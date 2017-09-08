@@ -9,7 +9,7 @@
       "parameters": [
         {
           "@id": "cc:Actor/bus",
-          "comment": "The bus this actor is subscribed to.",
+          "comment": "The bus this actor subscribes to.",
           "range": "cc:Bus",
           "unique": true,
           "required": true

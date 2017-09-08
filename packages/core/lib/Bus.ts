@@ -51,6 +51,8 @@ export class Bus<A extends Actor<I, T, O>, I extends IAction, T extends IActorTe
     /**
      * Unsubscribe the given actor from the bus.
      *
+     * An actor that is subscribed multiple times will be unsubscribed only once.
+     *
      * @param {A} actor The actor to unsubscribe
      * @return {boolean} If the given actor was successfully unsubscribed,
      *         otherwise it was not subscribed before.
