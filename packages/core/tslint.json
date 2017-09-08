@@ -1,0 +1,22 @@
+{
+  "defaultSeverity": "error",
+  "extends": [
+    "tslint:recommended",
+    "tslint-eslint-rules"
+  ],
+  "jsRules": {},
+  "rules": {
+    "array-type": [true, "array"],
+    "indent": [true, "spaces", 2],
+    "no-empty-interface": false,
+    "quotemark": false,
+    "no-trailing-whitespace": [true, "ignore-jsdoc"],
+    "valid-jsdoc": [false, {
+      "prefer": {
+        "return": "return"
+      },
+      "requireReturn": false
+    }]
+  },
+  "rulesDirectory": []
+}

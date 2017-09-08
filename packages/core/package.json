@@ -1,0 +1,57 @@
+{
+  "name": "@comunica/core",
+  "version": "0.0.1",
+  "description": "Lightweight, semantic and modular actor framework",
+  "main": "index.js",
+  "typings": "index",
+  "scripts": {
+    "test": "mocha",
+    "lint": "tslint lib/**/*.ts test/**/*.ts",
+    "build": "tsc",
+    "validate": "npm ls",
+    "prepare": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/comunica/core.git"
+  },
+  "keywords": [
+    "semantic",
+    "actor",
+    "framework",
+    "events",
+    "messages"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/comunica/core/issues"
+  },
+  "homepage": "https://github.com/comunica/core#readme",
+  "files": [
+    "components",
+    "lib",
+    "index.js"
+  ],
+  "pre-commit": [
+    "build",
+    "lint",
+    "test"
+  ],
+  "devDependencies": {
+    "@types/lodash": "^4.14.74",
+    "@types/node": "^8.0.27",
+    "chai": "^4.1.2",
+    "chai-as-promised": "^7.1.1",
+    "mocha": "^3.5.0",
+    "pre-commit": "^1.2.2",
+    "sinon": "^3.2.1",
+    "sinon-chai": "^2.13.0",
+    "tslint": "^5.7.0",
+    "tslint-eslint-rules": "^4.1.1",
+    "typescript": "^2.5.2"
+  },
+  "dependencies": {
+    "lodash": "^4.17.4",
+    "lsd-components": "^1.0.4"
+  }
+}
