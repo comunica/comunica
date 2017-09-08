@@ -1,0 +1,22 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/contexts/comunica-core.jsonld",
+  "@id": "npmd:@comunica/core",
+  "components": [
+    {
+      "@id": "cc:Bus",
+      "@type": "Class",
+      "requireElement": "Bus",
+      "comment": "A publish-subscribe bus for sending actions to actors to test whether or not they can run an action.",
+      "constructorArguments": [
+        {
+          "fields": [
+            {
+              "keyRaw": "name",
+              "value": "rdf:subject"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

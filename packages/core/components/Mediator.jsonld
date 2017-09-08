@@ -1,0 +1,35 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/contexts/comunica-core.jsonld",
+  "@id": "npmd:@comunica/core",
+  "components": [
+    {
+      "@id": "cc:Mediator",
+      "@type": "AbstractClass",
+      "comment": "A mediator can mediate an action over a bus of actors.",
+      "parameters": [
+        {
+          "@id": "cc:Mediator/bus",
+          "comment": "The bus this mediator will mediate over.",
+          "range": "cc:Bus",
+          "unique": true,
+          "required": true
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "cc:Actor/constructorArgumentsObject",
+          "fields": [
+            {
+              "keyRaw": "name",
+              "value": "rdf:subject"
+            },
+            {
+              "keyRaw": "bus",
+              "value": "cc:Mediator/bus"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

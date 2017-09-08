@@ -1,0 +1,11 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/contexts/comunica-core.jsonld",
+  "@id": "npmd:@comunica/core",
+  "@type": "Module",
+  "requireName": "@comunica/core",
+  "import": [
+    "Actor.jsonld",
+    "Bus.jsonld",
+    "Mediator.jsonld"
+  ]
+}
