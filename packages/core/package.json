@@ -43,8 +43,12 @@
     "test"
   ],
   "devDependencies": {
+    "@types/chai": "^4.0.4",
+    "@types/chai-as-promised": "^7.1.0",
     "@types/lodash": "^4.14.74",
+    "@types/mocha": "^2.2.43",
     "@types/node": "^8.0.27",
+    "@types/sinon": "^2.3.3",
     "chai": "^4.1.2",
     "chai-as-promised": "^7.1.1",
     "mocha": "^3.5.0",
