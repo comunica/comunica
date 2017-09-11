@@ -42,7 +42,7 @@ describe('Mediator', () => {
         });
     });
 
-    describe('An Mediator instance', () => {
+    describe('A Mediator instance', () => {
         let mediator: any;
         beforeEach(() => {
             mediator = new (<any> Mediator)({ name: 'mediator', bus });

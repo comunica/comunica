@@ -27,7 +27,7 @@ describe('Bus', () => {
         });
     });
 
-    describe('An Bus instance', () => {
+    describe('A Bus instance', () => {
         let bus: any;
         const actor1 = new (<any> Actor)({ name: 'actor1', bus: new Bus({ name: 'bus1' }) });
         const actor2 = new (<any> Actor)({ name: 'actor2', bus: new Bus({ name: 'bus2' }) });
