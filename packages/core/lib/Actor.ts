@@ -18,55 +18,55 @@ import {Bus} from "./Bus";
  * @template O The output type of an actor.
  */
 export abstract class Actor<I extends IAction, T extends IActorTest, O extends IActorOutput>
-    implements IActorArgs<I, T, O> {
+  implements IActorArgs<I, T, O> {
 
-    public readonly name: string;
-    public readonly bus: Bus<Actor<I, T, O>, I, T, O>;
+  public readonly name: string;
+  public readonly bus: Bus<Actor<I, T, O>, I, T, O>;
 
-    /**
-     * All enumerable properties from the `args` object are inherited to this actor.
-     *
-     * The actor will subscribe to the given bus when this constructor is called.
-     *
-     * @param {IActorArgs<I extends IAction, T extends IActorTest, O extends IActorOutput>} args Arguments object
-     * @param {string} args.name The name for this actor.
-     * @param {Bus<A extends Actor<I, T, O>, I extends IAction, T extends IActorTest, O extends IActorOutput>} args.bus
-     *        The bus this actor subscribes to.
-     * @throws When required arguments are missing.
-     */
-    constructor(args: IActorArgs<I, T, O>) {
-        _.assign(this, args);
-        if (!this.name) {
-            throw new Error('A valid "name" argument must be provided.');
-        }
-        if (!this.bus) {
-            throw new Error('No valid bus was assigned to the actor "' + this.name + '".');
-        }
-        this.bus.subscribe(this);
+  /**
+   * All enumerable properties from the `args` object are inherited to this actor.
+   *
+   * The actor will subscribe to the given bus when this constructor is called.
+   *
+   * @param {IActorArgs<I extends IAction, T extends IActorTest, O extends IActorOutput>} args Arguments object
+   * @param {string} args.name The name for this actor.
+   * @param {Bus<A extends Actor<I, T, O>, I extends IAction, T extends IActorTest, O extends IActorOutput>} args.bus
+   *        The bus this actor subscribes to.
+   * @throws When required arguments are missing.
+   */
+  constructor(args: IActorArgs<I, T, O>) {
+    _.assign(this, args);
+    if (!this.name) {
+      throw new Error('A valid "name" argument must be provided.');
     }
+    if (!this.bus) {
+      throw new Error('No valid bus was assigned to the actor "' + this.name + '".');
+    }
+    this.bus.subscribe(this);
+  }
 
-    /**
-     * Check if this actor can run the given action,
-     * without actually running it.
-     *
-     * @param {I} action The action to test.
-     * @return {Promise<T>} A promise that resolves to the test result.
-     */
-    public abstract async test(action: I): Promise<T>;
+  /**
+   * Check if this actor can run the given action,
+   * without actually running it.
+   *
+   * @param {I} action The action to test.
+   * @return {Promise<T>} A promise that resolves to the test result.
+   */
+  public abstract async test(action: I): Promise<T>;
 
-    /**
-     * Run the given action on this actor.
-     *
-     * @param {I} action The action to run.
-     * @return {Promise<T>} A promise that resolves to the run result.
-     */
-    public abstract async run(action: I): Promise<O>;
+  /**
+   * Run the given action on this actor.
+   *
+   * @param {I} action The action to run.
+   * @return {Promise<T>} A promise that resolves to the run result.
+   */
+  public abstract async run(action: I): Promise<O>;
 
 }
 
 export interface IActorArgs<I extends IAction, T extends IActorTest, O extends IActorOutput> {
-    name: string;
-    bus: Bus<Actor<I, T, O>, I, T, O>;
+  name: string;
+  bus: Bus<Actor<I, T, O>, I, T, O>;
 }
 
 /**
