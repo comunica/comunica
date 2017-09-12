@@ -1,29 +1,26 @@
-import { expect } from 'chai';
-import * as sinon from 'sinon';
-
 import {Actor} from "../lib/Actor";
 import {Bus} from "../lib/Bus";
 
 describe('Bus', () => {
   describe('The Bus module', () => {
     it('should be a function', () => {
-      Bus.should.be.a('function');
+      expect(Bus).toBeInstanceOf(Function);
     });
 
     it('should be a Bus constructor', () => {
-      new Bus({ name: 'Bus' }).should.be.an.instanceof(Bus);
+      expect(new Bus({ name: 'Bus' })).toBeInstanceOf(Bus);
     });
 
     it('should not be able to create new Bus objects without \'new\'', () => {
-      expect(() => { (<any> Bus)(); }).to.throw();
+      expect(() => { (<any> Bus)(); }).toThrow();
     });
 
     it('should throw an error when constructed without a name', () => {
-      expect(() => { new (<any> Bus)({}); }).to.throw();
+      expect(() => { new (<any> Bus)({}); }).toThrow();
     });
 
     it('should throw an error when constructed without arguments', () => {
-      expect(() => { new (<any> Bus)(); }).to.throw();
+      expect(() => { new (<any> Bus)(); }).toThrow();
     });
   });
 
@@ -44,66 +41,66 @@ describe('Bus', () => {
       actor2.test = actorTest;
       actor3.test = actorTest;
 
-      bus = new Bus({ name: 'bus' });
+      jest.spyOn(actor1, 'test');
+      jest.spyOn(actor2, 'test');
+      jest.spyOn(actor3, 'test');
 
-      sinon.spy(actor1, 'test');
-      sinon.spy(actor2, 'test');
-      sinon.spy(actor3, 'test');
+      bus = new Bus({ name: 'bus' });
     });
 
     it('should have a \'name\' field', () => {
-      bus.name.should.equal('bus');
+      expect(bus.name).toEqual('bus');
     });
 
     it('should allow an actor to be subscribed', () => {
       bus.subscribe(actor1);
-      bus.actors.should.contain(actor1);
-      bus.actors.length.should.equal(1);
+      expect(bus.actors).toContain(actor1);
+      expect(bus.actors).toHaveLength(1);
     });
 
     it('should allow an actor to be subscribed and unsubscribed', () => {
       bus.subscribe(actor1);
-      bus.actors.should.contain(actor1);
-      bus.actors.length.should.equal(1);
-      bus.unsubscribe(actor1).should.equal(true);
-      bus.actors.should.not.contain(actor1);
-      bus.actors.length.should.equal(0);
+      expect(bus.actors).toContain(actor1);
+      expect(bus.actors).toHaveLength(1);
+      expect(bus.unsubscribe(actor1)).toBeTruthy();
+      expect(bus.actors).not.toContain(actor1);
+      expect(bus.actors).toHaveLength(0);
     });
 
     it('should allow multiple actors to be subscribed and unsubscribed', () => {
       bus.subscribe(actor1);
       bus.subscribe(actor2);
       bus.subscribe(actor3);
-      bus.actors.should.contain(actor1);
-      bus.actors.should.contain(actor2);
-      bus.actors.should.contain(actor3);
-      bus.actors.length.should.equal(3);
-      bus.unsubscribe(actor1).should.equal(true);
-      bus.actors.length.should.equal(2);
-      bus.unsubscribe(actor3).should.equal(true);
-      bus.actors.should.not.contain(actor1);
-      bus.actors.should.contain(actor2);
-      bus.actors.should.not.contain(actor3);
-      bus.actors.length.should.equal(1);
+      expect(bus.actors).toContain(actor1);
+      expect(bus.actors).toContain(actor2);
+      expect(bus.actors).toContain(actor3);
+      expect(bus.actors).toHaveLength(3);
+      expect(bus.unsubscribe(actor1)).toBeTruthy();
+      expect(bus.actors).toHaveLength(2);
+      expect(bus.unsubscribe(actor3)).toBeTruthy();
+      expect(bus.actors).not.toContain(actor1);
+      expect(bus.actors).toContain(actor2);
+      expect(bus.actors).not.toContain(actor3);
+      expect(bus.actors).toHaveLength(1);
     });
 
     it('should allow an actor to be subscribed multiple times', () => {
       bus.subscribe(actor1);
       bus.subscribe(actor1);
       bus.subscribe(actor1);
-      bus.actors.length.should.equal(3);
+      expect(bus.actors).toHaveLength(3);
     });
 
     it('should return \'false\' when unsubscribing an actor that was not subscribed', () => {
-      bus.unsubscribe(actor1).should.equal(false);
+      expect(bus.unsubscribe(actor1)).toBeFalsy();
     });
 
     describe('without actors', () => {
       it('should send an action to 0 actors', () => {
         bus.publish({});
-        actor1.test.should.not.have.been.called;
-        actor2.test.should.not.have.been.called;
-        actor3.test.should.not.have.been.called;
+        expect(actor1.test).not.toHaveBeenCalled();
+        expect(actor2.test).not.toHaveBeenCalled();
+        expect(actor3.test).not.toHaveBeenCalled();
       });
     });
 
@@ -114,36 +111,35 @@ describe('Bus', () => {
 
       it('should send an action to 1 actor', () => {
         bus.publish({});
-        actor1.test.should.have.been.calledOnce;
-        actor2.test.should.not.have.been.called;
-        actor3.test.should.not.have.been.called;
+        expect(actor1.test).toHaveBeenCalledTimes(1);
+        expect(actor2.test).not.toHaveBeenCalled();
+        expect(actor3.test).not.toHaveBeenCalled();
       });
 
       it('should send two actions to 1 actor', () => {
         bus.publish({});
         bus.publish({});
-        actor1.test.should.have.been.calledTwice;
-        actor2.test.should.not.have.been.called;
-        actor3.test.should.not.have.been.called;
+        expect(actor1.test).toHaveBeenCalledTimes(2);
+        expect(actor2.test).not.toHaveBeenCalled();
+        expect(actor3.test).not.toHaveBeenCalled();
       });
 
       it('should send no action to 1 unsubscribed actor', () => {
         bus.unsubscribe(actor1);
         bus.publish({});
-        actor1.test.should.not.have.been.called;
-        actor2.test.should.not.have.been.called;
-        actor3.test.should.not.have.been.called;
+        expect(actor1.test).not.toHaveBeenCalled();
+        expect(actor2.test).not.toHaveBeenCalled();
+        expect(actor3.test).not.toHaveBeenCalled();
       });
 
       it('should receive 1 publication reply', () => {
-        bus.publish({}).length.should.equal(1);
+        expect(bus.publish({})).toHaveLength(1);
       });
 
       it('should receive a correct publication reply', () => {
-        bus.publish({ a: 'b' })[0].actor.should.equal(actor1);
-        bus.publish({ a: 'b' })[0].reply.should.be.instanceof(Promise);
-        return bus.publish({ a: 'b' })[0].reply.should.eventually
-          .deep.equal({ type: 'test', sent: { a: 'b' } });
+        expect(bus.publish({ a: 'b' })[0].actor).toEqual(actor1);
+        expect(bus.publish({ a: 'b' })[0].reply).toBeInstanceOf(Promise);
+        return expect(bus.publish({ a: 'b' })[0].reply).resolves.toEqual({ type: 'test', sent: { a: 'b' } });
       });
     });
 
@@ -156,40 +152,40 @@ describe('Bus', () => {
 
       it('should send an action to 3 actors', () => {
         bus.publish({});
-        actor1.test.should.have.been.calledOnce;
-        actor2.test.should.have.been.calledOnce;
-        actor3.test.should.have.been.calledOnce;
+        expect(actor1.test).toHaveBeenCalledTimes(1);
+        expect(actor2.test).toHaveBeenCalledTimes(1);
+        expect(actor3.test).toHaveBeenCalledTimes(1);
       });
 
       it('should send two actions to 3 actors', () => {
         bus.publish({});
         bus.publish({});
-        actor1.test.should.have.been.calledTwice;
-        actor2.test.should.have.been.calledTwice;
-        actor3.test.should.have.been.calledTwice;
+        expect(actor1.test).toHaveBeenCalledTimes(2);
+        expect(actor2.test).toHaveBeenCalledTimes(2);
+        expect(actor3.test).toHaveBeenCalledTimes(2);
       });
 
       it('should send no action to 1 unsubscribed actor, but an action to 2 subscribed actors', () => {
         bus.unsubscribe(actor1);
         bus.publish({});
-        actor1.test.should.not.have.been.called;
-        actor2.test.should.have.been.calledOnce;
-        actor3.test.should.have.been.calledOnce;
+        expect(actor1.test).not.toHaveBeenCalled();
+        expect(actor2.test).toHaveBeenCalledTimes(1);
+        expect(actor3.test).toHaveBeenCalledTimes(1);
       });
 
       it('should receive 3 publication replies', () => {
-        bus.publish({}).length.should.equal(3);
+        expect(bus.publish({})).toHaveLength(3);
       });
 
       it('should receive correct publication replies', () => {
-        bus.publish({ a: 'b' })[0].actor.should.equal(actor1);
-        bus.publish({ a: 'b' })[0].reply.should.be.instanceof(Promise);
+        expect(bus.publish({ a: 'b' })[0].actor).toBe(actor1);
+        expect(bus.publish({ a: 'b' })[0].reply).toBeInstanceOf(Promise);
 
-        bus.publish({ a: 'b' })[1].actor.should.equal(actor2);
-        bus.publish({ a: 'b' })[1].reply.should.be.instanceof(Promise);
+        expect(bus.publish({ a: 'b' })[1].actor).toBe(actor2);
+        expect(bus.publish({ a: 'b' })[1].reply).toBeInstanceOf(Promise);
 
-        bus.publish({ a: 'b' })[2].actor.should.equal(actor3);
-        bus.publish({ a: 'b' })[2].reply.should.be.instanceof(Promise);
+        expect(bus.publish({ a: 'b' })[2].actor).toBe(actor3);
+        expect(bus.publish({ a: 'b' })[2].reply).toBeInstanceOf(Promise);
       });
     });
 

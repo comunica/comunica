@@ -1,5 +1,3 @@
-import { expect } from 'chai';
-
 import {Actor} from "../lib/Actor";
 import {Bus} from "../lib/Bus";
 
@@ -8,31 +6,31 @@ describe('Actor', () => {
 
   describe('The Actor module', () => {
     it('should be a function', () => {
-      Actor.should.be.a('function');
+      expect(Actor).toBeInstanceOf(Function);
     });
 
     it('should be a Actor constructor', () => {
-      new (<any> Actor)({ name: 'actor', bus: new Bus({ name: 'bus' }) }).should.be.an.instanceof(Actor);
+      expect(new (<any> Actor)({ name: 'actor', bus: new Bus({ name: 'bus' }) })).toBeInstanceOf(Actor);
     });
 
     it('should not be able to create new Actor objects without \'new\'', () => {
-      expect(() => { (<any> Actor)(); }).to.throw();
+      expect(() => { (<any> Actor)(); }).toThrow();
     });
 
     it('should throw an error when constructed without a name', () => {
-      expect(() => { new (<any> Actor)({ bus }); }).to.throw();
+      expect(() => { new (<any> Actor)({ bus }); }).toThrow();
     });
 
     it('should throw an error when constructed without a bus', () => {
-      expect(() => { new (<any> Actor)({ name: 'name' }); }).to.throw();
+      expect(() => { new (<any> Actor)({ name: 'name' }); }).toThrow();
     });
 
     it('should throw an error when constructed without a name and bus', () => {
-      expect(() => { new (<any> Actor)({}); }).to.throw();
+      expect(() => { new (<any> Actor)({}); }).toThrow();
     });
 
     it('should throw an error when constructed without arguments', () => {
-      expect(() => { new (<any> Actor)(); }).to.throw();
+      expect(() => { new (<any> Actor)(); }).toThrow();
     });
   });
 
@@ -40,11 +38,11 @@ describe('Actor', () => {
     const actor = new (<any> Actor)({ name: 'actor', bus });
 
     it('should have a \'name\' field', () => {
-      actor.name.should.equal('actor');
+      expect(actor.name).toEqual('actor');
     });
 
     it('should have a \'bus\' field', () => {
-      actor.bus.should.equal(bus);
+      expect(actor.bus).toEqual(bus);
     });
   });
 });

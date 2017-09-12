@@ -1,6 +1,3 @@
-import { expect } from 'chai';
-import * as sinon from 'sinon';
-
 import {Actor} from "../lib/Actor";
 import {Bus} from "../lib/Bus";
 import {Mediator} from "../lib/Mediator";
@@ -14,31 +11,31 @@ describe('Mediator', () => {
 
   describe('The Mediator module', () => {
     it('should be a function', () => {
-      Mediator.should.be.a('function');
+      expect(Mediator).toBeInstanceOf(Function);
     });
 
     it('should be a Mediator constructor', () => {
-      new (<any> Mediator)({ name: 'mediator', bus: new Bus({ name: 'bus' }) }).should.be.an.instanceof(Mediator);
+      expect(new (<any> Mediator)({ name: 'mediator', bus: new Bus({ name: 'bus' }) })).toBeInstanceOf(Mediator);
     });
 
     it('should not be able to create new Mediator objects without \'new\'', () => {
-      expect(() => { (<any> Mediator)(); }).to.throw();
+      expect(() => { (<any> Mediator)(); }).toThrow();
     });
 
     it('should throw an error when constructed without a name', () => {
-      expect(() => { new (<any> Mediator)({ bus }); }).to.throw();
+      expect(() => { new (<any> Mediator)({ bus }); }).toThrow();
     });
 
     it('should throw an error when constructed without a bus', () => {
-      expect(() => { new (<any> Mediator)({ name: 'name' }); }).to.throw();
+      expect(() => { new (<any> Mediator)({ name: 'name' }); }).toThrow();
     });
 
     it('should throw an error when constructed without a name and bus', () => {
-      expect(() => { new (<any> Mediator)({}); }).to.throw();
+      expect(() => { new (<any> Mediator)({}); }).toThrow();
     });
 
     it('should throw an error when constructed without arguments', () => {
-      expect(() => { new (<any> Mediator)(); }).to.throw();
+      expect(() => { new (<any> Mediator)(); }).toThrow();
     });
   });
 
@@ -49,16 +46,16 @@ describe('Mediator', () => {
     });
 
     it('should have a \'name\' field', () => {
-      mediator.name.should.equal('mediator');
+      expect(mediator.name).toEqual('mediator');
     });
 
     it('should have a \'bus\' field', () => {
-      mediator.bus.should.equal(bus);
+      expect(mediator.bus).toEqual(bus);
     });
 
     describe('without actors in the bus', () => {
       it('should throw an error when mediated over', () => {
-        return mediator.mediate({}).should.be.rejected;
+        return expect(mediator.mediate({})).rejects.toBeInstanceOf(Error);
       });
     });
 
@@ -76,8 +73,11 @@ describe('Mediator', () => {
         resolve({ type: 'run', sent: action });
       });
     };
-    const mediateWithFirst = (action: any, testResults: any) => {
+    const mediateWithFirst = async (action: any, testResults: any) => {
       return testResults[0].actor;
+    };
+    const mediateWithFirstError = async () => {
+      throw new Error('some error');
     };
 
     beforeEach(() => {
@@ -94,13 +94,13 @@ describe('Mediator', () => {
       actor2.run = actorRun;
       actor3.run = actorRun;
 
-      sinon.spy(actor1, 'test');
-      sinon.spy(actor2, 'test');
-      sinon.spy(actor3, 'test');
-      sinon.spy(actor1, 'run');
-      sinon.spy(actor2, 'run');
-      sinon.spy(actor3, 'run');
-      sinon.spy(mediator, 'mediateWith');
+      jest.spyOn(mediator, 'mediateWith');
+      jest.spyOn(actor1, 'test');
+      jest.spyOn(actor2, 'test');
+      jest.spyOn(actor3, 'test');
+      jest.spyOn(actor1, 'run');
+      jest.spyOn(actor2, 'run');
+      jest.spyOn(actor3, 'run');
     });
 
     describe('without 1 actor in the bus', () => {
@@ -109,19 +109,19 @@ describe('Mediator', () => {
       });
 
       it('should not throw an error when mediated over', () => {
-        return mediator.mediate({}).should.not.be.rejected;
+        return expect(mediator.mediate({})).resolves.toBeTruthy();
       });
 
       it('should call \'mediateWith\' when mediated over', () => {
         return mediator.mediate({}).then(() => {
-          mediator.mediateWith.should.have.been.calledOnce;
+          expect(mediator.mediateWith).toHaveBeenCalledTimes(1);
         });
       });
 
       it('should call the actor test and run methods when mediated over', () => {
         return mediator.mediate({}).then(() => {
-          actor1.test.should.have.been.calledOnce;
-          actor1.run.should.have.been.calledOnce;
+          expect(actor1.test).toHaveBeenCalledTimes(1);
+          expect(actor1.run).toHaveBeenCalledTimes(1);
         });
       });
     });
@@ -134,29 +134,34 @@ describe('Mediator', () => {
       });
 
       it('should not throw an error when mediated over', () => {
-        return mediator.mediate({}).should.not.be.rejected;
+        return expect(mediator.mediate({})).resolves.toBeTruthy();
       });
 
       it('should call \'mediateWith\' when mediated over', () => {
         return mediator.mediate({}).then(() => {
-          mediator.mediateWith.should.have.been.calledOnce;
+          expect(mediator.mediateWith).toHaveBeenCalledTimes(1);
         });
       });
 
       it('should call all the actor tests methods when mediated over', () => {
         return mediator.mediate({}).then(() => {
-          actor1.test.should.have.been.calledOnce;
-          actor2.test.should.have.been.calledOnce;
-          actor3.test.should.have.been.calledOnce;
+          expect(actor1.test).toHaveBeenCalledTimes(1);
+          expect(actor2.test).toHaveBeenCalledTimes(1);
+          expect(actor3.test).toHaveBeenCalledTimes(1);
         });
       });
 
       it('should only call one actor run method when mediated over', () => {
         return mediator.mediate({}).then(() => {
-          actor1.run.should.have.been.calledOnce;
-          actor2.run.should.not.have.been.called;
-          actor3.run.should.not.have.been.called;
+          expect(actor1.run).toHaveBeenCalledTimes(1);
+          expect(actor2.run).not.toHaveBeenCalled();
+          expect(actor3.run).not.toHaveBeenCalled();
         });
+      });
+
+      it('should reject if the mediateWith function was rejected', () => {
+        mediator.mediateWith = mediateWithFirstError;
+        return expect(mediator.mediate({})).rejects.toBeInstanceOf(Error);
       });
     });
   });
