@@ -10,7 +10,8 @@
   "main": "index.js",
   "typings": "index",
   "scripts": {
-    "test": "jest --no-cache",
+    "test": "jest --no-cache ${1}",
+    "test-watch": "jest ${1} --watch",
     "lint": "tslint lib/**/*.ts test/**/*.ts --exclude '**/*.d.ts'",
     "build": "tsc",
     "validate": "npm ls",
