@@ -1,0 +1,81 @@
+{
+  "name": "@comunica/runner",
+  "version": "0.0.1",
+  "description": "Utility module for Comunica runner modules",
+  "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/runner",
+  "lsd:components": "components/components.jsonld",
+  "lsd:contexts": {
+    "https://linkedsoftwaredependencies.org/contexts/comunica-runner.jsonld": "components/context.jsonld"
+  },
+  "main": "index.js",
+  "typings": "index",
+  "scripts": {
+    "test": "jest --no-cache ${1}",
+    "test-watch": "jest ${1} --watch",
+    "lint": "tslint lib/**/*.ts test/**/*.ts --exclude '**/*.d.ts'",
+    "build": "tsc",
+    "validate": "npm ls",
+    "prepare": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/comunica/runner.git"
+  },
+  "keywords": [
+    "comunica",
+    "runner"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/comunica/runner/issues"
+  },
+  "homepage": "https://github.com/comunica/runner#readme",
+  "files": [
+    "components",
+    "lib",
+    "index.js"
+  ],
+  "pre-commit": [
+    "build",
+    "lint",
+    "test"
+  ],
+  "peerDependencies": {
+    "@comunica/core": "^0.0.1",
+    "@comunica/bus-init": "^0.0.1"
+  },
+  "devDependencies": {
+    "@comunica/core": "^0.0.1",
+    "@comunica/bus-init": "^0.0.1",
+    "@types/bluebird": "^3.5.11",
+    "@types/jest": "^20.0.8",
+    "@types/lodash": "^4.14.74",
+    "@types/node": "^8.0.27",
+    "jest": "^21.0.2",
+    "pre-commit": "^1.2.2",
+    "ts-jest": "^21.0.0",
+    "tslint": "^5.7.0",
+    "tslint-eslint-rules": "^4.1.1",
+    "typescript": "^2.5.2"
+  },
+  "dependencies": {
+    "bluebird": "^3.5.0",
+    "cancelable-awaiter": "^1.0.5",
+    "lodash": "^4.17.4",
+    "lsd-components": "^1.0.4",
+    "tslib": "^1.7.1"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.ts$": "<rootDir>/node_modules/ts-jest/preprocessor.js"
+    },
+    "transformIgnorePatterns": ["[/\\\\]node_modules[/\\\\].+\\.(js|jsx)$"],
+    "testRegex": "(/test/.*|(\\.|/)(test|spec))\\.ts$",
+    "moduleFileExtensions": [
+      "ts",
+      "js"
+    ],
+    "collectCoverage": true,
+    "mapCoverage": true
+  }
+}
