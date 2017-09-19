@@ -1,0 +1,6 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/contexts/comunica-bus-init.jsonld",
+  "@id": "cbi:Bus/Init",
+  "@type": "cc:Bus",
+  "comment": "A bus for process initialization events"
+}

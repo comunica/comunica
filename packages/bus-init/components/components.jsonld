@@ -1,0 +1,9 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/contexts/comunica-bus-init.jsonld",
+  "@id": "npmd:@comunica/bus-init",
+  "@type": "Module",
+  "requireName": "@comunica/bus-init",
+  "import": [
+    "Init.jsonld"
+  ]
+}
