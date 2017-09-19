@@ -1,0 +1,47 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-init-hello-world.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-init.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-init-hello-world",
+  "components": [
+    {
+      "@id": "chw:ActorInitHelloWorld",
+      "@type": "Class",
+      "extends": "Actor",
+      "requireElement": "ActorInitHelloWorld",
+      "comment": "A Hello World actor that listens to on the 'init' bus.",
+      "parameters": [
+        {
+          "@id": "cc:Actor/bus",
+          "defaultScoped": {
+            "defaultScope": "chw:ActorInitHelloWorld",
+            "defaultScopedValue": { "@id": "cbi:Bus/Init" }
+          }
+        },
+        {
+          "@id": "chw:hello",
+          "comment": "The 'hello' prefix",
+          "range": "xsd:string",
+          "defaultScoped": {
+            "defaultScope": "chw:ActorInitHelloWorld",
+            "defaultScopedValue": "Hello"
+          },
+          "unique": true
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "chw:ActorInitHelloWorld/constructorArgumentsObject",
+          "extends": "cc:Actor/constructorArgumentsObject",
+          "fields": [
+            {
+              "keyRaw": "hello",
+              "value": "chw:hello"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
