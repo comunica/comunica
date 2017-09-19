@@ -1,0 +1,26 @@
+{
+  "compileOnSave": true,
+  "compilerOptions": {
+    "module": "commonjs",
+    "lib": [
+      "es6"
+    ],
+    "target": "es6",
+    "noImplicitAny": true,
+    "removeComments": false,
+    "preserveConstEnums": true,
+    "sourceMap": true,
+    "inlineSources": true,
+    "declaration": true,
+    "importHelpers": true
+  },
+  "include": [
+    "index.ts",
+    "bin/**/*",
+    "lib/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "test/**/*"
+  ]
+}
