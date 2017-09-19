@@ -1,0 +1,12 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/components.jsonld",
+    {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
+      "cr": "npmd:@comunica/runner/",
+
+      "Runner": "cr:Runner",
+      "actors": "cr:actor"
+    }
+  ]
+}

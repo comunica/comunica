@@ -1,0 +1,9 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/contexts/comunica-runner.jsonld",
+  "@id": "npmd:@comunica/runner",
+  "@type": "Module",
+  "requireName": "@comunica/runner",
+  "import": [
+    "Runner.jsonld"
+  ]
+}
