@@ -1,2 +1,2 @@
-lib/**/*.ts
+bin/**/*.ts
 index.ts
