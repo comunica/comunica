@@ -1,0 +1,19 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-init-hello-world.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-runner.jsonld"
+  ],
+  "@graph": [
+    {
+      "@id": "urn:comunica:my",
+      "@type": "Runner",
+      "actors": [
+        {
+          "@id": "ex:myInit",
+          "@type": "ActorInitHelloWorld",
+          "hello": "Hi"
+        }
+      ]
+    }
+  ]
+}
