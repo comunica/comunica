@@ -8,17 +8,10 @@
     {
       "@id": "chw:ActorInitHelloWorld",
       "@type": "Class",
-      "extends": "Actor",
+      "extends": "cbi:ActorInit",
       "requireElement": "ActorInitHelloWorld",
       "comment": "A Hello World actor that listens to on the 'init' bus.",
       "parameters": [
-        {
-          "@id": "cc:Actor/bus",
-          "defaultScoped": {
-            "defaultScope": "chw:ActorInitHelloWorld",
-            "defaultScopedValue": { "@id": "cbi:Bus/Init" }
-          }
-        },
         {
           "@id": "chw:hello",
           "comment": "The 'hello' prefix",
