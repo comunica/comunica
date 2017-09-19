@@ -1,0 +1,22 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/contexts/comunica-bus-init.jsonld",
+  "@id": "npmd:@comunica/actor-init-hello-world",
+  "components": [
+    {
+      "@id": "cbi:ActorInit",
+      "@type": "AbstractClass",
+      "extends": "Actor",
+      "requireElement": "ActorInit",
+      "comment": "A base actor for listening to init events.",
+      "parameters": [
+        {
+          "@id": "cc:Actor/bus",
+          "defaultScoped": {
+            "defaultScope": "cbi:ActorInit",
+            "defaultScopedValue": { "@id": "cbi:Bus/Init" }
+          }
+        }
+      ]
+    }
+  ]
+}

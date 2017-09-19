@@ -3,7 +3,9 @@
     "https://linkedsoftwaredependencies.org/contexts/comunica-core.jsonld",
     {
       "cbi": "npmd:@comunica/bus-init/",
-      "Init": "cbi:Bus/Init"
+
+      "Init": "cbi:Bus/Init",
+      "ActorInit": "cbi:ActorInit"
     }
   ]
 }
