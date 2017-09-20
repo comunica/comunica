@@ -1,6 +1,6 @@
+import {ActorInit} from "@comunica/bus-init/lib/ActorInit";
 import {Bus} from "@comunica/core/lib/Bus";
 import {ActorInitHelloWorld} from "../lib/ActorInitHelloWorld";
-import {ActorInit} from "@comunica/bus-init/lib/ActorInit";
 
 describe('ActorInitHelloWorld', () => {
   let bus;

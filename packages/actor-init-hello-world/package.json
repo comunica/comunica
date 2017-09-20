@@ -32,7 +32,9 @@
   "homepage": "https://github.com/comunica/actor-init-hello-world#readme",
   "files": [
     "components",
-    "lib",
+    "lib/**/*.d.ts",
+    "lib/**/*.js",
+    "index.d.ts",
     "index.js"
   ],
   "pre-commit": [
