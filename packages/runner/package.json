@@ -32,7 +32,9 @@
   "homepage": "https://github.com/comunica/runner#readme",
   "files": [
     "components",
-    "lib",
+    "lib/**/*.d.ts",
+    "lib/**/*.js",
+    "index.d.ts",
     "index.js"
   ],
   "pre-commit": [
@@ -69,7 +71,9 @@
     "transform": {
       "^.+\\.ts$": "<rootDir>/node_modules/ts-jest/preprocessor.js"
     },
-    "transformIgnorePatterns": ["[/\\\\]node_modules[/\\\\].+\\.(js|jsx)$"],
+    "transformIgnorePatterns": [
+      "[/\\\\]node_modules[/\\\\].+\\.(js|jsx)$"
+    ],
     "testRegex": "(/test/.*|(\\.|/)(test|spec))\\.ts$",
     "moduleFileExtensions": [
       "ts",

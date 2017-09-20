@@ -1,6 +1,6 @@
+import {Actor} from "@comunica/core/lib/Actor";
 import {Bus} from "@comunica/core/lib/Bus";
 import {Runner} from "../lib/Runner";
-import {Actor} from "@comunica/core/lib/Actor";
 
 describe('Runner', () => {
   let bus;
