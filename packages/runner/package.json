@@ -68,6 +68,7 @@
     "tslib": "^1.7.1"
   },
   "jest": {
+    "testEnvironment": "node",
     "transform": {
       "^.+\\.ts$": "<rootDir>/node_modules/ts-jest/preprocessor.js"
     },
