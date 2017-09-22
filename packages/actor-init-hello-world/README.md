@@ -16,7 +16,7 @@ Assuming `@comunica/runner-cli` and `@comunica/runner` are installed,
 executing the following:
 
 ```
-$ node node_modules/.bin/comunica-run config/config-example.json Desmond Hume
+$ node_modules/.bin/comunica-run config/config-example.json Desmond Hume
 ```
 
 will print `Hi Desmond Hume`.
