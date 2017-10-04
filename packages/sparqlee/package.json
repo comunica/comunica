@@ -25,6 +25,8 @@
   "devDependencies": {
     "gulp": "^3.9.1",
     "gulp-typescript": "^3.2.2",
+    "gulp-util": "^3.0.8",
+    "gulp-watch": "^4.3.11",
     "typescript": "^2.5.3"
   }
 }
