@@ -1,0 +1,30 @@
+{
+  "name": "comunica-sparql-expeval",
+  "version": "0.0.1",
+  "description": "Promise based SPARQL Expression Evaluator",
+  "main": "dist/main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wschella/Comunica-SPARQL-ExpEval.git"
+  },
+  "keywords": [
+    "sparql",
+    "rdf",
+    "expression-engine",
+    "promise"
+  ],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/wschella/Comunica-SPARQL-ExpEval/issues"
+  },
+  "homepage": "https://github.com/wschella/Comunica-SPARQL-ExpEval#readme",
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-typescript": "^3.2.2",
+    "typescript": "^2.5.3"
+  }
+}
