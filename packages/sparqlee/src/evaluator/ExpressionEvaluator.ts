@@ -1,5 +1,6 @@
 import { Mapping } from "../core/Mapping";
-import { Expression } from "./Expression";
+import { Term, TermTypes } from "../core/Term";
+import { Expression } from "./../core/Expression";
 
 export class ExpressionEvaluator {
     expr: Expression;

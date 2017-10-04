@@ -4,6 +4,7 @@
     ],
     "compilerOptions": {
         "noImplicitAny": true,
-        "target": "es5"
+        "target": "ES6",
+        "module": "CommonJS"
     }
 }
