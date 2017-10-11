@@ -1,3 +1,6 @@
+/// <reference path="./types/rdf-js/index.d.ts"/>
+/// <reference path="./types/rdf-data-model/index.d.ts"/>
+
 {
     "exclude": [
         "node_modules",

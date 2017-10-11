@@ -35,6 +35,9 @@
     "@types/benchmark": "^1.0.30"
   },
   "dependencies": {
+    "@types/node": "^8.0.34",
+    "events": "^1.1.1",
+    "rdf-data-model": "^1.0.0",
     "sparqljs": "^1.5.0"
   }
 }

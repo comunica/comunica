@@ -1,3 +1,3 @@
-import { RDFTerm } from "./RDFTerm"
+import { Term } from '../../types/rdf-js'
 
-export type Mapping = Map<String, RDFTerm>;
+export type Mapping = Map<String, Term>;

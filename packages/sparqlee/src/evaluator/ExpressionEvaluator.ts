@@ -1,5 +1,5 @@
 import { Mapping } from "../core/Mapping";
-import { RDFTerm, RDFTermTypes } from "../core/RDFTerm";
+import { Term } from '../../types/rdf-js'
 import { Expression } from "sparqljs";
 
 export class ExpressionEvaluator {
@@ -10,7 +10,7 @@ export class ExpressionEvaluator {
     }
 
     evaluate(mapping: Mapping) {
-        console.log(this.expr);
+        
     }
 
     evaluateExampleQueryByHand(mapping: Mapping) {
