@@ -5,8 +5,6 @@
 
 import * as RDF from "../rdf-js";
 
-declare module 'rdf-data-model';
-
 export class NamedNode implements RDF.NamedNode {
     termType: "NamedNode";
     value: string;

@@ -1,47 +1,59 @@
+/// <reference path="../types/rdf-data-model/index.d.ts"/>
+
 import { Parser, FilterPattern, Query, OperationExpression, Term, Expression, BaseExpression} from 'sparqljs'
+import { Suite } from 'benchmark';
+import * as RDF from 'rdf-data-model';
 
 import { ExpressionEvaluator } from '../src/evaluator/ExpressionEvaluator';
 import { Mapping } from '../src/core/Mapping'
-import { RDFNamedNode, RDFLiteral, RDFVariable } from '../src/core/RDFTerm';
-import { Suite } from 'benchmark';
+import * as Convert from '../src/util/StringToRDFJS';
 
 var parser = new Parser({'xsd': 'http://www.w3.org/2001/XMLSchema'})
-var expression_string = '((?age + ?otherAge) = 40) && (?joinYear > "2005-01-01T00:00:00Z"^^xsd:dateTime)'
+var expression_string = '((?age + ?otherAge) = "40"^^xsd:integer) && (?joinYear > "2005-01-01T00:00:00Z"^^xsd:dateTime)'
 var sparql_query = parser.parse('SELECT * WHERE { ?s ?p ?o  FILTER (' + expression_string + ') }') as Query;
 var expr_example = (sparql_query.where[1] as FilterPattern).expression;
 
 var evaluator = new ExpressionEvaluator(expr_example);
+
 var mapping = new Map([
-    ['age', new RDFLiteral('20')],
-    ['otherAge', new RDFLiteral('20')],
-    ['joinYear', new RDFLiteral('2007-03-03T00:00:00Z')]
+    ['age', RDF.literal('20')],
+    ['otherAge', RDF.literal('20')],
+    ['joinYear', RDF.literal('2007-03-03T00:00:00Z')]
 ])
+
 console.log(expr_example);
 
 function evaluate(expr: Expression): any {
     // Term
     if (typeof expr == 'string'){
-        console.log(expr, expr.__termBrand)
-        return expr;
-    };
-
+        var term = Convert.stringToTerm(expr);
+        switch (term.termType) {
+            case 'Variable': {
+                return mapping.get(term.value).value as Number;
+            }
+            case 'Literal': {
+                return term.value as Number;
+            }
+        }
+    
     // Operation
-    expr = expr as OperationExpression;
-    var left = evaluate(expr.args[0]);
-    var right = evaluate(expr.args[1]);
-    switch (expr.operator) {
-        case '=': {
-            console.log(left == right);
-            return left == right;
-        }
-        case '>': {
-            return left > right;
-        }
-        case '&&': {
-            return left && right;
-        }
-        case '+': {
-            return left + right;
+    } else {
+        expr = expr as OperationExpression;
+        var left = evaluate(expr.args[0]);
+        var right = evaluate(expr.args[1]);
+        switch (expr.operator) {
+            case '=': {
+                return (left as number) == (right as number);
+            }
+            case '>': {
+                return new Date(left) > new Date(right);
+            }
+            case '&&': {
+                return left && right;
+            }
+            case '+': {
+                return Number(left) + Number(right);
+            }
         }
     }
 }
@@ -50,34 +62,7 @@ var suite = new Suite();
 suite
 .add('ExpressionByHand', () => {
     var expression = expr_example as OperationExpression;
-    /*
-    var evalSum = (expr: OperationExpression) => {
-        var leftArg = mapping.get(expr.args[0] as Term);
-        var rightArg = mapping.get(expr.args[0] as Term);
-        //return leftArg.value + rightArg.value;
-    }
-    
-    var evalLeft = (expr: OperationExpression) => {
-
-        var leftArg = evalSum(expr.args[0] as OperationExpression)
-        console.log(expr.args[1])
-        var rightArg = mapping.get(expr.args[1] as Term)
-        console.log(leftArg, rightArg);
-        return expr.args[0] == expr.args[1];
-
-    }
-    var evalRight = (expr: OperationExpression) => {
-        return expr.args[0] == expr.args[1];
-    }
-
-    var left = expression.args[0];
-    var right = expression.args[1];*/
-    var result = evaluate(expression);
-    console.log(result);
-    return result;
-
-    //return evalLeft(left as OperationExpression) &&
-      //     evalRight(right as OperationExpression);
+    evaluate(expression);
 })
 .on('cycle', function(event: Event) {
     console.log(String(event.target));
