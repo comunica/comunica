@@ -28,5 +28,9 @@
     "gulp-util": "^3.0.8",
     "gulp-watch": "^4.3.11",
     "typescript": "^2.5.3"
+  },
+  "dependencies": {
+    "@types/sparqljs": "^1.5.0",
+    "sparqljs": "^1.5.0"
   }
 }

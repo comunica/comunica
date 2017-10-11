@@ -1,5 +1,5 @@
 import { Mapping } from "../core/Mapping";
-import { Term, TermTypes } from "../core/Term";
+import { RDFTerm, RDFTermTypes } from "../core/RDFTerm";
 import { Expression } from "./../core/Expression";
 
 export class ExpressionEvaluator {
@@ -11,5 +11,9 @@ export class ExpressionEvaluator {
 
     evaluate(mapping: Mapping) {
         console.log(this.expr);
+    }
+
+    evaluateExampleQueryByHand(mapping: Mapping) {
+        
     }
 }
