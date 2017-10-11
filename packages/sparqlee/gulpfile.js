@@ -3,7 +3,7 @@ var ts = require("gulp-typescript");
 var tsProject = ts.createProject("tsconfig.json");
 
 gulp.task("watch", function(){
-    gulp.watch('src/**/*.ts', ["default"], { ignoreInitial: false });
+    gulp.watch('**/*.ts', ["default"], { ignoreInitial: false });
 });
 
 gulp.task("default", function () {

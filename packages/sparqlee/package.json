@@ -4,6 +4,8 @@
   "description": "Promise based SPARQL Expression Evaluator",
   "main": "dist/main.js",
   "scripts": {
+    "run": "node dist/src/main.js",
+    "bench": "node dist/benchmarks/ByHand.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -27,10 +29,12 @@
     "gulp-typescript": "^3.2.2",
     "gulp-util": "^3.0.8",
     "gulp-watch": "^4.3.11",
-    "typescript": "^2.5.3"
+    "typescript": "^2.5.3",
+    "@types/sparqljs": "^1.5.0",
+    "benchmark": "^2.1.4",
+    "@types/benchmark": "^1.0.30"
   },
   "dependencies": {
-    "@types/sparqljs": "^1.5.0",
     "sparqljs": "^1.5.0"
   }
 }
