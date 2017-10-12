@@ -35,6 +35,9 @@
     "lint"
   ],
   "devDependencies": {
+    "@comunica/bus-init": "^0.0.1",
+    "@comunica/core": "^0.0.1",
+    "@types/n3": "^0.0.3",
     "@types/node": "^8.0.27",
     "pre-commit": "^1.2.2",
     "tslint": "^5.7.0",
