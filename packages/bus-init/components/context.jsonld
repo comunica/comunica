@@ -4,8 +4,8 @@
     {
       "cbi": "npmd:@comunica/bus-init/",
 
-      "Init": "cbi:Bus/Init",
-      "ActorInit": "cbi:ActorInit"
+      "BusInit": "cbi:Bus/Init",
+      "ActorInit": "cbi:Actor/Init"
     }
   ]
 }

@@ -3,7 +3,7 @@
   "@id": "npmd:@comunica/actor-init-hello-world",
   "components": [
     {
-      "@id": "cbi:ActorInit",
+      "@id": "cbi:Actor/Init",
       "@type": "AbstractClass",
       "extends": "Actor",
       "requireElement": "ActorInit",
@@ -12,7 +12,7 @@
         {
           "@id": "cc:Actor/bus",
           "defaultScoped": {
-            "defaultScope": "cbi:ActorInit",
+            "defaultScope": "cbi:Actor/Init",
             "defaultScopedValue": { "@id": "cbi:Bus/Init" }
           }
         }
