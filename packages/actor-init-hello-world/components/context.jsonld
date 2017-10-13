@@ -5,7 +5,7 @@
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
       "cr": "npmd:@comunica/actor-init-hello-world/",
 
-      "ActorInitHelloWorld": "chw:ActorInitHelloWorld",
+      "ActorInitHelloWorld": "chw:Actor/Init/HelloWorld",
       "hello": "chw:hello"
     }
   ]

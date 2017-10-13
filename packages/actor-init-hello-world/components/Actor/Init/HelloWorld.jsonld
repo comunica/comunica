@@ -6,9 +6,9 @@
   "@id": "npmd:@comunica/actor-init-hello-world",
   "components": [
     {
-      "@id": "chw:ActorInitHelloWorld",
+      "@id": "chw:Actor/Init/HelloWorld",
       "@type": "Class",
-      "extends": "cbi:ActorInit",
+      "extends": "cbi:Actor/Init",
       "requireElement": "ActorInitHelloWorld",
       "comment": "A Hello World actor that listens to on the 'init' bus.",
       "parameters": [
@@ -17,7 +17,7 @@
           "comment": "The 'hello' prefix",
           "range": "xsd:string",
           "defaultScoped": {
-            "defaultScope": "chw:ActorInitHelloWorld",
+            "defaultScope": "chw:Actor/Init/HelloWorld",
             "defaultScopedValue": "Hello"
           },
           "unique": true
@@ -25,7 +25,7 @@
       ],
       "constructorArguments": [
         {
-          "@id": "chw:ActorInitHelloWorld/constructorArgumentsObject",
+          "@id": "chw:Actor/Init/HelloWorld/constructorArgumentsObject",
           "extends": "cc:Actor/constructorArgumentsObject",
           "fields": [
             {
