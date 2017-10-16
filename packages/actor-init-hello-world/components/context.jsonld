@@ -3,7 +3,7 @@
     "https://linkedsoftwaredependencies.org/contexts/components.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
-      "cr": "npmd:@comunica/actor-init-hello-world/",
+      "chw": "npmd:@comunica/actor-init-hello-world/",
 
       "ActorInitHelloWorld": "chw:Actor/Init/HelloWorld",
       "hello": "chw:hello"
