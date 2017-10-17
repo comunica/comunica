@@ -1,0 +1,12 @@
+node_modules
+.idea
+lib/**/*.js
+lib/**/*.js.map
+lib/**/*.d.ts
+test/**/*.js
+test/**/*.js.map
+test/**/*.d.ts
+index.js
+index.js.map
+index.d.ts
+coverage
