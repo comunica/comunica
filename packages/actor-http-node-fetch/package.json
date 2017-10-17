@@ -1,0 +1,82 @@
+{
+  "name": "@comunica/actor-http-node-fetch",
+  "version": "0.0.1",
+  "description": "A node-fetch http actor",
+  "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-http-node-fetch",
+  "lsd:components": "components/components.jsonld",
+  "lsd:contexts": {
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-http-node-fetch.jsonld": "components/context.jsonld"
+  },
+  "main": "index.js",
+  "typings": "index",
+  "scripts": {
+    "test": "jest --no-cache ${1}",
+    "test-watch": "jest ${1} --watch",
+    "lint": "tslint lib/**/*.ts test/**/*.ts --exclude '**/*.d.ts'",
+    "build": "tsc",
+    "validate": "npm ls",
+    "prepare": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/comunica/actor-http-node-fetch.git"
+  },
+  "keywords": [
+    "comunica",
+    "runner"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/comunica/actor-http-node-fetch/issues"
+  },
+  "homepage": "https://github.com/comunica/actor-http-node-fetch#readme",
+  "files": [
+    "components",
+    "lib/**/*.d.ts",
+    "lib/**/*.js",
+    "index.d.ts",
+    "index.js"
+  ],
+  "pre-commit": [
+    "build",
+    "lint",
+    "test"
+  ],
+  "dependencies": {
+    "node-fetch": "^1.7.3"
+  },
+  "peerDependencies": {
+    "@comunica/bus-http": "^0.0.1",
+    "@comunica/core": "^0.0.1"
+  },
+  "devDependencies": {
+    "@comunica/core": "^0.0.1",
+    "@comunica/bus-http": "^0.0.1",
+    "@comunica/mediatortype-time": "^0.0.1",
+    "@types/bluebird": "^3.5.11",
+    "@types/jest": "^20.0.8",
+    "@types/node": "^8.0.27",
+    "@types/node-fetch": "^1.6.7",
+    "jest": "^21.0.2",
+    "pre-commit": "^1.2.2",
+    "ts-jest": "^21.0.0",
+    "tslint": "^5.7.0",
+    "tslint-eslint-rules": "^4.1.1",
+    "typescript": "^2.5.2"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.ts$": "<rootDir>/node_modules/ts-jest/preprocessor.js"
+    },
+    "transformIgnorePatterns": [
+      "[/\\\\]node_modules[/\\\\].+\\.(js|jsx)$"
+    ],
+    "testRegex": "(/test/.*|(\\.|/)(test|spec))\\.ts$",
+    "moduleFileExtensions": [
+      "ts",
+      "js"
+    ],
+    "collectCoverage": true,
+    "mapCoverage": true
+  }
+}
