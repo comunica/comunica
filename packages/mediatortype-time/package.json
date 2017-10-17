@@ -1,0 +1,48 @@
+{
+  "name": "@comunica/mediatortype-time",
+  "version": "0.0.1",
+  "description": "A comunica mediator type for the 'time' parameter.",
+  "main": "index.js",
+  "typings": "index",
+  "scripts": {
+    "lint": "tslint lib/**/*.ts test/**/*.ts --exclude '**/*.d.ts'",
+    "build": "tsc",
+    "validate": "npm ls",
+    "prepare": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/comunica/mediatortype-time.git"
+  },
+  "keywords": [
+    "comunica",
+    "bus",
+    "init"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/comunica/mediatortype-time/issues"
+  },
+  "homepage": "https://github.com/comunica/mediatortype-time#readme",
+  "files": [
+    "components",
+    "lib/**/*.d.ts",
+    "lib/**/*.js",
+    "index.d.ts",
+    "index.js"
+  ],
+  "pre-commit": [
+    "build",
+    "lint"
+  ],
+  "peerDependencies": {
+    "@comunica/core": "^0.0.1"
+  },
+  "devDependencies": {
+    "@comunica/core": "^0.0.1",
+    "pre-commit": "^1.2.2",
+    "tslint": "^5.7.0",
+    "tslint-eslint-rules": "^4.1.1",
+    "typescript": "^2.5.2"
+  }
+}
