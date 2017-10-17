@@ -1,0 +1,79 @@
+{
+  "name": "@comunica/mediator-number",
+  "version": "0.0.1",
+  "description": "A mediator for a single mediation number value",
+  "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-number",
+  "lsd:components": "components/components.jsonld",
+  "lsd:contexts": {
+    "https://linkedsoftwaredependencies.org/contexts/comunica-mediator-number.jsonld": "components/context.jsonld"
+  },
+  "main": "index.js",
+  "typings": "index",
+  "scripts": {
+    "test": "jest --no-cache ${1}",
+    "test-watch": "jest ${1} --watch",
+    "lint": "tslint lib/**/*.ts test/**/*.ts --exclude '**/*.d.ts'",
+    "build": "tsc",
+    "validate": "npm ls",
+    "prepare": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/comunica/mediator-number.git"
+  },
+  "keywords": [
+    "comunica",
+    "runner"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/comunica/mediator-number/issues"
+  },
+  "homepage": "https://github.com/comunica/mediator-number#readme",
+  "files": [
+    "components",
+    "lib/**/*.d.ts",
+    "lib/**/*.js",
+    "index.d.ts",
+    "index.js"
+  ],
+  "pre-commit": [
+    "build",
+    "lint",
+    "test"
+  ],
+  "dependencies": {
+    "lodash": "^4.17.4"
+  },
+  "peerDependencies": {
+    "@comunica/core": "^0.0.1"
+  },
+  "devDependencies": {
+    "@comunica/core": "^0.0.1",
+    "@types/bluebird": "^3.5.11",
+    "@types/jest": "^20.0.8",
+    "@types/lodash": "^4.14.77",
+    "@types/node": "^8.0.27",
+    "jest": "^21.0.2",
+    "pre-commit": "^1.2.2",
+    "ts-jest": "^21.0.0",
+    "tslint": "^5.7.0",
+    "tslint-eslint-rules": "^4.1.1",
+    "typescript": "^2.5.2"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.ts$": "<rootDir>/node_modules/ts-jest/preprocessor.js"
+    },
+    "transformIgnorePatterns": [
+      "[/\\\\]node_modules[/\\\\].+\\.(js|jsx)$"
+    ],
+    "testRegex": "(/test/.*|(\\.|/)(test|spec))\\.ts$",
+    "moduleFileExtensions": [
+      "ts",
+      "js"
+    ],
+    "collectCoverage": true,
+    "mapCoverage": true
+  }
+}
