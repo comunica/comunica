@@ -1,0 +1,10 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/contexts/comunica-bus-http.jsonld",
+  "@id": "npmd:@comunica/bus-http",
+  "@type": "Module",
+  "requireName": "@comunica/bus-http",
+  "import": [
+    "Bus/Http.jsonld",
+    "Actor/Http.jsonld"
+  ]
+}

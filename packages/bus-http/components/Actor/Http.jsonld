@@ -1,0 +1,22 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/contexts/comunica-bus-http.jsonld",
+  "@id": "npmd:@comunica/bus-http",
+  "components": [
+    {
+      "@id": "cbh:Actor/Http",
+      "@type": "AbstractClass",
+      "extends": "Actor",
+      "requireElement": "ActorHttp",
+      "comment": "A base actor for handling HTTP events.",
+      "parameters": [
+        {
+          "@id": "cc:Actor/bus",
+          "defaultScoped": {
+            "defaultScope": "cbh:Actor/Http",
+            "defaultScopedValue": { "@id": "cbh:Bus/Http" }
+          }
+        }
+      ]
+    }
+  ]
+}
