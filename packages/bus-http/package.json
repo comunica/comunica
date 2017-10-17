@@ -1,0 +1,56 @@
+{
+  "name": "@comunica/bus-http",
+  "version": "0.0.1",
+  "description": "A comunica bus for 'http' events.",
+  "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-http",
+  "lsd:components": "components/components.jsonld",
+  "lsd:contexts": {
+    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-http.jsonld": "components/context.jsonld"
+  },
+  "main": "index.js",
+  "typings": "index",
+  "scripts": {
+    "lint": "tslint lib/**/*.ts test/**/*.ts --exclude '**/*.d.ts'",
+    "build": "tsc",
+    "validate": "npm ls",
+    "prepare": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/comunica/bus-http.git"
+  },
+  "keywords": [
+    "comunica",
+    "bus",
+    "init"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/comunica/bus-http/issues"
+  },
+  "homepage": "https://github.com/comunica/bus-http#readme",
+  "files": [
+    "components",
+    "lib/**/*.d.ts",
+    "lib/**/*.js",
+    "index.d.ts",
+    "index.js"
+  ],
+  "pre-commit": [
+    "build",
+    "lint"
+  ],
+  "peerDependencies": {
+    "@comunica/core": "^0.0.1"
+  },
+  "devDependencies": {
+    "@comunica/core": "^0.0.1",
+    "@comunica/mediatortype-time": "^0.0.1",
+    "@types/lodash": "^4.14.74",
+    "@types/node": "^8.0.27",
+    "pre-commit": "^1.2.2",
+    "tslint": "^5.7.0",
+    "tslint-eslint-rules": "^4.1.1",
+    "typescript": "^2.5.2"
+  }
+}
