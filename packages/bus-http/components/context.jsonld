@@ -1,0 +1,11 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/comunica-core.jsonld",
+    {
+      "cbh": "npmd:@comunica/bus-http/",
+
+      "BusHttp": "cbh:Bus/Http",
+      "ActorHttp": "cbh:Actor/Http"
+    }
+  ]
+}
