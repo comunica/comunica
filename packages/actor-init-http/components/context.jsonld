@@ -1,0 +1,16 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/components.jsonld",
+    {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
+      "cih": "npmd:@comunica/actor-init-http/",
+
+      "ActorInitHttp": "cih:Actor/Init/Http",
+      "mediatorHttp": "cih:mediatorHttp",
+      "url": "cih:url",
+      "method": "cih:method",
+      "header": "cih:header",
+      "headers": "cih:header"
+    }
+  ]
+}

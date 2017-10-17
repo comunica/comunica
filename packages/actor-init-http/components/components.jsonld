@@ -1,0 +1,9 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/contexts/comunica-actor-init-http.jsonld",
+  "@id": "npmd:@comunica/actor-init-http",
+  "@type": "Module",
+  "requireName": "@comunica/actor-init-http",
+  "import": [
+    "Actor/Init/Http.jsonld"
+  ]
+}

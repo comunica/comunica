@@ -1,0 +1,63 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-init-http.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-init.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-http.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-init-http",
+  "components": [
+    {
+      "@id": "cih:Actor/Init/Http",
+      "@type": "Class",
+      "extends": "cbi:Actor/Init",
+      "requireElement": "ActorInitHttp",
+      "comment": "An actor that listens to on the 'init' bus that triggers an HTTP event.",
+      "parameters": [
+        {
+          "@id": "cih:mediatorHttp",
+          "comment": "The HTTP mediator",
+          "required": true,
+          "unique": true
+        },
+        {
+          "@id": "cih:url",
+          "comment": "The URL that will be requested",
+          "unique": true
+        },
+        {
+          "@id": "cih:method",
+          "comment": "The HTTP method",
+          "unique": true
+        },
+        {
+          "@id": "cih:header",
+          "comment": "An HTTP header, format: \"Header: value\""
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "cih:Actor/Init/Http/constructorArgumentsObject",
+          "extends": "cc:Actor/constructorArgumentsObject",
+          "fields": [
+            {
+              "keyRaw": "mediatorHttp",
+              "value": "cih:mediatorHttp"
+            },
+            {
+              "keyRaw": "url",
+              "value": "cih:url"
+            },
+            {
+              "keyRaw": "method",
+              "value": "cih:method"
+            },
+            {
+              "keyRaw": "headers",
+              "value": "cih:header"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
