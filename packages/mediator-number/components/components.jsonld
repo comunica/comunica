@@ -1,0 +1,11 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/contexts/comunica-mediator-number.jsonld",
+  "@id": "npmd:@comunica/mediator-number",
+  "@type": "Module",
+  "requireName": "@comunica/mediator-number",
+  "import": [
+    "Mediator/Number.jsonld",
+    "Mediator/NumberMin.jsonld",
+    "Mediator/NumberMax.jsonld"
+  ]
+}
