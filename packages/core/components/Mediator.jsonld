@@ -17,7 +17,7 @@
       ],
       "constructorArguments": [
         {
-          "@id": "cc:Actor/constructorArgumentsObject",
+          "@id": "cc:Mediator/constructorArgumentsObject",
           "fields": [
             {
               "keyRaw": "name",
