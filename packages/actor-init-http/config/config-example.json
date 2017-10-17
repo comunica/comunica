@@ -1,0 +1,36 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-http.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-init-http.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-http-node-fetch.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-mediator-number.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-runner.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-core.jsonld"
+  ],
+  "@graph": [
+    {
+      "@id": "urn:comunica:my",
+      "@type": "Runner",
+      "actors": [
+        {
+          "@id": "ex:myInit",
+          "@type": "ActorInitHttp",
+          "mediatorHttp": {
+            "@id": "ex:mediatorHttp",
+            "@type": "MediatorNumberMin",
+            "field": "time",
+            "cc:Mediator/bus": { "@id": "cbh:Bus/Http" }
+          },
+          "url": "http://fragments.linkedsoftwaredependencies.org",
+          "headers": [
+            "Accept: application/trig;q=1.0,application/n-quads;q=0.7,text/n3,q=0.6"
+          ]
+        },
+        {
+          "@id": "ex:myHttpFetcher",
+          "@type": "ActorHttpNodeFetch"
+        }
+      ]
+    }
+  ]
+}
