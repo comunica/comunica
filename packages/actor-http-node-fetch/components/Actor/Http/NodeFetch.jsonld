@@ -1,0 +1,21 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-http-node-fetch.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-http.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-http-node-fetch",
+  "components": [
+    {
+      "@id": "chf:Actor/Http/NodeFetch",
+      "@type": "Class",
+      "extends": "cbh:Actor/Http",
+      "requireElement": "ActorHttpNodeFetch",
+      "comment": "A node-fetch actor that listens on the 'http' bus.",
+      "constructorArguments": [
+        {
+          "extends": "cc:Actor/constructorArgumentsObject"
+        }
+      ]
+    }
+  ]
+}

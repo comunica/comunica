@@ -1,0 +1,11 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/components.jsonld",
+    {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
+      "chf": "npmd:@comunica/actor-http-node-fetch/",
+
+      "ActorHttpNodeFetch": "chf:Actor/Http/NodeFetch"
+    }
+  ]
+}
