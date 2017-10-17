@@ -12,8 +12,7 @@ and defaults to 'Hello'.
 When executed, the actor will print the 'hello' parameter value
 to the console, followed by all command line parameters.
 
-Assuming `@comunica/runner-cli` and `@comunica/runner` are installed,
-executing the following:
+Executing the following:
 
 ```
 $ node_modules/.bin/comunica-run config/config-example.json Desmond Hume
