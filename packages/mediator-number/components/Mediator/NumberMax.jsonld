@@ -1,0 +1,31 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/comunica-core.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-mediator-number.jsonld"
+  ],
+  "@id": "npmd:@comunica/mediator-number",
+  "components": [
+    {
+      "@id": "cmn:Mediator/NumberMax",
+      "@type": "Class",
+      "extends": "cmn:Mediator/Number",
+      "requireElement": "MediatorNumber",
+      "comment": "A mediator that can mediate over a single number field and takes the maximum value.",
+      "parameters": [
+        {
+          "@id": "cmn:Mediator/Number/type",
+          "defaultScoped": {
+            "defaultScope": "cmn:Mediator/NumberMax",
+            "defaultScopedValue": { "@id": "cmn:Mediator/Number/type/TypeMax" }
+          }
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "cmn:Mediator/NumberMin/constructorArgumentsObject",
+          "extends": "cmn:Mediator/Number/constructorArgumentsObject"
+        }
+      ]
+    }
+  ]
+}
