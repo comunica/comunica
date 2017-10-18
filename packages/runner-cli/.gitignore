@@ -1,9 +1,0 @@
-node_modules
-.idea
-bin/**/*.js
-bin/**/*.js.map
-bin/**/*.d.ts
-index.js
-index.js.map
-index.d.ts
-coverage

@@ -9,27 +9,16 @@
   },
   "main": "index.js",
   "typings": "index",
-  "scripts": {
-    "test": "jest --no-cache ${1}",
-    "test-watch": "jest ${1} --watch",
-    "lint": "tslint lib/**/*.ts test/**/*.ts --exclude '**/*.d.ts'",
-    "build": "tsc",
-    "validate": "npm ls",
-    "prepare": "npm run build"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/comunica/runner.git"
-  },
+  "repository": "https://github.com/comunica/comunica/tree/master/packages/runner",
   "keywords": [
     "comunica",
     "runner"
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/comunica/runner/issues"
+    "url": "https://github.com/comunica/comunica/issues"
   },
-  "homepage": "https://github.com/comunica/runner#readme",
+  "homepage": "https://github.com/comunica/comunica#readme",
   "files": [
     "components",
     "lib/**/*.d.ts",
@@ -37,29 +26,9 @@
     "index.d.ts",
     "index.js"
   ],
-  "pre-commit": [
-    "build",
-    "lint",
-    "test"
-  ],
   "peerDependencies": {
     "@comunica/bus-init": "^0.0.1",
     "@comunica/core": "^0.0.1"
-  },
-  "devDependencies": {
-    "@comunica/bus-init": "^0.0.1",
-    "@comunica/core": "^0.0.1",
-    "@types/bluebird": "^3.5.11",
-    "@types/jest": "^20.0.8",
-    "@types/lodash": "^4.14.74",
-    "@types/n3": "^0.0.3",
-    "@types/node": "^8.0.27",
-    "jest": "^21.0.2",
-    "pre-commit": "^1.2.2",
-    "ts-jest": "^21.0.0",
-    "tslint": "^5.7.0",
-    "tslint-eslint-rules": "^4.1.1",
-    "typescript": "^2.5.2"
   },
   "dependencies": {
     "bluebird": "^3.5.0",
@@ -68,10 +37,13 @@
     "lsd-components": "^1.0.4",
     "tslib": "^1.7.1"
   },
+  "devDependencies": {
+    "@comunica/bus-init": "^0.0.1",
+    "@comunica/core": "^0.0.1"
+  },
   "jest": {
-    "testEnvironment": "node",
     "transform": {
-      "^.+\\.ts$": "<rootDir>/node_modules/ts-jest/preprocessor.js"
+      "^.+\\.ts$": "<rootDir>/../../node_modules/ts-jest/preprocessor.js"
     },
     "transformIgnorePatterns": [
       "[/\\\\]node_modules[/\\\\].+\\.(js|jsx)$"
@@ -83,5 +55,13 @@
     ],
     "collectCoverage": true,
     "mapCoverage": true
+  },
+  "scripts": {
+    "test": "../../node_modules/.bin/jest --no-cache ${1}",
+    "test-watch": "../../node_modules/.bin/jest ${1} --watch",
+    "lint": "../../node_modules/.bin/tslint lib/**/*.ts test/**/*.ts --exclude '**/*.d.ts'",
+    "build": "../../node_modules/.bin/tsc",
+    "validate": "npm ls",
+    "prepare": "npm run build"
   }
 }

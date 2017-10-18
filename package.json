@@ -1,5 +1,27 @@
 {
-	"devDependencies": {
-		"lerna": "^2.4.0"
-	}
+  "devDependencies": {
+    "@types/bluebird": "^3.5.11",
+    "@types/jest": "^20.0.8",
+    "@types/lodash": "^4.14.74",
+    "@types/n3": "^0.0.3",
+    "@types/node": "^8.0.27",
+    "lerna": "^2.4.0",
+    "jest": "^21.0.2",
+    "pre-commit": "^1.2.2",
+    "ts-jest": "^21.0.0",
+    "tslint": "^5.7.0",
+    "tslint-eslint-rules": "^4.1.1",
+    "typescript": "^2.5.2"
+  },
+  "pre-commit": [
+    "build",
+    "lint",
+    "test"
+  ],
+  "scripts": {
+    "test": "lerna run test --since HEAD",
+    "lint": "lerna run lint --since HEAD",
+    "build": "lerna run build --since HEAD",
+    "postinstall": "lerna bootstrap"
+  }
 }

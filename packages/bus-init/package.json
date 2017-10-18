@@ -9,16 +9,7 @@
   },
   "main": "index.js",
   "typings": "index",
-  "scripts": {
-    "lint": "tslint lib/**/*.ts test/**/*.ts --exclude '**/*.d.ts'",
-    "build": "tsc",
-    "validate": "npm ls",
-    "prepare": "npm run build"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/comunica/bus-init.git"
-  },
+  "repository": "https://github.com/comunica/comunica/tree/master/packages/bus-init",
   "keywords": [
     "comunica",
     "bus",
@@ -26,9 +17,9 @@
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/comunica/bus-init/issues"
+    "url": "https://github.com/comunica/comunica/issues"
   },
-  "homepage": "https://github.com/comunica/bus-init#readme",
+  "homepage": "https://github.com/comunica/comunica#readme",
   "files": [
     "components",
     "lib/**/*.d.ts",
@@ -36,20 +27,16 @@
     "index.d.ts",
     "index.js"
   ],
-  "pre-commit": [
-    "build",
-    "lint"
-  ],
   "peerDependencies": {
     "@comunica/core": "^0.0.1"
   },
   "devDependencies": {
-    "@comunica/core": "^0.0.1",
-    "@types/lodash": "^4.14.74",
-    "@types/node": "^8.0.27",
-    "pre-commit": "^1.2.2",
-    "tslint": "^5.7.0",
-    "tslint-eslint-rules": "^4.1.1",
-    "typescript": "^2.5.2"
+    "@comunica/core": "^0.0.1"
+  },
+  "scripts": {
+    "lint": "../../node_modules/.bin/tslint lib/**/*.ts test/**/*.ts --exclude '**/*.d.ts'",
+    "build": "../../node_modules/.bin/tsc",
+    "validate": "npm ls",
+    "prepare": "npm run build"
   }
 }

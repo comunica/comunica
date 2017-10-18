@@ -4,16 +4,7 @@
   "description": "A comunica runner that sends an 'init' event from a commandline process.",
   "main": "index.js",
   "typings": "index",
-  "scripts": {
-    "lint": "tslint lib/**/*.ts test/**/*.ts --exclude '**/*.d.ts'",
-    "build": "tsc",
-    "validate": "npm ls",
-    "prepare": "npm run build"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/comunica/runner-cli.git"
-  },
+  "repository": "https://github.com/comunica/comunica/tree/master/packages/runner-cli",
   "keywords": [
     "comunica",
     "runner",
@@ -24,27 +15,23 @@
     "comunica-run": "./bin/run.js"
   },
   "bugs": {
-    "url": "https://github.com/comunica/runner-cli/issues"
+    "url": "https://github.com/comunica/comunica/issues"
   },
-  "homepage": "https://github.com/comunica/runner-cli#readme",
+  "homepage": "https://github.com/comunica/comunica#readme",
   "files": [
     "bin"
   ],
-  "pre-commit": [
-    "build",
-    "lint"
-  ],
-  "devDependencies": {
-    "@comunica/bus-init": "^0.0.1",
-    "@comunica/core": "^0.0.1",
-    "@types/n3": "^0.0.3",
-    "@types/node": "^8.0.27",
-    "pre-commit": "^1.2.2",
-    "tslint": "^5.7.0",
-    "tslint-eslint-rules": "^4.1.1",
-    "typescript": "^2.5.2"
-  },
   "dependencies": {
     "@comunica/runner": "^0.0.1"
+  },
+  "devDependencies": {
+    "@comunica/bus-init": "^0.0.1",
+    "@comunica/core": "^0.0.1"
+  },
+  "scripts": {
+    "lint": "../../node_modules/.bin/tslint lib/**/*.ts test/**/*.ts --exclude '**/*.d.ts'",
+    "build": "../../node_modules/.bin/tsc",
+    "validate": "npm ls",
+    "prepare": "npm run build"
   }
 }
