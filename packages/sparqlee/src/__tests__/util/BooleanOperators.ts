@@ -1,5 +1,5 @@
 import { TRUE, TRUE_STR, FALSE, FALSE_STR, EVB_ERR_STR } from '../../util/Consts';
-import { evaluation_for } from './Evaluation';
+import { error_table, error_table_unary, evaluation_for } from './Evaluation';
 import { Literal } from 'rdf-data-model';
 
 const arg_map = {
@@ -15,8 +15,9 @@ const result_map = {
 
 export type OpTable = string[];
 
-export function test_binary_operator(op: string, table: OpTable) {
-    for (let row of table) {
+export function test_binary_operator(op: string, table: OpTable, err_table = error_table) {
+    const full_table = table.concat(err_table);
+    for (let row of full_table) {
         let [left, right, result] = row.split(' ');
         if (result == 'error') {
             __test_throw(
@@ -33,8 +34,9 @@ export function test_binary_operator(op: string, table: OpTable) {
     }
 }
 
-export function test_unary_operator(op: string, table: OpTable) {
-    for (let row of table) {
+export function test_unary_operator(op: string, table: OpTable, err_table = error_table_unary) {
+    const full_table = table.concat(err_table);
+    for (let row of full_table) {
         let [arg, result] = row.split(' ');
         if (result == 'error') {
             __test_throw(`(${arg}) should error`, `${op}${arg_map[arg]}`);
