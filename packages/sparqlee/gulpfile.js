@@ -11,7 +11,7 @@ gulp.task('clean:output', function () {
 });
 
 gulp.task('watch', function(){
-  gulp.watch(['**/*.ts'], ['default'], { ignoreInitial: false });
+  gulp.watch(['**/*.ts', '!**/dist'], ['default'], { ignoreInitial: false });
 });
 
 gulp.task('compile', ['clean:output'], function(){
