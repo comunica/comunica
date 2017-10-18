@@ -5,9 +5,11 @@ Promise based SPARQL Expression Evaluator
 
 ### From source
 
-1. Install Node
-2. Install TypeScript `npm install -g typescript`
-3. Install Gulp CLI `npm install -g gulp-cli`
-4. `npm install`
-5. `gulp` or `gulp watch`
-6. `npm run run` or `npm run test` or `npm run bench`
+1. Install NPM (and Node for benchmarking)
+1. `npm install -g typescript`
+1. `npm install -g gulp-cli`
+1. `npm install`
+1. `npm build`
+1. `npm test` or `npm run bench`
+
+You can also use `gulp` or `gulp watch` for building & compiling.

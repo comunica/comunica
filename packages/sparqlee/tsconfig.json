@@ -1,17 +1,14 @@
 {
-    "outDir": "dist/",
-    "exclude": [
-        "node_modules",
-        "dist"
-    ],
-    "include": [
-        "**/*.ts",
-        "./types/rdf-data-model/index.d.ts",
-        "./types/rdf-js/index.d.ts"
-    ],
-    "compilerOptions": {
-        "noImplicitAny": true,
-        "target": "ES6",
-        "module": "CommonJS"
-    }
+  "compilerOptions": {
+    "outDir": "./dist",
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "sourceMap": true,
+    "module": "CommonJS",
+    "target": "ES6",
+    "declaration": true
+  },
+  "include": [
+    "**/*.ts"
+  ]
 }

@@ -1,12 +1,10 @@
-/// <reference path="../types/rdf-data-model/index.d.ts"/>
-
 import { Parser, FilterPattern, Query, OperationExpression, Term, Expression, BaseExpression} from 'sparqljs'
 import { Suite } from 'benchmark';
 import * as RDF from 'rdf-data-model';
+import fromString from 'termterm.js'
 
 import { ExpressionEvaluator } from '../src/evaluator/ExpressionEvaluator';
 import { Mapping } from '../src/core/Mapping'
-import * as Convert from '../src/util/StringToRDFJS';
 
 var parser = new Parser({'xsd': 'http://www.w3.org/2001/XMLSchema'})
 var expression_string = '((?age + ?otherAge) = "40"^^xsd:integer) && (?joinYear > "2005-01-01T00:00:00Z"^^xsd:dateTime)'
@@ -26,13 +24,13 @@ console.log(expr_example);
 function evaluate(expr: Expression): any {
     // Term
     if (typeof expr == 'string'){
-        var term = Convert.stringToTerm(expr);
+        var term = fromString(expr)
         switch (term.termType) {
             case 'Variable': {
-                return mapping.get(term.value).value as Number;
+                return Number(mapping.get(term.value));
             }
             case 'Literal': {
-                return term.value as Number;
+                return Number(term.value);
             }
         }
     

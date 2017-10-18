@@ -4,9 +4,10 @@
   "description": "Promise based SPARQL Expression Evaluator",
   "main": "dist/main.js",
   "scripts": {
-    "run": "node dist/src/main.js",
+    "test": "jest",
+    "prepare": "npm run build",
     "bench": "node dist/benchmarks/ByHand.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc"
   },
   "repository": {
     "type": "git",
@@ -18,25 +19,43 @@
     "expression-engine",
     "promise"
   ],
-  "author": "",
-  "license": "ISC",
+  "author": "Wout Schellaert",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/wschella/Comunica-SPARQL-ExpEval/issues"
   },
   "homepage": "https://github.com/wschella/Comunica-SPARQL-ExpEval#readme",
   "devDependencies": {
+    "@types/benchmark": "^1.0.30",
+    "@types/sparqljs": "^1.5.0",
+    "@types/node": "^8.0.34",
+    "benchmark": "^2.1.4",
     "gulp": "^3.9.1",
     "gulp-typescript": "^3.2.2",
-    "gulp-util": "^3.0.8",
-    "gulp-watch": "^4.3.11",
-    "typescript": "^2.5.3",
-    "@types/sparqljs": "^1.5.0",
-    "benchmark": "^2.1.4",
-    "@types/benchmark": "^1.0.30"
+    "gulp-sourcemaps": "^2.6.1",
+    "merge-stream": "^1.0.1",
+    "del": "^3.0.0",
+    "jest": "~21.2.1",
+    "ts-jest": "^21.1.1",
+    "typescript": "^2.5.3"
   },
   "dependencies": {
-    "@types/node": "^8.0.34",
     "rdf-data-model": "^1.0.0",
+    "termterm.js": "^0.0.2",
+    "rdf-js": "^1.0.1",
     "sparqljs": "^1.5.0"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.tsx?$": "<rootDir>/node_modules/ts-jest/preprocessor.js"
+    },
+    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json"
+    ]
   }
 }
