@@ -22,7 +22,7 @@
       ],
       "constructorArguments": [
         {
-          "@id": "cmn:Mediator/NumberMin/constructorArgumentsObject",
+          "@id": "cmn:Mediator/NumberMax/constructorArgumentsObject",
           "extends": "cmn:Mediator/Number/constructorArgumentsObject"
         }
       ]
