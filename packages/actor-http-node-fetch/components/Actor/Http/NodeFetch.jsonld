@@ -13,7 +13,7 @@
       "comment": "A node-fetch actor that listens on the 'http' bus.",
       "constructorArguments": [
         {
-          "extends": "cc:Actor/constructorArgumentsObject"
+          "extends": "cbh:Actor/Http/constructorArgumentsObject"
         }
       ]
     }
