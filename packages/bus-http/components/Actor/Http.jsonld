@@ -16,6 +16,12 @@
             "defaultScopedValue": { "@id": "cbh:Bus/Http" }
           }
         }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "cbh:Actor/Http/constructorArgumentsObject",
+          "extends": "cc:Actor/constructorArgumentsObject"
+        }
       ]
     }
   ]
