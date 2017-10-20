@@ -15,9 +15,9 @@ import {Agent} from "http";
  * @see IActorHttpTest
  * @see IActorHttpOutput
  */
-export abstract class ActorHttp extends Actor<IActionHttp, IActorHttpTest, IActorHttpOutput> {
+export abstract class ActorHttp extends Actor<IActionHttp, IActorTest, IActorHttpOutput> {
 
-  constructor(args: IActorArgs<IActionHttp, IActorHttpTest, IActorHttpOutput>) {
+  constructor(args: IActorArgs<IActionHttp, IActorTest, IActorHttpOutput>) {
     super(args);
   }
 
@@ -56,18 +56,6 @@ export interface IHeaders {
   has(name: string): boolean;
   set(name: string, value: string): void;
   forEach(callback: (value: string, name: string) => void): void;
-}
-
-/**
- * The HTTP test output.
- */
-export interface IActorHttpTest extends IActorTest, IMediatorTypeTime {
-  /**
-   * An upper bound of the estimated response time.
-   * If unknown, this can be Infinity.
-   * If the request is for example retrieved from a cache, this can be 0.
-   */
-  time: number;
 }
 
 /**

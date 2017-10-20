@@ -1,6 +1,7 @@
-import {ActorHttp, IActionHttp, IActorHttpOutput, IActorHttpTest} from "@comunica/bus-http/lib/ActorHttp";
+import {ActorHttp, IActionHttp, IActorHttpOutput} from "@comunica/bus-http/lib/ActorHttp";
 import {IActorArgs} from "@comunica/core/lib/Actor";
 import fetch from "node-fetch";
+import {IMediatorTypeTime} from "../../mediatortype-time/lib/MediatorTypeTime";
 
 /**
  * A Hello World actor that listens to on the 'init' bus.
@@ -11,11 +12,11 @@ import fetch from "node-fetch";
  */
 export class ActorHttpNodeFetch extends ActorHttp {
 
-  constructor(args: IActorArgs<IActionHttp, IActorHttpTest, IActorHttpOutput>) {
+  constructor(args: IActorArgs<IActionHttp, IMediatorTypeTime, IActorHttpOutput>) {
     super(args);
   }
 
-  public async test(action: IActionHttp): Promise<IActorHttpTest> {
+  public async test(action: IActionHttp): Promise<IMediatorTypeTime> {
     return { time: Infinity };
   }
 

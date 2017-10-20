@@ -68,26 +68,65 @@ describe('MediatorNumber', () => {
     beforeEach(() => {
       mediatorMin = new MediatorNumber({ name: 'mediatorMin', bus, field: 'field', type: MediatorNumber.MIN });
       mediatorMax = new MediatorNumber({ name: 'mediatorMax', bus, field: 'field', type: MediatorNumber.MAX });
-      bus.subscribe(new DummyActor(10, bus));
-      bus.subscribe(new DummyActor(100, bus));
-      bus.subscribe(new DummyActor(1, bus));
     });
 
-    it('should mediate to the minimum value for type MIN', () => {
-      return expect(mediatorMin.mediate({})).resolves.toEqual({ field: 1 });
+    describe('with defined actor fields', () => {
+      beforeEach(() => {
+        bus.subscribe(new DummyActor(10, bus));
+        bus.subscribe(new DummyActor(100, bus));
+        bus.subscribe(new DummyActor(1, bus));
+      });
+
+      it('should mediate to the minimum value for type MIN', () => {
+        return expect(mediatorMin.mediate({})).resolves.toEqual({ field: 1 });
+      });
+
+      it('should mediate to the maximum value for type MAX', () => {
+        return expect(mediatorMax.mediate({})).resolves.toEqual({ field: 100 });
+      });
     });
 
-    it('should mediate to the maximum value for type MAX', () => {
-      return expect(mediatorMax.mediate({})).resolves.toEqual({ field: 100 });
+    describe('with null actor fields', () => {
+      beforeEach(() => {
+        bus.subscribe(new DummyActor(null, bus));
+      });
+
+      it('should mediate to the minimum value for type MIN', () => {
+        return expect(mediatorMin.mediate({})).resolves.toEqual({ field: null });
+      });
+
+      it('should mediate to the maximum value for type MAX', () => {
+        return expect(mediatorMax.mediate({})).resolves.toEqual({ field: null });
+      });
+    });
+
+    describe('with defined and null actor fields', () => {
+      beforeEach(() => {
+        bus.subscribe(new DummyActor(null, bus));
+        bus.subscribe(new DummyActor(10, bus));
+        bus.subscribe(new DummyActor(null, bus));
+        bus.subscribe(new DummyActor(100, bus));
+        bus.subscribe(new DummyActor(null, bus));
+        bus.subscribe(new DummyActor(1, bus));
+        bus.subscribe(new DummyActor(null, bus));
+      });
+
+      it('should mediate to the minimum value for type MIN', () => {
+        return expect(mediatorMin.mediate({})).resolves.toEqual({ field: 1 });
+      });
+
+      it('should mediate to the maximum value for type MAX', () => {
+        return expect(mediatorMax.mediate({})).resolves.toEqual({ field: 100 });
+      });
     });
   });
 });
 
 class DummyActor extends Actor<IAction, IDummyTest, IDummyTest> {
 
-  public readonly id: number;
+  public readonly id: number | null;
 
-  constructor(id: number, bus: Bus<DummyActor, IAction, IDummyTest, IDummyTest>) {
+  constructor(id: number | null, bus: Bus<DummyActor, IAction, IDummyTest, IDummyTest>) {
     super({ name: 'dummy' + id, bus });
     this.id = id;
   }
