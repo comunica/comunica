@@ -1,0 +1,11 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/components.jsonld",
+    {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
+      "cmr": "npmd:@comunica/mediator-race/",
+
+      "MediatorRace": "cmn:Mediator/Race"
+    }
+  ]
+}
