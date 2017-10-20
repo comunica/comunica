@@ -7,5 +7,5 @@ export interface IMediatorTypeTime extends IActorTest {
   /**
    * A certain amount of time, expressed in milliseconds.
    */
-  time: number;
+  time?: number;
 }

@@ -1,4 +1,4 @@
-import {IActionHttp, IActorHttpOutput, IActorHttpTest} from "@comunica/bus-http";
+import {IActionHttp, IActorHttpOutput} from "@comunica/bus-http";
 import {ActorInit, IActionInit} from "@comunica/bus-init/lib/ActorInit";
 import {Actor, Mediator} from "@comunica/core";
 import {IActorArgs, IActorTest} from "@comunica/core/lib/Actor";
@@ -14,8 +14,8 @@ import {IActorOutputInit} from "../../bus-init/lib/ActorInit";
  */
 export class ActorInitHttp extends ActorInit implements IActorInitHelloWorldArgs {
 
-  public readonly mediatorHttp: Mediator<Actor<IActionHttp, IActorHttpTest, IActorHttpOutput>,
-    IActionHttp, IActorHttpTest, IActorHttpOutput>;
+  public readonly mediatorHttp: Mediator<Actor<IActionHttp, IActorTest, IActorHttpOutput>,
+    IActionHttp, IActorTest, IActorHttpOutput>;
   public readonly url?: string;
   public readonly method?: string;
   public readonly headers?: string[];
@@ -59,8 +59,8 @@ export class ActorInitHttp extends ActorInit implements IActorInitHelloWorldArgs
 }
 
 export interface IActorInitHelloWorldArgs extends IActorArgs<IActionInit, IActorTest, IActorOutputInit> {
-  mediatorHttp: Mediator<Actor<IActionHttp, IActorHttpTest, IActorHttpOutput>,
-    IActionHttp, IActorHttpTest, IActorHttpOutput>;
+  mediatorHttp: Mediator<Actor<IActionHttp, IActorTest, IActorHttpOutput>,
+    IActionHttp, IActorTest, IActorHttpOutput>;
   url?: string;
   method?: string;
   headers?: string[];

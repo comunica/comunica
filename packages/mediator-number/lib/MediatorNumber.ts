@@ -40,14 +40,22 @@ export class MediatorNumber<A extends Actor<I, T, O>, I extends IAction, T exten
   protected createIndexPicker(): (tests: T[]) => number {
     switch (this.type) {
     case MediatorNumber.MIN:
-      return (tests: T[]) => <number> tests.reduce((a, b, i) => a[0] >= (<any> b)[this.field]
-        ? [(<any> b)[this.field], i] : a, [ Infinity, -1 ])[1];
+      return (tests: T[]) => <number> tests.reduce((a, b, i) => {
+        const val: number = this.getOrDefault((<any> b)[this.field], Infinity);
+        return a[0] >= val ? [val, i] : a;
+      }, [ Infinity, -1 ])[1];
     case MediatorNumber.MAX:
-      return (tests: T[]) => <number> tests.reduce((a, b, i) => a[0] <= (<any> b)[this.field]
-        ? [(<any> b)[this.field], i] : a, [ -Infinity, -1 ])[1];
+      return (tests: T[]) => <number> tests.reduce((a, b, i) => {
+        const val: number = this.getOrDefault((<any> b)[this.field], -Infinity);
+        return a[0] <= val ? [val, i] : a;
+      }, [ -Infinity, -1 ])[1];
     }
     throw new Error('No valid "type" value was given, must be either '
       + MediatorNumber.MIN + ' or ' + MediatorNumber.MAX);
+  }
+
+  protected getOrDefault(value: number | null, defaultValue: number): number {
+    return value === undefined || value === null ? defaultValue : value;
   }
 
   protected async mediateWith(action: I, testResults: IActorReply<A, I, T, O>[]): Promise<A> {
