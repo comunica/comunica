@@ -2,6 +2,7 @@ import {ActorHttpNodeFetch} from "@comunica/actor-http-node-fetch";
 import {ActorInit} from "@comunica/bus-init/lib/ActorInit";
 import {Bus} from "@comunica/core/lib/Bus";
 import {MediatorNumber} from "@comunica/mediator-number";
+import {PassThrough} from "stream";
 import {ActorInitHttp} from "../lib/ActorInitHttp";
 
 describe('ActorInitHttp', () => {
@@ -76,11 +77,12 @@ describe('ActorInitHttp', () => {
     });
 
     it('should test', () => {
-      return expect(actor.test({ argv: [], env: {} })).resolves.toBe(null);
+      return expect(actor.test({ argv: [], env: {}, stdin: new PassThrough() })).resolves.toBe(null);
     });
 
     it('should run', () => {
-      return expect(actor.run({ argv: [ 'https://www.google.com/' ], env: {} })).resolves.toBe(null);
+      return expect(actor.run({ argv: [ 'https://www.google.com/' ], env: {}, stdin: new PassThrough() }))
+        .resolves.toHaveProperty('stdout');
     });
 
     it('should run with parameters', () => {
@@ -92,12 +94,13 @@ describe('ActorInitHttp', () => {
         name: 'actor',
         url: 'https://www.google.com/',
       });
-      return expect(actor.run({ argv: [], env: {} })).resolves.toBe(null);
+      return expect(actor.run({ argv: [], env: {}, stdin: new PassThrough() })).resolves.toHaveProperty('stdout');
     });
 
-    it('should run', () => {
-      return expect(actor.run({ argv: [ 'https://www.google.com/this/is/not/a/page' ], env: {} }))
-        .resolves.toBe(null);
+    it('should run with argv', () => {
+      return expect(actor
+        .run({ argv: [ 'https://www.google.com/this/is/not/a/page' ], env: {}, stdin: new PassThrough() }))
+        .resolves.toHaveProperty('stderr');
     });
   });
 });
