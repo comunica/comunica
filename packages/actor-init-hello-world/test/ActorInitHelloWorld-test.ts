@@ -1,5 +1,7 @@
 import {ActorInit} from "@comunica/bus-init/lib/ActorInit";
 import {Bus} from "@comunica/core/lib/Bus";
+import {PassThrough} from "stream";
+import {IActorOutputInit} from "../../bus-init/lib/ActorInit";
 import {ActorInitHelloWorld} from "../lib/ActorInitHelloWorld";
 
 describe('ActorInitHelloWorld', () => {
@@ -60,11 +62,20 @@ describe('ActorInitHelloWorld', () => {
     });
 
     it('should test', () => {
-      return expect(actor.test({ argv: [], env: {} })).resolves.toBe(null);
+      return expect(actor.test({ argv: [], env: {}, stdin: new PassThrough() })).resolves.toBe(null);
     });
 
     it('should run', () => {
-      return expect(actor.run({ argv: [], env: {} })).resolves.toBe(null);
+      return actor.run({ argv: [ 'John' ], env: {}, stdin: new PassThrough() })
+        .then((result: IActorOutputInit) => {
+          const chunks = [];
+          result.stdout.on('data', (data) => {
+            chunks.push(data.toString());
+          });
+          result.stdout.on('end', () => {
+            expect(chunks.join('')).toBe('Hi John\n');
+          });
+        });
     });
   });
 });

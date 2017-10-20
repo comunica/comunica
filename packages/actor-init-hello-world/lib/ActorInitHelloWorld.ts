@@ -1,5 +1,7 @@
 import {ActorInit, IActionInit} from "@comunica/bus-init/lib/ActorInit";
-import {IActorArgs, IActorOutput, IActorTest} from "@comunica/core/lib/Actor";
+import {IActorArgs, IActorTest} from "@comunica/core/lib/Actor";
+import {Duplex, PassThrough, Readable} from "stream";
+import {IActorOutputInit} from "../../bus-init/lib/ActorInit";
 
 /**
  * A Hello World actor that listens to on the 'init' bus.
@@ -23,13 +25,28 @@ export class ActorInitHelloWorld extends ActorInit implements IActorInitHelloWor
     return null;
   }
 
-  public async run(action: IActionInit): Promise<IActorOutput> {
-    console.log(this.hello + ' ' + action.argv.join(' '));
-    return null;
+  public async run(action: IActionInit): Promise<IActorOutputInit> {
+    return {
+      stderr: new PassThrough(),
+      stdout: this.stringToStream(this.hello + ' ' + action.argv.join(' ') + '\n'),
+    };
+  }
+
+  protected stringToStream(input: string): Readable {
+    const array: string[] = input.split('');
+    const readable = new Duplex();
+    readable._read = () => {
+      readable.push(array.shift());
+      if (array.length === 0) {
+        readable.push(null);
+      }
+      return;
+    };
+    return readable;
   }
 
 }
 
-export interface IActorInitHelloWorldArgs extends IActorArgs<IActionInit, IActorTest, IActorOutput> {
+export interface IActorInitHelloWorldArgs extends IActorArgs<IActionInit, IActorTest, IActorOutputInit> {
   hello: string;
 }

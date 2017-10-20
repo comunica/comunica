@@ -2,6 +2,7 @@ import {ActorInit, IActionInit} from "@comunica/bus-init/lib/ActorInit";
 import {Actor, IAction, IActorOutput, IActorTest} from "@comunica/core/lib/Actor";
 import {Bus, IActorReply} from "@comunica/core/lib/Bus";
 import * as _ from "lodash";
+import {IActorOutputInit} from "../../bus-init/lib/ActorInit";
 
 /**
  * A Runner is used to instantiate a comunica workflow.
@@ -13,7 +14,7 @@ import * as _ from "lodash";
  */
 export class Runner implements IRunnerArgs {
 
-  public readonly busInit: Bus<ActorInit, IActionInit, IActorTest, IActorOutput>;
+  public readonly busInit: Bus<ActorInit, IActionInit, IActorTest, IActorOutputInit>;
   public readonly actors: Actor<IAction, IActorTest, IActorOutput>;
 
   constructor(args: IRunnerArgs) {
@@ -32,10 +33,10 @@ export class Runner implements IRunnerArgs {
    * @param {IActionInit} action An 'init' action.
    * @return {Promise<void>}     A promise that resolves when the init actors are triggered.
    */
-  public async run(action: IActionInit) {
-    const replies: IActorReply<ActorInit, IActionInit, IActorTest, IActorOutput>[] =
+  public async run(action: IActionInit): Promise<IActorOutputInit[]> {
+    const replies: IActorReply<ActorInit, IActionInit, IActorTest, IActorOutputInit>[] =
       await Promise.all(this.busInit.publish(action));
-    replies.forEach((reply) => reply.actor.run(action));
+    return Promise.all(replies.map((reply) => reply.actor.run(action)));
   }
 
 }

@@ -1,4 +1,5 @@
 import Bluebird = require("bluebird");
+import {Readable} from "stream";
 import {Setup} from "../lib/Setup";
 
 describe('Setup', () => {
@@ -19,9 +20,9 @@ describe('Setup', () => {
     it('should allow \'preparePromises\' to be called only once when running \'run\'', () => {
       const spy = jest.spyOn((<any> Setup), 'preparePromises');
 
-      Setup.run('', { argv: [], env: {} });
-      Setup.run('', { argv: [], env: {} });
-      Setup.run('', { argv: [], env: {} });
+      Setup.run('', { argv: [], env: {}, stdin: new Readable() });
+      Setup.run('', { argv: [], env: {}, stdin: new Readable() });
+      Setup.run('', { argv: [], env: {}, stdin: new Readable() });
 
       expect(spy).toHaveBeenCalledTimes(1);
 
