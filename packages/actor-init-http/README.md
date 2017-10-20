@@ -21,3 +21,6 @@ $ node_modules/.bin/comunica-run config/config-example.json http://fragments.lin
 ```
 
 will print the response.
+
+**Note: when running in a dev environment:**
+Make sure that your `NODE_PATH` contains the `node_modules` folder of this module.

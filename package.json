@@ -5,6 +5,7 @@
     "@types/lodash": "^4.14.74",
     "@types/n3": "^0.0.3",
     "@types/node": "^8.0.27",
+    "@types/node-fetch": "^1.6.7",
     "lerna": "^2.4.0",
     "jest": "^21.0.2",
     "pre-commit": "^1.2.2",

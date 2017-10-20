@@ -1,7 +1,9 @@
 import {IActionHttp, IActorHttpOutput, IActorHttpTest} from "@comunica/bus-http";
 import {ActorInit, IActionInit} from "@comunica/bus-init/lib/ActorInit";
 import {Actor, Mediator} from "@comunica/core";
-import {IActorArgs, IActorOutput, IActorTest} from "@comunica/core/lib/Actor";
+import {IActorArgs, IActorTest} from "@comunica/core/lib/Actor";
+import {PassThrough} from "stream";
+import {IActorOutputInit} from "../../bus-init/lib/ActorInit";
 
 /**
  * A Hello World actor that listens to on the 'init' bus.
@@ -29,7 +31,7 @@ export class ActorInitHttp extends ActorInit implements IActorInitHelloWorldArgs
     return null;
   }
 
-  public async run(action: IActionInit): Promise<IActorOutput> {
+  public async run(action: IActionInit): Promise<IActorOutputInit> {
     const http: IActionHttp = {
       url: action.argv.length > 0 ? action.argv[0] : this.url,
     };
@@ -45,13 +47,18 @@ export class ActorInitHttp extends ActorInit implements IActorInitHelloWorldArgs
     }
 
     const result: IActorHttpOutput = await this.mediatorHttp.mediate(http);
-    result.body.pipe(result.status === 200 ? process.stdout : process.stderr);
-    return null;
+    const output: IActorOutputInit = {};
+    if (result.status === 200) {
+      output.stdout = result.body.pipe(new PassThrough());
+    } else {
+      output.stderr = result.body.pipe(new PassThrough());
+    }
+    return output;
   }
 
 }
 
-export interface IActorInitHelloWorldArgs extends IActorArgs<IActionInit, IActorTest, IActorOutput> {
+export interface IActorInitHelloWorldArgs extends IActorArgs<IActionInit, IActorTest, IActorOutputInit> {
   mediatorHttp: Mediator<Actor<IActionHttp, IActorHttpTest, IActorHttpOutput>,
     IActionHttp, IActorHttpTest, IActorHttpOutput>;
   url?: string;
