@@ -1,0 +1,32 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/comunica-core.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-rdf-parse.jsonld"
+  ],
+  "@id": "npmd:@comunica/bus-rdf-parse",
+  "components": [
+    {
+      "@id": "cbrp:Actor/RdfParse",
+      "@type": "AbstractClass",
+      "extends": "Actor",
+      "requireElement": "ActorInit",
+      "comment": "A base actor for listening to RDF parse events.",
+      "parameters": [
+        {
+          "@id": "cc:Actor/bus",
+          "defaultScoped": {
+            "defaultScope": "cbrp:Actor/RdfParse",
+            "defaultScopedValue": { "@id": "cbrp:Bus/RdfParse" }
+          }
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "cbrp:Actor/RdfParse/constructorArgumentsObject",
+          "@type": "https://linkedsoftwaredependencies.org/vocabularies/object-oriented#Object",
+          "extends": "cc:Actor/constructorArgumentsObject"
+        }
+      ]
+    }
+  ]
+}

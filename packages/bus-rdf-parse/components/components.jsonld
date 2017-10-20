@@ -1,0 +1,10 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/contexts/comunica-bus-rdf-parse.jsonld",
+  "@id": "npmd:@comunica/bus-rdf-parse",
+  "@type": "Module",
+  "requireName": "@comunica/bus-rdf-parse",
+  "import": [
+    "Bus/RdfParse.jsonld",
+    "Actor/RdfParse.jsonld"
+  ]
+}
