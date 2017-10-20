@@ -1,0 +1,13 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/components.jsonld",
+    {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
+      "cirp": "npmd:@comunica/actor-init-rdf-parse/",
+
+      "ActorInitRdfParse": "cirp:Actor/Init/RdfParse",
+      "mediatorRdfParse": "cirp:mediatorRdfParse",
+      "mediaType": "cirp:mediaType"
+    }
+  ]
+}

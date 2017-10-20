@@ -1,0 +1,47 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-init-rdf-parse.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-init.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-rdf-parse.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-init-rdf-parse",
+  "components": [
+    {
+      "@id": "cirp:Actor/Init/RdfParse",
+      "@type": "Class",
+      "extends": "cbi:Actor/Init",
+      "requireElement": "ActorInitRdfParse",
+      "comment": "An actor that listens on the 'init' bus that triggers an RDF Parse event.",
+      "parameters": [
+        {
+          "@id": "cirp:mediatorRdfParse",
+          "comment": "The RDF Parse mediator",
+          "required": true,
+          "unique": true
+        },
+        {
+          "@id": "cirp:mediaType",
+          "comment": "The RDF serialization's media type",
+          "required": true,
+          "unique": true
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "cirp:Actor/Init/RdfParse/constructorArgumentsObject",
+          "extends": "cc:Actor/constructorArgumentsObject",
+          "fields": [
+            {
+              "keyRaw": "mediatorRdfParse",
+              "value": "cirp:mediatorRdfParse"
+            },
+            {
+              "keyRaw": "mediaType",
+              "value": "cirp:mediaType"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
