@@ -1,0 +1,32 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-rdf-parse.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-init-rdf-parse.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-parse-n3.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-mediator-race.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-runner.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-core.jsonld"
+  ],
+  "@graph": [
+    {
+      "@id": "urn:comunica:my",
+      "@type": "Runner",
+      "actors": [
+        {
+          "@id": "ex:myInit",
+          "@type": "ActorInitRdfParse",
+          "mediatorRdfParse": {
+            "@id": "ex:mediatorRdfParse",
+            "@type": "MediatorRace",
+            "cc:Mediator/bus": { "@id": "cbrp:Bus/RdfParse" }
+          },
+          "mediaType": "application/trig"
+        },
+        {
+          "@id": "ex:myRdfParserN3",
+          "@type": "ActorRdfParseN3"
+        }
+      ]
+    }
+  ]
+}

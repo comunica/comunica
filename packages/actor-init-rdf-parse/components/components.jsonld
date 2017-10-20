@@ -1,0 +1,9 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/contexts/comunica-actor-init-rdf-parse.jsonld",
+  "@id": "npmd:@comunica/actor-init-rdf-parse",
+  "@type": "Module",
+  "requireName": "@comunica/actor-init-rdf-parse",
+  "import": [
+    "Actor/Init/RdfParse.jsonld"
+  ]
+}
