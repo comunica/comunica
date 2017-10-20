@@ -1,0 +1,11 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/comunica-core.jsonld",
+    {
+      "cbrp": "npmd:@comunica/bus-rdf-parse/",
+
+      "BusRdfParse": "cbrp:Bus/RdfParse",
+      "ActorRdfParse": "cbrp:Actor/RdfParse"
+    }
+  ]
+}
