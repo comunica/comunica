@@ -44,9 +44,9 @@ export interface IActorOutputInit extends IActorOutput {
   /**
    * A standard error output stream.
    */
-  stderr: Readable;
+  stderr?: Readable;
   /**
    * A standard output stream.
    */
-  stdout: Readable;
+  stdout?: Readable;
 }

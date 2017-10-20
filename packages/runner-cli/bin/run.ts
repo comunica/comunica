@@ -13,8 +13,12 @@ const configResourceUrl = argv.shift();
 Setup.run(configResourceUrl, { argv, env: process.env, stdin: process.stdin })
   .then((results: IActorOutputInit[]) => {
     results.forEach((result: IActorOutputInit) => {
-      result.stdout.pipe(process.stdout);
-      result.stderr.pipe(process.stderr);
+      if (result.stdout) {
+        result.stdout.pipe(process.stdout);
+      }
+      if (result.stderr) {
+        result.stderr.pipe(process.stderr);
+      }
     });
   })
   .catch(console.error);
