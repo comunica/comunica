@@ -1,4 +1,5 @@
 import Bluebird = require("bluebird");
+import {Loader} from "lsd-components";
 import {Readable} from "stream";
 import {Setup} from "../lib/Setup";
 
@@ -19,6 +20,14 @@ describe('Setup', () => {
 
     it('should allow \'preparePromises\' to be called only once when running \'run\'', () => {
       const spy = jest.spyOn((<any> Setup), 'preparePromises');
+
+      // Mock Loader
+      (<any> Loader) = jest.fn(() => {
+        return {
+          instantiateFromUrl: () => Promise.resolve({ run: jest.fn() }),
+          registerAvailableModuleResources: jest.fn(),
+        };
+      });
 
       Setup.run('', { argv: [], env: {}, stdin: new Readable() });
       Setup.run('', { argv: [], env: {}, stdin: new Readable() });
