@@ -1,0 +1,21 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-parse-n3.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-rdf-parse.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-rdf-parse-n3",
+  "components": [
+    {
+      "@id": "crpn3:Actor/RdfParse/N3",
+      "@type": "Class",
+      "extends": "cbrp:Actor/RdfParse",
+      "requireElement": "ActorRdfParseN3",
+      "comment": "An N3-based actor that listens on the 'rdf-parse' bus.",
+      "constructorArguments": [
+        {
+          "extends": "cbrp:Actor/RdfParse/constructorArgumentsObject"
+        }
+      ]
+    }
+  ]
+}

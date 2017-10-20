@@ -1,0 +1,11 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/components.jsonld",
+    {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
+      "crpn3": "npmd:@comunica/actor-rdf-parse-n3/",
+
+      "ActorRdfParseN3": "crpn3:Actor/RdfParse/N3"
+    }
+  ]
+}
