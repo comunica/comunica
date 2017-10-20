@@ -1,0 +1,9 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/contexts/comunica-mediator-race.jsonld",
+  "@id": "npmd:@comunica/mediator-race",
+  "@type": "Module",
+  "requireName": "@comunica/mediator-race",
+  "import": [
+    "Mediator/Race.jsonld"
+  ]
+}
