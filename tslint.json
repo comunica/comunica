@@ -21,7 +21,8 @@
     "no-angle-bracket-type-assertion": false,
     "member-ordering": [true, {
       "order": "fields-first"
-    }]
+    }],
+    "forin": false
   },
   "rulesDirectory": []
 }
