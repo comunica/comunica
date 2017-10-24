@@ -40,6 +40,40 @@ describe('ActorRdfParseN3', () => {
     it('should throw an error when constructed without arguments', () => {
       expect(() => { new (<any> ActorRdfParseN3)(); }).toThrow();
     });
+
+    it('should not throw an error when constructed with required arguments', () => {
+      expect(() => { new ActorRdfParseN3({ name: 'actor', bus }); }).toBeTruthy();
+    });
+
+    it('should not throw an error when constructed with optional mediaTypes', () => {
+      expect(() => { new ActorRdfParseN3({ name: 'actor', bus, mediaTypes: {} }); }).toBeTruthy();
+    });
+
+    it('when constructed with optional mediaTypes should set the mediaTypes', () => {
+      expect(new ActorRdfParseN3({ name: 'actor', bus, mediaTypes: {} }).mediaTypes).toEqual({});
+    });
+
+    it('should not throw an error when constructed with optional priorityScale', () => {
+      expect(() => { new ActorRdfParseN3({ name: 'actor', bus, priorityScale: 0.5 }); }).toBeTruthy();
+    });
+
+    it('when constructed with optional priorityScale should set the priorityScale', () => {
+      expect(new ActorRdfParseN3({ name: 'actor', bus, priorityScale: 0.5 }).priorityScale).toEqual(0.5);
+    });
+
+    it('when constructed with optional priorityScale should scale the priorities', () => {
+      expect(new ActorRdfParseN3({ name: 'actor', bus, priorityScale: 0.5 }).mediaTypes).toEqual({
+        'application/trig': 0.5,
+        'application/n-quads': 0.35, // tslint:disable-line:object-literal-sort-keys // We want to sort by preference
+        'text/turtle': 0.3,
+        'application/n-triples': 0.15,
+        'text/n3': 0.1,
+      });
+    });
+
+    it('should not throw an error when constructed with optional arguments', () => {
+      expect(() => { new ActorRdfParseN3({ name: 'actor', bus, mediaTypes: {}, priorityScale: 0.5 }); }).toBeTruthy();
+    });
   });
 
   describe('An ActorRdfParseN3 instance', () => {
@@ -48,47 +82,90 @@ describe('ActorRdfParseN3', () => {
 
     beforeEach(() => {
       actor = new ActorRdfParseN3({ name: 'actor', bus });
-      input = stringToStream(`
-      <a> <b> <c>.
-      <d> <e> <f> <g>.
+    });
+
+    describe('for parsing', () => {
+      beforeEach(() => {
+        input = stringToStream(`
+          <a> <b> <c>.
+          <d> <e> <f> <g>.
       `);
-    });
+      });
 
-    it('should test on TriG', () => {
-      return expect(actor.test({ input, mediaType: 'application/trig' })).resolves.toBeTruthy();
-    });
+      it('should test on TriG', () => {
+        return expect(actor.test({ parse: { input, mediaType: 'application/trig' }})).resolves.toBeTruthy();
+      });
 
-    it('should test on N-Quads', () => {
-      return expect(actor.test({ input, mediaType: 'application/n-quads' })).resolves.toBeTruthy();
-    });
+      it('should test on N-Quads', () => {
+        return expect(actor.test({ parse: { input, mediaType: 'application/n-quads'}})).resolves.toBeTruthy();
+      });
 
-    it('should test on Turtle', () => {
-      return expect(actor.test({ input, mediaType: 'text/turtle' })).resolves.toBeTruthy();
-    });
+      it('should test on Turtle', () => {
+        return expect(actor.test({ parse: { input, mediaType: 'text/turtle'}})).resolves.toBeTruthy();
+      });
 
-    it('should test on N-Triples', () => {
-      return expect(actor.test({ input, mediaType: 'application/n-triples' })).resolves.toBeTruthy();
-    });
+      it('should test on N-Triples', () => {
+        return expect(actor.test({ parse: { input, mediaType: 'application/n-triples'}})).resolves.toBeTruthy();
+      });
 
-    it('should not test on JSON-LD', () => {
-      return expect(actor.test({ input, mediaType: 'application/ld+json' })).rejects.toBeTruthy();
-    });
+      it('should not test on JSON-LD', () => {
+        return expect(actor.test({ parse: { input, mediaType: 'application/ld+json'}})).rejects.toBeTruthy();
+      });
 
-    it('should run', () => {
-      return actor.run({ input, mediaType: 'text/turtle' })
-        .then((output) => {
-          return new Promise((resolve, reject) => {
-            const quads: RDF.Quad[] = [];
-            output.quads.on('data', (quad) => quads.push(quad));
-            output.quads.on('end', () => {
-              if (quads.length === 2) {
-                resolve();
-              } else {
-                reject();
-              }
+      it('should run', () => {
+        return actor.run({ parse: { input, mediaType: 'text/turtle'}})
+          .then((output) => {
+            return new Promise((resolve, reject) => {
+              const quads: RDF.Quad[] = [];
+              output.parse.quads.on('data', (quad) => quads.push(quad));
+              output.parse.quads.on('end', () => {
+                if (quads.length === 2) {
+                  resolve();
+                } else {
+                  reject();
+                }
+              });
             });
           });
-        });
+      });
+    });
+
+    describe('for getting media types', () => {
+      it('should test', () => {
+        return expect(actor.test({ mediaType: true })).resolves.toBeTruthy();
+      });
+
+      it('should run', () => {
+        return expect(actor.run({ mediaType: true })).resolves.toEqual({ mediaType: { mediaTypes: {
+          'application/trig': 1.0,
+          'application/n-quads': 0.7, // tslint:disable-line:object-literal-sort-keys // We want to sort by preference
+          'text/turtle': 0.6,
+          'application/n-triples': 0.3,
+          'text/n3': 0.2,
+        }}});
+      });
+
+      it('should run with scaled priorities 0.5', () => {
+        actor = new ActorRdfParseN3({ name: 'actor', bus, priorityScale: 0.5 });
+        return expect(actor.run({ mediaType: true })).resolves.toEqual({ mediaType: { mediaTypes: {
+          'application/trig': 0.5,
+          'application/n-quads': 0.35, // tslint:disable-line:object-literal-sort-keys // We want to sort by preference
+          'text/turtle': 0.3,
+          'application/n-triples': 0.15,
+          'text/n3': 0.1,
+        }}});
+      });
+
+      it('should run with scaled priorities 0', () => {
+        actor = new ActorRdfParseN3({ name: 'actor', bus, priorityScale: 0 });
+        return expect(actor.run({ mediaType: true })).resolves.toEqual({ mediaType: { mediaTypes: {
+          'application/trig': 0,
+          'application/n-quads': 0, // tslint:disable-line:object-literal-sort-keys // We want to sort by preference
+          'text/turtle': 0,
+          'application/n-triples': 0,
+          'text/n3': 0,
+        }}});
+      });
     });
   });
 });

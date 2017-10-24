@@ -36,6 +36,9 @@
   "devDependencies": {
     "@comunica/core": "^0.0.1"
   },
+  "dependencies": {
+    "lodash": "^4.17.4"
+  },
   "scripts": {
     "lint": "../../node_modules/.bin/tslint lib/**/*.ts test/**/*.ts --exclude '**/*.d.ts'",
     "build": "../../node_modules/.bin/tsc",
