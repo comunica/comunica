@@ -9,7 +9,7 @@
       "@id": "cbrp:Actor/RdfParse",
       "@type": "AbstractClass",
       "extends": "Actor",
-      "requireElement": "ActorInit",
+      "requireElement": "ActorRdfParse",
       "comment": "A base actor for listening to RDF parse events.",
       "parameters": [
         {

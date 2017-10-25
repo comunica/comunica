@@ -1,0 +1,71 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/comunica-core.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-rdf-parse.jsonld"
+  ],
+  "@id": "npmd:@comunica/bus-rdf-parse",
+  "components": [
+    {
+      "@id": "cbrp:Actor/RdfParseFixedMediaTypes",
+      "@type": "AbstractClass",
+      "extends": "cbrp:Actor/RdfParse",
+      "requireElement": "ActorRdfParseFixedMediaTypes",
+      "comment": "A base actor for listening to RDF parse events that has fixed media types.",
+      "parameters": [
+        {
+          "@id": "cbrp:Actor/RdfParseFixedMediaTypes/mediaTypeEntry",
+          "comment": "A media type entry",
+          "range": {
+            "@type": "cbrp:Actor/RdfParseFixedMediaTypes/MediaTypeEntry",
+            "parameters": [
+              {
+                "@id": "cbrp:Actor/RdfParseFixedMediaTypes/MediaTypeEntry/mediaType",
+                "comment": "A media type name",
+                "required": true,
+                "unique": true
+              },
+              {
+                "@id": "cbrp:Actor/RdfParseFixedMediaTypes/MediaTypeEntry/priority",
+                "comment": "A media type priority, with values between [0, 1]",
+                "default": "1",
+                "range": "xsd:float",
+                "required": true,
+                "unique": true
+              }
+            ]
+          }
+        },
+        {
+          "@id": "cbrp:Actor/RdfParseFixedMediaTypes/priorityScale",
+          "comment": "A multiplier for media type priorities",
+          "unique": true
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "cbrp:Actor/RdfParseFixedMediaTypes/constructorArgumentsObject",
+          "@type": "https://linkedsoftwaredependencies.org/vocabularies/object-oriented#Object",
+          "extends": "cbrp:Actor/RdfParse/constructorArgumentsObject",
+          "fields": [
+            {
+              "keyRaw": "mediaTypes",
+              "value": {
+                "fields": [
+                  {
+                    "collectEntries": "cbrp:Actor/RdfParseFixedMediaTypes/mediaTypeEntry",
+                    "key": "cbrp:Actor/RdfParseFixedMediaTypes/MediaTypeEntry/mediaType",
+                    "value": "cbrp:Actor/RdfParseFixedMediaTypes/MediaTypeEntry/priority"
+                  }
+                ]
+              }
+            },
+            {
+              "keyRaw": "priorityScale",
+              "value": "cbrp:Actor/RdfParseFixedMediaTypes/priorityScale"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

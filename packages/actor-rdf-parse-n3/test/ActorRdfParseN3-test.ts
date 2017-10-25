@@ -1,4 +1,4 @@
-import {ActorRdfParse} from "@comunica/bus-rdf-parse";
+import {ActorRdfParseFixedMediaTypes} from "@comunica/bus-rdf-parse";
 import {Bus} from "@comunica/core/lib/Bus";
 import * as RDF from "rdf-js";
 import {Readable} from "stream";
@@ -17,8 +17,10 @@ describe('ActorRdfParseN3', () => {
     });
 
     it('should be a ActorRdfParseN3 constructor', () => {
-      expect(new (<any> ActorRdfParseN3)({ name: 'actor', bus })).toBeInstanceOf(ActorRdfParseN3);
-      expect(new (<any> ActorRdfParseN3)({ name: 'actor', bus })).toBeInstanceOf(ActorRdfParse);
+      expect(new (<any> ActorRdfParseN3)({ name: 'actor', bus, mediaTypes: {} }))
+        .toBeInstanceOf(ActorRdfParseN3);
+      expect(new (<any> ActorRdfParseN3)({ name: 'actor', bus, mediaTypes: {} }))
+        .toBeInstanceOf(ActorRdfParseFixedMediaTypes);
     });
 
     it('should not be able to create new ActorRdfParseN3 objects without \'new\'', () => {
@@ -33,6 +35,10 @@ describe('ActorRdfParseN3', () => {
       expect(() => { new (<any> ActorRdfParseN3)({ name: 'actor' }); }).toThrow();
     });
 
+    it('should throw an error when constructed without mediaTypes', () => {
+      expect(() => { new (<any> ActorRdfParseN3)({ bus, name: 'actor' }); }).toThrow();
+    });
+
     it('should throw an error when constructed without a name and bus', () => {
       expect(() => { new (<any> ActorRdfParseN3)({}); }).toThrow();
     });
@@ -42,10 +48,6 @@ describe('ActorRdfParseN3', () => {
     });
 
     it('should not throw an error when constructed with required arguments', () => {
-      expect(() => { new ActorRdfParseN3({ name: 'actor', bus }); }).toBeTruthy();
-    });
-
-    it('should not throw an error when constructed with optional mediaTypes', () => {
       expect(() => { new ActorRdfParseN3({ name: 'actor', bus, mediaTypes: {} }); }).toBeTruthy();
     });
 
@@ -54,21 +56,21 @@ describe('ActorRdfParseN3', () => {
     });
 
     it('should not throw an error when constructed with optional priorityScale', () => {
-      expect(() => { new ActorRdfParseN3({ name: 'actor', bus, priorityScale: 0.5 }); }).toBeTruthy();
+      expect(() => { new ActorRdfParseN3({ name: 'actor', bus, mediaTypes: {}, priorityScale: 0.5 }); }).toBeTruthy();
     });
 
     it('when constructed with optional priorityScale should set the priorityScale', () => {
-      expect(new ActorRdfParseN3({ name: 'actor', bus, priorityScale: 0.5 }).priorityScale).toEqual(0.5);
+      expect(new ActorRdfParseN3({ name: 'actor', bus, mediaTypes: {}, priorityScale: 0.5 }).priorityScale)
+        .toEqual(0.5);
     });
 
     it('when constructed with optional priorityScale should scale the priorities', () => {
-      expect(new ActorRdfParseN3({ name: 'actor', bus, priorityScale: 0.5 }).mediaTypes).toEqual({
-        'application/trig': 0.5,
-        'application/n-quads': 0.35, // tslint:disable-line:object-literal-sort-keys // We want to sort by preference
-        'text/turtle': 0.3,
-        'application/n-triples': 0.15,
-        'text/n3': 0.1,
-      });
+      expect(new ActorRdfParseN3({ name: 'actor', bus, mediaTypes: { A: 2, B: 1, C: 0 }, priorityScale: 0.5 })
+        .mediaTypes).toEqual({
+          A: 1,
+          B: 0.5,
+          C: 0,
+        });
     });
 
     it('should not throw an error when constructed with optional arguments', () => {
@@ -81,7 +83,13 @@ describe('ActorRdfParseN3', () => {
     let input: Readable;
 
     beforeEach(() => {
-      actor = new ActorRdfParseN3({ name: 'actor', bus });
+      actor = new ActorRdfParseN3({ bus, mediaTypes: {
+        'application/trig': 1.0,
+        'application/n-quads': 0.7, // tslint:disable-line:object-literal-sort-keys // We want to sort by preference
+        'text/turtle': 0.6,
+        'application/n-triples': 0.3,
+        'text/n3': 0.2,
+      }, name: 'actor' });
     });
 
     describe('for parsing', () => {
@@ -146,24 +154,20 @@ describe('ActorRdfParseN3', () => {
       });
 
       it('should run with scaled priorities 0.5', () => {
-        actor = new ActorRdfParseN3({ name: 'actor', bus, priorityScale: 0.5 });
+        actor = new ActorRdfParseN3({ name: 'actor', bus, mediaTypes: { A: 2, B: 1, C: 0 }, priorityScale: 0.5 });
         return expect(actor.run({ mediaType: true })).resolves.toEqual({ mediaType: { mediaTypes: {
-          'application/trig': 0.5,
-          'application/n-quads': 0.35, // tslint:disable-line:object-literal-sort-keys // We want to sort by preference
-          'text/turtle': 0.3,
-          'application/n-triples': 0.15,
-          'text/n3': 0.1,
+          A: 1,
+          B: 0.5,
+          C: 0,
         }}});
       });
 
       it('should run with scaled priorities 0', () => {
-        actor = new ActorRdfParseN3({ name: 'actor', bus, priorityScale: 0 });
+        actor = new ActorRdfParseN3({ name: 'actor', bus, mediaTypes: { A: 2, B: 1, C: 0 }, priorityScale: 0 });
         return expect(actor.run({ mediaType: true })).resolves.toEqual({ mediaType: { mediaTypes: {
-          'application/trig': 0,
-          'application/n-quads': 0, // tslint:disable-line:object-literal-sort-keys // We want to sort by preference
-          'text/turtle': 0,
-          'application/n-triples': 0,
-          'text/n3': 0,
+          A: 0,
+          B: 0,
+          C: 0,
         }}});
       });
     });

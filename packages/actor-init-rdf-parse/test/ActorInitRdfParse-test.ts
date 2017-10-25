@@ -72,7 +72,13 @@ describe('ActorInitRdfParse', () => {
 
     beforeEach(() => {
       actor = new ActorInitRdfParse({ name: 'actor', bus, mediatorRdfParse: mediator, mediaType: 'text/turtle' });
-      busInit.subscribe(new ActorRdfParseN3({ name: 'actor-rdf-parse', bus }));
+      busInit.subscribe(new ActorRdfParseN3({ bus, mediaTypes: {
+        'application/trig': 1.0,
+        'application/n-quads': 0.7, // tslint:disable-line:object-literal-sort-keys // We want to sort by preference
+        'text/turtle': 0.6,
+        'application/n-triples': 0.3,
+        'text/n3': 0.2,
+      }, name: 'actor-rdf-parse' }));
       input = stringToStream(`
       <a> <b> <c>.
       <d> <e> <f> <g>.

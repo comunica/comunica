@@ -4,7 +4,7 @@ import * as RDF from "rdf-js";
 import {Readable} from "stream";
 
 /**
- * A base actor for listening to init events.
+ * A base actor for listening to RDF parse events.
  *
  * Actor types:
  * * Input:  IActionRdfParseOrMediaType:      A parse input or a media type input.

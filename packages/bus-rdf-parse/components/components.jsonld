@@ -5,6 +5,7 @@
   "requireName": "@comunica/bus-rdf-parse",
   "import": [
     "Bus/RdfParse.jsonld",
-    "Actor/RdfParse.jsonld"
+    "Actor/RdfParse.jsonld",
+    "Actor/RdfParseFixedMediaTypes.jsonld"
   ]
 }
