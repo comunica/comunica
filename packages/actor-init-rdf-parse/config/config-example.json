@@ -3,6 +3,7 @@
     "https://linkedsoftwaredependencies.org/contexts/comunica-bus-rdf-parse.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-actor-init-rdf-parse.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-parse-n3.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-parse-jsonld.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-mediator-race.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-runner.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-core.jsonld"
@@ -25,6 +26,11 @@
         {
           "@id": "ex:myRdfParserN3",
           "@type": "ActorRdfParseN3"
+        },
+        {
+          "@id": "ex:myRdfParserJsonLd",
+          "@type": "ActorRdfParseJsonLd",
+          "priorityScale": 0.5
         }
       ]
     }

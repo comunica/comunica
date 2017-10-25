@@ -1,0 +1,11 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/components.jsonld",
+    {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
+      "crpjl": "npmd:@comunica/actor-rdf-parse-jsonld/",
+
+      "ActorRdfParseJsonLd": "crpjl:Actor/RdfParse/JsonLd"
+    }
+  ]
+}
