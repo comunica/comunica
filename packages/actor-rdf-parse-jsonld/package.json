@@ -1,17 +1,17 @@
 {
-  "name": "@comunica/actor-init-rdf-parse",
+  "name": "@comunica/actor-rdf-parse-jsonld",
   "version": "0.0.1",
-  "description": "An RDF Parse init actor",
-  "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-rdf-parse",
+  "description": "A JSON-LD RDF Parse actor",
+  "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-parse-jsonld",
   "lsd:components": "components/components.jsonld",
   "lsd:contexts": {
-    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-init-rdf-parse.jsonld": "components/context.jsonld"
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-parse-jsonld.jsonld": "components/context.jsonld"
   },
   "main": "index.js",
   "typings": "index",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/comunica/actor-init-rdf-parse.git"
+    "url": "git+https://github.com/comunica/actor-rdf-parse-jsonld.git"
   },
   "keywords": [
     "comunica",
@@ -19,9 +19,9 @@
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/comunica/actor-init-rdf-parse/issues"
+    "url": "https://github.com/comunica/actor-rdf-parse-jsonld/issues"
   },
-  "homepage": "https://github.com/comunica/actor-init-rdf-parse#readme",
+  "homepage": "https://github.com/comunica/actor-rdf-parse-jsonld#readme",
   "files": [
     "components",
     "lib/**/*.d.ts",
@@ -30,19 +30,15 @@
     "index.js"
   ],
   "peerDependencies": {
-    "@comunica/bus-init": "^0.0.1",
     "@comunica/bus-rdf-parse": "^0.0.1",
     "@comunica/core": "^0.0.1"
   },
   "devDependencies": {
-    "@comunica/actor-rdf-parse-n3": "^0.0.1",
-    "@comunica/actor-rdf-parse-jsonld": "^0.0.1",
-    "@comunica/bus-init": "^0.0.1",
     "@comunica/bus-rdf-parse": "^0.0.1",
-    "@comunica/core": "^0.0.1",
-    "@comunica/mediator-race": "^0.0.1",
-    "@comunica/runner-cli": "^0.0.1",
-    "@comunica/runner": "^0.0.1"
+    "@comunica/core": "^0.0.1"
+  },
+  "dependencies": {
+    "rdf-parser-jsonld": "^1.1.0"
   },
   "jest": {
     "transform": {

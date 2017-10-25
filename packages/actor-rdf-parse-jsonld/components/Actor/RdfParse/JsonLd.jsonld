@@ -1,0 +1,33 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-parse-jsonld.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-rdf-parse.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-rdf-parse-jsonld",
+  "components": [
+    {
+      "@id": "crpjl:Actor/RdfParse/JsonLd",
+      "@type": "Class",
+      "extends": "cbrp:Actor/RdfParseFixedMediaTypes",
+      "requireElement": "ActorRdfParseJsonLd",
+      "comment": "A JSON-LD-based actor that listens on the 'rdf-parse' bus.",
+      "parameters": [
+        {
+          "@id": "cbrp:Actor/RdfParseFixedMediaTypes/mediaTypeEntry",
+          "defaultScoped": {
+            "defaultScope": "crpjl:Actor/RdfParse/JsonLd",
+            "defaultScopedValue": [
+              { "mediaTypeKey": "application/json",    "priorityValue": "1.0" },
+              { "mediaTypeKey": "application/ld+json", "priorityValue": "1.0" }
+            ]
+          }
+        }
+      ],
+      "constructorArguments": [
+        {
+          "extends": "cbrp:Actor/RdfParseFixedMediaTypes/constructorArgumentsObject"
+        }
+      ]
+    }
+  ]
+}
