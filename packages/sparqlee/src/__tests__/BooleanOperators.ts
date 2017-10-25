@@ -7,7 +7,48 @@ import { ExpressionEvaluator } from '../evaluator/ExpressionEvaluator';
 import { TRUE, TRUE_STR, FALSE, FALSE_STR, EVB_ERR_STR } from '../util/Consts';
 
 import { testBinOp, testUnOp } from './util/Operators';
-import { errorTable, evaluate } from './util/Evaluation';
+import { evaluate } from './util/Evaluation';
+
+// Some aliases that can be used in the truth tables
+const argMapping = {
+    'true': TRUE_STR,
+    'false': FALSE_STR,
+    'error': EVB_ERR_STR
+}
+const resultMapping = {
+    'true': TRUE,
+    'false': FALSE
+}
+
+// Default error handling for boolean operators
+const errorTable = `
+true  error = error
+error true  = error
+false error = error
+error false = error
+error error = error
+`
+const errorTableUnary = `
+error = error
+`
+
+// Friendlier aliases for operation tests
+function test(
+    op: string,
+    table: string,
+    errTable: string = errorTable,
+    argMap = argMapping
+) {
+    testBinOp(op, table, errorTable, argMap, resultMapping)
+}
+function testUnary(
+    op: string,
+    table: string,
+    errTable: string = errorTable,
+    argMap = argMapping
+) {
+    testUnOp(op, table, errorTableUnary, argMap, resultMapping)
+}
 
 describe('the evaluation of simple boolean expressions', () => {
     describe('like boolean literals', () => {
@@ -40,7 +81,7 @@ describe('the evaluation of simple boolean expressions', () => {
             error false = error
             error error = error
             `
-            testBinOp('||', table, err_table);
+            test('||', table, err_table);
         });
 
         describe('like "&&" receiving', () => {
@@ -57,7 +98,7 @@ describe('the evaluation of simple boolean expressions', () => {
             error false = false
             error error = error
             `
-            testBinOp('&&', table, err_table);
+            test('&&', table, err_table);
         });
 
         describe('like "=" receiving', () => {
@@ -65,9 +106,9 @@ describe('the evaluation of simple boolean expressions', () => {
             true  true  = true
             true  false = false
             false true  = false
-            false false = true'
+            false false = true
             `
-            testBinOp('=', table);
+            test('=', table);
         });
 
         describe('like "!=" receiving', () => {
@@ -75,9 +116,9 @@ describe('the evaluation of simple boolean expressions', () => {
             true  true  = false
             true  false = true
             false true  = true
-            false false = false'
+            false false = false
             `
-            testBinOp('!=', table);
+            test('!=', table);
         });
 
         describe('like "<" receiving', () => {
@@ -85,9 +126,9 @@ describe('the evaluation of simple boolean expressions', () => {
             true  true  = false
             true  false = false
             false true  = true
-            false false = false'
+            false false = false
             `
-            testBinOp('<', table);
+            test('<', table);
         });
 
         describe('like ">" receiving', () => {
@@ -95,9 +136,9 @@ describe('the evaluation of simple boolean expressions', () => {
             true  true  = false
             true  false = true
             false true  = false
-            false false = false'
+            false false = false
             `
-            testBinOp('>', table);
+            test('>', table);
         });
 
         describe('like "<=" receiving', () => {
@@ -105,9 +146,9 @@ describe('the evaluation of simple boolean expressions', () => {
             true  true  = true
             true  false = false
             false true  = true
-            false false = true'
+            false false = true
             `
-            testBinOp('<=', table)
+            test('<=', table)
         });
 
         describe('like >= receiving', () => {
@@ -115,9 +156,9 @@ describe('the evaluation of simple boolean expressions', () => {
             true  true  = true
             true  false = true
             false true  = false
-            false false = true'
+            false false = true
             `
-            testBinOp('>=', table)
+            test('>=', table)
         });
 
         describe('like "!" receiving', () => {
@@ -125,7 +166,7 @@ describe('the evaluation of simple boolean expressions', () => {
             true  = false
             false = true
             `
-            testUnOp('!', table);
+            testUnary('!', table);
         });
     });
 
@@ -148,7 +189,7 @@ describe('the evaluation of simple boolean expressions', () => {
 
         const table = `
         badbool true = false
-        badint  TRUE = false
+        badint  true = false
 
         true  true = true
         false true = false
@@ -158,13 +199,13 @@ describe('the evaluation of simple boolean expressions', () => {
 
         NaN true = false
 
-        zerod true = false
-        zeroi true = false
+        zerod  true = false
+        zeroi  true = false
         nzerof true = true
         nzeroi true = true
 
         unboundv true = error
         `
-        testBinOp('&&', table, '', argMap)
+        test('&&', table, '', argMap)
     })
 });
