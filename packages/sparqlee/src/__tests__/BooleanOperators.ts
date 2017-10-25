@@ -6,8 +6,8 @@ import { Mapping } from '../core/Mapping';
 import { ExpressionEvaluator } from '../evaluator/ExpressionEvaluator';
 import { TRUE, TRUE_STR, FALSE, FALSE_STR, EVB_ERR_STR } from '../util/Consts';
 
-import { test_binop, test_unop, OpTable } from './util/Operators';
-import { error_table, evaluate } from './util/Evaluation';
+import { testBinOp, testUnOp } from './util/Operators';
+import { errorTable, evaluate } from './util/Evaluation';
 
 describe('the evaluation of simple boolean expressions', () => {
     describe('like boolean literals', () => {
@@ -40,7 +40,7 @@ describe('the evaluation of simple boolean expressions', () => {
             error false = error
             error error = error
             `
-            test_binop('||', table, err_table);
+            testBinOp('||', table, err_table);
         });
 
         describe('like "&&" receiving', () => {
@@ -57,7 +57,7 @@ describe('the evaluation of simple boolean expressions', () => {
             error false = false
             error error = error
             `
-            test_binop('&&', table, err_table);
+            testBinOp('&&', table, err_table);
         });
 
         describe('like "=" receiving', () => {
@@ -67,7 +67,7 @@ describe('the evaluation of simple boolean expressions', () => {
             false true  = false
             false false = true'
             `
-            test_binop('=', table);
+            testBinOp('=', table);
         });
 
         describe('like "!=" receiving', () => {
@@ -77,7 +77,7 @@ describe('the evaluation of simple boolean expressions', () => {
             false true  = true
             false false = false'
             `
-            test_binop('!=', table);
+            testBinOp('!=', table);
         });
 
         describe('like "<" receiving', () => {
@@ -87,7 +87,7 @@ describe('the evaluation of simple boolean expressions', () => {
             false true  = true
             false false = false'
             `
-            test_binop('<', table);
+            testBinOp('<', table);
         });
 
         describe('like ">" receiving', () => {
@@ -97,7 +97,7 @@ describe('the evaluation of simple boolean expressions', () => {
             false true  = false
             false false = false'
             `
-            test_binop('>', table);
+            testBinOp('>', table);
         });
 
         describe('like "<=" receiving', () => {
@@ -107,7 +107,7 @@ describe('the evaluation of simple boolean expressions', () => {
             false true  = true
             false false = true'
             `
-            test_binop('<=', table)
+            testBinOp('<=', table)
         });
 
         describe('like >= receiving', () => {
@@ -117,7 +117,7 @@ describe('the evaluation of simple boolean expressions', () => {
             false true  = false
             false false = true'
             `
-            test_binop('>=', table)
+            testBinOp('>=', table)
         });
 
         describe('like "!" receiving', () => {
@@ -125,12 +125,12 @@ describe('the evaluation of simple boolean expressions', () => {
             true  = false
             false = true
             `
-            test_unop('!', table);
+            testUnOp('!', table);
         });
     });
 
     describe('like EBV boolean coercion (&&) with', () => {
-        const arg_map = {
+        const argMap = {
             'true': TRUE_STR,
             'false': FALSE_STR,
             'error': EVB_ERR_STR,
@@ -165,7 +165,6 @@ describe('the evaluation of simple boolean expressions', () => {
 
         unboundv true = error
         `
-        test_binop('&&', table, '', arg_map)
-        // TODO (compare empty strings, numbers, etc...)
+        testBinOp('&&', table, '', argMap)
     })
 });
