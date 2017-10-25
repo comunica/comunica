@@ -1,13 +1,5 @@
-import { Literal } from 'rdf-js';
-import * as RDF from 'rdf-data-model';
-import { Parser, Query, FilterPattern, Expression } from 'sparqljs';
-
-import { Mapping } from '../core/Mapping';
-import { ExpressionEvaluator } from '../evaluator/ExpressionEvaluator';
-import { TRUE, TRUE_STR, FALSE, FALSE_STR, EVB_ERR_STR } from '../util/Consts';
-
-import { testBinOp, testUnOp } from './util/Operators';
-import { evaluate } from './util/Evaluation';
+import { TRUE, TRUE_STR, FALSE, FALSE_STR, EVB_ERR_STR } from '../../util/Consts';
+import { testBinOp, testUnOp } from '../util/Operators';
 
 // Some aliases that can be used in the truth tables
 const argMapping = {
