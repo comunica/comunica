@@ -37,32 +37,26 @@ function test(
     op: string,
     table: string,
     errTable: string = errorTable,
-    argMap = argMapping
+    argMap: {} = argMapping
 ) {
-    testBinOp(op, table, errorTable, argMap, resultMapping)
+    testBinOp(op, table, errTable, argMap, resultMapping)
 }
 function testUnary(
     op: string,
     table: string,
-    errTable: string = errorTable,
-    argMap = argMapping
+    errTable: string = errorTableUnary,
+    argMap: {} = argMapping
 ) {
-    testUnOp(op, table, errorTableUnary, argMap, resultMapping)
+    testUnOp(op, table, errTable, argMap, resultMapping)
 }
 
-describe('the evaluation of simple boolean expressions', () => {
-    describe('like boolean literals', () => {
-        it('like true should evaluate true', () => {
-            expect(evaluate(TRUE_STR)).toBe(TRUE);
-        });
-
-        it('like false should evaluate false', () => {
-            expect(evaluate(FALSE_STR)).toBe(FALSE);
-        });
-
-        it('like error should error', () => {
-            expect(evaluate(EVB_ERR_STR)).toThrow();
-        });
+describe.skip('the evaluation of simple boolean expressions', () => {
+    describe('like boolean literals › like', () => {
+        const table = `
+        true = true
+        false = false
+        `
+        testUnary('', table);
     })
 
     describe('like boolean operations', () => {
@@ -156,7 +150,7 @@ describe('the evaluation of simple boolean expressions', () => {
             true  true  = true
             true  false = true
             false true  = false
-            false false = true
+            false false = true2
             `
             test('>=', table)
         });
@@ -170,6 +164,8 @@ describe('the evaluation of simple boolean expressions', () => {
         });
     });
 
+    // This should be placed in the relative type files (numeric, literal, ...)
+    // and be tested as well in operators that use coercion
     describe('like EBV boolean coercion (&&) with', () => {
         const argMap = {
             'true': TRUE_STR,
@@ -188,24 +184,19 @@ describe('the evaluation of simple boolean expressions', () => {
         }
 
         const table = `
-        badbool true = false
-        badint  true = false
-
-        true  true = true
-        false true = false
-
-        emptys    true  = false
-        nonemptys true  = true
-
-        NaN true = false
-
-        zerod  true = false
-        zeroi  true = false
-        nzerof true = true
-        nzeroi true = true
-
-        unboundv true = error
+        badbool   = false
+        badint    = false
+        true      = true
+        false     = false
+        emptys    = false
+        nonemptys = true
+        NaN       = false
+        zerod     = false
+        zeroi     = false
+        nzerof    = true
+        nzeroi    = true
+        unboundv  = error
         `
-        test('&&', table, '', argMap)
+        testUnary('', table, undefined, argMap)
     })
 });

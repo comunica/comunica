@@ -17,13 +17,13 @@ export function testBinOp(
         if (result == 'error') {
             it(`(${left}, ${right}) should error`, () => {
                 expect(evaluate(`${argMap[left]} ${op} ${argMap[right]}`))
-                    .toThrow();
+                .toThrow();
             });
-
+            
         } else {
             it(`(${left}, ${right}) should evaluate ${result}`, () => {
                 expect(evaluate(`${argMap[left]} ${op} ${argMap[right]}`))
-                    .toBe(resultMap[result]);
+                .toBe(resultMap[result]);
             });
         }
     });
