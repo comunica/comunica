@@ -26,106 +26,107 @@ describe('the evaluation of simple boolean expressions', () => {
 
     describe('like boolean operations', () => {
         describe('like "||" receiving', () => {
-            const table = [
-                'true true true',
-                'true false true',
-                'false true true',
-                'false false false'
-            ];
-            const err_table = [
-                'true error true',
-                'error true true',
-                'false error error',
-                'error false error',
-                'error error error'
-            ];
+            const table = `
+            true  true  = true
+            true  false = true
+            false true  = true
+            false false = false
+            `
+
+            const err_table = `
+            true  error = true
+            error true  = true
+            false error = error
+            error false = error
+            error error = error
+            `
             test_binary_operator('||', table, err_table);
         });
 
-        describe('like '&&' receiving', () => {
-            const table = [
-                'true true true',
-                'true false false',
-                'false true false',
-                'false false false'
-            ]
-            const err_table = [
-                'true error error',
-                'error true error',
-                'false error false',
-                'error false false',
-                'error error error'
-            ]
+        describe('like "&&" receiving', () => {
+            const table = `
+            true  true  = true
+            true  false = false
+            false true  = false
+            false false = false
+            `
+            const err_table = `
+            true  error = error
+            error true  = error
+            false error = false
+            error false = false
+            error error = error
+            `
             test_binary_operator('&&', table, err_table);
-        })
+        });
 
         describe('like "!" receiving', () => {
-            const table = [
-                'true false',
-                'false true'
-            ];
+            const table = `
+            true  = false
+            false = true
+            `
             test_unary_operator('!', table);
-        })
+        });
 
         describe('like "=" receiving', () => {
-            const table = [
-                'true true true',
-                'true false false',
-                'false true false',
-                'false false true'
-            ];
+            const table = `
+            true  true  = true
+            true  false = false
+            false true  = false
+            false false = true'
+            `
             test_binary_operator('=', table);
-        })
+        });
 
         describe('like "!=" receiving', () => {
-            const table = [
-                'true true false',
-                'true false true',
-                'false true true',
-                'false false false'
-            ];
+            const table = `
+            true  true  = false
+            true  false = true
+            false true  = true
+            false false = false'
+            `
             test_binary_operator('!=', table);
-        })
+        });
 
         describe('like "<" receiving', () => {
-            const table = [
-                'true true false',
-                'true false false',
-                'false true true',
-                'false false false'
-            ];
+            const table = `
+            true  true  = false
+            true  false = false
+            false true  = true
+            false false = false'
+            `
             test_binary_operator('<', table);
-        })
+        });
 
         describe('like ">" receiving', () => {
-            const table = [
-                'true true false',
-                'true false true',
-                'false true false',
-                'false false false'
-            ]
+            const table = `
+            true  true  = false
+            true  false = true
+            false true  = false
+            false false = false'
+            `
             test_binary_operator('>', table);
         });
 
         describe('like "<=" receiving', () => {
-            const table = [
-                'true true true',
-                'true false false',
-                'false true true',
-                'false false true'
-            ];
+            const table = `
+            true  true  = true
+            true  false = false
+            false true  = true
+            false false = true'
+            `
             test_binary_operator('<=', table)
-        })
+        });
 
         describe('like >= receiving', () => {
-            const table = [
-                'true true true',
-                'true false true',
-                'false true false',
-                'false false true'
-            ]
+            const table = `
+            true  true  = true
+            true  false = true
+            false true  = false
+            false false = true'
+            `
             test_binary_operator('>=', table)
-        })
+        });
     });
 
     describe('like EBV boolean operations', () => {
