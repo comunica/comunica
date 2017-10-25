@@ -30,7 +30,7 @@
     "index.js"
   ],
   "peerDependencies": {
-    "@comunica/bus-http": "^0.0.1",
+    "@comunica/bus-rdf-parse": "^0.0.1",
     "@comunica/core": "^0.0.1"
   },
   "devDependencies": {

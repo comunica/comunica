@@ -39,7 +39,24 @@
   "dependencies": {
     "lodash": "^4.17.4"
   },
+  "jest": {
+    "transform": {
+      "^.+\\.ts$": "<rootDir>/../../node_modules/ts-jest/preprocessor.js"
+    },
+    "transformIgnorePatterns": [
+      "[/\\\\]node_modules[/\\\\].+\\.(js|jsx)$"
+    ],
+    "testRegex": "(/test/.*|(\\.|/)(test|spec))\\.ts$",
+    "moduleFileExtensions": [
+      "ts",
+      "js"
+    ],
+    "collectCoverage": true,
+    "mapCoverage": true
+  },
   "scripts": {
+    "test": "../../node_modules/.bin/jest --no-cache ${1}",
+    "test-watch": "../../node_modules/.bin/jest ${1} --watch",
     "lint": "../../node_modules/.bin/tslint lib/**/*.ts test/**/*.ts --exclude '**/*.d.ts'",
     "build": "../../node_modules/.bin/tsc",
     "validate": "npm ls",

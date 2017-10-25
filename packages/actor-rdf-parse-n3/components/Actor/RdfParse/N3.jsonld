@@ -8,12 +8,27 @@
     {
       "@id": "crpn3:Actor/RdfParse/N3",
       "@type": "Class",
-      "extends": "cbrp:Actor/RdfParse",
+      "extends": "cbrp:Actor/RdfParseFixedMediaTypes",
       "requireElement": "ActorRdfParseN3",
       "comment": "An N3-based actor that listens on the 'rdf-parse' bus.",
+      "parameters": [
+        {
+          "@id": "cbrp:Actor/RdfParseFixedMediaTypes/mediaTypeEntry",
+          "defaultScoped": {
+            "defaultScope": "crpn3:Actor/RdfParse/N3",
+            "defaultScopedValue": [
+              { "mediaTypeKey": "application/trig",      "priorityValue": "1.0" },
+              { "mediaTypeKey": "application/n-quads",   "priorityValue": "0.7" },
+              { "mediaTypeKey": "text/turtle",           "priorityValue": "0.6" },
+              { "mediaTypeKey": "application/n-triples", "priorityValue": "0.3" },
+              { "mediaTypeKey": "text/n3",               "priorityValue": "0.2" }
+            ]
+          }
+        }
+      ],
       "constructorArguments": [
         {
-          "extends": "cbrp:Actor/RdfParse/constructorArgumentsObject"
+          "extends": "cbrp:Actor/RdfParseFixedMediaTypes/constructorArgumentsObject"
         }
       ]
     }
