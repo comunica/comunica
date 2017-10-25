@@ -6,21 +6,21 @@ import { Mapping } from '../core/Mapping';
 import { ExpressionEvaluator } from '../evaluator/ExpressionEvaluator';
 import { TRUE, TRUE_STR, FALSE, FALSE_STR, EVB_ERR_STR } from '../util/Consts';
 
-import { test_binary_operator, test_unary_operator, OpTable } from './util/BooleanOperators';
-import { error_table, evaluation_for } from './util/Evaluation';
+import { test_binop, test_unop, OpTable } from './util/Operators';
+import { error_table, evaluate } from './util/Evaluation';
 
 describe('the evaluation of simple boolean expressions', () => {
     describe('like boolean literals', () => {
         it('like true should evaluate true', () => {
-            expect(evaluation_for(TRUE_STR)).toBe(TRUE);
+            expect(evaluate(TRUE_STR)).toBe(TRUE);
         });
 
         it('like false should evaluate false', () => {
-            expect(evaluation_for(FALSE_STR)).toBe(FALSE);
+            expect(evaluate(FALSE_STR)).toBe(FALSE);
         });
 
         it('like error should error', () => {
-            expect(evaluation_for(EVB_ERR_STR)).toThrow();
+            expect(evaluate(EVB_ERR_STR)).toThrow();
         });
     })
 
@@ -40,7 +40,7 @@ describe('the evaluation of simple boolean expressions', () => {
             error false = error
             error error = error
             `
-            test_binary_operator('||', table, err_table);
+            test_binop('||', table, err_table);
         });
 
         describe('like "&&" receiving', () => {
@@ -57,15 +57,7 @@ describe('the evaluation of simple boolean expressions', () => {
             error false = false
             error error = error
             `
-            test_binary_operator('&&', table, err_table);
-        });
-
-        describe('like "!" receiving', () => {
-            const table = `
-            true  = false
-            false = true
-            `
-            test_unary_operator('!', table);
+            test_binop('&&', table, err_table);
         });
 
         describe('like "=" receiving', () => {
@@ -75,7 +67,7 @@ describe('the evaluation of simple boolean expressions', () => {
             false true  = false
             false false = true'
             `
-            test_binary_operator('=', table);
+            test_binop('=', table);
         });
 
         describe('like "!=" receiving', () => {
@@ -85,7 +77,7 @@ describe('the evaluation of simple boolean expressions', () => {
             false true  = true
             false false = false'
             `
-            test_binary_operator('!=', table);
+            test_binop('!=', table);
         });
 
         describe('like "<" receiving', () => {
@@ -95,7 +87,7 @@ describe('the evaluation of simple boolean expressions', () => {
             false true  = true
             false false = false'
             `
-            test_binary_operator('<', table);
+            test_binop('<', table);
         });
 
         describe('like ">" receiving', () => {
@@ -105,7 +97,7 @@ describe('the evaluation of simple boolean expressions', () => {
             false true  = false
             false false = false'
             `
-            test_binary_operator('>', table);
+            test_binop('>', table);
         });
 
         describe('like "<=" receiving', () => {
@@ -115,7 +107,7 @@ describe('the evaluation of simple boolean expressions', () => {
             false true  = true
             false false = true'
             `
-            test_binary_operator('<=', table)
+            test_binop('<=', table)
         });
 
         describe('like >= receiving', () => {
@@ -125,11 +117,55 @@ describe('the evaluation of simple boolean expressions', () => {
             false true  = false
             false false = true'
             `
-            test_binary_operator('>=', table)
+            test_binop('>=', table)
+        });
+
+        describe('like "!" receiving', () => {
+            const table = `
+            true  = false
+            false = true
+            `
+            test_unop('!', table);
         });
     });
 
-    describe('like EBV boolean operations', () => {
+    describe('like EBV boolean coercion (&&) with', () => {
+        const arg_map = {
+            'true': TRUE_STR,
+            'false': FALSE_STR,
+            'error': EVB_ERR_STR,
+            'badbool': '"notabool"^^xsd:boolean', // Boolean with bad lexical form
+            'badint': '"notint"^^xsd:integer',    // Integer with bad lexical form 
+            'nonemptys': '"nonempty string"',     // Non empty string
+            'emptys': '""',                 // Empty string
+            'NaN': '"NaN"^^xsd:integer',    // NaN
+            'zeroi': '"0"^^xsd:integer',    // Zero valued integer
+            'zerod': '"0.00"^^xsd:decimal', // Zero valued decimal
+            'nzerof': '"-1E4"^^xsd:float',  // Non zero float
+            'nzeroi': '"-34"^^xsd:integer', // Non zero integer
+            'unboundv': '?unboundvariable', // An unbound variable
+        }
+
+        const table = `
+        badbool true = false
+        badint  TRUE = false
+
+        true  true = true
+        false true = false
+
+        emptys    true  = false
+        nonemptys true  = true
+
+        NaN true = false
+
+        zerod true = false
+        zeroi true = false
+        nzerof true = true
+        nzeroi true = true
+
+        unboundv true = error
+        `
+        test_binop('&&', table, '', arg_map)
         // TODO (compare empty strings, numbers, etc...)
     })
 });

@@ -12,9 +12,9 @@ error false = error
 error error = error
 `
 
-export const error_table_unary = [
-    'error error'
-]
+export const error_table_unary = `
+error = error
+`
 
 export function create_expression(str: string): Expression {
     let sparql_query = parser.parse('SELECT * WHERE { ?s ?p ?o  FILTER (' + str + ') }') as Query;
@@ -22,7 +22,7 @@ export function create_expression(str: string): Expression {
     return expr;
 }
 
-export function evaluation_for(str: string, mappings = new Map()): Literal {
+export function evaluate(str: string, mappings = new Map()): Literal {
     let evaluator = new ExpressionEvaluator(create_expression(str));
     return evaluator.evaluate(mappings);
 }
