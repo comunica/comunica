@@ -310,7 +310,7 @@ describe.skip('the evaluation of simple numeric boolean expressions', () => {
         });
     })
 
-    describe('like bad lexical values', () => {
+    describe('like bad numeric lexical values', () => {
         // TODO: Add some bad lexical values for their datatype
         // https://www.w3.org/TR/sparql11-query/#operandDataTypes
     })

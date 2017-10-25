@@ -47,8 +47,8 @@ function testUnary(
 // TODO: Decent collation testing
 // https://www.w3.org/TR/xpath-functions/#collations
 // https://www.w3.org/TR/xpath-functions/#func-compare
-describe('the evaluation of simple numeric boolean expressions', () => {
-    describe('like numeric literals › like', () => {
+describe('the evaluation of simple literal expressions', () => {
+    describe('like literals › like', () => {
         const table = `
             empty = false
             gener = true
