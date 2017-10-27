@@ -1,0 +1,32 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-rdf-dereference.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-core.jsonld"
+  ],
+  "@id": "npmd:@comunica/bus-rdf-dereference",
+  "components": [
+    {
+      "@id": "cbrd:Actor/RdfDereference",
+      "@type": "AbstractClass",
+      "extends": "Actor",
+      "requireElement": "ActorRdfDereference",
+      "comment": "A base actor for handling RDF dereference events.",
+      "parameters": [
+        {
+          "@id": "cc:Actor/bus",
+          "defaultScoped": {
+            "defaultScope": "cbrd:Actor/RdfDereference",
+            "defaultScopedValue": { "@id": "cbrd:Bus/RdfDereference" }
+          }
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "cbrd:Actor/RdfDereference/constructorArgumentsObject",
+          "@type": "https://linkedsoftwaredependencies.org/vocabularies/object-oriented#Object",
+          "extends": "cc:Actor/constructorArgumentsObject"
+        }
+      ]
+    }
+  ]
+}
