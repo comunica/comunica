@@ -1,0 +1,13 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/components.jsonld",
+    {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
+      "cird": "npmd:@comunica/actor-init-rdf-dereference/",
+
+      "ActorInitRdfDereference": "cird:Actor/Init/RdfDereference",
+      "mediatorRdfDereference": "cird:mediatorRdfDereference",
+      "url": "cird:url"
+    }
+  ]
+}

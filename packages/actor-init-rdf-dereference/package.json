@@ -1,0 +1,77 @@
+{
+  "name": "@comunica/actor-init-rdf-dereference",
+  "version": "0.0.1",
+  "description": "An RDF Parse init actor",
+  "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-rdf-dereference",
+  "lsd:components": "components/components.jsonld",
+  "lsd:contexts": {
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-init-rdf-dereference.jsonld": "components/context.jsonld"
+  },
+  "main": "index.js",
+  "typings": "index",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/comunica/actor-init-rdf-dereference.git"
+  },
+  "keywords": [
+    "comunica",
+    "runner"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/comunica/actor-init-rdf-dereference/issues"
+  },
+  "homepage": "https://github.com/comunica/actor-init-rdf-dereference#readme",
+  "files": [
+    "components",
+    "lib/**/*.d.ts",
+    "lib/**/*.js",
+    "index.d.ts",
+    "index.js"
+  ],
+  "peerDependencies": {
+    "@comunica/bus-http": "^0.0.1",
+    "@comunica/bus-init": "^0.0.1",
+    "@comunica/bus-rdf-dereference": "^0.0.1",
+    "@comunica/bus-rdf-parse": "^0.0.1",
+    "@comunica/core": "^0.0.1"
+  },
+  "devDependencies": {
+    "@comunica/actor-http-node-fetch": "^0.0.1",
+    "@comunica/actor-rdf-dereference-http-parse": "^0.0.1",
+    "@comunica/actor-rdf-parse-n3": "^0.0.1",
+    "@comunica/actor-rdf-parse-jsonld": "^0.0.1",
+    "@comunica/bus-init": "^0.0.1",
+    "@comunica/bus-http": "^0.0.1",
+    "@comunica/bus-rdf-dereference": "^0.0.1",
+    "@comunica/bus-rdf-parse": "^0.0.1",
+    "@comunica/core": "^0.0.1",
+    "@comunica/mediator-number": "^0.0.1",
+    "@comunica/mediator-race": "^0.0.1",
+    "@comunica/runner-cli": "^0.0.1",
+    "@comunica/runner": "^0.0.1"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.ts$": "<rootDir>/../../node_modules/ts-jest/preprocessor.js"
+    },
+    "transformIgnorePatterns": [
+      "[/\\\\]node_modules[/\\\\].+\\.(js|jsx)$"
+    ],
+    "testRegex": "(/test/.*|(\\.|/)(test|spec))\\.ts$",
+    "moduleFileExtensions": [
+      "ts",
+      "js"
+    ],
+    "collectCoverage": true,
+    "mapCoverage": true
+  },
+  "scripts": {
+    "test": "../../node_modules/.bin/jest --no-cache ${1}",
+    "test-watch": "../../node_modules/.bin/jest ${1} --watch",
+    "lint": "../../node_modules/.bin/tslint lib/**/*.ts test/**/*.ts --exclude '**/*.d.ts'",
+    "build": "../../node_modules/.bin/tsc",
+    "validate": "npm ls",
+    "prepare": "npm run build"
+  }
+}
