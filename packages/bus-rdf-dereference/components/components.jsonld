@@ -1,0 +1,10 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/contexts/comunica-bus-rdf-dereference.jsonld",
+  "@id": "npmd:@comunica/bus-rdf-dereference",
+  "@type": "Module",
+  "requireName": "@comunica/bus-rdf-dereference",
+  "import": [
+    "Bus/RdfDereference.jsonld",
+    "Actor/RdfDereference.jsonld"
+  ]
+}
