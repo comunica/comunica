@@ -1,6 +1,5 @@
 import {Actor, IAction, IActorArgs, IActorOutput, IActorTest} from "@comunica/core";
 import * as RDF from "rdf-js";
-import {Readable} from "stream";
 
 /**
  * A base actor for listening to RDF parse events.
@@ -85,7 +84,7 @@ export interface IActionRdfParse extends IAction {
   /**
    * A readable string stream in a certain RDF serialization that needs to be parsed.
    */
-  input: Readable;
+  input: NodeJS.ReadableStream;
   /**
    * Media type that identifies the RDF serialization of the given input.
    */
