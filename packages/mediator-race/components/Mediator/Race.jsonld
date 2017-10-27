@@ -6,14 +6,14 @@
   "@id": "npmd:@comunica/mediator-race",
   "components": [
     {
-      "@id": "cmn:Mediator/Race",
+      "@id": "cmr:Mediator/Race",
       "@type": "Class",
       "extends": "cc:Mediator",
       "requireElement": "MediatorRace",
       "comment": "A mediator that picks the first actor that resolves its test.",
       "constructorArguments": [
         {
-          "@id": "cmn:Mediator/Race/constructorArgumentsObject",
+          "@id": "cmr:Mediator/Race/constructorArgumentsObject",
           "extends": "cc:Mediator/constructorArgumentsObject"
         }
       ]
