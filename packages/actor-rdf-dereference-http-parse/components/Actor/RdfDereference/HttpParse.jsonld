@@ -1,0 +1,48 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-dereference-http-parse.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-rdf-dereference.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-http.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-rdf-parse.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-rdf-dereference-http-parse",
+  "components": [
+    {
+      "@id": "crdhp:Actor/RdfDereference/HttpParse",
+      "@type": "Class",
+      "extends": "cbrd:Actor/RdfDereference",
+      "requireElement": "ActorRdfDereferenceHttpParse",
+      "comment": "An actor that listens on the 'rdf-dereference' bus that uses the 'http' and 'rdf-parse' buses.",
+      "parameters": [
+        {
+          "@id": "crdhp:mediatorHttp",
+          "comment": "The HTTP mediator",
+          "required": true,
+          "unique": true
+        },
+        {
+          "@id": "crdhp:mediatorRdfParse",
+          "comment": "The RDF Parse mediator",
+          "required": true,
+          "unique": true
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "crdhp:Actor/RdfDereference/HttpParse/constructorArgumentsObject",
+          "extends": "cbrd:Actor/RdfDereference/constructorArgumentsObject",
+          "fields": [
+            {
+              "keyRaw": "mediatorHttp",
+              "value": "crdhp:mediatorHttp"
+            },
+            {
+              "keyRaw": "mediatorRdfParse",
+              "value": "crdhp:mediatorRdfParse"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
