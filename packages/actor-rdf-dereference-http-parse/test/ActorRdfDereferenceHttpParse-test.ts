@@ -55,7 +55,7 @@ describe('ActorRdfDereferenceHttpParse', () => {
         if (action.mediaType) {
           return { mediaType: { mediaTypes: { a: 1.0 }}};
         } else {
-          return { parse: { quads: 'fine' }};
+          return { parse: { quads: 'fine', triples: true }};
         }
       };
       mediatorHttp.mediate = () => ({ body: null, headers: { get: () => 'a; charset=utf-8' } });
@@ -96,7 +96,8 @@ describe('ActorRdfDereferenceHttpParse', () => {
     });
 
     it('should run', () => {
-      return expect(actor.run({ url: 'https://www.google.com/' })).resolves.toMatchObject({ quads: 'fine' });
+      return expect(actor.run({ url: 'https://www.google.com/' })).resolves
+        .toMatchObject({ quads: 'fine', triples: true });
     });
   });
 });
