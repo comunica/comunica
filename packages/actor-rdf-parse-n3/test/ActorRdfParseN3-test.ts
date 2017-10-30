@@ -120,10 +120,29 @@ describe('ActorRdfParseN3', () => {
         return expect(actor.test({ parse: { input, mediaType: 'application/ld+json'}})).rejects.toBeTruthy();
       });
 
-      it('should run', () => {
-        return actor.run({ parse: { input, mediaType: 'text/turtle'}})
+      it('should run on text/turtle', () => {
+        return actor.run({ parse: { input, mediaType: 'text/turtle' }})
           .then((output) => {
             return new Promise((resolve, reject) => {
+              expect(output.parse.triples).toBeTruthy();
+              const quads: RDF.Quad[] = [];
+              output.parse.quads.on('data', (quad) => quads.push(quad));
+              output.parse.quads.on('end', () => {
+                if (quads.length === 2) {
+                  resolve();
+                } else {
+                  reject();
+                }
+              });
+            });
+          });
+      });
+
+      it('should run on application/trig', () => {
+        return actor.run({ parse: { input, mediaType: 'application/trig' }})
+          .then((output) => {
+            return new Promise((resolve, reject) => {
+              expect(output.parse.triples).toBeFalsy();
               const quads: RDF.Quad[] = [];
               output.parse.quads.on('data', (quad) => quads.push(quad));
               output.parse.quads.on('end', () => {

@@ -33,4 +33,10 @@ export interface IActorRdfDereferenceOutput extends IActorOutput {
    * The resulting quad stream.
    */
   quads: RDF.Stream;
+  /**
+   * An optional field indicating if the given quad stream originates from a triple-based serialization,
+   * in which everything is serialized in the default graph.
+   * If falsy, the quad stream contain actual quads, otherwise they should be interpreted as triples.
+   */
+  triples?: boolean;
 }

@@ -1,6 +1,7 @@
 import {IActionHttp, IActorHttpOutput} from "@comunica/bus-http";
 import {ActorRdfDereference, IActionRdfDereference, IActorRdfDereferenceOutput} from "@comunica/bus-rdf-dereference";
-import {IActionRdfParse, IActionRdfParseOrMediaType, IActorOutputRdfParseOrMediaType} from "@comunica/bus-rdf-parse";
+import {IActionRdfParse, IActionRdfParseOrMediaType, IActorOutputRdfParseOrMediaType,
+  IActorRdfParseOutput} from "@comunica/bus-rdf-parse";
 import {Actor, IActorTest, Mediator} from "@comunica/core";
 import {IActorArgs} from "@comunica/core/lib/Actor";
 
@@ -51,10 +52,10 @@ export class ActorRdfDereferenceHttpParse extends ActorRdfDereference implements
     const mediaType: string = ActorRdfDereferenceHttpParse.REGEX_MEDIATYPE
       .exec(httpResponse.headers.get('content-type'))[0];
     const parseAction: IActionRdfParse = { input: httpResponse.body, mediaType };
-    const quads = (await this.mediatorRdfParse.mediate({ parse: parseAction })).parse.quads;
+    const parseOutput: IActorRdfParseOutput = (await this.mediatorRdfParse.mediate({ parse: parseAction })).parse;
 
-    // Return the parsed quad stream
-    return { quads };
+    // Return the parsed quad stream and whether or not only triples are supported
+    return { quads: parseOutput.quads, triples: parseOutput.triples };
   }
 
   public mediaTypesToAcceptString(mediaTypes: {[id: string]: number}): string {

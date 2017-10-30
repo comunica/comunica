@@ -15,7 +15,12 @@ export class ActorRdfParseN3 extends ActorRdfParseFixedMediaTypes {
   }
 
   public async runParse(action: IActionRdfParse): Promise<IActorRdfParseOutput> {
-    return { quads: N3Parser.import(action.input) };
+    return {
+      quads: N3Parser.import(action.input),
+      triples: action.mediaType === 'text/turtle'
+      || action.mediaType === 'application/n-triples'
+      || action.mediaType === 'text/n3',
+    };
   }
 
 }
