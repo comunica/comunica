@@ -1,0 +1,9 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-metadata-extract-hydra-controls.jsonld",
+  "@id": "npmd:@comunica/actor-rdf-metadata-extract-hydra-controls",
+  "@type": "Module",
+  "requireName": "@comunica/actor-rdf-metadata-extract-hydra-controls",
+  "import": [
+    "Actor/RdfMetadataExtract/HydraControls.jsonld"
+  ]
+}

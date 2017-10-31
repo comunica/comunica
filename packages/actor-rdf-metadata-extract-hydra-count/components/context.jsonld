@@ -1,0 +1,13 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/components.jsonld",
+    {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
+      "carmehc": "npmd:@comunica/actor-rdf-metadata-extract-hydra-count/",
+
+      "ActorRdfMetadataExtractHydraCount": "carmehc:Actor/RdfMetadataExtract/HydraCount",
+      "hydraCountPredicate": "carmehc:Actor/RdfMetadataExtract/HydraCount/predicate",
+      "hydraCountPredicates": "carmehc:Actor/RdfMetadataExtract/HydraCount/predicate"
+    }
+  ]
+}
