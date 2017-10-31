@@ -1,0 +1,40 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-metadata-extract-hydra-count.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-rdf-metadata-extract.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-rdf-metadata-extract-hydra-count",
+  "components": [
+    {
+      "@id": "carmehc:Actor/RdfMetadataExtract/HydraCount",
+      "@type": "Class",
+      "extends": "cbrme:Actor/RdfMetadataExtract",
+      "requireElement": "ActorRdfMetadataExtractHydraCount",
+      "comment": "A comunica Hydra Count RDF Metadata Extract Actor.",
+      "parameters": [
+        {
+          "@id": "carmehc:Actor/RdfMetadataExtract/HydraCount/predicate",
+          "comment": "A predicate that provides a count estimate",
+          "defaultScoped": {
+            "defaultScope": "carmehc:Actor/RdfMetadataExtract/HydraCount",
+            "defaultScopedValue": [
+              "http://www.w3.org/ns/hydra/core#totalItems",
+              "http://rdfs.org/ns/void#triples"
+            ]
+          }
+        }
+      ],
+      "constructorArguments": [
+        {
+          "extends": "cbrme:Actor/RdfMetadataExtract/constructorArgumentsObject",
+          "fields": [
+            {
+              "keyRaw": "predicates",
+              "value": "carmehc:Actor/RdfMetadataExtract/HydraCount/predicate"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
