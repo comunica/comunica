@@ -1,0 +1,13 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/components.jsonld",
+    {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
+      "carmtp": "npmd:@comunica/actor-rdf-metadata-triple-predicate/",
+
+      "ActorRdfMetadataTriplePredicate": "carmtp:Actor/RdfMetadata/TriplePredicate",
+      "metadataPredicateRegex": "carmtp:Actor/RdfMetadata/TriplePredicate/predicateRegex",
+      "metadataPredicateRegexes": "carmtp:Actor/RdfMetadata/TriplePredicate/predicateRegex"
+    }
+  ]
+}

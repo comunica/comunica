@@ -1,0 +1,9 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-metadata-triple-predicate.jsonld",
+  "@id": "npmd:@comunica/actor-rdf-metadata-triple-predicate",
+  "@type": "Module",
+  "requireName": "@comunica/actor-rdf-metadata-triple-predicate",
+  "import": [
+    "Actor/RdfMetadata/TriplePredicate.jsonld"
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/components.jsonld",
+    {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
+      "carmpt": "npmd:@comunica/actor-rdf-metadata-primary-topic/",
+
+      "ActorRdfMetadataPrimaryTopic": "carmpt:Actor/RdfMetadata/PrimaryTopic"
+    }
+  ]
+}

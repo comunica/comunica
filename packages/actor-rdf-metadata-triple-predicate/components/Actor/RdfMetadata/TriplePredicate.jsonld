@@ -1,0 +1,39 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-metadata-triple-predicate.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-rdf-metadata.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-rdf-metadata-triple-predicate",
+  "components": [
+    {
+      "@id": "carmtp:Actor/RdfMetadata/TriplePredicate",
+      "@type": "Class",
+      "extends": "cbrm:Actor/RdfMetadata",
+      "requireElement": "ActorRdfMetadataTriplePredicate",
+      "comment": "A comunica Triple Predicate RDF Metadata Actor.",
+      "parameters": [
+        {
+          "@id": "carmtp:Actor/RdfMetadata/TriplePredicate/predicateRegex",
+          "comment": "A predicate regex that indicates if a certain triple should be seen as metadata",
+          "defaultScoped": {
+            "defaultScope": "carmtp:Actor/RdfMetadata/TriplePredicate",
+            "defaultScopedValue": [
+              "^http://www.w3.org/ns/hydra/core#.*"
+            ]
+          }
+        }
+      ],
+      "constructorArguments": [
+        {
+          "extends": "cbrm:Actor/RdfMetadata/constructorArgumentsObject",
+          "fields": [
+            {
+              "keyRaw": "predicateRegexes",
+              "value": "carmtp:Actor/RdfMetadata/TriplePredicate/predicateRegex"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

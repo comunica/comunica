@@ -1,0 +1,9 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-metadata-primary-topic.jsonld",
+  "@id": "npmd:@comunica/actor-rdf-metadata-primary-topic",
+  "@type": "Module",
+  "requireName": "@comunica/actor-rdf-metadata-primary-topic",
+  "import": [
+    "Actor/RdfMetadata/PrimaryTopic.jsonld"
+  ]
+}
