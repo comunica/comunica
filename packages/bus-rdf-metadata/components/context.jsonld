@@ -1,0 +1,11 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/comunica-core.jsonld",
+    {
+      "cbrm": "npmd:@comunica/bus-rdf-metadata/",
+
+      "BusRdfMetadata": "cbrm:Bus/RdfMetadata",
+      "ActorRdfMetadata": "cbrm:Actor/RdfMetadata"
+    }
+  ]
+}

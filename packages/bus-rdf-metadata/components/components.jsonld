@@ -1,0 +1,10 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/contexts/comunica-bus-rdf-metadata.jsonld",
+  "@id": "npmd:@comunica/bus-rdf-metadata",
+  "@type": "Module",
+  "requireName": "@comunica/bus-rdf-metadata",
+  "import": [
+    "Bus/RdfMetadata.jsonld",
+    "Actor/RdfMetadata.jsonld"
+  ]
+}

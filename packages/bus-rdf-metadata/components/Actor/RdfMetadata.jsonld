@@ -1,0 +1,32 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-rdf-metadata.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-core.jsonld"
+  ],
+  "@id": "npmd:@comunica/bus-rdf-metadata",
+  "components": [
+    {
+      "@id": "cbrm:Actor/RdfMetadata",
+      "@type": "AbstractClass",
+      "extends": "Actor",
+      "requireElement": "ActorRdfMetadata",
+      "comment": "A comunica actor for rdf-metadata events.",
+      "parameters": [
+        {
+          "@id": "cc:Actor/bus",
+          "defaultScoped": {
+            "defaultScope": "cbrm:Actor/RdfMetadata",
+            "defaultScopedValue": { "@id": "cbrm:Bus/RdfMetadata" }
+          }
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "cbrm:Actor/RdfMetadata/constructorArgumentsObject",
+          "@type": "https://linkedsoftwaredependencies.org/vocabularies/object-oriented#Object",
+          "extends": "cc:Actor/constructorArgumentsObject"
+        }
+      ]
+    }
+  ]
+}
