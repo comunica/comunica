@@ -29,6 +29,13 @@ export interface IActionRdfDereference extends IAction {
 
 export interface IActorRdfDereferenceOutput extends IActorOutput {
   /**
+   * The page on which the output was found.
+   *
+   * This is not necessarily the same as the original input url,
+   * as this may have changed due to redirects.
+   */
+  pageUrl: string;
+  /**
    * The resulting quad stream.
    */
   quads: RDF.Stream;
