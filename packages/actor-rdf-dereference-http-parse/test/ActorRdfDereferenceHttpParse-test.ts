@@ -58,8 +58,15 @@ describe('ActorRdfDereferenceHttpParse', () => {
           return { parse: { quads: 'fine', triples: true }};
         }
       };
-      mediatorHttp.mediate = () => ({ body: null, headers: { get: () => 'a; charset=utf-8' },
-        url: 'https://www.google.com/index.html', });
+      mediatorHttp.mediate = (action) => {
+        const status: number = action.url === 'https://www.google.com/' ? 200 : 400;
+        return {
+          body: null,
+          headers: {get: () => 'a; charset=utf-8'},
+          status,
+          url: 'https://www.google.com/index.html',
+        };
+      };
       actor = new ActorRdfDereferenceHttpParse({ name: 'actor', bus, mediatorHttp, mediatorRdfParse });
     });
 
@@ -99,6 +106,10 @@ describe('ActorRdfDereferenceHttpParse', () => {
     it('should run', () => {
       return expect(actor.run({ url: 'https://www.google.com/' })).resolves
         .toMatchObject({ pageUrl: 'https://www.google.com/index.html', quads: 'fine', triples: true });
+    });
+
+    it('should not run on a 404', () => {
+      return expect(actor.run({ url: 'https://www.google.com/notfound' })).rejects.toBeTruthy();
     });
   });
 });
