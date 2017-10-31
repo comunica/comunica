@@ -1,0 +1,21 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-metadata-primary-topic.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-rdf-metadata.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-rdf-metadata-primary-topic",
+  "components": [
+    {
+      "@id": "carmpt:Actor/RdfMetadata/PrimaryTopic",
+      "@type": "Class",
+      "extends": "cbrm:Actor/RdfMetadata",
+      "requireElement": "ActorRdfMetadataPrimaryTopic",
+      "comment": "A comunica Primary Topic RDF Metadata Actor.",
+      "constructorArguments": [
+        {
+          "extends": "cbrm:Actor/RdfMetadata/constructorArgumentsObject"
+        }
+      ]
+    }
+  ]
+}
