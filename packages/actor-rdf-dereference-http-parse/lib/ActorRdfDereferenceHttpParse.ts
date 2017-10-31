@@ -54,7 +54,7 @@ export class ActorRdfDereferenceHttpParse extends ActorRdfDereference implements
     const parseOutput: IActorRdfParseOutput = (await this.mediatorRdfParse.mediate({ parse: parseAction })).parse;
 
     // Return the parsed quad stream and whether or not only triples are supported
-    return { quads: parseOutput.quads, triples: parseOutput.triples };
+    return { pageUrl: httpResponse.url, quads: parseOutput.quads, triples: parseOutput.triples };
   }
 
   public mediaTypesToAcceptString(mediaTypes: {[id: string]: number}): string {
