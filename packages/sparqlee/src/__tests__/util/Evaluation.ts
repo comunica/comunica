@@ -1,6 +1,6 @@
 import { Parser, Expression, FilterPattern, Query } from 'sparqljs';
-import { ExpressionEvaluator } from '../../evaluator/ExpressionEvaluator';
-import { Literal } from 'rdf-data-model';
+import { AsyncEvaluator } from '../../evaluator/ExpressionEvaluator';
+import { Literal } from 'rdf-js';
 
 const parser = new Parser({ 'xsd': 'http://www.w3.org/2001/XMLSchema' });
 
@@ -11,6 +11,6 @@ export function createExpression(str: string): Expression {
 }
 
 export function evaluate(str: string, mappings = new Map()): Literal {
-    let evaluator = new ExpressionEvaluator(createExpression(str));
+    let evaluator = new AsyncEvaluator(createExpression(str));
     return evaluator.evaluate(mappings);
 }

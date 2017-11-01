@@ -6,7 +6,7 @@
   "scripts": {
     "test": "jest",
     "prepare": "npm run build",
-    "bench": "node dist/benchmarks/ByHand.js",
+    "bench": "node dist/benchmarks/Compare.js",
     "build": "tsc"
   },
   "repository": {
