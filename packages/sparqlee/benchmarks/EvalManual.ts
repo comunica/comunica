@@ -1,11 +1,12 @@
-import { evaluate } from '../src/__tests__/util/Evaluation';
 import { Expression, OperationExpression } from 'sparqljs';
 import { Literal } from 'rdf-js';
+import fromString from 'termterm.js';
 import * as RDF from 'rdf-data-model';
+
+import { evaluate } from '../src/__tests__/util/Evaluation';
 import { ExpressionEvaluator } from '../src/evaluator/ExpressionEvaluator';
 import { Mapping } from '../src/core/Mapping';
-import fromString from 'termterm.js'
-
+import { TermTypes as TT, ExpressionTypes as ET } from '../src/util/Consts';
 
 /**
  * Benchmarking this provides a theoretical maximum
@@ -27,10 +28,10 @@ export class ManualEvaluator implements ExpressionEvaluator {
         if (typeof expr == 'string'){
             const term = fromString(expr)
             switch (term.termType) {
-                case 'Variable': {
+                case TT.Variable: {
                     return mapping.get(term.value) as Literal;
                 }
-                case 'Literal': {
+                case TT.Literal: {
                     return term as Literal;
                 }
             }
