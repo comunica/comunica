@@ -1,7 +1,6 @@
-import {ActorInit} from "@comunica/bus-init/lib/ActorInit";
+import {ActorInit, IActorOutputInit} from "@comunica/bus-init/lib/ActorInit";
 import {Bus} from "@comunica/core/lib/Bus";
 import {PassThrough} from "stream";
-import {IActorOutputInit} from "../../bus-init/lib/ActorInit";
 import {ActorInitHelloWorld} from "../lib/ActorInitHelloWorld";
 
 describe('ActorInitHelloWorld', () => {
