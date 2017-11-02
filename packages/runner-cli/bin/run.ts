@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
+import {IActorOutputInit} from "@comunica/bus-init/lib/ActorInit";
 import {Setup} from "@comunica/runner";
-import {IActorOutputInit} from "../../bus-init/lib/ActorInit";
 
 const argv = process.argv.slice(2);
 if (argv.length < 1 || /^--?h(elp)?$/.test(argv[0])) {

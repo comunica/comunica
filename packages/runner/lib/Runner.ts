@@ -1,8 +1,7 @@
-import {ActorInit, IActionInit} from "@comunica/bus-init/lib/ActorInit";
+import {ActorInit, IActionInit, IActorOutputInit} from "@comunica/bus-init/lib/ActorInit";
 import {Actor, IAction, IActorOutput, IActorTest} from "@comunica/core/lib/Actor";
 import {Bus, IActorReply} from "@comunica/core/lib/Bus";
 import * as _ from "lodash";
-import {IActorOutputInit} from "../../bus-init/lib/ActorInit";
 
 /**
  * A Runner is used to instantiate a comunica workflow.

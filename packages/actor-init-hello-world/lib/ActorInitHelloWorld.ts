@@ -1,7 +1,6 @@
-import {ActorInit, IActionInit} from "@comunica/bus-init/lib/ActorInit";
+import {ActorInit, IActionInit, IActorOutputInit} from "@comunica/bus-init/lib/ActorInit";
 import {IActorArgs, IActorTest} from "@comunica/core/lib/Actor";
 import {Duplex, PassThrough, Readable} from "stream";
-import {IActorOutputInit} from "../../bus-init/lib/ActorInit";
 
 /**
  * A Hello World actor that listens to on the 'init' bus.
