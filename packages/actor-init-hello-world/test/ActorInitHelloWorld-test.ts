@@ -1,5 +1,5 @@
-import {ActorInit, IActorOutputInit} from "@comunica/bus-init/lib/ActorInit";
-import {Bus} from "@comunica/core/lib/Bus";
+import {ActorInit, IActorOutputInit} from "@comunica/bus-init";
+import {Bus} from "@comunica/core";
 import {PassThrough} from "stream";
 import {ActorInitHelloWorld} from "../lib/ActorInitHelloWorld";
 

@@ -1,5 +1,5 @@
-import {Actor} from "@comunica/core/lib/Actor";
-import {Bus} from "@comunica/core/lib/Bus";
+import {Actor} from "@comunica/core";
+import {Bus} from "@comunica/core";
 import {Runner} from "../lib/Runner";
 
 describe('Runner', () => {

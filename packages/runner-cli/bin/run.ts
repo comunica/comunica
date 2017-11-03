@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import {IActorOutputInit} from "@comunica/bus-init/lib/ActorInit";
+import {IActorOutputInit} from "@comunica/bus-init";
 import {Setup} from "@comunica/runner";
 
 const argv = process.argv.slice(2);
