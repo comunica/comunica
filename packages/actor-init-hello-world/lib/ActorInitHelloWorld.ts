@@ -1,5 +1,5 @@
-import {ActorInit, IActionInit, IActorOutputInit} from "@comunica/bus-init/lib/ActorInit";
-import {IActorArgs, IActorTest} from "@comunica/core/lib/Actor";
+import {ActorInit, IActionInit, IActorOutputInit} from "@comunica/bus-init";
+import {IActorArgs, IActorTest} from "@comunica/core";
 import {Duplex, PassThrough, Readable} from "stream";
 
 /**

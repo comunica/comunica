@@ -1,6 +1,6 @@
-import {ActorInit, IActionInit, IActorOutputInit} from "@comunica/bus-init/lib/ActorInit";
-import {Actor, IAction, IActorOutput, IActorTest} from "@comunica/core/lib/Actor";
-import {Bus, IActorReply} from "@comunica/core/lib/Bus";
+import {ActorInit, IActionInit, IActorOutputInit} from "@comunica/bus-init";
+import {Actor, IAction, IActorOutput, IActorTest} from "@comunica/core";
+import {Bus, IActorReply} from "@comunica/core";
 import * as _ from "lodash";
 
 /**

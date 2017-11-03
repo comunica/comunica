@@ -1,5 +1,5 @@
 import {Actor, IAction, IActorOutput, IActorTest} from "@comunica/core";
-import {IActorArgs} from "@comunica/core/lib/Actor";
+import {IActorArgs} from "@comunica/core";
 import {Readable} from "stream";
 
 /**
