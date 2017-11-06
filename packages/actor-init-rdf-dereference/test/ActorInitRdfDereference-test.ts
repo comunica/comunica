@@ -1,6 +1,5 @@
-import {ActorRdfParseN3} from "@comunica/actor-rdf-parse-n3";
-import {ActorInit} from "@comunica/bus-init/lib/ActorInit";
-import {Bus} from "@comunica/core/lib/Bus";
+import {ActorInit} from "@comunica/bus-init";
+import {Bus} from "@comunica/core";
 import {MediatorRace} from "@comunica/mediator-race";
 import {PassThrough, Readable} from "stream";
 import {ActorInitRdfDereference} from "../lib/ActorInitRdfDereference";
