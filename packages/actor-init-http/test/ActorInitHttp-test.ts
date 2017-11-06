@@ -73,7 +73,12 @@ describe('ActorInitHttp', () => {
 
     beforeEach(() => {
       actor = new ActorInitHttp({ name: 'actor', bus, mediatorHttp: mediator });
-      busInit.subscribe(new ActorHttpNodeFetch({ name: 'actor-node-fetch', bus }));
+      const actorFetch: ActorHttpNodeFetch = new ActorHttpNodeFetch({ name: 'actor-node-fetch', bus });
+      (<any> actorFetch).run = (action) => Promise.resolve({
+        body: new PassThrough(),
+        status: action.url === 'https://www.google.com/' ? 200 : 404,
+      });
+      busInit.subscribe(actorFetch);
     });
 
     it('should test', () => {

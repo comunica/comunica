@@ -2,6 +2,10 @@ import {ActorHttp} from "@comunica/bus-http";
 import {Bus} from "@comunica/core";
 import {ActorHttpNodeFetch} from "../lib/ActorHttpNodeFetch";
 
+jest.mock('node-fetch', () => ({ default: (url, data) => {
+  return Promise.resolve({ status: url === 'https://www.google.com/' ? 200 : 404 });
+}}));
+
 describe('ActorHttpNodeFetch', () => {
   let bus;
 
@@ -51,8 +55,13 @@ describe('ActorHttpNodeFetch', () => {
       return expect(actor.test({ url: 'https://www.google.com/' })).resolves.toEqual({ time: Infinity });
     });
 
-    it('should run', () => {
+    it('should run on an existing URI', () => {
       return expect(actor.run({ url: 'https://www.google.com/' })).resolves.toMatchObject({ status: 200 });
+    });
+
+    it('should run on an non-existing URI', () => {
+      return expect(actor.run({ url: 'https://www.google.com/notfound' })).resolves
+        .toMatchObject({ status: 404 });
     });
   });
 });
