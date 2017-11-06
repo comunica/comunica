@@ -1,5 +1,4 @@
-import {IAction, IActorTest} from "@comunica/core";
-import {IActorArgs} from "@comunica/core/lib/Actor";
+import {IAction, IActorArgs, IActorTest} from "@comunica/core";
 import * as _ from "lodash";
 import {
   ActorRdfParse, IActionRdfParse, IActionRdfParseOrMediaType, IActorOutputRdfParseOrMediaType,

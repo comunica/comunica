@@ -1,5 +1,4 @@
-import {Actor, IAction, IActorOutput, IActorTest} from "@comunica/core";
-import {IActorArgs} from "@comunica/core/lib/Actor";
+import {Actor, IAction, IActorArgs, IActorOutput, IActorTest} from "@comunica/core";
 import * as RDF from "rdf-js";
 import {Readable} from "stream";
 
