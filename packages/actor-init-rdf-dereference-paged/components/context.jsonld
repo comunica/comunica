@@ -1,0 +1,13 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/components.jsonld",
+    {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
+      "cairdp": "npmd:@comunica/actor-init-rdf-dereference-paged/",
+
+      "ActorInitRdfDereferencePaged": "cairdp:Actor/Init/RdfDereferencePaged",
+      "mediatorRdfDereferencePaged": "cairdp:mediatorRdfDereferencePaged",
+      "url": "cairdp:url"
+    }
+  ]
+}
