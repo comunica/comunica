@@ -6,6 +6,17 @@ import {Setup} from "../lib/Setup";
 describe('Setup', () => {
 
   describe('The Setup module', () => {
+
+    beforeEach(() => {
+      // Mock Loader
+      (<any> Loader) = jest.fn(() => {
+        return {
+          instantiateFromUrl: () => Promise.resolve({ run: jest.fn() }),
+          registerAvailableModuleResources: jest.fn(),
+        };
+      });
+    });
+
     it('should not be a function', () => {
       expect(Setup).toBeInstanceOf(Function);
     });
@@ -21,14 +32,6 @@ describe('Setup', () => {
     it('should allow \'preparePromises\' to be called only once when running \'run\'', () => {
       const spy = jest.spyOn((<any> Setup), 'preparePromises');
 
-      // Mock Loader
-      (<any> Loader) = jest.fn(() => {
-        return {
-          instantiateFromUrl: () => Promise.resolve({ run: jest.fn() }),
-          registerAvailableModuleResources: jest.fn(),
-        };
-      });
-
       Setup.run('', { argv: [], env: {}, stdin: new Readable() });
       Setup.run('', { argv: [], env: {}, stdin: new Readable() });
       Setup.run('', { argv: [], env: {}, stdin: new Readable() });
@@ -40,6 +43,14 @@ describe('Setup', () => {
 
     it('should have a \'preparePromises\' function', () => {
       expect((<any> Setup).preparePromises).toBeInstanceOf(Function);
+    });
+
+    it('should allow \'run\' to be called without optional arguments', () => {
+      Setup.run('', { argv: [], env: {}, stdin: new Readable() });
+    });
+
+    it('should allow \'run\' to be called with optional arguments', () => {
+      Setup.run('', { argv: [], env: {}, stdin: new Readable() }, 'myuri', {});
     });
 
     it('should modify Promise to be a Bluebird promise after calling \'preparePromises\'', () => {
