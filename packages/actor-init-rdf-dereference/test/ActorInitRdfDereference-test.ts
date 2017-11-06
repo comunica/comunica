@@ -71,7 +71,7 @@ describe('ActorInitRdfDereference', () => {
     });
 
     it('should test', () => {
-      return expect(actor.test({ argv: [], env: {}, stdin: new PassThrough() })).resolves.toBe(null);
+      return expect(actor.test({ argv: [], env: {}, stdin: new PassThrough() })).resolves.toBeTruthy();
     });
 
     it('should run with URL from argv', () => {

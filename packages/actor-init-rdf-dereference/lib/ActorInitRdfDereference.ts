@@ -24,7 +24,7 @@ export class ActorInitRdfDereference extends ActorInit implements IActorInitRdfP
   }
 
   public async test(action: IActionInit): Promise<IActorTest> {
-    return null;
+    return true;
   }
 
   public async run(action: IActionInit): Promise<IActorOutputInit> {
