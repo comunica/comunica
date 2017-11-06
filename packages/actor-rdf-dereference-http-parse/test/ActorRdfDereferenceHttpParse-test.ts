@@ -1,5 +1,5 @@
 import {ActorRdfDereference} from "@comunica/bus-rdf-dereference";
-import {Bus} from "@comunica/core/lib/Bus";
+import {Bus} from "@comunica/core";
 import {MediatorRace} from "@comunica/mediator-race";
 import {ActorRdfDereferenceHttpParse} from "../lib/ActorRdfDereferenceHttpParse";
 

@@ -2,8 +2,7 @@ import {IActionHttp, IActorHttpOutput} from "@comunica/bus-http";
 import {ActorRdfDereference, IActionRdfDereference, IActorRdfDereferenceOutput} from "@comunica/bus-rdf-dereference";
 import {IActionRdfParse, IActionRdfParseOrMediaType, IActorOutputRdfParseOrMediaType,
   IActorRdfParseOutput} from "@comunica/bus-rdf-parse";
-import {Actor, IActorTest, Mediator} from "@comunica/core";
-import {IActorArgs} from "@comunica/core/lib/Actor";
+import {Actor, IActorArgs, IActorTest, Mediator} from "@comunica/core";
 
 /**
  * An actor that listens to on the 'rdf-dereference' bus.
