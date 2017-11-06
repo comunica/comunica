@@ -1,4 +1,4 @@
-# Comunica RDF Parse Init Actor
+# Comunica RDF Dereference Init Actor
 
 An example init actor for Comunica that triggers an RDF Dereference event for the given URL.
 
