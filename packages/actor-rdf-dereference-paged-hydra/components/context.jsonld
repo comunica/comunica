@@ -1,0 +1,14 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/components.jsonld",
+    {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
+      "cardph": "npmd:@comunica/actor-rdf-dereference-paged-hydra/",
+
+      "ActorRdfDereferencePagedHydra": "cardph:Actor/RdfDereferencePaged/Hydra",
+      "mediatorRdfDereference": "cardph:mediatorRdfDereference",
+      "mediatorMetadata": "cardph:mediatorMetadata",
+      "mediatorMetadataExtract": "cardph:mediatorMetadataExtract"
+    }
+  ]
+}
