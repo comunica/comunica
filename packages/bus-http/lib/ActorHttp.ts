@@ -1,6 +1,4 @@
-import {Actor, IAction, IActorOutput, IActorTest} from "@comunica/core";
-import {IActorArgs} from "@comunica/core/lib/Actor";
-import {IMediatorTypeTime} from "@comunica/mediatortype-time";
+import {Actor, IAction, IActorArgs, IActorOutput, IActorTest} from "@comunica/core";
 import {Agent} from "http";
 
 /**

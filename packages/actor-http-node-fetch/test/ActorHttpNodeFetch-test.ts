@@ -1,5 +1,5 @@
-import {ActorHttp} from "@comunica/bus-http/lib/ActorHttp";
-import {Bus} from "@comunica/core/lib/Bus";
+import {ActorHttp} from "@comunica/bus-http";
+import {Bus} from "@comunica/core";
 import {ActorHttpNodeFetch} from "../lib/ActorHttpNodeFetch";
 
 describe('ActorHttpNodeFetch', () => {
