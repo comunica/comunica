@@ -1,5 +1,5 @@
-import {ActorRdfParseFixedMediaTypes, IActionRdfParse, IActorRdfParseOutput} from "@comunica/bus-rdf-parse";
-import {IActorRdfParseFixedMediaTypesArgs} from "../../bus-rdf-parse/lib/ActorRdfParseFixedMediaTypes";
+import {ActorRdfParseFixedMediaTypes, IActionRdfParse, IActorRdfParseFixedMediaTypesArgs,
+  IActorRdfParseOutput} from "@comunica/bus-rdf-parse";
 // TODO: Temporarily use rdf-parser-n3, until N3 is ported to RDFJS
 const N3Parser: any = require('rdf-parser-n3'); // tslint:disable-line:no-var-requires
 

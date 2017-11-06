@@ -1,6 +1,4 @@
-import {Actor, IAction, IActorOutput, IActorTest} from "@comunica/core";
-import {Bus} from "@comunica/core/lib/Bus";
-import {Mediator} from "@comunica/core/lib/Mediator";
+import {Actor, Bus, IAction, IActorOutput, IActorTest} from "@comunica/core";
 import {MediatorRace} from "../lib/MediatorRace";
 
 describe('MediatorRace', () => {

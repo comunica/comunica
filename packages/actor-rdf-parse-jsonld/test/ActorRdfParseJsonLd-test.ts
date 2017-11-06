@@ -1,5 +1,5 @@
 import {ActorRdfParse} from "@comunica/bus-rdf-parse";
-import {Bus} from "@comunica/core/lib/Bus";
+import {Bus} from "@comunica/core";
 import * as RDF from "rdf-js";
 import {Readable} from "stream";
 import {ActorRdfParseJsonLd} from "../lib/ActorRdfParseJsonLd";
