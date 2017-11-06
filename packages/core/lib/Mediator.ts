@@ -47,6 +47,26 @@ export abstract class Mediator<A extends Actor<I, T, O>,
   }
 
   /**
+   * Publish the given action in the bus.
+   *
+   * This will send test the action on all actors in the bus.
+   * All actor replies will be returned.
+   *
+   * @param {I} action The action to mediate for.
+   * @return {IActorReply<A extends Actor<I, T, O>, I extends IAction, T extends IActorTest, O extends IActorOutput>[]}
+   * The list of actor replies.
+   */
+  public publish(action: I): IActorReply<A, I, T, O>[] {
+    // Test all actors in the bus
+    const actors: IActorReply<A, I, T, O>[] = this.bus.publish(action);
+    if (!actors.length) {
+      throw new Error('No actors are able to reply to the message in the bus '
+        + this.bus.name + ': ' + inspect(action));
+    }
+    return actors;
+  }
+
+  /**
    * Mediate for the given action to get an actor.
    *
    * This will send test the action on all actors in the bus.
@@ -56,15 +76,8 @@ export abstract class Mediator<A extends Actor<I, T, O>,
    * @return {Promise<O extends IActorOutput>} A promise that resolves to the _best_ actor.
    */
   public async mediateActor(action: I): Promise<A> {
-    // Test all actors in the bus
-    const actors: IActorReply<A, I, T, O>[] = this.bus.publish(action);
-    if (!actors.length) {
-      throw new Error('No actors are able to reply to the message in the bus '
-        + this.bus.name + ': ' + inspect(action));
-    }
-
     // Mediate to one actor and run that actor.
-    return await this.mediateWith(action, actors);
+    return await this.mediateWith(action, this.publish(action));
   }
 
   /**
