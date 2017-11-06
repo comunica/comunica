@@ -55,7 +55,7 @@
     "mapCoverage": true
   },
   "scripts": {
-    "test": "node \"../../node_modules/jest/bin/jest.js\" --no-cache ${1}",
+    "test": "node \"../../node_modules/jest/bin/jest.js\" ${1}",
     "test-watch": "node \"../../node_modules/jest/bin/jest.js\" ${1} --watch",
     "lint": "node \"../../node_modules/tslint/bin/tslint\" lib/**/*.ts test/**/*.ts --exclude '**/*.d.ts'",
     "build": "node \"../../node_modules/typescript/bin/tsc\"",

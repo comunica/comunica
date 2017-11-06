@@ -71,7 +71,7 @@ npm manifest:
       "mapCoverage": true
     },
     "scripts": {
-      "test": "../../node_modules/.bin/jest --no-cache ${1}",
+      "test": "../../node_modules/.bin/jest ${1}",
       "test-watch": "../../node_modules/.bin/jest ${1} --watch",
       "lint": "../../node_modules/.bin/tslint lib/**/*.ts test/**/*.ts --exclude '**/*.d.ts'",
       "build": "../../node_modules/.bin/tsc",
