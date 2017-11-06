@@ -1,0 +1,56 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-dereference-paged-hydra.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-rdf-dereference-paged.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-rdf-dereference-paged-hydra",
+  "components": [
+    {
+      "@id": "cardph:Actor/RdfDereferencePaged/Hydra",
+      "@type": "Class",
+      "extends": "cbrdp:Actor/RdfDereferencePaged",
+      "requireElement": "ActorRdfDereferencePagedHydra",
+      "comment": "A comunica Hydra RDF Dereference Paged Actor.",
+      "parameters": [
+        {
+          "@id": "cardph:mediatorRdfDereference",
+          "comment": "The RDF Dereference mediator",
+          "required": true,
+          "unique": true
+        },
+        {
+          "@id": "cardph:mediatorMetadata",
+          "comment": "The RDF Metadata mediator",
+          "required": true,
+          "unique": true
+        },
+        {
+          "@id": "cardph:mediatorMetadataExtract",
+          "comment": "The RDF Metadata Extract mediator",
+          "required": true,
+          "unique": true
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "cardph:Actor/RdfDereferencePaged/Hydra/constructorArgumentsObject",
+          "extends": "cbrdp:Actor/RdfDereferencePaged/constructorArgumentsObject",
+          "fields": [
+            {
+              "keyRaw": "mediatorRdfDereference",
+              "value": "cardph:mediatorRdfDereference"
+            },
+            {
+              "keyRaw": "mediatorMetadata",
+              "value": "cardph:mediatorMetadata"
+            },
+            {
+              "keyRaw": "mediatorMetadataExtract",
+              "value": "cardph:mediatorMetadataExtract"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

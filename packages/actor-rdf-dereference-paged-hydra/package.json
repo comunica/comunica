@@ -1,0 +1,74 @@
+{
+  "name": "@comunica/actor-rdf-dereference-paged-hydra",
+  "version": "0.0.1",
+  "description": "A hydra rdf-dereference-paged actor",
+  "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-dereference-paged-hydra",
+  "lsd:components": "components/components.jsonld",
+  "lsd:contexts": {
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-dereference-paged-hydra.jsonld": "components/context.jsonld"
+  },
+  "main": "index.js",
+  "typings": "index",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/comunica/actor-rdf-dereference-paged-hydra.git"
+  },
+  "keywords": [
+    "comunica",
+    "actor",
+    "rdf-dereference-paged",
+    "hydra"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/comunica/actor-rdf-dereference-paged-hydra/issues"
+  },
+  "homepage": "https://github.com/comunica/actor-rdf-dereference-paged-hydra#readme",
+  "files": [
+    "components",
+    "lib/**/*.d.ts",
+    "lib/**/*.js",
+    "index.d.ts",
+    "index.js"
+  ],
+  "dependencies": {
+    "asynciterator": "1.1.0"
+  },
+  "peerDependencies": {
+    "@comunica/core": "^0.0.1",
+    "@comunica/bus-rdf-dereference-paged": "^0.0.1",
+    "@comunica/bus-rdf-dereference": "^0.0.1",
+    "@comunica/bus-rdf-metadata": "^0.0.1",
+    "@comunica/bus-rdf-metadata-extract": "^0.0.1"
+  },
+  "devDependencies": {
+    "@comunica/core": "^0.0.1",
+    "@comunica/bus-rdf-dereference-paged": "^0.0.1",
+    "@comunica/bus-rdf-dereference": "^0.0.1",
+    "@comunica/bus-rdf-metadata": "^0.0.1",
+    "@comunica/bus-rdf-metadata-extract": "^0.0.1"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.ts$": "<rootDir>/../../node_modules/ts-jest/preprocessor.js"
+    },
+    "transformIgnorePatterns": [
+      "[/\\\\]node_modules[/\\\\].+\\.(js|jsx)$"
+    ],
+    "testRegex": "(/test/.*|(\\.|/)(test|spec))\\.ts$",
+    "moduleFileExtensions": [
+      "ts",
+      "js"
+    ],
+    "collectCoverage": true,
+    "mapCoverage": true
+  },
+  "scripts": {
+    "test": "node \"../../node_modules/jest/bin/jest.js\" --no-cache ${1}",
+    "test-watch": "node \"../../node_modules/jest/bin/jest.js\" ${1} --watch",
+    "lint": "node \"../../node_modules/tslint/bin/tslint\" lib/**/*.ts test/**/*.ts --exclude '**/*.d.ts'",
+    "build": "node \"../../node_modules/typescript/bin/tsc\"",
+    "validate": "npm ls",
+    "prepare": "npm run build"
+  }
+}
