@@ -55,10 +55,10 @@
     "mapCoverage": true
   },
   "scripts": {
-    "test": "../../node_modules/.bin/jest --no-cache ${1}",
-    "test-watch": "../../node_modules/.bin/jest ${1} --watch",
-    "lint": "../../node_modules/.bin/tslint lib/**/*.ts test/**/*.ts --exclude '**/*.d.ts'",
-    "build": "../../node_modules/.bin/tsc",
+    "test": "node \"../../node_modules/jest/bin/jest.js\" --no-cache ${1}",
+    "test-watch": "node \"../../node_modules/jest/bin/jest.js\" ${1} --watch",
+    "lint": "node \"../../node_modules/tslint/bin/tslint\" lib/**/*.ts test/**/*.ts --exclude '**/*.d.ts'",
+    "build": "node \"../../node_modules/typescript/bin/tsc\"",
     "validate": "npm ls",
     "prepare": "npm run build"
   }
