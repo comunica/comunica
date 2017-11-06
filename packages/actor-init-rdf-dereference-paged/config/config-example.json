@@ -1,0 +1,113 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-init-rdf-dereference-paged.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-http.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-http-node-fetch.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-rdf-parse.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-parse-n3.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-parse-jsonld.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-rdf-dereference.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-dereference-http-parse.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-rdf-metadata-extract.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-metadata-extract-hydra-controls.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-metadata-extract-hydra-count.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-rdf-metadata.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-metadata-primary-topic.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-metadata-triple-predicate.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-rdf-dereference-paged.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-dereference-paged-hydra.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-mediator-combine-union.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-mediator-number.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-mediator-race.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-runner.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-core.jsonld"
+  ],
+  "@graph": [
+    {
+      "@id": "urn:comunica:my",
+      "@type": "Runner",
+      "actors": [
+        {
+          "@id": "ex:myInit",
+          "@type": "ActorInitRdfDereferencePaged",
+          "mediatorRdfDereferencePaged": {
+            "@id": "ex:mediatorRdfDereferencePaged",
+            "@type": "MediatorRace",
+            "cc:Mediator/bus": { "@id": "cbrdp:Bus/RdfDereferencePaged" }
+          },
+          "cairdp:url": "https://fragments.linkedsoftwaredependencies.org/npm"
+        },
+
+        {
+          "@id": "ex:myRdfPagedDereferencer",
+          "@type": "ActorRdfDereferencePagedHydra",
+          "cardph:mediatorRdfDereference": {
+            "@id": "ex:mediatorRdfDereference",
+            "@type": "MediatorRace",
+            "cc:Mediator/bus": { "@id": "cbrd:Bus/RdfDereference" }
+          },
+          "cardph:mediatorMetadata": {
+            "@id": "ex:mediatorMetadata",
+            "@type": "MediatorRace",
+            "cc:Mediator/bus": { "@id": "cbrm:Bus/RdfMetadata" }
+          },
+          "cardph:mediatorMetadataExtract": {
+            "@id": "ex:mediatorMetadataExtract",
+            "@type": "MediatorCombineUnion",
+            "cc:Mediator/bus": { "@id": "cbrme:Bus/RdfMetadataExtract" },
+            "cmcu:Mediator/CombineUnion/field": "metadata"
+          }
+        },
+
+        {
+          "@id": "ex:myRdfDereferencer",
+          "@type": "ActorRdfDereferenceHttpParse",
+          "mediatorHttp": {
+            "@id": "ex:mediatorHttp",
+            "@type": "MediatorNumberMin",
+            "field": "time",
+            "cc:Mediator/bus": { "@id": "cbh:Bus/Http" }
+          },
+          "mediatorRdfParse": {
+            "@id": "ex:mediatorRdfParse",
+            "@type": "MediatorRace",
+            "cc:Mediator/bus": { "@id": "cbrp:Bus/RdfParse" }
+          }
+        },
+
+        {
+          "@id": "ex:myHttpFetcher",
+          "@type": "ActorHttpNodeFetch"
+        },
+
+        {
+          "@id": "ex:myRdfParserN3",
+          "@type": "ActorRdfParseN3"
+        },
+        {
+          "@id": "ex:myRdfParserJsonLd",
+          "@type": "ActorRdfParseJsonLd",
+          "priorityScale": 0.9
+        },
+
+        {
+          "@id": "ex:myRdfMetadataPrimaryTopic",
+          "@type": "ActorRdfMetadataPrimaryTopic"
+        },
+        {
+          "@id": "ex:myRdfMetadataTriplePredicate",
+          "@type": "ActorRdfMetadataTriplePredicate"
+        },
+
+        {
+          "@id": "ex:myRdfMetadataExtractHydraControls",
+          "@type": "ActorRdfMetadataExtractHydraControls"
+        },
+        {
+          "@id": "ex:myRdfMetadataExtractHydraCount",
+          "@type": "ActorRdfMetadataExtractHydraCount"
+        }
+      ]
+    }
+  ]
+}
