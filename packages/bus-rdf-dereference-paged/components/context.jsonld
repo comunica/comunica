@@ -1,0 +1,11 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/comunica-core.jsonld",
+    {
+      "cbrdp": "npmd:@comunica/bus-rdf-dereference-paged/",
+
+      "BusRdfDereferencePaged": "cbrdp:Bus/RdfDereferencePaged",
+      "ActorRdfDereferencePaged": "cbrdp:Actor/RdfDereferencePaged"
+    }
+  ]
+}

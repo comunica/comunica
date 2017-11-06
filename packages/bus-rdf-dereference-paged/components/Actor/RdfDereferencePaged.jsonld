@@ -1,0 +1,32 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-rdf-dereference-paged.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-core.jsonld"
+  ],
+  "@id": "npmd:@comunica/bus-rdf-dereference-paged",
+  "components": [
+    {
+      "@id": "cbrdp:Actor/RdfDereferencePaged",
+      "@type": "AbstractClass",
+      "extends": "Actor",
+      "requireElement": "ActorRdfDereferencePaged",
+      "comment": "A comunica actor for rdf-dereference-paged events.",
+      "parameters": [
+        {
+          "@id": "cc:Actor/bus",
+          "defaultScoped": {
+            "defaultScope": "cbrdp:Actor/RdfDereferencePaged",
+            "defaultScopedValue": { "@id": "cbrdp:Bus/RdfDereferencePaged" }
+          }
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "cbrdp:Actor/RdfDereferencePaged/constructorArgumentsObject",
+          "@type": "https://linkedsoftwaredependencies.org/vocabularies/object-oriented#Object",
+          "extends": "cc:Actor/constructorArgumentsObject"
+        }
+      ]
+    }
+  ]
+}
