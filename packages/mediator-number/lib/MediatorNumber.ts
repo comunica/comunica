@@ -1,6 +1,4 @@
-import {IActorReply} from "@comunica/core";
-import {Actor, IAction, IActorOutput, IActorTest} from "@comunica/core/lib/Actor";
-import {IMediatorArgs, Mediator} from "@comunica/core/lib/Mediator";
+import {Actor, IAction, IActorOutput, IActorReply, IActorTest, IMediatorArgs, Mediator} from "@comunica/core";
 import * as _ from "lodash";
 
 /**

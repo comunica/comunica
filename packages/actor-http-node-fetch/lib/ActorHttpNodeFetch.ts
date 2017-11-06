@@ -1,7 +1,7 @@
-import {ActorHttp, IActionHttp, IActorHttpOutput} from "@comunica/bus-http/lib/ActorHttp";
-import {IActorArgs} from "@comunica/core/lib/Actor";
+import {ActorHttp, IActionHttp, IActorHttpOutput} from "@comunica/bus-http";
+import {IActorArgs} from "@comunica/core";
+import {IMediatorTypeTime} from "@comunica/mediatortype-time";
 import fetch from "node-fetch";
-import {IMediatorTypeTime} from "../../mediatortype-time/lib/MediatorTypeTime";
 
 /**
  * A Hello World actor that listens to on the 'init' bus.
