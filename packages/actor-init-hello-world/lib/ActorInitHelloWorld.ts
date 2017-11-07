@@ -3,7 +3,7 @@ import {IActorArgs, IActorTest} from "@comunica/core";
 import {Duplex, PassThrough, Readable} from "stream";
 
 /**
- * A Hello World actor that listens to on the 'init' bus.
+ * A Hello World actor that listens on the 'init' bus.
  *
  * It takes an optional `hello` parameter, which defaults to 'Hello'.
  * When run, it will print the `hello` parameter to the console,

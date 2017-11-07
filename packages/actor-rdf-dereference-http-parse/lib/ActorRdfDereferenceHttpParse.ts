@@ -5,7 +5,7 @@ import {IActionRdfParse, IActionRdfParseOrMediaType, IActorOutputRdfParseOrMedia
 import {Actor, IActorArgs, IActorTest, Mediator} from "@comunica/core";
 
 /**
- * An actor that listens to on the 'rdf-dereference' bus.
+ * An actor that listens on the 'rdf-dereference' bus.
  *
  * It starts by grabbing all available RDF media types from the RDF parse bus.
  * After that, it resolves the URL using the HTTP bus using an accept header compiled from the available media types.

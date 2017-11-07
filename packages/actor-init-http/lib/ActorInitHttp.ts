@@ -4,7 +4,7 @@ import {Actor, IActorArgs, IActorTest, Mediator} from "@comunica/core";
 import {PassThrough} from "stream";
 
 /**
- * A Hello World actor that listens to on the 'init' bus.
+ * A Hello World actor that listens on the 'init' bus.
  *
  * It takes an optional `hello` parameter, which defaults to 'Hello'.
  * When run, it will print the `hello` parameter to the console,

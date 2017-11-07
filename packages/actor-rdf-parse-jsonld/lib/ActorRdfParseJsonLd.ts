@@ -3,7 +3,7 @@ import {ActorRdfParseFixedMediaTypes, IActionRdfParse,
 const JsonLdParser: any = require('rdf-parser-jsonld'); // tslint:disable-line:no-var-requires
 
 /**
- * A JSON-LD RDF Parse actor that listens to on the 'rdf-parse' bus.
+ * A JSON-LD RDF Parse actor that listens on the 'rdf-parse' bus.
  *
  * It is able to parse JSON-LD-based RDF serializations and announce the presence of them by media type.
  */

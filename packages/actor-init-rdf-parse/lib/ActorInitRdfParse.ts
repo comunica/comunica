@@ -5,7 +5,7 @@ import {Actor, IActorArgs, IActorTest, Mediator} from "@comunica/core";
 import {PassThrough, Readable} from "stream";
 
 /**
- * An RDF Parse actor that listens to on the 'init' bus.
+ * An RDF Parse actor that listens on the 'init' bus.
  *
  * It requires a mediator that is defined over the 'rdf-parse' bus,
  * and a mediaType that identifies the RDF serialization.

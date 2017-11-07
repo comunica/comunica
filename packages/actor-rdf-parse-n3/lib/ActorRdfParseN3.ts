@@ -4,7 +4,7 @@ import {ActorRdfParseFixedMediaTypes, IActionRdfParse, IActorRdfParseFixedMediaT
 const N3Parser: any = require('rdf-parser-n3'); // tslint:disable-line:no-var-requires
 
 /**
- * An N3 RDF Parse actor that listens to on the 'rdf-parse' bus.
+ * An N3 RDF Parse actor that listens on the 'rdf-parse' bus.
  *
  * It is able to parse N3-based RDF serializations and announce the presence of them by media type.
  */
