@@ -1,0 +1,45 @@
+{
+  "name": "@comunica/bus-rdf-resolve-quad-pattern",
+  "version": "0.0.1",
+  "description": "A comunica bus for resolving quad patterns to quad streams.",
+  "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-resolve-quad-pattern",
+  "lsd:components": "components/components.jsonld",
+  "lsd:contexts": {
+    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-rdf-resolve-quad-pattern.jsonld": "components/context.jsonld"
+  },
+  "main": "index.js",
+  "typings": "index",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/comunica/bus-rdf-resolve-quad-pattern.git"
+  },
+  "keywords": [
+    "comunica",
+    "bus",
+    "rdf-resolve-quad-pattern"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/comunica/bus-rdf-resolve-quad-pattern/issues"
+  },
+  "homepage": "https://github.com/comunica/bus-rdf-resolve-quad-pattern#readme",
+  "files": [
+    "components",
+    "lib/**/*.d.ts",
+    "lib/**/*.js",
+    "index.d.ts",
+    "index.js"
+  ],
+  "peerDependencies": {
+    "@comunica/core": "^0.0.1"
+  },
+  "devDependencies": {
+    "@comunica/core": "^0.0.1"
+  },
+  "scripts": {
+    "lint": "node \"../../node_modules/tslint/bin/tslint\" lib/**/*.ts test/**/*.ts --exclude '**/*.d.ts'",
+    "build": "node \"../../node_modules/typescript/bin/tsc\"",
+    "validate": "npm ls",
+    "prepare": "npm run build"
+  }
+}
