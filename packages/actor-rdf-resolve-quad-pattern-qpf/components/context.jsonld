@@ -1,0 +1,15 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/components.jsonld",
+    {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
+      "carrqpq": "npmd:@comunica/actor-rdf-resolve-quad-pattern-qpf/",
+
+      "ActorRdfResolveQuadPatternQpf": "carrqpq:Actor/RdfResolveQuadPattern/Qpf",
+      "subjectUri": "carrqpq:Actor/RdfResolveQuadPattern/Qpf/subjectUri",
+      "predicateUri": "carrqpq:Actor/RdfResolveQuadPattern/Qpf/predicateUri",
+      "objectUri": "carrqpq:Actor/RdfResolveQuadPattern/Qpf/objectUri",
+      "graphUri": "carrqpq:Actor/RdfResolveQuadPattern/Qpf/graphUri"
+    }
+  ]
+}
