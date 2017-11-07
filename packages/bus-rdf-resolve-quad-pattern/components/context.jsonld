@@ -1,0 +1,11 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/comunica-core.jsonld",
+    {
+      "cbrrqp": "npmd:@comunica/bus-rdf-resolve-quad-pattern/",
+
+      "BusRdfResolveQuadPattern": "cbrrqp:Bus/RdfResolveQuadPattern",
+      "ActorRdfResolveQuadPattern": "cbrrqp:Actor/RdfResolveQuadPattern"
+    }
+  ]
+}
