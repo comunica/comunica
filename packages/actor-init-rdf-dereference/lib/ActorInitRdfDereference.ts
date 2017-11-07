@@ -36,12 +36,12 @@ export class ActorInitRdfDereference extends ActorInit implements IActorInitRdfP
     }
     const result: IActorRdfParseOutput = await this.mediatorRdfDereference.mediate(dereference);
 
-    result.quads.on('data', (quad) => readable.push(JSON.stringify(quad) + '\n'));
-    result.quads.on('end', () => readable.push(null));
     const readable = new Readable();
     readable._read = () => {
       return;
     };
+    result.quads.on('data', (quad) => readable.push(JSON.stringify(quad) + '\n'));
+    result.quads.on('end', () => readable.push(null));
 
     return { stdout: readable };
   }
