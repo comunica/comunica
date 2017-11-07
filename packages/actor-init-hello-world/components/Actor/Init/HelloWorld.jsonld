@@ -10,7 +10,7 @@
       "@type": "Class",
       "extends": "cbi:Actor/Init",
       "requireElement": "ActorInitHelloWorld",
-      "comment": "A Hello World actor that listens to on the 'init' bus.",
+      "comment": "A Hello World actor that listens on the 'init' bus.",
       "parameters": [
         {
           "@id": "chw:hello",

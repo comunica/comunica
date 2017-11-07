@@ -11,7 +11,7 @@
       "@type": "Class",
       "extends": "cbi:Actor/Init",
       "requireElement": "ActorInitHttp",
-      "comment": "An actor that listens to on the 'init' bus that triggers an HTTP event.",
+      "comment": "An actor that listens on the 'init' bus that triggers an HTTP event.",
       "parameters": [
         {
           "@id": "cih:mediatorHttp",
