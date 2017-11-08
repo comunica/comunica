@@ -1,7 +1,6 @@
 import { Options } from 'Benchmark';
 import { TRUE, TRUE_STR, FALSE, FALSE_STR, EVB_ERR_STR } from '../../util/Consts';
 import { evaluate } from './Evaluation';
-import { Literal } from 'rdf-data-model';
 
 export function testBinOp(
     op: string,

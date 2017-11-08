@@ -12,8 +12,8 @@ const argMapping = {
     'bbb': '"bbb"^^xsd:string'
 }
 const resultMapping = {
-    'true': TRUE,
-    'false': FALSE
+    'true': true,
+    'false': false
 }
 
 // Default error handling for boolean operators

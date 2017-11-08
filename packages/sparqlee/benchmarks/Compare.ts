@@ -1,14 +1,16 @@
 import { Suite } from 'benchmark';
 import { EmptyEvaluator } from './EvalEmpty';
 import { ManualEvaluator } from './EvalManual';
-import { SyncEvaluator } from './EvalSync';
+import { SyncEvaluator } from '../src/evaluator/EvalSync';
 import { example1 } from './Examples';
 
 const suite = new Suite();
 
+console.log(JSON.stringify(example1.expression, null, 4));
+
 suite
     .add('Empty', () => {
-        const evaluator = new SyncEvaluator(example1.expression);
+        const evaluator = new EmptyEvaluator(example1.expression);
         evaluator.evaluate(example1.mapping);
     })
     .add('Manual', () => {

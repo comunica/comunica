@@ -10,8 +10,8 @@ const argMapping = {
     'gener': '"13"^^xsd:integer', // Generic correct numeric value
 }
 const resultMapping = {
-    'true': TRUE,
-    'false': FALSE
+    'true': true,
+    'false': false
 }
 
 // Default error handling for boolean operators

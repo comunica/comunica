@@ -1,5 +1,5 @@
 import { Expression, OperationExpression } from 'sparqljs';
-import { Literal } from 'rdf-js';
+import { Literal, Term } from 'rdf-js';
 import fromString from 'termterm.js';
 import * as RDF from 'rdf-data-model';
 
@@ -19,20 +19,20 @@ export class ManualEvaluator implements ExpressionEvaluator {
         this.expr = expr;
     }
 
-    evaluate(mapping: Mapping) :Literal {
-        return this.evalExpr(this.expr, mapping);
+    evaluate(mapping: Mapping) :boolean {
+        return this.evalExpr(this.expr, mapping).value == "true";
     }
 
-    evalExpr(expr: Expression, mapping: Mapping) :Literal {
+    evalExpr(expr: Expression, mapping: Mapping) :Term {
         // Term
         if (typeof expr == 'string'){
             const term = fromString(expr)
             switch (term.termType) {
                 case TT.Variable: {
-                    return mapping.get(term.value) as Literal;
+                    return mapping.get(term.value);
                 }
                 case TT.Literal: {
-                    return term as Literal;
+                    return term;
                 }
             }
         

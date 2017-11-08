@@ -15,8 +15,8 @@ const argMapping = {
     'edge2': '"2000-01-01T00:00:00"^^xsd:dateTime',
 }
 const resultMapping = {
-    'true': TRUE,
-    'false': FALSE
+    'true': true,
+    'false': false
 }
 
 // Default error handling for boolean operators

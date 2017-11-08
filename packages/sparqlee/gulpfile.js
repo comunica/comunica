@@ -6,12 +6,12 @@ var sourcemaps = require('gulp-sourcemaps');
 
 gulp.task('clean:output', function () {
   return del([
-    'dist/'
+    'dist/*'
   ]);
 });
 
-gulp.task('watch', function(){
-  gulp.watch(['**/*.ts', '!**/dist'], ['default'], { ignoreInitial: false });
+gulp.task('watch', ['compile'], function(){
+  gulp.watch(['benchmarks/**/*.ts', 'src/**/*.ts', '!**/dist/*'], ['compile']);
 });
 
 gulp.task('compile', ['clean:output'], function(){

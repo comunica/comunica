@@ -10,7 +10,7 @@ export function createExpression(str: string): Expression {
     return expr;
 }
 
-export function evaluate(str: string, mappings = new Map()): Literal {
+export function evaluate(str: string, mappings = new Map()): boolean {
     let evaluator = new AsyncEvaluator(createExpression(str));
     return evaluator.evaluate(mappings);
 }

@@ -14,7 +14,7 @@ export class EmptyEvaluator implements ExpressionEvaluator {
         this.expr = expr;
     }
 
-    evaluate(mapping: Mapping) :Literal {
+    evaluate(mapping: Mapping) :boolean {
         return null;
     }
 }
