@@ -3,7 +3,8 @@ import { Term, Literal, BooleanLiteral } from './Terms';
 
 export interface Operation extends Expression {
     operator: Operator,
-    args: Expression[]
+    args: Expression[],
+    apply(args: Term[]): Term
 }
 
 export enum Operator {
@@ -24,14 +25,17 @@ export enum Operator {
     SUBTACTION
 }
 
-export abstract class BaseOperation {
+export abstract class BaseOperation implements Operation {
     abstract operator: Operator;
+
     exprType = ExpressionType.Operation;
     args: Expression[];
 
     constructor(args: Expression[]) {
         this.args = args
     }
+
+    abstract apply(args: Term[]): Term
 }
 
 export abstract class BinaryOperation extends BaseOperation {
@@ -47,7 +51,11 @@ export abstract class BinaryOperation extends BaseOperation {
         this.right = args[1];
     }
 
-    abstract apply(left: Term, right: Term): Term;
+    apply(args: Term[]): Term {
+        return this.applyBin(args[0], args[1]);
+    }
+
+    abstract applyBin(left: Term, right: Term): Term;
 }
 
 export abstract class UnaryOperation extends BaseOperation {
@@ -61,14 +69,18 @@ export abstract class UnaryOperation extends BaseOperation {
         this.arg = args[0];
     }
 
-    abstract apply(arg: Term): Term;
+    apply(args: Term[]): Term {
+        return this.applyUn(args[0]);
+    }
+
+    abstract applyUn(arg: Term): Term;
 }
 
 
 export class And extends BinaryOperation {
     operator = Operator.AND;
 
-    apply(left: Term, right: Term): BooleanLiteral {
+    applyBin(left: Term, right: Term): BooleanLiteral {
         let result = left.toEBV() && right.toEBV();
         return new BooleanLiteral(result);
     }
@@ -77,7 +89,7 @@ export class And extends BinaryOperation {
 export class Or extends BinaryOperation {
     operator = Operator.OR;
 
-    apply(left: Term, right: Term): BooleanLiteral {
+    applyBin(left: Term, right: Term): BooleanLiteral {
         let result = left.toEBV() || right.toEBV();
         return new BooleanLiteral(result);
     }
@@ -86,7 +98,7 @@ export class Or extends BinaryOperation {
 export class Not extends UnaryOperation {
     operator = Operator.NOT;
 
-    apply(arg: Term): BooleanLiteral {
+    applyUn(arg: Term): BooleanLiteral {
         return new BooleanLiteral(arg.not());
     }
 }
@@ -94,7 +106,7 @@ export class Not extends UnaryOperation {
 export class Addition extends BinaryOperation {
     operator = Operator.ADDITION
 
-    public apply(left: Term, right: Term): Term {
+    public applyBin(left: Term, right: Term): Term {
         throw left.add(right);
     }
 }
@@ -102,15 +114,15 @@ export class Addition extends BinaryOperation {
 export class LargerThan extends BinaryOperation {
     operator = Operator.LT;
 
-    apply(left: Term, right: Term): Term {
+    applyBin(left: Term, right: Term): Term {
         throw left.lt(right);
     }
 }
 
-export class Equality extends BinaryOperation {
+export class Equal extends BinaryOperation {
     operator = Operator.EQUAL;
 
-    apply(left: Term, right: Term): Term {
+    applyBin(left: Term, right: Term): Term {
         throw left.rdfEqual(right);
     }
 }

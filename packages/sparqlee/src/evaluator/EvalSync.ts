@@ -2,6 +2,7 @@ import * as RDFJS from 'rdf-js';
 import * as S from 'sparqljs';
 import fromString from 'termterm.js';
 
+// TODO: Join Expression type definitions back together
 import * as E from './expressions/Types';
 import * as T from './expressions/Terms';
 import * as Ops from './expressions/Operators';
@@ -30,6 +31,7 @@ export class SyncEvaluator implements ExpressionEvaluator {
     evalExpr(expr: E.Expression, mapping: Mapping): T.Term {
         switch (expr.exprType) {
             case E.ExpressionType.Term: return <T.Term>expr;
+
             case E.ExpressionType.Variable: {
                 let variable = <E.VariableExpression>expr;
                 let rdfTerm = mapping.get(variable.name);
@@ -37,7 +39,13 @@ export class SyncEvaluator implements ExpressionEvaluator {
                 if (term) { return term; }
                 throw Error;
             };
-            case E.ExpressionType.Operation: return undefined;
+
+            case E.ExpressionType.Operation: {
+                let op = <Ops.Operation>expr;
+                let args = op.args.map((arg) => this.evalExpr(arg, mapping));
+                return op.apply(args);
+            };
+
             case E.ExpressionType.FunctionCall: return undefined;
             case E.ExpressionType.Aggregate: return undefined;
             case E.ExpressionType.BGP: return undefined;
@@ -70,8 +78,8 @@ export class SyncEvaluator implements ExpressionEvaluator {
                 switch (expr.operator) {
                     case '&&': return new Ops.And(args);
                     case '||': return new Ops.Or(args);
-                    case '!': return undefined;
-                    case '=': return undefined;
+                    case '!': return new Ops.Not(args);
+                    case '=': return new Ops.Equal(args);
                     case '!=': return undefined;
                     case '<': return undefined;
                     case '>': return undefined;
