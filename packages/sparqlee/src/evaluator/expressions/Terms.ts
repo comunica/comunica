@@ -6,9 +6,26 @@ import { Expression, ExpressionType } from './Types';
 
 export interface Term extends Expression {
     termType: TermType
+
     toEBV(): boolean
     rdfEqual(other: Term): boolean
     rdfNotEqual(other: Term): boolean
+
+    // TODO: Maybe just return the native types (eg: boolean, number)
+    not(): boolean
+    unPlus(): number
+    unMin(): number
+
+    lt(other: Term): boolean
+    gt(other: Term): boolean
+    lte(other: Term): boolean
+    gte(other: Term): boolean
+
+    multiply(other: Term): number
+    divide(other: Term): number
+    add(other: Term): number
+    subtract(other: Term): number
+
     toRDFJS(): RDFJS.Term
 }
 
@@ -39,6 +56,20 @@ export abstract class BaseTerm implements Term {
     rdfNotEqual(other: Term): boolean {
         return !this.rdfEqual(other);
     }
+
+    not(): boolean { throw Error; }
+    unPlus(): number { throw Error; }
+    unMin(): number { throw Error; }
+
+    lt(other: Term): boolean { throw Error; }
+    gt(other: Term): boolean { throw Error; }
+    lte(other: Term): boolean { throw Error; }
+    gte(other: Term): boolean { throw Error; }
+
+    multiply(other: Term): number { throw Error; }
+    divide(other: Term): number { throw Error; }
+    add(other: Term): number { throw Error; }
+    subtract(other: Term): number { throw Error; }
 
     abstract toRDFJS(): RDFJS.Term;
 }
@@ -94,21 +125,6 @@ export class DefaultGraph extends BaseTerm {
 export interface Literal<T> extends Term {
     value: T
     dataType?: string
-
-    // TODO: Maybe just return the native types (eg: boolean, number)
-    not(): boolean
-    unPlus(): number
-    unMin(): number
-
-    lt(other: Literal<T>): boolean
-    gt(other: Literal<T>): boolean
-    lte(other: Literal<T>): boolean
-    gte(other: Literal<T>): boolean
-
-    multiply(other: Literal<T>): number
-    divide(other: Literal<T>): number
-    add(other: Literal<T>): number
-    subtract(other: Literal<T>): number
 }
 
 export abstract class BaseLiteral<T> extends BaseTerm implements Literal<T> {
@@ -125,20 +141,6 @@ export abstract class BaseLiteral<T> extends BaseTerm implements Literal<T> {
     toRDFJS(): RDFJS.Term {
         return RDFDM.literal(this.value.toString(), this.dataType);
     }
-
-    not(): boolean { throw Error; }
-    unPlus(): number { throw Error; }
-    unMin(): number { throw Error; }
-
-    lt(other: Literal<T>): boolean { throw Error; }
-    gt(other: Literal<T>): boolean { throw Error; }
-    lte(other: Literal<T>): boolean { throw Error; }
-    gte(other: Literal<T>): boolean { throw Error; }
-
-    multiply(other: Literal<T>): number { throw Error; }
-    divide(other: Literal<T>): number { throw Error; }
-    add(other: Literal<T>): number { throw Error; }
-    subtract(other: Literal<T>): number { throw Error; }
 }
 
 export abstract class PlainLiteral extends BaseLiteral<string> {
@@ -316,6 +318,22 @@ export class NumericLiteral extends TypedLiteral<number> {
 
     gte(other: NumericLiteral): boolean {
         return this.value >= other.value;
+    }
+
+    multiply(other: NumericLiteral): number { 
+        return this.value * other.value; 
+    }
+
+    divide(other: NumericLiteral): number {
+        return this.value / other.value;
+    }
+
+    add(other: NumericLiteral): number { 
+        return this.value + other.value;
+     }
+
+    subtract(other: NumericLiteral): number { 
+        return this.value - other.value;
     }
 }
 

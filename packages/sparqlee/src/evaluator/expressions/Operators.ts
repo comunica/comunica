@@ -7,20 +7,25 @@ export interface Operation extends Expression {
 }
 
 export enum Operator {
+    UN_PLUS,
+    UN_MIN,
+    NOT,
     AND,
     OR,
-    NOT,
     EQUAL,
     NOTEQUAL,
     LT,
     GT,
     LTE,
-    GTE
-    // TODO: Unary + -
-    // TODO: Arithmetic
+    GTE,
+    PRODUCT,
+    DIVISION,
+    ADDITION,
+    SUBTACTION
 }
 
 export abstract class BaseOperation {
+    abstract operator: Operator;
     exprType = ExpressionType.Operation;
     args: Expression[];
 
@@ -45,6 +50,21 @@ export abstract class BinaryOperation extends BaseOperation {
     abstract apply(left: Term, right: Term): Term;
 }
 
+export abstract class UnaryOperation extends BaseOperation {
+    arg: Expression;
+
+    constructor(args: Expression[]) {
+        super(args);
+        if (args.length != 1) {
+            throw Error(`Incorrect number of arguments, was ${args.length} but should be 1`);
+        }
+        this.arg = args[0];
+    }
+
+    abstract apply(arg: Term): Term;
+}
+
+
 export class And extends BinaryOperation {
     operator = Operator.AND;
 
@@ -63,3 +83,34 @@ export class Or extends BinaryOperation {
     }
 }
 
+export class Not extends UnaryOperation {
+    operator = Operator.NOT;
+
+    apply(arg: Term): BooleanLiteral {
+        return new BooleanLiteral(arg.not());
+    }
+}
+
+export class Addition extends BinaryOperation {
+    operator = Operator.ADDITION
+
+    public apply(left: Term, right: Term): Term {
+        throw left.add(right);
+    }
+}
+
+export class LargerThan extends BinaryOperation {
+    operator = Operator.LT;
+
+    apply(left: Term, right: Term): Term {
+        throw left.lt(right);
+    }
+}
+
+export class Equality extends BinaryOperation {
+    operator = Operator.EQUAL;
+
+    apply(left: Term, right: Term): Term {
+        throw left.rdfEqual(right);
+    }
+}

@@ -36,6 +36,7 @@
     "gulp-sourcemaps": "^2.6.1",
     "gulp-typescript": "^3.2.2",
     "jest": "~21.2.1",
+    "jest-html-reporter": "^0.5.3",
     "merge-stream": "^1.0.1",
     "ts-jest": "^21.1.1",
     "typescript": "^2.5.3"
@@ -50,7 +51,11 @@
     "transform": {
       "^.+\\.tsx?$": "<rootDir>/node_modules/ts-jest/preprocessor.js"
     },
-    "testPathIgnorePatterns": ["/node_modules/", "/src/__tests__/util"],
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "/src/__tests__/util"
+    ],
+    "testResultsProcessor": "./node_modules/jest-html-reporter",
     "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
     "moduleFileExtensions": [
       "ts",
