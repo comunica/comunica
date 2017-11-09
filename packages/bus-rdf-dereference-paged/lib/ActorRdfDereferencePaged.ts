@@ -1,4 +1,5 @@
 import {Actor, IAction, IActorArgs, IActorOutput, IActorTest} from "@comunica/core";
+import {AsyncIterator} from "asynciterator";
 import * as RDF from "rdf-js";
 
 /**
@@ -39,7 +40,7 @@ export interface IActorRdfDereferencePagedOutput extends IActorOutput {
   /**
    * The resulting quad data stream over all pages.
    */
-  data: RDF.Stream;
+  data: AsyncIterator<RDF.Quad> & RDF.Stream;
   /**
    * A promise resolving to the extracted metadata key-value mapping of the first page.
    */

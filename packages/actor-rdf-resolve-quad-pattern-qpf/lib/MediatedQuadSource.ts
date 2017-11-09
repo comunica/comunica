@@ -1,7 +1,9 @@
 import {IActionRdfDereferencePaged, IActorRdfDereferencePagedOutput} from "@comunica/bus-rdf-dereference-paged";
 import {Actor, IActorTest, Mediator} from "@comunica/core";
+import {AsyncIterator} from "asynciterator";
 import * as RDF from "rdf-js";
-import {PassThrough} from "stream";
+import {ILazyQuadSource} from "../../bus-rdf-resolve-quad-pattern/lib/ActorRdfResolveQuadPatternSource";
+import {ProxyIterator} from "./ProxyIterator";
 
 /**
  * A quad source that uses a paged RDF dereference mediator
@@ -10,7 +12,7 @@ import {PassThrough} from "stream";
  *
  * @see RDF.Source
  */
-export class MediatedQuadSource implements RDF.Source {
+export class MediatedQuadSource implements ILazyQuadSource {
 
   public readonly mediatorRdfDereferencePaged: Mediator<Actor<IActionRdfDereferencePaged, IActorTest,
     IActorRdfDereferencePagedOutput>, IActionRdfDereferencePaged, IActorTest, IActorRdfDereferencePagedOutput>;
@@ -26,10 +28,10 @@ export class MediatedQuadSource implements RDF.Source {
     this.uriConstructor = uriConstructor;
   }
 
-  public match(subject?: RegExp | RDF.Term,
-               predicate?: RegExp | RDF.Term,
-               object?: RegExp | RDF.Term,
-               graph?: RegExp | RDF.Term): RDF.Stream {
+  public matchLazy(subject?: RegExp | RDF.Term,
+                   predicate?: RegExp | RDF.Term,
+                   object?: RegExp | RDF.Term,
+                   graph?: RegExp | RDF.Term): AsyncIterator<RDF.Quad> & RDF.Stream {
     if (subject instanceof RegExp
       || predicate  instanceof RegExp
       || object instanceof RegExp
@@ -37,22 +39,20 @@ export class MediatedQuadSource implements RDF.Source {
       throw new Error("MediatedQuadSource does not support matching by regular expressions.");
     }
     const url: string = this.uriConstructor(subject, predicate, object, graph);
-    const quads: RDF.Stream = new PassThrough({ objectMode: true });
-
-    setImmediate(() => {
-      this.mediatorRdfDereferencePaged.mediate({ url })
-        .then((output) => {
-          // Emit metadata in the stream, so we can attach it later to the actor's promise output
-          quads.emit('metadata', output.firstPageMetadata);
-
-          output.data.on('error', (e)    => quads.emit('error', e));
-          output.data.on('data',  (data) => quads.emit('data', data));
-          output.data.on('end',   ()     => quads.emit('end'));
-        })
-        .catch((e) => quads.emit('error', e));
-    });
-
+    const quads = new ProxyIterator(() => this.mediatorRdfDereferencePaged.mediate({ url })
+      .then((output) => {
+        // Emit metadata in the stream, so we can attach it later to the actor's promise output
+        quads.emit('metadata', output.firstPageMetadata);
+        return output.data;
+      }));
     return quads;
+  }
+
+  public match(subject?: RegExp | RDF.Term,
+               predicate?: RegExp | RDF.Term,
+               object?: RegExp | RDF.Term,
+               graph?: RegExp | RDF.Term): RDF.Stream {
+    return this.matchLazy(subject, predicate, object, graph);
   }
 
 }

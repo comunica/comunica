@@ -87,7 +87,9 @@ describe('MediatedQuadSource', () => {
 
     it('should delegate promise rejections', () => {
       const error = new Error('a');
-      mediator.mediate = (action) => Promise.reject(error);
+      mediator.mediate = (action) => new Promise((resolve, reject) => {
+        setImmediate(() => reject(error));
+      });
       return new Promise((resolve, reject) => {
         const output: RDF.Stream = source.match(S, P, O, G);
         output.on('data', () => ({}));

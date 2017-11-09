@@ -4,7 +4,7 @@ import * as RDF from "rdf-js";
 /**
  * An abstract quad iterator that iterates over several pages.
  */
-export abstract class PagedAsyncRdfIterator extends BufferedIterator<RDF.Quad> {
+export abstract class PagedAsyncRdfIterator extends BufferedIterator<RDF.Quad> implements RDF.Stream {
 
   private readonly startUrl: string;
   private nextUrl: string;
