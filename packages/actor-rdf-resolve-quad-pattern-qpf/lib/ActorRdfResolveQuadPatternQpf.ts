@@ -1,7 +1,7 @@
 import {ISearchForm, ISearchForms} from "@comunica/actor-rdf-metadata-extract-hydra-controls";
 import {IActionRdfDereferencePaged, IActorRdfDereferencePagedOutput} from "@comunica/bus-rdf-dereference-paged";
 import {ActorRdfResolveQuadPatternSource, IActionRdfResolveQuadPattern,
-  IActorRdfResolveQuadPatternOutput} from "@comunica/bus-rdf-resolve-quad-pattern";
+  IActorRdfResolveQuadPatternOutput, ILazyQuadSource} from "@comunica/bus-rdf-resolve-quad-pattern";
 import {Actor, IActorArgs, IActorTest, Mediator} from "@comunica/core";
 import * as RDF from "rdf-js";
 import {MediatedQuadSource} from "./MediatedQuadSource";
@@ -43,7 +43,7 @@ export class ActorRdfResolveQuadPatternQpf extends ActorRdfResolveQuadPatternSou
     return true;
   }
 
-  protected async createSource(context?: {[id: string]: any}): Promise<RDF.Source> {
+  protected async createSource(context?: {[id: string]: any}): Promise<ILazyQuadSource> {
     // Collect metadata of the entrypoint
     const entrypoint: string = context.entrypoint;
     const metadata: {[id: string]: any} = (await this.mediatorRdfDereferencePaged.mediate({ url: entrypoint }))
@@ -104,7 +104,7 @@ export class ActorRdfResolveQuadPatternQpf extends ActorRdfResolveQuadPatternSou
     return new MediatedQuadSource(this.mediatorRdfDereferencePaged, uriConstructor);
   }
 
-  protected async getSource(context?: {[id: string]: any}): Promise<RDF.Source> {
+  protected async getSource(context?: {[id: string]: any}): Promise<ILazyQuadSource> {
     // Cache the source object for each entrypoint
     const entrypoint: string = context.entrypoint;
     if (this.sources[entrypoint]) {

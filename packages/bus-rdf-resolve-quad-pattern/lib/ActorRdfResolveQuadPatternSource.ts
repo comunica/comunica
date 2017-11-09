@@ -1,9 +1,11 @@
 import {IActorArgs, IActorTest} from "@comunica/core";
+import {AsyncIterator, BufferedIterator} from "asynciterator";
 import * as RDF from "rdf-js";
 import {
   ActorRdfResolveQuadPattern, IActionRdfResolveQuadPattern,
   IActorRdfResolveQuadPatternOutput,
 } from "./ActorRdfResolveQuadPattern";
+import {QuadStreamIterator} from "./QuadStreamIterator";
 
 /**
  * A base implementation for rdf-resolve-quad-pattern events
@@ -28,21 +30,19 @@ export abstract class ActorRdfResolveQuadPatternSource extends ActorRdfResolveQu
 
   /**
    * Get the output of the given action on a source.
-   * @param {RDF.Source} source An RDFJS source.
+   * @param {RDF.Source} source An RDFJS source, possibly lazy.
    * @param {RDF.Quad} pattern The resolve action.
    * @param {{[p: string]: any}} context Optional context data.
    * @return {Promise<IActorRdfResolveQuadPatternOutput>} A promise that resolves to a hash containing
    *                                                      a data RDFJS stream and an optional metadata hash.
    */
-  protected async getOutput(source: RDF.Source, pattern: RDF.Quad, context?: {[id: string]: any})
+  protected async getOutput(source: ILazyQuadSource, pattern: RDF.Quad, context?: {[id: string]: any})
   : Promise<IActorRdfResolveQuadPatternOutput> {
-    const data: RDF.Stream = source.match(
-      pattern.subject,
-      pattern.predicate,
-      pattern.object,
-      pattern.graph,
-    );
-    return { data };
+    if (source.matchLazy) {
+      return { data: source.matchLazy(pattern.subject, pattern.predicate, pattern.object, pattern.graph) };
+    }
+    return { data: new QuadStreamIterator(
+      source.match(pattern.subject, pattern.predicate, pattern.object, pattern.graph)) };
   }
 
   /**
@@ -50,6 +50,26 @@ export abstract class ActorRdfResolveQuadPatternSource extends ActorRdfResolveQu
    * @param {{[p: string]: any}} context Optional context data.
    * @return {Promise<RDF.Source>} A promise that resolves to a source.
    */
-  protected abstract getSource(context?: {[id: string]: any}): Promise<RDF.Source>;
+  protected abstract getSource(context?: {[id: string]: any}): Promise<ILazyQuadSource>;
 
+}
+
+/**
+ * A lazy quad source.
+ *
+ * This extends {@link RDF.Source} with an optional matchLazy method.
+ * So non-lazy sources can also be used in this place.
+ */
+export interface ILazyQuadSource extends RDF.Source {
+  /**
+   * Returns a lazy stream that processes all quads matching the pattern.
+   *
+   * @param {RDF.Term | RegExp} subject   The optional exact subject or subject regex to match.
+   * @param {RDF.Term | RegExp} predicate The optional exact predicate or predicate regex to match.
+   * @param {RDF.Term | RegExp} object    The optional exact object or object regex to match.
+   * @param {RDF.Term | RegExp} graph     The optional exact graph or graph regex to match.
+   * @return {RDF.Stream} The resulting quad stream.
+   */
+  matchLazy?(subject?: RDF.Term | RegExp, predicate?: RDF.Term | RegExp, object?: RDF.Term | RegExp,
+             graph?: RDF.Term | RegExp): AsyncIterator<RDF.Quad> & RDF.Stream;
 }

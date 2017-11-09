@@ -1,4 +1,5 @@
 import {Actor, IAction, IActorArgs, IActorOutput, IActorTest} from "@comunica/core";
+import {AsyncIterator} from "asynciterator";
 import * as RDF from "rdf-js";
 
 /**
@@ -38,7 +39,7 @@ export interface IActorRdfResolveQuadPatternOutput extends IActorOutput {
   /**
    * The resulting quad data stream.
    */
-  data: RDF.Stream;
+  data: AsyncIterator<RDF.Quad> & RDF.Stream;
   /**
    * Metadata about the resulting stream.
    * This can contain things like the estimated number of total quads,
