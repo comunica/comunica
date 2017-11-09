@@ -1,0 +1,21 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-query-operation-quadpattern.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-query-operation.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-query-operation-quadpattern",
+  "components": [
+    {
+      "@id": "caqoq:Actor/QueryOperation/Quadpattern",
+      "@type": "Class",
+      "extends": "cbqo:Actor/QueryOperation",
+      "requireElement": "ActorQueryOperationQuadpattern",
+      "comment": "A comunica actor for handling 'quadpattern' query operations.",
+      "constructorArguments": [
+        {
+          "extends": "cbqo:Actor/QueryOperation/constructorArgumentsObject"
+        }
+      ]
+    }
+  ]
+}
