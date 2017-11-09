@@ -1,0 +1,6 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/contexts/comunica-bus-query-operation.jsonld",
+  "@id": "cbqo:Bus/QueryOperation",
+  "@type": "cc:Bus",
+  "comment": "A comunica bus for query-operation events."
+}

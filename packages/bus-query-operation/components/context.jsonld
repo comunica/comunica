@@ -1,0 +1,11 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/comunica-core.jsonld",
+    {
+      "cbqo": "npmd:@comunica/bus-query-operation/",
+
+      "BusQueryOperation": "cbqo:Bus/QueryOperation",
+      "ActorQueryOperation": "cbqo:Actor/QueryOperation"
+    }
+  ]
+}
