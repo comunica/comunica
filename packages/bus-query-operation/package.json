@@ -1,0 +1,50 @@
+{
+  "name": "@comunica/bus-query-operation",
+  "version": "0.0.1",
+  "description": "A comunica bus for query-operation events.",
+  "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-query-operation",
+  "lsd:components": "components/components.jsonld",
+  "lsd:contexts": {
+    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-query-operation.jsonld": "components/context.jsonld"
+  },
+  "main": "index.js",
+  "typings": "index",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/comunica/bus-query-operation.git"
+  },
+  "keywords": [
+    "comunica",
+    "bus",
+    "query-operation"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/comunica/bus-query-operation/issues"
+  },
+  "homepage": "https://github.com/comunica/bus-query-operation#readme",
+  "files": [
+    "components",
+    "lib/**/*.d.ts",
+    "lib/**/*.js",
+    "index.d.ts",
+    "index.js"
+  ],
+  "dependencies": {
+    "asynciterator": "^1.1.0",
+    "immutable": "^3.8.2",
+    "lodash": "^4.17.4"
+  },
+  "peerDependencies": {
+    "@comunica/core": "^0.0.1"
+  },
+  "devDependencies": {
+    "@comunica/core": "^0.0.1"
+  },
+  "scripts": {
+    "lint": "node \"../../node_modules/tslint/bin/tslint\" lib/**/*.ts test/**/*.ts --exclude '**/*.d.ts'",
+    "build": "node \"../../node_modules/typescript/bin/tsc\"",
+    "validate": "npm ls",
+    "prepare": "npm run build"
+  }
+}

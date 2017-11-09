@@ -1,0 +1,10 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/contexts/comunica-bus-query-operation.jsonld",
+  "@id": "npmd:@comunica/bus-query-operation",
+  "@type": "Module",
+  "requireName": "@comunica/bus-query-operation",
+  "import": [
+    "Bus/QueryOperation.jsonld",
+    "Actor/QueryOperation.jsonld"
+  ]
+}
