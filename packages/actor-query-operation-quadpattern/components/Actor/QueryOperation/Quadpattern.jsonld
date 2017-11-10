@@ -11,9 +11,23 @@
       "extends": "cbqo:Actor/QueryOperation",
       "requireElement": "ActorQueryOperationQuadpattern",
       "comment": "A comunica actor for handling 'quadpattern' query operations.",
+      "parameters": [
+        {
+          "@id": "caqoq:mediatorResolveQuadPattern",
+          "comment": "The quad pattern resolve mediator",
+          "required": true,
+          "unique": true
+        }
+      ],
       "constructorArguments": [
         {
-          "extends": "cbqo:Actor/QueryOperation/constructorArgumentsObject"
+          "extends": "cbqo:Actor/QueryOperation/constructorArgumentsObject",
+          "fields": [
+            {
+              "keyRaw": "mediatorResolveQuadPattern",
+              "value": "caqoq:mediatorResolveQuadPattern"
+            }
+          ]
         }
       ]
     }

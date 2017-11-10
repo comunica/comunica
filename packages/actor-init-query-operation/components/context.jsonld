@@ -1,0 +1,12 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/components.jsonld",
+    {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
+      "caiqo": "npmd:@comunica/actor-init-query-operation/",
+
+      "ActorInitQueryOperation": "caiqo:Actor/Init/QueryOperation",
+      "mediatorQueryOperation": "caiqo:mediatorQueryOperation"
+    }
+  ]
+}
