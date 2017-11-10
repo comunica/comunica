@@ -5,12 +5,12 @@ import {Actor, IActorArgs, IActorTest, Mediator} from "@comunica/core";
 import {BufferedIterator} from "asynciterator";
 import * as _ from "lodash";
 import * as RDF from "rdf-js";
-import {QuadPattern} from "sparqlalgebrajs";
+import {Pattern} from "sparqlalgebrajs";
 
 /**
  * A comunica actor for handling 'quadpattern' query operations.
  */
-export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<QuadPattern>
+export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Pattern>
   implements IActorQueryOperationQuadpatternArgs {
 
   public static readonly QUAD_ELEMENTS = [ 'subject', 'predicate', 'object', 'graph' ];
@@ -19,7 +19,7 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Qua
     IActorRdfResolveQuadPatternOutput>, IActionRdfResolveQuadPattern, IActorTest, IActorRdfResolveQuadPatternOutput>;
 
   constructor(args: IActorQueryOperationQuadpatternArgs) {
-    super(_.assign(args, { operationName: 'quadpattern' }));
+    super(_.assign(args, { operationName: 'pattern' }));
     if (!this.mediatorResolveQuadPattern) {
       throw new Error('A valid "mediatorResolveQuadPattern" argument must be provided.');
     }
@@ -38,11 +38,8 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Qua
       .map((term) => term.value));
   }
 
-  public async runOperation(operation: QuadPattern, context?: {[id: string]: any})
+  public async runOperation(pattern: Pattern, context?: {[id: string]: any})
   : Promise<IActorQueryOperationOutput> {
-    // TODO: remove this once SPARQL Algebra emits RDFJS-compatible terms.
-    const pattern: RDF.Quad = this.getQuad(operation);
-
     // Resolve the quad pattern
     const result = await this.mediatorResolveQuadPattern.mediate({ pattern, context });
 
@@ -72,7 +69,7 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Qua
 
     return { bindingsStream, variables, metadata: result.metadata };
   }
-
+/*
   // TODO: remove this once SPARQL Algebra emits RDFJS-compatible terms.
   protected getTerm(term: string): RDF.Term {
     if (term.charAt(0) === '?') {
@@ -83,14 +80,14 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Qua
   }
 
   // TODO: remove this once SPARQL Algebra emits RDFJS-compatible terms.
-  protected getQuad(pattern: QuadPattern): RDF.Quad {
+  protected getQuad(pattern: Pattern): RDF.Quad {
     return <RDF.Quad> {
       graph: this.getTerm(pattern.graph),
       object: this.getTerm(pattern.object),
       predicate: this.getTerm(pattern.predicate),
       subject: this.getTerm(pattern.subject),
     };
-  }
+  }*/
 
 }
 

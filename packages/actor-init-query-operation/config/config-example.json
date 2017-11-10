@@ -39,7 +39,7 @@
             "@type": "MediatorRace",
             "cc:Mediator/bus": { "@id": "cbqo:Bus/QueryOperation" }
           },
-          "caiqo:operation": "{ \"type\": \"quadpattern\", \"subject\": \"?s\", \"predicate\": \"http://www.w3.org/1999/02/22-rdf-syntax-ns#type\", \"object\": \"?o\", \"graph\": \"?g\" }",
+          "caiqo:operation": "{ \"type\": \"pattern\", \"subject\": { \"value\": \"s\", \"termType\": \"Variable\" }, \"predicate\": { \"value\": \"http://www.w3.org/1999/02/22-rdf-syntax-ns#type\", \"termType\": \"NamedNode\" }, \"object\": { \"value\": \"o\", \"termType\": \"Variable\" }, \"graph\": { \"value\": \"g\", \"termType\": \"Variable\" } }",
           "caiqo:context": "{ \"entrypoint\": \"https://fragments.linkedsoftwaredependencies.org/npm\" }"
         },
 

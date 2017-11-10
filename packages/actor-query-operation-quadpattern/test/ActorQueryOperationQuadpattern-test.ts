@@ -69,7 +69,7 @@ describe('ActorQueryOperationQuadpattern', () => {
     });
 
     it('should test on quad pattern operations', () => {
-      return expect(actor.test({ operation: { type: 'quadpattern' } })).resolves.toBeTruthy();
+      return expect(actor.test({ operation: { type: 'pattern' } })).resolves.toBeTruthy();
     });
 
     it('should not test on dummy operations', () => {
@@ -108,7 +108,13 @@ describe('ActorQueryOperationQuadpattern', () => {
     });
 
     it('should run s ?p o g', () => {
-      const operation = { type: 'quadpattern', subject: 's', predicate: '?p', object: 'o', graph: 'g' };
+      const operation = {
+        graph: { value: 'g', termType: 'NamedNode' },
+        object: { value: 'o', termType: 'NamedNode' },
+        predicate: { value: 'p', termType: 'Variable' },
+        subject: { value: 's', termType: 'NamedNode' },
+        type: 'pattern',
+      };
       return expect(actor.run({ operation }).then((output) => {
         return new Promise((resolve, reject) => {
           expect(output.variables).toEqual([ 'p' ]);
