@@ -5,7 +5,8 @@
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
       "caqoq": "npmd:@comunica/actor-query-operation-quadpattern/",
 
-      "ActorQueryOperationQuadpattern": "caqoq:Actor/QueryOperation/Quadpattern"
+      "ActorQueryOperationQuadpattern": "caqoq:Actor/QueryOperation/Quadpattern",
+      "mediatorResolveQuadPattern": "caqoq:mediatorResolveQuadPattern"
     }
   ]
 }

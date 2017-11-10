@@ -1,0 +1,53 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-init-query-operation.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-init.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-init-query-operation",
+  "components": [
+    {
+      "@id": "caiqo:Actor/Init/QueryOperation",
+      "@type": "Class",
+      "extends": "cbi:Actor/Init",
+      "requireElement": "ActorInitQueryOperation",
+      "comment": "A comunica Query Operation Init Actor.",
+      "parameters": [
+        {
+          "@id": "caiqo:mediatorQueryOperation",
+          "comment": "The query operation mediator",
+          "required": true,
+          "unique": true
+        },
+        {
+          "@id": "caiqo:operation",
+          "comment": "A JSON string of a query operation",
+          "unique": true
+        },
+        {
+          "@id": "caiqo:context",
+          "comment": "A JSON string of a query operation context",
+          "unique": true
+        }
+      ],
+      "constructorArguments": [
+        {
+          "extends": "cbi:Actor/Init/constructorArgumentsObject",
+          "fields": [
+            {
+              "keyRaw": "mediatorQueryOperation",
+              "value": "caiqo:mediatorQueryOperation"
+            },
+            {
+              "keyRaw": "operation",
+              "value": "caiqo:operation"
+            },
+            {
+              "keyRaw": "context",
+              "value": "caiqo:context"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

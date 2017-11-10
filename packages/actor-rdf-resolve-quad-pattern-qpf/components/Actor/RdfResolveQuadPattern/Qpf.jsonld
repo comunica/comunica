@@ -13,6 +13,12 @@
       "comment": "A comunica QPF RDF Resolve Quad Pattern Actor.",
       "parameters": [
         {
+          "@id": "carrqpq:Actor/RdfResolveQuadPattern/Qpf/mediatorRdfDereferencePaged",
+          "comment": "The paged RDF dereference mediator",
+          "required": true,
+          "unique": true
+        },
+        {
           "@id": "carrqpq:Actor/RdfResolveQuadPattern/Qpf/subjectUri",
           "comment": "The URI that should be interpreted as subject URI",
           "unique": true,
@@ -56,6 +62,10 @@
         {
           "extends": "cbrrqp:Actor/RdfResolveQuadPattern/constructorArgumentsObject",
           "fields": [
+            {
+              "keyRaw": "mediatorRdfDereferencePaged",
+              "value": "carrqpq:Actor/RdfResolveQuadPattern/Qpf/mediatorRdfDereferencePaged"
+            },
             {
               "keyRaw": "subjectUri",
               "value": "carrqpq:Actor/RdfResolveQuadPattern/Qpf/subjectUri"

@@ -20,7 +20,8 @@ export abstract class ActorQueryOperationTyped<O extends Operation> extends Acto
 
   public async test(action: IActionQueryOperation): Promise<IActorTest> {
     if (action.operation && action.operation.type !== this.operationName) {
-      throw new Error('Actor ' + this.name + ' only supports ' + this.operationName + ' operations.');
+      throw new Error('Actor ' + this.name + ' only supports ' + this.operationName + ' operations, but got '
+        + action.operation.type);
     }
     return true;
   }
