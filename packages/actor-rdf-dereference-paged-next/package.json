@@ -1,29 +1,29 @@
 {
-  "name": "@comunica/actor-rdf-dereference-paged-hydra",
+  "name": "@comunica/actor-rdf-dereference-paged-next",
   "version": "0.0.1",
   "description": "A hydra rdf-dereference-paged actor",
-  "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-dereference-paged-hydra",
+  "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-dereference-paged-next",
   "lsd:components": "components/components.jsonld",
   "lsd:contexts": {
-    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-dereference-paged-hydra.jsonld": "components/context.jsonld"
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-dereference-paged-next.jsonld": "components/context.jsonld"
   },
   "main": "index.js",
   "typings": "index",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/comunica/actor-rdf-dereference-paged-hydra.git"
+    "url": "git+https://github.com/comunica/actor-rdf-dereference-paged-next.git"
   },
   "keywords": [
     "comunica",
     "actor",
     "rdf-dereference-paged",
-    "hydra"
+    "next"
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/comunica/actor-rdf-dereference-paged-hydra/issues"
+    "url": "https://github.com/comunica/actor-rdf-dereference-paged-next/issues"
   },
-  "homepage": "https://github.com/comunica/actor-rdf-dereference-paged-hydra#readme",
+  "homepage": "https://github.com/comunica/actor-rdf-dereference-paged-next#readme",
   "files": [
     "components",
     "lib/**/*.d.ts",

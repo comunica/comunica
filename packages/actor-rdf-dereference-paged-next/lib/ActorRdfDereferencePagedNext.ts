@@ -8,9 +8,9 @@ import * as RDF from "rdf-js";
 import {PagedAsyncRdfIterator} from "./PagedAsyncRdfIterator";
 
 /**
- * An RDF Dereference Paged Actor that will lazily follow hydra:next page links.
+ * An RDF Dereference Paged Actor that will lazily follow 'next' links as defined from the extracted metadata.
  */
-export class ActorRdfDereferencePagedHydra extends ActorRdfDereferencePaged implements IActorRdfDereferencePaged {
+export class ActorRdfDereferencePagedNext extends ActorRdfDereferencePaged implements IActorRdfDereferencePaged {
 
   public readonly mediatorRdfDereference: Mediator<Actor<IActionRdfDereference, IActorTest, IActorRdfDereferenceOutput>,
     IActionRdfDereference, IActorTest, IActorRdfDereferenceOutput>;
