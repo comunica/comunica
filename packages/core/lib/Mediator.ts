@@ -49,7 +49,7 @@ export abstract class Mediator<A extends Actor<I, T, O>,
   /**
    * Publish the given action in the bus.
    *
-   * This will send test the action on all actors in the bus.
+   * This will send the test action on all actors in the bus.
    * All actor replies will be returned.
    *
    * @param {I} action The action to mediate for.
@@ -69,7 +69,7 @@ export abstract class Mediator<A extends Actor<I, T, O>,
   /**
    * Mediate for the given action to get an actor.
    *
-   * This will send test the action on all actors in the bus.
+   * This will send the test action on all actors in the bus.
    * The actor that tests _best_ will be returned.
    *
    * @param {I} action The action to mediate for.
@@ -83,7 +83,7 @@ export abstract class Mediator<A extends Actor<I, T, O>,
   /**
    * Mediate for the given action.
    *
-   * This will send test the action on all actors in the bus.
+   * This will send the test action on all actors in the bus.
    * The action will be run on the actor that tests _best_,
    * of which the result will be returned.
    *
