@@ -130,10 +130,10 @@ describe('ActorRdfDereferencePagedNext', () => {
     it('should run', () => {
       return actor.run({ url: 'http://example.org/' })
         .then((output) => {
-          return new Promise((resolve, reject) => {
+          return new Promise(async (resolve, reject) => {
             expect(output.firstPageUrl).toEqual('0');
             expect(output.triples).toEqual(true);
-            expect(output.firstPageMetadata).toEqual({ next: 'http://example.org/1' });
+            expect(await output.firstPageMetadata).toEqual({ next: 'http://example.org/1' });
 
             const data: any = [];
             output.data.on('data', (d) => data.push(d));
@@ -157,19 +157,19 @@ describe('ActorRdfDereferencePagedNext', () => {
           });
         });
       }};
-      actor = new ActorRdfDereferencePagedNext({
+      const currentActor = new ActorRdfDereferencePagedNext({
         bus,
         mediatorMetadata,
         mediatorMetadataExtract: mediatorMetadataExtractSlow,
         mediatorRdfDereference,
         name: 'actor',
       });
-      return actor.run({ url: 'http://example.org/' })
+      return currentActor.run({ url: 'http://example.org/' })
         .then((output) => {
-          return new Promise((resolve, reject) => {
+          return new Promise(async (resolve, reject) => {
             expect(output.firstPageUrl).toEqual('0');
             expect(output.triples).toEqual(true);
-            expect(output.firstPageMetadata).toEqual({ next: 'http://example.org/1' });
+            expect(await output.firstPageMetadata).toEqual({ next: 'http://example.org/1' });
 
             const data: any = [];
             output.data.on('data', (d) => data.push(d));
@@ -203,58 +203,76 @@ describe('ActorRdfDereferencePagedNext', () => {
 
     it('should not run on errors originating from a metadata mediator on page 0', () => {
       const error = new Error('some error');
-      mediatorMetadata.mediate = () => Promise.reject(error);
-      actor = new ActorRdfDereferencePagedNext({
+      const currentMediatorMetadata: any = {
+        mediate: () => Promise.reject(error),
+      };
+      const currentActor = new ActorRdfDereferencePagedNext({
         bus,
-        mediatorMetadata,
+        mediatorMetadata: currentMediatorMetadata,
         mediatorMetadataExtract,
         mediatorRdfDereference,
         name: 'actor',
       });
-      return expect(actor.run({ url: 'http://example.org/' })).rejects.toEqual(error);
+      return expect(currentActor.run({ url: 'http://example.org/' })).rejects.toEqual(error);
     });
 
-    it('should not run on errors originating from an extract mediator on page 0', () => {
-      const error = new Error('some error');
-      mediatorMetadataExtract.mediate = () => Promise.reject(error);
-      actor = new ActorRdfDereferencePagedNext({
+    it('should run on errors originating from a metadata extract mediator on page 0 but should delegate errors ' +
+      'to the metadata promise *and* stream', () => {
+      const error = new Error('an error on page 0');
+      const currentMediatorMetadataExtract: any = {
+        mediate: () => Promise.reject(error),
+      };
+      const currentActor = new ActorRdfDereferencePagedNext({
         bus,
         mediatorMetadata,
-        mediatorMetadataExtract,
+        mediatorMetadataExtract: currentMediatorMetadataExtract,
         mediatorRdfDereference,
         name: 'actor',
       });
-      return expect(actor.run({ url: 'http://example.org/' })).rejects.toEqual(error);
+      return currentActor.run({ url: 'http://example.org/' })
+        .then((output) => {
+          expect(output.firstPageMetadata).rejects.toEqual(error);
+          return new Promise((resolve, reject) => {
+            output.data.on('data', () => { return; });
+            output.data.on('error', (e) => {
+              expect(e).toEqual(error);
+              resolve();
+            });
+            output.data.on('end', reject);
+          });
+        });
     });
 
     it('should not run on errors originating from a dereference mediator on page 0', () => {
-      const error = new Error('some error');
-      mediatorRdfDereference.mediate = () => Promise.reject(error);
-      actor = new ActorRdfDereferencePagedNext({
+      const error = new Error('some error on page 0');
+      const currentMediatorRdfDereference: any = {
+        mediate: () => Promise.reject(error),
+      };
+      const currentActor = new ActorRdfDereferencePagedNext({
         bus,
         mediatorMetadata,
         mediatorMetadataExtract,
-        mediatorRdfDereference,
+        mediatorRdfDereference: currentMediatorRdfDereference,
         name: 'actor',
       });
-      return expect(actor.run({ url: 'http://example.org/' })).rejects.toEqual(error);
+      return expect(currentActor.run({ url: 'http://example.org/' })).rejects.toEqual(error);
     });
 
     it('should run and delegate errors originating from a metadata mediator after page 0', () => {
-      const error = new Error('some error');
+      const error = new Error('some error after page 0');
       const mediatorMetadataTemp: any = { mediate: (action) => {
         const ret = mediatorMetadata.mediate(action);
         mediatorMetadataTemp.mediate = () => Promise.reject(error);
         return ret;
       }};
-      actor = new ActorRdfDereferencePagedNext({
+      const currentActor = new ActorRdfDereferencePagedNext({
         bus,
         mediatorMetadata: mediatorMetadataTemp,
         mediatorMetadataExtract,
         mediatorRdfDereference,
         name: 'actor',
       });
-      return actor.run({ url: 'http://example.org/' })
+      return currentActor.run({ url: 'http://example.org/' })
         .then((output) => {
           return new Promise((resolve, reject) => {
             output.data.on('data', () => { return; });

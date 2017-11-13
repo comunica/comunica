@@ -41,9 +41,9 @@ export interface IActorRdfDereferencePagedOutput extends IActorOutput {
    */
   data: RDF.Stream;
   /**
-   * The extracted metadata key-value mapping of the first page.
+   * A promise resolving to the extracted metadata key-value mapping of the first page.
    */
-  firstPageMetadata?: {[id: string]: any};
+  firstPageMetadata?: Promise<{[id: string]: any}>;
   /**
    * An optional field indicating if the given quad stream originates from a triple-based serialization,
    * in which everything is serialized in the default graph.

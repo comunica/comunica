@@ -43,8 +43,9 @@ export class ActorRdfDereferencePagedNext extends ActorRdfDereferencePaged imple
 
     const firstPageMetaSplit: IActorRdfMetadataOutput = await this.mediatorMetadata
       .mediate({ pageUrl: firstPageUrl, quads: firstPage.quads });
-    const firstPageMetadata: {[id: string]: any} = (await this.mediatorMetadataExtract.mediate(
-      { pageUrl: firstPageUrl, metadata: firstPageMetaSplit.metadata })).metadata;
+    const firstPageMetadata: Promise<{[id: string]: any}> = this.mediatorMetadataExtract.mediate(
+      { pageUrl: firstPageUrl, metadata: firstPageMetaSplit.metadata })
+      .then((output) => output.metadata);
 
     // We need to do this because class fields are not included in closures.
     const mediatorRdfDereference = this.mediatorRdfDereference;
@@ -59,7 +60,15 @@ export class ActorRdfDereferencePagedNext extends ActorRdfDereferencePaged imple
         // Don't call mediators again if we are on the first page
         if (!page) {
           pageData = firstPageMetaSplit.data;
-          onNextPage(firstPageMetadata.next);
+          let next: string;
+          try {
+            next = (await firstPageMetadata).next;
+          } catch (e) {
+            this.emit('error', e);
+          }
+          if (next) {
+            onNextPage(next);
+          }
         } else {
           const pageQuads: IActorRdfDereferenceOutput = await mediatorRdfDereference.mediate({ url });
           const pageMetaSplit: IActorRdfMetadataOutput = await mediatorMetadata
