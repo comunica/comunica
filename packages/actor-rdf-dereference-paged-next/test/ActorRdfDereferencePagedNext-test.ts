@@ -1,9 +1,9 @@
 import {ActorRdfDereferencePaged} from "@comunica/bus-rdf-dereference-paged";
 import {Bus} from "@comunica/core";
 import {Readable} from "stream";
-import {ActorRdfDereferencePagedHydra} from "../lib/ActorRdfDereferencePagedHydra";
+import {ActorRdfDereferencePagedNext} from "../lib/ActorRdfDereferencePagedNext";
 
-describe('ActorRdfDereferencePagedHydra', () => {
+describe('ActorRdfDereferencePagedNext', () => {
   let bus;
   let mediator;
 
@@ -12,20 +12,20 @@ describe('ActorRdfDereferencePagedHydra', () => {
     mediator = {};
   });
 
-  describe('The ActorRdfDereferencePagedHydra module', () => {
+  describe('The ActorRdfDereferencePagedNext module', () => {
     it('should be a function', () => {
-      expect(ActorRdfDereferencePagedHydra).toBeInstanceOf(Function);
+      expect(ActorRdfDereferencePagedNext).toBeInstanceOf(Function);
     });
 
-    it('should be a ActorRdfDereferencePagedHydra constructor', () => {
-      expect(new (<any> ActorRdfDereferencePagedHydra)({
+    it('should be a ActorRdfDereferencePagedNext constructor', () => {
+      expect(new (<any> ActorRdfDereferencePagedNext)({
         bus,
         mediatorMetadata: mediator,
         mediatorMetadataExtract: mediator,
         mediatorRdfDereference: mediator,
         name: 'actor',
-      })).toBeInstanceOf(ActorRdfDereferencePagedHydra);
-      expect(new (<any> ActorRdfDereferencePagedHydra)({
+      })).toBeInstanceOf(ActorRdfDereferencePagedNext);
+      expect(new (<any> ActorRdfDereferencePagedNext)({
         bus,
         mediatorMetadata: mediator,
         mediatorMetadataExtract: mediator,
@@ -34,12 +34,12 @@ describe('ActorRdfDereferencePagedHydra', () => {
       })).toBeInstanceOf(ActorRdfDereferencePaged);
     });
 
-    it('should not be able to create new ActorRdfDereferencePagedHydra objects without \'new\'', () => {
-      expect(() => { (<any> ActorRdfDereferencePagedHydra)(); }).toThrow();
+    it('should not be able to create new ActorRdfDereferencePagedNext objects without \'new\'', () => {
+      expect(() => { (<any> ActorRdfDereferencePagedNext)(); }).toThrow();
     });
 
     it('should throw an error when constructed without a mediatorMetadata', () => {
-      expect(() => { new (<any> ActorRdfDereferencePagedHydra)({
+      expect(() => { new (<any> ActorRdfDereferencePagedNext)({
         bus,
         mediatorMetadataExtract: mediator,
         mediatorRdfDereference: mediator,
@@ -48,7 +48,7 @@ describe('ActorRdfDereferencePagedHydra', () => {
     });
 
     it('should throw an error when constructed without a mediatorMetadataExtract', () => {
-      expect(() => { new (<any> ActorRdfDereferencePagedHydra)({
+      expect(() => { new (<any> ActorRdfDereferencePagedNext)({
         bus,
         mediatorMetadata: mediator,
         mediatorRdfDereference: mediator,
@@ -57,7 +57,7 @@ describe('ActorRdfDereferencePagedHydra', () => {
     });
 
     it('should throw an error when constructed without a mediatorRdfDereference', () => {
-      expect(() => { new (<any> ActorRdfDereferencePagedHydra)({
+      expect(() => { new (<any> ActorRdfDereferencePagedNext)({
         bus,
         mediatorMetadata: mediator,
         mediatorMetadataExtract: mediator,
@@ -66,12 +66,12 @@ describe('ActorRdfDereferencePagedHydra', () => {
     });
 
     it('should throw an error when constructed without arguments', () => {
-      expect(() => { new (<any> ActorRdfDereferencePagedHydra)(); }).toThrow();
+      expect(() => { new (<any> ActorRdfDereferencePagedNext)(); }).toThrow();
     });
   });
 
-  describe('An ActorRdfDereferencePagedHydra instance', () => {
-    let actor: ActorRdfDereferencePagedHydra;
+  describe('An ActorRdfDereferencePagedNext instance', () => {
+    let actor: ActorRdfDereferencePagedNext;
     let mediatorMetadata;
     let mediatorMetadataExtract;
     let mediatorRdfDereference;
@@ -110,7 +110,7 @@ describe('ActorRdfDereferencePagedHydra', () => {
           return action.url === 'http://example.org/' ? Promise.resolve(true) : Promise.reject(true);
         },
       };
-      actor = new ActorRdfDereferencePagedHydra({
+      actor = new ActorRdfDereferencePagedNext({
         bus,
         mediatorMetadata,
         mediatorMetadataExtract,
@@ -157,7 +157,7 @@ describe('ActorRdfDereferencePagedHydra', () => {
           });
         });
       }};
-      actor = new ActorRdfDereferencePagedHydra({
+      actor = new ActorRdfDereferencePagedNext({
         bus,
         mediatorMetadata,
         mediatorMetadataExtract: mediatorMetadataExtractSlow,
@@ -204,7 +204,7 @@ describe('ActorRdfDereferencePagedHydra', () => {
     it('should not run on errors originating from a metadata mediator on page 0', () => {
       const error = new Error('some error');
       mediatorMetadata.mediate = () => Promise.reject(error);
-      actor = new ActorRdfDereferencePagedHydra({
+      actor = new ActorRdfDereferencePagedNext({
         bus,
         mediatorMetadata,
         mediatorMetadataExtract,
@@ -217,7 +217,7 @@ describe('ActorRdfDereferencePagedHydra', () => {
     it('should not run on errors originating from an extract mediator on page 0', () => {
       const error = new Error('some error');
       mediatorMetadataExtract.mediate = () => Promise.reject(error);
-      actor = new ActorRdfDereferencePagedHydra({
+      actor = new ActorRdfDereferencePagedNext({
         bus,
         mediatorMetadata,
         mediatorMetadataExtract,
@@ -230,7 +230,7 @@ describe('ActorRdfDereferencePagedHydra', () => {
     it('should not run on errors originating from a dereference mediator on page 0', () => {
       const error = new Error('some error');
       mediatorRdfDereference.mediate = () => Promise.reject(error);
-      actor = new ActorRdfDereferencePagedHydra({
+      actor = new ActorRdfDereferencePagedNext({
         bus,
         mediatorMetadata,
         mediatorMetadataExtract,
@@ -247,7 +247,7 @@ describe('ActorRdfDereferencePagedHydra', () => {
         mediatorMetadataTemp.mediate = () => Promise.reject(error);
         return ret;
       }};
-      actor = new ActorRdfDereferencePagedHydra({
+      actor = new ActorRdfDereferencePagedNext({
         bus,
         mediatorMetadata: mediatorMetadataTemp,
         mediatorMetadataExtract,
@@ -274,7 +274,7 @@ describe('ActorRdfDereferencePagedHydra', () => {
         mediatorMetadataExtractTemp.mediate = () => Promise.reject(error);
         return ret;
       }};
-      actor = new ActorRdfDereferencePagedHydra({
+      actor = new ActorRdfDereferencePagedNext({
         bus,
         mediatorMetadata,
         mediatorMetadataExtract: mediatorMetadataExtractTemp,
@@ -301,7 +301,7 @@ describe('ActorRdfDereferencePagedHydra', () => {
         mediatorRdfDereferenceTemp.mediate = () => Promise.reject(error);
         return ret;
       }};
-      actor = new ActorRdfDereferencePagedHydra({
+      actor = new ActorRdfDereferencePagedNext({
         bus,
         mediatorMetadata,
         mediatorMetadataExtract,

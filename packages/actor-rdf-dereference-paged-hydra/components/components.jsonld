@@ -1,9 +1,0 @@
-{
-  "@context": "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-dereference-paged-hydra.jsonld",
-  "@id": "npmd:@comunica/actor-rdf-dereference-paged-hydra",
-  "@type": "Module",
-  "requireName": "@comunica/actor-rdf-dereference-paged-hydra",
-  "import": [
-    "Actor/RdfDereferencePaged/Hydra.jsonld"
-  ]
-}
