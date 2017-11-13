@@ -4,8 +4,7 @@ import {ActorRdfDereferencePaged, IActionRdfDereferencePaged,
 import {IActionRdfMetadata, IActorRdfMetadataOutput} from "@comunica/bus-rdf-metadata";
 import {IActionRdfMetadataExtract, IActorRdfMetadataExtractOutput} from "@comunica/bus-rdf-metadata-extract";
 import {Actor, IActorArgs, IActorTest, Mediator} from "@comunica/core";
-import * as RDF from "rdf-js";
-import {PagedAsyncRdfIterator} from "./PagedAsyncRdfIterator";
+import {MediatedPagedAsyncRdfIterator} from "./MediatedPagedAsyncRdfIterator";
 
 /**
  * An RDF Dereference Paged Actor that will lazily follow 'next' links as defined from the extracted metadata.
@@ -47,43 +46,8 @@ export class ActorRdfDereferencePagedNext extends ActorRdfDereferencePaged imple
       { pageUrl: firstPageUrl, metadata: firstPageMetaSplit.metadata })
       .then((output) => output.metadata);
 
-    // We need to do this because class fields are not included in closures.
-    const mediatorRdfDereference = this.mediatorRdfDereference;
-    const mediatorMetadata = this.mediatorMetadata;
-    const mediatorMetadataExtract = this.mediatorMetadataExtract;
-
-    const data: PagedAsyncRdfIterator = new class // tslint:disable-line: max-classes-per-file
-      extends PagedAsyncRdfIterator {
-      protected async getIterator(url: string, page: number, onNextPage: (nextPage: string) => void) {
-        let pageData: RDF.Stream;
-
-        // Don't call mediators again if we are on the first page
-        if (!page) {
-          pageData = firstPageMetaSplit.data;
-          let next: string;
-          try {
-            next = (await firstPageMetadata).next;
-          } catch (e) {
-            this.emit('error', e);
-          }
-          if (next) {
-            onNextPage(next);
-          }
-        } else {
-          const pageQuads: IActorRdfDereferenceOutput = await mediatorRdfDereference.mediate({ url });
-          const pageMetaSplit: IActorRdfMetadataOutput = await mediatorMetadata
-            .mediate({ pageUrl: pageQuads.pageUrl, quads: pageQuads.quads });
-          pageData = pageMetaSplit.data;
-
-          // Don't await, we want to process metadata in the background.
-          mediatorMetadataExtract.mediate({ pageUrl: pageQuads.pageUrl, metadata: pageMetaSplit.metadata })
-            .then((result) => onNextPage(result.metadata.next)).catch((e) => this.emit('error', e));
-        }
-
-        return pageData;
-      }
-    }(firstPageUrl);
-
+    const data: MediatedPagedAsyncRdfIterator = new MediatedPagedAsyncRdfIterator(firstPageUrl, firstPageMetaSplit.data,
+      firstPageMetadata, this.mediatorRdfDereference, this.mediatorMetadata, this.mediatorMetadataExtract);
     return { firstPageUrl, data, firstPageMetadata, triples: firstPage.triples };
   }
 
