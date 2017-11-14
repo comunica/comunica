@@ -19,7 +19,7 @@
     "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-metadata-primary-topic.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-metadata-triple-predicate.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-bus-rdf-dereference-paged.jsonld",
-    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-dereference-paged-hydra.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-dereference-paged-next.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-mediator-combine-union.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-mediator-number.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-mediator-race.jsonld",
@@ -65,7 +65,7 @@
 
         {
           "@id": "ex:myRdfPagedDereferencer",
-          "@type": "ActorRdfDereferencePagedHydra",
+          "@type": "ActorRdfDereferencePagedNext",
           "cardph:mediatorRdfDereference": {
             "@id": "ex:mediatorRdfDereference",
             "@type": "MediatorRace",
