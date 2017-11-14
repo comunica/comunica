@@ -46,8 +46,8 @@ export class ActorRdfResolveQuadPatternQpf extends ActorRdfResolveQuadPatternSou
   protected async createSource(context?: {[id: string]: any}): Promise<ILazyQuadSource> {
     // Collect metadata of the entrypoint
     const entrypoint: string = context.entrypoint;
-    const metadata: {[id: string]: any} = (await this.mediatorRdfDereferencePaged.mediate({ url: entrypoint }))
-      .firstPageMetadata;
+    const metadata: {[id: string]: any} = await (await this.mediatorRdfDereferencePaged
+      .mediate({ url: entrypoint })).firstPageMetadata;
     if (!metadata) {
       throw new Error('No metadata was found at entrypoint ' + entrypoint);
     }
