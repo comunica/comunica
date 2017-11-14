@@ -5,12 +5,12 @@ import {Actor, IActorArgs, IActorTest, Mediator} from "@comunica/core";
 import {BufferedIterator} from "asynciterator";
 import * as _ from "lodash";
 import * as RDF from "rdf-js";
-import {Pattern} from "sparqlalgebrajs";
+import {Algebra} from "sparqlalgebrajs";
 
 /**
  * A comunica actor for handling 'quadpattern' query operations.
  */
-export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Pattern>
+export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Algebra.Pattern>
   implements IActorQueryOperationQuadpatternArgs {
 
   public static readonly QUAD_ELEMENTS = [ 'subject', 'predicate', 'object', 'graph' ];
@@ -38,7 +38,7 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Pat
       .map((term) => term.value));
   }
 
-  public async runOperation(pattern: Pattern, context?: {[id: string]: any})
+  public async runOperation(pattern: Algebra.Pattern, context?: {[id: string]: any})
   : Promise<IActorQueryOperationOutput> {
     // Resolve the quad pattern
     const result = await this.mediatorResolveQuadPattern.mediate({ pattern, context });
