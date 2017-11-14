@@ -6,7 +6,7 @@ import {ILazyQuadSource} from "../../bus-rdf-resolve-quad-pattern/lib/ActorRdfRe
 import {ProxyIterator} from "./ProxyIterator";
 
 /**
- * A quad source that uses a paged RDF dereference mediator
+ * A QPF quad source that uses a paged RDF dereference mediator
  * and a quad pattern to URL constructor
  * to acts as an RDFJS source.
  *
@@ -28,6 +28,67 @@ export class MediatedQuadSource implements ILazyQuadSource {
     this.uriConstructor = uriConstructor;
   }
 
+  /**
+   * A helper function to find a hash with quad elements that have duplicate variables.
+   *
+   * @param {RDF.Term} subject An optional subject term.
+   * @param {RDF.Term} predicate An optional predicate term.
+   * @param {RDF.Term} object An optional object term.
+   * @param {RDF.Term} graph An optional graph term.
+   *
+   * @return {{[p: string]: string[]}} If no equal variable names are present in the four terms, this returns null.
+   *                                   Otherwise, this maps quad elements ('subject', 'predicate', 'object', 'graph')
+   *                                   to the list of quad elements it shares a variable name with.
+   *                                   If no links for a certain element exist, this element will
+   *                                   not be included in the hash.
+   *                                   Note 1: Quad elements will never have a link to themselves.
+   *                                           So this can never occur: { subject: [ 'subject'] },
+   *                                           instead 'null' would be returned.
+   *                                   Note 2: Links only exist in one direction,
+   *                                           this means that { subject: [ 'predicate'], predicate: [ 'subject' ] }
+   *                                           will not occur, instead only { subject: [ 'predicate'] }
+   *                                           will be returned.
+   */
+  public getDuplicateElementLinks(subject?: RDF.Term, predicate?: RDF.Term, object?: RDF.Term, graph?: RDF.Term)
+  : {[element: string]: string[]} {
+    // Collect a variable to quad elements mapping.
+    const variableElements: {[variableName: string]: string[]} = {};
+    let duplicateVariables = false;
+    if (subject && subject.termType === 'Variable') {
+      const length = (variableElements[subject.value] || (variableElements[subject.value] = [])).push('subject');
+      duplicateVariables = duplicateVariables || length > 1;
+    }
+    if (predicate && predicate.termType === 'Variable') {
+      const length = (variableElements[predicate.value] || (variableElements[predicate.value] = [])).push('predicate');
+      duplicateVariables = duplicateVariables || length > 1;
+    }
+    if (object && object.termType === 'Variable') {
+      const length = (variableElements[object.value] || (variableElements[object.value] = [])).push('object');
+      duplicateVariables = duplicateVariables || length > 1;
+    }
+    if (graph && graph.termType === 'Variable') {
+      const length = (variableElements[graph.value] || (variableElements[graph.value] = [])).push('graph');
+      duplicateVariables = duplicateVariables || length > 1;
+    }
+
+    if (!duplicateVariables) {
+      return null;
+    }
+
+    // Collect quad element to elements with equal variables mapping.
+    const duplicateElementLinks: {[element: string]: string[]} = {};
+    for (const variable in variableElements) {
+      const elements = variableElements[variable];
+      const remainingElements = elements.slice(1);
+      // Only store the elements that have at least one equal element.
+      if (remainingElements.length) {
+        duplicateElementLinks[elements[0]] = remainingElements;
+      }
+    }
+
+    return duplicateElementLinks;
+  }
+
   public matchLazy(subject?: RegExp | RDF.Term,
                    predicate?: RegExp | RDF.Term,
                    object?: RegExp | RDF.Term,
@@ -38,11 +99,33 @@ export class MediatedQuadSource implements ILazyQuadSource {
       || graph instanceof RegExp) {
       throw new Error("MediatedQuadSource does not support matching by regular expressions.");
     }
+
+    // Detect duplicate variables in the pattern
+    const duplicateElementLinks: {[element: string]: string[]} = this
+      .getDuplicateElementLinks(subject, predicate, object, graph);
+
     const url: string = this.uriConstructor(subject, predicate, object, graph);
     const quads = new ProxyIterator(() => this.mediatorRdfDereferencePaged.mediate({ url })
       .then((output) => {
         // Emit metadata in the stream, so we can attach it later to the actor's promise output
         quads.emit('metadata', output.firstPageMetadata);
+
+        // If there are duplicate variables in the search pattern,
+        // make sure that we filter out the triples that don't have equal values for those triple elements,
+        // as QPF ignores variable names.
+        if (duplicateElementLinks) {
+          return output.data.filter((quad) => {
+            // No need to check the last element, because an equal element already would have to be found in s, p, or o.
+            for (const element1 of [ 'subject', 'predicate', 'object'/*, 'graph'*/ ]) {
+              for (const element2 of (duplicateElementLinks[element1] || [])) {
+                if ((<any> quad)[element1] !== (<any> quad)[element2]) {
+                  return false;
+                }
+              }
+            }
+            return true;
+          });
+        }
         return output.data;
       }));
     return quads;
