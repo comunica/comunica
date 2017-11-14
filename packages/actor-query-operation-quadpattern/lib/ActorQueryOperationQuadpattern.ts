@@ -69,25 +69,6 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Pat
 
     return { bindingsStream, variables, metadata: result.metadata };
   }
-/*
-  // TODO: remove this once SPARQL Algebra emits RDFJS-compatible terms.
-  protected getTerm(term: string): RDF.Term {
-    if (term.charAt(0) === '?') {
-      return <RDF.Term> { termType: 'Variable', value: term.substr(1) };
-    } else {
-      return <RDF.Term> { termType: 'NamedNode', value: term };
-    }
-  }
-
-  // TODO: remove this once SPARQL Algebra emits RDFJS-compatible terms.
-  protected getQuad(pattern: Pattern): RDF.Quad {
-    return <RDF.Quad> {
-      graph: this.getTerm(pattern.graph),
-      object: this.getTerm(pattern.object),
-      predicate: this.getTerm(pattern.predicate),
-      subject: this.getTerm(pattern.subject),
-    };
-  }*/
 
 }
 
