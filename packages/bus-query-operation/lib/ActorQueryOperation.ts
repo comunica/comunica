@@ -1,6 +1,6 @@
 import {Actor, IAction, IActorArgs, IActorOutput, IActorTest} from "@comunica/core";
 import {AsyncIterator, BufferedIterator, SimpleTransformIteratorOptions} from "asynciterator";
-import {Operation} from "sparqlalgebrajs";
+import {Algebra} from "sparqlalgebrajs";
 import {BindingsStream} from "./Bindings";
 
 /**
@@ -26,7 +26,7 @@ export interface IActionQueryOperation extends IAction {
   /**
    * The query operation to handle.
    */
-  operation: Operation;
+  operation: Algebra.Operation;
   /**
    * The input context,
    * which can contain things such as the entrypoint URL

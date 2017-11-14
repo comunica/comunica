@@ -1,12 +1,12 @@
 import {IActorArgs, IActorTest} from "@comunica/core";
 import {AsyncIterator, BufferedIterator, SimpleTransformIteratorOptions} from "asynciterator";
-import {Operation} from "sparqlalgebrajs";
+import {Algebra} from "sparqlalgebrajs";
 import {ActorQueryOperation, IActionQueryOperation, IActorQueryOperationOutput} from "./ActorQueryOperation";
 
 /**
  * A base implementation for query operation actors for a specific operation type.
  */
-export abstract class ActorQueryOperationTyped<O extends Operation> extends ActorQueryOperation
+export abstract class ActorQueryOperationTyped<O extends Algebra.Operation> extends ActorQueryOperation
   implements IActorQueryOperationTypedArgs {
 
   public readonly operationName: string;
