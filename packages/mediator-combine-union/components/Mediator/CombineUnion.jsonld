@@ -23,7 +23,6 @@
       "constructorArguments": [
         {
           "@id": "cmcu:Mediator/CombineUnion/constructorArgumentsObject",
-          "@type": "https://linkedsoftwaredependencies.org/vocabularies/object-oriented#Object",
           "extends": "cc:Mediator/constructorArgumentsObject",
           "fields": [
             {

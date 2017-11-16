@@ -20,7 +20,6 @@
       "constructorArguments": [
         {
           "@id": "cbi:Actor/Init/constructorArgumentsObject",
-          "@type": "https://linkedsoftwaredependencies.org/vocabularies/object-oriented#Object",
           "extends": "cc:Actor/constructorArgumentsObject"
         }
       ]
