@@ -44,7 +44,6 @@
       "constructorArguments": [
         {
           "@id": "cbrp:Actor/RdfParseFixedMediaTypes/constructorArgumentsObject",
-          "@type": "https://linkedsoftwaredependencies.org/vocabularies/object-oriented#Object",
           "extends": "cbrp:Actor/RdfParse/constructorArgumentsObject",
           "fields": [
             {
