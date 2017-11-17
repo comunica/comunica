@@ -13,9 +13,6 @@ export class ActorRdfMetadataTriplePredicate extends ActorRdfMetadataQuadPredica
 
   constructor(args: IActorRdfParseFixedMediaTypesArgs) {
     super(args);
-    if (!this.predicateRegexes) {
-      throw new Error('A valid "predicates" argument must be provided.');
-    }
   }
 
   public async test(action: IActionRdfMetadata): Promise<IActorTest> {

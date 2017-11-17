@@ -14,9 +14,6 @@ export class MediatorCombineUnion<A extends Actor<I, T, O>, I extends IAction, T
 
   constructor(args: IMediatorCombineUnionArgs<A, I, T, O>) {
     super(args);
-    if (!this.field) {
-      throw new Error('A valid "field" argument must be provided.');
-    }
     this.combiner = this.createCombiner();
   }
 

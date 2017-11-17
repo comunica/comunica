@@ -24,22 +24,6 @@ describe('MediatorNumber', () => {
       expect(() => { (<any> MediatorNumber)(); }).toThrow();
     });
 
-    it('should throw an error when constructed without a field', () => {
-      expect(() => { new (<any> MediatorNumber)({ name: 'mediator', bus, type: MediatorNumber.MIN }); }).toThrow();
-    });
-
-    it('should throw an error when constructed without a type', () => {
-      expect(() => { new (<any> MediatorNumber)({ name: 'mediator', bus, field: 'field' }); }).toThrow();
-    });
-
-    it('should throw an error when constructed without a field and type', () => {
-      expect(() => { new (<any> MediatorNumber)({ name: 'mediator', bus }); }).toThrow();
-    });
-
-    it('should throw an error when constructed without arguments', () => {
-      expect(() => { new (<any> MediatorNumber)(); }).toThrow();
-    });
-
     it('should not throw an error when constructed with \'field\' and \'type\' parameters', () => {
       expect(() => { new MediatorNumber({ name: 'mediator', bus, field: 'field', type: MediatorNumber.MIN }); })
         .not.toThrow();

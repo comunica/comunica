@@ -20,9 +20,6 @@ export class ActorInitHttp extends ActorInit implements IActorInitHelloWorldArgs
 
   constructor(args: IActorInitHelloWorldArgs) {
     super(args);
-    if (!this.mediatorHttp) {
-      throw new Error('A valid "mediatorHttp" argument must be provided.');
-    }
   }
 
   public async test(action: IActionInit): Promise<IActorTest> {

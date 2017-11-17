@@ -26,22 +26,6 @@ describe('ActorRdfMetadataPrimaryTopic', () => {
     it('should not be able to create new ActorRdfMetadataPrimaryTopic objects without \'new\'', () => {
       expect(() => { (<any> ActorRdfMetadataPrimaryTopic)(); }).toThrow();
     });
-
-    it('should throw an error when constructed without a name', () => {
-      expect(() => { new (<any> ActorRdfMetadataPrimaryTopic)({ bus }); }).toThrow();
-    });
-
-    it('should throw an error when constructed without a bus', () => {
-      expect(() => { new (<any> ActorRdfMetadataPrimaryTopic)({ name: 'actor' }); }).toThrow();
-    });
-
-    it('should throw an error when constructed without a name and bus', () => {
-      expect(() => { new (<any> ActorRdfMetadataPrimaryTopic)({}); }).toThrow();
-    });
-
-    it('should throw an error when constructed without arguments', () => {
-      expect(() => { new (<any> ActorRdfMetadataPrimaryTopic)(); }).toThrow();
-    });
   });
 
   describe('An ActorRdfMetadataPrimaryTopic instance', () => {

@@ -18,9 +18,6 @@ export class ActorInitRdfDereference extends ActorInit implements IActorInitRdfP
 
   constructor(args: IActorInitRdfParseArgs) {
     super(args);
-    if (!this.mediatorRdfDereference) {
-      throw new Error('A valid "mediatorRdfDereference" argument must be provided.');
-    }
   }
 
   public async test(action: IActionInit): Promise<IActorTest> {

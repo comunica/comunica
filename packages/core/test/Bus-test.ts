@@ -14,14 +14,6 @@ describe('Bus', () => {
     it('should not be able to create new Bus objects without \'new\'', () => {
       expect(() => { (<any> Bus)(); }).toThrow();
     });
-
-    it('should throw an error when constructed without a name', () => {
-      expect(() => { new (<any> Bus)({}); }).toThrow();
-    });
-
-    it('should throw an error when constructed without arguments', () => {
-      expect(() => { new (<any> Bus)(); }).toThrow();
-    });
   });
 
   describe('A Bus instance', () => {

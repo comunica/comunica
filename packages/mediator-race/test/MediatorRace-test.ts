@@ -20,10 +20,6 @@ describe('MediatorRace', () => {
     it('should not be able to create new MediatorRace objects without \'new\'', () => {
       expect(() => { (<any> MediatorRace)(); }).toThrow();
     });
-
-    it('should throw an error when constructed without arguments', () => {
-      expect(() => { new (<any> MediatorRace)(); }).toThrow();
-    });
   });
 
   describe('An MediatorRace instance', () => {

@@ -21,22 +21,6 @@ describe('Mediator', () => {
     it('should not be able to create new Mediator objects without \'new\'', () => {
       expect(() => { (<any> Mediator)(); }).toThrow();
     });
-
-    it('should throw an error when constructed without a name', () => {
-      expect(() => { new (<any> Mediator)({ bus }); }).toThrow();
-    });
-
-    it('should throw an error when constructed without a bus', () => {
-      expect(() => { new (<any> Mediator)({ name: 'name' }); }).toThrow();
-    });
-
-    it('should throw an error when constructed without a name and bus', () => {
-      expect(() => { new (<any> Mediator)({}); }).toThrow();
-    });
-
-    it('should throw an error when constructed without arguments', () => {
-      expect(() => { new (<any> Mediator)(); }).toThrow();
-    });
   });
 
   describe('A Mediator instance', () => {

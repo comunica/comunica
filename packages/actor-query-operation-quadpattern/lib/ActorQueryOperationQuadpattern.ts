@@ -20,9 +20,6 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
 
   constructor(args: IActorQueryOperationQuadpatternArgs) {
     super(_.assign(args, { operationName: 'pattern' }));
-    if (!this.mediatorResolveQuadPattern) {
-      throw new Error('A valid "mediatorResolveQuadPattern" argument must be provided.');
-    }
   }
 
   /**

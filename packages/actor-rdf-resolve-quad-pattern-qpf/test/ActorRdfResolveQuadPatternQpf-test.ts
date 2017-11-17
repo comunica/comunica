@@ -28,44 +28,6 @@ describe('ActorRdfResolveQuadPatternQpf', () => {
       expect(() => { (<any> ActorRdfResolveQuadPatternQpf)(); }).toThrow();
     });
 
-    it('should throw an error when constructed without a name', () => {
-      expect(() => { new (<any> ActorRdfResolveQuadPatternQpf)({ bus, graphUri: 'g', mediatorRdfDereferencePaged: {},
-        objectUri: 'o', predicateUri: 'p', subjectUri: 's' }); }).toThrow();
-    });
-
-    it('should throw an error when constructed without a bus', () => {
-      expect(() => { new (<any> ActorRdfResolveQuadPatternQpf)({ graphUri: 'g', mediatorRdfDereferencePaged: {},
-        name: 'actor', objectUri: 'o', predicateUri: 'p', subjectUri: 's' }); }).toThrow();
-    });
-
-    it('should throw an error when constructed without a mediator', () => {
-      expect(() => { new (<any> ActorRdfResolveQuadPatternQpf)({ bus, graphUri: 'g',
-        name: 'actor', objectUri: 'o', predicateUri: 'p', subjectUri: 's' }); }).toThrow();
-    });
-
-    it('should throw an error when constructed without a subject uri', () => {
-      expect(() => { new (<any> ActorRdfResolveQuadPatternQpf)({ bus, mediatorRdfDereferencePaged: {},
-        name: 'actor' }); }).toThrow();
-    });
-
-    it('should throw an error when constructed without a predicate uri', () => {
-      expect(() => { new (<any> ActorRdfResolveQuadPatternQpf)({ bus, mediatorRdfDereferencePaged: {},
-        name: 'actor', subjectUri: 's' }); }).toThrow();
-    });
-
-    it('should throw an error when constructed without an object uri', () => {
-      expect(() => { new (<any> ActorRdfResolveQuadPatternQpf)({ bus, mediatorRdfDereferencePaged: {},
-        name: 'actor', predicateUri: 'p', subjectUri: 's' }); }).toThrow();
-    });
-
-    it('should throw an error when constructed without a name, bus, mediator and uris', () => {
-      expect(() => { new (<any> ActorRdfResolveQuadPatternQpf)({}); }).toThrow();
-    });
-
-    it('should throw an error when constructed without arguments', () => {
-      expect(() => { new (<any> ActorRdfResolveQuadPatternQpf)(); }).toThrow();
-    });
-
     it('should not throw an error when constructed without optional graph uri', () => {
       expect(() => { new (<any> ActorRdfResolveQuadPatternQpf)({ bus, mediatorRdfDereferencePaged: {},
         name: 'actor', objectUri: 'o', predicateUri: 'p', subjectUri: 's' }); }).not.toThrow();

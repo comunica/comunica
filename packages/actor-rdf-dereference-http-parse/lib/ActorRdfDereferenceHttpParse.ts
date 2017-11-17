@@ -22,12 +22,6 @@ export class ActorRdfDereferenceHttpParse extends ActorRdfDereference implements
 
   constructor(args: IActorRdfDereferenceHttpParseArgs) {
     super(args);
-    if (!this.mediatorHttp) {
-      throw new Error('A valid "mediatorHttp" argument must be provided.');
-    }
-    if (!this.mediatorRdfParse) {
-      throw new Error('A valid "mediatorRdfParse" argument must be provided.');
-    }
   }
 
   public async test(action: IActionRdfDereference): Promise<IActorTest> {

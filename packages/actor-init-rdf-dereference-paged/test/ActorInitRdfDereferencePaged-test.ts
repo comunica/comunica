@@ -27,28 +27,6 @@ describe('ActorInitRdfDereferencePaged', () => {
     it('should not be able to create new ActorInitRdfDereferencePaged objects without \'new\'', () => {
       expect(() => { (<any> ActorInitRdfDereferencePaged)(); }).toThrow();
     });
-
-    it('should throw an error when constructed without a name', () => {
-      expect(() => { new (<any> ActorInitRdfDereferencePaged)({ bus, mediatorRdfDereferencePaged: mediator }); })
-        .toThrow();
-    });
-
-    it('should throw an error when constructed without a bus', () => {
-      expect(() => { new (<any> ActorInitRdfDereferencePaged)({ name: 'actor', mediatorRdfDereferencePaged: mediator });
-      }).toThrow();
-    });
-
-    it('should throw an error when constructed without a mediator', () => {
-      expect(() => { new (<any> ActorInitRdfDereferencePaged)({ name: 'actor', bus }); }).toThrow();
-    });
-
-    it('should throw an error when constructed without a name, bus and mediator', () => {
-      expect(() => { new (<any> ActorInitRdfDereferencePaged)({}); }).toThrow();
-    });
-
-    it('should throw an error when constructed without arguments', () => {
-      expect(() => { new (<any> ActorInitRdfDereferencePaged)(); }).toThrow();
-    });
   });
 
   describe('An ActorInitRdfDereferencePaged instance', () => {

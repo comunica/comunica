@@ -34,18 +34,6 @@ describe('ActorInitRdfDereference', () => {
       expect(() => { (<any> ActorInitRdfDereference)(); }).toThrow();
     });
 
-    it('should throw an error when constructed without a mediator', () => {
-      expect(() => { new (<any> ActorInitRdfDereference)({ name: 'actor', bus, mediaType: 'abc' }); }).toThrow();
-    });
-
-    it('should throw an error when constructed without a name, bus, mediaType and mediator', () => {
-      expect(() => { new (<any> ActorInitRdfDereference)({}); }).toThrow();
-    });
-
-    it('should throw an error when constructed without arguments', () => {
-      expect(() => { new (<any> ActorInitRdfDereference)(); }).toThrow();
-    });
-
     it('should store the \'mediatorRdfDereference\' parameter', () => {
       expect(new ActorInitRdfDereference({ name: 'actor', bus, mediatorRdfDereference: mediator })
         .mediatorRdfDereference).toEqual(mediator);

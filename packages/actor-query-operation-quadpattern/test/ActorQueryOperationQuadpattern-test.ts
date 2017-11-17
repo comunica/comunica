@@ -28,27 +28,6 @@ describe('ActorQueryOperationQuadpattern', () => {
     it('should not be able to create new ActorQueryOperationQuadpattern objects without \'new\'', () => {
       expect(() => { (<any> ActorQueryOperationQuadpattern)(); }).toThrow();
     });
-
-    it('should throw an error when constructed without a name', () => {
-      expect(() => { new (<any> ActorQueryOperationQuadpattern)({ bus, mediatorResolveQuadPattern: {} }); }).toThrow();
-    });
-
-    it('should throw an error when constructed without a bus', () => {
-      expect(() => { new (<any> ActorQueryOperationQuadpattern)({ name: 'actor', mediatorResolveQuadPattern: {} }); })
-        .toThrow();
-    });
-
-    it('should throw an error when constructed without a name and bus', () => {
-      expect(() => { new (<any> ActorQueryOperationQuadpattern)({ mediatorResolveQuadPattern: {} }); }).toThrow();
-    });
-
-    it('should throw an error when constructed without a mediator', () => {
-      expect(() => { new (<any> ActorQueryOperationQuadpattern)({ name: 'actor', bus }); }).toThrow();
-    });
-
-    it('should throw an error when constructed without arguments', () => {
-      expect(() => { new (<any> ActorQueryOperationQuadpattern)(); }).toThrow();
-    });
   });
 
   describe('An ActorQueryOperationQuadpattern instance', () => {

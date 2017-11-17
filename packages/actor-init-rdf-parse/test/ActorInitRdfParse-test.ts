@@ -35,26 +35,6 @@ describe('ActorInitRdfParse', () => {
       expect(() => { (<any> ActorInitRdfParse)(); }).toThrow();
     });
 
-    it('should throw an error when constructed without a mediaType', () => {
-      expect(() => { new (<any> ActorInitRdfParse)({ name: 'actor', bus, mediatorRdfParse: mediator }); }).toThrow();
-    });
-
-    it('should throw an error when constructed without a mediator', () => {
-      expect(() => { new (<any> ActorInitRdfParse)({ name: 'actor', bus, mediaType: 'abc' }); }).toThrow();
-    });
-
-    it('should throw an error when constructed without a mediaType and mediator', () => {
-      expect(() => { new (<any> ActorInitRdfParse)({ name: 'actor', bus }); }).toThrow();
-    });
-
-    it('should throw an error when constructed without a name, bus, mediaType and mediator', () => {
-      expect(() => { new (<any> ActorInitRdfParse)({}); }).toThrow();
-    });
-
-    it('should throw an error when constructed without arguments', () => {
-      expect(() => { new (<any> ActorInitRdfParse)(); }).toThrow();
-    });
-
     it('should store the \'mediatorRdfParse\' parameter', () => {
       expect(new ActorInitRdfParse({ name: 'actor', bus, mediatorRdfParse: mediator, mediaType: 'abc' })
         .mediatorRdfParse).toEqual(mediator);

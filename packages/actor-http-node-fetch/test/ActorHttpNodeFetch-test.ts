@@ -26,22 +26,6 @@ describe('ActorHttpNodeFetch', () => {
     it('should not be able to create new ActorHttpNodeFetch objects without \'new\'', () => {
       expect(() => { (<any> ActorHttpNodeFetch)(); }).toThrow();
     });
-
-    it('should throw an error when constructed without a name', () => {
-      expect(() => { new (<any> ActorHttpNodeFetch)({ bus }); }).toThrow();
-    });
-
-    it('should throw an error when constructed without a bus', () => {
-      expect(() => { new (<any> ActorHttpNodeFetch)({ name: 'actor' }); }).toThrow();
-    });
-
-    it('should throw an error when constructed without a name and bus', () => {
-      expect(() => { new (<any> ActorHttpNodeFetch)({}); }).toThrow();
-    });
-
-    it('should throw an error when constructed without arguments', () => {
-      expect(() => { new (<any> ActorHttpNodeFetch)(); }).toThrow();
-    });
   });
 
   describe('An ActorHttpNodeFetch instance', () => {

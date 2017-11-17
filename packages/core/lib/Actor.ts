@@ -36,12 +36,6 @@ export abstract class Actor<I extends IAction, T extends IActorTest, O extends I
    */
   constructor(args: IActorArgs<I, T, O>) {
     _.assign(this, args);
-    if (!this.name) {
-      throw new Error('A valid "name" argument must be provided.');
-    }
-    if (!this.bus) {
-      throw new Error('No valid bus was assigned to the actor "' + this.name + '".');
-    }
     this.bus.subscribe(this);
   }
 
