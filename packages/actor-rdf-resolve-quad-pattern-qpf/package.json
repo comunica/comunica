@@ -43,8 +43,7 @@
     "@comunica/core": "^0.0.1",
     "@comunica/bus-rdf-dereference-paged": "^0.0.1",
     "@comunica/actor-rdf-metadata-extract-hydra-controls": "^0.0.1",
-    "@comunica/bus-rdf-resolve-quad-pattern": "^0.0.1",
-    "asynciterator": "^1.1.0"
+    "@comunica/bus-rdf-resolve-quad-pattern": "^0.0.1"
   },
   "jest": {
     "transform": {
