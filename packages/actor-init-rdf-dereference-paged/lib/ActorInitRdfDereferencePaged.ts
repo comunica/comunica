@@ -14,9 +14,6 @@ export class ActorInitRdfDereferencePaged extends ActorInit implements IActorIni
 
   constructor(args: IActorInitRdfDereferencePagedArgs) {
     super(args);
-    if (!this.mediatorRdfDereferencePaged) {
-      throw new Error('A valid "mediatorRdfDereferencePaged" argument must be provided.');
-    }
   }
 
   public async test(action: IActionInit): Promise<IActorTest> {

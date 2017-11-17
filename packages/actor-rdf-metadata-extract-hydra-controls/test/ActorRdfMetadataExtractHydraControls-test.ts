@@ -27,22 +27,6 @@ describe('ActorRdfMetadataExtractHydraControls', () => {
     it('should not be able to create new ActorRdfMetadataExtractHydraControls objects without \'new\'', () => {
       expect(() => { (<any> ActorRdfMetadataExtractHydraControls)(); }).toThrow();
     });
-
-    it('should throw an error when constructed without a name', () => {
-      expect(() => { new (<any> ActorRdfMetadataExtractHydraControls)({ bus }); }).toThrow();
-    });
-
-    it('should throw an error when constructed without a bus', () => {
-      expect(() => { new (<any> ActorRdfMetadataExtractHydraControls)({ name: 'actor' }); }).toThrow();
-    });
-
-    it('should throw an error when constructed without a name and bus', () => {
-      expect(() => { new (<any> ActorRdfMetadataExtractHydraControls)({}); }).toThrow();
-    });
-
-    it('should throw an error when constructed without arguments', () => {
-      expect(() => { new (<any> ActorRdfMetadataExtractHydraControls)(); }).toThrow();
-    });
   });
 
   describe('An ActorRdfMetadataExtractHydraControls instance', () => {

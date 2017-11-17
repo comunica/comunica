@@ -37,37 +37,6 @@ describe('ActorRdfDereferencePagedNext', () => {
     it('should not be able to create new ActorRdfDereferencePagedNext objects without \'new\'', () => {
       expect(() => { (<any> ActorRdfDereferencePagedNext)(); }).toThrow();
     });
-
-    it('should throw an error when constructed without a mediatorMetadata', () => {
-      expect(() => { new (<any> ActorRdfDereferencePagedNext)({
-        bus,
-        mediatorMetadataExtract: mediator,
-        mediatorRdfDereference: mediator,
-        name: 'actor',
-      }); }).toThrow();
-    });
-
-    it('should throw an error when constructed without a mediatorMetadataExtract', () => {
-      expect(() => { new (<any> ActorRdfDereferencePagedNext)({
-        bus,
-        mediatorMetadata: mediator,
-        mediatorRdfDereference: mediator,
-        name: 'actor',
-      }); }).toThrow();
-    });
-
-    it('should throw an error when constructed without a mediatorRdfDereference', () => {
-      expect(() => { new (<any> ActorRdfDereferencePagedNext)({
-        bus,
-        mediatorMetadata: mediator,
-        mediatorMetadataExtract: mediator,
-        name: 'actor',
-      }); }).toThrow();
-    });
-
-    it('should throw an error when constructed without arguments', () => {
-      expect(() => { new (<any> ActorRdfDereferencePagedNext)(); }).toThrow();
-    });
   });
 
   describe('An ActorRdfDereferencePagedNext instance', () => {

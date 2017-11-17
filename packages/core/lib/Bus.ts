@@ -31,9 +31,6 @@ export class Bus<A extends Actor<I, T, O>, I extends IAction, T extends IActorTe
    */
   constructor(args: IBusArgs) {
     _.assign(this, args);
-    if (!this.name) {
-      throw new Error('A valid "name" argument must be provided.');
-    }
   }
 
   /**

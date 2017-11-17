@@ -16,22 +16,6 @@ describe('Actor', () => {
     it('should not be able to create new Actor objects without \'new\'', () => {
       expect(() => { (<any> Actor)(); }).toThrow();
     });
-
-    it('should throw an error when constructed without a name', () => {
-      expect(() => { new (<any> Actor)({ bus }); }).toThrow();
-    });
-
-    it('should throw an error when constructed without a bus', () => {
-      expect(() => { new (<any> Actor)({ name: 'name' }); }).toThrow();
-    });
-
-    it('should throw an error when constructed without a name and bus', () => {
-      expect(() => { new (<any> Actor)({}); }).toThrow();
-    });
-
-    it('should throw an error when constructed without arguments', () => {
-      expect(() => { new (<any> Actor)(); }).toThrow();
-    });
   });
 
   describe('An Actor instance', () => {

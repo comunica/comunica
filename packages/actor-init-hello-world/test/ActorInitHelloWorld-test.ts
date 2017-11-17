@@ -24,22 +24,6 @@ describe('ActorInitHelloWorld', () => {
       expect(() => { (<any> ActorInitHelloWorld)(); }).toThrow();
     });
 
-    it('should throw an error when constructed without a name', () => {
-      expect(() => { new (<any> ActorInitHelloWorld)({ bus }); }).toThrow();
-    });
-
-    it('should throw an error when constructed without a bus', () => {
-      expect(() => { new (<any> ActorInitHelloWorld)({ name: 'actor' }); }).toThrow();
-    });
-
-    it('should throw an error when constructed without a name and bus', () => {
-      expect(() => { new (<any> ActorInitHelloWorld)({}); }).toThrow();
-    });
-
-    it('should throw an error when constructed without arguments', () => {
-      expect(() => { new (<any> ActorInitHelloWorld)(); }).toThrow();
-    });
-
     it('should have a default \'hello\' value', () => {
       expect(new (<any> ActorInitHelloWorld)({ name: 'actor', bus }).hello).toEqual('Hello');
     });

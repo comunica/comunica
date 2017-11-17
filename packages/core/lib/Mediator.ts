@@ -38,12 +38,6 @@ export abstract class Mediator<A extends Actor<I, T, O>,
    */
   constructor(args: IMediatorArgs<A, I, T, O>) {
     _.assign(this, args);
-    if (!this.name) {
-      throw new Error('A valid "name" argument must be provided.');
-    }
-    if (!this.bus) {
-      throw new Error('A valid "bus" argument must be provided to "' + this.name + '".');
-    }
   }
 
   /**

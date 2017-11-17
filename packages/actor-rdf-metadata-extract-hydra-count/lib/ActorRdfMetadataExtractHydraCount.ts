@@ -12,9 +12,6 @@ export class ActorRdfMetadataExtractHydraCount extends ActorRdfMetadataExtract
 
   constructor(args: IActorRdfParseFixedMediaTypesArgs) {
     super(args);
-    if (!this.predicates) {
-      throw new Error('A valid "predicates" argument must be provided.');
-    }
   }
 
   public async test(action: IActionRdfMetadataExtract): Promise<IActorTest> {

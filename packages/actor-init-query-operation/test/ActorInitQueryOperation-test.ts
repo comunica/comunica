@@ -27,27 +27,6 @@ describe('ActorInitQueryOperation', () => {
     it('should not be able to create new ActorInitQueryOperation objects without \'new\'', () => {
       expect(() => { (<any> ActorInitQueryOperation)(); }).toThrow();
     });
-
-    it('should throw an error when constructed without a name', () => {
-      expect(() => { new (<any> ActorInitQueryOperation)({ bus, mediatorQueryOperation: mediator }); }).toThrow();
-    });
-
-    it('should throw an error when constructed without a bus', () => {
-      expect(() => { new (<any> ActorInitQueryOperation)({ name: 'actor', mediatorQueryOperation: mediator }); })
-        .toThrow();
-    });
-
-    it('should throw an error when constructed without a mediator', () => {
-      expect(() => { new (<any> ActorInitQueryOperation)({ name: 'actor', bus }); }).toThrow();
-    });
-
-    it('should throw an error when constructed without a name and bus', () => {
-      expect(() => { new (<any> ActorInitQueryOperation)({ mediatorQueryOperation: mediator }); }).toThrow();
-    });
-
-    it('should throw an error when constructed without arguments', () => {
-      expect(() => { new (<any> ActorInitQueryOperation)(); }).toThrow();
-    });
   });
 
   describe('An ActorInitQueryOperation instance', () => {

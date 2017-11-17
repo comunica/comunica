@@ -22,18 +22,6 @@ export class ActorRdfResolveQuadPatternQpf extends ActorRdfResolveQuadPatternSou
 
   constructor(args: IActorRdfResolveQuadPatternQpfArgs) {
     super(args);
-    if (!this.mediatorRdfDereferencePaged) {
-      throw new Error('A valid "mediatorRdfDereferencePaged" argument must be provided.');
-    }
-    if (!this.subjectUri) {
-      throw new Error('A valid "subjectUri" argument must be provided.');
-    }
-    if (!this.predicateUri) {
-      throw new Error('A valid "predicateUri" argument must be provided.');
-    }
-    if (!this.objectUri) {
-      throw new Error('A valid "objectUri" argument must be provided.');
-    }
   }
 
   public async test(action: IActionRdfResolveQuadPattern): Promise<IActorTest> {

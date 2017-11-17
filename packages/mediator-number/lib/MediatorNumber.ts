@@ -22,12 +22,6 @@ export class MediatorNumber<A extends Actor<I, T, O>, I extends IAction, T exten
 
   constructor(args: IMediatorNumberArgs<A, I, T, O>) {
     super(args);
-    if (!this.field) {
-      throw new Error('A valid "field" argument must be provided.');
-    }
-    if (!this.type) {
-      throw new Error('A valid "type" argument must be provided.');
-    }
     this.indexPicker = this.createIndexPicker();
   }
 
@@ -49,7 +43,7 @@ export class MediatorNumber<A extends Actor<I, T, O>, I extends IAction, T exten
       }, [ -Infinity, -1 ])[1];
     }
     throw new Error('No valid "type" value was given, must be either '
-      + MediatorNumber.MIN + ' or ' + MediatorNumber.MAX);
+      + MediatorNumber.MIN + ' or ' + MediatorNumber.MAX + ', but got: ' + this.type);
   }
 
   protected getOrDefault(value: number | null, defaultValue: number): number {

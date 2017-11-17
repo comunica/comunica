@@ -19,10 +19,6 @@ describe('ActorRdfParse', () => {
     it('should not be able to create new ActorRdfParse objects without \'new\'', () => {
       expect(() => { (<any> ActorRdfParse)(); }).toThrow();
     });
-
-    it('should throw an error when constructed without arguments', () => {
-      expect(() => { new (<any> ActorRdfParse)(); }).toThrow();
-    });
   });
 
   describe('An ActorRdfParse instance', () => {

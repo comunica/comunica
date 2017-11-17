@@ -25,30 +25,6 @@ describe('ActorRdfMetadataExtractHydraCount', () => {
     it('should not be able to create new ActorRdfMetadataExtractHydraCount objects without \'new\'', () => {
       expect(() => { (<any> ActorRdfMetadataExtractHydraCount)(); }).toThrow();
     });
-
-    it('should throw an error when constructed without a name', () => {
-      expect(() => { new (<any> ActorRdfMetadataExtractHydraCount)({ bus, predicates: [] }); }).toThrow();
-    });
-
-    it('should throw an error when constructed without a bus', () => {
-      expect(() => { new (<any> ActorRdfMetadataExtractHydraCount)({ name: 'actor', predicates: [] }); }).toThrow();
-    });
-
-    it('should throw an error when constructed without predicates', () => {
-      expect(() => { new (<any> ActorRdfMetadataExtractHydraCount)({ name: 'actor', bus }); }).toThrow();
-    });
-
-    it('should throw an error when constructed without a name and bus', () => {
-      expect(() => { new (<any> ActorRdfMetadataExtractHydraCount)({ predicates: [] }); }).toThrow();
-    });
-
-    it('should throw an error when constructed without a name, bus and predicates', () => {
-      expect(() => { new (<any> ActorRdfMetadataExtractHydraCount)({ }); }).toThrow();
-    });
-
-    it('should throw an error when constructed without arguments', () => {
-      expect(() => { new (<any> ActorRdfMetadataExtractHydraCount)(); }).toThrow();
-    });
   });
 
   describe('An ActorRdfMetadataExtractHydraCount instance', () => {

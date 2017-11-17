@@ -27,26 +27,6 @@ describe('ActorRdfParseN3', () => {
       expect(() => { (<any> ActorRdfParseN3)(); }).toThrow();
     });
 
-    it('should throw an error when constructed without a name', () => {
-      expect(() => { new (<any> ActorRdfParseN3)({ bus }); }).toThrow();
-    });
-
-    it('should throw an error when constructed without a bus', () => {
-      expect(() => { new (<any> ActorRdfParseN3)({ name: 'actor' }); }).toThrow();
-    });
-
-    it('should throw an error when constructed without mediaTypes', () => {
-      expect(() => { new (<any> ActorRdfParseN3)({ bus, name: 'actor' }); }).toThrow();
-    });
-
-    it('should throw an error when constructed without a name and bus', () => {
-      expect(() => { new (<any> ActorRdfParseN3)({}); }).toThrow();
-    });
-
-    it('should throw an error when constructed without arguments', () => {
-      expect(() => { new (<any> ActorRdfParseN3)(); }).toThrow();
-    });
-
     it('should not throw an error when constructed with required arguments', () => {
       expect(() => { new ActorRdfParseN3({ name: 'actor', bus, mediaTypes: {} }); }).toBeTruthy();
     });

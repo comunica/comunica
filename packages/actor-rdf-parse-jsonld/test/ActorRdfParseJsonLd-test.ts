@@ -27,26 +27,6 @@ describe('ActorRdfParseJsonLd', () => {
       expect(() => { (<any> ActorRdfParseJsonLd)(); }).toThrow();
     });
 
-    it('should throw an error when constructed without a name', () => {
-      expect(() => { new (<any> ActorRdfParseJsonLd)({ bus }); }).toThrow();
-    });
-
-    it('should throw an error when constructed without a bus', () => {
-      expect(() => { new (<any> ActorRdfParseJsonLd)({ name: 'actor' }); }).toThrow();
-    });
-
-    it('should throw an error when constructed without a name and bus', () => {
-      expect(() => { new (<any> ActorRdfParseJsonLd)({}); }).toThrow();
-    });
-
-    it('should throw an error when constructed without arguments', () => {
-      expect(() => { new (<any> ActorRdfParseJsonLd)(); }).toThrow();
-    });
-
-    it('should not throw an error when constructed with required arguments', () => {
-      expect(() => { new ActorRdfParseJsonLd({ name: 'actor', bus, mediaTypes: {} }); }).toBeTruthy();
-    });
-
     it('when constructed with optional mediaTypes should set the mediaTypes', () => {
       expect(new ActorRdfParseJsonLd({ name: 'actor', bus, mediaTypes: {} }).mediaTypes).toEqual({});
     });

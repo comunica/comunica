@@ -20,15 +20,6 @@ export class ActorRdfDereferencePagedNext extends ActorRdfDereferencePaged imple
 
   constructor(args: IActorRdfDereferencePaged) {
     super(args);
-    if (!this.mediatorRdfDereference) {
-      throw new Error('A valid "mediatorRdfDereference" argument must be provided.');
-    }
-    if (!this.mediatorMetadata) {
-      throw new Error('A valid "mediatorMetadata" argument must be provided.');
-    }
-    if (!this.mediatorMetadataExtract) {
-      throw new Error('A valid "mediatorMetadataExtract" argument must be provided.');
-    }
   }
 
   public test(action: IActionRdfDereferencePaged): Promise<IActorTest> {

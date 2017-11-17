@@ -30,26 +30,6 @@ describe('ActorInitHttp', () => {
       expect(() => { (<any> ActorInitHttp)(); }).toThrow();
     });
 
-    it('should throw an error when constructed without a name', () => {
-      expect(() => { new (<any> ActorInitHttp)({ bus, mediatorHttp: mediator }); }).toThrow();
-    });
-
-    it('should throw an error when constructed without a bus', () => {
-      expect(() => { new (<any> ActorInitHttp)({ name: 'actor', mediatorHttp: mediator }); }).toThrow();
-    });
-
-    it('should throw an error when constructed without a mediator', () => {
-      expect(() => { new (<any> ActorInitHttp)({ name: 'actor', bus }); }).toThrow();
-    });
-
-    it('should throw an error when constructed without a name, bus and mediator', () => {
-      expect(() => { new (<any> ActorInitHttp)({}); }).toThrow();
-    });
-
-    it('should throw an error when constructed without arguments', () => {
-      expect(() => { new (<any> ActorInitHttp)(); }).toThrow();
-    });
-
     it('should store the \'mediatorHttp\' parameter', () => {
       expect(new ActorInitHttp({ name: 'actor', bus, mediatorHttp: mediator }).mediatorHttp).toEqual(mediator);
     });

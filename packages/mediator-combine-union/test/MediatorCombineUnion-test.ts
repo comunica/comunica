@@ -23,26 +23,6 @@ describe('MediatorCombineUnion', () => {
     it('should not be able to create new MediatorCombineUnion objects without \'new\'', () => {
       expect(() => { (<any> MediatorCombineUnion)(); }).toThrow();
     });
-
-    it('should throw an error when constructed without a name', () => {
-      expect(() => { new (<any> MediatorCombineUnion)({ bus, field: 'field' }); }).toThrow();
-    });
-
-    it('should throw an error when constructed without a bus', () => {
-      expect(() => { new (<any> MediatorCombineUnion)({ name: 'mediator', field: 'field' }); }).toThrow();
-    });
-
-    it('should throw an error when constructed without a field', () => {
-      expect(() => { new (<any> MediatorCombineUnion)({ name: 'mediator', bus }); }).toThrow();
-    });
-
-    it('should throw an error when constructed without a name, bus and field', () => {
-      expect(() => { new (<any> MediatorCombineUnion)({}); }).toThrow();
-    });
-
-    it('should throw an error when constructed without arguments', () => {
-      expect(() => { new (<any> MediatorCombineUnion)(); }).toThrow();
-    });
   });
 
   describe('An MediatorCombineUnion instance', () => {

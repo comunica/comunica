@@ -29,22 +29,6 @@ describe('ActorRdfDereferenceHttpParse', () => {
     it('should not be able to create new ActorRdfDereferenceHttpParse objects without \'new\'', () => {
       expect(() => { (<any> ActorRdfDereferenceHttpParse)(); }).toThrow();
     });
-
-    it('should throw an error when constructed without a http mediator', () => {
-      expect(() => { new (<any> ActorRdfDereferenceHttpParse)({ name: 'actor', bus, mediatorRdfParse }); }).toThrow();
-    });
-
-    it('should throw an error when constructed without a parse mediator', () => {
-      expect(() => { new (<any> ActorRdfDereferenceHttpParse)({ name: 'actor', bus, mediatorHttp }); }).toThrow();
-    });
-
-    it('should throw an error when constructed without a http and parse mediator', () => {
-      expect(() => { new (<any> ActorRdfDereferenceHttpParse)({ name: 'actor', bus }); }).toThrow();
-    });
-
-    it('should throw an error when constructed without arguments', () => {
-      expect(() => { new (<any> ActorRdfDereferenceHttpParse)(); }).toThrow();
-    });
   });
 
   describe('An ActorRdfDereferenceHttpParse instance', () => {

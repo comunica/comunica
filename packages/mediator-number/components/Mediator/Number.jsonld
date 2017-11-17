@@ -38,7 +38,7 @@
             },
             {
               "keyRaw": "type",
-              "valueRaw": "cmn:Mediator/Number/type"
+              "valueRawReference": "cmn:Mediator/Number/type"
             }
           ]
         }

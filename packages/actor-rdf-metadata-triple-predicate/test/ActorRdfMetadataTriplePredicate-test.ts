@@ -26,30 +26,6 @@ describe('ActorRdfMetadataTriplePredicate', () => {
     it('should not be able to create new ActorRdfMetadataTriplePredicate objects without \'new\'', () => {
       expect(() => { (<any> ActorRdfMetadataTriplePredicate)(); }).toThrow();
     });
-
-    it('should throw an error when constructed without a name', () => {
-      expect(() => { new (<any> ActorRdfMetadataTriplePredicate)({ bus, predicateRegexes: [] }); }).toThrow();
-    });
-
-    it('should throw an error when constructed without a bus', () => {
-      expect(() => { new (<any> ActorRdfMetadataTriplePredicate)({ name: 'actor', predicateRegexes: [] }); }).toThrow();
-    });
-
-    it('should throw an error when constructed without predicates', () => {
-      expect(() => { new (<any> ActorRdfMetadataTriplePredicate)({ name: 'actor', bus }); }).toThrow();
-    });
-
-    it('should throw an error when constructed without a name and bus', () => {
-      expect(() => { new (<any> ActorRdfMetadataTriplePredicate)({ predicateRegexes: [] }); }).toThrow();
-    });
-
-    it('should throw an error when constructed without a name, bus and predicates', () => {
-      expect(() => { new (<any> ActorRdfMetadataTriplePredicate)({ }); }).toThrow();
-    });
-
-    it('should throw an error when constructed without arguments', () => {
-      expect(() => { new (<any> ActorRdfMetadataTriplePredicate)(); }).toThrow();
-    });
   });
 
   describe('An ActorRdfMetadataTriplePredicate instance', () => {

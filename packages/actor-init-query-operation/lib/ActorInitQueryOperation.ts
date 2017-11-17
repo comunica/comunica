@@ -15,9 +15,6 @@ export class ActorInitQueryOperation extends ActorInit implements IActorInitQuer
 
   constructor(args: IActorInitQueryOperationArgs) {
     super(args);
-    if (!this.mediatorQueryOperation) {
-      throw new Error('A valid "mediatorQueryOperation" argument must be provided.');
-    }
   }
 
   public async test(action: IActionInit): Promise<IActorTest> {

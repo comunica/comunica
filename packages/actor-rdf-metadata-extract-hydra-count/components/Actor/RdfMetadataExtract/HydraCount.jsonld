@@ -21,7 +21,8 @@
               "http://www.w3.org/ns/hydra/core#totalItems",
               "http://rdfs.org/ns/void#triples"
             ]
-          }
+          },
+          "required": true
         }
       ],
       "constructorArguments": [

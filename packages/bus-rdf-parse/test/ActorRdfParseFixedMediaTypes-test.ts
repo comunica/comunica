@@ -26,10 +26,6 @@ describe('ActorRdfParseFixedMediaTypes', () => {
     it('should throw an error when constructed without mediaTypes', () => {
       expect(() => { new (<any> ActorRdfParseFixedMediaTypes)({ name: 'actor', bus }); }).toThrow();
     });
-
-    it('should throw an error when constructed without arguments', () => {
-      expect(() => { new (<any> ActorRdfParseFixedMediaTypes)(); }).toThrow();
-    });
   });
 
   describe('An ActorRdfParseFixedMediaTypes instance', () => {

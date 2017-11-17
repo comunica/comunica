@@ -18,12 +18,6 @@ export class ActorInitRdfParse extends ActorInit implements IActorInitRdfParseAr
 
   constructor(args: IActorInitRdfParseArgs) {
     super(args);
-    if (!this.mediatorRdfParse) {
-      throw new Error('A valid "mediatorRdfParse" argument must be provided.');
-    }
-    if (!this.mediaType) {
-      throw new Error('A valid "mediaType" argument must be provided.');
-    }
   }
 
   public async test(action: IActionInit): Promise<IActorTest> {
