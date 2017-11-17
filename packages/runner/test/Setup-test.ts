@@ -1,5 +1,5 @@
 import Bluebird = require("bluebird");
-import {Loader} from "lsd-components";
+import {Loader} from "componentsjs";
 import {Readable} from "stream";
 import {Setup} from "../lib/Setup";
 
