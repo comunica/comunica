@@ -1,9 +1,8 @@
 import {IActionInit} from "@comunica/bus-init";
 import Bluebird = require("bluebird");
 import cancelableAwaiter = require("cancelable-awaiter");
+import {Loader, LoaderProperties} from "componentsjs";
 import * as _ from "lodash";
-import {Loader} from "lsd-components";
-import {LoaderProperties} from "lsd-components";
 import tslib = require("tslib");
 import {Runner} from "./Runner";
 

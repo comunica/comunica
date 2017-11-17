@@ -34,7 +34,7 @@
     "bluebird": "^3.5.0",
     "cancelable-awaiter": "^1.0.5",
     "lodash": "^4.17.4",
-    "lsd-components": "^1.0.4",
+    "componentsjs": "^2.0.0",
     "tslib": "^1.7.1"
   },
   "devDependencies": {
