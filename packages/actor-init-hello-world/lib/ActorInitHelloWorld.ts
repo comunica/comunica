@@ -1,6 +1,7 @@
 import {ActorInit, IActionInit, IActorOutputInit} from "@comunica/bus-init";
 import {IActorArgs, IActorTest} from "@comunica/core";
-import {Duplex, PassThrough, Readable} from "stream";
+import {PassThrough} from "stream";
+const stringToStream = require('streamify-string'); // tslint:disable-line:no-var-requires
 
 /**
  * A Hello World actor that listens on the 'init' bus.
@@ -27,21 +28,8 @@ export class ActorInitHelloWorld extends ActorInit implements IActorInitHelloWor
   public async run(action: IActionInit): Promise<IActorOutputInit> {
     return {
       stderr: new PassThrough(),
-      stdout: this.stringToStream(this.hello + ' ' + action.argv.join(' ') + '\n'),
+      stdout: stringToStream(this.hello + ' ' + action.argv.join(' ') + '\n'),
     };
-  }
-
-  protected stringToStream(input: string): Readable {
-    const array: string[] = input.split('');
-    const readable = new Duplex();
-    readable._read = () => {
-      readable.push(array.shift());
-      if (array.length === 0) {
-        readable.push(null);
-      }
-      return;
-    };
-    return readable;
   }
 
 }

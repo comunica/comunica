@@ -3,6 +3,7 @@ import {Bus} from "@comunica/core";
 import * as RDF from "rdf-js";
 import {Readable} from "stream";
 import {ActorRdfParseJsonLd} from "../lib/ActorRdfParseJsonLd";
+const stringToStream = require('streamify-string');
 
 describe('ActorRdfParseJsonLd', () => {
   let bus;
@@ -137,16 +138,3 @@ describe('ActorRdfParseJsonLd', () => {
     });
   });
 });
-
-function stringToStream(input: string) {
-  const array: string[] = input.split('');
-  const readable = new Readable();
-  readable._read = () => {
-    readable.push(array.shift());
-    if (array.length === 0) {
-      readable.push(null);
-    }
-    return;
-  };
-  return readable;
-}

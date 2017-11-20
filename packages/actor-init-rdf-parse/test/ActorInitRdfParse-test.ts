@@ -4,6 +4,7 @@ import {Bus} from "@comunica/core";
 import {MediatorRace} from "@comunica/mediator-race";
 import {PassThrough, Readable} from "stream";
 import {ActorInitRdfParse} from "../lib/ActorInitRdfParse";
+const stringToStream = require('streamify-string');
 
 const n3 = require('@comunica/actor-rdf-parse-n3/node_modules/n3/N3.js');
 Object.keys(n3).forEach((submodule) => n3[submodule] = n3[submodule]);
@@ -75,16 +76,3 @@ describe('ActorInitRdfParse', () => {
     });
   });
 });
-
-function stringToStream(input: string) {
-  const array: string[] = input.split('');
-  const readable = new Readable();
-  readable._read = () => {
-    readable.push(array.shift());
-    if (array.length === 0) {
-      readable.push(null);
-    }
-    return;
-  };
-  return readable;
-}
