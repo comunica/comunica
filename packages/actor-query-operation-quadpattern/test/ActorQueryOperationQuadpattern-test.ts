@@ -3,7 +3,7 @@ import {Bindings} from "@comunica/bus-query-operation";
 import {Bus} from "@comunica/core";
 import {ArrayIterator} from "asynciterator";
 import * as RDF from "rdf-js";
-import {Operation} from "sparqlalgebrajs";
+import {Algebra} from "sparqlalgebrajs";
 import {ActorQueryOperationQuadpattern} from "../lib/ActorQueryOperationQuadpattern";
 
 describe('ActorQueryOperationQuadpattern', () => {
@@ -56,7 +56,7 @@ describe('ActorQueryOperationQuadpattern', () => {
     });
 
     it('should not test on invalid operations', () => {
-      return expect(actor.test({ operation: <Operation> {} })).rejects.toBeTruthy();
+      return expect(actor.test({ operation: <Algebra.Operation> {} })).rejects.toBeTruthy();
     });
 
     it('should get variables s, p, o, g from pattern ?s ?p ?o ?g', () => {
