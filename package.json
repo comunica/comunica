@@ -9,6 +9,7 @@
     "@types/node-fetch": "^1.6.7",
     "@types/rdf-js": "^1.0.0",
     "@types/uritemplate": "^0.3.4",
+    "asynciterator": "^1.1.0",
     "immutable": "^3.8.2",
     "jest": "^21.0.2",
     "lerna": "^2.4.0",
