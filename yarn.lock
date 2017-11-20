@@ -3125,6 +3125,10 @@ sshpk@^1.7.0:
     jsbn "~0.1.0"
     tweetnacl "~0.14.0"
 
+streamify-array@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/streamify-array/-/streamify-array-1.0.0.tgz#57226d8ffb317d9086a5d3020f6118ec9731d03a"
+
 streamify-string@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/streamify-string/-/streamify-string-1.0.1.tgz#9e220de33e1c475dd30e0206f5b1815cc6c9525b"

@@ -2,6 +2,7 @@ import {ActorRdfMetadataExtract} from "@comunica/bus-rdf-metadata-extract";
 import {Bus} from "@comunica/core";
 import {Readable} from "stream";
 import {ActorRdfMetadataExtractHydraControls} from "../lib/ActorRdfMetadataExtractHydraControls";
+const stream = require('streamify-array');
 
 const HYDRA: string = 'http://www.w3.org/ns/hydra/core#';
 
@@ -391,17 +392,6 @@ describe('ActorRdfMetadataExtractHydraControls', () => {
     });
   });
 });
-
-function stream(quads) {
-  const readable = new Readable({ objectMode: true });
-  readable._read = () => {
-    readable.push(quads.shift());
-    if (quads.length === 0) {
-      readable.push(null);
-    }
-  };
-  return readable;
-}
 
 function quad(s, p, o, g?) {
   return {

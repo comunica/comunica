@@ -1,6 +1,7 @@
 import * as RDF from "rdf-js";
 import {Readable} from "stream";
 import {MediatedQuadSource} from "../lib/MediatedQuadSource";
+const streamifyArray = require('streamify-array');
 
 describe('MediatedQuadSource', () => {
   let mediator;
@@ -279,13 +280,7 @@ describe('MediatedQuadSource', () => {
   });
 
   function stream(elements) {
-    const readable = new Readable({ objectMode: true });
-    readable._read = () => {
-      readable.push(elements.shift());
-      if (elements.length === 0) {
-        readable.push(null);
-      }
-    };
+    const readable = streamifyArray(elements);
     (<any> readable).filter = (filter: (quad) => boolean) => {
       withFilter = filter;
       return readable;

@@ -2,6 +2,7 @@ import {ActorRdfResolveQuadPattern} from "@comunica/bus-rdf-resolve-quad-pattern
 import {Bus} from "@comunica/core";
 import {Readable} from "stream";
 import {ActorRdfResolveQuadPatternQpf} from "../lib/ActorRdfResolveQuadPatternQpf";
+const stream = require('streamify-array');
 
 describe('ActorRdfResolveQuadPatternQpf', () => {
   let bus;
@@ -261,14 +262,3 @@ describe('ActorRdfResolveQuadPatternQpf', () => {
     });
   });
 });
-
-function stream(elements) {
-  const readable = new Readable({ objectMode: true });
-  readable._read = () => {
-    readable.push(elements.shift());
-    if (elements.length === 0) {
-      readable.push(null);
-    }
-  };
-  return readable;
-}

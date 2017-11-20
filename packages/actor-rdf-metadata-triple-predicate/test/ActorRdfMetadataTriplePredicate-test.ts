@@ -3,6 +3,7 @@ import {Bus} from "@comunica/core";
 import * as RDF from "rdf-js";
 import {Readable} from "stream";
 import {ActorRdfMetadataTriplePredicate} from "../lib/ActorRdfMetadataTriplePredicate";
+const stream = require('streamify-array');
 
 describe('ActorRdfMetadataTriplePredicate', () => {
   let bus;
@@ -88,17 +89,6 @@ describe('ActorRdfMetadataTriplePredicate', () => {
     });
   });
 });
-
-function stream(quads) {
-  const readable = new Readable({ objectMode: true });
-  readable._read = () => {
-    readable.push(quads.shift());
-    if (quads.length === 0) {
-      readable.push(null);
-    }
-  };
-  return readable;
-}
 
 function quad(s, p, o, g) {
   return {

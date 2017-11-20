@@ -46,7 +46,8 @@
     "@comunica/bus-rdf-dereference-paged": "^0.0.1",
     "@comunica/bus-rdf-dereference": "^0.0.1",
     "@comunica/bus-rdf-metadata": "^0.0.1",
-    "@comunica/bus-rdf-metadata-extract": "^0.0.1"
+    "@comunica/bus-rdf-metadata-extract": "^0.0.1",
+    "streamify-array": "^1.0.0"
   },
   "jest": {
     "transform": {
