@@ -15,10 +15,7 @@
           "@id": "cr:busInit",
           "comment": "The init bus",
           "range": "cc:Bus",
-          "defaultScoped": {
-            "defaultScope": "cr:Runner",
-            "defaultScopedValue": { "@id": "cbi:Bus/Init" }
-          },
+          "default": { "@id": "cbi:Bus/Init" },
           "unique": true
         },
         {

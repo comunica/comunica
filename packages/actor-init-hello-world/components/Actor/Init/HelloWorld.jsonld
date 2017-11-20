@@ -16,10 +16,7 @@
           "@id": "chw:hello",
           "comment": "The 'hello' prefix",
           "range": "xsd:string",
-          "defaultScoped": {
-            "defaultScope": "chw:Actor/Init/HelloWorld",
-            "defaultScopedValue": "Hello"
-          },
+          "default": "Hello",
           "unique": true
         }
       ],

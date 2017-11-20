@@ -15,12 +15,9 @@
         {
           "@id": "carmtp:Actor/RdfMetadata/TriplePredicate/predicateRegex",
           "comment": "A predicate regex that indicates if a certain triple should be seen as metadata",
-          "defaultScoped": {
-            "defaultScope": "carmtp:Actor/RdfMetadata/TriplePredicate",
-            "defaultScopedValue": [
-              "^http://www.w3.org/ns/hydra/core#.*"
-            ]
-          },
+          "default": [
+            "^http://www.w3.org/ns/hydra/core#.*"
+          ],
           "required": true
         }
       ],

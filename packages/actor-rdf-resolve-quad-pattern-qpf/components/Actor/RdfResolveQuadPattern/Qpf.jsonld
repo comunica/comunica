@@ -23,39 +23,27 @@
           "comment": "The URI that should be interpreted as subject URI",
           "unique": true,
           "required": true,
-          "defaultScoped": {
-            "defaultScope": "carrqpq:Actor/RdfResolveQuadPattern/Qpf",
-            "defaultScopedValue": "http://www.w3.org/1999/02/22-rdf-syntax-ns#subject"
-          }
+          "default": "http://www.w3.org/1999/02/22-rdf-syntax-ns#subject"
         },
         {
           "@id": "carrqpq:Actor/RdfResolveQuadPattern/Qpf/predicateUri",
           "comment": "The URI that should be interpreted as predicate URI",
           "unique": true,
           "required": true,
-          "defaultScoped": {
-            "defaultScope": "carrqpq:Actor/RdfResolveQuadPattern/Qpf",
-            "defaultScopedValue": "http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate"
-          }
+          "default": "http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate"
         },
         {
           "@id": "carrqpq:Actor/RdfResolveQuadPattern/Qpf/objectUri",
           "comment": "The URI that should be interpreted as object URI",
           "unique": true,
           "required": true,
-          "defaultScoped": {
-            "defaultScope": "carrqpq:Actor/RdfResolveQuadPattern/Qpf",
-            "defaultScopedValue": "http://www.w3.org/1999/02/22-rdf-syntax-ns#object"
-          }
+          "default": "http://www.w3.org/1999/02/22-rdf-syntax-ns#object"
         },
         {
           "@id": "carrqpq:Actor/RdfResolveQuadPattern/Qpf/graphUri",
           "comment": "The URI that should be interpreted as graph URI",
           "unique": true,
-          "defaultScoped": {
-            "defaultScope": "carrqpq:Actor/RdfResolveQuadPattern/Qpf",
-            "defaultScopedValue": "http://www.w3.org/ns/sparql-service-description#graph"
-          }
+          "default": "http://www.w3.org/ns/sparql-service-description#graph"
         }
       ],
       "constructorArguments": [
