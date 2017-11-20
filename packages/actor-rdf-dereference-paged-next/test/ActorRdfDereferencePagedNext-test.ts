@@ -2,6 +2,7 @@ import {ActorRdfDereferencePaged} from "@comunica/bus-rdf-dereference-paged";
 import {Bus} from "@comunica/core";
 import {Readable} from "stream";
 import {ActorRdfDereferencePagedNext} from "../lib/ActorRdfDereferencePagedNext";
+const stream = require('streamify-array');
 
 describe('ActorRdfDereferencePagedNext', () => {
   let bus;
@@ -310,14 +311,3 @@ describe('ActorRdfDereferencePagedNext', () => {
 
   });
 });
-
-function stream(elements) {
-  const readable = new Readable({ objectMode: true });
-  readable._read = () => {
-    readable.push(elements.shift());
-    if (elements.length === 0) {
-      readable.push(null);
-    }
-  };
-  return readable;
-}
