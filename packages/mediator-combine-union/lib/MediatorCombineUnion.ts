@@ -1,5 +1,4 @@
 import {Actor, IAction, IActorOutput, IActorReply, IActorTest, IMediatorArgs, Mediator} from "@comunica/core";
-import * as _ from "lodash";
 
 /**
  * A comunica mediator that takes the union of all actor results.
@@ -21,7 +20,7 @@ export class MediatorCombineUnion<A extends Actor<I, T, O>, I extends IAction, T
     const testResults: IActorReply<A, I, T, O>[] = this.publish(action);
 
     // Delegate test errors.
-    await Promise.all(_.map(testResults, 'reply'));
+    await Promise.all(require('lodash.map')(testResults, 'reply'));
 
     // Run action on all actors.
     const results: O[] = await Promise.all(testResults.map((result) => result.actor.run(action)));
@@ -37,7 +36,7 @@ export class MediatorCombineUnion<A extends Actor<I, T, O>, I extends IAction, T
   protected createCombiner(): (results: O[]) => O {
     return (results: O[]) => {
       const data: any = {};
-      data[this.field] = _.defaults.apply(_, _.map(results, this.field));
+      data[this.field] = require('lodash.defaults').apply({}, require('lodash.map')(results, this.field));
       return data;
     };
   }

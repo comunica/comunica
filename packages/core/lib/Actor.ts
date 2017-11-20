@@ -1,4 +1,3 @@
-import * as _ from "lodash";
 import {Bus} from "./Bus";
 
 /**
@@ -35,7 +34,7 @@ export abstract class Actor<I extends IAction, T extends IActorTest, O extends I
    * @throws When required arguments are missing.
    */
   constructor(args: IActorArgs<I, T, O>) {
-    _.assign(this, args);
+    require('lodash.assign')(this, args);
     this.bus.subscribe(this);
   }
 

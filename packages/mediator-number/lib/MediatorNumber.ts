@@ -1,5 +1,4 @@
 import {Actor, IAction, IActorOutput, IActorReply, IActorTest, IMediatorArgs, Mediator} from "@comunica/core";
-import * as _ from "lodash";
 
 /**
  * A mediator that can mediate over a single number field.
@@ -51,7 +50,7 @@ export class MediatorNumber<A extends Actor<I, T, O>, I extends IAction, T exten
   }
 
   protected async mediateWith(action: I, testResults: IActorReply<A, I, T, O>[]): Promise<A> {
-    const results: T[] = await Promise.all(_.map(testResults, 'reply'));
+    const results: T[] = await Promise.all(<Promise<T>[]> require('lodash.map')(testResults, 'reply'));
     return testResults[this.indexPicker(results)].actor;
   }
 

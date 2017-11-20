@@ -30,7 +30,7 @@
     "index.js"
   ],
   "dependencies": {
-    "lodash": "^4.17.4"
+    "lodash.assign": "^4.2.0"
   },
   "jest": {
     "transform": {

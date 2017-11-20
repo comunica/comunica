@@ -1,5 +1,4 @@
 import {IAction, IActorArgs, IActorTest} from "@comunica/core";
-import * as _ from "lodash";
 import {
   ActorRdfParse, IActionRdfParse, IActionRdfParseOrMediaType, IActorOutputRdfParseOrMediaType,
   IActorRdfMediaTypeOutput,
@@ -36,7 +35,7 @@ export abstract class ActorRdfParseFixedMediaTypes extends ActorRdfParse
       throw new Error('A valid "mediaTypes" argument must be provided.');
     }
     const scale: number = this.priorityScale || this.priorityScale === 0 ? this.priorityScale : 1;
-    this.mediaTypes = _.mapValues(this.mediaTypes, (priority) => priority * scale);
+    this.mediaTypes = require('lodash.mapvalues')(this.mediaTypes, (priority: number) => priority * scale);
     this.mediaTypes = Object.freeze(this.mediaTypes);
   }
 
