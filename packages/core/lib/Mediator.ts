@@ -1,4 +1,3 @@
-import * as _ from "lodash";
 import {inspect} from "util";
 import {Actor, IAction, IActorOutput, IActorTest} from "./Actor";
 import {Bus, IActorReply} from "./Bus";
@@ -37,7 +36,7 @@ export abstract class Mediator<A extends Actor<I, T, O>,
    * @throws When required arguments are missing.
    */
   constructor(args: IMediatorArgs<A, I, T, O>) {
-    _.assign(this, args);
+    require('lodash.assign')(this, args);
   }
 
   /**

@@ -1,4 +1,3 @@
-import * as _ from "lodash";
 import {Actor, IAction, IActorOutput, IActorTest} from "./Actor";
 
 /**
@@ -30,7 +29,7 @@ export class Bus<A extends Actor<I, T, O>, I extends IAction, T extends IActorTe
    * @throws When required arguments are missing.
    */
   constructor(args: IBusArgs) {
-    _.assign(this, args);
+    require('lodash.assign')(this, args);
   }
 
   /**

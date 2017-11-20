@@ -2,7 +2,6 @@ import {IActionInit} from "@comunica/bus-init";
 import Bluebird = require("bluebird");
 import cancelableAwaiter = require("cancelable-awaiter");
 import {Loader, LoaderProperties} from "componentsjs";
-import * as _ from "lodash";
 import tslib = require("tslib");
 import {Runner} from "./Runner";
 
@@ -43,7 +42,7 @@ export class Setup {
     if (!properties) {
       properties = {};
     }
-    _.defaults(properties, { mainModulePath: process.cwd() });
+    require('lodash.defaults')(properties, { mainModulePath: process.cwd() });
 
     // Instantiate the given config file
     const loader = new Loader(properties);

@@ -1,7 +1,6 @@
 import {ActorRdfMetadataExtract, IActionRdfMetadataExtract,
   IActorRdfMetadataExtractOutput} from "@comunica/bus-rdf-metadata-extract";
 import {IActorArgs, IActorTest} from "@comunica/core";
-import * as _ from "lodash";
 import * as RDF from "rdf-js";
 import {parse as parseUriTemplate, UriTemplate} from "uritemplate";
 
@@ -51,43 +50,44 @@ export class ActorRdfMetadataExtractHydraControls extends ActorRdfMetadataExtrac
     if (!searchFormData) {
       searchForms = [];
     } else {
-      searchForms = _.flatten(_.values(_.mapValues(searchFormData, ((searchFormValues) => {
-        return searchFormValues.map((searchFormId: string) => {
-          const searchTemplates = (hydraProperties.template || {})[searchFormId] || [];
+      searchForms = require('lodash.flatten')(require('lodash.values')(require('lodash.mapvalues')(searchFormData,
+        ((searchFormValues: string[]) => {
+          return searchFormValues.map((searchFormId: string) => {
+            const searchTemplates = (hydraProperties.template || {})[searchFormId] || [];
 
-          // Parse the template
-          if (searchTemplates.length !== 1) {
-            throw new Error('Expected 1 hydra:template for ' + searchFormId);
-          }
-          const template: string = searchTemplates[0];
-          const searchTemplate: UriTemplate = parseUriTemplate(template);
+            // Parse the template
+            if (searchTemplates.length !== 1) {
+              throw new Error('Expected 1 hydra:template for ' + searchFormId);
+            }
+            const template: string = searchTemplates[0];
+            const searchTemplate: UriTemplate = parseUriTemplate(template);
 
-          // Parse the template mappings
-          const mappings: {[id: string]: string} = ((hydraProperties.mapping || {})[searchFormId] || [])
-            .reduce((acc: {[id: string]: string}, mapping: string) => {
-              const variable = ((hydraProperties.variable || {})[mapping] || [])[0];
-              const property = ((hydraProperties.property || {})[mapping] || [])[0];
-              if (!variable) {
-                throw new Error('Expected a hydra:variable for ' + mapping);
-              }
-              if (!property) {
-                throw new Error('Expected a hydra:property for ' + mapping);
-              }
-              acc[property] = variable;
-              return acc;
-            }, {});
+            // Parse the template mappings
+            const mappings: {[id: string]: string} = ((hydraProperties.mapping || {})[searchFormId] || [])
+              .reduce((acc: {[id: string]: string}, mapping: string) => {
+                const variable = ((hydraProperties.variable || {})[mapping] || [])[0];
+                const property = ((hydraProperties.property || {})[mapping] || [])[0];
+                if (!variable) {
+                  throw new Error('Expected a hydra:variable for ' + mapping);
+                }
+                if (!property) {
+                  throw new Error('Expected a hydra:property for ' + mapping);
+                }
+                acc[property] = variable;
+                return acc;
+              }, {});
 
-          // Gets the URL of the Triple Pattern Fragment with the given triple pattern
-          const getUri = (entries: {[id: string]: string}) => {
-            return searchTemplate.expand(Object.keys(entries).reduce((variables: {[id: string]: string}, key) => {
-              variables[mappings[key]] = entries[key];
-              return variables;
-            }, {}));
-          };
+            // Gets the URL of the Triple Pattern Fragment with the given triple pattern
+            const getUri = (entries: {[id: string]: string}) => {
+              return searchTemplate.expand(Object.keys(entries).reduce((variables: {[id: string]: string}, key) => {
+                variables[mappings[key]] = entries[key];
+                return variables;
+              }, {}));
+            };
 
-          return { template, mappings, getUri };
-        });
-      }))));
+            return { template, mappings, getUri };
+          });
+        }))));
     }
     return { values: searchForms };
   }
@@ -120,7 +120,7 @@ export class ActorRdfMetadataExtractHydraControls extends ActorRdfMetadataExtrac
   public async run(action: IActionRdfMetadataExtract): Promise<IActorRdfMetadataExtractOutput> {
     const metadata: {[id: string]: any} = {};
     const hydraProperties = await this.getHydraProperties(action.metadata);
-    _.assign(metadata, this.getLinks(action.pageUrl, hydraProperties));
+    require('lodash.assign')(metadata, this.getLinks(action.pageUrl, hydraProperties));
     metadata.searchForms = this.getSearchForms(hydraProperties);
     return { metadata };
   }

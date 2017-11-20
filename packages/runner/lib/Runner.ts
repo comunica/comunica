@@ -1,7 +1,6 @@
 import {ActorInit, IActionInit, IActorOutputInit} from "@comunica/bus-init";
 import {Actor, IAction, IActorOutput, IActorTest} from "@comunica/core";
 import {Bus, IActorReply} from "@comunica/core";
-import * as _ from "lodash";
 
 /**
  * A Runner is used to instantiate a comunica workflow.
@@ -17,7 +16,7 @@ export class Runner implements IRunnerArgs {
   public readonly actors: Actor<IAction, IActorTest, IActorOutput>;
 
   constructor(args: IRunnerArgs) {
-    _.assign(this, args);
+    require('lodash.assign')(this, args);
     if (!this.busInit) {
       throw new Error('A valid "busInit" argument must be provided.');
     }

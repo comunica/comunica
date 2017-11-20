@@ -33,7 +33,8 @@
   "dependencies": {
     "bluebird": "^3.5.0",
     "cancelable-awaiter": "^1.0.5",
-    "lodash": "^4.17.4",
+    "lodash.assign": "^4.2.0",
+    "lodash.defaults": "^4.2.0",
     "componentsjs": "^2.0.0",
     "tslib": "^1.7.1"
   },

@@ -16,7 +16,43 @@
   version "20.0.8"
   resolved "https://registry.yarnpkg.com/@types/jest/-/jest-20.0.8.tgz#7f8c97f73d20d3bf5448fbe33661a342002b5954"
 
-"@types/lodash@^4.14.74":
+"@types/lodash.assign@^4.2.3":
+  version "4.2.3"
+  resolved "https://registry.yarnpkg.com/@types/lodash.assign/-/lodash.assign-4.2.3.tgz#3f2262d8a6e7205490a6d9f3a7c031715edab945"
+  dependencies:
+    "@types/lodash" "*"
+
+"@types/lodash.defaults@^4.2.3":
+  version "4.2.3"
+  resolved "https://registry.yarnpkg.com/@types/lodash.defaults/-/lodash.defaults-4.2.3.tgz#b4ce5afeafb8e55be6c771f77a55201ba696de5f"
+  dependencies:
+    "@types/lodash" "*"
+
+"@types/lodash.flatten@^4.4.3":
+  version "4.4.3"
+  resolved "https://registry.yarnpkg.com/@types/lodash.flatten/-/lodash.flatten-4.4.3.tgz#7806caef7eca7aa75600b2f87c474e3af980304a"
+  dependencies:
+    "@types/lodash" "*"
+
+"@types/lodash.mapvalues@^4.6.3":
+  version "4.6.3"
+  resolved "https://registry.yarnpkg.com/@types/lodash.mapvalues/-/lodash.mapvalues-4.6.3.tgz#71208ea7b08d7fc939b37c1922b8c7cc07af89b3"
+  dependencies:
+    "@types/lodash" "*"
+
+"@types/lodash.uniq@^4.5.3":
+  version "4.5.3"
+  resolved "https://registry.yarnpkg.com/@types/lodash.uniq/-/lodash.uniq-4.5.3.tgz#37e4586ebb9467306db9b32ee85495fd8942165b"
+  dependencies:
+    "@types/lodash" "*"
+
+"@types/lodash.values@^4.3.3":
+  version "4.3.3"
+  resolved "https://registry.yarnpkg.com/@types/lodash.values/-/lodash.values-4.3.3.tgz#910edc65b391782d65dc4b4d8804a0dabc5370e6"
+  dependencies:
+    "@types/lodash" "*"
+
+"@types/lodash@*":
   version "4.14.85"
   resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.85.tgz#a16fbf942422f6eca5622b6910492c496c35069b"
 
@@ -236,6 +272,12 @@ async@^2.1.4:
   resolved "https://registry.yarnpkg.com/async/-/async-2.6.0.tgz#61a29abb6fcc026fea77e56d1c6ec53a795951f4"
   dependencies:
     lodash "^4.14.0"
+
+asynciterator@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/asynciterator/-/asynciterator-1.1.0.tgz#b7c083981a32949772d7521159d9754dbacef4ad"
+  dependencies:
+    immediate "^3.2.3"
 
 asynckit@^0.4.0:
   version "0.4.0"
@@ -1503,6 +1545,10 @@ http-signature@~1.2.0:
 iconv-lite@0.4.19, iconv-lite@^0.4.17:
   version "0.4.19"
   resolved "https://registry.yarnpkg.com/iconv-lite/-/iconv-lite-0.4.19.tgz#f7468f60135f5e5dad3399c0a81be9a1603a082b"
+
+immediate@^3.2.3:
+  version "3.2.3"
+  resolved "https://registry.yarnpkg.com/immediate/-/immediate-3.2.3.tgz#d140fa8f614659bd6541233097ddaac25cdd991c"
 
 immutable@^3.8.2:
   version "3.8.2"

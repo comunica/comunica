@@ -3,7 +3,6 @@ import {ActorQueryOperationTyped, Bindings, BindingsStream, IActionQueryOperatio
 import {IActionRdfResolveQuadPattern, IActorRdfResolveQuadPatternOutput} from "@comunica/bus-rdf-resolve-quad-pattern";
 import {Actor, IActorArgs, IActorTest, Mediator} from "@comunica/core";
 import {BufferedIterator} from "asynciterator";
-import * as _ from "lodash";
 import * as RDF from "rdf-js";
 import {Algebra} from "sparqlalgebrajs";
 
@@ -19,7 +18,7 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
     IActorRdfResolveQuadPatternOutput>, IActionRdfResolveQuadPattern, IActorTest, IActorRdfResolveQuadPatternOutput>;
 
   constructor(args: IActorQueryOperationQuadpatternArgs) {
-    super(_.assign(args, { operationName: 'pattern' }));
+    super(require('lodash.assign')(args, { operationName: 'pattern' }));
   }
 
   /**
@@ -29,7 +28,7 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
    * @return {string[]} The variables in this pattern, without '?' prefix.
    */
   public getVariables(pattern: RDF.Quad): string[] {
-    return _.uniq(ActorQueryOperationQuadpattern.QUAD_ELEMENTS
+    return require('lodash.uniq')(ActorQueryOperationQuadpattern.QUAD_ELEMENTS
       .map((element) => (<any> pattern)[element])
       .filter((term) => term.termType === 'Variable')
       .map((term) => term.value));
