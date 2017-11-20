@@ -26,6 +26,9 @@
     "index.d.ts",
     "index.js"
   ],
+  "dependencies": {
+    "streamify-string": "^1.0.1"
+  },
   "peerDependencies": {
     "@comunica/bus-init": "^0.0.1",
     "@comunica/core": "^0.0.1"
