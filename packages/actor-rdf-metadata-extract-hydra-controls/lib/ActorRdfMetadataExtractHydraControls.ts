@@ -3,7 +3,6 @@ import {ActorRdfMetadataExtract, IActionRdfMetadataExtract,
 import {IActorArgs, IActorTest} from "@comunica/core";
 import * as _ from "lodash";
 import * as RDF from "rdf-js";
-// TODO: expects https://github.com/DefinitelyTyped/DefinitelyTyped/pull/21132 to be merged
 import {parse as parseUriTemplate, UriTemplate} from "uritemplate";
 
 /**
