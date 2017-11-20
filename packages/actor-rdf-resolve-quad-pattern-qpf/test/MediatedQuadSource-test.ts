@@ -2,6 +2,7 @@ import * as RDF from "rdf-js";
 import {Readable} from "stream";
 import {MediatedQuadSource} from "../lib/MediatedQuadSource";
 const streamifyArray = require('streamify-array');
+import {namedNode, quad, variable} from "rdf-data-model";
 
 describe('MediatedQuadSource', () => {
   let mediator;
@@ -29,14 +30,14 @@ describe('MediatedQuadSource', () => {
       });
     });
     uriConstructor = (s, p, o, g) => s.value + ',' + p.value + ',' + o.value + ',' + g.value;
-    S = { value: 'S' };
-    P = { value: 'P' };
-    O = { value: 'O' };
-    G = { value: 'G' };
-    V1 = { value: '?v1', termType: 'Variable' };
-    V2 = { value: '?v2', termType: 'Variable' };
-    V3 = { value: '?v3', termType: 'Variable' };
-    V4 = { value: '?v4', termType: 'Variable' };
+    S = namedNode('S');
+    P = namedNode('P');
+    O = namedNode('O');
+    G = namedNode('G');
+    V1 = variable('v1');
+    V2 = variable('v2');
+    V3 = variable('v3');
+    V4 = variable('v4');
   });
 
   describe('The MediatedQuadSource module', () => {
@@ -288,12 +289,3 @@ describe('MediatedQuadSource', () => {
     return readable;
   }
 });
-
-function quad(s, p, o, g) {
-  return {
-    graph: g,
-    object: o,
-    predicate: p,
-    subject: s,
-  };
-}

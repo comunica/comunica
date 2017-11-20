@@ -4,6 +4,7 @@ import * as RDF from "rdf-js";
 import {Readable} from "stream";
 import {ActorRdfMetadataTriplePredicate} from "../lib/ActorRdfMetadataTriplePredicate";
 const stream = require('streamify-array');
+const quad = require('rdf-quad');
 
 describe('ActorRdfMetadataTriplePredicate', () => {
   let bus;
@@ -89,12 +90,3 @@ describe('ActorRdfMetadataTriplePredicate', () => {
     });
   });
 });
-
-function quad(s, p, o, g) {
-  return {
-    graph:     { value: g },
-    object:    { value: o },
-    predicate: { value: p },
-    subject:   { value: s },
-  };
-}

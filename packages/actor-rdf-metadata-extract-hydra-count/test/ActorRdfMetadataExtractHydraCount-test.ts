@@ -3,6 +3,7 @@ import {Bus} from "@comunica/core";
 import {Readable} from "stream";
 import {ActorRdfMetadataExtractHydraCount} from "../lib/ActorRdfMetadataExtractHydraCount";
 const stream = require('streamify-array');
+const quad = require('rdf-quad');
 
 describe('ActorRdfMetadataExtractHydraCount', () => {
   let bus;
@@ -61,12 +62,3 @@ describe('ActorRdfMetadataExtractHydraCount', () => {
     });
   });
 });
-
-function quad(s, p, o, g) {
-  return {
-    graph:     { value: g },
-    object:    { value: o },
-    predicate: { value: p },
-    subject:   { value: s },
-  };
-}

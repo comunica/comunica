@@ -72,7 +72,13 @@
   version "8.0.53"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-8.0.53.tgz#396b35af826fa66aad472c8cb7b8d5e277f4e6d8"
 
-"@types/rdf-js@^1.0.0":
+"@types/rdf-data-model@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@types/rdf-data-model/-/rdf-data-model-1.0.1.tgz#fbf643cac7a08cacc502dbad063ea3eacddcd36f"
+  dependencies:
+    "@types/rdf-js" "*"
+
+"@types/rdf-js@*", "@types/rdf-js@^1.0.0":
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/@types/rdf-js/-/rdf-js-1.0.1.tgz#312e8478b608c3e2f66d3a2cae0c96c052c495a6"
   dependencies:
@@ -2785,6 +2791,16 @@ rc@^1.0.1, rc@^1.1.6, rc@^1.1.7:
     ini "~1.3.0"
     minimist "^1.2.0"
     strip-json-comments "~2.0.1"
+
+rdf-data-model@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/rdf-data-model/-/rdf-data-model-1.0.0.tgz#e768e1c2cd904c186471b20d1a4fce77c7712a4b"
+
+rdf-quad@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/rdf-quad/-/rdf-quad-1.0.0.tgz#5e8078f6e5bc34865d801845925a16b7fc6e88a9"
+  dependencies:
+    rdf-data-model "^1.0.0"
 
 read-cmd-shim@^1.0.1:
   version "1.0.1"
