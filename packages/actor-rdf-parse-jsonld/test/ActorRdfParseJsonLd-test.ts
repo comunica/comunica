@@ -4,6 +4,7 @@ import * as RDF from "rdf-js";
 import {Readable} from "stream";
 import {ActorRdfParseJsonLd} from "../lib/ActorRdfParseJsonLd";
 const stringToStream = require('streamify-string');
+const arrayifyStream = require('arrayify-stream');
 
 describe('ActorRdfParseJsonLd', () => {
   let bus;
@@ -86,19 +87,7 @@ describe('ActorRdfParseJsonLd', () => {
 
       it('should run', () => {
         return actor.run({ parse: { input, mediaType: 'application/ld+json'}})
-          .then((output) => {
-            return new Promise((resolve, reject) => {
-              const quads: RDF.Quad[] = [];
-              output.parse.quads.on('data', (quad) => quads.push(quad));
-              output.parse.quads.on('end', () => {
-                if (quads.length === 2) {
-                  resolve();
-                } else {
-                  reject();
-                }
-              });
-            });
-          });
+          .then(async (output) => expect(await arrayifyStream(output.parse.quads)).toHaveLength(2));
       });
     });
 

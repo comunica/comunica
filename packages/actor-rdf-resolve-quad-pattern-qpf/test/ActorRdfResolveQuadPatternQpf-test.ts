@@ -3,6 +3,7 @@ import {Bus} from "@comunica/core";
 import {Readable} from "stream";
 import {ActorRdfResolveQuadPatternQpf} from "../lib/ActorRdfResolveQuadPatternQpf";
 const stream = require('streamify-array');
+const arrayifyStream = require('arrayify-stream');
 
 describe('ActorRdfResolveQuadPatternQpf', () => {
   let bus;
@@ -155,70 +156,30 @@ describe('ActorRdfResolveQuadPatternQpf', () => {
     });
 
     it('should run for QPF pattern 1', () => {
-      return actor.run({ pattern: pattern1, context: { entrypoint: 'entrypoint' } }).then((output) => {
-        return new Promise((resolve, reject) => {
-          expect(output.metadata).toBe(metadataQpf);
-          const list = [];
-          output.data.on('data', (data) => list.push(data));
-          output.data.on('end', () => {
-            if (list.length !== 3) {
-              reject();
-            }
-            expect(list).toEqual([ 'a,_,c,d/a', 'a,_,c,d/b', 'a,_,c,d/c' ]);
-            resolve();
-          });
-        });
+      return actor.run({ pattern: pattern1, context: { entrypoint: 'entrypoint' } }).then(async (output) => {
+        expect(output.metadata).toBe(metadataQpf);
+        expect(await arrayifyStream(output.data)).toEqual([ 'a,_,c,d/a', 'a,_,c,d/b', 'a,_,c,d/c' ]);
       });
     });
 
     it('should run for QPF pattern 2', () => {
-      return actor.run({ pattern: pattern2, context: { entrypoint: 'entrypoint' } }).then((output) => {
-        return new Promise((resolve, reject) => {
-          expect(output.metadata).toBe(metadataQpf);
-          const list = [];
-          output.data.on('data', (data) => list.push(data));
-          output.data.on('end', () => {
-            if (list.length !== 3) {
-              reject();
-            }
-            expect(list).toEqual([ 'a,b,_,d/a', 'a,b,_,d/b', 'a,b,_,d/c' ]);
-            resolve();
-          });
-        });
+      return actor.run({ pattern: pattern2, context: { entrypoint: 'entrypoint' } }).then(async (output) => {
+        expect(output.metadata).toBe(metadataQpf);
+        expect(await arrayifyStream(output.data)).toEqual([ 'a,b,_,d/a', 'a,b,_,d/b', 'a,b,_,d/c' ]);
       });
     });
 
     it('should run for QPF pattern 3', () => {
-      return actor.run({ pattern: pattern3, context: { entrypoint: 'entrypoint' } }).then((output) => {
-        return new Promise((resolve, reject) => {
-          expect(output.metadata).toBe(metadataQpf);
-          const list = [];
-          output.data.on('data', (data) => list.push(data));
-          output.data.on('end', () => {
-            if (list.length !== 3) {
-              reject();
-            }
-            expect(list).toEqual([ 'a,b,c,_/a', 'a,b,c,_/b', 'a,b,c,_/c' ]);
-            resolve();
-          });
-        });
+      return actor.run({ pattern: pattern3, context: { entrypoint: 'entrypoint' } }).then(async (output) => {
+        expect(output.metadata).toBe(metadataQpf);
+        expect(await arrayifyStream(output.data)).toEqual([ 'a,b,c,_/a', 'a,b,c,_/b', 'a,b,c,_/c' ]);
       });
     });
 
     it('should run for QPF pattern 4', () => {
-      return actor.run({ pattern: pattern4, context: { entrypoint: 'entrypoint' } }).then((output) => {
-        return new Promise((resolve, reject) => {
-          expect(output.metadata).toBe(metadataQpf);
-          const list = [];
-          output.data.on('data', (data) => list.push(data));
-          output.data.on('end', () => {
-            if (list.length !== 3) {
-              reject();
-            }
-            expect(list).toEqual([ '_,b,c,d/a', '_,b,c,d/b', '_,b,c,d/c' ]);
-            resolve();
-          });
-        });
+      return actor.run({ pattern: pattern4, context: { entrypoint: 'entrypoint' } }).then(async (output) => {
+        expect(output.metadata).toBe(metadataQpf);
+        expect(await arrayifyStream(output.data)).toEqual([ '_,b,c,d/a', '_,b,c,d/b', '_,b,c,d/c' ]);
       });
     });
 
@@ -227,19 +188,9 @@ describe('ActorRdfResolveQuadPatternQpf', () => {
         data: stream([ action.url + '/a', action.url + '/b', action.url + '/c' ]),
         firstPageMetadata: metadataTpf,
       });
-      return actor.run({ pattern: pattern2, context: { entrypoint: 'entrypoint' } }).then((output) => {
-        return new Promise((resolve, reject) => {
-          expect(output.metadata).toBe(metadataTpf);
-          const list = [];
-          output.data.on('data', (data) => list.push(data));
-          output.data.on('end', () => {
-            if (list.length !== 3) {
-              reject();
-            }
-            expect(list).toEqual([ 'a,b,_/a', 'a,b,_/b', 'a,b,_/c' ]);
-            resolve();
-          });
-        });
+      return actor.run({ pattern: pattern2, context: { entrypoint: 'entrypoint' } }).then(async (output) => {
+        expect(output.metadata).toBe(metadataTpf);
+        expect(await arrayifyStream(output.data)).toEqual([ 'a,b,_/a', 'a,b,_/b', 'a,b,_/c' ]);
       });
     });
 

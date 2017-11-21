@@ -5,6 +5,7 @@ import {Readable} from "stream";
 import {ActorRdfMetadataPrimaryTopic} from "../lib/ActorRdfMetadataPrimaryTopic";
 const stream = require('streamify-array');
 const quad = require('rdf-quad');
+const arrayifyStream = require('arrayify-stream');
 
 describe('ActorRdfMetadataPrimaryTopic', () => {
   let bus;
@@ -45,44 +46,26 @@ describe('ActorRdfMetadataPrimaryTopic', () => {
     });
 
     it('should not test on a triple stream', () => {
-      return expect(actor.test({ quads: input, triples: true })).rejects.toBeTruthy();
+      return expect(actor.test({ pageUrl: '', quads: input, triples: true })).rejects.toBeTruthy();
     });
 
     it('should test on a quad stream', () => {
-      return expect(actor.test({ quads: input })).resolves.toBeTruthy();
+      return expect(actor.test({ pageUrl: '', quads: input })).resolves.toBeTruthy();
     });
 
     it('should run', () => {
-      return actor.run({ quads: input })
-        .then((output) => {
-          return new Promise((resolve, reject) => {
-            const data: RDF.Quad[] = [];
-            const metadata: RDF.Quad[] = [];
-            let ended = 0;
-
-            output.data.on('data', (d) => data.push(d));
-            output.metadata.on('data', (d) => metadata.push(d));
-            output.data.on('end', onEnd);
-            output.metadata.on('end', onEnd);
-
-            function onEnd() {
-              if (++ended === 2) {
-                expect(data).toEqual([
-                  quad('s1', 'p1', 'o1', ''),
-                  quad('s3', 'p3', 'o3', ''),
-                ]);
-                expect(metadata).toEqual([
-                  quad('g1', 'http://xmlns.com/foaf/0.1/primaryTopic', 'o1', 'g1'),
-                  quad('s2', 'p2', 'o2', 'g1'),
-                ]);
-                if (data.length === 2 && metadata.length === 2) {
-                  resolve();
-                } else {
-                  reject();
-                }
-              }
-            }
-          });
+      return actor.run({ pageUrl: '', quads: input })
+        .then(async (output) => {
+          const data: RDF.Quad[] = await arrayifyStream(output.data);
+          const metadata: RDF.Quad[] = await arrayifyStream(output.metadata);
+          expect(data).toEqual([
+            quad('s1', 'p1', 'o1', ''),
+            quad('s3', 'p3', 'o3', ''),
+          ]);
+          expect(metadata).toEqual([
+            quad('g1', 'http://xmlns.com/foaf/0.1/primaryTopic', 'o1', 'g1'),
+            quad('s2', 'p2', 'o2', 'g1'),
+          ]);
         });
     });
   });
