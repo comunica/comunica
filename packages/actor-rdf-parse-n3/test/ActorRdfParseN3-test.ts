@@ -4,6 +4,7 @@ import * as RDF from "rdf-js";
 import {Readable} from "stream";
 import {ActorRdfParseN3} from "../lib/ActorRdfParseN3";
 const stringToStream = require('streamify-string');
+const arrayifyStream = require('arrayify-stream');
 
 describe('ActorRdfParseN3', () => {
   let bus;
@@ -103,38 +104,12 @@ describe('ActorRdfParseN3', () => {
 
       it('should run on text/turtle', () => {
         return actor.run({ parse: { input, mediaType: 'text/turtle' }})
-          .then((output) => {
-            return new Promise((resolve, reject) => {
-              expect(output.parse.triples).toBeTruthy();
-              const quads: RDF.Quad[] = [];
-              output.parse.quads.on('data', (quad) => quads.push(quad));
-              output.parse.quads.on('end', () => {
-                if (quads.length === 2) {
-                  resolve();
-                } else {
-                  reject();
-                }
-              });
-            });
-          });
+          .then(async (output) => expect(await arrayifyStream(output.parse.quads)).toHaveLength(2));
       });
 
       it('should run on application/trig', () => {
         return actor.run({ parse: { input, mediaType: 'application/trig' }})
-          .then((output) => {
-            return new Promise((resolve, reject) => {
-              expect(output.parse.triples).toBeFalsy();
-              const quads: RDF.Quad[] = [];
-              output.parse.quads.on('data', (quad) => quads.push(quad));
-              output.parse.quads.on('end', () => {
-                if (quads.length === 2) {
-                  resolve();
-                } else {
-                  reject();
-                }
-              });
-            });
-          });
+          .then(async (output) => expect(await arrayifyStream(output.parse.quads)).toHaveLength(2));
       });
     });
 

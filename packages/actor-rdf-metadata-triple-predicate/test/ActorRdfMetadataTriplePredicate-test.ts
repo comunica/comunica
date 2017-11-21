@@ -5,6 +5,7 @@ import {Readable} from "stream";
 import {ActorRdfMetadataTriplePredicate} from "../lib/ActorRdfMetadataTriplePredicate";
 const stream = require('streamify-array');
 const quad = require('rdf-quad');
+const arrayifyStream = require('arrayify-stream');
 
 describe('ActorRdfMetadataTriplePredicate', () => {
   let bus;
@@ -57,35 +58,15 @@ describe('ActorRdfMetadataTriplePredicate', () => {
 
     it('should run', () => {
       return actor.run({ pageUrl: 's3', quads: input })
-        .then((output) => {
-          return new Promise((resolve, reject) => {
-            const data: RDF.Quad[] = [];
-            const metadata: RDF.Quad[] = [];
-            let ended = 0;
-
-            output.data.on('data', (d) => data.push(d));
-            output.metadata.on('data', (d) => metadata.push(d));
-            output.data.on('end', onEnd);
-            output.metadata.on('end', onEnd);
-
-            function onEnd() {
-              if (++ended === 2) {
-                expect(data).toEqual([
-                  quad('s1', 'p1', 'o1', ''),
-                ]);
-                expect(metadata).toEqual([
-                  quad('g1', '_py', 'o1', ''),
-                  quad('s2', 'px__', 'o2', ''),
-                  quad('s3', 'p3', 'o3', ''),
-                ]);
-                if (data.length === 1 && metadata.length === 3) {
-                  resolve();
-                } else {
-                  reject();
-                }
-              }
-            }
-          });
+        .then(async (output) => {
+          expect(await arrayifyStream(output.data)).toEqual([
+            quad('s1', 'p1', 'o1', ''),
+          ]);
+          expect(await arrayifyStream(output.metadata)).toEqual([
+            quad('g1', '_py', 'o1', ''),
+            quad('s2', 'px__', 'o2', ''),
+            quad('s3', 'p3', 'o3', ''),
+          ]);
         });
     });
   });

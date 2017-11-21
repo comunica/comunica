@@ -5,6 +5,8 @@ import {ArrayIterator} from "asynciterator";
 import * as RDF from "rdf-js";
 import {Algebra} from "sparqlalgebrajs";
 import {ActorQueryOperationQuadpattern} from "../lib/ActorQueryOperationQuadpattern";
+const quad = require('rdf-quad');
+const arrayifyStream = require('arrayify-stream');
 
 describe('ActorQueryOperationQuadpattern', () => {
   let bus;
@@ -94,30 +96,15 @@ describe('ActorQueryOperationQuadpattern', () => {
         subject: { value: 's', termType: 'NamedNode' },
         type: 'pattern',
       };
-      return expect(actor.run({ operation }).then((output) => {
-        return new Promise((resolve, reject) => {
-          expect(output.variables).toEqual([ 'p' ]);
-          expect(output.metadata).toBe(metadata);
-          const bindings = [];
-          output.bindingsStream.each((binding) => bindings.push(binding));
-          output.bindingsStream.on('end', () => {
-            resolve(bindings);
-          });
-        });
-      })).resolves.toEqual(
-        [ Bindings({ p: <RDF.Term> { value: 'p1' } }),
-          Bindings({ p: <RDF.Term> { value: 'p2' } }),
-          Bindings({ p: <RDF.Term> { value: 'p3' } }),
-        ]);
+      return actor.run({ operation }).then(async (output) => {
+        expect(output.variables).toEqual([ 'p' ]);
+        expect(output.metadata).toBe(metadata);
+        expect(await arrayifyStream(output.bindingsStream)).toEqual(
+          [ Bindings({ p: <RDF.Term> { value: 'p1' } }),
+            Bindings({ p: <RDF.Term> { value: 'p2' } }),
+            Bindings({ p: <RDF.Term> { value: 'p3' } }),
+          ]);
+      });
     });
   });
 });
-
-function quad(s, p, o, g) {
-  return {
-    graph: { value: g },
-    object: { value: o },
-    predicate: { value: p },
-    subject: { value: s },
-  };
-}

@@ -2,6 +2,7 @@ import {ActorInit, IActorOutputInit} from "@comunica/bus-init";
 import {Bus} from "@comunica/core";
 import {PassThrough} from "stream";
 import {ActorInitHelloWorld} from "../lib/ActorInitHelloWorld";
+const arrayifyStream = require('arrayify-stream');
 
 describe('ActorInitHelloWorld', () => {
   let bus;
@@ -50,14 +51,8 @@ describe('ActorInitHelloWorld', () => {
 
     it('should run', () => {
       return actor.run({ argv: [ 'John' ], env: {}, stdin: new PassThrough() })
-        .then((result: IActorOutputInit) => {
-          const chunks = [];
-          result.stdout.on('data', (data) => {
-            chunks.push(data.toString());
-          });
-          result.stdout.on('end', () => {
-            expect(chunks.join('')).toBe('Hi John\n');
-          });
+        .then(async (result: IActorOutputInit) => {
+          expect((await arrayifyStream(result.stdout)).map((chunk) => chunk.toString()).join('')).toBe('Hi John\n');
         });
     });
   });
