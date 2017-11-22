@@ -1,0 +1,21 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-query-operation-bgp-empty.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-query-operation.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-query-operation-bgp-empty",
+  "components": [
+    {
+      "@id": "caqobe:Actor/QueryOperation/BgpEmpty",
+      "@type": "Class",
+      "extends": "cbqo:Actor/QueryOperation",
+      "requireElement": "ActorQueryOperationBgpEmpty",
+      "comment": "A comunica Query Operation Actor for empty BGPs.",
+      "constructorArguments": [
+        {
+          "extends": "cbqo:Actor/QueryOperation/constructorArgumentsObject"
+        }
+      ]
+    }
+  ]
+}
