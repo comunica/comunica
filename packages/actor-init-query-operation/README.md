@@ -2,7 +2,7 @@
 
 An example init actor for Comunica that triggers an Query Operation event.
 
-The `config/config-example.json` contains an example on how to run this actor,
+The `config/` folder contains an examples on how to run this actor,
 which will trigger on the Runner's 'init' event.
 
 As defined by `components/ActorInitQueryOperation`,

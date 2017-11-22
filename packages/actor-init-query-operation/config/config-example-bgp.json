@@ -2,6 +2,9 @@
   "@context": [
     "https://linkedsoftwaredependencies.org/contexts/comunica-actor-init-query-operation.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-bus-query-operation.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-query-operation-bgp-empty.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-query-operation-bgp-left-deep-smallest.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-query-operation-bgp-single.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-actor-query-operation-quadpattern.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-bus-rdf-resolve-quad-pattern.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-resolve-quad-pattern-qpf.jsonld",
@@ -39,8 +42,25 @@
             "@type": "MediatorRace",
             "cc:Mediator/bus": { "@id": "cbqo:Bus/QueryOperation" }
           },
-          "caiqo:operation": "{ \"type\": \"pattern\", \"subject\": { \"value\": \"s\", \"termType\": \"Variable\" }, \"predicate\": { \"value\": \"http://www.w3.org/1999/02/22-rdf-syntax-ns#type\", \"termType\": \"NamedNode\" }, \"object\": { \"value\": \"o\", \"termType\": \"Variable\" }, \"graph\": { \"value\": \"g\", \"termType\": \"Variable\" } }",
+          "caiqo:operation": "{ \"type\": \"bgp\", \"patterns\": [ { \"type\": \"pattern\", \"subject\": { \"value\": \"s\", \"termType\": \"Variable\" }, \"predicate\": { \"value\": \"http://usefulinc.com/ns/doap#release\", \"termType\": \"NamedNode\" }, \"object\": { \"value\": \"https://linkedsoftwaredependencies.org/bundles/npm/angulpar/0.0.1-alpha.11\", \"termType\": \"NamedNode\" }, \"graph\": { \"value\": \"g\", \"termType\": \"Variable\" } }, { \"type\": \"pattern\", \"subject\": { \"value\": \"s\", \"termType\": \"Variable\" }, \"predicate\": { \"value\": \"http://purl.org/dc/terms/identifier\", \"termType\": \"NamedNode\" }, \"object\": { \"value\": \"o\", \"termType\": \"Variable\" }, \"graph\": { \"value\": \"g\", \"termType\": \"Variable\" } } ] }",
           "caiqo:context": "{ \"entrypoint\": \"https://fragments.linkedsoftwaredependencies.org/npm\" }"
+        },
+
+        {
+          "@id": "ex:myEmptyBgpQueryOperator",
+          "@type": "ActorQueryOperationBgpEmpty"
+        },
+
+        {
+          "@id": "ex:mySingleBgpQueryOperator",
+          "@type": "ActorQueryOperationBgpSingle",
+          "cbqo:mediatorQueryOperation": { "@id": "ex:mediatorQueryOperation" }
+        },
+
+        {
+          "@id": "ex:myLeftDeepSmallestBgpQueryOperator",
+          "@type": "ActorQueryOperationBgpLeftDeepSmallest",
+          "cbqo:mediatorQueryOperation": { "@id": "ex:mediatorQueryOperation" }
         },
 
         {

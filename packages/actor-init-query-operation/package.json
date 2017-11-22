@@ -38,6 +38,10 @@
   },
   "devDependencies": {
     "@comunica/actor-http-node-fetch": "^0.0.1",
+    "@comunica/actor-query-operation-bgp-empty": "^0.0.1",
+    "@comunica/actor-query-operation-bgp-left-deep-smallest": "^0.0.1",
+    "@comunica/actor-query-operation-bgp-single": "^0.0.1",
+    "@comunica/actor-query-operation-project": "^0.0.1",
     "@comunica/actor-query-operation-quadpattern": "^0.0.1",
     "@comunica/actor-rdf-metadata-extract-hydra-controls": "^0.0.1",
     "@comunica/actor-rdf-metadata-extract-hydra-count": "^0.0.1",
