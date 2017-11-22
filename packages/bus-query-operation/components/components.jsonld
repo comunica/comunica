@@ -5,6 +5,7 @@
   "requireName": "@comunica/bus-query-operation",
   "import": [
     "Bus/QueryOperation.jsonld",
-    "Actor/QueryOperation.jsonld"
+    "Actor/QueryOperation.jsonld",
+    "Actor/QueryOperationTypedMediated.jsonld"
   ]
 }

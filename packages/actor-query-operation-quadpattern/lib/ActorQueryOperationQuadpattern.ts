@@ -1,5 +1,5 @@
-import {ActorQueryOperationTyped, Bindings, BindingsStream, IActionQueryOperation,
-  IActorQueryOperationOutput} from "@comunica/bus-query-operation";
+import {ActorQueryOperationTyped, Bindings, BindingsStream,
+  IActionQueryOperation, IActorQueryOperationOutput} from "@comunica/bus-query-operation";
 import {IActionRdfResolveQuadPattern, IActorRdfResolveQuadPatternOutput} from "@comunica/bus-rdf-resolve-quad-pattern";
 import {Actor, IActorArgs, IActorTest, Mediator} from "@comunica/core";
 import {BufferedIterator} from "asynciterator";
@@ -18,7 +18,7 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
     IActorRdfResolveQuadPatternOutput>, IActionRdfResolveQuadPattern, IActorTest, IActorRdfResolveQuadPatternOutput>;
 
   constructor(args: IActorQueryOperationQuadpatternArgs) {
-    super(require('lodash.assign')(args, { operationName: 'pattern' }));
+    super(args, 'pattern');
   }
 
   /**
@@ -32,6 +32,10 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
       .map((element) => (<any> pattern)[element])
       .filter((term) => term.termType === 'Variable')
       .map((term) => term.value));
+  }
+
+  public async testOperation(operation: Algebra.Pattern, context?: {[id: string]: any}): Promise<IActorTest> {
+    return true;
   }
 
   public async runOperation(pattern: Algebra.Pattern, context?: {[id: string]: any})
@@ -68,8 +72,8 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
 
 }
 
-export interface IActorQueryOperationQuadpatternArgs
-  extends IActorArgs<IActionQueryOperation, IActorTest, IActorQueryOperationOutput> {
+export interface IActorQueryOperationQuadpatternArgs extends
+  IActorArgs<IActionQueryOperation, IActorTest, IActorQueryOperationOutput> {
   mediatorResolveQuadPattern: Mediator<Actor<IActionRdfResolveQuadPattern, IActorTest,
     IActorRdfResolveQuadPatternOutput>, IActionRdfResolveQuadPattern, IActorTest, IActorRdfResolveQuadPatternOutput>;
 }

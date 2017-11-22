@@ -7,6 +7,7 @@
     "@types/lodash.defaults": "^4.2.3",
     "@types/lodash.flatten": "^4.4.3",
     "@types/lodash.mapvalues": "^4.6.3",
+    "@types/lodash.sortby": "^4.7.3",
     "@types/lodash.uniq": "^4.5.3",
     "@types/lodash.values": "^4.3.3",
     "@types/n3": "^0.0.3",
