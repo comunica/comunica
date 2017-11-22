@@ -6,24 +6,27 @@
   "@id": "npmd:@comunica/bus-query-operation",
   "components": [
     {
-      "@id": "cbqo:Actor/QueryOperation",
+      "@id": "cbqo:Actor/QueryOperationTypedMediated",
       "@type": "AbstractClass",
-      "extends": "Actor",
-      "requireElement": "ActorQueryOperation",
-      "comment": "A comunica actor for query-operation events.",
+      "extends": "cbqo:Actor/QueryOperation",
+      "requireElement": "ActorQueryOperationTypedMediated",
+      "comment": "A base implementation for query operation actors for a specific operation type that have a query operation mediator.",
       "parameters": [
         {
-          "@id": "cc:Actor/bus",
-          "defaultScoped": {
-            "defaultScope": "cbqo:Actor/QueryOperation",
-            "defaultScopedValue": { "@id": "cbqo:Bus/QueryOperation" }
-          }
+          "@id": "cbqo:mediatorQueryOperation",
+          "comment": "The query operation mediator",
+          "required": true,
+          "unique": true
         }
       ],
       "constructorArguments": [
         {
-          "@id": "cbqo:Actor/QueryOperation/constructorArgumentsObject",
-          "extends": "cc:Actor/constructorArgumentsObject"
+          "@id": "cbqo:Actor/QueryOperationTypedMediated/constructorArgumentsObject",
+          "extends": "cbqo:Actor/QueryOperation/constructorArgumentsObject",
+          "fields": {
+            "keyRaw": "mediatorQueryOperation",
+            "value": "cbqo:mediatorQueryOperation"
+          }
         }
       ]
     }

@@ -5,7 +5,8 @@
       "cbqo": "npmd:@comunica/bus-query-operation/",
 
       "BusQueryOperation": "cbqo:Bus/QueryOperation",
-      "ActorQueryOperation": "cbqo:Actor/QueryOperation"
+      "ActorQueryOperation": "cbqo:Actor/QueryOperation",
+      "ActorQueryOperationTypedMediated": "cbqo:Actor/QueryOperationTypedMediated"
     }
   ]
 }
