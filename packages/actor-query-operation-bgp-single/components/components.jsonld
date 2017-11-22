@@ -1,0 +1,9 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/contexts/comunica-actor-query-operation-bgp-single.jsonld",
+  "@id": "npmd:@comunica/actor-query-operation-bgp-single",
+  "@type": "Module",
+  "requireName": "@comunica/actor-query-operation-bgp-single",
+  "import": [
+    "Actor/QueryOperation/BgpSingle.jsonld"
+  ]
+}
