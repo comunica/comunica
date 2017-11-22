@@ -1,8 +1,10 @@
+import * as console from 'console';
 import * as RDFJS from 'rdf-js';
 import * as RDFDM from 'rdf-data-model';
 
 import { Expression, ExpressionType } from './Types';
-
+import { DataType as DT, NumericType } from '../../util/Consts';
+import { UnimplementedError, InvalidOperationError } from '../../util/Errors';
 
 export interface Term extends Expression {
     termType: TermType
@@ -45,31 +47,30 @@ export abstract class BaseTerm implements Term {
 
     // https://www.w3.org/TR/sparql11-query/#ebv
     toEBV(): boolean {
-        throw TypeError;
+        throw new InvalidOperationError();
     }
 
     rdfEqual(other: Term): boolean {
-        // TODO
-        return undefined;
+        throw new UnimplementedError();
     }
 
     rdfNotEqual(other: Term): boolean {
         return !this.rdfEqual(other);
     }
 
-    not(): boolean { throw Error; }
-    unPlus(): number { throw Error; }
-    unMin(): number { throw Error; }
+    not(): boolean { throw new InvalidOperationError(); }
+    unPlus(): number { throw new InvalidOperationError(); }
+    unMin(): number { throw new InvalidOperationError(); }
 
-    lt(other: Term): boolean { throw Error; }
-    gt(other: Term): boolean { throw Error; }
-    lte(other: Term): boolean { throw Error; }
-    gte(other: Term): boolean { throw Error; }
+    lt(other: Term): boolean { throw new InvalidOperationError(); }
+    gt(other: Term): boolean { throw new InvalidOperationError(); }
+    lte(other: Term): boolean { throw new InvalidOperationError(); }
+    gte(other: Term): boolean { throw new InvalidOperationError(); }
 
-    multiply(other: Term): number { throw Error; }
-    divide(other: Term): number { throw Error; }
-    add(other: Term): number { throw Error; }
-    subtract(other: Term): number { throw Error; }
+    multiply(other: Term): number { throw new InvalidOperationError(); }
+    divide(other: Term): number { throw new InvalidOperationError(); }
+    add(other: Term): number { throw new InvalidOperationError(); }
+    subtract(other: Term): number { throw new InvalidOperationError(); }
 
     abstract toRDFJS(): RDFJS.Term;
 }
@@ -144,7 +145,7 @@ export abstract class BaseLiteral<T> extends BaseTerm implements Literal<T> {
 }
 
 export abstract class PlainLiteral extends BaseLiteral<string> {
-    dataType: undefined;
+    dataType: undefined = undefined;
 
     constructor(value: string) {
         super(value);
@@ -194,17 +195,17 @@ export class LangLiteral extends PlainLiteral implements Literal<string> {
     }
 }
 
-export abstract class TypedLiteral<T> extends BaseLiteral<T> {
+export class TypedLiteral<T> extends BaseLiteral<T> {
     dataType: string;
 
-    constructor(value: T) {
+    constructor(value: T, dataType?: string) {
         super(value);
     }
 }
 
 
 export class BooleanLiteral extends TypedLiteral<boolean> {
-    dataType: "xsd:boolean";
+    dataType: DT.XSD_BOOLEAN;
 
     constructor(value: boolean) {
         super(value);
@@ -220,7 +221,7 @@ export class BooleanLiteral extends TypedLiteral<boolean> {
 }
 
 export class StringLiteral extends TypedLiteral<string> {
-    dataType: "xsd:string";
+    dataType: DT.XSD_STRING;
 
     constructor(value: string) {
         super(value);
@@ -255,29 +256,12 @@ export class StringLiteral extends TypedLiteral<string> {
     }
 }
 
-// https://www.w3.org/TR/sparql11-query/#operandDataTypes
-export type numericTypes =
-    "xsd:integer"
-    | "xsd:decimal"
-    | "xsd:float"
-    | "xsd:double"
-    | "xsd:nonPositiveInteger"
-    | "xsd:negativeInteger"
-    | "xsd:long"
-    | "xsd:int"
-    | "xsd:short"
-    | "xsd:byte"
-    | "xsd:nonNegativeInteger"
-    | "xsd:unsignedLong"
-    | "xsd:unsignedInt"
-    | "xsd:unsignedShort"
-    | "xsd:unsignedByte"
-    | "xsd:positiveInteger"
-
 export class NumericLiteral extends TypedLiteral<number> {
-    dataType: numericTypes;
+    dataType: NumericType;
 
-    constructor(value: number, dataType: numericTypes) {
+    // TODO: Check need for keeping datatype in literal
+    // Possibly not needed at all
+    constructor(value: number, dataType?: NumericType) {
         super(value);
         this.dataType = dataType;
     }
@@ -338,7 +322,7 @@ export class NumericLiteral extends TypedLiteral<number> {
 }
 
 export class DateTimeLiteral extends TypedLiteral<Date> {
-    dataType: "xsd:dateTime";
+    dataType: DT.XSD_DATE_TIME;
 
     constructor(value: Date) {
         super(value);

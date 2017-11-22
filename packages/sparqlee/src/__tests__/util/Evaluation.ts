@@ -1,8 +1,9 @@
 import { Parser, Expression, FilterPattern, Query } from 'sparqljs';
 import { AsyncEvaluator } from '../../evaluator/ExpressionEvaluator';
+import { SyncEvaluator } from '../../evaluator/EvalSync';
 import { Literal } from 'rdf-js';
 
-const parser = new Parser({ 'xsd': 'http://www.w3.org/2001/XMLSchema' });
+const parser = new Parser({ 'xsd': 'http://www.w3.org/2001/XMLSchema#' });
 
 export function createExpression(str: string): Expression {
     let sparql_query = parser.parse('SELECT * WHERE { ?s ?p ?o  FILTER (' + str + ') }') as Query;
@@ -11,6 +12,6 @@ export function createExpression(str: string): Expression {
 }
 
 export function evaluate(str: string, mappings = new Map()): boolean {
-    let evaluator = new AsyncEvaluator(createExpression(str));
+    let evaluator = new SyncEvaluator(createExpression(str));
     return evaluator.evaluate(mappings);
 }

@@ -42,7 +42,8 @@ function testUnary(
     testUnOp(op, table, errTable, argMap, resultMapping)
 }
 
-describe.skip('the evaluation of simple boolean expressions', () => {
+debugger;
+describe('the evaluation of simple boolean expressions', () => {
     describe('like boolean literals › like', () => {
         const table = `
         true = true
@@ -158,7 +159,7 @@ describe.skip('the evaluation of simple boolean expressions', () => {
 
     // This should be placed in the relative type files (numeric, literal, ...)
     // and be tested as well in operators that use coercion
-    describe('like EBV boolean coercion (&&) with', () => {
+    describe('like EBV boolean coercion with', () => {
         const argMap = {
             'true': TRUE_STR,
             'false': FALSE_STR,

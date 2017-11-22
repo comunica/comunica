@@ -8,6 +8,9 @@ const suite = new Suite();
 
 console.log(JSON.stringify(example1.expression, null, 4));
 
+const evaluator = new SyncEvaluator(example1.expression);
+console.log(evaluator.evaluate(example1.mapping));
+
 suite
     .add('Empty', () => {
         const evaluator = new EmptyEvaluator(example1.expression);
@@ -24,4 +27,4 @@ suite
     .on('cycle', function (event: Event) {
         console.log(String(event.target));
     })
-    .run();
+    // .run();

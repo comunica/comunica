@@ -47,7 +47,7 @@ function testUnary(
     testUnOp(op, table, errTable, argMap, resultMapping)
 }
 
-describe.skip('the evaluation of simple numeric boolean expressions', () => {
+describe('the evaluation of simple numeric boolean expressions', () => {
     describe('like numeric literals › like', () => {
         const argMap = {
             'error': EVB_ERR_STR,

@@ -1,5 +1,5 @@
 import { Expression, ExpressionType } from './Types';
-import { Term, Literal, BooleanLiteral } from './Terms';
+import { Term, Literal, BooleanLiteral, NumericLiteral } from './Terms';
 
 export interface Operation extends Expression {
     operator: Operator,
@@ -28,7 +28,7 @@ export enum Operator {
 export abstract class BaseOperation implements Operation {
     abstract operator: Operator;
 
-    exprType = ExpressionType.Operation;
+    exprType:ExpressionType.Operation = ExpressionType.Operation;
     args: Expression[];
 
     constructor(args: Expression[]) {
@@ -45,7 +45,7 @@ export abstract class BinaryOperation extends BaseOperation {
     constructor(args: Expression[]) {
         super(args);
         if (args.length != 2) {
-            throw Error(`Incorrect number of arguments, was ${args.length} but should be 2`);
+            throw new Error(`Incorrect number of arguments, was ${args.length} but should be 2`);
         }
         this.left = args[0];
         this.right = args[1];
@@ -64,7 +64,7 @@ export abstract class UnaryOperation extends BaseOperation {
     constructor(args: Expression[]) {
         super(args);
         if (args.length != 1) {
-            throw Error(`Incorrect number of arguments, was ${args.length} but should be 1`);
+            throw new Error(`Incorrect number of arguments, was ${args.length} but should be 1`);
         }
         this.arg = args[0];
     }
@@ -76,7 +76,7 @@ export abstract class UnaryOperation extends BaseOperation {
     abstract applyUn(arg: Term): Term;
 }
 
-
+// TODO: Correctly handle error + false
 export class And extends BinaryOperation {
     operator = Operator.AND;
 
@@ -86,6 +86,7 @@ export class And extends BinaryOperation {
     }
 }
 
+// TODO: Correctly handle error + true
 export class Or extends BinaryOperation {
     operator = Operator.OR;
 
@@ -107,15 +108,15 @@ export class Addition extends BinaryOperation {
     operator = Operator.ADDITION
 
     public applyBin(left: Term, right: Term): Term {
-        throw left.add(right);
+        return new NumericLiteral(left.add(right));
     }
 }
 
-export class LargerThan extends BinaryOperation {
+export class GreaterThan extends BinaryOperation {
     operator = Operator.LT;
 
     applyBin(left: Term, right: Term): Term {
-        throw left.lt(right);
+        return new BooleanLiteral(left.gt(right));
     }
 }
 
@@ -123,6 +124,6 @@ export class Equal extends BinaryOperation {
     operator = Operator.EQUAL;
 
     applyBin(left: Term, right: Term): Term {
-        throw left.rdfEqual(right);
+        return new BooleanLiteral(left.rdfEqual(right));
     }
 }

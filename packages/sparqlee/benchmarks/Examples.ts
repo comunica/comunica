@@ -1,8 +1,12 @@
-import { Mapping } from '../src/core/Mapping';
-import { Parser, Query, Expression, FilterPattern} from 'sparqljs';
 import * as RDF from 'rdf-data-model';
+import { Parser, Query, Expression, FilterPattern} from 'sparqljs';
 
-const parser = new Parser({'xsd': 'http://www.w3.org/2001/XMLSchema'})
+import { Mapping } from '../src/core/Mapping';
+import { DataType as DT } from '../src/util/Consts';
+
+
+
+const parser = new Parser({'xsd': 'http://www.w3.org/2001/XMLSchema#'})
 
 export class Example {
     expression: Expression;
@@ -16,10 +20,11 @@ export class Example {
 
 export const example1 = (() => {
     const str = '((?age + ?otherAge) = "40"^^xsd:integer) && (?joinYear > "2005-01-01T00:00:00Z"^^xsd:dateTime)';
+    // const str = '"true"^^xsd:boolean';
     const mapping = new Map([
-        ['age', RDF.literal('20')],
-        ['otherAge', RDF.literal('20')],
-        ['joinYear', RDF.literal('2007-03-03T00:00:00Z')]
+        ['age', RDF.literal('20', RDF.namedNode(DT.XSD_INTEGER))],
+        ['otherAge', RDF.literal('20', RDF.namedNode(DT.XSD_INTEGER))],
+        ['joinYear', RDF.literal('2007-03-03T00:00:00Z', RDF.namedNode(DT.XSD_DATE_TIME))]
     ]);
     return new Example(str, mapping);
 })();

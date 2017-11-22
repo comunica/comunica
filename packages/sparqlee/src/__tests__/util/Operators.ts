@@ -15,7 +15,7 @@ export function testBinOp(
         // TODO: Check if mapped aliases are defined
         if (result == 'error') {
             it(`(${left}, ${right}) should error`, () => {
-                expect(evaluate(`${argMap[left]} ${op} ${argMap[right]}`))
+                expect(() => { evaluate(`${argMap[left]} ${op} ${argMap[right]}`) })
                 .toThrow();
             });
             
@@ -41,7 +41,7 @@ export function testUnOp(
         let [arg, result] = parseRowUnary(row);
         if (result == 'error') {
             it(`(${arg}) should error`, () => {
-                expect(evaluate(`${op}${argMap[arg]}`))
+                expect(() => evaluate(`${op}${argMap[arg]}`))
                     .toThrow();
             });
         } else {

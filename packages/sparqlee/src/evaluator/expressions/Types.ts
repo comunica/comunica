@@ -5,6 +5,7 @@ export interface Expression {
     exprType: ExpressionType
 }
 
+// TODO: Convert to string enum for verbosity in debugging (currently ints)
 export enum ExpressionType {
     Operation,
     FunctionCall,
@@ -17,7 +18,7 @@ export enum ExpressionType {
 }
 
 export class VariableExpression implements Expression {
-    exprType: ExpressionType.Variable;
+    exprType: ExpressionType.Variable = ExpressionType.Variable;
     name: string;
     
     constructor(name: string) {
@@ -27,7 +28,7 @@ export class VariableExpression implements Expression {
 }
 
 export class Tuple implements Expression {
-    exprType: ExpressionType.Tuple
+    exprType: ExpressionType.Tuple = ExpressionType.Tuple;
     exprs: Expression[]
 
     constructor(exprs: Expression[]) {
