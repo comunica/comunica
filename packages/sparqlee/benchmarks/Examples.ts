@@ -19,11 +19,11 @@ export class Example {
 }
 
 export const example1 = (() => {
-    const str = '((?age + ?otherAge) = "40"^^xsd:integer) && (?joinYear > "2005-01-01T00:00:00Z"^^xsd:dateTime)';
-    // const str = '"true"^^xsd:boolean';
+    const str = '((?age + ?otherAge) = "50"^^xsd:integer) && (?joinYear > "2005-01-01T00:00:00Z"^^xsd:dateTime)';
+    // const str = '10000 > ?age';
     const mapping = new Map([
         ['age', RDF.literal('20', RDF.namedNode(DT.XSD_INTEGER))],
-        ['otherAge', RDF.literal('20', RDF.namedNode(DT.XSD_INTEGER))],
+        ['otherAge', RDF.literal('30', RDF.namedNode(DT.XSD_INTEGER))],
         ['joinYear', RDF.literal('2007-03-03T00:00:00Z', RDF.namedNode(DT.XSD_DATE_TIME))]
     ]);
     return new Example(str, mapping);

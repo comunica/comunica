@@ -143,7 +143,7 @@ describe('the evaluation of simple boolean expressions', () => {
             true  true  = true
             true  false = true
             false true  = false
-            false false = true2
+            false false = true
             `
             test('>=', table)
         });

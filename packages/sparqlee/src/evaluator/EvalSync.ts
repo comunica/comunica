@@ -35,10 +35,9 @@ export class SyncEvaluator implements ExpressionEvaluator {
 
             case E.ExpressionType.Variable: {
                 let variable = <E.VariableExpression>expr;
-                let rdfTerm = mapping.get(variable.name);
-                let term = this._toTerm(rdfTerm);
-                if (term) { return term; }
-                throw new Error();
+                let binding = mapping.get(variable.name);
+                if (!binding) { throw new Error();}
+                return this._toTerm(binding);
             };
 
             case E.ExpressionType.Operation: {
