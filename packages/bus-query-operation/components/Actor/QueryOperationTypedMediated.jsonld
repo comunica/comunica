@@ -1,0 +1,31 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-query-operation.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-core.jsonld"
+  ],
+  "@id": "npmd:@comunica/bus-query-operation",
+  "components": [
+    {
+      "@id": "cbqo:Actor/QueryOperation",
+      "@type": "AbstractClass",
+      "extends": "Actor",
+      "requireElement": "ActorQueryOperation",
+      "comment": "A comunica actor for query-operation events.",
+      "parameters": [
+        {
+          "@id": "cc:Actor/bus",
+          "defaultScoped": {
+            "defaultScope": "cbqo:Actor/QueryOperation",
+            "defaultScopedValue": { "@id": "cbqo:Bus/QueryOperation" }
+          }
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "cbqo:Actor/QueryOperation/constructorArgumentsObject",
+          "extends": "cc:Actor/constructorArgumentsObject"
+        }
+      ]
+    }
+  ]
+}
