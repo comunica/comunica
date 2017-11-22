@@ -1,0 +1,21 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-query-operation-bgp-left-deep-smallest.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-query-operation.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-query-operation-bgp-left-deep-smallest",
+  "components": [
+    {
+      "@id": "caqoblds:Actor/QueryOperation/BgpLeftDeepSmallest",
+      "@type": "Class",
+      "extends": "cbqo:Actor/QueryOperationTypedMediated",
+      "requireElement": "ActorQueryOperationBgpLeftDeepSmallest",
+      "comment": "A comunica Query Operation Actor that resolves BGPs in a left-deep manner based on the pattern with the smallest item count.",
+      "constructorArguments": [
+        {
+          "extends": "cbqo:Actor/QueryOperationTypedMediated/constructorArgumentsObject"
+        }
+      ]
+    }
+  ]
+}
