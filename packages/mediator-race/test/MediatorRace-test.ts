@@ -23,17 +23,59 @@ describe('MediatorRace', () => {
   });
 
   describe('An MediatorRace instance', () => {
-    let mediator: MediatorRace<DummyActor, IAction, IDummyTest, IDummyTest>;
 
-    beforeEach(() => {
-      mediator = new MediatorRace({ name: 'mediator', bus });
-      bus.subscribe(new DummyActor(10, 10, bus));
-      bus.subscribe(new DummyActor(100, 0, bus));
-      bus.subscribe(new DummyActor(1, 20, bus));
+    describe('with resolving actors', () => {
+      let busm;
+      let mediator: MediatorRace<DummyActor, IAction, IDummyTest, IDummyTest>;
+
+      beforeEach(() => {
+        busm = new Bus({ name: 'bus' });
+        mediator = new MediatorRace({ name: 'mediator', bus: busm });
+        busm.subscribe(new DummyActor(10, 10, busm, false));
+        busm.subscribe(new DummyActor(100, 0, busm, false));
+        busm.subscribe(new DummyActor(1, 20, busm, false));
+      });
+
+      it('should mediate to the earliest resolver', () => {
+        return expect(mediator.mediate({})).resolves.toEqual({ field: 100 });
+      });
     });
 
-    it('should mediate to the earliest resolver', () => {
-      return expect(mediator.mediate({})).resolves.toEqual({ field: 100 });
+    describe('with rejecting actors', () => {
+      let busm;
+      let mediator: MediatorRace<DummyActor, IAction, IDummyTest, IDummyTest>;
+
+      beforeEach(() => {
+        busm = new Bus({ name: 'bus' });
+        mediator = new MediatorRace({ name: 'mediator', bus: busm });
+        busm.subscribe(new DummyActor(10, 10, busm, true));
+        busm.subscribe(new DummyActor(100, 0, busm, true));
+        busm.subscribe(new DummyActor(1, 20, busm, true));
+      });
+
+      it('should reject when mediated', () => {
+        return expect(mediator.mediate({})).rejects.toBeTruthy();
+      });
+    });
+
+    describe('with resolving and rejecting actors', () => {
+      let busm;
+      let mediator: MediatorRace<DummyActor, IAction, IDummyTest, IDummyTest>;
+      let actor0;
+      let actor1;
+      let actor2;
+
+      beforeEach(() => {
+        busm = new Bus({ name: 'bus' });
+        mediator = new MediatorRace({ name: 'mediator', bus: busm });
+        busm.subscribe(actor0 = new DummyActor(10, 10, busm, false));
+        busm.subscribe(actor1 = new DummyActor(100, 0, busm, true));
+        busm.subscribe(actor2 = new DummyActor(1, 20, busm, false));
+      });
+
+      it('should mediate to the earliest non-rejecting resolver', () => {
+        return expect(mediator.mediate({})).resolves.toEqual({ field: 10 });
+      });
     });
   });
 });
@@ -42,15 +84,24 @@ class DummyActor extends Actor<IAction, IDummyTest, IDummyTest> {
 
   public readonly id: number;
   public readonly delay: number;
+  public readonly reject: boolean;
 
-  constructor(id: number, delay: number, bus: Bus<DummyActor, IAction, IDummyTest, IDummyTest>) {
+  constructor(id: number, delay: number, bus: Bus<DummyActor, IAction, IDummyTest, IDummyTest>, reject: boolean) {
     super({ name: 'dummy' + id, bus });
     this.id = id;
     this.delay = delay;
+    this.reject = reject;
+    this.cancel = () => null;
+    jest.spyOn(this, 'cancel');
   }
 
   public test(action: IAction): Promise<IDummyTest> {
-    return new Promise((resolve, reject) => setTimeout(() => resolve({ field: this.id }), this.delay));
+    if (this.reject) {
+      return Promise.reject(new Error(this.id));
+    }
+    const promise = new Promise((resolve, reject) => setTimeout(() => resolve({ field: this.id }), this.delay));
+    promise.cancel = this.cancel;
+    return promise;
   }
 
   public async run(action: IAction): Promise<IDummyTest> {
