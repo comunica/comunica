@@ -1,0 +1,11 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/comunica-core.jsonld",
+    {
+      "cbrj": "npmd:@comunica/bus-rdf-join/",
+
+      "BusRdfJoin": "cbrj:Bus/RdfJoin",
+      "ActorRdfJoin": "cbrj:Actor/RdfJoin"
+    }
+  ]
+}

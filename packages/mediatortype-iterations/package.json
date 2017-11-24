@@ -1,0 +1,39 @@
+{
+  "name": "@comunica/mediatortype-iterations",
+  "version": "0.0.1",
+  "description": "A comunica mediator type for the 'iterations' parameter.",
+  "main": "index.js",
+  "typings": "index",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/comunica/mediatortype-iterations.git"
+  },
+  "keywords": [
+    "comunica",
+    "mediatortype"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/comunica/mediatortype-iterations/issues"
+  },
+  "homepage": "https://github.com/comunica/mediatortype-iterations#readme",
+  "files": [
+    "components",
+    "lib/**/*.d.ts",
+    "lib/**/*.js",
+    "index.d.ts",
+    "index.js"
+  ],
+  "peerDependencies": {
+    "@comunica/core": "^0.0.1"
+  },
+  "devDependencies": {
+    "@comunica/core": "^0.0.1"
+  },
+  "scripts": {
+    "lint": "node \"../../node_modules/tslint/bin/tslint\" lib/**/*.ts test/**/*.ts --exclude '**/*.d.ts'",
+    "build": "node \"../../node_modules/typescript/bin/tsc\"",
+    "validate": "npm ls",
+    "prepare": "npm run build"
+  }
+}
