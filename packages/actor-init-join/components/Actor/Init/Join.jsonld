@@ -1,0 +1,72 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-init-join.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-init.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-init-join",
+  "components": [
+    {
+      "@id": "caij:Actor/Init/Join",
+      "@type": "Class",
+      "extends": "cbi:Actor/Init",
+      "requireElement": "ActorInitJoin",
+      "comment": "A comunica Join Init Actor.",
+      "parameters": [
+        {
+          "@id": "caij:operationMediator",
+          "comment": "The query operation mediator",
+          "required": true,
+          "unique": true
+        },
+        {
+          "@id": "caij:joinMediator",
+          "comment": "The join mediator",
+          "required": true,
+          "unique": true
+        },
+        {
+          "@id": "caij:leftPattern",
+          "comment": "A JSON string of the left quad pattern",
+          "unique": true
+        },
+        {
+          "@id": "caij:rightPattern",
+          "comment": "A JSON string of the right quad pattern",
+          "unique": true
+        },
+        {
+          "@id": "caij:context",
+          "comment": "A JSON string the context",
+          "unique": true
+        }
+      ],
+      "constructorArguments": [
+        {
+          "extends": "cbi:Actor/Init/constructorArgumentsObject",
+          "fields": [
+            {
+              "keyRaw": "operationMediator",
+              "value": "caij:operationMediator"
+            },
+            {
+              "keyRaw": "joinMediator",
+              "value": "caij:joinMediator"
+            },
+            {
+              "keyRaw": "leftPattern",
+              "value": "caij:leftPattern"
+            },
+            {
+              "keyRaw": "rightPattern",
+              "value": "caij:rightPattern"
+            },
+            {
+              "keyRaw": "context",
+              "value": "caij:context"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
