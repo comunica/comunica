@@ -2,7 +2,7 @@
   "name": "comunica-sparql-expeval",
   "version": "0.0.1",
   "description": "Promise based SPARQL Expression Evaluator",
-  "main": "dist/main.js",
+  "main": "dist/src/lib.js",
   "scripts": {
     "test": "jest",
     "test-debug-lin": "node --nolazy --debug-brk=5858 ./node_modules/.bin/jest",
