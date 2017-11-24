@@ -1,0 +1,21 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-join-nestedloop.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-rdf-join.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-rdf-join-nestedloop",
+  "components": [
+    {
+      "@id": "carjn:Actor/RdfJoin/NestedLoop",
+      "@type": "Class",
+      "extends": "cbrj:Actor/RdfJoin",
+      "requireElement": "ActorRdfJoinNestedLoop",
+      "comment": "A comunica NestedLoop RDF Join Actor.",
+      "constructorArguments": [
+        {
+          "extends": "cbrj:Actor/RdfJoin/constructorArgumentsObject"
+        }
+      ]
+    }
+  ]
+}

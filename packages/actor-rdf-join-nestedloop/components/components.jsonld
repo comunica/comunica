@@ -1,0 +1,9 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-join-nestedloop.jsonld",
+  "@id": "npmd:@comunica/actor-rdf-join-nestedloop",
+  "@type": "Module",
+  "requireName": "@comunica/actor-rdf-join-nestedloop",
+  "import": [
+    "Actor/RdfJoin/NestedLoop.jsonld"
+  ]
+}
