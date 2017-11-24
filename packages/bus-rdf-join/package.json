@@ -1,0 +1,47 @@
+{
+  "name": "@comunica/bus-rdf-join",
+  "version": "0.0.1",
+  "description": "A comunica bus for rdf-join events.",
+  "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-join",
+  "lsd:components": "components/components.jsonld",
+  "lsd:contexts": {
+    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-rdf-join.jsonld": "components/context.jsonld"
+  },
+  "main": "index.js",
+  "typings": "index",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/comunica/bus-rdf-join.git"
+  },
+  "keywords": [
+    "comunica",
+    "bus",
+    "rdf-join"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/comunica/bus-rdf-join/issues"
+  },
+  "homepage": "https://github.com/comunica/bus-rdf-join#readme",
+  "files": [
+    "components",
+    "lib/**/*.d.ts",
+    "lib/**/*.js",
+    "index.d.ts",
+    "index.js"
+  ],
+  "peerDependencies": {
+    "@comunica/core": "^0.0.1"
+  },
+  "devDependencies": {
+    "@comunica/bus-query-operation": "^0.0.1",
+    "@comunica/core": "^0.0.1",
+    "@comunica/mediatortype-iterations": "^0.0.1"
+  },
+  "scripts": {
+    "lint": "node \"../../node_modules/tslint/bin/tslint\" lib/**/*.ts test/**/*.ts --exclude '**/*.d.ts'",
+    "build": "node \"../../node_modules/typescript/bin/tsc\"",
+    "validate": "npm ls",
+    "prepare": "npm run build"
+  }
+}
