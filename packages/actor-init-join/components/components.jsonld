@@ -1,0 +1,9 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/contexts/comunica-actor-init-join.jsonld",
+  "@id": "npmd:@comunica/actor-init-join",
+  "@type": "Module",
+  "requireName": "@comunica/actor-init-join",
+  "import": [
+    "Actor/Init/Join.jsonld"
+  ]
+}
