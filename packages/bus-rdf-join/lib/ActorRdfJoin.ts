@@ -22,20 +22,21 @@ export abstract class ActorRdfJoin extends Actor<IActionRdfJoin, IMediatorTypeIt
   }
 
   protected static join(left: Bindings, right: Bindings): Bindings {
+    let result = left;
     // doing it like this due to there being some with immutable's iterator (typings?)
     const incompatible = right.some((value: RDF.Term, key: string) => {
       const leftV = left.get(key);
       if (leftV) {
         return leftV.value !== value.value; // want to return true if there is no match
       } else {
-        left.set(key, value);
+        result = result.set(key, value);
       }
       return false;
     });
     if (incompatible) {
       return null;
     }
-    return left;
+    return result;
   }
 
   protected static iteratorsHaveMetadata(action: IActionRdfJoin, key: string): boolean {
