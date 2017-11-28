@@ -56,9 +56,7 @@ export class MediatedPagedAsyncRdfIterator extends PagedAsyncRdfIterator {
       } catch (e) {
         this.emit('error', e);
       }
-      if (next) {
-        onNextPage(next);
-      }
+      onNextPage(next);
     } else {
       const pageQuads: IActorRdfDereferenceOutput = await this.mediatorRdfDereference.mediate({ url });
       const pageMetaSplit: IActorRdfMetadataOutput = await this.mediatorMetadata
