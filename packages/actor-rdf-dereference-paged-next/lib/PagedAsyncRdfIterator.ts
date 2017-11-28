@@ -71,6 +71,8 @@ export abstract class PagedAsyncRdfIterator extends BufferedIterator<RDF.Quad> i
       this.startIterator(this.nextUrl, this.page++)
         .then(done)
         .catch((e) => this.emit('error', e));
+    } else {
+      done();
     }
   }
 }
