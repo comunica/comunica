@@ -10,17 +10,17 @@ import {Readable} from "stream";
 /**
  * A comunica Join Init Actor.
  */
-export class ActorInitJoin extends ActorInit {
+export class ActorInitJoin extends ActorInit implements IActorInitJoinArgs {
 
-  private operationMediator: Mediator<ActorQueryOperation, IActionQueryOperation,
+  public readonly operationMediator: Mediator<ActorQueryOperation, IActionQueryOperation,
     IActorTest, IActorQueryOperationOutput>;
-  private joinMediator: Mediator<ActorRdfJoin, IActionRdfJoin, IActorTest, IActorRdfJoinOutput>;
+  public readonly joinMediator: Mediator<ActorRdfJoin, IActionRdfJoin, IActorTest, IActorRdfJoinOutput>;
 
-  private leftPattern: string;
-  private rightPattern: string;
-  private context: string;
+  public readonly leftPattern: string;
+  public readonly rightPattern: string;
+  public readonly context: string;
 
-  constructor(args: IActorArgs<IActionInit, IActorTest, IActorOutputInit>) {
+  constructor(args: IActorInitJoinArgs) {
     super(args);
   }
 
@@ -47,8 +47,10 @@ export class ActorInitJoin extends ActorInit {
     const joinInput: IActionRdfJoin = {
       left: leftOutput.bindingsStream,
       leftMetadata: await leftOutput.metadata,
+      leftVariables: leftOutput.variables,
       right: rightOutput.bindingsStream,
       rightMetadata: await rightOutput.metadata,
+      rightVariables: rightOutput.variables,
     };
     const joinOutput = await this.joinMediator.mediate(joinInput);
 
@@ -61,8 +63,19 @@ export class ActorInitJoin extends ActorInit {
     joinOutput.bindingsStream.on('end', () => readable.push(null));
 
     readable.push('Metadata: ' + JSON.stringify(joinOutput.metadata, null, '  ') + '\n');
+    readable.push('Variables: ' + JSON.stringify(joinOutput.variables, null, '  ') + '\n');
 
     return { stdout: readable };
   }
 
+}
+
+export interface IActorInitJoinArgs extends IActorArgs<IActionInit, IActorTest, IActorOutputInit> {
+  operationMediator: Mediator<ActorQueryOperation, IActionQueryOperation,
+    IActorTest, IActorQueryOperationOutput>;
+  joinMediator: Mediator<ActorRdfJoin, IActionRdfJoin, IActorTest, IActorRdfJoinOutput>;
+
+  leftPattern: string;
+  rightPattern: string;
+  context: string;
 }
