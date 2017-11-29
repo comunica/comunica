@@ -40,8 +40,8 @@ describe('ActorRdfJoinNestedLoop', () => {
     beforeEach(() => {
       actor = new ActorRdfJoinNestedLoop({ name: 'actor', bus });
       action = {
-        left: new ArrayIterator([]), leftMetadata: { totalItems: 4 },
-        right: new ArrayIterator([]), rightMetadata: { totalItems: 5 },
+        left: new ArrayIterator([]), leftMetadata: { totalItems: 4 }, leftVariables: [],
+        right: new ArrayIterator([]), rightMetadata: { totalItems: 5 }, rightVariables: [],
       };
     });
 
@@ -61,14 +61,18 @@ describe('ActorRdfJoinNestedLoop', () => {
 
     it('should return an empty stream for empty input', () => {
       return actor.run(action).then(async (output) => {
+        expect(output.variables).toEqual([]);
         expect(await arrayifyStream(output.bindingsStream)).toEqual([]);
       });
     });
 
     it('should join bindings with matching values', () => {
       action.left = new ArrayIterator([Bindings({ a: literal('a'), b: literal('b')})]);
+      action.leftVariables = ['a', 'b'];
       action.right = new ArrayIterator([Bindings({ a: literal('a'), c: literal('c')})]);
+      action.rightVariables = ['a', 'c'];
       return actor.run(action).then(async (output) => {
+        expect(output.variables).toEqual(['a', 'b', 'c']);
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({ a: literal('a'), b: literal('b'), c: literal('c')}),
         ]);
@@ -77,8 +81,11 @@ describe('ActorRdfJoinNestedLoop', () => {
 
     it('should not join bindings with incompatible values', () => {
       action.left = new ArrayIterator([Bindings({ a: literal('a'), b: literal('b')})]);
+      action.leftVariables = ['a', 'b'];
       action.right = new ArrayIterator([Bindings({ a: literal('d'), c: literal('c')})]);
+      action.rightVariables = ['a', 'c'];
       return actor.run(action).then(async (output) => {
+        expect(output.variables).toEqual(['a', 'b', 'c']);
         expect(await arrayifyStream(output.bindingsStream)).toEqual([]);
       });
     });
@@ -92,6 +99,7 @@ describe('ActorRdfJoinNestedLoop', () => {
         Bindings({ a: literal('3'), b: literal('3')}),
         Bindings({ a: literal('3'), b: literal('4')}),
       ]);
+      action.leftVariables = ['a', 'b'];
       action.right = new ArrayIterator([
         Bindings({ a: literal('1'), c: literal('4')}),
         Bindings({ a: literal('1'), c: literal('5')}),
@@ -101,6 +109,7 @@ describe('ActorRdfJoinNestedLoop', () => {
         Bindings({ a: literal('0'), c: literal('4')}),
         Bindings({ b: literal('4'), c: literal('4')}),
       ]);
+      action.rightVariables = ['a', 'c'];
       return actor.run(action).then(async (output) => {
         const expected = [
           Bindings({ a: literal('1'), b: literal('2'), c: literal('4') }),
@@ -113,6 +122,7 @@ describe('ActorRdfJoinNestedLoop', () => {
           Bindings({ a: literal('3'), b: literal('4'), c: literal('7') }),
           Bindings({ a: literal('3'), b: literal('4'), c: literal('4') }),
         ];
+        expect(output.variables).toEqual(['a', 'b', 'c']);
         // mapping to string and sorting since we don't know order (well, we sort of know, but we might not!)
         expect((await arrayifyStream(output.bindingsStream)).map(bindingsToString).sort())
           .toEqual(expected.map(bindingsToString).sort());

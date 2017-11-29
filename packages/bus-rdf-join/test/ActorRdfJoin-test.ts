@@ -12,6 +12,14 @@ class Dummy extends ActorRdfJoin {
     super({name: 'name', bus: new Bus({ name: 'bus' })});
   }
 
+  public static overlappingVariables(action: IActionRdfJoin): string[] {
+    return ActorRdfJoin.overlappingVariables(action);
+  }
+
+  public static joinVariables(action: IActionRdfJoin): string[] {
+    return ActorRdfJoin.joinVariables(action);
+  }
+
   public static join(left: Bindings, right: Bindings): Bindings {
     return ActorRdfJoin.join(left, right);
   }
@@ -30,13 +38,14 @@ class Dummy extends ActorRdfJoin {
 
 describe('ActorRdfJoin', () => {
 
+  let action: IActionRdfJoin;
+
+  beforeEach(() => {
+    action = { left: null, right: null, leftMetadata: {}, rightMetadata: {}, leftVariables: [], rightVariables: [] };
+  });
+
   describe('The test function', () => {
     const instance = new Dummy();
-    let action: IActionRdfJoin;
-
-    beforeEach(() => {
-      action = { left: null, right: null, leftMetadata: {}, rightMetadata: {} };
-    });
 
     it('should return infinity if both metadata objects are missing', () => {
       return expect(instance.test(action)).resolves.toHaveProperty('iterations', Infinity);
@@ -56,6 +65,51 @@ describe('ActorRdfJoin', () => {
       action.leftMetadata = { totalItems: 5 };
       action.rightMetadata = { totalItems: 5 };
       return expect(instance.test(action)).resolves.toHaveProperty('iterations', 5);
+    });
+  });
+
+  describe('The overlappingVariables function', () => {
+
+    it('should return an empty array if there is no overlap', () => {
+      expect(Dummy.overlappingVariables(action)).toEqual([]);
+      action.leftVariables = ['a', 'b'];
+      action.rightVariables = ['c', 'd'];
+      expect(Dummy.overlappingVariables(action)).toEqual([]);
+    });
+
+    it('should return a correct array if there is overlap', () => {
+      action.leftVariables = ['a', 'b'];
+      action.rightVariables = ['a', 'd'];
+      expect(Dummy.overlappingVariables(action)).toEqual(['a']);
+
+      action.leftVariables = ['a', 'b'];
+      action.rightVariables = ['a', 'b'];
+      expect(Dummy.overlappingVariables(action)).toEqual(['a', 'b']);
+
+      action.leftVariables = ['c', 'b'];
+      action.rightVariables = ['a', 'b'];
+      expect(Dummy.overlappingVariables(action)).toEqual(['b']);
+    });
+  });
+
+  describe('The joinVariables function', () => {
+
+    it('should join variables', () => {
+      expect(Dummy.joinVariables(action)).toEqual([]);
+
+      action.leftVariables = ['a', 'b'];
+      action.rightVariables = ['c', 'd'];
+      expect(Dummy.joinVariables(action)).toEqual(['a', 'b', 'c', 'd']);
+    });
+
+    it('should deduplicate the result', () => {
+      action.leftVariables = ['a', 'b'];
+      action.rightVariables = ['b', 'd'];
+      expect(Dummy.joinVariables(action)).toEqual(['a', 'b', 'd']);
+
+      action.leftVariables = ['a', 'b'];
+      action.rightVariables = ['b', 'a'];
+      expect(Dummy.joinVariables(action)).toEqual(['a', 'b']);
     });
   });
 
@@ -96,11 +150,6 @@ describe('ActorRdfJoin', () => {
   });
 
   describe('The iteratorsHaveMetadata function', () => {
-    let action: IActionRdfJoin;
-
-    beforeEach(() => {
-      action = { left: null, right: null, leftMetadata: {}, rightMetadata: {} };
-    });
 
     it('should return false if there is no left metadata', () => {
       action.leftMetadata = null;
