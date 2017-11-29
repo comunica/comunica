@@ -1,0 +1,11 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/components.jsonld",
+    {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
+      "carjh": "npmd:@comunica/actor-rdf-join-hash/",
+
+      "ActorRdfJoinHash": "carjh:Actor/RdfJoin/Hash"
+    }
+  ]
+}
