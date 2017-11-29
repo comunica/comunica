@@ -205,7 +205,7 @@ export class TypedLiteral<T> extends BaseLiteral<T> {
 
 
 export class BooleanLiteral extends TypedLiteral<boolean> {
-    dataType: DT.XSD_BOOLEAN;
+    dataType: DT.XSD_BOOLEAN = DT.XSD_BOOLEAN;
 
     constructor(value: boolean) {
         super(value);
@@ -221,7 +221,7 @@ export class BooleanLiteral extends TypedLiteral<boolean> {
 }
 
 export class StringLiteral extends TypedLiteral<string> {
-    dataType: DT.XSD_STRING;
+    dataType: DT.XSD_STRING = DT.XSD_STRING;
 
     constructor(value: string) {
         super(value);
@@ -322,7 +322,7 @@ export class NumericLiteral extends TypedLiteral<number> {
 }
 
 export class DateTimeLiteral extends TypedLiteral<Date> {
-    dataType: DT.XSD_DATE_TIME;
+    dataType: DT.XSD_DATE_TIME = DT.XSD_DATE_TIME;
 
     constructor(value: Date) {
         super(value);
