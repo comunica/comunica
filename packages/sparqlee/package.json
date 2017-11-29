@@ -9,6 +9,7 @@
     "test-debug-win": "node --debug-brk=5858 ./node_modules/jest/bin/jest.js",
     "prepare": "npm run build",
     "bench": "node dist/benchmarks/Compare.js",
+    "testm": "node dist/benchmarks/Testing.js",
     "build": "tsc"
   },
   "repository": {

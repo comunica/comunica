@@ -5,7 +5,6 @@ import { Mapping } from '../src/core/Mapping';
 import { DataType as DT } from '../src/util/Consts';
 
 
-
 const parser = new Parser({'xsd': 'http://www.w3.org/2001/XMLSchema#'})
 
 export class Example {

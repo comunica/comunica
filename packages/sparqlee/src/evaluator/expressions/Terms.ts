@@ -2,31 +2,20 @@ import * as console from 'console';
 import * as RDFJS from 'rdf-js';
 import * as RDFDM from 'rdf-data-model';
 
+import { Impl, ImplType } from './BinOpImplementation';
 import { Expression, ExpressionType } from './Types';
 import { DataType as DT, NumericType } from '../../util/Consts';
 import { UnimplementedError, InvalidOperationError } from '../../util/Errors';
 
 export interface Term extends Expression {
     termType: TermType
+    implType: ImplType
 
     toEBV(): boolean
-    rdfEqual(other: Term): boolean
-    rdfNotEqual(other: Term): boolean
 
-    // TODO: Maybe just return the native types (eg: boolean, number)
     not(): boolean
     unPlus(): number
     unMin(): number
-
-    lt(other: Term): boolean
-    gt(other: Term): boolean
-    lte(other: Term): boolean
-    gte(other: Term): boolean
-
-    multiply(other: Term): number
-    divide(other: Term): number
-    add(other: Term): number
-    subtract(other: Term): number
 
     toRDFJS(): RDFJS.Term
 }
@@ -44,35 +33,19 @@ export enum TermType {
 export abstract class BaseTerm implements Term {
     abstract termType: TermType;
     exprType = ExpressionType.Term;
+    implType = ImplType.Term;
 
     // https://www.w3.org/TR/sparql11-query/#ebv
     toEBV(): boolean {
         throw new InvalidOperationError();
     }
 
-    rdfEqual(other: Term): boolean {
-        throw new UnimplementedError();
-    }
-
-    rdfNotEqual(other: Term): boolean {
-        return !this.rdfEqual(other);
-    }
-
     not(): boolean { throw new InvalidOperationError(); }
     unPlus(): number { throw new InvalidOperationError(); }
     unMin(): number { throw new InvalidOperationError(); }
 
-    lt(other: Term): boolean { throw new InvalidOperationError(); }
-    gt(other: Term): boolean { throw new InvalidOperationError(); }
-    lte(other: Term): boolean { throw new InvalidOperationError(); }
-    gte(other: Term): boolean { throw new InvalidOperationError(); }
-
-    multiply(other: Term): number { throw new InvalidOperationError(); }
-    divide(other: Term): number { throw new InvalidOperationError(); }
-    add(other: Term): number { throw new InvalidOperationError(); }
-    subtract(other: Term): number { throw new InvalidOperationError(); }
-
     abstract toRDFJS(): RDFJS.Term;
+
 }
 
 // ============================================================================
@@ -157,29 +130,7 @@ export abstract class PlainLiteral extends BaseLiteral<string> {
 }
 
 export class SimpleLiteral extends PlainLiteral { 
-    rdfEqual(other: SimpleLiteral): boolean {
-        return this.value === other.value;
-    }
-
-    rdfNotEqual(other: SimpleLiteral): boolean {
-        return this.value !== other.value;
-    }
-
-    lt(other: SimpleLiteral): boolean {
-        return this.value < other.value;
-    }
-
-    gt(other: SimpleLiteral): boolean {
-        return this.value > other.value;
-    }
-
-    lte(other: SimpleLiteral): boolean {
-        return this.value <= other.value;
-    }
-
-    gte(other: SimpleLiteral): boolean {
-        return this.value >= other.value;
-    }
+    implType = ImplType.Simple;
 }
 
 export class LangLiteral extends PlainLiteral implements Literal<string> {
@@ -206,6 +157,7 @@ export class TypedLiteral<T> extends BaseLiteral<T> {
 
 export class BooleanLiteral extends TypedLiteral<boolean> {
     dataType: DT.XSD_BOOLEAN = DT.XSD_BOOLEAN;
+    implType = ImplType.Boolean;
 
     constructor(value: boolean) {
         super(value);
@@ -222,6 +174,7 @@ export class BooleanLiteral extends TypedLiteral<boolean> {
 
 export class StringLiteral extends TypedLiteral<string> {
     dataType: DT.XSD_STRING = DT.XSD_STRING;
+    implType = ImplType.String;
 
     constructor(value: string) {
         super(value);
@@ -230,34 +183,11 @@ export class StringLiteral extends TypedLiteral<string> {
     toEBV(): boolean {
         return this.value.length != 0;
     }
-
-    rdfEqual(other: StringLiteral): boolean {
-        return this.value === other.value;
-    }
-
-    rdfNotEqual(other: StringLiteral): boolean {
-        return this.value !== other.value;
-    }
-
-    lt(other: StringLiteral): boolean {
-        return this.value < other.value;
-    }
-
-    gt(other: StringLiteral): boolean {
-        return this.value > other.value;
-    }
-
-    lte(other: StringLiteral): boolean {
-        return this.value <= other.value;
-    }
-
-    gte(other: StringLiteral): boolean {
-        return this.value >= other.value;
-    }
 }
 
 export class NumericLiteral extends TypedLiteral<number> {
     dataType: NumericType;
+    implType = ImplType.Numeric;
 
     // TODO: Check need for keeping datatype in literal
     // Possibly not needed at all
@@ -279,76 +209,13 @@ export class NumericLiteral extends TypedLiteral<number> {
     unMin(): number {
         return -this.value;
     }
-
-    rdfEqual(other: NumericLiteral): boolean {
-        return this.value === other.value;
-    }
-
-    rdfNotEqual(other: NumericLiteral): boolean {
-        return this.value !== other.value;
-    }
-
-    lt(other: NumericLiteral): boolean {
-        return this.value < other.value;
-    }
-
-    gt(other: NumericLiteral): boolean {
-        return this.value > other.value;
-    }
-
-    lte(other: NumericLiteral): boolean {
-        return this.value <= other.value;
-    }
-
-    gte(other: NumericLiteral): boolean {
-        return this.value >= other.value;
-    }
-
-    multiply(other: NumericLiteral): number { 
-        return this.value * other.value; 
-    }
-
-    divide(other: NumericLiteral): number {
-        return this.value / other.value;
-    }
-
-    add(other: NumericLiteral): number { 
-        return this.value + other.value;
-     }
-
-    subtract(other: NumericLiteral): number { 
-        return this.value - other.value;
-    }
 }
 
 export class DateTimeLiteral extends TypedLiteral<Date> {
     dataType: DT.XSD_DATE_TIME = DT.XSD_DATE_TIME;
+    implType = ImplType.DateTime;
 
     constructor(value: Date) {
         super(value);
-    }
-
-    rdfEqual(other: DateTimeLiteral): boolean {
-        return this.value.getTime() === other.value.getTime();
-    }
-
-    rdfNotEqual(other: DateTimeLiteral): boolean {
-        return this.value.getTime() !== other.value.getTime();
-    }
-
-    lt(other: DateTimeLiteral): boolean {
-        return this.value < other.value;
-    }
-
-    gt(other: DateTimeLiteral): boolean {
-        return this.value > other.value;
-    }
-
-    lte(other: DateTimeLiteral): boolean {
-        return this.value <= other.value;
-    }
-
-    gte(other: DateTimeLiteral): boolean {
-        return this.value >= other.value;
     }
 }

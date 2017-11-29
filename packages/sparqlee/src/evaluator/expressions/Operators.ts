@@ -1,5 +1,8 @@
 import { Expression, ExpressionType } from './Types';
-import { Term, Literal, BooleanLiteral, NumericLiteral } from './Terms';
+import { BooleanLiteral, Literal, NumericLiteral, Term } from './Terms';
+import { InvalidOperationError, UnimplementedError } from '../../util/Errors';
+import { BooleanImpl, DateTimeImpl, Impl, NumericImpl, SimpleImpl, StringImpl,
+         TermImpl, ImplType } from './BinOpImplementation';
 
 export interface Operation extends Expression {
     operator: Operator,
@@ -19,16 +22,16 @@ export enum Operator {
     GT,
     LTE,
     GTE,
-    PRODUCT,
+    MULTIPLICATION,
     DIVISION,
     ADDITION,
-    SUBTACTION
+    SUBTRACTION
 }
 
 export abstract class BaseOperation implements Operation {
     abstract operator: Operator;
 
-    exprType:ExpressionType.Operation = ExpressionType.Operation;
+    exprType: ExpressionType.Operation = ExpressionType.Operation;
     args: Expression[];
 
     constructor(args: Expression[]) {
@@ -52,10 +55,26 @@ export abstract class BinaryOperation extends BaseOperation {
     }
 
     apply(args: Term[]): Term {
-        return this.applyBin(args[0], args[1]);
+        let type = `${args[0].implType} ${args[1].implType}`;
+        let impl = typeMap.get(type);
+        return this.applyBin(impl, args[0], args[1]);
     }
 
-    abstract applyBin(left: Term, right: Term): Term;
+    abstract applyBin(impl: Impl, left: Term, right: Term): Term;
+}
+
+export abstract class BinaryBoolOperation extends BinaryOperation {
+    abstract func(impl: Impl): ((left: Term, right: Term) => boolean);
+    applyBin(impl: Impl, left: Term, right: Term): Term {
+        return new BooleanLiteral(this.func(impl)(left, right))
+    }
+}
+
+export abstract class BinaryArithmeticOperation extends BinaryOperation {
+    abstract func(impl: Impl): ((left: Term, right: Term) => number);
+    applyBin(impl: Impl, left: Term, right: Term): Term {
+        return new NumericLiteral(this.func(impl)(left, right))
+    }
 }
 
 export abstract class UnaryOperation extends BaseOperation {
@@ -76,54 +95,114 @@ export abstract class UnaryOperation extends BaseOperation {
     abstract applyUn(arg: Term): Term;
 }
 
-// TODO: Correctly handle error + false
-export class And extends BinaryOperation {
-    operator = Operator.AND;
-
-    applyBin(left: Term, right: Term): BooleanLiteral {
-        let result = left.toEBV() && right.toEBV();
-        return new BooleanLiteral(result);
-    }
-}
-
-// TODO: Correctly handle error + true
-export class Or extends BinaryOperation {
-    operator = Operator.OR;
-
-    applyBin(left: Term, right: Term): BooleanLiteral {
-        let result = left.toEBV() || right.toEBV();
-        return new BooleanLiteral(result);
-    }
-}
-
 export class Not extends UnaryOperation {
     operator = Operator.NOT;
-
     applyUn(arg: Term): BooleanLiteral {
         return new BooleanLiteral(arg.not());
     }
 }
 
-export class Addition extends BinaryOperation {
-    operator = Operator.ADDITION
-
-    public applyBin(left: Term, right: Term): Term {
-        return new NumericLiteral(left.add(right));
-    }
+// TODO: Maybe just extend BinaryOperation for performance
+// TODO: Correctly handle error + false
+export class And extends BinaryBoolOperation {
+    operator = Operator.AND;
+    func(impl: Impl) {
+        return (left: Term, right: Term) => {
+            return left.toEBV() && right.toEBV();
+        }
+    };
 }
 
-export class GreaterThan extends BinaryOperation {
-    operator = Operator.LT;
-
-    applyBin(left: Term, right: Term): Term {
-        return new BooleanLiteral(left.gt(right));
-    }
+// TODO: Correctly handle error + true
+export class Or extends BinaryBoolOperation {
+    operator = Operator.OR;
+    func(impl: Impl) {
+        return (left: Term, right: Term) => {
+            return left.toEBV() || right.toEBV();
+        }
+    };
 }
 
-export class Equal extends BinaryOperation {
+export class Equal extends BinaryBoolOperation {
     operator = Operator.EQUAL;
-
-    applyBin(left: Term, right: Term): Term {
-        return new BooleanLiteral(left.rdfEqual(right));
-    }
+    func(impl: Impl) { return impl.rdfEqual; }
 }
+
+export class NotEqual extends BinaryBoolOperation {
+    operator = Operator.NOTEQUAL;
+    func(impl: Impl) { return impl.rdfNotEqual; }
+}
+
+export class LesserThan extends BinaryBoolOperation {
+    operator = Operator.LT;
+    func(impl: Impl) { return impl.lt; }
+}
+
+export class GreaterThan extends BinaryBoolOperation {
+    operator = Operator.GT;
+    func(impl: Impl) { return impl.gt; }
+}
+
+export class LesserThenEqual extends BinaryBoolOperation {
+    operator = Operator.LTE;
+    func(impl: Impl) { return impl.lte; }
+}
+
+export class GreaterThenEqual extends BinaryBoolOperation {
+    operator = Operator.GTE;
+    func(impl: Impl) { return impl.gte; }
+}
+
+export class Multiplication extends BinaryArithmeticOperation {
+    operator = Operator.MULTIPLICATION;
+    func(impl: Impl) { return impl.multiply; }
+}
+
+export class Division extends BinaryArithmeticOperation {
+    operator = Operator.DIVISION;
+    func(impl: Impl) { return impl.divide; }
+}
+
+export class Addition extends BinaryArithmeticOperation {
+    operator = Operator.ADDITION;
+    func(impl: Impl) { return impl.add; }
+}
+
+export class Subtraction extends BinaryArithmeticOperation {
+    operator = Operator.SUBTRACTION;
+    func(impl: Impl) { return impl.subtract; }
+}
+
+// Generate typeMap so no branching is needed;
+// interface TypeKey { left: ImplType, right: ImplType }
+type TypeKey = string;
+const typeMap: Map<TypeKey, Impl> = (() => {
+    let keyValues: [TypeKey, Impl][] = [];
+    let term = new TermImpl();
+    let num = new NumericImpl();
+    let sim = new SimpleImpl();
+    let str = new StringImpl();
+    let bool = new BooleanImpl();
+    let date = new DateTimeImpl();
+    for (let t in ImplType) {
+        for (let tt in ImplType) {
+            let left: ImplType = (<any>ImplType)[t];
+            let right: ImplType = (<any>ImplType)[tt];
+            let impl: Impl = term;
+            if (left === right) {
+                switch (left) {
+                    case ImplType.Term: impl = term; break;
+                    case ImplType.Numeric: impl = num; break;
+                    case ImplType.Simple: impl = sim; break;
+                    case ImplType.String: impl = str; break;
+                    case ImplType.Boolean: impl = bool; break;
+                    case ImplType.DateTime: impl = date; break;
+                    default: throw Error("ImplType was somehow not defined");
+                }
+            }
+            console.log(left, right);
+            keyValues.push([`${left} ${right}`, impl])
+        }
+    }
+    return new Map(keyValues);
+})();

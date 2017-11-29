@@ -70,7 +70,7 @@ export type NumericType =
     | DataType.XSD_UNSIGNED_INT
     | DataType.XSD_UNSIGNED_SHORT
     | DataType.XSD_UNSIGNED_BYTE
-    | DataType.XSD_NON_POSITIVE_INTEGER
+    | DataType.XSD_POSITIVE_INTEGER
 
 // TODO: Operator enum
 // TODO: Function enum

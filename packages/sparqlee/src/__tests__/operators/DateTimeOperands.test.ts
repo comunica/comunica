@@ -152,7 +152,7 @@ describe('the evaluation of simple datetime expressions', () => {
 
             edge1 edge2   = true
             `
-            test('<=', table)
+            test('<=', table);
         });
 
         describe('like >= receiving', () => {
@@ -173,6 +173,7 @@ describe('the evaluation of simple datetime expressions', () => {
 
             edge1 edge2   = true
             `
+            test('>=', table);
         });
     })
 });

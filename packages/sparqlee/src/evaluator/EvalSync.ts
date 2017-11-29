@@ -80,15 +80,15 @@ export class SyncEvaluator implements ExpressionEvaluator {
                     case '||': return new Ops.Or(args);
                     case '!': return new Ops.Not(args);
                     case '=': return new Ops.Equal(args);
-                    case '!=': throw new UnimplementedError();
-                    case '<': throw new UnimplementedError();
+                    case '!=': return new Ops.NotEqual(args);
+                    case '<': return new Ops.LesserThan(args);
                     case '>': return new Ops.GreaterThan(args);
-                    case '<=': throw new UnimplementedError();
-                    case '>=': throw new UnimplementedError();
-                    case '*': throw new UnimplementedError();
-                    case '/': throw new UnimplementedError();
+                    case '<=': return new Ops.LesserThan(args);
+                    case '>=': throw new Ops.GreaterThenEqual(args);
+                    case '*': throw new Ops.Multiplication(args);
+                    case '/': throw new Ops.Division(args);
                     case '+': return new Ops.Addition(args);
-                    case '-': throw new UnimplementedError();
+                    case '-': throw new Ops.Subtraction(args);
                 }
             };
             case ET.FunctionCall: throw new UnimplementedError();
@@ -148,7 +148,19 @@ export class SyncEvaluator implements ExpressionEvaluator {
             case DT.XSD_DECIMAL:
             case DT.XSD_FLOAT:
             case DT.XSD_DOUBLE:
+            
+            case DT.XSD_NEGATIVE_INTEGER:
+            case DT.XSD_NON_NEGATIVE_INTEGER:
+            case DT.XSD_NON_POSITIVE_INTEGER:
+            case DT.XSD_POSITIVE_INTEGER:
             case DT.XSD_LONG:
+            case DT.XSD_INT:
+            case DT.XSD_SHORT:
+            case DT.XSD_BYTE:
+            case DT.XSD_UNSIGNED_LONG:
+            case DT.XSD_UNSIGNED_INT:
+            case DT.XSD_UNSIGNED_SHORT:
+            case DT.XSD_UNSIGNED_BYTE:
             case DT.XSD_INT: {
                 let val: number = JSON.parse(lit.value);
                 if (typeof val != 'number') {
