@@ -1,5 +1,6 @@
 import {ActorInit} from "@comunica/bus-init";
 import {Bus} from "@comunica/core";
+import {SingletonIterator} from "asynciterator";
 import {ActorInitJoin} from "../lib/ActorInitJoin";
 
 describe('ActorInitJoin', () => {
@@ -26,17 +27,56 @@ describe('ActorInitJoin', () => {
 
   describe('An ActorInitJoin instance', () => {
     let actor: ActorInitJoin;
+    let mediator;
+    let leftPattern;
+    let rightPattern;
+    let context;
 
     beforeEach(() => {
-      actor = new ActorInitJoin({ name: 'actor', bus });
+      mediator = { mediate: () => {
+        return {
+          bindingsStream: new SingletonIterator('a'),
+          metadata: {},
+          variables: {},
+        };
+      }};
+      leftPattern = '';
+      rightPattern = '';
+      context = '{}';
+      actor = new ActorInitJoin({ bus, context, joinMediator: mediator, leftPattern,
+        name: 'actor', operationMediator: mediator, rightPattern });
     });
 
     it('should test', () => {
-      return expect(actor.test({ todo: true })).resolves.toEqual({ todo: true }); // TODO
+      return expect(actor.test(null)).resolves.toBeTruthy();
+    });
+
+    it('should stop if no patterns are provided', () => {
+      return expect(actor.run(null)).rejects.toBeTruthy();
     });
 
     it('should run', () => {
-      return expect(actor.run({ todo: true })).resolves.toMatchObject({ todo: true }); // TODO
+      actor = new ActorInitJoin({ bus, context, joinMediator: mediator, leftPattern: '{}',
+        name: 'actor', operationMediator: mediator, rightPattern: '{}' });
+      return actor.run(null)
+        .then((result) => {
+          return new Promise((resolve, reject) => {
+            result.stdout.on('data', (line) => expect(line).toBeTruthy());
+            result.stdout.on('end', resolve);
+          });
+        });
+    });
+
+    it('should run without context', () => {
+      actor = new ActorInitJoin({ bus, context: null, joinMediator: mediator, leftPattern: '{}',
+        name: 'actor', operationMediator: mediator, rightPattern: '{}' });
+      return actor.run(null)
+        .then((result) => {
+          return new Promise((resolve, reject) => {
+            result.stdout.on('data', (line) => expect(line).toBeTruthy());
+            result.stdout.on('end', resolve);
+          });
+        });
     });
   });
 });
