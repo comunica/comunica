@@ -1,0 +1,9 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-join-hash.jsonld",
+  "@id": "npmd:@comunica/actor-rdf-join-hash",
+  "@type": "Module",
+  "requireName": "@comunica/actor-rdf-join-hash",
+  "import": [
+    "Actor/RdfJoin/Hash.jsonld"
+  ]
+}
