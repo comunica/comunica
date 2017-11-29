@@ -1,0 +1,21 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-join-symmetrichash.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-rdf-join.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-rdf-join-symmetrichash",
+  "components": [
+    {
+      "@id": "carjs:Actor/RdfJoin/SymmetricHash",
+      "@type": "Class",
+      "extends": "cbrj:Actor/RdfJoin",
+      "requireElement": "ActorRdfJoinSymmetricHash",
+      "comment": "A comunica SymmetricHash RDF Join Actor.",
+      "constructorArguments": [
+        {
+          "extends": "cbrj:Actor/RdfJoin/constructorArgumentsObject"
+        }
+      ]
+    }
+  ]
+}

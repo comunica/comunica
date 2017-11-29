@@ -1,0 +1,9 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-join-symmetrichash.jsonld",
+  "@id": "npmd:@comunica/actor-rdf-join-symmetrichash",
+  "@type": "Module",
+  "requireName": "@comunica/actor-rdf-join-symmetrichash",
+  "import": [
+    "Actor/RdfJoin/SymmetricHash.jsonld"
+  ]
+}
