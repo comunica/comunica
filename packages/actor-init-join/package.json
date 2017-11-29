@@ -53,6 +53,7 @@
     "@comunica/actor-rdf-dereference-paged-next": "^0.0.1",
     "@comunica/actor-rdf-join-hash": "^0.0.1",
     "@comunica/actor-rdf-join-nestedloop": "^0.0.1",
+    "@comunica/actor-rdf-join-symmetrichash": "^0.0.1",
     "@comunica/actor-rdf-metadata-extract-hydra-controls": "^0.0.1",
     "@comunica/actor-rdf-metadata-extract-hydra-count": "^0.0.1",
     "@comunica/actor-rdf-metadata-primary-topic": "^0.0.1",
