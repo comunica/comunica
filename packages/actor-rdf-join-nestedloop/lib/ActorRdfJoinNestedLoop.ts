@@ -15,7 +15,7 @@ export class ActorRdfJoinNestedLoop extends ActorRdfJoin {
 
   public async run(action: IActionRdfJoin): Promise<IActorRdfJoinOutput> {
     const join = new NestedLoopJoin<Bindings, Bindings, Bindings>(action.left, action.right, ActorRdfJoin.join);
-    const result: IActorRdfJoinOutput = { bindingsStream: join };
+    const result: IActorRdfJoinOutput = { bindingsStream: join, variables: ActorRdfJoin.joinVariables(action) };
 
     if (ActorRdfJoin.iteratorsHaveMetadata(action, 'totalItems')) {
       result.metadata = { totalItems: this.getIterations(action) };
