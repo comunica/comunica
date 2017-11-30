@@ -35,7 +35,7 @@ export class ActorInitRdfDereferencePaged extends ActorInit implements IActorIni
     readable._read = () => {
       return;
     };
-    readable.push('Metadata: ' + JSON.stringify(result.firstPageMetadata, null, '  ') + '\n');
+    readable.push('Metadata: ' + JSON.stringify(await result.firstPageMetadata, null, '  ') + '\n');
 
     return { stdout: readable };
   }
