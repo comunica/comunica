@@ -1,9 +1,9 @@
 import {IActionRdfDereferencePaged, IActorRdfDereferencePagedOutput} from "@comunica/bus-rdf-dereference-paged";
 import {Actor, IActorTest, Mediator} from "@comunica/core";
 import {AsyncIterator} from "asynciterator";
+import {PromiseProxyIterator} from "asynciterator-promiseproxy";
 import * as RDF from "rdf-js";
 import {ILazyQuadSource} from "../../bus-rdf-resolve-quad-pattern/lib/ActorRdfResolveQuadPatternSource";
-import {ProxyIterator} from "./ProxyIterator";
 
 /**
  * A QPF quad source that uses a paged RDF dereference mediator
@@ -105,7 +105,7 @@ export class MediatedQuadSource implements ILazyQuadSource {
       .getDuplicateElementLinks(subject, predicate, object, graph);
 
     const url: string = this.uriConstructor(subject, predicate, object, graph);
-    const quads = new ProxyIterator(() => this.mediatorRdfDereferencePaged.mediate({ url })
+    const quads = new PromiseProxyIterator(() => this.mediatorRdfDereferencePaged.mediate({ url })
       .then((output) => {
         // Emit metadata in the stream, so we can attach it later to the actor's promise output
         quads.emit('metadata', output.firstPageMetadata);

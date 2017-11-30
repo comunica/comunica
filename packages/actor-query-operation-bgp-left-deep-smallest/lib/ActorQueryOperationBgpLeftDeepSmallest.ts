@@ -2,10 +2,10 @@ import {ActorQueryOperationTypedMediated, Bindings, BindingsStream,
   IActorQueryOperationOutput, IActorQueryOperationTypedMediatedArgs} from "@comunica/bus-query-operation";
 import {IActorTest} from "@comunica/core";
 import {MultiTransformIterator} from "asynciterator";
+import {PromiseProxyIterator} from "asynciterator-promiseproxy";
 import {quad} from "rdf-data-model";
 import * as RDF from "rdf-js";
 import {Algebra} from "sparqlalgebrajs";
-import {ProxyIterator} from "../../actor-rdf-resolve-quad-pattern-qpf/lib/ProxyIterator";
 
 /**
  * A comunica Query Operation Actor that resolves BGPs in a left-deep manner
@@ -34,8 +34,7 @@ export class ActorQueryOperationBgpLeftDeepSmallest extends ActorQueryOperationT
     const bindingsStream: BindingsStream = new MultiTransformIterator(baseStream);
     // TODO: remove cast when asynciterator types are fixed
     (<any> bindingsStream)._createTransformer = (bindings: Bindings) => {
-      // TODO: move ProxyIterator to separate package
-      return new ProxyIterator(
+      return new PromiseProxyIterator(
         async () => (await patternBinder(ActorQueryOperationBgpLeftDeepSmallest.materializePatterns(patterns,
           bindings))).map((subBindings: Bindings) => subBindings.merge(bindings)));
     };
