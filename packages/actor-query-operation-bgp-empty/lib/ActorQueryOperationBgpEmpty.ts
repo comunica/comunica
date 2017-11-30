@@ -22,7 +22,7 @@ export class ActorQueryOperationBgpEmpty extends ActorQueryOperationTyped<Algebr
 
   public async runOperation(pattern: Algebra.Bgp, context?: {[id: string]: any})
   : Promise<IActorQueryOperationOutput> {
-    return { bindingsStream: new EmptyIterator(), variables: [], metadata: { totalItems: 0 } };
+    return { bindingsStream: new EmptyIterator(), variables: [], metadata: Promise.resolve({ totalItems: 0 }) };
   }
 
 }
