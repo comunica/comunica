@@ -463,7 +463,7 @@ describe('ActorQueryOperationBgpLeftDeepSmallest', () => {
       const op = { operation: { type: 'bgp', patterns }, context: { totalItems: 10, variables: ['a'] } };
       return actor.run(op).then(async (output) => {
         expect(output.variables).toEqual(['a']);
-        expect(output.metadata).toEqual({ totalItems: 100 });
+        expect(await output.metadata).toEqual({ totalItems: 100 });
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({
             graph: namedNode('4'),
@@ -479,7 +479,7 @@ describe('ActorQueryOperationBgpLeftDeepSmallest', () => {
       const op = { operation: { type: 'bgp', patterns } };
       return actor.run(op).then(async (output) => {
         expect(output.variables).toEqual([]);
-        expect(output.metadata).toEqual({ totalItems: Infinity });
+        expect(await output.metadata).toEqual({ totalItems: Infinity });
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({
             graph: namedNode('a'),
