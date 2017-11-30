@@ -45,9 +45,9 @@ export interface IActorQueryOperationOutput extends IActorOutput {
    */
   variables: string[];
   /**
-   * Metadata about the bindings stream.
+   * Promise that resolves to the metadata about the bindings stream.
    * This can contain things like the estimated number of total bindings,
    * or the order in which the bindings appear.
    */
-  metadata?: {[id: string]: any};
+  metadata?: Promise<{[id: string]: any}>;
 }

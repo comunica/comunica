@@ -157,28 +157,28 @@ describe('ActorRdfResolveQuadPatternQpf', () => {
 
     it('should run for QPF pattern 1', () => {
       return actor.run({ pattern: pattern1, context: { entrypoint: 'entrypoint' } }).then(async (output) => {
-        expect(output.metadata).toBe(metadataQpf);
+        expect(await output.metadata).toBe(metadataQpf);
         expect(await arrayifyStream(output.data)).toEqual([ 'a,_,c,d/a', 'a,_,c,d/b', 'a,_,c,d/c' ]);
       });
     });
 
     it('should run for QPF pattern 2', () => {
       return actor.run({ pattern: pattern2, context: { entrypoint: 'entrypoint' } }).then(async (output) => {
-        expect(output.metadata).toBe(metadataQpf);
+        expect(await output.metadata).toBe(metadataQpf);
         expect(await arrayifyStream(output.data)).toEqual([ 'a,b,_,d/a', 'a,b,_,d/b', 'a,b,_,d/c' ]);
       });
     });
 
     it('should run for QPF pattern 3', () => {
       return actor.run({ pattern: pattern3, context: { entrypoint: 'entrypoint' } }).then(async (output) => {
-        expect(output.metadata).toBe(metadataQpf);
+        expect(await output.metadata).toBe(metadataQpf);
         expect(await arrayifyStream(output.data)).toEqual([ 'a,b,c,_/a', 'a,b,c,_/b', 'a,b,c,_/c' ]);
       });
     });
 
     it('should run for QPF pattern 4', () => {
       return actor.run({ pattern: pattern4, context: { entrypoint: 'entrypoint' } }).then(async (output) => {
-        expect(output.metadata).toBe(metadataQpf);
+        expect(await output.metadata).toBe(metadataQpf);
         expect(await arrayifyStream(output.data)).toEqual([ '_,b,c,d/a', '_,b,c,d/b', '_,b,c,d/c' ]);
       });
     });
@@ -189,7 +189,7 @@ describe('ActorRdfResolveQuadPatternQpf', () => {
         firstPageMetadata: metadataTpf,
       });
       return actor.run({ pattern: pattern2, context: { entrypoint: 'entrypoint' } }).then(async (output) => {
-        expect(output.metadata).toBe(metadataTpf);
+        expect(await output.metadata).toBe(metadataTpf);
         expect(await arrayifyStream(output.data)).toEqual([ 'a,b,_/a', 'a,b,_/b', 'a,b,_/c' ]);
       });
     });

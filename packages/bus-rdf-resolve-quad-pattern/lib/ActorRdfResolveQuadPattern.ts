@@ -41,9 +41,9 @@ export interface IActorRdfResolveQuadPatternOutput extends IActorOutput {
    */
   data: AsyncIterator<RDF.Quad> & RDF.Stream;
   /**
-   * Metadata about the resulting stream.
+   * Promise that resolves to the metadata about the resulting stream.
    * This can contain things like the estimated number of total quads,
    * or the order in which the quads appear.
    */
-  metadata?: {[id: string]: any};
+  metadata?: Promise<{[id: string]: any}>;
 }

@@ -103,20 +103,18 @@ export class ActorRdfResolveQuadPatternQpf extends ActorRdfResolveQuadPatternSou
     return this.sources[entrypoint] = await this.createSource(context);
   }
 
-  protected getOutput(source: RDF.Source, pattern: RDF.Quad, context?: {[id: string]: any})
+  protected async getOutput(source: RDF.Source, pattern: RDF.Quad, context?: {[id: string]: any})
   : Promise<IActorRdfResolveQuadPatternOutput> {
     // Attach metadata to the output
-    return super.getOutput(source, pattern, context)
-      .then((output: IActorRdfResolveQuadPatternOutput) => {
-        return new Promise<IActorRdfResolveQuadPatternOutput>((resolve, reject) => {
-          output.data.on('error', reject);
-          output.data.on('end', () => reject(new Error('No metadata was found')));
-          output.data.on('metadata', (metadata) => {
-            output.metadata = metadata;
-            resolve(output);
-          });
-        });
+    const output: IActorRdfResolveQuadPatternOutput = await super.getOutput(source, pattern, context);
+    output.metadata = new Promise((resolve, reject) => {
+      output.data.on('error', reject);
+      output.data.on('end', () => reject(new Error('No metadata was found')));
+      output.data.on('metadata', (metadata) => {
+        resolve(metadata);
       });
+    });
+    return output;
   }
 
 }
