@@ -1,0 +1,11 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/components.jsonld",
+    {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
+      "caqos": "npmd:@comunica/actor-query-operation-slice/",
+
+      "ActorQueryOperationSlice": "caqos:Actor/QueryOperation/Slice"
+    }
+  ]
+}
