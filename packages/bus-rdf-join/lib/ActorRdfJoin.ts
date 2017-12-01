@@ -1,8 +1,9 @@
 
-import {Bindings, BindingsStream} from "@comunica/bus-query-operation";
-import {Actor, IAction, IActorArgs, IActorOutput} from "@comunica/core";
+import {Bindings, IActorQueryOperationOutput} from "@comunica/bus-query-operation";
+import {Actor, IAction, IActorArgs} from "@comunica/core";
 import {IMediatorTypeIterations} from "@comunica/mediatortype-iterations";
-import * as RDF from "rdf-js";
+import {EmptyIterator} from "asynciterator";
+import * as _ from "lodash";
 
 /**
  * A comunica actor for joining 2 binding streams.
@@ -13,21 +14,29 @@ import * as RDF from "rdf-js";
  * * Output: IActorRdfJoinOutput: The resulting joined stream.
  *
  * @see IActionRdfJoin
- * @see IActorRdfJoinOutput
+ * @see IActorQueryOperationOutput
  */
-export abstract class ActorRdfJoin extends Actor<IActionRdfJoin, IMediatorTypeIterations, IActorRdfJoinOutput> {
+export abstract class ActorRdfJoin extends Actor<IActionRdfJoin, IMediatorTypeIterations, IActorQueryOperationOutput> {
 
-  constructor(args: IActorArgs<IActionRdfJoin, IMediatorTypeIterations, IActorRdfJoinOutput>) {
+  /**
+   * Can be used by subclasses to indicate the max number of streams that can be joined.
+   * 0 for infinity.
+   */
+  protected maxEntries: number;
+
+  constructor(args: IActorArgs<IActionRdfJoin, IMediatorTypeIterations, IActorQueryOperationOutput>,
+              maxEntries?: number) {
     super(args);
+    this.maxEntries = maxEntries;
   }
 
   /**
-   * Returns an array containing all the variable names that occur in both binding streams.
+   * Returns an array containing all the variable names that occur in all bindings streams.
    * @param {IActionRdfJoin} action
    * @returns {string[]}
    */
-  protected static overlappingVariables(action: IActionRdfJoin): string[] {
-    return action.leftVariables.filter((v) => action.rightVariables.indexOf(v) >= 0);
+  public static overlappingVariables(action: IActionRdfJoin): string[] {
+    return _.intersection.apply(_, action.entries.map((entry) => entry.variables));
   }
 
   /**
@@ -35,58 +44,52 @@ export abstract class ActorRdfJoin extends Actor<IActionRdfJoin, IMediatorTypeIt
    * @param {IActionRdfJoin} action
    * @returns {string[]}
    */
-  protected static joinVariables(action: IActionRdfJoin): string[] {
-    return action.leftVariables.concat(action.rightVariables.filter((v) => action.leftVariables.indexOf(v) < 0));
+  public static joinVariables(action: IActionRdfJoin): string[] {
+    return _.union.apply(_, action.entries.map((entry) => entry.variables));
   }
 
   /**
-   * Returns the result of joining two bindings, or `null` if no join is possible.
-   * @param {Bindings} left
-   * @param {Bindings} right
+   * Returns the result of joining bindings, or `null` if no join is possible.
+   * @param {Bindings[]} bindings
    * @returns {Bindings}
    */
-  protected static join(left: Bindings, right: Bindings): Bindings {
-    let result = left;
-    const incompatible = right.some((rightV: RDF.Term, key: string) => {
-      const leftV = left.get(key);
-      if (leftV) {
-        return leftV.value !== rightV.value; // want to return true if there is no match
-      } else {
-        // not nice to change values in a `some` loop, but might be more efficient
-        result = result.set(key, rightV);
-      }
-      return false;
-    });
-    if (incompatible) {
+  public static join(...bindings: Bindings[]): Bindings {
+    try {
+      return bindings.reduce((acc, val) => acc.mergeWith((l, r) => {
+        if (!l.equals(r)) {
+          throw new Error();
+        }
+        return l;
+      }, val));
+    } catch (e) {
       return null;
     }
-    return result;
   }
 
   /**
-   * Checks if both metadata objects are present in the action, and if they have the specified key.
+   * Checks if all metadata objects are present in the action, and if they have the specified key.
    * @param {IActionRdfJoin} action
    * @param {string} key
    * @returns {boolean}
    */
-  protected static iteratorsHaveMetadata(action: IActionRdfJoin, key: string): boolean {
-    if (!action.leftMetadata || !action.leftMetadata.hasOwnProperty(key)) {
-      return false;
-    }
-    if (!action.rightMetadata || !action.rightMetadata.hasOwnProperty(key)) {
-      return false;
-    }
-    return true;
+  public static iteratorsHaveMetadata(action: IActionRdfJoin, key: string): boolean {
+    return action.entries.every((entry) => entry.metadata && entry.metadata.hasOwnProperty(key));
   }
 
   /**
    * Default test function for join actors.
-   * Checks whether both iterators have metadata.
+   * Checks whether all iterators have metadata.
    * If yes: call the abstract getIterations method, if not: return Infinity.
    * @param {IActionRdfJoin} action The input action containing the relevant iterators
    * @returns {Promise<IMediatorTypeIterations>} The calculated estime.
    */
   public async test(action: IActionRdfJoin): Promise<IMediatorTypeIterations> {
+    if (action.entries.length <= 1) {
+      return { iterations: 0 };
+    }
+    if (this.maxEntries && action.entries.length > this.maxEntries) {
+      return null;
+    }
     if (!ActorRdfJoin.iteratorsHaveMetadata(action, 'totalItems')) {
       return { iterations: Infinity };
     }
@@ -94,8 +97,31 @@ export abstract class ActorRdfJoin extends Actor<IActionRdfJoin, IMediatorTypeIt
   }
 
   /**
+   * Returns default input for 0 or 1 entries. Calls the getOutput function otherwise
+   * @param {IActionRdfJoin} action
+   * @returns {Promise<IActorQueryOperationOutput>}
+   */
+  public async run(action: IActionRdfJoin): Promise<IActorQueryOperationOutput> {
+    if (action.entries.length === 0) {
+      return { bindingsStream: new EmptyIterator(), metadata: { totalItems: 0}, variables: [] };
+    }
+    if (action.entries.length === 1) {
+      return action.entries[0];
+    }
+    return this.getOutput(action);
+  }
+
+  /**
+   * Returns the resulting output for joining the given entries.
+   * This is called after removing the trivial cases in run.
+   * @param {IActionRdfJoin} action
+   * @returns {Promise<IActorQueryOperationOutput>}
+   */
+  protected abstract getOutput(action: IActionRdfJoin): Promise<IActorQueryOperationOutput>;
+
+  /**
    * Used when calculating the number of iterations in the test function.
-   * Both metadata objects are guaranteed to have a value for the `totalItems` key.
+   * All metadata objects are guaranteed to have a value for the `totalItems` key.
    * @param {IActionRdfJoin} action
    * @returns {number} The estimated number of iterations when joining the given iterators.
    */
@@ -104,50 +130,9 @@ export abstract class ActorRdfJoin extends Actor<IActionRdfJoin, IMediatorTypeIt
 }
 
 export interface IActionRdfJoin extends IAction {
-  /**
-   * The left input stream.
-   */
-  left: BindingsStream;
 
   /**
-   * Metadata about the left input stream, such as the estimated number of bindings.
+   * The list of streams and their corresponding metadata that need to be joined.
    */
-  leftMetadata?: {[id: string]: any};
-
-  /**
-   * The list of variable names (without '?') for which bindings are provided in the left stream.
-   */
-  leftVariables: string[];
-
-  /**
-   * The right input stream.
-   */
-  right: BindingsStream;
-
-  /**
-   * Metadata about the left input stream, such as the estimated number of bindings.
-   */
-  rightMetadata?: {[id: string]: any};
-
-  /**
-   * The list of variable names (without '?') for which bindings are provided in the right stream.
-   */
-  rightVariables: string[];
-}
-
-export interface IActorRdfJoinOutput extends IActorOutput {
-  /**
-   * The resulting stream joining the results of the two input streams.
-   */
-  bindingsStream: BindingsStream;
-
-  /**
-   * Metadata about the output stream, such as the estimated number of bindings.
-   */
-  metadata?: {[id: string]: any};
-
-  /**
-   * The list of variable names (without '?') for which bindings are provided in this stream.
-   */
-  variables: string[];
+  entries: IActorQueryOperationOutput[];
 }

@@ -1,16 +1,16 @@
-import {Bindings} from "@comunica/bus-query-operation";
-import {ActorRdfJoin, IActionRdfJoin, IActorRdfJoinOutput} from "@comunica/bus-rdf-join";
+import {Bindings, IActorQueryOperationOutput} from "@comunica/bus-query-operation";
+import {ActorRdfJoin, IActionRdfJoin} from "@comunica/bus-rdf-join";
 import {IActorArgs} from "@comunica/core";
 import {IMediatorTypeIterations} from "@comunica/mediatortype-iterations";
-import {HashJoin} from "asyncjoin";
+import {SymmetricHashJoin} from "asyncjoin";
 
 /**
  * A comunica Hash RDF Join Actor.
  */
 export class ActorRdfJoinSymmetricHash extends ActorRdfJoin {
 
-  constructor(args: IActorArgs<IActionRdfJoin, IMediatorTypeIterations, IActorRdfJoinOutput>) {
-    super(args);
+  constructor(args: IActorArgs<IActionRdfJoin, IMediatorTypeIterations, IActorQueryOperationOutput>) {
+    super(args, 2);
   }
 
   /**
@@ -24,21 +24,22 @@ export class ActorRdfJoinSymmetricHash extends ActorRdfJoin {
     return variables.map((v) => bindings.get(v)).join('');
   }
 
-  public async run(action: IActionRdfJoin): Promise<IActorRdfJoinOutput> {
+  public async getOutput(action: IActionRdfJoin): Promise<IActorQueryOperationOutput> {
     const variables = ActorRdfJoin.overlappingVariables(action);
-    const join = new HashJoin<Bindings, string, Bindings>(action.left, action.right,
+    const join = new SymmetricHashJoin<Bindings, string, Bindings>(
+      action.entries[0].bindingsStream, action.entries[1].bindingsStream,
       (entry) => ActorRdfJoinSymmetricHash.hash(entry, variables), ActorRdfJoin.join);
-    const result: IActorRdfJoinOutput = { bindingsStream: join, variables: ActorRdfJoin.joinVariables(action) };
+    const result: IActorQueryOperationOutput = { bindingsStream: join, variables: ActorRdfJoin.joinVariables(action) };
 
     if (ActorRdfJoin.iteratorsHaveMetadata(action, 'totalItems')) {
-      result.metadata = { totalItems: this.getIterations(action) };
+      result.metadata = { totalItems: action.entries[0].metadata.totalItems * action.entries[1].metadata.totalItems };
     }
 
     return result;
   }
 
   protected getIterations(action: IActionRdfJoin): number {
-    return action.leftMetadata.totalItems + action.rightMetadata.totalItems;
+    return action.entries[0].metadata.totalItems + action.entries[1].metadata.totalItems;
   }
 
 }
