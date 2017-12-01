@@ -1,0 +1,63 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-init-sparql.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-init.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-init-sparql",
+  "components": [
+    {
+      "@id": "cais:Actor/Init/Sparql",
+      "@type": "Class",
+      "extends": "cbi:Actor/Init",
+      "requireElement": "ActorInitSparql",
+      "comment": "A comunica SPARQL Init Actor.",
+      "parameters": [
+        {
+          "@id": "cais:mediatorQueryOperation",
+          "comment": "The query operation mediator",
+          "required": true,
+          "unique": true
+        },
+        {
+          "@id": "cais:mediatorSparqlParse",
+          "comment": "The query parse mediator",
+          "required": true,
+          "unique": true
+        },
+        {
+          "@id": "cais:query",
+          "comment": "A SPARQL query string",
+          "unique": true
+        },
+        {
+          "@id": "cais:context",
+          "comment": "A JSON string of a query operation context",
+          "unique": true
+        }
+      ],
+      "constructorArguments": [
+        {
+          "extends": "cbi:Actor/Init/constructorArgumentsObject",
+          "fields": [
+            {
+              "keyRaw": "mediatorQueryOperation",
+              "value": "cais:mediatorQueryOperation"
+            },
+            {
+              "keyRaw": "mediatorSparqlParse",
+              "value": "cais:mediatorSparqlParse"
+            },
+            {
+              "keyRaw": "query",
+              "value": "cais:query"
+            },
+            {
+              "keyRaw": "context",
+              "value": "cais:context"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
