@@ -1,0 +1,106 @@
+{
+  "name": "@comunica/actor-init-sparql",
+  "version": "0.0.1",
+  "description": "A sparql init actor",
+  "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-sparql",
+  "lsd:components": "components/components.jsonld",
+  "lsd:contexts": {
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-init-sparql.jsonld": "components/context.jsonld"
+  },
+  "main": "index.js",
+  "typings": "index",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/comunica/actor-init-sparql.git"
+  },
+  "keywords": [
+    "comunica",
+    "actor",
+    "init",
+    "sparql"
+  ],
+  "license": "MIT",
+  "bin": {
+    "comunica-sparql": "./bin/query.js"
+  },
+  "bugs": {
+    "url": "https://github.com/comunica/actor-init-sparql/issues"
+  },
+  "homepage": "https://github.com/comunica/actor-init-sparql#readme",
+  "files": [
+    "components",
+    "lib/**/*.d.ts",
+    "lib/**/*.js",
+    "bin/**/*.d.ts",
+    "bin/**/*.js",
+    "index.d.ts",
+    "index.js"
+  ],
+  "dependencies": {
+    "minimist": "^1.2.0",
+    "@comunica/runner-cli": "^0.0.1"
+  },
+  "peerDependencies": {
+    "@comunica/core": "^0.0.1",
+    "@comunica/bus-init": "^0.0.1",
+    "@comunica/bus-query-operation": "^0.0.1",
+    "@comunica/bus-sparql-parse": "^0.0.1"
+  },
+  "devDependencies": {
+    "@comunica/actor-http-node-fetch": "^0.0.1",
+    "@comunica/actor-query-operation-bgp-empty": "^0.0.1",
+    "@comunica/actor-query-operation-bgp-left-deep-smallest": "^0.0.1",
+    "@comunica/actor-query-operation-bgp-single": "^0.0.1",
+    "@comunica/actor-query-operation-project": "^0.0.1",
+    "@comunica/actor-query-operation-quadpattern": "^0.0.1",
+    "@comunica/actor-rdf-metadata-extract-hydra-controls": "^0.0.1",
+    "@comunica/actor-rdf-metadata-extract-hydra-count": "^0.0.1",
+    "@comunica/actor-rdf-metadata-primary-topic": "^0.0.1",
+    "@comunica/actor-rdf-metadata-triple-predicate": "^0.0.1",
+    "@comunica/actor-rdf-dereference-http-parse": "^0.0.1",
+    "@comunica/actor-rdf-dereference-paged-next": "^0.0.1",
+    "@comunica/actor-rdf-parse-n3": "^0.0.1",
+    "@comunica/actor-rdf-parse-jsonld": "^0.0.1",
+    "@comunica/actor-rdf-resolve-quad-pattern-qpf": "^0.0.1",
+    "@comunica/actor-sparql-parse-algebra": "^0.0.1",
+    "@comunica/bus-init": "^0.0.1",
+    "@comunica/bus-http": "^0.0.1",
+    "@comunica/bus-query-operation": "^0.0.1",
+    "@comunica/bus-rdf-metadata-extract": "^0.0.1",
+    "@comunica/bus-rdf-metadata": "^0.0.1",
+    "@comunica/bus-rdf-dereference-paged": "^0.0.1",
+    "@comunica/bus-rdf-dereference": "^0.0.1",
+    "@comunica/bus-rdf-parse": "^0.0.1",
+    "@comunica/bus-rdf-resolve-quad-pattern": "^0.0.1",
+    "@comunica/bus-sparql-parse": "^0.0.1",
+    "@comunica/core": "^0.0.1",
+    "@comunica/mediator-combine-union": "^0.0.1",
+    "@comunica/mediator-number": "^0.0.1",
+    "@comunica/mediator-race": "^0.0.1",
+    "@comunica/runner-cli": "^0.0.1",
+    "@comunica/runner": "^0.0.1"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.ts$": "<rootDir>/../../node_modules/ts-jest/preprocessor.js"
+    },
+    "transformIgnorePatterns": [
+      "[/\\\\]node_modules[/\\\\].+\\.(js|jsx)$"
+    ],
+    "testRegex": "(/test/.*|(\\.|/)(test|spec))\\.ts$",
+    "moduleFileExtensions": [
+      "ts",
+      "js"
+    ],
+    "collectCoverage": true,
+    "mapCoverage": true
+  },
+  "scripts": {
+    "test": "node \"../../node_modules/jest/bin/jest.js\" ${1}",
+    "test-watch": "node \"../../node_modules/jest/bin/jest.js\" ${1} --watch",
+    "lint": "node \"../../node_modules/tslint/bin/tslint\" lib/**/*.ts test/**/*.ts --exclude '**/*.d.ts'",
+    "build": "node \"../../node_modules/typescript/bin/tsc\"",
+    "validate": "npm ls",
+    "prepare": "npm run build"
+  }
+}
