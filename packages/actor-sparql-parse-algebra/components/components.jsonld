@@ -1,0 +1,9 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/contexts/comunica-actor-sparql-parse-algebra.jsonld",
+  "@id": "npmd:@comunica/actor-sparql-parse-algebra",
+  "@type": "Module",
+  "requireName": "@comunica/actor-sparql-parse-algebra",
+  "import": [
+    "Actor/SparqlParse/Algebra.jsonld"
+  ]
+}

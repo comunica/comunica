@@ -1,0 +1,11 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/comunica-core.jsonld",
+    {
+      "cbsp": "npmd:@comunica/bus-sparql-parse/",
+
+      "BusSparqlParse": "cbsp:Bus/SparqlParse",
+      "ActorSparqlParse": "cbsp:Actor/SparqlParse"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/components.jsonld",
+    {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
+      "caspa": "npmd:@comunica/actor-sparql-parse-algebra/",
+
+      "ActorSparqlParseAlgebra": "caspa:Actor/SparqlParse/Algebra"
+    }
+  ]
+}

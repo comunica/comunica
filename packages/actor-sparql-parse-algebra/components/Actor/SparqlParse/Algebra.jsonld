@@ -1,0 +1,21 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-sparql-parse-algebra.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-sparql-parse.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-sparql-parse-algebra",
+  "components": [
+    {
+      "@id": "caspa:Actor/SparqlParse/Algebra",
+      "@type": "Class",
+      "extends": "cbsp:Actor/SparqlParse",
+      "requireElement": "ActorSparqlParseAlgebra",
+      "comment": "A comunica Algebra SPARQL Parse Actor.",
+      "constructorArguments": [
+        {
+          "extends": "cbsp:Actor/SparqlParse/constructorArgumentsObject"
+        }
+      ]
+    }
+  ]
+}
