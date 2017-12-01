@@ -3,7 +3,7 @@ import {
   ActorQueryOperation, Bindings,
   IActionQueryOperation, IActorQueryOperationOutput,
 } from "@comunica/bus-query-operation";
-import {ActorRdfJoin, IActionRdfJoin, IActorRdfJoinOutput} from "@comunica/bus-rdf-join";
+import {ActorRdfJoin, IActionRdfJoin} from "@comunica/bus-rdf-join";
 import {IActorArgs, IActorTest, Mediator} from "@comunica/core";
 import {Readable} from "stream";
 
@@ -14,7 +14,7 @@ export class ActorInitJoin extends ActorInit implements IActorInitJoinArgs {
 
   public readonly operationMediator: Mediator<ActorQueryOperation, IActionQueryOperation,
     IActorTest, IActorQueryOperationOutput>;
-  public readonly joinMediator: Mediator<ActorRdfJoin, IActionRdfJoin, IActorTest, IActorRdfJoinOutput>;
+  public readonly joinMediator: Mediator<ActorRdfJoin, IActionRdfJoin, IActorTest, IActorQueryOperationOutput>;
 
   public readonly leftPattern: string;
   public readonly rightPattern: string;
@@ -44,14 +44,7 @@ export class ActorInitJoin extends ActorInit implements IActorInitJoinArgs {
     };
     const rightOutput = await this.operationMediator.mediate(rightInput);
 
-    const joinInput: IActionRdfJoin = {
-      left: leftOutput.bindingsStream,
-      leftMetadata: await leftOutput.metadata,
-      leftVariables: leftOutput.variables,
-      right: rightOutput.bindingsStream,
-      rightMetadata: await rightOutput.metadata,
-      rightVariables: rightOutput.variables,
-    };
+    const joinInput: IActionRdfJoin = { entries: [leftOutput, rightOutput] };
     const joinOutput = await this.joinMediator.mediate(joinInput);
 
     const readable = new Readable();
@@ -73,7 +66,7 @@ export class ActorInitJoin extends ActorInit implements IActorInitJoinArgs {
 export interface IActorInitJoinArgs extends IActorArgs<IActionInit, IActorTest, IActorOutputInit> {
   operationMediator: Mediator<ActorQueryOperation, IActionQueryOperation,
     IActorTest, IActorQueryOperationOutput>;
-  joinMediator: Mediator<ActorRdfJoin, IActionRdfJoin, IActorTest, IActorRdfJoinOutput>;
+  joinMediator: Mediator<ActorRdfJoin, IActionRdfJoin, IActorTest, IActorQueryOperationOutput>;
 
   leftPattern: string;
   rightPattern: string;

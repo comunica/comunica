@@ -1,5 +1,5 @@
-import {Bindings} from "@comunica/bus-query-operation";
-import {ActorRdfJoin, IActionRdfJoin, IActorRdfJoinOutput} from "@comunica/bus-rdf-join";
+import {Bindings, IActorQueryOperationOutput} from "@comunica/bus-query-operation";
+import {ActorRdfJoin, IActionRdfJoin} from "@comunica/bus-rdf-join";
 import {IActorArgs} from "@comunica/core";
 import {IMediatorTypeIterations} from "@comunica/mediatortype-iterations";
 import {NestedLoopJoin} from "asyncjoin";
@@ -9,13 +9,14 @@ import {NestedLoopJoin} from "asyncjoin";
  */
 export class ActorRdfJoinNestedLoop extends ActorRdfJoin {
 
-  constructor(args: IActorArgs<IActionRdfJoin, IMediatorTypeIterations, IActorRdfJoinOutput>) {
-    super(args);
+  constructor(args: IActorArgs<IActionRdfJoin, IMediatorTypeIterations, IActorQueryOperationOutput>) {
+    super(args, 2);
   }
 
-  public async run(action: IActionRdfJoin): Promise<IActorRdfJoinOutput> {
-    const join = new NestedLoopJoin<Bindings, Bindings, Bindings>(action.left, action.right, ActorRdfJoin.join);
-    const result: IActorRdfJoinOutput = { bindingsStream: join, variables: ActorRdfJoin.joinVariables(action) };
+  protected async getOutput(action: IActionRdfJoin): Promise<IActorQueryOperationOutput> {
+    const join = new NestedLoopJoin<Bindings, Bindings, Bindings>(
+      action.entries[0].bindingsStream, action.entries[1].bindingsStream, ActorRdfJoin.join);
+    const result: IActorQueryOperationOutput = { bindingsStream: join, variables: ActorRdfJoin.joinVariables(action) };
 
     if (ActorRdfJoin.iteratorsHaveMetadata(action, 'totalItems')) {
       result.metadata = { totalItems: this.getIterations(action) };
@@ -25,7 +26,7 @@ export class ActorRdfJoinNestedLoop extends ActorRdfJoin {
   }
 
   protected getIterations(action: IActionRdfJoin): number {
-    return action.leftMetadata.totalItems * action.rightMetadata.totalItems;
+    return action.entries[0].metadata.totalItems * action.entries[1].metadata.totalItems;
   }
 
 }

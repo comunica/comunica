@@ -10,7 +10,7 @@
       "@type": "AbstractClass",
       "extends": "Actor",
       "requireElement": "ActorRdfJoin",
-      "comment": "A comunica actor for joining 2 binding streams.",
+      "comment": "A comunica actor for joining bindings streams.",
       "parameters": [
         {
           "@id": "cc:Actor/bus",

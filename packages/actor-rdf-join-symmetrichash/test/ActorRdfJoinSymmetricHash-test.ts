@@ -39,23 +39,29 @@ describe('ActorRdfJoinSymmetricHash', () => {
 
     beforeEach(() => {
       actor = new ActorRdfJoinSymmetricHash({ name: 'actor', bus });
-      action = {
-        left: new ArrayIterator([]), leftMetadata: { totalItems: 4 }, leftVariables: [],
-        right: new ArrayIterator([]), rightMetadata: { totalItems: 5 }, rightVariables: [],
-      };
+      action = { entries: [
+        { bindingsStream: new ArrayIterator([]), metadata: { totalItems: 4 }, variables: [] },
+        { bindingsStream: new ArrayIterator([]), metadata: { totalItems: 5 }, variables: [] },
+      ]};
     });
 
-    // uses default test implementation from ActorRdfJoin
-    // it('should test', () => {
-    // });
+    it('should only handle 2 streams', () => {
+      action.entries.push(<any> {});
+      return expect(actor.test(action)).resolves.toBeFalsy();
+    });
+
+    it('should generate correct test metadata', () => {
+      return expect(actor.test(action)).resolves.toHaveProperty('iterations',
+        action.entries[0].metadata.totalItems + action.entries[1].metadata.totalItems);
+    });
 
     it('should generate correct metadata', () => {
       return expect(actor.run(action)).resolves.toHaveProperty('metadata.totalItems',
-        action.leftMetadata.totalItems + action.rightMetadata.totalItems);
+        action.entries[0].metadata.totalItems * action.entries[1].metadata.totalItems);
     });
 
     it('should not return metadata if there is no valid input', () => {
-      delete action.leftMetadata;
+      delete action.entries[0].metadata;
       return expect(actor.run(action)).resolves.not.toHaveProperty('metadata');
     });
 
@@ -67,10 +73,10 @@ describe('ActorRdfJoinSymmetricHash', () => {
     });
 
     it('should join bindings with matching values', () => {
-      action.left = new ArrayIterator([Bindings({ a: literal('a'), b: literal('b')})]);
-      action.leftVariables = ['a', 'b'];
-      action.right = new ArrayIterator([Bindings({ a: literal('a'), c: literal('c')})]);
-      action.rightVariables = ['a', 'c'];
+      action.entries[0].bindingsStream = new ArrayIterator([Bindings({ a: literal('a'), b: literal('b')})]);
+      action.entries[0].variables = ['a', 'b'];
+      action.entries[1].bindingsStream = new ArrayIterator([Bindings({ a: literal('a'), c: literal('c')})]);
+      action.entries[1].variables = ['a', 'c'];
       return actor.run(action).then(async (output) => {
         expect(output.variables).toEqual(['a', 'b', 'c']);
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
@@ -80,10 +86,10 @@ describe('ActorRdfJoinSymmetricHash', () => {
     });
 
     it('should not join bindings with incompatible values', () => {
-      action.left = new ArrayIterator([Bindings({ a: literal('a'), b: literal('b')})]);
-      action.leftVariables = ['a', 'b'];
-      action.right = new ArrayIterator([Bindings({ a: literal('d'), c: literal('c')})]);
-      action.rightVariables = ['a', 'c'];
+      action.entries[0].bindingsStream = new ArrayIterator([Bindings({ a: literal('a'), b: literal('b')})]);
+      action.entries[0].variables = ['a', 'b'];
+      action.entries[1].bindingsStream = new ArrayIterator([Bindings({ a: literal('d'), c: literal('c')})]);
+      action.entries[1].variables = ['a', 'c'];
       return actor.run(action).then(async (output) => {
         expect(output.variables).toEqual(['a', 'b', 'c']);
         expect(await arrayifyStream(output.bindingsStream)).toEqual([]);
@@ -91,7 +97,7 @@ describe('ActorRdfJoinSymmetricHash', () => {
     });
 
     it('should join multiple bindings', () => {
-      action.left = new ArrayIterator([
+      action.entries[0].bindingsStream = new ArrayIterator([
         Bindings({ a: literal('1'), b: literal('2')}),
         Bindings({ a: literal('1'), b: literal('3')}),
         Bindings({ a: literal('2'), b: literal('2')}),
@@ -99,8 +105,8 @@ describe('ActorRdfJoinSymmetricHash', () => {
         Bindings({ a: literal('3'), b: literal('3')}),
         Bindings({ a: literal('3'), b: literal('4')}),
       ]);
-      action.leftVariables = ['a', 'b'];
-      action.right = new ArrayIterator([
+      action.entries[0].variables = ['a', 'b'];
+      action.entries[1].bindingsStream = new ArrayIterator([
         Bindings({ a: literal('1'), c: literal('4')}),
         Bindings({ a: literal('1'), c: literal('5')}),
         Bindings({ a: literal('2'), c: literal('6')}),
@@ -108,7 +114,7 @@ describe('ActorRdfJoinSymmetricHash', () => {
         Bindings({ a: literal('0'), c: literal('4')}),
         Bindings({ a: literal('0'), c: literal('4')}),
       ]);
-      action.rightVariables = ['a', 'c'];
+      action.entries[1].variables = ['a', 'c'];
       return actor.run(action).then(async (output) => {
         const expected = [
           Bindings({ a: literal('1'), b: literal('2'), c: literal('4') }),
