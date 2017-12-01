@@ -19,7 +19,11 @@
   },
   "homepage": "https://github.com/comunica/comunica#readme",
   "files": [
-    "bin"
+    "bin",
+    "lib/**/*.d.ts",
+    "lib/**/*.js",
+    "index.d.ts",
+    "index.js"
   ],
   "dependencies": {
     "@comunica/runner": "^0.0.1"

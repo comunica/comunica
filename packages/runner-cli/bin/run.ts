@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 
-import {IActorOutputInit} from "@comunica/bus-init";
-import {Setup} from "@comunica/runner";
+import {runArgs} from "../lib/ArgsRunner";
 
 const argv = process.argv.slice(2);
 if (argv.length < 1 || /^--?h(elp)?$/.test(argv[0])) {
@@ -10,15 +9,4 @@ if (argv.length < 1 || /^--?h(elp)?$/.test(argv[0])) {
 }
 
 const configResourceUrl = argv.shift();
-Setup.run(configResourceUrl, { argv, env: process.env, stdin: process.stdin })
-  .then((results: IActorOutputInit[]) => {
-    results.forEach((result: IActorOutputInit) => {
-      if (result.stdout) {
-        result.stdout.pipe(process.stdout);
-      }
-      if (result.stderr) {
-        result.stderr.pipe(process.stderr);
-      }
-    });
-  })
-  .catch(console.error);
+runArgs(configResourceUrl, argv, process.stdin, process.stdout, process.stderr, process.env);
