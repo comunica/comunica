@@ -32,7 +32,7 @@ export class ActorQueryOperationSlice extends ActorQueryOperationTypedMediated<A
     const metadata: Promise<{[id: string]: any}> = !output.metadata ? null : output.metadata.then((subMetadata) => {
       let totalItems: number = subMetadata.totalItems;
       if (isFinite(totalItems)) {
-        totalItems -= pattern.start;
+        totalItems = Math.max(0, totalItems - pattern.start);
         if (hasLength) {
           totalItems = Math.min(totalItems, pattern.length);
         }
