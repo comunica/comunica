@@ -241,5 +241,18 @@ describe('ActorQueryOperationSlice', () => {
         ]);
       });
     });
+
+    it('should run on a stream for start 0 and no length', () => {
+      const op = { operation: { type: 'project', start: 0 } };
+      return actor.run(op).then(async (output) => {
+        expect(await output.metadata).toEqual({ totalItems: 3 });
+        expect(output.variables).toEqual([ 'a' ]);
+        expect(await arrayifyStream(output.bindingsStream)).toEqual([
+          Bindings({ a: literal('1') }),
+          Bindings({ a: literal('2') }),
+          Bindings({ a: literal('3') }),
+        ]);
+      });
+    });
   });
 });

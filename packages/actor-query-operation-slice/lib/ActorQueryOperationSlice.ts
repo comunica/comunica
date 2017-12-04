@@ -24,15 +24,18 @@ export class ActorQueryOperationSlice extends ActorQueryOperationTypedMediated<A
       { operation: pattern.input, context });
 
     // Slice the bindings stream
+    const hasLength: boolean = !!pattern.length || pattern.length === 0;
     const bindingsStream: BindingsStream = output.bindingsStream.range(pattern.start,
-      pattern.start + pattern.length - 1);
+      hasLength ? pattern.start + pattern.length - 1 : Infinity);
 
     // If we find metadata, apply slicing on the total number of items
     const metadata: Promise<{[id: string]: any}> = !output.metadata ? null : output.metadata.then((subMetadata) => {
       let totalItems: number = subMetadata.totalItems;
       if (isFinite(totalItems)) {
         totalItems -= pattern.start;
-        totalItems = Math.min(totalItems, pattern.length);
+        if (hasLength) {
+          totalItems = Math.min(totalItems, pattern.length);
+        }
       }
       return Object.assign({}, subMetadata, { totalItems });
     });
