@@ -212,6 +212,24 @@ describe('ActorQueryOperationSlice', () => {
       });
     });
 
+    it('should run on a stream for start 4 and length 1', () => {
+      const op = { operation: { type: 'project', start: 4, length: 1 } };
+      return actor.run(op).then(async (output) => {
+        expect(await output.metadata).toEqual({ totalItems: 0 });
+        expect(output.variables).toEqual([ 'a' ]);
+        expect(await arrayifyStream(output.bindingsStream)).toEqual([]);
+      });
+    });
+
+    it('should run on a stream for start 4 and length 0', () => {
+      const op = { operation: { type: 'project', start: 4, length: 1 } };
+      return actor.run(op).then(async (output) => {
+        expect(await output.metadata).toEqual({ totalItems: 0 });
+        expect(output.variables).toEqual([ 'a' ]);
+        expect(await arrayifyStream(output.bindingsStream)).toEqual([]);
+      });
+    });
+
     it('should run on a stream for start 0 and length 100 when the mediator provides no metadata', () => {
       actor = new ActorQueryOperationSlice({ bus, mediatorQueryOperation: mediatorQueryOperationNoMeta,
         name: 'actor' });
