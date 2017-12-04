@@ -3137,9 +3137,9 @@ source-map@^0.6.0:
   version "0.6.1"
   resolved "https://registry.yarnpkg.com/source-map/-/source-map-0.6.1.tgz#74722af32e9614e9c287a8d0bbde48b5e2f1a263"
 
-sparqlalgebrajs@^0.5.0:
-  version "0.5.0"
-  resolved "https://registry.yarnpkg.com/sparqlalgebrajs/-/sparqlalgebrajs-0.5.0.tgz#d612f4ca48cbc235c545f9a1100b2d4de2f68cd6"
+sparqlalgebrajs@^0.5.2:
+  version "0.5.2"
+  resolved "https://registry.yarnpkg.com/sparqlalgebrajs/-/sparqlalgebrajs-0.5.2.tgz#0b99344f21cc24205cd50767c8301d530fc4a2e7"
   dependencies:
     lodash "^4.13.1"
     minimist "^1.2.0"
