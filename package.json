@@ -25,7 +25,7 @@
     "pre-commit": "^1.2.2",
     "rdf-data-model": "^1.0.0",
     "rdf-quad": "^1.0.0",
-    "sparqlalgebrajs": "^0.5.0",
+    "sparqlalgebrajs": "^0.5.2",
     "streamify-array": "^1.0.0",
     "streamify-string": "^1.0.1",
     "ts-jest": "^21.0.0",
