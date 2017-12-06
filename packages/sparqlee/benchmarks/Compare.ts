@@ -8,23 +8,23 @@ import { example1 } from './Examples';
 // Context
 console.log(JSON.stringify(example1.expression, null, 4));
 const evaluator = new ManualEvaluator(example1.expression);
-console.log(evaluator.evaluate(example1.mapping));
+console.log(evaluator.evaluate(example1.mapping()));
 
 // Different evaluators
 console.log("Total\n=====");
 const total = new Suite('Total');
 total
     .add('Empty', () => {
-        const evaluator = new EmptyEvaluator(example1.expression);
-        evaluator.evaluate(example1.mapping);
+        let evaluator = new EmptyEvaluator(example1.expression);
+        evaluator.evaluate(example1.mapping());
     })
     .add('Manual', () => {
-        const evaluator = new ManualEvaluator(example1.expression);
-        evaluator.evaluate(example1.mapping);
+        let evaluator = new ManualEvaluator(example1.expression);
+        evaluator.evaluate(example1.mapping());
     })
     .add('Sync', () => {
-        const evaluator = new SyncEvaluator(example1.expression);
-        evaluator.evaluate(example1.mapping);
+        let evaluator = new SyncEvaluator(example1.expression);
+        evaluator.evaluate(example1.mapping());
     })
     .on('cycle', function (event: Event) {
         console.log(String(event.target));
@@ -40,13 +40,13 @@ const sync = new ManualEvaluator(example1.expression);
 const evaluate = new Suite('Evaluating');
 evaluate
     .add('Empty', () => {
-        empty.evaluate(example1.mapping);
+        empty.evaluate(example1.mapping());
     })
     .add('Manual', () => { 
-        manual.evaluate(example1.mapping);
+        manual.evaluate(example1.mapping());
     })
     .add('Sync', () => {
-        sync.evaluate(example1.mapping);
+        sync.evaluate(example1.mapping());
     })
     .on('cycle', function (event: Event) {
         console.log(String(event.target));
@@ -54,20 +54,17 @@ evaluate
     .run({async: false});
 
 // Different evaluators
-console.log("\nParsing\n=====");
+console.log("\nParsing/Compiling\n=====");
 const parse = new Suite('Parsing');
 parse
     .add('Empty', () => {
-        const evaluator = new EmptyEvaluator(example1.expression);
-        evaluator.evaluate(example1.mapping);
+        let evaluator = new EmptyEvaluator(example1.expression);
     })
     .add('Manual', () => {
-        const evaluator = new ManualEvaluator(example1.expression);
-        evaluator.evaluate(example1.mapping);
+        let evaluator = new ManualEvaluator(example1.expression);
     })
     .add('Sync', () => {
-        const evaluator = new SyncEvaluator(example1.expression);
-        evaluator.evaluate(example1.mapping);
+        let evaluator = new SyncEvaluator(example1.expression);
     })
     .on('cycle', function (event: Event) {
         console.log(String(event.target));

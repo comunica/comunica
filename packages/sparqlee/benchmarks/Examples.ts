@@ -9,9 +9,9 @@ const parser = new Parser({'xsd': 'http://www.w3.org/2001/XMLSchema#'})
 
 export class Example {
     expression: Expression;
-    mapping: Mapping;
+    mapping: () => Mapping;
 
-    constructor(expr: string, mapping: Mapping){
+    constructor(expr: string, mapping: () => Mapping){
         this.expression = toExpression(expr);
         this.mapping = mapping;
     }
@@ -19,12 +19,21 @@ export class Example {
 
 export const example1 = (() => {
     const str = '((?age + ?otherAge) = "50"^^xsd:integer) && (?joinYear > "2005-01-01T00:00:00Z"^^xsd:dateTime)';
-    // const str = '10000 > ?age';
-    const mapping = new Map([
-        ['age', RDF.literal('20', RDF.namedNode(DT.XSD_INTEGER))],
-        ['otherAge', RDF.literal('30', RDF.namedNode(DT.XSD_INTEGER))],
-        ['joinYear', RDF.literal('2007-03-03T00:00:00Z', RDF.namedNode(DT.XSD_DATE_TIME))]
-    ]);
+    const mapping = () => {
+        const randAge = Math.floor((Math.random() * 100));
+        const beSame = Math.random() > 0.7;
+        const randLit = (beSame)
+        const randOtherAge = (beSame)
+                ? 50 - randAge
+                : Math.floor((Math.random() * 100));
+        const randYear = 1980 + Math.floor(Math.random() * 40);
+        
+        return new Map([
+            ['age', RDF.literal(randAge.toString(), RDF.namedNode(DT.XSD_INTEGER))],
+            ['otherAge', RDF.literal(randOtherAge.toString(), RDF.namedNode(DT.XSD_INTEGER))],
+            ['joinYear', RDF.literal(`${randYear}-03-03T00:00:00Z`, RDF.namedNode(DT.XSD_DATE_TIME))]
+        ]);
+    }
     return new Example(str, mapping);
 })();
 
