@@ -143,12 +143,12 @@ export class GreaterThan extends BinaryBoolOperation {
     func(impl: Impl) { return impl.gt; }
 }
 
-export class LesserThenEqual extends BinaryBoolOperation {
+export class LesserThanEqual extends BinaryBoolOperation {
     operator = Operator.LTE;
     func(impl: Impl) { return impl.lte; }
 }
 
-export class GreaterThenEqual extends BinaryBoolOperation {
+export class GreaterThanEqual extends BinaryBoolOperation {
     operator = Operator.GTE;
     func(impl: Impl) { return impl.gte; }
 }
@@ -200,7 +200,6 @@ const typeMap: Map<TypeKey, Impl> = (() => {
                     default: throw Error("ImplType was somehow not defined");
                 }
             }
-            console.log(left, right);
             keyValues.push([`${left} ${right}`, impl])
         }
     }

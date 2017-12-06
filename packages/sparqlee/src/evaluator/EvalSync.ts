@@ -12,6 +12,7 @@ import { Mapping } from '../core/Mapping';
 // TODO: Make this import more clear/elegant
 import { TermTypes as TT, ExpressionTypes as ET, DataType as DT } from '../util/Consts';
 import { UnimplementedError } from '../util/Errors';
+import * as P from '../util/Parsing';
 
 
 /**
@@ -83,12 +84,12 @@ export class SyncEvaluator implements ExpressionEvaluator {
                     case '!=': return new Ops.NotEqual(args);
                     case '<': return new Ops.LesserThan(args);
                     case '>': return new Ops.GreaterThan(args);
-                    case '<=': return new Ops.LesserThan(args);
-                    case '>=': throw new Ops.GreaterThenEqual(args);
-                    case '*': throw new Ops.Multiplication(args);
-                    case '/': throw new Ops.Division(args);
+                    case '<=': return new Ops.LesserThanEqual(args);
+                    case '>=': return new Ops.GreaterThanEqual(args);
+                    case '*': return new Ops.Multiplication(args);
+                    case '/': return new Ops.Division(args);
                     case '+': return new Ops.Addition(args);
-                    case '-': throw new Ops.Subtraction(args);
+                    case '-': return new Ops.Subtraction(args);
                 }
             };
             case ET.FunctionCall: throw new UnimplementedError();
@@ -146,9 +147,7 @@ export class SyncEvaluator implements ExpressionEvaluator {
 
             case DT.XSD_INTEGER:
             case DT.XSD_DECIMAL:
-            case DT.XSD_FLOAT:
-            case DT.XSD_DOUBLE:
-            
+
             case DT.XSD_NEGATIVE_INTEGER:
             case DT.XSD_NON_NEGATIVE_INTEGER:
             case DT.XSD_NON_POSITIVE_INTEGER:
@@ -162,10 +161,14 @@ export class SyncEvaluator implements ExpressionEvaluator {
             case DT.XSD_UNSIGNED_SHORT:
             case DT.XSD_UNSIGNED_BYTE:
             case DT.XSD_INT: {
-                let val: number = JSON.parse(lit.value);
-                if (typeof val != 'number') {
-                    throw new Error();
-                }
+                let val: number = P.parseXSDInteger(lit.value);
+                if (val == undefined) { throw new TypeError() }
+                return new T.NumericLiteral(val, lit.datatype.value);
+            }
+            case DT.XSD_FLOAT:
+            case DT.XSD_DOUBLE: {
+                let val: number = P.parseXSDFloat(lit.value);
+                if (val == undefined) { throw new TypeError() }
                 return new T.NumericLiteral(val, lit.datatype.value);
             }
             default:  return new T.TypedLiteral(lit.value, lit.datatype.value);

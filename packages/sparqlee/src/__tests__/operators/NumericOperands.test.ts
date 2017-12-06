@@ -26,7 +26,6 @@ gener NaN   = false
 `
 const errorTableUnary = `
 error = error
-Nan   = NaN
 `
 
 // Friendlier aliases for operation tests
@@ -77,7 +76,7 @@ describe('the evaluation of simple numeric boolean expressions', () => {
         float = true
         double = true
         nonPosInt = true
-        negInt = false
+        negInt = true
         long = true
         int = true
         short = true
@@ -134,8 +133,8 @@ describe('the evaluation of simple numeric boolean expressions', () => {
             3f INF = false
             INF NaN = false
             NaN NaN = false
-            NaN -3f = false
-            -3f NaN = false
+            NaN 3f = false
+            3f NaN = false
             `
             test('=', table, undefined, argMap)
         });
@@ -161,8 +160,8 @@ describe('the evaluation of simple numeric boolean expressions', () => {
             3f INF = true
             INF NaN = true
             NaN NaN = true
-            NaN -3f = true
-            -3f NaN = true
+            NaN 3f = true
+            3f NaN = true
             `
             test('!=', table, undefined, argMap);
         });
@@ -199,8 +198,8 @@ describe('the evaluation of simple numeric boolean expressions', () => {
 
             INF NaN = false
             NaN NaN = false
-            NaN -3f = false
-            -3f NaN = false
+            NaN 3f = false
+            3f NaN = false
             `
             test('<', table, undefined, argMap);
         });
@@ -237,8 +236,8 @@ describe('the evaluation of simple numeric boolean expressions', () => {
 
             INF NaN = false
             NaN NaN = false
-            NaN -3f = false
-            -3f NaN = false
+            NaN 3f = false
+            3f NaN = false
             `
             test('>', table, undefined, argMap);
         })

@@ -5,7 +5,7 @@ import { DataType as DT } from '../src/util/Consts';
 import { SyncEvaluator } from '../src/evaluator/EvalSync';
 
 const example1 = (() => {
-  const str = '?a = ?b';
+  const str = '"" <= ""';
   // const str = '10000 > ?age';
   const mapping = new Map([
       ['a', RDF.literal('20', RDF.namedNode(DT.XSD_INTEGER))],

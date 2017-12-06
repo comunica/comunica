@@ -120,8 +120,9 @@ describe('the evaluation of simple literal expressions', () => {
             aaa   empty = true
             aaa   aaa   = true
             aaa   bbb   = false
-            bbb   aaa   = false
+            bbb   aaa   = true
             `
+            test('>=', table)
         });
     })
 });
