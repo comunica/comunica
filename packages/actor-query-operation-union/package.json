@@ -32,8 +32,7 @@
     "index.js"
   ],
   "dependencies": {
-    "lodash.union": "^4.6.0",
-    "lodash.uniq": "^4.5.0"
+    "lodash.union": "^4.6.0"
   },
   "peerDependencies": {
     "@comunica/core": "^0.0.1",
