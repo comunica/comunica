@@ -30,6 +30,10 @@
     "index.d.ts",
     "index.js"
   ],
+  "dependencies": {
+    "lodash.intersection": "^4.4.0",
+    "lodash.union": "^4.6.0"
+  },
   "peerDependencies": {
     "@comunica/core": "^0.0.1"
   },
