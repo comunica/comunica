@@ -29,17 +29,11 @@ export class ActorRdfJoinSymmetricHash extends ActorRdfJoin {
     const join = new SymmetricHashJoin<Bindings, string, Bindings>(
       action.entries[0].bindingsStream, action.entries[1].bindingsStream,
       (entry) => ActorRdfJoinSymmetricHash.hash(entry, variables), ActorRdfJoin.join);
-    const result: IActorQueryOperationOutput = { bindingsStream: join, variables: ActorRdfJoin.joinVariables(action) };
-
-    if (ActorRdfJoin.iteratorsHaveMetadata(action, 'totalItems')) {
-      result.metadata = { totalItems: action.entries[0].metadata.totalItems * action.entries[1].metadata.totalItems };
-    }
-
-    return result;
+    return { bindingsStream: join, variables: ActorRdfJoin.joinVariables(action) };
   }
 
-  protected getIterations(action: IActionRdfJoin): number {
-    return action.entries[0].metadata.totalItems + action.entries[1].metadata.totalItems;
+  protected async getIterations(action: IActionRdfJoin): Promise<number> {
+    return (await action.entries[0].metadata).totalItems + (await action.entries[1].metadata).totalItems;
   }
 
 }

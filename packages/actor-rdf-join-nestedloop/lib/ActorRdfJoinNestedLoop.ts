@@ -16,17 +16,11 @@ export class ActorRdfJoinNestedLoop extends ActorRdfJoin {
   protected async getOutput(action: IActionRdfJoin): Promise<IActorQueryOperationOutput> {
     const join = new NestedLoopJoin<Bindings, Bindings, Bindings>(
       action.entries[0].bindingsStream, action.entries[1].bindingsStream, ActorRdfJoin.join);
-    const result: IActorQueryOperationOutput = { bindingsStream: join, variables: ActorRdfJoin.joinVariables(action) };
-
-    if (ActorRdfJoin.iteratorsHaveMetadata(action, 'totalItems')) {
-      result.metadata = { totalItems: this.getIterations(action) };
-    }
-
-    return result;
+    return { bindingsStream: join, variables: ActorRdfJoin.joinVariables(action) };
   }
 
-  protected getIterations(action: IActionRdfJoin): number {
-    return action.entries[0].metadata.totalItems * action.entries[1].metadata.totalItems;
+  protected async getIterations(action: IActionRdfJoin): Promise<number> {
+    return (await action.entries[0].metadata).totalItems * (await action.entries[1].metadata).totalItems;
   }
 
 }

@@ -40,8 +40,8 @@ describe('ActorRdfJoinNestedLoop', () => {
     beforeEach(() => {
       actor = new ActorRdfJoinNestedLoop({ name: 'actor', bus });
       action = { entries: [
-        { bindingsStream: new ArrayIterator([]), metadata: { totalItems: 4 }, variables: [] },
-        { bindingsStream: new ArrayIterator([]), metadata: { totalItems: 5 }, variables: [] },
+        { bindingsStream: new ArrayIterator([]), metadata: Promise.resolve({ totalItems: 4 }), variables: [] },
+        { bindingsStream: new ArrayIterator([]), metadata: Promise.resolve({ totalItems: 5 }), variables: [] },
       ]};
     });
 
@@ -50,14 +50,16 @@ describe('ActorRdfJoinNestedLoop', () => {
       return expect(actor.test(action)).resolves.toBeFalsy();
     });
 
-    it('should generate correct test metadata', () => {
+    it('should generate correct test metadata', async () => {
       return expect(actor.test(action)).resolves.toHaveProperty('iterations',
-        action.entries[0].metadata.totalItems * action.entries[1].metadata.totalItems);
+        (await action.entries[0].metadata).totalItems * (await action.entries[1].metadata).totalItems);
     });
 
-    it('should generate correct metadata', () => {
-      return expect(actor.run(action)).resolves.toHaveProperty('metadata.totalItems',
-        action.entries[0].metadata.totalItems * action.entries[1].metadata.totalItems);
+    it('should generate correct metadata', async () => {
+      return actor.run(action).then(async (result) => {
+        return expect(result.metadata).resolves.toHaveProperty('totalItems',
+          (await action.entries[0].metadata).totalItems * (await action.entries[1].metadata).totalItems);
+      });
     });
 
     it('should not return metadata if there is no valid input', () => {
@@ -113,7 +115,6 @@ describe('ActorRdfJoinNestedLoop', () => {
         Bindings({ a: literal('3'), c: literal('7')}),
         Bindings({ a: literal('0'), c: literal('4')}),
         Bindings({ a: literal('0'), c: literal('4')}),
-        Bindings({ b: literal('4'), c: literal('4')}),
       ]);
       action.entries[1].variables = ['a', 'c'];
       return actor.run(action).then(async (output) => {
@@ -126,7 +127,6 @@ describe('ActorRdfJoinNestedLoop', () => {
           Bindings({ a: literal('2'), b: literal('3'), c: literal('6') }),
           Bindings({ a: literal('3'), b: literal('3'), c: literal('7') }),
           Bindings({ a: literal('3'), b: literal('4'), c: literal('7') }),
-          Bindings({ a: literal('3'), b: literal('4'), c: literal('4') }),
         ];
         expect(output.variables).toEqual(['a', 'b', 'c']);
         // mapping to string and sorting since we don't know order (well, we sort of know, but we might not!)
