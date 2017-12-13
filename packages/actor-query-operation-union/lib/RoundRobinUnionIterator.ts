@@ -1,7 +1,7 @@
 import {AsyncIterator, BufferedIterator, BufferedIteratorOptions} from "asynciterator";
 
 /**
- * An iterator that takes element from a given set of iterators in a round-robin manner.
+ * An iterator that takes elements from a given set of iterators in a round-robin manner.
  *
  * Based on LDF client's UnionIterator:
  * https://github.com/LinkedDataFragments/Client.js/blob/master/lib/sparql/UnionIterator.js
