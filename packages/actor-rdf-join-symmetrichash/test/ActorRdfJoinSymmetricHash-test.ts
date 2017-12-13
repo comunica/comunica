@@ -40,8 +40,8 @@ describe('ActorRdfJoinSymmetricHash', () => {
     beforeEach(() => {
       actor = new ActorRdfJoinSymmetricHash({ name: 'actor', bus });
       action = { entries: [
-        { bindingsStream: new ArrayIterator([]), metadata: { totalItems: 4 }, variables: [] },
-        { bindingsStream: new ArrayIterator([]), metadata: { totalItems: 5 }, variables: [] },
+        { bindingsStream: new ArrayIterator([]), metadata: Promise.resolve({ totalItems: 4 }), variables: [] },
+        { bindingsStream: new ArrayIterator([]), metadata: Promise.resolve({ totalItems: 5 }), variables: [] },
       ]};
     });
 
@@ -50,14 +50,16 @@ describe('ActorRdfJoinSymmetricHash', () => {
       return expect(actor.test(action)).resolves.toBeFalsy();
     });
 
-    it('should generate correct test metadata', () => {
+    it('should generate correct test metadata', async () => {
       return expect(actor.test(action)).resolves.toHaveProperty('iterations',
-        action.entries[0].metadata.totalItems + action.entries[1].metadata.totalItems);
+        (await action.entries[0].metadata).totalItems + (await action.entries[1].metadata).totalItems);
     });
 
-    it('should generate correct metadata', () => {
-      return expect(actor.run(action)).resolves.toHaveProperty('metadata.totalItems',
-        action.entries[0].metadata.totalItems * action.entries[1].metadata.totalItems);
+    it('should generate correct metadata', async () => {
+      return actor.run(action).then(async (result) => {
+        return expect(result.metadata).resolves.toHaveProperty('totalItems',
+          (await action.entries[0].metadata).totalItems * (await action.entries[1].metadata).totalItems);
+      });
     });
 
     it('should not return metadata if there is no valid input', () => {

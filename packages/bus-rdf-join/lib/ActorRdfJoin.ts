@@ -72,8 +72,13 @@ export abstract class ActorRdfJoin extends Actor<IActionRdfJoin, IMediatorTypeIt
    * @param {string} key
    * @returns {boolean}
    */
-  public static iteratorsHaveMetadata(action: IActionRdfJoin, key: string): boolean {
-    return action.entries.every((entry) => entry.metadata && entry.metadata.hasOwnProperty(key));
+  public static async iteratorsHaveMetadata(action: IActionRdfJoin, key: string): Promise<boolean> {
+    for (const entry of action.entries) {
+      if (!entry.metadata || !(await entry.metadata).hasOwnProperty(key)) {
+        return Promise.resolve(false);
+      }
+    }
+    return Promise.resolve(true);
   }
 
   /**
@@ -90,10 +95,16 @@ export abstract class ActorRdfJoin extends Actor<IActionRdfJoin, IMediatorTypeIt
     if (this.maxEntries && action.entries.length > this.maxEntries) {
       return null;
     }
-    if (!ActorRdfJoin.iteratorsHaveMetadata(action, 'totalItems')) {
-      return { iterations: Infinity };
-    }
-    return { iterations: this.getIterations(action) };
+    const self = this;
+    // not explicitly calculating with await since it might not be required by the mediator
+    return ActorRdfJoin.iteratorsHaveMetadata(action, 'totalItems').
+      then((haveMetadata) => {
+        if (haveMetadata) {
+          return self.getIterations(action).then((iterations) => ({ iterations }));
+        } else {
+          return { iterations: Infinity };
+        }
+      });
   }
 
   /**
@@ -103,12 +114,38 @@ export abstract class ActorRdfJoin extends Actor<IActionRdfJoin, IMediatorTypeIt
    */
   public async run(action: IActionRdfJoin): Promise<IActorQueryOperationOutput> {
     if (action.entries.length === 0) {
-      return { bindingsStream: new EmptyIterator(), metadata: { totalItems: 0}, variables: [] };
+      return { bindingsStream: new EmptyIterator(), metadata: Promise.resolve({ totalItems: 0 }), variables: [] };
     }
     if (action.entries.length === 1) {
       return action.entries[0];
     }
-    return this.getOutput(action);
+
+    let result = this.getOutput(action);
+
+    if (await ActorRdfJoin.iteratorsHaveMetadata(action, 'totalItems')) {
+      const totalItems = await Promise.all(action.entries
+        .map((entry) => entry.metadata))
+        .then((metadatas) => metadatas.reduce((acc, val) => acc * val.totalItems, 1));
+
+      // update the result promise to also add the estimated total items
+      // not using await since the actual results aren't required at this point
+      result = result.then((previous) => {
+        // make sure we don't remove any metadata added by the actual join implementation
+        if (previous.hasOwnProperty('metadata')) {
+          previous.metadata = previous.metadata.then((metadata) => {
+            if (!metadata.hasOwnProperty('totalItems')) {
+              metadata.totalItems = totalItems;
+            }
+            return metadata;
+          });
+        } else {
+          previous.metadata = Promise.resolve({ totalItems });
+        }
+        return previous;
+      });
+    }
+
+    return result;
   }
 
   /**
@@ -125,7 +162,7 @@ export abstract class ActorRdfJoin extends Actor<IActionRdfJoin, IMediatorTypeIt
    * @param {IActionRdfJoin} action
    * @returns {number} The estimated number of iterations when joining the given iterators.
    */
-  protected abstract getIterations(action: IActionRdfJoin): number;
+  protected abstract getIterations(action: IActionRdfJoin): Promise<number>;
 
 }
 

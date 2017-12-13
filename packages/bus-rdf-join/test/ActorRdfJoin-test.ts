@@ -9,18 +9,26 @@ import {ActorRdfJoin, IActionRdfJoin} from "../lib/ActorRdfJoin";
 class Dummy extends ActorRdfJoin {
 
   public maxEntries: number;
+  public metadata: any;
 
   // just here to have a valid dummy class
-  constructor() {
+  constructor(metadata?: any) {
     super({name: 'name', bus: new Bus({ name: 'bus' })});
+    this.metadata = metadata;
   }
 
   public async getOutput(action: IActionRdfJoin) {
-    return (<any> "output");
+    const result = (<any> { dummy: 'dummy' });
+
+    if (this.metadata) {
+      result.metadata = Promise.resolve(this.metadata);
+    }
+
+    return result;
   }
 
-  protected getIterations(action: IActionRdfJoin): number {
-    return 5;
+  protected getIterations(action: IActionRdfJoin): Promise<number> {
+    return Promise.resolve(5);
   }
 }
 
@@ -30,8 +38,8 @@ describe('ActorRdfJoin', () => {
 
   beforeEach(() => {
     action = { entries: [
-      { bindingsStream: null, metadata: {}, variables: [] },
-      { bindingsStream: null, metadata: {}, variables: [] },
+      { bindingsStream: null, variables: [] },
+      { bindingsStream: null, variables: [] },
     ]};
   });
 
@@ -59,18 +67,18 @@ describe('ActorRdfJoin', () => {
     });
 
     it('should return infinity if the left metadata object is missing', async () => {
-      action.entries[1].metadata = { totalItems: 5 };
+      action.entries[1].metadata = Promise.resolve({ totalItems: 5 });
       return expect(instance.test(action)).resolves.toHaveProperty('iterations', Infinity);
     });
 
     it('should return infinity if the right metadata object is missing', () => {
-      action.entries[0].metadata = { totalItems: 5 };
+      action.entries[0].metadata = Promise.resolve({ totalItems: 5 });
       return expect(instance.test(action)).resolves.toHaveProperty('iterations', Infinity);
     });
 
     it('should return a value if both metadata objects are present', () => {
-      action.entries[0].metadata = { totalItems: 5 };
-      action.entries[1].metadata = { totalItems: 5 };
+      action.entries[0].metadata = Promise.resolve({ totalItems: 5 });
+      action.entries[1].metadata = Promise.resolve({ totalItems: 5 });
       return expect(instance.test(action)).resolves.toHaveProperty('iterations', 5);
     });
   });
@@ -159,29 +167,31 @@ describe('ActorRdfJoin', () => {
   describe('The iteratorsHaveMetadata function', () => {
 
     it('should return false if there is no left metadata', () => {
-      action.entries[0].metadata = null;
-      return expect(ActorRdfJoin.iteratorsHaveMetadata(action, 'key')).toBeFalsy();
+      action.entries[1].metadata = Promise.resolve({});
+      return expect(ActorRdfJoin.iteratorsHaveMetadata(action, 'key')).resolves.toBeFalsy();
     });
 
     it('should return false if there is no right metadata', () => {
-      action.entries[1].metadata = null;
-      return expect(ActorRdfJoin.iteratorsHaveMetadata(action, 'key')).toBeFalsy();
+      action.entries[0].metadata = Promise.resolve({});
+      return expect(ActorRdfJoin.iteratorsHaveMetadata(action, 'key')).resolves.toBeFalsy();
     });
 
     it('should return false if no relevant left metadata', () => {
-      action.entries[1].metadata.key = 5;
-      return expect(ActorRdfJoin.iteratorsHaveMetadata(action, 'key')).toBeFalsy();
+      action.entries[0].metadata = Promise.resolve({});
+      action.entries[1].metadata = Promise.resolve({ key: 5 });
+      return expect(ActorRdfJoin.iteratorsHaveMetadata(action, 'key')).resolves.toBeFalsy();
     });
 
     it('should return false if no relevant right metadata', () => {
-      action.entries[0].metadata.key = 5;
-      return expect(ActorRdfJoin.iteratorsHaveMetadata(action, 'key')).toBeFalsy();
+      action.entries[0].metadata = Promise.resolve({ key: 5 });
+      action.entries[1].metadata = Promise.resolve({});
+      return expect(ActorRdfJoin.iteratorsHaveMetadata(action, 'key')).resolves.toBeFalsy();
     });
 
     it('should return true if both have the relevant metadata', () => {
-      action.entries[0].metadata.key = 5;
-      action.entries[1].metadata.key = 10;
-      return expect(ActorRdfJoin.iteratorsHaveMetadata(action, 'key')).toBeTruthy();
+      action.entries[0].metadata = Promise.resolve({ key: 5 });
+      action.entries[1].metadata = Promise.resolve({ key: 10 });
+      return expect(ActorRdfJoin.iteratorsHaveMetadata(action, 'key')).resolves.toBeTruthy();
     });
   });
 
@@ -190,10 +200,11 @@ describe('ActorRdfJoin', () => {
 
     it('returns an empty stream for empty input', () => {
       action.entries = [];
-      return expect(instance.run(action)).resolves.toMatchObject({
-        bindingsStream: new EmptyIterator(),
-        metadata: { totalItems: 0 },
-        variables: [],
+
+      return instance.run(action).then((result) => {
+        expect(result.bindingsStream).toEqual(new EmptyIterator());
+        expect(result.variables).toEqual([]);
+        return expect(result.metadata).resolves.toEqual({ totalItems: 0 });
       });
     });
 
@@ -202,8 +213,34 @@ describe('ActorRdfJoin', () => {
       return expect(instance.run(action)).resolves.toEqual(action.entries[0]);
     });
 
-    it('calls getOutput if there are 2+ entries ', async () => {
+    it('calls getOutput if there are 2+ entries', async () => {
       return expect(instance.run(action)).resolves.toEqual(await instance.getOutput(action));
+    });
+
+    it('calculates totalItems if metadata is supplied', async () => {
+      action.entries[0].metadata = Promise.resolve({ totalItems: 5 });
+      action.entries[1].metadata = Promise.resolve({ totalItems: 10 });
+      return instance.run(action).then((result) => {
+        return expect(result.metadata).resolves.toEqual({ totalItems: 50 });
+      });
+    });
+
+    it('keeps generated metadata', async () => {
+      const metaInstance = new Dummy({ keep: true });
+      action.entries[0].metadata = Promise.resolve({ totalItems: 5 });
+      action.entries[1].metadata = Promise.resolve({ totalItems: 10 });
+      return metaInstance.run(action).then((result) => {
+        return expect(result.metadata).resolves.toEqual({ keep: true, totalItems: 50 });
+      });
+    });
+
+    it('does not overwrite calculated totalItems', async () => {
+      const metaInstance = new Dummy({ totalItems: 10 });
+      action.entries[0].metadata = Promise.resolve({ totalItems: 5 });
+      action.entries[1].metadata = Promise.resolve({ totalItems: 10 });
+      return metaInstance.run(action).then((result) => {
+        return expect(result.metadata).resolves.toEqual({ totalItems: 10 });
+      });
     });
   });
 });
