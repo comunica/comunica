@@ -29,7 +29,9 @@
   },
   "homepage": "https://github.com/wschella/Comunica-SPARQL-ExpEval#readme",
   "devDependencies": {
+    "@types/asynciterator": "^1.1.0",
     "@types/benchmark": "^1.0.30",
+    "@types/bluebird": "^3.5.18",
     "@types/jest": "^21.1.4",
     "@types/node": "^8.0.34",
     "@types/sparqljs": "^1.5.0",
@@ -45,6 +47,9 @@
     "typescript": "^2.5.3"
   },
   "dependencies": {
+    "asynciterator": "^1.1.0",
+    "bluebird": "^3.5.1",
+    "immutable": "^3.8.2",
     "rdf-data-model": "^1.0.0",
     "rdf-js": "^1.0.1",
     "sparqljs": "^1.5.0",

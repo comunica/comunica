@@ -7,8 +7,8 @@ import * as E from './expressions/Types';
 import * as T from './expressions/Terms';
 import * as Ops from './expressions/Operators';
 
-import { ExpressionEvaluator } from './ExpressionEvaluator';
-import { Mapping } from '../core/Mapping';
+import { Evaluator } from '../core/Evaluator';
+import { Bindings } from '../core/Bindings';
 // TODO: Make this import more clear/elegant
 import { TermTypes as TT, ExpressionTypes as ET, DataType as DT } from '../util/Consts';
 import { UnimplementedError } from '../util/Errors';
@@ -19,18 +19,18 @@ import * as P from '../util/Parsing';
  * Benchmarking this provides a theoretical maximum
  * Will only evaluate specific examples correctly.
  */
-export class SyncEvaluator implements ExpressionEvaluator {
+export class SyncEvaluator implements Evaluator {
     expr: E.Expression;
 
     constructor(expr: S.Expression) {
         this.expr = this._transform(expr);
     }
 
-    evaluate(mapping: Mapping): boolean {
+    evaluate(mapping: Bindings): boolean {
         return this.evalExpr(this.expr, mapping).toEBV();
     }
 
-    evalExpr(expr: E.Expression, mapping: Mapping): T.Term {
+    evalExpr(expr: E.Expression, mapping: Bindings): T.Term {
         switch (expr.exprType) {
             case E.ExpressionType.Term: return <T.Term>expr;
 

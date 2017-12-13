@@ -4,26 +4,26 @@ import fromString from 'termterm.js';
 import * as RDF from 'rdf-data-model';
 
 import { evaluate } from '../src/__tests__/util/Evaluation';
-import { ExpressionEvaluator } from '../src/evaluator/ExpressionEvaluator';
-import { Mapping } from '../src/core/Mapping';
+import { Evaluator } from '../src/core/Evaluator';
+import { Bindings } from "../src/core/Bindings";
 import { TermTypes as TT, ExpressionTypes as ET } from '../src/util/Consts';
 
 /**
  * Benchmarking this provides a theoretical maximum
  * Will only evaluate specific examples correctly.
  */
-export class ManualEvaluator implements ExpressionEvaluator {
+export class ManualEvaluator implements Evaluator {
     expr: S.Expression;
 
     constructor(expr: S.Expression) {
         this.expr = expr;
     }
 
-    evaluate(mapping: Mapping) :boolean {
+    evaluate(mapping: Bindings) :boolean {
         return this.evalExpr(this.expr, mapping).value == "true";
     }
 
-    evalExpr(expr: S.Expression, mapping: Mapping) :Term {
+    evalExpr(expr: S.Expression, mapping: Bindings) :Term {
         // ((?age + ?otherAge) = "50"^^xsd:integer) && (?joinYear > "2005-01-01T00:00:00Z"^^xsd:dateTime)
         let and = expr as S.OperationExpression;
         let eq = and.args[0] as S.OperationExpression;

@@ -1,7 +1,9 @@
 import { Parser, Expression, FilterPattern, Query } from 'sparqljs';
-import { AsyncEvaluator } from '../../evaluator/ExpressionEvaluator';
-import { SyncEvaluator } from '../../evaluator/EvalSync';
-import { Literal } from 'rdf-js';
+import { Literal, Term } from 'rdf-js';
+import { Map } from 'immutable';
+
+import { Bindings } from '../../core/Bindings';
+import { SyncEvaluator } from '../../evaluators/SyncEvaluator';
 
 const parser = new Parser({ 'xsd': 'http://www.w3.org/2001/XMLSchema#' });
 
@@ -11,7 +13,7 @@ export function createExpression(str: string): Expression {
     return expr;
 }
 
-export function evaluate(str: string, mappings = new Map()): boolean {
+export function evaluate(str: string, bindings = Bindings({})): boolean {
     let evaluator = new SyncEvaluator(createExpression(str));
-    return evaluator.evaluate(mappings);
+    return evaluator.evaluate(bindings);
 }

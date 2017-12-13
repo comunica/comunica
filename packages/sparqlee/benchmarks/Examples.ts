@@ -1,7 +1,7 @@
 import * as RDF from 'rdf-data-model';
 import { Parser, Query, Expression, FilterPattern} from 'sparqljs';
 
-import { Mapping } from '../src/core/Mapping';
+import { Bindings } from "../src/core/Bindings";
 import { DataType as DT } from '../src/util/Consts';
 
 
@@ -9,9 +9,9 @@ const parser = new Parser({'xsd': 'http://www.w3.org/2001/XMLSchema#'})
 
 export class Example {
     expression: Expression;
-    mapping: () => Mapping;
+    mapping: () => Bindings;
 
-    constructor(expr: string, mapping: () => Mapping){
+    constructor(expr: string, mapping: () => Bindings){
         this.expression = toExpression(expr);
         this.mapping = mapping;
     }
@@ -28,11 +28,11 @@ export const example1 = (() => {
                 : Math.floor((Math.random() * 100));
         const randYear = 1980 + Math.floor(Math.random() * 40);
         
-        return new Map([
-            ['age', RDF.literal(randAge.toString(), RDF.namedNode(DT.XSD_INTEGER))],
-            ['otherAge', RDF.literal(randOtherAge.toString(), RDF.namedNode(DT.XSD_INTEGER))],
-            ['joinYear', RDF.literal(`${randYear}-03-03T00:00:00Z`, RDF.namedNode(DT.XSD_DATE_TIME))]
-        ]);
+        return Bindings({
+            'age': RDF.literal(randAge.toString(), RDF.namedNode(DT.XSD_INTEGER)),
+            'otherAge': RDF.literal(randOtherAge.toString(), RDF.namedNode(DT.XSD_INTEGER)),
+            'joinYear': RDF.literal(`${randYear}-03-03T00:00:00Z`, RDF.namedNode(DT.XSD_DATE_TIME))
+        });
     }
     return new Example(str, mapping);
 })();

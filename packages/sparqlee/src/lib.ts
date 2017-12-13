@@ -1,6 +1,9 @@
-import { Mapping } from './core/Mapping';
-import { SyncEvaluator } from './evaluator/EvalSync';
-import { AsyncEvaluator, ExpressionEvaluator } from './evaluator/ExpressionEvaluator';
+import { Bindings } from './core/Bindings';
+import { Evaluator } from './core/Evaluator';
+import { FilteredStream } from './core/FilteredStreams';
+import { SyncEvaluator } from './evaluators/SyncEvaluator';
+import { AsyncEvaluator } from './evaluators/AsyncEvaluator';
 
 
-export { ExpressionEvaluator, AsyncEvaluator, SyncEvaluator, Mapping };
+
+export { Evaluator, Bindings, FilteredStream, AsyncEvaluator, SyncEvaluator};
