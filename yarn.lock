@@ -2821,9 +2821,16 @@ rdf-data-model@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/rdf-data-model/-/rdf-data-model-1.0.0.tgz#e768e1c2cd904c186471b20d1a4fce77c7712a4b"
 
-rdf-quad@^1.0.0:
+rdf-quad@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/rdf-quad/-/rdf-quad-1.1.0.tgz#81e43282d5f146bfff33caea27b369b4facd8126"
+  dependencies:
+    rdf-data-model "^1.0.0"
+    rdf-string "1.0.0"
+
+rdf-string@1.0.0:
   version "1.0.0"
-  resolved "https://registry.yarnpkg.com/rdf-quad/-/rdf-quad-1.0.0.tgz#5e8078f6e5bc34865d801845925a16b7fc6e88a9"
+  resolved "https://registry.yarnpkg.com/rdf-string/-/rdf-string-1.0.0.tgz#97753a833013a3407ac1ec77c8b869c743956170"
   dependencies:
     rdf-data-model "^1.0.0"
 
