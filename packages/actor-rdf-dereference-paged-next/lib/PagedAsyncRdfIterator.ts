@@ -17,6 +17,16 @@ export abstract class PagedAsyncRdfIterator extends BufferedIterator<RDF.Quad> i
     this.nextUrl = startUrl;
   }
 
+  public _read(count: number, done: () => void) {
+    if (this.nextUrl) {
+      this.startIterator(this.nextUrl, this.page++)
+        .then(done)
+        .catch((e) => this.emit('error', e));
+    } else {
+      done();
+    }
+  }
+
   /**
    * Create a new iterator for the given url, with the given page id.
    * @param {string} url The URL for which a quad iterator shuld be created.
@@ -64,15 +74,5 @@ export abstract class PagedAsyncRdfIterator extends BufferedIterator<RDF.Quad> i
         this.close();
       }
     });
-  }
-
-  protected _read(count: number, done: () => void) {
-    if (this.nextUrl) {
-      this.startIterator(this.nextUrl, this.page++)
-        .then(done)
-        .catch((e) => this.emit('error', e));
-    } else {
-      done();
-    }
   }
 }
