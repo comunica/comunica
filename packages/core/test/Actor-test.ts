@@ -28,5 +28,13 @@ describe('Actor', () => {
     it('should have a \'bus\' field', () => {
       expect(actor.bus).toEqual(bus);
     });
+
+    it('should be initializable', () => {
+      return expect(actor.initialize()).resolves.toBeTruthy();
+    });
+
+    it('should be deinitializable', () => {
+      return expect(actor.deinitialize()).resolves.toBeTruthy();
+    });
   });
 });

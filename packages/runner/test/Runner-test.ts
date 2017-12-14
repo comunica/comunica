@@ -93,5 +93,15 @@ describe('Runner', () => {
       expect(actor1.run).toHaveBeenCalledWith({ args: [ 'a', 'b' ], env: { c: 'd' } });
       expect(actor2.run).toHaveBeenCalledWith({ args: [ 'a', 'b' ], env: { c: 'd' } });
     });
+
+    it('should be initializable', () => {
+      runner.actors = [ actor1, actor2 ];
+      return expect(runner.initialize()).resolves.toBeTruthy();
+    });
+
+    it('should be deinitializable', () => {
+      runner.actors = [ actor1, actor2 ];
+      return expect(runner.deinitialize()).resolves.toBeTruthy();
+    });
   });
 });

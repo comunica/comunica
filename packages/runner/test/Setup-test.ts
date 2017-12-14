@@ -11,7 +11,7 @@ describe('Setup', () => {
       // Mock Loader
       (<any> Loader) = jest.fn(() => {
         return {
-          instantiateFromUrl: () => Promise.resolve({ run: jest.fn() }),
+          instantiateFromUrl: () => Promise.resolve({ run: jest.fn(), initialize: jest.fn(), deinitialize: jest.fn() }),
           registerAvailableModuleResources: jest.fn(),
         };
       });
@@ -98,6 +98,18 @@ describe('Setup', () => {
           return await p1;
         }
       })).resolves.toBe(true);
+    });
+
+    it('should throw an error when the runner resolves to false when calling \'run\'', () => {
+      (<any> Loader) = jest.fn(() => {
+        return {
+          instantiateFromUrl: () => Promise.resolve(
+            { run: Promise.reject(true), initialize: jest.fn(), deinitialize: jest.fn() }),
+          registerAvailableModuleResources: jest.fn(),
+        };
+      });
+      return expect(Setup.run('', { argv: [], env: {}, stdin: new Readable() }, 'myuri', {})).rejects
+        .toBeTruthy();
     });
   });
 });

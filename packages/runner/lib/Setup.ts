@@ -1,4 +1,4 @@
-import {IActionInit} from "@comunica/bus-init";
+import {IActionInit, IActorOutputInit} from "@comunica/bus-init";
 import Bluebird = require("bluebird");
 import cancelableAwaiter = require("cancelable-awaiter");
 import {Loader, LoaderProperties} from "componentsjs";
@@ -21,6 +21,7 @@ export class Setup {
 
   /**
    * Run the given config file.
+   * This will initialize the runner, and deinitialize it once it has finished
    *
    * @param {string} configResourceUrl    The URL or local path to a Components.js config file.
    * @param {any[]} action                The action to pass to the runner.
@@ -48,7 +49,17 @@ export class Setup {
     const loader = new Loader(properties);
     await loader.registerAvailableModuleResources();
     const runner: Runner = await loader.instantiateFromUrl(runnerUri, configResourceUrl);
-    return runner.run(action);
+
+    await runner.initialize();
+    let output: IActorOutputInit[];
+    try {
+      output = await runner.run(action);
+    } catch (e) {
+      await runner.deinitialize();
+      throw e;
+    }
+    await runner.deinitialize();
+    return output;
   }
 
   /**

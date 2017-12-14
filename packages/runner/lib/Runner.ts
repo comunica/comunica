@@ -13,7 +13,7 @@ import {Bus, IActorReply} from "@comunica/core";
 export class Runner implements IRunnerArgs {
 
   public readonly busInit: Bus<ActorInit, IActionInit, IActorTest, IActorOutputInit>;
-  public readonly actors: Actor<IAction, IActorTest, IActorOutput>;
+  public readonly actors: Actor<IAction, IActorTest, IActorOutput>[];
 
   constructor(args: IRunnerArgs) {
     require('lodash.assign')(this, args);
@@ -37,6 +37,28 @@ export class Runner implements IRunnerArgs {
     return Promise.all(replies.map((reply) => reply.actor.run(action)));
   }
 
+  /**
+   * Initialize the actors.
+   * This should be used for doing things that take a while,
+   * such as opening files.
+   *
+   * @return {Promise<void>} A promise that resolves when the actors have been initialized.
+   */
+  public initialize(): Promise<any> {
+    return Promise.all(this.actors.map((actor) => actor.initialize())).then(() => true);
+  }
+
+  /**
+   * Deinitialize the actors.
+   * This should be used for cleaning up things when the application is shut down,
+   * such as closing files and removing temporary files.
+   *
+   * @return {Promise<void>} A promise that resolves when the actors have been deinitialized.
+   */
+  public async deinitialize(): Promise<any> {
+    return Promise.all(this.actors.map((actor) => actor.deinitialize())).then(() => true);
+  }
+
 }
 
 /**
@@ -50,5 +72,5 @@ export interface IRunnerArgs {
   /**
    * The list of all actors that are part of the comunica workflow.
    */
-  actors: Actor<IAction, IActorTest, IActorOutput>;
+  actors: Actor<IAction, IActorTest, IActorOutput>[];
 }
