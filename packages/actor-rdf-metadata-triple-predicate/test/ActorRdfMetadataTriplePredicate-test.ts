@@ -42,8 +42,8 @@ describe('ActorRdfMetadataTriplePredicate', () => {
       ] });
       input = stream([
         quad('s1', 'p1', 'o1', ''),
-        quad('g1', '_py', 'o1', ''),
-        quad('s2', 'px__', 'o2', ''),
+        quad('g1', '-py', 'o1', ''),
+        quad('s2', 'px--', 'o2', ''),
         quad('s3', 'p3', 'o3', ''),
       ]);
     });
@@ -63,8 +63,8 @@ describe('ActorRdfMetadataTriplePredicate', () => {
             quad('s1', 'p1', 'o1', ''),
           ]);
           expect(await arrayifyStream(output.metadata)).toEqual([
-            quad('g1', '_py', 'o1', ''),
-            quad('s2', 'px__', 'o2', ''),
+            quad('g1', '-py', 'o1', ''),
+            quad('s2', 'px--', 'o2', ''),
             quad('s3', 'p3', 'o3', ''),
           ]);
         });
