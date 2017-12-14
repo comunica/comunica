@@ -1,0 +1,33 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-resolve-quad-pattern-hdt.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-rdf-resolve-quad-pattern.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-rdf-resolve-quad-pattern-hdt",
+  "components": [
+    {
+      "@id": "carrqph:Actor/RdfResolveQuadPattern/Hdt",
+      "@type": "Class",
+      "extends": "cbrrqp:Actor/RdfResolveQuadPattern",
+      "requireElement": "ActorRdfResolveQuadPatternHdt",
+      "comment": "A comunica HDT RDF Resolve Quad Pattern Actor.",
+      "parameters": [
+        {
+          "@id": "carrqph:Actor/RdfResolveQuadPattern/Hdt/files",
+          "comment": "The HDT file to preload",
+          "range": "xsd:string"
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "carrqph:Actor/RdfResolveQuadPattern/Hdt/constructorArgumentsObject",
+          "extends": "cbrrqp:Actor/RdfResolveQuadPattern/constructorArgumentsObject",
+          "fields": {
+            "keyRaw": "hdtFiles",
+            "value": "carrqph:Actor/RdfResolveQuadPattern/Hdt/files"
+          }
+        }
+      ]
+    }
+  ]
+}

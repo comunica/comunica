@@ -1,0 +1,12 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/components.jsonld",
+    {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
+      "carrqph": "npmd:@comunica/actor-rdf-resolve-quad-pattern-hdt/",
+
+      "ActorRdfResolveQuadPatternHdt": "carrqph:Actor/RdfResolveQuadPattern/Hdt",
+      "hdtFiles": "carrqph:Actor/RdfResolveQuadPattern/Hdt/files"
+    }
+  ]
+}
