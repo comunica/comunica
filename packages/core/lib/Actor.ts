@@ -55,6 +55,28 @@ export abstract class Actor<I extends IAction, T extends IActorTest, O extends I
    */
   public abstract async run(action: I): Promise<O>;
 
+  /**
+   * Initialize this actor.
+   * This should be used for doing things that take a while,
+   * such as opening files.
+   *
+   * @return {Promise<void>} A promise that resolves when the actor has been initialized.
+   */
+  public async initialize(): Promise<any> {
+    return true;
+  }
+
+  /**
+   * Deinitialize this actor.
+   * This should be used for cleaning up things when the application is shut down,
+   * such as closing files and removing temporary files.
+   *
+   * @return {Promise<void>} A promise that resolves when the actor has been deinitialized.
+   */
+  public async deinitialize(): Promise<any> {
+    return true;
+  }
+
 }
 
 export interface IActorArgs<I extends IAction, T extends IActorTest, O extends IActorOutput> {
