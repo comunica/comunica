@@ -22,7 +22,7 @@ export class RoundRobinUnionIterator<T> extends BufferedIterator<T> {
     }
   }
 
-  protected _read(count: number, done: () => void): void {
+  public _read(count: number, done: () => void): void {
     let item: T = null;
     let attempts: number = this.sources.length;
 

@@ -31,9 +31,8 @@ export class ActorQueryOperationBgpLeftDeepSmallest extends ActorQueryOperationT
   public static createLeftDeepStream(baseStream: BindingsStream, patterns: Algebra.Pattern[],
                                      patternBinder: (patterns: Algebra.Pattern[]) =>
                                        Promise<BindingsStream>): BindingsStream {
-    const bindingsStream: BindingsStream = new MultiTransformIterator(baseStream);
-    // TODO: remove cast when asynciterator types are fixed
-    (<any> bindingsStream)._createTransformer = (bindings: Bindings) => {
+    const bindingsStream: MultiTransformIterator<Bindings, Bindings> = new MultiTransformIterator(baseStream);
+    bindingsStream._createTransformer = (bindings: Bindings) => {
       return new PromiseProxyIterator(
         async () => (await patternBinder(ActorQueryOperationBgpLeftDeepSmallest.materializePatterns(patterns,
           bindings))).map((subBindings: Bindings) => subBindings.merge(bindings)));

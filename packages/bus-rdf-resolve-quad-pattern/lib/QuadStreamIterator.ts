@@ -13,7 +13,7 @@ export class QuadStreamIterator extends BufferedIterator<RDF.Quad> implements RD
     this.stream = stream;
   }
 
-  protected _begin(done: () => void) {
+  public _begin(done: () => void) {
     this.stream.on('data', (quad) => this._push(quad));
     this.stream.on('error', (e) => this.emit('error', e));
     this.stream.on('end', () => this._push(null));

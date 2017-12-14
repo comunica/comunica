@@ -32,7 +32,7 @@
     "index.js"
   ],
   "dependencies": {
-    "asynciterator-promiseproxy": "^1.0.1"
+    "asynciterator-promiseproxy": "^1.0.2"
   },
   "peerDependencies": {
     "@comunica/core": "^0.0.1",

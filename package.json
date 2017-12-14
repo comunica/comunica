@@ -1,6 +1,6 @@
 {
   "devDependencies": {
-    "@types/asynciterator": "^1.1.0",
+    "@types/asynciterator": "^1.1.1",
     "@types/bluebird": "^3.5.11",
     "@types/jest": "^20.0.8",
     "@types/lodash.assign": "^4.2.3",

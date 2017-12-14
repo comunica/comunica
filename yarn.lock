@@ -2,15 +2,20 @@
 # yarn lockfile v1
 
 
-"@types/asynciterator@^1.1.0":
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/@types/asynciterator/-/asynciterator-1.1.0.tgz#257cd7b65fe564f6797fdab8d51e1572ba226af3"
+"@types/asynciterator@^1.1.1":
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/@types/asynciterator/-/asynciterator-1.1.1.tgz#21ae5e3729ab2e87d324a044b2cd6288226da7fc"
   dependencies:
+    "@types/events" "*"
     "@types/node" "*"
 
 "@types/bluebird@^3.5.11":
   version "3.5.18"
   resolved "https://registry.yarnpkg.com/@types/bluebird/-/bluebird-3.5.18.tgz#6a60435d4663e290f3709898a4f75014f279c4d6"
+
+"@types/events@*":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@types/events/-/events-1.1.0.tgz#93b1be91f63c184450385272c47b6496fd028e02"
 
 "@types/jest@^20.0.8":
   version "20.0.8"
@@ -43,6 +48,12 @@
 "@types/lodash.sortby@^4.7.3":
   version "4.7.3"
   resolved "https://registry.yarnpkg.com/@types/lodash.sortby/-/lodash.sortby-4.7.3.tgz#d1f7a7fd955246e685a7541ac184dc058c553eb5"
+  dependencies:
+    "@types/lodash" "*"
+
+"@types/lodash.union@^4.6.3":
+  version "4.6.3"
+  resolved "https://registry.yarnpkg.com/@types/lodash.union/-/lodash.union-4.6.3.tgz#1001418d1c77ed6e501cba210a1b782392e49086"
   dependencies:
     "@types/lodash" "*"
 
