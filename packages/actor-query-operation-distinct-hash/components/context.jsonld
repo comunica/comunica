@@ -1,0 +1,11 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/components.jsonld",
+    {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
+      "caqodh": "npmd:@comunica/actor-query-operation-distinct-hash/",
+
+      "ActorQueryOperationDistinctHash": "caqodh:Actor/QueryOperation/DistinctHash"
+    }
+  ]
+}
