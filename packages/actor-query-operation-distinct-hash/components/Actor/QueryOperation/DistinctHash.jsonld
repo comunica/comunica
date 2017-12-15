@@ -1,0 +1,46 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-query-operation-distinct-hash.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-query-operation.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-query-operation-distinct-hash",
+  "components": [
+    {
+      "@id": "caqodh:Actor/QueryOperation/DistinctHash",
+      "@type": "Class",
+      "extends": "cbqo:Actor/QueryOperationTypedMediated",
+      "requireElement": "ActorQueryOperationDistinctHash",
+      "comment": "A comunica Distinct Hash Query Operation Actor.",
+      "parameters": [
+        {
+          "@id": "caqodh:hashAlgorithm",
+          "comment": "The algorithm to use for hashing objects (such as 'sha1').",
+          "required": true,
+          "unique": true
+        },
+        {
+          "@id": "caqodh:digestAlgorithm",
+          "comment": "The digest algorithm to use for creating a digest from a hash (such as 'base64').",
+          "required": true,
+          "unique": true
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "caqodh:Actor/QueryOperation/DistinctHash/constructorArgumentsObject",
+          "extends": "cbqo:Actor/QueryOperationTypedMediated/constructorArgumentsObject",
+          "fields": [
+            {
+              "keyRaw": "hashAlgorithm",
+              "value": "caqodh:hashAlgorithm"
+            },
+            {
+              "keyRaw": "digestAlgorithm",
+              "value": "caqodh:digestAlgorithm"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

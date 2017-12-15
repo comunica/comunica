@@ -7,6 +7,7 @@
     "https://linkedsoftwaredependencies.org/contexts/comunica-actor-query-operation-bgp-empty.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-actor-query-operation-bgp-left-deep-smallest.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-actor-query-operation-bgp-single.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-query-operation-distinct-hash.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-actor-query-operation-project.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-actor-query-operation-quadpattern.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-actor-query-operation-slice.jsonld",
@@ -80,6 +81,14 @@
           "@id": "ex:myLeftDeepSmallestBgpQueryOperator",
           "@type": "ActorQueryOperationBgpLeftDeepSmallest",
           "cbqo:mediatorQueryOperation": { "@id": "ex:mediatorQueryOperation" }
+        },
+
+        {
+          "@id": "ex:myDistinctQueryOperator",
+          "@type": "ActorQueryOperationDistinctHash",
+          "cbqo:mediatorQueryOperation": { "@id": "ex:mediatorQueryOperation" },
+          "caqodh:hashAlgorithm": "sha1",
+          "caqodh:digestAlgorithm": "base64"
         },
 
         {
