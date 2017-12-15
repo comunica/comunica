@@ -1,0 +1,72 @@
+{
+  "name": "@comunica/actor-rdf-resolve-quad-pattern-file",
+  "version": "0.0.1",
+  "description": "A file rdf-resolve-quad-pattern actor",
+  "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-resolve-quad-pattern-file",
+  "lsd:components": "components/components.jsonld",
+  "lsd:contexts": {
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-resolve-quad-pattern-file.jsonld": "components/context.jsonld"
+  },
+  "main": "index.js",
+  "typings": "index",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/comunica/actor-rdf-resolve-quad-pattern-file.git"
+  },
+  "keywords": [
+    "comunica",
+    "actor",
+    "rdf-resolve-quad-pattern",
+    "file"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/comunica/actor-rdf-resolve-quad-pattern-file/issues"
+  },
+  "homepage": "https://github.com/comunica/actor-rdf-resolve-quad-pattern-file#readme",
+  "files": [
+    "components",
+    "lib/**/*.d.ts",
+    "lib/**/*.js",
+    "index.d.ts",
+    "index.js"
+  ],
+  "dependencies": {
+    "asynciterator": "^1.1.0",
+    "n3": "^0.11.2",
+    "rdf-string": "^1.0.1"
+  },
+  "peerDependencies": {
+    "@comunica/core": "^0.0.1",
+    "@comunica/bus-rdf-dereference": "^0.0.1",
+    "@comunica/bus-rdf-resolve-quad-pattern": "^0.0.1"
+  },
+  "devDependencies": {
+    "@comunica/core": "^0.0.1",
+    "@comunica/bus-rdf-dereference": "^0.0.1",
+    "@comunica/bus-rdf-resolve-quad-pattern": "^0.0.1"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.ts$": "<rootDir>/../../node_modules/ts-jest/preprocessor.js"
+    },
+    "transformIgnorePatterns": [
+      "[/\\\\]node_modules[/\\\\].+\\.(js|jsx)$"
+    ],
+    "testRegex": "(/test/.*|(\\.|/)(test|spec))\\.ts$",
+    "moduleFileExtensions": [
+      "ts",
+      "js"
+    ],
+    "collectCoverage": true,
+    "mapCoverage": true
+  },
+  "scripts": {
+    "test": "node \"../../node_modules/jest/bin/jest.js\" ${1}",
+    "test-watch": "node \"../../node_modules/jest/bin/jest.js\" ${1} --watch",
+    "lint": "node \"../../node_modules/tslint/bin/tslint\" lib/**/*.ts test/**/*.ts --exclude '**/*.d.ts'",
+    "build": "node \"../../node_modules/typescript/bin/tsc\"",
+    "validate": "npm ls",
+    "prepare": "npm run build"
+  }
+}
