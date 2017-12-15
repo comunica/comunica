@@ -1,0 +1,45 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-resolve-quad-pattern-file.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-rdf-resolve-quad-pattern.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-rdf-resolve-quad-pattern-file",
+  "components": [
+    {
+      "@id": "carrqpf:Actor/RdfResolveQuadPattern/File",
+      "@type": "Class",
+      "extends": "cbrrqp:Actor/RdfResolveQuadPattern",
+      "requireElement": "ActorRdfResolveQuadPatternFile",
+      "comment": "A comunica File RDF Resolve Quad Pattern Actor.",
+      "parameters": [
+        {
+          "@id": "carrqpf:mediatorRdfDereference",
+          "comment": "The RDF Dereference mediator",
+          "required": true,
+          "unique": true
+        },
+        {
+          "@id": "cbrrqp:Actor/RdfResolveQuadPattern/file",
+          "comment": "The file to preload",
+          "range": "xsd:string"
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "carrqpf:Actor/RdfResolveQuadPattern/File/constructorArgumentsObject",
+          "extends": "cbrrqp:Actor/RdfResolveQuadPattern/constructorArgumentsObject",
+          "fields": [
+            {
+              "keyRaw": "mediatorRdfDereference",
+              "value": "carrqpf:mediatorRdfDereference"
+            },
+            {
+              "keyRaw": "files",
+              "value": "cbrrqp:Actor/RdfResolveQuadPattern/file"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
