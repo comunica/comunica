@@ -22,6 +22,8 @@ import {Bus, IActorReply} from "./Bus";
 export abstract class Mediator<A extends Actor<I, T, O>,
   I extends IAction, T extends IActorTest, O extends IActorOutput> implements IMediatorArgs<A, I, T, O> {
 
+  public static PROFILING_DURATIONS: {[actor: string]: number} = {};
+
   public readonly name: string;
   public readonly bus: Bus<A, I, T, O>;
 
@@ -37,6 +39,10 @@ export abstract class Mediator<A extends Actor<I, T, O>,
    */
   constructor(args: IMediatorArgs<A, I, T, O>) {
     require('lodash.assign')(this, args);
+  }
+
+  public doProfiling(): boolean {
+    return !!process.env.COMUNICA_PROFILE;
   }
 
   /**
@@ -86,7 +92,15 @@ export abstract class Mediator<A extends Actor<I, T, O>,
   public async mediate(action: I): Promise<O> {
     // Mediate to one actor and run the action on it
     const actor: A = await this.mediateActor(action);
-    return actor.run(action);
+    const startTime: [number, number] = this.doProfiling() ? process.hrtime() : null;
+    return actor.run(action).then((output: O) => {
+      if (startTime) {
+        const durationData: [number, number] = process.hrtime(startTime);
+        const duration: number = durationData[0] * 1000 + durationData[1] / 1000;
+        Mediator.PROFILING_DURATIONS[actor.name] = (Mediator.PROFILING_DURATIONS[actor.name] || 0) + duration;
+      }
+      return output;
+    });
   }
 
   /**

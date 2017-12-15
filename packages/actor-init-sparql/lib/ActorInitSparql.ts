@@ -86,7 +86,13 @@ Options:
     const result: IActorQueryOperationOutput = await this.mediatorQueryOperation.mediate(resolve);
 
     result.bindingsStream.on('data', (binding) => readable.push(JSON.stringify(binding) + '\n'));
-    result.bindingsStream.on('end', () => readable.push(null));
+    result.bindingsStream.on('end', () => {
+      readable.push(null);
+
+      console.error(Object.keys(Mediator.PROFILING_DURATIONS)
+        .map((key: string) => ({ key, value: Mediator.PROFILING_DURATIONS[key] }))
+        .sort((a, b) => b.value - a.value));
+    });
     const readable = new Readable();
     readable._read = () => {
       return;
