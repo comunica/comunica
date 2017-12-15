@@ -38,6 +38,7 @@
   ],
   "dependencies": {
     "minimist": "^1.2.0",
+    "@comunica/runner": "^0.0.1",
     "@comunica/runner-cli": "^0.0.1"
   },
   "peerDependencies": {

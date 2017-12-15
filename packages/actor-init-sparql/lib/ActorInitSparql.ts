@@ -27,6 +27,18 @@ export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs {
     return true;
   }
 
+  /**
+   * Evaluate the given query
+   * @param {string} query A query string.
+   * @param context An optional query context.
+   * @return {Promise<IActorQueryOperationOutput>} A promise that resolves to the query output.
+   */
+  public async evaluateQuery(query: string, context?: any): Promise<IActorQueryOperationOutput> {
+    const operation: Algebra.Operation = (await this.mediatorSparqlParse.mediate({ query })).operation;
+    const resolve: IActionQueryOperation = { context, operation };
+    return await this.mediatorQueryOperation.mediate(resolve);
+  }
+
   public async run(action: IActionInit): Promise<IActorOutputInit> {
     const args = minimist(action.argv);
     if (!this.query && (!(args.q || args.f) && args._.length < (args.c ? 1 : 2) || args._.length < (args.c ? 0 : 1)
@@ -80,10 +92,7 @@ Options:
       }
     }
 
-    const operation: Algebra.Operation = (await this.mediatorSparqlParse.mediate({ query })).operation;
-
-    const resolve: IActionQueryOperation = { context, operation };
-    const result: IActorQueryOperationOutput = await this.mediatorQueryOperation.mediate(resolve);
+    const result: IActorQueryOperationOutput = await this.evaluateQuery(query, context);
 
     result.bindingsStream.on('data', (binding) => readable.push(JSON.stringify(binding) + '\n'));
     result.bindingsStream.on('end', () => readable.push(null));

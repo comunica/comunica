@@ -41,7 +41,7 @@
       "@type": "Runner",
       "actors": [
         {
-          "@id": "ex:myInit",
+          "@id": "urn:comunica:sparqlinit",
           "@type": "ActorInitSparql",
           "mediatorQueryOperation": {
             "@id": "ex:mediatorQueryOperation",
