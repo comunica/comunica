@@ -27,29 +27,15 @@ export class Setup {
    * @param {any[]} action                The action to pass to the runner.
    * @param {string} runnerUri            An optional URI identifying the runner.
    * @param {LoaderProperties} properties Properties to pass to the Components.js loader.
-   * @return {Promise<void>}              A promise that resolves when the runner has been initialized.
+   * @return {Promise<any>}               A promise that resolves when the runner has been initialized.
    */
   public static async run(configResourceUrl: string, action: IActionInit, runnerUri?: string,
-                          properties?: LoaderProperties): Promise<any> {
-    if (!Setup.preparedPromises) {
-      Setup.preparedPromises = true;
-      Setup.preparePromises();
-    }
-
-    // Handle optional arguments
+                          properties?: ISetupProperties): Promise<any> {
     if (!runnerUri) {
       runnerUri = 'urn:comunica:my';
     }
-    if (!properties) {
-      properties = {};
-    }
-    require('lodash.defaults')(properties, { mainModulePath: process.cwd() });
 
-    // Instantiate the given config file
-    const loader = new Loader(properties);
-    await loader.registerAvailableModuleResources();
-    const runner: Runner = await loader.instantiateFromUrl(runnerUri, configResourceUrl);
-
+    const runner: Runner = await Setup.instantiateComponent(configResourceUrl, runnerUri, properties);
     await runner.initialize();
     let output: IActorOutputInit[];
     try {
@@ -60,6 +46,33 @@ export class Setup {
     }
     await runner.deinitialize();
     return output;
+  }
+
+  /**
+   * Instantiate the given component.
+   *
+   * @param {string} configResourceUrl    The URL or local path to a Components.js config file.
+   * @param {string} instanceUri          A URI identifying the component to instantiate.
+   * @param {LoaderProperties} properties Properties to pass to the Components.js loader.
+   * @return {Promise<any>}               A promise that resolves to the instance.
+   */
+  public static async instantiateComponent(configResourceUrl: string, instanceUri: string,
+                                           properties?: ISetupProperties): Promise<any> {
+    if (!Setup.preparedPromises) {
+      Setup.preparedPromises = true;
+      Setup.preparePromises();
+    }
+
+    // Handle optional arguments
+    if (!properties) {
+      properties = {};
+    }
+    require('lodash.defaults')(properties, { mainModulePath: process.cwd() });
+
+    // Instantiate the given config file
+    const loader = new Loader(properties);
+    await loader.registerAvailableModuleResources();
+    return await loader.instantiateFromUrl(instanceUri, configResourceUrl);
   }
 
   /**
@@ -91,3 +104,5 @@ export class Setup {
   }
 
 }
+
+export type ISetupProperties = LoaderProperties;
