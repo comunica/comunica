@@ -32,7 +32,7 @@ export class MockedHdtDocument {
     }
     const tripleIn = { subject, predicate, object };
     const offset = options.offset || 0;
-    const limit = Math.min(options.limit || Infinity, this.triples.length);
+    const limit = Math.min(options.limit, this.triples.length);
     let i = 0;
     const triples = [];
     for (const triple of this.triples) {
