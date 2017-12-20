@@ -179,7 +179,7 @@ describe('ActorRdfResolveQuadPatternHdt', () => {
 
     it('should close on process.exit', () => {
       actor.deinitialize();
-      process.emit('exit');
+      process.emit('exit', 0);
       expect(actor.closed).toBe(true);
       actor.closed = false;
     });
