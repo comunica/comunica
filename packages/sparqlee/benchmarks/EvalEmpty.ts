@@ -1,20 +1,19 @@
-import { Expression } from 'sparqljs';
 import { Literal } from 'rdf-js';
-import { Evaluator } from '../src/core/Evaluator';
-import { Bindings } from "../src/core/Bindings";
+import { Expression } from 'sparqljs';
 
+import { Bindings, IEvaluator } from '../src/core/FilteredStreams';
 
 /**
  * Benchmarking this provides a (very lose) theoretical maximum
  */
-export class EmptyEvaluator implements Evaluator {
-    expr: Expression;
+export class EmptyEvaluator implements IEvaluator {
+  private expr: Expression;
 
-    constructor(expr: Expression) {
-        this.expr = expr;
-    }
+  constructor(expr: Expression) {
+    this.expr = expr;
+  }
 
-    evaluate(mapping: Bindings) :boolean {
-        return null;
-    }
+  public evaluate(mapping: Bindings): boolean {
+    return null;
+  }
 }

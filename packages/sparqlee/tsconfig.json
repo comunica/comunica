@@ -1,19 +1,29 @@
 {
-  "compileOnSave": false,
+  "compileOnSave": true,
   "compilerOptions": {
-    "outDir": "./dist",
-    "noImplicitAny": true,
-    "noImplicitThis": true,
-    "sourceMap": true,
     "module": "CommonJS",
-    "target": "ES6",
-    "declaration": true
+    "lib": [
+      "es6"
+    ],
+    "target": "es6",
+    "noImplicitAny": true,
+    "removeComments": false,
+    "preserveConstEnums": true,
+    "sourceMap": true,
+    "inlineSources": true,
+    "declaration": true,
+    "importHelpers": true,
+
+    "outDir": "./dist",
+    "noImplicitThis": true
   },
   "include": [
-    "**/*.ts"
+    "**/*.ts",
+    "benchmarks/**/*.ts"
   ],
   "exclude": [
-    "**/__tests__/*",
+    "**/node_modules",
+    "**/tests/*",
     "dist/*"
   ]
 }

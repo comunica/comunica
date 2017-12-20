@@ -44,6 +44,8 @@
     "jest-html-reporter": "^0.5.3",
     "merge-stream": "^1.0.1",
     "ts-jest": "^21.1.1",
+    "tslint": "^5.8.0",
+    "tslint-eslint-rules": "^4.1.1",
     "typescript": "^2.5.3"
   },
   "dependencies": {
@@ -62,16 +64,15 @@
     },
     "testPathIgnorePatterns": [
       "/node_modules/",
-      "/src/__tests__/util"
+      "/src/tests/util"
     ],
     "testResultsProcessor": "./node_modules/jest-html-reporter",
-    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
+    "testRegex": "(/tests/.*|(\\.|/)(test|spec))\\.ts$",
     "moduleFileExtensions": [
       "ts",
-      "tsx",
-      "js",
-      "jsx",
-      "json"
-    ]
+      "js"
+    ],
+    "collectCoverage": true,
+    "mapCoverage": true
   }
 }

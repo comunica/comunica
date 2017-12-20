@@ -1,0 +1,31 @@
+{
+    "defaultSeverity": "warning",
+    "extends": [
+      "tslint:recommended",
+      "tslint-eslint-rules"
+    ],
+    "jsRules": {},
+    "rules": {
+      "array-type": [true, "array"],
+      "indent": [true, "spaces"],
+      "ter-indent": [true, 2, { "SwitchCase": 1 }],
+      "no-empty-interface": false,
+      "quotemark": false,
+      "no-trailing-whitespace": [true, "ignore-jsdoc"],
+      "valid-jsdoc": [false, {
+        "prefer": {
+          "return": "return"
+        },
+        "requireReturn": false
+      }],
+      "no-angle-bracket-type-assertion": false,
+      "member-ordering": [true, {
+        "order": "fields-first"
+      }],
+      "forin": false,
+      "max-classes-per-file": [false],
+      "object-literal-sort-keys": false
+    },
+    "rulesDirectory": []
+  }
+  

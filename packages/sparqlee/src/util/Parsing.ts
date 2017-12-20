@@ -9,11 +9,11 @@
  * @param value the string to interpret as a number
  */
 export function parseXSDInteger(value: string): number | undefined {
-    if (/^(\-|\+)?([0-9]+(\.[0-9]+)?)$/.test(value)) {
-        let numb: number = Number(value);
-        return (isNaN(numb)) ? undefined : numb;
-    }
-    return undefined;
+  if (/^(\-|\+)?([0-9]+(\.[0-9]+)?)$/.test(value)) {
+    const numb: number = Number(value);
+    return (isNaN(numb)) ? undefined : numb;
+  }
+  return undefined;
 }
 
 /**
@@ -25,12 +25,12 @@ export function parseXSDInteger(value: string): number | undefined {
  * @param value the string to interpret as a number
  */
 export function parseXSDFloat(value: string): number | undefined {
-    let numb: number = Number(value);
-    if (isNaN(numb)) {
-        if (value === 'NaN') { return NaN; }
-        if (value === 'INF') { return Infinity; }
-        if (value === '-INF') { return -Infinity; }
-        return undefined;
-    }
-    return numb;
+  const numb: number = Number(value);
+  if (isNaN(numb)) {
+    if (value === 'NaN') { return NaN; }
+    if (value === 'INF') { return Infinity; }
+    if (value === '-INF') { return -Infinity; }
+    return undefined;
+  }
+  return numb;
 }
