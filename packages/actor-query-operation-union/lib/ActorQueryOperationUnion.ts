@@ -2,8 +2,8 @@ import {ActorQueryOperationTypedMediated, Bindings, IActorQueryOperationOutput,
   IActorQueryOperationTypedMediatedArgs} from "@comunica/bus-query-operation";
 import {BindingsStream} from "@comunica/bus-query-operation";
 import {IActorTest} from "@comunica/core";
+import {RoundRobinUnionIterator} from "asynciterator-union";
 import {Algebra} from "sparqlalgebrajs";
-import {RoundRobinUnionIterator} from "./RoundRobinUnionIterator";
 
 /**
  * A comunica Union Query Operation Actor.
