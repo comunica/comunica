@@ -13,6 +13,7 @@
     "https://linkedsoftwaredependencies.org/contexts/comunica-actor-query-operation-slice.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-actor-query-operation-union.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-bus-rdf-resolve-quad-pattern.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-resolve-quad-pattern-federated.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-resolve-quad-pattern-qpf.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-bus-http.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-actor-http-node-fetch.jsonld",
@@ -110,6 +111,14 @@
             "@id": "ex:mediatorResolveQuadPattern",
             "@type": "MediatorRace",
             "cc:Mediator/bus": { "@id": "cbrrqp:Bus/RdfResolveQuadPattern" }
+          }
+        },
+
+        {
+          "@id": "ex:myFederatedQuadPatternResolver",
+          "@type": "ActorRdfResolveQuadPatternFederated",
+          "carrqpf:Actor/RdfResolveQuadPattern/Federated/mediatorResolveQuadPattern": {
+            "@id": "ex:mediatorResolveQuadPattern"
           }
         },
 
