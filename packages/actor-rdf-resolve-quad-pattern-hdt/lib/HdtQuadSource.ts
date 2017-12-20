@@ -1,6 +1,6 @@
+import {ILazyQuadSource} from "@comunica/bus-rdf-resolve-quad-pattern";
 import {AsyncIterator} from "asynciterator";
 import * as RDF from "rdf-js";
-import {ILazyQuadSource} from "../../bus-rdf-resolve-quad-pattern/lib/ActorRdfResolveQuadPatternSource";
 import {HdtIterator} from "./HdtIterator";
 
 export class HdtQuadSource implements ILazyQuadSource {
