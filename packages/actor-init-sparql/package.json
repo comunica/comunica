@@ -64,6 +64,7 @@
     "@comunica/actor-rdf-dereference-paged-next": "^0.0.1",
     "@comunica/actor-rdf-parse-n3": "^0.0.1",
     "@comunica/actor-rdf-parse-jsonld": "^0.0.1",
+    "@comunica/actor-rdf-resolve-quad-pattern-federated": "^0.0.1",
     "@comunica/actor-rdf-resolve-quad-pattern-file": "^0.0.1",
     "@comunica/actor-rdf-resolve-quad-pattern-hdt": "^0.0.1",
     "@comunica/actor-rdf-resolve-quad-pattern-qpf": "^0.0.1",

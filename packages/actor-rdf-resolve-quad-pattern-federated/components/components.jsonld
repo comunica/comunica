@@ -1,0 +1,9 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-resolve-quad-pattern-federated.jsonld",
+  "@id": "npmd:@comunica/actor-rdf-resolve-quad-pattern-federated",
+  "@type": "Module",
+  "requireName": "@comunica/actor-rdf-resolve-quad-pattern-federated",
+  "import": [
+    "Actor/RdfResolveQuadPattern/Federated.jsonld"
+  ]
+}

@@ -73,11 +73,15 @@ Options:
 
     // Add entrypoint parameter to context
     if (args._.length > 0) {
+      context.sources = context.sources || [];
+      args._.forEach((sourceValue: string) => {
+        const source: {[id: string]: string} = {};
+        // TODO: improve this so that other source types can be selected, we currently assume TPF
+        source.type = 'entrypoint';
+        source.value = sourceValue;
+        context.sources.push(source);
+      });
       context.entrypoint = args._[0];
-      if (args._.length > 1) {
-        // TODO: support federation
-        throw new Error('Only a single entrypoint is supported at the moment');
-      }
     }
 
     const operation: Algebra.Operation = (await this.mediatorSparqlParse.mediate({ query })).operation;

@@ -1,0 +1,46 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-resolve-quad-pattern-federated.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-rdf-resolve-quad-pattern.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-rdf-resolve-quad-pattern-federated",
+  "components": [
+    {
+      "@id": "carrqpf:Actor/RdfResolveQuadPattern/Federated",
+      "@type": "Class",
+      "extends": "cbrrqp:Actor/RdfResolveQuadPattern",
+      "requireElement": "ActorRdfResolveQuadPatternFederated",
+      "comment": "A comunica Federated RDF Resolve Quad Pattern Actor.",
+      "parameters": [
+        {
+          "@id": "carrqpf:Actor/RdfResolveQuadPattern/Federated/mediatorResolveQuadPattern",
+          "comment": "The quad pattern resolve mediator",
+          "required": true,
+          "unique": true
+        },
+        {
+          "@id": "carrqpf:Actor/RdfResolveQuadPattern/Federated/skipEmptyPatterns",
+          "comment": "If quad patterns that are sub-patterns of empty quad patterns should be skipped. This assumes that sources remain static during query evaluation.",
+          "default": true,
+          "unique": true
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "carrqpf:Actor/RdfResolveQuadPattern/Federated/constructorArgumentsObject",
+          "extends": "cbrrqp:Actor/RdfResolveQuadPattern/constructorArgumentsObject",
+          "fields": [
+            {
+              "keyRaw": "mediatorResolveQuadPattern",
+              "value": "carrqpf:Actor/RdfResolveQuadPattern/Federated/mediatorResolveQuadPattern"
+            },
+            {
+              "keyRaw": "skipEmptyPatterns",
+              "value": "carrqpf:Actor/RdfResolveQuadPattern/Federated/skipEmptyPatterns"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

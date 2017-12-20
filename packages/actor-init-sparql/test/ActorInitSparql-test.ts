@@ -141,9 +141,9 @@ describe('ActorInitSparql', () => {
         });
     });
 
-    it('should not run with multiple entrypoints and a query option', () => {
+    it('should run with multiple entrypoints and a query option', () => {
       return expect(actor.run({ argv: [ entrypoint, entrypoint, '-q', query ], env: {}, stdin: new PassThrough() }))
-        .rejects.toBeTruthy();
+        .resolves.toBeTruthy();
     });
 
     it('should not run with an entrypoint and a empty query file option', () => {
