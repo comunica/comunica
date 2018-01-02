@@ -51,7 +51,7 @@ export class ActorQueryOperationDistinctHash extends ActorQueryOperationTypedMed
    */
   public static hash(hashAlgorithm: string, digestAlgorithm: string, object: any): string {
     const hash: Hash = createHash(hashAlgorithm);
-    hash.update(JSON.stringify(object));
+    hash.update(require('json-stable-stringify')(object));
     return hash.digest(<any> digestAlgorithm);
   }
 

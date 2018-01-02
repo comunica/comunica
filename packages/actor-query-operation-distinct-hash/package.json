@@ -31,6 +31,9 @@
     "index.d.ts",
     "index.js"
   ],
+  "dependencies": {
+    "json-stable-stringify": "^1.0.1"
+  },
   "peerDependencies": {
     "@comunica/core": "^0.0.1",
     "@comunica/bus-query-operation": "^0.0.1"
