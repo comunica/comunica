@@ -1,0 +1,11 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/components.jsonld",
+    {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
+      "caqolj": "npmd:@comunica/actor-query-operation-leftjoin/",
+
+      "ActorQueryOperationLeftJoin": "caqolj:Actor/QueryOperation/LeftJoin"
+    }
+  ]
+}
