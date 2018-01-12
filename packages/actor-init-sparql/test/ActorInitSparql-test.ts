@@ -2,6 +2,13 @@ import {ActorInit} from "@comunica/bus-init";
 import {Bus} from "@comunica/core";
 import {PassThrough, Readable} from "stream";
 import {ActorInitSparql} from "../lib/ActorInitSparql";
+import {ActorInitSparql as ActorInitSparqlBrowser} from "../lib/ActorInitSparql-browser";
+
+describe('ActorInitSparqlBrowser', () => {
+  it('should not allow invoking its run method', () => {
+    return expect(new (<any> ActorInitSparqlBrowser)({ bus: new Bus({ name: 'bus' }) }).run()).rejects.toBeTruthy();
+  });
+});
 
 describe('ActorInitSparql', () => {
   let bus;
