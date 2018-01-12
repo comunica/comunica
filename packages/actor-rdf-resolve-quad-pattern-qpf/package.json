@@ -32,7 +32,7 @@
     "index.js"
   ],
   "dependencies": {
-    "asynciterator-promiseproxy": "^1.0.2",
+    "asynciterator-promiseproxy": "^1.0.3",
     "rdf-string": "^1.0.1"
   },
   "peerDependencies": {

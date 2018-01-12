@@ -33,8 +33,8 @@
   ],
   "dependencies": {
     "asynciterator": "^1.1.0",
-    "asynciterator-promiseproxy": "^1.0.2",
-    "asynciterator-union": "^1.0.1",
+    "asynciterator-promiseproxy": "^1.0.3",
+    "asynciterator-union": "^1.0.2",
     "lodash.omit": "^4.5.0",
     "rdf-data-model": "^1.0.0"
   },
