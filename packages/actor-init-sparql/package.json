@@ -21,7 +21,8 @@
   ],
   "license": "MIT",
   "bin": {
-    "comunica-sparql": "./bin/query.js"
+    "comunica-sparql": "./bin/query.js",
+    "comunica-sparql-http": "./bin/http.js"
   },
   "bugs": {
     "url": "https://github.com/comunica/actor-init-sparql/issues"
