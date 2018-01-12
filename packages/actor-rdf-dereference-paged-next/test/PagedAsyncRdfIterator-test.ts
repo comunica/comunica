@@ -47,10 +47,6 @@ describe('PagedAsyncRdfIterator', () => {
     it('should be a function', () => {
       expect(PagedAsyncRdfIterator).toBeInstanceOf(Function);
     });
-
-    it('should not be able to create new PagedAsyncRdfIterator objects without \'new\'', () => {
-      expect(() => { (<any> PagedAsyncRdfIterator)(); }).toThrow();
-    });
   });
 
   describe('A PagedAsyncRdfIterator instance', () => {

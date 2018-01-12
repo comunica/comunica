@@ -10,10 +10,6 @@ describe('Bus', () => {
     it('should be a Bus constructor', () => {
       expect(new Bus({ name: 'Bus' })).toBeInstanceOf(Bus);
     });
-
-    it('should not be able to create new Bus objects without \'new\'', () => {
-      expect(() => { (<any> Bus)(); }).toThrow();
-    });
   });
 
   describe('A Bus instance', () => {

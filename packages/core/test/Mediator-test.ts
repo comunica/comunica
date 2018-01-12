@@ -17,10 +17,6 @@ describe('Mediator', () => {
     it('should be a Mediator constructor', () => {
       expect(new (<any> Mediator)({ name: 'mediator', bus: new Bus({ name: 'bus' }) })).toBeInstanceOf(Mediator);
     });
-
-    it('should not be able to create new Mediator objects without \'new\'', () => {
-      expect(() => { (<any> Mediator)(); }).toThrow();
-    });
   });
 
   describe('A Mediator instance', () => {

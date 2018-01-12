@@ -46,10 +46,6 @@ describe('MediatedPagedAsyncRdfIterator', () => {
       expect(new (<any> MediatedPagedAsyncRdfIterator)('url', new SingletonIterator(''), {}, {}, {}, {} ))
         .toBeInstanceOf(PagedAsyncRdfIterator);
     });
-
-    it('should not be able to create new MediatedPagedAsyncRdfIterator objects without \'new\'', () => {
-      expect(() => { (<any> MediatedPagedAsyncRdfIterator)(); }).toThrow();
-    });
   });
 
   describe('A MediatedPagedAsyncRdfIterator instance', () => {
