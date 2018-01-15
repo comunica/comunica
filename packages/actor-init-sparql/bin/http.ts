@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+import * as fs from 'fs';
 import * as http from 'http';
 import minimist = require('minimist');
 import * as querystring from 'querystring';
@@ -10,14 +11,17 @@ const MIME_PLAIN = 'text/plain';
 const MIME_JSON  = 'application/json';
 
 const args = minimist(process.argv.slice(2));
-if (!args._.length || args.h || args.help) {
+if (args._.length !== 1 || args.h || args.help) {
   process.stderr.write(
-    'usage: ldf-client-http startFragment1 [startFragment2 ...] [-p port] [-t timeout] [--help]\n',
+    'usage: comunica-sparql-http context [-p port] [-t timeout] [--help]\n' +
+    '  context should be a JSON object, e.g. { "entrypoint": "http://fragments.dbpedia.org/2015/en" }\n' +
+    '  or the path to such a JSON file',
   );
   process.exit(1);
 }
 
-const startFragments = args._;
+// allow both files as direct JSON objects for context
+const context = JSON.parse(fs.existsSync(args._[0]) ? fs.readFileSync(args._[0], 'utf8') : args._[0]);
 const timeout = (parseInt(args.t, 10) || 60) * 1000;
 const port = parseInt(args.p, 10) || 3000;
 
@@ -53,8 +57,7 @@ function handleRequest(request: http.IncomingMessage, response: http.ServerRespo
 
 // Writes the result of the given SPARQL query
 function writeQueryResult(request: http.IncomingMessage, response: http.ServerResponse, sparql: string) {
-  query(sparql,
-    { entrypoint: startFragments[0] })
+  query(sparql, context)
     .then((result) => {
       process.stdout.write('[200] ' + request.method + ' to ' + request.url + '\n');
       process.stdout.write('      Received query: ' + sparql + '\n');
@@ -71,7 +74,7 @@ function writeQueryResult(request: http.IncomingMessage, response: http.ServerRe
     }).catch((error) => {
       process.stdout.write('[400] Bad request\n');
       response.writeHead(400, { 'content-type': MIME_PLAIN });
-      response.end(JSON.stringify(error));
+      response.end(error.toString());
     });
 }
 
