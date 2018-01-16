@@ -43,6 +43,8 @@ describe('ActorRdfResolveQuadPatternQpf', () => {
     let pattern2;
     let pattern3;
     let pattern4;
+    let pattern5;
+    let pattern6;
     let metadataQpf;
     let metadataTpf;
 
@@ -71,6 +73,17 @@ describe('ActorRdfResolveQuadPatternQpf', () => {
         object: { value: 'c', termType: 'NamedNode' },
         predicate: { value: 'b', termType: 'NamedNode' },
         subject: { value: 'a', termType: 'Variable' },
+      };
+      pattern5 = {
+        graph: { value: 'd', termType: 'NamedNode' },
+        object: { value: 'c', termType: 'BlankNode' },
+        predicate: { value: 'b', termType: 'NamedNode' },
+        subject: { value: 'a', termType: 'Variable' },
+      };
+      pattern6 = {
+        object: { value: 'c', datatype: { value: 'data', termType: 'NamedNode' }, termType: 'Literal' },
+        predicate: { value: 'b', language: 'nl', termType: 'Literal' },
+        subject: { value: 'a', termType: 'Literal' },
       };
       metadataQpf = {
         searchForms: { values: [
@@ -180,6 +193,21 @@ describe('ActorRdfResolveQuadPatternQpf', () => {
       return actor.run({ pattern: pattern4, context: { entrypoint: 'entrypoint' } }).then(async (output) => {
         expect(await output.metadata).toBe(metadataQpf);
         expect(await arrayifyStream(output.data)).toEqual([ '_,b,c,d/a', '_,b,c,d/b', '_,b,c,d/c' ]);
+      });
+    });
+
+    it('should run for QPF pattern 5', () => {
+      return actor.run({ pattern: pattern5, context: { entrypoint: 'entrypoint' } }).then(async (output) => {
+        expect(await output.metadata).toBe(metadataQpf);
+        expect(await arrayifyStream(output.data)).toEqual([ '_,b,_,d/a', '_,b,_,d/b', '_,b,_,d/c' ]);
+      });
+    });
+
+    it('should run for QPF pattern 6', () => {
+      return actor.run({ pattern: pattern6, context: { entrypoint: 'entrypoint' } }).then(async (output) => {
+        expect(await output.metadata).toBe(metadataQpf);
+        expect(await arrayifyStream(output.data)).toEqual([
+          '"a","b"@nl,"c"^^data,_/a', '"a","b"@nl,"c"^^data,_/b', '"a","b"@nl,"c"^^data,_/c' ]);
       });
     });
 

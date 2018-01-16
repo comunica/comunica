@@ -74,18 +74,28 @@ export class ActorRdfResolveQuadPatternQpf extends ActorRdfResolveQuadPatternSou
     // Create a quad pattern to URL converter
     const uriConstructor = (subject?: RDF.Term, predicate?: RDF.Term, object?: RDF.Term, graph?: RDF.Term) => {
       const entries: {[id: string]: string} = {};
-      if (subject.termType !== 'Variable') {
-        entries[this.subjectUri] = subject.value;
+      const input = [
+        { uri: this.subjectUri, term: subject },
+        { uri: this.predicateUri, term: predicate },
+        { uri: this.objectUri, term: object },
+        { uri: this.graphUri, term: graph },
+      ];
+      for (const entry of input) {
+        if (entry.uri && entry.term) {
+          if (entry.term.termType === 'NamedNode') {
+            entries[entry.uri] = entry.term.value;
+          } else if (entry.term.termType === 'Literal') {
+            const term = <RDF.Literal> entry.term;
+            entries[entry.uri] = '"' + entry.term.value + '"';
+            if (term.language) {
+              entries[entry.uri] += '@' + term.language;
+            } else if (term.datatype && term.datatype.value !== 'http://www.w3.org/2001/XMLSchema#string') {
+              entries[entry.uri] += '^^' + term.datatype.value;
+            }
+          }
+        }
       }
-      if (predicate.termType !== 'Variable') {
-        entries[this.predicateUri] = predicate.value;
-      }
-      if (object.termType !== 'Variable') {
-        entries[this.objectUri] = object.value;
-      }
-      if (this.graphUri && graph.termType !== 'Variable') {
-        entries[this.graphUri] = graph.value;
-      }
+
       return chosenForm.getUri(entries);
     };
 

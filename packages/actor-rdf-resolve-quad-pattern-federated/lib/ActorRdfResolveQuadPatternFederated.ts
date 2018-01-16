@@ -1,8 +1,7 @@
 import {ActorRdfResolveQuadPatternSource, IActionRdfResolveQuadPattern,
-  IActorRdfResolveQuadPatternOutput} from "@comunica/bus-rdf-resolve-quad-pattern";
+  IActorRdfResolveQuadPatternOutput, ILazyQuadSource} from "@comunica/bus-rdf-resolve-quad-pattern";
 import {Actor, IActorArgs, IActorTest, Mediator} from "@comunica/core";
 import * as RDF from "rdf-js";
-import {ILazyQuadSource} from "../../bus-rdf-resolve-quad-pattern/lib/ActorRdfResolveQuadPatternSource";
 import {FederatedQuadSource} from "./FederatedQuadSource";
 
 /**
