@@ -3,9 +3,7 @@ const webpack = require('webpack');
 const StringReplacePlugin = require("string-replace-webpack-plugin");
 
 module.exports = {
-  entry: {
-    path: path.resolve(__dirname, 'dist/engine-default.js')
-  },
+  entry: [ 'babel-polyfill', path.resolve(__dirname, 'dist/engine-default.js') ],
   output: {
     filename: 'comunica-browser.js',
     path: path.resolve(__dirname, 'dist'),
@@ -24,6 +22,19 @@ module.exports = {
               pattern: /_token_stack:/i,
               replacement: function () {
                 return '';
+              }
+            }
+          ]})
+      },
+      {
+        // Makes rdf-sink use a modularized lodash function instead of requiring lodash completely
+        test: /rdf-sink\/index\.js$/,
+        loader: StringReplacePlugin.replace({
+          replacements: [
+            {
+              pattern: /lodash\/assign/i,
+              replacement: function () {
+                return 'lodash.assign';
               }
             }
           ]})
