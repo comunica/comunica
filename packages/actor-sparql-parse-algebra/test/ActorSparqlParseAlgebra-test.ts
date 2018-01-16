@@ -42,10 +42,10 @@ describe('ActorSparqlParseAlgebra', () => {
             input: {
               patterns: [
                 {
-                  graph: {termType: "DefaultGraph", value: ""},
-                  object: {termType: "Variable", value: "b"},
-                  predicate: {termType: "NamedNode", value: "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"},
-                  subject: {termType: "Variable", value: "a"},
+                  graph: {value: ""},
+                  object: {value: "b"},
+                  predicate: {value: "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"},
+                  subject: {value: "a"},
                   type: "pattern",
                 },
               ],
@@ -53,11 +53,9 @@ describe('ActorSparqlParseAlgebra', () => {
             type: "project",
             variables: [
               {
-                termType: "Variable",
                 value: "a",
               },
               {
-                termType: "Variable",
                 value: "b",
               },
             ],

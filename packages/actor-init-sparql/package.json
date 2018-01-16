@@ -87,10 +87,8 @@
     "@comunica/mediator-race": "^0.0.1",
     "@comunica/runner-cli": "^0.0.1",
     "@comunica/runner": "^0.0.1",
-    "babel-core": "^6.26.0",
-    "babel-loader": "^7.1.2",
-    "babel-preset-es2015": "^6.24.1",
     "componentsjs": "2.1.0",
+    "lodash.assign": "^4.2.0",
     "string-replace-webpack-plugin": "^0.1.3",
     "webpack": "^3.10.0"
   },
