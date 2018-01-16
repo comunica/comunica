@@ -1,9 +1,9 @@
 import {IActionRdfDereferencePaged, IActorRdfDereferencePagedOutput} from "@comunica/bus-rdf-dereference-paged";
+import {ILazyQuadSource} from "@comunica/bus-rdf-resolve-quad-pattern";
 import {Actor, IActorTest, Mediator} from "@comunica/core";
 import {AsyncIterator} from "asynciterator";
 import {PromiseProxyIterator} from "asynciterator-promiseproxy";
 import * as RDF from "rdf-js";
-import {ILazyQuadSource} from "../../bus-rdf-resolve-quad-pattern/lib/ActorRdfResolveQuadPatternSource";
 
 /**
  * A QPF quad source that uses a paged RDF dereference mediator
@@ -54,21 +54,13 @@ export class MediatedQuadSource implements ILazyQuadSource {
     // Collect a variable to quad elements mapping.
     const variableElements: {[variableName: string]: string[]} = {};
     let duplicateVariables = false;
-    if (subject && subject.termType === 'Variable') {
-      const length = (variableElements[subject.value] || (variableElements[subject.value] = [])).push('subject');
-      duplicateVariables = duplicateVariables || length > 1;
-    }
-    if (predicate && predicate.termType === 'Variable') {
-      const length = (variableElements[predicate.value] || (variableElements[predicate.value] = [])).push('predicate');
-      duplicateVariables = duplicateVariables || length > 1;
-    }
-    if (object && object.termType === 'Variable') {
-      const length = (variableElements[object.value] || (variableElements[object.value] = [])).push('object');
-      duplicateVariables = duplicateVariables || length > 1;
-    }
-    if (graph && graph.termType === 'Variable') {
-      const length = (variableElements[graph.value] || (variableElements[graph.value] = [])).push('graph');
-      duplicateVariables = duplicateVariables || length > 1;
+    const input: { [id: string]: RDF.Term } = { subject, predicate, object, graph };
+    for (const key of Object.keys(input)) {
+      if (input[key] && (input[key].termType === 'Variable' || input[key].termType === 'BlankNode')) {
+        const val = (input[key].termType === 'Variable' ? '?' : '_:') + input[key].value;
+        const length = (variableElements[val] || (variableElements[val] = [])).push(key);
+        duplicateVariables = duplicateVariables || length > 1;
+      }
     }
 
     if (!duplicateVariables) {

@@ -123,7 +123,7 @@ export class ActorQueryOperationBgpLeftDeepSmallest extends ActorQueryOperationT
   /**
    * Materialize a term with the given binding.
    *
-   * If the given term is a variable
+   * If the given term is a variable (or blank node)
    * and that variable exist in the given bindings object,
    * the value of that binding is returned.
    * In all other cases, the term itself is returned.
@@ -133,8 +133,8 @@ export class ActorQueryOperationBgpLeftDeepSmallest extends ActorQueryOperationT
    * @return {RDF.Term} The materialized term.
    */
   public static materializeTerm(term: RDF.Term, bindings: Bindings): RDF.Term {
-    if (term.termType === 'Variable') {
-      const value: RDF.Term = bindings.get(term.value);
+    if (term.termType === 'Variable' || term.termType === 'BlankNode') {
+      const value: RDF.Term = bindings.get((term.termType === 'Variable' ? '?' : '_:') + term.value);
       if (value) {
         return value;
       }

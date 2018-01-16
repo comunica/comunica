@@ -2,7 +2,7 @@ import * as RDF from "rdf-js";
 import {Readable} from "stream";
 import {MediatedQuadSource} from "../lib/MediatedQuadSource";
 const streamifyArray = require('streamify-array');
-import {namedNode, quad, variable} from "rdf-data-model";
+import {blankNode, namedNode, quad, variable} from "rdf-data-model";
 
 describe('MediatedQuadSource', () => {
   let mediator;
@@ -17,6 +17,7 @@ describe('MediatedQuadSource', () => {
   let V2;
   let V3;
   let V4;
+  let BV1;
 
   beforeEach(() => {
     mediator = {};
@@ -38,6 +39,7 @@ describe('MediatedQuadSource', () => {
     V2 = variable('v2');
     V3 = variable('v3');
     V4 = variable('v4');
+    BV1 = blankNode('v1');
   });
 
   describe('The MediatedQuadSource module', () => {
@@ -86,8 +88,16 @@ describe('MediatedQuadSource', () => {
         return expect(source.getDuplicateElementLinks(V1, V2, V3, V4)).toBeFalsy();
       });
 
+      it('should return falsy on patterns when blank nodes and variables have the same value', () => {
+        return expect(source.getDuplicateElementLinks(V1, BV1, V3, V4)).toBeFalsy();
+      });
+
       it('should return correctly on patterns with equal subject and predicate variables', () => {
         return expect(source.getDuplicateElementLinks(V1, V1, V3, V4)).toEqual({ subject: [ 'predicate' ] });
+      });
+
+      it('should return correctly on patterns with equal subject and predicate blank nodes', () => {
+        return expect(source.getDuplicateElementLinks(BV1, BV1, V3, V4)).toEqual({ subject: [ 'predicate' ] });
       });
 
       it('should return correctly on patterns with equal subject and object variables', () => {

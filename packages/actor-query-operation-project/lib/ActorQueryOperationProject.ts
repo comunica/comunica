@@ -24,7 +24,8 @@ export class ActorQueryOperationProject extends ActorQueryOperationTypedMediated
 
     // Find all variables that should be deleted from the input stream
     // and all variables that are not bound in the input stream.
-    const variables: string[] = pattern.variables.map((variable) => variable.value);
+    const variables: string[] = pattern.variables.map(
+      (variable) => (variable.termType === 'Variable' ? '?' : '_:') + variable.value);
     const deleteVariables = output.variables.filter((variable) => variables.indexOf(variable) < 0);
     const missingVariables = variables.filter((variable) => output.variables.indexOf(variable) < 0);
 

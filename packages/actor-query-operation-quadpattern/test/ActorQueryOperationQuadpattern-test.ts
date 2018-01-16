@@ -61,31 +61,40 @@ describe('ActorQueryOperationQuadpattern', () => {
       return expect(actor.test({ operation: <Algebra.Operation> {} })).rejects.toBeTruthy();
     });
 
-    it('should get variables s, p, o, g from pattern ?s ?p ?o ?g', () => {
+    it('should get variables ?s, ?p, ?o, ?g from pattern ?s ?p ?o ?g', () => {
       return expect(actor.getVariables(<RDF.Quad> {
         graph: { value: 'g', termType: 'Variable' },
         object: { value: 'o', termType: 'Variable' },
         predicate: { value: 'p', termType: 'Variable' },
         subject: { value: 's', termType: 'Variable' },
-      })).toEqual([ 's', 'p', 'o', 'g' ]);
+      })).toEqual([ '?s', '?p', '?o', '?g' ]);
     });
 
-    it('should get variable s from pattern ?s p o g', () => {
+    it('should get blank nodes _:s, _:p, _:o, _:g from pattern _:s _:p _:o _:g', () => {
+      return expect(actor.getVariables(<RDF.Quad> {
+        graph: { value: 'g', termType: 'BlankNode' },
+        object: { value: 'o', termType: 'BlankNode' },
+        predicate: { value: 'p', termType: 'BlankNode' },
+        subject: { value: 's', termType: 'BlankNode' },
+      })).toEqual([ '_:s', '_:p', '_:o', '_:g' ]);
+    });
+
+    it('should get variable ?s from pattern ?s p o g', () => {
       return expect(actor.getVariables(<RDF.Quad> {
         graph: { value: 'g', termType: 'NamedNode' },
         object: { value: 'o', termType: 'NamedNode' },
         predicate: { value: 'p', termType: 'NamedNode' },
         subject: { value: 's', termType: 'Variable' },
-      })).toEqual([ 's'  ]);
+      })).toEqual([ '?s'  ]);
     });
 
-    it('should get variable p from pattern ?p ?p ?p g', () => {
+    it('should get variable ?p from pattern ?p ?p ?p g', () => {
       return expect(actor.getVariables(<RDF.Quad> {
         graph: { value: 'g', termType: 'NamedNode' },
         object: { value: 'p', termType: 'Variable' },
         predicate: { value: 'p', termType: 'Variable' },
         subject: { value: 'p', termType: 'Variable' },
-      })).toEqual([ 'p' ]);
+      })).toEqual([ '?p' ]);
     });
 
     it('should run s ?p o g', () => {
@@ -97,12 +106,12 @@ describe('ActorQueryOperationQuadpattern', () => {
         type: 'pattern',
       };
       return actor.run({ operation }).then(async (output) => {
-        expect(output.variables).toEqual([ 'p' ]);
+        expect(output.variables).toEqual([ '?p' ]);
         expect(output.metadata).toBe(metadata);
         expect(await arrayifyStream(output.bindingsStream)).toEqual(
-          [ Bindings({ p: <RDF.Term> { value: 'p1' } }),
-            Bindings({ p: <RDF.Term> { value: 'p2' } }),
-            Bindings({ p: <RDF.Term> { value: 'p3' } }),
+          [ Bindings({ '?p': <RDF.Term> { value: 'p1' } }),
+            Bindings({ '?p': <RDF.Term> { value: 'p2' } }),
+            Bindings({ '?p': <RDF.Term> { value: 'p3' } }),
           ]);
       });
     });

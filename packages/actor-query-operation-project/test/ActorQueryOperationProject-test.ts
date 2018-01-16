@@ -1,7 +1,7 @@
 import {ActorQueryOperation, Bindings} from "@comunica/bus-query-operation";
 import {Bus} from "@comunica/core";
 import {SingletonIterator} from "asynciterator";
-import {literal, variable} from "rdf-data-model";
+import {blankNode, literal, variable} from "rdf-data-model";
 import {ActorQueryOperationProject} from "../lib/ActorQueryOperationProject";
 const arrayifyStream = require('arrayify-stream');
 
@@ -13,10 +13,10 @@ describe('ActorQueryOperationProject', () => {
     bus = new Bus({ name: 'bus' });
     mediatorQueryOperation = {
       mediate: (arg) => Promise.resolve({
-        bindingsStream: new SingletonIterator(Bindings({ a: literal('A'), delet: literal('deleteMe') })),
+        bindingsStream: new SingletonIterator(Bindings({ '?a': literal('A'), '_:delet': literal('deleteMe') })),
         metadata: 'M',
         operated: arg,
-        variables: ['a', 'delet'],
+        variables: ['?a', '_:delet'],
       }),
     };
   });
@@ -54,12 +54,12 @@ describe('ActorQueryOperationProject', () => {
     });
 
     it('should run on a stream with variables that should not be deleted or are missing', () => {
-      const op = { operation: { type: 'project', input: 'in', variables: [ variable('a'), variable('delet') ] } };
+      const op = { operation: { type: 'project', input: 'in', variables: [ variable('a'), blankNode('delet') ] } };
       return actor.run(op).then(async (output) => {
         expect(output.metadata).toEqual('M');
-        expect(output.variables).toEqual([ 'a', 'delet' ]);
+        expect(output.variables).toEqual([ '?a', '_:delet' ]);
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
-          Bindings({ a: literal('A'), delet: literal('deleteMe') }),
+          Bindings({ '?a': literal('A'), '_:delet': literal('deleteMe') }),
         ]);
       });
     });
@@ -68,9 +68,9 @@ describe('ActorQueryOperationProject', () => {
       const op = { operation: { type: 'project', input: 'in', variables: [ variable('a') ] } };
       return actor.run(op).then(async (output) => {
         expect(output.metadata).toEqual('M');
-        expect(output.variables).toEqual([ 'a' ]);
+        expect(output.variables).toEqual([ '?a' ]);
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
-          Bindings({ a: literal('A') }),
+          Bindings({ '?a': literal('A') }),
         ]);
       });
     });
@@ -79,9 +79,9 @@ describe('ActorQueryOperationProject', () => {
       const op = { operation: { type: 'project', input: 'in', variables: [ variable('a'), variable('missing') ] } };
       return actor.run(op).then(async (output) => {
         expect(output.metadata).toEqual('M');
-        expect(output.variables).toEqual([ 'a', 'missing' ]);
+        expect(output.variables).toEqual([ '?a', '?missing' ]);
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
-          Bindings({ a: literal('A'), missing: null }),
+          Bindings({ '?a': literal('A'), '?missing': null }),
         ]);
       });
     });

@@ -1,7 +1,8 @@
 import {ActorQueryOperation, Bindings} from "@comunica/bus-query-operation";
 import {Bus} from "@comunica/core";
 import {ArrayIterator, EmptyIterator, SingletonIterator} from "asynciterator";
-import {defaultGraph, literal, namedNode, quad, variable} from "rdf-data-model";
+import {blankNode, defaultGraph, literal, namedNode, quad, variable} from "rdf-data-model";
+import {Algebra} from "sparqlalgebrajs";
 import {ActorQueryOperationBgpLeftDeepSmallest} from "../lib/ActorQueryOperationBgpLeftDeepSmallest";
 const arrayifyStream = require('arrayify-stream');
 
@@ -43,9 +44,9 @@ describe('ActorQueryOperationBgpLeftDeepSmallest', () => {
     const termLiteral = literal('b');
     const termVariableA = variable('a');
     const termVariableB = variable('b');
-    const termVariableC = variable('c');
-    const termVariableD = variable('d');
-    const termDefaultGraph = defaultGraph('d');
+    const termVariableC = blankNode('c');
+    const termVariableD = blankNode('d');
+    const termDefaultGraph = defaultGraph();
 
     const patternMaterialized: any = Object.assign(quad(termNamedNode, termNamedNode, termNamedNode, termNamedNode),
       { type: "pattern" });
@@ -66,9 +67,9 @@ describe('ActorQueryOperationBgpLeftDeepSmallest', () => {
     const valueC = literal('C');
 
     const bindingsEmpty = Bindings({});
-    const bindingsA = Bindings({ a: literal('A') });
-    const bindingsC = Bindings({ c: literal('C') });
-    const bindingsAC = Bindings({ a: valueA, c: valueC });
+    const bindingsA = Bindings({ '?a': literal('A') });
+    const bindingsC = Bindings({ '_:c': literal('C') });
+    const bindingsAC = Bindings({ '?a': valueA, '_:c': valueC });
 
     describe('materializeTerm', () => {
       it('should not materialize a named node with empty bindings', () => {
@@ -377,13 +378,13 @@ describe('ActorQueryOperationBgpLeftDeepSmallest', () => {
         predicate: patterns[2].predicate,
         subject: patterns[3].subject,
       }));
-      const pattern1 = quad(namedNode('1'), namedNode('1'), namedNode('1'), variable('a'));
-      const pattern2 = quad(namedNode('2'), namedNode('2'), variable('b'), namedNode('2'));
-      const pattern3 = quad(namedNode('3'), variable('c'), namedNode('3'), namedNode('3'));
-      const pattern4 = quad(variable('d'), namedNode('4'), namedNode('4'), namedNode('4'));
-      const binding1 = Bindings({ a: namedNode('A') });
-      const binding2 = Bindings({ b: namedNode('B') });
-      const binding3 = Bindings({ c: namedNode('C') });
+      const pattern1 = <Algebra.Pattern> quad(namedNode('1'), namedNode('1'), namedNode('1'), variable('a'));
+      const pattern2 = <Algebra.Pattern> quad(namedNode('2'), namedNode('2'), variable('b'), namedNode('2'));
+      const pattern3 = <Algebra.Pattern> quad(namedNode('3'), blankNode('c'), namedNode('3'), namedNode('3'));
+      const pattern4 = <Algebra.Pattern> quad(blankNode('d'), namedNode('4'), namedNode('4'), namedNode('4'));
+      const binding1 = Bindings({ '?a': namedNode('A') });
+      const binding2 = Bindings({ '?b': namedNode('B') });
+      const binding3 = Bindings({ '_:c': namedNode('C') });
       it('should return an empty stream for an empty base stream', async () => {
         expect(await arrayifyStream(ActorQueryOperationBgpLeftDeepSmallest.createLeftDeepStream(
           new EmptyIterator(), [], binder))).toEqual([]);
@@ -393,11 +394,11 @@ describe('ActorQueryOperationBgpLeftDeepSmallest', () => {
         expect(await arrayifyStream(ActorQueryOperationBgpLeftDeepSmallest.createLeftDeepStream(
           new SingletonIterator(binding1), [pattern1, pattern2, pattern3, pattern4], binder))).toEqual([
             Bindings({
-              graph: namedNode('A'),
-              object: namedNode('b'),
-              predicate: namedNode('c'),
-              subject: namedNode('d'),
-              a: namedNode('A'), // tslint:disable-line:object-literal-sort-keys
+              'graph': namedNode('A'),
+              'object': namedNode('b'),
+              'predicate': namedNode('c'),
+              'subject': namedNode('d'),
+              '?a': namedNode('A'), // tslint:disable-line:object-literal-sort-keys
             }),
           ]);
       });
@@ -407,25 +408,25 @@ describe('ActorQueryOperationBgpLeftDeepSmallest', () => {
           new ArrayIterator([binding1, binding2, binding3]), [pattern1, pattern2, pattern3, pattern4], binder),
         )).toEqual([
           Bindings({
-            graph: namedNode('A'),
-            object: namedNode('b'),
-            predicate: namedNode('c'),
-            subject: namedNode('d'),
-            a: namedNode('A'), // tslint:disable-line:object-literal-sort-keys
+            'graph': namedNode('A'),
+            'object': namedNode('b'),
+            'predicate': namedNode('c'),
+            'subject': namedNode('d'),
+            '?a': namedNode('A'), // tslint:disable-line:object-literal-sort-keys
           }),
           Bindings({
-            graph: namedNode('a'),
-            object: namedNode('B'),
-            predicate: namedNode('c'),
-            subject: namedNode('d'),
-            b: namedNode('B'), // tslint:disable-line:object-literal-sort-keys
+            'graph': namedNode('a'),
+            'object': namedNode('B'),
+            'predicate': namedNode('c'),
+            'subject': namedNode('d'),
+            '?b': namedNode('B'), // tslint:disable-line:object-literal-sort-keys
           }),
           Bindings({
-            graph: namedNode('a'),
-            object: namedNode('b'),
-            predicate: namedNode('C'),
-            subject: namedNode('d'),
-            c: namedNode('C'), // tslint:disable-line:object-literal-sort-keys
+            'graph': namedNode('a'),
+            'object': namedNode('b'),
+            'predicate': namedNode('C'),
+            'subject': namedNode('d'),
+            '_:c': namedNode('C'), // tslint:disable-line:object-literal-sort-keys
           }),
         ]);
       });
