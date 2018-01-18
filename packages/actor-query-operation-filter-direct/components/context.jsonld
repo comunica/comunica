@@ -1,0 +1,11 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/components.jsonld",
+    {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
+      "caqofd": "npmd:@comunica/actor-query-operation-filter-direct/",
+
+      "ActorQueryOperationFilterDirect": "caqofd:Actor/QueryOperation/FilterDirect"
+    }
+  ]
+}
