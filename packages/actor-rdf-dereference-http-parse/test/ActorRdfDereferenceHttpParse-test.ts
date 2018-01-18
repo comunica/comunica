@@ -1,6 +1,7 @@
 import {ActorRdfDereference} from "@comunica/bus-rdf-dereference";
 import {Bus} from "@comunica/core";
 import {MediatorRace} from "@comunica/mediator-race";
+import {PassThrough} from "stream";
 import {ActorRdfDereferenceHttpParse} from "../lib/ActorRdfDereferenceHttpParse";
 
 describe('ActorRdfDereferenceHttpParse', () => {
@@ -43,9 +44,10 @@ describe('ActorRdfDereferenceHttpParse', () => {
         }
       };
       mediatorHttp.mediate = (action) => {
-        const status: number = action.url === 'https://www.google.com/' ? 200 : 400;
+        const status: number = action.input.startsWith('https://www.google.com/') ? 200 : 400;
         return {
-          body: null,
+          body: action.input === 'https://www.google.com/noweb'
+          ? require('node-web-streams').toWebReadableStream(new PassThrough()) : new PassThrough(),
           headers: {get: () => 'a; charset=utf-8'},
           status,
           url: 'https://www.google.com/index.html',
@@ -87,13 +89,18 @@ describe('ActorRdfDereferenceHttpParse', () => {
         .toEqual('a, b;q=0.8, c;q=0.2');
     });
 
-    it('should run', () => {
+    it('should run with a web stream', () => {
       return expect(actor.run({ url: 'https://www.google.com/' })).resolves
         .toMatchObject({ pageUrl: 'https://www.google.com/index.html', quads: 'fine', triples: true });
     });
 
+    it('should run with a Node.JS stream', () => {
+      return expect(actor.run({ url: 'https://www.google.com/noweb' })).resolves
+        .toMatchObject({ pageUrl: 'https://www.google.com/index.html', quads: 'fine', triples: true });
+    });
+
     it('should not run on a 404', () => {
-      return expect(actor.run({ url: 'https://www.google.com/notfound' })).rejects.toBeTruthy();
+      return expect(actor.run({ url: 'https://www.nogoogle.com/notfound' })).rejects.toBeTruthy();
     });
   });
 });

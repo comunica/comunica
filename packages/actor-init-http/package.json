@@ -29,6 +29,10 @@
     "index.d.ts",
     "index.js"
   ],
+  "dependencies": {
+    "node-web-streams": "^0.2.2",
+    "fetch-headers": "^2.0.0"
+  },
   "peerDependencies": {
     "@comunica/bus-http": "^0.0.1",
     "@comunica/bus-init": "^0.0.1",

@@ -1,7 +1,7 @@
 import {ActorHttp, IActionHttp, IActorHttpOutput} from "@comunica/bus-http";
 import {IActorArgs} from "@comunica/core";
 import {IMediatorTypeTime} from "@comunica/mediatortype-time";
-import fetch from "node-fetch";
+import "isomorphic-fetch";
 
 /**
  * A Hello World actor that listens on the 'init' bus.
@@ -21,7 +21,7 @@ export class ActorHttpNodeFetch extends ActorHttp {
   }
 
   public run(action: IActionHttp): Promise<IActorHttpOutput> {
-    return fetch(action.url, action);
+    return fetch(action.input, action.init);
   }
 
 }

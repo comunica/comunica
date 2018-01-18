@@ -38,8 +38,15 @@ export class ActorRdfDereferenceHttpParse extends ActorRdfDereference implements
     const acceptHeader: string = this.mediaTypesToAcceptString(mediaTypes);
 
     // Resolve HTTP URL using appropriate accept header
-    const httpAction: IActionHttp = { headers: { accept: acceptHeader }, url: action.url };
+    const headers: Headers = new (require('fetch-headers'))();
+    headers.append('Accept', acceptHeader);
+    const httpAction: IActionHttp = { input: action.url, init: { headers } };
     const httpResponse: IActorHttpOutput = await this.mediatorHttp.mediate(httpAction);
+
+    // Wrap WhatWG readable stream into a Node.js readable stream
+    // If the body already is a Node.js stream (in the case of node-fetch), don't do explicit conversion.
+    const responseStream: NodeJS.ReadableStream = require('is-stream')(httpResponse.body)
+      ? httpResponse.body : require('node-web-streams').toNodeReadable(httpResponse.body);
 
     // Only parse if retrieval was successful
     if (httpResponse.status !== 200) {
@@ -49,7 +56,7 @@ export class ActorRdfDereferenceHttpParse extends ActorRdfDereference implements
     // Parse the resulting response
     const mediaType: string = ActorRdfDereferenceHttpParse.REGEX_MEDIATYPE
       .exec(httpResponse.headers.get('content-type'))[0];
-    const parseAction: IActionRdfParse = { input: httpResponse.body, mediaType };
+    const parseAction: IActionRdfParse = { input: responseStream, mediaType };
     const parseOutput: IActorRdfParseOutput = (await this.mediatorRdfParse.mediate({ parse: parseAction })).parse;
 
     // Return the parsed quad stream and whether or not only triples are supported
