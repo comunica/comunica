@@ -3,6 +3,7 @@ import {ActorQueryOperationTyped, Bindings, BindingsStream,
 import {IActionRdfResolveQuadPattern, IActorRdfResolveQuadPatternOutput} from "@comunica/bus-rdf-resolve-quad-pattern";
 import {Actor, IActorArgs, IActorTest, Mediator} from "@comunica/core";
 import * as RDF from "rdf-js";
+import {termToString} from "rdf-string";
 import {Algebra} from "sparqlalgebrajs";
 
 /**
@@ -30,7 +31,7 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
     return require('lodash.uniq')(ActorQueryOperationQuadpattern.QUAD_ELEMENTS
       .map((element) => (<any> pattern)[element])
       .filter((term) => term.termType === 'Variable' || term.termType === 'BlankNode')
-      .map((term) => (term.termType === 'Variable' ? '?' : '_:') + term.value));
+      .map(termToString));
   }
 
   public async testOperation(operation: Algebra.Pattern, context?: {[id: string]: any}): Promise<IActorTest> {
@@ -50,7 +51,7 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
       .reduce((acc: {[element: string]: string}, element: string) => {
         const term: RDF.Term = (<any> pattern)[element];
         if (term.termType === 'Variable' || term.termType === 'BlankNode') {
-          acc[element] = (term.termType === 'Variable' ? '?' : '_:') + term.value;
+          acc[element] = termToString(term);
         }
         return acc;
       }, {});

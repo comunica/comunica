@@ -5,6 +5,7 @@ import {MultiTransformIterator} from "asynciterator";
 import {PromiseProxyIterator} from "asynciterator-promiseproxy";
 import {quad} from "rdf-data-model";
 import * as RDF from "rdf-js";
+import {termToString} from "rdf-string";
 import {Algebra} from "sparqlalgebrajs";
 
 /**
@@ -134,7 +135,7 @@ export class ActorQueryOperationBgpLeftDeepSmallest extends ActorQueryOperationT
    */
   public static materializeTerm(term: RDF.Term, bindings: Bindings): RDF.Term {
     if (term.termType === 'Variable' || term.termType === 'BlankNode') {
-      const value: RDF.Term = bindings.get((term.termType === 'Variable' ? '?' : '_:') + term.value);
+      const value: RDF.Term = bindings.get(termToString(term));
       if (value) {
         return value;
       }
