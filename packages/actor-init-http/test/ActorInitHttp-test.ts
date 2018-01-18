@@ -55,8 +55,9 @@ describe('ActorInitHttp', () => {
       actor = new ActorInitHttp({ name: 'actor', bus, mediatorHttp: mediator });
       const actorFetch: ActorHttpNodeFetch = new ActorHttpNodeFetch({ name: 'actor-node-fetch', bus });
       (<any> actorFetch).run = (action) => Promise.resolve({
-        body: new PassThrough(),
-        status: action.url === 'https://www.google.com/' ? 200 : 404,
+        body: action.input === 'https://www.google.com/noweb'
+          ? require('node-web-streams').toWebReadableStream(new PassThrough()) : new PassThrough(),
+        status: action.input.startsWith('https://www.google.com/') ? 200 : 404,
       });
       busInit.subscribe(actorFetch);
     });
@@ -65,8 +66,13 @@ describe('ActorInitHttp', () => {
       return expect(actor.test({ argv: [], env: {}, stdin: new PassThrough() })).resolves.toBe(null);
     });
 
-    it('should run', () => {
+    it('should run with a web stream', () => {
       return expect(actor.run({ argv: [ 'https://www.google.com/' ], env: {}, stdin: new PassThrough() }))
+        .resolves.toHaveProperty('stdout');
+    });
+
+    it('should run with a Node.JS stream', () => {
+      return expect(actor.run({ argv: [ 'https://www.google.com/noweb' ], env: {}, stdin: new PassThrough() }))
         .resolves.toHaveProperty('stdout');
     });
 
@@ -84,7 +90,7 @@ describe('ActorInitHttp', () => {
 
     it('should run with argv', () => {
       return expect(actor
-        .run({ argv: [ 'https://www.google.com/this/is/not/a/page' ], env: {}, stdin: new PassThrough() }))
+        .run({ argv: [ 'https://www.nogoogle.com/this/is/not/a/page' ], env: {}, stdin: new PassThrough() }))
         .resolves.toHaveProperty('stderr');
     });
   });

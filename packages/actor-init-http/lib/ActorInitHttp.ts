@@ -28,25 +28,31 @@ export class ActorInitHttp extends ActorInit implements IActorInitHelloWorldArgs
 
   public async run(action: IActionInit): Promise<IActorOutputInit> {
     const http: IActionHttp = {
-      url: action.argv.length > 0 ? action.argv[0] : this.url,
+      init: {},
+      input: action.argv.length > 0 ? action.argv[0] : this.url,
     };
     if (this.method) {
-      http.method = this.method;
+      http.init.method = this.method;
     }
     if (this.headers) {
-      http.headers = this.headers.reduce((headers: {[id: string]: string}, value: string) => {
+      const headers: Headers = new (require('fetch-headers'))();
+      for (const value of this.headers) {
         const i: number = value.indexOf(':');
-        headers[value.substr(0, i)] = value.substr(i);
-        return headers;
-      }, {});
+        headers.append(value.substr(0, i), value.substr(i));
+      }
+      http.init.headers = headers;
     }
 
-    const result: IActorHttpOutput = await this.mediatorHttp.mediate(http);
+    const httpResponse: IActorHttpOutput = await this.mediatorHttp.mediate(http);
     const output: IActorOutputInit = {};
-    if (result.status === 200) {
-      output.stdout = result.body.pipe(new PassThrough());
+    // Wrap WhatWG readable stream into a Node.js readable stream
+    // If the body already is a Node.js stream (in the case of node-fetch), don't do explicit conversion.
+    const responseStream: NodeJS.ReadableStream = require('is-stream')(httpResponse.body)
+      ? httpResponse.body : require('node-web-streams').toNodeReadable(httpResponse.body);
+    if (httpResponse.status === 200) {
+      output.stdout = responseStream.pipe(new PassThrough());
     } else {
-      output.stderr = result.body.pipe(new PassThrough());
+      output.stderr = responseStream.pipe(new PassThrough());
     }
     return output;
   }
