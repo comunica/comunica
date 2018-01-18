@@ -4,6 +4,7 @@ import {ActorRdfResolveQuadPatternSource, IActionRdfResolveQuadPattern,
   IActorRdfResolveQuadPatternOutput, ILazyQuadSource} from "@comunica/bus-rdf-resolve-quad-pattern";
 import {Actor, IActorArgs, IActorTest, Mediator} from "@comunica/core";
 import * as RDF from "rdf-js";
+import {termToString} from "rdf-string";
 import {MediatedQuadSource} from "./MediatedQuadSource";
 
 /**
@@ -82,16 +83,8 @@ export class ActorRdfResolveQuadPatternQpf extends ActorRdfResolveQuadPatternSou
       ];
       for (const entry of input) {
         if (entry.uri && entry.term) {
-          if (entry.term.termType === 'NamedNode') {
-            entries[entry.uri] = entry.term.value;
-          } else if (entry.term.termType === 'Literal') {
-            const term = <RDF.Literal> entry.term;
-            entries[entry.uri] = '"' + entry.term.value + '"';
-            if (term.language) {
-              entries[entry.uri] += '@' + term.language;
-            } else if (term.datatype && term.datatype.value !== 'http://www.w3.org/2001/XMLSchema#string') {
-              entries[entry.uri] += '^^' + term.datatype.value;
-            }
+          if (entry.term.termType === 'NamedNode' || entry.term.termType === 'Literal') {
+            entries[entry.uri] = termToString(entry.term);
           }
         }
       }

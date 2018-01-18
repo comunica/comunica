@@ -4,6 +4,7 @@ import {Actor, IActorTest, Mediator} from "@comunica/core";
 import {AsyncIterator} from "asynciterator";
 import {PromiseProxyIterator} from "asynciterator-promiseproxy";
 import * as RDF from "rdf-js";
+import {termToString} from "rdf-string";
 
 /**
  * A QPF quad source that uses a paged RDF dereference mediator
@@ -57,7 +58,7 @@ export class MediatedQuadSource implements ILazyQuadSource {
     const input: { [id: string]: RDF.Term } = { subject, predicate, object, graph };
     for (const key of Object.keys(input)) {
       if (input[key] && (input[key].termType === 'Variable' || input[key].termType === 'BlankNode')) {
-        const val = (input[key].termType === 'Variable' ? '?' : '_:') + input[key].value;
+        const val = termToString(input[key]);
         const length = (variableElements[val] || (variableElements[val] = [])).push(key);
         duplicateVariables = duplicateVariables || length > 1;
       }

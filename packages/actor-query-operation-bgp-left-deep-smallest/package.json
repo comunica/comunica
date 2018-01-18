@@ -34,7 +34,8 @@
   "dependencies": {
     "asynciterator-promiseproxy": "^1.0.2",
     "lodash.uniq": "^4.5.0",
-    "rdf-data-model": "^1.0.0"
+    "rdf-data-model": "^1.0.0",
+    "rdf-string": "^1.0.1"
   },
   "peerDependencies": {
     "@comunica/core": "^0.0.1",

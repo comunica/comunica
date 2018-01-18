@@ -2,7 +2,7 @@ import {ActorRdfParseN3} from "@comunica/actor-rdf-parse-n3";
 import {ActorInit} from "@comunica/bus-init";
 import {Bus} from "@comunica/core";
 import {MediatorRace} from "@comunica/mediator-race";
-import {PassThrough, Readable} from "stream";
+import {Readable} from "stream";
 import {ActorInitRdfParse} from "../lib/ActorInitRdfParse";
 const stringToStream = require('streamify-string');
 

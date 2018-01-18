@@ -35,6 +35,9 @@
     "@comunica/core": "^0.0.1",
     "@comunica/bus-query-operation": "^0.0.1"
   },
+  "dependencies": {
+    "rdf-string": "^1.0.1"
+  },
   "devDependencies": {
     "@comunica/core": "^0.0.1",
     "@comunica/bus-query-operation": "^0.0.1"
