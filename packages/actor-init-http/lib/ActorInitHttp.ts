@@ -35,10 +35,10 @@ export class ActorInitHttp extends ActorInit implements IActorInitHelloWorldArgs
       http.init.method = this.method;
     }
     if (this.headers) {
-      const headers: Headers = new (require('fetch-headers'))();
+      const headers: Headers = new Headers();
       for (const value of this.headers) {
         const i: number = value.indexOf(':');
-        headers.append(value.substr(0, i), value.substr(i));
+        headers.append(value.substr(0, i).toLowerCase(), value.substr(i + 2));
       }
       http.init.headers = headers;
     }

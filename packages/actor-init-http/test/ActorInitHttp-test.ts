@@ -2,6 +2,7 @@ import {ActorHttpNodeFetch} from "@comunica/actor-http-node-fetch";
 import {ActorInit} from "@comunica/bus-init";
 import {Bus} from "@comunica/core";
 import {MediatorNumber} from "@comunica/mediator-number";
+import "isomorphic-fetch";
 import {PassThrough} from "stream";
 import {ActorInitHttp} from "../lib/ActorInitHttp";
 
