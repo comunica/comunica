@@ -9,6 +9,9 @@ export class SparqlExpressionEvaluator {
 
   /**
    * Creates an evaluator function that executes the given Sxpression on the given Bindings.
+   * This implementation is copied from the original LDF Client implementation.
+   * THIS IMPLEMENTATION IS NOT FULLY SPEC COMPATIBLE!!!
+   * But covers most of the standard cases.
    * @param {Expression} expr
    * @returns {(bindings: Bindings) => Term}
    */
@@ -16,6 +19,9 @@ export class SparqlExpressionEvaluator {
     // internally the expression evaluator uses primitives, so these have to be converted back
     return (bindings: Bindings) => {
       const str = SparqlExpressionEvaluator.handleExpression(expr)(bindings);
+      if (!str) {
+        return undefined;
+      }
       return stringToTerm(str);
     };
   }
@@ -38,7 +44,10 @@ export class SparqlExpressionEvaluator {
 
   private static handleTermExpression(expr: Algebra.TermExpression): (bindings: Bindings) => string {
     if (expr.term.termType === 'Variable') {
-      return (bindings) => termToString(bindings.get('?' + expr.term.value));
+      return (bindings) => {
+        const str = termToString(expr.term);
+        return bindings.has(str) ? termToString(bindings.get(str)) : undefined;
+      };
     } else {
       const str = termToString(expr.term);
       return () => str;
@@ -94,8 +103,10 @@ export class SparqlExpressionEvaluator {
         // Convert result if necessary
         switch (operator.resultType) {
         case 'numeric':
-          // TODO: determine type instead of taking the type of the first argument
-          const type = N3Util.getLiteralType(origArgs[0]) || XSD_INTEGER;
+          let type = N3Util.getLiteralType(origArgs[0]);
+          if (!type || type === XSD_STRING) {
+            type = XSD_INTEGER;
+          }
           return '"' + result + '"^^' + type;
         case 'boolean':
           return result ? XSD_TRUE : XSD_FALSE;
@@ -114,6 +125,7 @@ const XSD = 'http://www.w3.org/2001/XMLSchema#';
 const XSD_INTEGER = XSD + 'integer';
 const XSD_DOUBLE  = XSD + 'double';
 const XSD_BOOLEAN = XSD + 'boolean';
+const XSD_STRING  = XSD + 'string';
 const XSD_TRUE  = '"true"^^'  + XSD_BOOLEAN;
 const XSD_FALSE = '"false"^^' + XSD_BOOLEAN;
 
@@ -161,20 +173,23 @@ const operators: any = {
     return '"' + Math.floor(a) + '"^^http://www.w3.org/2001/XMLSchema#integer';
   },
   'http://www.w3.org/2001/XMLSchema#double'(a: number): string {
-    let str = a.toFixed();
+    let str = a.toString();
     if (str.indexOf('.') < 0) { str += '.0'; }
     return '"' + str + '"^^http://www.w3.org/2001/XMLSchema#double';
   },
-  'bound'(a: RDF.Term): string {
-    if (a.termType !== 'Variable') {
-      throw new Error('BOUND expects a variable but got: ' + a);
+  'bound'(a: Algebra.Expression): string {
+    if (a.expressionType !== 'term') {
+      throw new Error('BOUND expects a TermExpression but got: ' + JSON.stringify(a));
     }
-    return (a.value + '?') in this ? XSD_TRUE : XSD_FALSE;
+    const term = (<Algebra.TermExpression> a).term;
+    if (term.termType !== 'Variable') {
+      throw new Error('BOUND expects a Variable but got: ' + JSON.stringify(term));
+    }
+    return this.has(termToString(term)) ? XSD_TRUE : XSD_FALSE;
   },
 };
 
 // Tag all operators that expect their arguments to be numeric
-// TODO: Comparison operators can take simple literals and strings as well
 [
   '+', '-', '*', '/', '<', '<=', '>', '>=',
   XSD_INTEGER, XSD_DOUBLE,

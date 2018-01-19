@@ -8,6 +8,16 @@ const arrayifyStream = require('arrayify-stream');
 describe('ActorQueryOperationFilterDirect', () => {
   let bus;
   let mediatorQueryOperation;
+  const truthyExpression = {
+    expressionType: 'term',
+    term: { termType: 'Literal', value: 'true' },
+    type: 'expression',
+  };
+  const falsyExpression = {
+    expressionType: 'term',
+    term: { termType: 'Literal', value: 'false' },
+    type: 'expression',
+  };
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -59,9 +69,24 @@ describe('ActorQueryOperationFilterDirect', () => {
       return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
-    it('should run', () => {
-      const op = { operation: { type: 'filter' } };
-      return expect(actor.run(op)).resolves.toMatchObject({ todo: true }); // TODO
+    it('should return the full stream for a truthy filter', async () => {
+      const op = { operation: { type: 'filter', input: {}, expression: truthyExpression } };
+      const output = await actor.run(op);
+      expect(await arrayifyStream(output.bindingsStream)).toMatchObject([
+        Bindings({ a: literal('1') }),
+        Bindings({ a: literal('2') }),
+        Bindings({ a: literal('3') }),
+      ]);
+      expect(output.metadata).toMatchObject(Promise.resolve({ totalItems: 3 }));
+      expect(output.variables).toMatchObject(['a']);
+    });
+
+    it('should return an empty stream for a falsy filter', async () => {
+      const op = { operation: { type: 'filter', input: {}, expression: falsyExpression } };
+      const output = await actor.run(op);
+      expect(await arrayifyStream(output.bindingsStream)).toMatchObject([]);
+      expect(output.metadata).toMatchObject(Promise.resolve({ totalItems: 3 }));
+      expect(output.variables).toMatchObject(['a']);
     });
   });
 });
