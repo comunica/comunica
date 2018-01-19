@@ -38,7 +38,7 @@ export class ActorRdfDereferenceHttpParse extends ActorRdfDereference implements
     const acceptHeader: string = this.mediaTypesToAcceptString(mediaTypes);
 
     // Resolve HTTP URL using appropriate accept header
-    const headers: Headers = new (require('fetch-headers'))();
+    const headers: Headers = new Headers();
     headers.append('Accept', acceptHeader);
     const httpAction: IActionHttp = { input: action.url, init: { headers } };
     const httpResponse: IActorHttpOutput = await this.mediatorHttp.mediate(httpAction);

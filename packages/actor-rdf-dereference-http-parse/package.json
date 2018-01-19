@@ -30,7 +30,6 @@
     "index.js"
   ],
   "dependencies": {
-    "fetch-headers": "^2.0.0",
     "node-web-streams": "^0.2.2"
   },
   "peerDependencies": {
@@ -44,7 +43,8 @@
     "@comunica/bus-rdf-dereference": "^0.0.1",
     "@comunica/bus-http": "^0.0.1",
     "@comunica/bus-rdf-parse": "^0.0.1",
-    "@comunica/mediator-race": "^0.0.1"
+    "@comunica/mediator-race": "^0.0.1",
+    "isomorphic-fetch": "^2.2.1"
   },
   "jest": {
     "transform": {

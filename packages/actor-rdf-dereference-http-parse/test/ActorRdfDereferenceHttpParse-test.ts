@@ -1,6 +1,7 @@
 import {ActorRdfDereference} from "@comunica/bus-rdf-dereference";
 import {Bus} from "@comunica/core";
 import {MediatorRace} from "@comunica/mediator-race";
+import "isomorphic-fetch";
 import {PassThrough} from "stream";
 import {ActorRdfDereferenceHttpParse} from "../lib/ActorRdfDereferenceHttpParse";
 
