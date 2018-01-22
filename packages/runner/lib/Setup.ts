@@ -89,7 +89,7 @@ export class Setup {
    *
    * @private
    */
-  private static preparePromises() {
+  public static preparePromises() {
     // Hack to use Bluebird's promise to enable promise cancellation.
     global.Promise = Bluebird;
     Bluebird.config({
