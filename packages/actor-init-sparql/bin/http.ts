@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+import {Bindings} from "@comunica/bus-query-operation";
+import {AsyncIterator, IntegerIterator} from "asynciterator";
 import * as fs from 'fs';
 import * as http from 'http';
 import minimist = require('minimist');
@@ -57,12 +59,14 @@ function handleRequest(request: http.IncomingMessage, response: http.ServerRespo
 
 // Writes the result of the given SPARQL query
 function writeQueryResult(request: http.IncomingMessage, response: http.ServerResponse, sparql: string) {
-  query(sparql, context)
+  let stream: AsyncIterator<Bindings>;
+  const promise = query(sparql, context)
     .then((result) => {
       process.stdout.write('[200] ' + request.method + ' to ' + request.url + '\n');
       process.stdout.write('      Received query: ' + sparql + '\n');
       response.writeHead(200, { 'content-type': MIME_JSON });
 
+      stream = result.bindingsStream;
       result.bindingsStream.on('data', (data) => {
         response.write(JSON.stringify(data));
       });
@@ -76,6 +80,21 @@ function writeQueryResult(request: http.IncomingMessage, response: http.ServerRe
       response.writeHead(400, { 'content-type': MIME_PLAIN });
       response.end(error.toString());
     });
+
+  // Stop after timeout and if the connection is terminated
+  // Note: socket or response timeouts seemed unreliable, hence the explicit timeout
+  const killTimeout = setTimeout(killClient, timeout);
+  response.on('close', killClient);
+  function killClient() {
+    (<any> promise).cancel();
+    if (stream) {
+      // remove all listeners so we are sure no more write calls are made
+      stream.removeAllListeners();
+      stream.close();
+    }
+    try { response.end(); } catch (e) { /* ignore error */ }
+    clearTimeout(killTimeout);
+  }
 }
 
 // Parses the body of a SPARQL POST request

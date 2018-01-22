@@ -9,7 +9,7 @@ import {ActorInitSparql} from "./ActorInitSparql";
  * @param {IQueryOptions} options Optional options on how to instantiate the query evaluator.
  * @return {Promise<IActorQueryOperationOutput>}
  */
-export async function query(queryString: string, context?: any, options?: IQueryOptions)
+export function query(queryString: string, context?: any, options?: IQueryOptions)
 : Promise<IActorQueryOperationOutput> {
   if (!options) {
     options = {};
@@ -24,18 +24,23 @@ export async function query(queryString: string, context?: any, options?: IQuery
   // Instantiate the main runner so that all other actors are instantiated as well,
   // and find the SPARQL init actor with the given name
   const runnerInstanceUri: string = options.runnerInstanceUri || 'urn:comunica:my';
-  const runner: Runner = await Setup.instantiateComponent(configResourceUrl, runnerInstanceUri, options);
-  let actor: ActorInitSparql = null;
-  for (const runningActor of runner.actors) {
-    if (runningActor.name === instanceUri) {
-      actor = <any> runningActor;
-    }
-  }
-  if (!actor) {
-    throw new Error('No SPARQL init actor was found with the name "' + instanceUri + '" in runner "'
-      + runnerInstanceUri + '".');
-  }
-  return actor.evaluateQuery(queryString, context);
+
+  // this needs to happen before any promise gets generated
+  Setup.preparePromises();
+  return Setup.instantiateComponent(configResourceUrl, runnerInstanceUri, options)
+    .then((runner: Runner) => {
+      let actor: ActorInitSparql = null;
+      for (const runningActor of runner.actors) {
+        if (runningActor.name === instanceUri) {
+          actor = <any> runningActor;
+        }
+      }
+      if (!actor) {
+        throw new Error('No SPARQL init actor was found with the name "' + instanceUri + '" in runner "'
+          + runnerInstanceUri + '".');
+      }
+      return actor.evaluateQuery(queryString, context);
+    });
 }
 
 /**
