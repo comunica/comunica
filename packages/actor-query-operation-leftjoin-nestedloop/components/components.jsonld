@@ -1,0 +1,9 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/contexts/comunica-actor-query-operation-leftjoin-nestedloop.jsonld",
+  "@id": "npmd:@comunica/actor-query-operation-leftjoin-nestedloop",
+  "@type": "Module",
+  "requireName": "@comunica/actor-query-operation-leftjoin-nestedloop",
+  "import": [
+    "Actor/QueryOperation/LeftJoinNestedLoop.jsonld"
+  ]
+}

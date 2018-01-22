@@ -1,29 +1,30 @@
 {
-  "name": "@comunica/actor-query-operation-leftjoin",
+  "name": "@comunica/actor-query-operation-leftjoin-nestedloop",
   "version": "0.0.1",
-  "description": "A leftjoin query-operation actor",
-  "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-leftjoin",
+  "description": "A leftjoin nestedloop query-operation actor",
+  "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-leftjoin-nestedloop",
   "lsd:components": "components/components.jsonld",
   "lsd:contexts": {
-    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-query-operation-leftjoin.jsonld": "components/context.jsonld"
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-query-operation-leftjoin-nestedloop.jsonld": "components/context.jsonld"
   },
   "main": "index.js",
   "typings": "index",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/comunica/actor-query-operation-leftjoin.git"
+    "url": "git+https://github.com/comunica/actor-query-operation-leftjoin-nestedloop.git"
   },
   "keywords": [
     "comunica",
     "actor",
     "query-operation",
-    "leftjoin"
+    "leftjoin",
+    "nestedloop"
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/comunica/actor-query-operation-leftjoin/issues"
+    "url": "https://github.com/comunica/actor-query-operation-leftjoin-nestedloop/issues"
   },
-  "homepage": "https://github.com/comunica/actor-query-operation-leftjoin#readme",
+  "homepage": "https://github.com/comunica/actor-query-operation-leftjoin-nestedloop#readme",
   "files": [
     "components",
     "lib/**/*.d.ts",
