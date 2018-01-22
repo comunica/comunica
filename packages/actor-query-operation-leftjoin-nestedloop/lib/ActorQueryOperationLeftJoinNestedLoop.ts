@@ -5,25 +5,20 @@ import {IActorTest} from "@comunica/core";
 import {Algebra} from "sparqlalgebrajs";
 
 /**
- * A comunica LeftJoin Query Operation Actor.
+ * A comunica LeftJoin NestedLoop Query Operation Actor.
  */
-export class ActorQueryOperationLeftJoin extends ActorQueryOperationTypedMediated<Algebra.LeftJoin> {
+export class ActorQueryOperationLeftJoinNestedLoop extends ActorQueryOperationTypedMediated<Algebra.LeftJoin> {
 
   constructor(args: IActorQueryOperationTypedMediatedArgs) {
     super(args, 'leftjoin');
   }
 
   public async testOperation(pattern: Algebra.LeftJoin, context?: {[id: string]: any}): Promise<IActorTest> {
-    return true;
+    return !pattern.expression;
   }
 
   public async runOperation(pattern: Algebra.LeftJoin, context?: {[id: string]: any})
     : Promise<IActorQueryOperationOutput> {
-
-    if (pattern.expression) {
-      // TODO: do this once expressions are implemented
-      // create new filter using pattern.expression and pattern.right
-    }
 
     // uses nested loop join
     const left = await this.mediatorQueryOperation.mediate({ operation: pattern.left, context });
@@ -36,6 +31,11 @@ export class ActorQueryOperationLeftJoin extends ActorQueryOperationTypedMediate
         rightStream.on('data', (rightItem) => {
           const join = ActorRdfJoin.join(leftItem, rightItem);
           if (join) {
+            if (pattern.expression) {
+              // TODO: do this once expressions are implemented
+              // Values of both streams can be used for this expression
+            }
+
             bindingsStream._push(join);
           }
         });

@@ -2,10 +2,10 @@ import {ActorQueryOperation, Bindings} from "@comunica/bus-query-operation";
 import {Bus} from "@comunica/core";
 import {ArrayIterator} from "asynciterator";
 import {literal, variable} from "rdf-data-model";
-import {ActorQueryOperationLeftJoin} from "../lib/ActorQueryOperationLeftJoin";
+import {ActorQueryOperationLeftJoinNestedLoop} from "../lib/ActorQueryOperationLeftJoinNestedLoop";
 const arrayifyStream = require('arrayify-stream');
 
-describe('ActorQueryOperationLeftJoin', () => {
+describe('ActorQueryOperationLeftJoinNestedLoop', () => {
   let bus;
   let mediatorQueryOperation;
   let left;
@@ -36,28 +36,28 @@ describe('ActorQueryOperationLeftJoin', () => {
     };
   });
 
-  describe('The ActorQueryOperationLeftJoin module', () => {
+  describe('The ActorQueryOperationLeftJoinNestedLoop module', () => {
     it('should be a function', () => {
-      expect(ActorQueryOperationLeftJoin).toBeInstanceOf(Function);
+      expect(ActorQueryOperationLeftJoinNestedLoop).toBeInstanceOf(Function);
     });
 
-    it('should be a ActorQueryOperationLeftJoin constructor', () => {
-      expect(new (<any> ActorQueryOperationLeftJoin)({ name: 'actor', bus, mediatorQueryOperation }))
-        .toBeInstanceOf(ActorQueryOperationLeftJoin);
-      expect(new (<any> ActorQueryOperationLeftJoin)({ name: 'actor', bus, mediatorQueryOperation }))
+    it('should be a ActorQueryOperationLeftJoiNestedLoop constructor', () => {
+      expect(new (<any> ActorQueryOperationLeftJoinNestedLoop)({ name: 'actor', bus, mediatorQueryOperation }))
+        .toBeInstanceOf(ActorQueryOperationLeftJoinNestedLoop);
+      expect(new (<any> ActorQueryOperationLeftJoinNestedLoop)({ name: 'actor', bus, mediatorQueryOperation }))
         .toBeInstanceOf(ActorQueryOperation);
     });
 
-    it('should not be able to create new ActorQueryOperationLeftJoin objects without \'new\'', () => {
-      expect(() => { (<any> ActorQueryOperationLeftJoin)(); }).toThrow();
+    it('should not be able to create new ActorQueryOperationLeftJoinNestedLoop objects without \'new\'', () => {
+      expect(() => { (<any> ActorQueryOperationLeftJoinNestedLoop)(); }).toThrow();
     });
   });
 
-  describe('An ActorQueryOperationLeftJoin instance', () => {
-    let actor: ActorQueryOperationLeftJoin;
+  describe('An ActorQueryOperationLeftJoinNestedLoop instance', () => {
+    let actor: ActorQueryOperationLeftJoinNestedLoop;
 
     beforeEach(() => {
-      actor = new ActorQueryOperationLeftJoin({ name: 'actor', bus, mediatorQueryOperation });
+      actor = new ActorQueryOperationLeftJoinNestedLoop({ name: 'actor', bus, mediatorQueryOperation });
     });
 
     it('should test on leftjoin', () => {
