@@ -3,10 +3,10 @@ const webpack = require('webpack');
 const StringReplacePlugin = require("string-replace-webpack-plugin");
 
 module.exports = {
-  entry: [ 'babel-polyfill', path.resolve(__dirname, 'dist/engine-default.js') ],
+  entry: [ 'babel-polyfill', path.resolve(__dirname, 'engine-default.js') ],
   output: {
     filename: 'comunica-browser.js',
-    path: path.resolve(__dirname, 'dist'),
+    path: __dirname,
     libraryTarget: 'var',
     library: 'Comunica'
   },
