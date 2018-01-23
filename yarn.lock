@@ -45,12 +45,6 @@
   dependencies:
     "@types/lodash" "*"
 
-"@types/lodash.intersection@^4.4.3":
-  version "4.4.3"
-  resolved "https://registry.yarnpkg.com/@types/lodash.intersection/-/lodash.intersection-4.4.3.tgz#04ee42b95cc9c7bee62ef8ca39041070161e3311"
-  dependencies:
-    "@types/lodash" "*"
-
 "@types/lodash.mapvalues@^4.6.3":
   version "4.6.3"
   resolved "https://registry.yarnpkg.com/@types/lodash.mapvalues/-/lodash.mapvalues-4.6.3.tgz#71208ea7b08d7fc939b37c1922b8c7cc07af89b3"
@@ -105,7 +99,7 @@
   version "9.3.0"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-9.3.0.tgz#3a129cda7c4e5df2409702626892cb4b96546dd5"
 
-"@types/node@^8.0.27":
+"@types/node@^8.5.9":
   version "8.5.9"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-8.5.9.tgz#7155cfb4ae405bca4dd8df1a214c339e939109bf"
 
