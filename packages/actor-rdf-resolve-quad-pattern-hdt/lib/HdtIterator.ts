@@ -35,7 +35,7 @@ export class HdtIterator extends BufferedIterator<RDF.Quad> {
           return done();
         } else {
           this.emit('totalItems', totalItems);
-          triples.map(RdfString.stringQuadToQuad).forEach((t) => this._push(t));
+          triples.map((t) => RdfString.stringQuadToQuad(t)).forEach((t) => this._push(t));
         }
         if (triples.length < count) {
           this.close();
