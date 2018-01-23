@@ -3,14 +3,34 @@ import {ISetupProperties, Runner, Setup} from "@comunica/runner";
 import {ActorInitSparql} from "./ActorInitSparql";
 
 /**
- * Evaluate the given query.
- * @param {string} queryString A SPARQL query string.
- * @param context An optional query context.
- * @param {IQueryOptions} options Optional options on how to instantiate the query evaluator.
- * @return {Promise<IActorQueryOperationOutput>}
+ * A wired comunica engine.
  */
-export function query(queryString: string, context?: any, options?: IQueryOptions)
-: Promise<IActorQueryOperationOutput> {
+export class QueryEngine {
+
+  private actor: ActorInitSparql;
+
+  constructor(actor: ActorInitSparql) {
+    this.actor = actor;
+  }
+
+  /**
+   * Evaluate the given query.
+   * @param {string} queryString A SPARQL query string.
+   * @param context An optional query context.
+   * @return {Promise<IActorQueryOperationOutput>}
+   */
+  public query(queryString: string, context?: any): Promise<IActorQueryOperationOutput> {
+    return this.actor.evaluateQuery(queryString, context);
+  }
+
+}
+
+/**
+ * Create a new comunica engine.
+ * @param {IQueryOptions} options Optional options on how to instantiate the query evaluator.
+ * @return {Promise<QueryEngine>} A promise that resolves to a fully wired comunica engine.
+ */
+export function newEngine(options?: IQueryOptions): Promise<QueryEngine> {
   if (!options) {
     options = {};
   }
@@ -39,7 +59,7 @@ export function query(queryString: string, context?: any, options?: IQueryOption
         throw new Error('No SPARQL init actor was found with the name "' + instanceUri + '" in runner "'
           + runnerInstanceUri + '".');
       }
-      return actor.evaluateQuery(queryString, context);
+      return new QueryEngine(actor);
     });
 }
 
