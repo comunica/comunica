@@ -35,7 +35,7 @@
     "cancelable-awaiter": "^1.0.5",
     "lodash.assign": "^4.2.0",
     "lodash.defaults": "^4.2.0",
-    "componentsjs": "^2.1.1",
+    "componentsjs": "^2.1.2",
     "tslib": "^1.7.1"
   },
   "devDependencies": {
