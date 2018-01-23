@@ -114,7 +114,7 @@
     "build": "node \"../../node_modules/typescript/bin/tsc\"",
     "validate": "npm ls",
     "prepare": "npm run build",
-    "browser": "mkdir -p dist && componentsjs-compile-config urn:comunica:my -c config/config-default.json -e urn:comunica:sparqlinit > dist/engine-default.js && webpack --config webpack.config.js"
+    "browser": "componentsjs-compile-config urn:comunica:my -c config/config-default.json -e urn:comunica:sparqlinit > engine-default.js && webpack --config webpack.config.js"
   },
   "browser": {
     "./index.js": "./index-browser.js"
