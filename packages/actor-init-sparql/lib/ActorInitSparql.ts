@@ -73,8 +73,10 @@ Options:
 
     const result: IActorQueryOperationOutput = await this.evaluateQuery(query, context);
 
-    result.bindingsStream.on('data', (binding) => readable.push(JSON.stringify(binding) + '\n'));
-    result.bindingsStream.on('end', () => readable.push(null));
+    // TODO: this should be bus-ified
+    const resultStream: NodeJS.EventEmitter = result.quadStream || result.bindingsStream;
+    resultStream.on('data', (binding) => readable.push(JSON.stringify(binding) + '\n'));
+    resultStream.on('end', () => readable.push(null));
     const readable = new Readable();
     readable._read = () => {
       return;
