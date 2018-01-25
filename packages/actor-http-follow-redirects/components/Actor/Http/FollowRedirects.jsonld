@@ -1,0 +1,21 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-http-follow-redirects.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-http.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-http-follow-redirects",
+  "components": [
+    {
+      "@id": "cahfr:Actor/Http/FollowRedirects",
+      "@type": "Class",
+      "extends": "cbh:Actor/Http",
+      "requireElement": "ActorHttpFollowRedirects",
+      "comment": "A comunica Follow Redirects Http Actor.",
+      "constructorArguments": [
+        {
+          "extends": "cbh:Actor/Http/constructorArgumentsObject"
+        }
+      ]
+    }
+  ]
+}
