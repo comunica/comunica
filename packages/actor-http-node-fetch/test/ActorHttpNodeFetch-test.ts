@@ -3,7 +3,7 @@ import {Bus} from "@comunica/core";
 import {ActorHttpNodeFetch} from "../lib/ActorHttpNodeFetch";
 
 // Mock fetch
-global.fetch = (input, init) => {
+(<any> global).fetch = (input, init) => {
   return Promise.resolve({ status: input.url === 'https://www.google.com/' ? 200 : 404 });
 };
 

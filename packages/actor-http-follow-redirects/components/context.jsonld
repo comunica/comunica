@@ -1,0 +1,11 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/components.jsonld",
+    {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
+      "cahfr": "npmd:@comunica/actor-http-follow-redirects/",
+
+      "ActorHttpFollowRedirects": "cahfr:Actor/Http/FollowRedirects"
+    }
+  ]
+}

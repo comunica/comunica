@@ -1,0 +1,9 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/contexts/comunica-actor-http-follow-redirects.jsonld",
+  "@id": "npmd:@comunica/actor-http-follow-redirects",
+  "@type": "Module",
+  "requireName": "@comunica/actor-http-follow-redirects",
+  "import": [
+    "Actor/Http/FollowRedirects.jsonld"
+  ]
+}
