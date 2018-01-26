@@ -87,9 +87,9 @@ export class BindingsToQuadsIterator extends MultiTransformIterator<Bindings, RD
   /**
    * Convert a blank node to a unique blank node in the given context.
    * If the given term is not a blank node, the term itself will be returned.
-   * @param {{[p: string]: number}}   blankNodeCounter   A counter object for blank nodes.
+   * @param                           blankNodeCounter   A counter object for blank nodes.
    * @param {string[]}                blankNodeBlacklist A blacklist of blank node labels.
-   * @param {{[p: string]: RDF.Term}} blankNodeCache     An object with cached blank node localizations.
+   * @param                           blankNodeCache     An object with cached blank node localizations.
    * @param {RDF.Term}                term               The term that should be localized.
    * @return {RDF.Term}                                  A term.
    */
@@ -115,9 +115,9 @@ export class BindingsToQuadsIterator extends MultiTransformIterator<Bindings, RD
 
   /**
    * Convert the given quad to a quad that only contains unique blank nodes.
-   * @param {{[p: string]: number}}   blankNodeCount     A counter object for blank nodes.
+   * @param                           blankNodeCount     A counter object for blank nodes.
    * @param {string[]}                blankNodeBlacklist A blacklist of blank node labels.
-   * @param {{[p: string]: RDF.Term}} blankNodeCache     An object with cached blank node localizations.
+   * @param                           blankNodeCache     An object with cached blank node localizations.
    * @param {RDF.Quad}                pattern            The pattern that should be localized.
    * @return {RDF.Quad}                                  A quad.
    */
@@ -137,9 +137,9 @@ export class BindingsToQuadsIterator extends MultiTransformIterator<Bindings, RD
    * Convert the given template to a list of quads based on the given bindings.
    * @param {Bindings}                bindings           A bindings object.
    * @param {RDF.Quad[]}              template           A list of quad patterns.
-   * @param {{[p: string]: number}}   blankNodeCounter   A counter object for blank nodes.
+   * @param                           blankNodeCounter   A counter object for blank nodes.
    * @param {string[]}                blankNodeBlacklist A blacklist of blank node labels.
-   * @param {{[p: string]: RDF.Term}} blankNodeCache     An object with cached blank node localizations.
+   * @param                           blankNodeCache     An object with cached blank node localizations.
    * @return {RDF.Quad[]}                                A list of quads.
    */
   public static bindTemplate(bindings: Bindings, template: RDF.Quad[],
