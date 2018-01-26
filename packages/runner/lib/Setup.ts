@@ -94,9 +94,9 @@ export class Setup {
     global.Promise = Bluebird;
     Bluebird.config({
       cancellation: true,
-      longStackTraces: true,
-      monitoring: true,
-      warnings: true,
+      longStackTraces: false,
+      monitoring: false,
+      warnings: false,
     });
 
     // Hack to allow 'await' to be used on Bluebird's cancellable promises.
