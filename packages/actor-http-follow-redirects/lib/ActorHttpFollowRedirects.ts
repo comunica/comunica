@@ -2,15 +2,18 @@ import {ActorHttp, IActionHttp, IActorHttpOutput} from "@comunica/bus-http";
 import {IActorArgs} from "@comunica/core";
 import {IMediatorTypeTime} from "@comunica/mediatortype-time";
 import "isomorphic-fetch";
-import {createRequest} from "./Request";
+import Requester from "./Requester";
 
 /**
  * A comunica Follow Redirects Http Actor.
  */
 export class ActorHttpFollowRedirects extends ActorHttp {
 
-  constructor(args: IActorArgs<IActionHttp, IMediatorTypeTime, IActorHttpOutput>) {
+  private requester: Requester;
+
+  constructor(args: IActorHttpFollowRedirectsArgs) {
     super(args);
+    this.requester = new Requester(args.agentOptions ? JSON.parse(args.agentOptions) : undefined);
   }
 
   public async test(action: IActionHttp): Promise<IMediatorTypeTime> {
@@ -42,7 +45,7 @@ export class ActorHttpFollowRedirects extends ActorHttp {
     // not all options are supported
 
     return new Promise<IActorHttpOutput>((resolve, reject) => {
-      const req = createRequest(options);
+      const req = this.requester.createRequest(options);
       req.on('response', (httpResponse) => {
         // missing several of the required fetch fields
         const result = <IActorHttpOutput> {
@@ -60,4 +63,10 @@ export class ActorHttpFollowRedirects extends ActorHttp {
     });
   }
 
+}
+
+// Try to keep connections open, and set a maximum number of connections per server
+// AGENT_SETTINGS = {keepAlive: true, maxSockets: 5};
+export interface IActorHttpFollowRedirectsArgs extends IActorArgs<IActionHttp, IMediatorTypeTime, IActorHttpOutput> {
+  agentOptions?: string;
 }
