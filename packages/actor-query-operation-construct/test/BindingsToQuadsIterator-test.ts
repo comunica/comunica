@@ -20,7 +20,7 @@ describe('BindingsToQuadsIterator', () => {
       });
 
       it('should not bind a named node', () => {
-        return expect(BindingsToQuadsIterator.bindTerm(bindings, namedNode()).termType).toEqual('NamedNode');
+        return expect(BindingsToQuadsIterator.bindTerm(bindings, namedNode('abc')).termType).toEqual('NamedNode');
       });
 
       it('should not bind a default graph', () => {
@@ -44,7 +44,7 @@ describe('BindingsToQuadsIterator', () => {
       });
 
       it('should not bind a named node', () => {
-        return expect(BindingsToQuadsIterator.bindTerm(bindings, namedNode()).termType).toEqual('NamedNode');
+        return expect(BindingsToQuadsIterator.bindTerm(bindings, namedNode('abc')).termType).toEqual('NamedNode');
       });
 
       it('should not bind a default graph', () => {
@@ -233,146 +233,55 @@ describe('BindingsToQuadsIterator', () => {
 
   describe('#localizeBlankNode', () => {
     it('should not localize a literal', () => {
-      const counter: {[blankNodeLabel: string]: number} = {};
-      const blist: string[] = [];
-      const cache: {[blankNodeLabel: string]: RDF.Term} = {};
-      return expect(BindingsToQuadsIterator.localizeBlankNode(counter, blist, cache, literal('abc')).termType)
+      return expect(BindingsToQuadsIterator.localizeBlankNode(0, literal('abc')).termType)
         .toEqual('Literal');
     });
 
     it('should not localize a variable', () => {
-      const counter: {[blankNodeLabel: string]: number} = {};
-      const blist: string[] = [];
-      const cache: {[blankNodeLabel: string]: RDF.Term} = {};
-      return expect(BindingsToQuadsIterator.localizeBlankNode(counter, blist, cache, variable('abc')).termType)
+      return expect(BindingsToQuadsIterator.localizeBlankNode(0, variable('abc')).termType)
         .toEqual('Variable');
     });
 
     it('should not localize a named node', () => {
-      const counter: {[blankNodeLabel: string]: number} = {};
-      const blist: string[] = [];
-      const cache: {[blankNodeLabel: string]: RDF.Term} = {};
-      return expect(BindingsToQuadsIterator.localizeBlankNode(counter, blist, cache, namedNode('abc')).termType)
+      return expect(BindingsToQuadsIterator.localizeBlankNode(0, namedNode('abc')).termType)
         .toEqual('NamedNode');
     });
 
     it('should not localize a default graph', () => {
-      const counter: {[blankNodeLabel: string]: number} = {};
-      const blist: string[] = [];
-      const cache: {[blankNodeLabel: string]: RDF.Term} = {};
-      return expect(BindingsToQuadsIterator.localizeBlankNode(counter, blist, cache, defaultGraph()).termType)
+      return expect(BindingsToQuadsIterator.localizeBlankNode(0, defaultGraph()).termType)
         .toEqual('DefaultGraph');
     });
 
-    it('should localize a blank node without cache', () => {
-      const counter: {[blankNodeLabel: string]: number} = {};
-      const blist: string[] = ['abc'];
-      expect(BindingsToQuadsIterator.localizeBlankNode(counter, blist, {}, blankNode('abc')))
+    it('should localize a blank node with a different counter', () => {
+      expect(BindingsToQuadsIterator.localizeBlankNode(0, blankNode('abc')))
         .toEqual(blankNode('abc0'));
-      return expect(BindingsToQuadsIterator.localizeBlankNode(counter, blist, {}, blankNode('abc')))
+      return expect(BindingsToQuadsIterator.localizeBlankNode(1, blankNode('abc')))
         .toEqual(blankNode('abc1'));
     });
 
-    it('should localize a blank node with cache', () => {
-      const counter: {[blankNodeLabel: string]: number} = {};
-      const blist: string[] = ['abc'];
-      const cache: {[blankNodeLabel: string]: RDF.Term} = {};
-      expect(BindingsToQuadsIterator.localizeBlankNode(counter, blist, cache, blankNode('abc')))
+    it('should localize a blank node with the same counter', () => {
+      expect(BindingsToQuadsIterator.localizeBlankNode(0, blankNode('abc')))
         .toEqual(blankNode('abc0'));
-      return expect(BindingsToQuadsIterator.localizeBlankNode(counter, blist, cache, blankNode('abc')))
+      return expect(BindingsToQuadsIterator.localizeBlankNode(0, blankNode('abc')))
         .toEqual(blankNode('abc0'));
     });
 
-    it('should localize a blank node with different caches', () => {
-      const counter: {[blankNodeLabel: string]: number} = {};
-      const blist: string[] = ['abc'];
-      const cache1: {[blankNodeLabel: string]: RDF.Term} = {};
-      const cache2: {[blankNodeLabel: string]: RDF.Term} = {};
-      expect(BindingsToQuadsIterator.localizeBlankNode(counter, blist, cache1, blankNode('abc')))
+    it('should localize a blank node with mixed counters', () => {
+      expect(BindingsToQuadsIterator.localizeBlankNode(0, blankNode('abc')))
         .toEqual(blankNode('abc0'));
-      expect(BindingsToQuadsIterator.localizeBlankNode(counter, blist, cache1, blankNode('abc')))
+      expect(BindingsToQuadsIterator.localizeBlankNode(0, blankNode('abc')))
         .toEqual(blankNode('abc0'));
 
-      expect(BindingsToQuadsIterator.localizeBlankNode(counter, blist, cache2, blankNode('abc')))
+      expect(BindingsToQuadsIterator.localizeBlankNode(1, blankNode('abc')))
         .toEqual(blankNode('abc1'));
-      expect(BindingsToQuadsIterator.localizeBlankNode(counter, blist, cache2, blankNode('abc')))
-        .toEqual(blankNode('abc1'));
-    });
-
-    it('should localize multiple blank nodes without cache', () => {
-      const counter: {[blankNodeLabel: string]: number} = {};
-      const blist: string[] = ['abc', 'def'];
-      expect(BindingsToQuadsIterator.localizeBlankNode(counter, blist, {}, blankNode('abc')))
-        .toEqual(blankNode('abc0'));
-      expect(BindingsToQuadsIterator.localizeBlankNode(counter, blist, {}, blankNode('abc')))
-        .toEqual(blankNode('abc1'));
-
-      expect(BindingsToQuadsIterator.localizeBlankNode(counter, blist, {}, blankNode('def')))
-        .toEqual(blankNode('def0'));
-      expect(BindingsToQuadsIterator.localizeBlankNode(counter, blist, {}, blankNode('def')))
-        .toEqual(blankNode('def1'));
-
-      expect(BindingsToQuadsIterator.localizeBlankNode(counter, blist, {}, blankNode('abc')))
-        .toEqual(blankNode('abc2'));
-    });
-
-    it('should localize multiple blank nodes with cache', () => {
-      const counter: {[blankNodeLabel: string]: number} = {};
-      const blist: string[] = ['abc', 'def'];
-      const cache: {[blankNodeLabel: string]: RDF.Term} = {};
-      expect(BindingsToQuadsIterator.localizeBlankNode(counter, blist, cache, blankNode('abc')))
-        .toEqual(blankNode('abc0'));
-      expect(BindingsToQuadsIterator.localizeBlankNode(counter, blist, cache, blankNode('abc')))
-        .toEqual(blankNode('abc0'));
-
-      expect(BindingsToQuadsIterator.localizeBlankNode(counter, blist, cache, blankNode('def')))
-        .toEqual(blankNode('def0'));
-      expect(BindingsToQuadsIterator.localizeBlankNode(counter, blist, cache, blankNode('def')))
-        .toEqual(blankNode('def0'));
-
-      expect(BindingsToQuadsIterator.localizeBlankNode(counter, blist, cache, blankNode('abc')))
-        .toEqual(blankNode('abc0'));
-    });
-
-    it('should localize multiple blank nodes with different caches', () => {
-      const counter: {[blankNodeLabel: string]: number} = {};
-      const blist: string[] = ['abc', 'def'];
-      const cache1: {[blankNodeLabel: string]: RDF.Term} = {};
-      const cache2: {[blankNodeLabel: string]: RDF.Term} = {};
-      expect(BindingsToQuadsIterator.localizeBlankNode(counter, blist, cache1, blankNode('abc')))
-        .toEqual(blankNode('abc0'));
-      expect(BindingsToQuadsIterator.localizeBlankNode(counter, blist, cache1, blankNode('abc')))
-        .toEqual(blankNode('abc0'));
-
-      expect(BindingsToQuadsIterator.localizeBlankNode(counter, blist, cache1, blankNode('def')))
-        .toEqual(blankNode('def0'));
-      expect(BindingsToQuadsIterator.localizeBlankNode(counter, blist, cache1, blankNode('def')))
-        .toEqual(blankNode('def0'));
-
-      expect(BindingsToQuadsIterator.localizeBlankNode(counter, blist, cache1, blankNode('abc')))
-        .toEqual(blankNode('abc0'));
-
-      expect(BindingsToQuadsIterator.localizeBlankNode(counter, blist, cache2, blankNode('abc')))
-        .toEqual(blankNode('abc1'));
-      expect(BindingsToQuadsIterator.localizeBlankNode(counter, blist, cache2, blankNode('abc')))
-        .toEqual(blankNode('abc1'));
-
-      expect(BindingsToQuadsIterator.localizeBlankNode(counter, blist, cache2, blankNode('def')))
-        .toEqual(blankNode('def1'));
-      expect(BindingsToQuadsIterator.localizeBlankNode(counter, blist, cache2, blankNode('def')))
-        .toEqual(blankNode('def1'));
-
-      expect(BindingsToQuadsIterator.localizeBlankNode(counter, blist, cache2, blankNode('abc')))
+      expect(BindingsToQuadsIterator.localizeBlankNode(1, blankNode('abc')))
         .toEqual(blankNode('abc1'));
     });
   });
 
   describe('#localizeQuad', () => {
     it('should not change a quad without blank nodes', () => {
-      const counter: {[blankNodeLabel: string]: number} = {};
-      const blist: string[] = [];
-      const cache: {[blankNodeLabel: string]: RDF.Term} = {};
-      return expect(BindingsToQuadsIterator.localizeQuad(counter, blist, cache, quad(
+      return expect(BindingsToQuadsIterator.localizeQuad(0, quad(
         variable('s'),
         namedNode('p'),
         literal('o'),
@@ -386,10 +295,7 @@ describe('BindingsToQuadsIterator', () => {
     });
 
     it('should localize a quad with a subject blank node', () => {
-      const counter: {[blankNodeLabel: string]: number} = {};
-      const blist: string[] = ['s'];
-      const cache: {[blankNodeLabel: string]: RDF.Term} = {};
-      return expect(BindingsToQuadsIterator.localizeQuad(counter, blist, cache, quad(
+      return expect(BindingsToQuadsIterator.localizeQuad(0, quad(
         blankNode('s'),
         namedNode('p'),
         literal('o'),
@@ -403,10 +309,7 @@ describe('BindingsToQuadsIterator', () => {
     });
 
     it('should localize a quad with a predicate blank node', () => {
-      const counter: {[blankNodeLabel: string]: number} = {};
-      const blist: string[] = ['p'];
-      const cache: {[blankNodeLabel: string]: RDF.Term} = {};
-      return expect(BindingsToQuadsIterator.localizeQuad(counter, blist, cache, quad(
+      return expect(BindingsToQuadsIterator.localizeQuad(0, quad(
         variable('s'),
         blankNode('p'),
         literal('o'),
@@ -420,10 +323,7 @@ describe('BindingsToQuadsIterator', () => {
     });
 
     it('should localize a quad with a object blank node', () => {
-      const counter: {[blankNodeLabel: string]: number} = {};
-      const blist: string[] = ['o'];
-      const cache: {[blankNodeLabel: string]: RDF.Term} = {};
-      return expect(BindingsToQuadsIterator.localizeQuad(counter, blist, cache, quad(
+      return expect(BindingsToQuadsIterator.localizeQuad(0, quad(
         variable('s'),
         namedNode('p'),
         blankNode('o'),
@@ -437,10 +337,7 @@ describe('BindingsToQuadsIterator', () => {
     });
 
     it('should localize a quad with a graph blank node', () => {
-      const counter: {[blankNodeLabel: string]: number} = {};
-      const blist: string[] = ['g'];
-      const cache: {[blankNodeLabel: string]: RDF.Term} = {};
-      return expect(BindingsToQuadsIterator.localizeQuad(counter, blist, cache, quad(
+      return expect(BindingsToQuadsIterator.localizeQuad(0, quad(
         variable('s'),
         namedNode('p'),
         literal('o'),
@@ -454,10 +351,7 @@ describe('BindingsToQuadsIterator', () => {
     });
 
     it('should localize a quad with subject, predicate, object and graph blank nodes', () => {
-      const counter: {[blankNodeLabel: string]: number} = {};
-      const blist: string[] = ['s', 'p', 'o', 'g'];
-      const cache: {[blankNodeLabel: string]: RDF.Term} = {};
-      return expect(BindingsToQuadsIterator.localizeQuad(counter, blist, cache, quad(
+      return expect(BindingsToQuadsIterator.localizeQuad(0, quad(
         blankNode('s'),
         blankNode('p'),
         blankNode('o'),
@@ -471,10 +365,7 @@ describe('BindingsToQuadsIterator', () => {
     });
 
     it('should localize a quad with equal subject, predicate, object and graph blank nodes', () => {
-      const counter: {[blankNodeLabel: string]: number} = {};
-      const blist: string[] = ['a'];
-      const cache: {[blankNodeLabel: string]: RDF.Term} = {};
-      return expect(BindingsToQuadsIterator.localizeQuad(counter, blist, cache, quad(
+      return expect(BindingsToQuadsIterator.localizeQuad(0, quad(
         blankNode('a'),
         blankNode('a'),
         blankNode('a'),
@@ -487,52 +378,8 @@ describe('BindingsToQuadsIterator', () => {
       ));
     });
 
-    it('should localize a quad multiple times with subject, predicate, object and graph blank nodes without cache',
-      () => {
-        const counter: {[blankNodeLabel: string]: number} = {};
-        const blist: string[] = ['s', 'p', 'o', 'g'];
-        expect(BindingsToQuadsIterator.localizeQuad(counter, blist, {}, quad(
-          blankNode('s'),
-          blankNode('p'),
-          blankNode('o'),
-          blankNode('g'),
-        ))).toEqual(quad(
-          blankNode('s0'),
-          blankNode('p0'),
-          blankNode('o0'),
-          blankNode('g0'),
-        ));
-
-        expect(BindingsToQuadsIterator.localizeQuad(counter, blist, {}, quad(
-          blankNode('s'),
-          blankNode('p'),
-          blankNode('o'),
-          blankNode('g'),
-        ))).toEqual(quad(
-          blankNode('s1'),
-          blankNode('p1'),
-          blankNode('o1'),
-          blankNode('g1'),
-        ));
-
-        expect(BindingsToQuadsIterator.localizeQuad(counter, blist, {}, quad(
-          blankNode('s'),
-          blankNode('p'),
-          blankNode('o'),
-          blankNode('g'),
-        ))).toEqual(quad(
-          blankNode('s2'),
-          blankNode('p2'),
-          blankNode('o2'),
-          blankNode('g2'),
-        ));
-      });
-
-    it('should localize a quad multiple times with subject, predicate, object and graph blank nodes with cache', () => {
-      const counter: {[blankNodeLabel: string]: number} = {};
-      const blist: string[] = ['s', 'p', 'o', 'g'];
-      const cache: {[blankNodeLabel: string]: RDF.Term} = {};
-      expect(BindingsToQuadsIterator.localizeQuad(counter, blist, cache, quad(
+    it('should localize a quad multiple times with blank nodes with different counters', () => {
+      expect(BindingsToQuadsIterator.localizeQuad(0, quad(
         blankNode('s'),
         blankNode('p'),
         blankNode('o'),
@@ -544,35 +391,35 @@ describe('BindingsToQuadsIterator', () => {
         blankNode('g0'),
       ));
 
-      expect(BindingsToQuadsIterator.localizeQuad(counter, blist, cache, quad(
+      expect(BindingsToQuadsIterator.localizeQuad(1, quad(
         blankNode('s'),
         blankNode('p'),
         blankNode('o'),
         blankNode('g'),
       ))).toEqual(quad(
-        blankNode('s0'),
-        blankNode('p0'),
-        blankNode('o0'),
-        blankNode('g0'),
+        blankNode('s1'),
+        blankNode('p1'),
+        blankNode('o1'),
+        blankNode('g1'),
       ));
 
-      expect(BindingsToQuadsIterator.localizeQuad(counter, blist, cache, quad(
+      expect(BindingsToQuadsIterator.localizeQuad(2, quad(
         blankNode('s'),
         blankNode('p'),
         blankNode('o'),
         blankNode('g'),
       ))).toEqual(quad(
-        blankNode('s0'),
-        blankNode('p0'),
-        blankNode('o0'),
-        blankNode('g0'),
+        blankNode('s2'),
+        blankNode('p2'),
+        blankNode('o2'),
+        blankNode('g2'),
       ));
     });
   });
 
   describe('#bindTemplate', () => {
     it('should bind an empty template without variables, blank nodes and bindings', () => {
-      return expect(BindingsToQuadsIterator.bindTemplate(Bindings({}), [], {}, [], {}))
+      return expect(BindingsToQuadsIterator.bindTemplate(Bindings({}), [], 0))
         .toEqual([]);
     });
 
@@ -581,7 +428,7 @@ describe('BindingsToQuadsIterator', () => {
         quad(namedNode('s1'), namedNode('p1'), namedNode('o1')),
         quad(namedNode('s2'), namedNode('p2'), namedNode('o2')),
         quad(namedNode('s3'), namedNode('p3'), namedNode('o3')),
-      ], {}, [], {}))
+      ], 0))
         .toEqual([
           quad(namedNode('s1'), namedNode('p1'), namedNode('o1')),
           quad(namedNode('s2'), namedNode('p2'), namedNode('o2')),
@@ -594,7 +441,7 @@ describe('BindingsToQuadsIterator', () => {
         quad(variable('a'), namedNode('p1'), namedNode('o1')),
         quad(namedNode('s2'), variable('b'), namedNode('o2')),
         quad(namedNode('s3'), variable('a'), variable('b')),
-      ], {}, [], {}))
+      ], 0))
         .toEqual([
           quad(namedNode('a'), namedNode('p1'), namedNode('o1')),
           quad(namedNode('s2'), namedNode('b'), namedNode('o2')),
@@ -607,7 +454,7 @@ describe('BindingsToQuadsIterator', () => {
         quad(variable('a'), namedNode('p1'), namedNode('o1')),
         quad(namedNode('s2'), variable('b'), namedNode('o2')),
         quad(namedNode('s3'), variable('a'), variable('b')),
-      ], {}, [], {}))
+      ], 0))
         .toEqual([
           quad(namedNode('a'), namedNode('p1'), namedNode('o1')),
         ]);
@@ -618,7 +465,7 @@ describe('BindingsToQuadsIterator', () => {
         quad(variable('a'), namedNode('p1'), namedNode('o1')),
         quad(blankNode('bnode'), variable('b'), blankNode('bnode')),
         quad(blankNode('bnode'), variable('a'), variable('b')),
-      ], {}, ['bnode'], {}))
+      ], 0))
         .toEqual([
           quad(namedNode('a'), namedNode('p1'), namedNode('o1')),
           quad(blankNode('bnode0'), namedNode('b'), blankNode('bnode0')),

@@ -12,28 +12,12 @@ import * as RDF from "rdf-js";
 export class BindingsToQuadsIterator extends MultiTransformIterator<Bindings, RDF.Quad> {
 
   protected template: RDF.Quad[];
-  protected blankNodeCounter: {[blankNodeLabel: string]: number};
-  protected blankNodeBlacklist: string[];
+  protected blankNodeCounter: number;
 
   constructor(template: RDF.Quad[], bindingsStream: BindingsStream) {
     super(bindingsStream);
     this.template = template;
-    this.blankNodeCounter = {};
-    this.blankNodeBlacklist = [];
-    for (const q of template) {
-      if (q.subject.termType === 'BlankNode') {
-        this.blankNodeBlacklist.push(q.subject.value);
-      }
-      if (q.predicate.termType === 'BlankNode') {
-        this.blankNodeBlacklist.push(q.predicate.value);
-      }
-      if (q.object.termType === 'BlankNode') {
-        this.blankNodeBlacklist.push(q.object.value);
-      }
-      if (q.graph.termType === 'BlankNode') {
-        this.blankNodeBlacklist.push(q.graph.value);
-      }
-    }
+    this.blankNodeCounter = 0;
   }
 
   /**
@@ -87,78 +71,55 @@ export class BindingsToQuadsIterator extends MultiTransformIterator<Bindings, RD
   /**
    * Convert a blank node to a unique blank node in the given context.
    * If the given term is not a blank node, the term itself will be returned.
-   * @param                           blankNodeCounter   A counter object for blank nodes.
-   * @param {string[]}                blankNodeBlacklist A blacklist of blank node labels.
-   * @param                           blankNodeCache     An object with cached blank node localizations.
-   * @param {RDF.Term}                term               The term that should be localized.
-   * @return {RDF.Term}                                  A term.
+   * @param             blankNodeCounter A counter value for the blank node.
+   * @param {RDF.Term}  term             The term that should be localized.
+   * @return {RDF.Term}                  A term.
    */
-  public static localizeBlankNode(blankNodeCounter: {[blankNodeLabel: string]: number},
-                                  blankNodeBlacklist: string[],
-                                  blankNodeCache: {[blankNodeLabel: string]: RDF.BlankNode},
+  public static localizeBlankNode(blankNodeCounter: number,
                                   term: RDF.Term): RDF.Term {
     if (term.termType === 'BlankNode') {
-      let newTerm: RDF.BlankNode = blankNodeCache[term.value] || <RDF.BlankNode> term;
-      while (blankNodeBlacklist.indexOf(newTerm.value) >= 0) {
-        let counter: number = blankNodeCounter[term.value];
-        if (!counter) {
-          counter = blankNodeCounter[term.value] = 0;
-        }
-        blankNodeCounter[term.value]++;
-        newTerm = blankNode(term.value + counter);
-        blankNodeCache[term.value] = newTerm;
-      }
-      return newTerm;
+      return blankNode(term.value + blankNodeCounter);
     }
     return term;
   }
 
   /**
    * Convert the given quad to a quad that only contains unique blank nodes.
-   * @param                           blankNodeCount     A counter object for blank nodes.
-   * @param {string[]}                blankNodeBlacklist A blacklist of blank node labels.
-   * @param                           blankNodeCache     An object with cached blank node localizations.
-   * @param {RDF.Quad}                pattern            The pattern that should be localized.
-   * @return {RDF.Quad}                                  A quad.
+   * @param            blankNodeCounter A counter value for the blank node.
+   * @param {RDF.Quad} pattern          The pattern that should be localized.
+   * @return {RDF.Quad}                 A quad.
    */
-  public static localizeQuad(blankNodeCount: {[blankNodeLabel: string]: number},
-                             blankNodeBlacklist: string[],
-                             blankNodeCache: {[blankNodeLabel: string]: RDF.BlankNode},
+  public static localizeQuad(blankNodeCounter: number,
                              pattern: RDF.Quad): RDF.Quad {
     return quad(
-      BindingsToQuadsIterator.localizeBlankNode(blankNodeCount, blankNodeBlacklist, blankNodeCache, pattern.subject),
-      BindingsToQuadsIterator.localizeBlankNode(blankNodeCount, blankNodeBlacklist, blankNodeCache, pattern.predicate),
-      BindingsToQuadsIterator.localizeBlankNode(blankNodeCount, blankNodeBlacklist, blankNodeCache, pattern.object),
-      BindingsToQuadsIterator.localizeBlankNode(blankNodeCount, blankNodeBlacklist, blankNodeCache, pattern.graph),
+      BindingsToQuadsIterator.localizeBlankNode(blankNodeCounter, pattern.subject),
+      BindingsToQuadsIterator.localizeBlankNode(blankNodeCounter, pattern.predicate),
+      BindingsToQuadsIterator.localizeBlankNode(blankNodeCounter, pattern.object),
+      BindingsToQuadsIterator.localizeBlankNode(blankNodeCounter, pattern.graph),
     );
   }
 
   /**
    * Convert the given template to a list of quads based on the given bindings.
-   * @param {Bindings}                bindings           A bindings object.
-   * @param {RDF.Quad[]}              template           A list of quad patterns.
-   * @param                           blankNodeCounter   A counter object for blank nodes.
-   * @param {string[]}                blankNodeBlacklist A blacklist of blank node labels.
-   * @param                           blankNodeCache     An object with cached blank node localizations.
-   * @return {RDF.Quad[]}                                A list of quads.
+   * @param {Bindings}    bindings           A bindings object.
+   * @param {RDF.Quad[]}  template           A list of quad patterns.
+   * @param               blankNodeCounter   A counter value for the blank node.
+   * @return {RDF.Quad[]}                    A list of quads.
    */
   public static bindTemplate(bindings: Bindings, template: RDF.Quad[],
-                             blankNodeCounter: {[blankNodeLabel: string]: number},
-                             blankNodeBlacklist: string[],
-                             blankNodeCache: {[blankNodeLabel: string]: RDF.BlankNode}): RDF.Quad[] {
+                             blankNodeCounter: number): RDF.Quad[] {
     return template
       // Bind variables to bound terms
       .map(BindingsToQuadsIterator.bindQuad.bind(null, bindings))
       // Remove quads that contained unbound terms, i.e., variables.
       .filter((q) => !!q)
       // Make sure the multiple instantiations of the template contain different blank nodes, as required by SPARQL 1.1.
-      .map(BindingsToQuadsIterator.localizeQuad.bind(null, blankNodeCounter, blankNodeBlacklist, blankNodeCache));
+      .map(BindingsToQuadsIterator.localizeQuad.bind(null, blankNodeCounter));
   }
 
   public _createTransformer(bindings: Bindings): AsyncIterator<RDF.Quad> {
-    const blankNodeCache: {[blankNodeLabel: string]: RDF.BlankNode} = {};
     return new ArrayIterator(BindingsToQuadsIterator.bindTemplate(
-      bindings, this.template, this.blankNodeCounter, this.blankNodeBlacklist, blankNodeCache));
+      bindings, this.template, this.blankNodeCounter++));
   }
 
 }
