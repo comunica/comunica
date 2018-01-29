@@ -42,6 +42,8 @@ export class ActorHttpNative extends ActorHttp {
       options.headers = headers;
     }
 
+    options.method = options.method || 'GET';
+
     // not all options are supported
 
     return new Promise<IActorHttpOutput>((resolve, reject) => {
