@@ -3,9 +3,9 @@
     "https://linkedsoftwaredependencies.org/contexts/components.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
-      "cahfr": "npmd:@comunica/actor-http-follow-redirects/",
+      "cahn": "npmd:@comunica/actor-http-native/",
 
-      "ActorHttpFollowRedirects": "cahfr:Actor/Http/FollowRedirects"
+      "ActorHttpNative": "cahn:Actor/Http/Native"
     }
   ]
 }

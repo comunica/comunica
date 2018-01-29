@@ -4,38 +4,38 @@ import {Bus} from "@comunica/core";
 import "isomorphic-fetch";
 import {Readable} from "stream";
 import * as zlib from "zlib";
-import {ActorHttpFollowRedirects} from "../lib/ActorHttpFollowRedirects";
+import {ActorHttpNative} from "../lib/ActorHttpNative";
 
 const arrayifyStream = require('arrayify-stream');
 const mockSetup = require('./__mocks__/follow-redirects').mockSetup;
 
-describe('ActorHttpFollowRedirects', () => {
+describe('ActorHttpNative', () => {
   let bus;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
   });
 
-  describe('The ActorHttpFollowRedirects module', () => {
+  describe('The ActorHttpNative module', () => {
     it('should be a function', () => {
-      expect(ActorHttpFollowRedirects).toBeInstanceOf(Function);
+      expect(ActorHttpNative).toBeInstanceOf(Function);
     });
 
-    it('should be a ActorHttpFollowRedirects constructor', () => {
-      expect(new (<any> ActorHttpFollowRedirects)({ name: 'actor', bus })).toBeInstanceOf(ActorHttpFollowRedirects);
-      expect(new (<any> ActorHttpFollowRedirects)({ name: 'actor', bus })).toBeInstanceOf(ActorHttp);
+    it('should be a ActorHttpNative constructor', () => {
+      expect(new (<any> ActorHttpNative)({ name: 'actor', bus })).toBeInstanceOf(ActorHttpNative);
+      expect(new (<any> ActorHttpNative)({ name: 'actor', bus })).toBeInstanceOf(ActorHttp);
     });
 
-    it('should not be able to create new ActorHttpFollowRedirects objects without \'new\'', () => {
-      expect(() => { (<any> ActorHttpFollowRedirects)(); }).toThrow();
+    it('should not be able to create new ActorHttpNative objects without \'new\'', () => {
+      expect(() => { (<any> ActorHttpNative)(); }).toThrow();
     });
   });
 
-  describe('An ActorHttpFollowRedirects instance', () => {
-    let actor: ActorHttpFollowRedirects;
+  describe('An ActorHttpNative instance', () => {
+    let actor: ActorHttpNative;
 
     beforeEach(() => {
-      actor = new ActorHttpFollowRedirects({ name: 'actor', bus });
+      actor = new ActorHttpNative({ name: 'actor', bus });
     });
 
     it('should test', () => {
