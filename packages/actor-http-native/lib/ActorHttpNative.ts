@@ -7,11 +7,11 @@ import Requester from "./Requester";
 /**
  * A comunica Follow Redirects Http Actor.
  */
-export class ActorHttpFollowRedirects extends ActorHttp {
+export class ActorHttpNative extends ActorHttp {
 
   private requester: Requester;
 
-  constructor(args: IActorHttpFollowRedirectsArgs) {
+  constructor(args: IActorHttpNativeArgs) {
     super(args);
     this.requester = new Requester(args.agentOptions ? JSON.parse(args.agentOptions) : undefined);
   }
@@ -67,6 +67,6 @@ export class ActorHttpFollowRedirects extends ActorHttp {
 
 // Try to keep connections open, and set a maximum number of connections per server
 // AGENT_SETTINGS = {keepAlive: true, maxSockets: 5};
-export interface IActorHttpFollowRedirectsArgs extends IActorArgs<IActionHttp, IMediatorTypeTime, IActorHttpOutput> {
+export interface IActorHttpNativeArgs extends IActorArgs<IActionHttp, IMediatorTypeTime, IActorHttpOutput> {
   agentOptions?: string;
 }

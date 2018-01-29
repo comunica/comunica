@@ -1,17 +1,17 @@
 {
-  "name": "@comunica/actor-http-follow-redirects",
+  "name": "@comunica/actor-http-native",
   "version": "0.0.1",
-  "description": "A follow-redirects http actor",
-  "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-http-follow-redirects",
+  "description": "A native http actor",
+  "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-http-native",
   "lsd:components": "components/components.jsonld",
   "lsd:contexts": {
-    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-http-follow-redirects.jsonld": "components/context.jsonld"
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-http-native.jsonld": "components/context.jsonld"
   },
   "main": "index.js",
   "typings": "index",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/comunica/actor-http-follow-redirects.git"
+    "url": "git+https://github.com/comunica/actor-http-native.git"
   },
   "keywords": [
     "comunica",
@@ -21,9 +21,9 @@
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/comunica/actor-http-follow-redirects/issues"
+    "url": "https://github.com/comunica/actor-http-native/issues"
   },
-  "homepage": "https://github.com/comunica/actor-http-follow-redirects#readme",
+  "homepage": "https://github.com/comunica/actor-http-native#readme",
   "files": [
     "components",
     "lib/**/*.d.ts",

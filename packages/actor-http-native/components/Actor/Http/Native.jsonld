@@ -1,19 +1,19 @@
 {
   "@context": [
-    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-http-follow-redirects.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-http-native.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-bus-http.jsonld"
   ],
-  "@id": "npmd:@comunica/actor-http-follow-redirects",
+  "@id": "npmd:@comunica/actor-http-native",
   "components": [
     {
-      "@id": "cahfr:Actor/Http/FollowRedirects",
+      "@id": "cahn:Actor/Http/Native",
       "@type": "Class",
       "extends": "cbh:Actor/Http",
-      "requireElement": "ActorHttpFollowRedirects",
+      "requireElement": "ActorHttpNative",
       "comment": "A comunica Follow Redirects Http Actor.",
       "parameters": [
         {
-          "@id": "cbh:Actor/Http/FollowRedirects/agentOptions",
+          "@id": "cbh:Actor/Http/Native/agentOptions",
           "comment": "The AgentOptions for the HTTP agent as a JSON string",
           "required": false,
           "unique": true,
@@ -23,12 +23,12 @@
       ],
       "constructorArguments": [
         {
-          "@id": "cbrp:Actor/Http/FollowRedirects/constructorArgumentsObject",
+          "@id": "cbrp:Actor/Http/Native/constructorArgumentsObject",
           "extends": "cbh:Actor/Http/constructorArgumentsObject",
           "fields": [
             {
               "keyRaw": "agentOptions",
-              "value": "cbh:Actor/Http/FollowRedirects/agentOptions"
+              "value": "cbh:Actor/Http/Native/agentOptions"
             }
           ]
         }
