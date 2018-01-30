@@ -10,6 +10,7 @@
     "https://linkedsoftwaredependencies.org/contexts/comunica-actor-query-operation-project.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-actor-query-operation-quadpattern.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-bus-rdf-resolve-quad-pattern.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-resolve-quad-pattern-federated.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-resolve-quad-pattern-qpf.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-bus-http.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-actor-http-node-fetch.jsonld",
@@ -50,8 +51,8 @@
             "@type": "MediatorRace",
             "cc:Mediator/bus": { "@id": "cbsp:Bus/SparqlParse" }
           },
-          "cais:query": "SELECT * WHERE { ?project a <http://usefulinc.com/ns/doap#Project>. ?project <http://purl.org/dc/terms/abstract> ?abstract. ?project <http://usefulinc.com/ns/doap#maintainer> <https://linkedsoftwaredependencies.org/users/npm/rubensworks>. }",
-          "cais:context": "{ \"sources\": [{ \"type\": \"entrypoint\", \"value\": \"https://fragments.linkedsoftwaredependencies.org/npm\" }]}"
+          "cais:query": "PREFIX dbpedia-owl: <http://dbpedia.org/ontology/> PREFIX schema: <http://schema.org/> PREFIX dc: <http://purl.org/dc/terms/> PREFIX foaf: <http://xmlns.com/foaf/0.1/> PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>  SELECT ?person ?name ?book ?title {   ?person dbpedia-owl:birthPlace [ rdfs:label \"San Francisco\"@en ].   ?viafID schema:sameAs ?person;                schema:name ?name.   ?book dc:contributor [ foaf:name ?name ];               dc:title ?title. }",
+          "cais:context": "{ \"sources\": [ { \"type\": \"entrypoint\", \"value\": \"http://fragments.dbpedia.org/2016-04/en\" }, { \"type\": \"entrypoint\", \"value\": \"http://data.linkeddatafragments.org/viaf\" }, { \"type\": \"entrypoint\", \"value\": \"http://data.linkeddatafragments.org/harvard\" } ] }"
         },
 
         {
@@ -89,6 +90,14 @@
             "@id": "ex:mediatorResolveQuadPattern",
             "@type": "MediatorRace",
             "cc:Mediator/bus": { "@id": "cbrrqp:Bus/RdfResolveQuadPattern" }
+          }
+        },
+
+        {
+          "@id": "ex:myFederatedQuadPatternResolver",
+          "@type": "ActorRdfResolveQuadPatternFederated",
+          "carrqpf:Actor/RdfResolveQuadPattern/Federated/mediatorResolveQuadPattern": {
+            "@id": "ex:mediatorResolveQuadPattern"
           }
         },
 

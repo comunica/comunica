@@ -26,15 +26,16 @@ export class ActorRdfResolveQuadPatternQpf extends ActorRdfResolveQuadPatternSou
   }
 
   public async test(action: IActionRdfResolveQuadPattern): Promise<IActorTest> {
-    if (!action.context || !action.context.entrypoint) {
-      throw new Error('Actor ' + this.name + ' can only resolve quad pattern queries against a QPF entrypoint.');
+    if (!action.context || !action.context.sources || action.context.sources.length !== 1
+        || action.context.sources[0].type !== 'entrypoint') {
+      throw new Error('Actor ' + this.name + ' can only resolve quad pattern queries against a single QPF entrypoint.');
     }
     return true;
   }
 
   protected async createSource(context?: {[id: string]: any}): Promise<ILazyQuadSource> {
     // Collect metadata of the entrypoint
-    const entrypoint: string = context.entrypoint;
+    const entrypoint: string = context.sources[0].value;
     const metadata: {[id: string]: any} = await (await this.mediatorRdfDereferencePaged
       .mediate({ url: entrypoint })).firstPageMetadata;
     if (!metadata) {
@@ -97,7 +98,7 @@ export class ActorRdfResolveQuadPatternQpf extends ActorRdfResolveQuadPatternSou
 
   protected async getSource(context?: {[id: string]: any}): Promise<ILazyQuadSource> {
     // Cache the source object for each entrypoint
-    const entrypoint: string = context.entrypoint;
+    const entrypoint: string = context.sources[0].value;
     if (this.sources[entrypoint]) {
       return this.sources[entrypoint];
     }
