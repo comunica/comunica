@@ -11,16 +11,17 @@ describe('FederatedQuadSource', () => {
   beforeEach(() => {
     mediator = {
       mediate: (action) => {
-        if (action.context.emptySource) {
+        const type = action.context.sources[0].type;
+        if (type === 'emptySource') {
           return Promise.resolve({ data: new EmptyIterator(), metadata: Promise.resolve({ totalItems: 0 }) });
         }
-        if (action.context.nonEmptySourceNoMeta) {
+        if (type === 'nonEmptySourceNoMeta') {
           return Promise.resolve({ data: new ArrayIterator([
             squad('s1', 'p1', 'o1'),
             squad('s1', 'p1', 'o2'),
           ]), metadata: null });
         }
-        if (action.context.nonEmptySourceInfMeta) {
+        if (type === 'nonEmptySourceInfMeta') {
           return Promise.resolve({ data: new ArrayIterator([
             squad('s1', 'p1', 'o1'),
             squad('s1', 'p1', 'o2'),
@@ -41,17 +42,17 @@ describe('FederatedQuadSource', () => {
     });
 
     it('should be a FederatedQuadSource constructor', () => {
-      expect(new FederatedQuadSource(mediator, context, {})).toBeInstanceOf(FederatedQuadSource);
+      expect(new FederatedQuadSource(mediator, context, {}, true)).toBeInstanceOf(FederatedQuadSource);
     });
 
     it('should be a FederatedQuadSource constructor with optional bufferSize argument', () => {
-      expect(new FederatedQuadSource(mediator, context, {})).toBeInstanceOf(FederatedQuadSource);
+      expect(new FederatedQuadSource(mediator, context, {}, true)).toBeInstanceOf(FederatedQuadSource);
     });
   });
 
   describe('#hashSource', () => {
     it('should convert an empty query source to a string', () => {
-      return expect(FederatedQuadSource.hashSource({})).toEqual('{}');
+      return expect(FederatedQuadSource.hashSource(<any> {})).toEqual('{}');
     });
 
     it('should convert a non-empty query source to a string', () => {
@@ -242,23 +243,23 @@ describe('FederatedQuadSource', () => {
 
     describe('when calling isSourceEmpty', () => {
       it('on ?a ?b ?c "d" for the source should return true', () => {
-        return expect(source.isSourceEmpty({}, squad('?a', '?b', '?c', '"d"'))).toBeTruthy();
+        return expect(source.isSourceEmpty(<any> {}, squad('?a', '?b', '?c', '"d"'))).toBeTruthy();
       });
 
-      it('on "a" ?b ?c "d"d for the source should return true', () => {
-        return expect(source.isSourceEmpty({}, squad('"a"', '?b', '?c', '"d"'))).toBeTruthy();
+      it('on "a" ?b ?c "d" for the source should return true', () => {
+        return expect(source.isSourceEmpty(<any> {}, squad('"a"', '?b', '?c', '"d"'))).toBeTruthy();
       });
 
       it('on "a" ?b ?c "e" for the source should return false', () => {
-        return expect(source.isSourceEmpty({}, squad('"a"', '?b', '?c', '"e"'))).toBeFalsy();
+        return expect(source.isSourceEmpty(<any> {}, squad('"a"', '?b', '?c', '"e"'))).toBeFalsy();
       });
 
       it('on ?a ?b ?c "d" for another source should return false', () => {
-        return expect(source.isSourceEmpty({ a: 'b' }, squad('?a', '?b', '?c', '"d"'))).toBeFalsy();
+        return expect(source.isSourceEmpty(<any> { a: 'b' }, squad('?a', '?b', '?c', '"d"'))).toBeFalsy();
       });
 
       it('on "a" ?b ?c "d" for another source should return false', () => {
-        return expect(source.isSourceEmpty({ a: 'b' }, squad('"a"', '?b', '?c', '"d"'))).toBeFalsy();
+        return expect(source.isSourceEmpty(<any> { a: 'b' }, squad('"a"', '?b', '?c', '"d"'))).toBeFalsy();
       });
     });
   });
@@ -275,23 +276,23 @@ describe('FederatedQuadSource', () => {
 
     describe('when calling isSourceEmpty', () => {
       it('on ?a ?b ?c "d" for the source should return false', () => {
-        return expect(source.isSourceEmpty({}, squad('?a', '?b', '?c', '"d"'))).toBeFalsy();
+        return expect(source.isSourceEmpty(<any> {}, squad('?a', '?b', '?c', '"d"'))).toBeFalsy();
       });
 
       it('on "a" ?b ?c "d"d for the source should return false', () => {
-        return expect(source.isSourceEmpty({}, squad('"a"', '?b', '?c', '"d"'))).toBeFalsy();
+        return expect(source.isSourceEmpty(<any> {}, squad('"a"', '?b', '?c', '"d"'))).toBeFalsy();
       });
 
       it('on "a" ?b ?c "e" for the source should return false', () => {
-        return expect(source.isSourceEmpty({}, squad('"a"', '?b', '?c', '"e"'))).toBeFalsy();
+        return expect(source.isSourceEmpty(<any> {}, squad('"a"', '?b', '?c', '"e"'))).toBeFalsy();
       });
 
       it('on ?a ?b ?c "d" for another source should return false', () => {
-        return expect(source.isSourceEmpty({ a: 'b' }, squad('?a', '?b', '?c', '"d"'))).toBeFalsy();
+        return expect(source.isSourceEmpty(<any> { a: 'b' }, squad('?a', '?b', '?c', '"d"'))).toBeFalsy();
       });
 
       it('on "a" ?b ?c "d" for another source should return false', () => {
-        return expect(source.isSourceEmpty({ a: 'b' }, squad('"a"', '?b', '?c', '"d"'))).toBeFalsy();
+        return expect(source.isSourceEmpty(<any> { a: 'b' }, squad('"a"', '?b', '?c', '"d"'))).toBeFalsy();
       });
     });
   });

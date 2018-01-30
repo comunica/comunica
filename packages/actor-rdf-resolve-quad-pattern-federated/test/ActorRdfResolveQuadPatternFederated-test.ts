@@ -50,16 +50,20 @@ describe('ActorRdfResolveQuadPatternFederated', () => {
         { name: 'actor', bus, mediatorResolveQuadPattern, skipEmptyPatterns });
     });
 
-    it('should test with sources', () => {
-      return expect(actor.test({ context: { sources: [] } })).resolves.toBeTruthy();
+    it('should not test with >= 2 sources', () => {
+      return expect(actor.test({ pattern: null, context: { sources: [{}, {}] } })).resolves.toBeTruthy();
+    });
+
+    it('should not test with < 2 sources', () => {
+      return expect(actor.test({ pattern: null, context: { sources: [{}] } })).rejects.toBeTruthy();
     });
 
     it('should not test without sources', () => {
-      return expect(actor.test({ context: { sources: null } })).rejects.toBeTruthy();
+      return expect(actor.test({ pattern: null, context: { sources: null } })).rejects.toBeTruthy();
     });
 
     it('should not test without context', () => {
-      return expect(actor.test({ context: null })).rejects.toBeTruthy();
+      return expect(actor.test({ pattern: null, context: null })).rejects.toBeTruthy();
     });
 
     it('should run', () => {

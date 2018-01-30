@@ -143,8 +143,7 @@ export class FederatedQuadSource implements ILazyQuadSource {
       };
 
       // Prepare the context for this specific source
-      const context: {[id: string]: any} = {};
-      context[source.type] = source.value;
+      const context: {[id: string]: any} = { sources: [{ type: source.type, value: source.value }]};
       Object.assign(context, this.contextDefault);
 
       return new PromiseProxyIterator(async () => {
