@@ -58,7 +58,7 @@ Options:
       context = {};
     }
 
-    // Add entrypoint parameter to context
+    // Add sources to context
     if (args._.length > 0) {
       context.sources = context.sources || [];
       args._.forEach((sourceValue: string) => {
@@ -68,7 +68,6 @@ Options:
         source.value = sourceValue;
         context.sources.push(source);
       });
-      context.entrypoint = args._[0];
     }
 
     const result: IActorQueryOperationOutput = await this.evaluateQuery(query, context);

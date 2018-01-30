@@ -120,7 +120,8 @@ describe('ActorRdfResolveQuadPatternQpf', () => {
     });
 
     it('should test', () => {
-      return expect(actor.test({ pattern: pattern1, context: { entrypoint: 'entrypoint' } })).resolves
+      return expect(actor.test(
+        { pattern: pattern1, context: { sources: [{ type: 'entrypoint', value: 'entrypoint' } ]}})).resolves
         .toBeTruthy();
     });
 
@@ -134,20 +135,23 @@ describe('ActorRdfResolveQuadPatternQpf', () => {
 
     it('should not run when no metadata is available', () => {
       mediator.mediate = () => Promise.resolve({});
-      return expect(actor.run({ pattern: pattern1, context: { entrypoint: 'entrypoint' } })).rejects
+      return expect(actor.run(
+        { pattern: pattern1, context: { sources: [{ type: 'entrypoint', value: 'entrypoint' } ]}})).rejects
         .toEqual(new Error('No metadata was found at entrypoint entrypoint'));
     });
 
     it('should not run when no metadata search forms are available', () => {
       mediator.mediate = () => Promise.resolve({ firstPageMetadata: {} });
-      return expect(actor.run({ pattern: pattern1, context: { entrypoint: 'entrypoint' } })).rejects
+      return expect(actor.run(
+        { pattern: pattern1, context: { sources: [{ type: 'entrypoint', value: 'entrypoint' } ]}})).rejects
         .toEqual(new Error('No Hydra search forms were discovered in the metadata of entrypoint. ' +
           'You may be missing an actor that extracts this metadata'));
     });
 
     it('should not run when 0 metadata search forms are available', () => {
       mediator.mediate = () => Promise.resolve({ firstPageMetadata: { searchForms: { values: [] } } });
-      return expect(actor.run({ pattern: pattern1, context: { entrypoint: 'entrypoint' } })).rejects
+      return expect(actor.run(
+        { pattern: pattern1, context: { sources: [{ type: 'entrypoint', value: 'entrypoint' } ]}})).rejects
         .toEqual(new Error('No Hydra search forms were discovered in the metadata of entrypoint. ' +
           'You may be missing an actor that extracts this metadata'));
     });
@@ -164,51 +168,58 @@ describe('ActorRdfResolveQuadPatternQpf', () => {
           },
         },
       ]}}});
-      return expect(actor.run({ pattern: pattern1, context: { entrypoint: 'entrypoint' } })).rejects
+      return expect(actor.run(
+        { pattern: pattern1, context: { sources: [{ type: 'entrypoint', value: 'entrypoint' } ]}})).rejects
         .toEqual(new Error('No valid Hydra search form was found for quad pattern or triple pattern queries.'));
     });
 
     it('should run for QPF pattern 1', () => {
-      return actor.run({ pattern: pattern1, context: { entrypoint: 'entrypoint' } }).then(async (output) => {
-        expect(await output.metadata).toBe(metadataQpf);
-        expect(await arrayifyStream(output.data)).toEqual([ 'a,_,c,d/a', 'a,_,c,d/b', 'a,_,c,d/c' ]);
-      });
+      return actor.run({ pattern: pattern1, context: { sources: [{ type: 'entrypoint', value: 'entrypoint' } ]}})
+        .then(async (output) => {
+          expect(await output.metadata).toBe(metadataQpf);
+          expect(await arrayifyStream(output.data)).toEqual([ 'a,_,c,d/a', 'a,_,c,d/b', 'a,_,c,d/c' ]);
+        });
     });
 
     it('should run for QPF pattern 2', () => {
-      return actor.run({ pattern: pattern2, context: { entrypoint: 'entrypoint' } }).then(async (output) => {
-        expect(await output.metadata).toBe(metadataQpf);
-        expect(await arrayifyStream(output.data)).toEqual([ 'a,b,_,d/a', 'a,b,_,d/b', 'a,b,_,d/c' ]);
-      });
+      return actor.run({ pattern: pattern2, context: { sources: [{ type: 'entrypoint', value: 'entrypoint' } ]}})
+        .then(async (output) => {
+          expect(await output.metadata).toBe(metadataQpf);
+          expect(await arrayifyStream(output.data)).toEqual([ 'a,b,_,d/a', 'a,b,_,d/b', 'a,b,_,d/c' ]);
+        });
     });
 
     it('should run for QPF pattern 3', () => {
-      return actor.run({ pattern: pattern3, context: { entrypoint: 'entrypoint' } }).then(async (output) => {
-        expect(await output.metadata).toBe(metadataQpf);
-        expect(await arrayifyStream(output.data)).toEqual([ 'a,b,c,_/a', 'a,b,c,_/b', 'a,b,c,_/c' ]);
-      });
+      return actor.run({ pattern: pattern3, context: { sources: [{ type: 'entrypoint', value: 'entrypoint' } ]}})
+        .then(async (output) => {
+          expect(await output.metadata).toBe(metadataQpf);
+          expect(await arrayifyStream(output.data)).toEqual([ 'a,b,c,_/a', 'a,b,c,_/b', 'a,b,c,_/c' ]);
+        });
     });
 
     it('should run for QPF pattern 4', () => {
-      return actor.run({ pattern: pattern4, context: { entrypoint: 'entrypoint' } }).then(async (output) => {
-        expect(await output.metadata).toBe(metadataQpf);
-        expect(await arrayifyStream(output.data)).toEqual([ '_,b,c,d/a', '_,b,c,d/b', '_,b,c,d/c' ]);
-      });
+      return actor.run({ pattern: pattern4, context: { sources: [{ type: 'entrypoint', value: 'entrypoint' } ]}})
+        .then(async (output) => {
+          expect(await output.metadata).toBe(metadataQpf);
+          expect(await arrayifyStream(output.data)).toEqual([ '_,b,c,d/a', '_,b,c,d/b', '_,b,c,d/c' ]);
+        });
     });
 
     it('should run for QPF pattern 5', () => {
-      return actor.run({ pattern: pattern5, context: { entrypoint: 'entrypoint' } }).then(async (output) => {
-        expect(await output.metadata).toBe(metadataQpf);
-        expect(await arrayifyStream(output.data)).toEqual([ '_,b,_,d/a', '_,b,_,d/b', '_,b,_,d/c' ]);
-      });
+      return actor.run({ pattern: pattern5, context: { sources: [{ type: 'entrypoint', value: 'entrypoint' } ]}})
+        .then(async (output) => {
+          expect(await output.metadata).toBe(metadataQpf);
+          expect(await arrayifyStream(output.data)).toEqual([ '_,b,_,d/a', '_,b,_,d/b', '_,b,_,d/c' ]);
+        });
     });
 
     it('should run for QPF pattern 6', () => {
-      return actor.run({ pattern: pattern6, context: { entrypoint: 'entrypoint' } }).then(async (output) => {
-        expect(await output.metadata).toBe(metadataQpf);
-        expect(await arrayifyStream(output.data)).toEqual([
-          '"a","b"@nl,"c"^^data,_/a', '"a","b"@nl,"c"^^data,_/b', '"a","b"@nl,"c"^^data,_/c' ]);
-      });
+      return actor.run({ pattern: pattern6, context: { sources: [{ type: 'entrypoint', value: 'entrypoint' } ]}})
+        .then(async (output) => {
+          expect(await output.metadata).toBe(metadataQpf);
+          expect(await arrayifyStream(output.data)).toEqual([
+            '"a","b"@nl,"c"^^data,_/a', '"a","b"@nl,"c"^^data,_/b', '"a","b"@nl,"c"^^data,_/c' ]);
+        });
     });
 
     it('should run for TPF', () => {
@@ -216,28 +227,33 @@ describe('ActorRdfResolveQuadPatternQpf', () => {
         data: stream([ action.url + '/a', action.url + '/b', action.url + '/c' ]),
         firstPageMetadata: metadataTpf,
       });
-      return actor.run({ pattern: pattern2, context: { entrypoint: 'entrypoint' } }).then(async (output) => {
-        expect(await output.metadata).toBe(metadataTpf);
-        expect(await arrayifyStream(output.data)).toEqual([ 'a,b,_/a', 'a,b,_/b', 'a,b,_/c' ]);
-      });
+      return actor.run({ pattern: pattern2, context: { sources: [{ type: 'entrypoint', value: 'entrypoint' } ]}})
+        .then(async (output) => {
+          expect(await output.metadata).toBe(metadataTpf);
+          expect(await arrayifyStream(output.data)).toEqual([ 'a,b,_/a', 'a,b,_/b', 'a,b,_/c' ]);
+        });
     });
 
     it('should cache when run for the same entrypoint twice', () => {
       const spy = jest.spyOn(<any> actor, 'createSource');
-      return actor.run({ pattern: pattern1, context: { entrypoint: 'entrypoint' } }).then(() => {
-        actor.run({ pattern: pattern1, context: { entrypoint: 'entrypoint' } }).then(() => {
-          expect(spy).toHaveBeenCalledTimes(1);
+      return actor.run({ pattern: pattern1, context: { sources: [{ type: 'entrypoint', value: 'entrypoint' } ]}})
+        .then(() => {
+          actor.run({ pattern: pattern1, context: { sources: [{ type: 'entrypoint', value: 'entrypoint' } ]}})
+            .then(() => {
+              expect(spy).toHaveBeenCalledTimes(1);
+            });
         });
-      });
     });
 
     it('should not cache when run for different entrypoints', () => {
       const spy = jest.spyOn(<any> actor, 'createSource');
-      return actor.run({ pattern: pattern1, context: { entrypoint: 'entrypoint1' } }).then(() => {
-        actor.run({ pattern: pattern1, context: { entrypoint: 'entrypoint2' } }).then(() => {
-          expect(spy).toHaveBeenCalledTimes(2);
+      return actor.run({ pattern: pattern1, context: { sources: [{ type: 'entrypoint', value: 'entrypoint1' } ]}})
+        .then(() => {
+          actor.run({ pattern: pattern1, context: { sources: [{ type: 'entrypoint', value: 'entrypoint2' } ]}})
+            .then(() => {
+              expect(spy).toHaveBeenCalledTimes(2);
+            });
         });
-      });
     });
   });
 });
