@@ -38,8 +38,7 @@
   "dependencies": {
     "follow-redirects": "^1.4.1",
     "isomorphic-fetch": "^2.2.1",
-    "parse-link-header": "^1.0.1",
-    "setimmediate": "^1.0.5"
+    "parse-link-header": "^1.0.1"
   },
   "devDependencies": {
     "@comunica/core": "^0.0.1",

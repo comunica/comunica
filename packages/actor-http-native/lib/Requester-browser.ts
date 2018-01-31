@@ -7,8 +7,6 @@ import {EventEmitter} from 'events';
 import {IncomingMessage} from "http";
 import * as parseLink from 'parse-link-header';
 
-require('setimmediate'); // tslint:disable-line:no-var-requires
-
 // Headers we cannot send (see https://www.w3.org/TR/XMLHttpRequest/#the-setrequestheader()-method)
 const UNSAFE_REQUEST_HEADERS = {'accept-encoding': true, 'user-agent': true, 'referer': true};
 
