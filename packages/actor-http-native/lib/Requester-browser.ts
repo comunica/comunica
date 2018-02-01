@@ -2,10 +2,10 @@
 /* Single-function HTTP(S) request module for browsers */
 /* Translated from https://github.com/LinkedDataFragments/Client.js/blob/master/lib/browser/Request.js */
 
-import {SingletonIterator} from 'asynciterator';
 import {EventEmitter} from 'events';
 import {IncomingMessage} from "http";
 import * as parseLink from 'parse-link-header';
+import {Readable} from "stream";
 
 // Headers we cannot send (see https://www.w3.org/TR/XMLHttpRequest/#the-setrequestheader()-method)
 const UNSAFE_REQUEST_HEADERS = {'accept-encoding': true, 'user-agent': true, 'referer': true};
@@ -46,7 +46,9 @@ export default class Requester {
     // Handle the arrival of a response
     request.onload = () => {
       // Convert the response into an iterator
-      const response: IncomingMessage = <any> new SingletonIterator(request.responseText || '');
+      const response: IncomingMessage = <IncomingMessage> new Readable();
+      response.push(request.responseText || '');
+      response.push(null);
       response.statusCode = request.status;
       (<any> response).responseUrl = request.responseURL;
 
