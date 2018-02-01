@@ -27,8 +27,8 @@ export class ActorRdfResolveQuadPatternQpf extends ActorRdfResolveQuadPatternSou
 
   public async test(action: IActionRdfResolveQuadPattern): Promise<IActorTest> {
     if (!action.context || !action.context.sources || action.context.sources.length !== 1
-        || action.context.sources[0].type !== 'entrypoint') {
-      throw new Error('Actor ' + this.name + ' can only resolve quad pattern queries against a single QPF entrypoint.');
+        || action.context.sources[0].type !== 'entrypoint' || !action.context.sources[0].value) {
+      throw new Error(this.name + ' requires a single source with a QPF entrypoint to be present in the context.');
     }
     return true;
   }

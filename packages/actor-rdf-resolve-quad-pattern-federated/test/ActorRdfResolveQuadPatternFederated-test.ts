@@ -50,7 +50,7 @@ describe('ActorRdfResolveQuadPatternFederated', () => {
         { name: 'actor', bus, mediatorResolveQuadPattern, skipEmptyPatterns });
     });
 
-    it('should not test with >= 2 sources', () => {
+    it('should test with >= 2 sources', () => {
       return expect(actor.test({ pattern: null, context: { sources: [{}, {}] } })).resolves.toBeTruthy();
     });
 
