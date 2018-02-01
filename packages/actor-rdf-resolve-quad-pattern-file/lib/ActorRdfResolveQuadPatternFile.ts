@@ -20,7 +20,7 @@ export class ActorRdfResolveQuadPatternFile extends ActorRdfResolveQuadPatternSo
   public readonly files?: string[];
   public stores: {[file: string]: Promise<any>} = {};
 
-  constructor(args: IActorArgs<IActionRdfResolveQuadPattern, IActorTest, IActorRdfResolveQuadPatternOutput>) {
+  constructor(args: IActorRdfResolveQuadPatternFileArgs) {
     super(args);
   }
 
@@ -40,14 +40,15 @@ export class ActorRdfResolveQuadPatternFile extends ActorRdfResolveQuadPatternSo
   }
 
   public async test(action: IActionRdfResolveQuadPattern): Promise<IActorTest> {
-    if (!action.context || !action.context.file) {
-      throw new Error(this.name + ' requires a file to be present in the context.');
+    if (!action.context || !action.context.sources || action.context.sources.length !== 1
+      || action.context.sources[0].type !== 'file' || !action.context.sources[0].value) {
+      throw new Error(this.name + ' requires a single source with a file to be present in the context.');
     }
     return true;
   }
 
   protected async getSource(context?: {[id: string]: any}): Promise<ILazyQuadSource> {
-    const file: string = context.file;
+    const file: string = context.sources[0].value;
     if (!this.stores[file]) {
       await this.initializeFile(file);
     }
@@ -59,7 +60,7 @@ export class ActorRdfResolveQuadPatternFile extends ActorRdfResolveQuadPatternSo
     // Attach totalItems to the output
     const output: IActorRdfResolveQuadPatternOutput = await super.getOutput(source, pattern, context);
     output.metadata = new Promise((resolve, reject) => {
-      const file: string = context.file;
+      const file: string = context.sources[0].value;
       this.stores[file].then((store) => {
         const totalItems: number = store.countTriplesByIRI(
           N3StoreIterator.termToString(pattern.subject),

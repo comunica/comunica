@@ -49,7 +49,8 @@ describe('ActorRdfResolveQuadPatternHdt', () => {
     });
 
     it('should test', () => {
-      return expect(actor.test({ pattern: null, context: { hdtFile: 'abc' } })).resolves.toBeTruthy();
+      return expect(actor.test({ pattern: null, context: { sources: [{ type: 'hdtFile', value: 'abc'  }] } }))
+        .resolves.toBeTruthy();
     });
 
     it('should not test without a context', () => {
@@ -61,7 +62,24 @@ describe('ActorRdfResolveQuadPatternHdt', () => {
     });
 
     it('should not test on an invalid file', () => {
-      return expect(actor.test({ pattern: null, context: { hdtFile: null } })).rejects.toBeTruthy();
+      return expect(actor.test({ pattern: null, context: { sources: [{ type: 'hdtFile', value: null  }] } }))
+        .rejects.toBeTruthy();
+    });
+
+    it('should not test on no file', () => {
+      return expect(actor.test({ pattern: null, context: { sources: [{ type: 'entrypoint', value: null  }] } }))
+        .rejects.toBeTruthy();
+    });
+
+    it('should not test on no sources', () => {
+      return expect(actor.test({ pattern: null, context: { sources: [] } }))
+        .rejects.toBeTruthy();
+    });
+
+    it('should not test on multiple sources', () => {
+      return expect(actor.test(
+        { pattern: null, context: { sources: [{ type: 'hdtFile', value: 'a' }, { type: 'hdtFile', value: 'b' }] } }))
+        .rejects.toBeTruthy();
     });
 
     it('should allow HDT initialization with a valid file', () => {
@@ -73,18 +91,19 @@ describe('ActorRdfResolveQuadPatternHdt', () => {
     });
 
     it('should allow a HDT quad source to be created for a context with a valid file', () => {
-      return expect((<any> actor).getSource({ hdtFile: 'myFile' })).resolves.toBeTruthy();
+      return expect((<any> actor).getSource({ sources: [{ type: 'hdtFile', value: 'myFile'  }] }))
+        .resolves.toBeTruthy();
     });
 
     it('should fail on creating a HDT quad source for a context with an invalid file', () => {
-      return expect((<any> actor).getSource({ hdtFile: null })).rejects.toBeTruthy();
+      return expect((<any> actor).getSource({ sources: [{ type: 'hdtFile', value: null  }] })).rejects.toBeTruthy();
     });
 
     it('should create only a HDT quad source only once per file', () => {
       let doc1 = null;
-      return (<any> actor).getSource({ hdtFile: 'myFile' }).then((file: any) => {
+      return (<any> actor).getSource({ sources: [{ type: 'hdtFile', value: 'myFile'  }] }).then((file: any) => {
         doc1 = file.hdtDocument;
-        return (<any> actor).getSource({ hdtFile: 'myFile' });
+        return (<any> actor).getSource({ sources: [{ type: 'hdtFile', value: 'myFile'  }] });
       }).then((file: any) => {
         expect(file.hdtDocument).toBe(doc1);
       });
@@ -92,10 +111,10 @@ describe('ActorRdfResolveQuadPatternHdt', () => {
 
     it('should create different documents in HDT quad source for different files', () => {
       let doc1 = null;
-      return (<any> actor).getSource({ hdtFile: 'myFile1' }).then((file: any) => {
+      return (<any> actor).getSource({ sources: [{ type: 'hdtFile', value: 'myFile1'  }] }).then((file: any) => {
         doc1 = file.hdtDocument;
         require('hdt').__setMockedDocument(new MockedHdtDocument([]));
-        return (<any> actor).getSource({ hdtFile: 'myFile2' });
+        return (<any> actor).getSource({ sources: [{ type: 'hdtFile', value: 'myFile2'  }] });
       }).then((file: any) => {
         expect(file.hdtDocument).not.toBe(doc1);
       });
@@ -109,7 +128,7 @@ describe('ActorRdfResolveQuadPatternHdt', () => {
 
     it('should run on ? ? ?', () => {
       const pattern = quad('?', '?', '?');
-      return actor.run({ pattern, context: { hdtFile: 'abc' } }).then(async (output) => {
+      return actor.run({ pattern, context: { sources: [{ type: 'hdtFile', value: 'abc'  }] } }).then(async (output) => {
         expect(await output.metadata).toEqual({ totalItems: 8 });
         expect(await arrayifyStream(output.data)).toEqual([
           quad('s1', 'p1', 'o1'),
@@ -126,7 +145,7 @@ describe('ActorRdfResolveQuadPatternHdt', () => {
 
     it('should run on s1 ? ?', () => {
       const pattern = quad('s1', '?', '?');
-      return actor.run({ pattern, context: { hdtFile: 'abc' } }).then(async (output) => {
+      return actor.run({ pattern, context: { sources: [{ type: 'hdtFile', value: 'abc'  }] } }).then(async (output) => {
         expect(await output.metadata).toEqual({ totalItems: 4 });
         expect(await arrayifyStream(output.data)).toEqual([
           quad('s1', 'p1', 'o1'),
@@ -139,7 +158,7 @@ describe('ActorRdfResolveQuadPatternHdt', () => {
 
     it('should run on s3 ? ?', () => {
       const pattern = quad('s3', '?', '?');
-      return actor.run({ pattern, context: { hdtFile: 'abc' } }).then(async (output) => {
+      return actor.run({ pattern, context: { sources: [{ type: 'hdtFile', value: 'abc'  }] } }).then(async (output) => {
         expect(await output.metadata).toEqual({ totalItems: 0 });
         expect(await arrayifyStream(output.data)).toEqual([]);
       });
@@ -157,7 +176,7 @@ describe('ActorRdfResolveQuadPatternHdt', () => {
       (<any> actor).queries--;
       expect((<any> actor).shouldClose).toBe(true);
       const pattern = quad('s3', '?', '?');
-      return actor.run({ pattern, context: { hdtFile: 'abc' } }).then(async (output) => {
+      return actor.run({ pattern, context: { sources: [{ type: 'hdtFile', value: 'abc'  }] } }).then(async (output) => {
         expect(await arrayifyStream(output.data)).toBeTruthy();
         expect((<any> actor).shouldClose).toBe(false);
         expect(actor.closed).toBe(true);

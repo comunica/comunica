@@ -51,7 +51,8 @@ describe('ActorRdfResolveQuadPatternFile', () => {
     });
 
     it('should test', () => {
-      return expect(actor.test({ pattern: null, context: { file: 'abc' } })).resolves.toBeTruthy();
+      return expect(actor.test({ pattern: null, context: { sources: [{ type: 'file', value: 'abc'  }] } }))
+        .resolves.toBeTruthy();
     });
 
     it('should not test without a context', () => {
@@ -63,7 +64,24 @@ describe('ActorRdfResolveQuadPatternFile', () => {
     });
 
     it('should not test on an invalid file', () => {
-      return expect(actor.test({ pattern: null, context: { file: null } })).rejects.toBeTruthy();
+      return expect(actor.test({ pattern: null, context: { sources: [{ type: 'file', value: null  }] } }))
+        .rejects.toBeTruthy();
+    });
+
+    it('should not test on no file', () => {
+      return expect(actor.test({ pattern: null, context: { sources: [{ type: 'entrypoint', value: null  }] } }))
+        .rejects.toBeTruthy();
+    });
+
+    it('should not test on no sources', () => {
+      return expect(actor.test({ pattern: null, context: { sources: [] } }))
+        .rejects.toBeTruthy();
+    });
+
+    it('should not test on multiple sources', () => {
+      return expect(actor.test(
+        { pattern: null, context: { sources: [{ type: 'file', value: 'a' }, { type: 'file', value: 'b' }] } }))
+        .rejects.toBeTruthy();
     });
 
     it('should allow file initialization with a valid file', () => {
@@ -75,18 +93,18 @@ describe('ActorRdfResolveQuadPatternFile', () => {
     });
 
     it('should allow a file quad source to be created for a context with a valid file', () => {
-      return expect((<any> actor).getSource({ file: 'myFile' })).resolves.toBeTruthy();
+      return expect((<any> actor).getSource({ sources: [{ type: 'file', value: 'myFile'  }] })).resolves.toBeTruthy();
     });
 
     it('should fail on creating a file quad source for a context with an invalid file', () => {
-      return expect((<any> actor).getSource({ file: null })).rejects.toBeTruthy();
+      return expect((<any> actor).getSource({ sources: [{ type: 'file', value: null  }] })).rejects.toBeTruthy();
     });
 
     it('should create only a file quad source only once per file', () => {
       let doc1 = null;
-      return (<any> actor).getSource({ file: 'myFile' }).then((file: any) => {
+      return (<any> actor).getSource({ sources: [{ type: 'file', value: 'myFile'  }] }).then((file: any) => {
         doc1 = file.store;
-        return (<any> actor).getSource({ file: 'myFile' });
+        return (<any> actor).getSource({ sources: [{ type: 'file', value: 'myFile'  }] });
       }).then((file: any) => {
         expect(file.store).toBe(doc1);
       });
@@ -94,9 +112,9 @@ describe('ActorRdfResolveQuadPatternFile', () => {
 
     it('should create different documents in file quad source for different files', () => {
       let doc1 = null;
-      return (<any> actor).getSource({ file: 'myFile1' }).then((file: any) => {
+      return (<any> actor).getSource({ sources: [{ type: 'file', value: 'myFile1'  }] }).then((file: any) => {
         doc1 = file.store;
-        return (<any> actor).getSource({ file: 'myFile2' });
+        return (<any> actor).getSource({ sources: [{ type: 'file', value: 'myFile2'  }] });
       }).then((file: any) => {
         expect(file.store).not.toBe(doc1);
       });
@@ -111,7 +129,7 @@ describe('ActorRdfResolveQuadPatternFile', () => {
 
     it('should run on ? ? ?', () => {
       const pattern = quad('?', '?', '?');
-      return actor.run({ pattern, context: { file: 'abc' } }).then(async (output) => {
+      return actor.run({ pattern, context: { sources: [{ type: 'file', value: 'abc'  }] } }).then(async (output) => {
         expect(await output.metadata).toEqual({ totalItems: 8 });
         expect(await arrayifyStream(output.data)).toEqual([
           quad('s1', 'p1', 'o2'),
@@ -128,7 +146,7 @@ describe('ActorRdfResolveQuadPatternFile', () => {
 
     it('should run on s1 ? ?', () => {
       const pattern = quad('s1', '?', '?');
-      return actor.run({ pattern, context: { file: 'abc' } }).then(async (output) => {
+      return actor.run({ pattern, context: { sources: [{ type: 'file', value: 'abc'  }] } }).then(async (output) => {
         expect(await output.metadata).toEqual({ totalItems: 4 });
         expect(await arrayifyStream(output.data)).toEqual([
           quad('s1', 'p1', 'o2'),
@@ -141,7 +159,7 @@ describe('ActorRdfResolveQuadPatternFile', () => {
 
     it('should run on s3 ? ?', () => {
       const pattern = quad('s3', '?', '?');
-      return actor.run({ pattern, context: { file: 'abc' } }).then(async (output) => {
+      return actor.run({ pattern, context: { sources: [{ type: 'file', value: 'abc'  }] } }).then(async (output) => {
         expect(await output.metadata).toEqual({ totalItems: 0 });
         expect(await arrayifyStream(output.data)).toEqual([]);
       });
