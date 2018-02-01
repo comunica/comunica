@@ -87,7 +87,7 @@
     "@comunica/mediator-race": "^0.0.1",
     "@comunica/runner-cli": "^0.0.1",
     "@comunica/runner": "^0.0.1",
-    "componentsjs": "2.1.2",
+    "componentsjs": "2.1.3",
     "lodash.assign": "^4.2.0",
     "string-replace-webpack-plugin": "^0.1.3",
     "webpack": "^3.10.0"
