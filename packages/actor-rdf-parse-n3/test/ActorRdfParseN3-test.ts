@@ -6,6 +6,9 @@ import {ActorRdfParseN3} from "../lib/ActorRdfParseN3";
 const stringToStream = require('streamify-string');
 const arrayifyStream = require('arrayify-stream');
 
+const n3 = require('n3');
+Object.keys(n3).forEach((submodule) => n3[submodule] = n3[submodule]);
+
 describe('ActorRdfParseN3', () => {
   let bus;
 
@@ -83,67 +86,67 @@ describe('ActorRdfParseN3', () => {
       });
 
       it('should test on TriG', () => {
-        return expect(actor.test({ parse: { input, mediaType: 'application/trig' }})).resolves.toBeTruthy();
+        return expect(actor.test({ handle: { input }, handleMediaType: 'application/trig' })).resolves.toBeTruthy();
       });
 
       it('should test on N-Quads', () => {
-        return expect(actor.test({ parse: { input, mediaType: 'application/n-quads'}})).resolves.toBeTruthy();
+        return expect(actor.test({ handle: { input }, handleMediaType: 'application/n-quads'})).resolves.toBeTruthy();
       });
 
       it('should test on Turtle', () => {
-        return expect(actor.test({ parse: { input, mediaType: 'text/turtle'}})).resolves.toBeTruthy();
+        return expect(actor.test({ handle: { input }, handleMediaType: 'text/turtle'})).resolves.toBeTruthy();
       });
 
       it('should test on N-Triples', () => {
-        return expect(actor.test({ parse: { input, mediaType: 'application/n-triples'}})).resolves.toBeTruthy();
+        return expect(actor.test({ handle: { input }, handleMediaType: 'application/n-triples'})).resolves.toBeTruthy();
       });
 
       it('should not test on JSON-LD', () => {
-        return expect(actor.test({ parse: { input, mediaType: 'application/ld+json'}})).rejects.toBeTruthy();
+        return expect(actor.test({ handle: { input }, handleMediaType: 'application/ld+json'})).rejects.toBeTruthy();
       });
 
       it('should run on text/turtle', () => {
-        return actor.run({ parse: { input, mediaType: 'text/turtle' }})
-          .then(async (output) => expect(await arrayifyStream(output.parse.quads)).toHaveLength(2));
+        return actor.run({ handle: { input }, handleMediaType: 'text/turtle' })
+          .then(async (output) => expect(await arrayifyStream(output.handle.quads)).toHaveLength(2));
       });
 
       it('should run on application/trig', () => {
-        return actor.run({ parse: { input, mediaType: 'application/trig' }})
-          .then(async (output) => expect(await arrayifyStream(output.parse.quads)).toHaveLength(2));
+        return actor.run({ handle: { input }, handleMediaType: 'application/trig' })
+          .then(async (output) => expect(await arrayifyStream(output.handle.quads)).toHaveLength(2));
       });
     });
 
     describe('for getting media types', () => {
       it('should test', () => {
-        return expect(actor.test({ mediaType: true })).resolves.toBeTruthy();
+        return expect(actor.test({ mediaTypes: true })).resolves.toBeTruthy();
       });
 
       it('should run', () => {
-        return expect(actor.run({ mediaType: true })).resolves.toEqual({ mediaType: { mediaTypes: {
+        return expect(actor.run({ mediaTypes: true })).resolves.toEqual({ mediaTypes: {
           'application/trig': 1.0,
           'application/n-quads': 0.7, // tslint:disable-line:object-literal-sort-keys // We want to sort by preference
           'text/turtle': 0.6,
           'application/n-triples': 0.3,
           'text/n3': 0.2,
-        }}});
+        }});
       });
 
       it('should run with scaled priorities 0.5', () => {
         actor = new ActorRdfParseN3({ name: 'actor', bus, mediaTypes: { A: 2, B: 1, C: 0 }, priorityScale: 0.5 });
-        return expect(actor.run({ mediaType: true })).resolves.toEqual({ mediaType: { mediaTypes: {
+        return expect(actor.run({ mediaTypes: true })).resolves.toEqual({ mediaTypes: {
           A: 1,
           B: 0.5,
           C: 0,
-        }}});
+        }});
       });
 
       it('should run with scaled priorities 0', () => {
         actor = new ActorRdfParseN3({ name: 'actor', bus, mediaTypes: { A: 2, B: 1, C: 0 }, priorityScale: 0 });
-        return expect(actor.run({ mediaType: true })).resolves.toEqual({ mediaType: { mediaTypes: {
+        return expect(actor.run({ mediaTypes: true })).resolves.toEqual({ mediaTypes: {
           A: 0,
           B: 0,
           C: 0,
-        }}});
+        }});
       });
     });
   });

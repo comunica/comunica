@@ -1,5 +1,6 @@
 {
   "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-abstract-mediatyped.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-parse-n3.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-bus-rdf-parse.jsonld"
   ],
@@ -13,7 +14,7 @@
       "comment": "An N3-based actor that listens on the 'rdf-parse' bus.",
       "parameters": [
         {
-          "@id": "cbrp:Actor/RdfParseFixedMediaTypes/mediaTypeEntry",
+          "@id": "caam:Actor/AbstractMediaTypedFixed/mediaTypeEntry",
           "defaultScoped": {
             "defaultScope": "crpn3:Actor/RdfParse/N3",
             "defaultScopedValue": [

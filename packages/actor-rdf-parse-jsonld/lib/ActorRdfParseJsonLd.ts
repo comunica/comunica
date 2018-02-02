@@ -13,7 +13,7 @@ export class ActorRdfParseJsonLd extends ActorRdfParseFixedMediaTypes {
     super(args);
   }
 
-  public async runParse(action: IActionRdfParse): Promise<IActorRdfParseOutput> {
+  public async runHandle(action: IActionRdfParse, mediaType: string): Promise<IActorRdfParseOutput> {
     return { quads: JsonLdParser.import(action.input) };
   }
 

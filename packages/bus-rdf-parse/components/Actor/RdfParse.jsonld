@@ -1,5 +1,6 @@
 {
   "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-abstract-mediatyped.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-core.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-bus-rdf-parse.jsonld"
   ],
@@ -8,7 +9,7 @@
     {
       "@id": "cbrp:Actor/RdfParse",
       "@type": "AbstractClass",
-      "extends": "Actor",
+      "extends": "caam:Actor/AbstractMediaTyped",
       "requireElement": "ActorRdfParse",
       "comment": "A base actor for listening to RDF parse events.",
       "parameters": [
@@ -23,7 +24,7 @@
       "constructorArguments": [
         {
           "@id": "cbrp:Actor/RdfParse/constructorArgumentsObject",
-          "extends": "cc:Actor/constructorArgumentsObject"
+          "extends": "caam:Actor/AbstractMediaTyped/constructorArgumentsObject"
         }
       ]
     }

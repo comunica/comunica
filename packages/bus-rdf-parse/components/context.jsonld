@@ -6,11 +6,7 @@
 
       "BusRdfParse": "cbrp:Bus/RdfParse",
       "ActorRdfParse": "cbrp:Actor/RdfParse",
-      "ActorRdfParseFixedMediaTypes": "cbrp:Actor/RdfParseFixedMediaTypes",
-      "mediaTypeEntry": "cbrp:Actor/RdfParseFixedMediaTypes/mediaTypeEntry",
-      "mediaTypeKey": "cbrp:Actor/RdfParseFixedMediaTypes/MediaTypeEntry/mediaType",
-      "priorityValue": "cbrp:Actor/RdfParseFixedMediaTypes/MediaTypeEntry/priority",
-      "priorityScale": "cbrp:Actor/RdfParseFixedMediaTypes/priorityScale"
+      "ActorRdfParseFixedMediaTypes": "cbrp:Actor/RdfParseFixedMediaTypes"
     }
   ]
 }
