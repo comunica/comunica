@@ -1,0 +1,10 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/contexts/comunica-actor-abstract-mediatyped.jsonld",
+  "@id": "npmd:@comunica/actor-abstract-mediatyped",
+  "@type": "Module",
+  "requireName": "@comunica/actor-abstract-mediatyped",
+  "import": [
+    "Actor/AbstractMediaTyped.jsonld",
+    "Actor/AbstractMediaTypedFixed.jsonld"
+  ]
+}

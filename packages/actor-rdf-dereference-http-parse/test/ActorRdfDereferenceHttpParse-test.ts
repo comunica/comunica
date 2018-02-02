@@ -38,10 +38,10 @@ describe('ActorRdfDereferenceHttpParse', () => {
 
     beforeEach(() => {
       mediatorRdfParse.mediate = (action) => {
-        if (action.mediaType) {
-          return { mediaType: { mediaTypes: { a: 1.0 }}};
+        if (action.mediaTypes) {
+          return { mediaTypes: { a: 1.0 }};
         } else {
-          return { parse: { quads: 'fine', triples: true }};
+          return { handle: { quads: 'fine', triples: true }};
         }
       };
       mediatorHttp.mediate = (action) => {

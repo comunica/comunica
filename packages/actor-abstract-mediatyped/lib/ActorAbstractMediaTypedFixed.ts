@@ -1,0 +1,52 @@
+import {ActorAbstractMediaTyped, IActorArgsMediaTyped} from "./ActorAbstractMediaTyped";
+
+export abstract class ActorAbstractMediaTypedFixed<HI, HT, HO> extends ActorAbstractMediaTyped<HI, HT, HO> {
+
+  /**
+   * A hash of media types, with media type name as key, and its priority as value.
+   * Priorities are numbers between [0, 1].
+   */
+  public readonly mediaTypes: {[id: string]: number};
+  /**
+   * A multiplier for media type priorities.
+   * This can be used for keeping the original media types in place,
+   * but scaling all of their scores with a certain value.
+   */
+  public readonly priorityScale: number;
+
+  constructor(args: IActorArgsMediaTypedFixed<HI, HT, HO>) {
+    super(args);
+    const scale: number = this.priorityScale || this.priorityScale === 0 ? this.priorityScale : 1;
+    this.mediaTypes = require('lodash.mapvalues')(this.mediaTypes, (priority: number) => priority * scale);
+    this.mediaTypes = Object.freeze(this.mediaTypes);
+  }
+
+  public async testHandle(action: HI, mediaType: string): Promise<HT> {
+    if (!(mediaType in this.mediaTypes)) {
+      throw new Error('Unrecognized media type: ' + mediaType);
+    }
+    return await this.testHandleChecked(action);
+  }
+
+  /**
+   * Check to see if this actor can handle the given action.
+   * The media type has already been checked before this is called.
+   *
+   * @param {HI} action The action to test.
+   */
+  public abstract async testHandleChecked(action: HI): Promise<HT>;
+
+  public async testMediaType(): Promise<boolean> {
+    return true;
+  }
+
+  public async getMediaTypes(): Promise<{[id: string]: number}> {
+    return this.mediaTypes;
+  }
+
+}
+
+export interface IActorArgsMediaTypedFixed<HI, HT, HO> extends IActorArgsMediaTyped<HI, HT, HO> {
+  mediaTypes: {[id: string]: number};
+  priorityScale?: number;
+}

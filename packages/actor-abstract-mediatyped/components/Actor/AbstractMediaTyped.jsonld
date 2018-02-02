@@ -1,0 +1,22 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/comunica-core.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-abstract-mediatyped.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-abstract-mediatyped",
+  "components": [
+    {
+      "@id": "caam:Actor/AbstractMediaTyped",
+      "@type": "AbstractClass",
+      "extends": "Actor",
+      "requireElement": "ActorAbstractMediaTyped",
+      "comment": "An abstract comunica actor for handling media-typed actions.",
+      "constructorArguments": [
+        {
+          "@id": "caam:Actor/AbstractMediaTyped/constructorArgumentsObject",
+          "extends": "cc:Actor/constructorArgumentsObject"
+        }
+      ]
+    }
+  ]
+}

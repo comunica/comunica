@@ -1,0 +1,70 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/comunica-core.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-abstract-mediatyped.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-abstract-mediatyped",
+  "components": [
+    {
+      "@id": "caam:Actor/AbstractMediaTypedFixed",
+      "@type": "AbstractClass",
+      "extends": "caam:Actor/AbstractMediaTyped",
+      "requireElement": "ActorAbstractMediaTypedFixed",
+      "comment": "An abstract comunica actor for handling media-typed actions with fixed media-types.",
+      "parameters": [
+        {
+          "@id": "caam:Actor/AbstractMediaTypedFixed/mediaTypeEntry",
+          "comment": "A media type entry",
+          "range": {
+            "@type": "caam:Actor/AbstractMediaTypedFixed/MediaTypeEntry",
+            "parameters": [
+              {
+                "@id": "caam:Actor/AbstractMediaTypedFixed/MediaTypeEntry/mediaType",
+                "comment": "A media type name",
+                "required": true,
+                "unique": true
+              },
+              {
+                "@id": "caam:Actor/AbstractMediaTypedFixed/MediaTypeEntry/priority",
+                "comment": "A media type priority, with values between [0, 1]",
+                "default": "1",
+                "range": "xsd:float",
+                "required": true,
+                "unique": true
+              }
+            ]
+          }
+        },
+        {
+          "@id": "caam:Actor/AbstractMediaTypedFixed/priorityScale",
+          "comment": "A multiplier for media type priorities",
+          "unique": true
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "caam:Actor/AbstractMediaTypedFixed/constructorArgumentsObject",
+          "extends": "caam:Actor/AbstractMediaTyped/constructorArgumentsObject",
+          "fields": [
+            {
+              "keyRaw": "mediaTypes",
+              "value": {
+                "fields": [
+                  {
+                    "collectEntries": "caam:Actor/AbstractMediaTypedFixed/mediaTypeEntry",
+                    "key": "caam:Actor/AbstractMediaTypedFixed/MediaTypeEntry/mediaType",
+                    "value": "caam:Actor/AbstractMediaTypedFixed/MediaTypeEntry/priority"
+                  }
+                ]
+              }
+            },
+            {
+              "keyRaw": "priorityScale",
+              "value": "caam:Actor/AbstractMediaTypedFixed/priorityScale"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

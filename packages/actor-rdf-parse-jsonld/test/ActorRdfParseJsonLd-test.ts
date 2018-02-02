@@ -21,8 +21,6 @@ describe('ActorRdfParseJsonLd', () => {
     it('should be a ActorRdfParseJsonLd constructor', () => {
       expect(new (<any> ActorRdfParseJsonLd)({ name: 'actor', bus, mediaTypes: {} }))
         .toBeInstanceOf(ActorRdfParseJsonLd);
-      expect(new (<any> ActorRdfParseJsonLd)({ name: 'actor', bus, mediaTypes: {} }))
-        .toBeInstanceOf(ActorRdfParse);
     });
 
     it('should not be able to create new ActorRdfParseJsonLd objects without \'new\'', () => {
@@ -74,33 +72,33 @@ describe('ActorRdfParseJsonLd', () => {
       });
 
       it('should test on application/json', () => {
-        return expect(actor.test({ parse: { input, mediaType: 'application/json' }})).resolves.toBeTruthy();
+        return expect(actor.test({ handle: { input }, handleMediaType: 'application/json' })).resolves.toBeTruthy();
       });
 
       it('should test on application/ld+json', () => {
-        return expect(actor.test({ parse: { input, mediaType: 'application/ld+json'}})).resolves.toBeTruthy();
+        return expect(actor.test({ handle: { input }, handleMediaType: 'application/ld+json' })).resolves.toBeTruthy();
       });
 
       it('should not test on N-Triples', () => {
-        return expect(actor.test({ parse: { input, mediaType: 'application/n-triples'}})).rejects.toBeTruthy();
+        return expect(actor.test({ handle: { input }, handleMediaType: 'application/n-triples' })).rejects.toBeTruthy();
       });
 
       it('should run', () => {
-        return actor.run({ parse: { input, mediaType: 'application/ld+json'}})
-          .then(async (output) => expect(await arrayifyStream(output.parse.quads)).toHaveLength(2));
+        return actor.run({ handle: { input }, handleMediaType: 'application/ld+json' })
+          .then(async (output) => expect(await arrayifyStream(output.handle.quads)).toHaveLength(2));
       });
     });
 
     describe('for getting media types', () => {
       it('should test', () => {
-        return expect(actor.test({ mediaType: true })).resolves.toBeTruthy();
+        return expect(actor.test({ mediaTypes: true })).resolves.toBeTruthy();
       });
 
       it('should run', () => {
-        return expect(actor.run({ mediaType: true })).resolves.toEqual({ mediaType: { mediaTypes: {
+        return expect(actor.run({ mediaTypes: true })).resolves.toEqual({ mediaTypes: {
           'application/json': 1.0,
           'application/ld+json': 1.0,
-        }}});
+        }});
       });
 
       it('should run with scaled priorities 0.5', () => {
@@ -108,10 +106,10 @@ describe('ActorRdfParseJsonLd', () => {
           'application/json': 1.0,
           'application/ld+json': 1.0,
         }, name: 'actor', priorityScale: 0.5 });
-        return expect(actor.run({ mediaType: true })).resolves.toEqual({ mediaType: { mediaTypes: {
+        return expect(actor.run({ mediaTypes: true })).resolves.toEqual({ mediaTypes: {
           'application/json': 0.5,
           'application/ld+json': 0.5,
-        }}});
+        }});
       });
 
       it('should run with scaled priorities 0', () => {
@@ -119,10 +117,10 @@ describe('ActorRdfParseJsonLd', () => {
           'application/json': 1.0,
           'application/ld+json': 1.0,
         }, name: 'actor', priorityScale: 0 });
-        return expect(actor.run({ mediaType: true })).resolves.toEqual({ mediaType: { mediaTypes: {
+        return expect(actor.run({ mediaTypes: true })).resolves.toEqual({ mediaTypes: {
           'application/json': 0,
           'application/ld+json': 0,
-        }}});
+        }});
       });
     });
   });
