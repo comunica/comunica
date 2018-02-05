@@ -1,6 +1,6 @@
 import {ActorInit, IActionInit, IActorOutputInit} from "@comunica/bus-init";
-import {IActionRdfParse, IActionRdfParseOrMediaType, IActorOutputRdfParseOrMediaType,
-  IActorRdfParseOutput} from "@comunica/bus-rdf-parse";
+import {IActionRdfParse, IActionRootRdfParse, IActorOutputRootRdfParse, IActorRdfParseOutput,
+  IActorTestRootRdfParse} from "@comunica/bus-rdf-parse";
 import {Actor, IActorArgs, IActorTest, Mediator} from "@comunica/core";
 import {PassThrough, Readable} from "stream";
 
@@ -12,8 +12,8 @@ import {PassThrough, Readable} from "stream";
  */
 export class ActorInitRdfParse extends ActorInit implements IActorInitRdfParseArgs {
 
-  public readonly mediatorRdfParse: Mediator<Actor<IActionRdfParseOrMediaType, IActorTest,
-    IActorOutputRdfParseOrMediaType>, IActionRdfParseOrMediaType, IActorTest, IActorOutputRdfParseOrMediaType>;
+  public readonly mediatorRdfParse: Mediator<Actor<IActionRootRdfParse, IActorTestRootRdfParse,
+    IActorOutputRootRdfParse>, IActionRootRdfParse, IActorTestRootRdfParse, IActorOutputRootRdfParse>;
   public readonly mediaType: string;
 
   constructor(args: IActorInitRdfParseArgs) {
@@ -25,8 +25,9 @@ export class ActorInitRdfParse extends ActorInit implements IActorInitRdfParseAr
   }
 
   public async run(action: IActionInit): Promise<IActorOutputInit> {
-    const parseAction: IActionRdfParse = { input: action.stdin , mediaType: this.mediaType };
-    const result: IActorRdfParseOutput = (await this.mediatorRdfParse.mediate({ parse: parseAction })).parse;
+    const parseAction: IActionRdfParse = { input: action.stdin };
+    const result: IActorRdfParseOutput = (await this.mediatorRdfParse.mediate(
+      { handle: parseAction, handleMediaType: this.mediaType })).handle;
 
     result.quads.on('data', (quad) => readable.push(JSON.stringify(quad)));
     result.quads.on('end', () => readable.push(null));
@@ -41,7 +42,7 @@ export class ActorInitRdfParse extends ActorInit implements IActorInitRdfParseAr
 }
 
 export interface IActorInitRdfParseArgs extends IActorArgs<IActionInit, IActorTest, IActorOutputInit> {
-  mediatorRdfParse: Mediator<Actor<IActionRdfParseOrMediaType, IActorTest,
-    IActorOutputRdfParseOrMediaType>, IActionRdfParseOrMediaType, IActorTest, IActorOutputRdfParseOrMediaType>;
+  mediatorRdfParse: Mediator<Actor<IActionRootRdfParse, IActorTestRootRdfParse,
+    IActorOutputRootRdfParse>, IActionRootRdfParse, IActorTestRootRdfParse, IActorOutputRootRdfParse>;
   mediaType: string;
 }
