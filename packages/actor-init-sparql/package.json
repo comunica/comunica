@@ -50,6 +50,7 @@
     "@comunica/bus-sparql-parse": "^0.0.1"
   },
   "devDependencies": {
+    "@comunica/actor-abstract-mediatyped": "^0.0.1",
     "@comunica/actor-http-node-fetch": "^0.0.1",
     "@comunica/actor-query-operation-bgp-empty": "^0.0.1",
     "@comunica/actor-query-operation-bgp-left-deep-smallest": "^0.0.1",
@@ -73,6 +74,7 @@
     "@comunica/actor-rdf-resolve-quad-pattern-hdt": "^0.0.1",
     "@comunica/actor-rdf-resolve-quad-pattern-qpf": "^0.0.1",
     "@comunica/actor-sparql-parse-algebra": "^0.0.1",
+    "@comunica/actor-sparql-serialize-simple": "^0.0.1",
     "@comunica/bus-init": "^0.0.1",
     "@comunica/bus-http": "^0.0.1",
     "@comunica/bus-query-operation": "^0.0.1",
@@ -83,6 +85,7 @@
     "@comunica/bus-rdf-parse": "^0.0.1",
     "@comunica/bus-rdf-resolve-quad-pattern": "^0.0.1",
     "@comunica/bus-sparql-parse": "^0.0.1",
+    "@comunica/bus-sparql-serialize": "^0.0.1",
     "@comunica/core": "^0.0.1",
     "@comunica/mediator-combine-union": "^0.0.1",
     "@comunica/mediator-number": "^0.0.1",

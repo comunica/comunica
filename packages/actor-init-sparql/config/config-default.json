@@ -3,6 +3,8 @@
     "https://linkedsoftwaredependencies.org/contexts/comunica-actor-init-sparql.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-bus-sparql-parse.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-actor-sparql-parse-algebra.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-sparql-serialize.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-sparql-serialize-simple.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-bus-query-operation.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-actor-query-operation-bgp-empty.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-actor-query-operation-bgp-left-deep-smallest.jsonld",
@@ -51,15 +53,25 @@
             "cc:Mediator/bus": { "@id": "cbqo:Bus/QueryOperation" }
           },
           "mediatorSparqlParse": {
-            "@id": "ex:mediatorSparlParse",
+            "@id": "ex:mediatorSparqlParse",
             "@type": "MediatorRace",
             "cc:Mediator/bus": { "@id": "cbsp:Bus/SparqlParse" }
+          },
+          "mediatorSparqlSerialize": {
+            "@id": "ex:mediatorSparqlSerialize",
+            "@type": "MediatorRace",
+            "cc:Mediator/bus": { "@id": "cbss:Bus/SparqlSerialize" }
           }
         },
 
         {
           "@id": "ex:mySparqlParser",
           "@type": "ActorSparqlParseAlgebra"
+        },
+
+        {
+          "@id": "ex:mySimpleSparqlSerializer",
+          "@type": "ActorSparqlSerializeSimple"
         },
 
         {

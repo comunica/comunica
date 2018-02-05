@@ -25,6 +25,12 @@
           "unique": true
         },
         {
+          "@id": "cais:mediatorSparqlSerialize",
+          "comment": "The query serialize mediator",
+          "required": true,
+          "unique": true
+        },
+        {
           "@id": "cais:query",
           "comment": "A SPARQL query string",
           "unique": true
@@ -46,6 +52,10 @@
             {
               "keyRaw": "mediatorSparqlParse",
               "value": "cais:mediatorSparqlParse"
+            },
+            {
+              "keyRaw": "mediatorSparqlSerialize",
+              "value": "cais:mediatorSparqlSerialize"
             },
             {
               "keyRaw": "query",
