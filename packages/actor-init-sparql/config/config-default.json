@@ -25,6 +25,7 @@
     "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-parse-n3.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-parse-jsonld.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-bus-rdf-serialize.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-serialize-n3.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-serialize-jsonld.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-bus-rdf-dereference.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-dereference-http-parse.jsonld",
@@ -225,6 +226,10 @@
           "priorityScale": 0.9
         },
 
+        {
+          "@id": "ex:myRdfSerializerN3",
+          "@type": "ActorRdfSerializeN3"
+        },
         {
           "@id": "ex:myRdfSerializeJsonLd",
           "@type": "ActorRdfSerializeJsonLd",

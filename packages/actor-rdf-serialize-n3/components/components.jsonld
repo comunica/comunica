@@ -1,0 +1,9 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-serialize-n3.jsonld",
+  "@id": "npmd:@comunica/actor-rdf-serialize-n3",
+  "@type": "Module",
+  "requireName": "@comunica/actor-rdf-serialize-n3",
+  "import": [
+    "Actor/RdfSerialize/N3.jsonld"
+  ]
+}
