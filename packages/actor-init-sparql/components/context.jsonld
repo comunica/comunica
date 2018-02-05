@@ -8,7 +8,8 @@
       "ActorInitSparql": "cais:Actor/Init/Sparql",
       "mediatorQueryOperation": "cais:mediatorQueryOperation",
       "mediatorSparqlParse": "cais:mediatorSparqlParse",
-      "mediatorSparqlSerialize": "cais:mediatorSparqlSerialize"
+      "mediatorSparqlSerialize": "cais:mediatorSparqlSerialize",
+      "mediatorSparqlSerializeMediaTypeCombiner": "cais:mediatorSparqlSerializeMediaTypeCombiner"
     }
   ]
 }

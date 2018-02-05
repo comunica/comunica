@@ -23,9 +23,9 @@ export abstract class ActorRdfSerialize extends
 
 }
 
-export type IActionRootRdfParse = IActionAbstractMediaTyped<IActionRdfSerialize>;
-export type IActorTestRootRdfParse = IActorTestAbstractMediaTyped<IActorTest>;
-export type IActorOutputRootRdfParse = IActorOutputAbstractMediaTyped<IActorRdfSerializeOutput>;
+export type IActionRootRdfSerialize = IActionAbstractMediaTyped<IActionRdfSerialize>;
+export type IActorTestRootRdfSerialize = IActorTestAbstractMediaTyped<IActorTest>;
+export type IActorOutputRootRdfSerialize = IActorOutputAbstractMediaTyped<IActorRdfSerializeOutput>;
 
 export interface IActionRdfSerialize extends IAction {
   /**

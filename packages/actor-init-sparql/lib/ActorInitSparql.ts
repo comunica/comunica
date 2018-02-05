@@ -37,7 +37,7 @@ Options:
 
     // Print supported MIME types
     if (args.listformats) {
-      const mediaTypes: {[id: string]: number} = (await this.mediatorSparqlSerialize.mediate(
+      const mediaTypes: {[id: string]: number} = (await this.mediatorSparqlSerializeMediaTypeCombiner.mediate(
         { mediaTypes: true })).mediaTypes;
       return { stdout: require('streamify-string')(Object.keys(mediaTypes).join('\n')) };
     }
