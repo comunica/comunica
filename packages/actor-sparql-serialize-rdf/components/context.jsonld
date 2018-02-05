@@ -1,0 +1,13 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/components.jsonld",
+    {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
+      "cassr": "npmd:@comunica/actor-sparql-serialize-rdf/",
+
+      "ActorSparqlSerializeRdf": "cassr:Actor/SparqlSerialize/Rdf",
+      "mediatorRdfSerialize": "cassr:Actor/SparqlSerialize/Rdf/mediatorRdfSerialize",
+      "mediatorRdfSerializeMediaTypeCombiner": "cassr:Actor/SparqlSerialize/Rdf/mediatorRdfSerializeMediaTypeCombiner"
+    }
+  ]
+}

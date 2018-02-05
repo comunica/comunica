@@ -1,29 +1,29 @@
 {
-  "name": "@comunica/actor-sparql-serialize-simple",
+  "name": "@comunica/actor-sparql-serialize-rdf",
   "version": "0.0.1",
-  "description": "A simple sparql-serialize actor",
-  "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-sparql-serialize-simple",
+  "description": "A rdf sparql-serialize actor",
+  "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-sparql-serialize-rdf",
   "lsd:components": "components/components.jsonld",
   "lsd:contexts": {
-    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-sparql-serialize-simple.jsonld": "components/context.jsonld"
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-sparql-serialize-rdf.jsonld": "components/context.jsonld"
   },
   "main": "index.js",
   "typings": "index",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/comunica/actor-sparql-serialize-simple.git"
+    "url": "git+https://github.com/comunica/actor-sparql-serialize-rdf.git"
   },
   "keywords": [
     "comunica",
     "actor",
     "sparql-serialize",
-    "simple"
+    "rdf"
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/comunica/actor-sparql-serialize-simple/issues"
+    "url": "https://github.com/comunica/actor-sparql-serialize-rdf/issues"
   },
-  "homepage": "https://github.com/comunica/actor-sparql-serialize-simple#readme",
+  "homepage": "https://github.com/comunica/actor-sparql-serialize-rdf#readme",
   "files": [
     "components",
     "lib/**/*.d.ts",
@@ -33,11 +33,14 @@
   ],
   "peerDependencies": {
     "@comunica/core": "^0.0.1",
+    "@comunica/bus-rdf-serialize": "^0.0.1",
     "@comunica/bus-sparql-serialize": "^0.0.1"
   },
   "devDependencies": {
+    "@comunica/actor-abstract-mediatyped": "^0.0.1",
     "@comunica/core": "^0.0.1",
     "@comunica/bus-query-operation": "^0.0.1",
+    "@comunica/bus-rdf-serialize": "^0.0.1",
     "@comunica/bus-sparql-serialize": "^0.0.1"
   },
   "jest": {

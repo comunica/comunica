@@ -17,6 +17,9 @@ export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs {
     IActionSparqlParse, IActorTest, IActorSparqlParseOutput>;
   public readonly mediatorSparqlSerialize: Mediator<Actor<IActionRootSparqlParse, IActorTestRootSparqlParse,
     IActorOutputRootSparqlParse>, IActionRootSparqlParse, IActorTestRootSparqlParse, IActorOutputRootSparqlParse>;
+  public readonly mediatorSparqlSerializeMediaTypeCombiner: Mediator<Actor<IActionRootSparqlParse,
+    IActorTestRootSparqlParse, IActorOutputRootSparqlParse>, IActionRootSparqlParse, IActorTestRootSparqlParse,
+    IActorOutputRootSparqlParse>;
   public readonly query?: string;
   public readonly context?: string;
 
@@ -53,6 +56,9 @@ export interface IActorInitSparqlArgs extends IActorArgs<IActionInit, IActorTest
     IActionSparqlParse, IActorTest, IActorSparqlParseOutput>;
   mediatorSparqlSerialize: Mediator<Actor<IActionRootSparqlParse, IActorTestRootSparqlParse,
     IActorOutputRootSparqlParse>, IActionRootSparqlParse, IActorTestRootSparqlParse, IActorOutputRootSparqlParse>;
+  mediatorSparqlSerializeMediaTypeCombiner: Mediator<Actor<IActionRootSparqlParse,
+    IActorTestRootSparqlParse, IActorOutputRootSparqlParse>, IActionRootSparqlParse, IActorTestRootSparqlParse,
+    IActorOutputRootSparqlParse>;
   query?: string;
   context?: string;
 }

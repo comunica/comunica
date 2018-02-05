@@ -4,6 +4,7 @@
     "https://linkedsoftwaredependencies.org/contexts/comunica-bus-sparql-parse.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-actor-sparql-parse-algebra.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-bus-sparql-serialize.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-sparql-serialize-rdf.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-actor-sparql-serialize-simple.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-bus-query-operation.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-actor-query-operation-bgp-empty.jsonld",
@@ -23,6 +24,8 @@
     "https://linkedsoftwaredependencies.org/contexts/comunica-bus-rdf-parse.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-parse-n3.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-parse-jsonld.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-rdf-serialize.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-serialize-jsonld.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-bus-rdf-dereference.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-dereference-http-parse.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-bus-rdf-metadata-extract.jsonld",
@@ -61,6 +64,11 @@
             "@id": "ex:mediatorSparqlSerialize",
             "@type": "MediatorRace",
             "cc:Mediator/bus": { "@id": "cbss:Bus/SparqlSerialize" }
+          },
+          "mediatorSparqlSerializeMediaTypeCombiner": {
+            "@type": "MediatorCombineUnion",
+            "cc:Mediator/bus": { "@id": "cbss:Bus/SparqlSerialize" },
+            "cmcu:Mediator/CombineUnion/field": "mediaTypes"
           }
         },
 
@@ -69,6 +77,20 @@
           "@type": "ActorSparqlParseAlgebra"
         },
 
+        {
+          "@id": "ex:myRdfSparqlSerializer",
+          "@type": "ActorSparqlSerializeRdf",
+          "mediatorRdfSerialize": {
+            "@id": "ex:mediatorRdfSerialize",
+            "@type": "MediatorRace",
+            "cc:Mediator/bus": { "@id": "cbrs:Bus/RdfSerialize" }
+          },
+          "mediatorRdfSerializeMediaTypeCombiner": {
+            "@type": "MediatorCombineUnion",
+            "cc:Mediator/bus": { "@id": "cbrs:Bus/RdfSerialize" },
+            "cmcu:Mediator/CombineUnion/field": "mediaTypes"
+          }
+        },
         {
           "@id": "ex:mySimpleSparqlSerializer",
           "@type": "ActorSparqlSerializeSimple"
@@ -200,6 +222,13 @@
         {
           "@id": "ex:myRdfParserJsonLd",
           "@type": "ActorRdfParseJsonLd",
+          "priorityScale": 0.9
+        },
+
+        {
+          "@id": "ex:myRdfSerializeJsonLd",
+          "@type": "ActorRdfSerializeJsonLd",
+          "jsonStringifyIndentSpaces": 2,
           "priorityScale": 0.9
         },
 
