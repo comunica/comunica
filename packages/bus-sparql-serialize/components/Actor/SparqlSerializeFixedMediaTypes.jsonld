@@ -1,0 +1,23 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-abstract-mediatyped.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-core.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-sparql-serialize.jsonld"
+  ],
+  "@id": "npmd:@comunica/bus-rdf-serialize",
+  "components": [
+    {
+      "@id": "cbss:Actor/SparqlSerializeFixedMediaTypes",
+      "@type": "AbstractClass",
+      "extends": [ "cbss:Actor/SparqlSerialize", "caam:Actor/AbstractMediaTypedFixed" ],
+      "requireElement": "ActorSparqlSerializeFixedMediaTypes",
+      "comment": "A base actor for listening to SPARQL serialize events that has fixed media types.",
+      "constructorArguments": [
+        {
+          "@id": "cbss:Actor/SparqlSerializeFixedMediaTypes/constructorArgumentsObject",
+          "extends": "caam:Actor/AbstractMediaTypedFixed/constructorArgumentsObject"
+        }
+      ]
+    }
+  ]
+}
