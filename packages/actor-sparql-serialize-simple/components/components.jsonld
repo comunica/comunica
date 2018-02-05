@@ -1,0 +1,9 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/contexts/comunica-actor-sparql-serialize-simple.jsonld",
+  "@id": "npmd:@comunica/actor-sparql-serialize-simple",
+  "@type": "Module",
+  "requireName": "@comunica/actor-sparql-serialize-simple",
+  "import": [
+    "Actor/SparqlSerialize/Simple.jsonld"
+  ]
+}
