@@ -1,0 +1,12 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/comunica-core.jsonld",
+    {
+      "cbss": "npmd:@comunica/bus-sparql-serialize/",
+
+      "BusSparqlSerialize": "cbss:Bus/SparqlSerialize",
+      "ActorSparqlSerialize": "cbss:Actor/SparqlSerialize",
+      "SparqlSerializeFixedMediaTypes": "cbss:Actor/SparqlSerializeFixedMediaTypes"
+    }
+  ]
+}

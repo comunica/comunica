@@ -1,0 +1,6 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/contexts/comunica-bus-sparql-serialize.jsonld",
+  "@id": "cbss:Bus/SparqlSerialize",
+  "@type": "cc:Bus",
+  "comment": "A comunica bus for sparql-serialize events."
+}
