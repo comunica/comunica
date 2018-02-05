@@ -1,8 +1,5 @@
-import {ActorRdfSerialize} from "@comunica/bus-rdf-serialize";
 import {Bus} from "@comunica/core";
 import {ArrayIterator, AsyncIterator} from "asynciterator";
-import * as RDF from "rdf-js";
-import {Readable} from "stream";
 import {ActorRdfSerializeJsonLd} from "../lib/ActorRdfSerializeJsonLd";
 const quad = require('rdf-quad');
 const stringifyStream = require('stream-to-string');
@@ -31,7 +28,7 @@ describe('ActorRdfSerializeJsonLd', () => {
 
   describe('An ActorRdfSerializeJsonLd instance configured with two spaces', () => {
     let actor: ActorRdfSerializeJsonLd;
-    let quads: Readable;
+    let quads;
 
     beforeEach(() => {
       actor = new ActorRdfSerializeJsonLd({ bus, jsonStringifyIndentSpaces: 2, mediaTypes: {
@@ -70,7 +67,7 @@ describe('ActorRdfSerializeJsonLd', () => {
 
   describe('An ActorRdfSerializeJsonLd instance', () => {
     let actor: ActorRdfSerializeJsonLd;
-    let quads: Readable;
+    let quads;
 
     beforeEach(() => {
       actor = new ActorRdfSerializeJsonLd({ bus, jsonStringifyIndentSpaces: 0, mediaTypes: {
@@ -120,7 +117,7 @@ describe('ActorRdfSerializeJsonLd', () => {
       });
 
       it('should run with scaled priorities 0.5', () => {
-        actor = new ActorRdfSerializeJsonLd({ bus, mediaTypes: {
+        actor = new ActorRdfSerializeJsonLd({ bus, jsonStringifyIndentSpaces: 2, mediaTypes: {
           'application/json': 1.0,
           'application/ld+json': 1.0,
         }, name: 'actor', priorityScale: 0.5 });
@@ -131,7 +128,7 @@ describe('ActorRdfSerializeJsonLd', () => {
       });
 
       it('should run with scaled priorities 0', () => {
-        actor = new ActorRdfSerializeJsonLd({ bus, mediaTypes: {
+        actor = new ActorRdfSerializeJsonLd({ bus, jsonStringifyIndentSpaces: 2, mediaTypes: {
           'application/json': 1.0,
           'application/ld+json': 1.0,
         }, name: 'actor', priorityScale: 0 });
