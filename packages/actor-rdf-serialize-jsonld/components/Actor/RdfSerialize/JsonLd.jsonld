@@ -1,5 +1,6 @@
 {
   "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-abstract-mediatyped.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-serialize-jsonld.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-bus-rdf-serialize.jsonld"
   ],
@@ -13,7 +14,7 @@
       "comment": "A comunica JsonLd RDF Serialize Actor.",
       "parameters": [
         {
-          "@id": "cbrs:Actor/RdfSerializeFixedMediaTypes/mediaTypeEntry",
+          "@id": "caam:Actor/AbstractMediaTypedFixed/mediaTypeEntry",
           "defaultScoped": {
             "defaultScope": "carsjl:Actor/RdfSerialize/JsonLd",
             "defaultScopedValue": [
