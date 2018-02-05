@@ -76,7 +76,7 @@ describe('ActorRdfSerializeJsonLd', () => {
       }, name: 'actor'});
     });
 
-    describe('for parsing', () => {
+    describe('for serializing', () => {
       beforeEach(() => {
         quads = new ArrayIterator([
           quad('http://example.org/a', 'http://example.org/b', 'http://example.org/c'),
