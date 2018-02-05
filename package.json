@@ -32,6 +32,7 @@
     "rdf-data-model": "^1.0.0",
     "rdf-quad": "^1.1.0",
     "sparqlalgebrajs": "^0.5.2",
+    "stream-to-string": "^1.1.0",
     "streamify-array": "^1.0.0",
     "streamify-string": "^1.0.1",
     "ts-jest": "^21.0.0",

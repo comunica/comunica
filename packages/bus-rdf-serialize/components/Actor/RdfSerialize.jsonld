@@ -1,0 +1,32 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-abstract-mediatyped.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-rdf-serialize.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-core.jsonld"
+  ],
+  "@id": "npmd:@comunica/bus-rdf-serialize",
+  "components": [
+    {
+      "@id": "cbrs:Actor/RdfSerialize",
+      "@type": "AbstractClass",
+      "extends": "Actor",
+      "requireElement": "ActorRdfSerialize",
+      "comment": "A comunica actor for rdf-serialize events.",
+      "parameters": [
+        {
+          "@id": "cc:Actor/bus",
+          "defaultScoped": {
+            "defaultScope": "cbrs:Actor/RdfSerialize",
+            "defaultScopedValue": { "@id": "cbrs:Bus/RdfSerialize" }
+          }
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "cbrs:Actor/RdfSerialize/constructorArgumentsObject",
+          "extends": "caam:Actor/AbstractMediaTyped/constructorArgumentsObject"
+        }
+      ]
+    }
+  ]
+}
