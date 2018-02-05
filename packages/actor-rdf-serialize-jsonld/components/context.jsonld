@@ -1,0 +1,11 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/components.jsonld",
+    {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
+      "carsjl": "npmd:@comunica/actor-rdf-serialize-jsonld/",
+
+      "ActorRdfSerializeJsonLd": "carsjl:Actor/RdfSerialize/JsonLd"
+    }
+  ]
+}
