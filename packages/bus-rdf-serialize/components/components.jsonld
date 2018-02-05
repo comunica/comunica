@@ -1,0 +1,11 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/contexts/comunica-bus-rdf-serialize.jsonld",
+  "@id": "npmd:@comunica/bus-rdf-serialize",
+  "@type": "Module",
+  "requireName": "@comunica/bus-rdf-serialize",
+  "import": [
+    "Bus/RdfSerialize.jsonld",
+    "Actor/RdfSerialize.jsonld",
+    "Actor/RdfSerializeFixedMediaTypes.jsonld"
+  ]
+}

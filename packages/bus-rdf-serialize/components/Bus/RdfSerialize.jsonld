@@ -1,0 +1,6 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/contexts/comunica-bus-rdf-serialize.jsonld",
+  "@id": "cbrs:Bus/RdfSerialize",
+  "@type": "cc:Bus",
+  "comment": "A comunica bus for rdf-serialize events."
+}

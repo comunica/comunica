@@ -1,0 +1,12 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/comunica-core.jsonld",
+    {
+      "cbrs": "npmd:@comunica/bus-rdf-serialize/",
+
+      "BusRdfSerialize": "cbrs:Bus/RdfSerialize",
+      "ActorRdfSerialize": "cbrs:Actor/RdfSerialize",
+      "ActorRdfSerializeFixedMediaTypes": "cbrs:Actor/RdfSerializeFixedMediaTypes"
+    }
+  ]
+}
