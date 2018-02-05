@@ -1,5 +1,6 @@
 import {IActionInit, IActorOutputInit} from "@comunica/bus-init";
 import {IActorQueryOperationOutput} from "@comunica/bus-query-operation";
+import {IActorSparqlSerializeOutput} from "@comunica/bus-sparql-serialize";
 import {readFileSync} from "fs";
 import minimist = require('minimist');
 import {Readable} from "stream";
@@ -16,8 +17,8 @@ export class ActorInitSparql extends ActorInitSparqlBrowser {
 
   public async run(action: IActionInit): Promise<IActorOutputInit> {
     const args = minimist(action.argv);
-    if (!this.query && (!(args.q || args.f) && args._.length < (args.c ? 1 : 2) || args._.length < (args.c ? 0 : 1)
-        || args.h || args.help)) {
+    if (!args.listformats && (!this.query && (!(args.q || args.f) && args._.length < (args.c ? 1 : 2)
+        || args._.length < (args.c ? 0 : 1) || args.h || args.help))) {
       return { stderr: require('streamify-string')(`comunica-sparql evaluates SPARQL queries
 
 Usage:
@@ -25,11 +26,20 @@ Usage:
   comunica-sparql http://fragments.example.org/dataset [-f] query.sparql'
 
 Options:
-  -q      evaluate the given SPARQL query string
-  -f      evaluate the SPARQL query in the given file
-  -c      use the given JSON configuration file (e.g., config.json)
-  --help  print this help message
+  -q            evaluate the given SPARQL query string
+  -f            evaluate the SPARQL query in the given file
+  -c            use the given JSON configuration file (e.g., config.json)
+  -t            the MIME type of the output (e.g., application/json)
+  --help        print this help message
+  --listformats prints the supported MIME types
 `) };
+    }
+
+    // Print supported MIME types
+    if (args.listformats) {
+      const mediaTypes: {[id: string]: number} = (await this.mediatorSparqlSerialize.mediate(
+        { mediaTypes: true })).mediaTypes;
+      return { stdout: require('streamify-string')(Object.keys(mediaTypes).join('\n')) };
     }
 
     // Define query
@@ -70,18 +80,17 @@ Options:
       });
     }
 
-    const result: IActorQueryOperationOutput = await this.evaluateQuery(query, context);
+    const queryResult: IActorQueryOperationOutput = await this.evaluateQuery(query, context);
 
-    // TODO: this should be bus-ified
-    const resultStream: NodeJS.EventEmitter = result.quadStream || result.bindingsStream;
-    resultStream.on('data', (binding) => readable.push(JSON.stringify(binding) + '\n'));
-    resultStream.on('end', () => readable.push(null));
-    const readable = new Readable();
-    readable._read = () => {
-      return;
-    };
+    // Define output media type
+    const mediaType: string = args.t || (queryResult.bindingsStream ? 'application/json' : 'text/turtle');
 
-    return { stdout: readable };
+    // Serialize output according to media type
+    const output: IActorSparqlSerializeOutput = (await this.mediatorSparqlSerialize.mediate(
+      { handle: queryResult, handleMediaType: mediaType })).handle;
+    const stdout: Readable = <Readable> output.data;
+
+    return { stdout };
   }
 
 }

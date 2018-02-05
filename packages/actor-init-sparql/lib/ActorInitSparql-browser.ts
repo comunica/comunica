@@ -1,11 +1,10 @@
 import {ActorInit, IActionInit, IActorOutputInit} from "@comunica/bus-init";
 import {IActionQueryOperation, IActorQueryOperationOutput} from "@comunica/bus-query-operation";
 import {IActionSparqlParse, IActorSparqlParseOutput} from "@comunica/bus-sparql-parse";
+import {IActionRootSparqlParse, IActorOutputRootSparqlParse,
+  IActorTestRootSparqlParse} from "@comunica/bus-sparql-serialize";
 import {Actor, IActorArgs, IActorTest, Mediator} from "@comunica/core";
-import {readFileSync} from "fs";
-import minimist = require('minimist');
 import {Algebra} from "sparqlalgebrajs";
-import {Readable} from "stream";
 
 /**
  * A browser-safe comunica SPARQL Init Actor.
@@ -16,6 +15,8 @@ export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs {
     IActionQueryOperation, IActorTest, IActorQueryOperationOutput>;
   public readonly mediatorSparqlParse: Mediator<Actor<IActionSparqlParse, IActorTest, IActorSparqlParseOutput>,
     IActionSparqlParse, IActorTest, IActorSparqlParseOutput>;
+  public readonly mediatorSparqlSerialize: Mediator<Actor<IActionRootSparqlParse, IActorTestRootSparqlParse,
+    IActorOutputRootSparqlParse>, IActionRootSparqlParse, IActorTestRootSparqlParse, IActorOutputRootSparqlParse>;
   public readonly query?: string;
   public readonly context?: string;
 
@@ -50,6 +51,8 @@ export interface IActorInitSparqlArgs extends IActorArgs<IActionInit, IActorTest
     IActionQueryOperation, IActorTest, IActorQueryOperationOutput>;
   mediatorSparqlParse: Mediator<Actor<IActionSparqlParse, IActorTest, IActorSparqlParseOutput>,
     IActionSparqlParse, IActorTest, IActorSparqlParseOutput>;
+  mediatorSparqlSerialize: Mediator<Actor<IActionRootSparqlParse, IActorTestRootSparqlParse,
+    IActorOutputRootSparqlParse>, IActionRootSparqlParse, IActorTestRootSparqlParse, IActorOutputRootSparqlParse>;
   query?: string;
   context?: string;
 }
