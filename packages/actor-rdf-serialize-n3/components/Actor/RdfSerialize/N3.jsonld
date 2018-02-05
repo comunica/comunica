@@ -1,0 +1,38 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-abstract-mediatyped.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-serialize-n3.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-rdf-serialize.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-rdf-serialize-n3",
+  "components": [
+    {
+      "@id": "carsn:Actor/RdfSerialize/N3",
+      "@type": "Class",
+      "extends": "cbrs:Actor/RdfSerializeFixedMediaTypes",
+      "requireElement": "ActorRdfSerializeN3",
+      "comment": "A comunica N3 RDF Serialize Actor.",
+      "parameters": [
+        {
+          "@id": "caam:Actor/AbstractMediaTypedFixed/mediaTypeEntry",
+          "defaultScoped": {
+            "defaultScope": "carsn:Actor/RdfSerialize/N3",
+            "defaultScopedValue": [
+              { "mediaTypeKey": "application/trig",      "priorityValue": "1.0" },
+              { "mediaTypeKey": "application/n-quads",   "priorityValue": "0.7" },
+              { "mediaTypeKey": "text/turtle",           "priorityValue": "0.6" },
+              { "mediaTypeKey": "application/n-triples", "priorityValue": "0.3" },
+              { "mediaTypeKey": "text/n3",               "priorityValue": "0.2" }
+            ]
+          }
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "carsn:Actor/RdfSerialize/N3/constructorArgumentsObject",
+          "extends": "cbrs:Actor/RdfSerializeFixedMediaTypes/constructorArgumentsObject"
+        }
+      ]
+    }
+  ]
+}

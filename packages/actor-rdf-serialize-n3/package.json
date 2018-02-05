@@ -1,0 +1,69 @@
+{
+  "name": "@comunica/actor-rdf-serialize-n3",
+  "version": "0.0.1",
+  "description": "A n3 rdf-serialize actor",
+  "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-serialize-n3",
+  "lsd:components": "components/components.jsonld",
+  "lsd:contexts": {
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-serialize-n3.jsonld": "components/context.jsonld"
+  },
+  "main": "index.js",
+  "typings": "index",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/comunica/actor-rdf-serialize-n3.git"
+  },
+  "keywords": [
+    "comunica",
+    "actor",
+    "rdf-serialize",
+    "n3"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/comunica/actor-rdf-serialize-n3/issues"
+  },
+  "homepage": "https://github.com/comunica/actor-rdf-serialize-n3#readme",
+  "files": [
+    "components",
+    "lib/**/*.d.ts",
+    "lib/**/*.js",
+    "index.d.ts",
+    "index.js"
+  ],
+  "dependencies": {
+    "n3": "^0.11.2",
+    "rdf-string": "^1.1.0"
+  },
+  "peerDependencies": {
+    "@comunica/core": "^0.0.1",
+    "@comunica/bus-rdf-serialize": "^0.0.1"
+  },
+  "devDependencies": {
+    "@comunica/core": "^0.0.1",
+    "@comunica/bus-rdf-serialize": "^0.0.1"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.ts$": "<rootDir>/../../node_modules/ts-jest/preprocessor.js"
+    },
+    "transformIgnorePatterns": [
+      "[/\\\\]node_modules[/\\\\].+\\.(js|jsx)$"
+    ],
+    "testRegex": "(/test/.*|(\\.|/)(test|spec))\\.ts$",
+    "moduleFileExtensions": [
+      "ts",
+      "js"
+    ],
+    "collectCoverage": true,
+    "mapCoverage": true
+  },
+  "scripts": {
+    "test": "node \"../../node_modules/jest/bin/jest.js\" ${1}",
+    "test-watch": "node \"../../node_modules/jest/bin/jest.js\" ${1} --watch",
+    "lint": "node \"../../node_modules/tslint/bin/tslint\" lib/**/*.ts test/**/*.ts --exclude '**/*.d.ts'",
+    "build": "node \"../../node_modules/typescript/bin/tsc\"",
+    "validate": "npm ls",
+    "prepare": "npm run build"
+  }
+}
