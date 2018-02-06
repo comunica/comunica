@@ -1,0 +1,33 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-abstract-mediatyped.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-sparql-serialize-sparql-json.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-sparql-serialize.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-sparql-serialize-sparql-json",
+  "components": [
+    {
+      "@id": "casssj:Actor/SparqlSerialize/SparqlJson",
+      "@type": "Class",
+      "extends": "cbss:Actor/SparqlSerializeFixedMediaTypes",
+      "requireElement": "ActorSparqlSerializeSparqlJson",
+      "comment": "A comunica sparql-results+json SPARQL Serialize Actor.",
+      "parameters": [
+        {
+          "@id": "caam:Actor/AbstractMediaTypedFixed/mediaTypeEntry",
+          "defaultScoped": {
+            "defaultScope": "casssj:Actor/SparqlSerialize/SparqlJson",
+            "defaultScopedValue": [
+              { "mediaTypeKey": "application/sparql-results+json", "priorityValue": "1.0" }
+            ]
+          }
+        }
+      ],
+      "constructorArguments": [
+        {
+          "extends": "cbss:Actor/SparqlSerializeFixedMediaTypes/constructorArgumentsObject"
+        }
+      ]
+    }
+  ]
+}
