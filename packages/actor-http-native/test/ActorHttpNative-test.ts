@@ -1,6 +1,7 @@
 
 import {ActorHttp} from "@comunica/bus-http";
 import {Bus} from "@comunica/core";
+import {Setup} from "@comunica/runner";
 import "isomorphic-fetch";
 import {Readable} from "stream";
 import * as zlib from "zlib";
@@ -48,6 +49,12 @@ describe('ActorHttpNative', () => {
         .toMatchObject({ status: 404 });
     });
 
+    it('should run https', () => {
+      mockSetup({ statusCode: 404 });
+      return expect(actor.run({ input: new Request('https://example.com')})).resolves
+        .toMatchObject({ status: 404 });
+    });
+
     it('can have headers', async () => {
       mockSetup({ statusCode: 200 });
       const result: any = await actor.run(
@@ -72,6 +79,23 @@ describe('ActorHttpNative', () => {
       expect(result).toMatchObject({ status: 200 });
       const output = await arrayifyStream(result.body);
       expect(output).toContain('apple');
+    });
+
+    it('can be aborted', () => {
+      Setup.preparePromises();
+      mockSetup({ statusCode: 403 });
+      const promise: any = actor.run({ input: new Request('http://example.com')});
+      promise.cancel();
+      expect(promise.isCancelled()).toBe(true);
+    });
+
+    it('errors on invalid encoding', () => {
+      const body = new Readable();
+      body.push(zlib.gzipSync('apple'));
+      body.push(null);
+      mockSetup({ statusCode: 200, body, headers: { 'content-encoding': 'invalid' } });
+      return expect(actor.run({ input: new Request('http://example.com')})).rejects
+        .toMatchObject(new Error('Unsupported encoding: invalid'));
     });
   });
 });

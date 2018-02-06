@@ -31,10 +31,10 @@ export class ActorQueryOperationLeftJoinNestedLoop extends ActorQueryOperationTy
         rightStream.on('data', (rightItem) => {
           const join = ActorRdfJoin.join(leftItem, rightItem);
           if (join) {
-            if (pattern.expression) {
-              // TODO: do this once expressions are implemented
-              // Values of both streams can be used for this expression
-            }
+            // if (pattern.expression) {
+            //   // TODO: do this once expressions are implemented
+            //   // Values of both streams can be used for this expression
+            // }
 
             bindingsStream._push(join);
           }

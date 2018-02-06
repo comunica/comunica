@@ -1,4 +1,6 @@
 
+const IncomingMessage = require('http').IncomingMessage;
+
 let options = {
   statusCode: 200
 };
@@ -8,8 +10,8 @@ function mockSetup(mock) {
 }
 
 function request(settings, func) {
-  let body = options.body || {};
-  Object.assign(body, {
+  let body = new IncomingMessage();
+  Object.assign(body, options.body || {}, {
     input: settings,
     setEncoding: () => {},
     headers: options.headers || {},
@@ -18,7 +20,9 @@ function request(settings, func) {
     responseUrl: settings.url,
   });
   setImmediate(() => func(body));
+
   return {
+    abort: () => { },
     end: () => {}
   }
 }
