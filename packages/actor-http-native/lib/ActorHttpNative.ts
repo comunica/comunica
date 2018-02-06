@@ -46,23 +46,37 @@ export class ActorHttpNative extends ActorHttp {
 
     // not all options are supported
 
-    return new Promise<IActorHttpOutput>((resolve, reject) => {
+    // casting so we can support both normal Promises as well as Bluebird
+    return new Promise<IActorHttpOutput>(<any> ((resolve: any, reject: any, oncancel: any) => {
       const req = this.requester.createRequest(options);
       req.on('response', (httpResponse) => {
-        // missing several of the required fetch fields
-        const result = <IActorHttpOutput> {
-          body: httpResponse,
-          headers: new Headers(httpResponse.headers),
-          ok: httpResponse.statusCode < 300,
-          redirected: options.url !== httpResponse.responseUrl,
-          status: httpResponse.statusCode,
-          url: httpResponse.responseUrl,
-        };
-        resolve(result);
+        httpResponse.on('error', (e: Error) => {
+          httpResponse = null;
+          reject(e);
+        });
+        // using setImmediate so error can be caught should it be thrown
+        setImmediate(() => {
+          if (httpResponse) {
+            // missing several of the required fetch fields
+            const result = <IActorHttpOutput> {
+              body: httpResponse,
+              headers: new Headers(httpResponse.headers),
+              ok: httpResponse.statusCode < 300,
+              redirected: options.url !== httpResponse.responseUrl,
+              status: httpResponse.statusCode,
+              url: httpResponse.responseUrl,
+            };
+            resolve(result);
+          }
+        });
       });
 
-      req.on('error', reject);
-    });
+      if (oncancel) {
+        oncancel(() => {
+          (<any> req).abort();
+        });
+      }
+    }));
   }
 
 }
