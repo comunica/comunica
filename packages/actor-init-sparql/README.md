@@ -2,6 +2,35 @@
 
 A comunica SPARQL Init Actor.
 
+## Usage from the command line
+
+Show 100 triples from http://fragments.dbpedia.org/2015-10/en:
+
+```bash
+$ comunica-sparql http://fragments.dbpedia.org/2015-10/en "CONSTRUCT WHERE { ?s ?p ?o } LIMIT 100"
+```
+
+Show the help with all options:
+
+```bash
+$ comunica-sparql --help
+```
+
+## Usage from HTTP
+
+Start a webservice exposing http://fragments.dbpedia.org/2015-10/en via the SPARQL protocol.
+
+```bash
+$ comunica-sparql-http "{ \"sources\": [{ \"type\": \"entrypoint\", \"value\" : \"http://fragments.dbpedia.org/2015/en\" }]}""
+```
+
+Show the help with all options:
+
+```bash
+$ comunica-sparql-http --help
+```
+
+
 ## Usage within application
 
 ```javascript
