@@ -1,4 +1,5 @@
 import {IActorQueryOperationOutput} from "@comunica/bus-query-operation";
+import {IActorSparqlSerializeOutput} from "@comunica/bus-sparql-serialize";
 import {ISetupProperties, Runner, Setup} from "@comunica/runner";
 import {ActorInitSparql} from "./ActorInitSparql";
 
@@ -21,6 +22,24 @@ export class QueryEngine {
    */
   public query(queryString: string, context?: any): Promise<IActorQueryOperationOutput> {
     return this.actor.evaluateQuery(queryString, context);
+  }
+
+  /**
+   * @return {Promise<{[p: string]: number}>} All available SPARQL (weighted) result media types.
+   */
+  public getResultMediaTypes(): Promise<{[id: string]: number}> {
+    return this.actor.getResultMediaTypes();
+  }
+
+  /**
+   * Convert a query result to a string stream based on a certain media type.
+   * @param {IActorQueryOperationOutput} queryResult A query result.
+   * @param {string} mediaType A media type.
+   * @return {Promise<IActorSparqlSerializeOutput>} A text stream.
+   */
+  public resultToString(queryResult: IActorQueryOperationOutput, mediaType: string)
+  : Promise<IActorSparqlSerializeOutput> {
+    return this.actor.resultToString(queryResult, mediaType);
   }
 
 }
