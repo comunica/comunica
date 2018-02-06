@@ -61,7 +61,7 @@ export class ActorSparqlSerializeSparqlXml extends ActorSparqlSerializeFixedMedi
     (<NodeJS.ReadableStream> <any> xml({ sparql: root }, { stream: true, indent: '  ', declaration: true }))
       .on('data', (chunk) => data.push(chunk + '\n'));
     if (action.variables.length) {
-      root.push({ head: action.variables.map((v) => ({ variable: { _attr: { name: v } } }))});
+      root.push({ head: action.variables.map((v) => ({ variable: { _attr: { name: v.substr(1) } } }))});
     }
     root.push({ results });
     const resultStream: NodeJS.EventEmitter = action.bindingsStream;

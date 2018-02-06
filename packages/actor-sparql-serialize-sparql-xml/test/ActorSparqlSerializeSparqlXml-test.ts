@@ -84,7 +84,7 @@ describe('ActorSparqlSerializeSparqlXml', () => {
         quad('http://example.org/a', 'http://example.org/b', 'http://example.org/c'),
         quad('http://example.org/a', 'http://example.org/d', 'http://example.org/e'),
       ]);
-      variables = [ 'k1', 'k2' ];
+      variables = [ '?k1', '?k2' ];
     });
 
     describe('for getting media types', () => {
