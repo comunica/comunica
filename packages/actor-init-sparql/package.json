@@ -76,6 +76,7 @@
     "@comunica/actor-rdf-serialize-n3": "^0.0.1",
     "@comunica/actor-rdf-serialize-jsonld": "^0.0.1",
     "@comunica/actor-sparql-parse-algebra": "^0.0.1",
+    "@comunica/actor-sparql-serialize-json": "^0.0.1",
     "@comunica/actor-sparql-serialize-rdf": "^0.0.1",
     "@comunica/actor-sparql-serialize-simple": "^0.0.1",
     "@comunica/bus-init": "^0.0.1",
