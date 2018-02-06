@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 
-import {Bindings} from "@comunica/bus-query-operation";
 import {AsyncIterator, IntegerIterator} from "asynciterator";
 import * as fs from 'fs';
 import * as http from 'http';
@@ -8,6 +7,7 @@ import minimist = require('minimist');
 import * as querystring from 'querystring';
 import * as url from 'url';
 import {newEngine, QueryEngine} from '../lib/Query';
+import EventEmitter = NodeJS.EventEmitter;
 
 const MIME_PLAIN = 'text/plain';
 const MIME_JSON  = 'application/json';
@@ -28,7 +28,13 @@ const context = JSON.parse(fs.existsSync(args._[0]) ? fs.readFileSync(args._[0],
 const timeout = (parseInt(args.t, 10) || 60) * 1000;
 const port = parseInt(args.p, 10) || 3000;
 
-newEngine().then((engine: QueryEngine) => {
+newEngine().then(async (engine: QueryEngine) => {
+  const mediaTypes: {[id: string]: number} = await engine.getResultMediaTypes();
+  const variants: any = [];
+  for (const type of Object.keys(mediaTypes)) {
+    variants.push({ type, quality: mediaTypes[type] });
+  }
+
   // Start the server
   const server = http.createServer(handleRequest);
   server.listen(port);
@@ -37,6 +43,9 @@ newEngine().then((engine: QueryEngine) => {
 
   // Handles an HTTP request
   function handleRequest(request: http.IncomingMessage, response: http.ServerResponse) {
+    const mediaType: string = request.headers.accept && request.headers.accept !== '*/*'
+      ? require('negotiate').choose(variants, request)[0].type : null;
+
     // Verify the path
     const requestUrl = url.parse(request.url, true);
     if (requestUrl.pathname !== '/sparql') {
@@ -49,9 +58,10 @@ newEngine().then((engine: QueryEngine) => {
     // Parse the query, depending on the HTTP method
     switch (request.method) {
     case 'POST':
-      return parseBody(request, (sparql) => { writeQueryResult(request, response, sparql); });
+      return parseBody(request, (sparql) => { writeQueryResult(request, response, sparql, mediaType); });
     case 'GET':
-      return writeQueryResult(request, response, <string> (<querystring.ParsedUrlQuery> requestUrl.query).query || '');
+      return writeQueryResult(request, response,
+        <string> (<querystring.ParsedUrlQuery> requestUrl.query).query || '', mediaType);
     default:
       process.stdout.write('[405] ' + request.method + ' to ' + requestUrl + '\n');
       response.writeHead(405, { 'content-type': MIME_JSON });
@@ -60,23 +70,25 @@ newEngine().then((engine: QueryEngine) => {
   }
 
   // Writes the result of the given SPARQL query
-  function writeQueryResult(request: http.IncomingMessage, response: http.ServerResponse, sparql: string) {
-    let stream: AsyncIterator<Bindings>;
+  function writeQueryResult(request: http.IncomingMessage, response: http.ServerResponse,
+                            sparql: string, mediaType: string) {
+    let eventEmitter: EventEmitter;
     const promise = engine.query(sparql, context)
-      .then((result) => {
+      .then(async (result) => {
         process.stdout.write('[200] ' + request.method + ' to ' + request.url + '\n');
+        process.stdout.write('      Requested media type: ' + mediaType + '\n');
         process.stdout.write('      Received query: ' + sparql + '\n');
-        response.writeHead(200, { 'content-type': MIME_JSON });
+        response.writeHead(200, { 'content-type': mediaType });
 
-        stream = result.bindingsStream;
-        result.bindingsStream.on('data', (data) => {
-          response.write(JSON.stringify(data));
-        });
-
-        result.bindingsStream.on('end', () => {
-          response.end();
-        });
-
+        try {
+          const data: NodeJS.ReadableStream = (await engine.resultToString(result, mediaType)).data;
+          data.pipe(response);
+          eventEmitter = data;
+        } catch (error) {
+          process.stdout.write('[400] Bad request, invalid media type\n');
+          response.writeHead(400, { 'content-type': MIME_PLAIN });
+          response.end('The response for the given query could not be serialized for the requested media type\n');
+        }
       }).catch((error) => {
         process.stdout.write('[400] Bad request\n');
         response.writeHead(400, { 'content-type': MIME_PLAIN });
@@ -89,10 +101,10 @@ newEngine().then((engine: QueryEngine) => {
     response.on('close', killClient);
     function killClient() {
       (<any> promise).cancel();
-      if (stream) {
+      if (eventEmitter) {
         // remove all listeners so we are sure no more write calls are made
-        stream.removeAllListeners();
-        stream.close();
+        eventEmitter.removeAllListeners();
+        eventEmitter.emit('end');
       }
       try { response.end(); } catch (e) { /* ignore error */ }
       clearTimeout(killTimeout);

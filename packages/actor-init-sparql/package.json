@@ -39,6 +39,7 @@
   ],
   "dependencies": {
     "minimist": "^1.2.0",
+    "negotiate": "^1.0.1",
     "streamify-string": "^1.0.1",
     "@comunica/runner": "^0.0.1",
     "@comunica/runner-cli": "^0.0.1"

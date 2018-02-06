@@ -37,8 +37,7 @@ Options:
 
     // Print supported MIME types
     if (args.listformats) {
-      const mediaTypes: {[id: string]: number} = (await this.mediatorSparqlSerializeMediaTypeCombiner.mediate(
-        { mediaTypes: true })).mediaTypes;
+      const mediaTypes: {[id: string]: number} = await this.getResultMediaTypes();
       return { stdout: require('streamify-string')(Object.keys(mediaTypes).join('\n')) };
     }
 
@@ -80,15 +79,11 @@ Options:
       });
     }
 
+    // Evaluate query
     const queryResult: IActorQueryOperationOutput = await this.evaluateQuery(query, context);
 
-    // Define output media type
-    const mediaType: string = args.t || (queryResult.bindingsStream ? 'application/json' : 'text/turtle');
-
     // Serialize output according to media type
-    const output: IActorSparqlSerializeOutput = (await this.mediatorSparqlSerialize.mediate(
-      { handle: queryResult, handleMediaType: mediaType })).handle;
-    const stdout: Readable = <Readable> output.data;
+    const stdout: Readable = <Readable> (await this.resultToString(queryResult, args.t)).data;
 
     return { stdout };
   }

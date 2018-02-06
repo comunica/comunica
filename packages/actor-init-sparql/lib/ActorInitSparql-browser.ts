@@ -3,6 +3,7 @@ import {IActionQueryOperation, IActorQueryOperationOutput} from "@comunica/bus-q
 import {IActionSparqlParse, IActorSparqlParseOutput} from "@comunica/bus-sparql-parse";
 import {IActionRootSparqlParse, IActorOutputRootSparqlParse,
   IActorTestRootSparqlParse} from "@comunica/bus-sparql-serialize";
+import {IActorSparqlSerializeOutput} from "@comunica/bus-sparql-serialize";
 import {Actor, IActorArgs, IActorTest, Mediator} from "@comunica/core";
 import {Algebra} from "sparqlalgebrajs";
 
@@ -41,6 +42,27 @@ export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs {
     const operation: Algebra.Operation = (await this.mediatorSparqlParse.mediate({ query })).operation;
     const resolve: IActionQueryOperation = { context, operation };
     return await this.mediatorQueryOperation.mediate(resolve);
+  }
+
+  /**
+   * @return {Promise<{[p: string]: number}>} All available SPARQL (weighted) result media types.
+   */
+  public async getResultMediaTypes(): Promise<{[id: string]: number}> {
+    return (await this.mediatorSparqlSerializeMediaTypeCombiner.mediate({ mediaTypes: true })).mediaTypes;
+  }
+
+  /**
+   * Convert a query result to a string stream based on a certain media type.
+   * @param {IActorQueryOperationOutput} queryResult A query result.
+   * @param {string} mediaType A media type.
+   * @return {Promise<IActorSparqlSerializeOutput>} A text stream.
+   */
+  public async resultToString(queryResult: IActorQueryOperationOutput, mediaType?: string)
+  : Promise<IActorSparqlSerializeOutput> {
+    if (!mediaType) {
+      mediaType = queryResult.bindingsStream ? 'application/json' : 'text/turtle';
+    }
+    return (await this.mediatorSparqlSerialize.mediate({ handle: queryResult, handleMediaType: mediaType })).handle;
   }
 
   public async run(action: IActionInit): Promise<IActorOutputInit> {
