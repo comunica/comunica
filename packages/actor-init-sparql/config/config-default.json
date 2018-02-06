@@ -7,6 +7,7 @@
     "https://linkedsoftwaredependencies.org/contexts/comunica-actor-sparql-serialize-json.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-actor-sparql-serialize-rdf.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-actor-sparql-serialize-simple.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-sparql-serialize-sparql-json.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-actor-sparql-serialize-sparql-xml.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-actor-sparql-serialize-table.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-bus-query-operation.jsonld",
@@ -102,6 +103,10 @@
         {
           "@id": "ex:mySimpleSparqlSerializer",
           "@type": "ActorSparqlSerializeSimple"
+        },
+        {
+          "@id": "ex:mySparqlJsonSparqlSerializer",
+          "@type": "ActorSparqlSerializeSparqlJson"
         },
         {
           "@id": "ex:mySparqlXmlSparqlSerializer",
