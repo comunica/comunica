@@ -19,6 +19,7 @@
     "@types/rdf-data-model": "^1.0.1",
     "@types/rdf-js": "^1.0.0",
     "@types/uritemplate": "^0.3.4",
+    "@types/xml": "^1.0.2",
     "arrayify-stream": "^1.0.0",
     "asynciterator": "^1.1.0",
     "babel-core": "^6.26.0",
