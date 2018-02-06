@@ -113,7 +113,7 @@ describe('ActorInitSparql', () => {
         .toEqual('application/json');
     });
 
-    it('should default to media type application/json when a bindingsStream is returned', async () => {
+    it('should default to media type application/trig when a bindingsStream is returned', async () => {
       const m1: any = {
         mediate: (arg) => Promise.resolve({ quadStream: true }),
       };
@@ -124,7 +124,7 @@ describe('ActorInitSparql', () => {
         { bus, mediatorQueryOperation: m1, mediatorSparqlParse, mediatorSparqlSerialize: m2,
           mediatorSparqlSerializeMediaTypeCombiner: m2, name: 'actor', query });
       return expect((await actor.run({ argv: [], env: {}, stdin: new PassThrough() })).stdout)
-        .toEqual('text/turtle');
+        .toEqual('application/trig');
     });
 
     it('should run for no argv when query is passed as a parameter', () => {

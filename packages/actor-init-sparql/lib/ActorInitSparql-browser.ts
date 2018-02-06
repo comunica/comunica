@@ -60,7 +60,7 @@ export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs {
   public async resultToString(queryResult: IActorQueryOperationOutput, mediaType?: string)
   : Promise<IActorSparqlSerializeOutput> {
     if (!mediaType) {
-      mediaType = queryResult.bindingsStream ? 'application/json' : 'text/turtle';
+      mediaType = queryResult.bindingsStream ? 'application/json' : 'application/trig';
     }
     return (await this.mediatorSparqlSerialize.mediate({ handle: queryResult, handleMediaType: mediaType })).handle;
   }
