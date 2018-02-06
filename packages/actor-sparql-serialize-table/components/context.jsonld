@@ -1,0 +1,12 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/components.jsonld",
+    {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
+      "casst": "npmd:@comunica/actor-sparql-serialize-table/",
+
+      "ActorSparqlSerializeTable": "casst:Actor/SparqlSerialize/Table",
+      "columnWidth": "casst:Actor/SparqlSerialize/Table/columnWidth"
+    }
+  ]
+}
