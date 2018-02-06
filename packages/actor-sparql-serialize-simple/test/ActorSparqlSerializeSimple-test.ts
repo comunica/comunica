@@ -1,6 +1,7 @@
 import {Bindings, BindingsStream} from "@comunica/bus-query-operation";
 import {Bus} from "@comunica/core";
 import {ArrayIterator} from "asynciterator";
+import {namedNode} from "rdf-data-model";
 import {ActorSparqlSerializeSimple} from "../lib/ActorSparqlSerializeSimple";
 const quad = require('rdf-quad');
 const stringifyStream = require('stream-to-string');
@@ -36,8 +37,8 @@ describe('ActorSparqlSerializeSimple', () => {
         simple: 1.0,
       }, name: 'actor' });
       bindingsStream = new ArrayIterator([
-        Bindings({ k1: { value: 'v1' } }),
-        Bindings({ k2: { value: 'v2' } }),
+        Bindings({ k1: namedNode('v1') }),
+        Bindings({ k2: namedNode('v2') }),
       ]);
       quadStream = new ArrayIterator([
         quad('http://example.org/a', 'http://example.org/b', 'http://example.org/c'),
@@ -59,17 +60,17 @@ describe('ActorSparqlSerializeSimple', () => {
 
     describe('for serializing', () => {
       it('should test on simple', () => {
-        return expect(actor.test({ handle: { quadStream }, handleMediaType: 'simple' })).resolves.toBeTruthy();
+        return expect(actor.test({ handle: <any> { quadStream }, handleMediaType: 'simple' })).resolves.toBeTruthy();
       });
 
       it('should not test on N-Triples', () => {
-        return expect(actor.test({ handle: { quadStream }, handleMediaType: 'application/n-triples' }))
+        return expect(actor.test({ handle: <any> { quadStream }, handleMediaType: 'application/n-triples' }))
           .rejects.toBeTruthy();
       });
 
       it('should run on a bindings stream', async () => {
         return expect((await stringifyStream((await actor.run(
-          {handle: {bindingsStream}, handleMediaType: 'simple'})).handle.data))).toEqual(
+          {handle: <any> { bindingsStream }, handleMediaType: 'simple'})).handle.data))).toEqual(
 `k1: v1
 
 k2: v2
@@ -79,8 +80,8 @@ k2: v2
 
       // tslint:disable:no-trailing-whitespace
       it('should run on a quad stream', async () => {
-        return expect((await stringifyStream((await actor.run({ handle: { quadStream }, handleMediaType: 'simple' }))
-          .handle.data))).toEqual(
+        return expect((await stringifyStream((await actor.run(
+          { handle: <any> { quadStream }, handleMediaType: 'simple' })).handle.data))).toEqual(
 `subject: http://example.org/a
 predicate: http://example.org/b
 object: http://example.org/c
