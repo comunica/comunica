@@ -36,7 +36,7 @@ export function newEngine(options?: IQueryOptions): Promise<QueryEngine> {
   }
   if (!options.mainModulePath) {
     // This makes sure that our configuration is found by Components.js
-    options.mainModulePath = '';
+    options.mainModulePath = __dirname + '/../';
   }
   const configResourceUrl: string = options.configResourceUrl || __dirname + '/../config/config-default.json';
   const instanceUri: string = options.instanceUri || 'urn:comunica:sparqlinit';
