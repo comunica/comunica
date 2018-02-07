@@ -18,7 +18,7 @@ export class ActorInitSparql extends ActorInitSparqlBrowser {
     const args = minimist(action.argv);
     if (!this.query && (!(args.q || args.f) && args._.length < (args.c ? 1 : 2) || args._.length < (args.c ? 0 : 1)
         || args.h || args.help)) {
-      throw new Error(`comunica-sparql evaluates SPARQL queries
+      return { stderr: require('streamify-string')(`comunica-sparql evaluates SPARQL queries
 
 Usage:
   comunica-sparql http://fragments.example.org/dataset [-q] 'SELECT * WHERE { ?s ?p ?o }'
@@ -29,7 +29,7 @@ Options:
   -f      evaluate the SPARQL query in the given file
   -c      use the given JSON configuration file (e.g., config.json)
   --help  print this help message
-      `);
+`) };
     }
 
     // Define query

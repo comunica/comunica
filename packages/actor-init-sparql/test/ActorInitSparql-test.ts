@@ -60,16 +60,19 @@ describe('ActorInitSparql', () => {
       return expect(actor.test({ argv: [], env: {}, stdin: new PassThrough() })).resolves.toBeTruthy();
     });
 
-    it('should not run for no argv', () => {
-      return expect(actor.run({ argv: [ ], env: {}, stdin: new PassThrough() })).rejects.toBeTruthy();
+    it('should run to stderr for no argv', () => {
+      return expect(actor.run({ argv: [ ], env: {}, stdin: new PassThrough() })).resolves
+        .toHaveProperty('stderr');
     });
 
-    it('should not run on the -h option', () => {
-      return expect(actor.run({ argv: [ '-h' ], env: {}, stdin: new PassThrough() })).rejects.toBeTruthy();
+    it('should run to stderr on the -h option', () => {
+      return expect(actor.run({ argv: [ '-h' ], env: {}, stdin: new PassThrough() })).resolves
+        .toHaveProperty('stderr');
     });
 
-    it('should not run on the --help option', () => {
-      return expect(actor.run({ argv: [ '--help' ], env: {}, stdin: new PassThrough() })).rejects.toBeTruthy();
+    it('should run to stderr on the --help option', () => {
+      return expect(actor.run({ argv: [ '--help' ], env: {}, stdin: new PassThrough() })).resolves
+        .toHaveProperty('stderr');
     });
 
     it('should run for no argv when query is passed as a parameter', () => {
@@ -94,14 +97,16 @@ describe('ActorInitSparql', () => {
         });
     });
 
-    it('should not run for no argv when only a context is passed as parameter', () => {
+    it('should run to stderr for no argv when only a context is passed as parameter', () => {
       actor = new ActorInitSparql({ name: 'actor', bus, mediatorQueryOperation, mediatorSparqlParse, context });
-      return expect(actor.run({ argv: [ ], env: {}, stdin: new PassThrough() })).rejects.toBeTruthy();
+      return expect(actor.run({ argv: [ ], env: {}, stdin: new PassThrough() })).resolves
+        .toHaveProperty('stderr');
     });
 
-    it('should not run for no argv when only a falsy query is passed as parameter', () => {
+    it('should run to stderr for no argv when only a falsy query is passed as parameter', () => {
       actor = new ActorInitSparql({ name: 'actor', bus, mediatorQueryOperation, mediatorSparqlParse, query: null });
-      return expect(actor.run({ argv: [ ], env: {}, stdin: new PassThrough() })).rejects.toBeTruthy();
+      return expect(actor.run({ argv: [ ], env: {}, stdin: new PassThrough() })).resolves
+        .toHaveProperty('stderr');
     });
 
     it('should run with an entrypoint and query from argv', () => {
@@ -114,8 +119,9 @@ describe('ActorInitSparql', () => {
         });
     });
 
-    it('should not run for an entrypoint without a query', () => {
-      return expect(actor.run({ argv: [ entrypoint ], env: {}, stdin: new PassThrough() })).rejects.toBeTruthy();
+    it('should run to stderr for an entrypoint without a query', () => {
+      return expect(actor.run({ argv: [ entrypoint ], env: {}, stdin: new PassThrough() })).resolves
+        .toHaveProperty('stderr');
     });
 
     it('should not run for an entrypoint and an invalid query', () => {
