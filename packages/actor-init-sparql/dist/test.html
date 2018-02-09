@@ -1,0 +1,14 @@
+<html>
+<head>
+    <title>Test</title>
+</head>
+<body>
+    <script src="../comunica-browser.js"></script>
+    <script language="JavaScript">
+        Comunica.evaluateQuery('select * where {?s ?p ?o} LIMIT 100', { entrypoint: 'https://fragments.linkedsoftwaredependencies.org/npm' })
+          .then((out) => {
+            out.bindingsStream.on('data', (d) => console.log(JSON.stringify(d.toJSON())));
+          }).catch(console.error);
+    </script>
+</body>
+</html>

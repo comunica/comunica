@@ -101,7 +101,7 @@ describe('ActorInitSparql', () => {
 
     it('should default to media type application/json when a bindingsStream is returned', async () => {
       const m1: any = {
-        mediate: (arg) => Promise.resolve({ bindingsStream: true }),
+        mediate: (arg) => Promise.resolve({ type: 'bindings', bindingsStream: true }),
       };
       const m2: any = {
         mediate: (arg) => Promise.resolve({ handle: { data: arg.handleMediaType } }),
@@ -113,9 +113,9 @@ describe('ActorInitSparql', () => {
         .toEqual('application/json');
     });
 
-    it('should default to media type application/trig when a bindingsStream is returned', async () => {
+    it('should default to media type application/trig when a quadStream is returned', async () => {
       const m1: any = {
-        mediate: (arg) => Promise.resolve({ quadStream: true }),
+        mediate: (arg) => Promise.resolve({ type: 'quads', quadStream: true }),
       };
       const m2: any = {
         mediate: (arg) => Promise.resolve({ handle: { data: arg.handleMediaType } }),
@@ -125,6 +125,20 @@ describe('ActorInitSparql', () => {
           mediatorSparqlSerializeMediaTypeCombiner: m2, name: 'actor', query });
       return expect((await actor.run({ argv: [], env: {}, stdin: new PassThrough() })).stdout)
         .toEqual('application/trig');
+    });
+
+    it('should default to media type simple when a boolean is returned', async () => {
+      const m1: any = {
+        mediate: (arg) => Promise.resolve({ type: 'boolean', booleanResult: Promise.resolve(true) }),
+      };
+      const m2: any = {
+        mediate: (arg) => Promise.resolve({ handle: { data: arg.handleMediaType } }),
+      };
+      actor = new ActorInitSparql(
+        { bus, mediatorQueryOperation: m1, mediatorSparqlParse, mediatorSparqlSerialize: m2,
+          mediatorSparqlSerializeMediaTypeCombiner: m2, name: 'actor', query });
+      return expect((await actor.run({ argv: [], env: {}, stdin: new PassThrough() })).stdout)
+        .toEqual('simple');
     });
 
     it('should run for no argv when query is passed as a parameter', () => {

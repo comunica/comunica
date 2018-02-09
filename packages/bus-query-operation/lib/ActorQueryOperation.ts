@@ -75,7 +75,13 @@ export interface IActorQueryOperationOutput extends IActorOutput {
    * For example: SPARQL CONSTRUCT results
    */
   quadStream?: RDF.Stream;
+  /**
+   * A promise resolving to the boolean output of the operation.
+   * This must be defined iff the query operation output type equals 'boolean'.
+   * For example: SPARQL ASK results
+   */
+  booleanResult?: Promise<boolean>;
 
 }
 
-export type QueryOperationOutputType = 'bindings' | 'quads';
+export type QueryOperationOutputType = 'bindings' | 'quads' | 'boolean';
