@@ -16,6 +16,7 @@ describe('ActorQueryOperationProject', () => {
         bindingsStream: new SingletonIterator(Bindings({ '?a': literal('A'), '_:delet': literal('deleteMe') })),
         metadata: 'M',
         operated: arg,
+        type: 'bindings',
         variables: ['?a', '_:delet'],
       }),
     };
@@ -58,6 +59,7 @@ describe('ActorQueryOperationProject', () => {
       return actor.run(op).then(async (output) => {
         expect(output.metadata).toEqual('M');
         expect(output.variables).toEqual([ '?a', '_:delet' ]);
+        expect(output.type).toEqual('bindings');
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({ '?a': literal('A'), '_:delet': literal('deleteMe') }),
         ]);
@@ -69,6 +71,7 @@ describe('ActorQueryOperationProject', () => {
       return actor.run(op).then(async (output) => {
         expect(output.metadata).toEqual('M');
         expect(output.variables).toEqual([ '?a' ]);
+        expect(output.type).toEqual('bindings');
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({ '?a': literal('A') }),
         ]);
@@ -80,6 +83,7 @@ describe('ActorQueryOperationProject', () => {
       return actor.run(op).then(async (output) => {
         expect(output.metadata).toEqual('M');
         expect(output.variables).toEqual([ '?a', '?missing' ]);
+        expect(output.type).toEqual('bindings');
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({ '?a': literal('A'), '?missing': null }),
         ]);

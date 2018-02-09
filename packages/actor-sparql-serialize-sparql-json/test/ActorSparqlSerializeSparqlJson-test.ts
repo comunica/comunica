@@ -103,23 +103,27 @@ describe('ActorSparqlSerializeSparqlJson', () => {
 
     describe('for serializing', () => {
       it('should not test on quad streams', () => {
-        return expect(actor.test({ handle: <any> { quadStream }, handleMediaType: 'sparql-results+json' }))
+        return expect(actor.test({ handle: <any> { quadStream, type: 'quads' },
+          handleMediaType: 'sparql-results+json' }))
           .rejects.toBeTruthy();
       });
 
       it('should test on sparql-results+json', () => {
-        return expect(actor.test({ handle: <any> { bindingsStream }, handleMediaType: 'sparql-results+json' }))
+        return expect(actor.test({ handle: <any> { bindingsStream, type: 'bindings' },
+          handleMediaType: 'sparql-results+json' }))
           .resolves.toBeTruthy();
       });
 
       it('should not test on N-Triples', () => {
-        return expect(actor.test({ handle: <any> { bindingsStream }, handleMediaType: 'application/n-triples' }))
+        return expect(actor.test({ handle: <any> { bindingsStream, type: 'bindings' },
+          handleMediaType: 'application/n-triples' }))
           .rejects.toBeTruthy();
       });
 
       it('should run on a bindings stream', async () => {
         return expect((await stringifyStream((await actor.run(
-          {handle: <any> {bindingsStream, variables}, handleMediaType: 'json'})).handle.data))).toEqual(
+          {handle: <any> {bindingsStream, type: 'bindings', variables},
+            handleMediaType: 'json'})).handle.data))).toEqual(
 `{"head": {"vars":["k1","k2"]},
 "results": { "bindings": [
 {"k1":{"value":"v1","type":"uri"}},
@@ -130,7 +134,8 @@ describe('ActorSparqlSerializeSparqlJson', () => {
 
       it('should run on a bindings stream without variables', async () => {
         return expect((await stringifyStream((await actor.run(
-          {handle: <any> { bindingsStream, variables: [] }, handleMediaType: 'json'})).handle.data))).toEqual(
+          {handle: <any> { bindingsStream, type: 'bindings', variables: [] },
+            handleMediaType: 'json'})).handle.data))).toEqual(
 `{"head": {},
 "results": { "bindings": [
 {"k1":{"value":"v1","type":"uri"}},
@@ -141,8 +146,8 @@ describe('ActorSparqlSerializeSparqlJson', () => {
 
       it('should run on a bindings stream with unbound variables', async () => {
         return expect((await stringifyStream((await actor.run(
-          {handle: <any> { bindingsStream: bindingsStreamPartial, variables: [] }, handleMediaType: 'json'}))
-          .handle.data))).toEqual(
+          {handle: <any> { bindingsStream: bindingsStreamPartial, type: 'bindings', variables: [] },
+            handleMediaType: 'json'})).handle.data))).toEqual(
 `{"head": {},
 "results": { "bindings": [
 {"k1":{"value":"v1","type":"uri"}},
@@ -155,8 +160,8 @@ describe('ActorSparqlSerializeSparqlJson', () => {
 
     it('should run on an empty bindings stream', async () => {
       return expect((await stringifyStream((await actor.run(
-        {handle: <any> { bindingsStream: bindingsStreamEmpty, variables }, handleMediaType: 'json'}))
-        .handle.data))).toEqual(
+        {handle: <any> { bindingsStream: bindingsStreamEmpty, type: 'bindings', variables },
+          handleMediaType: 'json'})).handle.data))).toEqual(
 `{"head": {"vars":["k1","k2"]},
 "results": { "bindings": [] }}
 `);

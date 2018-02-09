@@ -1,4 +1,4 @@
-import {ActorQueryOperationTypedMediated, Bindings, IActorQueryOperationOutput,
+import {ActorQueryOperation, ActorQueryOperationTypedMediated, IActorQueryOperationOutput,
   IActorQueryOperationTypedMediatedArgs} from "@comunica/bus-query-operation";
 import {BindingsStream} from "@comunica/bus-query-operation";
 import {IActorTest} from "@comunica/core";
@@ -22,6 +22,7 @@ export class ActorQueryOperationSlice extends ActorQueryOperationTypedMediated<A
     // Resolve the input
     const output: IActorQueryOperationOutput = await this.mediatorQueryOperation.mediate(
       { operation: pattern.input, context });
+    ActorQueryOperation.validateQueryOutput(output, 'bindings');
 
     // Slice the bindings stream
     const hasLength: boolean = !!pattern.length || pattern.length === 0;
@@ -40,7 +41,7 @@ export class ActorQueryOperationSlice extends ActorQueryOperationTypedMediated<A
       return Object.assign({}, subMetadata, { totalItems });
     });
 
-    return { bindingsStream, metadata, variables: output.variables };
+    return { type: 'bindings', bindingsStream, metadata, variables: output.variables };
   }
 
 }

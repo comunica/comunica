@@ -21,6 +21,13 @@ export class ActorSparqlSerializeTable extends ActorSparqlSerializeFixedMediaTyp
     return new Array(count + 1).join(str);
   }
 
+  public async testHandleChecked(action: IActionSparqlSerialize) {
+    if (['bindings', 'quads'].indexOf(action.type) < 0) {
+      throw new Error('This actor can only handle bindings or quad streams.');
+    }
+    return true;
+  }
+
   public pad(str: string): string {
     if (str.length <= this.columnWidth) {
       return str + this.padding.slice(str.length);
@@ -41,7 +48,7 @@ export class ActorSparqlSerializeTable extends ActorSparqlSerializeFixedMediaTyp
     };
 
     let resultStream: NodeJS.EventEmitter;
-    if (action.bindingsStream) {
+    if (action.type === 'bindings') {
       resultStream = action.bindingsStream;
       this.pushHeader(data, action.variables);
       resultStream.on('data', (bindings) => data.push(bindings.map(

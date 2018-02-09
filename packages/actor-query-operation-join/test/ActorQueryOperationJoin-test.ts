@@ -21,6 +21,7 @@ describe('ActorQueryOperationJoin', () => {
         ]),
         metadata: Promise.resolve({ totalItems: 3 }),
         operated: arg,
+        type: 'bindings',
         variables: ['a'],
       }),
     };
@@ -32,6 +33,7 @@ describe('ActorQueryOperationJoin', () => {
         ]),
         metadata: Promise.resolve({ totalItems: 2 }),
         operated: arg,
+        type: 'bindings',
         variables: ['a', 'b'],
       }),
     };
@@ -79,6 +81,7 @@ describe('ActorQueryOperationJoin', () => {
           Bindings({ a: literal('2'), b: literal('2') }),
         ]),
         metadata: Promise.resolve({ totalItems: 2 }),
+        type: 'bindings',
         variables: ['a', 'b'],
       });
     });

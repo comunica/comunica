@@ -2626,6 +2626,10 @@ lodash._reinterpolate@~3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/lodash._reinterpolate/-/lodash._reinterpolate-3.0.0.tgz#0ccf2d89166af03b3663c796538b75ac6e114d9d"
 
+lodash.isequal@^4.5.0:
+  version "4.5.0"
+  resolved "https://registry.yarnpkg.com/lodash.isequal/-/lodash.isequal-4.5.0.tgz#415c4478f2bcc30120c22ce10ed3226f7d3e18e0"
+
 lodash.template@^4.0.2:
   version "4.4.0"
   resolved "https://registry.yarnpkg.com/lodash.template/-/lodash.template-4.4.0.tgz#e73a0385c8355591746e020b99679c690e68fba0"
@@ -2639,7 +2643,7 @@ lodash.templatesettings@^4.0.0:
   dependencies:
     lodash._reinterpolate "~3.0.0"
 
-lodash@^4.0.0, lodash@^4.1.0, lodash@^4.13.1, lodash@^4.14.0, lodash@^4.17.4, lodash@^4.2.1, lodash@^4.3.0:
+lodash@^4.0.0, lodash@^4.1.0, lodash@^4.14.0, lodash@^4.17.4, lodash@^4.2.1, lodash@^4.3.0:
   version "4.17.4"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.4.tgz#78203a4d1c328ae1d86dca6460e369b57f4055ae"
 
@@ -2787,10 +2791,6 @@ ms@2.0.0:
 mute-stream@0.0.7:
   version "0.0.7"
   resolved "https://registry.yarnpkg.com/mute-stream/-/mute-stream-0.0.7.tgz#3075ce93bc21b8fab43e1bc4da7e8115ed1e7bab"
-
-n3@^0.11.2:
-  version "0.11.2"
-  resolved "https://registry.yarnpkg.com/n3/-/n3-0.11.2.tgz#25cb2ef1b75b38cbfcc1979cf92e2bdba7f183e0"
 
 nan@^2.3.0:
   version "2.8.0"
@@ -3525,18 +3525,18 @@ source-map@^0.6.0:
   version "0.6.1"
   resolved "https://registry.yarnpkg.com/source-map/-/source-map-0.6.1.tgz#74722af32e9614e9c287a8d0bbde48b5e2f1a263"
 
-sparqlalgebrajs@^0.5.2:
-  version "0.5.2"
-  resolved "https://registry.yarnpkg.com/sparqlalgebrajs/-/sparqlalgebrajs-0.5.2.tgz#0b99344f21cc24205cd50767c8301d530fc4a2e7"
+sparqlalgebrajs@^0.7.0:
+  version "0.7.0"
+  resolved "https://registry.yarnpkg.com/sparqlalgebrajs/-/sparqlalgebrajs-0.7.0.tgz#0fcccdf9737a7adc995c605b837f89399747a50c"
   dependencies:
-    lodash "^4.13.1"
+    lodash.isequal "^4.5.0"
     minimist "^1.2.0"
-    n3 "^0.11.2"
-    sparqljs "^1.5.2"
+    rdf-data-model "^1.0.0"
+    sparqljs "^2.0.2"
 
-sparqljs@^1.5.2:
-  version "1.5.2"
-  resolved "https://registry.yarnpkg.com/sparqljs/-/sparqljs-1.5.2.tgz#bf4e676024c5216cca8ecd25b32cc6ae3777e323"
+sparqljs@^2.0.2:
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/sparqljs/-/sparqljs-2.0.2.tgz#ed75cb85776906396d81951a44b385fb7d4b803f"
 
 spawn-sync@^1.0.15:
   version "1.0.15"

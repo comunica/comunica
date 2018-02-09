@@ -21,6 +21,7 @@ describe('ActorQueryOperationConstruct', () => {
         ]),
         metadata: Promise.resolve({ totalItems: 3 }),
         operated: arg,
+        type: 'bindings',
         variables: ['a'],
       }),
     };
@@ -90,9 +91,9 @@ describe('ActorQueryOperationConstruct', () => {
     it('should run on an empty template', () => {
       const op = { operation: { type: 'construct', template: [] } };
       return expect(actor.run(op)).resolves.toMatchObject({
-        bindingsStream: null,
         metadata: Promise.resolve({ totalItems: 0 }),
         quadStream: new EmptyIterator(),
+        type: 'quads',
         variables: [],
       });
     });
@@ -103,9 +104,9 @@ describe('ActorQueryOperationConstruct', () => {
         quad(blankNode('s2'), namedNode('p2'), literal('o2')),
       ], type: 'construct' } };
       return expect(actor.run(op)).resolves.toMatchObject({
-        bindingsStream: null,
         metadata: Promise.resolve({ totalItems: 0 }),
         quadStream: new EmptyIterator(),
+        type: 'quads',
         variables: [],
       });
     });
@@ -118,6 +119,7 @@ describe('ActorQueryOperationConstruct', () => {
       return actor.run(op).then(async (output) => {
         expect(await output.metadata).toEqual({ totalItems: 6 });
         expect(output.variables).toEqual([]);
+        expect(output.type).toEqual('quads');
         expect(output.bindingsStream).toBeFalsy();
         expect(await arrayifyStream(output.quadStream)).toEqual([
           quad(blankNode('s10'), literal('1'), literal('o1')),
@@ -138,6 +140,7 @@ describe('ActorQueryOperationConstruct', () => {
           bindingsStream: new ArrayIterator([]),
           metadata: null,
           operated: arg,
+          type: 'bindings',
           variables: ['a'],
         }),
       }, name: 'actor' });
@@ -155,6 +158,7 @@ describe('ActorQueryOperationConstruct', () => {
           bindingsStream: new ArrayIterator([]),
           metadata: Promise.resolve(null),
           operated: arg,
+          type: 'bindings',
           variables: ['a'],
         }),
       }, name: 'actor' });
@@ -172,6 +176,7 @@ describe('ActorQueryOperationConstruct', () => {
           bindingsStream: new ArrayIterator([]),
           metadata: Promise.resolve({}),
           operated: arg,
+          type: 'bindings',
           variables: ['a'],
         }),
       }, name: 'actor' });

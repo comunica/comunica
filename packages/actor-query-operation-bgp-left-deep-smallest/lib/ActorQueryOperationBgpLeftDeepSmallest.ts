@@ -1,5 +1,5 @@
-import {ActorQueryOperationTypedMediated, Bindings, BindingsStream,
-  IActorQueryOperationOutput, IActorQueryOperationTypedMediatedArgs} from "@comunica/bus-query-operation";
+import {ActorQueryOperation, ActorQueryOperationTypedMediated, Bindings, BindingsStream, IActorQueryOperationOutput,
+  IActorQueryOperationTypedMediatedArgs} from "@comunica/bus-query-operation";
 import {IActorTest} from "@comunica/core";
 import {MultiTransformIterator} from "asynciterator";
 import {PromiseProxyIterator} from "asynciterator-promiseproxy";
@@ -167,6 +167,9 @@ export class ActorQueryOperationBgpLeftDeepSmallest extends ActorQueryOperationT
     const remainingPatterns: Algebra.Pattern[] = pattern.patterns;
     remainingPatterns.splice(smallestId, 1);
 
+    // Check if the output type is correct
+    ActorQueryOperation.validateQueryOutput(smallestPattern, 'bindings');
+
     // Materialize the remaining patterns for each binding in the stream.
     const bindingsStream: BindingsStream = ActorQueryOperationBgpLeftDeepSmallest.createLeftDeepStream(
       smallestPattern.bindingsStream, remainingPatterns,
@@ -183,7 +186,7 @@ export class ActorQueryOperationBgpLeftDeepSmallest extends ActorQueryOperationT
         metadatas.slice(smallestId)),
     };
 
-    return { bindingsStream, variables, metadata: Promise.resolve(metadata) };
+    return { type: 'bindings', bindingsStream, variables, metadata: Promise.resolve(metadata) };
   }
 
 }

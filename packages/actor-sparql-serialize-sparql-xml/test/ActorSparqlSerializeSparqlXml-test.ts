@@ -101,23 +101,27 @@ describe('ActorSparqlSerializeSparqlXml', () => {
 
     describe('for serializing', () => {
       it('should not test on quad streams', () => {
-        return expect(actor.test({ handle: <any> { quadStream }, handleMediaType: 'sparql-results+xml' }))
+        return expect(actor.test(
+          { handle: <any> { type: 'quads', quadStream }, handleMediaType: 'sparql-results+xml' }))
           .rejects.toBeTruthy();
       });
 
       it('should test on sparql-results+xml', () => {
-        return expect(actor.test({ handle: <any> { bindingsStream }, handleMediaType: 'sparql-results+xml' }))
+        return expect(actor.test(
+          { handle: <any> { type: 'bindings', bindingsStream }, handleMediaType: 'sparql-results+xml' }))
           .resolves.toBeTruthy();
       });
 
       it('should not test on N-Triples', () => {
-        return expect(actor.test({ handle: <any> { bindingsStream }, handleMediaType: 'application/n-triples' }))
+        return expect(actor.test(
+          { handle: <any> { type: 'bindings', bindingsStream }, handleMediaType: 'application/n-triples' }))
           .rejects.toBeTruthy();
       });
 
       it('should run on a bindings stream', async () => {
         return expect((await stringifyStream((await actor.run(
-          {handle: <any> {bindingsStream, variables}, handleMediaType: 'xml'})).handle.data))).toEqual(
+          {handle: <any> {type: 'bindings', bindingsStream, variables}, handleMediaType: 'xml'}))
+          .handle.data))).toEqual(
           `<?xml version="1.0" encoding="UTF-8"?>
 <sparql xlmns="http://www.w3.org/2005/sparql-results#">
   <head>
@@ -142,7 +146,8 @@ describe('ActorSparqlSerializeSparqlXml', () => {
 
       it('should run on a bindings stream without variables', async () => {
         return expect((await stringifyStream((await actor.run(
-          {handle: <any> { bindingsStream, variables: [] }, handleMediaType: 'xml'})).handle.data))).toEqual(
+          {handle: <any> { type: 'bindings', bindingsStream, variables: [] }, handleMediaType: 'xml'}))
+          .handle.data))).toEqual(
             `<?xml version="1.0" encoding="UTF-8"?>
 <sparql xlmns="http://www.w3.org/2005/sparql-results#">
   <results>
@@ -163,7 +168,8 @@ describe('ActorSparqlSerializeSparqlXml', () => {
 
       it('should run on a bindings stream with unbound variables', async () => {
         return expect((await stringifyStream((await actor.run(
-          {handle: <any> { bindingsStream: bindingsStreamPartial, variables: [] }, handleMediaType: 'xml'}))
+          {handle: <any> { type: 'bindings', bindingsStream: bindingsStreamPartial, variables: [] },
+            handleMediaType: 'xml'}))
           .handle.data))).toEqual(
           `<?xml version="1.0" encoding="UTF-8"?>
 <sparql xlmns="http://www.w3.org/2005/sparql-results#">

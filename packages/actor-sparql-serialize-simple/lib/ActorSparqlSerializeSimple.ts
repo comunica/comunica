@@ -12,6 +12,13 @@ export class ActorSparqlSerializeSimple extends ActorSparqlSerializeFixedMediaTy
     super(args);
   }
 
+  public async testHandleChecked(action: IActionSparqlSerialize) {
+    if (['bindings', 'quads'].indexOf(action.type) < 0) {
+      throw new Error('This actor can only handle bindings or quad streams.');
+    }
+    return true;
+  }
+
   public async runHandle(action: IActionSparqlSerialize, mediaType: string): Promise<IActorSparqlSerializeOutput> {
     const data = new Readable();
     data._read = () => {
@@ -19,7 +26,7 @@ export class ActorSparqlSerializeSimple extends ActorSparqlSerializeFixedMediaTy
     };
 
     let resultStream: NodeJS.EventEmitter;
-    if (action.bindingsStream) {
+    if (action.type === 'bindings') {
       resultStream = action.bindingsStream;
       resultStream.on('data', (bindings) => data.push(bindings.map(
         (value: RDF.Term, key: string) => key + ': ' + value.value).join('\n') + '\n\n'));

@@ -32,7 +32,7 @@
     "index.js"
   ],
   "dependencies": {
-    "sparqlalgebrajs": "^0.6.3"
+    "sparqlalgebrajs": "^0.7.0"
   },
   "peerDependencies": {
     "@comunica/core": "^0.0.1",

@@ -12,6 +12,13 @@ export class ActorSparqlSerializeJson extends ActorSparqlSerializeFixedMediaType
     super(args);
   }
 
+  public async testHandleChecked(action: IActionSparqlSerialize) {
+    if (['bindings', 'quads'].indexOf(action.type) < 0) {
+      throw new Error('This actor can only handle bindings or quad streams.');
+    }
+    return true;
+  }
+
   public async runHandle(action: IActionSparqlSerialize, mediaType: string): Promise<IActorSparqlSerializeOutput> {
     const data = new Readable();
     data._read = () => {
@@ -21,7 +28,7 @@ export class ActorSparqlSerializeJson extends ActorSparqlSerializeFixedMediaType
 
     let empty: boolean = true;
     let resultStream: NodeJS.EventEmitter;
-    if (action.bindingsStream) {
+    if (action.type === 'bindings') {
       resultStream = action.bindingsStream;
       resultStream.on('data', (element) => {
         data.push(empty ? '\n' : ',\n');

@@ -43,22 +43,22 @@ describe('ActorSparqlSerializeRdf', () => {
 
     describe('for serializing', () => {
       it('should not test for an invalid media type and a quad stream', () => {
-        const handle: any = { quadStream: true };
+        const handle: any = { quadStream: true, type: 'quads' };
         return expect(actor.test({ handle, handleMediaType: 'abc' })).rejects.toBeTruthy();
       });
 
-      it('should test for a valid media type and a bindings stream', () => {
-        const handle: any = { bindingsStream: true };
+      it('should not test for a valid media type and a bindings stream', () => {
+        const handle: any = { bindingsStream: true, type: 'bindings' };
         return expect(actor.test({ handle, handleMediaType: 'text/turtle' })).rejects.toBeTruthy();
       });
 
       it('should test for a valid media type and a quad stream', () => {
-        const handle: any = { quadStream: true };
+        const handle: any = { quadStream: true, type: 'quads' };
         return expect(actor.test({ handle, handleMediaType: 'text/turtle' })).resolves.toBeTruthy();
       });
 
       it('should run for a valid media type and a quad stream', () => {
-        const handle: any = { quadStream: true };
+        const handle: any = { quadStream: true, type: 'quads' };
         return expect(actor.run({ handle, handleMediaType: 'text/turtle' })).resolves.toEqual(
           { handle: { quads: true } });
       });

@@ -25,7 +25,7 @@ export class ActorSparqlSerializeRdf extends ActorSparqlSerialize implements IAc
 
   public async testHandle(action: IActorQueryOperationOutput, mediaType: string): Promise<IActorTest> {
     // Check if we are provided with a quad stream
-    if (!action.quadStream) {
+    if (action.type !== 'quads') {
       throw new Error('Actor ' + this.name + ' can only handle quad streams');
     }
 

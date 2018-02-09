@@ -1,4 +1,4 @@
-import {ActorQueryOperationTypedMediated, Bindings, IActorQueryOperationOutput,
+import {ActorQueryOperation, ActorQueryOperationTypedMediated, IActorQueryOperationOutput,
   IActorQueryOperationTypedMediatedArgs} from "@comunica/bus-query-operation";
 import {BindingsStream} from "@comunica/bus-query-operation";
 import {IActorTest} from "@comunica/core";
@@ -53,6 +53,9 @@ export class ActorQueryOperationUnion extends ActorQueryOperationTypedMediated<A
       this.mediatorQueryOperation.mediate({ operation: pattern.left, context }),
       this.mediatorQueryOperation.mediate({ operation: pattern.right, context }),
     ]);
+    for (const output of outputs) {
+      ActorQueryOperation.validateQueryOutput(output, 'bindings');
+    }
     const bindingsStream: BindingsStream = new RoundRobinUnionIterator(outputs.map(
       (output: IActorQueryOperationOutput) => output.bindingsStream));
     const metadata: Promise<{[id: string]: any}> = outputs[0].metadata && outputs[1].metadata
@@ -60,7 +63,7 @@ export class ActorQueryOperationUnion extends ActorQueryOperationTypedMediated<A
       : null;
     const variables: string[] = ActorQueryOperationUnion.unionVariables(
       outputs.map((output: IActorQueryOperationOutput) => output.variables));
-    return { bindingsStream, metadata, variables };
+    return { type: 'bindings', bindingsStream, metadata, variables };
   }
 
 }

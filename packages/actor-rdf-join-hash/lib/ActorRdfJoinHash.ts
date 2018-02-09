@@ -29,7 +29,7 @@ export class ActorRdfJoinHash extends ActorRdfJoin {
     const join = new HashJoin<Bindings, string, Bindings>(
       action.entries[0].bindingsStream, action.entries[1].bindingsStream,
       (entry) => ActorRdfJoinHash.hash(entry, variables), ActorRdfJoin.join);
-    return { bindingsStream: join, variables: ActorRdfJoin.joinVariables(action) };
+    return { type: 'bindings', bindingsStream: join, variables: ActorRdfJoin.joinVariables(action) };
   }
 
   protected async getIterations(action: IActionRdfJoin): Promise<number> {

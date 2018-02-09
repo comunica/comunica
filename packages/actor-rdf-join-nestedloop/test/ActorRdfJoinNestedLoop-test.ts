@@ -40,8 +40,18 @@ describe('ActorRdfJoinNestedLoop', () => {
     beforeEach(() => {
       actor = new ActorRdfJoinNestedLoop({ name: 'actor', bus });
       action = { entries: [
-        { bindingsStream: new ArrayIterator([]), metadata: Promise.resolve({ totalItems: 4 }), variables: [] },
-        { bindingsStream: new ArrayIterator([]), metadata: Promise.resolve({ totalItems: 5 }), variables: [] },
+        {
+          bindingsStream: new ArrayIterator([]),
+          metadata: Promise.resolve({ totalItems: 4 }),
+          type: 'bindings',
+          variables: [],
+        },
+        {
+          bindingsStream: new ArrayIterator([]),
+          metadata: Promise.resolve({ totalItems: 5 }),
+          type: 'bindings',
+          variables: [],
+        },
       ]};
     });
 
