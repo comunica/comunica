@@ -16,7 +16,9 @@
     "https://linkedsoftwaredependencies.org/contexts/comunica-actor-query-operation-bgp-left-deep-smallest.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-actor-query-operation-bgp-single.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-actor-query-operation-construct.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-query-operation-describe-subject.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-actor-query-operation-distinct-hash.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-query-operation-join.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-actor-query-operation-project.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-actor-query-operation-quadpattern.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-actor-query-operation-slice.jsonld",
@@ -42,6 +44,8 @@
     "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-metadata-triple-predicate.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-bus-rdf-dereference-paged.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-dereference-paged-next.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-rdf-join.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-join-nestedloop.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-mediator-combine-union.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-mediator-number.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-mediator-race.jsonld",
@@ -154,11 +158,28 @@
         },
 
         {
+          "@id": "ex:myDescribeQueryOperator",
+          "@type": "ActorQueryOperationDescribeSubject",
+          "cbqo:mediatorQueryOperation": { "@id": "ex:mediatorQueryOperation" }
+        },
+
+        {
           "@id": "ex:myDistinctQueryOperator",
           "@type": "ActorQueryOperationDistinctHash",
           "cbqo:mediatorQueryOperation": { "@id": "ex:mediatorQueryOperation" },
           "caqodh:hashAlgorithm": "sha1",
           "caqodh:digestAlgorithm": "base64"
+        },
+
+        {
+          "@id": "ex:myJoinQueryOperator",
+          "@type": "ActorQueryOperationJoin",
+          "cbqo:mediatorQueryOperation": { "@id": "ex:mediatorQueryOperation" },
+          "caqoj:mediatorJoin": {
+            "@id": "ex:mediatorRdfJoin",
+            "@type": "MediatorRace",
+            "cc:Mediator/bus": { "@id": "cbrj:Bus/RdfJoin" }
+          }
         },
 
         {
@@ -280,6 +301,11 @@
         {
           "@id": "ex:myRdfMetadataExtractHydraCount",
           "@type": "ActorRdfMetadataExtractHydraCount"
+        },
+
+        {
+          "@id": "ex:myRdfJoinActor",
+          "@type": "ActorRdfJoinNestedLoop"
         }
       ]
     }
