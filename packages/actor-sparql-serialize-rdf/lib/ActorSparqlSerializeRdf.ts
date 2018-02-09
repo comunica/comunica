@@ -8,6 +8,9 @@ import {Actor, IActorTest, Mediator} from "@comunica/core";
 
 /**
  * A comunica RDF SPARQL Serialize Actor.
+ *
+ * It serializes quad streams (for example resulting from a CONSTRUCT query)
+ * to an RDF syntax.
  */
 export class ActorSparqlSerializeRdf extends ActorSparqlSerialize implements IActorSparqlSerializeRdfArgs {
 
