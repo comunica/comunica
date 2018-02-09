@@ -1,7 +1,7 @@
 import {Bindings, BindingsStream} from "@comunica/bus-query-operation";
 import {Bus} from "@comunica/core";
 import {ArrayIterator} from "asynciterator";
-import {namedNode} from "rdf-data-model";
+import {blankNode, namedNode} from "rdf-data-model";
 import {ActorSparqlSerializeJson} from "../lib/ActorSparqlSerializeJson";
 const quad = require('rdf-quad');
 const stringifyStream = require('stream-to-string');
@@ -39,7 +39,7 @@ describe('ActorSparqlSerializeJson', () => {
       }, name: 'actor' });
       bindingsStream = new ArrayIterator([
         Bindings({ k1: namedNode('v1') }),
-        Bindings({ k2: namedNode('v2') }),
+        Bindings({ k2: blankNode('v2') }),
       ]);
       quadStream = new ArrayIterator([
         quad('http://example.org/a', 'http://example.org/b', 'http://example.org/c'),
@@ -75,8 +75,8 @@ describe('ActorSparqlSerializeJson', () => {
         return expect((await stringifyStream((await actor.run(
           {handle: <any> { bindingsStream }, handleMediaType: 'application/json'})).handle.data))).toEqual(
 `[
-{"k1":{"value":"v1"}},
-{"k2":{"value":"v2"}}
+{"k1":"v1"},
+{"k2":"_:v2"}
 ]
 `);
       });
@@ -86,8 +86,8 @@ describe('ActorSparqlSerializeJson', () => {
         return expect((await stringifyStream((await actor.run(
           { handle: <any> { quadStream }, handleMediaType: 'application/json' })).handle.data))).toEqual(
 `[
-{"subject":{"value":"http://example.org/a"},"predicate":{"value":"http://example.org/b"},"object":{"value":"http://example.org/c"},"graph":{"value":""}},
-{"subject":{"value":"http://example.org/a"},"predicate":{"value":"http://example.org/d"},"object":{"value":"http://example.org/e"},"graph":{"value":""}}
+{"subject":"http://example.org/a","predicate":"http://example.org/b","object":"http://example.org/c","graph":""},
+{"subject":"http://example.org/a","predicate":"http://example.org/d","object":"http://example.org/e","graph":""}
 ]
 `);
       });
