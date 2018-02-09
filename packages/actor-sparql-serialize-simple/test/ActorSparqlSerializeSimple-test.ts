@@ -59,8 +59,19 @@ describe('ActorSparqlSerializeSimple', () => {
     });
 
     describe('for serializing', () => {
-      it('should test on simple', () => {
+      it('should test on simple quads', () => {
         return expect(actor.test({ handle: <any> { type: 'quads', quadStream }, handleMediaType: 'simple' }))
+          .resolves.toBeTruthy();
+      });
+
+      it('should test on simple bindings', () => {
+        return expect(actor.test({ handle: <any> { type: 'bindings', bindingsStream }, handleMediaType: 'simple' }))
+          .resolves.toBeTruthy();
+      });
+
+      it('should test on simple booleans', () => {
+        return expect(actor.test({ handle: <any> { type: 'boolean', booleanResult: Promise.resolve(true) },
+          handleMediaType: 'simple' }))
           .resolves.toBeTruthy();
       });
 
@@ -100,6 +111,22 @@ predicate: http://example.org/d
 object: http://example.org/e
 graph: 
 
+`);
+      });
+
+      it('should run on a boolean result that resolves to true', async () => {
+        return expect((await stringifyStream((await actor.run(
+          {handle: <any> { type: 'boolean', booleanResult: Promise.resolve(true) }, handleMediaType: 'simple'}))
+          .handle.data))).toEqual(
+`true
+`);
+      });
+
+      it('should run on a boolean result that resolves to false', async () => {
+        return expect((await stringifyStream((await actor.run(
+          {handle: <any> { type: 'boolean', booleanResult: Promise.resolve(false) }, handleMediaType: 'simple'}))
+          .handle.data))).toEqual(
+          `false
 `);
       });
     });

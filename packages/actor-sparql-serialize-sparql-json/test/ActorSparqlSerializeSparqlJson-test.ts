@@ -108,8 +108,14 @@ describe('ActorSparqlSerializeSparqlJson', () => {
           .rejects.toBeTruthy();
       });
 
-      it('should test on sparql-results+json', () => {
+      it('should test on sparql-results+json bindings', () => {
         return expect(actor.test({ handle: <any> { bindingsStream, type: 'bindings' },
+          handleMediaType: 'sparql-results+json' }))
+          .resolves.toBeTruthy();
+      });
+
+      it('should test on sparql-results+json booleans', () => {
+        return expect(actor.test({ handle: <any> { booleanResult: Promise.resolve(true), type: 'boolean' },
           handleMediaType: 'sparql-results+json' }))
           .resolves.toBeTruthy();
       });
@@ -164,6 +170,26 @@ describe('ActorSparqlSerializeSparqlJson', () => {
           handleMediaType: 'json'})).handle.data))).toEqual(
 `{"head": {"vars":["k1","k2"]},
 "results": { "bindings": [] }}
+`);
+    });
+
+    it('should run on a boolean result that resolves to true', async () => {
+      return expect((await stringifyStream((await actor.run(
+        {handle: <any> { type: 'boolean', booleanResult: Promise.resolve(true), variables: [] },
+          handleMediaType: 'simple'})).handle.data))).toEqual(
+`{"head": {},
+"boolean":true
+}
+`);
+    });
+
+    it('should run on a boolean result that resolves to false', async () => {
+      return expect((await stringifyStream((await actor.run(
+        {handle: <any> { type: 'boolean', booleanResult: Promise.resolve(false), variables: [] },
+          handleMediaType: 'simple'})).handle.data))).toEqual(
+`{"head": {},
+"boolean":false
+}
 `);
     });
   });
