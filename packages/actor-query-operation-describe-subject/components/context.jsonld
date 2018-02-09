@@ -1,0 +1,11 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/components.jsonld",
+    {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
+      "caqods": "npmd:@comunica/actor-query-operation-describe-subject/",
+
+      "ActorQueryOperationDescribeSubject": "caqods:Actor/QueryOperation/DescribeSubject"
+    }
+  ]
+}
