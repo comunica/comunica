@@ -41,12 +41,11 @@ export class ActorSparqlSerializeSparqlXml extends ActorSparqlSerializeFixedMedi
     return { binding: [{ _attr: { name: key.substring(1) } }, xmlValue] };
   }
 
-  public async testHandle(action: IActorQueryOperationOutput, mediaType: string): Promise<IActorTest> {
-    // Check if we are provided with a bindings stream
-    if (!action.bindingsStream) {
-      throw new Error('Actor ' + this.name + ' can only handle bindings streams');
+  public async testHandleChecked(action: IActionSparqlSerialize) {
+    if (action.type !== 'bindings') {
+      throw new Error('This actor can only handle bindings streams.');
     }
-    return super.testHandle(action, mediaType);
+    return true;
   }
 
   public async runHandle(action: IActionSparqlSerialize, mediaType: string): Promise<IActorSparqlSerializeOutput> {

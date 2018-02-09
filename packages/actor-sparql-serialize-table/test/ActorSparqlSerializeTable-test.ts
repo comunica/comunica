@@ -63,18 +63,27 @@ describe('ActorSparqlSerializeTable', () => {
 
     describe('for serializing', () => {
       it('should test on table', () => {
-        return expect(actor.test({ handle: <any> { quadStream }, handleMediaType: 'table' })).resolves.toBeTruthy();
+        return expect(actor.test({ handle: <any> { type: 'quads', quadStream },
+          handleMediaType: 'table' })).resolves.toBeTruthy();
       });
 
       it('should not test on N-Triples', () => {
-        return expect(actor.test({ handle: <any> { quadStream }, handleMediaType: 'application/n-triples' }))
+        return expect(actor.test({ handle: <any> { type: 'quads', quadStream },
+          handleMediaType: 'application/n-triples' }))
+          .rejects.toBeTruthy();
+      });
+
+      it('should not test on unknown types', () => {
+        return expect(actor.test(
+          { handle: <any> { type: 'unknown' }, handleMediaType: 'table' }))
           .rejects.toBeTruthy();
       });
 
       // tslint:disable:no-trailing-whitespace
       it('should run on a bindings stream', async () => {
         return expect((await stringifyStream((await actor.run(
-          {handle: <any> { bindingsStream, variables }, handleMediaType: 'table'})).handle.data))).toEqual(
+          {handle: <any> { type: 'bindings', bindingsStream, variables },
+            handleMediaType: 'table'})).handle.data))).toEqual(
 `k1         k2        
 ---------------------
 v1                   
@@ -84,7 +93,8 @@ v1
 
       it('should run on a quad stream', async () => {
         return expect((await stringifyStream((await actor.run(
-          { handle: <any> { quadStream }, handleMediaType: 'table' })).handle.data))).toEqual(
+          { handle: <any> { type: 'quads', quadStream },
+            handleMediaType: 'table' })).handle.data))).toEqual(
 `subject    predicate  object     graph     
 -------------------------------------------
 http://ex… http://ex… http://ex…           

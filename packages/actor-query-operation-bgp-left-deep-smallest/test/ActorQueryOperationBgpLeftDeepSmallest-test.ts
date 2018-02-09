@@ -13,12 +13,17 @@ describe('ActorQueryOperationBgpLeftDeepSmallest', () => {
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
     mediatorQueryOperation = {
-      mediate: (arg) => Promise.resolve({ bindingsStream: new SingletonIterator(Bindings({
-        graph: arg.operation.graph,
-        object: arg.operation.object,
-        predicate: arg.operation.predicate,
-        subject: arg.operation.subject,
-      })), metadata: { totalItems: (arg.context || {}).totalItems }, variables: (arg.context || {}).variables || [] }),
+      mediate: (arg) => Promise.resolve({
+        bindingsStream: new SingletonIterator(Bindings({
+          graph: arg.operation.graph,
+          object: arg.operation.object,
+          predicate: arg.operation.predicate,
+          subject: arg.operation.subject,
+        })),
+        metadata: { totalItems: (arg.context || {}).totalItems },
+        type: 'bindings',
+        variables: (arg.context || {}).variables || [],
+      }),
     };
   });
 
@@ -464,6 +469,7 @@ describe('ActorQueryOperationBgpLeftDeepSmallest', () => {
       const op = { operation: { type: 'bgp', patterns }, context: { totalItems: 10, variables: ['a'] } };
       return actor.run(op).then(async (output) => {
         expect(output.variables).toEqual(['a']);
+        expect(output.type).toEqual('bindings');
         expect(await output.metadata).toEqual({ totalItems: 100 });
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({
@@ -480,6 +486,7 @@ describe('ActorQueryOperationBgpLeftDeepSmallest', () => {
       const op = { operation: { type: 'bgp', patterns } };
       return actor.run(op).then(async (output) => {
         expect(output.variables).toEqual([]);
+        expect(output.type).toEqual('bindings');
         expect(await output.metadata).toEqual({ totalItems: Infinity });
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({

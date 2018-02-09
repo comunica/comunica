@@ -21,6 +21,17 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
     super(args);
   }
 
+  /**
+   * Throw an error if the output type does not match the expected type.
+   * @param {IActorQueryOperationOutput} output A query operation output.
+   * @param {string} expectedType The expected output type.
+   */
+  public static validateQueryOutput(output: IActorQueryOperationOutput, expectedType: string) {
+    if (output.type !== expectedType) {
+      throw new Error('Invalid query output type: Expected \'' + expectedType + '\' but got \'' + output.type + '\'');
+    }
+  }
+
 }
 
 export interface IActionQueryOperation extends IAction {
@@ -38,9 +49,14 @@ export interface IActionQueryOperation extends IAction {
 
 export interface IActorQueryOperationOutput extends IActorOutput {
   /**
-   * The stream of bindings resulting from the given operation.
+   * The type of output.
    */
-  bindingsStream: BindingsStream;
+  type: QueryOperationOutputType;
+  /**
+   * The stream of bindings resulting from the given operation.
+   * This must be defined iff the query operation output type equals 'bindings'.
+   */
+  bindingsStream?: BindingsStream;
   /**
    * The list of variable names (without '?') for which bindings are provided in the bindingsStream.
    */
@@ -52,10 +68,14 @@ export interface IActorQueryOperationOutput extends IActorOutput {
    */
   metadata?: Promise<{[id: string]: any}>;
   /**
-   * An optional stream of quads.
+   * The stream of quads.
+   * This must be defined iff the query operation output type equals 'quads'.
    * This is used in cases where no bindings are returned,
    * but instead, a stream of quads is produced.
    * For example: SPARQL CONSTRUCT results
    */
   quadStream?: RDF.Stream;
+
 }
+
+export type QueryOperationOutputType = 'bindings' | 'quads';

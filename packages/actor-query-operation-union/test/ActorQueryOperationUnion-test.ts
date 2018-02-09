@@ -18,6 +18,7 @@ describe('ActorQueryOperationUnion', () => {
       mediate: (arg) => Promise.resolve({
         bindingsStream: arg.operation.stream,
         metadata: arg.operation.metadata,
+        type: 'bindings',
         variables: arg.operation.variables,
       }),
     };
@@ -28,6 +29,7 @@ describe('ActorQueryOperationUnion', () => {
         Bindings({ a: literal('2') }),
         Bindings({ a: literal('3') }),
       ]),
+      type: 'bindings',
       variables: [ 'a' ],
     };
     leftNoMeta = {
@@ -37,6 +39,7 @@ describe('ActorQueryOperationUnion', () => {
         Bindings({ a: literal('2') }),
         Bindings({ a: literal('3') }),
       ]),
+      type: 'bindings',
       variables: [ 'a' ],
     };
     right = {
@@ -45,6 +48,7 @@ describe('ActorQueryOperationUnion', () => {
         Bindings({ b: literal('1') }),
         Bindings({ b: literal('2') }),
       ]),
+      type: 'bindings',
       variables: [ 'b' ],
     };
   });
@@ -183,6 +187,7 @@ describe('ActorQueryOperationUnion', () => {
       return actor.run(op).then(async (output) => {
         expect(await output.metadata).toEqual({ totalItems: 5 });
         expect(output.variables).toEqual([ 'a', 'b' ]);
+        expect(output.type).toEqual('bindings');
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({ a: literal('1') }),
           Bindings({ b: literal('1') }),
@@ -198,6 +203,7 @@ describe('ActorQueryOperationUnion', () => {
       return actor.run(op).then(async (output) => {
         expect(output.metadata).toBeFalsy();
         expect(output.variables).toEqual([ 'a', 'b' ]);
+        expect(output.type).toEqual('bindings');
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({ a: literal('1') }),
           Bindings({ b: literal('1') }),

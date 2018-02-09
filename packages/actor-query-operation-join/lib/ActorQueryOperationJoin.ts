@@ -1,5 +1,5 @@
-import {ActorQueryOperationTypedMediated, IActorQueryOperationOutput,
-  IActorQueryOperationTypedMediatedArgs} from "@comunica/bus-query-operation";
+import {ActorQueryOperation, ActorQueryOperationTypedMediated,
+  IActorQueryOperationOutput, IActorQueryOperationTypedMediatedArgs} from "@comunica/bus-query-operation";
 import {ActorRdfJoin, IActionRdfJoin} from "@comunica/bus-rdf-join";
 import {IActorTest, Mediator} from "@comunica/core";
 import {IMediatorTypeIterations} from "@comunica/mediatortype-iterations";
@@ -25,6 +25,9 @@ export class ActorQueryOperationJoin extends ActorQueryOperationTypedMediated<Al
     : Promise<IActorQueryOperationOutput> {
     const left = this.mediatorQueryOperation.mediate({ operation: pattern.left, context });
     const right = this.mediatorQueryOperation.mediate({ operation: pattern.right, context });
+
+    ActorQueryOperation.validateQueryOutput(await left, 'bindings');
+    ActorQueryOperation.validateQueryOutput(await right, 'bindings');
 
     return this.mediatorJoin.mediate({ entries: [await left, await right] });
   }

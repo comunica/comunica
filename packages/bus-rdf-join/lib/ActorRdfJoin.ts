@@ -96,6 +96,11 @@ export abstract class ActorRdfJoin extends Actor<IActionRdfJoin, IMediatorTypeIt
       throw new Error(this.name + ' supports ' + this.maxEntries
         + ' sources at most. The input contained ' + action.entries.length + '.');
     }
+    for (const entry of action.entries) {
+      if (entry.type !== 'bindings') {
+        throw new Error('Invalid type of a join entry: Expected \'bindings\' but got \'' + entry.type + '\'');
+      }
+    }
 
     if (!(await ActorRdfJoin.iteratorsHaveMetadata(action, 'totalItems'))) {
       return { iterations: Infinity };
@@ -111,7 +116,12 @@ export abstract class ActorRdfJoin extends Actor<IActionRdfJoin, IMediatorTypeIt
    */
   public async run(action: IActionRdfJoin): Promise<IActorQueryOperationOutput> {
     if (action.entries.length === 0) {
-      return { bindingsStream: new EmptyIterator(), metadata: Promise.resolve({ totalItems: 0 }), variables: [] };
+      return {
+        bindingsStream: new EmptyIterator(),
+        metadata: Promise.resolve({ totalItems: 0 }),
+        type: 'bindings',
+        variables: [],
+      };
     }
     if (action.entries.length === 1) {
       return action.entries[0];

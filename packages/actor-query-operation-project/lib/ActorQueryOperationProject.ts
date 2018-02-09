@@ -1,4 +1,4 @@
-import {ActorQueryOperationTypedMediated, Bindings, IActorQueryOperationOutput,
+import {ActorQueryOperation, ActorQueryOperationTypedMediated, Bindings, IActorQueryOperationOutput,
   IActorQueryOperationTypedMediatedArgs} from "@comunica/bus-query-operation";
 import {IActorTest} from "@comunica/core";
 import {termToString} from "rdf-string";
@@ -22,6 +22,7 @@ export class ActorQueryOperationProject extends ActorQueryOperationTypedMediated
     // Resolve the input
     const output: IActorQueryOperationOutput = await this.mediatorQueryOperation.mediate(
       { operation: pattern.input, context });
+    ActorQueryOperation.validateQueryOutput(output, 'bindings');
 
     // Find all variables that should be deleted from the input stream
     // and all variables that are not bound in the input stream.
@@ -42,7 +43,7 @@ export class ActorQueryOperationProject extends ActorQueryOperationTypedMediated
           return binding;
         });
 
-    return { bindingsStream, metadata: output.metadata, variables };
+    return { type: 'bindings', bindingsStream, metadata: output.metadata, variables };
   }
 
 }

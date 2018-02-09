@@ -1,4 +1,4 @@
-import {ActorQueryOperationTypedMediated, Bindings, IActorQueryOperationOutput,
+import {ActorQueryOperation, ActorQueryOperationTypedMediated, Bindings, IActorQueryOperationOutput,
   IActorQueryOperationTypedMediatedArgs} from "@comunica/bus-query-operation";
 import {ActorRdfJoin} from "@comunica/bus-rdf-join";
 import {IActorTest} from "@comunica/core";
@@ -22,7 +22,9 @@ export class ActorQueryOperationLeftJoinNestedLoop extends ActorQueryOperationTy
 
     // uses nested loop join
     const left = await this.mediatorQueryOperation.mediate({ operation: pattern.left, context });
+    ActorQueryOperation.validateQueryOutput(left, 'bindings');
     const right = await this.mediatorQueryOperation.mediate({ operation: pattern.right, context });
+    ActorQueryOperation.validateQueryOutput(right, 'bindings');
     const bindingsStream = left.bindingsStream.transform<Bindings>({
       optional: true,
       transform: (leftItem, next) => {
@@ -48,7 +50,7 @@ export class ActorQueryOperationLeftJoinNestedLoop extends ActorQueryOperationTy
       .catch(() => Infinity)
       .then((totalItems) =>  ({ totalItems }) );
 
-    return { bindingsStream, metadata, variables };
+    return { type: 'bindings', bindingsStream, metadata, variables };
   }
 
 }

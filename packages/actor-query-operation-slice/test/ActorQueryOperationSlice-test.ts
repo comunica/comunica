@@ -22,6 +22,7 @@ describe('ActorQueryOperationSlice', () => {
         ]),
         metadata: Promise.resolve({ totalItems: 3 }),
         operated: arg,
+        type: 'bindings',
         variables: ['a'],
       }),
     };
@@ -34,6 +35,7 @@ describe('ActorQueryOperationSlice', () => {
         ]),
         metadata: null,
         operated: arg,
+        type: 'bindings',
         variables: ['a'],
       }),
     };
@@ -46,6 +48,7 @@ describe('ActorQueryOperationSlice', () => {
         ]),
         metadata: Promise.resolve({ totalItems: Infinity }),
         operated: arg,
+        type: 'bindings',
         variables: ['a'],
       }),
     };
@@ -88,6 +91,7 @@ describe('ActorQueryOperationSlice', () => {
       return actor.run(op).then(async (output) => {
         expect(await output.metadata).toEqual({ totalItems: 3 });
         expect(output.variables).toEqual([ 'a' ]);
+        expect(output.type).toEqual('bindings');
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({ a: literal('1') }),
           Bindings({ a: literal('2') }),
@@ -101,6 +105,7 @@ describe('ActorQueryOperationSlice', () => {
       return actor.run(op).then(async (output) => {
         expect(await output.metadata).toEqual({ totalItems: 2 });
         expect(output.variables).toEqual([ 'a' ]);
+        expect(output.type).toEqual('bindings');
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({ a: literal('2') }),
           Bindings({ a: literal('3') }),
@@ -113,6 +118,7 @@ describe('ActorQueryOperationSlice', () => {
       return actor.run(op).then(async (output) => {
         expect(await output.metadata).toEqual({ totalItems: 0 });
         expect(output.variables).toEqual([ 'a' ]);
+        expect(output.type).toEqual('bindings');
         expect(await arrayifyStream(output.bindingsStream)).toEqual([]);
       });
     });
@@ -122,6 +128,7 @@ describe('ActorQueryOperationSlice', () => {
       return actor.run(op).then(async (output) => {
         expect(await output.metadata).toEqual({ totalItems: 3 });
         expect(output.variables).toEqual([ 'a' ]);
+        expect(output.type).toEqual('bindings');
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({ a: literal('1') }),
           Bindings({ a: literal('2') }),
@@ -135,6 +142,7 @@ describe('ActorQueryOperationSlice', () => {
       return actor.run(op).then(async (output) => {
         expect(await output.metadata).toEqual({ totalItems: 2 });
         expect(output.variables).toEqual([ 'a' ]);
+        expect(output.type).toEqual('bindings');
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({ a: literal('1') }),
           Bindings({ a: literal('2') }),
@@ -147,6 +155,7 @@ describe('ActorQueryOperationSlice', () => {
       return actor.run(op).then(async (output) => {
         expect(await output.metadata).toEqual({ totalItems: 0 });
         expect(output.variables).toEqual([ 'a' ]);
+        expect(output.type).toEqual('bindings');
         expect(await arrayifyStream(output.bindingsStream)).toEqual([]);
       });
     });
@@ -156,6 +165,7 @@ describe('ActorQueryOperationSlice', () => {
       return actor.run(op).then(async (output) => {
         expect(await output.metadata).toEqual({ totalItems: 2 });
         expect(output.variables).toEqual([ 'a' ]);
+        expect(output.type).toEqual('bindings');
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({ a: literal('2') }),
           Bindings({ a: literal('3') }),
@@ -168,6 +178,7 @@ describe('ActorQueryOperationSlice', () => {
       return actor.run(op).then(async (output) => {
         expect(await output.metadata).toEqual({ totalItems: 1 });
         expect(output.variables).toEqual([ 'a' ]);
+        expect(output.type).toEqual('bindings');
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({ a: literal('2') }),
         ]);
@@ -179,6 +190,7 @@ describe('ActorQueryOperationSlice', () => {
       return actor.run(op).then(async (output) => {
         expect(await output.metadata).toEqual({ totalItems: 1 });
         expect(output.variables).toEqual([ 'a' ]);
+        expect(output.type).toEqual('bindings');
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({ a: literal('3') }),
         ]);
@@ -190,6 +202,7 @@ describe('ActorQueryOperationSlice', () => {
       return actor.run(op).then(async (output) => {
         expect(await output.metadata).toEqual({ totalItems: 0 });
         expect(output.variables).toEqual([ 'a' ]);
+        expect(output.type).toEqual('bindings');
         expect(await arrayifyStream(output.bindingsStream)).toEqual([]);
       });
     });
@@ -208,6 +221,7 @@ describe('ActorQueryOperationSlice', () => {
       return actor.run(op).then(async (output) => {
         expect(await output.metadata).toEqual({ totalItems: 0 });
         expect(output.variables).toEqual([ 'a' ]);
+        expect(output.type).toEqual('bindings');
         expect(await arrayifyStream(output.bindingsStream)).toEqual([]);
       });
     });
@@ -217,6 +231,7 @@ describe('ActorQueryOperationSlice', () => {
       return actor.run(op).then(async (output) => {
         expect(await output.metadata).toEqual({ totalItems: 0 });
         expect(output.variables).toEqual([ 'a' ]);
+        expect(output.type).toEqual('bindings');
         expect(await arrayifyStream(output.bindingsStream)).toEqual([]);
       });
     });
@@ -226,6 +241,7 @@ describe('ActorQueryOperationSlice', () => {
       return actor.run(op).then(async (output) => {
         expect(await output.metadata).toEqual({ totalItems: 0 });
         expect(output.variables).toEqual([ 'a' ]);
+        expect(output.type).toEqual('bindings');
         expect(await arrayifyStream(output.bindingsStream)).toEqual([]);
       });
     });
@@ -237,6 +253,7 @@ describe('ActorQueryOperationSlice', () => {
       return actor.run(op).then(async (output) => {
         expect(await output.metadata).toBeFalsy();
         expect(output.variables).toEqual([ 'a' ]);
+        expect(output.type).toEqual('bindings');
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({ a: literal('1') }),
           Bindings({ a: literal('2') }),
@@ -252,6 +269,7 @@ describe('ActorQueryOperationSlice', () => {
       return actor.run(op).then(async (output) => {
         expect(await output.metadata).toEqual({ totalItems: Infinity });
         expect(output.variables).toEqual([ 'a' ]);
+        expect(output.type).toEqual('bindings');
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({ a: literal('1') }),
           Bindings({ a: literal('2') }),
@@ -265,6 +283,7 @@ describe('ActorQueryOperationSlice', () => {
       return actor.run(op).then(async (output) => {
         expect(await output.metadata).toEqual({ totalItems: 3 });
         expect(output.variables).toEqual([ 'a' ]);
+        expect(output.type).toEqual('bindings');
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({ a: literal('1') }),
           Bindings({ a: literal('2') }),

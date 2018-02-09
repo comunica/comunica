@@ -30,6 +30,7 @@ describe('ActorQueryOperationLeftJoinNestedLoop', () => {
           bindingsStream: left ? bindingStreamLeft : bindingStreamRight,
           metadata: Promise.resolve({totalItems: 3}),
           operated: arg,
+          type: 'bindings',
           variables: left ? ['a'] : ['a', 'b'],
         });
       },

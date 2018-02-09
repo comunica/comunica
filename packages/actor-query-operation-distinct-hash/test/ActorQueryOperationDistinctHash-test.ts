@@ -24,6 +24,7 @@ describe('ActorQueryOperationDistinctHash', () => {
         ]),
         metadata: Promise.resolve({ totalItems: 5 }),
         operated: arg,
+        type: 'bindings',
         variables: ['a'],
       }),
     };
@@ -180,6 +181,7 @@ describe('ActorQueryOperationDistinctHash', () => {
       return actor.run(op).then(async (output) => {
         expect(await output.metadata).toEqual({ totalItems: 5 });
         expect(output.variables).toEqual([ 'a' ]);
+        expect(output.type).toEqual('bindings');
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({ a: literal('1') }),
           Bindings({ a: literal('2') }),

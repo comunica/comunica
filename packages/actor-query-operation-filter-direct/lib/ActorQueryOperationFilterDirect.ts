@@ -1,5 +1,5 @@
-import {ActorQueryOperationTypedMediated, Bindings, IActorQueryOperationOutput,
-  IActorQueryOperationTypedMediatedArgs} from "@comunica/bus-query-operation";
+import {ActorQueryOperation, ActorQueryOperationTypedMediated, Bindings,
+  IActorQueryOperationOutput, IActorQueryOperationTypedMediatedArgs} from "@comunica/bus-query-operation";
 import {IActorTest} from "@comunica/core";
 import {Algebra} from "sparqlalgebrajs";
 import {SparqlExpressionEvaluator} from "./SparqlExpressionEvaluator";
@@ -21,6 +21,7 @@ export class ActorQueryOperationFilterDirect extends ActorQueryOperationTypedMed
     : Promise<IActorQueryOperationOutput> {
     const output: IActorQueryOperationOutput =
       await this.mediatorQueryOperation.mediate({ operation: pattern.input, context });
+    ActorQueryOperation.validateQueryOutput(output, 'bindings');
 
     const exprFunc = SparqlExpressionEvaluator.createEvaluator(pattern.expression);
     const filter = (bindings: Bindings) => {
@@ -29,7 +30,7 @@ export class ActorQueryOperationFilterDirect extends ActorQueryOperationTypedMed
     };
     const bindingsStream = output.bindingsStream.filter(filter);
 
-    return { bindingsStream, metadata: output.metadata, variables: output.variables };
+    return { type: 'bindings', bindingsStream, metadata: output.metadata, variables: output.variables };
   }
 
 }

@@ -1,4 +1,5 @@
 import {
+  ActorQueryOperation,
   ActorQueryOperationTypedMediated,
   IActorQueryOperationOutput,
   IActorQueryOperationTypedMediatedArgs,
@@ -53,9 +54,9 @@ export class ActorQueryOperationConstruct extends ActorQueryOperationTypedMediat
     const variables: RDF.Variable[] = ActorQueryOperationConstruct.getVariables(pattern.template);
     if (variables.length === 0) {
       return {
-        bindingsStream: null,
         metadata: Promise.resolve({ totalItems: 0 }),
         quadStream: new EmptyIterator(),
+        type: 'quads',
         variables: [],
       };
     }
@@ -63,8 +64,11 @@ export class ActorQueryOperationConstruct extends ActorQueryOperationTypedMediat
     // Apply a projection on our CONSTRUCT variables first, as the query may contain other variables as well.
     const operation: Algebra.Operation = { type: 'project', input: pattern.input, variables };
 
-    // Evaluate the input query and construct triples using the result based on the pattern.
+    // Evaluate the input query
     const output: IActorQueryOperationOutput = await this.mediatorQueryOperation.mediate({ operation, context });
+    ActorQueryOperation.validateQueryOutput(output, 'bindings');
+
+    // construct triples using the result based on the pattern.
     const quadStream: AsyncIterator<RDF.Quad> = new BindingsToQuadsIterator(pattern.template, output.bindingsStream);
 
     // Let the final metadata contain the estimated number of triples
@@ -82,9 +86,9 @@ export class ActorQueryOperationConstruct extends ActorQueryOperationTypedMediat
     }
 
     return {
-      bindingsStream: null,
       metadata,
       quadStream,
+      type: 'quads',
       variables: [],
     };
   }

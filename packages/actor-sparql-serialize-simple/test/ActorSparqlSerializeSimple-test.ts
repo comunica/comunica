@@ -60,17 +60,25 @@ describe('ActorSparqlSerializeSimple', () => {
 
     describe('for serializing', () => {
       it('should test on simple', () => {
-        return expect(actor.test({ handle: <any> { quadStream }, handleMediaType: 'simple' })).resolves.toBeTruthy();
+        return expect(actor.test({ handle: <any> { type: 'quads', quadStream }, handleMediaType: 'simple' }))
+          .resolves.toBeTruthy();
       });
 
       it('should not test on N-Triples', () => {
-        return expect(actor.test({ handle: <any> { quadStream }, handleMediaType: 'application/n-triples' }))
+        return expect(actor.test(
+          { handle: <any> { type: 'quads', quadStream }, handleMediaType: 'application/n-triples' }))
+          .rejects.toBeTruthy();
+      });
+
+      it('should not test on unknown types', () => {
+        return expect(actor.test(
+          { handle: <any> { type: 'unknown' }, handleMediaType: 'simple' }))
           .rejects.toBeTruthy();
       });
 
       it('should run on a bindings stream', async () => {
         return expect((await stringifyStream((await actor.run(
-          {handle: <any> { bindingsStream }, handleMediaType: 'simple'})).handle.data))).toEqual(
+          {handle: <any> { type: 'bindings', bindingsStream }, handleMediaType: 'simple'})).handle.data))).toEqual(
 `k1: v1
 
 k2: v2
@@ -81,7 +89,7 @@ k2: v2
       // tslint:disable:no-trailing-whitespace
       it('should run on a quad stream', async () => {
         return expect((await stringifyStream((await actor.run(
-          { handle: <any> { quadStream }, handleMediaType: 'simple' })).handle.data))).toEqual(
+          { handle: <any> { type: 'quads', quadStream }, handleMediaType: 'simple' })).handle.data))).toEqual(
 `subject: http://example.org/a
 predicate: http://example.org/b
 object: http://example.org/c

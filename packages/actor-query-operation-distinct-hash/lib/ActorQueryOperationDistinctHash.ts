@@ -1,4 +1,4 @@
-import {ActorQueryOperationTypedMediated, Bindings, IActorQueryOperationOutput,
+import {ActorQueryOperation, ActorQueryOperationTypedMediated, Bindings, IActorQueryOperationOutput,
   IActorQueryOperationTypedMediatedArgs} from "@comunica/bus-query-operation";
 import {BindingsStream} from "@comunica/bus-query-operation";
 import {IActorTest} from "@comunica/core";
@@ -78,9 +78,10 @@ export class ActorQueryOperationDistinctHash extends ActorQueryOperationTypedMed
     : Promise<IActorQueryOperationOutput> {
     const output: IActorQueryOperationOutput = await this.mediatorQueryOperation.mediate(
       { operation: pattern.input, context });
+    ActorQueryOperation.validateQueryOutput(output, 'bindings');
     const bindingsStream: BindingsStream = output.bindingsStream.filter(
       ActorQueryOperationDistinctHash.newDistinctHashFilter(this.hashAlgorithm, this.digestAlgorithm));
-    return { bindingsStream, metadata: output.metadata, variables: output.variables };
+    return { type: 'bindings', bindingsStream, metadata: output.metadata, variables: output.variables };
   }
 
 }

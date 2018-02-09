@@ -38,8 +38,8 @@ describe('ActorRdfJoin', () => {
 
   beforeEach(() => {
     action = { entries: [
-      { bindingsStream: null, variables: [] },
-      { bindingsStream: null, variables: [] },
+      { bindingsStream: null, variables: [], type: 'bindings' },
+      { bindingsStream: null, variables: [], type: 'bindings' },
     ]};
   });
 
@@ -59,6 +59,13 @@ describe('ActorRdfJoin', () => {
     it('should reject if there are too many entries', () => {
       action.entries.push(<any> {});
       instance.maxEntries = 2;
+      return expect(instance.test(action)).rejects.toBeTruthy();
+    });
+
+    it('should throw an error if an entry has an incorrect type', () => {
+      action.entries.push(<any> { type: 'invalid' });
+      action.entries.push(<any> { type: 'invalid' });
+      instance.maxEntries = 99;
       return expect(instance.test(action)).rejects.toBeTruthy();
     });
 

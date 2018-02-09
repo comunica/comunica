@@ -67,7 +67,7 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
         }, {}));
     });
 
-    return { bindingsStream, variables, metadata: result.metadata };
+    return { type: 'bindings', bindingsStream, variables, metadata: result.metadata };
   }
 
 }

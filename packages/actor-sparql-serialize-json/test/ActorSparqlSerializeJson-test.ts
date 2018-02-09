@@ -62,18 +62,26 @@ describe('ActorSparqlSerializeJson', () => {
 
     describe('for serializing', () => {
       it('should test on application/json', () => {
-        return expect(actor.test({ handle: <any> { quadStream }, handleMediaType: 'application/json' }))
+        return expect(actor.test({ handle: <any> { type: 'quads', quadStream }, handleMediaType: 'application/json' }))
           .resolves.toBeTruthy();
       });
 
       it('should not test on N-Triples', () => {
-        return expect(actor.test({ handle: <any> { quadStream }, handleMediaType: 'application/n-triples' }))
+        return expect(actor.test(
+          { handle: <any> { type: 'quads', quadStream }, handleMediaType: 'application/n-triples' }))
+          .rejects.toBeTruthy();
+      });
+
+      it('should not test on unknown types', () => {
+        return expect(actor.test(
+          { handle: <any> { type: 'unknown' }, handleMediaType: 'application/json' }))
           .rejects.toBeTruthy();
       });
 
       it('should run on a bindings stream', async () => {
         return expect((await stringifyStream((await actor.run(
-          {handle: <any> { bindingsStream }, handleMediaType: 'application/json'})).handle.data))).toEqual(
+          {handle: <any> { type: 'bindings', bindingsStream }, handleMediaType: 'application/json'})).handle.data)))
+          .toEqual(
 `[
 {"k1":"v1"},
 {"k2":"_:v2"}
@@ -84,7 +92,7 @@ describe('ActorSparqlSerializeJson', () => {
       // tslint:disable:max-line-length
       it('should run on a quad stream', async () => {
         return expect((await stringifyStream((await actor.run(
-          { handle: <any> { quadStream }, handleMediaType: 'application/json' })).handle.data))).toEqual(
+          { handle: <any> { type: 'quads', quadStream }, handleMediaType: 'application/json' })).handle.data))).toEqual(
 `[
 {"subject":"http://example.org/a","predicate":"http://example.org/b","object":"http://example.org/c","graph":""},
 {"subject":"http://example.org/a","predicate":"http://example.org/d","object":"http://example.org/e","graph":""}
@@ -94,7 +102,8 @@ describe('ActorSparqlSerializeJson', () => {
 
       it('should run on an empty bindings stream', async () => {
         return expect((await stringifyStream((await actor.run(
-          {handle: <any> { bindingsStream: bindingsStreamEmpty }, handleMediaType: 'application/json'})).handle.data)))
+          { handle: <any> { type: 'bindings', bindingsStream: bindingsStreamEmpty },
+            handleMediaType: 'application/json'})).handle.data)))
           .toEqual(`[]
 `);
       });
