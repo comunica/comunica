@@ -93,7 +93,8 @@ export abstract class ActorRdfJoin extends Actor<IActionRdfJoin, IMediatorTypeIt
       return { iterations: 0 };
     }
     if (this.maxEntries && action.entries.length > this.maxEntries) {
-      return null;
+      throw new Error(this.name + ' supports ' + this.maxEntries
+        + ' sources at most. The input contained ' + action.entries.length + '.');
     }
 
     if (!(await ActorRdfJoin.iteratorsHaveMetadata(action, 'totalItems'))) {

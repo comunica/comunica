@@ -56,10 +56,10 @@ describe('ActorRdfJoin', () => {
       return expect(instance.test(action)).resolves.toHaveProperty('iterations', 0);
     });
 
-    it('should return null if there are too many entries', () => {
+    it('should reject if there are too many entries', () => {
       action.entries.push(<any> {});
       instance.maxEntries = 2;
-      return expect(instance.test(action)).resolves.toBeFalsy();
+      return expect(instance.test(action)).rejects.toBeTruthy();
     });
 
     it('should return infinity if both metadata objects are missing', () => {

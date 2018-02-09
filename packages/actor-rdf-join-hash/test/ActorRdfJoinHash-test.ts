@@ -47,7 +47,7 @@ describe('ActorRdfJoinHash', () => {
 
     it('should only handle 2 streams', () => {
       action.entries.push(<any> {});
-      return expect(actor.test(action)).resolves.toBeFalsy();
+      return expect(actor.test(action)).rejects.toBeTruthy();
     });
 
     it('should generate correct test metadata', async () => {
