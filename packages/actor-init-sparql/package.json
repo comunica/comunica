@@ -53,6 +53,7 @@
   "devDependencies": {
     "@comunica/actor-abstract-mediatyped": "^0.0.1",
     "@comunica/actor-http-node-fetch": "^0.0.1",
+    "@comunica/actor-query-operation-ask": "^0.0.1",
     "@comunica/actor-query-operation-bgp-empty": "^0.0.1",
     "@comunica/actor-query-operation-bgp-left-deep-smallest": "^0.0.1",
     "@comunica/actor-query-operation-bgp-single": "^0.0.1",
