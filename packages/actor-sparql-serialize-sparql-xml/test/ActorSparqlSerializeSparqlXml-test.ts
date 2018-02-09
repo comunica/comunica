@@ -106,9 +106,16 @@ describe('ActorSparqlSerializeSparqlXml', () => {
           .rejects.toBeTruthy();
       });
 
-      it('should test on sparql-results+xml', () => {
+      it('should test on sparql-results+xml bindings', () => {
         return expect(actor.test(
           { handle: <any> { type: 'bindings', bindingsStream }, handleMediaType: 'sparql-results+xml' }))
+          .resolves.toBeTruthy();
+      });
+
+      it('should test on sparql-results+xml booleans', () => {
+        return expect(actor.test(
+          { handle: <any> { type: 'boolean', booleanResult: Promise.resolve(true) },
+            handleMediaType: 'sparql-results+xml' }))
           .resolves.toBeTruthy();
       });
 
@@ -187,6 +194,28 @@ describe('ActorSparqlSerializeSparqlXml', () => {
     <result>
     </result>
 </results>
+</sparql>
+`);
+      });
+
+      it('should run on a boolean result that resolves to true', async () => {
+        return expect((await stringifyStream((await actor.run(
+          {handle: <any> { type: 'boolean', booleanResult: Promise.resolve(true), variables: [] },
+            handleMediaType: 'simple'})).handle.data))).toEqual(
+`<?xml version="1.0" encoding="UTF-8"?>
+<sparql xlmns="http://www.w3.org/2005/sparql-results#">
+  <boolean>true</boolean>
+</sparql>
+`);
+      });
+
+      it('should run on a boolean result that resolves to false', async () => {
+        return expect((await stringifyStream((await actor.run(
+          {handle: <any> { type: 'boolean', booleanResult: Promise.resolve(false), variables: [] },
+            handleMediaType: 'simple'})).handle.data))).toEqual(
+`<?xml version="1.0" encoding="UTF-8"?>
+<sparql xlmns="http://www.w3.org/2005/sparql-results#">
+  <boolean>false</boolean>
 </sparql>
 `);
       });

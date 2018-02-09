@@ -61,8 +61,20 @@ describe('ActorSparqlSerializeJson', () => {
     });
 
     describe('for serializing', () => {
-      it('should test on application/json', () => {
+      it('should test on application/json quads', () => {
         return expect(actor.test({ handle: <any> { type: 'quads', quadStream }, handleMediaType: 'application/json' }))
+          .resolves.toBeTruthy();
+      });
+
+      it('should test on application/json bindings', () => {
+        return expect(actor.test({ handle: <any> { type: 'bindings', bindingsStream },
+          handleMediaType: 'application/json' }))
+          .resolves.toBeTruthy();
+      });
+
+      it('should test on application/json booleans', () => {
+        return expect(actor.test({ handle: <any> { type: 'boolean', booleanResult: Promise.resolve(true) },
+          handleMediaType: 'application/json' }))
           .resolves.toBeTruthy();
       });
 
@@ -105,6 +117,30 @@ describe('ActorSparqlSerializeJson', () => {
           { handle: <any> { type: 'bindings', bindingsStream: bindingsStreamEmpty },
             handleMediaType: 'application/json'})).handle.data)))
           .toEqual(`[]
+`);
+      });
+
+      it('should run on an empty quad stream', async () => {
+        return expect((await stringifyStream((await actor.run(
+          { handle: <any> { type: 'quads', quadStream: bindingsStreamEmpty },
+            handleMediaType: 'application/json'})).handle.data)))
+          .toEqual(`[]
+`);
+      });
+
+      it('should run on a boolean result resolving to true', async () => {
+        return expect((await stringifyStream((await actor.run(
+          {handle: <any> { type: 'boolean', booleanResult: Promise.resolve(true) },
+            handleMediaType: 'application/json'})).handle.data)))
+          .toEqual(`true
+`);
+      });
+
+      it('should run on a boolean result resolving to false', async () => {
+        return expect((await stringifyStream((await actor.run(
+          {handle: <any> { type: 'boolean', booleanResult: Promise.resolve(false) },
+            handleMediaType: 'application/json'})).handle.data)))
+          .toEqual(`false
 `);
       });
     });

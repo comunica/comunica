@@ -39,8 +39,8 @@ export class ActorSparqlSerializeSparqlJson extends ActorSparqlSerializeFixedMed
   }
 
   public async testHandleChecked(action: IActionSparqlSerialize) {
-    if (action.type !== 'bindings') {
-      throw new Error('This actor can only handle bindings streams.');
+    if (['bindings', 'boolean'].indexOf(action.type) < 0) {
+      throw new Error('This actor can only handle bindings streams or booleans.');
     }
     return true;
   }
@@ -59,34 +59,39 @@ export class ActorSparqlSerializeSparqlJson extends ActorSparqlSerializeFixedMed
     data.push('{"head": ' + JSON.stringify(head) + ',\n');
     let empty: boolean = true;
 
-    const resultStream: NodeJS.EventEmitter = action.bindingsStream;
+    if (action.type === 'bindings') {
+      const resultStream: NodeJS.EventEmitter = action.bindingsStream;
 
-    // Write bindings
-    resultStream.on('data', (bindings: Bindings) => {
-      if (empty) {
-        data.push('"results": { "bindings": [\n');
-      } else {
-        data.push(',\n');
-      }
+      // Write bindings
+      resultStream.on('data', (bindings: Bindings) => {
+        if (empty) {
+          data.push('"results": { "bindings": [\n');
+        } else {
+          data.push(',\n');
+        }
 
-      // JSON SPARQL results spec does not allow unbound variables and blank node bindings
-      const realBindings: Bindings = <any> bindings.filter((v: RDF.Term, k: string) => !!v && k.startsWith('?'));
+        // JSON SPARQL results spec does not allow unbound variables and blank node bindings
+        const realBindings: Bindings = <any> bindings.filter((v: RDF.Term, k: string) => !!v && k.startsWith('?'));
 
-      data.push(JSON.stringify((<any> realBindings.mapEntries(([key, value]: [string, RDF.Term]) =>
-        [key.substr(1), ActorSparqlSerializeSparqlJson.bindingToJsonBindings(value)]))
-        .toJSON()));
-      empty = false;
-    });
+        data.push(JSON.stringify((<any> realBindings.mapEntries(([key, value]: [string, RDF.Term]) =>
+          [key.substr(1), ActorSparqlSerializeSparqlJson.bindingToJsonBindings(value)]))
+          .toJSON()));
+        empty = false;
+      });
 
-    // Close streams
-    resultStream.on('end', () => {
-      if (empty) {
-        data.push('"results": { "bindings": [] }}\n');
-      } else {
-        data.push('\n]}}\n');
-      }
+      // Close streams
+      resultStream.on('end', () => {
+        if (empty) {
+          data.push('"results": { "bindings": [] }}\n');
+        } else {
+          data.push('\n]}}\n');
+        }
+        data.push(null);
+      });
+    } else {
+      data.push('"boolean":' + await action.booleanResult + '\n}\n');
       data.push(null);
-    });
+    }
 
     return { data };
   }

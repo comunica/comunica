@@ -13,8 +13,8 @@ export class ActorSparqlSerializeSimple extends ActorSparqlSerializeFixedMediaTy
   }
 
   public async testHandleChecked(action: IActionSparqlSerialize) {
-    if (['bindings', 'quads'].indexOf(action.type) < 0) {
-      throw new Error('This actor can only handle bindings or quad streams.');
+    if (['bindings', 'quads', 'boolean'].indexOf(action.type) < 0) {
+      throw new Error('This actor can only handle bindings streams, quad streams or booleans.');
     }
     return true;
   }
@@ -30,15 +30,19 @@ export class ActorSparqlSerializeSimple extends ActorSparqlSerializeFixedMediaTy
       resultStream = action.bindingsStream;
       resultStream.on('data', (bindings) => data.push(bindings.map(
         (value: RDF.Term, key: string) => key + ': ' + value.value).join('\n') + '\n\n'));
-    } else {
+      resultStream.on('end', () => data.push(null));
+    } else if (action.type === 'quads') {
       resultStream = action.quadStream;
       resultStream.on('data', (quad) => data.push(
         'subject: ' + quad.subject.value + '\n'
         + 'predicate: ' + quad.predicate.value + '\n'
         + 'object: ' + quad.object.value + '\n'
         + 'graph: ' + quad.graph.value + '\n\n'));
+      resultStream.on('end', () => data.push(null));
+    } else {
+      data.push(JSON.stringify(await action.booleanResult) + '\n');
+      data.push(null);
     }
-    resultStream.on('end', () => data.push(null));
 
     return { data };
   }

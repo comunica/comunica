@@ -42,8 +42,8 @@ export class ActorSparqlSerializeSparqlXml extends ActorSparqlSerializeFixedMedi
   }
 
   public async testHandleChecked(action: IActionSparqlSerialize) {
-    if (action.type !== 'bindings') {
-      throw new Error('This actor can only handle bindings streams.');
+    if (['bindings', 'boolean'].indexOf(action.type) < 0) {
+      throw new Error('This actor can only handle bindings streams or booleans.');
     }
     return true;
   }
@@ -56,28 +56,35 @@ export class ActorSparqlSerializeSparqlXml extends ActorSparqlSerializeFixedMedi
 
     // Write head
     const root = xml.element({ _attr: { xlmns: 'http://www.w3.org/2005/sparql-results#' } });
-    const results = xml.element({});
     (<NodeJS.ReadableStream> <any> xml({ sparql: root }, { stream: true, indent: '  ', declaration: true }))
       .on('data', (chunk) => data.push(chunk + '\n'));
     if (action.variables.length) {
       root.push({ head: action.variables.map((v) => ({ variable: { _attr: { name: v.substr(1) } } }))});
     }
-    root.push({ results });
-    const resultStream: NodeJS.EventEmitter = action.bindingsStream;
 
-    // Write bindings
-    resultStream.on('data', (bindings: Bindings) => {
-      // XML SPARQL results spec does not allow unbound variables and blank node bindings
-      const realBindings = bindings.filter((v: RDF.Term, k: string) => !!v && k.startsWith('?'));
-      results.push({ result: realBindings.map(ActorSparqlSerializeSparqlXml.bindingToXmlBindings) });
-    });
+    if (action.type === 'bindings') {
+      const results = xml.element({});
+      root.push({ results });
+      const resultStream: NodeJS.EventEmitter = action.bindingsStream;
 
-    // Close streams
-    resultStream.on('end', () => {
-      results.close();
+      // Write bindings
+      resultStream.on('data', (bindings: Bindings) => {
+        // XML SPARQL results spec does not allow unbound variables and blank node bindings
+        const realBindings = bindings.filter((v: RDF.Term, k: string) => !!v && k.startsWith('?'));
+        results.push({result: realBindings.map(ActorSparqlSerializeSparqlXml.bindingToXmlBindings)});
+      });
+
+      // Close streams
+      resultStream.on('end', () => {
+        results.close();
+        root.close();
+        data.push(null);
+      });
+    } else {
+      root.push({ boolean: await action.booleanResult });
       root.close();
-      data.push(null);
-    });
+      setImmediate(() => data.push(null));
+    }
 
     return { data };
   }
