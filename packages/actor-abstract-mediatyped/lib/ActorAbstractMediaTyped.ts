@@ -7,6 +7,7 @@ import {Actor, IAction, IActorArgs, IActorOutput, IActorTest} from "@comunica/co
  * A 'mediaTypes' action is used to retrieve the available media types from this actor.
  * A 'handle' action is abstract, and can be implemented to do anything,
  * such as parsing, serializing, etc.
+ * @see IActionAbstractMediaTyped
  *
  * @see ActorAbstractMediaTypedFixed
  */
