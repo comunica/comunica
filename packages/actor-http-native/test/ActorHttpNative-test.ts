@@ -4,8 +4,10 @@ import {Bus} from "@comunica/core";
 import {Setup} from "@comunica/runner";
 import "isomorphic-fetch";
 import {Readable} from "stream";
+import * as url from "url";
 import * as zlib from "zlib";
 import {ActorHttpNative} from "../lib/ActorHttpNative";
+import Requester from "../lib/Requester";
 
 const arrayifyStream = require('arrayify-stream');
 const mockSetup = require('./__mocks__/follow-redirects').mockSetup;
@@ -55,6 +57,13 @@ describe('ActorHttpNative', () => {
         .toMatchObject({ status: 404 });
     });
 
+    it('should run with agent options', () => {
+      actor = new ActorHttpNative({ name: 'actor', bus, agentOptions: '{ "name": "007" }' });
+      mockSetup({ statusCode: 404 });
+      return expect(actor.run({ input: new Request('http://example.com')})).resolves
+        .toMatchObject({ status: 404 });
+    });
+
     it('can have headers', async () => {
       mockSetup({ statusCode: 200 });
       const result: any = await actor.run(
@@ -96,6 +105,21 @@ describe('ActorHttpNative', () => {
       mockSetup({ statusCode: 200, body, headers: { 'content-encoding': 'invalid' } });
       return expect(actor.run({ input: new Request('http://example.com')})).rejects
         .toMatchObject(new Error('Unsupported encoding: invalid'));
+    });
+  });
+});
+
+describe('Requester', () => {
+  it('also works with parsed URL objects', () => {
+    mockSetup({ statusCode: 405 });
+    const requester = new Requester();
+    const req = requester.createRequest(url.parse('http://example.com/test'));
+    return new Promise((resolve) => {
+      req.on('response', (response) => {
+        expect(response).toMatchObject({ statusCode: 405 });
+        expect(response.input).toMatchObject({ href: 'http://example.com/test' });
+        resolve();
+      });
     });
   });
 });
