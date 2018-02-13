@@ -16,9 +16,10 @@ export class SparqlExpressionEvaluator {
    * @returns {(bindings: Bindings) => Term}
    */
   public static createEvaluator(expr: Algebra.Expression): (bindings: Bindings) => RDF.Term {
+    const func = SparqlExpressionEvaluator.handleExpression(expr);
     // internally the expression evaluator uses primitives, so these have to be converted back
     return (bindings: Bindings) => {
-      const str = SparqlExpressionEvaluator.handleExpression(expr)(bindings);
+      const str = func(bindings);
       if (!str) {
         return undefined;
       }
@@ -64,6 +65,9 @@ export class SparqlExpressionEvaluator {
 
   private static handleFunction(operatorName: string, args: Algebra.Expression[]): (bindings: Bindings) => string {
     const op = operators[operatorName];
+    if (!op) {
+      throw new Error('Unsupported operator ' + operatorName);
+    }
 
     // Special case: some operators accept expressions instead of evaluated expressions
     if (op.acceptsExpressions) {

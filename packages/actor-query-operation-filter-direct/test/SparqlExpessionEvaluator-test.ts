@@ -28,8 +28,15 @@ describe('SparqlExpressionEvaluator', () => {
   });
 
   it('can not handle all expression', () => {
-    const gen = SparqlExpressionEvaluator.createEvaluator({ type: 'expression', expressionType: 'existence' });
-    expect(gen).toThrow();
+    expect(() => SparqlExpressionEvaluator.createEvaluator(
+      { type: 'expression', expressionType: 'existence' },
+      )).toThrow();
+  });
+
+  it('can not handle all operators', () => {
+    expect(() => SparqlExpressionEvaluator.createEvaluator(
+      operatorExpression('DUMMY', []),
+    )).toThrow();
   });
 
   describe('A TermExpression', () => {

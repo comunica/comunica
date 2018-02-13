@@ -14,6 +14,8 @@ export class ActorQueryOperationFilterDirect extends ActorQueryOperationTypedMed
   }
 
   public async testOperation(pattern: Algebra.Filter, context?: {[id: string]: any}): Promise<IActorTest> {
+    // will throw error for unsupported operators
+    SparqlExpressionEvaluator.createEvaluator(pattern.expression);
     return true;
   }
 

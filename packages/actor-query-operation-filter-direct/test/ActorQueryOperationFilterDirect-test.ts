@@ -18,6 +18,12 @@ describe('ActorQueryOperationFilterDirect', () => {
     term: { termType: 'Literal', value: 'false' },
     type: 'expression',
   };
+  const unknownExpression = {
+    args: [],
+    expressionType: 'term',
+    operator: 'DUMMY',
+    type: 'operator',
+  };
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -61,8 +67,13 @@ describe('ActorQueryOperationFilterDirect', () => {
     });
 
     it('should test on filter', () => {
-      const op = { operation: { type: 'filter' } };
+      const op = { operation: { type: 'filter', expression: truthyExpression } };
       return expect(actor.test(op)).resolves.toBeTruthy();
+    });
+
+    it('should fail on unsupported operators', () => {
+      const op = { operation: { type: 'filter', expression: unknownExpression } };
+      return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
     it('should not test on non-filter', () => {
