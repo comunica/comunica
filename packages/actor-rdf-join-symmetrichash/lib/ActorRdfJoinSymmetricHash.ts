@@ -1,4 +1,4 @@
-import {Bindings, IActorQueryOperationOutput} from "@comunica/bus-query-operation";
+import {Bindings, IActorQueryOperationOutput, IActorQueryOperationOutputBindings} from "@comunica/bus-query-operation";
 import {ActorRdfJoin, IActionRdfJoin} from "@comunica/bus-rdf-join";
 import {IActorArgs} from "@comunica/core";
 import {IMediatorTypeIterations} from "@comunica/mediatortype-iterations";
@@ -24,7 +24,7 @@ export class ActorRdfJoinSymmetricHash extends ActorRdfJoin {
     return variables.map((v) => bindings.get(v)).join('');
   }
 
-  public async getOutput(action: IActionRdfJoin): Promise<IActorQueryOperationOutput> {
+  public async getOutput(action: IActionRdfJoin): Promise<IActorQueryOperationOutputBindings> {
     const variables = ActorRdfJoin.overlappingVariables(action);
     const join = new SymmetricHashJoin<Bindings, string, Bindings>(
       action.entries[0].bindingsStream, action.entries[1].bindingsStream,

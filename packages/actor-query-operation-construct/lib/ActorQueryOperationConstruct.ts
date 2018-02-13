@@ -1,7 +1,8 @@
 import {
   ActorQueryOperation,
   ActorQueryOperationTypedMediated,
-  IActorQueryOperationOutput,
+  IActorQueryOperationOutputBindings,
+  IActorQueryOperationOutputQuads,
   IActorQueryOperationTypedMediatedArgs,
 } from "@comunica/bus-query-operation";
 import {IActorTest} from "@comunica/core";
@@ -49,7 +50,7 @@ export class ActorQueryOperationConstruct extends ActorQueryOperationTypedMediat
   }
 
   public async runOperation(pattern: Algebra.Construct, context?: {[id: string]: any})
-    : Promise<IActorQueryOperationOutput> {
+    : Promise<IActorQueryOperationOutputQuads> {
     // If our template is empty or contains no variables, no need to resolve a query.
     const variables: RDF.Variable[] = ActorQueryOperationConstruct.getVariables(pattern.template);
     if (variables.length === 0) {
@@ -57,7 +58,6 @@ export class ActorQueryOperationConstruct extends ActorQueryOperationTypedMediat
         metadata: Promise.resolve({ totalItems: 0 }),
         quadStream: new EmptyIterator(),
         type: 'quads',
-        variables: [],
       };
     }
 
@@ -65,8 +65,8 @@ export class ActorQueryOperationConstruct extends ActorQueryOperationTypedMediat
     const operation: Algebra.Operation = { type: 'project', input: pattern.input, variables };
 
     // Evaluate the input query
-    const output: IActorQueryOperationOutput = await this.mediatorQueryOperation.mediate({ operation, context });
-    ActorQueryOperation.validateQueryOutput(output, 'bindings');
+    const output: IActorQueryOperationOutputBindings = ActorQueryOperation.getSafeBindings(
+      await this.mediatorQueryOperation.mediate({ operation, context }));
 
     // construct triples using the result based on the pattern.
     const quadStream: AsyncIterator<RDF.Quad> = new BindingsToQuadsIterator(pattern.template, output.bindingsStream);
@@ -89,7 +89,6 @@ export class ActorQueryOperationConstruct extends ActorQueryOperationTypedMediat
       metadata,
       quadStream,
       type: 'quads',
-      variables: [],
     };
   }
 

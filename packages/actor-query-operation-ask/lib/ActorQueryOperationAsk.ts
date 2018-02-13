@@ -1,4 +1,5 @@
 import {ActorQueryOperation, ActorQueryOperationTypedMediated, IActorQueryOperationOutput,
+  IActorQueryOperationOutputBindings, IActorQueryOperationOutputBoolean,
   IActorQueryOperationTypedMediatedArgs} from "@comunica/bus-query-operation";
 import {IActorTest} from "@comunica/core";
 import {Algebra} from "sparqlalgebrajs";
@@ -17,28 +18,28 @@ export class ActorQueryOperationAsk extends ActorQueryOperationTypedMediated<Alg
   }
 
   public async runOperation(pattern: Algebra.Ask, context?: {[id: string]: any})
-    : Promise<IActorQueryOperationOutput> {
+    : Promise<IActorQueryOperationOutputBoolean> {
     // Call other query operations like this:
     const output: IActorQueryOperationOutput = await this.mediatorQueryOperation.mediate(
       { operation: pattern.input, context });
-    ActorQueryOperation.validateQueryOutput(output, 'bindings');
+    const bindings: IActorQueryOperationOutputBindings = ActorQueryOperation.getSafeBindings(output);
     const booleanResult: Promise<boolean> = new Promise<boolean>(<any> ((resolve: any, reject: any, onCancel: any) => {
       // Close the bindings stream when the promise is cancelled.
-      onCancel(output.bindingsStream.close);
+      onCancel(bindings.bindingsStream.close);
 
       // Resolve to true if we find one element, and close immediately
-      output.bindingsStream.once('data', () => {
+      bindings.bindingsStream.once('data', () => {
         resolve(true);
-        output.bindingsStream.close();
+        bindings.bindingsStream.close();
       });
 
       // If we reach the end of the stream without finding anything, resolve to false
-      output.bindingsStream.on('end', () => resolve(false));
+      bindings.bindingsStream.on('end', () => resolve(false));
 
       // Reject if an error occurs in the stream
-      output.bindingsStream.on('error', reject);
+      bindings.bindingsStream.on('error', reject);
     }));
-    return { type: 'boolean', booleanResult, variables: [] };
+    return { type: 'boolean', booleanResult };
   }
 
 }

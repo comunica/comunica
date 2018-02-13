@@ -1,4 +1,4 @@
-import {ActorQueryOperation} from "@comunica/bus-query-operation";
+import {ActorQueryOperation, IActorQueryOperationOutputBindings} from "@comunica/bus-query-operation";
 import {Bindings} from "@comunica/bus-query-operation";
 import {Bus} from "@comunica/core";
 import {ArrayIterator} from "asynciterator";
@@ -105,7 +105,7 @@ describe('ActorQueryOperationQuadpattern', () => {
         subject: { value: 's', termType: 'NamedNode' },
         type: 'pattern',
       };
-      return actor.run({ operation }).then(async (output) => {
+      return actor.run({ operation }).then(async (output: IActorQueryOperationOutputBindings) => {
         expect(output.variables).toEqual([ '?p' ]);
         expect(output.metadata).toBe(metadata);
         expect(await arrayifyStream(output.bindingsStream)).toEqual(

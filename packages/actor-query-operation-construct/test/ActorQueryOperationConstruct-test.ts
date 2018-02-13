@@ -1,8 +1,8 @@
-import {ActorQueryOperation, Bindings} from "@comunica/bus-query-operation";
+import {ActorQueryOperation, Bindings, IActorQueryOperationOutputBindings,
+  IActorQueryOperationOutputQuads} from "@comunica/bus-query-operation";
 import {Bus} from "@comunica/core";
 import {ArrayIterator, EmptyIterator} from "asynciterator";
 import {blankNode, defaultGraph, literal, namedNode, quad, variable} from "rdf-data-model";
-import * as RDF from "rdf-js";
 import {ActorQueryOperationConstruct} from "../lib/ActorQueryOperationConstruct";
 const arrayifyStream = require('arrayify-stream');
 
@@ -94,7 +94,6 @@ describe('ActorQueryOperationConstruct', () => {
         metadata: Promise.resolve({ totalItems: 0 }),
         quadStream: new EmptyIterator(),
         type: 'quads',
-        variables: [],
       });
     });
 
@@ -107,7 +106,6 @@ describe('ActorQueryOperationConstruct', () => {
         metadata: Promise.resolve({ totalItems: 0 }),
         quadStream: new EmptyIterator(),
         type: 'quads',
-        variables: [],
       });
     });
 
@@ -116,11 +114,9 @@ describe('ActorQueryOperationConstruct', () => {
         quad(blankNode('s1'), variable('a'), literal('o1')),
         quad(blankNode('s2'), namedNode('p2'), variable('a'), variable('a')),
       ], type: 'construct' } };
-      return actor.run(op).then(async (output) => {
+      return actor.run(op).then(async (output: IActorQueryOperationOutputQuads) => {
         expect(await output.metadata).toEqual({ totalItems: 6 });
-        expect(output.variables).toEqual([]);
         expect(output.type).toEqual('quads');
-        expect(output.bindingsStream).toBeFalsy();
         expect(await arrayifyStream(output.quadStream)).toEqual([
           quad(blankNode('s10'), literal('1'), literal('o1')),
           quad(blankNode('s20'), namedNode('p2'), literal('1'), literal('1')),
@@ -147,7 +143,7 @@ describe('ActorQueryOperationConstruct', () => {
       const op = { operation: { template: [
         quad(blankNode('s1'), variable('a'), literal('o1')),
       ], type: 'construct' } };
-      return actor.run(op).then(async (output) => {
+      return actor.run(op).then(async (output: IActorQueryOperationOutputQuads) => {
         expect(output.metadata).toBeFalsy();
       });
     });
@@ -165,7 +161,7 @@ describe('ActorQueryOperationConstruct', () => {
       const op = { operation: { template: [
         quad(blankNode('s1'), variable('a'), literal('o1')),
       ], type: 'construct' } };
-      return actor.run(op).then(async (output) => {
+      return actor.run(op).then(async (output: IActorQueryOperationOutputQuads) => {
         expect(await output.metadata).toBeFalsy();
       });
     });
@@ -183,7 +179,7 @@ describe('ActorQueryOperationConstruct', () => {
       const op = { operation: { template: [
         quad(blankNode('s1'), variable('a'), literal('o1')),
       ], type: 'construct' } };
-      return actor.run(op).then(async (output) => {
+      return actor.run(op).then(async (output: IActorQueryOperationOutputQuads) => {
         expect(await output.metadata).toEqual({});
       });
     });

@@ -53,9 +53,9 @@ describe('ActorQueryOperationBgpSingle', () => {
     });
 
     it('should run with a context and delegate the pattern to the mediator', () => {
-      const op = { operation: { type: 'bgp', patterns: [ 'abc' ] }, context: 'C' };
+      const op = { operation: { type: 'bgp', patterns: [ 'abc' ] }, context: { c: 'C' } };
       return actor.run(op).then(async (output) => {
-        expect(output).toMatchObject({ operated: { operation: 'abc', context: 'C' } });
+        expect(output).toMatchObject({ operated: { operation: 'abc', context: { c: 'C' } } });
       });
     });
 

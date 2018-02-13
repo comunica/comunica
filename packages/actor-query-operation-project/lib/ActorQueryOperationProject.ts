@@ -1,4 +1,4 @@
-import {ActorQueryOperation, ActorQueryOperationTypedMediated, Bindings, IActorQueryOperationOutput,
+import {ActorQueryOperation, ActorQueryOperationTypedMediated, Bindings, IActorQueryOperationOutputBindings,
   IActorQueryOperationTypedMediatedArgs} from "@comunica/bus-query-operation";
 import {IActorTest} from "@comunica/core";
 import {termToString} from "rdf-string";
@@ -18,11 +18,10 @@ export class ActorQueryOperationProject extends ActorQueryOperationTypedMediated
   }
 
   public async runOperation(pattern: Algebra.Project, context?: {[id: string]: any})
-  : Promise<IActorQueryOperationOutput> {
+  : Promise<IActorQueryOperationOutputBindings> {
     // Resolve the input
-    const output: IActorQueryOperationOutput = await this.mediatorQueryOperation.mediate(
-      { operation: pattern.input, context });
-    ActorQueryOperation.validateQueryOutput(output, 'bindings');
+    const output: IActorQueryOperationOutputBindings = ActorQueryOperation.getSafeBindings(
+      await this.mediatorQueryOperation.mediate({ operation: pattern.input, context }));
 
     // Find all variables that should be deleted from the input stream
     // and all variables that are not bound in the input stream.

@@ -1,4 +1,5 @@
-import {Bindings, IActorQueryOperationOutput} from "@comunica/bus-query-operation";
+import {Bindings, IActorQueryOperationOutputBindings,
+  IActorQueryOperationOutputBoolean} from "@comunica/bus-query-operation";
 import {ActorSparqlSerializeFixedMediaTypes, IActionSparqlSerialize,
   IActorSparqlSerializeFixedMediaTypesArgs, IActorSparqlSerializeOutput} from "@comunica/bus-sparql-serialize";
 import {IActorTest} from "@comunica/core";
@@ -53,7 +54,7 @@ export class ActorSparqlSerializeSparqlJson extends ActorSparqlSerializeFixedMed
 
     // Write head
     const head: any = {};
-    if (action.variables.length) {
+    if (action.type === 'bindings' && action.variables.length) {
       head.vars = action.variables.map((v: string) => v.substr(1));
     }
     data.push('{"head": ' + JSON.stringify(head) + ',\n');
@@ -89,7 +90,7 @@ export class ActorSparqlSerializeSparqlJson extends ActorSparqlSerializeFixedMed
         data.push(null);
       });
     } else {
-      data.push('"boolean":' + await action.booleanResult + '\n}\n');
+      data.push('"boolean":' + await (<IActorQueryOperationOutputBoolean> action).booleanResult + '\n}\n');
       data.push(null);
     }
 

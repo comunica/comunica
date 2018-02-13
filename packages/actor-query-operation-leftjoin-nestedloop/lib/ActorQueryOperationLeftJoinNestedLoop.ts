@@ -1,4 +1,4 @@
-import {ActorQueryOperation, ActorQueryOperationTypedMediated, Bindings, IActorQueryOperationOutput,
+import {ActorQueryOperation, ActorQueryOperationTypedMediated, Bindings, IActorQueryOperationOutputBindings,
   IActorQueryOperationTypedMediatedArgs} from "@comunica/bus-query-operation";
 import {ActorRdfJoin} from "@comunica/bus-rdf-join";
 import {IActorTest} from "@comunica/core";
@@ -18,13 +18,13 @@ export class ActorQueryOperationLeftJoinNestedLoop extends ActorQueryOperationTy
   }
 
   public async runOperation(pattern: Algebra.LeftJoin, context?: {[id: string]: any})
-    : Promise<IActorQueryOperationOutput> {
+    : Promise<IActorQueryOperationOutputBindings> {
 
     // uses nested loop join
-    const left = await this.mediatorQueryOperation.mediate({ operation: pattern.left, context });
-    ActorQueryOperation.validateQueryOutput(left, 'bindings');
-    const right = await this.mediatorQueryOperation.mediate({ operation: pattern.right, context });
-    ActorQueryOperation.validateQueryOutput(right, 'bindings');
+    const left: IActorQueryOperationOutputBindings = ActorQueryOperation.getSafeBindings(
+      await this.mediatorQueryOperation.mediate({ operation: pattern.left, context }));
+    const right: IActorQueryOperationOutputBindings = ActorQueryOperation.getSafeBindings(
+      await this.mediatorQueryOperation.mediate({ operation: pattern.right, context }));
     const bindingsStream = left.bindingsStream.transform<Bindings>({
       optional: true,
       transform: (leftItem, next) => {

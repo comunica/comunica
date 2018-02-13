@@ -1,9 +1,7 @@
-
-import {Bindings, IActorQueryOperationOutput} from "@comunica/bus-query-operation";
+import {Bindings, IActorQueryOperationOutput, IActorQueryOperationOutputBindings} from "@comunica/bus-query-operation";
 import {Actor, IAction, IActorArgs} from "@comunica/core";
 import {IMediatorTypeIterations} from "@comunica/mediatortype-iterations";
 import {EmptyIterator} from "asynciterator";
-import * as _ from "lodash";
 
 /**
  * A comunica actor for joining 2 binding streams.
@@ -159,7 +157,7 @@ export abstract class ActorRdfJoin extends Actor<IActionRdfJoin, IMediatorTypeIt
    * @param {IActionRdfJoin} action
    * @returns {Promise<IActorQueryOperationOutput>}
    */
-  protected abstract getOutput(action: IActionRdfJoin): Promise<IActorQueryOperationOutput>;
+  protected abstract getOutput(action: IActionRdfJoin): Promise<IActorQueryOperationOutputBindings>;
 
   /**
    * Used when calculating the number of iterations in the test function.
@@ -176,5 +174,5 @@ export interface IActionRdfJoin extends IAction {
   /**
    * The list of streams and their corresponding metadata that need to be joined.
    */
-  entries: IActorQueryOperationOutput[];
+  entries: IActorQueryOperationOutputBindings[];
 }

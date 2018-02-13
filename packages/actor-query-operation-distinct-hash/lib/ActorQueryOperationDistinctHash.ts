@@ -1,5 +1,5 @@
-import {ActorQueryOperation, ActorQueryOperationTypedMediated, Bindings, IActorQueryOperationOutput,
-  IActorQueryOperationTypedMediatedArgs} from "@comunica/bus-query-operation";
+import {ActorQueryOperation, ActorQueryOperationTypedMediated, Bindings,
+  IActorQueryOperationOutputBindings, IActorQueryOperationTypedMediatedArgs} from "@comunica/bus-query-operation";
 import {BindingsStream} from "@comunica/bus-query-operation";
 import {IActorTest} from "@comunica/core";
 import {createHash, getHashes, Hash} from "crypto";
@@ -75,10 +75,9 @@ export class ActorQueryOperationDistinctHash extends ActorQueryOperationTypedMed
   }
 
   public async runOperation(pattern: Algebra.Distinct, context?: {[id: string]: any})
-    : Promise<IActorQueryOperationOutput> {
-    const output: IActorQueryOperationOutput = await this.mediatorQueryOperation.mediate(
-      { operation: pattern.input, context });
-    ActorQueryOperation.validateQueryOutput(output, 'bindings');
+    : Promise<IActorQueryOperationOutputBindings> {
+    const output: IActorQueryOperationOutputBindings = ActorQueryOperation.getSafeBindings(
+      await this.mediatorQueryOperation.mediate({ operation: pattern.input, context }));
     const bindingsStream: BindingsStream = output.bindingsStream.filter(
       ActorQueryOperationDistinctHash.newDistinctHashFilter(this.hashAlgorithm, this.digestAlgorithm));
     return { type: 'bindings', bindingsStream, metadata: output.metadata, variables: output.variables };

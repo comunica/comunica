@@ -37,15 +37,15 @@ export class ActorInitJoin extends ActorInit implements IActorInitJoinArgs {
       context: this.context ? JSON.parse(this.context) : undefined,
       operation: JSON.parse(this.leftPattern),
     };
-    const leftOutput = await this.operationMediator.mediate(leftInput);
+    const leftOutput = ActorQueryOperation.getSafeBindings(await this.operationMediator.mediate(leftInput));
     const rightInput: IActionQueryOperation = {
       context: this.context ? JSON.parse(this.context) : undefined,
       operation: JSON.parse(this.rightPattern),
     };
-    const rightOutput = await this.operationMediator.mediate(rightInput);
+    const rightOutput = ActorQueryOperation.getSafeBindings(await this.operationMediator.mediate(rightInput));
 
     const joinInput: IActionRdfJoin = { entries: [leftOutput, rightOutput] };
-    const joinOutput = await this.joinMediator.mediate(joinInput);
+    const joinOutput = ActorQueryOperation.getSafeBindings(await this.joinMediator.mediate(joinInput));
 
     const readable = new Readable();
     readable._read = () => {

@@ -3,7 +3,6 @@ import {Bus} from "@comunica/core";
 import {ArrayIterator} from "asynciterator";
 import {literal, variable} from "rdf-data-model";
 import {ActorQueryOperationJoin} from "../lib/ActorQueryOperationJoin";
-const arrayifyStream = require('arrayify-stream');
 
 describe('ActorQueryOperationJoin', () => {
   let bus;

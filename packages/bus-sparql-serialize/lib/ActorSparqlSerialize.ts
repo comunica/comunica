@@ -1,7 +1,7 @@
 import {ActorAbstractMediaTyped, IActionAbstractMediaTyped, IActorArgsMediaTyped,
   IActorOutputAbstractMediaTyped, IActorTestAbstractMediaTyped} from "@comunica/actor-abstract-mediatyped";
 import {IActorQueryOperationOutput} from "@comunica/bus-query-operation";
-import {IAction, IActorOutput, IActorTest} from "@comunica/core";
+import {IActorOutput, IActorTest} from "@comunica/core";
 
 /**
  * A comunica actor for sparql-serialize events.
