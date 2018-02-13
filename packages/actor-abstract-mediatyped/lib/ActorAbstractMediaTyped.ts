@@ -19,9 +19,10 @@ export abstract class ActorAbstractMediaTyped<HI, HT, HO>
   }
 
   public async run(action: IActionAbstractMediaTyped<HI>): Promise<IActorOutputAbstractMediaTyped<HO>> {
-    if (action.handle) {
-      return { handle: await this.runHandle(action.handle, action.handleMediaType) };
-    } else if (action.mediaTypes) {
+    if ('handle' in action) {
+      const typedAction: IActionAbstractMediaTypedHandle<HI> = <IActionAbstractMediaTypedHandle<HI>> action;
+      return { handle: await this.runHandle(typedAction.handle, typedAction.handleMediaType) };
+    } else if ('mediaTypes' in action) {
       return { mediaTypes: await this.getMediaTypes() };
     } else {
       throw new Error('Either a handle or mediaType action needs to be provided');
@@ -29,9 +30,10 @@ export abstract class ActorAbstractMediaTyped<HI, HT, HO>
   }
 
   public async test(action: IActionAbstractMediaTyped<HI>): Promise<IActorTestAbstractMediaTyped<HT>> {
-    if (action.handle) {
-      return { handle: await this.testHandle(action.handle, action.handleMediaType) };
-    } else if (action.mediaTypes) {
+    if ('handle' in action) {
+      const typedAction: IActionAbstractMediaTypedHandle<HI> = <IActionAbstractMediaTypedHandle<HI>> action;
+      return { handle: await this.testHandle(typedAction.handle, typedAction.handleMediaType) };
+    } else if ('mediaTypes' in action) {
       return { mediaTypes: await this.testMediaType() };
     } else {
       throw new Error('Either a handle or mediaType action needs to be provided');
@@ -76,23 +78,24 @@ export abstract class ActorAbstractMediaTyped<HI, HT, HO>
 export interface IActorArgsMediaTyped<HI, HT, HO> extends IActorArgs<IActionAbstractMediaTyped<HI>,
   IActorTestAbstractMediaTyped<HT>, IActorOutputAbstractMediaTyped<HO>> {}
 
-/**
- * Either 'handle' and 'handleMediaType' must be truthy, or 'mediaTypes' must be truthy.
- * Both groups may not be truthy at the same time.
- */
-export interface IActionAbstractMediaTyped<HI> extends IAction {
+export type IActionAbstractMediaTyped<HI> = IActionAbstractMediaTypedHandle<HI> | IActionAbstractMediaTypedMediaTypes;
+
+export interface IActionAbstractMediaTypedHandle<HI> extends IAction {
   /**
    * The handle action input.
    */
-  handle?: HI;
+  handle: HI;
   /**
    * The handle media type that should be used when 'handle' is truthy.
    */
   handleMediaType?: string;
+}
+
+export interface IActionAbstractMediaTypedMediaTypes extends IAction {
   /**
    * True if media types should be retrieved.
    */
-  mediaTypes?: boolean;
+  mediaTypes: boolean;
 }
 
 /**
