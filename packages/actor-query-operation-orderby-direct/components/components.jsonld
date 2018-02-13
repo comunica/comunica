@@ -1,0 +1,9 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/contexts/comunica-actor-query-operation-orderby-direct.jsonld",
+  "@id": "npmd:@comunica/actor-query-operation-orderby-direct",
+  "@type": "Module",
+  "requireName": "@comunica/actor-query-operation-orderby-direct",
+  "import": [
+    "Actor/QueryOperation/OrderByDirect.jsonld"
+  ]
+}
