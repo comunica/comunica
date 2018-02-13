@@ -1,4 +1,4 @@
-import {Bindings} from "@comunica/bus-query-operation";
+import {Bindings, IActorQueryOperationOutputBindings} from "@comunica/bus-query-operation";
 import {ActorRdfJoin, IActionRdfJoin} from "@comunica/bus-rdf-join";
 import {Bus} from "@comunica/core";
 import {ArrayIterator} from "asynciterator";
@@ -66,7 +66,7 @@ describe('ActorRdfJoinHash', () => {
     });
 
     it('should generate correct metadata', async () => {
-      return actor.run(action).then(async (result) => {
+      return actor.run(action).then(async (result: IActorQueryOperationOutputBindings) => {
         return expect(result.metadata).resolves.toHaveProperty('totalItems',
           (await action.entries[0].metadata).totalItems * (await action.entries[1].metadata).totalItems);
       });
@@ -78,7 +78,7 @@ describe('ActorRdfJoinHash', () => {
     });
 
     it('should return an empty stream for empty input', () => {
-      return actor.run(action).then(async (output) => {
+      return actor.run(action).then(async (output: IActorQueryOperationOutputBindings) => {
         expect(output.variables).toEqual([]);
         expect(await arrayifyStream(output.bindingsStream)).toEqual([]);
       });
@@ -89,7 +89,7 @@ describe('ActorRdfJoinHash', () => {
       action.entries[0].variables = ['a', 'b'];
       action.entries[1].bindingsStream = new ArrayIterator([Bindings({ a: literal('a'), c: literal('c')})]);
       action.entries[1].variables = ['a', 'c'];
-      return actor.run(action).then(async (output) => {
+      return actor.run(action).then(async (output: IActorQueryOperationOutputBindings) => {
         expect(output.variables).toEqual(['a', 'b', 'c']);
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({ a: literal('a'), b: literal('b'), c: literal('c')}),
@@ -102,7 +102,7 @@ describe('ActorRdfJoinHash', () => {
       action.entries[0].variables = ['a', 'b'];
       action.entries[1].bindingsStream = new ArrayIterator([Bindings({ a: literal('d'), c: literal('c')})]);
       action.entries[1].variables = ['a', 'c'];
-      return actor.run(action).then(async (output) => {
+      return actor.run(action).then(async (output: IActorQueryOperationOutputBindings) => {
         expect(output.variables).toEqual(['a', 'b', 'c']);
         expect(await arrayifyStream(output.bindingsStream)).toEqual([]);
       });
@@ -127,7 +127,7 @@ describe('ActorRdfJoinHash', () => {
         Bindings({ a: literal('0'), c: literal('4')}),
       ]);
       action.entries[1].variables = ['a', 'c'];
-      return actor.run(action).then(async (output) => {
+      return actor.run(action).then(async (output: IActorQueryOperationOutputBindings) => {
         const expected = [
           Bindings({ a: literal('1'), b: literal('2'), c: literal('4') }),
           Bindings({ a: literal('1'), b: literal('2'), c: literal('5') }),

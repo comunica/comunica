@@ -1,4 +1,4 @@
-import {ActorQueryOperation, Bindings} from "@comunica/bus-query-operation";
+import {ActorQueryOperation, Bindings, IActorQueryOperationOutputBindings} from "@comunica/bus-query-operation";
 import {Bus} from "@comunica/core";
 import {ArrayIterator, EmptyIterator, SingletonIterator} from "asynciterator";
 import {blankNode, defaultGraph, literal, namedNode, quad, variable} from "rdf-data-model";
@@ -467,7 +467,7 @@ describe('ActorQueryOperationBgpLeftDeepSmallest', () => {
 
     it('should run with a context and delegate the pattern to the mediator', () => {
       const op = { operation: { type: 'bgp', patterns }, context: { totalItems: 10, variables: ['a'] } };
-      return actor.run(op).then(async (output) => {
+      return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
         expect(output.variables).toEqual(['a']);
         expect(output.type).toEqual('bindings');
         expect(await output.metadata).toEqual({ totalItems: 100 });
@@ -484,7 +484,7 @@ describe('ActorQueryOperationBgpLeftDeepSmallest', () => {
 
     it('should run without a context and delegate the pattern to the mediator', () => {
       const op = { operation: { type: 'bgp', patterns } };
-      return actor.run(op).then(async (output) => {
+      return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
         expect(output.variables).toEqual([]);
         expect(output.type).toEqual('bindings');
         expect(await output.metadata).toEqual({ totalItems: Infinity });

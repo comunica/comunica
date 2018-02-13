@@ -1,4 +1,4 @@
-import {ActorQueryOperation, Bindings} from "@comunica/bus-query-operation";
+import {ActorQueryOperation, Bindings, IActorQueryOperationOutputBoolean} from "@comunica/bus-query-operation";
 import {Bus} from "@comunica/core";
 import {Setup} from "@comunica/runner";
 import {ArrayIterator, AsyncIterator, BufferedIterator, EmptyIterator} from "asynciterator";
@@ -98,9 +98,7 @@ describe('ActorQueryOperationAsk', () => {
     it('should run on a non-empty stream', () => {
       Setup.preparePromises();
       const op = { operation: { type: 'ask' } };
-      return actor.run(op).then(async (output) => {
-        expect(output.metadata).toBeFalsy();
-        expect(output.variables).toEqual([]);
+      return actor.run(op).then(async (output: IActorQueryOperationOutputBoolean) => {
         expect(output.type).toEqual('boolean');
         expect(await output.booleanResult).toBeTruthy();
       });
@@ -111,9 +109,7 @@ describe('ActorQueryOperationAsk', () => {
       const op = { operation: { type: 'ask' } };
       const actorEmpty = new ActorQueryOperationAsk(
         { name: 'actor', bus, mediatorQueryOperation: mediatorQueryOperationEmpty });
-      return actorEmpty.run(op).then(async (output) => {
-        expect(output.metadata).toBeFalsy();
-        expect(output.variables).toEqual([]);
+      return actorEmpty.run(op).then(async (output: IActorQueryOperationOutputBoolean) => {
         expect(output.type).toEqual('boolean');
         expect(await output.booleanResult).toBeFalsy();
       });
@@ -124,9 +120,7 @@ describe('ActorQueryOperationAsk', () => {
       const op = { operation: { type: 'ask' } };
       const actorError = new ActorQueryOperationAsk(
         { name: 'actor', bus, mediatorQueryOperation: mediatorQueryOperationError });
-      return actorError.run(op).then(async (output) => {
-        expect(output.metadata).toBeFalsy();
-        expect(output.variables).toEqual([]);
+      return actorError.run(op).then(async (output: IActorQueryOperationOutputBoolean) => {
         expect(output.type).toEqual('boolean');
         return expect(output.booleanResult).rejects.toBeTruthy();
       });
@@ -137,9 +131,7 @@ describe('ActorQueryOperationAsk', () => {
       const op = { operation: { type: 'ask' } };
       const actorInf = new ActorQueryOperationAsk(
         { name: 'actor', bus, mediatorQueryOperation: mediatorQueryOperationInf });
-      return actorInf.run(op).then(async (output) => {
-        expect(output.metadata).toBeFalsy();
-        expect(output.variables).toEqual([]);
+      return actorInf.run(op).then(async (output: IActorQueryOperationOutputBoolean) => {
         expect(output.type).toEqual('boolean');
         if (output.booleanResult) {
           output.booleanResult.then(() => {

@@ -1,4 +1,4 @@
-import {ActorQueryOperation, Bindings} from "@comunica/bus-query-operation";
+import {ActorQueryOperation, Bindings, IActorQueryOperationOutputBindings} from "@comunica/bus-query-operation";
 import {Bus} from "@comunica/core";
 import {ArrayIterator} from "asynciterator";
 import {literal, variable} from "rdf-data-model";
@@ -184,7 +184,7 @@ describe('ActorQueryOperationUnion', () => {
 
     it('should run', () => {
       const op = { operation: { type: 'union', left, right } };
-      return actor.run(op).then(async (output) => {
+      return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
         expect(await output.metadata).toEqual({ totalItems: 5 });
         expect(output.variables).toEqual([ 'a', 'b' ]);
         expect(output.type).toEqual('bindings');
@@ -200,7 +200,7 @@ describe('ActorQueryOperationUnion', () => {
 
     it('should run with a left stream without metadata', () => {
       const op = { operation: { type: 'union', left: leftNoMeta, right } };
-      return actor.run(op).then(async (output) => {
+      return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
         expect(output.metadata).toBeFalsy();
         expect(output.variables).toEqual([ 'a', 'b' ]);
         expect(output.type).toEqual('bindings');

@@ -1,5 +1,6 @@
 import {ActorInit, IActionInit, IActorOutputInit} from "@comunica/bus-init";
-import {IActionQueryOperation, IActorQueryOperationOutput} from "@comunica/bus-query-operation";
+import {ActorQueryOperation, IActionQueryOperation, IActorQueryOperationOutput,
+  IActorQueryOperationOutputBindings} from "@comunica/bus-query-operation";
 import {Actor, IActorArgs, IActorTest, Mediator} from "@comunica/core";
 import {Readable} from "stream";
 
@@ -31,7 +32,8 @@ export class ActorInitQueryOperation extends ActorInit implements IActorInitQuer
       context: context ? this.parseJson(context) : null,
       operation: this.parseJson(operation),
     };
-    const result: IActorQueryOperationOutput = await this.mediatorQueryOperation.mediate(resolve);
+    const result: IActorQueryOperationOutputBindings = ActorQueryOperation.getSafeBindings(
+      await this.mediatorQueryOperation.mediate(resolve));
 
     result.bindingsStream.on('data', (binding) => readable.push(JSON.stringify(binding) + '\n'));
     result.bindingsStream.on('end', () => readable.push(null));

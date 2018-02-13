@@ -1,6 +1,5 @@
 import {IActionInit, IActorOutputInit} from "@comunica/bus-init";
 import {IActorQueryOperationOutput} from "@comunica/bus-query-operation";
-import {IActorSparqlSerializeOutput} from "@comunica/bus-sparql-serialize";
 import {readFileSync} from "fs";
 import minimist = require('minimist');
 import {Readable} from "stream";

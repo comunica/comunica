@@ -1,4 +1,4 @@
-import {ActorQueryOperation, ActorQueryOperationTypedMediated, IActorQueryOperationOutput,
+import {ActorQueryOperation, ActorQueryOperationTypedMediated, IActorQueryOperationOutputBindings,
   IActorQueryOperationTypedMediatedArgs} from "@comunica/bus-query-operation";
 import {BindingsStream} from "@comunica/bus-query-operation";
 import {IActorTest} from "@comunica/core";
@@ -18,11 +18,10 @@ export class ActorQueryOperationSlice extends ActorQueryOperationTypedMediated<A
   }
 
   public async runOperation(pattern: Algebra.Slice, context?: {[id: string]: any})
-  : Promise<IActorQueryOperationOutput> {
+  : Promise<IActorQueryOperationOutputBindings> {
     // Resolve the input
-    const output: IActorQueryOperationOutput = await this.mediatorQueryOperation.mediate(
-      { operation: pattern.input, context });
-    ActorQueryOperation.validateQueryOutput(output, 'bindings');
+    const output: IActorQueryOperationOutputBindings = ActorQueryOperation.getSafeBindings(
+      await this.mediatorQueryOperation.mediate({ operation: pattern.input, context }));
 
     // Slice the bindings stream
     const hasLength: boolean = !!pattern.length || pattern.length === 0;

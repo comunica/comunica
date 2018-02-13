@@ -1,5 +1,5 @@
 import {ActorQueryOperation, ActorQueryOperationTypedMediated, Bindings, BindingsStream, IActorQueryOperationOutput,
-  IActorQueryOperationTypedMediatedArgs} from "@comunica/bus-query-operation";
+  IActorQueryOperationOutputBindings, IActorQueryOperationTypedMediatedArgs} from "@comunica/bus-query-operation";
 import {IActorTest} from "@comunica/core";
 import {MultiTransformIterator} from "asynciterator";
 import {PromiseProxyIterator} from "asynciterator-promiseproxy";
@@ -46,7 +46,7 @@ export class ActorQueryOperationBgpLeftDeepSmallest extends ActorQueryOperationT
    * @param {IActorQueryOperationOutput[]} patternOutputs An array of query operation outputs
    * @return {string[]} The array of variable names.
    */
-  public static getCombinedVariables(patternOutputs: IActorQueryOperationOutput[]): string[] {
+  public static getCombinedVariables(patternOutputs: IActorQueryOperationOutputBindings[]): string[] {
     return require('lodash.uniq')([].concat.apply([],
       patternOutputs.map((patternOutput) => patternOutput.variables)));
   }
@@ -153,9 +153,10 @@ export class ActorQueryOperationBgpLeftDeepSmallest extends ActorQueryOperationT
   public async runOperation(pattern: Algebra.Bgp, context?: {[id: string]: any})
   : Promise<IActorQueryOperationOutput> {
     // Get the total number of items for all patterns by resolving the quad patterns
-    const patternOutputs: IActorQueryOperationOutput[] = (await Promise.all(pattern.patterns
+    const patternOutputs: IActorQueryOperationOutputBindings[] = (await Promise.all(pattern.patterns
       .map((subPattern: Algebra.Pattern) => this.mediatorQueryOperation.mediate(
-        { operation: subPattern, context }))));
+        { operation: subPattern, context }))))
+      .map(ActorQueryOperation.getSafeBindings);
 
     // Find the pattern with the smallest number of elements
     const metadatas: {[id: string]: any}[] = await Promise.all(patternOutputs.map(
@@ -163,7 +164,7 @@ export class ActorQueryOperationBgpLeftDeepSmallest extends ActorQueryOperationT
     const smallestId: number = ActorQueryOperationBgpLeftDeepSmallest.getSmallestPatternId(metadatas);
 
     // Take the pattern with the smallest number of items
-    const smallestPattern: IActorQueryOperationOutput = patternOutputs.slice(smallestId)[0];
+    const smallestPattern: IActorQueryOperationOutputBindings = patternOutputs.slice(smallestId)[0];
     const remainingPatterns: Algebra.Pattern[] = pattern.patterns;
     remainingPatterns.splice(smallestId, 1);
 
@@ -176,7 +177,8 @@ export class ActorQueryOperationBgpLeftDeepSmallest extends ActorQueryOperationT
       async (patterns: Algebra.Pattern[]) => {
         // Send the materialized patterns to the mediator for recursive BGP evaluation.
         const operation: Algebra.Bgp = { type: 'bgp', patterns };
-        return (await this.mediatorQueryOperation.mediate({ operation, context })).bindingsStream;
+        return ActorQueryOperation.getSafeBindings(await this.mediatorQueryOperation.mediate({ operation, context }))
+          .bindingsStream;
       });
 
     // Prepare variables and metadata

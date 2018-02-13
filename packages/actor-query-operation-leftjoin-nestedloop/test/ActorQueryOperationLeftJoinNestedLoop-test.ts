@@ -1,4 +1,4 @@
-import {ActorQueryOperation, Bindings} from "@comunica/bus-query-operation";
+import {ActorQueryOperation, Bindings, IActorQueryOperationOutputBindings} from "@comunica/bus-query-operation";
 import {Bus} from "@comunica/core";
 import {ArrayIterator} from "asynciterator";
 import {literal, variable} from "rdf-data-model";
@@ -73,7 +73,7 @@ describe('ActorQueryOperationLeftJoinNestedLoop', () => {
 
     it('should run', () => {
       const op = { operation: { type: 'leftjoin', left: {}, right: {} } };
-      return actor.run(op).then(async (output) => {
+      return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({ a: literal('1'), b: literal('1') }),
           Bindings({ a: literal('2') }),

@@ -1,5 +1,5 @@
 import {IActorArgsMediaTyped} from "@comunica/actor-abstract-mediatyped";
-import {IActorQueryOperationOutput} from "@comunica/bus-query-operation";
+import {IActorQueryOperationOutput, IActorQueryOperationOutputQuads} from "@comunica/bus-query-operation";
 import {IActionRootRdfSerialize, IActorOutputRootRdfSerialize,
   IActorTestRootRdfSerialize} from "@comunica/bus-rdf-serialize";
 import {ActorSparqlSerialize, IActionSparqlSerialize,
@@ -42,7 +42,7 @@ export class ActorSparqlSerializeRdf extends ActorSparqlSerialize implements IAc
   public async runHandle(action: IActorQueryOperationOutput, mediaType: string): Promise<IActorSparqlSerializeOutput> {
     // Delegate handling to the mediator
     return (await this.mediatorRdfSerialize.mediate(
-      { handle: { quads: action.quadStream }, handleMediaType: mediaType })).handle;
+      { handle: { quads: (<IActorQueryOperationOutputQuads> action).quadStream }, handleMediaType: mediaType })).handle;
   }
 
   public async testMediaType(): Promise<boolean> {

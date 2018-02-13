@@ -1,5 +1,6 @@
 import {ActorQueryOperationTyped, Bindings, BindingsStream,
-  IActionQueryOperation, IActorQueryOperationOutput} from "@comunica/bus-query-operation";
+  IActionQueryOperation, IActorQueryOperationOutput,
+  IActorQueryOperationOutputBindings} from "@comunica/bus-query-operation";
 import {IActionRdfResolveQuadPattern, IActorRdfResolveQuadPatternOutput} from "@comunica/bus-rdf-resolve-quad-pattern";
 import {Actor, IActorArgs, IActorTest, Mediator} from "@comunica/core";
 import * as RDF from "rdf-js";
@@ -39,7 +40,7 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
   }
 
   public async runOperation(pattern: Algebra.Pattern, context?: {[id: string]: any})
-  : Promise<IActorQueryOperationOutput> {
+  : Promise<IActorQueryOperationOutputBindings> {
     // Resolve the quad pattern
     const result = await this.mediatorResolveQuadPattern.mediate({ pattern, context });
 

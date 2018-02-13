@@ -1,4 +1,4 @@
-import {ActorQueryOperation, Bindings} from "@comunica/bus-query-operation";
+import {ActorQueryOperation, Bindings, IActorQueryOperationOutputBindings} from "@comunica/bus-query-operation";
 import {Bus} from "@comunica/core";
 import {ArrayIterator} from "asynciterator";
 import {literal, variable} from "rdf-data-model";
@@ -72,7 +72,7 @@ describe('ActorQueryOperationFilterDirect', () => {
 
     it('should return the full stream for a truthy filter', async () => {
       const op = { operation: { type: 'filter', input: {}, expression: truthyExpression } };
-      const output = await actor.run(op);
+      const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
       expect(await arrayifyStream(output.bindingsStream)).toMatchObject([
         Bindings({ a: literal('1') }),
         Bindings({ a: literal('2') }),
@@ -85,7 +85,7 @@ describe('ActorQueryOperationFilterDirect', () => {
 
     it('should return an empty stream for a falsy filter', async () => {
       const op = { operation: { type: 'filter', input: {}, expression: falsyExpression } };
-      const output = await actor.run(op);
+      const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
       expect(await arrayifyStream(output.bindingsStream)).toMatchObject([]);
       expect(output.metadata).toMatchObject(Promise.resolve({ totalItems: 3 }));
       expect(output.type).toEqual('bindings');

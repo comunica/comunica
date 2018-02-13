@@ -1,4 +1,4 @@
-import {ActorQueryOperation, Bindings} from "@comunica/bus-query-operation";
+import {ActorQueryOperation, Bindings, IActorQueryOperationOutputBindings} from "@comunica/bus-query-operation";
 import {Bus} from "@comunica/core";
 import {ArrayIterator} from "asynciterator";
 import {literal, variable} from "rdf-data-model";
@@ -127,34 +127,34 @@ describe('ActorQueryOperationDistinctHash', () => {
 
     it('should create a filter that is a predicate', () => {
       const filter = ActorQueryOperationDistinctHash.newDistinctHashFilter('sha1', 'base64');
-      return expect(filter('abc')).toBe(true);
+      return expect(filter(<any> 'abc')).toBe(true);
     });
 
     it('should create a filter that only returns true once for equal objects', () => {
       const filter = ActorQueryOperationDistinctHash.newDistinctHashFilter('sha1', 'base64');
-      expect(filter('abc')).toBe(true);
-      expect(filter('abc')).toBe(false);
-      expect(filter('abc')).toBe(false);
-      expect(filter('abc')).toBe(false);
+      expect(filter(<any> 'abc')).toBe(true);
+      expect(filter(<any> 'abc')).toBe(false);
+      expect(filter(<any> 'abc')).toBe(false);
+      expect(filter(<any> 'abc')).toBe(false);
 
-      expect(filter({ a: 'c' })).toBe(true);
-      expect(filter({ a: 'c' })).toBe(false);
-      expect(filter({ a: 'c' })).toBe(false);
-      expect(filter({ a: 'c' })).toBe(false);
+      expect(filter(<any> { a: 'c' })).toBe(true);
+      expect(filter(<any> { a: 'c' })).toBe(false);
+      expect(filter(<any> { a: 'c' })).toBe(false);
+      expect(filter(<any> { a: 'c' })).toBe(false);
     });
 
     it('should create a filters that are independent', () => {
       const filter1 = ActorQueryOperationDistinctHash.newDistinctHashFilter('sha1', 'base64');
       const filter2 = ActorQueryOperationDistinctHash.newDistinctHashFilter('sha1', 'base64');
       const filter3 = ActorQueryOperationDistinctHash.newDistinctHashFilter('sha1', 'base64');
-      expect(filter1('abc')).toBe(true);
-      expect(filter1('abc')).toBe(false);
+      expect(filter1(<any> 'abc')).toBe(true);
+      expect(filter1(<any> 'abc')).toBe(false);
 
-      expect(filter2('abc')).toBe(true);
-      expect(filter2('abc')).toBe(false);
+      expect(filter2(<any> 'abc')).toBe(true);
+      expect(filter2(<any> 'abc')).toBe(false);
 
-      expect(filter3('abc')).toBe(true);
-      expect(filter3('abc')).toBe(false);
+      expect(filter3(<any> 'abc')).toBe(true);
+      expect(filter3(<any> 'abc')).toBe(false);
     });
   });
 
@@ -178,7 +178,7 @@ describe('ActorQueryOperationDistinctHash', () => {
 
     it('should run', () => {
       const op = { operation: { type: 'distinct' } };
-      return actor.run(op).then(async (output) => {
+      return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
         expect(await output.metadata).toEqual({ totalItems: 5 });
         expect(output.variables).toEqual([ 'a' ]);
         expect(output.type).toEqual('bindings');

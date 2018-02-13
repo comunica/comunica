@@ -22,11 +22,44 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
   }
 
   /**
+   * Safely cast a query operation output to a bindings output.
+   * This will throw a runtime error if the output is of the incorrect type.
+   * @param {IActorQueryOperationOutput} output A query operation output.
+   * @return {IActorQueryOperationOutputBindings} A bindings query operation output.
+   */
+  public static getSafeBindings(output: IActorQueryOperationOutput): IActorQueryOperationOutputBindings {
+    ActorQueryOperation.validateQueryOutput(output, 'bindings');
+    return <IActorQueryOperationOutputBindings> output;
+  }
+
+  /**
+   * Safely cast a query operation output to a quads output.
+   * This will throw a runtime error if the output is of the incorrect type.
+   * @param {IActorQueryOperationOutput} output A query operation output.
+   * @return {IActorQueryOperationOutputQuads} A quads query operation output.
+   */
+  public static getSafeQuads(output: IActorQueryOperationOutput): IActorQueryOperationOutputQuads {
+    ActorQueryOperation.validateQueryOutput(output, 'quads');
+    return <IActorQueryOperationOutputQuads> output;
+  }
+
+  /**
+   * Safely cast a query operation output to a boolean output.
+   * This will throw a runtime error if the output is of the incorrect type.
+   * @param {IActorQueryOperationOutput} output A query operation output.
+   * @return {IActorQueryOperationOutputBoolean} A boolean query operation output.
+   */
+  public static getSafeBoolean(output: IActorQueryOperationOutput): IActorQueryOperationOutputBoolean {
+    ActorQueryOperation.validateQueryOutput(output, 'boolean');
+    return <IActorQueryOperationOutputBoolean> output;
+  }
+
+  /**
    * Throw an error if the output type does not match the expected type.
    * @param {IActorQueryOperationOutput} output A query operation output.
    * @param {string} expectedType The expected output type.
    */
-  public static validateQueryOutput(output: IActorQueryOperationOutput, expectedType: string) {
+  protected static validateQueryOutput(output: IActorQueryOperationOutput, expectedType: string) {
     if (output.type !== expectedType) {
       throw new Error('Invalid query output type: Expected \'' + expectedType + '\' but got \'' + output.type + '\'');
     }
@@ -47,41 +80,70 @@ export interface IActionQueryOperation extends IAction {
   context?: {[id: string]: any};
 }
 
-export interface IActorQueryOperationOutput extends IActorOutput {
-  /**
-   * The type of output.
-   */
-  type: QueryOperationOutputType;
-  /**
-   * The stream of bindings resulting from the given operation.
-   * This must be defined iff the query operation output type equals 'bindings'.
-   */
-  bindingsStream?: BindingsStream;
-  /**
-   * The list of variable names (without '?') for which bindings are provided in the bindingsStream.
-   */
-  variables: string[];
+export type IActorQueryOperationOutput =
+  IActorQueryOperationOutputBindings | IActorQueryOperationOutputQuads | IActorQueryOperationOutputBoolean;
+
+/**
+ * Super interface for query operation outputs that represent some for of stream.
+ * @see IActorQueryOperationOutputBindings, IActorQueryOperationOutputQuads
+ */
+export interface IActorQueryOperationOutputStream extends IActorOutput {
   /**
    * Promise that resolves to the metadata about the stream.
    * This can contain things like the estimated number of total stream elements,
    * or the order in which the bindings appear.
    */
   metadata?: Promise<{[id: string]: any}>;
+}
+
+/**
+ * Query operation output for a bindings stream.
+ * For example: SPARQL SELECT results
+ */
+export interface IActorQueryOperationOutputBindings extends IActorQueryOperationOutputStream {
   /**
-   * The stream of quads.
-   * This must be defined iff the query operation output type equals 'quads'.
-   * This is used in cases where no bindings are returned,
-   * but instead, a stream of quads is produced.
-   * For example: SPARQL CONSTRUCT results
+   * The type of output.
    */
-  quadStream?: RDF.Stream;
+  type: 'bindings';
   /**
-   * A promise resolving to the boolean output of the operation.
-   * This must be defined iff the query operation output type equals 'boolean'.
-   * For example: SPARQL ASK results
+   * The stream of bindings resulting from the given operation.
    */
-  booleanResult?: Promise<boolean>;
+  bindingsStream: BindingsStream;
+  /**
+   * The list of variable names (without '?') for which bindings are provided in the stream.
+   */
+  variables: string[];
 
 }
 
-export type QueryOperationOutputType = 'bindings' | 'quads' | 'boolean';
+/**
+ * Query operation output for quads.
+ * For example: SPARQL CONSTRUCT results
+ */
+export interface IActorQueryOperationOutputQuads extends IActorQueryOperationOutputStream {
+  /**
+   * The type of output.
+   */
+  type: 'quads';
+  /**
+   * The stream of quads.
+   */
+  quadStream: RDF.Stream;
+
+}
+
+/**
+ * Query operation output for quads.
+ * For example: SPARQL ASK results
+ */
+export interface IActorQueryOperationOutputBoolean extends IActorOutput {
+  /**
+   * The type of output.
+   */
+  type: 'boolean';
+  /**
+   * A promise resolving to the boolean output of the operation.
+   */
+  booleanResult: Promise<boolean>;
+
+}

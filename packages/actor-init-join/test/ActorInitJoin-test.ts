@@ -37,6 +37,7 @@ describe('ActorInitJoin', () => {
         return {
           bindingsStream: new SingletonIterator('a'),
           metadata: {},
+          type: 'bindings',
           variables: {},
         };
       }};

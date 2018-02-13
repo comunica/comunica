@@ -1,4 +1,5 @@
-import {Bindings, IActorQueryOperationOutput} from "@comunica/bus-query-operation";
+import {Bindings, IActorQueryOperationOutputBindings,
+  IActorQueryOperationOutputBoolean} from "@comunica/bus-query-operation";
 import {ActorSparqlSerializeFixedMediaTypes, IActionSparqlSerialize,
   IActorSparqlSerializeFixedMediaTypesArgs, IActorSparqlSerializeOutput} from "@comunica/bus-sparql-serialize";
 import {IActorTest} from "@comunica/core";
@@ -58,7 +59,7 @@ export class ActorSparqlSerializeSparqlXml extends ActorSparqlSerializeFixedMedi
     const root = xml.element({ _attr: { xlmns: 'http://www.w3.org/2005/sparql-results#' } });
     (<NodeJS.ReadableStream> <any> xml({ sparql: root }, { stream: true, indent: '  ', declaration: true }))
       .on('data', (chunk) => data.push(chunk + '\n'));
-    if (action.variables.length) {
+    if (action.type === 'bindings' && action.variables.length) {
       root.push({ head: action.variables.map((v) => ({ variable: { _attr: { name: v.substr(1) } } }))});
     }
 
@@ -81,7 +82,7 @@ export class ActorSparqlSerializeSparqlXml extends ActorSparqlSerializeFixedMedi
         data.push(null);
       });
     } else {
-      root.push({ boolean: await action.booleanResult });
+      root.push({ boolean: await (<IActorQueryOperationOutputBoolean> action).booleanResult });
       root.close();
       setImmediate(() => data.push(null));
     }

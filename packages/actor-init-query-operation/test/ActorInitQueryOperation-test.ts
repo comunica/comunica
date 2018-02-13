@@ -39,7 +39,7 @@ describe('ActorInitQueryOperation', () => {
         input.push(null);
       };
       mediator.mediate = (action) => action.operation.op === 'a' && (!action.context || action.context.c === 'd')
-        ? Promise.resolve({ bindingsStream: input }) : Promise.reject(new Error('a'));
+        ? Promise.resolve({ bindingsStream: input, type: 'bindings' }) : Promise.reject(new Error('a'));
       actor = new ActorInitQueryOperation({ name: 'actor', bus, mediatorQueryOperation: mediator });
     });
 
