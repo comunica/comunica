@@ -1,0 +1,11 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/components.jsonld",
+    {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
+      "caqood": "npmd:@comunica/actor-query-operation-orderby-direct/",
+
+      "ActorQueryOperationOrderByDirect": "caqood:Actor/QueryOperation/OrderByDirect"
+    }
+  ]
+}

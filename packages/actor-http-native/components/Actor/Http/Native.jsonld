@@ -13,7 +13,7 @@
       "comment": "A comunica Follow Redirects Http Actor.",
       "parameters": [
         {
-          "@id": "cbh:Actor/Http/Native/agentOptions",
+          "@id": "cahn:Actor/Http/Native/agentOptions",
           "comment": "The AgentOptions for the HTTP agent as a JSON string",
           "required": false,
           "unique": true,
@@ -23,12 +23,12 @@
       ],
       "constructorArguments": [
         {
-          "@id": "cbrp:Actor/Http/Native/constructorArgumentsObject",
+          "@id": "cahn:Actor/Http/Native/constructorArgumentsObject",
           "extends": "cbh:Actor/Http/constructorArgumentsObject",
           "fields": [
             {
               "keyRaw": "agentOptions",
-              "value": "cbh:Actor/Http/Native/agentOptions"
+              "value": "cahn:Actor/Http/Native/agentOptions"
             }
           ]
         }
