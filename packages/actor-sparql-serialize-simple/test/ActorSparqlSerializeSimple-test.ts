@@ -126,7 +126,7 @@ graph:
         return expect((await stringifyStream((await actor.run(
           {handle: <any> { type: 'boolean', booleanResult: Promise.resolve(false) }, handleMediaType: 'simple'}))
           .handle.data))).toEqual(
-          `false
+`false
 `);
       });
     });
