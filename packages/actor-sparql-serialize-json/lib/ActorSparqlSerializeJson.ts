@@ -1,3 +1,5 @@
+import {IActorQueryOperationOutputBindings, IActorQueryOperationOutputBoolean,
+  IActorQueryOperationOutputQuads} from "@comunica/bus-query-operation";
 import {ActorSparqlSerializeFixedMediaTypes, IActionSparqlSerialize,
   IActorSparqlSerializeFixedMediaTypesArgs, IActorSparqlSerializeOutput} from "@comunica/bus-sparql-serialize";
 import * as RdfString from "rdf-string";
@@ -27,7 +29,7 @@ export class ActorSparqlSerializeJson extends ActorSparqlSerializeFixedMediaType
 
     let empty: boolean = true;
     if (action.type === 'bindings') {
-      const resultStream = action.bindingsStream;
+      const resultStream = (<IActorQueryOperationOutputBindings> action).bindingsStream;
       data.push('[');
       resultStream.on('data', (element) => {
         data.push(empty ? '\n' : ',\n');
@@ -39,7 +41,7 @@ export class ActorSparqlSerializeJson extends ActorSparqlSerializeFixedMediaType
         data.push(null);
       });
     } else if (action.type === 'quads') {
-      const resultStream = action.quadStream;
+      const resultStream = (<IActorQueryOperationOutputQuads> action).quadStream;
       data.push('[');
       resultStream.on('data', (element) => {
         data.push(empty ? '\n' : ',\n');
@@ -51,7 +53,7 @@ export class ActorSparqlSerializeJson extends ActorSparqlSerializeFixedMediaType
         data.push(null);
       });
     } else {
-      data.push(JSON.stringify(await action.booleanResult) + '\n');
+      data.push(JSON.stringify(await (<IActorQueryOperationOutputBoolean> action).booleanResult) + '\n');
       data.push(null);
     }
 

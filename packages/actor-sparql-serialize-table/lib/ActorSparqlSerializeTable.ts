@@ -1,4 +1,4 @@
-import {IActorQueryOperationOutputQuads} from "@comunica/bus-query-operation";
+import {IActorQueryOperationOutputBindings, IActorQueryOperationOutputQuads} from "@comunica/bus-query-operation";
 import {ActorSparqlSerializeFixedMediaTypes, IActionSparqlSerialize,
   IActorSparqlSerializeFixedMediaTypesArgs, IActorSparqlSerializeOutput} from "@comunica/bus-sparql-serialize";
 import * as RDF from "rdf-js";
@@ -50,8 +50,8 @@ export class ActorSparqlSerializeTable extends ActorSparqlSerializeFixedMediaTyp
 
     let resultStream: NodeJS.EventEmitter;
     if (action.type === 'bindings') {
-      resultStream = action.bindingsStream;
-      this.pushHeader(data, action.variables);
+      resultStream = (<IActorQueryOperationOutputBindings> action).bindingsStream;
+      this.pushHeader(data, (<IActorQueryOperationOutputBindings> action).variables);
       resultStream.on('data', (bindings) => data.push(bindings.map(
         (value: RDF.Term, key: string) => this.pad(value ? value.value : '')).join(' ') + '\n'));
     } else {

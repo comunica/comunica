@@ -1,5 +1,5 @@
 import {ActorQueryOperationTyped, IActionQueryOperation,
-  IActorQueryOperationOutput} from "@comunica/bus-query-operation";
+  IActorQueryOperationOutput, IActorQueryOperationOutputBindings} from "@comunica/bus-query-operation";
 import {IActorArgs, IActorTest} from "@comunica/core";
 import {EmptyIterator} from "asynciterator";
 import {Algebra} from "sparqlalgebrajs";
@@ -21,7 +21,7 @@ export class ActorQueryOperationBgpEmpty extends ActorQueryOperationTyped<Algebr
   }
 
   public async runOperation(pattern: Algebra.Bgp, context?: {[id: string]: any})
-  : Promise<IActorQueryOperationOutput> {
+  : Promise<IActorQueryOperationOutputBindings> {
     return {
       bindingsStream: new EmptyIterator(),
       metadata: Promise.resolve({ totalItems: 0 }),
