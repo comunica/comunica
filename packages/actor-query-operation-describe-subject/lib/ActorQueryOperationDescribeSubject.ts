@@ -1,6 +1,8 @@
-import {ActorQueryOperationTypedMediated, IActorQueryOperationOutput,
-  IActorQueryOperationTypedMediatedArgs} from "@comunica/bus-query-operation";
+import {ActorQueryOperationUnion} from "@comunica/actor-query-operation-union";
+import {ActorQueryOperation, ActorQueryOperationTypedMediated,
+  IActorQueryOperationOutputQuads, IActorQueryOperationTypedMediatedArgs} from "@comunica/bus-query-operation";
 import {IActorTest} from "@comunica/core";
+import {RoundRobinUnionIterator} from "asynciterator-union";
 import {triple, variable} from "rdf-data-model";
 import * as RDF from "rdf-js";
 import {Algebra} from "sparqlalgebrajs";
@@ -19,22 +21,61 @@ export class ActorQueryOperationDescribeSubject extends ActorQueryOperationTyped
   }
 
   public async runOperation(pattern: Algebra.Describe, context?: {[id: string]: any})
-    : Promise<IActorQueryOperationOutput> {
-    // Transform to a construct operation with S ?p ?o patterns for all terms
-    const template: RDF.Quad[] = pattern.terms.map(
-      (term: RDF.Term, i: number) => triple(term, variable('__predicate' + i), variable('__object' + i)));
+    : Promise<IActorQueryOperationOutputQuads> {
+    // Create separate construct queries for all non-variable terms
+    const operations: Algebra.Construct[] = pattern.terms
+      .filter((term) => term.termType !== 'Variable')
+      .map((term: RDF.Term) => {
+        // Transform each term to a separate construct operation with S ?p ?o patterns (BGP) for all terms
+        const patterns: RDF.Quad[] = [ triple(term, variable('__predicate'), variable('__object')) ];
+        patterns.forEach((templatePattern: any) => templatePattern.type = 'pattern');
+        const templateOperation: Algebra.Operation = { type: 'bgp', patterns: <Algebra.Pattern[]> patterns };
 
-    // Make a BGP pattern for the template
-    template.forEach((templatePattern: any) => templatePattern.type = 'pattern');
-    const templateOperation: Algebra.Bgp = { type: 'bgp', patterns: <Algebra.Pattern[]> template };
+        // Create a construct query
+        return <Algebra.Construct> {
+          input: templateOperation,
+          template: <Algebra.Pattern[]> patterns,
+          type: 'construct',
+        };
+      });
 
-    // Delegate the BGP pattern (together with Describe's input operation) as a construct operation.
-    const operation: Algebra.Operation = {
-      input: { type: 'join', left: pattern.input, right: templateOperation },
-      template,
-      type: 'construct',
-    };
-    return this.mediatorQueryOperation.mediate({ operation, context });
+    // If we have variables in the term list,
+    // create one separate construct operation to determine these variables using the input pattern.
+    if (operations.length !== pattern.terms.length) {
+      let variablePatterns: Algebra.Pattern[] = [];
+      pattern.terms
+        .filter((term) => term.termType === 'Variable')
+        .forEach((term: RDF.Term, i: number) => {
+          // Transform each term to an S ?p ?o pattern in a non-conflicting way
+          const patterns: RDF.Quad[] = [ triple(term, variable('__predicate' + i), variable('__object' + i)) ];
+          patterns.forEach((templatePattern: any) => templatePattern.type = 'pattern');
+          variablePatterns = variablePatterns.concat(<Algebra.Pattern[]> patterns);
+        });
+
+      // Add a single construct for the variables
+      // This requires a join between the input pattern and our variable patterns that form a simple BGP
+      operations.push({
+        input: { type: 'join', left: pattern.input, right: { type: 'bgp', patterns: variablePatterns } },
+        template: variablePatterns,
+        type: 'construct',
+      });
+    }
+
+    // Evaluate the construct queries
+    const outputs: IActorQueryOperationOutputQuads[] = (await Promise.all(operations.map(
+      (operation) => this.mediatorQueryOperation.mediate({ operation, context }))))
+      .map(ActorQueryOperation.getSafeQuads);
+
+    // Take the union of all quad streams
+    const quadStream = new RoundRobinUnionIterator(outputs.map((output) => output.quadStream));
+
+    // Take union of metadata
+    const metadata: Promise<{[id: string]: any}> = Promise.all(outputs
+        .map((output) => output.metadata)
+        .filter((m) => !!m))
+      .then(ActorQueryOperationUnion.unionMetadata);
+
+    return { type: 'quads', quadStream, metadata };
   }
 
 }
