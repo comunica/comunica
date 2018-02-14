@@ -3170,6 +3170,12 @@ rdf-string@1.0.0:
   dependencies:
     rdf-data-model "^1.0.0"
 
+rdf-string@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/rdf-string/-/rdf-string-1.1.1.tgz#c385caefbeb9b729448e891c2a84f660790094af"
+  dependencies:
+    rdf-data-model "^1.0.0"
+
 read-cmd-shim@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/read-cmd-shim/-/read-cmd-shim-1.0.1.tgz#2d5d157786a37c055d22077c32c53f8329e91c7b"
@@ -3525,18 +3531,19 @@ source-map@^0.6.0:
   version "0.6.1"
   resolved "https://registry.yarnpkg.com/source-map/-/source-map-0.6.1.tgz#74722af32e9614e9c287a8d0bbde48b5e2f1a263"
 
-sparqlalgebrajs@^0.7.0:
-  version "0.7.0"
-  resolved "https://registry.yarnpkg.com/sparqlalgebrajs/-/sparqlalgebrajs-0.7.0.tgz#0fcccdf9737a7adc995c605b837f89399747a50c"
+sparqlalgebrajs@^0.7.2:
+  version "0.7.3"
+  resolved "https://registry.yarnpkg.com/sparqlalgebrajs/-/sparqlalgebrajs-0.7.3.tgz#705d31bb15e35b1b41febb31f97728625750e897"
   dependencies:
     lodash.isequal "^4.5.0"
     minimist "^1.2.0"
     rdf-data-model "^1.0.0"
-    sparqljs "^2.0.2"
+    rdf-string "^1.1.1"
+    sparqljs "^2.0.3"
 
-sparqljs@^2.0.2:
-  version "2.0.2"
-  resolved "https://registry.yarnpkg.com/sparqljs/-/sparqljs-2.0.2.tgz#ed75cb85776906396d81951a44b385fb7d4b803f"
+sparqljs@^2.0.3:
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/sparqljs/-/sparqljs-2.0.3.tgz#7f5d2416dc7339f2cea73b08e521c3a8c2c8e32d"
 
 spawn-sync@^1.0.15:
   version "1.0.15"

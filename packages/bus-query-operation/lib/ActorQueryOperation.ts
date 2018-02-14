@@ -136,7 +136,7 @@ export interface IActorQueryOperationOutputQuads extends IActorQueryOperationOut
   /**
    * The stream of quads.
    */
-  quadStream: RDF.Stream;
+  quadStream: RDF.Stream & AsyncIterator<RDF.Quad>;
 
 }
 

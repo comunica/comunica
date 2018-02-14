@@ -32,7 +32,9 @@
     "index.js"
   ],
   "dependencies": {
-    "rdf-data-model": "^1.0.0"
+    "@comunica/actor-query-operation-union": "^0.0.1",
+    "rdf-data-model": "^1.0.0",
+    "asynciterator-union": "^1.0.2"
   },
   "peerDependencies": {
     "@comunica/core": "^0.0.1",
