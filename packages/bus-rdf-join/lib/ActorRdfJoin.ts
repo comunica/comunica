@@ -112,7 +112,7 @@ export abstract class ActorRdfJoin extends Actor<IActionRdfJoin, IMediatorTypeIt
    * @param {IActionRdfJoin} action
    * @returns {Promise<IActorQueryOperationOutput>}
    */
-  public async run(action: IActionRdfJoin): Promise<IActorQueryOperationOutput> {
+  public async run(action: IActionRdfJoin): Promise<IActorQueryOperationOutputBindings> {
     if (action.entries.length === 0) {
       return {
         bindingsStream: new EmptyIterator(),

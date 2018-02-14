@@ -2,7 +2,6 @@ import {Bindings, IActorQueryOperationOutputBindings,
   IActorQueryOperationOutputBoolean} from "@comunica/bus-query-operation";
 import {ActorSparqlSerializeFixedMediaTypes, IActionSparqlSerialize,
   IActorSparqlSerializeFixedMediaTypesArgs, IActorSparqlSerializeOutput} from "@comunica/bus-sparql-serialize";
-import {IActorTest} from "@comunica/core";
 import * as RDF from "rdf-js";
 import {Readable} from "stream";
 
@@ -54,14 +53,14 @@ export class ActorSparqlSerializeSparqlJson extends ActorSparqlSerializeFixedMed
 
     // Write head
     const head: any = {};
-    if (action.type === 'bindings' && action.variables.length) {
-      head.vars = action.variables.map((v: string) => v.substr(1));
+    if (action.type === 'bindings' && (<IActorQueryOperationOutputBindings> action).variables.length) {
+      head.vars = (<IActorQueryOperationOutputBindings> action).variables.map((v: string) => v.substr(1));
     }
     data.push('{"head": ' + JSON.stringify(head) + ',\n');
     let empty: boolean = true;
 
     if (action.type === 'bindings') {
-      const resultStream: NodeJS.EventEmitter = action.bindingsStream;
+      const resultStream: NodeJS.EventEmitter = (<IActorQueryOperationOutputBindings> action).bindingsStream;
 
       // Write bindings
       resultStream.on('data', (bindings: Bindings) => {

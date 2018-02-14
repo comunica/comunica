@@ -80,14 +80,22 @@ export interface IActionQueryOperation extends IAction {
   context?: {[id: string]: any};
 }
 
-export type IActorQueryOperationOutput =
-  IActorQueryOperationOutputBindings | IActorQueryOperationOutputQuads | IActorQueryOperationOutputBoolean;
+/**
+ * Query operation output.
+ * @see IActorQueryOperationOutputBindings, IActorQueryOperationOutputQuads, IActorQueryOperationOutputBoolean
+ */
+export interface IActorQueryOperationOutput {
+  /**
+   * The type of output.
+   */
+  type: string;
+}
 
 /**
  * Super interface for query operation outputs that represent some for of stream.
  * @see IActorQueryOperationOutputBindings, IActorQueryOperationOutputQuads
  */
-export interface IActorQueryOperationOutputStream extends IActorOutput {
+export interface IActorQueryOperationOutputStream extends IActorQueryOperationOutput {
   /**
    * Promise that resolves to the metadata about the stream.
    * This can contain things like the estimated number of total stream elements,
@@ -136,7 +144,7 @@ export interface IActorQueryOperationOutputQuads extends IActorQueryOperationOut
  * Query operation output for quads.
  * For example: SPARQL ASK results
  */
-export interface IActorQueryOperationOutputBoolean extends IActorOutput {
+export interface IActorQueryOperationOutputBoolean extends IActorQueryOperationOutput {
   /**
    * The type of output.
    */

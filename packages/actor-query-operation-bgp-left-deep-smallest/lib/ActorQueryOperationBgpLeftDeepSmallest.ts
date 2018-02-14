@@ -151,7 +151,7 @@ export class ActorQueryOperationBgpLeftDeepSmallest extends ActorQueryOperationT
   }
 
   public async runOperation(pattern: Algebra.Bgp, context?: {[id: string]: any})
-  : Promise<IActorQueryOperationOutput> {
+  : Promise<IActorQueryOperationOutputBindings> {
     // Get the total number of items for all patterns by resolving the quad patterns
     const patternOutputs: IActorQueryOperationOutputBindings[] = (await Promise.all(pattern.patterns
       .map((subPattern: Algebra.Pattern) => this.mediatorQueryOperation.mediate(
