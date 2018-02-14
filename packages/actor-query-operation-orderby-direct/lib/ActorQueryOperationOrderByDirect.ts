@@ -1,6 +1,6 @@
 import {SparqlExpressionEvaluator} from "@comunica/actor-query-operation-filter-direct";
-import {ActorQueryOperationTypedMediated, Bindings, IActorQueryOperationOutput,
-  IActorQueryOperationTypedMediatedArgs} from "@comunica/bus-query-operation";
+import {ActorQueryOperation, ActorQueryOperationTypedMediated,
+  IActorQueryOperationOutputBindings, IActorQueryOperationTypedMediatedArgs} from "@comunica/bus-query-operation";
 import {IActorTest} from "@comunica/core";
 import {termToString} from "rdf-string";
 import {Algebra} from "sparqlalgebrajs";
@@ -34,10 +34,10 @@ export class ActorQueryOperationOrderByDirect extends ActorQueryOperationTypedMe
   }
 
   public async runOperation(pattern: Algebra.OrderBy, context?: {[id: string]: any})
-    : Promise<IActorQueryOperationOutput> {
-    // Call other query operations like this:
-    const output: IActorQueryOperationOutput = await this.mediatorQueryOperation.mediate(
-      { operation: pattern.input, context });
+    : Promise<IActorQueryOperationOutputBindings> {
+    const output: IActorQueryOperationOutputBindings =
+      ActorQueryOperation.getSafeBindings(await this.mediatorQueryOperation.mediate(
+        { operation: pattern.input, context }));
 
     const options = { window: this.window };
     let bindingsStream = output.bindingsStream;
@@ -61,7 +61,7 @@ export class ActorQueryOperationOrderByDirect extends ActorQueryOperationTypedMe
       }, options);
     }
 
-    return { bindingsStream, metadata: output.metadata, variables: output.variables };
+    return { type: 'bindings', bindingsStream, metadata: output.metadata, variables: output.variables };
   }
 
 }
