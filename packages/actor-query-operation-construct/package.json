@@ -33,7 +33,8 @@
   ],
   "dependencies": {
     "asynciterator": "^1.1.0",
-    "rdf-data-model": "^1.0.0"
+    "rdf-data-model": "^1.0.0",
+    "rdf-terms": "^1.0.1"
   },
   "peerDependencies": {
     "@comunica/core": "^0.0.1",

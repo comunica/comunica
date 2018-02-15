@@ -5,6 +5,7 @@ import {AsyncIterator} from "asynciterator";
 import {PromiseProxyIterator} from "asynciterator-promiseproxy";
 import * as RDF from "rdf-js";
 import {termToString} from "rdf-string";
+import {TRIPLE_TERM_NAMES} from "rdf-terms";
 
 /**
  * A QPF quad source that uses a paged RDF dereference mediator
@@ -108,8 +109,8 @@ export class MediatedQuadSource implements ILazyQuadSource {
         // as QPF ignores variable names.
         if (duplicateElementLinks) {
           return output.data.filter((quad) => {
-            // No need to check the last element, because an equal element already would have to be found in s, p, or o.
-            for (const element1 of [ 'subject', 'predicate', 'object'/*, 'graph'*/ ]) {
+            // No need to check the graph, because an equal element already would have to be found in s, p, or o.
+            for (const element1 of TRIPLE_TERM_NAMES) {
               for (const element2 of (duplicateElementLinks[element1] || [])) {
                 if ((<any> quad)[element1] !== (<any> quad)[element2]) {
                   return false;

@@ -1,7 +1,8 @@
 import {Bindings, BindingsStream} from "@comunica/bus-query-operation";
 import {ArrayIterator, AsyncIterator, MultiTransformIterator} from "asynciterator";
-import {blankNode, quad} from "rdf-data-model";
+import {blankNode} from "rdf-data-model";
 import * as RDF from "rdf-js";
+import {mapTerms, someTerms} from "rdf-terms";
 
 /**
  * Transforms a bindings stream into a quad stream given a quad template.
@@ -49,23 +50,17 @@ export class BindingsToQuadsIterator extends MultiTransformIterator<Bindings, RD
    * @return {RDF.Quad}         A bound RDF quad or falsy.
    */
   public static bindQuad(bindings: Bindings, pattern: RDF.Quad): RDF.Quad {
-    const s: RDF.Term = BindingsToQuadsIterator.bindTerm(bindings, pattern.subject);
-    if (!s) {
+    try {
+      return mapTerms(pattern, (term) => {
+        const boundTerm: RDF.Term = BindingsToQuadsIterator.bindTerm(bindings, term);
+        if (!boundTerm) {
+          throw new Error('Unbound term');
+        }
+        return boundTerm;
+      });
+    } catch (error) {
       return null;
     }
-    const p: RDF.Term = BindingsToQuadsIterator.bindTerm(bindings, pattern.predicate);
-    if (!p) {
-      return null;
-    }
-    const o: RDF.Term = BindingsToQuadsIterator.bindTerm(bindings, pattern.object);
-    if (!o) {
-      return null;
-    }
-    const g: RDF.Term = BindingsToQuadsIterator.bindTerm(bindings, pattern.graph);
-    if (!g) {
-      return null;
-    }
-    return quad(s, p, o, g);
   }
 
   /**
@@ -91,12 +86,7 @@ export class BindingsToQuadsIterator extends MultiTransformIterator<Bindings, RD
    */
   public static localizeQuad(blankNodeCounter: number,
                              pattern: RDF.Quad): RDF.Quad {
-    return quad(
-      BindingsToQuadsIterator.localizeBlankNode(blankNodeCounter, pattern.subject),
-      BindingsToQuadsIterator.localizeBlankNode(blankNodeCounter, pattern.predicate),
-      BindingsToQuadsIterator.localizeBlankNode(blankNodeCounter, pattern.object),
-      BindingsToQuadsIterator.localizeBlankNode(blankNodeCounter, pattern.graph),
-    );
+    return mapTerms(pattern, (term) => BindingsToQuadsIterator.localizeBlankNode(blankNodeCounter, term));
   }
 
   /**

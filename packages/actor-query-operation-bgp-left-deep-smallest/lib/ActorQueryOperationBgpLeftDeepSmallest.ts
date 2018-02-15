@@ -3,9 +3,9 @@ import {ActorQueryOperation, ActorQueryOperationTypedMediated, Bindings, Binding
 import {IActorTest} from "@comunica/core";
 import {MultiTransformIterator} from "asynciterator";
 import {PromiseProxyIterator} from "asynciterator-promiseproxy";
-import {quad} from "rdf-data-model";
 import * as RDF from "rdf-js";
 import {termToString} from "rdf-string";
+import {mapTerms} from "rdf-terms";
 import {Algebra} from "sparqlalgebrajs";
 
 /**
@@ -113,12 +113,9 @@ export class ActorQueryOperationBgpLeftDeepSmallest extends ActorQueryOperationT
    * @return {Pattern} A new materialized pattern.
    */
   public static materializePattern(pattern: Algebra.Pattern, bindings: Bindings): Algebra.Pattern {
-    return <Algebra.Pattern> Object.assign(quad(
-      ActorQueryOperationBgpLeftDeepSmallest.materializeTerm(pattern.subject, bindings),
-      ActorQueryOperationBgpLeftDeepSmallest.materializeTerm(pattern.predicate, bindings),
-      ActorQueryOperationBgpLeftDeepSmallest.materializeTerm(pattern.object, bindings),
-      ActorQueryOperationBgpLeftDeepSmallest.materializeTerm(pattern.graph, bindings),
-    ), { type: 'pattern' });
+    return <Algebra.Pattern> Object.assign(mapTerms(pattern,
+      (term: RDF.Term) => ActorQueryOperationBgpLeftDeepSmallest.materializeTerm(term, bindings)),
+      { type: 'pattern' });
   }
 
   /**

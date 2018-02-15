@@ -5,6 +5,7 @@ import {IActionRdfResolveQuadPattern, IActorRdfResolveQuadPatternOutput} from "@
 import {Actor, IActorArgs, IActorTest, Mediator} from "@comunica/core";
 import * as RDF from "rdf-js";
 import {termToString} from "rdf-string";
+import {getTerms, QuadTermName, reduceTerms, uniqTerms} from "rdf-terms";
 import {Algebra} from "sparqlalgebrajs";
 
 /**
@@ -12,8 +13,6 @@ import {Algebra} from "sparqlalgebrajs";
  */
 export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Algebra.Pattern>
   implements IActorQueryOperationQuadpatternArgs {
-
-  public static readonly QUAD_ELEMENTS = [ 'subject', 'predicate', 'object', 'graph' ];
 
   public readonly mediatorResolveQuadPattern: Mediator<Actor<IActionRdfResolveQuadPattern, IActorTest,
     IActorRdfResolveQuadPatternOutput>, IActionRdfResolveQuadPattern, IActorTest, IActorRdfResolveQuadPatternOutput>;
@@ -29,10 +28,9 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
    * @return {string[]} The variables in this pattern, without '?' prefix.
    */
   public getVariables(pattern: RDF.Quad): string[] {
-    return require('lodash.uniq')(ActorQueryOperationQuadpattern.QUAD_ELEMENTS
-      .map((element) => (<any> pattern)[element])
-      .filter((term) => term.termType === 'Variable' || term.termType === 'BlankNode')
-      .map(termToString));
+    return uniqTerms(getTerms(pattern)
+      .filter((term) => term.termType === 'Variable' || term.termType === 'BlankNode'))
+      .map(termToString);
   }
 
   public async testOperation(operation: Algebra.Pattern, context?: {[id: string]: any}): Promise<IActorTest> {
@@ -48,21 +46,20 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
     const variables: string[] = this.getVariables(pattern);
 
     // Convenience datastructure for mapping quad elements to variables
-    const elementVariables: {[element: string]: string} = ActorQueryOperationQuadpattern.QUAD_ELEMENTS
-      .reduce((acc: {[element: string]: string}, element: string) => {
-        const term: RDF.Term = (<any> pattern)[element];
+    const elementVariables: {[key: string]: string} = reduceTerms(pattern,
+      (acc: {[key: string]: string}, term: RDF.Term, key: QuadTermName) => {
         if (term.termType === 'Variable' || term.termType === 'BlankNode') {
-          acc[element] = termToString(term);
+          acc[key] = termToString(term);
         }
         return acc;
       }, {});
 
     const bindingsStream: BindingsStream = result.data.map((quad) => {
-      return Bindings(ActorQueryOperationQuadpattern.QUAD_ELEMENTS
-        .reduce((acc: {[element: string]: string}, element) => {
-          const variable: string = elementVariables[element];
+      return Bindings(reduceTerms(quad,
+        (acc: {[key: string]: RDF.Term}, term: RDF.Term, key: QuadTermName) => {
+          const variable: string = elementVariables[key];
           if (variable) {
-            acc[variable] = (<any> quad)[element];
+            acc[variable] = term;
           }
           return acc;
         }, {}));

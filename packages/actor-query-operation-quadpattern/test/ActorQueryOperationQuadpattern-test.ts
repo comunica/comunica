@@ -2,6 +2,7 @@ import {ActorQueryOperation, IActorQueryOperationOutputBindings} from "@comunica
 import {Bindings} from "@comunica/bus-query-operation";
 import {Bus} from "@comunica/core";
 import {ArrayIterator} from "asynciterator";
+import {blankNode, namedNode, variable} from "rdf-data-model";
 import * as RDF from "rdf-js";
 import {Algebra} from "sparqlalgebrajs";
 import {ActorQueryOperationQuadpattern} from "../lib/ActorQueryOperationQuadpattern";
@@ -63,46 +64,46 @@ describe('ActorQueryOperationQuadpattern', () => {
 
     it('should get variables ?s, ?p, ?o, ?g from pattern ?s ?p ?o ?g', () => {
       return expect(actor.getVariables(<RDF.Quad> {
-        graph: { value: 'g', termType: 'Variable' },
-        object: { value: 'o', termType: 'Variable' },
-        predicate: { value: 'p', termType: 'Variable' },
-        subject: { value: 's', termType: 'Variable' },
+        graph: variable('g'),
+        object: variable('o'),
+        predicate: variable('p'),
+        subject: variable('s'),
       })).toEqual([ '?s', '?p', '?o', '?g' ]);
     });
 
     it('should get blank nodes _:s, _:p, _:o, _:g from pattern _:s _:p _:o _:g', () => {
       return expect(actor.getVariables(<RDF.Quad> {
-        graph: { value: 'g', termType: 'BlankNode' },
-        object: { value: 'o', termType: 'BlankNode' },
-        predicate: { value: 'p', termType: 'BlankNode' },
-        subject: { value: 's', termType: 'BlankNode' },
+        graph: blankNode('g'),
+        object: blankNode('o'),
+        predicate: blankNode('p'),
+        subject: blankNode('s'),
       })).toEqual([ '_:s', '_:p', '_:o', '_:g' ]);
     });
 
     it('should get variable ?s from pattern ?s p o g', () => {
       return expect(actor.getVariables(<RDF.Quad> {
-        graph: { value: 'g', termType: 'NamedNode' },
-        object: { value: 'o', termType: 'NamedNode' },
-        predicate: { value: 'p', termType: 'NamedNode' },
-        subject: { value: 's', termType: 'Variable' },
+        graph: namedNode('g'),
+        object: namedNode('o'),
+        predicate: namedNode('p'),
+        subject: variable('s'),
       })).toEqual([ '?s'  ]);
     });
 
     it('should get variable ?p from pattern ?p ?p ?p g', () => {
       return expect(actor.getVariables(<RDF.Quad> {
-        graph: { value: 'g', termType: 'NamedNode' },
-        object: { value: 'p', termType: 'Variable' },
-        predicate: { value: 'p', termType: 'Variable' },
-        subject: { value: 'p', termType: 'Variable' },
-      })).toEqual([ '?p' ]);
+        graph: namedNode('g'),
+        object: variable('o'),
+        predicate: variable('p'),
+        subject: variable('s'),
+      })).toEqual([ '?s', '?p', '?o' ]);
     });
 
     it('should run s ?p o g', () => {
       const operation = {
-        graph: { value: 'g', termType: 'NamedNode' },
-        object: { value: 'o', termType: 'NamedNode' },
-        predicate: { value: 'p', termType: 'Variable' },
-        subject: { value: 's', termType: 'NamedNode' },
+        graph: namedNode('g'),
+        object: namedNode('o'),
+        predicate: variable('p'),
+        subject: namedNode('s'),
         type: 'pattern',
       };
       return actor.run({ operation }).then(async (output: IActorQueryOperationOutputBindings) => {

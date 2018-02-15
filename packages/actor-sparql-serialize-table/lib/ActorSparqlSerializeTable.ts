@@ -2,6 +2,7 @@ import {IActorQueryOperationOutputBindings, IActorQueryOperationOutputQuads} fro
 import {ActorSparqlSerializeFixedMediaTypes, IActionSparqlSerialize,
   IActorSparqlSerializeFixedMediaTypesArgs, IActorSparqlSerializeOutput} from "@comunica/bus-sparql-serialize";
 import * as RDF from "rdf-js";
+import {getTerms, QUAD_TERM_NAMES} from "rdf-terms";
 import {Readable} from "stream";
 
 /**
@@ -56,12 +57,9 @@ export class ActorSparqlSerializeTable extends ActorSparqlSerializeFixedMediaTyp
         (value: RDF.Term, key: string) => this.pad(value ? value.value : '')).join(' ') + '\n'));
     } else {
       resultStream = (<IActorQueryOperationOutputQuads> action).quadStream;
-      this.pushHeader(data, ['subject', 'predicate', 'object', 'graph']);
+      this.pushHeader(data, QUAD_TERM_NAMES);
       resultStream.on('data', (quad) => data.push(
-        this.pad(quad.subject.value) + ' '
-        + this.pad(quad.predicate.value) + ' '
-        + this.pad(quad.object.value) + ' '
-        + this.pad(quad.graph.value) + '\n'));
+        getTerms(quad).map((term) => this.pad(term.value)).join(' ') + '\n'));
     }
     resultStream.on('end', () => data.push(null));
 

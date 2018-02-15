@@ -7,8 +7,8 @@ import {
 } from "@comunica/bus-query-operation";
 import {IActorTest} from "@comunica/core";
 import {AsyncIterator, EmptyIterator, MultiTransformIterator} from "asynciterator";
-import {variable} from "rdf-data-model";
 import * as RDF from "rdf-js";
+import {getTerms, getVariables, uniqTerms} from "rdf-terms";
 import {Algebra} from "sparqlalgebrajs";
 import {BindingsToQuadsIterator} from "./BindingsToQuadsIterator";
 
@@ -27,22 +27,7 @@ export class ActorQueryOperationConstruct extends ActorQueryOperationTypedMediat
    * @return {RDF.Variable[]} The variables in the triple patterns.
    */
   public static getVariables(patterns: RDF.Quad[]): RDF.Variable[] {
-    const variables: {[label: string]: boolean} = {};
-    for (const pattern of patterns) {
-      if (pattern.subject.termType === 'Variable') {
-        variables[pattern.subject.value] = true;
-      }
-      if (pattern.predicate.termType === 'Variable') {
-        variables[pattern.predicate.value] = true;
-      }
-      if (pattern.object.termType === 'Variable') {
-        variables[pattern.object.value] = true;
-      }
-      if (pattern.graph.termType === 'Variable') {
-        variables[pattern.graph.value] = true;
-      }
-    }
-    return Object.keys(variables).map(variable);
+    return uniqTerms([].concat.apply([], patterns.map((pattern) => getVariables(getTerms(pattern)))));
   }
 
   public async testOperation(pattern: Algebra.Construct, context?: {[id: string]: any}): Promise<IActorTest> {
