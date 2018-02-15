@@ -47,6 +47,7 @@ describe('ActorInitSparql', () => {
 
   describe('An ActorInitSparql instance', () => {
     const hypermedia: string = "http://example.org/";
+    const hypermedia2: string = "hypermedia@http://example.org/";
     const query: string = "SELECT * WHERE { ?s ?p ?o } LIMIT 100";
     const context: any = JSON.stringify({ hypermedia });
     let actor: ActorInitSparql;
@@ -228,8 +229,24 @@ describe('ActorInitSparql', () => {
         });
     });
 
+    it('should run with a tagged hypermedia and query file option from argv', () => {
+      return actor.run({ argv: [ hypermedia2, '-f' , __dirname + '/assets/all-100.sparql' ], env: {},
+        stdin: new PassThrough() })
+        .then((result) => {
+          return new Promise((resolve, reject) => {
+            result.stdout.on('data', (line) => expect(line).toBeTruthy());
+            result.stdout.on('end', resolve);
+          });
+        });
+    });
+
     it('should run with multiple hypermedias and a query option', () => {
       return expect(actor.run({ argv: [ hypermedia, hypermedia, '-q', query ], env: {}, stdin: new PassThrough() }))
+        .resolves.toBeTruthy();
+    });
+
+    it('should run with multiple tagged hypermedias and a query option', () => {
+      return expect(actor.run({ argv: [ hypermedia2, hypermedia2, '-q', query ], env: {}, stdin: new PassThrough() }))
         .resolves.toBeTruthy();
     });
 

@@ -23,6 +23,7 @@ export class ActorInitSparql extends ActorInitSparqlBrowser {
 Usage:
   comunica-sparql http://fragments.example.org/dataset [-q] 'SELECT * WHERE { ?s ?p ?o }'
   comunica-sparql http://fragments.example.org/dataset [-f] query.sparql'
+  comunica-sparql hypermedia@http://fragments.example.org/dataset sparql@http://sparql.example.org/ ...
 
 Options:
   -q            evaluate the given SPARQL query string
@@ -71,9 +72,14 @@ Options:
       context.sources = context.sources || [];
       args._.forEach((sourceValue: string) => {
         const source: {[id: string]: string} = {};
-        // TODO: improve this so that other source types can be selected, we currently assume TPF
-        source.type = 'hypermedia';
-        source.value = sourceValue;
+        const splitValues: string[] = sourceValue.split('@', 2);
+        if (splitValues.length === 1) {
+          // Set default type
+          source.type = 'hypermedia';
+        } else {
+          source.type = splitValues[0];
+        }
+        source.value = splitValues[splitValues.length - 1];
         context.sources.push(source);
       });
     }
