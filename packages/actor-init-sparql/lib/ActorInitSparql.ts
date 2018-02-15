@@ -72,7 +72,7 @@ Options:
       args._.forEach((sourceValue: string) => {
         const source: {[id: string]: string} = {};
         // TODO: improve this so that other source types can be selected, we currently assume TPF
-        source.type = 'entrypoint';
+        source.type = 'hypermedia';
         source.value = sourceValue;
         context.sources.push(source);
       });

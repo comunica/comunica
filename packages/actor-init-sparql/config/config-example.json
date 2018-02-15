@@ -51,7 +51,7 @@
             "cc:Mediator/bus": { "@id": "cbsp:Bus/SparqlParse" }
           },
           "cais:query": "SELECT * WHERE { ?project a <http://usefulinc.com/ns/doap#Project>. ?project <http://purl.org/dc/terms/abstract> ?abstract. ?project <http://usefulinc.com/ns/doap#maintainer> <https://linkedsoftwaredependencies.org/users/npm/rubensworks>. }",
-          "cais:context": "{ \"sources\": [{ \"type\": \"entrypoint\", \"value\": \"https://fragments.linkedsoftwaredependencies.org/npm\" }]}"
+          "cais:context": "{ \"sources\": [{ \"type\": \"hypermedia\", \"value\": \"https://fragments.linkedsoftwaredependencies.org/npm\" }]}"
         },
 
         {

@@ -52,7 +52,7 @@
             "cc:Mediator/bus": { "@id": "cbsp:Bus/SparqlParse" }
           },
           "cais:query": "PREFIX dbpedia-owl: <http://dbpedia.org/ontology/> PREFIX schema: <http://schema.org/> PREFIX dc: <http://purl.org/dc/terms/> PREFIX foaf: <http://xmlns.com/foaf/0.1/> PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>  SELECT ?person ?name ?book ?title {   ?person dbpedia-owl:birthPlace [ rdfs:label \"San Francisco\"@en ].   ?viafID schema:sameAs ?person;                schema:name ?name.   ?book dc:contributor [ foaf:name ?name ];               dc:title ?title. }",
-          "cais:context": "{ \"sources\": [ { \"type\": \"entrypoint\", \"value\": \"http://fragments.dbpedia.org/2016-04/en\" }, { \"type\": \"entrypoint\", \"value\": \"http://data.linkeddatafragments.org/viaf\" }, { \"type\": \"entrypoint\", \"value\": \"http://data.linkeddatafragments.org/harvard\" } ] }"
+          "cais:context": "{ \"sources\": [ { \"type\": \"hypermedia\", \"value\": \"http://fragments.dbpedia.org/2016-04/en\" }, { \"type\": \"entrypoint\", \"value\": \"http://data.linkeddatafragments.org/viaf\" }, { \"type\": \"entrypoint\", \"value\": \"http://data.linkeddatafragments.org/harvard\" } ] }"
         },
 
         {

@@ -46,9 +46,9 @@ describe('ActorInitSparql', () => {
   });
 
   describe('An ActorInitSparql instance', () => {
-    const entrypoint: string = "http://example.org/";
+    const hypermedia: string = "http://example.org/";
     const query: string = "SELECT * WHERE { ?s ?p ?o } LIMIT 100";
-    const context: any = JSON.stringify({ entrypoint });
+    const context: any = JSON.stringify({ hypermedia });
     let actor: ActorInitSparql;
 
     beforeEach(() => {
@@ -183,8 +183,8 @@ describe('ActorInitSparql', () => {
         .toHaveProperty('stderr');
     });
 
-    it('should run with an entrypoint and query from argv', () => {
-      return actor.run({ argv: [ entrypoint, query ], env: {}, stdin: new PassThrough() })
+    it('should run with an hypermedia and query from argv', () => {
+      return actor.run({ argv: [ hypermedia, query ], env: {}, stdin: new PassThrough() })
         .then((result) => {
           return new Promise((resolve, reject) => {
             result.stdout.on('data', (line) => expect(line).toBeTruthy());
@@ -193,18 +193,18 @@ describe('ActorInitSparql', () => {
         });
     });
 
-    it('should run to stderr for an entrypoint without a query', () => {
-      return expect(actor.run({ argv: [ entrypoint ], env: {}, stdin: new PassThrough() })).resolves
+    it('should run to stderr for an hypermedia without a query', () => {
+      return expect(actor.run({ argv: [ hypermedia ], env: {}, stdin: new PassThrough() })).resolves
         .toHaveProperty('stderr');
     });
 
-    it('should not run for an entrypoint and an invalid query', () => {
-      return expect(actor.run({ argv: [ entrypoint, 'INVALID' ], env: {}, stdin: new PassThrough() }))
+    it('should not run for an hypermedia and an invalid query', () => {
+      return expect(actor.run({ argv: [ hypermedia, 'INVALID' ], env: {}, stdin: new PassThrough() }))
         .rejects.toBeTruthy();
     });
 
-    it('should run with an entrypoint and query option from argv', () => {
-      return actor.run({ argv: [ entrypoint, '-q' , query ], env: {}, stdin: new PassThrough() })
+    it('should run with an hypermedia and query option from argv', () => {
+      return actor.run({ argv: [ hypermedia, '-q' , query ], env: {}, stdin: new PassThrough() })
         .then((result) => {
           return new Promise((resolve, reject) => {
             result.stdout.on('data', (line) => expect(line).toBeTruthy());
@@ -213,12 +213,12 @@ describe('ActorInitSparql', () => {
         });
     });
 
-    it('should not run with an entrypoint and a empty query option', () => {
-      return expect(actor.run({ argv: [ entrypoint, '-q' ], env: {}, stdin: new PassThrough() })).rejects.toBeTruthy();
+    it('should not run with an hypermedia and a empty query option', () => {
+      return expect(actor.run({ argv: [ hypermedia, '-q' ], env: {}, stdin: new PassThrough() })).rejects.toBeTruthy();
     });
 
-    it('should run with an entrypoint and query file option from argv', () => {
-      return actor.run({ argv: [ entrypoint, '-f' , __dirname + '/assets/all-100.sparql' ], env: {},
+    it('should run with an hypermedia and query file option from argv', () => {
+      return actor.run({ argv: [ hypermedia, '-f' , __dirname + '/assets/all-100.sparql' ], env: {},
         stdin: new PassThrough() })
         .then((result) => {
           return new Promise((resolve, reject) => {
@@ -228,17 +228,17 @@ describe('ActorInitSparql', () => {
         });
     });
 
-    it('should run with multiple entrypoints and a query option', () => {
-      return expect(actor.run({ argv: [ entrypoint, entrypoint, '-q', query ], env: {}, stdin: new PassThrough() }))
+    it('should run with multiple hypermedias and a query option', () => {
+      return expect(actor.run({ argv: [ hypermedia, hypermedia, '-q', query ], env: {}, stdin: new PassThrough() }))
         .resolves.toBeTruthy();
     });
 
-    it('should not run with an entrypoint and a empty query file option', () => {
-      return expect(actor.run({ argv: [ entrypoint, '-f' ], env: {}, stdin: new PassThrough() })).rejects.toBeTruthy();
+    it('should not run with an hypermedia and a empty query file option', () => {
+      return expect(actor.run({ argv: [ hypermedia, '-f' ], env: {}, stdin: new PassThrough() })).rejects.toBeTruthy();
     });
 
-    it('should not run with an entrypoint and a query file option to an invalid path', () => {
-      return expect(actor.run({ argv: [ entrypoint, '-f', __dirname + 'filedoesnotexist.sparql' ], env: {},
+    it('should not run with an hypermedia and a query file option to an invalid path', () => {
+      return expect(actor.run({ argv: [ hypermedia, '-f', __dirname + 'filedoesnotexist.sparql' ], env: {},
         stdin: new PassThrough() })).rejects.toBeTruthy();
     });
 

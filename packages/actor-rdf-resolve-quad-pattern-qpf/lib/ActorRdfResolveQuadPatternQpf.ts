@@ -19,7 +19,7 @@ export class ActorRdfResolveQuadPatternQpf extends ActorRdfResolveQuadPatternSou
   public readonly predicateUri: string;
   public readonly objectUri: string;
   public readonly graphUri?: string;
-  protected sources: {[entrypoint: string]: RDF.Source} = {};
+  protected sources: {[hypermedia: string]: RDF.Source} = {};
 
   constructor(args: IActorRdfResolveQuadPatternQpfArgs) {
     super(args);
@@ -27,25 +27,26 @@ export class ActorRdfResolveQuadPatternQpf extends ActorRdfResolveQuadPatternSou
 
   public async test(action: IActionRdfResolveQuadPattern): Promise<IActorTest> {
     if (!action.context || !action.context.sources || action.context.sources.length !== 1
-        || action.context.sources[0].type !== 'entrypoint' || !action.context.sources[0].value) {
-      throw new Error(this.name + ' requires a single source with a QPF entrypoint to be present in the context.');
+        || action.context.sources[0].type !== 'hypermedia' || !action.context.sources[0].value) {
+      throw new Error(this.name
+        + ' requires a single source with a QPF \'hypermedia\' entrypoint to be present in the context.');
     }
     return true;
   }
 
   protected async createSource(context?: {[id: string]: any}): Promise<ILazyQuadSource> {
-    // Collect metadata of the entrypoint
-    const entrypoint: string = context.sources[0].value;
+    // Collect metadata of the hypermedia
+    const hypermedia: string = context.sources[0].value;
     const metadata: {[id: string]: any} = await (await this.mediatorRdfDereferencePaged
-      .mediate({ url: entrypoint })).firstPageMetadata;
+      .mediate({ url: hypermedia })).firstPageMetadata;
     if (!metadata) {
-      throw new Error('No metadata was found at entrypoint ' + entrypoint);
+      throw new Error('No metadata was found at hypermedia entrypoint ' + hypermedia);
     }
 
     // Find a quad pattern or triple pattern search form
     const searchForms: ISearchForms = metadata.searchForms;
     if (!searchForms || !searchForms.values.length) {
-      throw new Error('No Hydra search forms were discovered in the metadata of ' + entrypoint
+      throw new Error('No Hydra search forms were discovered in the metadata of ' + hypermedia
         + '. You may be missing an actor that extracts this metadata');
     }
 
@@ -97,14 +98,14 @@ export class ActorRdfResolveQuadPatternQpf extends ActorRdfResolveQuadPatternSou
   }
 
   protected async getSource(context?: {[id: string]: any}): Promise<ILazyQuadSource> {
-    // Cache the source object for each entrypoint
-    const entrypoint: string = context.sources[0].value;
-    if (this.sources[entrypoint]) {
-      return this.sources[entrypoint];
+    // Cache the source object for each hypermedia entrypoint
+    const hypermedia: string = context.sources[0].value;
+    if (this.sources[hypermedia]) {
+      return this.sources[hypermedia];
     }
 
     // Cache and return
-    return this.sources[entrypoint] = await this.createSource(context);
+    return this.sources[hypermedia] = await this.createSource(context);
   }
 
   protected async getOutput(source: RDF.Source, pattern: RDF.Quad, context?: {[id: string]: any})
