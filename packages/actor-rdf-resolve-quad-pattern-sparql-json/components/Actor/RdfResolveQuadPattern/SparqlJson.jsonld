@@ -1,0 +1,37 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-resolve-quad-pattern-sparql-json.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-rdf-resolve-quad-pattern.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-http.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-rdf-resolve-quad-pattern-sparql-json",
+  "components": [
+    {
+      "@id": "carrqpsj:Actor/RdfResolveQuadPattern/SparqlJson",
+      "@type": "Class",
+      "extends": "cbrrqp:Actor/RdfResolveQuadPattern",
+      "requireElement": "ActorRdfResolveQuadPatternSparqlJson",
+      "comment": "A comunica SPARQL JSON RDF Resolve Quad Pattern Actor.",
+      "parameters": [
+        {
+          "@id": "carrqpsj:Actor/RdfResolveQuadPattern/SparqlJson/mediatorHttp",
+          "comment": "The HTTP mediator",
+          "required": true,
+          "unique": true
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "carrqpsj:Actor/RdfResolveQuadPattern/SparqlJson/constructorArgumentsObject",
+          "extends": "cbrrqp:Actor/RdfResolveQuadPattern/constructorArgumentsObject",
+          "fields": [
+            {
+              "keyRaw": "mediatorHttp",
+              "value": "carrqpsj:Actor/RdfResolveQuadPattern/SparqlJson/mediatorHttp"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

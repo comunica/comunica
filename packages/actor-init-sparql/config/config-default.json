@@ -26,6 +26,7 @@
     "https://linkedsoftwaredependencies.org/contexts/comunica-bus-rdf-resolve-quad-pattern.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-resolve-quad-pattern-federated.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-resolve-quad-pattern-qpf.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-resolve-quad-pattern-sparql-json.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-bus-http.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-actor-http-node-fetch.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-bus-rdf-parse.jsonld",
@@ -220,6 +221,11 @@
             "@type": "MediatorRace",
             "cc:Mediator/bus": { "@id": "cbrdp:Bus/RdfDereferencePaged" }
           }
+        },
+        {
+          "@id": "ex:mySparqlQuadPatternResolver",
+          "@type": "ActorRdfResolveQuadPatternSparqlJson",
+          "carrqpsj:Actor/RdfResolveQuadPattern/SparqlJson/mediatorHttp": { "@id": "ex:mediatorHttp" }
         },
 
         {

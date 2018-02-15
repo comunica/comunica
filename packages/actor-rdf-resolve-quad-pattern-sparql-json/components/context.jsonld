@@ -1,0 +1,12 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/components.jsonld",
+    {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
+      "carrqpsj": "npmd:@comunica/actor-rdf-resolve-quad-pattern-sparql-json/",
+
+      "ActorRdfResolveQuadPatternSparqlJson": "carrqpsj:Actor/RdfResolveQuadPattern/SparqlJson",
+      "mediatorHttp": "carrqpsj:Actor/RdfResolveQuadPattern/SparqlJson/mediatorHttp"
+    }
+  ]
+}
