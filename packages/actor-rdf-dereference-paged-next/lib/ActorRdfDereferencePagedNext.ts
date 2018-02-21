@@ -4,6 +4,7 @@ import {ActorRdfDereferencePaged, IActionRdfDereferencePaged,
 import {IActionRdfMetadata, IActorRdfMetadataOutput} from "@comunica/bus-rdf-metadata";
 import {IActionRdfMetadataExtract, IActorRdfMetadataExtractOutput} from "@comunica/bus-rdf-metadata-extract";
 import {Actor, IActorArgs, IActorTest, Mediator} from "@comunica/core";
+import LRU = require("lru-cache");
 import {MediatedPagedAsyncRdfIterator} from "./MediatedPagedAsyncRdfIterator";
 
 /**
@@ -17,9 +18,12 @@ export class ActorRdfDereferencePagedNext extends ActorRdfDereferencePaged imple
     IActionRdfMetadata, IActorTest, IActorRdfMetadataOutput>;
   public readonly mediatorMetadataExtract: Mediator<Actor<IActionRdfMetadataExtract, IActorTest,
     IActorRdfMetadataExtractOutput>, IActionRdfMetadataExtract, IActorTest, IActorRdfMetadataExtractOutput>;
+  public readonly cacheSize: number;
+  private readonly cache: LRU.Cache<string, Promise<IActorRdfDereferencePagedOutput>>;
 
   constructor(args: IActorRdfDereferencePaged) {
     super(args);
+    this.cache = this.cacheSize ? new LRU<string, any>({ max: this.cacheSize }) : null;
   }
 
   public test(action: IActionRdfDereferencePaged): Promise<IActorTest> {
@@ -27,7 +31,42 @@ export class ActorRdfDereferencePagedNext extends ActorRdfDereferencePaged imple
     return this.mediatorRdfDereference.mediateActor({ url: action.url });
   }
 
-  public async run(action: IActionRdfDereferencePaged): Promise<IActorRdfDereferencePagedOutput> {
+  public run(action: IActionRdfDereferencePaged): Promise<IActorRdfDereferencePagedOutput> {
+    if (this.cacheSize && this.cache.has(action.url)) {
+      return this.cloneOutput(this.cache.get(action.url));
+    }
+    const output: Promise<IActorRdfDereferencePagedOutput> = this.runAsync(action);
+    if (this.cacheSize) {
+      this.cache.set(action.url, output);
+      return this.cloneOutput(output);
+    } else {
+      return output;
+    }
+  }
+
+  /**
+   * Make a copy of the given output promise.
+   * @param {Promise<IActorRdfDereferencePagedOutput>} outputPromise An output promise.
+   * @return {Promise<IActorRdfDereferencePagedOutput>} A cloned output promise.
+   */
+  protected async cloneOutput(outputPromise: Promise<IActorRdfDereferencePagedOutput>)
+  : Promise<IActorRdfDereferencePagedOutput> {
+    const output: IActorRdfDereferencePagedOutput = await outputPromise;
+    return {
+      data: output.data.clone(),
+      firstPageMetadata: output.firstPageMetadata.then(
+        (metadata: {[id: string]: any}) => Object.assign({}, metadata)),
+      firstPageUrl: output.firstPageUrl,
+      triples: output.triples,
+    };
+  }
+
+  /**
+   * Actual logic to produce the paged output.
+   * @param {IActionRdfDereferencePaged} action An action.
+   * @return {Promise<IActorRdfDereferencePagedOutput>} The output.
+   */
+  protected async runAsync(action: IActionRdfDereferencePaged): Promise<IActorRdfDereferencePagedOutput> {
     const firstPage: IActorRdfDereferenceOutput = await this.mediatorRdfDereference.mediate(action);
     const firstPageUrl: string = firstPage.pageUrl;
 
@@ -52,4 +91,5 @@ export interface IActorRdfDereferencePaged extends
     IActionRdfMetadata, IActorTest, IActorRdfMetadataOutput>;
   mediatorMetadataExtract: Mediator<Actor<IActionRdfMetadataExtract, IActorTest, IActorRdfMetadataExtractOutput>,
     IActionRdfMetadataExtract, IActorTest, IActorRdfMetadataExtractOutput>;
+  cacheSize: number;
 }

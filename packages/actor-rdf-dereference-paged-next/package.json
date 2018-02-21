@@ -32,7 +32,8 @@
     "index.js"
   ],
   "dependencies": {
-    "asynciterator": "1.1.0"
+    "asynciterator": "1.1.0",
+    "lru-cache": "^4.1.1"
   },
   "peerDependencies": {
     "@comunica/core": "^0.0.1",

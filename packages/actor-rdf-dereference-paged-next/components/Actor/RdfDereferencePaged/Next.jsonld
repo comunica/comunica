@@ -29,6 +29,14 @@
           "comment": "The RDF Metadata Extract mediator",
           "required": true,
           "unique": true
+        },
+        {
+          "@id": "cardph:cacheSize",
+          "comment": "The maximum number of entries in the LRU cache, set to 0 to disable.",
+          "range": "xsd:integer",
+          "default": 100,
+          "required": true,
+          "unique": true
         }
       ],
       "constructorArguments": [
@@ -47,6 +55,10 @@
             {
               "keyRaw": "mediatorMetadataExtract",
               "value": "cardph:mediatorMetadataExtract"
+            },
+            {
+              "keyRaw": "cacheSize",
+              "value": "cardph:cacheSize"
             }
           ]
         }

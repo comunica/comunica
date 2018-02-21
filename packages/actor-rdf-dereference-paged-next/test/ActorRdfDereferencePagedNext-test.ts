@@ -1,5 +1,6 @@
 import {ActorRdfDereferencePaged} from "@comunica/bus-rdf-dereference-paged";
 import {Bus} from "@comunica/core";
+import {ClonedIterator} from "asynciterator";
 import {Readable} from "stream";
 import {ActorRdfDereferencePagedNext} from "../lib/ActorRdfDereferencePagedNext";
 const stream = require('streamify-array');
@@ -43,12 +44,14 @@ describe('ActorRdfDereferencePagedNext', () => {
 
   describe('An ActorRdfDereferencePagedNext instance', () => {
     let actor: ActorRdfDereferencePagedNext;
+    let actorCached: ActorRdfDereferencePagedNext;
     let mediatorMetadata;
     let mediatorMetadataExtract;
     let mediatorRdfDereference;
     let stream0;
     let stream1;
     let stream2;
+    let cacheSize;
 
     beforeEach(() => {
       stream0 = stream([ '0a', '0b', '0c' ]);
@@ -81,8 +84,18 @@ describe('ActorRdfDereferencePagedNext', () => {
           return action.url === 'http://example.org/' ? Promise.resolve(true) : Promise.reject(true);
         },
       };
+      cacheSize = 0;
       actor = new ActorRdfDereferencePagedNext({
         bus,
+        cacheSize,
+        mediatorMetadata,
+        mediatorMetadataExtract,
+        mediatorRdfDereference,
+        name: 'actor',
+      });
+      actorCached = new ActorRdfDereferencePagedNext({
+        bus,
+        cacheSize: 100,
         mediatorMetadata,
         mediatorMetadataExtract,
         mediatorRdfDereference,
@@ -104,6 +117,7 @@ describe('ActorRdfDereferencePagedNext', () => {
           expect(output.firstPageUrl).toEqual('0');
           expect(output.triples).toEqual(true);
           expect(await output.firstPageMetadata).toEqual({ next: 'http://example.org/1' });
+          expect(output.data).not.toBeInstanceOf(ClonedIterator);
           expect(await arrayifyStream(output.data)).toEqual([
             '0a', '0b', '0c',
             '1a', '1b', '1c',
@@ -122,6 +136,7 @@ describe('ActorRdfDereferencePagedNext', () => {
       }};
       const currentActor = new ActorRdfDereferencePagedNext({
         bus,
+        cacheSize,
         mediatorMetadata,
         mediatorMetadataExtract: mediatorMetadataExtractSlow,
         mediatorRdfDereference,
@@ -154,6 +169,7 @@ describe('ActorRdfDereferencePagedNext', () => {
       };
       const currentActor = new ActorRdfDereferencePagedNext({
         bus,
+        cacheSize,
         mediatorMetadata: currentMediatorMetadata,
         mediatorMetadataExtract,
         mediatorRdfDereference,
@@ -170,6 +186,7 @@ describe('ActorRdfDereferencePagedNext', () => {
       };
       const currentActor = new ActorRdfDereferencePagedNext({
         bus,
+        cacheSize,
         mediatorMetadata,
         mediatorMetadataExtract: currentMediatorMetadataExtract,
         mediatorRdfDereference,
@@ -189,6 +206,7 @@ describe('ActorRdfDereferencePagedNext', () => {
       };
       const currentActor = new ActorRdfDereferencePagedNext({
         bus,
+        cacheSize,
         mediatorMetadata,
         mediatorMetadataExtract,
         mediatorRdfDereference: currentMediatorRdfDereference,
@@ -206,6 +224,7 @@ describe('ActorRdfDereferencePagedNext', () => {
       }};
       const currentActor = new ActorRdfDereferencePagedNext({
         bus,
+        cacheSize,
         mediatorMetadata: mediatorMetadataTemp,
         mediatorMetadataExtract,
         mediatorRdfDereference,
@@ -224,6 +243,7 @@ describe('ActorRdfDereferencePagedNext', () => {
       }};
       actor = new ActorRdfDereferencePagedNext({
         bus,
+        cacheSize,
         mediatorMetadata,
         mediatorMetadataExtract: mediatorMetadataExtractTemp,
         mediatorRdfDereference,
@@ -242,6 +262,7 @@ describe('ActorRdfDereferencePagedNext', () => {
       }};
       actor = new ActorRdfDereferencePagedNext({
         bus,
+        cacheSize,
         mediatorMetadata,
         mediatorMetadataExtract,
         mediatorRdfDereference: mediatorRdfDereferenceTemp,
@@ -251,5 +272,39 @@ describe('ActorRdfDereferencePagedNext', () => {
         .then((output) => expect(arrayifyStream(output.data)).rejects.toEqual(error));
     });
 
+    it('should run with an enabled cache', () => {
+      return actorCached.run({ url: 'http://example.org/' })
+        .then(async (output) => {
+          expect(output.firstPageUrl).toEqual('0');
+          expect(output.triples).toEqual(true);
+          expect(await output.firstPageMetadata).toEqual({ next: 'http://example.org/1' });
+          expect(output.data).toBeInstanceOf(ClonedIterator);
+          expect(await arrayifyStream(output.data)).toEqual([
+            '0a', '0b', '0c',
+            '1a', '1b', '1c',
+            '2a', '2b', '2c',
+          ]);
+        });
+    });
+
+    it('should run with an enabled cache and clone the output from the first call for the same URL', () => {
+      return Promise.all([
+        actorCached.run({ url: 'http://example.org/' }),
+        actorCached.run({ url: 'http://example.org/' }),
+      ]).then(async (outputs) => {
+        for (const output of outputs) {
+          expect(output.firstPageUrl).toEqual('0');
+          expect(output.triples).toEqual(true);
+          expect(await output.firstPageMetadata).toEqual({ next: 'http://example.org/1' });
+          expect(output.data).toBeInstanceOf(ClonedIterator);
+          expect(await arrayifyStream(output.data)).toEqual([
+            '0a', '0b', '0c',
+            '1a', '1b', '1c',
+            '2a', '2b', '2c',
+          ]);
+        }
+        expect((<any> actorCached).cache.length).toEqual(1);
+      });
+    });
   });
 });

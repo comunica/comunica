@@ -12,6 +12,7 @@
     "@types/lodash.union": "^4.6.3",
     "@types/lodash.uniq": "^4.5.3",
     "@types/lodash.values": "^4.3.3",
+    "@types/lru-cache": "^4.1.0",
     "@types/n3": "^0.0.3",
     "@types/node": "^8.5.9",
     "@types/node-fetch": "^1.6.7",
