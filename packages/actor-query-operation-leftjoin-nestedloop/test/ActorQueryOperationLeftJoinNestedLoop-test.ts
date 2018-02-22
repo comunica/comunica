@@ -28,7 +28,7 @@ describe('ActorQueryOperationLeftJoinNestedLoop', () => {
         left = !left;
         return Promise.resolve({
           bindingsStream: left ? bindingStreamLeft : bindingStreamRight,
-          metadata: Promise.resolve({totalItems: 3}),
+          metadata: () => Promise.resolve({totalItems: 3}),
           operated: arg,
           type: 'bindings',
           variables: left ? ['a'] : ['a', 'b'],
@@ -80,6 +80,9 @@ describe('ActorQueryOperationLeftJoinNestedLoop', () => {
           Bindings({ a: literal('3'), b: literal('1') }),
           Bindings({ a: literal('3'), b: literal('2') }),
         ]);
+        expect(output.metadata()).toMatchObject(Promise.resolve({ totalItems: 3 }));
+        expect(output.type).toEqual('bindings');
+        expect(output.variables).toMatchObject(['a', 'b']);
       });
     });
   });

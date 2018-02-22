@@ -20,7 +20,7 @@ import {PagedAsyncRdfIterator} from "./PagedAsyncRdfIterator";
 export class MediatedPagedAsyncRdfIterator extends PagedAsyncRdfIterator {
 
   public readonly firstPageData: RDF.Stream;
-  public readonly firstPageMetadata: Promise<{[id: string]: any}>;
+  public readonly firstPageMetadata: () => Promise<{[id: string]: any}>;
   public readonly mediatorRdfDereference: Mediator<Actor<IActionRdfDereference, IActorTest, IActorRdfDereferenceOutput>,
     IActionRdfDereference, IActorTest, IActorRdfDereferenceOutput>;
   public readonly mediatorMetadata: Mediator<Actor<IActionRdfMetadata, IActorTest, IActorRdfMetadataOutput>,
@@ -28,7 +28,7 @@ export class MediatedPagedAsyncRdfIterator extends PagedAsyncRdfIterator {
   public readonly mediatorMetadataExtract: Mediator<Actor<IActionRdfMetadataExtract, IActorTest,
     IActorRdfMetadataExtractOutput>, IActionRdfMetadataExtract, IActorTest, IActorRdfMetadataExtractOutput>;
 
-  constructor(firstPageUrl: string, firstPageData: RDF.Stream, firstPageMetadata: Promise<{[id: string]: any}>,
+  constructor(firstPageUrl: string, firstPageData: RDF.Stream, firstPageMetadata: () => Promise<{[id: string]: any}>,
               mediatorRdfDereference: Mediator<Actor<IActionRdfDereference, IActorTest,
                 IActorRdfDereferenceOutput>, IActionRdfDereference, IActorTest, IActorRdfDereferenceOutput>,
               mediatorMetadata: Mediator<Actor<IActionRdfMetadata, IActorTest, IActorRdfMetadataOutput>,
@@ -36,7 +36,7 @@ export class MediatedPagedAsyncRdfIterator extends PagedAsyncRdfIterator {
               mediatorMetadataExtract: Mediator<Actor<IActionRdfMetadataExtract, IActorTest,
                 IActorRdfMetadataExtractOutput>, IActionRdfMetadataExtract, IActorTest,
                 IActorRdfMetadataExtractOutput>) {
-    super(firstPageUrl);
+    super(firstPageUrl, { autoStart: false, maxBufferSize: Infinity });
     this.firstPageData = firstPageData;
     this.firstPageMetadata = firstPageMetadata;
     this.mediatorRdfDereference = mediatorRdfDereference;
@@ -52,7 +52,7 @@ export class MediatedPagedAsyncRdfIterator extends PagedAsyncRdfIterator {
       pageData = this.firstPageData;
       let next: string;
       try {
-        next = (await this.firstPageMetadata).next;
+        next = (await this.firstPageMetadata()).next;
       } catch (e) {
         this.emit('error', e);
       }

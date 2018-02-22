@@ -116,7 +116,7 @@ describe('ActorRdfDereferencePagedNext', () => {
         .then(async (output) => {
           expect(output.firstPageUrl).toEqual('0');
           expect(output.triples).toEqual(true);
-          expect(await output.firstPageMetadata).toEqual({ next: 'http://example.org/1' });
+          expect(await output.firstPageMetadata()).toEqual({ next: 'http://example.org/1' });
           expect(output.data).not.toBeInstanceOf(ClonedIterator);
           expect(await arrayifyStream(output.data)).toEqual([
             '0a', '0b', '0c',
@@ -146,7 +146,7 @@ describe('ActorRdfDereferencePagedNext', () => {
         .then(async (output) => {
           expect(output.firstPageUrl).toEqual('0');
           expect(output.triples).toEqual(true);
-          expect(await output.firstPageMetadata).toEqual({ next: 'http://example.org/1' });
+          expect(await output.firstPageMetadata()).toEqual({ next: 'http://example.org/1' });
           expect(await arrayifyStream(output.data)).toEqual([
             '0a', '0b', '0c',
             '1a', '1b', '1c',
@@ -194,7 +194,7 @@ describe('ActorRdfDereferencePagedNext', () => {
       });
       return currentActor.run({ url: 'http://example.org/' })
         .then((output) => {
-          expect(output.firstPageMetadata).rejects.toEqual(error);
+          expect(output.firstPageMetadata()).rejects.toEqual(error);
           expect(arrayifyStream(output.data)).rejects.toEqual(error);
         });
     });
@@ -277,7 +277,7 @@ describe('ActorRdfDereferencePagedNext', () => {
         .then(async (output) => {
           expect(output.firstPageUrl).toEqual('0');
           expect(output.triples).toEqual(true);
-          expect(await output.firstPageMetadata).toEqual({ next: 'http://example.org/1' });
+          expect(await output.firstPageMetadata()).toEqual({ next: 'http://example.org/1' });
           expect(output.data).toBeInstanceOf(ClonedIterator);
           expect(await arrayifyStream(output.data)).toEqual([
             '0a', '0b', '0c',
@@ -295,7 +295,7 @@ describe('ActorRdfDereferencePagedNext', () => {
         for (const output of outputs) {
           expect(output.firstPageUrl).toEqual('0');
           expect(output.triples).toEqual(true);
-          expect(await output.firstPageMetadata).toEqual({ next: 'http://example.org/1' });
+          expect(await output.firstPageMetadata()).toEqual({ next: 'http://example.org/1' });
           expect(output.data).toBeInstanceOf(ClonedIterator);
           expect(await arrayifyStream(output.data)).toEqual([
             '0a', '0b', '0c',

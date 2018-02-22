@@ -70,9 +70,10 @@ export class ActorQueryOperationDescribeSubject extends ActorQueryOperationTyped
     const quadStream = new RoundRobinUnionIterator(outputs.map((output) => output.quadStream));
 
     // Take union of metadata
-    const metadata: Promise<{[id: string]: any}> = Promise.all(outputs
+    const metadata: () => Promise<{[id: string]: any}> = () => Promise.all(outputs
         .map((output) => output.metadata)
-        .filter((m) => !!m))
+        .filter((m) => !!m)
+        .map((m) => m()))
       .then(ActorQueryOperationUnion.unionMetadata);
 
     return { type: 'quads', quadStream, metadata };

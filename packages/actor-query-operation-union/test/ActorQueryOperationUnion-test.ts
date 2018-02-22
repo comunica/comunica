@@ -23,7 +23,7 @@ describe('ActorQueryOperationUnion', () => {
       }),
     };
     left = {
-      metadata: Promise.resolve({ totalItems: 3 }),
+      metadata: () => Promise.resolve({ totalItems: 3 }),
       stream: new ArrayIterator([
         Bindings({ a: literal('1') }),
         Bindings({ a: literal('2') }),
@@ -43,7 +43,7 @@ describe('ActorQueryOperationUnion', () => {
       variables: [ 'a' ],
     };
     right = {
-      metadata: Promise.resolve({ totalItems: 2 }),
+      metadata: () => Promise.resolve({ totalItems: 2 }),
       stream: new ArrayIterator([
         Bindings({ b: literal('1') }),
         Bindings({ b: literal('2') }),
@@ -185,7 +185,7 @@ describe('ActorQueryOperationUnion', () => {
     it('should run', () => {
       const op = { operation: { type: 'union', left, right } };
       return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
-        expect(await output.metadata).toEqual({ totalItems: 5 });
+        expect(await output.metadata()).toEqual({ totalItems: 5 });
         expect(output.variables).toEqual([ 'a', 'b' ]);
         expect(output.type).toEqual('bindings');
         expect(await arrayifyStream(output.bindingsStream)).toEqual([

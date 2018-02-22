@@ -40,7 +40,7 @@ export class ActorQueryOperationConstruct extends ActorQueryOperationTypedMediat
     const variables: RDF.Variable[] = ActorQueryOperationConstruct.getVariables(pattern.template);
     if (variables.length === 0) {
       return {
-        metadata: Promise.resolve({ totalItems: 0 }),
+        metadata: () => Promise.resolve({ totalItems: 0 }),
         quadStream: new EmptyIterator(),
         type: 'quads',
       };
@@ -57,9 +57,9 @@ export class ActorQueryOperationConstruct extends ActorQueryOperationTypedMediat
     const quadStream: AsyncIterator<RDF.Quad> = new BindingsToQuadsIterator(pattern.template, output.bindingsStream);
 
     // Let the final metadata contain the estimated number of triples
-    let metadata: Promise<{[id: string]: any}> = null;
+    let metadata: () => Promise<{[id: string]: any}> = null;
     if (output.metadata) {
-      metadata = output.metadata.then((m) => {
+      metadata = ActorQueryOperation.cachifyMetadata(() => output.metadata().then((m) => {
         if (m) {
           if (m.totalItems) {
             return Object.assign({}, m, { totalItems: m.totalItems * pattern.template.length });
@@ -67,7 +67,7 @@ export class ActorQueryOperationConstruct extends ActorQueryOperationTypedMediat
           return m;
         }
         return null;
-      });
+      }));
     }
 
     return {

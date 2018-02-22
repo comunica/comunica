@@ -1,4 +1,4 @@
-import {ActorRdfResolveQuadPatternSource, IActionRdfResolveQuadPattern,
+import {ActorRdfResolveQuadPattern, ActorRdfResolveQuadPatternSource, IActionRdfResolveQuadPattern,
   IActorRdfResolveQuadPatternOutput, ILazyQuadSource} from "@comunica/bus-rdf-resolve-quad-pattern";
 import {IActorArgs, IActorTest} from "@comunica/core";
 import * as RDF from "rdf-js";
@@ -85,19 +85,21 @@ export class ActorRdfResolveQuadPatternHdt extends ActorRdfResolveQuadPatternSou
     // Attach totalItems to the output
     this.queries++;
     const output: IActorRdfResolveQuadPatternOutput = await super.getOutput(source, pattern, context);
-    output.metadata = new Promise((resolve, reject) => {
+    output.data.on('end', () => {
+      this.queries--;
+      if (this.shouldClose) {
+        this.close();
+      }
+    });
+    output.metadata = ActorRdfResolveQuadPattern.cachifyMetadata(() => new Promise((resolve, reject) => {
       output.data.on('error', reject);
       output.data.on('end', () => {
-        this.queries--;
-        if (this.shouldClose) {
-          this.close();
-        }
         reject(new Error('No count metadata was found'));
       });
       output.data.once('totalItems', (totalItems: number) => {
         resolve({ totalItems });
       });
-    });
+    }));
     return output;
   }
 

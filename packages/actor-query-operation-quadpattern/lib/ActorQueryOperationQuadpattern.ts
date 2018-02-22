@@ -3,6 +3,7 @@ import {ActorQueryOperationTyped, Bindings, BindingsStream,
   IActorQueryOperationOutputBindings} from "@comunica/bus-query-operation";
 import {IActionRdfResolveQuadPattern, IActorRdfResolveQuadPatternOutput} from "@comunica/bus-rdf-resolve-quad-pattern";
 import {Actor, IActorArgs, IActorTest, Mediator} from "@comunica/core";
+import {PromiseProxyIterator} from "asynciterator-promiseproxy";
 import * as RDF from "rdf-js";
 import {termToString} from "rdf-string";
 import {getTerms, QuadTermName, reduceTerms, uniqTerms} from "rdf-terms";
@@ -54,7 +55,7 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
         return acc;
       }, {});
 
-    const bindingsStream: BindingsStream = result.data.map((quad) => {
+    const bindingsStream: BindingsStream = new PromiseProxyIterator(async () => result.data.map((quad) => {
       return Bindings(reduceTerms(quad,
         (acc: {[key: string]: RDF.Term}, term: RDF.Term, key: QuadTermName) => {
           const variable: string = elementVariables[key];
@@ -63,7 +64,7 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
           }
           return acc;
         }, {}));
-    });
+    }));
 
     return { type: 'bindings', bindingsStream, variables, metadata: result.metadata };
   }
