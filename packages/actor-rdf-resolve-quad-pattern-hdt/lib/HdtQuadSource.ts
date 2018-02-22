@@ -31,6 +31,7 @@ export class HdtQuadSource implements ILazyQuadSource {
     if (graph && graph.termType !== 'DefaultGraph') {
       throw new Error("HdtQuadSource only supports triple pattern queries within the default graph.");
     }
-    return new HdtIterator(this.hdtDocument, subject, predicate, object, { maxBufferSize: this.bufferSize });
+    return new HdtIterator(this.hdtDocument, subject, predicate, object,
+      { autoStart: false, maxBufferSize: this.bufferSize });
   }
 }

@@ -1,4 +1,5 @@
 import {ArrayIterator, AsyncIterator, EmptyIterator} from "asynciterator";
+import {RoundRobinUnionIterator} from "asynciterator-union";
 import {blankNode, defaultGraph, literal, namedNode, quad, variable} from "rdf-data-model";
 import {FederatedQuadSource} from "../lib/FederatedQuadSource";
 const squad = require('rdf-quad');
@@ -13,7 +14,8 @@ describe('FederatedQuadSource', () => {
       mediate: (action) => {
         const type = action.context.sources[0].type;
         if (type === 'emptySource') {
-          return Promise.resolve({ data: new EmptyIterator(), metadata: Promise.resolve({ totalItems: 0 }) });
+          return Promise.resolve({ data: new EmptyIterator(),
+            metadata: () => Promise.resolve({ totalItems: 0 }) });
         }
         if (type === 'nonEmptySourceNoMeta') {
           return Promise.resolve({ data: new ArrayIterator([
@@ -25,12 +27,12 @@ describe('FederatedQuadSource', () => {
           return Promise.resolve({ data: new ArrayIterator([
             squad('s1', 'p1', 'o1'),
             squad('s1', 'p1', 'o2'),
-          ]), metadata: Promise.resolve({ totalItems: Infinity }) });
+          ]), metadata: () => Promise.resolve({ totalItems: Infinity }) });
         }
         return Promise.resolve({ data: new ArrayIterator([
           squad('s1', 'p1', 'o1'),
           squad('s1', 'p1', 'o2'),
-        ]), metadata: Promise.resolve({ totalItems: 2 }) });
+        ]), metadata: () => Promise.resolve({ totalItems: 2 }) });
       },
     };
     context = { sources: [ { type: 'myType', value: 'myValue' } ] };
@@ -238,7 +240,7 @@ describe('FederatedQuadSource', () => {
 
     it('should return an AsyncIterator', () => {
       return expect(source.match(variable('v'), variable('v'), variable('v'), variable('v')))
-        .toBeInstanceOf(AsyncIterator);
+        .toBeInstanceOf(RoundRobinUnionIterator);
     });
 
     describe('when calling isSourceEmpty', () => {

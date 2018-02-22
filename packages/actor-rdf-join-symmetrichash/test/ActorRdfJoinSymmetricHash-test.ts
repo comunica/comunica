@@ -42,13 +42,13 @@ describe('ActorRdfJoinSymmetricHash', () => {
       action = { entries: [
         {
           bindingsStream: new ArrayIterator([]),
-          metadata: Promise.resolve({ totalItems: 4 }),
+          metadata: () => Promise.resolve({ totalItems: 4 }),
           type: 'bindings',
           variables: [],
         },
         {
           bindingsStream: new ArrayIterator([]),
-          metadata: Promise.resolve({ totalItems: 5 }),
+          metadata: () => Promise.resolve({ totalItems: 5 }),
           type: 'bindings',
           variables: [],
         },
@@ -62,13 +62,13 @@ describe('ActorRdfJoinSymmetricHash', () => {
 
     it('should generate correct test metadata', async () => {
       return expect(actor.test(action)).resolves.toHaveProperty('iterations',
-        (await action.entries[0].metadata).totalItems + (await action.entries[1].metadata).totalItems);
+        (await action.entries[0].metadata()).totalItems + (await action.entries[1].metadata()).totalItems);
     });
 
     it('should generate correct metadata', async () => {
       return actor.run(action).then(async (result: IActorQueryOperationOutputBindings) => {
-        return expect(result.metadata).resolves.toHaveProperty('totalItems',
-          (await action.entries[0].metadata).totalItems * (await action.entries[1].metadata).totalItems);
+        return expect(result.metadata()).resolves.toHaveProperty('totalItems',
+          (await action.entries[0].metadata()).totalItems * (await action.entries[1].metadata()).totalItems);
       });
     });
 

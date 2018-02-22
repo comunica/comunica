@@ -20,6 +20,16 @@ export abstract class ActorRdfResolveQuadPattern extends Actor<IActionRdfResolve
     super(args);
   }
 
+  /**
+   * Convert a metadata callback to a lazy callback where the response value is cached.
+   * @param {() => Promise<{[p: string]: any}>} metadata A metadata callback
+   * @return {() => Promise<{[p: string]: any}>} The callback where the response will be cached.
+   */
+  public static cachifyMetadata(metadata: () => Promise<{[id: string]: any}>): () => Promise<{[id: string]: any}> {
+    let lastReturn: Promise<{[id: string]: any}> = null;
+    return () => lastReturn || (lastReturn = metadata());
+  }
+
 }
 
 export interface IActionRdfResolveQuadPattern extends IAction {
@@ -41,9 +51,9 @@ export interface IActorRdfResolveQuadPatternOutput extends IActorOutput {
    */
   data: AsyncIterator<RDF.Quad> & RDF.Stream;
   /**
-   * Promise that resolves to the metadata about the resulting stream.
-   * This can contain things like the estimated number of total quads,
+   * Callback that returns a promise that resolves to the metadata about the resulting stream.
+   * This metadata can contain things like the estimated number of total quads,
    * or the order in which the quads appear.
    */
-  metadata?: Promise<{[id: string]: any}>;
+  metadata?: () => Promise<{[id: string]: any}>;
 }

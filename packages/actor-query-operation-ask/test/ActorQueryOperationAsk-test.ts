@@ -22,7 +22,7 @@ describe('ActorQueryOperationAsk', () => {
           Bindings({ a: literal('2') }),
           Bindings({ a: literal('3') }),
         ]),
-        metadata: Promise.resolve({ totalItems: 3 }),
+        metadata: () => Promise.resolve({ totalItems: 3 }),
         operated: arg,
         type: 'bindings',
         variables: ['a'],
@@ -31,7 +31,7 @@ describe('ActorQueryOperationAsk', () => {
     mediatorQueryOperationEmpty = {
       mediate: (arg) => Promise.resolve({
         bindingsStream: new EmptyIterator(),
-        metadata: Promise.resolve({ totalItems: 0 }),
+        metadata: () => Promise.resolve({ totalItems: 0 }),
         operated: arg,
         type: 'bindings',
         variables: ['a'],
@@ -43,7 +43,7 @@ describe('ActorQueryOperationAsk', () => {
         setImmediate(() => bindingsStream.emit('error', new Error('Error!')));
         resolve({
           bindingsStream,
-          metadata: Promise.resolve({ totalItems: 0 }),
+          metadata: () => Promise.resolve({ totalItems: 0 }),
           operated: arg,
           type: 'bindings',
           variables: ['a'],
@@ -53,7 +53,7 @@ describe('ActorQueryOperationAsk', () => {
     mediatorQueryOperationInf = {
       mediate: (arg) => Promise.resolve({
         bindingsStream: AsyncIterator.range(0),
-        metadata: Promise.resolve({ totalItems: 0 }),
+        metadata: () => Promise.resolve({ totalItems: 0 }),
         operated: arg,
         type: 'bindings',
         variables: ['a'],

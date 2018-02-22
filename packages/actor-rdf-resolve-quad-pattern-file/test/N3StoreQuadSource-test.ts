@@ -18,17 +18,13 @@ describe('N3StoreQuadSource', () => {
     it('should be a N3StoreQuadSource constructor', () => {
       expect(new N3StoreQuadSource(store)).toBeInstanceOf(N3StoreQuadSource);
     });
-
-    it('should be a N3StoreQuadSource constructor with optional bufferSize argument', () => {
-      expect(new N3StoreQuadSource(store, 10)).toBeInstanceOf(N3StoreQuadSource);
-    });
   });
 
   describe('A N3StoreQuadSource instance', () => {
     let source: N3StoreQuadSource;
 
     beforeEach(() => {
-      source = new N3StoreQuadSource(store, 10);
+      source = new N3StoreQuadSource(store);
     });
 
     it('should throw an error on a subject regex call', () => {

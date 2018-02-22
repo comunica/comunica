@@ -24,7 +24,7 @@ export class ActorQueryOperationBgpEmpty extends ActorQueryOperationTyped<Algebr
   : Promise<IActorQueryOperationOutputBindings> {
     return {
       bindingsStream: new EmptyIterator(),
-      metadata: Promise.resolve({ totalItems: 0 }),
+      metadata: () => Promise.resolve({ totalItems: 0 }),
       type: 'bindings',
       variables: [],
     };

@@ -14,12 +14,18 @@ export class HdtIterator extends BufferedIterator<RDF.Quad> {
   protected position: number;
 
   constructor(hdtDocument: any, subject?: RDF.Term, predicate?: RDF.Term, object?: RDF.Term, options?: any) {
-    super(options);
+    super(options || { autoStart: false });
     this.hdtDocument = hdtDocument;
     this.subject = RdfString.termToString(subject);
     this.predicate = RdfString.termToString(predicate);
     this.object = RdfString.termToString(object);
     this.position = options && options.offset || 0;
+
+    this.on('newListener', (eventName) => {
+      if (eventName === 'totalItems') {
+        setImmediate(() => this._fillBuffer());
+      }
+    });
   }
 
   public _read(count: number, done: () => void): void {

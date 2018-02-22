@@ -42,9 +42,12 @@ export interface IActorRdfDereferencePagedOutput extends IActorOutput {
    */
   data: AsyncIterator<RDF.Quad> & RDF.Stream;
   /**
-   * A promise resolving to the extracted metadata key-value mapping of the first page.
+   * A callback returning a promise resolving to the extracted metadata key-value mapping of the first page.
+   * This callback can be invoked multiple times.
+   * The actors that return this metadata will make sure that multiple calls properly cache this promise.
+   * Metadata will not be collected until this callback is invoked.
    */
-  firstPageMetadata?: Promise<{[id: string]: any}>;
+  firstPageMetadata?: () => Promise<{[id: string]: any}>;
   /**
    * An optional field indicating if the given quad stream originates from a triple-based serialization,
    * in which everything is serialized in the default graph.

@@ -129,7 +129,7 @@ describe('ActorRdfResolveQuadPatternHdt', () => {
     it('should run on ? ? ?', () => {
       const pattern = quad('?', '?', '?');
       return actor.run({ pattern, context: { sources: [{ type: 'hdtFile', value: 'abc'  }] } }).then(async (output) => {
-        expect(await output.metadata).toEqual({ totalItems: 8 });
+        expect(await output.metadata()).toEqual({ totalItems: 8 });
         expect(await arrayifyStream(output.data)).toEqual([
           quad('s1', 'p1', 'o1'),
           quad('s1', 'p1', 'o2'),
@@ -143,10 +143,17 @@ describe('ActorRdfResolveQuadPatternHdt', () => {
       });
     });
 
+    it('should run on ? ? ? without data', () => {
+      const pattern = quad('?', '?', '?');
+      return actor.run({ pattern, context: { sources: [{ type: 'hdtFile', value: 'abc'  }] } }).then(async (output) => {
+        expect(await output.metadata()).toEqual({ totalItems: 8 });
+      });
+    });
+
     it('should run on s1 ? ?', () => {
       const pattern = quad('s1', '?', '?');
       return actor.run({ pattern, context: { sources: [{ type: 'hdtFile', value: 'abc'  }] } }).then(async (output) => {
-        expect(await output.metadata).toEqual({ totalItems: 4 });
+        expect(await output.metadata()).toEqual({ totalItems: 4 });
         expect(await arrayifyStream(output.data)).toEqual([
           quad('s1', 'p1', 'o1'),
           quad('s1', 'p1', 'o2'),
@@ -159,7 +166,7 @@ describe('ActorRdfResolveQuadPatternHdt', () => {
     it('should run on s3 ? ?', () => {
       const pattern = quad('s3', '?', '?');
       return actor.run({ pattern, context: { sources: [{ type: 'hdtFile', value: 'abc'  }] } }).then(async (output) => {
-        expect(await output.metadata).toEqual({ totalItems: 0 });
+        expect(await output.metadata()).toEqual({ totalItems: 0 });
         expect(await arrayifyStream(output.data)).toEqual([]);
       });
     });

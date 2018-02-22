@@ -45,10 +45,11 @@ export class ActorQueryOperationLeftJoinNestedLoop extends ActorQueryOperationTy
     });
 
     const variables = ActorRdfJoin.joinVariables({ entries: [left, right] });
-    const metadata = Promise.all([pattern.left, pattern.right].map((entry) => entry.metadata))
-      .then((metadatas) => metadatas.reduce((acc, val) => acc * val.totalItems, 1))
-      .catch(() => Infinity)
-      .then((totalItems) =>  ({ totalItems }) );
+    const metadata = ActorQueryOperation.cachifyMetadata(
+      () => Promise.all([pattern.left, pattern.right].map((entry) => entry.metadata))
+        .then((metadatas) => metadatas.reduce((acc, val) => acc * val.totalItems, 1))
+        .catch(() => Infinity)
+        .then((totalItems) =>  ({ totalItems }) ));
 
     return { type: 'bindings', bindingsStream, metadata, variables };
   }

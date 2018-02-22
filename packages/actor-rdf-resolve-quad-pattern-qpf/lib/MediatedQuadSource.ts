@@ -19,13 +19,13 @@ export class MediatedQuadSource implements ILazyQuadSource {
   public readonly mediatorRdfDereferencePaged: Mediator<Actor<IActionRdfDereferencePaged, IActorTest,
     IActorRdfDereferencePagedOutput>, IActionRdfDereferencePaged, IActorTest, IActorRdfDereferencePagedOutput>;
   public readonly uriConstructor: ((subject?: RDF.Term, predicate?: RDF.Term, object?: RDF.Term, graph?: RDF.Term)
-    => string);
+    => Promise<string>);
 
   constructor(mediatorRdfDereferencePaged: Mediator<Actor<IActionRdfDereferencePaged, IActorTest,
                 IActorRdfDereferencePagedOutput>, IActionRdfDereferencePaged, IActorTest,
                 IActorRdfDereferencePagedOutput>,
               uriConstructor: ((subject?: RDF.Term, predicate?: RDF.Term, object?: RDF.Term, graph?: RDF.Term)
-                => string)) {
+                => Promise<string>)) {
     this.mediatorRdfDereferencePaged = mediatorRdfDereferencePaged;
     this.uriConstructor = uriConstructor;
   }
@@ -94,34 +94,41 @@ export class MediatedQuadSource implements ILazyQuadSource {
       throw new Error("MediatedQuadSource does not support matching by regular expressions.");
     }
 
-    // Detect duplicate variables in the pattern
-    const duplicateElementLinks: {[element: string]: string[]} = this
-      .getDuplicateElementLinks(subject, predicate, object, graph);
+    const quads = new PromiseProxyIterator(async () => {
+      const url: string = await this.uriConstructor(subject, predicate, object, graph);
+      const output = await this.mediatorRdfDereferencePaged.mediate({url});
 
-    const url: string = this.uriConstructor(subject, predicate, object, graph);
-    const quads = new PromiseProxyIterator(() => this.mediatorRdfDereferencePaged.mediate({ url })
-      .then((output) => {
-        // Emit metadata in the stream, so we can attach it later to the actor's promise output
-        quads.emit('metadata', output.firstPageMetadata);
+      // Emit metadata in the stream, so we can attach it later to the actor's promise output
+      quads.emit('metadata', output.firstPageMetadata);
 
-        // If there are duplicate variables in the search pattern,
-        // make sure that we filter out the triples that don't have equal values for those triple elements,
-        // as QPF ignores variable names.
-        if (duplicateElementLinks) {
-          return output.data.filter((quad) => {
-            // No need to check the graph, because an equal element already would have to be found in s, p, or o.
-            for (const element1 of TRIPLE_TERM_NAMES) {
-              for (const element2 of (duplicateElementLinks[element1] || [])) {
-                if ((<any> quad)[element1] !== (<any> quad)[element2]) {
-                  return false;
-                }
+      // Detect duplicate variables in the pattern
+      const duplicateElementLinks: { [element: string]: string[] } = this
+        .getDuplicateElementLinks(subject, predicate, object, graph);
+
+      // If there are duplicate variables in the search pattern,
+      // make sure that we filter out the triples that don't have equal values for those triple elements,
+      // as QPF ignores variable names.
+      if (duplicateElementLinks) {
+        return output.data.filter((quad) => {
+          // No need to check the graph, because an equal element already would have to be found in s, p, or o.
+          for (const element1 of TRIPLE_TERM_NAMES) {
+            for (const element2 of (duplicateElementLinks[element1] || [])) {
+              if ((<any> quad)[element1] !== (<any> quad)[element2]) {
+                return false;
               }
             }
-            return true;
-          });
-        }
-        return output.data;
-      }));
+          }
+          return true;
+        });
+      }
+      return output.data;
+    });
+    quads.on('newListener', (eventName) => {
+      if (eventName === 'metadata') {
+        setImmediate(() => quads._fillBuffer());
+      }
+    });
+
     return quads;
   }
 

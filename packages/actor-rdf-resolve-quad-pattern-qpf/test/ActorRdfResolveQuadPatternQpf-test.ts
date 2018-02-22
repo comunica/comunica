@@ -113,7 +113,7 @@ describe('ActorRdfResolveQuadPatternQpf', () => {
       };
       mediator.mediate = (action) => Promise.resolve({
         data: stream([ action.url + '/a', action.url + '/b', action.url + '/c' ]),
-        firstPageMetadata: metadataQpf,
+        firstPageMetadata: () => Promise.resolve(metadataQpf),
       });
       actor = new ActorRdfResolveQuadPatternQpf({ bus, graphUri: 'g', mediatorRdfDereferencePaged: mediator,
         name: 'actor', objectUri: 'o', predicateUri: 'p', subjectUri: 's' });
@@ -133,50 +133,61 @@ describe('ActorRdfResolveQuadPatternQpf', () => {
       return expect(actor.test({ pattern: pattern1 })).rejects.toBeTruthy();
     });
 
-    it('should not run when no metadata is available', () => {
+    it('should run and error in the stream when no metadata is available', () => {
       mediator.mediate = () => Promise.resolve({});
-      return expect(actor.run(
-        { pattern: pattern1, context: { sources: [{ type: 'hypermedia', value: 'hypermedia' } ]}})).rejects
-        .toEqual(new Error('No metadata was found at hypermedia entrypoint hypermedia'));
+      return actor.run({ pattern: pattern1, context: { sources: [{ type: 'hypermedia', value: 'hypermedia' } ]}})
+        .then(async (output) => {
+          expect(arrayifyStream(output.data)).rejects
+            .toEqual(new Error('No metadata was found at hypermedia entrypoint hypermedia'));
+        });
     });
 
     it('should not run when no metadata search forms are available', () => {
-      mediator.mediate = () => Promise.resolve({ firstPageMetadata: {} });
-      return expect(actor.run(
-        { pattern: pattern1, context: { sources: [{ type: 'hypermedia', value: 'hypermedia' } ]}})).rejects
-        .toEqual(new Error('No Hydra search forms were discovered in the metadata of hypermedia. ' +
-          'You may be missing an actor that extracts this metadata'));
+      mediator.mediate = () => Promise.resolve({ firstPageMetadata: () => Promise.resolve({}) });
+      return actor.run({ pattern: pattern1, context: { sources: [{ type: 'hypermedia', value: 'hypermedia' } ]}})
+        .then(async (output) => {
+          expect(arrayifyStream(output.data)).rejects
+            .toEqual(new Error('No Hydra search forms were discovered in the metadata of hypermedia. ' +
+              'You may be missing an actor that extracts this metadata'));
+        });
     });
 
     it('should not run when 0 metadata search forms are available', () => {
-      mediator.mediate = () => Promise.resolve({ firstPageMetadata: { searchForms: { values: [] } } });
-      return expect(actor.run(
-        { pattern: pattern1, context: { sources: [{ type: 'hypermedia', value: 'hypermedia' } ]}})).rejects
-        .toEqual(new Error('No Hydra search forms were discovered in the metadata of hypermedia. ' +
-          'You may be missing an actor that extracts this metadata'));
+      mediator.mediate = () => Promise.resolve(
+        { firstPageMetadata: () => Promise.resolve({ searchForms: { values: [] } }) });
+      return actor.run({ pattern: pattern1, context: { sources: [{ type: 'hypermedia', value: 'hypermedia' } ]}})
+        .then(async (output) => {
+          expect(arrayifyStream(output.data)).rejects
+            .toEqual(new Error('No Hydra search forms were discovered in the metadata of hypermedia. ' +
+              'You may be missing an actor that extracts this metadata'));
+        });
     });
 
     it('should not run when no valid metadata search form was found', () => {
-      mediator.mediate = () => Promise.resolve({ firstPageMetadata: { searchForms: { values: [
-        {
-          getUri: () => null,
-          mappings: {
-            a: 'g1',
-            b: 'o1',
-            c: 'p1',
-            d: 's1',
+      mediator.mediate = () => Promise.resolve(
+        { firstPageMetadata: () => Promise.resolve({ searchForms: { values: [
+          {
+            getUri: () => null,
+            mappings: {
+              a: 'g1',
+              b: 'o1',
+              c: 'p1',
+              d: 's1',
+            },
           },
-        },
-      ]}}});
-      return expect(actor.run(
-        { pattern: pattern1, context: { sources: [{ type: 'hypermedia', value: 'hypermedia' } ]}})).rejects
-        .toEqual(new Error('No valid Hydra search form was found for quad pattern or triple pattern queries.'));
+        ]}})});
+
+      return actor.run({ pattern: pattern1, context: { sources: [{ type: 'hypermedia', value: 'hypermedia' } ]}})
+        .then(async (output) => {
+          expect(arrayifyStream(output.data)).rejects
+            .toEqual(new Error('No valid Hydra search form was found for quad pattern or triple pattern queries.'));
+        });
     });
 
     it('should run for QPF pattern 1', () => {
       return actor.run({ pattern: pattern1, context: { sources: [{ type: 'hypermedia', value: 'hypermedia' } ]}})
         .then(async (output) => {
-          expect(await output.metadata).toBe(metadataQpf);
+          expect(await output.metadata()).toBe(metadataQpf);
           expect(await arrayifyStream(output.data)).toEqual([ 'a,_,c,d/a', 'a,_,c,d/b', 'a,_,c,d/c' ]);
         });
     });
@@ -184,7 +195,7 @@ describe('ActorRdfResolveQuadPatternQpf', () => {
     it('should run for QPF pattern 2', () => {
       return actor.run({ pattern: pattern2, context: { sources: [{ type: 'hypermedia', value: 'hypermedia' } ]}})
         .then(async (output) => {
-          expect(await output.metadata).toBe(metadataQpf);
+          expect(await output.metadata()).toBe(metadataQpf);
           expect(await arrayifyStream(output.data)).toEqual([ 'a,b,_,d/a', 'a,b,_,d/b', 'a,b,_,d/c' ]);
         });
     });
@@ -192,7 +203,7 @@ describe('ActorRdfResolveQuadPatternQpf', () => {
     it('should run for QPF pattern 3', () => {
       return actor.run({ pattern: pattern3, context: { sources: [{ type: 'hypermedia', value: 'hypermedia' } ]}})
         .then(async (output) => {
-          expect(await output.metadata).toBe(metadataQpf);
+          expect(await output.metadata()).toBe(metadataQpf);
           expect(await arrayifyStream(output.data)).toEqual([ 'a,b,c,_/a', 'a,b,c,_/b', 'a,b,c,_/c' ]);
         });
     });
@@ -200,7 +211,7 @@ describe('ActorRdfResolveQuadPatternQpf', () => {
     it('should run for QPF pattern 4', () => {
       return actor.run({ pattern: pattern4, context: { sources: [{ type: 'hypermedia', value: 'hypermedia' } ]}})
         .then(async (output) => {
-          expect(await output.metadata).toBe(metadataQpf);
+          expect(await output.metadata()).toBe(metadataQpf);
           expect(await arrayifyStream(output.data)).toEqual([ '_,b,c,d/a', '_,b,c,d/b', '_,b,c,d/c' ]);
         });
     });
@@ -208,7 +219,7 @@ describe('ActorRdfResolveQuadPatternQpf', () => {
     it('should run for QPF pattern 5', () => {
       return actor.run({ pattern: pattern5, context: { sources: [{ type: 'hypermedia', value: 'hypermedia' } ]}})
         .then(async (output) => {
-          expect(await output.metadata).toBe(metadataQpf);
+          expect(await output.metadata()).toBe(metadataQpf);
           expect(await arrayifyStream(output.data)).toEqual([ '_,b,_,d/a', '_,b,_,d/b', '_,b,_,d/c' ]);
         });
     });
@@ -216,21 +227,61 @@ describe('ActorRdfResolveQuadPatternQpf', () => {
     it('should run for QPF pattern 6', () => {
       return actor.run({ pattern: pattern6, context: { sources: [{ type: 'hypermedia', value: 'hypermedia' } ]}})
         .then(async (output) => {
-          expect(await output.metadata).toBe(metadataQpf);
+          expect(await output.metadata()).toBe(metadataQpf);
           expect(await arrayifyStream(output.data)).toEqual([
             '"a","b"@nl,"c"^^data,_/a', '"a","b"@nl,"c"^^data,_/b', '"a","b"@nl,"c"^^data,_/c' ]);
         });
     });
 
+    it('should run for QPF pattern 6 when only the data is called', () => {
+      return actor.run({ pattern: pattern6, context: { sources: [{ type: 'hypermedia', value: 'hypermedia' } ]}})
+        .then(async (output) => {
+          expect(await arrayifyStream(output.data)).toEqual([
+            '"a","b"@nl,"c"^^data,_/a', '"a","b"@nl,"c"^^data,_/b', '"a","b"@nl,"c"^^data,_/c' ]);
+        });
+    });
+
+    it('should run for QPF pattern 6 when only the metadata is called', () => {
+      return actor.run({ pattern: pattern6, context: { sources: [{ type: 'hypermedia', value: 'hypermedia' } ]}})
+        .then(async (output) => {
+          expect(await output.metadata()).toBe(metadataQpf);
+        });
+    });
+
+    it('should run for lazily', () => {
+      mediator.mediate = (action) => { throw new Error('This should not be called'); };
+      return expect(actor.run(
+        { pattern: pattern6, context: { sources: [{ type: 'hypermedia', value: 'hypermedia' } ]}}))
+        .resolves.toBeTruthy();
+    });
+
     it('should run for TPF', () => {
       mediator.mediate = (action) => Promise.resolve({
         data: stream([ action.url + '/a', action.url + '/b', action.url + '/c' ]),
-        firstPageMetadata: metadataTpf,
+        firstPageMetadata: () => Promise.resolve(metadataTpf),
       });
       return actor.run({ pattern: pattern2, context: { sources: [{ type: 'hypermedia', value: 'hypermedia' } ]}})
         .then(async (output) => {
-          expect(await output.metadata).toBe(metadataTpf);
+          expect(await output.metadata()).toBe(metadataTpf);
           expect(await arrayifyStream(output.data)).toEqual([ 'a,b,_/a', 'a,b,_/b', 'a,b,_/c' ]);
+        });
+    });
+
+    it('should run multiple times for TPF', () => {
+      mediator.mediate = (action) => Promise.resolve({
+        data: stream([ action.url + '/a', action.url + '/b', action.url + '/c' ]),
+        firstPageMetadata: () => Promise.resolve(metadataTpf),
+      });
+      return actor.run({ pattern: pattern2, context: { sources: [{ type: 'hypermedia', value: 'hypermedia' } ]}})
+        .then(async (output) => {
+          expect(await output.metadata()).toBe(metadataTpf);
+          expect(await arrayifyStream(output.data)).toEqual([ 'a,b,_/a', 'a,b,_/b', 'a,b,_/c' ]);
+          return actor.run(
+            { pattern: pattern2, context: { sources: [{ type: 'hypermedia', value: 'hypermedia' } ]}})
+            .then(async (output2) => {
+              expect(await output2.metadata()).toBe(metadataTpf);
+              expect(await arrayifyStream(output2.data)).toEqual([ 'a,b,_/a', 'a,b,_/b', 'a,b,_/c' ]);
+            });
         });
     });
 

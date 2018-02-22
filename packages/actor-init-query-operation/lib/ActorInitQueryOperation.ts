@@ -42,7 +42,8 @@ export class ActorInitQueryOperation extends ActorInit implements IActorInitQuer
       return;
     };
 
-    readable.push('Metadata: ' + JSON.stringify(await result.metadata, null, '  ') + '\n');
+    readable.push('Metadata: ' + JSON.stringify(
+      result.metadata ? await result.metadata() : null, null, '  ') + '\n');
     readable.push('Variables: ' + JSON.stringify(result.variables, null, '  ') + '\n');
 
     return { stdout: readable };

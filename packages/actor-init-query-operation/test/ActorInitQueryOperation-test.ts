@@ -39,7 +39,7 @@ describe('ActorInitQueryOperation', () => {
         input.push(null);
       };
       mediator.mediate = (action) => action.operation.op === 'a' && (!action.context || action.context.c === 'd')
-        ? Promise.resolve({ bindingsStream: input, type: 'bindings' }) : Promise.reject(new Error('a'));
+        ? Promise.resolve({ bindingsStream: input, type: 'bindings', metadata: null }) : Promise.reject(new Error('a'));
       actor = new ActorInitQueryOperation({ name: 'actor', bus, mediatorQueryOperation: mediator });
     });
 
@@ -102,6 +102,27 @@ describe('ActorInitQueryOperation', () => {
     it('should not run for an invalid JSON context input', () => {
       return expect(actor.run({ argv: [ '{ \"op\": \"a\" }', '{' ], env: {}, stdin: new PassThrough() }))
         .rejects.toBeTruthy();
+    });
+
+    it('should run with valid a metadataresponse ', () => {
+      const thisMediator: any = {};
+      const input = new Readable({ objectMode: true });
+      input._read = () => {
+        input.push({ a: 'triple' });
+        input.push(null);
+      };
+      thisMediator.mediate = (action) => action.operation.op === 'a' && (!action.context || action.context.c === 'd')
+        ? Promise.resolve({ bindingsStream: input, type: 'bindings', metadata: () => Promise.resolve() })
+        : Promise.reject(new Error('a'));
+      actor = new ActorInitQueryOperation(
+        { name: 'actor', bus, mediatorQueryOperation: thisMediator, context: '{ \"c\": \"d\" }' });
+      return actor.run({ argv: [ '{ \"op\": \"a\" }' ], env: {}, stdin: new PassThrough() })
+        .then((result) => {
+          return new Promise((resolve, reject) => {
+            result.stdout.on('data', (line) => expect(line).toBeTruthy());
+            result.stdout.on('end', resolve);
+          });
+        });
     });
   });
 });

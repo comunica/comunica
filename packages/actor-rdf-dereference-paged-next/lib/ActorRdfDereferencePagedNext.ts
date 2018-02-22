@@ -54,7 +54,7 @@ export class ActorRdfDereferencePagedNext extends ActorRdfDereferencePaged imple
     const output: IActorRdfDereferencePagedOutput = await outputPromise;
     return {
       data: output.data.clone(),
-      firstPageMetadata: output.firstPageMetadata.then(
+      firstPageMetadata: () => output.firstPageMetadata().then(
         (metadata: {[id: string]: any}) => Object.assign({}, metadata)),
       firstPageUrl: output.firstPageUrl,
       triples: output.triples,
@@ -72,9 +72,12 @@ export class ActorRdfDereferencePagedNext extends ActorRdfDereferencePaged imple
 
     const firstPageMetaSplit: IActorRdfMetadataOutput = await this.mediatorMetadata
       .mediate({ pageUrl: firstPageUrl, quads: firstPage.quads });
-    const firstPageMetadata: Promise<{[id: string]: any}> = this.mediatorMetadataExtract.mediate(
-      { pageUrl: firstPageUrl, metadata: firstPageMetaSplit.metadata })
-      .then((output) => output.metadata);
+    let materializedFirstPageMetadata: Promise<{[id: string]: any}> = null;
+    const firstPageMetadata: () => Promise<{[id: string]: any}> = () => {
+      return materializedFirstPageMetadata || (materializedFirstPageMetadata = this.mediatorMetadataExtract.mediate(
+        { pageUrl: firstPageUrl, metadata: firstPageMetaSplit.metadata })
+        .then((output) => output.metadata));
+    };
 
     const data: MediatedPagedAsyncRdfIterator = new MediatedPagedAsyncRdfIterator(firstPageUrl, firstPageMetaSplit.data,
       firstPageMetadata, this.mediatorRdfDereference, this.mediatorMetadata, this.mediatorMetadataExtract);

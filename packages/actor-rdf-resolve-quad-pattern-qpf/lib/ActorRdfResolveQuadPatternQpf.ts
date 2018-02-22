@@ -1,6 +1,6 @@
 import {ISearchForm, ISearchForms} from "@comunica/actor-rdf-metadata-extract-hydra-controls";
 import {IActionRdfDereferencePaged, IActorRdfDereferencePagedOutput} from "@comunica/bus-rdf-dereference-paged";
-import {ActorRdfResolveQuadPatternSource, IActionRdfResolveQuadPattern,
+import {ActorRdfResolveQuadPattern, ActorRdfResolveQuadPatternSource, IActionRdfResolveQuadPattern,
   IActorRdfResolveQuadPatternOutput, ILazyQuadSource} from "@comunica/bus-rdf-resolve-quad-pattern";
 import {Actor, IActorArgs, IActorTest, Mediator} from "@comunica/core";
 import * as RDF from "rdf-js";
@@ -19,7 +19,7 @@ export class ActorRdfResolveQuadPatternQpf extends ActorRdfResolveQuadPatternSou
   public readonly predicateUri: string;
   public readonly objectUri: string;
   public readonly graphUri?: string;
-  protected sources: {[hypermedia: string]: RDF.Source} = {};
+  protected sources: {[hypermedia: string]: Promise<RDF.Source>} = {};
 
   constructor(args: IActorRdfResolveQuadPatternQpfArgs) {
     super(args);
@@ -34,14 +34,18 @@ export class ActorRdfResolveQuadPatternQpf extends ActorRdfResolveQuadPatternSou
     return true;
   }
 
-  protected async createSource(context?: {[id: string]: any}): Promise<ILazyQuadSource> {
-    // Collect metadata of the hypermedia
-    const hypermedia: string = context.sources[0].value;
-    const metadata: {[id: string]: any} = await (await this.mediatorRdfDereferencePaged
+  /**
+   * Choose a QPF hypermedia form.
+   * @param {string} hypermedia A hypermedia URL.
+   * @return {Promise<ISearchForm>} A promise resolving to a hypermedia form.
+   */
+  protected async chooseForm(hypermedia: string): Promise<ISearchForm> {
+    const firstPageMetadata: () => Promise<{[id: string]: any}> = (await this.mediatorRdfDereferencePaged
       .mediate({ url: hypermedia })).firstPageMetadata;
-    if (!metadata) {
+    if (!firstPageMetadata) {
       throw new Error('No metadata was found at hypermedia entrypoint ' + hypermedia);
     }
+    const metadata: {[id: string]: any} = await firstPageMetadata();
 
     // Find a quad pattern or triple pattern search form
     const searchForms: ISearchForms = metadata.searchForms;
@@ -51,7 +55,6 @@ export class ActorRdfResolveQuadPatternQpf extends ActorRdfResolveQuadPatternSou
     }
 
     // TODO: in the future, a query-based search form getter should be used.
-    let chosenForm: ISearchForm = null;
     for (const searchForm of searchForms.values) {
       if (this.graphUri
         && this.subjectUri in searchForm.mappings
@@ -59,23 +62,33 @@ export class ActorRdfResolveQuadPatternQpf extends ActorRdfResolveQuadPatternSou
         && this.objectUri in searchForm.mappings
         && this.graphUri in searchForm.mappings
         && Object.keys(searchForm.mappings).length === 4) {
-        chosenForm = searchForm;
-        break;
+        return searchForm;
       }
       if (this.subjectUri in searchForm.mappings
         && this.predicateUri in searchForm.mappings
         && this.objectUri in searchForm.mappings
         && Object.keys(searchForm.mappings).length === 3) {
-        chosenForm = searchForm;
-        break;
+        return searchForm;
       }
     }
-    if (!chosenForm) {
-      throw new Error('No valid Hydra search form was found for quad pattern or triple pattern queries.');
-    }
+
+    throw new Error('No valid Hydra search form was found for quad pattern or triple pattern queries.');
+  }
+
+  protected async createSource(context?: {[id: string]: any}): Promise<ILazyQuadSource> {
+    // Determine form lazily when a URL is constructed.
+    let chosenForm: Promise<ISearchForm> = null;
 
     // Create a quad pattern to URL converter
-    const uriConstructor = (subject?: RDF.Term, predicate?: RDF.Term, object?: RDF.Term, graph?: RDF.Term) => {
+    const uriConstructor = async (subject?: RDF.Term, predicate?: RDF.Term, object?: RDF.Term, graph?: RDF.Term) => {
+      if (!chosenForm) {
+        // Collect metadata of the hypermedia
+        const hypermedia: string = context.sources[0].value;
+
+        // Save the form, so it is determined only once per source.
+        chosenForm = this.chooseForm(hypermedia);
+      }
+
       const entries: {[id: string]: string} = {};
       const input = [
         { uri: this.subjectUri, term: subject },
@@ -91,7 +104,7 @@ export class ActorRdfResolveQuadPatternQpf extends ActorRdfResolveQuadPatternSou
         }
       }
 
-      return chosenForm.getUri(entries);
+      return (await chosenForm).getUri(entries);
     };
 
     return new MediatedQuadSource(this.mediatorRdfDereferencePaged, uriConstructor);
@@ -105,20 +118,20 @@ export class ActorRdfResolveQuadPatternQpf extends ActorRdfResolveQuadPatternSou
     }
 
     // Cache and return
-    return this.sources[hypermedia] = await this.createSource(context);
+    return await (this.sources[hypermedia] = this.createSource(context));
   }
 
   protected async getOutput(source: RDF.Source, pattern: RDF.Quad, context?: {[id: string]: any})
   : Promise<IActorRdfResolveQuadPatternOutput> {
     // Attach metadata to the output
     const output: IActorRdfResolveQuadPatternOutput = await super.getOutput(source, pattern, context);
-    output.metadata = new Promise((resolve, reject) => {
+    output.metadata = ActorRdfResolveQuadPattern.cachifyMetadata(() => new Promise((resolve, reject) => {
       output.data.on('error', reject);
       output.data.on('end', () => reject(new Error('No metadata was found')));
       output.data.on('metadata', (metadata) => {
-        resolve(metadata);
+        resolve(metadata());
       });
-    });
+    }));
     return output;
   }
 

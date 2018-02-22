@@ -4,6 +4,7 @@ import {ActorRdfResolveQuadPattern, IActionRdfResolveQuadPattern,
   IActorRdfResolveQuadPatternOutput} from "@comunica/bus-rdf-resolve-quad-pattern";
 import {Actor, IActorArgs, IActorTest, Mediator} from "@comunica/core";
 import {AsyncIterator, BufferedIterator} from "asynciterator";
+import {PromiseProxyIterator} from "asynciterator-promiseproxy";
 import {blankNode, literal, namedNode, variable} from "rdf-data-model";
 import * as RDF from "rdf-js";
 import {getTerms, getVariables, mapTerms} from "rdf-terms";
@@ -119,43 +120,45 @@ export class ActorRdfResolveQuadPatternSparqlJson
     const countQuery: string = ActorRdfResolveQuadPatternSparqlJson.patternToCountQuery(action.pattern);
 
     // Create promise for the metadata containing the estimated count
-    const metadata: Promise<{[id: string]: any}> = this.queryBindings(endpoint, countQuery)
-      .then((bindingsStream: BindingsStream) => {
-        return new Promise((resolve, reject) => {
-          bindingsStream.on('data', (bindings: Bindings) => {
-            const count: RDF.Term = bindings.get('?count');
-            if (count) {
-              const totalItems: number = parseInt(count.value, 10);
-              if (isNaN(totalItems)) {
+    const metadata: () => Promise<{[id: string]: any}> = ActorRdfResolveQuadPattern.cachifyMetadata(
+      () => this.queryBindings(endpoint, countQuery)
+        .then((bindingsStream: BindingsStream) => {
+          return new Promise((resolve, reject) => {
+            bindingsStream.on('data', (bindings: Bindings) => {
+              const count: RDF.Term = bindings.get('?count');
+              if (count) {
+                const totalItems: number = parseInt(count.value, 10);
+                if (isNaN(totalItems)) {
+                  return resolve({ totalItems: Infinity });
+                }
+                return resolve({ totalItems });
+              } else {
                 return resolve({ totalItems: Infinity });
               }
-              return resolve({ totalItems });
-            } else {
+            });
+            bindingsStream.on('error', () => {
               return resolve({ totalItems: Infinity });
-            }
+            });
+            bindingsStream.on('end', () => {
+              return resolve({ totalItems: Infinity });
+            });
           });
-          bindingsStream.on('error', () => {
-            return resolve({ totalItems: Infinity });
-          });
-          bindingsStream.on('end', () => {
-            return resolve({ totalItems: Infinity });
-          });
-        });
-      });
+        }));
 
     // Materialize the queried pattern using each found binding.
-    const data: AsyncIterator<RDF.Quad> & RDF.Stream = (await this.queryBindings(endpoint, selectQuery))
-      .map((bindings: Bindings) => mapTerms(action.pattern, (value: RDF.Term) => {
-        if (value.termType === 'Variable') {
-          const boundValue: RDF.Term = bindings.get('?' + value.value);
-          if (!boundValue) {
-            data.emit('error',
-              new Error('The endpoint ' + endpoint + ' failed to provide a binding for ' + value.value));
+    const data: AsyncIterator<RDF.Quad> & RDF.Stream = new PromiseProxyIterator(async () =>
+      (await this.queryBindings(endpoint, selectQuery))
+        .map((bindings: Bindings) => mapTerms(action.pattern, (value: RDF.Term) => {
+          if (value.termType === 'Variable') {
+            const boundValue: RDF.Term = bindings.get('?' + value.value);
+            if (!boundValue) {
+              data.emit('error',
+                new Error('The endpoint ' + endpoint + ' failed to provide a binding for ' + value.value));
+            }
+            return boundValue;
           }
-          return boundValue;
-        }
-        return value;
-      }));
+          return value;
+        })));
 
     return { data, metadata };
   }
@@ -166,7 +169,40 @@ export class ActorRdfResolveQuadPatternSparqlJson
    * @param {string} query A SPARQL query string.
    * @return {Promise<BindingsStream>} A promise resolving to a stream of bindings.
    */
-  protected async queryBindings(endpoint: string, query: string): Promise<BindingsStream> {
+  public async queryBindings(endpoint: string, query: string): Promise<BindingsStream> {
+    // Parse each binding and push it in our buffered iterator
+    const bindingsStream: BufferedIterator<Bindings> = new BufferedIterator<Bindings>(
+      { autoStart: false, maxBufferSize: Infinity });
+    let initialized: boolean = false;
+    const superRead = bindingsStream._read;
+    bindingsStream._read = (count: number, done: () => void) => {
+      if (!initialized) {
+        initialized = true;
+        this.fetchBindingsStream(endpoint, query).then((responseStream) => {
+          // Get streamed bindings
+          const rawBindingsStream: NodeJS.ReadableStream = responseStream
+            .pipe(require('JSONStream').parse('results.bindings.*'));
+          responseStream.on('error', (error) => rawBindingsStream.emit('error', error));
+
+          rawBindingsStream.on('error', (error) => bindingsStream.emit('error', error));
+          rawBindingsStream.on('data', (rawBindings) => {
+            bindingsStream._push(ActorRdfResolveQuadPatternSparqlJson.parseJsonBindings(rawBindings));
+          });
+          rawBindingsStream.on('end', () => {
+            bindingsStream.close();
+          });
+
+          superRead(count, done);
+        });
+      } else {
+        superRead(count, done);
+      }
+    };
+
+    return bindingsStream;
+  }
+
+  protected async fetchBindingsStream(endpoint: string, query: string): Promise<NodeJS.ReadableStream> {
     const url: string = endpoint + '?query=' + encodeURIComponent(query);
 
     // Initiate request
@@ -180,28 +216,13 @@ export class ActorRdfResolveQuadPatternSparqlJson
     const responseStream: NodeJS.ReadableStream = require('is-stream')(httpResponse.body)
       ? httpResponse.body : require('node-web-streams').toNodeReadable(httpResponse.body);
 
-    // Get streamed bindings
-    const rawBindingsStream: NodeJS.ReadableStream = responseStream
-      .pipe(require('JSONStream').parse('results.bindings.*'));
-    responseStream.on('error', (error) => rawBindingsStream.emit('error', error));
-
-    // Parse each binding and push it in our buffered iterator
-    const bindingsStream: BufferedIterator<Bindings> = new BufferedIterator<Bindings>();
-    rawBindingsStream.on('error', (error) => bindingsStream.emit('error', error));
-    rawBindingsStream.on('data', (rawBindings) => {
-      bindingsStream._push(ActorRdfResolveQuadPatternSparqlJson.parseJsonBindings(rawBindings));
-    });
-    rawBindingsStream.on('end', () => {
-      bindingsStream.close();
-    });
-
     // Emit an error if the server returned an invalid response
     if (!httpResponse.ok) {
-      setImmediate(() => bindingsStream.emit('error', new Error('Invalid SPARQL endpoint (' + endpoint + ') response: '
+      setImmediate(() => responseStream.emit('error', new Error('Invalid SPARQL endpoint (' + endpoint + ') response: '
         + httpResponse.statusText)));
     }
 
-    return bindingsStream;
+    return responseStream;
   }
 
 }

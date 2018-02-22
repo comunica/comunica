@@ -14,7 +14,7 @@ describe('ActorQueryOperationProject', () => {
     mediatorQueryOperation = {
       mediate: (arg) => Promise.resolve({
         bindingsStream: new SingletonIterator(Bindings({ '?a': literal('A'), '_:delet': literal('deleteMe') })),
-        metadata: 'M',
+        metadata: () => 'M',
         operated: arg,
         type: 'bindings',
         variables: ['?a', '_:delet'],
@@ -57,7 +57,7 @@ describe('ActorQueryOperationProject', () => {
     it('should run on a stream with variables that should not be deleted or are missing', () => {
       const op = { operation: { type: 'project', input: 'in', variables: [ variable('a'), blankNode('delet') ] } };
       return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
-        expect(output.metadata).toEqual('M');
+        expect(output.metadata()).toEqual('M');
         expect(output.variables).toEqual([ '?a', '_:delet' ]);
         expect(output.type).toEqual('bindings');
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
@@ -69,7 +69,7 @@ describe('ActorQueryOperationProject', () => {
     it('should run on a stream with variables that should be deleted', () => {
       const op = { operation: { type: 'project', input: 'in', variables: [ variable('a') ] } };
       return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
-        expect(output.metadata).toEqual('M');
+        expect(output.metadata()).toEqual('M');
         expect(output.variables).toEqual([ '?a' ]);
         expect(output.type).toEqual('bindings');
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
@@ -81,7 +81,7 @@ describe('ActorQueryOperationProject', () => {
     it('should run on a stream with variables that should be deleted and are missing', () => {
       const op = { operation: { type: 'project', input: 'in', variables: [ variable('a'), variable('missing') ] } };
       return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
-        expect(output.metadata).toEqual('M');
+        expect(output.metadata()).toEqual('M');
         expect(output.variables).toEqual([ '?a', '?missing' ]);
         expect(output.type).toEqual('bindings');
         expect(await arrayifyStream(output.bindingsStream)).toEqual([

@@ -33,7 +33,7 @@ export class ActorRdfJoinHash extends ActorRdfJoin {
   }
 
   protected async getIterations(action: IActionRdfJoin): Promise<number> {
-    return (await action.entries[0].metadata).totalItems + (await action.entries[1].metadata).totalItems;
+    return (await action.entries[0].metadata()).totalItems + (await action.entries[1].metadata()).totalItems;
   }
 
 }

@@ -122,6 +122,13 @@ describe('HdtIterator', () => {
     return expect(arrayifyStream(new HdtIterator(hdtDocument, variable('s'), variable('p'), variable('o'),
       {}))).rejects.toBe(e);
   });
+
+  it('should fill its buffer when a totalItems listener is attached', async () => {
+    const it = new HdtIterator(hdtDocument, variable('s'), variable('p'), variable('o'));
+    it.on('totalItems', (i) => {
+      expect(i).toEqual(8);
+    });
+  });
 });
 
 function t(subject, predicate, object) {

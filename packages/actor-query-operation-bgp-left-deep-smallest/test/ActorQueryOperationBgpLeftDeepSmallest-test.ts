@@ -20,7 +20,7 @@ describe('ActorQueryOperationBgpLeftDeepSmallest', () => {
           predicate: arg.operation.predicate,
           subject: arg.operation.subject,
         })),
-        metadata: { totalItems: (arg.context || {}).totalItems },
+        metadata: () => Promise.resolve({ totalItems: (arg.context || {}).totalItems }),
         type: 'bindings',
         variables: (arg.context || {}).variables || [],
       }),
@@ -470,7 +470,7 @@ describe('ActorQueryOperationBgpLeftDeepSmallest', () => {
       return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
         expect(output.variables).toEqual(['a']);
         expect(output.type).toEqual('bindings');
-        expect(await output.metadata).toEqual({ totalItems: 100 });
+        expect(await output.metadata()).toEqual({ totalItems: 100 });
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({
             graph: namedNode('4'),
@@ -487,15 +487,55 @@ describe('ActorQueryOperationBgpLeftDeepSmallest', () => {
       return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
         expect(output.variables).toEqual([]);
         expect(output.type).toEqual('bindings');
-        expect(await output.metadata).toEqual({ totalItems: Infinity });
+        expect(await output.metadata()).toEqual({ totalItems: Infinity });
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({
-            graph: namedNode('a'),
-            object: namedNode('1'),
-            predicate: namedNode('1'),
-            subject: namedNode('1'),
+            graph: namedNode('4'),
+            object: namedNode('4'),
+            predicate: namedNode('4'),
+            subject: namedNode('d'),
           }),
         ]);
+      });
+    });
+
+    it('should run for an empty pattern response', () => {
+      const thisMediatorQueryOperation: any = {
+        mediate: (arg) => Promise.resolve({
+          bindingsStream: new EmptyIterator(),
+          metadata: () => Promise.resolve({ totalItems: 0 }),
+          type: 'bindings',
+          variables: (arg.context || {}).variables || [],
+        }),
+      };
+      const thisActor = new ActorQueryOperationBgpLeftDeepSmallest(
+        { name: 'actor', bus, mediatorQueryOperation: thisMediatorQueryOperation });
+      const op = { operation: { type: 'bgp', patterns } };
+      return thisActor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
+        expect(output.variables).toEqual([]);
+        expect(output.type).toEqual('bindings');
+        expect(await output.metadata()).toEqual({ totalItems: 0 });
+        expect(await arrayifyStream(output.bindingsStream)).toEqual([]);
+      });
+    });
+
+    it('should run for responses with unknown metadata', () => {
+      const thisMediatorQueryOperation: any = {
+        mediate: (arg) => Promise.resolve({
+          bindingsStream: new EmptyIterator(),
+          metadata: null,
+          type: 'bindings',
+          variables: (arg.context || {}).variables || [],
+        }),
+      };
+      const thisActor = new ActorQueryOperationBgpLeftDeepSmallest(
+        { name: 'actor', bus, mediatorQueryOperation: thisMediatorQueryOperation });
+      const op = { operation: { type: 'bgp', patterns } };
+      return thisActor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
+        expect(output.variables).toEqual([]);
+        expect(output.type).toEqual('bindings');
+        expect(await output.metadata()).toEqual({ totalItems: Infinity });
+        expect(await arrayifyStream(output.bindingsStream)).toEqual([]);
       });
     });
   });

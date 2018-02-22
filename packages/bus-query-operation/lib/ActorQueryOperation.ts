@@ -55,6 +55,16 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
   }
 
   /**
+   * Convert a metadata callback to a lazy callback where the response value is cached.
+   * @param {() => Promise<{[p: string]: any}>} metadata A metadata callback
+   * @return {() => Promise<{[p: string]: any}>} The callback where the response will be cached.
+   */
+  public static cachifyMetadata(metadata: () => Promise<{[id: string]: any}>): () => Promise<{[id: string]: any}> {
+    let lastReturn: Promise<{[id: string]: any}> = null;
+    return () => lastReturn || (lastReturn = metadata());
+  }
+
+  /**
    * Throw an error if the output type does not match the expected type.
    * @param {IActorQueryOperationOutput} output A query operation output.
    * @param {string} expectedType The expected output type.
@@ -97,11 +107,14 @@ export interface IActorQueryOperationOutput {
  */
 export interface IActorQueryOperationOutputStream extends IActorQueryOperationOutput {
   /**
-   * Promise that resolves to the metadata about the stream.
+   * Callback that returns a promise that resolves to the metadata about the stream.
    * This can contain things like the estimated number of total stream elements,
    * or the order in which the bindings appear.
+   * This callback can be invoked multiple times.
+   * The actors that return this metadata will make sure that multiple calls properly cache this promise.
+   * Metadata will not be collected until this callback is invoked.
    */
-  metadata?: Promise<{[id: string]: any}>;
+  metadata?: () => Promise<{[id: string]: any}>;
 }
 
 /**

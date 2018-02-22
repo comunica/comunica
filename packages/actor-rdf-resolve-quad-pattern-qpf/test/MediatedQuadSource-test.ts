@@ -30,7 +30,7 @@ describe('MediatedQuadSource', () => {
         firstPageMetadata: 'somemetadata',
       });
     });
-    uriConstructor = (s, p, o, g) => s.value + ',' + p.value + ',' + o.value + ',' + g.value;
+    uriConstructor = (s, p, o, g) => Promise.resolve(s.value + ',' + p.value + ',' + o.value + ',' + g.value);
     S = namedNode('S');
     P = namedNode('P');
     O = namedNode('O');

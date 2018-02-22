@@ -29,16 +29,17 @@ export class ActorQueryOperationSlice extends ActorQueryOperationTypedMediated<A
       hasLength ? pattern.start + pattern.length - 1 : Infinity);
 
     // If we find metadata, apply slicing on the total number of items
-    const metadata: Promise<{[id: string]: any}> = !output.metadata ? null : output.metadata.then((subMetadata) => {
-      let totalItems: number = subMetadata.totalItems;
-      if (isFinite(totalItems)) {
-        totalItems = Math.max(0, totalItems - pattern.start);
-        if (hasLength) {
-          totalItems = Math.min(totalItems, pattern.length);
+    const metadata: () => Promise<{[id: string]: any}> = !output.metadata ? null : ActorQueryOperation.cachifyMetadata(
+      () => output.metadata().then((subMetadata) => {
+        let totalItems: number = subMetadata.totalItems;
+        if (isFinite(totalItems)) {
+          totalItems = Math.max(0, totalItems - pattern.start);
+          if (hasLength) {
+            totalItems = Math.min(totalItems, pattern.length);
+          }
         }
-      }
-      return Object.assign({}, subMetadata, { totalItems });
-    });
+        return Object.assign({}, subMetadata, { totalItems });
+      }));
 
     return { type: 'bindings', bindingsStream, metadata, variables: output.variables };
   }

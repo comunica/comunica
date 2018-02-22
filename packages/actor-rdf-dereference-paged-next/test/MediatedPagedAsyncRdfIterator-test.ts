@@ -17,7 +17,7 @@ import {PagedAsyncRdfIterator} from "../lib/PagedAsyncRdfIterator";
 class Dummy extends MediatedPagedAsyncRdfIterator {
   constructor(firstPageUrl: string,
               firstPageData: RDF.Stream,
-              firstPageMetadata: Promise<{[id: string]: any}>,
+              firstPageMetadata: () => Promise<{[id: string]: any}>,
               mediatorRdfDereference: Mediator<ActorRdfDereference,
                 IActionRdfDereference, IActorTest, IActorRdfDereferenceOutput>,
               mediatorMetadata: Mediator<ActorRdfMetadata,
@@ -57,7 +57,7 @@ describe('MediatedPagedAsyncRdfIterator', () => {
     let mediatorMetadataExtract;
 
     beforeEach(() => {
-      firstPageMetadata = { then: (f) => f({ next: 'NEXT' }) };
+      firstPageMetadata = () => ({ then: (f) => f({ next: 'NEXT' }) });
       mediatorRdfDereference = {};
       mediatorMetadata = {};
       mediatorMetadataExtract = {};
@@ -79,8 +79,11 @@ describe('MediatedPagedAsyncRdfIterator', () => {
     });
 
     it('handles incorrect first page metadata', (done) => {
-      firstPageMetadata.then = () => { throw new Error(); };
-      actor.on('error', () => { done(); });
+      const thisFirstPageMetadata = () => ({ then: () => { throw new Error(); } });
+      const thisActor = new (<any> Dummy)('URL', new SingletonIterator('DATA'), thisFirstPageMetadata,
+        mediatorRdfDereference, mediatorMetadata, mediatorMetadataExtract);
+      thisActor.on('data', () => { return; });
+      thisActor.on('error', () => { done(); });
     });
 
     it('handles the next page', (done) => {

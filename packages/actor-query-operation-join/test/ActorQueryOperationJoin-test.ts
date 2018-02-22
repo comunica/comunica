@@ -1,8 +1,9 @@
-import {ActorQueryOperation, Bindings} from "@comunica/bus-query-operation";
+import {ActorQueryOperation, Bindings, IActorQueryOperationOutputBindings} from "@comunica/bus-query-operation";
 import {Bus} from "@comunica/core";
 import {ArrayIterator} from "asynciterator";
 import {literal, variable} from "rdf-data-model";
 import {ActorQueryOperationJoin} from "../lib/ActorQueryOperationJoin";
+const arrayifyStream = require('arrayify-stream');
 
 describe('ActorQueryOperationJoin', () => {
   let bus;
@@ -18,7 +19,7 @@ describe('ActorQueryOperationJoin', () => {
           Bindings({ a: literal('2') }),
           Bindings({ a: literal('3') }),
         ]),
-        metadata: Promise.resolve({ totalItems: 3 }),
+        metadata: () => Promise.resolve({ totalItems: 3 }),
         operated: arg,
         type: 'bindings',
         variables: ['a'],
@@ -30,7 +31,7 @@ describe('ActorQueryOperationJoin', () => {
           Bindings({ a: literal('1'), b: literal('1') }),
           Bindings({ a: literal('2'), b: literal('2') }),
         ]),
-        metadata: Promise.resolve({ totalItems: 2 }),
+        metadata: () => Promise.resolve({ totalItems: 2 }),
         operated: arg,
         type: 'bindings',
         variables: ['a', 'b'],
@@ -74,14 +75,14 @@ describe('ActorQueryOperationJoin', () => {
 
     it('should run', () => {
       const op = { operation: { type: 'join' } };
-      return expect(actor.run(op)).resolves.toMatchObject({
-        bindingsStream: new ArrayIterator([
+      return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
+        expect(output.variables).toEqual(['a', 'b']);
+        expect(output.type).toEqual('bindings');
+        expect(await output.metadata()).toEqual({ totalItems: 2 });
+        expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({ a: literal('1'), b: literal('1') }),
           Bindings({ a: literal('2'), b: literal('2') }),
-        ]),
-        metadata: Promise.resolve({ totalItems: 2 }),
-        type: 'bindings',
-        variables: ['a', 'b'],
+        ]);
       });
     });
   });

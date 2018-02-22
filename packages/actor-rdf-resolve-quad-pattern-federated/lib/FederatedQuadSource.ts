@@ -117,7 +117,7 @@ export class FederatedQuadSource implements ILazyQuadSource {
     const metadata: {[id: string]: any} = { totalItems: 0 };
     let remainingSources: number = this.sources.length;
 
-    const it: AsyncIterator<RDF.Quad> = new RoundRobinUnionIterator(this.sources.map((source) => {
+    const it: RoundRobinUnionIterator<RDF.Quad> = new RoundRobinUnionIterator(this.sources.map((source) => {
       // If we can predict that the given source will have no bindings for the given pattern,
       // return an empty iterator.
       const pattern: RDF.Quad = quad(subject || blankNode(), predicate || blankNode(), object || blankNode(),
@@ -150,7 +150,7 @@ export class FederatedQuadSource implements ILazyQuadSource {
         const output: IActorRdfResolveQuadPatternOutput = await this.mediatorResolveQuadPattern
           .mediate({ pattern, context });
         if (output.metadata) {
-          output.metadata.then((subMetadata: {[id: string]: any}) => {
+          output.metadata().then((subMetadata: {[id: string]: any}) => {
             if ((!subMetadata.totalItems && subMetadata.totalItems !== 0) || !isFinite(subMetadata.totalItems)) {
               metadata.totalItems = Infinity;
               remainingSources = 0; // We're already at infinite, so ignore any later metadata
@@ -170,6 +170,11 @@ export class FederatedQuadSource implements ILazyQuadSource {
         return output.data;
       });
     }));
+    it.on('newListener', (eventName) => {
+      if (eventName === 'metadata') {
+        setImmediate(() => it._fillBuffer());
+      }
+    });
 
     // If we have 0 sources, immediately emit metadata
     if (!remainingSources) {

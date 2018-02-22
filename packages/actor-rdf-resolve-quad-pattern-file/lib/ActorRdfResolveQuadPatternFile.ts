@@ -59,7 +59,7 @@ export class ActorRdfResolveQuadPatternFile extends ActorRdfResolveQuadPatternSo
   : Promise<IActorRdfResolveQuadPatternOutput> {
     // Attach totalItems to the output
     const output: IActorRdfResolveQuadPatternOutput = await super.getOutput(source, pattern, context);
-    output.metadata = new Promise((resolve, reject) => {
+    output.metadata = () => new Promise((resolve, reject) => {
       const file: string = context.sources[0].value;
       this.stores[file].then((store) => {
         const totalItems: number = store.countTriplesByIRI(

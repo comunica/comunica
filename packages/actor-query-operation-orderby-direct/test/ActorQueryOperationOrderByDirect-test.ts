@@ -19,7 +19,7 @@ describe('ActorQueryOperationOrderByDirect', () => {
           Bindings({ '?a': literal('1') }),
           Bindings({ '?a': literal('3') }),
         ]),
-        metadata: Promise.resolve({ totalItems: 3 }),
+        metadata: () => Promise.resolve({ totalItems: 3 }),
         operated: arg,
         type: 'bindings',
         variables: ['?a'],

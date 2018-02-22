@@ -1,7 +1,14 @@
-import {ActorQueryOperation, ActorQueryOperationTypedMediated, Bindings, BindingsStream, IActorQueryOperationOutput,
-  IActorQueryOperationOutputBindings, IActorQueryOperationTypedMediatedArgs} from "@comunica/bus-query-operation";
+import {
+  ActorQueryOperation,
+  ActorQueryOperationTypedMediated,
+  Bindings,
+  BindingsStream,
+  IActorQueryOperationOutput,
+  IActorQueryOperationOutputBindings,
+  IActorQueryOperationTypedMediatedArgs,
+} from "@comunica/bus-query-operation";
 import {IActorTest} from "@comunica/core";
-import {MultiTransformIterator} from "asynciterator";
+import {EmptyIterator, MultiTransformIterator} from "asynciterator";
 import {PromiseProxyIterator} from "asynciterator-promiseproxy";
 import * as RDF from "rdf-js";
 import {termToString} from "rdf-string";
@@ -140,6 +147,23 @@ export class ActorQueryOperationBgpLeftDeepSmallest extends ActorQueryOperationT
     return term;
   }
 
+  /**
+   * Check if at least one of the given outputs has an empty output, i.e., when the estimated count is zero.
+   * @param {IActorQueryOperationOutputBindings[]} patternOutputs Pattern outputs.
+   * @return {Promise<boolean>} A promise for indicating whether or not at least one of the outputs is empty.
+   */
+  public static async hasOneEmptyPatternOutput(patternOutputs: IActorQueryOperationOutputBindings[]): Promise<boolean> {
+    for (const patternOutput of patternOutputs) {
+      if (patternOutput.metadata) {
+        const metadata: {[id: string]: any} = await patternOutput.metadata();
+        if (!ActorQueryOperationBgpLeftDeepSmallest.getTotalItems(metadata)) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
   public async testOperation(pattern: Algebra.Bgp, context?: {[id: string]: any}): Promise<IActorTest> {
     if (pattern.patterns.length < 2) {
       throw new Error('Actor ' + this.name + ' can only operate on BGPs with at least two patterns.');
@@ -155,14 +179,24 @@ export class ActorQueryOperationBgpLeftDeepSmallest extends ActorQueryOperationT
         { operation: subPattern, context }))))
       .map(ActorQueryOperation.getSafeBindings);
 
+    // If a triple pattern has no matches, the entire graph pattern has no matches.
+    if (await ActorQueryOperationBgpLeftDeepSmallest.hasOneEmptyPatternOutput(patternOutputs)) {
+      return {
+        bindingsStream: new EmptyIterator(),
+        metadata: () => Promise.resolve({ totalItems: 0 }),
+        type: 'bindings',
+        variables: [],
+      };
+    }
+
     // Find the pattern with the smallest number of elements
     const metadatas: {[id: string]: any}[] = await Promise.all(patternOutputs.map(
-      async (patternOutput) => await patternOutput.metadata));
+      async (patternOutput) => patternOutput.metadata ? await patternOutput.metadata() : {}));
     const smallestId: number = ActorQueryOperationBgpLeftDeepSmallest.getSmallestPatternId(metadatas);
 
     // Take the pattern with the smallest number of items
     const smallestPattern: IActorQueryOperationOutputBindings = patternOutputs.slice(smallestId)[0];
-    const remainingPatterns: Algebra.Pattern[] = pattern.patterns;
+    const remainingPatterns: Algebra.Pattern[] = pattern.patterns.concat([]);
     remainingPatterns.splice(smallestId, 1);
 
     // Check if the output type is correct
@@ -180,12 +214,12 @@ export class ActorQueryOperationBgpLeftDeepSmallest extends ActorQueryOperationT
 
     // Prepare variables and metadata
     const variables: string[] = ActorQueryOperationBgpLeftDeepSmallest.getCombinedVariables(patternOutputs);
-    const metadata = {
+    const metadata = ActorQueryOperation.cachifyMetadata(() => Promise.resolve({
       totalItems: ActorQueryOperationBgpLeftDeepSmallest.estimateCombinedTotalItems(metadatas[smallestId],
         metadatas.slice(smallestId)),
-    };
+    }));
 
-    return { type: 'bindings', bindingsStream, variables, metadata: Promise.resolve(metadata) };
+    return { type: 'bindings', bindingsStream, variables, metadata };
   }
 
 }

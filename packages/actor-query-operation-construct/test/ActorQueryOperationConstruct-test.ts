@@ -19,7 +19,7 @@ describe('ActorQueryOperationConstruct', () => {
           Bindings({ '?a': literal('2') }),
           Bindings({ '?a': literal('3') }),
         ]),
-        metadata: Promise.resolve({ totalItems: 3 }),
+        metadata: () => Promise.resolve({ totalItems: 3 }),
         operated: arg,
         type: 'bindings',
         variables: ['a'],
@@ -90,10 +90,10 @@ describe('ActorQueryOperationConstruct', () => {
 
     it('should run on an empty template', () => {
       const op = { operation: { type: 'construct', template: [] } };
-      return expect(actor.run(op)).resolves.toMatchObject({
-        metadata: Promise.resolve({ totalItems: 0 }),
-        quadStream: new EmptyIterator(),
-        type: 'quads',
+      return actor.run(op).then(async (output: IActorQueryOperationOutputQuads) => {
+        expect(await output.metadata()).toEqual({ totalItems: 0 });
+        expect(output.type).toEqual('quads');
+        expect(await arrayifyStream(output.quadStream)).toEqual([]);
       });
     });
 
@@ -102,10 +102,10 @@ describe('ActorQueryOperationConstruct', () => {
         quad(blankNode('s1'), namedNode('p1'), literal('o1')),
         quad(blankNode('s2'), namedNode('p2'), literal('o2')),
       ], type: 'construct' } };
-      return expect(actor.run(op)).resolves.toMatchObject({
-        metadata: Promise.resolve({ totalItems: 0 }),
-        quadStream: new EmptyIterator(),
-        type: 'quads',
+      return actor.run(op).then(async (output: IActorQueryOperationOutputQuads) => {
+        expect(await output.metadata()).toEqual({ totalItems: 0 });
+        expect(output.type).toEqual('quads');
+        expect(await arrayifyStream(output.quadStream)).toEqual([]);
       });
     });
 
@@ -115,7 +115,7 @@ describe('ActorQueryOperationConstruct', () => {
         quad(blankNode('s2'), namedNode('p2'), variable('a'), variable('a')),
       ], type: 'construct' } };
       return actor.run(op).then(async (output: IActorQueryOperationOutputQuads) => {
-        expect(await output.metadata).toEqual({ totalItems: 6 });
+        expect(await output.metadata()).toEqual({ totalItems: 6 });
         expect(output.type).toEqual('quads');
         expect(await arrayifyStream(output.quadStream)).toEqual([
           quad(blankNode('s10'), literal('1'), literal('o1')),
@@ -152,7 +152,7 @@ describe('ActorQueryOperationConstruct', () => {
       actor = new ActorQueryOperationConstruct({ bus, mediatorQueryOperation: <any> {
         mediate: (arg) => Promise.resolve({
           bindingsStream: new ArrayIterator([]),
-          metadata: Promise.resolve(null),
+          metadata: () => Promise.resolve(null),
           operated: arg,
           type: 'bindings',
           variables: ['a'],
@@ -162,7 +162,7 @@ describe('ActorQueryOperationConstruct', () => {
         quad(blankNode('s1'), variable('a'), literal('o1')),
       ], type: 'construct' } };
       return actor.run(op).then(async (output: IActorQueryOperationOutputQuads) => {
-        expect(await output.metadata).toBeFalsy();
+        expect(await output.metadata()).toBeFalsy();
       });
     });
 
@@ -170,7 +170,7 @@ describe('ActorQueryOperationConstruct', () => {
       actor = new ActorQueryOperationConstruct({ bus, mediatorQueryOperation: <any> {
         mediate: (arg) => Promise.resolve({
           bindingsStream: new ArrayIterator([]),
-          metadata: Promise.resolve({}),
+          metadata: () => Promise.resolve({}),
           operated: arg,
           type: 'bindings',
           variables: ['a'],
@@ -180,7 +180,7 @@ describe('ActorQueryOperationConstruct', () => {
         quad(blankNode('s1'), variable('a'), literal('o1')),
       ], type: 'construct' } };
       return actor.run(op).then(async (output: IActorQueryOperationOutputQuads) => {
-        expect(await output.metadata).toEqual({});
+        expect(await output.metadata()).toEqual({});
       });
     });
   });
