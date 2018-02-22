@@ -1,0 +1,21 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-query-operation-bgp-left-deep-reordering.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-query-operation.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-query-operation-bgp-left-deep-reordering",
+  "components": [
+    {
+      "@id": "caqobldr:Actor/QueryOperation/BgpLeftDeepReordering",
+      "@type": "Class",
+      "extends": "cbqo:Actor/QueryOperationTypedMediated",
+      "requireElement": "ActorQueryOperationBgpLeftDeepReordering",
+      "comment": "A Bgp actor whose algorithm is based on the original TPF algorithm.",
+      "constructorArguments": [
+        {
+          "extends": "cbqo:Actor/QueryOperationTypedMediated/constructorArgumentsObject"
+        }
+      ]
+    }
+  ]
+}

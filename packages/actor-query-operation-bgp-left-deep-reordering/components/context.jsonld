@@ -1,0 +1,11 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/components.jsonld",
+    {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
+      "caqobldr": "npmd:@comunica/actor-query-operation-bgp-left-deep-reordering/",
+
+      "ActorQueryOperationBgpLeftDeepReordering": "caqobldr:Actor/QueryOperation/BgpLeftDeepReordering"
+    }
+  ]
+}
