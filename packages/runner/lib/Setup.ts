@@ -101,6 +101,11 @@ export class Setup {
 
     // Hack to allow 'await' to be used on Bluebird's cancellable promises.
     (tslib).__awaiter = cancelableAwaiter;
+
+    // Promise rejections are based on errors.
+    // As the number of rejections can become quite huge, remove the overhead of Error stacktraces.
+    // We don't set this to zero, as Bluebird will dynamically adjust it otherwise.
+    Error.stackTraceLimit = <any> false;
   }
 
 }
