@@ -28,7 +28,7 @@
     "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-resolve-quad-pattern-qpf.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-resolve-quad-pattern-sparql-json.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-bus-http.jsonld",
-    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-http-node-fetch.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-http-native.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-bus-rdf-parse.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-parse-n3.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-parse-jsonld.jsonld",
@@ -267,7 +267,7 @@
 
         {
           "@id": "ex:myHttpFetcher",
-          "@type": "ActorHttpNodeFetch"
+          "@type": "ActorHttpNative"
         },
 
         {
