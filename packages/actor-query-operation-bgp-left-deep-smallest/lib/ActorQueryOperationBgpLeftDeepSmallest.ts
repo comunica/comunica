@@ -194,6 +194,13 @@ export class ActorQueryOperationBgpLeftDeepSmallest extends ActorQueryOperationT
       async (patternOutput) => patternOutput.metadata ? await patternOutput.metadata() : {}));
     const smallestId: number = ActorQueryOperationBgpLeftDeepSmallest.getSmallestPatternId(metadatas);
 
+    // Close the non-smallest streams
+    for (let i: number = 0; i < patternOutputs.length; i++) {
+      if (i !== smallestId) {
+        patternOutputs[i].bindingsStream.close();
+      }
+    }
+
     // Take the pattern with the smallest number of items
     const smallestPattern: IActorQueryOperationOutputBindings = patternOutputs.slice(smallestId)[0];
     const remainingPatterns: Algebra.Pattern[] = pattern.patterns.concat([]);
