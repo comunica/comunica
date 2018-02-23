@@ -11,6 +11,7 @@ export class ActorRdfMetadataExtractHydraControls extends ActorRdfMetadataExtrac
 
   public static readonly HYDRA: string = 'http://www.w3.org/ns/hydra/core#';
   public static readonly LINK_TYPES: string[] = ['first', 'next', 'previous', 'last'];
+  protected readonly parsedUriTemplateCache: {[url: string]: UriTemplate} = {};
 
   constructor(args: IActorArgs<IActionRdfMetadataExtract, IActorTest, IActorRdfMetadataExtractOutput>) {
     super(args);
@@ -40,6 +41,19 @@ export class ActorRdfMetadataExtractHydraControls extends ActorRdfMetadataExtrac
   }
 
   /**
+   * Parse a URI template, or retrieve it from a cache.
+   * @param {string} template A URI template string.
+   * @return {} A parsed URI template object.
+   */
+  public parseUriTemplateCached(template: string): UriTemplate {
+    const cachedUriTemplate: UriTemplate = this.parsedUriTemplateCache[template];
+    if (cachedUriTemplate) {
+      return cachedUriTemplate;
+    }
+    return this.parsedUriTemplateCache[template] = parseUriTemplate(template);
+  }
+
+  /**
    * Collect all search forms from the given Hydra properties object.
    * @param hydraProperties The collected Hydra properties.
    * @return The search forms.
@@ -60,7 +74,7 @@ export class ActorRdfMetadataExtractHydraControls extends ActorRdfMetadataExtrac
               throw new Error('Expected 1 hydra:template for ' + searchFormId);
             }
             const template: string = searchTemplates[0];
-            const searchTemplate: UriTemplate = parseUriTemplate(template);
+            const searchTemplate: UriTemplate = this.parseUriTemplateCached(template);
 
             // Parse the template mappings
             const mappings: {[id: string]: string} = ((hydraProperties.mapping || {})[searchFormId] || [])

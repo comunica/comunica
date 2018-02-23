@@ -78,6 +78,25 @@ describe('ActorRdfMetadataExtractHydraControls', () => {
       }] });
     });
 
+    it('should get a search forms multiple times without mappings', () => {
+      const hydraProperties = {
+        search: { mydataset: [ 'search1' ] },
+        template: {
+          search1: [ 'http://example.org/' ],
+        },
+      };
+      expect(actor.getSearchForms(hydraProperties)).toMatchObject({ values: [{
+        // getUri,
+        mappings: {},
+        template: 'http://example.org/',
+      }] });
+      expect(actor.getSearchForms(hydraProperties)).toMatchObject({ values: [{
+        // getUri,
+        mappings: {},
+        template: 'http://example.org/',
+      }] });
+    });
+
     it('should get a search forms without valid mappings', () => {
       const hydraProperties = {
         mapping: {
