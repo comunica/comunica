@@ -41,9 +41,10 @@ export class ActorQueryOperationBgpLeftDeepSmallest extends ActorQueryOperationT
                                        Promise<BindingsStream>): BindingsStream {
     const bindingsStream: MultiTransformIterator<Bindings, Bindings> = new MultiTransformIterator(baseStream);
     bindingsStream._createTransformer = (bindings: Bindings) => {
+      const bindingsMerger = (subBindings: Bindings) => subBindings.merge(bindings);
       return new PromiseProxyIterator(
         async () => (await patternBinder(ActorQueryOperationBgpLeftDeepSmallest.materializePatterns(patterns,
-          bindings))).map((subBindings: Bindings) => subBindings.merge(bindings)));
+          bindings))).map(bindingsMerger));
     };
     return bindingsStream;
   }

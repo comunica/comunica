@@ -23,6 +23,15 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
   }
 
   /**
+   * Check if a term is a variable or a blank node.
+   * @param {RDF.Term} term An RDF term.
+   * @return {any} If the term is a variable or blank node.
+   */
+  public static isTermVariableOrBlank(term: RDF.Term): any {
+    return term.termType === 'Variable' || term.termType === 'BlankNode';
+  }
+
+  /**
    * Get all variables in the given pattern.
    * No duplicates are returned.
    * @param {RDF.Quad} pattern A quad pattern.
@@ -30,7 +39,7 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
    */
   public getVariables(pattern: RDF.Quad): string[] {
     return uniqTerms(getTerms(pattern)
-      .filter((term) => term.termType === 'Variable' || term.termType === 'BlankNode'))
+      .filter(ActorQueryOperationQuadpattern.isTermVariableOrBlank))
       .map(termToString);
   }
 
@@ -49,21 +58,21 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
     // Convenience datastructure for mapping quad elements to variables
     const elementVariables: {[key: string]: string} = reduceTerms(pattern,
       (acc: {[key: string]: string}, term: RDF.Term, key: QuadTermName) => {
-        if (term.termType === 'Variable' || term.termType === 'BlankNode') {
+        if (ActorQueryOperationQuadpattern.isTermVariableOrBlank(term)) {
           acc[key] = termToString(term);
         }
         return acc;
       }, {});
+    const quadBindingsReducer = (acc: {[key: string]: RDF.Term}, term: RDF.Term, key: QuadTermName) => {
+      const variable: string = elementVariables[key];
+      if (variable) {
+        acc[variable] = term;
+      }
+      return acc;
+    };
 
     const bindingsStream: BindingsStream = new PromiseProxyIterator(async () => result.data.map((quad) => {
-      return Bindings(reduceTerms(quad,
-        (acc: {[key: string]: RDF.Term}, term: RDF.Term, key: QuadTermName) => {
-          const variable: string = elementVariables[key];
-          if (variable) {
-            acc[variable] = term;
-          }
-          return acc;
-        }, {}));
+      return Bindings(reduceTerms(quad, quadBindingsReducer, {}));
     }));
 
     return { type: 'bindings', bindingsStream, variables, metadata: result.metadata };
