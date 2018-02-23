@@ -66,13 +66,14 @@ export class ActorQueryOperationBgpLeftDeepSmallest extends ActorQueryOperationT
   public static getSmallestPatternId(metadatas: {[id: string]: any}[]) {
     let smallestId: number = -1;
     let smallestCount: number = Infinity;
-    metadatas.forEach((meta: {[id: string]: any}, id: number) => {
+    for (let i = 0; i < metadatas.length; i++) {
+      const meta: {[id: string]: any} = metadatas[i];
       const count: number = ActorQueryOperationBgpLeftDeepSmallest.getTotalItems(meta);
       if (count <= smallestCount) {
         smallestCount = count;
-        smallestId = id;
+        smallestId = i;
       }
-    });
+    }
     return smallestId;
   }
 

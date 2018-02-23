@@ -13,12 +13,16 @@ export class MediatorRace<A extends Actor<I, T, O>, I extends IAction, T extends
   protected mediateWith(action: I, testResults: IActorReply<A, I, T, O>[]): Promise<A> {
     return new Promise((resolve, reject) => {
       const errors: Error[] = [];
-      testResults.map((testResult) => testResult.reply
-        .then(() => {
+      for (const testResult of testResults) {
+        testResult.reply.then(() => {
           // Cancel other running promises if possible
-          setImmediate(() => testResults.forEach((otherTestResult) =>
-            (<any> otherTestResult.reply).cancel && (<any> otherTestResult.reply).cancel()));
-
+          setImmediate(() => {
+            for (const otherTestResult of testResults) {
+              if ((<any> otherTestResult.reply).cancel) {
+                (<any> otherTestResult.reply).cancel();
+              }
+            }
+          });
           resolve(testResult.actor);
         }).catch((error) => {
           // Reject if all replies were rejected
@@ -27,7 +31,8 @@ export class MediatorRace<A extends Actor<I, T, O>, I extends IAction, T extends
             reject(new Error(this.name + ' mediated over all rejecting actors:\n'
               + errors.map((e) => e.toString()).join('\n')));
           }
-        }));
+        });
+      }
     });
   }
 
