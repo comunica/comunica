@@ -33,7 +33,7 @@
   ],
   "dependencies": {
     "rdf-string": "^1.0.1",
-    "rdf-terms": "^1.0.1",
+    "rdf-terms": "^1.1.0",
     "asynciterator-promiseproxy": "^1.1.0"
   },
   "peerDependencies": {
