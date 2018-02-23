@@ -32,7 +32,7 @@
     "index.js"
   ],
   "dependencies": {
-    "rdf-terms": "^1.0.1"
+    "rdf-terms": "^1.1.0"
   },
   "peerDependencies": {
     "@comunica/core": "^0.0.1",
