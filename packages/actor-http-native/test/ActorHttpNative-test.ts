@@ -90,14 +90,6 @@ describe('ActorHttpNative', () => {
       expect(output).toContain('apple');
     });
 
-    it('can be aborted', () => {
-      Setup.preparePromises();
-      mockSetup({ statusCode: 403 });
-      const promise: any = actor.run({ input: new Request('http://example.com')});
-      promise.cancel();
-      expect(promise.isCancelled()).toBe(true);
-    });
-
     it('errors on invalid encoding', () => {
       const body = new Readable();
       body.push(zlib.gzipSync('apple'));

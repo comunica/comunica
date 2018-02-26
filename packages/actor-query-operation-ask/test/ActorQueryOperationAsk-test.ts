@@ -2,7 +2,6 @@ import {ActorQueryOperation, Bindings, IActorQueryOperationOutputBoolean} from "
 import {Bus} from "@comunica/core";
 import {Setup} from "@comunica/runner";
 import {ArrayIterator, AsyncIterator, BufferedIterator, EmptyIterator} from "asynciterator";
-import Bluebird = require("bluebird");
 import {literal, variable} from "rdf-data-model";
 import {ActorQueryOperationAsk} from "../lib/ActorQueryOperationAsk";
 
@@ -123,22 +122,6 @@ describe('ActorQueryOperationAsk', () => {
       return actorError.run(op).then(async (output: IActorQueryOperationOutputBoolean) => {
         expect(output.type).toEqual('boolean');
         return expect(output.booleanResult).rejects.toBeTruthy();
-      });
-    });
-
-    it('should run and return a cancellable promise', () => {
-      Setup.preparePromises();
-      const op = { operation: { type: 'ask' } };
-      const actorInf = new ActorQueryOperationAsk(
-        { name: 'actor', bus, mediatorQueryOperation: mediatorQueryOperationInf });
-      return actorInf.run(op).then(async (output: IActorQueryOperationOutputBoolean) => {
-        expect(output.type).toEqual('boolean');
-        if (output.booleanResult) {
-          output.booleanResult.then(() => {
-            throw new Error('This promise can not resolve!');
-          });
-        }
-        (<Bluebird<boolean>> <any> output.booleanResult).cancel();
       });
     });
   });

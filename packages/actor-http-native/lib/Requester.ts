@@ -43,9 +43,6 @@ export default class Requester {
       requestProxy.emit('response', response);
     });
     request.end();
-    (<any> requestProxy).abort = () => {
-      request.abort();
-    };
     return requestProxy;
   }
 

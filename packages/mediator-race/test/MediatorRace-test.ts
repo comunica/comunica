@@ -87,17 +87,13 @@ class DummyActor extends Actor<IAction, IDummyTest, IDummyTest> {
     this.id = id;
     this.delay = delay;
     this.reject = reject;
-    this.cancel = () => null;
-    jest.spyOn(this, 'cancel');
   }
 
   public test(action: IAction): Promise<IDummyTest> {
     if (this.reject) {
       return Promise.reject(new Error(this.id));
     }
-    const promise = new Promise((resolve, reject) => setTimeout(() => resolve({ field: this.id }), this.delay));
-    promise.cancel = this.cancel;
-    return promise;
+    return new Promise((resolve, reject) => setTimeout(() => resolve({ field: this.id }), this.delay));
   }
 
   public async run(action: IAction): Promise<IDummyTest> {

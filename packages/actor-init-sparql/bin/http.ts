@@ -100,7 +100,6 @@ newEngine().then(async (engine: QueryEngine) => {
     const killTimeout = setTimeout(killClient, timeout);
     response.on('close', killClient);
     function killClient() {
-      (<any> promise).cancel();
       if (eventEmitter) {
         // remove all listeners so we are sure no more write calls are made
         eventEmitter.removeAllListeners();
