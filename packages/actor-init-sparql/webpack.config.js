@@ -41,7 +41,13 @@ module.exports = {
       },
       {
         test: /\.js$/,
-        loader: 'babel-loader?presets[]=es2015'
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: ['es2015'],
+            plugins: [require('babel-plugin-transform-async-to-generator')]
+          }
+        }
       }
     ]
   },
