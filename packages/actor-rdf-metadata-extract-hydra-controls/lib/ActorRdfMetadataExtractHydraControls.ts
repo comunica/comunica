@@ -119,7 +119,7 @@ export class ActorRdfMetadataExtractHydraControls extends ActorRdfMetadataExtrac
       // Collect all hydra properties in a nice convenient nested hash (property / subject / objects).
       const hydraProperties: {[property: string]: {[subject: string]: string[]}} = {};
       metadata.on('data', (quad) => {
-        if (quad.predicate.value.indexOf(ActorRdfMetadataExtractHydraControls.HYDRA) === 0) {
+        if (quad.predicate.value.startsWith(ActorRdfMetadataExtractHydraControls.HYDRA)) {
           const property = quad.predicate.value.substr(ActorRdfMetadataExtractHydraControls.HYDRA.length);
           const subjectProperties = hydraProperties[property] || (hydraProperties[property] = {});
           const objects = subjectProperties[quad.subject.value] || (subjectProperties[quad.subject.value] = []);
