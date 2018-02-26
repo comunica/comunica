@@ -46,8 +46,7 @@ export class ActorHttpNative extends ActorHttp {
 
     // not all options are supported
 
-    // casting so we can support both normal Promises as well as Bluebird
-    return new Promise<IActorHttpOutput>(<any> ((resolve: any, reject: any, oncancel: any) => {
+    return new Promise<IActorHttpOutput>((resolve, reject) => {
       const req = this.requester.createRequest(options);
       req.on('response', (httpResponse) => {
         httpResponse.on('error', (e: Error) => {
@@ -70,13 +69,7 @@ export class ActorHttpNative extends ActorHttp {
           }
         });
       });
-
-      if (oncancel) {
-        oncancel(() => {
-          (<any> req).abort();
-        });
-      }
-    }));
+    });
   }
 
 }

@@ -23,10 +23,7 @@ export class ActorQueryOperationAsk extends ActorQueryOperationTypedMediated<Alg
     const output: IActorQueryOperationOutput = await this.mediatorQueryOperation.mediate(
       { operation: pattern.input, context });
     const bindings: IActorQueryOperationOutputBindings = ActorQueryOperation.getSafeBindings(output);
-    const booleanResult: Promise<boolean> = new Promise<boolean>(<any> ((resolve: any, reject: any, onCancel: any) => {
-      // Close the bindings stream when the promise is cancelled.
-      onCancel(bindings.bindingsStream.close);
-
+    const booleanResult: Promise<boolean> = new Promise<boolean>((resolve, reject) => {
       // Resolve to true if we find one element, and close immediately
       bindings.bindingsStream.once('data', () => {
         resolve(true);
@@ -38,7 +35,7 @@ export class ActorQueryOperationAsk extends ActorQueryOperationTypedMediated<Alg
 
       // Reject if an error occurs in the stream
       bindings.bindingsStream.on('error', reject);
-    }));
+    });
     return { type: 'boolean', booleanResult };
   }
 

@@ -15,14 +15,6 @@ export class MediatorRace<A extends Actor<I, T, O>, I extends IAction, T extends
       const errors: Error[] = [];
       for (const testResult of testResults) {
         testResult.reply.then(() => {
-          // Cancel other running promises if possible
-          setImmediate(() => {
-            for (const otherTestResult of testResults) {
-              if ((<any> otherTestResult.reply).cancel) {
-                (<any> otherTestResult.reply).cancel();
-              }
-            }
-          });
           resolve(testResult.actor);
         }).catch((error) => {
           // Reject if all replies were rejected

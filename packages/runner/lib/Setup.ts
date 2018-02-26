@@ -1,8 +1,5 @@
 import {IActionInit, IActorOutputInit} from "@comunica/bus-init";
-import Bluebird = require("bluebird");
-import cancelableAwaiter = require("cancelable-awaiter");
 import {Loader, LoaderProperties} from "componentsjs";
-import tslib = require("tslib");
 import {Runner} from "./Runner";
 
 /**
@@ -78,30 +75,9 @@ export class Setup {
   /**
    * Initialize the global Promise class.
    *
-   * This will make sure that promises are cancellable,
-   * by using Bluebird's promises.
-   *
-   * The TypeScript 'await' functionality will
-   * is also enhanced so that these cancellable
-   * promises can be used.
-   *
-   * @link https://www.npmjs.com/package/bluebird
-   *
    * @private
    */
   public static preparePromises() {
-    // Hack to use Bluebird's promise to enable promise cancellation.
-    global.Promise = Bluebird;
-    Bluebird.config({
-      cancellation: true,
-      longStackTraces: false,
-      monitoring: false,
-      warnings: false,
-    });
-
-    // Hack to allow 'await' to be used on Bluebird's cancellable promises.
-    (tslib).__awaiter = cancelableAwaiter;
-
     // Promise rejections are based on errors.
     // As the number of rejections can become quite huge, remove the overhead of Error stacktraces.
     // We don't set this to zero, as Bluebird will dynamically adjust it otherwise.
