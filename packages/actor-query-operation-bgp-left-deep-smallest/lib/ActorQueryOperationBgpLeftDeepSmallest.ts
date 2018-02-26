@@ -44,7 +44,7 @@ export class ActorQueryOperationBgpLeftDeepSmallest extends ActorQueryOperationT
       const bindingsMerger = (subBindings: Bindings) => subBindings.merge(bindings);
       return new PromiseProxyIterator(
         async () => (await patternBinder(ActorQueryOperationBgpLeftDeepSmallest.materializePatterns(patterns,
-          bindings))).map(bindingsMerger));
+          bindings))).map(bindingsMerger), { autoStart: true, maxBufferSize: 128 });
     };
     return bindingsStream;
   }

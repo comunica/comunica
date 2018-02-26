@@ -73,7 +73,7 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
 
     const bindingsStream: BindingsStream = new PromiseProxyIterator(async () => result.data.map((quad) => {
       return Bindings(reduceTerms(quad, quadBindingsReducer, {}));
-    }));
+    }, { autoStart: true, maxBufferSize: 128 }));
 
     return { type: 'bindings', bindingsStream, variables, metadata: result.metadata };
   }
