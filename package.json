@@ -13,10 +13,10 @@
     "@types/lodash.uniq": "^4.5.3",
     "@types/lodash.values": "^4.3.3",
     "@types/lru-cache": "^4.1.0",
+    "@types/minimist": "^1.2.0",
     "@types/n3": "^0.0.3",
     "@types/node": "^8.5.9",
     "@types/node-fetch": "^1.6.7",
-    "@types/minimist": "^1.2.0",
     "@types/rdf-data-model": "^1.0.1",
     "@types/rdf-js": "^1.0.0",
     "@types/uritemplate": "^0.3.4",
@@ -42,6 +42,7 @@
     "ts-jest": "^21.0.0",
     "tslint": "^5.7.0",
     "tslint-eslint-rules": "^4.1.1",
+    "typedoc": "^0.10.0",
     "typescript": "^2.5.3"
   },
   "pre-commit": [
@@ -73,6 +74,7 @@
     "test": "lerna run test --since HEAD",
     "lint": "lerna run lint --since HEAD",
     "build": "lerna run build --since HEAD",
+    "doc": "typedoc --name Comunica --exclude \"**/+(node_modules|test|mocks)/**\" --mode modules --out documentation packages/*",
     "postinstall": "lerna bootstrap"
   }
 }
