@@ -15,8 +15,8 @@
     "declaration": true
   },
   "include": [
-    "index.ts",
-    "lib/**/*"
+    "packages/*/index.ts",
+    "packages/*/lib/**/*"
   ],
   "exclude": [
     "**/node_modules",

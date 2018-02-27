@@ -70,10 +70,13 @@
     "mapCoverage": true
   },
   "scripts": {
-    "test": "lerna run test --since HEAD",
-    "lint": "lerna run lint --since HEAD",
-    "build": "lerna run build --since HEAD",
+    "test-changed": "lerna run test --since HEAD",
+    "lint-changed": "lerna run lint --since HEAD",
+    "build-changed": "lerna run build --since HEAD",
+    "test": "jest",
+    "lint": "tslint packages/*/lib/**/*.ts packages/*/test/**/*.ts --exclude '**/*.d.ts'",
+    "build": "tsc",
     "doc": "typedoc --name Comunica --exclude \"**/+(node_modules|test|mocks)/**\" --mode modules --out documentation packages/*",
-    "postinstall": "lerna bootstrap"
+    "postinstall": "lerna bootstrap && tsc"
   }
 }
