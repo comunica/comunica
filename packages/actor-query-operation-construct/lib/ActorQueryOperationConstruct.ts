@@ -59,7 +59,7 @@ export class ActorQueryOperationConstruct extends ActorQueryOperationTypedMediat
     // Let the final metadata contain the estimated number of triples
     let metadata: () => Promise<{[id: string]: any}> = null;
     if (output.metadata) {
-      metadata = ActorQueryOperation.cachifyMetadata(() => output.metadata().then((m) => {
+      metadata = () => output.metadata().then((m) => {
         if (m) {
           if (m.totalItems) {
             return Object.assign({}, m, { totalItems: m.totalItems * pattern.template.length });
@@ -67,7 +67,7 @@ export class ActorQueryOperationConstruct extends ActorQueryOperationTypedMediat
           return m;
         }
         return null;
-      }));
+      });
     }
 
     return {

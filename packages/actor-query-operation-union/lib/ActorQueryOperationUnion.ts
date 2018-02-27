@@ -56,9 +56,8 @@ export class ActorQueryOperationUnion extends ActorQueryOperationTypedMediated<A
 
     const bindingsStream: BindingsStream = new RoundRobinUnionIterator(outputs.map(
       (output: IActorQueryOperationOutputBindings) => output.bindingsStream));
-    const metadata: () => Promise<{[id: string]: any}> = outputs[0].metadata && outputs[1].metadata
-      ? ActorQueryOperation.cachifyMetadata(() =>
-        Promise.all([outputs[0].metadata(), outputs[1].metadata()]).then(ActorQueryOperationUnion.unionMetadata))
+    const metadata: () => Promise<{[id: string]: any}> = outputs[0].metadata && outputs[1].metadata ? () =>
+        Promise.all([outputs[0].metadata(), outputs[1].metadata()]).then(ActorQueryOperationUnion.unionMetadata)
       : null;
     const variables: string[] = ActorQueryOperationUnion.unionVariables(
       outputs.map((output: IActorQueryOperationOutputBindings) => output.variables));

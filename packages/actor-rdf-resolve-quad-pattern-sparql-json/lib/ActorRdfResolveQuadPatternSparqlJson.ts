@@ -120,30 +120,29 @@ export class ActorRdfResolveQuadPatternSparqlJson
     const countQuery: string = ActorRdfResolveQuadPatternSparqlJson.patternToCountQuery(action.pattern);
 
     // Create promise for the metadata containing the estimated count
-    const metadata: () => Promise<{[id: string]: any}> = ActorRdfResolveQuadPattern.cachifyMetadata(
-      () => this.queryBindings(endpoint, countQuery)
-        .then((bindingsStream: BindingsStream) => {
-          return new Promise((resolve, reject) => {
-            bindingsStream.on('data', (bindings: Bindings) => {
-              const count: RDF.Term = bindings.get('?count');
-              if (count) {
-                const totalItems: number = parseInt(count.value, 10);
-                if (isNaN(totalItems)) {
-                  return resolve({ totalItems: Infinity });
-                }
-                return resolve({ totalItems });
-              } else {
+    const metadata: () => Promise<{[id: string]: any}> = () => this.queryBindings(endpoint, countQuery)
+      .then((bindingsStream: BindingsStream) => {
+        return new Promise((resolve, reject) => {
+          bindingsStream.on('data', (bindings: Bindings) => {
+            const count: RDF.Term = bindings.get('?count');
+            if (count) {
+              const totalItems: number = parseInt(count.value, 10);
+              if (isNaN(totalItems)) {
                 return resolve({ totalItems: Infinity });
               }
-            });
-            bindingsStream.on('error', () => {
+              return resolve({ totalItems });
+            } else {
               return resolve({ totalItems: Infinity });
-            });
-            bindingsStream.on('end', () => {
-              return resolve({ totalItems: Infinity });
-            });
+            }
           });
-        }));
+          bindingsStream.on('error', () => {
+            return resolve({ totalItems: Infinity });
+          });
+          bindingsStream.on('end', () => {
+            return resolve({ totalItems: Infinity });
+          });
+        });
+      });
 
     // Materialize the queried pattern using each found binding.
     const data: AsyncIterator<RDF.Quad> & RDF.Stream = new PromiseProxyIterator(async () =>

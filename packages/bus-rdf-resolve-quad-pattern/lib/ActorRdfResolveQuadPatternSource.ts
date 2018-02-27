@@ -25,7 +25,11 @@ export abstract class ActorRdfResolveQuadPatternSource extends ActorRdfResolveQu
 
   public async run(action: IActionRdfResolveQuadPattern): Promise<IActorRdfResolveQuadPatternOutput> {
     const source: RDF.Source = await this.getSource(action.context);
-    return await this.getOutput(source, action.pattern, action.context);
+    const output: IActorRdfResolveQuadPatternOutput = await this.getOutput(source, action.pattern, action.context);
+    if (output.metadata) {
+      output.metadata = ActorRdfResolveQuadPattern.cachifyMetadata(output.metadata);
+    }
+    return output;
   }
 
   /**
