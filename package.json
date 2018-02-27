@@ -42,7 +42,6 @@
     "ts-jest": "^21.0.0",
     "tslint": "^5.7.0",
     "tslint-eslint-rules": "^4.1.1",
-    "typedoc": "^0.10.0",
     "typescript": "^2.5.3"
   },
   "pre-commit": [
