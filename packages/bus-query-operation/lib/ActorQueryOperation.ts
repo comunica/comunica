@@ -61,7 +61,7 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
    */
   public static cachifyMetadata(metadata: () => Promise<{[id: string]: any}>): () => Promise<{[id: string]: any}> {
     let lastReturn: Promise<{[id: string]: any}> = null;
-    return () => lastReturn || (lastReturn = metadata());
+    return () => (lastReturn || (lastReturn = metadata()));
   }
 
   /**
