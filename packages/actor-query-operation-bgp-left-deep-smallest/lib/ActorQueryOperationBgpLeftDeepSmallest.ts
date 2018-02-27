@@ -223,10 +223,10 @@ export class ActorQueryOperationBgpLeftDeepSmallest extends ActorQueryOperationT
 
     // Prepare variables and metadata
     const variables: string[] = ActorQueryOperationBgpLeftDeepSmallest.getCombinedVariables(patternOutputs);
-    const metadata = ActorQueryOperation.cachifyMetadata(() => Promise.resolve({
+    const metadata = () => Promise.resolve({
       totalItems: ActorQueryOperationBgpLeftDeepSmallest.estimateCombinedTotalItems(metadatas[smallestId],
         metadatas.slice(smallestId)),
-    }));
+    });
 
     return { type: 'bindings', bindingsStream, variables, metadata };
   }

@@ -1,6 +1,6 @@
 import {ISearchForm, ISearchForms} from "@comunica/actor-rdf-metadata-extract-hydra-controls";
 import {IActionRdfDereferencePaged, IActorRdfDereferencePagedOutput} from "@comunica/bus-rdf-dereference-paged";
-import {ActorRdfResolveQuadPattern, ActorRdfResolveQuadPatternSource, IActionRdfResolveQuadPattern,
+import {ActorRdfResolveQuadPatternSource, IActionRdfResolveQuadPattern,
   IActorRdfResolveQuadPatternOutput, ILazyQuadSource} from "@comunica/bus-rdf-resolve-quad-pattern";
 import {Actor, IActorArgs, IActorTest, Mediator} from "@comunica/core";
 import * as RDF from "rdf-js";
@@ -125,13 +125,13 @@ export class ActorRdfResolveQuadPatternQpf extends ActorRdfResolveQuadPatternSou
   : Promise<IActorRdfResolveQuadPatternOutput> {
     // Attach metadata to the output
     const output: IActorRdfResolveQuadPatternOutput = await super.getOutput(source, pattern, context);
-    output.metadata = ActorRdfResolveQuadPattern.cachifyMetadata(() => new Promise((resolve, reject) => {
+    output.metadata = () => new Promise((resolve, reject) => {
       output.data.on('error', reject);
       output.data.on('end', () => reject(new Error('No metadata was found')));
       output.data.on('metadata', (metadata) => {
         resolve(metadata());
       });
-    }));
+    });
     return output;
   }
 

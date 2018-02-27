@@ -1,4 +1,4 @@
-import {ActorRdfResolveQuadPattern, ActorRdfResolveQuadPatternSource, IActionRdfResolveQuadPattern,
+import {ActorRdfResolveQuadPatternSource, IActionRdfResolveQuadPattern,
   IActorRdfResolveQuadPatternOutput, ILazyQuadSource} from "@comunica/bus-rdf-resolve-quad-pattern";
 import {IActorArgs, IActorTest} from "@comunica/core";
 import * as RDF from "rdf-js";
@@ -91,7 +91,7 @@ export class ActorRdfResolveQuadPatternHdt extends ActorRdfResolveQuadPatternSou
         this.close();
       }
     });
-    output.metadata = ActorRdfResolveQuadPattern.cachifyMetadata(() => new Promise((resolve, reject) => {
+    output.metadata = () => new Promise((resolve, reject) => {
       output.data.on('error', reject);
       output.data.on('end', () => {
         reject(new Error('No count metadata was found'));
@@ -99,7 +99,7 @@ export class ActorRdfResolveQuadPatternHdt extends ActorRdfResolveQuadPatternSou
       output.data.once('totalItems', (totalItems: number) => {
         resolve({ totalItems });
       });
-    }));
+    });
     return output;
   }
 
