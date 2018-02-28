@@ -5,7 +5,7 @@
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
       "caqoljnl": "npmd:@comunica/actor-query-operation-leftjoin-nestedloop/",
 
-      "ActorQueryOperationLeftJoinNestedLoop": "caqolj:Actor/QueryOperation/LeftJoinNestedLoop"
+      "ActorQueryOperationLeftJoinNestedLoop": "caqoljnl:Actor/QueryOperation/LeftJoinNestedLoop"
     }
   ]
 }
