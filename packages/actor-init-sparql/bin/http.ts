@@ -28,7 +28,9 @@ const context = JSON.parse(fs.existsSync(args._[0]) ? fs.readFileSync(args._[0],
 const timeout = (parseInt(args.t, 10) || 60) * 1000;
 const port = parseInt(args.p, 10) || 3000;
 
-newEngineDynamic().then(async (engine: QueryEngine) => {
+const options = { configResourceUrl: process.env.COMUNICA_CONFIG
+  ? process.cwd() + '/' + process.env.COMUNICA_CONFIG : null };
+newEngineDynamic(options).then(async (engine: QueryEngine) => {
   const mediaTypes: {[id: string]: number} = await engine.getResultMediaTypes();
   const variants: any = [];
   for (const type of Object.keys(mediaTypes)) {

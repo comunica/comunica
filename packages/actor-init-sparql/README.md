@@ -21,6 +21,7 @@ $ comunica-sparql --help
 ```
 
 The dynamic variant of this executable is `comunica-dynamic-sparql`.
+An alternative config file can be passed via the `COMUNICA_CONFIG` environment variable.
 
 ## Usage from HTTP
 
@@ -37,6 +38,7 @@ $ comunica-sparql-http --help
 ```
 
 The HTTP service can only be started dynamically.
+An alternative config file can be passed via the `COMUNICA_CONFIG` environment variable.
 
 ## Usage within application
 
