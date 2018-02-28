@@ -22,7 +22,8 @@
   "license": "MIT",
   "bin": {
     "comunica-sparql": "./bin/query.js",
-    "comunica-sparql-http": "./bin/http.js"
+    "comunica-sparql-http": "./bin/http.js",
+    "comunica-dynamic-sparql": "./bin/query-dynamic.js"
   },
   "bugs": {
     "url": "https://github.com/comunica/actor-init-sparql/issues"
@@ -35,7 +36,8 @@
     "bin/**/*.d.ts",
     "bin/**/*.js",
     "index.d.ts",
-    "index.js"
+    "index.js",
+    "engine-default.js"
   ],
   "dependencies": {
     "minimist": "^1.2.0",
@@ -133,7 +135,8 @@
     "lint": "node \"../../node_modules/tslint/bin/tslint\" lib/**/*.ts test/**/*.ts --exclude '**/*.d.ts'",
     "build": "node \"../../node_modules/typescript/bin/tsc\"",
     "validate": "npm ls",
-    "browser": "componentsjs-compile-config urn:comunica:my -c config/config-default.json -e urn:comunica:sparqlinit > engine-default.js && webpack --config webpack.config.js"
+    "prepare": "componentsjs-compile-config urn:comunica:my -c config/config-default.json -e urn:comunica:sparqlinit > engine-default.js",
+    "browser": "npm run prepare && webpack --config webpack.config.js"
   },
   "browser": {
     "./index.js": "./index-browser.js"

@@ -46,10 +46,18 @@ export class QueryEngine {
 
 /**
  * Create a new comunica engine.
+ * @return {QueryEngine} A comunica engine.
+ */
+export function newEngine(): QueryEngine {
+  return new QueryEngine(require('../index-static.js'));
+}
+
+/**
+ * Create a new dynamic comunica engine.
  * @param {IQueryOptions} options Optional options on how to instantiate the query evaluator.
  * @return {Promise<QueryEngine>} A promise that resolves to a fully wired comunica engine.
  */
-export function newEngine(options?: IQueryOptions): Promise<QueryEngine> {
+export function newEngineDynamic(options?: IQueryOptions): Promise<QueryEngine> {
   if (!options) {
     options = {};
   }

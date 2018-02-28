@@ -6,7 +6,7 @@ import * as http from 'http';
 import minimist = require('minimist');
 import * as querystring from 'querystring';
 import * as url from 'url';
-import {newEngine, QueryEngine} from '../lib/Query';
+import {newEngineDynamic, QueryEngine} from '../lib/Query';
 import EventEmitter = NodeJS.EventEmitter;
 
 const MIME_PLAIN = 'text/plain';
@@ -28,7 +28,7 @@ const context = JSON.parse(fs.existsSync(args._[0]) ? fs.readFileSync(args._[0],
 const timeout = (parseInt(args.t, 10) || 60) * 1000;
 const port = parseInt(args.p, 10) || 3000;
 
-newEngine().then(async (engine: QueryEngine) => {
+newEngineDynamic().then(async (engine: QueryEngine) => {
   const mediaTypes: {[id: string]: number} = await engine.getResultMediaTypes();
   const variants: any = [];
   for (const type of Object.keys(mediaTypes)) {
