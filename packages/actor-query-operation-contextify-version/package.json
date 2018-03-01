@@ -1,0 +1,67 @@
+{
+  "name": "@comunica/actor-query-operation-contextify-version",
+  "version": "0.0.1",
+  "description": "A contextify-version query-operation actor",
+  "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-contextify-version",
+  "lsd:components": "components/components.jsonld",
+  "lsd:contexts": {
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-query-operation-contextify-version.jsonld": "components/context.jsonld"
+  },
+  "main": "index.js",
+  "typings": "index",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/comunica/actor-query-operation-contextify-version.git"
+  },
+  "keywords": [
+    "comunica",
+    "actor",
+    "query-operation",
+    "contextify-version"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/comunica/actor-query-operation-contextify-version/issues"
+  },
+  "homepage": "https://github.com/comunica/actor-query-operation-contextify-version#readme",
+  "files": [
+    "components",
+    "lib/**/*.d.ts",
+    "lib/**/*.js",
+    "index.d.ts",
+    "index.js"
+  ],
+  "dependencies": {
+    "sparqlalgebrajs": "^0.7.4"
+  },
+  "peerDependencies": {
+    "@comunica/core": "^0.0.1",
+    "@comunica/bus-query-operation": "^0.0.1"
+  },
+  "devDependencies": {
+    "@comunica/core": "^0.0.1",
+    "@comunica/bus-query-operation": "^0.0.1"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.ts$": "<rootDir>/../../node_modules/ts-jest/preprocessor.js"
+    },
+    "transformIgnorePatterns": [
+      "[/\\\\]node_modules[/\\\\].+\\.(js|jsx)$"
+    ],
+    "testRegex": "(/test/.*|(\\.|/)(test|spec))\\.ts$",
+    "moduleFileExtensions": [
+      "ts",
+      "js"
+    ],
+    "collectCoverage": true,
+    "mapCoverage": true
+  },
+  "scripts": {
+    "test": "node \"../../node_modules/jest/bin/jest.js\" ${1}",
+    "test-watch": "node \"../../node_modules/jest/bin/jest.js\" ${1} --watch",
+    "lint": "node \"../../node_modules/tslint/bin/tslint\" lib/**/*.ts test/**/*.ts --exclude '**/*.d.ts'",
+    "build": "node \"../../node_modules/typescript/bin/tsc\"",
+    "validate": "npm ls"
+  }
+}

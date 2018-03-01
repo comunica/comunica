@@ -1,0 +1,45 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-query-operation-contextify-version.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-query-operation.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-query-operation-contextify-version",
+  "components": [
+    {
+      "@id": "caqocv:Actor/QueryOperation/ContextifyVersion",
+      "@type": "Class",
+      "extends": "cbqo:Actor/QueryOperationTypedMediated",
+      "requireElement": "ActorQueryOperationContextifyVersion",
+      "comment": "A comunica Contextify Version Query Operation Actor.",
+      "parameters": [
+        {
+          "@id": "caqocv:Actor/QueryOperation/ContextifyVersion/baseGraphUri",
+          "comment": "The base URI of the graph to contextify. If this is not provided, then graphs will be converted to version identifiers as-is.",
+          "unique": true
+        },
+        {
+          "@id": "caqocv:Actor/QueryOperation/ContextifyVersion/numericalVersions",
+          "comment": "If versions should be parsed as integers",
+          "range": "xsd:boolean",
+          "default": false,
+          "unique": true
+        }
+      ],
+      "constructorArguments": [
+        {
+          "extends": "cbqo:Actor/QueryOperationTypedMediated/constructorArgumentsObject",
+          "fields": [
+            {
+              "keyRaw": "baseGraphUri",
+              "value": "caqocv:Actor/QueryOperation/ContextifyVersion/baseGraphUri"
+            },
+            {
+              "keyRaw": "numericalVersions",
+              "value": "caqocv:Actor/QueryOperation/ContextifyVersion/numericalVersions"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

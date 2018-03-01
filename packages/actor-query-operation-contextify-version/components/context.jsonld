@@ -1,0 +1,11 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/components.jsonld",
+    {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
+      "caqocv": "npmd:@comunica/actor-query-operation-contextify-version/",
+
+      "ActorQueryOperationContextifyVersion": "caqocv:Actor/QueryOperation/ContextifyVersion"
+    }
+  ]
+}
