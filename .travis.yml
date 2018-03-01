@@ -5,6 +5,7 @@ node_js:
 script:
   - yarn run lint
   - yarn run test-ci
+  - lerna run browser
 after_success:
   - yarn run coveralls-ci
   - yarn global add typedoc && yarn run doc
