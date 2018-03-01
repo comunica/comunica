@@ -4,6 +4,8 @@ This is the repository containing _all_ Comunica modules,
 as repo is managed as a [monorepo](https://github.com/babel/babel/blob/master/doc/design/monorepo.md)
 using [Lerna](https://lernajs.io/).
 
+Comunica requires Node.js 8.0 or higher and is tested on OSX and Linux.
+
 This repository should be used by Comunica module **developers**.
 If you want to **use** Comunica, have a look at the manual TODO.
 
