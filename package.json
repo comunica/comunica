@@ -66,6 +66,9 @@
       "ts",
       "js"
     ],
+    "setupFiles": [
+      "./setup-jest.js"
+    ],
     "collectCoverage": true,
     "mapCoverage": true
   },
