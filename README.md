@@ -1,5 +1,7 @@
 # Comunica
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/comunica/comunica.svg)](https://greenkeeper.io/)
+
 This is the repository containing _all_ Comunica modules,
 as repo is managed as a [monorepo](https://github.com/babel/babel/blob/master/doc/design/monorepo.md)
 using [Lerna](https://lernajs.io/).
