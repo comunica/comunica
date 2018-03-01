@@ -1,5 +1,7 @@
 # Comunica
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/comunica/comunica.svg)](https://greenkeeper.io/)
+
 [![Build Status](https://travis-ci.org/comunica/comunica.svg?branch=master)](https://travis-ci.org/comunica/comunica)
 [![Coverage Status](https://coveralls.io/repos/github/comunica/comunica/badge.svg?branch=master)](https://coveralls.io/github/comunica/comunica?branch=master)
 
