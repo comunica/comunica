@@ -1,5 +1,8 @@
 # Comunica
 
+[![Build Status](https://travis-ci.org/comunica/comunica.svg?branch=master)](https://travis-ci.org/comunica/comunica)
+[![Coverage Status](https://coveralls.io/repos/github/comunica/comunica/badge.svg?branch=master)](https://coveralls.io/github/comunica/comunica?branch=master)
+
 This is the repository containing _all_ Comunica modules,
 as repo is managed as a [monorepo](https://github.com/babel/babel/blob/master/doc/design/monorepo.md)
 using [Lerna](https://lernajs.io/).
