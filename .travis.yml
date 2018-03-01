@@ -6,8 +6,17 @@ script:
   - yarn run lint
   - yarn run test-ci
 after_success:
-  - npm run coveralls-ci
+  - yarn run coveralls-ci
+  - yarn global add typedoc && yarn run doc
 cache:
   yarn: true
   directories:
     - node_modules
+deploy:
+  provider: pages
+  skip-cleanup: true
+  github-token: $GITHUB_TOKEN
+  keep-history: true
+  local-dir: documentation
+  on:
+    branch: master
