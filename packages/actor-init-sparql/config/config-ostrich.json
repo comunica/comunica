@@ -1,0 +1,329 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-init-sparql.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-sparql-parse.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-sparql-parse-algebra.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-sparql-serialize.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-sparql-serialize-json.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-sparql-serialize-rdf.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-sparql-serialize-simple.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-sparql-serialize-sparql-json.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-sparql-serialize-sparql-xml.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-sparql-serialize-table.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-query-operation.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-query-operation-ask.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-query-operation-bgp-empty.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-query-operation-bgp-left-deep-smallest.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-query-operation-bgp-single.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-query-operation-construct.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-query-operation-contextify-version.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-query-operation-describe-subject.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-query-operation-distinct-hash.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-query-operation-filter-direct.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-query-operation-join.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-query-operation-leftjoin-nestedloop.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-query-operation-orderby-direct.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-query-operation-project.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-query-operation-quadpattern.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-query-operation-slice.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-query-operation-union.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-rdf-resolve-quad-pattern.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-resolve-quad-pattern-ostrich.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-http.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-http-native.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-rdf-parse.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-parse-n3.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-parse-jsonld.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-rdf-serialize.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-serialize-n3.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-serialize-jsonld.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-rdf-dereference.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-dereference-http-parse.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-rdf-metadata-extract.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-metadata-extract-hydra-controls.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-metadata-extract-hydra-count.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-rdf-metadata.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-metadata-primary-topic.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-metadata-triple-predicate.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-rdf-dereference-paged.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-dereference-paged-next.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-rdf-join.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-join-nestedloop.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-mediator-combine-union.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-mediator-number.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-mediator-race.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-runner.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-core.jsonld"
+  ],
+  "@graph": [
+    {
+      "@id": "urn:comunica:my",
+      "@type": "Runner",
+      "actors": [
+        {
+          "@id": "urn:comunica:sparqlinit",
+          "@type": "ActorInitSparql",
+          "mediatorQueryOperation": {
+            "@id": "ex:mediatorQueryOperation",
+            "@type": "MediatorRace",
+            "cc:Mediator/bus": { "@id": "cbqo:Bus/QueryOperation" }
+          },
+          "mediatorSparqlParse": {
+            "@id": "ex:mediatorSparqlParse",
+            "@type": "MediatorRace",
+            "cc:Mediator/bus": { "@id": "cbsp:Bus/SparqlParse" }
+          },
+          "mediatorSparqlSerialize": {
+            "@id": "ex:mediatorSparqlSerialize",
+            "@type": "MediatorRace",
+            "cc:Mediator/bus": { "@id": "cbss:Bus/SparqlSerialize" }
+          },
+          "mediatorSparqlSerializeMediaTypeCombiner": {
+            "@type": "MediatorCombineUnion",
+            "cc:Mediator/bus": { "@id": "cbss:Bus/SparqlSerialize" },
+            "cmcu:Mediator/CombineUnion/field": "mediaTypes"
+          }
+        },
+
+        {
+          "@id": "ex:mySparqlParser",
+          "@type": "ActorSparqlParseAlgebra"
+        },
+
+        {
+          "@id": "ex:myJsonSparqlSerializer",
+          "@type": "ActorSparqlSerializeJson"
+        },
+        {
+          "@id": "ex:myRdfSparqlSerializer",
+          "@type": "ActorSparqlSerializeRdf",
+          "mediatorRdfSerialize": {
+            "@id": "ex:mediatorRdfSerialize",
+            "@type": "MediatorRace",
+            "cc:Mediator/bus": { "@id": "cbrs:Bus/RdfSerialize" }
+          },
+          "mediatorRdfSerializeMediaTypeCombiner": {
+            "@type": "MediatorCombineUnion",
+            "cc:Mediator/bus": { "@id": "cbrs:Bus/RdfSerialize" },
+            "cmcu:Mediator/CombineUnion/field": "mediaTypes"
+          }
+        },
+        {
+          "@id": "ex:mySimpleSparqlSerializer",
+          "@type": "ActorSparqlSerializeSimple"
+        },
+        {
+          "@id": "ex:mySparqlJsonSparqlSerializer",
+          "@type": "ActorSparqlSerializeSparqlJson"
+        },
+        {
+          "@id": "ex:mySparqlXmlSparqlSerializer",
+          "@type": "ActorSparqlSerializeSparqlXml"
+        },
+        {
+          "@id": "ex:myTableSparqlSerializer",
+          "@type": "ActorSparqlSerializeTable"
+        },
+
+        {
+          "@id": "ex:myContextifyVersionQueryOperator",
+          "@type": "ActorQueryOperationContextifyVersion",
+          "cbqo:mediatorQueryOperation": { "@id": "ex:mediatorQueryOperation" },
+          "caqocv:Actor/QueryOperation/ContextifyVersion/baseGraphUri": "http://graph.version.",
+          "caqocv:Actor/QueryOperation/ContextifyVersion/numericalVersions": true
+        },
+
+        {
+          "@id": "ex:myAskQueryOperator",
+          "@type": "ActorQueryOperationAsk",
+          "cbqo:mediatorQueryOperation": { "@id": "ex:mediatorQueryOperation" }
+        },
+
+        {
+          "@id": "ex:mySliceQueryOperator",
+          "@type": "ActorQueryOperationSlice",
+          "cbqo:mediatorQueryOperation": { "@id": "ex:mediatorQueryOperation" }
+        },
+
+        {
+          "@id": "ex:myEmptyBgpQueryOperator",
+          "@type": "ActorQueryOperationBgpEmpty"
+        },
+
+        {
+          "@id": "ex:mySingleBgpQueryOperator",
+          "@type": "ActorQueryOperationBgpSingle",
+          "cbqo:mediatorQueryOperation": { "@id": "ex:mediatorQueryOperation" }
+        },
+
+        {
+          "@id": "ex:myLeftDeepSmallestBgpQueryOperator",
+          "@type": "ActorQueryOperationBgpLeftDeepSmallest",
+          "cbqo:mediatorQueryOperation": { "@id": "ex:mediatorQueryOperation" }
+        },
+
+        {
+          "@id": "ex:myConstructQueryOperator",
+          "@type": "ActorQueryOperationConstruct",
+          "cbqo:mediatorQueryOperation": { "@id": "ex:mediatorQueryOperation" }
+        },
+
+        {
+          "@id": "ex:myDescribeQueryOperator",
+          "@type": "ActorQueryOperationDescribeSubject",
+          "cbqo:mediatorQueryOperation": { "@id": "ex:mediatorQueryOperation" }
+        },
+
+        {
+          "@id": "ex:myDistinctQueryOperator",
+          "@type": "ActorQueryOperationDistinctHash",
+          "cbqo:mediatorQueryOperation": { "@id": "ex:mediatorQueryOperation" },
+          "caqodh:hashAlgorithm": "sha1",
+          "caqodh:digestAlgorithm": "base64"
+        },
+
+        {
+          "@id": "ex:myFilterQueryOperator",
+          "@type": "ActorQueryOperationFilterDirect",
+          "cbqo:mediatorQueryOperation": { "@id": "ex:mediatorQueryOperation" }
+        },
+
+        {
+          "@id": "ex:myJoinQueryOperator",
+          "@type": "ActorQueryOperationJoin",
+          "cbqo:mediatorQueryOperation": { "@id": "ex:mediatorQueryOperation" },
+          "caqoj:mediatorJoin": {
+            "@id": "ex:mediatorRdfJoin",
+            "@type": "MediatorRace",
+            "cc:Mediator/bus": { "@id": "cbrj:Bus/RdfJoin" }
+          }
+        },
+
+        {
+          "@id": "ex:myLeftJoinQueryOperator",
+          "@type": "ActorQueryOperationLeftJoinNestedLoop",
+          "cbqo:mediatorQueryOperation": { "@id": "ex:mediatorQueryOperation" }
+        },
+
+        {
+          "@id": "ex:myOrderByQueryOperator",
+          "@type": "ActorQueryOperationOrderByDirect",
+          "cbqo:mediatorQueryOperation": { "@id": "ex:mediatorQueryOperation" }
+        },
+
+        {
+          "@id": "ex:myProjectQueryOperator",
+          "@type": "ActorQueryOperationProject",
+          "cbqo:mediatorQueryOperation": { "@id": "ex:mediatorQueryOperation" }
+        },
+
+        {
+          "@id": "ex:myUnionQueryOperator",
+          "@type": "ActorQueryOperationUnion",
+          "cbqo:mediatorQueryOperation": { "@id": "ex:mediatorQueryOperation" }
+        },
+
+        {
+          "@id": "ex:myQuadPatternQueryOperator",
+          "@type": "ActorQueryOperationQuadpattern",
+          "caqoq:mediatorResolveQuadPattern": {
+            "@id": "ex:mediatorResolveQuadPattern",
+            "@type": "MediatorRace",
+            "cc:Mediator/bus": { "@id": "cbrrqp:Bus/RdfResolveQuadPattern" }
+          }
+        },
+
+        {
+          "@id": "ex:myOstrichQuadPatternResolver",
+          "@type": "ActorRdfResolveQuadPatternOstrich"
+        },
+
+        {
+          "@id": "ex:myRdfPagedDereferencer",
+          "@type": "ActorRdfDereferencePagedNext",
+          "cardph:mediatorRdfDereference": {
+            "@id": "ex:mediatorRdfDereference",
+            "@type": "MediatorRace",
+            "cc:Mediator/bus": { "@id": "cbrd:Bus/RdfDereference" }
+          },
+          "cardph:mediatorMetadata": {
+            "@id": "ex:mediatorMetadata",
+            "@type": "MediatorRace",
+            "cc:Mediator/bus": { "@id": "cbrm:Bus/RdfMetadata" }
+          },
+          "cardph:mediatorMetadataExtract": {
+            "@id": "ex:mediatorMetadataExtract",
+            "@type": "MediatorCombineUnion",
+            "cc:Mediator/bus": { "@id": "cbrme:Bus/RdfMetadataExtract" },
+            "cmcu:Mediator/CombineUnion/field": "metadata"
+          }
+        },
+
+        {
+          "@id": "ex:myRdfDereferencer",
+          "@type": "ActorRdfDereferenceHttpParse",
+          "mediatorHttp": {
+            "@id": "ex:mediatorHttp",
+            "@type": "MediatorNumberMin",
+            "field": "time",
+            "cc:Mediator/bus": { "@id": "cbh:Bus/Http" }
+          },
+          "mediatorRdfParse": {
+            "@id": "ex:mediatorRdfParse",
+            "@type": "MediatorRace",
+            "cc:Mediator/bus": { "@id": "cbrp:Bus/RdfParse" }
+          }
+        },
+
+        {
+          "@id": "ex:myHttpFetcher",
+          "@type": "ActorHttpNative"
+        },
+
+        {
+          "@id": "ex:myRdfParserN3",
+          "@type": "ActorRdfParseN3"
+        },
+        {
+          "@id": "ex:myRdfParserJsonLd",
+          "@type": "ActorRdfParseJsonLd",
+          "priorityScale": 0.9
+        },
+
+        {
+          "@id": "ex:myRdfSerializerN3",
+          "@type": "ActorRdfSerializeN3"
+        },
+        {
+          "@id": "ex:myRdfSerializeJsonLd",
+          "@type": "ActorRdfSerializeJsonLd",
+          "jsonStringifyIndentSpaces": 2,
+          "priorityScale": 0.9
+        },
+
+        {
+          "@id": "ex:myRdfMetadataPrimaryTopic",
+          "@type": "ActorRdfMetadataPrimaryTopic"
+        },
+        {
+          "@id": "ex:myRdfMetadataTriplePredicate",
+          "@type": "ActorRdfMetadataTriplePredicate"
+        },
+
+        {
+          "@id": "ex:myRdfMetadataExtractHydraControls",
+          "@type": "ActorRdfMetadataExtractHydraControls"
+        },
+        {
+          "@id": "ex:myRdfMetadataExtractHydraCount",
+          "@type": "ActorRdfMetadataExtractHydraCount"
+        },
+
+        {
+          "@id": "ex:myRdfJoinActor",
+          "@type": "ActorRdfJoinNestedLoop"
+        }
+      ]
+    }
+  ]
+}

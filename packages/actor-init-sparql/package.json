@@ -112,6 +112,8 @@
   "devDependencies": {
     "@comunica/actor-query-operation-bgp-left-deep-smallest-sort": "^1.0.0",
     "@comunica/actor-rdf-resolve-quad-pattern-hdt": "^1.0.0",
+    "@comunica/actor-rdf-resolve-quad-pattern-file": "^0.0.1",
+    "@comunica/actor-rdf-resolve-quad-pattern-ostrich": "^0.0.1",
     "lodash.assign": "^4.2.0",
     "string-replace-webpack-plugin": "^0.1.3",
     "webpack": "^3.10.0"
