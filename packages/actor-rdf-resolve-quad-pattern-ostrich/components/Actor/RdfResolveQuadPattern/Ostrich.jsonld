@@ -1,0 +1,32 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-resolve-quad-pattern-ostrich.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-rdf-resolve-quad-pattern.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-rdf-resolve-quad-pattern-ostrich",
+  "components": [
+    {
+      "@id": "carrqpo:Actor/RdfResolveQuadPattern/Ostrich",
+      "@type": "Class",
+      "extends": "cbrrqp:Actor/RdfResolveQuadPattern",
+      "requireElement": "ActorRdfResolveQuadPatternOstrich",
+      "comment": "A comunica OSTRICH RDF Resolve Quad Pattern Actor.",
+      "parameters": [
+        {
+          "@id": "carrqpo:Actor/RdfResolveQuadPattern/Ostrich/files",
+          "comment": "The OSTRICH file to preload",
+          "range": "xsd:string"
+        }
+      ],
+      "constructorArguments": [
+        {
+          "extends": "cbrrqp:Actor/RdfResolveQuadPattern/constructorArgumentsObject",
+          "fields": {
+            "keyRaw": "ostrichFiles",
+            "value": "carrqpo:Actor/RdfResolveQuadPattern/Ostrich/files"
+          }
+        }
+      ]
+    }
+  ]
+}

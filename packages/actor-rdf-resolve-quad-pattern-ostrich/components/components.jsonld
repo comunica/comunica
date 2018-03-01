@@ -1,0 +1,9 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-resolve-quad-pattern-ostrich.jsonld",
+  "@id": "npmd:@comunica/actor-rdf-resolve-quad-pattern-ostrich",
+  "@type": "Module",
+  "requireName": "@comunica/actor-rdf-resolve-quad-pattern-ostrich",
+  "import": [
+    "Actor/RdfResolveQuadPattern/Ostrich.jsonld"
+  ]
+}

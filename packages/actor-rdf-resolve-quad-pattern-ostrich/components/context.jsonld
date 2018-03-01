@@ -1,0 +1,11 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/components.jsonld",
+    {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
+      "carrqpo": "npmd:@comunica/actor-rdf-resolve-quad-pattern-ostrich/",
+
+      "ActorRdfResolveQuadPatternOstrich": "carrqpo:Actor/RdfResolveQuadPattern/Ostrich"
+    }
+  ]
+}
