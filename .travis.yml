@@ -1,0 +1,12 @@
+language: node_js
+node_js:
+ - "4"
+ - "6"
+ - "8"
+ - "node"
+script:
+  - yarn run lint
+  - yarn test
+cache:
+  directories:
+    - node_modules
