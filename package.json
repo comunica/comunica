@@ -77,7 +77,7 @@
     "build-changed": "lerna run build --since HEAD",
     "test": "jest",
     "coveralls": "jest --coverage && cat ./coverage/lcov.info | coveralls",
-    "test-ci": "jest --coverage",
+    "test-ci": "jest --ci --maxWorkers=4 --coverage",
     "coveralls-ci": "cat ./coverage/lcov.info | coveralls",
     "lint": "tslint packages/*/lib/**/*.ts packages/*/test/**/*.ts --exclude '**/*.d.ts'",
     "build": "tsc",
