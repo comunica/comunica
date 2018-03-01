@@ -67,9 +67,7 @@
       "ts",
       "js"
     ],
-    "setupFiles": [
-      "./setup-jest.js"
-    ],
+    "setupTestFrameworkScriptFile": "./setup-jest.js",
     "collectCoverage": true,
     "mapCoverage": true
   },
