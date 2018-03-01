@@ -4,7 +4,9 @@ node_js:
  - "node"
 script:
   - yarn run lint
-  - yarn test
+  - yarn run test-ci
+after_success:
+  - npm run coveralls-ci
 cache:
   yarn: true
   directories:
