@@ -6,5 +6,6 @@ script:
   - yarn run lint
   - yarn test
 cache:
+  yarn: true
   directories:
     - node_modules
