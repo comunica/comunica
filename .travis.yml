@@ -2,6 +2,9 @@ language: node_js
 node_js:
  - "8"
  - "node"
+before_install: yarn global add greenkeeper-lockfile@1
+before_script: greenkeeper-lockfile-update
+after_script: greenkeeper-lockfile-upload
 script:
   - yarn run lint
   - yarn run test-ci
@@ -16,7 +19,7 @@ cache:
 deploy:
   provider: pages
   skip-cleanup: true
-  github-token: $GITHUB_TOKEN
+  github-token: $GH_TOKEN
   keep-history: true
   local-dir: documentation
   on:
