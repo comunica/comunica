@@ -35,7 +35,8 @@
   },
   "devDependencies": {
     "@comunica/bus-rdf-parse": "^0.0.1",
-    "@comunica/core": "^0.0.1"
+    "@comunica/core": "^0.0.1",
+    "lodash.assign": "^4.2.0"
   },
   "dependencies": {
     "rdf-parser-n3": "^1.1.0"
