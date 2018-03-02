@@ -1,0 +1,11 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/components.jsonld",
+    {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
+      "casss": "npmd:@comunica/actor-sparql-serialize-stats/",
+
+      "ActorSparqlSerializeStats": "casss:Actor/SparqlSerialize/Stats"
+    }
+  ]
+}
