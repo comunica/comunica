@@ -45,7 +45,10 @@ module.exports = {
           loader: 'babel-loader',
           options: {
             presets: ['es2015'],
-            plugins: [require('babel-plugin-transform-async-to-generator')]
+            plugins: [
+              require('babel-plugin-transform-async-to-generator'),
+              require('babel-plugin-transform-object-rest-spread')
+            ]
           }
         }
       }
