@@ -60,8 +60,7 @@
       "ts",
       "js"
     ],
-    "collectCoverage": true,
-    "mapCoverage": true
+    "collectCoverage": true
   },
   "scripts": {
     "test": "node \"../../node_modules/jest/bin/jest.js\" ${1}",
