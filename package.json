@@ -69,7 +69,11 @@
       "js"
     ],
     "setupTestFrameworkScriptFile": "./setup-jest.js",
-    "collectCoverage": true
+    "collectCoverage": true,
+    "coveragePathIgnorePatterns": [
+      "/node_modules/",
+      "index.js"
+    ]
   },
   "scripts": {
     "test-changed": "lerna run test --since HEAD",
