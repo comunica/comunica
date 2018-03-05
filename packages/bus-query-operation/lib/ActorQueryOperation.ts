@@ -69,7 +69,7 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
    * @param {IActorQueryOperationOutput} output A query operation output.
    * @param {string} expectedType The expected output type.
    */
-  protected static validateQueryOutput(output: IActorQueryOperationOutput, expectedType: string) {
+  public static validateQueryOutput(output: IActorQueryOperationOutput, expectedType: string) {
     if (output.type !== expectedType) {
       throw new Error('Invalid query output type: Expected \'' + expectedType + '\' but got \'' + output.type + '\'');
     }

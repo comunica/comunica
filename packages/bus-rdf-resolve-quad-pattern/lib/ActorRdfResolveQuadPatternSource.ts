@@ -5,7 +5,6 @@ import {
   ActorRdfResolveQuadPattern, IActionRdfResolveQuadPattern,
   IActorRdfResolveQuadPatternOutput,
 } from "./ActorRdfResolveQuadPattern";
-import {QuadStreamIterator} from "./QuadStreamIterator";
 
 /**
  * A base implementation for rdf-resolve-quad-pattern events
@@ -45,8 +44,10 @@ export abstract class ActorRdfResolveQuadPatternSource extends ActorRdfResolveQu
     if (source.matchLazy) {
       return { data: source.matchLazy(pattern.subject, pattern.predicate, pattern.object, pattern.graph) };
     }
-    return { data: new QuadStreamIterator(
-      source.match(pattern.subject, pattern.predicate, pattern.object, pattern.graph)) };
+    return { data:
+      // TODO: AsyncIterator fix typings
+      (<any> AsyncIterator).wrap(source.match(pattern.subject, pattern.predicate, pattern.object, pattern.graph)),
+    };
   }
 
   /**

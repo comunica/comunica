@@ -68,5 +68,20 @@ describe('ActorRdfMetadataPrimaryTopic', () => {
           ]);
         });
     });
+
+    it('should run and delegate errors', () => {
+      return actor.run({ pageUrl: '', quads: input })
+        .then((output) => {
+          setImmediate(() => input.emit('error', new Error('RDF Meta Primary Topic error')));
+          output.data.on('data', () => { return; });
+          return Promise.all([new Promise((resolve, reject) => {
+            output.data.on('error', resolve);
+          }), new Promise((resolve, reject) => {
+            output.metadata.on('error', resolve);
+          })]).then((errors) => {
+            return expect(errors).toHaveLength(2);
+          });
+        });
+    });
   });
 });

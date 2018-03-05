@@ -5,6 +5,7 @@ import {MediatorRace} from "@comunica/mediator-race";
 import {Readable} from "stream";
 import {ActorInitRdfParse} from "../lib/ActorInitRdfParse";
 const stringToStream = require('streamify-string');
+const arrayifyStream = require('arrayify-stream');
 
 const n3 = require('@comunica/actor-rdf-parse-n3/node_modules/n3/N3.js');
 Object.keys(n3).forEach((submodule) => n3[submodule] = n3[submodule]);
@@ -73,6 +74,13 @@ describe('ActorInitRdfParse', () => {
     it('should run', () => {
       return expect(actor.run({ argv: [ 'https://www.google.com/' ], env: {}, stdin: input })).resolves
         .toHaveProperty('stdout');
+    });
+
+    it('should run', () => {
+      return actor.run({ argv: [ 'https://www.google.com/' ], env: {}, stdin: input })
+        .then(async (output) => {
+          return expect(await arrayifyStream(output.stdout)).toBeTruthy();
+        });
     });
   });
 });

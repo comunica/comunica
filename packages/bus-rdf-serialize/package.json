@@ -39,6 +39,20 @@
   "dependencies": {
     "@comunica/actor-abstract-mediatyped": "^0.0.1"
   },
+  "jest": {
+    "transform": {
+      "^.+\\.ts$": "<rootDir>/../../node_modules/ts-jest/preprocessor.js"
+    },
+    "transformIgnorePatterns": [
+      "[/\\\\]node_modules[/\\\\].+\\.(js|jsx)$"
+    ],
+    "testRegex": "(/test/.*|(\\.|/)(test|spec))\\.ts$",
+    "moduleFileExtensions": [
+      "ts",
+      "js"
+    ],
+    "collectCoverage": true
+  },
   "scripts": {
     "lint": "node \"../../node_modules/tslint/bin/tslint\" lib/**/*.ts test/**/*.ts --exclude '**/*.d.ts'",
     "build": "node \"../../node_modules/typescript/bin/tsc\"",
