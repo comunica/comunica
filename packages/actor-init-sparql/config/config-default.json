@@ -19,7 +19,7 @@
     "https://linkedsoftwaredependencies.org/contexts/comunica-actor-query-operation-describe-subject.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-actor-query-operation-distinct-hash.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-actor-query-operation-filter-direct.jsonld",
-    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-query-operation-from.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-query-operation-from-quad.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-actor-query-operation-join.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-actor-query-operation-leftjoin-nestedloop.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-actor-query-operation-orderby-direct.jsonld",
@@ -184,7 +184,7 @@
 
         {
           "@id": "ex:myFromQueryOperator",
-          "@type": "ActorQueryOperationFrom",
+          "@type": "ActorQueryOperationFromQuad",
           "cbqo:mediatorQueryOperation": { "@id": "ex:mediatorQueryOperation" }
         },
 

@@ -7,7 +7,7 @@ import {Algebra, Factory} from "sparqlalgebrajs";
 /**
  * A comunica From Query Operation Actor.
  */
-export class ActorQueryOperationFrom extends ActorQueryOperationTypedMediated<Algebra.From> {
+export class ActorQueryOperationFromQuad extends ActorQueryOperationTypedMediated<Algebra.From> {
 
   private static FACTORY: Factory = new Factory();
   private static ALGEBRA_TYPES: string[] = Object.keys(Algebra.types).map((key) => (<any> Algebra.types)[key]);
@@ -17,22 +17,38 @@ export class ActorQueryOperationFrom extends ActorQueryOperationTypedMediated<Al
   }
 
   /**
-   * Recursively transform the given operation to use the given graph as default graph
-   * This will create a new operation and not modify the given operation.
+   * Recursively transform the given operation to use the given graphs as default graph
+   * This will (possibly) create a new operation and not modify the given operation.
    * @param {Operation} operation An operation.
-   * @param {RDF.Term} graph A graph term.
+   * @param {RDF.Term[]} graphs Graph terms.
    * @return {Operation} A new operation.
    */
-  public static applyOperationGraph(operation: Algebra.Operation, graph: RDF.Term): Algebra.Operation {
-    // If the operation is a BGP or Path, change the graph.
-    if (operation.type === 'bgp') {
-      return ActorQueryOperationFrom.FACTORY.createBgp((<Algebra.Bgp> operation).patterns.map(
-        (quad) => quad.graph.termType === 'DefaultGraph'
-          ? ActorQueryOperationFrom.FACTORY.createPattern(quad.subject, quad.predicate, quad.object, graph) : quad));
+  public static applyOperationGraph(operation: Algebra.Operation, graphs: RDF.Term[]): Algebra.Operation {
+    // If the operation is a Pattern or Path, change the graph.
+    if (operation.type === 'pattern') {
+      const pattern: Algebra.Pattern = <Algebra.Pattern> operation;
+      const defaultGraph: boolean = pattern.graph.termType === 'DefaultGraph';
+      if (graphs.length === 1) {
+        const graph: RDF.Term = graphs[0];
+        return defaultGraph ? ActorQueryOperationFromQuad.FACTORY
+            .createPattern(pattern.subject, pattern.predicate, pattern.object, graph) : pattern;
+      } else {
+        return defaultGraph ? ActorQueryOperationFromQuad.unionOperations(graphs.map(
+          (graph: RDF.Term) => ActorQueryOperationFromQuad.applyOperationGraph(operation, [graph])))
+          : operation;
+      }
     } else if (operation.type === 'path') {
       const path: Algebra.Path = <Algebra.Path> operation;
-      return ActorQueryOperationFrom.FACTORY.createPath(path.subject, path.predicate, path.object,
-        path.graph.termType === 'DefaultGraph' ? graph : path.graph);
+      const defaultGraph: boolean = path.graph.termType === 'DefaultGraph';
+      if (graphs.length === 1) {
+        const graph: RDF.Term = graphs[0];
+        return defaultGraph ? ActorQueryOperationFromQuad.FACTORY
+          .createPath(path.subject, path.predicate, path.object, graph) : path;
+      } else {
+        return defaultGraph ? ActorQueryOperationFromQuad.unionOperations(graphs.map(
+          (graph: RDF.Term) => ActorQueryOperationFromQuad.applyOperationGraph(operation, [graph])))
+          : operation;
+      }
     }
 
     // Otherwise, copy the operation and recursively call this method.
@@ -43,10 +59,10 @@ export class ActorQueryOperationFrom extends ActorQueryOperationTypedMediated<Al
           copiedOperation[key] = operation[key];
         } else {
           copiedOperation[key] = operation[key]
-            .map((subOperation: any) => this.applyOperationGraph(subOperation, graph));
+            .map((subOperation: any) => this.applyOperationGraph(subOperation, graphs));
         }
-      } else if (ActorQueryOperationFrom.ALGEBRA_TYPES.indexOf(operation[key].type) >= 0) {
-        copiedOperation[key] = this.applyOperationGraph(operation[key], graph);
+      } else if (ActorQueryOperationFromQuad.ALGEBRA_TYPES.indexOf(operation[key].type) >= 0) {
+        copiedOperation[key] = this.applyOperationGraph(operation[key], graphs);
       } else {
         copiedOperation[key] = operation[key];
       }
@@ -61,9 +77,9 @@ export class ActorQueryOperationFrom extends ActorQueryOperationTypedMediated<Al
    */
   public static unionOperations(operations: Algebra.Operation[]): Algebra.Union {
     if (operations.length === 2) {
-      return ActorQueryOperationFrom.FACTORY.createUnion(operations[0], operations[1]);
+      return ActorQueryOperationFromQuad.FACTORY.createUnion(operations[0], operations[1]);
     } else if (operations.length > 2) {
-      return ActorQueryOperationFrom.FACTORY.createUnion(operations.shift(), this.unionOperations(operations));
+      return ActorQueryOperationFromQuad.FACTORY.createUnion(operations.shift(), this.unionOperations(operations));
     } else {
       throw new Error('A union can only be applied on at least two operations');
     }
@@ -94,19 +110,15 @@ export class ActorQueryOperationFrom extends ActorQueryOperationTypedMediated<Al
   /**
    * Transform an operation based on the default graphs in the pattern.
    * FROM sets the default graph.
-   * If multiple are available, take the union of the operation for all of them.
+   * If multiple are available, take the union of the operation for all of them at quad-pattern level.
    * @param {From} pattern A from operation.
    * @return {Operation} The transformed operation.
    */
   public static createOperation(pattern: Algebra.From): Algebra.Operation {
     if (!pattern.default.length) {
       return pattern.input;
-    } else if (pattern.default.length === 1) {
-      return ActorQueryOperationFrom.applyOperationGraph(pattern.input, pattern.default[0]);
-    } else {
-      return ActorQueryOperationFrom.unionOperations(pattern.default.map(
-        (graph: RDF.Term) => ActorQueryOperationFrom.applyOperationGraph(pattern.input, graph)));
     }
+    return ActorQueryOperationFromQuad.applyOperationGraph(pattern.input, pattern.default);
   }
 
   public async testOperation(pattern: Algebra.From, context?: { [id: string]: any }): Promise<IActorTest> {
@@ -115,8 +127,8 @@ export class ActorQueryOperationFrom extends ActorQueryOperationTypedMediated<Al
 
   public async runOperation(pattern: Algebra.From, context?: { [id: string]: any })
   : Promise<IActorQueryOperationOutput> {
-    context = ActorQueryOperationFrom.transformContext(pattern, context);
-    const operation: Algebra.Operation = ActorQueryOperationFrom.createOperation(pattern);
+    context = ActorQueryOperationFromQuad.transformContext(pattern, context);
+    const operation: Algebra.Operation = ActorQueryOperationFromQuad.createOperation(pattern);
     return this.mediatorQueryOperation.mediate({ operation, context });
   }
 }

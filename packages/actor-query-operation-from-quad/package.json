@@ -1,17 +1,17 @@
 {
-  "name": "@comunica/actor-query-operation-from",
+  "name": "@comunica/actor-query-operation-from-quad",
   "version": "0.0.1",
   "description": "A from query-operation actor",
-  "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-from",
+  "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-from-quad",
   "lsd:components": "components/components.jsonld",
   "lsd:contexts": {
-    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-query-operation-from.jsonld": "components/context.jsonld"
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-query-operation-from-quad.jsonld": "components/context.jsonld"
   },
   "main": "index.js",
   "typings": "index",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/comunica/actor-query-operation-from.git"
+    "url": "git+https://github.com/comunica/actor-query-operation-from-quad.git"
   },
   "keywords": [
     "comunica",
@@ -21,9 +21,9 @@
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/comunica/actor-query-operation-from/issues"
+    "url": "https://github.com/comunica/actor-query-operation-from-quad/issues"
   },
-  "homepage": "https://github.com/comunica/actor-query-operation-from#readme",
+  "homepage": "https://github.com/comunica/actor-query-operation-from-quad#readme",
   "files": [
     "components",
     "lib/**/*.d.ts",
