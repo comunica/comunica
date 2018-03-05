@@ -1,9 +1,0 @@
-{
-  "@context": "https://linkedsoftwaredependencies.org/contexts/comunica-actor-query-operation-from.jsonld",
-  "@id": "npmd:@comunica/actor-query-operation-from",
-  "@type": "Module",
-  "requireName": "@comunica/actor-query-operation-from",
-  "import": [
-    "Actor/QueryOperation/From.jsonld"
-  ]
-}

@@ -3,9 +3,9 @@
     "https://linkedsoftwaredependencies.org/contexts/components.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
-      "caqof": "npmd:@comunica/actor-query-operation-from/",
+      "caqof": "npmd:@comunica/actor-query-operation-from-quad/",
 
-      "ActorQueryOperationFrom": "caqof:Actor/QueryOperation/From"
+      "ActorQueryOperationFromQuad": "caqof:Actor/QueryOperation/FromQuad"
     }
   ]
 }
