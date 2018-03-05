@@ -1,29 +1,29 @@
 {
-  "name": "@comunica/actor-query-operation-quadpattern",
+  "name": "@comunica/actor-query-operation-from",
   "version": "0.0.1",
-  "description": "A quadpattern query-operation actor",
-  "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-quadpattern",
+  "description": "A from query-operation actor",
+  "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-from",
   "lsd:components": "components/components.jsonld",
   "lsd:contexts": {
-    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-query-operation-quadpattern.jsonld": "components/context.jsonld"
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-query-operation-from.jsonld": "components/context.jsonld"
   },
   "main": "index.js",
   "typings": "index",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/comunica/actor-query-operation-quadpattern.git"
+    "url": "git+https://github.com/comunica/actor-query-operation-from.git"
   },
   "keywords": [
     "comunica",
     "actor",
     "query-operation",
-    "quadpattern"
+    "from"
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/comunica/actor-query-operation-quadpattern/issues"
+    "url": "https://github.com/comunica/actor-query-operation-from/issues"
   },
-  "homepage": "https://github.com/comunica/actor-query-operation-quadpattern#readme",
+  "homepage": "https://github.com/comunica/actor-query-operation-from#readme",
   "files": [
     "components",
     "lib/**/*.d.ts",
@@ -32,20 +32,16 @@
     "index.js"
   ],
   "dependencies": {
-    "rdf-string": "^1.0.1",
-    "rdf-terms": "^1.1.0",
-    "asynciterator-promiseproxy": "^1.1.0",
-    "asynciterator-union": "^1.1.0"
+    "lodash.intersectionwith": "^4.4.0",
+    "sparqlalgebrajs": "^0.7.5"
   },
   "peerDependencies": {
     "@comunica/core": "^0.0.1",
-    "@comunica/bus-query-operation": "^0.0.1",
-    "@comunica/bus-rdf-resolve-quad-pattern": "^0.0.1"
+    "@comunica/bus-query-operation": "^0.0.1"
   },
   "devDependencies": {
     "@comunica/core": "^0.0.1",
-    "@comunica/bus-query-operation": "^0.0.1",
-    "@comunica/bus-rdf-resolve-quad-pattern": "^0.0.1"
+    "@comunica/bus-query-operation": "^0.0.1"
   },
   "jest": {
     "transform": {

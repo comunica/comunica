@@ -1,0 +1,21 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-query-operation-from.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-query-operation.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-query-operation-from",
+  "components": [
+    {
+      "@id": "caqof:Actor/QueryOperation/From",
+      "@type": "Class",
+      "extends": "cbqo:Actor/QueryOperationTypedMediated",
+      "requireElement": "ActorQueryOperationFrom",
+      "comment": "A comunica From Query Operation Actor.",
+      "constructorArguments": [
+        {
+          "extends": "cbqo:Actor/QueryOperationTypedMediated/constructorArgumentsObject"
+        }
+      ]
+    }
+  ]
+}

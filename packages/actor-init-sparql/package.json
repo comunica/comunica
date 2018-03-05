@@ -63,6 +63,7 @@
     "@comunica/actor-query-operation-describe-subject": "^0.0.1",
     "@comunica/actor-query-operation-distinct-hash": "^0.0.1",
     "@comunica/actor-query-operation-filter-direct": "^0.0.1",
+    "@comunica/actor-query-operation-from": "^0.0.1",
     "@comunica/actor-query-operation-join": "^0.0.1",
     "@comunica/actor-query-operation-leftjoin-nestedloop": "^0.0.1",
     "@comunica/actor-query-operation-orderby-direct": "^0.0.1",

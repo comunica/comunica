@@ -59,6 +59,12 @@
   dependencies:
     "@types/lodash" "*"
 
+"@types/lodash.intersectionwith@^4.4.3":
+  version "4.4.3"
+  resolved "https://registry.yarnpkg.com/@types/lodash.intersectionwith/-/lodash.intersectionwith-4.4.3.tgz#da3ee3e48bf0141f107106a40da1e4787a95cb87"
+  dependencies:
+    "@types/lodash" "*"
+
 "@types/lodash.mapvalues@^4.6.3":
   version "4.6.3"
   resolved "https://registry.yarnpkg.com/@types/lodash.mapvalues/-/lodash.mapvalues-4.6.3.tgz#71208ea7b08d7fc939b37c1922b8c7cc07af89b3"
@@ -3860,9 +3866,9 @@ source-map@^0.6.0, source-map@~0.6.1:
   version "0.6.1"
   resolved "https://registry.yarnpkg.com/source-map/-/source-map-0.6.1.tgz#74722af32e9614e9c287a8d0bbde48b5e2f1a263"
 
-sparqlalgebrajs@^0.7.2:
-  version "0.7.3"
-  resolved "https://registry.yarnpkg.com/sparqlalgebrajs/-/sparqlalgebrajs-0.7.3.tgz#705d31bb15e35b1b41febb31f97728625750e897"
+sparqlalgebrajs@^0.7.5:
+  version "0.7.5"
+  resolved "https://registry.yarnpkg.com/sparqlalgebrajs/-/sparqlalgebrajs-0.7.5.tgz#a4dfb656cbad518194c7fcbb27faf77907bd647b"
   dependencies:
     lodash.isequal "^4.5.0"
     minimist "^1.2.0"
