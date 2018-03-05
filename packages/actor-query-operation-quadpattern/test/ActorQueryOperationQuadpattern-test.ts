@@ -2,7 +2,7 @@ import {ActorQueryOperation, IActorQueryOperationOutputBindings} from "@comunica
 import {Bindings} from "@comunica/bus-query-operation";
 import {Bus} from "@comunica/core";
 import {ArrayIterator} from "asynciterator";
-import {blankNode, namedNode, variable} from "rdf-data-model";
+import {blankNode, defaultGraph, namedNode, variable} from "rdf-data-model";
 import * as RDF from "rdf-js";
 import {Algebra} from "sparqlalgebrajs";
 import {ActorQueryOperationQuadpattern} from "../lib/ActorQueryOperationQuadpattern";
@@ -33,6 +33,69 @@ describe('ActorQueryOperationQuadpattern', () => {
     });
   });
 
+  describe('#isTermVariableOrBlank', () => {
+    it('should be true for a variable', () => {
+      expect(ActorQueryOperationQuadpattern.isTermVariableOrBlank(variable('v'))).toBeTruthy();
+    });
+
+    it('should be true for a blank node', () => {
+      expect(ActorQueryOperationQuadpattern.isTermVariableOrBlank(blankNode())).toBeTruthy();
+    });
+
+    it('should be false for a named node', () => {
+      expect(ActorQueryOperationQuadpattern.isTermVariableOrBlank(namedNode('n'))).toBeFalsy();
+    });
+  });
+
+  describe('#unionMetadata', () => {
+    it('should be 0 for an empty array', () => {
+      expect(ActorQueryOperationQuadpattern.unionMetadata([])()).resolves.toEqual({ totalItems: 0 });
+    });
+
+    it('should be 1 for [1]', () => {
+      expect(ActorQueryOperationQuadpattern.unionMetadata([
+        () => Promise.resolve({ totalItems: 1 }),
+      ])()).resolves.toEqual({ totalItems: 1 });
+    });
+
+    it('should be 3 for [1, 2]', () => {
+      expect(ActorQueryOperationQuadpattern.unionMetadata([
+        () => Promise.resolve({ totalItems: 1 }),
+        () => Promise.resolve({ totalItems: 2 }),
+      ])()).resolves.toEqual({ totalItems: 3 });
+    });
+
+    it('should be Infinity for [null, 2]', () => {
+      expect(ActorQueryOperationQuadpattern.unionMetadata([
+        null,
+        () => Promise.resolve({ totalItems: 2 }),
+      ])()).resolves.toEqual({ totalItems: Infinity });
+    });
+
+    it('should be Infinity for [Infinity, 2]', () => {
+      expect(ActorQueryOperationQuadpattern.unionMetadata([
+        () => Promise.resolve({ totalItems: Infinity }),
+        () => Promise.resolve({ totalItems: 2 }),
+      ])()).resolves.toEqual({ totalItems: Infinity });
+    });
+
+    it('should be Infinity for [{}, 2]', () => {
+      expect(ActorQueryOperationQuadpattern.unionMetadata([
+        () => Promise.resolve({ }),
+        () => Promise.resolve({ totalItems: 2 }),
+      ])()).resolves.toEqual({ totalItems: Infinity });
+    });
+  });
+
+  describe('#newEmptyResult', () => {
+    it('should be empty', async () => {
+      const output = ActorQueryOperationQuadpattern.newEmptyResult(['a']);
+      expect(await arrayifyStream(output.bindingsStream)).toEqual([]);
+      expect(await output.metadata()).toEqual({ totalItems: 0 });
+      expect(output.variables).toEqual(['a']);
+    });
+  });
+
   describe('An ActorQueryOperationQuadpattern instance', () => {
     let actor: ActorQueryOperationQuadpattern;
     let mediator;
@@ -40,7 +103,7 @@ describe('ActorQueryOperationQuadpattern', () => {
     let metadataRaw;
 
     beforeEach(() => {
-      metadataRaw = 'metadata';
+      metadataRaw = Promise.resolve({ totalItems: 3 });
       metadata = () => metadataRaw;
       mediator = {
         mediate: () => Promise.resolve({ data: new ArrayIterator([
@@ -116,6 +179,158 @@ describe('ActorQueryOperationQuadpattern', () => {
             Bindings({ '?p': <RDF.Term> { value: 'p2' } }),
             Bindings({ '?p': <RDF.Term> { value: 'p3' } }),
           ]);
+      });
+    });
+
+    it('should run s ?p o g for an empty context', () => {
+      const operation = {
+        graph: namedNode('g'),
+        object: namedNode('o'),
+        predicate: variable('p'),
+        subject: namedNode('s'),
+        type: 'pattern',
+      };
+      const context = {};
+      return actor.run({ operation, context }).then(async (output: IActorQueryOperationOutputBindings) => {
+        expect(output.variables).toEqual([ '?p' ]);
+        expect(output.metadata()).toBe(metadataRaw);
+        expect(await arrayifyStream(output.bindingsStream)).toEqual(
+          [ Bindings({ '?p': <RDF.Term> { value: 'p1' } }),
+            Bindings({ '?p': <RDF.Term> { value: 'p2' } }),
+            Bindings({ '?p': <RDF.Term> { value: 'p3' } }),
+          ]);
+      });
+    });
+
+    it('should run s ?p o g for empty named graphs', () => {
+      const operation = {
+        graph: namedNode('g'),
+        object: namedNode('o'),
+        predicate: variable('p'),
+        subject: namedNode('s'),
+        type: 'pattern',
+      };
+      const context = { namedGraphs: [] };
+      return actor.run({ operation, context }).then(async (output: IActorQueryOperationOutputBindings) => {
+        expect(output.variables).toEqual([ '?p' ]);
+        expect(await output.metadata()).toEqual({ totalItems: 0 });
+        expect(await arrayifyStream(output.bindingsStream)).toEqual([]);
+      });
+    });
+
+    it('should run s ?p o g for named graph g', () => {
+      const operation = {
+        graph: namedNode('g'),
+        object: namedNode('o'),
+        predicate: variable('p'),
+        subject: namedNode('s'),
+        type: 'pattern',
+      };
+      const context = { namedGraphs: [ namedNode('g') ] };
+      return actor.run({ operation, context }).then(async (output: IActorQueryOperationOutputBindings) => {
+        expect(output.variables).toEqual([ '?p' ]);
+        expect(await output.metadata()).toEqual({ totalItems: 3 });
+        expect(await arrayifyStream(output.bindingsStream)).toEqual(
+          [ Bindings({ '?p': <RDF.Term> { value: 'p1' } }),
+            Bindings({ '?p': <RDF.Term> { value: 'p2' } }),
+            Bindings({ '?p': <RDF.Term> { value: 'p3' } }),
+          ]);
+      });
+    });
+
+    it('should run s ?p o g for named graph h', () => {
+      const operation = {
+        graph: namedNode('g'),
+        object: namedNode('o'),
+        predicate: variable('p'),
+        subject: namedNode('s'),
+        type: 'pattern',
+      };
+      const context = { namedGraphs: [ namedNode('h') ] };
+      return actor.run({ operation, context }).then(async (output: IActorQueryOperationOutputBindings) => {
+        expect(output.variables).toEqual([ '?p' ]);
+        expect(await output.metadata()).toEqual({ totalItems: 0 });
+        expect(await arrayifyStream(output.bindingsStream)).toEqual([]);
+      });
+    });
+
+    it('should run s ?p o ?g for named graph g', () => {
+      const operation = {
+        graph: variable('g'),
+        object: namedNode('o'),
+        predicate: variable('p'),
+        subject: namedNode('s'),
+        type: 'pattern',
+      };
+      const context = { namedGraphs: [ namedNode('g') ] };
+      return actor.run({ operation, context }).then(async (output: IActorQueryOperationOutputBindings) => {
+        expect(output.variables).toEqual([ '?p', '?g' ]);
+        expect(await output.metadata()).toEqual({ totalItems: 3 });
+        expect(await arrayifyStream(output.bindingsStream)).toEqual(
+          [ Bindings({ '?p': <RDF.Term> { value: 'p1' }, '?g': <RDF.Term> { value: 'g' } }),
+            Bindings({ '?p': <RDF.Term> { value: 'p2' }, '?g': <RDF.Term> { value: 'g' } }),
+            Bindings({ '?p': <RDF.Term> { value: 'p3' }, '?g': <RDF.Term> { value: 'g' } }),
+          ]);
+      });
+    });
+
+    it('should run s ?p o g for named graphs g and h', () => {
+      const operation = {
+        graph: namedNode('g'),
+        object: namedNode('o'),
+        predicate: variable('p'),
+        subject: namedNode('s'),
+        type: 'pattern',
+      };
+      const context = { namedGraphs: [ namedNode('g'), namedNode('h') ] };
+      return actor.run({ operation, context }).then(async (output: IActorQueryOperationOutputBindings) => {
+        expect(output.variables).toEqual([ '?p' ]);
+        expect(await output.metadata()).toEqual({ totalItems: 3 });
+        expect(await arrayifyStream(output.bindingsStream)).toEqual(
+          [ Bindings({ '?p': <RDF.Term> { value: 'p1' } }),
+            Bindings({ '?p': <RDF.Term> { value: 'p2' } }),
+            Bindings({ '?p': <RDF.Term> { value: 'p3' } }),
+          ]);
+      });
+    });
+
+    it('should run s ?p o ?g for named graphs g and h', () => {
+      const operation = {
+        graph: variable('g'),
+        object: namedNode('o'),
+        predicate: variable('p'),
+        subject: namedNode('s'),
+        type: 'pattern',
+      };
+      const context = { namedGraphs: [ namedNode('g'), namedNode('h') ] };
+      return actor.run({ operation, context }).then(async (output: IActorQueryOperationOutputBindings) => {
+        expect(output.variables).toEqual([ '?p', '?g' ]);
+        expect(await output.metadata()).toEqual({ totalItems: 6 });
+        expect(await arrayifyStream(output.bindingsStream)).toEqual(
+          [ Bindings({ '?p': <RDF.Term> { value: 'p1' }, '?g': <RDF.Term> { value: 'g' } }),
+            Bindings({ '?p': <RDF.Term> { value: 'p1' }, '?g': <RDF.Term> { value: 'h' } }),
+            Bindings({ '?p': <RDF.Term> { value: 'p2' }, '?g': <RDF.Term> { value: 'g' } }),
+            Bindings({ '?p': <RDF.Term> { value: 'p2' }, '?g': <RDF.Term> { value: 'h' } }),
+            Bindings({ '?p': <RDF.Term> { value: 'p3' }, '?g': <RDF.Term> { value: 'g' } }),
+            Bindings({ '?p': <RDF.Term> { value: 'p3' }, '?g': <RDF.Term> { value: 'h' } }),
+          ]);
+      });
+    });
+
+    // SPARQL spec (8.2) describes that when FROM NAMED's are used without a FROM, the default graph must be empty.
+    it('should run s ?p o for named graph h', () => {
+      const operation = {
+        graph: defaultGraph(),
+        object: namedNode('o'),
+        predicate: variable('p'),
+        subject: namedNode('s'),
+        type: 'pattern',
+      };
+      const context = { namedGraphs: [ namedNode('h') ] };
+      return actor.run({ operation, context }).then(async (output: IActorQueryOperationOutputBindings) => {
+        expect(output.variables).toEqual([ '?p' ]);
+        expect(await output.metadata()).toEqual({ totalItems: 0 });
+        expect(await arrayifyStream(output.bindingsStream)).toEqual([]);
       });
     });
   });
