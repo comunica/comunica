@@ -213,8 +213,12 @@ describe('ActorQueryOperationQuadpattern', () => {
       const context = { namedGraphs: [] };
       return actor.run({ operation, context }).then(async (output: IActorQueryOperationOutputBindings) => {
         expect(output.variables).toEqual([ '?p' ]);
-        expect(await output.metadata()).toEqual({ totalItems: 0 });
-        expect(await arrayifyStream(output.bindingsStream)).toEqual([]);
+        expect(output.metadata()).toBe(metadataRaw);
+        expect(await arrayifyStream(output.bindingsStream)).toEqual(
+          [ Bindings({ '?p': <RDF.Term> { value: 'p1' } }),
+            Bindings({ '?p': <RDF.Term> { value: 'p2' } }),
+            Bindings({ '?p': <RDF.Term> { value: 'p3' } }),
+          ]);
       });
     });
 
