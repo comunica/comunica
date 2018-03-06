@@ -93,11 +93,8 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
     let quadPattern: RDF.Quad = pattern;
     let bindGraph: RDF.Term = null;
     // Check if the available named graphs were specified
-    if (context && context.namedGraphs) {
-      if (!context.namedGraphs.length) {
-        // When no named graphs were deliberatively selected, we can't query anything
-        return ActorQueryOperationQuadpattern.newEmptyResult(variables);
-      } else if (context.namedGraphs.length === 1) {
+    if (context && context.namedGraphs && context.namedGraphs.length) {
+      if (context.namedGraphs.length === 1) {
         const variableGraph: boolean = ActorQueryOperationQuadpattern.isTermVariableOrBlank(pattern.graph);
         if (variableGraph || pattern.graph.equals(context.namedGraphs[0])) {
           // Only a single named graph is being queried, and it matches the pattern's graph
