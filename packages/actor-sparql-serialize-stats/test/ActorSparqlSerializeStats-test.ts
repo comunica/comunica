@@ -20,7 +20,6 @@ describe('ActorSparqlSerializeStats', () => {
 
     it('should be a ActorSparqlSerializeStats constructor', () => {
       expect(new (<any> ActorSparqlSerializeStats)({ name: 'actor', bus })).toBeInstanceOf(ActorSparqlSerializeStats);
-      // expect(new (<any> ActorSparqlSerializeStats)({ name: 'actor', bus })).toBeInstanceOf(ActorSparqlSerialize);
     });
 
     it('should not be able to create new ActorSparqlSerializeStats objects without \'new\'', () => {
@@ -34,9 +33,12 @@ describe('ActorSparqlSerializeStats', () => {
     let quadStream;
 
     beforeEach(() => {
-      actor = new ActorSparqlSerializeStats({ bus, delay: () => 3.14, mediaTypes: {
+      actor = new ActorSparqlSerializeStats({ bus, mediaTypes: {
         debug: 1.0,
       }, name: 'actor'});
+
+      actor.delay = () => 3.14;
+
       bindingsStream = new ArrayIterator([
         Bindings({ k1: namedNode('v1'), k2: null }),
         Bindings({ k1: null, k2: namedNode('v2') }),

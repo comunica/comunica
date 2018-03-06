@@ -9,14 +9,8 @@ import {Readable} from "stream";
  */
 export class ActorSparqlSerializeStats extends ActorSparqlSerializeFixedMediaTypes {
 
-  private startTime: [number, number] = process.hrtime();
-  private result: number = 1;
-
-  constructor(args: IActorSparqlSerializeStatsArgs) {
+  constructor(args: IActorSparqlSerializeFixedMediaTypesArgs) {
     super(args);
-    if (args.delay) {
-      this.delay = args.delay;
-    }
   }
 
   public async testHandleChecked(action: IActionSparqlSerialize) {
@@ -27,19 +21,19 @@ export class ActorSparqlSerializeStats extends ActorSparqlSerializeFixedMediaTyp
   }
 
   public pushHeader(data: Readable) {
-    const header: string = ['Result', 'Delay (ms)', // 'Requests (#)'
+    const header: string = ['Result', 'Delay (ms)',
     ].join(',');
     data.push(header + '\n');
   }
 
-  public pushStat(data: Readable) {
-    const row: string = [this.result++, this.delay(), // this._fragmentsClient.getRequestCount()
+  public pushStat(data: Readable, startTime: [number, number], result: number) {
+    const row: string = [result, this.delay(startTime),
     ].join(',');
     data.push(row + '\n');
   }
 
-  public pushFooter(data: Readable) {
-    const footer: string = ['TOTAL', this.delay(), // this._fragmentsClient.getRequestCount()
+  public pushFooter(data: Readable, startTime: [number, number]) {
+    const footer: string = ['TOTAL', this.delay(startTime),
     ].join(',');
     data.push(footer + '\n');
     data.push(null);
@@ -54,20 +48,20 @@ export class ActorSparqlSerializeStats extends ActorSparqlSerializeFixedMediaTyp
     const resultStream: NodeJS.EventEmitter = action.type === 'bindings' ?
     (<IActorQueryOperationOutputBindings> action).bindingsStream :
     (<IActorQueryOperationOutputQuads> action).quadStream;
+
+    // TODO: Make initiation timer configurable
+    const startTime = process.hrtime();
+    let result: number = 1;
+
     this.pushHeader(data);
-    resultStream.on('data', () => this.pushStat(data));
-    resultStream.on('end', () => this.pushFooter(data));
+    resultStream.on('data', () => this.pushStat(data, startTime, result++));
+    resultStream.on('end', () => this.pushFooter(data, startTime));
 
     return { data };
   }
 
-  private delay = function()  {
-    const time: [number, number] = process.hrtime(this.startTime);
+  public delay(startTime: [number, number]) {
+    const time: [number, number] = process.hrtime(startTime);
     return time[0] * 1000 + (time[1] / 1000000);
-  };
-
-}
-
-export interface IActorSparqlSerializeStatsArgs extends IActorSparqlSerializeFixedMediaTypesArgs {
-  delay(): number;
+  }
 }
