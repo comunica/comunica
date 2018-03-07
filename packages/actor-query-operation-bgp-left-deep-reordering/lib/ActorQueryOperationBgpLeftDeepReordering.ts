@@ -136,7 +136,7 @@ export class ActorQueryOperationBgpLeftDeepReordering extends ActorQueryOperatio
     const outputs = (await Promise.all(subPattern.map(
       (quad) => this.mediatorQueryOperation.mediate({ operation: quad, context }))))
       .map(ActorQueryOperation.getSafeBindings);
-    const metadatas = await Promise.all(outputs.map((output) => output.metadata));
+    const metadatas = await Promise.all(outputs.map((output) => output.metadata ? output.metadata() : <any> {}));
 
     for (let i = 0; i < subPattern.length; ++i) {
       const count = metadatas[i].totalItems;
@@ -151,6 +151,13 @@ export class ActorQueryOperationBgpLeftDeepReordering extends ActorQueryOperatio
         outputs[i].bindingsStream.close();
       }
     }
+    // can happen if there is not sufficient metadata
+    if (best.index < 0) {
+      best.index = 0;
+      outputs[0] = ActorQueryOperation.getSafeBindings(
+        await this.mediatorQueryOperation.mediate({ operation: subPattern[0], context }));
+    }
+
     subPattern.splice(best.index, 1);
 
     // create stream for the subPattern results

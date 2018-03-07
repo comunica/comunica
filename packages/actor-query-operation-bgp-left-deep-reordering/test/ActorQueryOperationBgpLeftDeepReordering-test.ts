@@ -28,7 +28,6 @@ describe('ActorQueryOperationBgpLeftDeepReordering', () => {
             const val = pattern.object.value;
             return {
               bindingsStream: new ArrayIterator<Bindings>(val === '1' || val === '2' ? [Bindings({})] : []),
-              metadata: Promise.resolve({ totalItems: 1 }),
               operated: arg,
               type: 'bindings',
               variables: [],
@@ -71,7 +70,7 @@ describe('ActorQueryOperationBgpLeftDeepReordering', () => {
         }
         return {
           bindingsStream,
-          metadata: Promise.resolve({ totalItems }),
+          metadata: () => Promise.resolve({ totalItems }),
           operated: arg,
           type: 'bindings',
           variables,
@@ -169,6 +168,26 @@ describe('ActorQueryOperationBgpLeftDeepReordering', () => {
         factory.createPattern(namedNode('a'), namedNode('a'), variable('x')),
         factory.createPattern(variable('x'), namedNode('a'), namedNode('a')),
       ])};
+      const output = <IActorQueryOperationOutputBindings> await actor.run(op);
+      expect(output.type).toEqual('bindings');
+      expect(output.variables).toMatchObject(['?x']);
+      const results = await arrayifyStream(output.bindingsStream);
+      expect(results).toContainEqual(Bindings({ '?x': literal('1') }));
+      expect(results).toContainEqual(Bindings({ '?x': literal('2') }));
+    });
+
+    it('should run on streams with no metadata', async () => {
+      const op = { operation: factory.createBgp([
+        factory.createPattern(namedNode('a'), namedNode('a'), variable('x')),
+        factory.createPattern(variable('x'), namedNode('a'), namedNode('a')),
+      ])};
+      mediatorQueryOperation.mediate = (arg) => {
+        return {
+          bindingsStream: new ArrayIterator([Bindings({ '?x': literal('1') }), Bindings({ '?x': literal('2') })]),
+          operated: arg,
+          type: 'bindings',
+        };
+      };
       const output = <IActorQueryOperationOutputBindings> await actor.run(op);
       expect(output.type).toEqual('bindings');
       expect(output.variables).toMatchObject(['?x']);
