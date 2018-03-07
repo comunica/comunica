@@ -131,33 +131,32 @@ export class ActorQueryOperationBgpLeftDeepReordering extends ActorQueryOperatio
 
     const best = {
       count: Infinity,
-      index: -1,
-      output: <IActorQueryOperationOutputBindings> null,
-      pattern: <Algebra.Pattern> null };
+      index: -1 };
+
+    const outputs = (await Promise.all(subPattern.map(
+      (quad) => this.mediatorQueryOperation.mediate({ operation: quad, context }))))
+      .map(ActorQueryOperation.getSafeBindings);
+    const metadatas = await Promise.all(outputs.map((output) => output.metadata));
+
     for (let i = 0; i < subPattern.length; ++i) {
-      const quad = subPattern[i];
-      const output = ActorQueryOperation.getSafeBindings(
-        await this.mediatorQueryOperation.mediate({ operation: quad, context }));
-      const count = (await output.metadata).totalItems;
+      const count = metadatas[i].totalItems;
       if (count < best.count) {
-        if (best.output) {
+        if (best.index >= 0) {
           // prevent useless nextPage calls
-          best.output.bindingsStream.close();
+          outputs[best.index].bindingsStream.close();
         }
         best.index = i;
         best.count = count;
-        best.pattern = quad;
-        best.output = output;
       } else {
-        output.bindingsStream.close();
+        outputs[i].bindingsStream.close();
       }
     }
     subPattern.splice(best.index, 1);
 
     // create stream for the subPattern results
-    let bindingsStream = best.output.bindingsStream;
+    let bindingsStream = outputs[best.index].bindingsStream;
     if (subPattern.length > 0) {
-      bindingsStream = new MultiTransformIterator<Bindings, Bindings>(best.output.bindingsStream);
+      bindingsStream = new MultiTransformIterator<Bindings, Bindings>(bindingsStream);
       (<MultiTransformIterator<Bindings, Bindings>> bindingsStream)._createTransformer = (bindings: Bindings) => {
         const bgp = this.factory.createBgp(subPattern.map((quad) => this.bindPattern(quad, bindings)));
         return this.getBoundOperationIterator(bgp, bindings, context);
