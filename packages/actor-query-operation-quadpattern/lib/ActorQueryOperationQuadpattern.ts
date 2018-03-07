@@ -5,10 +5,9 @@ import {IActionRdfResolveQuadPattern, IActorRdfResolveQuadPatternOutput} from "@
 import {Actor, IActorArgs, IActorTest, Mediator} from "@comunica/core";
 import {EmptyIterator} from "asynciterator";
 import {PromiseProxyIterator} from "asynciterator-promiseproxy";
-import {RoundRobinUnionIterator} from "asynciterator-union";
 import * as RDF from "rdf-js";
 import {termToString} from "rdf-string";
-import {getTerms, mapTerms, QuadTermName, reduceTerms, uniqTerms} from "rdf-terms";
+import {getTerms, QuadTermName, reduceTerms, uniqTerms} from "rdf-terms";
 import {Algebra} from "sparqlalgebrajs";
 
 /**
@@ -58,18 +57,6 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
   }
 
   /**
-   * @return {IActorQueryOperationOutputBindings} A new empty output result.
-   */
-  public static newEmptyResult(variables: string[]): IActorQueryOperationOutputBindings {
-    return {
-      bindingsStream: new EmptyIterator(),
-      metadata: () => Promise.resolve({ totalItems: 0 }),
-      type: 'bindings',
-      variables,
-    };
-  }
-
-  /**
    * Get all variables in the given pattern.
    * No duplicates are returned.
    * @param {RDF.Quad} pattern A quad pattern.
@@ -90,40 +77,8 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
     // Collect all variables from the pattern
     const variables: string[] = this.getVariables(pattern);
 
-    let quadPattern: RDF.Quad = pattern;
-    let bindGraph: RDF.Term = null;
-    // Check if the available named graphs were specified
-    if (context && context.namedGraphs && context.namedGraphs.length) {
-      if (context.namedGraphs.length === 1) {
-        const variableGraph: boolean = ActorQueryOperationQuadpattern.isTermVariableOrBlank(pattern.graph);
-        if (variableGraph || pattern.graph.equals(context.namedGraphs[0])) {
-          // Only a single named graph is being queried, and it matches the pattern's graph
-          if (variableGraph) {
-            quadPattern = mapTerms(quadPattern, (value, key) => key === 'graph' ? context.namedGraphs[0] : value);
-            bindGraph = context.namedGraphs[0];
-          }
-        } else {
-          // The single named graph does not match the pattern's graph, so the result is empty
-          return ActorQueryOperationQuadpattern.newEmptyResult(variables);
-        }
-      } else {
-        // Otherwise, take the union for all named graphs
-        const outputs: IActorQueryOperationOutputBindings[] = await Promise.all<IActorQueryOperationOutputBindings>(
-          context.namedGraphs.map((namedGraph: RDF.Term) => {
-            const subContext: {[id: string]: any} = Object.assign({}, context, { namedGraphs: [ namedGraph ] });
-            return this.runOperation(pattern, subContext);
-          }));
-        const subBindingsStream: BindingsStream = new RoundRobinUnionIterator(
-          outputs.map((output) => output.bindingsStream), { autoStart: true, maxBufferSize: 128 });
-        const subVariables: string[] = outputs[0].variables;
-        const subMetadata: () => Promise<{[id: string]: any}> = ActorQueryOperationQuadpattern.unionMetadata(
-          outputs.map((output) => output.metadata));
-        return { type: 'bindings', bindingsStream: subBindingsStream, variables: subVariables, metadata: subMetadata };
-      }
-    }
-
     // Resolve the quad pattern
-    const result = await this.mediatorResolveQuadPattern.mediate({ pattern: quadPattern, context });
+    const result = await this.mediatorResolveQuadPattern.mediate({ pattern, context });
 
     // Convenience datastructure for mapping quad elements to variables
     const elementVariables: {[key: string]: string} = reduceTerms(pattern,
@@ -135,9 +90,7 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
       }, {});
     const quadBindingsReducer = (acc: {[key: string]: RDF.Term}, term: RDF.Term, key: QuadTermName) => {
       const variable: string = elementVariables[key];
-      if (bindGraph && key === 'graph') {
-        acc[variable] = bindGraph;
-      } else if (variable) {
+      if (variable) {
         acc[variable] = term;
       }
       return acc;
