@@ -1,0 +1,21 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-query-operation-values.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-query-operation.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-query-operation-values",
+  "components": [
+    {
+      "@id": "caqov:Actor/QueryOperation/Values",
+      "@type": "Class",
+      "extends": "cbqo:Actor/QueryOperation",
+      "requireElement": "ActorQueryOperationValues",
+      "comment": "A comunica Values Query Operation Actor.",
+      "constructorArguments": [
+        {
+          "extends": "cbqo:Actor/QueryOperation/constructorArgumentsObject"
+        }
+      ]
+    }
+  ]
+}
