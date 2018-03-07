@@ -33,30 +33,6 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
   }
 
   /**
-   * Takes the union of the given metadata array.
-   * It will ensure that the totalItems metadata value is properly calculated.
-   * @param {(() => Promise<{[p: string]: any}>)[]} metadatas Array of metadata.
-   * @return {() => Promise<{[p: string]: any}>} Union of the metadata.
-   */
-  public static unionMetadata(metadatas: (() => Promise<{[id: string]: any}>)[]): () => Promise<{[id: string]: any}> {
-    return () => {
-      return Promise.all(metadatas.map((m) => m ? m() : null))
-        .then((metaObjects: {[id: string]: any}[]) => {
-          let totalItems: number = 0;
-          for (const metadata of metaObjects) {
-            if (metadata && (metadata.totalItems || metadata.totalItems === 0) && isFinite(metadata.totalItems)) {
-              totalItems += metadata.totalItems;
-            } else {
-              totalItems = Infinity;
-              break;
-            }
-          }
-          return { totalItems };
-        });
-    };
-  }
-
-  /**
    * Get all variables in the given pattern.
    * No duplicates are returned.
    * @param {RDF.Quad} pattern A quad pattern.
@@ -74,11 +50,11 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
 
   public async runOperation(pattern: Algebra.Pattern, context?: {[id: string]: any})
   : Promise<IActorQueryOperationOutputBindings> {
-    // Collect all variables from the pattern
-    const variables: string[] = this.getVariables(pattern);
-
     // Resolve the quad pattern
     const result = await this.mediatorResolveQuadPattern.mediate({ pattern, context });
+
+    // Collect all variables from the pattern
+    const variables: string[] = this.getVariables(pattern);
 
     // Convenience datastructure for mapping quad elements to variables
     const elementVariables: {[key: string]: string} = reduceTerms(pattern,

@@ -47,46 +47,6 @@ describe('ActorQueryOperationQuadpattern', () => {
     });
   });
 
-  describe('#unionMetadata', () => {
-    it('should be 0 for an empty array', () => {
-      expect(ActorQueryOperationQuadpattern.unionMetadata([])()).resolves.toEqual({ totalItems: 0 });
-    });
-
-    it('should be 1 for [1]', () => {
-      expect(ActorQueryOperationQuadpattern.unionMetadata([
-        () => Promise.resolve({ totalItems: 1 }),
-      ])()).resolves.toEqual({ totalItems: 1 });
-    });
-
-    it('should be 3 for [1, 2]', () => {
-      expect(ActorQueryOperationQuadpattern.unionMetadata([
-        () => Promise.resolve({ totalItems: 1 }),
-        () => Promise.resolve({ totalItems: 2 }),
-      ])()).resolves.toEqual({ totalItems: 3 });
-    });
-
-    it('should be Infinity for [null, 2]', () => {
-      expect(ActorQueryOperationQuadpattern.unionMetadata([
-        null,
-        () => Promise.resolve({ totalItems: 2 }),
-      ])()).resolves.toEqual({ totalItems: Infinity });
-    });
-
-    it('should be Infinity for [Infinity, 2]', () => {
-      expect(ActorQueryOperationQuadpattern.unionMetadata([
-        () => Promise.resolve({ totalItems: Infinity }),
-        () => Promise.resolve({ totalItems: 2 }),
-      ])()).resolves.toEqual({ totalItems: Infinity });
-    });
-
-    it('should be Infinity for [{}, 2]', () => {
-      expect(ActorQueryOperationQuadpattern.unionMetadata([
-        () => Promise.resolve({ }),
-        () => Promise.resolve({ totalItems: 2 }),
-      ])()).resolves.toEqual({ totalItems: Infinity });
-    });
-  });
-
   describe('An ActorQueryOperationQuadpattern instance', () => {
     let actor: ActorQueryOperationQuadpattern;
     let mediator;
