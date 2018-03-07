@@ -24,3 +24,4 @@ deploy:
   local-dir: documentation
   on:
     branch: master
+    node_js: "node"
