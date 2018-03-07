@@ -3,7 +3,6 @@ import {ActorQueryOperationTyped, Bindings, BindingsStream,
   IActorQueryOperationOutputBindings} from "@comunica/bus-query-operation";
 import {IActionRdfResolveQuadPattern, IActorRdfResolveQuadPatternOutput} from "@comunica/bus-rdf-resolve-quad-pattern";
 import {Actor, IActorArgs, IActorTest, Mediator} from "@comunica/core";
-import {EmptyIterator} from "asynciterator";
 import {PromiseProxyIterator} from "asynciterator-promiseproxy";
 import * as RDF from "rdf-js";
 import {termToString} from "rdf-string";
