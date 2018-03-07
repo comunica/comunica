@@ -11,7 +11,7 @@ using [Lerna](https://lernajs.io/).
 Comunica requires Node.js 8.0 or higher and is tested on OSX and Linux.
 
 This repository should be used by Comunica module **developers**.
-If you want to **use** Comunica, have a look at the manual TODO.
+If you want to **use** Comunica, have a look at the [manual](http://comunica.readthedocs.io/en/latest/).
 
 ## Intro
 
