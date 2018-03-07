@@ -32,7 +32,7 @@
     "index.js"
   ],
   "dependencies": {
-    "lodash.intersectionwith": "^4.4.0",
+    "lodash.find":"^4.6.0",
     "sparqlalgebrajs": "^0.7.5"
   },
   "peerDependencies": {

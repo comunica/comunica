@@ -47,6 +47,12 @@
   dependencies:
     "@types/lodash" "*"
 
+"@types/lodash.find@^4.6.3":
+  version "4.6.3"
+  resolved "https://registry.yarnpkg.com/@types/lodash.find/-/lodash.find-4.6.3.tgz#1096c0ca2ec96051ab67dcc2689adb86f4979992"
+  dependencies:
+    "@types/lodash" "*"
+
 "@types/lodash.flatten@^4.4.3":
   version "4.4.3"
   resolved "https://registry.yarnpkg.com/@types/lodash.flatten/-/lodash.flatten-4.4.3.tgz#7806caef7eca7aa75600b2f87c474e3af980304a"
@@ -56,12 +62,6 @@
 "@types/lodash.intersection@^4.4.3":
   version "4.4.3"
   resolved "https://registry.yarnpkg.com/@types/lodash.intersection/-/lodash.intersection-4.4.3.tgz#04ee42b95cc9c7bee62ef8ca39041070161e3311"
-  dependencies:
-    "@types/lodash" "*"
-
-"@types/lodash.intersectionwith@^4.4.3":
-  version "4.4.3"
-  resolved "https://registry.yarnpkg.com/@types/lodash.intersectionwith/-/lodash.intersectionwith-4.4.3.tgz#da3ee3e48bf0141f107106a40da1e4787a95cb87"
   dependencies:
     "@types/lodash" "*"
 

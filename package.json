@@ -7,7 +7,7 @@
     "@types/lodash.defaults": "^4.2.3",
     "@types/lodash.flatten": "^4.4.3",
     "@types/lodash.intersection": "^4.4.3",
-    "@types/lodash.intersectionwith":"^4.4.3",
+    "@types/lodash.find": "^4.6.3",
     "@types/lodash.mapvalues": "^4.6.3",
     "@types/lodash.sortby": "^4.7.3",
     "@types/lodash.union": "^4.6.3",
