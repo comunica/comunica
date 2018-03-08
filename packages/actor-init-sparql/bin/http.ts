@@ -84,6 +84,10 @@ newEngineDynamic(options).then(async (engine: QueryEngine) => {
 
         try {
           const data: NodeJS.ReadableStream = (await engine.resultToString(result, mediaType)).data;
+          data.on('error', (e: Error) => {
+            process.stdout.write('[500] Server error in results: ' + e + ' \n');
+            response.end('An internal server error occurred.\n');
+          });
           data.pipe(response);
           eventEmitter = data;
         } catch (error) {
