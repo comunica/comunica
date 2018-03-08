@@ -27,8 +27,13 @@ export class ActorQueryOperationFilterDirect extends ActorQueryOperationTypedMed
 
     const exprFunc = SparqlExpressionEvaluator.createEvaluator(pattern.expression);
     const filter = (bindings: Bindings) => {
-      const term = exprFunc(bindings);
-      return term && term.value !== 'false' && term.value !== '0';
+      try {
+        const term = exprFunc(bindings);
+        return term && term.value !== 'false' && term.value !== '0';
+      } catch (e) {
+        bindingsStream.emit('error', e);
+        return false;
+      }
     };
     const bindingsStream = output.bindingsStream.filter(filter);
 

@@ -3,6 +3,7 @@ import {Bus} from "@comunica/core";
 import {ArrayIterator} from "asynciterator";
 import {literal, variable} from "rdf-data-model";
 import {ActorQueryOperationFilterDirect} from "../lib/ActorQueryOperationFilterDirect";
+import {SparqlExpressionEvaluator} from "../lib/SparqlExpressionEvaluator";
 const arrayifyStream = require('arrayify-stream');
 
 describe('ActorQueryOperationFilterDirect', () => {
@@ -101,6 +102,13 @@ describe('ActorQueryOperationFilterDirect', () => {
       expect(output.metadata()).toMatchObject(Promise.resolve({ totalItems: 3 }));
       expect(output.type).toEqual('bindings');
       expect(output.variables).toMatchObject(['a']);
+    });
+
+    it('should emit an error for an erroring filter', async () => {
+      SparqlExpressionEvaluator.createEvaluator = () => () => { throw new Error('error'); };
+      const op = {operation: {type: 'filter', input: {}, expression: falsyExpression}};
+      const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
+      return expect(arrayifyStream(output.bindingsStream)).rejects.toBeTruthy();
     });
   });
 });
