@@ -20,6 +20,7 @@
     "https://linkedsoftwaredependencies.org/contexts/comunica-actor-query-operation-describe-subject.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-actor-query-operation-distinct-hash.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-actor-query-operation-filter-direct.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-query-operation-from-quad.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-actor-query-operation-join.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-actor-query-operation-leftjoin-nestedloop.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-actor-query-operation-orderby-direct.jsonld",
@@ -27,6 +28,7 @@
     "https://linkedsoftwaredependencies.org/contexts/comunica-actor-query-operation-quadpattern.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-actor-query-operation-slice.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-actor-query-operation-union.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-query-operation-values.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-bus-rdf-resolve-quad-pattern.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-resolve-quad-pattern-ostrich.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-bus-http.jsonld",
@@ -189,6 +191,12 @@
         },
 
         {
+          "@id": "ex:myFromQueryOperator",
+          "@type": "ActorQueryOperationFromQuad",
+          "cbqo:mediatorQueryOperation": { "@id": "ex:mediatorQueryOperation" }
+        },
+
+        {
           "@id": "ex:myJoinQueryOperator",
           "@type": "ActorQueryOperationJoin",
           "cbqo:mediatorQueryOperation": { "@id": "ex:mediatorQueryOperation" },
@@ -221,6 +229,11 @@
           "@id": "ex:myUnionQueryOperator",
           "@type": "ActorQueryOperationUnion",
           "cbqo:mediatorQueryOperation": { "@id": "ex:mediatorQueryOperation" }
+        },
+
+        {
+          "@id": "ex:myValuesQueryOperator",
+          "@type": "ActorQueryOperationValues"
         },
 
         {
