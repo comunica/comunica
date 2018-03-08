@@ -104,7 +104,8 @@ export class ActorQueryOperationBgpLeftDeepReordering extends ActorQueryOperatio
         await this.mediatorQueryOperation.mediate({operation: op, context})).bindingsStream;
     };
     return new PromiseProxyIterator(
-      async () => (await getStream()).map((subBindings: Bindings) => subBindings.merge(bindings)));
+      async () => (await getStream()).map((subBindings: Bindings) => subBindings.merge(bindings)),
+      { autoStart: true, maxBufferSize: 128 });
   }
 
   public async testOperation(pattern: Algebra.Bgp, context?: {[id: string]: any}): Promise<IActorTest> {
@@ -117,7 +118,7 @@ export class ActorQueryOperationBgpLeftDeepReordering extends ActorQueryOperatio
   public async runOperation(pattern: Algebra.Bgp, context?: {[id: string]: any})
   : Promise<IActorQueryOperationOutputBindings> {
     const clusters = ActorQueryOperationBgpLeftDeepReordering.findConnectedPatterns(pattern.patterns);
-    // find cluster with least unbound variables (with the least patterns in case of a tie)
+    // Find cluster with least unbound variables (with the least patterns in case of a tie)
     const clusterValues = clusters.map((cluster) => {
       const val = -(pattern.patterns.length * cluster.variables.length + cluster.quads.length);
       return { val, cluster };
@@ -131,18 +132,23 @@ export class ActorQueryOperationBgpLeftDeepReordering extends ActorQueryOperatio
 
     const best = {
       count: Infinity,
-      index: -1 };
+      index: -1,
+    };
 
     const outputs = (await Promise.all(subPattern.map(
       (quad) => this.mediatorQueryOperation.mediate({ operation: quad, context }))))
       .map(ActorQueryOperation.getSafeBindings);
     const metadatas = await Promise.all(outputs.map((output) => output.metadata ? output.metadata() : <any> {}));
 
+    // Upper bound of # of elements: product of all counts
+    let countBound = 1;
+
     for (let i = 0; i < subPattern.length; ++i) {
-      const count = metadatas[i].totalItems;
+      const count = 'totalItems' in metadatas[i] ? metadatas[i].totalItems : Infinity;
+      countBound *= count;
       if (count < best.count) {
         if (best.index >= 0) {
-          // prevent useless nextPage calls
+          // Prevent useless nextPage calls
           outputs[best.index].bindingsStream.close();
         }
         best.index = i;
@@ -151,7 +157,7 @@ export class ActorQueryOperationBgpLeftDeepReordering extends ActorQueryOperatio
         outputs[i].bindingsStream.close();
       }
     }
-    // can happen if there is not sufficient metadata
+    // Can happen if there is not sufficient metadata
     if (best.index < 0) {
       best.index = 0;
       outputs[0] = ActorQueryOperation.getSafeBindings(
@@ -160,7 +166,7 @@ export class ActorQueryOperationBgpLeftDeepReordering extends ActorQueryOperatio
 
     subPattern.splice(best.index, 1);
 
-    // create stream for the subPattern results
+    // Create stream for the subPattern results
     let bindingsStream = outputs[best.index].bindingsStream;
     if (subPattern.length > 0) {
       bindingsStream = new MultiTransformIterator<Bindings, Bindings>(bindingsStream);
@@ -169,14 +175,30 @@ export class ActorQueryOperationBgpLeftDeepReordering extends ActorQueryOperatio
         return this.getBoundOperationIterator(bgp, bindings, context);
       };
     }
+    let metadata = () => Promise.resolve({ totalItems: countBound });
 
-    // join with the remaining patterns
+    // Join with the remaining patterns
     if (clusterValues.length > 0) {
       bindingsStream = new MultiTransformIterator<Bindings, Bindings>(bindingsStream);
       const patterns = Array.prototype.concat(...clusterValues.map((c) => c.cluster.quads));
       const bgp = this.factory.createBgp(patterns);
       (<MultiTransformIterator<Bindings, Bindings>> bindingsStream)._createTransformer = (bindings: Bindings) => {
         return this.getBoundOperationIterator(bgp, bindings, context);
+      };
+
+      // Update the metadata function to also add the counts of these patterns
+      metadata = async () => {
+        const remainingOutputs = (await Promise.all(patterns.map(
+          (quad) => this.mediatorQueryOperation.mediate({ operation: quad, context }))))
+          .map(ActorQueryOperation.getSafeBindings);
+        const remainingMetadatas = await Promise.all(remainingOutputs.map(
+          (output) => output.metadata ? output.metadata() : <any> {}));
+        return remainingMetadatas.reduce(
+          (acc, meta) => {
+            acc.totalItems *= 'totalItems' in meta ? meta.totalItems : Infinity;
+            return acc;
+          },
+          { totalItems: countBound });
       };
     }
 
@@ -185,7 +207,7 @@ export class ActorQueryOperationBgpLeftDeepReordering extends ActorQueryOperatio
         cluster.variables.filter((v) => vars.findIndex((val) => val.equals(v)) < 0)), [])
       .map((term) => termToString(term));
 
-    return { type: 'bindings', bindingsStream, variables };
+    return { type: 'bindings', bindingsStream, variables, metadata };
   }
 
 }

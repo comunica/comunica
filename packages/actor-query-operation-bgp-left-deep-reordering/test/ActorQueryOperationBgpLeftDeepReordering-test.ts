@@ -172,6 +172,7 @@ describe('ActorQueryOperationBgpLeftDeepReordering', () => {
       expect(output.type).toEqual('bindings');
       expect(output.variables).toMatchObject(['?x']);
       const results = await arrayifyStream(output.bindingsStream);
+      expect(results.length).toEqual(2);
       expect(results).toContainEqual(Bindings({ '?x': literal('1') }));
       expect(results).toContainEqual(Bindings({ '?x': literal('2') }));
     });
@@ -194,6 +195,7 @@ describe('ActorQueryOperationBgpLeftDeepReordering', () => {
       const results = await arrayifyStream(output.bindingsStream);
       expect(results).toContainEqual(Bindings({ '?x': literal('1') }));
       expect(results).toContainEqual(Bindings({ '?x': literal('2') }));
+      expect(await output.metadata()).toMatchObject({ totalItems: Infinity });
     });
 
     it('should run on more patterns', async () => {
@@ -206,12 +208,14 @@ describe('ActorQueryOperationBgpLeftDeepReordering', () => {
       expect(output.type).toEqual('bindings');
       expect(output.variables.sort()).toMatchObject(['?x', '?y']);
       const results = await arrayifyStream(output.bindingsStream);
+      expect(results.length).toEqual(6);
       expect(results).toContainEqual(Bindings({ '?x': literal('1'), '?y': literal('0') }));
       expect(results).toContainEqual(Bindings({ '?x': literal('1'), '?y': literal('1') }));
       expect(results).toContainEqual(Bindings({ '?x': literal('1'), '?y': literal('2') }));
       expect(results).toContainEqual(Bindings({ '?x': literal('2'), '?y': literal('0') }));
       expect(results).toContainEqual(Bindings({ '?x': literal('2'), '?y': literal('1') }));
       expect(results).toContainEqual(Bindings({ '?x': literal('2'), '?y': literal('2') }));
+      expect(await output.metadata()).toMatchObject({ totalItems: 36});
     });
 
     it('should support unconnected patterns', async () => {
@@ -223,6 +227,7 @@ describe('ActorQueryOperationBgpLeftDeepReordering', () => {
       expect(output.type).toEqual('bindings');
       expect(output.variables.sort()).toMatchObject(['?x', '?y']);
       const results = await arrayifyStream(output.bindingsStream);
+      expect(results.length).toEqual(9);
       expect(results).toContainEqual(Bindings({ '?x': literal('1'), '?y': literal('0') }));
       expect(results).toContainEqual(Bindings({ '?x': literal('2'), '?y': literal('0') }));
       expect(results).toContainEqual(Bindings({ '?x': literal('3'), '?y': literal('0') }));
@@ -232,6 +237,28 @@ describe('ActorQueryOperationBgpLeftDeepReordering', () => {
       expect(results).toContainEqual(Bindings({ '?x': literal('1'), '?y': literal('2') }));
       expect(results).toContainEqual(Bindings({ '?x': literal('2'), '?y': literal('2') }));
       expect(results).toContainEqual(Bindings({ '?x': literal('3'), '?y': literal('2') }));
+      expect(await output.metadata()).toMatchObject({ totalItems: 12 });
+    });
+
+    it('should support unconnected patterns without metadata', async () => {
+      const op = { operation: factory.createBgp([
+        factory.createPattern(namedNode('a'), namedNode('a'), variable('x')),
+        factory.createPattern(variable('y'), namedNode('a'), namedNode('a')),
+      ])};
+      mediatorQueryOperation.mediate = (arg) => {
+        return {
+          bindingsStream: new ArrayIterator([Bindings({ '?x': literal('1') })]),
+          operated: arg,
+          type: 'bindings',
+        };
+      };
+      const output = <IActorQueryOperationOutputBindings> await actor.run(op);
+      expect(output.type).toEqual('bindings');
+      expect(output.variables.sort()).toMatchObject(['?x', '?y']);
+      const results = await arrayifyStream(output.bindingsStream);
+      expect(results.length).toEqual(1);
+      expect(results).toContainEqual(Bindings({ '?x': literal('1') }));
+      expect(await output.metadata()).toMatchObject({ totalItems: Infinity });
     });
   });
 });
