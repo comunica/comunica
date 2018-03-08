@@ -63,6 +63,9 @@ export class ActorSparqlSerializeSparqlJson extends ActorSparqlSerializeFixedMed
       const resultStream: NodeJS.EventEmitter = (<IActorQueryOperationOutputBindings> action).bindingsStream;
 
       // Write bindings
+      resultStream.on('error', (e: Error) => {
+        data.emit('error', e);
+      });
       resultStream.on('data', (bindings: Bindings) => {
         if (empty) {
           data.push('"results": { "bindings": [\n');
@@ -89,8 +92,12 @@ export class ActorSparqlSerializeSparqlJson extends ActorSparqlSerializeFixedMed
         data.push(null);
       });
     } else {
-      data.push('"boolean":' + await (<IActorQueryOperationOutputBoolean> action).booleanResult + '\n}\n');
-      data.push(null);
+      try {
+        data.push('"boolean":' + await (<IActorQueryOperationOutputBoolean> action).booleanResult + '\n}\n');
+        data.push(null);
+      } catch (e) {
+        setImmediate(() => data.emit('error', e));
+      }
     }
 
     return { data };

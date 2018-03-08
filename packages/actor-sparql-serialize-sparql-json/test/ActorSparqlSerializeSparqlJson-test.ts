@@ -2,7 +2,9 @@ import {Bindings, BindingsStream} from "@comunica/bus-query-operation";
 import {Bus} from "@comunica/core";
 import {ArrayIterator} from "asynciterator";
 import {blankNode, defaultGraph, literal, namedNode} from "rdf-data-model";
+import {PassThrough} from "stream";
 import {ActorSparqlSerializeSparqlJson} from "../lib/ActorSparqlSerializeSparqlJson";
+
 const quad = require('rdf-quad');
 const stringifyStream = require('stream-to-string');
 
@@ -65,6 +67,7 @@ describe('ActorSparqlSerializeSparqlJson', () => {
     let bindingsStream: BindingsStream;
     let bindingsStreamPartial: BindingsStream;
     let bindingsStreamEmpty: BindingsStream;
+    let bindingsStreamError: BindingsStream;
     let quadStream;
     let variables;
 
@@ -82,6 +85,8 @@ describe('ActorSparqlSerializeSparqlJson', () => {
         Bindings({}),
       ]);
       bindingsStreamEmpty = new ArrayIterator([]);
+      bindingsStreamError = <any> new PassThrough();
+      (<any> bindingsStreamError)._read = <any> (() => { bindingsStreamError.emit('error', new Error()); });
       quadStream = new ArrayIterator([
         quad('http://example.org/a', 'http://example.org/b', 'http://example.org/c'),
         quad('http://example.org/a', 'http://example.org/d', 'http://example.org/e'),
@@ -173,6 +178,12 @@ describe('ActorSparqlSerializeSparqlJson', () => {
 `);
     });
 
+    it('should emit an error on an errorring bindings stream', async () => {
+      return expect((stringifyStream((await actor.run(
+        {handle: <any> { bindingsStream: bindingsStreamError, type: 'bindings', variables },
+          handleMediaType: 'json'})).handle.data))).rejects.toBeTruthy();
+    });
+
     it('should run on a boolean result that resolves to true', async () => {
       return expect((await stringifyStream((await actor.run(
         {handle: <any> { type: 'boolean', booleanResult: Promise.resolve(true), variables: [] },
@@ -191,6 +202,12 @@ describe('ActorSparqlSerializeSparqlJson', () => {
 "boolean":false
 }
 `);
+    });
+
+    it('should emit an error on a boolean result that rejects', async () => {
+      return expect((stringifyStream((await actor.run(
+        {handle: <any> { type: 'boolean', booleanResult: Promise.reject(new Error('e')), variables: [] },
+          handleMediaType: 'simple'})).handle.data))).rejects.toBeTruthy();
     });
   });
 });

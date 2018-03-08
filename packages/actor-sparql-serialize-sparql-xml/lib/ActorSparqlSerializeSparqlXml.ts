@@ -70,6 +70,9 @@ export class ActorSparqlSerializeSparqlXml extends ActorSparqlSerializeFixedMedi
       const resultStream: NodeJS.EventEmitter = (<IActorQueryOperationOutputBindings> action).bindingsStream;
 
       // Write bindings
+      resultStream.on('error', (e: Error) => {
+        data.emit('error', e);
+      });
       resultStream.on('data', (bindings: Bindings) => {
         // XML SPARQL results spec does not allow unbound variables and blank node bindings
         const realBindings = bindings.filter((v: RDF.Term, k: string) => !!v && k.startsWith('?'));
@@ -83,9 +86,13 @@ export class ActorSparqlSerializeSparqlXml extends ActorSparqlSerializeFixedMedi
         data.push(null);
       });
     } else {
-      root.push({ boolean: await (<IActorQueryOperationOutputBoolean> action).booleanResult });
-      root.close();
-      setImmediate(() => data.push(null));
+      try {
+        root.push({ boolean: await (<IActorQueryOperationOutputBoolean> action).booleanResult });
+        root.close();
+        setImmediate(() => data.push(null));
+      } catch (e) {
+        setImmediate(() => data.emit('error', e));
+      }
     }
 
     return { data };

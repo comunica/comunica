@@ -2,6 +2,7 @@ import {Bindings, BindingsStream} from "@comunica/bus-query-operation";
 import {Bus} from "@comunica/core";
 import {ArrayIterator} from "asynciterator";
 import {blankNode, defaultGraph, literal, namedNode} from "rdf-data-model";
+import {PassThrough} from "stream";
 import {ActorSparqlSerializeSparqlXml} from "../lib/ActorSparqlSerializeSparqlXml";
 const quad = require('rdf-quad');
 const stringifyStream = require('stream-to-string');
@@ -64,6 +65,7 @@ describe('ActorSparqlSerializeSparqlXml', () => {
     let actor: ActorSparqlSerializeSparqlXml;
     let bindingsStream: BindingsStream;
     let bindingsStreamPartial: BindingsStream;
+    let bindingsStreamError: BindingsStream;
     let quadStream;
     let variables;
 
@@ -80,6 +82,8 @@ describe('ActorSparqlSerializeSparqlXml', () => {
         Bindings({ '?k1': null, '?k2': namedNode('v2') }),
         Bindings({}),
       ]);
+      bindingsStreamError = <any> new PassThrough();
+      (<any> bindingsStreamError)._read = <any> (() => { bindingsStreamError.emit('error', new Error()); });
       quadStream = new ArrayIterator([
         quad('http://example.org/a', 'http://example.org/b', 'http://example.org/c'),
         quad('http://example.org/a', 'http://example.org/d', 'http://example.org/e'),
@@ -198,6 +202,12 @@ describe('ActorSparqlSerializeSparqlXml', () => {
 `);
       });
 
+      it('should emit an error on an errorring bindings stream', async () => {
+        return expect((stringifyStream((await actor.run(
+          {handle: <any> { bindingsStream: bindingsStreamError, type: 'bindings', variables },
+            handleMediaType: 'json'})).handle.data))).rejects.toBeTruthy();
+      });
+
       it('should run on a boolean result that resolves to true', async () => {
         return expect((await stringifyStream((await actor.run(
           {handle: <any> { type: 'boolean', booleanResult: Promise.resolve(true), variables: [] },
@@ -218,6 +228,12 @@ describe('ActorSparqlSerializeSparqlXml', () => {
   <boolean>false</boolean>
 </sparql>
 `);
+      });
+
+      it('should emit an error on a boolean result that rejects', async () => {
+        return expect((stringifyStream((await actor.run(
+          {handle: <any> { type: 'boolean', booleanResult: Promise.reject(new Error('e')), variables: [] },
+            handleMediaType: 'simple'})).handle.data))).rejects.toBeTruthy();
       });
     });
   });
