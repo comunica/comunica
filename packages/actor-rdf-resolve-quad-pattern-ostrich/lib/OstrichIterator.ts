@@ -37,6 +37,7 @@ export class OstrichIterator extends BufferedIterator<RDF.Quad> {
       this.close();
       return done();
     }
+    count = 10000; // TODO: Temporarily force a higher read count to fix a bug in ostrich on small counts
     this.query(count, (error: Error, triples: IStringQuad[], totalItems: number) => {
       if (error) {
         this.emit('error', error);
