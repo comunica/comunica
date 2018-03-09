@@ -49,17 +49,24 @@ export class ActorQueryOperationFromQuad extends ActorQueryOperationTypedMediate
    * @return {Operation} A new operation.
    */
   public static applyOperationDefaultGraph(operation: Algebra.Operation, defaultGraphs: RDF.Term[]): Algebra.Operation {
-    // If the operation is a Pattern or Path, change the graph.
-    if (operation.type === 'pattern' || operation.type === 'path') {
-      const patternGraph: RDF.Term = operation.graph;
+    // If the operation is a BGP or Path, change the graph.
+    if ((operation.type === 'bgp' && operation.patterns.length) || operation.type === 'path') {
+      let patternGraph: RDF.Term;
+      if (operation.type === 'bgp') {
+        // We assume that the BGP has at least one pattern and all have the same graph.
+        patternGraph = operation.patterns[0].graph;
+      } else {
+        patternGraph = operation.graph;
+      }
       const defaultGraph: boolean = patternGraph.termType === 'DefaultGraph';
       if (defaultGraphs.length === 1) {
         if (defaultGraph) {
           const graph: RDF.Term = defaultGraphs[0];
           // If the pattern's graph is the default graph, replace the graph directly.
-          if (operation.type === 'pattern') {
+          if (operation.type === 'bgp') {
             return ActorQueryOperationFromQuad.FACTORY
-              .createPattern(operation.subject, operation.predicate, operation.object, graph);
+              .createBgp(operation.patterns.map((pattern: Algebra.Pattern) => ActorQueryOperationFromQuad.FACTORY
+                .createPattern(pattern.subject, pattern.predicate, pattern.object, graph)));
           } else {
             return ActorQueryOperationFromQuad.FACTORY
               .createPath(operation.subject, operation.predicate, operation.object, graph);
@@ -88,9 +95,15 @@ export class ActorQueryOperationFromQuad extends ActorQueryOperationTypedMediate
    */
   public static applyOperationNamedGraph(operation: Algebra.Operation, namedGraphs: RDF.Term[],
                                          defaultGraphs: RDF.Term[]): Algebra.Operation {
-    // If the operation is a Pattern or Path, change the graph.
-    if (operation.type === 'pattern' || operation.type === 'path') {
-      const patternGraph: RDF.Term = operation.graph;
+    // If the operation is a BGP or Path, change the graph.
+    if ((operation.type === 'bgp' && operation.patterns.length) || operation.type === 'path') {
+      let patternGraph: RDF.Term;
+      if (operation.type === 'bgp') {
+        // We assume that the BGP has at least one pattern and all have the same graph.
+        patternGraph = operation.patterns[0].graph;
+      } else {
+        patternGraph = operation.graph;
+      }
       if (patternGraph.termType === 'DefaultGraph') {
         // SPARQL spec (8.2) describes that when FROM NAMED's are used without a FROM, the default graph must be empty.
         // The FROMs are transformed before this step to a named node, so this will not apply to this case anymore.
@@ -104,9 +117,10 @@ export class ActorQueryOperationFromQuad extends ActorQueryOperationTypedMediate
           const values: Algebra.Values = ActorQueryOperationFromQuad.FACTORY
             .createValues([<RDF.Variable> patternGraph], [bindings]);
           let pattern: Algebra.Operation;
-          if (operation.type === 'pattern') {
+          if (operation.type === 'bgp') {
             pattern = ActorQueryOperationFromQuad.FACTORY
-              .createPattern(operation.subject, operation.predicate, operation.object, graph);
+              .createBgp(operation.patterns.map((p: Algebra.Pattern) => ActorQueryOperationFromQuad.FACTORY
+                .createPattern(p.subject, p.predicate, p.object, graph)));
           } else {
             pattern = ActorQueryOperationFromQuad.FACTORY
               .createPath(operation.subject, operation.predicate, operation.object, graph);
