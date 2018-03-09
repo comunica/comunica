@@ -32,19 +32,19 @@
     "index.js"
   ],
   "dependencies": {
-    "uritemplate": "0.3.4",
     "lodash.assign": "^4.2.0",
     "lodash.flatten": "^4.4.0",
     "lodash.mapvalues": "^4.6.0",
-    "lodash.values": "^4.3.0"
+    "lodash.values": "^4.3.0",
+    "uritemplate": "0.3.4"
   },
   "peerDependencies": {
-    "@comunica/core": "^0.0.1",
-    "@comunica/bus-rdf-metadata-extract": "^0.0.1"
+    "@comunica/bus-rdf-metadata-extract": "^0.0.1",
+    "@comunica/core": "^0.0.1"
   },
   "devDependencies": {
-    "@comunica/core": "^0.0.1",
-    "@comunica/bus-rdf-metadata-extract": "^0.0.1"
+    "@comunica/bus-rdf-metadata-extract": "^0.0.1",
+    "@comunica/core": "^0.0.1"
   },
   "jest": {
     "transform": {

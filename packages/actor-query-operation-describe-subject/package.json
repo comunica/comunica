@@ -33,16 +33,16 @@
   ],
   "dependencies": {
     "@comunica/actor-query-operation-union": "^0.0.1",
-    "rdf-data-model": "^1.0.0",
-    "asynciterator-union": "^1.1.0"
+    "asynciterator-union": "^1.1.0",
+    "rdf-data-model": "^1.0.0"
   },
   "peerDependencies": {
-    "@comunica/core": "^0.0.1",
-    "@comunica/bus-query-operation": "^0.0.1"
+    "@comunica/bus-query-operation": "^0.0.1",
+    "@comunica/core": "^0.0.1"
   },
   "devDependencies": {
-    "@comunica/core": "^0.0.1",
-    "@comunica/bus-query-operation": "^0.0.1"
+    "@comunica/bus-query-operation": "^0.0.1",
+    "@comunica/core": "^0.0.1"
   },
   "jest": {
     "transform": {

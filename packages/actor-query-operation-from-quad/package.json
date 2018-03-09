@@ -32,16 +32,16 @@
     "index.js"
   ],
   "dependencies": {
-    "lodash.find":"^4.6.0",
+    "lodash.find": "^4.6.0",
     "sparqlalgebrajs": "^0.7.5"
   },
   "peerDependencies": {
-    "@comunica/core": "^0.0.1",
-    "@comunica/bus-query-operation": "^0.0.1"
+    "@comunica/bus-query-operation": "^0.0.1",
+    "@comunica/core": "^0.0.1"
   },
   "devDependencies": {
-    "@comunica/core": "^0.0.1",
-    "@comunica/bus-query-operation": "^0.0.1"
+    "@comunica/bus-query-operation": "^0.0.1",
+    "@comunica/core": "^0.0.1"
   },
   "jest": {
     "transform": {

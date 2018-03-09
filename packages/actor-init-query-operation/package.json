@@ -32,9 +32,9 @@
     "index.js"
   ],
   "peerDependencies": {
-    "@comunica/core": "^0.0.1",
     "@comunica/bus-init": "^0.0.1",
-    "@comunica/bus-query-operation": "^0.0.1"
+    "@comunica/bus-query-operation": "^0.0.1",
+    "@comunica/core": "^0.0.1"
   },
   "devDependencies": {
     "@comunica/actor-http-node-fetch": "^0.0.1",
@@ -43,30 +43,30 @@
     "@comunica/actor-query-operation-bgp-single": "^0.0.1",
     "@comunica/actor-query-operation-project": "^0.0.1",
     "@comunica/actor-query-operation-quadpattern": "^0.0.1",
+    "@comunica/actor-rdf-dereference-http-parse": "^0.0.1",
+    "@comunica/actor-rdf-dereference-paged-next": "^0.0.1",
     "@comunica/actor-rdf-metadata-extract-hydra-controls": "^0.0.1",
     "@comunica/actor-rdf-metadata-extract-hydra-count": "^0.0.1",
     "@comunica/actor-rdf-metadata-primary-topic": "^0.0.1",
     "@comunica/actor-rdf-metadata-triple-predicate": "^0.0.1",
-    "@comunica/actor-rdf-dereference-http-parse": "^0.0.1",
-    "@comunica/actor-rdf-dereference-paged-next": "^0.0.1",
-    "@comunica/actor-rdf-parse-n3": "^0.0.1",
     "@comunica/actor-rdf-parse-jsonld": "^0.0.1",
+    "@comunica/actor-rdf-parse-n3": "^0.0.1",
     "@comunica/actor-rdf-resolve-quad-pattern-qpf": "^0.0.1",
-    "@comunica/bus-init": "^0.0.1",
     "@comunica/bus-http": "^0.0.1",
+    "@comunica/bus-init": "^0.0.1",
     "@comunica/bus-query-operation": "^0.0.1",
-    "@comunica/bus-rdf-metadata-extract": "^0.0.1",
-    "@comunica/bus-rdf-metadata": "^0.0.1",
-    "@comunica/bus-rdf-dereference-paged": "^0.0.1",
     "@comunica/bus-rdf-dereference": "^0.0.1",
+    "@comunica/bus-rdf-dereference-paged": "^0.0.1",
+    "@comunica/bus-rdf-metadata": "^0.0.1",
+    "@comunica/bus-rdf-metadata-extract": "^0.0.1",
     "@comunica/bus-rdf-parse": "^0.0.1",
     "@comunica/bus-rdf-resolve-quad-pattern": "^0.0.1",
     "@comunica/core": "^0.0.1",
     "@comunica/mediator-combine-union": "^0.0.1",
     "@comunica/mediator-number": "^0.0.1",
     "@comunica/mediator-race": "^0.0.1",
-    "@comunica/runner-cli": "^0.0.1",
-    "@comunica/runner": "^0.0.1"
+    "@comunica/runner": "^0.0.1",
+    "@comunica/runner-cli": "^0.0.1"
   },
   "jest": {
     "transform": {

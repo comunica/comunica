@@ -32,19 +32,19 @@
     "index.js"
   ],
   "dependencies": {
+    "asynciterator-promiseproxy": "^1.1.0",
     "rdf-string": "^1.0.1",
-    "rdf-terms": "^1.1.0",
-    "asynciterator-promiseproxy": "^1.1.0"
+    "rdf-terms": "^1.1.0"
   },
   "peerDependencies": {
-    "@comunica/core": "^0.0.1",
     "@comunica/bus-query-operation": "^0.0.1",
-    "@comunica/bus-rdf-resolve-quad-pattern": "^0.0.1"
+    "@comunica/bus-rdf-resolve-quad-pattern": "^0.0.1",
+    "@comunica/core": "^0.0.1"
   },
   "devDependencies": {
-    "@comunica/core": "^0.0.1",
     "@comunica/bus-query-operation": "^0.0.1",
-    "@comunica/bus-rdf-resolve-quad-pattern": "^0.0.1"
+    "@comunica/bus-rdf-resolve-quad-pattern": "^0.0.1",
+    "@comunica/core": "^0.0.1"
   },
   "jest": {
     "transform": {

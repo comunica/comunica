@@ -39,17 +39,17 @@
   "devDependencies": {
     "@comunica/actor-http-node-fetch": "^0.0.1",
     "@comunica/actor-rdf-dereference-http-parse": "^0.0.1",
-    "@comunica/actor-rdf-parse-n3": "^0.0.1",
     "@comunica/actor-rdf-parse-jsonld": "^0.0.1",
-    "@comunica/bus-init": "^0.0.1",
+    "@comunica/actor-rdf-parse-n3": "^0.0.1",
     "@comunica/bus-http": "^0.0.1",
+    "@comunica/bus-init": "^0.0.1",
     "@comunica/bus-rdf-dereference": "^0.0.1",
     "@comunica/bus-rdf-parse": "^0.0.1",
     "@comunica/core": "^0.0.1",
     "@comunica/mediator-number": "^0.0.1",
     "@comunica/mediator-race": "^0.0.1",
-    "@comunica/runner-cli": "^0.0.1",
-    "@comunica/runner": "^0.0.1"
+    "@comunica/runner": "^0.0.1",
+    "@comunica/runner-cli": "^0.0.1"
   },
   "jest": {
     "transform": {

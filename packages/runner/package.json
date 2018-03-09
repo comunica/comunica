@@ -31,9 +31,9 @@
     "@comunica/core": "^0.0.1"
   },
   "dependencies": {
+    "componentsjs": "^2.1.2",
     "lodash.assign": "^4.2.0",
-    "lodash.defaults": "^4.2.0",
-    "componentsjs": "^2.1.2"
+    "lodash.defaults": "^4.2.0"
   },
   "devDependencies": {
     "@comunica/bus-init": "^0.0.1",

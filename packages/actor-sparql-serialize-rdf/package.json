@@ -32,16 +32,16 @@
     "index.js"
   ],
   "peerDependencies": {
-    "@comunica/core": "^0.0.1",
     "@comunica/bus-rdf-serialize": "^0.0.1",
-    "@comunica/bus-sparql-serialize": "^0.0.1"
+    "@comunica/bus-sparql-serialize": "^0.0.1",
+    "@comunica/core": "^0.0.1"
   },
   "devDependencies": {
     "@comunica/actor-abstract-mediatyped": "^0.0.1",
-    "@comunica/core": "^0.0.1",
     "@comunica/bus-query-operation": "^0.0.1",
     "@comunica/bus-rdf-serialize": "^0.0.1",
-    "@comunica/bus-sparql-serialize": "^0.0.1"
+    "@comunica/bus-sparql-serialize": "^0.0.1",
+    "@comunica/core": "^0.0.1"
   },
   "jest": {
     "transform": {
