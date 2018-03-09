@@ -52,6 +52,11 @@ export function newEngine(): QueryEngine {
   return new QueryEngine(require('../index-static.js'));
 }
 
+// Hack to make dynamic invocation properly work in both dev environment and in production
+function inDev() {
+  return require('fs').existsSync(__dirname + '/../index.ts');
+}
+
 /**
  * Create a new dynamic comunica engine.
  * @param {IQueryOptions} options Optional options on how to instantiate the query evaluator.
@@ -63,7 +68,7 @@ export function newEngineDynamic(options?: IQueryOptions): Promise<QueryEngine> 
   }
   if (!options.mainModulePath) {
     // This makes sure that our configuration is found by Components.js
-    options.mainModulePath = __dirname + '/../';
+    options.mainModulePath = inDev() ? __dirname + '/../' : __dirname + '/../../';
   }
   const configResourceUrl: string = options.configResourceUrl || __dirname + '/../config/config-default.json';
   const instanceUri: string = options.instanceUri || 'urn:comunica:sparqlinit';
