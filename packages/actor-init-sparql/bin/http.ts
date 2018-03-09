@@ -17,7 +17,7 @@ if (args._.length !== 1 || args.h || args.help) {
   process.stderr.write(
     'usage: comunica-sparql-http context [-p port] [-t timeout] [--help]\n' +
     '  context should be a JSON object, e.g.\n' +
-    '      { "sources": [{ "type": "entrypoint", "value" : "http://fragments.dbpedia.org/2015/en" }]}\n' +
+    '      { "sources": [{ "type": "hypermedia", "value" : "http://fragments.dbpedia.org/2015/en" }]}\n' +
     '  or the path to such a JSON file\n',
   );
   process.exit(1);
