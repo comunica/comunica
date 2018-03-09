@@ -8,10 +8,11 @@ This is the repository containing _all_ Comunica modules,
 as repo is managed as a [monorepo](https://github.com/babel/babel/blob/master/doc/design/monorepo.md)
 using [Lerna](https://lernajs.io/).
 
-Comunica requires Node.js 8.0 or higher and is tested on OSX and Linux.
+Comunica requires [Node.JS](http://nodejs.org/) 8.0 or higher and is tested on OSX and Linux.
 
 This repository should be used by Comunica module **developers**.
-If you want to **use** Comunica, have a look at the [manual](http://comunica.readthedocs.io/en/latest/).
+If you want to **use** Comunica, have a look at the [manual](http://comunica.readthedocs.io/en/latest/)
+or at the [Comunica SPARQL Init Actor](https://github.com/comunica/comunica/tree/master/packages/actor-init-sparql) if you want to perform SPARQL queries.
 
 ## Intro
 

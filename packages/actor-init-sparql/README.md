@@ -6,7 +6,12 @@ Comunica can either be invoked **dynamically** using a configuration file,
 or **statically** using a pre-compiled configuration file.
 The latter will be faster to start because the dependency-injection phase can be avoided.
 
-## Usage from the command line
+## Execute SPARQL queries
+
+This actor can be used to execute SPARQL queries from
+the command line, HTTP (SPARQL protocol), within a Node.JS application, or from a browser.
+
+### Usage from the command line
 
 Show 100 triples from http://fragments.dbpedia.org/2015-10/en:
 
@@ -23,7 +28,7 @@ $ comunica-sparql --help
 The dynamic variant of this executable is `comunica-dynamic-sparql`.
 An alternative config file can be passed via the `COMUNICA_CONFIG` environment variable.
 
-## Usage from HTTP
+### Usage from HTTP
 
 Start a webservice exposing http://fragments.dbpedia.org/2015-10/en via the SPARQL protocol.
 
@@ -40,7 +45,7 @@ $ comunica-sparql-http --help
 The HTTP service can only be started dynamically.
 An alternative config file can be passed via the `COMUNICA_CONFIG` environment variable.
 
-## Usage within application
+### Usage within application
 
 _Static:_
 
@@ -73,7 +78,7 @@ newEngineDynamic().then(function (myEngine) {
 });
 ```
 
-## Usage within browser
+### Usage within browser
 
 This engine can run in the browser using [Webpack](https://www.npmjs.com/package/webpack).
 To created a web-packed version of the engine, run `yarn browser` to create `dist/comunica-browser.js`.
@@ -98,3 +103,16 @@ Comunica.evaluateQuery('SELECT * { ?s ?p <http://dbpedia.org/resource/Belgium>. 
 
 The browser script is pre-compiled using a config file and can therefore only be invoked dynamically.
 See the `prepare` and `browser` scripts in `package.json` to compile using a custom config file.
+
+## Installation
+
+This engine requires [Node.js](http://nodejs.org/) 8.0 or higher.
+
+The easiest way to install the client is by installing it from NPM as follows:
+
+```bash
+$ [sudo] npm install -g @comunica/actor-init-sparql
+```
+
+Alternatively, you can install from the latest GitHub sources.
+For this, please refer to the README of the [Comunica monorepo](https://github.com/comunica/comunica).
