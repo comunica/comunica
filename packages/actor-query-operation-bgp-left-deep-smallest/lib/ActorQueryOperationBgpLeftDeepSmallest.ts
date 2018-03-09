@@ -60,22 +60,14 @@ export class ActorQueryOperationBgpLeftDeepSmallest extends ActorQueryOperationT
   }
 
   /**
-   * Find the pattern index with the smallest number of elements.
-   * @param {{[p: string]: any}[]} metadatas An array of optional metadata objects for the patterns.
-   * @return {number} The index of the pattern with the smallest number of elements.
+   * Sort the given patterns and metadata by increasing estimated count.
+   * @param {IOutputMetaTuple[]} patternOutputsMeta An array of pattern output and metadata tuples.
+   * @return {IOutputMetaTuple[]} The sorted array.
    */
-  public static getSmallestPatternId(metadatas: {[id: string]: any}[]) {
-    let smallestId: number = -1;
-    let smallestCount: number = Infinity;
-    for (let i = 0; i < metadatas.length; i++) {
-      const meta: {[id: string]: any} = metadatas[i];
-      const count: number = ActorQueryOperationBgpLeftDeepSmallest.getTotalItems(meta);
-      if (count <= smallestCount) {
-        smallestCount = count;
-        smallestId = i;
-      }
-    }
-    return smallestId;
+  public static sortPatterns(patternOutputsMeta: IOutputMetaTuple[]): IOutputMetaTuple[] {
+    return require('lodash.sortby')(patternOutputsMeta, [(e: IOutputMetaTuple) => {
+      return ActorQueryOperationBgpLeftDeepSmallest.getTotalItems(e.meta);
+    }]);
   }
 
   /**
@@ -191,29 +183,27 @@ export class ActorQueryOperationBgpLeftDeepSmallest extends ActorQueryOperationT
       };
     }
 
-    // Find the pattern with the smallest number of elements
+    // Resolve the metadata for all patterns
     const metadatas: {[id: string]: any}[] = await Promise.all(patternOutputs.map(
       async (patternOutput) => patternOutput.metadata ? await patternOutput.metadata() : {}));
-    const smallestId: number = ActorQueryOperationBgpLeftDeepSmallest.getSmallestPatternId(metadatas);
+
+    // Sort patterns by increasing total items
+    const outputMetaTuples: IOutputMetaTuple[] = ActorQueryOperationBgpLeftDeepSmallest.sortPatterns(patternOutputs.map(
+      (output: IActorQueryOperationOutputBindings, i: number) =>
+        ({ input: pattern.patterns[i], output, meta: metadatas[i] })));
 
     // Close the non-smallest streams
-    for (let i: number = 0; i < patternOutputs.length; i++) {
-      if (i !== smallestId) {
-        patternOutputs[i].bindingsStream.close();
-      }
+    for (let i: number = 1; i < outputMetaTuples.length; i++) {
+      outputMetaTuples[i].output.bindingsStream.close();
     }
 
     // Take the pattern with the smallest number of items
-    const smallestPattern: IActorQueryOperationOutputBindings = patternOutputs.slice(smallestId)[0];
-    const remainingPatterns: Algebra.Pattern[] = pattern.patterns.concat([]);
-    remainingPatterns.splice(smallestId, 1);
-
-    // Check if the output type is correct
-    ActorQueryOperation.validateQueryOutput(smallestPattern, 'bindings');
+    const smallestPattern: IOutputMetaTuple = outputMetaTuples.slice(0)[0];
+    outputMetaTuples.splice(0, 1);
 
     // Materialize the remaining patterns for each binding in the stream.
     const bindingsStream: BindingsStream = ActorQueryOperationBgpLeftDeepSmallest.createLeftDeepStream(
-      smallestPattern.bindingsStream, remainingPatterns,
+      smallestPattern.output.bindingsStream, outputMetaTuples.map((p) => p.input),
       async (patterns: Algebra.Pattern[]) => {
         // Send the materialized patterns to the mediator for recursive BGP evaluation.
         const operation: Algebra.Bgp = { type: 'bgp', patterns };
@@ -224,11 +214,17 @@ export class ActorQueryOperationBgpLeftDeepSmallest extends ActorQueryOperationT
     // Prepare variables and metadata
     const variables: string[] = ActorQueryOperationBgpLeftDeepSmallest.getCombinedVariables(patternOutputs);
     const metadata = () => Promise.resolve({
-      totalItems: ActorQueryOperationBgpLeftDeepSmallest.estimateCombinedTotalItems(metadatas[smallestId],
-        metadatas.slice(smallestId)),
+      totalItems: ActorQueryOperationBgpLeftDeepSmallest.estimateCombinedTotalItems(smallestPattern.meta,
+        outputMetaTuples.map((p) => p.meta)),
     });
 
     return { type: 'bindings', bindingsStream, variables, metadata };
   }
 
+}
+
+export interface IOutputMetaTuple {
+  input: Algebra.Pattern;
+  output: IActorQueryOperationOutputBindings;
+  meta: {[id: string]: any};
 }
