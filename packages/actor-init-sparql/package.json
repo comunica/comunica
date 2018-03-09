@@ -40,19 +40,6 @@
     "engine-default.js"
   ],
   "dependencies": {
-    "@comunica/runner": "^0.0.1",
-    "@comunica/runner-cli": "^0.0.1",
-    "minimist": "^1.2.0",
-    "negotiate": "^1.0.1",
-    "streamify-string": "^1.0.1"
-  },
-  "peerDependencies": {
-    "@comunica/bus-init": "^0.0.1",
-    "@comunica/bus-query-operation": "^0.0.1",
-    "@comunica/bus-sparql-parse": "^0.0.1",
-    "@comunica/core": "^0.0.1"
-  },
-  "devDependencies": {
     "@comunica/actor-abstract-mediatyped": "^0.0.1",
     "@comunica/actor-http-native": "^0.0.1",
     "@comunica/actor-query-operation-ask": "^0.0.1",
@@ -82,8 +69,6 @@
     "@comunica/actor-rdf-parse-jsonld": "^0.0.1",
     "@comunica/actor-rdf-parse-n3": "^0.0.1",
     "@comunica/actor-rdf-resolve-quad-pattern-federated": "^0.0.1",
-    "@comunica/actor-rdf-resolve-quad-pattern-file": "^0.0.1",
-    "@comunica/actor-rdf-resolve-quad-pattern-hdt": "^0.0.1",
     "@comunica/actor-rdf-resolve-quad-pattern-qpf": "^0.0.1",
     "@comunica/actor-rdf-resolve-quad-pattern-sparql-json": "^0.0.1",
     "@comunica/actor-rdf-serialize-jsonld": "^0.0.1",
@@ -115,6 +100,13 @@
     "@comunica/runner": "^0.0.1",
     "@comunica/runner-cli": "^0.0.1",
     "componentsjs": "2.1.4",
+    "minimist": "^1.2.0",
+    "negotiate": "^1.0.1",
+    "streamify-string": "^1.0.1"
+  },
+  "devDependencies": {
+    "@comunica/actor-rdf-resolve-quad-pattern-file": "^0.0.1",
+    "@comunica/actor-rdf-resolve-quad-pattern-hdt": "^0.0.1",
     "lodash.assign": "^4.2.0",
     "string-replace-webpack-plugin": "^0.1.3",
     "webpack": "^3.10.0"
