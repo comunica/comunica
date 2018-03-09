@@ -4,7 +4,9 @@
     "publish": {
       "ignore": [
         "*.md"
-      ]
+      ],
+      "message": "Bump to release version %v",
+      "allowBranch": "master"
     }
   },
   "packages": [
