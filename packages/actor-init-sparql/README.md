@@ -1,6 +1,15 @@
 # Comunica SPARQL Init Actor
 
-A comunica SPARQL Init Actor.
+Linked Data on the Web is being published in different ways,
+such as [data dumps](http://downloads.dbpedia.org/3.9/en/),
+[subject pages](http://dbpedia.org/page/Linked_data),
+[results of SPARQL queries](http://dbpedia.org/sparql?default-graph-uri=http%3A%2F%2Fdbpedia.org&query=CONSTRUCT+%7B+%3Fp+a+dbpedia-owl%3AArtist+%7D%0D%0AWHERE+%7B+%3Fp+a+dbpedia-owl%3AArtist+%7D&format=text%2Fturtle),
+and [Triple Pattern Fragments](http://data.linkeddatafragments.org/dbpedia2014?subject=&predicate=rdf%3Atype&object=dbpedia-owl%3ARestaurant).
+This client is able to solve queries over such _heterogeneous interfaces_. 
+
+Concretely, the Comunica SPARQL Init Actor is a module that is preconfigured with a configuration file to initialize
+the [Comunica engine](https://github.com/comunica/comunica) with actors to evaluate SPARQL queries
+over heterogeneous interfaces.
 
 Comunica can either be invoked **dynamically** using a configuration file,
 or **statically** using a pre-compiled configuration file.
@@ -106,7 +115,7 @@ See the `prepare` and `browser` scripts in `package.json` to compile using a cus
 
 ## Installation
 
-This engine requires [Node.js](http://nodejs.org/) 8.0 or higher.
+Comunica requires [Node.JS](http://nodejs.org/) 8.0 or higher and is tested on OSX and Linux.
 
 The easiest way to install the client is by installing it from NPM as follows:
 

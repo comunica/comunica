@@ -4,24 +4,20 @@
 [![Build Status](https://travis-ci.org/comunica/comunica.svg?branch=master)](https://travis-ci.org/comunica/comunica)
 [![Coverage Status](https://coveralls.io/repos/github/comunica/comunica/badge.svg?branch=master)](https://coveralls.io/github/comunica/comunica?branch=master)
 
-This is the repository containing _all_ Comunica modules,
-as repo is managed as a [monorepo](https://github.com/babel/babel/blob/master/doc/design/monorepo.md)
-using [Lerna](https://lernajs.io/).
-
-Comunica requires [Node.JS](http://nodejs.org/) 8.0 or higher and is tested on OSX and Linux.
-
-This repository should be used by Comunica module **developers**.
-If you want to **use** Comunica, have a look at the [manual](http://comunica.readthedocs.io/en/latest/)
-or at the [Comunica SPARQL Init Actor](https://github.com/comunica/comunica/tree/master/packages/actor-init-sparql) if you want to perform SPARQL queries.
-
-## Intro
-
 Comunica is a highly modular and flexible query engine platform for the Web.
 It's main distinguishing features are the following:
 
 * High modularity enabling easy extensions and customization.
 * Federated querying over heterogeneous interfaces
 * Can run using [Node.JS](http://nodejs.org/), in the browser, and via the command-line.
+
+This should be used by Comunica module **developers** as it is the repository containing _all_ Comunica modules.
+This repo is managed as a [monorepo](https://github.com/babel/babel/blob/master/doc/design/monorepo.md)
+using [Lerna](https://lernajs.io/).
+
+If you want to **use** Comunica, have a look at the [manual](http://comunica.readthedocs.io/en/latest/)
+or at the [Comunica SPARQL Init Actor](https://github.com/comunica/comunica/tree/master/packages/actor-init-sparql)
+if you want to execute SPARQL queries.
 
 ## Development Setup
 
