@@ -1,0 +1,11 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/components.jsonld",
+    {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
+      "caqobldss": "npmd:@comunica/actor-query-operation-bgp-left-deep-smallest-sort/",
+
+      "ActorQueryOperationBgpLeftDeepSmallestSort": "caqobldss:Actor/QueryOperation/BgpLeftDeepSmallestSort"
+    }
+  ]
+}
