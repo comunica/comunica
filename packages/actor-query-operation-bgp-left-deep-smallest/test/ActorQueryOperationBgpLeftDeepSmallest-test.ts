@@ -298,56 +298,56 @@ describe('ActorQueryOperationBgpLeftDeepSmallest', () => {
       });
     });
 
-    describe('getSmallestPatternId', () => {
-      it('should return -1 for no metadatas', () => {
-        return expect(ActorQueryOperationBgpLeftDeepSmallest.getSmallestPatternId(
-          [])).toBe(-1);
+    describe('sortPatterns', () => {
+      it('should return an empty array for no patterns', () => {
+        return expect(ActorQueryOperationBgpLeftDeepSmallest.sortPatterns(
+          [])).toEqual([]);
       });
 
-      it('should return 0 for a single falsy metadata', () => {
-        return expect(ActorQueryOperationBgpLeftDeepSmallest.getSmallestPatternId(
-          [null])).toBe(0);
-      });
-
-      it('should return 0 for a single empty metadata', () => {
-        return expect(ActorQueryOperationBgpLeftDeepSmallest.getSmallestPatternId(
-          [{}])).toBe(0);
-      });
-
-      it('should return 0 for a single metadata', () => {
-        return expect(ActorQueryOperationBgpLeftDeepSmallest.getSmallestPatternId(
-          [{ totalItems: 10 }])).toBe(0);
-      });
-
-      it('should return 2 for a three falsy metadatas', () => {
-        return expect(ActorQueryOperationBgpLeftDeepSmallest.getSmallestPatternId(
-          [null, null, null])).toBe(2);
-      });
-
-      it('should return 2 for a three empty metadatas', () => {
-        return expect(ActorQueryOperationBgpLeftDeepSmallest.getSmallestPatternId(
-          [{}, {}, {}])).toBe(2);
-      });
-
-      it('should return 2 for a three sequential metadatas where 2 is the smallest', () => {
-        return expect(ActorQueryOperationBgpLeftDeepSmallest.getSmallestPatternId(
-          [{ totalItems: 3 }, { totalItems: 2 }, { totalItems: 1 }])).toBe(2);
-      });
-
-      it('should return 1 for a three sequential metadatas where 1 is the smallest', () => {
-        return expect(ActorQueryOperationBgpLeftDeepSmallest.getSmallestPatternId(
-          [{ totalItems: 3 }, { totalItems: 1 }, { totalItems: 2 }])).toBe(1);
-      });
-
-      it('should return 0 for a three sequential metadatas where 0 is the smallest', () => {
-        return expect(ActorQueryOperationBgpLeftDeepSmallest.getSmallestPatternId(
-          [{ totalItems: 1 }, { totalItems: 3 }, { totalItems: 2 }])).toBe(0);
-      });
-
-      it('should return 1 for a three sequential metadatas where 1 is the largest, ' +
-        'the first is empty and the last is falsy', () => {
-        return expect(ActorQueryOperationBgpLeftDeepSmallest.getSmallestPatternId(
-          [{}, { totalItems: 3 }, false])).toBe(1);
+      it('should sort an unsorted by increasing totalItems', () => {
+        return expect(ActorQueryOperationBgpLeftDeepSmallest.sortPatterns([
+          {
+            input: <any> 'I1',
+            meta: null,
+            output: <any> 'O1',
+          },
+          {
+            input: <any> 'I1',
+            meta: { totalItems: 10 },
+            output: <any> 'O1',
+          },
+          {
+            input: <any> 'I1',
+            meta: { totalItems: 0 },
+            output: <any> 'O1',
+          },
+          {
+            input: <any> 'I1',
+            meta: { totalItems: Infinity },
+            output: <any> 'O1',
+          },
+        ])).toEqual([
+          {
+            input: <any> 'I1',
+            meta: { totalItems: 0 },
+            output: <any> 'O1',
+          },
+          {
+            input: <any> 'I1',
+            meta: { totalItems: 10 },
+            output: <any> 'O1',
+          },
+          {
+            input: <any> 'I1',
+            meta: null,
+            output: <any> 'O1',
+          },
+          {
+            input: <any> 'I1',
+            meta: { totalItems: Infinity },
+            output: <any> 'O1',
+          },
+        ]);
       });
     });
 
@@ -473,10 +473,10 @@ describe('ActorQueryOperationBgpLeftDeepSmallest', () => {
         expect(await output.metadata()).toEqual({ totalItems: 100 });
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({
-            graph: namedNode('4'),
-            object: namedNode('4'),
-            predicate: namedNode('4'),
-            subject: namedNode('d'),
+            graph: namedNode('a'),
+            object: namedNode('1'),
+            predicate: namedNode('1'),
+            subject: namedNode('1'),
           }),
         ]);
       });
@@ -490,10 +490,10 @@ describe('ActorQueryOperationBgpLeftDeepSmallest', () => {
         expect(await output.metadata()).toEqual({ totalItems: Infinity });
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({
-            graph: namedNode('4'),
-            object: namedNode('4'),
-            predicate: namedNode('4'),
-            subject: namedNode('d'),
+            graph: namedNode('a'),
+            object: namedNode('1'),
+            predicate: namedNode('1'),
+            subject: namedNode('1'),
           }),
         ]);
       });

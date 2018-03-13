@@ -34,6 +34,7 @@
   "dependencies": {
     "asynciterator-promiseproxy": "^1.2.0",
     "lodash.uniq": "^4.5.0",
+    "lodash.sortby": "^4.7.0",
     "rdf-string": "^1.0.1",
     "rdf-terms": "^1.0.1"
   },
