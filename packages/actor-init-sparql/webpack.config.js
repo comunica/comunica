@@ -1,5 +1,4 @@
 const path = require('path');
-const webpack = require('webpack');
 const StringReplacePlugin = require("string-replace-webpack-plugin");
 
 module.exports = {
@@ -13,6 +12,18 @@ module.exports = {
   devtool: 'cheap-module-source-map',
   module: {
     loaders: [
+      { // This fixes a problem where the setImmediate of asynciterator would conflict with webpack's polyfill
+        test: /asynciterator\.js$/,
+        loader: StringReplacePlugin.replace({
+          replacements: [
+            {
+              pattern: /if \(typeof process !== 'undefined' && !process\.browser\)/i,
+              replacement: function () {
+                return 'if (true)';
+              },
+            },
+          ] }),
+      },
       { // This fixes an issue where UglifyJS would fail because labeled declarations are not allowed in strict mode
         // This is a problem that should be fixed in jison: https://github.com/zaach/jison/issues/351
         test: /SparqlParser\.js$/,
