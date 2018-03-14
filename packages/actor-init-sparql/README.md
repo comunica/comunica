@@ -11,6 +11,12 @@ Concretely, Comunica SPARQL is a module that is preconfigured with a configurati
 the [Comunica engine](https://github.com/comunica/comunica) with actors to evaluate SPARQL queries
 over heterogeneous interfaces.
 
+It's main distinguishing features are the following:
+
+* High modularity enabling easy extensions and customization.
+* Federated querying over heterogeneous interfaces.
+* Can run using [Node.JS](http://nodejs.org/), in the browser, and via the command-line.
+
 Comunica can either be invoked **dynamically** using a configuration file,
 or **statically** using a pre-compiled configuration file.
 The latter will be faster to start because the dependency-injection phase can be avoided.
