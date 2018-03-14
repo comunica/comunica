@@ -38,6 +38,8 @@
     "bin/**/*.js",
     "index.d.ts",
     "index.js",
+    "index-browser.d.ts",
+    "index-browser.js",
     "engine-default.js"
   ],
   "dependencies": {
