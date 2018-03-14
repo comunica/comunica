@@ -1,7 +1,7 @@
 {
   "name": "@comunica/actor-init-rdf-dereference",
   "version": "0.0.1",
-  "description": "An RDF Parse init actor",
+  "description": "A Comunica engine for dereferencing RDF resources",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-rdf-dereference",
   "lsd:components": "components/components.jsonld",
   "lsd:contexts": {

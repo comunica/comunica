@@ -1,7 +1,7 @@
 {
   "name": "@comunica/actor-init-hello-world",
   "version": "0.0.1",
-  "description": "An example Hello World init actor",
+  "description": "A Hello World Comunica engine",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-hello-world",
   "lsd:components": "components/components.jsonld",
   "lsd:contexts": {

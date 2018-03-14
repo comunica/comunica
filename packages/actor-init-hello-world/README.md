@@ -1,4 +1,4 @@
-# Comunica Hello World Init Actor
+# Comunica Hello World
 
 An example Hello World init actor for Comunica.
 

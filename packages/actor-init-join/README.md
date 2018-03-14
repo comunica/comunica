@@ -1,3 +1,3 @@
-# Comunica Join Init Actor
+# Comunica Join
 
 A comunica Join Init Actor.

@@ -1,7 +1,7 @@
 {
   "name": "@comunica/actor-init-query-operation",
   "version": "0.0.1",
-  "description": "A query-operation init actor",
+  "description": "A Comunica engine for evaluating query operations",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-query-operation",
   "lsd:components": "components/components.jsonld",
   "lsd:contexts": {

@@ -1,4 +1,4 @@
-# Comunica Query Operation Init Actor
+# Comunica Query Operation
 
 An example init actor for Comunica that triggers an Query Operation event.
 

@@ -1,7 +1,7 @@
 {
   "name": "@comunica/actor-init-join",
   "version": "0.0.1",
-  "description": "A join init actor",
+  "description": "A Comunica engine for joining streams",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-join",
   "lsd:components": "components/components.jsonld",
   "lsd:contexts": {

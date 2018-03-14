@@ -1,4 +1,4 @@
-# Comunica SPARQL Init Actor
+# Comunica SPARQL
 
 Linked Data on the Web is being published in different ways,
 such as [data dumps](http://downloads.dbpedia.org/3.9/en/),
@@ -7,7 +7,7 @@ such as [data dumps](http://downloads.dbpedia.org/3.9/en/),
 and [Triple Pattern Fragments](http://data.linkeddatafragments.org/dbpedia2014?subject=&predicate=rdf%3Atype&object=dbpedia-owl%3ARestaurant).
 This client is able to solve queries over such _heterogeneous interfaces_. 
 
-Concretely, the Comunica SPARQL Init Actor is a module that is preconfigured with a configuration file to initialize
+Concretely, Comunica SPARQL is a module that is preconfigured with a configuration file to initialize
 the [Comunica engine](https://github.com/comunica/comunica) with actors to evaluate SPARQL queries
 over heterogeneous interfaces.
 

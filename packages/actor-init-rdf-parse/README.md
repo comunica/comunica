@@ -1,4 +1,4 @@
-# Comunica RDF Parse Init Actor
+# Comunica RDF Parse
 
 An example init actor for Comunica that triggers an RDF Parse event for the given input stream.
 

@@ -1,7 +1,7 @@
 {
   "name": "@comunica/actor-init-http",
   "version": "0.0.1",
-  "description": "An HTTP init actor",
+  "description": "A Comunica engine for triggering HTTP requests",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-http",
   "lsd:components": "components/components.jsonld",
   "lsd:contexts": {

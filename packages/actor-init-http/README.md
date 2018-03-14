@@ -1,4 +1,4 @@
-# Comunica HTTP Init Actor
+# Comunica HTTP
 
 An example init actor for Comunica that triggers a HTTP request using the HTTP bus.
 

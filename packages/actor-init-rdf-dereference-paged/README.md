@@ -1,4 +1,4 @@
-# Comunica RDF Dereference Paged Init Actor
+# Comunica RDF Dereference Paged
 
 An example init actor for Comunica that triggers an RDF Dereference Paged event for the given URL.
 
