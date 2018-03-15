@@ -37,8 +37,6 @@ describe('ActorSparqlSerializeStats', () => {
         debug: 1.0,
       }, name: 'actor'});
 
-      actor.delay = () => 3.14;
-
       bindingsStream = new ArrayIterator([
         Bindings({ k1: namedNode('v1'), k2: null }),
         Bindings({ k1: null, k2: namedNode('v2') }),
@@ -60,7 +58,17 @@ describe('ActorSparqlSerializeStats', () => {
       });
     });
 
+    describe('for calculating delay', () => {
+      it('should return number greater than 0', () => {
+        return expect(actor.delay(process.hrtime())).toBeGreaterThan(0);
+      });
+    });
+
     describe('for serializing', () => {
+      beforeEach(() => {
+        actor.delay = () => 3.14;
+      });
+
       it('should test on table', () => {
         return expect(actor.test({ handle: <any> { type: 'quads', quadStream },
           handleMediaType: 'debug' })).resolves.toBeTruthy();
