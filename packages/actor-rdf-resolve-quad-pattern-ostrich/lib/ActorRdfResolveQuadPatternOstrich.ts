@@ -102,15 +102,8 @@ export class ActorRdfResolveQuadPatternOstrich extends ActorRdfResolveQuadPatter
         this.close();
       }
     });
-    output.metadata = () => new Promise((resolve, reject) => {
-      output.data.on('error', reject);
-      output.data.on('end', () => {
-        reject(new Error('No count metadata was found'));
-      });
-      output.data.once('totalItems', (totalItems: number) => {
-        resolve({ totalItems });
-      });
-    });
+    output.metadata = () => (<OstrichQuadSource> source).count(pattern.subject, pattern.predicate, pattern.object)
+      .then((totalItems: number) => ({ totalItems }));
     return output;
   }
 

@@ -33,19 +33,23 @@ export class MockedOstrichDocument {
     }
     const tripleIn = { subject, predicate, object };
     const version = options.version;
-    const offset = options.offset || 0;
-    const limit = Math.min(options.limit, this.triples[version].length);
     let i = 0;
     const triples: IStringQuad[] = [];
     for (const triple of this.triples[version]) {
       if (MockedOstrichDocument.triplesMatch(tripleIn, triple)) {
-        if (i >= offset && i < offset + limit) {
-          triples.push(triple);
-        }
+        triples.push(triple);
         i++;
       }
     }
     cb(null, triples, i);
+  }
+
+  public countTriplesVersionMaterialized(subject: string, predicate: string, object: string, version: number,
+                                         cb: (error: Error, totalItems: number) => any) {
+    this.searchTriplesVersionMaterialized(subject, predicate, object, { version },
+      (error: Error, triples: IStringQuad[]) => {
+        cb(error, triples.length);
+      });
   }
 
   public searchTriplesDeltaMaterialized(subject: string, predicate: string, object: string,
@@ -57,8 +61,6 @@ export class MockedOstrichDocument {
     const tripleIn = { subject, predicate, object };
     const versionStart = options.versionStart;
     const versionEnd = options.versionEnd;
-    const offset = options.offset || 0;
-    const limit = options.limit;
 
     const triplesStart: IStringQuad[] = [];
     for (const triple of this.triples[versionStart]) {
@@ -103,9 +105,16 @@ export class MockedOstrichDocument {
       }
     }
 
-    const triples: IStringQuad[] = triplesDiff.slice(offset, offset + limit);
+    cb(null, triplesDiff, triplesDiff.length);
+  }
 
-    cb(null, triples, triples.length);
+  public countTriplesDeltaMaterialized(subject: string, predicate: string, object: string,
+                                       versionStart: number, versionEnd: number,
+                                       cb: (error: Error, totalItems: number) => any) {
+    this.searchTriplesDeltaMaterialized(subject, predicate, object, { versionStart, versionEnd },
+      (error: Error, triples: IStringQuad[]) => {
+        cb(error, triples.length);
+      });
   }
 
   public searchTriplesVersion(subject: string, predicate: string, object: string,
@@ -115,23 +124,26 @@ export class MockedOstrichDocument {
       return cb(this.error, null, 0);
     }
     const tripleIn = { subject, predicate, object };
-    const offset = options.offset || 0;
-    const limit = Math.min(options.limit, Object.keys(this.triples)
-      .reduce((sum, version) => sum + this.triples[version].length, 0));
     let i = 0;
     const triples: IStringQuad[] = [];
     for (const version in this.triples) {
       for (const triple of this.triples[version]) {
         if (MockedOstrichDocument.triplesMatch(tripleIn, triple)) {
-          if (i >= offset && i < offset + limit) {
-            (<any> triple).versions = [version];
-            triples.push(triple);
-          }
+          (<any> triple).versions = [version];
+          triples.push(triple);
           i++;
         }
       }
     }
     cb(null, triples, i);
+  }
+
+  public countTriplesVersion(subject: string, predicate: string, object: string,
+                             cb: (error: Error, totalItems: number) => any) {
+    this.searchTriplesVersion(subject, predicate, object, {},
+      (error: Error, triples: IStringQuad[]) => {
+        cb(error, triples.length);
+      });
   }
 
   public close() {

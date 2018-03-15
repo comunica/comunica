@@ -46,46 +46,6 @@ describe('OstrichIterator', () => {
       ]);
   });
 
-  it('should return the correct stream for ? ? ? VM 0 with offset 1', async () => {
-    return expect(await arrayifyStream(new OstrichIterator(ostrichDocument, vm0, variable('s'), variable('p'),
-      variable('o'), { offset: 1 }))).toEqual([
-        quad('s0', 'p1', 'o2'),
-      ]);
-  });
-
-  it('should return the correct stream for ? ? ? VQ with offset 3', async () => {
-    return expect(await arrayifyStream(new OstrichIterator(ostrichDocument, vq, variable('s'), variable('p'),
-      variable('o'), { offset : 3 }))).toEqual([
-        quad('s1', 'p1', 'o2'),
-        quad('s2', 'p1', 'o1'),
-        quad('s2', 'p1', 'o2'),
-        quad('s2', 'p1', 'o1'),
-        quad('s2', 'p1', 'o2'),
-      ]);
-  });
-
-  it('should return the correct stream for s1 ? ? VQ with offset 3', async () => {
-    return expect(await arrayifyStream(new OstrichIterator(ostrichDocument, vq, namedNode('s1'), variable('p'),
-      variable('o'), { offset : 3 }))).toEqual([]);
-  });
-
-  it('should return the correct stream for ? ? ? VQ with offset 7', async () => {
-    return expect(await arrayifyStream(new OstrichIterator(ostrichDocument, vq, variable('s'), variable('p'),
-      variable('o'), { offset : 7 }))).toEqual([
-        quad('s2', 'p1', 'o2'),
-      ]);
-  });
-
-  it('should return the correct stream for ? ? ? VQ with offset 8', async () => {
-    return expect(await arrayifyStream(new OstrichIterator(ostrichDocument, vq, variable('s'), variable('p'),
-      variable('o'), { offset : 8 }))).toEqual([]);
-  });
-
-  it('should return the correct stream for ? ? ? VQ with offset 9', async () => {
-    return expect(await arrayifyStream(new OstrichIterator(ostrichDocument, vq, variable('s'), variable('p'),
-      variable('o'), { offset : 9 }))).toEqual([]);
-  });
-
   it('should return the correct stream for ? ? ? DM 0-1', async () => {
     return expect(await arrayifyStream(new OstrichIterator(ostrichDocument, dm01, variable('s'), variable('p'),
       variable('o'), {}))).toEqual([
@@ -117,6 +77,14 @@ describe('OstrichIterator', () => {
       variable('o'), {}))).toEqual([]);
   });
 
+  it('should return the correct stream for s0 VQ', async () => {
+    return expect(await arrayifyStream(new OstrichIterator(ostrichDocument, vq, namedNode('s0'), variable('p'),
+      variable('o'), {}))).toEqual([
+        quad('s0', 'p1', 'o1'),
+        quad('s0', 'p1', 'o2'),
+      ]);
+  });
+
   it('should not return anything when the document is closed', async () => {
     ostrichDocument.close();
     return expect(await arrayifyStream(new OstrichIterator(ostrichDocument, vq, variable('s'), variable('p'),
@@ -144,11 +112,12 @@ describe('OstrichIterator', () => {
       {}))).rejects.toBe(e);
   });
 
-  it('should fill its buffer when a totalItems listener is attached', async () => {
-    const it = new OstrichIterator(ostrichDocument, vq, variable('s'), variable('p'), variable('o'));
-    it.on('totalItems', (i) => {
-      expect(i).toEqual(8);
-    });
+  it('should only call query once', async () => {
+    const iterator = new OstrichIterator(ostrichDocument, vm0, variable('s'), variable('p'), variable('o'), {});
+    const spy = jest.spyOn(ostrichDocument, 'searchTriplesVersionMaterialized');
+    iterator._read(1, () => { return; });
+    iterator._read(1, () => { return; });
+    return expect(spy).toHaveBeenCalledTimes(1);
   });
 });
 
