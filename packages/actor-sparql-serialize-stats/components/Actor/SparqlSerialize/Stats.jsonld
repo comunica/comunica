@@ -1,0 +1,21 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-sparql-serialize-stats.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-sparql-serialize.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-sparql-serialize-stats",
+  "components": [
+    {
+      "@id": "casss:Actor/SparqlSerialize/Stats",
+      "@type": "Class",
+      "extends": "cbss:Actor/SparqlSerialize",
+      "requireElement": "ActorSparqlSerializeStats",
+      "comment": "Serializes SPARQL results for testing and debugging.",
+      "constructorArguments": [
+        {
+          "extends": "cbss:Actor/SparqlSerialize/constructorArgumentsObject"
+        }
+      ]
+    }
+  ]
+}
