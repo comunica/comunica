@@ -1,0 +1,9 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/contexts/comunica-actor-http-memento.jsonld",
+  "@id": "npmd:@comunica/actor-http-memento",
+  "@type": "Module",
+  "requireName": "@comunica/actor-http-memento",
+  "import": [
+    "Actor/Http/Memento.jsonld"
+  ]
+}

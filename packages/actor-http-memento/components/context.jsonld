@@ -1,0 +1,11 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/components.jsonld",
+    {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
+      "cahm": "npmd:@comunica/actor-http-memento/",
+
+      "ActorHttpMemento": "cahm:Actor/Http/Memento"
+    }
+  ]
+}

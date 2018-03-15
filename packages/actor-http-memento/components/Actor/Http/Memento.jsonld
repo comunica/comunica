@@ -1,0 +1,21 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-http-memento.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-http.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-http-memento",
+  "components": [
+    {
+      "@id": "cahm:Actor/Http/Memento",
+      "@type": "Class",
+      "extends": "cbh:Actor/Http",
+      "requireElement": "ActorHttpMemento",
+      "comment": "A comunica Memento Http Actor.",
+      "constructorArguments": [
+        {
+          "extends": "cbh:Actor/Http/constructorArgumentsObject"
+        }
+      ]
+    }
+  ]
+}
