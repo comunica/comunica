@@ -82,6 +82,7 @@
     "@comunica/actor-sparql-serialize-simple": "^0.0.1",
     "@comunica/actor-sparql-serialize-sparql-json": "^0.0.1",
     "@comunica/actor-sparql-serialize-sparql-xml": "^0.0.1",
+    "@comunica/actor-sparql-serialize-stats": "^0.0.1",
     "@comunica/actor-sparql-serialize-table": "^0.0.1",
     "@comunica/bus-http": "^0.0.1",
     "@comunica/bus-init": "^0.0.1",
