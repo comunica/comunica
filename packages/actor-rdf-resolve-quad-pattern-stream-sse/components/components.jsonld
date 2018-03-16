@@ -1,0 +1,9 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-resolve-quad-pattern-stream-sse.jsonld",
+  "@id": "npmd:@comunica/actor-rdf-resolve-quad-pattern-stream-sse",
+  "@type": "Module",
+  "requireName": "@comunica/actor-rdf-resolve-quad-pattern-stream-sse",
+  "import": [
+    "Actor/RdfResolveQuadPattern/StreamSse.jsonld"
+  ]
+}

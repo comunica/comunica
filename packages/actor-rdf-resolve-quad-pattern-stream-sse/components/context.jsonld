@@ -1,0 +1,12 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/components.jsonld",
+    {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
+      "carrqpss": "npmd:@comunica/actor-rdf-resolve-quad-pattern-stream-sse/",
+
+      "ActorRdfResolveQuadPatternStreamSse": "carrqpss:Actor/RdfResolveQuadPattern/StreamSse",
+      "mediatorRdfParse": "carrqpss:Actor/RdfResolveQuadPattern/StreamSse/mediatorRdfParse"
+    }
+  ]
+}

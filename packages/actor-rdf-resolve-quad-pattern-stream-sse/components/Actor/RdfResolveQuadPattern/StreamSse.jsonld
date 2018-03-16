@@ -1,0 +1,37 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-resolve-quad-pattern-stream-sse.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-rdf-resolve-quad-pattern.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-http.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-rdf-resolve-quad-pattern-stream-sse",
+  "components": [
+    {
+      "@id": "carrqpss:Actor/RdfResolveQuadPattern/StreamSse",
+      "@type": "Class",
+      "extends": "cbrrqp:Actor/RdfResolveQuadPattern",
+      "requireElement": "ActorRdfResolveQuadPatternStreamSse",
+      "comment": "A comunica Stream SSE RDF Resolve Quad Pattern Actor.",
+      "parameters": [
+        {
+          "@id": "carrqpss:Actor/RdfResolveQuadPattern/StreamSse/mediatorRdfParse",
+          "comment": "The RDF Parse mediator",
+          "required": true,
+          "unique": true
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "carrqpss:Actor/RdfResolveQuadPattern/StreamSse/constructorArgumentsObject",
+          "extends": "cbrrqp:Actor/RdfResolveQuadPattern/constructorArgumentsObject",
+          "fields": [
+            {
+              "keyRaw": "mediatorRdfParse",
+              "value": "carrqpss:Actor/RdfResolveQuadPattern/StreamSse/mediatorRdfParse"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

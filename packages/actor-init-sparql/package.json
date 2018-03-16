@@ -74,6 +74,7 @@
     "@comunica/actor-rdf-resolve-quad-pattern-federated": "^0.0.1",
     "@comunica/actor-rdf-resolve-quad-pattern-qpf": "^0.0.1",
     "@comunica/actor-rdf-resolve-quad-pattern-sparql-json": "^0.0.1",
+    "@comunica/actor-rdf-resolve-quad-pattern-stream-sse": "^0.0.1",
     "@comunica/actor-rdf-serialize-jsonld": "^0.0.1",
     "@comunica/actor-rdf-serialize-n3": "^0.0.1",
     "@comunica/actor-sparql-parse-algebra": "^0.0.1",
