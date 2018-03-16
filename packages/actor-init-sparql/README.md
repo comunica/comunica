@@ -65,7 +65,7 @@ An alternative config file can be passed via the `COMUNICA_CONFIG` environment v
 _Static:_
 
 ```javascript
-const newEngine = require('../index.js').newEngine;
+const newEngine = require('@comunica/actor-init-sparql').newEngine;
 
 const myEngine = newEngine();
 myEngine.query('SELECT * { ?s ?p <http://dbpedia.org/resource/Belgium>. ?s ?p ?o } LIMIT 100',
@@ -80,7 +80,7 @@ myEngine.query('SELECT * { ?s ?p <http://dbpedia.org/resource/Belgium>. ?s ?p ?o
 _Dynamic:_
 
 ```javascript
-const newEngineDynamic = require('../index.js').newEngineDynamic;
+const newEngineDynamic = require('@comunica/actor-init-sparql').newEngineDynamic;
 
 newEngineDynamic().then(function (myEngine) {
   myEngine.query('SELECT * { ?s ?p <http://dbpedia.org/resource/Belgium>. ?s ?p ?o } LIMIT 100',
