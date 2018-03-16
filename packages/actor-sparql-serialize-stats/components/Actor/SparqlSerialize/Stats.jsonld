@@ -1,19 +1,31 @@
 {
   "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-abstract-mediatyped.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-actor-sparql-serialize-stats.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-bus-sparql-serialize.jsonld"
   ],
   "@id": "npmd:@comunica/actor-sparql-serialize-stats",
   "components": [
     {
-      "@id": "casss:Actor/SparqlSerialize/Stats",
+      "@id": "cassst:Actor/SparqlSerialize/Stats",
       "@type": "Class",
-      "extends": "cbss:Actor/SparqlSerialize",
+      "extends": "cbss:Actor/SparqlSerializeFixedMediaTypes",
       "requireElement": "ActorSparqlSerializeStats",
       "comment": "Serializes SPARQL results for testing and debugging.",
+      "parameters": [
+        {
+          "@id": "caam:Actor/AbstractMediaTypedFixed/mediaTypeEntry",
+          "defaultScoped": {
+            "defaultScope": "cassst:Actor/SparqlSerialize/Stats",
+            "defaultScopedValue": [
+              { "mediaTypeKey": "stats", "priorityValue": "1.0" }
+            ]
+          }
+        }
+      ],
       "constructorArguments": [
         {
-          "extends": "cbss:Actor/SparqlSerialize/constructorArgumentsObject"
+          "extends": "cbss:Actor/SparqlSerializeFixedMediaTypes/constructorArgumentsObject"
         }
       ]
     }

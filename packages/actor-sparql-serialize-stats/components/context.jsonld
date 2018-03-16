@@ -5,7 +5,7 @@
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
       "casss": "npmd:@comunica/actor-sparql-serialize-stats/",
 
-      "ActorSparqlSerializeStats": "casss:Actor/SparqlSerialize/Stats"
+      "ActorSparqlSerializeStats": "cassst:Actor/SparqlSerialize/Stats"
     }
   ]
 }
