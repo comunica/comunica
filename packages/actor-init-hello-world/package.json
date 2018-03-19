@@ -27,17 +27,11 @@
     "index.js"
   ],
   "dependencies": {
-    "streamify-string": "^1.0.1"
-  },
-  "peerDependencies": {
-    "@comunica/bus-init": "^0.0.1",
-    "@comunica/core": "^0.0.1"
-  },
-  "devDependencies": {
     "@comunica/bus-init": "^0.0.1",
     "@comunica/core": "^0.0.1",
     "@comunica/runner": "^0.0.1",
-    "@comunica/runner-cli": "^0.0.1"
+    "@comunica/runner-cli": "^0.0.1",
+    "streamify-string": "^1.0.1"
   },
   "jest": {
     "transform": {

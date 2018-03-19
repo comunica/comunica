@@ -28,12 +28,7 @@
     "index.d.ts",
     "index.js"
   ],
-  "peerDependencies": {
-    "@comunica/bus-init": "^0.0.1",
-    "@comunica/bus-query-operation": "^0.0.1",
-    "@comunica/core": "^0.0.1"
-  },
-  "devDependencies": {
+  "dependencies": {
     "@comunica/actor-http-node-fetch": "^0.0.1",
     "@comunica/actor-query-operation-bgp-empty": "^0.0.1",
     "@comunica/actor-query-operation-bgp-left-deep-smallest": "^0.0.1",

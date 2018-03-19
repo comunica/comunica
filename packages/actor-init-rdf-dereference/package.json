@@ -26,14 +26,7 @@
     "index.d.ts",
     "index.js"
   ],
-  "peerDependencies": {
-    "@comunica/bus-http": "^0.0.1",
-    "@comunica/bus-init": "^0.0.1",
-    "@comunica/bus-rdf-dereference": "^0.0.1",
-    "@comunica/bus-rdf-parse": "^0.0.1",
-    "@comunica/core": "^0.0.1"
-  },
-  "devDependencies": {
+  "dependencies": {
     "@comunica/actor-http-node-fetch": "^0.0.1",
     "@comunica/actor-rdf-dereference-http-parse": "^0.0.1",
     "@comunica/actor-rdf-parse-jsonld": "^0.0.1",

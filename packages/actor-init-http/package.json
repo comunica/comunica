@@ -27,22 +27,20 @@
     "index.js"
   ],
   "dependencies": {
-    "node-web-streams": "^0.2.2"
-  },
-  "peerDependencies": {
-    "@comunica/bus-http": "^0.0.1",
-    "@comunica/bus-init": "^0.0.1",
-    "@comunica/core": "^0.0.1"
-  },
-  "devDependencies": {
     "@comunica/actor-http-node-fetch": "^0.0.1",
     "@comunica/bus-http": "^0.0.1",
     "@comunica/bus-init": "^0.0.1",
     "@comunica/core": "^0.0.1",
     "@comunica/mediator-number": "^0.0.1",
-    "@comunica/mediatortype-time": "^0.0.1",
     "@comunica/runner": "^0.0.1",
     "@comunica/runner-cli": "^0.0.1",
+    "node-web-streams": "^0.2.2"
+  },
+  "devDependencies": {
+    "@comunica/bus-http": "^0.0.1",
+    "@comunica/bus-init": "^0.0.1",
+    "@comunica/core": "^0.0.1",
+    "@comunica/mediatortype-time": "^0.0.1",
     "isomorphic-fetch": "^2.2.1"
   },
   "jest": {
