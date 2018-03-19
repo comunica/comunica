@@ -4,19 +4,16 @@
   "description": "A comunica mediator type for the 'iterations' parameter.",
   "main": "index.js",
   "typings": "index",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/comunica/mediatortype-iterations.git"
-  },
+  "repository": "https://github.com/comunica/comunica/tree/master/packages/mediatortype-iterations",
   "keywords": [
     "comunica",
     "mediatortype"
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/comunica/mediatortype-iterations/issues"
+    "url": "https://github.com/comunica/comunica/issues"
   },
-  "homepage": "https://github.com/comunica/mediatortype-iterations#readme",
+  "homepage": "https://github.com/comunica/comunica#readme",
   "files": [
     "components",
     "lib/**/*.d.ts",

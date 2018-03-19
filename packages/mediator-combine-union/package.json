@@ -9,19 +9,16 @@
   },
   "main": "index.js",
   "typings": "index",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/comunica/mediator-combine-union.git"
-  },
+  "repository": "https://github.com/comunica/comunica/tree/master/packages/mediator-combine-union",
   "keywords": [
     "comunica",
     "runner"
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/comunica/mediator-combine-union/issues"
+    "url": "https://github.com/comunica/comunica/issues"
   },
-  "homepage": "https://github.com/comunica/mediator-combine-union#readme",
+  "homepage": "https://github.com/comunica/comunica#readme",
   "files": [
     "components",
     "lib/**/*.d.ts",

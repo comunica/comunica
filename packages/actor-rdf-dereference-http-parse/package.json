@@ -9,19 +9,16 @@
   },
   "main": "index.js",
   "typings": "index",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/comunica/actor-rdf-dereference-http-parse.git"
-  },
+  "repository": "https://github.com/comunica/comunica/tree/master/packages/actor-rdf-dereference-http-parse",
   "keywords": [
     "comunica",
     "runner"
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/comunica/actor-rdf-dereference-http-parse/issues"
+    "url": "https://github.com/comunica/comunica/issues"
   },
-  "homepage": "https://github.com/comunica/actor-rdf-dereference-http-parse#readme",
+  "homepage": "https://github.com/comunica/comunica#readme",
   "files": [
     "components",
     "lib/**/*.d.ts",

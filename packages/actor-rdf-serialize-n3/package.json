@@ -9,10 +9,7 @@
   },
   "main": "index.js",
   "typings": "index",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/comunica/actor-rdf-serialize-n3.git"
-  },
+  "repository": "https://github.com/comunica/comunica/tree/master/packages/actor-rdf-serialize-n3",
   "keywords": [
     "comunica",
     "actor",

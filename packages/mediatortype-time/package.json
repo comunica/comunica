@@ -4,10 +4,7 @@
   "description": "A comunica mediator type for the 'time' parameter.",
   "main": "index.js",
   "typings": "index",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/comunica/mediatortype-time.git"
-  },
+  "repository": "https://github.com/comunica/comunica/tree/master/packages/mediatortype-time",
   "keywords": [
     "comunica",
     "bus",
@@ -15,9 +12,9 @@
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/comunica/mediatortype-time/issues"
+    "url": "https://github.com/comunica/comunica/issues"
   },
-  "homepage": "https://github.com/comunica/mediatortype-time#readme",
+  "homepage": "https://github.com/comunica/comunica#readme",
   "files": [
     "components",
     "lib/**/*.d.ts",

@@ -9,10 +9,7 @@
   },
   "main": "index.js",
   "typings": "index",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/comunica/actor-http-native.git"
-  },
+  "repository": "https://github.com/comunica/comunica/tree/master/packages/actor-http-native",
   "keywords": [
     "comunica",
     "actor",
@@ -21,9 +18,9 @@
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/comunica/actor-http-native/issues"
+    "url": "https://github.com/comunica/comunica/issues"
   },
-  "homepage": "https://github.com/comunica/actor-http-native#readme",
+  "homepage": "https://github.com/comunica/comunica#readme",
   "files": [
     "components",
     "lib/**/*.d.ts",

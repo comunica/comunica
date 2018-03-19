@@ -9,10 +9,7 @@
   },
   "main": "index.js",
   "typings": "index",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/comunica/actor-init-sparql.git"
-  },
+  "repository": "https://github.com/comunica/comunica/tree/master/packages/actor-init-sparql",
   "keywords": [
     "comunica",
     "actor",
@@ -26,9 +23,9 @@
     "comunica-dynamic-sparql": "./bin/query-dynamic.js"
   },
   "bugs": {
-    "url": "https://github.com/comunica/actor-init-sparql/issues"
+    "url": "https://github.com/comunica/comunica/issues"
   },
-  "homepage": "https://github.com/comunica/actor-init-sparql#readme",
+  "homepage": "https://github.com/comunica/comunica#readme",
   "files": [
     "components",
     "config",

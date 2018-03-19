@@ -9,10 +9,7 @@
   },
   "main": "index.js",
   "typings": "index",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/comunica/actor-query-operation-project.git"
-  },
+  "repository": "https://github.com/comunica/comunica/tree/master/packages/actor-query-operation-project",
   "keywords": [
     "comunica",
     "actor",
@@ -21,9 +18,9 @@
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/comunica/actor-query-operation-project/issues"
+    "url": "https://github.com/comunica/comunica/issues"
   },
-  "homepage": "https://github.com/comunica/actor-query-operation-project#readme",
+  "homepage": "https://github.com/comunica/comunica#readme",
   "files": [
     "components",
     "lib/**/*.d.ts",

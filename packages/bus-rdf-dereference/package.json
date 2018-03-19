@@ -9,10 +9,7 @@
   },
   "main": "index.js",
   "typings": "index",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/comunica/bus-rdf-dereference.git"
-  },
+  "repository": "https://github.com/comunica/comunica/tree/master/packages/bus-rdf-dereference",
   "keywords": [
     "comunica",
     "bus",
@@ -20,9 +17,9 @@
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/comunica/bus-rdf-dereference/issues"
+    "url": "https://github.com/comunica/comunica/issues"
   },
-  "homepage": "https://github.com/comunica/bus-rdf-dereference#readme",
+  "homepage": "https://github.com/comunica/comunica#readme",
   "files": [
     "components",
     "lib/**/*.d.ts",

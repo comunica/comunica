@@ -9,10 +9,7 @@
   },
   "main": "index.js",
   "typings": "index",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/comunica/actor-rdf-parse-n3.git"
-  },
+  "repository": "https://github.com/comunica/comunica/tree/master/packages/actor-rdf-parse-n3",
   "keywords": [
     "comunica",
     "runner"
