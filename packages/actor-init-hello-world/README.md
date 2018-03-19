@@ -1,5 +1,7 @@
 # Comunica Hello World
 
+[![npm version](https://badge.fury.io/js/%40comunica%2Factor-init-hello-world.svg)](https://www.npmjs.com/package/@comunica/actor-init-hello-world)
+
 An example Hello World init actor for Comunica.
 
 This module is part of the [Comunica framework](https://github.com/comunica/comunica).

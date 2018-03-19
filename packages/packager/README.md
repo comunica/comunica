@@ -1,5 +1,7 @@
 # Comunica Packager
 
+[![npm version](https://badge.fury.io/js/%40comunica%2Fpackager.svg)](https://www.npmjs.com/package/@comunica/packager)
+
 A tool for packaging Comunica modules in a single NPM package.
 
 This module is part of the [Comunica framework](https://github.com/comunica/comunica).

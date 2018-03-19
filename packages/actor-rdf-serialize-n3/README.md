@@ -1,5 +1,7 @@
 # Comunica N3 RDF Serialize Actor
 
+[![npm version](https://badge.fury.io/js/%40comunica%2Factor-rdf-serialize-n3.svg)](https://www.npmjs.com/package/@comunica/actor-rdf-serialize-n3)
+
 A comunica N3 RDF Serialize Actor.
 
 This module is part of the [Comunica framework](https://github.com/comunica/comunica).

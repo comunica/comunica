@@ -1,5 +1,7 @@
 # Comunica Query Operation
 
+[![npm version](https://badge.fury.io/js/%40comunica%2Factor-init-query-operation.svg)](https://www.npmjs.com/package/@comunica/actor-init-query-operation)
+
 An example init actor for Comunica that triggers an Query Operation event.
 
 This module is part of the [Comunica framework](https://github.com/comunica/comunica).

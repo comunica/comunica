@@ -1,5 +1,7 @@
 # Comunica Bus RDF Serialize
 
+[![npm version](https://badge.fury.io/js/%40comunica%2Fbus-rdf-serialize.svg)](https://www.npmjs.com/package/@comunica/bus-rdf-serialize)
+
 A comunica bus for rdf-serialize events.
 
 This module is part of the [Comunica framework](https://github.com/comunica/comunica).

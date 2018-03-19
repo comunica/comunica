@@ -1,5 +1,7 @@
 # Comunica SPARQL
 
+[![npm version](https://badge.fury.io/js/%40comunica%2Factor-init-sparql.svg)](https://www.npmjs.com/package/@comunica/actor-init-sparql)
+
 Linked Data on the Web is being published in different ways,
 such as [data dumps](http://downloads.dbpedia.org/3.9/en/),
 [subject pages](http://dbpedia.org/page/Linked_data),

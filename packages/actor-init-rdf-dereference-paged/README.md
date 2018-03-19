@@ -1,5 +1,7 @@
 # Comunica RDF Dereference Paged
 
+[![npm version](https://badge.fury.io/js/%40comunica%2Factor-init-rdf-dereference-paged.svg)](https://www.npmjs.com/package/@comunica/actor-init-rdf-dereference-paged)
+
 An example init actor for Comunica that triggers an RDF Dereference Paged event for the given URL.
 
 This module is part of the [Comunica framework](https://github.com/comunica/comunica).

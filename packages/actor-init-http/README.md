@@ -1,5 +1,7 @@
 # Comunica HTTP
 
+[![npm version](https://badge.fury.io/js/%40comunica%2Factor-init-http.svg)](https://www.npmjs.com/package/@comunica/actor-init-http)
+
 An example init actor for Comunica that triggers a HTTP request using the HTTP bus.
 
 This module is part of the [Comunica framework](https://github.com/comunica/comunica).

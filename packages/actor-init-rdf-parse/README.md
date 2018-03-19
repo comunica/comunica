@@ -1,5 +1,7 @@
 # Comunica RDF Parse
 
+[![npm version](https://badge.fury.io/js/%40comunica%2Factor-init-rdf-parse.svg)](https://www.npmjs.com/package/@comunica/actor-init-rdf-parse)
+
 An example init actor for Comunica that triggers an RDF Parse event for the given input stream.
 
 This module is part of the [Comunica framework](https://github.com/comunica/comunica).
