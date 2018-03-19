@@ -1,6 +1,6 @@
 {
   "name": "@comunica/bus-rdf-dereference",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "A comunica bus for 'http' events.",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-dereference",
   "lsd:components": "components/components.jsonld",
@@ -10,6 +10,9 @@
   "main": "index.js",
   "typings": "index",
   "repository": "https://github.com/comunica/comunica/tree/master/packages/bus-rdf-dereference",
+  "publishConfig": {
+    "access": "public"
+  },
   "keywords": [
     "comunica",
     "bus",
@@ -28,10 +31,10 @@
     "index.js"
   ],
   "peerDependencies": {
-    "@comunica/core": "^0.0.1"
+    "@comunica/core": "^1.0.0"
   },
   "devDependencies": {
-    "@comunica/core": "^0.0.1"
+    "@comunica/core": "^1.0.0"
   },
   "scripts": {
     "lint": "node \"../../node_modules/tslint/bin/tslint\" lib/**/*.ts test/**/*.ts --exclude '**/*.d.ts'",

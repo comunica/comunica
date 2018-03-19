@@ -5,14 +5,14 @@
       "ignore": [
         "*.md"
       ],
-      "message": "Bump to release version %v",
+      "message": "Bump to release version %s",
       "allowBranch": "master"
     }
   },
   "packages": [
     "packages/*"
   ],
-  "version": "0.0.1",
+  "version": "1.0.0",
   "npmClient": "yarn",
   "npmClientArgs": [
     "--no-lockfile"

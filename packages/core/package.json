@@ -1,6 +1,6 @@
 {
   "name": "@comunica/core",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Lightweight, semantic and modular actor framework",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core",
   "lsd:components": "components/components.jsonld",
@@ -10,6 +10,9 @@
   "main": "index.js",
   "typings": "index",
   "repository": "https://github.com/comunica/comunica/tree/master/packages/core",
+  "publishConfig": {
+    "access": "public"
+  },
   "keywords": [
     "semantic",
     "actor",

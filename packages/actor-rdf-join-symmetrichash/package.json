@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-join-symmetrichash",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "A symmetrichash rdf-join actor",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-join-symmetrichash",
   "lsd:components": "components/components.jsonld",
@@ -10,6 +10,9 @@
   "main": "index.js",
   "typings": "index",
   "repository": "https://github.com/comunica/comunica/tree/master/packages/actor-rdf-join-symmetrichash",
+  "publishConfig": {
+    "access": "public"
+  },
   "keywords": [
     "comunica",
     "actor",
@@ -32,14 +35,14 @@
     "asyncjoin": "^0.1.2"
   },
   "peerDependencies": {
-    "@comunica/bus-rdf-join": "^0.0.1",
-    "@comunica/core": "^0.0.1"
+    "@comunica/bus-rdf-join": "^1.0.0",
+    "@comunica/core": "^1.0.0"
   },
   "devDependencies": {
-    "@comunica/bus-query-operation": "^0.0.1",
-    "@comunica/bus-rdf-join": "^0.0.1",
-    "@comunica/core": "^0.0.1",
-    "@comunica/mediatortype-iterations": "^0.0.1"
+    "@comunica/bus-query-operation": "^1.0.0",
+    "@comunica/bus-rdf-join": "^1.0.0",
+    "@comunica/core": "^1.0.0",
+    "@comunica/mediatortype-iterations": "^1.0.0"
   },
   "jest": {
     "transform": {

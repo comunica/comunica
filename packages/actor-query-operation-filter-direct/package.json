@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-operation-filter-direct",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "A filter-direct query-operation actor",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-filter-direct",
   "lsd:components": "components/components.jsonld",
@@ -10,6 +10,9 @@
   "main": "index.js",
   "typings": "index",
   "repository": "https://github.com/comunica/comunica/tree/master/packages/actor-query-operation-filter-direct",
+  "publishConfig": {
+    "access": "public"
+  },
   "keywords": [
     "comunica",
     "actor",
@@ -29,16 +32,16 @@
     "index.js"
   ],
   "peerDependencies": {
-    "@comunica/bus-query-operation": "^0.0.1",
-    "@comunica/core": "^0.0.1"
+    "@comunica/bus-query-operation": "^1.0.0",
+    "@comunica/core": "^1.0.0"
   },
   "dependencies": {
     "n3": "^0.11.2",
     "rdf-string": "^1.0.1"
   },
   "devDependencies": {
-    "@comunica/bus-query-operation": "^0.0.1",
-    "@comunica/core": "^0.0.1"
+    "@comunica/bus-query-operation": "^1.0.0",
+    "@comunica/core": "^1.0.0"
   },
   "jest": {
     "transform": {

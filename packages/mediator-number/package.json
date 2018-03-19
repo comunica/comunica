@@ -1,6 +1,6 @@
 {
   "name": "@comunica/mediator-number",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "A mediator for a single mediation number value",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-number",
   "lsd:components": "components/components.jsonld",
@@ -10,6 +10,9 @@
   "main": "index.js",
   "typings": "index",
   "repository": "https://github.com/comunica/comunica/tree/master/packages/mediator-number",
+  "publishConfig": {
+    "access": "public"
+  },
   "keywords": [
     "comunica",
     "runner"
@@ -30,10 +33,10 @@
     "lodash.map": "^4.6.0"
   },
   "peerDependencies": {
-    "@comunica/core": "^0.0.1"
+    "@comunica/core": "^1.0.0"
   },
   "devDependencies": {
-    "@comunica/core": "^0.0.1"
+    "@comunica/core": "^1.0.0"
   },
   "jest": {
     "transform": {

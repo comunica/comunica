@@ -1,10 +1,13 @@
 {
   "name": "@comunica/mediatortype-time",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "A comunica mediator type for the 'time' parameter.",
   "main": "index.js",
   "typings": "index",
   "repository": "https://github.com/comunica/comunica/tree/master/packages/mediatortype-time",
+  "publishConfig": {
+    "access": "public"
+  },
   "keywords": [
     "comunica",
     "bus",
@@ -23,10 +26,10 @@
     "index.js"
   ],
   "peerDependencies": {
-    "@comunica/core": "^0.0.1"
+    "@comunica/core": "^1.0.0"
   },
   "devDependencies": {
-    "@comunica/core": "^0.0.1"
+    "@comunica/core": "^1.0.0"
   },
   "scripts": {
     "lint": "node \"../../node_modules/tslint/bin/tslint\" lib/**/*.ts test/**/*.ts --exclude '**/*.d.ts'",
