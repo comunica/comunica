@@ -2,6 +2,16 @@
 
 An example init actor for Comunica that triggers an RDF Dereference Paged event for the given URL.
 
+This module is part of the [Comunica framework](https://github.com/comunica/comunica).
+
+## Install
+
+```bash
+$ yarn add @comunica/actor-init-rdf-dereference-paged
+```
+
+## Usage
+
 The `config/config-example.json` contains an example on how to run this actor,
 which will trigger on the Runner's 'init' event.
 

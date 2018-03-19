@@ -2,6 +2,16 @@
 
 An example init actor for Comunica that triggers an Query Operation event.
 
+This module is part of the [Comunica framework](https://github.com/comunica/comunica).
+
+## Install
+
+```bash
+$ yarn add @comunica/actor-init-query-operation
+```
+
+## Usage
+
 The `config/` folder contains an examples on how to run this actor,
 which will trigger on the Runner's 'init' event.
 

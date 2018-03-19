@@ -2,6 +2,14 @@
 
 A tool for packaging Comunica modules in a single NPM package.
 
+This module is part of the [Comunica framework](https://github.com/comunica/comunica).
+
+## Install
+
+```bash
+$ yarn add @comunica/packager
+```
+
 ## Usage
 
 Invoke the packager using a config file as follows:

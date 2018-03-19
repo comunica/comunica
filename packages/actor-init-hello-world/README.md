@@ -2,6 +2,16 @@
 
 An example Hello World init actor for Comunica.
 
+This module is part of the [Comunica framework](https://github.com/comunica/comunica).
+
+## Install
+
+```bash
+$ yarn add @comunica/actor-init-hello-world
+```
+
+## Usage
+
 The `config/config-example.json` contains an example on how to run the Hello World actor,
 which will trigger on the Runner's 'init' event.
 

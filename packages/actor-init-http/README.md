@@ -2,6 +2,16 @@
 
 An example init actor for Comunica that triggers a HTTP request using the HTTP bus.
 
+This module is part of the [Comunica framework](https://github.com/comunica/comunica).
+
+## Install
+
+```bash
+$ yarn add @comunica/actor-init-http
+```
+
+## Usage
+
 The `config/config-example.json` contains an example on how to run this actor,
 which will trigger on the Runner's 'init' event.
 
