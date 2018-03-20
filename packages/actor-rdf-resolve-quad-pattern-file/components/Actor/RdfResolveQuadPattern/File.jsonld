@@ -6,14 +6,14 @@
   "@id": "npmd:@comunica/actor-rdf-resolve-quad-pattern-file",
   "components": [
     {
-      "@id": "carrqpf:Actor/RdfResolveQuadPattern/File",
+      "@id": "carrqpfi:Actor/RdfResolveQuadPattern/File",
       "@type": "Class",
       "extends": "cbrrqp:Actor/RdfResolveQuadPattern",
       "requireElement": "ActorRdfResolveQuadPatternFile",
       "comment": "A comunica File RDF Resolve Quad Pattern Actor.",
       "parameters": [
         {
-          "@id": "carrqpf:mediatorRdfDereference",
+          "@id": "carrqpfi:mediatorRdfDereference",
           "comment": "The RDF Dereference mediator",
           "required": true,
           "unique": true
@@ -26,12 +26,12 @@
       ],
       "constructorArguments": [
         {
-          "@id": "carrqpf:Actor/RdfResolveQuadPattern/File/constructorArgumentsObject",
+          "@id": "carrqpfi:Actor/RdfResolveQuadPattern/File/constructorArgumentsObject",
           "extends": "cbrrqp:Actor/RdfResolveQuadPattern/constructorArgumentsObject",
           "fields": [
             {
               "keyRaw": "mediatorRdfDereference",
-              "value": "carrqpf:mediatorRdfDereference"
+              "value": "carrqpfi:mediatorRdfDereference"
             },
             {
               "keyRaw": "files",
