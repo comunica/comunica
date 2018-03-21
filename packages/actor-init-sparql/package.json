@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-init-sparql",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A Comunica engine for SPARQL query evaluation over heterogeneous interfaces",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-sparql",
   "lsd:components": "components/components.jsonld",
@@ -110,7 +110,7 @@
   },
   "devDependencies": {
     "@comunica/actor-query-operation-bgp-left-deep-smallest-sort": "^1.0.0",
-    "@comunica/actor-rdf-resolve-quad-pattern-file": "^1.0.0",
+    "@comunica/actor-rdf-resolve-quad-pattern-file": "^1.0.1",
     "@comunica/actor-rdf-resolve-quad-pattern-hdt": "^1.0.0",
     "lodash.assign": "^4.2.0",
     "string-replace-webpack-plugin": "^0.1.3",

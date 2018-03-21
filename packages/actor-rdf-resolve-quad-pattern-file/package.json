@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-resolve-quad-pattern-file",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A file rdf-resolve-quad-pattern actor",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-resolve-quad-pattern-file",
   "lsd:components": "components/components.jsonld",
