@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-init-sparql",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A Comunica engine for SPARQL query evaluation over heterogeneous interfaces",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-sparql",
   "lsd:components": "components/components.jsonld",
