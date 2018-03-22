@@ -49,7 +49,7 @@ export class QueryEngine {
  * @return {QueryEngine} A comunica engine.
  */
 export function newEngine(): QueryEngine {
-  return new QueryEngine(require('../index-static.js'));
+  return new QueryEngine(require('../engine-default.js'));
 }
 
 // Hack to make dynamic invocation properly work in both dev environment and in production
