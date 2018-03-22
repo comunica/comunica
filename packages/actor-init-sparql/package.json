@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-init-sparql",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A Comunica engine for SPARQL query evaluation over heterogeneous interfaces",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-sparql",
   "lsd:components": "components/components.jsonld",
@@ -71,7 +71,7 @@
     "@comunica/actor-rdf-metadata-triple-predicate": "^1.0.0",
     "@comunica/actor-rdf-parse-jsonld": "^1.0.0",
     "@comunica/actor-rdf-parse-n3": "^1.0.0",
-    "@comunica/actor-rdf-resolve-quad-pattern-federated": "^1.0.0",
+    "@comunica/actor-rdf-resolve-quad-pattern-federated": "^1.0.3",
     "@comunica/actor-rdf-resolve-quad-pattern-file": "^1.0.1",
     "@comunica/actor-rdf-resolve-quad-pattern-qpf": "^1.0.0",
     "@comunica/actor-rdf-resolve-quad-pattern-sparql-json": "^1.0.0",
