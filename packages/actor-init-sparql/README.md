@@ -110,7 +110,7 @@ After that, `Comunica.evaluateQuery` can be called via JavaScript.
 
 ```javascript
 Comunica.evaluateQuery('SELECT * { ?s ?p <http://dbpedia.org/resource/Belgium>. ?s ?p ?o } LIMIT 100',
-  { entrypoint: 'http://fragments.dbpedia.org/2015/en' })
+  { sources: [ { type: 'hypermedia', value: 'http://fragments.dbpedia.org/2015/en' } ] })
   .then(function (result) {
     result.bindingsStream.on('data', function (data) {
       console.log(data.toObject());
