@@ -75,63 +75,48 @@ class CoalesceContinuer implements CoalesceController {
 // https://www.w3.org/TR/sparql11-query/#func-logical-or
 export class LogicalOrAsync extends SpecialFunctionAsync {
   public apply(args: E.IExpression[], mapping: Bindings, evaluate: Evaluator): AsyncTerm {
-    const [left, right] = args;
-    // TODO: Fix coercion error bug
-    const wrap = (p: AsyncTerm) => p.then((term) => term.coerceEBV()).reflect();
-    return Promise.join(
-      wrap(evaluate(left, mapping)),
-      wrap(evaluate(right, mapping)),
-      (p1, p2) => {
-        const r1 = p1.isRejected();
-        const r2 = p2.isRejected();
-        const f1 = p1.isFulfilled();
-        const f2 = p2.isFulfilled();
+    const [leftExpr, rightExpr] = args;
+    return evaluate(leftExpr, mapping)
+      .then((left) => left.coerceEBV())
+      .then((left) => {
+        if (left) { return bool(true); }
 
-        if (f1 && f2) { return bool(p1.value() || p2.value()); }
-
-        if (r1 && r2) { throw p1.reason(); } // TODO: Might need to throw both
-
-        const rejected = (r1) ? p1 : p2;
-        const fullfilled = (f1) ? p1 : p2;
-
-        if (fullfilled.value()) {
-          return bool(true);
-        } else {
-          throw rejected.reason();
-        }
-      },
-    );
+        return evaluate(rightExpr, mapping)
+          .then((right) => right.coerceEBV())
+          .then((right) => bool(right));
+      })
+      .catch((err) => {
+        return evaluate(rightExpr, mapping)
+          .then((right) => right.coerceEBV())
+          .then((right) => {
+            if (right) { return bool(true); }
+            throw err;
+          });
+      });
   }
 }
 
 // https://www.w3.org/TR/sparql11-query/#func-logical-and
 export class LogicalAndAsync extends SpecialFunctionAsync {
   public apply(args: E.IExpression[], mapping: Bindings, evaluate: Evaluator): AsyncTerm {
-    const [left, right] = args;
-    const wrap = (p: AsyncTerm) => p.then((term) => term.coerceEBV()).reflect();
-    return Promise.join(
-      wrap(evaluate(left, mapping)),
-      wrap(evaluate(right, mapping)),
-      (p1, p2) => {
-        const r1 = p1.isRejected();
-        const r2 = p2.isRejected();
-        const f1 = p1.isFulfilled();
-        const f2 = p2.isFulfilled();
+    const [leftExpr, rightExpr] = args;
 
-        if (f1 && f2) { return bool(p1.value() && p2.value()); }
-
-        if (r1 && r2) { throw p1.reason(); } // TODO: Might need to throw both
-
-        const rejected = (r1) ? p1 : p2;
-        const fullfilled = (f1) ? p1 : p2;
-
-        if (fullfilled.value()) {
-          throw rejected.reason();
-        } else {
-          return bool(false);
-        }
-      },
-    );
+    return evaluate(leftExpr, mapping)
+      .then((left) => left.coerceEBV())
+      .then((left) => {
+        if (!left) { return bool(false); }
+        return evaluate(rightExpr, mapping)
+          .then((right) => right.coerceEBV())
+          .then((right) => bool(right));
+      })
+      .catch((err) => {
+        return evaluate(rightExpr, mapping)
+          .then((right) => right.coerceEBV())
+          .then((right) => {
+            if (!right) { return bool(false); }
+            throw err;
+          });
+      });
   }
 }
 
