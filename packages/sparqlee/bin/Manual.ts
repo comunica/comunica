@@ -33,7 +33,7 @@ async function testEval() {
   //   a: RDF.literal("aaa"),
   // }));
   const evaluator = new AsyncEvaluator(ex.expression, mockLookup);
-  const presult = evaluator._evaluateAsInternal(ex.mapping()).catch((err) => console.log(err));
+  const presult = evaluator.evaluateAsInternal(ex.mapping()).catch((err) => console.log(err));
   const val = await presult;
   console.log(val);
 }
