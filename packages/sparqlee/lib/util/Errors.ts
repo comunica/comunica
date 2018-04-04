@@ -17,7 +17,7 @@ export class InvalidLexicalForm extends Error {
 }
 
 export class RDFEqualTypeError extends Error {
-  constructor(public args: E.IExpression[]) {
+  constructor(public args: E.Expression[]) {
     super('Equality test for literals with unsupported datatypes');
   }
 }
@@ -37,13 +37,13 @@ export class InError extends Error {
 }
 
 export class InvalidArity extends Error {
-  constructor(public args: E.IExpression[], public op: C.Operator) {
+  constructor(public args: E.Expression[], public op: C.Operator) {
     super('The amount of args don\'t match the arity of the operator.');
   }
 }
 
 export class InvalidArgumentTypes extends Error {
-  constructor(public args: E.IExpression[], public op: C.Operator) {
+  constructor(public args: E.Expression[], public op: C.Operator) {
     super("Argument types not valid for operator.");
   }
 }

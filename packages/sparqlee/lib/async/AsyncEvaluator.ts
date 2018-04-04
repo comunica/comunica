@@ -12,32 +12,26 @@ import { Lookup } from "../FromExpressionStream";
 import { DataType as DT } from '../util/Consts';
 
 export class AsyncEvaluator {
-  private _expr: E.IExpression;
+  private _expr: E.Expression;
   private _lookup: Lookup;
 
-  constructor(expr: Alg.Expression, lookup: Lookup) {
+  constructor(expr: Alg.Expression, public lookup: Lookup) {
     this._expr = this._transform(expr);
-    this._lookup = lookup;
   }
 
   public evaluate(mapping: Bindings): Promise<RDF.Term> {
-    return this._eval(this._expr, mapping).then((val) => {
-      return log(val).toRDF();
-    });
+    return this._eval(this._expr, mapping).then((val) => log(val).toRDF());
   }
 
   public evaluateAsEBV(mapping: Bindings): Promise<boolean> {
-    // let expr = new Promise<E.Expression>((res, rej) => res(this._expr));
-    return this._eval(this._expr, mapping).then((val) => {
-      return log(val).coerceEBV();
-    });
+    return this._eval(this._expr, mapping).then((val) => log(val).coerceEBV());
   }
 
   public _evaluateAsInternal(mapping: Bindings): Promise<E.ITermExpression> {
     return this._eval(this._expr, mapping);
   }
 
-  private _eval(expr: E.IExpression, mapping: Bindings): Promise<E.ITermExpression> {
+  private _eval(expr: E.Expression, mapping: Bindings): Promise<E.ITermExpression> {
     const types = E.expressionTypes;
     switch (expr.expressionType) {
       case types.TERM:
@@ -47,7 +41,7 @@ export class AsyncEvaluator {
           this._evalVar(<E.IVariableExpression> expr, mapping)
         ));
       case types.OPERATOR:
-        return this._evalOp(<E.IOperatorExpression<any>> expr, mapping);
+        return this._evalOp(<E.IOperatorExpression> expr, mapping);
       // TODO
       case types.NAMED:
         throw new Err.UnimplementedError();
@@ -72,28 +66,25 @@ export class AsyncEvaluator {
     }
   }
 
-  private _evalOp(expr: E.IOperatorExpression<any>, mapping: Bindings): Promise<E.ITermExpression> {
+  private _evalOp(expr: E.IOperatorExpression, mapping: Bindings): Promise<E.ITermExpression> {
     const { func, args } = expr;
     switch (func.functionClass) {
       case 'simple': {
         const pArgs = args.map((arg) => this._eval(arg, mapping));
-        const sFunc: E.ISPARQLFunc<E.SimpleApplication> = func;
         return Promise.all(pArgs).then((rArgs) => func.apply(rArgs));
       }
       case 'overloaded': {
         const pArgs = args.map((arg) => this._eval(arg, mapping));
-        const oFunc: E.ISPARQLFunc<E.SimpleApplication> = func;
         return Promise.all(pArgs).then((rArgs) => func.apply(rArgs));
       }
       case 'special': {
-        const oFunc: E.ISPARQLFunc<E.SpecialApplication> = func;
-        return oFunc.apply(args, mapping, this._eval.bind(this));
+        return func.apply(args, mapping, this._eval.bind(this));
       }
       default: throw new Err.UnexpectedError("Unknown function class.");
     }
   }
 
-  private _transform(expr: Alg.Expression): E.IExpression {
+  private _transform(expr: Alg.Expression): E.Expression {
     const types = Alg.expressionTypes;
     switch (expr.expressionType) {
       case types.TERM: return this._transformTerm(<Alg.TermExpression> expr);
@@ -111,7 +102,7 @@ export class AsyncEvaluator {
     }
   }
 
-  private _transformTerm(term: Alg.TermExpression): E.IExpression {
+  private _transformTerm(term: Alg.TermExpression): E.Expression {
     switch (term.term.termType) {
       case 'Variable': return new E.Variable(term.term.value);
       case 'Literal': return this._tranformLiteral(<RDF.Literal> term.term);

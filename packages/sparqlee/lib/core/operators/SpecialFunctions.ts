@@ -11,10 +11,10 @@ import { functions } from './index';
 import { OverloadedFunction, SpecialFunctionAsync } from './Types';
 
 export type AsyncTerm = Promise<E.ITermExpression>;
-export type Evaluator = (expr: E.IExpression, mapping: Bindings) => AsyncTerm;
+export type Evaluator = (expr: E.Expression, mapping: Bindings) => AsyncTerm;
 
 export class Bound extends SpecialFunctionAsync {
-  public apply(args: E.IExpression[], mapping: Bindings, evaluate: Evaluator): AsyncTerm {
+  public apply(args: E.Expression[], mapping: Bindings, evaluate: Evaluator): AsyncTerm {
     const variable = args[0] as E.IVariableExpression;
     if (variable.expressionType !== 'variable') {
       throw new Err.InvalidArgumentTypes(args, C.Operator.BOUND);
@@ -25,7 +25,7 @@ export class Bound extends SpecialFunctionAsync {
 }
 
 export class If extends SpecialFunctionAsync {
-  public apply(args: E.IExpression[], mapping: Bindings, evaluate: Evaluator): AsyncTerm {
+  public apply(args: E.Expression[], mapping: Bindings, evaluate: Evaluator): AsyncTerm {
     const valFirstP = evaluate(args[0], mapping);
     return valFirstP.then((valFirst) => {
       const ebv = valFirst.coerceEBV();
@@ -37,7 +37,7 @@ export class If extends SpecialFunctionAsync {
 }
 
 export class Coalesce extends SpecialFunctionAsync {
-  public apply(args: E.IExpression[], mapping: Bindings, evaluate: Evaluator): AsyncTerm {
+  public apply(args: E.Expression[], mapping: Bindings, evaluate: Evaluator): AsyncTerm {
     return Promise
       .mapSeries(args, (expr) =>
         evaluate(expr, mapping)
@@ -74,7 +74,7 @@ class CoalesceContinuer implements CoalesceController {
 // TODO: Might benefit from some smart people's input
 // https://www.w3.org/TR/sparql11-query/#func-logical-or
 export class LogicalOrAsync extends SpecialFunctionAsync {
-  public apply(args: E.IExpression[], mapping: Bindings, evaluate: Evaluator): AsyncTerm {
+  public apply(args: E.Expression[], mapping: Bindings, evaluate: Evaluator): AsyncTerm {
     const [leftExpr, rightExpr] = args;
     return evaluate(leftExpr, mapping)
       .then((left) => left.coerceEBV())
@@ -98,7 +98,7 @@ export class LogicalOrAsync extends SpecialFunctionAsync {
 
 // https://www.w3.org/TR/sparql11-query/#func-logical-and
 export class LogicalAndAsync extends SpecialFunctionAsync {
-  public apply(args: E.IExpression[], mapping: Bindings, evaluate: Evaluator): AsyncTerm {
+  public apply(args: E.Expression[], mapping: Bindings, evaluate: Evaluator): AsyncTerm {
     const [leftExpr, rightExpr] = args;
 
     return evaluate(leftExpr, mapping)
@@ -137,7 +137,7 @@ export function sameTerm(left: E.ITermExpression, right: E.ITermExpression) {
 }
 
 export class In extends SpecialFunctionAsync {
-  public apply(args: E.IExpression[], mapping: Bindings, evaluate: Evaluator): AsyncTerm {
+  public apply(args: E.Expression[], mapping: Bindings, evaluate: Evaluator): AsyncTerm {
     if (args.length < 1) { throw new Err.InvalidArity(args, C.Operator.IN); }
     const [left, ...remaining] = args;
     const thunks = remaining.map((expr) => () => evaluate(expr, mapping));
@@ -155,7 +155,7 @@ function inR(left: E.ITermExpression, args: (() => AsyncTerm)[], results: (Error
   const first = args.shift();
   return first()
     .then((v) => {
-      const op: E.ISPARQLFunc<E.SimpleApplication> = functions.get(C.Operator.EQUAL);
+      const op = functions.get(C.Operator.EQUAL) as E.OverloadedFunc;
       return op.apply([left, v]);
     })
     .then(
@@ -166,22 +166,8 @@ function inR(left: E.ITermExpression, args: (() => AsyncTerm)[], results: (Error
   );
 }
 
-// tslint:disable-next-line:interface-over-type-literal
-type InController = { type: 'breaker' | 'continuerFalse' | 'continuerError' };
-class InBreakerTrue extends Error implements InController {
-  public type: 'breaker' = 'breaker';
-  constructor() { super(); }
-}
-class InContinuerFalse implements InController {
-  public type: 'continuerFalse';
-}
-class InContinuerError implements InController {
-  public type: 'continuerError' = 'continuerError';
-  constructor(public err: Error) { }
-}
-
 export class NotIn extends SpecialFunctionAsync {
-  public apply(args: E.IExpression[], mapping: Bindings, evaluate: Evaluator): AsyncTerm {
+  public apply(args: E.Expression[], mapping: Bindings, evaluate: Evaluator): AsyncTerm {
     return new In(C.Operator.IN)
       .apply(args, mapping, evaluate)
       .then((term: E.ITermExpression) => (term as E.BooleanLiteral).typedValue)

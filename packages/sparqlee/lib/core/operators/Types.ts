@@ -20,7 +20,7 @@ export type ArgumentType = 'term' | E.TermType | C.DataTypeCategory;
 
 // Simple Functions -----------------------------------------------------------
 
-export class SimpleFunction implements E.ISPARQLFunc<E.SimpleApplication> {
+export class SimpleFunction implements E.SimpleFunc {
   public functionClass: 'simple' = 'simple';
 
   constructor(
@@ -73,7 +73,7 @@ export class SimpleFunction implements E.ISPARQLFunc<E.SimpleApplication> {
 // Maps argument types on their specific implementation.
 export type OverloadMap = Map<List<ArgumentType>, E.SimpleApplication>;
 
-export class OverloadedFunction implements E.ISPARQLFunc<E.SimpleApplication> {
+export class OverloadedFunction implements E.OverloadedFunc {
   public functionClass: 'overloaded' = 'overloaded';
 
   constructor(
@@ -115,15 +115,15 @@ export class OverloadedFunction implements E.ISPARQLFunc<E.SimpleApplication> {
  * in some contexts.
  */
 
-export abstract class SpecialFunctionAsync implements E.ISPARQLFunc<E.SpecialApplication> {
+export abstract class SpecialFunctionAsync implements E.SpecialFunc {
   public functionClass: 'special' = 'special';
 
   constructor(public operator: C.Operator) { }
 
   public abstract apply(
-    args: E.IExpression[],
+    args: E.Expression[],
     mapping: Bindings,
-    evaluate: (e: E.IExpression, mapping: Bindings) => Promise<E.ITermExpression>,
+    evaluate: (e: E.Expression, mapping: Bindings) => Promise<E.ITermExpression>,
   ): Promise<E.ITermExpression>;
 
 }

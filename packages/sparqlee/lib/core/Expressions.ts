@@ -18,48 +18,57 @@ export enum expressionTypes {
   VARIABLE = 'variable',
 }
 
-export interface IExpression {
+export type Expression =
+  IAggregateExpression |
+  IExistenceExpression |
+  INamedExpression |
+  IOperatorExpression |
+  ITermExpression |
+  IVariableExpression;
+
+export interface IExpressionProps {
   expressionType: 'aggregate' | 'existence' | 'named' | 'operator' | 'term' | 'variable';
 }
 
-export interface IAggregateExpression extends IExpression {
+export type IAggregateExpression = IExpressionProps & {
   expressionType: 'aggregate';
   aggregator: string;
   distinct: boolean;
   separator?: string; // used by GROUP_CONCAT
-  expression: IExpression;
-}
+  expression: Expression;
+};
 
-export interface IExistenceExpression extends IExpression {
+export type IExistenceExpression = IExpressionProps & {
   expressionType: 'existence';
   not: boolean;
   input: Algebra.Operation;
-}
+};
 
-export interface INamedExpression extends IExpression {
+export type INamedExpression = IExpressionProps & {
   expressionType: 'named';
   name: RDF.NamedNode;
-  args: IExpression[];
-}
+  args: Expression[];
+};
 
-export interface IOperatorExpression<Application extends ApplicationType> extends IExpression {
+export type IOperatorExpression = IExpressionProps & {
   expressionType: 'operator';
-  args: IExpression[];
-  func: ISPARQLFunc<Application>;
-}
+  args: Expression[];
+  func: SPARQLFunc;
+};
 
-export interface ITermExpression extends IExpression {
+export type ITermExpression = IExpressionProps & {
   expressionType: 'term';
   termType: TermType;
   coerceEBV(): boolean;
   toRDF(): RDF.Term;
-}
+};
+
 export type TermType = 'namedNode' | 'literal';
 
-export interface IVariableExpression extends IExpression {
+export type IVariableExpression = IExpressionProps & {
   expressionType: 'variable';
   name: string;
-}
+};
 
 // ----------------------------------------------------------------------------
 // Variable
@@ -206,19 +215,38 @@ export class NonLexicalLiteral extends Literal<undefined> {
  * (although they evaluate in different manners, the API is the same).
  */
 
-export interface ISPARQLFunc<Application extends ApplicationType> {
-  functionClass: 'simple' | 'overloaded' | 'special';
-  apply: Application;
-}
-export type SimpleApplication = (args: ITermExpression[]) => ITermExpression;
+// TODO Type better
 
+export interface ISPARQLFuncProps {
+  functionClass: 'simple' | 'overloaded' | 'special';
+}
+
+export type SPARQLFunc = SimpleFunc | OverloadedFunc | SpecialFunc;
+export type SimpleFunc = ISPARQLFuncProps & {
+  functionClass: 'simple';
+  apply: SimpleApplication;
+};
+export type OverloadedFunc = ISPARQLFuncProps & {
+  functionClass: 'overloaded';
+  apply: SimpleApplication;
+};
+export type SpecialFunc = ISPARQLFuncProps & {
+  functionClass: 'special';
+  apply: SpecialApplication;
+};
+
+// export interface ISPARQLFunc<SApplication extends Application> {
+//   functionClass: 'simple' | 'overloaded' | 'special';
+//   apply: SApplication;
+// }
+
+export type Application = SimpleApplication | SpecialApplication;
+export type SimpleApplication = (args: ITermExpression[]) => ITermExpression;
 export type SpecialApplication =
   (
-    args: IExpression[],
+    args: Expression[],
     mapping: Bindings,
     evaluate: Evaluator,
   ) => Promise<ITermExpression>;
 
-export type ApplicationType = SimpleApplication | SpecialApplication;
-
-export type Evaluator = (e: IExpression, mapping: Bindings) => Promise<ITermExpression>;
+export type Evaluator = (e: Expression, mapping: Bindings) => Promise<ITermExpression>;

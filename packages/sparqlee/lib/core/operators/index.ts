@@ -13,7 +13,7 @@ import {
 import { OverloadedFunction, SimpleFunction, SpecialFunctionAsync } from './Types';
 
 // TODO: If args are known, try to calculate already
-export function makeOp(opString: string, args: E.IExpression[]): E.IOperatorExpression<any> {
+export function makeOp(opString: string, args: E.Expression[]): E.IOperatorExpression {
   if (!C.Operators.contains(opString)) {
     throw new TypeError("Unknown operator");
   }
@@ -38,7 +38,7 @@ export function makeOp(opString: string, args: E.IExpression[]): E.IOperatorExpr
 
 }
 
-export const functions: Map<C.Operator, E.ISPARQLFunc<any>> = definitions.map((def, op) => {
+export const functions: Map<C.Operator, E.SPARQLFunc> = definitions.map((def, op) => {
   const { category, arity, definition } = def;
   switch (category) {
     case 'simple': {
