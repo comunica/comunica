@@ -8,8 +8,7 @@
     "test-debug-lin": "node --nolazy --debug-brk=5858 ./node_modules/.bin/jest",
     "test-debug-win": "node --debug-brk=5858 ./node_modules/jest/bin/jest.js",
     "prepare": "npm run build",
-    "bench": "node dist/benchmarks/Compare.js",
-    "testm": "node dist/benchmarks/Testing.js",
+    "watch": "gulp watch",
     "build": "tsc"
   },
   "repository": {
@@ -33,30 +32,32 @@
     "@types/benchmark": "^1.0.30",
     "@types/bluebird": "^3.5.18",
     "@types/jest": "^21.1.4",
+    "@types/lodash": "^4.14.105",
+    "@types/lodash.isequal": "^4.5.2",
     "@types/node": "^8.0.34",
-    "@types/sparqljs": "^1.5.0",
+    "@types/rdf-data-model": "^1.0.1",
     "benchmark": "^2.1.4",
     "del": "^3.0.0",
     "gulp": "^3.9.1",
     "gulp-sourcemaps": "^2.6.1",
     "gulp-typescript": "^3.2.2",
-    "jest": "~21.2.1",
+    "jest": "^22.4.0",
     "jest-html-reporter": "^0.5.3",
     "merge-stream": "^1.0.1",
     "ts-jest": "^21.1.1",
+    "ts-node": "^3.3.0",
     "tslint": "^5.8.0",
     "tslint-eslint-rules": "^4.1.1",
-    "typescript": "^2.5.3"
+    "typescript": "^2.6.0"
   },
   "dependencies": {
     "asynciterator": "^1.1.0",
     "bluebird": "^3.5.1",
     "immutable": "^3.8.2",
+    "lodash.isequal": "^4.5.0",
     "rdf-data-model": "^1.0.0",
     "rdf-js": "^1.0.1",
-    "sparqljs": "^1.5.0",
-    "termterm.js": "^0.0.2",
-    "ts-node": "^3.3.0"
+    "sparqlalgebrajs": "^0.7.3"
   },
   "jest": {
     "transform": {
@@ -64,15 +65,16 @@
     },
     "testPathIgnorePatterns": [
       "/node_modules/",
-      "/src/tests/util"
+      "/archive/",
+      "/dist/",
+      "/test/util/"
     ],
     "testResultsProcessor": "./node_modules/jest-html-reporter",
-    "testRegex": "(/tests/.*|(\\.|/)(test|spec))\\.ts$",
+    "testRegex": "(/test/.*|(\\.|/)(test|spec))\\.ts$",
     "moduleFileExtensions": [
       "ts",
       "js"
     ],
-    "collectCoverage": true,
-    "mapCoverage": true
+    "collectCoverage": true
   }
 }

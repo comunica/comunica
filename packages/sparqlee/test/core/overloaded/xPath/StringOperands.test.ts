@@ -1,62 +1,40 @@
-import { EVB_ERR_STR, FALSE_STR, TRUE_STR } from '../../util/Consts';
-import { testBinOp, testUnOp } from '../util/Operators';
+import * as RDFDM from 'rdf-data-model';
 
-// Some aliases that can be used in the truth tables
-const argMapping = {
-  true: TRUE_STR,
-  false: FALSE_STR,
-  error: EVB_ERR_STR,
+import * as C from '../../../../lib/util/Consts';
+import { testTable } from '../../../util/TruthTable';
+
+const CT = C.commonTerms;
+
+const aliasMap = {
+  true: C.TRUE_STR,
+  false: C.FALSE_STR,
+  error: C.EVB_ERR_STR,
   gener: '"generic-string"^^xsd:string',
   empty: '""^^xsd:string',
   aaa: '"aaa"^^xsd:string',
   bbb: '"bbb"^^xsd:string',
 };
-const resultMapping = {
-  true: true,
-  false: false,
+
+const resultMap = {
+  true: CT.true,
+  false: CT.false,
 };
 
-// Default error handling for boolean operators
 const errorTable = `
 gener error = error
 error gener = error
 error error = error
 `;
-const errorTableUnary = `
-error = error
-`;
 
-// Friendlier aliases for operation tests
-function test(
-  op: string,
-  table: string,
-  errTable: string = errorTable,
-  argMap: {} = argMapping,
-) {
-  testBinOp(op, table, errTable, argMap, resultMapping);
-}
-function testUnary(
-  op: string,
-  table: string,
-  errTable: string = errorTableUnary,
-  argMap: {} = argMapping,
-) {
-  testUnOp(op, table, errTable, argMap, resultMapping);
+function _testTable(op: string, table: string) {
+  testTable({ operator: op, table, errorTable, aliasMap, resultMap }, 2);
 }
 
 // TODO: Decent collation testing
 // https://www.w3.org/TR/xpath-functions/#collations
 // https://www.w3.org/TR/xpath-functions/#func-compare
-describe('the evaluation of simple numeric boolean expressions', () => {
-  describe('like string literals › like', () => {
-    const table = `
-    empty = false
-    gener = true
-    `;
-    testUnary('', table);
-  });
-
-  describe('like string operations', () => {
+describe('the evaluation of overloaded boolean operators', () => {
+  describe('with string operands', () => {
     describe('like "=" receiving', () => {
       const table = `
       empty empty = true
@@ -64,7 +42,7 @@ describe('the evaluation of simple numeric boolean expressions', () => {
       aaa   aaa   = true
       aaa   bbb   = false
       `;
-      test('=', table);
+      _testTable('=', table);
     });
 
     describe('like "!=" receiving', () => {
@@ -74,7 +52,7 @@ describe('the evaluation of simple numeric boolean expressions', () => {
       aaa   aaa   = false
       aaa   bbb   = true
       `;
-      test('!=', table);
+      _testTable('!=', table);
     });
 
     describe('like "<" receiving', () => {
@@ -86,7 +64,7 @@ describe('the evaluation of simple numeric boolean expressions', () => {
       aaa   bbb   = true
       bbb   aaa   = false
       `;
-      test('<', table);
+      _testTable('<', table);
     });
 
     describe('like ">" receiving', () => {
@@ -98,7 +76,7 @@ describe('the evaluation of simple numeric boolean expressions', () => {
       aaa   bbb   = false
       bbb   aaa   = true
       `;
-      test('>', table);
+      _testTable('>', table);
     });
 
     describe('like <= receiving', () => {
@@ -110,7 +88,7 @@ describe('the evaluation of simple numeric boolean expressions', () => {
       aaa   bbb   = true
       bbb   aaa   = false
       `;
-      test('<=', table);
+      _testTable('<=', table);
     });
 
     describe('like >= receiving', () => {
@@ -122,7 +100,7 @@ describe('the evaluation of simple numeric boolean expressions', () => {
       aaa   bbb   = false
       bbb   aaa   = true
       `;
-      test('>=', table);
+      _testTable('>=', table);
     });
   });
 });

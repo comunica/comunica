@@ -13,13 +13,15 @@
     "inlineSources": true,
     "declaration": true,
     "importHelpers": true,
-
     "outDir": "./dist",
     "noImplicitThis": true
   },
   "include": [
-    "**/*.ts",
-    "benchmarks/**/*.ts"
+    "index.ts",
+    "lib/**/*.ts",
+    "bin/**/*.ts",
+    "util/**/*.ts",
+    "test/**/*.ts"
   ],
   "exclude": [
     "**/node_modules",

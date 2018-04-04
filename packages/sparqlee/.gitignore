@@ -1,6 +1,8 @@
 dist/
 test-report.html
 
+package-lock.json
+
 # Logs
 logs
 *.log
