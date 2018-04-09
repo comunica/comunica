@@ -32,6 +32,8 @@ $ yarn install
 ```
 
 This will install the dependencies of all modules, and bootstrap the Lerna monorepo.
+After that, all [Comunica packages](https://github.com/comunica/comunica/tree/master/packages)
+can be used in a development environment, such as querying with [Comunica SPARQL](https://github.com/comunica/comunica/tree/master/packages/actor-init-sparql).
 
 Furthermore, this will add [pre-commit hooks](https://www.npmjs.com/package/pre-commit)
 to build, lint and test.

@@ -45,6 +45,13 @@ $ comunica-sparql --help
 The dynamic variant of this executable is `comunica-dynamic-sparql`.
 An alternative config file can be passed via the `COMUNICA_CONFIG` environment variable.
 
+When you are working with this module in the Comunica monorepo development environment,
+this command can be invoked directly as follows:
+
+```bash
+node bin/query.js http://fragments.dbpedia.org/2015-10/en "CONSTRUCT WHERE { ?s ?p ?o } LIMIT 100"
+```
+
 ### Usage from HTTP
 
 Start a webservice exposing http://fragments.dbpedia.org/2015-10/en via the SPARQL protocol.
