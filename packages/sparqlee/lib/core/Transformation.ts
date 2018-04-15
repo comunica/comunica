@@ -57,7 +57,7 @@ function tranformLiteral(lit: RDF.Literal): E.Literal<any> {
     case DT.XSD_DATE_TIME: {
       const val: Date = new Date(lit.value);
       if (isNaN(val.getTime())) {
-        return new E.NonLexicalLiteral(lit.value, lit.value, lit.datatype);
+        return new E.NonLexicalLiteral(undefined, lit.value, lit.datatype);
       }
       return new E.DateTimeLiteral(new Date(lit.value), lit.value, lit.datatype);
     }
@@ -93,7 +93,7 @@ function tranformLiteral(lit: RDF.Literal): E.Literal<any> {
     case DT.XSD_INT: {
       const val: number = P.parseXSDInteger(lit.value);
       if (val === undefined) {
-        return new E.NonLexicalLiteral(val, lit.value, lit.datatype);
+        return new E.NonLexicalLiteral(undefined, lit.value, lit.datatype);
       }
       return new E.NumericLiteral(val, lit.value, lit.datatype);
     }
@@ -101,7 +101,7 @@ function tranformLiteral(lit: RDF.Literal): E.Literal<any> {
     case DT.XSD_DOUBLE: {
       const val: number = P.parseXSDFloat(lit.value);
       if (val === undefined) {
-        return new E.NonLexicalLiteral(val, lit.value, lit.datatype);
+        return new E.NonLexicalLiteral(undefined, lit.value, lit.datatype);
       }
       return new E.NumericLiteral(val, lit.value, lit.datatype);
     }

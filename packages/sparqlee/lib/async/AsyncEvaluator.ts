@@ -28,21 +28,21 @@ export class AsyncEvaluator {
     return this._eval(this._expr, mapping).then((val) => log(val).coerceEBV());
   }
 
-  evaluateAsInternal(mapping: Bindings): Promise<E.ITermExpression> {
+  evaluateAsInternal(mapping: Bindings): Promise<E.TermExpression> {
     return this._eval(this._expr, mapping);
   }
 
-  private _eval(expr: E.Expression, mapping: Bindings): Promise<E.ITermExpression> {
+  private _eval(expr: E.Expression, mapping: Bindings): Promise<E.TermExpression> {
     const types = E.expressionTypes;
     switch (expr.expressionType) {
       case types.TERM:
-        return Promise.resolve(expr as E.ITermExpression);
+        return Promise.resolve(expr as E.TermExpression);
       case types.VARIABLE:
         return Promise.try(() => (
-          this._evalVar(expr as E.IVariableExpression, mapping)
+          this._evalVar(expr as E.VariableExpression, mapping)
         ));
       case types.OPERATOR:
-        return this._evalOp(expr as E.IOperatorExpression, mapping);
+        return this._evalOp(expr as E.OperatorExpression, mapping);
       // TODO
       case types.NAMED:
         throw new Err.UnimplementedError();
@@ -54,20 +54,20 @@ export class AsyncEvaluator {
     }
   }
 
-  private _evalVar(expr: E.IVariableExpression, mapping: Bindings): E.ITermExpression {
+  private _evalVar(expr: E.VariableExpression, mapping: Bindings): E.TermExpression {
     const rdfTerm = mapping.get(expr.name);
     if (rdfTerm) {
       return transformTerm({
         type: 'expression',
         expressionType: 'term',
         term: rdfTerm,
-      }) as E.ITermExpression;
+      }) as E.TermExpression;
     } else {
       throw new TypeError("Unbound variable");
     }
   }
 
-  private _evalOp(expr: E.IOperatorExpression, mapping: Bindings): Promise<E.ITermExpression> {
+  private _evalOp(expr: E.OperatorExpression, mapping: Bindings): Promise<E.TermExpression> {
     const { func, args } = expr;
     switch (func.functionClass) {
       case 'simple': {

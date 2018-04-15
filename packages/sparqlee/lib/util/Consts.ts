@@ -84,7 +84,7 @@ export function categorize(dataType: string): DataTypeCategory {
   switch (dataType) {
     case null:
     case undefined:
-    case "": return 'plain';
+    case '': return 'plain';
     case DataType.XSD_STRING:
     case DataType.RDF_LANG_STRING: return 'string';
     case DataType.XSD_DATE_TIME: return 'date';

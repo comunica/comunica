@@ -1,60 +1,28 @@
 {
+  "defaultSeverity": "warning",
+  "extends": ["tslint:recommended", "tslint-eslint-rules"],
   "rules": {
-    "array-type": [
-      true,
-      "array-simple"
-    ],
+    "array-type": [true, "array-simple"],
     "arrow-return-shorthand": true,
-    "ban": [
-      true,
-      {
-        "name": "parseInt",
-        "message": "tsstyle#type-coercion"
-      },
-      {
-        "name": "parseFloat",
-        "message": "tsstyle#type-coercion"
-      },
-      {
-        "name": "Array",
-        "message": "tsstyle#array-constructor"
-      }
+    "ban": [true,
+      { "name": "parseInt", "message": "tsstyle#type-coercion" },
+      { "name": "parseFloat", "message": "tsstyle#type-coercion" },
+      { "name": "Array", "message": "tsstyle#array-constructor" }
     ],
-    "ban-types": [
-      true,
-      [
-        "Object",
-        "Use {} instead."
-      ],
-      [
-        "String",
-        "Use 'string' instead."
-      ],
-      [
-        "Number",
-        "Use 'number' instead."
-      ],
-      [
-        "Boolean",
-        "Use 'boolean' instead."
-      ]
+    "ban-types": [true, ["Object", "Use {} instead."],
+      ["String", "Use 'string' instead."],
+      ["Number", "Use 'number' instead."],
+      ["Boolean", "Use 'boolean' instead."]
     ],
     "class-name": true,
-    "curly": [
-      true,
-      "ignore-same-line"
-    ],
+    "curly": [true, "ignore-same-line"],
     "forin": true,
-    "interface-name": [
-      true,
-      "never-prefix"
-    ],
+    "indent": [true, "spaces"],
+    "interface-name": [true, "never-prefix"],
     "jsdoc-format": true,
     "label-position": true,
-    "member-access": [
-      true,
-      "no-public"
-    ],
+    "member-access": [true, "no-public"],
+    "member-ordering": [true, { "order": "fields-first"}],
     "new-parens": true,
     "no-angle-bracket-type-assertion": true,
     "no-any": true,
@@ -65,32 +33,20 @@
     "no-default-export": true,
     "no-duplicate-variable": true,
     "no-inferrable-types": true,
-    "no-namespace": [
-      true,
-      "allow-declarations"
-    ],
+    "no-namespace": [true, "allow-declarations"],
     "no-reference": true,
     "no-string-throw": true,
     "no-unused-expression": true,
     "no-var-keyword": true,
     "object-literal-shorthand": true,
-    "only-arrow-functions": [
-      true,
-      "allow-declarations",
-      "allow-named-functions"
-    ],
+    "object-literal-sort-keys": false,
+    "only-arrow-functions": [true, "allow-declarations", "allow-named-functions"],
     "prefer-const": true,
+    "quotemark": [true, "single", "avoid-escape", "avoid-template"],
     "radix": true,
-    "semicolon": [
-      true,
-      "always",
-      "ignore-bound-class-methods"
-    ],
+    "semicolon": [true, "always", "ignore-bound-class-methods"],
     "switch-default": true,
-    "triple-equals": [
-      true,
-      "allow-null-check"
-    ],
+    "triple-equals": [true, "allow-null-check"],
     "use-isnan": true,
     "variable-name": [
       true,
@@ -101,62 +57,3 @@
     ]
   }
 }
-// {
-//   "defaultSeverity": "warning",
-//   "extends": [
-//     "tslint:recommended",
-//     "tslint-eslint-rules"
-//   ],
-//   "jsRules": {},
-//   "rules": {
-//     "array-type": [
-//       true,
-//       "array"
-//     ],
-//     "indent": [
-//       true,
-//       "spaces"
-//     ],
-//     "ter-indent": [
-//       true,
-//       2,
-//       {
-//         "SwitchCase": 1
-//       }
-//     ],
-//     "no-empty-interface": false,
-//     "quotemark": false,
-//     "no-trailing-whitespace": [
-//       true,
-//       "ignore-jsdoc"
-//     ],
-//     "valid-jsdoc": [
-//       false,
-//       {
-//         "prefer": {
-//           "return": "return"
-//         },
-//         "requireReturn": false
-//       }
-//     ],
-//     "no-angle-bracket-type-assertion": false,
-//     "member-ordering": [
-//       true,
-//       {
-//         "order": "fields-first"
-//       }
-//     ],
-//     "forin": false,
-//     "max-classes-per-file": [
-//       false
-//     ],
-//     "object-literal-sort-keys": false,
-//     "no-console": false,
-//     "variable-name": [
-//       true,
-//       "check-format",
-//       "allow-leading-underscore"
-//     ]
-//   },
-//   "rulesDirectory": []
-// }

@@ -13,7 +13,7 @@ import {
 import { OverloadedFunction, SimpleFunction, SpecialFunctionAsync } from './Types';
 
 // TODO: If args are known, try to calculate already
-export function makeOp(opString: string, args: E.Expression[]): E.IOperatorExpression {
+export function makeOp(opString: string, args: E.Expression[]): E.OperatorExpression {
   if (!C.Operators.contains(opString)) {
     throw new TypeError("Unknown operator");
   }

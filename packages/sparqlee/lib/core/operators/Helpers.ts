@@ -43,13 +43,13 @@ export function list(...args: ArgumentType[]) {
 // tslint:disable-next-line:interface-over-type-literal
 export type ImplType = {
   types: ArgumentType[];
-  func: (args: E.ITermExpression[]) => E.ITermExpression;
+  func: (args: E.TermExpression[]) => E.TermExpression;
 };
 
 function implDefaults() {
   return {
     types: [] as ArgumentType[],
-    func(args: E.ITermExpression[]) {
+    func(args: E.TermExpression[]) {
       throw new UnimplementedError();
     },
   };

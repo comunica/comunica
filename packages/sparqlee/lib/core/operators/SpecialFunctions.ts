@@ -10,12 +10,12 @@ import { bool } from './Helpers';
 import { functions } from './index';
 import { OverloadedFunction, SpecialFunctionAsync } from './Types';
 
-export type AsyncTerm = Promise<E.ITermExpression>;
+export type AsyncTerm = Promise<E.TermExpression>;
 export type Evaluator = (expr: E.Expression, mapping: Bindings) => AsyncTerm;
 
 export class Bound extends SpecialFunctionAsync {
   apply(args: E.Expression[], mapping: Bindings, evaluate: Evaluator): AsyncTerm {
-    const variable = args[0] as E.IVariableExpression;
+    const variable = args[0] as E.VariableExpression;
     if (variable.expressionType !== 'variable') {
       throw new Err.InvalidArgumentTypes(args, C.Operator.BOUND);
     }
@@ -62,7 +62,7 @@ export class Coalesce extends SpecialFunctionAsync {
 type CoalesceController = { type: 'breaker' | 'continuer' };
 class CoalesceBreaker extends Error implements CoalesceController {
   type: 'breaker' = 'breaker';
-  constructor(public val: E.ITermExpression) {
+  constructor(public val: E.TermExpression) {
     super();
   }
 }
@@ -122,7 +122,7 @@ export class LogicalAndAsync extends SpecialFunctionAsync {
 
 // Maybe put some place else
 // https://www.w3.org/TR/sparql11-query/#func-RDFterm-equal
-export function RDFTermEqual(_left: E.ITermExpression, _right: E.ITermExpression) {
+export function RDFTermEqual(_left: E.TermExpression, _right: E.TermExpression) {
   const left = _left.toRDF();
   const right = _right.toRDF();
   const val = left.equals(right);
@@ -132,7 +132,7 @@ export function RDFTermEqual(_left: E.ITermExpression, _right: E.ITermExpression
   return val;
 }
 
-export function sameTerm(left: E.ITermExpression, right: E.ITermExpression) {
+export function sameTerm(left: E.TermExpression, right: E.TermExpression) {
   return left.toRDF().equals(right.toRDF());
 }
 
@@ -146,7 +146,7 @@ export class In extends SpecialFunctionAsync {
   }
 }
 
-function inR(left: E.ITermExpression, args: Array<() => AsyncTerm>, results: Array<Error | false>): AsyncTerm {
+function inR(left: E.TermExpression, args: Array<() => AsyncTerm>, results: Array<Error | false>): AsyncTerm {
   if (args.length === 0) {
     return (results.every((v) => !v))
       ? Promise.resolve(bool(false))
@@ -170,7 +170,7 @@ export class NotIn extends SpecialFunctionAsync {
   apply(args: E.Expression[], mapping: Bindings, evaluate: Evaluator): AsyncTerm {
     return new In(C.Operator.IN)
       .apply(args, mapping, evaluate)
-      .then((term: E.ITermExpression) => (term as E.BooleanLiteral).typedValue)
+      .then((term: E.TermExpression) => (term as E.BooleanLiteral).typedValue)
       .then((isIn) => bool(!isIn));
   }
 }

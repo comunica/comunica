@@ -27,10 +27,10 @@ export class SimpleFunction implements E.SimpleFunc {
     public operator: C.Operator,
     public arity: number,
     public types: ArgumentType[],
-    protected _apply: (args: E.ITermExpression[]) => E.ITermExpression,
+    protected _apply: (args: E.TermExpression[]) => E.TermExpression,
   ) { }
 
-  apply(args: E.ITermExpression[]): E.ITermExpression {
+  apply(args: E.TermExpression[]): E.TermExpression {
     if (!this._isValidTypes(args)) {
       throw new InvalidArgumentTypes(args, this.operator);
     }
@@ -39,7 +39,8 @@ export class SimpleFunction implements E.SimpleFunc {
 
   // TODO: Test
   // TODO Can be optimised probably
-  private _isValidTypes(args: E.ITermExpression[]): boolean {
+  private _isValidTypes(args: E.TermExpression[]): boolean {
+    // tslint:disable-next-line:no-any
     const argTypes = args.map((a: any) => a.category || a.termType);
     return _.isEqual(this.types, argTypes)
       || _.isEqual(this.types, ['term', 'term']);
@@ -82,7 +83,7 @@ export class OverloadedFunction implements E.OverloadedFunc {
     private overloadMap: OverloadMap,
   ) { }
 
-  apply(args: E.ITermExpression[]): E.ITermExpression {
+  apply(args: E.TermExpression[]): E.TermExpression {
     const func = this._monomorph(args);
     if (!func) {
       throw new InvalidArgumentTypes(args, this.operator);
@@ -91,9 +92,12 @@ export class OverloadedFunction implements E.OverloadedFunc {
     return func(args);
   }
 
-  private _monomorph(args: E.ITermExpression[]): E.SimpleApplication {
+  // TODO: Clean up a bit
+  private _monomorph(args: E.TermExpression[]): E.SimpleApplication {
+    // tslint:disable-next-line:no-any
     const argTypes = List(args.map((a: any) => a.category || a.termType));
     return this.overloadMap.get(argTypes)
+      // tslint:disable-next-line:ban
       || this.overloadMap.get(List(Array(this.arity).fill('term')));
   }
 }
@@ -123,7 +127,7 @@ export abstract class SpecialFunctionAsync implements E.SpecialFunc {
   abstract apply(
     args: E.Expression[],
     mapping: Bindings,
-    evaluate: (e: E.Expression, mapping: Bindings) => Promise<E.ITermExpression>,
-  ): Promise<E.ITermExpression>;
+    evaluate: (e: E.Expression, mapping: Bindings) => Promise<E.TermExpression>,
+  ): Promise<E.TermExpression>;
 
 }

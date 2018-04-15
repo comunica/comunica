@@ -4,7 +4,7 @@ import { Impl, map } from './Helpers';
 
 import * as C from '../../util/Consts';
 import { DataType as DT } from '../../util/Consts';
-import { InvalidArity, UnimplementedError, InvalidLexicalForm } from '../../util/Errors';
+import { InvalidArity, InvalidLexicalForm, UnimplementedError } from '../../util/Errors';
 import * as E from './../Expressions';
 import { bool, list, number } from './Helpers';
 import * as Special from './SpecialFunctions';
@@ -17,20 +17,18 @@ import * as X from './XPath';
 // The definitions and functionality for all operators
 // ----------------------------------------------------------------------------
 
-export type SpecificDefinition = SimpleDefinition | OverloadedDefinition | SpecialDefinition;
-
-export interface IDefinition {
+export interface FuncDefinition {
   category: C.OperatorCategory;
   arity: number;
-  definition: SpecificDefinition;
+  definition: SimpleDefinition | OverloadedDefinition | SpecialDefinition;
 }
 
-type IDefinitionMap = { [key in C.Operator]: IDefinition };
+type IDefinitionMap = { [key in C.Operator]: FuncDefinition };
 
 // tslint:disable-next-line:interface-over-type-literal
 export type SimpleDefinition = {
   types: ArgumentType[];
-  apply(args: any[]): E.ITermExpression;
+  apply(args: E.TermExpression[]): E.TermExpression;
 };
 export type OverloadedDefinition = OverloadMap;
 export type SpecialDefinition = new (op: C.Operator) => SpecialFunctionAsync;
@@ -197,13 +195,13 @@ const _definitions: IDefinitionMap = {
   },
 };
 
-export const definitions = Map<C.Operator, IDefinition>(_definitions);
+export const definitions = Map<C.Operator, FuncDefinition>(_definitions);
 
 // ----------------------------------------------------------------------------
 // Utility helpers
 // ----------------------------------------------------------------------------
 
-type Term = E.ITermExpression;
+type Term = E.TermExpression;
 
 /*
  * Arithetic Operators take numbers, and return numbers.
@@ -291,7 +289,7 @@ function numeric(opFac: OpFactory): Impl[] {
 }
 
 type LiteralOp<T, R> = (left: T, right: T) => R;
-function binary<T, R>(op: LiteralOp<T, R>, args: E.ITermExpression[]): R {
+function binary<T, R>(op: LiteralOp<T, R>, args: E.TermExpression[]): R {
   const [left, right] = args as Array<E.Literal<T>>;
   return op(left.typedValue, right.typedValue);
 }

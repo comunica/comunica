@@ -19,18 +19,18 @@ export enum expressionTypes {
 }
 
 export type Expression =
-  IAggregateExpression |
-  IExistenceExpression |
-  INamedExpression |
-  IOperatorExpression |
-  ITermExpression |
-  IVariableExpression;
+  AggregateExpression |
+  ExistenceExpression |
+  NamedExpression |
+  OperatorExpression |
+  TermExpression |
+  VariableExpression;
 
-export interface IExpressionProps {
+export interface ExpressionProps {
   expressionType: 'aggregate' | 'existence' | 'named' | 'operator' | 'term' | 'variable';
 }
 
-export type IAggregateExpression = IExpressionProps & {
+export type AggregateExpression = ExpressionProps & {
   expressionType: 'aggregate';
   aggregator: string;
   distinct: boolean;
@@ -38,34 +38,34 @@ export type IAggregateExpression = IExpressionProps & {
   expression: Expression;
 };
 
-export type IExistenceExpression = IExpressionProps & {
+export type ExistenceExpression = ExpressionProps & {
   expressionType: 'existence';
   not: boolean;
   input: Algebra.Operation;
 };
 
-export type INamedExpression = IExpressionProps & {
+export type NamedExpression = ExpressionProps & {
   expressionType: 'named';
   name: RDF.NamedNode;
   args: Expression[];
 };
 
-export type IOperatorExpression = IExpressionProps & {
+export type OperatorExpression = ExpressionProps & {
   expressionType: 'operator';
   args: Expression[];
   func: SPARQLFunc;
 };
 
-export type ITermExpression = IExpressionProps & {
+export type TermType = 'namedNode' | 'literal';
+export type TermExpression = ExpressionProps & {
   expressionType: 'term';
   termType: TermType;
   coerceEBV(): boolean;
   toRDF(): RDF.Term;
 };
 
-export type TermType = 'namedNode' | 'literal';
 
-export type IVariableExpression = IExpressionProps & {
+export type VariableExpression = ExpressionProps & {
   expressionType: 'variable';
   name: string;
 };
@@ -74,9 +74,9 @@ export type IVariableExpression = IExpressionProps & {
 // Variable
 // ----------------------------------------------------------------------------
 
-export class Variable implements IVariableExpression {
-  public expressionType: 'variable' = 'variable';
-  public name: string;
+export class Variable implements VariableExpression {
+  expressionType: 'variable' = 'variable';
+  name: string;
   constructor(name: string) {
     this.name = name;
   }
@@ -86,25 +86,25 @@ export class Variable implements IVariableExpression {
 // Terms
 // ----------------------------------------------------------------------------
 
-export abstract class Term implements ITermExpression {
-  public expressionType: 'term' = 'term';
-  public abstract termType: TermType;
+export abstract class Term implements TermExpression {
+  expressionType: 'term' = 'term';
+  abstract termType: TermType;
 
-  public coerceEBV(): boolean {
+  coerceEBV(): boolean {
     throw new TypeError("Cannot coerce this term to EBV.");
   }
 
-  public abstract toRDF(): RDF.Term;
+  abstract toRDF(): RDF.Term;
 }
 
-export interface ILiteralTerm extends ITermExpression {
+export interface LiteralTerm extends TermExpression {
   category: C.DataTypeCategory;
 }
 
-export class Literal<T> extends Term implements ILiteralTerm {
-  public expressionType: 'term' = 'term';
-  public termType: 'literal' = 'literal';
-  public category: C.DataTypeCategory;
+export class Literal<T> extends Term implements LiteralTerm {
+  expressionType: 'term' = 'term';
+  termType: 'literal' = 'literal';
+  category: C.DataTypeCategory;
 
   constructor(
     public typedValue: T,
@@ -115,7 +115,7 @@ export class Literal<T> extends Term implements ILiteralTerm {
     this.category = C.categorize(dataType.value);
   }
 
-  public toRDF(): RDF.Term {
+  toRDF(): RDF.Term {
     return RDFDM.literal(
       this.strValue || this.typedValue.toString(),
       this.language || this.dataType);
@@ -123,14 +123,14 @@ export class Literal<T> extends Term implements ILiteralTerm {
 }
 
 export class NumericLiteral extends Literal<number> {
-  public category: C.NumericTypeCategory;
-  public coerceEBV(): boolean {
+  category: C.NumericTypeCategory;
+  coerceEBV(): boolean {
     return !!this.typedValue;
   }
 }
 
 export class BooleanLiteral extends Literal<boolean> {
-  public coerceEBV(): boolean {
+  coerceEBV(): boolean {
     return !!this.typedValue;
   }
 }
@@ -147,15 +147,15 @@ export class PlainLiteral extends Literal<string> {
     this.category = 'plain';
   }
 
-  public coerceEBV(): boolean {
+  coerceEBV(): boolean {
     return this.strValue.length !== 0;
   }
 }
 
 // https://www.w3.org/TR/sparql11-query/#defn_SimpleLiteral
 export class SimpleLiteral extends PlainLiteral {
-  public language?: undefined;
-  public category: 'simple';
+  language?: undefined;
+  category: 'simple';
 
   constructor(
     public typedValue: string,
@@ -164,13 +164,13 @@ export class SimpleLiteral extends PlainLiteral {
     this.category = 'simple';
   }
 
-  public coerceEBV(): boolean {
+  coerceEBV(): boolean {
     return this.strValue.length !== 0;
   }
 }
 
 export class StringLiteral extends Literal<string> {
-  public coerceEBV(): boolean {
+  coerceEBV(): boolean {
     return this.strValue.length !== 0;
   }
 }
@@ -193,7 +193,7 @@ export class StringLiteral extends Literal<string> {
  */
 export class NonLexicalLiteral extends Literal<undefined> {
   constructor(
-    typedValue: any,
+    typedValue: undefined,
     strValue?: string,
     dataType?: RDF.NamedNode,
     language?: string) {
@@ -217,20 +217,20 @@ export class NonLexicalLiteral extends Literal<undefined> {
 
 // TODO Type better
 
-export interface ISPARQLFuncProps {
+export interface SPARQLFuncProps {
   functionClass: 'simple' | 'overloaded' | 'special';
 }
 
 export type SPARQLFunc = SimpleFunc | OverloadedFunc | SpecialFunc;
-export type SimpleFunc = ISPARQLFuncProps & {
+export type SimpleFunc = SPARQLFuncProps & {
   functionClass: 'simple';
   apply: SimpleApplication;
 };
-export type OverloadedFunc = ISPARQLFuncProps & {
+export type OverloadedFunc = SPARQLFuncProps & {
   functionClass: 'overloaded';
   apply: SimpleApplication;
 };
-export type SpecialFunc = ISPARQLFuncProps & {
+export type SpecialFunc = SPARQLFuncProps & {
   functionClass: 'special';
   apply: SpecialApplication;
 };
@@ -241,12 +241,12 @@ export type SpecialFunc = ISPARQLFuncProps & {
 // }
 
 export type Application = SimpleApplication | SpecialApplication;
-export type SimpleApplication = (args: ITermExpression[]) => ITermExpression;
+export type SimpleApplication = (args: TermExpression[]) => TermExpression;
 export type SpecialApplication =
   (
     args: Expression[],
     mapping: Bindings,
     evaluate: Evaluator,
-  ) => Promise<ITermExpression>;
+  ) => Promise<TermExpression>;
 
-export type Evaluator = (e: Expression, mapping: Bindings) => Promise<ITermExpression>;
+export type Evaluator = (e: Expression, mapping: Bindings) => Promise<TermExpression>;
