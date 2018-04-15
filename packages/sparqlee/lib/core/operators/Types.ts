@@ -21,7 +21,7 @@ export type ArgumentType = 'term' | E.TermType | C.DataTypeCategory;
 // Simple Functions -----------------------------------------------------------
 
 export class SimpleFunction implements E.SimpleFunc {
-  public functionClass: 'simple' = 'simple';
+  functionClass: 'simple' = 'simple';
 
   constructor(
     public operator: C.Operator,
@@ -30,7 +30,7 @@ export class SimpleFunction implements E.SimpleFunc {
     protected _apply: (args: E.ITermExpression[]) => E.ITermExpression,
   ) { }
 
-  public apply(args: E.ITermExpression[]): E.ITermExpression {
+  apply(args: E.ITermExpression[]): E.ITermExpression {
     if (!this._isValidTypes(args)) {
       throw new InvalidArgumentTypes(args, this.operator);
     }
@@ -74,7 +74,7 @@ export class SimpleFunction implements E.SimpleFunc {
 export type OverloadMap = Map<List<ArgumentType>, E.SimpleApplication>;
 
 export class OverloadedFunction implements E.OverloadedFunc {
-  public functionClass: 'overloaded' = 'overloaded';
+  functionClass: 'overloaded' = 'overloaded';
 
   constructor(
     public operator: C.Operator,
@@ -82,7 +82,7 @@ export class OverloadedFunction implements E.OverloadedFunc {
     private overloadMap: OverloadMap,
   ) { }
 
-  public apply(args: E.ITermExpression[]): E.ITermExpression {
+  apply(args: E.ITermExpression[]): E.ITermExpression {
     const func = this._monomorph(args);
     if (!func) {
       throw new InvalidArgumentTypes(args, this.operator);
@@ -116,11 +116,11 @@ export class OverloadedFunction implements E.OverloadedFunc {
  */
 
 export abstract class SpecialFunctionAsync implements E.SpecialFunc {
-  public functionClass: 'special' = 'special';
+  functionClass: 'special' = 'special';
 
   constructor(public operator: C.Operator) { }
 
-  public abstract apply(
+  abstract apply(
     args: E.Expression[],
     mapping: Bindings,
     evaluate: (e: E.Expression, mapping: Bindings) => Promise<E.ITermExpression>,

@@ -48,7 +48,7 @@ export type ImplType = {
 
 function implDefaults() {
   return {
-    types: <ArgumentType[]>[],
+    types: [] as ArgumentType[],
     func(args: E.ITermExpression[]) {
       throw new UnimplementedError();
     },
@@ -57,7 +57,7 @@ function implDefaults() {
 
 export class Impl extends Record(implDefaults()) {
   constructor(params: ImplType) { super(params); }
-  public get<T extends keyof ImplType>(value: T): ImplType[T] {
+  get<T extends keyof ImplType>(value: T): ImplType[T] {
     return super.get(value);
   }
 }

@@ -4,11 +4,11 @@ import { Algebra as Alg } from 'sparqlalgebrajs';
 
 import { BufferedIterator } from 'asynciterator';
 import { Bindings, BindingsStream } from '../core/Bindings';
-import { IEvaluatedBindings, IEvaluatedStream, IFilteredStream, Lookup } from '../FromExpressionStream';
+import { EvaluatedBindings, EvaluatedStream, FilteredStream, Lookup } from '../FromExpressionStream';
 import { UnimplementedError } from '../util/Errors';
 import { AsyncEvaluator } from './AsyncEvaluator';
 
-export class AsyncFilteredStream extends BufferedIterator<Bindings> implements IFilteredStream {
+export class AsyncFilteredStream extends BufferedIterator<Bindings> implements FilteredStream {
 
   private _expr: Alg.Expression;
   private _evaluator: AsyncEvaluator;
@@ -25,9 +25,9 @@ export class AsyncFilteredStream extends BufferedIterator<Bindings> implements I
     Promise.longStackTraces();
   }
 
-  public _read(count: number, done: () => void): void {
+  _read(count: number, done: () => void): void {
     const first = this._input.take(count);
-    const evaluations: Promise<void>[] = [];
+    const evaluations: Array<Promise<void>> = [];
 
     first.on('data', (bindings) => {
       const evaluation = this._evaluate(bindings)
@@ -43,13 +43,14 @@ export class AsyncFilteredStream extends BufferedIterator<Bindings> implements I
     });
   }
 
+  // TODO
   // public async _evaluate(mapping: Bindings): Promise<boolean> {
-  public _evaluate(mapping: Bindings): Promise<boolean> {
+  _evaluate(mapping: Bindings): Promise<boolean> {
     return this._evaluator.evaluateAsEBV(mapping);
   }
 }
 
-export class AsyncEvaluatedStream extends BufferedIterator<IEvaluatedBindings> implements IEvaluatedStream {
+export class AsyncEvaluatedStream extends BufferedIterator<EvaluatedBindings> implements EvaluatedStream {
 
   private _expr: Alg.Expression;
   private _evaluator: AsyncEvaluator;
@@ -66,9 +67,9 @@ export class AsyncEvaluatedStream extends BufferedIterator<IEvaluatedBindings> i
     Promise.longStackTraces();
   }
 
-  public _read(count: number, done: () => void): void {
+  _read(count: number, done: () => void): void {
     const first = this._input.take(count);
-    const evaluations: Promise<void>[] = [];
+    const evaluations: Array<Promise<void>> = [];
 
     first.on('data', (bindings) => {
       const evaluation = this._evaluate(bindings)
@@ -86,8 +87,9 @@ export class AsyncEvaluatedStream extends BufferedIterator<IEvaluatedBindings> i
     });
   }
 
+  // TODO
   // public async _evaluate(mapping: Bindings): Promise<boolean> {
-  public _evaluate(mapping: Bindings): Promise<RDF.Term> {
+  _evaluate(mapping: Bindings): Promise<RDF.Term> {
     return this._evaluator.evaluate(mapping);
   }
 }

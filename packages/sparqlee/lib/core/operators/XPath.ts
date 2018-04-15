@@ -75,6 +75,6 @@ export function compare(left: string, right: string) {
   return left.localeCompare(right);
 }
 
-export function str(lit: E.Literal<any>) {
+export function str<T>(lit: E.Literal<T>) {
   return lit.strValue || lit.typedValue.toString();
 }

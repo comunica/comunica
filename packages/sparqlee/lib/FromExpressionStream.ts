@@ -7,11 +7,11 @@ import { Bindings, BindingsStream } from './core/Bindings';
 
 export type Lookup = (pattern: Alg.Bgp) => Promise<boolean>;
 
-export interface IFilteredStream extends BindingsStream { }
+export interface FilteredStream extends BindingsStream { }
 
-export interface IEvaluatedBindings {
+export interface EvaluatedBindings {
   bindings: Bindings;
   result: RDF.Term;
 }
 
-export interface IEvaluatedStream extends AsyncIterator<IEvaluatedBindings> { }
+export interface EvaluatedStream extends AsyncIterator<EvaluatedBindings> { }

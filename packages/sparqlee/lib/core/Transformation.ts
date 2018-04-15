@@ -11,9 +11,9 @@ import { makeOp } from './operators/index';
 export function transformAlgebra(expr: Alg.Expression): E.Expression {
   const types = Alg.expressionTypes;
   switch (expr.expressionType) {
-    case types.TERM: return transformTerm(<Alg.TermExpression> expr);
+    case types.TERM: return transformTerm(expr as Alg.TermExpression);
     case types.OPERATOR: {
-      const opIn = <Alg.OperatorExpression> expr;
+      const opIn = expr as Alg.OperatorExpression;
       const args = opIn.args.map((a) => transformAlgebra(a));
       // NOTE: If abstracted, sync and async should be differentiated
       return makeOp(opIn.operator, args);
@@ -29,7 +29,7 @@ export function transformAlgebra(expr: Alg.Expression): E.Expression {
 export function transformTerm(term: Alg.TermExpression): E.Expression {
   switch (term.term.termType) {
     case 'Variable': return new E.Variable(term.term.value);
-    case 'Literal': return tranformLiteral(<RDF.Literal> term.term);
+    case 'Literal': return tranformLiteral(term.term as RDF.Literal);
     // TODO
     case 'NamedNode': throw new Err.UnimplementedError();
     default: throw new Err.InvalidTermType(term);
@@ -37,6 +37,7 @@ export function transformTerm(term: Alg.TermExpression): E.Expression {
 }
 
 // TODO: Maybe do this with a map?
+// tslint:disable-next-line:no-any
 function tranformLiteral(lit: RDF.Literal): E.Literal<any> {
   switch (lit.datatype.value) {
     case null:

@@ -29,7 +29,7 @@ export class CoalesceError extends Error {
 }
 
 export class InError extends Error {
-  constructor(public errors: (Error | false)[]) {
+  constructor(public errors: Array<Error | false>) {
     super(
       'Some argument to IN errored and none where equal. ' +
       errors.map((err) => `(${err.toString()}) `).join('and '));
@@ -47,8 +47,8 @@ export class InvalidArgumentTypes extends Error {
     super("Argument types not valid for operator.");
   }
 }
-export class InvalidExpressionType extends Error {
-  constructor(public expr: any) {
+export class InvalidExpressionType<T> extends Error {
+  constructor(public expr: T) {
     super('The given expression type is not valid.');
   }
 }
@@ -59,8 +59,8 @@ export class InvalidTermType extends Error {
   }
 }
 
-export class UnexpectedError extends Error {
-  constructor(message: string, public payload?: any) {
+export class UnexpectedError<T> extends Error {
+  constructor(message: string, public payload?: T) {
     super('Programmer Error ' + message);
   }
 }

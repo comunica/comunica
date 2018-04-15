@@ -172,7 +172,8 @@ export enum Operator {
   NOT_IN = 'notin',
 }
 
-export const Operators = Set((<any> Object).values(Operator));
+// tslint:disable-next-line:no-any
+export const Operators = Set((Object as any).values(Operator));
 
 // export const SpecialOperators = Set<Operator>([3]);
 

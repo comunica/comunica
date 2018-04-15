@@ -20,15 +20,15 @@ export class AsyncEvaluator {
     this._expr = transformAlgebra(expr);
   }
 
-  public evaluate(mapping: Bindings): Promise<RDF.Term> {
+  evaluate(mapping: Bindings): Promise<RDF.Term> {
     return this._eval(this._expr, mapping).then((val) => log(val).toRDF());
   }
 
-  public evaluateAsEBV(mapping: Bindings): Promise<boolean> {
+  evaluateAsEBV(mapping: Bindings): Promise<boolean> {
     return this._eval(this._expr, mapping).then((val) => log(val).coerceEBV());
   }
 
-  public evaluateAsInternal(mapping: Bindings): Promise<E.ITermExpression> {
+  evaluateAsInternal(mapping: Bindings): Promise<E.ITermExpression> {
     return this._eval(this._expr, mapping);
   }
 
@@ -36,13 +36,13 @@ export class AsyncEvaluator {
     const types = E.expressionTypes;
     switch (expr.expressionType) {
       case types.TERM:
-        return Promise.resolve(<E.ITermExpression> expr);
+        return Promise.resolve(expr as E.ITermExpression);
       case types.VARIABLE:
         return Promise.try(() => (
-          this._evalVar(<E.IVariableExpression> expr, mapping)
+          this._evalVar(expr as E.IVariableExpression, mapping)
         ));
       case types.OPERATOR:
-        return this._evalOp(<E.IOperatorExpression> expr, mapping);
+        return this._evalOp(expr as E.IOperatorExpression, mapping);
       // TODO
       case types.NAMED:
         throw new Err.UnimplementedError();
@@ -57,11 +57,11 @@ export class AsyncEvaluator {
   private _evalVar(expr: E.IVariableExpression, mapping: Bindings): E.ITermExpression {
     const rdfTerm = mapping.get(expr.name);
     if (rdfTerm) {
-      return <E.ITermExpression> transformTerm({
+      return transformTerm({
         type: 'expression',
         expressionType: 'term',
         term: rdfTerm,
-      });
+      }) as E.ITermExpression;
     } else {
       throw new TypeError("Unbound variable");
     }
@@ -84,27 +84,9 @@ export class AsyncEvaluator {
       default: throw new Err.UnexpectedError("Unknown function class.");
     }
   }
-
-  private _transform(expr: Alg.Expression): E.Expression {
-    const types = Alg.expressionTypes;
-    switch (expr.expressionType) {
-      case types.TERM: return transformTerm(<Alg.TermExpression> expr);
-      case types.OPERATOR: {
-        const opIn = <Alg.OperatorExpression> expr;
-        const args = opIn.args.map((a) => this._transform(a));
-        // NOTE: If abstracted, sync and async should be differentiated
-        return makeOp(opIn.operator, args);
-      }
-      // TODO
-      case types.NAMED: throw new Err.UnimplementedError();
-      case types.EXISTENCE: throw new Err.UnimplementedError();
-      case types.AGGREGATE: throw new Err.UnimplementedError();
-      default: throw new Err.InvalidExpressionType(expr);
-    }
-  }
 }
 
-function log(val: any) {
+function log<T>(val: T): T {
   // console.log(val);
   return val;
 }

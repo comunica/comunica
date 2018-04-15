@@ -25,7 +25,7 @@ export interface IDefinition {
   definition: SpecificDefinition;
 }
 
-type IDefinitionMap = {[key in C.Operator]: IDefinition };
+type IDefinitionMap = { [key in C.Operator]: IDefinition };
 
 // tslint:disable-next-line:interface-over-type-literal
 export type SimpleDefinition = {
@@ -233,7 +233,7 @@ function xPathTest(
 ): OverloadMap {
   const numericHelper = (args: Term[]) => bool(binary(numOp, args));
 
-  const wrap = (func: XPathTest<any>) => (args: Term[]) => bool(binary(func, args));
+  const wrap = <T>(func: XPathTest<T>) => (args: Term[]) => bool(binary(func, args));
   return map([
     new Impl({ types: ['string', 'string'], func: wrap(strOp) }),
     new Impl({ types: ['simple', 'simple'], func: wrap(strOp) }),
@@ -292,7 +292,7 @@ function numeric(opFac: OpFactory): Impl[] {
 
 type LiteralOp<T, R> = (left: T, right: T) => R;
 function binary<T, R>(op: LiteralOp<T, R>, args: E.ITermExpression[]): R {
-  const [left, right] = <E.Literal<T>[]> args;
+  const [left, right] = args as Array<E.Literal<T>>;
   return op(left.typedValue, right.typedValue);
 }
 

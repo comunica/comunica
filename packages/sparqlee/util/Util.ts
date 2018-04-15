@@ -10,8 +10,8 @@ import { DataType as DT } from '../lib/util/Consts';
 import { UnimplementedError } from '../lib/util/Errors';
 
 export class Example {
-  public expression: Alg.Expression;
-  public mapping: () => Bindings;
+  expression: Alg.Expression;
+  mapping: () => Bindings;
 
   constructor(expr: string, mapping: () => Bindings) {
     this.expression = parse(expr);

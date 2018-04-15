@@ -42,16 +42,16 @@ export const functions: Map<C.Operator, E.SPARQLFunc> = definitions.map((def, op
   const { category, arity, definition } = def;
   switch (category) {
     case 'simple': {
-      const { types, apply } = <SimpleDefinition> definition;
+      const { types, apply } = definition as SimpleDefinition;
       return new SimpleFunction(op, arity, types, apply);
     }
     case 'overloaded': {
-      const overloadMap = <OverloadedDefinition> definition;
+      const overloadMap = definition as OverloadedDefinition;
       return new OverloadedFunction(op, arity, overloadMap);
     }
     case 'special': {
       // tslint:disable-next-line:variable-name
-      const SpecialFunc = <SpecialDefinition> definition;
+      const SpecialFunc = definition as SpecialDefinition;
       return new SpecialFunc(op);
     }
     default: throw new UnexpectedError('Unknown function type.');

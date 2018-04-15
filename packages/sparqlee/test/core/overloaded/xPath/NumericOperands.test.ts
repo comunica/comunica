@@ -1,7 +1,7 @@
 import * as RDFDM from 'rdf-data-model';
 
 import * as C from '../../../../lib/util/Consts';
-import { IAliasMap, testTable } from '../../../util/TruthTable';
+import { AliasMap, testTable } from '../../../util/TruthTable';
 
 const CT = C.commonTerms;
 

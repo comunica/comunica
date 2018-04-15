@@ -7,14 +7,14 @@ import { evaluate } from '../../util/Util';
  * evaluation tables.
  * Ex: { 'true': '"true"^^xsd:boolean' }
  */
-export interface IAliasMap { [key: string]: string; }
+export interface AliasMap { [key: string]: string; }
 
 /*
  * Maps short strings to longer RDF term-objects for easy use in making
  * evaluation tables.
  * Ex: { 'true': RDFDM.literal("true", RDF.namedNode(DT.XSD_BOOLEAN))}
  */
-export interface IResultMap { [key: string]: RDF.Term; }
+export interface ResultMap { [key: string]: RDF.Term; }
 
 /*
  * A series of tests in string format.
@@ -34,18 +34,18 @@ export interface IResultMap { [key: string]: RDF.Term; }
  * false false = false
  * `
  */
-export interface IEvaluationTable {
+export interface EvaluationTable {
   operator: string;
   table: string;
   errorTable: string;
-  aliasMap: IAliasMap;
-  resultMap: IResultMap;
+  aliasMap: AliasMap;
+  resultMap: ResultMap;
 }
 
 /*
  * Given the definition for an evaluation table, test all it's test cases.
  */
-export function testTable(definition: IEvaluationTable, arity: number): void {
+export function testTable(definition: EvaluationTable, arity: number): void {
   const tTable = (arity === 2)
     ? new BinaryTable(definition, BinaryTableParser)
     : new UnaryTable(definition, UnaryTableParser);
@@ -61,18 +61,18 @@ type Row = [string, string, string] | [string, string];
 
 abstract class Table<RowType extends Row> {
   protected parser: TableParser<RowType>;
-  protected def: IEvaluationTable;
+  protected def: EvaluationTable;
 
-  constructor(def: IEvaluationTable, parser: IParserConstructor<RowType>) {
+  constructor(def: EvaluationTable, parser: ParserConstructor<RowType>) {
     this.def = def;
     this.parser = new parser(def.table, def.errorTable);
   }
 
-  public abstract test(): void;
+  abstract test(): void;
 }
 
 class BinaryTable extends Table<[string, string, string]> {
-  public test(): void {
+  test(): void {
     this.parser.table.forEach((row) => {
       const [left, right, result] = row;
       const { aliasMap, resultMap, operator } = this.def;
@@ -95,7 +95,7 @@ class BinaryTable extends Table<[string, string, string]> {
 }
 
 class UnaryTable extends Table<[string, string]> {
-  public test(): void {
+  test(): void {
     this.parser.table.forEach((row) => {
       const [arg, result] = row;
       const { aliasMap, operator, resultMap } = this.def;
@@ -118,13 +118,13 @@ class UnaryTable extends Table<[string, string]> {
   }
 }
 
-interface IParserConstructor<RowType extends Row> {
+interface ParserConstructor<RowType extends Row> {
   new(table: string, errorTable: string): TableParser<RowType>;
 }
 
 abstract class TableParser<RowType extends Row> {
-  public table: RowType[];
-  public errorTable: RowType[];
+  table: RowType[];
+  errorTable: RowType[];
 
   constructor(table: string, errTable: string) {
     this.table = this.splitTable(table).map((row) => this.parseRow(row));
