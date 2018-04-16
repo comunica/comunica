@@ -1,7 +1,7 @@
 {
-  "name": "comunica-sparql-expeval",
+  "name": "sparqlee",
   "version": "0.0.1",
-  "description": "Promise based SPARQL Expression Evaluator",
+  "description": "A simple SPARQL expression evaluator library",
   "main": "dist/src/lib.js",
   "scripts": {
     "test": "jest",
@@ -17,9 +17,9 @@
   },
   "keywords": [
     "sparql",
+    "expression",
     "rdf",
-    "expression-engine",
-    "promise"
+    "evaluator"
   ],
   "author": "Wout Schellaert",
   "license": "MIT",

@@ -1,16 +1,38 @@
-# Comunica-SPARQL-ExpEval
+# Sparqlee
 
-Promise based SPARQL Expression Evaluator
+A simple SPARQL expression evaluator library.
 
-## Setup
+## Using Sparqlee
 
-### From source
+Note: If you want to use *aggregates*, or *exists* you should check out the [Stream](#streams).
 
-1. Install NPM (and Node for benchmarking)
-1. `npm install -g typescript`
-1. `npm install gulp-cli`
-1. `npm install`
-1. `npm build`
-1. `npm test`
+### Installation
 
-You can also use `npm run build` or `npm run watch` for building & compiling.
+This package is available on [(TODO)npm]('blurb').
+
+### Evaluating
+
+**TODO** Add section about creating an evaluator and passing bindings.
+
+### Streams
+
+**TODO** Add section about streams and their relation to _aggregates_ and _exists_.
+
+## Spec compliance
+
+**TODO** Add section about differences from the spec and which functions are affected (and which are implemented).
+
+## Setup locally
+
+1. Install `npm` and `node`.
+2. Run `npm install`.
+3. Use these evident commands (or check `package.json`):
+* building once: `npm run build`
+* build and watch: `npm run watch`
+* testing: `npm run test`
+* benchmarking: `npm run bench`
+
+### Testing
+
+Running tests will generate a `test-report.html` in the root dir.
+**TODO** Explain test organizatian and expression tables
