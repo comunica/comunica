@@ -13,7 +13,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/wschella/Comunica-SPARQL-ExpEval.git"
+    "url": "git+https://github.com/wschella/Sparqlee.git"
   },
   "keywords": [
     "sparql",
@@ -24,9 +24,9 @@
   "author": "Wout Schellaert",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/wschella/Comunica-SPARQL-ExpEval/issues"
+    "url": "https://github.com/wschella/Sparqlee/issues"
   },
-  "homepage": "https://github.com/wschella/Comunica-SPARQL-ExpEval#readme",
+  "homepage": "https://github.com/wschella/Sparqlee#readme",
   "devDependencies": {
     "@types/asynciterator": "^1.1.0",
     "@types/benchmark": "^1.0.30",
