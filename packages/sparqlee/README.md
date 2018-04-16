@@ -4,7 +4,7 @@ A simple SPARQL expression evaluator library.
 
 ## Using Sparqlee
 
-Note: If you want to use *aggregates*, or *exists* you should check out the [Stream](#streams).
+Note: If you want to use *aggregates*, or *exists* you should check out the [stream section](#streams).
 
 ### Installation
 
