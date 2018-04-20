@@ -6,17 +6,19 @@ import * as E from '../core/Expressions';
 import * as Err from '../util/Errors';
 import * as P from '../util/Parsing';
 
-import { Bindings } from '../core/Bindings';
 import { makeOp } from '../core/operators/index';
 import { transformAlgebra, transformTerm } from '../core/Transformation';
-import { Lookup } from "../FromExpressionStream";
+import { AsyncAggregator, AsyncLookUp, Bindings } from '../core/Types';
 import { DataType as DT } from '../util/Consts';
 
 export class AsyncEvaluator {
   private _expr: E.Expression;
-  private _lookup: Lookup;
 
-  constructor(expr: Alg.Expression, public lookup: Lookup) {
+  // TODO: Support passing functions to override default behaviour;
+  constructor(
+    expr: Alg.Expression,
+    public lookup?: AsyncLookUp,
+    public aggregator?: AsyncAggregator) {
     this._expr = transformAlgebra(expr);
   }
 
@@ -63,25 +65,20 @@ export class AsyncEvaluator {
         term: rdfTerm,
       }) as E.TermExpression;
     } else {
-      throw new TypeError("Unbound variable");
+      throw new TypeError('Unbound variable');
     }
   }
 
   private _evalOp(expr: E.OperatorExpression, mapping: Bindings): Promise<E.TermExpression> {
     const { func, args } = expr;
     switch (func.functionClass) {
-      case 'simple': {
-        const pArgs = args.map((arg) => this._eval(arg, mapping));
-        return Promise.all(pArgs).then((rArgs) => func.apply(rArgs));
-      }
+      case 'simple':
       case 'overloaded': {
         const pArgs = args.map((arg) => this._eval(arg, mapping));
         return Promise.all(pArgs).then((rArgs) => func.apply(rArgs));
       }
-      case 'special': {
-        return func.apply(args, mapping, this._eval.bind(this));
-      }
-      default: throw new Err.UnexpectedError("Unknown function class.");
+      case 'special': return func.apply(args, mapping, this._eval.bind(this));
+      default: throw new Err.UnexpectedError('Unknown function class.');
     }
   }
 }

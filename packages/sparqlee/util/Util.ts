@@ -5,7 +5,7 @@ import * as RDF from 'rdf-js';
 
 import { Algebra as Alg, translate } from 'sparqlalgebrajs';
 import { AsyncEvaluator } from '../lib/async/AsyncEvaluator';
-import { Bindings } from "../lib/core/Bindings";
+import { Bindings } from '../lib/core/Types';
 import { DataType as DT } from '../lib/util/Consts';
 import { UnimplementedError } from '../lib/util/Errors';
 
@@ -39,14 +39,36 @@ export const example1 = (() => {
 })();
 
 export function evaluate(expr: string, bindings = Bindings({})): Promise<RDF.Term> {
-  const evaluator = new AsyncEvaluator(parse(expr), mockLookup);
+  const evaluator = new AsyncEvaluator(parse(expr), mockLookUp, mockAggregator);
   return evaluator.evaluate(bindings);
 }
 
-export const mockLookup = (pattern: Alg.Bgp) => {
-  return new Promise<boolean>((resolve, reject) => {
-    return resolve(true);
-  });
+export const mockLookUp = (pattern: Alg.ExistenceExpression) => {
+  return Promise.resolve(true);
+};
+
+export const mockAggregator = {
+  count(exp: Alg.Expression): Promise<number> {
+    return Promise.resolve(3.14);
+  },
+  sum(exp: Alg.Expression): Promise<number> {
+    return Promise.resolve(3.14);
+  },
+  min(exp: Alg.Expression): Promise<number> {
+    return Promise.resolve(3.14);
+  },
+  max(exp: Alg.Expression): Promise<number> {
+    return Promise.resolve(3.14);
+  },
+  avg(exp: Alg.Expression): Promise<number> {
+    return Promise.resolve(3.14);
+  },
+  groupConcat(exp: Alg.Expression): Promise<string> {
+    return Promise.resolve('term term term');
+  },
+  sample(exp: Alg.Expression): Promise<RDF.Term> {
+    return Promise.resolve(RDFDM.literal('MockTerm'));
+  },
 };
 
 export function parse(expr: string): Alg.Expression {
@@ -56,7 +78,15 @@ export function parse(expr: string): Alg.Expression {
                     PREFIX err: <http://www.w3.org/2005/xqt-errors#>`;
   const queryString = `${prefixes} SELECT * WHERE { ?s ?p ?o FILTER (${expr})}`;
   const sparqlQuery = translate(queryString);
-
   // Extract filter expression from complete query
   return sparqlQuery.input.expression;
+}
+
+export function parseFull(expr: string): Alg.Operation {
+  const prefixes = `PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+                    PREFIX fn: <https://www.w3.org/TR/xpath-functions#>
+                    PREFIX err: <http://www.w3.org/2005/xqt-errors#>`;
+  const queryString = `${prefixes} ${expr}`;
+  const sparqlQuery = translate(queryString);
+  return sparqlQuery;
 }

@@ -5,15 +5,16 @@ import * as RDF from 'rdf-data-model';
 import { Algebra as Alg } from 'sparqlalgebrajs';
 
 import { ArrayIterator, AsyncIterator } from 'asynciterator';
-import { AsyncEvaluatedStream } from '../index';
 import { AsyncEvaluator } from '../lib/async/AsyncEvaluator';
-import { Bindings } from '../lib/core/Bindings';
+import { Bindings } from '../lib/core/Types';
 import { DataType as DT } from '../lib/util/Consts';
 import * as C from '../lib/util/Consts';
-import { Example, example1, mockLookup, parse } from '../util/Util';
+import * as U from '../util/Util';
+// import { Example, example1, mockLookUp, parse, parseFull } from '../util/Util';
 
-function print(expr: string): void {
-  console.log(JSON.stringify(parse(expr), null, 4));
+function print(expr: string, full?: boolean): void {
+  const parsedExpr = (full) ? U.parseFull(expr) : U.parse(expr);
+  console.log(JSON.stringify(parsedExpr, null, 4));
 }
 
 async function testEval() {
@@ -25,36 +26,22 @@ async function testEval() {
   //   a: RDF.literal("true", C.make(DT.XSD_BOOLEAN)),
   //   b: RDF.literal("true", C.make(DT.XSD_BOOLEAN)),
   // }));
-  const ex = new Example('"1999-03-17T06:00:00+04:00"^^xsd:dateTime',
+  const ex = new U.Example('"1999-03-17T06:00:00+04:00"^^xsd:dateTime',
     () => Bindings({
       // a: RDF.literal('a'),
     }));
   // const ex = new Example('?a IN (?b, "")', () => Bindings({
   //   a: RDF.literal("aaa"),
   // }));
-  const evaluator = new AsyncEvaluator(ex.expression, mockLookup);
+  const evaluator = new AsyncEvaluator(ex.expression, U.mockLookUp, U.mockAggregator);
   const presult = evaluator.evaluateAsInternal(ex.mapping()).catch((err) => console.log(err));
   const val = await presult;
   console.log(val);
 }
 
-function main(): void {
-  // const ex = example1;
-  const ex = new Example('?a || ?b', () => Bindings({
-    a: RDF.literal("3", RDF.namedNode(DT.XSD_INTEGER)),
-    b: RDF.literal("3", RDF.namedNode(DT.XSD_INTEGER)),
-  }));
-  const input = [ex.mapping()];
-  const istream = new ArrayIterator(input);
-  const evalled = new AsyncEvaluatedStream(ex.expression, istream, mockLookup);
-  evalled.on('error', (error) => console.log(error));
-  evalled.on('data', (data) => {
-    console.log(JSON.stringify(data, undefined, 4));
-  });
-}
-
-testEval();
+// testEval();
 // test();
+print('SELECT (avg(sum(?s + ?p) ) as ?avg) WHERE { ?s ?p ?o }', true);
 // print('bound(?a)');
 // print('IF(?a, ?a, ?a)');
 // print('coalesce(?a, ?a)');

@@ -6,7 +6,7 @@ import * as C from '../../util/Consts';
 import * as E from '../Expressions';
 
 import { InvalidArgumentTypes } from '../../util/Errors';
-import { Bindings } from '../Bindings';
+import { Bindings } from '../Types';
 
 // ----------------------------------------------------------------------------
 // Functions

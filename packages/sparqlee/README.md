@@ -27,10 +27,10 @@ This package is available on [(TODO)npm]('blurb').
 1. Install `npm` and `node`.
 2. Run `npm install`.
 3. Use these evident commands (or check `package.json`):
-* building once: `npm run build`
-* build and watch: `npm run watch`
-* testing: `npm run test`
-* benchmarking: `npm run bench`
+    * building once: `npm run build`
+    * build and watch: `npm run watch`
+    * testing: `npm run test`
+    * benchmarking: `npm run bench`
 
 ### Testing
 

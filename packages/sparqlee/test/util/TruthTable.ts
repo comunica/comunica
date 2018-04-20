@@ -71,6 +71,7 @@ abstract class Table<RowType extends Row> {
   abstract test(): void;
 }
 
+// TODO: Let tables only test function evaluation from the definitions, not the whole evaluator.
 class BinaryTable extends Table<[string, string, string]> {
   test(): void {
     this.parser.table.forEach((row) => {

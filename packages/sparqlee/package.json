@@ -36,6 +36,7 @@
     "@types/lodash.isequal": "^4.5.2",
     "@types/node": "^8.0.34",
     "@types/rdf-data-model": "^1.0.1",
+    "asynciterator": "^1.1.0",
     "benchmark": "^2.1.4",
     "del": "^3.0.0",
     "gulp": "^3.9.1",
@@ -51,7 +52,6 @@
     "typescript": "^2.6.0"
   },
   "dependencies": {
-    "asynciterator": "^1.1.0",
     "bluebird": "^3.5.1",
     "immutable": "^3.8.2",
     "lodash.isequal": "^4.5.0",

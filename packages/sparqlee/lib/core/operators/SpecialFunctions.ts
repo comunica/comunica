@@ -5,7 +5,7 @@ import * as C from '../../util/Consts';
 import * as Err from '../../util/Errors';
 import * as E from '../Expressions';
 
-import { Bindings } from '../Bindings';
+import { Bindings } from '../Types';
 import { bool } from './Helpers';
 import { functions } from './index';
 import { OverloadedFunction, SpecialFunctionAsync } from './Types';

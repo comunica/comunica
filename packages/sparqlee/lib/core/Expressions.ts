@@ -5,7 +5,7 @@ import * as RDFDM from 'rdf-data-model';
 import * as RDF from 'rdf-js';
 import { Algebra } from 'sparqlalgebrajs';
 
-import { Bindings } from '../core/Bindings';
+import { Bindings } from '../core/Types';
 import * as C from '../util/Consts';
 import { InvalidArgumentTypes, InvalidArity, UnimplementedError } from '../util/Errors';
 
@@ -64,7 +64,6 @@ export type TermExpression = ExpressionProps & {
   toRDF(): RDF.Term;
 };
 
-
 export type VariableExpression = ExpressionProps & {
   expressionType: 'variable';
   name: string;
@@ -91,7 +90,7 @@ export abstract class Term implements TermExpression {
   abstract termType: TermType;
 
   coerceEBV(): boolean {
-    throw new TypeError("Cannot coerce this term to EBV.");
+    throw new TypeError('Cannot coerce this term to EBV.');
   }
 
   abstract toRDF(): RDF.Term;
