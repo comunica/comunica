@@ -15,14 +15,13 @@ import { OverloadedFunction, SimpleFunction, SpecialFunctionAsync } from './Type
 // TODO: If args are known, try to calculate already
 export function makeOp(opString: string, args: E.Expression[]): E.OperatorExpression {
   if (!C.Operators.contains(opString)) {
-    throw new TypeError("Unknown operator");
+    // TODO Throw better error
+    throw new TypeError('Unknown operator');
   }
   const op = opString as C.Operator;
 
   const definitionMeta = definitions.get(op);
-  const { category, arity, definition } = definitionMeta;
-
-  if (!definition) { throw new UnimplementedError(); }
+  const { category, arity } = definitionMeta;
 
   // We can check for arity allready (assuming no programming mistakes) because
   // each (term) argument should already represented by the expressions that
@@ -39,21 +38,11 @@ export function makeOp(opString: string, args: E.Expression[]): E.OperatorExpres
 }
 
 export const functions: Map<C.Operator, E.SPARQLFunc> = definitions.map((def, op) => {
-  const { category, arity, definition } = def;
-  switch (category) {
-    case 'simple': {
-      const { types, apply } = definition as SimpleDefinition;
-      return new SimpleFunction(op, arity, types, apply);
-    }
-    case 'overloaded': {
-      const overloadMap = definition as OverloadedDefinition;
-      return new OverloadedFunction(op, arity, overloadMap);
-    }
-    case 'special': {
-      // tslint:disable-next-line:variable-name
-      const SpecialFunc = definition as SpecialDefinition;
-      return new SpecialFunc(op);
-    }
+  const { category, arity } = def;
+  switch (def.category) {
+    case 'simple': return new SimpleFunction(op, arity, def.types, def.apply);
+    case 'overloaded': return new OverloadedFunction(op, arity, def.overloads);
+    case 'special': return new def.constructor();
     default: throw new UnexpectedError('Unknown function type.');
   }
 }).toMap();

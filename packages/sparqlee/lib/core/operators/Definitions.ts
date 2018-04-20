@@ -17,21 +17,32 @@ import * as X from './XPath';
 // The definitions and functionality for all operators
 // ----------------------------------------------------------------------------
 
-export interface FuncDefinition {
-  category: C.OperatorCategory;
+export type FuncDefinition =
+  SimpleDefinition
+  | OverloadedDefinition
+  | SpecialDefinition;
+
+export interface DefinitionProps {
   arity: number;
-  definition: SimpleDefinition | OverloadedDefinition | SpecialDefinition;
 }
 
-type IDefinitionMap = { [key in C.Operator]: FuncDefinition };
-
-// tslint:disable-next-line:interface-over-type-literal
-export type SimpleDefinition = {
+export type SimpleDefinition = DefinitionProps & {
+  category: 'simple';
   types: ArgumentType[];
   apply(args: E.TermExpression[]): E.TermExpression;
 };
-export type OverloadedDefinition = OverloadMap;
-export type SpecialDefinition = new (op: C.Operator) => SpecialFunctionAsync;
+
+export type OverloadedDefinition = DefinitionProps & {
+  category: 'overloaded';
+  overloads: OverloadMap;
+};
+
+export type SpecialDefinition = DefinitionProps & {
+  category: 'special';
+  constructor: new () => SpecialFunctionAsync;
+};
+
+type IDefinitionMap = { [key in C.Operator]: FuncDefinition };
 
 // TODO Maybe split in definitions for simple, overloaded and async functions.
 const _definitions: IDefinitionMap = {
@@ -39,46 +50,40 @@ const _definitions: IDefinitionMap = {
   '!': {
     arity: 1,
     category: 'simple',
-    definition: {
-      types: [],
-      apply: () => { throw new UnimplementedError(); },
-    },
+    types: [],
+    apply: () => { throw new UnimplementedError(); },
   },
   'UPLUS': {
     arity: 1,
     category: 'simple',
-    definition: {
-      types: [],
-      apply: () => { throw new UnimplementedError(); },
-    },
+    types: [],
+    apply: () => { throw new UnimplementedError(); },
   },
   'UMINUS': {
     arity: 1,
     category: 'simple',
-    definition: {
-      types: [],
-      apply: () => { throw new UnimplementedError(); },
-    },
+    types: [],
+    apply: () => { throw new UnimplementedError(); },
   },
   '&&': {
     arity: 2,
     category: 'special',
-    definition: Special.LogicalAndAsync,
+    constructor: Special.LogicalAndAsync,
   },
   '||': {
     arity: 2,
     category: 'special',
-    definition: Special.LogicalOrAsync,
+    constructor: Special.LogicalOrAsync,
   },
   '*': {
     arity: 2,
     category: 'overloaded',
-    definition: arithmetic(X.numericMultiply),
+    overloads: arithmetic(X.numericMultiply),
   },
   '/': {
     arity: 2,
     category: 'overloaded',
-    definition: arithmetic(X.numericDivide).set(
+    overloads: arithmetic(X.numericDivide).set(
       list('integer', 'integer'),
       (args: Term[]) => number(binary(X.numericDivide, args), DT.XSD_DECIMAL),
     ),
@@ -86,17 +91,17 @@ const _definitions: IDefinitionMap = {
   '+': {
     arity: 2,
     category: 'overloaded',
-    definition: arithmetic(X.numericAdd),
+    overloads: arithmetic(X.numericAdd),
   },
   '-': {
     arity: 2,
     category: 'overloaded',
-    definition: arithmetic(X.numericSubtract),
+    overloads: arithmetic(X.numericSubtract),
   },
   '=': {
     arity: 2,
     category: 'overloaded',
-    definition: xPathTest(
+    overloads: xPathTest(
       X.numericEqual,
       (left, right) => X.numericEqual(X.compare(left, right), 0),
       X.booleanEqual,
@@ -111,7 +116,7 @@ const _definitions: IDefinitionMap = {
   '!=': {
     arity: 2,
     category: 'overloaded',
-    definition: xPathTest(
+    overloads: xPathTest(
       (left, right) => !X.numericEqual(left, right),
       (left, right) => !X.numericEqual(X.compare(left, right), 0),
       (left, right) => !X.booleanEqual(left, right),
@@ -121,7 +126,7 @@ const _definitions: IDefinitionMap = {
   '<': {
     arity: 2,
     category: 'overloaded',
-    definition: xPathTest(
+    overloads: xPathTest(
       X.numericLessThan,
       (left, right) => X.numericEqual(X.compare(left, right), -1),
       X.booleanLessThan,
@@ -131,7 +136,7 @@ const _definitions: IDefinitionMap = {
   '>': {
     arity: 2,
     category: 'overloaded',
-    definition: xPathTest(
+    overloads: xPathTest(
       X.numericGreaterThan,
       (left, right) => X.numericEqual(X.compare(left, right), 1),
       X.booleanGreaterThan,
@@ -141,7 +146,7 @@ const _definitions: IDefinitionMap = {
   '<=': {
     arity: 2,
     category: 'overloaded',
-    definition: xPathTest(
+    overloads: xPathTest(
       (left, right) => X.numericLessThan(left, right) || X.numericEqual(left, right),
       (left, right) => !X.numericEqual(X.compare(left, right), 1),
       (left, right) => !X.booleanGreaterThan(left, right),
@@ -151,7 +156,7 @@ const _definitions: IDefinitionMap = {
   '>=': {
     arity: 2,
     category: 'overloaded',
-    definition: xPathTest(
+    overloads: xPathTest(
       (left, right) => X.numericGreaterThan(left, right) || X.numericEqual(left, right),
       (left, right) => !X.numericEqual(X.compare(left, right), -1),
       (left, right) => !X.booleanLessThan(left, right),
@@ -161,37 +166,35 @@ const _definitions: IDefinitionMap = {
   'bound': {
     arity: 1,
     category: 'special',
-    definition: Special.Bound,
+    constructor: Special.Bound,
   },
   'if': {
     arity: 3,
     category: 'special',
-    definition: Special.If,
+    constructor: Special.If,
   },
   'coalesce': {
     arity: Infinity,
     category: 'special',
-    definition: Special.Coalesce,
+    constructor: Special.Coalesce,
   },
   'sameterm': {
     arity: 2,
     category: 'simple',
-    definition: {
-      types: ['term', 'term'],
-      apply(args: Term[]) {
-        return bool(Special.sameTerm(args[1], args[2]));
-      },
+    types: ['term', 'term'],
+    apply(args: Term[]) {
+      return bool(Special.sameTerm(args[1], args[2]));
     },
   },
   'in': {
     arity: Infinity,
     category: 'special',
-    definition: Special.In,
+    constructor: Special.In,
   },
   'notin': {
     arity: Infinity,
-    category: 'simple',
-    definition: Special.NotIn,
+    category: 'special',
+    constructor: Special.NotIn,
   },
 };
 

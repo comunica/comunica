@@ -121,8 +121,7 @@ export class OverloadedFunction implements E.OverloadedFunc {
 
 export abstract class SpecialFunctionAsync implements E.SpecialFunc {
   functionClass: 'special' = 'special';
-
-  constructor(public operator: C.Operator) { }
+  abstract operator: C.Operator;
 
   abstract apply(
     args: E.Expression[],
