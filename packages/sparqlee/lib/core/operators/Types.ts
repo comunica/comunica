@@ -20,9 +20,10 @@ export type ArgumentType = 'term' | E.TermType | C.DataTypeCategory;
 
 // Simple Functions -----------------------------------------------------------
 
+export type TypeChecker = (args: E.TermExpression[]) => boolean;
 export class SimpleFunction implements E.SimpleFunc {
   functionClass: 'simple' = 'simple';
-
+  // Add functions that select a datatype to compare to in _isValidTypes
   constructor(
     public operator: C.Operator,
     public arity: number,
@@ -39,11 +40,18 @@ export class SimpleFunction implements E.SimpleFunc {
 
   // TODO: Test
   // TODO Can be optimised probably
+  // TODO Put in documentation, this is our TypeChecker for simple
   private _isValidTypes(args: E.TermExpression[]): boolean {
+    return args.every((arg, i) => {
+      return this.types[i] === (arg as E.LiteralTerm).category
+        || this.types[i] === arg.termType
+        || this.types[i] === 'term';
+    });
     // tslint:disable-next-line:no-any
-    const argTypes = args.map((a: any) => a.category || a.termType);
-    return _.isEqual(this.types, argTypes)
-      || _.isEqual(this.types, ['term', 'term']);
+    // const argTypes = args.map((a) => a. || a.termType);
+    // return _.isEqual(this.types, argTypes)
+    // // TODO this arity is wrong
+    //   || _.isEqual(this.types, Array(arity).fill('term'));
   }
 }
 
@@ -79,16 +87,13 @@ export class OverloadedFunction implements E.OverloadedFunc {
 
   constructor(
     public operator: C.Operator,
-    public arity: number,
+    public arity: number | number[],
     private overloadMap: OverloadMap,
   ) { }
 
   apply(args: E.TermExpression[]): E.TermExpression {
     const func = this._monomorph(args);
-    if (!func) {
-      throw new InvalidArgumentTypes(args, this.operator);
-    }
-
+    if (!func) { throw new InvalidArgumentTypes(args, this.operator); }
     return func(args);
   }
 
@@ -96,9 +101,9 @@ export class OverloadedFunction implements E.OverloadedFunc {
   private _monomorph(args: E.TermExpression[]): E.SimpleApplication {
     // tslint:disable-next-line:no-any
     const argTypes = List(args.map((a: any) => a.category || a.termType));
+    const arity = args.length;
     return this.overloadMap.get(argTypes)
-      // tslint:disable-next-line:ban
-      || this.overloadMap.get(List(Array(this.arity).fill('term')));
+      || this.overloadMap.get(List(Array(arity).fill('term')));
   }
 }
 

@@ -38,10 +38,9 @@ export function makeOp(opString: string, args: E.Expression[]): E.OperatorExpres
 }
 
 export const functions: Map<C.Operator, E.SPARQLFunc> = definitions.map((def, op) => {
-  const { category, arity } = def;
   switch (def.category) {
-    case 'simple': return new SimpleFunction(op, arity, def.types, def.apply);
-    case 'overloaded': return new OverloadedFunction(op, arity, def.overloads);
+    case 'simple': return new SimpleFunction(op, def.arity, def.types, def.apply);
+    case 'overloaded': return new OverloadedFunction(op, def.arity, def.overloads);
     case 'special': return new def.constructor();
     default: throw new UnexpectedError('Unknown function type.');
   }

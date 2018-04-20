@@ -129,14 +129,12 @@ export function decategorize(cat: DataTypeCategory): DataType {
 // ----------------------------------------------------------------------------
 // TODO: Maybe rename to functions to match?
 
-// TODO: Operator enum (with special operators)
+// TODO: Rename Operator to functions
 export type OperatorType = keyof typeof Operator;
 export type OperatorCategory = 'simple' | 'overloaded' | 'special';
 export enum Operator {
-  /*
-   * Operator mapping
-   * https://www.w3.org/TR/sparql11-query/#OperatorMapping
-   */
+  // Operator mapping
+  // https://www.w3.org/TR/sparql11-query/#OperatorMapping
   NOT = '!',
   UMINUS = 'UMINUS',
   UPLUS = 'UPLUS',
@@ -156,10 +154,8 @@ export enum Operator {
   ADDITION = '+',
   SUBTRACTION = '-',
 
-  /*
-   * Functional Forms
-   * https://www.w3.org/TR/sparql11-query/#func-forms
-   */
+  // Functional Forms
+  // https://www.w3.org/TR/sparql11-query/#func-forms
   BOUND = 'bound',
   IF = 'if',
   COALESCE = 'coalesce',
@@ -170,6 +166,31 @@ export enum Operator {
   SAME_TERM = 'sameterm',
   IN = 'in',
   NOT_IN = 'notin',
+
+  // Functions on RDF Terms
+  // https://www.w3.org/TR/sparql11-query/#func-rdfTerms
+  STR = 'str',
+  LANG = 'lang',
+  DATATYPE = 'datatype',
+
+  // Functions on strings
+  // https://www.w3.org/TR/sparql11-query/#func-forms
+  STRLEN = 'strlen',
+  REGEX = 'regex',
+
+  // Functions on numerics
+  // https://www.w3.org/TR/sparql11-query/#func-numerics
+  ABS = 'abs',
+
+  // Functions on Dates and Times
+  // https://www.w3.org/TR/sparql11-query/#func-date-time
+  NOW = 'now',
+
+  // Hash functions
+  // https://www.w3.org/TR/sparql11-query/#func-hash
+
+  // XPath Constructor functions
+  // https://www.w3.org/TR/sparql11-query/#FunctionMapping
 }
 
 // tslint:disable-next-line:no-any

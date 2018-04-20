@@ -1,17 +1,16 @@
 import * as Promise from 'bluebird';
-import { Iterable, List, Map, Record } from 'immutable';
-import { Impl, map } from './Helpers';
+import { Map } from 'immutable';
+import { Impl, map, str, forAll, unary } from './Helpers';
 
 import * as C from '../../util/Consts';
-import { DataType as DT } from '../../util/Consts';
-import { InvalidArity, InvalidLexicalForm, UnimplementedError } from '../../util/Errors';
 import * as E from './../Expressions';
-import { bool, list, number } from './Helpers';
 import * as Special from './SpecialFunctions';
-import {
-  ArgumentType, OverloadedFunction, OverloadMap, SimpleFunction, SpecialFunctionAsync,
-} from './Types';
 import * as X from './XPath';
+
+import { DataType as DT } from '../../util/Consts';
+import { UnimplementedError } from '../../util/Errors';
+import { arithmetic, binary, bool, list, number, numeric, xPathTest } from './Helpers';
+import { ArgumentType, OverloadMap, SpecialFunctionAsync } from './Types';
 
 // ----------------------------------------------------------------------------
 // The definitions and functionality for all operators
@@ -23,30 +22,38 @@ export type FuncDefinition =
   | SpecialDefinition;
 
 export interface DefinitionProps {
-  arity: number;
+  arity: number | number[];
+  category: C.OperatorCategory;
 }
 
 export type SimpleDefinition = DefinitionProps & {
+  arity: number;
   category: 'simple';
   types: ArgumentType[];
   apply(args: E.TermExpression[]): E.TermExpression;
 };
 
 export type OverloadedDefinition = DefinitionProps & {
+  arity: number | number[];
   category: 'overloaded';
   overloads: OverloadMap;
 };
 
 export type SpecialDefinition = DefinitionProps & {
+  arity: number;
   category: 'special';
   constructor: new () => SpecialFunctionAsync;
 };
 
 type IDefinitionMap = { [key in C.Operator]: FuncDefinition };
+type Term = E.TermExpression;
 
 // TODO Maybe split in definitions for simple, overloaded and async functions.
 const _definitions: IDefinitionMap = {
-  // TODO: Check expressions parent types
+  // --------------------------------------------------------------------------
+  // Operator Mapping
+  // https://www.w3.org/TR/sparql11-query/#OperatorMapping
+  // --------------------------------------------------------------------------
   '!': {
     arity: 1,
     category: 'simple',
@@ -163,6 +170,10 @@ const _definitions: IDefinitionMap = {
       (left, right) => !X.dateTimeLessThan(left, right),
     ),
   },
+  // --------------------------------------------------------------------------
+  // Functional Forms
+  // https://www.w3.org/TR/sparql11-query/#func-forms
+  // --------------------------------------------------------------------------
   'bound': {
     arity: 1,
     category: 'special',
@@ -196,115 +207,101 @@ const _definitions: IDefinitionMap = {
     category: 'special',
     constructor: Special.NotIn,
   },
+  // --------------------------------------------------------------------------
+  // Functions on RDF Terms
+  // https://www.w3.org/TR/sparql11-query/#func-rdfTerms
+  // --------------------------------------------------------------------------
+  'str': {
+    arity: 1,
+    category: 'simple',
+    types: ['term'],
+    apply(args: Term[]) { return str(args[0].str()); }
+  },
+  'lang': {
+    arity: 1,
+    category: 'simple',
+    types: ['literal'],
+    apply(args: E.Literal<any>[]) {
+      return str(args[0].language || '');
+    },
+  },
+  'datatype': {
+    arity: 1,
+    category: 'simple',
+    types: ['literal'],
+    apply(args: E.Literal<any>[]) {
+      const arg = args[0];
+      return str((arg.dataType) ? arg.dataType.value : '');
+    },
+  },
+  // --------------------------------------------------------------------------
+  // Functions on strings
+  // https://www.w3.org/TR/sparql11-query/#func-forms
+  // TODO: Note somewhere that 'overloaded' is in the context of this typesystem.
+  // Eg. strlen is overloaded, although it has identical behaviour, 
+  // but the types can not be captured by a single ArgumentType.
+  // --------------------------------------------------------------------------
+  'strlen': {
+    arity: 1,
+    category: 'overloaded',
+    overloads: forAll(
+      [['plain'], ['simple'], ['string']],
+      (args: Term[]) => number(unary(X.stringLength, args), DT.XSD_INTEGER)
+    ),
+  },
+  'regex': {
+    arity: [2, 3],
+    category: 'overloaded',
+    overloads: forAll(
+      [
+        ['simple', 'simple'],
+        ['plain', 'simple'],
+        ['string', 'simple'],
+        ['simple', 'simple', 'simple'],
+        ['plain', 'simple', 'simple'],
+        ['string', 'simple', 'simple']
+
+      ],
+      (args: E.Literal<any>[]) => bool(X.matches(
+        args[0].typedValue,
+        args[1].typedValue,
+        ((args[2]) ? args[2].typedValue : ''),
+      ))
+    ),
+  },
+
+  // --------------------------------------------------------------------------
+  // Functions on numerics
+  // https://www.w3.org/TR/sparql11-query/#func-numerics
+  // --------------------------------------------------------------------------
+  'abs': {
+    arity: 1,
+    category: 'overloaded',
+    overloads: Map(),
+  },
+
+  // --------------------------------------------------------------------------
+  // Functions on Dates and Times
+  // https://www.w3.org/TR/sparql11-query/#func-date-time
+  // --------------------------------------------------------------------------
+  'now': {
+    arity: 0,
+    category: 'simple',
+    types: [],
+    apply: (args: Term[]) => {
+      throw new UnimplementedError();
+    },
+  },
+
+  // --------------------------------------------------------------------------
+  // Hash functions
+  // https://www.w3.org/TR/sparql11-query/#func-hash
+  // --------------------------------------------------------------------------
+
+  // --------------------------------------------------------------------------
+  // XPath Constructor functions
+  // https://www.w3.org/TR/sparql11-query/#FunctionMapping
+  // --------------------------------------------------------------------------
 };
 
 export const definitions = Map<C.Operator, FuncDefinition>(_definitions);
-
-// ----------------------------------------------------------------------------
-// Utility helpers
-// ----------------------------------------------------------------------------
-
-type Term = E.TermExpression;
-
-/*
- * Arithetic Operators take numbers, and return numbers.
- * Check 'numeric' for behaviour of the generic numeric helper.
- * https://www.w3.org/TR/sparql11-query/#OperatorMapping
- */
-type ArithmeticOperator = (left: number, right: number) => number;
-function arithmetic(op: ArithmeticOperator): OverloadMap {
-  const func = (dt?: DT) => (
-    (args: Term[]) => number(binary(op, args), dt || DT.XSD_FLOAT)
-  );
-  return map(numeric(func));
-}
-
-/*
- * XPath Tests take numbers, booleans, strings, simple strings, and dates,
- * and they return booleans.
- * Check 'numeric' for behaviour of the generic numeric helper.
- * https://www.w3.org/TR/sparql11-query/#OperatorMapping
- */
-type XPathTest<T> = (left: T, right: T) => boolean;
-function xPathTest(
-  numOp: XPathTest<number>,
-  strOp: XPathTest<string>,
-  boolOp: XPathTest<boolean>,
-  dateOp: XPathTest<Date>,
-): OverloadMap {
-  const numericHelper = (args: Term[]) => bool(binary(numOp, args));
-
-  const wrap = <T>(func: XPathTest<T>) => (args: Term[]) => bool(binary(func, args));
-  return map([
-    new Impl({ types: ['string', 'string'], func: wrap(strOp) }),
-    new Impl({ types: ['simple', 'simple'], func: wrap(strOp) }),
-    new Impl({ types: ['boolean', 'boolean'], func: wrap(boolOp) }),
-    new Impl({ types: ['date', 'date'], func: wrap(dateOp) }),
-
-    new Impl({ types: ['invalid', 'invalid'], func: invalidLexicalForm(1) }),
-    new Impl({ types: ['invalid', 'string'], func: invalidLexicalForm(1) }),
-    new Impl({ types: ['invalid', 'boolean'], func: invalidLexicalForm(1) }),
-    new Impl({ types: ['invalid', 'date'], func: invalidLexicalForm(1) }),
-    new Impl({ types: ['string', 'invalid'], func: invalidLexicalForm(2) }),
-    new Impl({ types: ['boolean', 'invalid'], func: invalidLexicalForm(2) }),
-    new Impl({ types: ['date', 'invalid'], func: invalidLexicalForm(2) }),
-
-  ].concat(numeric((dt?: DT) => numericHelper)));
-}
-
-type OpFactory = (dt?: C.DataType) => E.SimpleApplication;
-
-/*
- * DataType will be generalized to float,
- * or to the the category-parent (interger, decimal, ...) if both have the same.
- */
-function numeric(opFac: OpFactory): Impl[] {
-  return [
-    new Impl({ types: ['integer', 'integer'], func: opFac(DT.XSD_INTEGER) }),
-    new Impl({ types: ['integer', 'decimal'], func: opFac() }),
-    new Impl({ types: ['integer', 'float'], func: opFac() }),
-    new Impl({ types: ['integer', 'double'], func: opFac() }),
-    new Impl({ types: ['integer', 'invalid'], func: invalidLexicalForm(2) }),
-
-    new Impl({ types: ['decimal', 'integer'], func: opFac() }),
-    new Impl({ types: ['decimal', 'decimal'], func: opFac(DT.XSD_DECIMAL) }),
-    new Impl({ types: ['decimal', 'float'], func: opFac() }),
-    new Impl({ types: ['decimal', 'double'], func: opFac() }),
-    new Impl({ types: ['decimal', 'invalid'], func: invalidLexicalForm(2) }),
-
-    new Impl({ types: ['float', 'integer'], func: opFac() }),
-    new Impl({ types: ['float', 'decimal'], func: opFac() }),
-    new Impl({ types: ['float', 'float'], func: opFac(DT.XSD_FLOAT) }),
-    new Impl({ types: ['float', 'double'], func: opFac() }),
-    new Impl({ types: ['float', 'invalid'], func: invalidLexicalForm(2) }),
-
-    new Impl({ types: ['double', 'integer'], func: opFac() }),
-    new Impl({ types: ['double', 'decimal'], func: opFac() }),
-    new Impl({ types: ['double', 'float'], func: opFac() }),
-    new Impl({ types: ['double', 'double'], func: opFac(DT.XSD_DOUBLE) }),
-    new Impl({ types: ['double', 'invalid'], func: invalidLexicalForm(2) }),
-
-    new Impl({ types: ['invalid', 'integer'], func: invalidLexicalForm(1) }),
-    new Impl({ types: ['invalid', 'decimal'], func: invalidLexicalForm(1) }),
-    new Impl({ types: ['invalid', 'float'], func: invalidLexicalForm(1) }),
-    new Impl({ types: ['invalid', 'double'], func: invalidLexicalForm(1) }),
-  ];
-}
-
-type LiteralOp<T, R> = (left: T, right: T) => R;
-function binary<T, R>(op: LiteralOp<T, R>, args: E.TermExpression[]): R {
-  const [left, right] = args as Array<E.Literal<T>>;
-  return op(left.typedValue, right.typedValue);
-}
-
-function invalidLexicalForm(index: number) {
-  return (args: Term[]) => {
-    throw new InvalidLexicalForm(args[index - 1].toRDF());
-  };
-}
-// // https://gist.github.com/JamieMason/172460a36a0eaef24233e6edb2706f83
-// const compose = (...fns: Function[]) =>
-//   fns.reverse().reduce((prevFn, nextFn) =>
-//     (value: any) => nextFn(prevFn(value)),
-//     (value: any) => value,
-//   );

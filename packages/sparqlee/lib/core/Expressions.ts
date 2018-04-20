@@ -60,6 +60,7 @@ export type TermType = 'namedNode' | 'literal';
 export type TermExpression = ExpressionProps & {
   expressionType: 'term';
   termType: TermType;
+  str(): string;
   coerceEBV(): boolean;
   toRDF(): RDF.Term;
 };
@@ -89,11 +90,16 @@ export abstract class Term implements TermExpression {
   expressionType: 'term' = 'term';
   abstract termType: TermType;
 
+  abstract toRDF(): RDF.Term;
+
+  str(): string {
+    throw new InvalidArgumentTypes([this], C.Operator.STR);
+  }
+
   coerceEBV(): boolean {
     throw new TypeError('Cannot coerce this term to EBV.');
   }
 
-  abstract toRDF(): RDF.Term;
 }
 
 export interface LiteralTerm extends TermExpression {

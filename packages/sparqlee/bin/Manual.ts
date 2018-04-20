@@ -41,7 +41,8 @@ async function testEval() {
 
 // testEval();
 // test();
-print('SELECT (avg(sum(?s + ?p) ) as ?avg) WHERE { ?s ?p ?o }', true);
+// print('SELECT (avg(sum(?s + ?p) ) as ?avg) WHERE { ?s ?p ?o }', true);
+print('isIRI(<mailto:test@example.com>)');
 // print('bound(?a)');
 // print('IF(?a, ?a, ?a)');
 // print('coalesce(?a, ?a)');

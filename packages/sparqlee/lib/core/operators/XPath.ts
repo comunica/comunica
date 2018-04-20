@@ -68,6 +68,18 @@ export function dateTimeGreaterThan(left: Date, right: Date): boolean {
 }
 
 // ----------------------------------------------------------------------------
+// On Strings
+// ----------------------------------------------------------------------------
+export function stringLength(val: string): number {
+  return val.length;
+}
+
+export function matches(text: string, pattern: string, flags?: string): boolean {
+  // TODO
+  return !!text.match(pattern);
+}
+
+// ----------------------------------------------------------------------------
 // Varia
 // ----------------------------------------------------------------------------
 

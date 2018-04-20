@@ -7,7 +7,6 @@
     "ban": [true,
       { "name": "parseInt", "message": "tsstyle#type-coercion" },
       { "name": "parseFloat", "message": "tsstyle#type-coercion" },
-      { "name": "Array", "message": "tsstyle#array-constructor" }
     ],
     "ban-types": [true, ["Object", "Use {} instead."],
       ["String", "Use 'string' instead."],
