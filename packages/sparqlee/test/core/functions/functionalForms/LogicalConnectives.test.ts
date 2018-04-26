@@ -1,7 +1,7 @@
 import * as RDFDM from 'rdf-data-model';
 
-import * as C from '../../../lib/util/Consts';
-import { testTable } from '../../util/TruthTable';
+import * as C from '../../../../lib/util/Consts';
+import { testTable } from '../../../util/TruthTable';
 
 const CT = C.commonTerms;
 
@@ -17,7 +17,7 @@ const resultMap = {
 };
 
 function _testTable(op: string, table: string, errorTable: string) {
-  testTable({ operator: op, table, errorTable, aliasMap, resultMap }, 2);
+  testTable({ op, table, errorTable, aliasMap, resultMap, notation: 'infix' }, 2);
 }
 
 // TODO: Test use of EVB

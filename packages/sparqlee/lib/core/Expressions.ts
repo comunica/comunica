@@ -117,13 +117,19 @@ export class Literal<T> extends Term implements LiteralTerm {
     public dataType?: RDF.NamedNode,
     public language?: string) {
     super();
-    this.category = C.categorize(dataType.value);
+    this.category = (dataType)
+      ? C.categorize(dataType.value)
+      : 'plain';
   }
 
   toRDF(): RDF.Term {
     return RDFDM.literal(
       this.strValue || this.typedValue.toString(),
       this.language || this.dataType);
+  }
+
+  str(): string {
+    return this.strValue || this.typedValue.toString();
   }
 }
 

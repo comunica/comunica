@@ -35,12 +35,15 @@ export interface ResultMap { [key: string]: RDF.Term; }
  * `
  */
 export interface EvaluationTable {
-  operator: string;
+  op: string;
   table: string;
   errorTable: string;
   aliasMap: AliasMap;
   resultMap: ResultMap;
+  notation: Notation;
 }
+
+export type Notation = 'infix' | 'prefix' | 'function';
 
 /*
  * Given the definition for an evaluation table, test all it's test cases.
@@ -69,6 +72,8 @@ abstract class Table<RowType extends Row> {
   }
 
   abstract test(): void;
+
+  abstract format(args: string[]): string;
 }
 
 // TODO: Let tables only test function evaluation from the definitions, not the whole evaluator.
@@ -76,22 +81,29 @@ class BinaryTable extends Table<[string, string, string]> {
   test(): void {
     this.parser.table.forEach((row) => {
       const [left, right, result] = row;
-      const { aliasMap, resultMap, operator } = this.def;
-      const expr = `${aliasMap[left]} ${operator} ${aliasMap[right]}`;
-      it(`(${left} ${operator} ${right}) should evaluate ${result}`, () => {
+      const { aliasMap, resultMap, op } = this.def;
+      const expr = this.format([op, aliasMap[left], aliasMap[right]])
+      it(`${this.format([op, left, right])} should return ${result}`, () => {
         return expect(evaluate(expr)).resolves.toEqual(resultMap[result]);
       });
     });
 
     this.parser.errorTable.forEach((row) => {
       const [left, right, error] = row;
-      const { aliasMap, operator } = this.def;
-      const expr = `${aliasMap[left]} ${operator} ${aliasMap[right]}`;
-
-      it(`(${left}, ${right}) should error`, () => {
+      const { aliasMap, op } = this.def;
+      const expr = this.format([op, aliasMap[left], aliasMap[right]]);
+      it(`${this.format([op, left, right])} should error`, () => {
         return expect(evaluate(expr)).rejects.toThrow();
       });
     });
+  }
+
+  format([op, fst, snd]: string[]): string {
+    switch (this.def.notation) {
+      case 'function': return `${op}(${fst}, ${snd})`
+      case 'prefix': return `${op} ${fst} ${snd}`
+      case 'infix': return `${fst} ${op} ${snd}`;
+    }
   }
 }
 
@@ -99,23 +111,31 @@ class UnaryTable extends Table<[string, string]> {
   test(): void {
     this.parser.table.forEach((row) => {
       const [arg, result] = row;
-      const { aliasMap, operator, resultMap } = this.def;
-      const expr = `${operator} ${aliasMap[arg]}`;
+      const { aliasMap, op, resultMap } = this.def;
+      const expr = this.format([op, aliasMap[arg]]);
+      console.log(expr, this.def.notation);
 
-      it(`(${arg}) should evaluate ${result}`, () => {
+      it(`${this.format([op, arg, result])} should return ${result}`, () => {
         return expect(evaluate(expr)).resolves.toEqual(resultMap[arg]);
       });
     });
 
     this.parser.errorTable.forEach((row) => {
       const [arg, error] = row;
-      const { aliasMap, operator } = this.def;
-      const expr = `${operator} ${aliasMap[arg]}`;
-
-      it(`(${arg}) should error`, () => {
+      const { aliasMap, op } = this.def;
+      const expr = this.format([op, aliasMap[arg]]);
+      it(`${this.format([op, arg])} should error`, () => {
         expect(() => evaluate(expr)).toThrow();
       });
     });
+  }
+
+  format([op, arg]: string[]): string {
+    switch (this.def.notation) {
+      case 'function': return `${op}(${arg})`;
+      case 'prefix': return `${op}${arg}`;
+      case 'infix': throw new Error('Cant format a unary operator as infix.')
+    }
   }
 }
 

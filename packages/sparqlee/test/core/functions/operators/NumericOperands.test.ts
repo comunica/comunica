@@ -1,7 +1,7 @@
 import * as RDFDM from 'rdf-data-model';
 
 import * as C from '../../../../lib/util/Consts';
-import { AliasMap, testTable } from '../../../util/TruthTable';
+import { AliasMap, testTable, Notation } from '../../../util/TruthTable';
 
 const CT = C.commonTerms;
 
@@ -38,8 +38,8 @@ NaN   gener = false
 gener NaN   = false
 `;
 
-function _testTable(op: string, table: string) {
-  testTable({ operator: op, table: table.concat(common), errorTable, aliasMap, resultMap }, 2);
+function _testTable(op: string, table: string, notation: Notation = 'infix') {
+  testTable({ op, table: table.concat(common), errorTable, aliasMap, resultMap, notation }, 2);
 }
 
 describe('the evaluation of overloaded boolean operators', () => {

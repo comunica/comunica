@@ -1,7 +1,7 @@
 import * as RDFDM from 'rdf-data-model';
 
 import * as C from '../../../../lib/util/Consts';
-import { testTable } from '../../../util/TruthTable';
+import { testTable, Notation } from '../../../util/TruthTable';
 
 const CT = C.commonTerms;
 
@@ -29,8 +29,8 @@ error gener = error
 error error = error
 `;
 
-function _testTable(op: string, table: string) {
-  testTable({ operator: op, table, errorTable, aliasMap, resultMap }, 2);
+function _testTable(op: string, table: string, notation: Notation = 'infix') {
+  testTable({ op, table, errorTable, aliasMap, resultMap, notation }, 2);
 }
 
 // TODO: Decent collation testing

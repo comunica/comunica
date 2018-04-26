@@ -26,7 +26,7 @@ async function testEval() {
   //   a: RDF.literal("true", C.make(DT.XSD_BOOLEAN)),
   //   b: RDF.literal("true", C.make(DT.XSD_BOOLEAN)),
   // }));
-  const ex = new U.Example('"1999-03-17T06:00:00+04:00"^^xsd:dateTime',
+  const ex = new U.Example('str("test")',
     () => Bindings({
       // a: RDF.literal('a'),
     }));
@@ -39,10 +39,10 @@ async function testEval() {
   console.log(val);
 }
 
-// testEval();
+testEval();
 // test();
 // print('SELECT (avg(sum(?s + ?p) ) as ?avg) WHERE { ?s ?p ?o }', true);
-print('isIRI(<mailto:test@example.com>)');
+// print('isIRI(<mailto:test@example.com>)');
 // print('bound(?a)');
 // print('IF(?a, ?a, ?a)');
 // print('coalesce(?a, ?a)');
