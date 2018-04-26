@@ -27,7 +27,8 @@ export function makeOp(opString: string, args: E.Expression[]): E.OperatorExpres
   // each (term) argument should already represented by the expressions that
   // generates it.
   // Infinity is used to represent var-args.
-  if (args.length !== arity && arity !== Infinity) {
+  if (!(args.length === arity || arity === Infinity)
+    && !(Array.isArray(arity) && arity.indexOf(args.length) >= 0)) {
     throw new InvalidArity(args, op);
   }
 

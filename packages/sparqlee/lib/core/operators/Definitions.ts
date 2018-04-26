@@ -254,12 +254,13 @@ const _definitions: IDefinitionMap = {
     category: 'overloaded',
     overloads: forAll(
       [
-        ['simple', 'simple'],
-        ['plain', 'simple'],
-        ['string', 'simple'],
-        ['simple', 'simple', 'simple'],
-        ['plain', 'simple', 'simple'],
-        ['string', 'simple', 'simple']
+        // TODO: This deviates from the spec, as the second and third argument should be simple literals
+        ['simple', 'string'],
+        ['plain', 'string'],
+        ['string', 'string'],
+        ['simple', 'string', 'string'],
+        ['plain', 'string', 'string'],
+        ['string', 'string', 'string']
 
       ],
       (args: E.Literal<any>[]) => bool(X.matches(

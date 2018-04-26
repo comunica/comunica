@@ -113,10 +113,8 @@ class UnaryTable extends Table<[string, string]> {
       const [arg, result] = row;
       const { aliasMap, op, resultMap } = this.def;
       const expr = this.format([op, aliasMap[arg]]);
-      console.log(expr, this.def.notation);
-
-      it(`${this.format([op, arg, result])} should return ${result}`, () => {
-        return expect(evaluate(expr)).resolves.toEqual(resultMap[arg]);
+      it(`${this.format([op, arg])} should return ${result}`, () => {
+        return expect(evaluate(expr)).resolves.toEqual(resultMap[result]);
       });
     });
 
@@ -125,7 +123,7 @@ class UnaryTable extends Table<[string, string]> {
       const { aliasMap, op } = this.def;
       const expr = this.format([op, aliasMap[arg]]);
       it(`${this.format([op, arg])} should error`, () => {
-        expect(() => evaluate(expr)).toThrow();
+        expect(evaluate(expr)).rejects.toThrow();
       });
     });
   }

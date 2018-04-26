@@ -26,7 +26,7 @@ async function testEval() {
   //   a: RDF.literal("true", C.make(DT.XSD_BOOLEAN)),
   //   b: RDF.literal("true", C.make(DT.XSD_BOOLEAN)),
   // }));
-  const ex = new U.Example('str("test")',
+  const ex = new U.Example('strlen("not an integer"^^xsd:integer)',
     () => Bindings({
       // a: RDF.literal('a'),
     }));
@@ -34,7 +34,7 @@ async function testEval() {
   //   a: RDF.literal("aaa"),
   // }));
   const evaluator = new AsyncEvaluator(ex.expression, U.mockLookUp, U.mockAggregator);
-  const presult = evaluator.evaluateAsInternal(ex.mapping()).catch((err) => console.log(err));
+  const presult = evaluator.evaluate(ex.mapping()).catch((err) => console.log(err));
   const val = await presult;
   console.log(val);
 }

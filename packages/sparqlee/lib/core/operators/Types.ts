@@ -43,7 +43,6 @@ export class SimpleFunction implements E.SimpleFunc {
   // TODO Put in documentation, this is our TypeChecker for simple
   private _isValidTypes(args: E.TermExpression[]): boolean {
     return args.every((arg, i) => {
-      console.log(this.types[i], 'term', this.types[i] === 'term');
       return this.types[i] === (arg as E.LiteralTerm).category
         || this.types[i] === arg.termType
         || this.types[i] === 'term';
