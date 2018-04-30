@@ -122,12 +122,12 @@ newEngineDynamic(options).then(async (engine: QueryEngine) => {
     request.setEncoding('utf8');
     request.on('data', (chunk) => { body += chunk; });
     request.on('end', () => {
-      switch (request.headers['content-type']) {
-      case 'application/sparql-query':
+      const contentType: string = request.headers['content-type'];
+      if (contentType.indexOf('application/sparql-query') >= 0) {
         return callback(body);
-      case 'application/x-www-form-urlencoded':
+      } else if (contentType.indexOf('application/x-www-form-urlencoded') >= 0) {
         return callback(<string> querystring.parse(body).query || '');
-      default:
+      } else {
         return callback(body);
       }
     });
