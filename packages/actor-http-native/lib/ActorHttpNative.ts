@@ -36,7 +36,7 @@ export class ActorHttpNative extends ActorHttp {
     }
     if (options.headers) {
       const headers: any = {};
-      (<Headers> options.headers).forEach((val, key) => {
+      (<Headers> options.headers).forEach((val: any, key: any) => {
         headers[key] = val;
       });
       options.headers = headers;
