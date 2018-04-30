@@ -149,7 +149,7 @@ const operators: any = {
   '&&'(a: boolean, b: boolean): boolean { return a &&  b; },
   '||'(a: boolean, b: boolean): boolean { return a ||  b; },
   'lang'(a: any): string {
-    return '"' + N3Util.getLiteralLanguage(a).toLowerCase() + '"';
+    return isLiteral(a) ? '"' + N3Util.getLiteralLanguage(a).toLowerCase() + '"' : null;
   },
   'langmatches'(langTag: string, langRange: string): boolean {
     // Implements https://tools.ietf.org/html/rfc4647#section-3.3.1
