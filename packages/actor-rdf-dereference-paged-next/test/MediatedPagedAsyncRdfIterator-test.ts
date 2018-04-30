@@ -79,7 +79,7 @@ describe('MediatedPagedAsyncRdfIterator', () => {
     });
 
     it('handles incorrect first page metadata', (done) => {
-      const thisFirstPageMetadata = () => ({ then: () => { throw new Error(); } });
+      const thisFirstPageMetadata = () => Promise.reject(new Error());
       const thisActor = new (<any> Dummy)('URL', new SingletonIterator('DATA'), thisFirstPageMetadata,
         mediatorRdfDereference, mediatorMetadata, mediatorMetadataExtract);
       thisActor.on('data', () => { return; });
