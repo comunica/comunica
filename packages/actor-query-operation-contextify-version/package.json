@@ -35,12 +35,12 @@
     "sparqlalgebrajs": "^0.7.4"
   },
   "peerDependencies": {
-    "@comunica/core": "^0.0.1",
-    "@comunica/bus-query-operation": "^0.0.1"
+    "@comunica/core": "^1.0.0",
+    "@comunica/bus-query-operation": "^1.0.0"
   },
   "devDependencies": {
-    "@comunica/core": "^0.0.1",
-    "@comunica/bus-query-operation": "^0.0.1"
+    "@comunica/core": "^1.0.0",
+    "@comunica/bus-query-operation": "^1.0.0"
   },
   "jest": {
     "transform": {
