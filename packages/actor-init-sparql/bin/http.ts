@@ -133,4 +133,4 @@ newEngineDynamic(options).then(async (engine: QueryEngine) => {
     });
   }
 
-});
+}).catch(console.error);
