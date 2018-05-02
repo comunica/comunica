@@ -1,8 +1,8 @@
 {
   "name": "sparqlee",
-  "version": "0.0.1-rc1",
+  "version": "0.0.1-rc2",
   "description": "A simple SPARQL expression evaluator library",
-  "main": "dist/src/lib.js",
+  "main": "dist/index.js",
   "scripts": {
     "test": "jest",
     "test-debug-lin": "node --nolazy --debug-brk=5858 ./node_modules/.bin/jest",

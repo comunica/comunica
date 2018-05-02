@@ -39,6 +39,12 @@ export function transformTerm(term: Alg.TermExpression): E.Expression {
 // TODO: Maybe do this with a map?
 // tslint:disable-next-line:no-any
 function tranformLiteral(lit: RDF.Literal): E.Literal<any> {
+
+  if (!lit.datatype) {
+    if (lit.language) { return new E.PlainLiteral(lit.value, lit.value, lit.language); }
+    return new E.SimpleLiteral(lit.value, lit.value);
+  }
+
   switch (lit.datatype.value) {
     case null:
     case undefined:
