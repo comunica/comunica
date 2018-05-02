@@ -3,9 +3,7 @@ import {
   IActorQueryOperationOutputBindings, IActorQueryOperationTypedMediatedArgs,
 } from "@comunica/bus-query-operation";
 import { IActorTest } from "@comunica/core";
-import { AsyncFilterIterator } from 'asyncfilteriterator';
 import { Algebra } from "sparqlalgebrajs";
-// import {SparqlExpressionEvaluator} from "./SparqlExpressionEvaluator";
 import { AsyncEvaluator } from "sparqlee";
 
 /**
@@ -31,15 +29,13 @@ export class ActorQueryOperationFilterDirect extends ActorQueryOperationTypedMed
 
     const evaluator = new AsyncEvaluator(pattern.expression);
 
-    const filter = (bindings: Bindings): Promise<boolean> => Promise.resolve(
-      evaluator
-        .evaluateAsEBV(bindings)
-        .catch((err) => bindingsStream.emit('error', err)),
-    );
-
-    const bindingsStream = new AsyncFilterIterator(filter, output.bindingsStream);
-    // output.bindingsStream.filter(filter);
-
+    const transform = (item: Bindings, next: any) => {
+      evaluator.evaluateAsEBV(item)
+        .then((result) => (result) ? bindingsStream._push(item) : undefined)
+        .then(() => next())
+        .catch((err) => bindingsStream.emit('error', err));
+    };
+    const bindingsStream = output.bindingsStream.transform<Bindings>({ transform });
     return { type: 'bindings', bindingsStream, metadata: output.metadata, variables: output.variables };
   }
 

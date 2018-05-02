@@ -39,7 +39,6 @@
     "n3": "^0.11.2",
     "rdf-string": "^1.0.1",
     "sparqlee": "0.0.1-rc2",
-    "asyncfilteriterator": "^0.0.2"
   },
   "devDependencies": {
     "@comunica/bus-query-operation": "^1.0.0",
