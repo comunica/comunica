@@ -37,7 +37,7 @@ export interface ResultMap { [key: string]: RDF.Term; }
 export interface EvaluationTable {
   op: string;
   table: string;
-  errorTable: string;
+  errorTable?: string;
   aliasMap: AliasMap;
   resultMap: ResultMap;
   notation: Notation;
@@ -145,9 +145,12 @@ abstract class TableParser<RowType extends Row> {
   table: RowType[];
   errorTable: RowType[];
 
-  constructor(table: string, errTable: string) {
+  constructor(table: string, errTable?: string) {
+
     this.table = this.splitTable(table).map((row) => this.parseRow(row));
-    this.errorTable = this.splitTable(errTable).map((r) => this.parseRow(r));
+    this.errorTable = (errTable)
+      ? this.splitTable(errTable).map((r) => this.parseRow(r))
+      : [];
   }
 
   protected abstract parseRow(row: string): RowType;

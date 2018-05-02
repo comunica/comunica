@@ -26,7 +26,7 @@ const resultMap = {
 const errorTable = ``;
 
 function _testTable(op: string, table: string, notation: Notation = 'function') {
-  testTable({ op, table, errorTable, aliasMap, resultMap, notation }, 1);
+  testTable({ op, table, errorTable: undefined, aliasMap, resultMap, notation }, 1);
 }
 
 describe('the evaluation of functions on RDF terms', () => {
