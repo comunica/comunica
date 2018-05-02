@@ -1,9 +1,9 @@
-import {ActorQueryOperation, Bindings, IActorQueryOperationOutputBindings} from "@comunica/bus-query-operation";
-import {Bus} from "@comunica/core";
-import {ArrayIterator} from "asynciterator";
-import {literal, variable} from "rdf-data-model";
-import {ActorQueryOperationFilterDirect} from "../lib/ActorQueryOperationFilterDirect";
-import {SparqlExpressionEvaluator} from "../lib/SparqlExpressionEvaluator";
+import { ActorQueryOperation, Bindings, IActorQueryOperationOutputBindings } from "@comunica/bus-query-operation";
+import { Bus } from "@comunica/core";
+import { ArrayIterator } from "asynciterator";
+import { literal, namedNode, variable } from "rdf-data-model";
+import { ActorQueryOperationFilterDirect } from "../lib/ActorQueryOperationFilterDirect";
+import { SparqlExpressionEvaluator } from "../lib/SparqlExpressionEvaluator";
 const arrayifyStream = require('arrayify-stream');
 
 describe('ActorQueryOperationFilterDirect', () => {
@@ -16,7 +16,7 @@ describe('ActorQueryOperationFilterDirect', () => {
   };
   const falsyExpression = {
     expressionType: 'term',
-    term: { termType: 'Literal', value: 'false' },
+    term: { termType: 'Literal', value: '' },
     type: 'expression',
   };
   const unknownExpression = {
@@ -24,6 +24,12 @@ describe('ActorQueryOperationFilterDirect', () => {
     expressionType: 'term',
     operator: 'DUMMY',
     type: 'operator',
+  };
+  const erroringExpression = {
+    args: [],
+    expressionType: 'term',
+    term: literal('erroringLiteral', namedNode('https://example.com/dataType')),
+    type: 'expression',
   };
 
   beforeEach(() => {
@@ -105,8 +111,7 @@ describe('ActorQueryOperationFilterDirect', () => {
     });
 
     it('should emit an error for an erroring filter', async () => {
-      SparqlExpressionEvaluator.createEvaluator = () => () => { throw new Error('error'); };
-      const op = {operation: {type: 'filter', input: {}, expression: falsyExpression}};
+      const op = { operation: { type: 'filter', input: {}, expression: erroringExpression } };
       const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
       return expect(arrayifyStream(output.bindingsStream)).rejects.toBeTruthy();
     });
