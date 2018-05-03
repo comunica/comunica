@@ -87,14 +87,10 @@ export class SparqlExpressionEvaluator {
         const origArgs: string[] = new Array(argumentExpressions.length);
         for (let i = 0; i < argumentExpressions.length; i++) {
           const arg = resolvedArgs[i] = origArgs[i] = argumentExpressions[i](bindings);
-          // If any argument is undefined, the result is undefined
-          if (arg === undefined) {
-            return;
-          }
           // Convert the arguments if necessary
           switch (operator.type) {
           case 'numeric':
-            resolvedArgs[i] = parseFloat(literalValue(arg));
+            resolvedArgs[i] = arg ? parseFloat(literalValue(arg)) : undefined;
             break;
           case 'boolean':
             resolvedArgs[i] = arg !== XSD_FALSE &&
@@ -107,7 +103,7 @@ export class SparqlExpressionEvaluator {
         // Convert result if necessary
         switch (operator.resultType) {
         case 'numeric':
-          let type = N3Util.getLiteralType(origArgs[0]);
+          let type = origArgs[0] ? N3Util.getLiteralType(origArgs[0]) : undefined;
           if (!type || type === XSD_STRING) {
             type = XSD_INTEGER;
           }
@@ -149,14 +145,17 @@ const operators: any = {
   '&&'(a: boolean, b: boolean): boolean { return a &&  b; },
   '||'(a: boolean, b: boolean): boolean { return a ||  b; },
   'lang'(a: any): string {
-    return isLiteral(a) ? '"' + N3Util.getLiteralLanguage(a).toLowerCase() + '"' : '';
+    return isLiteral(a) ? '"' + N3Util.getLiteralLanguage(a).toLowerCase() + '"' : undefined;
   },
   'langmatches'(langTag: string, langRange: string): boolean {
     // Implements https://tools.ietf.org/html/rfc4647#section-3.3.1
+    if (!langTag || !langRange) {
+      return false;
+    }
     langTag = langTag.toLowerCase();
     langRange = langRange.toLowerCase();
     return langTag === langRange ||
-      (langRange = literalValue(langRange)) === '*' ||
+      ((langRange = literalValue(langRange)) === '*' && !!langTag) ||
       langTag.substr(1, langRange.length + 1) === langRange + '-';
   },
   'contains'(str: string, substring: string) {

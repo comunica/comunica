@@ -102,13 +102,6 @@ describe('SparqlExpressionEvaluator', () => {
       expect(exprFunc(bindings)).toMatchObject(literal('4'));
     });
 
-    it('returns undefined for undefined input', () => {
-      const exprFunc = SparqlExpressionEvaluator.createEvaluator(
-        operatorExpression('+', [termExpression(variable('x')), termExpression(literal('3'))]),
-      );
-      expect(exprFunc(bindings)).toEqual(undefined);
-    });
-
     it('supports -', () => {
       const exprFunc = SparqlExpressionEvaluator.createEvaluator(
         operatorExpression('-', [termExpression(literal('0')), termExpression(literal('3'))]),
