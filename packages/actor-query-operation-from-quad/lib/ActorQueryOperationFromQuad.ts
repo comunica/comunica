@@ -51,34 +51,24 @@ export class ActorQueryOperationFromQuad extends ActorQueryOperationTypedMediate
   public static applyOperationDefaultGraph(operation: Algebra.Operation, defaultGraphs: RDF.Term[]): Algebra.Operation {
     // If the operation is a BGP or Path, change the graph.
     if ((operation.type === 'bgp' && operation.patterns.length) || operation.type === 'path') {
-      let patternGraph: RDF.Term;
       if (operation.type === 'bgp') {
-        // We assume that the BGP has at least one pattern and all have the same graph.
-        patternGraph = operation.patterns[0].graph;
-      } else {
-        patternGraph = operation.graph;
-      }
-      const defaultGraph: boolean = patternGraph.termType === 'DefaultGraph';
-      if (defaultGraphs.length === 1) {
-        if (defaultGraph) {
-          const graph: RDF.Term = defaultGraphs[0];
-          // If the pattern's graph is the default graph, replace the graph directly.
-          if (operation.type === 'bgp') {
-            return ActorQueryOperationFromQuad.FACTORY
-              .createBgp(operation.patterns.map((pattern: Algebra.Pattern) => ActorQueryOperationFromQuad.FACTORY
-                .createPattern(pattern.subject, pattern.predicate, pattern.object, graph)));
-          } else {
-            return ActorQueryOperationFromQuad.FACTORY
-              .createPath(operation.subject, operation.predicate, operation.object, graph);
+        return ActorQueryOperationFromQuad.joinOperations(operation.patterns.map((pattern: Algebra.Pattern) => {
+          if (pattern.graph.termType !== 'DefaultGraph') {
+            return ActorQueryOperationFromQuad.FACTORY.createBgp([pattern]);
           }
-        } else {
-          // Otherwise, keep the non-default graph as-is.
+          const bgps = defaultGraphs.map((graph: RDF.Term) =>
+            ActorQueryOperationFromQuad.FACTORY.createBgp([ActorQueryOperationFromQuad.FACTORY
+              .createPattern(pattern.subject, pattern.predicate, pattern.object, graph)]));
+          return ActorQueryOperationFromQuad.unionOperations(bgps);
+        }));
+      } else {
+        if (operation.graph.termType !== 'DefaultGraph') {
           return operation;
         }
-      } else {
-        return defaultGraph ? ActorQueryOperationFromQuad.unionOperations(defaultGraphs.map(
-          (graph: RDF.Term) => ActorQueryOperationFromQuad.applyOperationDefaultGraph(operation, [graph])))
-          : operation;
+        const paths = defaultGraphs.map(
+          (graph: RDF.Term) => ActorQueryOperationFromQuad.FACTORY
+            .createPath(operation.subject, operation.predicate, operation.object, graph));
+        return ActorQueryOperationFromQuad.joinOperations(paths);
       }
     }
 
@@ -151,17 +141,36 @@ export class ActorQueryOperationFromQuad extends ActorQueryOperationTypedMediate
   }
 
   /**
+   * Transform the given array of operations into a join operation.
+   * @param {Operation[]} operations An array of operations, must contain at least one operation.
+   * @return {Join} A join operation.
+   */
+  public static joinOperations(operations: Algebra.Operation[]): Algebra.Operation {
+    if (operations.length === 1) {
+      return operations[0];
+    } else if (operations.length === 2) {
+      return ActorQueryOperationFromQuad.FACTORY.createJoin(operations[0], operations[1]);
+    } else if (operations.length > 2) {
+      return ActorQueryOperationFromQuad.FACTORY.createJoin(operations.shift(), this.joinOperations(operations));
+    } else {
+      throw new Error('A join can only be applied on at least one operation');
+    }
+  }
+
+  /**
    * Transform the given array of operations into a union operation.
-   * @param {Operation[]} operations An array of operations, must contain at least two operations.
+   * @param {Operation[]} operations An array of operations, must contain at least one operation.
    * @return {Union} A union operation.
    */
-  public static unionOperations(operations: Algebra.Operation[]): Algebra.Union {
-    if (operations.length === 2) {
+  public static unionOperations(operations: Algebra.Operation[]): Algebra.Operation {
+    if (operations.length === 1) {
+      return operations[0];
+    } else if (operations.length === 2) {
       return ActorQueryOperationFromQuad.FACTORY.createUnion(operations[0], operations[1]);
     } else if (operations.length > 2) {
       return ActorQueryOperationFromQuad.FACTORY.createUnion(operations.shift(), this.unionOperations(operations));
     } else {
-      throw new Error('A union can only be applied on at least two operations');
+      throw new Error('A union can only be applied on at least one operation');
     }
   }
 

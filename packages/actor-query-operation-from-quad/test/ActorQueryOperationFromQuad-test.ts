@@ -97,7 +97,7 @@ describe('ActorQueryOperationFromQuad', () => {
     it('should transform a Path with default graph patterns', () => {
       const result = ActorQueryOperationFromQuad.applyOperationDefaultGraph(
         Object.assign(quad('s', 'p', 'o'), { type: 'path' }), [namedNode('g'), namedNode('h')]);
-      expect(result.type).toEqual('union');
+      expect(result.type).toEqual('join');
       expect(result.left.type).toEqual('path');
       expect(quad('s', 'p', 'o', 'g').equals(result.left)).toBeTruthy();
       expect(result.right.type).toEqual('path');
@@ -313,13 +313,45 @@ describe('ActorQueryOperationFromQuad', () => {
     });
   });
 
+  describe('#joinOperations', () => {
+    it('should error on an empty array', () => {
+      expect(() => ActorQueryOperationFromQuad.joinOperations([])).toThrow();
+    });
+
+    it('should transform an array with length 1', () => {
+      expect(ActorQueryOperationFromQuad.joinOperations([{ type: 'nop' }])).toEqual({ type: 'nop' });
+    });
+
+    it('should transform two operations', () => {
+      expect(ActorQueryOperationFromQuad.joinOperations([{ type: 'nop0' }, { type: 'nop1' }]))
+        .toEqual({
+          left: { type: 'nop0' },
+          right: { type: 'nop1' },
+          type: 'join',
+        });
+    });
+
+    it('should transform three operations', () => {
+      expect(ActorQueryOperationFromQuad.joinOperations([{ type: 'nop0' }, { type: 'nop1' }, { type: 'nop2' }]))
+        .toEqual({
+          left: { type: 'nop0' },
+          right: {
+            left: { type: 'nop1' },
+            right: { type: 'nop2' },
+            type: 'join',
+          },
+          type: 'join',
+        });
+    });
+  });
+
   describe('#unionOperations', () => {
     it('should error on an empty array', () => {
       expect(() => ActorQueryOperationFromQuad.unionOperations([])).toThrow();
     });
 
-    it('should error on an array with length 1', () => {
-      expect(() => ActorQueryOperationFromQuad.unionOperations([{ type: 'nop' }])).toThrow();
+    it('should transform an array with length 1', () => {
+      expect(ActorQueryOperationFromQuad.unionOperations([{ type: 'nop' }])).toEqual({ type: 'nop' });
     });
 
     it('should transform two operations', () => {
@@ -372,9 +404,33 @@ describe('ActorQueryOperationFromQuad', () => {
         type: 'from',
       };
       const result = ActorQueryOperationFromQuad.createOperation(pattern);
-      expect(result.type).toEqual('union');
+      expect(result.type).toEqual('join');
       expect(quad('s', 'p', 'o', 'g').equals(result.left)).toBeTruthy();
       expect(quad('s', 'p', 'o', 'h').equals(result.right)).toBeTruthy();
+    });
+
+    it('should transform with two default graphs and without named graphs over two patterns', () => {
+      const pattern: any = {
+        default: [ namedNode('g'), namedNode('h') ],
+        input: { patterns: [
+          Object.assign(quad('s', 'p', 'o1'), { type: 'pattern' }),
+          Object.assign(quad('s', 'p', 'o2'), { type: 'pattern' }),
+        ], type: 'bgp' },
+        named: [],
+        type: 'from',
+      };
+      const result = ActorQueryOperationFromQuad.createOperation(pattern);
+      expect(result.type).toEqual('join');
+      expect(result.left.type).toEqual('union');
+      expect(result.left.left.type).toEqual('bgp');
+      expect(quad('s', 'p', 'o1', 'g').equals(result.left.left.patterns[0])).toBeTruthy();
+      expect(result.left.right.type).toEqual('bgp');
+      expect(quad('s', 'p', 'o1', 'h').equals(result.left.right.patterns[0])).toBeTruthy();
+      expect(result.right.type).toEqual('union');
+      expect(result.right.left.type).toEqual('bgp');
+      expect(quad('s', 'p', 'o2', 'g').equals(result.right.left.patterns[0])).toBeTruthy();
+      expect(result.right.right.type).toEqual('bgp');
+      expect(quad('s', 'p', 'o2', 'h').equals(result.right.right.patterns[0])).toBeTruthy();
     });
 
     it('should transform without default graphs and with one named graph', () => {
