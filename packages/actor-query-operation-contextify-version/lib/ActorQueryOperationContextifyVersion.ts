@@ -101,20 +101,22 @@ export class ActorQueryOperationContextifyVersion extends ActorQueryOperation
       left = ActorQueryOperationContextifyVersion.unwrapProject(left);
       right = ActorQueryOperationContextifyVersion.unwrapProject(right);
 
-      // Detect bi-directional minus of the same pattern on opposite graphs
-      if (left.type === 'minus' && right.type === 'minus'
-        && ActorQueryOperationContextifyVersion.isSingularBgp(left.left)
-        && ActorQueryOperationContextifyVersion.isSingularBgp(left.right)
-        && ActorQueryOperationContextifyVersion.isSingularBgp(right.left)
-        && ActorQueryOperationContextifyVersion.isSingularBgp(right.right)
-        && left.left.patterns[0].graph.equals(right.right.patterns[0].graph)
-        && left.right.patterns[0].graph.equals(right.left.patterns[0].graph)) {
+      // Detect bi-directional not-exists filter of the same pattern on opposite graphs
+      if (left.type === 'filter' && right.type === 'filter'
+        && left.expression.expressionType === 'existence' && left.expression.not
+        && right.expression.expressionType === 'existence' && right.expression.not
+        && ActorQueryOperationContextifyVersion.isSingularBgp(left.input)
+        && ActorQueryOperationContextifyVersion.isSingularBgp(left.expression.input)
+        && ActorQueryOperationContextifyVersion.isSingularBgp(right.input)
+        && ActorQueryOperationContextifyVersion.isSingularBgp(right.expression.input)
+        && left.input.patterns[0].graph.equals(right.expression.input.patterns[0].graph)
+        && left.expression.input.patterns[0].graph.equals(right.input.patterns[0].graph)) {
         // Remove graph from patterns
         const patterns: Algebra.Pattern[] = [
-          left.left.patterns[0],
-          left.right.patterns[0],
-          right.left.patterns[0],
-          right.right.patterns[0],
+          left.input.patterns[0],
+          left.expression.input.patterns[0],
+          right.input.patterns[0],
+          right.expression.input.patterns[0],
         ].map((pattern) => ActorQueryOperationContextifyVersion.FACTORY.createPattern(
           pattern.subject, pattern.predicate, pattern.object));
 
@@ -132,8 +134,8 @@ export class ActorQueryOperationContextifyVersion extends ActorQueryOperation
           valid = true;
           // Sort start and end graph lexicographically
           const [ versionStart, versionEnd ] = [
-            left.left.patterns[0].graph.value,
-            left.right.patterns[0].graph.value,
+            left.input.patterns[0].graph.value,
+            left.expression.input.patterns[0].graph.value,
           ].sort();
 
           // Create operation

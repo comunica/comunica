@@ -35,14 +35,24 @@ describe('ActorQueryOperationContextifyVersion', () => {
     actionValidDm = { context: {},
       operation: {
         left: {
-          left: { type: 'bgp', patterns: [ quad('s', 'p', 'o', 'http://ex/g/1') ] },
-          right: { type: 'bgp', patterns: [ quad('s', 'p', 'o', 'http://ex/g/2') ] },
-          type: 'minus',
+          expression: {
+            expressionType: 'existence',
+            input: { type: 'bgp', patterns: [ quad('s', 'p', 'o', 'http://ex/g/2') ] },
+            not: true,
+            type: 'expression',
+          },
+          input: { type: 'bgp', patterns: [ quad('s', 'p', 'o', 'http://ex/g/1') ] },
+          type: 'filter',
         },
         right: {
-          left: { type: 'bgp', patterns: [ quad('s', 'p', 'o', 'http://ex/g/2') ] },
-          right: { type: 'bgp', patterns: [ quad('s', 'p', 'o', 'http://ex/g/1') ] },
-          type: 'minus',
+          expression: {
+            expressionType: 'existence',
+            input: { type: 'bgp', patterns: [ quad('s', 'p', 'o', 'http://ex/g/1') ] },
+            not: true,
+            type: 'expression',
+          },
+          input: { type: 'bgp', patterns: [ quad('s', 'p', 'o', 'http://ex/g/2') ] },
+          type: 'filter',
         },
         type: 'union',
       },
@@ -163,28 +173,38 @@ describe('ActorQueryOperationContextifyVersion', () => {
 
       it('should not convert an invalid left union', () => {
         const action: any = { context: {},
-          operation: { type: 'union', left: { type: 'minus' }, right: { type: 'none' } } };
+          operation: { type: 'union', left: { type: 'filter' }, right: { type: 'none' } } };
         return expect(actor.getContextifiedVersionOperation(action)).toBeFalsy();
       });
 
       it('should not convert an invalid right union', () => {
         const action: any = { context: {},
-          operation: { type: 'union', left: { type: 'none' }, right: { type: 'minus' } } };
+          operation: { type: 'union', left: { type: 'none' }, right: { type: 'filter' } } };
         return expect(actor.getContextifiedVersionOperation(action)).toBeFalsy();
       });
 
-      it('should not convert union with invalid left-left', () => {
+      it('should not convert union with invalid left-input', () => {
         const action: any = { context: {},
           operation: {
             left: {
-              left: { type: 'none' },
-              right: { type: 'bgp', patterns: [ 'a' ] },
-              type: 'minus',
+              expression: {
+                expressionType: 'existence',
+                input: { type: 'bgp', patterns: [ 'a' ] },
+                not: true,
+                type: 'expression',
+              },
+              input: { type: 'none' },
+              type: 'filter',
             },
             right: {
-              left: { type: 'bgp', patterns: [ 'a' ] },
-              right: { type: 'bgp', patterns: [ 'a' ] },
-              type: 'minus',
+              expression: {
+                expressionType: 'existence',
+                input: { type: 'bgp', patterns: [ 'a' ] },
+                not: true,
+                type: 'expression',
+              },
+              input: { type: 'bgp', patterns: [ 'a' ] },
+              type: 'filter',
             },
             type: 'union',
           },
@@ -192,18 +212,28 @@ describe('ActorQueryOperationContextifyVersion', () => {
         return expect(actor.getContextifiedVersionOperation(action)).toBeFalsy();
       });
 
-      it('should not convert union with invalid left-right', () => {
+      it('should not convert union with invalid left-expression', () => {
         const action: any = { context: {},
           operation: {
             left: {
-              left: { type: 'bgp', patterns: [ 'a' ] },
-              right: { type: 'none' },
-              type: 'minus',
+              expression: {
+                expressionType: 'existence',
+                input: { type: 'none' },
+                not: true,
+                type: 'expression',
+              },
+              input: { type: 'bgp', patterns: [ 'a' ] },
+              type: 'filter',
             },
             right: {
-              left: { type: 'bgp', patterns: [ 'a' ] },
-              right: { type: 'bgp', patterns: [ 'a' ] },
-              type: 'minus',
+              expression: {
+                expressionType: 'existence',
+                input: { type: 'bgp', patterns: [ 'a' ] },
+                not: true,
+                type: 'expression',
+              },
+              input: { type: 'bgp', patterns: [ 'a' ] },
+              type: 'filter',
             },
             type: 'union',
           },
@@ -211,18 +241,28 @@ describe('ActorQueryOperationContextifyVersion', () => {
         return expect(actor.getContextifiedVersionOperation(action)).toBeFalsy();
       });
 
-      it('should not convert union with invalid right-left', () => {
+      it('should not convert union with invalid right-input', () => {
         const action: any = { context: {},
           operation: {
             left: {
-              left: { type: 'bgp', patterns: [ 'a' ] },
-              right: { type: 'bgp', patterns: [ 'a' ] },
-              type: 'minus',
+              expression: {
+                expressionType: 'existence',
+                input: { type: 'bgp', patterns: [ 'a' ] },
+                not: true,
+                type: 'expression',
+              },
+              input: { type: 'bgp', patterns: [ 'a' ] },
+              type: 'filter',
             },
             right: {
-              left: { type: 'none' },
-              right: { type: 'bgp', patterns: [ 'a' ] },
-              type: 'minus',
+              expression: {
+                expressionType: 'existence',
+                input: { type: 'bgp', patterns: [ 'a' ] },
+                not: true,
+                type: 'expression',
+              },
+              input: { type: 'none' },
+              type: 'filter',
             },
             type: 'union',
           },
@@ -230,18 +270,28 @@ describe('ActorQueryOperationContextifyVersion', () => {
         return expect(actor.getContextifiedVersionOperation(action)).toBeFalsy();
       });
 
-      it('should not convert union with invalid right-right', () => {
+      it('should not convert union with invalid right-expression', () => {
         const action: any = { context: {},
           operation: {
             left: {
-              left: { type: 'bgp', patterns: [ 'a' ] },
-              right: { type: 'bgp', patterns: [ 'a' ] },
-              type: 'minus',
+              expression: {
+                expressionType: 'existence',
+                input: { type: 'bgp', patterns: [ 'a' ] },
+                not: true,
+                type: 'expression',
+              },
+              input: { type: 'bgp', patterns: [ 'a' ] },
+              type: 'filter',
             },
             right: {
-              left: { type: 'bgp', patterns: [ 'a' ] },
-              right: { type: 'none' },
-              type: 'minus',
+              expression: {
+                expressionType: 'existence',
+                input: { type: 'none' },
+                not: true,
+                type: 'expression',
+              },
+              input: { type: 'bgp', patterns: [ 'a' ] },
+              type: 'filter',
             },
             type: 'union',
           },
@@ -253,14 +303,24 @@ describe('ActorQueryOperationContextifyVersion', () => {
         const action: any = { context: {},
           operation: {
             left: {
-              left: { type: 'bgp', patterns: [ quad('s', 'p', 'o', 'g1') ] },
-              right: { type: 'bgp', patterns: [ quad('s', 'p', 'o', 'g2') ] },
-              type: 'minus',
+              expression: {
+                expressionType: 'existence',
+                input: { type: 'bgp', patterns: [ quad('s', 'p', 'o', 'g2') ] },
+                not: true,
+                type: 'expression',
+              },
+              input: { type: 'bgp', patterns: [ quad('s', 'p', 'o', 'g1') ] },
+              type: 'filter',
             },
             right: {
-              left: { type: 'bgp', patterns: [ quad('s', 'p', 'o', 'g2') ] },
-              right: { type: 'bgp', patterns: [ quad('s', 'p', 'o', 'g1x') ] },
-              type: 'minus',
+              expression: {
+                expressionType: 'existence',
+                input: { type: 'bgp', patterns: [ quad('s', 'p', 'o', 'g1x') ] },
+                not: true,
+                type: 'expression',
+              },
+              input: { type: 'bgp', patterns: [ quad('s', 'p', 'o', 'g2') ] },
+              type: 'filter',
             },
             type: 'union',
           },
@@ -272,14 +332,24 @@ describe('ActorQueryOperationContextifyVersion', () => {
         const action: any = { context: {},
           operation: {
             left: {
-              left: { type: 'bgp', patterns: [ quad('s', 'p', 'o', 'g1') ] },
-              right: { type: 'bgp', patterns: [ quad('s', 'p', 'o', 'g2') ] },
-              type: 'minus',
+              expression: {
+                expressionType: 'existence',
+                input: { type: 'bgp', patterns: [ quad('s', 'p', 'o', 'g2') ] },
+                not: true,
+                type: 'expression',
+              },
+              input: { type: 'bgp', patterns: [ quad('s', 'p', 'o', 'g1') ] },
+              type: 'filter',
             },
             right: {
-              left: { type: 'bgp', patterns: [ quad('s', 'p', 'o', 'g2x') ] },
-              right: { type: 'bgp', patterns: [ quad('s', 'p', 'o', 'g1') ] },
-              type: 'minus',
+              expression: {
+                expressionType: 'existence',
+                input: { type: 'bgp', patterns: [ quad('s', 'p', 'o', 'g1') ] },
+                not: true,
+                type: 'expression',
+              },
+              input: { type: 'bgp', patterns: [ quad('s', 'p', 'o', 'g2x') ] },
+              type: 'filter',
             },
             type: 'union',
           },
@@ -291,14 +361,24 @@ describe('ActorQueryOperationContextifyVersion', () => {
         const action: any = { context: {},
           operation: {
             left: {
-              left: { type: 'bgp', patterns: [ quad('s', 'p', 'o', 'g1') ] },
-              right: { type: 'bgp', patterns: [ quad('s', 'p', 'o', 'g2') ] },
-              type: 'minus',
+              expression: {
+                expressionType: 'existence',
+                input: { type: 'bgp', patterns: [ quad('s', 'p', 'o', 'g2') ] },
+                not: true,
+                type: 'expression',
+              },
+              input: { type: 'bgp', patterns: [ quad('s', 'p', 'o', 'g1') ] },
+              type: 'filter',
             },
             right: {
-              left: { type: 'bgp', patterns: [ quad('s', 'p', 'o', 'g2') ] },
-              right: { type: 'bgp', patterns: [ quad('s', 'px', 'o', 'g1') ] },
-              type: 'minus',
+              expression: {
+                expressionType: 'existence',
+                input: { type: 'bgp', patterns: [ quad('s', 'px', 'o', 'g1') ] },
+                not: true,
+                type: 'expression',
+              },
+              input: { type: 'bgp', patterns: [ quad('s', 'p', 'o', 'g2') ] },
+              type: 'filter',
             },
             type: 'union',
           },
