@@ -41,6 +41,10 @@ export class OstrichIterator extends BufferedIterator<RDF.Quad> {
         this.emit('error', error);
         return done();
       } else {
+        if (this.versionContext.type === 'delta-materialization') {
+          const queryAdditions = this.versionContext.queryAdditions;
+          triples = triples.filter((t) => (<any> t).addition === queryAdditions);
+        }
         triples
           .map((t) => RdfString.stringQuadToQuad(t))
           .forEach((t) => this._push(t));

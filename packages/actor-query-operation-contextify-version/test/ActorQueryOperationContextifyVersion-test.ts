@@ -13,7 +13,8 @@ describe('ActorQueryOperationContextifyVersion', () => {
   let mediatorQueryOperation;
   let baseGraphUri;
   let numericalVersions;
-  let actionValidDm;
+  let actionValidDmAdd;
+  let actionValidDmDel;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -32,29 +33,28 @@ describe('ActorQueryOperationContextifyVersion', () => {
     };
     baseGraphUri = 'http://ex/g/';
     numericalVersions = true;
-    actionValidDm = { context: {},
+    actionValidDmAdd = { context: {},
       operation: {
-        left: {
-          expression: {
-            expressionType: 'existence',
-            input: { type: 'bgp', patterns: [ quad('s', 'p', 'o', 'http://ex/g/2') ] },
-            not: true,
-            type: 'expression',
-          },
+        expression: {
+          expressionType: 'existence',
           input: { type: 'bgp', patterns: [ quad('s', 'p', 'o', 'http://ex/g/1') ] },
-          type: 'filter',
+          not: true,
+          type: 'expression',
         },
-        right: {
-          expression: {
-            expressionType: 'existence',
-            input: { type: 'bgp', patterns: [ quad('s', 'p', 'o', 'http://ex/g/1') ] },
-            not: true,
-            type: 'expression',
-          },
+        input: { type: 'bgp', patterns: [ quad('s', 'p', 'o', 'http://ex/g/2') ] },
+        type: 'filter',
+      },
+    };
+    actionValidDmDel = { context: {},
+      operation: {
+        expression: {
+          expressionType: 'existence',
           input: { type: 'bgp', patterns: [ quad('s', 'p', 'o', 'http://ex/g/2') ] },
-          type: 'filter',
+          not: true,
+          type: 'expression',
         },
-        type: 'union',
+        input: { type: 'bgp', patterns: [ quad('s', 'p', 'o', 'http://ex/g/1') ] },
+        type: 'filter',
       },
     };
   });
@@ -165,237 +165,79 @@ describe('ActorQueryOperationContextifyVersion', () => {
         });
       });
 
-      it('should not convert invalid unions', () => {
+      it('should not convert an invalid DM', () => {
         const action: any = { context: {},
-          operation: { type: 'union', left: { type: 'none' }, right: { type: 'none' } } };
+          operation: {  type: 'none' } };
         return expect(actor.getContextifiedVersionOperation(action)).toBeFalsy();
       });
 
-      it('should not convert an invalid left union', () => {
-        const action: any = { context: {},
-          operation: { type: 'union', left: { type: 'filter' }, right: { type: 'none' } } };
-        return expect(actor.getContextifiedVersionOperation(action)).toBeFalsy();
-      });
-
-      it('should not convert an invalid right union', () => {
-        const action: any = { context: {},
-          operation: { type: 'union', left: { type: 'none' }, right: { type: 'filter' } } };
-        return expect(actor.getContextifiedVersionOperation(action)).toBeFalsy();
-      });
-
-      it('should not convert union with invalid left-input', () => {
+      it('should not convert DM with invalid left-input', () => {
         const action: any = { context: {},
           operation: {
-            left: {
-              expression: {
-                expressionType: 'existence',
-                input: { type: 'bgp', patterns: [ 'a' ] },
-                not: true,
-                type: 'expression',
-              },
+            expression: {
+              expressionType: 'existence',
+              input: { type: 'bgp', patterns: [ 'a' ] },
+              not: true,
+              type: 'expression',
+            },
+            input: { type: 'none' },
+            type: 'filter',
+          },
+        };
+        return expect(actor.getContextifiedVersionOperation(action)).toBeFalsy();
+      });
+
+      it('should not convert DM with invalid left-expression', () => {
+        const action: any = { context: {},
+          operation: {
+            expression: {
+              expressionType: 'existence',
               input: { type: 'none' },
-              type: 'filter',
+              not: true,
+              type: 'expression',
             },
-            right: {
-              expression: {
-                expressionType: 'existence',
-                input: { type: 'bgp', patterns: [ 'a' ] },
-                not: true,
-                type: 'expression',
-              },
-              input: { type: 'bgp', patterns: [ 'a' ] },
-              type: 'filter',
-            },
-            type: 'union',
+            input: { type: 'bgp', patterns: [ 'a' ] },
+            type: 'filter',
           },
         };
         return expect(actor.getContextifiedVersionOperation(action)).toBeFalsy();
       });
 
-      it('should not convert union with invalid left-expression', () => {
+      it('should not convert DM with non-equal inner patterns', () => {
         const action: any = { context: {},
           operation: {
-            left: {
-              expression: {
-                expressionType: 'existence',
-                input: { type: 'none' },
-                not: true,
-                type: 'expression',
-              },
-              input: { type: 'bgp', patterns: [ 'a' ] },
-              type: 'filter',
+            expression: {
+              expressionType: 'existence',
+              input: { type: 'bgp', patterns: [ quad('s', 'px', 'o', 'g1') ] },
+              not: true,
+              type: 'expression',
             },
-            right: {
-              expression: {
-                expressionType: 'existence',
-                input: { type: 'bgp', patterns: [ 'a' ] },
-                not: true,
-                type: 'expression',
-              },
-              input: { type: 'bgp', patterns: [ 'a' ] },
-              type: 'filter',
-            },
-            type: 'union',
+            input: { type: 'bgp', patterns: [ quad('s', 'p', 'o', 'g2') ] },
+            type: 'filter',
           },
         };
         return expect(actor.getContextifiedVersionOperation(action)).toBeFalsy();
       });
 
-      it('should not convert union with invalid right-input', () => {
-        const action: any = { context: {},
-          operation: {
-            left: {
-              expression: {
-                expressionType: 'existence',
-                input: { type: 'bgp', patterns: [ 'a' ] },
-                not: true,
-                type: 'expression',
-              },
-              input: { type: 'bgp', patterns: [ 'a' ] },
-              type: 'filter',
-            },
-            right: {
-              expression: {
-                expressionType: 'existence',
-                input: { type: 'bgp', patterns: [ 'a' ] },
-                not: true,
-                type: 'expression',
-              },
-              input: { type: 'none' },
-              type: 'filter',
-            },
-            type: 'union',
-          },
-        };
-        return expect(actor.getContextifiedVersionOperation(action)).toBeFalsy();
+      it('should convert a valid DM for additions', () => {
+        return expect(actor.getContextifiedVersionOperation(actionValidDmAdd)).toEqual({
+          context: { version: {
+            queryAdditions: true, type: 'delta-materialization', versionEnd: 2, versionStart: 1 } },
+          operation: new Factory().createPattern(namedNode('s'), namedNode('p'), namedNode('o')),
+        });
       });
 
-      it('should not convert union with invalid right-expression', () => {
-        const action: any = { context: {},
-          operation: {
-            left: {
-              expression: {
-                expressionType: 'existence',
-                input: { type: 'bgp', patterns: [ 'a' ] },
-                not: true,
-                type: 'expression',
-              },
-              input: { type: 'bgp', patterns: [ 'a' ] },
-              type: 'filter',
-            },
-            right: {
-              expression: {
-                expressionType: 'existence',
-                input: { type: 'none' },
-                not: true,
-                type: 'expression',
-              },
-              input: { type: 'bgp', patterns: [ 'a' ] },
-              type: 'filter',
-            },
-            type: 'union',
-          },
-        };
-        return expect(actor.getContextifiedVersionOperation(action)).toBeFalsy();
-      });
-
-      it('should not convert union with non-equal inner graphs 1', () => {
-        const action: any = { context: {},
-          operation: {
-            left: {
-              expression: {
-                expressionType: 'existence',
-                input: { type: 'bgp', patterns: [ quad('s', 'p', 'o', 'g2') ] },
-                not: true,
-                type: 'expression',
-              },
-              input: { type: 'bgp', patterns: [ quad('s', 'p', 'o', 'g1') ] },
-              type: 'filter',
-            },
-            right: {
-              expression: {
-                expressionType: 'existence',
-                input: { type: 'bgp', patterns: [ quad('s', 'p', 'o', 'g1x') ] },
-                not: true,
-                type: 'expression',
-              },
-              input: { type: 'bgp', patterns: [ quad('s', 'p', 'o', 'g2') ] },
-              type: 'filter',
-            },
-            type: 'union',
-          },
-        };
-        return expect(actor.getContextifiedVersionOperation(action)).toBeFalsy();
-      });
-
-      it('should not convert union with non-equal inner graphs 2', () => {
-        const action: any = { context: {},
-          operation: {
-            left: {
-              expression: {
-                expressionType: 'existence',
-                input: { type: 'bgp', patterns: [ quad('s', 'p', 'o', 'g2') ] },
-                not: true,
-                type: 'expression',
-              },
-              input: { type: 'bgp', patterns: [ quad('s', 'p', 'o', 'g1') ] },
-              type: 'filter',
-            },
-            right: {
-              expression: {
-                expressionType: 'existence',
-                input: { type: 'bgp', patterns: [ quad('s', 'p', 'o', 'g1') ] },
-                not: true,
-                type: 'expression',
-              },
-              input: { type: 'bgp', patterns: [ quad('s', 'p', 'o', 'g2x') ] },
-              type: 'filter',
-            },
-            type: 'union',
-          },
-        };
-        return expect(actor.getContextifiedVersionOperation(action)).toBeFalsy();
-      });
-
-      it('should not convert union with non-equal inner patterns', () => {
-        const action: any = { context: {},
-          operation: {
-            left: {
-              expression: {
-                expressionType: 'existence',
-                input: { type: 'bgp', patterns: [ quad('s', 'p', 'o', 'g2') ] },
-                not: true,
-                type: 'expression',
-              },
-              input: { type: 'bgp', patterns: [ quad('s', 'p', 'o', 'g1') ] },
-              type: 'filter',
-            },
-            right: {
-              expression: {
-                expressionType: 'existence',
-                input: { type: 'bgp', patterns: [ quad('s', 'px', 'o', 'g1') ] },
-                not: true,
-                type: 'expression',
-              },
-              input: { type: 'bgp', patterns: [ quad('s', 'p', 'o', 'g2') ] },
-              type: 'filter',
-            },
-            type: 'union',
-          },
-        };
-        return expect(actor.getContextifiedVersionOperation(action)).toBeFalsy();
-      });
-
-      it('should convert a valid union', () => {
-        return expect(actor.getContextifiedVersionOperation(actionValidDm)).toEqual({
-          context: { version: { type: 'delta-materialization', versionStart: 1, versionEnd: 2 } },
+      it('should convert a valid DM for deletions', () => {
+        return expect(actor.getContextifiedVersionOperation(actionValidDmDel)).toEqual({
+          context: { version: {
+            queryAdditions: false, type: 'delta-materialization', versionEnd: 2, versionStart: 1 } },
           operation: new Factory().createPattern(namedNode('s'), namedNode('p'), namedNode('o')),
         });
       });
     });
 
     it('should test', () => {
-      return expect(actor.test(actionValidDm)).resolves.toBeTruthy();
+      return expect(actor.test(actionValidDmDel)).resolves.toBeTruthy();
     });
 
     it('should not test without a context', () => {
@@ -411,7 +253,7 @@ describe('ActorQueryOperationContextifyVersion', () => {
     });
 
     it('should run', () => {
-      return actor.run(actionValidDm).then(async (output: IActorQueryOperationOutputBindings) => {
+      return actor.run(actionValidDmDel).then(async (output: IActorQueryOperationOutputBindings) => {
         expect(await output.metadata()).toEqual({ totalItems: 3 });
         expect(output.type).toEqual('bindings');
         expect(await arrayifyStream(output.bindingsStream)).toEqual([

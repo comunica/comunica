@@ -2,6 +2,7 @@ import {ActorRdfResolveQuadPatternSource, IActionRdfResolveQuadPattern,
   IActorRdfResolveQuadPatternOutput, ILazyQuadSource} from "@comunica/bus-rdf-resolve-quad-pattern";
 import {IActorArgs, IActorTest} from "@comunica/core";
 import * as RDF from "rdf-js";
+import {Algebra} from "sparqlalgebrajs";
 import {OstrichQuadSource} from "./OstrichQuadSource";
 // TODO: Create OSTRICH typings
 const ostrich = require('ostrich-bindings'); // tslint:disable-line:no-var-requires
@@ -134,6 +135,10 @@ export interface IVersionContextDm {
   type: 'delta-materialization';
   versionStart: number;
   versionEnd: number;
+  /**
+   * If only additions must be returned, otherwise, only deletions will be returned.
+   */
+  queryAdditions: boolean;
 }
 
 /**

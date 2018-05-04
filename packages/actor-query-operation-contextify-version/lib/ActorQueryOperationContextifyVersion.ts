@@ -92,51 +92,36 @@ export class ActorQueryOperationContextifyVersion extends ActorQueryOperation
       const version = this.graphToStringOrNumber(action.operation.graph.value);
       versionContext.type = 'version-materialization';
       versionContext.version = version;
-    } else if (action.operation.type === 'union') {
+    } else if (action.operation.type === 'filter'
+      && action.operation.expression.expressionType === 'existence'
+      && action.operation.expression.not) {
+
       // Delta materialization
-      let left = action.operation.left;
-      let right = action.operation.right;
+      const left = action.operation.input;
+      const right = action.operation.expression.input;
 
-      // Ignore projects
-      left = ActorQueryOperationContextifyVersion.unwrapProject(left);
-      right = ActorQueryOperationContextifyVersion.unwrapProject(right);
-
-      // Detect bi-directional not-exists filter of the same pattern on opposite graphs
-      if (left.type === 'filter' && right.type === 'filter'
-        && left.expression.expressionType === 'existence' && left.expression.not
-        && right.expression.expressionType === 'existence' && right.expression.not
-        && ActorQueryOperationContextifyVersion.isSingularBgp(left.input)
-        && ActorQueryOperationContextifyVersion.isSingularBgp(left.expression.input)
-        && ActorQueryOperationContextifyVersion.isSingularBgp(right.input)
-        && ActorQueryOperationContextifyVersion.isSingularBgp(right.expression.input)
-        && left.input.patterns[0].graph.equals(right.expression.input.patterns[0].graph)
-        && left.expression.input.patterns[0].graph.equals(right.input.patterns[0].graph)) {
+      // Detect not-exists filter of the same pattern over two graphs
+      if (ActorQueryOperationContextifyVersion.isSingularBgp(left)
+        && ActorQueryOperationContextifyVersion.isSingularBgp(right)) {
         // Remove graph from patterns
         const patterns: Algebra.Pattern[] = [
-          left.input.patterns[0],
-          left.expression.input.patterns[0],
-          right.input.patterns[0],
-          right.expression.input.patterns[0],
+          left.patterns[0],
+          right.patterns[0],
         ].map((pattern) => ActorQueryOperationContextifyVersion.FACTORY.createPattern(
           pattern.subject, pattern.predicate, pattern.object));
 
         // Check if patterns are equal
-        let patternsEqual: boolean = true;
-        let previousPattern = null;
-        for (const pattern of patterns) {
-          if (previousPattern != null) {
-            patternsEqual = patternsEqual && pattern.equals(previousPattern);
-          }
-          previousPattern = pattern;
-        }
-
-        if (patternsEqual) {
+        if (patterns[0].equals(patterns[1])) {
           valid = true;
           // Sort start and end graph lexicographically
-          const [ versionStart, versionEnd ] = [
-            left.input.patterns[0].graph.value,
-            left.expression.input.patterns[0].graph.value,
-          ].sort();
+          let [ versionStart, versionEnd ] = [
+            left.patterns[0].graph.value,
+            right.patterns[0].graph.value,
+          ];
+          const queryAdditions: boolean = versionStart > versionEnd;
+          if (queryAdditions) {
+            [ versionStart, versionEnd ] = [ versionEnd, versionStart ];
+          }
 
           // Create operation
           operation = patterns[0];
@@ -145,6 +130,7 @@ export class ActorQueryOperationContextifyVersion extends ActorQueryOperation
           versionContext.type = 'delta-materialization';
           versionContext.versionStart = this.graphToStringOrNumber(versionStart);
           versionContext.versionEnd = this.graphToStringOrNumber(versionEnd);
+          versionContext.queryAdditions = queryAdditions;
         }
       }
     }
