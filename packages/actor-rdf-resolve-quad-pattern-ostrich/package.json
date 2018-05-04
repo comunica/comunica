@@ -32,7 +32,7 @@
     "index.js"
   ],
   "dependencies": {
-    "ostrich-bindings": "^1.2.0",
+    "ostrich-bindings": "^1.2.1",
     "rdf-data-model": "^1.0.0",
     "rdf-string": "^1.1.0"
   },
