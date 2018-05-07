@@ -5,7 +5,7 @@ import {ActorRdfResolveQuadPattern, IActionRdfResolveQuadPattern,
 import {Actor, IActorArgs, IActorTest, Mediator} from "@comunica/core";
 import {AsyncIterator, BufferedIterator} from "asynciterator";
 import {PromiseProxyIterator} from "asynciterator-promiseproxy";
-import {blankNode, literal, namedNode, variable} from "rdf-data-model";
+import {blankNode, literal, namedNode, quad, variable} from "rdf-data-model";
 import * as RDF from "rdf-js";
 import {getTerms, getVariables, mapTerms} from "rdf-terms";
 import {Algebra, Factory, toSparql} from "sparqlalgebrajs";
@@ -24,6 +24,46 @@ export class ActorRdfResolveQuadPatternSparqlJson
 
   constructor(args: IActorRdfResolveQuadPatternSparqlJsonArgs) {
     super(args);
+  }
+
+  /**
+   * Replace all blank nodes in a pattern with variables.
+   * If the pattern contains no blank nodes the original pattern gets returned.
+   * @param {RDF.Quad} pattern A quad pattern.
+   * @return {RDF.Quad} A quad pattern with no blank nodes.
+   */
+  public static replaceBlankNodes(pattern: RDF.Quad): RDF.Quad {
+    const variableNames: string[] = getVariables(getTerms(pattern)).map((v) => v.value);
+    // track the names the blank nodes get mapped to (required if the name has to change)
+    const blankMap: { [id: string]: string } = {};
+    let changed = false;
+
+    // for every position, convert to a variable if there is a blank node
+    const result = mapTerms(pattern, (term) => {
+      if (term.termType === 'BlankNode') {
+        let name = term.value;
+        if (blankMap[name]) {
+          name = blankMap[name];
+        } else {
+          if (variableNames.indexOf(name) >= 0) {
+            // increase index added to name until we find one that is available (2 loops at most)
+            let idx = 0;
+            while (variableNames.indexOf(name + idx) >= 0) {
+              ++idx;
+            }
+            name = name + idx;
+          }
+          blankMap[term.value] = name;
+          variableNames.push(name);
+        }
+        changed = true;
+        return variable(name);
+      } else {
+        return term;
+      }
+    });
+
+    return changed ? result : pattern;
   }
 
   /**
@@ -116,8 +156,9 @@ export class ActorRdfResolveQuadPatternSparqlJson
 
   public async run(action: IActionRdfResolveQuadPattern): Promise<IActorRdfResolveQuadPatternOutput> {
     const endpoint: string = action.context.sources[0].value;
-    const selectQuery: string = ActorRdfResolveQuadPatternSparqlJson.patternToSelectQuery(action.pattern);
-    const countQuery: string = ActorRdfResolveQuadPatternSparqlJson.patternToCountQuery(action.pattern);
+    const pattern = ActorRdfResolveQuadPatternSparqlJson.replaceBlankNodes(action.pattern);
+    const selectQuery: string = ActorRdfResolveQuadPatternSparqlJson.patternToSelectQuery(pattern);
+    const countQuery: string = ActorRdfResolveQuadPatternSparqlJson.patternToCountQuery(pattern);
 
     // Create promise for the metadata containing the estimated count
     const metadata: () => Promise<{[id: string]: any}> = () => this.queryBindings(endpoint, countQuery)
@@ -147,7 +188,7 @@ export class ActorRdfResolveQuadPatternSparqlJson
     // Materialize the queried pattern using each found binding.
     const data: AsyncIterator<RDF.Quad> & RDF.Stream = new PromiseProxyIterator(async () =>
       (await this.queryBindings(endpoint, selectQuery))
-        .map((bindings: Bindings) => mapTerms(action.pattern, (value: RDF.Term) => {
+        .map((bindings: Bindings) => mapTerms(pattern, (value: RDF.Term) => {
           if (value.termType === 'Variable') {
             const boundValue: RDF.Term = bindings.get('?' + value.value);
             if (!boundValue) {
