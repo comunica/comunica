@@ -1,7 +1,7 @@
 import {ActorRdfResolveQuadPattern} from "@comunica/bus-rdf-resolve-quad-pattern";
 import {Bus} from "@comunica/core";
 import "isomorphic-fetch";
-import {blankNode, literal, namedNode} from "rdf-data-model";
+import {blankNode, literal, namedNode, variable} from "rdf-data-model";
 import Factory from "sparqlalgebrajs/lib/Factory";
 import {PassThrough} from "stream";
 import {ActorRdfResolveQuadPatternSparqlJson} from "../lib/ActorRdfResolveQuadPatternSparqlJson";
@@ -31,6 +31,28 @@ describe('ActorRdfResolveQuadPatternSparqlJson', () => {
 
     it('should not be able to create new ActorRdfResolveQuadPatternSparqlJson objects without \'new\'', () => {
       expect(() => { (<any> ActorRdfResolveQuadPatternSparqlJson)(); }).toThrow();
+    });
+  });
+
+  describe('#replaceBlankNodes', () => {
+    it('should replace blank nodes with variables', () => {
+      return expect(ActorRdfResolveQuadPatternSparqlJson.replaceBlankNodes(quad('s', 'p', '_:o')))
+        .toEqual(quad('s', 'p', '?o'));
+    });
+
+    it('should make sure blank and variable names don\'t overlap', () => {
+      return expect(ActorRdfResolveQuadPatternSparqlJson.replaceBlankNodes(quad('?x', '?x0', '_:x')))
+        .toEqual(quad('?x', '?x0', '?x1'));
+    });
+
+    it('should make sure blank and variable names don\'t overlap (2)', () => {
+      return expect(ActorRdfResolveQuadPatternSparqlJson.replaceBlankNodes(quad('?x', '_:x0', '_:x')))
+        .toEqual(quad('?x', '?x0', '?x1'));
+    });
+
+    it('should blank names change consistently', () => {
+      return expect(ActorRdfResolveQuadPatternSparqlJson.replaceBlankNodes(quad('?x', '_:x', '_:x')))
+        .toEqual(quad('?x', '?x0', '?x0'));
     });
   });
 
