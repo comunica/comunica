@@ -1,5 +1,5 @@
 import {Bindings} from "@comunica/bus-query-operation";
-import {literal, namedNode, variable} from "rdf-data-model";
+import {blankNode, literal, namedNode, variable} from "rdf-data-model";
 import {Algebra} from "sparqlalgebrajs";
 import {SparqlExpressionEvaluator} from "../lib/SparqlExpressionEvaluator";
 
@@ -100,6 +100,13 @@ describe('SparqlExpressionEvaluator', () => {
         operatorExpression('+', [termExpression(variable('a')), termExpression(literal('3'))]),
       );
       expect(exprFunc(bindings)).toMatchObject(literal('4'));
+    });
+
+    it('supports + for unbound values', () => {
+      const exprFunc = SparqlExpressionEvaluator.createEvaluator(
+        operatorExpression('+', [termExpression(variable('unbound')), termExpression(literal('3'))]),
+      );
+      expect(exprFunc(bindings).value).toEqual('NaN');
     });
 
     it('supports -', () => {
@@ -229,6 +236,14 @@ describe('SparqlExpressionEvaluator', () => {
       expect(exprFunc(bindings)).toMatchObject(literal(''));
     });
 
+    it('supports lang for a non-literal', () => {
+      const exprFunc = SparqlExpressionEvaluator.createEvaluator(
+        operatorExpression('lang', [
+          termExpression(blankNode())]),
+      );
+      expect(exprFunc(bindings)).toBeFalsy();
+    });
+
     it('supports langmatches', () => {
       const exprFunc = SparqlExpressionEvaluator.createEvaluator(
         operatorExpression('langmatches', [
@@ -252,6 +267,24 @@ describe('SparqlExpressionEvaluator', () => {
         operatorExpression('langmatches', [
           termExpression(literal('fr-BE')),
           termExpression(literal('nl'))]),
+      );
+      expect(exprFunc(bindings)).toMatchObject(literal('false'));
+    });
+
+    it('supports langmatches for missing first argument', () => {
+      const exprFunc = SparqlExpressionEvaluator.createEvaluator(
+        operatorExpression('langmatches', [
+          termExpression(variable('unknown')),
+          termExpression(literal('fr'))]),
+      );
+      expect(exprFunc(bindings)).toMatchObject(literal('false'));
+    });
+
+    it('supports langmatches for missing second argument', () => {
+      const exprFunc = SparqlExpressionEvaluator.createEvaluator(
+        operatorExpression('langmatches', [
+          termExpression(literal('fr-BE')),
+          termExpression(variable('unknown'))]),
       );
       expect(exprFunc(bindings)).toMatchObject(literal('false'));
     });
