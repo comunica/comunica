@@ -1,4 +1,7 @@
 {
+  "engines": {
+    "node": ">=8.0"
+  },
   "devDependencies": {
     "@types/asynciterator": "^1.1.1",
     "@types/bluebird": "^3.5.11",

@@ -8,6 +8,9 @@
     "https://linkedsoftwaredependencies.org/contexts/comunica-core.jsonld": "components/context.jsonld"
   },
   "main": "index.js",
+  "engines": {
+    "node": ">=8.0"
+  },
   "typings": "index",
   "repository": "https://github.com/comunica/comunica/tree/master/packages/core",
   "publishConfig": {
