@@ -15,14 +15,14 @@ describe('ActorQueryOperationOrderByDirect', () => {
     mediatorQueryOperation = {
       mediate: (arg) => Promise.resolve({
         bindingsStream: new ArrayIterator([
-          Bindings({ '?a': literal('2') }),
-          Bindings({ '?a': literal('1') }),
-          Bindings({ '?a': literal('3') }),
+          Bindings({ a: literal('22') }),
+          Bindings({ a: literal('1') }),
+          Bindings({ a: literal('333') }),
         ]),
         metadata: () => Promise.resolve({ totalItems: 3 }),
         operated: arg,
         type: 'bindings',
-        variables: ['?a'],
+        variables: ['a'],
       }),
     };
   });
@@ -56,8 +56,7 @@ describe('ActorQueryOperationOrderByDirect', () => {
       orderA = { type: 'expression', expressionType: 'term', term: variable('a') };
       orderB = { type: 'expression', expressionType: 'term', term: variable('b') };
       descOrderA = { type: 'expression', expressionType: 'operator', operator: 'desc', args: [orderA] };
-      orderA1 = { args: [orderA, { type: 'expression', expressionType: 'term', term: literal('1') }],
-        expressionType: 'operator', operator: '+', type: 'expression' };
+      orderA1 = { args: [orderA], expressionType: 'operator', operator: 'strlen', type: 'expression' };
     });
 
     it('should test on orderby', () => {
@@ -85,9 +84,9 @@ describe('ActorQueryOperationOrderByDirect', () => {
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
-        Bindings({ '?a': literal('1') }),
-        Bindings({ '?a': literal('2') }),
-        Bindings({ '?a': literal('3') }),
+        Bindings({ a: literal('1') }),
+        Bindings({ a: literal('22') }),
+        Bindings({ a: literal('333') }),
       ]);
     });
 
@@ -97,9 +96,9 @@ describe('ActorQueryOperationOrderByDirect', () => {
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
-        Bindings({ '?a': literal('2') }),
-        Bindings({ '?a': literal('1') }),
-        Bindings({ '?a': literal('3') }),
+        Bindings({ a: literal('22') }),
+        Bindings({ a: literal('1') }),
+        Bindings({ a: literal('333') }),
       ]);
     });
 
@@ -108,9 +107,9 @@ describe('ActorQueryOperationOrderByDirect', () => {
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
-        Bindings({ '?a': literal('1') }),
-        Bindings({ '?a': literal('2') }),
-        Bindings({ '?a': literal('3') }),
+        Bindings({ a: literal('1') }),
+        Bindings({ a: literal('22') }),
+        Bindings({ a: literal('333') }),
       ]);
     });
 
@@ -119,9 +118,9 @@ describe('ActorQueryOperationOrderByDirect', () => {
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
-        Bindings({ '?a': literal('3') }),
-        Bindings({ '?a': literal('2') }),
-        Bindings({ '?a': literal('1') }),
+        Bindings({ a: literal('333') }),
+        Bindings({ a: literal('22') }),
+        Bindings({ a: literal('1') }),
       ]);
     });
 
@@ -130,9 +129,9 @@ describe('ActorQueryOperationOrderByDirect', () => {
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
-        Bindings({ '?a': literal('2') }),
-        Bindings({ '?a': literal('1') }),
-        Bindings({ '?a': literal('3') }),
+        Bindings({ a: literal('22') }),
+        Bindings({ a: literal('1') }),
+        Bindings({ a: literal('333') }),
       ]);
     });
   });

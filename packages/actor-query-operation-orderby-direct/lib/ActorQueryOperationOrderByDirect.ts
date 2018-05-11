@@ -1,9 +1,12 @@
-import {SparqlExpressionEvaluator} from "@comunica/actor-query-operation-filter-direct";
-import {ActorQueryOperation, ActorQueryOperationTypedMediated,
-  IActorQueryOperationOutputBindings, IActorQueryOperationTypedMediatedArgs} from "@comunica/bus-query-operation";
+import {
+  ActorQueryOperation, ActorQueryOperationTypedMediated,
+  Bindings, IActorQueryOperationOutputBindings,
+  IActorQueryOperationTypedMediatedArgs} from "@comunica/bus-query-operation";
 import {IActorTest} from "@comunica/core";
+import { Term } from "rdf-js";
 import {termToString} from "rdf-string";
 import {Algebra} from "sparqlalgebrajs";
+import { AsyncEvaluator } from 'sparqlee';
 import {SortIterator} from "./SortIterator";
 
 /**
@@ -28,7 +31,7 @@ export class ActorQueryOperationOrderByDirect extends ActorQueryOperationTypedMe
           expr = op.args[0];
         }
       }
-      SparqlExpressionEvaluator.createEvaluator(expr);
+      const _ = new AsyncEvaluator(expr);
     }
     return true;
   }
@@ -39,8 +42,9 @@ export class ActorQueryOperationOrderByDirect extends ActorQueryOperationTypedMe
       ActorQueryOperation.getSafeBindings(await this.mediatorQueryOperation.mediate(
         { operation: pattern.input, context }));
 
-    const options = { window: this.window };
     let bindingsStream = output.bindingsStream;
+    const options = { window: this.window };
+
     for (let expr of pattern.expressions) {
       let ascending = true;
       if (expr.expressionType === Algebra.expressionTypes.OPERATOR) {
@@ -50,15 +54,31 @@ export class ActorQueryOperationOrderByDirect extends ActorQueryOperationTypedMe
           expr = op.args[0];
         }
       }
-      const order = SparqlExpressionEvaluator.createEvaluator(expr);
-      bindingsStream = new SortIterator(bindingsStream, (a, b) => {
-        const orderA = termToString(order(a));
-        const orderB = termToString(order(b));
+      const origin = output.bindingsStream;
+
+      // Transform the stream by annotating it with the expr result
+      const evaluator = new AsyncEvaluator(expr);
+      interface IAnnotatedBinding { bindings: Bindings; result: Term; }
+      const transform = (bindings: Bindings, next: any) => {
+        evaluator.evaluate(bindings)
+          .then((result) => transformedStream._push({bindings, result}))
+          .then(next)
+          .catch((err) => transformedStream.emit('error', err));
+      };
+      const transformedStream = origin.transform<IAnnotatedBinding>({transform});
+
+      // Sort the annoted stream
+      const sortedStream = new SortIterator(transformedStream, (a, b) => {
+        const orderA = termToString(a.result);
+        const orderB = termToString(b.result);
         if (!orderA || !orderB) {
           return 0;
         }
         return orderA > orderB === ascending ? 1 : -1;
       }, options);
+
+      // Remove the annotation
+      bindingsStream = sortedStream.map(({bindings, result}) => bindings);
     }
 
     return { type: 'bindings', bindingsStream, metadata: output.metadata, variables: output.variables };

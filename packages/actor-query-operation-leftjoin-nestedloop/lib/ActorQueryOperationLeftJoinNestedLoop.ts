@@ -1,8 +1,11 @@
-import {ActorQueryOperation, ActorQueryOperationTypedMediated, Bindings, IActorQueryOperationOutputBindings,
-  IActorQueryOperationTypedMediatedArgs} from "@comunica/bus-query-operation";
-import {ActorRdfJoin} from "@comunica/bus-rdf-join";
-import {IActorTest} from "@comunica/core";
-import {Algebra} from "sparqlalgebrajs";
+import {
+  ActorQueryOperation, ActorQueryOperationTypedMediated, Bindings, IActorQueryOperationOutputBindings,
+  IActorQueryOperationTypedMediatedArgs,
+} from "@comunica/bus-query-operation";
+import { ActorRdfJoin } from "@comunica/bus-rdf-join";
+import { IActorTest } from "@comunica/core";
+import { Algebra } from "sparqlalgebrajs";
+import { AsyncEvaluator } from 'sparqlee';
 
 /**
  * A comunica LeftJoin NestedLoop Query Operation Actor.
@@ -13,11 +16,11 @@ export class ActorQueryOperationLeftJoinNestedLoop extends ActorQueryOperationTy
     super(args, 'leftjoin');
   }
 
-  public async testOperation(pattern: Algebra.LeftJoin, context?: {[id: string]: any}): Promise<IActorTest> {
+  public async testOperation(pattern: Algebra.LeftJoin, context?: { [id: string]: any }): Promise<IActorTest> {
     return !pattern.expression;
   }
 
-  public async runOperation(pattern: Algebra.LeftJoin, context?: {[id: string]: any})
+  public async runOperation(pattern: Algebra.LeftJoin, context?: { [id: string]: any })
     : Promise<IActorQueryOperationOutputBindings> {
 
     // uses nested loop join
@@ -25,6 +28,11 @@ export class ActorQueryOperationLeftJoinNestedLoop extends ActorQueryOperationTy
       await this.mediatorQueryOperation.mediate({ operation: pattern.left, context }));
     const right: IActorQueryOperationOutputBindings = ActorQueryOperation.getSafeBindings(
       await this.mediatorQueryOperation.mediate({ operation: pattern.right, context }));
+
+    const evaluator = (pattern.expression)
+      ? new AsyncEvaluator(pattern.expression)
+      : undefined;
+
     const bindingsStream = left.bindingsStream.transform<Bindings>({
       optional: true,
       transform: (leftItem, next) => {
@@ -33,12 +41,14 @@ export class ActorQueryOperationLeftJoinNestedLoop extends ActorQueryOperationTy
         rightStream.on('data', (rightItem) => {
           const join = ActorRdfJoin.join(leftItem, rightItem);
           if (join) {
-            // if (pattern.expression) {
-            //   // TODO: do this once expressions are implemented
-            //   // Values of both streams can be used for this expression
-            // }
-
-            bindingsStream._push(join);
+            // TODO: If we want to keep orderening, next() should be used here.
+            if (pattern.expression) {
+              evaluator.evaluateAsEBV(join)
+                .then((result) => { if (result) {bindingsStream._push(join); }})
+                .catch((err) => bindingsStream.emit('error', err));
+            } else {
+              bindingsStream._push(join);
+            }
           }
         });
       },
@@ -48,7 +58,7 @@ export class ActorQueryOperationLeftJoinNestedLoop extends ActorQueryOperationTy
     const metadata = () => Promise.all([pattern.left, pattern.right].map((entry) => entry.metadata))
       .then((metadatas) => metadatas.reduce((acc, val) => acc * val.totalItems, 1))
       .catch(() => Infinity)
-      .then((totalItems) =>  ({ totalItems }) );
+      .then((totalItems) => ({ totalItems }));
 
     return { type: 'bindings', bindingsStream, metadata, variables };
   }
