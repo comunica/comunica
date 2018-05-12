@@ -12,7 +12,13 @@ export class UnimplementedError extends Error {
 
 export class InvalidLexicalForm extends Error {
   constructor(public args: RDF.Term) {
-    super('Invalid lexical form.');
+    super('Invalid lexical form');
+  }
+}
+
+export class EBVCoercionError extends Error {
+  constructor(public args: E.Term) {
+    super('Cannot coerce this term to EBV');
   }
 }
 
@@ -31,7 +37,7 @@ export class CoalesceError extends Error {
 export class InError extends Error {
   constructor(public errors: Array<Error | false>) {
     super(
-      'Some argument to IN errored and none where equal. ' +
+      'Some argument to IN errorred and none where equal. ' +
       errors.map((err) => `(${err.toString()}) `).join('and '));
   }
 }

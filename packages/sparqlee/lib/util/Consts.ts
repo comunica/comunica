@@ -5,7 +5,7 @@ import * as RDF from 'rdf-js';
 
 export const TRUE_STR = '"true"^^xsd:boolean';
 export const FALSE_STR = '"false"^^xsd:boolean';
-export const EVB_ERR_STR = '"not an integer"^^xsd:integer';
+export const EVB_ERR_STR = '"not an dateTime"^^xsd:dateTime';
 
 export enum DataType {
   XSD_STRING = 'http://www.w3.org/2001/XMLSchema#string',
@@ -79,6 +79,7 @@ export type DataTypeCategory =
   | 'invalid';
 
 export type NumericTypeCategory = 'integer' | 'decimal' | 'float' | 'double';
+export const NumericTypeCategories = Set(['integer', 'decimal', 'float', 'double']);
 
 export function categorize(dataType: string): DataTypeCategory {
   switch (dataType) {

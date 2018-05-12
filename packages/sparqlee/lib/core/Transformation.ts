@@ -58,7 +58,7 @@ function tranformLiteral(lit: RDF.Literal): E.Literal<any> {
     case DT.XSD_STRING:
       return new E.StringLiteral(lit.value, lit.value, lit.datatype);
     case DT.RDF_LANG_STRING:
-      return new E.Literal<string>(lit.value, lit.value, lit.datatype, lit.language);
+      return new E.PlainLiteral(lit.value, lit.value, lit.language);
 
     case DT.XSD_DATE_TIME: {
       const val: Date = new Date(lit.value);
@@ -69,15 +69,10 @@ function tranformLiteral(lit: RDF.Literal): E.Literal<any> {
     }
 
     case DT.XSD_BOOLEAN: {
-      const val: boolean = JSON.parse(lit.value);
-      // TODO: Fix: shouldn't error immediately, might require big changes
-      // TODO: This might cause silent errors, and behaviour when typedVal
-      // is undefined might be weird; Maybe errorType?
-      // Advantage is, unless operator is defined for plain literal,
-      // it will raise a type error;
-      if (typeof val !== 'boolean') {
-        return new E.NonLexicalLiteral(val, lit.value, lit.datatype);
+      if (lit.value !== 'true' && lit.value !== 'false') {
+        return new E.NonLexicalLiteral(undefined, lit.value, lit.datatype);
       }
+      const val: boolean = JSON.parse(lit.value);
       return new E.BooleanLiteral(val, lit.value, lit.datatype);
     }
 

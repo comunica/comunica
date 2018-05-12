@@ -73,13 +73,15 @@ describe('the coercion of RDF terms to it\'s EBV', () => {
     nonZeroSimple: '"a simple literal"',
     nonZeroLang: '"a language literal"@en',
     nonZeroStr: '"a string with datatype"^^xsd:string',
-    
+
     zeroInt: '"0"^^xsd:integer',
     zeroDouble: '"0.0"^^xsd:double',
     zeroDerived: '"0"^^xsd:unsignedInt',
     nonZeroInt: '"3"^^xsd:integer',
     nonZeroDouble: '"0.01667"^^xsd:double',
     nonZeroDerived: '"1"^^xsd:unsignedInt',
+    infPos: '"INF"^^xsd:double',
+    infNeg: '"-INF"^^xsd:float',
     NaN: '"NaN"^^xsd:float',
 
     date: '"2001-10-26T21:32:52+02:00"^^xsd:dateTime',
@@ -106,12 +108,22 @@ describe('the coercion of RDF terms to it\'s EBV', () => {
     nonZeroInt true = true
     nonZeroDouble true = true
     nonZeroDerived true = true
-    NAN true = false
+    infPos true = true
+    infNeg true = true
+    NaN true = false
     `;
     const errorTable = `
     unbound true = error
     date true = error
     `
-    testTable({..._default, table, errorTable, op: '&&', arity: 2});
+    testTable({..._default, 
+      op: '&&', 
+      arity: 2,
+      aliasMap, 
+      table,
+      resultMap,
+      errorTable, 
+      notation: Notation.Infix
+    });
   });
 });

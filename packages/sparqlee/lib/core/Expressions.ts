@@ -7,7 +7,7 @@ import { Algebra } from 'sparqlalgebrajs';
 
 import { Bindings } from '../core/Types';
 import * as C from '../util/Consts';
-import { InvalidArgumentTypes, InvalidArity, UnimplementedError } from '../util/Errors';
+import { InvalidArgumentTypes, InvalidArity, UnimplementedError, EBVCoercionError } from '../util/Errors';
 
 export enum expressionTypes {
   AGGREGATE = 'aggregate',
@@ -97,7 +97,7 @@ export abstract class Term implements TermExpression {
   }
 
   coerceEBV(): boolean {
-    throw new TypeError('Cannot coerce this term to EBV.');
+    throw new EBVCoercionError(this);
   }
 
 }
@@ -156,6 +156,9 @@ export class PlainLiteral extends Literal<string> {
     public language?: string) {
     super(typedValue, strValue, undefined, language);
     this.category = 'plain';
+    this.dataType = (this.language)
+      ? C.make(C.DataType.RDF_LANG_STRING)
+      : undefined;
   }
 
   coerceEBV(): boolean {
@@ -191,10 +194,11 @@ export class StringLiteral extends Literal<string> {
  * an invalid lexical form for it's datatype. The spec defines value with
  * invalid lexical form are still valid terms, and as such we can not error
  * immediately. This class makes sure that the typedValue will remain undefined,
- * and the category 'other'. This way, only when operators apply to the
- * 'other' category, they will keep working, otherwise they will throw a
+ * and the category 'invalid'. This way, only when operators apply to the
+ * 'invalid' category, they will keep working, otherwise they will throw a
  * type error.
- * This seems to match the spec.
+ * This seems to match the spec, except maybe for functions that accept
+ * non-lexical values for their datatype.
  *
  * See:
  *  - https://www.w3.org/TR/xquery/#dt-type-error
@@ -203,6 +207,7 @@ export class StringLiteral extends Literal<string> {
  *  - ... some other more precise thing i can't find...
  */
 export class NonLexicalLiteral extends Literal<undefined> {
+  private shouldBeCategory: C.DataTypeCategory;
   constructor(
     typedValue: undefined,
     strValue?: string,
@@ -211,6 +216,16 @@ export class NonLexicalLiteral extends Literal<undefined> {
     super(typedValue, strValue, dataType, language);
     this.typedValue = undefined;
     this.category = 'invalid';
+    this.shouldBeCategory = C.categorize(dataType.value);
+  }
+
+  coerceEBV(): boolean {
+    const isNumericOrBool =
+      C.NumericTypeCategories.contains(this.shouldBeCategory)
+      || this.shouldBeCategory === 'boolean';
+
+    if (isNumericOrBool) { return false; }
+    throw new EBVCoercionError(this);
   }
 }
 
