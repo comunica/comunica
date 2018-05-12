@@ -31,21 +31,15 @@ const resultMap = {
 };
 
 
-function _testTable(op: string, table: string, arity: number, notation: Notation = 'function') {
-  if (arity === 1) {
-    const errorTable = `
-    error = error
-    `;
-    testTable({ op, table, errorTable, aliasMap, resultMap, notation }, arity);
-  }
-  if (arity === 2) {
-    const errorTable = `
-    error string = error
-    string error = error
-    error error = error
-    `;
-    testTable({ op, table, errorTable, aliasMap, resultMap, notation }, arity);
-  }
+const _default = {aliasMap, resultMap, notation: Notation.Function};
+function _testTable(op: string, table: string, arity: number) {
+  const errorTable = (arity === 1)
+   ? `error = error`
+   : `
+      error string = error
+      string error = error
+      error error = error`
+  testTable({..._default, op, table, errorTable, arity});
 }
 
 describe('the evaluation of functions on strings', () => {

@@ -29,8 +29,9 @@ error gener = error
 error error = error
 `;
 
-function _testTable(op: string, table: string, notation: Notation = 'infix') {
-  testTable({ op, table, errorTable, aliasMap, resultMap, notation }, 2);
+const _default = {aliasMap, resultMap, errorTable, notation: Notation.Infix, arity: 2};
+function _testTable(op: string, table: string) {
+  testTable({..._default, op, table });
 }
 
 // TODO: Decent collation testing

@@ -6,7 +6,6 @@ import * as E from '../core/Expressions';
 import * as Err from '../util/Errors';
 import * as P from '../util/Parsing';
 
-import { makeOp } from '../core/operators/index';
 import { transformAlgebra, transformTerm } from '../core/Transformation';
 import { AsyncAggregator, AsyncLookUp, Bindings } from '../core/Types';
 import { DataType as DT } from '../util/Consts';

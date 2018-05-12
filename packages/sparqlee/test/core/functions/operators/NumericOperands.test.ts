@@ -38,8 +38,9 @@ NaN   gener = false
 gener NaN   = false
 `;
 
-function _testTable(op: string, table: string, notation: Notation = 'infix') {
-  testTable({ op, table: table.concat(common), errorTable, aliasMap, resultMap, notation }, 2);
+const _default = {aliasMap, errorTable,resultMap, arity: 2, notation: Notation.Infix}
+function _testTable(op: string, table: string) {
+  testTable({..._default, op, table: table.concat(common) });
 }
 
 describe('the evaluation of overloaded boolean operators', () => {

@@ -36,6 +36,7 @@ export interface ResultMap { [key: string]: RDF.Term; }
  */
 export interface EvaluationTable {
   op: string;
+  arity: number;
   table: string;
   errorTable?: string;
   aliasMap: AliasMap;
@@ -43,13 +44,18 @@ export interface EvaluationTable {
   notation: Notation;
 }
 
-export type Notation = 'infix' | 'prefix' | 'function';
+export enum Notation {
+  Infix,
+  Prefix,
+  Function
+}
 
 /*
  * Given the definition for an evaluation table, test all it's test cases.
  */
-export function testTable(definition: EvaluationTable, arity: number): void {
-  const tTable = (arity === 2)
+export function testTable(definition: EvaluationTable): void {
+
+  const tTable = (definition.arity === 2)
     ? new BinaryTable(definition, BinaryTableParser)
     : new UnaryTable(definition, UnaryTableParser);
 
@@ -100,9 +106,9 @@ class BinaryTable extends Table<[string, string, string]> {
 
   format([op, fst, snd]: string[]): string {
     switch (this.def.notation) {
-      case 'function': return `${op}(${fst}, ${snd})`
-      case 'prefix': return `${op} ${fst} ${snd}`
-      case 'infix': return `${fst} ${op} ${snd}`;
+      case Notation.Function: return `${op}(${fst}, ${snd})`
+      case Notation.Prefix: return `${op} ${fst} ${snd}`
+      case Notation.Infix: return `${fst} ${op} ${snd}`;
     }
   }
 }
@@ -130,9 +136,9 @@ class UnaryTable extends Table<[string, string]> {
 
   format([op, arg]: string[]): string {
     switch (this.def.notation) {
-      case 'function': return `${op}(${arg})`;
-      case 'prefix': return `${op}${arg}`;
-      case 'infix': throw new Error('Cant format a unary operator as infix.')
+      case Notation.Function: return `${op}(${arg})`;
+      case Notation.Prefix: return `${op}${arg}`;
+      case Notation.Infix: throw new Error('Cant format a unary operator as infix.')
     }
   }
 }

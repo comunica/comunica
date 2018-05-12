@@ -6,7 +6,7 @@ import * as P from '../util/Parsing';
 import * as E from './Expressions';
 
 import { DataType as DT } from '../util/Consts';
-import { makeOp } from './operators/index';
+import { makeOp } from './functions/index';
 
 export function transformAlgebra(expr: Alg.Expression): E.Expression {
   const types = Alg.expressionTypes;

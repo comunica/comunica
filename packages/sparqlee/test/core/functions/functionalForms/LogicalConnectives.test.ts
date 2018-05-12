@@ -1,7 +1,7 @@
 import * as RDFDM from 'rdf-data-model';
 
 import * as C from '../../../../lib/util/Consts';
-import { testTable } from '../../../util/TruthTable';
+import { testTable, Notation } from '../../../util/TruthTable';
 
 const CT = C.commonTerms;
 
@@ -16,11 +16,8 @@ const resultMap = {
   false: CT.false,
 };
 
-function _testTable(op: string, table: string, errorTable: string) {
-  testTable({ op, table, errorTable, aliasMap, resultMap, notation: 'infix' }, 2);
-}
+const _default = { arity: 2, aliasMap, resultMap, notation: Notation.Infix };
 
-// TODO: Test use of EVB
 describe('evaluation of logical connectives', () => {
   describe('like "||" receiving', () => {
     const table = `
@@ -32,13 +29,12 @@ describe('evaluation of logical connectives', () => {
     error true  = true
     `;
 
-    const errTable = `
+    const errorTable = `
     false error = error
     error false = error
     error error = error
     `;
-
-    _testTable('||', table, errTable);
+    testTable({op: '||', ..._default, table, errorTable});
   });
 
   describe('like "&&" receiving', () => {
@@ -51,12 +47,11 @@ describe('evaluation of logical connectives', () => {
     error false = false
     `;
 
-    const errTable = `
+    const errorTable = `
     true  error = error
     error true  = error
     error error = error
     `;
-
-    _testTable('&&', table, errTable);
+    testTable({op: '&&', ..._default, table, errorTable});
   });
 });

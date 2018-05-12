@@ -1,0 +1,117 @@
+import * as RDFDM from 'rdf-data-model';
+
+import * as C from '../../../lib/util/Consts';
+import { testTable, Notation } from '../../util/TruthTable';
+
+const CT = C.commonTerms;
+
+const aliasMap = {
+  simple: '"simple"',
+  lang: '"lang"@en',
+  string: '"string"^^xsd:string',
+  number: '"3"^^xsd:integer',
+  badlex: '"badlex"^^xsd:integer',
+};
+const resultMap = {
+  simple: RDFDM.literal('simple'),
+  lang: RDFDM.literal('lang'),
+  number: RDFDM.literal('3'),
+  string: RDFDM.literal('string'),
+  badlex: RDFDM.literal('badlex'),
+  en: RDFDM.literal('en'),
+  xsdInt: RDFDM.literal(C.DataType.XSD_INTEGER),
+  xsdString: RDFDM.literal(C.DataType.XSD_STRING),
+};
+
+const _default = {aliasMap, resultMap, arity: 1, notation: Notation.Function }
+function _testTable(op: string, table: string) {
+  testTable({..._default, op, table});
+}
+
+describe('the evaluation of functions on RDF terms', () => {
+  describe('like \'str\' receiving', () => {
+    const table = `
+    simple = simple
+    lang = lang
+    number = number
+    badlex = badlex
+    string = string
+    `;
+    _testTable('str', table);
+  });
+
+  describe('like \'lang\' receiving', () => {
+    const table = `
+    lang = en
+    `
+    _testTable('lang', table);
+  });
+  describe('like \' datatype\' receiving', () => {
+    const table = `
+    number = xsdInt
+    string = xsdString
+    `
+    _testTable('datatype', table);
+  });
+});
+
+// https://www.w3.org/TR/sparql11-query/#ebv
+describe('the coercion of RDF terms to it\'s EBV', () => {
+  const resultMap = { true: CT.true, false: CT.false }
+  const aliasMap = {
+    true: C.TRUE_STR,
+    false: C.FALSE_STR,
+
+    nonLexicalBool: '"notABool"^^xsd:boolean',
+    nonLexicalInt: '"notAnInt"^^xsd:integer',
+    boolFalse: '"false"^^xsd:boolean',
+    boolTrue: '"true"^^xsd:boolean',
+
+    zeroSimple: '""',
+    zeroLang: '""@en',
+    zeroStr: '""^^xsd:string',
+    nonZeroSimple: '"a simple literal"',
+    nonZeroLang: '"a language literal"@en',
+    nonZeroStr: '"a string with datatype"^^xsd:string',
+    
+    zeroInt: '"0"^^xsd:integer',
+    zeroDouble: '"0.0"^^xsd:double',
+    zeroDerived: '"0"^^xsd:unsignedInt',
+    nonZeroInt: '"3"^^xsd:integer',
+    nonZeroDouble: '"0.01667"^^xsd:double',
+    nonZeroDerived: '"1"^^xsd:unsignedInt',
+    NaN: '"NaN"^^xsd:float',
+
+    date: '"2001-10-26T21:32:52+02:00"^^xsd:dateTime',
+    unbound: '?a'
+  }
+  describe('like', () => {
+    // Using && as utility to force EBV
+    const table = `
+    nonLexicalBool true = false
+    nonLexicalInt true = false
+
+    boolFalse true = false
+    boolTrue true = true
+
+    zeroSimple true = false
+    zeroLang true = false
+    zeroStr true = false
+    nonZeroSimple true = true
+    nonZeroLang true = true
+
+    zeroInt true = false
+    zeroDouble true = false
+    zeroDerived true = false
+    nonZeroInt true = true
+    nonZeroDouble true = true
+    nonZeroDerived true = true
+    NAN true = false
+    `;
+    const errorTable = `
+    unbound true = error
+    date true = error
+    `
+    testTable({..._default, table, errorTable, op: '&&', arity: 2});
+  });
+});
