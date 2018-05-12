@@ -24,13 +24,13 @@ This package is available on [(TODO)npm]('blurb').
 
 ## Setup locally
 
-1. Install `npm` and `node`.
-2. Run `npm install`.
+1. Install `yarn` (or `npm`) and `node`.
+2. Run `yarn install`.
 3. Use these evident commands (or check `package.json`):
-    * building once: `npm run build`
-    * build and watch: `npm run watch`
-    * testing: `npm run test`
-    * benchmarking: `npm run bench`
+    * building once: `yarn run build`
+    * build and watch: `yarn run watch`
+    * testing: `yarn run test`
+    * benchmarking: `yarn run bench`
 
 ### Testing
 
