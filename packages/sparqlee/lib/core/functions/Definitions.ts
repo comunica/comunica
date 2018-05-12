@@ -249,6 +249,20 @@ const _definitions: IDefinitionMap = {
       (args: Term[]) => number(unary(X.stringLength, args), DT.XSD_INTEGER)
     ),
   },
+  'langmatches': {
+    arity: 2,
+    category: 'overloaded',
+    overloads: forAll(
+      [
+        // TODO: This deviates from the spec, as it only allows simple literals
+        ['simple', 'simple'],
+        ['simple', 'string'],
+        ['string', 'simple'],
+        ['string', 'string']
+      ],
+      (args: Term[]) => bool(binary(X.langMatches, args))
+    )
+  },
   'regex': {
     arity: [2, 3],
     category: 'overloaded',

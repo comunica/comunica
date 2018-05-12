@@ -175,7 +175,8 @@ export enum Operator {
   DATATYPE = 'datatype',
 
   // Functions on strings
-  // https://www.w3.org/TR/sparql11-query/#func-forms
+  // https://www.w3.org/TR/sparql11-query/#func-strings
+  LANG_MATCHES = 'langmatches',
   STRLEN = 'strlen',
   REGEX = 'regex',
 

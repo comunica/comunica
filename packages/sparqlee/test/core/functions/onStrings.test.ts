@@ -31,15 +31,15 @@ const resultMap = {
 };
 
 
-const _default = {aliasMap, resultMap, notation: Notation.Function};
+const _default = { aliasMap, resultMap, arity: 2, notation: Notation.Function };
 function _testTable(op: string, table: string, arity: number) {
   const errorTable = (arity === 1)
-   ? `error = error`
-   : `
+    ? `error = error`
+    : `
       error string = error
       string error = error
       error error = error`
-  testTable({..._default, op, table, errorTable, arity});
+  testTable({ ..._default, op, table, errorTable, arity });
 }
 
 describe('the evaluation of functions on strings', () => {
@@ -50,6 +50,39 @@ describe('the evaluation of functions on strings', () => {
     string = 6
     `;
     _testTable('strlen', table, 1);
+  });
+
+  // TODO: Add errors for when non BCP47 strings are passed
+  describe('like \'langMatches\' receiving', () => {
+    const aliasMap = {
+      'range': '"de-*-DE"',
+
+      'de-DE': '"de-DE"',
+      'de-de': '"de-de"',
+      'de-Latn-DE': '"de-Latn-DE"',
+      'de-Latf-DE': '"de-Latf-DE"',
+      'de-DE-x-goethe': '"de-DE-x-goethe"',
+      'de-Latn-DE-1996': '"de-Latn-DE-1996"',
+      'de-Deva-DE': '"de-Deva-DE"',
+
+      'de': '"de"',
+      'de-X-DE': '"de-X-DE"',
+      'de-Deva': '"de-Deva"',
+    }
+    const table = `
+    de-DE range = true
+    de-de range = true
+    de-Latn-DE range = true
+    de-Latf-DE range = true
+    de-DE-x-goethe range = true
+    de-Latn-DE-1996 range = true
+    de-Deva-DE range = true
+
+    de range = false
+    de-X-DE range = false
+    de-Deva range = false
+    `;
+    testTable({ ..._default, op: 'langmatches', aliasMap, table })
   });
 
   describe('like \'regex\' receiving', () => {

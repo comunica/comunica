@@ -13,9 +13,9 @@ export class Example {
   expression: Alg.Expression;
   mapping: () => Bindings;
 
-  constructor(expr: string, mapping: () => Bindings) {
+  constructor(expr: string, mapping?: () => Bindings) {
     this.expression = parse(expr);
-    this.mapping = mapping;
+    this.mapping = mapping || (() => Bindings({}));
   }
 }
 

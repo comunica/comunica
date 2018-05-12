@@ -16,7 +16,7 @@ import { OverloadedFunction, SimpleFunction, SpecialFunctionAsync } from './Type
 export function makeOp(opString: string, args: E.Expression[]): E.OperatorExpression {
   if (!C.Operators.contains(opString)) {
     // TODO Throw better error
-    throw new TypeError('Unknown operator');
+    throw new TypeError('Unknown operator (possibly not implemented)');
   }
   const op = opString as C.Operator;
 

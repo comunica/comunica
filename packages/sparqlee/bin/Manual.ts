@@ -26,22 +26,19 @@ async function testEval() {
   //   a: RDF.literal("true", C.make(DT.XSD_BOOLEAN)),
   //   b: RDF.literal("true", C.make(DT.XSD_BOOLEAN)),
   // }));
-  const ex = new U.Example('"not an integer"^^xsd:integer',
-    () => Bindings({
-      // a: RDF.literal('a'),
-    }));
+  const ex = new U.Example('langMatches("de-Deva","de-*-DE")');
   // const ex = new Example('?a IN (?b, "")', () => Bindings({
   //   a: RDF.literal("aaa"),
   // }));
+
   const evaluator = new AsyncEvaluator(ex.expression, U.mockLookUp, U.mockAggregator);
-  const presult = evaluator.evaluateAsEBV(ex.mapping()).catch((err) => console.log(err));
+  const presult = evaluator.evaluate(ex.mapping()).catch((err) => console.log(err));
   const val = await presult;
   console.log(val);
 }
 
-// testEval();
-// test();
-print('SELECT ((?s + ?p) as ?avg) WHERE { ?s ?p ?o }', true);
+testEval();
+// print('SELECT ((?s + ?p) as ?avg) WHERE { ?s ?p ?o }', true);
 // print('isIRI(<mailto:test@example.com>)');
 // print('bound(?a)');
 // print('IF(?a, ?a, ?a)');
