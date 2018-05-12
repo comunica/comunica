@@ -76,7 +76,7 @@ describe('the evaluation of overloaded boolean operators', () => {
       _testTable('=', table);
     });
 
-    describe.skip('like "!=" receiving', () => {
+    describe('like "!=" receiving', () => {
       const table = `
       3i 3i = false
       3d 3d = false
@@ -100,7 +100,7 @@ describe('the evaluation of overloaded boolean operators', () => {
       NaN 3f = true
       3f NaN = true
       `;
-      _testTable('!=', table);
+      testTable({ ..._default, op: '!=', table });
     });
 
     describe('like "<" receiving', () => {
