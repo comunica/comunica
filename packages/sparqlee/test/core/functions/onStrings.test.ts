@@ -1,7 +1,7 @@
 import * as RDFDM from 'rdf-data-model';
 
 import * as C from '../../../lib/util/Consts';
-import { testTable, Notation } from '../../util/TruthTable';
+import { Notation, testTable } from '../../util/TruthTable';
 
 const CT = C.commonTerms;
 
@@ -24,21 +24,20 @@ const resultMap = {
   badlex: RDFDM.literal('badlex'),
   en: RDFDM.literal('en'),
 
-  '4': RDFDM.literal('4', C.DataType.XSD_INTEGER),
-  '5': RDFDM.literal('5', C.DataType.XSD_INTEGER),
-  '6': RDFDM.literal('6', C.DataType.XSD_INTEGER),
-  int: RDFDM.literal(C.DataType.XSD_INTEGER)
+  4: RDFDM.literal('4', C.DataType.XSD_INTEGER),
+  5: RDFDM.literal('5', C.DataType.XSD_INTEGER),
+  6: RDFDM.literal('6', C.DataType.XSD_INTEGER),
+  int: RDFDM.literal(C.DataType.XSD_INTEGER),
 };
-
 
 const _default = { aliasMap, resultMap, arity: 2, notation: Notation.Function };
 function _testTable(op: string, table: string, arity: number) {
   const errorTable = (arity === 1)
-    ? `error = error`
+    ? 'error = error'
     : `
       error string = error
       string error = error
-      error error = error`
+      error error = error`;
   testTable({ ..._default, op, table, errorTable, arity });
 }
 
@@ -54,7 +53,7 @@ describe('the evaluation of functions on strings', () => {
 
   // TODO: Add errors for when non BCP47 strings are passed
   describe('like \'langMatches\' receiving', () => {
-    const aliasMap = {
+    const aliases = {
       'range': '"de-*-DE"',
 
       'de-DE': '"de-DE"',
@@ -68,7 +67,7 @@ describe('the evaluation of functions on strings', () => {
       'de': '"de"',
       'de-X-DE': '"de-X-DE"',
       'de-Deva': '"de-Deva"',
-    }
+    };
     const table = `
     de-DE range = true
     de-de range = true
@@ -82,14 +81,14 @@ describe('the evaluation of functions on strings', () => {
     de-X-DE range = false
     de-Deva range = false
     `;
-    testTable({ ..._default, op: 'langmatches', aliasMap, table })
+    testTable({ ..._default, op: 'langmatches', aliasMap: aliases, table });
   });
 
   describe('like \'regex\' receiving', () => {
     const table = `
     simple simple = true
     string simple = false
-    `
+    `;
     _testTable('regex', table, 2);
   });
 });

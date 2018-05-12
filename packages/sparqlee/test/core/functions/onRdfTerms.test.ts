@@ -1,7 +1,7 @@
 import * as RDFDM from 'rdf-data-model';
 
 import * as C from '../../../lib/util/Consts';
-import { testTable, Notation } from '../../util/TruthTable';
+import { Notation, testTable } from '../../util/TruthTable';
 
 const CT = C.commonTerms;
 
@@ -21,11 +21,12 @@ const resultMap = {
   en: RDFDM.literal('en'),
   xsdInt: RDFDM.literal(C.DataType.XSD_INTEGER),
   xsdString: RDFDM.literal(C.DataType.XSD_STRING),
+  emptyString: RDFDM.literal(''),
 };
 
-const _default = {aliasMap, resultMap, arity: 1, notation: Notation.Function }
+const _default = { aliasMap, resultMap, arity: 1, notation: Notation.Function };
 function _testTable(op: string, table: string) {
-  testTable({..._default, op, table});
+  testTable({ ..._default, op, table });
 }
 
 describe('the evaluation of functions on RDF terms', () => {
@@ -43,22 +44,23 @@ describe('the evaluation of functions on RDF terms', () => {
   describe('like \'lang\' receiving', () => {
     const table = `
     lang = en
-    `
+    simple = emptyString
+    `;
     _testTable('lang', table);
   });
   describe('like \' datatype\' receiving', () => {
     const table = `
     number = xsdInt
     string = xsdString
-    `
+    `;
     _testTable('datatype', table);
   });
 });
 
 // https://www.w3.org/TR/sparql11-query/#ebv
 describe('the coercion of RDF terms to it\'s EBV', () => {
-  const resultMap = { true: CT.true, false: CT.false }
-  const aliasMap = {
+  const results = { true: CT.true, false: CT.false };
+  const aliases = {
     true: C.TRUE_STR,
     false: C.FALSE_STR,
 
@@ -85,8 +87,8 @@ describe('the coercion of RDF terms to it\'s EBV', () => {
     NaN: '"NaN"^^xsd:float',
 
     date: '"2001-10-26T21:32:52+02:00"^^xsd:dateTime',
-    unbound: '?a'
-  }
+    unbound: '?a',
+  };
   describe('like', () => {
     // Using && as utility to force EBV
     const table = `
@@ -115,15 +117,16 @@ describe('the coercion of RDF terms to it\'s EBV', () => {
     const errorTable = `
     unbound true = error
     date true = error
-    `
-    testTable({..._default, 
-      op: '&&', 
+    `;
+    testTable({
+      ..._default,
+      op: '&&',
       arity: 2,
-      aliasMap, 
       table,
-      resultMap,
-      errorTable, 
-      notation: Notation.Infix
+      errorTable,
+      resultMap: results,
+      aliasMap: aliases,
+      notation: Notation.Infix,
     });
   });
 });

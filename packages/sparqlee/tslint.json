@@ -6,7 +6,7 @@
     "arrow-return-shorthand": true,
     "ban": [true,
       { "name": "parseInt", "message": "tsstyle#type-coercion" },
-      { "name": "parseFloat", "message": "tsstyle#type-coercion" },
+      { "name": "parseFloat", "message": "tsstyle#type-coercion" }
     ],
     "ban-types": [true, ["Object", "Use {} instead."],
       ["String", "Use 'string' instead."],

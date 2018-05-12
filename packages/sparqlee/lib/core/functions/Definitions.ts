@@ -1,6 +1,6 @@
 import * as Promise from 'bluebird';
 import { Map } from 'immutable';
-import { Impl, map, str, forAll, unary } from './Helpers';
+import { forAll, Impl, map, str, unary } from './Helpers';
 
 import * as C from '../../util/Consts';
 import * as E from './../Expressions';
@@ -92,7 +92,12 @@ const _definitions: IDefinitionMap = {
     category: 'overloaded',
     overloads: arithmetic(X.numericDivide).set(
       list('integer', 'integer'),
-      (args: Term[]) => number(binary(X.numericDivide, args), DT.XSD_DECIMAL),
+      (args: Term[]) => {
+        if ((args[1] as E.NumericLiteral).typedValue === 0) {
+          throw new TypeError('Integer division by 0');
+        }
+        return number(binary(X.numericDivide, args), DT.XSD_DECIMAL);
+      },
     ),
   },
   '+': {
@@ -215,13 +220,13 @@ const _definitions: IDefinitionMap = {
     arity: 1,
     category: 'simple',
     types: ['term'],
-    apply(args: Term[]) { return str(args[0].str()); }
+    apply(args: Term[]) { return str(args[0].str()); },
   },
   'lang': {
     arity: 1,
     category: 'simple',
     types: ['literal'],
-    apply(args: E.Literal<any>[]) {
+    apply(args: Array<E.Literal<string>>) {
       return str(args[0].language || '');
     },
   },
@@ -229,7 +234,7 @@ const _definitions: IDefinitionMap = {
     arity: 1,
     category: 'simple',
     types: ['literal'],
-    apply(args: E.Literal<any>[]) {
+    apply(args: Array<E.Literal<any>>) {
       const arg = args[0];
       return str((arg.dataType) ? arg.dataType.value : '');
     },
@@ -237,8 +242,8 @@ const _definitions: IDefinitionMap = {
   // --------------------------------------------------------------------------
   // Functions on strings
   // https://www.w3.org/TR/sparql11-query/#func-forms
-  // TODO: Note somewhere that 'overloaded' is in the context of this typesystem.
-  // Eg. strlen is overloaded, although it has identical behaviour, 
+  // TODO: Note somewhere that 'overloaded' is in the context of this type system.
+  // Eg. strlen is overloaded, although it has identical behaviour,
   // but the types can not be captured by a single ArgumentType.
   // --------------------------------------------------------------------------
   'strlen': {
@@ -246,7 +251,7 @@ const _definitions: IDefinitionMap = {
     category: 'overloaded',
     overloads: forAll(
       [['plain'], ['simple'], ['string']],
-      (args: Term[]) => number(unary(X.stringLength, args), DT.XSD_INTEGER)
+      (args: Term[]) => number(unary(X.stringLength, args), DT.XSD_INTEGER),
     ),
   },
   'langmatches': {
@@ -258,10 +263,10 @@ const _definitions: IDefinitionMap = {
         ['simple', 'simple'],
         ['simple', 'string'],
         ['string', 'simple'],
-        ['string', 'string']
+        ['string', 'string'],
       ],
-      (args: Term[]) => bool(binary(X.langMatches, args))
-    )
+      (args: Term[]) => bool(binary(X.langMatches, args)),
+    ),
   },
   'regex': {
     arity: [2, 3],
@@ -274,14 +279,14 @@ const _definitions: IDefinitionMap = {
         ['string', 'string'],
         ['simple', 'string', 'string'],
         ['plain', 'string', 'string'],
-        ['string', 'string', 'string']
+        ['string', 'string', 'string'],
 
       ],
-      (args: E.Literal<any>[]) => bool(X.matches(
+      (args: Array<E.Literal<string>>) => bool(X.matches(
         args[0].typedValue,
         args[1].typedValue,
         ((args[2]) ? args[2].typedValue : ''),
-      ))
+      )),
     ),
   },
 

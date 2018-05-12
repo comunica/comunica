@@ -138,6 +138,13 @@ export class NumericLiteral extends Literal<number> {
   coerceEBV(): boolean {
     return !!this.typedValue;
   }
+  toRDF(): RDF.Term {
+    const term = super.toRDF();
+    if (!isFinite(this.typedValue)) {
+      term.value = term.value.replace('Infinity', 'INF');
+    }
+    return term;
+  }
 }
 
 export class BooleanLiteral extends Literal<boolean> {
