@@ -1,13 +1,14 @@
 import {
   ActorQueryOperation, ActorQueryOperationTypedMediated,
   Bindings, IActorQueryOperationOutputBindings,
-  IActorQueryOperationTypedMediatedArgs} from "@comunica/bus-query-operation";
-import {IActorTest} from "@comunica/core";
+  IActorQueryOperationTypedMediatedArgs,
+} from "@comunica/bus-query-operation";
+import { IActorTest } from "@comunica/core";
 import { Term } from "rdf-js";
-import {termToString} from "rdf-string";
-import {Algebra} from "sparqlalgebrajs";
+import { termToString } from "rdf-string";
+import { Algebra } from "sparqlalgebrajs";
 import { AsyncEvaluator } from 'sparqlee';
-import {SortIterator} from "./SortIterator";
+import { SortIterator } from "./SortIterator";
 
 /**
  * A comunica OrderBy Direct Query Operation Actor.
@@ -21,12 +22,12 @@ export class ActorQueryOperationOrderByDirect extends ActorQueryOperationTypedMe
     this.window = args.window || Infinity;
   }
 
-  public async testOperation(pattern: Algebra.OrderBy, context?: {[id: string]: any}): Promise<IActorTest> {
+  public async testOperation(pattern: Algebra.OrderBy, context?: { [id: string]: any }): Promise<IActorTest> {
     // will throw error for unsupported operators
     for (let expr of pattern.expressions) {
       // remove descending operator
       if (expr.expressionType === Algebra.expressionTypes.OPERATOR) {
-        const op = <Algebra.OperatorExpression> expr;
+        const op = expr as Algebra.OperatorExpression;
         if (op.operator === 'desc') {
           expr = op.args[0];
         }
@@ -36,7 +37,7 @@ export class ActorQueryOperationOrderByDirect extends ActorQueryOperationTypedMe
     return true;
   }
 
-  public async runOperation(pattern: Algebra.OrderBy, context?: {[id: string]: any})
+  public async runOperation(pattern: Algebra.OrderBy, context?: { [id: string]: any })
     : Promise<IActorQueryOperationOutputBindings> {
     const output: IActorQueryOperationOutputBindings =
       ActorQueryOperation.getSafeBindings(await this.mediatorQueryOperation.mediate(
@@ -48,7 +49,7 @@ export class ActorQueryOperationOrderByDirect extends ActorQueryOperationTypedMe
     for (let expr of pattern.expressions) {
       let ascending = true;
       if (expr.expressionType === Algebra.expressionTypes.OPERATOR) {
-        const op = <Algebra.OperatorExpression> expr;
+        const op = expr as Algebra.OperatorExpression;
         if (op.operator === 'desc') {
           ascending = false;
           expr = op.args[0];
@@ -61,11 +62,12 @@ export class ActorQueryOperationOrderByDirect extends ActorQueryOperationTypedMe
       interface IAnnotatedBinding { bindings: Bindings; result: Term; }
       const transform = (bindings: Bindings, next: any) => {
         evaluator.evaluate(bindings)
-          .then((result) => transformedStream._push({bindings, result}))
-          .then(next)
-          .catch((err) => transformedStream.emit('error', err));
+          .then((result) => transformedStream._push({ bindings, result }))
+          // Don't emit errors, order by allows results to be undefined
+          .catch((err) => transformedStream._push({ bindings, result: undefined }))
+          .then(next);
       };
-      const transformedStream = origin.transform<IAnnotatedBinding>({transform});
+      const transformedStream = origin.transform<IAnnotatedBinding>({ transform });
 
       // Sort the annoted stream
       const sortedStream = new SortIterator(transformedStream, (a, b) => {
@@ -78,7 +80,7 @@ export class ActorQueryOperationOrderByDirect extends ActorQueryOperationTypedMe
       }, options);
 
       // Remove the annotation
-      bindingsStream = sortedStream.map(({bindings, result}) => bindings);
+      bindingsStream = sortedStream.map(({ bindings, result }) => bindings);
     }
 
     return { type: 'bindings', bindingsStream, metadata: output.metadata, variables: output.variables };
