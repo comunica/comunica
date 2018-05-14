@@ -52,6 +52,7 @@
     "@comunica/actor-query-operation-construct": "^1.0.0",
     "@comunica/actor-query-operation-describe-subject": "^1.0.0",
     "@comunica/actor-query-operation-distinct-hash": "^1.0.0",
+    "@comunica/actor-query-operation-extend": "^1.0.0",
     "@comunica/actor-query-operation-filter-direct": "^1.0.0",
     "@comunica/actor-query-operation-from-quad": "^1.0.0",
     "@comunica/actor-query-operation-join": "^1.0.0",
