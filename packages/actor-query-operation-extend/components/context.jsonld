@@ -1,0 +1,11 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/components.jsonld",
+    {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
+      "caqoe": "npmd:@comunica/actor-query-operation-extend/",
+
+      "ActorQueryOperationExtend": "caqoe:Actor/QueryOperation/Extend"
+    }
+  ]
+}
