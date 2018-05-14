@@ -1,27 +1,55 @@
-import {ActorQueryOperation, Bindings} from "@comunica/bus-query-operation";
-import {Bus} from "@comunica/core";
-import {ArrayIterator} from "asynciterator";
-import {literal, variable} from "rdf-data-model";
-import {ActorQueryOperationExtend} from "../lib/ActorQueryOperationExtend";
+// tslint:disable:object-literal-sort-keys
+import { ActorQueryOperation, Bindings, IActorQueryOperationOutputBindings } from "@comunica/bus-query-operation";
+import { Bus } from "@comunica/core";
+import { ArrayIterator } from "asynciterator";
+import { literal, namedNode, variable } from "rdf-data-model";
+import { ActorQueryOperationExtend } from "../lib/ActorQueryOperationExtend";
 const arrayifyStream = require('arrayify-stream');
 
 describe('ActorQueryOperationExtend', () => {
   let bus;
   let mediatorQueryOperation;
 
+  const example = {
+    type: 'extend',
+    input: {
+      type: "bgp",
+      patterns: [{
+        subject: { value: "s" },
+        predicate: { value: "p" },
+        object: { value: "o" },
+        graph: { value: "" },
+        type: "pattern",
+      }],
+    },
+    variable: { value: "l" },
+    expression: {
+      type: "expression",
+      expressionType: "operator",
+      operator: "strlen",
+      args: [
+        {
+          type: "expression",
+          expressionType: "term",
+          term: { termType: 'Variable', value: "s" },
+        },
+      ],
+    },
+  };
+
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
     mediatorQueryOperation = {
       mediate: (arg) => Promise.resolve({
         bindingsStream: new ArrayIterator([
-          Bindings({ a: literal('1') }),
-          Bindings({ a: literal('2') }),
-          Bindings({ a: literal('3') }),
+          Bindings({ s: literal('1') }),
+          Bindings({ s: literal('2') }),
+          Bindings({ s: literal('3') }),
         ]),
         metadata: () => Promise.resolve({ totalItems: 3 }),
         operated: arg,
         type: 'bindings',
-        variables: ['a'],
+        variables: ['s'],
       }),
     };
   });
@@ -32,14 +60,14 @@ describe('ActorQueryOperationExtend', () => {
     });
 
     it('should be a ActorQueryOperationExtend constructor', () => {
-      expect(new (<any> ActorQueryOperationExtend)({ name: 'actor', bus, mediatorQueryOperation }))
+      expect(new (ActorQueryOperationExtend as any)({ name: 'actor', bus, mediatorQueryOperation }))
         .toBeInstanceOf(ActorQueryOperationExtend);
-      expect(new (<any> ActorQueryOperationExtend)({ name: 'actor', bus, mediatorQueryOperation }))
+      expect(new (ActorQueryOperationExtend as any)({ name: 'actor', bus, mediatorQueryOperation }))
         .toBeInstanceOf(ActorQueryOperation);
     });
 
     it('should not be able to create new ActorQueryOperationExtend objects without \'new\'', () => {
-      expect(() => { (<any> ActorQueryOperationExtend)(); }).toThrow();
+      expect(() => { (ActorQueryOperationExtend as any)(); }).toThrow();
     });
   });
 
@@ -51,7 +79,7 @@ describe('ActorQueryOperationExtend', () => {
     });
 
     it('should test on extend', () => {
-      const op = { operation: { type: 'extend' } };
+      const op = { operation: example };
       return expect(actor.test(op)).resolves.toBeTruthy();
     });
 
@@ -60,9 +88,17 @@ describe('ActorQueryOperationExtend', () => {
       return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
-    it('should run', () => {
-      const op = { operation: { type: 'extend' } };
-      return expect(actor.run(op)).resolves.toMatchObject({ todo: true }); // TODO
+    it('should run', async () => {
+      const op = { operation: example };
+      const output: IActorQueryOperationOutputBindings = await actor.run(op) as any;
+      expect(await arrayifyStream(output.bindingsStream)).toMatchObject([
+        Bindings({ l: literal('1', namedNode('http://www.w3.org/2001/XMLSchema#integer')) }),
+        Bindings({ l: literal('1', namedNode('http://www.w3.org/2001/XMLSchema#integer')) }),
+        Bindings({ l: literal('1', namedNode('http://www.w3.org/2001/XMLSchema#integer')) }),
+      ]);
+      expect(output.type).toEqual('bindings');
+      expect(output.metadata()).toMatchObject(Promise.resolve({ totalItems: 3 }));
+      expect(output.variables).toMatchObject(['l']);
     });
   });
 });

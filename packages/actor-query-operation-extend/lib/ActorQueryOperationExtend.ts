@@ -6,6 +6,7 @@ import {
 import { BindingsStream } from "@comunica/bus-query-operation";
 import { IActorTest } from "@comunica/core";
 import { Algebra } from "sparqlalgebrajs";
+import { AsyncEvaluator } from "sparqlee";
 
 /**
  * A comunica Extend Query Operation Actor.
@@ -25,13 +26,23 @@ export class ActorQueryOperationExtend extends ActorQueryOperationTypedMediated<
   public async runOperation(pattern: Algebra.Extend, context?: { [id: string]: any })
     : Promise<IActorQueryOperationOutputBindings> {
 
-    // const { } = pattern;
+    const { expression, input, variable } = pattern;
+
     // Resolve the input
     const output: IActorQueryOperationOutputBindings = ActorQueryOperation.getSafeBindings(
       await this.mediatorQueryOperation.mediate({ operation: pattern.input, context }));
 
-    const variables = output.variables;
-    const bindingsStream = output.bindingsStream;
+    const evaluator = new AsyncEvaluator(expression);
+    const transform = (item: Bindings, next: any) => {
+      evaluator.evaluate(item)
+        .then((result) => bindingsStream._push(
+          Bindings({ [variable.value]: result })),
+      )
+        .then(() => next())
+        .catch((err) => bindingsStream.emit('error', err));
+    };
+    const variables = [variable.value];
+    const bindingsStream = output.bindingsStream.transform<Bindings>({ transform });
 
     // TODO check if metadata can be kept
     return { type: 'bindings', bindingsStream, metadata: output.metadata, variables };
