@@ -22,7 +22,7 @@ describe('ActorQueryOperationExtend', () => {
         type: "pattern",
       }],
     },
-    variable: { value: "l" },
+    variable: { termType: 'Variable', value: "l" },
     expression: {
       type: "expression",
       expressionType: "operator",
@@ -92,13 +92,13 @@ describe('ActorQueryOperationExtend', () => {
       const op = { operation: example };
       const output: IActorQueryOperationOutputBindings = await actor.run(op) as any;
       expect(await arrayifyStream(output.bindingsStream)).toMatchObject([
-        Bindings({ l: literal('1', namedNode('http://www.w3.org/2001/XMLSchema#integer')) }),
-        Bindings({ l: literal('1', namedNode('http://www.w3.org/2001/XMLSchema#integer')) }),
-        Bindings({ l: literal('1', namedNode('http://www.w3.org/2001/XMLSchema#integer')) }),
+        Bindings({ '?l': literal('1', namedNode('http://www.w3.org/2001/XMLSchema#integer')) }),
+        Bindings({ '?l': literal('1', namedNode('http://www.w3.org/2001/XMLSchema#integer')) }),
+        Bindings({ '?l': literal('1', namedNode('http://www.w3.org/2001/XMLSchema#integer')) }),
       ]);
       expect(output.type).toEqual('bindings');
       expect(output.metadata()).toMatchObject(Promise.resolve({ totalItems: 3 }));
-      expect(output.variables).toMatchObject(['l']);
+      expect(output.variables).toMatchObject(['?l']);
     });
   });
 });

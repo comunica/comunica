@@ -40,7 +40,8 @@
     "@comunica/bus-query-operation": "^1.0.0"
   },
   "dependencies": {
-    "sparqlee": "0.0.1-rc5"
+    "sparqlee": "0.0.1-rc6",
+    "rdf-string": "^1.1.1"
   },
   "jest": {
     "transform": {
