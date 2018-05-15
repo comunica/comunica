@@ -54,9 +54,9 @@
   "dependencies": {
     "bluebird": "^3.5.1",
     "immutable": "^3.8.2",
-    "lodash.isequal": "^4.5.0",
     "rdf-data-model": "^1.0.0",
     "rdf-js": "^1.0.1",
+    "rdf-string": "^1.1.1",
     "sparqlalgebrajs": "^0.7.3"
   },
   "jest": {

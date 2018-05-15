@@ -3,6 +3,7 @@ import { Algebra } from 'sparqlalgebrajs';
 import * as C from './Consts';
 
 import * as E from '../core/Expressions';
+import { Bindings } from '../core/Types';
 
 export class UnimplementedError extends Error {
   constructor() {
@@ -13,6 +14,12 @@ export class UnimplementedError extends Error {
 export class InvalidLexicalForm extends Error {
   constructor(public args: RDF.Term) {
     super('Invalid lexical form');
+  }
+}
+
+export class UnboundVariableError extends Error {
+  constructor(public variable: string, public bindings: Bindings) {
+    super(`Unbound variable ${variable}`);
   }
 }
 

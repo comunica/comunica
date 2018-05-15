@@ -1,6 +1,5 @@
 import * as Promise from 'bluebird';
 import { List, Map } from 'immutable';
-import * as _ from 'lodash';
 
 import * as C from '../../util/Consts';
 import * as E from '../Expressions';

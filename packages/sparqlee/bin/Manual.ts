@@ -1,6 +1,4 @@
 #! /usr/bin/env node
-
-import * as _ from 'lodash';
 import * as RDF from 'rdf-data-model';
 import { Algebra as Alg } from 'sparqlalgebrajs';
 
@@ -18,19 +16,9 @@ function print(expr: string, full?: boolean): void {
 }
 
 async function testEval() {
-  // const ex = new Example('?a / ?b', () => Bindings({
-  //   a: RDF.literal("3", C.make(C.DataType.XSD_INTEGER)),
-  //   b: RDF.literal("3", C.make(C.DataType.XSD_INTEGER)),
-  // }));
-  // const ex = new Example('?a && ?c', () => Bindings({
-  //   a: RDF.literal("true", C.make(DT.XSD_BOOLEAN)),
-  //   b: RDF.literal("true", C.make(DT.XSD_BOOLEAN)),
-  // }));
-  const ex = new U.Example('langMatches("de-Deva","de-*-DE")');
-  // const ex = new Example('?a IN (?b, "")', () => Bindings({
-  //   a: RDF.literal("aaa"),
-  // }));
-
+  const ex = new U.Example('langMatches(?a, "de-*-DE")', () => Bindings({
+    'a': RDF.literal('aaa'),
+  }));
   const evaluator = new AsyncEvaluator(ex.expression, U.mockLookUp, U.mockAggregator);
   const presult = evaluator.evaluate(ex.mapping()).catch((err) => console.log(err));
   const val = await presult;
@@ -38,7 +26,7 @@ async function testEval() {
 }
 
 testEval();
-// print('SELECT ((?s + ?p) as ?avg) WHERE { ?s ?p ?o }', true);
+// print('SELECT (strlen(?s) as ?l) WHERE { ?s ?p ?o }', true);
 // print('isIRI(<mailto:test@example.com>)');
 // print('bound(?a)');
 // print('IF(?a, ?a, ?a)');

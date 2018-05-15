@@ -1,13 +1,12 @@
 import * as Promise from 'bluebird';
 import { List, Map } from 'immutable';
-import * as _ from 'lodash';
 import * as RDFDM from 'rdf-data-model';
 import * as RDF from 'rdf-js';
 import { Algebra } from 'sparqlalgebrajs';
 
 import { Bindings } from '../core/Types';
 import * as C from '../util/Consts';
-import { InvalidArgumentTypes, InvalidArity, UnimplementedError, EBVCoercionError } from '../util/Errors';
+import { EBVCoercionError, InvalidArgumentTypes, InvalidArity, UnimplementedError } from '../util/Errors';
 
 export enum expressionTypes {
   AGGREGATE = 'aggregate',

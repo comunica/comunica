@@ -64,7 +64,7 @@ export class AsyncEvaluator {
         term: rdfTerm,
       }) as E.TermExpression;
     } else {
-      throw new TypeError('Unbound variable');
+      throw new Err.UnboundVariableError(expr.name, mapping);
     }
   }
 

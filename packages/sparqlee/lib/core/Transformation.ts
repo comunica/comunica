@@ -1,4 +1,5 @@
 import * as RDF from 'rdf-js';
+import * as RDFString from 'rdf-string';
 import { Algebra as Alg } from 'sparqlalgebrajs';
 
 import * as Err from '../util/Errors';
@@ -28,7 +29,7 @@ export function transformAlgebra(expr: Alg.Expression): E.Expression {
 
 export function transformTerm(term: Alg.TermExpression): E.Expression {
   switch (term.term.termType) {
-    case 'Variable': return new E.Variable(term.term.value);
+    case 'Variable': return new E.Variable(RDFString.termToString(term.term));
     case 'Literal': return tranformLiteral(term.term as RDF.Literal);
     // TODO
     case 'NamedNode': throw new Err.UnimplementedError();
