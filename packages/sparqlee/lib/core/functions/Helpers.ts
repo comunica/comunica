@@ -10,7 +10,7 @@ import * as C from '../../util/Consts';
 import * as E from '../Expressions';
 
 import { DataType as DT } from '../../util/Consts';
-import { InvalidLexicalForm, UnimplementedError } from '../../util/Errors';
+import { InvalidLexicalForm, UnimplementedError, UnexpectedError } from '../../util/Errors';
 import { ArgumentType, OverloadMap } from './Types';
 
 // ----------------------------------------------------------------------------
@@ -199,7 +199,7 @@ function implDefaults() {
   return {
     types: [] as ArgumentType[],
     func(args: Term[]) {
-      throw new UnimplementedError();
+      throw new UnexpectedError('Implementation for function not set but declared as implemented');
     },
   };
 }

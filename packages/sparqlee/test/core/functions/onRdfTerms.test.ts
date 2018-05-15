@@ -11,6 +11,7 @@ const aliasMap = {
   string: '"string"^^xsd:string',
   number: '"3"^^xsd:integer',
   badlex: '"badlex"^^xsd:integer',
+  uri: '<http://dbpedia.org/resource/Adventist_Heritage>',
 };
 const resultMap = {
   simple: RDFDM.literal('simple'),
@@ -22,6 +23,7 @@ const resultMap = {
   xsdInt: RDFDM.literal(C.DataType.XSD_INTEGER),
   xsdString: RDFDM.literal(C.DataType.XSD_STRING),
   emptyString: RDFDM.literal(''),
+  uri: RDFDM.literal('http://dbpedia.org/resource/Adventist_Heritage'),
 };
 
 const _default = { aliasMap, resultMap, arity: 1, notation: Notation.Function };
@@ -37,6 +39,7 @@ describe('the evaluation of functions on RDF terms', () => {
     number = number
     badlex = badlex
     string = string
+    uri = uri
     `;
     _testTable('str', table);
   });
@@ -88,6 +91,7 @@ describe('the coercion of RDF terms to it\'s EBV', () => {
 
     date: '"2001-10-26T21:32:52+02:00"^^xsd:dateTime',
     unbound: '?a',
+    uri: '<http://dbpedia.org/resource/Adventist_Heritage>',
   };
   describe('like', () => {
     // Using && as utility to force EBV
@@ -117,6 +121,7 @@ describe('the coercion of RDF terms to it\'s EBV', () => {
     const errorTable = `
     unbound true = error
     date true = error
+    uri true = error
     `;
     testTable({
       ..._default,

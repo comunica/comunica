@@ -101,6 +101,19 @@ export abstract class Term implements TermExpression {
 
 }
 
+export class NamedNode extends Term {
+  termType: TermType = 'namedNode';
+  constructor(public value: string) { super(); }
+
+  toRDF(): RDF.Term {
+    return RDFDM.namedNode(this.value);
+  }
+
+  str(): string {
+    return this.value;
+  }
+}
+
 export interface LiteralTerm extends TermExpression {
   category: C.DataTypeCategory;
 }

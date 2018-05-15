@@ -1,6 +1,6 @@
 import * as Promise from 'bluebird';
 import { Map } from 'immutable';
-import { forAll, Impl, map, str, unary, expand } from './Helpers';
+import { expand, forAll, Impl, map, str, unary } from './Helpers';
 
 import * as C from '../../util/Consts';
 import * as E from './../Expressions';
@@ -58,19 +58,19 @@ const _definitions: IDefinitionMap = {
     arity: 1,
     category: 'simple',
     types: [],
-    apply: () => { throw new UnimplementedError(); },
+    apply: () => { throw new UnimplementedError('! operator'); },
   },
   'UPLUS': {
     arity: 1,
     category: 'simple',
     types: [],
-    apply: () => { throw new UnimplementedError(); },
+    apply: () => { throw new UnimplementedError('Unary plus operator'); },
   },
   'UMINUS': {
     arity: 1,
     category: 'simple',
     types: [],
-    apply: () => { throw new UnimplementedError(); },
+    apply: () => { throw new UnimplementedError('Unary minus operator'); },
   },
   '&&': {
     arity: 2,
@@ -302,7 +302,7 @@ const _definitions: IDefinitionMap = {
     category: 'simple',
     types: [],
     apply: (args: Term[]) => {
-      throw new UnimplementedError();
+      throw new UnimplementedError('now function');
     },
   },
 

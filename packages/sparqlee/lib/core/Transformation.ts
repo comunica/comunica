@@ -20,9 +20,9 @@ export function transformAlgebra(expr: Alg.Expression): E.Expression {
       return makeOp(opIn.operator, args);
     }
     // TODO
-    case types.NAMED: throw new Err.UnimplementedError();
-    case types.EXISTENCE: throw new Err.UnimplementedError();
-    case types.AGGREGATE: throw new Err.UnimplementedError();
+    case types.NAMED: throw new Err.UnimplementedError('Named Operator');
+    case types.EXISTENCE: throw new Err.UnimplementedError('Existence Operator');
+    case types.AGGREGATE: throw new Err.UnimplementedError('Aggregate Operator');
     default: throw new Err.InvalidExpressionType(expr);
   }
 }
@@ -31,8 +31,8 @@ export function transformTerm(term: Alg.TermExpression): E.Expression {
   switch (term.term.termType) {
     case 'Variable': return new E.Variable(RDFString.termToString(term.term));
     case 'Literal': return tranformLiteral(term.term as RDF.Literal);
-    // TODO
-    case 'NamedNode': throw new Err.UnimplementedError();
+    case 'NamedNode': return new E.NamedNode(term.term.value);
+    case 'BlankNode': throw new Err.UnimplementedError('Blank Node');
     default: throw new Err.InvalidTermType(term);
   }
 }

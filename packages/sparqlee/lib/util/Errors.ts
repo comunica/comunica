@@ -6,8 +6,8 @@ import * as E from '../core/Expressions';
 import { Bindings } from '../core/Types';
 
 export class UnimplementedError extends Error {
-  constructor() {
-    super('Unimplemented feature!');
+  constructor(feature: string) {
+    super(`Unimplemented feature '${feature}!'`);
   }
 }
 
@@ -57,7 +57,7 @@ export class InvalidArity extends Error {
 
 export class InvalidArgumentTypes extends Error {
   constructor(public args: E.Expression[], public op: C.Operator) {
-    super("Argument types not valid for operator.");
+    super('Argument types not valid for operator.');
   }
 }
 export class InvalidExpressionType<T> extends Error {
