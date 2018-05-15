@@ -1,5 +1,5 @@
 /**
- * These helpers provide a (albeit inflexible) DSL for writing function 
+ * These helpers provide a (albeit inflexible) DSL for writing function
  * definitions for the SPARQL functions.
  */
 
@@ -13,7 +13,6 @@ import { DataType as DT } from '../../util/Consts';
 import { InvalidLexicalForm, UnimplementedError } from '../../util/Errors';
 import { ArgumentType, OverloadMap } from './Types';
 
-
 // ----------------------------------------------------------------------------
 // Literal Construction helpers
 // ----------------------------------------------------------------------------
@@ -26,8 +25,8 @@ export function number(num: number, dt?: C.DataType): E.NumericLiteral {
   return new E.NumericLiteral(num, undefined, C.make(dt || DT.XSD_FLOAT));
 }
 
-export function str(str: string): E.SimpleLiteral {
-  return new E.SimpleLiteral(str, str);
+export function str(s: string): E.SimpleLiteral {
+  return new E.SimpleLiteral(s, s);
 }
 
 export function list(...args: ArgumentType[]) {
@@ -40,10 +39,31 @@ export function list(...args: ArgumentType[]) {
 
 type Term = E.TermExpression;
 
+export type AliasType = 'stringly' | 'simple';
+export function expand(allowedTypes: AliasType[]): ArgumentType[][] {
+  const expandedArgs: ArgumentType[][] = allowedTypes.map((alias) => {
+    if (alias === 'stringly') {
+      const expanded: ArgumentType[] = ['simple', 'plain', 'string'];
+      return expanded;
+    }
+    if (alias === 'simple') {
+      const expanded: ArgumentType[] = ['simple', 'string'];
+      return expanded;
+    }
+  });
+  return cartesianProduct(expandedArgs);
+}
 
-export function forAll(allTypes: Array<ArgumentType[]>, func: E.SimpleApplication): OverloadMap {
+export function forAll(allTypes: ArgumentType[][], func: E.SimpleApplication): OverloadMap {
   return map(allTypes.map((types) => new Impl({ types, func })));
 }
+
+function cartesianProduct<T>(arr: T[][]): T[][] {
+  return arr.reduce((a, b) =>
+    a.map((x) => b.map((y) => x.concat(y)))
+      .reduce((_a, _b) => _a.concat(_b), []), [[]] as T[][]);
+}
+
 /*
 * Arithetic Operators take numbers, and return numbers.
 * Check 'numeric' for behaviour of the generic numeric helper.
@@ -147,14 +167,11 @@ export function binary<T, R>(op: BinLiteralOp<T, R>, args: E.TermExpression[]): 
 //   return op(val.typedValue);
 // }
 
-
-
 function invalidLexicalForm(index: number) {
   return (args: Term[]) => {
     throw new InvalidLexicalForm(args[index - 1].toRDF());
   };
 }
-
 
 // ----------------------------------------------------------------------------
 // Type Safety Helpers
@@ -196,6 +213,6 @@ export class Impl extends Record(implDefaults()) {
 
 export function map(implementations: Impl[]): OverloadMap {
   return Map<List<ArgumentType>, E.SimpleApplication>(
-    implementations.map((i) => [List(i.get('types')), i.get('func')])
+    implementations.map((i) => [List(i.get('types')), i.get('func')]),
   );
 }

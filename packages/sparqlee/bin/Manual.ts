@@ -17,7 +17,7 @@ function print(expr: string, full?: boolean): void {
 
 async function testEval() {
   const ex = new U.Example('langMatches(?a, "de-*-DE")', () => Bindings({
-    'a': RDF.literal('aaa'),
+    '?a': RDF.literal('aaa'),
   }));
   const evaluator = new AsyncEvaluator(ex.expression, U.mockLookUp, U.mockAggregator);
   const presult = evaluator.evaluate(ex.mapping()).catch((err) => console.log(err));

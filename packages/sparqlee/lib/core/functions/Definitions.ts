@@ -1,6 +1,6 @@
 import * as Promise from 'bluebird';
 import { Map } from 'immutable';
-import { forAll, Impl, map, str, unary } from './Helpers';
+import { forAll, Impl, map, str, unary, expand } from './Helpers';
 
 import * as C from '../../util/Consts';
 import * as E from './../Expressions';
@@ -271,17 +271,10 @@ const _definitions: IDefinitionMap = {
   'regex': {
     arity: [2, 3],
     category: 'overloaded',
+    // // TODO: This deviates from the spec, as the second and third argument should be simple literals
     overloads: forAll(
-      [
-        // TODO: This deviates from the spec, as the second and third argument should be simple literals
-        ['simple', 'string'],
-        ['plain', 'string'],
-        ['string', 'string'],
-        ['simple', 'string', 'string'],
-        ['plain', 'string', 'string'],
-        ['string', 'string', 'string'],
-
-      ],
+      [].concat(expand(['stringly', 'simple']))
+        .concat(expand(['stringly', 'simple', 'simple'])),
       (args: Array<E.Literal<string>>) => bool(X.matches(
         args[0].typedValue,
         args[1].typedValue,

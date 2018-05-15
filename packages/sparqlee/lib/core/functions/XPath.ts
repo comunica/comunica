@@ -74,9 +74,13 @@ export function stringLength(val: string): number {
   return val.length;
 }
 
+// https://www.w3.org/TR/xpath-functions/#func-matches
+// https://www.w3.org/TR/xpath-functions/#flags
 export function matches(text: string, pattern: string, flags?: string): boolean {
-  // TODO
-  return !!text.match(pattern);
+  // TODO: Only flags 'i' and 'm' match between XPath and JS.
+  // 's', 'x', 'q', would need proper implementation.
+  const reg = new RegExp(pattern, flags);
+  return reg.test(text);
 }
 
 // TODO: Not an XPath function
