@@ -31,7 +31,7 @@ describe('ActorQueryOperationExtend', () => {
         {
           type: "expression",
           expressionType: "term",
-          term: { termType: 'Variable', value: "s" },
+          term: { termType: 'Variable', value: 's' },
         },
       ],
     },
@@ -42,14 +42,14 @@ describe('ActorQueryOperationExtend', () => {
     mediatorQueryOperation = {
       mediate: (arg) => Promise.resolve({
         bindingsStream: new ArrayIterator([
-          Bindings({ s: literal('1') }),
-          Bindings({ s: literal('2') }),
-          Bindings({ s: literal('3') }),
+          Bindings({ '?s': literal('1') }),
+          Bindings({ '?s': literal('2') }),
+          Bindings({ '?s': literal('3') }),
         ]),
         metadata: () => Promise.resolve({ totalItems: 3 }),
         operated: arg,
         type: 'bindings',
-        variables: ['s'],
+        variables: ['?s'],
       }),
     };
   });

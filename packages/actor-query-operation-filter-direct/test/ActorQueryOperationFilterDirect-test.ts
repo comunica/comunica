@@ -37,14 +37,14 @@ describe('ActorQueryOperationFilterDirect', () => {
     mediatorQueryOperation = {
       mediate: (arg) => Promise.resolve({
         bindingsStream: new ArrayIterator([
-          Bindings({ a: literal('1') }),
-          Bindings({ a: literal('2') }),
-          Bindings({ a: literal('3') }),
+          Bindings({ '?a': literal('1') }),
+          Bindings({ '?a': literal('2') }),
+          Bindings({ '?a': literal('3') }),
         ]),
         metadata: () => Promise.resolve({ totalItems: 3 }),
         operated: arg,
         type: 'bindings',
-        variables: ['a'],
+        variables: ['?a'],
       }),
     };
   });
@@ -55,14 +55,14 @@ describe('ActorQueryOperationFilterDirect', () => {
     });
 
     it('should be a ActorQueryOperationFilterDirect constructor', () => {
-      expect(new (<any> ActorQueryOperationFilterDirect)({ name: 'actor', bus, mediatorQueryOperation }))
+      expect(new (ActorQueryOperationFilterDirect as any)({ name: 'actor', bus, mediatorQueryOperation }))
         .toBeInstanceOf(ActorQueryOperationFilterDirect);
-      expect(new (<any> ActorQueryOperationFilterDirect)({ name: 'actor', bus, mediatorQueryOperation }))
+      expect(new (ActorQueryOperationFilterDirect as any)({ name: 'actor', bus, mediatorQueryOperation }))
         .toBeInstanceOf(ActorQueryOperation);
     });
 
     it('should not be able to create new ActorQueryOperationFilterDirect objects without \'new\'', () => {
-      expect(() => { (<any> ActorQueryOperationFilterDirect)(); }).toThrow();
+      expect(() => { (ActorQueryOperationFilterDirect as any)(); }).toThrow();
     });
   });
 
@@ -90,29 +90,29 @@ describe('ActorQueryOperationFilterDirect', () => {
 
     it('should return the full stream for a truthy filter', async () => {
       const op = { operation: { type: 'filter', input: {}, expression: truthyExpression } };
-      const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
+      const output: IActorQueryOperationOutputBindings = await actor.run(op) as any;
       expect(await arrayifyStream(output.bindingsStream)).toMatchObject([
-        Bindings({ a: literal('1') }),
-        Bindings({ a: literal('2') }),
-        Bindings({ a: literal('3') }),
+        Bindings({ '?a': literal('1') }),
+        Bindings({ '?a': literal('2') }),
+        Bindings({ '?a': literal('3') }),
       ]);
       expect(output.type).toEqual('bindings');
       expect(output.metadata()).toMatchObject(Promise.resolve({ totalItems: 3 }));
-      expect(output.variables).toMatchObject(['a']);
+      expect(output.variables).toMatchObject(['?a']);
     });
 
     it('should return an empty stream for a falsy filter', async () => {
       const op = { operation: { type: 'filter', input: {}, expression: falsyExpression } };
-      const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
+      const output: IActorQueryOperationOutputBindings = await actor.run(op) as any;
       expect(await arrayifyStream(output.bindingsStream)).toMatchObject([]);
       expect(output.metadata()).toMatchObject(Promise.resolve({ totalItems: 3 }));
       expect(output.type).toEqual('bindings');
-      expect(output.variables).toMatchObject(['a']);
+      expect(output.variables).toMatchObject(['?a']);
     });
 
     it('should emit an error for an erroring filter', async () => {
       const op = { operation: { type: 'filter', input: {}, expression: erroringExpression } };
-      const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
+      const output: IActorQueryOperationOutputBindings = await actor.run(op) as any;
       return expect(arrayifyStream(output.bindingsStream)).rejects.toBeTruthy();
     });
   });
