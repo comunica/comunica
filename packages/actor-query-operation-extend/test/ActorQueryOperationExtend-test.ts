@@ -156,7 +156,7 @@ describe('ActorQueryOperationExtend', () => {
       actor = new ActorQueryOperationExtend({ name: 'actor', bus, mediatorQueryOperation });
       const op = { operation: example(defaultExpression) };
       const output: IActorQueryOperationOutputBindings = await actor.run(op) as any;
-      expect(arrayifyStream(output.bindingsStream)).rejects.toBeTruthy();
+      return expect(arrayifyStream(output.bindingsStream)).rejects.toBeTruthy();
     });
   });
 });

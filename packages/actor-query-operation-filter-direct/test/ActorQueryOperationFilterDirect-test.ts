@@ -1,3 +1,4 @@
+// tslint:disable:object-literal-sort-keys
 import { ActorQueryOperation, Bindings, IActorQueryOperationOutputBindings } from "@comunica/bus-query-operation";
 import { Bus } from "@comunica/core";
 import { ArrayIterator } from "asynciterator";
@@ -117,6 +118,45 @@ describe('ActorQueryOperationFilterDirect', () => {
       expect(output.metadata()).toMatchObject(Promise.resolve({ totalItems: 0 }));
       expect(output.type).toEqual('bindings');
       expect(output.variables).toMatchObject(['?a']);
+    });
+
+    it('should throw when evaluation code returns rejected promise', async () => {
+
+      const expression = {
+        type: "expression",
+        expressionType: "operator",
+        operator: "strlen",
+        args: [
+          {
+            type: "expression",
+            expressionType: "term",
+            term: { termType: 'Variable', value: 'a' },
+          },
+        ],
+      };
+
+      const badLiteral = literal('testliteral', namedNode('http://www.w3.org/2001/XMLSchema#integer'));
+      Object.defineProperty(badLiteral, 'value', {
+        get: () => { throw new Error(); },
+      });
+
+      mediatorQueryOperation.mediate = (arg) => Promise.resolve({
+        bindingsStream: new ArrayIterator([
+          Bindings({ '?a': badLiteral }),
+          Bindings({ '?a': badLiteral }),
+          Bindings({ '?a': badLiteral }),
+        ]),
+        metadata: () => Promise.resolve({ totalItems: 3 }),
+        operated: arg,
+        type: 'bindings',
+        variables: ['?a'],
+      });
+
+      actor = new ActorQueryOperationFilterDirect({ name: 'actor', bus, mediatorQueryOperation });
+      const op = { operation: { type: 'filter', input: {}, expression } };
+      const output: IActorQueryOperationOutputBindings = await actor.run(op) as any;
+      const results = arrayifyStream(output.bindingsStream);
+      return expect(arrayifyStream(output.bindingsStream)).rejects.toBeTruthy();
     });
   });
 });

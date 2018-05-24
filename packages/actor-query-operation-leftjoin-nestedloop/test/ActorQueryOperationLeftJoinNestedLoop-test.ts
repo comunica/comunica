@@ -10,16 +10,18 @@ describe('ActorQueryOperationLeftJoinNestedLoop', () => {
   let bus;
   let mediatorQueryOperation;
   let left;
+  let bindingStreamLeft;
+  let bindingStreamRight;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
     left = false;
-    const bindingStreamLeft = new ArrayIterator([
+    bindingStreamLeft = new ArrayIterator([
       Bindings({ '?a': literal('1') }),
       Bindings({ '?a': literal('2') }),
       Bindings({ '?a': literal('3') }),
     ]);
-    const bindingStreamRight = new ArrayIterator([
+    bindingStreamRight = new ArrayIterator([
       Bindings({ '?a': literal('1'), '?b': literal('1') }),
       Bindings({ '?a': literal('3'), '?b': literal('1') }),
       Bindings({ '?a': literal('3'), '?b': literal('2') }),
