@@ -22,9 +22,17 @@ export abstract class ActorSparqlParse extends Actor<IActionSparqlParse, IActorT
 
 export interface IActionSparqlParse extends IAction {
   /**
-   * A query in SPARQL syntax.
+   * A query.
    */
   query: string;
+  /**
+   * The query format.
+   */
+  queryFormat?: string;
+  /**
+   * An optional context.
+   */
+  context?: any;
 }
 
 export interface IActorSparqlParseOutput extends IActorOutput {

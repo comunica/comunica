@@ -1,0 +1,21 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-sparql-parse-graphql/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-sparql-parse/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-sparql-parse-graphql",
+  "components": [
+    {
+      "@id": "caspg:Actor/SparqlParse/Graphql",
+      "@type": "Class",
+      "extends": "cbsp:Actor/SparqlParse",
+      "requireElement": "ActorSparqlParseGraphql",
+      "comment": "A comunica GraphQL SPARQL Parse Actor.",
+      "constructorArguments": [
+        {
+          "extends": "cbsp:Actor/SparqlParse/constructorArgumentsObject"
+        }
+      ]
+    }
+  ]
+}

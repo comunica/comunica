@@ -43,6 +43,7 @@ export class ActorInitSparql extends ActorInitSparqlBrowser {
 
 Usage:
   comunica-sparql http://fragments.example.org/dataset [-q] 'SELECT * WHERE { ?s ?p ?o }'
+  comunica-sparql http://fragments.example.org/dataset [-q] '{ hero { name friends { name } } }' -i graphql
   comunica-sparql http://fragments.example.org/dataset [-f] query.sparql'
   comunica-sparql http://fragments.example.org/dataset http://sparql.example.org/ ...
   comunica-sparql hypermedia@http://fragments.example.org/dataset sparql@http://sparql.example.org/ ...
@@ -90,6 +91,12 @@ Options:
       context = {};
     }
 
+    // Define the query format
+    context.queryFormat = 'sparql'; // Default to SPARQL
+    if (args.i) {
+      context.queryFormat = args.i;
+    }
+
     // Add sources to context
     if (args._.length > 0) {
       context.sources = context.sources || [];
@@ -111,7 +118,7 @@ Options:
     const queryResult: IActorQueryOperationOutput = await this.query(query, context);
 
     // Serialize output according to media type
-    const stdout: Readable = <Readable> (await this.resultToString(queryResult, args.t)).data;
+    const stdout: Readable = <Readable> (await this.resultToString(queryResult, args.t, context)).data;
 
     return { stdout };
   }

@@ -27,7 +27,12 @@ export type IActionRootSparqlParse = IActionAbstractMediaTyped<IActionSparqlSeri
 export type IActorTestRootSparqlParse = IActorTestAbstractMediaTyped<IActorTest>;
 export type IActorOutputRootSparqlParse = IActorOutputAbstractMediaTyped<IActorSparqlSerializeOutput>;
 
-export type IActionSparqlSerialize = IActorQueryOperationOutput;
+export interface IActionSparqlSerialize extends IActorQueryOperationOutput {
+  /**
+   * An optional context.
+   */
+  context?: any;
+}
 
 export interface IActorSparqlSerializeOutput extends IActorOutput {
   /**

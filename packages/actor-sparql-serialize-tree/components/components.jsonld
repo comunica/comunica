@@ -1,0 +1,9 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/contexts/comunica-actor-sparql-serialize-tree.jsonld",
+  "@id": "npmd:@comunica/actor-sparql-serialize-tree",
+  "@type": "Module",
+  "requireName": "@comunica/actor-sparql-serialize-tree",
+  "import": [
+    "Actor/SparqlSerialize/Tree.jsonld"
+  ]
+}

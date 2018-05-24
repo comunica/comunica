@@ -9,6 +9,7 @@
   "devDependencies": {
     "@types/asynciterator": "^1.1.1",
     "@types/bluebird": "^3.5.11",
+    "@types/graphql": "^0.13.1",
     "@types/jest": "^23.0.0",
     "@types/lodash.assign": "^4.2.3",
     "@types/lodash.defaults": "^4.2.3",

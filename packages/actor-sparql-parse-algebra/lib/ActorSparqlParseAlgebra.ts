@@ -12,6 +12,9 @@ export class ActorSparqlParseAlgebra extends ActorSparqlParse {
   }
 
   public async test(action: IActionSparqlParse): Promise<IActorTest> {
+    if (action.queryFormat && action.queryFormat !== 'sparql') {
+      throw new Error('This actor can only parse SPARQL queries');
+    }
     return true;
   }
 
