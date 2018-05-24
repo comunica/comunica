@@ -61,6 +61,7 @@
         "packages/actor-rdf-source-identifier-hypermedia-qpf/package.json",
         "packages/actor-rdf-source-identifier-sparql/package.json",
         "packages/actor-sparql-parse-algebra/package.json",
+        "packages/actor-sparql-parse-graphql/package.json",
         "packages/actor-sparql-serialize-json/package.json",
         "packages/actor-sparql-serialize-rdf/package.json",
         "packages/actor-sparql-serialize-simple/package.json",

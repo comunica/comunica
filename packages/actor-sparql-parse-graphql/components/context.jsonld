@@ -1,0 +1,12 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^3.0.0/components/context.jsonld",
+    {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
+      "caspg": "npmd:@comunica/actor-sparql-parse-graphql/",
+      "files-caspg": "caspg:^1.0.0/",
+
+      "ActorSparqlParseGraphql": "caspg:Actor/SparqlParse/Graphql"
+    }
+  ]
+}

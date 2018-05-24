@@ -1,0 +1,33 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-abstract-mediatyped.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-sparql-serialize-tree.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-sparql-serialize.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-sparql-serialize-tree",
+  "components": [
+    {
+      "@id": "casstr:Actor/SparqlSerialize/Tree",
+      "@type": "Class",
+      "extends": "cbss:Actor/SparqlSerializeFixedMediaTypes",
+      "requireElement": "ActorSparqlSerializeTree",
+      "comment": "A comunica Tree SPARQL Serialize Actor.",
+      "parameters": [
+        {
+          "@id": "caam:Actor/AbstractMediaTypedFixed/mediaTypeEntry",
+          "defaultScoped": {
+            "defaultScope": "casstr:Actor/SparqlSerialize/Tree",
+            "defaultScopedValue": [
+              { "mediaTypeKey": "tree", "priorityValue": "1.0" }
+            ]
+          }
+        }
+      ],
+      "constructorArguments": [
+        {
+          "extends": "cbss:Actor/SparqlSerializeFixedMediaTypes/constructorArgumentsObject"
+        }
+      ]
+    }
+  ]
+}

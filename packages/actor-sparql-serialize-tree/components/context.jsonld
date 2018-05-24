@@ -1,0 +1,11 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/components.jsonld",
+    {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
+      "casstr": "npmd:@comunica/actor-sparql-serialize-tree/",
+
+      "ActorSparqlSerializeTree": "casstr:Actor/SparqlSerialize/Tree"
+    }
+  ]
+}
