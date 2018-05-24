@@ -2,25 +2,52 @@
 
 A simple SPARQL expression evaluator library.
 
+This package is available on [npm](https://www.npmjs.com/package/sparqlee), type definitions are provided.
+
 ## Using Sparqlee
+
+
+```ts
+const expression = ...some sparql algebra expression...;
+const bindings = ...some bindings/solution mapping...;
+
+// Create an evaluator (a sync evaluator will exist in the future too)
+const evaluator = new AsyncEvaluator(expression)
+
+// evaluate it as a term
+evaluator.evaluate(bindings)
+  .then((term) => console.log(term));
+
+// or evaluate it as an Effective Boolean Value
+evaluator.evaluateAsEBV(bindings)
+  .then((result) => { if (result) => console.log(bindings);})
+```
 
 Note: If you want to use *aggregates*, or *exists* you should check out the [stream section](#streams).
 
-### Installation
+### Errors
 
-This package is available on [(TODO)npm]('blurb').
+Sparqlee exports an Error class called `ExpressionError` from which all SPARQL related errors inherit. These might include unbound variables, wrong types, invalid lexical forms, and much more. More info on errors [here](lib/util/Errors.ts).
 
-### Evaluating
-
-**TODO** Add section about creating an evaluator and passing bindings.
+```ts
+// Make sure to catch errors if you don't control binding input
+evaluator.evaluate(bindings)
+  .then(consumeResult)
+  .catch((error) => {
+    if (error instanceof ExpressionError) {
+        console.log(error); // SPARQL related errors
+    } else {
+        throw error; // programming errors or missing features.
+    }
+  });
+```
 
 ### Streams
 
-**TODO** Add section about streams and their relation to _aggregates_ and _exists_.
+'Aggregates' and 'Exists' operations are annoying problems to tackle in the context of an expression evaluator, since they make the whole thing statefull.
+They might span entire streams and, depending on the use case, have very different requirements for speed and memory consumption. Sparqlee has therefore decided to delegate this responsibility back to you (and might provide utility in the future). It accepts functions that will resolve the respective aggregate and exists operators, and will use those when needed. This way, the library can still be optimized for simple use cases, both in it's API as in it's development time, while it can still support the full spec.
 
-### Errors
-
-**TODO** Add section about Errors, and specifically about Expression Errors.
+**NOTE: Aggregates and Exists are not implemented yet.**
 
 ## Spec compliance
 
@@ -35,6 +62,18 @@ This package is available on [(TODO)npm]('blurb').
     * build and watch: `yarn run watch`
     * testing: `yarn run test`
     * benchmarking: `yarn run bench`
+
+### Adding missing functions
+
+Functions are defined in the [definitions file]("lib/core/functions/Definitions.ts), and you can add them there. You also need to define it as an operator [here](lib/util/Errors.ts). The type system might be a bit cumbersome, so definitely check the [helpers](lib/core/functions/Helpers.ts) and existing definitions.
+
+Three kinds exists:
+
+* Simple functions: where all arguments have only one possible types.
+* Overloaded functions: where multiple types are allowed, and implementation might be dependant on the actual types.
+* Special functions: whose behaviour deviates enough from the norm to warrant the implementations taking full control over type checking and evaluation (these are mostly the functional forms).
+
+**TODO**: Explain this hot mess some more.
 
 ### Testing
 

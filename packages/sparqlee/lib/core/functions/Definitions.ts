@@ -290,7 +290,10 @@ const _definitions: IDefinitionMap = {
   'abs': {
     arity: 1,
     category: 'overloaded',
-    overloads: Map(),
+    overloads: forAll(
+      [['term']],
+      () => { throw new UnimplementedError('abs'); },
+    ),
   },
 
   // --------------------------------------------------------------------------
