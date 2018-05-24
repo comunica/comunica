@@ -7,7 +7,7 @@ import { BindingsStream } from "@comunica/bus-query-operation";
 import { IActorTest } from "@comunica/core";
 import { termToString } from "rdf-string";
 import { Algebra } from "sparqlalgebrajs";
-import { AsyncEvaluator } from "sparqlee";
+import { AsyncEvaluator, ExpressionError } from "sparqlee";
 
 /**
  * A comunica Extend Query Operation Actor.
@@ -32,17 +32,28 @@ export class ActorQueryOperationExtend extends ActorQueryOperationTypedMediated<
     // Resolve the input
     const output: IActorQueryOperationOutputBindings = ActorQueryOperation.getSafeBindings(
       await this.mediatorQueryOperation.mediate({ operation: pattern.input, context }));
-
     const bindingKey = termToString(variable);
     const evaluator = new AsyncEvaluator(expression);
+    const throwIfHardError = (err: any) => {
+      if (!(err instanceof ExpressionError)) {
+        bindingsStream.emit('error', err);
+        throw err;
+      }
+    };
+
     const transform = (item: Bindings, next: any) => {
       evaluator.evaluate(item)
         .then((result) => {
           const newBindings = Bindings({ [bindingKey]: result });
           bindingsStream._push(newBindings);
         })
-        .then(() => next())
-        .catch((err) => bindingsStream.emit('error', err));
+
+        // Leave the value unbound if it's the expression that Errors
+        .catch((err) => {
+          throwIfHardError(err);
+          bindingsStream._push(Bindings({}));
+        })
+        .then(next);
     };
 
     const variables = [bindingKey];

@@ -1,3 +1,4 @@
+// tslint:disable:object-literal-sort-keys
 import { ActorQueryOperation, Bindings, IActorQueryOperationOutputBindings } from "@comunica/bus-query-operation";
 import { Bus } from "@comunica/core";
 import { ArrayIterator } from "asynciterator";
@@ -79,6 +80,59 @@ describe('ActorQueryOperationLeftJoinNestedLoop', () => {
           Bindings({ '?a': literal('2') }),
           Bindings({ '?a': literal('3'), '?b': literal('1') }),
           Bindings({ '?a': literal('3'), '?b': literal('2') }),
+        ]);
+        expect(output.metadata()).toMatchObject(Promise.resolve({ totalItems: 3 }));
+        expect(output.type).toEqual('bindings');
+        expect(output.variables).toMatchObject(['?a', '?b']);
+      });
+    });
+
+    it('should bind when expression evaluates true', () => {
+      const expression = {
+        type: "expression",
+        expressionType: "operator",
+        operator: "strlen",
+        args: [
+          {
+            type: "expression",
+            expressionType: "term",
+            term: { termType: 'Variable', value: 'b' },
+          },
+        ],
+      };
+      const op = { operation: { type: 'leftjoin', left: {}, right: {}, expression } };
+      return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
+        expect(await arrayifyStream(output.bindingsStream)).toEqual([
+          Bindings({ '?a': literal('1'), '?b': literal('1') }),
+          Bindings({ '?a': literal('2') }),
+          Bindings({ '?a': literal('3'), '?b': literal('1') }),
+          Bindings({ '?a': literal('3'), '?b': literal('2') }),
+        ]);
+        expect(output.metadata()).toMatchObject(Promise.resolve({ totalItems: 4 }));
+        expect(output.type).toEqual('bindings');
+        expect(output.variables).toMatchObject(['?a', '?b']);
+      });
+    });
+
+    it('should not bind when expression errors evaluates', () => {
+      const expression = {
+        type: "expression",
+        expressionType: "operator",
+        operator: "abs",
+        args: [
+          {
+            type: "expression",
+            expressionType: "term",
+            term: { termType: 'Variable', value: 's' },
+          },
+        ],
+      };
+      const op = { operation: { type: 'leftjoin', left: {}, right: {}, expression } };
+      return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
+        expect(await arrayifyStream(output.bindingsStream)).toEqual([
+          Bindings({ '?a': literal('1') }),
+          Bindings({ '?a': literal('2') }),
+          Bindings({ '?a': literal('3') }),
         ]);
         expect(output.metadata()).toMatchObject(Promise.resolve({ totalItems: 3 }));
         expect(output.type).toEqual('bindings');

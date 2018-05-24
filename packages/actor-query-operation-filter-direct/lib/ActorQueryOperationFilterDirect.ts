@@ -4,7 +4,7 @@ import {
 } from "@comunica/bus-query-operation";
 import { IActorTest } from "@comunica/core";
 import { Algebra } from "sparqlalgebrajs";
-import { AsyncEvaluator } from "sparqlee";
+import { AsyncEvaluator, ExpressionError } from "sparqlee";
 
 /**
  * A comunica Filter Direct Query Operation Actor.
@@ -28,12 +28,21 @@ export class ActorQueryOperationFilterDirect extends ActorQueryOperationTypedMed
     ActorQueryOperation.validateQueryOutput(output, 'bindings');
 
     const evaluator = new AsyncEvaluator(pattern.expression);
+    const throwIfHardError = (err: any) => {
+      if (!(err instanceof ExpressionError)) {
+        bindingsStream.emit('error', err);
+        throw err;
+      }
+    };
 
     const transform = (item: Bindings, next: any) => {
       evaluator.evaluateAsEBV(item)
-        .then((result) => (result) ? bindingsStream._push(item) : undefined)
-        .then(() => next())
-        .catch((err) => bindingsStream.emit('error', err));
+        // Push the binding if it evaluates true, else don't
+        .then((result) => { if (result) { bindingsStream._push(item); } })
+
+        // Consider as false when expression errors
+        .catch((err) => throwIfHardError(err))
+        .then(next);
     };
     const bindingsStream = output.bindingsStream.transform<Bindings>({ transform });
     return { type: 'bindings', bindingsStream, metadata: output.metadata, variables: output.variables };

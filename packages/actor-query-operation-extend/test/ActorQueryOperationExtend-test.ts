@@ -10,7 +10,7 @@ describe('ActorQueryOperationExtend', () => {
   let bus;
   let mediatorQueryOperation;
 
-  const example = {
+  const example = (expression) => ({
     type: 'extend',
     input: {
       type: "bgp",
@@ -23,18 +23,39 @@ describe('ActorQueryOperationExtend', () => {
       }],
     },
     variable: { termType: 'Variable', value: "l" },
-    expression: {
-      type: "expression",
-      expressionType: "operator",
-      operator: "strlen",
-      args: [
-        {
-          type: "expression",
-          expressionType: "term",
-          term: { termType: 'Variable', value: 's' },
-        },
-      ],
-    },
+    expression,
+  });
+
+  const defaultExpression = {
+    type: "expression",
+    expressionType: "operator",
+    operator: "strlen",
+    args: [
+      {
+        type: "expression",
+        expressionType: "term",
+        term: { termType: 'Variable', value: 's' },
+      },
+    ],
+  };
+
+  // We sum 2 strings, which should error
+  const faultyExpression = {
+    type: "expression",
+    expressionType: "operator",
+    operator: "+",
+    args: [
+      {
+        type: "expression",
+        expressionType: "term",
+        term: { termType: 'Variable', value: 's' },
+      },
+      {
+        type: "expression",
+        expressionType: "term",
+        term: { termType: 'Variable', value: 's' },
+      },
+    ],
   };
 
   beforeEach(() => {
@@ -79,7 +100,7 @@ describe('ActorQueryOperationExtend', () => {
     });
 
     it('should test on extend', () => {
-      const op = { operation: example };
+      const op = { operation: example(defaultExpression) };
       return expect(actor.test(op)).resolves.toBeTruthy();
     });
 
@@ -89,7 +110,7 @@ describe('ActorQueryOperationExtend', () => {
     });
 
     it('should run', async () => {
-      const op = { operation: example };
+      const op = { operation: example(defaultExpression) };
       const output: IActorQueryOperationOutputBindings = await actor.run(op) as any;
       expect(await arrayifyStream(output.bindingsStream)).toMatchObject([
         Bindings({ '?l': literal('1', namedNode('http://www.w3.org/2001/XMLSchema#integer')) }),
@@ -99,6 +120,43 @@ describe('ActorQueryOperationExtend', () => {
       expect(output.type).toEqual('bindings');
       expect(output.metadata()).toMatchObject(Promise.resolve({ totalItems: 3 }));
       expect(output.variables).toMatchObject(['?l']);
+    });
+
+    it('should unbind variables on erroring expressions', async () => {
+      const op = { operation: example(faultyExpression) };
+      const output: IActorQueryOperationOutputBindings = await actor.run(op) as any;
+      expect(await arrayifyStream(output.bindingsStream)).toMatchObject([
+        Bindings({}),
+        Bindings({}),
+        Bindings({}),
+      ]);
+      expect(output.type).toEqual('bindings');
+      expect(output.metadata()).toMatchObject(Promise.resolve({ totalItems: 3 }));
+      expect(output.variables).toMatchObject(['?l']);
+    });
+
+    it('should throw when evaluation code returns rejected promise', async () => {
+
+      const badLiteral = literal('testliteral');
+      Object.defineProperty(badLiteral, 'value', {
+        get: () => { throw new Error(); },
+      });
+
+      mediatorQueryOperation.mediate = (arg) => Promise.resolve({
+        bindingsStream: new ArrayIterator([
+          Bindings({ '?s': badLiteral }),
+          Bindings({ '?s': badLiteral }),
+          Bindings({ '?s': badLiteral }),
+        ]),
+        metadata: () => Promise.resolve({ totalItems: 3 }),
+        operated: arg,
+        type: 'bindings',
+        variables: ['?s'],
+      });
+      actor = new ActorQueryOperationExtend({ name: 'actor', bus, mediatorQueryOperation });
+      const op = { operation: example(defaultExpression) };
+      const output: IActorQueryOperationOutputBindings = await actor.run(op) as any;
+      expect(arrayifyStream(output.bindingsStream)).rejects.toBeTruthy();
     });
   });
 });

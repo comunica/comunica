@@ -105,15 +105,18 @@ describe('ActorQueryOperationFilterDirect', () => {
       const op = { operation: { type: 'filter', input: {}, expression: falsyExpression } };
       const output: IActorQueryOperationOutputBindings = await actor.run(op) as any;
       expect(await arrayifyStream(output.bindingsStream)).toMatchObject([]);
-      expect(output.metadata()).toMatchObject(Promise.resolve({ totalItems: 3 }));
+      expect(output.metadata()).toMatchObject(Promise.resolve({ totalItems: 0 }));
       expect(output.type).toEqual('bindings');
       expect(output.variables).toMatchObject(['?a']);
     });
 
-    it('should emit an error for an erroring filter', async () => {
+    it('should return an empty stream for an erroring filter', async () => {
       const op = { operation: { type: 'filter', input: {}, expression: erroringExpression } };
       const output: IActorQueryOperationOutputBindings = await actor.run(op) as any;
-      return expect(arrayifyStream(output.bindingsStream)).rejects.toBeTruthy();
+      expect(await arrayifyStream(output.bindingsStream)).toMatchObject([]);
+      expect(output.metadata()).toMatchObject(Promise.resolve({ totalItems: 0 }));
+      expect(output.type).toEqual('bindings');
+      expect(output.variables).toMatchObject(['?a']);
     });
   });
 });

@@ -5,7 +5,7 @@ import {
 import { ActorRdfJoin } from "@comunica/bus-rdf-join";
 import { IActorTest } from "@comunica/core";
 import { Algebra } from "sparqlalgebrajs";
-import { AsyncEvaluator } from 'sparqlee';
+import { AsyncEvaluator, ExpressionError } from 'sparqlee';
 
 /**
  * A comunica LeftJoin NestedLoop Query Operation Actor.
@@ -33,6 +33,13 @@ export class ActorQueryOperationLeftJoinNestedLoop extends ActorQueryOperationTy
       ? new AsyncEvaluator(pattern.expression)
       : undefined;
 
+    const throwIfHardError = (err: any) => {
+      if (!(err instanceof ExpressionError)) {
+        bindingsStream.emit('error', err);
+        throw err;
+      }
+    };
+
     const bindingsStream = left.bindingsStream.transform<Bindings>({
       optional: true,
       transform: (leftItem, next) => {
@@ -41,11 +48,11 @@ export class ActorQueryOperationLeftJoinNestedLoop extends ActorQueryOperationTy
         rightStream.on('data', (rightItem) => {
           const join = ActorRdfJoin.join(leftItem, rightItem);
           if (join) {
-            // TODO: If we want to keep orderening, next() should be used here.
+            // If we want to keep orderening, next() should be used here.
             if (pattern.expression) {
               evaluator.evaluateAsEBV(join)
-                .then((result) => { if (result) {bindingsStream._push(join); }})
-                .catch((err) => bindingsStream.emit('error', err));
+                .then((result) => { if (result) { bindingsStream._push(join); } })
+                .catch(throwIfHardError);
             } else {
               bindingsStream._push(join);
             }

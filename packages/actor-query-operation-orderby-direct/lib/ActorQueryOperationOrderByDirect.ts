@@ -7,7 +7,7 @@ import { IActorTest } from "@comunica/core";
 import { Term } from "rdf-js";
 import { termToString } from "rdf-string";
 import { Algebra } from "sparqlalgebrajs";
-import { AsyncEvaluator } from 'sparqlee';
+import { AsyncEvaluator, ExpressionError } from 'sparqlee';
 import { SortIterator } from "./SortIterator";
 
 /**
@@ -46,6 +46,13 @@ export class ActorQueryOperationOrderByDirect extends ActorQueryOperationTypedMe
     let bindingsStream = output.bindingsStream;
     const options = { window: this.window };
 
+    const throwIfHardError = (err: any) => {
+      if (!(err instanceof ExpressionError)) {
+        bindingsStream.emit('error', err);
+        throw err;
+      }
+    };
+
     for (let expr of pattern.expressions) {
       let ascending = true;
       if (expr.expressionType === Algebra.expressionTypes.OPERATOR) {
@@ -63,8 +70,11 @@ export class ActorQueryOperationOrderByDirect extends ActorQueryOperationTypedMe
       const transform = (bindings: Bindings, next: any) => {
         evaluator.evaluate(bindings)
           .then((result) => transformedStream._push({ bindings, result }))
-          // Don't emit errors, order by allows results to be undefined
-          .catch((err) => transformedStream._push({ bindings, result: undefined }))
+          // Don't emit expression errors, order by allows results to be undefined
+          .catch((err) => {
+            throwIfHardError(err);
+            transformedStream._push({ bindings, result: undefined });
+          })
           .then(next);
       };
       const transformedStream = origin.transform<IAnnotatedBinding>({ transform });
