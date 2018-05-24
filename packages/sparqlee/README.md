@@ -18,6 +18,10 @@ This package is available on [(TODO)npm]('blurb').
 
 **TODO** Add section about streams and their relation to _aggregates_ and _exists_.
 
+### Errors
+
+**TODO** Add section about Errors, and specifically about Expression Errors.
+
 ## Spec compliance
 
 **TODO** Add section about differences from the spec and which functions are affected (and which are implemented).

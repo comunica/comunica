@@ -1,5 +1,6 @@
 import * as RDF from 'rdf-js';
 
+import { ExpressionError } from '../../';
 import { evaluate } from '../../util/Util';
 
 /*
@@ -47,7 +48,7 @@ export interface EvaluationTable {
 export enum Notation {
   Infix,
   Prefix,
-  Function
+  Function,
 }
 
 /*
@@ -88,7 +89,7 @@ class BinaryTable extends Table<[string, string, string]> {
     this.parser.table.forEach((row) => {
       const [left, right, result] = row;
       const { aliasMap, resultMap, op } = this.def;
-      const expr = this.format([op, aliasMap[left], aliasMap[right]])
+      const expr = this.format([op, aliasMap[left], aliasMap[right]]);
       it(`${this.format([op, left, right])} should return ${result}`, () => {
         return expect(evaluate(expr)).resolves.toEqual(resultMap[result]);
       });
@@ -99,16 +100,17 @@ class BinaryTable extends Table<[string, string, string]> {
       const { aliasMap, op } = this.def;
       const expr = this.format([op, aliasMap[left], aliasMap[right]]);
       it(`${this.format([op, left, right])} should error`, () => {
-        return expect(evaluate(expr)).rejects.toThrow();
+        return expect(evaluate(expr)).rejects.toThrow(ExpressionError);
       });
     });
   }
 
   format([op, fst, snd]: string[]): string {
     switch (this.def.notation) {
-      case Notation.Function: return `${op}(${fst}, ${snd})`
-      case Notation.Prefix: return `${op} ${fst} ${snd}`
+      case Notation.Function: return `${op}(${fst}, ${snd})`;
+      case Notation.Prefix: return `${op} ${fst} ${snd}`;
       case Notation.Infix: return `${fst} ${op} ${snd}`;
+      default: throw new Error('Unreachable');
     }
   }
 }
@@ -129,7 +131,7 @@ class UnaryTable extends Table<[string, string]> {
       const { aliasMap, op } = this.def;
       const expr = this.format([op, aliasMap[arg]]);
       it(`${this.format([op, arg])} should error`, () => {
-        expect(evaluate(expr)).rejects.toThrow();
+        expect(evaluate(expr)).rejects.toThrow(ExpressionError);
       });
     });
   }
@@ -138,7 +140,8 @@ class UnaryTable extends Table<[string, string]> {
     switch (this.def.notation) {
       case Notation.Function: return `${op}(${arg})`;
       case Notation.Prefix: return `${op}${arg}`;
-      case Notation.Infix: throw new Error('Cant format a unary operator as infix.')
+      case Notation.Infix: throw new Error('Cant format a unary operator as infix.');
+      default: throw new Error('Unreachable');
     }
   }
 }

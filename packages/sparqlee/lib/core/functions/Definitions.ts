@@ -8,7 +8,7 @@ import * as Special from './SpecialFunctions';
 import * as X from './XPath';
 
 import { DataType as DT } from '../../util/Consts';
-import { UnimplementedError } from '../../util/Errors';
+import { ExpressionError, UnimplementedError } from '../../util/Errors';
 import { arithmetic, binary, bool, list, number, numeric, xPathTest } from './Helpers';
 import { ArgumentType, OverloadMap, SpecialFunctionAsync } from './Types';
 
@@ -94,7 +94,7 @@ const _definitions: IDefinitionMap = {
       list('integer', 'integer'),
       (args: Term[]) => {
         if ((args[1] as E.NumericLiteral).typedValue === 0) {
-          throw new TypeError('Integer division by 0');
+          throw new ExpressionError('Integer division by 0');
         }
         return number(binary(X.numericDivide, args), DT.XSD_DECIMAL);
       },

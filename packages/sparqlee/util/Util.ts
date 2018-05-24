@@ -17,6 +17,13 @@ export class Example {
     this.expression = parse(expr);
     this.mapping = mapping || (() => Bindings({}));
   }
+
+  evaluate(mapping?: Bindings): Promise<RDF.Term> {
+    const evaluator = new AsyncEvaluator(this.expression, mockLookUp, mockAggregator);
+    return mapping
+      ? evaluator.evaluate(mapping)
+      : evaluator.evaluate(this.mapping());
+  }
 }
 
 export const example1 = (() => {

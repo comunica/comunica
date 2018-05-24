@@ -46,12 +46,12 @@ export class AsyncEvaluator {
         return this._evalOp(expr as E.OperatorExpression, mapping);
       // TODO
       case types.NAMED:
-        throw new Err.UnimplementedError('Named Operator');
+        return Promise.reject(new Err.UnimplementedError('Named Operator'));
       case types.EXISTENCE:
-        throw new Err.UnimplementedError('Existence Operator');
+        return Promise.reject(new Err.UnimplementedError('Existence Operator'));
       case types.AGGREGATE:
-        throw new Err.UnimplementedError('Aggregate Operator');
-      default: throw new Err.InvalidExpressionType(expr);
+        return Promise.reject(new Err.UnimplementedError('Aggregate Operator'));
+      default: return Promise.reject(new Err.InvalidExpressionType(expr));
     }
   }
 
