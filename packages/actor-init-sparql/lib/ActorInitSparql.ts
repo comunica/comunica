@@ -1,7 +1,9 @@
 import {IActionInit, IActorOutputInit} from "@comunica/bus-init";
 import {IActorQueryOperationOutput} from "@comunica/bus-query-operation";
-import {readFileSync} from "fs";
+import {exec} from "child_process";
+import {existsSync, readFileSync} from "fs";
 import minimist = require('minimist');
+import * as OS from "os";
 import {Readable} from "stream";
 import {ActorInitSparql as ActorInitSparqlBrowser, IActorInitSparqlArgs} from "./ActorInitSparql-browser";
 
@@ -17,7 +19,26 @@ export class ActorInitSparql extends ActorInitSparqlBrowser {
   public async run(action: IActionInit): Promise<IActorOutputInit> {
     const args = minimist(action.argv);
     if (!args.listformats && (!this.query && (!(args.q || args.f) && args._.length < (args.c ? 1 : 2)
-        || args._.length < (args.c ? 0 : 1) || args.h || args.help))) {
+        || args._.length < (args.c ? 0 : 1) || args.h || args.help || args.v || args.version))) {
+      // Print version information
+      if (args.v || args.version) {
+        const comunicaVersion: string = require('../package.json').version;
+        const dev: string = existsSync(__dirname + '/../test') ? '(dev)' : '';
+        const nodeVersion: string = process.version;
+        const npmVersion: string = await this.getScriptOutput('npm -v', '_NPM is unavailable_');
+        const yarnVersion: string = await this.getScriptOutput('yarn -v', '_Yarn is unavailable_');
+        const os: string = `${OS.platform()} (${OS.type()} ${OS.release()})`;
+        return { stderr: require('streamify-string')(`| software            | version
+| ------------------- | -------
+| Comunica Init Actor | ${comunicaVersion} ${dev}
+| node                | ${nodeVersion}
+| npm                 | ${npmVersion}
+| yarn                | ${yarnVersion}
+| Operating System    | ${os}
+`) };
+      }
+
+      // Print command usage
       return { stderr: require('streamify-string')(`comunica-sparql evaluates SPARQL queries
 
 Usage:
@@ -32,6 +53,7 @@ Options:
   -t            the MIME type of the output (e.g., application/json)
   --help        print this help message
   --listformats prints the supported MIME types
+  --version     prints version information
 `) };
     }
 
@@ -91,6 +113,17 @@ Options:
     const stdout: Readable = <Readable> (await this.resultToString(queryResult, args.t)).data;
 
     return { stdout };
+  }
+
+  protected getScriptOutput(command: string, fallback: string): Promise<string> {
+    return new Promise((resolve, reject) => {
+      exec(command, (error, stdout, stderr) => {
+        if (error) {
+          resolve(fallback);
+        }
+        resolve((stdout || stderr).trimRight());
+      });
+    });
   }
 
 }
