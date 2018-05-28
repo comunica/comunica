@@ -75,6 +75,22 @@ describe('ActorInitSparql', () => {
         .toHaveProperty('stderr');
     });
 
+    it('should run to stderr on the -v option', () => {
+      return expect(actor.run({ argv: [ '-v' ], env: {}, stdin: new PassThrough() })).resolves
+        .toHaveProperty('stderr');
+    });
+
+    it('should run to stderr on the -v option when not in a dev environment', () => {
+      (<any> actor).isDevelopmentEnvironment = () => false;
+      return expect(actor.run({ argv: [ '-v' ], env: {}, stdin: new PassThrough() })).resolves
+        .toHaveProperty('stderr');
+    });
+
+    it('should run to stderr on the --version option', () => {
+      return expect(actor.run({ argv: [ '--version' ], env: {}, stdin: new PassThrough() })).resolves
+        .toHaveProperty('stderr');
+    });
+
     it('should run to stderr on the -h option', () => {
       return expect(actor.run({ argv: [ '-h' ], env: {}, stdin: new PassThrough() })).resolves
         .toHaveProperty('stderr');
@@ -268,6 +284,13 @@ describe('ActorInitSparql', () => {
             result.stdout.on('end', resolve);
           });
         });
+    });
+
+    describe('getScriptOutput', () => {
+      it('should return the fallback for a failing command', () => {
+        return expect(actor.getScriptOutput('acommandthatdefinitelydoesnotexist', 'fallback'))
+          .resolves.toEqual('fallback');
+      });
     });
   });
 });

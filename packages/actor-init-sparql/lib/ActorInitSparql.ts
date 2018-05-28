@@ -23,7 +23,7 @@ export class ActorInitSparql extends ActorInitSparqlBrowser {
       // Print version information
       if (args.v || args.version) {
         const comunicaVersion: string = require('../package.json').version;
-        const dev: string = existsSync(__dirname + '/../test') ? '(dev)' : '';
+        const dev: string = this.isDevelopmentEnvironment() ? '(dev)' : '';
         const nodeVersion: string = process.version;
         const npmVersion: string = await this.getScriptOutput('npm -v', '_NPM is unavailable_');
         const yarnVersion: string = await this.getScriptOutput('yarn -v', '_Yarn is unavailable_');
@@ -115,7 +115,7 @@ Options:
     return { stdout };
   }
 
-  protected getScriptOutput(command: string, fallback: string): Promise<string> {
+  public getScriptOutput(command: string, fallback: string): Promise<string> {
     return new Promise((resolve, reject) => {
       exec(command, (error, stdout, stderr) => {
         if (error) {
@@ -124,6 +124,10 @@ Options:
         resolve((stdout || stderr).trimRight());
       });
     });
+  }
+
+  public isDevelopmentEnvironment(): boolean {
+    return existsSync(__dirname + '/../test');
   }
 
 }
