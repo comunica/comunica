@@ -98,6 +98,13 @@ describe('ActorHttpNative', () => {
       return expect(actor.run({ input: new Request('http://example.com')})).rejects
         .toMatchObject(new Error('Unsupported encoding: invalid'));
     });
+
+    it('can have headers in the init object', async () => {
+      mockSetup({ statusCode: 200 });
+      const result: any = await actor.run({ init: { headers: new Headers({ a: 'b' }), method: 'HEAD' },
+        input: 'http://example.com'});
+      expect(result).toMatchObject({ status: 200 });
+    });
   });
 });
 
