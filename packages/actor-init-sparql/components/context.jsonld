@@ -9,7 +9,8 @@
       "mediatorQueryOperation": "cais:mediatorQueryOperation",
       "mediatorSparqlParse": "cais:mediatorSparqlParse",
       "mediatorSparqlSerialize": "cais:mediatorSparqlSerialize",
-      "mediatorSparqlSerializeMediaTypeCombiner": "cais:mediatorSparqlSerializeMediaTypeCombiner"
+      "mediatorSparqlSerializeMediaTypeCombiner": "cais:mediatorSparqlSerializeMediaTypeCombiner",
+      "mediatorContextPreprocess": "cais:mediatorContextPreprocess"
     }
   ]
 }

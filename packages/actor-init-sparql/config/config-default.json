@@ -34,6 +34,12 @@
     "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-resolve-quad-pattern-file.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-resolve-quad-pattern-qpf.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-resolve-quad-pattern-sparql-json.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-context-preprocess.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-context-preprocess-rdf-source-identifier.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-rdf-source-identifier.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-source-identifier-file-content-type.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-source-identifier-hypermedia-qpf.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-source-identifier-sparql.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-bus-http.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-actor-http-native.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-bus-rdf-parse.jsonld",
@@ -54,6 +60,7 @@
     "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-dereference-paged-next.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-bus-rdf-join.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-join-nestedloop.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-mediator-combine-pipeline.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-mediator-combine-union.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-mediator-number.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-mediator-race.jsonld",
@@ -87,6 +94,11 @@
             "@type": "MediatorCombineUnion",
             "cc:Mediator/bus": { "@id": "cbss:Bus/SparqlSerialize" },
             "cmcu:Mediator/CombineUnion/field": "mediaTypes"
+          },
+          "mediatorContextPreprocess": {
+            "@id": "ex:mediatorContextPreprocess",
+            "@type": "MediatorCombinePipeline",
+            "cc:Mediator/bus": { "@id": "cbcp:Bus/ContextPreprocess" }
           }
         },
 
@@ -312,6 +324,31 @@
             "@type": "MediatorRace",
             "cc:Mediator/bus": { "@id": "cbrp:Bus/RdfParse" }
           }
+        },
+
+        {
+          "@id": "ex:myContextPreprocessRdfSourceIdentifier",
+          "@type": "ActorContextPreprocessRdfSourceIdentifier",
+          "cacprsi:Actor/ContextPreprocess/RdfSourceIdentifier/mediatorRdfSourceIdentifier": {
+            "@id": "ex:mediatorRdfSourceIdentifier",
+            "@type": "MediatorRace",
+            "cc:Mediator/bus": { "@id": "cbrsi:Bus/RdfSourceIdentifier" }
+          }
+        },
+        {
+          "@id": "ex:myActorRdfSourceIdentifierHypermediaQpf",
+          "@type": "ActorRdfSourceIdentifierHypermediaQpf",
+          "carsihq:Actor/RdfSourceIdentifier/HypermediaQpf/mediatorHttp": { "@id": "ex:mediatorHttp" }
+        },
+        {
+          "@id": "ex:myActorRdfSourceIdentifierSparql",
+          "@type": "ActorRdfSourceIdentifierSparql",
+          "carsis:Actor/RdfSourceIdentifier/Sparql/mediatorHttp": { "@id": "ex:mediatorHttp" }
+        },
+        {
+          "@id": "ex:myActorRdfSourceIdentifierFileContentType",
+          "@type": "ActorRdfSourceIdentifierFileContentType",
+          "carsifct:Actor/RdfSourceIdentifier/FileContentType/mediatorHttp": { "@id": "ex:mediatorHttp" }
         },
 
         {
