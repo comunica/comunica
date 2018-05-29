@@ -1,0 +1,6 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/contexts/comunica-bus-rdf-source-identifier.jsonld",
+  "@id": "cbrsi:Bus/RdfSourceIdentifier",
+  "@type": "cc:Bus",
+  "comment": "A comunica bus for rdf-source-identifier events."
+}

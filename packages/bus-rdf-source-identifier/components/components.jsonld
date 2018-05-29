@@ -1,0 +1,10 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/contexts/comunica-bus-rdf-source-identifier.jsonld",
+  "@id": "npmd:@comunica/bus-rdf-source-identifier",
+  "@type": "Module",
+  "requireName": "@comunica/bus-rdf-source-identifier",
+  "import": [
+    "Bus/RdfSourceIdentifier.jsonld",
+    "Actor/RdfSourceIdentifier.jsonld"
+  ]
+}
