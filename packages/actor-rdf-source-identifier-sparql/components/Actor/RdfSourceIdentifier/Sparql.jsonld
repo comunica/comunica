@@ -1,0 +1,37 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-source-identifier-sparql.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-rdf-source-identifier.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-http.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-rdf-source-identifier-sparql",
+  "components": [
+    {
+      "@id": "carsis:Actor/RdfSourceIdentifier/Sparql",
+      "@type": "Class",
+      "extends": "cbrsi:Actor/RdfSourceIdentifier",
+      "requireElement": "ActorRdfSourceIdentifierSparql",
+      "comment": "A comunica SPARQL RDF Source Identifier Actor.",
+      "parameters": [
+        {
+          "@id": "carsis:Actor/RdfSourceIdentifier/Sparql/mediatorHttp",
+          "comment": "The HTTP mediator",
+          "required": true,
+          "unique": true
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "carsis:Actor/RdfSourceIdentifier/Sparql/constructorArgumentsObject",
+          "extends": "cbrsi:Actor/RdfSourceIdentifier/constructorArgumentsObject",
+          "fields": [
+            {
+              "keyRaw": "mediatorHttp",
+              "value": "carsis:Actor/RdfSourceIdentifier/Sparql/mediatorHttp"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
