@@ -1,0 +1,32 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-context-preprocess.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-core.jsonld"
+  ],
+  "@id": "npmd:@comunica/bus-context-preprocess",
+  "components": [
+    {
+      "@id": "cbcp:Actor/ContextPreprocess",
+      "@type": "AbstractClass",
+      "extends": "Actor",
+      "requireElement": "ActorContextPreprocess",
+      "comment": "A comunica actor for context-preprocess events.",
+      "parameters": [
+        {
+          "@id": "cc:Actor/bus",
+          "defaultScoped": {
+            "defaultScope": "cbcp:Actor/ContextPreprocess",
+            "defaultScopedValue": { "@id": "cbcp:Bus/ContextPreprocess" }
+          }
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "cbcp:Actor/ContextPreprocess/constructorArgumentsObject",
+          "@type": "https://linkedsoftwaredependencies.org/vocabularies/object-oriented#Object",
+          "extends": "cc:Actor/constructorArgumentsObject"
+        }
+      ]
+    }
+  ]
+}

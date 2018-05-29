@@ -1,0 +1,10 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/contexts/comunica-bus-context-preprocess.jsonld",
+  "@id": "npmd:@comunica/bus-context-preprocess",
+  "@type": "Module",
+  "requireName": "@comunica/bus-context-preprocess",
+  "import": [
+    "Bus/ContextPreprocess.jsonld",
+    "Actor/ContextPreprocess.jsonld"
+  ]
+}

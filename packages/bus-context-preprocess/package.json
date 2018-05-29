@@ -1,0 +1,45 @@
+{
+  "name": "@comunica/bus-context-preprocess",
+  "version": "1.0.0",
+  "description": "A comunica bus for context-preprocess events.",
+  "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-context-preprocess",
+  "lsd:components": "components/components.jsonld",
+  "lsd:contexts": {
+    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-context-preprocess.jsonld": "components/context.jsonld"
+  },
+  "main": "index.js",
+  "typings": "index",
+  "repository": "https://github.com/comunica/comunica/tree/master/packages/bus-context-preprocess",
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "comunica",
+    "bus",
+    "context-preprocess"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/comunica/comunica/issues"
+  },
+  "homepage": "https://github.com/comunica/comunica#readme",
+  "files": [
+    "components",
+    "lib/**/*.d.ts",
+    "lib/**/*.js",
+    "index.d.ts",
+    "index.js"
+  ],
+  "peerDependencies": {
+    "@comunica/core": "^1.0.0"
+  },
+  "devDependencies": {
+    "@comunica/core": "^1.0.0"
+  },
+  "scripts": {
+    "lint": "node \"../../node_modules/tslint/bin/tslint\" lib/**/*.ts test/**/*.ts --exclude '**/*.d.ts'",
+    "build": "node \"../../node_modules/typescript/bin/tsc\"",
+    "validate": "npm ls",
+    "prepare": "npm run build"
+  }
+}
