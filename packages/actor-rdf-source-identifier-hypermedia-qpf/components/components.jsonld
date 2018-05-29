@@ -1,0 +1,9 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-source-identifier-hypermedia-qpf.jsonld",
+  "@id": "npmd:@comunica/actor-rdf-source-identifier-hypermedia-qpf",
+  "@type": "Module",
+  "requireName": "@comunica/actor-rdf-source-identifier-hypermedia-qpf",
+  "import": [
+    "Actor/RdfSourceIdentifier/HypermediaQpf.jsonld"
+  ]
+}
