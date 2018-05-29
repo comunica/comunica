@@ -1,0 +1,12 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/components.jsonld",
+    {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
+      "carsihq": "npmd:@comunica/actor-rdf-source-identifier-hypermedia-qpf/",
+
+      "ActorRdfSourceIdentifierHypermediaQpf": "carsihq:Actor/RdfSourceIdentifier/HypermediaQpf",
+      "mediatorHttp": "carsihq:Actor/RdfSourceIdentifier/ActorRdfSourceIdentifierHypermediaQpf/mediatorHttp"
+    }
+  ]
+}
