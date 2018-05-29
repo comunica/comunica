@@ -25,6 +25,11 @@ export interface IActionRdfDereference extends IAction {
    * The URL to dereference
    */
   url: string;
+
+  /**
+   * The mediatype of the source (if it can't be inferred from the source)
+   */
+  mediaType?: string;
 }
 
 export interface IActorRdfDereferenceOutput extends IActorOutput {

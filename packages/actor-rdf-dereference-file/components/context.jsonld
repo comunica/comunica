@@ -1,0 +1,11 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/components.jsonld",
+    {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
+      "cardf": "npmd:@comunica/actor-rdf-dereference-file/",
+
+      "ActorRdfDereferenceFile": "cardf:Actor/RdfDereference/File"
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-dereference-file.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-rdf-dereference.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-rdf-dereference-file",
+  "components": [
+    {
+      "@id": "cardf:Actor/RdfDereference/File",
+      "@type": "Class",
+      "extends": "cbrd:Actor/RdfDereference",
+      "requireElement": "ActorRdfDereferenceFile",
+      "comment": "A comunica File RDF Dereference Actor.",
+      "parameters": [
+        {
+          "@id": "cardf:mediatorRdfParse",
+          "comment": "The RDF parse mediator",
+          "required": true,
+          "unique": true
+        }
+      ],
+      "constructorArguments": [
+        {
+          "extends": "cbrd:Actor/RdfDereference/constructorArgumentsObject",
+          "fields": [
+            {
+              "keyRaw": "mediatorRdfParse",
+              "value": "cardf:mediatorRdfParse"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
