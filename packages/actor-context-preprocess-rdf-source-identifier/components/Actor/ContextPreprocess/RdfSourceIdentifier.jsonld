@@ -1,0 +1,36 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-context-preprocess-rdf-source-identifier.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-context-preprocess.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-context-preprocess-rdf-source-identifier",
+  "components": [
+    {
+      "@id": "cacprsi:Actor/ContextPreprocess/RdfSourceIdentifier",
+      "@type": "Class",
+      "extends": "cbcp:Actor/ContextPreprocess",
+      "requireElement": "ActorContextPreprocessRdfSourceIdentifier",
+      "comment": "A comunica RDF Source Identifier Context Preprocess Actor.",
+      "parameters": [
+        {
+          "@id": "cacprsi:Actor/ContextPreprocess/RdfSourceIdentifier/mediatorRdfSourceIdentifier",
+          "comment": "The RDF source identifier mediator",
+          "required": true,
+          "unique": true
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "cacprsi:Actor/ContextPreprocess/RdfSourceIdentifier/constructorArgumentsObject",
+          "extends": "cbcp:Actor/ContextPreprocess/constructorArgumentsObject",
+          "fields": [
+            {
+              "keyRaw": "mediatorRdfSourceIdentifier",
+              "value": "cacprsi:Actor/ContextPreprocess/RdfSourceIdentifier/mediatorRdfSourceIdentifier"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
