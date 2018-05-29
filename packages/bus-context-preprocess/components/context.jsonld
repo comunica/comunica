@@ -1,0 +1,11 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/comunica-core.jsonld",
+    {
+      "cbcp": "npmd:@comunica/bus-context-preprocess/",
+
+      "BusContextPreprocess": "cbcp:Bus/ContextPreprocess",
+      "ActorContextPreprocess": "cbcp:Actor/ContextPreprocess"
+    }
+  ]
+}
