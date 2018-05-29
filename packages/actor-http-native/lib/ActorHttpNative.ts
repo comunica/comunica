@@ -53,6 +53,10 @@ export class ActorHttpNative extends ActorHttp {
           httpResponse = null;
           reject(e);
         });
+        // Avoid memory leak on HEAD requests
+        if (options.method === 'HEAD') {
+          httpResponse.destroy();
+        }
         // using setImmediate so error can be caught should it be thrown
         setImmediate(() => {
           if (httpResponse) {
