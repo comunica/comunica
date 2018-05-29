@@ -105,6 +105,12 @@ describe('ActorHttpNative', () => {
         input: 'http://example.com'});
       expect(result).toMatchObject({ status: 200 });
     });
+
+    it('can cancel responses', async () => {
+      mockSetup({ statusCode: 200 });
+      const result: any = await actor.run({ input: 'http://example.com' });
+      expect(result.body.cancel()).resolves.toBeFalsy();
+    });
   });
 });
 

@@ -60,6 +60,8 @@ export class ActorHttpNative extends ActorHttp {
         // using setImmediate so error can be caught should it be thrown
         setImmediate(() => {
           if (httpResponse) {
+            // Expose fetch cancel promise
+            httpResponse.cancel = () => Promise.resolve(httpResponse.destroy());
             // missing several of the required fetch fields
             const result = <IActorHttpOutput> {
               body: httpResponse,
