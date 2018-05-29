@@ -1,3 +1,4 @@
+import {IActionContextPreprocess, IActorContextPreprocessOutput} from "@comunica/bus-context-preprocess";
 import {ActorInit, IActionInit, IActorOutputInit} from "@comunica/bus-init";
 import {IActionQueryOperation, IActorQueryOperationOutput} from "@comunica/bus-query-operation";
 import {IActionSparqlParse, IActorSparqlParseOutput} from "@comunica/bus-sparql-parse";
@@ -21,6 +22,8 @@ export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs {
   public readonly mediatorSparqlSerializeMediaTypeCombiner: Mediator<Actor<IActionRootSparqlParse,
     IActorTestRootSparqlParse, IActorOutputRootSparqlParse>, IActionRootSparqlParse, IActorTestRootSparqlParse,
     IActorOutputRootSparqlParse>;
+  public readonly mediatorContextPreprocess: Mediator<Actor<IActionContextPreprocess, IActorTest,
+    IActorContextPreprocessOutput>, IActionContextPreprocess, IActorTest, IActorContextPreprocessOutput>;
   public readonly query?: string;
   public readonly context?: string;
 
@@ -39,7 +42,16 @@ export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs {
    * @return {Promise<IActorQueryOperationOutput>} A promise that resolves to the query output.
    */
   public async evaluateQuery(query: string, context?: any): Promise<IActorQueryOperationOutput> {
+    // Start, but don't await, context pre-processing
+    const combinationPromise = this.mediatorContextPreprocess.mediate({ context });
+
+    // Parse query
     const operation: Algebra.Operation = (await this.mediatorSparqlParse.mediate({ query })).operation;
+
+    // Block until context has been processed
+    context = (await combinationPromise).context;
+
+    // Execute query
     const resolve: IActionQueryOperation = { context, operation };
     return await this.mediatorQueryOperation.mediate(resolve);
   }
@@ -91,6 +103,8 @@ export interface IActorInitSparqlArgs extends IActorArgs<IActionInit, IActorTest
   mediatorSparqlSerializeMediaTypeCombiner: Mediator<Actor<IActionRootSparqlParse,
     IActorTestRootSparqlParse, IActorOutputRootSparqlParse>, IActionRootSparqlParse, IActorTestRootSparqlParse,
     IActorOutputRootSparqlParse>;
+  mediatorContextPreprocess: Mediator<Actor<IActionContextPreprocess, IActorTest, IActorContextPreprocessOutput>,
+    IActionContextPreprocess, IActorTest, IActorContextPreprocessOutput>;
   query?: string;
   context?: string;
 }

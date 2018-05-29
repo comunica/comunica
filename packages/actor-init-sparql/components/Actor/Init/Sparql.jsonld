@@ -37,6 +37,12 @@
           "unique": true
         },
         {
+          "@id": "cais:mediatorContextPreprocess",
+          "comment": "The context processing combinator",
+          "required": true,
+          "unique": true
+        },
+        {
           "@id": "cais:query",
           "comment": "A SPARQL query string",
           "unique": true
@@ -66,6 +72,10 @@
             {
               "keyRaw": "mediatorSparqlSerializeMediaTypeCombiner",
               "value": "cais:mediatorSparqlSerializeMediaTypeCombiner"
+            },
+            {
+              "keyRaw": "mediatorContextPreprocess",
+              "value": "cais:mediatorContextPreprocess"
             },
             {
               "keyRaw": "query",
