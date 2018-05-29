@@ -1,0 +1,11 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/components.jsonld",
+    {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
+      "cacprsi": "npmd:@comunica/actor-context-preprocess-rdf-source-identifier/",
+
+      "ActorContextPreprocessRdfSourceIdentifier": "cacprsi:Actor/ContextPreprocess/RdfSourceIdentifier"
+    }
+  ]
+}
