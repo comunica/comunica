@@ -1,0 +1,54 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-source-identifier-file-content-type.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-rdf-source-identifier.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-http.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-rdf-source-identifier-file-content-type",
+  "components": [
+    {
+      "@id": "carsifct:Actor/RdfSourceIdentifier/FileContentType",
+      "@type": "Class",
+      "extends": "cbrsi:Actor/RdfSourceIdentifier",
+      "requireElement": "ActorRdfSourceIdentifierFileContentType",
+      "comment": "A comunica File Content Type RDF Source Identifier Actor.",
+      "parameters": [
+        {
+          "@id": "carsifct:Actor/RdfSourceIdentifier/FileContentType/mediatorHttp",
+          "comment": "The HTTP mediator",
+          "required": true,
+          "unique": true
+        },
+        {
+          "@id": "carsifct:Actor/RdfSourceIdentifier/FileContentType/allowedMediaTypes",
+          "comment": "The allowed media types",
+          "required": true,
+          "default": [
+            "application/trig",
+            "application/n-quads",
+            "text/turtle",
+            "application/n-triples",
+            "text/n3",
+            "application/ld+json"
+          ]
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "carsifct:Actor/RdfSourceIdentifier/FileContentType/constructorArgumentsObject",
+          "extends": "cbrsi:Actor/RdfSourceIdentifier/constructorArgumentsObject",
+          "fields": [
+            {
+              "keyRaw": "mediatorHttp",
+              "value": "carsifct:Actor/RdfSourceIdentifier/FileContentType/mediatorHttp"
+            },
+            {
+              "keyRaw": "allowedMediaTypes",
+              "value": "carsifct:Actor/RdfSourceIdentifier/FileContentType/allowedMediaTypes"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
