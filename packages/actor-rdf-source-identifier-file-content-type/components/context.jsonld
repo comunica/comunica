@@ -1,0 +1,12 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/components.jsonld",
+    {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
+      "carsifct": "npmd:@comunica/actor-rdf-source-identifier-file-content-type/",
+
+      "ActorRdfSourceIdentifierFileContentType": "carsifct:Actor/RdfSourceIdentifier/FileContentType",
+      "mediatorHttp": "carsifct:Actor/RdfSourceIdentifier/FileContentType/mediatorHttp"
+    }
+  ]
+}
