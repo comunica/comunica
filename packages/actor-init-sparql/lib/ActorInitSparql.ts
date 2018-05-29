@@ -44,6 +44,7 @@ export class ActorInitSparql extends ActorInitSparqlBrowser {
 Usage:
   comunica-sparql http://fragments.example.org/dataset [-q] 'SELECT * WHERE { ?s ?p ?o }'
   comunica-sparql http://fragments.example.org/dataset [-f] query.sparql'
+  comunica-sparql http://fragments.example.org/dataset http://sparql.example.org/ ...
   comunica-sparql hypermedia@http://fragments.example.org/dataset sparql@http://sparql.example.org/ ...
 
 Options:
@@ -97,7 +98,7 @@ Options:
         const splitValues: string[] = sourceValue.split('@', 2);
         if (splitValues.length === 1) {
           // Set default type
-          source.type = 'hypermedia';
+          source.type = 'auto';
         } else {
           source.type = splitValues[0];
         }
