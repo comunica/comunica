@@ -1,0 +1,32 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-rdf-source-identifier.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-core.jsonld"
+  ],
+  "@id": "npmd:@comunica/bus-rdf-source-identifier",
+  "components": [
+    {
+      "@id": "cbrsi:Actor/RdfSourceIdentifier",
+      "@type": "AbstractClass",
+      "extends": "Actor",
+      "requireElement": "ActorRdfSourceIdentifier",
+      "comment": "A comunica actor for rdf-source-identifier events.",
+      "parameters": [
+        {
+          "@id": "cc:Actor/bus",
+          "defaultScoped": {
+            "defaultScope": "cbrsi:Actor/RdfSourceIdentifier",
+            "defaultScopedValue": { "@id": "cbrsi:Bus/RdfSourceIdentifier" }
+          }
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "cbrsi:Actor/RdfSourceIdentifier/constructorArgumentsObject",
+          "@type": "https://linkedsoftwaredependencies.org/vocabularies/object-oriented#Object",
+          "extends": "cc:Actor/constructorArgumentsObject"
+        }
+      ]
+    }
+  ]
+}

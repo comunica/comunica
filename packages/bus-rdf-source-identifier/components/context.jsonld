@@ -1,0 +1,11 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/comunica-core.jsonld",
+    {
+      "cbrsi": "npmd:@comunica/bus-rdf-source-identifier/",
+
+      "BusRdfSourceIdentifier": "cbrsi:Bus/RdfSourceIdentifier",
+      "ActorRdfSourceIdentifier": "cbrsi:Actor/RdfSourceIdentifier"
+    }
+  ]
+}
