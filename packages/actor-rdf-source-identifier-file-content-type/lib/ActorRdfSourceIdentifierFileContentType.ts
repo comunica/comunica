@@ -24,8 +24,9 @@ export class ActorRdfSourceIdentifierFileContentType extends ActorRdfSourceIdent
     headers.append('Accept', this.allowedMediaTypes.join(';'));
     const httpAction: IActionHttp = { input: action.sourceValue, init: { headers, method: 'HEAD' } };
     const httpResponse: IActorHttpOutput = await this.mediatorHttp.mediate(httpAction);
-    if (!httpResponse.ok) {
-      throw new Error(`${action.sourceValue} is not an RDF file`);
+    if (!httpResponse.ok || !this.allowedMediaTypes.find((mediaType: string) => httpResponse.headers
+        .get('Content-Type').indexOf(mediaType) >= 0)) {
+      throw new Error(`${action.sourceValue} is not an RDF file of valid content type: ${this.allowedMediaTypes}`);
     }
     return true;
   }
