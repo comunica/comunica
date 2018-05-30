@@ -28,7 +28,7 @@ export class ActorRdfSourceIdentifierFileContentType extends ActorRdfSourceIdent
         .get('Content-Type').indexOf(mediaType) >= 0)) {
       throw new Error(`${action.sourceValue} is not an RDF file of valid content type: ${this.allowedMediaTypes}`);
     }
-    return true;
+    return { order: 2 };
   }
 
   public async run(action: IActionRdfSourceIdentifier): Promise<IActorRdfSourceIdentifierOutput> {

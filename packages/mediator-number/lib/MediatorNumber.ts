@@ -17,6 +17,7 @@ export class MediatorNumber<A extends Actor<I, T, O>, I extends IAction, T exten
 
   public readonly field: string;
   public readonly type: string;
+  public readonly ignoreErrors: boolean;
   public readonly indexPicker: (tests: T[]) => number;
 
   constructor(args: IMediatorNumberArgs<A, I, T, O>) {
@@ -50,7 +51,13 @@ export class MediatorNumber<A extends Actor<I, T, O>, I extends IAction, T exten
   }
 
   protected async mediateWith(action: I, testResults: IActorReply<A, I, T, O>[]): Promise<A> {
-    const results: T[] = await Promise.all(<Promise<T>[]> require('lodash.map')(testResults, 'reply'));
+    let promises = <Promise<T>[]> require('lodash.map')(testResults, 'reply');
+    if (this.ignoreErrors) {
+      const dummy: any = {};
+      dummy[this.field] = null;
+      promises = promises.map((p) => p.catch(() => dummy ));
+    }
+    const results = await Promise.all(promises);
     return testResults[this.indexPicker(results)].actor;
   }
 
@@ -68,4 +75,9 @@ export interface IMediatorNumberArgs<A extends Actor<I, T, O>, I extends IAction
    * For choosing the maximum value: {@link MediatorNumber#MAX}
    */
   type: string;
+
+  /**
+   * If actors that throw test errors should be ignored
+   */
+  ignoreErrors?: boolean;
 }
