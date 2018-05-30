@@ -34,7 +34,6 @@
             "http://www.w3.org/ns/hydra/core#",
             "search",
             "template",
-            "variableRepresentation",
             "mapping",
             "variable",
             "property"
