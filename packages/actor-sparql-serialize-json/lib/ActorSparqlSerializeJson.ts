@@ -31,6 +31,7 @@ export class ActorSparqlSerializeJson extends ActorSparqlSerializeFixedMediaType
     if (action.type === 'bindings') {
       const resultStream = (<IActorQueryOperationOutputBindings> action).bindingsStream;
       data.push('[');
+      resultStream.on('error', (e) => data.emit('error', e));
       resultStream.on('data', (element) => {
         data.push(empty ? '\n' : ',\n');
         data.push(JSON.stringify(element.map(RdfString.termToString)).trim());
@@ -43,6 +44,7 @@ export class ActorSparqlSerializeJson extends ActorSparqlSerializeFixedMediaType
     } else if (action.type === 'quads') {
       const resultStream = (<IActorQueryOperationOutputQuads> action).quadStream;
       data.push('[');
+      resultStream.on('error', (e) => data.emit('error', e));
       resultStream.on('data', (element) => {
         data.push(empty ? '\n' : ',\n');
         data.push(JSON.stringify(RdfString.quadToStringQuad(element)).trim());
@@ -53,8 +55,12 @@ export class ActorSparqlSerializeJson extends ActorSparqlSerializeFixedMediaType
         data.push(null);
       });
     } else {
-      data.push(JSON.stringify(await (<IActorQueryOperationOutputBoolean> action).booleanResult) + '\n');
-      data.push(null);
+      try {
+        data.push(JSON.stringify(await (<IActorQueryOperationOutputBoolean> action).booleanResult) + '\n');
+        data.push(null);
+      } catch (e) {
+        setImmediate(() => data.emit('error', e));
+      }
     }
 
     return { data };

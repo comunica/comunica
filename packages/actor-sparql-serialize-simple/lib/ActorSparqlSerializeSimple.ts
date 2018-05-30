@@ -30,11 +30,13 @@ export class ActorSparqlSerializeSimple extends ActorSparqlSerializeFixedMediaTy
     let resultStream: NodeJS.EventEmitter;
     if (action.type === 'bindings') {
       resultStream = (<IActorQueryOperationOutputBindings> action).bindingsStream;
+      resultStream.on('error', (e) => data.emit('error', e));
       resultStream.on('data', (bindings) => data.push(bindings.map(
         (value: RDF.Term, key: string) => key + ': ' + value.value).join('\n') + '\n\n'));
       resultStream.on('end', () => data.push(null));
     } else if (action.type === 'quads') {
       resultStream = (<IActorQueryOperationOutputQuads> action).quadStream;
+      resultStream.on('error', (e) => data.emit('error', e));
       resultStream.on('data', (quad) => data.push(
         'subject: ' + quad.subject.value + '\n'
         + 'predicate: ' + quad.predicate.value + '\n'
@@ -42,8 +44,12 @@ export class ActorSparqlSerializeSimple extends ActorSparqlSerializeFixedMediaTy
         + 'graph: ' + quad.graph.value + '\n\n'));
       resultStream.on('end', () => data.push(null));
     } else {
-      data.push(JSON.stringify(await (<IActorQueryOperationOutputBoolean> action).booleanResult) + '\n');
-      data.push(null);
+      try {
+        data.push(JSON.stringify(await (<IActorQueryOperationOutputBoolean> action).booleanResult) + '\n');
+        data.push(null);
+      } catch (e) {
+        setImmediate(() => data.emit('error', e));
+      }
     }
 
     return { data };

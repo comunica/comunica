@@ -2,7 +2,9 @@ import {Bindings, BindingsStream} from "@comunica/bus-query-operation";
 import {Bus} from "@comunica/core";
 import {ArrayIterator} from "asynciterator";
 import {namedNode} from "rdf-data-model";
+import {Readable} from "stream";
 import {ActorSparqlSerializeTable} from "../lib/ActorSparqlSerializeTable";
+
 const quad = require('rdf-quad');
 const stringifyStream = require('stream-to-string');
 
@@ -32,6 +34,7 @@ describe('ActorSparqlSerializeTable', () => {
     let actor: ActorSparqlSerializeTable;
     let bindingsStream: BindingsStream;
     let quadStream;
+    let streamError;
     let variables;
 
     beforeEach(() => {
@@ -46,6 +49,8 @@ describe('ActorSparqlSerializeTable', () => {
         quad('http://example.org/a', 'http://example.org/b', 'http://example.org/c'),
         quad('http://example.org/a', 'http://example.org/d', 'http://example.org/e'),
       ]);
+      streamError = new Readable();
+      streamError._read = () => streamError.emit('error', new Error());
       variables = [ 'k1', 'k2' ];
     });
 
@@ -100,6 +105,18 @@ v1
 http://ex… http://ex… http://ex…           
 http://ex… http://ex… http://ex…           
 `);
+      });
+
+      it('should emit an error when a bindings stream emits an error', async () => {
+        return expect(stringifyStream((await actor.run(
+          {handle: <any> { type: 'bindings', bindingsStream: streamError, variables },
+            handleMediaType: 'application/json'})).handle.data)).rejects.toBeTruthy();
+      });
+
+      it('should emit an error when a quad stream emits an error', async () => {
+        return expect(stringifyStream((await actor.run(
+          {handle: <any> { type: 'quads', quadStream: streamError, variables },
+            handleMediaType: 'application/json'})).handle.data)).rejects.toBeTruthy();
       });
     });
   });

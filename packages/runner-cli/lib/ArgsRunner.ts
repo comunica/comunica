@@ -8,9 +8,11 @@ export function runArgs(configResourceUrl: string, argv: string[], stdin: NodeJS
     .then((results: IActorOutputInit[]) => {
       results.forEach((result: IActorOutputInit) => {
         if (result.stdout) {
+          result.stdout.on('error', console.error);
           result.stdout.pipe(stdout);
         }
         if (result.stderr) {
+          result.stderr.on('error', console.error);
           result.stderr.pipe(stderr);
         }
       });

@@ -53,11 +53,13 @@ export class ActorSparqlSerializeTable extends ActorSparqlSerializeFixedMediaTyp
     if (action.type === 'bindings') {
       resultStream = (<IActorQueryOperationOutputBindings> action).bindingsStream;
       this.pushHeader(data, (<IActorQueryOperationOutputBindings> action).variables);
+      resultStream.on('error', (e) => data.emit('error', e));
       resultStream.on('data', (bindings) => data.push(bindings.map(
         (value: RDF.Term, key: string) => this.pad(value ? value.value : '')).join(' ') + '\n'));
     } else {
       resultStream = (<IActorQueryOperationOutputQuads> action).quadStream;
       this.pushHeader(data, QUAD_TERM_NAMES);
+      resultStream.on('error', (e) => data.emit('error', e));
       resultStream.on('data', (quad) => data.push(
         getTerms(quad).map((term) => this.pad(term.value)).join(' ') + '\n'));
     }

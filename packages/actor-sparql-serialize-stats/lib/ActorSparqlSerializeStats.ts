@@ -54,6 +54,7 @@ export class ActorSparqlSerializeStats extends ActorSparqlSerializeFixedMediaTyp
     let result: number = 1;
 
     this.pushHeader(data);
+    resultStream.on('error', (e) => data.emit('error', e));
     resultStream.on('data', () => this.pushStat(data, startTime, result++));
     resultStream.on('end', () => this.pushFooter(data, startTime));
 

@@ -2,7 +2,9 @@ import {Bindings, BindingsStream} from "@comunica/bus-query-operation";
 import {Bus} from "@comunica/core";
 import {ArrayIterator} from "asynciterator";
 import {blankNode, namedNode} from "rdf-data-model";
+import {Readable} from "stream";
 import {ActorSparqlSerializeJson} from "../lib/ActorSparqlSerializeJson";
+
 const quad = require('rdf-quad');
 const stringifyStream = require('stream-to-string');
 
@@ -32,6 +34,7 @@ describe('ActorSparqlSerializeJson', () => {
     let bindingsStream: BindingsStream;
     let quadStream;
     let bindingsStreamEmpty;
+    let streamError;
 
     beforeEach(() => {
       actor = new ActorSparqlSerializeJson({ bus, mediaTypes: {
@@ -46,6 +49,8 @@ describe('ActorSparqlSerializeJson', () => {
         quad('http://example.org/a', 'http://example.org/d', 'http://example.org/e'),
       ]);
       bindingsStreamEmpty = new ArrayIterator([]);
+      streamError = new Readable();
+      streamError._read = () => streamError.emit('error', new Error());
     });
 
     describe('for getting media types', () => {
@@ -142,6 +147,24 @@ describe('ActorSparqlSerializeJson', () => {
             handleMediaType: 'application/json'})).handle.data)))
           .toEqual(`false
 `);
+      });
+
+      it('should emit an error when a bindings stream emits an error', async () => {
+        return expect(stringifyStream((await actor.run(
+          {handle: <any> { type: 'bindings', bindingsStream: streamError },
+            handleMediaType: 'application/json'})).handle.data)).rejects.toBeTruthy();
+      });
+
+      it('should emit an error when a quad stream emits an error', async () => {
+        return expect(stringifyStream((await actor.run(
+          {handle: <any> { type: 'quads', quadStream: streamError },
+            handleMediaType: 'application/json'})).handle.data)).rejects.toBeTruthy();
+      });
+
+      it('should emit an error when the boolean is rejected', async () => {
+        return expect(stringifyStream((await actor.run(
+          {handle: <any> { type: 'boolean', booleanResult: Promise.reject(new Error()) },
+            handleMediaType: 'application/json'})).handle.data)).rejects.toBeTruthy();
       });
     });
   });
