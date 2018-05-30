@@ -37,7 +37,7 @@ export class ActorContextPreprocessRdfSourceIdentifier extends ActorContextPrepr
       }
       return { context };
     }
-    return { context: action.context };
+    return action;
   }
 
 }
