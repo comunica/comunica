@@ -33,7 +33,11 @@ describe('ActorRdfSourceIdentifierFileContentType', () => {
     beforeEach(() => {
       const mediatorHttp: any = {
         mediate: (action) => {
-          return Promise.resolve({ ok: action.input.indexOf('ok') >= 0 });
+          const ok: boolean = action.input.indexOf('ok') >= 0;
+          return Promise.resolve({
+            headers: { get: () => ok ? 'abc' : 'def' },
+            ok,
+          });
         },
       };
       const allowedMediaTypes = ['abc'];
