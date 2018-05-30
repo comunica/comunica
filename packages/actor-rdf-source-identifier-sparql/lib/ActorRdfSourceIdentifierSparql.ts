@@ -27,7 +27,7 @@ export class ActorRdfSourceIdentifierSparql extends ActorRdfSourceIdentifier {
     if (!httpResponse.ok || httpResponse.headers.get('Content-Type').indexOf('application/sparql-results+json') < 0) {
       throw new Error(`${action.sourceValue} is not a SPARQL endpoint`);
     }
-    return true;
+    return { order: 1 };
   }
 
   public async run(action: IActionRdfSourceIdentifier): Promise<IActorRdfSourceIdentifierOutput> {

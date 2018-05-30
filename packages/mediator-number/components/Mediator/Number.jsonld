@@ -25,6 +25,14 @@
           "range": "xsd:string",
           "unique": true,
           "required": true
+        },
+        {
+          "@id": "cmn:Mediator/Number/ignoreErrors",
+          "comment": "If actors that throw test errors should be ignored",
+          "range": "xsd:boolean",
+          "unique": true,
+          "required": true,
+          "default": false
         }
       ],
       "constructorArguments": [
@@ -39,6 +47,10 @@
             {
               "keyRaw": "type",
               "valueRawReference": "cmn:Mediator/Number/type"
+            },
+            {
+              "keyRaw": "ignoreErrors",
+              "valueRawReference": "cmn:Mediator/Number/ignoreErrors"
             }
           ]
         }

@@ -8,6 +8,7 @@
       "MediatorNumber": "cmn:Mediator/Number",
       "field": "cmn:Mediator/Number/field",
       "type": "cmn:Mediator/Number/type",
+      "ignoreErrors": "cmn:Mediator/Number/ignoreErrors",
       "Min": "cmn:Mediator/Number/type/TypeMin",
       "Max": "cmn:Mediator/Number/type/TypeMax",
 

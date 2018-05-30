@@ -39,7 +39,7 @@ export class ActorRdfSourceIdentifierHypermediaQpf extends ActorRdfSourceIdentif
         }
       }
       if (valid) {
-        return true;
+        return { order: 0 };
       }
     }
 
