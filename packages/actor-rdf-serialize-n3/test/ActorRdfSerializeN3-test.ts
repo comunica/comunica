@@ -1,6 +1,8 @@
 import {Bus} from "@comunica/core";
 import {ArrayIterator, AsyncIterator} from "asynciterator";
+import {Readable} from "stream";
 import {ActorRdfSerializeN3} from "../lib/ActorRdfSerializeN3";
+
 const quad = require('rdf-quad');
 const stringifyStream = require('stream-to-string');
 
@@ -31,6 +33,7 @@ describe('ActorRdfSerializeN3', () => {
   describe('An ActorRdfSerializeN3 instance', () => {
     let actor: ActorRdfSerializeN3;
     let quads;
+    let quadsError;
 
     beforeEach(() => {
       actor = new ActorRdfSerializeN3({ bus, mediaTypes: {
@@ -45,6 +48,8 @@ describe('ActorRdfSerializeN3', () => {
           quad('http://example.org/a', 'http://example.org/b', 'http://example.org/c'),
           quad('http://example.org/a', 'http://example.org/d', 'http://example.org/e'),
         ]);
+        quadsError = new Readable();
+        quadsError._read = () => quadsError.emit('error', new Error());
       });
 
       it('should test on application/trig', () => {
@@ -85,6 +90,12 @@ describe('ActorRdfSerializeN3', () => {
       it('should run and output non-triples for application/trig', async () => {
         return expect((await actor.run({ handle: { quads }, handleMediaType: 'application/trig' }))
           .handle.triples).toBeFalsy();
+      });
+
+      it('should forward stream errors', async () => {
+        return expect(stringifyStream((await actor.run(
+          { handle: { quads: quadsError }, handleMediaType: 'application/trig' }))
+          .handle.data)).rejects.toBeTruthy();
       });
     });
 

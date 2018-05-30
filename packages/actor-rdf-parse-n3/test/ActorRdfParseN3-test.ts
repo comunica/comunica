@@ -66,6 +66,7 @@ describe('ActorRdfParseN3', () => {
   describe('An ActorRdfParseN3 instance', () => {
     let actor: ActorRdfParseN3;
     let input: Readable;
+    let inputError: Readable;
 
     beforeEach(() => {
       actor = new ActorRdfParseN3({ bus, mediaTypes: {
@@ -83,6 +84,8 @@ describe('ActorRdfParseN3', () => {
           <a> <b> <c>.
           <d> <e> <f> <g>.
       `);
+        inputError = new Readable();
+        inputError._read = () => inputError.emit('error', new Error());
       });
 
       it('should test on TriG', () => {
@@ -113,6 +116,12 @@ describe('ActorRdfParseN3', () => {
       it('should run on application/trig', () => {
         return actor.run({ handle: { input }, handleMediaType: 'application/trig' })
           .then(async (output) => expect(await arrayifyStream(output.handle.quads)).toHaveLength(2));
+      });
+
+      it('should forward stream errors', async () => {
+        return expect(arrayifyStream((await actor.run(
+          { handle: { input: inputError }, handleMediaType: 'application/trig' }))
+          .handle.quads)).rejects.toBeTruthy();
       });
     });
 

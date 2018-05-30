@@ -19,10 +19,12 @@ export class ActorRdfSerializeN3 extends ActorRdfSerializeFixedMediaTypes {
       return;
     };
 
+    action.quads.on('error', (e) => data.emit('error', e));
     action.quads.on('data', (quad: RDF.Quad) => n3Triples.push(RdfString.quadToStringQuad(quad)));
     action.quads.on('end', () => n3Triples.emit('end'));
+    const data = n3Triples.pipe((require('n3').StreamWriter)({ format: mediaType }));
 
-    return { data: n3Triples.pipe((require('n3').StreamWriter)({ format: mediaType })),
+    return { data,
       triples: mediaType === 'text/turtle'
       || mediaType === 'application/n-triples'
       || mediaType === 'text/n3' };
