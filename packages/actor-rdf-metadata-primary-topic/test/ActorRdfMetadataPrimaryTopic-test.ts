@@ -34,12 +34,35 @@ describe('ActorRdfMetadataPrimaryTopic', () => {
   describe('An ActorRdfMetadataPrimaryTopic instance', () => {
     let actor: ActorRdfMetadataPrimaryTopic;
     let input: Readable;
+    let inputOOO: Readable;
+    let inputNone: Readable;
+    let inputDifferent: Readable;
 
     beforeEach(() => {
       actor = new ActorRdfMetadataPrimaryTopic({ name: 'actor', bus });
       input = stream([
         quad('s1', 'p1', 'o1', ''),
+        quad('o1', 'http://rdfs.org/ns/void#subset', 'o1?param', 'g1'),
         quad('g1', 'http://xmlns.com/foaf/0.1/primaryTopic', 'o1', 'g1'),
+        quad('s2', 'p2', 'o2', 'g1'),
+        quad('s3', 'p3', 'o3', ''),
+      ]);
+      inputOOO = stream([
+        quad('s1', 'p1', 'o1', ''),
+        quad('s2', 'p2', 'o2', 'g1'),
+        quad('s3', 'p3', 'o3', ''),
+        quad('g1', 'http://xmlns.com/foaf/0.1/primaryTopic', 'o1', 'g1'),
+        quad('o1', 'http://rdfs.org/ns/void#subset', 'o1?param', 'g1'),
+      ]);
+      inputNone = stream([
+        quad('s1', 'p1', 'o1', ''),
+        quad('s2', 'p2', 'o2', 'g1'),
+        quad('s3', 'p3', 'o3', ''),
+      ]);
+      inputDifferent = stream([
+        quad('s1', 'p1', 'o1', ''),
+        quad('g1', 'http://xmlns.com/foaf/0.1/primaryTopic', 'o2', 'g1'),
+        quad('o2', 'http://rdfs.org/ns/void#subset', 'o2?param', 'g1'),
         quad('s2', 'p2', 'o2', 'g1'),
         quad('s3', 'p3', 'o3', ''),
       ]);
@@ -54,7 +77,7 @@ describe('ActorRdfMetadataPrimaryTopic', () => {
     });
 
     it('should run', () => {
-      return actor.run({ pageUrl: '', quads: input })
+      return actor.run({ pageUrl: 'o1?param', quads: input })
         .then(async (output) => {
           const data: RDF.Quad[] = await arrayifyStream(output.data);
           const metadata: RDF.Quad[] = await arrayifyStream(output.metadata);
@@ -63,9 +86,57 @@ describe('ActorRdfMetadataPrimaryTopic', () => {
             quad('s3', 'p3', 'o3', ''),
           ]);
           expect(metadata).toEqual([
+            quad('o1', 'http://rdfs.org/ns/void#subset', 'o1?param', 'g1'),
             quad('g1', 'http://xmlns.com/foaf/0.1/primaryTopic', 'o1', 'g1'),
             quad('s2', 'p2', 'o2', 'g1'),
           ]);
+        });
+    });
+
+    it('should run when the primaryTopic triple comes after the graph', () => {
+      return actor.run({ pageUrl: 'o1?param', quads: inputOOO })
+        .then(async (output) => {
+          const data: RDF.Quad[] = await arrayifyStream(output.data);
+          const metadata: RDF.Quad[] = await arrayifyStream(output.metadata);
+          expect(data).toEqual([
+            quad('s1', 'p1', 'o1', ''),
+            quad('s3', 'p3', 'o3', ''),
+          ]);
+          expect(metadata).toEqual([
+            quad('s2', 'p2', 'o2', 'g1'),
+            quad('g1', 'http://xmlns.com/foaf/0.1/primaryTopic', 'o1', 'g1'),
+            quad('o1', 'http://rdfs.org/ns/void#subset', 'o1?param', 'g1'),
+          ]);
+        });
+    });
+
+    it('should run and make everything data without primaryTopic triple', () => {
+      return actor.run({ pageUrl: 'o1?param', quads: inputNone })
+        .then(async (output) => {
+          const data: RDF.Quad[] = await arrayifyStream(output.data);
+          const metadata: RDF.Quad[] = await arrayifyStream(output.metadata);
+          expect(data).toEqual([
+            quad('s1', 'p1', 'o1', ''),
+            quad('s3', 'p3', 'o3', ''),
+            quad('s2', 'p2', 'o2', 'g1'),
+          ]);
+          expect(metadata).toEqual([]);
+        });
+    });
+
+    it('should run and make everything data with a primaryTopic triple that does not match the pageUrl', () => {
+      return actor.run({ pageUrl: 'o1?param', quads: inputDifferent })
+        .then(async (output) => {
+          const data: RDF.Quad[] = await arrayifyStream(output.data);
+          const metadata: RDF.Quad[] = await arrayifyStream(output.metadata);
+          expect(data).toEqual([
+            quad('s1', 'p1', 'o1', ''),
+            quad('s3', 'p3', 'o3', ''),
+            quad('g1', 'http://xmlns.com/foaf/0.1/primaryTopic', 'o2', 'g1'),
+            quad('o2', 'http://rdfs.org/ns/void#subset', 'o2?param', 'g1'),
+            quad('s2', 'p2', 'o2', 'g1'),
+          ]);
+          expect(metadata).toEqual([]);
         });
     });
 
