@@ -111,7 +111,7 @@
     "@comunica/mediator-race": "^1.0.0",
     "@comunica/runner": "^1.0.0",
     "@comunica/runner-cli": "^1.0.0",
-    "componentsjs": "2.1.4",
+    "componentsjs": "2.2.0",
     "minimist": "^1.2.0",
     "negotiate": "^1.0.1",
     "streamify-string": "^1.0.1"
