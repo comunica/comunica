@@ -20,6 +20,9 @@
     "rdf-dereference-paged"
   ],
   "license": "MIT",
+  "bin": {
+    "comunica-rdf-dereference-paged": "./bin/run.js"
+  },
   "bugs": {
     "url": "https://github.com/comunica/comunica/issues"
   },
@@ -28,10 +31,13 @@
     "components",
     "lib/**/*.d.ts",
     "lib/**/*.js",
+    "bin/**/*.d.ts",
+    "bin/**/*.js",
     "index.d.ts",
     "index.js"
   ],
   "dependencies": {
+    "@comunica/actor-abstract-mediatyped": "^1.0.0",
     "@comunica/actor-http-node-fetch": "^1.0.0",
     "@comunica/actor-rdf-dereference-http-parse": "^1.0.0",
     "@comunica/actor-rdf-dereference-paged-next": "^1.0.0",
@@ -53,7 +59,8 @@
     "@comunica/mediator-number": "^1.0.0",
     "@comunica/mediator-race": "^1.0.0",
     "@comunica/runner": "^1.0.0",
-    "@comunica/runner-cli": "^1.0.0"
+    "@comunica/runner-cli": "^1.0.0",
+    "rdf-string": "^1.1.1"
   },
   "jest": {
     "transform": {

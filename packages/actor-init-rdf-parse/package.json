@@ -18,6 +18,9 @@
     "runner"
   ],
   "license": "MIT",
+  "bin": {
+    "comunica-rdf-parse": "./bin/run.js"
+  },
   "bugs": {
     "url": "https://github.com/comunica/comunica/issues"
   },
@@ -26,10 +29,13 @@
     "components",
     "lib/**/*.d.ts",
     "lib/**/*.js",
+    "bin/**/*.d.ts",
+    "bin/**/*.js",
     "index.d.ts",
     "index.js"
   ],
   "dependencies": {
+    "@comunica/actor-abstract-mediatyped": "^1.0.0",
     "@comunica/actor-rdf-parse-jsonld": "^1.0.0",
     "@comunica/actor-rdf-parse-n3": "^1.0.0",
     "@comunica/bus-init": "^1.0.0",
@@ -37,7 +43,8 @@
     "@comunica/core": "^1.0.0",
     "@comunica/mediator-race": "^1.0.0",
     "@comunica/runner": "^1.0.0",
-    "@comunica/runner-cli": "^1.0.0"
+    "@comunica/runner-cli": "^1.0.0",
+    "rdf-string": "^1.1.1"
   },
   "jest": {
     "transform": {

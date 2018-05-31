@@ -27,7 +27,7 @@ to the console, followed by all command line parameters.
 Executing the following:
 
 ```
-$ node_modules/.bin/comunica-run config/config-example.json Desmond Hume
+$ node bin/run.js Desmond Hume
 ```
 
 will print `Hi Desmond Hume`.

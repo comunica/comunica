@@ -2,6 +2,7 @@ import {ActorInit, IActionInit, IActorOutputInit} from "@comunica/bus-init";
 import {IActionRdfDereference, IActorRdfDereferenceOutput} from "@comunica/bus-rdf-dereference";
 import {IActorRdfParseOutput} from "@comunica/bus-rdf-parse";
 import {Actor, IActorArgs, IActorTest, Mediator} from "@comunica/core";
+import * as RdfString from "rdf-string";
 import {Readable} from "stream";
 
 /**
@@ -37,7 +38,7 @@ export class ActorInitRdfDereference extends ActorInit implements IActorInitRdfP
     readable._read = () => {
       return;
     };
-    result.quads.on('data', (quad) => readable.push(JSON.stringify(quad) + '\n'));
+    result.quads.on('data', (quad) => readable.push(JSON.stringify(RdfString.quadToStringQuad(quad)) + '\n'));
     result.quads.on('end', () => readable.push(null));
 
     return { stdout: readable };

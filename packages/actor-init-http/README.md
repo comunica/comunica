@@ -12,6 +12,8 @@ This module is part of the [Comunica framework](https://github.com/comunica/comu
 $ yarn add @comunica/actor-init-http
 ```
 
+This package exposes the binary `comunica-http [url]`.
+
 ## Usage
 
 The `config/config-example.json` contains an example on how to run this actor,
@@ -24,15 +26,10 @@ When executed, the actor will take the URL from the first CLI parameter,
 combine it with the parameters from the config file,
 perform the request, and print its response to stdout.
 
-When `@comunica/runner-cli`, `@comunica/runner`
-and any HTTP actor (such as `@comunica/actor-http-node-fetch`) are installed,
-executing the following:
+Executing the following:
 
 ```
-$ node_modules/.bin/comunica-run config/config-example.json http://fragments.linkedsoftwaredependencies.org
+$ node bin/run.js http://fragments.linkedsoftwaredependencies.org
 ```
 
 will print the response.
-
-**Note: when running in a dev environment:**
-Make sure that your `NODE_PATH` contains the `node_modules` folder of this module.

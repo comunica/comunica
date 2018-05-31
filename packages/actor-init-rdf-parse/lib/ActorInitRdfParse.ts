@@ -2,6 +2,7 @@ import {ActorInit, IActionInit, IActorOutputInit} from "@comunica/bus-init";
 import {IActionRdfParse, IActionRootRdfParse, IActorOutputRootRdfParse, IActorRdfParseOutput,
   IActorTestRootRdfParse} from "@comunica/bus-rdf-parse";
 import {Actor, IActorArgs, IActorTest, Mediator} from "@comunica/core";
+import * as RdfString from "rdf-string";
 import {PassThrough, Readable} from "stream";
 
 /**
@@ -25,11 +26,12 @@ export class ActorInitRdfParse extends ActorInit implements IActorInitRdfParseAr
   }
 
   public async run(action: IActionInit): Promise<IActorOutputInit> {
+    const mediaType: string = action.argv.length > 0 ? action.argv[0] : this.mediaType;
     const parseAction: IActionRdfParse = { input: action.stdin };
     const result: IActorRdfParseOutput = (await this.mediatorRdfParse.mediate(
-      { handle: parseAction, handleMediaType: this.mediaType })).handle;
+      { handle: parseAction, handleMediaType: mediaType })).handle;
 
-    result.quads.on('data', (quad) => readable.push(JSON.stringify(quad)));
+    result.quads.on('data', (quad) => readable.push(JSON.stringify(RdfString.quadToStringQuad(quad)) + '\n'));
     result.quads.on('end', () => readable.push(null));
     const readable = new Readable();
     readable._read = () => {

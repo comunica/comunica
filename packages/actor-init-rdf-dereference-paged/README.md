@@ -3,6 +3,7 @@
 [![npm version](https://badge.fury.io/js/%40comunica%2Factor-init-rdf-dereference-paged.svg)](https://www.npmjs.com/package/@comunica/actor-init-rdf-dereference-paged)
 
 An example init actor for Comunica that triggers an RDF Dereference Paged event for the given URL.
+In practise, this will fetch an HTTP resource, parse its RDF contents, and follow nextPage links.
 
 This module is part of the [Comunica framework](https://github.com/comunica/comunica).
 
@@ -11,6 +12,8 @@ This module is part of the [Comunica framework](https://github.com/comunica/comu
 ```bash
 $ yarn add @comunica/actor-init-rdf-dereference-paged
 ```
+
+This package exposes the binary `comunica-rdf-dereference-paged [url]`.
 
 ## Usage
 
@@ -24,14 +27,10 @@ When executed, the actor will take the URL from the first CLI parameter,
 or take it from the config file if not available,
 perform the request, and print its response to stdout.
 
-When `@comunica/runner-cli`, `@comunica/runner` and the appropriate actor modules are installed,
-executing the following:
+Executing the following:
 
 ```
-$ node_modules/.bin/comunica-run config/config-example.json
+$ node bin/run.js https://fragments.linkedsoftwaredependencies.org/npm
 ```
 
 will print the response.
-
-**Note: when running in a dev environment:**
-Make sure that your `NODE_PATH` contains the `node_modules` folder of this module.

@@ -2,6 +2,7 @@
   "extends": "../../tsconfig.json",
   "include": [
     "index.ts",
+    "bin/**/*",
     "lib/**/*"
   ]
 }

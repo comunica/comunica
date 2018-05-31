@@ -3,6 +3,7 @@
 [![npm version](https://badge.fury.io/js/%40comunica%2Factor-init-rdf-dereference.svg)](https://www.npmjs.com/package/@comunica/actor-init-rdf-dereference)
 
 An example init actor for Comunica that triggers an RDF Dereference event for the given URL.
+In practise, this will fetch an HTTP resource, and parse its RDF contents.
 
 This module is part of the [Comunica framework](https://github.com/comunica/comunica).
 
@@ -11,6 +12,8 @@ This module is part of the [Comunica framework](https://github.com/comunica/comu
 ```bash
 $ yarn add @comunica/actor-init-rdf-dereference
 ```
+
+This package exposes the binary `comunica-rdf-dereference [url]`.
 
 ## Usage
 
@@ -24,16 +27,10 @@ When executed, the actor will take the URL from the first CLI parameter,
 or take it from the config file if not available,
 perform the request, and print its response to stdout.
 
-When `@comunica/runner-cli`, `@comunica/runner`
-and any HTTP actor (such as `@comunica/actor-http-node-fetch`),
-and any RDF parse actor (such as `@comunica/actor-rdf-parse-n3`) are installed,
-executing the following:
+Executing the following:
 
 ```
-$ node_modules/.bin/comunica-run config/config-example.json
+$ node bin/run.js https://fragments.linkedsoftwaredependencies.org/npm
 ```
 
 will print the response.
-
-**Note: when running in a dev environment:**
-Make sure that your `NODE_PATH` contains the `node_modules` folder of this module.

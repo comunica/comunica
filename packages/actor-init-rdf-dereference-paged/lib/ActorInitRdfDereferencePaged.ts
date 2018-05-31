@@ -1,6 +1,7 @@
 import {ActorInit, IActionInit, IActorOutputInit} from "@comunica/bus-init";
 import {IActionRdfDereferencePaged, IActorRdfDereferencePagedOutput} from "@comunica/bus-rdf-dereference-paged";
 import {Actor, IActorArgs, IActorTest, Mediator} from "@comunica/core";
+import * as RdfString from "rdf-string";
 import {Readable} from "stream";
 
 /**
@@ -29,7 +30,7 @@ export class ActorInitRdfDereferencePaged extends ActorInit implements IActorIni
     }
     const result: IActorRdfDereferencePagedOutput = await this.mediatorRdfDereferencePaged.mediate(dereference);
 
-    result.data.on('data', (quad) => readable.push(JSON.stringify(quad) + '\n'));
+    result.data.on('data', (quad) => readable.push(JSON.stringify(RdfString.quadToStringQuad(quad)) + '\n'));
     result.data.on('end', () => readable.push(null));
     const readable = new Readable();
     readable._read = () => {

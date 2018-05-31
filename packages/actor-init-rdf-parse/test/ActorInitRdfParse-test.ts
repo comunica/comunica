@@ -72,12 +72,17 @@ describe('ActorInitRdfParse', () => {
     });
 
     it('should run', () => {
-      return expect(actor.run({ argv: [ 'https://www.google.com/' ], env: {}, stdin: input })).resolves
+      return expect(actor.run({ argv: [ 'text/turtle' ], env: {}, stdin: input })).resolves
+        .toHaveProperty('stdout');
+    });
+
+    it('should run without argv', () => {
+      return expect(actor.run({ argv: [], env: {}, stdin: input })).resolves
         .toHaveProperty('stdout');
     });
 
     it('should run', () => {
-      return actor.run({ argv: [ 'https://www.google.com/' ], env: {}, stdin: input })
+      return actor.run({ argv: [ 'text/turtle' ], env: {}, stdin: input })
         .then(async (output) => {
           return expect(await arrayifyStream(output.stdout)).toBeTruthy();
         });
