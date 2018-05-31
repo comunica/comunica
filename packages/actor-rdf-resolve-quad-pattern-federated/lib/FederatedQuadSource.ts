@@ -122,12 +122,6 @@ export class FederatedQuadSource implements ILazyQuadSource {
       // return an empty iterator.
       const pattern: RDF.Quad = quad(subject || blankNode(), predicate || blankNode(), object || blankNode(),
         graph || blankNode());
-      if (this.isSourceEmpty(source, pattern)) {
-        if (!(--remainingSources)) {
-          setImmediate(() => it.emit('metadata', metadata));
-        }
-        return new EmptyIterator();
-      }
 
       // Anonymous function to handle totalItems from metadata
       const checkEmitMetadata = (currentTotalItems: number) => {
@@ -147,8 +141,12 @@ export class FederatedQuadSource implements ILazyQuadSource {
       Object.assign(context, this.contextDefault);
 
       return new PromiseProxyIterator(async () => {
-        const output: IActorRdfResolveQuadPatternOutput = await this.mediatorResolveQuadPattern
-          .mediate({ pattern, context });
+        let output: IActorRdfResolveQuadPatternOutput;
+        if (this.isSourceEmpty(source, pattern)) {
+          output = { data: new EmptyIterator(), metadata: () => Promise.resolve({ totalItems: 0 }) };
+        } else {
+          output = await this.mediatorResolveQuadPattern.mediate({pattern, context});
+        }
         if (output.metadata) {
           output.metadata().then((subMetadata: {[id: string]: any}) => {
             if ((!subMetadata.totalItems && subMetadata.totalItems !== 0) || !isFinite(subMetadata.totalItems)) {
