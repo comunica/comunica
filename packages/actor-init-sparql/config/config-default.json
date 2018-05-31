@@ -378,6 +378,10 @@
         },
 
         {
+          "@id": "ex:myRdfMetadataPrimaryTopic",
+          "@type": "ActorRdfMetadataPrimaryTopic"
+        },
+        {
           "@id": "ex:myRdfMetadataTriplePredicate",
           "@type": "ActorRdfMetadataTriplePredicate"
         },
