@@ -71,7 +71,7 @@ export class ActorRdfDereferencePagedNext extends ActorRdfDereferencePaged imple
     const firstPageUrl: string = firstPage.pageUrl;
 
     const firstPageMetaSplit: IActorRdfMetadataOutput = await this.mediatorMetadata
-      .mediate({ pageUrl: firstPageUrl, quads: firstPage.quads });
+      .mediate({ pageUrl: firstPageUrl, quads: firstPage.quads, triples: firstPage.triples });
     let materializedFirstPageMetadata: Promise<{[id: string]: any}> = null;
     const firstPageMetadata: () => Promise<{[id: string]: any}> = () => {
       return materializedFirstPageMetadata || (materializedFirstPageMetadata = this.mediatorMetadataExtract.mediate(

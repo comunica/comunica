@@ -60,7 +60,7 @@ export class MediatedPagedAsyncRdfIterator extends PagedAsyncRdfIterator {
     } else {
       const pageQuads: IActorRdfDereferenceOutput = await this.mediatorRdfDereference.mediate({ url });
       const pageMetaSplit: IActorRdfMetadataOutput = await this.mediatorMetadata
-        .mediate({ pageUrl: pageQuads.pageUrl, quads: pageQuads.quads });
+        .mediate({ pageUrl: pageQuads.pageUrl, quads: pageQuads.quads, triples: pageQuads.triples });
       pageData = pageMetaSplit.data;
 
       // Don't await, we want to process metadata in the background.
