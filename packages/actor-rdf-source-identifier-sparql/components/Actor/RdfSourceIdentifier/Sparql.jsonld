@@ -18,6 +18,13 @@
           "comment": "The HTTP mediator",
           "required": true,
           "unique": true
+        },
+        {
+          "@id": "cbrsi:Actor/RdfSourceIdentifier/priority",
+          "defaultScoped": {
+            "defaultScope": "carsis:Actor/RdfSourceIdentifier/Sparql",
+            "defaultScopedValue": 0.5
+          }
         }
       ],
       "constructorArguments": [

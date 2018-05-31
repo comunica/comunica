@@ -1,7 +1,10 @@
 import {IActionHttp, IActorHttpOutput} from "@comunica/bus-http";
-import {ActorRdfSourceIdentifier, IActionRdfSourceIdentifier,
-  IActorRdfSourceIdentifierOutput} from "@comunica/bus-rdf-source-identifier";
+import {
+  ActorRdfSourceIdentifier, IActionRdfSourceIdentifier, IActorRdfSourceIdentifierArgs,
+  IActorRdfSourceIdentifierOutput,
+} from "@comunica/bus-rdf-source-identifier";
 import {Actor, IActorArgs, IActorTest, Mediator} from "@comunica/core";
+import {IMediatorTypePriority} from "@comunica/mediatortype-priority";
 
 /**
  * A comunica SPARQL RDF Source Identifier Actor.
@@ -15,7 +18,7 @@ export class ActorRdfSourceIdentifierSparql extends ActorRdfSourceIdentifier {
     super(args);
   }
 
-  public async test(action: IActionRdfSourceIdentifier): Promise<IActorTest> {
+  public async test(action: IActionRdfSourceIdentifier): Promise<IMediatorTypePriority> {
     if (!action.sourceValue.startsWith('http')) {
       throw new Error(`Actor ${this.name} can only detect SPARQL endpoints hosted via HTTP(S).`);
     }
@@ -27,7 +30,7 @@ export class ActorRdfSourceIdentifierSparql extends ActorRdfSourceIdentifier {
     if (!httpResponse.ok || httpResponse.headers.get('Content-Type').indexOf('application/sparql-results+json') < 0) {
       throw new Error(`${action.sourceValue} is not a SPARQL endpoint`);
     }
-    return { order: 1 };
+    return { priority: this.priority};
   }
 
   public async run(action: IActionRdfSourceIdentifier): Promise<IActorRdfSourceIdentifierOutput> {
@@ -37,7 +40,7 @@ export class ActorRdfSourceIdentifierSparql extends ActorRdfSourceIdentifier {
 }
 
 export interface IActorRdfSourceIdentifierSparqlArgs
-  extends IActorArgs<IActionRdfSourceIdentifier, IActorTest, IActorRdfSourceIdentifierOutput> {
+  extends IActorRdfSourceIdentifierArgs {
   mediatorHttp: Mediator<Actor<IActionHttp, IActorTest, IActorHttpOutput>,
     IActionHttp, IActorTest, IActorHttpOutput>;
 }

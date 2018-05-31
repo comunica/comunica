@@ -31,6 +31,13 @@
             "text/n3",
             "application/ld+json"
           ]
+        },
+        {
+          "@id": "cbrsi:Actor/RdfSourceIdentifier/priority",
+          "defaultScoped": {
+            "defaultScope": "carsifct:Actor/RdfSourceIdentifier/FileContentType",
+            "defaultScopedValue": 0.1
+          }
         }
       ],
       "constructorArguments": [

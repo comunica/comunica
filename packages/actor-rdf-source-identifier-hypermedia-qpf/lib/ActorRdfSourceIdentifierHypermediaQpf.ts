@@ -1,7 +1,10 @@
 import {IActionHttp, IActorHttpOutput} from "@comunica/bus-http";
-import {ActorRdfSourceIdentifier, IActionRdfSourceIdentifier,
-  IActorRdfSourceIdentifierOutput} from "@comunica/bus-rdf-source-identifier";
-import {Actor, IActorArgs, IActorTest, Mediator} from "@comunica/core";
+import {
+  ActorRdfSourceIdentifier, IActionRdfSourceIdentifier, IActorRdfSourceIdentifierArgs,
+  IActorRdfSourceIdentifierOutput,
+} from "@comunica/bus-rdf-source-identifier";
+import {Actor, IActorTest, Mediator} from "@comunica/core";
+import {IMediatorTypePriority} from "@comunica/mediatortype-priority";
 import "isomorphic-fetch";
 
 /**
@@ -18,7 +21,7 @@ export class ActorRdfSourceIdentifierHypermediaQpf extends ActorRdfSourceIdentif
     super(args);
   }
 
-  public async test(action: IActionRdfSourceIdentifier): Promise<IActorTest> {
+  public async test(action: IActionRdfSourceIdentifier): Promise<IMediatorTypePriority> {
     if (!action.sourceValue.startsWith('http')) {
       throw new Error(`Actor ${this.name} can only detect hypermedia interfaces hosted via HTTP(S).`);
     }
@@ -39,7 +42,7 @@ export class ActorRdfSourceIdentifierHypermediaQpf extends ActorRdfSourceIdentif
         }
       }
       if (valid) {
-        return { order: 0 };
+        return { priority: this.priority };
       }
     }
 
@@ -58,7 +61,7 @@ export class ActorRdfSourceIdentifierHypermediaQpf extends ActorRdfSourceIdentif
 }
 
 export interface IActorRdfSourceIdentifierHypermediaQpfArgs
-  extends IActorArgs<IActionRdfSourceIdentifier, IActorTest, IActorRdfSourceIdentifierOutput> {
+  extends IActorRdfSourceIdentifierArgs {
   mediatorHttp: Mediator<Actor<IActionHttp, IActorTest, IActorHttpOutput>,
     IActionHttp, IActorTest, IActorHttpOutput>;
   acceptHeader: string;

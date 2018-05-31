@@ -1,7 +1,10 @@
 import {IActionHttp, IActorHttpOutput} from "@comunica/bus-http";
-import {ActorRdfSourceIdentifier, IActionRdfSourceIdentifier,
-  IActorRdfSourceIdentifierOutput} from "@comunica/bus-rdf-source-identifier";
+import {
+  ActorRdfSourceIdentifier, IActionRdfSourceIdentifier, IActorRdfSourceIdentifierArgs,
+  IActorRdfSourceIdentifierOutput,
+} from "@comunica/bus-rdf-source-identifier";
 import {Actor, IActorArgs, IActorTest, Mediator} from "@comunica/core";
+import {IMediatorTypePriority} from "@comunica/mediatortype-priority";
 
 /**
  * A comunica File Content Type RDF Source Identifier Actor.
@@ -16,7 +19,7 @@ export class ActorRdfSourceIdentifierFileContentType extends ActorRdfSourceIdent
     super(args);
   }
 
-  public async test(action: IActionRdfSourceIdentifier): Promise<IActorTest> {
+  public async test(action: IActionRdfSourceIdentifier): Promise<IMediatorTypePriority> {
     if (!action.sourceValue.startsWith('http')) {
       throw new Error(`Actor ${this.name} can only detect files hosted via HTTP(S).`);
     }
@@ -28,7 +31,7 @@ export class ActorRdfSourceIdentifierFileContentType extends ActorRdfSourceIdent
         .get('Content-Type').indexOf(mediaType) >= 0)) {
       throw new Error(`${action.sourceValue} is not an RDF file of valid content type: ${this.allowedMediaTypes}`);
     }
-    return { order: 2 };
+    return { priority: this.priority };
   }
 
   public async run(action: IActionRdfSourceIdentifier): Promise<IActorRdfSourceIdentifierOutput> {
@@ -38,7 +41,7 @@ export class ActorRdfSourceIdentifierFileContentType extends ActorRdfSourceIdent
 }
 
 export interface IActorRdfSourceIdentifierFileContentTypeArgs
-  extends IActorArgs<IActionRdfSourceIdentifier, IActorTest, IActorRdfSourceIdentifierOutput> {
+  extends IActorRdfSourceIdentifierArgs {
   allowedMediaTypes: string[];
   mediatorHttp: Mediator<Actor<IActionHttp, IActorTest, IActorHttpOutput>,
     IActionHttp, IActorTest, IActorHttpOutput>;
