@@ -73,7 +73,9 @@
 						<section class="tsd-index-section ">
 							<h3>Functions</h3>
 							<ul class="tsd-index-list">
+								<li class="tsd-kind-function tsd-parent-kind-external-module"><a href="_runner_cli_lib_argsrunner_.html#isindev" class="tsd-kind-icon">is<wbr>InDev</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-external-module"><a href="_runner_cli_lib_argsrunner_.html#runargs" class="tsd-kind-icon">run<wbr>Args</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-external-module"><a href="_runner_cli_lib_argsrunner_.html#runargsinprocess" class="tsd-kind-icon">run<wbr>Args<wbr>InProcess</a></li>
 							</ul>
 						</section>
 					</div>
@@ -82,16 +84,33 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Functions</h2>
 				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-external-module">
-					<a name="runargs" class="tsd-anchor"></a>
-					<h3>run<wbr>Args</h3>
+					<a name="isindev" class="tsd-anchor"></a>
+					<h3>is<wbr>InDev</h3>
 					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-external-module">
-						<li class="tsd-signature tsd-kind-icon">run<wbr>Args<span class="tsd-signature-symbol">(</span>configResourceUrl<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, argv<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span>, stdin<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ReadStream</span>, stdout<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">WriteStream</span>, stderr<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">WriteStream</span>, env<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ProcessEnv</span>, runnerUri<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span>, properties<span class="tsd-signature-symbol">?: </span><a href="_actor_init_sparql_node_modules__comunica_runner_lib_setup_.html#isetupproperties" class="tsd-signature-type">ISetupProperties</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">is<wbr>InDev<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/cd45120/packages/runner-cli/lib/ArgsRunner.ts#L4">runner-cli/lib/ArgsRunner.ts:4</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/e75b56a/packages/runner-cli/lib/ArgsRunner.ts#L31">runner-cli/lib/ArgsRunner.ts:31</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-external-module">
+					<a name="runargs" class="tsd-anchor"></a>
+					<h3>run<wbr>Args</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-external-module">
+						<li class="tsd-signature tsd-kind-icon">run<wbr>Args<span class="tsd-signature-symbol">(</span>configResourceUrl<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, argv<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span>, stdin<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ReadStream</span>, stdout<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">WriteStream</span>, stderr<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">WriteStream</span>, env<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">ProcessEnv</span>, runnerUri<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span>, properties<span class="tsd-signature-symbol">?: </span><a href="_actor_init_hello_world_node_modules__comunica_runner_cli_node_modules__comunica_runner_lib_setup_.html#isetupproperties" class="tsd-signature-type">ISetupProperties</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/e75b56a/packages/runner-cli/lib/ArgsRunner.ts#L4">runner-cli/lib/ArgsRunner.ts:4</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -118,7 +137,33 @@
 									<h5><span class="tsd-flag ts-flagOptional">Optional</span> runnerUri: <span class="tsd-signature-type">string</span></h5>
 								</li>
 								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> properties: <a href="_actor_init_sparql_node_modules__comunica_runner_lib_setup_.html#isetupproperties" class="tsd-signature-type">ISetupProperties</a></h5>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> properties: <a href="_actor_init_hello_world_node_modules__comunica_runner_cli_node_modules__comunica_runner_lib_setup_.html#isetupproperties" class="tsd-signature-type">ISetupProperties</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-external-module">
+					<a name="runargsinprocess" class="tsd-anchor"></a>
+					<h3>run<wbr>Args<wbr>InProcess</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-external-module">
+						<li class="tsd-signature tsd-kind-icon">run<wbr>Args<wbr>InProcess<span class="tsd-signature-symbol">(</span>moduleRootPath<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, defaultConfigPath<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/e75b56a/packages/runner-cli/lib/ArgsRunner.ts#L23">runner-cli/lib/ArgsRunner.ts:23</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>moduleRootPath: <span class="tsd-signature-type">string</span></h5>
+								</li>
+								<li>
+									<h5>defaultConfigPath: <span class="tsd-signature-type">string</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -141,7 +186,13 @@
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
 					<li class=" tsd-kind-function tsd-parent-kind-external-module">
+						<a href="_runner_cli_lib_argsrunner_.html#isindev" class="tsd-kind-icon">is<wbr>InDev</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module">
 						<a href="_runner_cli_lib_argsrunner_.html#runargs" class="tsd-kind-icon">run<wbr>Args</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module">
+						<a href="_runner_cli_lib_argsrunner_.html#runargsinprocess" class="tsd-kind-icon">run<wbr>Args<wbr>InProcess</a>
 					</li>
 				</ul>
 			</nav>
