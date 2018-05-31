@@ -39,6 +39,13 @@
             "variable",
             "property"
           ]
+        },
+        {
+          "@id": "cbrsi:Actor/RdfSourceIdentifier/priority",
+          "defaultScoped": {
+            "defaultScope": "carsihq:Actor/RdfSourceIdentifier/HypermediaQpf",
+            "defaultScopedValue": 0.9
+          }
         }
       ],
       "constructorArguments": [

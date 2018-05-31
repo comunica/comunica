@@ -18,13 +18,26 @@
             "defaultScope": "cbrsi:Actor/RdfSourceIdentifier",
             "defaultScopedValue": { "@id": "cbrsi:Bus/RdfSourceIdentifier" }
           }
+        },
+        {
+          "@id": "cbrsi:Actor/RdfSourceIdentifier/priority",
+          "comment": "The priority of this identifier",
+          "range": "xsd:float",
+          "required": true,
+          "unique": true
         }
       ],
       "constructorArguments": [
         {
           "@id": "cbrsi:Actor/RdfSourceIdentifier/constructorArgumentsObject",
           "@type": "https://linkedsoftwaredependencies.org/vocabularies/object-oriented#Object",
-          "extends": "cc:Actor/constructorArgumentsObject"
+          "extends": "cc:Actor/constructorArgumentsObject",
+          "fields": [
+            {
+              "keyRaw": "priority",
+              "value": "cbrsi:Actor/RdfSourceIdentifier/priority"
+            }
+          ]
         }
       ]
     }

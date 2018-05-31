@@ -331,8 +331,8 @@
           "@type": "ActorContextPreprocessRdfSourceIdentifier",
           "cacprsi:Actor/ContextPreprocess/RdfSourceIdentifier/mediatorRdfSourceIdentifier": {
             "@id": "ex:mediatorRdfSourceIdentifier",
-            "@type": "MediatorNumberMin",
-            "field": "order",
+            "@type": "MediatorNumberMax",
+            "field": "priority",
             "ignoreErrors": true,
             "cc:Mediator/bus": { "@id": "cbrsi:Bus/RdfSourceIdentifier" }
           }
