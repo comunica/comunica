@@ -38,7 +38,7 @@ export class ActorRdfResolveQuadPatternFederated extends ActorRdfResolveQuadPatt
     const output: IActorRdfResolveQuadPatternOutput = await super.getOutput(source, pattern, context);
     output.metadata = () => new Promise((resolve, reject) => {
       output.data.on('error', reject);
-      output.data.on('end', () => resolve({ totalItems: Infinity }));
+      output.data.on('end', () => reject(new Error('No metadata was found')));
       output.data.on('metadata', (metadata) => {
         resolve(metadata);
       });
