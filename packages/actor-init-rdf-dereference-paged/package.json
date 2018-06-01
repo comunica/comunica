@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-init-rdf-dereference-paged",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "A Comunica engine for paging through RDF resources",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-rdf-dereference-paged",
   "lsd:components": "components/components.jsonld",

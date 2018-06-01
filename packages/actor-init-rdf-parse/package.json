@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-init-rdf-parse",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "A Comunica engine for parsing RDF",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-rdf-parse",
   "lsd:components": "components/components.jsonld",
