@@ -24,6 +24,7 @@
   },
   "homepage": "https://github.com/comunica/comunica#readme",
   "files": [
+    "config",
     "bin/**/*.d.ts",
     "bin/**/*.js"
   ],

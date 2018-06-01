@@ -29,6 +29,7 @@
   "homepage": "https://github.com/comunica/comunica#readme",
   "files": [
     "components",
+    "config",
     "lib/**/*.d.ts",
     "lib/**/*.js",
     "bin/**/*.d.ts",
