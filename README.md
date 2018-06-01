@@ -21,6 +21,9 @@ If you want to **use** Comunica, have a look at the [manual](http://comunica.rea
 or at [Comunica SPARQL](https://github.com/comunica/comunica/tree/master/packages/actor-init-sparql)
 if you want to execute SPARQL queries.
 
+If you want more background information about the motivations of this work,
+be sure to have a look at our [article](https://comunica.github.io/Article-ISWC2018-Resource/).
+
 ## Development Setup
 
 This project can be setup by cloning and installing it as follows:
