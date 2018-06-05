@@ -18,25 +18,10 @@ export class ActorRdfDereferenceFile extends ActorRdfDereference {
   public readonly mediatorRdfParse: Mediator<ActorRdfParse,
     IActionRootRdfParse, IActorTestRootRdfParse, IActorOutputRootRdfParse>;
 
+  public readonly mediaMappings: { [id: string]: string };
+
   constructor(args: IActorRdfDereferenceFileArgs) {
     super(args);
-  }
-
-  public static extensionToMediaType(extension: string): string {
-    switch (extension) {
-    case '.ttl':
-    case '.turtle':
-    case '.nt':
-    case '.nq':
-    case '.ntriples':
-    case '.nquads':
-    case '.n3':
-    case '.trig':
-      return 'text/turtle';
-    case '.jsonld':
-    case '.json':
-      return 'application/ld+json';
-    }
   }
 
   public async test(action: IActionRdfDereference): Promise<IActorTest> {
@@ -58,7 +43,7 @@ export class ActorRdfDereferenceFile extends ActorRdfDereference {
 
     // deduce media type from file extension if possible
     if (!mediaType) {
-      mediaType = ActorRdfDereferenceFile.extensionToMediaType(path.extname(action.url));
+      mediaType = this.mediaMappings[path.extname(action.url)];
     }
 
     const parseAction: IActionRootRdfParse = {
@@ -85,4 +70,9 @@ export interface IActorRdfDereferenceFileArgs
    * Mediator used for parsing the file contents.
    */
   mediatorRdfParse: Mediator<ActorRdfParse, IActionRootRdfParse, IActorTestRootRdfParse, IActorOutputRootRdfParse>;
+
+  /**
+   * A collection of mappings, mapping file extensions to their corresponding media type.
+   */
+  mediaMappings: { [id: string]: string };
 }

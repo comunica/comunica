@@ -17,6 +17,23 @@
           "comment": "The RDF parse mediator",
           "required": true,
           "unique": true
+        },
+        {
+          "@id": "cardf:mediaMappingEntry",
+          "comment": "Maps an extension to a file type",
+          "required": true,
+          "default": [
+            { "cardf:extension": ".ttl",      "cardf:mediaType": "text/turtle" },
+            { "cardf:extension": ".turtle",   "cardf:mediaType": "text/turtle" },
+            { "cardf:extension": ".nt",       "cardf:mediaType": "text/turtle" },
+            { "cardf:extension": ".nq",       "cardf:mediaType": "text/turtle" },
+            { "cardf:extension": ".ntriples", "cardf:mediaType": "text/turtle" },
+            { "cardf:extension": ".nquads",   "cardf:mediaType": "text/turtle" },
+            { "cardf:extension": ".n3",       "cardf:mediaType": "text/turtle" },
+            { "cardf:extension": ".trig",     "cardf:mediaType": "text/turtle" },
+            { "cardf:extension": ".jsonld",   "cardf:mediaType": "application/ld+json" },
+            { "cardf:extension": ".json",     "cardf:mediaType": "application/ld+json" }
+          ]
         }
       ],
       "constructorArguments": [
@@ -26,6 +43,18 @@
             {
               "keyRaw": "mediatorRdfParse",
               "value": "cardf:mediatorRdfParse"
+            },
+            {
+              "keyRaw": "mediaMappings",
+              "value": {
+                "fields": [
+                  {
+                    "collectEntries": "cardf:mediaMappingEntry",
+                    "key": "cardf:extension",
+                    "value": "cardf:mediaType"
+                  }
+                ]
+              }
             }
           ]
         }
