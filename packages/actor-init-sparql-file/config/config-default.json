@@ -44,6 +44,7 @@
     "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-serialize-n3.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-serialize-jsonld.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-bus-rdf-dereference.jsonld",
+    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-dereference-file.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-dereference-http-parse.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-bus-rdf-join.jsonld",
     "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-join-nestedloop.jsonld",
@@ -255,7 +256,17 @@
         },
 
         {
-          "@id": "ex:myRdfDereferencer",
+          "@id": "ex:myRdfFileDereferencer",
+          "@type": "ActorRdfDereferenceFile",
+          "cardf:mediatorRdfParse": {
+            "@id": "ex:mediatorRdfParse",
+            "@type": "MediatorRace",
+            "cc:Mediator/bus": { "@id": "cbrp:Bus/RdfParse" }
+          }
+        },
+
+        {
+          "@id": "ex:myRdfHttpDereferencer",
           "@type": "ActorRdfDereferenceHttpParse",
           "mediatorHttp": {
             "@id": "ex:mediatorHttp",
@@ -264,9 +275,7 @@
             "cc:Mediator/bus": { "@id": "cbh:Bus/Http" }
           },
           "mediatorRdfParse": {
-            "@id": "ex:mediatorRdfParse",
-            "@type": "MediatorRace",
-            "cc:Mediator/bus": { "@id": "cbrp:Bus/RdfParse" }
+            "@id": "ex:mediatorRdfParse"
           }
         },
         {

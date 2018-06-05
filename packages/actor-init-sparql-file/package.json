@@ -50,6 +50,7 @@
     "@comunica/actor-query-operation-slice": "^1.1.0",
     "@comunica/actor-query-operation-union": "^1.1.0",
     "@comunica/actor-query-operation-values": "^1.1.0",
+    "@comunica/actor-rdf-dereference-file": "^1.1.0",
     "@comunica/actor-rdf-dereference-http-parse": "^1.1.0",
     "@comunica/actor-rdf-join-nestedloop": "^1.1.0",
     "@comunica/actor-rdf-parse-jsonld": "^1.1.0",

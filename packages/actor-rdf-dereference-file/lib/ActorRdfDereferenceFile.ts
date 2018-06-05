@@ -28,10 +28,12 @@ export class ActorRdfDereferenceFile extends ActorRdfDereference {
   public async test(action: IActionRdfDereference): Promise<IActorTest> {
     if (!action.url.startsWith("file:///")) {
       // check if the url contains a (relative) path
-      return promisify(fs.access)(action.url, fs.constants.F_OK)
-        .then(() => true)
-        .catch((err) => { throw new Error(
-          'This actor can only handle URLs that start with \'file:///\' or paths of existing files. (' + err + ')'); });
+      try {
+        await promisify(fs.access)(action.url, fs.constants.F_OK);
+      } catch (e) {
+        throw new Error(
+          'This actor can only handle URLs that start with \'file:///\' or paths of existing files. (' + e + ')');
+      }
     }
     return true;
   }
