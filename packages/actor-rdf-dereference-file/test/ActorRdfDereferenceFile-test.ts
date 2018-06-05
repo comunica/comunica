@@ -43,7 +43,7 @@ describe('ActorRdfDereferenceFile', () => {
           }};
         },
       };
-      mediaMappings = { '.ttl': 'text/turtle' };
+      mediaMappings = { ttl: 'text/turtle' };
       actor = new ActorRdfDereferenceFile({ name: 'actor', bus, mediaMappings, mediatorRdfParse });
     });
 

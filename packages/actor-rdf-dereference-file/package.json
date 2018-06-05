@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-dereference-file",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A file rdf-dereference actor",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-dereference-file",
   "lsd:components": "components/components.jsonld",
