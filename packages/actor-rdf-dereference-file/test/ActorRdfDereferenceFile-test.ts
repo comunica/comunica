@@ -31,6 +31,7 @@ describe('ActorRdfDereferenceFile', () => {
   describe('An ActorRdfDereferenceFile instance', () => {
     let actor: ActorRdfDereferenceFile;
     let mediatorRdfParse;
+    let mediaMappings;
 
     beforeEach(() => {
       mediatorRdfParse = {
@@ -42,23 +43,8 @@ describe('ActorRdfDereferenceFile', () => {
           }};
         },
       };
-      actor = new ActorRdfDereferenceFile({ name: 'actor', bus, mediatorRdfParse });
-    });
-
-    it('should convert file extensions', () => {
-      expect(ActorRdfDereferenceFile.extensionToMediaType('.ttl')).toBe('text/turtle');
-      expect(ActorRdfDereferenceFile.extensionToMediaType('.turtle')).toBe('text/turtle');
-      expect(ActorRdfDereferenceFile.extensionToMediaType('.nt')).toBe('text/turtle');
-      expect(ActorRdfDereferenceFile.extensionToMediaType('.nq')).toBe('text/turtle');
-      expect(ActorRdfDereferenceFile.extensionToMediaType('.ntriples')).toBe('text/turtle');
-      expect(ActorRdfDereferenceFile.extensionToMediaType('.nquads')).toBe('text/turtle');
-      expect(ActorRdfDereferenceFile.extensionToMediaType('.n3')).toBe('text/turtle');
-      expect(ActorRdfDereferenceFile.extensionToMediaType('.trig')).toBe('text/turtle');
-
-      expect(ActorRdfDereferenceFile.extensionToMediaType('.json')).toBe('application/ld+json');
-      expect(ActorRdfDereferenceFile.extensionToMediaType('.jsonld')).toBe('application/ld+json');
-
-      expect(ActorRdfDereferenceFile.extensionToMediaType('.dummy')).toBeFalsy();
+      mediaMappings = { '.ttl': 'text/turtle' };
+      actor = new ActorRdfDereferenceFile({ name: 'actor', bus, mediaMappings, mediatorRdfParse });
     });
 
     it('should test', () => {
