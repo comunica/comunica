@@ -6,6 +6,17 @@ import {ActorRdfDereferenceFile} from "../lib/ActorRdfDereferenceFile";
 
 const arrayifyStream = require('arrayify-stream');
 
+function fileUrl(str: string): string {
+  let pathName = path.resolve(str).replace(/\\/g, '/');
+
+  // Windows drive letter must be prefixed with a slash
+  if (pathName[0] !== '/') {
+    pathName = '/' + pathName;
+  }
+
+  return encodeURI('file://' + pathName);
+}
+
 describe('ActorRdfDereferenceFile', () => {
   let bus;
 
@@ -48,7 +59,7 @@ describe('ActorRdfDereferenceFile', () => {
     });
 
     it('should test', () => {
-      return expect(actor.test({ url: 'file:///test'})).resolves.toEqual(true);
+      return expect(actor.test({ url: fileUrl(path.join(__dirname, 'dummy.ttl'))})).resolves.toEqual(true);
     });
 
     it('should test non-file URIs', () => {
