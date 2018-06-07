@@ -11,7 +11,7 @@ module.exports = {
   },
   devtool: 'cheap-module-source-map',
   module: {
-    loaders: [
+    rules: [
       { // This fixes a problem where the setImmediate of asynciterator would conflict with webpack's polyfill
         test: /asynciterator\.js$/,
         loader: StringReplacePlugin.replace({
@@ -23,19 +23,6 @@ module.exports = {
               },
             },
           ] }),
-      },
-      { // This fixes an issue where UglifyJS would fail because labeled declarations are not allowed in strict mode
-        // This is a problem that should be fixed in jison: https://github.com/zaach/jison/issues/351
-        test: /SparqlParser\.js$/,
-        loader: StringReplacePlugin.replace({
-          replacements: [
-            {
-              pattern: /_token_stack:/i,
-              replacement: function () {
-                return '';
-              }
-            }
-          ]})
       },
       {
         // Makes rdf-sink use a modularized lodash function instead of requiring lodash completely
@@ -64,6 +51,9 @@ module.exports = {
         }
       }
     ]
+  },
+  optimization: {
+    minimize: true,
   },
   plugins: [
     new StringReplacePlugin(),
