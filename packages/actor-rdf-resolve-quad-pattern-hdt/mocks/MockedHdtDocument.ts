@@ -1,17 +1,18 @@
+import * as HDT from "hdt";
 import {IStringQuad} from "rdf-string/lib/TermUtil";
 
-export class MockedHdtDocument {
+export class MockedHdtDocument implements HDT.Document  {
 
   public closed: boolean = false;
 
   private readonly triples: IStringQuad[];
   private error: Error = null;
 
-  constructor(triples: ITriple[]) {
+  constructor(triples: IStringQuad[]) {
     this.triples = triples;
   }
 
-  protected static triplesMatch(a: ITriple, b: ITriple): boolean {
+  protected static triplesMatch(a: IStringQuad, b: IStringQuad): boolean {
     return MockedHdtDocument.termsMatch(a.subject, b.subject)
       && MockedHdtDocument.termsMatch(a.predicate, b.predicate)
       && MockedHdtDocument.termsMatch(a.object, b.object);
@@ -25,10 +26,10 @@ export class MockedHdtDocument {
     return !a || a.charAt(0) === '?' || a.charAt(0) === '_';
   }
 
-  public searchTriples(subject: string, predicate: string, object: string, options: {[id: string]: any},
-                       cb: (error: Error, triple: IStringQuad, totalItems: number) => void) {
+  public async searchTriples(subject: string, predicate: string, object: string,
+                             options: {[id: string]: any}): Promise<HDT.SearchResult> {
     if (this.error) {
-      return cb(this.error, null, 0);
+      throw this.error;
     }
     const tripleIn = { subject, predicate, object };
     const offset = options.offset || 0;
@@ -43,7 +44,7 @@ export class MockedHdtDocument {
         i++;
       }
     }
-    cb(null, triples, i);
+    return { triples, totalCount: i, hasExactCount: true };
   }
 
   public close() {

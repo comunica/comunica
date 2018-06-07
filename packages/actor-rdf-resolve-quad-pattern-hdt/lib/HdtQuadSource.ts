@@ -1,14 +1,15 @@
 import {ILazyQuadSource} from "@comunica/bus-rdf-resolve-quad-pattern";
 import {AsyncIterator} from "asynciterator";
+import * as HDT from "hdt";
 import * as RDF from "rdf-js";
 import {HdtIterator} from "./HdtIterator";
 
 export class HdtQuadSource implements ILazyQuadSource {
 
   protected bufferSize: number = 128;
-  protected readonly hdtDocument: any;
+  protected readonly hdtDocument: HDT.Document;
 
-  constructor(hdtDocument: any, bufferSize?: number) {
+  constructor(hdtDocument: HDT.Document, bufferSize?: number) {
     this.hdtDocument = hdtDocument;
     if (bufferSize) {
       this.bufferSize = bufferSize;

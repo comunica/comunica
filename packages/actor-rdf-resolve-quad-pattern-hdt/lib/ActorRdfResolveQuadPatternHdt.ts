@@ -1,10 +1,9 @@
 import {ActorRdfResolveQuadPatternSource, IActionRdfResolveQuadPattern,
   IActorRdfResolveQuadPatternOutput, ILazyQuadSource} from "@comunica/bus-rdf-resolve-quad-pattern";
 import {IActorArgs, IActorTest} from "@comunica/core";
+import * as HDT from "hdt";
 import * as RDF from "rdf-js";
 import {HdtQuadSource} from "./HdtQuadSource";
-// TODO: Create HDT typings
-const hdt = require('hdt'); // tslint:disable-line:no-var-requires
 
 /**
  * A comunica HDT RDF Resolve Quad Pattern Actor.
@@ -13,7 +12,7 @@ export class ActorRdfResolveQuadPatternHdt extends ActorRdfResolveQuadPatternSou
  implements IActorRdfResolveQuadPatternHdtArgs {
 
   public readonly hdtFiles?: string[];
-  public hdtDocuments: {[file: string]: Promise<any>} = {};
+  public hdtDocuments: {[file: string]: Promise<HDT.Document>} = {};
   public closed: boolean = false;
 
   protected shouldClose: boolean;
@@ -23,15 +22,8 @@ export class ActorRdfResolveQuadPatternHdt extends ActorRdfResolveQuadPatternSou
     super(args);
   }
 
-  public initializeHdt(hdtFile: string): Promise<void> {
-    return this.hdtDocuments[hdtFile] = new Promise((resolve, reject) => {
-      hdt.fromFile(hdtFile, (error: Error, hdtDocument: any) => {
-        if (error) {
-          return reject(error);
-        }
-        resolve(hdtDocument);
-      });
-    });
+  public initializeHdt(hdtFile: string): Promise<HDT.Document> {
+    return this.hdtDocuments[hdtFile] = HDT.fromFile(hdtFile);
   }
 
   public async initialize(): Promise<any> {
