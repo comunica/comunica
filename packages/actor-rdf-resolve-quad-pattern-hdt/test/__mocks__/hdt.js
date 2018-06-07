@@ -3,11 +3,11 @@ module.exports = {
   __setMockedDocument: function(hdtDocument) {
     this.hdtDocument = hdtDocument;
   },
-  fromFile: function (file, cb) {
+  fromFile: function (file) {
     if (!file) {
-      cb(new Error('File not found'));
+      return Promise.reject(new Error('File not found'));
     } else {
-      cb(null, this.hdtDocument);
+      return Promise.resolve(this.hdtDocument);
     }
   }
 };

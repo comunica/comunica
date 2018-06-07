@@ -1,19 +1,19 @@
 import {BufferedIterator, BufferedIteratorOptions} from "asynciterator";
+import * as HDT from "hdt";
 import {blankNode, defaultGraph, literal, namedNode, triple, variable} from "rdf-data-model";
 import * as RDF from "rdf-js";
 import * as RdfString from "rdf-string";
-import {IStringQuad} from "rdf-string/lib/TermUtil";
 
 export class HdtIterator extends BufferedIterator<RDF.Quad> {
 
-  protected readonly hdtDocument: any;
+  protected readonly hdtDocument: HDT.Document;
   protected readonly subject?: string;
   protected readonly predicate?: string;
   protected readonly object?: string;
 
   protected position: number;
 
-  constructor(hdtDocument: any, subject?: RDF.Term, predicate?: RDF.Term, object?: RDF.Term, options?: any) {
+  constructor(hdtDocument: HDT.Document, subject?: RDF.Term, predicate?: RDF.Term, object?: RDF.Term, options?: any) {
     super(options || { autoStart: false });
     this.hdtDocument = hdtDocument;
     this.subject = RdfString.termToString(subject);
@@ -29,24 +29,23 @@ export class HdtIterator extends BufferedIterator<RDF.Quad> {
   }
 
   public _read(count: number, done: () => void): void {
-    if (this.hdtDocument.closed) {
+    if ((<any> this.hdtDocument).closed) {
       this.close();
       return done();
     }
     this.hdtDocument.searchTriples(this.subject, this.predicate, this.object,
-      { offset: this.position, limit: count },
-      (error: Error, triples: IStringQuad[], totalItems: number) => {
-        if (error) {
-          this.emit('error', error);
-          return done();
-        } else {
-          this.emit('totalItems', totalItems);
-          triples.map((t) => RdfString.stringQuadToQuad(t)).forEach((t) => this._push(t));
-        }
-        if (triples.length < count) {
+      { offset: this.position, limit: count })
+      .then((searchResult: HDT.SearchResult) => {
+        this.emit('totalItems', searchResult.totalCount);
+        searchResult.triples.map((t) => RdfString.stringQuadToQuad(t)).forEach((t) => this._push(t));
+        if (searchResult.triples.length < count) {
           this.close();
         }
         done();
+      })
+      .catch((error) => {
+        this.emit('error', error);
+        return done();
       });
     this.position += count;
   }
