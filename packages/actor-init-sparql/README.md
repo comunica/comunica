@@ -105,7 +105,7 @@ newEngineDynamic().then(function (myEngine) {
 ### Usage within browser
 
 This engine can run in the browser using [Webpack](https://www.npmjs.com/package/webpack).
-To created a web-packed version of the engine, run `yarn browser` to create `dist/comunica-browser.js`.
+To created a web-packed version of the engine, run `yarn run browser` to create `dist/comunica-browser.js`.
 
 Include this file in your webpage as follows:
 
