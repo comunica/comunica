@@ -19,7 +19,7 @@ ____
 <!--Output of the `comunica-sparql -v` command.-->
 <!--If running in a development environment, this must be the output of `node ./packages/actor-init-sparql/bin/query.js -v`-->
 
-#### Log file:
+#### Crash log:
 
-<!--Always required for crashes. For other bugs, we might ask for it.-->
+<!--Only required for crashes.-->
 <!--Don't paste contents here directly, but use something like http://pastebin.com/-->
