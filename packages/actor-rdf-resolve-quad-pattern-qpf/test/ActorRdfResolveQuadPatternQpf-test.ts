@@ -1,9 +1,14 @@
 import {ActorRdfResolveQuadPattern} from "@comunica/bus-rdf-resolve-quad-pattern";
 import {Bus} from "@comunica/core";
+import {ArrayIterator} from "asynciterator";
 import {Readable} from "stream";
 import {ActorRdfResolveQuadPatternQpf} from "../lib/ActorRdfResolveQuadPatternQpf";
-const stream = require('streamify-array');
 const arrayifyStream = require('arrayify-stream');
+import {blankNode, literal, namedNode, quad, variable} from "rdf-data-model";
+import {MediatedQuadSource} from "../lib/MediatedQuadSource";
+
+// Skip pattern filtering
+MediatedQuadSource.matchPattern = () => true;
 
 describe('ActorRdfResolveQuadPatternQpf', () => {
   let bus;
@@ -51,39 +56,39 @@ describe('ActorRdfResolveQuadPatternQpf', () => {
     beforeEach(() => {
       mediator = {};
       pattern1 = {
-        graph: { value: 'd', termType: 'NamedNode' },
-        object: { value: 'c', termType: 'NamedNode' },
-        predicate: { value: 'b', termType: 'Variable' },
-        subject: { value: 'a', termType: 'NamedNode' },
+        graph: namedNode('d'),
+        object: namedNode('c'),
+        predicate: variable('b'),
+        subject: namedNode('a'),
       };
       pattern2 = {
-        graph: { value: 'd', termType: 'NamedNode' },
-        object: { value: 'c', termType: 'Variable' },
-        predicate: { value: 'b', termType: 'NamedNode' },
-        subject: { value: 'a', termType: 'NamedNode' },
+        graph: namedNode('d'),
+        object: variable('c'),
+        predicate: namedNode('b'),
+        subject: namedNode('a'),
       };
       pattern3 = {
-        graph: { value: 'd', termType: 'Variable' },
-        object: { value: 'c', termType: 'NamedNode' },
-        predicate: { value: 'b', termType: 'NamedNode' },
-        subject: { value: 'a', termType: 'NamedNode' },
+        graph: variable('d'),
+        object: namedNode('c'),
+        predicate: namedNode('b'),
+        subject: namedNode('a'),
       };
       pattern4 = {
-        graph: { value: 'd', termType: 'NamedNode' },
-        object: { value: 'c', termType: 'NamedNode' },
-        predicate: { value: 'b', termType: 'NamedNode' },
-        subject: { value: 'a', termType: 'Variable' },
+        graph: namedNode('d'),
+        object: namedNode('c'),
+        predicate: namedNode('b'),
+        subject: variable('a'),
       };
       pattern5 = {
-        graph: { value: 'd', termType: 'NamedNode' },
-        object: { value: 'c', termType: 'BlankNode' },
-        predicate: { value: 'b', termType: 'NamedNode' },
-        subject: { value: 'a', termType: 'Variable' },
+        graph: namedNode('d'),
+        object: blankNode('c'),
+        predicate: namedNode('b'),
+        subject: variable('a'),
       };
       pattern6 = {
-        object: { value: 'c', datatype: { value: 'data', termType: 'NamedNode' }, termType: 'Literal' },
-        predicate: { value: 'b', language: 'nl', termType: 'Literal' },
-        subject: { value: 'a', termType: 'Literal' },
+        object: literal('c', namedNode('data')),
+        predicate: literal('b', 'nl'),
+        subject: literal('a'),
       };
       metadataQpf = {
         searchForms: { values: [
@@ -112,7 +117,14 @@ describe('ActorRdfResolveQuadPatternQpf', () => {
         ]},
       };
       mediator.mediate = (action) => Promise.resolve({
-        data: stream([ action.url + '/a', action.url + '/b', action.url + '/c' ]),
+        data: new ArrayIterator([
+          quad(namedNode(action.url + '/a'), namedNode(action.url + '/a'), namedNode(action.url + '/a'),
+            namedNode(action.url + '/a')),
+          quad(namedNode(action.url + '/b'), namedNode(action.url + '/b'), namedNode(action.url + '/b'),
+            namedNode(action.url + '/b')),
+          quad(namedNode(action.url + '/c'), namedNode(action.url + '/c'), namedNode(action.url + '/c'),
+            namedNode(action.url + '/c')),
+        ]),
         firstPageMetadata: () => Promise.resolve(metadataQpf),
       });
       actor = new ActorRdfResolveQuadPatternQpf({ bus, graphUri: 'g', mediatorRdfDereferencePaged: mediator,
@@ -188,7 +200,11 @@ describe('ActorRdfResolveQuadPatternQpf', () => {
       return actor.run({ pattern: pattern1, context: { sources: [{ type: 'hypermedia', value: 'hypermedia' } ]}})
         .then(async (output) => {
           expect(await output.metadata()).toBe(metadataQpf);
-          expect(await arrayifyStream(output.data)).toEqual([ 'a,_,c,d/a', 'a,_,c,d/b', 'a,_,c,d/c' ]);
+          expect(await arrayifyStream(output.data)).toEqual([
+            quad(namedNode('a,_,c,d/a'), namedNode('a,_,c,d/a'), namedNode('a,_,c,d/a'), namedNode('a,_,c,d/a')),
+            quad(namedNode('a,_,c,d/b'), namedNode('a,_,c,d/b'), namedNode('a,_,c,d/b'), namedNode('a,_,c,d/b')),
+            quad(namedNode('a,_,c,d/c'), namedNode('a,_,c,d/c'), namedNode('a,_,c,d/c'), namedNode('a,_,c,d/c')),
+          ]);
         });
     });
 
@@ -196,7 +212,11 @@ describe('ActorRdfResolveQuadPatternQpf', () => {
       return actor.run({ pattern: pattern2, context: { sources: [{ type: 'hypermedia', value: 'hypermedia' } ]}})
         .then(async (output) => {
           expect(await output.metadata()).toBe(metadataQpf);
-          expect(await arrayifyStream(output.data)).toEqual([ 'a,b,_,d/a', 'a,b,_,d/b', 'a,b,_,d/c' ]);
+          expect(await arrayifyStream(output.data)).toEqual([
+            quad(namedNode('a,b,_,d/a'), namedNode('a,b,_,d/a'), namedNode('a,b,_,d/a'), namedNode('a,b,_,d/a')),
+            quad(namedNode('a,b,_,d/b'), namedNode('a,b,_,d/b'), namedNode('a,b,_,d/b'), namedNode('a,b,_,d/b')),
+            quad(namedNode('a,b,_,d/c'), namedNode('a,b,_,d/c'), namedNode('a,b,_,d/c'), namedNode('a,b,_,d/c')),
+          ]);
         });
     });
 
@@ -204,7 +224,11 @@ describe('ActorRdfResolveQuadPatternQpf', () => {
       return actor.run({ pattern: pattern3, context: { sources: [{ type: 'hypermedia', value: 'hypermedia' } ]}})
         .then(async (output) => {
           expect(await output.metadata()).toBe(metadataQpf);
-          expect(await arrayifyStream(output.data)).toEqual([ 'a,b,c,_/a', 'a,b,c,_/b', 'a,b,c,_/c' ]);
+          expect(await arrayifyStream(output.data)).toEqual([
+            quad(namedNode('a,b,c,_/a'), namedNode('a,b,c,_/a'), namedNode('a,b,c,_/a'), namedNode('a,b,c,_/a')),
+            quad(namedNode('a,b,c,_/b'), namedNode('a,b,c,_/b'), namedNode('a,b,c,_/b'), namedNode('a,b,c,_/b')),
+            quad(namedNode('a,b,c,_/c'), namedNode('a,b,c,_/c'), namedNode('a,b,c,_/c'), namedNode('a,b,c,_/c')),
+          ]);
         });
     });
 
@@ -212,7 +236,11 @@ describe('ActorRdfResolveQuadPatternQpf', () => {
       return actor.run({ pattern: pattern4, context: { sources: [{ type: 'hypermedia', value: 'hypermedia' } ]}})
         .then(async (output) => {
           expect(await output.metadata()).toBe(metadataQpf);
-          expect(await arrayifyStream(output.data)).toEqual([ '_,b,c,d/a', '_,b,c,d/b', '_,b,c,d/c' ]);
+          expect(await arrayifyStream(output.data)).toEqual([
+            quad(namedNode('_,b,c,d/a'), namedNode('_,b,c,d/a'), namedNode('_,b,c,d/a'), namedNode('_,b,c,d/a')),
+            quad(namedNode('_,b,c,d/b'), namedNode('_,b,c,d/b'), namedNode('_,b,c,d/b'), namedNode('_,b,c,d/b')),
+            quad(namedNode('_,b,c,d/c'), namedNode('_,b,c,d/c'), namedNode('_,b,c,d/c'), namedNode('_,b,c,d/c')),
+          ]);
         });
     });
 
@@ -220,7 +248,11 @@ describe('ActorRdfResolveQuadPatternQpf', () => {
       return actor.run({ pattern: pattern5, context: { sources: [{ type: 'hypermedia', value: 'hypermedia' } ]}})
         .then(async (output) => {
           expect(await output.metadata()).toBe(metadataQpf);
-          expect(await arrayifyStream(output.data)).toEqual([ '_,b,_,d/a', '_,b,_,d/b', '_,b,_,d/c' ]);
+          expect(await arrayifyStream(output.data)).toEqual([
+            quad(namedNode('_,b,_,d/a'), namedNode('_,b,_,d/a'), namedNode('_,b,_,d/a'), namedNode('_,b,_,d/a')),
+            quad(namedNode('_,b,_,d/b'), namedNode('_,b,_,d/b'), namedNode('_,b,_,d/b'), namedNode('_,b,_,d/b')),
+            quad(namedNode('_,b,_,d/c'), namedNode('_,b,_,d/c'), namedNode('_,b,_,d/c'), namedNode('_,b,_,d/c')),
+          ]);
         });
     });
 
@@ -229,7 +261,13 @@ describe('ActorRdfResolveQuadPatternQpf', () => {
         .then(async (output) => {
           expect(await output.metadata()).toBe(metadataQpf);
           expect(await arrayifyStream(output.data)).toEqual([
-            '"a","b"@nl,"c"^^data,_/a', '"a","b"@nl,"c"^^data,_/b', '"a","b"@nl,"c"^^data,_/c' ]);
+            quad(namedNode('"a","b"@nl,"c"^^data,_/a'), namedNode('"a","b"@nl,"c"^^data,_/a'),
+              namedNode('"a","b"@nl,"c"^^data,_/a'), namedNode('"a","b"@nl,"c"^^data,_/a')),
+            quad(namedNode('"a","b"@nl,"c"^^data,_/b'), namedNode('"a","b"@nl,"c"^^data,_/b'),
+              namedNode('"a","b"@nl,"c"^^data,_/b'), namedNode('"a","b"@nl,"c"^^data,_/b')),
+            quad(namedNode('"a","b"@nl,"c"^^data,_/c'), namedNode('"a","b"@nl,"c"^^data,_/c'),
+              namedNode('"a","b"@nl,"c"^^data,_/c'), namedNode('"a","b"@nl,"c"^^data,_/c')),
+          ]);
         });
     });
 
@@ -237,7 +275,13 @@ describe('ActorRdfResolveQuadPatternQpf', () => {
       return actor.run({ pattern: pattern6, context: { sources: [{ type: 'hypermedia', value: 'hypermedia' } ]}})
         .then(async (output) => {
           expect(await arrayifyStream(output.data)).toEqual([
-            '"a","b"@nl,"c"^^data,_/a', '"a","b"@nl,"c"^^data,_/b', '"a","b"@nl,"c"^^data,_/c' ]);
+            quad(namedNode('"a","b"@nl,"c"^^data,_/a'), namedNode('"a","b"@nl,"c"^^data,_/a'),
+              namedNode('"a","b"@nl,"c"^^data,_/a'), namedNode('"a","b"@nl,"c"^^data,_/a')),
+            quad(namedNode('"a","b"@nl,"c"^^data,_/b'), namedNode('"a","b"@nl,"c"^^data,_/b'),
+              namedNode('"a","b"@nl,"c"^^data,_/b'), namedNode('"a","b"@nl,"c"^^data,_/b')),
+            quad(namedNode('"a","b"@nl,"c"^^data,_/c'), namedNode('"a","b"@nl,"c"^^data,_/c'),
+              namedNode('"a","b"@nl,"c"^^data,_/c'), namedNode('"a","b"@nl,"c"^^data,_/c')),
+          ]);
         });
     });
 
@@ -257,7 +301,7 @@ describe('ActorRdfResolveQuadPatternQpf', () => {
 
     it('should run for TPF', () => {
       mediator.mediate = (action) => Promise.resolve({
-        data: stream([ action.url + '/a', action.url + '/b', action.url + '/c' ]),
+        data: new ArrayIterator([ action.url + '/a', action.url + '/b', action.url + '/c' ]),
         firstPageMetadata: () => Promise.resolve(metadataTpf),
       });
       return actor.run({ pattern: pattern2, context: { sources: [{ type: 'hypermedia', value: 'hypermedia' } ]}})
@@ -269,7 +313,7 @@ describe('ActorRdfResolveQuadPatternQpf', () => {
 
     it('should run multiple times for TPF', () => {
       mediator.mediate = (action) => Promise.resolve({
-        data: stream([ action.url + '/a', action.url + '/b', action.url + '/c' ]),
+        data: new ArrayIterator([ action.url + '/a', action.url + '/b', action.url + '/c' ]),
         firstPageMetadata: () => Promise.resolve(metadataTpf),
       });
       return actor.run({ pattern: pattern2, context: { sources: [{ type: 'hypermedia', value: 'hypermedia' } ]}})

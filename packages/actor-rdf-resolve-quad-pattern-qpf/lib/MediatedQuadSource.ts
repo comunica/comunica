@@ -3,9 +3,10 @@ import {ILazyQuadSource} from "@comunica/bus-rdf-resolve-quad-pattern";
 import {Actor, IActorTest, Mediator} from "@comunica/core";
 import {AsyncIterator} from "asynciterator";
 import {PromiseProxyIterator} from "asynciterator-promiseproxy";
+import * as DataFactory from "rdf-data-model";
 import * as RDF from "rdf-js";
 import {termToString} from "rdf-string";
-import {TRIPLE_TERM_NAMES} from "rdf-terms";
+import {QUAD_TERM_NAMES, TRIPLE_TERM_NAMES} from "rdf-terms";
 
 /**
  * A QPF quad source that uses a paged RDF dereference mediator
@@ -28,6 +29,25 @@ export class MediatedQuadSource implements ILazyQuadSource {
                 => Promise<string>)) {
     this.mediatorRdfDereferencePaged = mediatorRdfDereferencePaged;
     this.uriConstructor = uriConstructor;
+  }
+
+  /**
+   * Check if the given pattern matches with the given quad.
+   * @param {Quad} pattern A quad pattern.
+   * @param {Quad} quad A quad.
+   * @return {boolean} If they match.
+   */
+  public static matchPattern(pattern: RDF.Quad, quad: RDF.Quad): boolean {
+    for (const termName of QUAD_TERM_NAMES) {
+      const patternTerm: RDF.Term = (<any> pattern)[termName];
+      if (patternTerm.termType !== 'BlankNode' && patternTerm.termType !== 'Variable') {
+        const quadTerm: RDF.Term = (<any> quad)[termName];
+        if (!patternTerm.equals(quadTerm)) {
+          return false;
+        }
+      }
+    }
+    return true;
   }
 
   /**
@@ -101,6 +121,12 @@ export class MediatedQuadSource implements ILazyQuadSource {
       // Emit metadata in the stream, so we can attach it later to the actor's promise output
       quads.emit('metadata', output.firstPageMetadata);
 
+      // The server is free to send any data in its response (such as metadata),
+      // including quads that do not match the given matter.
+      // Therefore, we have to filter away all non-matching quads here.
+      let filteredOutput = output.data.filter(MediatedQuadSource.matchPattern.bind(null,
+        DataFactory.quad(subject, predicate, object, graph)));
+
       // Detect duplicate variables in the pattern
       const duplicateElementLinks: { [element: string]: string[] } = this
         .getDuplicateElementLinks(subject, predicate, object, graph);
@@ -109,11 +135,11 @@ export class MediatedQuadSource implements ILazyQuadSource {
       // make sure that we filter out the triples that don't have equal values for those triple elements,
       // as QPF ignores variable names.
       if (duplicateElementLinks) {
-        return output.data.filter((quad) => {
+        filteredOutput = filteredOutput.filter((quad) => {
           // No need to check the graph, because an equal element already would have to be found in s, p, or o.
           for (const element1 of TRIPLE_TERM_NAMES) {
             for (const element2 of (duplicateElementLinks[element1] || [])) {
-              if ((<any> quad)[element1] !== (<any> quad)[element2]) {
+              if (!(<any> quad)[element1].equals((<any> quad)[element2])) {
                 return false;
               }
             }
@@ -121,7 +147,8 @@ export class MediatedQuadSource implements ILazyQuadSource {
           return true;
         });
       }
-      return output.data;
+
+      return filteredOutput;
     });
     quads.on('newListener', (eventName) => {
       if (eventName === 'metadata') {
