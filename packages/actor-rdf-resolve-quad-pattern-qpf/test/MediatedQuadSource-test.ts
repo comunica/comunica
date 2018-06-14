@@ -1,13 +1,11 @@
+import {ArrayIterator} from "asynciterator";
+import {blankNode, namedNode, quad, variable} from "rdf-data-model";
 import * as RDF from "rdf-js";
 import {Readable} from "stream";
 import {MediatedQuadSource} from "../lib/MediatedQuadSource";
-const streamifyArray = require('streamify-array');
-import {blankNode, namedNode, quad, variable} from "rdf-data-model";
 
 describe('MediatedQuadSource', () => {
   let mediator;
-  let filterCalled;
-  let withFilter: (quad) => boolean;
   let uriConstructor;
   let S;
   let P;
@@ -20,16 +18,6 @@ describe('MediatedQuadSource', () => {
   let BV1;
 
   beforeEach(() => {
-    mediator = {};
-    withFilter = null;
-    mediator.mediate = (action) => new Promise((resolve, reject) => {
-      const readable = stream([ action.url + '/a', action.url + '/b', action.url + '/c' ]);
-      filterCalled = jest.spyOn(<any> readable, 'filter');
-      resolve({
-        data: readable,
-        firstPageMetadata: 'somemetadata',
-      });
-    });
     uriConstructor = (s, p, o, g) => Promise.resolve(s.value + ',' + p.value + ',' + o.value + ',' + g.value);
     S = namedNode('S');
     P = namedNode('P');
@@ -40,6 +28,22 @@ describe('MediatedQuadSource', () => {
     V3 = variable('v3');
     V4 = variable('v4');
     BV1 = blankNode('v1');
+    mediator = {};
+    mediator.mediate = (action) => new Promise((resolve, reject) => {
+      const readable = stream([
+        quad(namedNode('S'), namedNode('S'), namedNode('O'), namedNode('G')),
+        quad(namedNode('S'), namedNode('P'), namedNode('O'), namedNode('G')),
+        quad(namedNode('S'), namedNode('P'), namedNode('O'), namedNode('Ga')),
+        quad(namedNode('S'), namedNode('P'), namedNode('Oa'), namedNode('G')),
+        quad(namedNode('S'), namedNode('Pa'), namedNode('O'), namedNode('G')),
+        quad(namedNode('Sa'), namedNode('P'), namedNode('O'), namedNode('G')),
+        quad(namedNode('S'), namedNode('P'), namedNode('P'), namedNode('P')),
+      ]);
+      resolve({
+        data: readable,
+        firstPageMetadata: 'somemetadata',
+      });
+    });
   });
 
   describe('The MediatedQuadSource module', () => {
@@ -165,13 +169,10 @@ describe('MediatedQuadSource', () => {
         output.on('data', (e) => list.push(e));
         output.on('error', reject);
         output.on('end', () => {
-          if (list.length !== 3) {
-            reject();
-          } else {
-            expect(list).toEqual([ 'S,P,O,G/a', 'S,P,O,G/b', 'S,P,O,G/c' ]);
-            expect(filterCalled).not.toHaveBeenCalled();
-            resolve();
-          }
+          expect(list).toEqual([
+            quad(namedNode('S'), namedNode('P'), namedNode('O'), namedNode('G')),
+          ]);
+          resolve();
         });
       });
     });
@@ -183,8 +184,15 @@ describe('MediatedQuadSource', () => {
         output.on('data', (e) => list.push(e));
         output.on('error', reject);
         output.on('end', () => {
-          expect(filterCalled).not.toHaveBeenCalled();
-          expect(withFilter).toBeFalsy();
+          expect(list).toEqual([
+            quad(namedNode('S'), namedNode('S'), namedNode('O'), namedNode('G')),
+            quad(namedNode('S'), namedNode('P'), namedNode('O'), namedNode('G')),
+            quad(namedNode('S'), namedNode('P'), namedNode('O'), namedNode('Ga')),
+            quad(namedNode('S'), namedNode('P'), namedNode('Oa'), namedNode('G')),
+            quad(namedNode('S'), namedNode('Pa'), namedNode('O'), namedNode('G')),
+            quad(namedNode('Sa'), namedNode('P'), namedNode('O'), namedNode('G')),
+            quad(namedNode('S'), namedNode('P'), namedNode('P'), namedNode('P')),
+          ]);
           resolve();
         });
       });
@@ -197,14 +205,9 @@ describe('MediatedQuadSource', () => {
         output.on('data', (e) => list.push(e));
         output.on('error', reject);
         output.on('end', () => {
-          expect(filterCalled).toHaveBeenCalledTimes(1);
-          expect(withFilter).toBeTruthy();
-
-          expect(withFilter(quad(S, P, O, G))).toBe(false);
-          expect(withFilter(quad(S, S, O, G))).toBe(true);
-          expect(withFilter(quad(P, P, O, G))).toBe(true);
-          expect(withFilter(quad(S, S, S, S))).toBe(true);
-
+          expect(list).toEqual([
+            quad(namedNode('S'), namedNode('S'), namedNode('O'), namedNode('G')),
+          ]);
           resolve();
         });
       });
@@ -217,27 +220,9 @@ describe('MediatedQuadSource', () => {
         output.on('data', (e) => list.push(e));
         output.on('error', reject);
         output.on('end', () => {
-          expect(filterCalled).toHaveBeenCalledTimes(1);
-          expect(withFilter).toBeTruthy();
-
-          expect(withFilter(quad(S, P, O, G))).toBe(false);
-          expect(withFilter(quad(S, S, O, G))).toBe(false);
-          expect(withFilter(quad(P, P, O, G))).toBe(false);
-
-          expect(withFilter(quad(S, P, P, P))).toBe(true);
-          expect(withFilter(quad(S, P, P, G))).toBe(false);
-          expect(withFilter(quad(S, P, O, P))).toBe(false);
-          expect(withFilter(quad(S, P, O, G))).toBe(false);
-          expect(withFilter(quad(S, G, P, P))).toBe(false);
-          expect(withFilter(quad(S, G, P, G))).toBe(false);
-          expect(withFilter(quad(S, G, O, P))).toBe(false);
-          expect(withFilter(quad(S, G, O, G))).toBe(false);
-
-          expect(withFilter(quad(S, S, S, S))).toBe(true);
-          expect(withFilter(quad(S, P, P, P))).toBe(true);
-          expect(withFilter(quad(S, O, O, O))).toBe(true);
-          expect(withFilter(quad(S, G, G, G))).toBe(true);
-
+          expect(list).toEqual([
+            quad(namedNode('S'), namedNode('P'), namedNode('P'), namedNode('P')),
+          ]);
           resolve();
         });
       });
@@ -272,7 +257,9 @@ describe('MediatedQuadSource', () => {
     });
 
     it('should delegate errors', () => {
-      const data = stream([ 'a', 'b' ]);
+      const data = stream([
+        quad(namedNode('S'), namedNode('P'), namedNode('O'), namedNode('G')),
+      ]);
       mediator.mediate = (action) => Promise.resolve({ data });
       const error = new Error('a');
       return new Promise((resolve, reject) => {
@@ -291,11 +278,6 @@ describe('MediatedQuadSource', () => {
   });
 
   function stream(elements) {
-    const readable = streamifyArray(elements);
-    (<any> readable).filter = (filter: (quad) => boolean) => {
-      withFilter = filter;
-      return readable;
-    };
-    return readable;
+    return new ArrayIterator(elements);
   }
 });
