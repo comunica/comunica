@@ -1,6 +1,6 @@
 {
   "name": "@comunica/runner-cli",
-  "version": "1.1.0",
+  "version": "1.1.2",
   "description": "A comunica runner that sends an 'init' event from a commandline process.",
   "main": "index.js",
   "typings": "index",
