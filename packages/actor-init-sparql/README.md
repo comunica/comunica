@@ -1,6 +1,7 @@
 # Comunica SPARQL
 
 [![npm version](https://badge.fury.io/js/%40comunica%2Factor-init-sparql.svg)](https://www.npmjs.com/package/@comunica/actor-init-sparql)
+[![Docker Pulls](https://img.shields.io/docker/pulls/comunica/actor-init-sparql.svg)](https://hub.docker.com/r/comunica/actor-init-sparql/)
 
 Linked Data on the Web is being published in different ways,
 such as [data dumps](http://downloads.dbpedia.org/3.9/en/),
