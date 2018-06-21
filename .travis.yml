@@ -1,3 +1,6 @@
+sudo: required
+services:
+ - docker
 language: node_js
 node_js:
  - "8"
@@ -11,6 +14,7 @@ script:
   - yarn run lint
   - yarn run test-ci
   - lerna run browser
+  - ./.travis/docker.sh
 after_success:
   - yarn run coveralls-ci
   - yarn global add typedoc && yarn run doc
@@ -25,5 +29,13 @@ deploy:
   keep-history: true
   local-dir: documentation
   on:
+    branch: master
+    node_js: "node"
+deploy:
+  provider: script
+  skip-cleanup: true
+  script: ./.travis/docker.sh push
+  on:
+    tags: true
     branch: master
     node_js: "node"
