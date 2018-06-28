@@ -4290,6 +4290,10 @@ mute-stream@0.0.7:
   version "0.0.7"
   resolved "https://registry.yarnpkg.com/mute-stream/-/mute-stream-0.0.7.tgz#3075ce93bc21b8fab43e1bc4da7e8115ed1e7bab"
 
+n3@1.0.0-beta.1:
+  version "1.0.0-beta.1"
+  resolved "https://registry.yarnpkg.com/n3/-/n3-1.0.0-beta.1.tgz#ecd0b7068ee393a3894c0b425d3f2f27bbc177f5"
+
 n3@^0.11.2:
   version "0.11.3"
   resolved "https://registry.yarnpkg.com/n3/-/n3-0.11.3.tgz#8e587495240dd21408c2c3aae385ec1651a837f8"
@@ -4994,15 +4998,6 @@ rdf-parser-jsonld@^1.1.0:
   dependencies:
     concat-stream "^1.5.1"
     jsonld "^0.4.11"
-    rdf-data-model "^1.0.0"
-    rdf-sink "^1.0.0"
-    readable-stream "^2.2.9"
-
-rdf-parser-n3@^1.1.0:
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/rdf-parser-n3/-/rdf-parser-n3-1.1.1.tgz#af748c6031676e245f21d84ddf0d21623cee7650"
-  dependencies:
-    n3 "^0.11.2"
     rdf-data-model "^1.0.0"
     rdf-sink "^1.0.0"
     readable-stream "^2.2.9"

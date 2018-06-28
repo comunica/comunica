@@ -1,8 +1,7 @@
 import {ActorRdfParseFixedMediaTypes, IActionRdfParse, IActorRdfParseFixedMediaTypesArgs,
   IActorRdfParseOutput} from "@comunica/bus-rdf-parse";
 import {ActionContext} from "@comunica/core";
-// TODO: Temporarily use rdf-parser-n3, until N3 is ported to RDFJS
-const N3Parser: any = require('rdf-parser-n3'); // tslint:disable-line:no-var-requires
+import {StreamParser} from "n3";
 
 /**
  * An N3 RDF Parse actor that listens on the 'rdf-parse' bus.
@@ -18,7 +17,7 @@ export class ActorRdfParseN3 extends ActorRdfParseFixedMediaTypes {
   public async runHandle(action: IActionRdfParse, mediaType: string, context: ActionContext)
     : Promise<IActorRdfParseOutput> {
     action.input.on('error', (e) => quads.emit('error', e));
-    const quads = N3Parser.import(action.input);
+    const quads = action.input.pipe(new StreamParser());
     return {
       quads,
       triples: mediaType === 'text/turtle'
