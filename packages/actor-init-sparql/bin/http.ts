@@ -6,8 +6,9 @@ import * as http from 'http';
 import minimist = require('minimist');
 import * as querystring from 'querystring';
 import * as url from 'url';
-import {newEngineDynamic, QueryEngine} from '../lib/Query';
+import {newEngineDynamic} from '../index';
 import EventEmitter = NodeJS.EventEmitter;
+import {ActorInitSparql} from "../lib/ActorInitSparql";
 
 const MIME_PLAIN = 'text/plain';
 const MIME_JSON  = 'application/json';
@@ -30,7 +31,7 @@ const port = parseInt(args.p, 10) || 3000;
 
 const options = { configResourceUrl: process.env.COMUNICA_CONFIG
   ? process.cwd() + '/' + process.env.COMUNICA_CONFIG : null };
-newEngineDynamic(options).then(async (engine: QueryEngine) => {
+newEngineDynamic(options).then(async (engine: ActorInitSparql) => {
   const mediaTypes: {[id: string]: number} = await engine.getResultMediaTypes();
   const variants: any = [];
   for (const type of Object.keys(mediaTypes)) {

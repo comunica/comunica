@@ -24,7 +24,7 @@ export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs {
     IActorOutputRootSparqlParse>;
   public readonly mediatorContextPreprocess: Mediator<Actor<IActionContextPreprocess, IActorTest,
     IActorContextPreprocessOutput>, IActionContextPreprocess, IActorTest, IActorContextPreprocessOutput>;
-  public readonly query?: string;
+  public readonly queryString?: string;
   public readonly context?: string;
 
   constructor(args: IActorInitSparqlArgs) {
@@ -41,7 +41,7 @@ export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs {
    * @param context An optional query context.
    * @return {Promise<IActorQueryOperationOutput>} A promise that resolves to the query output.
    */
-  public async evaluateQuery(query: string, context?: any): Promise<IActorQueryOperationOutput> {
+  public async query(query: string, context?: any): Promise<IActorQueryOperationOutput> {
     // Start, but don't await, context pre-processing
     const combinationPromise = this.mediatorContextPreprocess.mediate({ context });
 
@@ -105,6 +105,6 @@ export interface IActorInitSparqlArgs extends IActorArgs<IActionInit, IActorTest
     IActorOutputRootSparqlParse>;
   mediatorContextPreprocess: Mediator<Actor<IActionContextPreprocess, IActorTest, IActorContextPreprocessOutput>,
     IActionContextPreprocess, IActorTest, IActorContextPreprocessOutput>;
-  query?: string;
+  queryString?: string;
   context?: string;
 }

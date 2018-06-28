@@ -2,7 +2,7 @@ const path = require('path');
 const StringReplacePlugin = require("string-replace-webpack-plugin");
 
 module.exports = {
-  entry: [ 'babel-polyfill', path.resolve(__dirname, 'engine-default.js') ],
+  entry: [ 'babel-polyfill', path.resolve(__dirname, 'index-browser.js') ],
   output: {
     filename: 'comunica-browser.js',
     path: __dirname,

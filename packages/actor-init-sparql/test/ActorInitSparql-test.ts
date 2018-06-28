@@ -48,7 +48,7 @@ describe('ActorInitSparql', () => {
   describe('An ActorInitSparql instance', () => {
     const hypermedia: string = "http://example.org/";
     const hypermedia2: string = "hypermedia@http://example.org/";
-    const query: string = "SELECT * WHERE { ?s ?p ?o } LIMIT 100";
+    const queryString: string = "SELECT * WHERE { ?s ?p ?o } LIMIT 100";
     const context: any = JSON.stringify({ hypermedia });
     let actor: ActorInitSparql;
     const mediatorContextPreprocess: any = {
@@ -114,7 +114,7 @@ describe('ActorInitSparql', () => {
       };
       actor = new ActorInitSparql(
         { bus, mediatorContextPreprocess, mediatorQueryOperation, mediatorSparqlParse, mediatorSparqlSerialize: med,
-          mediatorSparqlSerializeMediaTypeCombiner: med, name: 'actor', query });
+          mediatorSparqlSerializeMediaTypeCombiner: med, name: 'actor', queryString });
       return expect((await actor.run({ argv: [ '-t', 'testtype' ], env: {}, stdin: new PassThrough() })).stdout)
         .toEqual('testtype');
     });
@@ -128,7 +128,7 @@ describe('ActorInitSparql', () => {
       };
       actor = new ActorInitSparql(
         { bus, mediatorContextPreprocess, mediatorQueryOperation: m1, mediatorSparqlParse, mediatorSparqlSerialize: m2,
-          mediatorSparqlSerializeMediaTypeCombiner: m2, name: 'actor', query });
+          mediatorSparqlSerializeMediaTypeCombiner: m2, name: 'actor', queryString });
       return expect((await actor.run({ argv: [], env: {}, stdin: new PassThrough() })).stdout)
         .toEqual('application/json');
     });
@@ -142,7 +142,7 @@ describe('ActorInitSparql', () => {
       };
       actor = new ActorInitSparql(
         { bus, mediatorContextPreprocess, mediatorQueryOperation: m1, mediatorSparqlParse, mediatorSparqlSerialize: m2,
-          mediatorSparqlSerializeMediaTypeCombiner: m2, name: 'actor', query });
+          mediatorSparqlSerializeMediaTypeCombiner: m2, name: 'actor', queryString });
       return expect((await actor.run({ argv: [], env: {}, stdin: new PassThrough() })).stdout)
         .toEqual('application/trig');
     });
@@ -156,7 +156,7 @@ describe('ActorInitSparql', () => {
       };
       actor = new ActorInitSparql(
         { bus, mediatorContextPreprocess, mediatorQueryOperation: m1, mediatorSparqlParse, mediatorSparqlSerialize: m2,
-          mediatorSparqlSerializeMediaTypeCombiner: m2, name: 'actor', query });
+          mediatorSparqlSerializeMediaTypeCombiner: m2, name: 'actor', queryString });
       return expect((await actor.run({ argv: [], env: {}, stdin: new PassThrough() })).stdout)
         .toEqual('simple');
     });
@@ -164,7 +164,7 @@ describe('ActorInitSparql', () => {
     it('should run for no argv when query is passed as a parameter', () => {
       actor = new ActorInitSparql(
         { bus, mediatorContextPreprocess, mediatorQueryOperation, mediatorSparqlParse, mediatorSparqlSerialize,
-          mediatorSparqlSerializeMediaTypeCombiner: mediatorSparqlSerialize, name: 'actor', query });
+          mediatorSparqlSerializeMediaTypeCombiner: mediatorSparqlSerialize, name: 'actor', queryString });
       return actor.run({ argv: [ ], env: {}, stdin: new PassThrough() })
         .then((result) => {
           return new Promise((resolve, reject) => {
@@ -177,7 +177,7 @@ describe('ActorInitSparql', () => {
     it('should run for no argv when query and context are passed as a parameter', () => {
       actor = new ActorInitSparql(
         { bus, context, mediatorContextPreprocess, mediatorQueryOperation, mediatorSparqlParse, mediatorSparqlSerialize,
-          mediatorSparqlSerializeMediaTypeCombiner: mediatorSparqlSerialize, name: 'actor', query });
+          mediatorSparqlSerializeMediaTypeCombiner: mediatorSparqlSerialize, name: 'actor', queryString });
       return actor.run({ argv: [ ], env: {}, stdin: new PassThrough() })
         .then((result) => {
           return new Promise((resolve, reject) => {
@@ -198,13 +198,13 @@ describe('ActorInitSparql', () => {
     it('should run to stderr for no argv when only a falsy query is passed as parameter', () => {
       actor = new ActorInitSparql(
         { bus, mediatorContextPreprocess, mediatorQueryOperation, mediatorSparqlParse, mediatorSparqlSerialize,
-          mediatorSparqlSerializeMediaTypeCombiner: mediatorSparqlSerialize, name: 'actor', query: null });
+          mediatorSparqlSerializeMediaTypeCombiner: mediatorSparqlSerialize, name: 'actor', queryString: null });
       return expect(actor.run({ argv: [ ], env: {}, stdin: new PassThrough() })).resolves
         .toHaveProperty('stderr');
     });
 
     it('should run with an hypermedia and query from argv', () => {
-      return actor.run({ argv: [ hypermedia, query ], env: {}, stdin: new PassThrough() })
+      return actor.run({ argv: [ hypermedia, queryString ], env: {}, stdin: new PassThrough() })
         .then((result) => {
           return new Promise((resolve, reject) => {
             result.stdout.on('data', (line) => expect(line).toBeTruthy());
@@ -224,7 +224,7 @@ describe('ActorInitSparql', () => {
     });
 
     it('should run with an hypermedia and query option from argv', () => {
-      return actor.run({ argv: [ hypermedia, '-q' , query ], env: {}, stdin: new PassThrough() })
+      return actor.run({ argv: [ hypermedia, '-q' , queryString ], env: {}, stdin: new PassThrough() })
         .then((result) => {
           return new Promise((resolve, reject) => {
             result.stdout.on('data', (line) => expect(line).toBeTruthy());
@@ -260,17 +260,20 @@ describe('ActorInitSparql', () => {
     });
 
     it('should run with multiple hypermedias and a query option', () => {
-      return expect(actor.run({ argv: [ hypermedia, hypermedia, '-q', query ], env: {}, stdin: new PassThrough() }))
+      return expect(actor.run(
+        { argv: [ hypermedia, hypermedia, '-q', queryString ], env: {}, stdin: new PassThrough() }))
         .resolves.toBeTruthy();
     });
 
     it('should run with multiple tagged hypermedias and a query option', () => {
-      return expect(actor.run({ argv: [ hypermedia2, hypermedia2, '-q', query ], env: {}, stdin: new PassThrough() }))
+      return expect(actor.run(
+        { argv: [ hypermedia2, hypermedia2, '-q', queryString ], env: {}, stdin: new PassThrough() }))
         .resolves.toBeTruthy();
     });
 
     it('should not run with an hypermedia and a empty query file option', () => {
-      return expect(actor.run({ argv: [ hypermedia, '-f' ], env: {}, stdin: new PassThrough() })).rejects.toBeTruthy();
+      return expect(actor.run({ argv: [ hypermedia, '-f' ], env: {}, stdin: new PassThrough() }))
+        .rejects.toBeTruthy();
     });
 
     it('should not run with an hypermedia and a query file option to an invalid path', () => {
@@ -279,7 +282,7 @@ describe('ActorInitSparql', () => {
     });
 
     it('should run with query and a config file option from argv', () => {
-      return actor.run({ argv: [ query, '-c' , __dirname + '/assets/config.json' ], env: {},
+      return actor.run({ argv: [ queryString, '-c' , __dirname + '/assets/config.json' ], env: {},
         stdin: new PassThrough() })
         .then((result) => {
           return new Promise((resolve, reject) => {
