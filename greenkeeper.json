@@ -19,6 +19,7 @@
         "packages/actor-init-sparql/package.json",
         "packages/actor-init-sparql-file/package.json",
         "packages/actor-init-sparql-hdt/package.json",
+        "packages/actor-init-sparql-rdfjs/package.json",
         "packages/actor-query-operation-ask/package.json",
         "packages/actor-query-operation-bgp-empty/package.json",
         "packages/actor-query-operation-bgp-left-deep-smallest/package.json",
