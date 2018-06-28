@@ -1,0 +1,11 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/contexts/components.jsonld",
+    {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
+      "carrqprs": "npmd:@comunica/actor-rdf-resolve-quad-pattern-rdfjs-source/",
+
+      "ActorRdfResolveQuadPatternRdfJsSource": "carrqprs:Actor/RdfResolveQuadPattern/RdfJsSource"
+    }
+  ]
+}
