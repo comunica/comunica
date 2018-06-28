@@ -18,7 +18,7 @@ export class ActorInitSparql extends ActorInitSparqlBrowser {
 
   public async run(action: IActionInit): Promise<IActorOutputInit> {
     const args = minimist(action.argv);
-    if (!args.listformats && (!this.query && (!(args.q || args.f) && args._.length < (args.c ? 1 : 2)
+    if (!args.listformats && (!this.queryString && (!(args.q || args.f) && args._.length < (args.c ? 1 : 2)
         || args._.length < (args.c ? 0 : 1) || args.h || args.help || args.v || args.version))) {
       // Print version information
       if (args.v || args.version) {
@@ -76,7 +76,7 @@ Options:
     } else {
       query = args._.pop();
       if (!query) {
-        query = this.query;
+        query = this.queryString;
       }
     }
 
@@ -108,7 +108,7 @@ Options:
     }
 
     // Evaluate query
-    const queryResult: IActorQueryOperationOutput = await this.evaluateQuery(query, context);
+    const queryResult: IActorQueryOperationOutput = await this.query(query, context);
 
     // Serialize output according to media type
     const stdout: Readable = <Readable> (await this.resultToString(queryResult, args.t)).data;

@@ -78,7 +78,7 @@
               "value": "cais:mediatorContextPreprocess"
             },
             {
-              "keyRaw": "query",
+              "keyRaw": "queryString",
               "value": "cais:query"
             },
             {

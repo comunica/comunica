@@ -114,10 +114,11 @@ Include this file in your webpage as follows:
 <script src="path/to/comunica-browser.js"></script>
 ```
 
-After that, `Comunica.evaluateQuery` can be called via JavaScript. 
+After that, `Comunica.newEngine` can be called via JavaScript. 
 
 ```javascript
-Comunica.evaluateQuery('SELECT * { ?s ?p <http://dbpedia.org/resource/Belgium>. ?s ?p ?o } LIMIT 100',
+const myEngine = Comunica.newEngine();
+myEngine.query('SELECT * { ?s ?p <http://dbpedia.org/resource/Belgium>. ?s ?p ?o } LIMIT 100',
   { sources: [ { type: 'hypermedia', value: 'http://fragments.dbpedia.org/2015/en' } ] })
   .then(function (result) {
     result.bindingsStream.on('data', function (data) {
