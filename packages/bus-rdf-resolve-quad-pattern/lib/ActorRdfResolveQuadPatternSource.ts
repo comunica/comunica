@@ -18,6 +18,13 @@ export abstract class ActorRdfResolveQuadPatternSource extends ActorRdfResolveQu
     super(args);
   }
 
+  public static variableToNull(term?: RDF.Term): RDF.Term {
+    if (term && (term.termType === 'Variable' || term.termType === 'BlankNode')) {
+      return null;
+    }
+    return term;
+  }
+
   public async test(action: IActionRdfResolveQuadPattern): Promise<IActorTest> {
     return true;
   }
@@ -42,11 +49,21 @@ export abstract class ActorRdfResolveQuadPatternSource extends ActorRdfResolveQu
   protected async getOutput(source: ILazyQuadSource, pattern: RDF.Quad, context?: {[id: string]: any})
   : Promise<IActorRdfResolveQuadPatternOutput> {
     if (source.matchLazy) {
-      return { data: source.matchLazy(pattern.subject, pattern.predicate, pattern.object, pattern.graph) };
+      return { data: source.matchLazy(
+        ActorRdfResolveQuadPatternSource.variableToNull(pattern.subject),
+        ActorRdfResolveQuadPatternSource.variableToNull(pattern.predicate),
+        ActorRdfResolveQuadPatternSource.variableToNull(pattern.object),
+        ActorRdfResolveQuadPatternSource.variableToNull(pattern.graph),
+      ) };
     }
     return { data:
       // TODO: AsyncIterator fix typings
-      (<any> AsyncIterator).wrap(source.match(pattern.subject, pattern.predicate, pattern.object, pattern.graph)),
+      (<any> AsyncIterator).wrap(source.match(
+        ActorRdfResolveQuadPatternSource.variableToNull(pattern.subject),
+        ActorRdfResolveQuadPatternSource.variableToNull(pattern.predicate),
+        ActorRdfResolveQuadPatternSource.variableToNull(pattern.object),
+        ActorRdfResolveQuadPatternSource.variableToNull(pattern.graph),
+      )),
     };
   }
 
