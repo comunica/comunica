@@ -43,6 +43,18 @@ describe('MediatorCombinePipeline', () => {
       return expect(mediator.mediate({ field: 1 })).resolves.toEqual({ field: 2101 });
     });
   });
+
+  describe('An MediatorCombinePipeline instance without actors', () => {
+    let mediator: MediatorCombinePipeline<DummyActor, IDummyAction, IActorTest>;
+
+    beforeEach(() => {
+      mediator = new MediatorCombinePipeline({ name: 'mediator', bus });
+    });
+
+    it('should mediate', () => {
+      return expect(mediator.mediate({ field: 1 })).resolves.toEqual({ field: 1 });
+    });
+  });
 });
 
 class DummyActor extends Actor<IDummyAction, IActorTest, IDummyAction> {

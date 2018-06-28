@@ -12,7 +12,13 @@ export class MediatorCombinePipeline<A extends Actor<H, T, H>, H extends IAction
   }
 
   public async mediate(action: H): Promise<H> {
-    const testResults: IActorReply<A, H, T, H>[] = this.publish(action);
+    let testResults: IActorReply<A, H, T, H>[];
+    try {
+      testResults = this.publish(action);
+    } catch (e) {
+      // If no actors are available, just return the input as output
+      return action;
+    }
 
     // Delegate test errors.
     await Promise.all(require('lodash.map')(testResults, 'reply'));
