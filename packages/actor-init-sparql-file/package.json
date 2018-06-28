@@ -26,7 +26,12 @@
   "files": [
     "config",
     "bin/**/*.d.ts",
-    "bin/**/*.js"
+    "bin/**/*.js",
+    "index.js",
+    "index.d.ts",
+    "index-browser.d.ts",
+    "index-browser.js",
+    "engine-default.js"
   ],
   "dependencies": {
     "@comunica/actor-abstract-mediatyped": "^1.1.0",
@@ -103,6 +108,11 @@
     "test-watch": "node \"../../node_modules/jest/bin/jest.js\" ${1} --watch",
     "lint": "node \"../../node_modules/tslint/bin/tslint\" lib/**/*.ts test/**/*.ts --exclude '**/*.d.ts'",
     "build": "node \"../../node_modules/typescript/bin/tsc\"",
-    "validate": "npm ls"
+    "validate": "npm ls",
+    "prepare": "comunica-compile-config config/config-browser.json > engine-default.js",
+    "browser": "npm run prepare && \"../../node_modules/webpack/bin/webpack.js\" --config webpack.config.js --mode production"
+  },
+  "browser": {
+    "./index.js": "./index-browser.js"
   }
 }
