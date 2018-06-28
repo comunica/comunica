@@ -2,6 +2,8 @@
   "extends": "../../tsconfig.json",
   "include": [
     "index.ts",
-    "lib/**/*"
+    "index-browser.ts",
+    "lib/**/*",
+    "bin/**/*"
   ]
 }

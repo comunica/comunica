@@ -1,6 +1,6 @@
 # Comunica SPARQL File Init Actor
 
-[![npm version](https://badge.fury.io/js/%40comunica%2Factor-init-sparql-hdt.svg)](https://www.npmjs.com/package/@comunica/actor-init-sparql-hdt)
+[![npm version](https://badge.fury.io/js/%40comunica%2Factor-init-sparql-file.svg)](https://www.npmjs.com/package/@comunica/actor-init-sparql-file)
 
 A comunica SPARQL File Init Actor.
 
