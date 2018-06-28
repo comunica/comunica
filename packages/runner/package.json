@@ -18,6 +18,9 @@
     "runner"
   ],
   "license": "MIT",
+  "bin": {
+    "comunica-compile-config": "./bin/compile-config.js"
+  },
   "bugs": {
     "url": "https://github.com/comunica/comunica/issues"
   },
@@ -26,6 +29,8 @@
     "components",
     "lib/**/*.d.ts",
     "lib/**/*.js",
+    "bin/**/*.d.ts",
+    "bin/**/*.js",
     "index.d.ts",
     "index.js"
   ],
