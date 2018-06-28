@@ -98,9 +98,7 @@ export class ActorRdfResolveQuadPatternQpf extends ActorRdfResolveQuadPatternSou
       ];
       for (const entry of input) {
         if (entry.uri && entry.term) {
-          if (entry.term.termType === 'NamedNode' || entry.term.termType === 'Literal') {
-            entries[entry.uri] = termToString(entry.term);
-          }
+          entries[entry.uri] = termToString(entry.term);
         }
       }
 
