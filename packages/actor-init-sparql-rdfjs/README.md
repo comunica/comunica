@@ -2,7 +2,8 @@
 
 [![npm version](https://badge.fury.io/js/%40comunica%2Factor-init-sparql-rdfjs.svg)](https://www.npmjs.com/package/@comunica/actor-init-sparql-rdfjs)
 
-A comunica SPARQL RDFJS Init Actor.
+A comunica SPARQL RDFJS Init Actor that can query RDFJS sources
+that implement the [Source interface](http://rdf.js.org/#source-interface).
 
 This module is part of the [Comunica framework](https://github.com/comunica/comunica).
 
@@ -14,4 +15,35 @@ $ yarn add @comunica/actor-init-sparql-rdfjs
 
 ## Usage
 
-TODO
+```javascript
+const newEngine = require('@comunica/actor-init-sparql-rdfjs').newEngine;
+const N3Store = require('n3').Store;
+const DataFactory = require('n3').DataFactory;
+
+// This can be any RDFJS source
+// In this example, we wrap an N3Store
+const store = new N3Store();
+store.addQuad(DataFactory.quad(
+  DataFactory.namedNode('a'), DataFactory.namedNode('b'), DataFactory.namedNode('http://dbpedia.org/resource/Belgium')));
+store.addQuad(DataFactory.quad(
+  DataFactory.namedNode('a'), DataFactory.namedNode('b'), DataFactory.namedNode('http://dbpedia.org/resource/Ghent')));
+const source = {
+  match: function(s, p, o, g) {
+    return require('streamify-array')(store.getQuads(s, p, o, g));
+  }
+};
+
+// Create our engine, and query it.
+// If you intend to query multiple times, be sure to cache your engine for optimal performance.
+const myEngine = newEngine();
+myEngine.query('SELECT * { ?s ?p <http://dbpedia.org/resource/Belgium>. ?s ?p ?o } LIMIT 100',
+  { sources: [ { type: 'rdfjsSource', value: source } ] })
+  .then(function (result) {
+    result.bindingsStream.on('data', function (data) {
+      // Each data object contains a mapping from variables to RDFJS terms.
+      console.log(data['?s']);
+      console.log(data['?p']);
+      console.log(data['?o']);
+    });
+  });
+```
