@@ -37,7 +37,7 @@
     "immutable": "^3.8.2",
     "isomorphic-fetch": "^2.2.1",
     "jest": "^23.1.0",
-    "lerna": "^2.4.0",
+    "lerna": "^2.11.0",
     "pre-commit": "^1.2.2",
     "rdf-data-model": "^1.0.0",
     "rdf-quad": "^1.1.0",
@@ -92,7 +92,7 @@
     "build": "tsc",
     "doc": "typedoc --name Comunica --exclude \"**/+(node_modules|test|mocks)/**\" --disableOutputCheck --mode modules --out documentation $(find packages ! -name 'packager' -type d -mindepth 1 -maxdepth 1)",
     "preinstall": "node -e \"if (!fs.existsSync('packages/runner-cli/bin/run.js')) { var os = fs.createWriteStream('packages/runner-cli/bin/run.js'); os.write('#!/usr/bin/env node\\nconsole.error(\\'Temporary runner script during lerna installation. If you see this, please run yarn install again.\\');\\nprocess.exit(1);'); os.end(); }\" && node -e \"if (!fs.existsSync('packages/runner/bin/compile-config.js')) { var os = fs.createWriteStream('packages/runner/bin/compile-config.js'); os.write('#!/usr/bin/env node\\nconsole.error(\\'Temporary compile-config script during lerna installation. If you see this, please run yarn install again.\\');\\nprocess.exit(1);'); os.end(); }\"",
-    "postinstall": "lerna bootstrap && tsc"
+    "postinstall": "lerna bootstrap --ignore-scripts && tsc && lerna bootstrap"
   },
   "greenkeeper": {
     "commitMessages": {
