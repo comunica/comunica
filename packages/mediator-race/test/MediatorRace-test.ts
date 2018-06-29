@@ -91,13 +91,13 @@ class DummyActor extends Actor<IAction, IDummyTest, IDummyTest> {
 
   public test(action: IAction): Promise<IDummyTest> {
     if (this.reject) {
-      return Promise.reject(new Error(this.id));
+      return Promise.reject(new Error('' + this.id));
     }
     return new Promise((resolve, reject) => setTimeout(() => resolve({ field: this.id }), this.delay));
   }
 
-  public async run(action: IAction): Promise<IDummyTest> {
-    return { field: this.id };
+  public run(action: IAction): Promise<IDummyTest> {
+    return new Promise((resolve, reject) => setTimeout(() => resolve({ field: this.id }), this.delay));
   }
 
 }
