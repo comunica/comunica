@@ -25,6 +25,9 @@ if you want to execute SPARQL queries.
 If you want more background information about the motivations of this work,
 be sure to have a look at our [article](https://comunica.github.io/Article-ISWC2018-Resource/).
 
+Browser scripts of all engines in this repo are automatically built and made available via a CDN:
+https://github.com/rdfjs/comunica-browser
+
 ## Development Setup
 
 This project can be setup by cloning and installing it as follows:
