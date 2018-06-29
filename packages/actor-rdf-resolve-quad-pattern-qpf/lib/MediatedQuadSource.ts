@@ -40,7 +40,7 @@ export class MediatedQuadSource implements ILazyQuadSource {
   public static matchPattern(pattern: RDF.Quad, quad: RDF.Quad): boolean {
     for (const termName of QUAD_TERM_NAMES) {
       const patternTerm: RDF.Term = (<any> pattern)[termName];
-      if (patternTerm.termType !== 'BlankNode' && patternTerm.termType !== 'Variable') {
+      if (patternTerm && patternTerm.termType !== 'BlankNode' && patternTerm.termType !== 'Variable') {
         const quadTerm: RDF.Term = (<any> quad)[termName];
         if (!patternTerm.equals(quadTerm)) {
           return false;
