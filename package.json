@@ -45,7 +45,7 @@
     "stream-to-string": "^1.1.0",
     "streamify-array": "^1.0.0",
     "streamify-string": "^1.0.1",
-    "ts-jest": "^22.4.0",
+    "ts-jest": "^23.0.0",
     "tslint": "^5.7.0",
     "tslint-eslint-rules": "^5.1.0",
     "typescript": "^2.5.3",
