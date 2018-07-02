@@ -1,8 +1,13 @@
 import {ActorInit} from "@comunica/bus-init";
+import {Bindings} from "@comunica/bus-query-operation";
 import {Bus} from "@comunica/core";
+import {literal, namedNode, variable} from "rdf-data-model";
+import {Factory} from "sparqlalgebrajs";
 import {PassThrough, Readable} from "stream";
 import {ActorInitSparql} from "../lib/ActorInitSparql";
 import {ActorInitSparql as ActorInitSparqlBrowser} from "../lib/ActorInitSparql-browser";
+
+const FACTORY: Factory = new Factory();
 
 describe('ActorInitSparqlBrowser', () => {
   it('should not allow invoking its run method', () => {
@@ -42,6 +47,76 @@ describe('ActorInitSparql', () => {
 
     it('should not be able to create new ActorInitSparql objects without \'new\'', () => {
       expect(() => { (<any> ActorInitSparql)(); }).toThrow();
+    });
+  });
+
+  describe('#applyInitialBindings', () => {
+    it('should filter out project variables that are defined', () => {
+      const input = FACTORY.createProject(FACTORY.createBgp([
+        FACTORY.createPattern(namedNode('s'), namedNode('p'), namedNode('o'), namedNode('g')),
+      ]), [ variable('a'), variable('b'), variable('c') ]);
+      expect(ActorInitSparql.applyInitialBindings(input, Bindings({ '?b': literal('bl') }))).toEqual(
+        FACTORY.createProject(FACTORY.createBgp([
+          FACTORY.createPattern(namedNode('s'), namedNode('p'), namedNode('o'), namedNode('g')),
+        ]), [ variable('a'), variable('c') ]),
+      );
+    });
+
+    it('should not change a BGP without variables', () => {
+      const input = FACTORY.createBgp([
+        FACTORY.createPattern(namedNode('s'), namedNode('p'), namedNode('o'), namedNode('g')),
+      ]);
+      expect(ActorInitSparql.applyInitialBindings(input, Bindings({}))).toEqual(input);
+    });
+
+    it('should not change a BGP with unbound variables', () => {
+      const input = FACTORY.createBgp([
+        FACTORY.createPattern(variable('s'), variable('p'), variable('o'), variable('g')),
+      ]);
+      expect(ActorInitSparql.applyInitialBindings(input, Bindings({
+        '?g1': literal('gl'),
+        '?o1': literal('ol'),
+        '?p1': literal('pl'),
+        '?s1': literal('sl'),
+      }))).toEqual(input);
+    });
+
+    it('should change a BGP with bound variables', () => {
+      const input = FACTORY.createBgp([
+        FACTORY.createPattern(variable('s'), variable('p'), variable('o'), variable('g')),
+      ]);
+      expect(ActorInitSparql.applyInitialBindings(input, Bindings({
+        '?g': literal('gl'),
+        '?o': literal('ol'),
+        '?p': literal('pl'),
+        '?s': literal('sl'),
+      }))).toEqual(FACTORY.createBgp([
+        FACTORY.createPattern(literal('sl'), literal('pl'), literal('ol'), literal('gl')),
+      ]));
+    });
+
+    it('should not change a path expression without bound variables', () => {
+      const input = FACTORY.createPath(variable('s'), FACTORY.createNps([namedNode('p')]),
+        variable('o'), variable('g'));
+      expect(ActorInitSparql.applyInitialBindings(input, Bindings({
+        '?g1': literal('gl'),
+        '?o1': literal('ol'),
+        '?p1': literal('pl'),
+        '?s1': literal('sl'),
+      }))).toEqual(FACTORY.createPath(variable('s'), FACTORY.createNps([namedNode('p')]),
+        variable('o'), variable('g')));
+    });
+
+    it('should change a path expression with bound variables', () => {
+      const input = FACTORY.createPath(variable('s'), FACTORY.createNps([namedNode('p')]),
+        variable('o'), variable('g'));
+      expect(ActorInitSparql.applyInitialBindings(input, Bindings({
+        '?g': literal('gl'),
+        '?o': literal('ol'),
+        '?p': literal('pl'),
+        '?s': literal('sl'),
+      }))).toEqual(FACTORY.createPath(literal('sl'), FACTORY.createNps([namedNode('p')]),
+        literal('ol'), literal('gl')));
     });
   });
 
@@ -296,6 +371,14 @@ describe('ActorInitSparql', () => {
       it('should return the fallback for a failing command', () => {
         return expect(actor.getScriptOutput('acommandthatdefinitelydoesnotexist', 'fallback'))
           .resolves.toEqual('fallback');
+      });
+    });
+
+    describe('query', () => {
+      it('should apply bindings when initialBindings are passed via the context', () => {
+        const ctx = { initialBindings: Bindings({ '?s': literal('sl') }) };
+        return expect(actor.query('SELECT * WHERE { ?s ?p ?o }', ctx))
+          .resolves.toBeTruthy();
       });
     });
   });
