@@ -118,6 +118,18 @@ describe('ActorInitSparql', () => {
       }))).toEqual(FACTORY.createPath(literal('sl'), FACTORY.createNps([namedNode('p')]),
         literal('ol'), literal('gl')));
     });
+
+    it('should correctly map describe operations', () => {
+      const input = FACTORY.createDescribe(FACTORY.createBgp([
+        FACTORY.createPattern(namedNode('s'), namedNode('p'), namedNode('o'), namedNode('g')),
+      ]), [ namedNode('a'), namedNode('b') ]);
+      expect(ActorInitSparql.applyInitialBindings(input, Bindings({}))).toEqual(input);
+    });
+
+    it('should correctly map values operations', () => {
+      const input = FACTORY.createValues([ variable('a') ], [{ '?a': namedNode('b') }]);
+      expect(ActorInitSparql.applyInitialBindings(input, Bindings({}))).toEqual(input);
+    });
   });
 
   describe('An ActorInitSparql instance', () => {
