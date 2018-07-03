@@ -61,9 +61,9 @@ export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs {
         copiedOperation[key] = operation[key];
       }
 
-      if (operation.type === 'pattern' || operation.type === 'path') {
+      if (operation.type === Algebra.types.PATTERN || operation.type === Algebra.types.PATH) {
         for (const quadTerm of QUAD_TERM_NAMES) {
-          if (!(operation.type === 'path' && quadTerm === 'predicate')) {
+          if (!(operation.type === Algebra.types.PATH && quadTerm === 'predicate')) {
             const term: RDF.Term = operation[quadTerm];
             if (term.termType === 'Variable') {
               const termString: string = termToString(term);
