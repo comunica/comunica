@@ -1,7 +1,7 @@
 {
   "@context": [
-    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-init-hello-world.jsonld",
-    "https://linkedsoftwaredependencies.org/contexts/comunica-runner.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-hello-world/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/runner/^1.0.0/components/context.jsonld"
   ],
   "@graph": [
     {

@@ -5,7 +5,7 @@
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core",
   "lsd:components": "components/components.jsonld",
   "lsd:contexts": {
-    "https://linkedsoftwaredependencies.org/contexts/comunica-core.jsonld": "components/context.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld": "components/context.jsonld"
   },
   "main": "index.js",
   "engines": {

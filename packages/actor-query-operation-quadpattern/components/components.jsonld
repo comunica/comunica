@@ -1,5 +1,5 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/contexts/comunica-actor-query-operation-quadpattern.jsonld",
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-quadpattern/^1.0.0/components/context.jsonld",
   "@id": "npmd:@comunica/actor-query-operation-quadpattern",
   "@type": "Module",
   "requireName": "@comunica/actor-query-operation-quadpattern",

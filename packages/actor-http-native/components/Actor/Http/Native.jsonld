@@ -1,7 +1,7 @@
 {
   "@context": [
-    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-http-native.jsonld",
-    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-http.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-http-native/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-http/^1.0.0/components/context.jsonld"
   ],
   "@id": "npmd:@comunica/actor-http-native",
   "components": [

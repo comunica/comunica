@@ -1,5 +1,5 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/contexts/comunica-mediator-number.jsonld",
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-number/^1.0.0/components/context.jsonld",
   "@id": "npmd:@comunica/mediator-number",
   "@type": "Module",
   "requireName": "@comunica/mediator-number",

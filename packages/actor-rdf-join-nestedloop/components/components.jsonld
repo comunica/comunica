@@ -1,5 +1,5 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-join-nestedloop.jsonld",
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-join-nestedloop/^1.0.0/components/context.jsonld",
   "@id": "npmd:@comunica/actor-rdf-join-nestedloop",
   "@type": "Module",
   "requireName": "@comunica/actor-rdf-join-nestedloop",

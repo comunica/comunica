@@ -1,7 +1,7 @@
 {
   "@context": [
-    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-sparql-parse-algebra.jsonld",
-    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-sparql-parse.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-sparql-parse-algebra/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-sparql-parse/^1.0.0/components/context.jsonld"
   ],
   "@id": "npmd:@comunica/actor-sparql-parse-algebra",
   "components": [

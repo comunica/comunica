@@ -1,7 +1,7 @@
 {
   "@context": [
-    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-metadata-extract-hydra-count.jsonld",
-    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-rdf-metadata-extract.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-metadata-extract-hydra-count/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-metadata-extract/^1.0.0/components/context.jsonld"
   ],
   "@id": "npmd:@comunica/actor-rdf-metadata-extract-hydra-count",
   "components": [

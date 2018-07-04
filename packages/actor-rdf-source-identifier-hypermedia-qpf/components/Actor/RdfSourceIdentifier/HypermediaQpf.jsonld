@@ -1,8 +1,8 @@
 {
   "@context": [
-    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-source-identifier-hypermedia-qpf.jsonld",
-    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-rdf-source-identifier.jsonld",
-    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-http.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-source-identifier-hypermedia-qpf/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-source-identifier/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-http/^1.0.0/components/context.jsonld"
   ],
   "@id": "npmd:@comunica/actor-rdf-source-identifier-hypermedia-qpf",
   "components": [

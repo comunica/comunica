@@ -1,7 +1,7 @@
 {
   "@context": [
-    "https://linkedsoftwaredependencies.org/contexts/comunica-runner.jsonld",
-    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-init.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/runner/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-init/^1.0.0/components/context.jsonld"
   ],
   "@id": "npmd:@comunica/runner",
   "components": [

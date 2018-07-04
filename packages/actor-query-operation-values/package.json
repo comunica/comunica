@@ -5,7 +5,7 @@
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-values",
   "lsd:components": "components/components.jsonld",
   "lsd:contexts": {
-    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-query-operation-values.jsonld": "components/context.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-values/^1.0.0/components/context.jsonld": "components/context.jsonld"
   },
   "main": "index.js",
   "typings": "index",

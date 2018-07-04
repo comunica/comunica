@@ -5,7 +5,7 @@
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-source-identifier-hypermedia-qpf",
   "lsd:components": "components/components.jsonld",
   "lsd:contexts": {
-    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-source-identifier-hypermedia-qpf.jsonld": "components/context.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-source-identifier-hypermedia-qpf/^1.0.0/components/context.jsonld": "components/context.jsonld"
   },
   "main": "index.js",
   "typings": "index",

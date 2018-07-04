@@ -1,8 +1,8 @@
 {
   "@context": [
-    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-abstract-mediatyped.jsonld",
-    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-serialize-n3.jsonld",
-    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-rdf-serialize.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-abstract-mediatyped/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-serialize-n3/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-serialize/^1.0.0/components/context.jsonld"
   ],
   "@id": "npmd:@comunica/actor-rdf-serialize-n3",
   "components": [

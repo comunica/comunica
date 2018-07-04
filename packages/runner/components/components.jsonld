@@ -1,5 +1,5 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/contexts/comunica-runner.jsonld",
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/runner/^1.0.0/components/context.jsonld",
   "@id": "npmd:@comunica/runner",
   "@type": "Module",
   "requireName": "@comunica/runner",

@@ -1,5 +1,5 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/contexts/comunica-bus-init.jsonld",
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-init/^1.0.0/components/context.jsonld",
   "@id": "npmd:@comunica/bus-init",
   "@type": "Module",
   "requireName": "@comunica/bus-init",
