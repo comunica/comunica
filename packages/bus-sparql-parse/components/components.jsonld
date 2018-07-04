@@ -1,5 +1,5 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/contexts/comunica-bus-sparql-parse.jsonld",
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-sparql-parse/^1.0.0/components/context.jsonld",
   "@id": "npmd:@comunica/bus-sparql-parse",
   "@type": "Module",
   "requireName": "@comunica/bus-sparql-parse",

@@ -1,5 +1,5 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/contexts/comunica-actor-init-rdf-dereference.jsonld",
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-rdf-dereference/^1.0.0/components/context.jsonld",
   "@id": "npmd:@comunica/actor-init-rdf-dereference",
   "@type": "Module",
   "requireName": "@comunica/actor-init-rdf-dereference",

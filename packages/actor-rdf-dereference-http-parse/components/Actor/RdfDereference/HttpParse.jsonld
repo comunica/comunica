@@ -1,9 +1,9 @@
 {
   "@context": [
-    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-dereference-http-parse.jsonld",
-    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-rdf-dereference.jsonld",
-    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-http.jsonld",
-    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-rdf-parse.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-dereference-http-parse/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-dereference/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-http/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-parse/^1.0.0/components/context.jsonld"
   ],
   "@id": "npmd:@comunica/actor-rdf-dereference-http-parse",
   "components": [

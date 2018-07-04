@@ -1,5 +1,5 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/contexts/comunica-actor-http-node-fetch.jsonld",
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-http-node-fetch/^1.0.0/components/context.jsonld",
   "@id": "npmd:@comunica/actor-http-node-fetch",
   "@type": "Module",
   "requireName": "@comunica/actor-http-node-fetch",

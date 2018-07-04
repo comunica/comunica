@@ -1,5 +1,5 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-serialize-n3.jsonld",
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-serialize-n3/^1.0.0/components/context.jsonld",
   "@id": "npmd:@comunica/actor-rdf-serialize-n3",
   "@type": "Module",
   "requireName": "@comunica/actor-rdf-serialize-n3",

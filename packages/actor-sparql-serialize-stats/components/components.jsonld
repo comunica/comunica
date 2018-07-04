@@ -1,5 +1,5 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/contexts/comunica-actor-sparql-serialize-stats.jsonld",
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-sparql-serialize-stats/^1.0.0/components/context.jsonld",
   "@id": "npmd:@comunica/actor-sparql-serialize-stats",
   "@type": "Module",
   "requireName": "@comunica/actor-sparql-serialize-stats",

@@ -1,7 +1,7 @@
 {
   "@context": [
-    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-query-operation-describe-subject.jsonld",
-    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-query-operation.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-describe-subject/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-query-operation/^1.0.0/components/context.jsonld"
   ],
   "@id": "npmd:@comunica/actor-query-operation-describe-subject",
   "components": [

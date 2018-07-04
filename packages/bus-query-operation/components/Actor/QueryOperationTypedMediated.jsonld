@@ -1,7 +1,7 @@
 {
   "@context": [
-    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-query-operation.jsonld",
-    "https://linkedsoftwaredependencies.org/contexts/comunica-core.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-query-operation/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld"
   ],
   "@id": "npmd:@comunica/bus-query-operation",
   "components": [

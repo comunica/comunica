@@ -1,5 +1,5 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/contexts/comunica-actor-abstract-mediatyped.jsonld",
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-abstract-mediatyped/^1.0.0/components/context.jsonld",
   "@id": "npmd:@comunica/actor-abstract-mediatyped",
   "@type": "Module",
   "requireName": "@comunica/actor-abstract-mediatyped",

@@ -1,8 +1,8 @@
 {
   "@context": [
-    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-init-rdf-parse.jsonld",
-    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-init.jsonld",
-    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-rdf-parse.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-rdf-parse/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-init/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-parse/^1.0.0/components/context.jsonld"
   ],
   "@id": "npmd:@comunica/actor-init-rdf-parse",
   "components": [

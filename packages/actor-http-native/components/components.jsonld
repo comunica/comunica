@@ -1,5 +1,5 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/contexts/comunica-actor-http-native.jsonld",
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-http-native/^1.0.0/components/context.jsonld",
   "@id": "npmd:@comunica/actor-http-native",
   "@type": "Module",
   "requireName": "@comunica/actor-http-native",

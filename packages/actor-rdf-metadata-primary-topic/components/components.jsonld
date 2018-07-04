@@ -1,5 +1,5 @@
 {
-  "@context": "https://linkedsoftwaredependencies.org/contexts/comunica-actor-rdf-metadata-primary-topic.jsonld",
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-metadata-primary-topic/^1.0.0/components/context.jsonld",
   "@id": "npmd:@comunica/actor-rdf-metadata-primary-topic",
   "@type": "Module",
   "requireName": "@comunica/actor-rdf-metadata-primary-topic",
