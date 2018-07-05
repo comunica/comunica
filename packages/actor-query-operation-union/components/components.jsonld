@@ -4,6 +4,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-query-operation-union",
   "import": [
-    "Actor/QueryOperation/Union.jsonld"
+    "files-caqou:components/Actor/QueryOperation/Union.jsonld"
   ]
 }

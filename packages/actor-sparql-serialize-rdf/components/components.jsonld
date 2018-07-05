@@ -4,6 +4,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-sparql-serialize-rdf",
   "import": [
-    "Actor/SparqlSerialize/Rdf.jsonld"
+    "files-cassr:components/Actor/SparqlSerialize/Rdf.jsonld"
   ]
 }

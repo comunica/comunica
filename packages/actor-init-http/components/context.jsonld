@@ -1,9 +1,10 @@
 {
   "@context": [
-    "https://linkedsoftwaredependencies.org/contexts/components.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^3.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
       "cih": "npmd:@comunica/actor-init-http/",
+      "files-cih": "cih:^1.0.0/",
 
       "ActorInitHttp": "cih:Actor/Init/Http",
       "mediatorHttp": "cih:mediatorHttp",

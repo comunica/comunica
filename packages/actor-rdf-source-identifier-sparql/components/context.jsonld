@@ -1,9 +1,10 @@
 {
   "@context": [
-    "https://linkedsoftwaredependencies.org/contexts/components.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^3.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
       "carsis": "npmd:@comunica/actor-rdf-source-identifier-sparql/",
+      "files-carsis": "carsis:^1.0.0/",
 
       "ActorRdfSourceIdentifierSparql": "carsis:Actor/RdfSourceIdentifier/Sparql",
       "mediatorHttp": "carsis:Actor/RdfSourceIdentifier/ActorRdfSourceIdentifierSparql/mediatorHttp"

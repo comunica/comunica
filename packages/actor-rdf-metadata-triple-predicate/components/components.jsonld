@@ -4,6 +4,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-rdf-metadata-triple-predicate",
   "import": [
-    "Actor/RdfMetadata/TriplePredicate.jsonld"
+    "files-carmtp:components/Actor/RdfMetadata/TriplePredicate.jsonld"
   ]
 }

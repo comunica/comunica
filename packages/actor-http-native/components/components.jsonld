@@ -4,6 +4,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-http-native",
   "import": [
-    "Actor/Http/Native.jsonld"
+    "files-cahn:components/Actor/Http/Native.jsonld"
   ]
 }

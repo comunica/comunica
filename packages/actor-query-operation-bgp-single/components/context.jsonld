@@ -1,9 +1,10 @@
 {
   "@context": [
-    "https://linkedsoftwaredependencies.org/contexts/components.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^3.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
       "caqobs": "npmd:@comunica/actor-query-operation-bgp-single/",
+      "files-caqobs": "caqobs:^1.0.0/",
 
       "ActorQueryOperationBgpSingle": "caqobs:Actor/QueryOperation/BgpSingle"
     }

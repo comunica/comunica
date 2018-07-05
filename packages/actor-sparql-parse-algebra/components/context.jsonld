@@ -1,9 +1,10 @@
 {
   "@context": [
-    "https://linkedsoftwaredependencies.org/contexts/components.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^3.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
       "caspa": "npmd:@comunica/actor-sparql-parse-algebra/",
+      "files-caspa": "caspa:^1.0.0/",
 
       "ActorSparqlParseAlgebra": "caspa:Actor/SparqlParse/Algebra"
     }

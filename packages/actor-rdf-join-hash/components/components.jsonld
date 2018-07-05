@@ -4,6 +4,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-rdf-join-hash",
   "import": [
-    "Actor/RdfJoin/Hash.jsonld"
+    "files-carjh:components/Actor/RdfJoin/Hash.jsonld"
   ]
 }

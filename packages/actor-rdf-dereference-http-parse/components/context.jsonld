@@ -1,9 +1,10 @@
 {
   "@context": [
-    "https://linkedsoftwaredependencies.org/contexts/components.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^3.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
       "crdhp": "npmd:@comunica/actor-rdf-dereference-http-parse/",
+      "files-crdhp": "crdhp:^1.0.0/",
 
       "ActorRdfDereferenceHttpParse": "crdhp:Actor/RdfDereference/HttpParse",
       "mediatorHttp": "crdhp:mediatorHttp",

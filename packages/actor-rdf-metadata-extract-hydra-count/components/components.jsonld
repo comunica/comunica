@@ -4,6 +4,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-rdf-metadata-extract-hydra-count",
   "import": [
-    "Actor/RdfMetadataExtract/HydraCount.jsonld"
+    "files-carmehco:components/Actor/RdfMetadataExtract/HydraCount.jsonld"
   ]
 }

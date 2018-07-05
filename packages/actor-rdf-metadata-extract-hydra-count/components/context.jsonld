@@ -1,13 +1,14 @@
 {
   "@context": [
-    "https://linkedsoftwaredependencies.org/contexts/components.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^3.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
-      "carmehc": "npmd:@comunica/actor-rdf-metadata-extract-hydra-count/",
+      "carmehco": "npmd:@comunica/actor-rdf-metadata-extract-hydra-count/",
+      "files-carmehco": "carmehco:^1.0.0/",
 
-      "ActorRdfMetadataExtractHydraCount": "carmehc:Actor/RdfMetadataExtract/HydraCount",
-      "hydraCountPredicate": "carmehc:Actor/RdfMetadataExtract/HydraCount/predicate",
-      "hydraCountPredicates": "carmehc:Actor/RdfMetadataExtract/HydraCount/predicate"
+      "ActorRdfMetadataExtractHydraCount": "carmehco:Actor/RdfMetadataExtract/HydraCount",
+      "hydraCountPredicate": "carmehco:Actor/RdfMetadataExtract/HydraCount/predicate",
+      "hydraCountPredicates": "carmehco:Actor/RdfMetadataExtract/HydraCount/predicate"
     }
   ]
 }

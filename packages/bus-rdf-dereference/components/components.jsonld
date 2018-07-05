@@ -4,7 +4,7 @@
   "@type": "Module",
   "requireName": "@comunica/bus-rdf-dereference",
   "import": [
-    "Bus/RdfDereference.jsonld",
-    "Actor/RdfDereference.jsonld"
+    "files-cbrd:components/Bus/RdfDereference.jsonld",
+    "files-cbrd:components/Actor/RdfDereference.jsonld"
   ]
 }

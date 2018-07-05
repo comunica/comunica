@@ -4,6 +4,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-query-operation-values",
   "import": [
-    "Actor/QueryOperation/Values.jsonld"
+    "files-caqov:components/Actor/QueryOperation/Values.jsonld"
   ]
 }

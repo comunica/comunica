@@ -4,6 +4,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-init-http",
   "import": [
-    "Actor/Init/Http.jsonld"
+    "files-cih:components/Actor/Init/Http.jsonld"
   ]
 }

@@ -1,9 +1,10 @@
 {
   "@context": [
-    "https://linkedsoftwaredependencies.org/contexts/components.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^3.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
       "caqop": "npmd:@comunica/actor-query-operation-project/",
+      "files-caqop": "caqop:^1.0.0/",
 
       "ActorQueryOperationProject": "caqop:Actor/QueryOperation/Project"
     }

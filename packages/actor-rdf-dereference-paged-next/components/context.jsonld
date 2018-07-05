@@ -1,9 +1,10 @@
 {
   "@context": [
-    "https://linkedsoftwaredependencies.org/contexts/components.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^3.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
       "cardph": "npmd:@comunica/actor-rdf-dereference-paged-next/",
+      "files-cardph": "cardph:^1.0.0/",
 
       "ActorRdfDereferencePagedNext": "cardph:Actor/RdfDereferencePaged/Next",
       "mediatorRdfDereference": "cardph:mediatorRdfDereference",

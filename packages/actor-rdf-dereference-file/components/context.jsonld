@@ -1,9 +1,10 @@
 {
   "@context": [
-    "https://linkedsoftwaredependencies.org/contexts/components.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^3.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
       "cardf": "npmd:@comunica/actor-rdf-dereference-file/",
+      "files-cardf": "cardf:^1.0.0/",
 
       "ActorRdfDereferenceFile": "cardf:Actor/RdfDereference/File"
     }

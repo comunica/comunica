@@ -4,6 +4,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-init-sparql",
   "import": [
-    "Actor/Init/Sparql.jsonld"
+    "files-cais:components/Actor/Init/Sparql.jsonld"
   ]
 }

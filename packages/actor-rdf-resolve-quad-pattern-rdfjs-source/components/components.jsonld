@@ -4,6 +4,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-rdf-resolve-quad-pattern-rdfjs-source",
   "import": [
-    "Actor/RdfResolveQuadPattern/RdfJsSource.jsonld"
+    "files-carrqprs:components/Actor/RdfResolveQuadPattern/RdfJsSource.jsonld"
   ]
 }

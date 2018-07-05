@@ -4,6 +4,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-rdf-dereference-http-parse",
   "import": [
-    "Actor/RdfDereference/HttpParse.jsonld"
+    "files-crdhp:components/Actor/RdfDereference/HttpParse.jsonld"
   ]
 }

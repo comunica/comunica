@@ -1,9 +1,10 @@
 {
   "@context": [
-    "https://linkedsoftwaredependencies.org/contexts/components.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^3.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
       "caqos": "npmd:@comunica/actor-query-operation-slice/",
+      "files-caqos": "caqos:^1.0.0/",
 
       "ActorQueryOperationSlice": "caqos:Actor/QueryOperation/Slice"
     }

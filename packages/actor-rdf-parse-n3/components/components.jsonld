@@ -4,6 +4,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-rdf-parse-n3",
   "import": [
-    "Actor/RdfParse/N3.jsonld"
+    "files-crpn3:components/Actor/RdfParse/N3.jsonld"
   ]
 }

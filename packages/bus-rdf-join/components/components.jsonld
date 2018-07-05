@@ -4,7 +4,7 @@
   "@type": "Module",
   "requireName": "@comunica/bus-rdf-join",
   "import": [
-    "Bus/RdfJoin.jsonld",
-    "Actor/RdfJoin.jsonld"
+    "files-cbrj:components/Bus/RdfJoin.jsonld",
+    "files-cbrj:components/Actor/RdfJoin.jsonld"
   ]
 }

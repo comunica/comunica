@@ -4,8 +4,8 @@
   "@type": "Module",
   "requireName": "@comunica/bus-sparql-serialize",
   "import": [
-    "Bus/SparqlSerialize.jsonld",
-    "Actor/SparqlSerialize.jsonld",
-    "Actor/SparqlSerializeFixedMediaTypes.jsonld"
+    "files-cbss:components/Bus/SparqlSerialize.jsonld",
+    "files-cbss:components/Actor/SparqlSerialize.jsonld",
+    "files-cbss:components/Actor/SparqlSerializeFixedMediaTypes.jsonld"
   ]
 }

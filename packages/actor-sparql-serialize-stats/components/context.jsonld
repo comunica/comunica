@@ -1,9 +1,10 @@
 {
   "@context": [
-    "https://linkedsoftwaredependencies.org/contexts/components.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^3.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
-      "casss": "npmd:@comunica/actor-sparql-serialize-stats/",
+      "cassst": "npmd:@comunica/actor-sparql-serialize-stats/",
+      "files-cassst": "cassst:^1.0.0/",
 
       "ActorSparqlSerializeStats": "cassst:Actor/SparqlSerialize/Stats"
     }

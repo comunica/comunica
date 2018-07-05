@@ -4,6 +4,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-query-operation-slice",
   "import": [
-    "Actor/QueryOperation/Slice.jsonld"
+    "files-caqos:components/Actor/QueryOperation/Slice.jsonld"
   ]
 }

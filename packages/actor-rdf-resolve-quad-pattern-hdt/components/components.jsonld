@@ -4,6 +4,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-rdf-resolve-quad-pattern-hdt",
   "import": [
-    "Actor/RdfResolveQuadPattern/Hdt.jsonld"
+    "files-carrqph:components/Actor/RdfResolveQuadPattern/Hdt.jsonld"
   ]
 }

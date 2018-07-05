@@ -4,6 +4,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-init-rdf-dereference-paged",
   "import": [
-    "Actor/Init/RdfDereferencePaged.jsonld"
+    "files-cairdp:components/Actor/Init/RdfDereferencePaged.jsonld"
   ]
 }

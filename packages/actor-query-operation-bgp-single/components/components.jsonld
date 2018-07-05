@@ -4,6 +4,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-query-operation-bgp-single",
   "import": [
-    "Actor/QueryOperation/BgpSingle.jsonld"
+    "files-caqobs:components/Actor/QueryOperation/BgpSingle.jsonld"
   ]
 }
