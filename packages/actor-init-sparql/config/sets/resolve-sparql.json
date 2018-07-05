@@ -1,15 +1,25 @@
 {
   "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-sparql/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/runner/^1.0.0/components/context.jsonld",
 
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-resolve-quad-pattern-sparql-json/^1.0.0/components/context.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-resolve-quad-pattern-sparql-json/^1.0.0/components/context.jsonld",
+
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-http/^1.0.0/components/context.jsonld",
+
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-number/^1.0.0/components/context.jsonld"
   ],
   "@id": "urn:comunica:my",
   "actors": [
     {
-      "@id": "ex:mySparqlQuadPatternResolver",
+      "@id": "config-sets:resolve-sparql.json#mySparqlQuadPatternResolver",
       "@type": "ActorRdfResolveQuadPatternSparqlJson",
-      "carrqpsj:Actor/RdfResolveQuadPattern/SparqlJson/mediatorHttp": { "@id": "ex:mediatorHttp" }
+      "carrqpsj:Actor/RdfResolveQuadPattern/SparqlJson/mediatorHttp": {
+        "@id": "config-sets:resolve-sparql.json#mediatorHttp",
+        "@type": "MediatorNumberMin",
+        "field": "time",
+        "cc:Mediator/bus": { "@id": "cbh:Bus/Http" }
+      }
     }
   ]
 }

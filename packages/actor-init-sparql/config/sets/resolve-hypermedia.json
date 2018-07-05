@@ -1,5 +1,6 @@
 {
   "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-sparql/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/runner/^1.0.0/components/context.jsonld",
 
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-metadata-extract/^1.0.0/components/context.jsonld",
@@ -13,36 +14,38 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-resolve-quad-pattern/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-resolve-quad-pattern-qpf/^1.0.0/components/context.jsonld",
 
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-dereference/^1.0.0/components/context.jsonld",
+
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-combine-union/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-race/^1.0.0/components/context.jsonld"
   ],
   "@id": "urn:comunica:my",
   "actors": [
     {
-      "@id": "ex:myQuadPatternResolver",
+      "@id": "config-sets:resolve-hypermedia.json#myQuadPatternResolver",
       "@type": "ActorRdfResolveQuadPatternQpf",
       "carrqpq:Actor/RdfResolveQuadPattern/Qpf/mediatorRdfDereferencePaged": {
-        "@id": "ex:mediatorRdfDereferencePaged",
+        "@id": "config-sets:resolve-hypermedia.json#mediatorRdfDereferencePaged",
         "@type": "MediatorRace",
         "cc:Mediator/bus": { "@id": "cbrdp:Bus/RdfDereferencePaged" }
       }
     },
 
     {
-      "@id": "ex:myRdfPagedDereferencer",
+      "@id": "config-sets:resolve-hypermedia.json#myRdfPagedDereferencer",
       "@type": "ActorRdfDereferencePagedNext",
       "cardph:mediatorRdfDereference": {
-        "@id": "ex:mediatorRdfDereference",
+        "@id": "config-sets:resolve-hypermedia.json#mediatorRdfDereference",
         "@type": "MediatorRace",
         "cc:Mediator/bus": { "@id": "cbrd:Bus/RdfDereference" }
       },
       "cardph:mediatorMetadata": {
-        "@id": "ex:mediatorMetadata",
+        "@id": "config-sets:resolve-hypermedia.json#mediatorMetadata",
         "@type": "MediatorRace",
         "cc:Mediator/bus": { "@id": "cbrm:Bus/RdfMetadata" }
       },
       "cardph:mediatorMetadataExtract": {
-        "@id": "ex:mediatorMetadataExtract",
+        "@id": "config-sets:resolve-hypermedia.json#mediatorMetadataExtract",
         "@type": "MediatorCombineUnion",
         "cc:Mediator/bus": { "@id": "cbrme:Bus/RdfMetadataExtract" },
         "cmcu:Mediator/CombineUnion/field": "metadata"
@@ -50,20 +53,20 @@
     },
 
     {
-      "@id": "ex:myRdfMetadataPrimaryTopic",
+      "@id": "config-sets:resolve-hypermedia.json#myRdfMetadataPrimaryTopic",
       "@type": "ActorRdfMetadataPrimaryTopic"
     },
     {
-      "@id": "ex:myRdfMetadataTriplePredicate",
+      "@id": "config-sets:resolve-hypermedia.json#myRdfMetadataTriplePredicate",
       "@type": "ActorRdfMetadataTriplePredicate"
     },
 
     {
-      "@id": "ex:myRdfMetadataExtractHydraControls",
+      "@id": "config-sets:resolve-hypermedia.json#myRdfMetadataExtractHydraControls",
       "@type": "ActorRdfMetadataExtractHydraControls"
     },
     {
-      "@id": "ex:myRdfMetadataExtractHydraCount",
+      "@id": "config-sets:resolve-hypermedia.json#myRdfMetadataExtractHydraCount",
       "@type": "ActorRdfMetadataExtractHydraCount"
     }
   ]

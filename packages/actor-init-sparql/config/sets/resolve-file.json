@@ -1,5 +1,6 @@
 {
   "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-sparql/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/runner/^1.0.0/components/context.jsonld",
 
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-resolve-quad-pattern-file/^1.0.0/components/context.jsonld",
@@ -11,10 +12,10 @@
   "@id": "urn:comunica:my",
   "actors": [
     {
-      "@id": "ex:myQuadPatternFileResolver",
+      "@id": "config-sets:resolve-file.json#myQuadPatternFileResolver",
       "@type": "ActorRdfResolveQuadPatternFile",
       "carrqpfi:mediatorRdfDereference": {
-        "@id": "ex:mediatorRdfDereference",
+        "@id": "config-sets:resolve-file.json#mediatorRdfDereference",
         "@type": "MediatorRace",
         "cc:Mediator/bus": { "@id": "cbrd:Bus/RdfDereference" }
       }

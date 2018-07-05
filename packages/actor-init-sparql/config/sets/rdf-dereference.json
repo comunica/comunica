@@ -1,5 +1,6 @@
 {
   "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-sparql/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/runner/^1.0.0/components/context.jsonld",
 
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-dereference/^1.0.0/components/context.jsonld",
@@ -14,16 +15,16 @@
   "@id": "urn:comunica:my",
   "actors": [
     {
-      "@id": "ex:myRdfDereferencer",
+      "@id": "config-sets:rdf-dereference.json#myRdfDereferencer",
       "@type": "ActorRdfDereferenceHttpParse",
       "mediatorHttp": {
-        "@id": "ex:mediatorHttp",
+        "@id": "config-sets:rdf-dereference.json#mediatorHttp",
         "@type": "MediatorNumberMin",
         "field": "time",
         "cc:Mediator/bus": { "@id": "cbh:Bus/Http" }
       },
       "mediatorRdfParse": {
-        "@id": "ex:mediatorRdfParse",
+        "@id": "config-sets:rdf-dereference.json#mediatorRdfParse",
         "@type": "MediatorRace",
         "cc:Mediator/bus": { "@id": "cbrp:Bus/RdfParse" }
       }

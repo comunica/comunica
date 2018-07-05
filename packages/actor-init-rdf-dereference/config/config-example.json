@@ -19,40 +19,40 @@
       "@type": "Runner",
       "actors": [
         {
-          "@id": "ex:myInit",
+          "@id": "config-example:myInit",
           "@type": "ActorInitRdfDereference",
           "mediatorRdfDereference": {
-            "@id": "ex:mediatorRdfDereference",
+            "@id": "config-example:mediatorRdfDereference",
             "@type": "MediatorRace",
             "cc:Mediator/bus": { "@id": "cbrd:Bus/RdfDereference" }
           },
           "cird:url": "https://fragments.linkedsoftwaredependencies.org/npm"
         },
         {
-          "@id": "ex:myRdfDereferencer",
+          "@id": "config-example:myRdfDereferencer",
           "@type": "ActorRdfDereferenceHttpParse",
           "mediatorHttp": {
-            "@id": "ex:mediatorHttp",
+            "@id": "config-example:mediatorHttp",
             "@type": "MediatorNumberMin",
             "field": "time",
             "cc:Mediator/bus": { "@id": "cbh:Bus/Http" }
           },
           "mediatorRdfParse": {
-            "@id": "ex:mediatorRdfParse",
+            "@id": "config-example:mediatorRdfParse",
             "@type": "MediatorRace",
             "cc:Mediator/bus": { "@id": "cbrp:Bus/RdfParse" }
           }
         },
         {
-          "@id": "ex:myHttpFetcher",
+          "@id": "config-example:myHttpFetcher",
           "@type": "ActorHttpNodeFetch"
         },
         {
-          "@id": "ex:myRdfParserN3",
+          "@id": "config-example:myRdfParserN3",
           "@type": "ActorRdfParseN3"
         },
         {
-          "@id": "ex:myRdfParserJsonLd",
+          "@id": "config-example:myRdfParserJsonLd",
           "@type": "ActorRdfParseJsonLd",
           "priorityScale": 0.9
         }

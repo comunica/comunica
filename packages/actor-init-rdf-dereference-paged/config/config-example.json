@@ -28,10 +28,10 @@
       "@type": "Runner",
       "actors": [
         {
-          "@id": "ex:myInit",
+          "@id": "config-example:myInit",
           "@type": "ActorInitRdfDereferencePaged",
           "mediatorRdfDereferencePaged": {
-            "@id": "ex:mediatorRdfDereferencePaged",
+            "@id": "config-example:mediatorRdfDereferencePaged",
             "@type": "MediatorRace",
             "cc:Mediator/bus": { "@id": "cbrdp:Bus/RdfDereferencePaged" }
           },
@@ -39,20 +39,20 @@
         },
 
         {
-          "@id": "ex:myRdfPagedDereferencer",
+          "@id": "config-example:myRdfPagedDereferencer",
           "@type": "ActorRdfDereferencePagedNext",
           "cardph:mediatorRdfDereference": {
-            "@id": "ex:mediatorRdfDereference",
+            "@id": "config-example:mediatorRdfDereference",
             "@type": "MediatorRace",
             "cc:Mediator/bus": { "@id": "cbrd:Bus/RdfDereference" }
           },
           "cardph:mediatorMetadata": {
-            "@id": "ex:mediatorMetadata",
+            "@id": "config-example:mediatorMetadata",
             "@type": "MediatorRace",
             "cc:Mediator/bus": { "@id": "cbrm:Bus/RdfMetadata" }
           },
           "cardph:mediatorMetadataExtract": {
-            "@id": "ex:mediatorMetadataExtract",
+            "@id": "config-example:mediatorMetadataExtract",
             "@type": "MediatorCombineUnion",
             "cc:Mediator/bus": { "@id": "cbrme:Bus/RdfMetadataExtract" },
             "cmcu:Mediator/CombineUnion/field": "metadata"
@@ -60,51 +60,51 @@
         },
 
         {
-          "@id": "ex:myRdfDereferencer",
+          "@id": "config-example:myRdfDereferencer",
           "@type": "ActorRdfDereferenceHttpParse",
           "mediatorHttp": {
-            "@id": "ex:mediatorHttp",
+            "@id": "config-example:mediatorHttp",
             "@type": "MediatorNumberMin",
             "field": "time",
             "cc:Mediator/bus": { "@id": "cbh:Bus/Http" }
           },
           "mediatorRdfParse": {
-            "@id": "ex:mediatorRdfParse",
+            "@id": "config-example:mediatorRdfParse",
             "@type": "MediatorRace",
             "cc:Mediator/bus": { "@id": "cbrp:Bus/RdfParse" }
           }
         },
 
         {
-          "@id": "ex:myHttpFetcher",
+          "@id": "config-example:myHttpFetcher",
           "@type": "ActorHttpNodeFetch"
         },
 
         {
-          "@id": "ex:myRdfParserN3",
+          "@id": "config-example:myRdfParserN3",
           "@type": "ActorRdfParseN3"
         },
         {
-          "@id": "ex:myRdfParserJsonLd",
+          "@id": "config-example:myRdfParserJsonLd",
           "@type": "ActorRdfParseJsonLd",
           "priorityScale": 0.9
         },
 
         {
-          "@id": "ex:myRdfMetadataPrimaryTopic",
+          "@id": "config-example:myRdfMetadataPrimaryTopic",
           "@type": "ActorRdfMetadataPrimaryTopic"
         },
         {
-          "@id": "ex:myRdfMetadataTriplePredicate",
+          "@id": "config-example:myRdfMetadataTriplePredicate",
           "@type": "ActorRdfMetadataTriplePredicate"
         },
 
         {
-          "@id": "ex:myRdfMetadataExtractHydraControls",
+          "@id": "config-example:myRdfMetadataExtractHydraControls",
           "@type": "ActorRdfMetadataExtractHydraControls"
         },
         {
-          "@id": "ex:myRdfMetadataExtractHydraCount",
+          "@id": "config-example:myRdfMetadataExtractHydraCount",
           "@type": "ActorRdfMetadataExtractHydraCount"
         }
       ]

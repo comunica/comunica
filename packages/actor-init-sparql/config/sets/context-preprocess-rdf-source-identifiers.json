@@ -1,5 +1,6 @@
 {
   "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-sparql/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/runner/^1.0.0/components/context.jsonld",
 
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-context-preprocess-rdf-source-identifier/^1.0.0/components/context.jsonld",
@@ -11,10 +12,10 @@
   "@id": "urn:comunica:my",
   "actors": [
     {
-      "@id": "ex:myContextPreprocessRdfSourceIdentifier",
+      "@id": "config-sets:context-preprocess-rdf-source-identifiers.json#myContextPreprocessRdfSourceIdentifier",
       "@type": "ActorContextPreprocessRdfSourceIdentifier",
       "cacprsi:Actor/ContextPreprocess/RdfSourceIdentifier/mediatorRdfSourceIdentifier": {
-        "@id": "ex:mediatorRdfSourceIdentifier",
+        "@id": "config-sets:context-preprocess-rdf-source-identifiers.json#mediatorRdfSourceIdentifier",
         "@type": "MediatorNumberMax",
         "field": "priority",
         "ignoreErrors": true,

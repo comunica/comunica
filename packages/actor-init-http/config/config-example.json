@@ -13,10 +13,10 @@
       "@type": "Runner",
       "actors": [
         {
-          "@id": "ex:myInit",
+          "@id": "config-example:myInit",
           "@type": "ActorInitHttp",
           "mediatorHttp": {
-            "@id": "ex:mediatorHttp",
+            "@id": "config-example:mediatorHttp",
             "@type": "MediatorNumberMin",
             "field": "time",
             "cc:Mediator/bus": { "@id": "cbh:Bus/Http" }
@@ -27,7 +27,7 @@
           ]
         },
         {
-          "@id": "ex:myHttpFetcher",
+          "@id": "config-example:myHttpFetcher",
           "@type": "ActorHttpNodeFetch"
         }
       ]

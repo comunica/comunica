@@ -1,5 +1,6 @@
 {
   "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-sparql/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/runner/^1.0.0/components/context.jsonld",
 
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-sparql-serialize-json/^1.0.0/components/context.jsonld",
@@ -18,14 +19,14 @@
   "@id": "urn:comunica:my",
   "actors": [
     {
-      "@id": "ex:myJsonSparqlSerializer",
+      "@id": "config-sets:sparql-serializers.json#myJsonSparqlSerializer",
       "@type": "ActorSparqlSerializeJson"
     },
     {
-      "@id": "ex:myRdfSparqlSerializer",
+      "@id": "config-sets:sparql-serializers.json#myRdfSparqlSerializer",
       "@type": "ActorSparqlSerializeRdf",
       "mediatorRdfSerialize": {
-        "@id": "ex:mediatorRdfSerialize",
+        "@id": "config-sets:sparql-serializers.json#mediatorRdfSerialize",
         "@type": "MediatorRace",
         "cc:Mediator/bus": { "@id": "cbrs:Bus/RdfSerialize" }
       },
@@ -36,23 +37,23 @@
       }
     },
     {
-      "@id": "ex:mySimpleSparqlSerializer",
+      "@id": "config-sets:sparql-serializers.json#mySimpleSparqlSerializer",
       "@type": "ActorSparqlSerializeSimple"
     },
     {
-      "@id": "ex:mySparqlJsonSparqlSerializer",
+      "@id": "config-sets:sparql-serializers.json#mySparqlJsonSparqlSerializer",
       "@type": "ActorSparqlSerializeSparqlJson"
     },
     {
-      "@id": "ex:mySparqlXmlSparqlSerializer",
+      "@id": "config-sets:sparql-serializers.json#mySparqlXmlSparqlSerializer",
       "@type": "ActorSparqlSerializeSparqlXml"
     },
     {
-      "@id": "ex:myStatsSparqlSerializer",
+      "@id": "config-sets:sparql-serializers.json#myStatsSparqlSerializer",
       "@type": "ActorSparqlSerializeStats"
     },
     {
-      "@id": "ex:myTableSparqlSerializer",
+      "@id": "config-sets:sparql-serializers.json#myTableSparqlSerializer",
       "@type": "ActorSparqlSerializeTable"
     }
   ]

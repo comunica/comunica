@@ -5,6 +5,7 @@
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
       "cird": "npmd:@comunica/actor-init-rdf-dereference/",
       "files-cird": "cird:^1.0.0/",
+      "config-example": "files-cird:config/config-example.json#",
 
       "ActorInitRdfDereference": "cird:Actor/Init/RdfDereference",
       "mediatorRdfDereference": "cird:mediatorRdfDereference",

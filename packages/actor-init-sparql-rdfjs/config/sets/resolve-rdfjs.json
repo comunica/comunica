@@ -3,12 +3,17 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/runner/^1.0.0/components/context.jsonld",
 
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-resolve-quad-pattern/^1.0.0/components/context.jsonld",
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-resolve-quad-pattern-rdfjs-source/^1.0.0/components/context.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-resolve-quad-pattern-rdfjs-source/^1.0.0/components/context.jsonld",
+    {
+      "caisr": "npmd:@comunica/actor-init-sparql-rdfjs/",
+      "files-caisr": "caisr:^1.0.0/",
+      "config-sets": "files-caisr:config/sets/"
+    }
   ],
   "@id": "urn:comunica:my",
   "actors": [
     {
-      "@id": "ex:myRdfRdfJsSourceQuadPatternResolver",
+      "@id": "config-sets:resolve-rdfjs.json#myRdfRdfJsSourceQuadPatternResolver",
       "@type": "ActorRdfResolveQuadPatternRdfJsSource"
     }
   ]
