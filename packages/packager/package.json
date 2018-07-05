@@ -96,7 +96,7 @@
     "@comunica/mediatortype-time": "^1.1.0",
     "@comunica/runner": "^1.1.0",
     "@comunica/runner-cli": "^1.1.0",
-    "componentsjs": "^2.2.0",
+    "componentsjs": "^3.0.1",
     "minimist": "^1.2.0"
   },
   "scripts": {
