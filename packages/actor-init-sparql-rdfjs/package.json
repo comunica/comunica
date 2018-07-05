@@ -2,6 +2,9 @@
   "name": "@comunica/actor-init-sparql-rdfjs",
   "version": "1.1.1",
   "description": "A Comunica engine for SPARQL query evaluation over RDFJS sources",
+  "lsd:importPaths": {
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-sparql-rdfjs/^1.0.0/config/": "config/"
+  },
   "main": "index.js",
   "typings": "index",
   "repository": "https://github.com/comunica/comunica/tree/master/packages/actor-init-sparql-rdfjs",
@@ -30,6 +33,7 @@
   ],
   "dependencies": {
     "@comunica/actor-abstract-mediatyped": "^1.1.0",
+    "@comunica/actor-context-preprocess-rdf-source-identifier": "^1.1.0",
     "@comunica/actor-init-sparql": "^1.1.0",
     "@comunica/actor-query-operation-ask": "^1.1.0",
     "@comunica/actor-query-operation-bgp-empty": "^1.1.0",
@@ -57,6 +61,7 @@
     "@comunica/bus-rdf-resolve-quad-pattern": "^1.1.0",
     "@comunica/bus-rdf-join": "^1.1.0",
     "@comunica/bus-rdf-serialize": "^1.1.0",
+    "@comunica/bus-rdf-source-identifier": "^1.1.0",
     "@comunica/bus-sparql-parse": "^1.1.0",
     "@comunica/bus-sparql-serialize": "^1.1.0",
     "@comunica/core": "^1.1.0",

@@ -1,0 +1,32 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/runner/^1.0.0/components/context.jsonld",
+
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-dereference/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-dereference-http-parse/^1.0.0/components/context.jsonld",
+
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-http/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-parse/^1.0.0/components/context.jsonld",
+
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-number/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-race/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "urn:comunica:my",
+  "actors": [
+    {
+      "@id": "ex:myRdfDereferencer",
+      "@type": "ActorRdfDereferenceHttpParse",
+      "mediatorHttp": {
+        "@id": "ex:mediatorHttp",
+        "@type": "MediatorNumberMin",
+        "field": "time",
+        "cc:Mediator/bus": { "@id": "cbh:Bus/Http" }
+      },
+      "mediatorRdfParse": {
+        "@id": "ex:mediatorRdfParse",
+        "@type": "MediatorRace",
+        "cc:Mediator/bus": { "@id": "cbrp:Bus/RdfParse" }
+      }
+    }
+  ]
+}

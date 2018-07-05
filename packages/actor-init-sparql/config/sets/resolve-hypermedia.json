@@ -1,0 +1,70 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/runner/^1.0.0/components/context.jsonld",
+
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-metadata-extract/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-metadata-extract-hydra-controls/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-metadata-extract-hydra-count/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-metadata/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-metadata-primary-topic/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-metadata-triple-predicate/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-dereference-paged/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-dereference-paged-next/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-resolve-quad-pattern/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-resolve-quad-pattern-qpf/^1.0.0/components/context.jsonld",
+
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-combine-union/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-race/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "urn:comunica:my",
+  "actors": [
+    {
+      "@id": "ex:myQuadPatternResolver",
+      "@type": "ActorRdfResolveQuadPatternQpf",
+      "carrqpq:Actor/RdfResolveQuadPattern/Qpf/mediatorRdfDereferencePaged": {
+        "@id": "ex:mediatorRdfDereferencePaged",
+        "@type": "MediatorRace",
+        "cc:Mediator/bus": { "@id": "cbrdp:Bus/RdfDereferencePaged" }
+      }
+    },
+
+    {
+      "@id": "ex:myRdfPagedDereferencer",
+      "@type": "ActorRdfDereferencePagedNext",
+      "cardph:mediatorRdfDereference": {
+        "@id": "ex:mediatorRdfDereference",
+        "@type": "MediatorRace",
+        "cc:Mediator/bus": { "@id": "cbrd:Bus/RdfDereference" }
+      },
+      "cardph:mediatorMetadata": {
+        "@id": "ex:mediatorMetadata",
+        "@type": "MediatorRace",
+        "cc:Mediator/bus": { "@id": "cbrm:Bus/RdfMetadata" }
+      },
+      "cardph:mediatorMetadataExtract": {
+        "@id": "ex:mediatorMetadataExtract",
+        "@type": "MediatorCombineUnion",
+        "cc:Mediator/bus": { "@id": "cbrme:Bus/RdfMetadataExtract" },
+        "cmcu:Mediator/CombineUnion/field": "metadata"
+      }
+    },
+
+    {
+      "@id": "ex:myRdfMetadataPrimaryTopic",
+      "@type": "ActorRdfMetadataPrimaryTopic"
+    },
+    {
+      "@id": "ex:myRdfMetadataTriplePredicate",
+      "@type": "ActorRdfMetadataTriplePredicate"
+    },
+
+    {
+      "@id": "ex:myRdfMetadataExtractHydraControls",
+      "@type": "ActorRdfMetadataExtractHydraControls"
+    },
+    {
+      "@id": "ex:myRdfMetadataExtractHydraCount",
+      "@type": "ActorRdfMetadataExtractHydraCount"
+    }
+  ]
+}

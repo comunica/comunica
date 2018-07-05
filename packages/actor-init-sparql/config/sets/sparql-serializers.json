@@ -1,0 +1,59 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/runner/^1.0.0/components/context.jsonld",
+
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-sparql-serialize-json/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-sparql-serialize-rdf/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-sparql-serialize-simple/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-sparql-serialize-sparql-json/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-sparql-serialize-sparql-xml/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-sparql-serialize-stats/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-sparql-serialize-table/^1.0.0/components/context.jsonld",
+
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-serialize/^1.0.0/components/context.jsonld",
+
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-combine-union/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-race/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "urn:comunica:my",
+  "actors": [
+    {
+      "@id": "ex:myJsonSparqlSerializer",
+      "@type": "ActorSparqlSerializeJson"
+    },
+    {
+      "@id": "ex:myRdfSparqlSerializer",
+      "@type": "ActorSparqlSerializeRdf",
+      "mediatorRdfSerialize": {
+        "@id": "ex:mediatorRdfSerialize",
+        "@type": "MediatorRace",
+        "cc:Mediator/bus": { "@id": "cbrs:Bus/RdfSerialize" }
+      },
+      "mediatorRdfSerializeMediaTypeCombiner": {
+        "@type": "MediatorCombineUnion",
+        "cc:Mediator/bus": { "@id": "cbrs:Bus/RdfSerialize" },
+        "cmcu:Mediator/CombineUnion/field": "mediaTypes"
+      }
+    },
+    {
+      "@id": "ex:mySimpleSparqlSerializer",
+      "@type": "ActorSparqlSerializeSimple"
+    },
+    {
+      "@id": "ex:mySparqlJsonSparqlSerializer",
+      "@type": "ActorSparqlSerializeSparqlJson"
+    },
+    {
+      "@id": "ex:mySparqlXmlSparqlSerializer",
+      "@type": "ActorSparqlSerializeSparqlXml"
+    },
+    {
+      "@id": "ex:myStatsSparqlSerializer",
+      "@type": "ActorSparqlSerializeStats"
+    },
+    {
+      "@id": "ex:myTableSparqlSerializer",
+      "@type": "ActorSparqlSerializeTable"
+    }
+  ]
+}

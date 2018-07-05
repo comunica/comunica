@@ -1,0 +1,23 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/runner/^1.0.0/components/context.jsonld",
+
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-resolve-quad-pattern-file/^1.0.0/components/context.jsonld",
+
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-dereference/^1.0.0/components/context.jsonld",
+
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-race/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "urn:comunica:my",
+  "actors": [
+    {
+      "@id": "ex:myQuadPatternFileResolver",
+      "@type": "ActorRdfResolveQuadPatternFile",
+      "carrqpfi:mediatorRdfDereference": {
+        "@id": "ex:mediatorRdfDereference",
+        "@type": "MediatorRace",
+        "cc:Mediator/bus": { "@id": "cbrd:Bus/RdfDereference" }
+      }
+    }
+  ]
+}
