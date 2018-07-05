@@ -4,6 +4,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-query-operation-bgp-left-deep-smallest-sort",
   "import": [
-    "Actor/QueryOperation/BgpLeftDeepSmallestSort.jsonld"
+    "files-caqobldss:components/Actor/QueryOperation/BgpLeftDeepSmallestSort.jsonld"
   ]
 }

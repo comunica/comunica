@@ -4,7 +4,7 @@
   "@type": "Module",
   "requireName": "@comunica/bus-init",
   "import": [
-    "Bus/Init.jsonld",
-    "Actor/Init.jsonld"
+    "files-cbi:components/Bus/Init.jsonld",
+    "files-cbi:components/Actor/Init.jsonld"
   ]
 }

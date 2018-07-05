@@ -4,8 +4,8 @@
   "@type": "Module",
   "requireName": "@comunica/mediator-number",
   "import": [
-    "Mediator/Number.jsonld",
-    "Mediator/NumberMin.jsonld",
-    "Mediator/NumberMax.jsonld"
+    "files-cmn:components/Mediator/Number.jsonld",
+    "files-cmn:components/Mediator/NumberMin.jsonld",
+    "files-cmn:components/Mediator/NumberMax.jsonld"
   ]
 }

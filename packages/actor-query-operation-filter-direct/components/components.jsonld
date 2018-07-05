@@ -4,6 +4,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-query-operation-filter-direct",
   "import": [
-    "Actor/QueryOperation/FilterDirect.jsonld"
+    "files-caqofd:components/Actor/QueryOperation/FilterDirect.jsonld"
   ]
 }

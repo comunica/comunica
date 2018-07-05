@@ -4,6 +4,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-rdf-join-nestedloop",
   "import": [
-    "Actor/RdfJoin/NestedLoop.jsonld"
+    "files-carjn:components/Actor/RdfJoin/NestedLoop.jsonld"
   ]
 }

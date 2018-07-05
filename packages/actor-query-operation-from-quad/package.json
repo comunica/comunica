@@ -7,6 +7,9 @@
   "lsd:contexts": {
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-from-quad/^1.0.0/components/context.jsonld": "components/context.jsonld"
   },
+  "lsd:importPaths": {
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-from-quad/^1.0.0/components/": "components/"
+  },
   "main": "index.js",
   "typings": "index",
   "repository": "https://github.com/comunica/comunica/tree/master/packages/actor-query-operation-from-quad",

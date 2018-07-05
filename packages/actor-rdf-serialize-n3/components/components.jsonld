@@ -4,6 +4,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-rdf-serialize-n3",
   "import": [
-    "Actor/RdfSerialize/N3.jsonld"
+    "files-carsn:components/Actor/RdfSerialize/N3.jsonld"
   ]
 }

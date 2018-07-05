@@ -1,9 +1,10 @@
 {
   "@context": [
-    "https://linkedsoftwaredependencies.org/contexts/components.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^3.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
       "caqoljnl": "npmd:@comunica/actor-query-operation-leftjoin-nestedloop/",
+      "files-caqoljnl": "caqoljnl:^1.0.0/",
 
       "ActorQueryOperationLeftJoinNestedLoop": "caqoljnl:Actor/QueryOperation/LeftJoinNestedLoop"
     }

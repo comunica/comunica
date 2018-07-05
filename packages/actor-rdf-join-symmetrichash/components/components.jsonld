@@ -4,6 +4,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-rdf-join-symmetrichash",
   "import": [
-    "Actor/RdfJoin/SymmetricHash.jsonld"
+    "files-carjs:components/Actor/RdfJoin/SymmetricHash.jsonld"
   ]
 }

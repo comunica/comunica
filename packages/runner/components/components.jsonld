@@ -4,6 +4,6 @@
   "@type": "Module",
   "requireName": "@comunica/runner",
   "import": [
-    "Runner.jsonld"
+    "files-cr:components/Runner.jsonld"
   ]
 }

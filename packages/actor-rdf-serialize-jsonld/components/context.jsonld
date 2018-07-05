@@ -1,9 +1,10 @@
 {
   "@context": [
-    "https://linkedsoftwaredependencies.org/contexts/components.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^3.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
       "carsjl": "npmd:@comunica/actor-rdf-serialize-jsonld/",
+      "files-carsjl": "carsjl:^1.0.0/",
 
       "ActorRdfSerializeJsonLd": "carsjl:Actor/RdfSerialize/JsonLd",
       "jsonStringifyIndentSpaces": "carsjl:Actor/RdfSerialize/JsonLd/jsonStringifyIndentSpaces"

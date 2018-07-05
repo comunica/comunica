@@ -1,9 +1,10 @@
 {
   "@context": [
-    "https://linkedsoftwaredependencies.org/contexts/components.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^3.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
       "cmcu": "npmd:@comunica/mediator-combine-union/",
+      "files-cmcu": "cmcu:^1.0.0/",
 
       "MediatorCombineUnion": "cmcu:Mediator/CombineUnion",
       "field": "cmcu:Mediator/CombineUnion/field"

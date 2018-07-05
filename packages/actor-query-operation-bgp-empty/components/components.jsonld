@@ -4,6 +4,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-query-operation-bgp-empty",
   "import": [
-    "Actor/QueryOperation/BgpEmpty.jsonld"
+    "files-caqobe:components/Actor/QueryOperation/BgpEmpty.jsonld"
   ]
 }

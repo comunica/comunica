@@ -1,9 +1,10 @@
 {
   "@context": [
-    "https://linkedsoftwaredependencies.org/contexts/components.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^3.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
       "carjn": "npmd:@comunica/actor-rdf-join-nestedloop/",
+      "files-carjn": "carjn:^1.0.0/",
 
       "ActorRdfJoinNestedLoop": "carjn:Actor/RdfJoin/NestedLoop"
     }

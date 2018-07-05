@@ -4,6 +4,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-init-rdf-parse",
   "import": [
-    "Actor/Init/RdfParse.jsonld"
+    "files-cirp:components/Actor/Init/RdfParse.jsonld"
   ]
 }

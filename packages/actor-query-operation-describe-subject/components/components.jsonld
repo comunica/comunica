@@ -4,6 +4,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-query-operation-describe-subject",
   "import": [
-    "Actor/QueryOperation/DescribeSubject.jsonld"
+    "files-caqods:components/Actor/QueryOperation/DescribeSubject.jsonld"
   ]
 }

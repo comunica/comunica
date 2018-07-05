@@ -4,7 +4,7 @@
   "@type": "Module",
   "requireName": "@comunica/actor-abstract-mediatyped",
   "import": [
-    "Actor/AbstractMediaTyped.jsonld",
-    "Actor/AbstractMediaTypedFixed.jsonld"
+    "files-caam:components/Actor/AbstractMediaTyped.jsonld",
+    "files-caam:components/Actor/AbstractMediaTypedFixed.jsonld"
   ]
 }

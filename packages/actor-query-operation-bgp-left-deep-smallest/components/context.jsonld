@@ -1,9 +1,10 @@
 {
   "@context": [
-    "https://linkedsoftwaredependencies.org/contexts/components.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^3.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
       "caqoblds": "npmd:@comunica/actor-query-operation-bgp-left-deep-smallest/",
+      "files-caqoblds": "caqoblds:^1.0.0/",
 
       "ActorQueryOperationBgpLeftDeepSmallest": "caqoblds:Actor/QueryOperation/BgpLeftDeepSmallest"
     }

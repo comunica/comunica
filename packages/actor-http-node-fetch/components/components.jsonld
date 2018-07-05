@@ -4,6 +4,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-http-node-fetch",
   "import": [
-    "Actor/Http/NodeFetch.jsonld"
+    "files-chf:components/Actor/Http/NodeFetch.jsonld"
   ]
 }

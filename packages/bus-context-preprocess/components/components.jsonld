@@ -4,7 +4,7 @@
   "@type": "Module",
   "requireName": "@comunica/bus-context-preprocess",
   "import": [
-    "Bus/ContextPreprocess.jsonld",
-    "Actor/ContextPreprocess.jsonld"
+    "files-cbcp:components/Bus/ContextPreprocess.jsonld",
+    "files-cbcp:components/Actor/ContextPreprocess.jsonld"
   ]
 }

@@ -4,7 +4,7 @@
   "@type": "Module",
   "requireName": "@comunica/bus-sparql-parse",
   "import": [
-    "Bus/SparqlParse.jsonld",
-    "Actor/SparqlParse.jsonld"
+    "files-cbsp:components/Bus/SparqlParse.jsonld",
+    "files-cbsp:components/Actor/SparqlParse.jsonld"
   ]
 }

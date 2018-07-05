@@ -1,9 +1,10 @@
 {
   "@context": [
-    "https://linkedsoftwaredependencies.org/contexts/components.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^3.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
       "caqoc": "npmd:@comunica/actor-query-operation-construct/",
+      "files-caqoc": "caqoc:^1.0.0/",
 
       "ActorQueryOperationConstruct": "caqoc:Actor/QueryOperation/Construct"
     }

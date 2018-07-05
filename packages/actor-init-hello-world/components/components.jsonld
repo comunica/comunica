@@ -4,6 +4,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-init-hello-world",
   "import": [
-    "Actor/Init/HelloWorld.jsonld"
+    "files-chw:components/Actor/Init/HelloWorld.jsonld"
   ]
 }

@@ -4,7 +4,7 @@
   "@type": "Module",
   "requireName": "@comunica/bus-rdf-metadata-extract",
   "import": [
-    "Bus/RdfMetadataExtract.jsonld",
-    "Actor/RdfMetadataExtract.jsonld"
+    "files-cbrme:components/Bus/RdfMetadataExtract.jsonld",
+    "files-cbrme:components/Actor/RdfMetadataExtract.jsonld"
   ]
 }

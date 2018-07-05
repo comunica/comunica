@@ -4,6 +4,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-rdf-resolve-quad-pattern-sparql-json",
   "import": [
-    "Actor/RdfResolveQuadPattern/SparqlJson.jsonld"
+    "files-carrqpsj:components/Actor/RdfResolveQuadPattern/SparqlJson.jsonld"
   ]
 }

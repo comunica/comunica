@@ -4,6 +4,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-rdf-resolve-quad-pattern-federated",
   "import": [
-    "Actor/RdfResolveQuadPattern/Federated.jsonld"
+    "files-carrqpf:components/Actor/RdfResolveQuadPattern/Federated.jsonld"
   ]
 }

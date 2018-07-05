@@ -4,6 +4,6 @@
   "@type": "Module",
   "requireName": "@comunica/mediator-race",
   "import": [
-    "Mediator/Race.jsonld"
+    "files-cmr:components/Mediator/Race.jsonld"
   ]
 }

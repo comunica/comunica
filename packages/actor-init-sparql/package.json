@@ -7,6 +7,9 @@
   "lsd:contexts": {
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-sparql/^1.0.0/components/context.jsonld": "components/context.jsonld"
   },
+  "lsd:importPaths": {
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-sparql/^1.0.0/components/": "components/"
+  },
   "main": "index.js",
   "typings": "index",
   "repository": "https://github.com/comunica/comunica/tree/master/packages/actor-init-sparql",
@@ -111,7 +114,6 @@
     "@comunica/mediator-race": "^1.1.0",
     "@comunica/runner": "^1.1.0",
     "@comunica/runner-cli": "^1.1.0",
-    "componentsjs": "2.2.0",
     "minimist": "^1.2.0",
     "negotiate": "^1.0.1",
     "rdf-string": "^1.1.1",

@@ -4,7 +4,7 @@
   "@type": "Module",
   "requireName": "@comunica/bus-rdf-resolve-quad-pattern",
   "import": [
-    "Bus/RdfResolveQuadPattern.jsonld",
-    "Actor/RdfResolveQuadPattern.jsonld"
+    "files-cbrrqp:components/Bus/RdfResolveQuadPattern.jsonld",
+    "files-cbrrqp:components/Actor/RdfResolveQuadPattern.jsonld"
   ]
 }

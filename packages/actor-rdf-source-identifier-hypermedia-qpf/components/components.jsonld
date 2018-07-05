@@ -4,6 +4,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-rdf-source-identifier-hypermedia-qpf",
   "import": [
-    "Actor/RdfSourceIdentifier/HypermediaQpf.jsonld"
+    "files-carsihq:components/Actor/RdfSourceIdentifier/HypermediaQpf.jsonld"
   ]
 }

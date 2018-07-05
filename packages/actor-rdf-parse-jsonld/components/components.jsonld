@@ -4,6 +4,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-rdf-parse-jsonld",
   "import": [
-    "Actor/RdfParse/JsonLd.jsonld"
+    "files-crpjl:components/Actor/RdfParse/JsonLd.jsonld"
   ]
 }

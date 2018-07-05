@@ -4,6 +4,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-query-operation-leftjoin-nestedloop",
   "import": [
-    "Actor/QueryOperation/LeftJoinNestedLoop.jsonld"
+    "files-caqoljnl:components/Actor/QueryOperation/LeftJoinNestedLoop.jsonld"
   ]
 }
