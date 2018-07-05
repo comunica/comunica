@@ -1,0 +1,47 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/runner/^1.0.0/components/context.jsonld",
+
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-sparql/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-sparql-parse/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-sparql-serialize/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-query-operation/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-context-preprocess/^1.0.0/components/context.jsonld",
+
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-combine-pipeline/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-combine-union/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-race/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "urn:comunica:my",
+  "actors": [
+    {
+      "@id": "urn:comunica:sparqlinit",
+      "@type": "ActorInitSparql",
+      "mediatorQueryOperation": {
+        "@id": "ex:mediatorQueryOperation",
+        "@type": "MediatorRace",
+        "cc:Mediator/bus": { "@id": "cbqo:Bus/QueryOperation" }
+      },
+      "mediatorSparqlParse": {
+        "@id": "ex:mediatorSparqlParse",
+        "@type": "MediatorRace",
+        "cc:Mediator/bus": { "@id": "cbsp:Bus/SparqlParse" }
+      },
+      "mediatorSparqlSerialize": {
+        "@id": "ex:mediatorSparqlSerialize",
+        "@type": "MediatorRace",
+        "cc:Mediator/bus": { "@id": "cbss:Bus/SparqlSerialize" }
+      },
+      "mediatorSparqlSerializeMediaTypeCombiner": {
+        "@type": "MediatorCombineUnion",
+        "cc:Mediator/bus": { "@id": "cbss:Bus/SparqlSerialize" },
+        "cmcu:Mediator/CombineUnion/field": "mediaTypes"
+      },
+      "mediatorContextPreprocess": {
+        "@id": "ex:mediatorContextPreprocess",
+        "@type": "MediatorCombinePipeline",
+        "cc:Mediator/bus": { "@id": "cbcp:Bus/ContextPreprocess" }
+      }
+    }
+  ]
+}
