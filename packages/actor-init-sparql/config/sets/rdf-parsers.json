@@ -1,5 +1,6 @@
 {
   "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-sparql/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/runner/^1.0.0/components/context.jsonld",
 
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-parse/^1.0.0/components/context.jsonld",
@@ -9,11 +10,11 @@
   "@id": "urn:comunica:my",
   "actors": [
     {
-      "@id": "ex:myRdfParserN3",
+      "@id": "config-sets:rdf-parsers.json#myRdfParserN3",
       "@type": "ActorRdfParseN3"
     },
     {
-      "@id": "ex:myRdfParserJsonLd",
+      "@id": "config-sets:rdf-parsers.json#myRdfParserJsonLd",
       "@type": "ActorRdfParseJsonLd",
       "priorityScale": 0.9
     }

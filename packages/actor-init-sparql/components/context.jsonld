@@ -5,6 +5,7 @@
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
       "cais": "npmd:@comunica/actor-init-sparql/",
       "files-cais": "cais:^1.0.0/",
+      "config-sets": "files-cais:config/sets/",
 
       "ActorInitSparql": "cais:Actor/Init/Sparql",
       "mediatorQueryOperation": "cais:mediatorQueryOperation",

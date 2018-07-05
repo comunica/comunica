@@ -8,7 +8,8 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-hello-world/^1.0.0/components/context.jsonld": "components/context.jsonld"
   },
   "lsd:importPaths": {
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-hello-world/^1.0.0/components/": "components/"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-hello-world/^1.0.0/components/": "components/",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-hello-world/^1.0.0/config/": "config/"
   },
   "main": "index.js",
   "typings": "index",

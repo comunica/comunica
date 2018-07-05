@@ -7,9 +7,9 @@
   "@id": "urn:comunica:my",
   "actors": [
     {
-      "@id": "ex:myActorRdfSourceIdentifierFileContentType",
+      "@id": "config-sets:rdf-source-identifiers.json#myActorRdfSourceIdentifierFileContentType",
       "@type": "ActorRdfSourceIdentifierFileContentType",
-      "carsifct:Actor/RdfSourceIdentifier/FileContentType/mediatorHttp": { "@id": "ex:mediatorHttp" }
+      "carsifct:Actor/RdfSourceIdentifier/FileContentType/mediatorHttp": { "@id": "config-sets:rdf-source-identifiers.json#mediatorHttp" }
     }
   ]
 }

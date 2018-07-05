@@ -5,6 +5,7 @@
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
       "chw": "npmd:@comunica/actor-init-hello-world/",
       "files-chw": "chw:^1.0.0/",
+      "config-example": "files-chw:config/config-example.json#",
 
       "ActorInitHelloWorld": "chw:Actor/Init/HelloWorld",
       "hello": "chw:hello"

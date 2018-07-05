@@ -1,5 +1,6 @@
 {
   "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-sparql/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/runner/^1.0.0/components/context.jsonld",
 
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-serialize-n3/^1.0.0/components/context.jsonld",
@@ -8,11 +9,11 @@
   "@id": "urn:comunica:my",
   "actors": [
     {
-      "@id": "ex:myRdfSerializerN3",
+      "@id": "config-sets:rdf-serializers.json#myRdfSerializerN3",
       "@type": "ActorRdfSerializeN3"
     },
     {
-      "@id": "ex:myRdfSerializeJsonLd",
+      "@id": "config-sets:rdf-serializers.json#myRdfSerializeJsonLd",
       "@type": "ActorRdfSerializeJsonLd",
       "jsonStringifyIndentSpaces": 2,
       "priorityScale": 0.9

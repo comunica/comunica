@@ -5,6 +5,7 @@
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
       "cairdp": "npmd:@comunica/actor-init-rdf-dereference-paged/",
       "files-cairdp": "cairdp:^1.0.0/",
+      "config-example": "files-cairdp:config/config-example.json#",
 
       "ActorInitRdfDereferencePaged": "cairdp:Actor/Init/RdfDereferencePaged",
       "mediatorRdfDereferencePaged": "cairdp:mediatorRdfDereferencePaged",

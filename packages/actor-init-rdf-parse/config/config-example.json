@@ -14,21 +14,21 @@
       "@type": "Runner",
       "actors": [
         {
-          "@id": "ex:myInit",
+          "@id": "config-example:myInit",
           "@type": "ActorInitRdfParse",
           "mediatorRdfParse": {
-            "@id": "ex:mediatorRdfParse",
+            "@id": "config-example:mediatorRdfParse",
             "@type": "MediatorRace",
             "cc:Mediator/bus": { "@id": "cbrp:Bus/RdfParse" }
           },
           "mediaType": "application/trig"
         },
         {
-          "@id": "ex:myRdfParserN3",
+          "@id": "config-example:myRdfParserN3",
           "@type": "ActorRdfParseN3"
         },
         {
-          "@id": "ex:myRdfParserJsonLd",
+          "@id": "config-example:myRdfParserJsonLd",
           "@type": "ActorRdfParseJsonLd",
           "priorityScale": 0.5
         }

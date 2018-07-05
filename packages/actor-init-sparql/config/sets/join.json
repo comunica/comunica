@@ -1,5 +1,6 @@
 {
   "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-sparql/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/runner/^1.0.0/components/context.jsonld",
 
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-join-nestedloop/^1.0.0/components/context.jsonld"
@@ -7,7 +8,7 @@
   "@id": "urn:comunica:my",
   "actors": [
     {
-      "@id": "ex:myRdfJoinActor",
+      "@id": "config-sets:join.json#myRdfJoinActor",
       "@type": "ActorRdfJoinNestedLoop"
     }
   ]

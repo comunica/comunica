@@ -9,7 +9,7 @@
       "@type": "Runner",
       "actors": [
         {
-          "@id": "ex:myInit",
+          "@id": "config-example:myInit",
           "@type": "ActorInitHelloWorld",
           "hello": "Hi"
         }

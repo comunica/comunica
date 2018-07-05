@@ -5,6 +5,7 @@
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
       "cirp": "npmd:@comunica/actor-init-rdf-parse/",
       "files-cirp": "cirp:^1.0.0/",
+      "config-example": "files-cirp:config/config-example.json#",
 
       "ActorInitRdfParse": "cirp:Actor/Init/RdfParse",
       "mediatorRdfParse": "cirp:mediatorRdfParse",
