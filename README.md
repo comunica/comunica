@@ -30,6 +30,13 @@ https://github.com/rdfjs/comunica-browser
 
 ## Development Setup
 
+If you want to develop new features
+or use the (potentially unstable) in-development version,
+you can set up a development environment for Comunica.
+
+Comunica requires [Node.JS](http://nodejs.org/) 8.0 or higher and the [Yarn](https://yarnpkg.com/en/) package manager.
+Comunica is tested on OSX, Linux and Windows.
+
 This project can be setup by cloning and installing it as follows:
 
 ```bash
@@ -39,8 +46,8 @@ $ yarn install
 ```
 
 This will install the dependencies of all modules, and bootstrap the Lerna monorepo.
-After that, all [Comunica packages](https://github.com/comunica/comunica/tree/master/packages)
-can be used in a development environment, such as querying with [Comunica SPARQL](https://github.com/comunica/comunica/tree/master/packages/actor-init-sparql).
+After that, all [Comunica packages](https://github.com/comunica/comunica/tree/master/packages) are available in the `packages/` folder
+and can be used in a development environment, such as querying with [Comunica SPARQL (`packages/actor-init-sparql`)](https://github.com/comunica/comunica/tree/master/packages/actor-init-sparql).
 
 Furthermore, this will add [pre-commit hooks](https://www.npmjs.com/package/pre-commit)
 to build, lint and test.
