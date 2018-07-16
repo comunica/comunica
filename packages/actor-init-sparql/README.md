@@ -24,6 +24,19 @@ Comunica can either be invoked **dynamically** using a configuration file,
 or **statically** using a pre-compiled configuration file.
 The latter will be faster to start because the dependency-injection phase can be avoided.
 
+## Installation
+
+Comunica requires [Node.JS](http://nodejs.org/) 8.0 or higher and is tested on OSX and Linux.
+
+The easiest way to install the client is by installing it from NPM as follows:
+
+```bash
+$ [sudo] npm install -g @comunica/actor-init-sparql
+```
+
+Alternatively, you can install from the latest GitHub sources.
+For this, please refer to the README of the [Comunica monorepo](https://github.com/comunica/comunica).
+
 ## Execute SPARQL queries
 
 This actor can be used to execute SPARQL queries from
@@ -129,16 +142,3 @@ myEngine.query('SELECT * { ?s ?p <http://dbpedia.org/resource/Belgium>. ?s ?p ?o
 
 The browser script is pre-compiled using a config file and can therefore only be invoked dynamically.
 See the `prepare` and `browser` scripts in `package.json` to compile using a custom config file.
-
-## Installation
-
-Comunica requires [Node.JS](http://nodejs.org/) 8.0 or higher and is tested on OSX and Linux.
-
-The easiest way to install the client is by installing it from NPM as follows:
-
-```bash
-$ [sudo] npm install -g @comunica/actor-init-sparql
-```
-
-Alternatively, you can install from the latest GitHub sources.
-For this, please refer to the README of the [Comunica monorepo](https://github.com/comunica/comunica).
