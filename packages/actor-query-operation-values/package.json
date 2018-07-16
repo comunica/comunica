@@ -32,7 +32,7 @@
     "index.js"
   ],
   "dependencies": {
-    "asynciterator": "^1.1.1",
+    "asynciterator": "^2.0.0",
     "rdf-string": "^1.1.1"
   },
   "peerDependencies": {
