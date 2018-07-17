@@ -634,9 +634,9 @@ async@~0.2.10:
   version "0.2.10"
   resolved "https://registry.yarnpkg.com/async/-/async-0.2.10.tgz#b6bbe0b0674b9d719708ca38de8c237cb526c3d1"
 
-asynciterator@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/asynciterator/-/asynciterator-1.1.0.tgz#b7c083981a32949772d7521159d9754dbacef4ad"
+asynciterator@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/asynciterator/-/asynciterator-2.0.0.tgz#f1d5ef187422aa9b3d6bd26bfcfa6f861435f635"
   dependencies:
     immediate "^3.2.3"
 

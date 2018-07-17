@@ -33,7 +33,7 @@
   ],
   "dependencies": {
     "@comunica/actor-query-operation-union": "^1.1.0",
-    "asynciterator-union": "^1.2.0",
+    "asynciterator-union": "^2.0.0",
     "rdf-data-model": "^1.0.0"
   },
   "peerDependencies": {
