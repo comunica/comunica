@@ -60,11 +60,13 @@ The dynamic variant of this executable is `comunica-dynamic-sparql`.
 An alternative config file can be passed via the `COMUNICA_CONFIG` environment variable.
 
 When you are working with this module in the Comunica monorepo development environment,
-this command can be invoked directly as follows:
+this command can be invoked directly as follows (when inside the `packages/actor-init-sparql` folder):
 
 ```bash
 node bin/query.js http://fragments.dbpedia.org/2015-10/en "CONSTRUCT WHERE { ?s ?p ?o } LIMIT 100"
 ```
+
+Use `bin/query-dynamic.js` when running dynamically inside the Comunica monorepo development environment.
 
 ### Usage from HTTP
 
@@ -82,6 +84,8 @@ $ comunica-sparql-http --help
 
 The HTTP service can only be started dynamically.
 An alternative config file can be passed via the `COMUNICA_CONFIG` environment variable.
+
+Use `bin/http.js` when running in the Comunica monorepo development environment.
 
 ### Usage within application
 
@@ -119,7 +123,7 @@ newEngineDynamic().then(function (myEngine) {
 ### Usage within browser
 
 This engine can run in the browser using [Webpack](https://www.npmjs.com/package/webpack).
-To created a web-packed version of the engine, run `yarn run browser` to create `comunica-browser.js`.
+To created a web-packed version of the engine, run `yarn run browser` (when inside the `packages/actor-init-sparql` folder) to create `comunica-browser.js`.
 
 Include this file in your webpage as follows:
 
