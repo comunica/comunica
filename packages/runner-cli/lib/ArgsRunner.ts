@@ -1,3 +1,4 @@
+// tslint:disable:no-console
 import {IActorOutputInit} from "@comunica/bus-init";
 import {ISetupProperties, Setup} from "@comunica/runner";
 
