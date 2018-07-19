@@ -151,9 +151,10 @@ describe('ActorInitSparql', () => {
       mediatorQueryOperation.mediate = (action) => action.operation.query !== 'INVALID'
         ? Promise.resolve({ bindingsStream: input }) : Promise.reject(new Error('a'));
       mediatorSparqlParse.mediate = (action) => Promise.resolve({ operation: action });
+      const defaultQueryInputFormat = 'sparql';
       actor = new ActorInitSparql(
-        { bus, mediatorContextPreprocess, mediatorQueryOperation, mediatorSparqlParse, mediatorSparqlSerialize,
-          mediatorSparqlSerializeMediaTypeCombiner: mediatorSparqlSerialize, name: 'actor' });
+        { bus, defaultQueryInputFormat, mediatorContextPreprocess, mediatorQueryOperation, mediatorSparqlParse,
+          mediatorSparqlSerialize, mediatorSparqlSerializeMediaTypeCombiner: mediatorSparqlSerialize, name: 'actor' });
     });
 
     it('should test', () => {
@@ -193,6 +194,25 @@ describe('ActorInitSparql', () => {
 
     it('should run on the --listformats option', () => {
       return expect(actor.run({ argv: [ '--listformats' ], env: {}, stdin: new PassThrough() })).resolves.toBeTruthy();
+    });
+
+    it('should have a default query format', async () => {
+      actor = new ActorInitSparql(
+        { bus, defaultQueryInputFormat: 'sparql', mediatorContextPreprocess, mediatorQueryOperation,
+          mediatorSparqlParse, mediatorSparqlSerialize,
+          mediatorSparqlSerializeMediaTypeCombiner: mediatorSparqlSerialize, name: 'actor', queryString });
+      const spy = jest.spyOn(actor, 'query');
+      (await actor.run({ argv: [], env: {}, stdin: new PassThrough() }));
+      return expect(spy.mock.calls[0][1].queryFormat).toEqual('sparql');
+    });
+
+    it('should allow the query format to be changed with -i', async () => {
+      actor = new ActorInitSparql(
+        { bus, mediatorContextPreprocess, mediatorQueryOperation, mediatorSparqlParse, mediatorSparqlSerialize,
+          mediatorSparqlSerializeMediaTypeCombiner: mediatorSparqlSerialize, name: 'actor', queryString });
+      const spy = jest.spyOn(actor, 'query');
+      (await actor.run({ argv: [ '-i', 'graphql' ], env: {}, stdin: new PassThrough() }));
+      return expect(spy.mock.calls[0][1].queryFormat).toEqual('graphql');
     });
 
     it('should allow a media type to be passed with -t', async () => {

@@ -31,6 +31,7 @@ export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs {
   public readonly mediatorContextPreprocess: Mediator<Actor<IActionContextPreprocess, IActorTest,
     IActorContextPreprocessOutput>, IActionContextPreprocess, IActorTest, IActorContextPreprocessOutput>;
   public readonly queryString?: string;
+  public readonly defaultQueryInputFormat?: string;
   public readonly context?: string;
 
   constructor(args: IActorInitSparqlArgs) {
@@ -164,5 +165,6 @@ export interface IActorInitSparqlArgs extends IActorArgs<IActionInit, IActorTest
   mediatorContextPreprocess: Mediator<Actor<IActionContextPreprocess, IActorTest, IActorContextPreprocessOutput>,
     IActionContextPreprocess, IActorTest, IActorContextPreprocessOutput>;
   queryString?: string;
+  defaultQueryInputFormat?: string;
   context?: string;
 }

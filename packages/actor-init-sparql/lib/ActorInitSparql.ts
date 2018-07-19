@@ -53,6 +53,7 @@ Options:
   -f            evaluate the SPARQL query in the given file
   -c            use the given JSON configuration file (e.g., config.json)
   -t            the MIME type of the output (e.g., application/json)
+  -i            the query input format (e.g., graphql, defaults to sparql)
   --help        print this help message
   --listformats prints the supported MIME types
   --version     prints version information
@@ -92,7 +93,7 @@ Options:
     }
 
     // Define the query format
-    context.queryFormat = 'sparql'; // Default to SPARQL
+    context.queryFormat = this.defaultQueryInputFormat;
     if (args.i) {
       context.queryFormat = args.i;
     }
