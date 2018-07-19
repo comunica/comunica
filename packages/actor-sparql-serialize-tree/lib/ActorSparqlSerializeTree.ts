@@ -2,7 +2,7 @@ import {IActorQueryOperationOutputBindings} from "@comunica/bus-query-operation"
 import {ActorSparqlSerializeFixedMediaTypes, IActionSparqlSerialize,
   IActorSparqlSerializeFixedMediaTypesArgs, IActorSparqlSerializeOutput} from "@comunica/bus-sparql-serialize";
 import * as RDF from "rdf-js";
-import {Converter} from "sparqljson-to-tree";
+import {Converter, ISchema} from "sparqljson-to-tree";
 import {Readable} from "stream";
 
 /**
@@ -32,7 +32,14 @@ export class ActorSparqlSerializeTree extends ActorSparqlSerializeFixedMediaType
     };
 
     const bindingsArray: {[key: string]: RDF.Term}[] = [];
-    const schema = action.context && action.context.singularizeVariables ? action.context : null;
+    const schema: ISchema = { singularizeVariables: {} };
+    if (action.context && action.context['@context']) {
+      for (const key of Object.keys(action.context['@context'])) {
+        if (action.context['@context'][key]['@singular']) {
+          schema.singularizeVariables[key] = true;
+        }
+      }
+    }
 
     const resultStream: NodeJS.EventEmitter = (<IActorQueryOperationOutputBindings> action).bindingsStream;
     resultStream.on('data', (bindings) => {
