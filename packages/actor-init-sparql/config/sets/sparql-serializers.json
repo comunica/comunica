@@ -10,6 +10,7 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-sparql-serialize-sparql-xml/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-sparql-serialize-stats/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-sparql-serialize-table/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-sparql-serialize-tree/^1.0.0/components/context.jsonld",
 
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-serialize/^1.0.0/components/context.jsonld",
 
@@ -55,6 +56,10 @@
     {
       "@id": "config-sets:sparql-serializers.json#myTableSparqlSerializer",
       "@type": "ActorSparqlSerializeTable"
+    },
+    {
+      "@id": "config-sets:sparql-serializers.json#myTreeSparqlSerializer",
+      "@type": "ActorSparqlSerializeTree"
     }
   ]
 }

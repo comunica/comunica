@@ -69,6 +69,7 @@
         "packages/actor-sparql-serialize-sparql-xml/package.json",
         "packages/actor-sparql-serialize-stats/package.json",
         "packages/actor-sparql-serialize-table/package.json",
+        "packages/actor-sparql-serialize-tree/package.json",
         "packages/bus-context-preprocess/package.json",
         "packages/bus-http/package.json",
         "packages/bus-init/package.json",
