@@ -176,3 +176,5 @@ myEngine.query('SELECT * { ?s ?p <http://dbpedia.org/resource/Belgium>. ?s ?p ?o
 
 The browser script is pre-compiled using a config file and can therefore only be invoked dynamically.
 See the `prepare` and `browser` scripts in `package.json` to compile using a custom config file.
+
+_If you want to use GraphQL-LD here as well, you can do this similar as in the Node.JS API using `Comunica.bindingsStreamToGraphQl`_

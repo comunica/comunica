@@ -1,4 +1,5 @@
 export * from './lib/ActorInitSparql-browser';
+export {bindingsStreamToGraphQl} from "@comunica/actor-sparql-serialize-tree";
 
 import {ActorInitSparql} from './lib/ActorInitSparql-browser';
 
