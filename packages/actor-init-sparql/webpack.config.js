@@ -13,6 +13,14 @@ module.exports = {
   devtool: 'cheap-module-source-map',
   module: {
     rules: [
+      {
+        // This is needed because our internal graphql dependency uses .mjs files,
+        // and Webpack's define plugin doesn't work well with it (yet).
+        // In the future this should be removed.
+        type: 'javascript/auto',
+        test: /\.mjs$/,
+        use: []
+      },
       { // This fixes a problem where the setImmediate of asynciterator would conflict with webpack's polyfill
         test: /asynciterator\.js$/,
         loader: StringReplacePlugin.replace({
