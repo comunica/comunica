@@ -31,12 +31,59 @@ describe('ActorSparqlParseGraphql', () => {
       actor = new ActorSparqlParseGraphql({ name: 'actor', bus });
     });
 
-    it('should test', () => {
-      return expect(actor.test({ todo: true })).resolves.toEqual({ todo: true }); // TODO
+    it('should not test on the sparql format', () => {
+      return expect(actor.test({ query: 'a', queryFormat: 'sparql' })).rejects.toBeTruthy();
+    });
+
+    it('should not test on no format', () => {
+      return expect(actor.test({ query: 'a' })).rejects.toBeTruthy();
+    });
+
+    it('should test on the graphql format', () => {
+      return expect(actor.test({ query: 'a', queryFormat: 'graphql' })).resolves.toBeTruthy();
     });
 
     it('should run', () => {
-      return expect(actor.run({ todo: true })).resolves.toMatchObject({ todo: true }); // TODO
+      const query = '{ label }';
+      const context = {
+        "@context": {
+          label: { "@id": "http://www.w3.org/2000/01/rdf-schema#label" },
+        },
+      };
+      return expect(actor.run({ query, queryFormat: 'graphql', context })).resolves
+        .toMatchObject({
+          operation: {
+            input: {
+              patterns: [
+                {
+                  graph: {value: ""},
+                  object: {value: "label"},
+                  predicate: {value: "http://www.w3.org/2000/01/rdf-schema#label"},
+                  subject: {value: "b1"},
+                  type: "pattern",
+                },
+              ],
+              type: "bgp"},
+            type: "project",
+            variables: [
+              {
+                value: "label",
+              },
+            ],
+          },
+        });
+    });
+
+    it('should not run without @context that has a required URI', () => {
+      const query = '{ label }';
+      const context = {};
+      return expect(actor.run({ query, queryFormat: 'graphql', context })).rejects.toBeTruthy();
+    });
+
+    it('should not run without context that has a required URI', () => {
+      const query = '{ label }';
+      const context = null;
+      return expect(actor.run({ query, queryFormat: 'graphql', context })).rejects.toBeTruthy();
     });
   });
 });
