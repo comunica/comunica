@@ -2,8 +2,9 @@ import {IActorQueryOperationOutputBindings} from "@comunica/bus-query-operation"
 import {ActorSparqlSerializeFixedMediaTypes, IActionSparqlSerialize,
   IActorSparqlSerializeFixedMediaTypesArgs, IActorSparqlSerializeOutput} from "@comunica/bus-sparql-serialize";
 import * as RDF from "rdf-js";
-import {Converter, ISchema} from "sparqljson-to-tree";
+import {Converter, IConverterSettings, ISchema} from "sparqljson-to-tree";
 import {Readable} from "stream";
+import {BindingsStream} from "../../bus-query-operation/lib/Bindings";
 
 /**
  * A comunica Tree SPARQL Serialize Actor.
@@ -11,11 +12,49 @@ import {Readable} from "stream";
 export class ActorSparqlSerializeTree extends ActorSparqlSerializeFixedMediaTypes
   implements IActorSparqlSerializeFixedMediaTypesArgs {
 
-  private readonly converter: Converter;
-
   constructor(args: IActorSparqlSerializeFixedMediaTypesArgs) {
     super(args);
-    this.converter = new Converter({ materializeRdfJsTerms: true });
+  }
+
+  /**
+   *
+   * @param {BindingsStream} bindingsStream
+   * @param context
+   * @param {IConverterSettings} converterSettings
+   * @return {Promise<string>}
+   */
+  public static bindingsStreamToGraphQl(bindingsStream: BindingsStream, context?: any,
+                                        converterSettings?: IConverterSettings): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const bindingsArray: {[key: string]: RDF.Term}[] = [];
+      const converter: Converter = new Converter(converterSettings);
+
+      const schema: ISchema = { singularizeVariables: {} };
+      if (context && context['@context']) {
+        for (const key of Object.keys(context['@context'])) {
+          if (context['@context'][key]['@singular']) {
+            schema.singularizeVariables[key] = true;
+          }
+        }
+      }
+
+      bindingsStream.on('error', reject);
+      bindingsStream.on('data', (bindings) => {
+        const rawBindings = bindings.toJS();
+        const reKeyedBindings: {[key: string]: RDF.Term} = {};
+        // Removes the '?' prefix
+        for (const key in rawBindings) {
+          const bindingValue = rawBindings[key];
+          if (bindingValue) {
+            reKeyedBindings[key.substr(1)] = bindingValue;
+          }
+        }
+        bindingsArray.push(reKeyedBindings);
+      });
+      bindingsStream.on('end', () => {
+        resolve(converter.bindingsToTree(bindingsArray, schema));
+      });
+    });
   }
 
   public async testHandleChecked(action: IActionSparqlSerialize) {
@@ -31,34 +70,13 @@ export class ActorSparqlSerializeTree extends ActorSparqlSerializeFixedMediaType
       return;
     };
 
-    const bindingsArray: {[key: string]: RDF.Term}[] = [];
-    const schema: ISchema = { singularizeVariables: {} };
-    if (action.context && action.context['@context']) {
-      for (const key of Object.keys(action.context['@context'])) {
-        if (action.context['@context'][key]['@singular']) {
-          schema.singularizeVariables[key] = true;
-        }
-      }
-    }
-
-    const resultStream: NodeJS.EventEmitter = (<IActorQueryOperationOutputBindings> action).bindingsStream;
+    const resultStream: BindingsStream = (<IActorQueryOperationOutputBindings> action).bindingsStream;
     resultStream.on('error', (e) => data.emit('error', e));
-    resultStream.on('data', (bindings) => {
-      const rawBindings = bindings.toJS();
-      const reKeyedBindings: {[key: string]: RDF.Term} = {};
-      // Removes the '?' prefix
-      for (const key in rawBindings) {
-        const bindingValue = rawBindings[key];
-        if (bindingValue) {
-          reKeyedBindings[key.substr(1)] = bindingValue;
-        }
-      }
-      bindingsArray.push(reKeyedBindings);
-    });
-    resultStream.on('end', () => {
-      data.push(JSON.stringify(this.converter.bindingsToTree(bindingsArray, schema), null, '  '));
-      data.push(null);
-    });
+    ActorSparqlSerializeTree.bindingsStreamToGraphQl(resultStream, action.context, { materializeRdfJsTerms: true })
+      .then((result: any) => {
+        data.push(JSON.stringify(result, null, '  '));
+        data.push(null);
+      });
 
     return { data };
   }

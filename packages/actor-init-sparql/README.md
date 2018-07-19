@@ -120,6 +120,36 @@ newEngineDynamic().then(function (myEngine) {
 });
 ```
 
+_GraphQL-LD_
+
+Instead of SPARQL queries, you can also define [GraphQL](https://graphql.org/) queries
+(with a [JSON-LD](https://json-ld.org/) context).
+
+If you want to convert your results to a GraphQL tree,
+then you will need the `@comunica/actor-sparql-serialize-tree` dependency,
+otherwise you can consume the bindings stream manually.
+
+```javascript
+const newEngine = require('@comunica/actor-init-sparql').newEngine;
+const bindingsStreamToGraphQl = require('@comunica/actor-sparql-serialize-tree').bindingsStreamToGraphQl;
+
+const myEngine = newEngine();
+const context = {
+  sources: [ { type: 'hypermedia', value: 'http://fragments.dbpedia.org/2016-04/en' } ],
+  queryFormat: 'graphql',
+  "@context": {
+    "label": { "@id": "http://www.w3.org/2000/01/rdf-schema#label", "@singular": true },
+    "label_en": { "@id": "http://www.w3.org/2000/01/rdf-schema#label", "@language": "en" },
+    "writer": { "@id": "http://dbpedia.org/ontology/writer", "@singular": true },
+    "artist": { "@id": "http://dbpedia.org/ontology/musicalArtist", "@singular": true },
+    "artist_label": { "@singular": true }
+  }
+};
+myEngine.query('{ label writer(label_en: \"Michael Jackson\") artist { label } }',context)
+  .then(function (result) { return bindingsStreamToGraphQl(result.bindingsStream, context); })
+  .then(console.log);
+```
+
 ### Usage within browser
 
 This engine can run in the browser using [Webpack](https://www.npmjs.com/package/webpack).
