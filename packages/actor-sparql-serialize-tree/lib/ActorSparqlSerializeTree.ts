@@ -42,12 +42,16 @@ export class ActorSparqlSerializeTree extends ActorSparqlSerializeFixedMediaType
     }
 
     const resultStream: NodeJS.EventEmitter = (<IActorQueryOperationOutputBindings> action).bindingsStream;
+    resultStream.on('error', (e) => data.emit('error', e));
     resultStream.on('data', (bindings) => {
       const rawBindings = bindings.toJS();
       const reKeyedBindings: {[key: string]: RDF.Term} = {};
       // Removes the '?' prefix
       for (const key in rawBindings) {
-        reKeyedBindings[key.substr(1)] = rawBindings[key];
+        const bindingValue = rawBindings[key];
+        if (bindingValue) {
+          reKeyedBindings[key.substr(1)] = bindingValue;
+        }
       }
       bindingsArray.push(reKeyedBindings);
     });
