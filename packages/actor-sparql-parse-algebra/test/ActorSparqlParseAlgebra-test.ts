@@ -31,8 +31,16 @@ describe('ActorSparqlParseAlgebra', () => {
       actor = new ActorSparqlParseAlgebra({ name: 'actor', bus });
     });
 
-    it('should test', () => {
-      return expect(actor.test({ query: "abc" })).resolves.toBeTruthy();
+    it('should not test on the graphql format', () => {
+      return expect(actor.test({ query: 'a', queryFormat: 'graphql' })).rejects.toBeTruthy();
+    });
+
+    it('should test on no format', () => {
+      return expect(actor.test({ query: 'a' })).resolves.toBeTruthy();
+    });
+
+    it('should test on the sparql format', () => {
+      return expect(actor.test({ query: 'a', queryFormat: 'sparql' })).resolves.toBeTruthy();
     });
 
     it('should run', () => {
