@@ -1,9 +1,10 @@
 {
   "@context": [
-    "https://linkedsoftwaredependencies.org/contexts/components.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^3.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
       "casstr": "npmd:@comunica/actor-sparql-serialize-tree/",
+      "files-casstr": "casstr:^1.0.0/",
 
       "ActorSparqlSerializeTree": "casstr:Actor/SparqlSerialize/Tree"
     }

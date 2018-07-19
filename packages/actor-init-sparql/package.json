@@ -94,6 +94,7 @@
     "@comunica/actor-sparql-serialize-sparql-xml": "^1.1.0",
     "@comunica/actor-sparql-serialize-stats": "^1.1.0",
     "@comunica/actor-sparql-serialize-table": "^1.1.0",
+    "@comunica/actor-sparql-serialize-tree": "^1.0.0",
     "@comunica/bus-context-preprocess": "^1.1.0",
     "@comunica/bus-http": "^1.1.0",
     "@comunica/bus-init": "^1.1.0",

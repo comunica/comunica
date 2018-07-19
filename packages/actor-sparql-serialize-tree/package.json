@@ -5,7 +5,10 @@
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-sparql-serialize-tree",
   "lsd:components": "components/components.jsonld",
   "lsd:contexts": {
-    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-sparql-serialize-tree.jsonld": "components/context.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-sparql-serialize-tree/^1.0.0/components/context.jsonld": "components/context.jsonld"
+  },
+  "lsd:importPaths": {
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-sparql-serialize-tree/^1.0.0/components/": "components/"
   },
   "main": "index.js",
   "typings": "index",
@@ -39,9 +42,9 @@
     "@comunica/bus-sparql-serialize": "^1.0.0"
   },
   "devDependencies": {
-    "@comunica/core": "^1.0.0",
-    "@comunica/bus-query-operation": "^1.0.0",
-    "@comunica/bus-sparql-serialize": "^1.0.0"
+    "@comunica/core": "^1.1.0",
+    "@comunica/bus-query-operation": "^1.1.0",
+    "@comunica/bus-sparql-serialize": "^1.1.0"
   },
   "jest": {
     "transform": {
