@@ -37,7 +37,7 @@
   "dependencies": {
     "hdt": "^2.1.1",
     "rdf-data-model": "^1.0.0",
-    "rdf-string": "^1.1.0"
+    "rdf-string": "^1.1.1"
   },
   "peerDependencies": {
     "@comunica/bus-rdf-resolve-quad-pattern": "^1.0.0",
