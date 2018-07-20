@@ -4,7 +4,7 @@ import {MediatorRace} from "@comunica/mediator-race";
 import {PassThrough, Readable} from "stream";
 import {ActorInitRdfDereference} from "../lib/ActorInitRdfDereference";
 
-const n3 = require('@comunica/actor-rdf-parse-n3/node_modules/n3/N3.js');
+const n3 = require('n3');
 Object.keys(n3).forEach((submodule) => n3[submodule] = n3[submodule]);
 
 describe('ActorInitRdfDereference', () => {
