@@ -20,14 +20,10 @@ export function runArgs(configResourceUrl: string, argv: string[], stdin: NodeJS
     .catch(console.error);
 }
 
-export function runArgsInProcess(moduleRootPath: string, defaultConfigPath: string, inDevOverride?: boolean) {
+export function runArgsInProcess(moduleRootPath: string, defaultConfigPath: string) {
   const argv = process.argv.slice(2);
   runArgs(process.env.COMUNICA_CONFIG
     ? process.cwd() + '/' + process.env.COMUNICA_CONFIG : defaultConfigPath, argv,
     process.stdin, process.stdout, process.stderr, process.env,
-    null, { mainModulePath: inDevOverride || isInDev() ? moduleRootPath : moduleRootPath + '../' });
-}
-
-export function isInDev() {
-  return require('fs').existsSync(__dirname + '/../index.ts');
+    null, { mainModulePath: moduleRootPath });
 }

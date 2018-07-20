@@ -1,5 +1,4 @@
 import {ISetupProperties, Runner, Setup} from "@comunica/runner";
-import {existsSync} from "fs";
 import {ActorInitSparql} from "./ActorInitSparql";
 
 /**
@@ -7,15 +6,13 @@ import {ActorInitSparql} from "./ActorInitSparql";
  * @param {IQueryOptions} options Optional options on how to instantiate the query evaluator.
  * @param {string} moduleRootPath The path to the invoking module.
  * @param {string} defaultConfigPath The path to the config file.
- * @param {boolean} [inDevOverride] If the engine is running in a monorepo development environment.
- *                                  Default is determined based on the state of this package.
  * @return {Promise<ActorInitSparql>} A promise that resolves to a fully wired comunica engine.
  */
-export function newEngineDynamicArged(options: IQueryOptions, moduleRootPath: string, defaultConfigPath: string,
-                                      inDevOverride?: boolean): Promise<ActorInitSparql> {
+export function newEngineDynamicArged(options: IQueryOptions, moduleRootPath: string,
+                                      defaultConfigPath: string): Promise<ActorInitSparql> {
   if (!options.mainModulePath) {
     // This makes sure that our configuration is found by Components.js
-    options.mainModulePath = inDevOverride || isInDev() ? moduleRootPath : moduleRootPath + '../';
+    options.mainModulePath = moduleRootPath;
   }
   const configResourceUrl: string = options.configResourceUrl || defaultConfigPath;
   const instanceUri: string = options.instanceUri || 'urn:comunica:sparqlinit';
@@ -40,10 +37,6 @@ export function newEngineDynamicArged(options: IQueryOptions, moduleRootPath: st
       }
       return actor;
     });
-}
-
-function isInDev(): boolean {
-  return existsSync(__dirname + '/../test');
 }
 
 /**
