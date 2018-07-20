@@ -15,9 +15,7 @@
       "@id": "config-sets:resolve-federated.json#myFederatedQuadPatternResolver",
       "@type": "ActorRdfResolveQuadPatternFederated",
       "carrqpf:Actor/RdfResolveQuadPattern/Federated/mediatorResolveQuadPattern": {
-        "@id": "config-sets:resolve-federated.json#mediatorResolveQuadPattern",
-        "@type": "MediatorRace",
-        "cc:Mediator/bus": { "@id": "cbrdp:Bus/RdfDereferencePaged" }
+        "@id": "config-sets:sparql-queryoperators.json#mediatorResolveQuadPattern"
       }
     }
   ]
