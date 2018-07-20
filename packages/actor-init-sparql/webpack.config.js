@@ -1,5 +1,6 @@
 const path = require('path');
 const StringReplacePlugin = require("string-replace-webpack-plugin");
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
 module.exports = {
   entry: [ 'babel-polyfill', path.resolve(__dirname, 'index-browser.js') ],
@@ -53,7 +54,18 @@ module.exports = {
     ]
   },
   optimization: {
-    minimize: true,
+    minimizer: [
+      // we specify a custom UglifyJsPlugin here to get source maps in production
+      new UglifyJsPlugin({
+        cache: true,
+        parallel: true,
+        uglifyOptions: {
+          compress: false,
+          mangle: true,
+        },
+        sourceMap: true
+      })
+    ]
   },
   plugins: [
     new StringReplacePlugin(),
