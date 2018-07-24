@@ -23,7 +23,7 @@ export class ActorSparqlParseGraphql extends ActorSparqlParse {
 
   public async run(action: IActionSparqlParse): Promise<IActorSparqlParseOutput> {
     return { operation: this.graphqlToSparql.graphqlToSparqlAlgebra(action.query,
-      action.context && action.context['@context'] ? action.context['@context'] : {}) };
+      action.context && action.context.has('@context') ? action.context.get('@context') : {}) };
   }
 
 }

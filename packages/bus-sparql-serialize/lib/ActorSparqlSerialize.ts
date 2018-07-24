@@ -1,7 +1,7 @@
 import {ActorAbstractMediaTyped, IActionAbstractMediaTyped, IActorArgsMediaTyped,
   IActorOutputAbstractMediaTyped, IActorTestAbstractMediaTyped} from "@comunica/actor-abstract-mediatyped";
 import {IActorQueryOperationOutput} from "@comunica/bus-query-operation";
-import {IActorOutput, IActorTest} from "@comunica/core";
+import {IAction, IActorOutput, IActorTest} from "@comunica/core";
 
 /**
  * A comunica actor for sparql-serialize events.
@@ -27,11 +27,7 @@ export type IActionRootSparqlParse = IActionAbstractMediaTyped<IActionSparqlSeri
 export type IActorTestRootSparqlParse = IActorTestAbstractMediaTyped<IActorTest>;
 export type IActorOutputRootSparqlParse = IActorOutputAbstractMediaTyped<IActorSparqlSerializeOutput>;
 
-export interface IActionSparqlSerialize extends IActorQueryOperationOutput {
-  /**
-   * An optional context.
-   */
-  context?: any;
+export interface IActionSparqlSerialize extends IAction, IActorQueryOperationOutput {
 }
 
 export interface IActorSparqlSerializeOutput extends IActorOutput {

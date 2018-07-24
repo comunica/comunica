@@ -1,4 +1,4 @@
-import {Actor, IAction, IActorArgs, IActorOutput, IActorTest} from "@comunica/core";
+import {ActionContext, Actor, IAction, IActorArgs, IActorOutput, IActorTest} from "@comunica/core";
 
 /**
  * An abstract actor that handles media-typed actions.
@@ -21,9 +21,9 @@ export abstract class ActorAbstractMediaTyped<HI, HT, HO>
   public async run(action: IActionAbstractMediaTyped<HI>): Promise<IActorOutputAbstractMediaTyped<HO>> {
     if ('handle' in action) {
       const typedAction: IActionAbstractMediaTypedHandle<HI> = <IActionAbstractMediaTypedHandle<HI>> action;
-      return { handle: await this.runHandle(typedAction.handle, typedAction.handleMediaType) };
+      return { handle: await this.runHandle(typedAction.handle, typedAction.handleMediaType, action.context) };
     } else if ('mediaTypes' in action) {
-      return { mediaTypes: await this.getMediaTypes() };
+      return { mediaTypes: await this.getMediaTypes(action.context) };
     } else {
       throw new Error('Either a handle or mediaType action needs to be provided');
     }
@@ -32,9 +32,9 @@ export abstract class ActorAbstractMediaTyped<HI, HT, HO>
   public async test(action: IActionAbstractMediaTyped<HI>): Promise<IActorTestAbstractMediaTyped<HT>> {
     if ('handle' in action) {
       const typedAction: IActionAbstractMediaTypedHandle<HI> = <IActionAbstractMediaTypedHandle<HI>> action;
-      return { handle: await this.testHandle(typedAction.handle, typedAction.handleMediaType) };
+      return { handle: await this.testHandle(typedAction.handle, typedAction.handleMediaType, action.context) };
     } else if ('mediaTypes' in action) {
-      return { mediaTypes: await this.testMediaType() };
+      return { mediaTypes: await this.testMediaType(action.context) };
     } else {
       throw new Error('Either a handle or mediaType action needs to be provided');
     }
@@ -46,32 +46,36 @@ export abstract class ActorAbstractMediaTyped<HI, HT, HO>
    *
    * @param {HI} action The handle action to test.
    * @param {string} mediaType The media type to test.
+   * @param {ActionContext} context An optional context.
    * @return {Promise<T>} A promise that resolves to the handle test result.
    */
-  public abstract async testHandle(action: HI, mediaType: string): Promise<HT>;
+  public abstract async testHandle(action: HI, mediaType: string, context?: ActionContext): Promise<HT>;
 
   /**
    * Run the given handle action on this actor.
    *
    * @param {HI} action The handle action to run.
    * @param {string} mediaType The media type to run with.
+   * @param {ActionContext} context An optional context.
    * @return {Promise<T>} A promise that resolves to the handle run result.
    */
-  public abstract runHandle(action: HI, mediaType: string): Promise<HO>;
+  public abstract runHandle(action: HI, mediaType: string, context?: ActionContext): Promise<HO>;
 
   /**
    * Check if this actor can emit its media types.
    *
+   * @param {ActionContext} context An optional context.
    * @return {Promise<boolean>} A promise that resolves to the media type run result.
    */
-  public abstract testMediaType(): Promise<boolean>;
+  public abstract testMediaType(context?: ActionContext): Promise<boolean>;
 
   /**
    * Get the media type of this given actor.
    *
+   * @param {ActionContext} context An optional context.
    * @return {Promise<{[id: string]: number}>} A promise that resolves to the media types.
    */
-  public abstract getMediaTypes(): Promise<{[id: string]: number}>;
+  public abstract getMediaTypes(context?: ActionContext): Promise<{[id: string]: number}>;
 
 }
 

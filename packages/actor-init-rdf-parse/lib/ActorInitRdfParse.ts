@@ -29,7 +29,7 @@ export class ActorInitRdfParse extends ActorInit implements IActorInitRdfParseAr
     const mediaType: string = action.argv.length > 0 ? action.argv[0] : this.mediaType;
     const parseAction: IActionRdfParse = { input: action.stdin };
     const result: IActorRdfParseOutput = (await this.mediatorRdfParse.mediate(
-      { handle: parseAction, handleMediaType: mediaType })).handle;
+      { context: action.context, handle: parseAction, handleMediaType: mediaType })).handle;
 
     result.quads.on('data', (quad) => readable.push(JSON.stringify(RdfString.quadToStringQuad(quad)) + '\n'));
     result.quads.on('end', () => readable.push(null));

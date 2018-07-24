@@ -23,6 +23,7 @@ export class ActorInitRdfDereferencePaged extends ActorInit implements IActorIni
 
   public async run(action: IActionInit): Promise<IActorOutputInit> {
     const dereference: IActionRdfDereferencePaged = {
+      context: action.context,
       url: action.argv.length > 0 ? action.argv[0] : this.url,
     };
     if (!dereference.url) {

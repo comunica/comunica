@@ -1,5 +1,5 @@
 import {ActorSparqlParse} from "@comunica/bus-sparql-parse";
-import {Bus} from "@comunica/core";
+import {ActionContext, Bus} from "@comunica/core";
 import {ActorSparqlParseGraphql} from "../lib/ActorSparqlParseGraphql";
 
 describe('ActorSparqlParseGraphql', () => {
@@ -45,11 +45,11 @@ describe('ActorSparqlParseGraphql', () => {
 
     it('should run', () => {
       const query = '{ label }';
-      const context = {
+      const context = ActionContext({
         "@context": {
           label: { "@id": "http://www.w3.org/2000/01/rdf-schema#label" },
         },
-      };
+      });
       return expect(actor.run({ query, queryFormat: 'graphql', context })).resolves
         .toMatchObject({
           operation: {
@@ -76,7 +76,7 @@ describe('ActorSparqlParseGraphql', () => {
 
     it('should not run without @context that has a required URI', () => {
       const query = '{ label }';
-      const context = {};
+      const context = ActionContext({});
       return expect(actor.run({ query, queryFormat: 'graphql', context })).rejects.toBeTruthy();
     });
 

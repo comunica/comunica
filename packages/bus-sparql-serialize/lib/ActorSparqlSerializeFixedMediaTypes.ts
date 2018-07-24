@@ -1,5 +1,5 @@
 import {ActorAbstractMediaTypedFixed, IActorArgsMediaTypedFixed} from "@comunica/actor-abstract-mediatyped";
-import {IActorTest} from "@comunica/core";
+import {ActionContext, IActorTest} from "@comunica/core";
 import {
   IActionSparqlSerialize, IActorSparqlSerializeOutput,
 } from "./ActorSparqlSerialize";
@@ -21,7 +21,7 @@ export abstract class ActorSparqlSerializeFixedMediaTypes extends ActorAbstractM
     super(args);
   }
 
-  public async testHandleChecked(action: IActionSparqlSerialize) {
+  public async testHandleChecked(action: IActionSparqlSerialize, context?: ActionContext) {
     return true;
   }
 
