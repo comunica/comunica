@@ -1,4 +1,4 @@
-import {Actor, IAction, IActorArgs, IActorOutput, IActorTest} from "@comunica/core";
+import {ActionContext, Actor, IAction, IActorArgs, IActorOutput, IActorTest} from "@comunica/core";
 
 /**
  * A comunica actor for context-preprocess events.
@@ -12,20 +12,12 @@ import {Actor, IAction, IActorArgs, IActorOutput, IActorTest} from "@comunica/co
  * @see IActorContextPreprocessOutput
  */
 export abstract class ActorContextPreprocess
-  extends Actor<IActionContextPreprocess, IActorTest, IActorContextPreprocessOutput> {
+  extends Actor<IAction, IActorTest, IActorContextPreprocessOutput> {
 
-  constructor(args: IActorArgs<IActionContextPreprocess, IActorTest, IActorContextPreprocessOutput>) {
+  constructor(args: IActorArgs<IAction, IActorTest, IActorContextPreprocessOutput>) {
     super(args);
   }
 
-}
-
-export interface IActionContextPreprocess extends IAction {
-  /**
-   * A context object.
-   * Can be null.
-   */
-  context?: {[id: string]: any};
 }
 
 export interface IActorContextPreprocessOutput extends IActorOutput {
@@ -33,5 +25,5 @@ export interface IActorContextPreprocessOutput extends IActorOutput {
    * A context object.
    * Can be null.
    */
-  context?: {[id: string]: any};
+  context?: ActionContext;
 }

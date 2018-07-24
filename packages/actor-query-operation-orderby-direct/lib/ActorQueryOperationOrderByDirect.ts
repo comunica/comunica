@@ -1,7 +1,7 @@
 import {SparqlExpressionEvaluator} from "@comunica/actor-query-operation-filter-direct";
 import {ActorQueryOperation, ActorQueryOperationTypedMediated,
   IActorQueryOperationOutputBindings, IActorQueryOperationTypedMediatedArgs} from "@comunica/bus-query-operation";
-import {IActorTest} from "@comunica/core";
+import {ActionContext, IActorTest} from "@comunica/core";
 import {termToString} from "rdf-string";
 import {Algebra} from "sparqlalgebrajs";
 import {SortIterator} from "./SortIterator";
@@ -18,7 +18,7 @@ export class ActorQueryOperationOrderByDirect extends ActorQueryOperationTypedMe
     this.window = args.window || Infinity;
   }
 
-  public async testOperation(pattern: Algebra.OrderBy, context?: {[id: string]: any}): Promise<IActorTest> {
+  public async testOperation(pattern: Algebra.OrderBy, context?: ActionContext): Promise<IActorTest> {
     // will throw error for unsupported operators
     for (let expr of pattern.expressions) {
       // remove descending operator
@@ -33,7 +33,7 @@ export class ActorQueryOperationOrderByDirect extends ActorQueryOperationTypedMe
     return true;
   }
 
-  public async runOperation(pattern: Algebra.OrderBy, context?: {[id: string]: any})
+  public async runOperation(pattern: Algebra.OrderBy, context?: ActionContext)
     : Promise<IActorQueryOperationOutputBindings> {
     const output: IActorQueryOperationOutputBindings =
       ActorQueryOperation.getSafeBindings(await this.mediatorQueryOperation.mediate(

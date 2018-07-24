@@ -39,7 +39,8 @@
     "index.js"
   ],
   "dependencies": {
-    "lodash.assign": "^4.2.0"
+    "lodash.assign": "^4.2.0",
+    "immutable": "^3.8.2"
   },
   "jest": {
     "transform": {

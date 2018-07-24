@@ -1,6 +1,8 @@
-import {IActionRdfResolveQuadPattern, IActorRdfResolveQuadPatternOutput,
-  ILazyQuadSource} from "@comunica/bus-rdf-resolve-quad-pattern";
-import {Actor, IActorTest, Mediator} from "@comunica/core";
+import {
+  IActionRdfResolveQuadPattern, IActorRdfResolveQuadPatternOutput,
+  ILazyQuadSource, KEY_CONTEXT_SOURCES,
+} from "@comunica/bus-rdf-resolve-quad-pattern";
+import {ActionContext, Actor, IActorTest, Mediator} from "@comunica/core";
 import {AsyncIterator, EmptyIterator} from "asynciterator";
 import {PromiseProxyIterator} from "asynciterator-promiseproxy";
 import {RoundRobinUnionIterator} from "asynciterator-union";
@@ -17,17 +19,17 @@ export class FederatedQuadSource implements ILazyQuadSource {
   protected readonly mediatorResolveQuadPattern: Mediator<Actor<IActionRdfResolveQuadPattern, IActorTest,
     IActorRdfResolveQuadPatternOutput>, IActionRdfResolveQuadPattern, IActorTest, IActorRdfResolveQuadPatternOutput>;
   protected readonly sources: IQuerySource[];
-  protected readonly contextDefault: {[id: string]: any};
+  protected readonly contextDefault: ActionContext;
   protected readonly emptyPatterns: {[sourceHash: string]: RDF.Quad[]};
   protected readonly skipEmptyPatterns: boolean;
 
   constructor(mediatorResolveQuadPattern: Mediator<Actor<IActionRdfResolveQuadPattern, IActorTest,
     IActorRdfResolveQuadPatternOutput>, IActionRdfResolveQuadPattern, IActorTest, IActorRdfResolveQuadPatternOutput>,
-              context: {[id: string]: any}, emptyPatterns: {[sourceHash: string]: RDF.Quad[]},
+              context: ActionContext, emptyPatterns: {[sourceHash: string]: RDF.Quad[]},
               skipEmptyPatterns: boolean) {
     this.mediatorResolveQuadPattern = mediatorResolveQuadPattern;
-    this.sources = context.sources;
-    this.contextDefault = require('lodash.omit')(context, ['sources']);
+    this.sources = context.get(KEY_CONTEXT_SOURCES);
+    this.contextDefault = context.delete(KEY_CONTEXT_SOURCES);
     this.emptyPatterns = emptyPatterns;
     this.skipEmptyPatterns = skipEmptyPatterns;
 
@@ -137,15 +139,15 @@ export class FederatedQuadSource implements ILazyQuadSource {
       };
 
       // Prepare the context for this specific source
-      const context: {[id: string]: any} = { sources: [{ type: source.type, value: source.value }]};
-      Object.assign(context, this.contextDefault);
+      const context: ActionContext = this.contextDefault.set(KEY_CONTEXT_SOURCES,
+        [{ type: source.type, value: source.value }]);
 
       return new PromiseProxyIterator(async () => {
         let output: IActorRdfResolveQuadPatternOutput;
         if (this.isSourceEmpty(source, pattern)) {
           output = { data: new EmptyIterator(), metadata: () => Promise.resolve({ totalItems: 0 }) };
         } else {
-          output = await this.mediatorResolveQuadPattern.mediate({pattern, context});
+          output = await this.mediatorResolveQuadPattern.mediate({ pattern, context });
         }
         if (output.metadata) {
           output.metadata().then((subMetadata: {[id: string]: any}) => {

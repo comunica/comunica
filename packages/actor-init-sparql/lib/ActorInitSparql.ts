@@ -1,5 +1,6 @@
 import {IActionInit, IActorOutputInit} from "@comunica/bus-init";
 import {IActorQueryOperationOutput} from "@comunica/bus-query-operation";
+import {KEY_CONTEXT_SOURCES} from "@comunica/bus-rdf-resolve-quad-pattern";
 import {exec} from "child_process";
 import {existsSync, readFileSync} from "fs";
 import minimist = require('minimist');
@@ -100,7 +101,7 @@ Options:
 
     // Add sources to context
     if (args._.length > 0) {
-      context.sources = context.sources || [];
+      context[KEY_CONTEXT_SOURCES] = context[KEY_CONTEXT_SOURCES] || [];
       args._.forEach((sourceValue: string) => {
         const source: {[id: string]: string} = {};
         const splitValues: string[] = sourceValue.split('@', 2);
@@ -111,7 +112,7 @@ Options:
           source.type = splitValues[0];
         }
         source.value = splitValues[splitValues.length - 1];
-        context.sources.push(source);
+        context[KEY_CONTEXT_SOURCES].push(source);
       });
     }
 

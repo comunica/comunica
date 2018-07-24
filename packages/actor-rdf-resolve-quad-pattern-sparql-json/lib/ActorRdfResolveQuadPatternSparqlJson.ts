@@ -147,15 +147,14 @@ export class ActorRdfResolveQuadPatternSparqlJson
   }
 
   public async test(action: IActionRdfResolveQuadPattern): Promise<IActorTest> {
-    if (!action.context || !action.context.sources || action.context.sources.length !== 1
-      || action.context.sources[0].type !== 'sparql' || !action.context.sources[0].value) {
+    if (!this.hasContextSingleSource('sparql', action.context)) {
       throw new Error(this.name + ' requires a single source with a \'sparql\' endpoint to be present in the context.');
     }
     return true;
   }
 
   public async run(action: IActionRdfResolveQuadPattern): Promise<IActorRdfResolveQuadPatternOutput> {
-    const endpoint: string = action.context.sources[0].value;
+    const endpoint: string = this.getContextSources(action.context)[0].value;
     const pattern = ActorRdfResolveQuadPatternSparqlJson.replaceBlankNodes(action.pattern);
     const selectQuery: string = ActorRdfResolveQuadPatternSparqlJson.patternToSelectQuery(pattern);
     const countQuery: string = ActorRdfResolveQuadPatternSparqlJson.patternToCountQuery(pattern);

@@ -1,6 +1,6 @@
 import {ActorRdfResolveQuadPatternSource, IActionRdfResolveQuadPattern,
   IActorRdfResolveQuadPatternOutput, ILazyQuadSource} from "@comunica/bus-rdf-resolve-quad-pattern";
-import {Actor, IActorArgs, IActorTest, Mediator} from "@comunica/core";
+import {ActionContext, Actor, IActorArgs, IActorTest, Mediator} from "@comunica/core";
 import * as RDF from "rdf-js";
 import {FederatedQuadSource} from "./FederatedQuadSource";
 
@@ -21,18 +21,19 @@ export class ActorRdfResolveQuadPatternFederated extends ActorRdfResolveQuadPatt
   }
 
   public async test(action: IActionRdfResolveQuadPattern): Promise<IActorTest> {
-    if (!action.context || !action.context.sources || action.context.sources.length < 2) {
+    const sources = this.getContextSources(action.context);
+    if (!sources || sources.length < 2) {
       throw new Error('Actor ' + this.name + ' can only resolve quad pattern queries against a set of sources.');
     }
     return true;
   }
 
-  protected async getSource(context?: {[id: string]: any}): Promise<ILazyQuadSource> {
+  protected async getSource(context?: ActionContext): Promise<ILazyQuadSource> {
     return new FederatedQuadSource(this.mediatorResolveQuadPattern, context,
       this.emptyPatterns, this.skipEmptyPatterns);
   }
 
-  protected async getOutput(source: RDF.Source, pattern: RDF.Quad, context?: {[id: string]: any})
+  protected async getOutput(source: RDF.Source, pattern: RDF.Quad, context?: ActionContext)
   : Promise<IActorRdfResolveQuadPatternOutput> {
     // Attach metadata to the output
     const output: IActorRdfResolveQuadPatternOutput = await super.getOutput(source, pattern, context);

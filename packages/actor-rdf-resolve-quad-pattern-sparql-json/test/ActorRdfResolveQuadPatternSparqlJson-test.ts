@@ -1,7 +1,7 @@
 import {ActorRdfResolveQuadPattern} from "@comunica/bus-rdf-resolve-quad-pattern";
-import {Bus} from "@comunica/core";
+import {ActionContext, Bus} from "@comunica/core";
 import "isomorphic-fetch";
-import {blankNode, literal, namedNode, variable} from "rdf-data-model";
+import {blankNode, literal, namedNode} from "rdf-data-model";
 import Factory from "sparqlalgebrajs/lib/Factory";
 import {PassThrough} from "stream";
 import {ActorRdfResolveQuadPatternSparqlJson} from "../lib/ActorRdfResolveQuadPatternSparqlJson";
@@ -9,6 +9,8 @@ const arrayifyStream = require('arrayify-stream');
 const streamifyString = require('streamify-string');
 
 const quad = require('rdf-quad');
+
+// tslint:disable:object-literal-sort-keys
 
 describe('ActorRdfResolveQuadPatternSparqlJson', () => {
   let bus;
@@ -146,7 +148,8 @@ describe('ActorRdfResolveQuadPatternSparqlJson', () => {
   describe('An ActorRdfResolveQuadPatternSparqlJson instance', () => {
     let actor: ActorRdfResolveQuadPatternSparqlJson;
     const pattern: any = quad('s', '?p', 'o');
-    const context = { sources: [ { type: 'sparql', value: 'http://ex' } ] };
+    const context = ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:sources':
+        [ { type: 'sparql', value: 'http://ex' } ] });
     const mediatorHttp: any = {
       mediate: (action) => {
         // tslint:disable: no-trailing-whitespace
@@ -199,28 +202,30 @@ describe('ActorRdfResolveQuadPatternSparqlJson', () => {
     });
 
     it('should not test without a sparql entry', () => {
-      return expect(actor.test({ pattern: null, context: {} })).rejects.toBeTruthy();
+      return expect(actor.test({ pattern: null, context: ActionContext({}) })).rejects.toBeTruthy();
     });
 
     it('should not test on an invalid sparql entry', () => {
-      return expect(actor.test({ pattern: null, context: { sources: [{ type: 'sparql', value: null  }] } }))
+      return expect(actor.test({ pattern: null, context: ActionContext(
+        { sources: [{ type: 'sparql', value: null  }] }) }))
         .rejects.toBeTruthy();
     });
 
     it('should not test on no sparql entry', () => {
-      return expect(actor.test({ pattern: null, context: { sources: [{ type: 'entrypoint', value: null  }] } }))
+      return expect(actor.test({ pattern: null, context: ActionContext(
+        { sources: [{ type: 'entrypoint', value: null  }] }) }))
         .rejects.toBeTruthy();
     });
 
     it('should not test on no sources', () => {
-      return expect(actor.test({ pattern: null, context: { sources: [] } }))
+      return expect(actor.test({ pattern: null, context: ActionContext({ sources: [] }) }))
         .rejects.toBeTruthy();
     });
 
     it('should not test on multiple sources', () => {
       return expect(actor.test(
         {
-          context: { sources: [{ type: 'sparql', value: 'a' }, { type: 'sparql', value: 'b' }] },
+          context: ActionContext({ sources: [{ type: 'sparql', value: 'a' }, { type: 'sparql', value: 'b' }] }),
           pattern: null,
         })).rejects.toBeTruthy();
     });

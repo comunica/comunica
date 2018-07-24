@@ -1,5 +1,5 @@
 import {ActorContextPreprocess} from "@comunica/bus-context-preprocess";
-import {Bus} from "@comunica/core";
+import {ActionContext, Bus} from "@comunica/core";
 import {ActorContextPreprocessRdfSourceIdentifier} from "../lib/ActorContextPreprocessRdfSourceIdentifier";
 
 describe('ActorContextPreprocessRdfSourceIdentifier', () => {
@@ -46,35 +46,44 @@ describe('ActorContextPreprocessRdfSourceIdentifier', () => {
     });
 
     it('should run for an empty context', () => {
-      return expect(actor.run({ context: {} })).resolves.toMatchObject({ context: {} });
+      return expect(actor.run({ context: ActionContext({}) })).resolves.toMatchObject({ context: {} });
     });
 
     it('should run for a context with zero sources', () => {
-      return expect(actor.run({ context: { sources: [] } })).resolves
-        .toMatchObject({ context: { sources: [] } });
+      return expect(actor.run({ context: ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:sources':
+            [] }) })).resolves
+        .toMatchObject({ context: ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:sources': [] }) });
     });
 
     it('should run for a context with two dummy sources', () => {
-      return expect(actor.run({ context: { sources: [{ type: 'dummy' }, { type: 'dummy' }] } })).resolves
-        .toMatchObject({ context: { sources: [{ type: 'dummy' }, { type: 'dummy' }] } });
+      return expect(actor.run({ context: ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:sources':
+            [{ type: 'dummy' }, { type: 'dummy' }] }) })).resolves
+        .toMatchObject({ context: ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:sources':
+              [{ type: 'dummy' }, { type: 'dummy' }] }) });
     });
 
     it('should run for a context with two auto sources', () => {
-      const context = { context: { sources: [{ type: 'auto', value: 'abc' }, { type: 'auto', value: 'def' }] } };
+      const context = { context: ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:sources':
+            [{ type: 'auto', value: 'abc' }, { type: 'auto', value: 'def' }] }) };
       return expect(actor.run(context)).resolves
-        .toMatchObject({ context: { sources: [{ type: 'a', value: 'abc' }, { type: 'd', value: 'def' }] } });
+        .toMatchObject({ context: ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:sources':
+              [{ type: 'a', value: 'abc' }, { type: 'd', value: 'def' }] }) });
     });
 
     it('should run for a context with a auto and a dummy source', () => {
-      const context = { context: { sources: [{ type: 'auto', value: 'abc' }, { type: 'dummy' }] } };
+      const context = { context: ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:sources':
+            [{ type: 'auto', value: 'abc' }, { type: 'dummy' }] }) };
       return expect(actor.run(context)).resolves
-        .toMatchObject({ context: { sources: [{ type: 'a', value: 'abc' }, { type: 'dummy' }] } });
+        .toMatchObject({ context: ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:sources':
+              [{ type: 'a', value: 'abc' }, { type: 'dummy' }] }) });
     });
 
     it('should run and keep the auto type if the mediator fails', () => {
-      const context = { context: { sources: [{ type: 'auto' }] } };
+      const context = { context: ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:sources':
+            [{ type: 'auto' }] }) };
       return expect(actor.run(context)).resolves
-        .toMatchObject({ context: { sources: [{ type: 'auto' }] } });
+        .toMatchObject({ context: ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:sources':
+              [{ type: 'auto' }] }) });
     });
   });
 });

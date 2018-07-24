@@ -1,6 +1,6 @@
 import {ActorRdfResolveQuadPatternSource, IActionRdfResolveQuadPattern,
   IActorRdfResolveQuadPatternOutput, ILazyQuadSource} from "@comunica/bus-rdf-resolve-quad-pattern";
-import {IActorArgs, IActorTest} from "@comunica/core";
+import {ActionContext, IActorArgs, IActorTest} from "@comunica/core";
 import * as HDT from "hdt";
 import * as RDF from "rdf-js";
 import {HdtQuadSource} from "./HdtQuadSource";
@@ -51,8 +51,7 @@ export class ActorRdfResolveQuadPatternHdt extends ActorRdfResolveQuadPatternSou
   }
 
   public async test(action: IActionRdfResolveQuadPattern): Promise<IActorTest> {
-    if (!action.context || !action.context.sources || action.context.sources.length !== 1
-      || action.context.sources[0].type !== 'hdtFile' || !action.context.sources[0].value) {
+    if (!this.hasContextSingleSource('hdtFile', action.context)) {
       throw new Error(this.name + ' requires a single source with a hdtFile to be present in the context.');
     }
     return true;
@@ -64,15 +63,15 @@ export class ActorRdfResolveQuadPatternHdt extends ActorRdfResolveQuadPatternSou
     }
   }
 
-  protected async getSource(context?: {[id: string]: any}): Promise<ILazyQuadSource> {
-    const hdtFile: string = context.sources[0].value;
+  protected async getSource(context?: ActionContext): Promise<ILazyQuadSource> {
+    const hdtFile: string = this.getContextSources(context)[0].value;
     if (!this.hdtDocuments[hdtFile]) {
       await this.initializeHdt(hdtFile);
     }
     return new HdtQuadSource(await this.hdtDocuments[hdtFile]);
   }
 
-  protected async getOutput(source: RDF.Source, pattern: RDF.Quad, context?: {[id: string]: any})
+  protected async getOutput(source: RDF.Source, pattern: RDF.Quad, context?: ActionContext)
   : Promise<IActorRdfResolveQuadPatternOutput> {
     // Attach totalItems to the output
     this.queries++;

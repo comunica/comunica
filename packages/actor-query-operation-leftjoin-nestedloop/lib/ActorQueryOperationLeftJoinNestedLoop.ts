@@ -1,7 +1,7 @@
 import {ActorQueryOperation, ActorQueryOperationTypedMediated, Bindings, IActorQueryOperationOutputBindings,
   IActorQueryOperationTypedMediatedArgs} from "@comunica/bus-query-operation";
 import {ActorRdfJoin} from "@comunica/bus-rdf-join";
-import {IActorTest} from "@comunica/core";
+import {ActionContext, IActorTest} from "@comunica/core";
 import {Algebra} from "sparqlalgebrajs";
 
 /**
@@ -13,11 +13,11 @@ export class ActorQueryOperationLeftJoinNestedLoop extends ActorQueryOperationTy
     super(args, 'leftjoin');
   }
 
-  public async testOperation(pattern: Algebra.LeftJoin, context?: {[id: string]: any}): Promise<IActorTest> {
+  public async testOperation(pattern: Algebra.LeftJoin, context?: ActionContext): Promise<IActorTest> {
     return !pattern.expression;
   }
 
-  public async runOperation(pattern: Algebra.LeftJoin, context?: {[id: string]: any})
+  public async runOperation(pattern: Algebra.LeftJoin, context?: ActionContext)
     : Promise<IActorQueryOperationOutputBindings> {
 
     // uses nested loop join

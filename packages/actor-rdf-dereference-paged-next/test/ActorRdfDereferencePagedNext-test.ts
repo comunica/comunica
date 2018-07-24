@@ -77,11 +77,12 @@ describe('ActorRdfDereferencePagedNext', () => {
               { pageUrl: '2', quads: { data: stream2,
                 metadata: { next: null }}, triples: true});
           default:
-            return Promise.reject(true);
+            return Promise.reject(new Error('Invalid paged-next URL in tests: ' + action.url));
           }
         },
         mediateActor: (action) => {
-          return action.url === 'http://example.org/' ? Promise.resolve(true) : Promise.reject(true);
+          return action.url === 'http://example.org/'
+            ? Promise.resolve(true) : Promise.reject(new Error('Invalid paged-next URL in tests'));
         },
       };
       cacheSize = 0;

@@ -1,5 +1,4 @@
-import {IActorArgs, IActorTest} from "@comunica/core";
-import {AsyncIterator, BufferedIterator, SimpleTransformIteratorOptions} from "asynciterator";
+import {ActionContext, IActorArgs, IActorTest} from "@comunica/core";
 import {Algebra} from "sparqlalgebrajs";
 import {
   ActorQueryOperation, IActionQueryOperation, IActorQueryOperationOutput,
@@ -42,8 +41,8 @@ export abstract class ActorQueryOperationTyped<O extends Algebra.Operation> exte
     return output;
   }
 
-  protected abstract async testOperation(operation: O, context?: {[id: string]: any}): Promise<IActorTest>;
+  protected abstract async testOperation(operation: O, context?: ActionContext): Promise<IActorTest>;
 
-  protected abstract runOperation(operation: O, context?: {[id: string]: any}): Promise<IActorQueryOperationOutput>;
+  protected abstract runOperation(operation: O, context?: ActionContext): Promise<IActorQueryOperationOutput>;
 
 }

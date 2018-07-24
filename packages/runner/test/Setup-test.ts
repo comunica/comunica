@@ -53,11 +53,12 @@ describe('Setup', () => {
       Setup.run('', { argv: [], env: {}, stdin: new Readable() }, 'myuri', {});
     });
 
-    it('should throw an error when the runner resolves to false when calling \'run\'', () => {
+    it('should throw an error when the runner resolves to false when calling \'run\'', async () => {
       (<any> Loader) = jest.fn(() => {
         return {
           instantiateFromUrl: () => Promise.resolve(
-            { run: Promise.reject(true), initialize: jest.fn(), deinitialize: jest.fn() }),
+            { deinitialize: jest.fn(), initialize: jest.fn(),
+              run: () => Promise.reject(new Error('Failure setup runner')) }),
           registerAvailableModuleResources: jest.fn(),
         };
       });

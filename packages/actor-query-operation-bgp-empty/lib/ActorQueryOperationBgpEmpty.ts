@@ -1,6 +1,6 @@
 import {ActorQueryOperationTyped, IActionQueryOperation,
   IActorQueryOperationOutput, IActorQueryOperationOutputBindings} from "@comunica/bus-query-operation";
-import {IActorArgs, IActorTest} from "@comunica/core";
+import {ActionContext, IActorArgs, IActorTest} from "@comunica/core";
 import {EmptyIterator} from "asynciterator";
 import {Algebra} from "sparqlalgebrajs";
 
@@ -13,14 +13,14 @@ export class ActorQueryOperationBgpEmpty extends ActorQueryOperationTyped<Algebr
     super(args, 'bgp');
   }
 
-  public async testOperation(pattern: Algebra.Bgp, context?: {[id: string]: any}): Promise<IActorTest> {
+  public async testOperation(pattern: Algebra.Bgp, context?: ActionContext): Promise<IActorTest> {
     if (pattern.patterns.length !== 0) {
       throw new Error('Actor ' + this.name + ' can only operate on empty BGPs.');
     }
     return true;
   }
 
-  public async runOperation(pattern: Algebra.Bgp, context?: {[id: string]: any})
+  public async runOperation(pattern: Algebra.Bgp, context?: ActionContext)
   : Promise<IActorQueryOperationOutputBindings> {
     return {
       bindingsStream: new EmptyIterator(),

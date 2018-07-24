@@ -7,7 +7,7 @@ import {
   IActorQueryOperationOutputBindings,
   IActorQueryOperationTypedMediatedArgs,
 } from "@comunica/bus-query-operation";
-import {IActorTest} from "@comunica/core";
+import {ActionContext, IActorTest} from "@comunica/core";
 import {EmptyIterator, MultiTransformIterator} from "asynciterator";
 import {PromiseProxyIterator} from "asynciterator-promiseproxy";
 import * as RDF from "rdf-js";
@@ -166,14 +166,14 @@ export class ActorQueryOperationBgpLeftDeepSmallest extends ActorQueryOperationT
     return false;
   }
 
-  public async testOperation(pattern: Algebra.Bgp, context?: {[id: string]: any}): Promise<IActorTest> {
+  public async testOperation(pattern: Algebra.Bgp, context?: ActionContext): Promise<IActorTest> {
     if (pattern.patterns.length < 2) {
       throw new Error('Actor ' + this.name + ' can only operate on BGPs with at least two patterns.');
     }
     return true;
   }
 
-  public async runOperation(pattern: Algebra.Bgp, context?: {[id: string]: any})
+  public async runOperation(pattern: Algebra.Bgp, context?: ActionContext)
   : Promise<IActorQueryOperationOutputBindings> {
     // Get the total number of items for all patterns by resolving the quad patterns
     const patternOutputs: IActorQueryOperationOutputBindings[] = (await Promise.all(pattern.patterns

@@ -82,12 +82,6 @@ export interface IActionQueryOperation extends IAction {
    * The query operation to handle.
    */
   operation: Algebra.Operation;
-  /**
-   * The input context,
-   * which can contain things such as the hypermedia entrypoint URL
-   * in which the pattern should be resolved.
-   */
-  context?: {[id: string]: any};
 }
 
 /**

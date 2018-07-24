@@ -1,5 +1,5 @@
 import {ActorQueryOperation, IActorQueryOperationOutputQuads} from "@comunica/bus-query-operation";
-import {Bus} from "@comunica/core";
+import {ActionContext, Bus} from "@comunica/core";
 import {ArrayIterator} from "asynciterator";
 import {blankNode, literal, namedNode, quad, variable} from "rdf-data-model";
 import {ActorQueryOperationDescribeSubject} from "../lib/ActorQueryOperationDescribeSubject";
@@ -72,7 +72,7 @@ describe('ActorQueryOperationDescribeSubject', () => {
 
     it('should run without variable terms', () => {
       const op = {
-        context: { name: 'context' },
+        context: ActionContext({ name: 'context' }),
         operation: { type: 'describe', terms: [namedNode('a'), namedNode('b')], input: { type: 'bgp', patterns: [] } },
       };
       return actor.run(op).then(async (output: IActorQueryOperationOutputQuads) => {
@@ -87,7 +87,7 @@ describe('ActorQueryOperationDescribeSubject', () => {
 
     it('should run with variable terms and an input', () => {
       const op = {
-        context: { name: 'context' },
+        context: ActionContext({ name: 'context' }),
         operation: {
           input: { type: 'bgp', patterns: [quad(variable('a'), variable('b'), namedNode('dummy'))] },
           terms: [variable('a'), variable('b')],
@@ -107,7 +107,7 @@ describe('ActorQueryOperationDescribeSubject', () => {
 
     it('should run with and without variable terms and an input', () => {
       const op = {
-        context: { name: 'context' },
+        context: ActionContext({ name: 'context' }),
         operation: {
           input: { type: 'bgp', patterns: [quad(variable('a'), variable('b'), namedNode('dummy'))] },
           terms: [variable('a'), variable('b'), namedNode('c')],
