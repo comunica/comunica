@@ -28,6 +28,7 @@ export class ActorInitHttp extends ActorInit implements IActorInitHelloWorldArgs
 
   public async run(action: IActionInit): Promise<IActorOutputInit> {
     const http: IActionHttp = {
+      context: action.context,
       init: {},
       input: action.argv.length > 0 ? action.argv[0] : this.url,
     };

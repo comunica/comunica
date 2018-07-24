@@ -2,7 +2,7 @@ import {IActionHttp, IActorHttpOutput} from "@comunica/bus-http";
 import {Bindings, BindingsStream} from "@comunica/bus-query-operation";
 import {ActorRdfResolveQuadPattern, IActionRdfResolveQuadPattern,
   IActorRdfResolveQuadPatternOutput} from "@comunica/bus-rdf-resolve-quad-pattern";
-import {Actor, IActorArgs, IActorTest, Mediator} from "@comunica/core";
+import {ActionContext, Actor, IActorArgs, IActorTest, Mediator} from "@comunica/core";
 import {AsyncIterator, BufferedIterator} from "asynciterator";
 import {PromiseProxyIterator} from "asynciterator-promiseproxy";
 import {blankNode, literal, namedNode, quad, variable} from "rdf-data-model";
@@ -160,7 +160,7 @@ export class ActorRdfResolveQuadPatternSparqlJson
     const countQuery: string = ActorRdfResolveQuadPatternSparqlJson.patternToCountQuery(pattern);
 
     // Create promise for the metadata containing the estimated count
-    const metadata: () => Promise<{[id: string]: any}> = () => this.queryBindings(endpoint, countQuery)
+    const metadata: () => Promise<{[id: string]: any}> = () => this.queryBindings(endpoint, countQuery, action.context)
       .then((bindingsStream: BindingsStream) => {
         return new Promise((resolve, reject) => {
           bindingsStream.on('data', (bindings: Bindings) => {
@@ -186,7 +186,7 @@ export class ActorRdfResolveQuadPatternSparqlJson
 
     // Materialize the queried pattern using each found binding.
     const data: AsyncIterator<RDF.Quad> & RDF.Stream = new PromiseProxyIterator(async () =>
-      (await this.queryBindings(endpoint, selectQuery))
+      (await this.queryBindings(endpoint, selectQuery, action.context))
         .map((bindings: Bindings) => mapTerms(pattern, (value: RDF.Term) => {
           if (value.termType === 'Variable') {
             const boundValue: RDF.Term = bindings.get('?' + value.value);
@@ -206,9 +206,10 @@ export class ActorRdfResolveQuadPatternSparqlJson
    * Send a SPARQL query to a SPARQL endpoint and retrieve its bindings as a stream.
    * @param {string} endpoint A SPARQL endpoint URL.
    * @param {string} query A SPARQL query string.
+   * @param {ActionContext} context An optional context.
    * @return {Promise<BindingsStream>} A promise resolving to a stream of bindings.
    */
-  public async queryBindings(endpoint: string, query: string): Promise<BindingsStream> {
+  public async queryBindings(endpoint: string, query: string, context?: ActionContext): Promise<BindingsStream> {
     // Parse each binding and push it in our buffered iterator
     const bindingsStream: BufferedIterator<Bindings> = new BufferedIterator<Bindings>(
       { autoStart: false, maxBufferSize: Infinity });
@@ -217,7 +218,7 @@ export class ActorRdfResolveQuadPatternSparqlJson
     bindingsStream._read = (count: number, done: () => void) => {
       if (!initialized) {
         initialized = true;
-        this.fetchBindingsStream(endpoint, query).then((responseStream) => {
+        this.fetchBindingsStream(endpoint, query, context).then((responseStream) => {
           // Get streamed bindings
           const rawBindingsStream: NodeJS.ReadableStream = responseStream
             .pipe(require('JSONStream').parse('results.bindings.*'));
@@ -241,13 +242,14 @@ export class ActorRdfResolveQuadPatternSparqlJson
     return bindingsStream;
   }
 
-  protected async fetchBindingsStream(endpoint: string, query: string): Promise<NodeJS.ReadableStream> {
+  protected async fetchBindingsStream(endpoint: string, query: string, context?: ActionContext)
+    : Promise<NodeJS.ReadableStream> {
     const url: string = endpoint + '?query=' + encodeURIComponent(query);
 
     // Initiate request
     const headers: Headers = new Headers();
     headers.append('Accept', 'application/sparql-results+json');
-    const httpAction: IActionHttp = { input: url, init: { headers } };
+    const httpAction: IActionHttp = { context, input: url, init: { headers } };
     const httpResponse: IActorHttpOutput = await this.mediatorHttp.mediate(httpAction);
 
     // Wrap WhatWG readable stream into a Node.js readable stream

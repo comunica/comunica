@@ -91,15 +91,20 @@ export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs {
    * @param context An optional query context.
    * @return {Promise<IActorQueryOperationOutput>} A promise that resolves to the query output.
    */
-  public async query(query: string, context?: any): Promise<IActorQueryOperationOutput> {
+  public async query(query: string, context?: ActionContext): Promise<IActorQueryOperationOutput> {
     context = ActionContext(context);
 
     // Start, but don't await, context pre-processing
     const combinationPromise = this.mediatorContextPreprocess.mediate({ context });
 
     // Parse query
+    let queryFormat: string = 'sparql';
+    if (context && context.has('queryFormat')) {
+      queryFormat = context.get('queryFormat');
+      context = context.delete('queryFormat');
+    }
     let operation: Algebra.Operation = (await this.mediatorSparqlParse.mediate(
-      { query, queryFormat: context && context.queryFormat ? context.queryFormat : 'sparql', context })).operation;
+      { context, query, queryFormat })).operation;
 
     // Block until context has been processed
     context = (await combinationPromise).context;
@@ -115,20 +120,21 @@ export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs {
   }
 
   /**
+   * @param context An optional context.
    * @return {Promise<{[p: string]: number}>} All available SPARQL (weighted) result media types.
    */
-  public async getResultMediaTypes(): Promise<{[id: string]: number}> {
-    return (await this.mediatorSparqlSerializeMediaTypeCombiner.mediate({ mediaTypes: true })).mediaTypes;
+  public async getResultMediaTypes(context?: ActionContext): Promise<{[id: string]: number}> {
+    return (await this.mediatorSparqlSerializeMediaTypeCombiner.mediate({ context, mediaTypes: true })).mediaTypes;
   }
 
   /**
    * Convert a query result to a string stream based on a certain media type.
    * @param {IActorQueryOperationOutput} queryResult A query result.
    * @param {string} mediaType A media type.
-   * @param context An optional query context.
+   * @param {ActionContext} context An optional context.
    * @return {Promise<IActorSparqlSerializeOutput>} A text stream.
    */
-  public async resultToString(queryResult: IActorQueryOperationOutput, mediaType?: string, context?: any)
+  public async resultToString(queryResult: IActorQueryOperationOutput, mediaType?: string, context?: ActionContext)
   : Promise<IActorSparqlSerializeOutput> {
     if (!mediaType) {
       switch (queryResult.type) {
@@ -143,9 +149,8 @@ export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs {
         break;
       }
     }
-    const handle: IActionSparqlSerialize = queryResult;
-    handle.context = context;
-    return (await this.mediatorSparqlSerialize.mediate({ handle, handleMediaType: mediaType })).handle;
+    return (await this.mediatorSparqlSerialize.mediate(
+      { context, handle: queryResult, handleMediaType: mediaType })).handle;
   }
 
   public async run(action: IActionInit): Promise<IActorOutputInit> {

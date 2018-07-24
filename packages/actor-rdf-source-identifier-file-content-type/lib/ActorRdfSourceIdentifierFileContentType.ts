@@ -25,7 +25,8 @@ export class ActorRdfSourceIdentifierFileContentType extends ActorRdfSourceIdent
     }
     const headers: Headers = new Headers();
     headers.append('Accept', this.allowedMediaTypes.join(';'));
-    const httpAction: IActionHttp = { input: action.sourceValue, init: { headers, method: 'HEAD' } };
+    const httpAction: IActionHttp = { context: action.context,
+      init: { headers, method: 'HEAD' }, input: action.sourceValue };
     const httpResponse: IActorHttpOutput = await this.mediatorHttp.mediate(httpAction);
     if (!httpResponse.ok || !this.allowedMediaTypes.find((mediaType: string) => httpResponse.headers
         .get('Content-Type').indexOf(mediaType) >= 0)) {

@@ -36,11 +36,12 @@ export class ActorRdfResolveQuadPatternQpf extends ActorRdfResolveQuadPatternSou
   /**
    * Choose a QPF hypermedia form.
    * @param {string} hypermedia A hypermedia URL.
+   * @param {ActionContext} context An optional context.
    * @return {Promise<ISearchForm>} A promise resolving to a hypermedia form.
    */
-  protected async chooseForm(hypermedia: string): Promise<ISearchForm> {
+  protected async chooseForm(hypermedia: string, context?: ActionContext): Promise<ISearchForm> {
     const firstPageMetadata: () => Promise<{[id: string]: any}> = (await this.mediatorRdfDereferencePaged
-      .mediate({ url: hypermedia })).firstPageMetadata;
+      .mediate({ context, url: hypermedia })).firstPageMetadata;
     if (!firstPageMetadata) {
       throw new Error('No metadata was found at hypermedia entrypoint ' + hypermedia);
     }
@@ -85,7 +86,7 @@ export class ActorRdfResolveQuadPatternQpf extends ActorRdfResolveQuadPatternSou
         const hypermedia: string = this.getContextSources(context)[0].value;
 
         // Save the form, so it is determined only once per source.
-        chosenForm = this.chooseForm(hypermedia);
+        chosenForm = this.chooseForm(hypermedia, context);
       }
 
       const entries: {[id: string]: string} = {};
@@ -104,7 +105,7 @@ export class ActorRdfResolveQuadPatternQpf extends ActorRdfResolveQuadPatternSou
       return (await chosenForm).getUri(entries);
     };
 
-    return new MediatedQuadSource(this.mediatorRdfDereferencePaged, uriConstructor);
+    return new MediatedQuadSource(this.mediatorRdfDereferencePaged, uriConstructor, context);
   }
 
   protected async getSource(context?: ActionContext): Promise<ILazyQuadSource> {

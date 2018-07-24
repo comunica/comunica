@@ -2,6 +2,7 @@ import {Bindings, IActorQueryOperationOutputBindings,
   IActorQueryOperationOutputBoolean} from "@comunica/bus-query-operation";
 import {ActorSparqlSerializeFixedMediaTypes, IActionSparqlSerialize,
   IActorSparqlSerializeFixedMediaTypesArgs, IActorSparqlSerializeOutput} from "@comunica/bus-sparql-serialize";
+import {ActionContext} from "@comunica/core";
 import * as RDF from "rdf-js";
 import {Readable} from "stream";
 
@@ -38,14 +39,15 @@ export class ActorSparqlSerializeSparqlJson extends ActorSparqlSerializeFixedMed
     }
   }
 
-  public async testHandleChecked(action: IActionSparqlSerialize) {
+  public async testHandleChecked(action: IActionSparqlSerialize, context?: ActionContext) {
     if (['bindings', 'boolean'].indexOf(action.type) < 0) {
       throw new Error('This actor can only handle bindings streams or booleans.');
     }
     return true;
   }
 
-  public async runHandle(action: IActionSparqlSerialize, mediaType: string): Promise<IActorSparqlSerializeOutput> {
+  public async runHandle(action: IActionSparqlSerialize, mediaType: string, context?: ActionContext)
+    : Promise<IActorSparqlSerializeOutput> {
     const data = new Readable();
     data._read = () => {
       return;

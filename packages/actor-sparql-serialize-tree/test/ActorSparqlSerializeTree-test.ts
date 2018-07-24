@@ -1,6 +1,6 @@
 import {Bindings, BindingsStream} from "@comunica/bus-query-operation";
-import {ActorSparqlSerialize} from "@comunica/bus-sparql-serialize";
 import {Bus} from "@comunica/core";
+import {ActionContext} from "@comunica/core";
 import {ArrayIterator} from "asynciterator";
 import {namedNode} from "rdf-data-model";
 import {Readable} from "stream";
@@ -49,7 +49,7 @@ describe('ActorSparqlSerializeTree', () => {
         quad('http://example.org/a', 'http://example.org/d', 'http://example.org/e'),
       ]);
       streamError = new Readable();
-      streamError._read = () => streamError.emit('error', new Error());
+      streamError._read = () => streamError.emit('error', new Error('actor sparql serialize tree test error'));
       variables = [ 'k1', 'k2' ];
     });
 
@@ -107,7 +107,7 @@ describe('ActorSparqlSerializeTree', () => {
       });
 
       it('should run on a bindings stream with a context', async () => {
-        const context = { "@context": { k1: { "@singular": true }, k2: { "@singular": false } } };
+        const context = ActionContext({ "@context": { k1: { "@singular": true }, k2: { "@singular": false } } });
         return expect((await stringifyStream((await actor.run(
           {handle: <any> { type: 'bindings', bindingsStream, variables, context },
             handleMediaType: 'tree'})).handle.data))).toEqual(

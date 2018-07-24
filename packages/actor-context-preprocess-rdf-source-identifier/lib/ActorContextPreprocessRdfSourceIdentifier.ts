@@ -1,7 +1,7 @@
 import {ActorContextPreprocess,
   IActorContextPreprocessOutput} from "@comunica/bus-context-preprocess";
 import {IActionRdfSourceIdentifier, IActorRdfSourceIdentifierOutput} from "@comunica/bus-rdf-source-identifier";
-import {Actor, IAction, IActorArgs, IActorTest, Mediator} from "@comunica/core";
+import {ActionContext, Actor, IAction, IActorArgs, IActorTest, Mediator} from "@comunica/core";
 import {KEY_CONTEXT_SOURCES} from "../../bus-rdf-resolve-quad-pattern";
 
 /**
@@ -25,8 +25,10 @@ export class ActorContextPreprocessRdfSourceIdentifier extends ActorContextPrepr
       const sources = action.context.get(KEY_CONTEXT_SOURCES);
       const autoSources = sources.map((source: any, id: number) => ({ id, source }))
         .filter((entry: any) => entry.source.type === 'auto');
+      const subContext: ActionContext = action.context.delete(KEY_CONTEXT_SOURCES);
       const autoSourceTypePromises: Promise<IActorRdfSourceIdentifierOutput>[] = autoSources.map(
-        (entry: any) => this.mediatorRdfSourceIdentifier.mediate({ sourceValue: entry.source.value }));
+        (entry: any) => this.mediatorRdfSourceIdentifier.mediate(
+          { sourceValue: entry.source.value, context: subContext }));
       const autoSourceTypes: IActorRdfSourceIdentifierOutput[] = await Promise.all(autoSourceTypePromises);
       for (let i = 0; i < autoSources.length; i++) {
         const sourceId = autoSources[i].id;

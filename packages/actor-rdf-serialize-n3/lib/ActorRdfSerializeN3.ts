@@ -1,5 +1,6 @@
 import {ActorRdfSerializeFixedMediaTypes, IActionRdfSerialize,
   IActorRdfSerializeFixedMediaTypesArgs, IActorRdfSerializeOutput} from "@comunica/bus-rdf-serialize";
+import {ActionContext} from "@comunica/core";
 import * as RDF from "rdf-js";
 import * as RdfString from "rdf-string";
 import {Readable} from "stream";
@@ -13,7 +14,8 @@ export class ActorRdfSerializeN3 extends ActorRdfSerializeFixedMediaTypes {
     super(args);
   }
 
-  public async runHandle(action: IActionRdfSerialize, mediaType: string): Promise<IActorRdfSerializeOutput> {
+  public async runHandle(action: IActionRdfSerialize, mediaType: string, context?: ActionContext)
+    : Promise<IActorRdfSerializeOutput> {
     const n3Triples = new Readable({ objectMode: true });
     n3Triples._read = () => {
       return;

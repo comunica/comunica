@@ -1,3 +1,4 @@
+import {ActionContext} from "@comunica/core";
 import {ActorAbstractMediaTyped, IActorArgsMediaTyped} from "./ActorAbstractMediaTyped";
 
 export abstract class ActorAbstractMediaTypedFixed<HI, HT, HO> extends ActorAbstractMediaTyped<HI, HT, HO> {
@@ -21,26 +22,27 @@ export abstract class ActorAbstractMediaTypedFixed<HI, HT, HO> extends ActorAbst
     this.mediaTypes = Object.freeze(this.mediaTypes);
   }
 
-  public async testHandle(action: HI, mediaType: string): Promise<HT> {
+  public async testHandle(action: HI, mediaType: string, context?: ActionContext): Promise<HT> {
     if (!(mediaType in this.mediaTypes)) {
       throw new Error('Unrecognized media type: ' + mediaType);
     }
-    return await this.testHandleChecked(action);
+    return await this.testHandleChecked(action, context);
   }
 
   /**
    * Check to see if this actor can handle the given action.
    * The media type has already been checked before this is called.
    *
+   * @param {ActionContext} context An optional context.
    * @param {HI} action The action to test.
    */
-  public abstract async testHandleChecked(action: HI): Promise<HT>;
+  public abstract async testHandleChecked(action: HI, context?: ActionContext): Promise<HT>;
 
-  public async testMediaType(): Promise<boolean> {
+  public async testMediaType(context?: ActionContext): Promise<boolean> {
     return true;
   }
 
-  public async getMediaTypes(): Promise<{[id: string]: number}> {
+  public async getMediaTypes(context?: ActionContext): Promise<{[id: string]: number}> {
     return this.mediaTypes;
   }
 

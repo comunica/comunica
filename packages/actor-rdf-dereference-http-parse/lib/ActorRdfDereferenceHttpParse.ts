@@ -33,14 +33,15 @@ export class ActorRdfDereferenceHttpParse extends ActorRdfDereference implements
 
   public async run(action: IActionRdfDereference): Promise<IActorRdfDereferenceOutput> {
     // Define accept header based on available media types.
-    const mediaTypes: {[id: string]: number} = (await this.mediatorRdfParse.mediate({ mediaTypes: true }))
+    const mediaTypes: {[id: string]: number} = (await this.mediatorRdfParse.mediate(
+      { context: action.context, mediaTypes: true }))
       .mediaTypes;
     const acceptHeader: string = this.mediaTypesToAcceptString(mediaTypes);
 
     // Resolve HTTP URL using appropriate accept header
     const headers: Headers = new Headers();
     headers.append('Accept', acceptHeader);
-    const httpAction: IActionHttp = { input: action.url, init: { headers } };
+    const httpAction: IActionHttp = { context: action.context, input: action.url, init: { headers } };
     const httpResponse: IActorHttpOutput = await this.mediatorHttp.mediate(httpAction);
 
     // Wrap WhatWG readable stream into a Node.js readable stream
@@ -58,7 +59,7 @@ export class ActorRdfDereferenceHttpParse extends ActorRdfDereference implements
       .exec(httpResponse.headers.get('content-type'))[0];
     const parseAction: IActionRdfParse = { input: responseStream };
     const parseOutput: IActorRdfParseOutput = (await this.mediatorRdfParse.mediate(
-      { handle: parseAction, handleMediaType: mediaType })).handle;
+      { context: action.context, handle: parseAction, handleMediaType: mediaType })).handle;
 
     // Return the parsed quad stream and whether or not only triples are supported
     return { pageUrl: httpResponse.url, quads: parseOutput.quads, triples: parseOutput.triples };

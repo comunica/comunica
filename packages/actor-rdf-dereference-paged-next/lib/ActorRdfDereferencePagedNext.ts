@@ -28,7 +28,7 @@ export class ActorRdfDereferencePagedNext extends ActorRdfDereferencePaged imple
 
   public test(action: IActionRdfDereferencePaged): Promise<IActorTest> {
     // Try to determine an actor in the RDF dereference bus to see if we can handle the given URL.
-    return this.mediatorRdfDereference.mediateActor({ url: action.url });
+    return this.mediatorRdfDereference.mediateActor({ context: action.context, url: action.url });
   }
 
   public run(action: IActionRdfDereferencePaged): Promise<IActorRdfDereferencePagedOutput> {
@@ -71,16 +71,17 @@ export class ActorRdfDereferencePagedNext extends ActorRdfDereferencePaged imple
     const firstPageUrl: string = firstPage.pageUrl;
 
     const firstPageMetaSplit: IActorRdfMetadataOutput = await this.mediatorMetadata
-      .mediate({ pageUrl: firstPageUrl, quads: firstPage.quads, triples: firstPage.triples });
+      .mediate({ context: action.context, pageUrl: firstPageUrl, quads: firstPage.quads, triples: firstPage.triples });
     let materializedFirstPageMetadata: Promise<{[id: string]: any}> = null;
     const firstPageMetadata: () => Promise<{[id: string]: any}> = () => {
       return materializedFirstPageMetadata || (materializedFirstPageMetadata = this.mediatorMetadataExtract.mediate(
-        { pageUrl: firstPageUrl, metadata: firstPageMetaSplit.metadata })
+        { context: action.context, pageUrl: firstPageUrl, metadata: firstPageMetaSplit.metadata })
         .then((output) => output.metadata));
     };
 
     const data: MediatedPagedAsyncRdfIterator = new MediatedPagedAsyncRdfIterator(firstPageUrl, firstPageMetaSplit.data,
-      firstPageMetadata, this.mediatorRdfDereference, this.mediatorMetadata, this.mediatorMetadataExtract);
+      firstPageMetadata, this.mediatorRdfDereference, this.mediatorMetadata, this.mediatorMetadataExtract,
+      action.context);
     return { firstPageUrl, data, firstPageMetadata, triples: firstPage.triples };
   }
 

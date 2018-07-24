@@ -1,5 +1,6 @@
 import {ActorRdfParseFixedMediaTypes, IActionRdfParse,
   IActorRdfParseFixedMediaTypesArgs, IActorRdfParseOutput} from "@comunica/bus-rdf-parse";
+import {ActionContext} from "@comunica/core";
 const JsonLdParser: any = require('rdf-parser-jsonld'); // tslint:disable-line:no-var-requires
 
 /**
@@ -13,7 +14,8 @@ export class ActorRdfParseJsonLd extends ActorRdfParseFixedMediaTypes {
     super(args);
   }
 
-  public async runHandle(action: IActionRdfParse, mediaType: string): Promise<IActorRdfParseOutput> {
+  public async runHandle(action: IActionRdfParse, mediaType: string, context?: ActionContext)
+    : Promise<IActorRdfParseOutput> {
     return { quads: JsonLdParser.import(action.input) };
   }
 

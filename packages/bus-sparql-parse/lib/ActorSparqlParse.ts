@@ -29,10 +29,6 @@ export interface IActionSparqlParse extends IAction {
    * The query format.
    */
   queryFormat?: string;
-  /**
-   * An optional context.
-   */
-  context?: any;
 }
 
 export interface IActorSparqlParseOutput extends IActorOutput {

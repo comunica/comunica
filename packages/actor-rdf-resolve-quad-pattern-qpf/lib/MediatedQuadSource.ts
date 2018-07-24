@@ -1,6 +1,6 @@
 import {IActionRdfDereferencePaged, IActorRdfDereferencePagedOutput} from "@comunica/bus-rdf-dereference-paged";
 import {ILazyQuadSource} from "@comunica/bus-rdf-resolve-quad-pattern";
-import {Actor, IActorTest, Mediator} from "@comunica/core";
+import {ActionContext, Actor, IActorTest, Mediator} from "@comunica/core";
 import {AsyncIterator} from "asynciterator";
 import {PromiseProxyIterator} from "asynciterator-promiseproxy";
 import * as DataFactory from "rdf-data-model";
@@ -21,14 +21,17 @@ export class MediatedQuadSource implements ILazyQuadSource {
     IActorRdfDereferencePagedOutput>, IActionRdfDereferencePaged, IActorTest, IActorRdfDereferencePagedOutput>;
   public readonly uriConstructor: ((subject?: RDF.Term, predicate?: RDF.Term, object?: RDF.Term, graph?: RDF.Term)
     => Promise<string>);
+  public readonly context: ActionContext;
 
   constructor(mediatorRdfDereferencePaged: Mediator<Actor<IActionRdfDereferencePaged, IActorTest,
                 IActorRdfDereferencePagedOutput>, IActionRdfDereferencePaged, IActorTest,
                 IActorRdfDereferencePagedOutput>,
               uriConstructor: ((subject?: RDF.Term, predicate?: RDF.Term, object?: RDF.Term, graph?: RDF.Term)
-                => Promise<string>)) {
+                => Promise<string>),
+              context?: ActionContext) {
     this.mediatorRdfDereferencePaged = mediatorRdfDereferencePaged;
     this.uriConstructor = uriConstructor;
+    this.context = context;
   }
 
   /**
@@ -116,7 +119,7 @@ export class MediatedQuadSource implements ILazyQuadSource {
 
     const quads = new PromiseProxyIterator(async () => {
       const url: string = await this.uriConstructor(subject, predicate, object, graph);
-      const output = await this.mediatorRdfDereferencePaged.mediate({url});
+      const output = await this.mediatorRdfDereferencePaged.mediate({ context: this.context, url });
 
       // Emit metadata in the stream, so we can attach it later to the actor's promise output
       quads.emit('metadata', output.firstPageMetadata);
