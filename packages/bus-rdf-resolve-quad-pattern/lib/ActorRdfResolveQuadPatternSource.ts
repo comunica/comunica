@@ -1,9 +1,9 @@
-import {IActorArgs, IActorTest} from "@comunica/core";
-import {AsyncIterator, BufferedIterator} from "asynciterator";
+import {ActionContext, IActorArgs, IActorTest} from "@comunica/core";
+import {AsyncIterator} from "asynciterator";
 import * as RDF from "rdf-js";
 import {
   ActorRdfResolveQuadPattern, IActionRdfResolveQuadPattern,
-  IActorRdfResolveQuadPatternOutput,
+  IActorRdfResolveQuadPatternOutput, KEY_CONTEXT_SOURCES,
 } from "./ActorRdfResolveQuadPattern";
 
 /**
@@ -42,11 +42,11 @@ export abstract class ActorRdfResolveQuadPatternSource extends ActorRdfResolveQu
    * Get the output of the given action on a source.
    * @param {RDF.Source} source An RDFJS source, possibly lazy.
    * @param {RDF.Quad} pattern The resolve action.
-   * @param {{[p: string]: any}} context Optional context data.
+   * @param ActionContext context Optional context data.
    * @return {Promise<IActorRdfResolveQuadPatternOutput>} A promise that resolves to a hash containing
    *                                                      a data RDFJS stream and an optional metadata hash.
    */
-  protected async getOutput(source: ILazyQuadSource, pattern: RDF.Quad, context?: {[id: string]: any})
+  protected async getOutput(source: ILazyQuadSource, pattern: RDF.Quad, context?: ActionContext)
   : Promise<IActorRdfResolveQuadPatternOutput> {
     if (source.matchLazy) {
       return { data: source.matchLazy(
@@ -69,10 +69,10 @@ export abstract class ActorRdfResolveQuadPatternSource extends ActorRdfResolveQu
 
   /**
    * Get a source instance for the given context.
-   * @param {{[p: string]: any}} context Optional context data.
+   * @param ActionContext context Optional context data.
    * @return {Promise<RDF.Source>} A promise that resolves to a source.
    */
-  protected abstract getSource(context?: {[id: string]: any}): Promise<ILazyQuadSource>;
+  protected abstract getSource(context?: ActionContext): Promise<ILazyQuadSource>;
 
 }
 

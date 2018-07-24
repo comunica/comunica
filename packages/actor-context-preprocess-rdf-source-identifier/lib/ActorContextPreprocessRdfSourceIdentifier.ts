@@ -1,7 +1,8 @@
-import {ActorContextPreprocess, IActionContextPreprocess,
+import {ActorContextPreprocess,
   IActorContextPreprocessOutput} from "@comunica/bus-context-preprocess";
 import {IActionRdfSourceIdentifier, IActorRdfSourceIdentifierOutput} from "@comunica/bus-rdf-source-identifier";
-import {Actor, IActorArgs, IActorTest, Mediator} from "@comunica/core";
+import {Actor, IAction, IActorArgs, IActorTest, Mediator} from "@comunica/core";
+import {KEY_CONTEXT_SOURCES} from "../../bus-rdf-resolve-quad-pattern";
 
 /**
  * A comunica RDF Source Identifier Context Preprocess Actor.
@@ -15,14 +16,13 @@ export class ActorContextPreprocessRdfSourceIdentifier extends ActorContextPrepr
     super(args);
   }
 
-  public async test(action: IActionContextPreprocess): Promise<IActorTest> {
+  public async test(action: IAction): Promise<IActorTest> {
     return true;
   }
 
-  public async run(action: IActionContextPreprocess): Promise<IActorContextPreprocessOutput> {
-    if (action.context && action.context.sources) {
-      const context = { ...action.context };
-      const sources = context.sources;
+  public async run(action: IAction): Promise<IActorContextPreprocessOutput> {
+    if (action.context && action.context.get(KEY_CONTEXT_SOURCES)) {
+      const sources = action.context.get(KEY_CONTEXT_SOURCES);
       const autoSources = sources.map((source: any, id: number) => ({ id, source }))
         .filter((entry: any) => entry.source.type === 'auto');
       const autoSourceTypePromises: Promise<IActorRdfSourceIdentifierOutput>[] = autoSources.map(
@@ -35,7 +35,7 @@ export class ActorContextPreprocessRdfSourceIdentifier extends ActorContextPrepr
           sources[sourceId].type = sourceType;
         }
       }
-      return { context };
+      return { context: action.context.set(KEY_CONTEXT_SOURCES, sources) };
     }
     return action;
   }
@@ -43,7 +43,7 @@ export class ActorContextPreprocessRdfSourceIdentifier extends ActorContextPrepr
 }
 
 export interface IActorContextPreprocessRdfSourceIdentifierArgs
-  extends IActorArgs<IActionContextPreprocess, IActorTest, IActorContextPreprocessOutput> {
+  extends IActorArgs<IAction, IActorTest, IActorContextPreprocessOutput> {
   mediatorRdfSourceIdentifier: Mediator<Actor<IActionRdfSourceIdentifier, IActorTest,
     IActorRdfSourceIdentifierOutput>, IActionRdfSourceIdentifier, IActorTest, IActorRdfSourceIdentifierOutput>;
 }

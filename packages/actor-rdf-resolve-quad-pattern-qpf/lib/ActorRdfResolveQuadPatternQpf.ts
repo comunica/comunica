@@ -2,7 +2,7 @@ import {ISearchForm, ISearchForms} from "@comunica/actor-rdf-metadata-extract-hy
 import {IActionRdfDereferencePaged, IActorRdfDereferencePagedOutput} from "@comunica/bus-rdf-dereference-paged";
 import {ActorRdfResolveQuadPatternSource, IActionRdfResolveQuadPattern,
   IActorRdfResolveQuadPatternOutput, ILazyQuadSource} from "@comunica/bus-rdf-resolve-quad-pattern";
-import {Actor, IActorArgs, IActorTest, Mediator} from "@comunica/core";
+import {ActionContext, Actor, IActorArgs, IActorTest, Mediator} from "@comunica/core";
 import * as RDF from "rdf-js";
 import {termToString} from "rdf-string";
 import {MediatedQuadSource} from "./MediatedQuadSource";
@@ -26,8 +26,7 @@ export class ActorRdfResolveQuadPatternQpf extends ActorRdfResolveQuadPatternSou
   }
 
   public async test(action: IActionRdfResolveQuadPattern): Promise<IActorTest> {
-    if (!action.context || !action.context.sources || action.context.sources.length !== 1
-        || action.context.sources[0].type !== 'hypermedia' || !action.context.sources[0].value) {
+    if (!this.hasContextSingleSource('hypermedia', action.context)) {
       throw new Error(this.name
         + ' requires a single source with a QPF \'hypermedia\' entrypoint to be present in the context.');
     }
@@ -75,7 +74,7 @@ export class ActorRdfResolveQuadPatternQpf extends ActorRdfResolveQuadPatternSou
     throw new Error('No valid Hydra search form was found for quad pattern or triple pattern queries.');
   }
 
-  protected async createSource(context?: {[id: string]: any}): Promise<ILazyQuadSource> {
+  protected async createSource(context?: ActionContext): Promise<ILazyQuadSource> {
     // Determine form lazily when a URL is constructed.
     let chosenForm: Promise<ISearchForm> = null;
 
@@ -83,7 +82,7 @@ export class ActorRdfResolveQuadPatternQpf extends ActorRdfResolveQuadPatternSou
     const uriConstructor = async (subject?: RDF.Term, predicate?: RDF.Term, object?: RDF.Term, graph?: RDF.Term) => {
       if (!chosenForm) {
         // Collect metadata of the hypermedia
-        const hypermedia: string = context.sources[0].value;
+        const hypermedia: string = this.getContextSources(context)[0].value;
 
         // Save the form, so it is determined only once per source.
         chosenForm = this.chooseForm(hypermedia);
@@ -108,9 +107,9 @@ export class ActorRdfResolveQuadPatternQpf extends ActorRdfResolveQuadPatternSou
     return new MediatedQuadSource(this.mediatorRdfDereferencePaged, uriConstructor);
   }
 
-  protected async getSource(context?: {[id: string]: any}): Promise<ILazyQuadSource> {
+  protected async getSource(context?: ActionContext): Promise<ILazyQuadSource> {
     // Cache the source object for each hypermedia entrypoint
-    const hypermedia: string = context.sources[0].value;
+    const hypermedia: string = this.getContextSources(context)[0].value;
     if (this.sources[hypermedia]) {
       return this.sources[hypermedia];
     }
@@ -119,7 +118,7 @@ export class ActorRdfResolveQuadPatternQpf extends ActorRdfResolveQuadPatternSou
     return await (this.sources[hypermedia] = this.createSource(context));
   }
 
-  protected async getOutput(source: RDF.Source, pattern: RDF.Quad, context?: {[id: string]: any})
+  protected async getOutput(source: RDF.Source, pattern: RDF.Quad, context?: ActionContext)
   : Promise<IActorRdfResolveQuadPatternOutput> {
     // Attach metadata to the output
     const output: IActorRdfResolveQuadPatternOutput = await super.getOutput(source, pattern, context);

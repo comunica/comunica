@@ -1,7 +1,7 @@
 import {ActorQueryOperation, ActorQueryOperationTypedMediated, IActorQueryOperationOutputBindings,
   IActorQueryOperationTypedMediatedArgs} from "@comunica/bus-query-operation";
 import {BindingsStream} from "@comunica/bus-query-operation";
-import {IActorTest} from "@comunica/core";
+import {ActionContext, IActorTest} from "@comunica/core";
 import {RoundRobinUnionIterator} from "asynciterator-union";
 import {Algebra} from "sparqlalgebrajs";
 
@@ -43,11 +43,11 @@ export class ActorQueryOperationUnion extends ActorQueryOperationTypedMediated<A
     return { totalItems };
   }
 
-  public async testOperation(pattern: Algebra.Union, context?: {[id: string]: any}): Promise<IActorTest> {
+  public async testOperation(pattern: Algebra.Union, context?: ActionContext): Promise<IActorTest> {
     return true;
   }
 
-  public async runOperation(pattern: Algebra.Union, context?: {[id: string]: any})
+  public async runOperation(pattern: Algebra.Union, context?: ActionContext)
   : Promise<IActorQueryOperationOutputBindings> {
     const outputs: IActorQueryOperationOutputBindings[] = (await Promise.all([
       this.mediatorQueryOperation.mediate({ operation: pattern.left, context }),

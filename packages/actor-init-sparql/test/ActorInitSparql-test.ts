@@ -408,7 +408,7 @@ describe('ActorInitSparql', () => {
 
     describe('query', () => {
       it('should apply bindings when initialBindings are passed via the context', () => {
-        const ctx = { initialBindings: Bindings({ '?s': literal('sl') }) };
+        const ctx = { '@comunica/actor-init-sparql:initialBindings': Bindings({ '?s': literal('sl') }) };
         return expect(actor.query('SELECT * WHERE { ?s ?p ?o }', ctx))
           .resolves.toBeTruthy();
       });

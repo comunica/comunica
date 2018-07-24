@@ -1,7 +1,7 @@
 import {ActorQueryOperation, ActorQueryOperationTypedMediated, IActorQueryOperationOutputBindings,
   IActorQueryOperationTypedMediatedArgs} from "@comunica/bus-query-operation";
 import {BindingsStream} from "@comunica/bus-query-operation";
-import {IActorTest} from "@comunica/core";
+import {ActionContext, IActorTest} from "@comunica/core";
 import {Algebra} from "sparqlalgebrajs";
 
 /**
@@ -13,11 +13,11 @@ export class ActorQueryOperationSlice extends ActorQueryOperationTypedMediated<A
     super(args, 'slice');
   }
 
-  public async testOperation(pattern: Algebra.Slice, context?: {[id: string]: any}): Promise<IActorTest> {
+  public async testOperation(pattern: Algebra.Slice, context?: ActionContext): Promise<IActorTest> {
     return true;
   }
 
-  public async runOperation(pattern: Algebra.Slice, context?: {[id: string]: any})
+  public async runOperation(pattern: Algebra.Slice, context?: ActionContext)
   : Promise<IActorQueryOperationOutputBindings> {
     // Resolve the input
     const output: IActorQueryOperationOutputBindings = ActorQueryOperation.getSafeBindings(

@@ -1,4 +1,4 @@
-import {IActionContextPreprocess, IActorContextPreprocessOutput} from "@comunica/bus-context-preprocess";
+import {IActorContextPreprocessOutput} from "@comunica/bus-context-preprocess";
 import {ActorInit, IActionInit, IActorOutputInit} from "@comunica/bus-init";
 import {Bindings, IActionQueryOperation, IActorQueryOperationOutput} from "@comunica/bus-query-operation";
 import {IActionSparqlParse, IActorSparqlParseOutput} from "@comunica/bus-sparql-parse";
@@ -6,7 +6,7 @@ import {IActionSparqlSerialize} from "@comunica/bus-sparql-serialize";
 import {IActionRootSparqlParse, IActorOutputRootSparqlParse,
   IActorTestRootSparqlParse} from "@comunica/bus-sparql-serialize";
 import {IActorSparqlSerializeOutput} from "@comunica/bus-sparql-serialize";
-import {Actor, IActorArgs, IActorTest, Mediator} from "@comunica/core";
+import {ActionContext, Actor, IAction, IActorArgs, IActorTest, Mediator} from "@comunica/core";
 import * as RDF from "rdf-js";
 import {termToString} from "rdf-string";
 import {QUAD_TERM_NAMES} from "rdf-terms";
@@ -28,8 +28,8 @@ export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs {
   public readonly mediatorSparqlSerializeMediaTypeCombiner: Mediator<Actor<IActionRootSparqlParse,
     IActorTestRootSparqlParse, IActorOutputRootSparqlParse>, IActionRootSparqlParse, IActorTestRootSparqlParse,
     IActorOutputRootSparqlParse>;
-  public readonly mediatorContextPreprocess: Mediator<Actor<IActionContextPreprocess, IActorTest,
-    IActorContextPreprocessOutput>, IActionContextPreprocess, IActorTest, IActorContextPreprocessOutput>;
+  public readonly mediatorContextPreprocess: Mediator<Actor<IAction, IActorTest,
+    IActorContextPreprocessOutput>, IAction, IActorTest, IActorContextPreprocessOutput>;
   public readonly queryString?: string;
   public readonly defaultQueryInputFormat?: string;
   public readonly context?: string;
@@ -92,6 +92,8 @@ export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs {
    * @return {Promise<IActorQueryOperationOutput>} A promise that resolves to the query output.
    */
   public async query(query: string, context?: any): Promise<IActorQueryOperationOutput> {
+    context = ActionContext(context);
+
     // Start, but don't await, context pre-processing
     const combinationPromise = this.mediatorContextPreprocess.mediate({ context });
 
@@ -103,8 +105,8 @@ export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs {
     context = (await combinationPromise).context;
 
     // Apply initial bindings in context
-    if (context.initialBindings) {
-      operation = ActorInitSparql.applyInitialBindings(operation, context.initialBindings);
+    if (context.has(KEY_CONTEXT_INITIALBINDINGS)) {
+      operation = ActorInitSparql.applyInitialBindings(operation, context.get(KEY_CONTEXT_INITIALBINDINGS));
     }
 
     // Execute query
@@ -162,9 +164,11 @@ export interface IActorInitSparqlArgs extends IActorArgs<IActionInit, IActorTest
   mediatorSparqlSerializeMediaTypeCombiner: Mediator<Actor<IActionRootSparqlParse,
     IActorTestRootSparqlParse, IActorOutputRootSparqlParse>, IActionRootSparqlParse, IActorTestRootSparqlParse,
     IActorOutputRootSparqlParse>;
-  mediatorContextPreprocess: Mediator<Actor<IActionContextPreprocess, IActorTest, IActorContextPreprocessOutput>,
-    IActionContextPreprocess, IActorTest, IActorContextPreprocessOutput>;
+  mediatorContextPreprocess: Mediator<Actor<IAction, IActorTest, IActorContextPreprocessOutput>,
+    IAction, IActorTest, IActorContextPreprocessOutput>;
   queryString?: string;
   defaultQueryInputFormat?: string;
   context?: string;
 }
+
+export const KEY_CONTEXT_INITIALBINDINGS: string = '@comunica/actor-init-sparql:initialBindings';

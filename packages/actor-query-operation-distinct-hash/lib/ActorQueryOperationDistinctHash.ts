@@ -1,7 +1,7 @@
 import {ActorQueryOperation, ActorQueryOperationTypedMediated, Bindings,
   IActorQueryOperationOutputBindings, IActorQueryOperationTypedMediatedArgs} from "@comunica/bus-query-operation";
 import {BindingsStream} from "@comunica/bus-query-operation";
-import {IActorTest} from "@comunica/core";
+import {ActionContext, IActorTest} from "@comunica/core";
 import {createHash, getHashes, Hash} from "crypto";
 import {Algebra} from "sparqlalgebrajs";
 
@@ -70,11 +70,11 @@ export class ActorQueryOperationDistinctHash extends ActorQueryOperationTypedMed
     };
   }
 
-  public async testOperation(pattern: Algebra.Distinct, context?: {[id: string]: any}): Promise<IActorTest> {
+  public async testOperation(pattern: Algebra.Distinct, context?: ActionContext): Promise<IActorTest> {
     return true;
   }
 
-  public async runOperation(pattern: Algebra.Distinct, context?: {[id: string]: any})
+  public async runOperation(pattern: Algebra.Distinct, context?: ActionContext)
     : Promise<IActorQueryOperationOutputBindings> {
     const output: IActorQueryOperationOutputBindings = ActorQueryOperation.getSafeBindings(
       await this.mediatorQueryOperation.mediate({ operation: pattern.input, context }));

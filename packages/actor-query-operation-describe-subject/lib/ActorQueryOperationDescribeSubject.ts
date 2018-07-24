@@ -1,7 +1,7 @@
 import {ActorQueryOperationUnion} from "@comunica/actor-query-operation-union";
 import {ActorQueryOperation, ActorQueryOperationTypedMediated,
   IActorQueryOperationOutputQuads, IActorQueryOperationTypedMediatedArgs} from "@comunica/bus-query-operation";
-import {IActorTest} from "@comunica/core";
+import {ActionContext, IActorTest} from "@comunica/core";
 import {RoundRobinUnionIterator} from "asynciterator-union";
 import {triple, variable} from "rdf-data-model";
 import * as RDF from "rdf-js";
@@ -16,11 +16,11 @@ export class ActorQueryOperationDescribeSubject extends ActorQueryOperationTyped
     super(args, 'describe');
   }
 
-  public async testOperation(pattern: Algebra.Describe, context?: {[id: string]: any}): Promise<IActorTest> {
+  public async testOperation(pattern: Algebra.Describe, context?: ActionContext): Promise<IActorTest> {
     return true;
   }
 
-  public async runOperation(pattern: Algebra.Describe, context?: {[id: string]: any})
+  public async runOperation(pattern: Algebra.Describe, context?: ActionContext)
     : Promise<IActorQueryOperationOutputQuads> {
     // Create separate construct queries for all non-variable terms
     const operations: Algebra.Construct[] = pattern.terms

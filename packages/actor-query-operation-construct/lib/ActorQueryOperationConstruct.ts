@@ -5,7 +5,7 @@ import {
   IActorQueryOperationOutputQuads,
   IActorQueryOperationTypedMediatedArgs,
 } from "@comunica/bus-query-operation";
-import {IActorTest} from "@comunica/core";
+import {ActionContext, IActorTest} from "@comunica/core";
 import {AsyncIterator, EmptyIterator, MultiTransformIterator} from "asynciterator";
 import * as RDF from "rdf-js";
 import {getTerms, getVariables, uniqTerms} from "rdf-terms";
@@ -30,11 +30,11 @@ export class ActorQueryOperationConstruct extends ActorQueryOperationTypedMediat
     return uniqTerms([].concat.apply([], patterns.map((pattern) => getVariables(getTerms(pattern)))));
   }
 
-  public async testOperation(pattern: Algebra.Construct, context?: {[id: string]: any}): Promise<IActorTest> {
+  public async testOperation(pattern: Algebra.Construct, context?: ActionContext): Promise<IActorTest> {
     return true;
   }
 
-  public async runOperation(pattern: Algebra.Construct, context?: {[id: string]: any})
+  public async runOperation(pattern: Algebra.Construct, context?: ActionContext)
     : Promise<IActorQueryOperationOutputQuads> {
     // If our template is empty or contains no variables, no need to resolve a query.
     const variables: RDF.Variable[] = ActorQueryOperationConstruct.getVariables(pattern.template);
