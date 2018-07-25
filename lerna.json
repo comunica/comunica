@@ -12,7 +12,7 @@
   "packages": [
     "packages/*"
   ],
-  "hoist": true,
+  "useWorkspaces": true,
   "version": "1.1.2",
   "npmClient": "yarn"
 }
