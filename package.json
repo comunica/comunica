@@ -93,10 +93,13 @@
     "test-ci": "jest --ci --maxWorkers=4 --coverage",
     "coveralls-ci": "cat ./coverage/lcov.info | coveralls",
     "lint": "tslint packages/*/lib/**/*.ts packages/*/test/**/*.ts --exclude '**/*.d.ts'",
+    "clean": "rm -rf ./node_modules && rm -rf ./packages/*/node_modules",
     "build": "tsc",
+    "build-watch": "tsc --watch",
+    "publish": "yarn run build-clean && lerna publish",
     "doc": "typedoc --name Comunica --exclude \"**/+(node_modules|test|mocks)/**\" --disableOutputCheck --mode modules --out documentation $(find packages ! -name 'packager' -type d -mindepth 1 -maxdepth 1)",
     "preinstall": "node -e \"if (!fs.existsSync('packages/runner-cli/bin/run.js')) { var os = fs.createWriteStream('packages/runner-cli/bin/run.js'); os.write('#!/usr/bin/env node\\nconsole.error(\\'Temporary runner script during lerna installation. If you see this, please run yarn install again.\\');\\nprocess.exit(1);'); os.end(); }\" && node -e \"if (!fs.existsSync('packages/runner/bin/compile-config.js')) { var os = fs.createWriteStream('packages/runner/bin/compile-config.js'); os.write('#!/usr/bin/env node\\nconsole.error(\\'Temporary compile-config script during lerna installation. If you see this, please run yarn install again.\\');\\nprocess.exit(1);'); os.end(); }\"",
-    "postinstall": "tsc"
+    "postinstall": "yarn run build"
   },
   "greenkeeper": {
     "commitMessages": {
