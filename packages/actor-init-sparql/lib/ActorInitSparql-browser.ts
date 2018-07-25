@@ -1,6 +1,7 @@
 import {IActorContextPreprocessOutput} from "@comunica/bus-context-preprocess";
 import {ActorInit, IActionInit, IActorOutputInit} from "@comunica/bus-init";
 import {Bindings, IActionQueryOperation, IActorQueryOperationOutput} from "@comunica/bus-query-operation";
+import {KEY_CONTEXT_SOURCES} from "@comunica/bus-rdf-resolve-quad-pattern";
 import {IActionSparqlParse, IActorSparqlParseOutput} from "@comunica/bus-sparql-parse";
 import {IActionSparqlSerialize} from "@comunica/bus-sparql-serialize";
 import {IActionRootSparqlParse, IActorOutputRootSparqlParse,
@@ -91,7 +92,18 @@ export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs {
    * @param context An optional query context.
    * @return {Promise<IActorQueryOperationOutput>} A promise that resolves to the query output.
    */
-  public async query(query: string, context?: ActionContext): Promise<IActorQueryOperationOutput> {
+  public async query(query: string, context?: any): Promise<IActorQueryOperationOutput> {
+    // Backwards-compatibility for non-namespaced keys
+    // TODO: remove in next major update
+    if (context.sources) {
+      context[KEY_CONTEXT_SOURCES] = context.sources;
+      delete context.sources;
+    }
+    if (context.initialBindings) {
+      context[KEY_CONTEXT_INITIALBINDINGS] = context.initialBindings;
+      delete context.initialBindings;
+    }
+
     context = ActionContext(context);
 
     // Start, but don't await, context pre-processing

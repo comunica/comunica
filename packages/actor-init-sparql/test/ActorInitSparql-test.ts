@@ -413,5 +413,21 @@ describe('ActorInitSparql', () => {
           .resolves.toBeTruthy();
       });
     });
+
+    describe('query', () => {
+      it('should apply bindings when initialBindings in the old format are passed via the context', () => {
+        const ctx = { initialBindings: Bindings({ '?s': literal('sl') }) };
+        return expect(actor.query('SELECT * WHERE { ?s ?p ?o }', ctx))
+          .resolves.toBeTruthy();
+      });
+    });
+
+    describe('query', () => {
+      it('should apply bindings when sources in the old format are passed via the context', () => {
+        const ctx = { sources: [] };
+        return expect(actor.query('SELECT * WHERE { ?s ?p ?o }', ctx))
+          .resolves.toBeTruthy();
+      });
+    });
   });
 });
