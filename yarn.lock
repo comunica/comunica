@@ -545,23 +545,17 @@ asynciterator-union@^2.0.0:
   dependencies:
     asynciterator "^2.0.0"
 
-asynciterator@^1.1.0:
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/asynciterator/-/asynciterator-1.1.1.tgz#8d1c06a0436410186ebc889e0b36060fa62b1821"
-  dependencies:
-    immediate "^3.2.3"
-
 asynciterator@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/asynciterator/-/asynciterator-2.0.0.tgz#f1d5ef187422aa9b3d6bd26bfcfa6f861435f635"
   dependencies:
     immediate "^3.2.3"
 
-asyncjoin@^0.1.2:
-  version "0.1.2"
-  resolved "https://registry.yarnpkg.com/asyncjoin/-/asyncjoin-0.1.2.tgz#2a943694d9d6758c89858aed25b1e61cf0b5b212"
+asyncjoin@^0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/asyncjoin/-/asyncjoin-0.3.0.tgz#464e822e94629d571323ae179ea79a4fcd169111"
   dependencies:
-    asynciterator "^1.1.0"
+    asynciterator "^2.0.0"
 
 asynckit@^0.4.0:
   version "0.4.0"
