@@ -36,7 +36,7 @@
   ],
   "dependencies": {
     "asynciterator": "^2.0.0",
-    "n3": "^0.11.2",
+    "n3": "1.0.0-beta.1",
     "rdf-string": "^1.1.1"
   },
   "peerDependencies": {

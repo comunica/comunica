@@ -1,10 +1,11 @@
 import {ActorRdfResolveQuadPattern} from "@comunica/bus-rdf-resolve-quad-pattern";
 import {ActionContext, Bus} from "@comunica/core";
+import "jest-rdf";
+import {Store as N3Store} from "n3";
 import {ActorRdfResolveQuadPatternFile} from "../lib/ActorRdfResolveQuadPatternFile";
 const arrayifyStream = require('arrayify-stream');
 const quad = require('rdf-quad');
 const streamifyArray = require('streamify-array');
-const N3Store = require('n3').Store;
 
 // tslint:disable:object-literal-sort-keys
 
@@ -151,15 +152,15 @@ describe('ActorRdfResolveQuadPatternFile', () => {
           { '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'file', value: 'abc'  }}) })
         .then(async (output) => {
           expect(await output.metadata()).toEqual({ totalItems: 8 });
-          expect(await arrayifyStream(output.data)).toEqual([
-            quad('s1', 'p1', 'o2'),
+          expect(await arrayifyStream(output.data)).toEqualRdfQuadArray([
             quad('s1', 'p1', 'o1'),
-            quad('s1', 'p2', 'o2'),
+            quad('s1', 'p1', 'o2'),
             quad('s1', 'p2', 'o1'),
-            quad('s2', 'p1', 'o2'),
+            quad('s1', 'p2', 'o2'),
             quad('s2', 'p1', 'o1'),
-            quad('s2', 'p2', 'o2'),
+            quad('s2', 'p1', 'o2'),
             quad('s2', 'p2', 'o1'),
+            quad('s2', 'p2', 'o2'),
           ]);
         });
     });
@@ -170,11 +171,11 @@ describe('ActorRdfResolveQuadPatternFile', () => {
           { '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'file', value: 'abc' }}) })
         .then(async (output) => {
           expect(await output.metadata()).toEqual({ totalItems: 4 });
-          expect(await arrayifyStream(output.data)).toEqual([
-            quad('s1', 'p1', 'o2'),
+          expect(await arrayifyStream(output.data)).toEqualRdfQuadArray([
             quad('s1', 'p1', 'o1'),
-            quad('s1', 'p2', 'o2'),
+            quad('s1', 'p1', 'o2'),
             quad('s1', 'p2', 'o1'),
+            quad('s1', 'p2', 'o2'),
           ]);
         });
     });
@@ -185,7 +186,7 @@ describe('ActorRdfResolveQuadPatternFile', () => {
           { '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'file', value: 'abc' }}) })
         .then(async (output) => {
           expect(await output.metadata()).toEqual({ totalItems: 0 });
-          expect(await arrayifyStream(output.data)).toEqual([]);
+          expect(await arrayifyStream(output.data)).toEqualRdfQuadArray([]);
         });
     });
 

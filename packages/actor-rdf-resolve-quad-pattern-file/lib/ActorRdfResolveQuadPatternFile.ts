@@ -2,12 +2,10 @@ import {IActionRdfDereference, IActorRdfDereferenceOutput} from "@comunica/bus-r
 import {ActorRdfResolveQuadPatternSource, IActionRdfResolveQuadPattern, IActorRdfResolveQuadPatternOutput,
   ILazyQuadSource} from "@comunica/bus-rdf-resolve-quad-pattern";
 import {ActionContext, Actor, IActorArgs, IActorTest, Mediator} from "@comunica/core";
+import {N3Store, Store} from "n3";
 import * as RDF from "rdf-js";
-import {quadToStringQuad} from "rdf-string";
 import {N3StoreIterator} from "./N3StoreIterator";
 import {N3StoreQuadSource} from "./N3StoreQuadSource";
-// TODO: Remove when N3 typings are updated
-const N3Store = require('n3').Store; // tslint:disable-line:no-var-requires
 
 /**
  * A comunica File RDF Resolve Quad Pattern Actor.
@@ -18,7 +16,7 @@ export class ActorRdfResolveQuadPatternFile extends ActorRdfResolveQuadPatternSo
   public readonly mediatorRdfDereference: Mediator<Actor<IActionRdfDereference, IActorTest, IActorRdfDereferenceOutput>,
     IActionRdfDereference, IActorTest, IActorRdfDereferenceOutput>;
   public readonly files?: string[];
-  public stores: {[file: string]: Promise<any>} = {};
+  public stores: {[file: string]: Promise<N3Store>} = {};
 
   constructor(args: IActorRdfResolveQuadPatternFileArgs) {
     super(args);
@@ -26,9 +24,9 @@ export class ActorRdfResolveQuadPatternFile extends ActorRdfResolveQuadPatternSo
 
   public initializeFile(file: string, context: ActionContext): Promise<any> {
     return this.stores[file] = this.mediatorRdfDereference.mediate({ context, url: file })
-      .then((page: IActorRdfDereferenceOutput) => new Promise((resolve, reject) => {
-        const store: any = new N3Store();
-        page.quads.on('data', (quad) => store.addTriple(quadToStringQuad(quad)));
+      .then((page: IActorRdfDereferenceOutput) => new Promise<N3Store>((resolve, reject) => {
+        const store: N3Store = new Store();
+        page.quads.on('data', (quad) => store.addQuad(quad));
         page.quads.on('error', reject);
         page.quads.on('end', () => resolve(store));
       }));
@@ -61,11 +59,11 @@ export class ActorRdfResolveQuadPatternFile extends ActorRdfResolveQuadPatternSo
     output.metadata = () => new Promise((resolve, reject) => {
       const file: string = this.getContextSource(context).value;
       this.stores[file].then((store) => {
-        const totalItems: number = store.countTriplesByIRI(
-          N3StoreIterator.termToString(pattern.subject),
-          N3StoreIterator.termToString(pattern.predicate),
-          N3StoreIterator.termToString(pattern.object),
-          N3StoreIterator.termToString(pattern.graph),
+        const totalItems: number = store.countQuads(
+          N3StoreIterator.nullifyVariables(pattern.subject),
+          N3StoreIterator.nullifyVariables(pattern.predicate),
+          N3StoreIterator.nullifyVariables(pattern.object),
+          N3StoreIterator.nullifyVariables(pattern.graph),
         );
         resolve({ totalItems });
       }, reject);
