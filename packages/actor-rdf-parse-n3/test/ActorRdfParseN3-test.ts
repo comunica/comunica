@@ -1,6 +1,5 @@
 import {ActorRdfParseFixedMediaTypes} from "@comunica/bus-rdf-parse";
 import {Bus} from "@comunica/core";
-import * as RDF from "rdf-js";
 import {Readable} from "stream";
 import {ActorRdfParseN3} from "../lib/ActorRdfParseN3";
 const stringToStream = require('streamify-string');

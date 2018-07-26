@@ -1,5 +1,5 @@
 import {Bus} from "@comunica/core";
-import {ArrayIterator, AsyncIterator} from "asynciterator";
+import {ArrayIterator} from "asynciterator";
 import {Readable} from "stream";
 import {ActorRdfSerializeN3} from "../lib/ActorRdfSerializeN3";
 
