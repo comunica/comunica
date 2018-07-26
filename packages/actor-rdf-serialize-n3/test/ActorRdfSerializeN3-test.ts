@@ -6,9 +6,6 @@ import {ActorRdfSerializeN3} from "../lib/ActorRdfSerializeN3";
 const quad = require('rdf-quad');
 const stringifyStream = require('stream-to-string');
 
-const n3 = require('n3');
-Object.keys(n3).forEach((submodule) => n3[submodule] = n3[submodule]);
-
 describe('ActorRdfSerializeN3', () => {
   let bus;
 

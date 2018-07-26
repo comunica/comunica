@@ -5,9 +5,6 @@ import {ActorRdfParseN3} from "../lib/ActorRdfParseN3";
 const stringToStream = require('streamify-string');
 const arrayifyStream = require('arrayify-stream');
 
-const n3 = require('n3');
-Object.keys(n3).forEach((submodule) => n3[submodule] = n3[submodule]);
-
 describe('ActorRdfParseN3', () => {
   let bus;
 
