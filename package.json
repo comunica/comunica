@@ -7,6 +7,7 @@
     "node": ">=8.0"
   },
   "devDependencies": {
+    "@rdfjs/data-model": "^1.0.1",
     "@types/asynciterator": "^1.1.1",
     "@types/bluebird": "^3.5.11",
     "@types/graphql": "^0.13.1",
@@ -23,7 +24,7 @@
     "@types/lodash.values": "^4.3.3",
     "@types/lru-cache": "^4.1.0",
     "@types/minimist": "^1.2.0",
-    "@types/n3": "^0.0.3",
+    "@types/n3": "^1.0.0",
     "@types/node": "^10.0.3",
     "@types/node-fetch": "^2.1.0",
     "@types/rdf-data-model": "^1.0.1",
@@ -46,7 +47,6 @@
     "lerna": "^2.11.0",
     "lodash.assign": "^4.2.0",
     "pre-commit": "^1.2.2",
-    "rdf-data-model": "^1.0.0",
     "rdf-quad": "^1.1.0",
     "sparqlalgebrajs": "^1.0.1",
     "stream-to-string": "^1.1.0",
