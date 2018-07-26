@@ -1,6 +1,4 @@
-
 import {Bindings} from "@comunica/bus-query-operation";
-import {Util as N3Util} from "n3";
 import * as RDF from "rdf-js";
 import {stringToTerm, termToString} from "rdf-string";
 import {Algebra} from "sparqlalgebrajs";
@@ -103,7 +101,7 @@ export class SparqlExpressionEvaluator {
         // Convert result if necessary
         switch (operator.resultType) {
         case 'numeric':
-          let type = origArgs[0] ? N3Util.getLiteralType(origArgs[0]) : undefined;
+          let type = origArgs[0] ? getLiteralType(origArgs[0]) : undefined;
           if (!type || type === XSD_STRING) {
             type = XSD_INTEGER;
           }
@@ -118,8 +116,34 @@ export class SparqlExpressionEvaluator {
   }
 }
 
-const isLiteral = N3Util.isLiteral;
-const literalValue = N3Util.getLiteralValue;
+function isLiteral(entity: any) {
+  return typeof entity === 'string' && entity[0] === '"';
+}
+
+function literalValue(literal: string) {
+  const match = /^"([^]*)"/.exec(literal);
+  if (!match) {
+    throw new Error(literal + ' is not a literal');
+  }
+  return match[1];
+}
+
+function getLiteralType(literal: string) {
+  const match = /^"[^]*"(?:\^\^([^"]+)|(@)[^@"]+)?$/.exec(literal);
+  if (!match) {
+    throw new Error(literal + ' is not a literal');
+  }
+  return match[1] || (match[2]
+    ? 'http://www.w3.org/1999/02/22-rdf-syntax-ns#langString' : 'http://www.w3.org/2001/XMLSchema#string');
+}
+
+function getLiteralLanguage(literal: string) {
+  const match = /^"[^]*"(?:@([^@"]+)|\^\^[^"]+)?$/.exec(literal);
+  if (!match) {
+    throw new Error(literal + ' is not a literal');
+  }
+  return match[1] ? match[1].toLowerCase() : '';
+}
 
 const XSD = 'http://www.w3.org/2001/XMLSchema#';
 const XSD_INTEGER = XSD + 'integer';
@@ -145,7 +169,7 @@ const operators: any = {
   '&&'(a: boolean, b: boolean): boolean { return a &&  b; },
   '||'(a: boolean, b: boolean): boolean { return a ||  b; },
   'lang'(a: any): string {
-    return isLiteral(a) ? '"' + N3Util.getLiteralLanguage(a).toLowerCase() + '"' : undefined;
+    return isLiteral(a) ? '"' + getLiteralLanguage(a).toLowerCase() + '"' : undefined;
   },
   'langmatches'(langTag: string, langRange: string): boolean {
     // Implements https://tools.ietf.org/html/rfc4647#section-3.3.1
