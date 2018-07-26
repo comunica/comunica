@@ -4958,7 +4958,7 @@ rdf-string@1.2.0, rdf-string@^1.1.1, rdf-string@^1.2.0:
   dependencies:
     "@rdfjs/data-model" "^1.1.0"
 
-rdf-terms@^1.1.0:
+rdf-terms@^1.1.0, rdf-terms@^1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/rdf-terms/-/rdf-terms-1.2.0.tgz#92fc4c36348c4198f3be8f7d5c2f2c73b6569439"
   dependencies:

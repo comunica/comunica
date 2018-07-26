@@ -84,7 +84,8 @@
     "coveragePathIgnorePatterns": [
       "/node_modules/",
       "index.js"
-    ]
+    ],
+    "testEnvironment": "node"
   },
   "scripts": {
     "test-changed": "lerna run test --since HEAD",

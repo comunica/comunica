@@ -36,7 +36,7 @@
   ],
   "dependencies": {
     "asynciterator": "^2.0.0",
-    "rdf-data-model": "^1.0.0",
+    "@rdfjs/data-model": "^1.1.0",
     "rdf-terms": "^1.1.0"
   },
   "peerDependencies": {
