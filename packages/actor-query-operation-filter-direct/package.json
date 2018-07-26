@@ -39,7 +39,6 @@
     "@comunica/core": "^1.0.0"
   },
   "dependencies": {
-    "n3": "^0.11.2",
     "rdf-string": "^1.1.1"
   },
   "devDependencies": {
