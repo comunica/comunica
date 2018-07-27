@@ -22,8 +22,8 @@ export class ActorRdfResolveQuadPatternFederated extends ActorRdfResolveQuadPatt
 
   public async test(action: IActionRdfResolveQuadPattern): Promise<IActorTest> {
     const sources = this.getContextSources(action.context);
-    if (!sources || sources.length < 2) {
-      throw new Error('Actor ' + this.name + ' can only resolve quad pattern queries against a set of sources.');
+    if (!sources || sources.length < 1) {
+      throw new Error('Actor ' + this.name + ' can only resolve quad pattern queries against a sources array.');
     }
     return true;
   }

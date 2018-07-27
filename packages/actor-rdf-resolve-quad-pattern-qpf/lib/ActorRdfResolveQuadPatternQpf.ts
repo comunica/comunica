@@ -83,7 +83,7 @@ export class ActorRdfResolveQuadPatternQpf extends ActorRdfResolveQuadPatternSou
     const uriConstructor = async (subject?: RDF.Term, predicate?: RDF.Term, object?: RDF.Term, graph?: RDF.Term) => {
       if (!chosenForm) {
         // Collect metadata of the hypermedia
-        const hypermedia: string = this.getContextSources(context)[0].value;
+        const hypermedia: string = this.getContextSource(context).value;
 
         // Save the form, so it is determined only once per source.
         chosenForm = this.chooseForm(hypermedia, context);
@@ -110,7 +110,7 @@ export class ActorRdfResolveQuadPatternQpf extends ActorRdfResolveQuadPatternSou
 
   protected async getSource(context: ActionContext): Promise<ILazyQuadSource> {
     // Cache the source object for each hypermedia entrypoint
-    const hypermedia: string = this.getContextSources(context)[0].value;
+    const hypermedia: string = this.getContextSource(context).value;
     if (this.sources[hypermedia]) {
       return this.sources[hypermedia];
     }

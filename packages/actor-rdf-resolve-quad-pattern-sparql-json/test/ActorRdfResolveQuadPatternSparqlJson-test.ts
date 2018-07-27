@@ -148,8 +148,8 @@ describe('ActorRdfResolveQuadPatternSparqlJson', () => {
   describe('An ActorRdfResolveQuadPatternSparqlJson instance', () => {
     let actor: ActorRdfResolveQuadPatternSparqlJson;
     const pattern: any = quad('s', '?p', 'o');
-    const context = ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:sources':
-        [ { type: 'sparql', value: 'http://ex' } ] });
+    const context = ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:source':
+        { type: 'sparql', value: 'http://ex' } });
     const mediatorHttp: any = {
       mediate: (action) => {
         // tslint:disable: no-trailing-whitespace
@@ -477,7 +477,7 @@ describe('ActorRdfResolveQuadPatternSparqlJson', () => {
 
     it('should allow multiple _read calls on query bindings', () => {
       const thisActor = new ActorRdfResolveQuadPatternSparqlJson({ name: 'actor', bus, mediatorHttp });
-      return thisActor.queryBindings('http://ex', '').then((data) => {
+      return thisActor.queryBindings('http://ex', '', null).then((data) => {
         (<any> data)._read(1, () => { return; });
         (<any> data)._read(1, () => { return; });
       });

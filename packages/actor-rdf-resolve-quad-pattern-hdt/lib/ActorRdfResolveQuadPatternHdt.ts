@@ -64,7 +64,7 @@ export class ActorRdfResolveQuadPatternHdt extends ActorRdfResolveQuadPatternSou
   }
 
   protected async getSource(context: ActionContext): Promise<ILazyQuadSource> {
-    const hdtFile: string = this.getContextSources(context)[0].value;
+    const hdtFile: string = this.getContextSource(context).value;
     if (!this.hdtDocuments[hdtFile]) {
       await this.initializeHdt(hdtFile);
     }

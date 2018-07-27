@@ -52,14 +52,19 @@ describe('ActorRdfResolveQuadPatternFederated', () => {
         { name: 'actor', bus, mediatorResolveQuadPattern, skipEmptyPatterns });
     });
 
-    it('should test with >= 2 sources', () => {
+    it('should test with >= 1 sources', () => {
       return expect(actor.test({ pattern: null, context: ActionContext(
-        { '@comunica/bus-rdf-resolve-quad-pattern:sources': [{}, {}] }) })).resolves.toBeTruthy();
+        { '@comunica/bus-rdf-resolve-quad-pattern:sources': [{}] }) })).resolves.toBeTruthy();
     });
 
-    it('should not test with < 2 sources', () => {
+    it('should not test with < 1 sources', () => {
       return expect(actor.test({ pattern: null, context: ActionContext(
-        { '@comunica/bus-rdf-resolve-quad-pattern:sources': [{}] }) })).rejects.toBeTruthy();
+        { '@comunica/bus-rdf-resolve-quad-pattern:sources': [] }) })).rejects.toBeTruthy();
+    });
+
+    it('should not test with a single source', () => {
+      return expect(actor.test({ pattern: null, context: ActionContext(
+          { '@comunica/bus-rdf-resolve-quad-pattern:source': {} }) })).rejects.toBeTruthy();
     });
 
     it('should not test without sources', () => {

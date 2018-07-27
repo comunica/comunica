@@ -52,7 +52,7 @@ describe('ActorRdfResolveQuadPatternHdt', () => {
 
     it('should test', () => {
       return expect(actor.test({ pattern: null, context: ActionContext(
-        { '@comunica/bus-rdf-resolve-quad-pattern:sources': [{ type: 'hdtFile', value: 'abc'  }] }) }))
+        { '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'hdtFile', value: 'abc'  }}) }))
         .resolves.toBeTruthy();
     });
 
@@ -66,26 +66,26 @@ describe('ActorRdfResolveQuadPatternHdt', () => {
 
     it('should not test on an invalid file', () => {
       return expect(actor.test({ pattern: null, context: ActionContext(
-        { sources: [{ type: 'hdtFile', value: null  }] }) }))
+        { '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'hdtFile', value: null  }}) }))
         .rejects.toBeTruthy();
     });
 
     it('should not test on no file', () => {
       return expect(actor.test({ pattern: null, context: ActionContext(
-        { sources: [{ type: 'entrypoint', value: null  }] }) }))
+        { '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'entrypoint', value: null  }}) }))
         .rejects.toBeTruthy();
     });
 
     it('should not test on no sources', () => {
       return expect(actor.test({ pattern: null, context: ActionContext(
-        { sources: [] }) }))
+        { '@comunica/bus-rdf-resolve-quad-pattern:sources': [] }) }))
         .rejects.toBeTruthy();
     });
 
     it('should not test on multiple sources', () => {
       return expect(actor.test(
-        { pattern: null, context: ActionContext(
-          { sources: [{ type: 'hdtFile', value: 'a' }, { type: 'hdtFile', value: 'b' }] }) }))
+        { pattern: null, context: ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:sources':
+              [{ type: 'hdtFile', value: 'a' }, { type: 'hdtFile', value: 'b' }] }) }))
         .rejects.toBeTruthy();
     });
 
@@ -98,23 +98,24 @@ describe('ActorRdfResolveQuadPatternHdt', () => {
     });
 
     it('should allow a HDT quad source to be created for a context with a valid file', () => {
-      return expect((<any> actor).getSource(ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:sources':
-          [{ type: 'hdtFile', value: 'myFile'  }] })))
+      return expect((<any> actor).getSource(ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:source':
+          { type: 'hdtFile', value: 'myFile'  }})))
         .resolves.toBeTruthy();
     });
 
     it('should fail on creating a HDT quad source for a context with an invalid file', () => {
-      return expect((<any> actor).getSource({ sources: [{ type: 'hdtFile', value: null  }] })).rejects.toBeTruthy();
+      return expect((<any> actor).getSource({ '@comunica/bus-rdf-resolve-quad-pattern:sources':
+          { type: 'hdtFile', value: null  }})).rejects.toBeTruthy();
     });
 
     it('should create only a HDT quad source only once per file', () => {
       let doc1 = null;
-      return (<any> actor).getSource(ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:sources':
-          [{ type: 'hdtFile', value: 'myFile'  }] }))
+      return (<any> actor).getSource(ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:source':
+          { type: 'hdtFile', value: 'myFile'  }}))
         .then((file: any) => {
           doc1 = file.hdtDocument;
-          return (<any> actor).getSource(ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:sources':
-              [{ type: 'hdtFile', value: 'myFile'  }] }));
+          return (<any> actor).getSource(ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:source':
+              { type: 'hdtFile', value: 'myFile'  }}));
         })
         .then((file: any) => {
           expect(file.hdtDocument).toBe(doc1);
@@ -123,13 +124,13 @@ describe('ActorRdfResolveQuadPatternHdt', () => {
 
     it('should create different documents in HDT quad source for different files', () => {
       let doc1 = null;
-      return (<any> actor).getSource(ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:sources':
-          [{ type: 'hdtFile', value: 'myFile1'  }] }))
+      return (<any> actor).getSource(ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:source':
+          { type: 'hdtFile', value: 'myFile1' }}))
         .then((file: any) => {
           doc1 = file.hdtDocument;
           require('hdt').__setMockedDocument(new MockedHdtDocument([]));
-          return (<any> actor).getSource(ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:sources':
-              [{ type: 'hdtFile', value: 'myFile2'  }] }));
+          return (<any> actor).getSource(ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:source':
+              { type: 'hdtFile', value: 'myFile2' }}));
         })
         .then((file: any) => {
           expect(file.hdtDocument).not.toBe(doc1);
@@ -145,7 +146,7 @@ describe('ActorRdfResolveQuadPatternHdt', () => {
     it('should run on ? ? ?', () => {
       const pattern = quad('?', '?', '?');
       return actor.run({ pattern, context: ActionContext(
-        { '@comunica/bus-rdf-resolve-quad-pattern:sources': [{ type: 'hdtFile', value: 'abc'  }] }) })
+        { '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'hdtFile', value: 'abc'  }}) })
         .then(async (output) => {
           expect(await output.metadata()).toEqual({ totalItems: 8 });
           expect(await arrayifyStream(output.data)).toEqual([
@@ -164,7 +165,7 @@ describe('ActorRdfResolveQuadPatternHdt', () => {
     it('should run on ? ? ? without data', () => {
       const pattern = quad('?', '?', '?');
       return actor.run({ pattern, context: ActionContext(
-          { '@comunica/bus-rdf-resolve-quad-pattern:sources': [{ type: 'hdtFile', value: 'abc'  }] }) })
+          { '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'hdtFile', value: 'abc'  }}) })
         .then(async (output) => {
           expect(await output.metadata()).toEqual({ totalItems: 8 });
         });
@@ -173,7 +174,7 @@ describe('ActorRdfResolveQuadPatternHdt', () => {
     it('should run on s1 ? ?', () => {
       const pattern = quad('s1', '?', '?');
       return actor.run({ pattern, context: ActionContext(
-          { '@comunica/bus-rdf-resolve-quad-pattern:sources': [{ type: 'hdtFile', value: 'abc'  }] }) })
+          { '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'hdtFile', value: 'abc'  }}) })
         .then(async (output) => {
           expect(await output.metadata()).toEqual({ totalItems: 4 });
           expect(await arrayifyStream(output.data)).toEqual([
@@ -188,7 +189,7 @@ describe('ActorRdfResolveQuadPatternHdt', () => {
     it('should run on s3 ? ?', () => {
       const pattern = quad('s3', '?', '?');
       return actor.run({ pattern, context: ActionContext(
-        { '@comunica/bus-rdf-resolve-quad-pattern:sources': [{ type: 'hdtFile', value: 'abc'  }] }) })
+          { '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'hdtFile', value: 'abc'  }}) })
         .then(async (output) => {
           expect(await output.metadata()).toEqual({ totalItems: 0 });
           expect(await arrayifyStream(output.data)).toEqual([]);
@@ -208,7 +209,7 @@ describe('ActorRdfResolveQuadPatternHdt', () => {
       expect((<any> actor).shouldClose).toBe(true);
       const pattern = quad('s3', '?', '?');
       return actor.run({ pattern, context: ActionContext(
-          { '@comunica/bus-rdf-resolve-quad-pattern:sources': [{ type: 'hdtFile', value: 'abc'  }] }) })
+          { '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'hdtFile', value: 'abc'  }}) })
         .then(async (output) => {
           expect(await arrayifyStream(output.data)).toBeTruthy();
           expect((<any> actor).shouldClose).toBe(false);
