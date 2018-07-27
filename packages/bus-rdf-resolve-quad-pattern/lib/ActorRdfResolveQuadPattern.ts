@@ -33,10 +33,19 @@ export abstract class ActorRdfResolveQuadPattern extends Actor<IActionRdfResolve
   /**
    * Get the sources from the given context.
    * @param {ActionContext} context An optional context.
-   * @return {{type: string; value: string}[]} The array of sources or null.
+   * @return {IDataSource[]} The array of sources or null.
    */
-  protected getContextSources(context: ActionContext): { type: string, value: string }[] {
+  protected getContextSources(context: ActionContext): IDataSource[] {
     return context ? context.get(KEY_CONTEXT_SOURCES) : null;
+  }
+
+  /**
+   * Get the source from the given context.
+   * @param {ActionContext} context An optional context.
+   * @return {IDataSource} The source or null.
+   */
+  protected getContextSource(context: ActionContext): IDataSource {
+    return context ? context.get(KEY_CONTEXT_SOURCE) : null;
   }
 
   /**
@@ -46,17 +55,27 @@ export abstract class ActorRdfResolveQuadPattern extends Actor<IActionRdfResolve
    * @return {boolean} If the given context has a single source of the given type.
    */
   protected hasContextSingleSource(requiredType: string, context: ActionContext): boolean {
-    const sources = this.getContextSources(context);
-    return !!(sources && sources.length === 1 && sources[0].type === requiredType && sources[0].value);
+    const source = this.getContextSource(context);
+    return !!(source && source.type === requiredType && source.value);
   }
 
 }
 
+export interface IDataSource {
+  type: string;
+  value: any;
+}
+export type DataSources = IDataSource[];
 /**
  * @type {string} Context entry for data sources.
- * @value { type: string; value: any }[] An array of sources.
+ * @value {DataSources} An array or stream of sources.
  */
 export const KEY_CONTEXT_SOURCES: string = '@comunica/bus-rdf-resolve-quad-pattern:sources';
+/**
+ * @type {string} Context entry for a data source.
+ * @value {IDataSource} A source.
+ */
+export const KEY_CONTEXT_SOURCE: string = '@comunica/bus-rdf-resolve-quad-pattern:source';
 
 export interface IActionRdfResolveQuadPattern extends IAction {
   /**

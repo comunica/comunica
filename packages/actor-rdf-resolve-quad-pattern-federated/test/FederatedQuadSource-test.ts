@@ -13,7 +13,7 @@ describe('FederatedQuadSource', () => {
   beforeEach(() => {
     mediator = {
       mediate: (action) => {
-        const type = action.context.get('@comunica/bus-rdf-resolve-quad-pattern:sources')[0].type;
+        const type = action.context.get('@comunica/bus-rdf-resolve-quad-pattern:source').type;
         if (type === 'emptySource') {
           return Promise.resolve({ data: new EmptyIterator(),
             metadata: () => Promise.resolve({ totalItems: 0 }) });

@@ -136,7 +136,7 @@ describe('ActorRdfResolveQuadPatternQpf', () => {
     it('should test', () => {
       return expect(actor.test(
         { pattern: pattern1, context: ActionContext(
-          { '@comunica/bus-rdf-resolve-quad-pattern:sources': [{ type: 'hypermedia', value: 'hypermedia' } ]})}))
+          { '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'hypermedia', value: 'hypermedia' }})}))
         .resolves.toBeTruthy();
     });
 
@@ -151,7 +151,7 @@ describe('ActorRdfResolveQuadPatternQpf', () => {
     it('should run and error in the stream when no metadata is available', () => {
       mediator.mediate = () => Promise.resolve({});
       return actor.run({ pattern: pattern1, context: ActionContext(
-        { '@comunica/bus-rdf-resolve-quad-pattern:sources': [{ type: 'hypermedia', value: 'hypermedia' } ]})})
+        { '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'hypermedia', value: 'hypermedia' }})})
         .then(async (output) => {
           expect(arrayifyStream(output.data)).rejects
             .toEqual(new Error('No metadata was found at hypermedia entrypoint hypermedia'));
@@ -161,7 +161,7 @@ describe('ActorRdfResolveQuadPatternQpf', () => {
     it('should not run when no metadata search forms are available', () => {
       mediator.mediate = () => Promise.resolve({ firstPageMetadata: () => Promise.resolve({}) });
       return actor.run({ pattern: pattern1, context: ActionContext(
-        { '@comunica/bus-rdf-resolve-quad-pattern:sources': [{ type: 'hypermedia', value: 'hypermedia' } ]})})
+        { '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'hypermedia', value: 'hypermedia' }})})
         .then(async (output) => {
           expect(arrayifyStream(output.data)).rejects
             .toEqual(new Error('No Hydra search forms were discovered in the metadata of hypermedia. ' +
@@ -173,7 +173,7 @@ describe('ActorRdfResolveQuadPatternQpf', () => {
       mediator.mediate = () => Promise.resolve(
         { firstPageMetadata: () => Promise.resolve({ searchForms: { values: [] } }) });
       return actor.run({ pattern: pattern1, context: ActionContext(
-        { '@comunica/bus-rdf-resolve-quad-pattern:sources': [{ type: 'hypermedia', value: 'hypermedia' } ]})})
+        { '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'hypermedia', value: 'hypermedia' }})})
         .then(async (output) => {
           expect(arrayifyStream(output.data)).rejects
             .toEqual(new Error('No Hydra search forms were discovered in the metadata of hypermedia. ' +
@@ -196,7 +196,7 @@ describe('ActorRdfResolveQuadPatternQpf', () => {
         ]}})});
 
       return actor.run({ pattern: pattern1, context: ActionContext(
-        { '@comunica/bus-rdf-resolve-quad-pattern:sources': [{ type: 'hypermedia', value: 'hypermedia' } ]})})
+        { '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'hypermedia', value: 'hypermedia' }})})
         .then(async (output) => {
           expect(arrayifyStream(output.data)).rejects
             .toEqual(new Error('No valid Hydra search form was found for quad pattern or triple pattern queries.'));
@@ -205,7 +205,7 @@ describe('ActorRdfResolveQuadPatternQpf', () => {
 
     it('should run for QPF pattern 1', () => {
       return actor.run({ pattern: pattern1, context: ActionContext(
-        { '@comunica/bus-rdf-resolve-quad-pattern:sources': [{ type: 'hypermedia', value: 'hypermedia' } ]})})
+        { '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'hypermedia', value: 'hypermedia' }})})
         .then(async (output) => {
           expect(await output.metadata()).toBe(metadataQpf);
           expect(await arrayifyStream(output.data)).toEqual([
@@ -218,7 +218,7 @@ describe('ActorRdfResolveQuadPatternQpf', () => {
 
     it('should run for QPF pattern 2', () => {
       return actor.run({ pattern: pattern2, context: ActionContext(
-        { '@comunica/bus-rdf-resolve-quad-pattern:sources': [{ type: 'hypermedia', value: 'hypermedia' } ]})})
+        { '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'hypermedia', value: 'hypermedia' }})})
         .then(async (output) => {
           expect(await output.metadata()).toBe(metadataQpf);
           expect(await arrayifyStream(output.data)).toEqual([
@@ -231,7 +231,7 @@ describe('ActorRdfResolveQuadPatternQpf', () => {
 
     it('should run for QPF pattern 3', () => {
       return actor.run({ pattern: pattern3, context: ActionContext(
-        { '@comunica/bus-rdf-resolve-quad-pattern:sources': [{ type: 'hypermedia', value: 'hypermedia' } ]})})
+        { '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'hypermedia', value: 'hypermedia' }})})
         .then(async (output) => {
           expect(await output.metadata()).toBe(metadataQpf);
           expect(await arrayifyStream(output.data)).toEqual([
@@ -244,7 +244,7 @@ describe('ActorRdfResolveQuadPatternQpf', () => {
 
     it('should run for QPF pattern 4', () => {
       return actor.run({ pattern: pattern4, context: ActionContext(
-        { '@comunica/bus-rdf-resolve-quad-pattern:sources': [{ type: 'hypermedia', value: 'hypermedia' } ]})})
+          { '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'hypermedia', value: 'hypermedia' }})})
         .then(async (output) => {
           expect(await output.metadata()).toBe(metadataQpf);
           expect(await arrayifyStream(output.data)).toEqual([
@@ -257,7 +257,7 @@ describe('ActorRdfResolveQuadPatternQpf', () => {
 
     it('should run for QPF pattern 5', () => {
       return actor.run({ pattern: pattern5, context: ActionContext(
-        { '@comunica/bus-rdf-resolve-quad-pattern:sources': [{ type: 'hypermedia', value: 'hypermedia' } ]})})
+          { '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'hypermedia', value: 'hypermedia' }})})
         .then(async (output) => {
           expect(await output.metadata()).toBe(metadataQpf);
           expect(await arrayifyStream(output.data)).toEqual([
@@ -270,7 +270,7 @@ describe('ActorRdfResolveQuadPatternQpf', () => {
 
     it('should run for QPF pattern 6', () => {
       return actor.run({ pattern: pattern6, context: ActionContext(
-        { '@comunica/bus-rdf-resolve-quad-pattern:sources': [{ type: 'hypermedia', value: 'hypermedia' } ]})})
+          { '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'hypermedia', value: 'hypermedia' }})})
         .then(async (output) => {
           expect(await output.metadata()).toBe(metadataQpf);
           expect(await arrayifyStream(output.data)).toEqual([
@@ -286,7 +286,7 @@ describe('ActorRdfResolveQuadPatternQpf', () => {
 
     it('should run for QPF pattern 6 when only the data is called', () => {
       return actor.run({ pattern: pattern6, context: ActionContext(
-        { '@comunica/bus-rdf-resolve-quad-pattern:sources': [{ type: 'hypermedia', value: 'hypermedia' } ]})})
+          { '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'hypermedia', value: 'hypermedia' }})})
         .then(async (output) => {
           expect(await arrayifyStream(output.data)).toEqual([
             quad(namedNode('"a","b"@nl,"c"^^data,_/a'), namedNode('"a","b"@nl,"c"^^data,_/a'),
@@ -301,7 +301,7 @@ describe('ActorRdfResolveQuadPatternQpf', () => {
 
     it('should run for QPF pattern 6 when only the metadata is called', () => {
       return actor.run({ pattern: pattern6, context: ActionContext(
-        { '@comunica/bus-rdf-resolve-quad-pattern:sources': [{ type: 'hypermedia', value: 'hypermedia' } ]})})
+          { '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'hypermedia', value: 'hypermedia' }})})
         .then(async (output) => {
           expect(await output.metadata()).toBe(metadataQpf);
         });
@@ -311,7 +311,7 @@ describe('ActorRdfResolveQuadPatternQpf', () => {
       mediator.mediate = (action) => { throw new Error('This should not be called'); };
       return expect(actor.run(
         { pattern: pattern6, context: ActionContext(
-          { '@comunica/bus-rdf-resolve-quad-pattern:sources': [{ type: 'hypermedia', value: 'hypermedia' } ]})}))
+            { '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'hypermedia', value: 'hypermedia' }})}))
         .resolves.toBeTruthy();
     });
 
@@ -321,7 +321,7 @@ describe('ActorRdfResolveQuadPatternQpf', () => {
         firstPageMetadata: () => Promise.resolve(metadataTpf),
       });
       return actor.run({ pattern: pattern2, context: ActionContext(
-        { '@comunica/bus-rdf-resolve-quad-pattern:sources': [{ type: 'hypermedia', value: 'hypermedia' } ]})})
+          { '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'hypermedia', value: 'hypermedia' }})})
         .then(async (output) => {
           expect(await output.metadata()).toBe(metadataTpf);
           expect(await arrayifyStream(output.data)).toEqual([ 'a,b,_/a', 'a,b,_/b', 'a,b,_/c' ]);
@@ -334,13 +334,13 @@ describe('ActorRdfResolveQuadPatternQpf', () => {
         firstPageMetadata: () => Promise.resolve(metadataTpf),
       });
       return actor.run({ pattern: pattern2, context: ActionContext(
-        { '@comunica/bus-rdf-resolve-quad-pattern:sources': [{ type: 'hypermedia', value: 'hypermedia' } ]})})
+          { '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'hypermedia', value: 'hypermedia' }})})
         .then(async (output) => {
           expect(await output.metadata()).toBe(metadataTpf);
           expect(await arrayifyStream(output.data)).toEqual([ 'a,b,_/a', 'a,b,_/b', 'a,b,_/c' ]);
           return actor.run(
             { pattern: pattern2, context: ActionContext(
-              { '@comunica/bus-rdf-resolve-quad-pattern:sources': [{ type: 'hypermedia', value: 'hypermedia' } ]})})
+                { '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'hypermedia', value: 'hypermedia' }})})
             .then(async (output2) => {
               expect(await output2.metadata()).toBe(metadataTpf);
               expect(await arrayifyStream(output2.data)).toEqual([ 'a,b,_/a', 'a,b,_/b', 'a,b,_/c' ]);
@@ -351,10 +351,10 @@ describe('ActorRdfResolveQuadPatternQpf', () => {
     it('should cache when run for the same hypermedia twice', () => {
       const spy = jest.spyOn(<any> actor, 'createSource');
       return actor.run({ pattern: pattern1, context: ActionContext(
-        { '@comunica/bus-rdf-resolve-quad-pattern:sources': [{ type: 'hypermedia', value: 'hypermedia' } ]})})
+          { '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'hypermedia', value: 'hypermedia' }})})
         .then(() => {
           actor.run({ pattern: pattern1, context: ActionContext(
-            { '@comunica/bus-rdf-resolve-quad-pattern:sources': [{ type: 'hypermedia', value: 'hypermedia' } ]})})
+              { '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'hypermedia', value: 'hypermedia' }})})
             .then(() => {
               expect(spy).toHaveBeenCalledTimes(1);
             });
@@ -364,10 +364,10 @@ describe('ActorRdfResolveQuadPatternQpf', () => {
     it('should not cache when run for different hypermedias', () => {
       const spy = jest.spyOn(<any> actor, 'createSource');
       return actor.run({ pattern: pattern1, context: ActionContext(
-        { '@comunica/bus-rdf-resolve-quad-pattern:sources': [{ type: 'hypermedia', value: 'hypermedia1' } ]})})
+          { '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'hypermedia', value: 'hypermedia1' }})})
         .then(() => {
           actor.run({ pattern: pattern1, context: ActionContext(
-            { '@comunica/bus-rdf-resolve-quad-pattern:sources': [{ type: 'hypermedia', value: 'hypermedia2' } ]})})
+              { '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'hypermedia', value: 'hypermedia2' }})})
             .then(() => {
               expect(spy).toHaveBeenCalledTimes(2);
             });
