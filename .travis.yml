@@ -21,7 +21,6 @@ script:
   - yarn run lint
   - yarn run test-ci
   - lerna run browser
-  - ./.travis/docker.sh
 after_success:
   - yarn run coveralls-ci
   - yarn global add typedoc && yarn run doc
@@ -41,7 +40,7 @@ deploy:
 deploy:
   provider: script
   skip-cleanup: true
-  script: ./.travis/docker.sh push
+  script: ./.travis/docker.sh && ./.travis/docker.sh push
   on:
     tags: true
     branch: master
