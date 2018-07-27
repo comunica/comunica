@@ -39,14 +39,14 @@ export class ActorSparqlSerializeSparqlJson extends ActorSparqlSerializeFixedMed
     }
   }
 
-  public async testHandleChecked(action: IActionSparqlSerialize, context?: ActionContext) {
+  public async testHandleChecked(action: IActionSparqlSerialize, context: ActionContext) {
     if (['bindings', 'boolean'].indexOf(action.type) < 0) {
       throw new Error('This actor can only handle bindings streams or booleans.');
     }
     return true;
   }
 
-  public async runHandle(action: IActionSparqlSerialize, mediaType: string, context?: ActionContext)
+  public async runHandle(action: IActionSparqlSerialize, mediaType: string, context: ActionContext)
     : Promise<IActorSparqlSerializeOutput> {
     const data = new Readable();
     data._read = () => {

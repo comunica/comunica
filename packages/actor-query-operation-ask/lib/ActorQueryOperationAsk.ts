@@ -13,11 +13,11 @@ export class ActorQueryOperationAsk extends ActorQueryOperationTypedMediated<Alg
     super(args, 'ask');
   }
 
-  public async testOperation(pattern: Algebra.Ask, context?: ActionContext): Promise<IActorTest> {
+  public async testOperation(pattern: Algebra.Ask, context: ActionContext): Promise<IActorTest> {
     return true;
   }
 
-  public async runOperation(pattern: Algebra.Ask, context?: ActionContext)
+  public async runOperation(pattern: Algebra.Ask, context: ActionContext)
     : Promise<IActorQueryOperationOutputBoolean> {
     // Call other query operations like this:
     const output: IActorQueryOperationOutput = await this.mediatorQueryOperation.mediate(

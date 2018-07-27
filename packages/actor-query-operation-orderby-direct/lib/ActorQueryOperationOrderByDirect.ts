@@ -18,7 +18,7 @@ export class ActorQueryOperationOrderByDirect extends ActorQueryOperationTypedMe
     this.window = args.window || Infinity;
   }
 
-  public async testOperation(pattern: Algebra.OrderBy, context?: ActionContext): Promise<IActorTest> {
+  public async testOperation(pattern: Algebra.OrderBy, context: ActionContext): Promise<IActorTest> {
     // will throw error for unsupported operators
     for (let expr of pattern.expressions) {
       // remove descending operator
@@ -33,7 +33,7 @@ export class ActorQueryOperationOrderByDirect extends ActorQueryOperationTypedMe
     return true;
   }
 
-  public async runOperation(pattern: Algebra.OrderBy, context?: ActionContext)
+  public async runOperation(pattern: Algebra.OrderBy, context: ActionContext)
     : Promise<IActorQueryOperationOutputBindings> {
     const output: IActorQueryOperationOutputBindings =
       ActorQueryOperation.getSafeBindings(await this.mediatorQueryOperation.mediate(

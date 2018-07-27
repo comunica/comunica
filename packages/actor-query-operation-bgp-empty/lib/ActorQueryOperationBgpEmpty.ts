@@ -13,14 +13,14 @@ export class ActorQueryOperationBgpEmpty extends ActorQueryOperationTyped<Algebr
     super(args, 'bgp');
   }
 
-  public async testOperation(pattern: Algebra.Bgp, context?: ActionContext): Promise<IActorTest> {
+  public async testOperation(pattern: Algebra.Bgp, context: ActionContext): Promise<IActorTest> {
     if (pattern.patterns.length !== 0) {
       throw new Error('Actor ' + this.name + ' can only operate on empty BGPs.');
     }
     return true;
   }
 
-  public async runOperation(pattern: Algebra.Bgp, context?: ActionContext)
+  public async runOperation(pattern: Algebra.Bgp, context: ActionContext)
   : Promise<IActorQueryOperationOutputBindings> {
     return {
       bindingsStream: new EmptyIterator(),

@@ -23,7 +23,7 @@ export class ActorSparqlSerializeRdf extends ActorSparqlSerialize implements IAc
     super(args);
   }
 
-  public async testHandle(action: IActorQueryOperationOutput, mediaType: string, context?: ActionContext)
+  public async testHandle(action: IActorQueryOperationOutput, mediaType: string, context: ActionContext)
     : Promise<IActorTest> {
     // Check if we are provided with a quad stream
     if (action.type !== 'quads') {
@@ -40,18 +40,18 @@ export class ActorSparqlSerializeRdf extends ActorSparqlSerialize implements IAc
     return true;
   }
 
-  public async runHandle(action: IActorQueryOperationOutput, mediaType: string, context?: ActionContext)
+  public async runHandle(action: IActorQueryOperationOutput, mediaType: string, context: ActionContext)
     : Promise<IActorSparqlSerializeOutput> {
     // Delegate handling to the mediator
     return (await this.mediatorRdfSerialize.mediate({ context,
       handle: { quads: (<IActorQueryOperationOutputQuads> action).quadStream }, handleMediaType: mediaType })).handle;
   }
 
-  public async testMediaType(context?: ActionContext): Promise<boolean> {
+  public async testMediaType(context: ActionContext): Promise<boolean> {
     return true;
   }
 
-  public async getMediaTypes(context?: ActionContext): Promise<{[id: string]: number}> {
+  public async getMediaTypes(context: ActionContext): Promise<{[id: string]: number}> {
     return (await this.mediatorMediaTypeCombiner.mediate({ context, mediaTypes: true })).mediaTypes;
   }
 

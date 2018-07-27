@@ -24,7 +24,7 @@ export class ActorSparqlSerializeTree extends ActorSparqlSerializeFixedMediaType
    * @param {IConverterSettings} converterSettings
    * @return {Promise<string>}
    */
-  public static bindingsStreamToGraphQl(bindingsStream: BindingsStream, context?: ActionContext,
+  public static bindingsStreamToGraphQl(bindingsStream: BindingsStream, context: ActionContext,
                                         converterSettings?: IConverterSettings): Promise<string> {
     return new Promise((resolve, reject) => {
       const bindingsArray: {[key: string]: RDF.Term}[] = [];

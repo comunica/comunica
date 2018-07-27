@@ -20,7 +20,7 @@ export class ActorRdfSerializeJsonLd extends ActorRdfSerializeFixedMediaTypes {
     this.jsonLd = require('jsonld')();
   }
 
-  public async runHandle(action: IActionRdfSerialize, mediaType: string, context?: ActionContext)
+  public async runHandle(action: IActionRdfSerialize, mediaType: string, context: ActionContext)
     : Promise<IActorRdfSerializeOutput> {
     const quadsArray: RDF.Quad = await require('arrayify-stream')(action.quads);
     const jsonLines: string[] = (await this.jsonLd.fromRDF(quadsArray, { useNativeTypes: true }))

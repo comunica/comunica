@@ -21,7 +21,7 @@ export abstract class ActorSparqlSerializeFixedMediaTypes extends ActorAbstractM
     super(args);
   }
 
-  public async testHandleChecked(action: IActionSparqlSerialize, context?: ActionContext) {
+  public async testHandleChecked(action: IActionSparqlSerialize, context: ActionContext) {
     return true;
   }
 

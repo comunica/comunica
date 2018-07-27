@@ -197,11 +197,11 @@ export class ActorQueryOperationFromQuad extends ActorQueryOperationTypedMediate
     return operation;
   }
 
-  public async testOperation(pattern: Algebra.From, context?: ActionContext): Promise<IActorTest> {
+  public async testOperation(pattern: Algebra.From, context: ActionContext): Promise<IActorTest> {
     return true;
   }
 
-  public async runOperation(pattern: Algebra.From, context?: ActionContext)
+  public async runOperation(pattern: Algebra.From, context: ActionContext)
   : Promise<IActorQueryOperationOutput> {
     const operation: Algebra.Operation = ActorQueryOperationFromQuad.createOperation(pattern);
     return this.mediatorQueryOperation.mediate({ operation, context });

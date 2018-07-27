@@ -63,7 +63,7 @@ Options:
 
     // Print supported MIME types
     if (args.listformats) {
-      const mediaTypes: {[id: string]: number} = await this.getResultMediaTypes();
+      const mediaTypes: {[id: string]: number} = await this.getResultMediaTypes(null);
       return { stdout: require('streamify-string')(Object.keys(mediaTypes).join('\n')) };
     }
 

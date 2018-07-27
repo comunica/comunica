@@ -139,7 +139,7 @@ export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs {
    * @param context An optional context.
    * @return {Promise<{[p: string]: number}>} All available SPARQL (weighted) result media types.
    */
-  public async getResultMediaTypes(context?: ActionContext): Promise<{[id: string]: number}> {
+  public async getResultMediaTypes(context: ActionContext): Promise<{[id: string]: number}> {
     return (await this.mediatorSparqlSerializeMediaTypeCombiner.mediate({ context, mediaTypes: true })).mediaTypes;
   }
 

@@ -43,11 +43,11 @@ export class ActorQueryOperationUnion extends ActorQueryOperationTypedMediated<A
     return { totalItems };
   }
 
-  public async testOperation(pattern: Algebra.Union, context?: ActionContext): Promise<IActorTest> {
+  public async testOperation(pattern: Algebra.Union, context: ActionContext): Promise<IActorTest> {
     return true;
   }
 
-  public async runOperation(pattern: Algebra.Union, context?: ActionContext)
+  public async runOperation(pattern: Algebra.Union, context: ActionContext)
   : Promise<IActorQueryOperationOutputBindings> {
     const outputs: IActorQueryOperationOutputBindings[] = (await Promise.all([
       this.mediatorQueryOperation.mediate({ operation: pattern.left, context }),
