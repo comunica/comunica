@@ -30,11 +30,11 @@ export class ActorQueryOperationConstruct extends ActorQueryOperationTypedMediat
     return uniqTerms([].concat.apply([], patterns.map((pattern) => getVariables(getTerms(pattern)))));
   }
 
-  public async testOperation(pattern: Algebra.Construct, context?: ActionContext): Promise<IActorTest> {
+  public async testOperation(pattern: Algebra.Construct, context: ActionContext): Promise<IActorTest> {
     return true;
   }
 
-  public async runOperation(pattern: Algebra.Construct, context?: ActionContext)
+  public async runOperation(pattern: Algebra.Construct, context: ActionContext)
     : Promise<IActorQueryOperationOutputQuads> {
     // If our template is empty or contains no variables, no need to resolve a query.
     const variables: RDF.Variable[] = ActorQueryOperationConstruct.getVariables(pattern.template);

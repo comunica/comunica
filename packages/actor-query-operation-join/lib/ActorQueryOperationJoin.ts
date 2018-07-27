@@ -18,11 +18,11 @@ export class ActorQueryOperationJoin extends ActorQueryOperationTypedMediated<Al
     super(args, 'join');
   }
 
-  public async testOperation(pattern: Algebra.Join, context?: ActionContext): Promise<IActorTest> {
+  public async testOperation(pattern: Algebra.Join, context: ActionContext): Promise<IActorTest> {
     return true;
   }
 
-  public async runOperation(pattern: Algebra.Join, context?: ActionContext)
+  public async runOperation(pattern: Algebra.Join, context: ActionContext)
     : Promise<IActorQueryOperationOutput> {
     const left = this.mediatorQueryOperation.mediate({ operation: pattern.left, context });
     const right = this.mediatorQueryOperation.mediate({ operation: pattern.right, context });

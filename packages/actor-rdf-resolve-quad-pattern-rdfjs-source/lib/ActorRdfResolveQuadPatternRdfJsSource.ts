@@ -21,7 +21,7 @@ export class ActorRdfResolveQuadPatternRdfJsSource extends ActorRdfResolveQuadPa
     return true;
   }
 
-  protected async getSource(context?: ActionContext): Promise<ILazyQuadSource> {
+  protected async getSource(context: ActionContext): Promise<ILazyQuadSource> {
     return <any> this.getContextSources(context)[0].value;
   }
 

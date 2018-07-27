@@ -15,11 +15,11 @@ export class ActorQueryOperationValues extends ActorQueryOperationTyped<Algebra.
     super(args, 'values');
   }
 
-  public async testOperation(pattern: Algebra.Values, context?: ActionContext): Promise<IActorTest> {
+  public async testOperation(pattern: Algebra.Values, context: ActionContext): Promise<IActorTest> {
     return true;
   }
 
-  public async runOperation(pattern: Algebra.Values, context?: ActionContext)
+  public async runOperation(pattern: Algebra.Values, context: ActionContext)
     : Promise<IActorQueryOperationOutputBindings> {
     const bindingsStream: BindingsStream = new ArrayIterator<Bindings>(pattern.bindings.map(Bindings));
     const metadata = () => Promise.resolve({ totalItems: pattern.bindings.length });

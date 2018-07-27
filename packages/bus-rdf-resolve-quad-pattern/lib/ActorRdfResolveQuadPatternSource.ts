@@ -46,7 +46,7 @@ export abstract class ActorRdfResolveQuadPatternSource extends ActorRdfResolveQu
    * @return {Promise<IActorRdfResolveQuadPatternOutput>} A promise that resolves to a hash containing
    *                                                      a data RDFJS stream and an optional metadata hash.
    */
-  protected async getOutput(source: ILazyQuadSource, pattern: RDF.Quad, context?: ActionContext)
+  protected async getOutput(source: ILazyQuadSource, pattern: RDF.Quad, context: ActionContext)
   : Promise<IActorRdfResolveQuadPatternOutput> {
     if (source.matchLazy) {
       return { data: source.matchLazy(
@@ -72,7 +72,7 @@ export abstract class ActorRdfResolveQuadPatternSource extends ActorRdfResolveQu
    * @param ActionContext context Optional context data.
    * @return {Promise<RDF.Source>} A promise that resolves to a source.
    */
-  protected abstract getSource(context?: ActionContext): Promise<ILazyQuadSource>;
+  protected abstract getSource(context: ActionContext): Promise<ILazyQuadSource>;
 
 }
 

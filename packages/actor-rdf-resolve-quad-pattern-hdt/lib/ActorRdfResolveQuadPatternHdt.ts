@@ -63,7 +63,7 @@ export class ActorRdfResolveQuadPatternHdt extends ActorRdfResolveQuadPatternSou
     }
   }
 
-  protected async getSource(context?: ActionContext): Promise<ILazyQuadSource> {
+  protected async getSource(context: ActionContext): Promise<ILazyQuadSource> {
     const hdtFile: string = this.getContextSources(context)[0].value;
     if (!this.hdtDocuments[hdtFile]) {
       await this.initializeHdt(hdtFile);
@@ -71,7 +71,7 @@ export class ActorRdfResolveQuadPatternHdt extends ActorRdfResolveQuadPatternSou
     return new HdtQuadSource(await this.hdtDocuments[hdtFile]);
   }
 
-  protected async getOutput(source: RDF.Source, pattern: RDF.Quad, context?: ActionContext)
+  protected async getOutput(source: RDF.Source, pattern: RDF.Quad, context: ActionContext)
   : Promise<IActorRdfResolveQuadPatternOutput> {
     // Attach totalItems to the output
     this.queries++;

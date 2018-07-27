@@ -39,7 +39,7 @@ export class ActorRdfResolveQuadPatternQpf extends ActorRdfResolveQuadPatternSou
    * @param {ActionContext} context An optional context.
    * @return {Promise<ISearchForm>} A promise resolving to a hypermedia form.
    */
-  protected async chooseForm(hypermedia: string, context?: ActionContext): Promise<ISearchForm> {
+  protected async chooseForm(hypermedia: string, context: ActionContext): Promise<ISearchForm> {
     const firstPageMetadata: () => Promise<{[id: string]: any}> = (await this.mediatorRdfDereferencePaged
       .mediate({ context, url: hypermedia })).firstPageMetadata;
     if (!firstPageMetadata) {
@@ -75,7 +75,7 @@ export class ActorRdfResolveQuadPatternQpf extends ActorRdfResolveQuadPatternSou
     throw new Error('No valid Hydra search form was found for quad pattern or triple pattern queries.');
   }
 
-  protected async createSource(context?: ActionContext): Promise<ILazyQuadSource> {
+  protected async createSource(context: ActionContext): Promise<ILazyQuadSource> {
     // Determine form lazily when a URL is constructed.
     let chosenForm: Promise<ISearchForm> = null;
 
@@ -108,7 +108,7 @@ export class ActorRdfResolveQuadPatternQpf extends ActorRdfResolveQuadPatternSou
     return new MediatedQuadSource(this.mediatorRdfDereferencePaged, uriConstructor, context);
   }
 
-  protected async getSource(context?: ActionContext): Promise<ILazyQuadSource> {
+  protected async getSource(context: ActionContext): Promise<ILazyQuadSource> {
     // Cache the source object for each hypermedia entrypoint
     const hypermedia: string = this.getContextSources(context)[0].value;
     if (this.sources[hypermedia]) {
@@ -119,7 +119,7 @@ export class ActorRdfResolveQuadPatternQpf extends ActorRdfResolveQuadPatternSou
     return await (this.sources[hypermedia] = this.createSource(context));
   }
 
-  protected async getOutput(source: RDF.Source, pattern: RDF.Quad, context?: ActionContext)
+  protected async getOutput(source: RDF.Source, pattern: RDF.Quad, context: ActionContext)
   : Promise<IActorRdfResolveQuadPatternOutput> {
     // Attach metadata to the output
     const output: IActorRdfResolveQuadPatternOutput = await super.getOutput(source, pattern, context);

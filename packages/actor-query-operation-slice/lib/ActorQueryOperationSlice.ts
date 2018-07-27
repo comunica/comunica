@@ -13,11 +13,11 @@ export class ActorQueryOperationSlice extends ActorQueryOperationTypedMediated<A
     super(args, 'slice');
   }
 
-  public async testOperation(pattern: Algebra.Slice, context?: ActionContext): Promise<IActorTest> {
+  public async testOperation(pattern: Algebra.Slice, context: ActionContext): Promise<IActorTest> {
     return true;
   }
 
-  public async runOperation(pattern: Algebra.Slice, context?: ActionContext)
+  public async runOperation(pattern: Algebra.Slice, context: ActionContext)
   : Promise<IActorQueryOperationOutputBindings> {
     // Resolve the input
     const output: IActorQueryOperationOutputBindings = ActorQueryOperation.getSafeBindings(

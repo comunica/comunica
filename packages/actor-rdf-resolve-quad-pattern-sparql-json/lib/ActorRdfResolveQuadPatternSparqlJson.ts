@@ -209,7 +209,7 @@ export class ActorRdfResolveQuadPatternSparqlJson
    * @param {ActionContext} context An optional context.
    * @return {Promise<BindingsStream>} A promise resolving to a stream of bindings.
    */
-  public async queryBindings(endpoint: string, query: string, context?: ActionContext): Promise<BindingsStream> {
+  public async queryBindings(endpoint: string, query: string, context: ActionContext): Promise<BindingsStream> {
     // Parse each binding and push it in our buffered iterator
     const bindingsStream: BufferedIterator<Bindings> = new BufferedIterator<Bindings>(
       { autoStart: false, maxBufferSize: Infinity });
@@ -242,7 +242,7 @@ export class ActorRdfResolveQuadPatternSparqlJson
     return bindingsStream;
   }
 
-  protected async fetchBindingsStream(endpoint: string, query: string, context?: ActionContext)
+  protected async fetchBindingsStream(endpoint: string, query: string, context: ActionContext)
     : Promise<NodeJS.ReadableStream> {
     const url: string = endpoint + '?query=' + encodeURIComponent(query);
 

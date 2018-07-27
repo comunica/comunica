@@ -35,7 +35,7 @@ export abstract class ActorRdfResolveQuadPattern extends Actor<IActionRdfResolve
    * @param {ActionContext} context An optional context.
    * @return {{type: string; value: string}[]} The array of sources or null.
    */
-  protected getContextSources(context?: ActionContext): { type: string, value: string }[] {
+  protected getContextSources(context: ActionContext): { type: string, value: string }[] {
     return context ? context.get(KEY_CONTEXT_SOURCES) : null;
   }
 
@@ -45,7 +45,7 @@ export abstract class ActorRdfResolveQuadPattern extends Actor<IActionRdfResolve
    * @param {ActionContext} context An optional context.
    * @return {boolean} If the given context has a single source of the given type.
    */
-  protected hasContextSingleSource(requiredType: string, context?: ActionContext): boolean {
+  protected hasContextSingleSource(requiredType: string, context: ActionContext): boolean {
     const sources = this.getContextSources(context);
     return !!(sources && sources.length === 1 && sources[0].type === requiredType && sources[0].value);
   }

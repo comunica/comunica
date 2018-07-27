@@ -47,7 +47,7 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
     return true;
   }
 
-  public async runOperation(pattern: Algebra.Pattern, context?: ActionContext)
+  public async runOperation(pattern: Algebra.Pattern, context: ActionContext)
   : Promise<IActorQueryOperationOutputBindings> {
     // Resolve the quad pattern
     const result = await this.mediatorResolveQuadPattern.mediate({ pattern, context });

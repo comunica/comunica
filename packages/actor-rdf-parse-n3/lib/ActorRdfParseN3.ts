@@ -15,7 +15,7 @@ export class ActorRdfParseN3 extends ActorRdfParseFixedMediaTypes {
     super(args);
   }
 
-  public async runHandle(action: IActionRdfParse, mediaType: string, context?: ActionContext)
+  public async runHandle(action: IActionRdfParse, mediaType: string, context: ActionContext)
     : Promise<IActorRdfParseOutput> {
     action.input.on('error', (e) => quads.emit('error', e));
     const quads = N3Parser.import(action.input);

@@ -13,11 +13,11 @@ export class ActorQueryOperationLeftJoinNestedLoop extends ActorQueryOperationTy
     super(args, 'leftjoin');
   }
 
-  public async testOperation(pattern: Algebra.LeftJoin, context?: ActionContext): Promise<IActorTest> {
+  public async testOperation(pattern: Algebra.LeftJoin, context: ActionContext): Promise<IActorTest> {
     return !pattern.expression;
   }
 
-  public async runOperation(pattern: Algebra.LeftJoin, context?: ActionContext)
+  public async runOperation(pattern: Algebra.LeftJoin, context: ActionContext)
     : Promise<IActorQueryOperationOutputBindings> {
 
     // uses nested loop join

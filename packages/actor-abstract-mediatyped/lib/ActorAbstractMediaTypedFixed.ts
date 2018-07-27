@@ -22,7 +22,7 @@ export abstract class ActorAbstractMediaTypedFixed<HI, HT, HO> extends ActorAbst
     this.mediaTypes = Object.freeze(this.mediaTypes);
   }
 
-  public async testHandle(action: HI, mediaType: string, context?: ActionContext): Promise<HT> {
+  public async testHandle(action: HI, mediaType: string, context: ActionContext): Promise<HT> {
     if (!(mediaType in this.mediaTypes)) {
       throw new Error('Unrecognized media type: ' + mediaType);
     }
@@ -36,13 +36,13 @@ export abstract class ActorAbstractMediaTypedFixed<HI, HT, HO> extends ActorAbst
    * @param {ActionContext} context An optional context.
    * @param {HI} action The action to test.
    */
-  public abstract async testHandleChecked(action: HI, context?: ActionContext): Promise<HT>;
+  public abstract async testHandleChecked(action: HI, context: ActionContext): Promise<HT>;
 
-  public async testMediaType(context?: ActionContext): Promise<boolean> {
+  public async testMediaType(context: ActionContext): Promise<boolean> {
     return true;
   }
 
-  public async getMediaTypes(context?: ActionContext): Promise<{[id: string]: number}> {
+  public async getMediaTypes(context: ActionContext): Promise<{[id: string]: number}> {
     return this.mediaTypes;
   }
 

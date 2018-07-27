@@ -13,11 +13,11 @@ export class ActorQueryOperationProject extends ActorQueryOperationTypedMediated
     super(args, 'project');
   }
 
-  public async testOperation(pattern: Algebra.Project, context?: ActionContext): Promise<IActorTest> {
+  public async testOperation(pattern: Algebra.Project, context: ActionContext): Promise<IActorTest> {
     return true;
   }
 
-  public async runOperation(pattern: Algebra.Project, context?: ActionContext)
+  public async runOperation(pattern: Algebra.Project, context: ActionContext)
   : Promise<IActorQueryOperationOutputBindings> {
     // Resolve the input
     const output: IActorQueryOperationOutputBindings = ActorQueryOperation.getSafeBindings(

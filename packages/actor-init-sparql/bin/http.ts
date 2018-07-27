@@ -32,7 +32,7 @@ const port = parseInt(args.p, 10) || 3000;
 const options = { configResourceUrl: process.env.COMUNICA_CONFIG
   ? process.cwd() + '/' + process.env.COMUNICA_CONFIG : null };
 newEngineDynamic(options).then(async (engine: ActorInitSparql) => {
-  const mediaTypes: {[id: string]: number} = await engine.getResultMediaTypes();
+  const mediaTypes: {[id: string]: number} = await engine.getResultMediaTypes(null);
   const variants: any = [];
   for (const type of Object.keys(mediaTypes)) {
     variants.push({ type, quality: mediaTypes[type] });

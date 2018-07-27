@@ -13,13 +13,13 @@ export class ActorQueryOperationFilterDirect extends ActorQueryOperationTypedMed
     super(args, 'filter');
   }
 
-  public async testOperation(pattern: Algebra.Filter, context?: ActionContext): Promise<IActorTest> {
+  public async testOperation(pattern: Algebra.Filter, context: ActionContext): Promise<IActorTest> {
     // will throw error for unsupported operators
     SparqlExpressionEvaluator.createEvaluator(pattern.expression);
     return true;
   }
 
-  public async runOperation(pattern: Algebra.Filter, context?: ActionContext)
+  public async runOperation(pattern: Algebra.Filter, context: ActionContext)
     : Promise<IActorQueryOperationOutputBindings> {
     const output: IActorQueryOperationOutputBindings = ActorQueryOperation.getSafeBindings(
       await this.mediatorQueryOperation.mediate({ operation: pattern.input, context }));

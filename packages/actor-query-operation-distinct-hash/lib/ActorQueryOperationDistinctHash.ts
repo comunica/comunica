@@ -70,11 +70,11 @@ export class ActorQueryOperationDistinctHash extends ActorQueryOperationTypedMed
     };
   }
 
-  public async testOperation(pattern: Algebra.Distinct, context?: ActionContext): Promise<IActorTest> {
+  public async testOperation(pattern: Algebra.Distinct, context: ActionContext): Promise<IActorTest> {
     return true;
   }
 
-  public async runOperation(pattern: Algebra.Distinct, context?: ActionContext)
+  public async runOperation(pattern: Algebra.Distinct, context: ActionContext)
     : Promise<IActorQueryOperationOutputBindings> {
     const output: IActorQueryOperationOutputBindings = ActorQueryOperation.getSafeBindings(
       await this.mediatorQueryOperation.mediate({ operation: pattern.input, context }));

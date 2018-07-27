@@ -24,7 +24,7 @@ export class ActorSparqlSerializeTable extends ActorSparqlSerializeFixedMediaTyp
     return new Array(count + 1).join(str);
   }
 
-  public async testHandleChecked(action: IActionSparqlSerialize, context?: ActionContext) {
+  public async testHandleChecked(action: IActionSparqlSerialize, context: ActionContext) {
     if (['bindings', 'quads'].indexOf(action.type) < 0) {
       throw new Error('This actor can only handle bindings or quad streams.');
     }
@@ -44,7 +44,7 @@ export class ActorSparqlSerializeTable extends ActorSparqlSerializeFixedMediaTyp
     data.push(header + '\n' + ActorSparqlSerializeTable.repeat('-', header.length) + '\n');
   }
 
-  public async runHandle(action: IActionSparqlSerialize, mediaType: string, context?: ActionContext)
+  public async runHandle(action: IActionSparqlSerialize, mediaType: string, context: ActionContext)
     : Promise<IActorSparqlSerializeOutput> {
     const data = new Readable();
     data._read = () => {

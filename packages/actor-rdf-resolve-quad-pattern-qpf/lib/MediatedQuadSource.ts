@@ -28,7 +28,7 @@ export class MediatedQuadSource implements ILazyQuadSource {
                 IActorRdfDereferencePagedOutput>,
               uriConstructor: ((subject?: RDF.Term, predicate?: RDF.Term, object?: RDF.Term, graph?: RDF.Term)
                 => Promise<string>),
-              context?: ActionContext) {
+              context: ActionContext) {
     this.mediatorRdfDereferencePaged = mediatorRdfDereferencePaged;
     this.uriConstructor = uriConstructor;
     this.context = context;

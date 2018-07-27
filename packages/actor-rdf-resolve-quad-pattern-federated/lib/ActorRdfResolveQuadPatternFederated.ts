@@ -28,12 +28,12 @@ export class ActorRdfResolveQuadPatternFederated extends ActorRdfResolveQuadPatt
     return true;
   }
 
-  protected async getSource(context?: ActionContext): Promise<ILazyQuadSource> {
+  protected async getSource(context: ActionContext): Promise<ILazyQuadSource> {
     return new FederatedQuadSource(this.mediatorResolveQuadPattern, context,
       this.emptyPatterns, this.skipEmptyPatterns);
   }
 
-  protected async getOutput(source: RDF.Source, pattern: RDF.Quad, context?: ActionContext)
+  protected async getOutput(source: RDF.Source, pattern: RDF.Quad, context: ActionContext)
   : Promise<IActorRdfResolveQuadPatternOutput> {
     // Attach metadata to the output
     const output: IActorRdfResolveQuadPatternOutput = await super.getOutput(source, pattern, context);

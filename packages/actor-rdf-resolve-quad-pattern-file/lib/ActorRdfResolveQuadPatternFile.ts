@@ -24,7 +24,7 @@ export class ActorRdfResolveQuadPatternFile extends ActorRdfResolveQuadPatternSo
     super(args);
   }
 
-  public initializeFile(file: string, context?: ActionContext): Promise<any> {
+  public initializeFile(file: string, context: ActionContext): Promise<any> {
     return this.stores[file] = this.mediatorRdfDereference.mediate({ context, url: file })
       .then((page: IActorRdfDereferenceOutput) => new Promise((resolve, reject) => {
         const store: any = new N3Store();
@@ -35,7 +35,7 @@ export class ActorRdfResolveQuadPatternFile extends ActorRdfResolveQuadPatternSo
   }
 
   public async initialize(): Promise<any> {
-    (this.files || []).forEach((file) => this.initializeFile(file));
+    (this.files || []).forEach((file) => this.initializeFile(file, null));
     return null;
   }
 
@@ -46,7 +46,7 @@ export class ActorRdfResolveQuadPatternFile extends ActorRdfResolveQuadPatternSo
     return true;
   }
 
-  protected async getSource(context?: ActionContext): Promise<ILazyQuadSource> {
+  protected async getSource(context: ActionContext): Promise<ILazyQuadSource> {
     const file: string = this.getContextSources(context)[0].value;
     if (!this.stores[file]) {
       await this.initializeFile(file, context);
@@ -54,7 +54,7 @@ export class ActorRdfResolveQuadPatternFile extends ActorRdfResolveQuadPatternSo
     return new N3StoreQuadSource(await this.stores[file]);
   }
 
-  protected async getOutput(source: RDF.Source, pattern: RDF.Quad, context?: ActionContext)
+  protected async getOutput(source: RDF.Source, pattern: RDF.Quad, context: ActionContext)
   : Promise<IActorRdfResolveQuadPatternOutput> {
     // Attach totalItems to the output
     const output: IActorRdfResolveQuadPatternOutput = await super.getOutput(source, pattern, context);

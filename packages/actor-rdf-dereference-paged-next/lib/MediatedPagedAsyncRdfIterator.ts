@@ -37,7 +37,7 @@ export class MediatedPagedAsyncRdfIterator extends PagedAsyncRdfIterator {
               mediatorMetadataExtract: Mediator<Actor<IActionRdfMetadataExtract, IActorTest,
                 IActorRdfMetadataExtractOutput>, IActionRdfMetadataExtract, IActorTest,
                 IActorRdfMetadataExtractOutput>,
-              context?: ActionContext) {
+              context: ActionContext) {
     super(firstPageUrl, { autoStart: false });
     this.firstPageData = firstPageData;
     this.firstPageMetadata = firstPageMetadata;
