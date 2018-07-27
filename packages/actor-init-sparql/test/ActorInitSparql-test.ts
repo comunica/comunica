@@ -5,7 +5,7 @@ import {literal, namedNode, variable} from "rdf-data-model";
 import {Factory} from "sparqlalgebrajs";
 import {PassThrough, Readable} from "stream";
 import {ActorInitSparql} from "../lib/ActorInitSparql";
-import {ActorInitSparql as ActorInitSparqlBrowser} from "../lib/ActorInitSparql-browser";
+import {ActorInitSparql as ActorInitSparqlBrowser, KEY_CONTEXT_QUERYFORMAT} from "../lib/ActorInitSparql-browser";
 
 const FACTORY: Factory = new Factory();
 
@@ -203,7 +203,7 @@ describe('ActorInitSparql', () => {
           mediatorSparqlSerializeMediaTypeCombiner: mediatorSparqlSerialize, name: 'actor', queryString });
       const spy = jest.spyOn(actor, 'query');
       (await actor.run({ argv: [], env: {}, stdin: new PassThrough() }));
-      return expect(spy.mock.calls[0][1].queryFormat).toEqual('sparql');
+      return expect(spy.mock.calls[0][1][KEY_CONTEXT_QUERYFORMAT]).toEqual('sparql');
     });
 
     it('should allow the query format to be changed with -i', async () => {
@@ -212,7 +212,7 @@ describe('ActorInitSparql', () => {
           mediatorSparqlSerializeMediaTypeCombiner: mediatorSparqlSerialize, name: 'actor', queryString });
       const spy = jest.spyOn(actor, 'query');
       (await actor.run({ argv: [ '-i', 'graphql' ], env: {}, stdin: new PassThrough() }));
-      return expect(spy.mock.calls[0][1].queryFormat).toEqual('graphql');
+      return expect(spy.mock.calls[0][1][KEY_CONTEXT_QUERYFORMAT]).toEqual('graphql');
     });
 
     it('should allow a media type to be passed with -t', async () => {
