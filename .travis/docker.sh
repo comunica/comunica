@@ -18,7 +18,10 @@ for package in packages/*; do
         imagename="comunica/"$(echo $package | sed "s/packages\///")
 
         echo "Building Docker image $imagename..."
-        docker build -t $imagename:$VERSION $package
+        if ! docker build -t $imagename:$VERSION $package; then
+            echo "Failed to build Docker image for $package"
+            exit 1;
+        fi
         docker tag $imagename:$VERSION $imagename:latest
 
         if [[ $1 == "push" ]]; then
