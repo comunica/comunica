@@ -146,8 +146,10 @@ export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs {
    * @param {ActionContext} context An optional context.
    * @return {Promise<IActorSparqlSerializeOutput>} A text stream.
    */
-  public async resultToString(queryResult: IActorQueryOperationOutput, mediaType?: string, context?: ActionContext)
+  public async resultToString(queryResult: IActorQueryOperationOutput, mediaType?: string, context?: any)
   : Promise<IActorSparqlSerializeOutput> {
+    context = ActionContext(context);
+
     if (!mediaType) {
       switch (queryResult.type) {
       case 'bindings':
@@ -161,8 +163,9 @@ export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs {
         break;
       }
     }
-    return (await this.mediatorSparqlSerialize.mediate(
-      { context, handle: queryResult, handleMediaType: mediaType })).handle;
+    const handle: IActionSparqlSerialize = queryResult;
+    handle.context = context;
+    return (await this.mediatorSparqlSerialize.mediate({ context, handle, handleMediaType: mediaType })).handle;
   }
 
   public async run(action: IActionInit): Promise<IActorOutputInit> {
