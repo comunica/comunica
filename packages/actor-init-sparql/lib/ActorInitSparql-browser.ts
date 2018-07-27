@@ -103,6 +103,10 @@ export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs {
       context[KEY_CONTEXT_INITIALBINDINGS] = context.initialBindings;
       delete context.initialBindings;
     }
+    if (context.queryFormat) {
+      context[KEY_CONTEXT_QUERYFORMAT] = context.queryFormat;
+      delete context.queryFormat;
+    }
 
     context = ActionContext(context);
 
@@ -111,9 +115,9 @@ export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs {
 
     // Parse query
     let queryFormat: string = 'sparql';
-    if (context && context.has('queryFormat')) {
-      queryFormat = context.get('queryFormat');
-      context = context.delete('queryFormat');
+    if (context && context.has(KEY_CONTEXT_QUERYFORMAT)) {
+      queryFormat = context.get(KEY_CONTEXT_QUERYFORMAT);
+      context = context.delete(KEY_CONTEXT_QUERYFORMAT);
     }
     let operation: Algebra.Operation = (await this.mediatorSparqlParse.mediate(
       { context, query, queryFormat })).operation;
@@ -192,3 +196,4 @@ export interface IActorInitSparqlArgs extends IActorArgs<IActionInit, IActorTest
 }
 
 export const KEY_CONTEXT_INITIALBINDINGS: string = '@comunica/actor-init-sparql:initialBindings';
+export const KEY_CONTEXT_QUERYFORMAT: string = '@comunica/actor-init-sparql:queryFormat';
