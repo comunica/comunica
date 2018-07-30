@@ -34,6 +34,9 @@
     "index.d.ts",
     "index.js"
   ],
+  "dependencies": {
+    "asyncreiterable": "^1.0.0"
+  },
   "peerDependencies": {
     "@comunica/bus-context-preprocess": "^1.0.0",
     "@comunica/bus-rdf-source-identifier": "^1.0.0",

@@ -1,8 +1,9 @@
 import {ActorContextPreprocess,
   IActorContextPreprocessOutput} from "@comunica/bus-context-preprocess";
+import {DataSources, IDataSource, KEY_CONTEXT_SOURCES} from "@comunica/bus-rdf-resolve-quad-pattern";
 import {IActionRdfSourceIdentifier, IActorRdfSourceIdentifierOutput} from "@comunica/bus-rdf-source-identifier";
 import {ActionContext, Actor, IAction, IActorArgs, IActorTest, Mediator} from "@comunica/core";
-import {KEY_CONTEXT_SOURCES} from "../../bus-rdf-resolve-quad-pattern";
+import {AsyncReiterableArray} from "asyncreiterable";
 
 /**
  * A comunica RDF Source Identifier Context Preprocess Actor.
@@ -22,22 +23,40 @@ export class ActorContextPreprocessRdfSourceIdentifier extends ActorContextPrepr
 
   public async run(action: IAction): Promise<IActorContextPreprocessOutput> {
     if (action.context && action.context.get(KEY_CONTEXT_SOURCES)) {
-      const sources = action.context.get(KEY_CONTEXT_SOURCES);
-      const autoSources = sources.map((source: any, id: number) => ({ id, source }))
-        .filter((entry: any) => entry.source.type === 'auto');
       const subContext: ActionContext = action.context.delete(KEY_CONTEXT_SOURCES);
-      const autoSourceTypePromises: Promise<IActorRdfSourceIdentifierOutput>[] = autoSources.map(
-        (entry: any) => this.mediatorRdfSourceIdentifier.mediate(
-          { sourceValue: entry.source.value, context: subContext }));
-      const autoSourceTypes: IActorRdfSourceIdentifierOutput[] = await Promise.all(autoSourceTypePromises);
-      for (let i = 0; i < autoSources.length; i++) {
-        const sourceId = autoSources[i].id;
-        const sourceType = autoSourceTypes[i].sourceType;
-        if (sourceType) {
-          sources[sourceId].type = sourceType;
+
+      const sources: DataSources = action.context.get(KEY_CONTEXT_SOURCES);
+      const newSources: DataSources = AsyncReiterableArray.forInitialEmpty();
+      let remainingSources = 1;
+      const it = sources.iterator();
+      it.on('data', (source: IDataSource) => {
+        remainingSources++;
+        if (source.type === 'auto') {
+          this.mediatorRdfSourceIdentifier.mediate(
+            { sourceValue: source.value, context: subContext })
+            .then((sourceIdentificationResult) => {
+              if (sourceIdentificationResult.sourceType) {
+                source.type = sourceIdentificationResult.sourceType;
+              }
+              newSources.push(source);
+              endSource();
+            });
+        } else {
+          newSources.push(source);
+          endSource();
+        }
+      });
+      it.on('end', () => {
+        endSource();
+      });
+
+      function endSource() {
+        if (--remainingSources === 0) {
+          newSources.push(null);
         }
       }
-      return { context: action.context.set(KEY_CONTEXT_SOURCES, sources) };
+
+      return { context: action.context.set(KEY_CONTEXT_SOURCES, newSources) };
     }
     return action;
   }

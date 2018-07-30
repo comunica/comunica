@@ -55,8 +55,3 @@ export interface IActorRdfResolveQuadPatternFederatedArgs
     IActorRdfResolveQuadPatternOutput>, IActionRdfResolveQuadPattern, IActorTest, IActorRdfResolveQuadPatternOutput>;
   skipEmptyPatterns?: boolean;
 }
-
-export interface IQuerySource {
-  type: string;
-  value: any;
-}
