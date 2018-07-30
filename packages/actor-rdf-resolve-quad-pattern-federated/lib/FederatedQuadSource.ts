@@ -1,6 +1,6 @@
 import {
-  IActionRdfResolveQuadPattern, IActorRdfResolveQuadPatternOutput,
-  ILazyQuadSource, KEY_CONTEXT_SOURCE, KEY_CONTEXT_SOURCES,
+  DataSources, IActionRdfResolveQuadPattern,
+  IActorRdfResolveQuadPatternOutput, IDataSource, ILazyQuadSource, KEY_CONTEXT_SOURCE, KEY_CONTEXT_SOURCES,
 } from "@comunica/bus-rdf-resolve-quad-pattern";
 import {ActionContext, Actor, IActorTest, Mediator} from "@comunica/core";
 import {AsyncIterator, EmptyIterator} from "asynciterator";
@@ -8,7 +8,6 @@ import {PromiseProxyIterator} from "asynciterator-promiseproxy";
 import {RoundRobinUnionIterator} from "asynciterator-union";
 import {blankNode, quad} from "rdf-data-model";
 import * as RDF from "rdf-js";
-import {IQuerySource} from "./ActorRdfResolveQuadPatternFederated";
 
 /**
  * A FederatedQuadSource can evaluate quad pattern queries over the union of different heterogeneous sources.
@@ -18,7 +17,7 @@ export class FederatedQuadSource implements ILazyQuadSource {
 
   protected readonly mediatorResolveQuadPattern: Mediator<Actor<IActionRdfResolveQuadPattern, IActorTest,
     IActorRdfResolveQuadPatternOutput>, IActionRdfResolveQuadPattern, IActorTest, IActorRdfResolveQuadPatternOutput>;
-  protected readonly sources: IQuerySource[];
+  protected readonly sources: DataSources;
   protected readonly contextDefault: ActionContext;
   protected readonly emptyPatterns: {[sourceHash: string]: RDF.Quad[]};
   protected readonly skipEmptyPatterns: boolean;
@@ -35,12 +34,12 @@ export class FederatedQuadSource implements ILazyQuadSource {
 
     // Initialize sources in the emptyPatterns datastructure
     if (this.skipEmptyPatterns) {
-      for (const source of this.sources) {
+      this.sources.iterator().on('data', (source: IDataSource) => {
         const sourceHash: string = FederatedQuadSource.hashSource(source);
         if (!this.emptyPatterns[sourceHash]) {
           this.emptyPatterns[sourceHash] = [];
         }
-      }
+      });
     }
   }
 
@@ -49,7 +48,7 @@ export class FederatedQuadSource implements ILazyQuadSource {
    * @param {IQuerySource} source A query source object.
    * @return {string} A string representation of this query source.
    */
-  public static hashSource(source: IQuerySource): string {
+  public static hashSource(source: IDataSource): string {
     return JSON.stringify(source);
   }
 
@@ -89,7 +88,7 @@ export class FederatedQuadSource implements ILazyQuadSource {
    * @param {RDF.Quad} pattern
    * @return {boolean}
    */
-  public isSourceEmpty(source: IQuerySource, pattern: RDF.Quad) {
+  public isSourceEmpty(source: IDataSource, pattern: RDF.Quad) {
     if (!this.skipEmptyPatterns) {
       return false;
     }
@@ -117,9 +116,12 @@ export class FederatedQuadSource implements ILazyQuadSource {
 
     // Counters for our metadata
     const metadata: {[id: string]: any} = { totalItems: 0 };
-    let remainingSources: number = this.sources.length;
+    let remainingSources: number = 0;
 
-    const it: RoundRobinUnionIterator<RDF.Quad> = new RoundRobinUnionIterator(this.sources.map((source) => {
+    const sourcesIt = this.sources.iterator();
+    const it: RoundRobinUnionIterator<RDF.Quad> = new RoundRobinUnionIterator(sourcesIt.map((source) => {
+      remainingSources++;
+
       // If we can predict that the given source will have no bindings for the given pattern,
       // return an empty iterator.
       const pattern: RDF.Quad = quad(subject || blankNode(), predicate || blankNode(), object || blankNode(),
@@ -177,9 +179,11 @@ export class FederatedQuadSource implements ILazyQuadSource {
     });
 
     // If we have 0 sources, immediately emit metadata
-    if (!remainingSources) {
-      setImmediate(() => it.emit('metadata', metadata));
-    }
+    sourcesIt.on('end', () => {
+      if (!remainingSources) {
+        it.emit('metadata', metadata);
+      }
+    });
 
     return it;
   }

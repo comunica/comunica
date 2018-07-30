@@ -8,6 +8,7 @@ import {IActionRootSparqlParse, IActorOutputRootSparqlParse,
   IActorTestRootSparqlParse} from "@comunica/bus-sparql-serialize";
 import {IActorSparqlSerializeOutput} from "@comunica/bus-sparql-serialize";
 import {ActionContext, Actor, IAction, IActorArgs, IActorTest, Mediator} from "@comunica/core";
+import {AsyncReiterableArray} from "asyncreiterable";
 import * as RDF from "rdf-js";
 import {termToString} from "rdf-string";
 import {QUAD_TERM_NAMES} from "rdf-terms";
@@ -106,6 +107,9 @@ export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs {
     if (context.queryFormat) {
       context[KEY_CONTEXT_QUERYFORMAT] = context.queryFormat;
       delete context.queryFormat;
+    }
+    if (Array.isArray(context[KEY_CONTEXT_SOURCES])) {
+      context[KEY_CONTEXT_SOURCES] = AsyncReiterableArray.forFixedData(context[KEY_CONTEXT_SOURCES]);
     }
 
     context = ActionContext(context);

@@ -1,6 +1,8 @@
 import {ActorContextPreprocess} from "@comunica/bus-context-preprocess";
 import {ActionContext, Bus} from "@comunica/core";
+import {AsyncReiterableArray} from "asyncreiterable";
 import {ActorContextPreprocessRdfSourceIdentifier} from "../lib/ActorContextPreprocessRdfSourceIdentifier";
+const arrayifyStream = require('arrayify-stream');
 
 describe('ActorContextPreprocessRdfSourceIdentifier', () => {
   let bus;
@@ -49,41 +51,55 @@ describe('ActorContextPreprocessRdfSourceIdentifier', () => {
       return expect(actor.run({ context: ActionContext({}) })).resolves.toMatchObject({ context: {} });
     });
 
-    it('should run for a context with zero sources', () => {
-      return expect(actor.run({ context: ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:sources':
-            [] }) })).resolves
-        .toMatchObject({ context: ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:sources': [] }) });
+    it('should run for a context with zero sources', async () => {
+      return expect(await arrayifyStream((await actor.run({
+        context: ActionContext(
+          { '@comunica/bus-rdf-resolve-quad-pattern:sources': AsyncReiterableArray.forFixedData([]) }),
+      })).context.get('@comunica/bus-rdf-resolve-quad-pattern:sources').iterator()))
+        .toEqual([]);
     });
 
-    it('should run for a context with two dummy sources', () => {
-      return expect(actor.run({ context: ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:sources':
-            [{ type: 'dummy' }, { type: 'dummy' }] }) })).resolves
-        .toMatchObject({ context: ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:sources':
-              [{ type: 'dummy' }, { type: 'dummy' }] }) });
+    it('should run for a context with two dummy sources', async () => {
+      return expect(await arrayifyStream((await actor.run({
+        context: ActionContext(
+          { '@comunica/bus-rdf-resolve-quad-pattern:sources': AsyncReiterableArray.forFixedData([
+              { type: 'dummy' },
+              { type: 'dummy' },
+          ]) }),
+      })).context.get('@comunica/bus-rdf-resolve-quad-pattern:sources').iterator()))
+        .toEqual([{ type: 'dummy' }, { type: 'dummy' }]);
     });
 
-    it('should run for a context with two auto sources', () => {
-      const context = { context: ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:sources':
-            [{ type: 'auto', value: 'abc' }, { type: 'auto', value: 'def' }] }) };
-      return expect(actor.run(context)).resolves
-        .toMatchObject({ context: ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:sources':
-              [{ type: 'a', value: 'abc' }, { type: 'd', value: 'def' }] }) });
+    it('should run for a context with two auto sources', async () => {
+      return expect(await arrayifyStream((await actor.run({
+        context: ActionContext(
+          { '@comunica/bus-rdf-resolve-quad-pattern:sources': AsyncReiterableArray.forFixedData([
+              { type: 'auto', value: 'abc' },
+              { type: 'auto', value: 'def' },
+          ]) }),
+      })).context.get('@comunica/bus-rdf-resolve-quad-pattern:sources').iterator()))
+    .toEqual([{ type: 'a', value: 'abc' }, { type: 'd', value: 'def' }]);
     });
 
-    it('should run for a context with a auto and a dummy source', () => {
-      const context = { context: ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:sources':
-            [{ type: 'auto', value: 'abc' }, { type: 'dummy' }] }) };
-      return expect(actor.run(context)).resolves
-        .toMatchObject({ context: ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:sources':
-              [{ type: 'a', value: 'abc' }, { type: 'dummy' }] }) });
+    it('should run for a context with a auto and a dummy source', async () => {
+      return expect(await arrayifyStream((await actor.run({
+        context: ActionContext(
+          { '@comunica/bus-rdf-resolve-quad-pattern:sources': AsyncReiterableArray.forFixedData([
+              { type: 'auto', value: 'abc' },
+              { type: 'dummy' },
+          ]) }),
+      })).context.get('@comunica/bus-rdf-resolve-quad-pattern:sources').iterator()))
+    .toEqual([{ type: 'dummy' }, { type: 'a', value: 'abc' }]);
     });
 
-    it('should run and keep the auto type if the mediator fails', () => {
-      const context = { context: ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:sources':
-            [{ type: 'auto' }] }) };
-      return expect(actor.run(context)).resolves
-        .toMatchObject({ context: ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:sources':
-              [{ type: 'auto' }] }) });
+    it('should run and keep the auto type if the mediator fails', async () => {
+      return expect(await arrayifyStream((await actor.run({
+        context: ActionContext(
+          { '@comunica/bus-rdf-resolve-quad-pattern:sources': AsyncReiterableArray.forFixedData([
+              { type: 'auto' },
+          ]) }),
+      })).context.get('@comunica/bus-rdf-resolve-quad-pattern:sources').iterator()))
+    .toEqual([{ type: 'auto' }]);
     });
   });
 });

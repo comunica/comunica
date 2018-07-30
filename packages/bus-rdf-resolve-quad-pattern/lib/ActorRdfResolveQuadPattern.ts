@@ -1,5 +1,6 @@
 import {ActionContext, Actor, IAction, IActorArgs, IActorOutput, IActorTest} from "@comunica/core";
 import {AsyncIterator} from "asynciterator";
+import {AsyncReiterable} from "asyncreiterable";
 import * as RDF from "rdf-js";
 
 /**
@@ -65,7 +66,7 @@ export interface IDataSource {
   type: string;
   value: any;
 }
-export type DataSources = IDataSource[];
+export type DataSources = AsyncReiterable<IDataSource>;
 /**
  * @type {string} Context entry for data sources.
  * @value {DataSources} An array or stream of sources.
