@@ -543,9 +543,9 @@ asynciterator-promiseproxy@^2.0.0:
   dependencies:
     asynciterator "^2.0.0"
 
-asynciterator-union@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/asynciterator-union/-/asynciterator-union-2.0.0.tgz#243236fb12ddea77e3c3c19eaa691c2e486c6f4a"
+asynciterator-union@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/asynciterator-union/-/asynciterator-union-2.1.0.tgz#607fde4d33478e511f60f00332cf5247c8900270"
   dependencies:
     asynciterator "^2.0.0"
 
