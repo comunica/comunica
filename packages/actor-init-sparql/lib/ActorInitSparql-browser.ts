@@ -109,7 +109,7 @@ export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs {
       delete context.queryFormat;
     }
     if (Array.isArray(context[KEY_CONTEXT_SOURCES])) {
-      context[KEY_CONTEXT_SOURCES] = AsyncReiterableArray.forFixedData(context[KEY_CONTEXT_SOURCES]);
+      context[KEY_CONTEXT_SOURCES] = AsyncReiterableArray.fromFixedData(context[KEY_CONTEXT_SOURCES]);
     }
 
     context = ActionContext(context);

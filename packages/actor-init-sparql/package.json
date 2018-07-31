@@ -117,7 +117,7 @@
     "@comunica/mediator-race": "^1.1.0",
     "@comunica/runner": "^1.1.0",
     "@comunica/runner-cli": "^1.1.0",
-    "asyncreiterable": "^1.0.0",
+    "asyncreiterable": "^1.1.0",
     "minimist": "^1.2.0",
     "negotiate": "^1.0.1",
     "rdf-string": "^1.1.1",
