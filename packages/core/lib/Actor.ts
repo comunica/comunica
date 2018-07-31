@@ -51,10 +51,26 @@ export abstract class Actor<I extends IAction, T extends IActorTest, O extends I
   /**
    * Run the given action on this actor.
    *
+   * In most cases, this method should not be called directly.
+   * Instead, {@link #runObservable} should be called.
+   *
    * @param {I} action The action to run.
    * @return {Promise<T>} A promise that resolves to the run result.
    */
   public abstract async run(action: I): Promise<O>;
+
+  /**
+   * Run the given action on this actor
+   * AND invokes the {@link Bus#onRun} method.
+   *
+   * @param {I} action The action to run.
+   * @return {Promise<T>} A promise that resolves to the run result.
+   */
+  public runObservable(action: I): Promise<O> {
+    const output: Promise<O> = this.run(action);
+    this.bus.onRun(this, action, output);
+    return output;
+  }
 
   /**
    * Initialize this actor.

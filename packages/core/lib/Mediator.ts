@@ -86,7 +86,7 @@ export abstract class Mediator<A extends Actor<I, T, O>,
   public async mediate(action: I): Promise<O> {
     // Mediate to one actor and run the action on it
     const actor: A = await this.mediateActor(action);
-    return actor.run(action);
+    return actor.runObservable(action);
   }
 
   /**

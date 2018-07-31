@@ -1,3 +1,4 @@
+import {ActionObserver} from "../lib/ActionObserver";
 import {Actor} from "../lib/Actor";
 import {Bus} from "../lib/Bus";
 
@@ -18,6 +19,10 @@ describe('Bus', () => {
     const actor2 = new (<any> Actor)({ name: 'actor2', bus: new Bus({ name: 'bus2' }) });
     const actor3 = new (<any> Actor)({ name: 'actor3', bus: new Bus({ name: 'bus3' }) });
 
+    const observer1 = new (<any> ActionObserver)({ name: 'observer1', bus: new Bus({ name: 'bus1' }) });
+    const observer2 = new (<any> ActionObserver)({ name: 'observer2', bus: new Bus({ name: 'bus2' }) });
+    const observer3 = new (<any> ActionObserver)({ name: 'observer3', bus: new Bus({ name: 'bus3' }) });
+
     const actorTest = (action: any) => {
       return new Promise((resolve) => {
         resolve({ type: 'test', sent: action });
@@ -29,9 +34,17 @@ describe('Bus', () => {
       actor2.test = actorTest;
       actor3.test = actorTest;
 
+      observer1.onRun = () => { return; };
+      observer2.onRun = () => { return; };
+      observer3.onRun = () => { return; };
+
       jest.spyOn(actor1, 'test');
       jest.spyOn(actor2, 'test');
       jest.spyOn(actor3, 'test');
+
+      jest.spyOn(observer1, 'onRun');
+      jest.spyOn(observer2, 'onRun');
+      jest.spyOn(observer3, 'onRun');
 
       bus = new Bus({ name: 'bus' });
     });
@@ -81,6 +94,72 @@ describe('Bus', () => {
 
     it('should return \'false\' when unsubscribing an actor that was not subscribed', () => {
       expect(bus.unsubscribe(actor1)).toBeFalsy();
+    });
+
+    it('should allow an observer to be subscribed', () => {
+      bus.subscribeObserver(observer1);
+      expect(bus.observers).toContain(observer1);
+      expect(bus.observers).toHaveLength(1);
+
+      bus.onRun(1, 2, 3);
+      expect(observer1.onRun).toHaveBeenCalledTimes(1);
+      expect(observer1.onRun).toBeCalledWith(1, 2, 3);
+      expect(observer2.onRun).toHaveBeenCalledTimes(0);
+      expect(observer3.onRun).toHaveBeenCalledTimes(0);
+    });
+
+    it('should allow an observer to be subscribed and unsubscribed', () => {
+      bus.subscribeObserver(observer1);
+      expect(bus.observers).toContain(observer1);
+      expect(bus.observers).toHaveLength(1);
+      expect(bus.unsubscribeObserver(observer1)).toBeTruthy();
+      expect(bus.observers).not.toContain(observer1);
+      expect(bus.observers).toHaveLength(0);
+
+      bus.onRun(1, 2, 3);
+      expect(observer1.onRun).toHaveBeenCalledTimes(0);
+      expect(observer2.onRun).toHaveBeenCalledTimes(0);
+      expect(observer3.onRun).toHaveBeenCalledTimes(0);
+    });
+
+    it('should allow multiple observers to be subscribed and unsubscribed', () => {
+      bus.subscribeObserver(observer1);
+      bus.subscribeObserver(observer2);
+      bus.subscribeObserver(observer3);
+      expect(bus.observers).toContain(observer1);
+      expect(bus.observers).toContain(observer2);
+      expect(bus.observers).toContain(observer3);
+      expect(bus.observers).toHaveLength(3);
+      expect(bus.unsubscribeObserver(observer1)).toBeTruthy();
+      expect(bus.observers).toHaveLength(2);
+      expect(bus.unsubscribeObserver(observer3)).toBeTruthy();
+      expect(bus.observers).not.toContain(observer1);
+      expect(bus.observers).toContain(observer2);
+      expect(bus.observers).not.toContain(observer3);
+      expect(bus.observers).toHaveLength(1);
+
+      bus.onRun(1, 2, 3);
+      expect(observer1.onRun).toHaveBeenCalledTimes(0);
+      expect(observer2.onRun).toHaveBeenCalledTimes(1);
+      expect(observer2.onRun).toBeCalledWith(1, 2, 3);
+      expect(observer3.onRun).toHaveBeenCalledTimes(0);
+    });
+
+    it('should allow an observer to be subscribed multiple times', () => {
+      bus.subscribeObserver(observer1);
+      bus.subscribeObserver(observer1);
+      bus.subscribeObserver(observer1);
+      expect(bus.observers).toHaveLength(3);
+
+      bus.onRun(1, 2, 3);
+      expect(observer1.onRun).toHaveBeenCalledTimes(3);
+      expect(observer1.onRun).toBeCalledWith(1, 2, 3);
+      expect(observer2.onRun).toHaveBeenCalledTimes(0);
+      expect(observer3.onRun).toHaveBeenCalledTimes(0);
+    });
+
+    it('should return \'false\' when unsubscribing an observer that was not subscribed', () => {
+      expect(bus.unsubscribeObserver(observer1)).toBeFalsy();
     });
 
     describe('without actors', () => {

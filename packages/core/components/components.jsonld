@@ -4,6 +4,7 @@
   "@type": "Module",
   "requireName": "@comunica/core",
   "import": [
+    "files-cc:components/ActionObserver.jsonld",
     "files-cc:components/Actor.jsonld",
     "files-cc:components/Bus.jsonld",
     "files-cc:components/Mediator.jsonld"

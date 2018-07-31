@@ -1,0 +1,35 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+  "@id": "npmd:@comunica/core",
+  "components": [
+    {
+      "@id": "cc:ActionObserver",
+      "@type": "AbstractClass",
+      "comment": "An ActionObserver can passively listen to {@link Actor#run} inputs and outputs for all actors on a certain bus.",
+      "parameters": [
+        {
+          "@id": "cc:ActionObserver/bus",
+          "comment": "The bus this observer can subscribe to.",
+          "range": "cc:Bus",
+          "unique": true,
+          "required": true
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "cc:ActionObserver/constructorArgumentsObject",
+          "fields": [
+            {
+              "keyRaw": "name",
+              "value": "rdf:subject"
+            },
+            {
+              "keyRaw": "bus",
+              "value": "cc:ActionObserver/bus"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

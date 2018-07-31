@@ -27,7 +27,7 @@ export class MediatorCombinePipeline<A extends Actor<H, T, H>, H extends IAction
     // and each actor output as input to the following actor.
     let handle: H = action;
     for (const actor of testResults.map((result) => result.actor)) {
-      handle = await actor.run(handle);
+      handle = await actor.runObservable(handle);
     }
 
     // Return the final actor output

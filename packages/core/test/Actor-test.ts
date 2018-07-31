@@ -20,6 +20,12 @@ describe('Actor', () => {
 
   describe('An Actor instance', () => {
     const actor = new (<any> Actor)({ name: 'actor', bus });
+    actor.run = () => { return; };
+
+    beforeEach(() => {
+      jest.spyOn(actor, 'run');
+      jest.spyOn(bus, 'onRun');
+    });
 
     it('should have a \'name\' field', () => {
       expect(actor.name).toEqual('actor');
@@ -35,6 +41,13 @@ describe('Actor', () => {
 
     it('should be deinitializable', () => {
       return expect(actor.deinitialize()).resolves.toBeTruthy();
+    });
+
+    it('should call bus#onRun and actor#run when actor#runObservable is called', () => {
+      const action = { myAction: true };
+      const output = actor.runObservable(action);
+      expect(actor.run).toBeCalledWith(action);
+      expect(bus.onRun).toBeCalledWith(actor, action, output);
     });
   });
 });
