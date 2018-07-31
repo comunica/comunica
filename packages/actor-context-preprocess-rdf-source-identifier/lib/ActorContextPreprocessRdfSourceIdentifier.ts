@@ -26,7 +26,7 @@ export class ActorContextPreprocessRdfSourceIdentifier extends ActorContextPrepr
       const subContext: ActionContext = action.context.delete(KEY_CONTEXT_SOURCES);
 
       const sources: DataSources = action.context.get(KEY_CONTEXT_SOURCES);
-      const newSources: DataSources = AsyncReiterableArray.forInitialEmpty();
+      const newSources: DataSources = AsyncReiterableArray.fromInitialEmpty();
       let remainingSources = 1;
       const it = sources.iterator();
       it.on('data', (source: IDataSource) => {

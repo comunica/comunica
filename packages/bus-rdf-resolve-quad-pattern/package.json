@@ -35,7 +35,7 @@
   ],
   "dependencies": {
     "asynciterator": "^2.0.0",
-    "asyncreiterable": "^1.0.0"
+    "asyncreiterable": "^1.1.0"
   },
   "peerDependencies": {
     "@comunica/core": "^1.0.0"

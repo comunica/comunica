@@ -80,7 +80,7 @@ describe('ActorRdfResolveQuadPatternFederated', () => {
     it('should run', () => {
       const pattern = squad('?s', 'p', 'o', '?g');
       const context = ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:sources':
-          AsyncReiterableArray.forFixedData([
+          AsyncReiterableArray.fromFixedData([
             { type: 'nonEmptySource', value: 'I will not be empty' },
             { type: 'nonEmptySource', value: 'I will not be empty' },
           ])});
@@ -102,7 +102,7 @@ describe('ActorRdfResolveQuadPatternFederated', () => {
         { name: 'actor', bus, mediatorResolveQuadPattern: thisMediator, skipEmptyPatterns });
       const pattern = squad('?s', 'p', 'o', '?g');
       const context = ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:sources':
-          AsyncReiterableArray.forFixedData([
+          AsyncReiterableArray.fromFixedData([
             { type: 'nonEmptySource', value: 'I will not be empty' },
             { type: 'nonEmptySource', value: 'I will not be empty' },
           ])});
@@ -112,7 +112,7 @@ describe('ActorRdfResolveQuadPatternFederated', () => {
     it('should run when only metadata is called', () => {
       const pattern = squad('?s', 'p', 'o', '?g');
       const context = ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:sources':
-          AsyncReiterableArray.forFixedData([
+          AsyncReiterableArray.fromFixedData([
             { type: 'nonEmptySource', value: 'I will not be empty' },
             { type: 'nonEmptySource', value: 'I will not be empty' },
           ])});
@@ -124,7 +124,7 @@ describe('ActorRdfResolveQuadPatternFederated', () => {
     it('should run when only data is called', () => {
       const pattern = squad('?s', 'p', 'o', '?g');
       const context = ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:sources':
-          AsyncReiterableArray.forFixedData([
+          AsyncReiterableArray.fromFixedData([
             { type: 'nonEmptySource', value: 'I will not be empty' },
             { type: 'nonEmptySource', value: 'I will not be empty' },
           ])});

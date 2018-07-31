@@ -38,7 +38,7 @@ describe('FederatedQuadSource', () => {
       },
     };
     context = ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:sources':
-        AsyncReiterableArray.forFixedData([ { type: 'myType', value: 'myValue' } ]) });
+        AsyncReiterableArray.fromFixedData([ { type: 'myType', value: 'myValue' } ]) });
   });
 
   describe('The FederatedQuadSource module', () => {
@@ -310,7 +310,7 @@ describe('FederatedQuadSource', () => {
     beforeEach(() => {
       emptyPatterns = {};
       contextEmpty = ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:sources':
-          AsyncReiterableArray.forFixedData([]) });
+          AsyncReiterableArray.fromFixedData([]) });
       source = new FederatedQuadSource(mediator, contextEmpty, emptyPatterns, true);
     });
 
@@ -335,7 +335,7 @@ describe('FederatedQuadSource', () => {
     beforeEach(() => {
       emptyPatterns = {};
       contextSingleEmpty = ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:sources':
-          AsyncReiterableArray.forFixedData([ { type: 'emptySource', value: 'I will be empty' } ]) });
+          AsyncReiterableArray.fromFixedData([ { type: 'emptySource', value: 'I will be empty' } ]) });
       source = new FederatedQuadSource(mediator, contextSingleEmpty, emptyPatterns, true);
     });
 
@@ -376,7 +376,7 @@ describe('FederatedQuadSource', () => {
     beforeEach(() => {
       emptyPatterns = {};
       contextSingle = ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:sources':
-          AsyncReiterableArray.forFixedData([{ type: 'nonEmptySource', value: 'I will not be empty' }]) });
+          AsyncReiterableArray.fromFixedData([{ type: 'nonEmptySource', value: 'I will not be empty' }]) });
       source = new FederatedQuadSource(mediator, contextSingle, emptyPatterns, true);
     });
 
@@ -417,7 +417,7 @@ describe('FederatedQuadSource', () => {
     beforeEach(() => {
       emptyPatterns = {};
       contextSingleEmpty = ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:sources':
-          AsyncReiterableArray.forFixedData([
+          AsyncReiterableArray.fromFixedData([
             { type: 'emptySource', value: 'I will be empty' },
             { type: 'nonEmptySource', value: 'I will not be empty' },
           ]) });
@@ -466,7 +466,7 @@ describe('FederatedQuadSource', () => {
     beforeEach(() => {
       emptyPatterns = {};
       contextSingleEmpty = ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:sources':
-          AsyncReiterableArray.forFixedData([
+          AsyncReiterableArray.fromFixedData([
             { type: 'emptySource', value: 'I will be empty' },
             { type: 'emptySource', value: 'I will be empty' },
           ]) });
@@ -511,7 +511,7 @@ describe('FederatedQuadSource', () => {
     beforeEach(() => {
       emptyPatterns = {};
       contextSingleEmpty = ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:sources':
-          AsyncReiterableArray.forFixedData([
+          AsyncReiterableArray.fromFixedData([
             { type: 'emptySource', value: 'I will be empty' },
             { type: 'emptySource', value: 'I will be empty' },
           ]) });
@@ -551,7 +551,7 @@ describe('FederatedQuadSource', () => {
     beforeEach(() => {
       emptyPatterns = {};
       contextSingleEmpty = ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:sources':
-          AsyncReiterableArray.forFixedData([
+          AsyncReiterableArray.fromFixedData([
             { type: 'nonEmptySource', value: 'I will not be empty' },
             { type: 'nonEmptySource2', value: 'I will also not be empty' },
           ]) });
@@ -599,7 +599,7 @@ describe('FederatedQuadSource', () => {
     beforeEach(() => {
       emptyPatterns = {};
       contextSingleEmpty = ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:sources':
-          AsyncReiterableArray.forFixedData([
+          AsyncReiterableArray.fromFixedData([
             { type: 'nonEmptySource', value: 'I will not be empty' },
             { type: 'nonEmptySourceNoMeta', value: 'I will also not be empty, but have no metadata' },
           ]) });
@@ -633,7 +633,7 @@ describe('FederatedQuadSource', () => {
     beforeEach(() => {
       emptyPatterns = {};
       contextSingleEmpty = ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:sources':
-          AsyncReiterableArray.forFixedData([
+          AsyncReiterableArray.fromFixedData([
             { type: 'nonEmptySourceNoMeta', value: 'I will not be empty' },
             { type: 'nonEmptySourceNoMeta', value: 'I will also not be empty, but have no metadata' },
           ]) });
@@ -667,7 +667,7 @@ describe('FederatedQuadSource', () => {
     beforeEach(() => {
       emptyPatterns = {};
       contextSingleEmpty = ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:sources':
-          AsyncReiterableArray.forFixedData([
+          AsyncReiterableArray.fromFixedData([
             { type: 'nonEmptySource', value: 'I will not be empty' },
             { type: 'nonEmptySourceInfMeta', value: 'I will also not be empty, but have inf metadata' },
           ]) });
@@ -701,7 +701,7 @@ describe('FederatedQuadSource', () => {
     beforeEach(() => {
       emptyPatterns = {};
       contextSingleEmpty = ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:sources':
-          AsyncReiterableArray.forFixedData([
+          AsyncReiterableArray.fromFixedData([
             { type: 'nonEmptySourceInfMeta', value: 'I will not be empty' },
             { type: 'nonEmptySourceInfMeta', value: 'I will also not be empty, but have inf metadata' },
           ]) });

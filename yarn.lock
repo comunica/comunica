@@ -565,9 +565,9 @@ asynckit@^0.4.0:
   version "0.4.0"
   resolved "https://registry.yarnpkg.com/asynckit/-/asynckit-0.4.0.tgz#c79ed97f7f34cb8f2ba1bc9790bcc366474b4b79"
 
-asyncreiterable@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/asyncreiterable/-/asyncreiterable-1.0.0.tgz#76d1ac01c34ebf4bdb415d42ff0656529813c4c1"
+asyncreiterable@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/asyncreiterable/-/asyncreiterable-1.1.0.tgz#438175b924139d52503cfbf050e5d61fe19c79c4"
   dependencies:
     asynciterator "^2.0.0"
 
