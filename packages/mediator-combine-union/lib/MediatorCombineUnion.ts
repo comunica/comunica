@@ -23,7 +23,7 @@ export class MediatorCombineUnion<A extends Actor<I, T, O>, I extends IAction, T
     await Promise.all(require('lodash.map')(testResults, 'reply'));
 
     // Run action on all actors.
-    const results: O[] = await Promise.all(testResults.map((result) => result.actor.run(action)));
+    const results: O[] = await Promise.all(testResults.map((result) => result.actor.runObservable(action)));
 
     // Return the combined results.
     return this.combiner(results);

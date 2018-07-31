@@ -1,3 +1,4 @@
+import {ActionObserver} from "./ActionObserver";
 import {Actor, IAction, IActorOutput, IActorTest} from "./Actor";
 
 /**
@@ -20,6 +21,7 @@ export class Bus<A extends Actor<I, T, O>, I extends IAction, T extends IActorTe
 
   public readonly name: string;
   protected readonly actors: A[] = [];
+  protected readonly observers: ActionObserver<I, O>[] = [];
 
   /**
    * All enumerable properties from the `args` object are inherited to this bus.
@@ -45,6 +47,18 @@ export class Bus<A extends Actor<I, T, O>, I extends IAction, T extends IActorTe
   }
 
   /**
+   * Subscribe the given observer to the bus.
+   * After this, the given observer can be unsubscribed from the bus by calling {@link Bus#unsubscribeObserver}.
+   *
+   * An observer that is subscribed multiple times will exist that amount of times in the bus.
+   *
+   * @param {ActionObserver<I, O>} observer The observer to subscribe.
+   */
+  public subscribeObserver(observer: ActionObserver<I, O>) {
+    this.observers.push(observer);
+  }
+
+  /**
    * Unsubscribe the given actor from the bus.
    *
    * An actor that is subscribed multiple times will be unsubscribed only once.
@@ -63,6 +77,24 @@ export class Bus<A extends Actor<I, T, O>, I extends IAction, T extends IActorTe
   }
 
   /**
+   * Unsubscribe the given observer from the bus.
+   *
+   * An observer that is subscribed multiple times will be unsubscribed only once.
+   *
+   * @param {ActionObserver<I, O>} observer The observer to unsubscribe.
+   * @return {boolean} If the given observer was successfully unsubscribed,
+   *         otherwise it was not subscribed before.
+   */
+  public unsubscribeObserver(observer: ActionObserver<I, O>) {
+    const index: number = this.observers.indexOf(observer);
+    if (index >= 0) {
+      this.observers.splice(index, 1);
+      return true;
+    }
+    return false;
+  }
+
+  /**
    * Publish an action to all actors in the bus to test if they can run the action.
    *
    * @param {I} action An action to publish
@@ -75,6 +107,19 @@ export class Bus<A extends Actor<I, T, O>, I extends IAction, T extends IActorTe
     return this.actors.map((actor: A) => {
       return { actor, reply: actor.test(action) };
     });
+  }
+
+  /**
+   * Invoked when an action was run by an actor.
+   *
+   * @param actor               The action on which the {@link Actor#run} method was invoked.
+   * @param {I}          action The original action input.
+   * @param {Promise<O>} output A promise resolving to the final action output.
+   */
+  public onRun(actor: Actor<I, T, O>, action: I, output: Promise<O>): void {
+    for (const observer of this.observers) {
+      observer.onRun(actor, action, output);
+    }
   }
 
 }

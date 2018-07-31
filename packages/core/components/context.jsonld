@@ -7,6 +7,7 @@
       "cc": "npmd:@comunica/core/",
       "files-cc": "cc:^1.0.0/",
 
+      "ActionObserver": "cc:ActionObserver",
       "Actor": "cc:Actor",
       "Bus": "cc:Bus",
       "Mediator": "cc:Mediator"

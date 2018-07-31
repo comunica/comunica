@@ -34,7 +34,7 @@ export class Runner implements IRunnerArgs {
   public async run(action: IActionInit): Promise<IActorOutputInit[]> {
     const replies: IActorReply<ActorInit, IActionInit, IActorTest, IActorOutputInit>[] =
       await Promise.all(this.busInit.publish(action));
-    return Promise.all(replies.map((reply) => reply.actor.run(action)));
+    return Promise.all(replies.map((reply) => reply.actor.runObservable(action)));
   }
 
   /**
