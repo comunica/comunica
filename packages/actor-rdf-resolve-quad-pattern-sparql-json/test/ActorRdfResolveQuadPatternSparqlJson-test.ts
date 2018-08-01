@@ -97,54 +97,6 @@ describe('ActorRdfResolveQuadPatternSparqlJson', () => {
     });
   });
 
-  describe('#parseJsonBindings', () => {
-    it('should convert bindings with named nodes', () => {
-      return expect(ActorRdfResolveQuadPatternSparqlJson.parseJsonBindings({
-        book: { type: 'uri', value: 'http://example.org/book/book6' },
-      }).toJS()).toEqual({ '?book': namedNode('http://example.org/book/book6') });
-    });
-
-    it('should convert bindings with blank nodes', () => {
-      return expect(ActorRdfResolveQuadPatternSparqlJson.parseJsonBindings({
-        book: { type: 'bnode', value: 'abc' },
-      }).toJS()).toEqual({ '?book': blankNode('abc') });
-    });
-
-    it('should convert bindings with literals', () => {
-      return expect(ActorRdfResolveQuadPatternSparqlJson.parseJsonBindings({
-        book: { type: 'literal', value: 'abc' },
-      }).toJS()).toEqual({ '?book': literal('abc') });
-    });
-
-    it('should convert bindings with languaged literals', () => {
-      return expect(ActorRdfResolveQuadPatternSparqlJson.parseJsonBindings({
-        book: { 'type': 'literal', 'value': 'abc', 'xml:lang': 'en-us' },
-      }).toJS()).toEqual({ '?book': literal('abc', 'en-us') });
-    });
-
-    it('should convert bindings with datatyped literals', () => {
-      return expect(ActorRdfResolveQuadPatternSparqlJson.parseJsonBindings({
-        book: { type: 'literal', value: 'abc', datatype: 'http://ex' },
-      }).toJS()).toEqual({ '?book': literal('abc', namedNode('http://ex')) });
-    });
-
-    it('should convert mixed bindings', () => {
-      return expect(ActorRdfResolveQuadPatternSparqlJson.parseJsonBindings({
-        book1: { type: 'uri', value: 'http://example.org/book/book6' },
-        book2: { type: 'bnode', value: 'abc' },
-        book3: { type: 'literal', value: 'abc' },
-        book4: { 'type': 'literal', 'value': 'abc', 'xml:lang': 'en-us' },
-        book5: { type: 'literal', value: 'abc', datatype: 'http://ex' },
-      }).toJS()).toEqual({
-        '?book1': namedNode('http://example.org/book/book6'),
-        '?book2': blankNode('abc'),
-        '?book3': literal('abc'),
-        '?book4': literal('abc', 'en-us'),
-        '?book5': literal('abc', namedNode('http://ex')),
-      });
-    });
-  });
-
   describe('An ActorRdfResolveQuadPatternSparqlJson instance', () => {
     let actor: ActorRdfResolveQuadPatternSparqlJson;
     const pattern: any = quad('s', '?p', 'o');

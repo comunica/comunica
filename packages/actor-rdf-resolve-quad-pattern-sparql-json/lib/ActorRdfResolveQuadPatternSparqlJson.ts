@@ -9,6 +9,7 @@ import {blankNode, literal, namedNode, quad, variable} from "rdf-data-model";
 import * as RDF from "rdf-js";
 import {getTerms, getVariables, mapTerms} from "rdf-terms";
 import {Algebra, Factory, toSparql} from "sparqlalgebrajs";
+import {SparqlJsonParser} from "sparqljson-parse";
 
 /**
  * A comunica SPARQL JSON RDF Resolve Quad Pattern Actor.
@@ -114,38 +115,6 @@ export class ActorRdfResolveQuadPatternSparqlJson
     ));
   }
 
-  /**
-   * Convert a SPARQL JSON result binding to a bindings object.
-   * @param rawBindings A SPARQL json result binding.
-   * @return {Bindings} A bindings object.
-   */
-  public static parseJsonBindings(rawBindings: any): Bindings {
-    const bindings: {[key: string]: RDF.Term} = {};
-    for (const key in rawBindings) {
-      const rawValue: any = rawBindings[key];
-      let value: RDF.Term = null;
-      switch (rawValue.type) {
-      case 'bnode':
-        value = blankNode(rawValue.value);
-        break;
-      case 'literal':
-        if (rawValue['xml:lang']) {
-          value = literal(rawValue.value, rawValue['xml:lang']);
-        } else if (rawValue.datatype) {
-          value = literal(rawValue.value, namedNode(rawValue.datatype));
-        } else {
-          value = literal(rawValue.value);
-        }
-        break;
-      default:
-        value = namedNode(rawValue.value);
-        break;
-      }
-      bindings['?' + key] = value;
-    }
-    return Bindings(bindings);
-  }
-
   public async test(action: IActionRdfResolveQuadPattern): Promise<IActorTest> {
     if (!this.hasContextSingleSource('sparql', action.context)) {
       throw new Error(this.name + ' requires a single source with a \'sparql\' endpoint to be present in the context.');
@@ -219,15 +188,12 @@ export class ActorRdfResolveQuadPatternSparqlJson
       if (!initialized) {
         initialized = true;
         this.fetchBindingsStream(endpoint, query, context).then((responseStream) => {
-          // Get streamed bindings
-          const rawBindingsStream: NodeJS.ReadableStream = responseStream
-            .pipe(require('JSONStream').parse('results.bindings.*'));
+          const rawBindingsStream = new SparqlJsonParser({ prefixVariableQuestionMark: true })
+            .parseJsonResultsStream(responseStream);
           responseStream.on('error', (error) => rawBindingsStream.emit('error', error));
 
           rawBindingsStream.on('error', (error) => bindingsStream.emit('error', error));
-          rawBindingsStream.on('data', (rawBindings) => {
-            bindingsStream._push(ActorRdfResolveQuadPatternSparqlJson.parseJsonBindings(rawBindings));
-          });
+          rawBindingsStream.on('data', (rawBindings) => bindingsStream._push(Bindings(rawBindings)));
           rawBindingsStream.on('end', () => {
             bindingsStream.close();
           });
