@@ -4,6 +4,9 @@ import {Bus} from "./Bus";
 /**
  * An ActionObserver can passively listen to {@link Actor#run} inputs and outputs for all actors on a certain bus.
  *
+ * ActionObserver should not edit inputs and outputs,
+ * they should be considered immutable.
+ *
  * @see Actor
  * @see Bus
  *
