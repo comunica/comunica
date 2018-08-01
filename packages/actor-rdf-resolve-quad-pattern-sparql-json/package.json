@@ -35,10 +35,10 @@
     "index.js"
   ],
   "dependencies": {
-    "JSONStream": "^1.3.2",
     "asynciterator": "^2.0.0",
     "asynciterator-promiseproxy": "^2.0.0",
     "node-web-streams": "^0.2.2",
+    "sparqljson-parse": "^1.1.0",
     "rdf-data-model": "^1.0.0",
     "rdf-terms": "^1.1.0",
     "sparqlalgebrajs": "^0.7.5"
