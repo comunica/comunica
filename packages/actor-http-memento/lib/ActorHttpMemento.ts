@@ -19,6 +19,9 @@ export class ActorHttpMemento extends ActorHttp {
     if (!(action.context && action.context.has('datetime') && action.context.get('datetime') instanceof Date)) {
       throw new Error('This actor only handles request with a set valid datetime.');
     }
+    if (action.init && new Headers(action.init.headers || {}).has('accept-datetime')) {
+      throw new Error('The request already has a set datetime.');
+    }
     return true;
   }
 
