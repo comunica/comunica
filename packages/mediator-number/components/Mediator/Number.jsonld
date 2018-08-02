@@ -50,7 +50,7 @@
             },
             {
               "keyRaw": "ignoreErrors",
-              "valueRawReference": "cmn:Mediator/Number/ignoreErrors"
+              "value": "cmn:Mediator/Number/ignoreErrors"
             }
           ]
         }
