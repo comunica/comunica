@@ -68,17 +68,31 @@ describe('MediatorNumber', () => {
       });
     });
 
+    describe('with undefined actor fields', () => {
+      beforeEach(() => {
+        bus.subscribe(new DummyActor(undefined, bus));
+      });
+
+      it('should mediate to the minimum value for type MIN', () => {
+        return expect(mediatorMin.mediate({})).resolves.toEqual({ field: undefined });
+      });
+
+      it('should mediate to the maximum value for type MAX', () => {
+        return expect(mediatorMax.mediate({})).resolves.toEqual({ field: undefined });
+      });
+    });
+
     describe('with null actor fields', () => {
       beforeEach(() => {
         bus.subscribe(new DummyActor(null, bus));
       });
 
-      it('should mediate to the minimum value for type MIN', () => {
-        return expect(mediatorMin.mediate({})).resolves.toEqual({ field: null });
+      it('should reject', () => {
+        return expect(mediatorMin.mediate({})).rejects.toBeTruthy();
       });
 
-      it('should mediate to the maximum value for type MAX', () => {
-        return expect(mediatorMax.mediate({})).resolves.toEqual({ field: null });
+      it('should reject', () => {
+        return expect(mediatorMax.mediate({})).rejects.toBeTruthy();
       });
     });
 
