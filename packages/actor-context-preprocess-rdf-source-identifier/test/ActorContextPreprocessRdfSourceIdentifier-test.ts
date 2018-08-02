@@ -70,6 +70,26 @@ describe('ActorContextPreprocessRdfSourceIdentifier', () => {
         .toEqual([{ type: 'dummy' }, { type: 'dummy' }]);
     });
 
+    it('should run for a context with two ended dummy sources and block until the sources become ended', async () => {
+      return expect((await actor.run({
+        context: ActionContext(
+          { '@comunica/bus-rdf-resolve-quad-pattern:sources': AsyncReiterableArray.fromFixedData([
+              { type: 'dummy' },
+              { type: 'dummy' },
+          ]) }),
+      })).context.get('@comunica/bus-rdf-resolve-quad-pattern:sources').isEnded()).toBeTruthy();
+    });
+
+    it('should run for a context with two non-ended dummy sources and not block until the sources end', async () => {
+      return expect((await actor.run({
+        context: ActionContext(
+          { '@comunica/bus-rdf-resolve-quad-pattern:sources': AsyncReiterableArray.fromInitialData([
+              { type: 'dummy' },
+              { type: 'dummy' },
+          ]) }),
+      })).context.get('@comunica/bus-rdf-resolve-quad-pattern:sources').isEnded()).toBeFalsy();
+    });
+
     it('should run for a context with two auto sources', async () => {
       return expect(await arrayifyStream((await actor.run({
         context: ActionContext(
