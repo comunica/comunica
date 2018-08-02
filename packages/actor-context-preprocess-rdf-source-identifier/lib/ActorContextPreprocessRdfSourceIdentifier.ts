@@ -56,6 +56,11 @@ export class ActorContextPreprocessRdfSourceIdentifier extends ActorContextPrepr
         }
       }
 
+      // If the sources are fixed, block until all sources are transformed.
+      if (sources.isEnded()) {
+        await new Promise((resolve) => it.on('end', resolve));
+      }
+
       return { context: action.context.set(KEY_CONTEXT_SOURCES, newSources) };
     }
     return action;
