@@ -66,6 +66,7 @@
     "@comunica/actor-query-operation-project": "^1.1.0",
     "@comunica/actor-query-operation-quadpattern": "^1.1.0",
     "@comunica/actor-query-operation-slice": "^1.1.0",
+    "@comunica/actor-query-operation-sparql-endpoint": "^1.0.0",
     "@comunica/actor-query-operation-union": "^1.1.0",
     "@comunica/actor-query-operation-values": "^1.1.0",
     "@comunica/actor-rdf-dereference-http-parse": "^1.1.0",

@@ -26,6 +26,7 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-resolve-quad-pattern/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-join/^1.0.0/components/context.jsonld",
 
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-number/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-race/^1.0.0/components/context.jsonld"
   ],
   "@id": "urn:comunica:my",
@@ -35,7 +36,9 @@
       "@type": "ActorQueryOperationAsk",
       "cbqo:mediatorQueryOperation": {
         "@id": "config-sets:sparql-queryoperators.json#mediatorQueryOperation",
-        "@type": "MediatorRace",
+        "@type": "MediatorNumberMin",
+        "field": "httpRequests",
+        "ignoreErrors": true,
         "cc:Mediator/bus": { "@id": "cbqo:Bus/QueryOperation" }
       }
     },
