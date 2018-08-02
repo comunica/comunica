@@ -1,11 +1,14 @@
 {
   "name": "@comunica/actor-http-memento",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "A memento http actor",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-http-memento",
   "lsd:components": "components/components.jsonld",
   "lsd:contexts": {
-    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-http-memento.jsonld": "components/context.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-http-memento/^1.0.0/components/context.jsonld": "components/context.jsonld"
+  },
+  "lsd:importPaths": {
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-http-memento/^1.0.0/components/": "components/"
   },
   "main": "index.js",
   "typings": "index",

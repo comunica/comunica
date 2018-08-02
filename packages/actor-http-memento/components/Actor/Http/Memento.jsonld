@@ -1,7 +1,7 @@
 {
   "@context": [
-    "https://linkedsoftwaredependencies.org/contexts/comunica-actor-http-memento.jsonld",
-    "https://linkedsoftwaredependencies.org/contexts/comunica-bus-http.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-http-memento/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-http/^1.0.0/components/context.jsonld"
   ],
   "@id": "npmd:@comunica/actor-http-memento",
   "components": [
@@ -26,7 +26,7 @@
           "fields": [
             {
               "keyRaw": "mediatorHttp",
-              "value": "cahm:Actor/Http/Memento/SparqlJson/mediatorHttp"
+              "value": "cahm:Actor/Http/Memento/mediatorHttp"
             }
           ]
         }
