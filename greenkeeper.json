@@ -90,6 +90,7 @@
         "packages/mediator-combine-union/package.json",
         "packages/mediator-number/package.json",
         "packages/mediator-race/package.json",
+        "packages/mediatortype-httprequests/package.json",
         "packages/mediatortype-iterations/package.json",
         "packages/mediatortype-priority/package.json",
         "packages/mediatortype-time/package.json",
