@@ -16,6 +16,15 @@
     esutils "^2.0.2"
     js-tokens "^3.0.0"
 
+"@comunica/bus-http@^0.0.1":
+  version "1.1.0"
+
+"@comunica/core@^0.0.1":
+  version "1.1.0"
+  dependencies:
+    immutable "^3.8.2"
+    lodash.assign "^4.2.0"
+
 "@types/asynciterator@^1.1.1":
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/@types/asynciterator/-/asynciterator-1.1.1.tgz#21ae5e3729ab2e87d324a044b2cd6288226da7fc"

@@ -1,46 +1,62 @@
-import {ActorHttp, IActionHttp, IActorHttpOutput} from "@comunica/bus-http";
-import {IActorArgs, IActorTest, Mediator} from "@comunica/core";
-import {Request} from "node-fetch";
+import { ActorHttp, IActionHttp, IActorHttpOutput } from "@comunica/bus-http";
+import { ActionContext, IActorArgs, IActorTest, Mediator } from "@comunica/core";
+import "isomorphic-fetch";
+import * as parseLink from 'parse-link-header';
 
 /**
  * A comunica Memento Http Actor.
  */
 export class ActorHttpMemento extends ActorHttp {
 
-  public readonly mediator: Mediator<ActorHttp,
-  IActionHttp, IActorTest, IActorHttpOutput>;
+  public readonly mediatorHttp: Mediator<ActorHttp,
+    IActionHttp, IActorTest, IActorHttpOutput>;
 
-  constructor(args: IActorArgs<IActionHttp, IActorTest, IActorHttpOutput>) {
+  constructor(args: IActorHttpMementoArgs) {
     super(args);
   }
 
   public async test(action: IActionHttp): Promise<IActorTest> {
-    return true; // TODO implement
+    if (!(action.context && action.context.has('datetime') && action.context.get('datetime') instanceof Date)) {
+      throw new Error('This actor only handles request with a set valid datetime.');
+    }
+    return true;
   }
 
   public async run(action: IActionHttp): Promise<IActorHttpOutput> {
-
-    if ((<any> action.input).headers) {
-      options.url = (<Request> action.input).headers;
-      Object.assign(options, action.input);
-    } else {
-      options.url = action.input;
-    }
+    const datetime: Date = action.context && action.context.get('datetime');
 
     // 1. Create ActionHttp
-    const httpAction: IActionHttp = {
-      input: new Request()
-    };
-
     // 2. Add datetime
 
-    // 3. call mediator
-    mediator.mediate(new IActionHttp());
+    const init: RequestInit = Object.assign({}, action.init || {});
+    const headers: Headers = init.headers = new Headers(init.headers || {});
+    init.headers.append('accept-datetime', datetime.toUTCString());
 
+    const httpAction: IActionHttp = { context: action.context, input: action.input, init };
+
+    // 3. call mediator
+    const result: IActorHttpOutput = await this.mediatorHttp.mediate(httpAction);
     // 4. follow timegate
 
-    // 5. Create IActorHttpOutput
-    return IActorHttpOutput;
-  }
+    // Did we ask for a time-negotiated response, but haven't received one?
+    if (headers.has('accept-datetime') && result.headers && !result.headers.has('memento-datetime')) {
+      // The links might have a timegate that can help us
+      const links = result.headers.has('link') && parseLink(result.headers.get('link'));
 
+      if (links && links.timegate) {
+        // Respond with a time-negotiated response from the timegate instead
+        const followLink: IActionHttp = { context: action.context, input: links.timegate.url, init };
+        return this.mediatorHttp.mediate(followLink);
+      }
+    }
+
+    // 5. Return IActorHttpOutput
+    return result;
+  }
+}
+
+export interface IActorHttpMementoArgs
+  extends IActorArgs<IActionHttp, IActorTest, IActorHttpOutput> {
+  mediatorHttp: Mediator<ActorHttp,
+  IActionHttp, IActorTest, IActorHttpOutput>;
 }

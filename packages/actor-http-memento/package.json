@@ -31,6 +31,10 @@
     "index.d.ts",
     "index.js"
   ],
+  "dependencies": {
+    "parse-link-header": "^1.0.1",
+    "isomorphic-fetch": "^2.2.1"
+  },
   "peerDependencies": {
     "@comunica/core": "^0.0.1",
     "@comunica/bus-http": "^0.0.1"
