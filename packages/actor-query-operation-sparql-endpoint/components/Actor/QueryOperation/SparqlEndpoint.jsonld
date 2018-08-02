@@ -1,0 +1,36 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-sparql-endpoint/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-query-operation/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-query-operation-sparql-endpoint",
+  "components": [
+    {
+      "@id": "caqose:Actor/QueryOperation/SparqlEndpoint",
+      "@type": "Class",
+      "extends": "cbqo:Actor/QueryOperation",
+      "requireElement": "ActorQueryOperationSparqlEndpoint",
+      "comment": "A comunica SPARQL Endpoint Query Operation Actor.",
+      "parameters": [
+        {
+          "@id": "caqose:Actor/QueryOperation/SparqlEndpoint/mediatorHttp",
+          "comment": "The HTTP mediator",
+          "required": true,
+          "unique": true
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "caqose:Actor/QueryOperation/SparqlEndpoint/constructorArgumentsObject",
+          "extends": "cbqo:Actor/QueryOperation/constructorArgumentsObject",
+          "fields": [
+            {
+              "keyRaw": "mediatorHttp",
+              "value": "caqose:Actor/QueryOperation/SparqlEndpoint/mediatorHttp"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^3.0.0/components/context.jsonld",
+    {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
+      "caqose": "npmd:@comunica/actor-query-operation-sparql-endpoint/",
+      "files-caqose": "caqose:^1.0.0/",
+
+      "ActorQueryOperationSparqlEndpoint": "caqose:Actor/QueryOperation/SparqlEndpoint"
+    }
+  ]
+}
