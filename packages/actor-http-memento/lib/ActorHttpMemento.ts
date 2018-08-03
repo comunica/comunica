@@ -30,7 +30,6 @@ export class ActorHttpMemento extends ActorHttp {
 
     // 1. Create ActionHttp
     // 2. Add datetime
-
     const init: RequestInit = Object.assign({}, action.init || {});
     const headers: Headers = init.headers = new Headers(init.headers || {});
     init.headers.append('accept-datetime', datetime.toUTCString());
