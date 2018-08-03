@@ -1,0 +1,12 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^3.0.0/components/context.jsonld",
+    {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
+      "caqoserv": "npmd:@comunica/actor-query-operation-service/",
+      "files-caqoserv": "caqoserv:^1.0.0/",
+
+      "ActorQueryOperationService": "caqoserv:Actor/QueryOperation/Service"
+    }
+  ]
+}
