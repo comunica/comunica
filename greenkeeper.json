@@ -35,6 +35,7 @@
         "packages/actor-query-operation-orderby-direct/package.json",
         "packages/actor-query-operation-project/package.json",
         "packages/actor-query-operation-quadpattern/package.json",
+        "packages/actor-query-operation-service/package.json",
         "packages/actor-query-operation-slice/package.json",
         "packages/actor-query-operation-sparql-endpoint/package.json",
         "packages/actor-query-operation-union/package.json",

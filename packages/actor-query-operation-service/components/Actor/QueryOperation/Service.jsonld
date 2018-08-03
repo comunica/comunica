@@ -1,0 +1,48 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-service/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-query-operation/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-query-operation-service",
+  "components": [
+    {
+      "@id": "caqoserv:Actor/QueryOperation/Service",
+      "@type": "Class",
+      "extends": "cbqo:Actor/QueryOperationTypedMediated",
+      "requireElement": "ActorQueryOperationService",
+      "comment": "A comunica Service Query Operation Actor.",
+      "parameters": [
+        {
+          "@id": "caqoserv:Actor/QueryOperation/Service/mediatorRdfSourceIdentifier",
+          "comment": "The RDF source identifier mediator",
+          "required": true,
+          "unique": true
+        },
+        {
+          "@id": "caqoserv:Actor/QueryOperation/Service/forceSparqlEndpoint",
+          "comment": "If the SERVICE target should be assumed to be a SPARQL endpoint",
+          "range": "xsd:boolean",
+          "unique": true,
+          "required": true,
+          "default": false
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "caqoserv:Actor/QueryOperation/Service/constructorArgumentsObject",
+          "extends": "cbqo:Actor/QueryOperationTypedMediated/constructorArgumentsObject",
+          "fields": [
+            {
+              "keyRaw": "mediatorRdfSourceIdentifier",
+              "value": "caqoserv:Actor/QueryOperation/Service/mediatorRdfSourceIdentifier"
+            },
+            {
+              "keyRaw": "forceSparqlEndpoint",
+              "value": "caqoserv:Actor/QueryOperation/Service/forceSparqlEndpoint"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

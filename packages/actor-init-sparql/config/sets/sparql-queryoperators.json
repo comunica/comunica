@@ -18,6 +18,7 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-orderby-direct/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-project/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-quadpattern/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-service/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-slice/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-union/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-values/^1.0.0/components/context.jsonld",
@@ -41,6 +42,16 @@
         "ignoreErrors": true,
         "cc:Mediator/bus": { "@id": "cbqo:Bus/QueryOperation" }
       }
+    },
+
+    {
+      "@id": "config-sets:sparql-queryoperators.json#myServiceQueryOperator",
+      "@type": "ActorQueryOperationService",
+      "cbqo:mediatorQueryOperation": { "@id": "config-sets:sparql-queryoperators.json#mediatorQueryOperation" },
+      "caqoserv:Actor/QueryOperation/Service/mediatorRdfSourceIdentifier": {
+        "@id": "config-sets:context-preprocess-rdf-source-identifiers.json#mediatorRdfSourceIdentifier"
+      },
+      "caqoserv:Actor/QueryOperation/Service/forceSparqlEndpoint": false
     },
 
     {
