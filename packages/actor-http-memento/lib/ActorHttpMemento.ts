@@ -30,7 +30,8 @@ export class ActorHttpMemento extends ActorHttp {
 
     // 1. Create ActionHttp
     // 2. Add datetime
-    const init: RequestInit = Object.assign({}, action.init || {});
+    const init: RequestInit = {...action.init};
+//    console.log(init);
     const headers: Headers = init.headers = new Headers(init.headers || {});
     init.headers.append('accept-datetime', datetime.toUTCString());
 
@@ -44,7 +45,7 @@ export class ActorHttpMemento extends ActorHttp {
     if (headers.has('accept-datetime') && result.headers && !result.headers.has('memento-datetime')) {
       // The links might have a timegate that can help us
       const links = result.headers.has('link') && parseLink(result.headers.get('link'));
-
+      result.body.cancel();
       if (links && links.timegate) {
         // Respond with a time-negotiated response from the timegate instead
         const followLink: IActionHttp = { context: action.context, input: links.timegate.url, init };

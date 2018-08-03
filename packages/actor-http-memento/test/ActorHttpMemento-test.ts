@@ -35,22 +35,22 @@ describe('ActorHttpMemento', () => {
 
         const headers = new Headers();
         let status = 200;
-        let body;
+        let bodyText;
 
         switch (requestUrl) {
         case "http://example.com/or":
           headers.set('link', '<http://example.com/tg/http%3A%2F%2Fexample.com%2For>; rel="timegate"');
-          body = 'original';
+          bodyText = 'original';
           break;
       
         case "http://example.com/tg/http%3A%2F%2Fexample.com%2For":
         
           if (requestHeaders.has("accept-datetime") && 
           new Date(requestHeaders.get("accept-datetime")) > new Date(2018, 6)) {
-            body = 'memento1';
+            bodyText = 'memento1';
             headers.set('memento-datetime', new Date(2018, 7).toUTCString());
           } else {
-            body = 'memento2';
+            bodyText = 'memento2';
             headers.set('memento-datetime', new Date(2018, 1).toUTCString());
           }
           break;
@@ -61,7 +61,18 @@ describe('ActorHttpMemento', () => {
         }
 
         return Promise.resolve({
-          body,
+          body: {
+            getReader() {
+              return {
+                read() {
+                  return bodyText;
+                },
+              };
+            },
+            cancel() {
+              return;
+            },
+          },
           headers,
           ok: true,
           status,
@@ -86,24 +97,31 @@ describe('ActorHttpMemento', () => {
       return expect(actor.test(action)).rejects.toBeTruthy();
     });
 
-    it('should run with new memento', () => {
+    it('should run with new memento', async () => {
       const action: IActionHttp = {
         context: ActionContext({ datetime: new Date() }),
         input: new Request('http://example.com/or'),
       };
+      const result = await actor.run(action);
+      expect(result.status).toEqual(200);
 
-      return expect(actor.run(action)).resolves
-        .toMatchObject({ status: 200, body: "memento1" });
+      const body = result.body;
+      expect(body.getReader().read()).toEqual("memento1");
+      return;
     });
 
-    it('should run with old memento', () => {
+    it('should run with old memento', async () => {
       const action: IActionHttp = {
         context: ActionContext({ datetime: new Date(2018, 1) }),
         input: new Request('http://example.com/or'),
       };
 
-      return expect(actor.run(action)).resolves
-        .toMatchObject({ status: 200, body: "memento2" });
+      const result = await actor.run(action);
+      expect(result.status).toEqual(200);
+
+      const body = result.body;
+      expect(body.getReader().read()).toEqual("memento2");
+      return;
     });
   });
 });
