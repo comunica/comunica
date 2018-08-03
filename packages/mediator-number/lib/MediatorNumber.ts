@@ -52,15 +52,20 @@ export class MediatorNumber<A extends Actor<I, T, O>, I extends IAction, T exten
 
   protected async mediateWith(action: I, testResults: IActorReply<A, I, T, O>[]): Promise<A> {
     let promises = <Promise<T>[]> require('lodash.map')(testResults, 'reply');
+    const errors: Error[] = [];
     if (this.ignoreErrors) {
       const dummy: any = {};
       dummy[this.field] = null;
-      promises = promises.map((p) => p.catch(() => dummy ));
+      promises = promises.map((p) => p.catch((error) => {
+        errors.push(error);
+        return dummy;
+      }));
     }
     const results = await Promise.all(promises);
     const index = this.indexPicker(results);
     if (index < 0) {
-      throw new Error('All actors rejected their test in ' + this.name);
+      throw new Error('All actors rejected their test in ' + this.name + '\n'
+        + errors.map((e) => e.toString()).join('\n'));
     }
     return testResults[index].actor;
   }

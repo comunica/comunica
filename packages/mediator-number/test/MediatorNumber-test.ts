@@ -135,6 +135,24 @@ describe('MediatorNumber', () => {
         return expect(mediatorMax.mediate({})).resolves.toEqual({ field: 100 });
       });
     });
+
+    describe('with only actors throwing errors', () => {
+      beforeEach(() => {
+        mediatorMin = new MediatorNumber({ bus, field: 'field', ignoreErrors: true,
+          name: 'mediatorMin', type: MediatorNumber.MIN });
+        mediatorMax = new MediatorNumber({ bus, field: 'field', ignoreErrors: true,
+          name: 'mediatorMax', type: MediatorNumber.MAX });
+        bus.subscribe(new ErrorDummyActor(null, bus));
+      });
+
+      it('should not mediate to the minimum value for type MIN', () => {
+        return expect(mediatorMin.mediate({})).rejects.toBeTruthy();
+      });
+
+      it('should not mediate to the maximum value for type MAX', () => {
+        return expect(mediatorMax.mediate({})).rejects.toBeTruthy();
+      });
+    });
   });
 });
 
@@ -160,7 +178,7 @@ class DummyActor extends Actor<IAction, IDummyTest, IDummyTest> {
 // tslint:disable-next-line:max-classes-per-file
 class ErrorDummyActor extends DummyActor {
   public async test(action: IAction): Promise<IDummyTest> {
-    throw new Error();
+    throw new Error('abc');
   }
 }
 
