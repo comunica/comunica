@@ -35,7 +35,7 @@
     "index.js"
   ],
   "dependencies": {
-    "graphql-to-sparql": "1.2.0"
+    "graphql-to-sparql": "1.3.0"
   },
   "peerDependencies": {
     "@comunica/core": "^1.0.0",
