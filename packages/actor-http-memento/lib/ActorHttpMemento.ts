@@ -26,12 +26,13 @@ export class ActorHttpMemento extends ActorHttp {
   }
 
   public async run(action: IActionHttp): Promise<IActorHttpOutput> {
-    const datetime: Date = action.context && action.context.get('datetime');
-
     // Duplicate the ActionHttp to append a datetime header to the request.
-    const init: RequestInit = {...action.init};
+    const init: RequestInit = action.init ? {...action.init} : {};
     const headers: Headers = init.headers = new Headers(init.headers || {});
-    init.headers.append('accept-datetime', datetime.toUTCString());
+
+    if (action.context && action.context.has('datetime')) {
+      headers.append('accept-datetime', action.context.get('datetime').toUTCString());
+    }
 
     const httpAction: IActionHttp = { context: action.context, input: action.input, init };
 

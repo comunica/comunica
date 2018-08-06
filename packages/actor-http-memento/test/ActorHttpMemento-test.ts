@@ -49,12 +49,24 @@ describe('ActorHttpMemento', () => {
           new Date(requestHeaders.get("accept-datetime")) > new Date(2018, 6)) {
             bodyText = 'memento1';
             headers.set('memento-datetime', new Date(2018, 7).toUTCString());
+            headers.set('content-location', 'http://example.com/m1/http%3A%2F%2Fexample.com%2For');
           } else {
             bodyText = 'memento2';
             headers.set('memento-datetime', new Date(2018, 1).toUTCString());
+            headers.set('content-location', 'http://example.com/m2/http%3A%2F%2Fexample.com%2For');
           }
           break;
+        
+        case "http://example.com/m1/http%3A%2F%2Fexample.com%2For":
+          bodyText = 'memento1';
+          headers.set('memento-datetime', new Date(2018, 7).toUTCString());
+          break;
 
+        case "http://example.com/m2/http%3A%2F%2Fexample.com%2For":
+          bodyText = 'memento2';
+          headers.set('memento-datetime', new Date(2018, 1).toUTCString());
+          break;
+          
         default:
           status = 404;
 
@@ -97,6 +109,14 @@ describe('ActorHttpMemento', () => {
       return expect(actor.test(action)).rejects.toBeTruthy();
     });
 
+    it('should not test without Accept-Datetime header', () => {
+      const action: IActionHttp = { 
+        init: { headers: new Headers({ 'Accept-Datetime': new Date().toUTCString() })}, 
+        input: new Request('https://www.google.com/'), 
+      };
+      return expect(actor.test(action)).rejects.toBeTruthy();
+    });
+
     it('should run with new memento', async () => {
       const action: IActionHttp = {
         context: ActionContext({ datetime: new Date() }),
@@ -121,6 +141,20 @@ describe('ActorHttpMemento', () => {
 
       const body = result.body;
       expect(body.getReader().read()).toEqual("memento2");
+      return;
+    });
+
+    it('should proxy request when memento', async () => {
+      const action: IActionHttp = { 
+        init: { headers: new Headers({ 'Accept-Datetime': new Date().toUTCString() })}, 
+        input: new Request('http://example.com/m1/http%3A%2F%2Fexample.com%2For'), 
+      };
+
+      const result = await actor.run(action);
+      expect(result.status).toEqual(200);
+
+      const body = result.body;
+      expect(body.getReader().read()).toEqual("memento1");
       return;
     });
   });
