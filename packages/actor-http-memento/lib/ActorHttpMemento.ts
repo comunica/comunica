@@ -28,17 +28,15 @@ export class ActorHttpMemento extends ActorHttp {
   public async run(action: IActionHttp): Promise<IActorHttpOutput> {
     const datetime: Date = action.context && action.context.get('datetime');
 
-    // 1. Create ActionHttp
-    // 2. Add datetime
+    // Duplicate the ActionHttp to append a datetime header to the request.
     const init: RequestInit = {...action.init};
     const headers: Headers = init.headers = new Headers(init.headers || {});
     init.headers.append('accept-datetime', datetime.toUTCString());
 
     const httpAction: IActionHttp = { context: action.context, input: action.input, init };
 
-    // 3. call mediator
+    // Execute the request and follow the timegate in the response (if any).
     const result: IActorHttpOutput = await this.mediatorHttp.mediate(httpAction);
-    // 4. follow timegate
 
     // Did we ask for a time-negotiated response, but haven't received one?
     if (headers.has('accept-datetime') && result.headers && !result.headers.has('memento-datetime')) {
@@ -52,7 +50,6 @@ export class ActorHttpMemento extends ActorHttp {
       }
     }
 
-    // 5. Return IActorHttpOutput
     return result;
   }
 }
