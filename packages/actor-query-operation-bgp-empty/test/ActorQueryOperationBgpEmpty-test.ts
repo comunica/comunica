@@ -1,4 +1,4 @@
-import {ActorQueryOperation, IActorQueryOperationOutputBindings} from "@comunica/bus-query-operation";
+import {ActorQueryOperation, Bindings, IActorQueryOperationOutputBindings} from "@comunica/bus-query-operation";
 import {Bus} from "@comunica/core";
 import {ActorQueryOperationBgpEmpty} from "../lib/ActorQueryOperationBgpEmpty";
 const arrayifyStream = require('arrayify-stream');
@@ -47,9 +47,9 @@ describe('ActorQueryOperationBgpEmpty', () => {
     it('should run', () => {
       const op = { operation: { type: 'bgp', patterns: [] } };
       return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
-        expect(await arrayifyStream(output.bindingsStream)).toEqual([]);
+        expect(await arrayifyStream(output.bindingsStream)).toEqual([Bindings({})]);
         expect(output.variables).toEqual([]);
-        expect(await output.metadata()).toMatchObject({ totalItems: 0 });
+        expect(await output.metadata()).toMatchObject({ totalItems: 1 });
       });
     });
   });
