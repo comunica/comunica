@@ -430,14 +430,19 @@ describe('ActorInitSparql', () => {
       });
     });
 
-    // it('should set datetime on the -d option', async () => {
-    //   const dt: Date = new Date();
-    //   await actor.run({
-    //     argv: [ hypermedia, queryString, '-d', dt.toISOString() ], env: {},
-    //     stdin: new PassThrough(),
-    //   });
-    //   return expect(actor.context).toHaveProperty('datetime');
-    // });
+    it('should set datetime on the -d option', async () => {
+      const dt: Date = new Date();
+      const med: any = {
+        mediate: (arg) => Promise.resolve({ handle: { data: arg.handleMediaType } }),
+      };
+      actor = new ActorInitSparql(
+        { bus, mediatorContextPreprocess, mediatorQueryOperation, mediatorSparqlParse, mediatorSparqlSerialize: med,
+          mediatorSparqlSerializeMediaTypeCombiner: med, name: 'actor', queryString });
+      return expect((await actor.run({
+        argv: [ hypermedia, queryString, '-d', dt.toISOString() ], env: {},
+        stdin: new PassThrough(),
+      }))).toBeTruthy();
+    });
 
   });
 });

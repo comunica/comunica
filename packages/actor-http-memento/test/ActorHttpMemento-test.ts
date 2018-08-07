@@ -110,16 +110,27 @@ describe('ActorHttpMemento', () => {
       return expect(actor.test(action)).resolves.toEqual(true);
     });
 
+    it('should test with empty headers', () => {
+      const action: IActionHttp = {
+        context: ActionContext({ datetime: new Date() }),
+        init: { headers: new Headers()}, 
+        input: new Request('https://www.google.com/'), 
+      };
+      return expect(actor.test(action)).resolves.toBeTruthy();
+    });
+
     it('should not test without datetime', () => {
       const action: IActionHttp = { input: new Request('https://www.google.com/') };
       return expect(actor.test(action)).rejects.toBeTruthy();
     });
 
-    it('should not test without init', () => {
-      const action: IActionHttp = {  
+    it('should test without init', () => {
+      const action: IActionHttp = {
+        context: ActionContext({ datetime: new Date() }),
+        init: {}, 
         input: new Request('https://www.google.com/'), 
       };
-      return expect(actor.test(action)).rejects.toBeTruthy();
+      return expect(actor.test(action)).resolves.toBeTruthy();
     });
 
     it('should not test with Accept-Datetime header', () => {
