@@ -429,5 +429,15 @@ describe('ActorInitSparql', () => {
           .resolves.toBeTruthy();
       });
     });
+
+    // it('should set datetime on the -d option', async () => {
+    //   const dt: Date = new Date();
+    //   await actor.run({
+    //     argv: [ hypermedia, queryString, '-d', dt.toISOString() ], env: {},
+    //     stdin: new PassThrough(),
+    //   });
+    //   return expect(actor.context).toHaveProperty('datetime');
+    // });
+
   });
 });

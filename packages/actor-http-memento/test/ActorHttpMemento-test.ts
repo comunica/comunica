@@ -44,6 +44,11 @@ describe('ActorHttpMemento', () => {
           bodyText = 'original';
           break;
       
+        case "http://example.com/or2":
+          headers.set('link', '<http://example.com/tg/http%3A%2F%2Fexample.com%2For>; rel="something"');
+          bodyText = 'nolink';
+          break;
+
         case "http://example.com/tg/http%3A%2F%2Fexample.com%2For":
         
           if (requestHeaders.has("accept-datetime") && 
@@ -118,6 +123,13 @@ describe('ActorHttpMemento', () => {
       return expect(actor.test(action)).rejects.toBeTruthy();
     });
 
+    it('should not test without init', () => {
+      const action: IActionHttp = {  
+        input: new Request('https://www.google.com/'), 
+      };
+      return expect(actor.test(action)).rejects.toBeTruthy();
+    });
+
     it('should run with new memento', async () => {
       const action: IActionHttp = {
         context: ActionContext({ datetime: new Date() }),
@@ -142,6 +154,20 @@ describe('ActorHttpMemento', () => {
 
       const body = result.body;
       expect(body.getReader().read()).toEqual("memento2");
+      return;
+    });
+
+    it('should not follow other link header', async () => {
+      const action: IActionHttp = {
+        context: ActionContext({ datetime: new Date(2018, 1) }),
+        input: new Request('http://example.com/or2'),
+      };
+
+      const result = await actor.run(action);
+      expect(result.status).toEqual(200);
+
+      const body = result.body;
+      expect(body.getReader().read()).toEqual("nolink");
       return;
     });
 
