@@ -115,19 +115,20 @@ describe('ActorHttpMemento', () => {
       return expect(actor.test(action)).rejects.toBeTruthy();
     });
 
-    it('should not test without Accept-Datetime header', () => {
-      const action: IActionHttp = { 
-        init: { headers: new Headers({ 'Accept-Datetime': new Date().toUTCString() })}, 
-        input: new Request('https://www.google.com/'), 
-      };
-      return expect(actor.test(action)).rejects.toBeTruthy();
-    });
-
     it('should not test without init', () => {
       const action: IActionHttp = {  
         input: new Request('https://www.google.com/'), 
       };
       return expect(actor.test(action)).rejects.toBeTruthy();
+    });
+
+    it('should not test with Accept-Datetime header', () => {
+      const action: IActionHttp = { 
+        context: ActionContext({ datetime: new Date() }),
+        init: { headers: new Headers({ 'Accept-Datetime': new Date().toUTCString() })}, 
+        input: new Request('https://www.google.com/'), 
+      };
+      return expect(actor.test(action)).rejects.toMatchObject(new Error('The request already has a set datetime.'));
     });
 
     it('should run with new memento', async () => {
