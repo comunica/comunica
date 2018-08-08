@@ -1,0 +1,36 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-http-memento/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-http/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-http-memento",
+  "components": [
+    {
+      "@id": "cahm:Actor/Http/Memento",
+      "@type": "Class",
+      "extends": "cbh:Actor/Http",
+      "requireElement": "ActorHttpMemento",
+      "comment": "A comunica Memento Http Actor.",
+      "parameters": [
+        {
+          "@id": "cahm:Actor/Http/Memento/mediatorHttp",
+          "comment": "The HTTP mediator",
+          "required": true,
+          "unique": true
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "cahm:Actor/Http/Memento/constructorArgumentsObject",
+          "extends": "cbh:Actor/Http/constructorArgumentsObject",
+          "fields": [
+            {
+              "keyRaw": "mediatorHttp",
+              "value": "cahm:Actor/Http/Memento/mediatorHttp"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

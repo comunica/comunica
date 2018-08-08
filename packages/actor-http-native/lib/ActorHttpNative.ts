@@ -63,13 +63,15 @@ export class ActorHttpNative extends ActorHttp {
             // Expose fetch cancel promise
             httpResponse.cancel = () => Promise.resolve(httpResponse.destroy());
             // missing several of the required fetch fields
+            const headers = new Headers(httpResponse.headers);
             const result = <IActorHttpOutput> {
               body: httpResponse,
-              headers: new Headers(httpResponse.headers),
+              headers,
               ok: httpResponse.statusCode < 300,
               redirected: options.url !== httpResponse.responseUrl,
               status: httpResponse.statusCode,
-              url: httpResponse.responseUrl,
+              // when the content came from another resource because of conneg, let Content-Location deliver the url
+              url: headers.has('content-location') ? headers.get('content-location') : httpResponse.responseUrl,
             };
             resolve(result);
           }

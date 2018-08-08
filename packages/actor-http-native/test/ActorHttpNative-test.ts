@@ -79,6 +79,12 @@ describe('ActorHttpNative', () => {
       expect(result.body.input).toMatchObject({ headers: { a: 'b' }});
     });
 
+    it('uses Content-Location header as URL when set', async () => {
+      mockSetup({ headers: {'content-location': 'http://example.com/contentlocation'}});
+      const result: any = await actor.run({ input: 'http://example.com' });
+      expect(result).toMatchObject({ url: 'http://example.com/contentlocation' });
+    });
+
     it('can decode gzipped streams', async () => {
       const body = new Readable();
       body.push(zlib.gzipSync('apple'));

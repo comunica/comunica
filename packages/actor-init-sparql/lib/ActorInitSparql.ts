@@ -1,3 +1,4 @@
+import {KEY_CONTEXT_DATETIME} from "@comunica/actor-http-memento";
 import {IActionInit, IActorOutputInit} from "@comunica/bus-init";
 import {IActorQueryOperationOutput} from "@comunica/bus-query-operation";
 import {KEY_CONTEXT_SOURCES} from "@comunica/bus-rdf-resolve-quad-pattern";
@@ -55,6 +56,7 @@ Options:
   -c            use the given JSON configuration file (e.g., config.json)
   -t            the MIME type of the output (e.g., application/json)
   -i            the query input format (e.g., graphql, defaults to sparql)
+  -d            sets a datetime for querying Memento-enabled archives'
   --help        print this help message
   --listformats prints the supported MIME types
   --version     prints version information
@@ -97,6 +99,11 @@ Options:
     context.queryFormat = this.defaultQueryInputFormat;
     if (args.i) {
       context.queryFormat = args.i;
+    }
+
+    // Define the datetime
+    if (args.d) {
+      context[KEY_CONTEXT_DATETIME] = new Date(args.d);
     }
 
     // Add sources to context

@@ -1,0 +1,9 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-http-memento/^1.0.0/components/context.jsonld",
+  "@id": "npmd:@comunica/actor-http-memento",
+  "@type": "Module",
+  "requireName": "@comunica/actor-http-memento",
+  "import": [
+    "files-cahm:components/Actor/Http/Memento.jsonld"
+  ]
+}
