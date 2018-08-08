@@ -60,3 +60,8 @@ export interface IActorHttpMementoArgs
   mediatorHttp: Mediator<ActorHttp,
   IActionHttp, IActorTest, IActorHttpOutput>;
 }
+
+/**
+ * @type {string} Context entry for the desired datetime.
+ */
+export const KEY_CONTEXT_DATETIME = '@comunica/actor-http-memento:datetime';

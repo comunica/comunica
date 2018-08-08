@@ -1,3 +1,4 @@
+import {KEY_CONTEXT_DATETIME} from "@comunica/actor-http-memento";
 import {IActionInit, IActorOutputInit} from "@comunica/bus-init";
 import {IActorQueryOperationOutput} from "@comunica/bus-query-operation";
 import {KEY_CONTEXT_SOURCES} from "@comunica/bus-rdf-resolve-quad-pattern";
@@ -102,7 +103,7 @@ Options:
 
     // Define the datetime
     if (args.d) {
-      context.datetime = new Date(args.d);
+      context[KEY_CONTEXT_DATETIME] = new Date(args.d);
     }
 
     // Add sources to context
