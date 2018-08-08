@@ -16,7 +16,8 @@ export class ActorHttpMemento extends ActorHttp {
   }
 
   public async test(action: IActionHttp): Promise<IActorTest> {
-    if (!(action.context && action.context.has('datetime') && action.context.get('datetime') instanceof Date)) {
+    if (!(action.context && action.context.has(KEY_CONTEXT_DATETIME) &&
+          action.context.get(KEY_CONTEXT_DATETIME) instanceof Date)) {
       throw new Error('This actor only handles request with a set valid datetime.');
     }
     if (action.init && new Headers(action.init.headers || {}).has('accept-datetime')) {
@@ -30,8 +31,8 @@ export class ActorHttpMemento extends ActorHttp {
     const init: RequestInit = action.init ? {...action.init} : {};
     const headers: Headers = init.headers = new Headers(init.headers || {});
 
-    if (action.context && action.context.has('datetime')) {
-      headers.append('accept-datetime', action.context.get('datetime').toUTCString());
+    if (action.context && action.context.has(KEY_CONTEXT_DATETIME)) {
+      headers.append('accept-datetime', action.context.get(KEY_CONTEXT_DATETIME).toUTCString());
     }
 
     const httpAction: IActionHttp = { context: action.context, input: action.input, init };
