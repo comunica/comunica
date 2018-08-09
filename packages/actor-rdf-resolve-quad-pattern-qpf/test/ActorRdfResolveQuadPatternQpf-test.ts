@@ -4,7 +4,7 @@ import {ArrayIterator} from "asynciterator";
 import {Readable} from "stream";
 import {ActorRdfResolveQuadPatternQpf} from "../lib/ActorRdfResolveQuadPatternQpf";
 const arrayifyStream = require('arrayify-stream');
-import {blankNode, literal, namedNode, quad, variable} from "rdf-data-model";
+import {blankNode, literal, namedNode, quad, variable} from "@rdfjs/data-model";
 import {MediatedQuadSource} from "../lib/MediatedQuadSource";
 
 // tslint:disable:object-literal-sort-keys

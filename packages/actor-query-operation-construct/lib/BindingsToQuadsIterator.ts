@@ -1,8 +1,8 @@
 import {Bindings, BindingsStream} from "@comunica/bus-query-operation";
+import {blankNode} from "@rdfjs/data-model";
 import {ArrayIterator, AsyncIterator, MultiTransformIterator} from "asynciterator";
-import {blankNode} from "rdf-data-model";
 import * as RDF from "rdf-js";
-import {mapTerms, someTerms} from "rdf-terms";
+import {mapTerms} from "rdf-terms";
 
 /**
  * Transforms a bindings stream into a quad stream given a quad template.

@@ -1,7 +1,7 @@
 import {Bindings, BindingsStream} from "@comunica/bus-query-operation";
 import {Bus} from "@comunica/core";
+import {blankNode, namedNode} from "@rdfjs/data-model";
 import {ArrayIterator} from "asynciterator";
-import {blankNode, namedNode} from "rdf-data-model";
 import {Readable} from "stream";
 import {ActorSparqlSerializeJson} from "../lib/ActorSparqlSerializeJson";
 

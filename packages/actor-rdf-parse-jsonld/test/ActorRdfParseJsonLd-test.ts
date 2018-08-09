@@ -1,10 +1,10 @@
-import {ActorRdfParse} from "@comunica/bus-rdf-parse";
 import {Bus} from "@comunica/core";
-import * as RDF from "rdf-js";
+import "jest-rdf";
 import {Readable} from "stream";
 import {ActorRdfParseJsonLd} from "../lib/ActorRdfParseJsonLd";
 const stringToStream = require('streamify-string');
 const arrayifyStream = require('arrayify-stream');
+const quad = require('rdf-quad');
 
 describe('ActorRdfParseJsonLd', () => {
   let bus;
@@ -54,6 +54,7 @@ describe('ActorRdfParseJsonLd', () => {
   describe('An ActorRdfParseJsonLd instance', () => {
     let actor: ActorRdfParseJsonLd;
     let input: Readable;
+    let inputGraphs: Readable;
 
     beforeEach(() => {
       actor = new ActorRdfParseJsonLd({ bus, mediaTypes: {
@@ -69,6 +70,27 @@ describe('ActorRdfParseJsonLd', () => {
             "http://example.org/b": "http://example.org/c",
             "http://example.org/d": "http://example.org/e"
           }`);
+        inputGraphs = stringToStream(`[
+          {
+            "@id": "http://example.org/g0",
+            "@graph": [
+              {
+                "@id": "http://example.org/a",
+                "http://example.org/b": "http://example.org/c",
+                "http://example.org/d": { "@value": "http://example.org/e", "@language": "nl" }
+              }
+            ]
+          },
+          {
+            "@id": "http://example.org/g1",
+            "@graph": [
+              {
+                "http://example.org/b": "http://example.org/c",
+                "http://example.org/d": "http://example.org/e"
+              }
+            ]
+          }
+            ]`);
       });
 
       it('should test on application/json', () => {
@@ -85,7 +107,20 @@ describe('ActorRdfParseJsonLd', () => {
 
       it('should run', () => {
         return actor.run({ handle: { input }, handleMediaType: 'application/ld+json' })
-          .then(async (output) => expect(await arrayifyStream(output.handle.quads)).toHaveLength(2));
+          .then(async (output) => expect(await arrayifyStream(output.handle.quads)).toEqualRdfQuadArray([
+            quad('http://example.org/a', 'http://example.org/b', '"http://example.org/c"'),
+            quad('http://example.org/a', 'http://example.org/d', '"http://example.org/e"'),
+          ]));
+      });
+
+      it('should run for graphs', () => {
+        return actor.run({ handle: { input: inputGraphs }, handleMediaType: 'application/ld+json' })
+          .then(async (output) => expect(await arrayifyStream(output.handle.quads)).toEqualRdfQuadArray([
+            quad('http://example.org/a', 'http://example.org/b', '"http://example.org/c"', 'http://example.org/g0'),
+            quad('http://example.org/a', 'http://example.org/d', '"http://example.org/e"@nl', 'http://example.org/g0'),
+            quad('_:b1', 'http://example.org/b', '"http://example.org/c"', 'http://example.org/g1'),
+            quad('_:b1', 'http://example.org/d', '"http://example.org/e"', 'http://example.org/g1'),
+          ]));
       });
     });
 

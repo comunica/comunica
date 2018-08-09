@@ -1,4 +1,4 @@
-import {blankNode, defaultGraph, literal, namedNode, variable} from "rdf-data-model";
+import {namedNode, variable} from "@rdfjs/data-model";
 import {HdtIterator} from "../lib/HdtIterator";
 import {MockedHdtDocument} from "../mocks/MockedHdtDocument";
 const arrayifyStream = require('arrayify-stream');

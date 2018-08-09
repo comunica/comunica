@@ -1,8 +1,8 @@
 import {ActorQueryOperation, IActorQueryOperationOutputBindings} from "@comunica/bus-query-operation";
 import {Bindings} from "@comunica/bus-query-operation";
 import {Bus} from "@comunica/core";
+import {blankNode, namedNode, variable} from "@rdfjs/data-model";
 import {ArrayIterator} from "asynciterator";
-import {blankNode, defaultGraph, namedNode, variable} from "rdf-data-model";
 import * as RDF from "rdf-js";
 import {Algebra} from "sparqlalgebrajs";
 import {ActorQueryOperationQuadpattern} from "../lib/ActorQueryOperationQuadpattern";

@@ -122,26 +122,17 @@ function isLiteral(entity: any) {
 
 function literalValue(literal: string) {
   const match = /^"([^]*)"/.exec(literal);
-  if (!match) {
-    throw new Error(literal + ' is not a literal');
-  }
   return match[1];
 }
 
 function getLiteralType(literal: string) {
   const match = /^"[^]*"(?:\^\^([^"]+)|(@)[^@"]+)?$/.exec(literal);
-  if (!match) {
-    throw new Error(literal + ' is not a literal');
-  }
   return match[1] || (match[2]
     ? 'http://www.w3.org/1999/02/22-rdf-syntax-ns#langString' : 'http://www.w3.org/2001/XMLSchema#string');
 }
 
 function getLiteralLanguage(literal: string) {
   const match = /^"[^]*"(?:@([^@"]+)|\^\^[^"]+)?$/.exec(literal);
-  if (!match) {
-    throw new Error(literal + ' is not a literal');
-  }
   return match[1] ? match[1].toLowerCase() : '';
 }
 

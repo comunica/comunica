@@ -1,5 +1,5 @@
+import {variable} from "@rdfjs/data-model";
 import {Store as N3Store} from "n3";
-import {namedNode, quad, variable} from "rdf-data-model";
 import {N3StoreIterator} from "../lib/N3StoreIterator";
 import {N3StoreQuadSource} from "../lib/N3StoreQuadSource";
 

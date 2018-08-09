@@ -137,12 +137,6 @@
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@types/parse-link-header/-/parse-link-header-1.0.0.tgz#69f059e40a0fa93dc2e095d4142395ae6adc5d7a"
 
-"@types/rdf-data-model@^1.0.1":
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/@types/rdf-data-model/-/rdf-data-model-1.0.1.tgz#fbf643cac7a08cacc502dbad063ea3eacddcd36f"
-  dependencies:
-    "@types/rdf-js" "*"
-
 "@types/rdf-js@*", "@types/rdf-js@^1.0.0":
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/@types/rdf-js/-/rdf-js-1.0.1.tgz#312e8478b608c3e2f66d3a2cae0c96c052c495a6"
@@ -1519,7 +1513,7 @@ concat-map@0.0.1:
   version "0.0.1"
   resolved "https://registry.yarnpkg.com/concat-map/-/concat-map-0.0.1.tgz#d8a96bd77fd68df7793a73036a3ba0d5405d477b"
 
-concat-stream@^1.4.10, concat-stream@^1.4.7, concat-stream@^1.5.0, concat-stream@^1.5.1:
+concat-stream@^1.4.10, concat-stream@^1.4.7, concat-stream@^1.5.0:
   version "1.6.2"
   resolved "https://registry.yarnpkg.com/concat-stream/-/concat-stream-1.6.2.tgz#904bdf194cd3122fc675c77fc4ac3d4ff0fd1a34"
   dependencies:
@@ -4906,51 +4900,12 @@ rdf-canonize@^0.2.1:
     node-forge "^0.7.1"
     semver "^5.4.1"
 
-rdf-data-model@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/rdf-data-model/-/rdf-data-model-1.0.0.tgz#e768e1c2cd904c186471b20d1a4fce77c7712a4b"
-
-rdf-dataset-simple@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/rdf-dataset-simple/-/rdf-dataset-simple-1.0.0.tgz#02238a3321595667fbf34335ff49153c9cb59126"
-  dependencies:
-    readable-stream "^2.2.9"
-
-rdf-ext@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/rdf-ext/-/rdf-ext-1.1.0.tgz#1baf035568f981579f98aff3a17bff9b1bde5aa3"
-  dependencies:
-    rdf-data-model "^1.0.0"
-    rdf-dataset-simple "^1.0.0"
-    rdf-normalize "^1.0.0"
-
-rdf-normalize@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/rdf-normalize/-/rdf-normalize-1.0.0.tgz#53496baf362cce9d9fca1f2216c6c30007f99cca"
-
-rdf-parser-jsonld@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/rdf-parser-jsonld/-/rdf-parser-jsonld-1.1.0.tgz#d93a271d9a9e34b60cd95a0209525ff8018bada2"
-  dependencies:
-    concat-stream "^1.5.1"
-    jsonld "^0.4.11"
-    rdf-data-model "^1.0.0"
-    rdf-sink "^1.0.0"
-    readable-stream "^2.2.9"
-
-rdf-quad@^1.1.0:
+rdf-quad@^1.2.2:
   version "1.2.2"
   resolved "https://registry.yarnpkg.com/rdf-quad/-/rdf-quad-1.2.2.tgz#ff39071d4aa04d9a718a21d6c47338feee3c8a40"
   dependencies:
     "@rdfjs/data-model" "^1.1.0"
     rdf-string "1.2.0"
-
-rdf-sink@^1.0.0:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/rdf-sink/-/rdf-sink-1.0.1.tgz#e82f760233165f1cc7c58e55a1c6345644b31d78"
-  dependencies:
-    rdf-ext "^1.1.0"
-    readable-stream "^2.3.5"
 
 rdf-string@1.2.0, rdf-string@^1.1.1, rdf-string@^1.2.0:
   version "1.2.0"
@@ -5016,7 +4971,7 @@ read-pkg@^3.0.0:
     normalize-package-data "^2.3.2"
     path-type "^3.0.0"
 
-"readable-stream@1 || 2", readable-stream@^2.0.0, readable-stream@^2.0.1, readable-stream@^2.0.2, readable-stream@^2.0.4, readable-stream@^2.0.6, readable-stream@^2.1.5, readable-stream@^2.2.2, readable-stream@^2.2.9, readable-stream@^2.3.3, readable-stream@^2.3.5, readable-stream@^2.3.6:
+"readable-stream@1 || 2", readable-stream@^2.0.0, readable-stream@^2.0.1, readable-stream@^2.0.2, readable-stream@^2.0.4, readable-stream@^2.0.6, readable-stream@^2.1.5, readable-stream@^2.2.2, readable-stream@^2.3.3, readable-stream@^2.3.6:
   version "2.3.6"
   resolved "https://registry.yarnpkg.com/readable-stream/-/readable-stream-2.3.6.tgz#b11c27d88b8ff1fbe070643cf94b0c79ae1b0aaf"
   dependencies:

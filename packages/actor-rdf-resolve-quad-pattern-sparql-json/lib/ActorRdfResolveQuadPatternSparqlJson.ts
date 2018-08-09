@@ -3,9 +3,9 @@ import {Bindings, BindingsStream} from "@comunica/bus-query-operation";
 import {ActorRdfResolveQuadPattern, IActionRdfResolveQuadPattern,
   IActorRdfResolveQuadPatternOutput} from "@comunica/bus-rdf-resolve-quad-pattern";
 import {ActionContext, Actor, IActorArgs, IActorTest, Mediator} from "@comunica/core";
+import {blankNode, literal, namedNode, variable} from "@rdfjs/data-model";
 import {AsyncIterator, BufferedIterator} from "asynciterator";
 import {PromiseProxyIterator} from "asynciterator-promiseproxy";
-import {blankNode, literal, namedNode, quad, variable} from "rdf-data-model";
 import * as RDF from "rdf-js";
 import {getTerms, getVariables, mapTerms} from "rdf-terms";
 import {Algebra, Factory, toSparql} from "sparqlalgebrajs";
