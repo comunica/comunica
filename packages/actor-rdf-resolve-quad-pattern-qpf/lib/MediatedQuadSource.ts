@@ -1,9 +1,9 @@
 import {IActionRdfDereferencePaged, IActorRdfDereferencePagedOutput} from "@comunica/bus-rdf-dereference-paged";
 import {ILazyQuadSource} from "@comunica/bus-rdf-resolve-quad-pattern";
 import {ActionContext, Actor, IActorTest, Mediator} from "@comunica/core";
+import * as DataFactory from "@rdfjs/data-model";
 import {AsyncIterator} from "asynciterator";
 import {PromiseProxyIterator} from "asynciterator-promiseproxy";
-import * as DataFactory from "rdf-data-model";
 import * as RDF from "rdf-js";
 import {termToString} from "rdf-string";
 import {QUAD_TERM_NAMES, TRIPLE_TERM_NAMES} from "rdf-terms";

@@ -2,8 +2,8 @@ import {ActorQueryOperationUnion} from "@comunica/actor-query-operation-union";
 import {ActorQueryOperation, ActorQueryOperationTypedMediated,
   IActorQueryOperationOutputQuads, IActorQueryOperationTypedMediatedArgs} from "@comunica/bus-query-operation";
 import {ActionContext, IActorTest} from "@comunica/core";
+import {triple, variable} from "@rdfjs/data-model";
 import {RoundRobinUnionIterator} from "asynciterator-union";
-import {triple, variable} from "rdf-data-model";
 import * as RDF from "rdf-js";
 import {Algebra} from "sparqlalgebrajs";
 

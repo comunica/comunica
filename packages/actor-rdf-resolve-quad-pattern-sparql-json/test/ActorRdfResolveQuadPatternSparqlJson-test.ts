@@ -1,7 +1,7 @@
 import {ActorRdfResolveQuadPattern} from "@comunica/bus-rdf-resolve-quad-pattern";
 import {ActionContext, Bus} from "@comunica/core";
+import {blankNode, literal, namedNode} from "@rdfjs/data-model";
 import "isomorphic-fetch";
-import {blankNode, literal, namedNode} from "rdf-data-model";
 import Factory from "sparqlalgebrajs/lib/Factory";
 import {PassThrough} from "stream";
 import {ActorRdfResolveQuadPatternSparqlJson} from "../lib/ActorRdfResolveQuadPatternSparqlJson";

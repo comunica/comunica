@@ -42,7 +42,10 @@
     "lodash.assign": "^4.2.0"
   },
   "dependencies": {
-    "rdf-parser-jsonld": "^1.1.0"
+    "@rdfjs/data-model": "^1.1.0",
+    "jsonld": "^1.0.2",
+    "rdf-terms": "^1.2.0",
+    "stream-to-string": "^1.1.0"
   },
   "jest": {
     "transform": {

@@ -1,6 +1,6 @@
+import {defaultGraph, namedNode, variable} from "@rdfjs/data-model";
 import "jest-rdf";
 import {Store as N3Store} from "n3";
-import {defaultGraph, namedNode, variable} from "rdf-data-model";
 import {N3StoreIterator} from "../lib/N3StoreIterator";
 const arrayifyStream = require('arrayify-stream');
 const quad = require('rdf-quad');

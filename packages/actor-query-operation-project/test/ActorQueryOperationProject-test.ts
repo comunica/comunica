@@ -1,7 +1,7 @@
 import {ActorQueryOperation, Bindings, IActorQueryOperationOutputBindings} from "@comunica/bus-query-operation";
 import {Bus} from "@comunica/core";
+import {blankNode, literal, variable} from "@rdfjs/data-model";
 import {SingletonIterator} from "asynciterator";
-import {blankNode, literal, variable} from "rdf-data-model";
 import {ActorQueryOperationProject} from "../lib/ActorQueryOperationProject";
 const arrayifyStream = require('arrayify-stream');
 

@@ -1,6 +1,5 @@
-
+import {literal as lit} from "@rdfjs/data-model";
 import {ArrayIterator} from "asynciterator";
-import {literal as lit, quad} from "rdf-data-model";
 import * as RDF from "rdf-js";
 import {PagedAsyncRdfIterator} from "../lib/PagedAsyncRdfIterator";
 

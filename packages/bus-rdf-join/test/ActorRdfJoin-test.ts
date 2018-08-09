@@ -1,8 +1,7 @@
-
 import {Bindings} from "@comunica/bus-query-operation";
 import {Bus} from "@comunica/core";
+import {literal} from "@rdfjs/data-model";
 import {EmptyIterator} from "asynciterator";
-import {literal} from "rdf-data-model";
 import {ActorRdfJoin, IActionRdfJoin} from "../lib/ActorRdfJoin";
 
 // dummy class to test instance of abstract class

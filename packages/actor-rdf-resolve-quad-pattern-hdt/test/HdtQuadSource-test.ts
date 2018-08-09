@@ -1,4 +1,4 @@
-import {namedNode, quad, variable} from "rdf-data-model";
+import {namedNode, variable} from "@rdfjs/data-model";
 import {HdtIterator} from "../lib/HdtIterator";
 import {HdtQuadSource} from "../lib/HdtQuadSource";
 import {MockedHdtDocument} from "../mocks/MockedHdtDocument";

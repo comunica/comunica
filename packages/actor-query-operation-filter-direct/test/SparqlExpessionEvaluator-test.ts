@@ -1,5 +1,5 @@
 import {Bindings} from "@comunica/bus-query-operation";
-import {blankNode, literal, namedNode, variable} from "rdf-data-model";
+import {blankNode, literal, namedNode, variable} from "@rdfjs/data-model";
 import {Algebra} from "sparqlalgebrajs";
 import {SparqlExpressionEvaluator} from "../lib/SparqlExpressionEvaluator";
 
@@ -83,23 +83,33 @@ describe('SparqlExpressionEvaluator', () => {
       const exprFunc = SparqlExpressionEvaluator.createEvaluator(
         operatorExpression('+',
           [termExpression(literal('3', namedNode('http://www.w3.org/2001/XMLSchema#integer'))),
-            termExpression(literal('2'))]),
+            termExpression(literal('2', namedNode('http://www.w3.org/2001/XMLSchema#integer')))]),
       );
-      expect(exprFunc(bindings)).toMatchObject(literal('5'));
+      expect(exprFunc(bindings)).toMatchObject(literal('5', namedNode('http://www.w3.org/2001/XMLSchema#integer')));
+    });
+
+    it('supports + for static language values', () => {
+      const exprFunc = SparqlExpressionEvaluator.createEvaluator(
+        operatorExpression('+',
+          [termExpression(literal('3', 'en')),
+            termExpression(literal('2', namedNode('http://www.w3.org/2001/XMLSchema#integer')))]),
+      );
+      expect(exprFunc(bindings))
+        .toMatchObject(literal('5', namedNode('http://www.w3.org/1999/02/22-rdf-syntax-ns#langString')));
     });
 
     it('supports + for bound values', () => {
       const exprFunc = SparqlExpressionEvaluator.createEvaluator(
         operatorExpression('+', [termExpression(variable('a')), termExpression(variable('b'))]),
       );
-      expect(exprFunc(bindings)).toMatchObject(literal('3'));
+      expect(exprFunc(bindings)).toMatchObject(literal('3', namedNode('http://www.w3.org/2001/XMLSchema#integer')));
     });
 
     it('supports + for bound and static values', () => {
       const exprFunc = SparqlExpressionEvaluator.createEvaluator(
         operatorExpression('+', [termExpression(variable('a')), termExpression(literal('3'))]),
       );
-      expect(exprFunc(bindings)).toMatchObject(literal('4'));
+      expect(exprFunc(bindings)).toMatchObject(literal('4', namedNode('http://www.w3.org/2001/XMLSchema#integer')));
     });
 
     it('supports + for unbound values', () => {
@@ -113,77 +123,77 @@ describe('SparqlExpressionEvaluator', () => {
       const exprFunc = SparqlExpressionEvaluator.createEvaluator(
         operatorExpression('-', [termExpression(literal('0')), termExpression(literal('3'))]),
       );
-      expect(exprFunc(bindings)).toMatchObject(literal('-3'));
+      expect(exprFunc(bindings)).toMatchObject(literal('-3', namedNode('http://www.w3.org/2001/XMLSchema#integer')));
     });
 
     it('supports *', () => {
       const exprFunc = SparqlExpressionEvaluator.createEvaluator(
         operatorExpression('*', [termExpression(literal('5')), termExpression(literal('6'))]),
       );
-      expect(exprFunc(bindings)).toMatchObject(literal('30'));
+      expect(exprFunc(bindings)).toMatchObject(literal('30', namedNode('http://www.w3.org/2001/XMLSchema#integer')));
     });
 
     it('supports /', () => {
       const exprFunc = SparqlExpressionEvaluator.createEvaluator(
         operatorExpression('/', [termExpression(literal('12')), termExpression(literal('6'))]),
       );
-      expect(exprFunc(bindings)).toMatchObject(literal('2'));
+      expect(exprFunc(bindings)).toMatchObject(literal('2', namedNode('http://www.w3.org/2001/XMLSchema#integer')));
     });
 
     it('supports = for literals', () => {
       const exprFunc = SparqlExpressionEvaluator.createEvaluator(
         operatorExpression('=', [termExpression(literal('aa')), termExpression(literal('aa'))]),
       );
-      expect(exprFunc(bindings)).toMatchObject(literal('true'));
+      expect(exprFunc(bindings)).toMatchObject(literal('true', namedNode('http://www.w3.org/2001/XMLSchema#boolean')));
     });
 
     it('supports = for named nodes', () => {
       const exprFunc = SparqlExpressionEvaluator.createEvaluator(
         operatorExpression('=', [termExpression(namedNode('htp://aa')), termExpression(namedNode('htp://aa'))]),
       );
-      expect(exprFunc(bindings)).toMatchObject(literal('true'));
+      expect(exprFunc(bindings)).toMatchObject(literal('true', namedNode('http://www.w3.org/2001/XMLSchema#boolean')));
     });
 
     it('supports = for literals (false)', () => {
       const exprFunc = SparqlExpressionEvaluator.createEvaluator(
         operatorExpression('=', [termExpression(literal('aa')), termExpression(literal('ab'))]),
       );
-      expect(exprFunc(bindings)).toMatchObject(literal('false'));
+      expect(exprFunc(bindings)).toMatchObject(literal('false', namedNode('http://www.w3.org/2001/XMLSchema#boolean')));
     });
 
     it('supports !=', () => {
       const exprFunc = SparqlExpressionEvaluator.createEvaluator(
         operatorExpression('!=', [termExpression(literal('aa')), termExpression(literal('aa'))]),
       );
-      expect(exprFunc(bindings)).toMatchObject(literal('false'));
+      expect(exprFunc(bindings)).toMatchObject(literal('false', namedNode('http://www.w3.org/2001/XMLSchema#boolean')));
     });
 
     it('supports <', () => {
       const exprFunc = SparqlExpressionEvaluator.createEvaluator(
         operatorExpression('<', [termExpression(literal('3')), termExpression(literal('3'))]),
       );
-      expect(exprFunc(bindings)).toMatchObject(literal('false'));
+      expect(exprFunc(bindings)).toMatchObject(literal('false', namedNode('http://www.w3.org/2001/XMLSchema#boolean')));
     });
 
     it('supports <=', () => {
       const exprFunc = SparqlExpressionEvaluator.createEvaluator(
         operatorExpression('<=', [termExpression(literal('3')), termExpression(literal('3'))]),
       );
-      expect(exprFunc(bindings)).toMatchObject(literal('true'));
+      expect(exprFunc(bindings)).toMatchObject(literal('true', namedNode('http://www.w3.org/2001/XMLSchema#boolean')));
     });
 
     it('supports >=', () => {
       const exprFunc = SparqlExpressionEvaluator.createEvaluator(
         operatorExpression('>=', [termExpression(literal('3')), termExpression(literal('3'))]),
       );
-      expect(exprFunc(bindings)).toMatchObject(literal('true'));
+      expect(exprFunc(bindings)).toMatchObject(literal('true', namedNode('http://www.w3.org/2001/XMLSchema#boolean')));
     });
 
     it('supports >', () => {
       const exprFunc = SparqlExpressionEvaluator.createEvaluator(
         operatorExpression('>', [termExpression(literal('3')), termExpression(literal('2'))]),
       );
-      expect(exprFunc(bindings)).toMatchObject(literal('true'));
+      expect(exprFunc(bindings)).toMatchObject(literal('true', namedNode('http://www.w3.org/2001/XMLSchema#boolean')));
     });
 
     it('supports ! (true)', () => {
@@ -191,7 +201,7 @@ describe('SparqlExpressionEvaluator', () => {
         operatorExpression('!', [
           termExpression(literal('true', namedNode('http://www.w3.org/2001/XMLSchema#boolean')))]),
       );
-      expect(exprFunc(bindings)).toMatchObject(literal('false'));
+      expect(exprFunc(bindings)).toMatchObject(literal('false', namedNode('http://www.w3.org/2001/XMLSchema#boolean')));
     });
 
     it('supports ! (false)', () => {
@@ -199,7 +209,7 @@ describe('SparqlExpressionEvaluator', () => {
         operatorExpression('!', [
           termExpression(literal('false', namedNode('http://www.w3.org/2001/XMLSchema#boolean')))]),
       );
-      expect(exprFunc(bindings)).toMatchObject(literal('true'));
+      expect(exprFunc(bindings)).toMatchObject(literal('true', namedNode('http://www.w3.org/2001/XMLSchema#boolean')));
     });
 
     it('supports &&', () => {
@@ -208,7 +218,7 @@ describe('SparqlExpressionEvaluator', () => {
           termExpression(literal('true', namedNode('http://www.w3.org/2001/XMLSchema#boolean'))),
           termExpression(literal('false', namedNode('http://www.w3.org/2001/XMLSchema#boolean')))]),
       );
-      expect(exprFunc(bindings)).toMatchObject(literal('false'));
+      expect(exprFunc(bindings)).toMatchObject(literal('false', namedNode('http://www.w3.org/2001/XMLSchema#boolean')));
     });
 
     it('supports ||', () => {
@@ -217,7 +227,7 @@ describe('SparqlExpressionEvaluator', () => {
           termExpression(literal('false', namedNode('http://www.w3.org/2001/XMLSchema#boolean'))),
           termExpression(literal('true', namedNode('http://www.w3.org/2001/XMLSchema#boolean')))]),
       );
-      expect(exprFunc(bindings)).toMatchObject(literal('true'));
+      expect(exprFunc(bindings)).toMatchObject(literal('true', namedNode('http://www.w3.org/2001/XMLSchema#boolean')));
     });
 
     it('supports lang', () => {
@@ -250,7 +260,7 @@ describe('SparqlExpressionEvaluator', () => {
           termExpression(literal('fr-BE')),
           termExpression(literal('fr'))]),
       );
-      expect(exprFunc(bindings)).toMatchObject(literal('true'));
+      expect(exprFunc(bindings)).toMatchObject(literal('true', namedNode('http://www.w3.org/2001/XMLSchema#boolean')));
     });
 
     it('supports langmatches (*)', () => {
@@ -259,7 +269,7 @@ describe('SparqlExpressionEvaluator', () => {
           termExpression(literal('fr-BE')),
           termExpression(literal('*'))]),
       );
-      expect(exprFunc(bindings)).toMatchObject(literal('true'));
+      expect(exprFunc(bindings)).toMatchObject(literal('true', namedNode('http://www.w3.org/2001/XMLSchema#boolean')));
     });
 
     it('supports langmatches (failure)', () => {
@@ -268,7 +278,7 @@ describe('SparqlExpressionEvaluator', () => {
           termExpression(literal('fr-BE')),
           termExpression(literal('nl'))]),
       );
-      expect(exprFunc(bindings)).toMatchObject(literal('false'));
+      expect(exprFunc(bindings)).toMatchObject(literal('false', namedNode('http://www.w3.org/2001/XMLSchema#boolean')));
     });
 
     it('supports langmatches for missing first argument', () => {
@@ -277,7 +287,7 @@ describe('SparqlExpressionEvaluator', () => {
           termExpression(variable('unknown')),
           termExpression(literal('fr'))]),
       );
-      expect(exprFunc(bindings)).toMatchObject(literal('false'));
+      expect(exprFunc(bindings)).toMatchObject(literal('false', namedNode('http://www.w3.org/2001/XMLSchema#boolean')));
     });
 
     it('supports langmatches for missing second argument', () => {
@@ -286,7 +296,7 @@ describe('SparqlExpressionEvaluator', () => {
           termExpression(literal('fr-BE')),
           termExpression(variable('unknown'))]),
       );
-      expect(exprFunc(bindings)).toMatchObject(literal('false'));
+      expect(exprFunc(bindings)).toMatchObject(literal('false', namedNode('http://www.w3.org/2001/XMLSchema#boolean')));
     });
 
     it('supports contains', () => {
@@ -295,7 +305,7 @@ describe('SparqlExpressionEvaluator', () => {
           termExpression(literal('apple')),
           termExpression(literal('pl'))]),
       );
-      expect(exprFunc(bindings)).toMatchObject(literal('true'));
+      expect(exprFunc(bindings)).toMatchObject(literal('true', namedNode('http://www.w3.org/2001/XMLSchema#boolean')));
     });
 
     it('supports contains (failure)', () => {
@@ -304,7 +314,7 @@ describe('SparqlExpressionEvaluator', () => {
           termExpression(literal('apple')),
           termExpression(literal('pear'))]),
       );
-      expect(exprFunc(bindings)).toMatchObject(literal('false'));
+      expect(exprFunc(bindings)).toMatchObject(literal('false', namedNode('http://www.w3.org/2001/XMLSchema#boolean')));
     });
 
     it('supports regex', () => {
@@ -313,7 +323,7 @@ describe('SparqlExpressionEvaluator', () => {
           termExpression(literal('apple')),
           termExpression(literal('p+l'))]),
       );
-      expect(exprFunc(bindings)).toMatchObject(literal('true'));
+      expect(exprFunc(bindings)).toMatchObject(literal('true', namedNode('http://www.w3.org/2001/XMLSchema#boolean')));
     });
 
     it('supports regex on named nodes', () => {
@@ -322,7 +332,7 @@ describe('SparqlExpressionEvaluator', () => {
           termExpression(namedNode('apple')),
           termExpression(literal('p+l'))]),
       );
-      expect(exprFunc(bindings)).toMatchObject(literal('true'));
+      expect(exprFunc(bindings)).toMatchObject(literal('true', namedNode('http://www.w3.org/2001/XMLSchema#boolean')));
     });
 
     it('supports regex (failure)', () => {
@@ -331,7 +341,7 @@ describe('SparqlExpressionEvaluator', () => {
           termExpression(literal('apple')),
           termExpression(literal('a.*b'))]),
       );
-      expect(exprFunc(bindings)).toMatchObject(literal('false'));
+      expect(exprFunc(bindings)).toMatchObject(literal('false', namedNode('http://www.w3.org/2001/XMLSchema#boolean')));
     });
 
     it('supports str', () => {
@@ -379,7 +389,7 @@ describe('SparqlExpressionEvaluator', () => {
         operatorExpression('bound', [
           termExpression(variable('a'))]),
       );
-      expect(exprFunc(bindings)).toMatchObject(literal('true'));
+      expect(exprFunc(bindings)).toMatchObject(literal('true', namedNode('http://www.w3.org/2001/XMLSchema#boolean')));
     });
 
     it('supports bound (failure)', () => {
@@ -387,7 +397,7 @@ describe('SparqlExpressionEvaluator', () => {
         operatorExpression('bound', [
           termExpression(variable('x'))]),
       );
-      expect(exprFunc(bindings)).toMatchObject(literal('false'));
+      expect(exprFunc(bindings)).toMatchObject(literal('false', namedNode('http://www.w3.org/2001/XMLSchema#boolean')));
     });
 
     it('supports bound (invalid Expression)', () => {

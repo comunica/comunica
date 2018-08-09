@@ -3,10 +3,10 @@ import {
   IActorRdfResolveQuadPatternOutput, IDataSource, ILazyQuadSource, KEY_CONTEXT_SOURCE, KEY_CONTEXT_SOURCES,
 } from "@comunica/bus-rdf-resolve-quad-pattern";
 import {ActionContext, Actor, IActorTest, Mediator} from "@comunica/core";
+import {blankNode, quad} from "@rdfjs/data-model";
 import {AsyncIterator, EmptyIterator} from "asynciterator";
 import {PromiseProxyIterator} from "asynciterator-promiseproxy";
 import {RoundRobinUnionIterator} from "asynciterator-union";
-import {blankNode, quad} from "rdf-data-model";
 import * as RDF from "rdf-js";
 
 /**

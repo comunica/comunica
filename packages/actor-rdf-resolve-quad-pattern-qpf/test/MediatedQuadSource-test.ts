@@ -1,5 +1,5 @@
+import {blankNode, namedNode, quad, variable} from "@rdfjs/data-model";
 import {ArrayIterator} from "asynciterator";
-import {blankNode, namedNode, quad, variable} from "rdf-data-model";
 import * as RDF from "rdf-js";
 import {Readable} from "stream";
 import {MediatedQuadSource} from "../lib/MediatedQuadSource";

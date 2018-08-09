@@ -1,8 +1,8 @@
 import {Bindings, IActorQueryOperationOutputBindings} from "@comunica/bus-query-operation";
 import {ActorRdfJoin, IActionRdfJoin} from "@comunica/bus-rdf-join";
 import {Bus} from "@comunica/core";
+import {literal} from "@rdfjs/data-model";
 import {ArrayIterator} from "asynciterator";
-import {literal} from "rdf-data-model";
 import {ActorRdfJoinHash} from "../lib/ActorRdfJoinHash";
 const arrayifyStream = require('arrayify-stream');
 

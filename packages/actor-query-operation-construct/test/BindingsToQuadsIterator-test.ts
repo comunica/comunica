@@ -1,6 +1,6 @@
 import {Bindings} from "@comunica/bus-query-operation";
+import {blankNode, defaultGraph, literal, namedNode, quad, variable} from "@rdfjs/data-model";
 import {ArrayIterator} from "asynciterator";
-import {blankNode, defaultGraph, literal, namedNode, quad, variable} from "rdf-data-model";
 import * as RDF from "rdf-js";
 import {BindingsToQuadsIterator} from "../lib/BindingsToQuadsIterator";
 

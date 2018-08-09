@@ -1,6 +1,5 @@
-import {BufferedIterator, BufferedIteratorOptions} from "asynciterator";
+import {BufferedIterator} from "asynciterator";
 import * as HDT from "hdt";
-import {blankNode, defaultGraph, literal, namedNode, triple, variable} from "rdf-data-model";
 import * as RDF from "rdf-js";
 import * as RdfString from "rdf-string";
 

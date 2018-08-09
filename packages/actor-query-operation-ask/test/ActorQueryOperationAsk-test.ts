@@ -1,8 +1,8 @@
 import {ActorQueryOperation, Bindings, IActorQueryOperationOutputBoolean} from "@comunica/bus-query-operation";
 import {Bus} from "@comunica/core";
 import {Setup} from "@comunica/runner";
+import {literal} from "@rdfjs/data-model";
 import {ArrayIterator, AsyncIterator, BufferedIterator, EmptyIterator} from "asynciterator";
-import {literal, variable} from "rdf-data-model";
 import {ActorQueryOperationAsk} from "../lib/ActorQueryOperationAsk";
 
 describe('ActorQueryOperationAsk', () => {
