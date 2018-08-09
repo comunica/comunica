@@ -2713,14 +2713,14 @@ graceful-fs@^4.1.11, graceful-fs@^4.1.2, graceful-fs@^4.1.6:
   version "4.1.11"
   resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.1.11.tgz#0e8bdfe4d1ddb8854d64e04ea7c00e2a026e5658"
 
-graphql-to-sparql@1.2.0:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/graphql-to-sparql/-/graphql-to-sparql-1.2.0.tgz#7037846fbf7036102166c44755f333e5f4eb5888"
+graphql-to-sparql@^1.3.1:
+  version "1.3.1"
+  resolved "https://registry.yarnpkg.com/graphql-to-sparql/-/graphql-to-sparql-1.3.1.tgz#1514d2c459b4788e48b358e12fce8c34d1c108e3"
   dependencies:
+    "@rdfjs/data-model" "^1.1.0"
     graphql "^0.13.2"
     minimist "^1.2.0"
-    rdf-data-model "^1.0.0"
-    sparqlalgebrajs "^0.7.5"
+    sparqlalgebrajs "^1.0.1"
 
 graphql@^0.13.2:
   version "0.13.2"
@@ -5577,16 +5577,6 @@ source-map@~0.1.38:
   resolved "https://registry.yarnpkg.com/source-map/-/source-map-0.1.43.tgz#c24bc146ca517c1471f5dacbe2571b2b7f9e3346"
   dependencies:
     amdefine ">=0.0.4"
-
-sparqlalgebrajs@^0.7.5:
-  version "0.7.8"
-  resolved "https://registry.yarnpkg.com/sparqlalgebrajs/-/sparqlalgebrajs-0.7.8.tgz#418b9bc1b6a72cf4ac73513d9ff6a0eff8a2595d"
-  dependencies:
-    lodash.isequal "^4.5.0"
-    minimist "^1.2.0"
-    rdf-data-model "^1.0.0"
-    rdf-string "^1.1.1"
-    sparqljs "^2.0.3"
 
 sparqlalgebrajs@^1.0.1:
   version "1.0.1"
