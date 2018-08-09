@@ -60,34 +60,6 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
     });
   });
 
-  describe('#getVariables should return all variables for', () => {
-    it('a pattern', () => {
-      const op = factory.createPattern(namedNode('s'), variable('p'), namedNode('o'));
-      return expect(ActorQueryOperationSparqlEndpoint.getVariables(op))
-        .toEqual([variable('p')]);
-    });
-
-    it('a BGP', () => {
-      const op = factory.createBgp([
-        factory.createPattern(variable('s'), variable('p'), namedNode('o')),
-        factory.createPattern(variable('s'), namedNode('p'), namedNode('o')),
-        factory.createPattern(namedNode('s'), namedNode('p'), variable('o')),
-      ]);
-      return expect(ActorQueryOperationSparqlEndpoint.getVariables(op))
-        .toEqual([variable('s'), variable('p'), variable('o')]);
-    });
-
-    it('a project', () => {
-      const op = factory.createProject(factory.createBgp([
-        factory.createPattern(variable('s'), variable('p'), namedNode('o')),
-        factory.createPattern(variable('s'), namedNode('p'), namedNode('o')),
-        factory.createPattern(namedNode('s'), namedNode('p'), variable('o')),
-      ]), []);
-      return expect(ActorQueryOperationSparqlEndpoint.getVariables(op))
-        .toEqual([variable('s'), variable('p'), variable('o')]);
-    });
-  });
-
   describe('#patternToSelectQuery', () => {
     it('should convert a pattern', () => {
       const op = factory.createPattern(namedNode('s'), variable('p'), namedNode('o'));
