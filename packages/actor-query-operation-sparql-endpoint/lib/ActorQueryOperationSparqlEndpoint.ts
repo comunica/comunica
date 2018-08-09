@@ -14,8 +14,7 @@ import {BufferedIterator, TransformIterator} from "asynciterator";
 import {SparqlEndpointFetcher} from "fetch-sparql-endpoint";
 import * as RDF from "rdf-js";
 import {termToString} from "rdf-string";
-import {uniqTerms} from "rdf-terms";
-import {Algebra, Factory, toSparql} from "sparqlalgebrajs";
+import {Algebra, Factory, toSparql, Util} from "sparqlalgebrajs";
 
 /**
  * A comunica SPARQL Endpoint Query Operation Actor.
@@ -38,31 +37,6 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
   }
 
   /**
-   * Recursively find all variables in an operation.
-   * @param {Operation} operation An operation.
-   * @return The variables in the operation.
-   */
-  public static getVariables(operation: Algebra.Operation): RDF.Variable[] {
-    const variables: RDF.Variable[] = [];
-    getVariableCb(operation,  (variable: RDF.Variable) => variables.push(variable));
-    return uniqTerms(variables);
-
-    function getVariableCb(op: Algebra.Operation, variablesCb: (variable: RDF.Variable) => void) {
-      for (const key of Object.keys(op)) {
-        if (Array.isArray(op[key])) {
-          for (const subOperation of op[key]) {
-            getVariableCb(subOperation, variablesCb);
-          }
-        } else if (ActorQueryOperationSparqlEndpoint.ALGEBRA_TYPES.indexOf(op[key].type) >= 0) {
-          getVariableCb(op[key], variablesCb);
-        } else if (op[key].termType === 'Variable') {
-          variablesCb(op[key]);
-        }
-      }
-    }
-  }
-
-  /**
    * Wrap a pattern in a select query.
    * @param {Operation} operation An operation.
    * @return {Project} A select query.
@@ -71,7 +45,7 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
     if (operation.type === 'project') {
       return <Algebra.Project> operation;
     }
-    const variables: RDF.Variable[] = ActorQueryOperationSparqlEndpoint.getVariables(operation);
+    const variables: RDF.Variable[] = Util.inScopeVariables(operation);
     return ActorQueryOperationSparqlEndpoint.FACTORY.createProject(operation, variables);
   }
 
