@@ -9,11 +9,19 @@ import Requester from "./Requester";
  */
 export class ActorHttpNative extends ActorHttp {
 
+  private readonly userAgent: string;
+
   private requester: Requester;
 
   constructor(args: IActorHttpNativeArgs) {
     super(args);
+    this.userAgent = ActorHttpNative.createUserAgent();
     this.requester = new Requester(args.agentOptions ? JSON.parse(args.agentOptions) : undefined);
+  }
+
+  public static createUserAgent(): string {
+    return `Comunica/actor-http-native (${typeof window === 'undefined'
+      ? 'Node.js ' + process.version + '; ' + process.platform : 'Browser-' + window.navigator.userAgent})`;
   }
 
   public async test(action: IActionHttp): Promise<IMediatorTypeTime> {
@@ -40,6 +48,11 @@ export class ActorHttpNative extends ActorHttp {
         headers[key] = val;
       });
       options.headers = headers;
+    } else {
+      options.headers = {};
+    }
+    if (!options.headers['user-agent']) {
+      options.headers['user-agent'] = this.userAgent;
     }
 
     options.method = options.method || 'GET';

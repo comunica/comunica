@@ -34,6 +34,19 @@ describe('ActorHttpNative', () => {
     });
   });
 
+  describe('#createUserAgent', () => {
+    it('should create a user agent in the browser', () => {
+      return expect(ActorHttpNative.createUserAgent())
+        .toEqual(`Comunica/actor-http-native (Browser-${window.navigator.userAgent})`);
+    });
+
+    it('should create a user agent in Node.js', () => {
+      delete (<any> global).window;
+      return expect(ActorHttpNative.createUserAgent())
+        .toEqual(`Comunica/actor-http-native (Node.js ${process.version}; ${process.platform})`);
+    });
+  });
+
   describe('An ActorHttpNative instance', () => {
     let actor: ActorHttpNative;
 
@@ -83,6 +96,22 @@ describe('ActorHttpNative', () => {
       mockSetup({ headers: {'content-location': 'http://example.com/contentlocation'}});
       const result: any = await actor.run({ input: 'http://example.com' });
       expect(result).toMatchObject({ url: 'http://example.com/contentlocation' });
+    });
+
+    it('should set no user agent if one has been set', async () => {
+      mockSetup({ statusCode: 200 });
+      const result: any = await actor.run(
+        { input: new Request('http://example.com', { headers: new Headers({ 'user-agent': 'b' }) })});
+      expect(result).toMatchObject({ status: 200 });
+      expect(result.body.input).toMatchObject({ headers: { 'user-agent': 'b' }});
+    });
+
+    it('should set a user agent if none has been set', async () => {
+      mockSetup({ statusCode: 200 });
+      const result: any = await actor.run(
+        { input: new Request('http://example.com', { headers: new Headers({}) })});
+      expect(result).toMatchObject({ status: 200 });
+      expect(result.body.input.headers['user-agent']).toBeTruthy();
     });
 
     it('can decode gzipped streams', async () => {
