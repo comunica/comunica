@@ -4,7 +4,7 @@ import {ActorQueryOperation, IActorQueryOperationOutputBindings} from "@comunica
 import {ActorRdfJoin, IActionRdfJoin} from "@comunica/bus-rdf-join";
 import {ActionContext, IActorTest, Mediator} from "@comunica/core";
 import {IMediatorTypeIterations} from "@comunica/mediatortype-iterations";
-import {AsyncIterator, BufferedIterator, MultiTransformIterator} from "asynciterator";
+import {AsyncIterator, BufferedIterator, MultiTransformIterator, SingletonIterator} from "asynciterator";
 import {PromiseProxyIterator} from "asynciterator-promiseproxy";
 import {RoundRobinUnionIterator} from "asynciterator-union";
 import {blankNode} from "rdf-data-model";
@@ -22,7 +22,7 @@ export class ActorQueryOperationPath extends ActorQueryOperationTypedMediated<Al
   public readonly mediatorJoin: Mediator<ActorRdfJoin,
     IActionRdfJoin, IMediatorTypeIterations, IActorQueryOperationOutput>;
 
-  constructor(args: IActorQueryOperationTypedMediatedArgs) {
+  constructor(args: IActorQueryOperationPath) {
     super(args, 'path');
   }
 
@@ -174,12 +174,12 @@ export class ActorQueryOperationPath extends ActorQueryOperationTypedMediated<Al
     : Promise<IActorQueryOperationOutputBindings> {
     const predicate = <Algebra.OneOrMorePath> path.predicate;
 
-    const sVar = path.subject.termType !== 'Variable' && path.subject.termType !== 'BlankNode';
-    const oVar = path.object.termType !== 'Variable' && path.object.termType !== 'BlankNode';
+    const sVar = path.subject.termType === 'Variable' || path.subject.termType === 'BlankNode';
+    const oVar = path.object.termType === 'Variable' || path.object.termType === 'BlankNode';
 
     if (!sVar && oVar) {
       // get all the results of applying this once, then do zeroOrMore for those
-      const single = ActorQueryOperationPath.FACTORY.createPath(path.subject, predicate.path, path.subject, path.graph);
+      const single = ActorQueryOperationPath.FACTORY.createPath(path.subject, predicate.path, path.object, path.graph);
       const results = ActorQueryOperation.getSafeBindings(await this.handlePath(single, context));
       const o = termToString(path.object);
 
@@ -194,7 +194,7 @@ export class ActorQueryOperationPath extends ActorQueryOperationTypedMediated<Al
         return new PromiseProxyIterator<Bindings>(
           async () => {
             const it = new BufferedIterator<Term>();
-            await this.ALP(val, predicate, context, V, it, { count: 0 });
+            await this.ALP(val, predicate.path, context, V, it, { count: 0 });
             return it.transform<Bindings>({
               transform: (item, next) => {
                 bindingsStream._push(Bindings({ [o]: item }));
@@ -210,11 +210,12 @@ export class ActorQueryOperationPath extends ActorQueryOperationTypedMediated<Al
       return <Promise<IActorQueryOperationOutputBindings>> this.handlePath(
         ActorQueryOperationPath.FACTORY.createPath(
           path.object,
-          ActorQueryOperationPath.FACTORY.createOneOrMorePath(ActorQueryOperationPath.FACTORY.createInv(predicate)),
+          ActorQueryOperationPath.FACTORY.createOneOrMorePath(
+            ActorQueryOperationPath.FACTORY.createInv(predicate.path)),
           path.subject,
           path.graph),
         context);
-    } else if (!sVar && !oVar) {
+    } else { // if (!sVar && !oVar)
       const b = this.generateBlankNode();
       const bString = termToString(b);
       const results = ActorQueryOperation.getSafeBindings(await this.handlePath(
@@ -232,13 +233,15 @@ export class ActorQueryOperationPath extends ActorQueryOperationTypedMediated<Al
 
   public async handleZeroOrMore(path: Algebra.Path, context: ActionContext)
     : Promise<IActorQueryOperationOutputBindings> {
-    const sVar = path.subject.termType !== 'Variable' && path.subject.termType !== 'BlankNode';
-    const oVar = path.object.termType !== 'Variable' && path.object.termType !== 'BlankNode';
+    const predicate = <Algebra.ZeroOrMorePath> path.predicate;
+
+    const sVar = path.subject.termType === 'Variable' || path.subject.termType === 'BlankNode';
+    const oVar = path.object.termType === 'Variable' || path.object.termType === 'BlankNode';
 
     if (sVar && oVar) {
       throw new Error('ZeroOrMore path expressions with 2 variables not supported yet');
     } else if (!sVar && !oVar) {
-      const bindingsStream = (await this.ALPeval(path.subject, path.predicate, context))
+      const bindingsStream = (await this.ALPeval(path.subject, predicate.path, context))
         .transform<Bindings>({
           filter: (item) => item.equals(path.object),
           transform: (item, next) => {
@@ -249,8 +252,8 @@ export class ActorQueryOperationPath extends ActorQueryOperationTypedMediated<Al
       return { type: 'bindings', bindingsStream, variables: [] };
     } else {
       const v = termToString(sVar ? path.subject : path.object);
-      const pred = sVar ? ActorQueryOperationPath.FACTORY.createInv(path.predicate) : path.predicate;
-      const bindingsStream = (await this.ALPeval(path.object, pred, context))
+      const pred = sVar ? ActorQueryOperationPath.FACTORY.createInv(predicate.path) : predicate.path;
+      const bindingsStream = (await this.ALPeval(sVar ? path.object : path.subject, pred, context))
         .transform<Bindings>({
           transform: (item, next) => {
             bindingsStream._push(Bindings({ [v]: item }));
@@ -265,15 +268,15 @@ export class ActorQueryOperationPath extends ActorQueryOperationTypedMediated<Al
     : Promise<IActorQueryOperationOutputBindings> {
     const predicate = <Algebra.ZeroOrOnePath> path.predicate;
 
-    const sVar = path.subject.termType !== 'Variable' && path.subject.termType !== 'BlankNode';
-    const oVar = path.object.termType !== 'Variable' && path.object.termType !== 'BlankNode';
+    const sVar = path.subject.termType === 'Variable' || path.subject.termType === 'BlankNode';
+    const oVar = path.object.termType === 'Variable' || path.object.termType === 'BlankNode';
 
     const extra: Bindings[] = [];
 
     // both subject and object non-variables
     if (!sVar && !oVar) {
       if (path.subject.equals(path.object)) {
-        extra.push(Bindings({}));
+        return { type: 'bindings', bindingsStream: new SingletonIterator(Bindings({})), variables: [] };
       }
     }
 
@@ -305,4 +308,6 @@ export class ActorQueryOperationPath extends ActorQueryOperationTypedMediated<Al
 
 }
 
-// TODO: custom constructor parameters
+export interface IActorQueryOperationPath extends IActorQueryOperationTypedMediatedArgs {
+  mediatorJoin: Mediator<ActorRdfJoin, IActionRdfJoin, IMediatorTypeIterations, IActorQueryOperationOutput>;
+}
