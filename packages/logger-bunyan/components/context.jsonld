@@ -1,0 +1,17 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    {
+      "clb": "npmd:@comunica/logger-bunyan/",
+      "files-clb": "clb:^1.0.0/",
+
+      "LoggerBunyan": "clb:Logger/Bunyan",
+      "name": "clb:Logger/Bunyan/name",
+      "level": "clb:Logger/Bunyan/level",
+      "stream": "clb:Logger/Bunyan/stream",
+      "streams": "clb:Logger/Bunyan/stream",
+
+      "path": "clb:Logger/Bunyan/Stream/File/path"
+    }
+  ]
+}

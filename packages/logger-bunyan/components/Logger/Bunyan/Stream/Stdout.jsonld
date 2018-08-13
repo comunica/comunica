@@ -1,0 +1,22 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/logger-bunyan/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/logger-bunyan",
+  "components": [
+    {
+      "@id": "clb:Logger/Bunyan/Stream/Stdout",
+      "@type": "Class",
+      "extends": "clb:Logger/Bunyan/Stream",
+      "requireElement": "BunyanStreamProviderStdout",
+      "comment": "A stdout bunyan stream provider.",
+      "constructorArguments": [
+        {
+          "@id": "clb:Logger/Bunyan/Stream/Stdout/constructorArgumentsObject",
+          "extends": "clb:Logger/Bunyan/Stream/constructorArgumentsObject"
+        }
+      ]
+    }
+  ]
+}

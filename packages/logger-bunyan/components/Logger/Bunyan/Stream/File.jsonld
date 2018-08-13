@@ -1,0 +1,37 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/logger-bunyan/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/logger-bunyan",
+  "components": [
+    {
+      "@id": "clb:Logger/Bunyan/Stream/File",
+      "@type": "Class",
+      "extends": "clb:Logger/Bunyan/Stream",
+      "requireElement": "BunyanStreamProviderFile",
+      "comment": "A file bunyan stream provider.",
+      "parameters": [
+        {
+          "@id": "clb:Logger/Bunyan/Stream/File/path",
+          "comment": "Path to the target log file",
+          "range": "xsd:string",
+          "unique": true,
+          "required": true
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "clb:Logger/Bunyan/Stream/File/constructorArgumentsObject",
+          "extends": "clb:Logger/Bunyan/Stream/constructorArgumentsObject",
+          "fields": [
+            {
+              "keyRaw": "path",
+              "value": "clb:Logger/Bunyan/Stream/File/path"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
