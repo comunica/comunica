@@ -1,0 +1,64 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/logger-bunyan/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/logger-bunyan",
+  "components": [
+    {
+      "@id": "clb:Logger/Bunyan",
+      "@type": "Class",
+      "extends": "Logger",
+      "requireElement": "LoggerBunyan",
+      "comment": "A bunyan-based logger implementation.",
+      "parameters": [
+        {
+          "@id": "clb:Logger/Bunyan/name",
+          "defaultScoped": {
+            "defaultScope": "clb:Logger/Bunyan",
+            "defaultScopedValue": "comunica"
+          },
+          "comment": "The name of this logger",
+          "range": "xsd:string",
+          "unique": true
+        },
+        {
+          "@id": "clb:Logger/Bunyan/level",
+          "comment": "The logging level to emit",
+          "range": "xsd:string",
+          "unique": true,
+          "required": false
+        },
+        {
+          "@id": "clb:Logger/Bunyan/stream",
+          "comment": "A stream to output to",
+          "range": "clb:Logger/Bunyan/Stream",
+          "unique": false,
+          "required": false
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "clb:Logger/Bunyan/constructorArgumentsObject",
+          "extends": "cc:Logger/constructorArgumentsObject",
+          "fields": [
+            {
+              "keyRaw": "name",
+              "value": "clb:Logger/Bunyan/name"
+            },
+            {
+              "keyRaw": "level",
+              "value": "clb:Logger/Bunyan/level"
+            },
+            {
+              "keyRaw": "streamProviders",
+              "value": {
+                "elements": "clb:Logger/Bunyan/stream"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

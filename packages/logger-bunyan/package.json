@@ -1,0 +1,63 @@
+{
+  "name": "@comunica/logger-bunyan",
+  "version": "1.1.0",
+  "description": "A comunica bunyan-based logger.",
+  "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/logger-bunyan",
+  "lsd:components": "components/components.jsonld",
+  "lsd:contexts": {
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/logger-bunyan/^1.0.0/components/context.jsonld": "components/context.jsonld"
+  },
+  "lsd:importPaths": {
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/logger-bunyan/^1.0.0/components/": "components/"
+  },
+  "main": "index.js",
+  "typings": "index",
+  "repository": "https://github.com/comunica/comunica/tree/master/packages/logger-bunyan",
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "comunica",
+    "logger",
+    "bunyan"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/comunica/comunica/issues"
+  },
+  "homepage": "https://github.com/comunica/comunica#readme",
+  "files": [
+    "components",
+    "lib/**/*.d.ts",
+    "lib/**/*.js",
+    "index.d.ts",
+    "index.js"
+  ],
+  "dependencies": {
+    "bunyan": "^1.8.12"
+  },
+  "peerDependencies": {
+    "@comunica/core": "^1.0.0"
+  },
+  "devDependencies": {
+    "@comunica/core": "^1.1.0"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.ts$": "<rootDir>/../../node_modules/ts-jest/preprocessor.js"
+    },
+    "testRegex": "(/test/.*|(\\.|/)(test|spec))\\.ts$",
+    "moduleFileExtensions": [
+      "ts",
+      "js"
+    ],
+    "collectCoverage": true
+  },
+  "scripts": {
+    "test": "node \"../../node_modules/jest/bin/jest.js\" ${1}",
+    "test-watch": "node \"../../node_modules/jest/bin/jest.js\" ${1} --watch",
+    "lint": "node \"../../node_modules/tslint/bin/tslint\" lib/**/*.ts test/**/*.ts --exclude '**/*.d.ts'",
+    "build": "node \"../../node_modules/typescript/bin/tsc\"",
+    "validate": "npm ls"
+  }
+}
