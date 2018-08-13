@@ -1,5 +1,6 @@
 import {Map} from "immutable";
 import {Bus} from "./Bus";
+import {KEY_CONTEXT_LOG, Logger} from "./Logger";
 
 /**
  * An actor can act on messages of certain types and provide output of a certain type.
@@ -37,6 +38,15 @@ export abstract class Actor<I extends IAction, T extends IActorTest, O extends I
   constructor(args: IActorArgs<I, T, O>) {
     require('lodash.assign')(this, args);
     this.bus.subscribe(this);
+  }
+
+  /**
+   * Get the logger from the given context.
+   * @param {ActionContext} context An optional context.
+   * @return {Logger} The logger or null.
+   */
+  public static getContextLogger(context: ActionContext): Logger {
+    return context ? context.get(KEY_CONTEXT_LOG) : null;
   }
 
   /**
@@ -92,6 +102,50 @@ export abstract class Actor<I extends IAction, T extends IActorTest, O extends I
    */
   public async deinitialize(): Promise<any> {
     return true;
+  }
+
+  /* Proxy methods for the (optional) logger that is defined in the context */
+
+  protected logTrace(context: ActionContext, message: string, data?: any): void {
+    const logger: Logger = Actor.getContextLogger(context);
+    if (logger) {
+      logger.trace(message, data);
+    }
+  }
+
+  protected logDebug(context: ActionContext, message: string, data?: any): void {
+    const logger: Logger = Actor.getContextLogger(context);
+    if (logger) {
+      logger.debug(message, data);
+    }
+  }
+
+  protected logInfo(context: ActionContext, message: string, data?: any): void {
+    const logger: Logger = Actor.getContextLogger(context);
+    if (logger) {
+      logger.info(message, data);
+    }
+  }
+
+  protected logWarn(context: ActionContext, message: string, data?: any): void {
+    const logger: Logger = Actor.getContextLogger(context);
+    if (logger) {
+      logger.warn(message, data);
+    }
+  }
+
+  protected logError(context: ActionContext, message: string, data?: any): void {
+    const logger: Logger = Actor.getContextLogger(context);
+    if (logger) {
+      logger.error(message, data);
+    }
+  }
+
+  protected logFatal(context: ActionContext, message: string, data?: any): void {
+    const logger: Logger = Actor.getContextLogger(context);
+    if (logger) {
+      logger.fatal(message, data);
+    }
   }
 
 }
