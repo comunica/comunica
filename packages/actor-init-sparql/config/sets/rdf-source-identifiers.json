@@ -7,9 +7,7 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-source-identifier-hypermedia-qpf/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-source-identifier-sparql/^1.0.0/components/context.jsonld",
 
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-http/^1.0.0/components/context.jsonld",
-
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-number/^1.0.0/components/context.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-http/^1.0.0/components/context.jsonld"
   ],
   "@id": "urn:comunica:my",
   "actors": [
@@ -17,21 +15,22 @@
       "@id": "config-sets:rdf-source-identifiers.json#myActorRdfSourceIdentifierHypermediaQpf",
       "@type": "ActorRdfSourceIdentifierHypermediaQpf",
       "carsihq:Actor/RdfSourceIdentifier/HypermediaQpf/mediatorHttp": {
-        "@id": "config-sets:rdf-source-identifiers.json#mediatorHttp",
-        "@type": "MediatorNumberMin",
-        "field": "time",
-        "cc:Mediator/bus": { "@id": "cbh:Bus/Http" }
+        "@id": "config-sets:http.json#mediatorHttp"
       }
     },
     {
       "@id": "config-sets:rdf-source-identifiers.json#myActorRdfSourceIdentifierSparql",
       "@type": "ActorRdfSourceIdentifierSparql",
-      "carsis:Actor/RdfSourceIdentifier/Sparql/mediatorHttp": { "@id": "config-sets:rdf-source-identifiers.json#mediatorHttp" }
+      "carsis:Actor/RdfSourceIdentifier/Sparql/mediatorHttp": {
+        "@id": "config-sets:http.json#mediatorHttp"
+      }
     },
     {
       "@id": "config-sets:rdf-source-identifiers.json#myActorRdfSourceIdentifierFileContentType",
       "@type": "ActorRdfSourceIdentifierFileContentType",
-      "carsifct:Actor/RdfSourceIdentifier/FileContentType/mediatorHttp": { "@id": "config-sets:rdf-source-identifiers.json#mediatorHttp" }
+      "carsifct:Actor/RdfSourceIdentifier/FileContentType/mediatorHttp": {
+        "@id": "config-sets:http.json#mediatorHttp"
+      }
     }
   ]
 }

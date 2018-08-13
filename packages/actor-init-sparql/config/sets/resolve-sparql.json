@@ -6,9 +6,7 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-resolve-quad-pattern-sparql-json/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-sparql-endpoint/^1.0.0/components/context.jsonld",
 
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-http/^1.0.0/components/context.jsonld",
-
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-number/^1.0.0/components/context.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-http/^1.0.0/components/context.jsonld"
   ],
   "@id": "urn:comunica:my",
   "actors": [
@@ -16,18 +14,14 @@
       "@id": "config-sets:resolve-sparql.json#mySparqlQuadPatternResolver",
       "@type": "ActorRdfResolveQuadPatternSparqlJson",
       "carrqpsj:Actor/RdfResolveQuadPattern/SparqlJson/mediatorHttp": {
-        "@id": "config-sets:resolve-sparql.json#mediatorHttp",
-        "@type": "MediatorNumberMin",
-        "field": "time",
-        "ignoreErrors": true,
-        "cc:Mediator/bus": { "@id": "cbh:Bus/Http" }
+        "@id": "config-sets:http.json#mediatorHttp"
       }
     },
     {
       "@id": "config-sets:resolve-sparql.json#mySparqlEndpointResolver",
       "@type": "ActorQueryOperationSparqlEndpoint",
       "caqose:Actor/QueryOperation/SparqlEndpoint/mediatorHttp": {
-        "@id": "config-sets:resolve-sparql.json#mediatorHttp"
+        "@id": "config-sets:http.json#mediatorHttp"
       }
     }
   ]
