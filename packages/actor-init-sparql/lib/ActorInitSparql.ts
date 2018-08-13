@@ -2,6 +2,7 @@ import {KEY_CONTEXT_DATETIME} from "@comunica/actor-http-memento";
 import {IActionInit, IActorOutputInit} from "@comunica/bus-init";
 import {IActorQueryOperationOutput} from "@comunica/bus-query-operation";
 import {KEY_CONTEXT_SOURCES} from "@comunica/bus-rdf-resolve-quad-pattern";
+import {LoggerPretty} from "@comunica/logger-pretty";
 import {exec} from "child_process";
 import {existsSync, readFileSync} from "fs";
 import minimist = require('minimist');
@@ -60,6 +61,7 @@ Options:
   -c            use the given JSON configuration file (e.g., config.json)
   -t            the MIME type of the output (e.g., application/json)
   -i            the query input format (e.g., graphql, defaults to sparql)
+  -l            sets the log level (e.g., debug, info, warn, ... defaults to error)
   -d            sets a datetime for querying Memento-enabled archives'
   --help        print this help message
   --listformats prints the supported MIME types
@@ -104,6 +106,9 @@ Options:
     if (args.i) {
       context[KEY_CONTEXT_QUERYFORMAT] = args.i;
     }
+
+    // Set the logger
+    context.log = new LoggerPretty({ level: args.l || 'warn' });
 
     // Define the datetime
     if (args.d) {
