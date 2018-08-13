@@ -150,6 +150,27 @@ myEngine.query('{ label writer(label_en: \"Michael Jackson\") artist { label } }
   .then(console.log);
 ```
 
+_Logging_
+
+Optionally, a custom logger can be used inside Comunica.
+By default, [`@comunica/logger-void`](https://github.com/comunica/comunica/tree/master/packages/logger-void/) is used,
+which will simply void all log calls.
+(_This default can be changed in the [configuration file](https://github.com/comunica/comunica/blob/master/packages/actor-init-sparql/config/config-default.json)_)
+
+Alternatively, [`@comunica/logger-pretty`](https://github.com/comunica/comunica/tree/master/packages/logger-pretty/),
+[`@comunica/logger-bunyan`](https://github.com/comunica/comunica/tree/master/packages/logger-bunyan/),
+or a custom logger implementing the [`Logger`](https://github.com/comunica/comunica/blob/master/packages/core/lib/Logger.ts) interface can be used.
+
+These loggers can be configured through the context as follows:
+```javascript
+import {LoggerPretty} from "@comunica/logger-pretty";
+
+const context = {
+  log: new LoggerPretty({ level: 'warn' });
+};
+myEngine.query('...', context);
+```
+
 ### Usage within browser
 
 This engine can run in the browser using [Webpack](https://www.npmjs.com/package/webpack).
