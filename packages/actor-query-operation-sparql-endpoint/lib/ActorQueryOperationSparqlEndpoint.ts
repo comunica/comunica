@@ -28,10 +28,13 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
     IActionHttp, IActorTest, IActorHttpOutput>;
   public readonly endpointFetcher: SparqlEndpointFetcher;
 
+  protected lastContext: ActionContext;
+
   constructor(args: IActorQueryOperationSparqlEndpointArgs) {
     super(args);
     this.endpointFetcher = new SparqlEndpointFetcher({
-      fetch: (input?: Request | string, init?: RequestInit) => this.mediatorHttp.mediate({ input, init }),
+      fetch: (input?: Request | string, init?: RequestInit) => this.mediatorHttp.mediate(
+        { input, init, context: this.lastContext }),
       prefixVariableQuestionMark: true,
     });
   }
@@ -87,6 +90,7 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
 
     const bindingsStream: BufferedIterator<Bindings> = new BufferedIterator<Bindings>(
       { autoStart: false, maxBufferSize: Infinity });
+    this.lastContext = action.context;
     this.endpointFetcher.fetchBindings(endpoint, query)
       .then((rawBindingsStream) => {
         let totalItems = 0;
