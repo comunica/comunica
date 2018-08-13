@@ -1,0 +1,17 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+  "@id": "npmd:@comunica/core",
+  "components": [
+    {
+      "@id": "cc:Logger",
+      "@type": "AbstractClass",
+      "comment": "A logger accepts messages from different levels and emits them in a certain way.",
+      "constructorArguments": [
+        {
+          "@id": "cc:Logger/constructorArgumentsObject",
+          "@type": "om:ObjectMapping"
+        }
+      ]
+    }
+  ]
+}
