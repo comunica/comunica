@@ -1,0 +1,11 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    {
+      "clp": "npmd:@comunica/logger-pretty/",
+      "files-clp": "clp:^1.0.0/",
+
+      "LoggerPretty": "clp:Logger/Pretty"
+    }
+  ]
+}

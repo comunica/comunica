@@ -1,0 +1,9 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/logger-pretty/^1.0.0/components/context.jsonld",
+  "@id": "npmd:@comunica/logger-pretty",
+  "@type": "Module",
+  "requireName": "@comunica/logger-pretty",
+  "import": [
+    "files-clp:components/Logger/Pretty.jsonld"
+  ]
+}
