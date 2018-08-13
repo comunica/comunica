@@ -57,6 +57,8 @@ export class ActorHttpNative extends ActorHttp {
 
     options.method = options.method || 'GET';
 
+    this.logInfo(action.context, `Requesting ${options.url}`, { actor: this.name });
+
     // not all options are supported
 
     return new Promise<IActorHttpOutput>((resolve, reject) => {
