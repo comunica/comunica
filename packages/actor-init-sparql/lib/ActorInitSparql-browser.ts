@@ -7,7 +7,7 @@ import {IActionSparqlSerialize} from "@comunica/bus-sparql-serialize";
 import {IActionRootSparqlParse, IActorOutputRootSparqlParse,
   IActorTestRootSparqlParse} from "@comunica/bus-sparql-serialize";
 import {IActorSparqlSerializeOutput} from "@comunica/bus-sparql-serialize";
-import {ActionContext, Actor, IAction, IActorArgs, IActorTest, Mediator} from "@comunica/core";
+import {ActionContext, Actor, IAction, IActorArgs, IActorTest, KEY_CONTEXT_LOG, Logger, Mediator} from "@comunica/core";
 import {AsyncReiterableArray} from "asyncreiterable";
 import * as RDF from "rdf-js";
 import {termToString} from "rdf-string";
@@ -32,6 +32,7 @@ export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs {
     IActorOutputRootSparqlParse>;
   public readonly mediatorContextPreprocess: Mediator<Actor<IAction, IActorTest,
     IActorContextPreprocessOutput>, IAction, IActorTest, IActorContextPreprocessOutput>;
+  public readonly logger: Logger;
   public readonly queryString?: string;
   public readonly defaultQueryInputFormat?: string;
   public readonly context?: string;
@@ -102,6 +103,11 @@ export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs {
         context[this.contextKeyShortcuts[key]] = existingEntry;
         delete context[key];
       }
+    }
+
+    // Set the default logger if none is provided
+    if (!context[KEY_CONTEXT_LOG]) {
+      context[KEY_CONTEXT_LOG] = this.logger;
     }
 
     // Ensure sources are an async re-iterable
@@ -191,6 +197,7 @@ export interface IActorInitSparqlArgs extends IActorArgs<IActionInit, IActorTest
     IActorOutputRootSparqlParse>;
   mediatorContextPreprocess: Mediator<Actor<IAction, IActorTest, IActorContextPreprocessOutput>,
     IAction, IActorTest, IActorContextPreprocessOutput>;
+  logger: Logger;
   queryString?: string;
   defaultQueryInputFormat?: string;
   context?: string;

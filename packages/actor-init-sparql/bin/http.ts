@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import {AsyncIterator, IntegerIterator} from "asynciterator";
+import {LoggerPretty} from "@comunica/logger-pretty";
 import * as fs from 'fs';
 import * as http from 'http';
 import minimist = require('minimist');
@@ -16,7 +16,7 @@ const MIME_JSON  = 'application/json';
 const args = minimist(process.argv.slice(2));
 if (args._.length !== 1 || args.h || args.help) {
   process.stderr.write(
-    'usage: comunica-sparql-http context [-p port] [-t timeout] [--help]\n' +
+    'usage: comunica-sparql-http context [-p port] [-t timeout] [-l log-level] [--help]\n' +
     '  context should be a JSON object, e.g.\n' +
     '      { "sources": [{ "type": "hypermedia", "value" : "http://fragments.dbpedia.org/2015/en" }]}\n' +
     '  or the path to such a JSON file\n',
@@ -28,6 +28,11 @@ if (args._.length !== 1 || args.h || args.help) {
 const context = JSON.parse(fs.existsSync(args._[0]) ? fs.readFileSync(args._[0], 'utf8') : args._[0]);
 const timeout = (parseInt(args.t, 10) || 60) * 1000;
 const port = parseInt(args.p, 10) || 3000;
+
+// Set the logger
+if (!context.log) {
+  context.log = new LoggerPretty({ level: args.l || 'warn' });
+}
 
 const options = { configResourceUrl: process.env.COMUNICA_CONFIG
   ? process.cwd() + '/' + process.env.COMUNICA_CONFIG : null };
