@@ -3,9 +3,7 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-sparql/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/runner/^1.0.0/components/context.jsonld",
 
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-http-memento/^1.0.0/components/context.jsonld",
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-http/^1.0.0/components/context.jsonld",
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-number/^1.0.0/components/context.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-http-memento/^1.0.0/components/context.jsonld"
   ],
   "@id": "urn:comunica:my",
   "actors": [
@@ -13,10 +11,7 @@
       "@id": "config-sets:http-memento.json#myHttpFetcher",
       "@type": "ActorHttpMemento",
       "cahm:Actor/Http/Memento/mediatorHttp": {
-        "@id": "config-sets:http-memento.json#mediatorHttp",
-        "@type": "MediatorNumberMin",
-        "field": "time",
-        "cc:Mediator/bus": { "@id": "cbh:Bus/Http" }
+        "@id": "config-sets:http.json#mediatorHttp"
       }
     }
   ]
