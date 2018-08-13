@@ -1,5 +1,5 @@
 import {ActorQueryOperation, Bindings, IActorQueryOperationOutputBindings} from "@comunica/bus-query-operation";
-import {Bus} from "@comunica/core";
+import {ActionContext, Bus} from "@comunica/core";
 import {blankNode, defaultGraph, literal, namedNode, quad, variable} from "@rdfjs/data-model";
 import {ArrayIterator, EmptyIterator, SingletonIterator} from "asynciterator";
 import {Algebra} from "sparqlalgebrajs";
@@ -20,9 +20,9 @@ describe('ActorQueryOperationBgpLeftDeepSmallest', () => {
           predicate: arg.operation.predicate,
           subject: arg.operation.subject,
         })),
-        metadata: () => Promise.resolve({ totalItems: (arg.context || {}).totalItems }),
+        metadata: () => Promise.resolve({ totalItems: (arg.context || ActionContext({})).get('totalItems') }),
         type: 'bindings',
-        variables: (arg.context || {}).variables || [],
+        variables: (arg.context || ActionContext({})).get('variables') || [],
       }),
     };
   });
@@ -466,7 +466,7 @@ describe('ActorQueryOperationBgpLeftDeepSmallest', () => {
     const patterns = [ pattern1, pattern2 ];
 
     it('should run with a context and delegate the pattern to the mediator', () => {
-      const op = { operation: { type: 'bgp', patterns }, context: { totalItems: 10, variables: ['a'] } };
+      const op = { operation: { type: 'bgp', patterns }, context: ActionContext({ totalItems: 10, variables: ['a'] }) };
       return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
         expect(output.variables).toEqual(['a']);
         expect(output.type).toEqual('bindings');
