@@ -85,38 +85,43 @@ describe('ActorRdfParseN3', () => {
       });
 
       it('should test on TriG', () => {
-        return expect(actor.test({ handle: { input }, handleMediaType: 'application/trig' })).resolves.toBeTruthy();
+        return expect(actor.test({ handle: { input, baseIRI: '' }, handleMediaType: 'application/trig' }))
+          .resolves.toBeTruthy();
       });
 
       it('should test on N-Quads', () => {
-        return expect(actor.test({ handle: { input }, handleMediaType: 'application/n-quads'})).resolves.toBeTruthy();
+        return expect(actor.test({ handle: { input, baseIRI: '' }, handleMediaType: 'application/n-quads'}))
+          .resolves.toBeTruthy();
       });
 
       it('should test on Turtle', () => {
-        return expect(actor.test({ handle: { input }, handleMediaType: 'text/turtle'})).resolves.toBeTruthy();
+        return expect(actor.test({ handle: { input, baseIRI: '' }, handleMediaType: 'text/turtle'}))
+          .resolves.toBeTruthy();
       });
 
       it('should test on N-Triples', () => {
-        return expect(actor.test({ handle: { input }, handleMediaType: 'application/n-triples'})).resolves.toBeTruthy();
+        return expect(actor.test({ handle: { input, baseIRI: '' }, handleMediaType: 'application/n-triples'}))
+          .resolves.toBeTruthy();
       });
 
       it('should not test on JSON-LD', () => {
-        return expect(actor.test({ handle: { input }, handleMediaType: 'application/ld+json'})).rejects.toBeTruthy();
+        return expect(actor.test({ handle: { input, baseIRI: '' }, handleMediaType: 'application/ld+json'}))
+          .rejects.toBeTruthy();
       });
 
       it('should run on text/turtle', () => {
-        return actor.run({ handle: { input }, handleMediaType: 'text/turtle' })
+        return actor.run({ handle: { input, baseIRI: '' }, handleMediaType: 'text/turtle' })
           .then(async (output) => expect(await arrayifyStream(output.handle.quads)).toHaveLength(2));
       });
 
       it('should run on application/trig', () => {
-        return actor.run({ handle: { input }, handleMediaType: 'application/trig' })
+        return actor.run({ handle: { input, baseIRI: '' }, handleMediaType: 'application/trig' })
           .then(async (output) => expect(await arrayifyStream(output.handle.quads)).toHaveLength(2));
       });
 
       it('should forward stream errors', async () => {
         return expect(arrayifyStream((await actor.run(
-          { handle: { input: inputError }, handleMediaType: 'application/trig' }))
+          { handle: { input: inputError, baseIRI: '' }, handleMediaType: 'application/trig' }))
           .handle.quads)).rejects.toBeTruthy();
       });
     });

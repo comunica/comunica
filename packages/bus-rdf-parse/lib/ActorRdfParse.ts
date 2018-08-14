@@ -35,6 +35,10 @@ export interface IActionRdfParse extends IAction {
    * A readable string stream in a certain RDF serialization that needs to be parsed.
    */
   input: NodeJS.ReadableStream;
+  /**
+   * The base IRI for parsed quads.
+   */
+  baseIRI: string;
 }
 
 export interface IActorRdfParseOutput extends IActorOutput {

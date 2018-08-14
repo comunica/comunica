@@ -43,7 +43,7 @@ export class ActorRdfParseJsonLd extends ActorRdfParseFixedMediaTypes {
       if (!initialized) {
         initialized = true;
         const jsonString = await require('stream-to-string')(action.input);
-        const quadsArray = await this.jsonLd.toRDF(JSON.parse(jsonString), {});
+        const quadsArray = await this.jsonLd.toRDF(JSON.parse(jsonString), { baseIRI: action.baseIRI });
         for (const quad of quadsArray) {
           quads.push(mapTerms(quad, ActorRdfParseJsonLd.mapTerm));
         }

@@ -94,19 +94,22 @@ describe('ActorRdfParseJsonLd', () => {
       });
 
       it('should test on application/json', () => {
-        return expect(actor.test({ handle: { input }, handleMediaType: 'application/json' })).resolves.toBeTruthy();
+        return expect(actor.test({ handle: { input, baseIRI: '' }, handleMediaType: 'application/json' }))
+          .resolves.toBeTruthy();
       });
 
       it('should test on application/ld+json', () => {
-        return expect(actor.test({ handle: { input }, handleMediaType: 'application/ld+json' })).resolves.toBeTruthy();
+        return expect(actor.test({ handle: { input, baseIRI: '' }, handleMediaType: 'application/ld+json' }))
+          .resolves.toBeTruthy();
       });
 
       it('should not test on N-Triples', () => {
-        return expect(actor.test({ handle: { input }, handleMediaType: 'application/n-triples' })).rejects.toBeTruthy();
+        return expect(actor.test({ handle: { input, baseIRI: '' }, handleMediaType: 'application/n-triples' }))
+          .rejects.toBeTruthy();
       });
 
       it('should run', () => {
-        return actor.run({ handle: { input }, handleMediaType: 'application/ld+json' })
+        return actor.run({ handle: { input, baseIRI: '' }, handleMediaType: 'application/ld+json' })
           .then(async (output) => expect(await arrayifyStream(output.handle.quads)).toEqualRdfQuadArray([
             quad('http://example.org/a', 'http://example.org/b', '"http://example.org/c"'),
             quad('http://example.org/a', 'http://example.org/d', '"http://example.org/e"'),
@@ -114,7 +117,7 @@ describe('ActorRdfParseJsonLd', () => {
       });
 
       it('should run for graphs', () => {
-        return actor.run({ handle: { input: inputGraphs }, handleMediaType: 'application/ld+json' })
+        return actor.run({ handle: { input: inputGraphs, baseIRI: '' }, handleMediaType: 'application/ld+json' })
           .then(async (output) => expect(await arrayifyStream(output.handle.quads)).toEqualRdfQuadArray([
             quad('http://example.org/a', 'http://example.org/b', '"http://example.org/c"', 'http://example.org/g0'),
             quad('http://example.org/a', 'http://example.org/d', '"http://example.org/e"@nl', 'http://example.org/g0'),

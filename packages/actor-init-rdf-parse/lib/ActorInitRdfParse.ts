@@ -27,7 +27,7 @@ export class ActorInitRdfParse extends ActorInit implements IActorInitRdfParseAr
 
   public async run(action: IActionInit): Promise<IActorOutputInit> {
     const mediaType: string = action.argv.length > 0 ? action.argv[0] : this.mediaType;
-    const parseAction: IActionRdfParse = { input: action.stdin };
+    const parseAction: IActionRdfParse = { input: action.stdin, baseIRI: action.argv.length > 1 ? action.argv[1] : '' };
     const result: IActorRdfParseOutput = (await this.mediatorRdfParse.mediate(
       { context: action.context, handle: parseAction, handleMediaType: mediaType })).handle;
 

@@ -17,7 +17,7 @@ export class ActorRdfParseN3 extends ActorRdfParseFixedMediaTypes {
   public async runHandle(action: IActionRdfParse, mediaType: string, context: ActionContext)
     : Promise<IActorRdfParseOutput> {
     action.input.on('error', (e) => quads.emit('error', e));
-    const quads = action.input.pipe(new StreamParser());
+    const quads = action.input.pipe(new StreamParser({ baseIRI: action.baseIRI }));
     return {
       quads,
       triples: mediaType === 'text/turtle'
