@@ -7,7 +7,11 @@ import {existsSync, readFileSync} from "fs";
 import minimist = require('minimist');
 import * as OS from "os";
 import {Readable} from "stream";
-import {ActorInitSparql as ActorInitSparqlBrowser, IActorInitSparqlArgs} from "./ActorInitSparql-browser";
+import {
+  ActorInitSparql as ActorInitSparqlBrowser,
+  IActorInitSparqlArgs,
+  KEY_CONTEXT_QUERYFORMAT,
+} from "./ActorInitSparql-browser";
 
 /**
  * A comunica SPARQL Init Actor.
@@ -96,9 +100,9 @@ Options:
     }
 
     // Define the query format
-    context.queryFormat = this.defaultQueryInputFormat;
+    context[KEY_CONTEXT_QUERYFORMAT] = this.defaultQueryInputFormat;
     if (args.i) {
-      context.queryFormat = args.i;
+      context[KEY_CONTEXT_QUERYFORMAT] = args.i;
     }
 
     // Define the datetime

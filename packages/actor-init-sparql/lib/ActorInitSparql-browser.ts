@@ -35,6 +35,7 @@ export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs {
   public readonly queryString?: string;
   public readonly defaultQueryInputFormat?: string;
   public readonly context?: string;
+  public readonly contextKeyShortcuts: {[shortcut: string]: string};
 
   constructor(args: IActorInitSparqlArgs) {
     super(args);
@@ -94,20 +95,16 @@ export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs {
    * @return {Promise<IActorQueryOperationOutput>} A promise that resolves to the query output.
    */
   public async query(query: string, context?: any): Promise<IActorQueryOperationOutput> {
-    // Backwards-compatibility for non-namespaced keys
-    // TODO: remove in next major update
-    if (context.sources) {
-      context[KEY_CONTEXT_SOURCES] = context.sources;
-      delete context.sources;
+    // Expand shortcuts
+    for (const key in context) {
+      if (this.contextKeyShortcuts[key]) {
+        const existingEntry = context[key];
+        context[this.contextKeyShortcuts[key]] = existingEntry;
+        delete context[key];
+      }
     }
-    if (context.initialBindings) {
-      context[KEY_CONTEXT_INITIALBINDINGS] = context.initialBindings;
-      delete context.initialBindings;
-    }
-    if (context.queryFormat) {
-      context[KEY_CONTEXT_QUERYFORMAT] = context.queryFormat;
-      delete context.queryFormat;
-    }
+
+    // Ensure sources are an async re-iterable
     if (Array.isArray(context[KEY_CONTEXT_SOURCES])) {
       context[KEY_CONTEXT_SOURCES] = AsyncReiterableArray.fromFixedData(context[KEY_CONTEXT_SOURCES]);
     }
@@ -197,6 +194,7 @@ export interface IActorInitSparqlArgs extends IActorArgs<IActionInit, IActorTest
   queryString?: string;
   defaultQueryInputFormat?: string;
   context?: string;
+  contextKeyShortcuts: {[shortcut: string]: string};
 }
 
 export const KEY_CONTEXT_INITIALBINDINGS: string = '@comunica/actor-init-sparql:initialBindings';

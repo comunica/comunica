@@ -56,6 +56,34 @@
           "@id": "cais:context",
           "comment": "A JSON string of a query operation context",
           "unique": true
+        },
+        {
+          "@id": "cais:contextKeyShortcut",
+          "comment": "A context key shortcut entry",
+          "range": {
+            "@type": "cais:contextKeyShortcut/Entry",
+            "parameters": [
+              {
+                "@id": "cais:contextKeyShortcut/shortcut",
+                "comment": "A shortcut string",
+                "required": true,
+                "unique": true
+              },
+              {
+                "@id": "cais:contextKeyShortcut/expanded",
+                "comment": "The full expanded key",
+                "required": true,
+                "unique": true
+              }
+            ]
+          },
+          "default": [
+            { "contextShortcutKey": "source",          "contextShortcutValue": "@comunica/bus-rdf-resolve-quad-pattern:source"  },
+            { "contextShortcutKey": "sources",         "contextShortcutValue": "@comunica/bus-rdf-resolve-quad-pattern:sources" },
+            { "contextShortcutKey": "initialBindings", "contextShortcutValue": "@comunica/actor-init-sparql:initialBindings"    },
+            { "contextShortcutKey": "queryFormat",     "contextShortcutValue": "@comunica/actor-init-sparql:queryFormat"        },
+            { "contextShortcutKey": "log",             "contextShortcutValue": "@comunica/core:log"                             }
+          ]
         }
       ],
       "constructorArguments": [
@@ -93,6 +121,18 @@
             {
               "keyRaw": "context",
               "value": "cais:context"
+            },
+            {
+              "keyRaw": "contextKeyShortcuts",
+              "value": {
+                "fields": [
+                  {
+                    "collectEntries": "cais:contextKeyShortcut",
+                    "key": "cais:contextKeyShortcut/shortcut",
+                    "value": "cais:contextKeyShortcut/expanded"
+                  }
+                ]
+              }
             }
           ]
         }

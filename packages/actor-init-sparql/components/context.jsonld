@@ -12,7 +12,10 @@
       "mediatorSparqlParse": "cais:mediatorSparqlParse",
       "mediatorSparqlSerialize": "cais:mediatorSparqlSerialize",
       "mediatorSparqlSerializeMediaTypeCombiner": "cais:mediatorSparqlSerializeMediaTypeCombiner",
-      "mediatorContextPreprocess": "cais:mediatorContextPreprocess"
+      "mediatorContextPreprocess": "cais:mediatorContextPreprocess",
+
+      "contextShortcutKey": "cais:contextKeyShortcut/shortcut",
+      "contextShortcutValue": "cais:contextKeyShortcut/expanded"
     }
   ]
 }
