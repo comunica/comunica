@@ -32,7 +32,7 @@ export class Setup {
       runnerUri = 'urn:comunica:my';
     }
 
-    const runner: Runner = await Setup.instantiateComponent(configResourceUrl, runnerUri, properties);
+    const runner: Runner = await Setup.instantiateComponent(configResourceUrl, runnerUri, action, properties);
     await runner.initialize();
     let output: IActorOutputInit[];
     try {
@@ -50,14 +50,16 @@ export class Setup {
    *
    * @param {string} configResourceUrl    The URL or local path to a Components.js config file.
    * @param {string} instanceUri          A URI identifying the component to instantiate.
+   * @param {any[]}  action               The action to pass to the runner.
    * @param {LoaderProperties} properties Properties to pass to the Components.js loader.
    * @return {Promise<any>}               A promise that resolves to the instance.
    */
   public static async instantiateComponent(configResourceUrl: string, instanceUri: string,
+                                           action: IActionInit,
                                            properties?: ISetupProperties): Promise<any> {
     if (!Setup.preparedPromises) {
       Setup.preparedPromises = true;
-      Setup.preparePromises();
+      Setup.preparePromises(action);
     }
 
     // Handle optional arguments
@@ -74,14 +76,16 @@ export class Setup {
 
   /**
    * Initialize the global Promise class.
-   *
+   * @param {any[]} action The action to pass to the runner.
    * @private
    */
-  public static preparePromises() {
+  public static preparePromises(action: IActionInit) {
     // Promise rejections are based on errors.
     // As the number of rejections can become quite huge, remove the overhead of Error stacktraces.
     // We don't set this to zero, as Bluebird will dynamically adjust it otherwise.
-    Error.stackTraceLimit = <any> false;
+    if (!action.env.COMUNICA_DEBUG) {
+      Error.stackTraceLimit = <any> false;
+    }
   }
 
 }

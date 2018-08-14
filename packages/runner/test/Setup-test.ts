@@ -41,6 +41,19 @@ describe('Setup', () => {
       spy.mockRestore();
     });
 
+    it('should allow \'preparePromises\' to be called only once when running \'run\' in debug mode', () => {
+      (<any> Setup).preparedPromises = false;
+      const spy = jest.spyOn((<any> Setup), 'preparePromises');
+
+      Setup.run('', { argv: [], env: { COMUNICA_DEBUG: 'true' }, stdin: new Readable() });
+      Setup.run('', { argv: [], env: { COMUNICA_DEBUG: 'true' }, stdin: new Readable() });
+      Setup.run('', { argv: [], env: { COMUNICA_DEBUG: 'true' }, stdin: new Readable() });
+
+      expect(spy).toHaveBeenCalledTimes(1);
+
+      spy.mockRestore();
+    });
+
     it('should have a \'preparePromises\' function', () => {
       expect((<any> Setup).preparePromises).toBeInstanceOf(Function);
     });

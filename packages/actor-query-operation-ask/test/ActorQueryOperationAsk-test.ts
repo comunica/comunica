@@ -95,7 +95,6 @@ describe('ActorQueryOperationAsk', () => {
     });
 
     it('should run on a non-empty stream', () => {
-      Setup.preparePromises();
       const op = { operation: { type: 'ask' } };
       return actor.run(op).then(async (output: IActorQueryOperationOutputBoolean) => {
         expect(output.type).toEqual('boolean');
@@ -104,7 +103,6 @@ describe('ActorQueryOperationAsk', () => {
     });
 
     it('should run on an empty stream', () => {
-      Setup.preparePromises();
       const op = { operation: { type: 'ask' } };
       const actorEmpty = new ActorQueryOperationAsk(
         { name: 'actor', bus, mediatorQueryOperation: mediatorQueryOperationEmpty });
@@ -115,7 +113,6 @@ describe('ActorQueryOperationAsk', () => {
     });
 
     it('should run and return a rejecting promise on an errorring stream', () => {
-      Setup.preparePromises();
       const op = { operation: { type: 'ask' } };
       const actorError = new ActorQueryOperationAsk(
         { name: 'actor', bus, mediatorQueryOperation: mediatorQueryOperationError });
