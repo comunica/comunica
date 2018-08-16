@@ -1,0 +1,22 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-path-link/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-query-operation/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-abstract-path/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-query-operation-path-link",
+  "components": [
+    {
+      "@id": "caqopl:Actor/QueryOperation/PathLink",
+      "@type": "Class",
+      "extends": "caap:Actor/AbstractPath",
+      "requireElement": "ActorQueryOperationPathLink",
+      "comment": "A comunica Path Link Query Operation Actor.",
+      "constructorArguments": [
+        {
+          "extends": "cbqo:Actor/QueryOperationTypedMediated/constructorArgumentsObject"
+        }
+      ]
+    }
+  ]
+}

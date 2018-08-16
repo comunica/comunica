@@ -1,0 +1,37 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-path-seq/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-query-operation/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-abstract-path/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-query-operation-path-seq",
+  "components": [
+    {
+      "@id": "caqops:Actor/QueryOperation/PathSeq",
+      "@type": "Class",
+      "extends": "caap:Actor/AbstractPath",
+      "requireElement": "ActorQueryOperationPathSeq",
+      "comment": "A comunica Path Seq Query Operation Actor.",
+      "parameters": [
+        {
+          "@id": "caqops:mediatorJoin",
+          "comment": "The Join mediator",
+          "required": true,
+          "unique": true
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "caqops:Actor/QueryOperation/PathSeq/constructorArgumentsObject",
+          "extends": "cbqo:Actor/QueryOperationTypedMediated/constructorArgumentsObject",
+          "fields": [
+            {
+              "keyRaw": "mediatorJoin",
+              "value": "caap:mediatorJoin"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

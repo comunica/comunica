@@ -1,0 +1,9 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-path-inv/^1.0.0/components/context.jsonld",
+  "@id": "npmd:@comunica/actor-query-operation-path-inv",
+  "@type": "Module",
+  "requireName": "@comunica/actor-query-operation-path-inv",
+  "import": [
+    "files-caqopi:components/Actor/QueryOperation/PathInv.jsonld"
+  ]
+}

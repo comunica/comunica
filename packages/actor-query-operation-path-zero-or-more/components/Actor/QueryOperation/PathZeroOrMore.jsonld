@@ -1,0 +1,22 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-path-zero-or-more/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-query-operation/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-abstract-path/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-query-operation-path-zero-or-more",
+  "components": [
+    {
+      "@id": "caqopzom:Actor/QueryOperation/PathZeroOrMore",
+      "@type": "Class",
+      "extends": "caap:Actor/AbstractPath",
+      "requireElement": "ActorQueryOperationPathZeroOrMore",
+      "comment": "A comunica Path ZeroOrMore Query Operation Actor.",
+      "constructorArguments": [
+        {
+          "extends": "cbqo:Actor/QueryOperationTypedMediated/constructorArgumentsObject"
+        }
+      ]
+    }
+  ]
+}

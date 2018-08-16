@@ -1,0 +1,12 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^3.0.0/components/context.jsonld",
+    {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
+      "caqopzoo": "npmd:@comunica/actor-query-operation-path-zero-or-one/",
+      "files-caqopzoo": "caqopzoo:^1.0.0/",
+
+      "ActorQueryOperationPathZeroOrOne": "caqopzoo:Actor/QueryOperation/PathZeroOrOne"
+    }
+  ]
+}
