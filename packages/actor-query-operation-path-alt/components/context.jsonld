@@ -1,0 +1,12 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^3.0.0/components/context.jsonld",
+    {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
+      "caqopa": "npmd:@comunica/actor-query-operation-path-alt/",
+      "files-caqopa": "caqopa:^1.0.0/",
+
+      "ActorQueryOperationPathAlt": "caqopa:Actor/QueryOperation/PathAlt"
+    }
+  ]
+}

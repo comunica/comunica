@@ -16,7 +16,7 @@
     esutils "^2.0.2"
     js-tokens "^3.0.0"
 
-"@rdfjs/data-model@^1.0.1", "@rdfjs/data-model@^1.1.0":
+"@rdfjs/data-model@^1.0.0", "@rdfjs/data-model@^1.0.1", "@rdfjs/data-model@^1.1.0":
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@rdfjs/data-model/-/data-model-1.1.0.tgz#15d9c5b7b8166893696565aefb65bad95da3fd99"
 
@@ -4940,6 +4940,10 @@ rdf-canonize@^0.2.1:
     node-forge "^0.7.1"
     semver "^5.4.1"
 
+rdf-js@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/rdf-js/-/rdf-js-1.0.1.tgz#295b9f822ff80b3da8cc85742ff826984c5f67e9"
+
 rdf-quad@^1.2.2:
   version "1.2.2"
   resolved "https://registry.yarnpkg.com/rdf-quad/-/rdf-quad-1.2.2.tgz#ff39071d4aa04d9a718a21d6c47338feee3c8a40"
@@ -5463,8 +5467,8 @@ source-map-support@^0.4.15:
     source-map "^0.5.6"
 
 source-map-support@^0.5.6:
-  version "0.5.8"
-  resolved "https://registry.yarnpkg.com/source-map-support/-/source-map-support-0.5.8.tgz#04f5581713a8a65612d0175fbf3a01f80a162613"
+  version "0.5.9"
+  resolved "https://registry.yarnpkg.com/source-map-support/-/source-map-support-0.5.9.tgz#41bc953b2534267ea2d605bccfa7bfa3111ced5f"
   dependencies:
     buffer-from "^1.0.0"
     source-map "^0.6.0"

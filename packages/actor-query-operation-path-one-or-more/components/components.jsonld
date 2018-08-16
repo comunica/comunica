@@ -1,0 +1,9 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-path-one-or-more/^1.0.0/components/context.jsonld",
+  "@id": "npmd:@comunica/actor-query-operation-path-one-or-more",
+  "@type": "Module",
+  "requireName": "@comunica/actor-query-operation-path-one-or-more",
+  "import": [
+    "files-caqopoom:components/Actor/QueryOperation/PathOneOrMore.jsonld"
+  ]
+}

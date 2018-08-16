@@ -1,0 +1,12 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^3.0.0/components/context.jsonld",
+    {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
+      "caqopoom": "npmd:@comunica/actor-query-operation-path-one-or-more/",
+      "files-caqopoom": "caqopoom:^1.0.0/",
+
+      "ActorQueryOperationPathOneOrMore": "caqopoom:Actor/QueryOperation/PathOneOrMore"
+    }
+  ]
+}

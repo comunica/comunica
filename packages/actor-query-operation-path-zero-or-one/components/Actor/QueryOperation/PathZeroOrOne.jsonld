@@ -1,0 +1,22 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-path-zero-or-one/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-query-operation/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-abstract-path/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-query-operation-path-zero-or-one",
+  "components": [
+    {
+      "@id": "caqopzoo:Actor/QueryOperation/PathZeroOrOne",
+      "@type": "Class",
+      "extends": "caap:Actor/AbstractPath",
+      "requireElement": "ActorQueryOperationPathZeroOrOne",
+      "comment": "A comunica Path ZeroOrOne Query Operation Actor.",
+      "constructorArguments": [
+        {
+          "extends": "cbqo:Actor/QueryOperationTypedMediated/constructorArgumentsObject"
+        }
+      ]
+    }
+  ]
+}

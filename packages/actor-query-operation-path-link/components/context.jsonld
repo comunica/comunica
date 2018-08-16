@@ -1,0 +1,12 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^3.0.0/components/context.jsonld",
+    {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
+      "caqopl": "npmd:@comunica/actor-query-operation-path-link/",
+      "files-caqopl": "caqopl:^1.0.0/",
+
+      "ActorQueryOperationPathLink": "caqopl:Actor/QueryOperation/PathLink"
+    }
+  ]
+}
