@@ -23,7 +23,7 @@
     "@types/lodash.values": "^4.3.3",
     "@types/lru-cache": "^4.1.0",
     "@types/minimist": "^1.2.0",
-    "@types/n3": "^0.0.3",
+    "@types/n3": "^1.0.0",
     "@types/node": "^10.0.3",
     "@types/node-fetch": "^2.1.0",
     "@types/rdf-data-model": "^1.0.1",
