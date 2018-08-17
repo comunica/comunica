@@ -1,7 +1,7 @@
 import {ActorQueryOperation, Bindings} from "@comunica/bus-query-operation";
 import {ActionContext, Bus} from "@comunica/core";
+import {namedNode, variable} from "@rdfjs/data-model";
 import {AsyncReiterableArray} from "asyncreiterable";
-import {namedNode, variable} from "rdf-data-model";
 import Factory from "sparqlalgebrajs/lib/Factory";
 import {ActorQueryOperationSparqlEndpoint} from "../lib/ActorQueryOperationSparqlEndpoint";
 const arrayifyStream = require('arrayify-stream');
