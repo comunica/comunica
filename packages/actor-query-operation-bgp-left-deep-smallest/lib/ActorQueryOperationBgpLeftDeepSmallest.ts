@@ -197,7 +197,7 @@ export class ActorQueryOperationBgpLeftDeepSmallest extends ActorQueryOperationT
     const smallestId: number = ActorQueryOperationBgpLeftDeepSmallest.getSmallestPatternId(metadatas);
 
     this.logDebug(context, 'Smallest pattern: ',
-      { actor: this.name, pattern: pattern.patterns[smallestId], metadata: metadatas[smallestId] });
+      { pattern: pattern.patterns[smallestId], metadata: metadatas[smallestId] });
 
     // Close the non-smallest streams
     for (let i: number = 0; i < patternOutputs.length; i++) {

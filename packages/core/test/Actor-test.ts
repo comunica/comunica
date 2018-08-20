@@ -97,32 +97,37 @@ describe('Actor', () => {
 
       it('should call the logger on trace', () => {
         actor.logTrace(context, 'bla', {});
-        return expect(logger.trace).toBeCalledWith('bla', {});
+        return expect(logger.trace).toBeCalledWith('bla', { actor: 'actor' });
+      });
+
+      it('should call the logger on trace without data', () => {
+        actor.logTrace(context, 'bla');
+        return expect(logger.trace).toBeCalledWith('bla', { actor: 'actor' });
       });
 
       it('should call the logger on debug', () => {
         actor.logDebug(context, 'bla', {});
-        return expect(logger.debug).toBeCalledWith('bla', {});
+        return expect(logger.debug).toBeCalledWith('bla', { actor: 'actor' });
       });
 
       it('should call the logger on info', () => {
         actor.logInfo(context, 'bla', {});
-        return expect(logger.info).toBeCalledWith('bla', {});
+        return expect(logger.info).toBeCalledWith('bla', { actor: 'actor' });
       });
 
       it('should call the logger on warn', () => {
         actor.logWarn(context, 'bla', {});
-        return expect(logger.warn).toBeCalledWith('bla', {});
+        return expect(logger.warn).toBeCalledWith('bla', { actor: 'actor' });
       });
 
       it('should call the logger on error', () => {
         actor.logError(context, 'bla', {});
-        return expect(logger.error).toBeCalledWith('bla', {});
+        return expect(logger.error).toBeCalledWith('bla', { actor: 'actor' });
       });
 
       it('should call the logger on fatal', () => {
         actor.logFatal(context, 'bla', {});
-        return expect(logger.fatal).toBeCalledWith('bla', {});
+        return expect(logger.fatal).toBeCalledWith('bla', { actor: 'actor' });
       });
     });
   });
