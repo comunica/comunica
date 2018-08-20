@@ -16,6 +16,7 @@
     "files-caisr:config/sets/resolve-rdfjs.json",
     "files-cais:config/sets/sparql-init.json",
     "files-cais:config/sets/sparql-parsers.json",
-    "files-cais:config/sets/sparql-queryoperators.json"
+    "files-cais:config/sets/sparql-queryoperators.json",
+    "files-cais:config/sets/sparql-queryoperators-path.json"
   ]
 }

@@ -22,6 +22,7 @@
     "files-cais:config/sets/graphql-parsers.json",
     "files-cais:config/sets/sparql-parsers.json",
     "files-cais:config/sets/sparql-queryoperators.json",
+    "files-cais:config/sets/sparql-queryoperators-path.json",
     "files-cais:config/sets/sparql-serializers.json"
   ]
 }
