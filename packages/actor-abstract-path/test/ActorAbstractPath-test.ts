@@ -3,28 +3,28 @@ import {blankNode, namedNode} from "@rdfjs/data-model";
 import {Factory} from "sparqlalgebrajs";
 import {ActorAbstractPath} from "../lib/ActorAbstractPath";
 
-describe('ActorAbstractMediaTyped', () => {
+describe('ActorAbstractPath', () => {
   const bus = new Bus({ name: 'bus' });
   const factory: Factory = new Factory();
 
-  describe('The ActorAbstractMediaTyped module', () => {
+  describe('The ActorAbstractPath module', () => {
     it('should be a function', () => {
       expect(ActorAbstractPath).toBeInstanceOf(Function);
     });
 
-    it('should be a ActorAbstractMediaTyped constructor', () => {
+    it('should be a ActorAbstractPath constructor', () => {
       expect(new (<any> ActorAbstractPath)({ bus: new Bus({ name: 'bus' }), name: 'actor' }))
         .toBeInstanceOf(ActorAbstractPath);
       expect(new (<any> ActorAbstractPath)({ bus: new Bus({ name: 'bus' }), name: 'actor' }))
         .toBeInstanceOf(Actor);
     });
 
-    it('should not be able to create new ActorAbstractMediaTyped objects without \'new\'', () => {
+    it('should not be able to create new ActorAbstractPath objects without \'new\'', () => {
       expect(() => { (<any> ActorAbstractPath)(); }).toThrow();
     });
   });
 
-  describe('An ActorAbstractMediaTyped instance', () => {
+  describe('An ActorAbstractPath instance', () => {
     const actor = new (<any> ActorAbstractPath)({ bus, name: 'actor' });
 
     it('generates unique blank nodes', () => {
