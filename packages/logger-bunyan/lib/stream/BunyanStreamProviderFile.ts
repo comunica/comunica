@@ -1,4 +1,5 @@
 import {Stream} from "bunyan";
+import {URL} from "url";
 import {BunyanStreamProvider, IBunyanStreamProviderArgs} from "./BunyanStreamProvider";
 
 /**
@@ -13,7 +14,7 @@ export class BunyanStreamProviderFile extends BunyanStreamProvider {
   }
 
   public createStream(): Stream {
-    return { type: 'file', name: this.name, path: this.path.substr(8), level: this.level };
+    return { type: 'file', name: this.name, path: <any> new URL(this.path), level: this.level };
   }
 
 }
