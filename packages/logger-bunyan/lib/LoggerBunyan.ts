@@ -12,7 +12,6 @@ export class LoggerBunyan extends Logger {
 
   constructor(args: ILoggerBunyanArgs) {
     super();
-    args = <ILoggerBunyanArgs> args;
     args.streams = args.streamProviders.map((p) => p.createStream());
     delete args.streamProviders;
     this.bunyanLogger = BunyanLogger.createLogger(args);
