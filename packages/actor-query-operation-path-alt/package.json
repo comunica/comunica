@@ -40,7 +40,8 @@
   },
   "dependencies": {
     "@comunica/actor-abstract-path": "^1.1.0",
-    "asynciterator-union": "^2.1.0"
+    "asynciterator-union": "^2.1.0",
+    "lodash.uniq": "^4.5.0"
   },
   "devDependencies": {
     "@comunica/core": "^1.1.0",
