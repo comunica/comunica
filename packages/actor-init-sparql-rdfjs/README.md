@@ -41,9 +41,9 @@ myEngine.query('SELECT * { ?s ?p <http://dbpedia.org/resource/Belgium>. ?s ?p ?o
   .then(function (result) {
     result.bindingsStream.on('data', function (data) {
       // Each data object contains a mapping from variables to RDFJS terms.
-      console.log(data['?s']);
-      console.log(data['?p']);
-      console.log(data['?o']);
+      console.log(data.get('?s'));
+      console.log(data.get('?p'));
+      console.log(data.get('?o'));
     });
   });
 ```
