@@ -28,14 +28,16 @@ export class ActorQueryOperationPathSeq extends ActorAbstractPath {
     const blank = this.generateBlankNode(path);
     const blankName = termToString(blank);
 
-    const left = ActorQueryOperation.getSafeBindings(await this.mediatorQueryOperation.mediate({
-      context, operation: ActorAbstractPath.FACTORY.createPath(path.subject, predicate.left, blank, path.graph),
-    }));
-    const right = ActorQueryOperation.getSafeBindings(await this.mediatorQueryOperation.mediate({
-      context, operation: ActorAbstractPath.FACTORY.createPath(blank, predicate.right, path.object, path.graph),
-    }));
+    const subOperations: IActorQueryOperationOutputBindings[] = (await Promise.all([
+      this.mediatorQueryOperation.mediate({
+        context, operation: ActorAbstractPath.FACTORY.createPath(path.subject, predicate.left, blank, path.graph),
+      }),
+      this.mediatorQueryOperation.mediate({
+        context, operation: ActorAbstractPath.FACTORY.createPath(blank, predicate.right, path.object, path.graph),
+      }),
+    ])).map((op) => ActorQueryOperation.getSafeBindings(op));
 
-    const join = ActorQueryOperation.getSafeBindings(await this.mediatorJoin.mediate({ entries: [left, right] }));
+    const join = ActorQueryOperation.getSafeBindings(await this.mediatorJoin.mediate({ entries: subOperations }));
     // remove the generated blank nodes from the bindings
     const bindingsStream = join.bindingsStream.transform<Bindings>({
       transform: (item, next) => {

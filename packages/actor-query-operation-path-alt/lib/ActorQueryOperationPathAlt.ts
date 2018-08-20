@@ -20,17 +20,19 @@ export class ActorQueryOperationPathAlt extends ActorAbstractPath {
     : Promise<IActorQueryOperationOutputBindings> {
     const predicate = <Algebra.Alt> path.predicate;
 
-    const left = ActorQueryOperation.getSafeBindings(await this.mediatorQueryOperation.mediate({
-      context,
-      operation: ActorAbstractPath.FACTORY.createPath(path.subject, predicate.left, path.object, path.graph),
-    }));
-    const right = ActorQueryOperation.getSafeBindings(await this.mediatorQueryOperation.mediate({
-      context,
-      operation: ActorAbstractPath.FACTORY.createPath(path.subject, predicate.right, path.object, path.graph),
-    }));
+    const subOperations: IActorQueryOperationOutputBindings[] = (await Promise.all([
+      this.mediatorQueryOperation.mediate({
+        context,
+        operation: ActorAbstractPath.FACTORY.createPath(path.subject, predicate.left, path.object, path.graph),
+      }),
+      this.mediatorQueryOperation.mediate({
+        context,
+        operation: ActorAbstractPath.FACTORY.createPath(path.subject, predicate.right, path.object, path.graph),
+      }),
+    ])).map((op) => ActorQueryOperation.getSafeBindings(op));
 
-    const bindingsStream = new RoundRobinUnionIterator([left.bindingsStream, right.bindingsStream]);
-    const variables = require('lodash.uniq')(left.variables.concat(right.variables));
+    const bindingsStream = new RoundRobinUnionIterator(subOperations.map((op) => op.bindingsStream));
+    const variables = require('lodash.uniq')([].concat.apply([], subOperations.map((op) => op.variables)));
 
     return { type: 'bindings', bindingsStream, variables };
   }
