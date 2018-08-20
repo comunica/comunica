@@ -1,7 +1,7 @@
 import {ActorQueryOperation, Bindings} from "@comunica/bus-query-operation";
 import {Bus} from "@comunica/core";
+import {literal, namedNode, variable} from "@rdfjs/data-model";
 import {ArrayIterator} from "asynciterator";
-import {literal, namedNode, variable} from "rdf-data-model";
 import {Algebra, Factory} from "sparqlalgebrajs";
 import {ActorQueryOperationPathLink} from "../lib/ActorQueryOperationPathLink";
 const arrayifyStream = require('arrayify-stream');
@@ -66,9 +66,9 @@ describe('ActorQueryOperationPathLink', () => {
       const op = { operation: factory.createPath(namedNode('s'), factory.createLink(namedNode('p')), variable('x')) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       expect(await arrayifyStream(output.bindingsStream)).toEqual([
-        Bindings({ '?x': namedNode('1') }),
-        Bindings({ '?x': namedNode('2') }),
-        Bindings({ '?x': namedNode('3') }),
+        Bindings({ '?x': literal('1') }),
+        Bindings({ '?x': literal('2') }),
+        Bindings({ '?x': literal('3') }),
       ]);
     });
   });

@@ -1,7 +1,7 @@
 import {ActorQueryOperation, Bindings} from "@comunica/bus-query-operation";
 import {Bus} from "@comunica/core";
+import {namedNode, variable} from "@rdfjs/data-model";
 import {ArrayIterator} from "asynciterator";
-import {namedNode, variable} from "rdf-data-model";
 import {termToString} from "rdf-string";
 import {QUAD_TERM_NAMES} from "rdf-terms";
 import {Algebra, Factory} from "sparqlalgebrajs";

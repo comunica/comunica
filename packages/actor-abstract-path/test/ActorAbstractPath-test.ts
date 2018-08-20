@@ -1,5 +1,5 @@
 import {Actor, Bus} from "@comunica/core";
-import {blankNode, namedNode} from "rdf-data-model";
+import {blankNode, namedNode} from "@rdfjs/data-model";
 import {Factory} from "sparqlalgebrajs";
 import {ActorAbstractPath} from "../lib/ActorAbstractPath";
 
