@@ -106,45 +106,53 @@ export abstract class Actor<I extends IAction, T extends IActorTest, O extends I
 
   /* Proxy methods for the (optional) logger that is defined in the context */
 
+  protected getDefaultLogData(context: ActionContext, data?: any): any {
+    if (!data) {
+      data = {};
+    }
+    data.actor = this.name;
+    return data;
+  }
+
   protected logTrace(context: ActionContext, message: string, data?: any): void {
     const logger: Logger = Actor.getContextLogger(context);
     if (logger) {
-      logger.trace(message, data);
+      logger.trace(message, this.getDefaultLogData(context, data));
     }
   }
 
   protected logDebug(context: ActionContext, message: string, data?: any): void {
     const logger: Logger = Actor.getContextLogger(context);
     if (logger) {
-      logger.debug(message, data);
+      logger.debug(message, this.getDefaultLogData(context, data));
     }
   }
 
   protected logInfo(context: ActionContext, message: string, data?: any): void {
     const logger: Logger = Actor.getContextLogger(context);
     if (logger) {
-      logger.info(message, data);
+      logger.info(message, this.getDefaultLogData(context, data));
     }
   }
 
   protected logWarn(context: ActionContext, message: string, data?: any): void {
     const logger: Logger = Actor.getContextLogger(context);
     if (logger) {
-      logger.warn(message, data);
+      logger.warn(message, this.getDefaultLogData(context, data));
     }
   }
 
   protected logError(context: ActionContext, message: string, data?: any): void {
     const logger: Logger = Actor.getContextLogger(context);
     if (logger) {
-      logger.error(message, data);
+      logger.error(message, this.getDefaultLogData(context, data));
     }
   }
 
   protected logFatal(context: ActionContext, message: string, data?: any): void {
     const logger: Logger = Actor.getContextLogger(context);
     if (logger) {
-      logger.fatal(message, data);
+      logger.fatal(message, this.getDefaultLogData(context, data));
     }
   }
 
