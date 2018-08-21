@@ -35,13 +35,14 @@ describe('ActorRdfSourceIdentifierFileContentType', () => {
         mediate: (action) => {
           const ok: boolean = action.input.indexOf('ok') >= 0;
           return Promise.resolve({
-            headers: { get: () => ok ? 'abc' : 'def' },
+            headers: { get: () => ok ? 'abc' : 'def', has: (key) => key === 'Content-Type' },
             ok,
           });
         },
       };
       const allowedMediaTypes = ['abc'];
-      actor = new ActorRdfSourceIdentifierFileContentType({ name: 'actor', bus, mediatorHttp, allowedMediaTypes });
+      actor = new ActorRdfSourceIdentifierFileContentType(
+        { name: 'actor', bus, mediatorHttp, allowedMediaTypes, priority: 0 });
     });
 
     it('should not test on non-http requests', () => {
