@@ -2,6 +2,8 @@ import {ActorQueryOperation, Bindings} from "@comunica/bus-query-operation";
 import {ActionContext, Bus} from "@comunica/core";
 import {namedNode, variable} from "@rdfjs/data-model";
 import {AsyncReiterableArray} from "asyncreiterable";
+import {SparqlEndpointFetcher} from "fetch-sparql-endpoint";
+import {Headers} from "node-fetch";
 import {Factory} from "sparqlalgebrajs";
 import {ActorQueryOperationSparqlEndpoint} from "../lib/ActorQueryOperationSparqlEndpoint";
 const arrayifyStream = require('arrayify-stream');
@@ -36,6 +38,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
     ]
   }
 }`),
+          headers: new Headers({ 'Content-Type': SparqlEndpointFetcher.CONTENTTYPE_SPARQL_JSON }),
           ok: true,
         };
         // tslint:enable: no-trailing-whitespace
@@ -185,6 +188,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
         mediate: () => {
           return {
             body: streamifyString(``),
+            headers: new Headers({ 'Content-Type': SparqlEndpointFetcher.CONTENTTYPE_SPARQL_JSON }),
             ok: false,
             status: 500,
             statusText: 'Error!',
