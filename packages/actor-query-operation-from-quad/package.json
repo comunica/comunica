@@ -36,7 +36,7 @@
   ],
   "dependencies": {
     "lodash.find": "^4.6.0",
-    "sparqlalgebrajs": "^1.0.1"
+    "sparqlalgebrajs": "^1.1.0"
   },
   "peerDependencies": {
     "@comunica/bus-query-operation": "^1.0.0",

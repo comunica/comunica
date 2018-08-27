@@ -41,7 +41,7 @@
     "@rdfjs/data-model": "^1.0.0",
     "asynciterator": "^2.0.0",
     "rdf-string": "^1.2.0",
-    "sparqlalgebrajs": "^1.0.1"
+    "sparqlalgebrajs": "^1.1.0"
   },
   "devDependencies": {
     "@comunica/core": "^1.1.0",

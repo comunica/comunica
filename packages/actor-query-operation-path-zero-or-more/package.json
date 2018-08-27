@@ -47,7 +47,7 @@
     "@comunica/bus-query-operation": "^1.1.0",
     "rdf-js": "^1.0.1",
     "rdf-terms": "^1.2.0",
-    "sparqlalgebrajs": "^1.0.1"
+    "sparqlalgebrajs": "^1.1.0"
   },
   "jest": {
     "transform": {

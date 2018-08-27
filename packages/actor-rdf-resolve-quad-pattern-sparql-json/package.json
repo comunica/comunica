@@ -41,7 +41,7 @@
     "sparqljson-parse": "^1.1.1",
     "@rdfjs/data-model": "^1.1.0",
     "rdf-terms": "^1.1.0",
-    "sparqlalgebrajs": "^1.0.1"
+    "sparqlalgebrajs": "^1.1.0"
   },
   "peerDependencies": {
     "@comunica/bus-http": "^1.0.0",
