@@ -3,7 +3,7 @@ const StringReplacePlugin = require("string-replace-webpack-plugin");
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
 module.exports = {
-  entry: [ 'babel-polyfill', path.resolve(__dirname, 'index-browser.js') ],
+  entry: [ '@babel/polyfill', path.resolve(__dirname, 'index-browser.js') ],
   output: {
     filename: 'comunica-browser.js',
     path: __dirname,
@@ -51,10 +51,10 @@ module.exports = {
         use: {
           loader: 'babel-loader',
           options: {
-            presets: ['es2015'],
+            presets: ['@babel/preset-env'],
             plugins: [
-              require('babel-plugin-transform-async-to-generator'),
-              require('babel-plugin-transform-object-rest-spread')
+              require('@babel/plugin-transform-async-to-generator'),
+              require('@babel/plugin-syntax-object-rest-spread')
             ]
           }
         }
