@@ -1,8 +1,8 @@
 {
   "lerna": "2.4.0",
-  "commands": {
+  "command": {
     "publish": {
-      "ignore": [
+      "ignoreChanges": [
         "*.md"
       ],
       "message": "Bump to release version %s",
