@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-init-sparql",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "A Comunica engine for SPARQL query evaluation over heterogeneous interfaces",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-sparql",
   "lsd:components": "components/components.jsonld",
@@ -105,7 +105,7 @@
     "@comunica/actor-sparql-serialize-sparql-xml": "^1.2.0",
     "@comunica/actor-sparql-serialize-stats": "^1.2.0",
     "@comunica/actor-sparql-serialize-table": "^1.2.0",
-    "@comunica/actor-sparql-serialize-tree": "^1.2.1",
+    "@comunica/actor-sparql-serialize-tree": "^1.2.2",
     "@comunica/bus-context-preprocess": "^1.2.0",
     "@comunica/bus-http": "^1.2.0",
     "@comunica/bus-init": "^1.2.0",
