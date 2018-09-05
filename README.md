@@ -55,6 +55,20 @@ Furthermore, this will add [pre-commit hooks](https://www.npmjs.com/package/pre-
 to build, lint and test.
 These hooks can temporarily be disabled at your own risk by adding the `-n` flag to the commit command.
 
+## Benchmarking
+
+If you want to do benchmarking with Comunica in Node.js,
+make sure to run Node.js in production mode as follows:
+
+```bash
+> NODE_ENV=production node packages/some-package/bin/some-bin.js
+```
+
+The reason for this is that Comunica extensively generates
+internal `Error` objects.
+In non-production mode, these also produce long stacktraces,
+which may in some cases impact performance.
+
 ## License
 This code is copyrighted by [Ghent University – imec](http://idlab.ugent.be/)
 and released under the [MIT license](http://opensource.org/licenses/MIT).
