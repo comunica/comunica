@@ -1,6 +1,6 @@
 {
   "name": "@comunica/core",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Lightweight, semantic and modular actor framework",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core",
   "lsd:components": "components/components.jsonld",
@@ -39,8 +39,8 @@
     "index.js"
   ],
   "dependencies": {
-    "lodash.assign": "^4.2.0",
-    "immutable": "^3.8.2"
+    "immutable": "^3.8.2",
+    "lodash.assign": "^4.2.0"
   },
   "jest": {
     "transform": {
