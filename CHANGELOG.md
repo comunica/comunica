@@ -1,6 +1,22 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="1.2.2"></a>
+## [1.2.2](https://github.com/comunica/comunica/compare/v1.2.1...v1.2.2) - 2018-09-05
+
+### Fixes
+
+* [Bump sparqljson-to-tree to 1.2.2](https://github.com/comunica/comunica/commit/79daa792c70a5a8dd70867b1b92348a9c8598ff5)
+
+<a name="1.2.1"></a>
+## [1.2.1](https://github.com/comunica/comunica/compare/v1.2.0...v1.2.1) - 2018-09-05
+
+### Fixes
+
+* [Bump dependencies with invalid tslib dependency](https://github.com/comunica/comunica/commit/3ffdbf35b8676dcc212dfd4993624b11b3d20ae4)
+* [Add missing actor-query-operation-service dependencies](https://github.com/comunica/comunica/commit/f4ddb986837339d8c76db2cfe2e399c2f61bcf3f)
+* [Update peer dependency version](https://github.com/comunica/comunica/commit/a9498e0a6d4e532c27093539044346c23b509805)
+
 <a name="1.2.0"></a>
 ## [1.2.0](https://github.com/comunica/comunica/compare/v1.1.2...v1.2.0) - 2018-09-05
 
