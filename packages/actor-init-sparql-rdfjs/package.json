@@ -57,6 +57,7 @@
     "@comunica/actor-query-operation-path-zero-or-one": "^1.2.0",
     "@comunica/actor-query-operation-project": "^1.2.0",
     "@comunica/actor-query-operation-quadpattern": "^1.2.0",
+    "@comunica/actor-query-operation-service": "^1.2.0",
     "@comunica/actor-query-operation-slice": "^1.2.0",
     "@comunica/actor-query-operation-union": "^1.2.0",
     "@comunica/actor-query-operation-values": "^1.2.0",
