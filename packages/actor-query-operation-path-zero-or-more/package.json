@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-operation-path-zero-or-more",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "A path-zero-or-more query-operation actor",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-path-zero-or-more",
   "lsd:components": "components/components.jsonld",

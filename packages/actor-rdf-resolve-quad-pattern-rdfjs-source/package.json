@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-resolve-quad-pattern-rdfjs-source",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "A rdfjs-source rdf-resolve-quad-pattern actor",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-resolve-quad-pattern-rdfjs-source",
   "lsd:components": "components/components.jsonld",

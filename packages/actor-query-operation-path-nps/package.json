@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-operation-path-nps",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "A path-nps query-operation actor",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-path-nps",
   "lsd:components": "components/components.jsonld",
