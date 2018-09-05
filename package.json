@@ -16,7 +16,7 @@
     "@types/asynciterator": "^1.1.1",
     "@types/bluebird": "^3.5.11",
     "@types/bunyan": "^1.8.4",
-    "@types/graphql": "^0.13.1",
+    "@types/graphql": "^14.0.0",
     "@types/jest": "^23.0.0",
     "@types/lodash.assign": "^4.2.3",
     "@types/lodash.defaults": "^4.2.3",
