@@ -23,7 +23,6 @@ export function newEngineDynamicArged(options: IQueryOptions, moduleRootPath: st
 
   // this needs to happen before any promise gets generated
   const rootAction = { argv: process.argv, env: process.env, stdin: process.stdin };
-  Setup.preparePromises(rootAction);
   return Setup.instantiateComponent(configResourceUrl, runnerInstanceUri, rootAction, options)
     .then((runner: Runner) => {
       let actor = null;

@@ -10,8 +10,6 @@ import {Runner} from "./Runner";
  */
 export class Setup {
 
-  private static preparedPromises: boolean = false;
-
   private constructor() {
     throw new Error('The Setup class may not be constructed');
   }
@@ -57,11 +55,6 @@ export class Setup {
   public static async instantiateComponent(configResourceUrl: string, instanceUri: string,
                                            action: IActionInit,
                                            properties?: ISetupProperties): Promise<any> {
-    if (!Setup.preparedPromises) {
-      Setup.preparedPromises = true;
-      Setup.preparePromises(action);
-    }
-
     // Handle optional arguments
     if (!properties) {
       properties = {};
@@ -72,20 +65,6 @@ export class Setup {
     const loader = new Loader(properties);
     await loader.registerAvailableModuleResources();
     return await loader.instantiateFromUrl(instanceUri, configResourceUrl);
-  }
-
-  /**
-   * Initialize the global Promise class.
-   * @param {any[]} action The action to pass to the runner.
-   * @private
-   */
-  public static preparePromises(action: IActionInit) {
-    // Promise rejections are based on errors.
-    // As the number of rejections can become quite huge, remove the overhead of Error stacktraces.
-    // We don't set this to zero, as Bluebird will dynamically adjust it otherwise.
-    if (!action.env.COMUNICA_DEBUG) {
-      Error.stackTraceLimit = <any> false;
-    }
   }
 
 }
