@@ -4,9 +4,11 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-rdf-parse/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-parse-n3/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-parse-jsonld/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-parse-rdfxml/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-race/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/runner/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld"
+
   ],
   "@graph": [
     {
@@ -30,6 +32,11 @@
         {
           "@id": "config-example:myRdfParserJsonLd",
           "@type": "ActorRdfParseJsonLd",
+          "priorityScale": 0.5
+        },
+        {
+          "@id": "config-example:myRdfParserRdfXml",
+          "@type": "ActorRdfParseRdfXml",
           "priorityScale": 0.5
         }
       ]

@@ -1,0 +1,12 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^3.0.0/components/context.jsonld",
+    {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
+      "carpr": "npmd:@comunica/actor-rdf-parse-rdfxml/",
+      "files-carpr": "carpr:^1.0.0/",
+
+      "ActorRdfParseRdfXml": "carpr:Actor/RdfParse/RdfXml"
+    }
+  ]
+}

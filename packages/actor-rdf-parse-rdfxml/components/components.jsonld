@@ -1,0 +1,9 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-parse-rdfxml/^1.0.0/components/context.jsonld",
+  "@id": "npmd:@comunica/actor-rdf-parse-rdfxml",
+  "@type": "Module",
+  "requireName": "@comunica/actor-rdf-parse-rdfxml",
+  "import": [
+    "files-carpr:components/Actor/RdfParse/RdfXml.jsonld"
+  ]
+}

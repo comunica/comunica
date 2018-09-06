@@ -61,6 +61,7 @@
         "packages/actor-rdf-metadata-primary-topic/package.json",
         "packages/actor-rdf-metadata-triple-predicate/package.json",
         "packages/actor-rdf-parse-jsonld/package.json",
+        "packages/actor-rdf-parse-rdfxml/package.json",
         "packages/actor-rdf-parse-n3/package.json",
         "packages/actor-rdf-resolve-quad-pattern-federated/package.json",
         "packages/actor-rdf-resolve-quad-pattern-file/package.json",
