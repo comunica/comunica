@@ -1,6 +1,6 @@
 import {
     ActorQueryOperation, ActorQueryOperationTypedMediated, Bindings,
-    IActorQueryOperationOutput, IActorQueryOperationOutputBindings, IActorQueryOperationTypedMediatedArgs,
+    IActorQueryOperationOutputBindings, IActorQueryOperationTypedMediatedArgs,
 } from "@comunica/bus-query-operation";
 import {BindingsStream} from "@comunica/bus-query-operation";
 import {ActionContext, IActorTest} from "@comunica/core";
