@@ -87,6 +87,7 @@
     "@comunica/actor-rdf-metadata-triple-predicate": "^1.2.0",
     "@comunica/actor-rdf-parse-jsonld": "^1.2.0",
     "@comunica/actor-rdf-parse-n3": "^1.2.0",
+    "@comunica/actor-rdf-parse-rdfxml": "^1.0.0",
     "@comunica/actor-rdf-resolve-quad-pattern-federated": "^1.2.0",
     "@comunica/actor-rdf-resolve-quad-pattern-file": "^1.2.0",
     "@comunica/actor-rdf-resolve-quad-pattern-qpf": "^1.2.0",
