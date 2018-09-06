@@ -115,8 +115,5 @@
       "dependencyPin": "Pin ${dependency} to ${oldVersion}",
       "devDependencyPin": "Pin ${dependency} to ${oldVersion}"
     }
-  },
-  "dependencies": {
-    "rdfxml-streaming-parser": "^1.0.0"
   }
 }

@@ -13,16 +13,16 @@
       "requireElement": "ActorRdfParseRdfXml",
       "comment": "A comunica RDF/XML RDF Parse Actor.",
       "parameters": [
-              {
-                "@id": "caam:Actor/AbstractMediaTypedFixed/mediaTypeEntry",
-                "defaultScoped": {
-                  "defaultScope": "carpr:Actor/RdfParse/RdfXml",
-                  "defaultScopedValue": [
-                    { "mediaTypeKey": "application/rdf+xml",      "priorityValue": "1.0" }
-                  ]
-                }
-              }
-            ],
+          {
+            "@id": "caam:Actor/AbstractMediaTypedFixed/mediaTypeEntry",
+            "defaultScoped": {
+              "defaultScope": "carpr:Actor/RdfParse/RdfXml",
+              "defaultScopedValue": [
+                { "mediaTypeKey": "application/rdf+xml",      "priorityValue": "1.0" }
+              ]
+            }
+          }
+        ],
       "constructorArguments": [
         {
           "extends": "cbrp:Actor/RdfParseFixedMediaTypes/constructorArgumentsObject"

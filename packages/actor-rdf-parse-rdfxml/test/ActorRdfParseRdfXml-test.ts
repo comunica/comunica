@@ -70,11 +70,7 @@ describe('ActorRdfParseRdfXml', () => {
 
     beforeEach(() => {
       actor = new ActorRdfParseRdfXml({ bus, mediaTypes: {
-        'application/trig': 1.0,
-        'application/n-quads': 0.7, // tslint:disable-line:object-literal-sort-keys // We want to sort by preference
-        'text/turtle': 0.6,
-        'application/n-triples': 0.3,
-        'text/n3': 0.2,
+        'application/rdf+xml': 1.0,
       }, name: 'actor' });
     });
 
@@ -94,26 +90,6 @@ describe('ActorRdfParseRdfXml', () => {
       `);
         inputError = new Readable();
         inputError._read = () => inputError.emit('error', new Error());
-      });
-
-      it('should test on TriG', () => {
-        return expect(actor.test({ handle: { input }, handleMediaType: 'application/trig' })).resolves.toBeTruthy();
-      });
-
-      it('should test on N-Quads', () => {
-        return expect(actor.test({ handle: { input }, handleMediaType: 'application/n-quads'})).resolves.toBeTruthy();
-      });
-
-      it('should test on Turtle', () => {
-        return expect(actor.test({ handle: { input }, handleMediaType: 'text/turtle'})).resolves.toBeTruthy();
-      });
-
-      it('should test on N-Triples', () => {
-        return expect(actor.test({ handle: { input }, handleMediaType: 'application/n-triples'})).resolves.toBeTruthy();
-      });
-
-      it('should not test on JSON-LD', () => {
-        return expect(actor.test({ handle: { input }, handleMediaType: 'application/ld+json'})).rejects.toBeTruthy();
       });
 
       it('should run on application/rdf+xml', () => {
@@ -146,11 +122,7 @@ describe('ActorRdfParseRdfXml', () => {
 
       it('should run', () => {
         return expect(actor.run({ mediaTypes: true })).resolves.toEqual({ mediaTypes: {
-          'application/trig': 1.0,
-          'application/n-quads': 0.7, // tslint:disable-line:object-literal-sort-keys // We want to sort by preference
-          'text/turtle': 0.6,
-          'application/n-triples': 0.3,
-          'text/n3': 0.2,
+          'application/rdf+xml': 1.0,
         }});
       });
 

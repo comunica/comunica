@@ -18,6 +18,7 @@ export class ActorRdfParseRdfXml extends ActorRdfParseFixedMediaTypes {
     const quads = action.input.pipe(new RdfXmlParser());
     return {
       quads,
-      triples: mediaType === 'application/rdf+xml'};
+      triples: true,
+    };
   }
 }
