@@ -31,6 +31,11 @@
           "@id": "config-example:myRdfParserJsonLd",
           "@type": "ActorRdfParseJsonLd",
           "priorityScale": 0.5
+        },
+        {
+          "@id": "config-example:myRdfParserRdfXml",
+          "@type": "ActorRdfParseRdfXml",
+          "priorityScale": 0.5
         }
       ]
     }
