@@ -35,12 +35,12 @@
     "index.js"
   ],
   "peerDependencies": {
-    "@comunica/core": "^1.1.0",
-    "@comunica/bus-rdf-parse": "^1.1.0"
+    "@comunica/bus-rdf-parse": "^1.1.0",
+    "@comunica/core": "^1.1.0"
   },
   "devDependencies": {
-    "@comunica/core": "^1.1.0",
-    "@comunica/bus-rdf-parse": "^1.1.0"
+    "@comunica/bus-rdf-parse": "^1.1.0",
+    "@comunica/core": "^1.1.0"
   },
   "jest": {
     "transform": {
@@ -59,5 +59,8 @@
     "lint": "node \"../../node_modules/tslint/bin/tslint\" lib/**/*.ts test/**/*.ts --exclude '**/*.d.ts'",
     "build": "node \"../../node_modules/typescript/bin/tsc\"",
     "validate": "npm ls"
+  },
+  "dependencies": {
+    "rdfxml-streaming-parser": "^1.0.0"
   }
 }
