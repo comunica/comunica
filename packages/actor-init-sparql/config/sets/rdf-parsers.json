@@ -5,7 +5,8 @@
 
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-parse/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-parse-n3/^1.0.0/components/context.jsonld",
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-parse-jsonld/^1.0.0/components/context.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-parse-jsonld/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-parse-rdfxml/^1.0.0/components/context.jsonld"
   ],
   "@id": "urn:comunica:my",
   "actors": [
@@ -17,6 +18,11 @@
       "@id": "config-sets:rdf-parsers.json#myRdfParserJsonLd",
       "@type": "ActorRdfParseJsonLd",
       "priorityScale": 0.9
+    },
+    {
+      "@id": "config-sets:rdf-parsers.json#myRdfParserRdfXml",
+      "@type": "ActorRdfParseRdfXml",
+      "priorityScale": 0.95
     }
   ]
 }
