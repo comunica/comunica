@@ -37,7 +37,7 @@
   "dependencies": {
     "arrayify-stream": "^1.0.0",
     "asynciterator": "^2.0.0",
-    "fetch-sparql-endpoint": "^1.3.2",
+    "fetch-sparql-endpoint": "^1.3.3",
     "rdf-string": "^1.1.1",
     "rdf-terms": "^1.1.0",
     "sparqlalgebrajs": "^1.1.0"
