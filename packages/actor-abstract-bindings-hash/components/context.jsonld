@@ -2,6 +2,7 @@
   "@context": [
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
     {
+<<<<<<< HEAD
       "caabh": "npmd:@comunica/actor-abstract-bindings-hash/",
       "files-caabh": "caabh:^1.0.0/",
 
@@ -9,6 +10,15 @@
       "hashAlgorithm": "caabh:Actor/AbstractBindingsHash/hashAlgorithm",
       "digestAlgorithm": "caabh:Actor/AbstractBindingsHash/digestAlgorithm",
       "cacheSize": "caabh:Actor/AbstractBindingsHash/cacheSize"
+=======
+      "caam": "npmd:@comunica/actor-abstract-binding-hash/",
+      "files-caam": "caam:^1.0.0/",
+      
+      "AbstractBindingHash": "caam:Actor/AbstractBindingHash",
+      "hashAlgorithm": "caam:Actor/AbstractBindingHash/hashAlgorithm",
+      "digestAlgorithm": "caam:Actor/AbstractBindingHash/digestAlgorithm",
+      "cachesize": "caam:Actor/AbstractBindingHash/cachesize",
+>>>>>>> documents updated
     }
   ]
 }
