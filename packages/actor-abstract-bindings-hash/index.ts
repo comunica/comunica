@@ -1,2 +1,2 @@
-export * from './lib/ActorAbstractMediaTyped';
-export * from './lib/ActorAbstractMediaTypedFixed';
+export * from './lib/AbstractBindingsHash';
+export * from './lib/AbstractBindingsHash';
