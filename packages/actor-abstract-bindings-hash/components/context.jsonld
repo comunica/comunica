@@ -1,0 +1,16 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    {
+      "caam": "npmd:@comunica/actor-abstract-mediatyped/",
+      "files-caam": "caam:^1.0.0/",
+      
+      "AbstractMediaTyped": "caam:Actor/AbstractMediaTyped",
+      "AbstractMediaTypedFixed": "caam:Actor/AbstractMediaTypedFixed",
+      "mediaTypeEntry": "caam:Actor/AbstractMediaTypedFixed/mediaTypeEntry",
+      "mediaTypeKey": "caam:Actor/AbstractMediaTypedFixed/MediaTypeEntry/mediaType",
+      "priorityValue": "caam:Actor/AbstractMediaTypedFixed/MediaTypeEntry/priority",
+      "priorityScale": "caam:Actor/AbstractMediaTypedFixed/priorityScale"
+    }
+  ]
+}
