@@ -1,20 +1,47 @@
 {
   "@context": [
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-abstract-mediatyped/^1.0.0/components/context.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-abstract-binding-hash/^1.0.0/components/context.jsonld"
   ],
-  "@id": "npmd:@comunica/actor-abstract-mediatyped",
+  "@id": "npmd:@comunica/actor-abstract-binding-hash",
   "components": [
     {
-      "@id": "caam:Actor/AbstractMediaTyped",
+      "@id": "caam:Actor/AbstractBindingHash",
       "@type": "AbstractClass",
-      "extends": "Actor",
-      "requireElement": "ActorAbstractMediaTyped",
-      "comment": "An abstract comunica actor for handling media-typed actions.",
+      "extends": "caam:Actor/ActorQueryOperationTypedMediated",
+      "requireElement": "ActorAbstractMediaTypedFixed",
+      "comment": "An abstract comunica actor for handling binding query operators.",
+      "parameters": [
+        {
+          "@id": "caam:Actor/AbstractBindingHash/hashAlgorithm",
+          "comment": "The algorithm used for hashing",
+        },
+        {
+          "@id": "caam:Actor/AbstractBindingHash/digestAlgorithm",
+          "comment": "The algorithm used for digesting",
+        },
+        {
+          "@id": "caam:Actor/AbstractBindingHash/cachesize",
+          "comment": "The maximum size of the cache used, if there is a cache involved",
+        }
+      ],
       "constructorArguments": [
         {
-          "@id": "caam:Actor/AbstractMediaTyped/constructorArgumentsObject",
-          "extends": "cc:Actor/constructorArgumentsObject"
+          "@id": "caam:Actor/AbstractBindingHash/constructorArgumentsObject",
+          "fields": [
+        {
+          "keyRaw": "hashAlgorithm",
+          "value": "caam:Actor/AbstractBindingHash/hashAlgorithm"
+        },
+        {
+          "keyRaw": "digestAlgorithm",
+          "value": "caam:Actor/AbstractBindingHash/digestAlgorithm"
+        },
+        {
+          "keyRaw": "cachesize",
+          "value": "caam:Actor/AbstractBindingHash/cachesize"
+        }
+          ]
         }
       ]
     }
