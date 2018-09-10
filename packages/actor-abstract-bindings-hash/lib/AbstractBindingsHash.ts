@@ -1,7 +1,6 @@
-import {IActorInitRdfBindingHashArgs} from "@comunica/actor-query-operation-reduced-hash";
 import {
     ActorQueryOperation, ActorQueryOperationTypedMediated, Bindings,
-    IActorQueryOperationOutputBindings,
+    IActorQueryOperationOutputBindings, IActorQueryOperationTypedMediatedArgs,
 } from "@comunica/bus-query-operation";
 import {BindingsStream} from "@comunica/bus-query-operation";
 import {ActionContext, IActorTest} from "@comunica/core";
@@ -83,4 +82,10 @@ export abstract class AbstractBindingHash<T extends Operation> extends ActorQuer
     return { type: 'bindings', bindingsStream, metadata: output.metadata, variables: output.variables };
 
   }
+}
+
+export interface IActorInitRdfBindingHashArgs extends IActorQueryOperationTypedMediatedArgs {
+  hashAlgorithm: string;
+  digestAlgorithm: string;
+  cachesize: number;
 }

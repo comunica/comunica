@@ -36,11 +36,13 @@
   ],
   "peerDependencies": {
     "@comunica/core": "^1.2.0",
-    "@comunica/bus-query-operation": "^1.2.0"
+    "@comunica/bus-query-operation": "^1.2.0",
+    "@comunica/actor-abstract-bindings-hash": "^1.2.0"
   },
   "devDependencies": {
     "@comunica/core": "^1.2.0",
-    "@comunica/bus-query-operation": "^1.2.0"
+    "@comunica/bus-query-operation": "^1.2.0",
+    "@comunica/actor-abstract-bindings-hash": "^1.2.0"
   },
   "jest": {
     "transform": {
@@ -61,6 +63,7 @@
     "validate": "npm ls"
   },
   "dependencies": {
-    "lru-cache": "^4.1.3"
+    "lru-cache": "^4.1.3",
+    "@comunica/actor-abstract-bindings-hash": "^1.2.0"
   }
 }

@@ -1,7 +1,7 @@
-import {Bindings, IActorQueryOperationTypedMediatedArgs} from "@comunica/bus-query-operation";
+import {AbstractBindingHash, IActorInitRdfBindingHashArgs} from "@comunica/actor-abstract-bindings-hash";
+import {Bindings} from "@comunica/bus-query-operation";
 import LRU = require("lru-cache");
 import {Algebra} from "sparqlalgebrajs";
-import {AbstractBindingHash} from "../../actor-abstract-bindings-hash";
 /**
  * A comunica Reduced Hash Query Operation Actor.
  */
@@ -29,10 +29,4 @@ export class ActorQueryOperationReducedHash extends AbstractBindingHash<Algebra.
     };
   }
 
-}
-
-export interface IActorInitRdfBindingHashArgs extends IActorQueryOperationTypedMediatedArgs {
-  hashAlgorithm: string;
-  digestAlgorithm: string;
-  cachesize: number;
 }

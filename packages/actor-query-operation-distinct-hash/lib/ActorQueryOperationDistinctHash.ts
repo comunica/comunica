@@ -1,7 +1,6 @@
+import {AbstractBindingHash, IActorInitRdfBindingHashArgs} from "@comunica/actor-abstract-bindings-hash";
 import {Bindings} from "@comunica/bus-query-operation";
 import {Algebra} from "sparqlalgebrajs";
-import {AbstractBindingHash} from "../../actor-abstract-bindings-hash";
-import {IActorInitRdfBindingHashArgs} from "../../actor-query-operation-reduced-hash";
 
 /**
  * A comunica Distinct Hash Query Operation Actor.
