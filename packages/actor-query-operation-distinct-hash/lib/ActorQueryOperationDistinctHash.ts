@@ -1,14 +1,21 @@
+<<<<<<< HEAD
 import {AbstractBindingHash, IActorInitRdfDereferencePagedArgs} from "@comunica/actor-abstract-bindings-hash";
 import {Bindings} from "@comunica/bus-query-operation";
 import {Algebra} from "sparqlalgebrajs";
+=======
+import {Bindings} from "@comunica/bus-query-operation";
+import {Algebra} from "sparqlalgebrajs";
+import {AbstractBindingHash} from "../../actor-abstract-bindings-hash";
+import {IActorInitRdfBindingHashArgs} from "../../actor-query-operation-reduced-hash";
+>>>>>>> config fixed
 
 /**
  * A comunica Distinct Hash Query Operation Actor.
  */
 export class ActorQueryOperationDistinctHash extends AbstractBindingHash<Algebra.Distinct>
-  implements IActorInitRdfDereferencePagedArgs {
+  implements IActorInitRdfBindingHashArgs {
 
-  constructor(args: IActorInitRdfDereferencePagedArgs) {
+  constructor(args: IActorInitRdfBindingHashArgs) {
     super(args, 'distinct');
   }
 
@@ -17,6 +24,7 @@ export class ActorQueryOperationDistinctHash extends AbstractBindingHash<Algebra
      * This will maintain an internal hash datastructure so that every bindings object only returns true once.
      * @param {string} hashAlgorithm A hash algorithm.
      * @param {string} digestAlgorithm A digest algorithm.
+     * @param {number} cachesize is a meaningless parameter used to fulfil the AbstractBindingHash interface.
      * @return {(bindings: Bindings) => boolean} A distinct filter for bindings.
      */
   public newHashFilter(hashAlgorithm: string, digestAlgorithm: string)

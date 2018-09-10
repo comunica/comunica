@@ -2,6 +2,7 @@ import {AbstractBindingHash} from "@comunica/actor-abstract-bindings-hash";
 import {Bindings, IActorQueryOperationTypedMediatedArgs} from "@comunica/bus-query-operation";
 import LRU = require("lru-cache");
 import {Algebra} from "sparqlalgebrajs";
+
 /**
  * A comunica Reduced Hash Query Operation Actor.
  */

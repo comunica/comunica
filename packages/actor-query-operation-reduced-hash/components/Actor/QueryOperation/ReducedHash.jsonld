@@ -26,13 +26,6 @@
                 "defaultScope": "caqorh:Actor/QueryOperation/ReducedHash",
                 "defaultScopedValue": "base64"
               }
-            },
-          {
-            "@id": "caabh:Actor/AbstractBindingsHash/cacheSize",
-            "defaultScoped": {
-              "defaultScope": "caqorh:Actor/QueryOperation/ReducedHash",
-              "defaultScopedValue": "100"
-            }
           }
         ],
       "constructorArguments": [

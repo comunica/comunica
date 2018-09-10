@@ -28,7 +28,11 @@
               }
             },
             {
+<<<<<<< HEAD
             "@id": "caabh:Actor/AbstractBindingsHash/cacheSize",
+=======
+            "@id": "caabh:Actor/AbstractBindingsHash/cachesize",
+>>>>>>> config fixed
             "defaultScoped": {
               "defaultScope": "caqodh:Actor/QueryOperation/DistinctHash",
               "defaultScopedValue":  "100"
