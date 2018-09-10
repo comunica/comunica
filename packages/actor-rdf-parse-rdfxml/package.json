@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-parse-rdfxml",
-  "version": "1.0.0",
+  "version": "1.3.0",
   "description": "A rdfxml rdf-parse actor",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-parse-rdfxml",
   "lsd:components": "components/components.jsonld",
