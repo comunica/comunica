@@ -29,10 +29,14 @@
             },
             {
 <<<<<<< HEAD
+<<<<<<< HEAD
             "@id": "caabh:Actor/AbstractBindingsHash/cacheSize",
 =======
             "@id": "caabh:Actor/AbstractBindingsHash/cachesize",
 >>>>>>> config fixed
+=======
+            "@id": "caabh:Actor/AbstractBindingsHash/cacheSize",
+>>>>>>> removing cacheSize from abstract-binding-hash
             "defaultScoped": {
               "defaultScope": "caqodh:Actor/QueryOperation/DistinctHash",
               "defaultScopedValue":  "100"

@@ -13,7 +13,6 @@ import {Operation} from "sparqlalgebrajs/lib/algebra";
 export abstract class AbstractBindingHash<T extends Operation> extends ActorQueryOperationTypedMediated<T>
     implements IActorInitRdfDereferencePagedArgs {
 
-
   public readonly hashAlgorithm: string;
   public readonly digestAlgorithm: string;
 
