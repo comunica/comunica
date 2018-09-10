@@ -2,7 +2,6 @@
   "@context": [
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
     {
-      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
       "caabh": "npmd:@comunica/actor-abstract-bindings-hash/",
       "files-caabh": "caabh:^1.0.0/",
 
