@@ -21,27 +21,12 @@
             }
           },
           {
-              "@id": "caabh:Actor/AbstractBindingsHash/digestAlgorithm",
-              "defaultScoped": {
-                "defaultScope": "caqodh:Actor/QueryOperation/DistinctHash",
-                "defaultScopedValue": "base64"
-              }
-            },
-            {
-<<<<<<< HEAD
-<<<<<<< HEAD
-            "@id": "caabh:Actor/AbstractBindingsHash/cacheSize",
-=======
-            "@id": "caabh:Actor/AbstractBindingsHash/cachesize",
->>>>>>> config fixed
-=======
-            "@id": "caabh:Actor/AbstractBindingsHash/cacheSize",
->>>>>>> removing cacheSize from abstract-binding-hash
+            "@id": "caabh:Actor/AbstractBindingsHash/digestAlgorithm",
             "defaultScoped": {
-              "defaultScope": "caqodh:Actor/QueryOperation/DistinctHash",
-              "defaultScopedValue":  "100"
-            }
+            "defaultScope": "caqodh:Actor/QueryOperation/DistinctHash",
+            "defaultScopedValue": "base64"
           }
+        }
         ],
       "constructorArguments": [
         {

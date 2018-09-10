@@ -26,11 +26,32 @@
                 "defaultScope": "caqorh:Actor/QueryOperation/ReducedHash",
                 "defaultScopedValue": "base64"
               }
+            },
+          {
+            "@id": "caqorh:Actor/QueryOperation/ReducedHash/cacheSize",
+            "defaultScoped": {
+              "defaultScope": "caqorh:Actor/QueryOperation/ReducedHash",
+              "defaultScopedValue": "100"
+            }
           }
         ],
       "constructorArguments": [
         {
           "extends": "caabh:Actor/AbstractBindingsHash/constructorArgumentsObject"
+          "fields": [
+              {
+                "keyRaw": "hashAlgorithm",
+                "value": "caabh:Actor/AbstractBindingsHash/hashAlgorithm"
+              },
+              {
+                "keyRaw": "digestAlgorithm",
+                "value": "caabh:Actor/AbstractBindingsHash/digestAlgorithm"
+              },
+              {
+                "keyRaw": "cacheSize",
+                "value": "caqorh:Actor/QueryOperation/ReducedHash/cacheSize"
+              }
+          ]
         }
       ]
     }
