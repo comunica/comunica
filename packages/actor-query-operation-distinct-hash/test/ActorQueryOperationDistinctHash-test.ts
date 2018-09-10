@@ -39,20 +39,20 @@ describe('ActorQueryOperationDistinctHash', () => {
     beforeEach(() => {
       cachesize = 0;
       actor = new ActorQueryOperationDistinctHash(
-            { name: 'actor', bus, mediatorQueryOperation, hashAlgorithm, digestAlgorithm, cachesize });
+            { name: 'actor', bus, mediatorQueryOperation, hashAlgorithm, digestAlgorithm, cacheSize: cachesize });
     });
     it('should create a filter', () => {
-      return expect(actor.newHashFilter('sha1', 'base64', null))
+      return expect(actor.newHashFilter('sha1', 'base64'))
         .toBeInstanceOf(Function);
     });
 
     it('should create a filter that is a predicate', () => {
-      const filter = actor.newHashFilter('sha1', 'base64', null);
+      const filter = actor.newHashFilter('sha1', 'base64');
       return expect(filter(<any> 'abc')).toBe(true);
     });
 
     it('should create a filter that only returns true once for equal objects', () => {
-      const filter = actor.newHashFilter('sha1', 'base64', null);
+      const filter = actor.newHashFilter('sha1', 'base64');
       expect(filter(<any> 'abc')).toBe(true);
       expect(filter(<any> 'abc')).toBe(false);
       expect(filter(<any> 'abc')).toBe(false);
@@ -65,9 +65,9 @@ describe('ActorQueryOperationDistinctHash', () => {
     });
 
     it('should create a filters that are independent', () => {
-      const filter1 = actor.newHashFilter('sha1', 'base64', null);
-      const filter2 = actor.newHashFilter('sha1', 'base64', null);
-      const filter3 = actor.newHashFilter('sha1', 'base64', null);
+      const filter1 = actor.newHashFilter('sha1', 'base64');
+      const filter2 = actor.newHashFilter('sha1', 'base64');
+      const filter3 = actor.newHashFilter('sha1', 'base64');
       expect(filter1(<any> 'abc')).toBe(true);
       expect(filter1(<any> 'abc')).toBe(false);
 
@@ -85,7 +85,7 @@ describe('ActorQueryOperationDistinctHash', () => {
     beforeEach(() => {
       cachesize = 0;
       actor = new ActorQueryOperationDistinctHash(
-        { name: 'actor', bus, mediatorQueryOperation, hashAlgorithm, digestAlgorithm, cachesize });
+        { name: 'actor', bus, mediatorQueryOperation, hashAlgorithm, digestAlgorithm });
     });
 
     it('should test on distinct', () => {

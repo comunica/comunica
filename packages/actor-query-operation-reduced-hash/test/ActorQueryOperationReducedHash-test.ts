@@ -10,7 +10,7 @@ describe('ActorQueryOperationReducedHash', () => {
   let mediatorQueryOperation;
   let hashAlgorithm;
   let digestAlgorithm;
-  let cachesize;
+  let cacheSize;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -31,7 +31,7 @@ describe('ActorQueryOperationReducedHash', () => {
     };
     hashAlgorithm = 'sha1';
     digestAlgorithm = 'base64';
-    cachesize = 20;
+    cacheSize = 20;
   });
 
   describe('#newReducedHashFilter', () => {
@@ -39,20 +39,20 @@ describe('ActorQueryOperationReducedHash', () => {
 
     beforeEach(() => {
       actor = new ActorQueryOperationReducedHash(
-            { name: 'actor', bus, mediatorQueryOperation, hashAlgorithm, digestAlgorithm, cachesize });
+            { name: 'actor', bus, mediatorQueryOperation, hashAlgorithm, digestAlgorithm, cacheSize });
     });
     it('should create a filter', () => {
-      return expect(actor.newHashFilter('sha1', 'base64', cachesize))
+      return expect(actor.newHashFilter('sha1', 'base64'))
                 .toBeInstanceOf(Function);
     });
 
     it('should create a filter that is a predicate', () => {
-      const filter = actor.newHashFilter('sha1', 'base64', cachesize);
+      const filter = actor.newHashFilter('sha1', 'base64');
       return expect(filter(<any> 'abc')).toBe(true);
     });
 
     it('should create a filter that only returns true once for equal objects', () => {
-      const filter = actor.newHashFilter('sha1', 'base64', cachesize);
+      const filter = actor.newHashFilter('sha1', 'base64');
       expect(filter(<any> 'abc')).toBe(true);
       expect(filter(<any> 'abc')).toBe(false);
       expect(filter(<any> 'abc')).toBe(false);
@@ -65,9 +65,9 @@ describe('ActorQueryOperationReducedHash', () => {
     });
 
     it('should create a filters that are independent', () => {
-      const filter1 = actor.newHashFilter('sha1', 'base64', cachesize);
-      const filter2 = actor.newHashFilter('sha1', 'base64', cachesize);
-      const filter3 = actor.newHashFilter('sha1', 'base64', cachesize);
+      const filter1 = actor.newHashFilter('sha1', 'base64');
+      const filter2 = actor.newHashFilter('sha1', 'base64');
+      const filter3 = actor.newHashFilter('sha1', 'base64');
       expect(filter1(<any> 'abc')).toBe(true);
       expect(filter1(<any> 'abc')).toBe(false);
 
@@ -84,7 +84,7 @@ describe('ActorQueryOperationReducedHash', () => {
 
     beforeEach(() => {
       actor = new ActorQueryOperationReducedHash(
-                { name: 'actor', bus, mediatorQueryOperation, hashAlgorithm, digestAlgorithm, cachesize });
+                { name: 'actor', bus, mediatorQueryOperation, hashAlgorithm, digestAlgorithm, cacheSize });
     });
 
     it('should test on reduced', () => {
@@ -119,13 +119,13 @@ describe('Smaller cache than number of queries', () => {
   let mediatorQueryOperation;
   let hashAlgorithm;
   let digestAlgorithm;
-  let cachesize;
+  let cacheSize;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
     hashAlgorithm = 'sha1';
     digestAlgorithm = 'base64';
-    cachesize = 1;
+    cacheSize = 1;
     mediatorQueryOperation = {
       mediate: (arg) => Promise.resolve({
         bindingsStream: new ArrayIterator([
@@ -144,7 +144,7 @@ describe('Smaller cache than number of queries', () => {
       }),
     };
     actor = new ActorQueryOperationReducedHash(
-          { name: 'actor', bus, mediatorQueryOperation, hashAlgorithm, digestAlgorithm, cachesize });
+          { name: 'actor', bus, mediatorQueryOperation, hashAlgorithm, digestAlgorithm, cacheSize });
 
   });
   it('should run', () => {
