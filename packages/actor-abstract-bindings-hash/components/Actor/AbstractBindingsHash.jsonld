@@ -1,46 +1,53 @@
 {
   "@context": [
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-abstract-binding-hash/^1.0.0/components/context.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-abstract-bindings-hash/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-query-operation/^1.0.0/components/context.jsonld"
   ],
-  "@id": "npmd:@comunica/actor-abstract-binding-hash",
+  "@id": "npmd:@comunica/actor-abstract-bindings-hash",
   "components": [
     {
-      "@id": "caam:Actor/AbstractBindingHash",
+      "@id": "caabh:Actor/AbstractBindingsHash",
       "@type": "AbstractClass",
-      "extends": "caam:Actor/ActorQueryOperationTypedMediated",
-      "requireElement": "ActorAbstractMediaTypedFixed",
+      "extends": "cbqo:Actor/QueryOperationTypedMediated",
+      "requireElement": "ActorAbstractBindingsHash",
       "comment": "An abstract comunica actor for handling binding query operators.",
       "parameters": [
         {
-          "@id": "caam:Actor/AbstractBindingHash/hashAlgorithm",
+          "@id": "caabh:Actor/AbstractBindingsHash/hashAlgorithm",
           "comment": "The algorithm used for hashing",
+          "required": true,
+          "unique": true
         },
         {
-          "@id": "caam:Actor/AbstractBindingHash/digestAlgorithm",
+          "@id": "caabh:Actor/AbstractBindingsHash/digestAlgorithm",
           "comment": "The algorithm used for digesting",
+          "required": true,
+          "unique": true
         },
         {
-          "@id": "caam:Actor/AbstractBindingHash/cachesize",
+          "@id": "caabh:Actor/AbstractBindingsHash/cachesize",
           "comment": "The maximum size of the cache used, if there is a cache involved",
+          "required": true,
+          "unique": true
         }
       ],
       "constructorArguments": [
         {
-          "@id": "caam:Actor/AbstractBindingHash/constructorArgumentsObject",
+          "@id": "caabh:Actor/AbstractBindingsHash/constructorArgumentsObject",
+          "extends": "cbqo:Actor/QueryOperationTypedMediated/constructorArgumentsObject",
           "fields": [
-        {
-          "keyRaw": "hashAlgorithm",
-          "value": "caam:Actor/AbstractBindingHash/hashAlgorithm"
-        },
-        {
-          "keyRaw": "digestAlgorithm",
-          "value": "caam:Actor/AbstractBindingHash/digestAlgorithm"
-        },
-        {
-          "keyRaw": "cachesize",
-          "value": "caam:Actor/AbstractBindingHash/cachesize"
-        }
+            {
+              "keyRaw": "hashAlgorithm",
+              "value": "caabh:Actor/AbstractBindingsHash/hashAlgorithm"
+            },
+            {
+              "keyRaw": "digestAlgorithm",
+              "value": "caabh:Actor/AbstractBindingsHash/digestAlgorithm"
+            },
+            {
+              "keyRaw": "cachesize",
+              "value": "caabh:Actor/AbstractBindingsHash/cachesize"
+            }
           ]
         }
       ]

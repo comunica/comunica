@@ -1,6 +1,7 @@
+import {IActorInitRdfBindingHashArgs} from "@comunica/actor-query-operation-reduced-hash";
 import {
     ActorQueryOperation, ActorQueryOperationTypedMediated, Bindings,
-    IActorQueryOperationOutputBindings, IActorQueryOperationTypedMediatedArgs,
+    IActorQueryOperationOutputBindings,
 } from "@comunica/bus-query-operation";
 import {BindingsStream} from "@comunica/bus-query-operation";
 import {ActionContext, IActorTest} from "@comunica/core";
@@ -11,13 +12,13 @@ import {Operation} from "sparqlalgebrajs/lib/algebra";
  * A comunica Reduced Hash Query Operation Actor.
  */
 export abstract class AbstractBindingHash<T extends Operation> extends ActorQueryOperationTypedMediated<T>
-    implements IActorQueryOperationTypedMediatedArgs {
+    implements IActorInitRdfBindingHashArgs {
 
   public readonly hashAlgorithm: string;
   public readonly digestAlgorithm: string;
   public readonly cachesize: number;
 
-  constructor(args: IActorQueryOperationTypedMediatedArgs, operator: string) {
+  constructor(args: IActorInitRdfBindingHashArgs, operator: string) {
     super(args, operator);
     if (!AbstractBindingHash.doesHashAlgorithmExist(this.hashAlgorithm)) {
       throw new Error("The given hash algorithm is not present in this version of Node: " + this.hashAlgorithm);

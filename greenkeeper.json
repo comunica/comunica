@@ -8,6 +8,7 @@
     "allPackages": {
       "packages": [
         "packages/actor-abstract-mediatyped/package.json",
+        "packages/actor-abstract-bindings-hash/package.json",
         "packages/actor-abstract-path/package.json",
         "packages/actor-context-preprocess-rdf-source-identifier/package.json",
         "packages/actor-http-memento/package.json",
@@ -45,6 +46,7 @@
         "packages/actor-query-operation-path-zero-or-one/package.json",
         "packages/actor-query-operation-project/package.json",
         "packages/actor-query-operation-quadpattern/package.json",
+        "packages/actor-query-operation-reduced-hash/package.json",
         "packages/actor-query-operation-service/package.json",
         "packages/actor-query-operation-slice/package.json",
         "packages/actor-query-operation-sparql-endpoint/package.json",

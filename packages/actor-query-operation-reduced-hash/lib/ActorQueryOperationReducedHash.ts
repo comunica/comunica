@@ -1,21 +1,21 @@
-import {Bindings, IActorQueryOperationTypedMediatedArgs,} from "@comunica/bus-query-operation";
+import {Bindings, IActorQueryOperationTypedMediatedArgs} from "@comunica/bus-query-operation";
 import LRU = require("lru-cache");
 import {Algebra} from "sparqlalgebrajs";
-import {AbstractBindingHash} from "../../actor-abstract-bindings-hash/lib/AbstractBindingsHash";
+import {AbstractBindingHash} from "../../actor-abstract-bindings-hash";
 /**
  * A comunica Reduced Hash Query Operation Actor.
  */
 export class ActorQueryOperationReducedHash extends AbstractBindingHash<Algebra.Reduced>
-  implements IActorInitRdfReducedHashArgs {
+  implements IActorInitRdfBindingHashArgs {
 
-  constructor(args: IActorInitRdfReducedHashArgs) {
+  constructor(args: IActorInitRdfBindingHashArgs) {
     super(args, 'reduced');
   }
 
   /**
    * Create a new distinct filter function for the given hash algorithm and digest algorithm.
    * This will maintain an internal hash datastructure so that every bindings object only returns true once.
-   *  @param {string} hashAlgorithm A hash algorithm.
+   * @param {string} hashAlgorithm A hash algorithm.
    * @param {string} digestAlgorithm A digest algorithm.
    * @param {number} cachesize Max number of cashed hashes.
    * @return {(bindings: Bindings) => boolean} A distinct filter for bindings.
@@ -31,7 +31,7 @@ export class ActorQueryOperationReducedHash extends AbstractBindingHash<Algebra.
 
 }
 
-export interface IActorInitRdfReducedHashArgs extends IActorQueryOperationTypedMediatedArgs {
+export interface IActorInitRdfBindingHashArgs extends IActorQueryOperationTypedMediatedArgs {
   hashAlgorithm: string;
   digestAlgorithm: string;
   cachesize: number;
