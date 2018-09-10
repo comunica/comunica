@@ -1,6 +1,13 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="1.3.0"></a>
+## [1.3.0](https://github.com/comunica/comunica/compare/v1.2.2...v1.3.0) - 2018-09-10
+
+### Added
+* [Add RDF/XML parser](https://github.com/comunica/comunica/commit/90bb02420b1d12c404221150f63abad0e6fd69ee)
+* [Enable serialization in actor-init-sparql-rdfjs](https://github.com/comunica/comunica/commit/aae26f2b339e6a520912a841c1a453b0782f4078)
+
 <a name="1.2.2"></a>
 ## [1.2.2](https://github.com/comunica/comunica/compare/v1.2.1...v1.2.2) - 2018-09-05
 
