@@ -4,6 +4,6 @@
   "@type": "Module",
   "requireName": "@comunica/actor-abstract-bindings-hash",
   "import": [
-    "files-caam:components/Actor/AbstractBindingHash.jsonld",
+    "files-caabh:components/Actor/AbstractBindingsHash.jsonld"
   ]
 }

@@ -127,15 +127,16 @@ describe('AbstractBindingHash', () => {
 
   describe('An AbstractBindingHash instance', () => {
     let m: AbstractBindingHash<Algebra.Distinct>;
-
+    let cachesize;
     beforeEach(() => {
+      cachesize = 0;
       m = new (class Mock extends AbstractBindingHash<Algebra.Distinct> {
         public newHashFilter() {
           return () => {
             return true;
           };
         }
-      })({ name: 'actor', bus, mediatorQueryOperation, hashAlgorithm, digestAlgorithm }, 'distinct');
+      })({ name: 'actor', bus, mediatorQueryOperation, hashAlgorithm, digestAlgorithm, cachesize }, 'distinct');
 
     });
 

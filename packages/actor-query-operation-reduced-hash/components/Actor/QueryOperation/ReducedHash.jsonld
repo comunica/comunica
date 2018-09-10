@@ -1,6 +1,7 @@
 {
   "@context": [
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-reduced-hash/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-abstract-bindings-hash/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-query-operation/^1.0.0/components/context.jsonld"
   ],
   "@id": "npmd:@comunica/actor-query-operation-reduced-hash",
@@ -8,12 +9,35 @@
     {
       "@id": "caqorh:Actor/QueryOperation/ReducedHash",
       "@type": "Class",
-      "extends": "cbqo:Actor/QueryOperationTypedMediated",
+      "extends": "caabh:Actor/AbstractBindingsHash",
       "requireElement": "ActorQueryOperationReducedHash",
       "comment": "A comunica Reduced Hash Query Operation Actor.",
+      "parameters": [
+              {
+                "@id": "caabh:Actor/AbstractBindingsHash/hashAlgorithm",
+                "defaultScoped": {
+                  "defaultScope": "caqorh:Actor/QueryOperation/ReducedHash",
+                  "defaultScopedValue": "sha1"
+                }
+              },
+              {
+                  "@id": "caabh:Actor/AbstractBindingsHash/digestAlgorithm",
+                  "defaultScoped": {
+                    "defaultScope": "caqorh:Actor/QueryOperation/ReducedHash",
+                    "defaultScopedValue": "base64"
+                  }
+                },
+              {
+                "@id": "caabh:Actor/AbstractBindingsHash/cachesize",
+                "defaultScoped": {
+                  "defaultScope": "caqorh:Actor/QueryOperation/ReducedHash",
+                  "defaultScopedValue": "100"
+                }
+              }
+            ],
       "constructorArguments": [
         {
-          "extends": "cbqo:Actor/QueryOperationTypedMediated/constructorArgumentsObject"
+          "extends": "caabh:Actor/AbstractBindingsHash/constructorArgumentsObject"
         }
       ]
     }
