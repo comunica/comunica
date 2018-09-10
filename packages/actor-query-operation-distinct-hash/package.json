@@ -40,11 +40,11 @@
   },
   "peerDependencies": {
     "@comunica/bus-query-operation": "^1.0.0",
-    "@comunica/core": "^1.0.0"
+    "@comunica/core": "^1.3.0"
   },
   "devDependencies": {
     "@comunica/bus-query-operation": "^1.2.0",
-    "@comunica/core": "^1.2.0"
+    "@comunica/core": "^1.3.0"
   },
   "jest": {
     "transform": {
