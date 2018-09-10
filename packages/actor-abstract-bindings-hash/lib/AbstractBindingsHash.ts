@@ -11,13 +11,12 @@ import {Operation} from "sparqlalgebrajs/lib/algebra";
  * A comunica Reduced Hash Query Operation Actor.
  */
 export abstract class AbstractBindingHash<T extends Operation> extends ActorQueryOperationTypedMediated<T>
-    implements IActorInitRdfBindingHashArgs {
+    implements IActorInitRdfDereferencePagedArgs {
 
   public readonly hashAlgorithm: string;
   public readonly digestAlgorithm: string;
-  public readonly cachesize: number;
 
-  constructor(args: IActorInitRdfBindingHashArgs, operator: string) {
+  constructor(args: IActorInitRdfDereferencePagedArgs, operator: string) {
     super(args, operator);
     if (!AbstractBindingHash.doesHashAlgorithmExist(this.hashAlgorithm)) {
       throw new Error("The given hash algorithm is not present in this version of Node: " + this.hashAlgorithm);
@@ -63,10 +62,9 @@ export abstract class AbstractBindingHash<T extends Operation> extends ActorQuer
      * The given filter depends on the Algebraic operation
      *  @param {string} hashAlgorithm A hash algorithm.
      * @param {string} digestAlgorithm A digest algorithm.
-     * @param {number} cachesize Max number of cashed hashes.
      * @return {(bindings: Bindings) => boolean} A distinct filter for bindings.
      */
-  public abstract newHashFilter(hashAlgorithm: string, digestAlgorithm: string, cachesize: number)
+  public abstract newHashFilter(hashAlgorithm: string, digestAlgorithm: string)
     : (bindings: Bindings) => boolean;
 
   public async testOperation(pattern: T, context: ActionContext): Promise<IActorTest> {
@@ -78,14 +76,13 @@ export abstract class AbstractBindingHash<T extends Operation> extends ActorQuer
     const output: IActorQueryOperationOutputBindings = ActorQueryOperation.getSafeBindings(
       await this.mediatorQueryOperation.mediate({ operation: pattern.input, context }));
     const bindingsStream: BindingsStream = output.bindingsStream.filter(
-      this.newHashFilter(this.hashAlgorithm, this.digestAlgorithm, this.cachesize));
+      this.newHashFilter(this.hashAlgorithm, this.digestAlgorithm));
     return { type: 'bindings', bindingsStream, metadata: output.metadata, variables: output.variables };
 
   }
 }
 
-export interface IActorInitRdfBindingHashArgs extends IActorQueryOperationTypedMediatedArgs {
+export interface IActorInitRdfDereferencePagedArgs extends IActorQueryOperationTypedMediatedArgs {
   hashAlgorithm: string;
   digestAlgorithm: string;
-  cachesize: number;
 }

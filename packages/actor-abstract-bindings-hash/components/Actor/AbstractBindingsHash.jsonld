@@ -25,7 +25,7 @@
           "unique": true
         },
         {
-          "@id": "caabh:Actor/AbstractBindingsHash/cachesize",
+          "@id": "caabh:Actor/AbstractBindingsHash/cacheSize",
           "comment": "The maximum size of the cache used, if there is a cache involved",
           "required": true,
           "unique": true
@@ -45,8 +45,8 @@
               "value": "caabh:Actor/AbstractBindingsHash/digestAlgorithm"
             },
             {
-              "keyRaw": "cachesize",
-              "value": "caabh:Actor/AbstractBindingsHash/cachesize"
+              "keyRaw": "cacheSize",
+              "value": "caabh:Actor/AbstractBindingsHash/cacheSize"
             }
           ]
         }

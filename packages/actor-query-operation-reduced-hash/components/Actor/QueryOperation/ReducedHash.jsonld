@@ -28,7 +28,7 @@
               }
             },
           {
-            "@id": "caabh:Actor/AbstractBindingsHash/cachesize",
+            "@id": "caabh:Actor/AbstractBindingsHash/cacheSize",
             "defaultScoped": {
               "defaultScope": "caqorh:Actor/QueryOperation/ReducedHash",
               "defaultScopedValue": "100"

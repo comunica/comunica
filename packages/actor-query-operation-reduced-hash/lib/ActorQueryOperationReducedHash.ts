@@ -1,5 +1,5 @@
-import {AbstractBindingHash, IActorInitRdfBindingHashArgs} from "@comunica/actor-abstract-bindings-hash";
-import {Bindings} from "@comunica/bus-query-operation";
+import {AbstractBindingHash} from "@comunica/actor-abstract-bindings-hash";
+import {Bindings, IActorQueryOperationTypedMediatedArgs} from "@comunica/bus-query-operation";
 import LRU = require("lru-cache");
 import {Algebra} from "sparqlalgebrajs";
 /**
@@ -7,6 +7,7 @@ import {Algebra} from "sparqlalgebrajs";
  */
 export class ActorQueryOperationReducedHash extends AbstractBindingHash<Algebra.Reduced>
   implements IActorInitRdfBindingHashArgs {
+  public readonly cacheSize: number;
 
   constructor(args: IActorInitRdfBindingHashArgs) {
     super(args, 'reduced');
@@ -17,16 +18,20 @@ export class ActorQueryOperationReducedHash extends AbstractBindingHash<Algebra.
    * This will maintain an internal hash datastructure so that every bindings object only returns true once.
    * @param {string} hashAlgorithm A hash algorithm.
    * @param {string} digestAlgorithm A digest algorithm.
-   * @param {number} cachesize Max number of cashed hashes.
    * @return {(bindings: Bindings) => boolean} A distinct filter for bindings.
    */
-  public newHashFilter(hashAlgorithm: string, digestAlgorithm: string, cachesize: number)
+  public newHashFilter(hashAlgorithm: string, digestAlgorithm: string)
       : (bindings: Bindings) => boolean {
-    const hashes = new LRU<string, boolean>({ max: cachesize });
+    const hashes = new LRU<string, boolean>({ max: this.cacheSize });
     return (bindings: Bindings) => {
       const hash: string = ActorQueryOperationReducedHash.hash(hashAlgorithm, digestAlgorithm, bindings);
       return !(hashes.has(hash)) && hashes.set(hash, true);
     };
   }
+}
 
+export interface IActorInitRdfBindingHashArgs extends IActorQueryOperationTypedMediatedArgs {
+  hashAlgorithm: string;
+  digestAlgorithm: string;
+  cacheSize: number;
 }
