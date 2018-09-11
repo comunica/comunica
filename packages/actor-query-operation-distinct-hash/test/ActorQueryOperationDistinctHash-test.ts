@@ -39,7 +39,7 @@ describe('ActorQueryOperationDistinctHash', () => {
     beforeEach(() => {
       cachesize = 0;
       actor = new ActorQueryOperationDistinctHash(
-            { name: 'actor', bus, mediatorQueryOperation, hashAlgorithm, digestAlgorithm, cacheSize: cachesize });
+            { name: 'actor', bus, mediatorQueryOperation, hashAlgorithm, digestAlgorithm });
     });
     it('should create a filter', () => {
       return expect(actor.newHashFilter('sha1', 'base64'))
@@ -81,12 +81,7 @@ describe('ActorQueryOperationDistinctHash', () => {
 
   describe('An ActorQueryOperationDistinctHash instance', () => {
     let actor: ActorQueryOperationDistinctHash;
-<<<<<<< HEAD
-=======
-    let cachesize;
->>>>>>> requested changes
     beforeEach(() => {
-      cachesize = 0;
       actor = new ActorQueryOperationDistinctHash(
         { name: 'actor', bus, mediatorQueryOperation, hashAlgorithm, digestAlgorithm });
     });

@@ -7,7 +7,7 @@
 
       "AbstractBindingHash": "caabh:Actor/AbstractBindingsHash",
       "hashAlgorithm": "caabh:Actor/AbstractBindingsHash/hashAlgorithm",
-      "digestAlgorithm": "caabh:Actor/AbstractBindingsHash/digestAlgorithm",
+      "digestAlgorithm": "caabh:Actor/AbstractBindingsHash/digestAlgorithm"
     }
   ]
 }

@@ -25,8 +25,8 @@
             "defaultScoped": {
             "defaultScope": "caqodh:Actor/QueryOperation/DistinctHash",
             "defaultScopedValue": "base64"
+            }
           }
-        }
         ],
       "constructorArguments": [
         {
