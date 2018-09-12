@@ -2,6 +2,7 @@
   "@context": [
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-sparql/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/runner/^1.0.0/components/context.jsonld",
+
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-query-operation/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-ask/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-bgp-empty/^1.0.0/components/context.jsonld",
@@ -94,11 +95,13 @@
       "@type": "ActorQueryOperationDistinctHash",
       "cbqo:mediatorQueryOperation": { "@id": "config-sets:sparql-queryoperators.json#mediatorQueryOperation" }
     },
+
     {
       "@id": "config-sets:sparql-queryoperators.json#myReducedQueryOperator",
       "@type": "ActorQueryOperationReducedHash",
       "cbqo:mediatorQueryOperation": { "@id": "config-sets:sparql-queryoperators.json#mediatorQueryOperation" }
     },
+
     {
       "@id": "config-sets:sparql-queryoperators.json#myFilterQueryOperator",
       "@type": "ActorQueryOperationFilterDirect",
