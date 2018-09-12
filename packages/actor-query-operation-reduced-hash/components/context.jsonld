@@ -6,7 +6,8 @@
       "caqorh": "npmd:@comunica/actor-query-operation-reduced-hash/",
       "files-caqorh": "caqorh:^1.0.0/",
 
-      "ActorQueryOperationReducedHash": "caqorh:Actor/QueryOperation/ReducedHash"
+      "ActorQueryOperationReducedHash": "caqorh:Actor/QueryOperation/ReducedHash",
+      "cacheSize" : "caqorh:Actor/QueryOperation/ReducedHash/cacheSize"
     }
   ]
 }

@@ -13,28 +13,21 @@
       "requireElement": "ActorQueryOperationDistinctHash",
       "comment": "A comunica Distinct Hash Query Operation Actor.",
       "parameters": [
-          {
-            "@id": "caabh:Actor/AbstractBindingsHash/hashAlgorithm",
-            "defaultScoped": {
-              "defaultScope": "caqodh:Actor/QueryOperation/DistinctHash",
-              "defaultScopedValue": "sha1"
-            }
-          },
-          {
-              "@id": "caabh:Actor/AbstractBindingsHash/digestAlgorithm",
-              "defaultScoped": {
-                "defaultScope": "caqodh:Actor/QueryOperation/DistinctHash",
-                "defaultScopedValue": "base64"
-              }
-            },
-            {
-            "@id": "caabh:Actor/AbstractBindingsHash/cacheSize",
-            "defaultScoped": {
-              "defaultScope": "caqodh:Actor/QueryOperation/DistinctHash",
-              "defaultScopedValue":  "100"
-            }
+        {
+          "@id": "caabh:Actor/AbstractBindingsHash/hashAlgorithm",
+          "defaultScoped": {
+            "defaultScope": "caqodh:Actor/QueryOperation/DistinctHash",
+            "defaultScopedValue": "sha1"
           }
-        ],
+        },
+        {
+          "@id": "caabh:Actor/AbstractBindingsHash/digestAlgorithm",
+          "defaultScoped": {
+            "defaultScope": "caqodh:Actor/QueryOperation/DistinctHash",
+            "defaultScopedValue": "base64"
+          }
+        }
+      ],
       "constructorArguments": [
         {
           "extends": "caabh:Actor/AbstractBindingsHash/constructorArgumentsObject"

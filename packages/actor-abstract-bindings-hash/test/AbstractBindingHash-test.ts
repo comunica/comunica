@@ -7,7 +7,7 @@ import {Actor, Bus} from "@comunica/core";
 import {literal} from "@rdfjs/data-model";
 import {ArrayIterator} from "asynciterator";
 import {Algebra} from "sparqlalgebrajs";
-import {AbstractBindingHash} from "../lib/AbstractBindingsHash";
+import {AbstractBindingHash} from "..";
 const arrayifyStream = require('arrayify-stream');
 
 describe('AbstractBindingHash', () => {

@@ -23,12 +23,6 @@
           "comment": "The algorithm used for digesting",
           "required": true,
           "unique": true
-        },
-        {
-          "@id": "caabh:Actor/AbstractBindingsHash/cacheSize",
-          "comment": "The maximum size of the cache used, if there is a cache involved",
-          "required": true,
-          "unique": true
         }
       ],
       "constructorArguments": [
@@ -43,10 +37,6 @@
             {
               "keyRaw": "digestAlgorithm",
               "value": "caabh:Actor/AbstractBindingsHash/digestAlgorithm"
-            },
-            {
-              "keyRaw": "cacheSize",
-              "value": "caabh:Actor/AbstractBindingsHash/cacheSize"
             }
           ]
         }

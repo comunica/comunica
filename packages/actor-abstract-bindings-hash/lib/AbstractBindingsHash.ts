@@ -1,16 +1,15 @@
 import {
-    ActorQueryOperation, ActorQueryOperationTypedMediated, Bindings,
+    ActorQueryOperation, ActorQueryOperationTypedMediated, Bindings, BindingsStream,
     IActorQueryOperationOutputBindings, IActorQueryOperationTypedMediatedArgs,
 } from "@comunica/bus-query-operation";
-import {BindingsStream} from "@comunica/bus-query-operation";
 import {ActionContext, IActorTest} from "@comunica/core";
 import {createHash, getHashes, Hash} from "crypto";
-import {Operation} from "sparqlalgebrajs/lib/algebra";
+import {Algebra} from "sparqlalgebrajs";
 
 /**
- * A comunica Reduced Hash Query Operation Actor.
+ * A comunica Hash Query Operation Actor.
  */
-export abstract class AbstractBindingHash<T extends Operation> extends ActorQueryOperationTypedMediated<T>
+export abstract class AbstractBindingHash<T extends Algebra.Operation> extends ActorQueryOperationTypedMediated<T>
     implements IActorInitRdfDereferencePagedArgs {
 
   public readonly hashAlgorithm: string;

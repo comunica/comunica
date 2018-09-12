@@ -21,23 +21,37 @@
             }
           },
           {
-              "@id": "caabh:Actor/AbstractBindingsHash/digestAlgorithm",
-              "defaultScoped": {
-                "defaultScope": "caqorh:Actor/QueryOperation/ReducedHash",
-                "defaultScopedValue": "base64"
-              }
-            },
+            "@id": "caabh:Actor/AbstractBindingsHash/digestAlgorithm",
+            "defaultScoped": {
+              "defaultScope": "caqorh:Actor/QueryOperation/ReducedHash",
+              "defaultScopedValue": "base64"
+            }
+          },
           {
-            "@id": "caabh:Actor/AbstractBindingsHash/cacheSize",
+            "@id": "caqorh:Actor/QueryOperation/ReducedHash/cacheSize",
             "defaultScoped": {
               "defaultScope": "caqorh:Actor/QueryOperation/ReducedHash",
               "defaultScopedValue": "100"
             }
           }
-        ],
+      ],
       "constructorArguments": [
         {
-          "extends": "caabh:Actor/AbstractBindingsHash/constructorArgumentsObject"
+          "extends": "caabh:Actor/AbstractBindingsHash/constructorArgumentsObject",
+          "fields": [
+            {
+              "keyRaw": "hashAlgorithm",
+              "value": "caabh:Actor/AbstractBindingsHash/hashAlgorithm"
+            },
+            {
+              "keyRaw": "digestAlgorithm",
+              "value": "caabh:Actor/AbstractBindingsHash/digestAlgorithm"
+            },
+            {
+              "keyRaw": "cacheSize",
+              "value": "caqorh:Actor/QueryOperation/ReducedHash/cacheSize"
+            }
+          ]
         }
       ]
     }
