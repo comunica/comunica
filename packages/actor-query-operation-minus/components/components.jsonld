@@ -1,0 +1,9 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-minus/^1.0.0/components/context.jsonld",
+  "@id": "npmd:@comunica/actor-query-operation-minus",
+  "@type": "Module",
+  "requireName": "@comunica/actor-query-operation-minus",
+  "import": [
+    "files-caqom:components/Actor/QueryOperation/Minus.jsonld"
+  ]
+}
