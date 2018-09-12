@@ -1,18 +1,18 @@
 {
-  "name": "@comunica/actor-query-operation-distinct-hash",
-  "version": "1.2.0",
-  "description": "A distinct-hash query-operation actor",
-  "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-distinct-hash",
+  "name": "@comunica/actor-query-operation-reduced-hash",
+  "version": "1.0.0",
+  "description": "A reduced-hash query-operation actor",
+  "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-reduced-hash",
   "lsd:components": "components/components.jsonld",
   "lsd:contexts": {
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-distinct-hash/^1.0.0/components/context.jsonld": "components/context.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-reduced-hash/^1.0.0/components/context.jsonld": "components/context.jsonld"
   },
   "lsd:importPaths": {
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-distinct-hash/^1.0.0/components/": "components/"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-reduced-hash/^1.0.0/components/": "components/"
   },
   "main": "index.js",
   "typings": "index",
-  "repository": "https://github.com/comunica/comunica/tree/master/packages/actor-query-operation-distinct-hash",
+  "repository": "https://github.com/comunica/comunica/tree/master/packages/actor-query-operation-reduced-hash",
   "publishConfig": {
     "access": "public"
   },
@@ -20,7 +20,7 @@
     "comunica",
     "actor",
     "query-operation",
-    "distinct-hash"
+    "reduced-hash"
   ],
   "license": "MIT",
   "bugs": {
@@ -34,17 +34,15 @@
     "index.d.ts",
     "index.js"
   ],
-  "dependencies": {
-    "json-stable-stringify": "^1.0.1",
-    "@comunica/actor-abstract-bindings-hash" : "^1.0.0"
-  },
   "peerDependencies": {
-    "@comunica/bus-query-operation": "^1.0.0",
-    "@comunica/core": "^1.2.0"
+    "@comunica/core": "^1.2.0",
+    "@comunica/bus-query-operation": "^1.2.0",
+    "@comunica/actor-abstract-bindings-hash": "^1.2.0"
   },
   "devDependencies": {
+    "@comunica/core": "^1.2.0",
     "@comunica/bus-query-operation": "^1.2.0",
-    "@comunica/core": "^1.2.0"
+    "@comunica/actor-abstract-bindings-hash": "^1.2.0"
   },
   "jest": {
     "transform": {
@@ -63,5 +61,9 @@
     "lint": "node \"../../node_modules/tslint/bin/tslint\" lib/**/*.ts test/**/*.ts --exclude '**/*.d.ts'",
     "build": "node \"../../node_modules/typescript/bin/tsc\"",
     "validate": "npm ls"
+  },
+  "dependencies": {
+    "lru-cache": "^4.1.3",
+    "@comunica/actor-abstract-bindings-hash": "^1.2.0"
   }
 }

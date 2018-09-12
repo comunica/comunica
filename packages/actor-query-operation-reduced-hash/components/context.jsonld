@@ -1,0 +1,13 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^3.0.0/components/context.jsonld",
+    {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
+      "caqorh": "npmd:@comunica/actor-query-operation-reduced-hash/",
+      "files-caqorh": "caqorh:^1.0.0/",
+
+      "ActorQueryOperationReducedHash": "caqorh:Actor/QueryOperation/ReducedHash",
+      "cacheSize" : "caqorh:Actor/QueryOperation/ReducedHash/cacheSize"
+    }
+  ]
+}
