@@ -2,14 +2,15 @@ import {Bindings, IActorQueryOperationOutputBindings} from "@comunica/bus-query-
 import {Bus} from "@comunica/core";
 import {literal} from "@rdfjs/data-model";
 import {ArrayIterator} from "asynciterator";
-import {ActorQueryOperationDistinctHash} from "..";
+import {ActorQueryOperationReducedHash} from "..";
 const arrayifyStream = require('arrayify-stream');
 
-describe('ActorQueryOperationDistinctHash', () => {
+describe('ActorQueryOperationReducedHash', () => {
   let bus;
   let mediatorQueryOperation;
   let hashAlgorithm;
   let digestAlgorithm;
+  let cacheSize;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -30,20 +31,19 @@ describe('ActorQueryOperationDistinctHash', () => {
     };
     hashAlgorithm = 'sha1';
     digestAlgorithm = 'base64';
+    cacheSize = 20;
   });
 
-  describe('#newDistinctHashFilter', () => {
-    let actor: ActorQueryOperationDistinctHash;
-    let cachesize;
+  describe('#newReducedHashFilter', () => {
+    let actor: ActorQueryOperationReducedHash;
 
     beforeEach(() => {
-      cachesize = 0;
-      actor = new ActorQueryOperationDistinctHash(
-            { name: 'actor', bus, mediatorQueryOperation, hashAlgorithm, digestAlgorithm });
+      actor = new ActorQueryOperationReducedHash(
+            { name: 'actor', bus, mediatorQueryOperation, hashAlgorithm, digestAlgorithm, cacheSize });
     });
     it('should create a filter', () => {
       return expect(actor.newHashFilter('sha1', 'base64'))
-        .toBeInstanceOf(Function);
+                .toBeInstanceOf(Function);
     });
 
     it('should create a filter that is a predicate', () => {
@@ -79,25 +79,26 @@ describe('ActorQueryOperationDistinctHash', () => {
     });
   });
 
-  describe('An ActorQueryOperationDistinctHash instance', () => {
-    let actor: ActorQueryOperationDistinctHash;
+  describe('An ActorQueryOperationReducedHash instance', () => {
+    let actor: ActorQueryOperationReducedHash;
+
     beforeEach(() => {
-      actor = new ActorQueryOperationDistinctHash(
-        { name: 'actor', bus, mediatorQueryOperation, hashAlgorithm, digestAlgorithm });
+      actor = new ActorQueryOperationReducedHash(
+                { name: 'actor', bus, mediatorQueryOperation, hashAlgorithm, digestAlgorithm, cacheSize });
     });
 
-    it('should test on distinct', () => {
-      const op = { operation: { type: 'distinct' } };
+    it('should test on reduced', () => {
+      const op = { operation: { type: 'reduced' } };
       return expect(actor.test(op)).resolves.toBeTruthy();
     });
 
-    it('should not test on non-distinct', () => {
+    it('should not test on non-reduced', () => {
       const op = { operation: { type: 'some-other-type' } };
       return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
     it('should run', () => {
-      const op = { operation: { type: 'distinct' } };
+      const op = { operation: { type: 'reduced' } };
       return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
         expect(await output.metadata()).toEqual({ totalItems: 5 });
         expect(output.variables).toEqual([ 'a' ]);
@@ -108,6 +109,56 @@ describe('ActorQueryOperationDistinctHash', () => {
           Bindings({ a: literal('3') }),
         ]);
       });
+    });
+  });
+});
+
+describe('Smaller cache than number of queries', () => {
+  let actor: ActorQueryOperationReducedHash;
+  let bus;
+  let mediatorQueryOperation;
+  let hashAlgorithm;
+  let digestAlgorithm;
+  let cacheSize;
+
+  beforeEach(() => {
+    bus = new Bus({ name: 'bus' });
+    hashAlgorithm = 'sha1';
+    digestAlgorithm = 'base64';
+    cacheSize = 1;
+    mediatorQueryOperation = {
+      mediate: (arg) => Promise.resolve({
+        bindingsStream: new ArrayIterator([
+          Bindings({ a: literal('1') }),
+          Bindings({ a: literal('1') }),
+          Bindings({ a: literal('1') }),
+          Bindings({ a: literal('3') }),
+          Bindings({ a: literal('2') }),
+          Bindings({ a: literal('2') }),
+          Bindings({ a: literal('1') }),
+        ]),
+        metadata: () => Promise.resolve({ totalItems: 7 }),
+        operated: arg,
+        type: 'bindings',
+        variables: ['a'],
+      }),
+    };
+    actor = new ActorQueryOperationReducedHash(
+          { name: 'actor', bus, mediatorQueryOperation, hashAlgorithm, digestAlgorithm, cacheSize });
+
+  });
+  it('should run', () => {
+    const op = { operation: { type: 'reduced' } };
+    return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
+      expect(await output.metadata()).toEqual({ totalItems: 7 });
+      expect(output.variables).toEqual([ 'a' ]);
+      expect(output.type).toEqual('bindings');
+      expect(await arrayifyStream(output.bindingsStream)).toEqual([
+        Bindings({ a: literal('1') }),
+        Bindings({ a: literal('3') }),
+        Bindings({ a: literal('2') }),
+        Bindings({ a: literal('1') }),
+      ]);
     });
   });
 });

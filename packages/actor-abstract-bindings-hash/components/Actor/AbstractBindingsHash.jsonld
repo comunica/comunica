@@ -1,0 +1,46 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-abstract-bindings-hash/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-query-operation/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-abstract-bindings-hash",
+  "components": [
+    {
+      "@id": "caabh:Actor/AbstractBindingsHash",
+      "@type": "AbstractClass",
+      "extends": "cbqo:Actor/QueryOperationTypedMediated",
+      "requireElement": "ActorAbstractBindingsHash",
+      "comment": "An abstract comunica actor for handling binding query operators.",
+      "parameters": [
+        {
+          "@id": "caabh:Actor/AbstractBindingsHash/hashAlgorithm",
+          "comment": "The algorithm used for hashing",
+          "required": true,
+          "unique": true
+        },
+        {
+          "@id": "caabh:Actor/AbstractBindingsHash/digestAlgorithm",
+          "comment": "The algorithm used for digesting",
+          "required": true,
+          "unique": true
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "caabh:Actor/AbstractBindingsHash/constructorArgumentsObject",
+          "extends": "cbqo:Actor/QueryOperationTypedMediated/constructorArgumentsObject",
+          "fields": [
+            {
+              "keyRaw": "hashAlgorithm",
+              "value": "caabh:Actor/AbstractBindingsHash/hashAlgorithm"
+            },
+            {
+              "keyRaw": "digestAlgorithm",
+              "value": "caabh:Actor/AbstractBindingsHash/digestAlgorithm"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

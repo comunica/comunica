@@ -1,26 +1,27 @@
 {
-  "name": "@comunica/actor-query-operation-distinct-hash",
+  "name": "@comunica/actor-abstract-bindings-hash",
   "version": "1.2.0",
-  "description": "A distinct-hash query-operation actor",
-  "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-distinct-hash",
+  "description": "An abstract actor for handling binding query operators",
+  "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-abstract-bindings-hash",
   "lsd:components": "components/components.jsonld",
   "lsd:contexts": {
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-distinct-hash/^1.0.0/components/context.jsonld": "components/context.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-abstract-bindings-hash/^1.0.0/components/context.jsonld": "components/context.jsonld"
   },
   "lsd:importPaths": {
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-distinct-hash/^1.0.0/components/": "components/"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-abstract-bindings-hash/^1.0.0/components/": "components/"
   },
   "main": "index.js",
   "typings": "index",
-  "repository": "https://github.com/comunica/comunica/tree/master/packages/actor-query-operation-distinct-hash",
+  "repository": "https://github.com/comunica/comunica/tree/master/packages/actor-abstract-bindings-hash",
   "publishConfig": {
     "access": "public"
   },
   "keywords": [
     "comunica",
     "actor",
-    "query-operation",
-    "distinct-hash"
+    "abstract",
+    "binding",
+    "hash"
   ],
   "license": "MIT",
   "bugs": {
@@ -34,16 +35,12 @@
     "index.d.ts",
     "index.js"
   ],
-  "dependencies": {
-    "json-stable-stringify": "^1.0.1",
-    "@comunica/actor-abstract-bindings-hash" : "^1.0.0"
-  },
   "peerDependencies": {
     "@comunica/bus-query-operation": "^1.0.0",
-    "@comunica/core": "^1.2.0"
+    "@comunica/core": "^1.0.0"
   },
   "devDependencies": {
-    "@comunica/bus-query-operation": "^1.2.0",
+    "@comunica/bus-query-operation": "^1.0.0",
     "@comunica/core": "^1.2.0"
   },
   "jest": {

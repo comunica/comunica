@@ -1,0 +1,54 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-reduced-hash/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-abstract-bindings-hash/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-query-operation/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-query-operation-reduced-hash",
+  "components": [
+    {
+      "@id": "caqorh:Actor/QueryOperation/ReducedHash",
+      "@type": "Class",
+      "extends": "caabh:Actor/AbstractBindingsHash",
+      "requireElement": "ActorQueryOperationReducedHash",
+      "comment": "A comunica Reduced Hash Query Operation Actor.",
+      "parameters": [
+          {
+            "@id": "caabh:Actor/AbstractBindingsHash/hashAlgorithm",
+            "defaultScoped": {
+              "defaultScope": "caqorh:Actor/QueryOperation/ReducedHash",
+              "defaultScopedValue": "sha1"
+            }
+          },
+          {
+            "@id": "caabh:Actor/AbstractBindingsHash/digestAlgorithm",
+            "defaultScoped": {
+              "defaultScope": "caqorh:Actor/QueryOperation/ReducedHash",
+              "defaultScopedValue": "base64"
+            }
+          },
+          {
+            "@id": "caqorh:Actor/QueryOperation/ReducedHash/cacheSize",
+            "comment": "The size of the cache used by Reduce",
+            "required": true,
+            "defaultScoped": {
+              "defaultScope": "caqorh:Actor/QueryOperation/ReducedHash",
+              "defaultScopedValue": "100"
+            }
+          }
+        ],
+      "constructorArguments": [
+        {
+          "@id": "cagorh:Actor/QueryOperation/ReducedHash/constructorArgumentsObject",
+          "extends": "caabh:Actor/AbstractBindingsHash/constructorArgumentsObject",
+          "fields": [
+            {
+              "keyRaw": "cacheSize",
+              "value": "caqorh:Actor/QueryOperation/ReducedHash/cacheSize"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
