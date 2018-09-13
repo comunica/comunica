@@ -1,10 +1,10 @@
-import {AbstractBindingHash} from "@comunica/actor-abstract-bindings-hash";
-import {IActorInitRdfDereferencePagedArgs} from "@comunica/actor-query-operation-distinct-hash";
+import {AbstractBindingHash, IActorInitRdfDereferencePagedArgs} from "@comunica/actor-abstract-bindings-hash";
 import {
     ActorQueryOperation, Bindings, BindingsStream,
     IActorQueryOperationOutputBindings,
 } from "@comunica/bus-query-operation";
 import {ActionContext} from "@comunica/core";
+import * as RDF from "rdf-js";
 import {Algebra} from "sparqlalgebrajs";
 
 /**
@@ -13,6 +13,7 @@ import {Algebra} from "sparqlalgebrajs";
 export class ActorQueryOperationMinus extends AbstractBindingHash<Algebra.Minus> {
 
   private hashes: {[id: string]: boolean} = {};
+  private commons: string[];
 
   constructor(args: IActorInitRdfDereferencePagedArgs) {
     super(args, 'minus');
@@ -21,7 +22,9 @@ export class ActorQueryOperationMinus extends AbstractBindingHash<Algebra.Minus>
   public newHashFilter(hashAlgorithm: string, digestAlgorithm: string)
         : (bindings: Bindings) => boolean {
     return (bindings: Bindings) => {
-      const hash: string = ActorQueryOperationMinus.hash(hashAlgorithm, digestAlgorithm, bindings);
+      const hash: string = ActorQueryOperationMinus.hash(hashAlgorithm, digestAlgorithm,
+          bindings.filter((v: RDF.Term, k: string) => -1 !== this.commons.indexOf(k)));
+
       return !(hash in this.hashes);
     };
   }
@@ -34,12 +37,14 @@ export class ActorQueryOperationMinus extends AbstractBindingHash<Algebra.Minus>
     const output = ActorQueryOperation.getSafeBindings(
           await this.mediatorQueryOperation.mediate({ operation: pattern.left, context }));
 
-    if (this.haveCommonVariables(buffer.variables, output.variables)) {
+    this.commons = buffer.variables.filter((n: string) => -1 !== output.variables.indexOf(n));
+    if (this.commons.length > 0) {
       let bindingsStream: BindingsStream = null;
       const prom = new Promise((resolve) => {
         bindingsStream = buffer.bindingsStream;
         bindingsStream.on('data', (data) => {
-          const hash = ActorQueryOperationMinus.hash(this.hashAlgorithm, this.digestAlgorithm, data);
+          const hash = ActorQueryOperationMinus.hash(this.hashAlgorithm, this.digestAlgorithm,
+              data.filter((v: RDF.Term, k: string) => -1 !== this.commons.indexOf(k)));
           this.hashes[hash] = true;
         });
         bindingsStream.on('end', () => {
@@ -55,14 +60,5 @@ export class ActorQueryOperationMinus extends AbstractBindingHash<Algebra.Minus>
       return output;
     }
 
-  }
-
-  private haveCommonVariables(array1: string[], array2: string[]): boolean {
-    for (const element of array1) {
-      if (array2.indexOf(element) > -1) {
-        return true;
-      }
-    }
-    return false;
   }
 }

@@ -35,7 +35,8 @@
     "index.js"
   ],
   "dependencies": {
-    "lodash.difference": "^4.5.0"
+    "lodash.difference": "^4.5.0",
+    "@comunica/actor-abstract-bindings-hash" : "^1.0.0"
   },
   "peerDependencies": {
     "@comunica/core": "^1.2.0",
