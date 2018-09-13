@@ -79,6 +79,7 @@
     "@comunica/actor-query-operation-slice": "^1.2.0",
     "@comunica/actor-query-operation-sparql-endpoint": "^1.3.0",
     "@comunica/actor-query-operation-union": "^1.2.0",
+    "@comunica/actor-query-operation-minus": "^1.0.0",
     "@comunica/actor-query-operation-values": "^1.2.0",
     "@comunica/actor-rdf-dereference-http-parse": "^1.2.0",
     "@comunica/actor-rdf-dereference-paged-next": "^1.2.0",
