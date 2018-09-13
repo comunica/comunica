@@ -105,7 +105,7 @@ describe('ActorQueryOperationMinus', () => {
       });
     });
 
-    it('should run with a left stream without metadata', () => {
+    it('should run with a left stream without common variables', () => {
       const op = { operation: { type: 'union', left, right: rightNoCommons } };
       return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
         expect(await output.metadata()).toEqual({ totalItems: 3 });
@@ -119,5 +119,71 @@ describe('ActorQueryOperationMinus', () => {
       });
     });
 
+  });
+  describe('An ActorQueryOperationMinus instance', () => {
+    let actor: ActorQueryOperationMinus;
+
+    beforeEach(() => {
+      bus = new Bus({name: 'bus'});
+      mediatorQueryOperation = {
+        mediate: (arg) => Promise.resolve({
+          bindingsStream: arg.operation.stream,
+          metadata: arg.operation.metadata,
+          type: 'bindings',
+          variables: arg.operation.variables,
+        }),
+      };
+      left = {
+        metadata: () => Promise.resolve({totalItems: 11}),
+        stream: new ArrayIterator([
+          Bindings({a: literal('1')}),
+          Bindings({a: literal('2')}),
+          Bindings({b: literal('1')}),
+          Bindings({b: literal('2')}),
+          Bindings({b: literal('3')}),
+          Bindings({a: literal('3')}),
+          Bindings({a: literal('4')}),
+          Bindings({a: literal('5')}),
+          Bindings({b: literal('4')}),
+          Bindings({b: literal('5')}),
+          Bindings({a: literal('6')}),
+        ]),
+        type: 'bindings',
+        variables: ['a', 'b'],
+      };
+      right = {
+        metadata: () => Promise.resolve({totalItems: 4}),
+        stream: new ArrayIterator([
+          Bindings({a: literal('1')}),
+          Bindings({a: literal('2')}),
+          Bindings({b: literal('1')}),
+          Bindings({b: literal('2')}),
+        ]),
+        type: 'bindings',
+        variables: ['a', 'b'],
+      };
+      hashAlgorithm = 'sha1';
+      digestAlgorithm = 'base64';
+      actor = new ActorQueryOperationMinus(
+            { name: 'actor', bus, mediatorQueryOperation, hashAlgorithm, digestAlgorithm });
+    });
+
+    it('should run', () => {
+      const op = { operation: { type: 'minus', left, right } };
+      return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
+        expect(await output.metadata()).toEqual({ totalItems: 11 });
+        expect(output.variables).toEqual([ 'a', 'b' ]);
+        expect(output.type).toEqual('bindings');
+        expect(await arrayifyStream(output.bindingsStream)).toEqual([
+          Bindings({b: literal('3')}),
+          Bindings({a: literal('3')}),
+          Bindings({a: literal('4')}),
+          Bindings({a: literal('5')}),
+          Bindings({b: literal('4')}),
+          Bindings({b: literal('5')}),
+          Bindings({a: literal('6')}),
+        ]);
+      });
+    });
   });
 });
