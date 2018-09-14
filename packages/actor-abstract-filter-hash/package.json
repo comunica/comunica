@@ -1,26 +1,27 @@
 {
-  "name": "@comunica/actor-query-operation-minus",
-  "version": "1.0.0",
-  "description": "A minus query-operation actor",
-  "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-minus",
+  "name": "@comunica/actor-abstract-filter-hash",
+  "version": "1.2.0",
+  "description": "An abstract actor for handling binding query operators",
+  "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-abstract-filter-hash",
   "lsd:components": "components/components.jsonld",
   "lsd:contexts": {
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-minus/^1.0.0/components/context.jsonld": "components/context.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-abstract-filter-hash/^1.0.0/components/context.jsonld": "components/context.jsonld"
   },
   "lsd:importPaths": {
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-minus/^1.0.0/components/": "components/"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-abstract-filter-hash/^1.0.0/components/": "components/"
   },
   "main": "index.js",
   "typings": "index",
-  "repository": "https://github.com/comunica/comunica/tree/master/packages/actor-query-operation-minus",
+  "repository": "https://github.com/comunica/comunica/tree/master/packages/actor-abstract-filter-hash",
   "publishConfig": {
     "access": "public"
   },
   "keywords": [
     "comunica",
     "actor",
-    "query-operation",
-    "minus"
+    "abstract",
+    "binding",
+    "hash"
   ],
   "license": "MIT",
   "bugs": {
@@ -34,16 +35,13 @@
     "index.d.ts",
     "index.js"
   ],
-  "dependencies": {
-    "@comunica/actor-abstract-bindings-hash" : "^1.0.0"
-  },
   "peerDependencies": {
-    "@comunica/core": "^1.2.0",
-    "@comunica/bus-query-operation": "^1.2.0"
+    "@comunica/bus-query-operation": "^1.0.0",
+    "@comunica/core": "^1.0.0"
   },
   "devDependencies": {
-    "@comunica/core": "^1.2.0",
-    "@comunica/bus-query-operation": "^1.2.0"
+    "@comunica/bus-query-operation": "^1.0.0",
+    "@comunica/core": "^1.2.0"
   },
   "jest": {
     "transform": {

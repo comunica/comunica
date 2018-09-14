@@ -1,0 +1,13 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    {
+      "caafh": "npmd:@comunica/actor-abstract-filter-hash/",
+      "files-caafh": "caafh:^1.0.0/",
+
+      "AbstractBindingHash": "caafh:Actor/AbstractFilterHash",
+      "hashAlgorithm": "caafh:Actor/AbstractFilterHash/hashAlgorithm",
+      "digestAlgorithm": "caafh:Actor/AbstractFilterHash/digestAlgorithm"
+    }
+  ]
+}
