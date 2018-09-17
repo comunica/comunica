@@ -7,8 +7,11 @@ import {translate} from "sparqlalgebrajs";
  */
 export class ActorSparqlParseAlgebra extends ActorSparqlParse {
 
+  public readonly prefixes: {[id: string]: string};
+
   constructor(args: IActorArgs<IActionSparqlParse, IActorTest, IActorSparqlParseOutput>) {
     super(args);
+    this.prefixes = Object.freeze(this.prefixes);
   }
 
   public async test(action: IActionSparqlParse): Promise<IActorTest> {
@@ -19,7 +22,7 @@ export class ActorSparqlParseAlgebra extends ActorSparqlParse {
   }
 
   public async run(action: IActionSparqlParse): Promise<IActorSparqlParseOutput> {
-    return { operation: translate(action.query, { quads: true }) };
+    return { operation: translate(action.query, { quads: true, prefixes: this.prefixes }) };
   }
 
 }
