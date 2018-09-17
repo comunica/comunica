@@ -1,11 +1,9 @@
-import {AbstractBindingHash, IActorInitRdfDereferencePagedArgs} from "@comunica/actor-abstract-bindings-hash";
-import {AbstractFilterHash} from "@comunica/actor-abstract-filter-hash";
+import {AbstractFilterHash, IActorInitRdfDereferencePagedArgs} from "@comunica/actor-abstract-filter-hash";
 import {
-    ActorQueryOperation, Bindings, BindingsStream,
+    ActorQueryOperation, Bindings,
     IActorQueryOperationOutputBindings,
 } from "@comunica/bus-query-operation";
 import {ActionContext} from "@comunica/core";
-import {MultiTransformIterator} from "asynciterator";
 import {PromiseProxyIterator} from "asynciterator-promiseproxy";
 import * as RDF from "rdf-js";
 import {Algebra} from "sparqlalgebrajs";
@@ -39,20 +37,21 @@ export class ActorQueryOperationMinus extends AbstractFilterHash<Algebra.Minus> 
     const commons: {[variableName: string]: boolean} = this.getCommonVariables(buffer.variables, output.variables);
     if (Object.keys(commons).length !== 0) {
       const hashes: {[id: string]: boolean} = {};
-
-      const prom = new Promise((resolve) => {
-        buffer.bindingsStream.on('data', (data) => {
-          const hash = ActorQueryOperationMinus.hash(this.hashAlgorithm, this.digestAlgorithm,
-                        data.filter((v: RDF.Term, k: string) => commons[k]));
-          hashes[hash] = true;
-        });
-        buffer.bindingsStream.on('end', () => {
-          resolve(hashes);
-        });
-      });
-
+      /**
+       * Om er zeker van te zijn dat we alle triples uit A `output` weg filteren die er niet horen wachten we eerst tot
+       * we alle elementen van B `buffer` kennen. Deze steken we in een hashmap `hashes` en gebruiken we in onze filter.
+       */
       const bindingsStream = new PromiseProxyIterator(async () => {
-        await prom;
+        await new Promise((resolve) => {
+          buffer.bindingsStream.on('data', (data) => {
+            const hash = ActorQueryOperationMinus.hash(this.hashAlgorithm, this.digestAlgorithm,
+                    data.filter((v: RDF.Term, k: string) => commons[k]));
+            hashes[hash] = true;
+          });
+          buffer.bindingsStream.on('end', () => {
+            resolve(hashes);
+          });
+        });
         return output.bindingsStream.filter(
                 this.newHashFilter(this.hashAlgorithm, this.digestAlgorithm, commons, hashes));
       });
@@ -62,6 +61,9 @@ export class ActorQueryOperationMinus extends AbstractFilterHash<Algebra.Minus> 
     }
   }
 
+  /**
+   * Deze functie stopt alle gemeenschappelijke elementen uit twee arrays in een map met als `value` : true
+   */
   private getCommonVariables(array1: string[], array2: string[]): {[variableName: string]: boolean } {
     return array1.filter(
         (n: string) => -1 !== array2.indexOf(n))

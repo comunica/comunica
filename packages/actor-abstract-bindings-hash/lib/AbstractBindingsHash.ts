@@ -1,3 +1,4 @@
+import {IActorInitRdfDereferencePagedArgs} from "@comunica/actor-abstract-filter-hash";
 import {
     ActorQueryOperation, ActorQueryOperationTypedMediated, Bindings, BindingsStream,
     IActorQueryOperationOutputBindings, IActorQueryOperationTypedMediatedArgs,
@@ -79,9 +80,4 @@ export abstract class AbstractBindingHash<T extends Algebra.Operation> extends A
     return { type: 'bindings', bindingsStream, metadata: output.metadata, variables: output.variables };
 
   }
-}
-
-export interface IActorInitRdfDereferencePagedArgs extends IActorQueryOperationTypedMediatedArgs {
-  hashAlgorithm: string;
-  digestAlgorithm: string;
 }
