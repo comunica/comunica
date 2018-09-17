@@ -1,4 +1,4 @@
-import {AbstractFilterHash, IActorInitRdfDereferencePagedArgs} from "@comunica/actor-abstract-filter-hash";
+import {AbstractFilterHash, IActorInitRdfDereferencePagedArgs} from "@comunica/actor-abstract-bindings-hash";
 import {
     ActorQueryOperation, Bindings,
     IActorQueryOperationOutputBindings,
@@ -38,8 +38,8 @@ export class ActorQueryOperationMinus extends AbstractFilterHash<Algebra.Minus> 
     if (Object.keys(commons).length !== 0) {
       const hashes: {[id: string]: boolean} = {};
       /**
-       * Om er zeker van te zijn dat we alle triples uit A `output` weg filteren die er niet horen wachten we eerst tot
-       * we alle elementen van B `buffer` kennen. Deze steken we in een hashmap `hashes` en gebruiken we in onze filter.
+       * To assure we've filtered all B (`buffer) values from A (`output`) we wait until we've fetched all values of B.
+       * Then we save these triples in a hashmap `hashes` and use the map to filter our A-stream.
        */
       const bindingsStream = new PromiseProxyIterator(async () => {
         await new Promise((resolve) => {
@@ -62,7 +62,7 @@ export class ActorQueryOperationMinus extends AbstractFilterHash<Algebra.Minus> 
   }
 
   /**
-   * Deze functie stopt alle gemeenschappelijke elementen uit twee arrays in een map met als `value` : true
+   * This function puts all common values between 2 arrays in a map with `value` : true
    */
   private getCommonVariables(array1: string[], array2: string[]): {[variableName: string]: boolean } {
     return array1.filter(

@@ -1,11 +1,11 @@
-import {IActorInitRdfDereferencePagedArgs} from "@comunica/actor-abstract-filter-hash";
 import {
     ActorQueryOperation, ActorQueryOperationTypedMediated, Bindings, BindingsStream,
-    IActorQueryOperationOutputBindings, IActorQueryOperationTypedMediatedArgs,
+    IActorQueryOperationOutputBindings,
 } from "@comunica/bus-query-operation";
 import {ActionContext, IActorTest} from "@comunica/core";
 import {createHash, getHashes, Hash} from "crypto";
 import {Algebra} from "sparqlalgebrajs";
+import {IActorInitRdfDereferencePagedArgs} from "./AbstractFilterHash";
 
 /**
  * A comunica Hash Query Operation Actor.

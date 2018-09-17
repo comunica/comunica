@@ -1,9 +1,0 @@
-{
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-abstract-filter-hash/^1.0.0/components/context.jsonld",
-  "@id": "npmd:@comunica/actor-abstract-filter-hash",
-  "@type": "Module",
-  "requireName": "@comunica/actor-abstract-filter-hash",
-  "import": [
-    "files-caafh:components/Actor/AbstractFilterHash.jsonld"
-  ]
-}
