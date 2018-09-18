@@ -35,7 +35,8 @@
     "index.js"
   ],
   "dependencies": {
-    "@comunica/actor-abstract-bindings-hash" : "^1.0.0"
+    "@comunica/actor-abstract-bindings-hash" : "^1.0.0",
+    "asynciterator-promiseproxy": "^2.0.0"
   },
   "peerDependencies": {
     "@comunica/core": "^1.2.0",

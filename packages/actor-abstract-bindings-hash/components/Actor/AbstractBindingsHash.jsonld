@@ -1,7 +1,6 @@
 {
   "@context": [
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-abstract-bindings-hash/^1.0.0/components/context.jsonld",
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-abstract-filter-hash/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-query-operation/^1.0.0/components/context.jsonld"
   ],
   "@id": "npmd:@comunica/actor-abstract-bindings-hash",
@@ -9,20 +8,20 @@
     {
       "@id": "caabh:Actor/AbstractBindingsHash",
       "@type": "AbstractClass",
-      "extends": "caafh:Actor/AbstractFilterHash",
+      "extends": "caabh:Actor/AbstractFilterHash",
       "requireElement": "ActorAbstractBindingsHash",
       "comment": "An abstract comunica actor for handling binding query operators.",
       "parameters": [
         {
-          "@id": "caafh:Actor/AbstractFilterHash/hashAlgorithm"
+          "@id": "caabh:Actor/AbstractFilterHash/hashAlgorithm"
         },
         {
-          "@id": "caafh:Actor/AbstractFilterHash/digestAlgorithm"
+          "@id": "caabh:Actor/AbstractFilterHash/digestAlgorithm"
         }
       ],
       "constructorArguments": [
         {
-          "extends": "caafh:Actor/AbstractFilterHash/constructorArgumentsObject"
+          "extends": "caabh:Actor/AbstractFilterHash/constructorArgumentsObject"
         }
       ]
     }

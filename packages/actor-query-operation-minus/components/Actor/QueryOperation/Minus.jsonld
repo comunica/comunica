@@ -1,6 +1,6 @@
 {
   "@context": [
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-abstract-filter-hash/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-abstract-bindings-hash/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-minus/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-query-operation/^1.0.0/components/context.jsonld"
   ],
@@ -9,19 +9,19 @@
     {
       "@id": "caqom:Actor/QueryOperation/Minus",
       "@type": "Class",
-      "extends": "caafh:Actor/AbstractFilterHash",
+      "extends": "caabh:Actor/AbstractFilterHash",
       "requireElement": "ActorQueryOperationMinus",
       "comment": "A comunica Minus Query Operation Actor.",
       "parameters": [
         {
-          "@id": "caafh:Actor/AbstractFilterHash/hashAlgorithm",
+          "@id": "caabh:Actor/AbstractFilterHash/hashAlgorithm",
           "defaultScoped": {
             "defaultScope": "caqom:Actor/QueryOperation/Minus",
             "defaultScopedValue": "sha1"
           }
         },
         {
-          "@id": "caafh:Actor/AbstractFilterHash/digestAlgorithm",
+          "@id": "caabh:Actor/AbstractFilterHash/digestAlgorithm",
           "defaultScoped": {
             "defaultScope": "caqom:Actor/QueryOperation/Minus",
             "defaultScopedValue": "base64"
@@ -30,7 +30,7 @@
       ],
       "constructorArguments": [
         {
-          "extends": "caafh:Actor/AbstractFilterHash/constructorArgumentsObject"
+          "extends": "caabh:Actor/AbstractFilterHash/constructorArgumentsObject"
         }
       ]
     }

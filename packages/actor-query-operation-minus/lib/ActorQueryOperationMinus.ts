@@ -38,7 +38,7 @@ export class ActorQueryOperationMinus extends AbstractFilterHash<Algebra.Minus> 
     if (Object.keys(commons).length !== 0) {
       const hashes: {[id: string]: boolean} = {};
       /**
-       * To assure we've filtered all B (`buffer) values from A (`output`) we wait until we've fetched all values of B.
+       * To assure we've filtered all B (`buffer`) values from A (`output`) we wait until we've fetched all values of B.
        * Then we save these triples in a hashmap `hashes` and use the map to filter our A-stream.
        */
       const bindingsStream = new PromiseProxyIterator(async () => {
@@ -49,7 +49,7 @@ export class ActorQueryOperationMinus extends AbstractFilterHash<Algebra.Minus> 
             hashes[hash] = true;
           });
           buffer.bindingsStream.on('end', () => {
-            resolve(hashes);
+            resolve();
           });
         });
         return output.bindingsStream.filter(

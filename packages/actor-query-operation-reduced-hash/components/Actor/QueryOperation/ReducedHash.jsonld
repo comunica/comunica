@@ -2,7 +2,6 @@
   "@context": [
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-reduced-hash/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-abstract-bindings-hash/^1.0.0/components/context.jsonld",
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-abstract-filter-hash/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-query-operation/^1.0.0/components/context.jsonld"
   ],
   "@id": "npmd:@comunica/actor-query-operation-reduced-hash",
@@ -15,14 +14,14 @@
       "comment": "A comunica Reduced Hash Query Operation Actor.",
       "parameters": [
         {
-          "@id": "caafh:Actor/AbstractFilterHash/hashAlgorithm",
+          "@id": "caabh:Actor/AbstractFilterHash/hashAlgorithm",
           "defaultScoped": {
             "defaultScope": "caqorh:Actor/QueryOperation/ReducedHash",
             "defaultScopedValue": "sha1"
           }
         },
         {
-          "@id": "caafh:Actor/AbstractFilterHash/digestAlgorithm",
+          "@id": "caabh:Actor/AbstractFilterHash/digestAlgorithm",
           "defaultScoped": {
             "defaultScope": "caqorh:Actor/QueryOperation/ReducedHash",
             "defaultScopedValue": "base64"
@@ -38,15 +37,15 @@
       ],
       "constructorArguments": [
         {
-          "extends": "caafh:Actor/AbstractFilterHash/constructorArgumentsObject",
+          "extends": "caabh:Actor/AbstractFilterHash/constructorArgumentsObject",
           "fields": [
             {
               "keyRaw": "hashAlgorithm",
-              "value": "caafh:Actor/AbstractFilterHash/hashAlgorithm"
+              "value": "caabh:Actor/AbstractFilterHash/hashAlgorithm"
             },
             {
               "keyRaw": "digestAlgorithm",
-              "value": "caafh:Actor/AbstractFilterHash/digestAlgorithm"
+              "value": "caabh:Actor/AbstractFilterHash/digestAlgorithm"
             },
             {
               "keyRaw": "cacheSize",

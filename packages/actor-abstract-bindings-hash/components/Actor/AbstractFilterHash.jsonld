@@ -1,9 +1,9 @@
 {
   "@context": [
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-abstract-filter-hash/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-abstract-bindings-hash/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-query-operation/^1.0.0/components/context.jsonld"
   ],
-  "@id": "npmd:@comunica/actor-abstract-filter-hash",
+  "@id": "npmd:@comunica/actor-abstract-binding-hash",
   "components": [
     {
       "@id": "caabh:Actor/AbstractFilterHash",
