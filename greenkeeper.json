@@ -51,6 +51,7 @@
         "packages/actor-query-operation-slice/package.json",
         "packages/actor-query-operation-sparql-endpoint/package.json",
         "packages/actor-query-operation-union/package.json",
+        "packages/actor-query-operation-minus/package.json",
         "packages/actor-query-operation-values/package.json",
         "packages/actor-rdf-dereference-file/package.json",
         "packages/actor-rdf-dereference-http-parse/package.json",

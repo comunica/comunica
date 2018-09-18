@@ -8,37 +8,20 @@
     {
       "@id": "caabh:Actor/AbstractBindingsHash",
       "@type": "AbstractClass",
-      "extends": "cbqo:Actor/QueryOperationTypedMediated",
+      "extends": "caabh:Actor/AbstractFilterHash",
       "requireElement": "ActorAbstractBindingsHash",
       "comment": "An abstract comunica actor for handling binding query operators.",
       "parameters": [
         {
-          "@id": "caabh:Actor/AbstractBindingsHash/hashAlgorithm",
-          "comment": "The algorithm used for hashing",
-          "required": true,
-          "unique": true
+          "@id": "caabh:Actor/AbstractFilterHash/hashAlgorithm"
         },
         {
-          "@id": "caabh:Actor/AbstractBindingsHash/digestAlgorithm",
-          "comment": "The algorithm used for digesting",
-          "required": true,
-          "unique": true
+          "@id": "caabh:Actor/AbstractFilterHash/digestAlgorithm"
         }
       ],
       "constructorArguments": [
         {
-          "@id": "caabh:Actor/AbstractBindingsHash/constructorArgumentsObject",
-          "extends": "cbqo:Actor/QueryOperationTypedMediated/constructorArgumentsObject",
-          "fields": [
-            {
-              "keyRaw": "hashAlgorithm",
-              "value": "caabh:Actor/AbstractBindingsHash/hashAlgorithm"
-            },
-            {
-              "keyRaw": "digestAlgorithm",
-              "value": "caabh:Actor/AbstractBindingsHash/digestAlgorithm"
-            }
-          ]
+          "extends": "caabh:Actor/AbstractFilterHash/constructorArgumentsObject"
         }
       ]
     }

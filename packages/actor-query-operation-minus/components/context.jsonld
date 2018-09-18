@@ -1,0 +1,12 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^3.0.0/components/context.jsonld",
+    {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
+      "caqom": "npmd:@comunica/actor-query-operation-minus/",
+      "files-caqom": "caqom:^1.0.0/",
+
+      "ActorQueryOperationMinus": "caqom:Actor/QueryOperation/Minus"
+    }
+  ]
+}
