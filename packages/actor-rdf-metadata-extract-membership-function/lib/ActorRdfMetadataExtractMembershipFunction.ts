@@ -26,7 +26,6 @@ export class ActorRdfMetadataExtractMembershipFunction extends ActorRdfMetadataE
       const MFProperties: {[property: string]: {[subject: string]: string[]}} = {};
       let MembershipFunctionBinding: string;
       metadata.on('data', (quad) => {
-        // console.log(quad);
         if (quad.predicate.value.startsWith(ActorRdfMetadataExtractMembershipFunction.SEMWEB)) {
           if (quad.object.value.endsWith("amf_subject")) {
             MembershipFunctionBinding = quad.object.value;

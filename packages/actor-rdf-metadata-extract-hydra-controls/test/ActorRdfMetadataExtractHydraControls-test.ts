@@ -1,7 +1,6 @@
 import {ActorRdfMetadataExtract} from "@comunica/bus-rdf-metadata-extract";
 import {Bus} from "@comunica/core";
-import {Readable} from "stream";
-import {ActorRdfMetadataExtractHydraControls} from "../lib/ActorRdfMetadataExtractHydraControls";
+import {ActorRdfMetadataExtractHydraControls} from "..";
 const stream = require('streamify-array');
 const quad = require('rdf-quad');
 
