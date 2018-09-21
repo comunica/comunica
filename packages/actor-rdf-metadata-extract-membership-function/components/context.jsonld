@@ -1,0 +1,12 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^3.0.0/components/context.jsonld",
+    {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
+      "carmemf": "npmd:@comunica/actor-rdf-metadata-extract-membership-function/",
+      "files-carmemf": "carmemf:^1.0.0/",
+
+      "ActorRdfMetadataExtractMembershipFunction": "carmemf:Actor/RdfMetadataExtract/MembershipFunction"
+    }
+  ]
+}

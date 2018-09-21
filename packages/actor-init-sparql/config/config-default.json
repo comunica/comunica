@@ -7,6 +7,7 @@
   "@type": "Runner",
   "import": [
     "files-cais:config/sets/http.json",
+    "files-cais:config/sets/amf.json",
     "files-cais:config/sets/http-memento.json",
     "files-cais:config/sets/join.json",
     "files-cais:config/sets/rdf-dereference.json",

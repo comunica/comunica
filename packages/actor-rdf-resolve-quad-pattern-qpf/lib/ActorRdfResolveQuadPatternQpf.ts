@@ -1,6 +1,7 @@
 import {ISearchForm, ISearchForms} from "@comunica/actor-rdf-metadata-extract-hydra-controls";
 import {IActionRdfDereferencePaged, IActorRdfDereferencePagedOutput} from "@comunica/bus-rdf-dereference-paged";
-import {ActorRdfResolveQuadPatternSource, IActionRdfResolveQuadPattern,
+import {
+  ActorRdfResolveQuadPatternSource, IActionRdfResolveQuadPattern,
   IActorRdfResolveQuadPatternOutput, ILazyQuadSource} from "@comunica/bus-rdf-resolve-quad-pattern";
 import {ActionContext, Actor, IActorArgs, IActorTest, Mediator} from "@comunica/core";
 import * as RDF from "rdf-js";

@@ -1,0 +1,21 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-metadata-extract-membership-function/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-metadata-extract/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-rdf-metadata-extract-membership-function",
+  "components": [
+    {
+      "@id": "carmemf:Actor/RdfMetadataExtract/MembershipFunction",
+      "@type": "Class",
+      "extends": "cbrme:Actor/RdfMetadataExtract",
+      "requireElement": "ActorRdfMetadataExtractMembershipFunction",
+      "comment": "A comunica Membership Function RDF Metadata Extract Actor.",
+      "constructorArguments": [
+        {
+          "extends": "cbrme:Actor/RdfMetadataExtract/constructorArgumentsObject"
+        }
+      ]
+    }
+  ]
+}

@@ -60,6 +60,7 @@ export class ActorRdfMetadataExtractHydraControls extends ActorRdfMetadataExtrac
    */
   public getSearchForms(hydraProperties: {[property: string]: {[subject: string]: string[]}}): ISearchForms {
     const searchFormData: {[subject: string]: string[]} = hydraProperties.search;
+    // console.log(hydraProperties.search);
     let searchForms: ISearchForm[];
     if (!searchFormData) {
       searchForms = [];
@@ -122,12 +123,16 @@ export class ActorRdfMetadataExtractHydraControls extends ActorRdfMetadataExtrac
         if (quad.predicate.value.startsWith(ActorRdfMetadataExtractHydraControls.HYDRA)) {
           const property = quad.predicate.value.substr(ActorRdfMetadataExtractHydraControls.HYDRA.length);
           const subjectProperties = hydraProperties[property] || (hydraProperties[property] = {});
+          // console.log(hydraProperties);
           const objects = subjectProperties[quad.subject.value] || (subjectProperties[quad.subject.value] = []);
           objects.push(quad.object.value);
         }
       });
 
-      metadata.on('end', () => resolve(hydraProperties));
+      metadata.on('end', () => {
+        console.log(hydraProperties);
+        resolve(hydraProperties);
+      });
     });
   }
 
@@ -136,6 +141,7 @@ export class ActorRdfMetadataExtractHydraControls extends ActorRdfMetadataExtrac
     const hydraProperties = await this.getHydraProperties(action.metadata);
     require('lodash.assign')(metadata, this.getLinks(action.pageUrl, hydraProperties));
     metadata.searchForms = this.getSearchForms(hydraProperties);
+    console.log({metadata})
     return { metadata };
   }
 
