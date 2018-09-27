@@ -1,6 +1,14 @@
+.vscode/
 bin/
+coverage/
 dist/bin/
+dist/test/
+dist/util/
+test/
+util/
 
+tslint.json
+.travis.yml
 test-report.html
 
 package-lock.json
