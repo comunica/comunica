@@ -61,9 +61,7 @@
   },
   "jest": {
     "testEnvironment": "node",
-    "transform": {
-      "^.+\\.tsx?$": "<rootDir>/node_modules/ts-jest/preprocessor.js"
-    },
+    "preset": "ts-jest",
     "testPathIgnorePatterns": [
       "/node_modules/",
       "/archive/",
@@ -71,7 +69,6 @@
       "/test/util/"
     ],
     "testResultsProcessor": "./node_modules/jest-html-reporter",
-    "testRegex": "(/test/.*|(\\.|/)(test|spec))\\.ts$",
     "moduleFileExtensions": [
       "ts",
       "js"

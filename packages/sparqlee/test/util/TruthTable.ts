@@ -100,7 +100,7 @@ class BinaryTable extends Table<[string, string, string]> {
       const { aliasMap, op } = this.def;
       const expr = this.format([op, aliasMap[left], aliasMap[right]]);
       it(`${this.format([op, left, right])} should error`, () => {
-        return expect(evaluate(expr)).rejects.toThrow(ExpressionError);
+        return expect(evaluate(expr)).rejects.toThrow(Error);
       });
     });
   }
@@ -131,7 +131,7 @@ class UnaryTable extends Table<[string, string]> {
       const { aliasMap, op } = this.def;
       const expr = this.format([op, aliasMap[arg]]);
       it(`${this.format([op, arg])} should error`, () => {
-        expect(evaluate(expr)).rejects.toThrow(ExpressionError);
+        expect(evaluate(expr)).rejects.toThrow(Error);
       });
     });
   }
