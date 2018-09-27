@@ -4,8 +4,8 @@
   "description": "A simple SPARQL expression evaluator library",
   "main": "dist/index.js",
   "scripts": {
-    "build": "gulp",
-    "watch": "gulp watch",
+    "build": "tsc",
+    "watch": "tsc --watch",
     "lint": "tslint --project .",
     "test": "jest",
     "test-ci": "jest --ci --maxWorkers=4 --coverage",
@@ -48,13 +48,8 @@
     "asynciterator": "^2.0.0",
     "benchmark": "^2.1.4",
     "coveralls": "^3.0.2",
-    "del": "^3.0.0",
-    "gulp": "^3.9.1",
-    "gulp-sourcemaps": "^2.6.1",
-    "gulp-typescript": "^5.0.0-alpha.3",
     "jest": "^23.6.0",
     "jest-html-reporter": "^2.4.2",
-    "merge-stream": "^1.0.1",
     "pre-commit": "^1.2.2",
     "ts-jest": "^23.10.2",
     "ts-node": "^7.0.1",
@@ -74,17 +69,16 @@
     "testEnvironment": "node",
     "preset": "ts-jest",
     "testPathIgnorePatterns": [
-      "/node_modules/",
-      "/archive/",
-      "/dist/",
-      "/test/util/"
+      "<rootDir>/dist/"
+    ],
+    "collectCoverageFrom": [
+      "<rootDir>/lib/**"
     ],
     "testResultsProcessor": "./node_modules/jest-html-reporter",
     "moduleFileExtensions": [
       "ts",
       "js"
-    ],
-    "collectCoverage": true
+    ]
   },
   "greenkeeper": {
     "commitMessages": {
