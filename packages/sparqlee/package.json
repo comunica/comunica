@@ -4,13 +4,22 @@
   "description": "A simple SPARQL expression evaluator library",
   "main": "dist/index.js",
   "scripts": {
+    "build": "gulp",
+    "watch": "gulp watch",
+    "lint": "tslint --project .",
     "test": "jest",
+    "test-ci": "jest --ci --maxWorkers=4 --coverage",
     "test-debug-lin": "node --nolazy --debug-brk=5858 ./node_modules/.bin/jest",
     "test-debug-win": "node --debug-brk=5858 ./node_modules/jest/bin/jest.js",
-    "prepare": "npm run build",
-    "watch": "gulp watch",
-    "build": "gulp"
+    "prepare": "yarn run build",
+    "postinstall": "yarn run build",
+    "coveralls-ci": "cat ./coverage/lcov.info | coveralls"
   },
+  "pre-commit": [
+    "build",
+    "lint",
+    "test"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/wschella/Sparqlee.git"
@@ -46,6 +55,7 @@
     "jest": "^23.6.0",
     "jest-html-reporter": "^2.4.2",
     "merge-stream": "^1.0.1",
+    "pre-commit": "^1.2.2",
     "ts-jest": "^23.10.2",
     "ts-node": "^7.0.1",
     "tslint": "^5.8.0",
@@ -75,5 +85,16 @@
       "js"
     ],
     "collectCoverage": true
+  },
+  "greenkeeper": {
+    "commitMessages": {
+      "initialBadge": "Add Greenkeeper badge",
+      "initialDependencies": "Update dependencies",
+      "initialBranches": "Whitelist greenkeeper branches",
+      "dependencyUpdate": "Update ${dependency} to version ${version}",
+      "devDependencyUpdate": "Update dev ${dependency} to version ${version}",
+      "dependencyPin": "Pin ${dependency} to ${oldVersion}",
+      "devDependencyPin": "Pin ${dependency} to ${oldVersion}"
+    }
   }
 }

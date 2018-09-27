@@ -17,7 +17,6 @@ after_script: greenkeeper-lockfile-upload
 script:
   - yarn run lint
   - yarn run test-ci
-  - lerna run browser
 after_success:
   - yarn run coveralls-ci
 cache:
