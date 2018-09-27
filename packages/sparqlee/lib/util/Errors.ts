@@ -77,7 +77,7 @@ export class InvalidArgumentTypes extends ExpressionError {
  */
 export class UnexpectedError<T> extends Error {
   constructor(message: string, public payload?: T) {
-    super('Programmer Error ' + message);
+    super(`Programmer Error '${message}'`);
   }
 }
 
@@ -90,14 +90,20 @@ export class UnimplementedError extends Error {
   }
 }
 
+export class InvalidExpression<T> extends Error {
+  constructor(expr: T) {
+    super(`Invalid SPARQL Expression '${expr}'`);
+  }
+}
+
 export class InvalidExpressionType<T> extends Error {
   constructor(public expr: T) {
-    super('The given expression type is not valid.');
+    super(`Invalid expression type for SPARQL Expression '${expr}'`);
   }
 }
 
 export class InvalidTermType extends Error {
   constructor(public term: Algebra.TermExpression) {
-    super('The given term type is invalid.');
+    super(`Invalid term type for term '${term}'`);
   }
 }

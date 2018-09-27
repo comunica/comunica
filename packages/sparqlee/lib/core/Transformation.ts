@@ -1,6 +1,7 @@
 import * as RDF from 'rdf-js';
 import * as RDFString from 'rdf-string';
 import { Algebra as Alg } from 'sparqlalgebrajs';
+import { InvalidExpression } from './../util/Errors';
 
 import * as Err from '../util/Errors';
 import * as P from '../util/Parsing';
@@ -10,7 +11,10 @@ import { DataType as DT } from '../util/Consts';
 import { makeOp } from './functions/index';
 
 export function transformAlgebra(expr: Alg.Expression): E.Expression {
+  if (!expr) { throw new InvalidExpression(expr); }
+
   const types = Alg.expressionTypes;
+
   switch (expr.expressionType) {
     case types.TERM: return transformTerm(expr as Alg.TermExpression);
     case types.OPERATOR: {
@@ -28,8 +32,11 @@ export function transformAlgebra(expr: Alg.Expression): E.Expression {
 }
 
 export function transformTerm(term: Alg.TermExpression): E.Expression {
+  if (!term.term) { throw new InvalidExpression(term); }
+
   switch (term.term.termType) {
-    case 'Variable': return new E.Variable(RDFString.termToString(term.term));
+    // case 'Variable': return new E.Variable(RDFString.termToString(term.term));
+    case 'Variable': return new E.Variable(term.term.value);
     case 'Literal': return tranformLiteral(term.term as RDF.Literal);
     case 'NamedNode': return new E.NamedNode(term.term.value);
     case 'BlankNode': throw new Err.UnimplementedError('Blank Node');
