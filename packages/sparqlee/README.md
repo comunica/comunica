@@ -1,5 +1,10 @@
 # Sparqlee
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/comunica/sparqlee.svg)](https://greenkeeper.io/)
+[![Build Status](https://travis-ci.org/comunica/sparqlee.svg?branch=master)](https://travis-ci.org/comunica/sparqlee)
+[![Coverage Status](https://coveralls.io/repos/github/comunica/sparqlee/badge.svg?branch=master)](https://coveralls.io/github/comunica/sparqlee?branch=master)
+[![Gitter chat](https://badges.gitter.im/comunica.png)](https://gitter.im/comunica/Lobby)
+
 A simple SPARQL expression evaluator library.
 
 This package is available on [npm](https://www.npmjs.com/package/sparqlee), type definitions are provided.
