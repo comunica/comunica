@@ -44,7 +44,7 @@
     "@types/lodash": "^4.14.105",
     "@types/lodash.isequal": "^4.5.2",
     "@types/node": "^10.11.0",
-    "@types/rdf-data-model": "^1.0.1",
+    "@types/rdf-js": "^1.0.1",
     "asynciterator": "^2.0.0",
     "benchmark": "^2.1.4",
     "coveralls": "^3.0.2",
@@ -58,10 +58,9 @@
     "typescript": "^3.0.3"
   },
   "dependencies": {
+    "@rdfjs/data-model": "^1.1.0",
     "bluebird": "^3.5.1",
     "immutable": "^3.8.2",
-    "rdf-data-model": "^1.0.0",
-    "rdf-js": "^1.0.1",
     "rdf-string": "^1.1.1",
     "sparqlalgebrajs": "^1.1.0"
   },

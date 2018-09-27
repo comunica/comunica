@@ -1,6 +1,6 @@
+import * as RDFDM from '@rdfjs/data-model';
 import * as Promise from 'bluebird';
 import { List, Map } from 'immutable';
-import * as RDFDM from 'rdf-data-model';
 import * as RDF from 'rdf-js';
 import { Algebra } from 'sparqlalgebrajs';
 

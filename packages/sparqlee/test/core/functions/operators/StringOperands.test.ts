@@ -1,4 +1,4 @@
-import * as RDFDM from 'rdf-data-model';
+import * as RDFDM from '@rdfjs/data-model';
 
 import * as C from '../../../../lib/util/Consts';
 import { Notation, testTable } from '../../../util/TruthTable';

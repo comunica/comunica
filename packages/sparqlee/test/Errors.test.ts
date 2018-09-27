@@ -1,4 +1,4 @@
-import { literal } from 'rdf-data-model';
+import { literal } from '@rdfjs/data-model';
 
 import { AsyncEvaluator, ExpressionError } from '..';
 import { Bindings } from '../lib/core/Types';

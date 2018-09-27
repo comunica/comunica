@@ -1,7 +1,7 @@
-import * as RDFDM from 'rdf-data-model';
+import * as RDFDM from '@rdfjs/data-model';
 
 import * as C from '../../../../lib/util/Consts';
-import { testTable, Notation } from '../../../util/TruthTable';
+import { Notation, testTable } from '../../../util/TruthTable';
 
 const CT = C.commonTerms;
 
@@ -34,7 +34,7 @@ describe('evaluation of logical connectives', () => {
     error false = error
     error error = error
     `;
-    testTable({op: '||', ..._default, table, errorTable});
+    testTable({ op: '||', ..._default, table, errorTable });
   });
 
   describe('like "&&" receiving', () => {
@@ -52,6 +52,6 @@ describe('evaluation of logical connectives', () => {
     error true  = error
     error error = error
     `;
-    testTable({op: '&&', ..._default, table, errorTable});
+    testTable({ op: '&&', ..._default, table, errorTable });
   });
 });

@@ -1,6 +1,6 @@
 // tslint:disable:variable-name
+import * as RDFDM from '@rdfjs/data-model';
 import { Map, Set } from 'immutable';
-import * as RDFDM from 'rdf-data-model';
 import * as RDF from 'rdf-js';
 
 export const TRUE_STR = '"true"^^xsd:boolean';

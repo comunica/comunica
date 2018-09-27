@@ -1,7 +1,7 @@
 #! /usr/bin/env node
 // tslint:disable:no-console
 
-import * as RDF from 'rdf-data-model';
+import * as RDF from '@rdfjs/data-model';
 import { Algebra as Alg } from 'sparqlalgebrajs';
 
 import { ArrayIterator, AsyncIterator } from 'asynciterator';
@@ -21,6 +21,7 @@ async function testEval() {
   const ex = new U.Example('langMatches(?a, "de-*-DE")', () => Bindings({
     '?a': RDF.literal('aaa'),
   }));
+  // tslint:disable-next-line:no-any
   const evaluator = new AsyncEvaluator(undefined as any, U.mockLookUp, U.mockAggregator);
   const presult = evaluator.evaluate(ex.mapping()).catch((err) => console.log(err));
   const val = await presult;
