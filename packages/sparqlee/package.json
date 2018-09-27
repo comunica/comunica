@@ -9,7 +9,7 @@
     "test-debug-win": "node --debug-brk=5858 ./node_modules/jest/bin/jest.js",
     "prepare": "npm run build",
     "watch": "gulp watch",
-    "build": "tsc"
+    "build": "gulp"
   },
   "repository": {
     "type": "git",
@@ -38,6 +38,7 @@
     "@types/rdf-data-model": "^1.0.1",
     "asynciterator": "^2.0.0",
     "benchmark": "^2.1.4",
+    "coveralls": "^3.0.2",
     "del": "^3.0.0",
     "gulp": "^3.9.1",
     "gulp-sourcemaps": "^2.6.1",
