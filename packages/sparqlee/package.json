@@ -31,25 +31,25 @@
     "@types/asynciterator": "^1.1.0",
     "@types/benchmark": "^1.0.30",
     "@types/bluebird": "^3.5.18",
-    "@types/jest": "^21.1.4",
+    "@types/jest": "^23.3.2",
     "@types/lodash": "^4.14.105",
     "@types/lodash.isequal": "^4.5.2",
-    "@types/node": "^8.0.34",
+    "@types/node": "^10.11.0",
     "@types/rdf-data-model": "^1.0.1",
-    "asynciterator": "^1.1.0",
+    "asynciterator": "^2.0.0",
     "benchmark": "^2.1.4",
     "del": "^3.0.0",
     "gulp": "^3.9.1",
     "gulp-sourcemaps": "^2.6.1",
-    "gulp-typescript": "^3.2.2",
-    "jest": "^22.4.0",
-    "jest-html-reporter": "^0.5.3",
+    "gulp-typescript": "^5.0.0-alpha.3",
+    "jest": "^23.6.0",
+    "jest-html-reporter": "^2.4.2",
     "merge-stream": "^1.0.1",
-    "ts-jest": "^21.1.1",
-    "ts-node": "^3.3.0",
+    "ts-jest": "^23.10.2",
+    "ts-node": "^7.0.1",
     "tslint": "^5.8.0",
-    "tslint-eslint-rules": "^4.1.1",
-    "typescript": "^2.6.0"
+    "tslint-eslint-rules": "^5.4.0",
+    "typescript": "^3.0.3"
   },
   "dependencies": {
     "bluebird": "^3.5.1",
@@ -57,9 +57,10 @@
     "rdf-data-model": "^1.0.0",
     "rdf-js": "^1.0.1",
     "rdf-string": "^1.1.1",
-    "sparqlalgebrajs": "^0.7.3"
+    "sparqlalgebrajs": "^1.1.0"
   },
   "jest": {
+    "testEnvironment": "node",
     "transform": {
       "^.+\\.tsx?$": "<rootDir>/node_modules/ts-jest/preprocessor.js"
     },

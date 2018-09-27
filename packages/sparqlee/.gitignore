@@ -1,9 +1,6 @@
 dist/
 test-report.html
 
-package-lock.json
-yarn.lock
-
 # Logs
 logs
 *.log
