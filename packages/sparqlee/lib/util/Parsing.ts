@@ -2,10 +2,10 @@
 
 /**
  * Parses integer datatypes (decimal, int, byte, nonPositiveInteger, etc...).
- * 
+ *
  * All other values, including NaN, INF, and floating point numbers all
  * return undefined;
- * 
+ *
  * @param value the string to interpret as a number
  */
 export function parseXSDInteger(value: string): number | undefined {
@@ -19,9 +19,9 @@ export function parseXSDInteger(value: string): number | undefined {
 /**
  * TODO: Fix decently
  * Parses float datatypes (double, float).
- * 
+ *
  * All invalid lexical values return undefined.
- * 
+ *
  * @param value the string to interpret as a number
  */
 export function parseXSDFloat(value: string): number | undefined {

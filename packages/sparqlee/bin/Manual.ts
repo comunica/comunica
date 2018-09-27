@@ -1,4 +1,6 @@
 #! /usr/bin/env node
+// tslint:disable:no-console
+
 import * as RDF from 'rdf-data-model';
 import { Algebra as Alg } from 'sparqlalgebrajs';
 

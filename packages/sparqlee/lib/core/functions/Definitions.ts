@@ -234,6 +234,7 @@ const _definitions: IDefinitionMap = {
     arity: 1,
     category: 'simple',
     types: ['literal'],
+    // tslint:disable-next-line:no-any
     apply(args: Array<E.Literal<any>>) {
       const arg = args[0];
       return str((arg.dataType) ? arg.dataType.value : '');

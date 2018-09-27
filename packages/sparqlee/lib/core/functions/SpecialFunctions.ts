@@ -169,7 +169,7 @@ function inR(left: E.TermExpression, args: Array<() => AsyncTerm>, results: Arra
         ? bool(true)
         : inR(left, args, [...results, false]),
       (err) => inR(left, args, [...results, err]),
-  );
+    );
 }
 
 export class NotIn extends SpecialFunctionAsync {

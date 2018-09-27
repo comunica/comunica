@@ -4,13 +4,12 @@
  */
 
 import { List, Map, Record } from 'immutable';
-import * as RDFDM from 'rdf-data-model';
 
 import * as C from '../../util/Consts';
 import * as E from '../Expressions';
 
 import { DataType as DT } from '../../util/Consts';
-import { InvalidLexicalForm, UnimplementedError, UnexpectedError } from '../../util/Errors';
+import { InvalidLexicalForm, UnexpectedError } from '../../util/Errors';
 import { ArgumentType, OverloadMap } from './Types';
 
 // ----------------------------------------------------------------------------
@@ -107,7 +106,7 @@ export function xPathTest(
     new Impl({ types: ['boolean', 'invalid'], func: invalidLexicalForm(2) }),
     new Impl({ types: ['date', 'invalid'], func: invalidLexicalForm(2) }),
 
-  ].concat(numeric((dt?: DT) => numericHelper)));
+  ].concat(numeric(() => numericHelper)));
 }
 
 export type OpFactory = (dt?: C.DataType) => E.SimpleApplication;
@@ -198,7 +197,7 @@ export type ImplType = {
 function implDefaults() {
   return {
     types: [] as ArgumentType[],
-    func(args: Term[]) {
+    func() {
       throw new UnexpectedError('Implementation for function not set but declared as implemented');
     },
   };

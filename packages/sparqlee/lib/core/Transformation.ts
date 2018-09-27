@@ -49,7 +49,7 @@ function tranformLiteral(lit: RDF.Literal): E.Literal<any> {
   switch (lit.datatype.value) {
     case null:
     case undefined:
-    case "": {
+    case '': {
       if (lit.language) {
         return new E.PlainLiteral(lit.value, lit.value, lit.language);
       }
