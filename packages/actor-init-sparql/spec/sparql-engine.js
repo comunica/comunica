@@ -1,5 +1,5 @@
 const newEngine = require('@comunica/actor-init-sparql-rdfjs').newEngine;
-const SparqlTest = require('sparql-test');
+const RdfTestSuite = require('rdf-test-suite');
 const N3Store = require('n3').Store;
 
 const engine = newEngine();
@@ -10,13 +10,13 @@ module.exports = {
   query: async function(data, queryString) {
     const result = await engine.query(queryString, { sources: [ { type: 'rdfjsSource', value: source(data) } ] });
     if (result.type === 'boolean') {
-      return new SparqlTest.QueryResultBoolean(await result.booleanResult);
+      return new RdfTestSuite.QueryResultBoolean(await result.booleanResult);
     }
     if (result.type === 'quads') {
-      return new SparqlTest.QueryResultQuads(await require('arrayify-stream')(result.quadStream));
+      return new RdfTestSuite.QueryResultQuads(await require('arrayify-stream')(result.quadStream));
     }
     if (result.type === 'bindings') {
-      return new SparqlTest.QueryResultBindings(result.variables, await require('arrayify-stream')(result.bindingsStream.map((binding) => binding.toObject())));
+      return new RdfTestSuite.QueryResultBindings(result.variables, await require('arrayify-stream')(result.bindingsStream.map((binding) => binding.toObject())));
     }
   },
 };
