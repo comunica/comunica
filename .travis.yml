@@ -20,6 +20,7 @@ script:
   - yarn run lint
   - yarn run test-ci
   - lerna run browser
+  - lerna run spec
 after_success:
   - yarn run coveralls-ci
   - yarn global add typedoc && yarn run doc
@@ -27,6 +28,7 @@ cache:
   yarn: true
   directories:
     - node_modules
+    - .rdf-test-suite-cache
 deploy:
   provider: pages
   skip-cleanup: true
