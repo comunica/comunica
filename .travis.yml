@@ -26,6 +26,7 @@ after_success:
   - yarn global add typedoc && yarn run doc
 cache:
   yarn: true
+  apt: true
   directories:
     - node_modules
     - .rdf-test-suite-cache
