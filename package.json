@@ -85,6 +85,7 @@
     "collectCoverage": true,
     "coveragePathIgnorePatterns": [
       "/node_modules/",
+      "/mocks/",
       "index.js"
     ],
     "testEnvironment": "node"
