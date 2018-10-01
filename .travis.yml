@@ -45,6 +45,12 @@ deploy:
   script: ./.travis/docker.sh && ./.travis/docker.sh push
   on:
     tags: true
+    node_js: "node"
+deploy:
+  provider: script
+  skip-cleanup: true
+  script: ./.travis/deploy_browser.sh
+  on:
     branch: master
     node_js: "node"
 deploy:
@@ -52,4 +58,5 @@ deploy:
   skip-cleanup: true
   script: ./.travis/deploy_browser.sh
   on:
+    tags: true
     node_js: "node"
