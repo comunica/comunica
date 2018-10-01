@@ -116,7 +116,7 @@ export class FederatedQuadSource implements ILazyQuadSource {
 
     // Counters for our metadata
     const metadata: {[id: string]: any} = { totalItems: 0 };
-    let remainingSources: number = 0;
+    let remainingSources: number = 1;
 
     const sourcesIt = this.sources.iterator();
     const it: RoundRobinUnionIterator<RDF.Quad> = new RoundRobinUnionIterator(sourcesIt.map((source) => {
@@ -180,7 +180,7 @@ export class FederatedQuadSource implements ILazyQuadSource {
 
     // If we have 0 sources, immediately emit metadata
     sourcesIt.on('end', () => {
-      if (!remainingSources) {
+      if (!--remainingSources) {
         it.emit('metadata', metadata);
       }
     });
