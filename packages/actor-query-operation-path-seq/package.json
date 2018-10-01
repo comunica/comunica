@@ -51,6 +51,11 @@
     "sparqlalgebrajs": "^1.1.0"
   },
   "jest": {
+    "globals": {
+      "ts-jest": {
+        "tsConfig": "test/tsconfig.json"
+      }
+    },
     "transform": {
       "^.+\\.ts$": "ts-jest"
     },

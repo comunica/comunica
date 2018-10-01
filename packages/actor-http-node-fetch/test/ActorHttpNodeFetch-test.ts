@@ -37,15 +37,17 @@ describe('ActorHttpNodeFetch', () => {
     });
 
     it('should test', () => {
-      return expect(actor.test({ input: { url: 'https://www.google.com/' }})).resolves.toEqual({ time: Infinity });
+      return expect(actor.test({ input: <Request> { url: 'https://www.google.com/' }})).resolves
+        .toEqual({ time: Infinity });
     });
 
     it('should run on an existing URI', () => {
-      return expect(actor.run({ input: { url: 'https://www.google.com/' }})).resolves.toMatchObject({ status: 200 });
+      return expect(actor.run({ input: <Request> { url: 'https://www.google.com/' }})).resolves
+        .toMatchObject({ status: 200 });
     });
 
     it('should run on an non-existing URI', () => {
-      return expect(actor.run({ input: { url: 'https://www.google.com/notfound' }})).resolves
+      return expect(actor.run({ input: <Request> { url: 'https://www.google.com/notfound' }})).resolves
         .toMatchObject({ status: 404 });
     });
   });

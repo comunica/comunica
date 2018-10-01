@@ -43,7 +43,9 @@ describe('ActorRdfSourceIdentifierHypermediaQpf', () => {
       };
       const acceptHeader = 'abc';
       const toContain = [ 'def' ];
-      actor = new ActorRdfSourceIdentifierHypermediaQpf({ name: 'actor', bus, mediatorHttp, acceptHeader, toContain });
+      const priority = 1;
+      actor = new ActorRdfSourceIdentifierHypermediaQpf(
+        { name: 'actor', bus, mediatorHttp, acceptHeader, toContain, priority });
     });
 
     it('should not test on non-http requests', () => {

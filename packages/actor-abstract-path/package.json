@@ -51,6 +51,11 @@
     "rdf-js": "^1.0.1"
   },
   "jest": {
+    "globals": {
+      "ts-jest": {
+        "tsConfig": "test/tsconfig.json"
+      }
+    },
     "transform": {
       "^.+\\.ts$": "ts-jest"
     },

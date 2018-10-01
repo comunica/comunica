@@ -1,4 +1,5 @@
 import * as HDT from "hdt";
+import {Document, SearchLiteralsOpts, SearchLiteralsResult, SearchResult, SearchTermsOpts} from "hdt";
 import {IStringQuad} from "rdf-string/lib/TermUtil";
 
 export class MockedHdtDocument implements HDT.Document  {
@@ -47,11 +48,32 @@ export class MockedHdtDocument implements HDT.Document  {
     return { triples, totalCount: i, hasExactCount: true };
   }
 
-  public close() {
+  public async countTriples(sub?: string, pred?: string, obj?: string): Promise<SearchResult> {
+    return null;
+  }
+
+  public async searchLiterals(substring: string, opts?: SearchLiteralsOpts): Promise<SearchLiteralsResult> {
+    return null;
+  }
+
+  public searchTerms(opts?: SearchTermsOpts): Promise<string[]> {
+    return null;
+  }
+
+  public async close(): Promise<void> {
     this.closed = true;
   }
 
   public setError(error: Error) {
     this.error = error;
   }
+
+  public async readHeader(): Promise<string> {
+    return null;
+  }
+
+  public async changeHeader(triples: string, outputFile: string): Promise<Document> {
+    return null;
+  }
+
 }

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import {IActorOutputInit} from "../../bus-init/lib/ActorInit";
+import {IActorOutputInit} from "@comunica/bus-init";
 // tslint:disable:no-var-requires
 const sparqlActor: any = require('../engine-default.js');
 

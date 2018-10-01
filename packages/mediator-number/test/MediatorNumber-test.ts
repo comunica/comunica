@@ -20,10 +20,6 @@ describe('MediatorNumber', () => {
         .toBeInstanceOf(Mediator);
     });
 
-    it('should not be able to create new MediatorNumber objects without \'new\'', () => {
-      expect(() => { (<any> MediatorNumber)(); }).toThrow();
-    });
-
     it('should not throw an error when constructed with \'field\' and \'type\' parameters', () => {
       expect(() => { new MediatorNumber({ name: 'mediator', bus, field: 'field', type: MediatorNumber.MIN }); })
         .not.toThrow();

@@ -1,6 +1,6 @@
 import {ActorQueryOperation, IActorQueryOperationOutputBindings} from "@comunica/bus-query-operation";
 import {Bindings} from "@comunica/bus-query-operation";
-import {Bus} from "@comunica/core";
+import {ActionContext, Bus} from "@comunica/core";
 import {blankNode, namedNode, variable} from "@rdfjs/data-model";
 import {ArrayIterator} from "asynciterator";
 import * as RDF from "rdf-js";
@@ -141,7 +141,7 @@ describe('ActorQueryOperationQuadpattern', () => {
         subject: namedNode('s'),
         type: 'pattern',
       };
-      const context = {};
+      const context = ActionContext({});
       return actor.run({ operation, context }).then(async (output: IActorQueryOperationOutputBindings) => {
         expect(output.variables).toEqual([ '?p' ]);
         expect(output.metadata()).toBe(metadataRaw);

@@ -19,10 +19,6 @@ describe('MediatorCombinePipeline', () => {
       expect(new (<any> MediatorCombinePipeline)({ name: 'mediator', bus }))
         .toBeInstanceOf(Mediator);
     });
-
-    it('should not be able to create new MediatorCombinePipeline objects without \'new\'', () => {
-      expect(() => { (<any> MediatorCombinePipeline)(); }).toThrow();
-    });
   });
 
   describe('An MediatorCombinePipeline instance', () => {

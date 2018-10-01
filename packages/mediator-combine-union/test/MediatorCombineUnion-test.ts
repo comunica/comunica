@@ -19,10 +19,6 @@ describe('MediatorCombineUnion', () => {
       expect(new (<any> MediatorCombineUnion)({ name: 'mediator', bus, field: 'field' }))
         .toBeInstanceOf(Mediator);
     });
-
-    it('should not be able to create new MediatorCombineUnion objects without \'new\'', () => {
-      expect(() => { (<any> MediatorCombineUnion)(); }).toThrow();
-    });
   });
 
   describe('An MediatorCombineUnion instance', () => {

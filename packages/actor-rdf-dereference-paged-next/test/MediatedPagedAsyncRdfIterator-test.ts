@@ -6,8 +6,8 @@ import {
   IActionRdfMetadataExtract,
   IActorRdfMetadataExtractOutput,
 } from "@comunica/bus-rdf-metadata-extract";
-import {Actor, Bus, IActorTest, Mediator} from "@comunica/core";
-import {ArrayIterator, SingletonIterator} from "asynciterator";
+import {ActionContext, IActorTest, Mediator} from "@comunica/core";
+import {SingletonIterator} from "asynciterator";
 import * as _ from "lodash";
 import * as RDF from "rdf-js";
 import {MediatedPagedAsyncRdfIterator} from "../lib/MediatedPagedAsyncRdfIterator";
@@ -23,9 +23,10 @@ class Dummy extends MediatedPagedAsyncRdfIterator {
               mediatorMetadata: Mediator<ActorRdfMetadata,
                 IActionRdfMetadata, IActorTest, IActorRdfMetadataOutput>,
               mediatorMetadataExtract: Mediator<ActorRdfMetadataExtract,
-                IActionRdfMetadataExtract, IActorTest, IActorRdfMetadataExtractOutput>) {
+                IActionRdfMetadataExtract, IActorTest, IActorRdfMetadataExtractOutput>,
+              context: ActionContext) {
     super(firstPageUrl, firstPageData, firstPageMetadata,
-      mediatorRdfDereference, mediatorMetadata, mediatorMetadataExtract);
+      mediatorRdfDereference, mediatorMetadata, mediatorMetadataExtract, context);
   }
 
   public async getIterator(url: string, page: number, onNextPage: (nextPage: string) => void) {

@@ -52,7 +52,7 @@ describe('MediatedQuadSource', () => {
     });
 
     it('should be a MediatedQuadSource constructor', () => {
-      expect(new MediatedQuadSource(mediator, uriConstructor)).toBeInstanceOf(MediatedQuadSource);
+      expect(new MediatedQuadSource(mediator, uriConstructor, null)).toBeInstanceOf(MediatedQuadSource);
     });
   });
 
@@ -60,7 +60,7 @@ describe('MediatedQuadSource', () => {
     let source: MediatedQuadSource;
 
     beforeEach(() => {
-      source = new MediatedQuadSource(mediator, uriConstructor);
+      source = new MediatedQuadSource(mediator, uriConstructor, null);
     });
 
     describe('for #getDuplicateElementLinks', () => {

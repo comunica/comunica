@@ -1,5 +1,5 @@
 import {ActorQueryOperation} from "@comunica/bus-query-operation";
-import {Bus} from "@comunica/core";
+import {ActionContext, Bus} from "@comunica/core";
 import {ActorQueryOperationBgpSingle} from "../lib/ActorQueryOperationBgpSingle";
 
 describe('ActorQueryOperationBgpSingle', () => {
@@ -53,9 +53,9 @@ describe('ActorQueryOperationBgpSingle', () => {
     });
 
     it('should run with a context and delegate the pattern to the mediator', () => {
-      const op = { operation: { type: 'bgp', patterns: [ 'abc' ] }, context: { c: 'C' } };
+      const op = { operation: { type: 'bgp', patterns: [ 'abc' ] }, context: ActionContext({ c: 'C' }) };
       return actor.run(op).then(async (output) => {
-        expect(output).toMatchObject({ operated: { operation: 'abc', context: { c: 'C' } } });
+        expect(output).toMatchObject({ operated: { operation: 'abc', context: ActionContext({ c: 'C' }) } });
       });
     });
 

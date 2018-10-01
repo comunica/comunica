@@ -239,7 +239,7 @@ describe('ActorRdfResolveQuadPatternHdt', () => {
 
     it('should close on process.SIGINT', () => {
       actor.deinitialize();
-      process.emit('SIGINT');
+      process.emit(<any> 'SIGINT');
       expect(actor.closed).toBe(true);
       actor.closed = false;
     });

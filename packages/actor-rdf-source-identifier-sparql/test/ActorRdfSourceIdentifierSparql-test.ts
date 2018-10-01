@@ -39,7 +39,8 @@ describe('ActorRdfSourceIdentifierSparql', () => {
           });
         },
       };
-      actor = new ActorRdfSourceIdentifierSparql({ name: 'actor', bus, mediatorHttp });
+      const priority = 1;
+      actor = new ActorRdfSourceIdentifierSparql({ name: 'actor', bus, mediatorHttp, priority });
     });
 
     it('should not test on non-http requests', () => {

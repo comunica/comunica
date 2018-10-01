@@ -45,6 +45,11 @@
     "n3": "1.0.0-beta.2"
   },
   "jest": {
+    "globals": {
+      "ts-jest": {
+        "tsConfig": "test/tsconfig.json"
+      }
+    },
     "transform": {
       "^.+\\.ts$": "ts-jest"
     },

@@ -3,5 +3,8 @@
   "include": [
     "packages/*/index.ts",
     "packages/*/lib/**/*"
-  ]
+  ],
+  "compilerOptions": {
+    "noImplicitAny": false
+  }
 }

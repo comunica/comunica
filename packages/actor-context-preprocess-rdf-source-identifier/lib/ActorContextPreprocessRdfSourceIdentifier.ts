@@ -25,6 +25,12 @@ export class ActorContextPreprocessRdfSourceIdentifier extends ActorContextPrepr
     if (action.context && action.context.get(KEY_CONTEXT_SOURCES)) {
       const subContext: ActionContext = action.context.delete(KEY_CONTEXT_SOURCES);
 
+      const endSource = () => {
+        if (--remainingSources === 0) {
+          newSources.push(null);
+        }
+      };
+
       const sources: DataSources = action.context.get(KEY_CONTEXT_SOURCES);
       const newSources: DataSources = AsyncReiterableArray.fromInitialEmpty();
       let remainingSources = 1;
@@ -49,12 +55,6 @@ export class ActorContextPreprocessRdfSourceIdentifier extends ActorContextPrepr
       it.on('end', () => {
         endSource();
       });
-
-      function endSource() {
-        if (--remainingSources === 0) {
-          newSources.push(null);
-        }
-      }
 
       // If the sources are fixed, block until all sources are transformed.
       if (sources.isEnded()) {

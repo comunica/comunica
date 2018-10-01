@@ -10,7 +10,7 @@ import {
 import {Actor, IActorArgs, IActorTest, Mediator} from "@comunica/core";
 import {ActionContext} from "@comunica/core";
 import {IMediatorTypeHttpRequests} from "@comunica/mediatortype-httprequests";
-import {BufferedIterator, TransformIterator} from "asynciterator";
+import {BufferedIterator} from "asynciterator";
 import {SparqlEndpointFetcher} from "fetch-sparql-endpoint";
 import * as RDF from "rdf-js";
 import {termToString} from "rdf-string";
