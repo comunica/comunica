@@ -5,6 +5,7 @@
   "requireName": "@comunica/bus-rdf-dereference",
   "import": [
     "files-cbrd:components/Bus/RdfDereference.jsonld",
-    "files-cbrd:components/Actor/RdfDereference.jsonld"
+    "files-cbrd:components/Actor/RdfDereference.jsonld",
+    "files-cbrd:components/Actor/RdfDereferenceMediaMappings.jsonld"
   ]
 }

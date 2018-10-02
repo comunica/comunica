@@ -8,7 +8,7 @@
     {
       "@id": "cardf:Actor/RdfDereference/File",
       "@type": "Class",
-      "extends": "cbrd:Actor/RdfDereference",
+      "extends": "cbrd:Actor/RdfDereferenceMediaMappings",
       "requireElement": "ActorRdfDereferenceFile",
       "comment": "A comunica File RDF Dereference Actor.",
       "parameters": [
@@ -17,44 +17,15 @@
           "comment": "The RDF parse mediator",
           "required": true,
           "unique": true
-        },
-        {
-          "@id": "cardf:mediaMappingEntry",
-          "comment": "Maps an extension to a file type",
-          "required": true,
-          "default": [
-            { "cardf:extension": "ttl",      "cardf:mediaType": "text/turtle" },
-            { "cardf:extension": "turtle",   "cardf:mediaType": "text/turtle" },
-            { "cardf:extension": "nt",       "cardf:mediaType": "application/n-triples" },
-            { "cardf:extension": "ntriples", "cardf:mediaType": "application/n-triples" },
-            { "cardf:extension": "nq",       "cardf:mediaType": "application/n-quads" },
-            { "cardf:extension": "nquads",   "cardf:mediaType": "application/n-quads" },
-            { "cardf:extension": "n3",       "cardf:mediaType": "text/n3" },
-            { "cardf:extension": "trig",     "cardf:mediaType": "application/trig" },
-            { "cardf:extension": "jsonld",   "cardf:mediaType": "application/ld+json" },
-            { "cardf:extension": "json",     "cardf:mediaType": "application/json" }
-          ]
         }
       ],
       "constructorArguments": [
         {
-          "extends": "cbrd:Actor/RdfDereference/constructorArgumentsObject",
+          "extends": "cbrd:Actor/RdfDereferenceMediaMappings/constructorArgumentsObject",
           "fields": [
             {
               "keyRaw": "mediatorRdfParse",
               "value": "cardf:mediatorRdfParse"
-            },
-            {
-              "keyRaw": "mediaMappings",
-              "value": {
-                "fields": [
-                  {
-                    "collectEntries": "cardf:mediaMappingEntry",
-                    "key": "cardf:extension",
-                    "value": "cardf:mediaType"
-                  }
-                ]
-              }
             }
           ]
         }
