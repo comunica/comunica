@@ -6607,6 +6607,13 @@ sparqljson-parse@^1.3.1:
     "@rdfjs/data-model" "^1.1.0"
     JSONStream "^1.3.3"
 
+sparqljson-parse@^1.4.0:
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/sparqljson-parse/-/sparqljson-parse-1.4.0.tgz#14b92ce94a486e33114b0f34fa6dcf9cb033a275"
+  dependencies:
+    "@rdfjs/data-model" "^1.1.0"
+    JSONStream "^1.3.3"
+
 sparqljson-to-tree@^1.2.3:
   version "1.2.3"
   resolved "https://registry.yarnpkg.com/sparqljson-to-tree/-/sparqljson-to-tree-1.2.3.tgz#169e24ea2eeb5b169f597a54419bf3c2d0c935f8"
