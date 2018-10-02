@@ -10,7 +10,7 @@
     {
       "@id": "crdhp:Actor/RdfDereference/HttpParse",
       "@type": "Class",
-      "extends": "cbrd:Actor/RdfDereference",
+      "extends": "cbrd:Actor/RdfDereferenceMediaMappings",
       "requireElement": "ActorRdfDereferenceHttpParse",
       "comment": "An actor that listens on the 'rdf-dereference' bus that uses the 'http' and 'rdf-parse' buses.",
       "parameters": [
@@ -30,7 +30,7 @@
       "constructorArguments": [
         {
           "@id": "crdhp:Actor/RdfDereference/HttpParse/constructorArgumentsObject",
-          "extends": "cbrd:Actor/RdfDereference/constructorArgumentsObject",
+          "extends": "cbrd:Actor/RdfDereferenceMediaMappings/constructorArgumentsObject",
           "fields": [
             {
               "keyRaw": "mediatorHttp",

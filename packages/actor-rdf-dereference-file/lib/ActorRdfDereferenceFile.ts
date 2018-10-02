@@ -39,7 +39,7 @@ export class ActorRdfDereferenceFile extends ActorRdfDereferenceMediaMappings {
 
     // deduce media type from file extension if possible
     if (!mediaType) {
-      mediaType = this.getMediaType(action.url);
+      mediaType = this.getMediaTypeFromExtension(action.url);
     }
 
     const parseAction: IActionRootRdfParse = {
