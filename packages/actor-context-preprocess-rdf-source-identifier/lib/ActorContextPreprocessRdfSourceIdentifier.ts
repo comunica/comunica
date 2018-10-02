@@ -33,12 +33,13 @@ export class ActorContextPreprocessRdfSourceIdentifier extends ActorContextPrepr
 
       const sources: DataSources = action.context.get(KEY_CONTEXT_SOURCES);
       const newSources: DataSources = AsyncReiterableArray.fromInitialEmpty();
+      const identificationPromises: Promise<void>[] = [];
       let remainingSources = 1;
       const it = sources.iterator();
       it.on('data', (source: IDataSource) => {
         remainingSources++;
         if (source.type === 'auto') {
-          this.mediatorRdfSourceIdentifier.mediate(
+          identificationPromises.push(this.mediatorRdfSourceIdentifier.mediate(
             { sourceValue: source.value, context: subContext })
             .then((sourceIdentificationResult) => {
               if (sourceIdentificationResult.sourceType) {
@@ -46,7 +47,7 @@ export class ActorContextPreprocessRdfSourceIdentifier extends ActorContextPrepr
               }
               newSources.push(source);
               endSource();
-            });
+            }));
         } else {
           newSources.push(source);
           endSource();
@@ -59,6 +60,7 @@ export class ActorContextPreprocessRdfSourceIdentifier extends ActorContextPrepr
       // If the sources are fixed, block until all sources are transformed.
       if (sources.isEnded()) {
         await new Promise((resolve) => it.on('end', resolve));
+        await Promise.all(identificationPromises);
       }
 
       return { context: action.context.set(KEY_CONTEXT_SOURCES, newSources) };
