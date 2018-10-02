@@ -3,6 +3,7 @@
 [![Greenkeeper badge](https://badges.greenkeeper.io/comunica/comunica.svg)](https://greenkeeper.io/)
 [![Build Status](https://travis-ci.org/comunica/comunica.svg?branch=master)](https://travis-ci.org/comunica/comunica)
 [![Coverage Status](https://coveralls.io/repos/github/comunica/comunica/badge.svg?branch=master)](https://coveralls.io/github/comunica/comunica?branch=master)
+[![Mutation testing badge](https://badge.stryker-mutator.io/github.com/comunica/comunica/master)](https://stryker-mutator.github.io)
 [![DOI](https://zenodo.org/badge/107345960.svg)](https://zenodo.org/badge/latestdoi/107345960)
 [![Gitter chat](https://badges.gitter.im/comunica.png)](https://gitter.im/comunica/Lobby)
 
