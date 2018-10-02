@@ -1,8 +1,9 @@
 import {IActionHttp, IActorHttpOutput} from "@comunica/bus-http";
-import {ActorRdfDereference, IActionRdfDereference, IActorRdfDereferenceOutput} from "@comunica/bus-rdf-dereference";
+import {ActorRdfDereferenceMediaMappings, IActionRdfDereference,
+  IActorRdfDereferenceMediaMappingsArgs, IActorRdfDereferenceOutput} from "@comunica/bus-rdf-dereference";
 import {IActionRdfParse, IActionRootRdfParse, IActorOutputRootRdfParse, IActorRdfParseOutput,
   IActorTestRootRdfParse} from "@comunica/bus-rdf-parse";
-import {Actor, IActorArgs, IActorTest, Mediator} from "@comunica/core";
+import {Actor, IActorTest, Mediator} from "@comunica/core";
 
 /**
  * An actor that listens on the 'rdf-dereference' bus.
@@ -11,7 +12,8 @@ import {Actor, IActorArgs, IActorTest, Mediator} from "@comunica/core";
  * After that, it resolves the URL using the HTTP bus using an accept header compiled from the available media types.
  * Finally, the response is parsed using the RDF parse bus.
  */
-export class ActorRdfDereferenceHttpParse extends ActorRdfDereference implements IActorRdfDereferenceHttpParseArgs {
+export class ActorRdfDereferenceHttpParse extends ActorRdfDereferenceMediaMappings
+  implements IActorRdfDereferenceHttpParseArgs {
 
   public static readonly REGEX_MEDIATYPE: RegExp = /^[^ ;]*/;
 
@@ -55,8 +57,13 @@ export class ActorRdfDereferenceHttpParse extends ActorRdfDereference implements
     }
 
     // Parse the resulting response
-    const mediaType: string = ActorRdfDereferenceHttpParse.REGEX_MEDIATYPE
-      .exec(httpResponse.headers.get('content-type'))[0];
+    let mediaType: string = httpResponse.headers.has('content-type')
+      ? ActorRdfDereferenceHttpParse.REGEX_MEDIATYPE.exec(httpResponse.headers.get('content-type'))[0] : null;
+    // If no media type could be found, try to determine it via the file extension
+    if (!mediaType) {
+      mediaType = this.getMediaTypeFromExtension(httpResponse.url);
+    }
+
     const parseAction: IActionRdfParse = { input: responseStream };
     const parseOutput: IActorRdfParseOutput = (await this.mediatorRdfParse.mediate(
       { context: action.context, handle: parseAction, handleMediaType: mediaType })).handle;
@@ -80,7 +87,7 @@ export class ActorRdfDereferenceHttpParse extends ActorRdfDereference implements
 }
 
 export interface IActorRdfDereferenceHttpParseArgs extends
-  IActorArgs<IActionRdfDereference, IActorTest, IActorRdfDereferenceOutput> {
+  IActorRdfDereferenceMediaMappingsArgs {
   mediatorHttp: Mediator<Actor<IActionHttp, IActorTest, IActorHttpOutput>,
     IActionHttp, IActorTest, IActorHttpOutput>;
   mediatorRdfParse: Mediator<Actor<IActionRootRdfParse, IActorTestRootRdfParse,

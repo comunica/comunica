@@ -26,12 +26,12 @@ export abstract class ActorRdfDereferenceMediaMappings extends ActorRdfDereferen
    * @param {string} path A path.
    * @return {string} A media type or the empty string.
    */
-  public getMediaType(path: string): string {
+  public getMediaTypeFromExtension(path: string): string {
     const dotIndex = path.lastIndexOf('.');
     if (dotIndex >= 0) {
       const ext = path.substr(dotIndex);
       // ignore dot
-      return this.mediaMappings[ext.substring(1)];
+      return this.mediaMappings[ext.substring(1)] || '';
     }
     return '';
   }
