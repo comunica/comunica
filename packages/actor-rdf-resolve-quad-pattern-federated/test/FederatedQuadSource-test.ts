@@ -47,22 +47,11 @@ describe('FederatedQuadSource', () => {
     });
 
     it('should be a FederatedQuadSource constructor', () => {
-      expect(new FederatedQuadSource(mediator, context, {}, true)).toBeInstanceOf(FederatedQuadSource);
+      expect(new FederatedQuadSource(mediator, context, new Map(), true)).toBeInstanceOf(FederatedQuadSource);
     });
 
     it('should be a FederatedQuadSource constructor with optional bufferSize argument', () => {
-      expect(new FederatedQuadSource(mediator, context, {}, true)).toBeInstanceOf(FederatedQuadSource);
-    });
-  });
-
-  describe('#hashSource', () => {
-    it('should convert an empty query source to a string', () => {
-      return expect(FederatedQuadSource.hashSource(<any> {})).toEqual('{}');
-    });
-
-    it('should convert a non-empty query source to a string', () => {
-      return expect(FederatedQuadSource.hashSource({ type: 'type', value: 'value' }))
-        .toEqual('{"type":"type","value":"value"}');
+      expect(new FederatedQuadSource(mediator, context, new Map(), true)).toBeInstanceOf(FederatedQuadSource);
     });
   });
 
@@ -217,11 +206,14 @@ describe('FederatedQuadSource', () => {
   });
 
   describe('A FederatedQuadSource instance with predefined empty patterns', () => {
+    let subSource;
     let source: FederatedQuadSource;
     let emptyPatterns;
 
     beforeEach(() => {
-      emptyPatterns = { '{}': [ squad('?a', '?b', '?c', '"d"') ] };
+      subSource = {};
+      emptyPatterns = new Map();
+      emptyPatterns.set(subSource, [ squad('?a', '?b', '?c', '"d"') ]);
       source = new FederatedQuadSource(mediator, context, emptyPatterns, true);
     });
 
@@ -248,56 +240,59 @@ describe('FederatedQuadSource', () => {
 
     describe('when calling isSourceEmpty', () => {
       it('on ?a ?b ?c "d" for the source should return true', () => {
-        return expect(source.isSourceEmpty(<any> {}, squad('?a', '?b', '?c', '"d"'))).toBeTruthy();
+        return expect(source.isSourceEmpty(<any> subSource, squad('?a', '?b', '?c', '"d"'))).toBeTruthy();
       });
 
       it('on "a" ?b ?c "d" for the source should return true', () => {
-        return expect(source.isSourceEmpty(<any> {}, squad('"a"', '?b', '?c', '"d"'))).toBeTruthy();
+        return expect(source.isSourceEmpty(<any> subSource, squad('"a"', '?b', '?c', '"d"'))).toBeTruthy();
       });
 
       it('on "a" ?b ?c "e" for the source should return false', () => {
-        return expect(source.isSourceEmpty(<any> {}, squad('"a"', '?b', '?c', '"e"'))).toBeFalsy();
+        return expect(source.isSourceEmpty(<any> subSource, squad('"a"', '?b', '?c', '"e"'))).toBeFalsy();
       });
 
       it('on ?a ?b ?c "d" for another source should return false', () => {
-        return expect(source.isSourceEmpty(<any> { a: 'b' }, squad('?a', '?b', '?c', '"d"'))).toBeFalsy();
+        return expect(source.isSourceEmpty(<any> {}, squad('?a', '?b', '?c', '"d"'))).toBeFalsy();
       });
 
       it('on "a" ?b ?c "d" for another source should return false', () => {
-        return expect(source.isSourceEmpty(<any> { a: 'b' }, squad('"a"', '?b', '?c', '"d"'))).toBeFalsy();
+        return expect(source.isSourceEmpty(<any> {}, squad('"a"', '?b', '?c', '"d"'))).toBeFalsy();
       });
     });
   });
 
   describe('A FederatedQuadSource instance with skipEmptyPatterns set to false', () => {
 
+    let subSource;
     let source: FederatedQuadSource;
     let emptyPatterns;
 
     beforeEach(() => {
-      emptyPatterns = { '{}': [ squad('?a', '?b', '?c', '"d"') ] };
+      subSource = {};
+      emptyPatterns = new Map();
+      emptyPatterns.set(subSource, [ squad('?a', '?b', '?c', '"d"') ]);
       source = new FederatedQuadSource(mediator, context, emptyPatterns, false);
     });
 
     describe('when calling isSourceEmpty', () => {
       it('on ?a ?b ?c "d" for the source should return false', () => {
-        return expect(source.isSourceEmpty(<any> {}, squad('?a', '?b', '?c', '"d"'))).toBeFalsy();
+        return expect(source.isSourceEmpty(<any> subSource, squad('?a', '?b', '?c', '"d"'))).toBeFalsy();
       });
 
       it('on "a" ?b ?c "d"d for the source should return false', () => {
-        return expect(source.isSourceEmpty(<any> {}, squad('"a"', '?b', '?c', '"d"'))).toBeFalsy();
+        return expect(source.isSourceEmpty(<any> subSource, squad('"a"', '?b', '?c', '"d"'))).toBeFalsy();
       });
 
       it('on "a" ?b ?c "e" for the source should return false', () => {
-        return expect(source.isSourceEmpty(<any> {}, squad('"a"', '?b', '?c', '"e"'))).toBeFalsy();
+        return expect(source.isSourceEmpty(<any> subSource, squad('"a"', '?b', '?c', '"e"'))).toBeFalsy();
       });
 
       it('on ?a ?b ?c "d" for another source should return false', () => {
-        return expect(source.isSourceEmpty(<any> { a: 'b' }, squad('?a', '?b', '?c', '"d"'))).toBeFalsy();
+        return expect(source.isSourceEmpty(<any> {}, squad('?a', '?b', '?c', '"d"'))).toBeFalsy();
       });
 
       it('on "a" ?b ?c "d" for another source should return false', () => {
-        return expect(source.isSourceEmpty(<any> { a: 'b' }, squad('"a"', '?b', '?c', '"d"'))).toBeFalsy();
+        return expect(source.isSourceEmpty(<any> {}, squad('"a"', '?b', '?c', '"d"'))).toBeFalsy();
       });
     });
   });
@@ -308,7 +303,7 @@ describe('FederatedQuadSource', () => {
     let contextEmpty;
 
     beforeEach(() => {
-      emptyPatterns = {};
+      emptyPatterns = new Map();
       contextEmpty = ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:sources':
           AsyncReiterableArray.fromFixedData([]) });
       source = new FederatedQuadSource(mediator, contextEmpty, emptyPatterns, true);
@@ -328,14 +323,16 @@ describe('FederatedQuadSource', () => {
   });
 
   describe('A FederatedQuadSource instance over one empty source', () => {
+    let subSource;
     let source: FederatedQuadSource;
     let emptyPatterns;
     let contextSingleEmpty;
 
     beforeEach(() => {
-      emptyPatterns = {};
+      subSource = { type: 'emptySource', value: 'I will be empty' };
+      emptyPatterns = new Map();
       contextSingleEmpty = ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:sources':
-          AsyncReiterableArray.fromFixedData([ { type: 'emptySource', value: 'I will be empty' } ]) });
+          AsyncReiterableArray.fromFixedData([ subSource ]) });
       source = new FederatedQuadSource(mediator, contextSingleEmpty, emptyPatterns, true);
     });
 
@@ -359,24 +356,26 @@ describe('FederatedQuadSource', () => {
       await arrayifyStream(source.match(literal('s'), variable('p'), literal('o'), variable('g')));
       await arrayifyStream(source.match(literal('s'), variable('p'), literal('o'), literal('g')));
 
-      return expect(emptyPatterns).toEqual({
-        '{"type":"emptySource","value":"I will be empty"}': [
+      return expect(Array.from(emptyPatterns.entries())).toEqual([
+        [subSource, [
           quad(variable('s'), literal('p'), variable('o'), variable('g')),
           quad(literal('s'), variable('p'), variable('o'), variable('g')),
-        ],
-      });
+        ]],
+      ]);
     });
   });
 
   describe('A FederatedQuadSource instance over one non-empty source', () => {
+    let subSource;
     let source: FederatedQuadSource;
     let emptyPatterns;
     let contextSingle;
 
     beforeEach(() => {
-      emptyPatterns = {};
+      subSource = { type: 'nonEmptySource', value: 'I will not be empty' };
+      emptyPatterns = new Map();
       contextSingle = ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:sources':
-          AsyncReiterableArray.fromFixedData([{ type: 'nonEmptySource', value: 'I will not be empty' }]) });
+          AsyncReiterableArray.fromFixedData([ subSource ]) });
       source = new FederatedQuadSource(mediator, contextSingle, emptyPatterns, true);
     });
 
@@ -403,23 +402,27 @@ describe('FederatedQuadSource', () => {
       await arrayifyStream(source.match(literal('s'), variable('p'), literal('o'), variable('g')));
       await arrayifyStream(source.match(literal('s'), variable('p'), literal('o'), literal('g')));
 
-      return expect(emptyPatterns).toEqual({
-        '{"type":"nonEmptySource","value":"I will not be empty"}': [],
-      });
+      return expect(Array.from(emptyPatterns.entries())).toEqual([
+        [subSource, []],
+      ]);
     });
   });
 
   describe('A FederatedQuadSource instance over one empty source and one non-empty source', () => {
+    let subSource1;
+    let subSource2;
     let source: FederatedQuadSource;
     let emptyPatterns;
     let contextSingleEmpty;
 
     beforeEach(() => {
-      emptyPatterns = {};
+      subSource1 = { type: 'emptySource', value: 'I will be empty' };
+      subSource2 = { type: 'nonEmptySource', value: 'I will not be empty' };
+      emptyPatterns = new Map();
       contextSingleEmpty = ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:sources':
           AsyncReiterableArray.fromFixedData([
-            { type: 'emptySource', value: 'I will be empty' },
-            { type: 'nonEmptySource', value: 'I will not be empty' },
+            subSource1,
+            subSource2,
           ]) });
       source = new FederatedQuadSource(mediator, contextSingleEmpty, emptyPatterns, true);
     });
@@ -448,27 +451,31 @@ describe('FederatedQuadSource', () => {
       await arrayifyStream(source.match(literal('s'), variable('p'), literal('o'), variable('g')));
       await arrayifyStream(source.match(literal('s'), variable('p'), literal('o'), literal('g')));
 
-      return expect(emptyPatterns).toEqual({
-        '{"type":"emptySource","value":"I will be empty"}': [
+      return expect(Array.from(emptyPatterns.entries())).toEqual([
+        [subSource1, [
           quad(variable('s'), literal('p'), variable('o'), variable('g')),
           quad(literal('s'), variable('p'), variable('o'), variable('g')),
-        ],
-        '{"type":"nonEmptySource","value":"I will not be empty"}': [],
-      });
+        ]],
+        [subSource2, []],
+      ]);
     });
   });
 
   describe('A FederatedQuadSource instance over two equal empty sources', () => {
+    let subSource1;
+    let subSource2;
     let source: FederatedQuadSource;
     let emptyPatterns;
     let contextSingleEmpty;
 
     beforeEach(() => {
-      emptyPatterns = {};
+      subSource1 = { type: 'emptySource', value: 'I will be empty' };
+      subSource2 = { type: 'emptySource', value: 'I will be empty' };
+      emptyPatterns = new Map();
       contextSingleEmpty = ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:sources':
           AsyncReiterableArray.fromFixedData([
-            { type: 'emptySource', value: 'I will be empty' },
-            { type: 'emptySource', value: 'I will be empty' },
+            subSource1,
+            subSource2,
           ]) });
       source = new FederatedQuadSource(mediator, contextSingleEmpty, emptyPatterns, true);
     });
@@ -494,12 +501,63 @@ describe('FederatedQuadSource', () => {
       await arrayifyStream(source.match(literal('s'), variable('p'), literal('o'), variable('g')));
       await arrayifyStream(source.match(literal('s'), variable('p'), literal('o'), literal('g')));
 
-      return expect(emptyPatterns).toEqual({
-        '{"type":"emptySource","value":"I will be empty"}': [
+      return expect(Array.from(emptyPatterns.entries())).toEqual([
+        [subSource1, [
           quad(variable('s'), literal('p'), variable('o'), variable('g')),
           quad(literal('s'), variable('p'), variable('o'), variable('g')),
-        ],
-      });
+        ]],
+        [subSource2, [
+          quad(variable('s'), literal('p'), variable('o'), variable('g')),
+          quad(literal('s'), variable('p'), variable('o'), variable('g')),
+        ]],
+      ]);
+    });
+  });
+
+  describe('A FederatedQuadSource instance over two identical empty sources', () => {
+    let subSource;
+    let source: FederatedQuadSource;
+    let emptyPatterns;
+    let contextSingleEmpty;
+
+    beforeEach(() => {
+      subSource = { type: 'emptySource', value: 'I will be empty' };
+      emptyPatterns = new Map();
+      contextSingleEmpty = ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:sources':
+          AsyncReiterableArray.fromFixedData([
+            subSource,
+            subSource,
+          ]) });
+      source = new FederatedQuadSource(mediator, contextSingleEmpty, emptyPatterns, true);
+    });
+
+    it('should return an empty AsyncIterator', async () => {
+      const a = await arrayifyStream(source.match());
+      return expect(a).toEqual([]);
+    });
+
+    it('should emit metadata with 0 totalItems', async () => {
+      const stream = source.match();
+      return expect(new Promise((resolve, reject) => {
+        stream.on('metadata', resolve);
+        stream.on('end', reject);
+      })).resolves.toEqual({ totalItems: 0 });
+    });
+
+    it('should store the queried empty patterns for the empty source in the emptyPatterns datastructure', async () => {
+      await arrayifyStream(source.match(variable('s'), literal('p'), variable('o'), variable('g')));
+      await arrayifyStream(source.match(variable('s'), literal('p'), literal('o'), variable('g')));
+
+      await arrayifyStream(source.match(literal('s'), variable('p'), variable('o'), variable('g')));
+      await arrayifyStream(source.match(literal('s'), variable('p'), literal('o'), variable('g')));
+      await arrayifyStream(source.match(literal('s'), variable('p'), literal('o'), literal('g')));
+
+      return expect(Array.from(emptyPatterns.entries())).toEqual([
+        [subSource, [
+          quad(variable('s'), literal('p'), variable('o'), variable('g')),
+          quad(literal('s'), variable('p'), variable('o'), variable('g')),
+        ]],
+      ]);
     });
   });
 
@@ -509,7 +567,7 @@ describe('FederatedQuadSource', () => {
     let contextSingleEmpty;
 
     beforeEach(() => {
-      emptyPatterns = {};
+      emptyPatterns = new Map();
       contextSingleEmpty = ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:sources':
           AsyncReiterableArray.fromFixedData([
             { type: 'emptySource', value: 'I will be empty' },
@@ -539,21 +597,25 @@ describe('FederatedQuadSource', () => {
       await arrayifyStream(source.match(literal('s'), variable('p'), literal('o'), variable('g')));
       await arrayifyStream(source.match(literal('s'), variable('p'), literal('o'), literal('g')));
 
-      return expect(emptyPatterns).toEqual({});
+      return expect(Array.from(emptyPatterns.entries())).toEqual([]);
     });
   });
 
   describe('A FederatedQuadSource instance over two non-empty sources', () => {
+    let subSource1;
+    let subSource2;
     let source: FederatedQuadSource;
     let emptyPatterns;
     let contextSingleEmpty;
 
     beforeEach(() => {
-      emptyPatterns = {};
+      subSource1 = { type: 'nonEmptySource', value: 'I will not be empty' };
+      subSource2 = { type: 'nonEmptySource2', value: 'I will also not be empty' };
+      emptyPatterns = new Map();
       contextSingleEmpty = ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:sources':
           AsyncReiterableArray.fromFixedData([
-            { type: 'nonEmptySource', value: 'I will not be empty' },
-            { type: 'nonEmptySource2', value: 'I will also not be empty' },
+            subSource1,
+            subSource2,
           ]) });
       source = new FederatedQuadSource(mediator, contextSingleEmpty, emptyPatterns, true);
     });
@@ -584,10 +646,10 @@ describe('FederatedQuadSource', () => {
       await arrayifyStream(source.match(literal('s'), variable('p'), literal('o'), variable('g')));
       await arrayifyStream(source.match(literal('s'), variable('p'), literal('o'), literal('g')));
 
-      return expect(emptyPatterns).toEqual({
-        '{"type":"nonEmptySource","value":"I will not be empty"}': [],
-        '{"type":"nonEmptySource2","value":"I will also not be empty"}': [],
-      });
+      return expect(Array.from(emptyPatterns.entries())).toEqual([
+        [subSource1, []],
+        [subSource2, []],
+      ]);
     });
   });
 
@@ -597,7 +659,7 @@ describe('FederatedQuadSource', () => {
     let contextSingleEmpty;
 
     beforeEach(() => {
-      emptyPatterns = {};
+      emptyPatterns = new Map();
       contextSingleEmpty = ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:sources':
           AsyncReiterableArray.fromFixedData([
             { type: 'nonEmptySource', value: 'I will not be empty' },
@@ -631,7 +693,7 @@ describe('FederatedQuadSource', () => {
     let contextSingleEmpty;
 
     beforeEach(() => {
-      emptyPatterns = {};
+      emptyPatterns = new Map();
       contextSingleEmpty = ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:sources':
           AsyncReiterableArray.fromFixedData([
             { type: 'nonEmptySourceNoMeta', value: 'I will not be empty' },
@@ -665,7 +727,7 @@ describe('FederatedQuadSource', () => {
     let contextSingleEmpty;
 
     beforeEach(() => {
-      emptyPatterns = {};
+      emptyPatterns = new Map();
       contextSingleEmpty = ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:sources':
           AsyncReiterableArray.fromFixedData([
             { type: 'nonEmptySource', value: 'I will not be empty' },
@@ -699,7 +761,7 @@ describe('FederatedQuadSource', () => {
     let contextSingleEmpty;
 
     beforeEach(() => {
-      emptyPatterns = {};
+      emptyPatterns = new Map();
       contextSingleEmpty = ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:sources':
           AsyncReiterableArray.fromFixedData([
             { type: 'nonEmptySourceInfMeta', value: 'I will not be empty' },

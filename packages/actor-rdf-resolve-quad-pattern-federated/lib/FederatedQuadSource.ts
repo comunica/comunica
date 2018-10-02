@@ -19,12 +19,12 @@ export class FederatedQuadSource implements ILazyQuadSource {
     IActorRdfResolveQuadPatternOutput>, IActionRdfResolveQuadPattern, IActorTest, IActorRdfResolveQuadPatternOutput>;
   protected readonly sources: DataSources;
   protected readonly contextDefault: ActionContext;
-  protected readonly emptyPatterns: {[sourceHash: string]: RDF.Quad[]};
+  protected readonly emptyPatterns: Map<IDataSource, RDF.Quad[]>;
   protected readonly skipEmptyPatterns: boolean;
 
   constructor(mediatorResolveQuadPattern: Mediator<Actor<IActionRdfResolveQuadPattern, IActorTest,
     IActorRdfResolveQuadPatternOutput>, IActionRdfResolveQuadPattern, IActorTest, IActorRdfResolveQuadPatternOutput>,
-              context: ActionContext, emptyPatterns: {[sourceHash: string]: RDF.Quad[]},
+              context: ActionContext, emptyPatterns: Map<IDataSource, RDF.Quad[]>,
               skipEmptyPatterns: boolean) {
     this.mediatorResolveQuadPattern = mediatorResolveQuadPattern;
     this.sources = context.get(KEY_CONTEXT_SOURCES);
@@ -35,21 +35,11 @@ export class FederatedQuadSource implements ILazyQuadSource {
     // Initialize sources in the emptyPatterns datastructure
     if (this.skipEmptyPatterns) {
       this.sources.iterator().on('data', (source: IDataSource) => {
-        const sourceHash: string = FederatedQuadSource.hashSource(source);
-        if (!this.emptyPatterns[sourceHash]) {
-          this.emptyPatterns[sourceHash] = [];
+        if (!this.emptyPatterns.has(source)) {
+          this.emptyPatterns.set(source, []);
         }
       });
     }
-  }
-
-  /**
-   * Convert a {@link IQuerySource} to a string.
-   * @param {IQuerySource} source A query source object.
-   * @return {string} A string representation of this query source.
-   */
-  public static hashSource(source: IDataSource): string {
-    return JSON.stringify(source);
   }
 
   /**
@@ -92,7 +82,7 @@ export class FederatedQuadSource implements ILazyQuadSource {
     if (!this.skipEmptyPatterns) {
       return false;
     }
-    const emptyPatterns: RDF.Quad[] = this.emptyPatterns[FederatedQuadSource.hashSource(source)];
+    const emptyPatterns: RDF.Quad[] = this.emptyPatterns.get(source);
     if (emptyPatterns) {
       for (const emptyPattern of emptyPatterns) {
         if (FederatedQuadSource.isSubPatternOf(pattern, emptyPattern)) {
@@ -132,7 +122,7 @@ export class FederatedQuadSource implements ILazyQuadSource {
         if (this.skipEmptyPatterns && !currentTotalItems) {
           // Because another call may have added more information in the meantime
           if (!this.isSourceEmpty(source, pattern)) {
-            this.emptyPatterns[FederatedQuadSource.hashSource(source)].push(pattern);
+            this.emptyPatterns.get(source).push(pattern);
           }
         }
         if (!remainingSources) {

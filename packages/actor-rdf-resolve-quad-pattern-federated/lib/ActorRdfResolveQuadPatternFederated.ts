@@ -1,5 +1,7 @@
-import {ActorRdfResolveQuadPatternSource, IActionRdfResolveQuadPattern,
-  IActorRdfResolveQuadPatternOutput, ILazyQuadSource} from "@comunica/bus-rdf-resolve-quad-pattern";
+import {
+  ActorRdfResolveQuadPatternSource, IActionRdfResolveQuadPattern,
+  IActorRdfResolveQuadPatternOutput, IDataSource, ILazyQuadSource,
+} from "@comunica/bus-rdf-resolve-quad-pattern";
 import {ActionContext, Actor, IActorArgs, IActorTest, Mediator} from "@comunica/core";
 import * as RDF from "rdf-js";
 import {FederatedQuadSource} from "./FederatedQuadSource";
@@ -14,7 +16,7 @@ export class ActorRdfResolveQuadPatternFederated extends ActorRdfResolveQuadPatt
     IActorRdfResolveQuadPatternOutput>, IActionRdfResolveQuadPattern, IActorTest, IActorRdfResolveQuadPatternOutput>;
   public readonly skipEmptyPatterns: boolean;
 
-  protected readonly emptyPatterns: {[sourceHash: string]: RDF.Quad[]} = {};
+  protected readonly emptyPatterns: Map<IDataSource, RDF.Quad[]> = new Map();
 
   constructor(args: IActorRdfResolveQuadPatternFederatedArgs) {
     super(args);
