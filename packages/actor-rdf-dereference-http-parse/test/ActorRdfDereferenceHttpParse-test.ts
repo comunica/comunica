@@ -107,6 +107,11 @@ describe('ActorRdfDereferenceHttpParse', () => {
         .toMatchObject({ pageUrl: 'https://www.google.com/abc.x', quads: 'fine', triples: true });
     });
 
+    it('should run with a web stream with a known extension', () => {
+      return expect(actor.run({ url: 'https://www.google.com/abc.y' })).resolves
+        .toMatchObject({ pageUrl: 'https://www.google.com/abc.y', quads: 'fine', triples: true });
+    });
+
     it('should run with a Node.JS stream', () => {
       return expect(actor.run({ url: 'https://www.google.com/noweb' })).resolves
         .toMatchObject({ pageUrl: 'https://www.google.com/index.html', quads: 'fine', triples: true });
