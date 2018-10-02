@@ -29,7 +29,9 @@
             "text/turtle",
             "application/n-triples",
             "text/n3",
-            "application/ld+json"
+            "application/ld+json",
+            "application/json",
+            "application/rdf+xml"
           ]
         },
         {
