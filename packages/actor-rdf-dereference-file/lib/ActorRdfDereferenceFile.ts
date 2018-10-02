@@ -1,25 +1,23 @@
-import {ActorRdfDereference, IActionRdfDereference, IActorRdfDereferenceOutput} from "@comunica/bus-rdf-dereference";
+import {ActorRdfDereferenceMediaMappings, IActionRdfDereference,
+  IActorRdfDereferenceMediaMappingsArgs, IActorRdfDereferenceOutput} from "@comunica/bus-rdf-dereference";
 import {
   ActorRdfParse,
   IActionRootRdfParse,
   IActorOutputRootRdfParse,
   IActorTestRootRdfParse,
 } from "@comunica/bus-rdf-parse";
-import {IActorArgs, IActorTest, Mediator} from "@comunica/core";
+import {IActorTest, Mediator} from "@comunica/core";
 import * as fs from "fs";
-import * as path from "path";
 import {URL} from "url";
 import {promisify} from "util";
 
 /**
  * A comunica File RDF Dereference Actor.
  */
-export class ActorRdfDereferenceFile extends ActorRdfDereference {
+export class ActorRdfDereferenceFile extends ActorRdfDereferenceMediaMappings {
 
   public readonly mediatorRdfParse: Mediator<ActorRdfParse,
     IActionRootRdfParse, IActorTestRootRdfParse, IActorOutputRootRdfParse>;
-
-  public readonly mediaMappings: { [id: string]: string };
 
   constructor(args: IActorRdfDereferenceFileArgs) {
     super(args);
@@ -41,11 +39,7 @@ export class ActorRdfDereferenceFile extends ActorRdfDereference {
 
     // deduce media type from file extension if possible
     if (!mediaType) {
-      const ext = path.extname(action.url);
-      if (ext) {
-        // ignore dot
-        mediaType = this.mediaMappings[ext.substring(1)];
-      }
+      mediaType = this.getMediaType(action.url);
     }
 
     const parseAction: IActionRootRdfParse = {
@@ -66,16 +60,9 @@ export class ActorRdfDereferenceFile extends ActorRdfDereference {
   }
 }
 
-export interface IActorRdfDereferenceFileArgs
-  extends IActorArgs<IActionRdfDereference, IActorTest, IActorRdfDereferenceOutput> {
-
+export interface IActorRdfDereferenceFileArgs extends IActorRdfDereferenceMediaMappingsArgs {
   /**
    * Mediator used for parsing the file contents.
    */
   mediatorRdfParse: Mediator<ActorRdfParse, IActionRootRdfParse, IActorTestRootRdfParse, IActorOutputRootRdfParse>;
-
-  /**
-   * A collection of mappings, mapping file extensions to their corresponding media type.
-   */
-  mediaMappings: { [id: string]: string };
 }
