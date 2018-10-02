@@ -18,7 +18,8 @@
           "defaultScoped": {
             "defaultScope": "crpjl:Actor/RdfParse/JsonLd",
             "defaultScopedValue": [
-              { "mediaTypeKey": "application/ld+json", "priorityValue": "1.0" }
+              { "mediaTypeKey": "application/ld+json", "priorityValue": "1.0" },
+              { "mediaTypeKey": "application/json", "priorityValue": "0.1" }
             ]
           }
         }
