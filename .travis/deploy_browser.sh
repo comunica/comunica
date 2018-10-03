@@ -49,5 +49,9 @@ popd
 git add --all
 git config user.name  "Travis"
 git config user.email "travis@travis-ci.org"
-git commit -m "Update to comunica/comunica#$TRAVIS_COMMIT."
+if [ ! -z "$TRAVIS_TAG" ]; then
+    git commit -m "Update to comunica/comunica#$TRAVIS_TAG."
+else
+    git commit -m "Update to comunica/comunica#$TRAVIS_COMMIT."
+fi
 git push -fq origin master 2>&1 > /dev/null
