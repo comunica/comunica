@@ -3,9 +3,11 @@ import {BindingsStream} from "@comunica/bus-query-operation";
 import {ActorSparqlSerializeFixedMediaTypes, IActionSparqlSerialize,
   IActorSparqlSerializeFixedMediaTypesArgs, IActorSparqlSerializeOutput} from "@comunica/bus-sparql-serialize";
 import {ActionContext} from "@comunica/core";
+import {Map} from "immutable";
 import * as RDF from "rdf-js";
 import {Converter, IConverterSettings, ISchema} from "sparqljson-to-tree";
 import {Readable} from "stream";
+import isMap = Map.isMap;
 
 /**
  * A comunica Tree SPARQL Serialize Actor.
@@ -24,16 +26,17 @@ export class ActorSparqlSerializeTree extends ActorSparqlSerializeFixedMediaType
    * @param {IConverterSettings} converterSettings
    * @return {Promise<string>}
    */
-  public static bindingsStreamToGraphQl(bindingsStream: BindingsStream, context: ActionContext,
+  public static bindingsStreamToGraphQl(bindingsStream: BindingsStream, context: ActionContext | {[key: string]: any},
                                         converterSettings?: IConverterSettings): Promise<string> {
+    const actionContext: ActionContext = isMap(context) ? <ActionContext> context : ActionContext(context);
     return new Promise((resolve, reject) => {
       const bindingsArray: {[key: string]: RDF.Term}[] = [];
       const converter: Converter = new Converter(converterSettings);
 
       const schema: ISchema = { singularizeVariables: {} };
-      if (context && context.has('@context')) {
-        for (const key of Object.keys(context.get('@context'))) {
-          if (context.get('@context')[key]['@singular']) {
+      if (actionContext && actionContext.has('@context')) {
+        for (const key of Object.keys(actionContext.get('@context'))) {
+          if (actionContext.get('@context')[key]['@singular']) {
             schema.singularizeVariables[key] = true;
           }
         }
