@@ -1,6 +1,23 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v1.4.0"></a>
+## [v1.4.0](https://github.com/comunica/comunica/compare/v1.3.0...v1.4.0) - 2018-10-03
+
+### Added
+* [Add MINUS operator actor](https://github.com/comunica/comunica/commit/4fe28defe0d35bd9e18e21518c209cd57141bc19)
+* [Add preconfigured prefixes, Closes #80](https://github.com/comunica/comunica/commit/d52f5af96f29530568d76a7595c90cbda5aa37ca)
+* [Also check extensions when no valid media type is present, Closes #286](https://github.com/comunica/comunica/commit/58717e45aee9b24974810b21ef255405aa0f7bc0)
+* [Make JSON-LD parser accept application/json](https://github.com/comunica/comunica/commit/368c133a75271d3036f45aeb2d08cd32efce491b)
+* [Update sparqljson-parse to 1.4.0 with fix for Virtuoso, Closes #278](https://github.com/comunica/comunica/commit/946e30aadd41ceab1b36016137a4ea325ad1283e)
+
+### Fixed
+* [Fix federated actor stringifying sources, Closes #265](https://github.com/comunica/comunica/commit/5698508bb21205f14142406102b1c9b0d540d1c0)
+* [Fix federation actor occasionally failing to produce results](https://github.com/comunica/comunica/commit/893161fc51cf69520411420b87650af0375c8a2b)
+* [Fix crash when passing raw context with GraphQL, Closes #293](https://github.com/comunica/comunica/commit/8e2fafc4e5da5bac158310e0d23907ff550c5334)
+* [Fallback to file-based sources when no content type is present, #286](https://github.com/comunica/comunica/commit/c32266913b20d788a3b046dbfd625693792a0e2a)
+* [Fix parsing errors with datetime on resources without Memento support](https://github.com/comunica/comunica/commit/12d60e853f64e3c6544e5468897a1e7158d73a5c)
+
 <a name="1.3.0"></a>
 ## [1.3.0](https://github.com/comunica/comunica/compare/v1.2.2...v1.3.0) - 2018-09-10
 
