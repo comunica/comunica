@@ -30,12 +30,12 @@
     "@types/lodash.uniq": "^4.5.3",
     "@types/lodash.values": "^4.3.3",
     "@types/lru-cache": "^4.1.0",
-    "@types/sax": "^1.0.1",
     "@types/minimist": "^1.2.0",
     "@types/n3": "^1.0.0",
     "@types/node": "^10.11.3",
     "@types/node-fetch": "^2.1.0",
     "@types/rdf-js": "^1.0.0",
+    "@types/sax": "^1.0.1",
     "@types/uritemplate": "^0.3.4",
     "@types/xml": "^1.0.2",
     "arrayify-stream": "^1.0.0",
@@ -48,6 +48,7 @@
     "jest-rdf": "^1.0.0",
     "lerna": "^3.4.0",
     "lodash.assign": "^4.2.0",
+    "manual-git-changelog": "^1.0.0",
     "pre-commit": "^1.2.2",
     "rdf-quad": "^1.2.2",
     "rdf-test-suite": "^1.0.0",
@@ -106,7 +107,8 @@
     "publish": "yarn run build && lerna publish",
     "doc": "typedoc --name Comunica --exclude \"**/+(lib|node_modules|test|mocks)/*.ts\" --disableOutputCheck --mode modules --out documentation $(find packages ! -name 'packager' -type d -mindepth 1 -maxdepth 1)",
     "preinstall": "node -e \"if (!fs.existsSync('packages/runner-cli/bin/run.js')) { var os = fs.createWriteStream('packages/runner-cli/bin/run.js'); os.write('#!/usr/bin/env node\\nconsole.error(\\'Temporary runner script during lerna installation. If you see this, please run yarn install again.\\');\\nprocess.exit(1);'); os.end(); }\" && node -e \"if (!fs.existsSync('packages/runner/bin/compile-config.js')) { var os = fs.createWriteStream('packages/runner/bin/compile-config.js'); os.write('#!/usr/bin/env node\\nconsole.error(\\'Temporary compile-config script during lerna installation. If you see this, please run yarn install again.\\');\\nprocess.exit(1);'); os.end(); }\"",
-    "postinstall": "yarn run build && lerna run prepare"
+    "postinstall": "yarn run build && lerna run prepare",
+    "version": "manual-git-changelog onversion"
   },
   "greenkeeper": {
     "commitMessages": {
