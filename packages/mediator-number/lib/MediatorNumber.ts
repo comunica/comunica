@@ -34,13 +34,13 @@ export class MediatorNumber<A extends Actor<I, T, O>, I extends IAction, T exten
     case MediatorNumber.MIN:
       return (tests: T[]) => <number> tests.reduce((a, b, i) => {
         const val: number = this.getOrDefault((<any> b)[this.field], Infinity);
-        return val !== null && a[0] >= val ? [val, i] : a;
-      }, [ Infinity, -1 ])[1];
+        return val !== null && (isNaN(a[0]) || a[0] > val) ? [val, i] : a;
+      }, [ NaN, -1 ])[1];
     case MediatorNumber.MAX:
       return (tests: T[]) => <number> tests.reduce((a, b, i) => {
         const val: number = this.getOrDefault((<any> b)[this.field], -Infinity);
-        return val !== null && a[0] <= val ? [val, i] : a;
-      }, [ -Infinity, -1 ])[1];
+        return val !== null && (isNaN(a[0]) || a[0] < val) ? [val, i] : a;
+      }, [ NaN, -1 ])[1];
     }
     throw new Error('No valid "type" value was given, must be either '
       + MediatorNumber.MIN + ' or ' + MediatorNumber.MAX + ', but got: ' + this.type);

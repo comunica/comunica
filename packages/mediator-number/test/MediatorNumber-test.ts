@@ -112,6 +112,23 @@ describe('MediatorNumber', () => {
       });
     });
 
+    describe('with null actor fields', () => {
+      beforeEach(() => {
+        bus.subscribe(new DummyActorInvalid(1, bus));
+        bus.subscribe(new DummyActorInvalid(2, bus));
+        bus.subscribe(new DummyActorInvalid(3, bus));
+        bus.subscribe(new DummyActorInvalid(4, bus));
+      });
+
+      it('should mediate to the first value for type MIN', () => {
+        return expect(mediatorMin.mediate({})).resolves.toEqual({ field: 1 });
+      });
+
+      it('should mediate to the first value for type MAX', () => {
+        return expect(mediatorMax.mediate({})).resolves.toEqual({ field: 1 });
+      });
+    });
+
     describe('with actors throwing errors', () => {
       beforeEach(() => {
         mediatorMin = new MediatorNumber({ bus, field: 'field', ignoreErrors: true,
@@ -152,6 +169,7 @@ describe('MediatorNumber', () => {
   });
 });
 
+// tslint:disable:max-classes-per-file
 class DummyActor extends Actor<IAction, IDummyTest, IDummyTest> {
 
   public readonly id: number | null;
@@ -163,6 +181,25 @@ class DummyActor extends Actor<IAction, IDummyTest, IDummyTest> {
 
   public async test(action: IAction): Promise<IDummyTest> {
     return { field: this.id };
+  }
+
+  public async run(action: IAction): Promise<IDummyTest> {
+    return { field: this.id };
+  }
+
+}
+
+class DummyActorInvalid extends Actor<IAction, IDummyTest, IDummyTest> {
+
+  public readonly id: number | null;
+
+  constructor(id: number | null, bus: Bus<DummyActor, IAction, IDummyTest, IDummyTest>) {
+    super({ name: 'dummy' + id, bus });
+    this.id = id;
+  }
+
+  public async test(action: IAction): Promise<IDummyTest> {
+    return <any> {};
   }
 
   public async run(action: IAction): Promise<IDummyTest> {
