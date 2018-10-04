@@ -43,7 +43,7 @@
     "@types/jest": "^23.3.2",
     "@types/lodash": "^4.14.105",
     "@types/lodash.isequal": "^4.5.2",
-    "@types/node": "^10.11.0",
+    "@types/node": "^10.11.4",
     "@types/rdf-js": "^1.0.1",
     "asynciterator": "^2.0.0",
     "benchmark": "^2.1.4",
