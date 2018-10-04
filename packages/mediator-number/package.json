@@ -1,6 +1,6 @@
 {
   "name": "@comunica/mediator-number",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "A mediator for a single mediation number value",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-number",
   "lsd:components": "components/components.jsonld",

@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v1.4.1"></a>
+## [v1.4.1](https://github.com/comunica/comunica/compare/v1.4.0...v1.4.1) - 2018-10-04
+
+### Fixed
+* [Make number mediator pick the first when all are invalid](https://github.com/comunica/comunica/commit/9022e419f0a8fd1776d208fe92a61ff12d758073)
+
 <a name="v1.4.0"></a>
 ## [v1.4.0](https://github.com/comunica/comunica/compare/v1.3.0...v1.4.0) - 2018-10-03
 

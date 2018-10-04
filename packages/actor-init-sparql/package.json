@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-init-sparql",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "A Comunica engine for SPARQL query evaluation over heterogeneous interfaces",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-sparql",
   "lsd:components": "components/components.jsonld",
@@ -130,7 +130,7 @@
     "@comunica/logger-void": "^1.4.0",
     "@comunica/mediator-combine-pipeline": "^1.4.0",
     "@comunica/mediator-combine-union": "^1.4.0",
-    "@comunica/mediator-number": "^1.4.0",
+    "@comunica/mediator-number": "^1.4.1",
     "@comunica/mediator-race": "^1.4.0",
     "@comunica/runner": "^1.4.0",
     "@comunica/runner-cli": "^1.4.0",
