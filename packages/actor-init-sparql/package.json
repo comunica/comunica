@@ -142,8 +142,7 @@
     "streamify-string": "^1.0.1"
   },
   "devDependencies": {
-    "@comunica/actor-query-operation-bgp-left-deep-smallest-sort": "^1.4.0",
-    "@comunica/actor-rdf-resolve-quad-pattern-hdt": "^1.4.0"
+    "@comunica/actor-query-operation-bgp-left-deep-smallest-sort": "^1.4.0"
   },
   "jest": {
     "globals": {
