@@ -60,7 +60,7 @@
       "js"
     ],
     "collectCoverage": true
-  }
+  },
   "scripts": {
     "test": "node \"../../node_modules/jest/bin/jest.js\" ${1}",
     "test-watch": "node \"../../node_modules/jest/bin/jest.js\" ${1} --watch",
