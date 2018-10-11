@@ -1,0 +1,9 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-filter-sparqlee/^1.0.0/components/context.jsonld",
+  "@id": "npmd:@comunica/actor-query-operation-filter-sparqlee",
+  "@type": "Module",
+  "requireName": "@comunica/actor-query-operation-filter-sparqlee",
+  "import": [
+    "files-caqofs:components/Actor/QueryOperation/FilterSparqlee.jsonld"
+  ]
+}
