@@ -1,8 +1,8 @@
-import {ActorQueryOperation, Bindings, IActorQueryOperationOutputBindings} from "@comunica/bus-query-operation";
-import {Bus} from "@comunica/core";
-import {literal} from "@rdfjs/data-model";
-import {ArrayIterator} from "asynciterator";
-import {ActorQueryOperationLeftJoinNestedLoop} from "../lib/ActorQueryOperationLeftJoinNestedLoop";
+import { ActorQueryOperation, Bindings, IActorQueryOperationOutputBindings } from "@comunica/bus-query-operation";
+import { Bus } from "@comunica/core";
+import { literal } from "@rdfjs/data-model";
+import { ArrayIterator } from "asynciterator";
+import { ActorQueryOperationLeftJoinNestedLoop } from "../lib/ActorQueryOperationLeftJoinNestedLoop";
 const arrayifyStream = require('arrayify-stream');
 
 describe('ActorQueryOperationLeftJoinNestedLoop', () => {
@@ -28,7 +28,7 @@ describe('ActorQueryOperationLeftJoinNestedLoop', () => {
         left = !left;
         return Promise.resolve({
           bindingsStream: left ? bindingStreamLeft : bindingStreamRight,
-          metadata: () => Promise.resolve({totalItems: 3}),
+          metadata: () => Promise.resolve({ totalItems: 3 }),
           operated: arg,
           type: 'bindings',
           variables: left ? ['a'] : ['a', 'b'],
@@ -43,14 +43,14 @@ describe('ActorQueryOperationLeftJoinNestedLoop', () => {
     });
 
     it('should be a ActorQueryOperationLeftJoiNestedLoop constructor', () => {
-      expect(new (<any> ActorQueryOperationLeftJoinNestedLoop)({ name: 'actor', bus, mediatorQueryOperation }))
+      expect(new ActorQueryOperationLeftJoinNestedLoop({ name: 'actor', bus, mediatorQueryOperation }))
         .toBeInstanceOf(ActorQueryOperationLeftJoinNestedLoop);
-      expect(new (<any> ActorQueryOperationLeftJoinNestedLoop)({ name: 'actor', bus, mediatorQueryOperation }))
+      expect(new ActorQueryOperationLeftJoinNestedLoop({ name: 'actor', bus, mediatorQueryOperation }))
         .toBeInstanceOf(ActorQueryOperation);
     });
 
     it('should not be able to create new ActorQueryOperationLeftJoinNestedLoop objects without \'new\'', () => {
-      expect(() => { (<any> ActorQueryOperationLeftJoinNestedLoop)(); }).toThrow();
+      expect(() => { (ActorQueryOperationLeftJoinNestedLoop as any)(); }).toThrow();
     });
   });
 

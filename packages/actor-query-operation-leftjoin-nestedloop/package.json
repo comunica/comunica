@@ -35,6 +35,9 @@
     "index.d.ts",
     "index.js"
   ],
+  "dependencies": {
+    "sparqlee": "0.0.1-rc7"
+  },
   "peerDependencies": {
     "@comunica/bus-query-operation": "^1.0.0",
     "@comunica/bus-rdf-join": "^1.0.0",
