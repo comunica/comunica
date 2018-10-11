@@ -1,0 +1,9 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-extend/^1.0.0/components/context.jsonld",
+  "@id": "npmd:@comunica/actor-query-operation-extend",
+  "@type": "Module",
+  "requireName": "@comunica/actor-query-operation-extend",
+  "import": [
+    "files-caqoe:components/Actor/QueryOperation/Extend.jsonld"
+  ]
+}
