@@ -7,7 +7,11 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-abstract-mediatyped/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-parse-n3/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-parse-jsonld/^1.0.0/components/context.jsonld",
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-parse-rdfxml/^1.0.0/components/context.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-parse-rdfxml/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-parse-html-script/^1.0.0/components/context.jsonld",
+
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-combine-union/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-race/^1.0.0/components/context.jsonld"
   ],
   "@id": "urn:comunica:my",
   "actors": [
@@ -24,6 +28,22 @@
       "@id": "config-sets:rdf-parsers.json#myRdfParserRdfXml",
       "@type": "ActorRdfParseRdfXml",
       "priorityScale": 0.5
+    },
+    {
+      "@id": "config-sets:rdf-parsers.json#myRdfParserHtmlScript",
+      "@type": "ActorRdfParseHtmlScript",
+      "priorityScale": 0.8,
+      "carphs:mediatorRdfParseMediatypes": {
+        "@id": "config-sets:rdf-parsers.json#mediatorRdfParseMediatypes",
+        "@type": "MediatorCombineUnion",
+        "cc:Mediator/bus": { "@id": "cbrp:Bus/RdfParse" },
+        "cmcu:Mediator/CombineUnion/field": "mediaTypes"
+      },
+      "carphs:mediatorRdfParseHandle": {
+        "@id": "config-sets:rdf-parsers.json#mediatorRdfParseHandle",
+        "@type": "MediatorRace",
+        "cc:Mediator/bus": { "@id": "cbrp:Bus/RdfParse" }
+      }
     }
   ]
 }
