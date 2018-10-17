@@ -65,6 +65,7 @@
         "packages/actor-rdf-metadata-extract-hydra-count/package.json",
         "packages/actor-rdf-metadata-primary-topic/package.json",
         "packages/actor-rdf-metadata-triple-predicate/package.json",
+        "packages/actor-rdf-parse-html-script/package.json",
         "packages/actor-rdf-parse-jsonld/package.json",
         "packages/actor-rdf-parse-rdfxml/package.json",
         "packages/actor-rdf-parse-n3/package.json",
