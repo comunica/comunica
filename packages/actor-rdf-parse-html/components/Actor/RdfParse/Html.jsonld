@@ -1,0 +1,35 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-parse-html/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-parse/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-rdf-parse-html",
+  "components": [
+    {
+      "@id": "carph:Actor/RdfParse/Html",
+      "@type": "Class",
+      "extends": "cbrp:Actor/RdfParse",
+      "requireElement": "ActorRdfParseHtml",
+      "comment": "A comunica HTML RDF Parser RDF Parse Actor.",
+      "parameters": [
+              {
+                "@id": "carph:mediatorRdfParse",
+                "comment": "The RDF parse mediator",
+                "required": true,
+                "unique": true
+              }
+            ],
+      "constructorArguments": [
+        {
+          "extends": "cbrp:Actor/RdfParse/constructorArgumentsObject",
+          "fields": [
+                      {
+                        "keyRaw": "mediatorRdfParse",
+                        "value": "carph:mediatorRdfParse"
+                      }
+                    ]
+        }
+      ]
+    }
+  ]
+}

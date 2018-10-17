@@ -1,0 +1,69 @@
+{
+  "name": "@comunica/actor-rdf-parse-html",
+  "version": "1.0.0",
+  "description": "A html rdf-parse actor",
+  "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-parse-html",
+  "lsd:components": "components/components.jsonld",
+  "lsd:contexts": {
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-parse-html/^1.0.0/components/context.jsonld": "components/context.jsonld"
+  },
+  "lsd:importPaths": {
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-parse-html/^1.0.0/components/": "components/"
+  },
+  "main": "index.js",
+  "typings": "index",
+  "repository": "https://github.com/comunica/comunica/tree/master/packages/actor-rdf-parse-html",
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "comunica",
+    "actor",
+    "rdf-parse",
+    "html"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/comunica/comunica/issues"
+  },
+  "homepage": "https://github.com/comunica/comunica#readme",
+  "files": [
+    "components",
+    "lib/**/*.d.ts",
+    "lib/**/*.js",
+    "index.d.ts",
+    "index.js"
+  ],
+  "peerDependencies": {
+    "@comunica/bus-rdf-parse": "^1.4.0",
+    "@comunica/core": "^1.4.0"
+  },
+  "devDependencies": {
+    "@comunica/bus-rdf-parse": "^1.4.0",
+    "@comunica/core": "^1.4.0",
+    "jest": "^23.6.0"
+  },
+  "jest": {
+    "globals": {
+      "ts-jest": {
+        "tsConfig": "test/tsconfig.json"
+      }
+    },
+    "transform": {
+      "^.+\\.ts$": "ts-jest"
+    },
+    "testRegex": "(/test/.*|(\\.|/)(test|spec))\\.ts$",
+    "moduleFileExtensions": [
+      "ts",
+      "js"
+    ],
+    "collectCoverage": true
+  },
+  "scripts": {
+    "test": "node \"../../node_modules/jest/bin/jest.js\" ${1}",
+    "test-watch": "node \"../../node_modules/jest/bin/jest.js\" ${1} --watch",
+    "lint": "node \"../../node_modules/tslint/bin/tslint\" lib/**/*.ts test/**/*.ts --exclude '**/*.d.ts'",
+    "build": "node \"../../node_modules/typescript/bin/tsc\"",
+    "validate": "npm ls"
+  }
+}
