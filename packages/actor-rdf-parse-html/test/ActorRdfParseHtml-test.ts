@@ -1,5 +1,6 @@
 import {ActorRdfParse, ActorRdfParseFixedMediaTypes} from "@comunica/bus-rdf-parse";
 import {Bus} from "@comunica/core";
+import {ArrayIterator} from "asynciterator";
 import "jest-rdf";
 import {Readable} from "stream";
 import {ActorRdfParseHtml} from "../lib/ActorRdfParseHtml";
@@ -9,9 +10,18 @@ const stringToStream = require('streamify-string');
 
 describe('ActorRdfParseHtml', () => {
   let bus;
+  let mediator;
 
   beforeEach(() => {
     bus = new Bus({name: 'bus'});
+    mediator = {
+      mediate: () => {
+        return Promise.resolve({ data: new ArrayIterator([
+          quad('s1', 'p1', 'o1'),
+          quad('s1', 'p1', 'o2'),
+        ]), metadata: () => Promise.resolve({ totalItems: 2 }) });
+      },
+    };
   });
 
   describe('The ActorRdfParseHtml module', () => {

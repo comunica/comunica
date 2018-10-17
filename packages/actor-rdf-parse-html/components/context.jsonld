@@ -7,8 +7,7 @@
       "files-carph": "carph:^1.0.0/",
 
       "ActorRdfParseHtml": "carph:Actor/RdfParse/Html",
-      "mediatorRdfParse": "carph:mediatorRdfParse",
-      "url": "carph:url"
+      "mediatorRdfParse": "carph:mediatorRdfParse"
     }
   ]
 }

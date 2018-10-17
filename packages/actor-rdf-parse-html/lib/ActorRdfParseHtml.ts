@@ -18,6 +18,7 @@ import {IActorArgsMediaTypedFixed} from "@comunica/actor-abstract-mediatyped";
  * It is able to extract JSON-LD from HTML files and parse the JSON-LD based RDF serializations
  * and announce the presence of them by media type.
  */
+// Gebaseerd op JSON LD parser
 export class ActorRdfParseHtml extends ActorRdfParseFixedMediaTypes {
 
   private readonly mediatorRdfParse: Mediator<Actor<IActionRootRdfParse, IActorTestRootRdfParse,
@@ -25,36 +26,41 @@ export class ActorRdfParseHtml extends ActorRdfParseFixedMediaTypes {
 
   constructor(args: IActorRdfParseFixedMediaTypesArgs) {
     super(args);
-    console.log("argumenten: ");
-    console.log(args);
+    console.log("My HTML parser was instantiated!!");
   }
 
   public async runHandle(action: IActionRdfParse, mediaType: string, context: ActionContext):
       Promise<IActorRdfParseOutput> {
 
-    const jsonStream: Readable = new Readable({ objectMode: true });
-    jsonStream._read = async () => {
-      const htmlString: string = await require('stream-to-string')(action.input);
-      const jsonString: string = await this.extractJsonFromHtml(htmlString);
-      jsonStream.push(jsonString);
-      jsonStream.push(null);
-    };
+    console.log("HTML parser started running...\n\n\n\n\n");
 
-    const parseAction: IActionRootRdfParse = {
-      context: action.context,
+    const jsonStream: Readable = new Readable({ objectMode: true });
+    const htmlString: string = await require('stream-to-string')(action.input);
+
+    // JSON-LD (extraction needs refining)
+    const jsonString: string = await this.extractJsonFromHtml(htmlString);
+    jsonStream.push(jsonString);
+    jsonStream.push(null);
+
+    const jsonParseAction: IActionRootRdfParse = {
+      context,
       handle: { input: jsonStream },
       handleMediaType: 'application/ld+json',
     };
 
-    console.log("parseaction: ");
-    console.log(parseAction);
-
-    console.log("mediator: ");
+    console.log("\nParseAction:");
+    console.log(jsonParseAction);
+    console.log("\nMediator:");
     console.log(this.mediatorRdfParse);
 
-    const result: IActorRdfParseOutput = (await this.mediatorRdfParse.mediate(parseAction)).handle;
+    console.log("\n\n\n\n");
+
+    const result: IActorRdfParseOutput = (await this.mediatorRdfParse.mediate(jsonParseAction)).handle;
 
     // TODO RDFa support
+    // Delegate all HTML to RDFa parser
+    // (the script tags can be removed during earlier parsing?)
+    // (Support Sink interface for Parser still to do)
 
     return result;
   }
@@ -66,24 +72,21 @@ export class ActorRdfParseHtml extends ActorRdfParseFixedMediaTypes {
    *
    * @returns string
    */
-  private extractJsonFromHtml(htmlString: any) {
+  private extractJsonFromHtml(htmlString: string) {
+    const DOMParser = require('xmldom').DOMParser;
     const doc = new DOMParser().parseFromString(htmlString, 'text/html');
-    const scriptElementsWithJsonLd = doc.querySelectorAll('script[type=\"application/ld+json\"]');
 
     let jsonString: string = '';
-    [].map.call(scriptElementsWithJsonLd, (el: any) => {
-      jsonString += el.innerText;
-    });
+
+    const scripts = doc.getElementsByTagName('script');
+
+    for (let i = 0; i < scripts.length; i++) {
+      if (scripts[i].getAttribute("type") === 'application/ld+json') {
+        jsonString += scripts[i].textContent;
+      }
+    }
 
     return jsonString;
   }
 
-}
-
-export interface IActorRdfParseFixedMediaTypesArgs extends
-  IActorArgsMediaTypedFixed<IActionRdfParse, IActorTest, IActorRdfParseOutput> {
-  /**
-   * Mediator used for parsing the file contents.
-   */
-  mediatorRdfParse: Mediator<ActorRdfParse, IActionRootRdfParse, IActorTestRootRdfParse, IActorOutputRootRdfParse>;
 }
