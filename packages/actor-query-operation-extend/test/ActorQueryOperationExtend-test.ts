@@ -59,9 +59,9 @@ describe('ActorQueryOperationExtend', () => {
   };
 
   const input = [
-    Bindings({ a: literal('1') }),
-    Bindings({ a: literal('2') }),
-    Bindings({ a: literal('3') }),
+    Bindings({ '?a': literal('1') }),
+    Bindings({ '?a': literal('2') }),
+    Bindings({ '?a': literal('3') }),
   ];
 
   beforeEach(() => {
@@ -72,7 +72,7 @@ describe('ActorQueryOperationExtend', () => {
         metadata: () => Promise.resolve({ totalItems: 3 }),
         operated: arg,
         type: 'bindings',
-        variables: ['a'],
+        variables: ['?a'],
       }),
     };
   });
@@ -116,22 +116,22 @@ describe('ActorQueryOperationExtend', () => {
       const output: IActorQueryOperationOutputBindings = await actor.run(op) as any;
       expect(await arrayifyStream(output.bindingsStream)).toMatchObject([
         Bindings({
-          a: literal('1'),
-          l: literal('1', namedNode('http://www.w3.org/2001/XMLSchema#integer')),
+          '?a': literal('1'),
+          '?l': literal('1', namedNode('http://www.w3.org/2001/XMLSchema#integer')),
         }),
         Bindings({
-          a: literal('2'),
-          l: literal('1', namedNode('http://www.w3.org/2001/XMLSchema#integer')),
+          '?a': literal('2'),
+          '?l': literal('1', namedNode('http://www.w3.org/2001/XMLSchema#integer')),
         }),
         Bindings({
-          a: literal('3'),
-          l: literal('1', namedNode('http://www.w3.org/2001/XMLSchema#integer')),
+          '?a': literal('3'),
+          '?l': literal('1', namedNode('http://www.w3.org/2001/XMLSchema#integer')),
         }),
       ]);
 
       expect(output.type).toEqual('bindings');
       expect(output.metadata()).toMatchObject(Promise.resolve({ totalItems: 3 }));
-      expect(output.variables).toMatchObject(['l']);
+      expect(output.variables).toMatchObject(['?l']);
     });
 
     it('should not extend bindings on erroring expressions', async () => {
@@ -140,7 +140,7 @@ describe('ActorQueryOperationExtend', () => {
       expect(await arrayifyStream(output.bindingsStream)).toMatchObject(input);
       expect(output.type).toEqual('bindings');
       expect(output.metadata()).toMatchObject(Promise.resolve({ totalItems: 3 }));
-      expect(output.variables).toMatchObject(['l']);
+      expect(output.variables).toMatchObject(['?l']);
     });
 
     it('should emit error when evaluation code returns a hard error', async (next) => {
