@@ -1,7 +1,7 @@
 // tslint:disable:object-literal-sort-keys
 import { ActorQueryOperation, Bindings, IActorQueryOperationOutputBindings } from "@comunica/bus-query-operation";
 import { Bus } from "@comunica/core";
-import { literal } from "@rdfjs/data-model";
+import { literal, variable } from "@rdfjs/data-model";
 import { ArrayIterator } from "asynciterator";
 import { ActorQueryOperationLeftJoinNestedLoop } from "../lib/ActorQueryOperationLeftJoinNestedLoop";
 const arrayifyStream = require('arrayify-stream');
@@ -29,12 +29,12 @@ describe('ActorQueryOperationLeftJoinNestedLoop', () => {
       {
         type: "expression",
         expressionType: "term",
-        term: { termType: 'Variable', value: 'a' },
+        term: variable('a'),
       },
       {
         type: "expression",
         expressionType: "term",
-        term: { termType: 'Variable', value: 'a' },
+        term: variable('a'),
       },
     ],
   };
@@ -43,14 +43,14 @@ describe('ActorQueryOperationLeftJoinNestedLoop', () => {
     bus = new Bus({ name: 'bus' });
     left = false;
     const bindingStreamLeft = new ArrayIterator([
-      Bindings({ a: literal('1') }),
-      Bindings({ a: literal('2') }),
-      Bindings({ a: literal('3') }),
+      Bindings({ '?a': literal('1') }),
+      Bindings({ '?a': literal('2') }),
+      Bindings({ '?a': literal('3') }),
     ]);
     const bindingStreamRight = new ArrayIterator([
-      Bindings({ a: literal('1'), b: literal('1') }),
-      Bindings({ a: literal('3'), b: literal('1') }),
-      Bindings({ a: literal('3'), b: literal('2') }),
+      Bindings({ '?a': literal('1'), '?b': literal('1') }),
+      Bindings({ '?a': literal('3'), '?b': literal('1') }),
+      Bindings({ '?a': literal('3'), '?b': literal('2') }),
     ]);
     mediatorQueryOperation = {
       mediate: (arg) => {
@@ -60,7 +60,7 @@ describe('ActorQueryOperationLeftJoinNestedLoop', () => {
           metadata: () => Promise.resolve({ totalItems: 3 }),
           operated: arg,
           type: 'bindings',
-          variables: left ? ['a'] : ['a', 'b'],
+          variables: left ? ['?a'] : ['?a', '?b'],
         });
       },
     };
@@ -104,14 +104,14 @@ describe('ActorQueryOperationLeftJoinNestedLoop', () => {
       const op = { operation: { type: 'leftjoin', left: {}, right: {} } };
       return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
-          Bindings({ a: literal('1'), b: literal('1') }),
-          Bindings({ a: literal('2') }),
-          Bindings({ a: literal('3'), b: literal('1') }),
-          Bindings({ a: literal('3'), b: literal('2') }),
+          Bindings({ '?a': literal('1'), '?b': literal('1') }),
+          Bindings({ '?a': literal('2') }),
+          Bindings({ '?a': literal('3'), '?b': literal('1') }),
+          Bindings({ '?a': literal('3'), '?b': literal('2') }),
         ]);
         expect(output.metadata()).toMatchObject(Promise.resolve({ totalItems: 3 }));
         expect(output.type).toEqual('bindings');
-        expect(output.variables).toMatchObject(['a', 'b']);
+        expect(output.variables).toMatchObject(['?a', '?b']);
       });
     });
 
@@ -120,14 +120,14 @@ describe('ActorQueryOperationLeftJoinNestedLoop', () => {
       const op = { operation: { type: 'leftjoin', left: {}, right: {}, expression } };
       return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
-          Bindings({ a: literal('1'), b: literal('1') }),
-          Bindings({ a: literal('2') }),
-          Bindings({ a: literal('3'), b: literal('1') }),
-          Bindings({ a: literal('3'), b: literal('2') }),
+          Bindings({ '?a': literal('1'), '?b': literal('1') }),
+          Bindings({ '?a': literal('2') }),
+          Bindings({ '?a': literal('3'), '?b': literal('1') }),
+          Bindings({ '?a': literal('3'), '?b': literal('2') }),
         ]);
         expect(output.metadata()).toMatchObject(Promise.resolve({ totalItems: 3 }));
         expect(output.type).toEqual('bindings');
-        expect(output.variables).toMatchObject(['a', 'b']);
+        expect(output.variables).toMatchObject(['?a', '?b']);
       });
     });
 
@@ -136,13 +136,13 @@ describe('ActorQueryOperationLeftJoinNestedLoop', () => {
       const op = { operation: { type: 'leftjoin', left: {}, right: {}, expression } };
       return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
-          Bindings({ a: literal('1') }),
-          Bindings({ a: literal('2') }),
-          Bindings({ a: literal('3') }),
+          Bindings({ '?a': literal('1') }),
+          Bindings({ '?a': literal('2') }),
+          Bindings({ '?a': literal('3') }),
         ]);
         expect(output.metadata()).toMatchObject(Promise.resolve({ totalItems: 3 }));
         expect(output.type).toEqual('bindings');
-        expect(output.variables).toMatchObject(['a', 'b']);
+        expect(output.variables).toMatchObject(['?a', '?b']);
       });
     });
 
@@ -151,13 +151,13 @@ describe('ActorQueryOperationLeftJoinNestedLoop', () => {
       const op = { operation: { type: 'leftjoin', left: {}, right: {}, expression } };
       return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
-          Bindings({ a: literal('1') }),
-          Bindings({ a: literal('2') }),
-          Bindings({ a: literal('3') }),
+          Bindings({ '?a': literal('1') }),
+          Bindings({ '?a': literal('2') }),
+          Bindings({ '?a': literal('3') }),
         ]);
         expect(output.metadata()).toMatchObject(Promise.resolve({ totalItems: 3 }));
         expect(output.type).toEqual('bindings');
-        expect(output.variables).toMatchObject(['a', 'b']);
+        expect(output.variables).toMatchObject(['?a', '?b']);
       });
     });
 
