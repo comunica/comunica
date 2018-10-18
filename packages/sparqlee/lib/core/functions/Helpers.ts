@@ -188,6 +188,10 @@ function invalidLexicalForm(index: number) {
  * https://medium.com/@alexxgent/enforcing-types-with-immutablejs-and-typescript-6ab980819b6a
  */
 
+export function simple(types: ArgumentType[], func: E.SimpleApplication): OverloadMap {
+  return map([new Impl({ types, func })]);
+}
+
 // tslint:disable-next-line:interface-over-type-literal
 export type ImplType = {
   types: ArgumentType[];

@@ -17,43 +17,6 @@ import { Bindings } from '../Types';
 // If the argument is a literal, the datatype often also matters.
 export type ArgumentType = 'term' | E.TermType | C.DataTypeCategory;
 
-// Simple Functions -----------------------------------------------------------
-
-export type TypeChecker = (args: E.TermExpression[]) => boolean;
-export class SimpleFunction implements E.SimpleFunc {
-  functionClass: 'simple' = 'simple';
-  // Add functions that select a datatype to compare to in _isValidTypes
-  constructor(
-    public operator: C.Operator,
-    public arity: number,
-    public types: ArgumentType[],
-    protected _apply: (args: E.TermExpression[]) => E.TermExpression,
-  ) { }
-
-  apply(args: E.TermExpression[]): E.TermExpression {
-    if (!this._isValidTypes(args)) {
-      throw new InvalidArgumentTypes(args, this.operator);
-    }
-    return this._apply(args);
-  }
-
-  // TODO: Test
-  // TODO Can be optimised probably
-  // TODO Put in documentation, this is our TypeChecker for simple
-  private _isValidTypes(args: E.TermExpression[]): boolean {
-    return args.every((arg, i) => {
-      return this.types[i] === (arg as E.LiteralTerm).category
-        || this.types[i] === arg.termType
-        || this.types[i] === 'term';
-    });
-    // tslint:disable-next-line:no-any
-    // const argTypes = args.map((a) => a. || a.termType);
-    // return _.isEqual(this.types, argTypes)
-    // // TODO this arity is wrong
-    //   || _.isEqual(this.types, Array(arity).fill('term'));
-  }
-}
-
 // Overloaded Functions -------------------------------------------------------
 
 /*
@@ -102,6 +65,7 @@ export class OverloadedFunction implements E.OverloadedFunc {
     const argTypes = List(args.map((a: any) => a.category || a.termType));
     const arity = args.length;
     return this.overloadMap.get(argTypes)
+      || this.overloadMap.get(List(args.map((a: E.TermExpression) => a.termType)))
       || this.overloadMap.get(List(Array(arity).fill('term')));
   }
 }

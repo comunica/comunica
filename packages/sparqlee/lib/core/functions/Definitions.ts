@@ -1,6 +1,5 @@
-import * as Promise from 'bluebird';
 import { Map } from 'immutable';
-import { expand, forAll, Impl, map, str, unary } from './Helpers';
+import { expand, forAll, simple, str, unary } from './Helpers';
 
 import * as C from '../../util/Consts';
 import * as E from './../Expressions';
@@ -9,8 +8,8 @@ import * as X from './XPath';
 
 import { DataType as DT } from '../../util/Consts';
 import { ExpressionError, UnimplementedError } from '../../util/Errors';
-import { arithmetic, binary, bool, list, number, numeric, xPathTest } from './Helpers';
-import { ArgumentType, OverloadMap, SpecialFunctionAsync } from './Types';
+import { arithmetic, binary, bool, list, number, xPathTest } from './Helpers';
+import { OverloadMap, SpecialFunctionAsync } from './Types';
 
 // ----------------------------------------------------------------------------
 // The definitions and functionality for all operators
@@ -49,20 +48,26 @@ const _definitions: IDefinitionMap = {
   '!': {
     arity: 1,
     category: 'overloaded',
-    overloads: [],
-    apply: () => { throw new UnimplementedError('! operator'); },
+    overloads: simple(
+      ['term'],
+      () => { throw new UnimplementedError('! operator'); },
+    ),
   },
   'UPLUS': {
     arity: 1,
-    category: 'simple',
-    types: [],
-    apply: () => { throw new UnimplementedError('Unary plus operator'); },
+    category: 'overloaded',
+    overloads: simple(
+      ['term'],
+      () => { throw new UnimplementedError('Unary plus operator'); },
+    ),
   },
   'UMINUS': {
     arity: 1,
-    category: 'simple',
-    types: [],
-    apply: () => { throw new UnimplementedError('Unary minus operator'); },
+    category: 'overloaded',
+    overloads: simple(
+      ['term'],
+      () => { throw new UnimplementedError('Unary minus operator'); },
+    ),
   },
   '&&': {
     arity: 2,
@@ -188,11 +193,11 @@ const _definitions: IDefinitionMap = {
   },
   'sameterm': {
     arity: 2,
-    category: 'simple',
-    types: ['term', 'term'],
-    apply(args: Term[]) {
-      return bool(Special.sameTerm(args[1], args[2]));
-    },
+    category: 'overloaded',
+    overloads: simple(
+      ['term', 'term'],
+      (args: Term[]) => bool(Special.sameTerm(args[1], args[2])),
+    ),
   },
   'in': {
     arity: Infinity,
@@ -210,27 +215,31 @@ const _definitions: IDefinitionMap = {
   // --------------------------------------------------------------------------
   'str': {
     arity: 1,
-    category: 'simple',
-    types: ['term'],
-    apply(args: Term[]) { return str(args[0].str()); },
+    category: 'overloaded',
+    overloads: simple(
+      ['term'],
+      (args: Term[]) => str(args[0].str()),
+    ),
   },
   'lang': {
     arity: 1,
-    category: 'simple',
-    types: ['literal'],
-    apply(args: Array<E.Literal<string>>) {
-      return str(args[0].language || '');
-    },
+    category: 'overloaded',
+    overloads: simple(
+      ['literal'],
+      (args: Array<E.Literal<string>>) => str(args[0].language || ''),
+    ),
   },
   'datatype': {
     arity: 1,
-    category: 'simple',
-    types: ['literal'],
-    // tslint:disable-next-line:no-any
-    apply(args: Array<E.Literal<any>>) {
-      const arg = args[0];
-      return str((arg.dataType) ? arg.dataType.value : '');
-    },
+    category: 'overloaded',
+    overloads: simple(
+      ['literal'],
+      // tslint:disable-next-line:no-any
+      (args: Array<E.Literal<any>>) => {
+        const arg = args[0];
+        return str((arg.dataType) ? arg.dataType.value : '');
+      },
+    ),
   },
   // --------------------------------------------------------------------------
   // Functions on strings
@@ -295,11 +304,11 @@ const _definitions: IDefinitionMap = {
   // --------------------------------------------------------------------------
   'now': {
     arity: 0,
-    category: 'simple',
-    types: [],
-    apply: (args: Term[]) => {
-      throw new UnimplementedError('now function');
-    },
+    category: 'overloaded',
+    overloads: simple(
+      ['term'],
+      () => { throw new UnimplementedError('now function'); },
+    ),
   },
 
   // --------------------------------------------------------------------------

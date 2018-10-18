@@ -74,7 +74,6 @@ Functions are defined in the [definitions file]("lib/core/functions/Definitions.
 
 Three kinds exists:
 
-* Simple functions: where all arguments have only one possible types.
 * Overloaded functions: where multiple types are allowed, and implementation might be dependant on the actual types.
 * Special functions: whose behaviour deviates enough from the norm to warrant the implementations taking full control over type checking and evaluation (these are mostly the functional forms).
 

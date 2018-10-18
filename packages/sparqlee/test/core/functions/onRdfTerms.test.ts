@@ -51,7 +51,7 @@ describe('the evaluation of functions on RDF terms', () => {
     `;
     _testTable('lang', table);
   });
-  describe('like \' datatype\' receiving', () => {
+  describe('like \'datatype\' receiving', () => {
     const table = `
     number = xsdInt
     string = xsdString
