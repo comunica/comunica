@@ -4,6 +4,7 @@ import {
 } from "@comunica/bus-query-operation";
 import { ActorRdfJoin } from "@comunica/bus-rdf-join";
 import { ActionContext, IActorTest } from "@comunica/core";
+import { ClonedIterator } from "asynciterator";
 import { Algebra } from "sparqlalgebrajs";
 import { AsyncEvaluator, ExpressionError } from 'sparqlee';
 
@@ -23,27 +24,20 @@ export class ActorQueryOperationLeftJoinNestedLoop extends ActorQueryOperationTy
   public async runOperation(pattern: Algebra.LeftJoin, context: ActionContext)
     : Promise<IActorQueryOperationOutputBindings> {
 
-    // uses nested loop join
     const leftRaw = await this.mediatorQueryOperation.mediate({ operation: pattern.left, context });
     const left = ActorQueryOperation.getSafeBindings(leftRaw);
     const rightRaw = await this.mediatorQueryOperation.mediate({ operation: pattern.right, context });
     const right = ActorQueryOperation.getSafeBindings(rightRaw);
 
-    // When the right stream ends, and there have been no matches (pushes), the left
-    // element should be pushed. This happens by setting the optional flag on the iterator.
-    // TODO: There is a race condition if the stream ends before some async 'data' callbacks
-    // have finished (which could match/push). Would be solved most easily by sparqlee exposing
-    // a sync evaluator.
-    const transform = (leftItem: Bindings, nextLeft: any) => {
-      const joinedStream = right.bindingsStream
-        .clone()
+    const leftJoinInner = (outerItem: Bindings, innerStream: ClonedIterator<Bindings>) => {
+      const joinedStream = innerStream
         .transform({
-          transform: async (rightItem: Bindings, nextRight: any) => {
-            const joinedBindings = ActorRdfJoin.join(leftItem, rightItem);
-            if (!joinedBindings) { nextRight(); return; }
+          transform: async (innerItem: Bindings, nextInner: any) => {
+            const joinedBindings = ActorRdfJoin.join(outerItem, innerItem);
+            if (!joinedBindings) { nextInner(); return; }
             if (!pattern.expression) {
               joinedStream._push({ joinedBindings, result: true });
-              nextRight();
+              nextInner();
               return;
             }
             try {
@@ -55,11 +49,18 @@ export class ActorQueryOperationLeftJoinNestedLoop extends ActorQueryOperationTy
                 bindingsStream.emit('error', err);
               }
             }
-            nextRight();
+            nextInner();
           },
         });
+      return joinedStream;
+    };
+
+    const leftJoinOuter = (leftItem: Bindings, nextLeft: any) => {
+      const innerStream = right.bindingsStream.clone(); // TODO: Why does this even work?
+      const joinedStream = leftJoinInner(leftItem, innerStream);
 
       // TODO: Does this even work for large streams?
+      // The full inner stream is kept in memory.
       joinedStream.on('end', () => nextLeft());
       joinedStream.on('data', async ({ joinedBindings, result }) => {
         if (result) {
@@ -68,7 +69,9 @@ export class ActorQueryOperationLeftJoinNestedLoop extends ActorQueryOperationTy
       });
     };
 
-    const bindingsStream = left.bindingsStream.transform<Bindings>({ optional: true, transform });
+    const transform = leftJoinOuter;
+    const bindingsStream = left.bindingsStream
+      .transform<Bindings>({ optional: true, transform });
 
     const variables = ActorRdfJoin.joinVariables({ entries: [left, right] });
     const metadata = () => Promise.all([pattern.left, pattern.right].map((entry) => entry.metadata))
