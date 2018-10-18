@@ -15,14 +15,14 @@ describe('ActorQueryOperationOrderByDirect', () => {
     mediatorQueryOperation = {
       mediate: (arg) => Promise.resolve({
         bindingsStream: new ArrayIterator([
-          Bindings({ a: literal('22') }),
-          Bindings({ a: literal('1') }),
-          Bindings({ a: literal('333') }),
+          Bindings({ '?a': literal('22') }),
+          Bindings({ '?a': literal('1') }),
+          Bindings({ '?a': literal('333') }),
         ]),
         metadata: () => Promise.resolve({ totalItems: 3 }),
         operated: arg,
         type: 'bindings',
-        variables: ['a'],
+        variables: ['?a'],
       }),
     };
   });
@@ -84,9 +84,9 @@ describe('ActorQueryOperationOrderByDirect', () => {
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
-        Bindings({ a: literal('1') }),
-        Bindings({ a: literal('22') }),
-        Bindings({ a: literal('333') }),
+        Bindings({ '?a': literal('1') }),
+        Bindings({ '?a': literal('22') }),
+        Bindings({ '?a': literal('333') }),
       ]);
     });
 
@@ -96,9 +96,9 @@ describe('ActorQueryOperationOrderByDirect', () => {
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
-        Bindings({ a: literal('22') }),
-        Bindings({ a: literal('1') }),
-        Bindings({ a: literal('333') }),
+        Bindings({ '?a': literal('22') }),
+        Bindings({ '?a': literal('1') }),
+        Bindings({ '?a': literal('333') }),
       ]);
     });
 
@@ -107,9 +107,9 @@ describe('ActorQueryOperationOrderByDirect', () => {
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
-        Bindings({ a: literal('1') }),
-        Bindings({ a: literal('22') }),
-        Bindings({ a: literal('333') }),
+        Bindings({ '?a': literal('1') }),
+        Bindings({ '?a': literal('22') }),
+        Bindings({ '?a': literal('333') }),
       ]);
     });
 
@@ -118,9 +118,9 @@ describe('ActorQueryOperationOrderByDirect', () => {
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
-        Bindings({ a: literal('333') }),
-        Bindings({ a: literal('22') }),
-        Bindings({ a: literal('1') }),
+        Bindings({ '?a': literal('333') }),
+        Bindings({ '?a': literal('22') }),
+        Bindings({ '?a': literal('1') }),
       ]);
     });
 
@@ -129,9 +129,9 @@ describe('ActorQueryOperationOrderByDirect', () => {
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
-        Bindings({ a: literal('22') }),
-        Bindings({ a: literal('1') }),
-        Bindings({ a: literal('333') }),
+        Bindings({ '?a': literal('22') }),
+        Bindings({ '?a': literal('1') }),
+        Bindings({ '?a': literal('333') }),
       ]);
     });
 

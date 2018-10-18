@@ -35,7 +35,7 @@ export class ActorQueryOperationExtend extends ActorQueryOperationTypedMediated<
     const output: IActorQueryOperationOutputBindings = ActorQueryOperation.getSafeBindings(
       await this.mediatorQueryOperation.mediate({ operation: input, context }));
 
-    const extendKey = variable.value;
+    const extendKey = termToString(variable);
     const evaluator = new AsyncEvaluator(expression);
 
     // Transform the stream by extending each Bindings with the expression result

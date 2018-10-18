@@ -1,7 +1,7 @@
 // tslint:disable:object-literal-sort-keys
 import { ActorQueryOperation, Bindings, IActorQueryOperationOutputBindings } from "@comunica/bus-query-operation";
 import { Bus } from "@comunica/core";
-import { literal } from "@rdfjs/data-model";
+import { literal, variable } from "@rdfjs/data-model";
 import { ArrayIterator } from "asynciterator";
 import { ActorQueryOperationFilterSparqlee } from "../lib/ActorQueryOperationFilterSparqlee";
 // import { SparqlExpressionEvaluator } from "../lib/SparqlExpressionEvaluator";
@@ -28,12 +28,12 @@ describe('ActorQueryOperationFilterSparqlee', () => {
       {
         type: "expression",
         expressionType: "term",
-        term: { termType: 'Variable', value: 'a' },
+        term: variable('a'),
       },
       {
         type: "expression",
         expressionType: "term",
-        term: { termType: 'Variable', value: 'a' },
+        term: variable('a'),
       },
     ],
   };
@@ -49,9 +49,9 @@ describe('ActorQueryOperationFilterSparqlee', () => {
     mediatorQueryOperation = {
       mediate: (arg) => Promise.resolve({
         bindingsStream: new ArrayIterator([
-          Bindings({ a: literal('1') }),
-          Bindings({ a: literal('2') }),
-          Bindings({ a: literal('3') }),
+          Bindings({ '?a': literal('1') }),
+          Bindings({ '?a': literal('2') }),
+          Bindings({ '?a': literal('3') }),
         ]),
         metadata: () => Promise.resolve({ totalItems: 3 }),
         operated: arg,
@@ -104,9 +104,9 @@ describe('ActorQueryOperationFilterSparqlee', () => {
       const op = { operation: { type: 'filter', input: {}, expression: truthyExpression } };
       const output: IActorQueryOperationOutputBindings = await actor.run(op) as any;
       expect(await arrayifyStream(output.bindingsStream)).toMatchObject([
-        Bindings({ a: literal('1') }),
-        Bindings({ a: literal('2') }),
-        Bindings({ a: literal('3') }),
+        Bindings({ '?a': literal('1') }),
+        Bindings({ '?a': literal('2') }),
+        Bindings({ '?a': literal('3') }),
       ]);
       expect(output.type).toEqual('bindings');
       expect(output.metadata()).toMatchObject(Promise.resolve({ totalItems: 3 }));

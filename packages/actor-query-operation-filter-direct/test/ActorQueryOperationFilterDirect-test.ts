@@ -1,9 +1,9 @@
-import {ActorQueryOperation, Bindings, IActorQueryOperationOutputBindings} from "@comunica/bus-query-operation";
-import {Bus} from "@comunica/core";
-import {literal} from "@rdfjs/data-model";
-import {ArrayIterator} from "asynciterator";
-import {ActorQueryOperationFilterDirect} from "../lib/ActorQueryOperationFilterDirect";
-import {SparqlExpressionEvaluator} from "../lib/SparqlExpressionEvaluator";
+import { ActorQueryOperation, Bindings, IActorQueryOperationOutputBindings } from "@comunica/bus-query-operation";
+import { Bus } from "@comunica/core";
+import { literal } from "@rdfjs/data-model";
+import { ArrayIterator } from "asynciterator";
+import { ActorQueryOperationFilterDirect } from "../lib/ActorQueryOperationFilterDirect";
+import { SparqlExpressionEvaluator } from "../lib/SparqlExpressionEvaluator";
 const arrayifyStream = require('arrayify-stream');
 
 describe('ActorQueryOperationFilterDirect', () => {
@@ -31,9 +31,9 @@ describe('ActorQueryOperationFilterDirect', () => {
     mediatorQueryOperation = {
       mediate: (arg) => Promise.resolve({
         bindingsStream: new ArrayIterator([
-          Bindings({ a: literal('1') }),
-          Bindings({ a: literal('2') }),
-          Bindings({ a: literal('3') }),
+          Bindings({ '?a': literal('1') }),
+          Bindings({ '?a': literal('2') }),
+          Bindings({ '?a': literal('3') }),
         ]),
         metadata: () => Promise.resolve({ totalItems: 3 }),
         operated: arg,
@@ -86,9 +86,9 @@ describe('ActorQueryOperationFilterDirect', () => {
       const op = { operation: { type: 'filter', input: {}, expression: truthyExpression } };
       const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
       expect(await arrayifyStream(output.bindingsStream)).toMatchObject([
-        Bindings({ a: literal('1') }),
-        Bindings({ a: literal('2') }),
-        Bindings({ a: literal('3') }),
+        Bindings({ '?a': literal('1') }),
+        Bindings({ '?a': literal('2') }),
+        Bindings({ '?a': literal('3') }),
       ]);
       expect(output.type).toEqual('bindings');
       expect(output.metadata()).toMatchObject(Promise.resolve({ totalItems: 3 }));
@@ -106,7 +106,7 @@ describe('ActorQueryOperationFilterDirect', () => {
 
     it('should emit an error for an erroring filter', async () => {
       SparqlExpressionEvaluator.createEvaluator = () => () => { throw new Error('error'); };
-      const op = {operation: {type: 'filter', input: {}, expression: falsyExpression}};
+      const op = { operation: { type: 'filter', input: {}, expression: falsyExpression } };
       const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
       return expect(arrayifyStream(output.bindingsStream)).rejects.toBeTruthy();
     });
