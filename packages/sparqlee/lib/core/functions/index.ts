@@ -4,13 +4,8 @@ import * as C from '../../util/Consts';
 import * as E from '../Expressions';
 
 import { InvalidArity, UnexpectedError, UnimplementedError } from '../../util/Errors';
-import {
-  definitions,
-  OverloadedDefinition,
-  SimpleDefinition,
-  SpecialDefinition,
-} from './Definitions';
-import { OverloadedFunction, SimpleFunction, SpecialFunctionAsync } from './Types';
+import { definitions } from './Definitions';
+import { OverloadedFunction } from './Types';
 
 // TODO: If args are known, try to calculate already
 export function makeOp(opString: string, args: E.Expression[]): E.OperatorExpression {
@@ -21,7 +16,7 @@ export function makeOp(opString: string, args: E.Expression[]): E.OperatorExpres
   const op = opString as C.Operator;
 
   const definitionMeta = definitions.get(op);
-  const { category, arity } = definitionMeta;
+  const { arity } = definitionMeta;
 
   // We can check for arity allready (assuming no programming mistakes) because
   // each (term) argument should already represented by the expressions that
@@ -40,7 +35,6 @@ export function makeOp(opString: string, args: E.Expression[]): E.OperatorExpres
 
 export const functions: Map<C.Operator, E.SPARQLFunc> = definitions.map((def, op) => {
   switch (def.category) {
-    case 'simple': return new SimpleFunction(op, def.arity, def.types, def.apply);
     case 'overloaded': return new OverloadedFunction(op, def.arity, def.overloads);
     case 'special': return new def.constructor();
     default: throw new UnexpectedError('Unknown function type.');

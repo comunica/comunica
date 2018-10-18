@@ -35,8 +35,7 @@ export function transformTerm(term: Alg.TermExpression): E.Expression {
   if (!term.term) { throw new InvalidExpression(term); }
 
   switch (term.term.termType) {
-    // case 'Variable': return new E.Variable(RDFString.termToString(term.term));
-    case 'Variable': return new E.Variable(term.term.value);
+    case 'Variable': return new E.Variable(RDFString.termToString(term.term));
     case 'Literal': return tranformLiteral(term.term as RDF.Literal);
     case 'NamedNode': return new E.NamedNode(term.term.value);
     case 'BlankNode': throw new Err.UnimplementedError('Blank Node');

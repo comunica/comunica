@@ -1,2 +1,2 @@
-export { AsyncEvaluator } from './lib/async/AsyncEvaluator';
+export { AsyncEvaluator } from './lib/AsyncEvaluator';
 export { ExpressionError } from './lib/util/Errors';

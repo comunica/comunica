@@ -1,12 +1,11 @@
 import * as RDFDM from '@rdfjs/data-model';
 import * as Promise from 'bluebird';
-import { List, Map } from 'immutable';
 import * as RDF from 'rdf-js';
 import { Algebra } from 'sparqlalgebrajs';
 
 import { Bindings } from '../core/Types';
 import * as C from '../util/Consts';
-import { EBVCoercionError, InvalidArgumentTypes, InvalidArity, UnimplementedError } from '../util/Errors';
+import { EBVCoercionError, InvalidArgumentTypes } from '../util/Errors';
 
 export enum expressionTypes {
   AGGREGATE = 'aggregate',
@@ -263,14 +262,10 @@ export class NonLexicalLiteral extends Literal<undefined> {
 // TODO Type better
 
 export interface SPARQLFuncProps {
-  functionClass: 'simple' | 'overloaded' | 'special';
+  functionClass: 'overloaded' | 'special';
 }
 
-export type SPARQLFunc = SimpleFunc | OverloadedFunc | SpecialFunc;
-export type SimpleFunc = SPARQLFuncProps & {
-  functionClass: 'simple';
-  apply: SimpleApplication;
-};
+export type SPARQLFunc = OverloadedFunc | SpecialFunc;
 export type OverloadedFunc = SPARQLFuncProps & {
   functionClass: 'overloaded';
   apply: SimpleApplication;

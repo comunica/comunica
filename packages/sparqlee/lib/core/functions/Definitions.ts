@@ -17,7 +17,6 @@ import { ArgumentType, OverloadMap, SpecialFunctionAsync } from './Types';
 // ----------------------------------------------------------------------------
 
 export type FuncDefinition =
-  SimpleDefinition
   | OverloadedDefinition
   | SpecialDefinition;
 
@@ -25,13 +24,6 @@ export interface DefinitionProps {
   arity: number | number[];
   category: C.OperatorCategory;
 }
-
-export type SimpleDefinition = DefinitionProps & {
-  arity: number;
-  category: 'simple';
-  types: ArgumentType[];
-  apply(args: E.TermExpression[]): E.TermExpression;
-};
 
 export type OverloadedDefinition = DefinitionProps & {
   arity: number | number[];
@@ -48,7 +40,7 @@ export type SpecialDefinition = DefinitionProps & {
 type IDefinitionMap = { [key in C.Operator]: FuncDefinition };
 type Term = E.TermExpression;
 
-// TODO Maybe split in definitions for simple, overloaded and async functions.
+// TODO Maybe split in definitions for overloaded and async functions.
 const _definitions: IDefinitionMap = {
   // --------------------------------------------------------------------------
   // Operator Mapping
@@ -56,8 +48,8 @@ const _definitions: IDefinitionMap = {
   // --------------------------------------------------------------------------
   '!': {
     arity: 1,
-    category: 'simple',
-    types: [],
+    category: 'overloaded',
+    overloads: [],
     apply: () => { throw new UnimplementedError('! operator'); },
   },
   'UPLUS': {
