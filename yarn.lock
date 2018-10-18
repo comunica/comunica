@@ -6840,11 +6840,6 @@ rdf-canonize@^0.2.1:
     node-forge "^0.7.1"
     semver "^5.4.1"
 
-rdf-data-model@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/rdf-data-model/-/rdf-data-model-1.0.0.tgz#e768e1c2cd904c186471b20d1a4fce77c7712a4b"
-  integrity sha1-52jhws2QTBhkcbINGk/Od8dxKks=
-
 rdf-isomorphic@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/rdf-isomorphic/-/rdf-isomorphic-1.0.2.tgz#69fb529f8d2d2f2cccdc97a12b0ecd829a587e88"
@@ -7575,17 +7570,6 @@ source-map@~0.1.38:
   dependencies:
     amdefine ">=0.0.4"
 
-sparqlalgebrajs@^0.7.3:
-  version "0.7.9"
-  resolved "https://registry.yarnpkg.com/sparqlalgebrajs/-/sparqlalgebrajs-0.7.9.tgz#3a54cb4f636e43fa8866f1cbaaa91d7d127e60c3"
-  integrity sha512-DBbQtmhZT2smpqeYYcC7KR8n+o3c+3YC6wkk63y7z9JpmEN9kixKFa2Pc3blwvEK5q0smYULIezK13UkJHlq+g==
-  dependencies:
-    "@rdfjs/data-model" "^1.1.0"
-    lodash.isequal "^4.5.0"
-    minimist "^1.2.0"
-    rdf-string "^1.1.1"
-    sparqljs "^2.0.3"
-
 sparqlalgebrajs@^1.0.1, sparqlalgebrajs@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/sparqlalgebrajs/-/sparqlalgebrajs-1.1.0.tgz#684f023905ddd4bb895c3c7b3686ab2c816cd1fb"
@@ -7597,17 +7581,15 @@ sparqlalgebrajs@^1.0.1, sparqlalgebrajs@^1.1.0:
     rdf-string "^1.2.0"
     sparqljs "^2.0.3"
 
-sparqlee@0.0.1-rc7:
+"sparqlee@git+https://github.com/comunica/sparqlee":
   version "0.0.1-rc7"
-  resolved "https://registry.yarnpkg.com/sparqlee/-/sparqlee-0.0.1-rc7.tgz#7c0467ad5ec6492aecfa77417ffbb5ef9ec9b761"
-  integrity sha1-fARnrV7GSSrs+ndBf/u1757Jt2E=
+  resolved "git+https://github.com/comunica/sparqlee#8f773e0fb72c861724ab3d22b9c8bf1d6f5444a0"
   dependencies:
+    "@rdfjs/data-model" "^1.1.0"
     bluebird "^3.5.1"
     immutable "^3.8.2"
-    rdf-data-model "^1.0.0"
-    rdf-js "^1.0.1"
     rdf-string "^1.1.1"
-    sparqlalgebrajs "^0.7.3"
+    sparqlalgebrajs "^1.1.0"
 
 sparqljs@^2.0.3:
   version "2.1.0"
