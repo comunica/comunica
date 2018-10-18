@@ -143,7 +143,7 @@ describe('ActorQueryOperationExtend', () => {
       expect(output.variables).toMatchObject(['l']);
     });
 
-    it('should emit error when evaluation code returns rejected promise', async (next) => {
+    it('should emit error when evaluation code returns a hard error', async (next) => {
       // Mock the expression error test so we can force 'a programming error' and test the branch
       actor.isExpressionError = (error: Error) => false;
       const op = { operation: example(faultyExpression) };

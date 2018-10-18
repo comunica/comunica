@@ -35,22 +35,35 @@ export class ActorQueryOperationLeftJoinNestedLoop extends ActorQueryOperationTy
     // have finished (which could match/push). Would be solved most easily by sparqlee exposing
     // a sync evaluator.
     const transform = (leftItem: Bindings, nextLeft: any) => {
-      const rightStream = right.bindingsStream.clone();
-      rightStream.on('end', () => nextLeft());
-      rightStream.on('data', async (rightItem) => {
-        const joinedBindings = ActorRdfJoin.join(leftItem, rightItem);
-        if (!joinedBindings) { return; }
-        if (!pattern.expression) { bindingsStream._push(joinedBindings); return; }
-        try {
-          const evaluator = new AsyncEvaluator(pattern.expression);
-          const result = await evaluator.evaluateAsEBV(joinedBindings);
-          if (result === true) {
-            bindingsStream._push(joinedBindings);
-          }
-        } catch (err) {
-          if (!this.isExpressionError(err)) {
-            bindingsStream.emit('error', err);
-          }
+      const joinedStream = right.bindingsStream
+        .clone()
+        .transform({
+          transform: async (rightItem: Bindings, nextRight: any) => {
+            const joinedBindings = ActorRdfJoin.join(leftItem, rightItem);
+            if (!joinedBindings) { nextRight(); return; }
+            if (!pattern.expression) {
+              joinedStream._push({ joinedBindings, result: true });
+              nextRight();
+              return;
+            }
+            try {
+              const evaluator = new AsyncEvaluator(pattern.expression);
+              const result = await evaluator.evaluateAsEBV(joinedBindings);
+              joinedStream._push({ joinedBindings, result });
+            } catch (err) {
+              if (!this.isExpressionError(err)) {
+                bindingsStream.emit('error', err);
+              }
+            }
+            nextRight();
+          },
+        });
+
+      // TODO: Does this even work for large streams?
+      joinedStream.on('end', () => nextLeft());
+      joinedStream.on('data', async ({ joinedBindings, result }) => {
+        if (result) {
+          bindingsStream._push(joinedBindings);
         }
       });
     };
