@@ -131,7 +131,7 @@ describe('ActorQueryOperationFilterSparqlee', () => {
       expect(output.variables).toMatchObject(['a']);
     });
 
-    it('should emit an error for an erroring filter', async (next) => {
+    it('should emit an error for a hard erroring filter', async (next) => {
       // Mock the expression error test so we can force 'a programming error' and test the branch
       actor.isExpressionError = (error: Error) => false;
       const op = { operation: { type: 'filter', input: {}, expression: erroringExpression } };
