@@ -6,8 +6,7 @@
       "carph": "npmd:@comunica/actor-rdf-parse-html/",
       "files-carph": "carph:^1.0.0/",
 
-      "ActorRdfParseHtml": "carph:Actor/RdfParse/Html",
-      "mediatorRdfParse": "carph:mediatorRdfParse"
+      "ActorRdfParseHtml": "carph:Actor/RdfParse/Html"
     }
   ]
 }

@@ -14,6 +14,12 @@
       "comment": "An HTML actor that listens on the 'rdf-parse' bus.",
       "parameters": [
         {
+          "@id": "carph:mediatorRdfParse",
+          "comment": "The RDF Parse mediator",
+          "required": true,
+          "unique": true
+        },
+        {
           "@id": "caam:Actor/AbstractMediaTypedFixed/mediaTypeEntry",
           "defaultScoped": {
             "defaultScope": "carph:Actor/RdfParse/Html",
@@ -25,7 +31,13 @@
       ],
       "constructorArguments": [
         {
-          "extends": "cbrp:Actor/RdfParseFixedMediaTypes/constructorArgumentsObject"
+          "extends": "cbrp:Actor/RdfParseFixedMediaTypes/constructorArgumentsObject",
+          "fields": [
+            {
+              "keyRaw": "mediatorRdfParse",
+              "value": "carph:mediatorRdfParse"
+            }
+          ]
         }
       ]
     }
