@@ -11,6 +11,7 @@ import {
 import {ActionContext, Actor, IActorTest, Mediator} from "@comunica/core";
 import {Readable} from "stream";
 import {IActorArgsMediaTypedFixed} from "@comunica/actor-abstract-mediatyped";
+import {IActionRdfResolveQuadPattern} from "@comunica/bus-rdf-resolve-quad-pattern";
 
 /**
  * A HTML RDF Parse actor that listens on the 'rdf-parse' bus.
@@ -26,19 +27,38 @@ export class ActorRdfParseHtml extends ActorRdfParseFixedMediaTypes {
 
   constructor(args: IActorRdfParseFixedMediaTypesArgs) {
     super(args);
-    console.log("My HTML parser was instantiated!!");
+    console.log("\n\n[RdfParseHTML] My HTML parser was instantiated!!\n\n");
   }
+
+  // copied from ActorRdfResolveQuadPatternQpf
+  /*public async test(action: IActionRdfResolveQuadPattern): Promise<IActorTest> {
+    if (!this.hasContextSingleSource('hypermedia-html', action.context)) {
+      throw new Error(this.name
+        + ' requires a single source with a QPF \'hypermedia\' entrypoint to be present in the context.');
+    }
+    return true;
+  }*/
+
+
+  public async testHandleChecked(action: IActionRdfParse): Promise<boolean> {
+    console.log(action);
+    return true;
+  }
+
 
   public async runHandle(action: IActionRdfParse, mediaType: string, context: ActionContext):
       Promise<IActorRdfParseOutput> {
 
-    console.log("HTML parser started running...\n\n\n\n\n");
+    console.log("[RdfParseHTML] HTML parser started running...\n\n");
 
     const jsonStream: Readable = new Readable({ objectMode: true });
     const htmlString: string = await require('stream-to-string')(action.input);
 
     // JSON-LD (extraction needs refining)
     const jsonString: string = await this.extractJsonFromHtml(htmlString);
+
+    // console.log("\n" + jsonString + "\n");
+
     jsonStream.push(jsonString);
     jsonStream.push(null);
 
@@ -48,19 +68,16 @@ export class ActorRdfParseHtml extends ActorRdfParseFixedMediaTypes {
       handleMediaType: 'application/ld+json',
     };
 
-    console.log("\nParseAction:");
+    /*console.log("\n[RdfParseHTML] ParseAction:");
     console.log(jsonParseAction);
-    console.log("\nMediator:");
-    console.log(this.mediatorRdfParse);
-
-    console.log("\n\n\n\n");
+    console.log("\n[RdfParseHTML] Mediator:");
+    console.log(this.mediatorRdfParse);*/
 
     const result: IActorRdfParseOutput = (await this.mediatorRdfParse.mediate(jsonParseAction)).handle;
 
-    // TODO RDFa support
-    // Delegate all HTML to RDFa parser
-    // (the script tags can be removed during earlier parsing?)
-    // (Support Sink interface for Parser still to do)
+    console.log("\n[RdfParseHTML] Result:");
+    console.log(result);
+    console.log("\n\n");
 
     return result;
   }

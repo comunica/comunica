@@ -50,6 +50,7 @@ export class ActorRdfParseJsonLd extends ActorRdfParseFixedMediaTypes {
         quads.push(null);
       }
     };
+
     return { quads };
   }
 
