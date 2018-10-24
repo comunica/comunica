@@ -22,7 +22,7 @@ import {IActionRdfResolveQuadPattern} from "@comunica/bus-rdf-resolve-quad-patte
 // Gebaseerd op JSON LD parser
 export class ActorRdfParseHtml extends ActorRdfParseFixedMediaTypes {
 
-  private readonly mediatorRdfParse: Mediator<Actor<IActionRootRdfParse, IActorTestRootRdfParse,
+  public mediatorRdfParse: Mediator<Actor<IActionRootRdfParse, IActorTestRootRdfParse,
     IActorOutputRootRdfParse>, IActionRootRdfParse, IActorTestRootRdfParse, IActorOutputRootRdfParse>;
 
   constructor(args: IActorRdfParseFixedMediaTypesArgs) {

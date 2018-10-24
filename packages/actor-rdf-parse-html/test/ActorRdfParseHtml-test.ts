@@ -49,6 +49,7 @@ describe('ActorRdfParseHtml', () => {
 
     beforeEach(() => {
       actor = new ActorRdfParseHtml({name: 'actor', bus, mediaTypes: {'text/html': 1.0}});
+      actor.mediatorRdfParse = mediator;
     });
 
     describe('for parsing', () => {
