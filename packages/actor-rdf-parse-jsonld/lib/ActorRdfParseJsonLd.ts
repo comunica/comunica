@@ -22,16 +22,16 @@ export class ActorRdfParseJsonLd extends ActorRdfParseFixedMediaTypes {
 
   public static mapTerm(term: any): RDF.Term {
     switch (term.termType) {
-    case 'NamedNode':
-      return namedNode(term.value);
-    case 'BlankNode':
-      return blankNode(term.value.substr(2)); // Remove the '_:' prefix.
-    case 'Literal':
-      return literal(term.value, term.language || term.datatype);
-    /*case 'Variable':
-      return variable(term.value);*/ // Variables can not occur in JSON-LD bodies
-    case 'DefaultGraph':
-      return defaultGraph();
+      case 'NamedNode':
+        return namedNode(term.value);
+      case 'BlankNode':
+        return blankNode(term.value.substr(2)); // Remove the '_:' prefix.
+      case 'Literal':
+        return literal(term.value, term.language || term.datatype);
+      /*case 'Variable':
+        return variable(term.value);*/ // Variables can not occur in JSON-LD bodies
+      case 'DefaultGraph':
+        return defaultGraph();
     }
   }
 
@@ -50,7 +50,6 @@ export class ActorRdfParseJsonLd extends ActorRdfParseFixedMediaTypes {
         quads.push(null);
       }
     };
-
     return { quads };
   }
 

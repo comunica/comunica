@@ -56,6 +56,7 @@ export class ActorRdfParseHtml extends ActorRdfParseFixedMediaTypes {
       handleMediaType: 'application/ld+json',
     };
 
-    return (await this.mediatorRdfParse.mediate(jsonParseAction)).handle;
+    const mediatorResult = (await this.mediatorRdfParse.mediate(jsonParseAction));
+    return mediatorResult.handle;
   }
 }

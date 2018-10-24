@@ -44,10 +44,10 @@ describe('ActorRdfParseJsonLd', () => {
     it('when constructed with optional priorityScale should scale the priorities', () => {
       expect(new ActorRdfParseJsonLd({ name: 'actor', bus, mediaTypes: { A: 2, B: 1, C: 0 }, priorityScale: 0.5 })
         .mediaTypes).toEqual({
-          A: 1,
-          B: 0.5,
-          C: 0,
-        });
+        A: 1,
+        B: 0.5,
+        C: 0,
+      });
     });
   });
 
@@ -58,9 +58,9 @@ describe('ActorRdfParseJsonLd', () => {
 
     beforeEach(() => {
       actor = new ActorRdfParseJsonLd({ bus, mediaTypes: {
-        'application/json': 1.0,
-        'application/ld+json': 1.0,
-      }, name: 'actor'});
+          'application/json': 1.0,
+          'application/ld+json': 1.0,
+        }, name: 'actor'});
     });
 
     describe('for parsing', () => {
@@ -134,31 +134,31 @@ describe('ActorRdfParseJsonLd', () => {
 
       it('should run', () => {
         return expect(actor.run({ mediaTypes: true })).resolves.toEqual({ mediaTypes: {
-          'application/json': 1.0,
-          'application/ld+json': 1.0,
-        }});
+            'application/json': 1.0,
+            'application/ld+json': 1.0,
+          }});
       });
 
       it('should run with scaled priorities 0.5', () => {
         actor = new ActorRdfParseJsonLd({ bus, mediaTypes: {
-          'application/json': 1.0,
-          'application/ld+json': 1.0,
-        }, name: 'actor', priorityScale: 0.5 });
+            'application/json': 1.0,
+            'application/ld+json': 1.0,
+          }, name: 'actor', priorityScale: 0.5 });
         return expect(actor.run({ mediaTypes: true })).resolves.toEqual({ mediaTypes: {
-          'application/json': 0.5,
-          'application/ld+json': 0.5,
-        }});
+            'application/json': 0.5,
+            'application/ld+json': 0.5,
+          }});
       });
 
       it('should run with scaled priorities 0', () => {
         actor = new ActorRdfParseJsonLd({ bus, mediaTypes: {
-          'application/json': 1.0,
-          'application/ld+json': 1.0,
-        }, name: 'actor', priorityScale: 0 });
+            'application/json': 1.0,
+            'application/ld+json': 1.0,
+          }, name: 'actor', priorityScale: 0 });
         return expect(actor.run({ mediaTypes: true })).resolves.toEqual({ mediaTypes: {
-          'application/json': 0,
-          'application/ld+json': 0,
-        }});
+            'application/json': 0,
+            'application/ld+json': 0,
+          }});
       });
     });
   });

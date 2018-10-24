@@ -7,6 +7,7 @@ import {ActorRdfParseHtml} from "../lib/ActorRdfParseHtml";
 const quad = require('rdf-quad');
 const arrayifyStream = require('arrayify-stream');
 const stringToStream = require('streamify-string');
+const streamifyArray = require('streamify-array');
 
 describe('ActorRdfParseHtml', () => {
   let bus;
@@ -15,12 +16,10 @@ describe('ActorRdfParseHtml', () => {
   beforeEach(() => {
     bus = new Bus({name: 'bus'});
     mediator = {
-      mediate: () => {
-        return Promise.resolve({ data: new ArrayIterator([
-          quad('s1', 'p1', 'o1'),
-          quad('s1', 'p1', 'o2'),
-        ]), metadata: () => Promise.resolve({ totalItems: 2 }) });
-      },
+      mediate: () => Promise.resolve({ handle: {quads: streamifyArray([
+        quad('http://example.org/a', 'http://example.org/b', 'http://example.org/c'),
+        quad('http://example.org/a', 'http://example.org/d', 'http://example.org/e'),
+      ]) }}),
     };
   });
 
@@ -76,8 +75,8 @@ describe('ActorRdfParseHtml', () => {
       it('should run', () => {
         return actor.run({handle: { input }, handleMediaType: 'text/html'})
           .then(async (output) => expect(await arrayifyStream(output.handle.quads)).toEqualRdfQuadArray([
-            quad('http://example.org/a', 'http://example.org/b', '"http://example.org/c"'),
-            quad('http://example.org/a', 'http://example.org/d', '"http://example.org/e"'),
+            quad('http://example.org/a', 'http://example.org/b', 'http://example.org/c'),
+            quad('http://example.org/a', 'http://example.org/d', 'http://example.org/e'),
           ]));
       });
     });
