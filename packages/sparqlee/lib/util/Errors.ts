@@ -31,8 +31,8 @@ export class UnboundVariableError extends ExpressionError {
 }
 
 export class EBVCoercionError extends ExpressionError {
-  constructor(public args: E.Term) {
-    super('Cannot coerce this term to EBV');
+  constructor(public arg: E.Term) {
+    super(`Cannot coerce term to EBV ${JSON.stringify(arg)}`);
   }
 }
 

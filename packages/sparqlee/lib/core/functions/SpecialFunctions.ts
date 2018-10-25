@@ -1,13 +1,11 @@
 
-import * as Promise from 'bluebird';
-
 import * as C from '../../util/Consts';
 import * as Err from '../../util/Errors';
 import * as E from '../Expressions';
 
 import { Bindings } from '../Types';
 import { bool } from './Helpers';
-import { regularFunctions } from './index';
+import { regularFunctions, specialFunctions } from './index';
 import { SpecialFunctionAsync } from './Types';
 
 export type AsyncTerm = Promise<E.TermExpression>;
@@ -17,13 +15,13 @@ export class Bound extends SpecialFunctionAsync {
   operator = C.SpecialOperator.BOUND;
   arity = 1;
 
-  apply(args: E.Expression[], mapping: Bindings, evaluate: Evaluator): AsyncTerm {
+  async apply(args: E.Expression[], mapping: Bindings, evaluate: Evaluator): Promise<E.TermExpression> {
     const variable = args[0] as E.VariableExpression;
     if (variable.expressionType !== E.ExpressionType.Variable) {
       throw new Err.InvalidArgumentTypes(args, C.SpecialOperator.BOUND);
     }
     const val = mapping.has(variable.name) && !!mapping.get(variable.name);
-    return Promise.resolve(bool(val));
+    return bool(val);
   }
 }
 
@@ -31,14 +29,12 @@ export class If extends SpecialFunctionAsync {
   operator = C.SpecialOperator.IF;
   arity = 3;
 
-  apply(args: E.Expression[], mapping: Bindings, evaluate: Evaluator): AsyncTerm {
-    const valFirstP = evaluate(args[0], mapping);
-    return valFirstP.then((valFirst) => {
-      const ebv = valFirst.coerceEBV();
-      return (ebv)
-        ? evaluate(args[1], mapping)
-        : evaluate(args[2], mapping);
-    });
+  async apply(args: E.Expression[], mapping: Bindings, evaluate: Evaluator): Promise<E.TermExpression> {
+    const valFirst = await evaluate(args[0], mapping);
+    const ebv = valFirst.coerceEBV();
+    return (ebv)
+      ? evaluate(args[1], mapping)
+      : evaluate(args[2], mapping);
   }
 }
 
@@ -46,38 +42,17 @@ export class Coalesce extends SpecialFunctionAsync {
   operator = C.SpecialOperator.COALESCE;
   arity = Infinity;
 
-  apply(args: E.Expression[], mapping: Bindings, evaluate: Evaluator): AsyncTerm {
-    return Promise
-      .mapSeries(args, (expr) =>
-        evaluate(expr, mapping)
-          .then((term) => new CoalesceBreaker(term))
-          .catch((err) => new CoalesceContinuer(err))
-          .then((controller) => {
-            if (controller.type === 'breaker') {
-              throw controller;
-            } else {
-              return controller;
-            }
-          }))
-      .map((continuer: CoalesceContinuer) => continuer.err)
-      .then((errors) => { throw new Err.CoalesceError(errors); })
-      .catch(CoalesceBreaker, (br) => {
-        return br.val;
-      });
+  async apply(args: E.Expression[], mapping: Bindings, evaluate: Evaluator): Promise<E.TermExpression> {
+    const errors: Error[] = [];
+    for (const expr of args) {
+      try {
+        return await evaluate(expr, mapping);
+      } catch (err) {
+        errors.push(err);
+      }
+    }
+    throw new Err.CoalesceError(errors);
   }
-}
-
-// tslint:disable-next-line:interface-over-type-literal
-type CoalesceController = { type: 'breaker' | 'continuer' };
-class CoalesceBreaker extends Error implements CoalesceController {
-  type: 'breaker' = 'breaker';
-  constructor(public val: E.TermExpression) {
-    super();
-  }
-}
-class CoalesceContinuer implements CoalesceController {
-  type: 'continuer' = 'continuer';
-  constructor(public err: Error) { }
 }
 
 // TODO: Might benefit from some smart people's input
@@ -86,25 +61,21 @@ export class LogicalOrAsync extends SpecialFunctionAsync {
   operator = C.SpecialOperator.LOGICAL_OR;
   arity = 2;
 
-  apply(args: E.Expression[], mapping: Bindings, evaluate: Evaluator): AsyncTerm {
+  async apply(args: E.Expression[], mapping: Bindings, evaluate: Evaluator): Promise<E.TermExpression> {
     const [leftExpr, rightExpr] = args;
-    return evaluate(leftExpr, mapping)
-      .then((left) => left.coerceEBV())
-      .then((left) => {
-        if (left) { return bool(true); }
-
-        return evaluate(rightExpr, mapping)
-          .then((right) => right.coerceEBV())
-          .then((right) => bool(right));
-      })
-      .catch((err) => {
-        return evaluate(rightExpr, mapping)
-          .then((right) => right.coerceEBV())
-          .then((right) => {
-            if (right) { return bool(true); }
-            throw err;
-          });
-      });
+    try {
+      const leftTerm = await evaluate(leftExpr, mapping);
+      const left = leftTerm.coerceEBV();
+      if (left) { return bool(true); }
+      const rightTerm = await evaluate(rightExpr, mapping);
+      const right = rightTerm.coerceEBV();
+      return bool(right);
+    } catch (leftErr) {
+      const rightTerm = await evaluate(rightExpr, mapping);
+      const right = rightTerm.coerceEBV();
+      if (!right) { throw leftErr; }
+      return bool(true);
+    }
   }
 }
 
@@ -113,25 +84,21 @@ export class LogicalAndAsync extends SpecialFunctionAsync {
   operator = C.SpecialOperator.LOGICAL_AND;
   arity = 2;
 
-  apply(args: E.Expression[], mapping: Bindings, evaluate: Evaluator): AsyncTerm {
+  async apply(args: E.Expression[], mapping: Bindings, evaluate: Evaluator): Promise<E.TermExpression> {
     const [leftExpr, rightExpr] = args;
-
-    return evaluate(leftExpr, mapping)
-      .then((left) => left.coerceEBV())
-      .then((left) => {
-        if (!left) { return bool(false); }
-        return evaluate(rightExpr, mapping)
-          .then((right) => right.coerceEBV())
-          .then((right) => bool(right));
-      })
-      .catch((err) => {
-        return evaluate(rightExpr, mapping)
-          .then((right) => right.coerceEBV())
-          .then((right) => {
-            if (!right) { return bool(false); }
-            throw err;
-          });
-      });
+    try {
+      const leftTerm = await evaluate(leftExpr, mapping);
+      const left = leftTerm.coerceEBV();
+      if (!left) { return bool(false); }
+      const rightTerm = await evaluate(rightExpr, mapping);
+      const right = rightTerm.coerceEBV();
+      return bool(right);
+    } catch (leftErr) {
+      const rightTerm = await evaluate(rightExpr, mapping);
+      const right = rightTerm.coerceEBV();
+      if (right) { throw leftErr; }
+      return bool(false);
+    }
   }
 }
 
@@ -151,14 +118,12 @@ export class SameTerm extends SpecialFunctionAsync {
   operator = C.SpecialOperator.SAME_TERM;
   arity = 2;
 
-  apply(args: E.Expression[], mapping: Bindings, evaluate: Evaluator): AsyncTerm {
+  async apply(args: E.Expression[], mapping: Bindings, evaluate: Evaluator): Promise<E.TermExpression> {
     if (args.length !== 2) { throw new Err.InvalidArity(args, C.SpecialOperator.SAME_TERM); }
     const [leftExpr, rightExpr] = args.map((a) => evaluate(a, mapping));
-    return leftExpr.then((left) => {
-      return rightExpr.then((right) => {
-        return bool(left.toRDF().equals(right.toRDF()));
-      });
-    });
+    const left = await leftExpr;
+    const right = await rightExpr;
+    return bool(left.toRDF().equals(right.toRDF()));
   }
 }
 
@@ -166,43 +131,48 @@ export class In extends SpecialFunctionAsync {
   operator = C.SpecialOperator.IN;
   arity = Infinity;
 
-  apply(args: E.Expression[], mapping: Bindings, evaluate: Evaluator): AsyncTerm {
+  async apply(args: E.Expression[], mapping: Bindings, evaluate: Evaluator): Promise<E.TermExpression> {
     if (args.length < 1) { throw new Err.InvalidArity(args, C.SpecialOperator.IN); }
-    const [left, ...remaining] = args;
-    const thunks = remaining.map((expr) => () => evaluate(expr, mapping));
-    return evaluate(left, mapping)
-      .then((_left) => inR(_left, thunks, []));
+    const [leftExpr, ...remaining] = args;
+    // const thunks = remaining.map((expr) => () => evaluate(expr, mapping));
+    const left = await evaluate(leftExpr, mapping);
+    return inRecursive(left, { args: remaining, mapping, evaluate }, []);
   }
 }
 
-function inR(left: E.TermExpression, args: Array<() => AsyncTerm>, results: Array<Error | false>): AsyncTerm {
+interface Context { args: E.Expression[]; mapping: Bindings; evaluate: Evaluator; }
+
+async function inRecursive(
+  needle: E.TermExpression,
+  { args, mapping, evaluate }: Context,
+  results: Array<Error | false>,
+): Promise<E.TermExpression> {
+
   if (args.length === 0) {
-    return (results.every((v) => !v))
-      ? Promise.resolve(bool(false))
-      : Promise.reject(new Err.InError(results));
+    const noErrors = results.every((v) => !v);
+    return (noErrors) ? bool(false) : Promise.reject(new Err.InError(results));
   }
-  const first = args.shift();
-  return first()
-    .then((v) => {
-      const op = regularFunctions.get(C.Operator.EQUAL);
-      return op.apply([left, v]);
-    })
-    .then(
-      (result) => ((result as E.BooleanLiteral).typedValue)
-        ? bool(true)
-        : inR(left, args, [...results, false]),
-      (err) => inR(left, args, [...results, err]),
-    );
+
+  try {
+    const next = await evaluate(args.shift(), mapping);
+    const isEqual = regularFunctions.get(C.Operator.EQUAL);
+    if (isEqual.apply([needle, next])) {
+      return bool(true);
+    } else {
+      inRecursive(needle, { args, mapping, evaluate }, [...results, false]);
+    }
+  } catch (err) {
+    return inRecursive(needle, { args, mapping, evaluate }, [...results, err]);
+  }
 }
 
 export class NotIn extends SpecialFunctionAsync {
   operator = C.SpecialOperator.NOT_IN;
   arity = Infinity;
 
-  apply(args: E.Expression[], mapping: Bindings, evaluate: Evaluator): AsyncTerm {
-    return new In()
-      .apply(args, mapping, evaluate)
-      .then((term: E.TermExpression) => (term as E.BooleanLiteral).typedValue)
-      .then((isIn) => bool(!isIn));
+  async apply(args: E.Expression[], mapping: Bindings, evaluate: Evaluator): Promise<E.TermExpression> {
+    const _in = specialFunctions.get(C.SpecialOperator.IN);
+    const isIn = await _in.apply(args, mapping, evaluate);
+    return bool(!(isIn as E.BooleanLiteral).typedValue);
   }
 }

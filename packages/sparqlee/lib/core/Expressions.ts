@@ -1,5 +1,4 @@
 import * as RDFDM from '@rdfjs/data-model';
-import * as Promise from 'bluebird';
 import * as RDF from 'rdf-js';
 import { Algebra } from 'sparqlalgebrajs';
 

@@ -1,5 +1,4 @@
 import * as RDFDM from '@rdfjs/data-model';
-import * as Promise from 'bluebird';
 import { Map } from 'immutable';
 import * as RDF from 'rdf-js';
 
@@ -18,7 +17,7 @@ export class Example {
     this.mapping = mapping || (() => Bindings({}));
   }
 
-  evaluate(mapping?: Bindings): Promise<RDF.Term> {
+  async evaluate(mapping?: Bindings): Promise<RDF.Term> {
     const evaluator = new AsyncEvaluator(this.expression, mockLookUp, mockAggregator);
     return mapping
       ? evaluator.evaluate(mapping)

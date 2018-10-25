@@ -1,4 +1,3 @@
-import * as Promise from 'bluebird';
 import { Map } from 'immutable';
 import * as RDF from 'rdf-js';
 import { Algebra as Alg } from 'sparqlalgebrajs';
@@ -25,8 +24,7 @@ export function Bindings(hash: { [key: string]: RDF.Term }): Bindings {
 // TODO: Document
 export type AsyncLookUp = (expr: Alg.ExistenceExpression) => Promise<boolean>;
 
-// tslint:disable-next-line:interface-over-type-literal
-export type AsyncAggregator = {
+export interface AsyncAggregator {
   count(exp: Alg.Expression): Promise<number>,
   sum(exp: Alg.Expression): Promise<number>,
   min(exp: Alg.Expression): Promise<number>,
@@ -34,4 +32,4 @@ export type AsyncAggregator = {
   avg(exp: Alg.Expression): Promise<number>,
   groupConcat(exp: Alg.Expression): Promise<string>,
   sample(exp: Alg.Expression): Promise<RDF.Term>,
-};
+}

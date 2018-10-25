@@ -1,4 +1,3 @@
-import * as Promise from 'bluebird';
 import { List, Map } from 'immutable';
 
 import * as C from '../../util/Consts';

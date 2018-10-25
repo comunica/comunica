@@ -169,9 +169,6 @@ const _definitions: { [key in C.Operator]: Definition } = {
   // --------------------------------------------------------------------------
   // Functions on strings
   // https://www.w3.org/TR/sparql11-query/#func-forms
-  // TODO: Note somewhere that 'overloaded' is in the context of this type system.
-  // Eg. strlen is overloaded, although it has identical behaviour,
-  // but the types can not be captured by a single ArgumentType.
   // --------------------------------------------------------------------------
   'strlen': {
     arity: 1,

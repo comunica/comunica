@@ -37,7 +37,6 @@
   "devDependencies": {
     "@types/asynciterator": "^1.1.0",
     "@types/benchmark": "^1.0.30",
-    "@types/bluebird": "^3.5.18",
     "@types/jest": "^23.3.2",
     "@types/lodash": "^4.14.105",
     "@types/lodash.isequal": "^4.5.2",
@@ -57,7 +56,6 @@
   },
   "dependencies": {
     "@rdfjs/data-model": "^1.1.0",
-    "bluebird": "^3.5.1",
     "immutable": "^3.8.2",
     "rdf-string": "^1.1.1",
     "sparqlalgebrajs": "^1.1.0"

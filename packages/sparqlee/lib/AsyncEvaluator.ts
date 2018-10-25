@@ -1,4 +1,3 @@
-import * as Promise from 'bluebird';
 import * as RDF from 'rdf-js';
 import { Algebra as Alg } from 'sparqlalgebrajs';
 
@@ -19,17 +18,17 @@ export class AsyncEvaluator {
     this.inputExpr = transformAlgebra(expr);
   }
 
-  evaluate(mapping: Bindings): Promise<RDF.Term> {
-    const result = this.evalRec(this.inputExpr, mapping);
-    return result.then((val) => log(val).toRDF());
+  async evaluate(mapping: Bindings): Promise<RDF.Term> {
+    const result = await this.evalRec(this.inputExpr, mapping);
+    return log(result).toRDF();
   }
 
-  evaluateAsEBV(mapping: Bindings): Promise<boolean> {
-    const result = this.evalRec(this.inputExpr, mapping);
-    return result.then((val) => log(val).coerceEBV());
+  async evaluateAsEBV(mapping: Bindings): Promise<boolean> {
+    const result = await this.evalRec(this.inputExpr, mapping);
+    return log(result).coerceEBV();
   }
 
-  evaluateAsInternal(mapping: Bindings): Promise<E.TermExpression> {
+  async evaluateAsInternal(mapping: Bindings): Promise<E.TermExpression> {
     return this.evalRec(this.inputExpr, mapping);
   }
 
@@ -44,56 +43,53 @@ export class AsyncEvaluator {
     [E.ExpressionType.Aggregate]: this.evalAggregate,
   };
 
-  private evalRec(expr: E.Expression, mapping: Bindings): Promise<E.TermExpression> {
+  private async evalRec(expr: E.Expression, mapping: Bindings): Promise<E.TermExpression> {
     const evaluatorFunction = this.evalLookup[expr.expressionType];
-    if (!evaluatorFunction) {
-      return Promise.reject(new Err.InvalidExpressionType(expr));
-    }
+    if (!evaluatorFunction) { throw new Err.InvalidExpressionType(expr); }
     return evaluatorFunction.bind(this)(expr, mapping);
   }
 
-  private evalTerm(expr: E.TermExpression, mapping: Bindings): Promise<E.TermExpression> {
-    return Promise.resolve(expr as E.TermExpression);
+  private async evalTerm(expr: E.TermExpression, mapping: Bindings): Promise<E.TermExpression> {
+    return expr as E.TermExpression;
   }
 
-  private evalVariable(expr: E.VariableExpression, mapping: Bindings): Promise<E.TermExpression> {
-    return Promise.try(() => {
-      const term = mapping.get(expr.name);
+  private async evalVariable(expr: E.VariableExpression, mapping: Bindings): Promise<E.TermExpression> {
+    const term = mapping.get(expr.name);
 
-      if (!term) { throw new Err.UnboundVariableError(expr.name, mapping); }
+    if (!term) { throw new Err.UnboundVariableError(expr.name, mapping); }
 
-      return transformTerm({
-        term,
-        type: 'expression',
-        expressionType: 'term',
-      }) as E.TermExpression;
-    });
+    return transformTerm({
+      term,
+      type: 'expression',
+      expressionType: 'term',
+    }) as E.TermExpression;
   }
 
-  private evalOperator(expr: E.OperatorExpression, mapping: Bindings): Promise<E.TermExpression> {
+  private async evalOperator(expr: E.OperatorExpression, mapping: Bindings): Promise<E.TermExpression> {
     const { func, args } = expr;
-    const pArgs = args.map((arg) => this.evalRec(arg, mapping));
-    return Promise.all(pArgs).then((rArgs) => func.apply(rArgs));
+    const argPromises = args.map((arg) => this.evalRec(arg, mapping));
+    const argResults = await Promise.all(argPromises);
+    return func.apply(argResults);
   }
 
-  private evalSpecialOperator(expr: E.SpecialOperatorExpression, mapping: Bindings): Promise<E.TermExpression> {
+  private async evalSpecialOperator(expr: E.SpecialOperatorExpression, mapping: Bindings): Promise<E.TermExpression> {
     const { func, args } = expr;
     return func.apply(args, mapping, this.evalRec.bind(this));
   }
 
   // TODO
-  private evalNamed(expr: E.NamedExpression, mapping: Bindings): Promise<E.TermExpression> {
-    return Promise.reject(new Err.UnimplementedError('Named Operator'));
+  private async evalNamed(expr: E.NamedExpression, mapping: Bindings): Promise<E.TermExpression> {
+    throw new Err.UnimplementedError('Named Operator');
   }
 
   // TODO
-  private evalExistence(expr: E.ExistenceExpression, mapping: Bindings): Promise<E.TermExpression> {
-    return Promise.reject(new Err.UnimplementedError('Existence Operator'));
+  private async evalExistence(expr: E.ExistenceExpression, mapping: Bindings): Promise<E.TermExpression> {
+    throw new Err.UnimplementedError('Existence Operator');
   }
 
   // TODO
-  private evalAggregate(expr: E.AggregateExpression, mapping: Bindings): Promise<E.TermExpression> {
-    return Promise.reject(new Err.UnimplementedError('Aggregate Operator'));
+  private async evalAggregate(expr: E.AggregateExpression, mapping: Bindings): Promise<E.TermExpression> {
+    throw new Err.UnimplementedError('Aggregate Operator');
   }
 }
 
