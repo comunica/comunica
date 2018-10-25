@@ -20,8 +20,8 @@ const resultMap = {
   string: RDFDM.literal('string'),
   badlex: RDFDM.literal('badlex'),
   en: RDFDM.literal('en'),
-  xsdInt: RDFDM.literal(C.DataType.XSD_INTEGER),
-  xsdString: RDFDM.literal(C.DataType.XSD_STRING),
+  xsdInt: RDFDM.literal(C.TypeURL.XSD_INTEGER),
+  xsdString: RDFDM.literal(C.TypeURL.XSD_STRING),
   emptyString: RDFDM.literal(''),
   uri: RDFDM.literal('http://dbpedia.org/resource/Adventist_Heritage'),
 };

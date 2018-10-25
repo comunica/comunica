@@ -7,7 +7,7 @@ import { Algebra as Alg } from 'sparqlalgebrajs';
 import { ArrayIterator, AsyncIterator } from 'asynciterator';
 import { AsyncEvaluator } from '../lib/AsyncEvaluator';
 import { Bindings } from '../lib/core/Types';
-import { DataType as DT } from '../lib/util/Consts';
+import { TypeURL as DT } from '../lib/util/Consts';
 import * as C from '../lib/util/Consts';
 import * as U from '../util/Util';
 // import { Example, example1, mockLookUp, parse, parseFull } from '../util/Util';

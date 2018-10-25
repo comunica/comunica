@@ -6,7 +6,7 @@ import * as E from './../Expressions';
 import * as Special from './SpecialFunctions';
 import * as X from './XPath';
 
-import { DataType as DT } from '../../util/Consts';
+import { TypeURL as DT } from '../../util/Consts';
 import { ExpressionError, UnimplementedError } from '../../util/Errors';
 import { arithmetic, binary, bool, list, number, xPathTest } from './Helpers';
 import { OverloadMap, SpecialFunctionAsync } from './Types';
@@ -162,7 +162,7 @@ const _definitions: { [key in C.Operator]: Definition } = {
       // tslint:disable-next-line:no-any
       (args: Array<E.Literal<any>>) => {
         const arg = args[0];
-        return str((arg.dataType) ? arg.dataType.value : '');
+        return str((arg.typeURL) ? arg.typeURL.value : '');
       },
     ),
   },
@@ -176,20 +176,14 @@ const _definitions: { [key in C.Operator]: Definition } = {
   'strlen': {
     arity: 1,
     overloads: forAll(
-      [['plain'], ['simple'], ['string']],
+      [['string'], ['langString']],
       (args: Term[]) => number(unary(X.stringLength, args), DT.XSD_INTEGER),
     ),
   },
   'langmatches': {
     arity: 2,
-    overloads: forAll(
-      [
-        // TODO: This deviates from the spec, as it only allows simple literals
-        ['simple', 'simple'],
-        ['simple', 'string'],
-        ['string', 'simple'],
-        ['string', 'string'],
-      ],
+    overloads: simple(
+      ['string', 'string'],
       (args: Term[]) => bool(binary(X.langMatches, args)),
     ),
   },
@@ -197,8 +191,12 @@ const _definitions: { [key in C.Operator]: Definition } = {
     arity: [2, 3],
     // // TODO: This deviates from the spec, as the second and third argument should be simple literals
     overloads: forAll(
-      [].concat(expand(['stringly', 'simple']))
-        .concat(expand(['stringly', 'simple', 'simple'])),
+      [
+        ['string', 'string'],
+        ['langString', 'string'],
+        ['string', 'string', 'string'],
+        ['langString', 'string', 'string'],
+      ],
       (args: Array<E.Literal<string>>) => bool(X.matches(
         args[0].typedValue,
         args[1].typedValue,

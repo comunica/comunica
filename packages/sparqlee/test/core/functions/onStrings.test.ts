@@ -24,10 +24,10 @@ const resultMap = {
   badlex: RDFDM.literal('badlex'),
   en: RDFDM.literal('en'),
 
-  4: RDFDM.literal('4', C.DataType.XSD_INTEGER),
-  5: RDFDM.literal('5', C.DataType.XSD_INTEGER),
-  6: RDFDM.literal('6', C.DataType.XSD_INTEGER),
-  int: RDFDM.literal(C.DataType.XSD_INTEGER),
+  4: RDFDM.literal('4', C.TypeURL.XSD_INTEGER),
+  5: RDFDM.literal('5', C.TypeURL.XSD_INTEGER),
+  6: RDFDM.literal('6', C.TypeURL.XSD_INTEGER),
+  int: RDFDM.literal(C.TypeURL.XSD_INTEGER),
 };
 
 const _default = { aliasMap, resultMap, arity: 2, notation: Notation.Function };

@@ -8,7 +8,7 @@ import { List, Map, Record } from 'immutable';
 import * as C from '../../util/Consts';
 import * as E from '../Expressions';
 
-import { DataType as DT } from '../../util/Consts';
+import { TypeURL as DT } from '../../util/Consts';
 import { InvalidLexicalForm, UnexpectedError } from '../../util/Errors';
 import { ArgumentType, OverloadMap } from './Types';
 
@@ -20,12 +20,12 @@ export function bool(val: boolean): E.BooleanLiteral {
   return new E.BooleanLiteral(val, undefined, C.make(DT.XSD_BOOLEAN));
 }
 
-export function number(num: number, dt?: C.DataType): E.NumericLiteral {
+export function number(num: number, dt?: C.TypeURL): E.NumericLiteral {
   return new E.NumericLiteral(num, undefined, C.make(dt || DT.XSD_FLOAT));
 }
 
-export function str(s: string): E.SimpleLiteral {
-  return new E.SimpleLiteral(s, s);
+export function str(s: string): E.StringLiteral {
+  return new E.StringLiteral(s);
 }
 
 export function list(...args: ArgumentType[]) {
@@ -38,15 +38,11 @@ export function list(...args: ArgumentType[]) {
 
 type Term = E.TermExpression;
 
-export type AliasType = 'stringly' | 'simple';
+export type AliasType = 'stringly';
 export function expand(allowedTypes: AliasType[]): ArgumentType[][] {
   const expandedArgs: ArgumentType[][] = allowedTypes.map((alias) => {
     if (alias === 'stringly') {
-      const expanded: ArgumentType[] = ['simple', 'plain', 'string'];
-      return expanded;
-    }
-    if (alias === 'simple') {
-      const expanded: ArgumentType[] = ['simple', 'string'];
+      const expanded: ArgumentType[] = ['string', 'langString'];
       return expanded;
     }
   });
@@ -94,7 +90,6 @@ export function xPathTest(
   const wrap = <T>(func: XPathTest<T>) => (args: Term[]) => bool(binary(func, args));
   return map([
     new Impl({ types: ['string', 'string'], func: wrap(strOp) }),
-    new Impl({ types: ['simple', 'simple'], func: wrap(strOp) }),
     new Impl({ types: ['boolean', 'boolean'], func: wrap(boolOp) }),
     new Impl({ types: ['date', 'date'], func: wrap(dateOp) }),
 
@@ -109,7 +104,7 @@ export function xPathTest(
   ].concat(numeric(() => numericHelper)));
 }
 
-export type OpFactory = (dt?: C.DataType) => E.SimpleApplication;
+export type OpFactory = (dt?: C.TypeURL) => E.SimpleApplication;
 
 /**
  * DataType will be generalized to float,

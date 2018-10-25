@@ -17,7 +17,7 @@ import { RegularFunc, SpecialFunc } from './index';
 
 // Function and operator arguments are 'flattened' in the SPARQL spec.
 // If the argument is a literal, the datatype often also matters.
-export type ArgumentType = 'term' | E.TermType | C.DataTypeCategory;
+export type ArgumentType = 'term' | E.TermType | C.Type;
 
 // Overloaded Functions -------------------------------------------------------
 
@@ -65,7 +65,7 @@ export class RegularFunction implements RegularFunc {
   // TODO: Clean up a bit
   private _monomorph(args: E.TermExpression[]): E.SimpleApplication {
     // tslint:disable-next-line:no-any
-    const argTypes = List(args.map((a: any) => a.category || a.termType));
+    const argTypes = List(args.map((a: any) => a.type || a.termType));
     const arity = args.length;
     return this.overloadMap.get(argTypes)
       || this.overloadMap.get(List(args.map((a: E.TermExpression) => a.termType)))

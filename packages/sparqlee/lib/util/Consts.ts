@@ -7,7 +7,7 @@ export const TRUE_STR = '"true"^^xsd:boolean';
 export const FALSE_STR = '"false"^^xsd:boolean';
 export const EVB_ERR_STR = '"not an dateTime"^^xsd:dateTime';
 
-export enum DataType {
+export enum TypeURL {
   XSD_STRING = 'http://www.w3.org/2001/XMLSchema#string',
   RDF_LANG_STRING = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#langString',
 
@@ -36,77 +36,76 @@ export enum DataType {
   XSD_POSITIVE_INTEGER = 'http://www.w3.org/2001/XMLSchema#positiveInteger',
 }
 
-export function make(dt: DataType) {
+export function make(dt: TypeURL) {
   return RDFDM.namedNode(dt);
 }
 
 // https://www.w3.org/TR/sparql11-query/#operandDataTypes
 export enum NumericType {
-  XSD_INTEGER = DataType.XSD_INTEGER,
-  XSD_DECIMAL = DataType.XSD_DECIMAL,
-  XSD_FLOAT = DataType.XSD_FLOAT,
-  XSD_DOUBLE = DataType.XSD_DOUBLE,
-  XSD_NON_POSITIVE_INTEGER = DataType.XSD_NON_POSITIVE_INTEGER,
-  XSD_NEGATIVE_INTEGER = DataType.XSD_NEGATIVE_INTEGER,
-  XSD_LONG = DataType.XSD_LONG,
-  XSD_INT = DataType.XSD_INT,
-  XSD_SHORT = DataType.XSD_SHORT,
-  XSD_BYTE = DataType.XSD_BYTE,
-  XSD_NON_NEGATIVE_INTEGER = DataType.XSD_NON_NEGATIVE_INTEGER,
-  XSD_UNSIGNED_LONG = DataType.XSD_UNSIGNED_LONG,
-  XSD_UNSIGNED_INT = DataType.XSD_UNSIGNED_INT,
-  XSD_UNSIGNED_SHORT = DataType.XSD_UNSIGNED_SHORT,
-  XSD_UNSIGNED_BYTE = DataType.XSD_UNSIGNED_BYTE,
-  XSD_POSITIVE_INTEGER = DataType.XSD_POSITIVE_INTEGER,
+  XSD_INTEGER = TypeURL.XSD_INTEGER,
+  XSD_DECIMAL = TypeURL.XSD_DECIMAL,
+  XSD_FLOAT = TypeURL.XSD_FLOAT,
+  XSD_DOUBLE = TypeURL.XSD_DOUBLE,
+  XSD_NON_POSITIVE_INTEGER = TypeURL.XSD_NON_POSITIVE_INTEGER,
+  XSD_NEGATIVE_INTEGER = TypeURL.XSD_NEGATIVE_INTEGER,
+  XSD_LONG = TypeURL.XSD_LONG,
+  XSD_INT = TypeURL.XSD_INT,
+  XSD_SHORT = TypeURL.XSD_SHORT,
+  XSD_BYTE = TypeURL.XSD_BYTE,
+  XSD_NON_NEGATIVE_INTEGER = TypeURL.XSD_NON_NEGATIVE_INTEGER,
+  XSD_UNSIGNED_LONG = TypeURL.XSD_UNSIGNED_LONG,
+  XSD_UNSIGNED_INT = TypeURL.XSD_UNSIGNED_INT,
+  XSD_UNSIGNED_SHORT = TypeURL.XSD_UNSIGNED_SHORT,
+  XSD_UNSIGNED_BYTE = TypeURL.XSD_UNSIGNED_BYTE,
+  XSD_POSITIVE_INTEGER = TypeURL.XSD_POSITIVE_INTEGER,
 }
 
 export const commonTerms: { [key: string]: RDF.Term } = {
-  true: RDFDM.literal('true', RDFDM.namedNode(DataType.XSD_BOOLEAN)),
-  false: RDFDM.literal('false', RDFDM.namedNode(DataType.XSD_BOOLEAN)),
+  true: RDFDM.literal('true', RDFDM.namedNode(TypeURL.XSD_BOOLEAN)),
+  false: RDFDM.literal('false', RDFDM.namedNode(TypeURL.XSD_BOOLEAN)),
 };
 
-export type DataTypeCategory =
+export type Type =
   'string'
+  | 'langString'
   | 'date'
   | 'boolean'
   | 'integer'
   | 'decimal'
   | 'float'
   | 'double'
-  | 'simple' // Some things are defined for simple strings
-  | 'plain' // but not for general plain ones.
   | 'other'
   | 'invalid';
 
 export type NumericTypeCategory = 'integer' | 'decimal' | 'float' | 'double';
 export const NumericTypeCategories = Set(['integer', 'decimal', 'float', 'double']);
 
-export function categorize(dataType: string): DataTypeCategory {
-  switch (dataType) {
+export function type(typeURL: string): Type {
+  switch (typeURL) {
     case null:
     case undefined:
-    case '': return 'plain';
-    case DataType.XSD_STRING:
-    case DataType.RDF_LANG_STRING: return 'string';
-    case DataType.XSD_DATE_TIME: return 'date';
-    case DataType.XSD_BOOLEAN: return 'boolean';
+    case '':
+    case TypeURL.XSD_STRING: return 'string';
+    case TypeURL.RDF_LANG_STRING: return 'langString';
+    case TypeURL.XSD_DATE_TIME: return 'date';
+    case TypeURL.XSD_BOOLEAN: return 'boolean';
 
-    case DataType.XSD_DECIMAL: return 'decimal';
-    case DataType.XSD_FLOAT: return 'float';
-    case DataType.XSD_DOUBLE: return 'double';
-    case DataType.XSD_INTEGER:
-    case DataType.XSD_NON_POSITIVE_INTEGER:
-    case DataType.XSD_NEGATIVE_INTEGER:
-    case DataType.XSD_LONG:
-    case DataType.XSD_INT:
-    case DataType.XSD_SHORT:
-    case DataType.XSD_BYTE:
-    case DataType.XSD_NON_NEGATIVE_INTEGER:
-    case DataType.XSD_UNSIGNED_LONG:
-    case DataType.XSD_UNSIGNED_INT:
-    case DataType.XSD_UNSIGNED_SHORT:
-    case DataType.XSD_UNSIGNED_BYTE:
-    case DataType.XSD_POSITIVE_INTEGER: return 'integer';
+    case TypeURL.XSD_DECIMAL: return 'decimal';
+    case TypeURL.XSD_FLOAT: return 'float';
+    case TypeURL.XSD_DOUBLE: return 'double';
+    case TypeURL.XSD_INTEGER:
+    case TypeURL.XSD_NON_POSITIVE_INTEGER:
+    case TypeURL.XSD_NEGATIVE_INTEGER:
+    case TypeURL.XSD_LONG:
+    case TypeURL.XSD_INT:
+    case TypeURL.XSD_SHORT:
+    case TypeURL.XSD_BYTE:
+    case TypeURL.XSD_NON_NEGATIVE_INTEGER:
+    case TypeURL.XSD_UNSIGNED_LONG:
+    case TypeURL.XSD_UNSIGNED_INT:
+    case TypeURL.XSD_UNSIGNED_SHORT:
+    case TypeURL.XSD_UNSIGNED_BYTE:
+    case TypeURL.XSD_POSITIVE_INTEGER: return 'integer';
     default: return 'other';
   }
 }
@@ -114,14 +113,14 @@ export function categorize(dataType: string): DataTypeCategory {
 // If datatypes get lost or lose specificity during operations, we can insert a
 // concrete type, since categories should remain the same. This mostly (only)
 // relevant for integer subtypes.
-const _decategorize = Map<DataTypeCategory, DataType>([
-  ['integer', DataType.XSD_INTEGER],
-  ['float', DataType.XSD_FLOAT],
-  ['double', DataType.XSD_DOUBLE],
-  ['decimal', DataType.XSD_DECIMAL],
+const _decategorize = Map<Type, TypeURL>([
+  ['integer', TypeURL.XSD_INTEGER],
+  ['float', TypeURL.XSD_FLOAT],
+  ['double', TypeURL.XSD_DOUBLE],
+  ['decimal', TypeURL.XSD_DECIMAL],
 ]);
 
-export function decategorize(cat: DataTypeCategory): DataType {
+export function decategorize(cat: Type): TypeURL {
   return _decategorize.get(cat);
 }
 

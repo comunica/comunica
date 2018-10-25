@@ -6,7 +6,7 @@ import * as RDF from 'rdf-js';
 import { Algebra as Alg, translate } from 'sparqlalgebrajs';
 import { AsyncEvaluator } from '../lib/AsyncEvaluator';
 import { Bindings } from '../lib/core/Types';
-import { DataType as DT } from '../lib/util/Consts';
+import { TypeURL as DT } from '../lib/util/Consts';
 import { UnimplementedError } from '../lib/util/Errors';
 
 export class Example {

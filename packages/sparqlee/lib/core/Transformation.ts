@@ -8,7 +8,7 @@ import * as Err from '../util/Errors';
 import * as P from '../util/Parsing';
 import * as E from './Expressions';
 
-import { DataType as DT } from '../util/Consts';
+import { TypeURL as DT } from '../util/Consts';
 import { functions } from './functions';
 
 export function transformAlgebra(expr: Alg.Expression): E.Expression {
@@ -44,24 +44,24 @@ export function transformTerm(term: Alg.TermExpression): E.Expression {
 function tranformLiteral(lit: RDF.Literal): E.Literal<any> {
 
   if (!lit.datatype) {
-    if (lit.language) { return new E.PlainLiteral(lit.value, lit.value, lit.language); }
-    return new E.SimpleLiteral(lit.value, lit.value);
+    return (lit.language)
+      ? new E.LangStringLiteral(lit.value, lit.language)
+      : new E.StringLiteral(lit.value);
   }
 
   switch (lit.datatype.value) {
     case null:
     case undefined:
     case '': {
-      if (lit.language) {
-        return new E.PlainLiteral(lit.value, lit.value, lit.language);
-      }
-      return new E.SimpleLiteral(lit.value, lit.value);
+      return (lit.language)
+        ? new E.LangStringLiteral(lit.value, lit.language)
+        : new E.StringLiteral(lit.value);
     }
 
     case DT.XSD_STRING:
-      return new E.StringLiteral(lit.value, lit.value, lit.datatype);
+      return new E.StringLiteral(lit.value);
     case DT.RDF_LANG_STRING:
-      return new E.PlainLiteral(lit.value, lit.value, lit.language);
+      return new E.LangStringLiteral(lit.value, lit.language);
 
     case DT.XSD_DATE_TIME: {
       const val: Date = new Date(lit.value);

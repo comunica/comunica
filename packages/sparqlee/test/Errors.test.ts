@@ -3,9 +3,9 @@ import { Example } from '../util/Util';
 
 describe('the evaluation of', () => {
   describe('faulty expressions', () => {
-    it.skip('should throw ExpressionErrors', () => {
+    it('should throw ExpressionErrors', () => {
       const expr = new Example('str("testString") > 10');
-      // expect(expr.evaluate()).rejects.toThrow(ExpressionError);
+      expect(expr.evaluate()).rejects.toThrow(ExpressionError);
     });
   });
   describe('expressions with unimplemented features', () => {

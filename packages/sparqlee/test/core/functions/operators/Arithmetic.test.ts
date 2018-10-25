@@ -4,7 +4,7 @@ import * as C from '../../../../lib/util/Consts';
 import { AliasMap, Notation, testTable } from '../../../util/TruthTable';
 
 const CT = C.commonTerms;
-const D = C.DataType;
+const D = C.TypeURL;
 
 const aliasMap = {
   'error': C.EVB_ERR_STR,

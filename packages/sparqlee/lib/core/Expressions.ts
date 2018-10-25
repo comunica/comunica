@@ -134,29 +134,27 @@ export class NamedNode extends Term {
 }
 
 export interface LiteralTerm extends TermExpression {
-  category: C.DataTypeCategory;
+  type: C.Type;
 }
 
 export class Literal<T> extends Term implements LiteralTerm {
   expressionType: ExpressionType.Term = ExpressionType.Term;
   termType: 'literal' = 'literal';
-  category: C.DataTypeCategory;
+  type: C.Type;
 
   constructor(
     public typedValue: T,
     public strValue?: string,
-    public dataType?: RDF.NamedNode,
+    public typeURL?: RDF.NamedNode,
     public language?: string) {
     super();
-    this.category = (dataType)
-      ? C.categorize(dataType.value)
-      : 'plain';
+    this.type = C.type(typeURL.value);
   }
 
   toRDF(): RDF.Term {
     return RDFDM.literal(
       this.strValue || this.typedValue.toString(),
-      this.language || this.dataType);
+      this.language || this.typeURL);
   }
 
   str(): string {
@@ -165,7 +163,7 @@ export class Literal<T> extends Term implements LiteralTerm {
 }
 
 export class NumericLiteral extends Literal<number> {
-  category: C.NumericTypeCategory;
+  type: C.NumericTypeCategory;
   coerceEBV(): boolean {
     return !!this.typedValue;
   }
@@ -186,42 +184,25 @@ export class BooleanLiteral extends Literal<boolean> {
 
 export class DateTimeLiteral extends Literal<Date> { }
 
+export class LangStringLiteral extends Literal<string> {
+  constructor(public typedValue: string, public language: string) {
+    super(typedValue, typedValue, C.make(C.TypeURL.RDF_LANG_STRING), language);
+  }
+
+  coerceEBV(): boolean {
+    return this.strValue.length !== 0;
+  }
+}
+
 // https://www.w3.org/TR/2004/REC-rdf-concepts-20040210/#dfn-plain-literal
-export class PlainLiteral extends Literal<string> {
-  constructor(
-    public typedValue: string,
-    public strValue?: string,
-    public language?: string) {
-    super(typedValue, strValue, undefined, language);
-    this.category = 'plain';
-    this.dataType = (this.language)
-      ? C.make(C.DataType.RDF_LANG_STRING)
-      : undefined;
-  }
-
-  coerceEBV(): boolean {
-    return this.strValue.length !== 0;
-  }
-}
-
 // https://www.w3.org/TR/sparql11-query/#defn_SimpleLiteral
-export class SimpleLiteral extends PlainLiteral {
-  language?: undefined;
-  category: 'simple';
-
-  constructor(
-    public typedValue: string,
-    public strValue?: string) {
-    super(typedValue, strValue, undefined);
-    this.category = 'simple';
-  }
-
-  coerceEBV(): boolean {
-    return this.strValue.length !== 0;
-  }
-}
-
+// https://www.w3.org/TR/sparql11-query/#func-strings
+// This does not include language tagged literals
 export class StringLiteral extends Literal<string> {
+  constructor(public typedValue: string) {
+    super(typedValue, typedValue, C.make(C.TypeURL.XSD_STRING));
+  }
+
   coerceEBV(): boolean {
     return this.strValue.length !== 0;
   }
@@ -245,7 +226,7 @@ export class StringLiteral extends Literal<string> {
  *  - ... some other more precise thing i can't find...
  */
 export class NonLexicalLiteral extends Literal<undefined> {
-  private shouldBeCategory: C.DataTypeCategory;
+  private shouldBeCategory: C.Type;
   constructor(
     typedValue: undefined,
     strValue?: string,
@@ -253,8 +234,8 @@ export class NonLexicalLiteral extends Literal<undefined> {
     language?: string) {
     super(typedValue, strValue, dataType, language);
     this.typedValue = undefined;
-    this.category = 'invalid';
-    this.shouldBeCategory = C.categorize(dataType.value);
+    this.type = 'invalid';
+    this.shouldBeCategory = C.type(dataType.value);
   }
 
   coerceEBV(): boolean {
