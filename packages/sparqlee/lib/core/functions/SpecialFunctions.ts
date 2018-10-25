@@ -7,18 +7,20 @@ import * as E from '../Expressions';
 
 import { Bindings } from '../Types';
 import { bool } from './Helpers';
-import { functions } from './index';
-import { OverloadedFunction, SpecialFunctionAsync } from './Types';
+import { regularFunctions } from './index';
+import { SpecialFunctionAsync } from './Types';
 
 export type AsyncTerm = Promise<E.TermExpression>;
 export type Evaluator = (expr: E.Expression, mapping: Bindings) => AsyncTerm;
 
 export class Bound extends SpecialFunctionAsync {
-  operator = C.Operator.BOUND;
+  operator = C.SpecialOperator.BOUND;
+  arity = 1;
+
   apply(args: E.Expression[], mapping: Bindings, evaluate: Evaluator): AsyncTerm {
     const variable = args[0] as E.VariableExpression;
-    if (variable.expressionType !== 'variable') {
-      throw new Err.InvalidArgumentTypes(args, C.Operator.BOUND);
+    if (variable.expressionType !== E.ExpressionType.Variable) {
+      throw new Err.InvalidArgumentTypes(args, C.SpecialOperator.BOUND);
     }
     const val = mapping.has(variable.name) && !!mapping.get(variable.name);
     return Promise.resolve(bool(val));
@@ -26,7 +28,9 @@ export class Bound extends SpecialFunctionAsync {
 }
 
 export class If extends SpecialFunctionAsync {
-  operator = C.Operator.IF;
+  operator = C.SpecialOperator.IF;
+  arity = 3;
+
   apply(args: E.Expression[], mapping: Bindings, evaluate: Evaluator): AsyncTerm {
     const valFirstP = evaluate(args[0], mapping);
     return valFirstP.then((valFirst) => {
@@ -39,7 +43,9 @@ export class If extends SpecialFunctionAsync {
 }
 
 export class Coalesce extends SpecialFunctionAsync {
-  operator = C.Operator.COALESCE;
+  operator = C.SpecialOperator.COALESCE;
+  arity = Infinity;
+
   apply(args: E.Expression[], mapping: Bindings, evaluate: Evaluator): AsyncTerm {
     return Promise
       .mapSeries(args, (expr) =>
@@ -77,7 +83,9 @@ class CoalesceContinuer implements CoalesceController {
 // TODO: Might benefit from some smart people's input
 // https://www.w3.org/TR/sparql11-query/#func-logical-or
 export class LogicalOrAsync extends SpecialFunctionAsync {
-  operator = C.Operator.LOGICAL_OR;
+  operator = C.SpecialOperator.LOGICAL_OR;
+  arity = 2;
+
   apply(args: E.Expression[], mapping: Bindings, evaluate: Evaluator): AsyncTerm {
     const [leftExpr, rightExpr] = args;
     return evaluate(leftExpr, mapping)
@@ -102,7 +110,9 @@ export class LogicalOrAsync extends SpecialFunctionAsync {
 
 // https://www.w3.org/TR/sparql11-query/#func-logical-and
 export class LogicalAndAsync extends SpecialFunctionAsync {
-  operator = C.Operator.LOGICAL_AND;
+  operator = C.SpecialOperator.LOGICAL_AND;
+  arity = 2;
+
   apply(args: E.Expression[], mapping: Bindings, evaluate: Evaluator): AsyncTerm {
     const [leftExpr, rightExpr] = args;
 
@@ -137,14 +147,27 @@ export function RDFTermEqual(_left: E.TermExpression, _right: E.TermExpression) 
   return val;
 }
 
-export function sameTerm(left: E.TermExpression, right: E.TermExpression) {
-  return left.toRDF().equals(right.toRDF());
+export class SameTerm extends SpecialFunctionAsync {
+  operator = C.SpecialOperator.SAME_TERM;
+  arity = 2;
+
+  apply(args: E.Expression[], mapping: Bindings, evaluate: Evaluator): AsyncTerm {
+    if (args.length !== 2) { throw new Err.InvalidArity(args, C.SpecialOperator.SAME_TERM); }
+    const [leftExpr, rightExpr] = args.map((a) => evaluate(a, mapping));
+    return leftExpr.then((left) => {
+      return rightExpr.then((right) => {
+        return bool(left.toRDF().equals(right.toRDF()));
+      });
+    });
+  }
 }
 
 export class In extends SpecialFunctionAsync {
-  operator = C.Operator.IN;
+  operator = C.SpecialOperator.IN;
+  arity = Infinity;
+
   apply(args: E.Expression[], mapping: Bindings, evaluate: Evaluator): AsyncTerm {
-    if (args.length < 1) { throw new Err.InvalidArity(args, C.Operator.IN); }
+    if (args.length < 1) { throw new Err.InvalidArity(args, C.SpecialOperator.IN); }
     const [left, ...remaining] = args;
     const thunks = remaining.map((expr) => () => evaluate(expr, mapping));
     return evaluate(left, mapping)
@@ -161,7 +184,7 @@ function inR(left: E.TermExpression, args: Array<() => AsyncTerm>, results: Arra
   const first = args.shift();
   return first()
     .then((v) => {
-      const op = functions.get(C.Operator.EQUAL) as E.OverloadedFunc;
+      const op = regularFunctions.get(C.Operator.EQUAL);
       return op.apply([left, v]);
     })
     .then(
@@ -173,7 +196,9 @@ function inR(left: E.TermExpression, args: Array<() => AsyncTerm>, results: Arra
 }
 
 export class NotIn extends SpecialFunctionAsync {
-  operator = C.Operator.NOT_IN;
+  operator = C.SpecialOperator.NOT_IN;
+  arity = Infinity;
+
   apply(args: E.Expression[], mapping: Bindings, evaluate: Evaluator): AsyncTerm {
     return new In()
       .apply(args, mapping, evaluate)

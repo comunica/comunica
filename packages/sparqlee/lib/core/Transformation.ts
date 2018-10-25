@@ -3,12 +3,13 @@ import * as RDFString from 'rdf-string';
 import { Algebra as Alg } from 'sparqlalgebrajs';
 import { InvalidExpression } from './../util/Errors';
 
+import * as C from '../util/Consts';
 import * as Err from '../util/Errors';
 import * as P from '../util/Parsing';
 import * as E from './Expressions';
 
 import { DataType as DT } from '../util/Consts';
-import { makeOp } from './functions/index';
+import { functions } from './functions';
 
 export function transformAlgebra(expr: Alg.Expression): E.Expression {
   if (!expr) { throw new InvalidExpression(expr); }
@@ -17,12 +18,7 @@ export function transformAlgebra(expr: Alg.Expression): E.Expression {
 
   switch (expr.expressionType) {
     case types.TERM: return transformTerm(expr as Alg.TermExpression);
-    case types.OPERATOR: {
-      const opIn = expr as Alg.OperatorExpression;
-      const args = opIn.args.map((a) => transformAlgebra(a));
-      // NOTE: If abstracted, sync and async should be differentiated
-      return makeOp(opIn.operator, args);
-    }
+    case types.OPERATOR: return transformOperator(expr as Alg.OperatorExpression);
     // TODO
     case types.NAMED: throw new Err.UnimplementedError('Named Operator');
     case types.EXISTENCE: throw new Err.UnimplementedError('Existence Operator');
@@ -115,4 +111,35 @@ function tranformLiteral(lit: RDF.Literal): E.Literal<any> {
     }
     default: return new E.Literal<string>(lit.value, lit.value, lit.datatype);
   }
+}
+
+function transformOperator(expr: Alg.OperatorExpression)
+  : E.OperatorExpression | E.SpecialOperatorExpression {
+
+  if (!C.OperatorsAll.contains(expr.operator)) {
+    // TODO Throw better error
+    throw new Err.UnimplementedError(expr.operator);
+  }
+
+  const op = expr.operator as C.OperatorAll;
+  const args = expr.args.map((a) => transformAlgebra(a));
+  const func = functions.get(expr.operator as C.OperatorAll);
+
+  if (!hasCorrectArity(args, func.arity)) { throw new Err.InvalidArity(args, op); }
+
+  return (func.functionClass === 'special')
+    ? { func, args, expressionType: E.ExpressionType.SpecialOperator }
+    : { func, args, expressionType: E.ExpressionType.Operator };
+}
+
+function hasCorrectArity(args: E.Expression[], arity: number | number[]): boolean {
+  // Infinity is used to represent var-args, so it's always correct.
+  if (arity === Infinity) { return true; }
+
+  // If the function has overloaded arity, the actual arity needs to be present.
+  if (Array.isArray(arity)) {
+    return arity.indexOf(args.length) >= 0;
+  }
+
+  return args.length === arity;
 }

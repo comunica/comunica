@@ -57,13 +57,13 @@ export class InError extends ExpressionError {
 }
 
 export class InvalidArity extends ExpressionError {
-  constructor(public args: E.Expression[], public op: C.Operator) {
+  constructor(public args: E.Expression[], public op: C.Operator | C.SpecialOperator) {
     super('The amount of args don\'t match the arity of the operator.');
   }
 }
 
 export class InvalidArgumentTypes extends ExpressionError {
-  constructor(public args: E.Expression[], public op: C.Operator) {
+  constructor(public args: E.Expression[], public op: C.Operator | C.SpecialOperator) {
     super('Argument types not valid for operator.');
   }
 }

@@ -8,11 +8,6 @@ import * as Err from './util/Errors';
 import { transformAlgebra, transformTerm } from './core/Transformation';
 import { AsyncAggregator, AsyncLookUp, Bindings } from './core/Types';
 
-interface EvaluationContext {
-  expr: E.Expression;
-  mapping: Bindings;
-}
-
 export class AsyncEvaluator {
   private inputExpr: E.Expression;
 
@@ -40,12 +35,13 @@ export class AsyncEvaluator {
 
   // tslint:disable-next-line:member-ordering
   private readonly evalLookup: EvalLookup = {
-    [E.expressionTypes.TERM]: this.evalTerm.bind(this),
-    [E.expressionTypes.VARIABLE]: this.evalVariable,
-    [E.expressionTypes.OPERATOR]: this.evalOperator,
-    [E.expressionTypes.NAMED]: this.evalNamed,
-    [E.expressionTypes.EXISTENCE]: this.evalExistence,
-    [E.expressionTypes.AGGREGATE]: this.evalAggregate,
+    [E.ExpressionType.Term]: this.evalTerm.bind(this),
+    [E.ExpressionType.Variable]: this.evalVariable,
+    [E.ExpressionType.Operator]: this.evalOperator,
+    [E.ExpressionType.SpecialOperator]: this.evalSpecialOperator,
+    [E.ExpressionType.Named]: this.evalNamed,
+    [E.ExpressionType.Existence]: this.evalExistence,
+    [E.ExpressionType.Aggregate]: this.evalAggregate,
   };
 
   private evalRec(expr: E.Expression, mapping: Bindings): Promise<E.TermExpression> {
@@ -76,14 +72,13 @@ export class AsyncEvaluator {
 
   private evalOperator(expr: E.OperatorExpression, mapping: Bindings): Promise<E.TermExpression> {
     const { func, args } = expr;
-    switch (func.functionClass) {
-      case 'overloaded': {
-        const pArgs = args.map((arg) => this.evalRec(arg, mapping));
-        return Promise.all(pArgs).then((rArgs) => func.apply(rArgs));
-      }
-      case 'special': return func.apply(args, mapping, this.evalRec.bind(this));
-      default: throw new Err.UnexpectedError('Unknown function class.');
-    }
+    const pArgs = args.map((arg) => this.evalRec(arg, mapping));
+    return Promise.all(pArgs).then((rArgs) => func.apply(rArgs));
+  }
+
+  private evalSpecialOperator(expr: E.SpecialOperatorExpression, mapping: Bindings): Promise<E.TermExpression> {
+    const { func, args } = expr;
+    return func.apply(args, mapping, this.evalRec.bind(this));
   }
 
   // TODO

@@ -7,13 +7,14 @@ import { Bindings } from '../core/Types';
 import * as C from '../util/Consts';
 import { EBVCoercionError, InvalidArgumentTypes } from '../util/Errors';
 
-export enum expressionTypes {
-  AGGREGATE = 'aggregate',
-  EXISTENCE = 'existence',
-  NAMED = 'named',
-  OPERATOR = 'operator',
-  TERM = 'term',
-  VARIABLE = 'variable',
+export enum ExpressionType {
+  Aggregate = 'aggregate',
+  Existence = 'existence',
+  Named = 'named',
+  Operator = 'operator',
+  SpecialOperator = 'specialOperator',
+  Term = 'term',
+  Variable = 'variable',
 }
 
 export type Expression =
@@ -21,15 +22,16 @@ export type Expression =
   ExistenceExpression |
   NamedExpression |
   OperatorExpression |
+  SpecialOperatorExpression |
   TermExpression |
   VariableExpression;
 
 export interface ExpressionProps {
-  expressionType: 'aggregate' | 'existence' | 'named' | 'operator' | 'term' | 'variable';
+  expressionType: ExpressionType;
 }
 
 export type AggregateExpression = ExpressionProps & {
-  expressionType: 'aggregate';
+  expressionType: ExpressionType.Aggregate;
   aggregator: string;
   distinct: boolean;
   separator?: string; // used by GROUP_CONCAT
@@ -37,26 +39,44 @@ export type AggregateExpression = ExpressionProps & {
 };
 
 export type ExistenceExpression = ExpressionProps & {
-  expressionType: 'existence';
+  expressionType: ExpressionType.Existence;
   not: boolean;
   input: Algebra.Operation;
 };
 
 export type NamedExpression = ExpressionProps & {
-  expressionType: 'named';
+  expressionType: ExpressionType.Named;
   name: RDF.NamedNode;
   args: Expression[];
 };
 
+export type SimpleApplication = (args: TermExpression[]) => TermExpression;
 export type OperatorExpression = ExpressionProps & {
-  expressionType: 'operator';
+  expressionType: ExpressionType.Operator;
   args: Expression[];
-  func: SPARQLFunc;
+  func: {
+    apply: SimpleApplication;
+  };
 };
+
+export type SpecialOperatorExpression = ExpressionProps & {
+  expressionType: ExpressionType.SpecialOperator,
+  args: Expression[],
+  func: {
+    apply: SpecialApplication;
+  },
+};
+export type SpecialApplication =
+  (
+    args: Expression[],
+    mapping: Bindings,
+    evaluate: Evaluator,
+  ) => Promise<TermExpression>;
+export type Evaluator = (e: Expression, mapping: Bindings) => Promise<TermExpression>;
 
 export type TermType = 'namedNode' | 'literal';
 export type TermExpression = ExpressionProps & {
-  expressionType: 'term';
+  expressionType: ExpressionType.Term;
   termType: TermType;
   str(): string;
   coerceEBV(): boolean;
@@ -64,7 +84,7 @@ export type TermExpression = ExpressionProps & {
 };
 
 export type VariableExpression = ExpressionProps & {
-  expressionType: 'variable';
+  expressionType: ExpressionType.Variable;
   name: string;
 };
 
@@ -73,7 +93,7 @@ export type VariableExpression = ExpressionProps & {
 // ----------------------------------------------------------------------------
 
 export class Variable implements VariableExpression {
-  expressionType: 'variable' = 'variable';
+  expressionType: ExpressionType.Variable = ExpressionType.Variable;
   name: string;
   constructor(name: string) {
     this.name = name;
@@ -85,7 +105,7 @@ export class Variable implements VariableExpression {
 // ----------------------------------------------------------------------------
 
 export abstract class Term implements TermExpression {
-  expressionType: 'term' = 'term';
+  expressionType: ExpressionType.Term = ExpressionType.Term;
   abstract termType: TermType;
 
   abstract toRDF(): RDF.Term;
@@ -118,7 +138,7 @@ export interface LiteralTerm extends TermExpression {
 }
 
 export class Literal<T> extends Term implements LiteralTerm {
-  expressionType: 'term' = 'term';
+  expressionType: ExpressionType.Term = ExpressionType.Term;
   termType: 'literal' = 'literal';
   category: C.DataTypeCategory;
 
@@ -246,47 +266,3 @@ export class NonLexicalLiteral extends Literal<undefined> {
     throw new EBVCoercionError(this);
   }
 }
-
-// ----------------------------------------------------------------------------
-// Functions
-// ----------------------------------------------------------------------------
-
-/*
- * An Application is a type for a function, depending in the Application,
- * the evaluator needs to pass more info to the function (eg: SpecialApplication).
- *
- * Both SimpleFunctions and OverloadedFunctions have a simple application.
- * (although they evaluate in different manners, the API is the same).
- */
-
-// TODO Type better
-
-export interface SPARQLFuncProps {
-  functionClass: 'overloaded' | 'special';
-}
-
-export type SPARQLFunc = OverloadedFunc | SpecialFunc;
-export type OverloadedFunc = SPARQLFuncProps & {
-  functionClass: 'overloaded';
-  apply: SimpleApplication;
-};
-export type SpecialFunc = SPARQLFuncProps & {
-  functionClass: 'special';
-  apply: SpecialApplication;
-};
-
-// export interface ISPARQLFunc<SApplication extends Application> {
-//   functionClass: 'simple' | 'overloaded' | 'special';
-//   apply: SApplication;
-// }
-
-export type Application = SimpleApplication | SpecialApplication;
-export type SimpleApplication = (args: TermExpression[]) => TermExpression;
-export type SpecialApplication =
-  (
-    args: Expression[],
-    mapping: Bindings,
-    evaluate: Evaluator,
-  ) => Promise<TermExpression>;
-
-export type Evaluator = (e: Expression, mapping: Bindings) => Promise<TermExpression>;

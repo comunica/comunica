@@ -6,6 +6,8 @@ import * as E from '../Expressions';
 
 import { InvalidArgumentTypes } from '../../util/Errors';
 import { Bindings } from '../Types';
+import { Definition } from './Definitions';
+import { RegularFunc, SpecialFunc } from './index';
 
 // ----------------------------------------------------------------------------
 // Functions
@@ -44,14 +46,15 @@ export type ArgumentType = 'term' | E.TermType | C.DataTypeCategory;
 // Maps argument types on their specific implementation.
 export type OverloadMap = Map<List<ArgumentType>, E.SimpleApplication>;
 
-export class OverloadedFunction implements E.OverloadedFunc {
-  functionClass: 'overloaded' = 'overloaded';
+export class RegularFunction implements RegularFunc {
+  functionClass: 'regular' = 'regular';
+  arity: number | number[];
+  private overloadMap: OverloadMap;
 
-  constructor(
-    public operator: C.Operator,
-    public arity: number | number[],
-    private overloadMap: OverloadMap,
-  ) { }
+  constructor(public operator: C.Operator, definition: Definition) {
+    this.arity = definition.arity;
+    this.overloadMap = definition.overloads;
+  }
 
   apply(args: E.TermExpression[]): E.TermExpression {
     const func = this._monomorph(args);
@@ -87,9 +90,10 @@ export class OverloadedFunction implements E.OverloadedFunc {
  * in some contexts.
  */
 
-export abstract class SpecialFunctionAsync implements E.SpecialFunc {
+export abstract class SpecialFunctionAsync implements SpecialFunc {
   functionClass: 'special' = 'special';
-  abstract operator: C.Operator;
+  abstract arity: number;
+  abstract operator: C.SpecialOperator;
 
   abstract apply(
     args: E.Expression[],

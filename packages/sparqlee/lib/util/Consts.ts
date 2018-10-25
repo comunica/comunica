@@ -139,9 +139,8 @@ export enum Operator {
   NOT = '!',
   UMINUS = 'UMINUS',
   UPLUS = 'UPLUS',
-
-  LOGICAL_AND = '&&',
-  LOGICAL_OR = '||',
+  // LOGICAL_AND // See SpecialOperators
+  // LOGICAL_OR  // See SpecialOperators
 
   EQUAL = '=',
   NOT_EQUAL = '!=',
@@ -157,16 +156,7 @@ export enum Operator {
 
   // Functional Forms
   // https://www.w3.org/TR/sparql11-query/#func-forms
-  BOUND = 'bound',
-  IF = 'if',
-  COALESCE = 'coalesce',
-  // EXISTENCE = 'existence',
-  // LOGICAL_OR = '||',
-  // LOGICAL_AND = '&&',
-  // EQUAL = '=',
-  SAME_TERM = 'sameterm',
-  IN = 'in',
-  NOT_IN = 'notin',
+  // See SpecialOperators
 
   // Functions on RDF Terms
   // https://www.w3.org/TR/sparql11-query/#func-rdfTerms
@@ -196,25 +186,24 @@ export enum Operator {
 }
 
 // tslint:disable-next-line:no-any
-export const Operators = Set((Object as any).values(Operator));
+export const Operators = Set(Object.values(Operator));
 
-// export const SpecialOperators = Set<Operator>([3]);
+export enum SpecialOperator {
+  // Functional Forms
+  // https://www.w3.org/TR/sparql11-query/#func-forms
+  BOUND = 'bound',
+  IF = 'if',
+  COALESCE = 'coalesce',
+  // EXISTENCE = 'existence',
+  LOGICAL_OR = '||',
+  LOGICAL_AND = '&&',
+  // EQUAL = '=',
+  SAME_TERM = 'sameterm',
+  IN = 'in',
+  NOT_IN = 'notin',
+}
 
-// export enum OverloadedOperator {
-//   EQUAL = Operator.EQUAL,
-//   NOT_EQUAL = Operator.NOT_EQUAL,
-//   LT = Operator.LT,
-//   GT = Operator.GT,
-//   LTE = Operator.LTE,
-//   GTE = Operator.GTE,
+export const SpecialOperators = Set(Object.values(SpecialOperator));
 
-//   MULTIPLICATION = Operator.MULTIPLICATION,
-//   DIVISION = Operator.DIVISION,
-//   ADDITION = Operator.ADDITION,
-//   SUBTRACTION = Operator.SUBTRACTION,
-// }
-
-// export enum SpecialOperator {
-//   AND = Operator.AND,
-//   OR = Operator.OR,
-// }
+export type OperatorAll = Operator | SpecialOperator;
+export const OperatorsAll = Operators.union(SpecialOperators);

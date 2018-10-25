@@ -15,39 +15,26 @@ import { OverloadMap, SpecialFunctionAsync } from './Types';
 // The definitions and functionality for all operators
 // ----------------------------------------------------------------------------
 
-export type FuncDefinition =
-  | OverloadedDefinition
-  | SpecialDefinition;
-
-export interface DefinitionProps {
+export interface Definition {
   arity: number | number[];
-  category: C.OperatorCategory;
+  overloads: OverloadMap;
 }
 
-export type OverloadedDefinition = DefinitionProps & {
-  arity: number | number[];
-  category: 'overloaded';
-  overloads: OverloadMap;
-};
-
-export type SpecialDefinition = DefinitionProps & {
+export interface SpecialDefinition {
   arity: number;
-  category: 'special';
   constructor: new () => SpecialFunctionAsync;
-};
+}
 
-type IDefinitionMap = { [key in C.Operator]: FuncDefinition };
 type Term = E.TermExpression;
 
 // TODO Maybe split in definitions for overloaded and async functions.
-const _definitions: IDefinitionMap = {
+const _definitions: { [key in C.Operator]: Definition } = {
   // --------------------------------------------------------------------------
   // Operator Mapping
   // https://www.w3.org/TR/sparql11-query/#OperatorMapping
   // --------------------------------------------------------------------------
   '!': {
     arity: 1,
-    category: 'overloaded',
     overloads: simple(
       ['term'],
       () => { throw new UnimplementedError('! operator'); },
@@ -55,7 +42,6 @@ const _definitions: IDefinitionMap = {
   },
   'UPLUS': {
     arity: 1,
-    category: 'overloaded',
     overloads: simple(
       ['term'],
       () => { throw new UnimplementedError('Unary plus operator'); },
@@ -63,30 +49,17 @@ const _definitions: IDefinitionMap = {
   },
   'UMINUS': {
     arity: 1,
-    category: 'overloaded',
     overloads: simple(
       ['term'],
       () => { throw new UnimplementedError('Unary minus operator'); },
     ),
   },
-  '&&': {
-    arity: 2,
-    category: 'special',
-    constructor: Special.LogicalAndAsync,
-  },
-  '||': {
-    arity: 2,
-    category: 'special',
-    constructor: Special.LogicalOrAsync,
-  },
   '*': {
     arity: 2,
-    category: 'overloaded',
     overloads: arithmetic(X.numericMultiply),
   },
   '/': {
     arity: 2,
-    category: 'overloaded',
     overloads: arithmetic(X.numericDivide).set(
       list('integer', 'integer'),
       (args: Term[]) => {
@@ -99,17 +72,14 @@ const _definitions: IDefinitionMap = {
   },
   '+': {
     arity: 2,
-    category: 'overloaded',
     overloads: arithmetic(X.numericAdd),
   },
   '-': {
     arity: 2,
-    category: 'overloaded',
     overloads: arithmetic(X.numericSubtract),
   },
   '=': {
     arity: 2,
-    category: 'overloaded',
     overloads: xPathTest(
       X.numericEqual,
       (left, right) => X.numericEqual(X.compare(left, right), 0),
@@ -124,7 +94,6 @@ const _definitions: IDefinitionMap = {
   },
   '!=': {
     arity: 2,
-    category: 'overloaded',
     overloads: xPathTest(
       (left, right) => !X.numericEqual(left, right),
       (left, right) => !X.numericEqual(X.compare(left, right), 0),
@@ -134,7 +103,6 @@ const _definitions: IDefinitionMap = {
   },
   '<': {
     arity: 2,
-    category: 'overloaded',
     overloads: xPathTest(
       X.numericLessThan,
       (left, right) => X.numericEqual(X.compare(left, right), -1),
@@ -144,7 +112,6 @@ const _definitions: IDefinitionMap = {
   },
   '>': {
     arity: 2,
-    category: 'overloaded',
     overloads: xPathTest(
       X.numericGreaterThan,
       (left, right) => X.numericEqual(X.compare(left, right), 1),
@@ -154,7 +121,6 @@ const _definitions: IDefinitionMap = {
   },
   '<=': {
     arity: 2,
-    category: 'overloaded',
     overloads: xPathTest(
       (left, right) => X.numericLessThan(left, right) || X.numericEqual(left, right),
       (left, right) => !X.numericEqual(X.compare(left, right), 1),
@@ -164,7 +130,6 @@ const _definitions: IDefinitionMap = {
   },
   '>=': {
     arity: 2,
-    category: 'overloaded',
     overloads: xPathTest(
       (left, right) => X.numericGreaterThan(left, right) || X.numericEqual(left, right),
       (left, right) => !X.numericEqual(X.compare(left, right), -1),
@@ -173,49 +138,11 @@ const _definitions: IDefinitionMap = {
     ),
   },
   // --------------------------------------------------------------------------
-  // Functional Forms
-  // https://www.w3.org/TR/sparql11-query/#func-forms
-  // --------------------------------------------------------------------------
-  'bound': {
-    arity: 1,
-    category: 'special',
-    constructor: Special.Bound,
-  },
-  'if': {
-    arity: 3,
-    category: 'special',
-    constructor: Special.If,
-  },
-  'coalesce': {
-    arity: Infinity,
-    category: 'special',
-    constructor: Special.Coalesce,
-  },
-  'sameterm': {
-    arity: 2,
-    category: 'overloaded',
-    overloads: simple(
-      ['term', 'term'],
-      (args: Term[]) => bool(Special.sameTerm(args[1], args[2])),
-    ),
-  },
-  'in': {
-    arity: Infinity,
-    category: 'special',
-    constructor: Special.In,
-  },
-  'notin': {
-    arity: Infinity,
-    category: 'special',
-    constructor: Special.NotIn,
-  },
-  // --------------------------------------------------------------------------
   // Functions on RDF Terms
   // https://www.w3.org/TR/sparql11-query/#func-rdfTerms
   // --------------------------------------------------------------------------
   'str': {
     arity: 1,
-    category: 'overloaded',
     overloads: simple(
       ['term'],
       (args: Term[]) => str(args[0].str()),
@@ -223,7 +150,6 @@ const _definitions: IDefinitionMap = {
   },
   'lang': {
     arity: 1,
-    category: 'overloaded',
     overloads: simple(
       ['literal'],
       (args: Array<E.Literal<string>>) => str(args[0].language || ''),
@@ -231,7 +157,6 @@ const _definitions: IDefinitionMap = {
   },
   'datatype': {
     arity: 1,
-    category: 'overloaded',
     overloads: simple(
       ['literal'],
       // tslint:disable-next-line:no-any
@@ -250,7 +175,6 @@ const _definitions: IDefinitionMap = {
   // --------------------------------------------------------------------------
   'strlen': {
     arity: 1,
-    category: 'overloaded',
     overloads: forAll(
       [['plain'], ['simple'], ['string']],
       (args: Term[]) => number(unary(X.stringLength, args), DT.XSD_INTEGER),
@@ -258,7 +182,6 @@ const _definitions: IDefinitionMap = {
   },
   'langmatches': {
     arity: 2,
-    category: 'overloaded',
     overloads: forAll(
       [
         // TODO: This deviates from the spec, as it only allows simple literals
@@ -272,7 +195,6 @@ const _definitions: IDefinitionMap = {
   },
   'regex': {
     arity: [2, 3],
-    category: 'overloaded',
     // // TODO: This deviates from the spec, as the second and third argument should be simple literals
     overloads: forAll(
       [].concat(expand(['stringly', 'simple']))
@@ -291,7 +213,6 @@ const _definitions: IDefinitionMap = {
   // --------------------------------------------------------------------------
   'abs': {
     arity: 1,
-    category: 'overloaded',
     overloads: forAll(
       [['term']],
       () => { throw new UnimplementedError('abs'); },
@@ -304,7 +225,6 @@ const _definitions: IDefinitionMap = {
   // --------------------------------------------------------------------------
   'now': {
     arity: 0,
-    category: 'overloaded',
     overloads: simple(
       ['term'],
       () => { throw new UnimplementedError('now function'); },
@@ -322,4 +242,44 @@ const _definitions: IDefinitionMap = {
   // --------------------------------------------------------------------------
 };
 
-export const definitions = Map<C.Operator, FuncDefinition>(_definitions);
+const _specialDefinitions: { [key in C.SpecialOperator]: SpecialDefinition } = {
+  // --------------------------------------------------------------------------
+  // Functional Forms
+  // https://www.w3.org/TR/sparql11-query/#func-forms
+  // --------------------------------------------------------------------------
+  'bound': {
+    arity: 1,
+    constructor: Special.Bound,
+  },
+  'if': {
+    arity: 3,
+    constructor: Special.If,
+  },
+  'coalesce': {
+    arity: Infinity,
+    constructor: Special.Coalesce,
+  },
+  '&&': {
+    arity: 2,
+    constructor: Special.LogicalAndAsync,
+  },
+  '||': {
+    arity: 2,
+    constructor: Special.LogicalOrAsync,
+  },
+  'sameterm': {
+    arity: 2,
+    constructor: Special.SameTerm,
+  },
+  'in': {
+    arity: Infinity,
+    constructor: Special.In,
+  },
+  'notin': {
+    arity: Infinity,
+    constructor: Special.NotIn,
+  },
+};
+
+export const definitions = Map<C.Operator, Definition>(_definitions);
+export const specialDefinitions = Map<C.SpecialOperator, SpecialDefinition>(_specialDefinitions);
