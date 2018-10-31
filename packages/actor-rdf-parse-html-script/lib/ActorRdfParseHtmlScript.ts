@@ -26,8 +26,20 @@ export class ActorRdfParseHtml extends ActorRdfParseFixedMediaTypes {
     super(args);
   }
 
+  /**
+   * TODO:
+   * multiple script tags support
+   *
+   * All these go to N3 parser:
+   * application/trig
+   * application/n-quads
+   * text/turtle
+   * application/n-triples
+   * text/n3
+   */
+
   public async runHandle(action: IActionRdfParse, mediaType: string, context: ActionContext):
-      Promise<IActorRdfParseOutput> {
+    Promise<IActorRdfParseOutput> {
 
     const htmlString: string = await require('stream-to-string')(action.input);
 

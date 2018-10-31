@@ -1,18 +1,18 @@
 {
-  "name": "@comunica/actor-rdf-parse-html",
+  "name": "@comunica/actor-rdf-parse-html-script",
   "version": "1.0.0",
-  "description": "A html rdf-parse actor",
-  "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-parse-html",
+  "description": "A html-script rdf-parse actor",
+  "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-parse-html-script",
   "lsd:components": "components/components.jsonld",
   "lsd:contexts": {
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-parse-html/^1.0.0/components/context.jsonld": "components/context.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-parse-html-script/^1.0.0/components/context.jsonld": "components/context.jsonld"
   },
   "lsd:importPaths": {
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-parse-html/^1.0.0/components/": "components/"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-parse-html-script/^1.0.0/components/": "components/"
   },
   "main": "index.js",
   "typings": "index",
-  "repository": "https://github.com/comunica/comunica/tree/master/packages/actor-rdf-parse-html",
+  "repository": "https://github.com/comunica/comunica/tree/master/packages/actor-rdf-parse-html-script",
   "publishConfig": {
     "access": "public"
   },
@@ -20,7 +20,7 @@
     "comunica",
     "actor",
     "rdf-parse",
-    "html"
+    "html-script"
   ],
   "license": "MIT",
   "bugs": {
@@ -35,13 +35,12 @@
     "index.js"
   ],
   "peerDependencies": {
-    "@comunica/bus-rdf-parse": "^1.4.0",
-    "@comunica/core": "^1.4.0"
+    "@comunica/core": "^1.4.0",
+    "@comunica/bus-rdf-parse": "^1.4.0"
   },
   "devDependencies": {
-    "@comunica/bus-rdf-parse": "^1.4.0",
     "@comunica/core": "^1.4.0",
-    "jest": "^23.6.0"
+    "@comunica/bus-rdf-parse": "^1.4.0"
   },
   "jest": {
     "globals": {

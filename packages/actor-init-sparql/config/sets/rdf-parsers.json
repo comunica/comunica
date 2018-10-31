@@ -14,9 +14,9 @@
   "@id": "urn:comunica:my",
   "actors": [
     {
-      "@id": "config-sets:rdf-parsers.json#myRdfParserHtml",
-      "@type": "ActorRdfParseHtml",
-      "carph:mediatorRdfParse": {
+      "@id": "config-sets:rdf-parsers.json#myRdfParserHtmlScript",
+      "@type": "ActorRdfParseHtmlScript",
+      "carphs:mediatorRdfParse": {
         "@id": "config-sets:rdf-parsers.json#mediatorRdfParse",
         "@type": "MediatorRace",
         "cc:Mediator/bus": { "@id": "cbrp:Bus/RdfParse" }

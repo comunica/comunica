@@ -22,9 +22,9 @@ describe('ActorRdfParseHtml', () => {
     bus = new Bus({name: 'bus'});
     mediator = {
       mediate: () => Promise.resolve({ handle: {quads: streamifyArray([
-        quad('http://example.org/a', 'http://example.org/b', 'http://example.org/c'),
-        quad('http://example.org/a', 'http://example.org/d', 'http://example.org/e'),
-      ]) }}),
+            quad('http://example.org/a', 'http://example.org/b', 'http://example.org/c'),
+            quad('http://example.org/a', 'http://example.org/d', 'http://example.org/e'),
+          ]) }}),
     };
   });
 
