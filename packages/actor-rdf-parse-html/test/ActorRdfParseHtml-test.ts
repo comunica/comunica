@@ -59,11 +59,11 @@ describe('ActorRdfParseHtml', () => {
 
     describe('for parsing', () => {
       beforeEach(() => {
-        input = stringToStream(`&lt;script type="application/ld+json"&gt;{
+        input = stringToStream(`<script type="application/ld+json">{
             "@id": "http://example.org/a",
             "http://example.org/b": "http://example.org/c",
             "http://example.org/d": "http://example.org/e"
-          }&lt;/script&gt;`);
+          }</script>`);
       });
 
       it('should test on text/html', () => {
@@ -87,16 +87,16 @@ describe('ActorRdfParseHtml', () => {
       });
 
       it('should run with wrong script type', () => {
-        wrongInput = stringToStream(`&lt;script type="application/ld+json"&gt;{
+        wrongInput = stringToStream(`<script type="application/ld+json">{
             "@id": "http://example.org/a",
             "http://example.org/b": "http://example.org/c",
             "http://example.org/d": "http://example.org/e"
-          }&lt;/script&gt;
-          &lt;script type="text/plain"&gt;{
+          }</script>
+          <script type="text/plain">{
             "@id": "http://example.org/f",
             "http://example.org/g": "http://example.org/h",
             "http://example.org/i": "http://example.org/j"
-          }&lt;/script&gt;`);
+          }</script>`);
 
         const parseAction: IActionRdfParse = {
           input: wrongInput,

@@ -37,7 +37,6 @@ export class ActorRdfParseHtml extends ActorRdfParseFixedMediaTypes {
     const DOMParser = require('xmldom').DOMParser;
     const doc = new DOMParser().parseFromString(htmlString, 'text/html');
     const scripts = doc.getElementsByTagName('script');
-    console.log("HIEERRRRRRRRRRRRRR");
     for (let i = 0; i < scripts.length; i++) {
       if (scripts[i].getAttribute("type") === "application/ld+json") {
         jsonString += scripts[i].textContent;
