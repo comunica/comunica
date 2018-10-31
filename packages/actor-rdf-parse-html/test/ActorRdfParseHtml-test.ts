@@ -45,6 +45,7 @@ describe('ActorRdfParseHtml', () => {
   describe('An ActorRdfParseHtml instance', () => {
     let actor: ActorRdfParseHtml;
     let input: Readable;
+    let wrongInput: Readable;
 
     beforeEach(() => {
       actor = new ActorRdfParseHtml({name: 'actor', bus, mediaTypes: {'text/html': 1.0}});
@@ -53,7 +54,7 @@ describe('ActorRdfParseHtml', () => {
 
     describe('for parsing', () => {
       beforeEach(() => {
-        input = stringToStream(`&lt;script type="application/ld+json&gt;"{
+        input = stringToStream(`&lt;script type="application/ld+json"&gt;{
             "@id": "http://example.org/a",
             "http://example.org/b": "http://example.org/c",
             "http://example.org/d": "http://example.org/e"
@@ -74,6 +75,24 @@ describe('ActorRdfParseHtml', () => {
 
       it('should run', () => {
         return actor.run({handle: { input }, handleMediaType: 'text/html'})
+          .then(async (output) => expect(await arrayifyStream(output.handle.quads)).toEqualRdfQuadArray([
+            quad('http://example.org/a', 'http://example.org/b', 'http://example.org/c'),
+            quad('http://example.org/a', 'http://example.org/d', 'http://example.org/e'),
+          ]));
+      });
+
+      it('should run with wrong script type', () => {
+        wrongInput = stringToStream(`&lt;script type="application/ld+json"&gt;{
+            "@id": "http://example.org/a",
+            "http://example.org/b": "http://example.org/c",
+            "http://example.org/d": "http://example.org/e"
+          }&lt;/script&gt;
+          &lt;script type="text/plain"&gt;{
+            "@id": "http://example.org/f",
+            "http://example.org/g": "http://example.org/h",
+            "http://example.org/i": "http://example.org/j"
+          }&lt;/script&gt;`);
+        return actor.run({handle: { input: wrongInput }, handleMediaType: 'text/html'})
           .then(async (output) => expect(await arrayifyStream(output.handle.quads)).toEqualRdfQuadArray([
             quad('http://example.org/a', 'http://example.org/b', 'http://example.org/c'),
             quad('http://example.org/a', 'http://example.org/d', 'http://example.org/e'),

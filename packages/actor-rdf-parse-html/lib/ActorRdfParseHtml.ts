@@ -40,7 +40,7 @@ export class ActorRdfParseHtml extends ActorRdfParseFixedMediaTypes {
     const doc = new DOMParser().parseFromString(htmlString, 'text/html');
     const scripts = doc.getElementsByTagName('script');
     for (let i = 0; i < scripts.length; i++) {
-      if (scripts[i].getAttribute("type") === 'application/ld+json') {
+      if (scripts[i].getAttribute("type") === "application/ld+json") {
         jsonString += scripts[i].textContent;
       }
     }
