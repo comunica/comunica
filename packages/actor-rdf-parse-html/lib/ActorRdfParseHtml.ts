@@ -10,8 +10,6 @@ import {
 } from "@comunica/bus-rdf-parse";
 import {ActionContext, Actor, IActorTest, Mediator} from "@comunica/core";
 import {Readable} from "stream";
-import {IActorArgsMediaTypedFixed} from "@comunica/actor-abstract-mediatyped";
-import {IActionRdfResolveQuadPattern} from "@comunica/bus-rdf-resolve-quad-pattern";
 
 /**
  * A HTML RDF Parse actor that listens on the 'rdf-parse' bus.
@@ -34,11 +32,12 @@ export class ActorRdfParseHtml extends ActorRdfParseFixedMediaTypes {
 
     const htmlString: string = await require('stream-to-string')(action.input);
 
-    // JSON-LD
+    // JSON-LD extraction
     let jsonString: string = '';
     const DOMParser = require('xmldom').DOMParser;
     const doc = new DOMParser().parseFromString(htmlString, 'text/html');
     const scripts = doc.getElementsByTagName('script');
+    console.log("HIEERRRRRRRRRRRRRR");
     for (let i = 0; i < scripts.length; i++) {
       if (scripts[i].getAttribute("type") === "application/ld+json") {
         jsonString += scripts[i].textContent;

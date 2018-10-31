@@ -1,5 +1,10 @@
-import {ActorRdfParse, ActorRdfParseFixedMediaTypes} from "@comunica/bus-rdf-parse";
-import {Bus} from "@comunica/core";
+import {
+  ActorRdfParse,
+  ActorRdfParseFixedMediaTypes,
+  IActionRdfParse,
+  IActionRootRdfParse,
+} from "@comunica/bus-rdf-parse";
+import {ActionContext, Bus} from "@comunica/core";
 import {ArrayIterator} from "asynciterator";
 import "jest-rdf";
 import {Readable} from "stream";
@@ -92,8 +97,13 @@ describe('ActorRdfParseHtml', () => {
             "http://example.org/g": "http://example.org/h",
             "http://example.org/i": "http://example.org/j"
           }&lt;/script&gt;`);
-        return actor.run({handle: { input: wrongInput }, handleMediaType: 'text/html'})
-          .then(async (output) => expect(await arrayifyStream(output.handle.quads)).toEqualRdfQuadArray([
+
+        const parseAction: IActionRdfParse = {
+          input: wrongInput,
+        };
+
+        return actor.runHandle(parseAction, "text/html", parseAction.context)
+          .then(async (output) => expect(await arrayifyStream(output.quads)).toEqualRdfQuadArray([
             quad('http://example.org/a', 'http://example.org/b', 'http://example.org/c'),
             quad('http://example.org/a', 'http://example.org/d', 'http://example.org/e'),
           ]));
