@@ -17,7 +17,6 @@ import {Readable} from "stream";
  * It is able to extract JSON-LD from HTML files and parse the JSON-LD based RDF serializations
  * and announce the presence of them by media type.
  */
-// Gebaseerd op JSON LD parser
 export class ActorRdfParseHtml extends ActorRdfParseFixedMediaTypes {
 
   public mediatorRdfParse: Mediator<Actor<IActionRootRdfParse, IActorTestRootRdfParse,
