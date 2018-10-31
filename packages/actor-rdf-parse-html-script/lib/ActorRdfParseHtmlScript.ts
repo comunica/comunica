@@ -7,7 +7,7 @@ import {
   IActorRdfParseOutput,
   IActorTestRootRdfParse,
 } from "@comunica/bus-rdf-parse";
-import {ActionContext, Actor, IActorTest, Mediator} from "@comunica/core";
+import {ActionContext, Actor, Mediator} from "@comunica/core";
 import {Readable} from "stream";
 
 /**
@@ -23,6 +23,9 @@ export class ActorRdfParseHtmlScript extends ActorRdfParseFixedMediaTypes {
 
   constructor(args: IActorRdfParseFixedMediaTypesArgs) {
     super(args);
+    console.log("\n\n\n");
+    console.log(this);
+    console.log("\n\n\n");
   }
 
   /**
