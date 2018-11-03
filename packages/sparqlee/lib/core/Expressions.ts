@@ -2,9 +2,10 @@ import * as RDFDM from '@rdfjs/data-model';
 import * as RDF from 'rdf-js';
 import { Algebra } from 'sparqlalgebrajs';
 
-import { Bindings } from '../core/Types';
 import * as C from '../util/Consts';
-import { EBVCoercionError, InvalidArgumentTypes } from '../util/Errors';
+import * as Err from '../util/Errors';
+
+import { Bindings } from './Types';
 
 export enum ExpressionType {
   Aggregate = 'aggregate',
@@ -49,9 +50,13 @@ export type NamedExpression = ExpressionProps & {
   args: Expression[];
 };
 
-export type Application = SimpleApplication | SpecialApplication;
+export type Evaluator = (e: Expression, mapping: Bindings) => Promise<TermExpression>;
+export type EvalContext = { args: Expression[], mapping: Bindings, evaluate: Evaluator };
 
+export type Application = SimpleApplication | SpecialApplication;
 export type SimpleApplication = (args: TermExpression[]) => TermExpression;
+export type SpecialApplication = (context: EvalContext) => Promise<TermExpression>;
+
 export type OperatorExpression = ExpressionProps & {
   expressionType: ExpressionType.Operator;
   args: Expression[];
@@ -63,14 +68,6 @@ export type SpecialOperatorExpression = ExpressionProps & {
   args: Expression[],
   func: { apply: SpecialApplication; },
 };
-
-export type SpecialApplication =
-  (
-    args: Expression[],
-    mapping: Bindings,
-    evaluate: Evaluator,
-  ) => Promise<TermExpression>;
-export type Evaluator = (e: Expression, mapping: Bindings) => Promise<TermExpression>;
 
 export type TermType = 'namedNode' | 'literal';
 export type TermExpression = ExpressionProps & {
@@ -109,11 +106,11 @@ export abstract class Term implements TermExpression {
   abstract toRDF(): RDF.Term;
 
   str(): string {
-    throw new InvalidArgumentTypes([this], C.Operator.STR);
+    throw new Err.InvalidArgumentTypes([this], C.Operator.STR);
   }
 
   coerceEBV(): boolean {
-    throw new EBVCoercionError(this);
+    throw new Err.EBVCoercionError(this);
   }
 
 }
@@ -242,6 +239,6 @@ export class NonLexicalLiteral extends Literal<undefined> {
       || this.shouldBeCategory === 'boolean';
 
     if (isNumericOrBool) { return false; }
-    throw new EBVCoercionError(this);
+    throw new Err.EBVCoercionError(this);
   }
 }

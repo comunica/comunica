@@ -74,7 +74,7 @@ export class AsyncEvaluator {
 
   private async evalSpecialOperator(expr: E.SpecialOperatorExpression, mapping: Bindings): Promise<E.TermExpression> {
     const { func, args } = expr;
-    return func.apply(args, mapping, this.evalRec.bind(this));
+    return func.apply({ args, mapping, evaluate: this.evalRec.bind(this) });
   }
 
   // TODO

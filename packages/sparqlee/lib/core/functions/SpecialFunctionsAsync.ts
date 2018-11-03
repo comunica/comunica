@@ -32,11 +32,7 @@ export abstract class SpecialFunctionAsync implements SpecialFunc {
   abstract arity: number;
   abstract operator: C.SpecialOperator;
 
-  abstract async apply(
-    args: E.Expression[],
-    mapping: Bindings,
-    evaluate: (e: E.Expression, mapping: Bindings) => Promise<E.TermExpression>,
-  ): Promise<E.TermExpression>;
+  abstract async apply(context: E.EvalContext): Promise<E.TermExpression>;
 }
 
 export type AsyncTerm = Promise<E.TermExpression>;
@@ -46,7 +42,7 @@ export class Bound extends SpecialFunctionAsync {
   operator = C.SpecialOperator.BOUND;
   arity = 1;
 
-  async apply(args: E.Expression[], mapping: Bindings, evaluate: Evaluator): Promise<E.TermExpression> {
+  async apply({ args, mapping }: E.EvalContext): Promise<E.TermExpression> {
     const variable = args[0] as E.VariableExpression;
     if (variable.expressionType !== E.ExpressionType.Variable) {
       throw new Err.InvalidArgumentTypes(args, C.SpecialOperator.BOUND);
@@ -60,7 +56,7 @@ export class If extends SpecialFunctionAsync {
   operator = C.SpecialOperator.IF;
   arity = 3;
 
-  async apply(args: E.Expression[], mapping: Bindings, evaluate: Evaluator): Promise<E.TermExpression> {
+  async apply({ args, mapping, evaluate }: E.EvalContext): Promise<E.TermExpression> {
     const valFirst = await evaluate(args[0], mapping);
     const ebv = valFirst.coerceEBV();
     return (ebv)
@@ -73,7 +69,7 @@ export class Coalesce extends SpecialFunctionAsync {
   operator = C.SpecialOperator.COALESCE;
   arity = Infinity;
 
-  async apply(args: E.Expression[], mapping: Bindings, evaluate: Evaluator): Promise<E.TermExpression> {
+  async apply({ args, mapping, evaluate }: E.EvalContext): Promise<E.TermExpression> {
     const errors: Error[] = [];
     for (const expr of args) {
       try {
@@ -92,7 +88,7 @@ export class LogicalOrAsync extends SpecialFunctionAsync {
   operator = C.SpecialOperator.LOGICAL_OR;
   arity = 2;
 
-  async apply(args: E.Expression[], mapping: Bindings, evaluate: Evaluator): Promise<E.TermExpression> {
+  async apply({ args, mapping, evaluate }: E.EvalContext): Promise<E.TermExpression> {
     const [leftExpr, rightExpr] = args;
     try {
       const leftTerm = await evaluate(leftExpr, mapping);
@@ -115,7 +111,7 @@ export class LogicalAndAsync extends SpecialFunctionAsync {
   operator = C.SpecialOperator.LOGICAL_AND;
   arity = 2;
 
-  async apply(args: E.Expression[], mapping: Bindings, evaluate: Evaluator): Promise<E.TermExpression> {
+  async apply({ args, mapping, evaluate }: E.EvalContext): Promise<E.TermExpression> {
     const [leftExpr, rightExpr] = args;
     try {
       const leftTerm = await evaluate(leftExpr, mapping);
@@ -137,7 +133,7 @@ export class SameTerm extends SpecialFunctionAsync {
   operator = C.SpecialOperator.SAME_TERM;
   arity = 2;
 
-  async apply(args: E.Expression[], mapping: Bindings, evaluate: Evaluator): Promise<E.TermExpression> {
+  async apply({ args, mapping, evaluate }: E.EvalContext): Promise<E.TermExpression> {
     if (args.length !== 2) { throw new Err.InvalidArity(args, C.SpecialOperator.SAME_TERM); }
     const [leftExpr, rightExpr] = args.map((a) => evaluate(a, mapping));
     const left = await leftExpr;
@@ -150,7 +146,7 @@ export class In extends SpecialFunctionAsync {
   operator = C.SpecialOperator.IN;
   arity = Infinity;
 
-  async apply(args: E.Expression[], mapping: Bindings, evaluate: Evaluator): Promise<E.TermExpression> {
+  async apply({ args, mapping, evaluate }: E.EvalContext): Promise<E.TermExpression> {
     if (args.length < 1) { throw new Err.InvalidArity(args, C.SpecialOperator.IN); }
     const [leftExpr, ...remaining] = args;
     // const thunks = remaining.map((expr) => () => evaluate(expr, mapping));
@@ -159,11 +155,9 @@ export class In extends SpecialFunctionAsync {
   }
 }
 
-interface Context { args: E.Expression[]; mapping: Bindings; evaluate: Evaluator; }
-
 async function inRecursive(
   needle: E.TermExpression,
-  { args, mapping, evaluate }: Context,
+  { args, mapping, evaluate }: E.EvalContext,
   results: Array<Error | false>,
 ): Promise<E.TermExpression> {
 
@@ -189,9 +183,9 @@ export class NotIn extends SpecialFunctionAsync {
   operator = C.SpecialOperator.NOT_IN;
   arity = Infinity;
 
-  async apply(args: E.Expression[], mapping: Bindings, evaluate: Evaluator): Promise<E.TermExpression> {
+  async apply(context: E.EvalContext): Promise<E.TermExpression> {
     const _in = specialFunctions.get(C.SpecialOperator.IN);
-    const isIn = await _in.apply(args, mapping, evaluate);
+    const isIn = await _in.apply(context);
     return bool(!(isIn as E.BooleanLiteral).typedValue);
   }
 }

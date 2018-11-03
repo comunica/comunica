@@ -18,6 +18,7 @@
     "forin": true,
     "indent": [true, "spaces"],
     "interface-name": [true, "never-prefix"],
+    "interface-over-type-literal": false,
     "jsdoc-format": true,
     "label-position": true,
     "max-classes-per-file": false,
