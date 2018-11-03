@@ -3,27 +3,31 @@ import { Map } from 'immutable';
 import * as C from '../../util/Consts';
 import * as E from '../Expressions';
 
-import { definitions, specialDefinitions } from './Definitions';
-import { SpecialFunc } from './SpecialFunctionsAsync';
-import { RegularFunction } from './Types';
+import { definitions, RegularFunction } from './RegularFunctions';
+import { specialDefinitions, SpecialFunctionAsync } from './SpecialFunctionsAsync';
+
+export { RegularFunction } from './RegularFunctions';
+export { SpecialFunctionAsync } from './SpecialFunctionsAsync';
 
 export interface SPARQLFunction<Apply extends E.Application> {
-  functionClass: 'regular' | 'special';
+  functionClass: C.OperatorCategory;
   arity: number | number[];
   apply: Apply;
 }
 
-export type RegularFunc = SPARQLFunction<E.SimpleApplication> & {
-  functionClass: 'regular';
-};
+export type RegularFunctionMap = Map<C.RegularOperator, RegularFunction>;
+export const regularFunctions: RegularFunctionMap =
+  definitions
+    .map((def, op) => new RegularFunction(op, def))
+    .toMap();
 
-export const regularFunctions: Map<C.Operator, RegularFunc> =
-  definitions.map((def, op) => new RegularFunction(op, def)).toMap();
+export type SpecialFunctionAsyncMap = Map<C.SpecialOperator, SpecialFunctionAsync>;
+export const specialFunctions: SpecialFunctionAsyncMap =
+  specialDefinitions
+    .map((def, op) => new SpecialFunctionAsync(op, def))
+    .toMap();
 
-export const specialFunctions: Map<C.SpecialOperator, SpecialFunc> =
-  specialDefinitions.map((def, op) => def).toMap();
-
-export const functions: Map<C.OperatorAll, SPARQLFunction<E.Application>> =
-  // Immutable has some inflexible typing here
-  // tslint:disable-next-line:no-any
-  regularFunctions.merge(specialFunctions as any);
+export type FunctionMap = Map<C.Operator, SPARQLFunction<E.Application>>;
+export const functions: FunctionMap =
+  (specialFunctions as FunctionMap)
+    .merge(regularFunctions);

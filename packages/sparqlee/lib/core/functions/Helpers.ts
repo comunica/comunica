@@ -10,7 +10,7 @@ import * as E from '../Expressions';
 
 import { TypeURL as DT } from '../../util/Consts';
 import { InvalidLexicalForm, UnexpectedError } from '../../util/Errors';
-import { ArgumentType, OverloadMap } from './Types';
+import { ArgumentType, OverloadMap } from './RegularFunctions';
 
 // ----------------------------------------------------------------------------
 // Literal Construction helpers

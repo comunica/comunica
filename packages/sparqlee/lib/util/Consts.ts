@@ -127,12 +127,11 @@ export function decategorize(cat: Type): TypeURL {
 // ----------------------------------------------------------------------------
 // Operators
 // ----------------------------------------------------------------------------
-// TODO: Maybe rename to functions to match?
 
-// TODO: Rename Operator to functions
-export type OperatorType = keyof typeof Operator;
-export type OperatorCategory = 'simple' | 'overloaded' | 'special';
-export enum Operator {
+export type OperatorCategory = 'regular' | 'special';
+export type Operator = RegularOperator | SpecialOperator;
+
+export enum RegularOperator {
   // Operator mapping
   // https://www.w3.org/TR/sparql11-query/#OperatorMapping
   NOT = '!',
@@ -184,9 +183,6 @@ export enum Operator {
   // https://www.w3.org/TR/sparql11-query/#FunctionMapping
 }
 
-// tslint:disable-next-line:no-any
-export const Operators = Set(Object.values(Operator));
-
 export enum SpecialOperator {
   // Functional Forms
   // https://www.w3.org/TR/sparql11-query/#func-forms
@@ -196,13 +192,12 @@ export enum SpecialOperator {
   // EXISTENCE = 'existence',
   LOGICAL_OR = '||',
   LOGICAL_AND = '&&',
-  // EQUAL = '=',
+  // EQUAL = '=', // See RegularOperators
   SAME_TERM = 'sameterm',
   IN = 'in',
   NOT_IN = 'notin',
 }
 
+export const RegularOperators = Set(Object.values(RegularOperator));
 export const SpecialOperators = Set(Object.values(SpecialOperator));
-
-export type OperatorAll = Operator | SpecialOperator;
-export const OperatorsAll = Operators.union(SpecialOperators);
+export const Operators = RegularOperators.union(SpecialOperators);

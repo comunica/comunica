@@ -8,8 +8,11 @@ import * as P from '../util/Parsing';
 import * as E from './Expressions';
 
 import { TypeURL as DT } from '../util/Consts';
-import { functions, RegularFunc } from './functions';
-import { SpecialFunc } from './functions/SpecialFunctionsAsync';
+import {
+  functions,
+  RegularFunction,
+  SpecialFunctionAsync,
+} from './functions';
 
 export function transformAlgebra(expr: Alg.Expression): E.Expression {
   if (!expr) { throw new Err.InvalidExpression(expr); }
@@ -116,25 +119,25 @@ function tranformLiteral(lit: RDF.Literal): E.Literal<any> {
 function transformOperator(expr: Alg.OperatorExpression)
   : E.OperatorExpression | E.SpecialOperatorExpression {
 
-  if (!C.OperatorsAll.contains(expr.operator)) {
+  if (!C.Operators.contains(expr.operator)) {
     // TODO Throw better error
     throw new Err.UnimplementedError(expr.operator);
   }
 
-  const op = expr.operator as C.OperatorAll;
+  const op = expr.operator as C.Operator;
   const args = expr.args.map((a) => transformAlgebra(a));
-  const _func = functions.get(expr.operator as C.OperatorAll);
+  const _func = functions.get(expr.operator as C.Operator);
 
   if (!hasCorrectArity(args, _func.arity)) { throw new Err.InvalidArity(args, op); }
 
   switch (_func.functionClass) {
     case 'special': {
-      const func = _func as SpecialFunc;
+      const func = _func as SpecialFunctionAsync;
       const expressionType = E.ExpressionType.SpecialOperator;
       return { func, args, expressionType };
     }
     case 'regular': {
-      const func = _func as RegularFunc;
+      const func = _func as RegularFunction;
       const expressionType = E.ExpressionType.Operator;
       return { func, args, expressionType };
     }

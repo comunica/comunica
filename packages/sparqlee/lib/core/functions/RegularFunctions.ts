@@ -1,27 +1,72 @@
-import { Map } from 'immutable';
-import { expand, forAll, simple, str, unary } from './Helpers';
+import { List, Map } from 'immutable';
+import { forAll, simple, str, unary } from './Helpers';
 
 import * as C from '../../util/Consts';
 import * as Err from '../../util/Errors';
 import * as E from '../Expressions';
-import * as Special from './SpecialFunctionsAsync';
 import * as X from './XPath';
 
-import { TypeURL as DT } from '../../util/Consts';
+import { TypeURL as T } from '../../util/Consts';
+
 import { arithmetic, binary, bool, list, number, xPathTest } from './Helpers';
-import { OverloadMap } from './Types';
-
-// ----------------------------------------------------------------------------
-// The definitions and functionality for all operators
-// ----------------------------------------------------------------------------
-
-export interface Definition {
-  arity: number | number[];
-  overloads: OverloadMap;
-}
-export type SpecialDefinition = Special.SpecialFunctionAsync;
+import { SPARQLFunction } from './index';
 
 type Term = E.TermExpression;
+
+// Maps argument types on their specific implementation.
+export type OverloadMap = Map<List<ArgumentType>, E.SimpleApplication>;
+
+// Function and operator arguments are 'flattened' in the SPARQL spec.
+// If the argument is a literal, the datatype often also matters.
+export type ArgumentType = 'term' | E.TermType | C.Type;
+
+/*
+ * Varying kinds of functions take arguments of different types on which the
+ * specific behaviour is dependant. Although their behaviour is often varying,
+ * it is always relatively simple, and better suited for synced behaviour.
+ * The types of their arguments are always terms, but might differ in
+ * their term-type (eg: iri, literal),
+ * their specific literal type (eg: string, integer),
+ * their arity (see BNODE),
+ * or even their specific numeric type (eg: integer, float).
+ *
+ * Examples include:
+ *  - Arithmetic operations such as: *, -, /, +
+ *  - Bool operators such as: =, !=, <=, <, ...
+ *  - Functions such as: str, IRI
+ *
+ * Note: functions that have multiple arities do not belong in this category.
+ * Eg: BNODE.
+ *
+ * See also: https://www.w3.org/TR/sparql11-query/#func-rdfTerms
+ * and https://www.w3.org/TR/sparql11-query/#OperatorMapping
+ */
+export class RegularFunction implements SPARQLFunction<E.SimpleApplication> {
+  functionClass: 'regular' = 'regular';
+  arity: number | number[];
+  private overloadMap: OverloadMap;
+
+  constructor(public operator: C.RegularOperator, definition: Definition) {
+    this.arity = definition.arity;
+    this.overloadMap = definition.overloads;
+  }
+
+  apply(args: E.TermExpression[]): E.TermExpression {
+    const func = this._monomorph(args);
+    if (!func) { throw new Err.InvalidArgumentTypes(args, this.operator); }
+    return func(args);
+  }
+
+  // TODO: Clean up a bit
+  private _monomorph(args: E.TermExpression[]): E.SimpleApplication {
+    // tslint:disable-next-line:no-any
+    const argTypes = List(args.map((a: any) => a.type || a.termType));
+    const arity = args.length;
+    return this.overloadMap.get(argTypes)
+      || this.overloadMap.get(List(args.map((a: E.TermExpression) => a.termType)))
+      || this.overloadMap.get(List(Array(arity).fill('term')));
+  }
+}
 
 // ----------------------------------------------------------------------------
 // Operator Mapping
@@ -65,7 +110,7 @@ const division = {
       if ((args[1] as E.NumericLiteral).typedValue === 0) {
         throw new Err.ExpressionError('Integer division by 0');
       }
-      return number(binary(X.numericDivide, args), DT.XSD_DECIMAL);
+      return number(binary(X.numericDivide, args), T.XSD_DECIMAL);
     },
   ),
 };
@@ -197,7 +242,7 @@ const strlen = {
   arity: 1,
   overloads: forAll(
     [['string'], ['langString']],
-    (args: Term[]) => number(unary(X.stringLength, args), DT.XSD_INTEGER),
+    (args: Term[]) => number(unary(X.stringLength, args), T.XSD_INTEGER),
   ),
 };
 
@@ -211,7 +256,8 @@ const langmatches = {
 
 const regex = {
   arity: [2, 3],
-  // // TODO: This deviates from the spec, as the second and third argument should be simple literals
+  // TODO: This deviates from the spec, as the second and third argument should be simple literals
+  // ^ just document this somewhere
   overloads: forAll(
     [
       ['string', 'string'],
@@ -264,7 +310,7 @@ const now = {
 // ----------------------------------------------------------------------------
 
 // TODO Maybe split in definitions for overloaded and async functions.
-const _definitions: { [key in C.Operator]: Definition } = {
+const _definitions: { [key in C.RegularOperator]: Definition } = {
   // --------------------------------------------------------------------------
   // Operator Mapping
   // https://www.w3.org/TR/sparql11-query/#OperatorMapping
@@ -319,20 +365,13 @@ const _definitions: { [key in C.Operator]: Definition } = {
   // --------------------------------------------------------------------------
 };
 
-const _specialDefinitions: { [key in C.SpecialOperator]: SpecialDefinition } = {
-  // --------------------------------------------------------------------------
-  // Functional Forms
-  // https://www.w3.org/TR/sparql11-query/#func-forms
-  // --------------------------------------------------------------------------
-  'bound': new Special.Bound(),
-  'if': new Special.If(),
-  'coalesce': new Special.Coalesce(),
-  '&&': new Special.LogicalAndAsync(),
-  '||': new Special.LogicalOrAsync(),
-  'sameterm': new Special.SameTerm(),
-  'in': new Special.In(),
-  'notin': new Special.NotIn(),
-};
+// ----------------------------------------------------------------------------
+// The definitions and functionality for all operators
+// ----------------------------------------------------------------------------
 
-export const definitions = Map<C.Operator, Definition>(_definitions);
-export const specialDefinitions = Map<C.SpecialOperator, SpecialDefinition>(_specialDefinitions);
+export interface Definition {
+  arity: number | number[];
+  overloads: OverloadMap;
+}
+
+export const definitions = Map<C.RegularOperator, Definition>(_definitions);
