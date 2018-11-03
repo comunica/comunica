@@ -25,11 +25,11 @@ export function Bindings(hash: { [key: string]: RDF.Term }): Bindings {
 export type AsyncLookUp = (expr: Alg.ExistenceExpression) => Promise<boolean>;
 
 export interface AsyncAggregator {
-  count(exp: Alg.Expression): Promise<number>,
-  sum(exp: Alg.Expression): Promise<number>,
-  min(exp: Alg.Expression): Promise<number>,
-  max(exp: Alg.Expression): Promise<number>,
-  avg(exp: Alg.Expression): Promise<number>,
-  groupConcat(exp: Alg.Expression): Promise<string>,
-  sample(exp: Alg.Expression): Promise<RDF.Term>,
+  count(exp: Alg.Expression): Promise<number>;
+  sum(exp: Alg.Expression): Promise<number>;
+  min(exp: Alg.Expression): Promise<number>;
+  max(exp: Alg.Expression): Promise<number>;
+  avg(exp: Alg.Expression): Promise<number>;
+  groupConcat(exp: Alg.Expression): Promise<string>;
+  sample(exp: Alg.Expression): Promise<RDF.Term>;
 }

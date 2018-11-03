@@ -1,7 +1,6 @@
 import * as RDF from 'rdf-js';
 import * as RDFString from 'rdf-string';
 import { Algebra as Alg } from 'sparqlalgebrajs';
-import { InvalidExpression } from './../util/Errors';
 
 import * as C from '../util/Consts';
 import * as Err from '../util/Errors';
@@ -9,10 +8,11 @@ import * as P from '../util/Parsing';
 import * as E from './Expressions';
 
 import { TypeURL as DT } from '../util/Consts';
-import { functions } from './functions';
+import { functions, RegularFunc } from './functions';
+import { SpecialFunc } from './functions/SpecialFunctionsAsync';
 
 export function transformAlgebra(expr: Alg.Expression): E.Expression {
-  if (!expr) { throw new InvalidExpression(expr); }
+  if (!expr) { throw new Err.InvalidExpression(expr); }
 
   const types = Alg.expressionTypes;
 
@@ -28,7 +28,7 @@ export function transformAlgebra(expr: Alg.Expression): E.Expression {
 }
 
 export function transformTerm(term: Alg.TermExpression): E.Expression {
-  if (!term.term) { throw new InvalidExpression(term); }
+  if (!term.term) { throw new Err.InvalidExpression(term); }
 
   switch (term.term.termType) {
     case 'Variable': return new E.Variable(RDFString.termToString(term.term));
@@ -123,13 +123,23 @@ function transformOperator(expr: Alg.OperatorExpression)
 
   const op = expr.operator as C.OperatorAll;
   const args = expr.args.map((a) => transformAlgebra(a));
-  const func = functions.get(expr.operator as C.OperatorAll);
+  const _func = functions.get(expr.operator as C.OperatorAll);
 
-  if (!hasCorrectArity(args, func.arity)) { throw new Err.InvalidArity(args, op); }
+  if (!hasCorrectArity(args, _func.arity)) { throw new Err.InvalidArity(args, op); }
 
-  return (func.functionClass === 'special')
-    ? { func, args, expressionType: E.ExpressionType.SpecialOperator }
-    : { func, args, expressionType: E.ExpressionType.Operator };
+  switch (_func.functionClass) {
+    case 'special': {
+      const func = _func as SpecialFunc;
+      const expressionType = E.ExpressionType.SpecialOperator;
+      return { func, args, expressionType };
+    }
+    case 'regular': {
+      const func = _func as RegularFunc;
+      const expressionType = E.ExpressionType.Operator;
+      return { func, args, expressionType };
+    }
+    default: throw new Err.UnexpectedError('Unknown function class');
+  }
 }
 
 function hasCorrectArity(args: E.Expression[], arity: number | number[]): boolean {

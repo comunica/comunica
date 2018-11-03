@@ -5,8 +5,39 @@ import * as E from '../Expressions';
 
 import { Bindings } from '../Types';
 import { bool } from './Helpers';
-import { regularFunctions, specialFunctions } from './index';
-import { SpecialFunctionAsync } from './Types';
+import { regularFunctions, SPARQLFunction, specialFunctions } from './index';
+
+// Special Functions ----------------------------------------------------------
+/*
+ * Special Functions are those that don't really fit in sensible categories and
+ * have extremely heterogeneous signatures that make them impossible to abstract
+ * over. They are small in number, and their behaviour is often complex and open
+ * for multiple correct implementations with different trade-offs.
+ *
+ * Due to their varying nature, they need all available information present
+ * during evaluation. This reflects in the signature of the apply() method.
+ *
+ * They need access to an evaluator to be able to even implement their logic.
+ * Especially relevant for IF, and the logical connectives.
+ *
+ * They can have both sync and async implementations, and both would make sense
+ * in some contexts.
+ */
+export type SpecialFunc = SPARQLFunction<E.SpecialApplication> & {
+  functionClass: 'special';
+};
+
+export abstract class SpecialFunctionAsync implements SpecialFunc {
+  functionClass: 'special' = 'special';
+  abstract arity: number;
+  abstract operator: C.SpecialOperator;
+
+  abstract async apply(
+    args: E.Expression[],
+    mapping: Bindings,
+    evaluate: (e: E.Expression, mapping: Bindings) => Promise<E.TermExpression>,
+  ): Promise<E.TermExpression>;
+}
 
 export type AsyncTerm = Promise<E.TermExpression>;
 export type Evaluator = (expr: E.Expression, mapping: Bindings) => AsyncTerm;
@@ -100,18 +131,6 @@ export class LogicalAndAsync extends SpecialFunctionAsync {
       return bool(false);
     }
   }
-}
-
-// Maybe put some place else
-// https://www.w3.org/TR/sparql11-query/#func-RDFterm-equal
-export function RDFTermEqual(_left: E.TermExpression, _right: E.TermExpression) {
-  const left = _left.toRDF();
-  const right = _right.toRDF();
-  const val = left.equals(right);
-  if ((left.termType === 'Literal') && (right.termType === 'Literal')) {
-    throw new Err.RDFEqualTypeError([_left, _right]);
-  }
-  return val;
 }
 
 export class SameTerm extends SpecialFunctionAsync {

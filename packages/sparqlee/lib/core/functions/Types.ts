@@ -4,21 +4,8 @@ import * as C from '../../util/Consts';
 import * as E from '../Expressions';
 
 import { InvalidArgumentTypes } from '../../util/Errors';
-import { Bindings } from '../Types';
 import { Definition } from './Definitions';
-import { RegularFunc, SpecialFunc } from './index';
-
-// ----------------------------------------------------------------------------
-// Functions
-// ---------------------------------------------------------------------------
-
-// Argument Types and their specificity ---------------------------------------
-
-// Function and operator arguments are 'flattened' in the SPARQL spec.
-// If the argument is a literal, the datatype often also matters.
-export type ArgumentType = 'term' | E.TermType | C.Type;
-
-// Overloaded Functions -------------------------------------------------------
+import { RegularFunc } from './index';
 
 /*
  * Varying kinds of functions take arguments of different types on which the
@@ -72,32 +59,6 @@ export class RegularFunction implements RegularFunc {
   }
 }
 
-// Special Functions ----------------------------------------------------------
-/*
- * Special Functions are those that don't really fit in sensible categories and
- * have extremely heterogeneous signatures that make them impossible to abstract
- * over. They are small in number, and their behaviour is often complex and open
- * for multiple correct implementations with different trade-offs.
- *
- * Due to their varying nature, they need all available information present
- * during evaluation. This reflects in the signature of the apply() method.
- *
- * They need access to an evaluator to be able to even implement their logic.
- * Especially relevant for IF, and the logical connectives.
- *
- * They can have both sync and async implementations, and both would make sense
- * in some contexts.
- */
-
-export abstract class SpecialFunctionAsync implements SpecialFunc {
-  functionClass: 'special' = 'special';
-  abstract arity: number;
-  abstract operator: C.SpecialOperator;
-
-  abstract apply(
-    args: E.Expression[],
-    mapping: Bindings,
-    evaluate: (e: E.Expression, mapping: Bindings) => Promise<E.TermExpression>,
-  ): Promise<E.TermExpression>;
-
-}
+// Function and operator arguments are 'flattened' in the SPARQL spec.
+// If the argument is a literal, the datatype often also matters.
+export type ArgumentType = 'term' | E.TermType | C.Type;

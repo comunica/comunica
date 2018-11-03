@@ -49,22 +49,21 @@ export type NamedExpression = ExpressionProps & {
   args: Expression[];
 };
 
+export type Application = SimpleApplication | SpecialApplication;
+
 export type SimpleApplication = (args: TermExpression[]) => TermExpression;
 export type OperatorExpression = ExpressionProps & {
   expressionType: ExpressionType.Operator;
   args: Expression[];
-  func: {
-    apply: SimpleApplication;
-  };
+  func: { apply: SimpleApplication; };
 };
 
 export type SpecialOperatorExpression = ExpressionProps & {
   expressionType: ExpressionType.SpecialOperator,
   args: Expression[],
-  func: {
-    apply: SpecialApplication;
-  },
+  func: { apply: SpecialApplication; },
 };
+
 export type SpecialApplication =
   (
     args: Expression[],
