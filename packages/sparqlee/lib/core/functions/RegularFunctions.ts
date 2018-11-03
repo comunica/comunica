@@ -1,14 +1,13 @@
 import { List, Map } from 'immutable';
-import { forAll, simple, str, unary } from './Helpers';
 
 import * as C from '../../util/Consts';
 import * as Err from '../../util/Errors';
 import * as E from '../Expressions';
 import * as X from './XPath';
 
-import { TypeURL as T } from '../../util/Consts';
+import { TypeURL as Type } from '../../util/Consts';
 
-import { arithmetic, binary, bool, list, number, xPathTest } from './Helpers';
+import { bool, declare, number, str } from './Helpers';
 import { SPARQLFunction } from './index';
 
 type Term = E.TermExpression;
@@ -75,70 +74,72 @@ export class RegularFunction implements SPARQLFunction<E.SimpleApplication> {
 
 const not = {
   arity: 1,
-  overloads: simple(
-    ['term'],
-    () => { throw new Err.UnimplementedError('! operator'); },
-  ),
+  overloads: declare()
+    .unimplemented('! operator')
+    .collect(),
 };
 
 const unaryPlus = {
   arity: 1,
-  overloads: simple(
-    ['term'],
-    () => { throw new Err.UnimplementedError('Unary plus operator'); },
-  ),
+  overloads: declare()
+    .unimplemented('unary plus operator')
+    .collect(),
 };
 
 const unaryMinus = {
   arity: 1,
-  overloads: simple(
-    ['term'],
-    () => { throw new Err.UnimplementedError('Unary minus operator'); },
-  ),
+  overloads: declare()
+    .unimplemented('unary minus operator')
+    .collect(),
 };
 
 const multiplication = {
   arity: 2,
-  overloads: arithmetic(X.numericMultiply),
+  overloads: declare()
+    .arithmetic((left, right) => left * right)
+    .collect(),
 };
 
 const division = {
   arity: 2,
-  overloads: arithmetic(X.numericDivide).set(
-    list('integer', 'integer'),
-    (args: Term[]) => {
-      if ((args[1] as E.NumericLiteral).typedValue === 0) {
-        throw new Err.ExpressionError('Integer division by 0');
-      }
-      return number(binary(X.numericDivide, args), T.XSD_DECIMAL);
-    },
-  ),
+  overloads: declare()
+    .arithmetic((left, right) => left / right)
+    .setBinary(['integer', 'integer'],
+      (left: number, right: number) => {
+        if (right === 0) {
+          throw new Err.ExpressionError('Integer division by 0');
+        }
+        return number(left / right, Type.XSD_DECIMAL);
+      })
+    .collect(),
 };
 
 const addition = {
   arity: 2,
-  overloads: arithmetic(X.numericAdd),
+  overloads: declare()
+    .arithmetic((left, right) => left + right)
+    .collect(),
 };
 
 const subtraction = {
   arity: 2,
-  overloads: arithmetic(X.numericSubtract),
+  overloads: declare()
+    .arithmetic((left, right) => left - right)
+    .collect(),
 };
 
 // https://www.w3.org/TR/sparql11-query/#func-RDFterm-equal
 const equality = {
   arity: 2,
-  overloads: xPathTest(
-    X.numericEqual,
-    (left, right) => X.numericEqual(X.compare(left, right), 0),
-    X.booleanEqual,
-    X.dateTimeEqual,
-  ).set(
-    list('term', 'term'),
-    (args: Term[]) => {
-      return bool(RDFTermEqual(args[0], args[1]));
-    },
-  ),
+  overloads: declare()
+    .numberTest((left, right) => left === right)
+    .stringTest((left, right) => left.localeCompare(right) === 0)
+    .booleanTest((left, right) => left === right)
+    .dateTimeTest((left, right) => left.getTime() === right.getTime())
+    .set(['term', 'term'],
+      ([left, right]) => bool(RDFTermEqual(left, right)),
+    )
+    .collect(),
 };
 
 function RDFTermEqual(_left: Term, _right: Term) {
@@ -153,52 +154,55 @@ function RDFTermEqual(_left: Term, _right: Term) {
 
 const inequality = {
   arity: 2,
-  overloads: xPathTest(
-    (left, right) => !X.numericEqual(left, right),
-    (left, right) => !X.numericEqual(X.compare(left, right), 0),
-    (left, right) => !X.booleanEqual(left, right),
-    (left, right) => !X.dateTimeEqual(left, right),
-  ),
+  overloads: declare()
+    .numberTest((left, right) => left !== right)
+    .stringTest((left, right) => left.localeCompare(right) !== 0)
+    .booleanTest((left, right) => left !== right)
+    .dateTimeTest((left, right) => left.getTime() !== right.getTime())
+    .set(['term', 'term'],
+      ([left, right]) => bool(!RDFTermEqual(left, right)),
+    )
+    .collect(),
 };
 
 const lesserThan = {
   arity: 2,
-  overloads: xPathTest(
-    X.numericLessThan,
-    (left, right) => X.numericEqual(X.compare(left, right), -1),
-    X.booleanLessThan,
-    X.dateTimeLessThan,
-  ),
+  overloads: declare()
+    .numberTest((left, right) => left < right)
+    .stringTest((left, right) => left.localeCompare(right) === -1)
+    .booleanTest((left, right) => left < right)
+    .dateTimeTest((left, right) => left.getTime() < right.getTime())
+    .collect(),
 };
 
 const greaterThan = {
   arity: 2,
-  overloads: xPathTest(
-    X.numericGreaterThan,
-    (left, right) => X.numericEqual(X.compare(left, right), 1),
-    X.booleanGreaterThan,
-    X.dateTimeGreaterThan,
-  ),
+  overloads: declare()
+    .numberTest((left, right) => left > right)
+    .stringTest((left, right) => left.localeCompare(right) === 1)
+    .booleanTest((left, right) => left > right)
+    .dateTimeTest((left, right) => left.getTime() > right.getTime())
+    .collect(),
 };
 
 const lesserThanEqual = {
   arity: 2,
-  overloads: xPathTest(
-    (left, right) => X.numericLessThan(left, right) || X.numericEqual(left, right),
-    (left, right) => !X.numericEqual(X.compare(left, right), 1),
-    (left, right) => !X.booleanGreaterThan(left, right),
-    (left, right) => !X.dateTimeGreaterThan(left, right),
-  ),
+  overloads: declare()
+    .numberTest((left, right) => left <= right)
+    .stringTest((left, right) => left.localeCompare(right) !== 1)
+    .booleanTest((left, right) => left <= right)
+    .dateTimeTest((left, right) => left.getTime() <= right.getTime())
+    .collect(),
 };
 
 const greaterThanEqual = {
   arity: 2,
-  overloads: xPathTest(
-    (left, right) => X.numericGreaterThan(left, right) || X.numericEqual(left, right),
-    (left, right) => !X.numericEqual(X.compare(left, right), -1),
-    (left, right) => !X.booleanLessThan(left, right),
-    (left, right) => !X.dateTimeLessThan(left, right),
-  ),
+  overloads: declare()
+    .numberTest((left, right) => left >= right)
+    .stringTest((left, right) => left.localeCompare(right) !== -1)
+    .booleanTest((left, right) => left >= right)
+    .dateTimeTest((left, right) => left.getTime() >= right.getTime())
+    .collect(),
 };
 
 // ----------------------------------------------------------------------------
@@ -207,30 +211,19 @@ const greaterThanEqual = {
 // ----------------------------------------------------------------------------
 const strTerm = {
   arity: 1,
-  overloads: simple(
-    ['term'],
-    (args: Term[]) => str(args[0].str()),
-  ),
+  overloads: declare().onTerm1((term) => str(term.str())).collect(),
 };
 
 const lang = {
   arity: 1,
-  overloads: simple(
-    ['literal'],
-    (args: Array<E.Literal<string>>) => str(args[0].language || ''),
-  ),
+  overloads: declare().onLiteral1((lit) => str(lit.language || '')).collect(),
 };
 
 const datatype = {
   arity: 1,
-  overloads: simple(
-    ['literal'],
-    // tslint:disable-next-line:no-any
-    (args: Array<E.Literal<any>>) => {
-      const arg = args[0];
-      return str((arg.typeURL) ? arg.typeURL.value : '');
-    },
-  ),
+  overloads: declare().onLiteral1(
+    (lit) => str((lit.typeURL) ? lit.typeURL.value : C.TypeURL.XSD_STRING),
+  ).collect(),
 };
 
 // ----------------------------------------------------------------------------
@@ -240,37 +233,30 @@ const datatype = {
 
 const strlen = {
   arity: 1,
-  overloads: forAll(
-    [['string'], ['langString']],
-    (args: Term[]) => number(unary(X.stringLength, args), T.XSD_INTEGER),
-  ),
+  overloads: declare()
+    .onLiteral1<string>((lit) => number(lit.typedValue.length, Type.XSD_INTEGER))
+    .collect(),
 };
 
 const langmatches = {
   arity: 2,
-  overloads: simple(
-    ['string', 'string'],
-    (args: Term[]) => bool(binary(X.langMatches, args)),
-  ),
+  overloads: declare()
+    .setBinary(
+      ['string', 'string'],
+      (tag: string, range: string) => bool(X.langMatches(tag, range)),
+    ).collect(),
 };
 
+const regex2 = (text: string, pattern: string) => bool(X.matches(text, pattern));
+const regex3 = (text: string, pattern: string, flags: string) => bool(X.matches(text, pattern, flags));
 const regex = {
   arity: [2, 3],
-  // TODO: This deviates from the spec, as the second and third argument should be simple literals
-  // ^ just document this somewhere
-  overloads: forAll(
-    [
-      ['string', 'string'],
-      ['langString', 'string'],
-      ['string', 'string', 'string'],
-      ['langString', 'string', 'string'],
-    ],
-    (args: Array<E.Literal<string>>) => bool(X.matches(
-      args[0].typedValue,
-      args[1].typedValue,
-      ((args[2]) ? args[2].typedValue : ''),
-    )),
-  ),
+  overloads: declare()
+    .setBinary(['string', 'string'], regex2)
+    .setBinary(['langString', 'langString'], regex2)
+    .setTernary(['string', 'string', 'string'], regex3)
+    .setTernary(['langString', 'string', 'string'], regex3)
+    .collect(),
 };
 
 // ----------------------------------------------------------------------------
@@ -280,10 +266,7 @@ const regex = {
 
 const abs = {
   arity: 1,
-  overloads: forAll(
-    [['term']],
-    () => { throw new Err.UnimplementedError('abs'); },
-  ),
+  overloads: declare().unimplemented('abs').collect(),
 };
 
 // ----------------------------------------------------------------------------
@@ -293,10 +276,7 @@ const abs = {
 
 const now = {
   arity: 0,
-  overloads: simple(
-    ['term'],
-    () => { throw new Err.UnimplementedError('now function'); },
-  ),
+  overloads: declare().unimplemented('now').collect(),
 };
 
 // ----------------------------------------------------------------------------
