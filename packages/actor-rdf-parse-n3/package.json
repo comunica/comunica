@@ -42,7 +42,7 @@
     "lodash.assign": "^4.2.0"
   },
   "dependencies": {
-    "n3": "1.0.0-beta.2"
+    "n3": "1.0.0"
   },
   "jest": {
     "globals": {
