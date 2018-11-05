@@ -61,7 +61,7 @@
     "tslint": "^5.7.0",
     "tslint-eslint-rules": "^5.1.0",
     "typescript": "^2.5.3",
-    "webpack": "^4.11.1",
+    "webpack": "^4.25.0",
     "webpack-cli": "^3.0.3"
   },
   "pre-commit": [
