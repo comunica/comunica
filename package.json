@@ -31,7 +31,7 @@
     "@types/lodash.values": "^4.3.3",
     "@types/lru-cache": "^4.1.0",
     "@types/minimist": "^1.2.0",
-    "@types/n3": "^1.0.0",
+    "@types/n3": "1.0.3",
     "@types/node": "^10.11.3",
     "@types/node-fetch": "^2.1.0",
     "@types/rdf-js": "^1.0.0",
@@ -63,6 +63,9 @@
     "typescript": "^2.5.3",
     "webpack": "^4.25.0",
     "webpack-cli": "^3.0.3"
+  },
+  "resolutions": {
+    "**/@types/rdf-js": "1.0.1"
   },
   "pre-commit": [
     "build",
