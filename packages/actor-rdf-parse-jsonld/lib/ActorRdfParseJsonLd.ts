@@ -29,7 +29,7 @@ export class ActorRdfParseJsonLd extends ActorRdfParseFixedMediaTypes {
     case 'Literal':
       return literal(term.value, term.language || term.datatype);
     /*case 'Variable':
-        return variable(term.value);*/ // Variables can not occur in JSON-LD bodies
+      return variable(term.value);*/ // Variables can not occur in JSON-LD bodies
     case 'DefaultGraph':
       return defaultGraph();
     }

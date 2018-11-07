@@ -14,15 +14,6 @@
   "@id": "urn:comunica:my",
   "actors": [
     {
-      "@id": "config-sets:rdf-parsers.json#myRdfParserHtmlScript",
-      "@type": "ActorRdfParseHtmlScript",
-      "carphs:mediatorRdfParse": {
-        "@id": "config-sets:rdf-parsers.json#mediatorRdfParse",
-        "@type": "MediatorRace",
-        "cc:Mediator/bus": { "@id": "cbrp:Bus/RdfParse" }
-      }
-    },
-    {
       "@id": "config-sets:rdf-parsers.json#myRdfParserN3",
       "@type": "ActorRdfParseN3"
     },
@@ -35,6 +26,16 @@
       "@id": "config-sets:rdf-parsers.json#myRdfParserRdfXml",
       "@type": "ActorRdfParseRdfXml",
       "priorityScale": 0.95
+    },
+    {
+      "@id": "config-sets:rdf-parsers.json#myRdfParserHtmlScript",
+      "@type": "ActorRdfParseHtmlScript",
+      "priorityScale": 0.8,
+      "carphs:mediatorRdfParse": {
+        "@id": "config-sets:rdf-parsers.json#mediatorRdfParse",
+        "@type": "MediatorRace",
+        "cc:Mediator/bus": { "@id": "cbrp:Bus/RdfParse" }
+      }
     }
   ]
 }
