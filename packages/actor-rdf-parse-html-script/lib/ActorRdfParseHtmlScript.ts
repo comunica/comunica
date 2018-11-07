@@ -40,7 +40,7 @@ export class ActorRdfParseHtmlScript extends ActorRdfParseFixedMediaTypes {
   public async runHandle(action: IActionRdfParse, mediaType: string, context: ActionContext):
     Promise<IActorRdfParseOutput> {
 
-    const myQuads = new Readable({ objectMode: true });
+    const myQuads = new Readable({objectMode: true});
 
     let initialized = false;
 
@@ -56,10 +56,47 @@ export class ActorRdfParseHtmlScript extends ActorRdfParseFixedMediaTypes {
         const doc = new DOMParser().parseFromString(htmlString, 'text/html');
         const scripts = doc.getElementsByTagName('script');
 
+        const supportedTypes = [
+          "application/ld+json",
+          "application/n-quads",
+          "application/n-triples",
+          "application/trig",
+          "text/n3",
+          "text/turtle",
+        ];
+
         // Loop script elements
+        let count: number = 0;
         for (let i = 0; i < scripts.length; i++) {
+          const index: number = supportedTypes.indexOf(scripts[i].getAttribute("type"));
+          if (index > -1) {
+            count++;
+            const jsonStream: Readable = new Readable({objectMode: true});
+            jsonStream.push(scripts[i].textContent);
+            jsonStream.push(null);
+
+            const returned = (await this.mediatorRdfParse.mediate(
+              {context, handle: {input: jsonStream}, handleMediaType: supportedTypes[index]})).handle;
+
+            await returned.quads.on('data', async (chunk) => {
+              console.log("\n");
+              console.log(chunk);
+              console.log("\n");
+              await myQuads.push(chunk);
+            });
+
+            // End the stream
+            await returned.quads.on('end', async () => {
+              if (count > 1) {
+                count--;
+              } else {
+                await myQuads.push(null);
+              }
+            });
+          }
+
           // JSON-LD scripts
-          if (scripts[i].getAttribute("type") === "application/ld+json") {
+          /*if (scripts[i].getAttribute("type") === "application/ld+json") {
             // Streamify the content of the JSON-LD script tags
             const jsonStream: Readable = new Readable({ objectMode: true });
             jsonStream.push(scripts[i].textContent);
@@ -78,11 +115,10 @@ export class ActorRdfParseHtmlScript extends ActorRdfParseFixedMediaTypes {
             returned.quads.on('end', async () => {
               await myQuads.push(null);
             });
-          }
+          }*/
         }
       }
     };
-
-    return { quads: myQuads };
+    return {quads: myQuads};
   }
 }
