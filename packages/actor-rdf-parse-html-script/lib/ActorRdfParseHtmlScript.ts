@@ -8,7 +8,6 @@ import {
   IActorTestRootRdfParse,
 } from "@comunica/bus-rdf-parse";
 import {ActionContext, Actor, Mediator} from "@comunica/core";
-import {RoundRobinUnionIterator} from "asynciterator-union";
 import {Readable} from "stream";
 
 /**
@@ -49,71 +48,41 @@ export class ActorRdfParseHtmlScript extends ActorRdfParseFixedMediaTypes {
       if (!initialized) {
         initialized = true;
 
+        // Stringify HTML input
         const htmlString: string = await require('stream-to-string')(action.input);
 
+        // Extract script tags
         const DOMParser = require('xmldom').DOMParser;
         const doc = new DOMParser().parseFromString(htmlString, 'text/html');
         const scripts = doc.getElementsByTagName('script');
 
+        // Loop script elements
         for (let i = 0; i < scripts.length; i++) {
+          // JSON-LD scripts
           if (scripts[i].getAttribute("type") === "application/ld+json") {
+            // Streamify the content of the JSON-LD script tags
             const jsonStream: Readable = new Readable({ objectMode: true });
             jsonStream.push(scripts[i].textContent);
             jsonStream.push(null);
 
-            const jsonParseAction: IActionRootRdfParse = {
-              context,
-              handle: { input: jsonStream },
-              handleMediaType: 'application/ld+json',
-            };
+            // Throw the JSON-LD stream on the rdf-parse-bus
+            const returned = (await this.mediatorRdfParse.mediate(
+              {context, handle: { input: jsonStream}, handleMediaType: 'application/ld+json'})).handle;
 
-            const returned = (await this.mediatorRdfParse.mediate(jsonParseAction)).handle;
+            // Push the returned quads to my general stream
+            returned.quads.on('data', async (chunk) => {
+              await myQuads.push(chunk);
+            });
 
-            returned.quads.on('readable', async () => {
-              let data;
-              data = returned.quads.read();
-              while (data) {
-                await myQuads.push(data);
-                data = returned.quads.read();
-              }
+            // End the stream
+            returned.quads.on('end', async () => {
+              await myQuads.push(null);
             });
           }
         }
       }
     };
-    // myQuads.on('data', console.log);
+
     return { quads: myQuads };
-
-    /*const htmlString: string = await require('stream-to-string')(action.input);
-
-    // JSON-LD extraction
-    let jsonString: string = '';
-    const DOMParser = require('xmldom').DOMParser;
-    const doc = new DOMParser().parseFromString(htmlString, 'text/html');
-    const scripts = doc.getElementsByTagName('script');
-    for (let i = 0; i < scripts.length; i++) {
-      if (scripts[i].getAttribute("type") === "application/ld+json") {
-        jsonString += scripts[i].textContent;
-      }
-    }
-
-    // Streamify JSON-LD
-    const jsonStream: Readable = new Readable({ objectMode: true });
-    jsonStream.push(jsonString);
-    jsonStream.push(null);
-
-    const jsonParseAction: IActionRootRdfParse = {
-      context,
-      handle: { input: jsonStream },
-      handleMediaType: 'application/ld+json',
-    };
-
-    const mediatorResult = (await this.mediatorRdfParse.mediate(jsonParseAction));
-
-    // mediatorResult.handle.quads is a Readable
-    // the _read async method needs to be implemented.
-    // So I read this quads thing, and push every quad? to my own Readable.
-    console.log(mediatorResult);
-    return mediatorResult.handle;*/
   }
 }
