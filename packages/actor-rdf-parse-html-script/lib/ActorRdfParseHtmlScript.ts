@@ -25,18 +25,6 @@ export class ActorRdfParseHtmlScript extends ActorRdfParseFixedMediaTypes {
     super(args);
   }
 
-  /**
-   * TODO:
-   * multiple script tags support
-   *
-   * All these go to N3 parser:
-   * application/trig
-   * application/n-quads
-   * text/turtle
-   * application/n-triples
-   * text/n3
-   */
-
   public async runHandle(action: IActionRdfParse, mediaType: string, context: ActionContext):
     Promise<IActorRdfParseOutput> {
 
@@ -66,26 +54,28 @@ export class ActorRdfParseHtmlScript extends ActorRdfParseFixedMediaTypes {
         ];
 
         // Loop script elements
-        let count: number = 0;
+        let count: number = 0;      // count quad streams
         for (let i = 0; i < scripts.length; i++) {
+          // Check if supported type
           const index: number = supportedTypes.indexOf(scripts[i].getAttribute("type"));
           if (index > -1) {
             count++;
-            const jsonStream: Readable = new Readable({objectMode: true});
-            jsonStream.push(scripts[i].textContent);
-            jsonStream.push(null);
 
+            // Streamify script content
+            const stream: Readable = new Readable({objectMode: true});
+            stream.push(scripts[i].textContent);
+            stream.push(null);
+
+            // Push stream on parse bus
             const returned = (await this.mediatorRdfParse.mediate(
-              {context, handle: {input: jsonStream}, handleMediaType: supportedTypes[index]})).handle;
+              {context, handle: {input: stream}, handleMediaType: supportedTypes[index]})).handle;
 
+            // Push parsed quads on main stream
             await returned.quads.on('data', async (chunk) => {
-              console.log("\n");
-              console.log(chunk);
-              console.log("\n");
               await myQuads.push(chunk);
             });
 
-            // End the stream
+            // End the main stream
             await returned.quads.on('end', async () => {
               if (count > 1) {
                 count--;
@@ -94,28 +84,6 @@ export class ActorRdfParseHtmlScript extends ActorRdfParseFixedMediaTypes {
               }
             });
           }
-
-          // JSON-LD scripts
-          /*if (scripts[i].getAttribute("type") === "application/ld+json") {
-            // Streamify the content of the JSON-LD script tags
-            const jsonStream: Readable = new Readable({ objectMode: true });
-            jsonStream.push(scripts[i].textContent);
-            jsonStream.push(null);
-
-            // Throw the JSON-LD stream on the rdf-parse-bus
-            const returned = (await this.mediatorRdfParse.mediate(
-              {context, handle: { input: jsonStream}, handleMediaType: 'application/ld+json'})).handle;
-
-            // Push the returned quads to my general stream
-            returned.quads.on('data', async (chunk) => {
-              await myQuads.push(chunk);
-            });
-
-            // End the stream
-            returned.quads.on('end', async () => {
-              await myQuads.push(null);
-            });
-          }*/
         }
       }
     };
