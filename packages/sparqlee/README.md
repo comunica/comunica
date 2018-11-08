@@ -11,7 +11,6 @@ This package is available on [npm](https://www.npmjs.com/package/sparqlee), type
 
 ## Using Sparqlee
 
-
 ```ts
 const expression = ...some sparql algebra expression...;
 const bindings = ...some bindings/solution mapping...;
@@ -56,7 +55,108 @@ They might span entire streams and, depending on the use case, have very differe
 
 ## Spec compliance
 
-**TODO** Add section about differences from the spec and which functions are affected (and which are implemented).
+**TODO** Add section about differences from the spec and which functions are affected (and which are implemented). See also [extensible value testing and error handling](https://www.w3.org/TR/sparql11-query/#extensionFunctions).
+
+**TODO** String literals (plain literals etc...)
+
+**TODO** Replace with check marks
+
+|    Function    | Implemented | Tested | Spec compliant |
+|----------------|-------------|--------|----------------|
+| [Operator Mapping](https://www.w3.org/TR/sparql11-query/#OperatorMapping)
+| ! (not)        |   |   |   |
+| + (unary plus) |   |   |   |
+| - (unary minus)|   |   |   |
+| \|\|           | X | X | X |
+| &&             | X | X | X |
+| =              | X | X | ? |
+| !=             | X | X | ? |
+| <              | X | X | X |
+| >              | X | X | X |
+| <=             | X | X | X |
+| >=             | X | X | X |
+| *              | X | X | X |
+| /              | X | X | X |
+| +              | X | X | X |
+| -              | X | X | X |
+| [Functional Forms](https://www.w3.org/TR/sparql11-query/#func-forms)
+| BOUND          | X |   |   |
+| IF             | X |   |   |
+| COALESCE       | X |   |   |
+| NOT EXISTS     |   |   |   |
+| EXISTS         |   |   |   |
+| logical-or     | X | X | X |
+| logical-and    | X | X | X |
+| RDFTerm-equal  | X | X | ? |
+| sameTerm       | X |   |   |
+| IN             | X |   |   |
+| NOT IN         | X |   |   |
+|
+| [On RDF Terms](https://www.w3.org/TR/sparql11-query/#func-rdfTerms)
+| isIRI          |   |   |   |
+| isBlank        |   |   |   |
+| isLiteral      |   |   |   |
+| isNumeric      |   |   |   |
+| str            | X | X | X |
+| lang           | X | X | X |
+| datatype       | X | X | X |
+| IRI            |   |   |   |
+| BNODE          |   |   |   |
+| STRDT          |   |   |   |
+| STRLANG        |   |   |   |
+| UUID           |   |   |   |
+| STRUID         |   |   |   |
+|
+| [On Strings](https://www.w3.org/TR/sparql11-query/#func-strings)
+| STRLEN         | X | X | X |
+| SUBSTR         |   |   |   |
+| UCASE          |   |   |   |
+| LCASE          |   |   |   |
+| STRSTARTS      |   |   |   |
+| STRENDS        |   |   |   |
+| CONTAINS       |   |   |   |
+| STRBEFORE      |   |   |   |
+| STRAFTER       |   |   |   |
+| ENCODE_FOR_URI |   |   |   |
+| CONCAT         |   |   |   |
+| langMatches    | X | X | ? |
+| REGEX          | X | X |   |
+| REPLACE        |   |   |   |
+|
+| [On Numerics](https://www.w3.org/TR/sparql11-query/#func-numerics)
+| abs            | X |   |   |
+| round          |   |   |   |
+| ceil           |   |   |   |
+| floor          |   |   |   |
+| RAND           |   |   |   |
+|
+| [On Dates and Times](https://www.w3.org/TR/sparql11-query/#func-date-time)
+| now            |   |   |   |
+| year           |   |   |   |
+| month          |   |   |   |
+| day            |   |   |   |
+| hours          |   |   |   |
+| minutes        |   |   |   |
+| seconds        |   |   |   |
+| timezone       |   |   |   |
+| tz             |   |   |   |
+|
+| [Hash Functions](https://www.w3.org/TR/sparql11-query/#func-hash)
+| SHA1           |   |   |   |
+| SHA256         |   |   |   |
+| SHA384         |   |   |   |
+| SHA512         |   |   |   |
+|
+| [XPath Constructor Functions](https://www.w3.org/TR/sparql11-query/#FunctionMapping)
+| str (see 'On Terms') | X | X | X |
+| flt            |   |   |   |
+| dbl            |   |   |   |
+| dec            |   |   |   |
+| int            |   |   |   |
+| dT             |   |   |   |
+| bool           |   |   |   |
+| IRI            |   |   |   |
+| ltrl           |   |   |   |
 
 ## Setup locally
 

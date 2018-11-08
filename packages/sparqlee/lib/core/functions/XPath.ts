@@ -9,6 +9,7 @@ export function matches(text: string, pattern: string, flags?: string): boolean 
 }
 
 // TODO: Not an XPath function
+// TODO: Publish as package
 // https://www.ietf.org/rfc/rfc4647.txt
 // https://www.w3.org/TR/sparql11-query/#func-langMatches
 export function langMatches(tag: string, range: string): boolean {
