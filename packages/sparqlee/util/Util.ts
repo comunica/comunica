@@ -1,12 +1,10 @@
 import * as RDFDM from '@rdfjs/data-model';
-import { Map } from 'immutable';
 import * as RDF from 'rdf-js';
 
 import { Algebra as Alg, translate } from 'sparqlalgebrajs';
 import { AsyncEvaluator } from '../lib/AsyncEvaluator';
 import { Bindings } from '../lib/core/Types';
 import { TypeURL as DT } from '../lib/util/Consts';
-import { UnimplementedError } from '../lib/util/Errors';
 
 export class Example {
   expression: Alg.Expression;
@@ -81,7 +79,8 @@ export function parse(expr: string): Alg.Expression {
   // Build mock SPARQL query with expression in the filter
   const prefixes = `PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
                     PREFIX fn: <https://www.w3.org/TR/xpath-functions#>
-                    PREFIX err: <http://www.w3.org/2005/xqt-errors#>`;
+                    PREFIX err: <http://www.w3.org/2005/xqt-errors#>
+                    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>`;
   const queryString = `${prefixes} SELECT * WHERE { ?s ?p ?o FILTER (${expr})}`;
   const sparqlQuery = translate(queryString);
   // Extract filter expression from complete query
@@ -91,7 +90,8 @@ export function parse(expr: string): Alg.Expression {
 export function parseFull(expr: string): Alg.Operation {
   const prefixes = `PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
                     PREFIX fn: <https://www.w3.org/TR/xpath-functions#>
-                    PREFIX err: <http://www.w3.org/2005/xqt-errors#>`;
+                    PREFIX err: <http://www.w3.org/2005/xqt-errors#>
+                    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>`;
   const queryString = `${prefixes} ${expr}`;
   const sparqlQuery = translate(queryString);
   return sparqlQuery;

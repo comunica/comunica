@@ -9,8 +9,9 @@
     "lint": "tslint --project .",
     "test": "jest",
     "test-ci": "jest --ci --maxWorkers=4 --coverage",
-    "test-debug-lin": "node --nolazy --debug-brk=5858 ./node_modules/.bin/jest",
-    "test-debug-win": "node --debug-brk=5858 ./node_modules/jest/bin/jest.js",
+    "test-debug": "yarn test-debug-lin",
+    "test-debug-lin": "node --inspect-brk=5858 ./node_modules/.bin/jest",
+    "test-debug-win": "node --inspect-brk=5858 ./node_modules/jest/bin/jest.js",
     "coveralls-ci": "cat ./coverage/lcov.info | coveralls"
   },
   "pre-commit": [

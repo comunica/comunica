@@ -20,7 +20,7 @@
     "index.ts",
     "lib/**/*.ts",
     "bin/**/*.ts",
-    "util/**/*.ts",
+    "util/**/*.ts", "test/EBVCoercion.test.ts", "test/EBVCoercion.ts",
   ],
   "exclude": [
     "**/dist",

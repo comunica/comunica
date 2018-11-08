@@ -1,6 +1,5 @@
 import * as RDF from 'rdf-js';
 
-import { ExpressionError } from '../../';
 import { evaluate } from '../../util/Util';
 
 /*
@@ -35,15 +34,17 @@ export interface ResultMap { [key: string]: RDF.Term; }
  * false false = false
  * `
  */
-export interface EvaluationTable {
+export interface EvaluationConfig {
   op: string;
   arity: number;
-  table: string;
-  errorTable?: string;
   aliasMap: AliasMap;
   resultMap: ResultMap;
   notation: Notation;
 }
+export type EvaluationTable = EvaluationConfig & {
+  table: string;
+  errorTable?: string;
+};
 
 export enum Notation {
   Infix,
