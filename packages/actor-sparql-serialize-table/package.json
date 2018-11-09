@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-sparql-serialize-table",
-  "version": "1.4.0",
+  "version": "1.4.3",
   "description": "A table sparql-serialize actor",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-sparql-serialize-table",
   "lsd:components": "components/components.jsonld",

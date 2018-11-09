@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-sparql-serialize-json",
-  "version": "1.4.0",
+  "version": "1.4.3",
   "description": "A json sparql-serialize actor",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-sparql-serialize-json",
   "lsd:components": "components/components.jsonld",

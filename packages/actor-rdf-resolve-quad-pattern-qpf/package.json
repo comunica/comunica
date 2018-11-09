@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-resolve-quad-pattern-qpf",
-  "version": "1.4.0",
+  "version": "1.4.3",
   "description": "A qpf rdf-resolve-quad-pattern actor",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-resolve-quad-pattern-qpf",
   "lsd:components": "components/components.jsonld",
@@ -48,7 +48,7 @@
   "devDependencies": {
     "@comunica/actor-rdf-metadata-extract-hydra-controls": "^1.4.0",
     "@comunica/bus-rdf-dereference-paged": "^1.4.0",
-    "@comunica/bus-rdf-resolve-quad-pattern": "^1.4.0",
+    "@comunica/bus-rdf-resolve-quad-pattern": "^1.4.3",
     "@comunica/core": "^1.4.0"
   },
   "jest": {

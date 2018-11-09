@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-operation-describe-subject",
-  "version": "1.4.0",
+  "version": "1.4.3",
   "description": "A describe-subject query-operation actor",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-describe-subject",
   "lsd:components": "components/components.jsonld",

@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-serialize-n3",
-  "version": "1.4.0",
+  "version": "1.4.3",
   "description": "A n3 rdf-serialize actor",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-serialize-n3",
   "lsd:components": "components/components.jsonld",
