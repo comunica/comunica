@@ -21,18 +21,6 @@ module.exports = {
         test: /\.mjs$/,
         use: []
       },
-      { // This fixes a problem where the setImmediate of asynciterator would conflict with webpack's polyfill
-        test: /asynciterator\.js$/,
-        loader: StringReplacePlugin.replace({
-          replacements: [
-            {
-              pattern: /if \(typeof process !== 'undefined' && !process\.browser\)/i,
-              replacement: function () {
-                return 'if (true)';
-              },
-            },
-          ] }),
-      },
       {
         // Makes rdf-sink use a modularized lodash function instead of requiring lodash completely
         test: /rdf-sink\/index\.js$/,

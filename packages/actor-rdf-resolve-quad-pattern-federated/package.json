@@ -36,7 +36,7 @@
   ],
   "dependencies": {
     "@rdfjs/data-model": "^1.1.1",
-    "asynciterator": "^2.0.0",
+    "asynciterator": "^2.0.1",
     "asynciterator-promiseproxy": "^2.0.0",
     "asynciterator-union": "^2.1.1",
     "lodash.omit": "^4.5.0"
