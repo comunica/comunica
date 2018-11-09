@@ -30,10 +30,10 @@ export class ActorRdfResolveQuadPatternSparqlJson
   /**
    * Replace all blank nodes in a pattern with variables.
    * If the pattern contains no blank nodes the original pattern gets returned.
-   * @param {RDF.Quad} pattern A quad pattern.
-   * @return {RDF.Quad} A quad pattern with no blank nodes.
+   * @param {RDF.BaseQuad} pattern A quad pattern.
+   * @return {RDF.BaseQuad} A quad pattern with no blank nodes.
    */
-  public static replaceBlankNodes(pattern: RDF.Quad): RDF.Quad {
+  public static replaceBlankNodes(pattern: RDF.BaseQuad): RDF.BaseQuad {
     const variableNames: string[] = getVariables(getTerms(pattern)).map((v) => v.value);
     // track the names the blank nodes get mapped to (required if the name has to change)
     const blankMap: { [id: string]: string } = {};
@@ -72,7 +72,7 @@ export class ActorRdfResolveQuadPatternSparqlJson
    * @param {RDF.pattern} quad A quad pattern.
    * @return {Bgp} A BGP.
    */
-  public static patternToBgp(pattern: RDF.Quad): Algebra.Bgp {
+  public static patternToBgp(pattern: RDF.BaseQuad): Algebra.Bgp {
     return ActorRdfResolveQuadPatternSparqlJson.FACTORY.createBgp([ ActorRdfResolveQuadPatternSparqlJson.FACTORY
       .createPattern(pattern.subject, pattern.predicate, pattern.object, pattern.graph) ]);
   }
@@ -82,7 +82,7 @@ export class ActorRdfResolveQuadPatternSparqlJson
    * @param {RDF.Quad} pattern A quad pattern.
    * @return {string} A select query string.
    */
-  public static patternToSelectQuery(pattern: RDF.Quad): string {
+  public static patternToSelectQuery(pattern: RDF.BaseQuad): string {
     const variables: RDF.Variable[] = getVariables(getTerms(pattern));
     return toSparql(ActorRdfResolveQuadPatternSparqlJson.FACTORY.createProject(
       ActorRdfResolveQuadPatternSparqlJson.patternToBgp(pattern),
@@ -95,7 +95,7 @@ export class ActorRdfResolveQuadPatternSparqlJson
    * @param {RDF.Quad} pattern A quad pattern.
    * @return {string} A count query string.
    */
-  public static patternToCountQuery(pattern: RDF.Quad): string {
+  public static patternToCountQuery(pattern: RDF.BaseQuad): string {
     return toSparql(ActorRdfResolveQuadPatternSparqlJson.FACTORY.createProject(
       ActorRdfResolveQuadPatternSparqlJson.FACTORY.createExtend(
         ActorRdfResolveQuadPatternSparqlJson.FACTORY.createGroup(
@@ -156,7 +156,7 @@ export class ActorRdfResolveQuadPatternSparqlJson
     // Materialize the queried pattern using each found binding.
     const data: AsyncIterator<RDF.Quad> & RDF.Stream = new PromiseProxyIterator(async () =>
       (await this.queryBindings(endpoint, selectQuery, action.context))
-        .map((bindings: Bindings) => mapTerms(pattern, (value: RDF.Term) => {
+        .map((bindings: Bindings) => <RDF.Quad> mapTerms(pattern, (value: RDF.Term) => {
           if (value.termType === 'Variable') {
             const boundValue: RDF.Term = bindings.get('?' + value.value);
             if (!boundValue) {

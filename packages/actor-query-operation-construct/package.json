@@ -35,9 +35,9 @@
     "index.js"
   ],
   "dependencies": {
-    "@rdfjs/data-model": "^1.1.0",
+    "@rdfjs/data-model": "^1.1.1",
     "asynciterator": "^2.0.0",
-    "rdf-terms": "^1.1.0"
+    "rdf-terms": "^1.4.0"
   },
   "peerDependencies": {
     "@comunica/bus-query-operation": "^1.0.0",

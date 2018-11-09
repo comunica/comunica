@@ -35,7 +35,7 @@
     "index.js"
   ],
   "dependencies": {
-    "sparqljson-to-tree": "^1.2.3"
+    "sparqljson-to-tree": "^1.3.0"
   },
   "peerDependencies": {
     "@comunica/bus-sparql-serialize": "^1.0.0",

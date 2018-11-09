@@ -3,6 +3,7 @@ import {blankNode, defaultGraph, literal, namedNode, quad, variable} from "@rdfj
 import {ArrayIterator, EmptyIterator} from "asynciterator";
 import {RoundRobinUnionIterator} from "asynciterator-union";
 import {AsyncReiterableArray} from "asyncreiterable";
+import * as RDF from "rdf-js";
 import {FederatedQuadSource} from "../lib/FederatedQuadSource";
 const squad = require('rdf-quad');
 const arrayifyStream = require('arrayify-stream');
@@ -358,8 +359,8 @@ describe('FederatedQuadSource', () => {
 
       return expect(Array.from(emptyPatterns.entries())).toEqual([
         [subSource, [
-          quad(variable('s'), literal('p'), variable('o'), variable('g')),
-          quad(literal('s'), variable('p'), variable('o'), variable('g')),
+          quad<RDF.BaseQuad>(variable('s'), literal('p'), variable('o'), variable('g')),
+          quad<RDF.BaseQuad>(literal('s'), variable('p'), variable('o'), variable('g')),
         ]],
       ]);
     });
@@ -453,8 +454,8 @@ describe('FederatedQuadSource', () => {
 
       return expect(Array.from(emptyPatterns.entries())).toEqual([
         [subSource1, [
-          quad(variable('s'), literal('p'), variable('o'), variable('g')),
-          quad(literal('s'), variable('p'), variable('o'), variable('g')),
+          quad<RDF.BaseQuad>(variable('s'), literal('p'), variable('o'), variable('g')),
+          quad<RDF.BaseQuad>(literal('s'), variable('p'), variable('o'), variable('g')),
         ]],
         [subSource2, []],
       ]);
@@ -503,12 +504,12 @@ describe('FederatedQuadSource', () => {
 
       return expect(Array.from(emptyPatterns.entries())).toEqual([
         [subSource1, [
-          quad(variable('s'), literal('p'), variable('o'), variable('g')),
-          quad(literal('s'), variable('p'), variable('o'), variable('g')),
+          quad<RDF.BaseQuad>(variable('s'), literal('p'), variable('o'), variable('g')),
+          quad<RDF.BaseQuad>(literal('s'), variable('p'), variable('o'), variable('g')),
         ]],
         [subSource2, [
-          quad(variable('s'), literal('p'), variable('o'), variable('g')),
-          quad(literal('s'), variable('p'), variable('o'), variable('g')),
+          quad<RDF.BaseQuad>(variable('s'), literal('p'), variable('o'), variable('g')),
+          quad<RDF.BaseQuad>(literal('s'), variable('p'), variable('o'), variable('g')),
         ]],
       ]);
     });
@@ -554,8 +555,8 @@ describe('FederatedQuadSource', () => {
 
       return expect(Array.from(emptyPatterns.entries())).toEqual([
         [subSource, [
-          quad(variable('s'), literal('p'), variable('o'), variable('g')),
-          quad(literal('s'), variable('p'), variable('o'), variable('g')),
+          quad<RDF.BaseQuad>(variable('s'), literal('p'), variable('o'), variable('g')),
+          quad<RDF.BaseQuad>(literal('s'), variable('p'), variable('o'), variable('g')),
         ]],
       ]);
     });

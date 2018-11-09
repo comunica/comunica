@@ -27,7 +27,9 @@ export class ActorQueryOperationDescribeSubject extends ActorQueryOperationTyped
       .filter((term) => term.termType !== 'Variable')
       .map((term: RDF.Term) => {
         // Transform each term to a separate construct operation with S ?p ?o patterns (BGP) for all terms
-        const patterns: RDF.Quad[] = [ triple(term, variable('__predicate'), variable('__object')) ];
+        const patterns: RDF.BaseQuad[] = [
+          triple<RDF.BaseQuad>(term, variable('__predicate'), variable('__object')),
+        ];
         patterns.forEach((templatePattern: any) => templatePattern.type = 'pattern');
         const templateOperation: Algebra.Operation = { type: 'bgp', patterns: <Algebra.Pattern[]> patterns };
 
@@ -47,7 +49,9 @@ export class ActorQueryOperationDescribeSubject extends ActorQueryOperationTyped
         .filter((term) => term.termType === 'Variable')
         .forEach((term: RDF.Term, i: number) => {
           // Transform each term to an S ?p ?o pattern in a non-conflicting way
-          const patterns: RDF.Quad[] = [ triple(term, variable('__predicate' + i), variable('__object' + i)) ];
+          const patterns: RDF.BaseQuad[] = [
+            triple<RDF.BaseQuad>(term, variable('__predicate' + i), variable('__object' + i)),
+          ];
           patterns.forEach((templatePattern: any) => templatePattern.type = 'pattern');
           variablePatterns = variablePatterns.concat(<Algebra.Pattern[]> patterns);
         });

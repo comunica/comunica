@@ -2,6 +2,7 @@ import {ActorQueryOperation, Bindings, IActorQueryOperationOutputBindings} from 
 import {ActionContext, Bus} from "@comunica/core";
 import {blankNode, defaultGraph, literal, namedNode, quad, variable} from "@rdfjs/data-model";
 import {ArrayIterator, EmptyIterator, SingletonIterator} from "asynciterator";
+import * as RDF from "rdf-js";
 import {Algebra} from "sparqlalgebrajs";
 import {ActorQueryOperationBgpLeftDeepSmallest} from "../lib/ActorQueryOperationBgpLeftDeepSmallest";
 const arrayifyStream = require('arrayify-stream');
@@ -57,13 +58,15 @@ describe('ActorQueryOperationBgpLeftDeepSmallest', () => {
       { type: "pattern" });
     const patternVarS: any = Object.assign(quad(termVariableC, termNamedNode, termNamedNode, termNamedNode),
       { type: "pattern" });
-    const patternVarP: any = Object.assign(quad(termNamedNode, termVariableC, termNamedNode, termNamedNode),
+    const patternVarP: any = Object.assign(quad<RDF.BaseQuad>(
+      termNamedNode, termVariableC, termNamedNode, termNamedNode),
       { type: "pattern" });
     const patternVarO: any = Object.assign(quad(termNamedNode, termNamedNode, termVariableC, termNamedNode),
       { type: "pattern" });
     const patternVarG: any = Object.assign(quad(termNamedNode, termNamedNode, termNamedNode, termVariableC),
       { type: "pattern" });
-    const patternVarAll: any = Object.assign(quad(termVariableC, termVariableC, termVariableC, termVariableC),
+    const patternVarAll: any = Object.assign(quad<RDF.BaseQuad>(
+      termVariableC, termVariableC, termVariableC, termVariableC),
       { type: "pattern" });
     const patternVarMixed: any = Object.assign(quad(termVariableA, termVariableB, termVariableC, termVariableD),
       { type: "pattern" });
@@ -166,13 +169,13 @@ describe('ActorQueryOperationBgpLeftDeepSmallest', () => {
 
       it('should materialize a pattern with variable subject', () => {
         return expect(ActorQueryOperationBgpLeftDeepSmallest.materializePattern(patternVarS, bindingsAC))
-          .toEqual(Object.assign(quad(valueC, termNamedNode, termNamedNode, termNamedNode),
+          .toEqual(Object.assign(quad<RDF.BaseQuad>(valueC, termNamedNode, termNamedNode, termNamedNode),
             { type: "pattern" }));
       });
 
       it('should materialize a pattern with variable predicate', () => {
         return expect(ActorQueryOperationBgpLeftDeepSmallest.materializePattern(patternVarP, bindingsAC))
-          .toEqual(Object.assign(quad(termNamedNode, valueC, termNamedNode, termNamedNode),
+          .toEqual(Object.assign(quad<RDF.BaseQuad>(termNamedNode, valueC, termNamedNode, termNamedNode),
             { type: "pattern" }));
       });
 
@@ -184,19 +187,19 @@ describe('ActorQueryOperationBgpLeftDeepSmallest', () => {
 
       it('should materialize a pattern with variable graph', () => {
         return expect(ActorQueryOperationBgpLeftDeepSmallest.materializePattern(patternVarG, bindingsAC))
-          .toEqual(Object.assign(quad(termNamedNode, termNamedNode, termNamedNode, valueC),
+          .toEqual(Object.assign(quad<RDF.BaseQuad>(termNamedNode, termNamedNode, termNamedNode, valueC),
             { type: "pattern" }));
       });
 
       it('should materialize a pattern with all variables', () => {
         return expect(ActorQueryOperationBgpLeftDeepSmallest.materializePattern(patternVarAll, bindingsAC))
-          .toEqual(Object.assign(quad(valueC, valueC, valueC, valueC),
+          .toEqual(Object.assign(quad<RDF.BaseQuad>(valueC, valueC, valueC, valueC),
             { type: "pattern" }));
       });
 
       it('should partially materialize a pattern with mixed variables', () => {
         return expect(ActorQueryOperationBgpLeftDeepSmallest.materializePattern(patternVarMixed, bindingsAC))
-          .toEqual(Object.assign(quad(valueA, termVariableB, valueC, termVariableD),
+          .toEqual(Object.assign(quad<RDF.BaseQuad>(valueA, termVariableB, valueC, termVariableD),
             { type: "pattern" }));
       });
     });
@@ -209,9 +212,9 @@ describe('ActorQueryOperationBgpLeftDeepSmallest', () => {
       it('should materialize all patterns in a non-empty array', () => {
         return expect(ActorQueryOperationBgpLeftDeepSmallest.materializePatterns([patternVarS, patternVarP],
           bindingsAC)).toEqual([
-            Object.assign(quad(valueC, termNamedNode, termNamedNode, termNamedNode),
+            Object.assign(quad<RDF.BaseQuad>(valueC, termNamedNode, termNamedNode, termNamedNode),
             { type: "pattern" }),
-            Object.assign(quad(termNamedNode, valueC, termNamedNode, termNamedNode),
+            Object.assign(quad<RDF.BaseQuad>(termNamedNode, valueC, termNamedNode, termNamedNode),
             { type: "pattern" }),
           ]);
       });

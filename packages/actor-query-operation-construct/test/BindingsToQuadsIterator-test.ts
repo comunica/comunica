@@ -309,7 +309,7 @@ describe('BindingsToQuadsIterator', () => {
     });
 
     it('should localize a quad with a predicate blank node', () => {
-      return expect(BindingsToQuadsIterator.localizeQuad(0, quad(
+      return expect(BindingsToQuadsIterator.localizeQuad(0, quad<RDF.BaseQuad>(
         variable('s'),
         blankNode('p'),
         literal('o'),
@@ -494,15 +494,18 @@ describe('BindingsToQuadsIterator', () => {
         quad(namedNode('a1'), namedNode('p1'), namedNode('o1')),
         quad(blankNode('bnode0'), namedNode('b1'), blankNode('bnode0')),
         quad(blankNode('bnode0'), namedNode('a1'), namedNode('b1')),
-        quad(blankNode('bnode0'), blankNode('otherbnode0'), blankNode('otherbnode0'), blankNode('otherbnode0')),
+        quad<RDF.BaseQuad>(blankNode('bnode0'), blankNode('otherbnode0'),
+          blankNode('otherbnode0'), blankNode('otherbnode0')),
 
         quad(namedNode('a2'), namedNode('p1'), namedNode('o1')),
         quad(blankNode('bnode1'), namedNode('b2'), blankNode('bnode1')),
         quad(blankNode('bnode1'), namedNode('a2'), namedNode('b2')),
-        quad(blankNode('bnode1'), blankNode('otherbnode1'), blankNode('otherbnode1'), blankNode('otherbnode1')),
+        quad<RDF.BaseQuad>(blankNode('bnode1'), blankNode('otherbnode1'),
+          blankNode('otherbnode1'), blankNode('otherbnode1')),
 
         quad(namedNode('a3'), namedNode('p1'), namedNode('o1')),
-        quad(blankNode('bnode2'), blankNode('otherbnode2'), blankNode('otherbnode2'), blankNode('otherbnode2')),
+        quad<RDF.BaseQuad>(blankNode('bnode2'), blankNode('otherbnode2'),
+          blankNode('otherbnode2'), blankNode('otherbnode2')),
       ]);
     });
   });

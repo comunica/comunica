@@ -6,7 +6,7 @@ import {
   IActorQueryOperationTypedMediatedArgs,
 } from "@comunica/bus-query-operation";
 import {ActionContext, IActorTest} from "@comunica/core";
-import {AsyncIterator, EmptyIterator, MultiTransformIterator} from "asynciterator";
+import {AsyncIterator, EmptyIterator} from "asynciterator";
 import * as RDF from "rdf-js";
 import {getTerms, getVariables, uniqTerms} from "rdf-terms";
 import {Algebra} from "sparqlalgebrajs";
@@ -26,7 +26,7 @@ export class ActorQueryOperationConstruct extends ActorQueryOperationTypedMediat
    * @param {Algebra.Pattern[]} patterns An array of triple patterns.
    * @return {RDF.Variable[]} The variables in the triple patterns.
    */
-  public static getVariables(patterns: RDF.Quad[]): RDF.Variable[] {
+  public static getVariables(patterns: RDF.BaseQuad[]): RDF.Variable[] {
     return uniqTerms([].concat.apply([], patterns.map((pattern) => getVariables(getTerms(pattern)))));
   }
 

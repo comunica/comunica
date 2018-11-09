@@ -35,7 +35,7 @@
     "index.js"
   ],
   "dependencies": {
-    "@rdfjs/data-model": "^1.1.0",
+    "@rdfjs/data-model": "^1.1.1",
     "asynciterator": "^2.0.0",
     "asynciterator-promiseproxy": "^2.0.0",
     "asynciterator-union": "^2.1.1",

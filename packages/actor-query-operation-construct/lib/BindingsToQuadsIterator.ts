@@ -12,10 +12,10 @@ import {mapTerms} from "rdf-terms";
  */
 export class BindingsToQuadsIterator extends MultiTransformIterator<Bindings, RDF.Quad> {
 
-  protected template: RDF.Quad[];
+  protected template: RDF.BaseQuad[];
   protected blankNodeCounter: number;
 
-  constructor(template: RDF.Quad[], bindingsStream: BindingsStream) {
+  constructor(template: RDF.BaseQuad[], bindingsStream: BindingsStream) {
     super(bindingsStream);
     this.template = template;
     this.blankNodeCounter = 0;
@@ -81,11 +81,11 @@ export class BindingsToQuadsIterator extends MultiTransformIterator<Bindings, RD
   /**
    * Convert the given quad to a quad that only contains unique blank nodes.
    * @param            blankNodeCounter A counter value for the blank node.
-   * @param {RDF.Quad} pattern          The pattern that should be localized.
-   * @return {RDF.Quad}                 A quad.
+   * @param {RDF.BaseQuad} pattern          The pattern that should be localized.
+   * @return {RDF.BaseQuad}                 A quad.
    */
   public static localizeQuad(blankNodeCounter: number,
-                             pattern: RDF.Quad): RDF.Quad {
+                             pattern: RDF.BaseQuad): RDF.BaseQuad {
     return mapTerms(pattern, (term) => BindingsToQuadsIterator.localizeBlankNode(blankNodeCounter, term));
   }
 
@@ -96,7 +96,7 @@ export class BindingsToQuadsIterator extends MultiTransformIterator<Bindings, RD
    * @param               blankNodeCounter   A counter value for the blank node.
    * @return {RDF.Quad[]}                    A list of quads.
    */
-  public static bindTemplate(bindings: Bindings, template: RDF.Quad[],
+  public static bindTemplate(bindings: Bindings, template: RDF.BaseQuad[],
                              blankNodeCounter: number): RDF.Quad[] {
     return template
       // Bind variables to bound terms
