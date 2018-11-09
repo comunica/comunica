@@ -1801,12 +1801,10 @@ asynciterator-union@^2.1.1:
   dependencies:
     asynciterator "^2.0.0"
 
-asynciterator@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/asynciterator/-/asynciterator-2.0.0.tgz#f1d5ef187422aa9b3d6bd26bfcfa6f861435f635"
-  integrity sha512-sAD0fwT3h5hC8O/tclYGLWy3xPs8G8P20ROAOzDKG7SBkdySRAo/NMftlE37cVRe+RAfzGT5dYG+malp2KfefA==
-  dependencies:
-    immediate "^3.2.3"
+asynciterator@^2.0.0, asynciterator@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/asynciterator/-/asynciterator-2.0.1.tgz#94d6a059fee4bc63e862ad1edb685c5f5fa26be6"
+  integrity sha512-aVLheZsDNU5qpOv6jZEHnFv79GfEi+N0w/OLmMmXZfGD8XFFmPsRhkSqleNl9jS6mqy/DNoV7tXGcI0S3cUvHQ==
 
 asyncjoin@^0.3.0:
   version "0.3.0"
@@ -4177,11 +4175,6 @@ ignore@^3.3.5:
   version "3.3.10"
   resolved "https://registry.yarnpkg.com/ignore/-/ignore-3.3.10.tgz#0a97fb876986e8081c631160f8f9f389157f0043"
   integrity sha512-Pgs951kaMm5GXP7MOvxERINe3gsaVjUWFm+UZPSq9xYriQAksyhg0csnS0KXSNRD5NmNdapXEpjxG49+AKh/ug==
-
-immediate@^3.2.3:
-  version "3.2.3"
-  resolved "https://registry.yarnpkg.com/immediate/-/immediate-3.2.3.tgz#d140fa8f614659bd6541233097ddaac25cdd991c"
-  integrity sha1-0UD6j2FGWb1lQSMwl92qwlzdmRw=
 
 immutable@^3.8.2:
   version "3.8.2"

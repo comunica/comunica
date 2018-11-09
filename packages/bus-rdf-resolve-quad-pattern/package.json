@@ -34,7 +34,7 @@
     "index.js"
   ],
   "dependencies": {
-    "asynciterator": "^2.0.0",
+    "asynciterator": "^2.0.1",
     "asyncreiterable": "^1.1.0"
   },
   "peerDependencies": {
