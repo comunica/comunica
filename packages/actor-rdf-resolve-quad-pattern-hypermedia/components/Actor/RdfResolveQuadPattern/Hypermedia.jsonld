@@ -1,0 +1,88 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-resolve-quad-pattern-hypermedia/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-resolve-quad-pattern/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-rdf-resolve-quad-pattern-hypermedia",
+  "components": [
+    {
+      "@id": "carrqph:Actor/RdfResolveQuadPattern/Hypermedia",
+      "@type": "Class",
+      "extends": "cbrrqp:Actor/RdfResolveQuadPattern",
+      "requireElement": "ActorRdfResolveQuadPatternHypermedia",
+      "comment": "A comunica Hypermedia RDF Resolve Quad Pattern Actor.",
+      "parameters": [
+        {
+          "@id": "carrqph:Actor/RdfResolveQuadPattern/Hypermedia/mediatorRdfDereferencePaged",
+          "comment": "The paged RDF dereference mediator",
+          "required": true,
+          "unique": true
+        },
+        {
+          "@id": "carrqph:Actor/RdfResolveQuadPattern/Hypermedia/mediatorRdfResolveHypermedia",
+          "comment": "The hypermedia resolver",
+          "required": true,
+          "unique": true
+        },
+        {
+          "@id": "carrqph:Actor/RdfResolveQuadPattern/Hypermedia/subjectUri",
+          "comment": "The URI that should be interpreted as subject URI",
+          "unique": true,
+          "required": true,
+          "default": "http://www.w3.org/1999/02/22-rdf-syntax-ns#subject"
+        },
+        {
+          "@id": "carrqph:Actor/RdfResolveQuadPattern/Hypermedia/predicateUri",
+          "comment": "The URI that should be interpreted as predicate URI",
+          "unique": true,
+          "required": true,
+          "default": "http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate"
+        },
+        {
+          "@id": "carrqph:Actor/RdfResolveQuadPattern/Hypermedia/objectUri",
+          "comment": "The URI that should be interpreted as object URI",
+          "unique": true,
+          "required": true,
+          "default": "http://www.w3.org/1999/02/22-rdf-syntax-ns#object"
+        },
+        {
+          "@id": "carrqph:Actor/RdfResolveQuadPattern/Hypermedia/graphUri",
+          "comment": "The URI that should be interpreted as graph URI",
+          "unique": true,
+          "default": "http://www.w3.org/ns/sparql-service-description#graph"
+        }
+      ],
+      "constructorArguments": [
+        {
+          "extends": "cbrrqp:Actor/RdfResolveQuadPattern/constructorArgumentsObject",
+          "fields": [
+            {
+              "keyRaw": "mediatorRdfDereferencePaged",
+              "value": "carrqph:Actor/RdfResolveQuadPattern/Hypermedia/mediatorRdfDereferencePaged"
+            },
+            {
+              "keyRaw": "mediatorRdfResolveHypermedia",
+              "value": "carrqph:Actor/RdfResolveQuadPattern/Hypermedia/mediatorRdfResolveHypermedia"
+            },
+            {
+              "keyRaw": "subjectUri",
+              "value": "carrqph:Actor/RdfResolveQuadPattern/Hypermedia/subjectUri"
+            },
+            {
+              "keyRaw": "predicateUri",
+              "value": "carrqph:Actor/RdfResolveQuadPattern/Hypermedia/predicateUri"
+            },
+            {
+              "keyRaw": "objectUri",
+              "value": "carrqph:Actor/RdfResolveQuadPattern/Hypermedia/objectUri"
+            },
+            {
+              "keyRaw": "graphUri",
+              "value": "carrqph:Actor/RdfResolveQuadPattern/Hypermedia/graphUri"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

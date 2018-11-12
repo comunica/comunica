@@ -1,0 +1,6 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-resolve-hypermedia/^1.0.0/components/context.jsonld",
+  "@id": "cbrrh:Bus/RdfResolveHypermedia",
+  "@type": "cc:Bus",
+  "comment": "A comunica bus for resolving hypermedia to quad streams."
+}
