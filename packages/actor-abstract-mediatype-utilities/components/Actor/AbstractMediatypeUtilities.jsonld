@@ -1,0 +1,15 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-abstract-mediatype-utilities/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-query-operation/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-abstract-mediatype-utilities",
+  "components": [
+    {
+      "@id": "caamu:Actor/AbstractMediatypeUtilities",
+      "@type": "AbstractClass",
+      "requireElement": "ActorAbstractMediatypeUtilities",
+      "comment": "An abstract comunica actor for handling mediatype discovery."
+    }
+  ]
+}
