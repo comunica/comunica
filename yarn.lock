@@ -1100,6 +1100,12 @@
   dependencies:
     "@types/rdf-js" "^2.0.1"
 
+"@rdfjs/data-model@^1.1.1":
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/@rdfjs/data-model/-/data-model-1.1.1.tgz#083737568e4a776a0fc7c718b4a4acdd287b78a7"
+  dependencies:
+    "@types/rdf-js" "^2.0.1"
+
 "@types/asynciterator@^1.1.1":
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/@types/asynciterator/-/asynciterator-1.1.1.tgz#21ae5e3729ab2e87d324a044b2cd6288226da7fc"
@@ -1232,6 +1238,12 @@
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/@types/rdf-js/-/rdf-js-2.0.1.tgz#f07030a529ed1a8cd073098be961f2196d6ac0a9"
   integrity sha512-x3Qct8TPilUos4znM1gANmtTvjOFdDRItmpEM2Nu9QgAx258FN9k22OvOu2TmPzOlx8a1FLdEW3o33UXHQt5ow==
+  dependencies:
+    "@types/node" "*"
+
+"@types/rdf-js@^2.0.1":
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/@types/rdf-js/-/rdf-js-2.0.1.tgz#f07030a529ed1a8cd073098be961f2196d6ac0a9"
   dependencies:
     "@types/node" "*"
 
