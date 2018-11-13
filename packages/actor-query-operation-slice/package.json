@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-operation-slice",
-  "version": "1.4.0",
+  "version": "1.4.4",
   "description": "A slice query-operation actor",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-slice",
   "lsd:components": "components/components.jsonld",
@@ -39,7 +39,7 @@
     "@comunica/core": "^1.0.0"
   },
   "devDependencies": {
-    "@comunica/bus-query-operation": "^1.4.0",
+    "@comunica/bus-query-operation": "^1.4.4",
     "@comunica/core": "^1.4.0"
   },
   "jest": {

@@ -1,6 +1,6 @@
 {
   "name": "@comunica/bus-rdf-join",
-  "version": "1.4.0",
+  "version": "1.4.4",
   "description": "A comunica bus for rdf-join events.",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-join",
   "lsd:components": "components/components.jsonld",
@@ -41,7 +41,7 @@
     "@comunica/core": "^1.0.0"
   },
   "devDependencies": {
-    "@comunica/bus-query-operation": "^1.4.0",
+    "@comunica/bus-query-operation": "^1.4.4",
     "@comunica/core": "^1.4.0",
     "@comunica/mediatortype-iterations": "^1.4.0"
   },

@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-init-hello-world",
-  "version": "1.4.0",
+  "version": "1.4.4",
   "description": "A Hello World Comunica engine",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-hello-world",
   "lsd:components": "components/components.jsonld",
@@ -39,8 +39,8 @@
   "dependencies": {
     "@comunica/bus-init": "^1.4.0",
     "@comunica/core": "^1.4.0",
-    "@comunica/runner": "^1.4.0",
-    "@comunica/runner-cli": "^1.4.0",
+    "@comunica/runner": "^1.4.4",
+    "@comunica/runner-cli": "^1.4.4",
     "streamify-string": "^1.0.1"
   },
   "jest": {

@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-operation-bgp-left-deep-smallest-sort",
-  "version": "1.4.3",
+  "version": "1.4.4",
   "description": "A bgp-left-deep-smallest-sort query-operation actor",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-bgp-left-deep-smallest-sort",
   "lsd:components": "components/components.jsonld",
@@ -46,7 +46,7 @@
     "@comunica/core": "^1.0.0"
   },
   "devDependencies": {
-    "@comunica/bus-query-operation": "^1.4.0",
+    "@comunica/bus-query-operation": "^1.4.4",
     "@comunica/core": "^1.4.0"
   },
   "jest": {
