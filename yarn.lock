@@ -2573,10 +2573,10 @@ component-emitter@^1.2.1:
   resolved "https://registry.yarnpkg.com/component-emitter/-/component-emitter-1.2.1.tgz#137918d6d78283f7df7a6b7c5a63e140e69425e6"
   integrity sha1-E3kY1teCg/ffemt8WmPhQOaUJeY=
 
-componentsjs@^3.1.0:
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/componentsjs/-/componentsjs-3.1.0.tgz#0ea466d3d7d05a562ff1b39b5274983d4eca0554"
-  integrity sha512-xL7v5rs3uoBRLaR//mzsB5V54EwFhWMXhsfMXE1DUsRrVgqPwyIJLd8B6f6w84/y5qJQK15znauILIy+vIuVlQ==
+componentsjs@^3.2.0:
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/componentsjs/-/componentsjs-3.2.0.tgz#3f919845f8c8eff976a69d505aee0098f370af0c"
+  integrity sha512-ruO5GneIIYtmi+Bg0Yj1Wqe+QBAeUGVjjn+u/TBNfqYZBoCnbHZV/gq8vm9bw6vWp5QBSjywy0PNNmgV71dxmA==
   dependencies:
     global-modules "^1.0.0"
     jsonld "^0.4.11"
