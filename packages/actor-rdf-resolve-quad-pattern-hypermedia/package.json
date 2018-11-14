@@ -42,6 +42,7 @@
   },
   "peerDependencies": {
     "@comunica/actor-abstract-mediatype-utilities": "^1.0.0",
+    "@comunica/actor-rdf-metadata-extract-hydra-controls": "^1.0.0",
     "@comunica/bus-rdf-dereference-paged": "^1.0.0",
     "@comunica/bus-rdf-resolve-hypermedia": "^1.0.0",
     "@comunica/bus-rdf-resolve-quad-pattern": "^1.0.0",

@@ -38,9 +38,11 @@
     "asyncreiterable": "^1.1.0"
   },
   "peerDependencies": {
+    "@comunica/actor-rdf-metadata-extract-hydra-controls": "^1.0.0",
     "@comunica/core": "^1.0.0"
   },
   "devDependencies": {
+    "@comunica/actor-rdf-metadata-extract-hydra-controls": "^1.4.0",
     "@comunica/core": "^1.4.0"
   },
   "jest": {
