@@ -13,28 +13,28 @@
       "comment": "A comunica QPF RDF Resolve Quad Pattern Actor.",
       "parameters": [
         {
-          "@id": "carrqph:Actor/RdfResolveQuadPattern/Hypermedia/subjectUri",
+          "@id": "carrhq:Actor/RdfResolveHypermedia/Qpf/subjectUri",
           "comment": "The URI that should be interpreted as subject URI",
           "unique": true,
           "required": true,
           "default": "http://www.w3.org/1999/02/22-rdf-syntax-ns#subject"
         },
         {
-          "@id": "carrqph:Actor/RdfResolveQuadPattern/Hypermedia/predicateUri",
+          "@id": "carrhq:Actor/RdfResolveHypermedia/Qpf/predicateUri",
           "comment": "The URI that should be interpreted as predicate URI",
           "unique": true,
           "required": true,
           "default": "http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate"
         },
         {
-          "@id": "carrqph:Actor/RdfResolveQuadPattern/Hypermedia/objectUri",
+          "@id": "carrhq:Actor/RdfResolveHypermedia/Qpf/objectUri",
           "comment": "The URI that should be interpreted as object URI",
           "unique": true,
           "required": true,
           "default": "http://www.w3.org/1999/02/22-rdf-syntax-ns#object"
         },
         {
-          "@id": "carrqph:Actor/RdfResolveQuadPattern/Hypermedia/graphUri",
+          "@id": "carrhq:Actor/RdfResolveHypermedia/Qpf/graphUri",
           "comment": "The URI that should be interpreted as graph URI",
           "unique": true,
           "default": "http://www.w3.org/ns/sparql-service-description#graph"
@@ -46,19 +46,19 @@
           "fields": [
             {
               "keyRaw": "subjectUri",
-              "value": "carrqph:Actor/RdfResolveQuadPattern/Hypermedia/subjectUri"
+              "value": "carrhq:Actor/RdfResolveHypermedia/Qpf/subjectUri"
             },
             {
               "keyRaw": "predicateUri",
-              "value": "carrqph:Actor/RdfResolveQuadPattern/Hypermedia/predicateUri"
+              "value": "carrhq:Actor/RdfResolveHypermedia/Qpf/predicateUri"
             },
             {
               "keyRaw": "objectUri",
-              "value": "carrqph:Actor/RdfResolveQuadPattern/Hypermedia/objectUri"
+              "value": "carrhq:Actor/RdfResolveHypermedia/Qpf/objectUri"
             },
             {
               "keyRaw": "graphUri",
-              "value": "carrqph:Actor/RdfResolveQuadPattern/Hypermedia/graphUri"
+              "value": "carrhq:Actor/RdfResolveHypermedia/Qpf/graphUri"
             }
           ]
         }

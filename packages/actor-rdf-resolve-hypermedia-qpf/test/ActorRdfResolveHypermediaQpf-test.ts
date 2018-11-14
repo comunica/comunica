@@ -71,6 +71,22 @@ describe('ActorRdfResolveHypermediaQpf', () => {
         ({ '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'an-other-type', value: 'source' }}),
       })).rejects.toThrow();
     });
+
+    it('should not test without metadata', () => {
+      return expect(actor.test({metadata: null, context: ActionContext
+        ({ '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'hypermedia', value: 'source' }}),
+      })).rejects.toEqual(
+        new Error(`actor requires metadata and searchForms to work on.`),
+      );
+    });
+
+    it('should not test without searchForms in metadata', () => {
+      return expect(actor.test({metadata: {}, context: ActionContext
+        ({ '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'hypermedia', value: 'source' }}),
+      })).rejects.toEqual(
+        new Error(`actor requires metadata and searchForms to work on.`),
+      );
+    });
   });
 
   describe('#run', () => {
@@ -97,20 +113,6 @@ describe('ActorRdfResolveHypermediaQpf', () => {
       return expect(actor.run({metadata, context: ActionContext
         ({ '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'hypermedia', value: 'source' }}),
       })).resolves.toEqual({ searchForm: metadata.searchForms.values[0] });
-    });
-
-    it('should not run without metadata', () => {
-      return expect(actor.run({metadata: null, context: ActionContext
-        ({ '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'hypermedia', value: 'source' }}),
-      })).rejects.toEqual(
-        new Error('No valid Hydra search form was found for quad pattern or triple pattern queries.'));
-    });
-
-    it('should not run without searchForms in metadata', () => {
-      return expect(actor.run({metadata: {}, context: ActionContext
-        ({ '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'hypermedia', value: 'source' }}),
-      })).rejects.toEqual(
-        new Error('No valid Hydra search form was found for quad pattern or triple pattern queries.'));
     });
 
     it('should not run when no URIs are defined in the searchForms of the metadata', () => {

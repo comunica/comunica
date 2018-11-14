@@ -33,8 +33,8 @@ export class ActorRdfResolveQuadPatternHypermedia extends ActorRdfResolveQuadPat
 
   public async test(action: IActionRdfResolveQuadPattern): Promise<IActorTest> {
     if (!(await AbstractMediatypeUtilities.singleSourceHasType(action.context, 'hypermedia'))) {
-      throw new Error(this.name
-        + ' requires a single source with a Hypermedia \'hypermedia\' entrypoint to be present in the context.');
+      throw new Error(
+        `${this.name} requires a single source with a \'hypermedia\' entrypoint to be present in the context.`);
     }
     return true;
   }
@@ -46,18 +46,20 @@ export class ActorRdfResolveQuadPatternHypermedia extends ActorRdfResolveQuadPat
    * @return {Promise<ISearchForm>} A promise resolving to a hypermedia form.
    */
   protected async chooseForm(hypermedia: string, context: ActionContext): Promise<ISearchForm> {
+    // Mediate the hypermedia url to get a paged stream
     const firstPageMetadata: () => Promise<{[id: string]: any}> = (await this.mediatorRdfDereferencePaged
       .mediate({ context, url: hypermedia })).firstPageMetadata;
     if (!firstPageMetadata) {
-      throw new Error('No metadata was found at hypermedia entrypoint ' + hypermedia);
+      throw new Error(`No metadata was found at hypermedia entrypoint ${hypermedia}`);
     }
     const metadata: {[id: string]: any} = await firstPageMetadata();
 
     if (!metadata.searchForms || !metadata.searchForms.values.length) {
-      throw new Error('No Hydra search forms were discovered in the metadata of ' + hypermedia
-        + '. You may be missing an actor that extracts this metadata');
+      throw new Error(`No Hydra search forms were discovered in the metadata of ${hypermedia}.` +
+        ` You may be missing an actor that extracts this metadata`);
     }
 
+    // Mediate the metadata to get the searchform
     const searchForm: ISearchForm = (await this.mediatorRdfResolveHypermedia.mediate({metadata, context})).searchForm;
 
     return searchForm;

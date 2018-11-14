@@ -24,6 +24,11 @@ implements IActorRdfResolveHypermediaQpfArgs {
       throw new Error(this.name
         + ' requires a single source with a Hypermedia \'hypermedia\' entrypoint to be present in the context.');
     }
+
+    if (!action.metadata || !action.metadata.searchForms) {
+      throw new Error(`${this.name} requires metadata and searchForms to work on.`);
+    }
+
     return true;
   }
 
@@ -35,26 +40,24 @@ implements IActorRdfResolveHypermediaQpfArgs {
   public async run(action: IActionRdfResolveHypermedia):
   Promise<IActorRdfResolveHypermediaOutput> {
 
-    if (action.metadata && action.metadata.searchForms) {
-      // Find a quad pattern or triple pattern search form
-      const searchForms: ISearchForms = action.metadata.searchForms;
+    // Find a quad pattern or triple pattern search form
+    const searchForms: ISearchForms = action.metadata.searchForms;
 
-      // TODO: in the future, a query-based search form getter should be used.
-      for (const searchForm of searchForms.values) {
-        if (this.graphUri
-          && this.subjectUri in searchForm.mappings
-          && this.predicateUri in searchForm.mappings
-          && this.objectUri in searchForm.mappings
-          && this.graphUri in searchForm.mappings
-          && Object.keys(searchForm.mappings).length === 4) {
-          return {searchForm};
-        }
-        if (this.subjectUri in searchForm.mappings
-          && this.predicateUri in searchForm.mappings
-          && this.objectUri in searchForm.mappings
-          && Object.keys(searchForm.mappings).length === 3) {
-          return {searchForm};
-        }
+    // TODO: in the future, a query-based search form getter should be used.
+    for (const searchForm of searchForms.values) {
+      if (this.graphUri
+        && this.subjectUri in searchForm.mappings
+        && this.predicateUri in searchForm.mappings
+        && this.objectUri in searchForm.mappings
+        && this.graphUri in searchForm.mappings
+        && Object.keys(searchForm.mappings).length === 4) {
+        return {searchForm};
+      }
+      if (this.subjectUri in searchForm.mappings
+        && this.predicateUri in searchForm.mappings
+        && this.objectUri in searchForm.mappings
+        && Object.keys(searchForm.mappings).length === 3) {
+        return {searchForm};
       }
     }
 
