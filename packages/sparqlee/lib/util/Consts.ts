@@ -131,6 +131,7 @@ export function decategorize(cat: Type): TypeURL {
 export type OperatorCategory = 'regular' | 'special';
 export type Operator = RegularOperator | SpecialOperator;
 
+// TODO: Remove unneeded double typing
 export enum RegularOperator {
   // Operator mapping
   // https://www.w3.org/TR/sparql11-query/#OperatorMapping
@@ -158,29 +159,77 @@ export enum RegularOperator {
 
   // Functions on RDF Terms
   // https://www.w3.org/TR/sparql11-query/#func-rdfTerms
-  STR = 'str',
+  // STR = 'str', see XPath constructor functions
+  IS_IRI = 'isIRI',
+  IS_BLANK = 'isBlank',
+  IS_LITERAL = 'isLiteral',
+  IS_NUMERIC = 'isNumeric',
+  // STR see XPath Contructor functions
   LANG = 'lang',
   DATATYPE = 'datatype',
+  // IRI see XPath Constructor functions
+  BNODE = 'BNODE',
+  STRDT = 'STRDT',
+  STRLANG = 'STRLANG',
+  UUID = 'UUID',
+  STRUUID = 'STRUUID',
 
   // Functions on strings
   // https://www.w3.org/TR/sparql11-query/#func-strings
-  LANG_MATCHES = 'langmatches',
   STRLEN = 'strlen',
+  SUBSTR = 'SUBSTR',
+  UCASE = 'UCASE',
+  LCASE = 'LCASE',
+  STRSTARTS = 'STRSTARTS',
+  STRENDS = 'STRENDS',
+  CONTAINS = 'CONTAINS',
+  STRBEFORE = 'STRBEFORE',
+  STRAFTER = 'STRAFTER',
+  ENCODE_FOR_URI = 'ENCODE_FOR_URI',
+  CONCAT = 'CONCAT',
+  LANG_MATCHES = 'langmatches',
   REGEX = 'regex',
+  REPLACE = 'REPLACE',
 
   // Functions on numerics
   // https://www.w3.org/TR/sparql11-query/#func-numerics
   ABS = 'abs',
+  ROUND = 'round',
+  CEIL = 'ceil',
+  FLOOR = 'floor',
+  RAND = 'RAND',
 
   // Functions on Dates and Times
   // https://www.w3.org/TR/sparql11-query/#func-date-time
   NOW = 'now',
+  YEAR = 'year',
+  MONTH = 'month',
+  DAY = 'day',
+  HOURS = 'hours',
+  MINUTES = 'minutes',
+  SECONDS = 'seconds',
+  TIMEZONE = 'timezone',
+  TZ = 'tz',
 
   // Hash functions
   // https://www.w3.org/TR/sparql11-query/#func-hash
+  MD5 = 'MD5',
+  SHA1 = 'SHA1',
+  SHA256 = 'SHA256',
+  SHA384 = 'SHA384',
+  SHA512 = 'SHA512',
 
   // XPath Constructor functions
   // https://www.w3.org/TR/sparql11-query/#FunctionMapping
+  STR = 'str',
+  FLT = 'flt',
+  DBL = 'dbl',
+  DEC = 'dec',
+  INT = 'int',
+  DT = 'dT',
+  BOOL = 'bool',
+  IRI = 'IRI',
+  LTRL = 'ltrl',
 }
 
 export enum SpecialOperator {

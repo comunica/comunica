@@ -250,6 +250,6 @@ export function number(num: number, dt?: C.TypeURL): E.NumericLiteral {
   return new E.NumericLiteral(num, undefined, C.make(dt || Type.XSD_FLOAT));
 }
 
-export function str(s: string): E.StringLiteral {
+export function string(s: string): E.StringLiteral {
   return new E.StringLiteral(s);
 }

@@ -7,7 +7,7 @@ import * as X from './XPath';
 
 import { TypeURL as Type } from '../../util/Consts';
 
-import { bool, declare, number, str } from './Helpers';
+import { bool, declare, number, string } from './Helpers';
 import { SPARQLFunction } from './index';
 
 type Term = E.TermExpression;
@@ -66,6 +66,11 @@ export class RegularFunction implements SPARQLFunction<E.SimpleApplication> {
       || this.overloadMap.get(List(Array(arity).fill('term')));
   }
 }
+
+// ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
+// Begin definitions
 
 // ----------------------------------------------------------------------------
 // Operator Mapping
@@ -213,21 +218,68 @@ const greaterThanEqual = {
 // Functions on RDF Terms
 // https://www.w3.org/TR/sparql11-query/#func-rdfTerms
 // ----------------------------------------------------------------------------
-const strTerm = {
+
+const isIRI = {
   arity: 1,
-  overloads: declare().onTerm1((term) => str(term.str())).collect(),
+  overloads: declare().unimplemented('isIRI').collect(),
 };
+
+const isBlank = {
+  arity: 1,
+  overloads: declare().unimplemented('isBlank').collect(),
+};
+
+const isLiteral = {
+  arity: 1,
+  overloads: declare().unimplemented('isLiteral').collect(),
+};
+
+const isNumeric = {
+  arity: 1,
+  overloads: declare().unimplemented('isNumeric').collect(),
+};
+
+// See XPath Constructors below
+// const str = {};
 
 const lang = {
   arity: 1,
-  overloads: declare().onLiteral1((lit) => str(lit.language || '')).collect(),
+  overloads: declare().onLiteral1((lit) => string(lit.language || '')).collect(),
 };
 
 const datatype = {
   arity: 1,
   overloads: declare().onLiteral1(
-    (lit) => str((lit.typeURL) ? lit.typeURL.value : C.TypeURL.XSD_STRING),
+    (lit) => string((lit.typeURL) ? lit.typeURL.value : C.TypeURL.XSD_STRING),
   ).collect(),
+};
+
+// See XPath Constructors below
+// const IRI = {};
+
+const BNODE = {
+  arity: [0, 1],
+  overloads: declare().unimplemented('BNODE').collect(),
+};
+
+const STRDT = {
+  arity: 2,
+  overloads: declare().unimplemented('STRDT').collect(),
+};
+
+const STRLANG = {
+  arity: 2,
+  overloads: declare().unimplemented('STRLANG').collect(),
+};
+
+const UUID = {
+  arity: 0,
+  overloads: declare().unimplemented('UUID').collect(),
+};
+
+const STRUUID = {
+  arity: 0,
+  overloads: declare().unimplemented('STRUUID').collect(),
 };
 
 // ----------------------------------------------------------------------------
@@ -235,11 +287,61 @@ const datatype = {
 // https://www.w3.org/TR/sparql11-query/#func-forms
 // ----------------------------------------------------------------------------
 
-const strlen = {
+const STRLEN = {
   arity: 1,
   overloads: declare()
     .onLiteral1<string>((lit) => number(lit.typedValue.length, Type.XSD_INTEGER))
     .collect(),
+};
+
+const SUBSTR = {
+  arity: [2, 3],
+  overloads: declare().unimplemented('SUBSTR').collect(),
+};
+
+const UCASE = {
+  arity: 1,
+  overloads: declare().unimplemented('UCASE').collect(),
+};
+
+const LCASE = {
+  arity: 1,
+  overloads: declare().unimplemented('LCASE').collect(),
+};
+
+const STRSTARTS = {
+  arity: 2,
+  overloads: declare().unimplemented('STRSTARTS').collect(),
+};
+
+const STRENDS = {
+  arity: 2,
+  overloads: declare().unimplemented('STRENDS').collect(),
+};
+
+const CONTAINS = {
+  arity: 2,
+  overloads: declare().unimplemented('CONTAINS').collect(),
+};
+
+const STRBEFORE = {
+  arity: 2,
+  overloads: declare().unimplemented('STRBEFORE').collect(),
+};
+
+const STRAFTER = {
+  arity: 2,
+  overloads: declare().unimplemented('STRAFTER').collect(),
+};
+
+const ENCODE_FOR_URI = {
+  arity: 1,
+  overloads: declare().unimplemented('ENCODE_FOR_URI').collect(),
+};
+
+const CONCAT = {
+  arity: Infinity,
+  overloads: declare().unimplemented('CONCAT').collect(),
 };
 
 const langmatches = {
@@ -253,7 +355,7 @@ const langmatches = {
 
 const regex2 = (text: string, pattern: string) => bool(X.matches(text, pattern));
 const regex3 = (text: string, pattern: string, flags: string) => bool(X.matches(text, pattern, flags));
-const regex = {
+const REGEX = {
   arity: [2, 3],
   overloads: declare()
     .setBinary(['string', 'string'], regex2)
@@ -261,6 +363,11 @@ const regex = {
     .setTernary(['string', 'string', 'string'], regex3)
     .setTernary(['langString', 'string', 'string'], regex3)
     .collect(),
+};
+
+const REPLACE = {
+  arity: [3, 4],
+  overloads: declare().unimplemented('REPLACE').collect(),
 };
 
 // ----------------------------------------------------------------------------
@@ -273,6 +380,26 @@ const abs = {
   overloads: declare().unimplemented('abs').collect(),
 };
 
+const round = {
+  arity: 1,
+  overloads: declare().unimplemented('round').collect(),
+};
+
+const ceil = {
+  arity: 1,
+  overloads: declare().unimplemented('ceil').collect(),
+};
+
+const floor = {
+  arity: 1,
+  overloads: declare().unimplemented('floor').collect(),
+};
+
+const RAND = {
+  arity: 1,
+  overloads: declare().unimplemented('RAND').collect(),
+};
+
 // ----------------------------------------------------------------------------
 // Functions on Dates and Times
 // https://www.w3.org/TR/sparql11-query/#func-date-time
@@ -283,17 +410,136 @@ const now = {
   overloads: declare().unimplemented('now').collect(),
 };
 
+const year = {
+  arity: 1,
+  overloads: declare().unimplemented('year').collect(),
+};
+
+const month = {
+  arity: 1,
+  overloads: declare().unimplemented('month').collect(),
+};
+
+const day = {
+  arity: 1,
+  overloads: declare().unimplemented('day').collect(),
+};
+
+const hours = {
+  arity: 1,
+  overloads: declare().unimplemented('hours').collect(),
+};
+
+const minutes = {
+  arity: 1,
+  overloads: declare().unimplemented('minutes').collect(),
+};
+
+const seconds = {
+  arity: 1,
+  overloads: declare().unimplemented('seconds').collect(),
+};
+
+const timezone = {
+  arity: 1,
+  overloads: declare().unimplemented('timezone').collect(),
+};
+
+const tz = {
+  arity: 1,
+  overloads: declare().unimplemented('tz').collect(),
+};
+
 // ----------------------------------------------------------------------------
 // Hash functions
 // https://www.w3.org/TR/sparql11-query/#func-hash
 // ----------------------------------------------------------------------------
+
+const MD5 = {
+  arity: 1,
+  overloads: declare().unimplemented('MD5').collect(),
+};
+
+const SHA1 = {
+  arity: 1,
+  overloads: declare().unimplemented('SHA1').collect(),
+};
+
+const SHA256 = {
+  arity: 1,
+  overloads: declare().unimplemented('SHA256').collect(),
+};
+
+const SHA384 = {
+  arity: 1,
+  overloads: declare().unimplemented('SHA384').collect(),
+};
+
+const SHA512 = {
+  arity: 1,
+  overloads: declare().unimplemented('SHA512').collect(),
+};
 
 // ----------------------------------------------------------------------------
 // XPath Constructor functions
 // https://www.w3.org/TR/sparql11-query/#FunctionMapping
 // ----------------------------------------------------------------------------
 
-// TODO Maybe split in definitions for overloaded and async functions.
+const toString = {
+  arity: 1,
+  overloads: declare()
+    .onTerm1((term) => string(term.str()))
+    .collect(),
+};
+
+const toFloat = {
+  arity: 1,
+  overloads: declare().unimplemented('flt').collect(),
+};
+
+const toDouble = {
+  arity: 1,
+  overloads: declare().unimplemented('dbl').collect(),
+};
+
+const toDecimal = {
+  arity: 1,
+  overloads: declare().unimplemented('dec').collect(),
+};
+
+const toInteger = {
+  arity: 1,
+  overloads: declare().unimplemented('int').collect(),
+};
+
+const toDatetime = {
+  arity: 1,
+  overloads: declare().unimplemented('dT').collect(),
+};
+
+const toBoolean = {
+  arity: 1,
+  overloads: declare().unimplemented('bool').collect(),
+};
+
+const toIRI = {
+  arity: 1,
+  overloads: declare().unimplemented('IRI').collect(),
+};
+
+const toSimpleLiteral = {
+  arity: 1,
+  overloads: declare().unimplemented('ltrl').collect(),
+};
+
+// End definitions.
+// ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
+
+/*
+ * Collect all the definitions from above into an object
+ */
 const _definitions: { [key in C.RegularOperator]: Definition } = {
   // --------------------------------------------------------------------------
   // Operator Mapping
@@ -312,41 +558,91 @@ const _definitions: { [key in C.RegularOperator]: Definition } = {
   '>': greaterThan,
   '<=': lesserThanEqual,
   '>=': greaterThanEqual,
+
   // --------------------------------------------------------------------------
   // Functions on RDF Terms
   // https://www.w3.org/TR/sparql11-query/#func-rdfTerms
   // --------------------------------------------------------------------------
-  'str': strTerm,
+  'isIRI': isIRI,
+  'isBlank': isBlank,
+  'isLiteral': isLiteral,
+  'isNumeric': isNumeric,
+  // 'str': See XPath Constructor functions below
   'lang': lang,
   'datatype': datatype,
+  // 'IRI' : See XPath Contructor functions below
+  'BNODE': BNODE,
+  'STRDT': STRDT,
+  'STRLANG': STRLANG,
+  'UUID': UUID,
+  'STRUUID': STRUUID,
+
   // --------------------------------------------------------------------------
   // Functions on strings
   // https://www.w3.org/TR/sparql11-query/#func-forms
   // --------------------------------------------------------------------------
-  'strlen': strlen,
+  'strlen': STRLEN,
+  'SUBSTR': SUBSTR,
+  'UCASE': UCASE,
+  'LCASE': LCASE,
+  'STRSTARTS': STRSTARTS,
+  'STRENDS': STRENDS,
+  'CONTAINS': CONTAINS,
+  'STRBEFORE': STRBEFORE,
+  'STRAFTER': STRAFTER,
+  'ENCODE_FOR_URI': ENCODE_FOR_URI,
+  'CONCAT': CONCAT,
   'langmatches': langmatches,
-  'regex': regex,
+  'regex': REGEX,
+  'REPLACE': REPLACE,
+
   // --------------------------------------------------------------------------
   // Functions on numerics
   // https://www.w3.org/TR/sparql11-query/#func-numerics
   // --------------------------------------------------------------------------
   'abs': abs,
+  'round': round,
+  'ceil': ceil,
+  'floor': floor,
+  'RAND': RAND,
 
   // --------------------------------------------------------------------------
   // Functions on Dates and Times
   // https://www.w3.org/TR/sparql11-query/#func-date-time
   // --------------------------------------------------------------------------
   'now': now,
+  'year': year,
+  'month': month,
+  'day': day,
+  'hours': hours,
+  'minutes': minutes,
+  'seconds': seconds,
+  'timezone': timezone,
+  'tz': tz,
 
   // --------------------------------------------------------------------------
   // Hash functions
   // https://www.w3.org/TR/sparql11-query/#func-hash
   // --------------------------------------------------------------------------
+  'MD5': MD5,
+  'SHA1': SHA1,
+  'SHA256': SHA256,
+  'SHA384': SHA384,
+  'SHA512': SHA512,
 
   // --------------------------------------------------------------------------
   // XPath Constructor functions
   // https://www.w3.org/TR/sparql11-query/#FunctionMapping
   // --------------------------------------------------------------------------
+  'str': toString,
+  'flt': toFloat,
+  'dbl': toDouble,
+  'dec': toDecimal,
+  'int': toInteger,
+  'dT': toDatetime,
+  'bool': toBoolean,
+  'IRI': toIRI,
+  'ltrl': toSimpleLiteral,
 };
 
 // ----------------------------------------------------------------------------
