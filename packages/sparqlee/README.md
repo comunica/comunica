@@ -64,21 +64,22 @@ They might span entire streams and, depending on the use case, have very differe
 |    Function    | Implemented | Tested | Spec compliant |
 |----------------|-------------|--------|----------------|
 | [Operator Mapping](https://www.w3.org/TR/sparql11-query/#OperatorMapping)
-| ! (not)        |   |   |   |
-| + (unary plus) |   |   |   |
-| - (unary minus)|   |   |   |
-| \|\|           | X | X | X |
-| &&             | X | X | X |
-| =              | X | X | ? |
-| !=             | X | X | ? |
-| <              | X | X | X |
-| >              | X | X | X |
-| <=             | X | X | X |
-| >=             | X | X | X |
-| *              | X | X | X |
-| /              | X | X | X |
-| +              | X | X | X |
-| -              | X | X | X |
+| ! (not)        | X | X | X |
+| + (unary plus) | X | X |   |
+| - (unary minus)| X | X |   |
+| \|\|           | X | X |   |
+| &&             | X | X |   |
+| =              | X | X |   |
+| !=             | X | X |   |
+| <              | X | X |   |
+| >              | X | X |   |
+| <=             | X | X |   |
+| >=             | X | X |   |
+| *              | X | X |   |
+| /              | X | X |   |
+| +              | X | X |   |
+| -              | X | X |   |
+| _Note_         |   |   | Spec compliance depends on #13 and #14 |
 | [Functional Forms](https://www.w3.org/TR/sparql11-query/#func-forms)
 | BOUND          | X |   |   |
 | IF             | X |   |   |

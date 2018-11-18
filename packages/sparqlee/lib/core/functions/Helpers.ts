@@ -82,6 +82,14 @@ export class Builder {
       .set(['langString'], ([lit]: [E.Literal<string>]) => op(lit));
   }
 
+  onNumeric1(op: (val: E.NumericLiteral) => Term): Builder {
+    return this
+      .set(['integer'], ([val]: [E.NumericLiteral]) => op(val))
+      .set(['decimal'], ([val]: [E.NumericLiteral]) => op(val))
+      .set(['float'], ([val]: [E.NumericLiteral]) => op(val))
+      .set(['double'], ([val]: [E.NumericLiteral]) => op(val))
+      .invalidLexicalForm(['invalid'], 1);
+  }
   /*
   * Arithetic Operators take numbers, and return numbers.
   * Check 'numeric' for behaviour of the generic numeric helper.
@@ -174,7 +182,7 @@ export class Builder {
 
   invalidLexicalForm(types: ArgumentType[], index: number): Builder {
     return this.set(types, (args: Term[]): E.TermExpression => {
-      throw new Err.InvalidLexicalForm(args[index].toRDF());
+      throw new Err.InvalidLexicalForm(args[index - 1].toRDF());
     });
   }
 

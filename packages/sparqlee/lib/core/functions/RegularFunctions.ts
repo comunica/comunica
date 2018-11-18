@@ -75,21 +75,25 @@ export class RegularFunction implements SPARQLFunction<E.SimpleApplication> {
 const not = {
   arity: 1,
   overloads: declare()
-    .unimplemented('! operator')
+    .onTerm1((val: Term) => bool(!val.coerceEBV()))
     .collect(),
 };
 
 const unaryPlus = {
   arity: 1,
   overloads: declare()
-    .unimplemented('unary plus operator')
+    .onNumeric1((val: E.NumericLiteral) => {
+      return number(val.typedValue, val.typeURL.value as C.TypeURL);
+    })
     .collect(),
 };
 
 const unaryMinus = {
   arity: 1,
   overloads: declare()
-    .unimplemented('unary minus operator')
+    .onNumeric1((val: E.NumericLiteral) => {
+      return number(-val.typedValue, val.typeURL.value as C.TypeURL);
+    })
     .collect(),
 };
 
