@@ -63,8 +63,15 @@ export class InvalidArity extends ExpressionError {
 }
 
 export class InvalidArgumentTypes extends ExpressionError {
-  constructor(public args: E.Expression[], public op: C.Operator) {
-    super('Argument types not valid for operator.');
+  // tslint:disable-next-line:no-any
+  constructor(public args: E.Expression[], public op: C.Operator | C.NamedOperator) {
+    super(`Argument types not valid for operator: '${op}' with '${args}`);
+  }
+}
+
+export class CastError<T> extends ExpressionError {
+  constructor(public arg: T, cast: C.TypeURL) {
+    super(`Invalid cast: '${arg}' to '${cast}'`);
   }
 }
 
@@ -105,5 +112,17 @@ export class InvalidExpressionType<T> extends Error {
 export class InvalidTermType extends Error {
   constructor(public term: Algebra.TermExpression) {
     super(`Invalid term type for term '${term}'`);
+  }
+}
+
+export class UnknownOperator extends Error {
+  constructor(public name: string) {
+    super(`Unknown operator: '${name}`);
+  }
+}
+
+export class UnknownNamedOperator extends Error {
+  constructor(public name: string) {
+    super(`Unknown named operator: '${name}'`);
   }
 }

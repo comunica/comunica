@@ -10,7 +10,7 @@ import * as Err from '../../util/Errors';
 import * as E from '../Expressions';
 
 import { TypeURL as Type } from '../../util/Consts';
-import { ArgumentType, OverloadMap } from './RegularFunctions';
+import { ArgumentType, OverloadMap } from './FunctionClasses';
 
 type Term = E.TermExpression;
 type OpFactory = (dt?: C.TypeURL) => E.SimpleApplication;
@@ -21,37 +21,9 @@ export function declare(): Builder {
 
 export class Builder {
   private implementations: Impl[] = [];
-  private arity = 1;
 
   collect(): OverloadMap {
     return map(this.implementations);
-  }
-
-  withArity(arity: number): Builder {
-    this.arity = arity;
-    return this;
-  }
-
-  set(types: ArgumentType[], func: E.SimpleApplication): Builder {
-    return this.add(new Impl({ types, func }));
-  }
-
-  setBinary<L, R>(types: ArgumentType[], op: (left: L, right: R) => Term) {
-    return this.set(types, ([left, right]: [E.Literal<L>, E.Literal<R>]) => {
-      return op(left.typedValue, right.typedValue);
-    });
-  }
-
-  setTernary<A1, A2, A3>(types: ArgumentType[], op: (a1: A1, a2: A2, a3: A3) => Term) {
-    return this.set(types, ([a1, a2, a3]: [E.Literal<A1>, E.Literal<A2>, E.Literal<A3>]) => {
-      return op(a1.typedValue, a2.typedValue, a3.typedValue);
-    });
-  }
-
-  unimplemented(msg: string): Builder {
-    const types = Array(this.arity).fill('term');
-    const func = (_args: Term[]) => { throw new Err.UnimplementedError(msg); };
-    return this.add(new Impl({ types, func }));
   }
 
   log(): Builder {
@@ -62,6 +34,56 @@ export class Builder {
 
   add(impl: Impl): Builder {
     this.implementations.push(impl);
+    return this;
+  }
+
+  set(types: ArgumentType[], func: E.SimpleApplication): Builder {
+    return this.add(new Impl({ types, func }));
+  }
+
+  copyTo(to: ArgumentType[]): Builder {
+    const last = this.implementations[this.implementations.length - 1].get('func');
+    return this.set(to, last);
+  }
+
+  copyToAll(to: ArgumentType[][]): Builder {
+    const last = this.implementations[this.implementations.length - 1].get('func');
+    to.forEach((types) => {
+      this.set(types, last);
+    });
+    return this;
+  }
+
+  setUnary<T extends Term>(type: ArgumentType, op: (val: T) => Term) {
+    return this.set([type], ([val]: [T]) => {
+      return op(val);
+    });
+  }
+
+  setLitUnary<T>(type: ArgumentType, op: (val: T) => Term) {
+    return this.set([type], ([val]: [E.Literal<T>]) => {
+      return op(val.typedValue);
+    });
+  }
+
+  setLitBinary<L, R>(types: ArgumentType[], op: (left: L, right: R) => Term) {
+    return this.set(types, ([left, right]: [E.Literal<L>, E.Literal<R>]) => {
+      return op(left.typedValue, right.typedValue);
+    });
+  }
+
+  setLitTernary<A1, A2, A3>(types: ArgumentType[], op: (a1: A1, a2: A2, a3: A3) => Term) {
+    return this.set(types, ([a1, a2, a3]: [E.Literal<A1>, E.Literal<A2>, E.Literal<A3>]) => {
+      return op(a1.typedValue, a2.typedValue, a3.typedValue);
+    });
+  }
+
+  unimplemented(msg: string): Builder {
+    for (let arity = 0; arity <= 5; arity++) {
+      const types = Array(arity).fill('term');
+      const func = (_args: Term[]) => { throw new Err.UnimplementedError(msg); };
+      this.add(new Impl({ types, func }));
+    }
     return this;
   }
 
@@ -88,7 +110,7 @@ export class Builder {
       .set(['decimal'], ([val]: [E.NumericLiteral]) => op(val))
       .set(['float'], ([val]: [E.NumericLiteral]) => op(val))
       .set(['double'], ([val]: [E.NumericLiteral]) => op(val))
-      .invalidLexicalForm(['invalid'], 1);
+      .invalidLexicalForm(['nonlexical'], 1);
   }
   /*
   * Arithetic Operators take numbers, and return numbers.
@@ -96,7 +118,6 @@ export class Builder {
   * https://www.w3.org/TR/sparql11-query/#OperatorMapping
   */
   arithmetic(op: (left: number, right: number) => number): Builder {
-    this.arity = 2;
     const opFac = (dt?: Type) => ([left, right]: Array<E.Literal<number>>) =>
       number(op(left.typedValue, right.typedValue), dt || Type.XSD_FLOAT);
     return this.numeric(opFac);
@@ -118,8 +139,8 @@ export class Builder {
           const result = test(left.typedValue, right.typedValue);
           return bool(result);
         })
-      .invalidLexicalForm(['invalid', 'string'], 1)
-      .invalidLexicalForm(['string', 'invalid'], 2);
+      .invalidLexicalForm(['nonlexical', 'string'], 1)
+      .invalidLexicalForm(['string', 'nonlexical'], 2);
   }
 
   booleanTest(test: (left: boolean, right: boolean) => boolean): Builder {
@@ -130,8 +151,8 @@ export class Builder {
           const result = test(left.typedValue, right.typedValue);
           return bool(result);
         })
-      .invalidLexicalForm(['invalid', 'boolean'], 1)
-      .invalidLexicalForm(['boolean', 'invalid'], 2);
+      .invalidLexicalForm(['nonlexical', 'boolean'], 1)
+      .invalidLexicalForm(['boolean', 'nonlexical'], 2);
   }
 
   dateTimeTest(test: (left: Date, right: Date) => boolean): Builder {
@@ -142,41 +163,40 @@ export class Builder {
           const result = test(left.typedValue, right.typedValue);
           return bool(result);
         })
-      .invalidLexicalForm(['invalid', 'date'], 1)
-      .invalidLexicalForm(['date', 'invalid'], 2);
+      .invalidLexicalForm(['nonlexical', 'date'], 1)
+      .invalidLexicalForm(['date', 'nonlexical'], 2);
   }
 
   numeric(opFac: OpFactory): Builder {
-    this.arity = 2;
     return this
       .set(['integer', 'integer'], opFac(Type.XSD_INTEGER))
       .set(['integer', 'decimal'], opFac())
       .set(['integer', 'float'], opFac())
       .set(['integer', 'double'], opFac())
-      .invalidLexicalForm(['integer', 'invalid'], 2)
+      .invalidLexicalForm(['integer', 'nonlexical'], 2)
 
       .set(['decimal', 'integer'], opFac())
       .set(['decimal', 'decimal'], opFac(Type.XSD_DECIMAL))
       .set(['decimal', 'float'], opFac())
       .set(['decimal', 'double'], opFac())
-      .invalidLexicalForm(['decimal', 'invalid'], 2)
+      .invalidLexicalForm(['decimal', 'nonlexical'], 2)
 
       .set(['float', 'integer'], opFac())
       .set(['float', 'decimal'], opFac())
       .set(['float', 'float'], opFac(Type.XSD_FLOAT))
       .set(['float', 'double'], opFac())
-      .invalidLexicalForm(['float', 'invalid'], 2)
+      .invalidLexicalForm(['float', 'nonlexical'], 2)
 
       .set(['double', 'integer'], opFac())
       .set(['double', 'decimal'], opFac())
       .set(['double', 'float'], opFac())
       .set(['double', 'double'], opFac(Type.XSD_DOUBLE))
-      .invalidLexicalForm(['double', 'invalid'], 2)
+      .invalidLexicalForm(['double', 'nonlexical'], 2)
 
-      .invalidLexicalForm(['invalid', 'integer'], 1)
-      .invalidLexicalForm(['invalid', 'decimal'], 1)
-      .invalidLexicalForm(['invalid', 'float'], 1)
-      .invalidLexicalForm(['invalid', 'double'], 1);
+      .invalidLexicalForm(['nonlexical', 'integer'], 1)
+      .invalidLexicalForm(['nonlexical', 'decimal'], 1)
+      .invalidLexicalForm(['nonlexical', 'float'], 1)
+      .invalidLexicalForm(['nonlexical', 'double'], 1);
 
   }
 
@@ -243,7 +263,7 @@ export function map(implementations: Impl[]): OverloadMap {
 // ----------------------------------------------------------------------------
 
 export function bool(val: boolean): E.BooleanLiteral {
-  return new E.BooleanLiteral(val, undefined, C.make(Type.XSD_BOOLEAN));
+  return new E.BooleanLiteral(val);
 }
 
 export function number(num: number, dt?: C.TypeURL): E.NumericLiteral {
@@ -252,4 +272,8 @@ export function number(num: number, dt?: C.TypeURL): E.NumericLiteral {
 
 export function string(s: string): E.StringLiteral {
   return new E.StringLiteral(s);
+}
+
+export function dateTime(date: Date): E.DateTimeLiteral {
+  return new E.DateTimeLiteral(date);
 }

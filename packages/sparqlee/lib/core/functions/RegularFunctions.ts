@@ -1,71 +1,16 @@
-import { List, Map } from 'immutable';
+import { Map } from 'immutable';
 
 import * as C from '../../util/Consts';
 import * as Err from '../../util/Errors';
 import * as E from '../Expressions';
-import * as X from './XPath';
+import * as X from './XPathFunctions';
 
 import { TypeURL as Type } from '../../util/Consts';
 
+import { OverloadMap } from './FunctionClasses';
 import { bool, declare, number, string } from './Helpers';
-import { SPARQLFunction } from './index';
 
 type Term = E.TermExpression;
-
-// Maps argument types on their specific implementation.
-export type OverloadMap = Map<List<ArgumentType>, E.SimpleApplication>;
-
-// Function and operator arguments are 'flattened' in the SPARQL spec.
-// If the argument is a literal, the datatype often also matters.
-export type ArgumentType = 'term' | E.TermType | C.Type;
-
-/*
- * Varying kinds of functions take arguments of different types on which the
- * specific behaviour is dependant. Although their behaviour is often varying,
- * it is always relatively simple, and better suited for synced behaviour.
- * The types of their arguments are always terms, but might differ in
- * their term-type (eg: iri, literal),
- * their specific literal type (eg: string, integer),
- * their arity (see BNODE),
- * or even their specific numeric type (eg: integer, float).
- *
- * Examples include:
- *  - Arithmetic operations such as: *, -, /, +
- *  - Bool operators such as: =, !=, <=, <, ...
- *  - Functions such as: str, IRI
- *
- * Note: functions that have multiple arities do not belong in this category.
- * Eg: BNODE.
- *
- * See also: https://www.w3.org/TR/sparql11-query/#func-rdfTerms
- * and https://www.w3.org/TR/sparql11-query/#OperatorMapping
- */
-export class RegularFunction implements SPARQLFunction<E.SimpleApplication> {
-  functionClass: 'regular' = 'regular';
-  arity: number | number[];
-  private overloadMap: OverloadMap;
-
-  constructor(public operator: C.RegularOperator, definition: Definition) {
-    this.arity = definition.arity;
-    this.overloadMap = definition.overloads;
-  }
-
-  apply(args: E.TermExpression[]): E.TermExpression {
-    const func = this._monomorph(args);
-    if (!func) { throw new Err.InvalidArgumentTypes(args, this.operator); }
-    return func(args);
-  }
-
-  // TODO: Clean up a bit
-  private _monomorph(args: E.TermExpression[]): E.SimpleApplication {
-    // tslint:disable-next-line:no-any
-    const argTypes = List(args.map((a: any) => a.type || a.termType));
-    const arity = args.length;
-    return this.overloadMap.get(argTypes)
-      || this.overloadMap.get(List(args.map((a: E.TermExpression) => a.termType)))
-      || this.overloadMap.get(List(Array(arity).fill('term')));
-  }
-}
 
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
@@ -88,7 +33,7 @@ const unaryPlus = {
   arity: 1,
   overloads: declare()
     .onNumeric1((val: E.NumericLiteral) => {
-      return number(val.typedValue, val.typeURL.value as C.TypeURL);
+      return number(val.typedValue, val.typeURL.value as Type);
     })
     .collect(),
 };
@@ -97,7 +42,7 @@ const unaryMinus = {
   arity: 1,
   overloads: declare()
     .onNumeric1((val: E.NumericLiteral) => {
-      return number(-val.typedValue, val.typeURL.value as C.TypeURL);
+      return number(-val.typedValue, val.typeURL.value as Type);
     })
     .collect(),
 };
@@ -113,7 +58,7 @@ const division = {
   arity: 2,
   overloads: declare()
     .arithmetic((left, right) => left / right)
-    .setBinary(['integer', 'integer'],
+    .setLitBinary(['integer', 'integer'],
       (left: number, right: number) => {
         if (right === 0) {
           throw new Err.ExpressionError('Integer division by 0');
@@ -239,8 +184,12 @@ const isNumeric = {
   overloads: declare().unimplemented('isNumeric').collect(),
 };
 
-// See XPath Constructors below
-// const str = {};
+const toString = {
+  arity: 1,
+  overloads: declare()
+    .onTerm1((term) => string(term.str()))
+    .collect(),
+};
 
 const lang = {
   arity: 1,
@@ -250,12 +199,14 @@ const lang = {
 const datatype = {
   arity: 1,
   overloads: declare().onLiteral1(
-    (lit) => string((lit.typeURL) ? lit.typeURL.value : C.TypeURL.XSD_STRING),
+    (lit) => string((lit.typeURL) ? lit.typeURL.value : Type.XSD_STRING),
   ).collect(),
 };
 
-// See XPath Constructors below
-// const IRI = {};
+const IRI = {
+  arity: 1,
+  overloads: declare().unimplemented('IRI').collect(),
+};
 
 const BNODE = {
   arity: [0, 1],
@@ -347,7 +298,7 @@ const CONCAT = {
 const langmatches = {
   arity: 2,
   overloads: declare()
-    .setBinary(
+    .setLitBinary(
       ['string', 'string'],
       (tag: string, range: string) => bool(X.langMatches(tag, range)),
     ).collect(),
@@ -358,10 +309,10 @@ const regex3 = (text: string, pattern: string, flags: string) => bool(X.matches(
 const REGEX = {
   arity: [2, 3],
   overloads: declare()
-    .setBinary(['string', 'string'], regex2)
-    .setBinary(['langString', 'langString'], regex2)
-    .setTernary(['string', 'string', 'string'], regex3)
-    .setTernary(['langString', 'string', 'string'], regex3)
+    .setLitBinary(['string', 'string'], regex2)
+    .setLitBinary(['langString', 'langString'], regex2)
+    .setLitTernary(['string', 'string', 'string'], regex3)
+    .setLitTernary(['langString', 'string', 'string'], regex3)
     .collect(),
 };
 
@@ -480,58 +431,6 @@ const SHA512 = {
   overloads: declare().unimplemented('SHA512').collect(),
 };
 
-// ----------------------------------------------------------------------------
-// XPath Constructor functions
-// https://www.w3.org/TR/sparql11-query/#FunctionMapping
-// ----------------------------------------------------------------------------
-
-const toString = {
-  arity: 1,
-  overloads: declare()
-    .onTerm1((term) => string(term.str()))
-    .collect(),
-};
-
-const toFloat = {
-  arity: 1,
-  overloads: declare().unimplemented('flt').collect(),
-};
-
-const toDouble = {
-  arity: 1,
-  overloads: declare().unimplemented('dbl').collect(),
-};
-
-const toDecimal = {
-  arity: 1,
-  overloads: declare().unimplemented('dec').collect(),
-};
-
-const toInteger = {
-  arity: 1,
-  overloads: declare().unimplemented('int').collect(),
-};
-
-const toDatetime = {
-  arity: 1,
-  overloads: declare().unimplemented('dT').collect(),
-};
-
-const toBoolean = {
-  arity: 1,
-  overloads: declare().unimplemented('bool').collect(),
-};
-
-const toIRI = {
-  arity: 1,
-  overloads: declare().unimplemented('IRI').collect(),
-};
-
-const toSimpleLiteral = {
-  arity: 1,
-  overloads: declare().unimplemented('ltrl').collect(),
-};
-
 // End definitions.
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
@@ -567,10 +466,10 @@ const _definitions: { [key in C.RegularOperator]: Definition } = {
   'isBlank': isBlank,
   'isLiteral': isLiteral,
   'isNumeric': isNumeric,
-  // 'str': See XPath Constructor functions below
+  'str': toString,
   'lang': lang,
   'datatype': datatype,
-  // 'IRI' : See XPath Contructor functions below
+  'IRI': IRI,
   'BNODE': BNODE,
   'STRDT': STRDT,
   'STRLANG': STRLANG,
@@ -629,20 +528,6 @@ const _definitions: { [key in C.RegularOperator]: Definition } = {
   'SHA256': SHA256,
   'SHA384': SHA384,
   'SHA512': SHA512,
-
-  // --------------------------------------------------------------------------
-  // XPath Constructor functions
-  // https://www.w3.org/TR/sparql11-query/#FunctionMapping
-  // --------------------------------------------------------------------------
-  'str': toString,
-  'flt': toFloat,
-  'dbl': toDouble,
-  'dec': toDecimal,
-  'int': toInteger,
-  'dT': toDatetime,
-  'bool': toBoolean,
-  'IRI': toIRI,
-  'ltrl': toSimpleLiteral,
 };
 
 // ----------------------------------------------------------------------------

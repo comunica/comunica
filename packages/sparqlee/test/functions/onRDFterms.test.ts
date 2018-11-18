@@ -1,7 +1,6 @@
 import { testAll } from '../util/utils';
 
 describe('evaluation of functions on RDF terms', () => {
-
   describe('like \'str\' receiving', () => {
     testAll([
       'str("") = ""',

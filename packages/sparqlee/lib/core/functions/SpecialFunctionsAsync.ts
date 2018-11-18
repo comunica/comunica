@@ -10,33 +10,6 @@ import { regularFunctions, SPARQLFunction, specialFunctions } from './index';
 type Term = E.TermExpression;
 type Result = Promise<E.TermExpression>;
 
-// Special Functions ----------------------------------------------------------
-/*
- * Special Functions are those that don't really fit in sensible categories and
- * have extremely heterogeneous signatures that make them impossible to abstract
- * over. They are small in number, and their behaviour is often complex and open
- * for multiple correct implementations with different trade-offs.
- *
- * Due to their varying nature, they need all available information present
- * during evaluation. This reflects in the signature of the apply() method.
- *
- * They need access to an evaluator to be able to even implement their logic.
- * Especially relevant for IF, and the logical connectives.
- *
- * They can have both sync and async implementations, and both would make sense
- * in some contexts.
- */
-export class SpecialFunctionAsync implements SPARQLFunction<E.SpecialApplication> {
-  functionClass: 'special' = 'special';
-  arity: number;
-  apply: E.SpecialApplication;
-
-  constructor(public operator: C.SpecialOperator, definition: SpecialDefinition) {
-    this.arity = definition.arity;
-    this.apply = definition.apply;
-  }
-}
-
 // BOUND ----------------------------------------------------------------------
 const bound = {
   arity: 1,

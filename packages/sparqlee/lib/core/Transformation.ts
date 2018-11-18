@@ -9,9 +9,9 @@ import * as E from './Expressions';
 
 import { TypeURL as DT } from '../util/Consts';
 import {
-  functions,
-  RegularFunction,
-  SpecialFunctionAsync,
+  namedFunctions,
+  regularFunctions,
+  specialFunctions,
 } from './functions';
 
 export function transformAlgebra(expr: Alg.Expression): E.Expression {
@@ -22,8 +22,8 @@ export function transformAlgebra(expr: Alg.Expression): E.Expression {
   switch (expr.expressionType) {
     case types.TERM: return transformTerm(expr as Alg.TermExpression);
     case types.OPERATOR: return transformOperator(expr as Alg.OperatorExpression);
+    case types.NAMED: return transformNamed(expr as Alg.NamedExpression);
     // TODO
-    case types.NAMED: throw new Err.UnimplementedError('Named Operator');
     case types.EXISTENCE: throw new Err.UnimplementedError('Existence Operator');
     case types.AGGREGATE: throw new Err.UnimplementedError('Aggregate Operator');
     default: throw new Err.InvalidExpressionType(expr);
@@ -71,15 +71,14 @@ function tranformLiteral(lit: RDF.Literal): E.Literal<any> {
       if (isNaN(val.getTime())) {
         return new E.NonLexicalLiteral(undefined, lit.value, lit.datatype);
       }
-      return new E.DateTimeLiteral(new Date(lit.value), lit.value, lit.datatype);
+      return new E.DateTimeLiteral(new Date(lit.value), lit.value);
     }
 
     case DT.XSD_BOOLEAN: {
       if (lit.value !== 'true' && lit.value !== 'false') {
         return new E.NonLexicalLiteral(undefined, lit.value, lit.datatype);
       }
-      const val: boolean = JSON.parse(lit.value);
-      return new E.BooleanLiteral(val, lit.value, lit.datatype);
+      return new E.BooleanLiteral(lit.value === 'true', lit.value);
     }
 
     case DT.XSD_INTEGER:
@@ -98,7 +97,7 @@ function tranformLiteral(lit: RDF.Literal): E.Literal<any> {
     case DT.XSD_UNSIGNED_SHORT:
     case DT.XSD_UNSIGNED_BYTE:
     case DT.XSD_INT: {
-      const val: number = P.parseXSDInteger(lit.value);
+      const val: number = P.parseXSDDecimal(lit.value);
       if (val === undefined) {
         return new E.NonLexicalLiteral(undefined, lit.value, lit.datatype);
       }
@@ -118,31 +117,38 @@ function tranformLiteral(lit: RDF.Literal): E.Literal<any> {
 
 function transformOperator(expr: Alg.OperatorExpression)
   : E.OperatorExpression | E.SpecialOperatorExpression {
+  if (C.SpecialOperators.contains(expr.operator)) {
+    const op = expr.operator as C.SpecialOperator;
+    const args = expr.args.map((a) => transformAlgebra(a));
+    const func = specialFunctions.get(op);
+    const expressionType = E.ExpressionType.SpecialOperator;
+    if (!hasCorrectArity(args, func.arity)) { throw new Err.InvalidArity(args, op); }
+    return { func, args, expressionType };
+  } else {
+    if (!C.Operators.contains(expr.operator)) {
+      throw new Err.UnknownOperator(expr.operator);
+    }
+    const op = expr.operator as C.RegularOperator;
+    const args = expr.args.map((a) => transformAlgebra(a));
+    const func = regularFunctions.get(op);
+    const expressionType = E.ExpressionType.Operator;
+    if (!hasCorrectArity(args, func.arity)) { throw new Err.InvalidArity(args, op); }
+    return { func, args, expressionType };
+  }
+}
 
-  if (!C.Operators.contains(expr.operator)) {
-    // TODO Throw better error
-    throw new Err.UnimplementedError(expr.operator);
+export function transformNamed(expr: Alg.NamedExpression): E.NamedExpression {
+  const funcName = expr.name.value;
+  if (!C.NamedOperators.contains(funcName)) {
+    throw new Err.UnknownNamedOperator(expr.name.value);
   }
 
-  const op = expr.operator as C.Operator;
+  // tslint:disable-next-line:no-any
+  const op = expr.name.value as any as C.NamedOperator;
   const args = expr.args.map((a) => transformAlgebra(a));
-  const _func = functions.get(expr.operator as C.Operator);
-
-  if (!hasCorrectArity(args, _func.arity)) { throw new Err.InvalidArity(args, op); }
-
-  switch (_func.functionClass) {
-    case 'special': {
-      const func = _func as SpecialFunctionAsync;
-      const expressionType = E.ExpressionType.SpecialOperator;
-      return { func, args, expressionType };
-    }
-    case 'regular': {
-      const func = _func as RegularFunction;
-      const expressionType = E.ExpressionType.Operator;
-      return { func, args, expressionType };
-    }
-    default: throw new Err.UnexpectedError('Unknown function class');
-  }
+  const func = namedFunctions.get(op);
+  const expressionType = E.ExpressionType.Named;
+  return { func, args, expressionType, name: expr.name };
 }
 
 function hasCorrectArity(args: E.Expression[], arity: number | number[]): boolean {

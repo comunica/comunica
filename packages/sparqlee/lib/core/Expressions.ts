@@ -47,6 +47,7 @@ export type ExistenceExpression = ExpressionProps & {
 export type NamedExpression = ExpressionProps & {
   expressionType: ExpressionType.Named;
   name: RDF.NamedNode;
+  func: { apply: SimpleApplication }
   args: Expression[];
 };
 
@@ -172,12 +173,19 @@ export class NumericLiteral extends Literal<number> {
 }
 
 export class BooleanLiteral extends Literal<boolean> {
+  constructor(public typedValue: boolean, public strValue?: string) {
+    super(typedValue, strValue, C.make(C.TypeURL.XSD_BOOLEAN));
+  }
   coerceEBV(): boolean {
     return !!this.typedValue;
   }
 }
 
-export class DateTimeLiteral extends Literal<Date> { }
+export class DateTimeLiteral extends Literal<Date> {
+  constructor(public typedValue: Date, public strValue?: string) {
+    super(typedValue, strValue, C.make(C.TypeURL.XSD_DATE_TIME));
+  }
+}
 
 export class LangStringLiteral extends Literal<string> {
   constructor(public typedValue: string, public language: string) {
@@ -208,8 +216,8 @@ export class StringLiteral extends Literal<string> {
  * an invalid lexical form for it's datatype. The spec defines value with
  * invalid lexical form are still valid terms, and as such we can not error
  * immediately. This class makes sure that the typedValue will remain undefined,
- * and the category 'invalid'. This way, only when operators apply to the
- * 'invalid' category, they will keep working, otherwise they will throw a
+ * and the category 'nonlexical'. This way, only when operators apply to the
+ * 'nonlexical' category, they will keep working, otherwise they will throw a
  * type error.
  * This seems to match the spec, except maybe for functions that accept
  * non-lexical values for their datatype.
@@ -229,7 +237,7 @@ export class NonLexicalLiteral extends Literal<undefined> {
     language?: string) {
     super(typedValue, strValue, dataType, language);
     this.typedValue = undefined;
-    this.type = 'invalid';
+    this.type = 'nonlexical';
     this.shouldBeCategory = C.type(dataType.value);
   }
 

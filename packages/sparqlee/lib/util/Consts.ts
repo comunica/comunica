@@ -75,7 +75,7 @@ export type Type =
   | 'float'
   | 'double'
   | 'other'
-  | 'invalid';
+  | 'nonlexical';
 
 export type NumericTypeCategory = 'integer' | 'decimal' | 'float' | 'double';
 export const NumericTypeCategories = Set(['integer', 'decimal', 'float', 'double']);
@@ -159,15 +159,14 @@ export enum RegularOperator {
 
   // Functions on RDF Terms
   // https://www.w3.org/TR/sparql11-query/#func-rdfTerms
-  // STR = 'str', see XPath constructor functions
   IS_IRI = 'isIRI',
   IS_BLANK = 'isBlank',
   IS_LITERAL = 'isLiteral',
   IS_NUMERIC = 'isNumeric',
-  // STR see XPath Contructor functions
+  STR = 'str',
   LANG = 'lang',
   DATATYPE = 'datatype',
-  // IRI see XPath Constructor functions
+  IRI = 'IRI',
   BNODE = 'BNODE',
   STRDT = 'STRDT',
   STRLANG = 'STRLANG',
@@ -221,15 +220,7 @@ export enum RegularOperator {
 
   // XPath Constructor functions
   // https://www.w3.org/TR/sparql11-query/#FunctionMapping
-  STR = 'str',
-  FLT = 'flt',
-  DBL = 'dbl',
-  DEC = 'dec',
-  INT = 'int',
-  DT = 'dT',
-  BOOL = 'bool',
-  IRI = 'IRI',
-  LTRL = 'ltrl',
+  // See Named Operators
 }
 
 export enum SpecialOperator {
@@ -250,3 +241,17 @@ export enum SpecialOperator {
 export const RegularOperators = Set(Object.values(RegularOperator));
 export const SpecialOperators = Set(Object.values(SpecialOperator));
 export const Operators = RegularOperators.union(SpecialOperators);
+
+export enum NamedOperator {
+  // XPath Constructor functions
+  // https://www.w3.org/TR/sparql11-query/#FunctionMapping
+  STR = TypeURL.XSD_STRING,
+  FLT = TypeURL.XSD_FLOAT,
+  DBL = TypeURL.XSD_DOUBLE,
+  DEC = TypeURL.XSD_DECIMAL,
+  INT = TypeURL.XSD_INTEGER,
+  DT = TypeURL.XSD_DATE_TIME,
+  BOOL = TypeURL.XSD_BOOLEAN,
+}
+
+export const NamedOperators = Set(Object.values(NamedOperator));

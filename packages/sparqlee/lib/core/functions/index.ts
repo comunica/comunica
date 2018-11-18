@@ -3,14 +3,18 @@ import { Map } from 'immutable';
 import * as C from '../../util/Consts';
 import * as E from '../Expressions';
 
-import { definitions, RegularFunction } from './RegularFunctions';
-import { specialDefinitions, SpecialFunctionAsync } from './SpecialFunctionsAsync';
+import {
+  NamedFunction,
+  RegularFunction,
+  SpecialFunctionAsync,
+} from './FunctionClasses';
+import { namedDefinitions } from './NamedFunctions';
+import { definitions } from './RegularFunctions';
+import { specialDefinitions } from './SpecialFunctionsAsync';
 
-export { RegularFunction } from './RegularFunctions';
-export { SpecialFunctionAsync } from './SpecialFunctionsAsync';
+export * from './FunctionClasses';
 
 export interface SPARQLFunction<Apply extends E.Application> {
-  functionClass: C.OperatorCategory;
   arity: number | number[];
   apply: Apply;
 }
@@ -31,3 +35,9 @@ export type FunctionMap = Map<C.Operator, SPARQLFunction<E.Application>>;
 export const functions: FunctionMap =
   (specialFunctions as FunctionMap)
     .merge(regularFunctions);
+
+export type NamedFunctionMap = Map<C.NamedOperator, NamedFunction>;
+export const namedFunctions: NamedFunctionMap =
+  namedDefinitions
+    .map((def, op) => new NamedFunction(op, def))
+    .toMap();
