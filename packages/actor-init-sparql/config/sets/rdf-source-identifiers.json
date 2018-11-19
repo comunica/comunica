@@ -5,6 +5,7 @@
 
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-source-identifier-file-content-type/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-source-identifier-hypermedia-qpf/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-source-identifier-hypermedia-tree/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-source-identifier-sparql/^1.0.0/components/context.jsonld",
 
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-http/^1.0.0/components/context.jsonld"
@@ -15,6 +16,13 @@
       "@id": "config-sets:rdf-source-identifiers.json#myActorRdfSourceIdentifierHypermediaQpf",
       "@type": "ActorRdfSourceIdentifierHypermediaQpf",
       "carsihq:Actor/RdfSourceIdentifier/HypermediaQpf/mediatorHttp": {
+        "@id": "config-sets:http.json#mediatorHttp"
+      }
+    },
+    {
+      "@id": "config-sets:rdf-source-identifiers.json#myActorRdfSourceIdentifierHypermediaTree",
+      "@type": "ActorRdfSourceIdentifierHypermediaTree",
+      "carsiht:Actor/RdfSourceIdentifier/HypermediaTree/mediatorHttp": {
         "@id": "config-sets:http.json#mediatorHttp"
       }
     },

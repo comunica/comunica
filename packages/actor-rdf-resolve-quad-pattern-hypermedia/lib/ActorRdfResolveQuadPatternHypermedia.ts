@@ -31,7 +31,7 @@ export class ActorRdfResolveQuadPatternHypermedia extends ActorRdfResolveQuadPat
   }
 
   public async test(action: IActionRdfResolveQuadPattern): Promise<IActorTest> {
-    if (!(action.context.get(KEY_CONTEXT_SOURCE).type === "hypermedia")) {
+    if (!action.context || !(action.context.get(KEY_CONTEXT_SOURCE).type === "hypermedia")) {
       throw new Error(
         `${this.name} requires a single source with a \'hypermedia\' entrypoint to be present in the context.`);
     }

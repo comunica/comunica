@@ -1,0 +1,9 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-source-identifier-hypermedia-tree/^1.0.0/components/context.jsonld",
+  "@id": "npmd:@comunica/actor-rdf-source-identifier-hypermedia-tree",
+  "@type": "Module",
+  "requireName": "@comunica/actor-rdf-source-identifier-hypermedia-tree",
+  "import": [
+    "files-carsiht:components/Actor/RdfSourceIdentifier/HypermediaTree.jsonld"
+  ]
+}

@@ -1,0 +1,71 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-source-identifier-hypermedia-tree/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-source-identifier/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-http/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-rdf-source-identifier-hypermedia-tree",
+  "components": [
+    {
+      "@id": "carsiht:Actor/RdfSourceIdentifier/HypermediaTree",
+      "@type": "Class",
+      "extends": "cbrsi:Actor/RdfSourceIdentifier",
+      "requireElement": "ActorRdfSourceIdentifierHypermediaTree",
+      "comment": "A comunica Hypermedia Tree RDF Source Identifier Actor.",
+      "parameters": [
+        {
+          "@id": "carsiht:Actor/RdfSourceIdentifier/HypermediaTree/mediatorHttp",
+          "comment": "The HTTP mediator",
+          "required": true,
+          "unique": true
+        },
+        {
+          "@id": "carsiht:Actor/RdfSourceIdentifier/HypermediaTree/acceptHeader",
+          "comment": "The HTTP accept header",
+          "required": true,
+          "unique": true,
+          "default": "application/trig;q=1.0,application/n-quads;q=0.7,text/n3;q=0.6,application/n-triples;q=0.3,text/n3;q=0.2"
+        },
+        {
+          "@id": "carsiht:Actor/RdfSourceIdentifier/HypermediaTree/toContain",
+          "comment": "The required strings in the response",
+          "required": true,
+          "default": [
+            "http://www.w3.org/ns/hydra/core#",
+            "https://w3id.org/tree#",
+            "view",
+            "Collection",
+            "node"
+          ]
+        },
+        {
+          "@id": "cbrsi:Actor/RdfSourceIdentifier/priority",
+          "defaultScoped": {
+            "defaultScope": "carsiht:Actor/RdfSourceIdentifier/HypermediaTree",
+            "defaultScopedValue": 1
+          }
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "carsiht:Actor/RdfSourceIdentifier/HypermediaTree/constructorArgumentsObject",
+          "extends": "cbrsi:Actor/RdfSourceIdentifier/constructorArgumentsObject",
+          "fields": [
+            {
+              "keyRaw": "mediatorHttp",
+              "value": "carsiht:Actor/RdfSourceIdentifier/HypermediaTree/mediatorHttp"
+            },
+            {
+              "keyRaw": "acceptHeader",
+              "value": "carsiht:Actor/RdfSourceIdentifier/HypermediaTree/acceptHeader"
+            },
+            {
+              "keyRaw": "toContain",
+              "value": "carsiht:Actor/RdfSourceIdentifier/HypermediaTree/toContain"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

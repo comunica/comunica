@@ -12,7 +12,7 @@ describe('AbstractMediatypeUtilities', () => {
 
   const contextNull: ActionContext = null;
   const contextWithSource: ActionContext = ActionContext(
-    { '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'a-type', value: 'a-value' }},
+    { '@comunica/bus-rdf-resolve-quad-pattern:source': { flags: { aFlag: true }, type: 'a-type', value: 'a-value' }},
   );
   const contextWithSingleMultipleSources: ActionContext = ActionContext({
     '@comunica/bus-rdf-resolve-quad-pattern:sources': AsyncReiterableArray.fromFixedData([
@@ -32,7 +32,7 @@ describe('AbstractMediatypeUtilities', () => {
   describe('#getSingleSource', () => {
     it('should extract single source when source is set', () => {
       const source = AbstractMediatypeUtilities.getSingleSource(contextWithSource);
-      return expect(source).resolves.toEqual({ type: 'a-type', value: 'a-value' });
+      return expect(source).resolves.toEqual({ flags: { aFlag: true }, type: 'a-type', value: 'a-value' });
     });
 
     it('should return null when context null', () => {
@@ -102,6 +102,36 @@ describe('AbstractMediatypeUtilities', () => {
     it('should return false when no source', () => {
       const sourceType = AbstractMediatypeUtilities.singleSourceHasType(contextNull, "a-type");
       return expect(sourceType).resolves.toEqual(false);
+    });
+
+  });
+
+  describe('#getSingleSourceFlags', () => {
+    it('should return the flags of the source', () => {
+      const sourceFlags = AbstractMediatypeUtilities.getSingleSourceFlags(contextWithSource);
+      return expect(sourceFlags).resolves.toEqual({ aFlag: true });
+    });
+
+    it('should return null if no source found', () => {
+      const sourceFlags = AbstractMediatypeUtilities.getSingleSourceFlags(contextNull);
+      return expect(sourceFlags).resolves.toEqual(null);
+    });
+  });
+
+  describe('#singleSourceHasFlag', () => {
+    it('should return true if the given flag and value are present', () => {
+      const flagIsThere = AbstractMediatypeUtilities.singleSourceHasFlag(contextWithSource, "aFlag", true);
+      return expect(flagIsThere).resolves.toEqual(true);
+    });
+
+    it('should return false if the given flag is not present', () => {
+      const flagIsThere = AbstractMediatypeUtilities.singleSourceHasFlag(contextWithSource, "anOtherFlag", true);
+      return expect(flagIsThere).resolves.toEqual(false);
+    });
+
+    it('should return false if the given flag does not have the right value', () => {
+      const flagIsThere = AbstractMediatypeUtilities.singleSourceHasFlag(contextWithSource, "aFlag", false);
+      return expect(flagIsThere).resolves.toEqual(false);
     });
 
   });

@@ -37,6 +37,10 @@ export interface IActorRdfSourceIdentifierOutput extends IActorOutput {
    * The identified source type.
    */
   sourceType: string;
+  /**
+   * Flags about the source
+   */
+  flags?: {[id: string]: any};
 }
 
 export interface IActorRdfSourceIdentifierArgs

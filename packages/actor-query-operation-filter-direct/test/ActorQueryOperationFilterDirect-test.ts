@@ -1,5 +1,5 @@
 import {ActorQueryOperation, Bindings, IActorQueryOperationOutputBindings} from "@comunica/bus-query-operation";
-import {Bus} from "@comunica/core";
+import {ActionContext, Bus} from "@comunica/core";
 import {literal} from "@rdfjs/data-model";
 import {ArrayIterator} from "asynciterator";
 import {ActorQueryOperationFilterDirect} from "../lib/ActorQueryOperationFilterDirect";
@@ -80,6 +80,30 @@ describe('ActorQueryOperationFilterDirect', () => {
     it('should not test on non-filter', () => {
       const op = { operation: { type: 'some-other-type' } };
       return expect(actor.test(op)).rejects.toBeTruthy();
+    });
+
+    it('should not test on hypermedia-tree source type if tree filter is not set yet', () => {
+      const contextHypermediaTree: ActionContext = ActionContext(
+        { '@comunica/bus-rdf-resolve-quad-pattern:source': { flags: { isTree: true }, type: 'hypermedia',
+          value: 'hypermedia-tree'}});
+      const op = {
+        context: contextHypermediaTree,
+        operation: { type: 'filter', input: {}, expression: falsyExpression },
+      };
+      return expect(actor.test(op)).rejects.toBeTruthy();
+    });
+
+    it('should test on hypermedia-tree source type if tree filter is set', () => {
+      const contextHypermediaTree: ActionContext = ActionContext({
+        '@comunica/actor-query-operation-filter-tree:filter': truthyExpression,
+        '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'hypermedia-tree', value: 'hypermedia-tree'},
+      },
+      );
+      const op = {
+        context: contextHypermediaTree,
+        operation: { type: 'filter', input: {}, expression: truthyExpression },
+      };
+      return expect(actor.test(op)).resolves.toBeTruthy();
     });
 
     it('should return the full stream for a truthy filter', async () => {

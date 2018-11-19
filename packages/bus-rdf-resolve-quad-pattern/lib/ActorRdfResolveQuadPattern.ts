@@ -65,6 +65,7 @@ export abstract class ActorRdfResolveQuadPattern extends Actor<IActionRdfResolve
 export interface IDataSource {
   type: string;
   value: any;
+  flags: {[id: string]: any};
 }
 export type DataSources = AsyncReiterable<IDataSource>;
 /**

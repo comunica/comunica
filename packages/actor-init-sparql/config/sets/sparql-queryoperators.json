@@ -13,6 +13,7 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-distinct-hash/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-reduced-hash/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-filter-direct/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-filter-tree/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-from-quad/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-join/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-leftjoin-nestedloop/^1.0.0/components/context.jsonld",
@@ -104,8 +105,14 @@
     },
 
     {
-      "@id": "config-sets:sparql-queryoperators.json#myFilterQueryOperator",
+      "@id": "config-sets:sparql-queryoperators.json#myDirectFilterQueryOperator",
       "@type": "ActorQueryOperationFilterDirect",
+      "cbqo:mediatorQueryOperation": { "@id": "config-sets:sparql-queryoperators.json#mediatorQueryOperation" }
+    },
+
+    {
+      "@id": "config-sets:sparql-queryoperators.json#myTreeFilterQueryOperator",
+      "@type": "ActorQueryOperationFilterTree",
       "cbqo:mediatorQueryOperation": { "@id": "config-sets:sparql-queryoperators.json#mediatorQueryOperation" }
     },
 

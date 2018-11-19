@@ -1,0 +1,13 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^3.0.0/components/context.jsonld",
+    {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
+      "carsiht": "npmd:@comunica/actor-rdf-source-identifier-hypermedia-tree/",
+      "files-carsiht": "carsiht:^1.0.0/",
+
+      "ActorRdfSourceIdentifierHypermediaTree": "carsiht:Actor/RdfSourceIdentifier/HypermediaTree",
+      "mediatorHttp": "carsiht:Actor/RdfSourceIdentifier/ActorRdfSourceIdentifierHypermediaTree/mediatorHttp"
+    }
+  ]
+}

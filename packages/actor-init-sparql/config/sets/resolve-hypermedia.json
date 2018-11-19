@@ -8,6 +8,7 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-metadata-extract-hydra-count/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-metadata/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-metadata-primary-topic/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-metadata-tree-data/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-metadata-triple-predicate/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-dereference-paged/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-dereference-paged-next/^1.0.0/components/context.jsonld",
@@ -43,29 +44,37 @@
     },
 
     {
+      "@id": "config-sets:resolve-hypermedia.json#mediatorRdfDereference",
+      "@type": "MediatorRace",
+      "cc:Mediator/bus": { "@id": "cbrd:Bus/RdfDereference" }
+    },
+    {
+      "@id": "config-sets:resolve-hypermedia.json#mediatorMetadata",
+      "@type": "MediatorRace",
+      "cc:Mediator/bus": { "@id": "cbrm:Bus/RdfMetadata" }
+    },
+    {
+      "@id": "config-sets:resolve-hypermedia.json#mediatorMetadataExtract",
+      "@type": "MediatorCombineUnion",
+      "cc:Mediator/bus": { "@id": "cbrme:Bus/RdfMetadataExtract" },
+      "cmcu:Mediator/CombineUnion/field": "metadata"
+    },
+
+    {
       "@id": "config-sets:resolve-hypermedia.json#myRdfPagedDereferencer",
       "@type": "ActorRdfDereferencePagedNext",
-      "cardph:mediatorRdfDereference": {
-        "@id": "config-sets:resolve-hypermedia.json#mediatorRdfDereference",
-        "@type": "MediatorRace",
-        "cc:Mediator/bus": { "@id": "cbrd:Bus/RdfDereference" }
-      },
-      "cardph:mediatorMetadata": {
-        "@id": "config-sets:resolve-hypermedia.json#mediatorMetadata",
-        "@type": "MediatorRace",
-        "cc:Mediator/bus": { "@id": "cbrm:Bus/RdfMetadata" }
-      },
-      "cardph:mediatorMetadataExtract": {
-        "@id": "config-sets:resolve-hypermedia.json#mediatorMetadataExtract",
-        "@type": "MediatorCombineUnion",
-        "cc:Mediator/bus": { "@id": "cbrme:Bus/RdfMetadataExtract" },
-        "cmcu:Mediator/CombineUnion/field": "metadata"
-      }
+      "cardph:mediatorRdfDereference": { "@id": "config-sets:resolve-hypermedia.json#mediatorRdfDereference" },
+      "cardph:mediatorMetadata": { "@id": "config-sets:resolve-hypermedia.json#mediatorMetadata" },
+      "cardph:mediatorMetadataExtract": { "@id": "config-sets:resolve-hypermedia.json#mediatorMetadataExtract" }
     },
 
     {
       "@id": "config-sets:resolve-hypermedia.json#myRdfMetadataPrimaryTopic",
       "@type": "ActorRdfMetadataPrimaryTopic"
+    },
+    {
+      "@id": "config-sets:resolve-hypermedia.json#myRdfMetadataTreeData",
+      "@type": "ActorRdfMetadataTreeData"
     },
     {
       "@id": "config-sets:resolve-hypermedia.json#myRdfMetadataTriplePredicate",

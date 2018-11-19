@@ -45,6 +45,11 @@ export class ActorContextPreprocessRdfSourceIdentifier extends ActorContextPrepr
               if (sourceIdentificationResult.sourceType) {
                 source.type = sourceIdentificationResult.sourceType;
               }
+              if (sourceIdentificationResult.flags) {
+                source.flags = sourceIdentificationResult.flags;
+              } else {
+                source.flags = {};
+              }
               newSources.push(source);
               endSource();
             }));

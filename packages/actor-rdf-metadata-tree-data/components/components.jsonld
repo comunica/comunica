@@ -1,0 +1,9 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-metadata-tree-data/^1.0.0/components/context.jsonld",
+  "@id": "npmd:@comunica/actor-rdf-metadata-tree-data",
+  "@type": "Module",
+  "requireName": "@comunica/actor-rdf-metadata-tree-data",
+  "import": [
+    "files-carmtd:components/Actor/RdfMetadata/TreeData.jsonld"
+  ]
+}

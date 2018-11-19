@@ -1,0 +1,21 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-metadata-tree-data/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-metadata/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-rdf-metadata-tree-data",
+  "components": [
+    {
+      "@id": "carmtd:Actor/RdfMetadata/TreeData",
+      "@type": "Class",
+      "extends": "cbrm:Actor/RdfMetadata",
+      "requireElement": "ActorRdfMetadataTreeData",
+      "comment": "A comunica TreeData RDF Metadata Actor.",
+      "constructorArguments": [
+        {
+          "extends": "cbrm:Actor/RdfMetadata/constructorArgumentsObject"
+        }
+      ]
+    }
+  ]
+}
