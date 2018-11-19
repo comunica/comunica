@@ -182,7 +182,9 @@ export class BooleanLiteral extends Literal<boolean> {
 }
 
 export class DateTimeLiteral extends Literal<Date> {
-  constructor(public typedValue: Date, public strValue?: string) {
+  // strValue is mandatory here because toISOString will always add
+  // milliseconds, even if they were not present.
+  constructor(public typedValue: Date, public strValue: string) {
     super(typedValue, strValue, C.make(C.TypeURL.XSD_DATE_TIME));
   }
 }

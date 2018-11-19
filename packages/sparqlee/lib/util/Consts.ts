@@ -242,16 +242,23 @@ export const RegularOperators = Set(Object.values(RegularOperator));
 export const SpecialOperators = Set(Object.values(SpecialOperator));
 export const Operators = RegularOperators.union(SpecialOperators);
 
-export enum NamedOperator {
+export type NamedOperator =
   // XPath Constructor functions
   // https://www.w3.org/TR/sparql11-query/#FunctionMapping
-  STR = TypeURL.XSD_STRING,
-  FLT = TypeURL.XSD_FLOAT,
-  DBL = TypeURL.XSD_DOUBLE,
-  DEC = TypeURL.XSD_DECIMAL,
-  INT = TypeURL.XSD_INTEGER,
-  DT = TypeURL.XSD_DATE_TIME,
-  BOOL = TypeURL.XSD_BOOLEAN,
-}
+  TypeURL.XSD_STRING
+  | TypeURL.XSD_FLOAT
+  | TypeURL.XSD_DOUBLE
+  | TypeURL.XSD_DECIMAL
+  | TypeURL.XSD_INTEGER
+  | TypeURL.XSD_DATE_TIME
+  | TypeURL.XSD_BOOLEAN;
 
-export const NamedOperators = Set(Object.values(NamedOperator));
+export const NamedOperators = Set([
+  TypeURL.XSD_STRING,
+  TypeURL.XSD_FLOAT,
+  TypeURL.XSD_DOUBLE,
+  TypeURL.XSD_DECIMAL,
+  TypeURL.XSD_INTEGER,
+  TypeURL.XSD_DATE_TIME,
+  TypeURL.XSD_BOOLEAN,
+]);

@@ -1,4 +1,4 @@
-import { aliases as a, testAll } from '../util/utils';
+import { testAll } from '../util/utils';
 
 describe('evaluation of XPath constructors', () => {
   describe('like \'str\' receiving', () => {
@@ -12,7 +12,7 @@ describe('evaluation of XPath constructors', () => {
     ]);
   });
 
-  describe.only('like \'flt\' receiving', () => {
+  describe('like \'flt\' receiving', () => {
     testAll([
       'xsd:float("3")          = "3"^^xsd:float',
       'xsd:float("3"^^xsd:int) = "3"^^xsd:float',

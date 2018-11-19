@@ -139,7 +139,7 @@ function transformOperator(expr: Alg.OperatorExpression)
 
 export function transformNamed(expr: Alg.NamedExpression): E.NamedExpression {
   const funcName = expr.name.value;
-  if (!C.NamedOperators.contains(funcName)) {
+  if (!C.NamedOperators.contains(funcName as C.NamedOperator)) {
     throw new Err.UnknownNamedOperator(expr.name.value);
   }
 

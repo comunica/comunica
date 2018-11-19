@@ -77,9 +77,11 @@ export class AsyncEvaluator {
     return func.apply({ args, mapping, evaluate: this.evalRec.bind(this) });
   }
 
-  // TODO
   private async evalNamed(expr: E.NamedExpression, mapping: Bindings): Promise<E.TermExpression> {
-    throw new Err.UnimplementedError('Named Operator');
+    const { func, args } = expr;
+    const argPromises = args.map((arg) => this.evalRec(arg, mapping));
+    const argResults = await Promise.all(argPromises);
+    return func.apply(argResults);
   }
 
   // TODO

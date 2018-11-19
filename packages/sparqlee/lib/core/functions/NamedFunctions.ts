@@ -39,7 +39,7 @@ const toFloat = {
       if (!result) { throw new Err.CastError(val, Type.XSD_FLOAT); }
       return number(result);
     })
-    .copyTo(['nonlexical'])
+    .copy({ from: ['string'], to: ['nonlexical'] })
     .collect(),
 };
 
@@ -53,7 +53,7 @@ const toDouble = {
       if (!result) { throw new Err.CastError(val, Type.XSD_DOUBLE); }
       return number(result, Type.XSD_DOUBLE);
     })
-    .copyTo(['nonlexical'])
+    .copy({ from: ['string'], to: ['nonlexical'] })
     .collect(),
 };
 
@@ -65,8 +65,8 @@ const toDecimal = {
       if (!result) { throw new Err.CastError(val, Type.XSD_DECIMAL); }
       return number(result, Type.XSD_DECIMAL);
     })
-    .copyTo(['string'])
-    .copyTo(['nonlexical'])
+    .copy({ from: ['integer'], to: ['string'] })
+    .copy({ from: ['integer'], to: ['nonlexical'] })
     .setLitUnary('boolean', (val: boolean) => number(val ? 1 : 0, Type.XSD_DECIMAL))
     .collect(),
 };
@@ -80,23 +80,23 @@ const toInteger = {
       if (!result) { throw new Err.CastError(val, Type.XSD_INTEGER); }
       return number(result, Type.XSD_INTEGER);
     })
-    .copyTo(['string'])
-    .copyTo(['nonlexical'])
+    .copy({ from: ['integer'], to: ['string'] })
+    .copy({ from: ['integer'], to: ['nonlexical'] })
     .collect(),
 };
 
 const toDatetime = {
   arity: 1,
   overloads: declare()
-    .setLitUnary('date', (val: Date) => dateTime(val))
+    .setUnary('date', (val: E.DateTimeLiteral) => val)
     .setUnary('string', (val: Term) => {
       const date = new Date(val.str());
       if (isNaN(date.getTime())) {
         throw new Err.CastError(val, Type.XSD_DATE_TIME);
       }
-      return dateTime(date);
+      return dateTime(date, val.str());
     })
-    .copyTo(['nonlexical'])
+    .copy({ from: ['string'], to: ['nonlexical'] })
     .collect(),
 };
 
@@ -112,7 +112,7 @@ const toBoolean = {
       }
       return bool((str === 'true'));
     })
-    .copyTo(['nonlexical'])
+    .copy({ from: ['string'], to: ['nonlexical'] })
     .collect(),
 };
 
@@ -126,13 +126,13 @@ const _definitions: { [key in C.NamedOperator]: Definition } = {
   // XPath Constructor functions
   // https://www.w3.org/TR/sparql11-query/#FunctionMapping
   // --------------------------------------------------------------------------
-  str: toString,
-  flt: toFloat,
-  dbl: toDouble,
-  dec: toDecimal,
-  int: toInteger,
-  dT: toDatetime,
-  bool: toBoolean,
+  [Type.XSD_STRING]: toString,
+  [Type.XSD_FLOAT]: toFloat,
+  [Type.XSD_DOUBLE]: toDouble,
+  [Type.XSD_DECIMAL]: toDecimal,
+  [Type.XSD_INTEGER]: toInteger,
+  [Type.XSD_DATE_TIME]: toDatetime,
+  [Type.XSD_BOOLEAN]: toBoolean,
 };
 
 // ----------------------------------------------------------------------------

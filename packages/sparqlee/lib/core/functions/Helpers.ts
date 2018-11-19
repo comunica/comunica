@@ -37,21 +37,23 @@ export class Builder {
     return this;
   }
 
-  set(types: ArgumentType[], func: E.SimpleApplication): Builder {
+  set(argTypes: ArgumentType[], func: E.SimpleApplication): Builder {
+    const types = List(argTypes);
     return this.add(new Impl({ types, func }));
   }
 
-  copyTo(to: ArgumentType[]): Builder {
-    const last = this.implementations[this.implementations.length - 1].get('func');
-    return this.set(to, last);
-  }
-
-  copyToAll(to: ArgumentType[][]): Builder {
-    const last = this.implementations[this.implementations.length - 1].get('func');
-    to.forEach((types) => {
-      this.set(types, last);
-    });
-    return this;
+  copy({ from, to }: { from: ArgumentType[], to: ArgumentType[] }): Builder {
+    const last = this.implementations.length - 1;
+    const _from = List(from);
+    for (let i = last; i >= 0; i--) {
+      const impl = this.implementations[i];
+      if (impl.get('types').equals(_from)) {
+        return this.set(to, impl.get('func'));
+      }
+    }
+    throw new Err.UnexpectedError(
+      'Tried to copy implementation, but types not found',
+      { from, to });
   }
 
   setUnary<T extends Term>(type: ArgumentType, op: (val: T) => Term) {
@@ -82,16 +84,13 @@ export class Builder {
     for (let arity = 0; arity <= 5; arity++) {
       const types = Array(arity).fill('term');
       const func = (_args: Term[]) => { throw new Err.UnimplementedError(msg); };
-      this.add(new Impl({ types, func }));
+      this.set(types, func);
     }
     return this;
   }
 
   onTerm1(op: (term: Term) => Term): Builder {
-    return this.add(new Impl({
-      types: ['term'],
-      func: ([term]: [Term]) => op(term),
-    }));
+    return this.set(['term'], ([term]: [Term]) => op(term));
   }
 
   onLiteral1<T>(op: (lit: E.Literal<T>) => Term): Builder {
@@ -228,7 +227,7 @@ export class Builder {
  */
 
 export type ImplType = {
-  types: ArgumentType[];
+  types: List<ArgumentType>;
   func: E.SimpleApplication;
 };
 
@@ -249,7 +248,7 @@ export class Impl extends Record(implDefaults) {
   }
 
   toPair(): [List<ArgumentType>, E.SimpleApplication] {
-    return [List(this.get('types')), this.get('func')];
+    return [this.get('types'), this.get('func')];
   }
 }
 
@@ -274,6 +273,6 @@ export function string(s: string): E.StringLiteral {
   return new E.StringLiteral(s);
 }
 
-export function dateTime(date: Date): E.DateTimeLiteral {
-  return new E.DateTimeLiteral(date);
+export function dateTime(date: Date, str: string): E.DateTimeLiteral {
+  return new E.DateTimeLiteral(date, str);
 }
