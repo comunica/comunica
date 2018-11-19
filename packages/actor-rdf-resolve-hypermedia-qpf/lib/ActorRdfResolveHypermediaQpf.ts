@@ -1,5 +1,5 @@
-import {AbstractMediatypeUtilities} from "@comunica/actor-abstract-mediatype-utilities";
 import {ISearchForms} from "@comunica/actor-rdf-metadata-extract-hydra-controls";
+import {KEY_CONTEXT_SOURCE} from "@comunica/bus-rdf-resolve-quad-pattern";
 import {ActorRdfResolveHypermedia, IActionRdfResolveHypermedia,
   IActorRdfResolveHypermediaOutput} from "@comunica/bus-rdf-resolve-hypermedia";
 import {ActionContext, IActorArgs, IActorTest} from "@comunica/core";
@@ -20,7 +20,7 @@ implements IActorRdfResolveHypermediaQpfArgs {
   }
 
   public async test(action: IActionRdfResolveHypermedia): Promise<IActorTest> {
-    if (!(await AbstractMediatypeUtilities.singleSourceHasType(action.context, 'hypermedia'))) {
+    if (!(action.context.get(KEY_CONTEXT_SOURCE).type === "hypermedia")) {
       throw new Error(this.name
         + ' requires a single source with a Hypermedia \'hypermedia\' entrypoint to be present in the context.');
     }

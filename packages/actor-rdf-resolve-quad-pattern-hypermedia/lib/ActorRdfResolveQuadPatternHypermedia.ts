@@ -1,9 +1,8 @@
-import {AbstractMediatypeUtilities} from "@comunica/actor-abstract-mediatype-utilities";
 import {ISearchForm} from "@comunica/actor-rdf-metadata-extract-hydra-controls";
 import {IActionRdfDereferencePaged, IActorRdfDereferencePagedOutput} from "@comunica/bus-rdf-dereference-paged";
 import {IActionRdfResolveHypermedia, IActorRdfResolveHypermediaOutput} from "@comunica/bus-rdf-resolve-hypermedia";
 import {ActorRdfResolveQuadPatternSource, IActionRdfResolveQuadPattern,
-  IActorRdfResolveQuadPatternOutput, ILazyQuadSource} from "@comunica/bus-rdf-resolve-quad-pattern";
+  IActorRdfResolveQuadPatternOutput, ILazyQuadSource, KEY_CONTEXT_SOURCE} from "@comunica/bus-rdf-resolve-quad-pattern";
 import {ActionContext, Actor, IActorArgs, IActorTest, Mediator} from "@comunica/core";
 import * as RDF from "rdf-js";
 import {termToString} from "rdf-string";
@@ -32,7 +31,7 @@ export class ActorRdfResolveQuadPatternHypermedia extends ActorRdfResolveQuadPat
   }
 
   public async test(action: IActionRdfResolveQuadPattern): Promise<IActorTest> {
-    if (!(await AbstractMediatypeUtilities.singleSourceHasType(action.context, 'hypermedia'))) {
+    if (!(action.context.get(KEY_CONTEXT_SOURCE).type === "hypermedia")) {
       throw new Error(
         `${this.name} requires a single source with a \'hypermedia\' entrypoint to be present in the context.`);
     }
