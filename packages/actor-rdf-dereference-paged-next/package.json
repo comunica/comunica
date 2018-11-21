@@ -36,7 +36,7 @@
   ],
   "dependencies": {
     "asynciterator": "^2.0.1",
-    "lru-cache": "^4.1.1"
+    "lru-cache": "^5.1.1"
   },
   "peerDependencies": {
     "@comunica/bus-rdf-dereference": "^1.0.0",
