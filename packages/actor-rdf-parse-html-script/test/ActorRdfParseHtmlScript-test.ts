@@ -23,15 +23,7 @@ describe('ActorRdfParseHtml', () => {
     mediator = {
       mediate: (action) => {
 
-        const type = action.context.get('@comunica/bus-rdf-parse:source').type;
-
-        if (type === 'handle') {
-          return Promise.resolve({ handle: { quads: streamifyArray([
-            quad('http://example.org/a', 'http://example.org/b', 'http://example.org/c'),
-            quad('http://example.org/a', 'http://example.org/d', 'http://example.org/e'),
-          ]) }});
-        }
-        if (type === 'mediaTypes') {
+        if (action.mediaTypes === true) {
           return Promise.resolve({ mediaTypes: {
             "application/ld+json": 1,
             "application/n-quads": 2,
@@ -40,7 +32,13 @@ describe('ActorRdfParseHtml', () => {
             "text/n3": 5,
             "text/turtle": 6,
           } });
+        } else {
+          return Promise.resolve({ handle: { quads: streamifyArray([
+            quad('http://example.org/a', 'http://example.org/b', 'http://example.org/c'),
+            quad('http://example.org/a', 'http://example.org/d', 'http://example.org/e'),
+          ]) }});
         }
+
       },
     };
 

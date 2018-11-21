@@ -38,8 +38,7 @@ export class ActorRdfParseHtmlScript extends ActorRdfParseFixedMediaTypes {
       // Fetch the supported types
       const supportedTypes: string[] = Object.keys((await this.mediatorRdfParse
         .mediate({
-          // context,
-          context: ActionContext({ '@comunica/bus-rdf-parse:source': { type: 'mediaTypes' } }),
+          context,
           mediaTypes: true,
         })).mediaTypes);
       supportedTypes.push("application/ld+json");   // Add json-ld while waiting for issue 138
