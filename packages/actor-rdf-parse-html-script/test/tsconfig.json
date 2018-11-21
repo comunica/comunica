@@ -2,9 +2,7 @@
   "compilerOptions": {
     "module": "commonjs",
     "lib": [
-      "es6",
-      "dom",
-      "esnext.asynciterable"
+      "es6"
     ],
     "noImplicitAny": false
   }

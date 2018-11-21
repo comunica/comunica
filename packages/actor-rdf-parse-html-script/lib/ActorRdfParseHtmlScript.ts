@@ -31,16 +31,9 @@ export class ActorRdfParseHtmlScript extends ActorRdfParseFixedMediaTypes {
     const quads = new Readable({objectMode: true});
 
     quads._read = async () => {
-      let count: number;
-      let scripts: Element[];
 
       // Stringify HTML input
       const htmlString: string = await require('stream-to-string')(action.input);
-
-      // Extract script tags
-      const DOMParser = require('xmldom').DOMParser;
-      const doc = new DOMParser().parseFromString(htmlString, 'text/html');
-      scripts = await doc.getElementsByTagName('script');
 
       // Fetch the supported types
       const supportedTypes: string[] = Object.keys((await this.mediatorRdfParse
@@ -51,48 +44,62 @@ export class ActorRdfParseHtmlScript extends ActorRdfParseFixedMediaTypes {
         })).mediaTypes);
       supportedTypes.push("application/ld+json");   // Add json-ld while waiting for issue 138
 
-      // Loop script elements
-      count = 0;  // count handled script tags
-      for (let i = 0; i < scripts.length; i++) {
-        // Check if supported type
-        const index: number = supportedTypes.indexOf(scripts[i].getAttribute("type"));
-        if (index > -1) {
+      let stream: Readable;
+      let index: number;
+      let streamOpened: boolean = false;
+      let count: number = 0;
+      let noRDFScriptTags: boolean = true;
 
-          // Streamify script content
-          const stream: Readable = new Readable({objectMode: true});
-          stream.push(scripts[i].textContent);
-          stream.push(null);
+      const htmlparser = require("htmlparser2");
+      const parser = new htmlparser.Parser({
 
-          // Push stream on parse bus
-          const parseAction = {
-            context,
-            handle: {input: stream},
-            handleMediaType: supportedTypes[index],
-          };
-          const returned = (await this.mediatorRdfParse.mediate(parseAction)).handle;
+        onclosetag: async (tagname: string) => {
+          if (tagname === "script" && index > -1) {
+            streamOpened = false;
+            stream.push(null);
 
-          // Push parsed quads on main stream
-          returned.quads.on('data', (chunk) => {
-            quads.push(chunk);
-          });
+            const parseAction = {
+              context,
+              handle: { input: stream },
+              handleMediaType: supportedTypes[index],
+            };
+            const returned = (await this.mediatorRdfParse.mediate(parseAction)).handle;
 
-          // Wait for stream to end
-          returned.quads.on('end', () => {
-            count++;
-            if (count === scripts.length) {
-              quads.push(null);
-              return { quads };
-            }
-          });
-        } else {
-          count++;    // increment if script tag has unsupported type
-          if (count === scripts.length) {
-            quads.push(null);
-            return { quads };
+            returned.quads.on('data', (chunk) => {
+              quads.push(chunk);
+            });
+
+            returned.quads.on('end', () => {
+              count--;
+              if (count === 0) {
+                quads.push(null);
+              }
+            });
           }
-        }
-      }
+        },
 
+        onopentag: (tagname: string, attribs: any) => {
+          index = supportedTypes.indexOf(attribs.type);
+          if (tagname === "script" && index > -1) {
+            noRDFScriptTags = false;
+            streamOpened = true;
+            count++;
+            stream = new Readable({ objectMode: true });
+          }
+        },
+
+        ontext: (text: string) => {
+          if (streamOpened) {
+            stream.push(text);
+          }
+        },
+      }, {decodeEntities: true});
+      await parser.write(htmlString);
+      parser.end();
+
+      if (noRDFScriptTags) {
+        quads.push(null);
+      }
     };
 
     return { quads };
