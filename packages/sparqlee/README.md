@@ -19,31 +19,31 @@ const bindings = ...some bindings/solution mapping...;
 const evaluator = new AsyncEvaluator(expression)
 
 // evaluate it as a term
-evaluator.evaluate(bindings)
-  .then((term) => console.log(term));
+const result: RDF.Term = await evaluator.evaluate(bindings);
 
-// or evaluate it as an Effective Boolean Value
-evaluator.evaluateAsEBV(bindings)
-  .then((result) => { if (result) => console.log(bindings);})
+// or evaluate it as an Effective Boolean Value (for e.g in FILTER)
+const result: boolean = await evaluator.evaluateAsEBV(bindings);
+
 ```
 
 Note: If you want to use *aggregates*, or *exists* you should check out the [stream section](#streams).
 
 ### Errors
 
-Sparqlee exports an Error class called `ExpressionError` from which all SPARQL related errors inherit. These might include unbound variables, wrong types, invalid lexical forms, and much more. More info on errors [here](lib/util/Errors.ts).
+Sparqlee exports an Error class called `ExpressionError` from which all SPARQL related errors inherit. These might include unbound variables, wrong types, invalid lexical forms, and much more. More info on errors [here](lib/util/Errors.ts). These errors can be caught, and may impact program execution in an expected way. All other errors are unexpected, and are thus programmer mistakes or mistakes in this library.
 
 ```ts
 // Make sure to catch errors if you don't control binding input
-evaluator.evaluate(bindings)
-  .then(consumeResult)
-  .catch((error) => {
+try {
+  const result = await evaluator.evaluate(bindings);
+  consumeResult(result;)
+} catch (error) {
     if (error instanceof ExpressionError) {
         console.log(error); // SPARQL related errors
     } else {
         throw error; // programming errors or missing features.
     }
-  });
+}
 ```
 
 ### Streams
@@ -159,6 +159,8 @@ They might span entire streams and, depending on the use case, have very differe
 | IRI            |   |   |   |
 | ltrl           |   |   |   |
 
+## Development
+
 ## Setup locally
 
 1. Install `yarn` (or `npm`) and `node`.
@@ -169,16 +171,22 @@ They might span entire streams and, depending on the use case, have very differe
     * testing: `yarn run test`
     * benchmarking: `yarn run bench`
 
-### Adding missing functions
+### Adding unimplemented functions
 
-Functions are defined in the [definitions file]("lib/core/functions/Definitions.ts), and you can add them there. You also need to define it as an operator [here](lib/util/Errors.ts). The type system might be a bit cumbersome, so definitely check the [helpers](lib/core/functions/Helpers.ts) and existing definitions.
+Functions are defined in the [functions directory](lib/functions/), and you can add them there. All definitions are defined using a builder model defined in [Helpers.ts](lib/functions/Helpers.ts).
 
 Three kinds exists:
 
-* Overloaded functions: where multiple types are allowed, and implementation might be dependant on the actual types.
+* Regular functions: Functions with a uniform interface, that only need their arguments to calculate their result.
 * Special functions: whose behaviour deviates enough from the norm to warrant the implementations taking full control over type checking and evaluation (these are mostly the functional forms).
+* Named functions: which correspond to the SPARQLAlgebra Named Expressions.
 
 **TODO**: Explain this hot mess some more.
+
+### Layout and control flow
+
+The only important external facing API is creating an Evaluator.
+When you create one, the SPARQL Algebra expression that is passed will be transformed to an internal representation (see [Transformation.ts](./lib/Transformation.ts)). This will build objects (see [expressions module](./lib/expressions)) that contain all the logic and data for evaluation, for example the implementations for SPARQL functions (see [functions module](./lib/functions)). After transformation, the evaluator will recursively evaluate all the expressions.
 
 ### Testing
 
