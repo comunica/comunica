@@ -5,11 +5,11 @@
 
 import { List, Map, Record } from 'immutable';
 
-import * as C from '../../util/Consts';
-import * as Err from '../../util/Errors';
-import * as E from '../Expressions';
+import * as E from '../expressions';
+import * as C from '../util/Consts';
+import * as Err from '../util/Errors';
 
-import { TypeURL as Type } from '../../util/Consts';
+import { TypeURL as Type } from '../util/Consts';
 import { ArgumentType, OverloadMap } from './FunctionClasses';
 
 type Term = E.TermExpression;

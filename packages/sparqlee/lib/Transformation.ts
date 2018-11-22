@@ -2,17 +2,17 @@ import * as RDF from 'rdf-js';
 import * as RDFString from 'rdf-string';
 import { Algebra as Alg } from 'sparqlalgebrajs';
 
-import * as C from '../util/Consts';
-import * as Err from '../util/Errors';
-import * as P from '../util/Parsing';
-import * as E from './Expressions';
+import * as E from './expressions';
+import * as C from './util/Consts';
+import * as Err from './util/Errors';
+import * as P from './util/Parsing';
 
-import { TypeURL as DT } from '../util/Consts';
 import {
   namedFunctions,
   regularFunctions,
   specialFunctions,
 } from './functions';
+import { TypeURL as DT } from './util/Consts';
 
 export function transformAlgebra(expr: Alg.Expression): E.Expression {
   if (!expr) { throw new Err.InvalidExpression(expr); }
@@ -121,9 +121,8 @@ function transformOperator(expr: Alg.OperatorExpression)
     const op = expr.operator as C.SpecialOperator;
     const args = expr.args.map((a) => transformAlgebra(a));
     const func = specialFunctions.get(op);
-    const expressionType = E.ExpressionType.SpecialOperator;
     if (!hasCorrectArity(args, func.arity)) { throw new Err.InvalidArity(args, op); }
-    return { func, args, expressionType };
+    return new E.SpecialOperatorAsync(args, func.apply);
   } else {
     if (!C.Operators.contains(expr.operator)) {
       throw new Err.UnknownOperator(expr.operator);
@@ -131,9 +130,8 @@ function transformOperator(expr: Alg.OperatorExpression)
     const op = expr.operator as C.RegularOperator;
     const args = expr.args.map((a) => transformAlgebra(a));
     const func = regularFunctions.get(op);
-    const expressionType = E.ExpressionType.Operator;
     if (!hasCorrectArity(args, func.arity)) { throw new Err.InvalidArity(args, op); }
-    return { func, args, expressionType };
+    return new E.Operator(args, func.apply);
   }
 }
 
@@ -147,8 +145,7 @@ export function transformNamed(expr: Alg.NamedExpression): E.NamedExpression {
   const op = expr.name.value as any as C.NamedOperator;
   const args = expr.args.map((a) => transformAlgebra(a));
   const func = namedFunctions.get(op);
-  const expressionType = E.ExpressionType.Named;
-  return { func, args, expressionType, name: expr.name };
+  return new E.Named(expr.name, args, func.apply);
 }
 
 function hasCorrectArity(args: E.Expression[], arity: number | number[]): boolean {

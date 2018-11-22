@@ -1,11 +1,11 @@
 import { Map } from 'immutable';
 
-import * as C from '../../util/Consts';
-import * as Err from '../../util/Errors';
-import * as E from '../Expressions';
+import * as E from '../expressions';
+import * as C from '../util/Consts';
+import * as Err from '../util/Errors';
 
 import { bool } from './Helpers';
-import { regularFunctions, SPARQLFunction, specialFunctions } from './index';
+import { regularFunctions, specialFunctions } from './index';
 
 type Term = E.TermExpression;
 type Result = Promise<E.TermExpression>;

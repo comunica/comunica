@@ -1,9 +1,10 @@
 import * as RDF from 'rdf-js';
 import { Algebra } from 'sparqlalgebrajs';
+
+import * as E from '../expressions';
 import * as C from './Consts';
 
-import * as E from '../core/Expressions';
-import { Bindings } from '../core/Types';
+import { Bindings } from '../Types';
 
 /**
  * This error will be thrown when an expression errors.

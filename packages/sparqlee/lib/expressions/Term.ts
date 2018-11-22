@@ -1,106 +1,10 @@
 import * as RDFDM from '@rdfjs/data-model';
 import * as RDF from 'rdf-js';
-import { Algebra } from 'sparqlalgebrajs';
+
+import { ExpressionType, TermExpression, TermType } from './Expressions';
 
 import * as C from '../util/Consts';
 import * as Err from '../util/Errors';
-
-import { Bindings } from './Types';
-
-export enum ExpressionType {
-  Aggregate = 'aggregate',
-  Existence = 'existence',
-  Named = 'named',
-  Operator = 'operator',
-  SpecialOperator = 'specialOperator',
-  Term = 'term',
-  Variable = 'variable',
-}
-
-export type Expression =
-  AggregateExpression |
-  ExistenceExpression |
-  NamedExpression |
-  OperatorExpression |
-  SpecialOperatorExpression |
-  TermExpression |
-  VariableExpression;
-
-export interface ExpressionProps {
-  expressionType: ExpressionType;
-}
-
-export type AggregateExpression = ExpressionProps & {
-  expressionType: ExpressionType.Aggregate;
-  aggregator: string;
-  distinct: boolean;
-  separator?: string; // used by GROUP_CONCAT
-  expression: Expression;
-};
-
-export type ExistenceExpression = ExpressionProps & {
-  expressionType: ExpressionType.Existence;
-  not: boolean;
-  input: Algebra.Operation;
-};
-
-export type NamedExpression = ExpressionProps & {
-  expressionType: ExpressionType.Named;
-  name: RDF.NamedNode;
-  func: { apply: SimpleApplication }
-  args: Expression[];
-};
-
-export type Evaluator = (e: Expression, mapping: Bindings) => Promise<TermExpression>;
-export type EvalContext = { args: Expression[], mapping: Bindings, evaluate: Evaluator };
-
-export type Application = SimpleApplication | SpecialApplication;
-export type SimpleApplication = (args: TermExpression[]) => TermExpression;
-export type SpecialApplication = (context: EvalContext) => Promise<TermExpression>;
-
-export type OperatorExpression = ExpressionProps & {
-  expressionType: ExpressionType.Operator;
-  args: Expression[];
-  func: { apply: SimpleApplication; };
-};
-
-export type SpecialOperatorExpression = ExpressionProps & {
-  expressionType: ExpressionType.SpecialOperator,
-  args: Expression[],
-  func: { apply: SpecialApplication; },
-};
-
-export type TermType = 'namedNode' | 'literal' | 'blankNode';
-export type TermExpression = ExpressionProps & {
-  expressionType: ExpressionType.Term;
-  termType: TermType;
-  str(): string;
-  coerceEBV(): boolean;
-  toRDF(): RDF.Term;
-};
-
-export type VariableExpression = ExpressionProps & {
-  expressionType: ExpressionType.Variable;
-  name: string;
-};
-
-// ----------------------------------------------------------------------------
-// Variable
-// ----------------------------------------------------------------------------
-
-export class Variable implements VariableExpression {
-  expressionType: ExpressionType.Variable = ExpressionType.Variable;
-  name: string;
-  constructor(name: string) {
-    this.name = name;
-  }
-}
-
-
-
-// ----------------------------------------------------------------------------
-// Terms
-// ----------------------------------------------------------------------------
 
 export abstract class Term implements TermExpression {
   expressionType: ExpressionType.Term = ExpressionType.Term;

@@ -1,11 +1,11 @@
 import * as RDF from 'rdf-js';
 import { Algebra as Alg } from 'sparqlalgebrajs';
 
-import * as E from './core/Expressions';
+import * as E from './expressions/Expressions';
 import * as Err from './util/Errors';
 
-import { transformAlgebra, transformTerm } from './core/Transformation';
-import { AsyncAggregator, AsyncLookUp, Bindings } from './core/Types';
+import { transformAlgebra, transformTerm } from './Transformation';
+import { AsyncAggregator, AsyncLookUp, Bindings } from './Types';
 
 type Expression = E.Expression;
 type Term = E.TermExpression;
@@ -75,24 +75,21 @@ export class AsyncEvaluator {
   }
 
   private async evalOperator(expr: Operator, mapping: Bindings): Promise<Term> {
-    const { func, args } = expr;
-    const argPromises = args.map((arg) => this.evalRecursive(arg, mapping));
+    const argPromises = expr.args.map((arg) => this.evalRecursive(arg, mapping));
     const argResults = await Promise.all(argPromises);
-    return func.apply(argResults);
+    return expr.apply(argResults);
   }
 
   private async evalSpecialOperator(expr: SpecialOperator, mapping: Bindings): Promise<Term> {
-    const { func, args } = expr;
     const evaluate = this.evalRecursive.bind(this);
-    const context = { args, mapping, evaluate };
-    return func.apply(context);
+    const context = { args: expr.args, mapping, evaluate };
+    return expr.apply(context);
   }
 
   private async evalNamed(expr: Named, mapping: Bindings): Promise<Term> {
-    const { func, args } = expr;
-    const argPromises = args.map((arg) => this.evalRecursive(arg, mapping));
+    const argPromises = expr.args.map((arg) => this.evalRecursive(arg, mapping));
     const argResults = await Promise.all(argPromises);
-    return func.apply(argResults);
+    return expr.apply(argResults);
   }
 
   // TODO

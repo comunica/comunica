@@ -1,11 +1,15 @@
 import { Map } from 'immutable';
 
-import * as C from '../../util/Consts';
-import * as Err from '../../util/Errors';
-import * as E from '../Expressions';
+import * as E from '../expressions';
+import * as C from '../util/Consts';
+import * as Err from '../util/Errors';
 
-import { TypeURL as Type } from '../../util/Consts';
-import { parseXSDDecimal, parseXSDFloat, parseXSDInteger } from '../../util/Parsing';
+import { TypeURL as Type } from '../util/Consts';
+import {
+  parseXSDDecimal,
+  parseXSDFloat,
+  parseXSDInteger,
+} from '../util/Parsing';
 
 import { OverloadMap } from './FunctionClasses';
 import { bool, dateTime, declare, number, string } from './Helpers';

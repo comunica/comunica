@@ -1,8 +1,8 @@
 import { List, Map } from 'immutable';
 
-import * as C from '../../util/Consts';
-import * as Err from '../../util/Errors';
-import * as E from '../Expressions';
+import * as E from '../expressions';
+import * as C from '../util/Consts';
+import * as Err from '../util/Errors';
 
 import { SPARQLFunction } from './index';
 

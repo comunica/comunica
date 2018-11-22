@@ -1,11 +1,11 @@
 import { Map } from 'immutable';
 
-import * as C from '../../util/Consts';
-import * as Err from '../../util/Errors';
-import * as E from '../Expressions';
+import * as E from '../expressions';
+import * as C from '../util/Consts';
+import * as Err from '../util/Errors';
 import * as X from './XPathFunctions';
 
-import { TypeURL as Type } from '../../util/Consts';
+import { TypeURL as Type } from '../util/Consts';
 
 import { OverloadMap } from './FunctionClasses';
 import { bool, declare, number, string } from './Helpers';
