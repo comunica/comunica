@@ -1,7 +1,9 @@
 import * as RDFDM from '@rdfjs/data-model';
 import * as RDF from 'rdf-js';
-
 import { Algebra as Alg, translate } from 'sparqlalgebrajs';
+
+import * as C from '../lib/util/Consts';
+
 import { AsyncEvaluator } from '../lib/AsyncEvaluator';
 import { Bindings } from '../lib/Types';
 import { TypeURL as DT } from '../lib/util/Consts';
@@ -52,25 +54,25 @@ export const mockLookUp = (pattern: Alg.ExistenceExpression) => {
 };
 
 export const mockAggregator = {
-  count(exp: Alg.Expression): Promise<number> {
-    return Promise.resolve(3.14);
+  count(distinct: boolean, exp: Alg.Expression): Promise<RDF.Term> {
+    return Promise.resolve(RDFDM.literal('3.14', C.make(DT.XSD_FLOAT)));
   },
-  sum(exp: Alg.Expression): Promise<number> {
-    return Promise.resolve(3.14);
+  sum(distinct: boolean, exp: Alg.Expression): Promise<RDF.Term> {
+    return Promise.resolve(RDFDM.literal('3.14', C.make(DT.XSD_FLOAT)));
   },
-  min(exp: Alg.Expression): Promise<number> {
-    return Promise.resolve(3.14);
+  min(distinct: boolean, exp: Alg.Expression): Promise<RDF.Term> {
+    return Promise.resolve(RDFDM.literal('3.14', C.make(DT.XSD_FLOAT)));
   },
-  max(exp: Alg.Expression): Promise<number> {
-    return Promise.resolve(3.14);
+  max(distinct: boolean, exp: Alg.Expression): Promise<RDF.Term> {
+    return Promise.resolve(RDFDM.literal('3.14', C.make(DT.XSD_FLOAT)));
   },
-  avg(exp: Alg.Expression): Promise<number> {
-    return Promise.resolve(3.14);
+  avg(distinct: boolean, exp: Alg.Expression): Promise<RDF.Term> {
+    return Promise.resolve(RDFDM.literal('3.14', C.make(DT.XSD_FLOAT)));
   },
-  groupConcat(exp: Alg.Expression): Promise<string> {
-    return Promise.resolve('term term term');
+  groupConcat(distinct: boolean, exp: Alg.Expression, seperator?: string): Promise<RDF.Term> {
+    return Promise.resolve(RDFDM.literal('term term term'));
   },
-  sample(exp: Alg.Expression): Promise<RDF.Term> {
+  sample(distinct: boolean, exp: Alg.Expression): Promise<RDF.Term> {
     return Promise.resolve(RDFDM.literal('MockTerm'));
   },
 };

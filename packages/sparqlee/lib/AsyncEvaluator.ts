@@ -17,28 +17,29 @@ type Named = E.NamedExpression;
 type Aggregate = E.AggregateExpression;
 
 export class AsyncEvaluator {
-  private inputExpr: Expression;
+  private expr: Expression;
 
   // TODO: Support passing functions to override default behaviour;
   constructor(
-    expr: Alg.Expression,
+    public algExpr: Alg.Expression,
     public lookup?: AsyncLookUp,
-    public aggregator?: AsyncAggregator) {
-    this.inputExpr = transformAlgebra(expr);
+    public aggregator?: AsyncAggregator,
+  ) {
+    this.expr = transformAlgebra(algExpr, aggregator);
   }
 
   async evaluate(mapping: Bindings): Promise<RDF.Term> {
-    const result = await this.evalRecursive(this.inputExpr, mapping);
+    const result = await this.evalRecursive(this.expr, mapping);
     return log(result).toRDF();
   }
 
   async evaluateAsEBV(mapping: Bindings): Promise<boolean> {
-    const result = await this.evalRecursive(this.inputExpr, mapping);
+    const result = await this.evalRecursive(this.expr, mapping);
     return log(result).coerceEBV();
   }
 
   async evaluateAsInternal(mapping: Bindings): Promise<Term> {
-    return this.evalRecursive(this.inputExpr, mapping);
+    return this.evalRecursive(this.expr, mapping);
   }
 
   // tslint:disable-next-line:member-ordering
@@ -99,7 +100,12 @@ export class AsyncEvaluator {
 
   // TODO
   private async evalAggregate(expr: Aggregate, mapping: Bindings): Promise<Term> {
-    throw new Err.UnimplementedError('Aggregate Operator');
+    const result = await expr.aggregate(mapping);
+    return transformTerm({
+      type: 'expression',
+      expressionType: 'term',
+      term: result,
+    }) as Term;
   }
 }
 

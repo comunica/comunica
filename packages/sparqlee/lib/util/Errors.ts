@@ -117,13 +117,20 @@ export class InvalidTermType extends Error {
 }
 
 export class UnknownOperator extends Error {
-  constructor(public name: string) {
+  constructor(name: string) {
     super(`Unknown operator: '${name}`);
   }
 }
 
 export class UnknownNamedOperator extends Error {
-  constructor(public name: string) {
+  constructor(name: string) {
     super(`Unknown named operator: '${name}'`);
+  }
+}
+
+export class NoAggregator extends Error {
+  constructor(name?: string) {
+    const nameStr = (name) ? ('\'' + name + '\' ') : '';
+    super(`Aggregate expression ${nameStr}found, but no aggregator provided`);
   }
 }

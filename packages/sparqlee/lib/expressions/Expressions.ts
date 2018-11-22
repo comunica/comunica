@@ -28,10 +28,10 @@ export interface ExpressionProps {
 
 export type AggregateExpression = ExpressionProps & {
   expressionType: ExpressionType.Aggregate;
-  aggregator: string;
+  name: string;
   distinct: boolean;
-  separator?: string; // used by GROUP_CONCAT
-  expression: Expression;
+  expression: Algebra.Expression;
+  aggregate(mapping: Bindings): Promise<RDF.Term>;
 };
 
 export type ExistenceExpression = ExpressionProps & {

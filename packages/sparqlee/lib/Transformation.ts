@@ -12,9 +12,10 @@ import {
   regularFunctions,
   specialFunctions,
 } from './functions';
+import { AsyncAggregator } from './Types';
 import { TypeURL as DT } from './util/Consts';
 
-export function transformAlgebra(expr: Alg.Expression): E.Expression {
+export function transformAlgebra(expr: Alg.Expression, aggregator?: AsyncAggregator): E.Expression {
   if (!expr) { throw new Err.InvalidExpression(expr); }
 
   const types = Alg.expressionTypes;
@@ -25,7 +26,7 @@ export function transformAlgebra(expr: Alg.Expression): E.Expression {
     case types.NAMED: return transformNamed(expr as Alg.NamedExpression);
     // TODO
     case types.EXISTENCE: throw new Err.UnimplementedError('Existence Operator');
-    case types.AGGREGATE: throw new Err.UnimplementedError('Aggregate Operator');
+    case types.AGGREGATE: return transformAggregate(expr as Alg.AggregateExpression, aggregator);
     default: throw new Err.InvalidExpressionType(expr);
   }
 }
@@ -44,7 +45,7 @@ export function transformTerm(term: Alg.TermExpression): E.Expression {
 
 // TODO: Maybe do this with a map?
 // tslint:disable-next-line:no-any
-function tranformLiteral(lit: RDF.Literal): E.Literal<any> {
+export function tranformLiteral(lit: RDF.Literal): E.Literal<any> {
 
   if (!lit.datatype) {
     return (lit.language)
@@ -158,4 +159,13 @@ function hasCorrectArity(args: E.Expression[], arity: number | number[]): boolea
   }
 
   return args.length === arity;
+}
+
+export function transformAggregate(expr: Alg.AggregateExpression, _aggregator?: AsyncAggregator) {
+  if (!_aggregator) { throw new Err.NoAggregator(); }
+  const name = expr.aggregator;
+  const { distinct, expression, separator } = expr;
+  const aggregator = _aggregator[name];
+  if (!aggregator) { throw new Err.NoAggregator(name); }
+  return new E.Aggregate(name, distinct, expression, aggregator, separator);
 }

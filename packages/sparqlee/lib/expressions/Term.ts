@@ -24,7 +24,6 @@ export abstract class Term implements TermExpression {
 
 // NamedNodes -----------------------------------------------------------------
 export class NamedNode extends Term {
-
   termType: TermType = 'namedNode';
   constructor(public value: string) { super(); }
 
