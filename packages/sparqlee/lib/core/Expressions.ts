@@ -70,7 +70,7 @@ export type SpecialOperatorExpression = ExpressionProps & {
   func: { apply: SpecialApplication; },
 };
 
-export type TermType = 'namedNode' | 'literal';
+export type TermType = 'namedNode' | 'literal' | 'blankNode';
 export type TermExpression = ExpressionProps & {
   expressionType: ExpressionType.Term;
   termType: TermType;
@@ -96,6 +96,8 @@ export class Variable implements VariableExpression {
   }
 }
 
+
+
 // ----------------------------------------------------------------------------
 // Terms
 // ----------------------------------------------------------------------------
@@ -116,7 +118,9 @@ export abstract class Term implements TermExpression {
 
 }
 
+// NamedNodes -----------------------------------------------------------------
 export class NamedNode extends Term {
+
   termType: TermType = 'namedNode';
   constructor(public value: string) { super(); }
 
@@ -129,12 +133,34 @@ export class NamedNode extends Term {
   }
 }
 
+// BlankNodes -----------------------------------------------------------------
+
+export class BlankNode extends Term {
+  static _nextID = 0;
+
+  termType: TermType = 'blankNode';
+
+  constructor(public value: string) {
+    super();
+    this.value = value;
+  }
+
+  static nextID() {
+    BlankNode._nextID += 1;
+    return BlankNode.nextID.toString();
+  }
+
+  toRDF(): RDF.Term {
+    return RDFDM.blankNode(this.value);
+  }
+}
+
+// Literals-- -----------------------------------------------------------------
 export interface LiteralTerm extends TermExpression {
   type: C.Type;
 }
 
 export class Literal<T> extends Term implements LiteralTerm {
-  expressionType: ExpressionType.Term = ExpressionType.Term;
   termType: 'literal' = 'literal';
   type: C.Type;
 

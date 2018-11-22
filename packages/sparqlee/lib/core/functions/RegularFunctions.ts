@@ -208,9 +208,14 @@ const IRI = {
   overloads: declare().unimplemented('IRI').collect(),
 };
 
+// https://www.w3.org/TR/sparql11-query/#func-bnode
+// id has to be distinct over all id's in dataset
 const BNODE = {
   arity: [0, 1],
-  overloads: declare().unimplemented('BNODE').collect(),
+  overloads: declare()
+    // .set([], () => new E.BlankNode()) // TODO
+    .setLitUnary('string', (val: string) => new E.BlankNode(val))
+    .collect(),
 };
 
 const STRDT = {

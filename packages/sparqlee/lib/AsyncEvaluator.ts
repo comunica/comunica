@@ -7,8 +7,17 @@ import * as Err from './util/Errors';
 import { transformAlgebra, transformTerm } from './core/Transformation';
 import { AsyncAggregator, AsyncLookUp, Bindings } from './core/Types';
 
+type Expression = E.Expression;
+type Term = E.TermExpression;
+type Variable = E.VariableExpression;
+type Existence = E.ExistenceExpression;
+type Operator = E.OperatorExpression;
+type SpecialOperator = E.SpecialOperatorExpression;
+type Named = E.NamedExpression;
+type Aggregate = E.AggregateExpression;
+
 export class AsyncEvaluator {
-  private inputExpr: E.Expression;
+  private inputExpr: Expression;
 
   // TODO: Support passing functions to override default behaviour;
   constructor(
@@ -19,17 +28,17 @@ export class AsyncEvaluator {
   }
 
   async evaluate(mapping: Bindings): Promise<RDF.Term> {
-    const result = await this.evalRec(this.inputExpr, mapping);
+    const result = await this.evalRecursive(this.inputExpr, mapping);
     return log(result).toRDF();
   }
 
   async evaluateAsEBV(mapping: Bindings): Promise<boolean> {
-    const result = await this.evalRec(this.inputExpr, mapping);
+    const result = await this.evalRecursive(this.inputExpr, mapping);
     return log(result).coerceEBV();
   }
 
-  async evaluateAsInternal(mapping: Bindings): Promise<E.TermExpression> {
-    return this.evalRec(this.inputExpr, mapping);
+  async evaluateAsInternal(mapping: Bindings): Promise<Term> {
+    return this.evalRecursive(this.inputExpr, mapping);
   }
 
   // tslint:disable-next-line:member-ordering
@@ -43,17 +52,17 @@ export class AsyncEvaluator {
     [E.ExpressionType.Aggregate]: this.evalAggregate,
   };
 
-  private async evalRec(expr: E.Expression, mapping: Bindings): Promise<E.TermExpression> {
+  private async evalRecursive(expr: Expression, mapping: Bindings): Promise<Term> {
     const evaluatorFunction = this.evalLookup[expr.expressionType];
     if (!evaluatorFunction) { throw new Err.InvalidExpressionType(expr); }
     return evaluatorFunction.bind(this)(expr, mapping);
   }
 
-  private async evalTerm(expr: E.TermExpression, mapping: Bindings): Promise<E.TermExpression> {
-    return expr as E.TermExpression;
+  private async evalTerm(expr: Term, mapping: Bindings): Promise<Term> {
+    return expr;
   }
 
-  private async evalVariable(expr: E.VariableExpression, mapping: Bindings): Promise<E.TermExpression> {
+  private async evalVariable(expr: Variable, mapping: Bindings): Promise<Term> {
     const term = mapping.get(expr.name);
 
     if (!term) { throw new Err.UnboundVariableError(expr.name, mapping); }
@@ -62,41 +71,43 @@ export class AsyncEvaluator {
       term,
       type: 'expression',
       expressionType: 'term',
-    }) as E.TermExpression;
+    }) as Term;
   }
 
-  private async evalOperator(expr: E.OperatorExpression, mapping: Bindings): Promise<E.TermExpression> {
+  private async evalOperator(expr: Operator, mapping: Bindings): Promise<Term> {
     const { func, args } = expr;
-    const argPromises = args.map((arg) => this.evalRec(arg, mapping));
+    const argPromises = args.map((arg) => this.evalRecursive(arg, mapping));
     const argResults = await Promise.all(argPromises);
     return func.apply(argResults);
   }
 
-  private async evalSpecialOperator(expr: E.SpecialOperatorExpression, mapping: Bindings): Promise<E.TermExpression> {
+  private async evalSpecialOperator(expr: SpecialOperator, mapping: Bindings): Promise<Term> {
     const { func, args } = expr;
-    return func.apply({ args, mapping, evaluate: this.evalRec.bind(this) });
+    const evaluate = this.evalRecursive.bind(this);
+    const context = { args, mapping, evaluate };
+    return func.apply(context);
   }
 
-  private async evalNamed(expr: E.NamedExpression, mapping: Bindings): Promise<E.TermExpression> {
+  private async evalNamed(expr: Named, mapping: Bindings): Promise<Term> {
     const { func, args } = expr;
-    const argPromises = args.map((arg) => this.evalRec(arg, mapping));
+    const argPromises = args.map((arg) => this.evalRecursive(arg, mapping));
     const argResults = await Promise.all(argPromises);
     return func.apply(argResults);
   }
 
   // TODO
-  private async evalExistence(expr: E.ExistenceExpression, mapping: Bindings): Promise<E.TermExpression> {
+  private async evalExistence(expr: Existence, mapping: Bindings): Promise<Term> {
     throw new Err.UnimplementedError('Existence Operator');
   }
 
   // TODO
-  private async evalAggregate(expr: E.AggregateExpression, mapping: Bindings): Promise<E.TermExpression> {
+  private async evalAggregate(expr: Aggregate, mapping: Bindings): Promise<Term> {
     throw new Err.UnimplementedError('Aggregate Operator');
   }
 }
 
 interface EvalLookup {
-  [key: string]: (expr: E.Expression, mapping: Bindings) => Promise<E.TermExpression>;
+  [key: string]: (expr: Expression, mapping: Bindings) => Promise<Term>;
 }
 
 function log<T>(val: T): T {

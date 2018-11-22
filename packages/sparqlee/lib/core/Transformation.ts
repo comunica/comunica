@@ -37,7 +37,7 @@ export function transformTerm(term: Alg.TermExpression): E.Expression {
     case 'Variable': return new E.Variable(RDFString.termToString(term.term));
     case 'Literal': return tranformLiteral(term.term as RDF.Literal);
     case 'NamedNode': return new E.NamedNode(term.term.value);
-    case 'BlankNode': throw new Err.UnimplementedError('Blank Node');
+    case 'BlankNode': return new E.BlankNode(term.term.value);
     default: throw new Err.InvalidTermType(term);
   }
 }
