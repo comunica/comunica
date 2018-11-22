@@ -196,4 +196,4 @@ export const langMatchesTemp = {
   'de': '"de"',
   'de-X-DE': '"de-X-DE"',
   'de-Deva': '"de-Deva"',
-}
+};

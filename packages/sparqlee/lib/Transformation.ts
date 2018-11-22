@@ -123,7 +123,7 @@ function transformOperator(expr: Alg.OperatorExpression)
     const args = expr.args.map((a) => transformAlgebra(a));
     const func = specialFunctions.get(op);
     if (!hasCorrectArity(args, func.arity)) { throw new Err.InvalidArity(args, op); }
-    return new E.SpecialOperatorAsync(args, func.apply);
+    return new E.SpecialOperator(args, func.applyAsync, func.applySync);
   } else {
     if (!C.Operators.contains(expr.operator)) {
       throw new Err.UnknownOperator(expr.operator);

@@ -4,7 +4,7 @@ import { Algebra as Alg, translate } from 'sparqlalgebrajs';
 
 import * as C from '../lib/util/Consts';
 
-import { AsyncEvaluator } from '../lib/AsyncEvaluator';
+import { AsyncEvaluator } from '../lib/evaluators/AsyncEvaluator';
 import { Bindings } from '../lib/Types';
 import { TypeURL as DT } from '../lib/util/Consts';
 

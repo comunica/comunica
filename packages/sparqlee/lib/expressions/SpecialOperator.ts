@@ -1,12 +1,17 @@
 import {
   Expression,
   ExpressionType,
-  SpecialApplication,
+  SpecialApplicationAsync,
+  SpecialApplicationSync,
   SpecialOperatorExpression,
 } from './Expressions';
 
-export class SpecialOperatorAsync implements SpecialOperatorExpression {
+export class SpecialOperator implements SpecialOperatorExpression {
   expressionType: ExpressionType.SpecialOperator = ExpressionType.SpecialOperator;
 
-  constructor(public args: Expression[], public apply: SpecialApplication) { }
+  constructor(
+    public args: Expression[],
+    public applyAsync: SpecialApplicationAsync,
+    public applySync: SpecialApplicationSync,
+  ) { }
 }

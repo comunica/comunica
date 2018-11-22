@@ -5,7 +5,7 @@ import * as RDF from '@rdfjs/data-model';
 import { Algebra as Alg } from 'sparqlalgebrajs';
 
 import { ArrayIterator, AsyncIterator } from 'asynciterator';
-import { AsyncEvaluator } from '../lib/AsyncEvaluator';
+import { AsyncEvaluator } from '../lib/evaluators/AsyncEvaluator';
 import { Bindings } from '../lib/Types';
 import { TypeURL as DT } from '../lib/util/Consts';
 import * as C from '../lib/util/Consts';

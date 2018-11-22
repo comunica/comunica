@@ -47,7 +47,7 @@ export type NamedExpression = ExpressionProps & {
   args: Expression[];
 };
 
-export type Application = SimpleApplication | SpecialApplication;
+// export type Application = SimpleApplication | SpecialApplication;
 export type SimpleApplication = (args: TermExpression[]) => TermExpression;
 
 export type OperatorExpression = ExpressionProps & {
@@ -57,13 +57,19 @@ export type OperatorExpression = ExpressionProps & {
 };
 
 // TODO: Move to Types.ts?
-export type Evaluator = (e: Expression, mapping: Bindings) => Promise<TermExpression>;
-export type EvalContext = { args: Expression[], mapping: Bindings, evaluate: Evaluator };
-export type SpecialApplication = (context: EvalContext) => Promise<TermExpression>;
+export type EvaluatorAsync = (expr: Expression, mapping: Bindings) => Promise<TermExpression>;
+export type EvalContextAsync = { args: Expression[], mapping: Bindings, evaluate: EvaluatorAsync };
+export type SpecialApplicationAsync = (context: EvalContextAsync) => Promise<TermExpression>;
+
+export type EvaluatorSync = (expr: Expression, mapping: Bindings) => TermExpression;
+export type EvalContextSync = { args: Expression[], mapping: Bindings, evaluate: EvaluatorSync };
+export type SpecialApplicationSync = (context: EvalContextSync) => TermExpression;
+
 export type SpecialOperatorExpression = ExpressionProps & {
   expressionType: ExpressionType.SpecialOperator,
   args: Expression[],
-  apply: SpecialApplication,
+  applyAsync: SpecialApplicationAsync,
+  applySync: SpecialApplicationSync,
 };
 
 export type TermType = 'namedNode' | 'literal' | 'blankNode';

@@ -4,21 +4,7 @@ import * as E from '../expressions';
 import * as C from '../util/Consts';
 import * as Err from '../util/Errors';
 
-import { SPARQLFunction } from './index';
-
 type Term = E.TermExpression;
-
-export abstract class FunctionClass<
-  Operator,
-  Definition,
-  Application extends E.Application,
-  > implements SPARQLFunction<Application> {
-  abstract arity: number | number[];
-  abstract apply: Application;
-
-  constructor(public operator: Operator, private definition: Definition) { }
-
-}
 
 // ----------------------------------------------------------------------------
 // Overloaded Functions
@@ -36,14 +22,12 @@ export type OverloadedDefinition = {
   overloads: OverloadMap,
 };
 
-export abstract class OverloadedFunction<Operator>
-  extends FunctionClass<Operator, OverloadedDefinition, E.SimpleApplication> {
+export abstract class OverloadedFunction<Operator> {
 
   arity: number | number[];
   private overloads: OverloadMap;
 
-  constructor(op: Operator, definition: OverloadedDefinition) {
-    super(op, definition);
+  constructor(public operator: Operator, definition: OverloadedDefinition) {
     this.arity = definition.arity;
     this.overloads = definition.overloads;
   }
@@ -156,18 +140,21 @@ export class NamedFunction extends OverloadedFunction<C.NamedOperator> {
  * They can have both sync and async implementations, and both would make sense
  * in some contexts.
  */
-export class SpecialFunctionAsync implements SPARQLFunction<E.SpecialApplication> {
+export class SpecialFunction {
   functionClass: 'special' = 'special';
   arity: number;
-  apply: E.SpecialApplication;
+  applySync: E.SpecialApplicationSync;
+  applyAsync: E.SpecialApplicationAsync;
 
   constructor(public operator: C.SpecialOperator, definition: SpecialDefinition) {
     this.arity = definition.arity;
-    this.apply = definition.apply;
+    this.applySync = definition.applySync;
+    this.applyAsync = definition.applyAsync;
   }
 }
 
 export type SpecialDefinition = {
   arity: number;
-  apply: E.SpecialApplication;
+  applySync: E.SpecialApplicationSync;
+  applyAsync: E.SpecialApplicationAsync;
 };

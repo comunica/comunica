@@ -1,11 +1,11 @@
 import * as RDF from 'rdf-js';
 import { Algebra as Alg } from 'sparqlalgebrajs';
 
-import * as E from './expressions/Expressions';
-import * as Err from './util/Errors';
+import * as E from '../expressions/Expressions';
+import * as Err from '../util/Errors';
 
-import { transformAlgebra, transformTerm } from './Transformation';
-import { AsyncAggregator, AsyncLookUp, Bindings } from './Types';
+import { transformAlgebra, transformTerm } from '../Transformation';
+import { AsyncAggregator, AsyncLookUp, Bindings } from '../Types';
 
 type Expression = E.Expression;
 type Term = E.TermExpression;
@@ -84,7 +84,7 @@ export class AsyncEvaluator {
   private async evalSpecialOperator(expr: SpecialOperator, mapping: Bindings): Promise<Term> {
     const evaluate = this.evalRecursive.bind(this);
     const context = { args: expr.args, mapping, evaluate };
-    return expr.apply(context);
+    return expr.applyAsync(context);
   }
 
   private async evalNamed(expr: Named, mapping: Bindings): Promise<Term> {
