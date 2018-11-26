@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>&quot;packages/actor-rdf-resolve-quad-pattern-qpf/lib/ActorRdfResolveQuadPatternQpf&quot; | Comunica</title>
+	<title>IActionRdfResolveHypermedia | Comunica</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -56,32 +56,80 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="_packages_actor_rdf_resolve_quad_pattern_qpf_lib_actorrdfresolvequadpatternqpf_.html">&quot;packages/actor-rdf-resolve-quad-pattern-qpf/lib/ActorRdfResolveQuadPatternQpf&quot;</a>
+					<a href="../modules/_packages_bus_rdf_resolve_hypermedia_lib_actorrdfresolvehypermedia_.html">&quot;packages/bus-rdf-resolve-hypermedia/lib/ActorRdfResolveHypermedia&quot;</a>
+				</li>
+				<li>
+					<a href="_packages_bus_rdf_resolve_hypermedia_lib_actorrdfresolvehypermedia_.iactionrdfresolvehypermedia.html">IActionRdfResolveHypermedia</a>
 				</li>
 			</ul>
-			<h1>External module &quot;packages/actor-rdf-resolve-quad-pattern-qpf/lib/ActorRdfResolveQuadPatternQpf&quot;</h1>
+			<h1>Interface IActionRdfResolveHypermedia</h1>
 		</div>
 	</div>
 </header>
 <div class="container container-main">
 	<div class="row">
 		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-hierarchy">
+				<h3>Hierarchy</h3>
+				<ul class="tsd-hierarchy">
+					<li>
+						<a href="_node_modules__comunica_core_lib_actor_.iaction.html" class="tsd-signature-type">IAction</a>
+						<ul class="tsd-hierarchy">
+							<li>
+								<span class="target">IActionRdfResolveHypermedia</span>
+							</li>
+						</ul>
+					</li>
+				</ul>
+			</section>
 			<section class="tsd-panel-group tsd-index-group">
 				<h2>Index</h2>
 				<section class="tsd-panel tsd-index-panel">
 					<div class="tsd-index-content">
 						<section class="tsd-index-section tsd-is-external">
-							<h3>Classes</h3>
+							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-class tsd-parent-kind-external-module tsd-is-external"><a href="../classes/_packages_actor_rdf_resolve_quad_pattern_qpf_lib_actorrdfresolvequadpatternqpf_.actorrdfresolvequadpatternqpf.html" class="tsd-kind-icon">Actor<wbr>Rdf<wbr>Resolve<wbr>Quad<wbr>Pattern<wbr>Qpf</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external"><a href="_packages_bus_rdf_resolve_hypermedia_lib_actorrdfresolvehypermedia_.iactionrdfresolvehypermedia.html#context" class="tsd-kind-icon">context</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="_packages_bus_rdf_resolve_hypermedia_lib_actorrdfresolvehypermedia_.iactionrdfresolvehypermedia.html#metadata" class="tsd-kind-icon">metadata</a></li>
 							</ul>
 						</section>
-						<section class="tsd-index-section tsd-is-external">
-							<h3>Interfaces</h3>
-							<ul class="tsd-index-list">
-								<li class="tsd-kind-interface tsd-parent-kind-external-module tsd-is-external"><a href="../interfaces/_packages_actor_rdf_resolve_quad_pattern_qpf_lib_actorrdfresolvequadpatternqpf_.iactorrdfresolvequadpatternqpfargs.html" class="tsd-kind-icon">IActor<wbr>Rdf<wbr>Resolve<wbr>Quad<wbr>Pattern<wbr>Qpf<wbr>Args</a></li>
-							</ul>
-						</section>
+					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group tsd-is-external">
+				<h2>Properties</h2>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external">
+					<a name="context" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> context</h3>
+					<div class="tsd-signature tsd-kind-icon">context<span class="tsd-signature-symbol">:</span> <a href="../modules/_node_modules__comunica_core_lib_actor_.html#actioncontext" class="tsd-signature-type">ActionContext</a></div>
+					<aside class="tsd-sources">
+						<p>Inherited from <a href="_node_modules__comunica_core_lib_actor_.iaction.html">IAction</a>.<a href="_node_modules__comunica_core_lib_actor_.iaction.html#context">context</a></p>
+						<ul>
+							<li>Defined in node_modules/@comunica/core/lib/Actor.ts:203</li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The optional input context that is passed through by actors.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
+					<a name="metadata" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> metadata</h3>
+					<div class="tsd-signature tsd-kind-icon">metadata<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/08e300e/packages/bus-rdf-resolve-hypermedia/lib/ActorRdfResolveHypermedia.ts#L25">packages/bus-rdf-resolve-hypermedia/lib/ActorRdfResolveHypermedia.ts:25</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter-index-signature">
+								<h5><span class="tsd-signature-symbol">[</span>id: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]: </span><span class="tsd-signature-type">any</span></h5>
+							</li>
+						</ul>
 					</div>
 				</section>
 			</section>
@@ -93,17 +141,32 @@
 						<a href="../globals.html"><em>Globals</em></a>
 					</li>
 					<li class="current tsd-kind-external-module tsd-is-external">
-						<a href="_packages_actor_rdf_resolve_quad_pattern_qpf_lib_actorrdfresolvequadpatternqpf_.html">"packages/actor-<wbr>rdf-<wbr>resolve-<wbr>quad-<wbr>pattern-<wbr>qpf/lib/<wbr>Actor<wbr>Rdf<wbr>Resolve<wbr>Quad<wbr>Pattern<wbr>Qpf"</a>
+						<a href="../modules/_packages_bus_rdf_resolve_hypermedia_lib_actorrdfresolvehypermedia_.html">"packages/bus-<wbr>rdf-<wbr>resolve-<wbr>hypermedia/lib/<wbr>Actor<wbr>Rdf<wbr>Resolve<wbr>Hypermedia"</a>
 					</li>
 				</ul>
 			</nav>
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
 					<li class=" tsd-kind-class tsd-parent-kind-external-module tsd-is-external">
-						<a href="../classes/_packages_actor_rdf_resolve_quad_pattern_qpf_lib_actorrdfresolvequadpatternqpf_.actorrdfresolvequadpatternqpf.html" class="tsd-kind-icon">Actor<wbr>Rdf<wbr>Resolve<wbr>Quad<wbr>Pattern<wbr>Qpf</a>
+						<a href="../classes/_packages_bus_rdf_resolve_hypermedia_lib_actorrdfresolvehypermedia_.actorrdfresolvehypermedia.html" class="tsd-kind-icon">Actor<wbr>Rdf<wbr>Resolve<wbr>Hypermedia</a>
 					</li>
+				</ul>
+				<ul class="current">
+					<li class="current tsd-kind-interface tsd-parent-kind-external-module tsd-is-external">
+						<a href="_packages_bus_rdf_resolve_hypermedia_lib_actorrdfresolvehypermedia_.iactionrdfresolvehypermedia.html" class="tsd-kind-icon">IAction<wbr>Rdf<wbr>Resolve<wbr>Hypermedia</a>
+						<ul>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external">
+								<a href="_packages_bus_rdf_resolve_hypermedia_lib_actorrdfresolvehypermedia_.iactionrdfresolvehypermedia.html#context" class="tsd-kind-icon">context</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
+								<a href="_packages_bus_rdf_resolve_hypermedia_lib_actorrdfresolvehypermedia_.iactionrdfresolvehypermedia.html#metadata" class="tsd-kind-icon">metadata</a>
+							</li>
+						</ul>
+					</li>
+				</ul>
+				<ul class="after-current">
 					<li class=" tsd-kind-interface tsd-parent-kind-external-module tsd-is-external">
-						<a href="../interfaces/_packages_actor_rdf_resolve_quad_pattern_qpf_lib_actorrdfresolvequadpatternqpf_.iactorrdfresolvequadpatternqpfargs.html" class="tsd-kind-icon">IActor<wbr>Rdf<wbr>Resolve<wbr>Quad<wbr>Pattern<wbr>Qpf<wbr>Args</a>
+						<a href="_packages_bus_rdf_resolve_hypermedia_lib_actorrdfresolvehypermedia_.iactorrdfresolvehypermediaoutput.html" class="tsd-kind-icon">IActor<wbr>Rdf<wbr>Resolve<wbr>Hypermedia<wbr>Output</a>
 					</li>
 				</ul>
 			</nav>
