@@ -1,0 +1,65 @@
+{
+  "name": "@comunica/utils-datasource",
+  "version": "1.4.0",
+  "description": "An abstract actor for handling mediatype detection.",
+  "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/utils-datasource",
+  "main": "index.js",
+  "typings": "index",
+  "repository": "https://github.com/comunica/comunica/tree/master/packages/utils-datasource",
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "comunica",
+    "actor",
+    "abstract",
+    "binding",
+    "hash"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/comunica/comunica/issues"
+  },
+  "homepage": "https://github.com/comunica/comunica#readme",
+  "files": [
+    "components",
+    "lib/**/*.d.ts",
+    "lib/**/*.js",
+    "index.d.ts",
+    "index.js"
+  ],
+  "dependencies": {
+    "arrayify-stream": "^1.0.0",
+    "asyncreiterable": "^1.0.0",
+    "asynciterator": "^2.0.0"
+  },
+  "peerDependencies": {
+    "@comunica/core": "^1.0.0"
+  },
+  "devDependencies": {
+    "@comunica/core": "^1.4.0"
+  },
+  "jest": {
+    "globals": {
+      "ts-jest": {
+        "tsConfig": "test/tsconfig.json"
+      }
+    },
+    "transform": {
+      "^.+\\.ts$": "ts-jest"
+    },
+    "testRegex": "(/test/.*|(\\.|/)(test|spec))\\.ts$",
+    "moduleFileExtensions": [
+      "ts",
+      "js"
+    ],
+    "collectCoverage": true
+  },
+  "scripts": {
+    "test": "node \"../../node_modules/jest/bin/jest.js\" ${1}",
+    "test-watch": "node \"../../node_modules/jest/bin/jest.js\" ${1} --watch",
+    "lint": "node \"../../node_modules/tslint/bin/tslint\" lib/**/*.ts test/**/*.ts --exclude '**/*.d.ts'",
+    "build": "node \"../../node_modules/typescript/bin/tsc\"",
+    "validate": "npm ls"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^3.0.0/components/context.jsonld",
+    {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
+      "carrqph": "npmd:@comunica/actor-rdf-resolve-quad-pattern-hypermedia/",
+      "files-carrqph": "carrqph:^1.0.0/",
+
+      "ActorRdfResolveQuadPatternHypermedia": "carrqph:Actor/RdfResolveQuadPattern/Hypermedia",
+      "subjectUri": "carrqph:Actor/RdfResolveQuadPattern/Hypermedia/subjectUri",
+      "predicateUri": "carrqph:Actor/RdfResolveQuadPattern/Hypermedia/predicateUri",
+      "objectUri": "carrqph:Actor/RdfResolveQuadPattern/Hypermedia/objectUri",
+      "graphUri": "carrqph:Actor/RdfResolveQuadPattern/Hypermedia/graphUri"
+    }
+  ]
+}

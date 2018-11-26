@@ -1,78 +1,68 @@
-import {ISearchForm, ISearchForms} from "@comunica/actor-rdf-metadata-extract-hydra-controls";
+import {DataSourceUtils} from "@comunica/utils-datasource";
+import {ISearchForm} from "@comunica/actor-rdf-metadata-extract-hydra-controls";
 import {IActionRdfDereferencePaged, IActorRdfDereferencePagedOutput} from "@comunica/bus-rdf-dereference-paged";
+import {IActionRdfResolveHypermedia, IActorRdfResolveHypermediaOutput} from "@comunica/bus-rdf-resolve-hypermedia";
 import {ActorRdfResolveQuadPatternSource, IActionRdfResolveQuadPattern,
-  IActorRdfResolveQuadPatternOutput, ILazyQuadSource} from "@comunica/bus-rdf-resolve-quad-pattern";
+  IActorRdfResolveQuadPatternOutput, ILazyQuadSource, KEY_CONTEXT_SOURCE} from "@comunica/bus-rdf-resolve-quad-pattern";
 import {ActionContext, Actor, IActorArgs, IActorTest, Mediator} from "@comunica/core";
 import * as RDF from "rdf-js";
 import {termToString} from "rdf-string";
 import {MediatedQuadSource} from "./MediatedQuadSource";
 
 /**
- * A comunica QPF RDF Resolve Quad Pattern Actor.
+ * A comunica Hypermedia RDF Resolve Quad Pattern Actor.
  */
-export class ActorRdfResolveQuadPatternQpf extends ActorRdfResolveQuadPatternSource
-   implements IActorRdfResolveQuadPatternQpfArgs {
+export class ActorRdfResolveQuadPatternHypermedia extends ActorRdfResolveQuadPatternSource
+   implements IActorRdfResolveQuadPatternHypermediaArgs {
 
+  // Mediators
   public readonly mediatorRdfDereferencePaged: Mediator<Actor<IActionRdfDereferencePaged, IActorTest,
     IActorRdfDereferencePagedOutput>, IActionRdfDereferencePaged, IActorTest, IActorRdfDereferencePagedOutput>;
+  public readonly mediatorRdfResolveHypermedia: Mediator<Actor<IActionRdfResolveHypermedia, IActorTest,
+    IActorRdfResolveHypermediaOutput>, IActionRdfResolveHypermedia, IActorTest, IActorRdfResolveHypermediaOutput>;
+
   public readonly subjectUri: string;
   public readonly predicateUri: string;
   public readonly objectUri: string;
   public readonly graphUri?: string;
   protected sources: {[hypermedia: string]: Promise<RDF.Source>} = {};
 
-  constructor(args: IActorRdfResolveQuadPatternQpfArgs) {
+  constructor(args: IActorRdfResolveQuadPatternHypermediaArgs) {
     super(args);
   }
 
   public async test(action: IActionRdfResolveQuadPattern): Promise<IActorTest> {
-    if (!this.hasContextSingleSource('hypermedia', action.context)) {
-      throw new Error(this.name
-        + ' requires a single source with a QPF \'hypermedia\' entrypoint to be present in the context.');
+    if (!(await DataSourceUtils.singleSourceHasType(action.context, 'hypermedia'))) {
+      throw new Error(
+        `${this.name} requires a single source with a \'hypermedia\' entrypoint to be present in the context.`);
     }
     return true;
   }
 
   /**
-   * Choose a QPF hypermedia form.
+   * Choose a Hypermedia hypermedia form.
    * @param {string} hypermedia A hypermedia URL.
    * @param {ActionContext} context An optional context.
    * @return {Promise<ISearchForm>} A promise resolving to a hypermedia form.
    */
   protected async chooseForm(hypermedia: string, context: ActionContext): Promise<ISearchForm> {
+    // Mediate the hypermedia url to get a paged stream
     const firstPageMetadata: () => Promise<{[id: string]: any}> = (await this.mediatorRdfDereferencePaged
       .mediate({ context, url: hypermedia })).firstPageMetadata;
     if (!firstPageMetadata) {
-      throw new Error('No metadata was found at hypermedia entrypoint ' + hypermedia);
+      throw new Error(`No metadata was found at hypermedia entrypoint ${hypermedia}`);
     }
     const metadata: {[id: string]: any} = await firstPageMetadata();
 
-    // Find a quad pattern or triple pattern search form
-    const searchForms: ISearchForms = metadata.searchForms;
-    if (!searchForms || !searchForms.values.length) {
-      throw new Error('No Hydra search forms were discovered in the metadata of ' + hypermedia
-        + '. You may be missing an actor that extracts this metadata');
+    if (!metadata.searchForms || !metadata.searchForms.values.length) {
+      throw new Error(`No Hydra search forms were discovered in the metadata of ${hypermedia}.` +
+        ` You may be missing an actor that extracts this metadata`);
     }
 
-    // TODO: in the future, a query-based search form getter should be used.
-    for (const searchForm of searchForms.values) {
-      if (this.graphUri
-        && this.subjectUri in searchForm.mappings
-        && this.predicateUri in searchForm.mappings
-        && this.objectUri in searchForm.mappings
-        && this.graphUri in searchForm.mappings
-        && Object.keys(searchForm.mappings).length === 4) {
-        return searchForm;
-      }
-      if (this.subjectUri in searchForm.mappings
-        && this.predicateUri in searchForm.mappings
-        && this.objectUri in searchForm.mappings
-        && Object.keys(searchForm.mappings).length === 3) {
-        return searchForm;
-      }
-    }
+    // Mediate the metadata to get the searchform
+    const searchForm: ISearchForm = (await this.mediatorRdfResolveHypermedia.mediate({metadata, context})).searchForm;
 
-    throw new Error('No valid Hydra search form was found for quad pattern or triple pattern queries.');
+    return searchForm;
   }
 
   protected async createSource(context: ActionContext): Promise<ILazyQuadSource> {
@@ -135,10 +125,15 @@ export class ActorRdfResolveQuadPatternQpf extends ActorRdfResolveQuadPatternSou
 
 }
 
-export interface IActorRdfResolveQuadPatternQpfArgs extends
+export interface IActorRdfResolveQuadPatternHypermediaArgs extends
   IActorArgs<IActionRdfResolveQuadPattern, IActorTest, IActorRdfResolveQuadPatternOutput> {
+
   mediatorRdfDereferencePaged: Mediator<Actor<IActionRdfDereferencePaged, IActorTest, IActorRdfDereferencePagedOutput>,
     IActionRdfDereferencePaged, IActorTest, IActorRdfDereferencePagedOutput>;
+
+  mediatorRdfResolveHypermedia: Mediator<Actor<IActionRdfResolveHypermedia, IActorTest,
+    IActorRdfResolveHypermediaOutput>, IActionRdfResolveHypermedia, IActorTest, IActorRdfResolveHypermediaOutput>;
+
   subjectUri: string;
   predicateUri: string;
   objectUri: string;
