@@ -51,13 +51,13 @@ implements IActorRdfResolveHypermediaQpfArgs {
         && this.objectUri in searchForm.mappings
         && this.graphUri in searchForm.mappings
         && Object.keys(searchForm.mappings).length === 4) {
-        return {searchForm};
+        return { searchForm };
       }
       if (this.subjectUri in searchForm.mappings
         && this.predicateUri in searchForm.mappings
         && this.objectUri in searchForm.mappings
         && Object.keys(searchForm.mappings).length === 3) {
-        return {searchForm};
+        return { searchForm };
       }
     }
 

@@ -1,4 +1,4 @@
-import {AbstractMediatypeUtilities} from "@comunica/actor-abstract-mediatype-utilities";
+import {DataSourceUtils} from "@comunica/utils-datasource";
 import {ISearchForm} from "@comunica/actor-rdf-metadata-extract-hydra-controls";
 import {IActionRdfDereferencePaged, IActorRdfDereferencePagedOutput} from "@comunica/bus-rdf-dereference-paged";
 import {IActionRdfResolveHypermedia, IActorRdfResolveHypermediaOutput} from "@comunica/bus-rdf-resolve-hypermedia";
@@ -32,7 +32,7 @@ export class ActorRdfResolveQuadPatternHypermedia extends ActorRdfResolveQuadPat
   }
 
   public async test(action: IActionRdfResolveQuadPattern): Promise<IActorTest> {
-    if (!(await AbstractMediatypeUtilities.singleSourceHasType(action.context, 'hypermedia'))) {
+    if (!(await DataSourceUtils.singleSourceHasType(action.context, 'hypermedia'))) {
       throw new Error(
         `${this.name} requires a single source with a \'hypermedia\' entrypoint to be present in the context.`);
     }

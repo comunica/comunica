@@ -1,7 +1,0 @@
-{
-  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-abstract-mediatype-utilities/^1.0.0/components/context.jsonld",
-  "@id": "npmd:@comunica/actor-abstract-mediatype-utilities",
-  "@type": "Module",
-  "requireName": "@comunica/actor-abstract-mediatype-utilities",
-  "import": "files-caamu:components/Actor/AbstractMediatypeUtilities.jsonld"
-}

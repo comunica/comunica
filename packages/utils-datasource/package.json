@@ -1,18 +1,11 @@
 {
-  "name": "@comunica/actor-abstract-mediatype-utilities",
+  "name": "@comunica/utils-datasource",
   "version": "1.4.0",
   "description": "An abstract actor for handling mediatype detection.",
-  "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-abstract-mediatype-utilities",
-  "lsd:components": "components/components.jsonld",
-  "lsd:contexts": {
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-abstract-mediatype-utilities/^1.0.0/components/context.jsonld": "components/context.jsonld"
-  },
-  "lsd:importPaths": {
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-abstract-mediatype-utilities/^1.0.0/components/": "components/"
-  },
+  "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/utils-datasource",
   "main": "index.js",
   "typings": "index",
-  "repository": "https://github.com/comunica/comunica/tree/master/packages/actor-abstract-mediatype-utilities",
+  "repository": "https://github.com/comunica/comunica/tree/master/packages/utils-datasource",
   "publishConfig": {
     "access": "public"
   },

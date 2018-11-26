@@ -1,4 +1,4 @@
-import {AbstractMediatypeUtilities} from "@comunica/actor-abstract-mediatype-utilities";
+import {DataSourceUtils} from "@comunica/utils-datasource";
 import {IActionHttp, IActorHttpOutput} from "@comunica/bus-http";
 import {ActorQueryOperation, Bindings, IActionQueryOperation,
   IActorQueryOperationOutput, IActorQueryOperationOutputBindings} from "@comunica/bus-query-operation";
@@ -57,7 +57,7 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
     if (!action.operation) {
       throw new Error('Missing field \'operation\' in the query operation action: ' + require('util').inspect(action));
     }
-    const source: IDataSource = await AbstractMediatypeUtilities.getSingleSource(action.context);
+    const source: IDataSource = await DataSourceUtils.getSingleSource(action.context);
     if (source && source.type === 'sparql') {
       return { httpRequests: 1 };
     }
@@ -65,7 +65,7 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
   }
 
   public async run(action: IActionQueryOperation): Promise<IActorQueryOperationOutputBindings> {
-    const endpoint: string = (await AbstractMediatypeUtilities.getSingleSource(action.context)).value;
+    const endpoint: string = (await DataSourceUtils.getSingleSource(action.context)).value;
     const selectQuery: Algebra.Project = ActorQueryOperationSparqlEndpoint.patternToSelectQuery(action.operation);
     const query: string = toSparql(selectQuery);
 

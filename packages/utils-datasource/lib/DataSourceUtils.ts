@@ -7,9 +7,9 @@ import {
 import {ActionContext} from "@comunica/core";
 
 /**
- * A comunica Hash Query Operation Actor.
+ * Comunica datasource utilities 
  */
-export abstract class AbstractMediatypeUtilities {
+export abstract class DataSourceUtils {
 
   /**
    * Get the single source if the context contains just a single source.
