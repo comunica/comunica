@@ -41,7 +41,6 @@ export class ActorRdfParseHtmlScript extends ActorRdfParseFixedMediaTypes {
           context,
           mediaTypes: true,
         })).mediaTypes);
-      supportedTypes.push("application/ld+json");   // Add json-ld while waiting for issue 138
 
       let stream: Readable;
       let index: number;
