@@ -28,7 +28,7 @@ export class ActorRdfParseHtmlScript extends ActorRdfParseFixedMediaTypes {
   public async runHandle(action: IActionRdfParse, mediaType: string, context: ActionContext):
     Promise<IActorRdfParseOutput> {
 
-    const quads = new Readable({objectMode: true});
+    const quads = new Readable({ objectMode: true });
 
     quads._read = async () => {
 
@@ -58,12 +58,12 @@ export class ActorRdfParseHtmlScript extends ActorRdfParseFixedMediaTypes {
 
             const parseAction = {
               context,
-              handle: { input: stream },
+              handle: { baseIRI: action.baseIRI, input: stream },
               handleMediaType: supportedTypes[index],
             };
             const returned = (await this.mediatorRdfParse.mediate(parseAction)).handle;
 
-            returned.quads.on('data', (chunk) => {
+            returned.quads.on('data', (chunk: any) => {
               quads.push(chunk);
             });
 
@@ -91,8 +91,8 @@ export class ActorRdfParseHtmlScript extends ActorRdfParseFixedMediaTypes {
             stream.push(text);
           }
         },
-      }, {decodeEntities: true});
-      await parser.write(htmlString);
+      }, { decodeEntities: true });
+      parser.write(htmlString);
       parser.end();
 
       if (noRDFScriptTags) {

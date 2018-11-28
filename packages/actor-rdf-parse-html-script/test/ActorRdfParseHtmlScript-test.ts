@@ -76,6 +76,7 @@ describe('ActorRdfParseHtml', () => {
         }</script>`);
 
     const parseAction: IActionRdfParse = {
+      baseIRI: "base_",
       context,
       input,
     };
@@ -95,22 +96,23 @@ describe('ActorRdfParseHtml', () => {
     describe('for parsing', () => {
 
       it('should test on text/html', () => {
-        return expect(actor.test({ handle: { input: parseAction.input },
+        return expect(actor.test({ handle: { input: parseAction.input, baseIRI: parseAction.baseIRI },
           handleMediaType: 'text/html' })).resolves.toBeTruthy();
       });
 
       it('should not test on application/json', () => {
-        return expect(actor.test({ handle: { input: parseAction.input },
+        return expect(actor.test({ handle: { input: parseAction.input, baseIRI: parseAction.baseIRI },
           handleMediaType: 'application/json' })).rejects.toBeTruthy();
       });
 
       it('should not test on application/ld+json', () => {
-        return expect(actor.test({ handle: { input: parseAction.input },
+        return expect(actor.test({ handle: { input: parseAction.input, baseIRI: parseAction.baseIRI },
           handleMediaType: 'application/ld+json' })).rejects.toBeTruthy();
       });
 
       it('should run', () => {
-        return actor.run({ context, handle: { input: parseAction.input }, handleMediaType: 'text/html' })
+        return actor.run({ context, handle: { input: parseAction.input, baseIRI: parseAction.baseIRI },
+          handleMediaType: 'text/html' })
           .then(async (output) => expect(await arrayifyStream(output.handle.quads)).toEqualRdfQuadArray([
             quad('http://example.org/a', 'http://example.org/b', 'http://example.org/c'),
             quad('http://example.org/a', 'http://example.org/d', 'http://example.org/e'),
@@ -126,7 +128,8 @@ describe('ActorRdfParseHtml', () => {
           }</script>`);
 
         return actor.run(
-          { context: parseAction.context, handle: { input: parseAction.input }, handleMediaType: 'text/html' })
+          { context: parseAction.context, handle: { input: parseAction.input, baseIRI: parseAction.baseIRI },
+            handleMediaType: 'text/html' })
           .then(async (output) => expect(await arrayifyStream(output.handle.quads)).toEqualRdfQuadArray([]));
       });
 
@@ -148,7 +151,8 @@ describe('ActorRdfParseHtml', () => {
           </script>`);
 
         return actor.run(
-          { context: parseAction.context, handle: { input: parseAction.input }, handleMediaType: 'text/html' })
+          { context: parseAction.context, handle: { input: parseAction.input, baseIRI: parseAction.baseIRI },
+            handleMediaType: 'text/html' })
           .then(async (output) => expect(await arrayifyStream(output.handle.quads)).toEqualRdfQuadArray([
             quad('http://example.org/a', 'http://example.org/b', 'http://example.org/c'),
             quad('http://example.org/a', 'http://example.org/d', 'http://example.org/e'),
@@ -175,7 +179,8 @@ describe('ActorRdfParseHtml', () => {
           </script>`);
 
         return actor.run(
-          { context: parseAction.context, handle: { input: parseAction.input }, handleMediaType: 'text/html' })
+          { context: parseAction.context, handle: { input: parseAction.input, baseIRI: parseAction.baseIRI },
+            handleMediaType: 'text/html' })
           .then(async (output) => expect(await arrayifyStream(output.handle.quads)).toEqualRdfQuadArray([
             quad('http://example.org/a', 'http://example.org/b', 'http://example.org/c'),
             quad('http://example.org/a', 'http://example.org/d', 'http://example.org/e'),
@@ -204,7 +209,8 @@ describe('ActorRdfParseHtml', () => {
           </script>`);
 
         return actor.run(
-          { context: parseAction.context, handle: { input: parseAction.input }, handleMediaType: 'text/html' })
+          { context: parseAction.context, handle: { input: parseAction.input, baseIRI: parseAction.baseIRI },
+            handleMediaType: 'text/html' })
           .then(async (output) => expect(await arrayifyStream(output.handle.quads)).toEqualRdfQuadArray([
             quad("http://example.org/a", "http://example.org/b", "http://example.org/c", ""),
             quad("http://example.org/a", "http://example.org/d", "http://example.org/e", ""),
