@@ -1,0 +1,12 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^3.0.0/components/context.jsonld",
+    {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
+      "carrhnp": "npmd:@comunica/actor-rdf-resolve-hypermedia-next-page/",
+      "files-carrhnp": "carrhnp:^1.0.0/",
+
+      "ActorRdfResolveHypermediaNextPage": "carrhnp:Actor/RdfResolveHypermedia/NextPage"
+    }
+  ]
+}

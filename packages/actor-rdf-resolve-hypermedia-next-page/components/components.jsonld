@@ -1,0 +1,9 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-resolve-hypermedia-next-page/^1.0.0/components/context.jsonld",
+  "@id": "npmd:@comunica/actor-rdf-resolve-hypermedia-next-page",
+  "@type": "Module",
+  "requireName": "@comunica/actor-rdf-resolve-hypermedia-next-page",
+  "import": [
+    "files-carrhnp:components/Actor/RdfResolveHypermedia/NextPage.jsonld"
+  ]
+}

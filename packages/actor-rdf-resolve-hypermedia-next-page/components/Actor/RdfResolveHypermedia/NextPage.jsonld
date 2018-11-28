@@ -1,0 +1,21 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-resolve-hypermedia-next-page/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-resolve-hypermedia/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-rdf-resolve-hypermedia-next-page",
+  "components": [
+    {
+      "@id": "carrhnp:Actor/RdfResolveHypermedia/NextPage",
+      "@type": "Class",
+      "extends": "cbrrh:Actor/RdfResolveHypermedia",
+      "requireElement": "ActorRdfResolveHypermediaNextPage",
+      "comment": "A comunica next-page RDF Resolve Quad Pattern Actor.",
+      "constructorArguments": [
+        {
+          "extends": "cbrrh:Actor/RdfResolveHypermedia/constructorArgumentsObject"
+        }
+      ]
+    }
+  ]
+}
