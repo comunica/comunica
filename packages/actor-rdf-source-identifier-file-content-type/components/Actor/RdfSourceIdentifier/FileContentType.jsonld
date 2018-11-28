@@ -32,7 +32,8 @@
             "application/ld+json",
             "application/json",
             "application/rdf+xml",
-            "text/html"
+            "text/html",
+            "application/xhtml+xml"
           ]
         },
         {

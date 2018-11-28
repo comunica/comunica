@@ -13,7 +13,7 @@ import {Readable} from "stream";
 /**
  * A HTML script RDF Parse actor that listens on the 'rdf-parse' bus.
  *
- * It is able to extract and parse any RDF serialization from HTML files
+ * It is able to extract and parse any RDF serialization from script tags in HTML files
  * and announce the presence of them by media type.
  */
 export class ActorRdfParseHtmlScript extends ActorRdfParseFixedMediaTypes {
@@ -32,15 +32,14 @@ export class ActorRdfParseHtmlScript extends ActorRdfParseFixedMediaTypes {
 
     quads._read = async () => {
 
-      // Stringify HTML input
       const htmlString: string = await require('stream-to-string')(action.input);
 
-      // Fetch the supported types
       const supportedTypes: string[] = Object.keys((await this.mediatorRdfParse
         .mediate({
           context,
           mediaTypes: true,
         })).mediaTypes);
+      supportedTypes.push("application/ld+json");
 
       let stream: Readable;
       let index: number;
@@ -76,6 +75,12 @@ export class ActorRdfParseHtmlScript extends ActorRdfParseFixedMediaTypes {
           }
         },
 
+        onend: () => {
+          if (noRDFScriptTags) {
+            quads.push(null);
+          }
+        },
+
         onopentag: (tagname: string, attribs: any) => {
           index = supportedTypes.indexOf(attribs.type);
           if (tagname === "script" && index > -1) {
@@ -92,12 +97,10 @@ export class ActorRdfParseHtmlScript extends ActorRdfParseFixedMediaTypes {
           }
         },
       }, { decodeEntities: true });
+
       parser.write(htmlString);
       parser.end();
 
-      if (noRDFScriptTags) {
-        quads.push(null);
-      }
     };
 
     return { quads };
