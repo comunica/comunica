@@ -22,7 +22,7 @@ async function testEval() {
     '?a': RDF.literal('aaa'),
   }));
   // tslint:disable-next-line:no-any
-  const evaluator = new AsyncEvaluator(undefined as any, U.mockLookUp, U.mockAggregator);
+  const evaluator = new AsyncEvaluator(undefined as any, U.mockHooks);
   const presult = evaluator.evaluate(ex.mapping()).catch((err) => console.log(err));
   const val = await presult;
   console.log(val);

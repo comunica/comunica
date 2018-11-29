@@ -12,10 +12,10 @@ import {
   regularFunctions,
   specialFunctions,
 } from './functions';
-import { AsyncAggregator } from './Types';
+import { AggregateHook, Hooks } from './Types';
 import { TypeURL as DT } from './util/Consts';
 
-export function transformAlgebra(expr: Alg.Expression, aggregator?: AsyncAggregator): E.Expression {
+export function transformAlgebra(expr: Alg.Expression, hooks: Hooks = {}): E.Expression {
   if (!expr) { throw new Err.InvalidExpression(expr); }
 
   const types = Alg.expressionTypes;
@@ -26,7 +26,7 @@ export function transformAlgebra(expr: Alg.Expression, aggregator?: AsyncAggrega
     case types.NAMED: return transformNamed(expr as Alg.NamedExpression);
     // TODO
     case types.EXISTENCE: throw new Err.UnimplementedError('Existence Operator');
-    case types.AGGREGATE: return transformAggregate(expr as Alg.AggregateExpression, aggregator);
+    case types.AGGREGATE: return transformAggregate(expr as Alg.AggregateExpression, hooks.aggregate);
     default: throw new Err.InvalidExpressionType(expr);
   }
 }
@@ -136,6 +136,7 @@ function transformOperator(expr: Alg.OperatorExpression)
   }
 }
 
+// TODO: Support passing functions to override default behaviour;
 export function transformNamed(expr: Alg.NamedExpression): E.NamedExpression {
   const funcName = expr.name.value;
   if (!C.NamedOperators.contains(funcName as C.NamedOperator)) {
@@ -161,11 +162,8 @@ function hasCorrectArity(args: E.Expression[], arity: number | number[]): boolea
   return args.length === arity;
 }
 
-export function transformAggregate(expr: Alg.AggregateExpression, _aggregator?: AsyncAggregator) {
-  if (!_aggregator) { throw new Err.NoAggregator(); }
+export function transformAggregate(expr: Alg.AggregateExpression, hook: AggregateHook) {
   const name = expr.aggregator;
-  const { distinct, expression, separator } = expr;
-  const aggregator = _aggregator[name];
-  if (!aggregator) { throw new Err.NoAggregator(name); }
-  return new E.Aggregate(name, distinct, expression, aggregator, separator);
+  if (!hook) { throw new Err.NoAggregator(name); }
+  return new E.Aggregate(name, hook, expr);
 }

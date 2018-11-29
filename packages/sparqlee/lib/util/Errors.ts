@@ -130,7 +130,6 @@ export class UnknownNamedOperator extends Error {
 
 export class NoAggregator extends Error {
   constructor(name?: string) {
-    const nameStr = (name) ? ('\'' + name + '\' ') : '';
-    super(`Aggregate expression ${nameStr}found, but no aggregator provided`);
+    super(`Aggregate expression ${name} found, but no aggregate hook provided.`);
   }
 }

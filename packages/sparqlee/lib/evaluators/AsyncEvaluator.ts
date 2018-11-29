@@ -5,7 +5,7 @@ import * as E from '../expressions/Expressions';
 import * as Err from '../util/Errors';
 
 import { transformAlgebra, transformTerm } from '../Transformation';
-import { AsyncAggregator, AsyncLookUp, Bindings } from '../Types';
+import { Bindings, Hooks } from '../Types';
 
 type Expression = E.Expression;
 type Term = E.TermExpression;
@@ -19,13 +19,8 @@ type Aggregate = E.AggregateExpression;
 export class AsyncEvaluator {
   private expr: Expression;
 
-  // TODO: Support passing functions to override default behaviour;
-  constructor(
-    public algExpr: Alg.Expression,
-    public lookup?: AsyncLookUp,
-    public aggregator?: AsyncAggregator,
-  ) {
-    this.expr = transformAlgebra(algExpr, aggregator);
+  constructor(public algExpr: Alg.Expression, public hooks: Hooks = {}) {
+    this.expr = transformAlgebra(algExpr, hooks);
   }
 
   async evaluate(mapping: Bindings): Promise<RDF.Term> {
@@ -101,8 +96,8 @@ export class AsyncEvaluator {
   }
 
   // TODO
-  private async evalAggregate(expr: Aggregate, mapping: Bindings): Promise<Term> {
-    const result = await expr.aggregate(mapping);
+  private async evalAggregate(expr: Aggregate, _mapping: Bindings): Promise<Term> {
+    const result = await expr.aggregate();
     return transformTerm({
       type: 'expression',
       expressionType: 'term',

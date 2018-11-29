@@ -5,7 +5,7 @@ import { Algebra as Alg, translate } from 'sparqlalgebrajs';
 import * as C from '../lib/util/Consts';
 
 import { AsyncEvaluator } from '../lib/evaluators/AsyncEvaluator';
-import { Bindings } from '../lib/Types';
+import { Bindings, Hooks } from '../lib/Types';
 import { TypeURL as DT } from '../lib/util/Consts';
 
 export class Example {
@@ -18,7 +18,7 @@ export class Example {
   }
 
   async evaluate(mapping?: Bindings): Promise<RDF.Term> {
-    const evaluator = new AsyncEvaluator(this.expression, mockLookUp, mockAggregator);
+    const evaluator = new AsyncEvaluator(this.expression, mockHooks);
     return mapping
       ? evaluator.evaluate(mapping)
       : evaluator.evaluate(this.mapping());
@@ -45,36 +45,30 @@ export const example1 = (() => {
 })();
 
 export function evaluate(expr: string, bindings = Bindings({})): Promise<RDF.Term> {
-  const evaluator = new AsyncEvaluator(parse(expr), mockLookUp, mockAggregator);
+  const evaluator = new AsyncEvaluator(parse(expr), mockHooks);
   return evaluator.evaluate(bindings);
 }
 
-export const mockLookUp = (pattern: Alg.ExistenceExpression) => {
+export function mockExistence(expression: Alg.ExistenceExpression): Promise<boolean> {
   return Promise.resolve(true);
-};
+}
 
-export const mockAggregator = {
-  count(distinct: boolean, exp: Alg.Expression): Promise<RDF.Term> {
-    return Promise.resolve(RDFDM.literal('3.14', C.make(DT.XSD_FLOAT)));
-  },
-  sum(distinct: boolean, exp: Alg.Expression): Promise<RDF.Term> {
-    return Promise.resolve(RDFDM.literal('3.14', C.make(DT.XSD_FLOAT)));
-  },
-  min(distinct: boolean, exp: Alg.Expression): Promise<RDF.Term> {
-    return Promise.resolve(RDFDM.literal('3.14', C.make(DT.XSD_FLOAT)));
-  },
-  max(distinct: boolean, exp: Alg.Expression): Promise<RDF.Term> {
-    return Promise.resolve(RDFDM.literal('3.14', C.make(DT.XSD_FLOAT)));
-  },
-  avg(distinct: boolean, exp: Alg.Expression): Promise<RDF.Term> {
-    return Promise.resolve(RDFDM.literal('3.14', C.make(DT.XSD_FLOAT)));
-  },
-  groupConcat(distinct: boolean, exp: Alg.Expression, seperator?: string): Promise<RDF.Term> {
-    return Promise.resolve(RDFDM.literal('term term term'));
-  },
-  sample(distinct: boolean, exp: Alg.Expression): Promise<RDF.Term> {
-    return Promise.resolve(RDFDM.literal('MockTerm'));
-  },
+export function mockAggregate(expression: Alg.AggregateExpression): Promise<RDF.Term> {
+  switch (expression.aggregator) {
+    case 'count':
+    case 'sum':
+    case 'min':
+    case 'max':
+    case 'avg': return Promise.resolve(RDFDM.literal('3.14', C.make(DT.XSD_FLOAT)));
+    case 'groupConcat': return Promise.resolve(RDFDM.literal('term term term'));
+    case 'sample': return Promise.resolve(RDFDM.literal('MockTerm'));
+    default: throw new Error('woops y daisy');
+  }
+}
+
+export const mockHooks: Hooks = {
+  existence: mockExistence,
+  aggregate: mockAggregate,
 };
 
 export function parse(expr: string): Alg.Expression {

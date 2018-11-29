@@ -21,16 +21,13 @@ export function Bindings(hash: { [key: string]: RDF.Term }): Bindings {
   return Map(hash);
 }
 
-// TODO: Document
-export type AsyncLookUp = (expr: Alg.ExistenceExpression) => Promise<boolean>;
-
-type Aggregator = (distinct: boolean, expression: Alg.Expression, separator?: string) => Promise<RDF.Term>;
-export type AsyncAggregator = { [key: string]: Aggregator } & {
-  count(distinct: boolean, exp: Alg.Expression): Promise<RDF.Term>;
-  sum(distinct: boolean, exp: Alg.Expression): Promise<RDF.Term>;
-  min(distinct: boolean, exp: Alg.Expression): Promise<RDF.Term>;
-  max(distinct: boolean, exp: Alg.Expression): Promise<RDF.Term>;
-  avg(distinct: boolean, exp: Alg.Expression): Promise<RDF.Term>;
-  groupConcat(distinct: boolean, exp: Alg.Expression, seperator?: string): Promise<RDF.Term>;
-  sample(distinct: boolean, exp: Alg.Expression): Promise<RDF.Term>;
+export type Hooks = {
+  existence?: ExistenceHook;
+  aggregate?: AggregateHook;
+  namedFunc?: NamedFuncHook;
 };
+
+// TODO: Document
+export type ExistenceHook = (expression: Alg.ExistenceExpression) => Promise<boolean>;
+export type AggregateHook = (expression: Alg.AggregateExpression) => Promise<RDF.Term>;
+export type NamedFuncHook = (expression: Alg.NamedExpression) => Promise<RDF.Term>;
