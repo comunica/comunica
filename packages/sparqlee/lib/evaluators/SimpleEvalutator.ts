@@ -42,20 +42,22 @@ export class SimpleEvaluator {
   }
 
   // tslint:disable-next-line:member-ordering
-  private readonly evalLookup: EvalLookup = {
-    [E.ExpressionType.Term]: this.evalTerm.bind(this),
-    [E.ExpressionType.Variable]: this.evalVariable,
-    [E.ExpressionType.Operator]: this.evalOperator,
-    [E.ExpressionType.SpecialOperator]: this.evalSpecialOperator,
-    [E.ExpressionType.Named]: this.evalNamed,
-    [E.ExpressionType.Existence]: this.evalExistence,
-    [E.ExpressionType.Aggregate]: this.evalAggregate,
-  };
+  private readonly evaluators: {
+    [key: string]: (expr: Expression, mapping: Bindings) => Term;
+  } = {
+      [E.ExpressionType.Term]: this.evalTerm,
+      [E.ExpressionType.Variable]: this.evalVariable,
+      [E.ExpressionType.Operator]: this.evalOperator,
+      [E.ExpressionType.SpecialOperator]: this.evalSpecialOperator,
+      [E.ExpressionType.Named]: this.evalNamed,
+      [E.ExpressionType.Existence]: this.evalExistence,
+      [E.ExpressionType.Aggregate]: this.evalAggregate,
+    };
 
   private evalRecursive(expr: Expression, mapping: Bindings): Term {
-    const evaluatorFunction = this.evalLookup[expr.expressionType];
-    if (!evaluatorFunction) { throw new Err.InvalidExpressionType(expr); }
-    return evaluatorFunction.bind(this)(expr, mapping);
+    const evaluator = this.evaluators[expr.expressionType];
+    if (!evaluator) { throw new Err.InvalidExpressionType(expr); }
+    return evaluator.bind(this)(expr, mapping);
   }
 
   private evalTerm(expr: Term, mapping: Bindings): Term {
@@ -97,10 +99,6 @@ export class SimpleEvaluator {
   private evalAggregate(expr: Aggregate, mapping: Bindings): Term {
     throw new UnsupportedOperation(`aggregate ${expr.name}`);
   }
-}
-
-interface EvalLookup {
-  [key: string]: (expr: Expression, mapping: Bindings) => Term;
 }
 
 function log<T>(val: T): T {
