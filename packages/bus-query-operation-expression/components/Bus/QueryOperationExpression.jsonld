@@ -1,0 +1,6 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-query-operation-expression/^1.0.0/components/context.jsonld",
+  "@id": "cbqoe:Bus/QueryOperationExpression",
+  "@type": "cc:Bus",
+  "comment": "A comunica bus for query-operation-expression events."
+}

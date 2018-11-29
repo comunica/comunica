@@ -1,0 +1,10 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-query-operation-expression/^1.0.0/components/context.jsonld",
+  "@id": "npmd:@comunica/bus-query-operation-expression",
+  "@type": "Module",
+  "requireName": "@comunica/bus-query-operation-expression",
+  "import": [
+    "files-cbqoe:components/Bus/QueryOperationExpression.jsonld",
+    "files-cbqoe:components/Actor/QueryOperationExpression.jsonld"
+  ]
+}

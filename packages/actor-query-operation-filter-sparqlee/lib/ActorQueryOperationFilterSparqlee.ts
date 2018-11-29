@@ -1,13 +1,16 @@
+import * as RDF from 'rdf-js';
+import { Algebra } from "sparqlalgebrajs";
+import { AsyncEvaluator, ExpressionError } from "sparqlee";
+
 import {
-  ActorQueryOperation, ActorQueryOperationTypedMediated, Bindings,
-  IActorQueryOperationOutput,
+  ActorQueryOperation,
+  ActorQueryOperationTypedMediated,
+  Bindings,
   IActorQueryOperationOutputBindings,
   IActorQueryOperationTypedMediatedArgs,
 } from "@comunica/bus-query-operation";
 import { BindingsStream } from "@comunica/bus-query-operation";
 import { ActionContext, IActorTest } from "@comunica/core";
-import { Algebra } from "sparqlalgebrajs";
-import { AsyncEvaluator, ExpressionError } from "sparqlee";
 
 /**
  * A comunica Filter Sparqlee Query Operation Actor.
@@ -32,7 +35,13 @@ export class ActorQueryOperationFilterSparqlee extends ActorQueryOperationTypedM
     ActorQueryOperation.validateQueryOutput(output, 'bindings');
     const { variables, metadata } = output;
 
-    const evaluator = new AsyncEvaluator(pattern.expression);
+    const hooks = {
+      aggregate(expression: Algebra.AggregateExpression): Promise<RDF.Term> {
+        return undefined;
+      },
+    };
+
+    const evaluator = new AsyncEvaluator(pattern.expression, hooks);
     const transform = async (item: Bindings, next: any) => {
       try {
         const result = await evaluator.evaluateAsEBV(item);
