@@ -1,0 +1,16 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^3.0.0/components/context.jsonld",
+    {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
+      "carrhq": "npmd:@comunica/actor-rdf-resolve-hypermedia-qpf/",
+      "files-carrhq": "carrhq:^1.0.0/",
+
+      "ActorRdfResolveHypermediaQpf": "carrhq:Actor/RdfResolveHypermedia/Qpf",
+      "subjectUri": "carrhq:Actor/RdfResolveHypermedia/Qpf/subjectUri",
+      "predicateUri": "carrhq:Actor/RdfResolveHypermedia/Qpf/predicateUri",
+      "objectUri": "carrhq:Actor/RdfResolveHypermedia/Qpf/objectUri",
+      "graphUri": "carrhq:Actor/RdfResolveHypermedia/Qpf/graphUri"
+    }
+  ]
+}

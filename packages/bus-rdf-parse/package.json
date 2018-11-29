@@ -1,6 +1,6 @@
 {
   "name": "@comunica/bus-rdf-parse",
-  "version": "1.4.0",
+  "version": "1.4.2",
   "description": "A comunica bus for 'init' events.",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-parse",
   "lsd:components": "components/components.jsonld",

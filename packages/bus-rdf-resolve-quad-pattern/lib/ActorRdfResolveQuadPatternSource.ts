@@ -41,12 +41,12 @@ export abstract class ActorRdfResolveQuadPatternSource extends ActorRdfResolveQu
   /**
    * Get the output of the given action on a source.
    * @param {RDF.Source} source An RDFJS source, possibly lazy.
-   * @param {RDF.Quad} pattern The resolve action.
+   * @param {RDF.BaseQuad} pattern The resolve action.
    * @param ActionContext context Optional context data.
    * @return {Promise<IActorRdfResolveQuadPatternOutput>} A promise that resolves to a hash containing
    *                                                      a data RDFJS stream and an optional metadata hash.
    */
-  protected async getOutput(source: ILazyQuadSource, pattern: RDF.Quad, context: ActionContext)
+  protected async getOutput(source: ILazyQuadSource, pattern: RDF.BaseQuad, context: ActionContext)
   : Promise<IActorRdfResolveQuadPatternOutput> {
     if (source.matchLazy) {
       return { data: source.matchLazy(
@@ -82,7 +82,7 @@ export abstract class ActorRdfResolveQuadPatternSource extends ActorRdfResolveQu
  * This extends {@link RDF.Source} with an optional matchLazy method.
  * So non-lazy sources can also be used in this place.
  */
-export interface ILazyQuadSource extends RDF.Source {
+export interface ILazyQuadSource<Q extends RDF.BaseQuad = RDF.Quad> extends RDF.Source<Q> {
   /**
    * Returns a lazy stream that processes all quads matching the pattern.
    *
@@ -93,5 +93,5 @@ export interface ILazyQuadSource extends RDF.Source {
    * @return {RDF.Stream} The resulting quad stream.
    */
   matchLazy?(subject?: RDF.Term | RegExp, predicate?: RDF.Term | RegExp, object?: RDF.Term | RegExp,
-             graph?: RDF.Term | RegExp): AsyncIterator<RDF.Quad> & RDF.Stream;
+             graph?: RDF.Term | RegExp): AsyncIterator<Q> & RDF.Stream<Q>;
 }

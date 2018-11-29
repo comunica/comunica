@@ -1,3 +1,4 @@
+import {DataSourceUtils} from "@comunica/utils-datasource";
 import {IActionHttp, IActorHttpOutput} from "@comunica/bus-http";
 import {ActorQueryOperation, Bindings, IActionQueryOperation,
   IActorQueryOperationOutput, IActorQueryOperationOutputBindings} from "@comunica/bus-query-operation";
@@ -52,31 +53,11 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
     return ActorQueryOperationSparqlEndpoint.FACTORY.createProject(operation, variables);
   }
 
-  /**
-   * Get the single source if the context contains just a single source.
-   * @param {ActionContext} context A context, can be null.
-   * @return {Promise<IDataSource>} A promise resolving to the single datasource or null.
-   */
-  public static async getSingleSource(context: ActionContext): Promise<IDataSource> {
-    if (context && context.has(KEY_CONTEXT_SOURCE)) {
-      return context.get(KEY_CONTEXT_SOURCE);
-    } else if (context && context.has(KEY_CONTEXT_SOURCES)) {
-      const datasources: DataSources = context.get(KEY_CONTEXT_SOURCES);
-      if (datasources.isEnded()) {
-        const datasourcesArray: IDataSource[] = await require('arrayify-stream')(datasources.iterator());
-        if (datasourcesArray.length === 1) {
-          return datasourcesArray[0];
-        }
-      }
-    }
-    return null;
-  }
-
   public async test(action: IActionQueryOperation): Promise<IMediatorTypeHttpRequests> {
     if (!action.operation) {
       throw new Error('Missing field \'operation\' in the query operation action: ' + require('util').inspect(action));
     }
-    const source: IDataSource = await ActorQueryOperationSparqlEndpoint.getSingleSource(action.context);
+    const source: IDataSource = await DataSourceUtils.getSingleSource(action.context);
     if (source && source.type === 'sparql') {
       return { httpRequests: 1 };
     }
@@ -84,7 +65,7 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
   }
 
   public async run(action: IActionQueryOperation): Promise<IActorQueryOperationOutputBindings> {
-    const endpoint: string = (await ActorQueryOperationSparqlEndpoint.getSingleSource(action.context)).value;
+    const endpoint: string = (await DataSourceUtils.getSingleSource(action.context)).value;
     const selectQuery: Algebra.Project = ActorQueryOperationSparqlEndpoint.patternToSelectQuery(action.operation);
     const query: string = toSparql(selectQuery);
 

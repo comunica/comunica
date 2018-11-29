@@ -15,7 +15,7 @@ export class ActorRdfParseRdfXml extends ActorRdfParseFixedMediaTypes {
   public async runHandle(action: IActionRdfParse, mediaType: string, context: ActionContext)
     : Promise<IActorRdfParseOutput> {
     action.input.on('error', (e) => quads.emit('error', e));
-    const quads = action.input.pipe(new RdfXmlParser());
+    const quads = action.input.pipe(new RdfXmlParser({ baseIRI: action.baseIRI }));
     return {
       quads,
       triples: true,

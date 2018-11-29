@@ -1,6 +1,6 @@
 {
   "name": "@comunica/bus-query-operation",
-  "version": "1.4.0",
+  "version": "1.4.4",
   "description": "A comunica bus for query-operation events.",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-query-operation",
   "lsd:components": "components/components.jsonld",
@@ -34,7 +34,7 @@
     "index.js"
   ],
   "dependencies": {
-    "asynciterator": "^2.0.0",
+    "asynciterator": "^2.0.1",
     "immutable": "^3.8.2"
   },
   "peerDependencies": {

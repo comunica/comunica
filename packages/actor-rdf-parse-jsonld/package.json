@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-parse-jsonld",
-  "version": "1.4.0",
+  "version": "1.4.3",
   "description": "A JSON-LD RDF Parse actor",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-parse-jsonld",
   "lsd:components": "components/components.jsonld",
@@ -37,14 +37,14 @@
     "@comunica/core": "^1.0.0"
   },
   "devDependencies": {
-    "@comunica/bus-rdf-parse": "^1.4.0",
+    "@comunica/bus-rdf-parse": "^1.4.2",
     "@comunica/core": "^1.4.0",
     "lodash.assign": "^4.2.0"
   },
   "dependencies": {
-    "@rdfjs/data-model": "^1.1.0",
+    "@rdfjs/data-model": "^1.1.1",
     "jsonld": "^1.0.2",
-    "rdf-terms": "^1.2.0",
+    "rdf-terms": "^1.4.0",
     "stream-to-string": "^1.1.0"
   },
   "jest": {

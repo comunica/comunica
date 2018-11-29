@@ -90,50 +90,6 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
     });
   });
 
-  describe('#getSingleSource', () => {
-    it('return null for a falsy context', async () => {
-      return expect(await ActorQueryOperationSparqlEndpoint.getSingleSource(null)).toBe(null);
-    });
-
-    it('return null for a context without source or sources', async () => {
-      return expect(await ActorQueryOperationSparqlEndpoint.getSingleSource(ActionContext({}))).toBe(null);
-    });
-
-    it('return a single source', async () => {
-      return expect(await ActorQueryOperationSparqlEndpoint.getSingleSource(ActionContext({
-        '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'bla' },
-      }))).toEqual({ type: 'bla' });
-    });
-
-    it('return null for sources that are not ended', async () => {
-      return expect(await ActorQueryOperationSparqlEndpoint.getSingleSource(ActionContext({
-        '@comunica/bus-rdf-resolve-quad-pattern:sources': AsyncReiterableArray.fromInitialEmpty(),
-      }))).toBe(null);
-    });
-
-    it('return null for empty sources that are ended', async () => {
-      return expect(await ActorQueryOperationSparqlEndpoint.getSingleSource(ActionContext({
-        '@comunica/bus-rdf-resolve-quad-pattern:sources': AsyncReiterableArray.fromFixedData([]),
-      }))).toBe(null);
-    });
-
-    it('return null for empty sources with two elements', async () => {
-      return expect(await ActorQueryOperationSparqlEndpoint.getSingleSource(ActionContext({
-        '@comunica/bus-rdf-resolve-quad-pattern:sources': AsyncReiterableArray.fromFixedData([
-          { type: 'bla1' }, { type: 'bla2' },
-        ]),
-      }))).toBe(null);
-    });
-
-    it('return the single source for empty sources with one elements', async () => {
-      return expect(await ActorQueryOperationSparqlEndpoint.getSingleSource(ActionContext({
-        '@comunica/bus-rdf-resolve-quad-pattern:sources': AsyncReiterableArray.fromFixedData([
-          { type: 'bla' },
-        ]),
-      }))).toEqual({ type: 'bla' });
-    });
-  });
-
   describe('An ActorQueryOperationSparqlEndpoint instance', () => {
     let actor: ActorQueryOperationSparqlEndpoint;
 

@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-parse-rdfxml",
-  "version": "1.4.0",
+  "version": "1.4.3",
   "description": "A rdfxml rdf-parse actor",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-parse-rdfxml",
   "lsd:components": "components/components.jsonld",
@@ -34,12 +34,15 @@
     "index.d.ts",
     "index.js"
   ],
+  "dependencies": {
+    "rdfxml-streaming-parser": "^1.1.0"
+  },
   "peerDependencies": {
     "@comunica/bus-rdf-parse": "^1.1.0",
     "@comunica/core": "^1.1.0"
   },
   "devDependencies": {
-    "@comunica/bus-rdf-parse": "^1.4.0",
+    "@comunica/bus-rdf-parse": "^1.4.2",
     "@comunica/core": "^1.4.0"
   },
   "jest": {
@@ -64,8 +67,5 @@
     "lint": "node \"../../node_modules/tslint/bin/tslint\" lib/**/*.ts test/**/*.ts --exclude '**/*.d.ts'",
     "build": "node \"../../node_modules/typescript/bin/tsc\"",
     "validate": "npm ls"
-  },
-  "dependencies": {
-    "rdfxml-streaming-parser": "^1.0.0"
   }
 }

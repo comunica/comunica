@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-operation-join",
-  "version": "1.4.0",
+  "version": "1.4.4",
   "description": "A join query-operation actor",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-join",
   "lsd:components": "components/components.jsonld",
@@ -40,8 +40,8 @@
     "@comunica/core": "^1.0.0"
   },
   "devDependencies": {
-    "@comunica/bus-query-operation": "^1.4.0",
-    "@comunica/bus-rdf-join": "^1.4.0",
+    "@comunica/bus-query-operation": "^1.4.4",
+    "@comunica/bus-rdf-join": "^1.4.4",
     "@comunica/core": "^1.4.0",
     "@comunica/mediatortype-iterations": "^1.4.0"
   },

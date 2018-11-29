@@ -1,6 +1,6 @@
 {
   "name": "@comunica/runner-cli",
-  "version": "1.4.0",
+  "version": "1.4.4",
   "description": "A comunica runner that sends an 'init' event from a commandline process.",
   "main": "index.js",
   "typings": "index",
@@ -30,7 +30,7 @@
     "index.js"
   ],
   "dependencies": {
-    "@comunica/runner": "^1.4.0"
+    "@comunica/runner": "^1.4.4"
   },
   "devDependencies": {
     "@comunica/bus-init": "^1.4.0",

@@ -1,6 +1,26 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v1.4.4"></a>
+## [v1.4.4](https://github.com/comunica/comunica/compare/v1.4.3...v1.4.4) - 2018-11-13
+
+### Fixed
+* [Update to Components.js 3.2.0](https://github.com/comunica/comunica/commit/69ec1caab8a2ffbc99371ae0c9f50ff8c80007b7)
+* [Upgrade asynciterator to v2.0.1](https://github.com/comunica/comunica/commit/7a2bda6756ed8701ffc101a36ab19ee21480ed31)
+
+<a name="v1.4.3"></a>
+## [v1.4.3](https://github.com/comunica/comunica/compare/v1.4.2...v1.4.3) - 2018-11-09
+
+### Changed
+* [Update to generic RDFJS typings](https://github.com/comunica/comunica/commit/dede6abd7768a1c42e2195961930ed766271ab30)
+* [Update N3 to 1.0.0, Closes #314](https://github.com/comunica/comunica/commit/f21d548b30d01d99be32e0d168d33737b1d3a33c)
+
+<a name="v1.4.2"></a>
+## [v1.4.2](https://github.com/comunica/comunica/compare/v1.4.1...v1.4.2) - 2018-11-05
+
+### Fixed
+* [Pass baseIRI to RDF parsers, Closes #311](https://github.com/comunica/comunica/commit/e1dfeb487c387286b3c8900b544d83ea5eca6908)
+
 <a name="v1.4.1"></a>
 ## [v1.4.1](https://github.com/comunica/comunica/compare/v1.4.0...v1.4.1) - 2018-10-04
 

@@ -1,0 +1,12 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    {
+      "cbrrh": "npmd:@comunica/bus-rdf-resolve-hypermedia/",
+      "files-cbrrh": "cbrrh:^1.0.0/",
+
+      "BusRdfResolveHypermedia": "cbrrh:Bus/RdfResolveHypermedia",
+      "ActorRdfResolveHypermedia": "cbrrh:Actor/RdfResolveHypermedia"
+    }
+  ]
+}

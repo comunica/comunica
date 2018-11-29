@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-sparql-serialize-rdf",
-  "version": "1.4.0",
+  "version": "1.4.4",
   "description": "A rdf sparql-serialize actor",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-sparql-serialize-rdf",
   "lsd:components": "components/components.jsonld",
@@ -41,9 +41,9 @@
   },
   "devDependencies": {
     "@comunica/actor-abstract-mediatyped": "^1.4.0",
-    "@comunica/bus-query-operation": "^1.4.0",
+    "@comunica/bus-query-operation": "^1.4.4",
     "@comunica/bus-rdf-serialize": "^1.4.0",
-    "@comunica/bus-sparql-serialize": "^1.4.0",
+    "@comunica/bus-sparql-serialize": "^1.4.4",
     "@comunica/core": "^1.4.0"
   },
   "jest": {

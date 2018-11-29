@@ -82,7 +82,7 @@ export interface IActionRdfResolveQuadPattern extends IAction {
   /**
    * The quad pattern to resolve.
    */
-  pattern: RDF.Quad;
+  pattern: RDF.BaseQuad;
 }
 
 export interface IActorRdfResolveQuadPatternOutput extends IActorOutput {

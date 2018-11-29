@@ -19,7 +19,7 @@ export class FederatedQuadSource implements ILazyQuadSource {
     IActorRdfResolveQuadPatternOutput>, IActionRdfResolveQuadPattern, IActorTest, IActorRdfResolveQuadPatternOutput>;
   protected readonly sources: DataSources;
   protected readonly contextDefault: ActionContext;
-  protected readonly emptyPatterns: Map<IDataSource, RDF.Quad[]>;
+  protected readonly emptyPatterns: Map<IDataSource, RDF.BaseQuad[]>;
   protected readonly skipEmptyPatterns: boolean;
 
   constructor(mediatorResolveQuadPattern: Mediator<Actor<IActionRdfResolveQuadPattern, IActorTest,
@@ -55,11 +55,11 @@ export class FederatedQuadSource implements ILazyQuadSource {
   /**
    * Checks if the given (child) pattern is a more bound version of the given (parent) pattern.
    * This will also return true if the patterns are equal.
-   * @param {RDF.Quad} child A child pattern.
-   * @param {RDF.Quad} parent A parent pattern.
+   * @param {RDF.BaseQuad} child A child pattern.
+   * @param {RDF.BaseQuad} parent A parent pattern.
    * @return {boolean} If child is a sub-pattern of parent
    */
-  public static isSubPatternOf(child: RDF.Quad, parent: RDF.Quad): boolean {
+  public static isSubPatternOf(child: RDF.BaseQuad, parent: RDF.BaseQuad): boolean {
     return (!FederatedQuadSource.isTermBound(parent.subject) || parent.subject.equals(child.subject))
       && (!FederatedQuadSource.isTermBound(parent.predicate) || parent.predicate.equals(child.predicate))
       && (!FederatedQuadSource.isTermBound(parent.object) || parent.object.equals(child.object))
@@ -75,14 +75,14 @@ export class FederatedQuadSource implements ILazyQuadSource {
    * This is under the assumption that sources will remain static during query evaluation.
    *
    * @param {IQuerySource} source
-   * @param {RDF.Quad} pattern
+   * @param {RDF.BaseQuad} pattern
    * @return {boolean}
    */
-  public isSourceEmpty(source: IDataSource, pattern: RDF.Quad) {
+  public isSourceEmpty(source: IDataSource, pattern: RDF.BaseQuad) {
     if (!this.skipEmptyPatterns) {
       return false;
     }
-    const emptyPatterns: RDF.Quad[] = this.emptyPatterns.get(source);
+    const emptyPatterns: RDF.BaseQuad[] = this.emptyPatterns.get(source);
     if (emptyPatterns) {
       for (const emptyPattern of emptyPatterns) {
         if (FederatedQuadSource.isSubPatternOf(pattern, emptyPattern)) {
@@ -114,7 +114,7 @@ export class FederatedQuadSource implements ILazyQuadSource {
 
       // If we can predict that the given source will have no bindings for the given pattern,
       // return an empty iterator.
-      const pattern: RDF.Quad = quad(subject || blankNode(), predicate || blankNode(), object || blankNode(),
+      const pattern: RDF.BaseQuad = quad(subject || blankNode(), predicate || blankNode(), object || blankNode(),
         graph || blankNode());
 
       // Anonymous function to handle totalItems from metadata

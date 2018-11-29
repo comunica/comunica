@@ -1,6 +1,6 @@
 {
   "name": "@comunica/bus-rdf-resolve-quad-pattern",
-  "version": "1.4.0",
+  "version": "1.4.4",
   "description": "A comunica bus for resolving quad patterns to quad streams.",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-resolve-quad-pattern",
   "lsd:components": "components/components.jsonld",
@@ -34,7 +34,7 @@
     "index.js"
   ],
   "dependencies": {
-    "asynciterator": "^2.0.0",
+    "asynciterator": "^2.0.1",
     "asyncreiterable": "^1.1.0"
   },
   "peerDependencies": {

@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-resolve-quad-pattern-federated",
-  "version": "1.4.0",
+  "version": "1.4.4",
   "description": "A federated rdf-resolve-quad-pattern actor",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-resolve-quad-pattern-federated",
   "lsd:components": "components/components.jsonld",
@@ -35,8 +35,8 @@
     "index.js"
   ],
   "dependencies": {
-    "@rdfjs/data-model": "^1.1.0",
-    "asynciterator": "^2.0.0",
+    "@rdfjs/data-model": "^1.1.1",
+    "asynciterator": "^2.0.1",
     "asynciterator-promiseproxy": "^2.0.0",
     "asynciterator-union": "^2.1.1",
     "lodash.omit": "^4.5.0"
@@ -46,7 +46,7 @@
     "@comunica/core": "^1.0.0"
   },
   "devDependencies": {
-    "@comunica/bus-rdf-resolve-quad-pattern": "^1.4.0",
+    "@comunica/bus-rdf-resolve-quad-pattern": "^1.4.4",
     "@comunica/core": "^1.4.0"
   },
   "jest": {

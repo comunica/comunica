@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-operation-service",
-  "version": "1.4.0",
+  "version": "1.4.4",
   "description": "A service query-operation actor",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-service",
   "lsd:components": "components/components.jsonld",
@@ -35,14 +35,14 @@
     "index.js"
   ],
   "dependencies": {
-    "asynciterator": "^2.0.0"
+    "asynciterator": "^2.0.1"
   },
   "peerDependencies": {
     "@comunica/bus-query-operation": "^1.2.0",
     "@comunica/core": "^1.2.0"
   },
   "devDependencies": {
-    "@comunica/bus-query-operation": "^1.4.0",
+    "@comunica/bus-query-operation": "^1.4.4",
     "@comunica/core": "^1.4.0"
   },
   "jest": {

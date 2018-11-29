@@ -1,8 +1,8 @@
-import {ActorQueryOperation, Bindings, IActorQueryOperationOutputBindings,
-  IActorQueryOperationOutputQuads} from "@comunica/bus-query-operation";
+import {ActorQueryOperation, Bindings, IActorQueryOperationOutputQuads} from "@comunica/bus-query-operation";
 import {Bus} from "@comunica/core";
 import {blankNode, literal, namedNode, quad, variable} from "@rdfjs/data-model";
-import {ArrayIterator, EmptyIterator} from "asynciterator";
+import {ArrayIterator} from "asynciterator";
+import * as RDF from "rdf-js";
 import {ActorQueryOperationConstruct} from "../lib/ActorQueryOperationConstruct";
 const arrayifyStream = require('arrayify-stream');
 
@@ -118,14 +118,14 @@ describe('ActorQueryOperationConstruct', () => {
         expect(await output.metadata()).toEqual({ totalItems: 6 });
         expect(output.type).toEqual('quads');
         expect(await arrayifyStream(output.quadStream)).toEqual([
-          quad(blankNode('s10'), literal('1'), literal('o1')),
-          quad(blankNode('s20'), namedNode('p2'), literal('1'), literal('1')),
+          quad<RDF.BaseQuad>(blankNode('s10'), literal('1'), literal('o1')),
+          quad<RDF.BaseQuad>(blankNode('s20'), namedNode('p2'), literal('1'), literal('1')),
 
-          quad(blankNode('s11'), literal('2'), literal('o1')),
-          quad(blankNode('s21'), namedNode('p2'), literal('2'), literal('2')),
+          quad<RDF.BaseQuad>(blankNode('s11'), literal('2'), literal('o1')),
+          quad<RDF.BaseQuad>(blankNode('s21'), namedNode('p2'), literal('2'), literal('2')),
 
-          quad(blankNode('s12'), literal('3'), literal('o1')),
-          quad(blankNode('s22'), namedNode('p2'), literal('3'), literal('3')),
+          quad<RDF.BaseQuad>(blankNode('s12'), literal('3'), literal('o1')),
+          quad<RDF.BaseQuad>(blankNode('s22'), namedNode('p2'), literal('3'), literal('3')),
         ]);
       });
     });

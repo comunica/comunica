@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-resolve-quad-pattern-sparql-json",
-  "version": "1.4.0",
+  "version": "1.4.4",
   "description": "A sparql rdf-resolve-quad-pattern actor",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-resolve-quad-pattern-sparql-json",
   "lsd:components": "components/components.jsonld",
@@ -35,13 +35,13 @@
     "index.js"
   ],
   "dependencies": {
-    "@rdfjs/data-model": "^1.1.0",
-    "asynciterator": "^2.0.0",
+    "@rdfjs/data-model": "^1.1.1",
+    "asynciterator": "^2.0.1",
     "asynciterator-promiseproxy": "^2.0.0",
     "node-web-streams": "^0.2.2",
-    "rdf-terms": "^1.1.0",
-    "sparqlalgebrajs": "^1.1.0",
-    "sparqljson-parse": "^1.4.0"
+    "rdf-terms": "^1.4.0",
+    "sparqlalgebrajs": "^1.3.1",
+    "sparqljson-parse": "^1.5.0"
   },
   "peerDependencies": {
     "@comunica/bus-http": "^1.0.0",
@@ -50,8 +50,8 @@
   },
   "devDependencies": {
     "@comunica/bus-http": "^1.4.0",
-    "@comunica/bus-query-operation": "^1.4.0",
-    "@comunica/bus-rdf-resolve-quad-pattern": "^1.4.0",
+    "@comunica/bus-query-operation": "^1.4.4",
+    "@comunica/bus-rdf-resolve-quad-pattern": "^1.4.4",
     "@comunica/core": "^1.4.0"
   },
   "jest": {

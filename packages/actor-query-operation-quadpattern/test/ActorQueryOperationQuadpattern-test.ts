@@ -88,7 +88,7 @@ describe('ActorQueryOperationQuadpattern', () => {
     });
 
     it('should get blank nodes _:s, _:p, _:o, _:g from pattern _:s _:p _:o _:g', () => {
-      return expect(actor.getVariables(<RDF.Quad> {
+      return expect(actor.getVariables(<RDF.BaseQuad> {
         graph: blankNode('g'),
         object: blankNode('o'),
         predicate: blankNode('p'),

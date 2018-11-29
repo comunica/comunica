@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-parse-n3",
-  "version": "1.4.0",
+  "version": "1.4.3",
   "description": "A N3 RDF Parse actor",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-parse-n3",
   "lsd:components": "components/components.jsonld",
@@ -37,12 +37,12 @@
     "@comunica/core": "^1.0.0"
   },
   "devDependencies": {
-    "@comunica/bus-rdf-parse": "^1.4.0",
+    "@comunica/bus-rdf-parse": "^1.4.2",
     "@comunica/core": "^1.4.0",
     "lodash.assign": "^4.2.0"
   },
   "dependencies": {
-    "n3": "1.0.0-beta.2"
+    "n3": "^1.0.0"
   },
   "jest": {
     "globals": {

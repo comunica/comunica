@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-operation-extend",
-  "version": "1.4.0",
+  "version": "1.4.4",
   "description": "A extend query-operation actor",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-extend",
   "lsd:components": "components/components.jsonld",
