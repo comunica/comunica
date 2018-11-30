@@ -35,10 +35,6 @@
     "index.js"
   ],
   "dependencies": {
-    "@rdfjs/data-model": "^1.1.0",
-    "asynciterator-promiseproxy": "^2.0.0",
-    "rdf-string": "^1.2.0",
-    "rdf-terms": "^1.2.0"
   },
   "peerDependencies": {
     "@comunica/actor-rdf-metadata-extract-hydra-controls": "^1.0.0",
