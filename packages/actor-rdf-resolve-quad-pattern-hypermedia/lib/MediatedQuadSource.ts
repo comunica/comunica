@@ -128,7 +128,7 @@ export class MediatedQuadSource implements ILazyQuadSource {
       // including quads that do not match the given matter.
       // Therefore, we have to filter away all non-matching quads here.
       let filteredOutput = output.data.filter(MediatedQuadSource.matchPattern.bind(null,
-        DataFactory.quad(subject, predicate, object, graph)));
+        DataFactory.quad(subject, predicate, object, graph || DataFactory.variable('v'))));
 
       // Detect duplicate variables in the pattern
       const duplicateElementLinks: { [element: string]: string[] } = this
