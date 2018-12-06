@@ -1,6 +1,6 @@
 {
   "name": "sparqlee",
-  "version": "0.0.1-rc7",
+  "version": "0.0.1-rc8",
   "description": "A simple SPARQL expression evaluator library",
   "main": "dist/index.js",
   "scripts": {
@@ -21,7 +21,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/wschella/Sparqlee.git"
+    "url": "git+https://github.com/comunica/sparqlee.git"
   },
   "keywords": [
     "sparql",
@@ -32,9 +32,9 @@
   "author": "Wout Schellaert",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/wschella/Sparqlee/issues"
+    "url": "https://github.com/comunica/sparqlee/issues"
   },
-  "homepage": "https://github.com/wschella/Sparqlee#readme",
+  "homepage": "https://github.com/comunica/sparqlee#readme",
   "devDependencies": {
     "@types/asynciterator": "^1.1.0",
     "@types/benchmark": "^1.0.30",

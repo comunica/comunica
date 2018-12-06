@@ -1,17 +1,26 @@
+# Editors
 .vscode/
+.idea/
+
+# Code
 bin/
-coverage/
 dist/bin/
 dist/test/
 dist/util/
 test/
 util/
 
+# Examples and reports
+examples/
+coverage/
+
+# Configs
 tslint.json
 tsconfig.json
 .travis.yml
 test-report.html
 
+# Package locks
 package-lock.json
 yarn.lock
 

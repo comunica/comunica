@@ -64,43 +64,43 @@ They might span entire streams and, depending on the use case, have very differe
 |    Function    | Implemented | Tested | Spec compliant |
 |----------------|-------------|--------|----------------|
 | [Operator Mapping](https://www.w3.org/TR/sparql11-query/#OperatorMapping)
-| ! (not)        | X | X | X |
-| + (unary plus) | X | X |   |
-| - (unary minus)| X | X |   |
-| \|\|           | X | X |   |
-| &&             | X | X |   |
-| =              | X | X |   |
-| !=             | X | X |   |
-| <              | X | X |   |
-| >              | X | X |   |
-| <=             | X | X |   |
-| >=             | X | X |   |
-| *              | X | X |   |
-| /              | X | X |   |
-| +              | X | X |   |
-| -              | X | X |   |
+| ! (not)        | ✓ | ✓ | ✓ |
+| + (unary plus) | ✓ | ✓ |   |
+| - (unary minus)| ✓ | ✓ |   |
+| \|\|           | ✓ | ✓ |   |
+| &&             | ✓ | ✓ |   |
+| =              | ✓ | ✓ |   |
+| !=             | ✓ | ✓ |   |
+| <              | ✓ | ✓ |   |
+| >              | ✓ | ✓ |   |
+| <=             | ✓ | ✓ |   |
+| >=             | ✓ | ✓ |   |
+| *              | ✓ | ✓ |   |
+| /              | ✓ | ✓ |   |
+| +              | ✓ | ✓ |   |
+| -              | ✓ | ✓ |   |
 | _Note_         |   |   | Spec compliance depends on #13 and #14 |
 | [Functional Forms](https://www.w3.org/TR/sparql11-query/#func-forms)
-| BOUND          | X |   |   |
-| IF             | X |   |   |
-| COALESCE       | X |   |   |
+| BOUND          | ✓ |   |   |
+| IF             | ✓ |   |   |
+| COALESCE       | ✓ |   |   |
 | NOT EXISTS     |   |   |   |
 | EXISTS         |   |   |   |
-| logical-or     | X | X | X |
-| logical-and    | X | X | X |
-| RDFTerm-equal  | X | X | ? |
-| sameTerm       | X |   |   |
-| IN             | X |   |   |
-| NOT IN         | X |   |   |
+| logical-or     | ✓ | ✓ | ✓ |
+| logical-and    | ✓ | ✓ | ✓ |
+| RDFTerm-equal  | ✓ | ✓ | ? |
+| sameTerm       | ✓ |   |   |
+| IN             | ✓ |   |   |
+| NOT IN         | ✓ |   |   |
 |
 | [On RDF Terms](https://www.w3.org/TR/sparql11-query/#func-rdfTerms)
 | isIRI          |   |   |   |
 | isBlank        |   |   |   |
 | isLiteral      |   |   |   |
 | isNumeric      |   |   |   |
-| str            | X | X | X |
-| lang           | X | X | X |
-| datatype       | X | X | X |
+| str            | ✓ | ✓ | ✓ |
+| lang           | ✓ | ✓ | ✓ |
+| datatype       | ✓ | ✓ | ✓ |
 | IRI            |   |   |   |
 | BNODE          |   |   |   |
 | STRDT          |   |   |   |
@@ -109,7 +109,7 @@ They might span entire streams and, depending on the use case, have very differe
 | STRUID         |   |   |   |
 |
 | [On Strings](https://www.w3.org/TR/sparql11-query/#func-strings)
-| STRLEN         | X | X | X |
+| STRLEN         | ✓ | ✓ | ✓ |
 | SUBSTR         |   |   |   |
 | UCASE          |   |   |   |
 | LCASE          |   |   |   |
@@ -120,12 +120,12 @@ They might span entire streams and, depending on the use case, have very differe
 | STRAFTER       |   |   |   |
 | ENCODE_FOR_URI |   |   |   |
 | CONCAT         |   |   |   |
-| langMatches    | X | X | ? |
-| REGEX          | X | X |   |
+| langMatches    | ✓ | ✓ | ? |
+| REGEX          | ✓ | ✓ |   |
 | REPLACE        |   |   |   |
 |
 | [On Numerics](https://www.w3.org/TR/sparql11-query/#func-numerics)
-| abs            | X |   |   |
+| abs            | ✓ |   |   |
 | round          |   |   |   |
 | ceil           |   |   |   |
 | floor          |   |   |   |
@@ -149,15 +149,13 @@ They might span entire streams and, depending on the use case, have very differe
 | SHA512         |   |   |   |
 |
 | [XPath Constructor Functions](https://www.w3.org/TR/sparql11-query/#FunctionMapping)
-| str (see 'On Terms') | X | X | X |
-| flt            |   |   |   |
-| dbl            |   |   |   |
-| dec            |   |   |   |
-| int            |   |   |   |
-| dT             |   |   |   |
-| bool           |   |   |   |
-| IRI            |   |   |   |
-| ltrl           |   |   |   |
+| str (see 'On Terms') | ✓ | ✓ | ✓ |
+| flt            | ✓ | ✓ |   |
+| dbl            | ✓ | ✓ |   |
+| dec            | ✓ | ✓ |   |
+| int            | ✓ | ✓ |   |
+| dT             | ✓ | ✓ |   |
+| bool           | ✓ | ✓ |   |
 
 ## Development
 
