@@ -3,7 +3,7 @@ import { literal, namedNode } from '@rdfjs/data-model';
 import { ArrayIterator } from 'asynciterator';
 import { Algebra } from 'sparqlalgebrajs';
 
-import { Bindings } from '@comunica/bus-query-operation';
+import { Bindings, IActorQueryOperationOutputBindings } from '@comunica/bus-query-operation';
 import { ActorQueryOperationExpression } from "@comunica/bus-query-operation-expression";
 import { Bus } from "@comunica/core";
 import { ActorQueryOperationExpressionAggregate } from "../lib/ActorQueryOperationExpressionAggregate";
@@ -31,12 +31,16 @@ describe('ActorQueryOperationExpressionAggregate', () => {
   };
 
   const int = () => namedNode("http://www.w3.org/2001/XMLSchema#integer");
-  const simpleBindingsStream = () => {
-    return new ArrayIterator([
-      Bindings({ '?a': literal('1', int()) }),
-      Bindings({ '?a': literal('2', int()) }),
-      Bindings({ '?a': literal('3', int()) }),
-    ]);
+  const simpleOperationOutput = (): IActorQueryOperationOutputBindings => {
+    return {
+      type: 'bindings',
+      variables: ['a'],
+      bindingsStream: new ArrayIterator([
+        Bindings({ '?a': literal('1', int()) }),
+        Bindings({ '?a': literal('2', int()) }),
+        Bindings({ '?a': literal('3', int()) }),
+      ]),
+    };
   };
 
   beforeEach(() => {
@@ -68,12 +72,12 @@ describe('ActorQueryOperationExpressionAggregate', () => {
     });
 
     it('should test', () => {
-      const action = { expression: simpleCount, bindingsStream: simpleBindingsStream() };
+      const action = { expression: simpleCount, operationOutputBindings: simpleOperationOutput() };
       return expect(actor.test(action)).resolves.toEqual(true);
     });
 
     it('should run', () => {
-      const action = { expression: simpleCount, bindingsStream: simpleBindingsStream() };
+      const action = { expression: simpleCount, operationOutputBindings: simpleOperationOutput() };
       return expect(actor.run(action)).resolves
         .toMatchObject({ result: literal("3", int()) });
     });

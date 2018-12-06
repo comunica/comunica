@@ -9,29 +9,27 @@ import { Bindings } from '@comunica/bus-query-operation';
 import {
   ActorQueryOperationExpression,
   IActionQueryOperationExpression,
+  IActorQueryOperationExpressionArgs,
   IActorQueryOperationExpressionOutput,
 } from "@comunica/bus-query-operation-expression";
-import { IActorArgs, IActorTest } from "@comunica/core";
 
 /**
  * A comunica Aggregate Query Operation Expression Actor.
  */
 export class ActorQueryOperationExpressionAggregate extends ActorQueryOperationExpression<RDF.Term> {
 
-  constructor(
-    args: IActorArgs<
-      IActionQueryOperationExpression,
-      IActorTest,
-      IActorQueryOperationExpressionOutput<RDF.Term>>,
-  ) {
+  constructor(args: IActorQueryOperationExpressionArgs<RDF.Term>) {
     super(args, 'aggregate');
   }
 
   public async run(action: IActionQueryOperationExpression): Promise<IActorQueryOperationExpressionOutput<RDF.Term>> {
     const aggregateExpression = action.expression as Algebra.AggregateExpression;
     const { aggregator, distinct, expression, separator, variable } = aggregateExpression;
+    const { bindingsStream } = action.operationOutputBindings;
 
     const evaluator = new SimpleEvaluator(expression);
+
+    // TODO: Check if mediatorquery exists;
 
     // TODO: Check if exists
     const aggregate = aggregators[aggregator as Aggregator];
@@ -41,12 +39,12 @@ export class ActorQueryOperationExpressionAggregate extends ActorQueryOperationE
 
     return new Promise<IActorQueryOperationExpressionOutput<RDF.Term>>(
       (resolve, reject) => {
-        action.bindingsStream.on("end", () =>
+        bindingsStream.on("end", () =>
           resolve({ result: aggregate.result(state) }));
 
-        action.bindingsStream.on("error", (err) => reject(err));
+        bindingsStream.on("error", (err) => reject(err));
 
-        action.bindingsStream.each((bindings: Bindings) => {
+        bindingsStream.each((bindings: Bindings) => {
           const result = evaluator.evaluate(bindings);
           state = aggregate.iter(state, result);
         });

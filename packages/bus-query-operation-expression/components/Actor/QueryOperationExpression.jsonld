@@ -18,6 +18,12 @@
             "defaultScope": "cbqoe:Actor/QueryOperationExpression",
             "defaultScopedValue": { "@id": "cbqoe:Bus/QueryOperationExpression" }
           }
+        },
+        {
+          "@id": "cbqo:mediatorQueryOperation",
+          "comment": "The query operation mediator",
+          "required": true,
+          "unique": true
         }
       ],
       "constructorArguments": [
@@ -25,6 +31,14 @@
           "@id": "cbqoe:Actor/QueryOperationExpression/constructorArgumentsObject",
           "@type": "https://linkedsoftwaredependencies.org/vocabularies/object-oriented#Object",
           "extends": "cc:Actor/constructorArgumentsObject"
+        },
+        {
+          "@id": "cbqo:Actor/QueryOperationTypedMediated/constructorArgumentsObject",
+          "extends": "cbqo:Actor/QueryOperation/constructorArgumentsObject",
+          "fields": {
+            "keyRaw": "mediatorQueryOperation",
+            "value": "cbqo:mediatorQueryOperation"
+          }
         }
       ]
     }

@@ -1,8 +1,12 @@
-import * as RDF from 'rdf-js';
 import { Algebra } from 'sparqlalgebrajs';
 
-import { BindingsStream } from '@comunica/bus-query-operation';
-import { Actor, IAction, IActorArgs, IActorOutput, IActorTest } from "@comunica/core";
+import {
+  Bindings,
+  IActionQueryOperation,
+  IActorQueryOperationOutput,
+  IActorQueryOperationOutputBindings,
+} from '@comunica/bus-query-operation';
+import { Actor, IAction, IActorArgs, IActorOutput, IActorTest, Mediator } from "@comunica/core";
 
 /**
  * A comunica actor for query-operation-expression events.
@@ -19,7 +23,11 @@ import { Actor, IAction, IActorArgs, IActorOutput, IActorTest } from "@comunica/
  */
 export abstract class ActorQueryOperationExpression<Result> extends
   Actor<IActionQueryOperationExpression, IActorTest, IActorQueryOperationExpressionOutput<Result>> {
+
+  public readonly mediatorQueryOperation: QueryOperationMediator;
+
   protected expressionType: 'aggregate' | 'existence' | 'named';
+
   constructor(
     args: IActorArgs<IActionQueryOperationExpression, IActorTest, IActorQueryOperationExpressionOutput<Result>>,
     expressionType: 'aggregate' | 'existence' | 'named',
@@ -34,11 +42,24 @@ export abstract class ActorQueryOperationExpression<Result> extends
 
 }
 
+export interface IActorQueryOperationExpressionArgs<Result>
+  extends IActorArgs<IActionQueryOperationExpression, IActorTest, IActorQueryOperationExpressionOutput<Result>> {
+  mediatorQueryOperation: QueryOperationMediator;
+}
+
 export interface IActionQueryOperationExpression extends IAction {
   expression: Algebra.Expression;
-  bindingsStream: BindingsStream;
+  operationOutputBindings: IActorQueryOperationOutputBindings;
+  bindings?: Bindings;
 }
 
 export interface IActorQueryOperationExpressionOutput<Result> extends IActorOutput {
   result: Result;
 }
+
+type QueryOperationMediator = Mediator<
+  Actor<IActionQueryOperation, IActorTest, IActorQueryOperationOutput>,
+  IActionQueryOperation,
+  IActorTest,
+  IActorQueryOperationOutput
+  >;
