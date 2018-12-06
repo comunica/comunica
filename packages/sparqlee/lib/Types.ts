@@ -28,6 +28,6 @@ export type Hooks = {
 };
 
 // TODO: Document
-export type ExistenceHook = (expression: Alg.ExistenceExpression) => Promise<boolean>;
-export type AggregateHook = (expression: Alg.AggregateExpression) => Promise<RDF.Term>;
 export type NamedFuncHook = (expression: Alg.NamedExpression) => Promise<RDF.Term>;
+export type AggregateHook = (expression: Alg.AggregateExpression) => Promise<RDF.Term>;
+export type ExistenceHook = (expression: Alg.ExistenceExpression, mapping: Bindings) => Promise<boolean>;

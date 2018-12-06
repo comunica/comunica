@@ -1,7 +1,9 @@
+import * as RDFDM from '@rdfjs/data-model';
 import * as RDF from 'rdf-js';
 import { Algebra as Alg } from 'sparqlalgebrajs';
 
 import * as E from '../expressions/Expressions';
+import * as C from '../util/Consts';
 import * as Err from '../util/Errors';
 
 import { transformAlgebra, transformTerm } from '../Transformation';
@@ -90,12 +92,15 @@ export class AsyncEvaluator {
     return expr.apply(argResults);
   }
 
-  // TODO
   private async evalExistence(expr: Existence, mapping: Bindings): Promise<Term> {
-    throw new Err.UnimplementedError('Existence Operator');
+    const result = await expr.exists_with(mapping);
+    return transformTerm({
+      term: RDFDM.literal(result.toString(), C.make(C.TypeURL.XSD_BOOLEAN)),
+      expressionType: 'term',
+      type: 'expression',
+    }) as Term;
   }
 
-  // TODO
   private async evalAggregate(expr: Aggregate, _mapping: Bindings): Promise<Term> {
     const result = await expr.aggregate();
     return transformTerm({

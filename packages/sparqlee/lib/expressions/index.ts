@@ -5,3 +5,4 @@ export * from './Operator';
 export * from './SpecialOperator';
 export * from './Named';
 export * from './Aggregate';
+export * from './Existence';

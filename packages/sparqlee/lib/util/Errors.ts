@@ -134,6 +134,12 @@ export class NoAggregator extends Error {
   }
 }
 
+export class NoExistenceHook extends Error {
+  constructor() {
+    super('EXISTS found, but no existence hook provided.');
+  }
+}
+
 function pp<T>(o: T) {
   return JSON.stringify(o);
 }

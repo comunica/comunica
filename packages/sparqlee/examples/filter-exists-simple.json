@@ -1,4 +1,5 @@
 {
+  "query": "SELECT * WHERE { FILTER EXISTS {?s ?p ?o}}",
   "result": {
     "type": "project",
     "input": {

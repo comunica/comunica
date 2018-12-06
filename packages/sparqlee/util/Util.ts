@@ -49,7 +49,7 @@ export function evaluate(expr: string, bindings = Bindings({})): Promise<RDF.Ter
   return evaluator.evaluate(bindings);
 }
 
-export function mockExistence(expression: Alg.ExistenceExpression): Promise<boolean> {
+export function mockExistence(expression: Alg.ExistenceExpression, mapping: Bindings): Promise<boolean> {
   return Promise.resolve(true);
 }
 

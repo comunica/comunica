@@ -12,7 +12,7 @@ import {
   regularFunctions,
   specialFunctions,
 } from './functions';
-import { AggregateHook, Hooks } from './Types';
+import { AggregateHook, ExistenceHook, Hooks } from './Types';
 import { TypeURL as DT } from './util/Consts';
 
 export function transformAlgebra(expr: Alg.Expression, hooks: Hooks = {}): E.Expression {
@@ -21,12 +21,16 @@ export function transformAlgebra(expr: Alg.Expression, hooks: Hooks = {}): E.Exp
   const types = Alg.expressionTypes;
 
   switch (expr.expressionType) {
-    case types.TERM: return transformTerm(expr as Alg.TermExpression);
-    case types.OPERATOR: return transformOperator(expr as Alg.OperatorExpression);
-    case types.NAMED: return transformNamed(expr as Alg.NamedExpression);
-    // TODO
-    case types.EXISTENCE: throw new Err.UnimplementedError('Existence Operator');
-    case types.AGGREGATE: return transformAggregate(expr as Alg.AggregateExpression, hooks.aggregate);
+    case types.TERM:
+      return transformTerm(expr as Alg.TermExpression);
+    case types.OPERATOR:
+      return transformOperator(expr as Alg.OperatorExpression);
+    case types.NAMED:
+      return transformNamed(expr as Alg.NamedExpression);
+    case types.EXISTENCE:
+      return transformExistence(expr as Alg.ExistenceExpression, hooks.existence);
+    case types.AGGREGATE:
+      return transformAggregate(expr as Alg.AggregateExpression, hooks.aggregate);
     default: throw new Err.InvalidExpressionType(expr);
   }
 }
@@ -166,4 +170,9 @@ export function transformAggregate(expr: Alg.AggregateExpression, hook: Aggregat
   const name = expr.aggregator;
   if (!hook) { throw new Err.NoAggregator(name); }
   return new E.Aggregate(name, hook, expr);
+}
+
+export function transformExistence(expr: Alg.ExistenceExpression, hook: ExistenceHook) {
+  if (!hook) { throw new Err.NoExistenceHook(); }
+  return new E.Existence(hook, expr);
 }

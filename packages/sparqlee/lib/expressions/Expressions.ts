@@ -35,8 +35,8 @@ export type AggregateExpression = ExpressionProps & {
 
 export type ExistenceExpression = ExpressionProps & {
   expressionType: ExpressionType.Existence;
-  not: boolean;
-  input: Algebra.Operation;
+  expression: Algebra.ExistenceExpression;
+  exists_with(mapping: Bindings): Promise<boolean>
 };
 
 export type NamedExpression = ExpressionProps & {
