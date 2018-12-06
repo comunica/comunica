@@ -1,0 +1,67 @@
+{
+  "query": "SELECT (count(?x) as ?Cx) WHERE { ?x ?y ?z }",
+  "description": "Counts the amount of subject in the database",
+  "result": {
+    "type": "project",
+    "input": {  
+      "type": "extend",
+      "input": {
+        "type": "group",
+        "input": {
+          "type": "bgp",
+          "patterns": [
+            {
+              "subject": {
+                "value": "x"
+              },
+              "predicate": {
+                "value": "y"
+              },
+              "object": {
+                "value": "z"
+              },
+              "graph": {
+                "value": ""
+              },
+              "type": "pattern"
+            }
+          ]
+        },
+        "variables": [],
+        "aggregates": [
+          {
+            "type": "expression",
+            "expressionType": "aggregate",
+            "aggregator": "count",
+            "expression": {
+              "type": "expression",
+              "expressionType": "term",
+              "term": {
+                "value": "x"
+              }
+            },
+            "distinct": false,
+            "variable": {
+              "value": "var0"
+            }
+          }
+        ]
+      },
+      "variable": {
+        "value": "Cx"
+      },
+      "expression": {
+        "type": "expression",
+        "expressionType": "term",
+        "term": {
+          "value": "var0"
+        }
+      }
+    },
+    "variables": [
+      {
+        "value": "Cx"
+      }
+    ]
+  }
+}

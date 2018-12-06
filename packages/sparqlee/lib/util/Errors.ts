@@ -27,13 +27,13 @@ export class InvalidLexicalForm extends ExpressionError {
 
 export class UnboundVariableError extends ExpressionError {
   constructor(public variable: string, public bindings: Bindings) {
-    super(`Unbound variable ${variable}`);
+    super(`Unbound variable ${pp(variable)}`);
   }
 }
 
 export class EBVCoercionError extends ExpressionError {
   constructor(public arg: E.Term) {
-    super(`Cannot coerce term to EBV ${JSON.stringify(arg)}`);
+    super(`Cannot coerce term to EBV ${pp(arg)}`);
   }
 }
 
@@ -59,20 +59,20 @@ export class InError extends ExpressionError {
 
 export class InvalidArity extends ExpressionError {
   constructor(public args: E.Expression[], public op: C.Operator) {
-    super('The amount of args don\'t match the arity of the operator.');
+    super(`The amount of args don't match the arity of the operator '${pp(op)}'.`);
   }
 }
 
 export class InvalidArgumentTypes extends ExpressionError {
   // tslint:disable-next-line:no-any
   constructor(public args: E.Expression[], public op: C.Operator | C.NamedOperator) {
-    super(`Argument types not valid for operator: '${op}' with '${args}`);
+    super(`Argument types not valid for operator: '${pp(op)}' with '${pp(args)}`);
   }
 }
 
 export class CastError<T> extends ExpressionError {
   constructor(public arg: T, cast: C.TypeURL) {
-    super(`Invalid cast: '${arg}' to '${cast}'`);
+    super(`Invalid cast: '${pp(arg)}' to '${pp(cast)}'`);
   }
 }
 
@@ -100,36 +100,40 @@ export class UnimplementedError extends Error {
 
 export class InvalidExpression<T> extends Error {
   constructor(expr: T) {
-    super(`Invalid SPARQL Expression '${expr}'`);
+    super(`Invalid SPARQL Expression '${pp(expr)}'`);
   }
 }
 
 export class InvalidExpressionType<T> extends Error {
   constructor(public expr: T) {
-    super(`Invalid expression type for SPARQL Expression '${expr}'`);
+    super(`Invalid expression type for SPARQL Expression '${pp(expr)}'`);
   }
 }
 
 export class InvalidTermType extends Error {
   constructor(public term: Algebra.TermExpression) {
-    super(`Invalid term type for term '${term}'`);
+    super(`Invalid term type for term '${pp(term)}'`);
   }
 }
 
 export class UnknownOperator extends Error {
   constructor(name: string) {
-    super(`Unknown operator: '${name}`);
+    super(`Unknown operator: '${pp(name)}`);
   }
 }
 
 export class UnknownNamedOperator extends Error {
   constructor(name: string) {
-    super(`Unknown named operator: '${name}'`);
+    super(`Unknown named operator: '${pp(name)}'`);
   }
 }
 
 export class NoAggregator extends Error {
   constructor(name?: string) {
-    super(`Aggregate expression ${name} found, but no aggregate hook provided.`);
+    super(`Aggregate expression ${pp(name)} found, but no aggregate hook provided.`);
   }
+}
+
+function pp<T>(o: T) {
+  return JSON.stringify(o);
 }
