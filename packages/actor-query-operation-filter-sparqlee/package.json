@@ -35,7 +35,7 @@
     "index.js"
   ],
   "dependencies": {
-    "sparqlee": "git+https://github.com/comunica/sparqlee"
+    "sparqlee": "0.0.1-rc9"
   },
   "peerDependencies": {
     "@comunica/bus-query-operation": "^1.4.0",

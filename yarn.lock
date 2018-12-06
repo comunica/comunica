@@ -1169,7 +1169,7 @@
   resolved "https://registry.yarnpkg.com/@rdfjs/data-model/-/data-model-1.1.0.tgz#15d9c5b7b8166893696565aefb65bad95da3fd99"
   integrity sha512-vK7TlSFBJQihqMoMgXK/VtcRV+rCQSOLB9VGAfv4Pr6BzUbBcR0CeM/RpkD4bHGX3816eaaURH1CNgN7togWdw==
 
-"@types/asynciterator@^1.1.1":
+"@types/asynciterator@^1.1.0", "@types/asynciterator@^1.1.1":
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/@types/asynciterator/-/asynciterator-1.1.1.tgz#21ae5e3729ab2e87d324a044b2cd6288226da7fc"
   integrity sha512-KgjXxTtWbMW7UA4oZauIfg2rCl5+5LbsoVF5DwwpXVQxzSbez2PQ9NAlbJlBjIHqKLOpWcdjqL+wyrNepvTZOg==
@@ -1240,6 +1240,13 @@
   dependencies:
     "@types/lodash" "*"
 
+"@types/lodash.isequal@^4.5.2":
+  version "4.5.3"
+  resolved "https://registry.yarnpkg.com/@types/lodash.isequal/-/lodash.isequal-4.5.3.tgz#b0d2747d3e76cc94da47ebd932c69a98c0ba61b4"
+  integrity sha512-tpTUmHksO2H9RF98Y2w7v06ZeEKAxHPo2ysL0bV5qv5UBweiZl33NFu5QYmYOSxSnHMqBt/vsVsBVeQAcJiokg==
+  dependencies:
+    "@types/lodash" "*"
+
 "@types/lodash.mapvalues@^4.6.3":
   version "4.6.4"
   resolved "https://registry.yarnpkg.com/@types/lodash.mapvalues/-/lodash.mapvalues-4.6.4.tgz#3b47d455a827cdd96bc72cfa7170f200c0512d43"
@@ -1280,6 +1287,11 @@
   resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.116.tgz#5ccf215653e3e8c786a58390751033a9adca0eb9"
   integrity sha512-lRnAtKnxMXcYYXqOiotTmJd74uawNWuPnsnPrrO7HiFuE3npE2iQhfABatbYDyxTNqZNuXzcKGhw37R7RjBFLg==
 
+"@types/lodash@^4.14.105":
+  version "4.14.119"
+  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.119.tgz#be847e5f4bc3e35e46d041c394ead8b603ad8b39"
+  integrity sha512-Z3TNyBL8Vd/M9D9Ms2S3LmFq2sSMzahodD6rCS9V2N44HUMINb75jNkSuwAx7eo2ufqTdfOdtGQpNbieUjPQmw==
+
 "@types/lru-cache@^4.1.0":
   version "4.1.1"
   resolved "https://registry.yarnpkg.com/@types/lru-cache/-/lru-cache-4.1.1.tgz#b2d87a5e3df8d4b18ca426c5105cd701c2306d40"
@@ -1315,6 +1327,11 @@
   version "10.11.3"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-10.11.3.tgz#c055536ac8a5e871701aa01914be5731539d01ee"
   integrity sha512-3AvcEJAh9EMatxs+OxAlvAEs7OTy6AG94mcH1iqyVDwVVndekLxzwkWQ/Z4SDbY6GO2oyUXyWW8tQ4rENSSQVQ==
+
+"@types/node@^10.11.4":
+  version "10.12.12"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-10.12.12.tgz#e15a9d034d9210f00320ef718a50c4a799417c47"
+  integrity sha512-Pr+6JRiKkfsFvmU/LK68oBRCQeEg36TyAbPhc2xpez24OOZZCuoIhWGTd39VZy6nGafSbxzGouFPTFD/rR1A0A==
 
 "@types/parse-link-header@^1.0.0":
   version "1.0.0"
@@ -7581,12 +7598,17 @@ sparqlalgebrajs@^1.0.1, sparqlalgebrajs@^1.1.0:
     rdf-string "^1.2.0"
     sparqljs "^2.0.3"
 
-"sparqlee@git+https://github.com/comunica/sparqlee":
-  version "0.0.1-rc7"
-  resolved "git+https://github.com/comunica/sparqlee#8f773e0fb72c861724ab3d22b9c8bf1d6f5444a0"
+sparqlee@0.0.1-rc9:
+  version "0.0.1-rc9"
+  resolved "https://registry.yarnpkg.com/sparqlee/-/sparqlee-0.0.1-rc9.tgz#c95b522f9e4494d8594b2a7175f602d3341551bf"
+  integrity sha512-B5fuD2Qng5OIz9u9NcSMgSNz5kbdOjZnkjhe0aRiCiwJ6VohdEdQ71CnvOXNJn+q4smG60g+Blqx5QSoh+Z+Uw==
   dependencies:
     "@rdfjs/data-model" "^1.1.0"
-    bluebird "^3.5.1"
+    "@types/asynciterator" "^1.1.0"
+    "@types/lodash" "^4.14.105"
+    "@types/lodash.isequal" "^4.5.2"
+    "@types/node" "^10.11.4"
+    "@types/rdf-js" "^2.0.1"
     immutable "^3.8.2"
     rdf-string "^1.1.1"
     sparqlalgebrajs "^1.1.0"
