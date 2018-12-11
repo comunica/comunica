@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v1.4.6"></a>
+## [v1.4.6](https://github.com/comunica/comunica/compare/v1.4.5...v1.4.6) - 2018-12-11
+
+### TODO: categorize commits, choose titles from: Added, Changed, Deprecated, Removed, Fixed, Security.
+* [Fix missing dependencies between new hypermedia actors](https://github.com/comunica/comunica/commit/806f11aaf95fed4d4150b7e791da1f338d44da23)
+
 <a name="v1.4.5"></a>
 ## [v1.4.5](https://github.com/comunica/comunica/compare/v1.4.4...v1.4.5) - 2018-12-11
 
