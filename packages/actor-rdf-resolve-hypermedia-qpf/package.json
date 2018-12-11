@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-resolve-hypermedia-qpf",
-  "version": "1.4.0",
+  "version": "1.4.5",
   "description": "A hypermedia-qpf rdf-resolve-quad-pattern actor",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-resolve-hypermedia-qpf",
   "lsd:components": "components/components.jsonld",
@@ -48,8 +48,8 @@
   },
   "devDependencies": {
     "@comunica/actor-rdf-metadata-extract-hydra-controls": "^1.4.0",
-    "@comunica/bus-rdf-resolve-hypermedia": "^1.4.0",
-    "@comunica/bus-rdf-resolve-quad-pattern": "^1.4.0",
+    "@comunica/bus-rdf-resolve-hypermedia": "^1.4.5",
+    "@comunica/bus-rdf-resolve-quad-pattern": "^1.4.5",
     "@comunica/core": "^1.4.0"
   },
   "jest": {

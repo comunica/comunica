@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-operation-sparql-endpoint",
-  "version": "1.4.4",
+  "version": "1.4.5",
   "description": "A sparql-endpoint query-operation actor",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-sparql-endpoint",
   "lsd:components": "components/components.jsonld",
@@ -43,17 +43,17 @@
     "sparqlalgebrajs": "^1.4.0"
   },
   "peerDependencies": {
-    "@comunica/utils-datasource": "^1.2.0",
     "@comunica/bus-http": "^1.2.0",
     "@comunica/bus-query-operation": "^1.2.0",
-    "@comunica/core": "^1.2.0"
+    "@comunica/core": "^1.2.0",
+    "@comunica/utils-datasource": "^1.2.0"
   },
   "devDependencies": {
-    "@comunica/utils-datasource": "^1.4.0",
     "@comunica/bus-http": "^1.4.0",
     "@comunica/bus-query-operation": "^1.4.4",
     "@comunica/core": "^1.4.0",
-    "@comunica/mediatortype-httprequests": "^1.4.0"
+    "@comunica/mediatortype-httprequests": "^1.4.0",
+    "@comunica/utils-datasource": "^1.4.5"
   },
   "jest": {
     "globals": {

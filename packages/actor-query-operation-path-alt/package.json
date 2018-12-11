@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-operation-path-alt",
-  "version": "1.4.4",
+  "version": "1.4.5",
   "description": "A path-alt query-operation actor",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-path-alt",
   "lsd:components": "components/components.jsonld",
@@ -39,7 +39,7 @@
     "@comunica/core": "^1.2.0"
   },
   "dependencies": {
-    "@comunica/actor-abstract-path": "^1.4.4",
+    "@comunica/actor-abstract-path": "^1.4.5",
     "asynciterator-union": "^2.1.1",
     "lodash.uniq": "^4.5.0",
     "sparqlalgebrajs": "^1.4.0"

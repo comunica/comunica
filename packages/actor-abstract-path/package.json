@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-abstract-path",
-  "version": "1.4.4",
+  "version": "1.4.5",
   "description": "An abstract actor for handling mediatypes",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-abstract-path",
   "lsd:components": "components/components.jsonld",

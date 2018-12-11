@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-resolve-quad-pattern-sparql-json",
-  "version": "1.4.4",
+  "version": "1.4.5",
   "description": "A sparql rdf-resolve-quad-pattern actor",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-resolve-quad-pattern-sparql-json",
   "lsd:components": "components/components.jsonld",
@@ -51,7 +51,7 @@
   "devDependencies": {
     "@comunica/bus-http": "^1.4.0",
     "@comunica/bus-query-operation": "^1.4.4",
-    "@comunica/bus-rdf-resolve-quad-pattern": "^1.4.4",
+    "@comunica/bus-rdf-resolve-quad-pattern": "^1.4.5",
     "@comunica/core": "^1.4.0"
   },
   "jest": {

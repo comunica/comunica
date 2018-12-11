@@ -1,6 +1,17 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v1.4.5"></a>
+## [v1.4.5](https://github.com/comunica/comunica/compare/v1.4.4...v1.4.5) - 2018-12-11
+
+### Fixed
+* [Fix blank nodes in data being seen as variables](https://github.com/comunica/comunica/commit/04edbe462c8962cbd198a9643664a5718d21b9c2)
+* [Fix queries with a variable graph only matching the default graph](https://github.com/comunica/comunica/commit/c0d9ea47e86124fd78d6e48574fb7dadcd4dfda2)
+* [Fix missing base IRI in JSON-LD parser, Closes #342](https://github.com/comunica/comunica/commit/b9562cc53d7597ce89f33374de4c28785599d134)
+
+### Changed
+* [Split resolve quad pattern actor into two separate modules](https://github.com/comunica/comunica/commit/08e300e598cc173ad81fc383f7a441e16e7f5309)
+
 <a name="v1.4.4"></a>
 ## [v1.4.4](https://github.com/comunica/comunica/compare/v1.4.3...v1.4.4) - 2018-11-13
 
