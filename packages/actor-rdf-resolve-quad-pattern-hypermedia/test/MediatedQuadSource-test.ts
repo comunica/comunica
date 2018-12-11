@@ -100,8 +100,8 @@ describe('MediatedQuadSource', () => {
         return expect(source.getDuplicateElementLinks(V1, V1, V3, V4)).toEqual({ subject: [ 'predicate' ] });
       });
 
-      it('should return correctly on patterns with equal subject and predicate blank nodes', () => {
-        return expect(source.getDuplicateElementLinks(BV1, BV1, V3, V4)).toEqual({ subject: [ 'predicate' ] });
+      it('should ignore patterns with equal subject and predicate blank nodes', () => {
+        return expect(source.getDuplicateElementLinks(BV1, BV1, V3, V4)).toEqual(null);
       });
 
       it('should return correctly on patterns with equal subject and object variables', () => {

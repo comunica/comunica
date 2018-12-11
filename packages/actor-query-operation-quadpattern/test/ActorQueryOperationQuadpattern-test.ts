@@ -33,17 +33,17 @@ describe('ActorQueryOperationQuadpattern', () => {
     });
   });
 
-  describe('#isTermVariableOrBlank', () => {
+  describe('#isTermVariable', () => {
     it('should be true for a variable', () => {
-      expect(ActorQueryOperationQuadpattern.isTermVariableOrBlank(variable('v'))).toBeTruthy();
+      expect(ActorQueryOperationQuadpattern.isTermVariable(variable('v'))).toBeTruthy();
     });
 
-    it('should be true for a blank node', () => {
-      expect(ActorQueryOperationQuadpattern.isTermVariableOrBlank(blankNode())).toBeTruthy();
+    it('should be false for a blank node', () => {
+      expect(ActorQueryOperationQuadpattern.isTermVariable(blankNode())).toBeFalsy();
     });
 
     it('should be false for a named node', () => {
-      expect(ActorQueryOperationQuadpattern.isTermVariableOrBlank(namedNode('n'))).toBeFalsy();
+      expect(ActorQueryOperationQuadpattern.isTermVariable(namedNode('n'))).toBeFalsy();
     });
   });
 
@@ -87,13 +87,13 @@ describe('ActorQueryOperationQuadpattern', () => {
       })).toEqual([ '?s', '?p', '?o', '?g' ]);
     });
 
-    it('should get blank nodes _:s, _:p, _:o, _:g from pattern _:s _:p _:o _:g', () => {
+    it('should not get blank nodes _:s, _:p, _:o, _:g from pattern _:s _:p _:o _:g', () => {
       return expect(actor.getVariables(<RDF.BaseQuad> {
         graph: blankNode('g'),
         object: blankNode('o'),
         predicate: blankNode('p'),
         subject: blankNode('s'),
-      })).toEqual([ '_:s', '_:p', '_:o', '_:g' ]);
+      })).toEqual([]);
     });
 
     it('should get variable ?s from pattern ?s p o g', () => {

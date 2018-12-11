@@ -23,12 +23,12 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
   }
 
   /**
-   * Check if a term is a variable or a blank node.
+   * Check if a term is a variable.
    * @param {RDF.Term} term An RDF term.
    * @return {any} If the term is a variable or blank node.
    */
-  public static isTermVariableOrBlank(term: RDF.Term): any {
-    return term.termType === 'Variable' || term.termType === 'BlankNode';
+  public static isTermVariable(term: RDF.Term): any {
+    return term.termType === 'Variable';
   }
 
   /**
@@ -39,7 +39,7 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
    */
   public getVariables(pattern: RDF.BaseQuad): string[] {
     return uniqTerms(getTerms(pattern)
-      .filter(ActorQueryOperationQuadpattern.isTermVariableOrBlank))
+      .filter(ActorQueryOperationQuadpattern.isTermVariable))
       .map(termToString);
   }
 
@@ -58,7 +58,7 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
     // Convenience datastructure for mapping quad elements to variables
     const elementVariables: {[key: string]: string} = reduceTerms(pattern,
       (acc: {[key: string]: string}, term: RDF.Term, key: QuadTermName) => {
-        if (ActorQueryOperationQuadpattern.isTermVariableOrBlank(term)) {
+        if (ActorQueryOperationQuadpattern.isTermVariable(term)) {
           acc[key] = termToString(term);
         }
         return acc;

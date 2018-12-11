@@ -43,7 +43,7 @@ export class MediatedQuadSource implements ILazyQuadSource {
   public static matchPattern(pattern: RDF.Quad, quad: RDF.Quad): boolean {
     for (const termName of QUAD_TERM_NAMES) {
       const patternTerm: RDF.Term = (<any> pattern)[termName];
-      if (patternTerm && patternTerm.termType !== 'BlankNode' && patternTerm.termType !== 'Variable') {
+      if (patternTerm && patternTerm.termType !== 'Variable') {
         const quadTerm: RDF.Term = (<any> quad)[termName];
         if (!patternTerm.equals(quadTerm)) {
           return false;
@@ -81,7 +81,7 @@ export class MediatedQuadSource implements ILazyQuadSource {
     let duplicateVariables = false;
     const input: { [id: string]: RDF.Term } = { subject, predicate, object, graph };
     for (const key of Object.keys(input)) {
-      if (input[key] && (input[key].termType === 'Variable' || input[key].termType === 'BlankNode')) {
+      if (input[key] && input[key].termType === 'Variable') {
         const val = termToString(input[key]);
         const length = (variableElements[val] || (variableElements[val] = [])).push(key);
         duplicateVariables = duplicateVariables || length > 1;

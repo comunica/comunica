@@ -132,7 +132,7 @@ export class ActorQueryOperationBgpLeftDeepSmallestSort extends ActorQueryOperat
    * @return {RDF.Term} The materialized term.
    */
   public static materializeTerm(term: RDF.Term, bindings: Bindings): RDF.Term {
-    if (term.termType === 'Variable' || term.termType === 'BlankNode') {
+    if (term.termType === 'Variable') {
       const value: RDF.Term = bindings.get(termToString(term));
       if (value) {
         return value;

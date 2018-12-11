@@ -3,7 +3,8 @@ import {
   IActorRdfResolveQuadPatternOutput, IDataSource, ILazyQuadSource, KEY_CONTEXT_SOURCE, KEY_CONTEXT_SOURCES,
 } from "@comunica/bus-rdf-resolve-quad-pattern";
 import {ActionContext, Actor, IActorTest, Mediator} from "@comunica/core";
-import {blankNode, quad} from "@rdfjs/data-model";
+import {quad} from "@rdfjs/data-model";
+import * as DataFactory from "@rdfjs/data-model";
 import {AsyncIterator, EmptyIterator} from "asynciterator";
 import {PromiseProxyIterator} from "asynciterator-promiseproxy";
 import {RoundRobinUnionIterator} from "asynciterator-union";
@@ -44,12 +45,12 @@ export class FederatedQuadSource implements ILazyQuadSource {
 
   /**
    * Check if the given RDF term is not bound to an exact value.
-   * I.e., if it is not a Variable or a BlankNode.
+   * I.e., if it is not a Variable.
    * @param {RDF.Term} term An RDF term.
    * @return {boolean} If it is not bound.
    */
   public static isTermBound(term: RDF.Term) {
-    return term.termType !== 'Variable' && term.termType !== 'BlankNode';
+    return term.termType !== 'Variable';
   }
 
   /**
@@ -64,6 +65,19 @@ export class FederatedQuadSource implements ILazyQuadSource {
       && (!FederatedQuadSource.isTermBound(parent.predicate) || parent.predicate.equals(child.predicate))
       && (!FederatedQuadSource.isTermBound(parent.object) || parent.object.equals(child.object))
       && (!FederatedQuadSource.isTermBound(parent.graph) || parent.graph.equals(child.graph));
+  }
+
+  /**
+   * Converts falsy terms to variables.
+   * This is the reverse operation of {@link ActorRdfResolveQuadPatternSource#variableToNull}.
+   * @param {Term} term A term or null.
+   * @return {Term} A term.
+   */
+  public static nullToVariable(term: RDF.Term): RDF.Term {
+    if (!term) {
+      return DataFactory.variable('v');
+    }
+    return term;
   }
 
   /**
@@ -114,8 +128,12 @@ export class FederatedQuadSource implements ILazyQuadSource {
 
       // If we can predict that the given source will have no bindings for the given pattern,
       // return an empty iterator.
-      const pattern: RDF.BaseQuad = quad(subject || blankNode(), predicate || blankNode(), object || blankNode(),
-        graph || blankNode());
+      const pattern: RDF.BaseQuad = quad(
+        FederatedQuadSource.nullToVariable(subject),
+        FederatedQuadSource.nullToVariable(predicate),
+        FederatedQuadSource.nullToVariable(object),
+        FederatedQuadSource.nullToVariable(graph),
+      );
 
       // Anonymous function to handle totalItems from metadata
       const checkEmitMetadata = (currentTotalItems: number) => {

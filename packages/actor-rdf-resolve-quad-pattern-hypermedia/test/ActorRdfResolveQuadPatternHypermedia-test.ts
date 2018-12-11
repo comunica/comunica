@@ -254,9 +254,12 @@ describe('ActorRdfResolveQuadPatternHypermedia', () => {
         .then(async (output) => {
           expect(await output.metadata()).toBe(metadataQpf);
           expect(await arrayifyStream(output.data)).toEqual([
-            quad(namedNode('_,b,_,d/a'), namedNode('_,b,_,d/a'), namedNode('_,b,_,d/a'), namedNode('_,b,_,d/a')),
-            quad(namedNode('_,b,_,d/b'), namedNode('_,b,_,d/b'), namedNode('_,b,_,d/b'), namedNode('_,b,_,d/b')),
-            quad(namedNode('_,b,_,d/c'), namedNode('_,b,_,d/c'), namedNode('_,b,_,d/c'), namedNode('_,b,_,d/c')),
+            quad(namedNode('_,b,_:c,d/a'), namedNode('_,b,_:c,d/a'), namedNode('_,b,_:c,d/a'),
+              namedNode('_,b,_:c,d/a')),
+            quad(namedNode('_,b,_:c,d/b'), namedNode('_,b,_:c,d/b'), namedNode('_,b,_:c,d/b'),
+              namedNode('_,b,_:c,d/b')),
+            quad(namedNode('_,b,_:c,d/c'), namedNode('_,b,_:c,d/c'), namedNode('_,b,_:c,d/c'),
+              namedNode('_,b,_:c,d/c')),
           ]);
         });
     });

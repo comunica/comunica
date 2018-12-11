@@ -24,8 +24,8 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
     : Promise<IActorQueryOperationOutputBindings> {
     const predicate = <Algebra.OneOrMorePath> path.predicate;
 
-    const sVar = path.subject.termType === 'Variable' || path.subject.termType === 'BlankNode';
-    const oVar = path.object.termType === 'Variable' || path.object.termType === 'BlankNode';
+    const sVar = path.subject.termType === 'Variable';
+    const oVar = path.object.termType === 'Variable';
 
     if (!sVar && oVar) {
       // get all the results of applying this once, then do zeroOrMore for those

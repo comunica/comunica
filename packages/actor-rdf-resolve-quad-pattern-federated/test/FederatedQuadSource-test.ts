@@ -61,8 +61,8 @@ describe('FederatedQuadSource', () => {
       return expect(FederatedQuadSource.isTermBound(variable('var'))).toBeFalsy();
     });
 
-    it('should be false on a blank node', () => {
-      return expect(FederatedQuadSource.isTermBound(blankNode('bnode'))).toBeFalsy();
+    it('should be true on a blank node', () => {
+      return expect(FederatedQuadSource.isTermBound(blankNode('bnode'))).toBeTruthy();
     });
 
     it('should be true on a named node', () => {

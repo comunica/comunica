@@ -22,8 +22,8 @@ export class ActorQueryOperationPathZeroOrOne extends ActorAbstractPath {
     : Promise<IActorQueryOperationOutputBindings> {
     const predicate = <Algebra.ZeroOrOnePath> path.predicate;
 
-    const sVar = path.subject.termType === 'Variable' || path.subject.termType === 'BlankNode';
-    const oVar = path.object.termType === 'Variable' || path.object.termType === 'BlankNode';
+    const sVar = path.subject.termType === 'Variable';
+    const oVar = path.object.termType === 'Variable';
 
     const extra: Bindings[] = [];
 

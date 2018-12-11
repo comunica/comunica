@@ -19,7 +19,7 @@ export class N3StoreIterator extends BufferedIterator<RDF.Quad> {
   }
 
   public static nullifyVariables(term: RDF.Term): RDF.Term {
-    return !term || term.termType === 'Variable' || term.termType === 'BlankNode' ? null : term;
+    return !term || term.termType === 'Variable' ? null : term;
   }
 
   public _read(count: number, done: () => void): void {

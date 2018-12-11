@@ -20,8 +20,8 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
     : Promise<IActorQueryOperationOutputBindings> {
     const predicate = <Algebra.ZeroOrMorePath> path.predicate;
 
-    const sVar = path.subject.termType === 'Variable' || path.subject.termType === 'BlankNode';
-    const oVar = path.object.termType === 'Variable' || path.object.termType === 'BlankNode';
+    const sVar = path.subject.termType === 'Variable';
+    const oVar = path.object.termType === 'Variable';
 
     if (sVar && oVar) {
       throw new Error('ZeroOrMore path expressions with 2 variables not supported yet');

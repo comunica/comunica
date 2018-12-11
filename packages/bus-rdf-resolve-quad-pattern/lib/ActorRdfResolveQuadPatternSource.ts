@@ -1,10 +1,8 @@
 import {ActionContext, IActorArgs, IActorTest} from "@comunica/core";
 import {AsyncIterator} from "asynciterator";
 import * as RDF from "rdf-js";
-import {
-  ActorRdfResolveQuadPattern, IActionRdfResolveQuadPattern,
-  IActorRdfResolveQuadPatternOutput, KEY_CONTEXT_SOURCES,
-} from "./ActorRdfResolveQuadPattern";
+import {ActorRdfResolveQuadPattern, IActionRdfResolveQuadPattern,
+  IActorRdfResolveQuadPatternOutput} from "./ActorRdfResolveQuadPattern";
 
 /**
  * A base implementation for rdf-resolve-quad-pattern events
@@ -19,7 +17,7 @@ export abstract class ActorRdfResolveQuadPatternSource extends ActorRdfResolveQu
   }
 
   public static variableToNull(term?: RDF.Term): RDF.Term {
-    if (term && (term.termType === 'Variable' || term.termType === 'BlankNode')) {
+    if (term && term.termType === 'Variable') {
       return null;
     }
     return term;

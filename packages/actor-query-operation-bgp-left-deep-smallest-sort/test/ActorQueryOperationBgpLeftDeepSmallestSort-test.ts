@@ -56,17 +56,17 @@ describe('ActorQueryOperationBgpLeftDeepSmallestSort', () => {
 
     const patternMaterialized: any = Object.assign(quad(termNamedNode, termNamedNode, termNamedNode, termNamedNode),
       { type: "pattern" });
-    const patternVarS: any = Object.assign(quad(termVariableC, termNamedNode, termNamedNode, termNamedNode),
+    const patternVarS: any = Object.assign(quad(termVariableA, termNamedNode, termNamedNode, termNamedNode),
       { type: "pattern" });
     const patternVarP: any = Object.assign(quad<RDF.BaseQuad>(
-      termNamedNode, termVariableC, termNamedNode, termNamedNode),
+      termNamedNode, termVariableA, termNamedNode, termNamedNode),
       { type: "pattern" });
-    const patternVarO: any = Object.assign(quad(termNamedNode, termNamedNode, termVariableC, termNamedNode),
+    const patternVarO: any = Object.assign(quad(termNamedNode, termNamedNode, termVariableA, termNamedNode),
       { type: "pattern" });
-    const patternVarG: any = Object.assign(quad(termNamedNode, termNamedNode, termNamedNode, termVariableC),
+    const patternVarG: any = Object.assign(quad(termNamedNode, termNamedNode, termNamedNode, termVariableA),
       { type: "pattern" });
     const patternVarAll: any = Object.assign(quad<RDF.BaseQuad>(
-      termVariableC, termVariableC, termVariableC, termVariableC),
+      termVariableA, termVariableA, termVariableA, termVariableA),
       { type: "pattern" });
     const patternVarMixed: any = Object.assign(quad(termVariableA, termVariableB, termVariableC, termVariableD),
       { type: "pattern" });
@@ -130,14 +130,14 @@ describe('ActorQueryOperationBgpLeftDeepSmallestSort', () => {
           .toEqual(termVariableC);
       });
 
-      it('should materialize a variable with bindings for c', () => {
+      it('should not materialize a blank node with bindings for c', () => {
         return expect(ActorQueryOperationBgpLeftDeepSmallestSort.materializeTerm(termVariableC, bindingsC))
-          .toEqual(valueC);
+          .toEqual(termVariableC);
       });
 
-      it('should materialize a variable with bindings for a and c', () => {
+      it('should not materialize a blank node with bindings for a and c', () => {
         return expect(ActorQueryOperationBgpLeftDeepSmallestSort.materializeTerm(termVariableC, bindingsAC))
-          .toEqual(valueC);
+          .toEqual(termVariableC);
       });
 
       it('should not materialize a default graph with empty bindings', () => {
@@ -169,37 +169,37 @@ describe('ActorQueryOperationBgpLeftDeepSmallestSort', () => {
 
       it('should materialize a pattern with variable subject', () => {
         return expect(ActorQueryOperationBgpLeftDeepSmallestSort.materializePattern(patternVarS, bindingsAC))
-          .toEqual(Object.assign(quad<RDF.BaseQuad>(valueC, termNamedNode, termNamedNode, termNamedNode),
+          .toEqual(Object.assign(quad<RDF.BaseQuad>(valueA, termNamedNode, termNamedNode, termNamedNode),
             { type: "pattern" }));
       });
 
       it('should materialize a pattern with variable predicate', () => {
         return expect(ActorQueryOperationBgpLeftDeepSmallestSort.materializePattern(patternVarP, bindingsAC))
-          .toEqual(Object.assign(quad<RDF.BaseQuad>(termNamedNode, valueC, termNamedNode, termNamedNode),
+          .toEqual(Object.assign(quad<RDF.BaseQuad>(termNamedNode, valueA, termNamedNode, termNamedNode),
             { type: "pattern" }));
       });
 
       it('should materialize a pattern with variable object', () => {
         return expect(ActorQueryOperationBgpLeftDeepSmallestSort.materializePattern(patternVarO, bindingsAC))
-          .toEqual(Object.assign(quad(termNamedNode, termNamedNode, valueC, termNamedNode),
+          .toEqual(Object.assign(quad(termNamedNode, termNamedNode, valueA, termNamedNode),
             { type: "pattern" }));
       });
 
       it('should materialize a pattern with variable graph', () => {
         return expect(ActorQueryOperationBgpLeftDeepSmallestSort.materializePattern(patternVarG, bindingsAC))
-          .toEqual(Object.assign(quad<RDF.BaseQuad>(termNamedNode, termNamedNode, termNamedNode, valueC),
+          .toEqual(Object.assign(quad<RDF.BaseQuad>(termNamedNode, termNamedNode, termNamedNode, valueA),
             { type: "pattern" }));
       });
 
       it('should materialize a pattern with all variables', () => {
         return expect(ActorQueryOperationBgpLeftDeepSmallestSort.materializePattern(patternVarAll, bindingsAC))
-          .toEqual(Object.assign(quad<RDF.BaseQuad>(valueC, valueC, valueC, valueC),
+          .toEqual(Object.assign(quad<RDF.BaseQuad>(valueA, valueA, valueA, valueA),
             { type: "pattern" }));
       });
 
       it('should partially materialize a pattern with mixed variables', () => {
         return expect(ActorQueryOperationBgpLeftDeepSmallestSort.materializePattern(patternVarMixed, bindingsAC))
-          .toEqual(Object.assign(quad<RDF.BaseQuad>(valueA, termVariableB, valueC, termVariableD),
+          .toEqual(Object.assign(quad<RDF.BaseQuad>(valueA, termVariableB, termVariableC, termVariableD),
             { type: "pattern" }));
       });
     });
@@ -212,9 +212,9 @@ describe('ActorQueryOperationBgpLeftDeepSmallestSort', () => {
       it('should materialize all patterns in a non-empty array', () => {
         return expect(ActorQueryOperationBgpLeftDeepSmallestSort.materializePatterns([patternVarS, patternVarP],
           bindingsAC)).toEqual([
-            Object.assign(quad<RDF.BaseQuad>(valueC, termNamedNode, termNamedNode, termNamedNode),
+            Object.assign(quad<RDF.BaseQuad>(valueA, termNamedNode, termNamedNode, termNamedNode),
             { type: "pattern" }),
-            Object.assign(quad<RDF.BaseQuad>(termNamedNode, valueC, termNamedNode, termNamedNode),
+            Object.assign(quad<RDF.BaseQuad>(termNamedNode, valueA, termNamedNode, termNamedNode),
             { type: "pattern" }),
           ]);
       });
@@ -418,22 +418,22 @@ describe('ActorQueryOperationBgpLeftDeepSmallestSort', () => {
           Bindings({
             'graph': namedNode('A'),
             'object': namedNode('b'),
-            'predicate': namedNode('c'),
-            'subject': namedNode('d'),
+            'predicate': blankNode('c'),
+            'subject': blankNode('d'),
             '?a': namedNode('A'), // tslint:disable-line:object-literal-sort-keys
           }),
           Bindings({
             'graph': namedNode('a'),
             'object': namedNode('B'),
-            'predicate': namedNode('c'),
-            'subject': namedNode('d'),
+            'predicate': blankNode('c'),
+            'subject': blankNode('d'),
             '?b': namedNode('B'), // tslint:disable-line:object-literal-sort-keys
           }),
           Bindings({
             'graph': namedNode('a'),
             'object': namedNode('b'),
-            'predicate': namedNode('C'),
-            'subject': namedNode('d'),
+            'predicate': blankNode('c'),
+            'subject': blankNode('d'),
             '_:c': namedNode('C'), // tslint:disable-line:object-literal-sort-keys
           }),
         ]);
