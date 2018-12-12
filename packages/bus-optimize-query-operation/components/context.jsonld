@@ -1,0 +1,12 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    {
+      "cboqo": "npmd:@comunica/bus-optimize-query-operation/",
+      "files-cboqo": "cboqo:^1.0.0/",
+
+      "BusOptimizeQueryOperation": "cboqo:Bus/OptimizeQueryOperation",
+      "ActorOptimizeQueryOperation": "cboqo:Actor/OptimizeQueryOperation"
+    }
+  ]
+}
