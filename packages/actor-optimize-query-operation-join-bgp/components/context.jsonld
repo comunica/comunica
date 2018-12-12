@@ -1,0 +1,12 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
+      "caoqojb": "npmd:@comunica/actor-optimize-query-operation-join-bgp/",
+      "files-caoqojb": "caoqojb:^1.0.0/",
+
+      "ActorOptimizeQueryOperationJoinBgp": "caoqojb:Actor/OptimizeQueryOperation/JoinBgp"
+    }
+  ]
+}
