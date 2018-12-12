@@ -1,5 +1,7 @@
 import {IActorContextPreprocessOutput} from "@comunica/bus-context-preprocess";
 import {ActorInit, IActionInit, IActorOutputInit} from "@comunica/bus-init";
+import {IActionOptimizeQueryOperation,
+  IActorOptimizeQueryOperationOutput} from "@comunica/bus-optimize-query-operation";
 import {Bindings, IActionQueryOperation, IActorQueryOperationOutput} from "@comunica/bus-query-operation";
 import {KEY_CONTEXT_SOURCES} from "@comunica/bus-rdf-resolve-quad-pattern";
 import {IActionSparqlParse, IActorSparqlParseOutput} from "@comunica/bus-sparql-parse";
@@ -21,6 +23,8 @@ export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs {
 
   private static ALGEBRA_TYPES: string[] = Object.keys(Algebra.types).map((key) => (<any> Algebra.types)[key]);
 
+  public readonly mediatorOptimizeQueryOperation: Mediator<Actor<IActionOptimizeQueryOperation, IActorTest,
+    IActorOptimizeQueryOperationOutput>, IActionOptimizeQueryOperation, IActorTest, IActorOptimizeQueryOperationOutput>;
   public readonly mediatorQueryOperation: Mediator<Actor<IActionQueryOperation, IActorTest, IActorQueryOperationOutput>,
     IActionQueryOperation, IActorTest, IActorQueryOperationOutput>;
   public readonly mediatorSparqlParse: Mediator<Actor<IActionSparqlParse, IActorTest, IActorSparqlParseOutput>,
@@ -137,6 +141,9 @@ export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs {
       operation = ActorInitSparql.applyInitialBindings(operation, context.get(KEY_CONTEXT_INITIALBINDINGS));
     }
 
+    // Optimize the query operation
+    operation = (await this.mediatorOptimizeQueryOperation.mediate({ context, operation })).operation;
+
     // Execute query
     const resolve: IActionQueryOperation = { context, operation };
     return await this.mediatorQueryOperation.mediate(resolve);
@@ -186,6 +193,8 @@ export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs {
 }
 
 export interface IActorInitSparqlArgs extends IActorArgs<IActionInit, IActorTest, IActorOutputInit> {
+  mediatorOptimizeQueryOperation: Mediator<Actor<IActionOptimizeQueryOperation, IActorTest,
+    IActorOptimizeQueryOperationOutput>, IActionOptimizeQueryOperation, IActorTest, IActorOptimizeQueryOperationOutput>;
   mediatorQueryOperation: Mediator<Actor<IActionQueryOperation, IActorTest, IActorQueryOperationOutput>,
     IActionQueryOperation, IActorTest, IActorQueryOperationOutput>;
   mediatorSparqlParse: Mediator<Actor<IActionSparqlParse, IActorTest, IActorSparqlParseOutput>,
