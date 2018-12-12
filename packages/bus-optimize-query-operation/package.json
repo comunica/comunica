@@ -1,0 +1,51 @@
+{
+  "name": "@comunica/bus-optimize-query-operation",
+  "version": "1.0.0",
+  "description": "A comunica bus for optimize-query-operation events.",
+  "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-optimize-query-operation",
+  "lsd:components": "components/components.jsonld",
+  "lsd:contexts": {
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-optimize-query-operation/^1.0.0/components/context.jsonld": "components/context.jsonld"
+  },
+  "lsd:importPaths": {
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-optimize-query-operation/^1.0.0/components/": "components/"
+  },
+  "main": "index.js",
+  "typings": "index",
+  "repository": "https://github.com/comunica/comunica/tree/master/packages/bus-optimize-query-operation",
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "comunica",
+    "bus",
+    "optimize-query-operation"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/comunica/comunica/issues"
+  },
+  "homepage": "https://github.com/comunica/comunica#readme",
+  "files": [
+    "components",
+    "lib/**/*.d.ts",
+    "lib/**/*.js",
+    "index.d.ts",
+    "index.js"
+  ],
+  "dependencies": {
+    "sparqlalgebrajs": "^1.4.0"
+  },
+  "peerDependencies": {
+    "@comunica/core": "^1.4.0"
+  },
+  "devDependencies": {
+    "@comunica/core": "^1.4.0"
+  },
+  "scripts": {
+    "lint": "node \"../../node_modules/tslint/bin/tslint\" lib/**/*.ts test/**/*.ts --exclude '**/*.d.ts'",
+    "build": "node \"../../node_modules/typescript/bin/tsc\"",
+    "validate": "npm ls",
+    "prepare": "npm run build"
+  }
+}
