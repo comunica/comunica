@@ -14,6 +14,12 @@
       "comment": "A comunica SPARQL Init Actor.",
       "parameters": [
         {
+          "@id": "cais:mediatorOptimizeQueryOperation",
+          "comment": "The query operation optimize mediator",
+          "required": true,
+          "unique": true
+        },
+        {
           "@id": "cais:mediatorQueryOperation",
           "comment": "The query operation mediator",
           "required": true,
@@ -100,6 +106,10 @@
         {
           "extends": "cbi:Actor/Init/constructorArgumentsObject",
           "fields": [
+            {
+              "keyRaw": "mediatorOptimizeQueryOperation",
+              "value": "cais:mediatorOptimizeQueryOperation"
+            },
             {
               "keyRaw": "mediatorQueryOperation",
               "value": "cais:mediatorQueryOperation"

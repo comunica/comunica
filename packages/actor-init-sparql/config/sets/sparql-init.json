@@ -6,6 +6,7 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-sparql/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-sparql-parse/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-sparql-serialize/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-optimize-query-operation/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-query-operation/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-context-preprocess/^1.0.0/components/context.jsonld",
 
@@ -18,6 +19,11 @@
     {
       "@id": "urn:comunica:sparqlinit",
       "@type": "ActorInitSparql",
+      "mediatorOptimizeQueryOperation": {
+        "@id": "config-sets:sparql-init.json#mediatorOptimizeQueryOperation",
+        "@type": "MediatorCombinePipeline",
+        "cc:Mediator/bus": { "@id": "cboqo:Bus/OptimizeQueryOperation" }
+      },
       "mediatorQueryOperation": { "@id": "config-sets:sparql-queryoperators.json#mediatorQueryOperation" },
       "mediatorSparqlParse": {
         "@id": "config-sets:sparql-init.json#mediatorSparqlParse",
