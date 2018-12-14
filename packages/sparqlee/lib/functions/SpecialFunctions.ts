@@ -157,14 +157,12 @@ const logicalAnd = {
 const sameTerm = {
   arity: 2,
   async applyAsync({ args, mapping, evaluate }: E.EvalContextAsync): PTerm {
-    if (args.length !== 2) { throw new Err.InvalidArity(args, C.SpecialOperator.SAME_TERM); }
     const [leftExpr, rightExpr] = args.map((a) => evaluate(a, mapping));
     const left = await leftExpr;
     const right = await rightExpr;
     return bool(left.toRDF().equals(right.toRDF()));
   },
   applySync({ args, mapping, evaluate }: E.EvalContextSync): Term {
-    if (args.length !== 2) { throw new Err.InvalidArity(args, C.SpecialOperator.SAME_TERM); }
     const [left, right] = args.map((a) => evaluate(a, mapping));
     return bool(left.toRDF().equals(right.toRDF()));
   },
@@ -173,14 +171,13 @@ const sameTerm = {
 // IN -------------------------------------------------------------------------
 const inSPARQL = {
   arity: Infinity,
+  checkArity(args: E.Expression[]) { return args.length >= 1; },
   async applyAsync({ args, mapping, evaluate }: E.EvalContextAsync): PTerm {
-    if (args.length < 1) { throw new Err.InvalidArity(args, C.SpecialOperator.IN); }
     const [leftExpr, ...remaining] = args;
     const left = await evaluate(leftExpr, mapping);
     return inRecursiveAsync(left, { args: remaining, mapping, evaluate }, []);
   },
   applySync({ args, mapping, evaluate }: E.EvalContextSync): Term {
-    if (args.length < 1) { throw new Err.InvalidArity(args, C.SpecialOperator.IN); }
     const [leftExpr, ...remaining] = args;
     const left = evaluate(leftExpr, mapping);
     return inRecursiveSync(left, { args: remaining, mapping, evaluate }, []);
@@ -242,6 +239,7 @@ function inRecursiveSync(
 // NOT IN ---------------------------------------------------------------------
 const notInSPARQL = {
   arity: Infinity,
+  checkArity(args: E.Expression[]) { return args.length >= 1; },
   async applyAsync(context: E.EvalContextAsync): PTerm {
     const _in = specialFunctions.get(C.SpecialOperator.IN);
     const isIn = await _in.applyAsync(context);
@@ -262,6 +260,7 @@ export type SpecialDefinition = {
   arity: number;
   applyAsync: E.SpecialApplicationAsync;
   applySync: E.SpecialApplicationSync; // TODO: Test these implementations
+  checkArity?: (args: E.Expression[]) => boolean;
 };
 
 const _specialDefinitions: { [key in C.SpecialOperator]: SpecialDefinition } = {

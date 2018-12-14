@@ -126,7 +126,9 @@ function transformOperator(expr: Alg.OperatorExpression)
     const op = expr.operator as C.SpecialOperator;
     const args = expr.args.map((a) => transformAlgebra(a));
     const func = specialFunctions.get(op);
-    if (!hasCorrectArity(args, func.arity)) { throw new Err.InvalidArity(args, op); }
+    if (!func.checkArity(args)) {
+      throw new Err.InvalidArity(args, op);
+    }
     return new E.SpecialOperator(args, func.applyAsync, func.applySync);
   } else {
     if (!C.Operators.contains(expr.operator)) {

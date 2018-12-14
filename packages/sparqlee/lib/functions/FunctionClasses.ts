@@ -145,16 +145,33 @@ export class SpecialFunction {
   arity: number;
   applySync: E.SpecialApplicationSync;
   applyAsync: E.SpecialApplicationAsync;
+  checkArity: (args: E.Expression[]) => boolean;
 
   constructor(public operator: C.SpecialOperator, definition: SpecialDefinition) {
     this.arity = definition.arity;
     this.applySync = definition.applySync;
     this.applyAsync = definition.applyAsync;
+    this.checkArity = definition.checkArity || defaultArityCheck(this.arity);
   }
+}
+
+function defaultArityCheck(arity: number): (args: E.Expression[]) => boolean {
+  return (args: E.Expression[]): boolean => {
+    // Infinity is used to represent var-args, so it's always correct.
+    if (arity === Infinity) { return true; }
+
+    // If the function has overloaded arity, the actual arity needs to be present.
+    if (Array.isArray(arity)) {
+      return arity.indexOf(args.length) >= 0;
+    }
+
+    return args.length === arity;
+  };
 }
 
 export type SpecialDefinition = {
   arity: number;
-  applySync: E.SpecialApplicationSync;
   applyAsync: E.SpecialApplicationAsync;
+  applySync: E.SpecialApplicationSync;
+  checkArity?: (args: E.Expression[]) => boolean;
 };
