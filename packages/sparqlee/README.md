@@ -32,17 +32,20 @@ Note: If you want to use *aggregates*, or *exists* you should check out the [str
 
 Sparqlee exports an Error class called `ExpressionError` from which all SPARQL related errors inherit. These might include unbound variables, wrong types, invalid lexical forms, and much more. More info on errors [here](lib/util/Errors.ts). These errors can be caught, and may impact program execution in an expected way. All other errors are unexpected, and are thus programmer mistakes or mistakes in this library.
 
+There is also the utility function `isExpressionError` for detecting these cases.
+
 ```ts
 // Make sure to catch errors if you don't control binding input
 try {
   const result = await evaluator.evaluate(bindings);
   consumeResult(result;)
 } catch (error) {
-    if (error instanceof ExpressionError) {
-        console.log(error); // SPARQL related errors
-    } else {
-        throw error; // programming errors or missing features.
-    }
+  if (isExpressionError(error)) {
+    console.log(error); // SPARQL related errors
+    ...                 // Move on, ignore result, ...
+  } else {
+    throw error;        // Programming errors or missing features.
+  }
 }
 ```
 
