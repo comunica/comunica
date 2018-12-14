@@ -1,7 +1,7 @@
 import { Term } from "rdf-js";
 import { termToString } from "rdf-string";
 import { Algebra } from "sparqlalgebrajs";
-import { AsyncEvaluator, ExpressionError } from 'sparqlee';
+import { AsyncEvaluator, isExpressionError } from 'sparqlee';
 
 import {
   ActorQueryOperation, ActorQueryOperationTypedMediated,
@@ -53,7 +53,7 @@ export class ActorQueryOperationOrderByDirect extends ActorQueryOperationTypedMe
           const result = await evaluator.evaluate(bindings);
           transformedStream._push({ bindings, result });
         } catch (err) {
-          if (!this.isExpressionError(err)) {
+          if (!isExpressionError(err)) {
             bindingsStream.emit('error', err);
           }
           transformedStream._push({ bindings, result: undefined });
@@ -77,10 +77,6 @@ export class ActorQueryOperationOrderByDirect extends ActorQueryOperationTypedMe
     }
 
     return { type: 'bindings', bindingsStream, metadata: output.metadata, variables: output.variables };
-  }
-
-  public isExpressionError(error: Error): boolean {
-    return error instanceof ExpressionError;
   }
 
   // Remove descending operator if necessary

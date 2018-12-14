@@ -1,10 +1,12 @@
-import { ActorQueryOperation, Bindings } from "@comunica/bus-query-operation";
-import { Bus } from "@comunica/core";
 import { literal, variable } from "@rdfjs/data-model";
 import { ArrayIterator } from "asynciterator";
 import { Algebra } from "sparqlalgebrajs";
-import { ActorQueryOperationOrderByDirect } from "../lib/ActorQueryOperationOrderByDirect";
+import * as sparqlee from "sparqlee";
 const arrayifyStream = require('arrayify-stream');
+
+import { ActorQueryOperation, Bindings } from "@comunica/bus-query-operation";
+import { Bus } from "@comunica/core";
+import { ActorQueryOperationOrderByDirect } from "../lib/ActorQueryOperationOrderByDirect";
 
 describe('ActorQueryOperationOrderByDirect', () => {
   let bus;
@@ -137,7 +139,7 @@ describe('ActorQueryOperationOrderByDirect', () => {
 
     it('should emit an error on a hard erroring expression', async (next) => {
       // Mock the expression error test so we can force 'a programming error' and test the branch
-      actor.isExpressionError = (error: Error) => false;
+      spyOn(sparqlee, 'isExpressionError').and.returnValue(false);
       const op = { operation: { type: 'orderby', input: {}, expressions: [orderB] } };
       const output = await actor.run(op) as any;
       output.bindingsStream.on('error', () => next());

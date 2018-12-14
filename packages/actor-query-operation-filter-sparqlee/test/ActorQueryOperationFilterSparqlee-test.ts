@@ -1,11 +1,12 @@
 // tslint:disable:object-literal-sort-keys
-import { ActorQueryOperation, Bindings, IActorQueryOperationOutputBindings } from "@comunica/bus-query-operation";
-import { Bus } from "@comunica/core";
 import { literal, variable } from "@rdfjs/data-model";
 import { ArrayIterator } from "asynciterator";
-import { ActorQueryOperationFilterSparqlee } from "../lib/ActorQueryOperationFilterSparqlee";
-// import { SparqlExpressionEvaluator } from "../lib/SparqlExpressionEvaluator";
+import * as sparqlee from "sparqlee";
 const arrayifyStream = require('arrayify-stream');
+
+import { ActorQueryOperation, Bindings, IActorQueryOperationOutputBindings } from "@comunica/bus-query-operation";
+import { Bus } from "@comunica/core";
+import { ActorQueryOperationFilterSparqlee } from "../lib/ActorQueryOperationFilterSparqlee";
 
 describe('ActorQueryOperationFilterSparqlee', () => {
   let bus;
@@ -132,8 +133,7 @@ describe('ActorQueryOperationFilterSparqlee', () => {
     });
 
     it('should emit an error for a hard erroring filter', async (next) => {
-      // Mock the expression error test so we can force 'a programming error' and test the branch
-      actor.isExpressionError = (error: Error) => false;
+      spyOn(sparqlee, 'isExpressionError').and.returnValue(false);
       const op = { operation: { type: 'filter', input: {}, expression: erroringExpression } };
       const output: IActorQueryOperationOutputBindings = await actor.run(op) as any;
       output.bindingsStream.on('error', () => next());

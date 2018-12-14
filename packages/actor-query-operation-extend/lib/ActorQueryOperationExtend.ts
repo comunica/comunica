@@ -1,14 +1,12 @@
 import {
   ActorQueryOperation, ActorQueryOperationTypedMediated, Bindings,
-  IActorQueryOperationOutput,
   IActorQueryOperationOutputBindings,
   IActorQueryOperationTypedMediatedArgs,
 } from "@comunica/bus-query-operation";
-import { BindingsStream } from "@comunica/bus-query-operation";
 import { ActionContext, IActorTest } from "@comunica/core";
 import { termToString } from 'rdf-string';
 import { Algebra } from "sparqlalgebrajs";
-import { AsyncEvaluator, ExpressionError } from "sparqlee";
+import { AsyncEvaluator, isExpressionError } from "sparqlee";
 
 /**
  * A comunica Extend Query Operation Actor.
@@ -45,7 +43,7 @@ export class ActorQueryOperationExtend extends ActorQueryOperationTypedMediated<
         const extended = bindings.set(extendKey, result); // Extend is undefined when the key exists.
         bindingsStream._push(extended);
       } catch (err) {
-        if (this.isExpressionError(err)) {
+        if (isExpressionError(err)) {
           // Errors silently don't actually extend according to the spec
           // TODO: Do we try to emit a warning here?
           bindingsStream._push(bindings);
@@ -61,14 +59,4 @@ export class ActorQueryOperationExtend extends ActorQueryOperationTypedMediated<
     const metadata = output.metadata;
     return { type: 'bindings', bindingsStream, metadata, variables };
   }
-
-  // Expression errors are errors intentionally thrown because of expression-data mismatches.
-  // They are distinct from other errors in the sense that their behaviour is defined by
-  // the SPARQL spec.
-  // In this specific case, they should be ignored (while others obviously should not).
-  // This function is separate so it can more easily be mocked in tests.
-  public isExpressionError(error: Error): boolean {
-    return error instanceof ExpressionError;
-  }
-
 }

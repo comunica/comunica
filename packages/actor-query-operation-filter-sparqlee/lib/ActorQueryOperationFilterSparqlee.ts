@@ -1,13 +1,11 @@
 import {
   ActorQueryOperation, ActorQueryOperationTypedMediated, Bindings,
-  IActorQueryOperationOutput,
   IActorQueryOperationOutputBindings,
   IActorQueryOperationTypedMediatedArgs,
 } from "@comunica/bus-query-operation";
-import { BindingsStream } from "@comunica/bus-query-operation";
 import { ActionContext, IActorTest } from "@comunica/core";
 import { Algebra } from "sparqlalgebrajs";
-import { AsyncEvaluator, ExpressionError } from "sparqlee";
+import { AsyncEvaluator, isExpressionError } from "sparqlee";
 
 /**
  * A comunica Filter Sparqlee Query Operation Actor.
@@ -38,7 +36,7 @@ export class ActorQueryOperationFilterSparqlee extends ActorQueryOperationTypedM
         const result = await evaluator.evaluateAsEBV(item);
         if (result === true) { bindingsStream._push(item); }
       } catch (err) {
-        if (!this.isExpressionError(err)) {
+        if (!isExpressionError(err)) {
           bindingsStream.emit('error', err);
         }
       }
@@ -47,15 +45,5 @@ export class ActorQueryOperationFilterSparqlee extends ActorQueryOperationTypedM
 
     const bindingsStream = output.bindingsStream.transform<Bindings>({ transform });
     return { type: 'bindings', bindingsStream, metadata, variables };
-  }
-
-  // TODO Duplication with e.g. Extend
-  // Expression errors are errors intentionally thrown because of expression-data mismatches.
-  // They are distinct from other errors in the sense that their behaviour is defined by
-  // the SPARQL spec.
-  // In this specific case, they should be ignored (while others obviously should not).
-  // This function is separate so it can more easily be mocked in tests.
-  public isExpressionError(error: Error): boolean {
-    return error instanceof ExpressionError;
   }
 }
