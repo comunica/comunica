@@ -35,7 +35,7 @@
     "index.js"
   ],
   "dependencies": {
-    "sparqlee": "0.0.1-rc9"
+    "sparqlee": "0.0.1"
   },
   "peerDependencies": {
     "@comunica/core": "^1.4.0",
