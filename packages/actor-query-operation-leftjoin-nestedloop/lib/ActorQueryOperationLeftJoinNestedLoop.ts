@@ -29,6 +29,10 @@ export class ActorQueryOperationLeftJoinNestedLoop extends ActorQueryOperationTy
     const rightRaw = await this.mediatorQueryOperation.mediate({ operation: pattern.right, context });
     const right = ActorQueryOperation.getSafeBindings(rightRaw);
 
+    const evaluator = (pattern.expression)
+      ? new AsyncEvaluator(pattern.expression)
+      : null;
+
     const leftJoinInner = (outerItem: Bindings, innerStream: ClonedIterator<Bindings>) => {
       const joinedStream = innerStream
         .transform({
@@ -41,7 +45,6 @@ export class ActorQueryOperationLeftJoinNestedLoop extends ActorQueryOperationTy
               return;
             }
             try {
-              const evaluator = new AsyncEvaluator(pattern.expression);
               const result = await evaluator.evaluateAsEBV(joinedBindings);
               joinedStream._push({ joinedBindings, result });
             } catch (err) {

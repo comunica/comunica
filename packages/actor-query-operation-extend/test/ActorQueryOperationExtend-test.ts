@@ -1,3 +1,4 @@
+import { Actor } from '@comunica/core';
 // tslint:disable:object-literal-sort-keys
 import { Bus } from "@comunica/core";
 import { literal, namedNode } from "@rdfjs/data-model";
@@ -133,24 +134,32 @@ describe('ActorQueryOperationExtend', () => {
 
       expect(output.type).toEqual('bindings');
       expect(output.metadata()).toMatchObject(Promise.resolve({ totalItems: 3 }));
-      expect(output.variables).toMatchObject(['?l']);
+      expect(output.variables).toMatchObject(['?a', '?l']);
     });
 
     it('should not extend bindings on erroring expressions', async () => {
+      const warn = jest.fn();
+      spyOn(Actor, "getContextLogger").and.returnValue({ warn });
+
       const op = { operation: example(faultyExpression) };
       const output: IActorQueryOperationOutputBindings = await actor.run(op) as any;
+
       expect(await arrayifyStream(output.bindingsStream)).toMatchObject(input);
+      expect(warn).toHaveBeenCalledTimes(3);
       expect(output.type).toEqual('bindings');
       expect(output.metadata()).toMatchObject(Promise.resolve({ totalItems: 3 }));
-      expect(output.variables).toMatchObject(['?l']);
+      expect(output.variables).toMatchObject(['?a', '?l']);
     });
 
     it('should emit error when evaluation code returns a hard error', async (next) => {
-      // Mock the expression error test so we can force 'a programming error' and test the branch
+      const warn = jest.fn();
+      spyOn(Actor, "getContextLogger").and.returnValue({ warn });
       spyOn(sparqlee, 'isExpressionError').and.returnValue(false);
+
       const op = { operation: example(faultyExpression) };
       const output: IActorQueryOperationOutputBindings = await actor.run(op) as any;
       output.bindingsStream.on('error', () => next());
+      expect(warn).toBeCalledTimes(0);
     });
 
   });

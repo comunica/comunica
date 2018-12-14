@@ -1,12 +1,13 @@
+import { termToString } from 'rdf-string';
+import { Algebra } from "sparqlalgebrajs";
+import { AsyncEvaluator, isExpressionError } from "sparqlee";
+
 import {
   ActorQueryOperation, ActorQueryOperationTypedMediated, Bindings,
   IActorQueryOperationOutputBindings,
   IActorQueryOperationTypedMediatedArgs,
 } from "@comunica/bus-query-operation";
-import { ActionContext, IActorTest } from "@comunica/core";
-import { termToString } from 'rdf-string';
-import { Algebra } from "sparqlalgebrajs";
-import { AsyncEvaluator, isExpressionError } from "sparqlee";
+import { ActionContext, Actor, IActorTest } from "@comunica/core";
 
 /**
  * A comunica Extend Query Operation Actor.
@@ -21,8 +22,7 @@ export class ActorQueryOperationExtend extends ActorQueryOperationTypedMediated<
 
   public async testOperation(pattern: Algebra.Extend, context: ActionContext): Promise<IActorTest> {
     // Will throw error for unsupported opperations
-    const _ = new AsyncEvaluator(pattern.expression);
-    return true;
+    return pattern.type === "extend" && !!new AsyncEvaluator(pattern.expression);
   }
 
   public async runOperation(pattern: Algebra.Extend, context: ActionContext)
@@ -35,18 +35,22 @@ export class ActorQueryOperationExtend extends ActorQueryOperationTypedMediated<
 
     const extendKey = termToString(variable);
     const evaluator = new AsyncEvaluator(expression);
+    const logger = Actor.getContextLogger(context);
 
     // Transform the stream by extending each Bindings with the expression result
     const transform = async (bindings: Bindings, next: any) => {
       try {
         const result = await evaluator.evaluate(bindings);
-        const extended = bindings.set(extendKey, result); // Extend is undefined when the key exists.
+        // Extend operation is undefined when the key already exists
+        // We just override it here.
+        const extended = bindings.set(extendKey, result);
         bindingsStream._push(extended);
       } catch (err) {
         if (isExpressionError(err)) {
           // Errors silently don't actually extend according to the spec
-          // TODO: Do we try to emit a warning here?
           bindingsStream._push(bindings);
+          // But let's warn anyway
+          this.logWarn(context, `Expression error for extend operation with bindings '${JSON.stringify(bindings)}'`);
         } else {
           bindingsStream.emit('error', err);
         }
@@ -54,7 +58,7 @@ export class ActorQueryOperationExtend extends ActorQueryOperationTypedMediated<
       next();
     };
 
-    const variables = [extendKey]; // TODO: Can I access existing variables already to concat with?
+    const variables = output.variables.concat([extendKey]);
     const bindingsStream = output.bindingsStream.transform<Bindings>({ transform });
     const metadata = output.metadata;
     return { type: 'bindings', bindingsStream, metadata, variables };
