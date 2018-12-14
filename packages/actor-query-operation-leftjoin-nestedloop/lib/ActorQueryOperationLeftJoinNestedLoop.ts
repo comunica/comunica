@@ -6,7 +6,7 @@ import { ActorRdfJoin } from "@comunica/bus-rdf-join";
 import { ActionContext, IActorTest } from "@comunica/core";
 import { ClonedIterator } from "asynciterator";
 import { Algebra } from "sparqlalgebrajs";
-import { AsyncEvaluator, ExpressionError } from 'sparqlee';
+import { AsyncEvaluator, isExpressionError } from 'sparqlee';
 
 /**
  * A comunica LeftJoin NestedLoop Query Operation Actor.
@@ -45,7 +45,7 @@ export class ActorQueryOperationLeftJoinNestedLoop extends ActorQueryOperationTy
               const result = await evaluator.evaluateAsEBV(joinedBindings);
               joinedStream._push({ joinedBindings, result });
             } catch (err) {
-              if (!this.isExpressionError(err)) {
+              if (!isExpressionError(err)) {
                 bindingsStream.emit('error', err);
               }
             }
@@ -80,15 +80,5 @@ export class ActorQueryOperationLeftJoinNestedLoop extends ActorQueryOperationTy
       .then((totalItems) => ({ totalItems }));
 
     return { type: 'bindings', bindingsStream, metadata, variables };
-  }
-
-  // TODO Duplication with e.g. Extend
-  // Expression errors are errors intentionally thrown because of expression-data mismatches.
-  // They are distinct from other errors in the sense that their behaviour is defined by
-  // the SPARQL spec.
-  // In this specific case, they should be ignored (while others obviously should not).
-  // This function is separate so it can more easily be mocked in tests.
-  public isExpressionError(error: Error): boolean {
-    return error instanceof ExpressionError;
   }
 }
