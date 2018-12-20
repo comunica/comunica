@@ -114,12 +114,6 @@
 
     {
       "@id": "config-sets:sparql-queryoperators.json#myFilterQueryOperator",
-      "@type": "ActorQueryOperationFilterDirect",
-      "cbqo:mediatorQueryOperation": { "@id": "config-sets:sparql-queryoperators.json#mediatorQueryOperation" }
-    },
-
-    {
-      "@id": "config-sets:sparql-queryoperators.json#myFilterSparqleeQueryOperator",
       "@type": "ActorQueryOperationFilterSparqlee",
       "cbqo:mediatorQueryOperation": { "@id": "config-sets:sparql-queryoperators.json#mediatorQueryOperation" }
     },
@@ -149,12 +143,6 @@
 
     {
       "@id": "config-sets:sparql-queryoperators.json#myOrderByQueryOperator",
-      "@type": "ActorQueryOperationOrderByDirect",
-      "cbqo:mediatorQueryOperation": { "@id": "config-sets:sparql-queryoperators.json#mediatorQueryOperation" }
-    },
-
-    {
-      "@id": "config-sets:sparql-queryoperators.json#myOrderBySparqleeQueryOperator",
       "@type": "ActorQueryOperationOrderBySparqlee",
       "cbqo:mediatorQueryOperation": { "@id": "config-sets:sparql-queryoperators.json#mediatorQueryOperation" }
     },
