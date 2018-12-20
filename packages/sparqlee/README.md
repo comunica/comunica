@@ -51,7 +51,7 @@ try {
 
 ### Streams
 
-'Aggregates' and 'Exists' operations are annoying problems to tackle in the context of an expression evaluator, since they make the whole thing statefull.
+'Aggregates' and 'Exists' operations are annoying problems to tackle in the context of an expression evaluator, since they make the whole thing stateful.
 They might span entire streams and, depending on the use case, have very different requirements for speed and memory consumption. Sparqlee has therefore decided to delegate this responsibility back to you (and might provide utility in the future). It accepts functions that will resolve the respective aggregate and exists operators, and will use those when needed. This way, the library can still be optimized for simple use cases, both in it's API as in it's development time, while it can still support the full spec.
 
 **NOTE: Aggregates and Exists are not implemented yet.**
@@ -82,7 +82,7 @@ They might span entire streams and, depending on the use case, have very differe
 | /              | ✓ | ✓ |   |
 | +              | ✓ | ✓ |   |
 | -              | ✓ | ✓ |   |
-| _Note_         |   |   | Spec compliance depends on #13 and #14 |
+| _Notes_        |   |   | Spec compliance depends on #13 and #14 |
 | [Functional Forms](https://www.w3.org/TR/sparql11-query/#func-forms)
 | BOUND          | ✓ |   |   |
 | IF             | ✓ |   |   |
@@ -95,7 +95,7 @@ They might span entire streams and, depending on the use case, have very differe
 | sameTerm       | ✓ |   |   |
 | IN             | ✓ |   |   |
 | NOT IN         | ✓ |   |   |
-|
+| _Notes_        |   |   |   |
 | [On RDF Terms](https://www.w3.org/TR/sparql11-query/#func-rdfTerms)
 | isIRI          |   |   |   |
 | isBlank        |   |   |   |
@@ -110,7 +110,7 @@ They might span entire streams and, depending on the use case, have very differe
 | STRLANG        |   |   |   |
 | UUID           |   |   |   |
 | STRUID         |   |   |   |
-|
+| _Notes_        |   |   |   |
 | [On Strings](https://www.w3.org/TR/sparql11-query/#func-strings)
 | STRLEN         | ✓ | ✓ | ✓ |
 | SUBSTR         |   |   |   |
@@ -126,14 +126,14 @@ They might span entire streams and, depending on the use case, have very differe
 | langMatches    | ✓ | ✓ | ? |
 | REGEX          | ✓ | ✓ |   |
 | REPLACE        |   |   |   |
-|
+| _Notes_        |   |   |   |
 | [On Numerics](https://www.w3.org/TR/sparql11-query/#func-numerics)
 | abs            | ✓ |   |   |
 | round          |   |   |   |
 | ceil           |   |   |   |
 | floor          |   |   |   |
 | RAND           |   |   |   |
-|
+| _Notes         |   |   |   |
 | [On Dates and Times](https://www.w3.org/TR/sparql11-query/#func-date-time)
 | now            |   |   |   |
 | year           |   |   |   |
@@ -144,13 +144,13 @@ They might span entire streams and, depending on the use case, have very differe
 | seconds        |   |   |   |
 | timezone       |   |   |   |
 | tz             |   |   |   |
-|
+| _Notes_        |   |   |   |
 | [Hash Functions](https://www.w3.org/TR/sparql11-query/#func-hash)
 | SHA1           |   |   |   |
 | SHA256         |   |   |   |
 | SHA384         |   |   |   |
 | SHA512         |   |   |   |
-|
+| _Notes_        |   |   |   |
 | [XPath Constructor Functions](https://www.w3.org/TR/sparql11-query/#FunctionMapping)
 | str (see 'On Terms') | ✓ | ✓ | ✓ |
 | flt            | ✓ | ✓ |   |
