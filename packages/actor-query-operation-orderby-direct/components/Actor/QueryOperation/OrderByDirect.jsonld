@@ -1,0 +1,36 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-orderby-direct/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-query-operation/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-query-operation-orderby-direct",
+  "components": [
+    {
+      "@id": "caqood:Actor/QueryOperation/OrderByDirect",
+      "@type": "Class",
+      "extends": "cbqo:Actor/QueryOperationTypedMediated",
+      "requireElement": "ActorQueryOperationOrderByDirect",
+      "comment": "A comunica OrderBy Direct Query Operation Actor.",
+      "parameters": [
+        {
+          "@id": "caqood:Actor/QueryOperation/OrderByDirect/window",
+          "comment": "The size of the window for the sort iterator",
+          "unique": true,
+          "range": "xsd:integer"
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "caqood:Actor/QueryOperation/OrderByDirect/constructorArgumentsObject",
+          "extends": "cbqo:Actor/QueryOperationTypedMediated/constructorArgumentsObject",
+          "fields": [
+            {
+              "keyRaw": "window",
+              "value": "caqood:Actor/QueryOperation/OrderByDirect/window"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
