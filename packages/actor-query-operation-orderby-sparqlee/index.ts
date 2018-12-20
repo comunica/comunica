@@ -1,1 +1,1 @@
-export * from './lib/ActorQueryOperationOrderByDirect';
+export * from './lib/ActorQueryOperationOrderBySparqlee';

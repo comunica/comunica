@@ -6,14 +6,14 @@
   "@id": "npmd:@comunica/actor-query-operation-orderby-direct",
   "components": [
     {
-      "@id": "caqood:Actor/QueryOperation/OrderByDirect",
+      "@id": "caqood:Actor/QueryOperation/OrderBySparqlee",
       "@type": "Class",
       "extends": "cbqo:Actor/QueryOperationTypedMediated",
-      "requireElement": "ActorQueryOperationOrderByDirect",
+      "requireElement": "ActorQueryOperationOrderBySparqlee",
       "comment": "A comunica OrderBy Direct Query Operation Actor.",
       "parameters": [
         {
-          "@id": "caqood:Actor/QueryOperation/OrderByDirect/window",
+          "@id": "caqood:Actor/QueryOperation/OrderBySparqlee/window",
           "comment": "The size of the window for the sort iterator",
           "unique": true,
           "range": "xsd:integer"
@@ -21,12 +21,12 @@
       ],
       "constructorArguments": [
         {
-          "@id": "caqood:Actor/QueryOperation/OrderByDirect/constructorArgumentsObject",
+          "@id": "caqood:Actor/QueryOperation/OrderBySparqlee/constructorArgumentsObject",
           "extends": "cbqo:Actor/QueryOperationTypedMediated/constructorArgumentsObject",
           "fields": [
             {
               "keyRaw": "window",
-              "value": "caqood:Actor/QueryOperation/OrderByDirect/window"
+              "value": "caqood:Actor/QueryOperation/OrderBySparqlee/window"
             }
           ]
         }

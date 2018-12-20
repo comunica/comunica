@@ -3,10 +3,10 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^3.0.0/components/context.jsonld",
     {
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
-      "caqood": "npmd:@comunica/actor-query-operation-orderby-direct/",
+      "caqood": "npmd:@comunica/actor-query-operation-orderby-sparqlee/",
       "files-caqood": "caqood:^1.0.0/",
 
-      "ActorQueryOperationOrderByDirect": "caqood:Actor/QueryOperation/OrderByDirect"
+      "ActorQueryOperationOrderBySparqlee": "caqood:Actor/QueryOperation/OrderBySparqlee"
     }
   ]
 }

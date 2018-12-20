@@ -11,13 +11,13 @@ import { ActionContext, IActorTest } from "@comunica/core";
 import { SortIterator } from "./SortIterator";
 
 /**
- * A comunica OrderBy Direct Query Operation Actor.
+ * A comunica OrderBy Sparqlee Query Operation Actor.
  */
-export class ActorQueryOperationOrderByDirect extends ActorQueryOperationTypedMediated<Algebra.OrderBy> {
+export class ActorQueryOperationOrderBySparqlee extends ActorQueryOperationTypedMediated<Algebra.OrderBy> {
 
   private window: number;
 
-  constructor(args: IActorQueryOperationOrderByDirectArgs) {
+  constructor(args: IActorQueryOperationOrderBySparqleeArgs) {
     super(args, 'orderby');
     this.window = args.window || Infinity;
   }
@@ -98,6 +98,6 @@ export class ActorQueryOperationOrderByDirect extends ActorQueryOperationTypedMe
 /**
  * The window parameter determines how many of the elements to consider when sorting.
  */
-export interface IActorQueryOperationOrderByDirectArgs extends IActorQueryOperationTypedMediatedArgs {
+export interface IActorQueryOperationOrderBySparqleeArgs extends IActorQueryOperationTypedMediatedArgs {
   window?: number;
 }

@@ -59,10 +59,10 @@ export class ActorQueryOperationLeftJoinNestedLoop extends ActorQueryOperationTy
     };
 
     const leftJoinOuter = (leftItem: Bindings, nextLeft: any) => {
-      const innerStream = right.bindingsStream.clone(); // TODO: Why does this even work?
+      const innerStream = right.bindingsStream.clone();
       const joinedStream = leftJoinInner(leftItem, innerStream);
 
-      // TODO: Does this even work for large streams?
+      // TODO: This will not work for larger streams.
       // The full inner stream is kept in memory.
       joinedStream.on('end', () => nextLeft());
       joinedStream.on('data', async ({ joinedBindings, result }) => {
