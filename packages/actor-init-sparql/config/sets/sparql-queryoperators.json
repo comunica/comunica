@@ -154,7 +154,7 @@
     },
 
     {
-      "@id": "config-sets:sparql-queryoperators.json#myOrderByQueryOperator",
+      "@id": "config-sets:sparql-queryoperators.json#myOrderBySparqleeQueryOperator",
       "@type": "ActorQueryOperationOrderBySparqlee",
       "cbqo:mediatorQueryOperation": { "@id": "config-sets:sparql-queryoperators.json#mediatorQueryOperation" }
     },
