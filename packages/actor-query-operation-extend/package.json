@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-operation-extend",
-  "version": "1.4.4",
+  "version": "1.5.0",
   "description": "A extend query-operation actor",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-extend",
   "lsd:components": "components/components.jsonld",
@@ -38,12 +38,12 @@
     "sparqlee": "0.0.1"
   },
   "peerDependencies": {
-    "@comunica/core": "^1.4.0",
-    "@comunica/bus-query-operation": "^1.4.0"
+    "@comunica/bus-query-operation": "^1.4.0",
+    "@comunica/core": "^1.4.0"
   },
   "devDependencies": {
-    "@comunica/core": "^1.4.0",
-    "@comunica/bus-query-operation": "^1.4.0"
+    "@comunica/bus-query-operation": "^1.4.0",
+    "@comunica/core": "^1.4.0"
   },
   "jest": {
     "globals": {

@@ -1,10 +1,20 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v1.5.0"></a>
+## [v1.5.0](https://github.com/comunica/comunica/compare/v1.4.6...v1.5.0) - 2019-01-02
+
+### Added
+* [Add Filter operator (based on Sparqlee)](https://github.com/comunica/comunica/commit/780460106489f9dab78f88cf0c730a8d9ac48498)
+* [Add Extend operator (based on Sparqlee)](https://github.com/comunica/comunica/commit/f606ef2c86ee8fe6372027c6ac3067d7933a7a62)
+* [Update LeftJoin NestedLoop actor to use Sparqlee](https://github.com/comunica/comunica/commit/f785d270a479274660fddc122680d13098d22bae)
+* [Add BGP join optimizer, Closes #90](https://github.com/comunica/comunica/commit/5f799cacf76e5bd3f2d464a2454aeed95d4cb71f)
+* [Add query operation optimize bus](https://github.com/comunica/comunica/commit/72e8cf4ea5df44c43ed9cd21fd8e7892e2505d44)
+
 <a name="v1.4.6"></a>
 ## [v1.4.6](https://github.com/comunica/comunica/compare/v1.4.5...v1.4.6) - 2018-12-11
 
-### TODO: categorize commits, choose titles from: Added, Changed, Deprecated, Removed, Fixed, Security.
+### Fixed
 * [Fix missing dependencies between new hypermedia actors](https://github.com/comunica/comunica/commit/806f11aaf95fed4d4150b7e791da1f338d44da23)
 
 <a name="v1.4.5"></a>
