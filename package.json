@@ -15,7 +15,6 @@
     "@babel/preset-env": "^7.0.0",
     "@rdfjs/data-model": "^1.1.1",
     "@types/asynciterator": "^1.1.1",
-    "@types/bluebird": "^3.5.11",
     "@types/bunyan": "^1.8.4",
     "@types/graphql": "^14.0.0",
     "@types/jest": "^23.0.0",
