@@ -1,4 +1,3 @@
-import {DataSourceUtils} from "@comunica/utils-datasource";
 import {IActionHttp, IActorHttpOutput} from "@comunica/bus-http";
 import {ActorQueryOperation, Bindings, IActionQueryOperation,
   IActorQueryOperationOutput, IActorQueryOperationOutputBindings} from "@comunica/bus-query-operation";
@@ -11,6 +10,7 @@ import {
 import {Actor, IActorArgs, IActorTest, Mediator} from "@comunica/core";
 import {ActionContext} from "@comunica/core";
 import {IMediatorTypeHttpRequests} from "@comunica/mediatortype-httprequests";
+import {DataSourceUtils} from "@comunica/utils-datasource";
 import {BufferedIterator} from "asynciterator";
 import {SparqlEndpointFetcher} from "fetch-sparql-endpoint";
 import * as RDF from "rdf-js";
