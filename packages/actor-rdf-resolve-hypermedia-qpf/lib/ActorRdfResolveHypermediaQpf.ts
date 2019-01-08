@@ -1,7 +1,7 @@
 import {ISearchForms} from "@comunica/actor-rdf-metadata-extract-hydra-controls";
-import {KEY_CONTEXT_SOURCE} from "@comunica/bus-rdf-resolve-quad-pattern";
 import {ActorRdfResolveHypermedia, IActionRdfResolveHypermedia,
   IActorRdfResolveHypermediaOutput} from "@comunica/bus-rdf-resolve-hypermedia";
+import {KEY_CONTEXT_SOURCE} from "@comunica/bus-rdf-resolve-quad-pattern";
 import {ActionContext, IActorArgs, IActorTest} from "@comunica/core";
 
 /**

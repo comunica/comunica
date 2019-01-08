@@ -1,10 +1,10 @@
-import {DataSourceUtils} from "@comunica/utils-datasource";
 import {ISearchForm} from "@comunica/actor-rdf-metadata-extract-hydra-controls";
 import {IActionRdfDereferencePaged, IActorRdfDereferencePagedOutput} from "@comunica/bus-rdf-dereference-paged";
 import {IActionRdfResolveHypermedia, IActorRdfResolveHypermediaOutput} from "@comunica/bus-rdf-resolve-hypermedia";
 import {ActorRdfResolveQuadPatternSource, IActionRdfResolveQuadPattern,
   IActorRdfResolveQuadPatternOutput, ILazyQuadSource, KEY_CONTEXT_SOURCE} from "@comunica/bus-rdf-resolve-quad-pattern";
 import {ActionContext, Actor, IActorArgs, IActorTest, Mediator} from "@comunica/core";
+import {DataSourceUtils} from "@comunica/utils-datasource";
 import * as RDF from "rdf-js";
 import {termToString} from "rdf-string";
 import {MediatedQuadSource} from "./MediatedQuadSource";
