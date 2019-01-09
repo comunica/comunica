@@ -18,6 +18,16 @@ export abstract class ActorHttp extends Actor<IActionHttp, IActorTest, IActorHtt
     super(args);
   }
 
+  /**
+   * Converts a WhatWG streams to Node streams if required.
+   * Returns the input in case the stream already is a Node stream.
+   * @param {ReadableStream} body
+   * @returns {NodeJS.ReadableStream}
+   */
+  public static toNodeReadable(body: ReadableStream): NodeJS.ReadableStream {
+    return require('is-stream')(body) ? body : require('node-web-streams').toNodeReadable(body);
+  }
+
 }
 
 /**

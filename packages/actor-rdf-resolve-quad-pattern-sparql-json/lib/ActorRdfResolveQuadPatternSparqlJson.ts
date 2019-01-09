@@ -1,4 +1,4 @@
-import {IActionHttp, IActorHttpOutput} from "@comunica/bus-http";
+import {ActorHttp, IActionHttp, IActorHttpOutput} from "@comunica/bus-http";
 import {Bindings, BindingsStream} from "@comunica/bus-query-operation";
 import {ActorRdfResolveQuadPattern, IActionRdfResolveQuadPattern,
   IActorRdfResolveQuadPatternOutput} from "@comunica/bus-rdf-resolve-quad-pattern";
@@ -220,8 +220,7 @@ export class ActorRdfResolveQuadPatternSparqlJson
 
     // Wrap WhatWG readable stream into a Node.js readable stream
     // If the body already is a Node.js stream (in the case of node-fetch), don't do explicit conversion.
-    const responseStream: NodeJS.ReadableStream = require('is-stream')(httpResponse.body)
-      ? httpResponse.body : require('node-web-streams').toNodeReadable(httpResponse.body);
+    const responseStream: NodeJS.ReadableStream = ActorHttp.toNodeReadable(httpResponse.body);
 
     // Emit an error if the server returned an invalid response
     if (!httpResponse.ok) {

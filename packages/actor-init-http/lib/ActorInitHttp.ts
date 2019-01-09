@@ -1,4 +1,4 @@
-import {IActionHttp, IActorHttpOutput} from "@comunica/bus-http";
+import {ActorHttp, IActionHttp, IActorHttpOutput} from "@comunica/bus-http";
 import {ActorInit, IActionInit, IActorOutputInit} from "@comunica/bus-init";
 import {Actor, IActorArgs, IActorTest, Mediator} from "@comunica/core";
 import {PassThrough} from "stream";
@@ -48,8 +48,7 @@ export class ActorInitHttp extends ActorInit implements IActorInitHelloWorldArgs
     const output: IActorOutputInit = {};
     // Wrap WhatWG readable stream into a Node.js readable stream
     // If the body already is a Node.js stream (in the case of node-fetch), don't do explicit conversion.
-    const responseStream: NodeJS.ReadableStream = require('is-stream')(httpResponse.body)
-      ? httpResponse.body : require('node-web-streams').toNodeReadable(httpResponse.body);
+    const responseStream: NodeJS.ReadableStream = ActorHttp.toNodeReadable(httpResponse.body);
     if (httpResponse.status === 200) {
       output.stdout = responseStream.pipe(new PassThrough());
     } else {

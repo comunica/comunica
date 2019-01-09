@@ -1,4 +1,4 @@
-import {IActionHttp, IActorHttpOutput} from "@comunica/bus-http";
+import {ActorHttp, IActionHttp, IActorHttpOutput} from "@comunica/bus-http";
 import {ActorRdfDereferenceMediaMappings, IActionRdfDereference,
   IActorRdfDereferenceMediaMappingsArgs, IActorRdfDereferenceOutput} from "@comunica/bus-rdf-dereference";
 import {IActionRdfParse, IActionRootRdfParse, IActorOutputRootRdfParse, IActorRdfParseOutput,
@@ -48,8 +48,7 @@ export class ActorRdfDereferenceHttpParse extends ActorRdfDereferenceMediaMappin
 
     // Wrap WhatWG readable stream into a Node.js readable stream
     // If the body already is a Node.js stream (in the case of node-fetch), don't do explicit conversion.
-    const responseStream: NodeJS.ReadableStream = require('is-stream')(httpResponse.body)
-      ? httpResponse.body : require('node-web-streams').toNodeReadable(httpResponse.body);
+    const responseStream: NodeJS.ReadableStream = ActorHttp.toNodeReadable(httpResponse.body);
 
     // Only parse if retrieval was successful
     if (httpResponse.status !== 200) {

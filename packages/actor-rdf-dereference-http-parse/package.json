@@ -32,9 +32,6 @@
     "index.d.ts",
     "index.js"
   ],
-  "dependencies": {
-    "node-web-streams": "^0.2.2"
-  },
   "peerDependencies": {
     "@comunica/bus-http": "^1.0.0",
     "@comunica/bus-rdf-dereference": "^1.0.0",
