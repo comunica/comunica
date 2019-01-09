@@ -84,5 +84,15 @@ describe('ActorInitRdfParse', () => {
           return expect(await arrayifyStream(output.stdout)).toBeTruthy();
         });
     });
+
+    it('should run', () => {
+      return actor.run({ argv: [ 'text/turtle', 'x:' ], env: {}, stdin: input })
+        .then(async (output) => {
+          return expect((await arrayifyStream(output.stdout)).map((b) => JSON.parse(b.toString()))).toEqual([
+            { subject: 'x:a', predicate: 'x:b', object: 'x:c', graph: ''},
+            { subject: 'x:d', predicate: 'x:e', object: 'x:f', graph: 'x:g'},
+          ]);
+        });
+    });
   });
 });
