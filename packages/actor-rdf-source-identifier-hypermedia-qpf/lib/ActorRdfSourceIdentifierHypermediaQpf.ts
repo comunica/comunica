@@ -1,4 +1,4 @@
-import {IActionHttp, IActorHttpOutput} from "@comunica/bus-http";
+import {ActorHttp, IActionHttp, IActorHttpOutput} from "@comunica/bus-http";
 import {
   ActorRdfSourceIdentifier, IActionRdfSourceIdentifier, IActorRdfSourceIdentifierArgs,
   IActorRdfSourceIdentifierOutput,
@@ -31,8 +31,7 @@ export class ActorRdfSourceIdentifierHypermediaQpf extends ActorRdfSourceIdentif
     const httpAction: IActionHttp = { context: action.context, input: action.sourceValue, init: { headers } };
     const httpResponse: IActorHttpOutput = await this.mediatorHttp.mediate(httpAction);
     if (httpResponse.ok) {
-      const stream = require('is-stream')(httpResponse.body)
-        ? httpResponse.body : require('node-web-streams').toNodeReadable(httpResponse.body);
+      const stream = ActorHttp.toNodeReadable(httpResponse.body);
       const body = (await require('stream-to-string')(stream));
 
       // Check if body contains all required things

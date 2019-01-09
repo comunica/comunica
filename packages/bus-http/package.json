@@ -36,6 +36,10 @@
   "peerDependencies": {
     "@comunica/core": "^1.0.0"
   },
+  "dependencies": {
+    "is-stream": "^1.1.0",
+    "node-web-streams": "^0.2.2"
+  },
   "devDependencies": {
     "@comunica/core": "^1.4.0"
   },

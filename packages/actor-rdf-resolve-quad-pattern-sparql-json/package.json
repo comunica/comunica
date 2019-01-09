@@ -38,7 +38,6 @@
     "@rdfjs/data-model": "^1.1.1",
     "asynciterator": "^2.0.1",
     "asynciterator-promiseproxy": "^2.0.0",
-    "node-web-streams": "^0.2.2",
     "rdf-terms": "^1.4.0",
     "sparqlalgebrajs": "^1.4.0",
     "sparqljson-parse": "^1.5.0"
