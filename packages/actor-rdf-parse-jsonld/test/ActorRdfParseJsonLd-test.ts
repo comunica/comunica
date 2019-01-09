@@ -160,6 +160,18 @@ describe('ActorRdfParseJsonLd', () => {
           'application/ld+json': 0,
         }});
       });
+
+      it('should not have duplicate results on multiple _read calls', () => {
+        return actor.run({ handle: { input, baseIRI: '' }, handleMediaType: 'application/ld+json' })
+          .then(async (output) => {
+            (<any> output.handle.quads)._read();
+            (<any> output.handle.quads)._read();
+            expect(await arrayifyStream(output.handle.quads)).toEqualRdfQuadArray([
+              quad('http://example.org/a', 'http://example.org/b', '"http://example.org/c"'),
+              quad('http://example.org/a', 'http://example.org/d', '"http://example.org/e"'),
+            ]);
+          });
+      });
     });
   });
 });
