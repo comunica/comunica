@@ -25,7 +25,7 @@ export class ActorRdfSerializeJsonLd extends ActorRdfSerializeFixedMediaTypes {
     const quadsArray: RDF.Quad = await require('arrayify-stream')(action.quads);
     const jsonLines: string[] = (await this.jsonLd.fromRDF(quadsArray, { useNativeTypes: true }))
       .map((jsonObject: any) => JSON.stringify(jsonObject, null, this.jsonStringifyIndentSpaces));
-    return { data: require('streamify-array')(jsonLines) };
+    return { data: require('streamify-string')(`[${jsonLines.join(',')}]`) };
   }
 
 }
