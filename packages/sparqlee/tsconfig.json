@@ -12,7 +12,7 @@
     "sourceMap": true,
     "inlineSources": true,
     "declaration": true,
-    "importHelpers": true,
+    "importHelpers": false,
     "outDir": "./dist",
     "noImplicitThis": true
   },
