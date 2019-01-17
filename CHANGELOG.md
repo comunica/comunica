@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v1.5.2"></a>
+## [v1.5.2](https://github.com/comunica/comunica/compare/v1.5.1...v1.5.2) - 2019-01-17
+
+### Fixed
+* [Fix extend operator still depending on old sparqlee version](https://github.com/comunica/comunica/commit/51aad9e802ed9da32f25cd7d08510072628c94c9)
+
 <a name="v1.5.1"></a>
 ## [v1.5.1](https://github.com/comunica/comunica/compare/v1.5.0...v1.5.1) - 2019-01-17
 
