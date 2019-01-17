@@ -1,6 +1,6 @@
 {
   "name": "@comunica/bus-http",
-  "version": "1.4.0",
+  "version": "1.5.1",
   "description": "A comunica bus for 'http' events.",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-http",
   "lsd:components": "components/components.jsonld",

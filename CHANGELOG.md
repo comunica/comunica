@@ -1,6 +1,16 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v1.5.1"></a>
+## [v1.5.1](https://github.com/comunica/comunica/compare/v1.5.0...v1.5.1) - 2019-01-17
+
+### Fixed
+* [Fix tslib dependency issue in sparqlee, causing a crash at startup](https://github.com/comunica/comunica/commit/33768c2ef38dc74d0fc41277847e3a642d53c98d)
+* [Fix JSON-LD serializer producing invalid JSON](https://github.com/comunica/comunica/commit/84ec23e624b92d778318cdad8c63f8cd15936f4b)
+* [Check HTTP stream type when identifying source](https://github.com/comunica/comunica/commit/4e138c74e33393ba6f5aab9cfd5522b521eec20b)
+* [Remove unneeded filter peer dependency from orderby actor](https://github.com/comunica/comunica/commit/5287c2bb2a966bb653ec64830464849773801451)
+* [Remove unneeded @types/bluebird dependency, Closes #360](https://github.com/comunica/comunica/commit/6c647b0316a9d3791b161444e029a35da1f09130)
+
 <a name="v1.5.0"></a>
 ## [v1.5.0](https://github.com/comunica/comunica/compare/v1.4.6...v1.5.0) - 2019-01-02
 
