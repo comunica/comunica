@@ -1227,11 +1227,6 @@
     "@types/events" "*"
     "@types/node" "*"
 
-"@types/bluebird@^3.5.11":
-  version "3.5.25"
-  resolved "https://registry.yarnpkg.com/@types/bluebird/-/bluebird-3.5.25.tgz#59188b871208092e37767e4b3d80c3b3eaae43bd"
-  integrity sha512-yfhIBix+AIFTmYGtkC0Bi+XGjSkOINykqKvO/Wqdz/DuXlAKK7HmhLAXdPIGsV4xzKcL3ev/zYc4yLNo+OvGaw==
-
 "@types/bunyan@^1.8.4":
   version "1.8.5"
   resolved "https://registry.yarnpkg.com/@types/bunyan/-/bunyan-1.8.5.tgz#d992adbce8ed20cde634764bd8f269f29f703647"
@@ -7820,6 +7815,21 @@ sparqlee@0.0.1:
   version "0.0.1"
   resolved "https://registry.yarnpkg.com/sparqlee/-/sparqlee-0.0.1.tgz#12fc455c3571711c34c51acd548f365587edfcce"
   integrity sha512-k7PIJyC2gal0QQ5ia1ZmyeFNAth9s6/A3hZKP7PDPqYB5OgbrTT5Z/uEu5cIS0l+GqiHgR39sdm3XAzD94bfsQ==
+  dependencies:
+    "@rdfjs/data-model" "^1.1.0"
+    "@types/asynciterator" "^1.1.0"
+    "@types/lodash" "^4.14.105"
+    "@types/lodash.isequal" "^4.5.2"
+    "@types/node" "^10.11.4"
+    "@types/rdf-js" "^2.0.1"
+    immutable "^3.8.2"
+    rdf-string "^1.1.1"
+    sparqlalgebrajs "^1.1.0"
+
+sparqlee@0.0.2:
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/sparqlee/-/sparqlee-0.0.2.tgz#76173d93c5f0f471e804d10b713bd47b6224b677"
+  integrity sha512-4Gi30lGMgqfxuDUn0V4bFraA+Rk7auJQsW5uy3Pf0wBCv8BqePVdPHsfSUY+ycRDGcMx1hivvs83Oh8NMYTwRg==
   dependencies:
     "@rdfjs/data-model" "^1.1.0"
     "@types/asynciterator" "^1.1.0"
