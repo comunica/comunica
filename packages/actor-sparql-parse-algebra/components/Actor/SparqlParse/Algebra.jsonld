@@ -44,7 +44,7 @@
               { "prefix": "dbpedia-owl", "prefixUrl": "http://dbpedia.org/ontology/" },
               { "prefix": "dbpprop", "prefixUrl": "http://dbpedia.org/property/" },
               { "prefix": "schema", "prefixUrl": "http://schema.org/" },
-              { "prefix": "skos", "prefixUrl": "http://www.w3.org/2008/05/skos" }
+              { "prefix": "skos", "prefixUrl": "http://www.w3.org/2008/05/skos#" }
             ]
           }
         }
