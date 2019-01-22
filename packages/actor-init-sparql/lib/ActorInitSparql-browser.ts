@@ -116,7 +116,7 @@ export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs {
 
     // Ensure sources are an async re-iterable
     if (Array.isArray(context[KEY_CONTEXT_SOURCES])) {
-      context[KEY_CONTEXT_SOURCES] = AsyncReiterableArray.fromFixedData(context[KEY_CONTEXT_SOURCES]);
+      context[KEY_CONTEXT_SOURCES] = AsyncReiterableArray.fromFixedData(context[KEY_CONTEXT_SOURCES].slice());
     }
 
     context = ActionContext(context);
