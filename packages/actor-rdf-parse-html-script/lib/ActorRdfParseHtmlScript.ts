@@ -8,6 +8,7 @@ import {
   IActorTestRootRdfParse,
 } from "@comunica/bus-rdf-parse";
 import {ActionContext, Actor, Mediator} from "@comunica/core";
+import { namedNode, quad } from "@rdfjs/data-model";
 import {Readable} from "stream";
 
 /**
@@ -21,86 +22,95 @@ export class ActorRdfParseHtmlScript extends ActorRdfParseFixedMediaTypes {
   public mediatorRdfParse: Mediator<Actor<IActionRootRdfParse, IActorTestRootRdfParse,
     IActorOutputRootRdfParse>, IActionRootRdfParse, IActorTestRootRdfParse, IActorOutputRootRdfParse>;
 
+  private readonly htmlparser: any;
+
   constructor(args: IActorRdfParseFixedMediaTypesArgs) {
     super(args);
+    this.htmlparser = require("htmlparser2");
   }
 
   public async runHandle(action: IActionRdfParse, mediaType: string, context: ActionContext):
     Promise<IActorRdfParseOutput> {
+    const supportedTypes: string[] = Object.keys((await this.mediatorRdfParse
+      .mediate({
+        context,
+        mediaTypes: true,
+      })).mediaTypes);
+    supportedTypes.push("application/ld+json");
 
-    const quads = new Readable({ objectMode: true });
-
+    const quads = new Readable({objectMode: true});
+    let textStream: Readable;
+    let textBuffer: string = '';
+    let initialized: boolean = false;
     quads._read = async () => {
+      if (!initialized) {
+        initialized = true;
+        let mediaTypeFound: string;
+        let isTextFound: boolean = false;
+        let countScriptTexts: number = 0; // amount of script-texts that have been found for parsing
+        let ended: boolean = false;
+        let closed: boolean = false; // after onclosetag is called, htmlparser can return an empty text in ontext
+        const parser = new this.htmlparser.Parser({
+          onclosetag: async () => {
+            // Only process the first time it closes
+            if (!closed && mediaTypeFound) {
+              closed = true;
+              if (isTextFound) {
+                textStream.push(textBuffer);
+                textStream.push(null);
 
-      const htmlString: string = await require('stream-to-string')(action.input);
-
-      const supportedTypes: string[] = Object.keys((await this.mediatorRdfParse
-        .mediate({
-          context,
-          mediaTypes: true,
-        })).mediaTypes);
-      supportedTypes.push("application/ld+json");
-
-      let stream: Readable;
-      let index: number;
-      let streamOpened: boolean = false;
-      let count: number = 0;
-      let noRDFScriptTags: boolean = true;
-
-      const htmlparser = require("htmlparser2");
-      const parser = new htmlparser.Parser({
-
-        onclosetag: async (tagname: string) => {
-          if (tagname === "script" && index > -1) {
-            streamOpened = false;
-            stream.push(null);
-
-            const parseAction = {
-              context,
-              handle: { baseIRI: action.baseIRI, input: stream },
-              handleMediaType: supportedTypes[index],
-            };
-            const returned = (await this.mediatorRdfParse.mediate(parseAction)).handle;
-
-            returned.quads.on('data', (chunk: any) => {
-              quads.push(chunk);
-            });
-
-            returned.quads.on('end', () => {
-              count--;
-              if (count === 0) {
-                quads.push(null);
+                // Send text to parser
+                const parseAction = {
+                  context,
+                  handle: {baseIRI: action.baseIRI, input: textStream},
+                  handleMediaType: mediaTypeFound,
+                };
+                const returned = (await this.mediatorRdfParse.mediate(parseAction)).handle;
+                returned.quads.on('data', (chunk: any) => {
+                  quads.push(chunk);
+                });
+                returned.quads.on('end', () => {
+                  countScriptTexts--;
+                  // When the document has been read and this is the last one, end the stream
+                  if (ended && countScriptTexts === 0) {
+                    quads.push(null);
+                  }
+                });
+              } else {
+                countScriptTexts--; // done with this script tag
               }
-            });
-          }
-        },
-
-        onend: () => {
-          if (noRDFScriptTags) {
-            quads.push(null);
-          }
-        },
-
-        onopentag: (tagname: string, attribs: any) => {
-          index = supportedTypes.indexOf(attribs.type);
-          if (tagname === "script" && index > -1) {
-            noRDFScriptTags = false;
-            streamOpened = true;
-            count++;
-            stream = new Readable({ objectMode: true });
-          }
-        },
-
-        ontext: (text: string) => {
-          if (streamOpened) {
-            stream.push(text);
-          }
-        },
-      }, { decodeEntities: true });
-
-      parser.write(htmlString);
-      parser.end();
-
+            }
+          },
+          // This method gets called after running all onopentags, ontexts and onendtags
+          onend: () => {
+            ended = true;
+            // If all script texts are processed or none are found, end the stream
+            if (countScriptTexts === 0) {
+              quads.push(null);
+            }
+          },
+          onopentag: (tagname: string, attribs: any) => {
+            textBuffer = '';
+            closed = false;
+            isTextFound = false;
+            if (tagname === "script" && supportedTypes.indexOf(attribs.type) > -1) {
+              textStream = new Readable({objectMode: true});
+              mediaTypeFound = attribs.type;
+              countScriptTexts++;
+            } else {
+              mediaTypeFound = null; // the tag will not be processed in the ontext
+            }
+          },
+          // ontext runs synchronously after onopentag
+          ontext: (text: string) => {
+            if (!closed && mediaTypeFound) {
+              textBuffer += text;
+              isTextFound = true;
+            }
+          },
+        }, { decodeEntities: true});
+        action.input.pipe(parser);
+      }
     };
 
     return { quads };
