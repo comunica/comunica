@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-sparql-parse-graphql",
-  "version": "1.4.3",
+  "version": "1.5.3",
   "description": "A graphql sparql-parse actor",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-sparql-parse-graphql",
   "lsd:components": "components/components.jsonld",

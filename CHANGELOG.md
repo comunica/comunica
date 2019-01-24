@@ -1,6 +1,13 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v1.5.3"></a>
+## [v1.5.3](https://github.com/comunica/comunica/compare/v1.5.2...v1.5.3) - 2019-01-24
+
+### Fixed
+* [Fix GraphQL-LD queries not producing results anymore](https://github.com/comunica/comunica/commit/3d923a8204e9daf37ed47d378c778fc936601faa)
+* [Fix schema and skos prefix](https://github.com/comunica/comunica/commit/f25b0d6e8abdec1307b7b7326b7ea233ffd75299)
+
 <a name="v1.5.2"></a>
 ## [v1.5.2](https://github.com/comunica/comunica/compare/v1.5.1...v1.5.2) - 2019-01-17
 
