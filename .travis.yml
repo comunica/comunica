@@ -1,19 +1,13 @@
 sudo: required
 services:
  - docker
-addons:
-  apt:
-    sources:
-     - ubuntu-toolchain-r-test
-    packages:
-     - g++-4.9
 language: node_js
 node_js:
  - "8"
  - "10"
  - "node"
 before_install: yarn global add greenkeeper-lockfile@1
-install: CC=gcc-4.9 CXX=g++-4.9 yarn install --pure-lockfile
+install: yarn install --pure-lockfile
 before_script: greenkeeper-lockfile-update
 after_script: greenkeeper-lockfile-upload
 script:
@@ -26,7 +20,6 @@ after_success:
   - yarn global add typedoc && yarn run doc
 cache:
   yarn: true
-  apt: true
   directories:
     - node_modules
     - .rdf-test-suite-cache

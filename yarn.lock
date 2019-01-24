@@ -2123,11 +2123,6 @@ binary-extensions@^1.0.0:
   resolved "https://registry.yarnpkg.com/binary-extensions/-/binary-extensions-1.12.0.tgz#c2d780f53d45bba8317a8902d4ceeaf3a6385b14"
   integrity sha512-DYWGk01lDcxeS/K9IHPGWfT8PsJmbXRtRd2Sx72Tnb8pcYZQFF1oSDb8hJtS1vhp212q1Rzi5dUf9+nq0o9UIg==
 
-bindings@^1.3.0:
-  version "1.3.1"
-  resolved "https://registry.yarnpkg.com/bindings/-/bindings-1.3.1.tgz#21fc7c6d67c18516ec5aaa2815b145ff77b26ea5"
-  integrity sha512-i47mqjF9UbjxJhxGf+pZ6kSxrnI3wBLlnGI2ArWJ4r0VrvDS7ZYXkprq/pLaBWYq4GM0r4zdHY+NNRqEMU7uew==
-
 block-stream@*:
   version "0.0.9"
   resolved "https://registry.yarnpkg.com/block-stream/-/block-stream-0.0.9.tgz#13ebfe778a03205cfe03751481ebb4b3300c126a"
@@ -5245,14 +5240,14 @@ jsonld@^0.4.11:
     request "^2.61.0"
     xmldom "0.1.19"
 
-jsonld@^1.0.2:
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/jsonld/-/jsonld-1.2.1.tgz#ac143963cda9eddcf2b1b7c9beac47d6c4f826b4"
-  integrity sha512-oHYbTsEqtJs9n8AJP5RrvEDpo5xv5yzfJNBFhOaiWsAo7jMkkiM/LWRrXwD5rN/zRHJFv+foST1yW3/Jh1rAjQ==
+jsonld@^1.5.0:
+  version "1.5.0"
+  resolved "https://registry.yarnpkg.com/jsonld/-/jsonld-1.5.0.tgz#c9f4d1680ab18530f760e5685eead25251451943"
+  integrity sha512-7jF9WXK4nuHvhz/qT6A4DEZ58tUYgrV98xBJEgHFhQ6GQaNT+oU1zqkFXKtDZsKsiEs/1K/VShNnat6SISb3jg==
   dependencies:
-    rdf-canonize "^0.3.0"
-    request "^2.83.0"
-    semver "^5.5.0"
+    rdf-canonize "^1.0.1"
+    request "^2.88.0"
+    semver "^5.6.0"
     xmldom "0.1.19"
 
 jsonparse@^1.2.0:
@@ -6071,7 +6066,7 @@ n3@^1.0.0:
   resolved "https://registry.yarnpkg.com/n3/-/n3-1.0.3.tgz#781e5de7965d3e52955ac9b970a438bb36e11b9a"
   integrity sha512-IdcCNqb/1gj9fX63hoVEn3/Z1u9iLJiYLSpesmqT3+5UrxcYG5YldUP6T2okNRZKzyVdqz+I0PExGkWkz9gcZw==
 
-nan@^2.10.0, nan@^2.11.1, nan@^2.9.2:
+nan@^2.10.0, nan@^2.9.2:
   version "2.12.1"
   resolved "https://registry.yarnpkg.com/nan/-/nan-2.12.1.tgz#7b1aa193e9aa86057e3c7bbd0ac448e770925552"
   integrity sha512-JY7V6lRkStKcKTvHO5NVSQRv+RV+FIL5pvDoLiAtSL9pKlC5x9PKQcZDsq7m4FO4d57mkhC6Z+QhAh3Jdk5JFw==
@@ -7042,24 +7037,13 @@ rc@^1.2.7, rc@~1.2.7:
     minimist "^1.2.0"
     strip-json-comments "~2.0.1"
 
-rdf-canonize-native@^0.3.0:
-  version "0.3.0"
-  resolved "https://registry.yarnpkg.com/rdf-canonize-native/-/rdf-canonize-native-0.3.0.tgz#de6c4a67345adf402520846778f5ad67728e50e2"
-  integrity sha512-t/EI0B0GSV+eM2d/Nnxvo5PHomO5Qc5EzBxxtxcrzd8Hx9wHGbh6VFCn4A5/RehQATeoAfynifszJZO+bDO8Ow==
-  dependencies:
-    bindings "^1.3.0"
-    nan "^2.11.1"
-    semver "^5.6.0"
-
-rdf-canonize@^0.3.0:
-  version "0.3.0"
-  resolved "https://registry.yarnpkg.com/rdf-canonize/-/rdf-canonize-0.3.0.tgz#f33c1725a4496d8c47871b376e5a9b873399ecea"
-  integrity sha512-LHyT23nTPy9ASARyoYg/zvNNysJ3cfUAFpPJBbGIjhoENHiUK+l/T3z7oAttqNMBvrJRJuEvcuhyT+YsnC73Dg==
+rdf-canonize@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/rdf-canonize/-/rdf-canonize-1.0.1.tgz#0a200a12c169e0008dd10e5b2b3855a55db0626c"
+  integrity sha512-vQq6q7BIUwrVQijKRYdunxlodkn0Btjv2MnJ4S3rOUELsghq7fGuDaWuqBNbXca3KRbcRS6HwTIT2hJbJej2UA==
   dependencies:
     node-forge "^0.7.6"
     semver "^5.6.0"
-  optionalDependencies:
-    rdf-canonize-native "^0.3.0"
 
 rdf-isomorphic@^1.1.0:
   version "1.1.0"
@@ -7371,7 +7355,7 @@ request-promise-native@^1.0.5:
     stealthy-require "^1.1.0"
     tough-cookie ">=2.3.3"
 
-request@^2.61.0, request@^2.83.0, request@^2.85.0, request@^2.87.0:
+request@^2.61.0, request@^2.85.0, request@^2.87.0, request@^2.88.0:
   version "2.88.0"
   resolved "https://registry.yarnpkg.com/request/-/request-2.88.0.tgz#9c2fca4f7d35b592efe57c7f0a55e81052124fef"
   integrity sha512-NAqBSrijGLZdM0WZNsInLJpkJokL72XYjUpnB0iwsRgxh7dB6COrHnTBNwN0E+lHDAJzu7kLAkDeY08z2/A0hg==

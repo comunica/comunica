@@ -43,7 +43,7 @@
   },
   "dependencies": {
     "@rdfjs/data-model": "^1.1.1",
-    "jsonld": "^1.0.2",
+    "jsonld": "^1.5.0",
     "rdf-terms": "^1.4.0",
     "stream-to-string": "^1.1.0"
   },
