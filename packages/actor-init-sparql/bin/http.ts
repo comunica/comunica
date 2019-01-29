@@ -34,8 +34,7 @@ if (!context.log) {
   context.log = new LoggerPretty({ level: args.l || 'warn' });
 }
 
-const options = { configResourceUrl: process.env.COMUNICA_CONFIG
-  ? process.cwd() + '/' + process.env.COMUNICA_CONFIG : null };
+const options = { configResourceUrl: process.env.COMUNICA_CONFIG };
 newEngineDynamic(options).then(async (engine: ActorInitSparql) => {
   const mediaTypes: {[id: string]: number} = await engine.getResultMediaTypes(null);
   const variants: any = [];
