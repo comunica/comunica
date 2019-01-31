@@ -1,6 +1,6 @@
 {
   "name": "@comunica/utils-datasource",
-  "version": "1.4.5",
+  "version": "1.5.4",
   "description": "An abstract actor for handling mediatype detection.",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/utils-datasource",
   "main": "index.js",

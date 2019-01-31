@@ -1,6 +1,16 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v1.5.4"></a>
+## [v1.5.4](https://github.com/comunica/comunica/compare/v1.5.3...v1.5.4) - 2019-01-31
+
+### Fixed
+* [Fix newEngineDynamic failing to produce results after multiple calls](https://github.com/comunica/comunica/commit/6531a962e0fbd519a5f7ff3c8055db7e64748668)
+* [Fix http tool not working with absolute config paths](https://github.com/comunica/comunica/commit/97c03fd25dd152c02831a1a727f7b2598bc976da)
+
+## Changed
+* [Update jsonld to 1.5.0](https://github.com/comunica/comunica/commit/76ebd19c31e94bddbf0875454881244e52b9bcb7)
+
 <a name="v1.5.3"></a>
 ## [v1.5.3](https://github.com/comunica/comunica/compare/v1.5.2...v1.5.3) - 2019-01-24
 

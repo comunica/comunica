@@ -1,6 +1,6 @@
 {
   "name": "@comunica/bus-rdf-resolve-hypermedia",
-  "version": "1.4.5",
+  "version": "1.5.4",
   "description": "A comunica bus for resolving hypermedia to quad streams.",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-resolve-hypermedia",
   "lsd:components": "components/components.jsonld",
