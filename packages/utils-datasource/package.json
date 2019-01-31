@@ -31,7 +31,7 @@
   "dependencies": {
     "arrayify-stream": "^1.0.0",
     "asynciterator": "^2.0.0",
-    "asyncreiterable": "^1.0.0"
+    "asyncreiterable": "^1.1.1"
   },
   "peerDependencies": {
     "@comunica/core": "^1.0.0"
