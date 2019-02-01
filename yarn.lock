@@ -7086,7 +7086,7 @@ rdf-terms@^1.2.0, rdf-terms@^1.4.0:
     "@rdfjs/data-model" "^1.1.1"
     lodash.uniqwith "^4.5.0"
 
-rdf-test-suite@^1.1.1:
+rdf-test-suite@^1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/rdf-test-suite/-/rdf-test-suite-1.2.0.tgz#0f1fde76b54605d829805b0f24ff14e28ba9fe78"
   integrity sha512-wjQMOWE93Ox+FGAX1fgUJMRJpgA8EOH8zd9ceyByYuFVNm9GUinfVfW2gRTcDqUy9+fk24cYgdAyTKkiGCOhkA==
