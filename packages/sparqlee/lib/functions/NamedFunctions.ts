@@ -23,7 +23,8 @@ type Term = E.TermExpression;
 
 // ----------------------------------------------------------------------------
 // XPath Constructor functions
-// https://www.w3.org/TR/sparql11-query/#FunctionMapping
+// https://www.w3.org/TR/sparql11-query/#
+// https://www.w3.org/TR/xpath-functions/#casting-from-primitive-to-primitive
 // ----------------------------------------------------------------------------
 
 const toString = {

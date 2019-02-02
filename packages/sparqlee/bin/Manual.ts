@@ -9,6 +9,7 @@ import { AsyncEvaluator } from '../lib/evaluators/AsyncEvaluator';
 import { Bindings } from '../lib/Types';
 import { TypeURL as DT } from '../lib/util/Consts';
 import * as C from '../lib/util/Consts';
+import * as UU from '../lib/util/Parsing';
 import * as U from '../util/Util';
 // import { Example, example1, mockLookUp, parse, parseFull } from '../util/Util';
 
@@ -18,14 +19,15 @@ function print(expr: string, full?: boolean): void {
 }
 
 async function testEval() {
-  const ex = new U.Example('langMatches(?a, "de-*-DE")', () => Bindings({
+  const ex = new U.Example('"2008-06-20T23:59:00Z"^^xsd:dateTime', () => Bindings({
     '?a': RDF.literal('aaa'),
   }));
   // tslint:disable-next-line:no-any
-  const evaluator = new AsyncEvaluator(undefined as any, U.mockHooks);
-  const presult = evaluator.evaluate(ex.mapping()).catch((err) => console.log(err));
+  const evaluator = new AsyncEvaluator(ex.expression, U.mockHooks);
+  const presult = evaluator.evaluateAsInternal(ex.mapping()).catch((err) => console.log(err));
   const val = await presult;
-  console.log(val);
+  // console.log(UU.parseXSDDateTime(val.strValue));
+  // console.log(val);
 }
 
 testEval();

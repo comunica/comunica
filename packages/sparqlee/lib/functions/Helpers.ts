@@ -111,6 +111,13 @@ export class Builder {
       .set(['double'], ([val]: [E.NumericLiteral]) => op(val))
       .invalidLexicalForm(['nonlexical'], 1);
   }
+
+  onDateTime1(op: (date: E.DateTimeLiteral) => Term): Builder {
+    return this
+      .set(['date'], ([val]: [E.DateTimeLiteral]) => op(val))
+      .invalidLexicalForm(['nonlexical'], 1);
+  }
+
   /*
   * Arithetic Operators take numbers, and return numbers.
   * Check 'numeric' for behaviour of the generic numeric helper.
@@ -266,6 +273,10 @@ export function bool(val: boolean): E.BooleanLiteral {
 }
 
 export function number(num: number, dt?: C.TypeURL): E.NumericLiteral {
+  return new E.NumericLiteral(num, undefined, C.make(dt || Type.XSD_FLOAT));
+}
+
+export function numberFromString(num: number, dt?: C.TypeURL): E.NumericLiteral {
   return new E.NumericLiteral(num, undefined, C.make(dt || Type.XSD_FLOAT));
 }
 

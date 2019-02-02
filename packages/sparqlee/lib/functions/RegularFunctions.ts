@@ -3,6 +3,7 @@ import { Map } from 'immutable';
 import * as E from '../expressions';
 import * as C from '../util/Consts';
 import * as Err from '../util/Errors';
+import * as P from '../util/Parsing';
 import * as X from './XPathFunctions';
 
 import { TypeURL as Type } from '../util/Consts';
@@ -361,6 +362,11 @@ const RAND = {
 // https://www.w3.org/TR/sparql11-query/#func-date-time
 // ----------------------------------------------------------------------------
 
+function parseDate(dateLit: E.DateTimeLiteral): P.SplittedDate {
+  // TODO: This is assuming datelits always have a string
+  return P.parseXSDDateTime(dateLit.strValue);
+}
+
 const now = {
   arity: 0,
   overloads: declare().unimplemented('now').collect(),
@@ -368,42 +374,65 @@ const now = {
 
 const year = {
   arity: 1,
-  overloads: declare().unimplemented('year').collect(),
+  overloads: declare()
+    .onDateTime1(
+      (date) => number(Number(parseDate(date).year), Type.XSD_INTEGER))
+    .collect(),
 };
 
 const month = {
   arity: 1,
-  overloads: declare().unimplemented('month').collect(),
+  overloads: declare()
+    .onDateTime1(
+      (date) => number(Number(parseDate(date).month), Type.XSD_INTEGER))
+    .collect(),
 };
 
 const day = {
   arity: 1,
-  overloads: declare().unimplemented('day').collect(),
+  overloads: declare()
+    .onDateTime1(
+      (date) => number(Number(parseDate(date).day), Type.XSD_INTEGER))
+    .collect(),
 };
 
 const hours = {
   arity: 1,
-  overloads: declare().unimplemented('hours').collect(),
+  overloads: declare()
+    .onDateTime1(
+      (date) => number(Number(parseDate(date).hours), Type.XSD_INTEGER))
+    .collect(),
 };
 
 const minutes = {
   arity: 1,
-  overloads: declare().unimplemented('minutes').collect(),
+  overloads: declare()
+    .onDateTime1(
+      (date) => number(Number(parseDate(date).minutes), Type.XSD_INTEGER))
+    .collect(),
 };
 
 const seconds = {
   arity: 1,
-  overloads: declare().unimplemented('seconds').collect(),
+  overloads: declare()
+    .onDateTime1(
+      (date) => number(Number(parseDate(date).seconds), Type.XSD_DECIMAL))
+    .collect(),
 };
 
 const timezone = {
   arity: 1,
-  overloads: declare().unimplemented('timezone').collect(),
+  overloads: declare()
+    .unimplemented('timezone')
+    .collect(),
 };
 
 const tz = {
   arity: 1,
-  overloads: declare().unimplemented('tz').collect(),
+  overloads: declare()
+    .onDateTime1(
+      (date) => string(parseDate(date).timezone))
+    .collect(),
 };
 
 // ----------------------------------------------------------------------------
