@@ -8,7 +8,7 @@
     {
       "@id": "cbrj:Actor/RdfJoin",
       "@type": "AbstractClass",
-      "extends": "Actor",
+      "extends": "cc:Actor",
       "requireElement": "ActorRdfJoin",
       "comment": "A comunica actor for joining bindings streams.",
       "parameters": [

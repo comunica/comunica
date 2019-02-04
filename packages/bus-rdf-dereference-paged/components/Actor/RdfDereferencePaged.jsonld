@@ -8,7 +8,7 @@
     {
       "@id": "cbrdp:Actor/RdfDereferencePaged",
       "@type": "AbstractClass",
-      "extends": "Actor",
+      "extends": "cc:Actor",
       "requireElement": "ActorRdfDereferencePaged",
       "comment": "A comunica actor for rdf-dereference-paged events.",
       "parameters": [

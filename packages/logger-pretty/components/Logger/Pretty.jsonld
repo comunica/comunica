@@ -8,7 +8,7 @@
     {
       "@id": "clp:Logger/Pretty",
       "@type": "Class",
-      "extends": "Logger",
+      "extends": "cc:Logger",
       "requireElement": "LoggerPretty",
       "comment": "A logger that pretty-prints.",
       "parameters": [

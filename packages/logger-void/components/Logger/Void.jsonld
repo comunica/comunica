@@ -8,7 +8,7 @@
     {
       "@id": "clv:Logger/Void",
       "@type": "Class",
-      "extends": "Logger",
+      "extends": "cc:Logger",
       "requireElement": "LoggerVoid",
       "comment": "A logger that voids everything.",
       "constructorArguments": [

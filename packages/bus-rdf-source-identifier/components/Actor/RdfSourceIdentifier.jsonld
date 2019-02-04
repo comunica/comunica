@@ -8,7 +8,7 @@
     {
       "@id": "cbrsi:Actor/RdfSourceIdentifier",
       "@type": "AbstractClass",
-      "extends": "Actor",
+      "extends": "cc:Actor",
       "requireElement": "ActorRdfSourceIdentifier",
       "comment": "A comunica actor for rdf-source-identifier events.",
       "parameters": [

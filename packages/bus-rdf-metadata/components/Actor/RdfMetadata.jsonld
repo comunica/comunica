@@ -8,7 +8,7 @@
     {
       "@id": "cbrm:Actor/RdfMetadata",
       "@type": "AbstractClass",
-      "extends": "Actor",
+      "extends": "cc:Actor",
       "requireElement": "ActorRdfMetadata",
       "comment": "A comunica actor for rdf-metadata events.",
       "parameters": [

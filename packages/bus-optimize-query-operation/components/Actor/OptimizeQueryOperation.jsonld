@@ -8,7 +8,7 @@
     {
       "@id": "cboqo:Actor/OptimizeQueryOperation",
       "@type": "AbstractClass",
-      "extends": "Actor",
+      "extends": "cc:Actor",
       "requireElement": "ActorOptimizeQueryOperation",
       "comment": "A comunica actor for optimize-query-operation events.",
       "parameters": [

@@ -9,7 +9,7 @@
     {
       "@id": "cbss:Actor/SparqlSerialize",
       "@type": "AbstractClass",
-      "extends": "Actor",
+      "extends": "cc:Actor",
       "requireElement": "ActorSparqlSerialize",
       "comment": "A comunica actor for rdf-serialize events.",
       "parameters": [

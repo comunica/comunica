@@ -8,7 +8,7 @@
     {
       "@id": "cbcp:Actor/ContextPreprocess",
       "@type": "AbstractClass",
-      "extends": "Actor",
+      "extends": "cc:Actor",
       "requireElement": "ActorContextPreprocess",
       "comment": "A comunica actor for context-preprocess events.",
       "parameters": [

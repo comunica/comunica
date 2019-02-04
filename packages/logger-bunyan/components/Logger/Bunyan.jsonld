@@ -8,7 +8,7 @@
     {
       "@id": "clb:Logger/Bunyan",
       "@type": "Class",
-      "extends": "Logger",
+      "extends": "cc:Logger",
       "requireElement": "LoggerBunyan",
       "comment": "A bunyan-based logger implementation.",
       "parameters": [

@@ -8,7 +8,7 @@
     {
       "@id": "cbrrqp:Actor/RdfResolveQuadPattern",
       "@type": "AbstractClass",
-      "extends": "Actor",
+      "extends": "cc:Actor",
       "requireElement": "ActorRdfResolveQuadPattern",
       "comment": "A comunica actor for rdf-resolve-quad-pattern events.",
       "parameters": [

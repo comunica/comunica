@@ -8,7 +8,7 @@
     {
       "@id": "cbsp:Actor/SparqlParse",
       "@type": "AbstractClass",
-      "extends": "Actor",
+      "extends": "cc:Actor",
       "requireElement": "ActorSparqlParse",
       "comment": "A comunica actor for sparql-parse events.",
       "parameters": [

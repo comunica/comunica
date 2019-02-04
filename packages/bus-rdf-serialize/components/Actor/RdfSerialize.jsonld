@@ -9,7 +9,7 @@
     {
       "@id": "cbrs:Actor/RdfSerialize",
       "@type": "AbstractClass",
-      "extends": "Actor",
+      "extends": "cc:Actor",
       "requireElement": "ActorRdfSerialize",
       "comment": "A comunica actor for rdf-serialize events.",
       "parameters": [

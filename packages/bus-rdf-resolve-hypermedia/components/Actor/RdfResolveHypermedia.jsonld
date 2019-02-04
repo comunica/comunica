@@ -8,7 +8,7 @@
     {
       "@id": "cbrrh:Actor/RdfResolveHypermedia",
       "@type": "AbstractClass",
-      "extends": "Actor",
+      "extends": "cc:Actor",
       "requireElement": "ActorRdfResolveHypermedia",
       "comment": "A comunica actor for rdf-resolve-hypermedia bus.",
       "parameters": [

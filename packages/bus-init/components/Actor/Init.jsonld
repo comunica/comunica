@@ -5,7 +5,7 @@
     {
       "@id": "cbi:Actor/Init",
       "@type": "AbstractClass",
-      "extends": "Actor",
+      "extends": "cc:Actor",
       "requireElement": "ActorInit",
       "comment": "A base actor for listening to init events.",
       "parameters": [

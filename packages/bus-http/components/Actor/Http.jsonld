@@ -8,7 +8,7 @@
     {
       "@id": "cbh:Actor/Http",
       "@type": "AbstractClass",
-      "extends": "Actor",
+      "extends": "cc:Actor",
       "requireElement": "ActorHttp",
       "comment": "A base actor for handling HTTP events.",
       "parameters": [

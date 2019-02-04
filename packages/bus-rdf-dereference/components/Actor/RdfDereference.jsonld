@@ -8,7 +8,7 @@
     {
       "@id": "cbrd:Actor/RdfDereference",
       "@type": "AbstractClass",
-      "extends": "Actor",
+      "extends": "cc:Actor",
       "requireElement": "ActorRdfDereference",
       "comment": "A base actor for handling RDF dereference events.",
       "parameters": [
