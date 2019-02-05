@@ -52,7 +52,7 @@ describe('ActorQueryOperation', () => {
   describe('#cachifyMetadata', () => {
     it('should remember an instance', () => {
       const cb = jest.fn(() => 'ABC');
-      const cached = ActorQueryOperation.cachifyMetadata(cb);
+      const cached = ActorQueryOperation.cachifyMetadata(<any> cb);
       expect(cached()).toEqual('ABC');
       expect(cached()).toEqual('ABC');
       expect(cb).toHaveBeenCalledTimes(1);
