@@ -6,6 +6,10 @@ node_js:
  - "8"
  - "10"
  - "node"
+os:
+ - linux
+ - osx
+# - windows # Temporary disabled, not very stable yet on Travis
 before_install: yarn global add greenkeeper-lockfile@1
 install: yarn install --pure-lockfile
 before_script: greenkeeper-lockfile-update
@@ -33,6 +37,7 @@ deploy:
       tags: false
       branch: master
       node_js: "node"
+      os: "linux"
   - provider: script
     skip-cleanup: true
     script: ./.travis/docker.sh && ./.travis/docker.sh push
@@ -40,6 +45,7 @@ deploy:
       tags: true
       all_branches: true
       node_js: "node"
+      os: "linux"
   - provider: script
     skip-cleanup: true
     script: ./.travis/deploy_browser.sh
@@ -47,6 +53,7 @@ deploy:
       tags: false
       branch: master
       node_js: "node"
+      os: "linux"
   - provider: script
     skip-cleanup: true
     script: ./.travis/deploy_browser.sh
@@ -54,3 +61,4 @@ deploy:
       tags: true
       all_branches: true
       node_js: "node"
+      os: "linux"
