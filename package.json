@@ -31,7 +31,7 @@
     "@types/lru-cache": "^4.1.0",
     "@types/minimist": "^1.2.0",
     "@types/n3": "^1.0.4",
-    "@types/node": "^10.11.3",
+    "@types/node": "^11.9.0",
     "@types/node-fetch": "^2.1.0",
     "@types/rdf-js": "^2.0.1",
     "@types/sax": "^1.0.1",
