@@ -21,8 +21,14 @@
           "unique": true
         },
         {
-          "@id": "crdhp:mediatorRdfParse",
-          "comment": "The RDF Parse mediator",
+          "@id": "crdhp:mediatorRdfParseMediatypes",
+          "comment": "The RDF Parse mediator for collecting media types",
+          "required": true,
+          "unique": true
+        },
+        {
+          "@id": "crdhp:mediatorRdfParseHandle",
+          "comment": "The RDF Parse mediator for handling parsing",
           "required": true,
           "unique": true
         }
@@ -37,8 +43,12 @@
               "value": "crdhp:mediatorHttp"
             },
             {
-              "keyRaw": "mediatorRdfParse",
-              "value": "crdhp:mediatorRdfParse"
+              "keyRaw": "mediatorRdfParseMediatypes",
+              "value": "crdhp:mediatorRdfParseMediatypes"
+            },
+            {
+              "keyRaw": "mediatorRdfParseHandle",
+              "value": "crdhp:mediatorRdfParseHandle"
             }
           ]
         }

@@ -19,7 +19,9 @@ export class ActorRdfDereferenceHttpParse extends ActorRdfDereferenceMediaMappin
 
   public readonly mediatorHttp: Mediator<Actor<IActionHttp, IActorTest, IActorHttpOutput>,
     IActionHttp, IActorTest, IActorHttpOutput>;
-  public readonly mediatorRdfParse: Mediator<Actor<IActionRootRdfParse, IActorTestRootRdfParse,
+  public readonly mediatorRdfParseMediatypes: Mediator<Actor<IActionRootRdfParse, IActorTestRootRdfParse,
+    IActorOutputRootRdfParse>, IActionRootRdfParse, IActorTestRootRdfParse, IActorOutputRootRdfParse>;
+  public readonly mediatorRdfParseHandle: Mediator<Actor<IActionRootRdfParse, IActorTestRootRdfParse,
     IActorOutputRootRdfParse>, IActionRootRdfParse, IActorTestRootRdfParse, IActorOutputRootRdfParse>;
 
   constructor(args: IActorRdfDereferenceHttpParseArgs) {
@@ -35,7 +37,7 @@ export class ActorRdfDereferenceHttpParse extends ActorRdfDereferenceMediaMappin
 
   public async run(action: IActionRdfDereference): Promise<IActorRdfDereferenceOutput> {
     // Define accept header based on available media types.
-    const mediaTypes: {[id: string]: number} = (await this.mediatorRdfParse.mediate(
+    const mediaTypes: {[id: string]: number} = (await this.mediatorRdfParseMediatypes.mediate(
       { context: action.context, mediaTypes: true }))
       .mediaTypes;
     const acceptHeader: string = this.mediaTypesToAcceptString(mediaTypes);
@@ -64,7 +66,7 @@ export class ActorRdfDereferenceHttpParse extends ActorRdfDereferenceMediaMappin
     }
 
     const parseAction: IActionRdfParse = { input: responseStream, baseIRI: httpResponse.url };
-    const parseOutput: IActorRdfParseOutput = (await this.mediatorRdfParse.mediate(
+    const parseOutput: IActorRdfParseOutput = (await this.mediatorRdfParseHandle.mediate(
       { context: action.context, handle: parseAction, handleMediaType: mediaType })).handle;
 
     // Return the parsed quad stream and whether or not only triples are supported
@@ -89,6 +91,8 @@ export interface IActorRdfDereferenceHttpParseArgs extends
   IActorRdfDereferenceMediaMappingsArgs {
   mediatorHttp: Mediator<Actor<IActionHttp, IActorTest, IActorHttpOutput>,
     IActionHttp, IActorTest, IActorHttpOutput>;
-  mediatorRdfParse: Mediator<Actor<IActionRootRdfParse, IActorTestRootRdfParse,
+  mediatorRdfParseMediatypes: Mediator<Actor<IActionRootRdfParse, IActorTestRootRdfParse,
+    IActorOutputRootRdfParse>, IActionRootRdfParse, IActorTestRootRdfParse, IActorOutputRootRdfParse>;
+  mediatorRdfParseHandle: Mediator<Actor<IActionRootRdfParse, IActorTestRootRdfParse,
     IActorOutputRootRdfParse>, IActionRootRdfParse, IActorTestRootRdfParse, IActorOutputRootRdfParse>;
 }

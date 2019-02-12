@@ -61,7 +61,14 @@ describe('ActorRdfDereferenceHttpParse', () => {
           url: extension ? action.input : 'https://www.google.com/index.html',
         };
       };
-      actor = new ActorRdfDereferenceHttpParse({ name: 'actor', bus, mediatorHttp, mediatorRdfParse, mediaMappings });
+      actor = new ActorRdfDereferenceHttpParse({
+        bus,
+        mediaMappings,
+        mediatorHttp,
+        mediatorRdfParseHandle: mediatorRdfParse,
+        mediatorRdfParseMediatypes: mediatorRdfParse,
+        name: 'actor',
+      });
     });
 
     it('should test on https', () => {
