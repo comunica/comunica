@@ -151,11 +151,12 @@ They might span entire streams and, depending on the use case, have very differe
 | tz             | ✓ |   | ✓ |   |
 | _Notes_        |   |   |   |   |
 | [Hash Functions](https://www.w3.org/TR/sparql11-query/#func-hash)
-| SHA1           |   |   |   |   |
-| SHA256         |   |   |   |   |
-| SHA384         |   |   |   |   |
-| SHA512         |   |   |   |   |
-| _Notes_        |   |   |   |   |
+| MD5            | ✓ |   | ✓ | ✓ |
+| SHA1           | ✓ |   | ✓ | ✓ |
+| SHA256         | ✓ |   | ✓ | ✓ |
+| SHA384         |  |  | X |   |
+| SHA512         | ✓ |   | ✓ | ✓ |
+| _Notes_        |   |   |   | Sha384 has no spec tests |
 | [XPath Constructor Functions](https://www.w3.org/TR/sparql11-query/#FunctionMapping)
 | str (see 'On Terms') | ✓ | ✓ |   | ✓ |
 | flt            | ✓ | ✓ |   |   |

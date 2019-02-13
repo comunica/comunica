@@ -215,11 +215,11 @@ export enum RegularOperator {
 
   // Hash functions
   // https://www.w3.org/TR/sparql11-query/#func-hash
-  MD5 = 'MD5',
-  SHA1 = 'SHA1',
-  SHA256 = 'SHA256',
-  SHA384 = 'SHA384',
-  SHA512 = 'SHA512',
+  MD5 = 'md5',
+  SHA1 = 'sha1',
+  SHA256 = 'sha256',
+  SHA384 = 'sha384',
+  SHA512 = 'sha512',
 
   // XPath Constructor functions
   // https://www.w3.org/TR/sparql11-query/#FunctionMapping

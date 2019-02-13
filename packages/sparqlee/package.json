@@ -43,6 +43,7 @@
   "homepage": "https://github.com/comunica/sparqlee#readme",
   "devDependencies": {
     "@types/benchmark": "^1.0.30",
+    "@types/hasha": "^3.0.0",
     "@types/jest": "^24.0.0",
     "asynciterator": "^2.0.0",
     "benchmark": "^2.1.4",
@@ -63,6 +64,7 @@
     "@types/lodash.isequal": "^4.5.2",
     "@types/node": "^11.9.0",
     "@types/rdf-js": "^2.0.1",
+    "hasha": "^3.0.0",
     "immutable": "^3.8.2",
     "rdf-string": "^1.1.1",
     "sparqlalgebrajs": "^1.1.0"

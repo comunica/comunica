@@ -1,3 +1,4 @@
+import * as hasha from 'hasha';
 import { Map } from 'immutable';
 
 import * as E from '../expressions';
@@ -450,27 +451,37 @@ const tz = {
 
 const MD5 = {
   arity: 1,
-  overloads: declare().unimplemented('MD5').collect(),
+  overloads: declare()
+    .onString1Typed((str) => string(hasha(str, { algorithm: 'md5' })))
+    .collect(),
 };
 
 const SHA1 = {
   arity: 1,
-  overloads: declare().unimplemented('SHA1').collect(),
+  overloads: declare()
+    .onString1Typed((str) => string(hasha(str, { algorithm: 'sha1' })))
+    .collect(),
 };
 
 const SHA256 = {
   arity: 1,
-  overloads: declare().unimplemented('SHA256').collect(),
+  overloads: declare()
+    .onString1Typed((str) => string(hasha(str, { algorithm: 'sha256' })))
+    .collect(),
 };
 
 const SHA384 = {
   arity: 1,
-  overloads: declare().unimplemented('SHA384').collect(),
+  overloads: declare()
+    .onString1Typed((str) => string(hasha(str, { algorithm: 'sha384' })))
+    .collect(),
 };
 
 const SHA512 = {
   arity: 1,
-  overloads: declare().unimplemented('SHA512').collect(),
+  overloads: declare()
+    .onString1Typed((str) => string(hasha(str, { algorithm: 'sha512' })))
+    .collect(),
 };
 
 // End definitions.
@@ -565,11 +576,11 @@ const _definitions: { [key in C.RegularOperator]: Definition } = {
   // Hash functions
   // https://www.w3.org/TR/sparql11-query/#func-hash
   // --------------------------------------------------------------------------
-  'MD5': MD5,
-  'SHA1': SHA1,
-  'SHA256': SHA256,
-  'SHA384': SHA384,
-  'SHA512': SHA512,
+  'md5': MD5,
+  'sha1': SHA1,
+  'sha256': SHA256,
+  'sha384': SHA384,
+  'sha512': SHA512,
 };
 
 // ----------------------------------------------------------------------------
