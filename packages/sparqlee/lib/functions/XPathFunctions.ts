@@ -1,3 +1,4 @@
+import * as P from '../util/Parsing';
 
 // https://www.w3.org/TR/xpath-functions/#func-matches
 // https://www.w3.org/TR/xpath-functions/#flags
@@ -38,4 +39,36 @@ function _isWildCard(tag: string): boolean {
 function _matchLangTag(left: string, right: string): boolean {
   const matchInitial = new RegExp(`/${left}/`, 'i');
   return matchInitial.test(`/${right}/`);
+}
+
+/**
+ * Formats a timezone string into a XML DayTimeDuration
+ *
+ * TODO: Test
+ * Used in fn:timezone
+ * http://www.datypic.com/sc/xsd/t-xsd_dayTimeDuration.html
+ */
+export function formatDayTimeDuration(timezone: string) {
+  if (!timezone) { return undefined; }
+  if (timezone[0] === 'Z') {
+    return 'PT0S';
+  } else {
+    // Split string
+    const [sign, h1Raw, h2Raw, _, m1Raw, m2Raw] = timezone;
+
+    // Cut of leading zero, set to empty string if 0, and append H;
+    const h1 = (h1Raw !== '0') ? h1Raw : '';
+    const h2 = (h1 || h2Raw !== '0') ? h2Raw : '';
+    const hours = (h1 + h2) ? h1 + h2 + 'H' : '';
+
+    // Same as in hours
+    const m1 = (m1Raw !== '0') ? m1Raw : '';
+    const m2 = (m1 || m2Raw !== '0') ? m2Raw : '';
+    const minutes = (m1 + m2) ? m1 + m2 + 'M' : '';
+
+    // Concat sign and time and mandatory separators
+    const time = `${hours}${minutes}`;
+    const signNoPlus = (sign === '-') ? '-' : '';
+    return `${signNoPlus}PT${time}`;
+  }
 }

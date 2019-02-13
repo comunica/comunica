@@ -113,6 +113,12 @@ export class CastError<T> extends ExpressionError {
   }
 }
 
+export class InvalidTimezoneCall extends ExpressionError {
+  constructor(public dateString: string) {
+    super(`TIMEZONE call on ${dateString} which has no timezone`);
+  }
+}
+
 // Non Expression Errors ------------------------------------------------------
 
 /**

@@ -276,7 +276,8 @@ export function number(num: number, dt?: C.TypeURL): E.NumericLiteral {
   return new E.NumericLiteral(num, undefined, C.make(dt || Type.XSD_FLOAT));
 }
 
-export function numberFromString(num: number, dt?: C.TypeURL): E.NumericLiteral {
+export function numberFromString(str: string, dt?: C.TypeURL): E.NumericLiteral {
+  const num = Number(str);
   return new E.NumericLiteral(num, undefined, C.make(dt || Type.XSD_FLOAT));
 }
 

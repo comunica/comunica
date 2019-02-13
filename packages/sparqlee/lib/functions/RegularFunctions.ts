@@ -423,7 +423,15 @@ const seconds = {
 const timezone = {
   arity: 1,
   overloads: declare()
-    .unimplemented('timezone')
+    .onDateTime1(
+      (date) => {
+        const duration = X.formatDayTimeDuration(parseDate(date).timezone);
+        if (!duration) {
+          throw new Err.InvalidTimezoneCall(date.strValue);
+        }
+        return new E.Literal(duration, duration, C.make(Type.XSD_DAYTIME_DURATION));
+      },
+    )
     .collect(),
 };
 
