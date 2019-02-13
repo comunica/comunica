@@ -166,7 +166,7 @@ export class NonLexicalLiteral extends Literal<undefined> {
     typeURL: RDF.NamedNode,
     strValue?: string,
     language?: string) {
-    super(typedValue, typeURL, language, strValue);
+    super(typedValue, typeURL, strValue, language);
     this.typedValue = undefined;
     this.type = 'nonlexical';
     this.shouldBeCategory = C.type(typeURL.value);

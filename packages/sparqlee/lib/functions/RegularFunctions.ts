@@ -201,7 +201,7 @@ const lang = {
 const datatype = {
   arity: 1,
   overloads: declare().onLiteral1(
-    (lit) => string((lit.typeURL) ? lit.typeURL.value : Type.XSD_STRING),
+    (lit) => new E.NamedNode(lit.typeURL.value),
   ).collect(),
 };
 
@@ -335,27 +335,41 @@ const REPLACE = {
 
 const abs = {
   arity: 1,
-  overloads: declare().unimplemented('abs').collect(),
+  overloads: declare()
+    .onNumeric1(
+      (num) => number(Math.abs(num.typedValue), num.typeURL.value as C.TypeURL))
+    .collect(),
 };
 
 const round = {
   arity: 1,
-  overloads: declare().unimplemented('round').collect(),
+  overloads: declare()
+    .onNumeric1(
+      (num) => number(Math.round(num.typedValue), num.typeURL.value as C.TypeURL))
+    .collect(),
 };
 
 const ceil = {
   arity: 1,
-  overloads: declare().unimplemented('ceil').collect(),
+  overloads: declare()
+    .onNumeric1(
+      (num) => number(Math.ceil(num.typedValue), num.typeURL.value as C.TypeURL))
+    .collect(),
 };
 
 const floor = {
   arity: 1,
-  overloads: declare().unimplemented('floor').collect(),
+  overloads: declare()
+    .onNumeric1(
+      (num) => number(Math.floor(num.typedValue), num.typeURL.value as C.TypeURL))
+    .collect(),
 };
 
-const RAND = {
-  arity: 1,
-  overloads: declare().unimplemented('RAND').collect(),
+const rand = {
+  arity: 0,
+  overloads: declare()
+    .set([], () => number(Math.random(), Type.XSD_DOUBLE))
+    .collect(),
 };
 
 // ----------------------------------------------------------------------------
@@ -430,7 +444,7 @@ const timezone = {
         if (!duration) {
           throw new Err.InvalidTimezoneCall(date.strValue);
         }
-        return new E.Literal(duration, duration, C.make(Type.XSD_DAYTIME_DURATION));
+        return new E.Literal(duration, C.make(Type.XSD_DAYTIME_DURATION), duration);
       },
     )
     .collect(),
@@ -556,7 +570,7 @@ const _definitions: { [key in C.RegularOperator]: Definition } = {
   'round': round,
   'ceil': ceil,
   'floor': floor,
-  'RAND': RAND,
+  'rand': rand,
 
   // --------------------------------------------------------------------------
   // Functions on Dates and Times

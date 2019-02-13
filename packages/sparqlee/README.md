@@ -133,11 +133,11 @@ They might span entire streams and, depending on the use case, have very differe
 | REPLACE        |   |   |   |   |
 | _Notes_        |   |   |   |   |
 | [On Numerics](https://www.w3.org/TR/sparql11-query/#func-numerics)
-| abs            | ✓ |   |   |   |
-| round          |   |   |   |   |
-| ceil           |   |   |   |   |
-| floor          |   |   |   |   |
-| RAND           |   |   |   |   |
+| abs            | ✓ |   | ✓ |   |
+| round          | ✓ |   | ✓ |   |
+| ceil           | ✓ |   | ✓ |   |
+| floor          | ✓ |   | ✓ |   |
+| RAND           | ✓ |   | ✓ |   |
 | _Notes         |   |   |   |   |
 | [On Dates and Times](https://www.w3.org/TR/sparql11-query/#func-date-time)
 | now            |   |   |   |   |

@@ -21,9 +21,9 @@ describe('evaluation of functions on RDF terms', () => {
 
   describe('like \'datatype\' receiving', () => {
     testAll([
-      'datatype("3"^^xsd:integer) = "http://www.w3.org/2001/XMLSchema#integer"',
-      'datatype("a"^^xsd:string)  = "http://www.w3.org/2001/XMLSchema#string" ',
-      'datatype("plain literal")  = "http://www.w3.org/2001/XMLSchema#string" ',
+      'datatype("3"^^xsd:integer) = http://www.w3.org/2001/XMLSchema#integer',
+      'datatype("a"^^xsd:string)  = http://www.w3.org/2001/XMLSchema#string ',
+      'datatype("plain literal")  = http://www.w3.org/2001/XMLSchema#string ',
     ]);
   });
 });
