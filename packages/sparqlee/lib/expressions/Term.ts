@@ -69,8 +69,8 @@ export class Literal<T> extends Term implements LiteralTerm {
 
   constructor(
     public typedValue: T,
+    public typeURL: RDF.NamedNode,
     public strValue?: string,
-    public typeURL?: RDF.NamedNode,
     public language?: string) {
     super();
     this.type = C.type(typeURL.value);
@@ -103,7 +103,7 @@ export class NumericLiteral extends Literal<number> {
 
 export class BooleanLiteral extends Literal<boolean> {
   constructor(public typedValue: boolean, public strValue?: string) {
-    super(typedValue, strValue, C.make(C.TypeURL.XSD_BOOLEAN));
+    super(typedValue, C.make(C.TypeURL.XSD_BOOLEAN), strValue);
   }
   coerceEBV(): boolean {
     return !!this.typedValue;
@@ -114,13 +114,13 @@ export class DateTimeLiteral extends Literal<Date> {
   // strValue is mandatory here because toISOString will always add
   // milliseconds, even if they were not present.
   constructor(public typedValue: Date, public strValue: string) {
-    super(typedValue, strValue, C.make(C.TypeURL.XSD_DATE_TIME));
+    super(typedValue, C.make(C.TypeURL.XSD_DATE_TIME), strValue);
   }
 }
 
 export class LangStringLiteral extends Literal<string> {
   constructor(public typedValue: string, public language: string) {
-    super(typedValue, typedValue, C.make(C.TypeURL.RDF_LANG_STRING), language);
+    super(typedValue, C.make(C.TypeURL.RDF_LANG_STRING), typedValue, language);
   }
 
   coerceEBV(): boolean {
@@ -134,7 +134,7 @@ export class LangStringLiteral extends Literal<string> {
 // This does not include language tagged literals
 export class StringLiteral extends Literal<string> {
   constructor(public typedValue: string) {
-    super(typedValue, typedValue, C.make(C.TypeURL.XSD_STRING));
+    super(typedValue, C.make(C.TypeURL.XSD_STRING), typedValue);
   }
 
   coerceEBV(): boolean {
@@ -163,13 +163,13 @@ export class NonLexicalLiteral extends Literal<undefined> {
   private shouldBeCategory: C.Type;
   constructor(
     typedValue: undefined,
+    typeURL: RDF.NamedNode,
     strValue?: string,
-    dataType?: RDF.NamedNode,
     language?: string) {
-    super(typedValue, strValue, dataType, language);
+    super(typedValue, typeURL, language, strValue);
     this.typedValue = undefined;
     this.type = 'nonlexical';
-    this.shouldBeCategory = C.type(dataType.value);
+    this.shouldBeCategory = C.type(typeURL.value);
   }
 
   coerceEBV(): boolean {

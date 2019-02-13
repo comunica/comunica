@@ -293,12 +293,12 @@ export function bool(val: boolean): E.BooleanLiteral {
 }
 
 export function number(num: number, dt?: C.TypeURL): E.NumericLiteral {
-  return new E.NumericLiteral(num, undefined, C.make(dt || Type.XSD_FLOAT));
+  return new E.NumericLiteral(num, C.make(dt || Type.XSD_FLOAT), undefined);
 }
 
 export function numberFromString(str: string, dt?: C.TypeURL): E.NumericLiteral {
   const num = Number(str);
-  return new E.NumericLiteral(num, undefined, C.make(dt || Type.XSD_FLOAT));
+  return new E.NumericLiteral(num, C.make(dt || Type.XSD_FLOAT), undefined);
 }
 
 export function string(s: string): E.StringLiteral {

@@ -19,14 +19,18 @@ function print(expr: string, full?: boolean): void {
 }
 
 async function testEval() {
-  const ex = new U.Example('"2008-06-20T23:59:00Z"^^xsd:dateTime', () => Bindings({
-    '?a': RDF.literal('aaa'),
+  // const ex = new U.Example('DATATYPE(?r) = xsd:double && ?r >= 0.0 && ?r < 1.0', () => Bindings({
+  //   '?r': RDF.literal('0.3', C.TypeURL.XSD_DOUBLE),
+  // }));
+  const ex = new U.Example('DATATYPE(?r) = xsd:double', () => Bindings({
+    '?r': RDF.literal('0.3', C.TypeURL.XSD_DOUBLE),
   }));
+  // const ex = new U.Example('0.0');
   // tslint:disable-next-line:no-any
   const evaluator = new AsyncEvaluator(ex.expression, U.mockHooks);
   const presult = evaluator.evaluateAsInternal(ex.mapping()).catch((err) => console.log(err));
-  const val = await presult;
-  // console.log(UU.parseXSDDateTime(val.strValue));
+  const val = await presult as any;
+  console.log(val);
   // console.log(val);
 }
 

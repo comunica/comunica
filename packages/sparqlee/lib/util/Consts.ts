@@ -199,7 +199,7 @@ export enum RegularOperator {
   ROUND = 'round',
   CEIL = 'ceil',
   FLOOR = 'floor',
-  RAND = 'RAND',
+  RAND = 'rand',
 
   // Functions on Dates and Times
   // https://www.w3.org/TR/sparql11-query/#func-date-time
