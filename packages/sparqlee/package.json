@@ -1,6 +1,6 @@
 {
   "name": "sparqlee",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "description": "A simple SPARQL expression evaluator library",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -43,8 +43,8 @@
   "homepage": "https://github.com/comunica/sparqlee#readme",
   "devDependencies": {
     "@types/benchmark": "^1.0.30",
-    "@types/jest": "^24.0.0",
     "@types/hasha": "^3.0.0",
+    "@types/jest": "^24.0.0",
     "@types/uuid": "^3.4.4",
     "asynciterator": "^2.0.0",
     "benchmark": "^2.1.4",
