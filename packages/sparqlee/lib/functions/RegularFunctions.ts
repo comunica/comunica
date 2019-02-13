@@ -59,7 +59,7 @@ const division = {
   arity: 2,
   overloads: declare()
     .arithmetic((left, right) => left / right)
-    .setLitBinary(['integer', 'integer'],
+    .onBinaryTyped(['integer', 'integer'],
       (left: number, right: number) => {
         if (right === 0) {
           throw new Err.ExpressionError('Integer division by 0');
@@ -215,7 +215,7 @@ const BNODE = {
   arity: [0, 1],
   overloads: declare()
     // .set([], () => new E.BlankNode()) // TODO
-    .setLitUnary('string', (val: string) => new E.BlankNode(val))
+    .onString1Typed((val) => new E.BlankNode(val))
     .collect(),
 };
 
@@ -304,7 +304,7 @@ const CONCAT = {
 const langmatches = {
   arity: 2,
   overloads: declare()
-    .setLitBinary(
+    .onBinaryTyped(
       ['string', 'string'],
       (tag: string, range: string) => bool(X.langMatches(tag, range)),
     ).collect(),
@@ -315,10 +315,10 @@ const regex3 = (text: string, pattern: string, flags: string) => bool(X.matches(
 const REGEX = {
   arity: [2, 3],
   overloads: declare()
-    .setLitBinary(['string', 'string'], regex2)
-    .setLitBinary(['langString', 'langString'], regex2)
-    .setLitTernary(['string', 'string', 'string'], regex3)
-    .setLitTernary(['langString', 'string', 'string'], regex3)
+    .onBinaryTyped(['string', 'string'], regex2)
+    .onBinaryTyped(['langString', 'langString'], regex2)
+    .onTernaryTyped(['string', 'string', 'string'], regex3)
+    .onTernaryTyped(['langString', 'string', 'string'], regex3)
     .collect(),
 };
 

@@ -1,4 +1,3 @@
-import * as P from '../util/Parsing';
 
 // https://www.w3.org/TR/xpath-functions/#func-matches
 // https://www.w3.org/TR/xpath-functions/#flags

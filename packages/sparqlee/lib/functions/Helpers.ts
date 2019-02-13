@@ -56,25 +56,25 @@ export class Builder {
       { from, to });
   }
 
-  setUnary<T extends Term>(type: ArgumentType, op: (val: T) => Term) {
+  onUnary<T extends Term>(type: ArgumentType, op: (val: T) => Term) {
     return this.set([type], ([val]: [T]) => {
       return op(val);
     });
   }
 
-  setLitUnary<T>(type: ArgumentType, op: (val: T) => Term) {
+  onUnaryTyped<T>(type: ArgumentType, op: (val: T) => Term) {
     return this.set([type], ([val]: [E.Literal<T>]) => {
       return op(val.typedValue);
     });
   }
 
-  setLitBinary<L, R>(types: ArgumentType[], op: (left: L, right: R) => Term) {
+  onBinaryTyped<L, R>(types: ArgumentType[], op: (left: L, right: R) => Term) {
     return this.set(types, ([left, right]: [E.Literal<L>, E.Literal<R>]) => {
       return op(left.typedValue, right.typedValue);
     });
   }
 
-  setLitTernary<A1, A2, A3>(types: ArgumentType[], op: (a1: A1, a2: A2, a3: A3) => Term) {
+  onTernaryTyped<A1, A2, A3>(types: ArgumentType[], op: (a1: A1, a2: A2, a3: A3) => Term) {
     return this.set(types, ([a1, a2, a3]: [E.Literal<A1>, E.Literal<A2>, E.Literal<A3>]) => {
       return op(a1.typedValue, a2.typedValue, a3.typedValue);
     });
@@ -97,7 +97,27 @@ export class Builder {
     return this.set(['literal'], ([term]: [E.Literal<T>]) => op(term));
   }
 
+  onBoolean1(op: (lit: E.BooleanLiteral) => Term): Builder {
+    return this
+      .set(['boolean'], ([lit]: [E.BooleanLiteral]) => op(lit));
+  }
+
+  onBoolean1Typed(op: (lit: boolean) => Term): Builder {
+    return this
+      .set(['boolean'], ([lit]: [E.BooleanLiteral]) => op(lit.typedValue));
+  }
+
   onString1(op: (lit: E.Literal<string>) => Term): Builder {
+    return this
+      .set(['string'], ([lit]: [E.Literal<string>]) => op(lit));
+  }
+
+  onString1Typed(op: (lit: string) => Term): Builder {
+    return this
+      .set(['string'], ([lit]: [E.Literal<string>]) => op(lit.typedValue));
+  }
+
+  onStringly1(op: (lit: E.Literal<string>) => Term): Builder {
     return this
       .set(['string'], ([lit]: [E.Literal<string>]) => op(lit))
       .set(['langString'], ([lit]: [E.Literal<string>]) => op(lit));

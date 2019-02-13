@@ -38,8 +38,8 @@ const toFloat = {
   arity: 1,
   overloads: declare()
     .onNumeric1((val: E.NumericLiteral) => number(val.typedValue))
-    .setLitUnary('boolean', (val: boolean) => number(val ? 1 : 0))
-    .setUnary('string', (val: E.StringLiteral) => {
+    .onBoolean1Typed((val) => number(val ? 1 : 0))
+    .onUnary('string', (val: E.StringLiteral) => {
       const result = parseXSDFloat(val.str());
       if (!result) { throw new Err.CastError(val, Type.XSD_FLOAT); }
       return number(result);
@@ -52,8 +52,8 @@ const toDouble = {
   arity: 1,
   overloads: declare()
     .onNumeric1((val: E.NumericLiteral) => number(val.typedValue, Type.XSD_DOUBLE))
-    .setLitUnary('boolean', (val: boolean) => number(val ? 1 : 0, Type.XSD_DOUBLE))
-    .setUnary('string', (val: E.Term) => {
+    .onBoolean1Typed((val) => number(val ? 1 : 0, Type.XSD_DOUBLE))
+    .onUnary('string', (val: E.Term) => {
       const result = parseXSDFloat(val.str());
       if (!result) { throw new Err.CastError(val, Type.XSD_DOUBLE); }
       return number(result, Type.XSD_DOUBLE);
@@ -72,14 +72,14 @@ const toDecimal = {
     })
     .copy({ from: ['integer'], to: ['string'] })
     .copy({ from: ['integer'], to: ['nonlexical'] })
-    .setLitUnary('boolean', (val: boolean) => number(val ? 1 : 0, Type.XSD_DECIMAL))
+    .onBoolean1Typed((val) => number(val ? 1 : 0, Type.XSD_DECIMAL))
     .collect(),
 };
 
 const toInteger = {
   arity: 1,
   overloads: declare()
-    .setLitUnary('boolean', (val: boolean) => number(val ? 1 : 0, Type.XSD_INTEGER))
+    .onBoolean1Typed((val) => number(val ? 1 : 0, Type.XSD_INTEGER))
     .onNumeric1((val: E.Term) => {
       const result = parseXSDInteger(val.str());
       if (!result) { throw new Err.CastError(val, Type.XSD_INTEGER); }
@@ -93,8 +93,8 @@ const toInteger = {
 const toDatetime = {
   arity: 1,
   overloads: declare()
-    .setUnary('date', (val: E.DateTimeLiteral) => val)
-    .setUnary('string', (val: Term) => {
+    .onUnary('date', (val: E.DateTimeLiteral) => val)
+    .onUnary('string', (val: Term) => {
       const date = new Date(val.str());
       if (isNaN(date.getTime())) {
         throw new Err.CastError(val, Type.XSD_DATE_TIME);
@@ -109,8 +109,8 @@ const toBoolean = {
   arity: 1,
   overloads: declare()
     .onNumeric1((val: E.NumericLiteral) => bool(val.coerceEBV()))
-    .setUnary('boolean', (val: Term) => val)
-    .setUnary('string', (val: Term) => {
+    .onUnary('boolean', (val: Term) => val)
+    .onUnary('string', (val: Term) => {
       const str = val.str();
       if (str !== 'true' && str !== 'false') {
         throw new Err.CastError(val, Type.XSD_BOOLEAN);
