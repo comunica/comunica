@@ -1,4 +1,7 @@
+import * as RDFDM from '@rdfjs/data-model';
 import * as hasha from 'hasha';
+import * as uuid from 'uuid';
+
 import { Map } from 'immutable';
 
 import * as E from '../expressions';
@@ -9,6 +12,7 @@ import * as X from './XPathFunctions';
 
 import { TypeURL as Type } from '../util/Consts';
 
+import { transformLiteral } from '../Transformation';
 import { OverloadMap } from './FunctionClasses';
 import { bool, declare, number, string } from './Helpers';
 
@@ -168,22 +172,31 @@ const greaterThanEqual = {
 
 const isIRI = {
   arity: 1,
-  overloads: declare().unimplemented('isIRI').collect(),
+  overloads: declare()
+    .onTerm1((term) => bool(term.termType === 'namedNode'))
+    .collect(),
 };
 
 const isBlank = {
   arity: 1,
-  overloads: declare().unimplemented('isBlank').collect(),
+  overloads: declare()
+    .onTerm1((term) => bool(term.termType === 'blankNode'))
+    .collect(),
 };
 
 const isLiteral = {
   arity: 1,
-  overloads: declare().unimplemented('isLiteral').collect(),
+  overloads: declare()
+    .onTerm1((term) => bool(term.termType === 'literal'))
+    .collect(),
 };
 
 const isNumeric = {
   arity: 1,
-  overloads: declare().unimplemented('isNumeric').collect(),
+  overloads: declare()
+    .onNumeric1((term) => bool(true))
+    .set(['nonlexical'], (term) => bool(false))
+    .collect(),
 };
 
 const toString = {
@@ -195,16 +208,20 @@ const toString = {
 
 const lang = {
   arity: 1,
-  overloads: declare().onLiteral1((lit) => string(lit.language || '')).collect(),
+  overloads: declare()
+    .onLiteral1((lit) => string(lit.language || ''))
+    .collect(),
 };
 
 const datatype = {
   arity: 1,
-  overloads: declare().onLiteral1(
-    (lit) => new E.NamedNode(lit.typeURL.value),
-  ).collect(),
+  overloads: declare()
+    .onLiteral1(
+      (lit) => new E.NamedNode(lit.typeURL.value))
+    .collect(),
 };
 
+// https://www.w3.org/TR/sparql11-query/#func-iri
 const IRI = {
   arity: 1,
   overloads: declare().unimplemented('IRI').collect(),
@@ -222,22 +239,34 @@ const BNODE = {
 
 const STRDT = {
   arity: 2,
-  overloads: declare().unimplemented('STRDT').collect(),
+  overloads: declare()
+    .onBinary(['string', 'namedNode'], (str: E.StringLiteral, iri: E.NamedNode) => {
+      const lit = RDFDM.literal(str.typedValue, RDFDM.namedNode(iri.value));
+      return transformLiteral(lit);
+    })
+    .collect(),
 };
 
 const STRLANG = {
   arity: 2,
-  overloads: declare().unimplemented('STRLANG').collect(),
+  overloads: declare()
+    .onBinaryTyped(['string', 'string'],
+      (val: string, language: string) => new E.LangStringLiteral(val, language))
+    .collect(),
 };
 
 const UUID = {
   arity: 0,
-  overloads: declare().unimplemented('UUID').collect(),
+  overloads: declare()
+    .set([], () => new E.NamedNode(`urn:uuid:${uuid.v4()}`))
+    .collect(),
 };
 
 const STRUUID = {
   arity: 0,
-  overloads: declare().unimplemented('STRUUID').collect(),
+  overloads: declare()
+    .set([], () => string(uuid.v4()))
+    .collect(),
 };
 
 // ----------------------------------------------------------------------------
@@ -529,38 +558,39 @@ const _definitions: { [key in C.RegularOperator]: Definition } = {
   // Functions on RDF Terms
   // https://www.w3.org/TR/sparql11-query/#func-rdfTerms
   // --------------------------------------------------------------------------
-  'isIRI': isIRI,
-  'isBlank': isBlank,
-  'isLiteral': isLiteral,
-  'isNumeric': isNumeric,
+  'isiri': isIRI,
+  'isblank': isBlank,
+  'isliteral': isLiteral,
+  'isnumeric': isNumeric,
   'str': toString,
   'lang': lang,
   'datatype': datatype,
-  'IRI': IRI,
+  'iri': IRI,
+  'uri': IRI,
   'BNODE': BNODE,
-  'STRDT': STRDT,
-  'STRLANG': STRLANG,
-  'UUID': UUID,
-  'STRUUID': STRUUID,
+  'strdt': STRDT,
+  'strlang': STRLANG,
+  'uuid': UUID,
+  'struuid': STRUUID,
 
   // --------------------------------------------------------------------------
   // Functions on strings
   // https://www.w3.org/TR/sparql11-query/#func-forms
   // --------------------------------------------------------------------------
   'strlen': STRLEN,
-  'SUBSTR': SUBSTR,
-  'UCASE': UCASE,
-  'LCASE': LCASE,
-  'STRSTARTS': STRSTARTS,
-  'STRENDS': STRENDS,
-  'CONTAINS': CONTAINS,
-  'STRBEFORE': STRBEFORE,
-  'STRAFTER': STRAFTER,
-  'ENCODE_FOR_URI': ENCODE_FOR_URI,
-  'CONCAT': CONCAT,
+  'substr': SUBSTR,
+  'ucase': UCASE,
+  'lcase': LCASE,
+  'strstarts': STRSTARTS,
+  'strends': STRENDS,
+  'contains': CONTAINS,
+  'strbefore': STRBEFORE,
+  'strafter': STRAFTER,
+  'encode_for_uri': ENCODE_FOR_URI,
+  'concat': CONCAT,
   'langmatches': langmatches,
   'regex': REGEX,
-  'REPLACE': REPLACE,
+  'replace': REPLACE,
 
   // --------------------------------------------------------------------------
   // Functions on numerics

@@ -40,7 +40,7 @@ export function transformTerm(term: Alg.TermExpression): E.Expression {
 
   switch (term.term.termType) {
     case 'Variable': return new E.Variable(RDFString.termToString(term.term));
-    case 'Literal': return tranformLiteral(term.term as RDF.Literal);
+    case 'Literal': return transformLiteral(term.term as RDF.Literal);
     case 'NamedNode': return new E.NamedNode(term.term.value);
     case 'BlankNode': return new E.BlankNode(term.term.value);
     default: throw new Err.InvalidTermType(term);
@@ -49,7 +49,7 @@ export function transformTerm(term: Alg.TermExpression): E.Expression {
 
 // TODO: Maybe do this with a map?
 // tslint:disable-next-line:no-any
-export function tranformLiteral(lit: RDF.Literal): E.Literal<any> {
+export function transformLiteral(lit: RDF.Literal): E.Literal<any> {
 
   if (!lit.datatype) {
     return (lit.language)

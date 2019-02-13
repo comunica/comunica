@@ -68,6 +68,12 @@ export class Builder {
     });
   }
 
+  onBinary<L extends Term, R extends Term>(types: ArgumentType[], op: (left: L, right: R) => Term) {
+    return this.set(types, ([left, right]: [L, R]) => {
+      return op(left, right);
+    });
+  }
+
   onBinaryTyped<L, R>(types: ArgumentType[], op: (left: L, right: R) => Term) {
     return this.set(types, ([left, right]: [E.Literal<L>, E.Literal<R>]) => {
       return op(left.typedValue, right.typedValue);

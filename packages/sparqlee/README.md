@@ -102,20 +102,20 @@ They might span entire streams and, depending on the use case, have very differe
 | NOT IN         | ✓ |   | ✓ |   |
 | _Notes_        |   |   |   |   |
 | [On RDF Terms](https://www.w3.org/TR/sparql11-query/#func-rdfTerms)
-| isIRI          |   |   |   |   |
-| isBlank        |   |   |   |   |
-| isLiteral      |   |   |   |   |
-| isNumeric      |   |   |   |   |
+| isIRI          | ✓ |   |   |   |
+| isBlank        | ✓ |   |   |   |
+| isLiteral      | ✓ |   |   |   |
+| isNumeric      | ✓ |   |   |   |
 | str            | ✓ | ✓ |   | ✓ |
 | lang           | ✓ | ✓ |   | ✓ |
 | datatype       | ✓ | ✓ |   | ✓ |
 | IRI            |   |   |   |   |
 | BNODE          |   |   |   |   |
-| STRDT          |   |   |   |   |
-| STRLANG        |   |   |   |   |
-| UUID           |   |   |   |   |
-| STRUID         |   |   |   |   |
-| _Notes_        |   |   |   |   |
+| STRDT          | ✓ |   | ✓ |   |
+| STRLANG        | ✓ |   | X |   |
+| UUID           | ✓ |   |   |   |
+| STRUID         | ✓ |   |   |   |
+| _Notes_        |   |   |   | STRLANG test case is wrong (different case for lang-tag)  |
 | [On Strings](https://www.w3.org/TR/sparql11-query/#func-strings)
 | STRLEN         | ✓ | ✓ |   | ✓ |
 | SUBSTR         |   |   |   |   |
