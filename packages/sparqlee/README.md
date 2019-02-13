@@ -64,101 +64,106 @@ They might span entire streams and, depending on the use case, have very differe
 
 **TODO** Replace with check marks
 
-|    Function    | Implemented | Tested | Spec compliant |
-|----------------|-------------|--------|----------------|
+- _Implemented_: The function is at least partially implemented.
+- _Tested_: There are tests for this function in this repo.
+- _Passes spec_: Passes the spec tests (see [rdf-test-suite](https://github.com/rubensworks/rdf-test-suite.js)). We test this with [Comunica](https://github.com/comunica/comunica) manually (TODO).
+- _Spec compliant_: Passes the spec tests, has local tests, and there is high confidence the function is fully spec compliant.
+
+|    Function    | Implemented | Tested | Passes Spec |Spec compliant |
+|----------------|-------------|--------|-------------|----------------|
 | [Operator Mapping](https://www.w3.org/TR/sparql11-query/#OperatorMapping)
-| ! (not)        | ✓ | ✓ | ✓ |
-| + (unary plus) | ✓ | ✓ |   |
-| - (unary minus)| ✓ | ✓ |   |
-| \|\|           | ✓ | ✓ |   |
-| &&             | ✓ | ✓ |   |
-| =              | ✓ | ✓ |   |
-| !=             | ✓ | ✓ |   |
-| <              | ✓ | ✓ |   |
-| >              | ✓ | ✓ |   |
-| <=             | ✓ | ✓ |   |
-| >=             | ✓ | ✓ |   |
-| *              | ✓ | ✓ |   |
-| /              | ✓ | ✓ |   |
-| +              | ✓ | ✓ |   |
-| -              | ✓ | ✓ |   |
-| _Notes_        |   |   | Spec compliance depends on #13 and #14 |
+| ! (not)        | ✓ | ✓ |   | ✓ |
+| + (unary plus) | ✓ | ✓ |   |   |
+| - (unary minus)| ✓ | ✓ |   |   |
+| \|\|           | ✓ | ✓ |   |   |
+| &&             | ✓ | ✓ |   |   |
+| =              | ✓ | ✓ |   |   |
+| !=             | ✓ | ✓ |   |   |
+| <              | ✓ | ✓ |   |   |
+| >              | ✓ | ✓ |   |   |
+| <=             | ✓ | ✓ |   |   |
+| >=             | ✓ | ✓ |   |   |
+| *              | ✓ | ✓ |   |   |
+| /              | ✓ | ✓ |   |   |
+| +              | ✓ | ✓ |   |   |
+| -              | ✓ | ✓ |   |   |
+| _Notes_        |   |   |   | Spec compliance depends on #13 and #14 |
 | [Functional Forms](https://www.w3.org/TR/sparql11-query/#func-forms)
-| BOUND          | ✓ |   |   |
-| IF             | ✓ |   |   |
-| COALESCE       | ✓ |   |   |
-| NOT EXISTS     |   |   |   |
-| EXISTS         |   |   |   |
-| logical-or     | ✓ | ✓ | ✓ |
-| logical-and    | ✓ | ✓ | ✓ |
-| RDFTerm-equal  | ✓ | ✓ | ? |
-| sameTerm       | ✓ |   |   |
-| IN             | ✓ |   |   |
-| NOT IN         | ✓ |   |   |
-| _Notes_        |   |   |   |
+| BOUND          | ✓ |   |   |   |
+| IF             | ✓ |   |   |   |
+| COALESCE       | ✓ |   |   |   |
+| NOT EXISTS     |   |   |   |   |
+| EXISTS         |   |   |   |   |
+| logical-or     | ✓ | ✓ |   | ✓ |
+| logical-and    | ✓ | ✓ |   | ✓ |
+| RDFTerm-equal  | ✓ | ✓ |   | ? |
+| sameTerm       | ✓ |   |   |   |
+| IN             | ✓ |   |   |   |
+| NOT IN         | ✓ |   | ✓ |   |
+| _Notes_        |   |   |   |   |
 | [On RDF Terms](https://www.w3.org/TR/sparql11-query/#func-rdfTerms)
-| isIRI          |   |   |   |
-| isBlank        |   |   |   |
-| isLiteral      |   |   |   |
-| isNumeric      |   |   |   |
-| str            | ✓ | ✓ | ✓ |
-| lang           | ✓ | ✓ | ✓ |
-| datatype       | ✓ | ✓ | ✓ |
-| IRI            |   |   |   |
-| BNODE          |   |   |   |
-| STRDT          |   |   |   |
-| STRLANG        |   |   |   |
-| UUID           |   |   |   |
-| STRUID         |   |   |   |
-| _Notes_        |   |   |   |
+| isIRI          |   |   |   |   |
+| isBlank        |   |   |   |   |
+| isLiteral      |   |   |   |   |
+| isNumeric      |   |   |   |   |
+| str            | ✓ | ✓ |   | ✓ |
+| lang           | ✓ | ✓ |   | ✓ |
+| datatype       | ✓ | ✓ |   | ✓ |
+| IRI            |   |   |   |   |
+| BNODE          |   |   |   |   |
+| STRDT          |   |   |   |   |
+| STRLANG        |   |   |   |   |
+| UUID           |   |   |   |   |
+| STRUID         |   |   |   |   |
+| _Notes_        |   |   |   |   |
 | [On Strings](https://www.w3.org/TR/sparql11-query/#func-strings)
-| STRLEN         | ✓ | ✓ | ✓ |
-| SUBSTR         |   |   |   |
-| UCASE          |   |   |   |
-| LCASE          |   |   |   |
-| STRSTARTS      |   |   |   |
-| STRENDS        |   |   |   |
-| CONTAINS       |   |   |   |
-| STRBEFORE      |   |   |   |
-| STRAFTER       |   |   |   |
-| ENCODE_FOR_URI |   |   |   |
-| CONCAT         |   |   |   |
-| langMatches    | ✓ | ✓ | ? |
-| REGEX          | ✓ | ✓ |   |
-| REPLACE        |   |   |   |
-| _Notes_        |   |   |   |
+| STRLEN         | ✓ | ✓ |   | ✓ |
+| SUBSTR         |   |   |   |   |
+| UCASE          |   |   |   |   |
+| LCASE          |   |   |   |   |
+| STRSTARTS      |   |   |   |   |
+| STRENDS        |   |   |   |   |
+| CONTAINS       |   |   |   |   |
+| STRBEFORE      |   |   |   |   |
+| STRAFTER       |   |   |   |   |
+| ENCODE_FOR_URI |   |   |   |   |
+| CONCAT         |   |   |   |   |
+| langMatches    | ✓ | ✓ |   | ? |
+| REGEX          | ✓ | ✓ |   |   |
+| REPLACE        |   |   |   |   |
+| _Notes_        |   |   |   |   |
 | [On Numerics](https://www.w3.org/TR/sparql11-query/#func-numerics)
-| abs            | ✓ |   |   |
-| round          |   |   |   |
-| ceil           |   |   |   |
-| floor          |   |   |   |
-| RAND           |   |   |   |
-| _Notes         |   |   |   |
+| abs            | ✓ |   |   |   |
+| round          |   |   |   |   |
+| ceil           |   |   |   |   |
+| floor          |   |   |   |   |
+| RAND           |   |   |   |   |
+| _Notes         |   |   |   |   |
 | [On Dates and Times](https://www.w3.org/TR/sparql11-query/#func-date-time)
-| now            |   |   |   |
-| year           |   |   |   |
-| month          |   |   |   |
-| day            |   |   |   |
-| hours          |   |   |   |
-| minutes        |   |   |   |
-| seconds        |   |   |   |
-| timezone       |   |   |   |
-| tz             |   |   |   |
-| _Notes_        |   |   |   |
+| now            |   |   |   |   |
+| year           | ✓ |   | ✓ |   |
+| month          | ✓ |   | ✓ |   |
+| day            | ✓ |   | ✓ |   |
+| hours          | ✓ |   | ✓ |   |
+| minutes        | ✓ |   | ✓ |   |
+| seconds        | ✓ |   | ✓ |   |
+| timezone       | ✓ |   | ✓ |   |
+| tz             | ✓ |   | ✓ |   |
+| _Notes_        |   |   |   |   |
 | [Hash Functions](https://www.w3.org/TR/sparql11-query/#func-hash)
-| SHA1           |   |   |   |
-| SHA256         |   |   |   |
-| SHA384         |   |   |   |
-| SHA512         |   |   |   |
-| _Notes_        |   |   |   |
+| SHA1           |   |   |   |   |
+| SHA256         |   |   |   |   |
+| SHA384         |   |   |   |   |
+| SHA512         |   |   |   |   |
+| _Notes_        |   |   |   |   |
 | [XPath Constructor Functions](https://www.w3.org/TR/sparql11-query/#FunctionMapping)
-| str (see 'On Terms') | ✓ | ✓ | ✓ |
-| flt            | ✓ | ✓ |   |
-| dbl            | ✓ | ✓ |   |
-| dec            | ✓ | ✓ |   |
-| int            | ✓ | ✓ |   |
-| dT             | ✓ | ✓ |   |
-| bool           | ✓ | ✓ |   |
+| str (see 'On Terms') | ✓ | ✓ |   | ✓ |
+| flt            | ✓ | ✓ |   |   |
+| dbl            | ✓ | ✓ |   |   |
+| dec            | ✓ | ✓ |   |   |
+| int            | ✓ | ✓ |   |   |
+| dT             | ✓ | ✓ |   |   |
+| bool           | ✓ | ✓ |   |   |
 
 ## Development
 
