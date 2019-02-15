@@ -59,6 +59,15 @@ describe('ActorContextPreprocessRdfSourceIdentifier', () => {
         .toEqual([]);
     });
 
+    it('should run for a context with a single dummy source', async () => {
+      const result = await actor.run({
+        context: ActionContext(
+          { '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'dummy' } }),
+      });
+      return expect(result.context.get('@comunica/bus-rdf-resolve-quad-pattern:source'))
+        .toEqual({ type: 'dummy' });
+    });
+
     it('should run for a context with two dummy sources', async () => {
       return expect(await arrayifyStream((await actor.run({
         context: ActionContext(
@@ -88,6 +97,15 @@ describe('ActorContextPreprocessRdfSourceIdentifier', () => {
               { type: 'dummy' },
           ]) }),
       })).context.get('@comunica/bus-rdf-resolve-quad-pattern:sources').isEnded()).toBeFalsy();
+    });
+
+    it('should run for a context with a single auto source', async () => {
+      const result = await actor.run({
+        context: ActionContext(
+          { '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'auto', value: 'abc' } }),
+      });
+      return expect(result.context.get('@comunica/bus-rdf-resolve-quad-pattern:source'))
+        .toEqual({ type: 'a', value: 'abc' });
     });
 
     it('should run for a context with two auto sources', async () => {
