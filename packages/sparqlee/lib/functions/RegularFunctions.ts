@@ -447,13 +447,12 @@ const STRAFTER = {
 
 const ENCODE_FOR_URI = {
   arity: 1,
-  overloads: declare().unimplemented('ENCODE_FOR_URI').collect(),
+  overloads: declare()
+    .onStringly1Typed((val) => string(encodeURI(val))).collect(),
 };
 
-const CONCAT = {
-  arity: Infinity,
-  overloads: declare().unimplemented('CONCAT').collect(),
-};
+// See special operators
+// const CONCAT = {}
 
 const langmatches = {
   arity: 2,
@@ -711,7 +710,7 @@ const _definitions: { [key in C.RegularOperator]: Definition } = {
   'strbefore': STRBEFORE,
   'strafter': STRAFTER,
   'encode_for_uri': ENCODE_FOR_URI,
-  'concat': CONCAT,
+  // 'concat': CONCAT (see special operators)
   'langmatches': langmatches,
   'regex': REGEX,
   'replace': REPLACE,

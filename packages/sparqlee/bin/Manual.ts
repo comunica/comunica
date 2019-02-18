@@ -25,17 +25,13 @@ async function testEval() {
   // const ex = new U.Example('DATATYPE(?r) = xsd:double && ?r >= 0.0 && ?r < 1.0', () => Bindings({
   //   '?r': RDF.literal('0.3', C.TypeURL.XSD_DOUBLE),
   // }));
-  const ex = new U.Example('substr("bar", 1, 1)', () => Bindings({
+  const ex = new U.Example('concat()', () => Bindings({
     '?r': RDF.literal('0.3', C.TypeURL.XSD_DOUBLE),
   }));
   // const ex = new U.Example('0.0');
   // tslint:disable-next-line:no-any
   console.log(ex.expression);
-  console.log(JSON.stringify(A.translate(`PREFIX : <http://example.org/>
-SELECT ?s ?str (SUBSTR(?str,1,1) AS ?substr) WHERE {
-        ?s :str ?str
-}
-`)));
+
   const evaluator = new AsyncEvaluator(ex.expression, U.mockHooks);
   const presult = evaluator.evaluateAsInternal(ex.mapping()).catch((err) => console.log(err));
   const val = await presult;

@@ -5,7 +5,7 @@ import * as C from '../util/Consts';
 import * as Err from '../util/Errors';
 
 import { Bindings } from '../Types';
-import { bool } from './Helpers';
+import { bool, string, langString } from './Helpers';
 import { regularFunctions, specialFunctions } from './index';
 
 type Term = E.TermExpression;
@@ -252,6 +252,50 @@ const notInSPARQL = {
   },
 };
 
+// CONCAT
+function typeCheckConcatArg(term: Term, args: E.Expression[]): E.Literal<string> | never {
+  if (term.termType !== 'literal') {
+    throw new Err.InvalidArgumentTypes(args, C.SpecialOperator.CONCAT);
+  }
+
+  // tslint:disable-next-line:no-any
+  const lit = term as E.Literal<any>;
+
+  if (lit.type !== 'string' && lit.type !== 'langString') {
+    throw new Err.InvalidArgumentTypes(args, C.SpecialOperator.CONCAT);
+  }
+
+  return lit as E.Literal<string>;
+}
+
+function langAllEqual(lits: Array<E.Literal<string>>): boolean {
+  return lits.length > 0 && lits.every((lit) => lit.language === lits[0].language);
+}
+
+const concat = {
+  arity: Infinity,
+  async applyAsync({ args, evaluate, mapping }: E.EvalContextAsync): PTerm {
+    const pLits = args
+      .map(async (expr) => evaluate(expr, mapping))
+      .map(async (pTerm) => typeCheckConcatArg(await pTerm, args));
+    const lits = await Promise.all(pLits);
+    const strings = lits.map((lit) => lit.typedValue);
+    const joined = strings.join('');
+    const lang = langAllEqual(lits) ? lits[0].language : undefined;
+    return (lang) ? langString(joined, lang) : string(joined);
+  },
+
+  applySync({ args, evaluate, mapping }: E.EvalContextSync): Term {
+    const lits = args
+      .map((expr) => evaluate(expr, mapping))
+      .map((pTerm) => typeCheckConcatArg(pTerm, args));
+    const strings = lits.map((lit) => lit.typedValue);
+    const joined = strings.join('');
+    const lang = langAllEqual(lits) ? lits[0].language : undefined;
+    return (lang) ? langString(joined, lang) : string(joined);
+  },
+};
+
 // ----------------------------------------------------------------------------
 // Wrap these declarations into functions
 // ----------------------------------------------------------------------------
@@ -276,6 +320,9 @@ const _specialDefinitions: { [key in C.SpecialOperator]: SpecialDefinition } = {
   'sameterm': sameTerm,
   'in': inSPARQL,
   'notin': notInSPARQL,
+
+  // Annoying functions
+  'concat': concat,
 };
 
 export const specialDefinitions = Map<C.SpecialOperator, SpecialDefinition>(_specialDefinitions);

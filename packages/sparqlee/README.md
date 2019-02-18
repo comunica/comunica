@@ -126,8 +126,8 @@ They might span entire streams and, depending on the use case, have very differe
 | CONTAINS       | ✓ |   | ✓ |   |
 | STRBEFORE      | ✓ |   | X |   |
 | STRAFTER       | ✓ |   | ✓ |   |
-| ENCODE_FOR_URI |   |   |   |   |
-| CONCAT         |   |   |   |   |
+| ENCODE_FOR_URI | ✓ |   | ✓ |   |
+| CONCAT         | ✓ |   | ✓ |   |
 | langMatches    | ✓ | ✓ |   | ? |
 | REGEX          | ✓ | ✓ |   |   |
 | REPLACE        |   |   |   |   |

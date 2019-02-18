@@ -144,6 +144,12 @@ export class Builder {
       .set(['langString'], ([lit]: [E.Literal<string>]) => op(lit));
   }
 
+  onStringly1Typed(op: (lit: string) => Term): Builder {
+    return this
+      .set(['string'], ([lit]: [E.Literal<string>]) => op(lit.typedValue))
+      .set(['langString'], ([lit]: [E.Literal<string>]) => op(lit.typedValue));
+  }
+
   onNumeric1(op: (val: E.NumericLiteral) => Term): Builder {
     return this
       .set(['integer'], ([val]: [E.NumericLiteral]) => op(val))

@@ -189,7 +189,7 @@ export enum RegularOperator {
   STRBEFORE = 'strbefore',
   STRAFTER = 'strafter',
   ENCODE_FOR_URI = 'encode_for_uri',
-  CONCAT = 'concat',
+  // CONCAT = 'concat' (see special operators)
   LANG_MATCHES = 'langmatches',
   REGEX = 'regex',
   REPLACE = 'replace',
@@ -240,6 +240,9 @@ export enum SpecialOperator {
   SAME_TERM = 'sameterm',
   IN = 'in',
   NOT_IN = 'notin',
+
+  // Functions that are annoying
+  CONCAT = 'concat', // Has variable arity
 }
 
 export const RegularOperators = Set(Object.values(RegularOperator));
