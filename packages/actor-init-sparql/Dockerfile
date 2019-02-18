@@ -10,6 +10,10 @@ COPY lib/*.js ${dir}/lib/
 COPY bin/*.js ${dir}/bin/
 COPY index.js index-browser.js engine-default.js package.json ${dir}
 
+# Set the npm registry
+ARG NPM_REGISTRY=https://registry.npmjs.org/
+RUN npm config set @comunica:registry $NPM_REGISTRY
+
 # Install the node module
 RUN cd ${dir} && npm install --only=production
 

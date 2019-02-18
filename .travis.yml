@@ -2,10 +2,12 @@ sudo: required
 services:
  - docker
 language: node_js
-node_js:
- - "8"
- - "10"
- - "node"
+matrix:
+  include:
+    - node_js: '8'
+    - node_js: '10'
+    - node_js: 'node'
+      env: DOCUMENTATION_BUILD=true DOCKER_BUILD=true
 os:
  - linux
 # - osx # Temporary disabled, not very stable yet on Travis
@@ -19,9 +21,10 @@ script:
   - yarn run test-ci
   - lerna run browser
   - lerna run spec
+  - if [ "$DOCKER_BUILD" = "true" ]; then ( yarn global add verdaccio@3.11.4 npm-cli-adduser && ./.travis/docker.sh ) fi
 after_success:
   - yarn run coveralls-ci
-  - yarn global add typedoc && yarn run doc
+  - if [ "$DOCUMENTATION_BUILD" = "true" ]; then ( yarn global add typedoc && yarn run doc ) fi
 cache:
   yarn: true
   directories:
@@ -40,7 +43,7 @@ deploy:
       os: "linux"
   - provider: script
     skip-cleanup: true
-    script: ./.travis/docker.sh && ./.travis/docker.sh push
+    script: ./.travis/docker.sh push
     on:
       tags: true
       all_branches: true
