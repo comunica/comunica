@@ -30,7 +30,7 @@
         "packages/actor-query-operation-construct/package.json",
         "packages/actor-query-operation-describe-subject/package.json",
         "packages/actor-query-operation-distinct-hash/package.json",
-        "packages/actor-query-operation-distinct-extend/package.json",
+        "packages/actor-query-operation-extend/package.json",
         "packages/actor-query-operation-filter-direct/package.json",
         "packages/actor-query-operation-filter-sparqlee/package.json",
         "packages/actor-query-operation-from-quad/package.json",
