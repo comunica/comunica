@@ -1,7 +1,8 @@
 import * as RDFDM from '@rdfjs/data-model';
-import * as hasha from 'hasha';
+import * as hash from 'create-hash';
 import * as uuid from 'uuid';
 
+import { Hash } from 'crypto';
 import { Map } from 'immutable';
 
 import * as E from '../expressions';
@@ -495,35 +496,35 @@ const tz = {
 const MD5 = {
   arity: 1,
   overloads: declare()
-    .onString1Typed((str) => string(hasha(str, { algorithm: 'md5' })))
+    .onString1Typed((str) => string(hash('md5').update(str).digest('hex')))
     .collect(),
 };
 
 const SHA1 = {
   arity: 1,
   overloads: declare()
-    .onString1Typed((str) => string(hasha(str, { algorithm: 'sha1' })))
+    .onString1Typed((str) => string(hash('sha1').update(str).digest('hex')))
     .collect(),
 };
 
 const SHA256 = {
   arity: 1,
   overloads: declare()
-    .onString1Typed((str) => string(hasha(str, { algorithm: 'sha256' })))
+    .onString1Typed((str) => string(hash('sha256').update(str).digest('hex')))
     .collect(),
 };
 
 const SHA384 = {
   arity: 1,
   overloads: declare()
-    .onString1Typed((str) => string(hasha(str, { algorithm: 'sha384' })))
+    .onString1Typed((str) => string(hash('sha384').update(str).digest('hex')))
     .collect(),
 };
 
 const SHA512 = {
   arity: 1,
   overloads: declare()
-    .onString1Typed((str) => string(hasha(str, { algorithm: 'sha512' })))
+    .onString1Typed((str) => string(hash('sha512').update(str).digest('hex')))
     .collect(),
 };
 
