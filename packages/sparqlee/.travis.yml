@@ -1,8 +1,4 @@
 sudo: required
-addons:
-  apt:
-    sources:
-     - ubuntu-toolchain-r-test
 language: node_js
 node_js:
  - "8"
