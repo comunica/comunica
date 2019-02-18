@@ -118,9 +118,9 @@ They might span entire streams and, depending on the use case, have very differe
 | _Notes_        |   |   |   | STRLANG test case is wrong (different case for lang-tag)  |
 | [On Strings](https://www.w3.org/TR/sparql11-query/#func-strings)
 | STRLEN         | ✓ | ✓ |   | ✓ |
-| SUBSTR         |   |   |   |   |
-| UCASE          |   |   |   |   |
-| LCASE          |   |   |   |   |
+| SUBSTR         | ✓ |   | ✓ |   |
+| UCASE          | ✓ |   | ✓ |   |
+| LCASE          | ✓ |   | ✓ |   |
 | STRSTARTS      |   |   |   |   |
 | STRENDS        |   |   |   |   |
 | CONTAINS       |   |   |   |   |

@@ -133,6 +133,11 @@ export class Builder {
       .set(['string'], ([lit]: [E.Literal<string>]) => op(lit.typedValue));
   }
 
+  onLangString1(op: (lit: E.LangStringLiteral) => Term): Builder {
+    return this
+      .set(['langString'], ([lit]: [E.LangStringLiteral]) => op(lit));
+  }
+
   onStringly1(op: (lit: E.Literal<string>) => Term): Builder {
     return this
       .set(['string'], ([lit]: [E.Literal<string>]) => op(lit))

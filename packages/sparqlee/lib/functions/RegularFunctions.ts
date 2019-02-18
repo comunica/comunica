@@ -307,12 +307,18 @@ const SUBSTR = {
 
 const UCASE = {
   arity: 1,
-  overloads: declare().unimplemented('UCASE').collect(),
+  overloads: declare()
+    .onString1Typed((lit) => string(lit.toUpperCase()))
+    .onLangString1((lit) => langString(lit.typedValue.toUpperCase(), lit.language))
+    .collect(),
 };
 
 const LCASE = {
   arity: 1,
-  overloads: declare().unimplemented('LCASE').collect(),
+  overloads: declare()
+    .onString1Typed((lit) => string(lit.toLowerCase()))
+    .onLangString1((lit) => langString(lit.typedValue.toLowerCase(), lit.language))
+    .collect(),
 };
 
 const STRSTARTS = {
