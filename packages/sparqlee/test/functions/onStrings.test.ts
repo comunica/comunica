@@ -24,6 +24,12 @@ describe('evaluation of \'langMatches\' like', () => {
   ]);
 });
 
+describe('evaluations of \'substr\' like', () => {
+  testAll([
+    'substr("bar", 1, 1) = "b"',
+  ]);
+});
+
 describe('evaluation of \'regex\' like', () => {
   // TODO: Test better
   testAll([

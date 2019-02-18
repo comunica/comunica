@@ -86,6 +86,16 @@ export class Builder {
     });
   }
 
+  onTernary<
+    A1 extends Term,
+    A2 extends Term,
+    A3 extends Term
+  >(types: ArgumentType[], op: (a1: A1, a2: A2, a3: A3) => Term) {
+    return this.set(types, ([a1, a2, a3]: [A1, A2, A3]) => {
+      return op(a1, a2, a3);
+    });
+  }
+
   unimplemented(msg: string): Builder {
     for (let arity = 0; arity <= 5; arity++) {
       const types = Array(arity).fill('term');
@@ -311,6 +321,21 @@ export function string(s: string): E.StringLiteral {
   return new E.StringLiteral(s);
 }
 
+export function langString(s: string, lang: string) {
+  return new E.LangStringLiteral(s, lang);
+}
+
 export function dateTime(date: Date, str: string): E.DateTimeLiteral {
   return new E.DateTimeLiteral(date, str);
+}
+
+// ----------------------------------------------------------------------------
+// Util
+// ----------------------------------------------------------------------------
+
+// tslint:disable-next-line:no-any
+export function log<T>(val: T, ...args: any[]): T {
+  // tslint:disable-next-line:no-console
+  console.log(val, args);
+  return val;
 }

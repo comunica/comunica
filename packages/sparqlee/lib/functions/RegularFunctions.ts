@@ -2,7 +2,6 @@ import * as RDFDM from '@rdfjs/data-model';
 import * as hash from 'create-hash';
 import * as uuid from 'uuid';
 
-import { Hash } from 'crypto';
 import { Map } from 'immutable';
 
 import * as E from '../expressions';
@@ -15,7 +14,7 @@ import { TypeURL as Type } from '../util/Consts';
 
 import { transformLiteral } from '../Transformation';
 import { OverloadMap } from './FunctionClasses';
-import { bool, declare, number, string } from './Helpers';
+import { bool, declare, langString, log, number, string } from './Helpers';
 
 type Term = E.TermExpression;
 
@@ -278,13 +277,32 @@ const STRUUID = {
 const STRLEN = {
   arity: 1,
   overloads: declare()
-    .onLiteral1<string>((lit) => number(lit.typedValue.length, Type.XSD_INTEGER))
+    .onStringly1((str) => number(str.typedValue.length, Type.XSD_INTEGER))
     .collect(),
 };
 
 const SUBSTR = {
   arity: [2, 3],
-  overloads: declare().unimplemented('SUBSTR').collect(),
+  overloads: declare()
+    .onBinaryTyped<string, number>(['string', 'integer'],
+      (source, startingLoc) => {
+        return string(source.substr(startingLoc - 1));
+      })
+    .onBinary<E.LangStringLiteral, E.NumericLiteral>(['langString', 'integer'],
+      (source, startingLoc) => {
+        const sub = source.typedValue.substr(startingLoc.typedValue - 1);
+        return langString(sub, source.language);
+      })
+    .onTernaryTyped<string, number, number>(['string', 'integer', 'integer'],
+      (source, startingLoc, length) => {
+        return string(source.substr(startingLoc - 1, length));
+      })
+    .onTernary(['langString', 'integer', 'integer'],
+      (source: E.LangStringLiteral, startingLoc: E.NumericLiteral, length: E.NumericLiteral) => {
+        const sub = source.typedValue.substr(startingLoc.typedValue - 1, length.typedValue);
+        return langString(sub, source.language);
+      })
+    .collect(),
 };
 
 const UCASE = {
