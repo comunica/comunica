@@ -393,12 +393,56 @@ const CONTAINS = {
 
 const STRBEFORE = {
   arity: 2,
-  overloads: declare().unimplemented('STRBEFORE').collect(),
+  overloads: declare()
+    .onBinaryTyped(
+      ['string', 'string'],
+      (arg1: string, arg2: string) => string(arg1.substr(0, arg1.indexOf(arg2))),
+    )
+    .onBinary(
+      ['langString', 'string'],
+      (arg1: E.LangStringLiteral, arg2: E.StringLiteral) => {
+        const sub = arg1.typedValue.substr(0, arg1.typedValue.indexOf(arg2.typedValue));
+        return (sub) ? langString(sub, arg1.language) : string(sub);
+      },
+    )
+    .onBinary(
+      ['langString', 'langString'],
+      (arg1: E.LangStringLiteral, arg2: E.LangStringLiteral) => {
+        if (arg1.language !== arg2.language) {
+          throw new Err.IncompatibleLanguageOperation(arg1, arg2);
+        }
+        const sub = arg1.typedValue.substr(0, arg1.typedValue.indexOf(arg2.typedValue));
+        return (sub) ? langString(sub, arg1.language) : string(sub);
+      })
+    .collect(),
 };
 
 const STRAFTER = {
   arity: 2,
-  overloads: declare().unimplemented('STRAFTER').collect(),
+  overloads: declare()
+    .onBinaryTyped(
+      ['string', 'string'],
+      (arg1: string, arg2: string) => string(arg1.substr(arg1.indexOf(arg2)).substr(arg2.length)),
+    )
+    .onBinary(
+      ['langString', 'string'],
+      (arg1: E.LangStringLiteral, arg2: E.StringLiteral) => {
+        const [a1, a2] = [arg1.typedValue, arg2.typedValue];
+        const sub = a1.substr(a1.indexOf(a2)).substr(a2.length);
+        return (sub) ? langString(sub, arg1.language) : string(sub);
+      },
+    )
+    .onBinary(
+      ['langString', 'langString'],
+      (arg1: E.LangStringLiteral, arg2: E.LangStringLiteral) => {
+        if (arg1.language !== arg2.language) {
+          throw new Err.IncompatibleLanguageOperation(arg1, arg2);
+        }
+        const [a1, a2] = [arg1.typedValue, arg2.typedValue];
+        const sub = a1.substr(a1.indexOf(a2)).substr(a2.length);
+        return (sub) ? langString(sub, arg1.language) : string(sub);
+      })
+    .collect(),
 };
 
 const ENCODE_FOR_URI = {

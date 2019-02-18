@@ -117,21 +117,21 @@ They might span entire streams and, depending on the use case, have very differe
 | STRUID         | ✓ |   |   |   |
 | _Notes_        |   |   |   | STRLANG test case is wrong (different case for lang-tag)  |
 | [On Strings](https://www.w3.org/TR/sparql11-query/#func-strings)
-| STRLEN         | ✓ | ✓ |   | ✓ |
+| STRLEN         | ✓ | ✓ |   |   |
 | SUBSTR         | ✓ |   | ✓ |   |
 | UCASE          | ✓ |   | ✓ |   |
 | LCASE          | ✓ |   | ✓ |   |
 | STRSTARTS      | ✓ |   | ✓ |   |
 | STRENDS        | ✓ |   | ✓ |   |
 | CONTAINS       | ✓ |   | ✓ |   |
-| STRBEFORE      |   |   |   |   |
-| STRAFTER       |   |   |   |   |
+| STRBEFORE      | ✓ |   | X |   |
+| STRAFTER       | ✓ |   | ✓ |   |
 | ENCODE_FOR_URI |   |   |   |   |
 | CONCAT         |   |   |   |   |
 | langMatches    | ✓ | ✓ |   | ? |
 | REGEX          | ✓ | ✓ |   |   |
 | REPLACE        |   |   |   |   |
-| _Notes_        |   |   |   |   |
+| _Notes_        |   |   |   | STRBEFORE language handling sucks (2 test cases are incompatible in relation to empty strings and language tags). For LEN i can't spot the problem |
 | [On Numerics](https://www.w3.org/TR/sparql11-query/#func-numerics)
 | abs            | ✓ |   | ✓ |   |
 | round          | ✓ |   | ✓ |   |
