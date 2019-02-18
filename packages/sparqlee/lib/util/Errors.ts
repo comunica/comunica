@@ -119,6 +119,12 @@ export class InvalidTimezoneCall extends ExpressionError {
   }
 }
 
+export class IncompatibleLanguageOperation extends ExpressionError {
+  constructor(public arg1: E.LangStringLiteral, public arg2: E.LangStringLiteral) {
+    super(`Operation on incompatible language literals '${pp(arg1)}' and '${pp(arg2)}'`);
+  }
+}
+
 // Non Expression Errors ------------------------------------------------------
 
 /**

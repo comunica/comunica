@@ -121,9 +121,9 @@ They might span entire streams and, depending on the use case, have very differe
 | SUBSTR         | ✓ |   | ✓ |   |
 | UCASE          | ✓ |   | ✓ |   |
 | LCASE          | ✓ |   | ✓ |   |
-| STRSTARTS      |   |   |   |   |
-| STRENDS        |   |   |   |   |
-| CONTAINS       |   |   |   |   |
+| STRSTARTS      | ✓ |   | ✓ |   |
+| STRENDS        | ✓ |   | ✓ |   |
+| CONTAINS       | ✓ |   | ✓ |   |
 | STRBEFORE      |   |   |   |   |
 | STRAFTER       |   |   |   |   |
 | ENCODE_FOR_URI |   |   |   |   |
@@ -154,7 +154,7 @@ They might span entire streams and, depending on the use case, have very differe
 | MD5            | ✓ |   | ✓ | ✓ |
 | SHA1           | ✓ |   | ✓ | ✓ |
 | SHA256         | ✓ |   | ✓ | ✓ |
-| SHA384         |  |  | X |   |
+| SHA384         | ✓ |  | X |   |
 | SHA512         | ✓ |   | ✓ | ✓ |
 | _Notes_        |   |   |   | Sha384 has no spec tests |
 | [XPath Constructor Functions](https://www.w3.org/TR/sparql11-query/#FunctionMapping)

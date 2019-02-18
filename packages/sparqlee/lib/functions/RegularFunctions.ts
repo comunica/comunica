@@ -31,25 +31,21 @@ type Term = E.TermExpression;
 const not = {
   arity: 1,
   overloads: declare()
-    .onTerm1((val: Term) => bool(!val.coerceEBV()))
+    .onTerm1((val) => bool(!val.coerceEBV()))
     .collect(),
 };
 
 const unaryPlus = {
   arity: 1,
   overloads: declare()
-    .onNumeric1((val: E.NumericLiteral) => {
-      return number(val.typedValue, val.typeURL.value as Type);
-    })
+    .onNumeric1((val) => number(val.typedValue, val.typeURL.value as Type))
     .collect(),
 };
 
 const unaryMinus = {
   arity: 1,
   overloads: declare()
-    .onNumeric1((val: E.NumericLiteral) => {
-      return number(-val.typedValue, val.typeURL.value as Type);
-    })
+    .onNumeric1((val) => number(-val.typedValue, val.typeURL.value as Type))
     .collect(),
 };
 
@@ -64,7 +60,8 @@ const division = {
   arity: 2,
   overloads: declare()
     .arithmetic((left, right) => left / right)
-    .onBinaryTyped(['integer', 'integer'],
+    .onBinaryTyped(
+      ['integer', 'integer'],
       (left: number, right: number) => {
         if (right === 0) {
           throw new Err.ExpressionError('Integer division by 0');
@@ -96,7 +93,8 @@ const equality = {
     .stringTest((left, right) => left.localeCompare(right) === 0)
     .booleanTest((left, right) => left === right)
     .dateTimeTest((left, right) => left.getTime() === right.getTime())
-    .set(['term', 'term'],
+    .set(
+      ['term', 'term'],
       ([left, right]) => bool(RDFTermEqual(left, right)),
     )
     .collect(),
@@ -119,7 +117,8 @@ const inequality = {
     .stringTest((left, right) => left.localeCompare(right) !== 0)
     .booleanTest((left, right) => left !== right)
     .dateTimeTest((left, right) => left.getTime() !== right.getTime())
-    .set(['term', 'term'],
+    .set(
+      ['term', 'term'],
       ([left, right]) => bool(!RDFTermEqual(left, right)),
     )
     .collect(),
@@ -216,8 +215,7 @@ const lang = {
 const datatype = {
   arity: 1,
   overloads: declare()
-    .onLiteral1(
-      (lit) => new E.NamedNode(lit.typeURL.value))
+    .onLiteral1((lit) => new E.NamedNode(lit.typeURL.value))
     .collect(),
 };
 
@@ -240,18 +238,22 @@ const BNODE = {
 const STRDT = {
   arity: 2,
   overloads: declare()
-    .onBinary(['string', 'namedNode'], (str: E.StringLiteral, iri: E.NamedNode) => {
-      const lit = RDFDM.literal(str.typedValue, RDFDM.namedNode(iri.value));
-      return transformLiteral(lit);
-    })
+    .onBinary(
+      ['string', 'namedNode'],
+      (str: E.StringLiteral, iri: E.NamedNode) => {
+        const lit = RDFDM.literal(str.typedValue, RDFDM.namedNode(iri.value));
+        return transformLiteral(lit);
+      })
     .collect(),
 };
 
 const STRLANG = {
   arity: 2,
   overloads: declare()
-    .onBinaryTyped(['string', 'string'],
-      (val: string, language: string) => new E.LangStringLiteral(val, language))
+    .onBinaryTyped(
+      ['string', 'string'],
+      (val: string, language: string) => new E.LangStringLiteral(val, language),
+    )
     .collect(),
 };
 
@@ -284,17 +286,19 @@ const STRLEN = {
 const SUBSTR = {
   arity: [2, 3],
   overloads: declare()
-    .onBinaryTyped<string, number>(['string', 'integer'],
-      (source, startingLoc) => {
+    .onBinaryTyped(
+      ['string', 'integer'],
+      (source: string, startingLoc: number) => {
         return string(source.substr(startingLoc - 1));
       })
-    .onBinary<E.LangStringLiteral, E.NumericLiteral>(['langString', 'integer'],
-      (source, startingLoc) => {
+    .onBinary(
+      ['langString', 'integer'],
+      (source: E.LangStringLiteral, startingLoc: E.NumericLiteral) => {
         const sub = source.typedValue.substr(startingLoc.typedValue - 1);
         return langString(sub, source.language);
       })
-    .onTernaryTyped<string, number, number>(['string', 'integer', 'integer'],
-      (source, startingLoc, length) => {
+    .onTernaryTyped(['string', 'integer', 'integer'],
+      (source: string, startingLoc: number, length: number) => {
         return string(source.substr(startingLoc - 1, length));
       })
     .onTernary(['langString', 'integer', 'integer'],
@@ -323,17 +327,68 @@ const LCASE = {
 
 const STRSTARTS = {
   arity: 2,
-  overloads: declare().unimplemented('STRSTARTS').collect(),
+  overloads: declare()
+    .onBinaryTyped(
+      ['string', 'string'],
+      (arg1: string, arg2: string) => bool(arg1.startsWith(arg2)),
+    )
+    .onBinaryTyped(
+      ['langString', 'string'],
+      (arg1: string, arg2: string) => bool(arg1.includes(arg2)),
+    )
+    .onBinary(
+      ['langString', 'langString'],
+      (arg1: E.LangStringLiteral, arg2: E.LangStringLiteral) => {
+        if (arg1.language !== arg2.language) {
+          throw new Err.IncompatibleLanguageOperation(arg1, arg2);
+        }
+        return bool(arg1.typedValue.startsWith(arg2.typedValue));
+      })
+    .collect(),
 };
 
 const STRENDS = {
   arity: 2,
-  overloads: declare().unimplemented('STRENDS').collect(),
+  overloads: declare()
+    .onBinaryTyped(
+      ['string', 'string'],
+      (arg1: string, arg2: string) => bool(arg1.endsWith(arg2)),
+    )
+    .onBinaryTyped(
+      ['langString', 'string'],
+      (arg1: string, arg2: string) => bool(arg1.includes(arg2)),
+    )
+    .onBinary(
+      ['langString', 'langString'],
+      (arg1: E.LangStringLiteral, arg2: E.LangStringLiteral) => {
+        if (arg1.language !== arg2.language) {
+          throw new Err.IncompatibleLanguageOperation(arg1, arg2);
+        }
+        return bool(arg1.typedValue.endsWith(arg2.typedValue));
+      })
+    .collect(),
 };
 
 const CONTAINS = {
   arity: 2,
-  overloads: declare().unimplemented('CONTAINS').collect(),
+  overloads: declare()
+    .onBinaryTyped(
+      ['string', 'string'],
+      (arg1: string, arg2: string) => bool(arg1.includes(arg2)),
+    )
+    .onBinaryTyped(
+      ['langString', 'string'],
+      (arg1: string, arg2: string) => bool(arg1.includes(arg2)),
+    )
+    .onBinary(
+      ['langString', 'langString'],
+      (arg1: E.LangStringLiteral, arg2: E.LangStringLiteral) => {
+        if (arg1.language !== arg2.language) {
+          throw new Err.IncompatibleLanguageOperation(arg1, arg2);
+        }
+        return bool(arg1.typedValue.includes(arg2.typedValue));
+      })
+    .collect(),
 };
 
 const STRBEFORE = {
