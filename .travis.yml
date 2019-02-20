@@ -45,6 +45,14 @@ deploy:
     skip-cleanup: true
     script: ./.travis/docker.sh push
     on:
+      tags: false
+      branch: master
+      node_js: "node"
+      os: "linux"
+  - provider: script
+    skip-cleanup: true
+    script: ./.travis/docker.sh push
+    on:
       tags: true
       all_branches: true
       node_js: "node"
