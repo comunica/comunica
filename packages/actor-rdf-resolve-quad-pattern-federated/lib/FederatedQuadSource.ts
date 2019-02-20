@@ -121,10 +121,31 @@ export class FederatedQuadSource implements ILazyQuadSource {
     // Counters for our metadata
     const metadata: {[id: string]: any} = { totalItems: 0 };
     let remainingSources: number = 1;
+    let sourcesCount: number = 0;
+
+    // Anonymous function to handle totalItems from metadata
+    const checkEmitMetadata = (currentTotalItems: number, source: IDataSource,
+                               pattern: RDF.BaseQuad, lastMetadata?: {[id: string]: any}) => {
+      if (this.skipEmptyPatterns && !currentTotalItems) {
+        // Because another call may have added more information in the meantime
+        if (!this.isSourceEmpty(source, pattern)) {
+          this.emptyPatterns.get(source).push(pattern);
+        }
+      }
+      if (!remainingSources) {
+        if (lastMetadata && sourcesCount === 1) {
+          // If we only had one source, emit the metadata as-is.
+          it.emit('metadata', lastMetadata);
+        } else {
+          it.emit('metadata', metadata);
+        }
+      }
+    };
 
     const sourcesIt = this.sources.iterator();
     const it: RoundRobinUnionIterator<RDF.Quad> = new RoundRobinUnionIterator(sourcesIt.map((source) => {
       remainingSources++;
+      sourcesCount++;
 
       // If we can predict that the given source will have no bindings for the given pattern,
       // return an empty iterator.
@@ -134,19 +155,6 @@ export class FederatedQuadSource implements ILazyQuadSource {
         FederatedQuadSource.nullToVariable(object),
         FederatedQuadSource.nullToVariable(graph),
       );
-
-      // Anonymous function to handle totalItems from metadata
-      const checkEmitMetadata = (currentTotalItems: number) => {
-        if (this.skipEmptyPatterns && !currentTotalItems) {
-          // Because another call may have added more information in the meantime
-          if (!this.isSourceEmpty(source, pattern)) {
-            this.emptyPatterns.get(source).push(pattern);
-          }
-        }
-        if (!remainingSources) {
-          it.emit('metadata', metadata);
-        }
-      };
 
       // Prepare the context for this specific source
       const context: ActionContext = this.contextDefault.set(KEY_CONTEXT_SOURCE,
@@ -164,17 +172,17 @@ export class FederatedQuadSource implements ILazyQuadSource {
             if ((!subMetadata.totalItems && subMetadata.totalItems !== 0) || !isFinite(subMetadata.totalItems)) {
               metadata.totalItems = Infinity;
               remainingSources = 0; // We're already at infinite, so ignore any later metadata
-              checkEmitMetadata(Infinity);
+              checkEmitMetadata(Infinity, source, pattern, subMetadata);
             } else {
               metadata.totalItems += subMetadata.totalItems;
               remainingSources--;
-              checkEmitMetadata(subMetadata.totalItems);
+              checkEmitMetadata(subMetadata.totalItems, source, pattern, subMetadata);
             }
           });
         } else {
           metadata.totalItems = Infinity;
           remainingSources = 0; // We're already at infinite, so ignore any later metadata
-          checkEmitMetadata(Infinity);
+          checkEmitMetadata(Infinity, source, pattern);
         }
 
         return output.data;

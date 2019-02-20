@@ -35,7 +35,7 @@ describe('FederatedQuadSource', () => {
         return Promise.resolve({ data: new ArrayIterator([
           squad('s1', 'p1', 'o1'),
           squad('s1', 'p1', 'o2'),
-        ]), metadata: () => Promise.resolve({ totalItems: 2 }) });
+        ]), metadata: () => Promise.resolve({ totalItems: 2, otherMetadata: true }) });
       },
     };
     context = ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:sources':
@@ -392,7 +392,7 @@ describe('FederatedQuadSource', () => {
       return expect(new Promise((resolve, reject) => {
         stream.on('metadata', resolve);
         stream.on('end', reject);
-      })).resolves.toEqual({ totalItems: 2 });
+      })).resolves.toEqual({ totalItems: 2, otherMetadata: true });
     });
 
     it('should store no queried empty patterns in the emptyPatterns datastructure', async () => {
