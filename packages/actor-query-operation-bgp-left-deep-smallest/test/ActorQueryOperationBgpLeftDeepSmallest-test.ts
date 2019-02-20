@@ -486,11 +486,18 @@ describe('ActorQueryOperationBgpLeftDeepSmallest', () => {
     });
 
     it('should run without a context and delegate the pattern to the mediator', () => {
-      const op = { operation: { type: 'bgp', patterns } };
+      const op = { operation: { type: 'bgp', patterns }, context: ActionContext({ a: 'b' }) };
+      jest.spyOn(mediatorQueryOperation, 'mediate');
       return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
         expect(output.variables).toEqual([]);
         expect(output.type).toEqual('bindings');
         expect(await output.metadata()).toEqual({ totalItems: Infinity });
+        expect(mediatorQueryOperation.mediate).toHaveBeenCalledTimes(2);
+        expect(mediatorQueryOperation.mediate).toHaveBeenCalledWith(
+          {
+            context: ActionContext({ a: 'b' }),
+            operation: quad(variable('d'), namedNode('4'), namedNode('4'), namedNode('4')),
+          });
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({
             graph: namedNode('4'),
