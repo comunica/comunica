@@ -21,7 +21,7 @@ script:
   - yarn run test-ci
   - lerna run browser
   - lerna run spec
-  - if [ "$DOCKER_BUILD" = "true" ]; then ( yarn global add verdaccio@3.11.4 npm-cli-adduser && ./.travis/docker.sh ) fi
+  - if [ "$DOCKER_BUILD" = "true" ]; then ( sh -c "`curl -fsSl https://raw.githubusercontent.com/comunica/comunica-lerna-docker/master/install.sh`" && ~/.comunica-lerna-docker/bin/comunica-lerna-docker build ) fi
 after_success:
   - yarn run coveralls-ci
   - if [ "$DOCUMENTATION_BUILD" = "true" ]; then ( yarn global add typedoc && yarn run doc ) fi
@@ -43,7 +43,7 @@ deploy:
       os: "linux"
   - provider: script
     skip-cleanup: true
-    script: ./.travis/docker.sh push
+    script: ~/.comunica-lerna-docker/bin/comunica-lerna-docker push
     on:
       tags: false
       branch: master
@@ -51,7 +51,7 @@ deploy:
       os: "linux"
   - provider: script
     skip-cleanup: true
-    script: ./.travis/docker.sh push
+    script: ~/.comunica-lerna-docker/bin/comunica-lerna-docker push
     on:
       tags: true
       all_branches: true
