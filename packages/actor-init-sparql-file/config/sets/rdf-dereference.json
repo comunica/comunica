@@ -9,6 +9,7 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-http/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-parse/^1.0.0/components/context.jsonld",
 
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-combine-union/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-number/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-race/^1.0.0/components/context.jsonld",
     {
@@ -38,8 +39,14 @@
         "field": "time",
         "cc:Mediator/bus": { "@id": "cbh:Bus/Http" }
       },
-      "mediatorRdfParse": {
-        "@id": "config-sets:rdf-dereference.json#mediatorRdfParse",
+      "mediatorRdfParseMediatypes": {
+        "@id": "config-sets:rdf-dereference.json#mediatorRdfParseMediatypes",
+        "@type": "MediatorCombineUnion",
+        "cc:Mediator/bus": { "@id": "cbrp:Bus/RdfParse" },
+        "cmcu:Mediator/CombineUnion/field": "mediaTypes"
+      },
+      "mediatorRdfParseHandle": {
+        "@id": "config-sets:rdf-dereference.json#mediatorRdfParseHandle",
         "@type": "MediatorRace",
         "cc:Mediator/bus": { "@id": "cbrp:Bus/RdfParse" }
       }
