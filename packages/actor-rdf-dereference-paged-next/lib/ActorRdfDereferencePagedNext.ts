@@ -1,3 +1,4 @@
+import {ActorHttpInvalidateListenable, IActionHttpInvalidate} from "@comunica/bus-http-invalidate";
 import {IActionRdfDereference, IActorRdfDereferenceOutput} from "@comunica/bus-rdf-dereference";
 import {ActorRdfDereferencePaged, IActionRdfDereferencePaged,
   IActorRdfDereferencePagedOutput} from "@comunica/bus-rdf-dereference-paged";
@@ -19,11 +20,16 @@ export class ActorRdfDereferencePagedNext extends ActorRdfDereferencePaged imple
   public readonly mediatorMetadataExtract: Mediator<Actor<IActionRdfMetadataExtract, IActorTest,
     IActorRdfMetadataExtractOutput>, IActionRdfMetadataExtract, IActorTest, IActorRdfMetadataExtractOutput>;
   public readonly cacheSize: number;
-  private readonly cache: LRU.Cache<string, Promise<IActorRdfDereferencePagedOutput>>;
+  public readonly cache: LRU.Cache<string, Promise<IActorRdfDereferencePagedOutput>>;
+  public readonly httpInvalidator: ActorHttpInvalidateListenable;
 
   constructor(args: IActorRdfDereferencePaged) {
     super(args);
     this.cache = this.cacheSize ? new LRU<string, any>({ max: this.cacheSize }) : null;
+    if (this.cache) {
+      this.httpInvalidator.addInvalidateListener(
+        ({pageUrl}: IActionHttpInvalidate) => pageUrl ? this.cache.del(pageUrl) : this.cache.reset());
+    }
   }
 
   public test(action: IActionRdfDereferencePaged): Promise<IActorTest> {
@@ -96,4 +102,5 @@ export interface IActorRdfDereferencePaged extends
   mediatorMetadataExtract: Mediator<Actor<IActionRdfMetadataExtract, IActorTest, IActorRdfMetadataExtractOutput>,
     IActionRdfMetadataExtract, IActorTest, IActorRdfMetadataExtractOutput>;
   cacheSize: number;
+  httpInvalidator: ActorHttpInvalidateListenable;
 }

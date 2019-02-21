@@ -1,7 +1,7 @@
+import {ActorHttpInvalidateListenable} from "@comunica/bus-http-invalidate";
 import {ActorRdfDereferencePaged} from "@comunica/bus-rdf-dereference-paged";
 import {Bus} from "@comunica/core";
 import {ClonedIterator} from "asynciterator";
-import {Readable} from "stream";
 import {ActorRdfDereferencePagedNext} from "../lib/ActorRdfDereferencePagedNext";
 const stream = require('streamify-array');
 const arrayifyStream = require('arrayify-stream');
@@ -9,10 +9,12 @@ const arrayifyStream = require('arrayify-stream');
 describe('ActorRdfDereferencePagedNext', () => {
   let bus;
   let mediator;
+  let httpInvalidator;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
     mediator = {};
+    httpInvalidator = new ActorHttpInvalidateListenable({ name: 'httpInvalidator', bus });
   });
 
   describe('The ActorRdfDereferencePagedNext module', () => {
@@ -23,6 +25,7 @@ describe('ActorRdfDereferencePagedNext', () => {
     it('should be a ActorRdfDereferencePagedNext constructor', () => {
       expect(new (<any> ActorRdfDereferencePagedNext)({
         bus,
+        httpInvalidator,
         mediatorMetadata: mediator,
         mediatorMetadataExtract: mediator,
         mediatorRdfDereference: mediator,
@@ -30,6 +33,7 @@ describe('ActorRdfDereferencePagedNext', () => {
       })).toBeInstanceOf(ActorRdfDereferencePagedNext);
       expect(new (<any> ActorRdfDereferencePagedNext)({
         bus,
+        httpInvalidator,
         mediatorMetadata: mediator,
         mediatorMetadataExtract: mediator,
         mediatorRdfDereference: mediator,
@@ -86,9 +90,11 @@ describe('ActorRdfDereferencePagedNext', () => {
         },
       };
       cacheSize = 0;
+      httpInvalidator = new ActorHttpInvalidateListenable({ name: 'httpInvalidator', bus });
       actor = new ActorRdfDereferencePagedNext({
         bus,
         cacheSize,
+        httpInvalidator,
         mediatorMetadata,
         mediatorMetadataExtract,
         mediatorRdfDereference,
@@ -97,6 +103,7 @@ describe('ActorRdfDereferencePagedNext', () => {
       actorCached = new ActorRdfDereferencePagedNext({
         bus,
         cacheSize: 100,
+        httpInvalidator,
         mediatorMetadata,
         mediatorMetadataExtract,
         mediatorRdfDereference,
@@ -138,6 +145,7 @@ describe('ActorRdfDereferencePagedNext', () => {
       const currentActor = new ActorRdfDereferencePagedNext({
         bus,
         cacheSize,
+        httpInvalidator,
         mediatorMetadata,
         mediatorMetadataExtract: mediatorMetadataExtractSlow,
         mediatorRdfDereference,
@@ -171,6 +179,7 @@ describe('ActorRdfDereferencePagedNext', () => {
       const currentActor = new ActorRdfDereferencePagedNext({
         bus,
         cacheSize,
+        httpInvalidator,
         mediatorMetadata: currentMediatorMetadata,
         mediatorMetadataExtract,
         mediatorRdfDereference,
@@ -188,6 +197,7 @@ describe('ActorRdfDereferencePagedNext', () => {
       const currentActor = new ActorRdfDereferencePagedNext({
         bus,
         cacheSize,
+        httpInvalidator,
         mediatorMetadata,
         mediatorMetadataExtract: currentMediatorMetadataExtract,
         mediatorRdfDereference,
@@ -208,6 +218,7 @@ describe('ActorRdfDereferencePagedNext', () => {
       const currentActor = new ActorRdfDereferencePagedNext({
         bus,
         cacheSize,
+        httpInvalidator,
         mediatorMetadata,
         mediatorMetadataExtract,
         mediatorRdfDereference: currentMediatorRdfDereference,
@@ -226,6 +237,7 @@ describe('ActorRdfDereferencePagedNext', () => {
       const currentActor = new ActorRdfDereferencePagedNext({
         bus,
         cacheSize,
+        httpInvalidator,
         mediatorMetadata: mediatorMetadataTemp,
         mediatorMetadataExtract,
         mediatorRdfDereference,
@@ -245,6 +257,7 @@ describe('ActorRdfDereferencePagedNext', () => {
       actor = new ActorRdfDereferencePagedNext({
         bus,
         cacheSize,
+        httpInvalidator,
         mediatorMetadata,
         mediatorMetadataExtract: mediatorMetadataExtractTemp,
         mediatorRdfDereference,
@@ -264,6 +277,7 @@ describe('ActorRdfDereferencePagedNext', () => {
       actor = new ActorRdfDereferencePagedNext({
         bus,
         cacheSize,
+        httpInvalidator,
         mediatorMetadata,
         mediatorMetadataExtract,
         mediatorRdfDereference: mediatorRdfDereferenceTemp,
@@ -306,6 +320,26 @@ describe('ActorRdfDereferencePagedNext', () => {
         }
         expect((<any> actorCached).cache.length).toEqual(1);
       });
+    });
+
+    it('should invalidate by URL', async () => {
+      await actorCached.run({ url: 'http://example.org/1' });
+      await actorCached.run({ url: 'http://example.org/2' });
+      expect(actorCached.cache.has('http://example.org/1')).toBeTruthy();
+      expect(actorCached.cache.has('http://example.org/2')).toBeTruthy();
+      await httpInvalidator.run({ pageUrl: 'http://example.org/1' });
+      expect(actorCached.cache.has('http://example.org/1')).toBeFalsy();
+      expect(actorCached.cache.has('http://example.org/2')).toBeTruthy();
+    });
+
+    it('should invalidate by all URLs', async () => {
+      await actorCached.run({ url: 'http://example.org/1' });
+      await actorCached.run({ url: 'http://example.org/2' });
+      expect(actorCached.cache.has('http://example.org/1')).toBeTruthy();
+      expect(actorCached.cache.has('http://example.org/2')).toBeTruthy();
+      await httpInvalidator.run({});
+      expect(actorCached.cache.has('http://example.org/1')).toBeFalsy();
+      expect(actorCached.cache.has('http://example.org/2')).toBeFalsy();
     });
   });
 });
