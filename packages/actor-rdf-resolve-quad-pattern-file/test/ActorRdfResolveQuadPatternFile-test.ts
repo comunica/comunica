@@ -50,7 +50,7 @@ describe('ActorRdfResolveQuadPatternFile', () => {
           quad('s2', 'p2', 'o2'),
         ]) }) : Promise.reject('No test file'),
       };
-      actor = new ActorRdfResolveQuadPatternFile({ name: 'actor', bus, mediatorRdfDereference });
+      actor = new ActorRdfResolveQuadPatternFile({ name: 'actor', bus, mediatorRdfDereference, cacheSize: 10 });
     });
 
     it('should test', () => {
@@ -141,9 +141,9 @@ describe('ActorRdfResolveQuadPatternFile', () => {
 
     it('should initialize file sources when passed to the constructor', async () => {
       const myActor = new ActorRdfResolveQuadPatternFile(
-        { name: 'actor', bus, files: ['myFile'], mediatorRdfDereference });
+        { name: 'actor', bus, files: ['myFile'], mediatorRdfDereference, cacheSize: 10 });
       await myActor.initialize();
-      return expect(myActor.stores.myFile).resolves.toBeInstanceOf(N3Store);
+      return expect(myActor.cache.get('myFile')).resolves.toBeInstanceOf(N3Store);
     });
 
     it('should run on ? ? ?', () => {

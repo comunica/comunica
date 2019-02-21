@@ -22,6 +22,14 @@
           "@id": "cbrrqp:Actor/RdfResolveQuadPattern/file",
           "comment": "The file to preload",
           "range": "xsd:string"
+        },
+        {
+          "@id": "cbrrqp:Actor/RdfResolveQuadPattern/cacheSize",
+          "comment": "The maximum number of entries in the LRU cache",
+          "range": "xsd:integer",
+          "default": 100,
+          "required": true,
+          "unique": true
         }
       ],
       "constructorArguments": [
@@ -36,6 +44,10 @@
             {
               "keyRaw": "files",
               "value": "cbrrqp:Actor/RdfResolveQuadPattern/file"
+            },
+            {
+              "keyRaw": "cacheSize",
+              "value": "cbrrqp:Actor/RdfResolveQuadPattern/cacheSize"
             }
           ]
         }
