@@ -1,0 +1,9 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-all/^1.0.0/components/context.jsonld",
+  "@id": "npmd:@comunica/mediator-all",
+  "@type": "Module",
+  "requireName": "@comunica/mediator-all",
+  "import": [
+    "files-cma:components/Mediator/All.jsonld"
+  ]
+}
