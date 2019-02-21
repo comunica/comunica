@@ -9,7 +9,9 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-optimize-query-operation/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-query-operation/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-context-preprocess/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-http-invalidate/^1.0.0/components/context.jsonld",
 
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-all/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-combine-pipeline/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-combine-union/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-race/^1.0.0/components/context.jsonld"
@@ -44,6 +46,11 @@
         "@id": "config-sets:sparql-init.json#mediatorContextPreprocess",
         "@type": "MediatorCombinePipeline",
         "cc:Mediator/bus": { "@id": "cbcp:Bus/ContextPreprocess" }
+      },
+      "mediatorHttpInvalidate": {
+        "@id": "config-sets:sparql-init.json#mediatorHttpInvalidate",
+        "@type": "MediatorAll",
+        "cc:Mediator/bus": { "@id": "cbhi:Bus/HttpInvalidate" }
       }
     }
   ]

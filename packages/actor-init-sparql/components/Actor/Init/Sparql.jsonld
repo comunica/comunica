@@ -50,6 +50,12 @@
           "unique": true
         },
         {
+          "@id": "cais:mediatorHttpInvalidate",
+          "comment": "The HTTP cache invalidation mediator",
+          "required": true,
+          "unique": true
+        },
+        {
           "@id": "cais:logger",
           "comment": "The logger of this actor.",
           "range": "cc:Logger",
@@ -129,6 +135,10 @@
             {
               "keyRaw": "mediatorContextPreprocess",
               "value": "cais:mediatorContextPreprocess"
+            },
+            {
+              "keyRaw": "mediatorHttpInvalidate",
+              "value": "cais:mediatorHttpInvalidate"
             },
             {
               "keyRaw": "logger",
