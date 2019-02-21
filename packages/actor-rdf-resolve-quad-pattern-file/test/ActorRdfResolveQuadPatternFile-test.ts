@@ -1,3 +1,4 @@
+import {ActorHttpInvalidateListenable} from "@comunica/bus-http-invalidate";
 import {ActorRdfResolveQuadPattern} from "@comunica/bus-rdf-resolve-quad-pattern";
 import {ActionContext, Bus} from "@comunica/core";
 import "jest-rdf";
@@ -11,9 +12,11 @@ const streamifyArray = require('streamify-array');
 
 describe('ActorRdfResolveQuadPatternFile', () => {
   let bus;
+  let httpInvalidator;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
+    httpInvalidator = new ActorHttpInvalidateListenable({ name: 'httpInvalidator', bus });
   });
 
   describe('The ActorRdfResolveQuadPatternFile module', () => {
@@ -22,9 +25,9 @@ describe('ActorRdfResolveQuadPatternFile', () => {
     });
 
     it('should be a ActorRdfResolveQuadPatternFile constructor', () => {
-      expect(new (<any> ActorRdfResolveQuadPatternFile)({ name: 'actor', bus }))
+      expect(new (<any> ActorRdfResolveQuadPatternFile)({ name: 'actor', bus, httpInvalidator }))
         .toBeInstanceOf(ActorRdfResolveQuadPatternFile);
-      expect(new (<any> ActorRdfResolveQuadPatternFile)({ name: 'actor', bus }))
+      expect(new (<any> ActorRdfResolveQuadPatternFile)({ name: 'actor', bus, httpInvalidator }))
         .toBeInstanceOf(ActorRdfResolveQuadPattern);
     });
 
@@ -50,7 +53,9 @@ describe('ActorRdfResolveQuadPatternFile', () => {
           quad('s2', 'p2', 'o2'),
         ]) }) : Promise.reject('No test file'),
       };
-      actor = new ActorRdfResolveQuadPatternFile({ name: 'actor', bus, mediatorRdfDereference, cacheSize: 10 });
+      httpInvalidator = new ActorHttpInvalidateListenable({ name: 'httpInvalidator', bus });
+      actor = new ActorRdfResolveQuadPatternFile(
+        { name: 'actor', bus, mediatorRdfDereference, cacheSize: 10, httpInvalidator });
     });
 
     it('should test', () => {
@@ -141,7 +146,7 @@ describe('ActorRdfResolveQuadPatternFile', () => {
 
     it('should initialize file sources when passed to the constructor', async () => {
       const myActor = new ActorRdfResolveQuadPatternFile(
-        { name: 'actor', bus, files: ['myFile'], mediatorRdfDereference, cacheSize: 10 });
+        { name: 'actor', bus, files: ['myFile'], mediatorRdfDereference, cacheSize: 10, httpInvalidator });
       await myActor.initialize();
       return expect(myActor.cache.get('myFile')).resolves.toBeInstanceOf(N3Store);
     });
@@ -196,6 +201,28 @@ describe('ActorRdfResolveQuadPatternFile', () => {
 
     it('should be deinitializable', () => {
       return expect(() => actor.deinitialize()).not.toThrow();
+    });
+
+    it('should invalidate by URL', async () => {
+      const myActor = new ActorRdfResolveQuadPatternFile(
+        { name: 'actor', bus, files: ['myFile1', 'myFile2'], mediatorRdfDereference, cacheSize: 10, httpInvalidator });
+      await myActor.initialize();
+      expect(myActor.cache.has('myFile1')).toBeTruthy();
+      expect(myActor.cache.has('myFile2')).toBeTruthy();
+      await httpInvalidator.run({ pageUrl: 'myFile1' });
+      expect(myActor.cache.has('myFile1')).toBeFalsy();
+      expect(myActor.cache.has('myFile2')).toBeTruthy();
+    });
+
+    it('should invalidate by all URLs', async () => {
+      const myActor = new ActorRdfResolveQuadPatternFile(
+        { name: 'actor', bus, files: ['myFile1', 'myFile2'], mediatorRdfDereference, cacheSize: 10, httpInvalidator });
+      await myActor.initialize();
+      expect(myActor.cache.has('myFile1')).toBeTruthy();
+      expect(myActor.cache.has('myFile2')).toBeTruthy();
+      await httpInvalidator.run({});
+      expect(myActor.cache.has('myFile1')).toBeFalsy();
+      expect(myActor.cache.has('myFile2')).toBeFalsy();
     });
   });
 });

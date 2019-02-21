@@ -1,7 +1,8 @@
 {
   "@context": [
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-resolve-quad-pattern-file/^1.0.0/components/context.jsonld",
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-resolve-quad-pattern/^1.0.0/components/context.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-resolve-quad-pattern/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-http-invalidate/^1.0.0/components/context.jsonld"
   ],
   "@id": "npmd:@comunica/actor-rdf-resolve-quad-pattern-file",
   "components": [
@@ -30,6 +31,17 @@
           "default": 100,
           "required": true,
           "unique": true
+        },
+        {
+          "@id": "cbrrqp:Actor/RdfResolveQuadPattern/httpInvalidator",
+          "comment": "An actor that listens to HTTP invalidation events",
+          "range": "cbhi:Actor/HttpInvalidateListenable",
+          "default": {
+            "@id": "cbrrqp:Actor/RdfResolveQuadPattern/httpInvalidator#default",
+            "@type": "cbhi:Actor/HttpInvalidateListenable"
+          },
+          "required": true,
+          "unique": true
         }
       ],
       "constructorArguments": [
@@ -48,6 +60,10 @@
             {
               "keyRaw": "cacheSize",
               "value": "cbrrqp:Actor/RdfResolveQuadPattern/cacheSize"
+            },
+            {
+              "keyRaw": "httpInvalidator",
+              "value": "cbrrqp:Actor/RdfResolveQuadPattern/httpInvalidator"
             }
           ]
         }
