@@ -2,6 +2,7 @@ import {IActionRdfDereference, IActorRdfDereferenceOutput} from "@comunica/bus-r
 import {ActorRdfResolveQuadPatternSource, IActionRdfResolveQuadPattern, IActorRdfResolveQuadPatternOutput,
   ILazyQuadSource} from "@comunica/bus-rdf-resolve-quad-pattern";
 import {ActionContext, Actor, IActorArgs, IActorTest, Mediator} from "@comunica/core";
+import * as LRU from "lru-cache";
 import {N3Store, Store} from "n3";
 import * as RDF from "rdf-js";
 import {N3StoreIterator} from "./N3StoreIterator";
@@ -16,20 +17,24 @@ export class ActorRdfResolveQuadPatternFile extends ActorRdfResolveQuadPatternSo
   public readonly mediatorRdfDereference: Mediator<Actor<IActionRdfDereference, IActorTest, IActorRdfDereferenceOutput>,
     IActionRdfDereference, IActorTest, IActorRdfDereferenceOutput>;
   public readonly files?: string[];
-  public stores: {[file: string]: Promise<N3Store>} = {};
+  public readonly cacheSize: number;
+  public readonly cache: LRU.Cache<string, Promise<N3Store>>;
 
   constructor(args: IActorRdfResolveQuadPatternFileArgs) {
     super(args);
+    this.cache = new LRU<string, any>({ max: this.cacheSize });
   }
 
   public initializeFile(file: string, context: ActionContext): Promise<any> {
-    return this.stores[file] = this.mediatorRdfDereference.mediate({ context, url: file })
+    const storePromise = this.mediatorRdfDereference.mediate({ context, url: file })
       .then((page: IActorRdfDereferenceOutput) => new Promise<N3Store>((resolve, reject) => {
         const store: N3Store = new Store();
         page.quads.on('data', (quad) => store.addQuad(quad));
         page.quads.on('error', reject);
         page.quads.on('end', () => resolve(store));
       }));
+    this.cache.set(file, storePromise);
+    return storePromise;
   }
 
   public async initialize(): Promise<any> {
@@ -46,10 +51,10 @@ export class ActorRdfResolveQuadPatternFile extends ActorRdfResolveQuadPatternSo
 
   protected async getSource(context: ActionContext): Promise<ILazyQuadSource> {
     const file: string = this.getContextSource(context).value;
-    if (!this.stores[file]) {
+    if (!this.cache.has(file)) {
       await this.initializeFile(file, context);
     }
-    return new N3StoreQuadSource(await this.stores[file]);
+    return new N3StoreQuadSource(await this.cache.get(file));
   }
 
   protected async getOutput(source: RDF.Source, pattern: RDF.Quad, context: ActionContext)
@@ -58,7 +63,7 @@ export class ActorRdfResolveQuadPatternFile extends ActorRdfResolveQuadPatternSo
     const output: IActorRdfResolveQuadPatternOutput = await super.getOutput(source, pattern, context);
     output.metadata = () => new Promise((resolve, reject) => {
       const file: string = this.getContextSource(context).value;
-      this.stores[file].then((store) => {
+      this.cache.get(file).then((store) => {
         const totalItems: number = store.countQuads(
           N3StoreIterator.nullifyVariables(pattern.subject),
           N3StoreIterator.nullifyVariables(pattern.predicate),
@@ -84,4 +89,8 @@ export interface IActorRdfResolveQuadPatternFileArgs
    * The files to preload.
    */
   files?: string[];
+  /**
+   * The maximum number of files to be cached.
+   */
+  cacheSize: number;
 }
