@@ -1,4 +1,5 @@
 export * from './lib/ActorInitSparql';
+export * from './lib/HttpServiceSparqlEndpoint';
 export {newEngine} from './index-browser';
 
 import {ActorInitSparql} from "./lib/ActorInitSparql";

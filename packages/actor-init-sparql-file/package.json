@@ -21,6 +21,7 @@
   "license": "MIT",
   "bin": {
     "comunica-sparql-file": "./bin/query.js",
+    "comunica-sparql-file-http": "./bin/http.js",
     "comunica-dynamic-sparql-file": "./bin/query-dynamic.js"
   },
   "bugs": {
