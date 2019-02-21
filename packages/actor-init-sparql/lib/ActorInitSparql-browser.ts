@@ -1,14 +1,15 @@
 import {IActorContextPreprocessOutput} from "@comunica/bus-context-preprocess";
+import {IActionHttpInvalidate, IActorHttpInvalidateOutput} from "@comunica/bus-http-invalidate";
 import {ActorInit, IActionInit, IActorOutputInit} from "@comunica/bus-init";
 import {IActionOptimizeQueryOperation,
   IActorOptimizeQueryOperationOutput} from "@comunica/bus-optimize-query-operation";
 import {Bindings, IActionQueryOperation, IActorQueryOperationOutput} from "@comunica/bus-query-operation";
 import {KEY_CONTEXT_SOURCES} from "@comunica/bus-rdf-resolve-quad-pattern";
 import {IActionSparqlParse, IActorSparqlParseOutput} from "@comunica/bus-sparql-parse";
-import {IActionSparqlSerialize} from "@comunica/bus-sparql-serialize";
 import {IActionRootSparqlParse, IActorOutputRootSparqlParse,
   IActorTestRootSparqlParse} from "@comunica/bus-sparql-serialize";
 import {IActorSparqlSerializeOutput} from "@comunica/bus-sparql-serialize";
+import {IActionSparqlSerialize} from "@comunica/bus-sparql-serialize";
 import {ActionContext, Actor, IAction, IActorArgs, IActorTest, KEY_CONTEXT_LOG, Logger, Mediator} from "@comunica/core";
 import {AsyncReiterableArray} from "asyncreiterable";
 import * as RDF from "rdf-js";
@@ -36,6 +37,8 @@ export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs {
     IActorOutputRootSparqlParse>;
   public readonly mediatorContextPreprocess: Mediator<Actor<IAction, IActorTest,
     IActorContextPreprocessOutput>, IAction, IActorTest, IActorContextPreprocessOutput>;
+  public readonly mediatorHttpInvalidate: Mediator<Actor<IActionHttpInvalidate, IActorTest, IActorHttpInvalidateOutput>,
+    IActionHttpInvalidate, IActorTest, IActorHttpInvalidateOutput>;
   public readonly logger: Logger;
   public readonly queryString?: string;
   public readonly defaultQueryInputFormat?: string;
@@ -186,6 +189,16 @@ export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs {
     return (await this.mediatorSparqlSerialize.mediate({ context, handle, handleMediaType: mediaType })).handle;
   }
 
+  /**
+   * Invalidate all internal caches related to the given page URL.
+   * If no page URL is given, then all pages will be invalidated.
+   * @param {string} pageUrl The page URL to invalidate.
+   * @return {Promise<any>} A promise resolving when the caches have been invalidated.
+   */
+  public invalidateHttpCache(pageUrl?: string): Promise<any> {
+    return this.mediatorHttpInvalidate.mediate({ pageUrl });
+  }
+
   public async run(action: IActionInit): Promise<IActorOutputInit> {
     throw new Error('ActorInitSparql#run is not supported in the browser.');
   }
@@ -206,6 +219,8 @@ export interface IActorInitSparqlArgs extends IActorArgs<IActionInit, IActorTest
     IActorOutputRootSparqlParse>;
   mediatorContextPreprocess: Mediator<Actor<IAction, IActorTest, IActorContextPreprocessOutput>,
     IAction, IActorTest, IActorContextPreprocessOutput>;
+  mediatorHttpInvalidate: Mediator<Actor<IActionHttpInvalidate, IActorTest, IActorHttpInvalidateOutput>,
+    IActionHttpInvalidate, IActorTest, IActorHttpInvalidateOutput>;
   logger: Logger;
   queryString?: string;
   defaultQueryInputFormat?: string;
