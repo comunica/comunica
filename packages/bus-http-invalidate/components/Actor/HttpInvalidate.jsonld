@@ -1,0 +1,32 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-http-invalidate/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/bus-http-invalidate",
+  "components": [
+    {
+      "@id": "cbhi:Actor/HttpInvalidate",
+      "@type": "AbstractClass",
+      "extends": "cc:Actor",
+      "requireElement": "ActorHttpInvalidate",
+      "comment": "A comunica actor for http-invalidate events.",
+      "parameters": [
+        {
+          "@id": "cc:Actor/bus",
+          "defaultScoped": {
+            "defaultScope": "cbhi:Actor/HttpInvalidate",
+            "defaultScopedValue": { "@id": "cbhi:Bus/HttpInvalidate" }
+          }
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "cbhi:Actor/HttpInvalidate/constructorArgumentsObject",
+          "@type": "https://linkedsoftwaredependencies.org/vocabularies/object-oriented#Object",
+          "extends": "cc:Actor/constructorArgumentsObject"
+        }
+      ]
+    }
+  ]
+}
