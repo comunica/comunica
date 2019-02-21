@@ -43,12 +43,14 @@
   "peerDependencies": {
     "@comunica/bus-rdf-dereference": "^1.0.0",
     "@comunica/bus-rdf-resolve-quad-pattern": "^1.0.0",
-    "@comunica/core": "^1.0.0"
+    "@comunica/core": "^1.0.0",
+    "@comunica/bus-http-invalidate": "^1.0.0"
   },
   "devDependencies": {
     "@comunica/bus-rdf-dereference": "^1.4.0",
     "@comunica/bus-rdf-resolve-quad-pattern": "^1.5.4",
-    "@comunica/core": "^1.4.0"
+    "@comunica/core": "^1.4.0",
+    "@comunica/bus-http-invalidate": "^1.0.0"
   },
   "jest": {
     "globals": {

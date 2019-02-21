@@ -1,3 +1,4 @@
+import {ActorHttpInvalidateListenable, IActionHttpInvalidate} from "@comunica/bus-http-invalidate";
 import {IActionRdfDereference, IActorRdfDereferenceOutput} from "@comunica/bus-rdf-dereference";
 import {ActorRdfResolveQuadPatternSource, IActionRdfResolveQuadPattern, IActorRdfResolveQuadPatternOutput,
   ILazyQuadSource} from "@comunica/bus-rdf-resolve-quad-pattern";
@@ -19,10 +20,13 @@ export class ActorRdfResolveQuadPatternFile extends ActorRdfResolveQuadPatternSo
   public readonly files?: string[];
   public readonly cacheSize: number;
   public readonly cache: LRU.Cache<string, Promise<N3Store>>;
+  public readonly httpInvalidator: ActorHttpInvalidateListenable;
 
   constructor(args: IActorRdfResolveQuadPatternFileArgs) {
     super(args);
     this.cache = new LRU<string, any>({ max: this.cacheSize });
+    this.httpInvalidator.addInvalidateListener(
+      ({ pageUrl }: IActionHttpInvalidate) => pageUrl ? this.cache.del(pageUrl) : this.cache.reset());
   }
 
   public initializeFile(file: string, context: ActionContext): Promise<any> {
@@ -93,4 +97,8 @@ export interface IActorRdfResolveQuadPatternFileArgs
    * The maximum number of files to be cached.
    */
   cacheSize: number;
+  /**
+   * An actor that listens to HTTP invalidation events
+   */
+  httpInvalidator: ActorHttpInvalidateListenable;
 }
