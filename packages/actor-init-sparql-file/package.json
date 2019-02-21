@@ -20,7 +20,8 @@
   ],
   "license": "MIT",
   "bin": {
-    "comunica-sparql-file": "./bin/run.js"
+    "comunica-sparql-file": "./bin/query.js",
+    "comunica-dynamic-sparql-file": "./bin/query-dynamic.js"
   },
   "bugs": {
     "url": "https://github.com/comunica/comunica/issues"

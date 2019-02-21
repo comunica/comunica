@@ -28,3 +28,18 @@ export function runArgsInProcess(moduleRootPath: string, defaultConfigPath: stri
     process.stdin, process.stdout, process.stderr, process.env,
     null, { mainModulePath: moduleRootPath });
 }
+
+export function runArgsInProcessStatic(actor: any) {
+  const argv = process.argv.slice(2);
+  actor.run({ argv, env: process.env, stdin: process.stdin })
+    .then((result: IActorOutputInit) => {
+      if (result.stdout) {
+        result.stdout.on('error', console.error);
+        result.stdout.pipe(process.stdout);
+      }
+      if (result.stderr) {
+        result.stderr.on('error', console.error);
+        result.stderr.pipe(process.stderr);
+      }
+    }).catch(console.error);
+}
