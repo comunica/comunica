@@ -8,8 +8,7 @@ import {KEY_CONTEXT_SOURCES} from "@comunica/bus-rdf-resolve-quad-pattern";
 import {IActionSparqlParse, IActorSparqlParseOutput} from "@comunica/bus-sparql-parse";
 import {IActionRootSparqlParse, IActorOutputRootSparqlParse,
   IActorTestRootSparqlParse} from "@comunica/bus-sparql-serialize";
-import {IActorSparqlSerializeOutput} from "@comunica/bus-sparql-serialize";
-import {IActionSparqlSerialize} from "@comunica/bus-sparql-serialize";
+import {IActorSparqlSerializeOutput, IActionSparqlSerialize} from "@comunica/bus-sparql-serialize";
 import {ActionContext, Actor, IAction, IActorArgs, IActorTest, KEY_CONTEXT_LOG, Logger, Mediator} from "@comunica/core";
 import {AsyncReiterableArray} from "asyncreiterable";
 import * as RDF from "rdf-js";
