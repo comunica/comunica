@@ -1,6 +1,25 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v1.6.0"></a>
+## [v1.6.0](https://github.com/comunica/comunica/compare/v1.5.4...v1.6.0) - 2019-02-22
+
+### Added
+* [Expose invalidateHttpCache method on SPARQL init](https://github.com/comunica/comunica/commit/f8b218323d2aa66bfc94c7ee290f8fef6a1ac868)
+* [Support source identification for single sources](https://github.com/comunica/comunica/commit/4594d9b1102c847173e05795edb6154a3d0787e7)
+* [Pass parent metadata to BGP and pattern actions](https://github.com/comunica/comunica/commit/c5f1e7c3f09dd0e746855ef73eafceedf1eb202a)
+
+### Changed
+* [Update sparqlee to version 0.1.0, improves FILTER expressivity](https://github.com/comunica/comunica/commit/938884977697931091867bca817890c6bb77c8ba)
+* [Use LRU cache in file resolver](https://github.com/comunica/comunica/commit/87651bf388d55b684c3a198c170636d0f8b9c88f)
+* [Abstract SPARQL HTTP service](https://github.com/comunica/comunica/commit/5c2a9647704eddba7c4b6baae9b287200ed232b9)
+
+### Fixed
+* [Fix config compilation issues in file init actor](https://github.com/comunica/comunica/commit/f30474d583e51a1b90a6dd2bfb2b5d8af0440df3)
+* [Fix parser/serializer priority values not being applied](https://github.com/comunica/comunica/commit/cf8bad54bb2fba5a97ee57cdec7fa477a9683720)
+* [Fix not all media types being determined in RDF dereference, Closes #318](https://github.com/comunica/comunica/commit/e0c2f18216049c64762e76d617a7c2aef52deedb)
+* [Fix invalid unscoped JSON-LD objects](https://github.com/comunica/comunica/commit/69d1810b285b42bd2a153e7fde703114ed7c460f)
+
 <a name="v1.5.4"></a>
 ## [v1.5.4](https://github.com/comunica/comunica/compare/v1.5.3...v1.5.4) - 2019-01-31
 

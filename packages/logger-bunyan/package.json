@@ -1,6 +1,6 @@
 {
   "name": "@comunica/logger-bunyan",
-  "version": "1.4.0",
+  "version": "1.6.0",
   "description": "A comunica bunyan-based logger.",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/logger-bunyan",
   "lsd:components": "components/components.jsonld",

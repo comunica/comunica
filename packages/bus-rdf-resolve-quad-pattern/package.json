@@ -1,6 +1,6 @@
 {
   "name": "@comunica/bus-rdf-resolve-quad-pattern",
-  "version": "1.5.4",
+  "version": "1.6.0",
   "description": "A comunica bus for resolving quad patterns to quad streams.",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-resolve-quad-pattern",
   "lsd:components": "components/components.jsonld",

@@ -1,6 +1,6 @@
 {
   "name": "@comunica/bus-context-preprocess",
-  "version": "1.4.0",
+  "version": "1.6.0",
   "description": "A comunica bus for context-preprocess events.",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-context-preprocess",
   "lsd:components": "components/components.jsonld",

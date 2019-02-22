@@ -1,6 +1,6 @@
 {
   "name": "@comunica/bus-init",
-  "version": "1.4.0",
+  "version": "1.6.0",
   "description": "A comunica bus for 'init' events.",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-init",
   "lsd:components": "components/components.jsonld",

@@ -1,6 +1,6 @@
 {
   "name": "@comunica/bus-rdf-dereference",
-  "version": "1.4.0",
+  "version": "1.6.0",
   "description": "A comunica bus for 'http' events.",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-dereference",
   "lsd:components": "components/components.jsonld",

@@ -1,6 +1,6 @@
 {
   "name": "@comunica/logger-void",
-  "version": "1.4.0",
+  "version": "1.6.0",
   "description": "A comunica void-based logger.",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/logger-void",
   "lsd:components": "components/components.jsonld",

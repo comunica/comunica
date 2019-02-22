@@ -1,6 +1,6 @@
 {
   "name": "@comunica/bus-http-invalidate",
-  "version": "1.0.0",
+  "version": "1.6.0",
   "description": "A comunica bus for http-invalidate events.",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-http-invalidate",
   "lsd:components": "components/components.jsonld",
