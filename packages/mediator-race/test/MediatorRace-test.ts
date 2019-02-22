@@ -27,9 +27,9 @@ describe('MediatorRace', () => {
       beforeEach(() => {
         busm = new Bus({ name: 'bus' });
         mediator = new MediatorRace({ name: 'mediator', bus: busm });
-        busm.subscribe(new DummyActor(10, 10, busm, false));
+        busm.subscribe(new DummyActor(10, 100, busm, false));
         busm.subscribe(new DummyActor(100, 0, busm, false));
-        busm.subscribe(new DummyActor(1, 20, busm, false));
+        busm.subscribe(new DummyActor(1, 200, busm, false));
       });
 
       it('should mediate to the earliest resolver', () => {
@@ -44,9 +44,9 @@ describe('MediatorRace', () => {
       beforeEach(() => {
         busm = new Bus({ name: 'bus' });
         mediator = new MediatorRace({ name: 'mediator', bus: busm });
-        busm.subscribe(new DummyActor(10, 10, busm, true));
+        busm.subscribe(new DummyActor(10, 100, busm, true));
         busm.subscribe(new DummyActor(100, 0, busm, true));
-        busm.subscribe(new DummyActor(1, 20, busm, true));
+        busm.subscribe(new DummyActor(1, 200, busm, true));
       });
 
       it('should reject when mediated', () => {
@@ -64,9 +64,9 @@ describe('MediatorRace', () => {
       beforeEach(() => {
         busm = new Bus({ name: 'bus' });
         mediator = new MediatorRace({ name: 'mediator', bus: busm });
-        busm.subscribe(actor0 = new DummyActor(10, 10, busm, false));
+        busm.subscribe(actor0 = new DummyActor(10, 100, busm, false));
         busm.subscribe(actor1 = new DummyActor(100, 0, busm, true));
-        busm.subscribe(actor2 = new DummyActor(1, 20, busm, false));
+        busm.subscribe(actor2 = new DummyActor(1, 200, busm, false));
       });
 
       it('should mediate to the earliest non-rejecting resolver', () => {
