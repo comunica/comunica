@@ -1,0 +1,21 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-expression-exists/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-query-operation-expression/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-query-operation-expression-exists",
+  "components": [
+    {
+      "@id": "caqoee:Actor/QueryOperationExpression/Exists",
+      "@type": "Class",
+      "extends": "cbqoe:Actor/QueryOperationExpression",
+      "requireElement": "ActorQueryOperationExpressionExists",
+      "comment": "A comunica Exists Query Operation Expression Actor.",
+      "constructorArguments": [
+        {
+          "extends": "cbqoe:Actor/QueryOperationExpression/constructorArgumentsObject"
+        }
+      ]
+    }
+  ]
+}
