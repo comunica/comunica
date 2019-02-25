@@ -14,42 +14,7 @@ $ yarn add @comunica/actor-query-operation-group
 
 ## Usage
 
-Group actor handles SPARQL Algebra GROUP operations. Example:
+Group actor handles SPARQL Algebra GROUP operations.
+Docs [here](https://www.w3.org/TR/sparql11-query/#convertGroupAggSelectExpressions) and [here](https://www.w3.org/TR/sparql11-query/#defn_algGroup).
 
-```SELECT * WHERE {?x ?y ?z} GROUP BY ?x```
-
-turn in to:
-
-```js
-{
-    "type": "project",
-    "input": {
-        "type": "group",
-        "input": {
-            "type": "bgp",
-            "patterns": [
-                {
-                    "subject": { "value": "x" },
-                    "predicate": { "value": "y" },
-                    "object": { "value": "z" },
-                    "graph": { "value": "" },
-                    "type": "pattern"
-                }
-            ]
-        },
-        "variables": [{"value": "x"}],
-        "aggregates": []
-    },
-    "variables": [
-        {
-            "value": "x"
-        },
-        {
-            "value": "y"
-        },
-        {
-            "value": "z"
-        }
-    ]
-}
-```
+See the './examples' dir for example queries and their SPARQL Algebra result.

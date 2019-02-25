@@ -1,0 +1,64 @@
+{
+    "__query": "SELECT ?s ?z WHERE {?x ?y ?z} GROUP BY ?z (str(?x) as ?s)",
+    "type": "project",
+    "input": {
+        "type": "group",
+        "input": {
+            "type": "extend",
+            "input": {
+                "type": "bgp",
+                "patterns": [
+                    {
+                        "subject": {
+                            "value": "x"
+                        },
+                        "predicate": {
+                            "value": "y"
+                        },
+                        "object": {
+                            "value": "z"
+                        },
+                        "graph": {
+                            "value": ""
+                        },
+                        "type": "pattern"
+                    }
+                ]
+            },
+            "variable": {
+                "value": "s"
+            },
+            "expression": {
+                "type": "expression",
+                "expressionType": "operator",
+                "operator": "str",
+                "args": [
+                    {
+                        "type": "expression",
+                        "expressionType": "term",
+                        "term": {
+                            "value": "x"
+                        }
+                    }
+                ]
+            }
+        },
+        "variables": [
+            {
+                "value": "z"
+            },
+            {
+                "value": "s"
+            }
+        ],
+        "aggregates": []
+    },
+    "variables": [
+        {
+            "value": "s"
+        },
+        {
+            "value": "z"
+        }
+    ]
+}

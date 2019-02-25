@@ -1,0 +1,84 @@
+{
+    "__query": "SELECT ?s ?p WHERE {?x ?y ?z} GROUP BY (str(?x) as ?s) (str(?y) as ?p)",
+    "type": "project",
+    "input": {
+        "type": "group",
+        "input": {
+            "type": "extend",
+            "input": {
+                "type": "extend",
+                "input": {
+                    "type": "bgp",
+                    "patterns": [
+                        {
+                            "subject": {
+                                "value": "x"
+                            },
+                            "predicate": {
+                                "value": "y"
+                            },
+                            "object": {
+                                "value": "z"
+                            },
+                            "graph": {
+                                "value": ""
+                            },
+                            "type": "pattern"
+                        }
+                    ]
+                },
+                "variable": {
+                    "value": "s"
+                },
+                "expression": {
+                    "type": "expression",
+                    "expressionType": "operator",
+                    "operator": "str",
+                    "args": [
+                        {
+                            "type": "expression",
+                            "expressionType": "term",
+                            "term": {
+                                "value": "x"
+                            }
+                        }
+                    ]
+                }
+            },
+            "variable": {
+                "value": "p"
+            },
+            "expression": {
+                "type": "expression",
+                "expressionType": "operator",
+                "operator": "str",
+                "args": [
+                    {
+                        "type": "expression",
+                        "expressionType": "term",
+                        "term": {
+                            "value": "y"
+                        }
+                    }
+                ]
+            }
+        },
+        "variables": [
+            {
+                "value": "s"
+            },
+            {
+                "value": "p"
+            }
+        ],
+        "aggregates": []
+    },
+    "variables": [
+        {
+            "value": "s"
+        },
+        {
+            "value": "p"
+        }
+    ]
+}
