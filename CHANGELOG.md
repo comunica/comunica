@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v1.6.1"></a>
+## [v1.6.1](https://github.com/comunica/comunica/compare/v1.6.0...v1.6.1) - 2019-02-25
+
+### Fixed
+* [Fix http tool not working with absolute config paths](https://github.com/comunica/comunica/commit/6bfcbfa3a10014232c1b529790bffbd2ba81476e)
+
 <a name="v1.6.0"></a>
 ## [v1.6.0](https://github.com/comunica/comunica/compare/v1.5.4...v1.6.0) - 2019-02-22
 
