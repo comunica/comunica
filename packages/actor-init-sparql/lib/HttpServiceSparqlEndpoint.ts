@@ -1,14 +1,14 @@
+import * as fs from "fs";
 import * as http from "http";
+import EventEmitter = NodeJS.EventEmitter;
+import minimist = require("minimist");
 import * as querystring from "querystring";
 import {Writable} from "stream";
 import * as url from "url";
+import {LoggerPretty} from "../../logger-pretty";
 import {newEngineDynamic} from "../index";
 import {ActorInitSparql} from "./ActorInitSparql";
 import {IQueryOptions} from "./QueryDynamic";
-import EventEmitter = NodeJS.EventEmitter;
-import minimist = require("minimist");
-import * as fs from "fs";
-import {LoggerPretty} from "../../logger-pretty";
 
 /**
  * An HTTP service that exposes a Comunica engine as a SPARQL endpoint.
@@ -20,6 +20,7 @@ export class HttpServiceSparqlEndpoint {
   private readonly context: any;
   private readonly timeout: number;
   private readonly port: number;
+  private readonly invalidateCacheBeforeQuery: boolean;
 
   private readonly engine: Promise<ActorInitSparql>;
 
@@ -28,6 +29,7 @@ export class HttpServiceSparqlEndpoint {
     this.context = args.context || {};
     this.timeout = args.timeout || 60000;
     this.port = args.port || 3000;
+    this.invalidateCacheBeforeQuery = args.invalidateCacheBeforeQuery;
 
     this.engine = newEngineDynamic(args);
   }
@@ -36,7 +38,7 @@ export class HttpServiceSparqlEndpoint {
     const args = minimist(process.argv.slice(2));
     if (args._.length !== 1 || args.h || args.help) {
       process.stderr.write(
-        'usage: comunica-sparql-http context [-p port] [-t timeout] [-l log-level] [--help]\n' +
+        'usage: comunica-sparql-http context [-p port] [-t timeout] [-l log-level] [-i] [--help]\n' +
         '  context should be a JSON object, e.g.\n' +
         '      { "sources": [{ "type": "hypermedia", "value" : "http://fragments.dbpedia.org/2015/en" }]}\n' +
         '  or the path to such a JSON file\n',
@@ -48,6 +50,7 @@ export class HttpServiceSparqlEndpoint {
     const context = JSON.parse(fs.existsSync(args._[0]) ? fs.readFileSync(args._[0], 'utf8') : args._[0]);
     const timeout = (parseInt(args.t, 10) || 60) * 1000;
     const port = parseInt(args.p, 10) || 3000;
+    const invalidateCacheBeforeQuery: boolean = args.i;
 
     // Set the logger
     if (!context.log) {
@@ -57,6 +60,7 @@ export class HttpServiceSparqlEndpoint {
     const options = {
       configResourceUrl: process.env.COMUNICA_CONFIG ? process.env.COMUNICA_CONFIG : defaultConfigPath,
       context,
+      invalidateCacheBeforeQuery,
       mainModulePath: moduleRootPath,
       port,
       timeout,
@@ -110,6 +114,11 @@ export class HttpServiceSparqlEndpoint {
       response.writeHead(404, { 'content-type': HttpServiceSparqlEndpoint.MIME_JSON });
       response.end(JSON.stringify({ message: 'Resource not found' }));
       return;
+    }
+
+    if (this.invalidateCacheBeforeQuery) {
+      // Invalidate cache
+      await engine.invalidateHttpCache();
     }
 
     // Parse the query, depending on the HTTP method
@@ -214,4 +223,5 @@ export interface IHttpServiceSparqlEndpointArgs extends IQueryOptions {
   context?: any;
   timeout?: number;
   port?: number;
+  invalidateCacheBeforeQuery?: boolean;
 }
