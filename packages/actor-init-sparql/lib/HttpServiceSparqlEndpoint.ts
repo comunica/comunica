@@ -55,8 +55,7 @@ export class HttpServiceSparqlEndpoint {
     }
 
     const options = {
-      configResourceUrl: process.env.COMUNICA_CONFIG
-        ? process.cwd() + '/' + process.env.COMUNICA_CONFIG : defaultConfigPath,
+      configResourceUrl: process.env.COMUNICA_CONFIG ? process.env.COMUNICA_CONFIG : defaultConfigPath,
       context,
       mainModulePath: moduleRootPath,
       port,
