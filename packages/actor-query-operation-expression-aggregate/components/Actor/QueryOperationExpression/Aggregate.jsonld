@@ -1,0 +1,21 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-expression-aggregate/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-query-operation-expression/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-query-operation-expression-aggregate",
+  "components": [
+    {
+      "@id": "caqoea:Actor/QueryOperationExpression/Aggregate",
+      "@type": "Class",
+      "extends": "cbqoe:Actor/QueryOperationExpression",
+      "requireElement": "ActorQueryOperationExpressionAggregate",
+      "comment": "A comunica Aggregate Query Operation Expression Actor.",
+      "constructorArguments": [
+        {
+          "extends": "cbqoe:Actor/QueryOperationExpression/constructorArgumentsObject"
+        }
+      ]
+    }
+  ]
+}

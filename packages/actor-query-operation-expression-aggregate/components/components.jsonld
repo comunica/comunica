@@ -1,0 +1,9 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-expression-aggregate/^1.0.0/components/context.jsonld",
+  "@id": "npmd:@comunica/actor-query-operation-expression-aggregate",
+  "@type": "Module",
+  "requireName": "@comunica/actor-query-operation-expression-aggregate",
+  "import": [
+    "files-caqoea:components/Actor/QueryOperationExpression/Aggregate.jsonld"
+  ]
+}
