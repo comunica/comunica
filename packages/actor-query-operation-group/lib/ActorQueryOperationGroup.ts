@@ -3,9 +3,6 @@ import { Iterable, List, Map, Seq, Set } from "immutable";
 import { termToString } from 'rdf-string';
 import { Algebra } from "sparqlalgebrajs";
 
-// tslint:disable-next-line:no-var-requires
-const arrayifyStream = require('arrayify-stream');
-
 import {
   ActorQueryOperation,
   ActorQueryOperationTypedMediated,
@@ -13,8 +10,8 @@ import {
   IActorQueryOperationOutputBindings,
   IActorQueryOperationTypedMediatedArgs,
 } from "@comunica/bus-query-operation";
-import { BindingsStream } from "@comunica/bus-query-operation";
 import { ActionContext, IActorTest } from "@comunica/core";
+import { BaseAggregator, createAggregator } from './Aggregators';
 
 /**
  * A comunica Group Query Operation Actor.
@@ -31,9 +28,10 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
 
   public async runOperation(pattern: Algebra.Group, context: ActionContext)
     : Promise<IActorQueryOperationOutputBindings> {
-    const { input, aggregates } = pattern;
 
-    const outputRaw = await this.mediatorQueryOperation.mediate({ operation: pattern.input, context });
+    // Get result stream for the input query
+    const { input, aggregates } = pattern;
+    const outputRaw = await this.mediatorQueryOperation.mediate({ operation: input, context });
     const output = ActorQueryOperation.getSafeBindings(outputRaw);
     ActorQueryOperation.validateQueryOutput(output, 'bindings');
 
@@ -44,37 +42,55 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
       .map((variable) => termToString(variable))
       .concat(aggregates.map((agg) => termToString(agg.variable)));
 
-    // Consume the whole stream
-    const bindingsArray: Bindings[] = await arrayifyStream(output.bindingsStream);
-
     // TODO: Can be empty (test behaviour) when implicit group by
     // TODO: We need to know what SELECT * WHERE {?x ?y ?z} GROUP BY str(?x) looks like
     // either it's in pattern.variables or it is not
     const patternVariables = Set(pattern.variables.map((v) => termToString(v)));
+    const aggregateVariables = Set(aggregates.map(({ variable }) => termToString(variable)));
 
-    // Group by subset of keys defined in pattern.variables
-    const groups: Seq.Keyed<Bindings, Iterable<number, Bindings>> = List(bindingsArray)
-      .groupBy<Bindings>((bindings) => {
-        return bindings
-          .filter((v, key) => patternVariables.has(key))
-          .toMap();
+    let groups: Map<Bindings, Map<string, BaseAggregator<any>>> = Map();
+
+    // Consume the stream
+    // Identify the groups and populate the aggregate bindings
+    output.bindingsStream.on('data', (bindings: Bindings) => {
+      // Select the bindings on which we group
+      const grouper = bindings.filter((term, variable) => patternVariables.has(variable)).toMap();
+
+      // New group
+      if (!groups.has(grouper)) {
+        // Initialize state for all aggregators for new group
+        const newAggregators: Map<string, BaseAggregator<any>> = Map(aggregates.map(
+          (aggregate) => [termToString(aggregate.variable), createAggregator(aggregate)]));
+        groups = groups.set(grouper, newAggregators);
+      }
+
+      // For all the aggregate variables we update the corresponding aggregator
+      // with the corresponding from the bindings
+      const aggregators = groups.get(grouper);
+      aggregateVariables.forEach((variable) => {
+        aggregators.get(variable).put(bindings.get(variable));
+      });
+    });
+
+    // We can only return when the binding stream ends, when that happens
+    // we return the groups identified (which are nothing more than Bindings)
+    // and we merge that with the aggregate bindings for that group
+    return new Promise((resolve, reject) => {
+      output.bindingsStream.on('end', () => {
+        const rows: Bindings[] = groups.map((aggregators, groupKeys) => {
+          // TODO Collect
+          return groupKeys;
+        }).toArray();
+
+        const bindingsStream = new ArrayIterator(rows);
+        const metadata = output.metadata;
+        resolve({ type: 'bindings', bindingsStream, metadata, variables });
       });
 
-    // Aggregate each group with each aggregator and bind the result
-    const rows: Bindings[] = groups.map((group, groupKey) => {
-      let bindings: Bindings = Map(groupKey);
-      aggregates.forEach((aggregate) => {
-        // TODO
-        // TODO: This might not reach the actual expression actors later on
-        // this.mediatorQueryOperation.mediate(aggregate)
-        bindings = Bindings({});
+      output.bindingsStream.on('error', (err) => {
+        reject(err);
       });
-      return bindings;
-    }).toArray();
-
-    const bindingsStream = new ArrayIterator(rows);
-    const metadata = output.metadata;
-    return { type: 'bindings', bindingsStream, metadata, variables };
+    });
   }
 
 }
