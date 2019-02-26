@@ -1,0 +1,109 @@
+{
+    "__query": "SELECT ?contains (sample(?object) as ?gc) WHERE { ?subject ?predicate ?object } GROUP BY (contains(str(?subject), \"Publikationen\") as ?contains)",
+    "type": "project",
+    "input": {
+        "type": "extend",
+        "input": {
+            "type": "group",
+            "input": {
+                "type": "extend",
+                "input": {
+                    "type": "bgp",
+                    "patterns": [
+                        {
+                            "subject": {
+                                "value": "subject"
+                            },
+                            "predicate": {
+                                "value": "predicate"
+                            },
+                            "object": {
+                                "value": "object"
+                            },
+                            "graph": {
+                                "value": ""
+                            },
+                            "type": "pattern"
+                        }
+                    ]
+                },
+                "variable": {
+                    "value": "contains"
+                },
+                "expression": {
+                    "type": "expression",
+                    "expressionType": "operator",
+                    "operator": "contains",
+                    "args": [
+                        {
+                            "type": "expression",
+                            "expressionType": "operator",
+                            "operator": "str",
+                            "args": [
+                                {
+                                    "type": "expression",
+                                    "expressionType": "term",
+                                    "term": {
+                                        "value": "subject"
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "type": "expression",
+                            "expressionType": "term",
+                            "term": {
+                                "value": "Publikationen",
+                                "datatype": {
+                                    "value": "http://www.w3.org/2001/XMLSchema#string"
+                                },
+                                "language": ""
+                            }
+                        }
+                    ]
+                }
+            },
+            "variables": [
+                {
+                    "value": "contains"
+                }
+            ],
+            "aggregates": [
+                {
+                    "type": "expression",
+                    "expressionType": "aggregate",
+                    "aggregator": "sample",
+                    "expression": {
+                        "type": "expression",
+                        "expressionType": "term",
+                        "term": {
+                            "value": "object"
+                        }
+                    },
+                    "distinct": false,
+                    "variable": {
+                        "value": "var0"
+                    }
+                }
+            ]
+        },
+        "variable": {
+            "value": "gc"
+        },
+        "expression": {
+            "type": "expression",
+            "expressionType": "term",
+            "term": {
+                "value": "var0"
+            }
+        }
+    },
+    "variables": [
+        {
+            "value": "contains"
+        },
+        {
+            "value": "gc"
+        }
+    ]
+}
