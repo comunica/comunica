@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-metadata-primary-topic",
-  "version": "1.6.0",
+  "version": "1.6.2",
   "description": "A primary-topic rdf-metadata actor",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-metadata-primary-topic",
   "lsd:components": "components/components.jsonld",

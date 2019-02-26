@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-init-sparql",
-  "version": "1.6.1",
+  "version": "1.6.2",
   "description": "A Comunica engine for SPARQL query evaluation over heterogeneous interfaces",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-sparql",
   "lsd:components": "components/components.jsonld",
@@ -88,7 +88,7 @@
     "@comunica/actor-rdf-join-nestedloop": "^1.6.0",
     "@comunica/actor-rdf-metadata-extract-hydra-controls": "^1.6.0",
     "@comunica/actor-rdf-metadata-extract-hydra-count": "^1.6.0",
-    "@comunica/actor-rdf-metadata-primary-topic": "^1.6.0",
+    "@comunica/actor-rdf-metadata-primary-topic": "^1.6.2",
     "@comunica/actor-rdf-metadata-triple-predicate": "^1.6.0",
     "@comunica/actor-rdf-parse-jsonld": "^1.6.0",
     "@comunica/actor-rdf-parse-n3": "^1.6.0",
