@@ -1,6 +1,4 @@
 {
-    "__query": "SELECT * WHERE {?x ?y ?z} GROUP BY str(?x)",
-    "__note": "This is currently wrong, bug filed in https://github.com/joachimvh/SPARQLAlgebra.js/issues/37",
     "type": "project",
     "input": {
         "type": "group",
@@ -26,7 +24,7 @@
         },
         "variables": [
             {
-                "value": ""
+                "value": "x"
             }
         ],
         "aggregates": []

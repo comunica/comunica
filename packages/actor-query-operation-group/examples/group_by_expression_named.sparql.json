@@ -1,5 +1,4 @@
 {
-    "__query": "SELECT ?contains (sample(?object) as ?gc) WHERE { ?subject ?predicate ?object } GROUP BY (contains(str(?subject), \"Publikationen\") as ?contains)",
     "type": "project",
     "input": {
         "type": "extend",

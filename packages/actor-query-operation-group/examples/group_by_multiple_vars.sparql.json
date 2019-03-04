@@ -1,5 +1,4 @@
 {
-    "__query": "SELECT (avg(?x) as ?a) WHERE {?x ?y ?z} GROUP BY ?x ?z",
     "type": "project",
     "input": {
         "type": "extend",

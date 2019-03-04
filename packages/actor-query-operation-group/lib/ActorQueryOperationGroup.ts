@@ -50,7 +50,7 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
 
     let groups: Map<Bindings, Map<string, BaseAggregator<any>>> = Map();
 
-    // Consume the stream
+    // Phase 1: Consume the stream
     // Identify the groups and populate the aggregate bindings
     output.bindingsStream.on('data', (bindings: Bindings) => {
       // Select the bindings on which we group
@@ -72,6 +72,7 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
       });
     });
 
+    // Phase 2: Collect aggregator results
     // We can only return when the binding stream ends, when that happens
     // we return the groups identified (which are nothing more than Bindings)
     // and we merge that with the aggregate bindings for that group

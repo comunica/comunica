@@ -1,5 +1,4 @@
 {
-    "__query": "SELECT ?s ?p WHERE {?x ?y ?z} GROUP BY (str(?x) as ?s) (str(?y) as ?p)",
     "type": "project",
     "input": {
         "type": "group",
