@@ -36,22 +36,20 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
     ActorQueryOperation.validateQueryOutput(output, 'bindings');
 
     // The variables in scope are the variables on which we group, e.g. pattern.variables
-    // for GROUP BY ?x, ?z, this is [?x, ?z], for GROUP by expr(?x) as ?e this is [?e].
+    // for 'GROUP BY ?x, ?z', this is [?x, ?z], for 'GROUP by expr(?x) as ?e' this is [?e].
     // But also in scope are the variables defined by the aggregations, since GROUP has to handle this
     const variables = pattern.variables
       .map((variable) => termToString(variable))
       .concat(aggregates.map((agg) => termToString(agg.variable)));
 
     // TODO: Can be empty (test behaviour) when implicit group by
-    // TODO: We need to know what SELECT * WHERE {?x ?y ?z} GROUP BY str(?x) looks like
     // either it's in pattern.variables or it is not
     const patternVariables = Set(pattern.variables.map((v) => termToString(v)));
     const aggregateVariables = Set(aggregates.map(({ variable }) => termToString(variable)));
 
     let groups: Map<Bindings, Map<string, BaseAggregator<any>>> = Map();
 
-    // Phase 1: Consume the stream
-    // Identify the groups and populate the aggregate bindings
+    // Phase 1: Consume the stream, identify the groups and populate the aggregate bindings
     output.bindingsStream.on('data', (bindings: Bindings) => {
       // Select the bindings on which we group
       const grouper = bindings.filter((term, variable) => patternVariables.has(variable)).toMap();
@@ -78,9 +76,13 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
     // and we merge that with the aggregate bindings for that group
     return new Promise((resolve, reject) => {
       output.bindingsStream.on('end', () => {
-        const rows: Bindings[] = groups.map((aggregators, groupKeys) => {
-          // TODO Collect
-          return groupKeys;
+        // Collect groups
+        const rows: Bindings[] = groups.map((aggregators, groupBindings) => {
+          // Collect aggregator bindings
+          const aggBindings = aggregators.map((aggregator) => aggregator.result());
+
+          // Merge grouping bindings and aggregator bindings
+          return groupBindings.merge(aggBindings);
         }).toArray();
 
         const bindingsStream = new ArrayIterator(rows);
