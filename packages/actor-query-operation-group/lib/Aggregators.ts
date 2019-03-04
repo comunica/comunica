@@ -5,15 +5,6 @@ import * as RDFDM from '@rdfjs/data-model';
 import { Set } from 'immutable';
 import * as RDF from 'rdf-js';
 import { Algebra } from 'sparqlalgebrajs';
-import { SimpleEvaluator } from 'sparqlee';
-
-import { Bindings } from '@comunica/bus-query-operation';
-import {
-  ActorQueryOperationExpression,
-  IActionQueryOperationExpression,
-  IActorQueryOperationExpressionArgs,
-  IActorQueryOperationExpressionOutput,
-} from "@comunica/bus-query-operation-expression";
 
 export function createAggregator(expr: Algebra.BoundAggregate): BaseAggregator<any> {
   const aggregator = expr.aggregator as Aggregator;
@@ -29,9 +20,21 @@ export abstract class BaseAggregator<State> {
 
   public abstract init(): State;
 
-  public abstract put(term: RDF.Term): void;
-
   public abstract result(): RDF.Term;
+
+  public put(term: RDF.Term): void {
+    try {
+      this._put(term);
+      // If any term errors, the corresponding aggregate variable should be unbound
+      // This is done by setting the result to be undefined
+    } catch (err) {
+      this.put = () => { return; };
+      this.result = () => undefined;
+    }
+  }
+
+  protected abstract _put(term: RDF.Term): void;
+
 }
 
 enum Aggregator {
@@ -48,11 +51,13 @@ class Count extends BaseAggregator<number> {
   public init(): number {
     return 0;
   }
-  public put(term: RDF.Term): void {
-    this.state += 1;
-  }
+
   public result(): RDF.Term {
     return int(this.state);
+  }
+
+  protected _put(term: RDF.Term): void {
+    this.state += 1;
   }
 }
 
@@ -61,12 +66,14 @@ class Sum extends BaseAggregator<number> {
   public init(): number {
     return 0;
   }
-  public put(term: RDF.Term): void {
-    const value = extractNumericValueOrError(term);
-    this.state += value;
-  }
+
   public result(): RDF.Term {
     return float(this.state);
+  }
+
+  protected _put(term: RDF.Term): void {
+    const value = extractNumericValueOrError(term);
+    this.state += value;
   }
 }
 
@@ -88,7 +95,7 @@ class Sum extends BaseAggregator<number> {
 class Min extends BaseAggregator<number> {
   public init(): number {
     throw new Error("Method not implemented.");
-  } public put(term: RDF.Term): void {
+  } public _put(term: RDF.Term): void {
     throw new Error("Method not implemented.");
   }
   public result(): RDF.Term {
@@ -113,7 +120,7 @@ class Min extends BaseAggregator<number> {
 class Max extends BaseAggregator<number> {
   public init(): number {
     throw new Error("Method not implemented.");
-  } public put(term: RDF.Term): void {
+  } public _put(term: RDF.Term): void {
     throw new Error("Method not implemented.");
   }
   public result(): RDF.Term {
@@ -124,7 +131,7 @@ class Max extends BaseAggregator<number> {
 class Average extends BaseAggregator<number> {
   public init(): number {
     throw new Error("Method not implemented.");
-  } public put(term: RDF.Term): void {
+  } public _put(term: RDF.Term): void {
     throw new Error("Method not implemented.");
   }
   public result(): RDF.Term {
@@ -135,7 +142,7 @@ class Average extends BaseAggregator<number> {
 class GroupConcat extends BaseAggregator<string> {
   public init(): string {
     throw new Error("Method not implemented.");
-  } public put(term: RDF.Term): void {
+  } public _put(term: RDF.Term): void {
     throw new Error("Method not implemented.");
   }
   public result(): RDF.Term {
@@ -146,7 +153,7 @@ class GroupConcat extends BaseAggregator<string> {
 class Sample extends BaseAggregator<RDF.Term> {
   public init(): RDF.Term {
     throw new Error("Method not implemented.");
-  } public put(term: RDF.Term): void {
+  } public _put(term: RDF.Term): void {
     throw new Error("Method not implemented.");
   }
   public result(): RDF.Term {

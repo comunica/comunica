@@ -1,0 +1,2 @@
+SELECT (count(str(?x)) as ?count)
+WHERE {?x ?y ?z}

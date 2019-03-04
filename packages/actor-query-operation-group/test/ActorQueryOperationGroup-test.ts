@@ -55,6 +55,10 @@ interface ICaseOutput {
   actor: ActorQueryOperationGroup; bus: any; mediatorQueryOperation: any; op: IActionQueryOperation;
 }
 
+function int(value: string) {
+  return literal(value, "http://www.w3.org/2001/XMLSchema#integer");
+}
+
 function constructCase(
   { inputBindings, inputVariables = [], groupVariables = [], aggregates = [], inputOp }: ICaseOptions)
   : ICaseOutput {
@@ -174,6 +178,198 @@ describe('ActorQueryOperationGroup', () => {
         Bindings({ '?x': literal('ccc'), '?y': literal('aaa') }),
       ]);
       expect(output.variables).toMatchObject(['?x', '?y']);
+    });
+
+    it('should aggregate single vars', async () => {
+      const countY: Algebra.BoundAggregate = {
+        type: "expression",
+        expressionType: "aggregate",
+        aggregator: "count",
+        expression: {
+          type: "expression",
+          expressionType: "term",
+          term: variable('y'),
+        },
+        distinct: false,
+        variable: variable('count'),
+      };
+
+      const { op, actor } = constructCase({
+        inputBindings: [
+          Bindings({ '?x': literal('aaa'), '?y': literal('aaa') }),
+          Bindings({ '?x': literal('aaa'), '?y': literal('bbb') }),
+          Bindings({ '?x': literal('bbb'), '?y': literal('aaa') }),
+          Bindings({ '?x': literal('ccc'), '?y': literal('aaa') }),
+          Bindings({ '?x': literal('aaa'), '?y': literal('aaa') }),
+        ],
+        groupVariables: ['x'],
+        inputVariables: ['x', 'y', 'z'],
+        inputOp: simpleXYZinput,
+        aggregates: [countY],
+      });
+
+      const output = await actor.run(op) as any;
+      expect(await arrayifyStream(output.bindingsStream)).toMatchObject([
+        Bindings({ '?x': literal('aaa'), '?count': int('3') }),
+        Bindings({ '?x': literal('bbb'), '?count': int('1') }),
+        Bindings({ '?x': literal('ccc'), '?count': int('1') }),
+      ]);
+      expect(output.variables).toMatchObject(['?x', '?count']);
+    });
+
+    it('should aggregate multiple vars', async () => {
+      const countY: Algebra.BoundAggregate = {
+        type: "expression",
+        expressionType: "aggregate",
+        aggregator: "count",
+        expression: {
+          type: "expression",
+          expressionType: "term",
+          term: variable('y'),
+        },
+        distinct: false,
+        variable: variable('count'),
+      };
+
+      const sumZ: Algebra.BoundAggregate = {
+        type: "expression",
+        expressionType: "aggregate",
+        aggregator: "sum",
+        expression: {
+          type: "expression",
+          expressionType: "term",
+          term: variable('z'),
+        },
+        distinct: false,
+        variable: variable('sum'),
+      };
+
+      const { op, actor } = constructCase({
+        inputBindings: [
+          Bindings({ '?x': literal('aaa'), '?y': literal('aaa'), '?z': int("1") }),
+          Bindings({ '?x': literal('aaa'), '?y': literal('bbb'), '?z': int("2") }),
+          Bindings({ '?x': literal('bbb'), '?y': literal('aaa'), '?z': int("3") }),
+          Bindings({ '?x': literal('ccc'), '?y': literal('aaa'), '?z': int("4") }),
+          Bindings({ '?x': literal('aaa'), '?y': literal('aaa'), '?z': int("5") }),
+        ],
+        groupVariables: ['x'],
+        inputVariables: ['x', 'y', 'z'],
+        inputOp: simpleXYZinput,
+        aggregates: [countY, sumZ],
+      });
+
+      const output = await actor.run(op) as any;
+      expect(await arrayifyStream(output.bindingsStream)).toMatchObject([
+        Bindings({ '?x': literal('aaa'), '?count': int('3'), '?sum': int('8') }),
+        Bindings({ '?x': literal('bbb'), '?count': int('1'), '?sum': int('3') }),
+        Bindings({ '?x': literal('ccc'), '?count': int('1'), '?sum': int('4') }),
+      ]);
+      expect(output.variables).toMatchObject(['?x', '?count', '?sum']);
+    });
+
+    it('should aggregate implicit', async () => {
+      const countY: Algebra.BoundAggregate = {
+        type: "expression",
+        expressionType: "aggregate",
+        aggregator: "count",
+        expression: {
+          type: "expression",
+          expressionType: "term",
+          term: variable('y'),
+        },
+        distinct: false,
+        variable: variable('count'),
+      };
+
+      const { op, actor } = constructCase({
+        inputBindings: [
+          Bindings({ '?x': literal('aaa'), '?y': literal('aaa') }),
+          Bindings({ '?x': literal('aaa'), '?y': literal('bbb') }),
+          Bindings({ '?x': literal('bbb'), '?y': literal('aaa') }),
+          Bindings({ '?x': literal('ccc'), '?y': literal('aaa') }),
+          Bindings({ '?x': literal('aaa'), '?y': literal('aaa') }),
+        ],
+        groupVariables: [],
+        inputVariables: ['x', 'y', 'z'],
+        inputOp: simpleXYZinput,
+        aggregates: [countY],
+      });
+
+      const output = await actor.run(op) as any;
+      expect(await arrayifyStream(output.bindingsStream)).toMatchObject([
+        Bindings({ '?count': int('5') }),
+      ]);
+      expect(output.variables).toMatchObject(['?count']);
+    });
+
+    // https://www.w3.org/TR/sparql11-query/#aggregateExample2
+    it('should handle aggregate errors', async () => {
+      const sumY: Algebra.BoundAggregate = {
+        type: "expression",
+        expressionType: "aggregate",
+        aggregator: "sum",
+        expression: {
+          type: "expression",
+          expressionType: "term",
+          term: variable('y'),
+        },
+        distinct: false,
+        variable: variable('sum'),
+      };
+
+      const { op, actor } = constructCase({
+        inputBindings: [
+          Bindings({ '?x': literal('aaa'), '?y': int('1') }),
+          Bindings({ '?x': literal('aaa'), '?y': int('1') }),
+          Bindings({ '?x': literal('bbb'), '?y': literal('not an int') }),
+          Bindings({ '?x': literal('ccc'), '?y': int('1') }),
+          Bindings({ '?x': literal('aaa'), '?y': literal('not an int') }),
+        ],
+        groupVariables: ['x'],
+        inputVariables: ['x', 'y', 'z'],
+        inputOp: simpleXYZinput,
+        aggregates: [sumY],
+      });
+
+      const output = await actor.run(op) as any;
+      expect(await arrayifyStream(output.bindingsStream)).toMatchObject([
+        Bindings({ '?x': literal('aaa'), '?sum': undefined }),
+        Bindings({ '?x': literal('bbb'), '?sum': undefined }),
+        Bindings({ '?x': literal('ccc'), '?sum': int('1') }),
+      ]);
+      expect(output.variables).toMatchObject(['?x', '?sum']);
+    });
+
+    it.skip('should respect distinct', async () => {
+      expect(1).toMatchObject(0);
+    });
+
+    it.skip('should be able to count', async () => {
+      expect(1).toMatchObject(0);
+    });
+
+    it.skip('should be able to sum', async () => {
+      expect(1).toMatchObject(0);
+    });
+
+    it.skip('should be able to min', async () => {
+      expect(1).toMatchObject(0);
+    });
+
+    it.skip('should be able to max', async () => {
+      expect(1).toMatchObject(0);
+    });
+
+    it.skip('should be able to avg', async () => {
+      expect(1).toMatchObject(0);
+    });
+
+    it.skip('should be able to sample', async () => {
+      expect(1).toMatchObject(0);
+    });
+
+    it.skip('should be able to groupConcat', async () => {
+      expect(1).toMatchObject(0);
     });
   });
 });

@@ -1,0 +1,2 @@
+SELECT (sum(?x + ?y) as ?count)
+WHERE {?x ?y ?z}

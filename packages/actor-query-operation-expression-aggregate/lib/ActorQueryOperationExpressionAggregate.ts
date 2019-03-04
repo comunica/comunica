@@ -129,7 +129,7 @@ function int(value: number): RDF.Literal {
 }
 
 function float(value: number): RDF.Literal {
-  return RDFDM.literal(value.toString(), RDFDM.namedNode('http://www.w3.org/2001/XMLSchema#integer'));
+  return RDFDM.literal(value.toString(), RDFDM.namedNode('http://www.w3.org/2001/XMLSchema#float'));
 }
 
 function extractNumericValueOrError(term: RDF.Term): number {

@@ -1,0 +1,99 @@
+{
+    "type": "project",
+    "input": {
+        "type": "extend",
+        "input": {
+            "type": "extend",
+            "input": {
+                "type": "group",
+                "input": {
+                    "type": "bgp",
+                    "patterns": [
+                        {
+                            "subject": {
+                                "value": "x"
+                            },
+                            "predicate": {
+                                "value": "y"
+                            },
+                            "object": {
+                                "value": "z"
+                            },
+                            "graph": {
+                                "value": ""
+                            },
+                            "type": "pattern"
+                        }
+                    ]
+                },
+                "variables": [
+                    {
+                        "value": "x"
+                    }
+                ],
+                "aggregates": [
+                    {
+                        "type": "expression",
+                        "expressionType": "aggregate",
+                        "aggregator": "count",
+                        "expression": {
+                            "type": "expression",
+                            "expressionType": "term",
+                            "term": {
+                                "value": "y"
+                            }
+                        },
+                        "distinct": false,
+                        "variable": {
+                            "value": "var0"
+                        }
+                    },
+                    {
+                        "type": "expression",
+                        "expressionType": "aggregate",
+                        "aggregator": "sum",
+                        "expression": {
+                            "type": "expression",
+                            "expressionType": "term",
+                            "term": {
+                                "value": "z"
+                            }
+                        },
+                        "distinct": false,
+                        "variable": {
+                            "value": "var1"
+                        }
+                    }
+                ]
+            },
+            "variable": {
+                "value": "count"
+            },
+            "expression": {
+                "type": "expression",
+                "expressionType": "term",
+                "term": {
+                    "value": "var0"
+                }
+            }
+        },
+        "variable": {
+            "value": "sum"
+        },
+        "expression": {
+            "type": "expression",
+            "expressionType": "term",
+            "term": {
+                "value": "var1"
+            }
+        }
+    },
+    "variables": [
+        {
+            "value": "count"
+        },
+        {
+            "value": "sum"
+        }
+    ]
+}

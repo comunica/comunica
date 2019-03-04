@@ -1,7 +1,8 @@
 import { ArrayIterator } from 'asynciterator';
-import { Iterable, List, Map, Seq, Set } from "immutable";
+import { Map, Set } from "immutable";
 import { termToString } from 'rdf-string';
 import { Algebra } from "sparqlalgebrajs";
+import { SimpleEvaluator } from 'sparqlee';
 
 import {
   ActorQueryOperation,
@@ -42,10 +43,10 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
       .map((variable) => termToString(variable))
       .concat(aggregates.map((agg) => termToString(agg.variable)));
 
-    // TODO: Can be empty (test behaviour) when implicit group by
-    // either it's in pattern.variables or it is not
     const patternVariables = Set(pattern.variables.map((v) => termToString(v)));
     const aggregateVariables = Set(aggregates.map(({ variable }) => termToString(variable)));
+    const aggregateExpressionEvaluators: Map<string, SimpleEvaluator> =
+      Map(aggregates.map(({ variable, expression }) => [termToString(variable), new SimpleEvaluator(expression)]));
 
     let groups: Map<Bindings, Map<string, BaseAggregator<any>>> = Map();
 
@@ -63,10 +64,11 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
       }
 
       // For all the aggregate variables we update the corresponding aggregator
-      // with the corresponding from the bindings
+      // with the corresponding result expression
       const aggregators = groups.get(grouper);
       aggregateVariables.forEach((variable) => {
-        aggregators.get(variable).put(bindings.get(variable));
+        const exprResult = aggregateExpressionEvaluators.get(variable).evaluate(bindings);
+        aggregators.get(variable).put(exprResult);
       });
     });
 
@@ -80,6 +82,7 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
         const rows: Bindings[] = groups.map((aggregators, groupBindings) => {
           // Collect aggregator bindings
           const aggBindings = aggregators.map((aggregator) => aggregator.result());
+          // .filter((term) => !!term); // Filter undefined values (TODO ask wanted behaviour)
 
           // Merge grouping bindings and aggregator bindings
           return groupBindings.merge(aggBindings);
@@ -89,10 +92,7 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
         const metadata = output.metadata;
         resolve({ type: 'bindings', bindingsStream, metadata, variables });
       });
-
-      output.bindingsStream.on('error', (err) => {
-        reject(err);
-      });
+      // TODO: What to do with errors?
     });
   }
 
