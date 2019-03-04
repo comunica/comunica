@@ -1,7 +1,7 @@
-import {ISearchForms} from "@comunica/actor-rdf-metadata-extract-hydra-controls";
+import {ISearchForm, ISearchForms} from "@comunica/actor-rdf-metadata-extract-hydra-controls";
+import {KEY_CONTEXT_SOURCE} from "@comunica/bus-rdf-resolve-quad-pattern";
 import {ActorRdfResolveHypermedia, IActionRdfResolveHypermedia,
   IActorRdfResolveHypermediaOutput} from "@comunica/bus-rdf-resolve-hypermedia";
-import {KEY_CONTEXT_SOURCE} from "@comunica/bus-rdf-resolve-quad-pattern";
 import {ActionContext, IActorArgs, IActorTest} from "@comunica/core";
 
 /**
@@ -14,6 +14,7 @@ implements IActorRdfResolveHypermediaQpfArgs {
   public readonly predicateUri: string;
   public readonly objectUri: string;
   public readonly graphUri?: string;
+  private searchForm: ISearchForm;
 
   constructor(args: IActorRdfResolveHypermediaQpfArgs) {
     super(args);
@@ -29,7 +30,26 @@ implements IActorRdfResolveHypermediaQpfArgs {
       throw new Error(`${this.name} requires metadata and searchForms to work on.`);
     }
 
-    return true;
+    // Find a quad pattern or triple pattern search form
+    const searchForms: ISearchForms = action.metadata.searchForms;
+    
+    // TODO: in the future, a query-based search form getter should be used.
+    for (this.searchForm of searchForms.values) {
+      if ((this.graphUri
+        && this.subjectUri in this.searchForm.mappings
+        && this.predicateUri in this.searchForm.mappings
+        && this.objectUri in this.searchForm.mappings
+        && this.graphUri in this.searchForm.mappings
+        && Object.keys(this.searchForm.mappings).length === 4) || 
+        (this.subjectUri in this.searchForm.mappings
+        && this.predicateUri in this.searchForm.mappings
+        && this.objectUri in this.searchForm.mappings
+        && Object.keys(this.searchForm.mappings).length === 3)) {
+        return true;
+      };
+    }
+
+    throw new Error('No valid Hydra search form was found for quad pattern or triple pattern queries.');
   }
 
   /**
@@ -39,29 +59,7 @@ implements IActorRdfResolveHypermediaQpfArgs {
    */
   public async run(action: IActionRdfResolveHypermedia):
   Promise<IActorRdfResolveHypermediaOutput> {
-
-    // Find a quad pattern or triple pattern search form
-    const searchForms: ISearchForms = action.metadata.searchForms;
-
-    // TODO: in the future, a query-based search form getter should be used.
-    for (const searchForm of searchForms.values) {
-      if (this.graphUri
-        && this.subjectUri in searchForm.mappings
-        && this.predicateUri in searchForm.mappings
-        && this.objectUri in searchForm.mappings
-        && this.graphUri in searchForm.mappings
-        && Object.keys(searchForm.mappings).length === 4) {
-        return { searchForm };
-      }
-      if (this.subjectUri in searchForm.mappings
-        && this.predicateUri in searchForm.mappings
-        && this.objectUri in searchForm.mappings
-        && Object.keys(searchForm.mappings).length === 3) {
-        return { searchForm };
-      }
-    }
-
-    throw new Error('No valid Hydra search form was found for quad pattern or triple pattern queries.');
+    return {searchForm: this.searchForm};
   }
 }
 

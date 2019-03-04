@@ -87,13 +87,25 @@ describe('ActorRdfResolveHypermediaQpf', () => {
         new Error(`actor requires metadata and searchForms to work on.`),
       );
     });
+
+    it('should not test when no URIs are defined in the searchForms of the metadata', () => {
+      const action = {metadata: {searchForms: {values: [ {
+        mappings: {},
+      } ] }}, context: ActionContext
+        ({ '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'hypermedia', value: 'source' }}),
+      };
+      return expect(actor.test(action)).rejects.toEqual(
+        new Error('No valid Hydra search form was found for quad pattern or triple pattern queries.'));
+    });
   });
 
   describe('#run', () => {
     it('should return a searchForm', () => {
-      return expect(actor.run({metadata, context: ActionContext
+      const action = {metadata, context: ActionContext
         ({ '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'hypermedia', value: 'source' }}),
-      })).resolves.toEqual({ searchForm: metadata.searchForms.values[0] });
+      };
+      actor.test(action);
+      return expect(actor.run(action)).resolves.toEqual({ searchForm: metadata.searchForms.values[0] });
     });
 
     it('should return a searchForm withouth graph', () => {
@@ -110,18 +122,12 @@ describe('ActorRdfResolveHypermediaQpf', () => {
           },
         ]},
       };
-      return expect(actor.run({metadata, context: ActionContext
+      const action = {metadata, context: ActionContext
         ({ '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'hypermedia', value: 'source' }}),
-      })).resolves.toEqual({ searchForm: metadata.searchForms.values[0] });
+      };
+      actor.test(action);
+      return expect(actor.run(action)).resolves.toEqual({ searchForm: metadata.searchForms.values[0] });
     });
 
-    it('should not run when no URIs are defined in the searchForms of the metadata', () => {
-      return expect(actor.run({metadata: {searchForms: {values: [ {
-        mappings: {},
-      } ] }}, context: ActionContext
-        ({ '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'hypermedia', value: 'source' }}),
-      })).rejects.toEqual(
-        new Error('No valid Hydra search form was found for quad pattern or triple pattern queries.'));
-    });
   });
 });
