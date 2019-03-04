@@ -61,7 +61,7 @@ Options:
   -c            use the given JSON configuration file (e.g., config.json)
   -t            the MIME type of the output (e.g., application/json)
   -i            the query input format (e.g., graphql, defaults to sparql)
-  -l            sets the log level (e.g., debug, info, warn, ... defaults to error)
+  -l            sets the log level (e.g., debug, info, warn, ... defaults to warn)
   -d            sets a datetime for querying Memento-enabled archives'
   --help        print this help message
   --listformats prints the supported MIME types

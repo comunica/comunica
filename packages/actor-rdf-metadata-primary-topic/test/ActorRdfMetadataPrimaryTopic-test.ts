@@ -154,5 +154,20 @@ describe('ActorRdfMetadataPrimaryTopic', () => {
           });
         });
     });
+
+    it('should run and not re-attach listeners after calling .read again', () => {
+      return actor.run({ pageUrl: 'o1?param', quads: inputDifferent })
+        .then(async (output) => {
+          const data: RDF.Quad[] = await arrayifyStream(output.data);
+          expect(data).toEqual([
+            quad('s1', 'p1', 'o1', ''),
+            quad('s3', 'p3', 'o3', ''),
+            quad('g1', 'http://xmlns.com/foaf/0.1/primaryTopic', 'o2', 'g1'),
+            quad('o2', 'http://rdfs.org/ns/void#subset', 'o2?param', 'g1'),
+            quad('s2', 'p2', 'o2', 'g1'),
+          ]);
+          expect((<any> output.data)._read()).toBeFalsy();
+        });
+    });
   });
 });

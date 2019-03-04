@@ -1,6 +1,22 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v1.6.3"></a>
+## [v1.6.3](https://github.com/comunica/comunica/compare/v1.6.2...v1.6.3) - 2019-02-27
+
+### Changed
+* [Fix performance issue due to many Error instantiations](https://github.com/comunica/comunica/commit/a185d795520afc1aa829855da423aba0680e6dbd)
+* [Disable empty sources check in federated actor](https://github.com/comunica/comunica/commit/d0dfb35091c176f4d9dd5bd2b3f58ae876221b69)
+
+<a name="v1.6.2"></a>
+## [v1.6.2](https://github.com/comunica/comunica/compare/v1.6.1...v1.6.2) - 2019-02-26
+
+### Added
+* [Add option to invalidate cache before each query exec](https://github.com/comunica/comunica/commit/5cec61c6b5ca51e095d65baac40933b9baf4cfb5)
+
+### Changed
+* [Improve help message of HTTP tool](https://github.com/comunica/comunica/commit/44c7f8f8c10d438f0d3d206aa362a6acdb9484ea)
+
 <a name="v1.6.1"></a>
 ## [v1.6.1](https://github.com/comunica/comunica/compare/v1.6.0...v1.6.1) - 2019-02-25
 

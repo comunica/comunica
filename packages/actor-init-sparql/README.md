@@ -68,9 +68,9 @@ node bin/query.js http://fragments.dbpedia.org/2015-10/en "CONSTRUCT WHERE { ?s 
 
 Use `bin/query-dynamic.js` when running dynamically inside the Comunica monorepo development environment.
 
-### Usage from HTTP
+### Usage as a SPARQL endpoint
 
-Start a webservice exposing http://fragments.dbpedia.org/2015-10/en via the SPARQL protocol.
+Start a webservice exposing http://fragments.dbpedia.org/2015-10/en via the SPARQL protocol, i.e., a _SPARQL endpoint_.
 
 ```bash
 $ comunica-sparql-http "{ \"sources\": [{ \"type\": \"entrypoint\", \"value\" : \"http://fragments.dbpedia.org/2015/en\" }]}""
@@ -82,7 +82,7 @@ Show the help with all options:
 $ comunica-sparql-http --help
 ```
 
-The HTTP service can only be started dynamically.
+The SPARQL endpoint can only be started dynamically.
 An alternative config file can be passed via the `COMUNICA_CONFIG` environment variable.
 
 Use `bin/http.js` when running in the Comunica monorepo development environment.

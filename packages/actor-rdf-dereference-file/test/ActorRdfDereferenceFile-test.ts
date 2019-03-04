@@ -113,6 +113,19 @@ describe('ActorRdfDereferenceFile', () => {
         });
     });
 
+    it('should not find a mediatype if an unknown extension is provided', () => {
+      const p = path.join(__dirname, 'dummy.unknown');
+      const data = fs.readFileSync(p);
+      return expect(actor.run({ url: p })).resolves.toMatchObject(
+        {
+          pageUrl: p,
+          quads: {
+            data,
+          },
+          triples: false,
+        });
+    });
+
     it('should not find a mediatype if there is no file extension', () => {
       const p = path.join(__dirname, 'dummy');
       const data = fs.readFileSync(p);
