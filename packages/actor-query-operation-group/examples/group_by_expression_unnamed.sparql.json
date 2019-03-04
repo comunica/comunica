@@ -3,28 +3,48 @@
     "input": {
         "type": "group",
         "input": {
-            "type": "bgp",
-            "patterns": [
-                {
-                    "subject": {
-                        "value": "x"
-                    },
-                    "predicate": {
-                        "value": "y"
-                    },
-                    "object": {
-                        "value": "z"
-                    },
-                    "graph": {
-                        "value": ""
-                    },
-                    "type": "pattern"
-                }
-            ]
+            "type": "extend",
+            "input": {
+                "type": "bgp",
+                "patterns": [
+                    {
+                        "subject": {
+                            "value": "x"
+                        },
+                        "predicate": {
+                            "value": "y"
+                        },
+                        "object": {
+                            "value": "z"
+                        },
+                        "graph": {
+                            "value": ""
+                        },
+                        "type": "pattern"
+                    }
+                ]
+            },
+            "variable": {
+                "value": "var0"
+            },
+            "expression": {
+                "type": "expression",
+                "expressionType": "operator",
+                "operator": "str",
+                "args": [
+                    {
+                        "type": "expression",
+                        "expressionType": "term",
+                        "term": {
+                            "value": "x"
+                        }
+                    }
+                ]
+            }
         },
         "variables": [
             {
-                "value": ""
+                "value": "var0"
             }
         ],
         "aggregates": []
