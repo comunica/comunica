@@ -1,5 +1,5 @@
 // tslint:disable:object-literal-sort-keys
-import { literal, variable } from "@rdfjs/data-model";
+import { literal, namedNode, variable } from "@rdfjs/data-model";
 import { ArrayIterator } from "asynciterator";
 import { Variable } from "rdf-js";
 import { Algebra } from 'sparqlalgebrajs';
@@ -55,10 +55,6 @@ interface ICaseOutput {
   actor: ActorQueryOperationGroup; bus: any; mediatorQueryOperation: any; op: IActionQueryOperation;
 }
 
-function int(value: string) {
-  return literal(value, "http://www.w3.org/2001/XMLSchema#integer");
-}
-
 function constructCase(
   { inputBindings, inputVariables = [], groupVariables = [], aggregates = [], inputOp }: ICaseOptions)
   : ICaseOutput {
@@ -66,7 +62,7 @@ function constructCase(
 
   // Construct mediator
   let mediatorQueryOperation: any;
-  if (!inputBindings) {
+  if (inputBindings === undefined) {
     mediatorQueryOperation = getDefaultMediatorQueryOperation();
   } else {
     mediatorQueryOperation = {
@@ -90,6 +86,18 @@ function constructCase(
 
   const actor = new ActorQueryOperationGroup({ name: 'actor', bus, mediatorQueryOperation });
   return { actor, bus, mediatorQueryOperation, op };
+}
+
+function int(value: string) {
+  return literal(value, "http://www.w3.org/2001/XMLSchema#integer");
+}
+
+function float(value: string) {
+  return literal(value, "http://www.w3.org/2001/XMLSchema#float");
+}
+
+function decimal(value: string) {
+  return literal(value, "http://www.w3.org/2001/XMLSchema#decimal");
 }
 
 describe('ActorQueryOperationGroup', () => {
@@ -344,32 +352,309 @@ describe('ActorQueryOperationGroup', () => {
       expect(1).toMatchObject(0);
     });
 
-    it.skip('should be able to count', async () => {
-      expect(1).toMatchObject(0);
+    const aggregateOn = (aggregator: string, inVar: string, outVar: string): Algebra.BoundAggregate => {
+      return {
+        type: "expression",
+        expressionType: "aggregate",
+        aggregator,
+        expression: {
+          type: "expression",
+          expressionType: "term",
+          term: variable(inVar),
+        },
+        distinct: false,
+        variable: variable(outVar),
+      };
+    };
+
+    it('should be able to count', async () => {
+      const { op, actor } = constructCase({
+        inputBindings: [
+          Bindings({ '?x': int("1") }),
+          Bindings({ '?x': int("2") }),
+          Bindings({ '?x': int("3") }),
+          Bindings({ '?x': int("4") }),
+        ],
+        groupVariables: [],
+        inputVariables: ['x', 'y', 'z'],
+        inputOp: simpleXYZinput,
+        aggregates: [aggregateOn('count', 'x', 'c')],
+      });
+
+      const output = await actor.run(op) as any;
+      expect(await arrayifyStream(output.bindingsStream)).toMatchObject([
+        Bindings({ '?c': int('4') }),
+      ]);
+      expect(output.variables).toMatchObject(['?c']);
     });
 
-    it.skip('should be able to sum', async () => {
-      expect(1).toMatchObject(0);
+    it('should be able to sum', async () => {
+      const { op, actor } = constructCase({
+        inputBindings: [
+          Bindings({ '?x': int("1") }),
+          Bindings({ '?x': int("2") }),
+          Bindings({ '?x': int("3") }),
+          Bindings({ '?x': int("4") }),
+        ],
+        groupVariables: [],
+        inputVariables: ['x', 'y', 'z'],
+        inputOp: simpleXYZinput,
+        aggregates: [aggregateOn('sum', 'x', 's')],
+      });
+
+      const output = await actor.run(op) as any;
+      expect(await arrayifyStream(output.bindingsStream)).toMatchObject([
+        Bindings({ '?s': int('10') }),
+      ]);
+      expect(output.variables).toMatchObject(['?s']);
     });
 
-    it.skip('should be able to min', async () => {
-      expect(1).toMatchObject(0);
+    it('should sum with regard to type promotion', async () => {
+      const { op, actor } = constructCase({
+        inputBindings: [
+          Bindings({ '?x': literal("1", namedNode("http://www.w3.org/2001/XMLSchema#byte")) }),
+          Bindings({ '?x': int("2") }),
+          Bindings({ '?x': float("3") }),
+          Bindings({ '?x': int("4") }),
+        ],
+        groupVariables: [],
+        inputVariables: ['x', 'y', 'z'],
+        inputOp: simpleXYZinput,
+        aggregates: [aggregateOn('sum', 'x', 's')],
+      });
+
+      const output = await actor.run(op) as any;
+      expect(await arrayifyStream(output.bindingsStream)).toMatchObject([
+        Bindings({ '?s': float('10') }),
+      ]);
+      expect(output.variables).toMatchObject(['?s']);
     });
 
-    it.skip('should be able to max', async () => {
-      expect(1).toMatchObject(0);
+    // TODO empty set
+    it('should be able to min', async () => {
+      const { op, actor } = constructCase({
+        inputBindings: [
+          Bindings({ '?x': int("1") }),
+          Bindings({ '?x': int("2") }),
+          Bindings({ '?x': int("3") }),
+          Bindings({ '?x': int("4") }),
+        ],
+        groupVariables: [],
+        inputVariables: ['x', 'y', 'z'],
+        inputOp: simpleXYZinput,
+        aggregates: [aggregateOn('min', 'x', 'm')],
+      });
+
+      const output = await actor.run(op) as any;
+      expect(await arrayifyStream(output.bindingsStream)).toMatchObject([
+        Bindings({ '?m': int('1') }),
+      ]);
+      expect(output.variables).toMatchObject(['?m']);
     });
 
-    it.skip('should be able to avg', async () => {
-      expect(1).toMatchObject(0);
+    it('should be able to min with respect to the empty set', async () => {
+      const { op, actor } = constructCase({
+        inputBindings: [],
+        groupVariables: [],
+        inputVariables: ['x', 'y', 'z'],
+        inputOp: simpleXYZinput,
+        aggregates: [aggregateOn('min', 'x', 'm')],
+      });
+
+      const output = await actor.run(op) as any;
+      expect(await arrayifyStream(output.bindingsStream)).toMatchObject([
+        Bindings({ '?m': undefined }),
+      ]);
+      expect(output.variables).toMatchObject(['?m']);
     });
 
-    it.skip('should be able to sample', async () => {
-      expect(1).toMatchObject(0);
+    it('should be able to max', async () => {
+      const { op, actor } = constructCase({
+        inputBindings: [
+          Bindings({ '?x': int("1") }),
+          Bindings({ '?x': int("2") }),
+          Bindings({ '?x': int("3") }),
+          Bindings({ '?x': int("4") }),
+        ],
+        groupVariables: [],
+        inputVariables: ['x', 'y', 'z'],
+        inputOp: simpleXYZinput,
+        aggregates: [aggregateOn('max', 'x', 'm')],
+      });
+
+      const output = await actor.run(op) as any;
+      expect(await arrayifyStream(output.bindingsStream)).toMatchObject([
+        Bindings({ '?m': int('4') }),
+      ]);
+      expect(output.variables).toMatchObject(['?m']);
     });
 
-    it.skip('should be able to groupConcat', async () => {
-      expect(1).toMatchObject(0);
+    it('should be able to max with respect to the empty set', async () => {
+      const { op, actor } = constructCase({
+        inputBindings: [],
+        groupVariables: [],
+        inputVariables: ['x', 'y', 'z'],
+        inputOp: simpleXYZinput,
+        aggregates: [aggregateOn('max', 'x', 'm')],
+      });
+
+      const output = await actor.run(op) as any;
+      expect(await arrayifyStream(output.bindingsStream)).toMatchObject([
+        Bindings({ '?m': undefined }),
+      ]);
+      expect(output.variables).toMatchObject(['?m']);
+    });
+
+    it('should be able to avg', async () => {
+      const { op, actor } = constructCase({
+        inputBindings: [
+          Bindings({ '?x': float("1") }),
+          Bindings({ '?x': float("2") }),
+          Bindings({ '?x': float("3") }),
+          Bindings({ '?x': float("4") }),
+        ],
+        groupVariables: [],
+        inputVariables: ['x', 'y', 'z'],
+        inputOp: simpleXYZinput,
+        aggregates: [aggregateOn('avg', 'x', 'a')],
+      });
+
+      const output = await actor.run(op) as any;
+      expect(await arrayifyStream(output.bindingsStream)).toMatchObject([
+        Bindings({ '?a': float('2.5') }),
+      ]);
+      expect(output.variables).toMatchObject(['?a']);
+    });
+
+    it('should be able to avg with respect to type preservation', async () => {
+      const { op, actor } = constructCase({
+        inputBindings: [
+          Bindings({ '?x': int("1") }),
+          Bindings({ '?x': int("2") }),
+          Bindings({ '?x': int("3") }),
+          Bindings({ '?x': int("4") }),
+        ],
+        groupVariables: [],
+        inputVariables: ['x', 'y', 'z'],
+        inputOp: simpleXYZinput,
+        aggregates: [aggregateOn('avg', 'x', 'a')],
+      });
+
+      const output = await actor.run(op) as any;
+      expect(await arrayifyStream(output.bindingsStream)).toMatchObject([
+        Bindings({ '?a': decimal('2.5') }),
+      ]);
+      expect(output.variables).toMatchObject(['?a']);
+    });
+
+    it('should be able to avg with respect to empty input', async () => {
+      const { op, actor } = constructCase({
+        inputBindings: [],
+        groupVariables: [],
+        inputVariables: ['x', 'y', 'z'],
+        inputOp: simpleXYZinput,
+        aggregates: [aggregateOn('avg', 'x', 'a')],
+      });
+
+      const output = await actor.run(op) as any;
+      expect(await arrayifyStream(output.bindingsStream)).toMatchObject([
+        Bindings({ '?a': int("0") }),
+      ]);
+      expect(output.variables).toMatchObject(['?a']);
+    });
+
+    it('should be able to sample', async () => {
+      const { op, actor } = constructCase({
+        inputBindings: [
+          Bindings({ '?x': int("1") }),
+          Bindings({ '?x': int("2") }),
+          Bindings({ '?x': int("3") }),
+          Bindings({ '?x': int("4") }),
+        ],
+        groupVariables: [],
+        inputVariables: ['x', 'y', 'z'],
+        inputOp: simpleXYZinput,
+        aggregates: [aggregateOn('sample', 'x', 's')],
+      });
+
+      const output = await actor.run(op) as any;
+      expect((await arrayifyStream(output.bindingsStream))[0]).toBeTruthy();
+      expect(output.variables).toMatchObject(['?s']);
+    });
+
+    it('should be able to sample with respect to the empty input', async () => {
+      const { op, actor } = constructCase({
+        inputBindings: [],
+        groupVariables: [],
+        inputVariables: ['x', 'y', 'z'],
+        inputOp: simpleXYZinput,
+        aggregates: [aggregateOn('sample', 'x', 's')],
+      });
+
+      const output = await actor.run(op) as any;
+      expect((await arrayifyStream(output.bindingsStream))).toMatchObject([
+        Bindings({ '?s': undefined }),
+      ]);
+      expect(output.variables).toMatchObject(['?s']);
+    });
+
+    it('should be able to groupConcat', async () => {
+      const { op, actor } = constructCase({
+        inputBindings: [
+          Bindings({ '?x': int("1") }),
+          Bindings({ '?x': int("2") }),
+          Bindings({ '?x': int("3") }),
+          Bindings({ '?x': int("4") }),
+        ],
+        groupVariables: [],
+        inputVariables: ['x', 'y', 'z'],
+        inputOp: simpleXYZinput,
+        aggregates: [aggregateOn('groupConcat', 'x', 'g')],
+      });
+
+      const output = await actor.run(op) as any;
+      expect(await arrayifyStream(output.bindingsStream)).toMatchObject([
+        Bindings({ '?g': literal('1 2 3 4') }),
+      ]);
+      expect(output.variables).toMatchObject(['?g']);
+    });
+
+    it('should be able to groupConcat with respect to the empty input', async () => {
+      const { op, actor } = constructCase({
+        inputBindings: [],
+        groupVariables: [],
+        inputVariables: ['x', 'y', 'z'],
+        inputOp: simpleXYZinput,
+        aggregates: [aggregateOn('groupConcat', 'x', 'g')],
+      });
+
+      const output = await actor.run(op) as any;
+      expect(await arrayifyStream(output.bindingsStream)).toMatchObject([
+        Bindings({ '?g': literal('') }),
+      ]);
+      expect(output.variables).toMatchObject(['?g']);
+    });
+
+    it('should be able to groupConcat with respect to a custom separator', async () => {
+      const { op, actor } = constructCase({
+        inputBindings: [
+          Bindings({ '?x': int("1") }),
+          Bindings({ '?x': int("2") }),
+          Bindings({ '?x': int("3") }),
+          Bindings({ '?x': int("4") }),
+        ],
+        groupVariables: [],
+        inputVariables: ['x', 'y', 'z'],
+        inputOp: simpleXYZinput,
+        aggregates: [aggregateOn('groupConcat', 'x', 'g')],
+      });
+      op.operation.aggregates[0].separator = ';';
+
+      const output = await actor.run(op) as any;
+      expect(await arrayifyStream(output.bindingsStream)).toMatchObject([
+        Bindings({ '?g': literal('1;2;3;4') }),
+      ]);
+      expect(output.variables).toMatchObject(['?g']);
     });
   });
 });

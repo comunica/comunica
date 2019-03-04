@@ -6,16 +6,24 @@ import { Set } from 'immutable';
 import * as RDF from 'rdf-js';
 import { Algebra } from 'sparqlalgebrajs';
 
-export function createAggregator(expr: Algebra.BoundAggregate): BaseAggregator<any> {
-  const aggregator = expr.aggregator as Aggregator;
-  return new aggregators[aggregator](expr);
-}
+// export function createAggregator(expr: Algebra.BoundAggregate): BaseAggregator<any> {
+//   const aggregator = expr.aggregator as Aggregator;
+//   return new aggregators[aggregator](expr);
+// }
 
 export abstract class BaseAggregator<State> {
   protected state: State;
+  protected distinct: boolean;
+  protected separator: string;
 
   constructor(expr: Algebra.BoundAggregate) {
     this.state = this.init();
+    this.distinct = expr.distinct;
+    this.separator = expr.separator || " ";
+  }
+
+  public static emptyValue(): RDF.Term {
+    return undefined;
   }
 
   public abstract init(): State;
@@ -34,10 +42,9 @@ export abstract class BaseAggregator<State> {
   }
 
   protected abstract _put(term: RDF.Term): void;
-
 }
 
-enum Aggregator {
+export enum Aggregator {
   COUNT = 'count',
   SUM = 'sum',
   MIN = 'min',
@@ -61,109 +68,140 @@ class Count extends BaseAggregator<number> {
   }
 }
 
-// TODO: Type preservation of numeric type
-class Sum extends BaseAggregator<number> {
-  public init(): number {
-    return 0;
+class Sum extends BaseAggregator<{ sum: number, type: string }> {
+
+  public init(): { sum: number, type: string } {
+    return { sum: 0, type: "http://www.w3.org/2001/XMLSchema#integer" };
   }
 
   public result(): RDF.Term {
-    return float(this.state);
+    return RDFDM.literal(this.state.sum.toString(), this.state.type);
   }
 
   protected _put(term: RDF.Term): void {
     const value = extractNumericValueOrError(term);
-    this.state += value;
+    this.state.sum += value;
+    this.state.type = (this.state.type === (term as RDF.Literal).datatype.value)
+      ? this.state.type
+      : promote(this.state.type, (term as RDF.Literal).datatype.value);
   }
 }
 
-// // TODO: Type preservation
-// const min: IAggregator<[number, number]> = {
-//   init(): [number, number] { return [Infinity, 0]; },
-//   iter([minimum, counter]: [number, number], term: RDF.Term): [number, number] {
-//     const value = extractNumericValueOrError(term);
-//     return [Math.min(minimum, value), counter + 1];
-//   },
-//   result([minimum, counter]: [number, number]): RDF.Term {
-//     if (counter === 0) {
-//       throw new Error("Aggregate on empty group");
-//     }
-//     return float(minimum);
-//   },
-// };
-
-class Min extends BaseAggregator<number> {
-  public init(): number {
-    throw new Error("Method not implemented.");
-  } public _put(term: RDF.Term): void {
-    throw new Error("Method not implemented.");
+class Min extends BaseAggregator<{ minNum: number, minTerm: RDF.Term }> {
+  public init(): { minNum: number, minTerm: RDF.Term } {
+    return { minNum: Infinity, minTerm: undefined };
   }
+
+  public _put(term: RDF.Term): void {
+    const value = extractNumericValueOrError(term);
+    if (value <= this.state.minNum) {
+      this.state.minNum = value;
+      this.state.minTerm = term;
+    }
+  }
+
   public result(): RDF.Term {
-    throw new Error("Method not implemented.");
+    if (this.state.minTerm === undefined) {
+      throw new Error("MIN on empty group");
+    }
+    return this.state.minTerm;
   }
 }
 
-// // TODO: Type preservation
-// const max: IAggregator<[number, number]> = {
-//   init(): [number, number] { return [-Infinity, 0]; },
-//   iter([minimum, counter]: [number, number], term: RDF.Term): [number, number] {
-//     const value = extractNumericValueOrError(term);
-//     return [Math.max(minimum, value), counter + 1];
-//   },
-//   result([minimum, counter]: [number, number]): RDF.Term {
-//     if (counter === 0) {
-//       throw new Error("Aggregate on empty group");
-//     }
-//     return float(minimum);
-//   },
-// };
-class Max extends BaseAggregator<number> {
-  public init(): number {
-    throw new Error("Method not implemented.");
-  } public _put(term: RDF.Term): void {
-    throw new Error("Method not implemented.");
+class Max extends BaseAggregator<{ maxNum: number, maxTerm: RDF.Term }> {
+  public init(): { maxNum: number, maxTerm: RDF.Term } {
+    return { maxNum: -Infinity, maxTerm: undefined };
   }
+
+  public _put(term: RDF.Term): void {
+    const value = extractNumericValueOrError(term);
+    if (value >= this.state.maxNum) {
+      this.state.maxNum = value;
+      this.state.maxTerm = term;
+    }
+  }
+
   public result(): RDF.Term {
-    throw new Error("Method not implemented.");
+    // Remove this, we should always have 1 result
+    if (this.state.maxTerm === undefined) {
+      throw new Error("MAX on empty group");
+    }
+    return this.state.maxTerm;
   }
 }
 
-class Average extends BaseAggregator<number> {
-  public init(): number {
-    throw new Error("Method not implemented.");
-  } public _put(term: RDF.Term): void {
-    throw new Error("Method not implemented.");
+class Average extends BaseAggregator<{ sum: number, sumType: string, count: number }> {
+  public static emptyValue() {
+    return int(0);
   }
+
+  public init(): { sum: number, sumType: string, count: number } {
+    return { sum: 0, sumType: "http://www.w3.org/2001/XMLSchema#integer", count: 0 };
+  }
+
+  public _put(term: RDF.Term): void {
+    const value = extractNumericValueOrError(term);
+    this.state.sum += value;
+    this.state.count += 1;
+    this.state.sumType = (this.state.sumType === (term as RDF.Literal).datatype.value)
+      ? this.state.sumType
+      : promote(this.state.sumType, (term as RDF.Literal).datatype.value);
+  }
+
   public result(): RDF.Term {
-    throw new Error("Method not implemented.");
+    if (this.state.count === 0) {
+      return int(0);
+    } else {
+      const result = this.state.sum / this.state.count;
+      return this.state.sumType === 'http://www.w3.org/2001/XMLSchema#integer'
+        ? decimal(result)
+        : float(result);
+    }
   }
+
 }
 
 class GroupConcat extends BaseAggregator<string> {
+  public static emptyValue() {
+    return RDFDM.literal("");
+  }
+
   public init(): string {
-    throw new Error("Method not implemented.");
-  } public _put(term: RDF.Term): void {
-    throw new Error("Method not implemented.");
+    return "";
   }
+
+  public _put(term: RDF.Term): void {
+    this.state += term.value + this.separator;
+  }
+
   public result(): RDF.Term {
-    throw new Error("Method not implemented.");
+    return RDFDM.literal(this.state.slice(0, -this.separator.length));
   }
 }
 
-class Sample extends BaseAggregator<RDF.Term> {
+class Sample extends BaseAggregator<RDF.Term | undefined> {
   public init(): RDF.Term {
-    throw new Error("Method not implemented.");
-  } public _put(term: RDF.Term): void {
-    throw new Error("Method not implemented.");
+    return undefined;
   }
+
+  public _put(term: RDF.Term): void {
+    this.state = term;
+  }
+
   public result(): RDF.Term {
-    throw new Error("Method not implemented.");
+    if (this.state === undefined) {
+      throw new Error("SAMPLE on empty set");
+    } else {
+      return this.state;
+    }
   }
 }
 
-const aggregators: {
-  [key in Aggregator]: new (expr: Algebra.BoundAggregate) => BaseAggregator<any>
-} = {
+export interface IAggregatorClass {
+  new(expr: Algebra.BoundAggregate): BaseAggregator<any>;
+  emptyValue(): RDF.Term;
+}
+export const aggregatorClasses: Readonly<{ [key in Aggregator]: IAggregatorClass }> = {
   count: Count,
   sum: Sum,
   min: Min,
@@ -173,29 +211,56 @@ const aggregators: {
   sample: Sample,
 };
 
-// enum Aggregators {
-//   COUNT = 'count',
-//   SUM = 'sum',
-//   MIN = 'min',
-//   MAX = 'max',
-//   // AVG = 'avg',
-//   // GROUP_CONCAT = 'groupConcat',
-//   // SAMPLE = 'sample',
-// }
-
-// export const aggregators: { [key in Aggregators]: IAggregator<any> } = {
-//   count,
-//   sum,
-//   min,
-//   max,
-// };
-
 function int(value: number): RDF.Literal {
   return RDFDM.literal(value.toString(), RDFDM.namedNode('http://www.w3.org/2001/XMLSchema#integer'));
 }
 
 function float(value: number): RDF.Literal {
-  return RDFDM.literal(value.toString(), RDFDM.namedNode('http://www.w3.org/2001/XMLSchema#integer'));
+  return RDFDM.literal(value.toString(), RDFDM.namedNode('http://www.w3.org/2001/XMLSchema#float'));
+}
+
+function decimal(value: number): RDF.Literal {
+  return RDFDM.literal(value.toString(), RDFDM.namedNode('http://www.w3.org/2001/XMLSchema#decimal'));
+}
+
+// https://www.w3.org/TR/xpath-31/#promotion
+const promoTree: { [key: string]: { [key: string]: string } } = {
+  'http://www.w3.org/2001/XMLSchema#integer': {
+    'http://www.w3.org/2001/XMLSchema#integer': 'http://www.w3.org/2001/XMLSchema#integer',
+    'http://www.w3.org/2001/XMLSchema#float': 'http://www.w3.org/2001/XMLSchema#float',
+    'http://www.w3.org/2001/XMLSchema#decimal': 'http://www.w3.org/2001/XMLSchema#decimal',
+    'http://www.w3.org/2001/XMLSchema#double': 'http://www.w3.org/2001/XMLSchema#double',
+  },
+  'http://www.w3.org/2001/XMLSchema#float': {
+    'http://www.w3.org/2001/XMLSchema#integer': 'http://www.w3.org/2001/XMLSchema#float',
+    'http://www.w3.org/2001/XMLSchema#float': 'http://www.w3.org/2001/XMLSchema#float',
+    'http://www.w3.org/2001/XMLSchema#decimal': 'http://www.w3.org/2001/XMLSchema#float',
+    'http://www.w3.org/2001/XMLSchema#double': 'http://www.w3.org/2001/XMLSchema#double',
+  },
+  'http://www.w3.org/2001/XMLSchema#decimal': {
+    'http://www.w3.org/2001/XMLSchema#integer': 'http://www.w3.org/2001/XMLSchema#decimal',
+    'http://www.w3.org/2001/XMLSchema#float': 'http://www.w3.org/2001/XMLSchema#float',
+    'http://www.w3.org/2001/XMLSchema#decimal': 'http://www.w3.org/2001/XMLSchema#decimal',
+    'http://www.w3.org/2001/XMLSchema#double': 'http://www.w3.org/2001/XMLSchema#double',
+  },
+  'http://www.w3.org/2001/XMLSchema#double': {
+    'http://www.w3.org/2001/XMLSchema#integer': 'http://www.w3.org/2001/XMLSchema#double',
+    'http://www.w3.org/2001/XMLSchema#float': 'http://www.w3.org/2001/XMLSchema#double',
+    'http://www.w3.org/2001/XMLSchema#decimal': 'http://www.w3.org/2001/XMLSchema#double',
+    'http://www.w3.org/2001/XMLSchema#double': 'http://www.w3.org/2001/XMLSchema#double',
+  },
+};
+
+function promote(type1: string, type2: string): string {
+  if (derivedIntegerTypes.contains(type1)) {
+    type1 = 'http://www.w3.org/2001/XMLSchema#integer';
+  }
+
+  if (derivedIntegerTypes.contains(type2)) {
+    type2 = 'http://www.w3.org/2001/XMLSchema#integer';
+  }
+
+  return promoTree[type1][type2];
 }
 
 function extractNumericValueOrError(term: RDF.Term): number {
@@ -209,13 +274,14 @@ function extractNumericValueOrError(term: RDF.Term): number {
   return parseFloat(term.value);
 }
 
-const numericTypes = Set([
+const baseNumericTypes = Set([
   'http://www.w3.org/2001/XMLSchema#integer',
   'http://www.w3.org/2001/XMLSchema#decimal',
   'http://www.w3.org/2001/XMLSchema#float',
   'http://www.w3.org/2001/XMLSchema#double',
+]);
 
-  // Derived numeric types
+const derivedIntegerTypes = Set([
   'http://www.w3.org/2001/XMLSchema#nonPositiveInteger',
   'http://www.w3.org/2001/XMLSchema#negativeInteger',
   'http://www.w3.org/2001/XMLSchema#long',
@@ -230,42 +296,4 @@ const numericTypes = Set([
   'http://www.w3.org/2001/XMLSchema#positiveInteger',
 ]);
 
-// /**
-//  * A comunica Aggregate Query Operation Expression Actor.
-//  */
-// export class ActorQueryOperationExpressionAggregate extends ActorQueryOperationExpression<RDF.Term> {
-
-//   constructor(args: IActorQueryOperationExpressionArgs<RDF.Term>) {
-//     super(args, 'aggregate');
-//   }
-
-// public async run(action: IActionQueryOperationExpression): Promise<IActorQueryOperationExpressionOutput<RDF.Term>> {
-//     const aggregateExpression = action.expression as Algebra.AggregateExpression;
-//     const { aggregator, distinct, expression, separator, variable } = aggregateExpression;
-//     const { bindingsStream } = action.operationOutputBindings;
-
-//     const evaluator = new SimpleEvaluator(expression);
-
-//     // TODO: Check if mediatorquery exists;
-
-//     // TODO: Check if exists
-//     const aggregate = aggregators[aggregator as Aggregators];
-
-//     // TODO: Handle distinct
-//     let state = aggregate.init(separator);
-
-//     return new Promise<IActorQueryOperationExpressionOutput<RDF.Term>>(
-//       (resolve, reject) => {
-//         bindingsStream.on("end", () =>
-//           resolve({ result: aggregate.result(state) }));
-
-//         bindingsStream.on("error", (err) => reject(err));
-
-//         bindingsStream.each((bindings: Bindings) => {
-//           const result = evaluator.evaluate(bindings);
-//           state = aggregate.iter(state, result);
-//         });
-//       });
-//   }
-
-// }
+const numericTypes = baseNumericTypes.union(derivedIntegerTypes);

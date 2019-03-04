@@ -12,7 +12,7 @@ import {
   IActorQueryOperationTypedMediatedArgs,
 } from "@comunica/bus-query-operation";
 import { ActionContext, IActorTest } from "@comunica/core";
-import { BaseAggregator, createAggregator } from './Aggregators';
+import { Aggregator, aggregatorClasses, BaseAggregator } from './Aggregators';
 
 /**
  * A comunica Group Query Operation Actor.
@@ -59,7 +59,10 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
       if (!groups.has(grouper)) {
         // Initialize state for all aggregators for new group
         const newAggregators: Map<string, BaseAggregator<any>> = Map(aggregates.map(
-          (aggregate) => [termToString(aggregate.variable), createAggregator(aggregate)]));
+          (aggregate) => {
+            const aggregator = new aggregatorClasses[aggregate.aggregator as Aggregator](aggregate);
+            return [termToString(aggregate.variable), aggregator];
+          }));
         groups = groups.set(grouper, newAggregators);
       }
 
@@ -79,7 +82,7 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
     return new Promise((resolve, reject) => {
       output.bindingsStream.on('end', () => {
         // Collect groups
-        const rows: Bindings[] = groups.map((aggregators, groupBindings) => {
+        let rows: Bindings[] = groups.map((aggregators, groupBindings) => {
           // Collect aggregator bindings
           const aggBindings = aggregators.map((aggregator) => aggregator.result());
           // .filter((term) => !!term); // Filter undefined values (TODO ask wanted behaviour)
@@ -87,6 +90,16 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
           // Merge grouping bindings and aggregator bindings
           return groupBindings.merge(aggBindings);
         }).toArray();
+
+        // Case: No Input
+        // Some aggregators still define an output on the empty input, this is what we must return
+        if (rows.length === 0) {
+          rows = [Map(aggregates.map((aggregate) => {
+            const aggregator = aggregatorClasses[aggregate.aggregator as Aggregator];
+            const value = aggregator.emptyValue();
+            return [termToString(aggregate.variable), value];
+          }))];
+        }
 
         const bindingsStream = new ArrayIterator(rows);
         const metadata = output.metadata;
