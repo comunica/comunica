@@ -60,19 +60,24 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
         // Initialize state for all aggregators for new group
         const newAggregators: Map<string, BaseAggregator<any>> = Map(aggregates.map(
           (aggregate) => {
-            const aggregator = new aggregatorClasses[aggregate.aggregator as Aggregator](aggregate);
+            const aggregatorClass = aggregatorClasses[aggregate.aggregator as Aggregator];
+            const start = aggregateExpressionEvaluators.get(termToString(aggregate.variable)).evaluate(bindings);
+            const aggregator = new aggregatorClass(aggregate, start);
             return [termToString(aggregate.variable), aggregator];
           }));
         groups = groups.set(grouper, newAggregators);
+
+      } else {
+        // Group already exists
+        // For all the aggregate variables we update the corresponding aggregator
+        // with the corresponding result expression
+        const aggregators = groups.get(grouper);
+        aggregateVariables.forEach((variable) => {
+          const exprResult = aggregateExpressionEvaluators.get(variable).evaluate(bindings);
+          aggregators.get(variable).put(exprResult);
+        });
       }
 
-      // For all the aggregate variables we update the corresponding aggregator
-      // with the corresponding result expression
-      const aggregators = groups.get(grouper);
-      aggregateVariables.forEach((variable) => {
-        const exprResult = aggregateExpressionEvaluators.get(variable).evaluate(bindings);
-        aggregators.get(variable).put(exprResult);
-      });
     });
 
     // Phase 2: Collect aggregator results

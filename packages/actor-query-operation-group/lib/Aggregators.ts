@@ -6,27 +6,30 @@ import { Set } from 'immutable';
 import * as RDF from 'rdf-js';
 import { Algebra } from 'sparqlalgebrajs';
 
-// export function createAggregator(expr: Algebra.BoundAggregate): BaseAggregator<any> {
-//   const aggregator = expr.aggregator as Aggregator;
-//   return new aggregators[aggregator](expr);
-// }
-
 export abstract class BaseAggregator<State> {
   protected state: State;
   protected distinct: boolean;
   protected separator: string;
 
-  constructor(expr: Algebra.BoundAggregate) {
-    this.state = this.init();
+  constructor(expr: Algebra.BoundAggregate, start: RDF.Term) {
+    try {
+      this.state = this.init(start);
+    } catch (err) {
+      this.put = () => { return; };
+      this.result = () => undefined;
+    }
     this.distinct = expr.distinct;
     this.separator = expr.separator || " ";
   }
 
   public static emptyValue(): RDF.Term {
+    // We want to this `throw new Error('Aggregate on empty set');`
+    // But aggregate error handling just doesn't bind in case of error
+    // so this is a shortcut to prevent the need to catch in consumers
     return undefined;
   }
 
-  public abstract init(): State;
+  public abstract init(start: RDF.Term): State;
 
   public abstract result(): RDF.Term;
 
@@ -55,8 +58,12 @@ export enum Aggregator {
 }
 
 class Count extends BaseAggregator<number> {
-  public init(): number {
-    return 0;
+  public static emptyValue() {
+    return int(0);
+  }
+
+  public init(start: RDF.Term): number {
+    return 1;
   }
 
   public result(): RDF.Term {
@@ -69,9 +76,13 @@ class Count extends BaseAggregator<number> {
 }
 
 class Sum extends BaseAggregator<{ sum: number, type: string }> {
+  public static emptyValue() {
+    return int(0);
+  }
 
-  public init(): { sum: number, type: string } {
-    return { sum: 0, type: "http://www.w3.org/2001/XMLSchema#integer" };
+  public init(start: RDF.Term): { sum: number, type: string } {
+    const value = extractNumericValueOrError(start);
+    return { sum: value, type: (start as RDF.Literal).datatype.value };
   }
 
   public result(): RDF.Term {
@@ -88,29 +99,28 @@ class Sum extends BaseAggregator<{ sum: number, type: string }> {
 }
 
 class Min extends BaseAggregator<{ minNum: number, minTerm: RDF.Term }> {
-  public init(): { minNum: number, minTerm: RDF.Term } {
-    return { minNum: Infinity, minTerm: undefined };
+  public init(start: RDF.Term): { minNum: number, minTerm: RDF.Term } {
+    const value = extractNumericValueOrError(start);
+    return { minNum: value, minTerm: start };
   }
 
   public _put(term: RDF.Term): void {
     const value = extractNumericValueOrError(term);
-    if (value <= this.state.minNum) {
+    if (value < this.state.minNum) {
       this.state.minNum = value;
       this.state.minTerm = term;
     }
   }
 
   public result(): RDF.Term {
-    if (this.state.minTerm === undefined) {
-      throw new Error("MIN on empty group");
-    }
     return this.state.minTerm;
   }
 }
 
 class Max extends BaseAggregator<{ maxNum: number, maxTerm: RDF.Term }> {
-  public init(): { maxNum: number, maxTerm: RDF.Term } {
-    return { maxNum: -Infinity, maxTerm: undefined };
+  public init(start: RDF.Term): { maxNum: number, maxTerm: RDF.Term } {
+    const value = extractNumericValueOrError(start);
+    return { maxNum: value, maxTerm: start };
   }
 
   public _put(term: RDF.Term): void {
@@ -122,10 +132,6 @@ class Max extends BaseAggregator<{ maxNum: number, maxTerm: RDF.Term }> {
   }
 
   public result(): RDF.Term {
-    // Remove this, we should always have 1 result
-    if (this.state.maxTerm === undefined) {
-      throw new Error("MAX on empty group");
-    }
     return this.state.maxTerm;
   }
 }
@@ -135,8 +141,9 @@ class Average extends BaseAggregator<{ sum: number, sumType: string, count: numb
     return int(0);
   }
 
-  public init(): { sum: number, sumType: string, count: number } {
-    return { sum: 0, sumType: "http://www.w3.org/2001/XMLSchema#integer", count: 0 };
+  public init(start: RDF.Term): { sum: number, sumType: string, count: number } {
+    const value = extractNumericValueOrError(start);
+    return { sum: value, sumType: (start as RDF.Literal).datatype.value, count: 1 };
   }
 
   public _put(term: RDF.Term): void {
@@ -149,14 +156,10 @@ class Average extends BaseAggregator<{ sum: number, sumType: string, count: numb
   }
 
   public result(): RDF.Term {
-    if (this.state.count === 0) {
-      return int(0);
-    } else {
-      const result = this.state.sum / this.state.count;
-      return this.state.sumType === 'http://www.w3.org/2001/XMLSchema#integer'
-        ? decimal(result)
-        : float(result);
-    }
+    const result = this.state.sum / this.state.count;
+    return this.state.sumType === 'http://www.w3.org/2001/XMLSchema#integer'
+      ? decimal(result)
+      : float(result);
   }
 
 }
@@ -166,39 +169,35 @@ class GroupConcat extends BaseAggregator<string> {
     return RDFDM.literal("");
   }
 
-  public init(): string {
-    return "";
+  public init(start: RDF.Term): string {
+    return start.value;
   }
 
   public _put(term: RDF.Term): void {
-    this.state += term.value + this.separator;
+    this.state += this.separator + term.value;
   }
 
   public result(): RDF.Term {
-    return RDFDM.literal(this.state.slice(0, -this.separator.length));
+    return RDFDM.literal(this.state);
   }
 }
 
 class Sample extends BaseAggregator<RDF.Term | undefined> {
-  public init(): RDF.Term {
-    return undefined;
+  public init(start: RDF.Term): RDF.Term {
+    return start;
   }
 
   public _put(term: RDF.Term): void {
-    this.state = term;
+    return; // First value is our sample
   }
 
   public result(): RDF.Term {
-    if (this.state === undefined) {
-      throw new Error("SAMPLE on empty set");
-    } else {
-      return this.state;
-    }
+    return this.state;
   }
 }
 
 export interface IAggregatorClass {
-  new(expr: Algebra.BoundAggregate): BaseAggregator<any>;
+  new(expr: Algebra.BoundAggregate, start: RDF.Term): BaseAggregator<any>;
   emptyValue(): RDF.Term;
 }
 export const aggregatorClasses: Readonly<{ [key in Aggregator]: IAggregatorClass }> = {
