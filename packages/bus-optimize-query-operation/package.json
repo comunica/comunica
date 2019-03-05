@@ -1,6 +1,6 @@
 {
   "name": "@comunica/bus-optimize-query-operation",
-  "version": "1.6.3",
+  "version": "1.6.4",
   "description": "A comunica bus for optimize-query-operation events.",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-optimize-query-operation",
   "lsd:components": "components/components.jsonld",
