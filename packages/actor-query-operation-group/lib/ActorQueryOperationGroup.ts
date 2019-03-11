@@ -34,7 +34,6 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
 
   public async runOperation(pattern: Algebra.Group, context: ActionContext)
     : Promise<IActorQueryOperationOutputBindings> {
-
     // Get result stream for the input query
     const { input, aggregates } = pattern;
     const outputRaw = await this.mediatorQueryOperation.mediate({ operation: input, context });
@@ -54,31 +53,33 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
     let groups: Map<Bindings, Map<string, BaseAggregator<any>>> = Map();
 
     // Phase 1: Consume the stream, identify the groups and populate the aggregate bindings
-    output.bindingsStream.on('data', (bindings: Bindings) => {
-      // Select the bindings on which we group
-      const grouper = bindings.filter((term, variable) => patternVariables.has(variable)).toMap();
+    const phase1 = () => {
+      output.bindingsStream.on('data', (bindings: Bindings) => {
+        // Select the bindings on which we group
+        const grouper = bindings.filter((term, variable) => patternVariables.has(variable)).toMap();
 
-      // First member of groep -> create new group
-      if (!groups.has(grouper)) {
-        // Initialize state for all aggregators for new group
-        const newAggregators: Map<string, BaseAggregator<any>> = Map(aggregates.map(
-          (aggregate) => {
-            const aggregatorClass = aggregatorClasses[aggregate.aggregator as Aggregator];
-            const aggregatorState = new aggregatorClass(aggregate, bindings);
-            return [termToString(aggregate.variable), aggregatorState];
-          }));
-        groups = groups.set(grouper, newAggregators);
+        // First member of groep -> create new group
+        if (!groups.has(grouper)) {
+          // Initialize state for all aggregators for new group
+          const newAggregators: Map<string, BaseAggregator<any>> = Map(aggregates.map(
+            (aggregate) => {
+              const aggregatorClass = aggregatorClasses[aggregate.aggregator as Aggregator];
+              const aggregatorState = new aggregatorClass(aggregate, bindings);
+              return [termToString(aggregate.variable), aggregatorState];
+            }));
+          groups = groups.set(grouper, newAggregators);
 
-      } else {
-        // Group already exists
-        // For all the aggregate variables we update the corresponding aggregator
-        // with the corresponding result expression
-        const aggregators = groups.get(grouper);
-        aggregateVariables.forEach((variable) => {
-          aggregators.get(variable).put(bindings);
-        });
-      }
-    });
+        } else {
+          // Group already exists
+          // For all the aggregate variables we update the corresponding aggregator
+          // with the corresponding result expression
+          const aggregators = groups.get(grouper);
+          aggregateVariables.forEach((variable) => {
+            aggregators.get(variable).put(bindings);
+          });
+        }
+      });
+    };
 
     // Phase 2: Collect aggregator results
     // We can only return when the binding stream ends, when that happens
@@ -86,31 +87,45 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
     // and we merge that with the aggregate bindings for that group
     return new Promise((resolve, reject) => {
       output.bindingsStream.on('end', () => {
-        // Collect groups
-        let rows: Bindings[] = groups.map((aggregators, groupBindings) => {
-          // Collect aggregator bindings
-          const aggBindings = aggregators.map((aggregator) => aggregator.result());
-          // .filter((term) => !!term); // Filter undefined values (TODO ask wanted behaviour)
+        try {
+          // Collect groups
+          // resolve();
+          let rows: Bindings[] = groups.map((aggregators, groupBindings) => {
+            // Collect aggregator bindings
+            const aggBindings = aggregators.map((aggregator) => aggregator.result());
+            // .filter((term) => !!term); // Filter undefined values (TODO ask wanted behaviour)
 
-          // Merge grouping bindings and aggregator bindings
-          return groupBindings.merge(aggBindings);
-        }).toArray();
+            // Merge grouping bindings and aggregator bindings
+            return groupBindings.merge(aggBindings);
+          }).toArray();
 
-        // Case: No Input
-        // Some aggregators still define an output on the empty input
-        if (rows.length === 0) {
-          rows = [Map(aggregates.map((aggregate) => {
-            const aggregator = aggregatorClasses[aggregate.aggregator as Aggregator];
-            const value = aggregator.emptyValue();
-            return [termToString(aggregate.variable), value];
-          }))];
+          // Case: No Input
+          // Some aggregators still define an output on the empty input
+          // Result is a single Bindings
+          if (rows.length === 0) {
+            rows = [Map(aggregates.map((aggregate) => {
+              const aggregator = aggregatorClasses[aggregate.aggregator as Aggregator];
+              const value = aggregator.emptyValue();
+              return [termToString(aggregate.variable), value];
+            }))];
+          }
+
+          const bindingsStream = new ArrayIterator(rows);
+          const metadata = output.metadata;
+          resolve({ type: 'bindings', bindingsStream, metadata, variables });
+        } catch (err) {
+          reject(err);
         }
-
-        const bindingsStream = new ArrayIterator(rows);
-        const metadata = output.metadata;
-        resolve({ type: 'bindings', bindingsStream, metadata, variables });
       });
-      // TODO: What to do with errors?
+
+      output.bindingsStream.on('error', (err) => {
+        reject(err);
+      });
+
+      // Starting this phase will bind the data listeners, we need to do this
+      // AFTER binding 'end' and 'error' listeners to avoid those events 
+      // having their listener not yet initialised.
+      phase1();
     });
   }
 
