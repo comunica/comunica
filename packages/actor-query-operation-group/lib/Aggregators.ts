@@ -53,7 +53,7 @@ export enum Aggregator {
   MIN = 'min',
   MAX = 'max',
   AVG = 'avg',
-  GROUP_CONCAT = 'groupConcat',
+  GROUP_CONCAT = 'group_concat',
   SAMPLE = 'sample',
 }
 
@@ -206,7 +206,7 @@ export const aggregatorClasses: Readonly<{ [key in Aggregator]: IAggregatorClass
   min: Min,
   max: Max,
   avg: Average,
-  groupConcat: GroupConcat,
+  group_concat: GroupConcat,
   sample: Sample,
 };
 

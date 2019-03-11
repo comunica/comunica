@@ -7,8 +7,8 @@ module.exports = {
   parse: function (query) {
     return engine.mediatorSparqlParse.mediate({ query: query });
   },
-  query: async function(data, queryString) {
-    const result = await engine.query(queryString, { sources: [ { type: 'rdfjsSource', value: source(data) } ] });
+  query: async function (data, queryString) {
+    const result = await engine.query(queryString, { sources: [{ type: 'rdfjsSource', value: source(data) }] });
     if (result.type === 'boolean') {
       return new RdfTestSuite.QueryResultBoolean(await result.booleanResult);
     }
@@ -25,7 +25,7 @@ function source(data) {
   const store = new N3Store();
   store.addQuads(data);
   return {
-    match: function(s, p, o, g) {
+    match: function (s, p, o, g) {
       return require('streamify-array')(store.getQuads(s, p, o, g));
     }
   };

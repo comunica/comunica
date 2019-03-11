@@ -653,7 +653,7 @@ describe('ActorQueryOperationGroup', () => {
       expect(output.variables).toMatchObject(['?s']);
     });
 
-    it('should be able to groupConcat', async () => {
+    it('should be able to group_concat', async () => {
       const { op, actor } = constructCase({
         inputBindings: [
           Bindings({ '?x': int("1") }),
@@ -664,7 +664,7 @@ describe('ActorQueryOperationGroup', () => {
         groupVariables: [],
         inputVariables: ['x', 'y', 'z'],
         inputOp: simpleXYZinput,
-        aggregates: [aggregateOn('groupConcat', 'x', 'g')],
+        aggregates: [aggregateOn('group_concat', 'x', 'g')],
       });
 
       const output = await actor.run(op) as any;
@@ -674,13 +674,13 @@ describe('ActorQueryOperationGroup', () => {
       expect(output.variables).toMatchObject(['?g']);
     });
 
-    it('should be able to groupConcat with respect to the empty input', async () => {
+    it('should be able to group_concat with respect to the empty input', async () => {
       const { op, actor } = constructCase({
         inputBindings: [],
         groupVariables: [],
         inputVariables: ['x', 'y', 'z'],
         inputOp: simpleXYZinput,
-        aggregates: [aggregateOn('groupConcat', 'x', 'g')],
+        aggregates: [aggregateOn('group_concat', 'x', 'g')],
       });
 
       const output = await actor.run(op) as any;
@@ -690,7 +690,7 @@ describe('ActorQueryOperationGroup', () => {
       expect(output.variables).toMatchObject(['?g']);
     });
 
-    it('should be able to groupConcat with respect to a custom separator', async () => {
+    it('should be able to group_concat with respect to a custom separator', async () => {
       const { op, actor } = constructCase({
         inputBindings: [
           Bindings({ '?x': int("1") }),
@@ -701,7 +701,7 @@ describe('ActorQueryOperationGroup', () => {
         groupVariables: [],
         inputVariables: ['x', 'y', 'z'],
         inputOp: simpleXYZinput,
-        aggregates: [aggregateOn('groupConcat', 'x', 'g')],
+        aggregates: [aggregateOn('group_concat', 'x', 'g')],
       });
       op.operation.aggregates[0].separator = ';';
 

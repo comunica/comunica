@@ -63,6 +63,7 @@
     "@comunica/actor-query-operation-extend": "^1.6.3",
     "@comunica/actor-query-operation-filter-sparqlee": "^1.6.3",
     "@comunica/actor-query-operation-from-quad": "^1.6.4",
+    "@comunica/actor-query-operation-group": "^1.6.4",
     "@comunica/actor-query-operation-join": "^1.6.3",
     "@comunica/actor-query-operation-leftjoin-nestedloop": "^1.6.3",
     "@comunica/actor-query-operation-minus": "^1.6.3",
