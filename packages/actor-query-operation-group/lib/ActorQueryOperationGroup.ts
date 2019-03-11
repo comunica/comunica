@@ -50,8 +50,6 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
 
     const patternVariables = Set(pattern.variables.map((v) => termToString(v)));
     const aggregateVariables = Set(aggregates.map(({ variable }) => termToString(variable)));
-    const aggregateExpressionEvaluators: Map<string, SimpleEvaluator> =
-      Map(aggregates.map(({ variable, expression }) => [termToString(variable), new SimpleEvaluator(expression)]));
 
     let groups: Map<Bindings, Map<string, BaseAggregator<any>>> = Map();
 
@@ -60,15 +58,14 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
       // Select the bindings on which we group
       const grouper = bindings.filter((term, variable) => patternVariables.has(variable)).toMap();
 
-      // New group
+      // First member of groep -> create new group
       if (!groups.has(grouper)) {
         // Initialize state for all aggregators for new group
         const newAggregators: Map<string, BaseAggregator<any>> = Map(aggregates.map(
           (aggregate) => {
             const aggregatorClass = aggregatorClasses[aggregate.aggregator as Aggregator];
-            const start = aggregateExpressionEvaluators.get(termToString(aggregate.variable)).evaluate(bindings);
-            const aggregator = new aggregatorClass(aggregate, start);
-            return [termToString(aggregate.variable), aggregator];
+            const aggregatorState = new aggregatorClass(aggregate, bindings);
+            return [termToString(aggregate.variable), aggregatorState];
           }));
         groups = groups.set(grouper, newAggregators);
 
@@ -78,8 +75,7 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
         // with the corresponding result expression
         const aggregators = groups.get(grouper);
         aggregateVariables.forEach((variable) => {
-          const exprResult = aggregateExpressionEvaluators.get(variable).evaluate(bindings);
-          aggregators.get(variable).put(exprResult);
+          aggregators.get(variable).put(bindings);
         });
       }
     });

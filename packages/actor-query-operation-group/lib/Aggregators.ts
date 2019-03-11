@@ -5,15 +5,21 @@ import * as RDFDM from '@rdfjs/data-model';
 import { Set } from 'immutable';
 import * as RDF from 'rdf-js';
 import { Algebra } from 'sparqlalgebrajs';
+import { SimpleEvaluator } from 'sparqlee';
+
+import { Bindings } from '@comunica/bus-query-operation';
 
 export abstract class BaseAggregator<State> {
   protected state: State;
   protected distinct: boolean;
   protected separator: string;
+  private evaluator: SimpleEvaluator;
 
-  constructor(expr: Algebra.BoundAggregate, start: RDF.Term) {
+  constructor(expr: Algebra.BoundAggregate, start: Bindings) {
     try {
-      this.state = this.init(start);
+      this.evaluator = new SimpleEvaluator(expr.expression);
+      const startTerm = this.evaluator.evaluate(start);
+      this.state = this.init(startTerm);
     } catch (err) {
       this.put = () => { return; };
       this.result = () => undefined;
@@ -33,8 +39,9 @@ export abstract class BaseAggregator<State> {
 
   public abstract result(): RDF.Term;
 
-  public put(term: RDF.Term): void {
+  public put(bindings: Bindings): void {
     try {
+      const term = this.evaluator.evaluate(bindings);
       this._put(term);
       // If any term errors, the corresponding aggregate variable should be unbound
       // This is done by setting the result to be undefined
@@ -197,7 +204,7 @@ class Sample extends BaseAggregator<RDF.Term | undefined> {
 }
 
 export interface IAggregatorClass {
-  new(expr: Algebra.BoundAggregate, start: RDF.Term): BaseAggregator<any>;
+  new(expr: Algebra.BoundAggregate, start: Bindings): BaseAggregator<any>;
   emptyValue(): RDF.Term;
 }
 export const aggregatorClasses: Readonly<{ [key in Aggregator]: IAggregatorClass }> = {
