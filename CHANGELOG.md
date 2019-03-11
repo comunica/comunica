@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v1.6.4"></a>
+## [v1.6.4](https://github.com/comunica/comunica/compare/v1.6.3...v1.6.4) - 2019-03-05
+
+### Fixed
+* [Fix HTTP service imports](https://github.com/comunica/comunica/commit/d199daa344679a1564b5c0274f75f641d9fb1249)
+
 <a name="v1.6.3"></a>
 ## [v1.6.3](https://github.com/comunica/comunica/compare/v1.6.2...v1.6.3) - 2019-02-27
 

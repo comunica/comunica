@@ -1,3 +1,4 @@
+import {LoggerPretty} from "@comunica/logger-pretty";
 import * as fs from "fs";
 import * as http from "http";
 import EventEmitter = NodeJS.EventEmitter;
@@ -5,7 +6,6 @@ import minimist = require("minimist");
 import * as querystring from "querystring";
 import {Writable} from "stream";
 import * as url from "url";
-import {LoggerPretty} from "../../logger-pretty";
 import {newEngineDynamic} from "../index";
 import {ActorInitSparql} from "./ActorInitSparql";
 import {IQueryOptions} from "./QueryDynamic";
