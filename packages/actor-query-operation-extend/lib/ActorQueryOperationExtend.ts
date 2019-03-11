@@ -22,7 +22,8 @@ export class ActorQueryOperationExtend extends ActorQueryOperationTypedMediated<
 
   public async testOperation(pattern: Algebra.Extend, context: ActionContext): Promise<IActorTest> {
     // Will throw error for unsupported opperations
-    return pattern.type === "extend" && !!new AsyncEvaluator(pattern.expression);
+    const _ = !!new AsyncEvaluator(pattern.expression);
+    return true;
   }
 
   public async runOperation(pattern: Algebra.Extend, context: ActionContext)
