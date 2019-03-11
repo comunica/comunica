@@ -18,7 +18,7 @@ export class ActorQueryOperationLeftJoinNestedLoop extends ActorQueryOperationTy
   }
 
   public async testOperation(pattern: Algebra.LeftJoin, context: ActionContext): Promise<IActorTest> {
-    return !pattern.expression;
+    return true;
   }
 
   public async runOperation(pattern: Algebra.LeftJoin, context: ActionContext)
