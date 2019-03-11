@@ -24,7 +24,12 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
   }
 
   public async testOperation(pattern: Algebra.Group, context: ActionContext): Promise<IActorTest> {
-    return pattern.type === 'group';
+    pattern.aggregates.forEach((aggregate) => {
+      if (aggregate.distinct) {
+        throw new Error("Group Operation doesn't support distinct just yet.");
+      }
+    });
+    return true;
   }
 
   public async runOperation(pattern: Algebra.Group, context: ActionContext)

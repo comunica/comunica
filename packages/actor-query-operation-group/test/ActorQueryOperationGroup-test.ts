@@ -79,8 +79,8 @@ function constructCase(
   const operation: Algebra.Group = {
     type: 'group',
     input: inputOp,
-    variables: groupVariables.map(variable),
-    aggregates,
+    variables: groupVariables.map(variable) || [],
+    aggregates: aggregates || [],
   };
   const op = { operation };
 
@@ -128,8 +128,7 @@ describe('ActorQueryOperationGroup', () => {
 
   describe('An ActorQueryOperationGroup instance', () => {
     it('should test on group', () => {
-      const op = { operation: { type: 'group' } };
-      const { actor } = constructCase({});
+      const { actor, op } = constructCase({});
       return expect(actor.test(op)).resolves.toBeTruthy();
     });
 
@@ -137,6 +136,30 @@ describe('ActorQueryOperationGroup', () => {
       const op = { operation: { type: 'some-other-type' } };
       const { actor } = constructCase({});
       return expect(actor.test(op)).rejects.toBeTruthy();
+    });
+
+    it('should not test on distinct aggregate', async () => {
+      const countY: Algebra.BoundAggregate = {
+        type: "expression",
+        expressionType: "aggregate",
+        aggregator: "count",
+        expression: {
+          type: "expression",
+          expressionType: "term",
+          term: variable('y'),
+        },
+        distinct: true,
+        variable: variable('count'),
+      };
+
+      const { op, actor } = constructCase({
+        inputBindings: [],
+        groupVariables: ['x'],
+        inputVariables: ['x', 'y', 'z'],
+        inputOp: simpleXYZinput,
+        aggregates: [countY],
+      });
+      expect(actor.test(op)).rejects.toBeTruthy();
     });
 
     it('should group on a single var', async () => {
