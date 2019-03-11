@@ -1,0 +1,18 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/runner/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-resolve-hypermedia-next-page/^1.0.0/components/context.jsonld",
+    {
+      "caisnp": "npmd:@comunica/actor-init-sparql-next-page/",
+      "files-caisnp": "caisnp:^1.0.0/",
+      "config-sets": "files-caisnp:config/sets/"
+    }
+  ],
+  "@id": "urn:comunica:my",
+  "actors": [
+    { 
+      "@id": "config-sets:resolve-hypermedia.json#myHypermediaNextPageResolver",
+      "@type": "ActorRdfResolveHypermediaNextPage"
+    }
+  ]
+}

@@ -104,7 +104,6 @@ describe('ActorRdfResolveHypermediaQpf', () => {
       const action = {metadata, context: ActionContext
         ({ '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'hypermedia', value: 'source' }}),
       };
-      actor.test(action);
       return expect(actor.run(action)).resolves.toEqual({ searchForm: metadata.searchForms.values[0] });
     });
 
@@ -125,7 +124,6 @@ describe('ActorRdfResolveHypermediaQpf', () => {
       const action = {metadata, context: ActionContext
         ({ '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'hypermedia', value: 'source' }}),
       };
-      actor.test(action);
       return expect(actor.run(action)).resolves.toEqual({ searchForm: metadata.searchForms.values[0] });
     });
 

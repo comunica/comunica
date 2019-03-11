@@ -1,0 +1,17 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-sparql/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/runner/^1.0.0/components/context.jsonld",
+    {
+      "caisnp": "npmd:@comunica/actor-init-sparql-next-page/",
+      "files-caisnp": "caisnp:^1.0.0/"
+    }
+  ],
+  "@id": "urn:comunica:my",
+  "@type": "Runner",
+  "import": [
+    "files-cais:config/config-default.json",
+    "files-caisnp:config/sets/resolve-hypermedia.json",
+    "files-caisnp:config/sets/rdf-source-identifiers.json"
+  ]
+}

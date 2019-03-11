@@ -54,11 +54,6 @@ export class ActorRdfResolveQuadPatternHypermedia extends ActorRdfResolveQuadPat
     }
     const metadata: {[id: string]: any} = await firstPageMetadata();
 
-    if (!metadata.next && (!metadata.searchForms || !metadata.searchForms.values.length)) {
-      throw new Error(`No Hydra search forms were discovered in the metadata of ${hypermedia}.` +
-        ` You may be missing an actor that extracts this metadata`);
-    }
-
     // Mediate the metadata to get the searchform
     const searchForm: ISearchForm = (await this.mediatorRdfResolveHypermedia.mediate({metadata, context})).searchForm;
 

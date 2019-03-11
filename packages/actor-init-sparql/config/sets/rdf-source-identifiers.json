@@ -19,17 +19,6 @@
       }
     },
     {
-      "@id": "config-sets:rdf-source-identifiers.json#myActorRdfSourceIdentifierHypermediaNextPage",
-      "@type": "ActorRdfSourceIdentifierHypermediaQpf",
-      "carsihq:Actor/RdfSourceIdentifier/HypermediaQpf/mediatorHttp": {
-        "@id": "config-sets:http.json#mediatorHttp"
-      },
-      "carsihq:Actor/RdfSourceIdentifier/HypermediaQpf/toContain": [
-            "http://www.w3.org/ns/hydra/core#",
-            "next"
-      ]
-    },
-    {
       "@id": "config-sets:rdf-source-identifiers.json#myActorRdfSourceIdentifierSparql",
       "@type": "ActorRdfSourceIdentifierSparql",
       "carsis:Actor/RdfSourceIdentifier/Sparql/mediatorHttp": {

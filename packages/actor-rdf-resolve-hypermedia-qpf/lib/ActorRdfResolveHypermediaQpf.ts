@@ -14,7 +14,6 @@ implements IActorRdfResolveHypermediaQpfArgs {
   public readonly predicateUri: string;
   public readonly objectUri: string;
   public readonly graphUri?: string;
-  private searchForm: ISearchForm;
 
   constructor(args: IActorRdfResolveHypermediaQpfArgs) {
     super(args);
@@ -30,26 +29,35 @@ implements IActorRdfResolveHypermediaQpfArgs {
       throw new Error(`${this.name} requires metadata and searchForms to work on.`);
     }
 
-    // Find a quad pattern or triple pattern search form
-    const searchForms: ISearchForms = action.metadata.searchForms;
-    
-    // TODO: in the future, a query-based search form getter should be used.
-    for (this.searchForm of searchForms.values) {
-      if ((this.graphUri
-        && this.subjectUri in this.searchForm.mappings
-        && this.predicateUri in this.searchForm.mappings
-        && this.objectUri in this.searchForm.mappings
-        && this.graphUri in this.searchForm.mappings
-        && Object.keys(this.searchForm.mappings).length === 4) || 
-        (this.subjectUri in this.searchForm.mappings
-        && this.predicateUri in this.searchForm.mappings
-        && this.objectUri in this.searchForm.mappings
-        && Object.keys(this.searchForm.mappings).length === 3)) {
-        return true;
-      };
+    // Check if we can find a valid searchForm
+    if (this.getValidSearchForm(action.metadata.searchForms)) {
+      return true;
     }
 
     throw new Error('No valid Hydra search form was found for quad pattern or triple pattern queries.');
+  }
+
+  public isValidSearchForm(searchForm: ISearchForm): boolean {
+    return (this.subjectUri in searchForm.mappings
+      && this.predicateUri in searchForm.mappings
+      && this.objectUri in searchForm.mappings
+      && Object.keys(searchForm.mappings).length === 3);
+  }
+
+  public isValidSearchFromWithGraph(searchForm: ISearchForm): boolean {
+    return (this.graphUri
+      && this.subjectUri in searchForm.mappings
+      && this.predicateUri in searchForm.mappings
+      && this.objectUri in searchForm.mappings
+      && this.graphUri in searchForm.mappings
+      && Object.keys(searchForm.mappings).length === 4);
+  }
+
+  public getValidSearchForm(searchForms: ISearchForms) {
+    // TODO: in the future, a query-based search form getter should be used.
+    for (const searchForm of searchForms.values)
+      if (this.isValidSearchForm(searchForm) || this.isValidSearchFromWithGraph(searchForm))
+        return searchForm;
   }
 
   /**
@@ -59,7 +67,8 @@ implements IActorRdfResolveHypermediaQpfArgs {
    */
   public async run(action: IActionRdfResolveHypermedia):
   Promise<IActorRdfResolveHypermediaOutput> {
-    return {searchForm: this.searchForm};
+    const searchForm = this.getValidSearchForm(action.metadata.searchForms);
+    return {searchForm: searchForm};
   }
 }
 

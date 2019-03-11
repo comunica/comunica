@@ -26,6 +26,13 @@ describe('ActorRdfResolveHypermediaNextPage', () => {
     };
   });
 
+  describe('#constructor', () => {
+    it('should return a ActorRdfResolveHypermediaNextPage actor', () => {
+      return expect(new ActorRdfResolveHypermediaNextPage({ bus, name: 'actor' }))
+        .toBeInstanceOf(ActorRdfResolveHypermediaNextPage);
+    });
+  });
+
   describe('#test', () => {
     it('should test when source is hypermedia', () => {
       return expect(actor.test({metadata, context: ActionContext

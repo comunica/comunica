@@ -173,29 +173,6 @@ describe('ActorRdfResolveQuadPatternHypermedia', () => {
         });
     });
 
-    it('should not run when no metadata search forms are available', () => {
-      mediatorPaged.mediate = () => Promise.resolve({ firstPageMetadata: () => Promise.resolve({}) });
-      return actor.run({ pattern: pattern1, context: ActionContext(
-        { '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'hypermedia', value: 'hypermedia' }})})
-        .then(async (output) => {
-          expect(arrayifyStream(output.data)).rejects
-            .toEqual(new Error('No Hydra search forms were discovered in the metadata of hypermedia. ' +
-              'You may be missing an actor that extracts this metadata'));
-        });
-    });
-
-    it('should not run when 0 metadata search forms are available', () => {
-      mediatorPaged.mediate = () => Promise.resolve(
-        { firstPageMetadata: () => Promise.resolve({ searchForms: { values: [] } }) });
-      return actor.run({ pattern: pattern1, context: ActionContext(
-        { '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'hypermedia', value: 'hypermedia' }})})
-        .then(async (output) => {
-          expect(arrayifyStream(output.data)).rejects
-            .toEqual(new Error('No Hydra search forms were discovered in the metadata of hypermedia. ' +
-              'You may be missing an actor that extracts this metadata'));
-        });
-    });
-
     it('should run for QPF pattern 1', () => {
       return actor.run({ pattern: pattern1, context: ActionContext(
         { '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'hypermedia', value: 'hypermedia' }})})
