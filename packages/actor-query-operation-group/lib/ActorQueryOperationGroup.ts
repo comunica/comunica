@@ -77,7 +77,6 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
           aggregators.get(variable).put(exprResult);
         });
       }
-
     });
 
     // Phase 2: Collect aggregator results
@@ -97,7 +96,7 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
         }).toArray();
 
         // Case: No Input
-        // Some aggregators still define an output on the empty input, this is what we must return
+        // Some aggregators still define an output on the empty input
         if (rows.length === 0) {
           rows = [Map(aggregates.map((aggregate) => {
             const aggregator = aggregatorClasses[aggregate.aggregator as Aggregator];

@@ -388,6 +388,22 @@ describe('ActorQueryOperationGroup', () => {
       expect(output.variables).toMatchObject(['?c']);
     });
 
+    it('should be able to count with respect to empty input', async () => {
+      const { op, actor } = constructCase({
+        inputBindings: [],
+        groupVariables: [],
+        inputVariables: ['x', 'y', 'z'],
+        inputOp: simpleXYZinput,
+        aggregates: [aggregateOn('count', 'x', 'c')],
+      });
+
+      const output = await actor.run(op) as any;
+      expect(await arrayifyStream(output.bindingsStream)).toMatchObject([
+        Bindings({ '?c': int('0') }),
+      ]);
+      expect(output.variables).toMatchObject(['?c']);
+    });
+
     it('should be able to sum', async () => {
       const { op, actor } = constructCase({
         inputBindings: [
@@ -409,13 +425,29 @@ describe('ActorQueryOperationGroup', () => {
       expect(output.variables).toMatchObject(['?s']);
     });
 
+    it('should be able to sum with respect to empty input', async () => {
+      const { op, actor } = constructCase({
+        inputBindings: [],
+        groupVariables: [],
+        inputVariables: ['x', 'y', 'z'],
+        inputOp: simpleXYZinput,
+        aggregates: [aggregateOn('sum', 'x', 's')],
+      });
+
+      const output = await actor.run(op) as any;
+      expect(await arrayifyStream(output.bindingsStream)).toMatchObject([
+        Bindings({ '?s': int('0') }),
+      ]);
+      expect(output.variables).toMatchObject(['?s']);
+    });
+
     it('should sum with regard to type promotion', async () => {
       const { op, actor } = constructCase({
         inputBindings: [
           Bindings({ '?x': literal("1", namedNode("http://www.w3.org/2001/XMLSchema#byte")) }),
           Bindings({ '?x': int("2") }),
           Bindings({ '?x': float("3") }),
-          Bindings({ '?x': int("4") }),
+          Bindings({ '?x': literal("4", namedNode("http://www.w3.org/2001/XMLSchema#nonNegativeInteger")) }),
         ],
         groupVariables: [],
         inputVariables: ['x', 'y', 'z'],
@@ -434,10 +466,10 @@ describe('ActorQueryOperationGroup', () => {
     it('should be able to min', async () => {
       const { op, actor } = constructCase({
         inputBindings: [
-          Bindings({ '?x': int("1") }),
+          Bindings({ '?x': int("4") }),
           Bindings({ '?x': int("2") }),
           Bindings({ '?x': int("3") }),
-          Bindings({ '?x': int("4") }),
+          Bindings({ '?x': int("1") }),
         ],
         groupVariables: [],
         inputVariables: ['x', 'y', 'z'],
@@ -471,8 +503,8 @@ describe('ActorQueryOperationGroup', () => {
     it('should be able to max', async () => {
       const { op, actor } = constructCase({
         inputBindings: [
-          Bindings({ '?x': int("1") }),
           Bindings({ '?x': int("2") }),
+          Bindings({ '?x': int("1") }),
           Bindings({ '?x': int("3") }),
           Bindings({ '?x': int("4") }),
         ],
@@ -529,10 +561,10 @@ describe('ActorQueryOperationGroup', () => {
     it('should be able to avg with respect to type preservation', async () => {
       const { op, actor } = constructCase({
         inputBindings: [
-          Bindings({ '?x': int("1") }),
+          Bindings({ '?x': literal("1", namedNode("http://www.w3.org/2001/XMLSchema#byte")) }),
           Bindings({ '?x': int("2") }),
           Bindings({ '?x': int("3") }),
-          Bindings({ '?x': int("4") }),
+          Bindings({ '?x': literal("4", namedNode("http://www.w3.org/2001/XMLSchema#nonNegativeInteger")) }),
         ],
         groupVariables: [],
         inputVariables: ['x', 'y', 'z'],
