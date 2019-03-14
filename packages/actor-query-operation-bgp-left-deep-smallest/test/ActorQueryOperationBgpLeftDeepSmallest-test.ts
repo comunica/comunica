@@ -164,43 +164,71 @@ describe('ActorQueryOperationBgpLeftDeepSmallest', () => {
     describe('materializePattern', () => {
       it('should not materialize a pattern without variables', () => {
         return expect(ActorQueryOperationBgpLeftDeepSmallest.materializePattern(patternMaterialized, bindingsAC))
-          .toEqual(patternMaterialized);
+          .toEqual({
+            bindings: {},
+            pattern: patternMaterialized,
+          });
       });
 
       it('should materialize a pattern with variable subject', () => {
         return expect(ActorQueryOperationBgpLeftDeepSmallest.materializePattern(patternVarS, bindingsAC))
-          .toEqual(Object.assign(quad<RDF.BaseQuad>(valueA, termNamedNode, termNamedNode, termNamedNode),
-            { type: "pattern" }));
+          .toEqual({
+            bindings: { subject: termVariableA },
+            pattern: Object.assign(quad<RDF.BaseQuad>(valueA, termNamedNode, termNamedNode, termNamedNode),
+              { type: "pattern" }),
+          });
       });
 
       it('should materialize a pattern with variable predicate', () => {
         return expect(ActorQueryOperationBgpLeftDeepSmallest.materializePattern(patternVarP, bindingsAC))
-          .toEqual(Object.assign(quad<RDF.BaseQuad>(termNamedNode, valueA, termNamedNode, termNamedNode),
-            { type: "pattern" }));
+          .toEqual({
+            bindings: { predicate: termVariableA },
+            pattern: Object.assign(quad<RDF.BaseQuad>(termNamedNode, valueA, termNamedNode, termNamedNode),
+              { type: "pattern" }),
+          });
       });
 
       it('should materialize a pattern with variable object', () => {
         return expect(ActorQueryOperationBgpLeftDeepSmallest.materializePattern(patternVarO, bindingsAC))
-          .toEqual(Object.assign(quad(termNamedNode, termNamedNode, valueA, termNamedNode),
-            { type: "pattern" }));
+          .toEqual({
+            bindings: { object: termVariableA },
+            pattern: Object.assign(quad(termNamedNode, termNamedNode, valueA, termNamedNode),
+              { type: "pattern" }),
+          });
       });
 
       it('should materialize a pattern with variable graph', () => {
         return expect(ActorQueryOperationBgpLeftDeepSmallest.materializePattern(patternVarG, bindingsAC))
-          .toEqual(Object.assign(quad<RDF.BaseQuad>(termNamedNode, termNamedNode, termNamedNode, valueA),
-            { type: "pattern" }));
+          .toEqual({
+            bindings: { graph: termVariableA },
+            pattern: Object.assign(quad<RDF.BaseQuad>(termNamedNode, termNamedNode, termNamedNode, valueA),
+              { type: "pattern" }),
+          });
       });
 
       it('should materialize a pattern with all variables', () => {
         return expect(ActorQueryOperationBgpLeftDeepSmallest.materializePattern(patternVarAll, bindingsAC))
-          .toEqual(Object.assign(quad<RDF.BaseQuad>(valueA, valueA, valueA, valueA),
-            { type: "pattern" }));
+          .toEqual({
+            bindings: {
+              graph: termVariableA,
+              object: termVariableA,
+              predicate: termVariableA,
+              subject: termVariableA,
+            },
+            pattern: Object.assign(quad<RDF.BaseQuad>(valueA, valueA, valueA, valueA),
+              { type: "pattern" }),
+          });
       });
 
       it('should partially materialize a pattern with mixed variables', () => {
         return expect(ActorQueryOperationBgpLeftDeepSmallest.materializePattern(patternVarMixed, bindingsAC))
-          .toEqual(Object.assign(quad<RDF.BaseQuad>(valueA, termVariableB, termVariableC, termVariableD),
-            { type: "pattern" }));
+          .toEqual({
+            bindings: {
+              subject: termVariableA,
+            },
+            pattern: Object.assign(quad<RDF.BaseQuad>(valueA, termVariableB, termVariableC, termVariableD),
+              {type: "pattern"}),
+          });
       });
     });
 
@@ -212,10 +240,16 @@ describe('ActorQueryOperationBgpLeftDeepSmallest', () => {
       it('should materialize all patterns in a non-empty array', () => {
         return expect(ActorQueryOperationBgpLeftDeepSmallest.materializePatterns([patternVarS, patternVarP],
           bindingsAC)).toEqual([
-            Object.assign(quad<RDF.BaseQuad>(valueA, termNamedNode, termNamedNode, termNamedNode),
-            { type: "pattern" }),
-            Object.assign(quad<RDF.BaseQuad>(termNamedNode, valueA, termNamedNode, termNamedNode),
-            { type: "pattern" }),
+            {
+              bindings: { subject: termVariableA },
+              pattern: Object.assign(quad<RDF.BaseQuad>(valueA, termNamedNode, termNamedNode, termNamedNode),
+                { type: "pattern" }),
+            },
+            {
+              bindings: { predicate: termVariableA },
+              pattern: Object.assign(quad<RDF.BaseQuad>(termNamedNode, valueA, termNamedNode, termNamedNode),
+                { type: "pattern" }),
+            },
           ]);
       });
     });
@@ -381,10 +415,10 @@ describe('ActorQueryOperationBgpLeftDeepSmallest', () => {
 
     describe('createLeftDeepStream', () => {
       const binder: any = (patterns) => new SingletonIterator(Bindings({
-        graph: patterns[0].graph,
-        object: patterns[1].object,
-        predicate: patterns[2].predicate,
-        subject: patterns[3].subject,
+        graph: patterns[0].pattern.graph,
+        object: patterns[1].pattern.object,
+        predicate: patterns[2].pattern.predicate,
+        subject: patterns[3].pattern.subject,
       }));
       const pattern1 = <Algebra.Pattern> quad(namedNode('1'), namedNode('1'), namedNode('1'), variable('a'));
       const pattern2 = <Algebra.Pattern> quad(namedNode('2'), namedNode('2'), variable('b'), namedNode('2'));
