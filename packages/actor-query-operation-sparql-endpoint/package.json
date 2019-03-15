@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-operation-sparql-endpoint",
-  "version": "1.6.4",
+  "version": "1.6.5",
   "description": "A sparql-endpoint query-operation actor",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-sparql-endpoint",
   "lsd:components": "components/components.jsonld",
@@ -51,7 +51,7 @@
   },
   "devDependencies": {
     "@comunica/bus-http": "^1.6.3",
-    "@comunica/bus-query-operation": "^1.6.3",
+    "@comunica/bus-query-operation": "^1.6.5",
     "@comunica/core": "^1.6.3",
     "@comunica/mediatortype-httprequests": "^1.6.3",
     "@comunica/utils-datasource": "^1.4.5"

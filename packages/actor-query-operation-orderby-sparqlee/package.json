@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-operation-orderby-sparqlee",
-  "version": "1.6.3",
+  "version": "1.6.5",
   "description": "A orderby-sparqlee query-operation actor",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-orderby-sparqlee",
   "lsd:components": "components/components.jsonld",
@@ -43,8 +43,8 @@
     "sparqlee": "0.1.0"
   },
   "devDependencies": {
-    "@comunica/actor-query-operation-filter-direct": "^1.6.3",
-    "@comunica/bus-query-operation": "^1.6.3",
+    "@comunica/actor-query-operation-filter-direct": "^1.6.5",
+    "@comunica/bus-query-operation": "^1.6.5",
     "@comunica/core": "^1.6.3"
   },
   "jest": {
