@@ -59,11 +59,7 @@ export class BlankNode extends Term {
 }
 
 // Literals-- -----------------------------------------------------------------
-export interface LiteralTerm extends TermExpression {
-  type: C.Type;
-}
-
-export class Literal<T> extends Term implements LiteralTerm {
+export class Literal<T> extends Term {
   termType: 'literal' = 'literal';
   type: C.Type;
 
@@ -88,7 +84,7 @@ export class Literal<T> extends Term implements LiteralTerm {
 }
 
 export class NumericLiteral extends Literal<number> {
-  type: C.NumericTypeCategory;
+  type: C.PrimitiveNumericType;
   coerceEBV(): boolean {
     return !!this.typedValue;
   }
@@ -174,7 +170,7 @@ export class NonLexicalLiteral extends Literal<undefined> {
 
   coerceEBV(): boolean {
     const isNumericOrBool =
-      C.NumericTypeCategories.contains(this.shouldBeCategory)
+      C.PrimitiveNumericTypes.contains(this.shouldBeCategory)
       || this.shouldBeCategory === 'boolean';
 
     if (isNumericOrBool) { return false; }

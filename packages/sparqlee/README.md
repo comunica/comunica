@@ -195,6 +195,22 @@ Three kinds exists:
 The only important external facing API is creating an Evaluator.
 When you create one, the SPARQL Algebra expression that is passed will be transformed to an internal representation (see [Transformation.ts](./lib/Transformation.ts)). This will build objects (see [expressions module](./lib/expressions)) that contain all the logic and data for evaluation, for example the implementations for SPARQL functions (see [functions module](./lib/functions)). After transformation, the evaluator will recursively evaluate all the expressions.
 
+### Type System
+
+[See functions/Core.ts](./lib/functions/Core.ts)
+
+The type system is tailored for doing (supposedly) quick evaluation of overloaded functions. A function object consists of a map of argument types to a concrete function implementation for those argument types.
+
+When a function object is called with some functions, it looks up a concrete implementation. If we can not find one, we consider the argument of invalid types.
+
+Since many derived types exist, we also associate every literal with it's primitive datatype when constructing a literal. This handles **subtype substitution**, as we define allowed types in function of these primitives types. Note: the derived type is not maintained after operation, since I found no functions for which this was relevant.
+
+**Type promotion** is handled in a couple of ways. Firstly, a bit like C++ vtables, if we can not find a implementation for the concrete (primitive) types, we try to find an implementation for the term-types of all the arguments, if that fails, we look for an implementation on generic terms.
+
+We also handle type promotion by explicitly coding for it. This is done in the arithmetic functions `+, -, *, /`.
+
+Lastly for types that do not occur in any SPARQL function definitions on themselves, we simply consider their primitive type to the type they can be promototed to. This happens for `anyUri` (considered a string).
+
 ### Testing
 
 Running tests will generate a `test-report.html` in the root dir.

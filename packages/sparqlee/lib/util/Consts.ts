@@ -8,6 +8,7 @@ export const FALSE_STR = '"false"^^xsd:boolean';
 export const EVB_ERR_STR = '"not an dateTime"^^xsd:dateTime';
 
 export enum TypeURL {
+  XSD_ANY_URI = 'http://www.w3.org/2001/XMLSchema#anyURI',
   XSD_STRING = 'http://www.w3.org/2001/XMLSchema#string',
   RDF_LANG_STRING = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#langString',
 
@@ -86,6 +87,8 @@ export const commonTerms: { [key: string]: RDF.Term } = {
   false: RDFDM.literal('false', RDFDM.namedNode(TypeURL.XSD_BOOLEAN)),
 };
 
+// TODO: Rename to primitive
+// https://www.w3.org/TR/xmlschema-2/#built-in-primitive-datatypes
 export type Type =
   'string'
   | 'langString'
@@ -98,8 +101,8 @@ export type Type =
   | 'other'
   | 'nonlexical';
 
-export type NumericTypeCategory = 'integer' | 'decimal' | 'float' | 'double';
-export const NumericTypeCategories = Set(['integer', 'decimal', 'float', 'double']);
+export type PrimitiveNumericType = 'integer' | 'decimal' | 'float' | 'double';
+export const PrimitiveNumericTypes = Set(['integer', 'decimal', 'float', 'double']);
 
 export function type(typeURL: string): Type {
   switch (typeURL) {

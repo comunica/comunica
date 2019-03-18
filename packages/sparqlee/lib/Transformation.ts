@@ -66,6 +66,7 @@ export function transformLiteral(lit: RDF.Literal): E.Literal<any> {
         : new E.StringLiteral(lit.value);
     }
 
+    case DT.XSD_ANY_URI:
     case DT.XSD_STRING:
       return new E.StringLiteral(lit.value);
     case DT.RDF_LANG_STRING:

@@ -4,14 +4,14 @@ import * as E from '../expressions';
 import * as C from '../util/Consts';
 import * as Err from '../util/Errors';
 
-import { TypeURL as Type } from '../util/Consts';
+import { TypeURL } from '../util/Consts';
 import {
   parseXSDDecimal,
   parseXSDFloat,
   parseXSDInteger,
 } from '../util/Parsing';
 
-import { OverloadMap } from './FunctionClasses';
+import { OverloadMap } from './Core';
 import { bool, dateTime, declare, number, string } from './Helpers';
 
 type Term = E.TermExpression;
@@ -41,7 +41,7 @@ const toFloat = {
     .onBoolean1Typed((val) => number(val ? 1 : 0))
     .onUnary('string', (val: E.StringLiteral) => {
       const result = parseXSDFloat(val.str());
-      if (!result) { throw new Err.CastError(val, Type.XSD_FLOAT); }
+      if (!result) { throw new Err.CastError(val, TypeURL.XSD_FLOAT); }
       return number(result);
     })
     .copy({ from: ['string'], to: ['nonlexical'] })
@@ -51,12 +51,12 @@ const toFloat = {
 const toDouble = {
   arity: 1,
   overloads: declare()
-    .onNumeric1((val: E.NumericLiteral) => number(val.typedValue, Type.XSD_DOUBLE))
-    .onBoolean1Typed((val) => number(val ? 1 : 0, Type.XSD_DOUBLE))
+    .onNumeric1((val: E.NumericLiteral) => number(val.typedValue, TypeURL.XSD_DOUBLE))
+    .onBoolean1Typed((val) => number(val ? 1 : 0, TypeURL.XSD_DOUBLE))
     .onUnary('string', (val: E.Term) => {
       const result = parseXSDFloat(val.str());
-      if (!result) { throw new Err.CastError(val, Type.XSD_DOUBLE); }
-      return number(result, Type.XSD_DOUBLE);
+      if (!result) { throw new Err.CastError(val, TypeURL.XSD_DOUBLE); }
+      return number(result, TypeURL.XSD_DOUBLE);
     })
     .copy({ from: ['string'], to: ['nonlexical'] })
     .collect(),
@@ -67,23 +67,23 @@ const toDecimal = {
   overloads: declare()
     .onNumeric1((val: E.Term) => {
       const result = parseXSDDecimal(val.str());
-      if (!result) { throw new Err.CastError(val, Type.XSD_DECIMAL); }
-      return number(result, Type.XSD_DECIMAL);
+      if (!result) { throw new Err.CastError(val, TypeURL.XSD_DECIMAL); }
+      return number(result, TypeURL.XSD_DECIMAL);
     })
     .copy({ from: ['integer'], to: ['string'] })
     .copy({ from: ['integer'], to: ['nonlexical'] })
-    .onBoolean1Typed((val) => number(val ? 1 : 0, Type.XSD_DECIMAL))
+    .onBoolean1Typed((val) => number(val ? 1 : 0, TypeURL.XSD_DECIMAL))
     .collect(),
 };
 
 const toInteger = {
   arity: 1,
   overloads: declare()
-    .onBoolean1Typed((val) => number(val ? 1 : 0, Type.XSD_INTEGER))
+    .onBoolean1Typed((val) => number(val ? 1 : 0, TypeURL.XSD_INTEGER))
     .onNumeric1((val: E.Term) => {
       const result = parseXSDInteger(val.str());
-      if (!result) { throw new Err.CastError(val, Type.XSD_INTEGER); }
-      return number(result, Type.XSD_INTEGER);
+      if (!result) { throw new Err.CastError(val, TypeURL.XSD_INTEGER); }
+      return number(result, TypeURL.XSD_INTEGER);
     })
     .copy({ from: ['integer'], to: ['string'] })
     .copy({ from: ['integer'], to: ['nonlexical'] })
@@ -97,7 +97,7 @@ const toDatetime = {
     .onUnary('string', (val: Term) => {
       const date = new Date(val.str());
       if (isNaN(date.getTime())) {
-        throw new Err.CastError(val, Type.XSD_DATE_TIME);
+        throw new Err.CastError(val, TypeURL.XSD_DATE_TIME);
       }
       return dateTime(date, val.str());
     })
@@ -113,7 +113,7 @@ const toBoolean = {
     .onUnary('string', (val: Term) => {
       const str = val.str();
       if (str !== 'true' && str !== 'false') {
-        throw new Err.CastError(val, Type.XSD_BOOLEAN);
+        throw new Err.CastError(val, TypeURL.XSD_BOOLEAN);
       }
       return bool((str === 'true'));
     })
@@ -131,13 +131,13 @@ const _definitions: { [key in C.NamedOperator]: Definition } = {
   // XPath Constructor functions
   // https://www.w3.org/TR/sparql11-query/#FunctionMapping
   // --------------------------------------------------------------------------
-  [Type.XSD_STRING]: toString,
-  [Type.XSD_FLOAT]: toFloat,
-  [Type.XSD_DOUBLE]: toDouble,
-  [Type.XSD_DECIMAL]: toDecimal,
-  [Type.XSD_INTEGER]: toInteger,
-  [Type.XSD_DATE_TIME]: toDatetime,
-  [Type.XSD_BOOLEAN]: toBoolean,
+  [TypeURL.XSD_STRING]: toString,
+  [TypeURL.XSD_FLOAT]: toFloat,
+  [TypeURL.XSD_DOUBLE]: toDouble,
+  [TypeURL.XSD_DECIMAL]: toDecimal,
+  [TypeURL.XSD_INTEGER]: toInteger,
+  [TypeURL.XSD_DATE_TIME]: toDatetime,
+  [TypeURL.XSD_BOOLEAN]: toBoolean,
 };
 
 // ----------------------------------------------------------------------------

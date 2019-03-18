@@ -10,10 +10,10 @@ import * as Err from '../util/Errors';
 import * as P from '../util/Parsing';
 import * as X from './XPathFunctions';
 
-import { TypeURL as Type } from '../util/Consts';
+import { TypeURL } from '../util/Consts';
 
 import { transformLiteral } from '../Transformation';
-import { OverloadMap } from './FunctionClasses';
+import { OverloadMap } from './Core';
 import { bool, declare, langString, log, number, string } from './Helpers';
 
 type Term = E.TermExpression;
@@ -38,14 +38,14 @@ const not = {
 const unaryPlus = {
   arity: 1,
   overloads: declare()
-    .onNumeric1((val) => number(val.typedValue, val.typeURL.value as Type))
+    .onNumeric1((val) => number(val.typedValue, val.typeURL.value as TypeURL))
     .collect(),
 };
 
 const unaryMinus = {
   arity: 1,
   overloads: declare()
-    .onNumeric1((val) => number(-val.typedValue, val.typeURL.value as Type))
+    .onNumeric1((val) => number(-val.typedValue, val.typeURL.value as TypeURL))
     .collect(),
 };
 
@@ -66,7 +66,7 @@ const division = {
         if (right === 0) {
           throw new Err.ExpressionError('Integer division by 0');
         }
-        return number(left / right, Type.XSD_DECIMAL);
+        return number(left / right, TypeURL.XSD_DECIMAL);
       })
     .collect(),
 };
@@ -279,7 +279,7 @@ const STRUUID = {
 const STRLEN = {
   arity: 1,
   overloads: declare()
-    .onStringly1((str) => number(str.typedValue.length, Type.XSD_INTEGER))
+    .onStringly1((str) => number(str.typedValue.length, TypeURL.XSD_INTEGER))
     .collect(),
 };
 
@@ -520,7 +520,7 @@ const floor = {
 const rand = {
   arity: 0,
   overloads: declare()
-    .set([], () => number(Math.random(), Type.XSD_DOUBLE))
+    .set([], () => number(Math.random(), TypeURL.XSD_DOUBLE))
     .collect(),
 };
 
@@ -543,7 +543,7 @@ const year = {
   arity: 1,
   overloads: declare()
     .onDateTime1(
-      (date) => number(Number(parseDate(date).year), Type.XSD_INTEGER))
+      (date) => number(Number(parseDate(date).year), TypeURL.XSD_INTEGER))
     .collect(),
 };
 
@@ -551,7 +551,7 @@ const month = {
   arity: 1,
   overloads: declare()
     .onDateTime1(
-      (date) => number(Number(parseDate(date).month), Type.XSD_INTEGER))
+      (date) => number(Number(parseDate(date).month), TypeURL.XSD_INTEGER))
     .collect(),
 };
 
@@ -559,7 +559,7 @@ const day = {
   arity: 1,
   overloads: declare()
     .onDateTime1(
-      (date) => number(Number(parseDate(date).day), Type.XSD_INTEGER))
+      (date) => number(Number(parseDate(date).day), TypeURL.XSD_INTEGER))
     .collect(),
 };
 
@@ -567,7 +567,7 @@ const hours = {
   arity: 1,
   overloads: declare()
     .onDateTime1(
-      (date) => number(Number(parseDate(date).hours), Type.XSD_INTEGER))
+      (date) => number(Number(parseDate(date).hours), TypeURL.XSD_INTEGER))
     .collect(),
 };
 
@@ -575,7 +575,7 @@ const minutes = {
   arity: 1,
   overloads: declare()
     .onDateTime1(
-      (date) => number(Number(parseDate(date).minutes), Type.XSD_INTEGER))
+      (date) => number(Number(parseDate(date).minutes), TypeURL.XSD_INTEGER))
     .collect(),
 };
 
@@ -583,7 +583,7 @@ const seconds = {
   arity: 1,
   overloads: declare()
     .onDateTime1(
-      (date) => number(Number(parseDate(date).seconds), Type.XSD_DECIMAL))
+      (date) => number(Number(parseDate(date).seconds), TypeURL.XSD_DECIMAL))
     .collect(),
 };
 
@@ -596,7 +596,7 @@ const timezone = {
         if (!duration) {
           throw new Err.InvalidTimezoneCall(date.strValue);
         }
-        return new E.Literal(duration, C.make(Type.XSD_DAYTIME_DURATION), duration);
+        return new E.Literal(duration, C.make(TypeURL.XSD_DAYTIME_DURATION), duration);
       },
     )
     .collect(),

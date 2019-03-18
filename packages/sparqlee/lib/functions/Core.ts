@@ -22,7 +22,7 @@ export type OverloadedDefinition = {
   overloads: OverloadMap,
 };
 
-export abstract class OverloadedFunction<Operator> {
+export abstract class BaseFunction<Operator> {
 
   arity: number | number[];
   private overloads: OverloadMap;
@@ -38,8 +38,8 @@ export abstract class OverloadedFunction<Operator> {
    * to the args.
    */
   apply = (args: Term[]): Term => {
-    const func = this.monomorph(args) || this.handleInvalidTypes(args);
-    return func(args);
+    const concreteFunction = this.monomorph(args) || this.handleInvalidTypes(args);
+    return concreteFunction(args);
   }
 
   protected abstract handleInvalidTypes(args: Term[]): never;
@@ -57,6 +57,7 @@ export abstract class OverloadedFunction<Operator> {
    */
   private monomorph(args: Term[]) {
     return (false
+      // TODO: Maybe use non primitive types first?
       || this.overloads.get(Typer.asConcreteTypes(args))
       || this.overloads.get(Typer.asTermTypes(args))
       || this.overloads.get(Typer.asGenericTerms(args))
@@ -99,7 +100,7 @@ class Typer {
  * See also: https://www.w3.org/TR/sparql11-query/#func-rdfTerms
  * and https://www.w3.org/TR/sparql11-query/#OperatorMapping
  */
-export class RegularFunction extends OverloadedFunction<C.RegularOperator> {
+export class RegularFunction extends BaseFunction<C.RegularOperator> {
   functionClass: 'regular' = 'regular';
 
   constructor(op: C.RegularOperator, definition: OverloadedDefinition) {
@@ -112,7 +113,7 @@ export class RegularFunction extends OverloadedFunction<C.RegularOperator> {
 }
 
 // Named Functions ------------------------------------------------------------
-export class NamedFunction extends OverloadedFunction<C.NamedOperator> {
+export class NamedFunction extends BaseFunction<C.NamedOperator> {
   functionClass: 'named' = 'named';
 
   constructor(op: C.NamedOperator, definition: OverloadedDefinition) {
@@ -175,3 +176,36 @@ export type SpecialDefinition = {
   applySync: E.SpecialApplicationSync;
   checkArity?: (args: E.Expression[]) => boolean;
 };
+
+// Type Promotion -------------------------------------------------------------
+
+const _promote: { [t in C.PrimitiveNumericType]: { [tt in C.PrimitiveNumericType]: C.PrimitiveNumericType } } = {
+  integer: {
+    integer: 'integer',
+    decimal: 'decimal',
+    float: 'float',
+    double: 'double',
+  },
+  decimal: {
+    integer: 'decimal',
+    decimal: 'decimal',
+    float: 'float',
+    double: 'double',
+  },
+  float: {
+    integer: 'float',
+    decimal: 'float',
+    float: 'float',
+    double: 'double',
+  },
+  double: {
+    integer: 'double',
+    decimal: 'double',
+    float: 'double',
+    double: 'double',
+  },
+}
+
+export function promote(left: C.PrimitiveNumericType, right: C.PrimitiveNumericType): C.PrimitiveNumericType {
+  return _promote[left][right];
+}

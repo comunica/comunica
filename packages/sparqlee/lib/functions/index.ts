@@ -7,12 +7,12 @@ import {
   NamedFunction,
   RegularFunction,
   SpecialFunction,
-} from './FunctionClasses';
+} from './Core';
 import { namedDefinitions } from './NamedFunctions';
 import { definitions } from './RegularFunctions';
 import { specialDefinitions } from './SpecialFunctions';
 
-export * from './FunctionClasses';
+export * from './Core';
 
 export type RegularFunctionMap = Map<C.RegularOperator, RegularFunction>;
 export const regularFunctions: RegularFunctionMap =

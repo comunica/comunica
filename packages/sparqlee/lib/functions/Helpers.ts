@@ -9,11 +9,10 @@ import * as E from '../expressions';
 import * as C from '../util/Consts';
 import * as Err from '../util/Errors';
 
-import { TypeURL as Type } from '../util/Consts';
-import { ArgumentType, OverloadMap } from './FunctionClasses';
+import { TypeURL } from '../util/Consts';
+import { ArgumentType, OverloadMap, promote } from './Core';
 
 type Term = E.TermExpression;
-type OpFactory = (dt?: C.TypeURL) => E.SimpleApplication;
 
 export function declare(): Builder {
   return new Builder();
@@ -165,23 +164,29 @@ export class Builder {
       .invalidLexicalForm(['nonlexical'], 1);
   }
 
-  /*
-  * Arithetic Operators take numbers, and return numbers.
-  * Check 'numeric' for behaviour of the generic numeric helper.
-  * https://www.w3.org/TR/sparql11-query/#OperatorMapping
-  */
+  /**
+   * Arithmetic operators take 2 numeric arguments, and return a single numerical
+   * value. The type of the return value is heavily dependant on the types of the
+   * input arguments. In JS everything is a double, but in SPARQL it is not.
+   *
+   * {@link https://www.w3.org/TR/sparql11-query/#OperatorMapping}
+   * {@link https://www.w3.org/TR/xpath-functions/#op.numeric}
+   *
+   * @param op the (simple) binary mathematical operator that
+   */
   arithmetic(op: (left: number, right: number) => number): Builder {
-    const opFac = (dt?: Type) => ([left, right]: Array<E.Literal<number>>) =>
-      number(op(left.typedValue, right.typedValue), dt || Type.XSD_FLOAT);
-    return this.numeric(opFac);
+    return this.numeric(([left, right]: E.NumericLiteral[]) => {
+      const promotionType = promote(left.type, right.type);
+      const resultType = C.decategorize(promotionType);
+      return number(op(left.typedValue, right.typedValue), resultType);
+    });
   }
 
   numberTest(test: (left: number, right: number) => boolean): Builder {
-    const func = ([left, right]: E.NumericLiteral[]) => {
+    return this.numeric(([left, right]: E.NumericLiteral[]) => {
       const result = test(left.typedValue, right.typedValue);
       return bool(result);
-    };
-    return this.numeric(() => func);
+    });
   }
 
   stringTest(test: (left: string, right: string) => boolean): Builder {
@@ -220,30 +225,30 @@ export class Builder {
       .invalidLexicalForm(['date', 'nonlexical'], 2);
   }
 
-  numeric(opFac: OpFactory): Builder {
+  numeric(op: E.SimpleApplication): Builder {
     return this
-      .set(['integer', 'integer'], opFac(Type.XSD_INTEGER))
-      .set(['integer', 'decimal'], opFac())
-      .set(['integer', 'float'], opFac())
-      .set(['integer', 'double'], opFac())
+      .set(['integer', 'integer'], op)
+      .set(['integer', 'decimal'], op)
+      .set(['integer', 'float'], op)
+      .set(['integer', 'double'], op)
       .invalidLexicalForm(['integer', 'nonlexical'], 2)
 
-      .set(['decimal', 'integer'], opFac())
-      .set(['decimal', 'decimal'], opFac(Type.XSD_DECIMAL))
-      .set(['decimal', 'float'], opFac())
-      .set(['decimal', 'double'], opFac())
+      .set(['decimal', 'integer'], op)
+      .set(['decimal', 'decimal'], op)
+      .set(['decimal', 'float'], op)
+      .set(['decimal', 'double'], op)
       .invalidLexicalForm(['decimal', 'nonlexical'], 2)
 
-      .set(['float', 'integer'], opFac())
-      .set(['float', 'decimal'], opFac())
-      .set(['float', 'float'], opFac(Type.XSD_FLOAT))
-      .set(['float', 'double'], opFac())
+      .set(['float', 'integer'], op)
+      .set(['float', 'decimal'], op)
+      .set(['float', 'float'], op)
+      .set(['float', 'double'], op)
       .invalidLexicalForm(['float', 'nonlexical'], 2)
 
-      .set(['double', 'integer'], opFac())
-      .set(['double', 'decimal'], opFac())
-      .set(['double', 'float'], opFac())
-      .set(['double', 'double'], opFac(Type.XSD_DOUBLE))
+      .set(['double', 'integer'], op)
+      .set(['double', 'decimal'], op)
+      .set(['double', 'float'], op)
+      .set(['double', 'double'], op)
       .invalidLexicalForm(['double', 'nonlexical'], 2)
 
       .invalidLexicalForm(['nonlexical', 'integer'], 1)
@@ -320,12 +325,12 @@ export function bool(val: boolean): E.BooleanLiteral {
 }
 
 export function number(num: number, dt?: C.TypeURL): E.NumericLiteral {
-  return new E.NumericLiteral(num, C.make(dt || Type.XSD_FLOAT), undefined);
+  return new E.NumericLiteral(num, C.make(dt || TypeURL.XSD_FLOAT), undefined);
 }
 
 export function numberFromString(str: string, dt?: C.TypeURL): E.NumericLiteral {
   const num = Number(str);
-  return new E.NumericLiteral(num, C.make(dt || Type.XSD_FLOAT), undefined);
+  return new E.NumericLiteral(num, C.make(dt || TypeURL.XSD_FLOAT), undefined);
 }
 
 export function string(s: string): E.StringLiteral {
