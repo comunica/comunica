@@ -15,22 +15,28 @@ import { SetFunction, TypeURL } from './../util/Consts';
 import { SimpleEvaluator } from './SimpleEvaluator';
 
 export class AggregateEvaluator {
-  private expression: Algebra.BoundAggregate;
+  private expression: Algebra.AggregateExpression;
   private aggregator: BaseAggregator<any>;
   private evaluator: SimpleEvaluator;
+  private throwError = false;
   private state: any;
 
-  constructor(expr: Algebra.BoundAggregate, start?: Bindings) {
+  constructor(expr: Algebra.AggregateExpression, start?: Bindings, throwError?: boolean) {
     this.expression = expr;
-    this.evaluator = new SimpleEvaluator(expr);
+    this.evaluator = new SimpleEvaluator(expr.expression);
     this.aggregator = new aggregators[expr.aggregator as SetFunction](expr);
+    this.throwError = throwError;
 
     try {
       const startTerm = this.evaluator.evaluate(start);
       this.state = this.aggregator.init(startTerm);
     } catch (err) {
-      this.put = () => { return; };
-      this.result = () => undefined;
+      if (throwError) {
+        throw err;
+      } else {
+        this.put = () => { return; };
+        this.result = () => undefined;
+      }
     }
   }
 
@@ -42,7 +48,7 @@ export class AggregateEvaluator {
    *
    * @param throwError wether this function should respect the spec and throw an error if no empty value is defined
    */
-  static emptyValue(expr: Algebra.BoundAggregate, throwError = false): RDF.Term {
+  static emptyValue(expr: Algebra.AggregateExpression, throwError = false): RDF.Term {
     if (throwError) {
       throw new Err.EmptyAggregateError();
     } else {
@@ -62,8 +68,12 @@ export class AggregateEvaluator {
       const term = this.evaluator.evaluate(bindings);
       this.state = this.aggregator.put(this.state, term);
     } catch (err) {
-      this.put = () => { return; };
-      this.result = () => undefined;
+      if (this.throwError) {
+        throw err;
+      } else {
+        this.put = () => { return; };
+        this.result = () => undefined;
+      }
     }
   }
 
@@ -76,7 +86,7 @@ abstract class BaseAggregator<State> {
   protected distinct: boolean;
   protected separator: string;
 
-  constructor(expr: Algebra.BoundAggregate) {
+  constructor(expr: Algebra.AggregateExpression) {
     this.distinct = expr.distinct;
     this.separator = expr.separator || ' ';
   }
@@ -238,7 +248,7 @@ class Sample extends BaseAggregator<RDF.Term> {
   }
 
   put(state: RDF.Term, term: RDF.Term): RDF.Term {
-    return; // First value is our sample
+    return state; // First value is our sample
   }
 
   result(state: RDF.Term): RDF.Term {
@@ -247,7 +257,7 @@ class Sample extends BaseAggregator<RDF.Term> {
 }
 
 export interface AggregatorClass {
-  new(expr: Algebra.BoundAggregate): BaseAggregator<any>;
+  new(expr: Algebra.AggregateExpression): BaseAggregator<any>;
   emptyValue(): RDF.Term;
 }
 export const aggregators: Readonly<{ [key in SetFunction]: AggregatorClass }> = {

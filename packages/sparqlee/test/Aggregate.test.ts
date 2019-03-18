@@ -1,6 +1,6 @@
 import { testAll } from './util/utils';
 
-describe('aggregates', () => {
+describe.skip('aggregates', () => {
   testAll([
     'avg(?a) = "3.14"^^xsd:float',
   ]);
