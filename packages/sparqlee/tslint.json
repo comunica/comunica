@@ -26,7 +26,7 @@
     "member-ordering": [true, { "order": "fields-first"}],
     "new-parens": true,
     "no-angle-bracket-type-assertion": true,
-    "no-any": true,
+    "no-any": false,
     "no-arg": true,
     "no-conditional-assignment": true,
     "no-construct": true,

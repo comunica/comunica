@@ -125,6 +125,12 @@ export class IncompatibleLanguageOperation extends ExpressionError {
   }
 }
 
+export class EmptyAggregateError extends ExpressionError {
+  constructor() {
+    super('Empty aggregate expression');
+  }
+}
+
 // Non Expression Errors ------------------------------------------------------
 
 /**
