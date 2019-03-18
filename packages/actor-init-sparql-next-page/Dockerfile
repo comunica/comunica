@@ -1,7 +1,7 @@
 FROM node:10
 
 # Install location
-ENV dir /var/www/@comunica/actor-init-sparql/
+ENV dir /var/www/@comunica/actor-init-sparql-next-page/
 
 # Copy the engine files (generated from package.json!files)
 COPY components ${dir}/components/
