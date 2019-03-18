@@ -63,6 +63,24 @@ export enum NumericType {
   XSD_POSITIVE_INTEGER = TypeURL.XSD_POSITIVE_INTEGER,
 }
 
+export enum DerivedIntegerType {
+  XSD_NON_POSITIVE_INTEGER = TypeURL.XSD_NON_POSITIVE_INTEGER,
+  XSD_NEGATIVE_INTEGER = TypeURL.XSD_NEGATIVE_INTEGER,
+  XSD_LONG = TypeURL.XSD_LONG,
+  XSD_INT = TypeURL.XSD_INT,
+  XSD_SHORT = TypeURL.XSD_SHORT,
+  XSD_BYTE = TypeURL.XSD_BYTE,
+  XSD_NON_NEGATIVE_INTEGER = TypeURL.XSD_NON_NEGATIVE_INTEGER,
+  XSD_UNSIGNED_LONG = TypeURL.XSD_UNSIGNED_LONG,
+  XSD_UNSIGNED_INT = TypeURL.XSD_UNSIGNED_INT,
+  XSD_UNSIGNED_SHORT = TypeURL.XSD_UNSIGNED_SHORT,
+  XSD_UNSIGNED_BYTE = TypeURL.XSD_UNSIGNED_BYTE,
+  XSD_POSITIVE_INTEGER = TypeURL.XSD_POSITIVE_INTEGER,
+}
+
+export const NumericTypes = Set(Object.values(NumericType));
+export const DerivedIntegerTypes = Set(Object.values(DerivedIntegerType));
+
 export const commonTerms: { [key: string]: RDF.Term } = {
   true: RDFDM.literal('true', RDFDM.namedNode(TypeURL.XSD_BOOLEAN)),
   false: RDFDM.literal('false', RDFDM.namedNode(TypeURL.XSD_BOOLEAN)),
@@ -248,6 +266,17 @@ export enum SpecialOperator {
 export const RegularOperators = Set(Object.values(RegularOperator));
 export const SpecialOperators = Set(Object.values(SpecialOperator));
 export const Operators = RegularOperators.union(SpecialOperators);
+
+export enum SetFunction {
+  COUNT = 'count',
+  SUM = 'sum',
+  MIN = 'min',
+  MAX = 'max',
+  AVG = 'avg',
+  GROUP_CONCAT = 'group_concat',
+  SAMPLE = 'sample',
+}
+export const SetFunctions = Set(Object.values(SetFunction));
 
 export type NamedOperator =
   // XPath Constructor functions

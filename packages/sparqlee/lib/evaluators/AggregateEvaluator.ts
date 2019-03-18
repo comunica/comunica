@@ -1,15 +1,18 @@
 // tslint:disable:object-literal-sort-keys
 // tslint:disable:max-classes-per-file
 
-import * as RDFDM from '@rdfjs/data-model';
-import { Set } from 'immutable';
 import * as RDF from 'rdf-js';
+
 import { Algebra } from 'sparqlalgebrajs';
-import { SimpleEvaluator } from './SimpleEvaluator';
 
-import { Bindings } from '../Types';
-
+import * as C from '../util/Consts';
 import * as Err from '../util/Errors';
+
+import { number, string } from '../functions/Helpers';
+import { Bindings } from '../Types';
+import { parseXSDFloat } from '../util/Parsing';
+import { SetFunction, TypeURL } from './../util/Consts';
+import { SimpleEvaluator } from './SimpleEvaluator';
 
 export class AggregateEvaluator {
   private expression: Algebra.BoundAggregate;
@@ -90,19 +93,9 @@ abstract class BaseAggregator<State> {
 
 }
 
-export enum SetFunction {
-  COUNT = 'count',
-  SUM = 'sum',
-  MIN = 'min',
-  MAX = 'max',
-  AVG = 'avg',
-  GROUP_CONCAT = 'group_concat',
-  SAMPLE = 'sample',
-}
-
 class Count extends BaseAggregator<number> {
   static emptyValue() {
-    return int(0);
+    return number(0, TypeURL.XSD_INTEGER).toRDF();
   }
 
   init(start: RDF.Term): number {
@@ -114,45 +107,45 @@ class Count extends BaseAggregator<number> {
   }
 
   result(state: number): RDF.Term {
-    return int(state);
+    return number(state, TypeURL.XSD_INTEGER).toRDF();
   }
 }
 
-type SumState = { sum: number, type: string };
+type SumState = { sum: number, type: C.NumericType };
 class Sum extends BaseAggregator<SumState> {
   static emptyValue() {
-    return int(0);
+    return number(0, TypeURL.XSD_INTEGER).toRDF();
   }
 
   init(start: RDF.Term): SumState {
-    const value = extractNumericValueOrError(start);
-    return { sum: value, type: (start as RDF.Literal).datatype.value };
+    const { value, type } = extractNumericValueAndTypeOrError(start);
+    return { sum: value, type };
   }
 
   put(state: SumState, term: RDF.Term): SumState {
-    const value = extractNumericValueOrError(term);
+    const { value, type } = extractNumericValueAndTypeOrError(term);
     return {
       sum: state.sum + value,
-      type: (state.type === (term as RDF.Literal).datatype.value)
+      type: (state.type === type)
         ? state.type
-        : promote(state.type, (term as RDF.Literal).datatype.value),
+        : promote(state.type, type),
     };
   }
 
   result(state: SumState): RDF.Term {
-    return RDFDM.literal(state.sum.toString(), state.type);
+    return number(state.sum, state.type as unknown as C.TypeURL).toRDF()
   }
 }
 
 type MinState = { minNum: number, minTerm: RDF.Term };
 class Min extends BaseAggregator<MinState> {
   init(start: RDF.Term): MinState {
-    const value = extractNumericValueOrError(start);
+    const { value } = extractNumericValueAndTypeOrError(start);
     return { minNum: value, minTerm: start };
   }
 
   put(state: MinState, term: RDF.Term): MinState {
-    const value = extractNumericValueOrError(term);
+    const { value } = extractNumericValueAndTypeOrError(term);
     if (value < state.minNum) {
       return {
         minNum: value,
@@ -170,12 +163,12 @@ class Min extends BaseAggregator<MinState> {
 type MaxState = { maxNum: number, maxTerm: RDF.Term };
 class Max extends BaseAggregator<MaxState> {
   init(start: RDF.Term): MaxState {
-    const value = extractNumericValueOrError(start);
+    const { value } = extractNumericValueAndTypeOrError(start);
     return { maxNum: value, maxTerm: start };
   }
 
   put(state: MaxState, term: RDF.Term): MaxState {
-    const value = extractNumericValueOrError(term);
+    const { value } = extractNumericValueAndTypeOrError(term);
     if (value >= state.maxNum) {
       return {
         maxNum: value,
@@ -190,40 +183,40 @@ class Max extends BaseAggregator<MaxState> {
   }
 }
 
-type AverageState = { sum: number, sumType: string, count: number };
+type AverageState = { sum: number, sumType: C.NumericType, count: number };
 class Average extends BaseAggregator<AverageState> {
   static emptyValue() {
-    return int(0);
+    return number(0, TypeURL.XSD_INTEGER).toRDF();
   }
 
   init(start: RDF.Term): AverageState {
-    const value = extractNumericValueOrError(start);
-    return { sum: value, sumType: (start as RDF.Literal).datatype.value, count: 1 };
+    const { value, type } = extractNumericValueAndTypeOrError(start);
+    return { sum: value, sumType: type, count: 1 };
   }
 
   put(state: AverageState, term: RDF.Term): AverageState {
-    const value = extractNumericValueOrError(term);
+    const { value, type } = extractNumericValueAndTypeOrError(term);
     return {
       sum: state.sum + value,
       count: state.count + 1,
-      sumType: (state.sumType === (term as RDF.Literal).datatype.value)
+      sumType: (state.sumType === type)
         ? state.sumType
-        : promote(state.sumType, (term as RDF.Literal).datatype.value),
+        : promote(state.sumType, type),
     };
   }
 
   result(state: AverageState): RDF.Term {
     const result = state.sum / state.count;
-    return state.sumType === 'http://www.w3.org/2001/XMLSchema#integer'
-      ? decimal(result)
-      : float(result);
+    return state.sumType === C.NumericType.XSD_INTEGER
+      ? number(result, TypeURL.XSD_DECIMAL).toRDF()
+      : number(result, TypeURL.XSD_FLOAT).toRDF();
   }
 
 }
 
 class GroupConcat extends BaseAggregator<string> {
   static emptyValue() {
-    return RDFDM.literal('');
+    return string('').toRDF();
   }
 
   init(start: RDF.Term): string {
@@ -235,7 +228,7 @@ class GroupConcat extends BaseAggregator<string> {
   }
 
   result(state: string): RDF.Term {
-    return RDFDM.literal(state);
+    return string(state).toRDF();
   }
 }
 
@@ -267,89 +260,53 @@ export const aggregators: Readonly<{ [key in SetFunction]: AggregatorClass }> = 
   sample: Sample,
 };
 
-function int(value: number): RDF.Literal {
-  return RDFDM.literal(value.toString(), RDFDM.namedNode('http://www.w3.org/2001/XMLSchema#integer'));
-}
-
-function float(value: number): RDF.Literal {
-  return RDFDM.literal(value.toString(), RDFDM.namedNode('http://www.w3.org/2001/XMLSchema#float'));
-}
-
-function decimal(value: number): RDF.Literal {
-  return RDFDM.literal(value.toString(), RDFDM.namedNode('http://www.w3.org/2001/XMLSchema#decimal'));
-}
-
 // https://www.w3.org/TR/xpath-31/#promotion
-const promoTree: { [key: string]: { [key: string]: string } } = {
+const promoTree: { [key: string]: { [key: string]: C.NumericType } } = {
   'http://www.w3.org/2001/XMLSchema#integer': {
-    'http://www.w3.org/2001/XMLSchema#integer': 'http://www.w3.org/2001/XMLSchema#integer',
-    'http://www.w3.org/2001/XMLSchema#float': 'http://www.w3.org/2001/XMLSchema#float',
-    'http://www.w3.org/2001/XMLSchema#decimal': 'http://www.w3.org/2001/XMLSchema#decimal',
-    'http://www.w3.org/2001/XMLSchema#double': 'http://www.w3.org/2001/XMLSchema#double',
+    'http://www.w3.org/2001/XMLSchema#integer': C.NumericType.XSD_INTEGER,
+    'http://www.w3.org/2001/XMLSchema#float': C.NumericType.XSD_FLOAT,
+    'http://www.w3.org/2001/XMLSchema#decimal': C.NumericType.XSD_DECIMAL,
+    'http://www.w3.org/2001/XMLSchema#double': C.NumericType.XSD_DOUBLE,
   },
   'http://www.w3.org/2001/XMLSchema#float': {
-    'http://www.w3.org/2001/XMLSchema#integer': 'http://www.w3.org/2001/XMLSchema#float',
-    'http://www.w3.org/2001/XMLSchema#float': 'http://www.w3.org/2001/XMLSchema#float',
-    'http://www.w3.org/2001/XMLSchema#decimal': 'http://www.w3.org/2001/XMLSchema#float',
-    'http://www.w3.org/2001/XMLSchema#double': 'http://www.w3.org/2001/XMLSchema#double',
+    'http://www.w3.org/2001/XMLSchema#integer': C.NumericType.XSD_FLOAT,
+    'http://www.w3.org/2001/XMLSchema#float': C.NumericType.XSD_FLOAT,
+    'http://www.w3.org/2001/XMLSchema#decimal': C.NumericType.XSD_FLOAT,
+    'http://www.w3.org/2001/XMLSchema#double': C.NumericType.XSD_FLOAT,
   },
   'http://www.w3.org/2001/XMLSchema#decimal': {
-    'http://www.w3.org/2001/XMLSchema#integer': 'http://www.w3.org/2001/XMLSchema#decimal',
-    'http://www.w3.org/2001/XMLSchema#float': 'http://www.w3.org/2001/XMLSchema#float',
-    'http://www.w3.org/2001/XMLSchema#decimal': 'http://www.w3.org/2001/XMLSchema#decimal',
-    'http://www.w3.org/2001/XMLSchema#double': 'http://www.w3.org/2001/XMLSchema#double',
+    'http://www.w3.org/2001/XMLSchema#integer': C.NumericType.XSD_DECIMAL,
+    'http://www.w3.org/2001/XMLSchema#float': C.NumericType.XSD_FLOAT,
+    'http://www.w3.org/2001/XMLSchema#decimal': C.NumericType.XSD_DECIMAL,
+    'http://www.w3.org/2001/XMLSchema#double': C.NumericType.XSD_DOUBLE,
   },
   'http://www.w3.org/2001/XMLSchema#double': {
-    'http://www.w3.org/2001/XMLSchema#integer': 'http://www.w3.org/2001/XMLSchema#double',
-    'http://www.w3.org/2001/XMLSchema#float': 'http://www.w3.org/2001/XMLSchema#double',
-    'http://www.w3.org/2001/XMLSchema#decimal': 'http://www.w3.org/2001/XMLSchema#double',
-    'http://www.w3.org/2001/XMLSchema#double': 'http://www.w3.org/2001/XMLSchema#double',
+    'http://www.w3.org/2001/XMLSchema#integer': C.NumericType.XSD_DOUBLE,
+    'http://www.w3.org/2001/XMLSchema#float': C.NumericType.XSD_DOUBLE,
+    'http://www.w3.org/2001/XMLSchema#decimal': C.NumericType.XSD_DOUBLE,
+    'http://www.w3.org/2001/XMLSchema#double': C.NumericType.XSD_DOUBLE,
   },
 };
 
-function promote(type1: string, type2: string): string {
-  if (derivedIntegerTypes.contains(type1)) {
-    type1 = 'http://www.w3.org/2001/XMLSchema#integer';
+function promote(type1: C.NumericType, type2: C.NumericType): C.NumericType {
+  if (C.DerivedIntegerTypes.contains(type1)) {
+    type1 = C.NumericType.XSD_INTEGER;
   }
 
-  if (derivedIntegerTypes.contains(type2)) {
-    type2 = 'http://www.w3.org/2001/XMLSchema#integer';
+  if (C.DerivedIntegerTypes.contains(type2)) {
+    type2 = C.NumericType.XSD_INTEGER;
   }
 
   return promoTree[type1][type2];
 }
 
-function extractNumericValueOrError(term: RDF.Term): number {
+function extractNumericValueAndTypeOrError(term: RDF.Term): { value: number, type: C.NumericType } {
   // TODO: Check behaviour
-  if (
-    term.termType !== 'Literal'
-    || !numericTypes.contains(term.datatype.value)
-  ) {
+  if (term.termType !== 'Literal' || !C.NumericTypes.contains(term.datatype.value)) {
     throw new Error('Term is not numeric');
   }
-  return parseFloat(term.value);
+
+  const type: C.NumericType = term.datatype.value as unknown as C.NumericType;
+  const value = parseXSDFloat(term.value);
+  return { type, value };
 }
-
-const baseNumericTypes = Set([
-  'http://www.w3.org/2001/XMLSchema#integer',
-  'http://www.w3.org/2001/XMLSchema#decimal',
-  'http://www.w3.org/2001/XMLSchema#float',
-  'http://www.w3.org/2001/XMLSchema#double',
-]);
-
-const derivedIntegerTypes = Set([
-  'http://www.w3.org/2001/XMLSchema#nonPositiveInteger',
-  'http://www.w3.org/2001/XMLSchema#negativeInteger',
-  'http://www.w3.org/2001/XMLSchema#long',
-  'http://www.w3.org/2001/XMLSchema#int',
-  'http://www.w3.org/2001/XMLSchema#short',
-  'http://www.w3.org/2001/XMLSchema#byte',
-  'http://www.w3.org/2001/XMLSchema#nonNegativeInteger',
-  'http://www.w3.org/2001/XMLSchema#unsignedLong',
-  'http://www.w3.org/2001/XMLSchema#unsignedInt',
-  'http://www.w3.org/2001/XMLSchema#unsignedShort',
-  'http://www.w3.org/2001/XMLSchema#unsignedByte',
-  'http://www.w3.org/2001/XMLSchema#positiveInteger',
-]);
-
-const numericTypes = baseNumericTypes.union(derivedIntegerTypes);

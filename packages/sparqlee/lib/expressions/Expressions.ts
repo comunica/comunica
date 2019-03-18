@@ -71,6 +71,7 @@ export type SpecialOperatorExpression = ExpressionProps & {
   applySync: SpecialApplicationSync,
 };
 
+// TODO: Create alias Term = TermExpression
 export type TermType = 'namedNode' | 'literal' | 'blankNode';
 export type TermExpression = ExpressionProps & {
   expressionType: ExpressionType.Term;
