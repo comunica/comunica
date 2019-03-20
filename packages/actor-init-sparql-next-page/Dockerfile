@@ -4,7 +4,6 @@ FROM node:10
 ENV dir /var/www/@comunica/actor-init-sparql-next-page/
 
 # Copy the engine files (generated from package.json!files)
-COPY components ${dir}/components/
 COPY config ${dir}/config/
 COPY lib/*.js ${dir}/lib/
 COPY bin/*.js ${dir}/bin/
