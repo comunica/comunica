@@ -4,6 +4,7 @@ import { ArrayIterator } from "asynciterator";
 import { Variable } from "rdf-js";
 import { Algebra } from 'sparqlalgebrajs';
 const arrayifyStream = require('arrayify-stream');
+import * as sparqlee from "sparqlee";
 
 import { ActorQueryOperation, Bindings, IActionQueryOperation } from "@comunica/bus-query-operation";
 import { Bus } from "@comunica/core";
@@ -28,6 +29,19 @@ const simpleXYZinput = {
       type: "pattern",
     },
   ],
+};
+
+const countY: Algebra.BoundAggregate = {
+  type: "expression",
+  expressionType: "aggregate",
+  aggregator: "count",
+  expression: {
+    type: "expression",
+    expressionType: "term",
+    term: variable('y'),
+  },
+  distinct: true,
+  variable: variable('count'),
 };
 
 const getDefaultMediatorQueryOperation = () => ({
@@ -139,19 +153,6 @@ describe('ActorQueryOperationGroup', () => {
     });
 
     it('should not test on distinct aggregate', async () => {
-      const countY: Algebra.BoundAggregate = {
-        type: "expression",
-        expressionType: "aggregate",
-        aggregator: "count",
-        expression: {
-          type: "expression",
-          expressionType: "term",
-          term: variable('y'),
-        },
-        distinct: true,
-        variable: variable('count'),
-      };
-
       const { op, actor } = constructCase({
         inputBindings: [],
         groupVariables: ['x'],
@@ -212,19 +213,6 @@ describe('ActorQueryOperationGroup', () => {
     });
 
     it('should aggregate single vars', async () => {
-      const countY: Algebra.BoundAggregate = {
-        type: "expression",
-        expressionType: "aggregate",
-        aggregator: "count",
-        expression: {
-          type: "expression",
-          expressionType: "term",
-          term: variable('y'),
-        },
-        distinct: false,
-        variable: variable('count'),
-      };
-
       const { op, actor } = constructCase({
         inputBindings: [
           Bindings({ '?x': literal('aaa'), '?y': literal('aaa') }),
@@ -249,19 +237,6 @@ describe('ActorQueryOperationGroup', () => {
     });
 
     it('should aggregate multiple vars', async () => {
-      const countY: Algebra.BoundAggregate = {
-        type: "expression",
-        expressionType: "aggregate",
-        aggregator: "count",
-        expression: {
-          type: "expression",
-          expressionType: "term",
-          term: variable('y'),
-        },
-        distinct: false,
-        variable: variable('count'),
-      };
-
       const sumZ: Algebra.BoundAggregate = {
         type: "expression",
         expressionType: "aggregate",
@@ -299,19 +274,6 @@ describe('ActorQueryOperationGroup', () => {
     });
 
     it('should aggregate implicit', async () => {
-      const countY: Algebra.BoundAggregate = {
-        type: "expression",
-        expressionType: "aggregate",
-        aggregator: "count",
-        expression: {
-          type: "expression",
-          expressionType: "term",
-          term: variable('y'),
-        },
-        distinct: false,
-        variable: variable('count'),
-      };
-
       const { op, actor } = constructCase({
         inputBindings: [
           Bindings({ '?x': literal('aaa'), '?y': literal('aaa') }),
@@ -369,6 +331,65 @@ describe('ActorQueryOperationGroup', () => {
         Bindings({ '?x': literal('ccc'), '?sum': int('1') }),
       ]);
       expect(output.variables).toMatchObject(['?x', '?sum']);
+    });
+
+    it('should pass errors in the input stream', async () => {
+      const inputBindings = [
+        Bindings({ '?x': literal('a'), '?y': int('1') }),
+        Bindings({ '?x': literal('b'), '?y': int('2') }),
+        Bindings({ '?x': literal('c'), '?y': int('3') }),
+      ];
+      const bindingsStream = new ArrayIterator(inputBindings).transform({
+        transform: (result, done) => {
+          bindingsStream._push(result);
+          bindingsStream.emit('error', 'Test error');
+          done(result);
+        },
+      });
+      const myMediatorQueryOperation = {
+        mediate: (arg) => Promise.resolve({
+          bindingsStream,
+          metadata: () => Promise.resolve({ totalItems: inputBindings.length }),
+          operated: arg,
+          type: 'bindings',
+          variables: ['x', 'y'],
+        }),
+      };
+      const { op } = constructCase({
+        inputBindings: [],
+        groupVariables: ['x'],
+        inputVariables: ['x', 'y', 'z'],
+        inputOp: simpleXYZinput,
+        aggregates: [countY],
+      });
+
+      const actor = new ActorQueryOperationGroup({
+        name: 'actor',
+        bus,
+        mediatorQueryOperation: myMediatorQueryOperation as any,
+      });
+      expect((async () => arrayifyStream(await actor.run(op)))())
+        .rejects
+        .toBeTruthy();
+    });
+
+    it('should reject in case something unexpected happens', async () => {
+      const temp = sparqlee.AggregateEvaluator.emptyValue;
+      sparqlee.AggregateEvaluator.emptyValue = () => { throw Error("test error"); };
+      const { op, actor } = constructCase({
+        inputBindings: [],
+        groupVariables: ['x'],
+        inputVariables: ['x', 'y', 'z'],
+        inputOp: simpleXYZinput,
+        aggregates: [countY],
+      });
+      try {
+        await arrayifyStream((await actor.run(op) as any).bindingsStream);
+        fail();
+      } catch (err) {
+        sparqlee.AggregateEvaluator.emptyValue = temp;
+        expect(() => { throw err; }).toThrow("test error");
+      }
     });
 
     it.skip('should respect distinct', async () => {

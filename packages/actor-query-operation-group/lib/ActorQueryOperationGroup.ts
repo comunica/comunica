@@ -91,8 +91,8 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
           // resolve();
           let rows: Bindings[] = groups.map((aggregators, groupBindings) => {
             // Collect aggregator bindings
+            // If the aggregate errorred, the result will be undefined
             const aggBindings = aggregators.map((aggregator) => aggregator.result());
-            // .filter((term) => !!term); // Filter undefined values (TODO ask wanted behaviour)
 
             // Merge grouping bindings and aggregator bindings
             return groupBindings.merge(aggBindings);
