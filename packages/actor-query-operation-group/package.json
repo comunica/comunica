@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-operation-group",
-  "version": "1.6.4",
+  "version": "1.6.5",
   "description": "A group query-operation actor",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-group",
   "lsd:components": "components/components.jsonld",

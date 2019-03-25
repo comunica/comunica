@@ -1,6 +1,15 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v1.6.5"></a>
+## [v1.6.5](https://github.com/comunica/comunica/compare/v1.6.4...v1.6.5) - 2019-03-15
+
+### Added
+* [Emit bound pattern metadata in BGP subcontexts](https://github.com/comunica/comunica/commit/ddb5af7f7d0e57177c3a9cc0851d91e77e17405b)
+
+### Fixed
+* [Fix invalid expression actor test functions](https://github.com/comunica/comunica/commit/bc7654a5db7068c11af0063b294e4687000fa087)
+
 <a name="v1.6.4"></a>
 ## [v1.6.4](https://github.com/comunica/comunica/compare/v1.6.3...v1.6.4) - 2019-03-05
 

@@ -1,5 +1,5 @@
-import {Actor, IAction, IActorArgs, IActorOutput, IActorTest} from "@comunica/core";
-import {AsyncIterator, BufferedIterator, SimpleTransformIteratorOptions} from "asynciterator";
+import {Actor, IAction, IActorArgs, IActorTest} from "@comunica/core";
+import {AsyncIterator} from "asynciterator";
 import * as RDF from "rdf-js";
 import {Algebra} from "sparqlalgebrajs";
 import {BindingsStream} from "./Bindings";
@@ -164,13 +164,26 @@ export interface IActorQueryOperationOutputBoolean extends IActorQueryOperationO
 }
 
 /**
+ * @type {string} Context entry for current metadata.
+ *                I.e., the metadata that was used to determine the next BGP operation.
+ * @value {any} A metadata hash.
+ */
+export const KEY_CONTEXT_BGP_CURRENTMETADATA: string = '@comunica/bus-query-operation:bgpCurrentMetadata';
+/**
  * @type {string} Context entry for an array of parent metadata.
  *                I.e., an array of the metadata that was present before materializing the current BGP operations.
  *                This can be passed in 'bgp' actions.
  *                The array entries should correspond to the pattern entries in the BGP.
- * @value {any} A metadata hash.
+ * @value {any} An array of metadata hashes.
  */
 export const KEY_CONTEXT_BGP_PARENTMETADATA: string = '@comunica/bus-query-operation:bgpParentMetadata';
+/**
+ * @type {string} Context entry for indicating which patterns were bound from variables.
+ *                I.e., an array of the same length as the value of KEY_CONTEXT_BGP_PARENTMETADATA,
+ *                where each array value corresponds to the pattern bindings for the corresponding pattern.
+ * @value {any} An array of {@link IPatternBindings}.
+ */
+export const KEY_CONTEXT_BGP_PATTERNBINDINGS: string = '@comunica/bus-query-operation:bgpPatternBindings';
 /**
  * @type {string} Context entry for parent metadata.
  *                I.e., the metadata that was present before materializing the current operation.
@@ -178,3 +191,10 @@ export const KEY_CONTEXT_BGP_PARENTMETADATA: string = '@comunica/bus-query-opera
  * @value {any} A metadata hash.
  */
 export const KEY_CONTEXT_PATTERN_PARENTMETADATA: string = '@comunica/bus-query-operation:patternParentMetadata';
+
+/**
+ * Binds a quad pattern term's position to a variable.
+ */
+export interface IPatternBindings {
+  [termPosition: string]: RDF.Variable;
+}
