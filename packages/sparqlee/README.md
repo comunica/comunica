@@ -51,10 +51,37 @@ try {
 
 ### Streams
 
-'Aggregates' and 'Exists' operations are annoying problems to tackle in the context of an expression evaluator, since they make the whole thing stateful.
-They might span entire streams and, depending on the use case, have very different requirements for speed and memory consumption. Sparqlee has therefore decided to delegate this responsibility back to you (and might provide utility in the future). It accepts functions that will resolve the respective aggregate and exists operators, and will use those when needed. This way, the library can still be optimized for simple use cases, both in it's API as in it's development time, while it can still support the full spec.
+'Aggregates' and 'Exists' operations are annoying problems to tackle in the context of an expression evaluator, since they make the whole thing statefull.
+They might span entire streams and, depending on the use case, have very different requirements for speed and memory consumption. Sparqlee has therefore decided to delegate this responsibility back to you.
 
-**NOTE: Aggregates and Exists are not implemented yet.**
+You can, if you want, pass hooks to the evaluators of the shape:
+
+```ts
+export type AggregateHook = (expression: Alg.AggregateExpression) => Promise<RDF.Term>;
+export type ExistenceHook = (expression: Alg.ExistenceExpression, mapping: Bindings) => Promise<boolean>;
+```
+
+If Sparqlee encounters any aggregate or existence expression, it will call this hook with the relevant information so you can resolve it yourself.
+
+#### Aggregates
+
+We provide an `AggregateEvaluator` to which you can pass the individual bindings in the stream, end ask the aggregated result back. It uses Sparqlee's internal type system for operations such as `sum` and `avg`.
+
+```ts
+const stream = [bindings1, bindings2, bindings3];
+
+if (stream.length === 0) {
+  return AggregateEvaluator.emptyValue(aggregateExpression);
+} else {
+  const evaluator = = new AggregateEvaluator(aggregateExpression, bindings[0]);
+  stream.slice(1).forEach((bindings) => evaluator.put(bindings));
+  return evaluator.result();
+}
+```
+
+### Custom functions
+
+**NOTE: Not yet implemented. On the roadmap.**
 
 ## Spec compliance
 

@@ -17,6 +17,7 @@ import { parseXSDFloat } from '../util/Parsing';
 import { SetFunction, TypeURL } from './../util/Consts';
 import { SimpleEvaluator } from './SimpleEvaluator';
 
+// TODO: Support hooks
 export class AggregateEvaluator {
   private expression: Algebra.AggregateExpression;
   private aggregator: BaseAggregator<any>;
