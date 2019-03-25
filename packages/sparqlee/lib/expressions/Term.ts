@@ -74,7 +74,7 @@ export class Literal<T> extends Term {
 
   toRDF(): RDF.Term {
     return RDFDM.literal(
-      this.strValue || this.typedValue.toString(),
+      this.strValue || this.str(),
       this.language || this.typeURL);
   }
 
@@ -84,16 +84,45 @@ export class Literal<T> extends Term {
 }
 
 export class NumericLiteral extends Literal<number> {
+  private static specificFormatters: { [key in C.PrimitiveNumericType]: (val: number) => string } = {
+    integer: (value) => value.toFixed(), // Avoid emitting non lexical integers
+    float: (value) => value.toString(),
+    decimal: (value) => value.toString(),
+    // https://www.w3.org/TR/xmlschema-2/#double
+    double: (value) => {
+      const jsExponential = value.toExponential();
+      const [jsMantisse, jsExponent] = jsExponential.split('e');
+
+      // leading + must be removed for integer
+      // https://www.w3.org/TR/xmlschema-2/#integer
+      const exponent = jsExponent.replace(/\+/, '');
+
+      // SPARQL test suite prefers trailing zero's
+      const mantisse = jsMantisse.match(/\./)
+        ? jsMantisse
+        : jsMantisse + '.0';
+
+      return `${mantisse}E${exponent}`;
+    },
+  };
+
   type: C.PrimitiveNumericType;
+
   coerceEBV(): boolean {
     return !!this.typedValue;
   }
+
   toRDF(): RDF.Term {
     const term = super.toRDF();
     if (!isFinite(this.typedValue)) {
       term.value = term.value.replace('Infinity', 'INF');
     }
     return term;
+  }
+
+  str(): string {
+    return this.strValue
+      || NumericLiteral.specificFormatters[this.type](this.typedValue);
   }
 }
 

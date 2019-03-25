@@ -35,7 +35,21 @@ export function transformAlgebra(expr: Alg.Expression, hooks: Hooks = {}): E.Exp
   }
 }
 
-export function transformTerm(term: Alg.TermExpression): E.Expression {
+/**
+ * Transforms an RDF term to the internal representation of a term,
+ * assuming it is not a variable, which would be an expression (internally).
+ *
+ * @param term RDF term to transform into internal representation of a term
+ */
+export function transformRDFTermUnsafe(term: RDF.Term): E.Term {
+  return transformTerm({
+    term,
+    type: 'expression',
+    expressionType: 'term',
+  }) as E.Term;
+}
+
+function transformTerm(term: Alg.TermExpression): E.Expression {
   if (!term.term) { throw new Err.InvalidExpression(term); }
 
   switch (term.term.termType) {
@@ -66,7 +80,6 @@ export function transformLiteral(lit: RDF.Literal): E.Literal<any> {
         : new E.StringLiteral(lit.value);
     }
 
-    case DT.XSD_ANY_URI:
     case DT.XSD_STRING:
       return new E.StringLiteral(lit.value);
     case DT.RDF_LANG_STRING:

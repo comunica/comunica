@@ -1,5 +1,5 @@
-import { ExpressionError } from '..';
-import { Example } from '../util/Util';
+import { ExpressionError } from '../../dist';
+import { Example } from '../../util/Util';
 
 describe('the evaluation of', () => {
   describe('faulty expressions', () => {

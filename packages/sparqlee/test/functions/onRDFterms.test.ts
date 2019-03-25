@@ -9,6 +9,7 @@ describe('evaluation of functions on RDF terms', () => {
       'str("3"^^xsd:integer) = "3"',
       'str("badlex"^^xsd:integer) = "badlex"',
       'str(<http://dbpedia.org/resource/Adventist_Heritage>) = "http://dbpedia.org/resource/Adventist_Heritage"',
+      'str("1000"^^xsd:integer + "1e3"^^xsd:double) = "2.0E3"',
     ]);
   });
 

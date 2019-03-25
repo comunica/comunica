@@ -6,7 +6,7 @@ import * as E from '../expressions/Expressions';
 import * as C from '../util/Consts';
 import * as Err from '../util/Errors';
 
-import { transformAlgebra, transformTerm } from '../Transformation';
+import { transformAlgebra, transformRDFTermUnsafe } from '../Transformation';
 import { Bindings, Hooks } from '../Types';
 
 type Expression = E.Expression;
@@ -64,14 +64,10 @@ export class AsyncEvaluator {
 
   private async evalVariable(expr: Variable, mapping: Bindings): Promise<Term> {
     const term = mapping.get(expr.name);
-
-    if (!term) { throw new Err.UnboundVariableError(expr.name, mapping); }
-
-    return transformTerm({
-      term,
-      type: 'expression',
-      expressionType: 'term',
-    }) as Term;
+    if (!term) {
+      throw new Err.UnboundVariableError(expr.name, mapping);
+    }
+    return transformRDFTermUnsafe(term);
   }
 
   private async evalOperator(expr: Operator, mapping: Bindings): Promise<Term> {
@@ -94,20 +90,14 @@ export class AsyncEvaluator {
 
   private async evalExistence(expr: Existence, mapping: Bindings): Promise<Term> {
     const result = await expr.exists_with(mapping);
-    return transformTerm({
-      term: RDFDM.literal(result.toString(), C.make(C.TypeURL.XSD_BOOLEAN)),
-      expressionType: 'term',
-      type: 'expression',
-    }) as Term;
+    return transformRDFTermUnsafe(
+      RDFDM.literal(result.toString(), C.make(C.TypeURL.XSD_BOOLEAN)),
+    );
   }
 
+  // TODO: Remove?
   private async evalAggregate(expr: Aggregate, _mapping: Bindings): Promise<Term> {
-    const result = await expr.aggregate();
-    return transformTerm({
-      type: 'expression',
-      expressionType: 'term',
-      term: result,
-    }) as Term;
+    return transformRDFTermUnsafe(await expr.aggregate());
   }
 }
 

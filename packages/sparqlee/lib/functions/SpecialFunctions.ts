@@ -5,7 +5,7 @@ import * as C from '../util/Consts';
 import * as Err from '../util/Errors';
 
 import { Bindings } from '../Types';
-import { bool, string, langString } from './Helpers';
+import { bool, langString, string } from './Helpers';
 import { regularFunctions, specialFunctions } from './index';
 
 type Term = E.TermExpression;

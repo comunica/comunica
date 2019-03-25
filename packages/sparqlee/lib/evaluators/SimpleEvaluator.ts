@@ -4,7 +4,7 @@ import { Algebra as Alg } from 'sparqlalgebrajs';
 import * as E from '../expressions/Expressions';
 import * as Err from '../util/Errors';
 
-import { transformAlgebra, transformTerm } from '../Transformation';
+import { transformAlgebra, transformRDFTermUnsafe } from '../Transformation';
 import { Bindings } from '../Types';
 
 type Expression = E.Expression;
@@ -66,14 +66,10 @@ export class SimpleEvaluator {
 
   private evalVariable(expr: Variable, mapping: Bindings): Term {
     const term = mapping.get(expr.name);
-
-    if (!term) { throw new Err.UnboundVariableError(expr.name, mapping); }
-
-    return transformTerm({
-      term,
-      type: 'expression',
-      expressionType: 'term',
-    }) as Term;
+    if (!term) {
+      throw new Err.UnboundVariableError(expr.name, mapping);
+    }
+    return transformRDFTermUnsafe(term);
   }
 
   private evalOperator(expr: Operator, mapping: Bindings): Term {

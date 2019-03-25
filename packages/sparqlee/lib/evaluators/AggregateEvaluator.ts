@@ -1,13 +1,16 @@
 // tslint:disable:object-literal-sort-keys
 // tslint:disable:max-classes-per-file
 
+import * as RDFDM from '@rdfjs/data-model';
 import * as RDF from 'rdf-js';
 
 import { Algebra } from 'sparqlalgebrajs';
 
+import * as E from '../expressions';
 import * as C from '../util/Consts';
 import * as Err from '../util/Errors';
 
+import { regularFunctions } from '../functions';
 import { number, string } from '../functions/Helpers';
 import { Bindings } from '../Types';
 import { parseXSDFloat } from '../util/Parsing';
@@ -26,7 +29,6 @@ export class AggregateEvaluator {
     this.evaluator = new SimpleEvaluator(expr.expression);
     this.aggregator = new aggregators[expr.aggregator as SetFunction](expr);
     this.throwError = throwError;
-
     try {
       const startTerm = this.evaluator.evaluate(start);
       this.state = this.aggregator.init(startTerm);
@@ -121,29 +123,28 @@ class Count extends BaseAggregator<number> {
   }
 }
 
-type SumState = { sum: number, type: C.NumericType };
+type SumState = E.NumericLiteral;
 class Sum extends BaseAggregator<SumState> {
+  summer = regularFunctions.get(C.RegularOperator.ADDITION);
+
   static emptyValue() {
     return number(0, TypeURL.XSD_INTEGER).toRDF();
   }
 
   init(start: RDF.Term): SumState {
     const { value, type } = extractNumericValueAndTypeOrError(start);
-    return { sum: value, type };
+    return new E.NumericLiteral(value, RDFDM.namedNode(type));
   }
 
   put(state: SumState, term: RDF.Term): SumState {
     const { value, type } = extractNumericValueAndTypeOrError(term);
-    return {
-      sum: state.sum + value,
-      type: (state.type === type)
-        ? state.type
-        : promote(state.type, type),
-    };
+    const internalTerm = new E.NumericLiteral(value, RDFDM.namedNode(type));
+    const sum = this.summer.apply([state, internalTerm]) as E.NumericLiteral;
+    return sum;
   }
 
   result(state: SumState): RDF.Term {
-    return number(state.sum, state.type as unknown as C.TypeURL).toRDF()
+    return state.toRDF();
   }
 }
 
@@ -193,33 +194,35 @@ class Max extends BaseAggregator<MaxState> {
   }
 }
 
-type AverageState = { sum: number, sumType: C.NumericType, count: number };
+type AverageState = { sum: E.NumericLiteral, count: number };
 class Average extends BaseAggregator<AverageState> {
+  summer = regularFunctions.get(C.RegularOperator.ADDITION);
+  divider = regularFunctions.get(C.RegularOperator.DIVISION);
+
   static emptyValue() {
     return number(0, TypeURL.XSD_INTEGER).toRDF();
   }
 
   init(start: RDF.Term): AverageState {
     const { value, type } = extractNumericValueAndTypeOrError(start);
-    return { sum: value, sumType: type, count: 1 };
+    const sum = new E.NumericLiteral(value, RDFDM.namedNode(type));
+    return { sum, count: 1 };
   }
 
   put(state: AverageState, term: RDF.Term): AverageState {
     const { value, type } = extractNumericValueAndTypeOrError(term);
+    const internalTerm = new E.NumericLiteral(value, RDFDM.namedNode(type));
+    const sum = this.summer.apply([state.sum, internalTerm]) as E.NumericLiteral;
     return {
-      sum: state.sum + value,
+      sum,
       count: state.count + 1,
-      sumType: (state.sumType === type)
-        ? state.sumType
-        : promote(state.sumType, type),
     };
   }
 
   result(state: AverageState): RDF.Term {
-    const result = state.sum / state.count;
-    return state.sumType === C.NumericType.XSD_INTEGER
-      ? number(result, TypeURL.XSD_DECIMAL).toRDF()
-      : number(result, TypeURL.XSD_FLOAT).toRDF();
+    const count = new E.NumericLiteral(state.count, RDFDM.namedNode(C.TypeURL.XSD_INTEGER));
+    const result = this.divider.apply([state.sum, count]);
+    return result.toRDF();
   }
 
 }
@@ -270,53 +273,13 @@ export const aggregators: Readonly<{ [key in SetFunction]: AggregatorClass }> = 
   sample: Sample,
 };
 
-// https://www.w3.org/TR/xpath-31/#promotion
-const promoTree: { [key: string]: { [key: string]: C.NumericType } } = {
-  'http://www.w3.org/2001/XMLSchema#integer': {
-    'http://www.w3.org/2001/XMLSchema#integer': C.NumericType.XSD_INTEGER,
-    'http://www.w3.org/2001/XMLSchema#float': C.NumericType.XSD_FLOAT,
-    'http://www.w3.org/2001/XMLSchema#decimal': C.NumericType.XSD_DECIMAL,
-    'http://www.w3.org/2001/XMLSchema#double': C.NumericType.XSD_DOUBLE,
-  },
-  'http://www.w3.org/2001/XMLSchema#float': {
-    'http://www.w3.org/2001/XMLSchema#integer': C.NumericType.XSD_FLOAT,
-    'http://www.w3.org/2001/XMLSchema#float': C.NumericType.XSD_FLOAT,
-    'http://www.w3.org/2001/XMLSchema#decimal': C.NumericType.XSD_FLOAT,
-    'http://www.w3.org/2001/XMLSchema#double': C.NumericType.XSD_FLOAT,
-  },
-  'http://www.w3.org/2001/XMLSchema#decimal': {
-    'http://www.w3.org/2001/XMLSchema#integer': C.NumericType.XSD_DECIMAL,
-    'http://www.w3.org/2001/XMLSchema#float': C.NumericType.XSD_FLOAT,
-    'http://www.w3.org/2001/XMLSchema#decimal': C.NumericType.XSD_DECIMAL,
-    'http://www.w3.org/2001/XMLSchema#double': C.NumericType.XSD_DOUBLE,
-  },
-  'http://www.w3.org/2001/XMLSchema#double': {
-    'http://www.w3.org/2001/XMLSchema#integer': C.NumericType.XSD_DOUBLE,
-    'http://www.w3.org/2001/XMLSchema#float': C.NumericType.XSD_DOUBLE,
-    'http://www.w3.org/2001/XMLSchema#decimal': C.NumericType.XSD_DOUBLE,
-    'http://www.w3.org/2001/XMLSchema#double': C.NumericType.XSD_DOUBLE,
-  },
-};
-
-function promote(type1: C.NumericType, type2: C.NumericType): C.NumericType {
-  if (C.DerivedIntegerTypes.contains(type1)) {
-    type1 = C.NumericType.XSD_INTEGER;
-  }
-
-  if (C.DerivedIntegerTypes.contains(type2)) {
-    type2 = C.NumericType.XSD_INTEGER;
-  }
-
-  return promoTree[type1][type2];
-}
-
-function extractNumericValueAndTypeOrError(term: RDF.Term): { value: number, type: C.NumericType } {
+function extractNumericValueAndTypeOrError(term: RDF.Term): { value: number, type: C.NumericTypeURL } {
   // TODO: Check behaviour
-  if (term.termType !== 'Literal' || !C.NumericTypes.contains(term.datatype.value)) {
+  if (term.termType !== 'Literal' || !C.NumericTypeURLs.contains(term.datatype.value)) {
     throw new Error('Term is not numeric');
   }
 
-  const type: C.NumericType = term.datatype.value as unknown as C.NumericType;
+  const type: C.NumericTypeURL = term.datatype.value as unknown as C.NumericTypeURL;
   const value = parseXSDFloat(term.value);
   return { type, value };
 }

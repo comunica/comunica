@@ -7,6 +7,7 @@ export const TRUE_STR = '"true"^^xsd:boolean';
 export const FALSE_STR = '"false"^^xsd:boolean';
 export const EVB_ERR_STR = '"not an dateTime"^^xsd:dateTime';
 
+// TODO: Consider inlining all with 'const enum'
 export enum TypeURL {
   XSD_ANY_URI = 'http://www.w3.org/2001/XMLSchema#anyURI',
   XSD_STRING = 'http://www.w3.org/2001/XMLSchema#string',
@@ -45,42 +46,45 @@ export function make(dt: TypeURL) {
 }
 
 // https://www.w3.org/TR/sparql11-query/#operandDataTypes
-export enum NumericType {
-  XSD_INTEGER = TypeURL.XSD_INTEGER,
-  XSD_DECIMAL = TypeURL.XSD_DECIMAL,
-  XSD_FLOAT = TypeURL.XSD_FLOAT,
-  XSD_DOUBLE = TypeURL.XSD_DOUBLE,
-  XSD_NON_POSITIVE_INTEGER = TypeURL.XSD_NON_POSITIVE_INTEGER,
-  XSD_NEGATIVE_INTEGER = TypeURL.XSD_NEGATIVE_INTEGER,
-  XSD_LONG = TypeURL.XSD_LONG,
-  XSD_INT = TypeURL.XSD_INT,
-  XSD_SHORT = TypeURL.XSD_SHORT,
-  XSD_BYTE = TypeURL.XSD_BYTE,
-  XSD_NON_NEGATIVE_INTEGER = TypeURL.XSD_NON_NEGATIVE_INTEGER,
-  XSD_UNSIGNED_LONG = TypeURL.XSD_UNSIGNED_LONG,
-  XSD_UNSIGNED_INT = TypeURL.XSD_UNSIGNED_INT,
-  XSD_UNSIGNED_SHORT = TypeURL.XSD_UNSIGNED_SHORT,
-  XSD_UNSIGNED_BYTE = TypeURL.XSD_UNSIGNED_BYTE,
-  XSD_POSITIVE_INTEGER = TypeURL.XSD_POSITIVE_INTEGER,
+export enum NumericTypeURL {
+  // Numeric types
+  XSD_INTEGER = 'http://www.w3.org/2001/XMLSchema#integer',
+  XSD_DECIMAL = 'http://www.w3.org/2001/XMLSchema#decimal',
+  XSD_FLOAT = 'http://www.w3.org/2001/XMLSchema#float',
+  XSD_DOUBLE = 'http://www.w3.org/2001/XMLSchema#double',
+
+  // Derived numeric types
+  XSD_NON_POSITIVE_INTEGER = 'http://www.w3.org/2001/XMLSchema#nonPositiveInteger',
+  XSD_NEGATIVE_INTEGER = 'http://www.w3.org/2001/XMLSchema#negativeInteger',
+  XSD_LONG = 'http://www.w3.org/2001/XMLSchema#long',
+  XSD_INT = 'http://www.w3.org/2001/XMLSchema#int',
+  XSD_SHORT = 'http://www.w3.org/2001/XMLSchema#short',
+  XSD_BYTE = 'http://www.w3.org/2001/XMLSchema#byte',
+  XSD_NON_NEGATIVE_INTEGER = 'http://www.w3.org/2001/XMLSchema#nonNegativeInteger',
+  XSD_UNSIGNED_LONG = 'http://www.w3.org/2001/XMLSchema#unsignedLong',
+  XSD_UNSIGNED_INT = 'http://www.w3.org/2001/XMLSchema#unsignedInt',
+  XSD_UNSIGNED_SHORT = 'http://www.w3.org/2001/XMLSchema#unsignedShort',
+  XSD_UNSIGNED_BYTE = 'http://www.w3.org/2001/XMLSchema#unsignedByte',
+  XSD_POSITIVE_INTEGER = 'http://www.w3.org/2001/XMLSchema#positiveInteger',
 }
 
-export enum DerivedIntegerType {
-  XSD_NON_POSITIVE_INTEGER = TypeURL.XSD_NON_POSITIVE_INTEGER,
-  XSD_NEGATIVE_INTEGER = TypeURL.XSD_NEGATIVE_INTEGER,
-  XSD_LONG = TypeURL.XSD_LONG,
-  XSD_INT = TypeURL.XSD_INT,
-  XSD_SHORT = TypeURL.XSD_SHORT,
-  XSD_BYTE = TypeURL.XSD_BYTE,
-  XSD_NON_NEGATIVE_INTEGER = TypeURL.XSD_NON_NEGATIVE_INTEGER,
-  XSD_UNSIGNED_LONG = TypeURL.XSD_UNSIGNED_LONG,
-  XSD_UNSIGNED_INT = TypeURL.XSD_UNSIGNED_INT,
-  XSD_UNSIGNED_SHORT = TypeURL.XSD_UNSIGNED_SHORT,
-  XSD_UNSIGNED_BYTE = TypeURL.XSD_UNSIGNED_BYTE,
-  XSD_POSITIVE_INTEGER = TypeURL.XSD_POSITIVE_INTEGER,
+export enum DerivedIntegerTypeURL {
+  XSD_NON_POSITIVE_INTEGER = 'http://www.w3.org/2001/XMLSchema#nonPositiveInteger',
+  XSD_NEGATIVE_INTEGER = 'http://www.w3.org/2001/XMLSchema#negativeInteger',
+  XSD_LONG = 'http://www.w3.org/2001/XMLSchema#long',
+  XSD_INT = 'http://www.w3.org/2001/XMLSchema#int',
+  XSD_SHORT = 'http://www.w3.org/2001/XMLSchema#short',
+  XSD_BYTE = 'http://www.w3.org/2001/XMLSchema#byte',
+  XSD_NON_NEGATIVE_INTEGER = 'http://www.w3.org/2001/XMLSchema#nonNegativeInteger',
+  XSD_UNSIGNED_LONG = 'http://www.w3.org/2001/XMLSchema#unsignedLong',
+  XSD_UNSIGNED_INT = 'http://www.w3.org/2001/XMLSchema#unsignedInt',
+  XSD_UNSIGNED_SHORT = 'http://www.w3.org/2001/XMLSchema#unsignedShort',
+  XSD_UNSIGNED_BYTE = 'http://www.w3.org/2001/XMLSchema#unsignedByte',
+  XSD_POSITIVE_INTEGER = 'http://www.w3.org/2001/XMLSchema#positiveInteger',
 }
 
-export const NumericTypes = Set(Object.values(NumericType));
-export const DerivedIntegerTypes = Set(Object.values(DerivedIntegerType));
+export const NumericTypeURLs = Set(Object.values(NumericTypeURL));
+export const DerivedIntegerTypeURLs = Set(Object.values(DerivedIntegerTypeURL));
 
 export const commonTerms: { [key: string]: RDF.Term } = {
   true: RDFDM.literal('true', RDFDM.namedNode(TypeURL.XSD_BOOLEAN)),
@@ -109,6 +113,7 @@ export function type(typeURL: string): Type {
     case null:
     case undefined:
     case '':
+    case TypeURL.XSD_ANY_URI: return 'string';
     case TypeURL.XSD_STRING: return 'string';
     case TypeURL.RDF_LANG_STRING: return 'langString';
     case TypeURL.XSD_DATE_TIME: return 'date';
@@ -137,14 +142,14 @@ export function type(typeURL: string): Type {
 // If datatypes get lost or lose specificity during operations, we can insert a
 // concrete type, since categories should remain the same. This mostly (only)
 // relevant for integer subtypes.
-const _decategorize = Map<Type, TypeURL>([
+const _decategorize = Map<PrimitiveNumericType, TypeURL>([
   ['integer', TypeURL.XSD_INTEGER],
   ['float', TypeURL.XSD_FLOAT],
   ['double', TypeURL.XSD_DOUBLE],
   ['decimal', TypeURL.XSD_DECIMAL],
 ]);
 
-export function decategorize(cat: Type): TypeURL {
+export function decategorize(cat: PrimitiveNumericType): TypeURL {
   return _decategorize.get(cat);
 }
 

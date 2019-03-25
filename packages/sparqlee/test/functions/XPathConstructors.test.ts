@@ -21,8 +21,8 @@ describe('evaluation of XPath constructors', () => {
 
   describe('like \'dbl\' receiving', () => {
     testAll([
-      'xsd:double("3")          = "3"^^xsd:double',
-      'xsd:double("3"^^xsd:int) = "3"^^xsd:double',
+      'xsd:double("3")          = "3.0E0"^^xsd:double',
+      'xsd:double("3"^^xsd:int) = "3.0E0"^^xsd:double',
     ]);
   });
 

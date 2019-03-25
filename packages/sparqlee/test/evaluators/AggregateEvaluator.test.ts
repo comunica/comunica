@@ -45,6 +45,10 @@ function decimal(value: string): RDF.Term {
   return literal(value, 'http://www.w3.org/2001/XMLSchema#decimal');
 }
 
+function double(value: string): RDF.Term {
+  return literal(value, 'http://www.w3.org/2001/XMLSchema#double');
+}
+
 describe('an aggregate evaluator should be able to', () => {
   describe('count', () => {
     it('a list of bindings', () => {
@@ -102,6 +106,19 @@ describe('an aggregate evaluator should be able to', () => {
         ],
       });
       expect(result).toEqual(float('10'));
+    });
+
+    it('with respect to type promotion 2', () => {
+      const result = testCase({
+        expr: makeAggregate('avg'),
+        input: [
+          Bindings({ '?x': double('1000') }),
+          Bindings({ '?x': int('2000') }),
+          Bindings({ '?x': float('3000') }),
+          Bindings({ '?x': double('4000') }),
+        ],
+      });
+      expect(result).toEqual(double('2.5E3'));
     });
   });
 

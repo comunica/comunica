@@ -1,4 +1,4 @@
-import { aliases as a, testAll, testAllErrors } from './util/utils';
+import { aliases as a, testAll, testAllErrors } from '../util/utils';
 
 // https://www.w3.org/TR/sparql11-query/#ebv
 // Using && as utility to force EBV

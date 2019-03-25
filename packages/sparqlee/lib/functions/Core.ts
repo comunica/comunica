@@ -204,7 +204,7 @@ const _promote: { [t in C.PrimitiveNumericType]: { [tt in C.PrimitiveNumericType
     float: 'double',
     double: 'double',
   },
-}
+};
 
 export function promote(left: C.PrimitiveNumericType, right: C.PrimitiveNumericType): C.PrimitiveNumericType {
   return _promote[left][right];

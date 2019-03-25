@@ -1,5 +1,5 @@
 import * as RDFDM from '@rdfjs/data-model';
-import { evaluate } from '../util/Util';
+import { evaluate } from '../../util/Util';
 
 describe('exists', () => {
   it('runs with mock existence hooks', () => {
