@@ -95,6 +95,12 @@ export class Builder {
     });
   }
 
+  onQuaternaryTyped<A1, A2, A3, A4>(types: ArgumentType[], op: (a1: A1, a2: A2, a3: A3, a4: A4) => Term) {
+    return this.set(types, ([a1, a2, a3, a4]: [E.Literal<A1>, E.Literal<A2>, E.Literal<A3>, E.Literal<A4>]) => {
+      return op(a1.typedValue, a2.typedValue, a3.typedValue, a4.typedValue);
+    });
+  }
+
   unimplemented(msg: string): Builder {
     for (let arity = 0; arity <= 5; arity++) {
       const types = Array(arity).fill('term');

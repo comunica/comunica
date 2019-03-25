@@ -469,15 +469,46 @@ const REGEX = {
   arity: [2, 3],
   overloads: declare()
     .onBinaryTyped(['string', 'string'], regex2)
-    .onBinaryTyped(['langString', 'langString'], regex2)
+    .onBinaryTyped(['langString', 'string'], regex2)
     .onTernaryTyped(['string', 'string', 'string'], regex3)
     .onTernaryTyped(['langString', 'string', 'string'], regex3)
     .collect(),
 };
 
+const replace3 = (arg: string, pattern: string, replacement: string) =>
+  string(X.replace(arg, pattern, replacement));
+const replace4 = (arg: string, pattern: string, replacement: string, flags: string) =>
+  string(X.replace(arg, pattern, replacement, flags));
+
 const REPLACE = {
   arity: [3, 4],
-  overloads: declare().unimplemented('REPLACE').collect(),
+  overloads: declare()
+    .onTernaryTyped(
+      ['string', 'string', 'string'],
+      (arg: string, pattern: string, replacement: string) =>
+        string(X.replace(arg, pattern, replacement)),
+    )
+    .set(
+      ['langString', 'string', 'string'],
+      ([arg, pattern, replacement]: [E.LangStringLiteral, E.StringLiteral, E.StringLiteral]) => {
+        const result = X.replace(arg.typedValue, pattern.typedValue, replacement.typedValue);
+        return langString(result, arg.language);
+      },
+    )
+    .onQuaternaryTyped(
+      ['string', 'string', 'string', 'string'],
+      (arg: string, pattern: string, replacement: string, flags: string) =>
+        string(X.replace(arg, pattern, replacement, flags)),
+    )
+    .set(
+      ['langString', 'string', 'string', 'string'],
+      ([arg, pattern, replacement, flags]
+        : [E.LangStringLiteral, E.StringLiteral, E.StringLiteral, E.StringLiteral]) => {
+        const result = X.replace(arg.typedValue, pattern.typedValue, replacement.typedValue, flags.typedValue);
+        return langString(result, arg.language);
+      },
+    )
+    .collect(),
 };
 
 // ----------------------------------------------------------------------------

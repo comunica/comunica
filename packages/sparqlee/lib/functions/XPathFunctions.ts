@@ -8,6 +8,17 @@ export function matches(text: string, pattern: string, flags?: string): boolean 
   return reg.test(text);
 }
 
+// TODO: Fix flags
+// https://www.w3.org/TR/xpath-functions/#func-replace
+export function replace(arg: string, pattern: string, replacement: string, flags?: string): string {
+  let reg = new RegExp(pattern, flags);
+  if (!reg.global) {
+    const flags_ = flags || '';
+    reg = new RegExp(pattern, flags_ + 'g');
+  }
+  return arg.replace(reg, replacement);
+}
+
 // TODO: Not an XPath function
 // TODO: Publish as package
 // https://www.ietf.org/rfc/rfc4647.txt
