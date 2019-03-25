@@ -1,4 +1,4 @@
-import { ExpressionError } from '../../dist';
+import { ExpressionError } from '../../lib/util/Errors';
 import { Example } from '../../util/Util';
 
 describe('the evaluation of', () => {
