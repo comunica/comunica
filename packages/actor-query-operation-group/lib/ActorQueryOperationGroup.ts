@@ -2,7 +2,7 @@ import { ArrayIterator } from 'asynciterator';
 import { Map, Set } from "immutable";
 import { termToString } from 'rdf-string';
 import { Algebra } from "sparqlalgebrajs";
-import { SimpleEvaluator } from 'sparqlee';
+import { AggregateEvaluator } from 'sparqlee';
 
 import {
   ActorQueryOperation,
@@ -12,7 +12,6 @@ import {
   IActorQueryOperationTypedMediatedArgs,
 } from "@comunica/bus-query-operation";
 import { ActionContext, IActorTest } from "@comunica/core";
-import { Aggregator, aggregatorClasses, BaseAggregator } from './Aggregators';
 
 /**
  * A comunica Group Query Operation Actor.
@@ -50,7 +49,7 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
     const patternVariables = Set(pattern.variables.map((v) => termToString(v)));
     const aggregateVariables = Set(aggregates.map(({ variable }) => termToString(variable)));
 
-    let groups: Map<Bindings, Map<string, BaseAggregator<any>>> = Map();
+    let groups: Map<Bindings, Map<string, AggregateEvaluator>> = Map();
 
     // Phase 1: Consume the stream, identify the groups and populate the aggregate bindings
     const phase1 = () => {
@@ -61,11 +60,11 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
         // First member of groep -> create new group
         if (!groups.has(grouper)) {
           // Initialize state for all aggregators for new group
-          const newAggregators: Map<string, BaseAggregator<any>> = Map(aggregates.map(
+          const newAggregators: Map<string, AggregateEvaluator> = Map(aggregates.map(
             (aggregate) => {
-              const aggregatorClass = aggregatorClasses[aggregate.aggregator as Aggregator];
-              const aggregatorState = new aggregatorClass(aggregate, bindings);
-              return [termToString(aggregate.variable), aggregatorState];
+              const key = termToString(aggregate.variable);
+              const value = new AggregateEvaluator(aggregate, bindings);
+              return [key, value];
             }));
           groups = groups.set(grouper, newAggregators);
 
@@ -104,9 +103,9 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
           // Result is a single Bindings
           if (rows.length === 0) {
             rows = [Map(aggregates.map((aggregate) => {
-              const aggregator = aggregatorClasses[aggregate.aggregator as Aggregator];
-              const value = aggregator.emptyValue();
-              return [termToString(aggregate.variable), value];
+              const key = termToString(aggregate.variable);
+              const value = AggregateEvaluator.emptyValue(aggregate);
+              return [key, value];
             }))];
           }
 
@@ -123,7 +122,7 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
       });
 
       // Starting this phase will bind the data listeners, we need to do this
-      // AFTER binding 'end' and 'error' listeners to avoid those events 
+      // AFTER binding 'end' and 'error' listeners to avoid those events
       // having their listener not yet initialised.
       phase1();
     });

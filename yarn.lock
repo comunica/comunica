@@ -7822,10 +7822,10 @@ sparqlalgebrajs@^1.5.0:
     rdf-string "^1.3.1"
     sparqljs "^2.2.1"
 
-sparqlee@0.1.0:
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/sparqlee/-/sparqlee-0.1.0.tgz#727a4b28b3835daa2b9550dc7578780c512a19c3"
-  integrity sha512-iLR9Vxky4ONoLX2rnvLg4tOtQVLXDE5b1qKH+jB8mrBUF2qlGDAic/PUF4w1nxQP3A+OlVcbJIWb1O/OmE0vrw==
+sparqlee@0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/sparqlee/-/sparqlee-0.2.0.tgz#0a9e723cd5064ab17906a4c6948f594b827a6128"
+  integrity sha512-qP12vQm+dgtYzwZXM89WfA8xG+bhG54189HhQgeRxY0xas55jEuJNI8bR7bmvbG1k2hodU8+s6tbOStY4vpLcw==
   dependencies:
     "@rdfjs/data-model" "^1.1.0"
     "@types/asynciterator" "^1.1.0"
