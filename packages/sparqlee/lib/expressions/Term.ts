@@ -88,6 +88,14 @@ export class NumericLiteral extends Literal<number> {
     integer: (value) => value.toFixed(), // Avoid emitting non lexical integers
     float: (value) => value.toString(),
     decimal: (value) => value.toString(),
+    // // Be consistent with float
+    // decimal: (value) => {
+    //   const jsDecimal = value.toString();
+    //   return jsDecimal.match(/\./)
+    //     ? jsDecimal
+    //     : jsDecimal + '.0';
+    // },
+
     // https://www.w3.org/TR/xmlschema-2/#double
     double: (value) => {
       const jsExponential = value.toExponential();
