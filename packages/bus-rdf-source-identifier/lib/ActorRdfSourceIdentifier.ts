@@ -23,6 +23,13 @@ export abstract class ActorRdfSourceIdentifier
 
   public abstract async test(action: IActionRdfSourceIdentifier): Promise<IMediatorTypePriority>;
 
+  protected getSourceUrl(action: IActionRdfSourceIdentifier): string {
+    if (!action.sourceValue.startsWith('http')) {
+      throw new Error(`Actor ${this.name} can only detect sources hosted via HTTP(S).`);
+    }
+    return action.sourceValue.replace(/#.*/, '');
+  }
+
 }
 
 export interface IActionRdfSourceIdentifier extends IAction {

@@ -54,7 +54,7 @@ export class ActorRdfResolveQuadPatternFile extends ActorRdfResolveQuadPatternSo
   }
 
   protected async getSource(context: ActionContext): Promise<ILazyQuadSource> {
-    const file: string = this.getContextSource(context).value;
+    const file: string = this.getContextSourceUrl(context);
     if (!this.cache.has(file)) {
       await this.initializeFile(file, context);
     }
@@ -66,7 +66,7 @@ export class ActorRdfResolveQuadPatternFile extends ActorRdfResolveQuadPatternSo
     // Attach totalItems to the output
     const output: IActorRdfResolveQuadPatternOutput = await super.getOutput(source, pattern, context);
     output.metadata = () => new Promise((resolve, reject) => {
-      const file: string = this.getContextSource(context).value;
+      const file: string = this.getContextSourceUrl(context);
       this.cache.get(file).then((store) => {
         const totalItems: number = store.countQuads(
           N3StoreIterator.nullifyVariables(pattern.subject),

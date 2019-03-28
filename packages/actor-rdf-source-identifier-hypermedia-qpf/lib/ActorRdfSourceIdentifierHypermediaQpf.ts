@@ -22,13 +22,11 @@ export class ActorRdfSourceIdentifierHypermediaQpf extends ActorRdfSourceIdentif
   }
 
   public async test(action: IActionRdfSourceIdentifier): Promise<IMediatorTypePriority> {
-    if (!action.sourceValue.startsWith('http')) {
-      throw new Error(`Actor ${this.name} can only detect hypermedia interfaces hosted via HTTP(S).`);
-    }
+    const sourceUrl = this.getSourceUrl(action);
     const headers: Headers = new Headers();
     headers.append('Accept', this.acceptHeader);
 
-    const httpAction: IActionHttp = { context: action.context, input: action.sourceValue, init: { headers } };
+    const httpAction: IActionHttp = { context: action.context, input: sourceUrl, init: { headers } };
     const httpResponse: IActorHttpOutput = await this.mediatorHttp.mediate(httpAction);
     if (httpResponse.ok) {
       const stream = ActorHttp.toNodeReadable(httpResponse.body);
@@ -52,7 +50,7 @@ export class ActorRdfSourceIdentifierHypermediaQpf extends ActorRdfSourceIdentif
       httpResponse.body.cancel();
     }
 
-    throw new Error(`${action.sourceValue} is not a (QPF) hypermedia interface`);
+    throw new Error(`${sourceUrl} is not a (QPF) hypermedia interface`);
   }
 
   public async run(action: IActionRdfSourceIdentifier): Promise<IActorRdfSourceIdentifierOutput> {

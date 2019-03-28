@@ -123,7 +123,7 @@ export class ActorRdfResolveQuadPatternSparqlJson
   }
 
   public async run(action: IActionRdfResolveQuadPattern): Promise<IActorRdfResolveQuadPatternOutput> {
-    const endpoint: string = this.getContextSource(action.context).value;
+    const endpoint: string = this.getContextSourceUrl(action.context);
     const pattern = ActorRdfResolveQuadPatternSparqlJson.replaceBlankNodes(action.pattern);
     const selectQuery: string = ActorRdfResolveQuadPatternSparqlJson.patternToSelectQuery(pattern);
     const countQuery: string = ActorRdfResolveQuadPatternSparqlJson.patternToCountQuery(pattern);

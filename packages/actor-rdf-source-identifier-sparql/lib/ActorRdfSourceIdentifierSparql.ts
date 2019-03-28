@@ -19,10 +19,8 @@ export class ActorRdfSourceIdentifierSparql extends ActorRdfSourceIdentifier {
   }
 
   public async test(action: IActionRdfSourceIdentifier): Promise<IMediatorTypePriority> {
-    if (!action.sourceValue.startsWith('http')) {
-      throw new Error(`Actor ${this.name} can only detect SPARQL endpoints hosted via HTTP(S).`);
-    }
-    const url: string = action.sourceValue + '?query=' + encodeURIComponent('ASK { ?s a ?o }');
+    const sourceUrl = this.getSourceUrl(action);
+    const url: string = sourceUrl + '?query=' + encodeURIComponent('ASK { ?s a ?o }');
     const headers: Headers = new Headers();
     headers.append('Accept', 'application/sparql-results+json');
     const httpAction: IActionHttp = { context: action.context, input: url, init: { headers, method: 'GET' } };
@@ -32,7 +30,7 @@ export class ActorRdfSourceIdentifierSparql extends ActorRdfSourceIdentifier {
     httpResponse.body.cancel();
 
     if (!httpResponse.ok || httpResponse.headers.get('Content-Type').indexOf('application/sparql-results+json') < 0) {
-      throw new Error(`${action.sourceValue} is not a SPARQL endpoint`);
+      throw new Error(`${sourceUrl} is not a SPARQL endpoint`);
     }
     return { priority: this.priority};
   }

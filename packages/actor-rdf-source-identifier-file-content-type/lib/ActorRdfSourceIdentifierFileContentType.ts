@@ -20,18 +20,16 @@ export class ActorRdfSourceIdentifierFileContentType extends ActorRdfSourceIdent
   }
 
   public async test(action: IActionRdfSourceIdentifier): Promise<IMediatorTypePriority> {
-    if (!action.sourceValue.startsWith('http')) {
-      throw new Error(`Actor ${this.name} can only detect files hosted via HTTP(S).`);
-    }
+    const sourceUrl = this.getSourceUrl(action);
     const headers: Headers = new Headers();
     headers.append('Accept', this.allowedMediaTypes.join(';'));
     const httpAction: IActionHttp = { context: action.context,
-      init: { headers, method: 'HEAD' }, input: action.sourceValue };
+      init: { headers, method: 'HEAD' }, input: sourceUrl};
     const httpResponse: IActorHttpOutput = await this.mediatorHttp.mediate(httpAction);
     if (!httpResponse.ok || (httpResponse.headers.has('Content-Type')
       && !this.allowedMediaTypes.find((mediaType: string) => httpResponse.headers
         .get('Content-Type').indexOf(mediaType) >= 0))) {
-      throw new Error(`${action.sourceValue} (${httpResponse.headers.get('Content-Type')}) \
+      throw new Error(`${sourceUrl} (${httpResponse.headers.get('Content-Type')}) \
 is not an RDF file of valid content type: ${this.allowedMediaTypes}`);
     }
     return { priority: this.priority };

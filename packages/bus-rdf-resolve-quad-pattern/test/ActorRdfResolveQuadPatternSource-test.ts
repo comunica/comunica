@@ -1,5 +1,6 @@
-import {Bus} from "@comunica/core";
+import {ActionContext, Bus} from "@comunica/core";
 import {ArrayIterator} from "asynciterator";
+import {KEY_CONTEXT_SOURCE} from "../lib/ActorRdfResolveQuadPattern";
 import {ActorRdfResolveQuadPatternSource} from "../lib/ActorRdfResolveQuadPatternSource";
 const arrayifyStream = require("arrayify-stream");
 
@@ -25,6 +26,22 @@ describe('ActorRdfResolveQuadPatternSource', () => {
     const actor = new (<any> ActorRdfResolveQuadPatternSource)({ name: 'actor', bus });
     actor.getSource = () => ({
       match: () => new ArrayIterator(['a', 'b']),
+    });
+
+    describe('getContextSourceUrl', () => {
+      it('should return null when no source is available', () => {
+        return expect(actor.getContextSourceUrl(ActionContext({}))).toEqual(null);
+      });
+
+      it('should return when a source is available', () => {
+        const context = ActionContext({ [KEY_CONTEXT_SOURCE]: { value: 'abc' } });
+        return expect(actor.getContextSourceUrl(context)).toEqual('abc');
+      });
+
+      it('should strip away everything after the hash', () => {
+        const context = ActionContext({ [KEY_CONTEXT_SOURCE]: { value: 'http://ex.org/#abcdef#xyz' } });
+        return expect(actor.getContextSourceUrl(context)).toEqual('http://ex.org/');
+      });
     });
 
     it('should have a default test implementation', () => {

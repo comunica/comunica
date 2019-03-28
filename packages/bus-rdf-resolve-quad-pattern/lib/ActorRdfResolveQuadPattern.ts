@@ -50,6 +50,27 @@ export abstract class ActorRdfResolveQuadPattern extends Actor<IActionRdfResolve
   }
 
   /**
+   * Get the source's raw URL value from the given context.
+   * @param {ActionContext} context An optional context.
+   * @return {string} The URL or null.
+   */
+  protected getContextSourceUrl(context: ActionContext): string {
+    const source = this.getContextSource(context);
+    if (source) {
+      let fileUrl = source.value;
+
+      // Remove hashes from source
+      const hashPosition = fileUrl.indexOf('#');
+      if (hashPosition >= 0) {
+        fileUrl = fileUrl.substr(0, hashPosition);
+      }
+
+      return fileUrl;
+    }
+    return null;
+  }
+
+  /**
    * Check if the given context has a single source of the given type.
    * @param {string} requiredType The required source type name.
    * @param {ActionContext} context An optional context.
