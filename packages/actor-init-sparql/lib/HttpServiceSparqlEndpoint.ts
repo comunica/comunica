@@ -136,11 +136,12 @@ Options:
     switch (request.method) {
     case 'POST':
       sparql = await this.parseBody(request);
-      this.writeQueryResult(engine, stdout, stderr, request, response, sparql, mediaType);
+      this.writeQueryResult(engine, stdout, stderr, request, response, sparql, mediaType, false);
       break;
+    case 'HEAD':
     case 'GET':
       sparql = <string> (<querystring.ParsedUrlQuery> requestUrl.query).query || '';
-      this.writeQueryResult(engine, stdout, stderr, request, response, sparql, mediaType);
+      this.writeQueryResult(engine, stdout, stderr, request, response, sparql, mediaType, request.method === 'HEAD');
       break;
     default:
       stdout.write('[405] ' + request.method + ' to ' + requestUrl + '\n');
@@ -158,10 +159,11 @@ Options:
    * @param {module:http.ServerResponse} response Response object.
    * @param {string} sparql The SPARQL query string.
    * @param {string} mediaType The requested response media type.
+   * @param {boolean} headOnly If only the header should be written.
    */
   protected writeQueryResult(engine: ActorInitSparql, stdout: Writable, stderr: Writable,
                              request: http.IncomingMessage, response: http.ServerResponse,
-                             sparql: string, mediaType: string) {
+                             sparql: string, mediaType: string, headOnly: boolean) {
     let eventEmitter: EventEmitter;
     engine.query(sparql, this.context)
       .then(async (result) => {
@@ -169,6 +171,11 @@ Options:
         stdout.write('      Requested media type: ' + mediaType + '\n');
         stdout.write('      Received query: ' + sparql + '\n');
         response.writeHead(200, { 'content-type': mediaType });
+
+        if (headOnly) {
+          response.end();
+          return;
+        }
 
         try {
           const data: NodeJS.ReadableStream = (await engine.resultToString(result, mediaType)).data;
