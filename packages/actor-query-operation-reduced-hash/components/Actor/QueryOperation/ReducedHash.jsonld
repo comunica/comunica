@@ -29,10 +29,10 @@
         },
         {
           "@id": "caqorh:Actor/QueryOperation/ReducedHash/cacheSize",
-          "defaultScoped": {
-            "defaultScope": "caqorh:Actor/QueryOperation/ReducedHash",
-            "defaultScopedValue": "100"
-          }
+          "range": "xsd:integer",
+          "required": true,
+          "unique": true,
+          "default": 100
         }
       ],
       "constructorArguments": [
