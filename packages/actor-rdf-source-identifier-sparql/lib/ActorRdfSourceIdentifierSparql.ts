@@ -25,8 +25,12 @@ export class ActorRdfSourceIdentifierSparql extends ActorRdfSourceIdentifier {
     const url: string = action.sourceValue + '?query=' + encodeURIComponent('ASK { ?s a ?o }');
     const headers: Headers = new Headers();
     headers.append('Accept', 'application/sparql-results+json');
-    const httpAction: IActionHttp = { context: action.context, input: url, init: { headers, method: 'HEAD' } };
+    const httpAction: IActionHttp = { context: action.context, input: url, init: { headers, method: 'GET' } };
     const httpResponse: IActorHttpOutput = await this.mediatorHttp.mediate(httpAction);
+
+    // No need to process the body. (HEAD requests would be better, but not all endpoints implement that properly)
+    httpResponse.body.cancel();
+
     if (!httpResponse.ok || httpResponse.headers.get('Content-Type').indexOf('application/sparql-results+json') < 0) {
       throw new Error(`${action.sourceValue} is not a SPARQL endpoint`);
     }

@@ -34,6 +34,9 @@ describe('ActorRdfSourceIdentifierSparql', () => {
       const mediatorHttp: any = {
         mediate: (action) => {
           return Promise.resolve({
+            body : {
+              cancel: () => null,
+            },
             headers: { get: () => 'application/sparql-results+json' },
             ok: action.input.indexOf('ok') >= 0,
           });
