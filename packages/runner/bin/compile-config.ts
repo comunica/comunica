@@ -34,4 +34,7 @@ for (let i = pathParts.length; i > 0; i--) {
 }
 
 compileConfig({ mainModulePath }, configPath, configStreamRaw, configResourceUri, exportVariableName)
-  .then(console.log).catch(console.error);
+  .then(console.log).catch((e) => {
+    console.error(e);
+    process.exit(1);
+  });
