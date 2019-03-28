@@ -49,11 +49,11 @@ export class ActorInitSparql extends ActorInitSparqlBrowser {
       return { stderr: require('streamify-string')(`comunica-sparql evaluates SPARQL queries
 
 Usage:
-  comunica-sparql http://fragments.example.org/dataset [-q] 'SELECT * WHERE { ?s ?p ?o }'
-  comunica-sparql http://fragments.example.org/dataset [-q] '{ hero { name friends { name } } }' -i graphql
-  comunica-sparql http://fragments.example.org/dataset [-f] query.sparql'
-  comunica-sparql http://fragments.example.org/dataset http://sparql.example.org/ ...
-  comunica-sparql hypermedia@http://fragments.example.org/dataset sparql@http://sparql.example.org/ ...
+  comunica-sparql http://fragments.dbpedia.org/2016-04/en [-q] 'SELECT * WHERE { ?s ?p ?o }'
+  comunica-sparql http://fragments.dbpedia.org/2016-04/en [-q] '{ hero { name friends { name } } }' -i graphql
+  comunica-sparql http://fragments.dbpedia.org/2016-04/en [-f] query.sparql'
+  comunica-sparql http://fragments.dbpedia.org/2016-04/en https://query.wikidata.org/sparql ...
+  comunica-sparql hypermedia@http://fragments.dbpedia.org/2016-04/en sparql@https://query.wikidata.org/sparql ...
 
 Options:
   -q            evaluate the given SPARQL query string

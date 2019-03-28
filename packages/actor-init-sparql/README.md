@@ -63,7 +63,7 @@ When you are working with this module in the Comunica monorepo development envir
 this command can be invoked directly as follows (when inside the `packages/actor-init-sparql` folder):
 
 ```bash
-node bin/query.js http://fragments.dbpedia.org/2015-10/en "CONSTRUCT WHERE { ?s ?p ?o } LIMIT 100"
+node bin/query.js http://fragments.dbpedia.org/2016-04/en "CONSTRUCT WHERE { ?s ?p ?o } LIMIT 100"
 ```
 
 Use `bin/query-dynamic.js` when running dynamically inside the Comunica monorepo development environment.
