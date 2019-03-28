@@ -71,11 +71,12 @@ export class FederatedQuadSource implements ILazyQuadSource {
    * Converts falsy terms to variables.
    * This is the reverse operation of {@link ActorRdfResolveQuadPatternSource#variableToNull}.
    * @param {Term} term A term or null.
+   * @param {string} label The label to use if we have a variable.
    * @return {Term} A term.
    */
-  public static nullToVariable(term: RDF.Term): RDF.Term {
+  public static nullToVariable(term: RDF.Term, label: string): RDF.Term {
     if (!term) {
-      return DataFactory.variable('v');
+      return DataFactory.variable('v' + label);
     }
     return term;
   }
@@ -150,10 +151,10 @@ export class FederatedQuadSource implements ILazyQuadSource {
       // If we can predict that the given source will have no bindings for the given pattern,
       // return an empty iterator.
       const pattern: RDF.BaseQuad = quad(
-        FederatedQuadSource.nullToVariable(subject),
-        FederatedQuadSource.nullToVariable(predicate),
-        FederatedQuadSource.nullToVariable(object),
-        FederatedQuadSource.nullToVariable(graph),
+        FederatedQuadSource.nullToVariable(subject, 's'),
+        FederatedQuadSource.nullToVariable(predicate, 'p'),
+        FederatedQuadSource.nullToVariable(object, 'o'),
+        FederatedQuadSource.nullToVariable(graph, 'g'),
       );
 
       // Prepare the context for this specific source
