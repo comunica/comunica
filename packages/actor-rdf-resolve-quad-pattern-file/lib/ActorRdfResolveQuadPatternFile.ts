@@ -3,7 +3,7 @@ import {IActionRdfDereference, IActorRdfDereferenceOutput} from "@comunica/bus-r
 import {ActorRdfResolveQuadPatternSource, IActionRdfResolveQuadPattern, IActorRdfResolveQuadPatternOutput,
   ILazyQuadSource} from "@comunica/bus-rdf-resolve-quad-pattern";
 import {ActionContext, Actor, IActorArgs, IActorTest, Mediator} from "@comunica/core";
-import * as LRU from "lru-cache";
+import * as LRUCache from "lru-cache";
 import {N3Store, Store} from "n3";
 import * as RDF from "rdf-js";
 import {N3StoreIterator} from "./N3StoreIterator";
@@ -19,12 +19,12 @@ export class ActorRdfResolveQuadPatternFile extends ActorRdfResolveQuadPatternSo
     IActionRdfDereference, IActorTest, IActorRdfDereferenceOutput>;
   public readonly files?: string[];
   public readonly cacheSize: number;
-  public readonly cache: LRU.Cache<string, Promise<N3Store>>;
+  public readonly cache: LRUCache<string, Promise<N3Store>>;
   public readonly httpInvalidator: ActorHttpInvalidateListenable;
 
   constructor(args: IActorRdfResolveQuadPatternFileArgs) {
     super(args);
-    this.cache = new LRU<string, any>({ max: this.cacheSize });
+    this.cache = new LRUCache<string, any>({ max: this.cacheSize });
     this.httpInvalidator.addInvalidateListener(
       ({ pageUrl }: IActionHttpInvalidate) => pageUrl ? this.cache.del(pageUrl) : this.cache.reset());
   }

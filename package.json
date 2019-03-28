@@ -28,7 +28,7 @@
     "@types/lodash.union": "^4.6.3",
     "@types/lodash.uniq": "^4.5.3",
     "@types/lodash.values": "^4.3.3",
-    "@types/lru-cache": "^4.1.0",
+    "@types/lru-cache": "^5.1.0",
     "@types/minimist": "^1.2.0",
     "@types/n3": "^1.0.4",
     "@types/node": "^11.9.0",

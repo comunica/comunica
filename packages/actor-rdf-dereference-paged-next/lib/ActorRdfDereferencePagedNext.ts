@@ -5,7 +5,7 @@ import {ActorRdfDereferencePaged, IActionRdfDereferencePaged,
 import {IActionRdfMetadata, IActorRdfMetadataOutput} from "@comunica/bus-rdf-metadata";
 import {IActionRdfMetadataExtract, IActorRdfMetadataExtractOutput} from "@comunica/bus-rdf-metadata-extract";
 import {Actor, IActorArgs, IActorTest, Mediator} from "@comunica/core";
-import LRU = require("lru-cache");
+import * as LRUCache from "lru-cache";
 import {MediatedPagedAsyncRdfIterator} from "./MediatedPagedAsyncRdfIterator";
 
 /**
@@ -20,12 +20,12 @@ export class ActorRdfDereferencePagedNext extends ActorRdfDereferencePaged imple
   public readonly mediatorMetadataExtract: Mediator<Actor<IActionRdfMetadataExtract, IActorTest,
     IActorRdfMetadataExtractOutput>, IActionRdfMetadataExtract, IActorTest, IActorRdfMetadataExtractOutput>;
   public readonly cacheSize: number;
-  public readonly cache: LRU.Cache<string, Promise<IActorRdfDereferencePagedOutput>>;
+  public readonly cache: LRUCache<string, Promise<IActorRdfDereferencePagedOutput>>;
   public readonly httpInvalidator: ActorHttpInvalidateListenable;
 
   constructor(args: IActorRdfDereferencePaged) {
     super(args);
-    this.cache = this.cacheSize ? new LRU<string, any>({ max: this.cacheSize }) : null;
+    this.cache = this.cacheSize ? new LRUCache<string, any>({ max: this.cacheSize }) : null;
     if (this.cache) {
       this.httpInvalidator.addInvalidateListener(
         ({pageUrl}: IActionHttpInvalidate) => pageUrl ? this.cache.del(pageUrl) : this.cache.reset());
