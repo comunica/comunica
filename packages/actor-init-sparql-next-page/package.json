@@ -87,6 +87,7 @@
     "@comunica/actor-rdf-parse-jsonld": "^1.6.3",
     "@comunica/actor-rdf-parse-n3": "^1.6.3",
     "@comunica/actor-rdf-parse-rdfxml": "^1.6.3",
+    "@comunica/actor-rdf-resolve-hypermedia-next-page": "^1.6.3",
     "@comunica/actor-rdf-resolve-hypermedia-qpf": "^1.6.3",
     "@comunica/actor-rdf-resolve-quad-pattern-federated": "^1.6.3",
     "@comunica/actor-rdf-resolve-quad-pattern-file": "^1.6.3",
@@ -145,35 +146,12 @@
   "devDependencies": {
     "@comunica/actor-query-operation-bgp-left-deep-smallest-sort": "^1.6.3"
   },
-  "jest": {
-    "globals": {
-      "ts-jest": {
-        "tsConfig": "test/tsconfig.json"
-      }
-    },
-    "transform": {
-      "^.+\\.ts$": "ts-jest"
-    },
-    "testRegex": "(/test/.*|(\\.|/)(test|spec))\\.ts$",
-    "moduleFileExtensions": [
-      "ts",
-      "js"
-    ],
-    "collectCoverage": true
-  },
   "scripts": {
-    "test": "node \"../../node_modules/jest/bin/jest.js\" ${1}",
-    "test-watch": "node \"../../node_modules/jest/bin/jest.js\" ${1} --watch",
     "lint": "node \"../../node_modules/tslint/bin/tslint\" lib/**/*.ts test/**/*.ts --exclude '**/*.d.ts'",
     "build": "node \"../../node_modules/typescript/bin/tsc\"",
     "validate": "npm ls",
     "prepare": "comunica-compile-config config/config-default.json > engine-default.js",
-    "browser": "npm run prepare && \"../../node_modules/webpack/bin/webpack.js\" --config webpack.config.js --mode production",
-    "browser-profile": "\"../../node_modules/webpack/bin/webpack.js\" --config webpack.config.js --profile --mode production --json > stats.json && webpack-bundle-analyzer stats.json && rm stats.json",
-    "spec-base": "node ../../node_modules/rdf-test-suite/bin/Runner.js spec/sparql-engine.js http://w3c.github.io/rdf-tests/sparql11/data-sparql11/manifest-all.ttl -s http://www.w3.org/TR/sparql11-query/ -c ../../.rdf-test-suite-cache/",
-    "spec": "yarn run spec-base -o summary -e",
-    "spec-file": "yarn run spec-base -t",
-    "spec-earl": "yarn run spec-base -o earl -p spec/earl-meta.json -e > earl.ttl"
+    "browser": "npm run prepare && \"../../node_modules/webpack/bin/webpack.js\" --config webpack.config.js --mode production"
   },
   "browser": {
     "./index.js": "./index-browser.js"

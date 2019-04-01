@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-resolve-hypermedia-next-page",
-  "version": "1.4.0",
+  "version": "1.6.3",
   "description": "A hypermedia-next-page rdf-resolve-quad-pattern actor",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-resolve-hypermedia-next-page",
   "lsd:components": "components/components.jsonld",

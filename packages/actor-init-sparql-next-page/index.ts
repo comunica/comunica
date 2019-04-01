@@ -1,9 +1,7 @@
-export * from './lib/ActorInitSparql';
-export * from './lib/HttpServiceSparqlEndpoint';
 export {newEngine} from './index-browser';
 
-import {ActorInitSparql} from "./lib/ActorInitSparql";
-import {IQueryOptions, newEngineDynamicArged} from "./lib/QueryDynamic";
+import {ActorInitSparql} from '@comunica/actor-init-sparql/lib/ActorInitSparql-browser';
+import {IQueryOptions, newEngineDynamicArged} from "@comunica/actor-init-sparql/lib/QueryDynamic";
 
 /**
  * Create a new dynamic comunica engine from a given config file.
