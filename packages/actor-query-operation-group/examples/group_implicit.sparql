@@ -1,2 +1,0 @@
-SELECT (count(?x) as ?c)
-WHERE {?x ?y ?z}

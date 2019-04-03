@@ -1,3 +1,0 @@
-SELECT (count(?y) as ?count) (sum(?z) as ?sum)
-WHERE {?x ?y ?z}
-GROUP BY ?x
