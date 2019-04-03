@@ -85,6 +85,8 @@ export class GroupsState {
           const hash = this.hashBindings(bindings);
           if (this.distinctHashes!.get(groupHash).has(hash)) {
             continue;
+          } else {
+            this.distinctHashes!.get(groupHash).add(hash);
           }
         }
 

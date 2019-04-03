@@ -278,10 +278,12 @@ describe('ActorQueryOperationGroup', () => {
       const { op, actor } = constructCase({
         inputBindings: [
           Bindings({ '?x': literal('aaa'), '?y': literal('aaa'), '?z': int("1") }),
+          Bindings({ '?x': literal('aaa'), '?y': literal('aaa'), '?z': int("1") }),
+          Bindings({ '?x': literal('aaa'), '?y': literal('aaa'), '?z': int("1") }),
+          Bindings({ '?x': literal('aaa'), '?y': literal('bbb'), '?z': int("2") }),
           Bindings({ '?x': literal('aaa'), '?y': literal('bbb'), '?z': int("2") }),
           Bindings({ '?x': literal('bbb'), '?y': literal('aaa'), '?z': int("3") }),
           Bindings({ '?x': literal('ccc'), '?y': literal('aaa'), '?z': int("4") }),
-          Bindings({ '?x': literal('aaa'), '?y': literal('aaa'), '?z': int("1") }),
         ],
         groupVariables: ['x'],
         inputVariables: ['x', 'y', 'z'],
@@ -291,7 +293,7 @@ describe('ActorQueryOperationGroup', () => {
 
       const output = await actor.run(op) as any;
       expect(await arrayifyStream(output.bindingsStream)).toMatchObject([
-        Bindings({ '?x': literal('aaa'), '?count': int('2'), '?sum': int('4') }),
+        Bindings({ '?x': literal('aaa'), '?count': int('2'), '?sum': int('7') }),
         Bindings({ '?x': literal('bbb'), '?count': int('1'), '?sum': int('3') }),
         Bindings({ '?x': literal('ccc'), '?count': int('1'), '?sum': int('4') }),
       ]);
