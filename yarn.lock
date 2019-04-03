@@ -1517,6 +1517,11 @@
   dependencies:
     "@types/jest-diff" "*"
 
+"@types/json-stable-stringify@^1.0.32":
+  version "1.0.32"
+  resolved "https://registry.yarnpkg.com/@types/json-stable-stringify/-/json-stable-stringify-1.0.32.tgz#121f6917c4389db3923640b2e68de5fa64dda88e"
+  integrity sha512-q9Q6+eUEGwQkv4Sbst3J4PNgDOvpuVuKj79Hl/qnmBMEIPzB5QoFRUtjcgcg2xNUZyYUGXBk5wYIBKHt0A+Mxw==
+
 "@types/lodash.assign@^4.2.3":
   version "4.2.6"
   resolved "https://registry.yarnpkg.com/@types/lodash.assign/-/lodash.assign-4.2.6.tgz#e5cc225446c706907893263d5938c6571ad28551"
@@ -7079,10 +7084,10 @@ rdf-terms@^1.2.0, rdf-terms@^1.4.0:
     "@rdfjs/data-model" "^1.1.1"
     lodash.uniqwith "^4.5.0"
 
-rdf-test-suite@^1.5.1:
-  version "1.6.0"
-  resolved "https://registry.yarnpkg.com/rdf-test-suite/-/rdf-test-suite-1.6.0.tgz#f842ae19f68d2cbff5ccdb40b8f45701ee4faa69"
-  integrity sha512-qiH8me8vTcpaXmIQCGo/zfeEr7/QJgotuXq5YZPNRoO3E1v16/nzToIcc2UTy36RYXbtyTe+amtscVY11zJHug==
+rdf-test-suite@^1.6.0:
+  version "1.7.0"
+  resolved "https://registry.yarnpkg.com/rdf-test-suite/-/rdf-test-suite-1.7.0.tgz#0aa4d3570f881052bb1db4b7c44653d60a58ab09"
+  integrity sha512-3Rc6Vq9LZTxWfMuL5A8BRrb2edK6OMwlZGztKwRCqo+50qpRSKf6r+QfFOIudbBRTwOFDIapxpm5T6teNtqMig==
   dependencies:
     "@rdfjs/data-model" "^1.1.1"
     arrayify-stream "^1.0.0"

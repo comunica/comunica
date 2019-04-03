@@ -326,8 +326,8 @@ describe('ActorQueryOperationGroup', () => {
 
       const output = await actor.run(op) as any;
       expect(await arrayifyStream(output.bindingsStream)).toMatchObject([
-        Bindings({ '?x': literal('aaa'), '?sum': undefined }),
-        Bindings({ '?x': literal('bbb'), '?sum': undefined }),
+        Bindings({ '?x': literal('aaa') }),
+        Bindings({ '?x': literal('bbb') }),
         Bindings({ '?x': literal('ccc'), '?sum': int('1') }),
       ]);
       expect(output.variables).toMatchObject(['?x', '?sum']);
@@ -539,7 +539,7 @@ describe('ActorQueryOperationGroup', () => {
 
       const output = await actor.run(op) as any;
       expect(await arrayifyStream(output.bindingsStream)).toMatchObject([
-        Bindings({ '?m': undefined }),
+        Bindings({}),
       ]);
       expect(output.variables).toMatchObject(['?m']);
     });
@@ -576,7 +576,7 @@ describe('ActorQueryOperationGroup', () => {
 
       const output = await actor.run(op) as any;
       expect(await arrayifyStream(output.bindingsStream)).toMatchObject([
-        Bindings({ '?m': undefined }),
+        Bindings({}),
       ]);
       expect(output.variables).toMatchObject(['?m']);
     });
@@ -669,7 +669,7 @@ describe('ActorQueryOperationGroup', () => {
 
       const output = await actor.run(op) as any;
       expect((await arrayifyStream(output.bindingsStream))).toMatchObject([
-        Bindings({ '?s': undefined }),
+        Bindings({}),
       ]);
       expect(output.variables).toMatchObject(['?s']);
     });
