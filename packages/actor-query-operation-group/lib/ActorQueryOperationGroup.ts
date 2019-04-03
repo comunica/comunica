@@ -2,6 +2,7 @@
 import { ArrayIterator } from 'asynciterator';
 import { termToString } from 'rdf-string';
 import { Algebra } from "sparqlalgebrajs";
+import { SimpleEvaluator } from 'sparqlee';
 
 import {
   ActorQueryOperation,
@@ -23,10 +24,9 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
   }
 
   public async testOperation(pattern: Algebra.Group, context: ActionContext): Promise<IActorTest> {
-    for (const aggregate in pattern.aggregates) {
-      if (pattern.aggregates[aggregate].distinct) {
-        throw new Error("Group Operation doesn't support distinct just yet.");
-      }
+    for (const i in pattern.aggregates) {
+      // Will throw for unsupported expressions
+      const _ = new SimpleEvaluator(pattern.aggregates[i].expression);
     }
     return true;
   }

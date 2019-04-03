@@ -17,7 +17,6 @@ export type BindingsHash = string;
  * A state container for a single group
  *
  * @property {Bindings} bindings - The binding entries on which we group
- * @property aggregators - POJO with as keys the aggregate variables and as value an AggregateEvaluator
  */
 export interface IGroup {
   bindings: Bindings;
@@ -32,10 +31,14 @@ export interface IGroup {
 export class GroupsState {
   private groups: Map<BindingsHash, IGroup>;
   private groupVariables: Set<string>;
+  private distinctHashes: null | Map<BindingsHash, Set<BindingsHash>>;
 
   constructor(private pattern: Algebra.Group) {
     this.groups = new Map();
     this.groupVariables = new Set(this.pattern.variables.map(termToString));
+    this.distinctHashes = pattern.aggregates.some(({ distinct }) => distinct)
+      ? new Map()
+      : null;
   }
 
   /**
@@ -50,10 +53,10 @@ export class GroupsState {
     const grouper = bindings
       .filter((_, variable) => this.groupVariables.has(variable))
       .toMap();
-    const bindingsHash = this.hashBindings(grouper);
+    const groupHash = this.hashBindings(grouper);
 
     // First member of group -> create new group
-    if (!this.groups.has(bindingsHash)) {
+    if (!this.groups.has(groupHash)) {
       // Initialize state for all aggregators for new group
       const aggregators: { [key: string]: AggregateEvaluator } = {};
       for (const i in this.pattern.aggregates) {
@@ -63,14 +66,30 @@ export class GroupsState {
       }
 
       const group: IGroup = { aggregators, bindings: grouper };
-      this.groups.set(bindingsHash, group);
+      this.groups.set(groupHash, group);
+
+      if (this.distinctHashes) {
+        const bindingsHash = this.hashBindings(bindings);
+        this.distinctHashes.set(groupHash, new Set([bindingsHash]));
+      }
 
     } else {
       // Group already exists
       // Update all the aggregators with the input binding
-      const group = this.groups.get(bindingsHash);
-      for (const key in group.aggregators) {
-        group.aggregators[key].put(bindings);
+      const group = this.groups.get(groupHash);
+      for (const i in this.pattern.aggregates) {
+        const aggregate = this.pattern.aggregates[i];
+
+        // If distinct, check first wether we have inserted these values already
+        if (aggregate.distinct) {
+          const hash = this.hashBindings(bindings);
+          if (this.distinctHashes!.get(groupHash).has(hash)) {
+            continue;
+          }
+        }
+
+        const variable = termToString(aggregate.variable);
+        group.aggregators[variable].put(bindings);
       }
     }
   }
