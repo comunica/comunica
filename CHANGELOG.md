@@ -1,6 +1,23 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v1.6.6"></a>
+## [v1.6.6](https://github.com/comunica/comunica/compare/v1.6.5...v1.6.6) - 2019-04-03
+
+### Changed
+* [Remove jsonld.js in favor of streaming JSON-LD processing, Closes #384](https://github.com/comunica/comunica/commit/f93753e93f2bc739fb3b475cafbbbd81665ee861)
+* [Use real-world endpoint examples in query help message](https://github.com/comunica/comunica/commit/e4c3703080c1916578007e6ef190c8204a22edd2)
+* [Return error code when config compilation failed, Closes #394](https://github.com/comunica/comunica/commit/706aa0b6bcd4384c0b9e3d5888bc4f7faad48d0c)
+* [Make SPARQL endpoint identifier use GET instead of HEAD](https://github.com/comunica/comunica/commit/d6547c81238580869faece5843e83611d85d6a8d)
+* [Lower default tree serialization priority](https://github.com/comunica/comunica/commit/812faddb2f1797e7d6aaa4fb9151178abf183cad)
+
+### Fixed
+* [Fix bug in orderby due to multiple transforms on same stream, Closes #434](https://github.com/comunica/comunica/commit/87f8121980e67a21749eeda11607cd13c5fa4fac)
+* [Fix URL hashes not being stripped when doing HTTP requests, Closes #277](https://github.com/comunica/comunica/commit/8f121c0f73bc6ddc95437876fc67108e1c38ec58)
+* [Fix invalid default REDUCED cache size, Closes #376](https://github.com/comunica/comunica/commit/70bc5b15aba91cc3fc92b66c48d38292c24961b4)
+* [Fix HEAD requests on HTTP service not working, Closes #417](https://github.com/comunica/comunica/commit/2038945856d24724dc7b3acfe93ac5ff48f44551)
+* [Fix patterns with conflicting variables being created in federation](https://github.com/comunica/comunica/commit/2ebef4328a912fdcfaafbd11a667fb89977b8768)
+
 <a name="v1.6.5"></a>
 ## [v1.6.5](https://github.com/comunica/comunica/compare/v1.6.4...v1.6.5) - 2019-03-15
 

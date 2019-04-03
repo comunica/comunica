@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-init-rdf-parse",
-  "version": "1.6.3",
+  "version": "1.6.6",
   "description": "A Comunica engine for parsing RDF",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-rdf-parse",
   "lsd:components": "components/components.jsonld",
@@ -41,15 +41,15 @@
   ],
   "dependencies": {
     "@comunica/actor-abstract-mediatyped": "^1.6.3",
-    "@comunica/actor-rdf-parse-jsonld": "^1.6.3",
+    "@comunica/actor-rdf-parse-jsonld": "^1.6.6",
     "@comunica/actor-rdf-parse-n3": "^1.6.3",
     "@comunica/actor-rdf-parse-rdfxml": "^1.6.3",
     "@comunica/bus-init": "^1.6.3",
     "@comunica/bus-rdf-parse": "^1.6.3",
     "@comunica/core": "^1.6.3",
     "@comunica/mediator-race": "^1.6.3",
-    "@comunica/runner": "^1.6.3",
-    "@comunica/runner-cli": "^1.6.3",
+    "@comunica/runner": "^1.6.6",
+    "@comunica/runner-cli": "^1.6.6",
     "rdf-string": "^1.3.1"
   },
   "jest": {

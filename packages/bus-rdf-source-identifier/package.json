@@ -1,6 +1,6 @@
 {
   "name": "@comunica/bus-rdf-source-identifier",
-  "version": "1.6.3",
+  "version": "1.6.6",
   "description": "A comunica bus for rdf-source-identifier events.",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-source-identifier",
   "lsd:components": "components/components.jsonld",

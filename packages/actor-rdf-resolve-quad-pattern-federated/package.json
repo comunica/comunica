@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-resolve-quad-pattern-federated",
-  "version": "1.6.3",
+  "version": "1.6.6",
   "description": "A federated rdf-resolve-quad-pattern actor",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-resolve-quad-pattern-federated",
   "lsd:components": "components/components.jsonld",
@@ -46,7 +46,7 @@
     "@comunica/core": "^1.0.0"
   },
   "devDependencies": {
-    "@comunica/bus-rdf-resolve-quad-pattern": "^1.6.3",
+    "@comunica/bus-rdf-resolve-quad-pattern": "^1.6.6",
     "@comunica/core": "^1.6.3"
   },
   "jest": {

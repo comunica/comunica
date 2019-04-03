@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-source-identifier-hypermedia-qpf",
-  "version": "1.6.3",
+  "version": "1.6.6",
   "description": "A hypermedia-qpf rdf-source-identifier actor",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-source-identifier-hypermedia-qpf",
   "lsd:components": "components/components.jsonld",
@@ -44,7 +44,7 @@
   },
   "devDependencies": {
     "@comunica/bus-http": "^1.6.3",
-    "@comunica/bus-rdf-source-identifier": "^1.6.3",
+    "@comunica/bus-rdf-source-identifier": "^1.6.6",
     "@comunica/core": "^1.6.3",
     "@comunica/mediatortype-priority": "^1.6.3"
   },

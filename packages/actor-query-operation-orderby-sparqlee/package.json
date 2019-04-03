@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-operation-orderby-sparqlee",
-  "version": "1.6.5",
+  "version": "1.6.6",
   "description": "A orderby-sparqlee query-operation actor",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-orderby-sparqlee",
   "lsd:components": "components/components.jsonld",
