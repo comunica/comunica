@@ -72,8 +72,13 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
       // Phase 1: Consume the stream, identify the groups and populate the aggregators.
       // We need to bind this after the 'error' and 'end' listeners to avoid the
       // stream having ended before those listeners are bound.
-      // TODO: Error handling maybe?
-      output.bindingsStream.on('data', (bindings) => groups.consumeBindings(bindings));
+      output.bindingsStream.on('data', (bindings) => {
+        try {
+          groups.consumeBindings(bindings);
+        } catch (err) {
+          reject(err);
+        }
+      });
     });
   }
 }

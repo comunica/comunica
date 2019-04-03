@@ -9,6 +9,7 @@ import * as sparqlee from "sparqlee";
 import { ActorQueryOperation, Bindings, IActionQueryOperation } from "@comunica/bus-query-operation";
 import { Bus } from "@comunica/core";
 import { ActorQueryOperationGroup } from "../lib/ActorQueryOperationGroup";
+import { GroupsState } from "../lib/GroupsState";
 
 const simpleXYZinput = {
   type: "bgp",
@@ -373,9 +374,13 @@ describe('ActorQueryOperationGroup', () => {
         .toBeTruthy();
     });
 
-    it('should reject in case something unexpected happens', async () => {
-      const temp = sparqlee.AggregateEvaluator.emptyValue;
-      sparqlee.AggregateEvaluator.emptyValue = () => { throw Error("test error"); };
+    it('should reject in case something unexpected happens when collecting results', async () => {
+      const temp = GroupsState.prototype.collectResults;
+      GroupsState.prototype.collectResults = jest
+        .fn()
+        .mockImplementationOnce(() => {
+          throw new Error("test error");
+        });
       const { op, actor } = constructCase({
         inputBindings: [],
         groupVariables: ['x'],
@@ -387,9 +392,32 @@ describe('ActorQueryOperationGroup', () => {
         await arrayifyStream((await actor.run(op) as any).bindingsStream);
         fail();
       } catch (err) {
-        sparqlee.AggregateEvaluator.emptyValue = temp;
-        expect(() => { throw err; }).toThrow("test error");
+        expect(() => { throw err; }).toThrowError("test error");
       }
+      GroupsState.prototype.collectResults = temp;
+    });
+
+    it('should reject in case something unexpected happens when consuming the stream', async () => {
+      const temp = GroupsState.prototype.consumeBindings;
+      GroupsState.prototype.consumeBindings = jest
+        .fn()
+        .mockImplementation(() => {
+          throw new Error("test error");
+        });
+      const { op, actor } = constructCase({
+        inputBindings: [Bindings({ '?x': literal("doesn't matter") })],
+        groupVariables: ['x'],
+        inputVariables: ['x', 'y', 'z'],
+        inputOp: simpleXYZinput,
+        aggregates: [countY],
+      });
+      try {
+        await arrayifyStream((await actor.run(op) as any).bindingsStream);
+        fail("BindingStream did not error when it should");
+      } catch (err) {
+        expect(() => { throw err; }).toThrowError("test error");
+      }
+      GroupsState.prototype.consumeBindings = temp;
     });
 
     it.skip('should respect distinct', async () => {
