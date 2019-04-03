@@ -28,7 +28,7 @@
           "required": true,
           "unique": true,
           "range": "xsd:int",
-          "default": 0
+          "default": 2
         }
       ],
       "constructorArguments": [

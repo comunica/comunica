@@ -38,14 +38,10 @@
   },
   "devDependencies": {
     "@comunica/bus-rdf-parse": "^1.6.3",
-    "@comunica/core": "^1.6.3",
-    "lodash.assign": "^4.2.0"
+    "@comunica/core": "^1.6.3"
   },
   "dependencies": {
-    "@rdfjs/data-model": "^1.1.1",
-    "jsonld": "^1.5.0",
-    "rdf-terms": "^1.4.0",
-    "stream-to-string": "^1.1.0"
+    "jsonld-streaming-parser": "^1.1.0"
   },
   "jest": {
     "globals": {

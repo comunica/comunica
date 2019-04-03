@@ -45,9 +45,7 @@
     "@comunica/core": "^1.6.3"
   },
   "dependencies": {
-    "arrayify-stream": "^1.0.0",
-    "jsonld": "^1.5.0",
-    "streamify-array": "^1.0.0"
+    "jsonld-streaming-serializer": "^1.0.1"
   },
   "jest": {
     "globals": {

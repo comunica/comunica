@@ -1,7 +1,11 @@
-import {ActorRdfSerializeFixedMediaTypes, IActionRdfSerialize,
-  IActorRdfSerializeFixedMediaTypesArgs, IActorRdfSerializeOutput} from "@comunica/bus-rdf-serialize";
+import {
+  ActorRdfSerializeFixedMediaTypes,
+  IActionRdfSerialize,
+  IActorRdfSerializeFixedMediaTypesArgs,
+  IActorRdfSerializeOutput,
+} from "@comunica/bus-rdf-serialize";
 import {ActionContext} from "@comunica/core";
-import * as RDF from "rdf-js";
+import {JsonLdSerializer} from "jsonld-streaming-serializer";
 
 /**
  * A comunica Jsonld RDF Serialize Actor.
@@ -22,10 +26,9 @@ export class ActorRdfSerializeJsonLd extends ActorRdfSerializeFixedMediaTypes {
 
   public async runHandle(action: IActionRdfSerialize, mediaType: string, context: ActionContext)
     : Promise<IActorRdfSerializeOutput> {
-    const quadsArray: RDF.Quad = await require('arrayify-stream')(action.quads);
-    const jsonLines: string[] = (await this.jsonLd.fromRDF(quadsArray, { useNativeTypes: true }))
-      .map((jsonObject: any) => JSON.stringify(jsonObject, null, this.jsonStringifyIndentSpaces));
-    return { data: require('streamify-string')(`[${jsonLines.join(',')}]`) };
+    const data: NodeJS.ReadableStream = <any> new JsonLdSerializer(
+      { space: ' '.repeat(this.jsonStringifyIndentSpaces) }).import(action.quads);
+    return { data };
   }
 
 }

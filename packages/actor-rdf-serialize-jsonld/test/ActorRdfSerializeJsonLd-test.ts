@@ -48,19 +48,22 @@ describe('ActorRdfSerializeJsonLd', () => {
       it('should run', () => {
         return actor.run({ handle: { quads }, handleMediaType: 'application/ld+json' })
           .then(async (output) => expect(await stringifyStream(output.handle.data)).toEqual(
-`[{
-  "@id": "http://example.org/a",
-  "http://example.org/b": [
-    {
-      "@id": "http://example.org/c"
-    }
-  ],
-  "http://example.org/d": [
-    {
-      "@id": "http://example.org/e"
-    }
-  ]
-}]`));
+`[
+  {
+    "@id": "http://example.org/a",
+    "http://example.org/b": [
+      {
+        "@id": "http://example.org/c"
+      }
+    ],
+    "http://example.org/d": [
+      {
+        "@id": "http://example.org/e"
+      }
+    ]
+  }
+]
+`));
       });
     });
 
@@ -75,31 +78,35 @@ describe('ActorRdfSerializeJsonLd', () => {
 
       return actor.run({ handle: { quads }, handleMediaType: 'application/ld+json' })
         .then(async (output) => expect(await stringifyStream(output.handle.data)).toEqual(
-          `[{
-  "@id": "http://example.org/a",
-  "http://example.org/b": [
-    {
-      "@id": "http://example.org/c"
-    }
-  ],
-  "http://example.org/d": [
-    {
-      "@id": "http://example.org/e"
-    }
-  ]
-},{
-  "@id": "http://example.org/a2",
-  "http://example.org/b": [
-    {
-      "@id": "http://example.org/c"
-    }
-  ],
-  "http://example.org/d": [
-    {
-      "@id": "http://example.org/e"
-    }
-  ]
-}]`));
+          `[
+  {
+    "@id": "http://example.org/a",
+    "http://example.org/b": [
+      {
+        "@id": "http://example.org/c"
+      }
+    ],
+    "http://example.org/d": [
+      {
+        "@id": "http://example.org/e"
+      }
+    ]
+  },
+  {
+    "@id": "http://example.org/a2",
+    "http://example.org/b": [
+      {
+        "@id": "http://example.org/c"
+      }
+    ],
+    "http://example.org/d": [
+      {
+        "@id": "http://example.org/e"
+      }
+    ]
+  }
+]
+`));
     });
   });
 
