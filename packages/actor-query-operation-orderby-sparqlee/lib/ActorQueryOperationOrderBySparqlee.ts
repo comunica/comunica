@@ -41,7 +41,6 @@ export class ActorQueryOperationOrderBySparqlee extends ActorQueryOperationTyped
     let bindingsStream = output.bindingsStream;
 
     for (let expr of pattern.expressions) {
-      const origin = output.bindingsStream;
       const isAscending = this.isAscending(expr);
       expr = this.extractSortExpression(expr);
 
@@ -60,7 +59,7 @@ export class ActorQueryOperationOrderBySparqlee extends ActorQueryOperationTyped
         }
         next();
       };
-      const transformedStream = origin.transform<IAnnotatedBinding>({ transform });
+      const transformedStream = bindingsStream.transform<IAnnotatedBinding>({ transform });
 
       // Sort the annoted stream
       const sortedStream = new SortIterator(transformedStream, (a, b) => {
