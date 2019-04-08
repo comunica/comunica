@@ -1,11 +1,9 @@
-import * as stringify from 'json-stable-stringify';
-
-import { createHash, Hash } from 'crypto';
 import { Term } from 'rdf-js';
 import { termToString } from 'rdf-string';
 import { Algebra } from 'sparqlalgebrajs';
 import { AggregateEvaluator } from 'sparqlee';
 
+import { AbstractBindingHash } from '@comunica/actor-abstract-bindings-hash';
 import { Bindings } from '@comunica/bus-query-operation';
 
 /**
@@ -142,8 +140,6 @@ export class GroupsState {
    * @param {Bindings} bindings - Bindings to hash
    */
   private hashBindings(bindings: Bindings): BindingsHash {
-    const hash: Hash = createHash("sha1");
-    hash.update(stringify(bindings));
-    return hash.digest().toString();
+    return AbstractBindingHash.hash('sha1', 'hex', bindings);
   }
 }

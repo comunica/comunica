@@ -65,9 +65,8 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
         }
       });
 
-      output.bindingsStream.on('error', (err) => {
-        reject(err);
-      });
+      // Make sure to propagate any errors in the binding stream
+      output.bindingsStream.on('error', reject);
 
       // Phase 1: Consume the stream, identify the groups and populate the aggregators.
       // We need to bind this after the 'error' and 'end' listeners to avoid the

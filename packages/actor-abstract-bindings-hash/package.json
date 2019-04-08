@@ -65,5 +65,8 @@
     "lint": "node \"../../node_modules/tslint/bin/tslint\" lib/**/*.ts test/**/*.ts --exclude '**/*.d.ts'",
     "build": "node \"../../node_modules/typescript/bin/tsc\"",
     "validate": "npm ls"
+  },
+  "dependencies": {
+    "json-stable-stringify": "^1.0.1"
   }
 }
