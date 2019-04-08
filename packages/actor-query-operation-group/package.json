@@ -1,27 +1,26 @@
 {
-  "name": "@comunica/actor-abstract-bindings-hash",
+  "name": "@comunica/actor-query-operation-group",
   "version": "1.6.5",
-  "description": "An abstract actor for handling binding query operators",
-  "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-abstract-bindings-hash",
+  "description": "A group query-operation actor",
+  "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-group",
   "lsd:components": "components/components.jsonld",
   "lsd:contexts": {
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-abstract-bindings-hash/^1.0.0/components/context.jsonld": "components/context.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-group/^1.0.0/components/context.jsonld": "components/context.jsonld"
   },
   "lsd:importPaths": {
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-abstract-bindings-hash/^1.0.0/components/": "components/"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-group/^1.0.0/components/": "components/"
   },
   "main": "index.js",
   "typings": "index",
-  "repository": "https://github.com/comunica/comunica/tree/master/packages/actor-abstract-bindings-hash",
+  "repository": "https://github.com/comunica/comunica/tree/master/packages/actor-query-operation-group",
   "publishConfig": {
     "access": "public"
   },
   "keywords": [
     "comunica",
     "actor",
-    "abstract",
-    "binding",
-    "hash"
+    "query-operation",
+    "group"
   ],
   "license": "MIT",
   "bugs": {
@@ -35,13 +34,19 @@
     "index.d.ts",
     "index.js"
   ],
+  "dependencies": {
+    "@comunica/actor-abstract-bindings-hash": "^1.6.5",
+    "rdf-string": "^1.3.1",
+    "sparqlee": "0.2.0"
+  },
   "peerDependencies": {
-    "@comunica/bus-query-operation": "^1.0.0",
-    "@comunica/core": "^1.0.0"
+    "@comunica/bus-query-operation": "^1.6.0",
+    "@comunica/core": "^1.4.0"
   },
   "devDependencies": {
-    "@comunica/bus-query-operation": "^1.6.5",
-    "@comunica/core": "^1.6.3"
+    "@comunica/bus-query-operation": "^1.6.0",
+    "@comunica/core": "^1.4.0",
+    "@types/json-stable-stringify": "^1.0.32"
   },
   "jest": {
     "globals": {
@@ -64,9 +69,7 @@
     "test-watch": "node \"../../node_modules/jest/bin/jest.js\" ${1} --watch",
     "lint": "node \"../../node_modules/tslint/bin/tslint\" lib/**/*.ts test/**/*.ts --exclude '**/*.d.ts'",
     "build": "node \"../../node_modules/typescript/bin/tsc\"",
-    "validate": "npm ls"
-  },
-  "dependencies": {
-    "json-stable-stringify": "^1.0.1"
+    "validate": "npm ls",
+    "example": "node ./examples/translate_to_algebra.js ./examples"
   }
 }

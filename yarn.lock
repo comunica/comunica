@@ -1517,6 +1517,11 @@
   dependencies:
     "@types/jest-diff" "*"
 
+"@types/json-stable-stringify@^1.0.32":
+  version "1.0.32"
+  resolved "https://registry.yarnpkg.com/@types/json-stable-stringify/-/json-stable-stringify-1.0.32.tgz#121f6917c4389db3923640b2e68de5fa64dda88e"
+  integrity sha512-q9Q6+eUEGwQkv4Sbst3J4PNgDOvpuVuKj79Hl/qnmBMEIPzB5QoFRUtjcgcg2xNUZyYUGXBk5wYIBKHt0A+Mxw==
+
 "@types/lodash.assign@^4.2.3":
   version "4.2.6"
   resolved "https://registry.yarnpkg.com/@types/lodash.assign/-/lodash.assign-4.2.6.tgz#e5cc225446c706907893263d5938c6571ad28551"
@@ -5289,9 +5294,9 @@ jsonify@~0.0.0:
   integrity sha1-LHS27kHZPKUbe1qu6PUDYx0lKnM=
 
 jsonld-context-parser@^1.1.0, jsonld-context-parser@^1.1.3:
-  version "1.1.3"
-  resolved "https://registry.yarnpkg.com/jsonld-context-parser/-/jsonld-context-parser-1.1.3.tgz#af30aa1b51c6cdc9c4b60ef3a40ed1f6e2bbcd35"
-  integrity sha512-/OWdhhJZPBoeUa6HlfkI2VpkpdvbTRvcyJwAu9fWuvZtGW00uDmGiNrzAWVfPH9mHAj0Dn9DN5ZjrD59CbU7Aw==
+  version "1.1.4"
+  resolved "https://registry.yarnpkg.com/jsonld-context-parser/-/jsonld-context-parser-1.1.4.tgz#8cefebc80f3adf79d09e69559d1cfd14e99121bd"
+  integrity sha512-Re52EVbbSO7r7gS5JqAIbcwnNTVWNscD7tCG4o9l7zGjuYpjek1m6QBcq23o8S3i0uTcxIp1LQ2efOwElVVqbA==
   dependencies:
     isomorphic-fetch "^2.2.1"
     relative-to-absolute-iri "^1.0.2"
@@ -7082,10 +7087,10 @@ rdf-terms@^1.2.0, rdf-terms@^1.4.0:
     "@rdfjs/data-model" "^1.1.1"
     lodash.uniqwith "^4.5.0"
 
-rdf-test-suite@^1.5.1:
-  version "1.5.3"
-  resolved "https://registry.yarnpkg.com/rdf-test-suite/-/rdf-test-suite-1.5.3.tgz#f4432620c8c4b94f470d3aaa5030e981e3b91bac"
-  integrity sha512-i/k8k0+jFHRtZym+NX874WImMFaJrdofp9EatiC/Q9BQkIgEqQPDrCAS+5XscDcmbuN3EwxC5OdjcASc5jz8/A==
+rdf-test-suite@^1.6.0:
+  version "1.7.0"
+  resolved "https://registry.yarnpkg.com/rdf-test-suite/-/rdf-test-suite-1.7.0.tgz#0aa4d3570f881052bb1db4b7c44653d60a58ab09"
+  integrity sha512-3Rc6Vq9LZTxWfMuL5A8BRrb2edK6OMwlZGztKwRCqo+50qpRSKf6r+QfFOIudbBRTwOFDIapxpm5T6teNtqMig==
   dependencies:
     "@rdfjs/data-model" "^1.1.1"
     arrayify-stream "^1.0.0"
@@ -7787,10 +7792,10 @@ sparqlalgebrajs@^1.1.0, sparqlalgebrajs@^1.4.2, sparqlalgebrajs@^1.5.0:
     rdf-string "^1.3.1"
     sparqljs "^2.2.1"
 
-sparqlee@0.1.0:
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/sparqlee/-/sparqlee-0.1.0.tgz#727a4b28b3835daa2b9550dc7578780c512a19c3"
-  integrity sha512-iLR9Vxky4ONoLX2rnvLg4tOtQVLXDE5b1qKH+jB8mrBUF2qlGDAic/PUF4w1nxQP3A+OlVcbJIWb1O/OmE0vrw==
+sparqlee@0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/sparqlee/-/sparqlee-0.2.0.tgz#0a9e723cd5064ab17906a4c6948f594b827a6128"
+  integrity sha512-qP12vQm+dgtYzwZXM89WfA8xG+bhG54189HhQgeRxY0xas55jEuJNI8bR7bmvbG1k2hodU8+s6tbOStY4vpLcw==
   dependencies:
     "@rdfjs/data-model" "^1.1.0"
     "@types/asynciterator" "^1.1.0"

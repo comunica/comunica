@@ -8,7 +8,7 @@ module.exports = {
     return engine.mediatorSparqlParse.mediate({ query: query });
   },
   query: async function(data, queryString) {
-    const result = await engine.query(queryString, { sources: [ { type: 'rdfjsSource', value: source(data) } ] });
+    const result = await engine.query(queryString, { sources: [{ type: 'rdfjsSource', value: source(data) }] });
     if (result.type === 'boolean') {
       return new RdfTestSuite.QueryResultBoolean(await result.booleanResult);
     }
