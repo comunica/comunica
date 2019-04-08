@@ -1,11 +1,14 @@
+import * as RDF from 'rdf-js';
+import { termToString } from 'rdf-string';
+import { Algebra, Factory, Util } from "sparqlalgebrajs";
+import { AsyncEvaluator, isExpressionError } from "sparqlee";
+
 import {
   ActorQueryOperation, ActorQueryOperationTypedMediated, Bindings,
   IActorQueryOperationOutputBindings,
   IActorQueryOperationTypedMediatedArgs,
 } from "@comunica/bus-query-operation";
 import { ActionContext, IActorTest } from "@comunica/core";
-import { Algebra } from "sparqlalgebrajs";
-import { AsyncEvaluator, isExpressionError } from "sparqlee";
 
 /**
  * A comunica Filter Sparqlee Query Operation Actor.
@@ -30,7 +33,9 @@ export class ActorQueryOperationFilterSparqlee extends ActorQueryOperationTypedM
     ActorQueryOperation.validateQueryOutput(output, 'bindings');
     const { variables, metadata } = output;
 
-    const evaluator = new AsyncEvaluator(pattern.expression);
+    const hooks = { existence: this.createExistenceResolver(context) };
+    const evaluator = new AsyncEvaluator(pattern.expression, hooks);
+
     const transform = async (item: Bindings, next: any) => {
       try {
         const result = await evaluator.evaluateAsEBV(item);
@@ -47,5 +52,64 @@ export class ActorQueryOperationFilterSparqlee extends ActorQueryOperationTypedM
 
     const bindingsStream = output.bindingsStream.transform<Bindings>({ transform });
     return { type: 'bindings', bindingsStream, metadata, variables };
+  }
+
+  private createExistenceResolver(context: ActionContext):
+    (expr: Algebra.ExistenceExpression, bindings: Bindings) => Promise<boolean> {
+    return async (expr, bindings) => {
+      const operation = this.substitute(expr.input, bindings);
+
+      const outputRaw = await this.mediatorQueryOperation.mediate({ operation, context });
+      const output = ActorQueryOperation.getSafeBindings(outputRaw);
+
+      return new Promise(
+        (resolve, reject) => {
+          output.bindingsStream.on('end', () => {
+            resolve(false);
+          });
+
+          output.bindingsStream.on('error', reject);
+
+          output.bindingsStream.on('data', () => {
+            output.bindingsStream.close();
+            resolve(true);
+          });
+        })
+        .then((exists: boolean) => expr.not ? !exists : exists);
+    };
+  }
+
+  private substitute(operation: Algebra.Operation, bindings: Bindings): Algebra.Operation {
+    return Util.mapOperation(operation, {
+      path: (op: Algebra.Path, factory: Factory) => {
+        return {
+          recurse: false,
+          result: factory.createPath(
+            this.substituteSingle(op.subject, bindings),
+            op.predicate,
+            this.substituteSingle(op.object, bindings),
+            this.substituteSingle(op.graph, bindings),
+          ),
+        };
+      },
+      pattern: (op: Algebra.Pattern, factory: Factory) => {
+        return {
+          recurse: false,
+          result: factory.createPattern(
+            this.substituteSingle(op.subject, bindings),
+            this.substituteSingle(op.predicate, bindings),
+            this.substituteSingle(op.object, bindings),
+            this.substituteSingle(op.graph, bindings),
+          ),
+        };
+      },
+    });
+  }
+
+  private substituteSingle(term: RDF.Term, bindings: Bindings): RDF.Term {
+    if (term.termType === 'Variable') {
+      return bindings.get(termToString(term), term);
+    }
+    return term;
   }
 }
