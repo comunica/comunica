@@ -8,7 +8,7 @@ such as [data dumps](http://downloads.dbpedia.org/3.9/en/),
 [subject pages](http://dbpedia.org/page/Linked_data),
 [results of SPARQL queries](http://dbpedia.org/sparql?default-graph-uri=http%3A%2F%2Fdbpedia.org&query=CONSTRUCT+%7B+%3Fp+a+dbpedia-owl%3AArtist+%7D%0D%0AWHERE+%7B+%3Fp+a+dbpedia-owl%3AArtist+%7D&format=text%2Fturtle),
 and [Triple Pattern Fragments](http://data.linkeddatafragments.org/dbpedia2014?subject=&predicate=rdf%3Atype&object=dbpedia-owl%3ARestaurant).
-This client is able to solve queries over such _heterogeneous interfaces_. 
+This client is able to solve queries over such _heterogeneous interfaces_.
 
 Concretely, Comunica SPARQL is a module that is preconfigured with a configuration file to initialize
 the [Comunica engine](https://github.com/comunica/comunica) with actors to evaluate SPARQL queries
@@ -89,36 +89,61 @@ Use `bin/http.js` when running in the Comunica monorepo development environment.
 
 ### Usage within application
 
-_Static:_
+The easiest way to create an engine (with default config) is as follows:
 
 ```javascript
 const newEngine = require('@comunica/actor-init-sparql').newEngine;
 
 const myEngine = newEngine();
-myEngine.query('SELECT * { ?s ?p <http://dbpedia.org/resource/Belgium>. ?s ?p ?o } LIMIT 100',
-  { sources: [ { type: 'hypermedia', value: 'http://fragments.dbpedia.org/2015/en' } ] })
-  .then(function (result) {
-    result.bindingsStream.on('data', function (data) {
-      console.log(data.toObject());
-    });
-  });
 ```
 
-_Dynamic:_
+Alternatively, an engine can also be created dynamically with a custom config:
 
 ```javascript
 const newEngineDynamic = require('@comunica/actor-init-sparql').newEngineDynamic;
 
-newEngineDynamic().then(function (myEngine) {
-  myEngine.query('SELECT * { ?s ?p <http://dbpedia.org/resource/Belgium>. ?s ?p ?o } LIMIT 100',
-    { sources: [ { type: 'hypermedia', value: 'http://fragments.dbpedia.org/2015/en' } ] })
-    .then(function (result) {
-      result.bindingsStream.on('data', function (data) {
-        console.log(data.toObject());
-      });
-    });
-});
+const myEngine = await newEngineDynamic({ configResourceUrl: 'path/to/config.json' });
 ```
+
+Once you have created your query engine,
+you can use it to call the async `query(queryString, context)` method,
+which returns an output of type that depends on the given query string.
+
+For example, a `SELECT` query can be executed as follows:
+
+```javascript
+const result = await myEngine.query('SELECT * WHERE { ?s ?p <http://dbpedia.org/resource/Belgium>. ?s ?p ?o } LIMIT 100',
+  { sources: [ { type: 'hypermedia', value: 'http://fragments.dbpedia.org/2015/en' } ] })
+result.bindingsStream.on('data', (data) => console.log(data.toObject()));
+```
+
+For `CONSTRUCT` and `DESCRIBE` queries,
+results can be collected as follows.
+
+```javascript
+const result = await myEngine.query('CONSTRUCT { ?s ?p <http://dbpedia.org/resource/Belgium> } LIMIT 100',
+  { sources: [ { type: 'hypermedia', value: 'http://fragments.dbpedia.org/2015/en' } ] })
+result.quadStream.on('data', (data) => console.log(data.toObject()));
+```
+
+Finally, `ASK` queries return async booleans.
+
+```javascript
+const result = await myEngine.query('ASK { ?s ?p <http://dbpedia.org/resource/Belgium> }',
+  { sources: [ { type: 'hypermedia', value: 'http://fragments.dbpedia.org/2015/en' } ] })
+const isPresent = await result.booleanResult;
+```
+
+**Context options:**
+
+| **Key** | **Description** |
+| ------- | --------------- |
+| `sources` | An array of data sources, e.g. `[ { type: 'hypermedia', value: 'http://fragments.dbpedia.org/2015/en' } ]`. Sources can be one of the following types: `hypermedia`, `sparql`, `file` |
+| `initialBindings` | Variables that have to be pre-bound to values in the query, using the `Bindings` datastructure, e.g. `Bindings({ '?s': literal('sl') })`. |
+| `queryFormat` | Name of the provided query's format. Defaults to `sparql`, can also be `graphql` |
+| `baseIRI` | Base IRI for relative IRIs in SPARQL queries, e.g. `http://example.org/`. |
+| `log` | Logger to use, e.g. `new LoggerPretty({ level: 'warn' })`. |
+| `datetime` | Datetime to handle time travel with [Memento](http://timetravel.mementoweb.org/), e.g. `new Date()`. |
 
 _GraphQL-LD_
 
@@ -182,7 +207,7 @@ Include this file in your webpage as follows:
 <script src="path/to/comunica-browser.js"></script>
 ```
 
-After that, `Comunica.newEngine` can be called via JavaScript. 
+After that, `Comunica.newEngine` can be called via JavaScript.
 
 ```javascript
 const myEngine = Comunica.newEngine();
