@@ -7087,10 +7087,10 @@ rdf-terms@^1.2.0, rdf-terms@^1.4.0:
     "@rdfjs/data-model" "^1.1.1"
     lodash.uniqwith "^4.5.0"
 
-rdf-test-suite@^1.8.0:
-  version "1.8.0"
-  resolved "https://registry.yarnpkg.com/rdf-test-suite/-/rdf-test-suite-1.8.0.tgz#b035fca9a7a384572bb979a345745180a35b975d"
-  integrity sha512-6Y3+FqJ+ZwWrO/FsIzsWSWFWrqsQa/Ng8ZqyYHBUCSVqfeIpcv4msx54CAm8sc8YCW/yDTO4Ci3q2iKBWZEPoA==
+rdf-test-suite@^1.8.1:
+  version "1.8.1"
+  resolved "https://registry.yarnpkg.com/rdf-test-suite/-/rdf-test-suite-1.8.1.tgz#a329512b03ba533a2f2debb6bc90e20bc82acd69"
+  integrity sha512-WIvmekT88gfP7lne+Zeri3JbRLz6TJx/jamWPeB4JdcSSoMc5LtmI0CFm6aPaOMPuRUAd1RwcsZatwZAEARFvg==
   dependencies:
     "@rdfjs/data-model" "^1.1.1"
     arrayify-stream "^1.0.0"

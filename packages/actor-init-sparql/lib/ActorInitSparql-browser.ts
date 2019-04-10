@@ -68,7 +68,7 @@ export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs {
           copiedOperation[key] = operation[key].map(
             (subOperation: Algebra.Operation) => ActorInitSparql.applyInitialBindings(subOperation, initialBindings));
         }
-      } else if (ActorInitSparql.ALGEBRA_TYPES.indexOf(operation[key].type) >= 0) {
+      } else if (operation[key] && ActorInitSparql.ALGEBRA_TYPES.indexOf(operation[key].type) >= 0) {
         copiedOperation[key] = ActorInitSparql.applyInitialBindings(operation[key], initialBindings);
       } else {
         copiedOperation[key] = operation[key];
@@ -133,8 +133,13 @@ export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs {
       queryFormat = context.get(KEY_CONTEXT_QUERYFORMAT);
       context = context.delete(KEY_CONTEXT_QUERYFORMAT);
     }
+    let baseIRI: string;
+    if (context && context.has(KEY_CONTEXT_BASEIRI)) {
+      baseIRI = context.get(KEY_CONTEXT_BASEIRI);
+      context = context.delete(KEY_CONTEXT_BASEIRI);
+    }
     let operation: Algebra.Operation = (await this.mediatorSparqlParse.mediate(
-      { context, query, queryFormat })).operation;
+      { context, query, queryFormat, baseIRI })).operation;
 
     // Block until context has been processed
     context = (await combinationPromise).context;
@@ -230,3 +235,4 @@ export interface IActorInitSparqlArgs extends IActorArgs<IActionInit, IActorTest
 
 export const KEY_CONTEXT_INITIALBINDINGS: string = '@comunica/actor-init-sparql:initialBindings';
 export const KEY_CONTEXT_QUERYFORMAT: string = '@comunica/actor-init-sparql:queryFormat';
+export const KEY_CONTEXT_BASEIRI: string = '@comunica/actor-init-sparql:baseIRI';

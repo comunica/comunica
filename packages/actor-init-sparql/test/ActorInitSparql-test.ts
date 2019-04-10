@@ -502,5 +502,23 @@ describe('ActorInitSparql', () => {
       })).stdout).toMatchObject({ level: 'warn' });
     });
 
+    it('should set baseIRI on the -b option', () => {
+      const relativeQuery = `
+select * where {
+graph <exists02.ttl> {
+  ?s ?p ex:o1
+  filter exists { ?s ?p ex:o2 }
+}
+`;
+      const baseIRI = 'http://example.org';
+      return actor.run({ argv: [ hypermedia, '-q' , relativeQuery, '-b', baseIRI ], env: {}, stdin: new PassThrough() })
+        .then((result) => {
+          return new Promise((resolve, reject) => {
+            result.stdout.on('data', (line) => expect(line).toBeTruthy());
+            result.stdout.on('end', resolve);
+          });
+        });
+    });
+
   });
 });

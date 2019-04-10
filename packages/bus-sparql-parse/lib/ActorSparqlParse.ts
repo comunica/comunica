@@ -29,6 +29,10 @@ export interface IActionSparqlParse extends IAction {
    * The query format.
    */
   queryFormat?: string;
+  /**
+   * The query's default base IRI.
+   */
+  baseIRI?: string;
 }
 
 export interface IActorSparqlParseOutput extends IActorOutput {

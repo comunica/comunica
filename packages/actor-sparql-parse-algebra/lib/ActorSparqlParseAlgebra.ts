@@ -22,7 +22,8 @@ export class ActorSparqlParseAlgebra extends ActorSparqlParse {
   }
 
   public async run(action: IActionSparqlParse): Promise<IActorSparqlParseOutput> {
-    return { operation: translate(action.query, { quads: true, prefixes: this.prefixes, blankToVariable: true }) };
+    return { operation: translate(action.query,
+        { quads: true, prefixes: this.prefixes, blankToVariable: true, baseIRI: action.baseIRI }) };
   }
 
 }

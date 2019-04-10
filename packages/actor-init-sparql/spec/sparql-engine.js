@@ -4,11 +4,11 @@ const N3Store = require('n3').Store;
 
 const engine = newEngine();
 module.exports = {
-  parse: function (query) {
-    return engine.mediatorSparqlParse.mediate({ query: query });
+  parse: function (query, options) {
+    return engine.mediatorSparqlParse.mediate({ query: query, baseIRI: options.baseIRI });
   },
-  query: async function(data, queryString) {
-    const result = await engine.query(queryString, { sources: [{ type: 'rdfjsSource', value: source(data) }] });
+  query: async function(data, queryString, options) {
+    const result = await engine.query(queryString, { sources: [{ type: 'rdfjsSource', value: source(data) }], baseIRI: options.baseIRI });
     if (result.type === 'boolean') {
       return new RdfTestSuite.QueryResultBoolean(await result.booleanResult);
     }

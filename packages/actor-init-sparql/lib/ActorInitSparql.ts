@@ -10,7 +10,7 @@ import * as OS from "os";
 import {Readable} from "stream";
 import {
   ActorInitSparql as ActorInitSparqlBrowser,
-  IActorInitSparqlArgs,
+  IActorInitSparqlArgs, KEY_CONTEXT_BASEIRI,
   KEY_CONTEXT_QUERYFORMAT,
 } from "./ActorInitSparql-browser";
 
@@ -61,6 +61,7 @@ Options:
   -c            use the given JSON configuration file (e.g., config.json)
   -t            the MIME type of the output (e.g., application/json)
   -i            the query input format (e.g., graphql, defaults to sparql)
+  -b            base IRI for the query (e.g., http://example.org/)
   -l            sets the log level (e.g., debug, info, warn, ... defaults to warn)
   -d            sets a datetime for querying Memento-enabled archives'
   --help        print this help message
@@ -105,6 +106,11 @@ Options:
     context[KEY_CONTEXT_QUERYFORMAT] = this.defaultQueryInputFormat;
     if (args.i) {
       context[KEY_CONTEXT_QUERYFORMAT] = args.i;
+    }
+
+    // Define the base IRI
+    if (args.b) {
+      context[KEY_CONTEXT_BASEIRI] = args.b;
     }
 
     // Set the logger
