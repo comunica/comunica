@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-operation-filter-sparqlee",
-  "version": "1.6.5",
+  "version": "1.7.0",
   "description": "A filter-sparqlee query-operation actor",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-filter-sparqlee",
   "lsd:components": "components/components.jsonld",

@@ -1,6 +1,17 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v1.7.0"></a>
+## [v1.7.0](https://github.com/comunica/comunica/compare/v1.6.6...v1.7.0) - 2019-04-11
+
+### Added
+* [Allow expressions in EXISTS](https://github.com/comunica/comunica/commit/b2182f7f21a7a8389cd70deb8ed1d135259a7f02)
+* [Add support for SPARQL aggragates](https://github.com/comunica/comunica/commit/e90e2106d5282a6a09bc96391af9826a6e9edebb)
+* [Allow baseIRI to be defined for queries](https://github.com/comunica/comunica/commit/97e3ea1c94c8bd1b9abe73dc1cf4ebcdc31e19d3)
+
+### Fixed
+* [Fix local file querying not working](https://github.com/comunica/comunica/commit/19d03f6271d0a84f664b3ae9b8285b5feabf4c05)
+
 <a name="v1.6.6"></a>
 ## [v1.6.6](https://github.com/comunica/comunica/compare/v1.6.5...v1.6.6) - 2019-04-03
 

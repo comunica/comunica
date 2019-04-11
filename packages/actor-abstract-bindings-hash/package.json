@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-abstract-bindings-hash",
-  "version": "1.6.5",
+  "version": "1.7.0",
   "description": "An abstract actor for handling binding query operators",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-abstract-bindings-hash",
   "lsd:components": "components/components.jsonld",

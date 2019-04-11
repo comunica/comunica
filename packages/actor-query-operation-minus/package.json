@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-operation-minus",
-  "version": "1.6.5",
+  "version": "1.7.0",
   "description": "A minus query-operation actor",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-minus",
   "lsd:components": "components/components.jsonld",
@@ -35,7 +35,7 @@
     "index.js"
   ],
   "dependencies": {
-    "@comunica/actor-abstract-bindings-hash": "^1.6.5",
+    "@comunica/actor-abstract-bindings-hash": "^1.7.0",
     "asynciterator-promiseproxy": "^2.0.0"
   },
   "peerDependencies": {
