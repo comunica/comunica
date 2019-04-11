@@ -36,7 +36,8 @@
     "index.d.ts",
     "index-browser.d.ts",
     "index-browser.js",
-    "engine-default.js"
+    "engine-default.js",
+    "engine-browser.js"
   ],
   "dependencies": {
     "@comunica/actor-abstract-mediatyped": "^1.6.3",
@@ -111,7 +112,7 @@
     "lint": "node \"../../node_modules/tslint/bin/tslint\" lib/**/*.ts test/**/*.ts --exclude '**/*.d.ts'",
     "build": "node \"../../node_modules/typescript/bin/tsc\"",
     "validate": "npm ls",
-    "prepare": "comunica-compile-config config/config-browser.json > engine-default.js",
+    "prepare": "comunica-compile-config config/config-default.json > engine-default.js && comunica-compile-config config/config-browser.json > engine-browser.js",
     "browser": "npm run prepare && \"../../node_modules/webpack/bin/webpack.js\" --config webpack.config.js --mode production"
   },
   "browser": {
