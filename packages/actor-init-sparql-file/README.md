@@ -14,10 +14,22 @@ $ yarn add @comunica/actor-init-sparql-file
 
 ## Usage from the command line
 
-Show 100 triples from a FOAF profile:
+Show 100 triples from a remote FOAF profile:
 
 ```bash
 $ comunica-sparql-file file@https://ruben.verborgh.org/profile/#me "CONSTRUCT WHERE { ?s ?p ?o } LIMIT 100"
+```
+
+Show 100 triples from a local RDF file:
+
+```bash
+$ comunica-sparql-file file@path/to/my/file.ttl "CONSTRUCT WHERE { ?s ?p ?o } LIMIT 100"
+```
+
+Show all triples from a local and remote file:
+
+```bash
+$ comunica-sparql-file file@path/to/my/file.ttl file@https://ruben.verborgh.org/profile/#me "CONSTRUCT WHERE { ?s ?p ?o } LIMIT 100"
 ```
 
 Show the help with all options:
@@ -28,6 +40,21 @@ $ comunica-sparql-file --help
 
 Just like [Comunica SPARQL](https://github.com/comunica/comunica/tree/master/packages/actor-init-sparql),
 a [dynamic variant](https://github.com/comunica/comunica/tree/master/packages/actor-init-sparql#usage-from-the-command-line) (`comunica-dynamic-sparql-file`) also exists.
+
+### Usage within application
+
+This engine can be used in JavaScript/TypeScript applications as follows:
+
+```javascript
+const newEngine = require('@comunica/actor-init-sparql-file').newEngine;
+const myEngine = newEngine();
+
+const result = await myEngine.query('SELECT * WHERE { ?s ?p <http://dbpedia.org/resource/Belgium>. ?s ?p ?o } LIMIT 100',
+  { sources: [ { type: 'file', value: '/path/to/my/file.ttl' } ] })
+result.bindingsStream.on('data', (data) => console.log(data.toObject()));
+```
+
+[More details](https://github.com/comunica/comunica/tree/master/packages/actor-init-sparql#usage-within-application)
 
 ### Usage as a SPARQL endpoint
 

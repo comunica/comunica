@@ -24,6 +24,8 @@ Comunica can either be invoked **dynamically** using a configuration file,
 or **statically** using a pre-compiled configuration file.
 The latter will be faster to start because the dependency-injection phase can be avoided.
 
+**This actor can not query over local files for security reasons, but [Comunica SPARQL file](https://github.com/comunica/comunica/tree/master/packages/actor-init-sparql-file#readme) can.**
+
 ## Installation
 
 Comunica requires [Node.JS](http://nodejs.org/) 8.0 or higher and is tested on OSX and Linux.
@@ -48,6 +50,18 @@ Show 100 triples from http://fragments.dbpedia.org/2015-10/en:
 
 ```bash
 $ comunica-sparql http://fragments.dbpedia.org/2015-10/en "CONSTRUCT WHERE { ?s ?p ?o } LIMIT 100"
+```
+
+Show all triples from http://dbpedia.org/resource/Belgium:
+
+```bash
+$ comunica-sparql file@http://dbpedia.org/resource/Belgium "CONSTRUCT WHERE { ?s ?p ?o }"
+```
+
+Combine multiple sources:
+
+```bash
+$ comunica-sparql http://fragments.dbpedia.org/2015-10/en file@http://dbpedia.org/resource/Belgium "CONSTRUCT WHERE { ?s ?p ?o } LIMIT 100"
 ```
 
 Show the help with all options:
@@ -75,6 +89,8 @@ Start a webservice exposing http://fragments.dbpedia.org/2015-10/en via the SPAR
 ```bash
 $ comunica-sparql-http "{ \"sources\": [{ \"type\": \"hypermedia\", \"value\" : \"http://fragments.dbpedia.org/2015/en\" }]}"
 ```
+
+_(Use `\"type\": \"file\"` if you want to query over remote RDF files)_
 
 Show the help with all options:
 
@@ -198,8 +214,11 @@ myEngine.query('...', context);
 
 ### Usage within browser
 
+_(Just want to quickly demo queries in the browser? Have a look at our [Web client](https://github.com/comunica/jQuery-Widget.js))_
+
 This engine can run in the browser using [Webpack](https://www.npmjs.com/package/webpack).
-To created a web-packed version of the engine, run `yarn run browser` (when inside the `packages/actor-init-sparql` folder) to create `comunica-browser.js`.
+To create a web-packed version of the engine, run `yarn run browser` (when inside the `packages/actor-init-sparql` folder) to create `comunica-browser.js`.
+Alternatively, just [use a pre-built version from our CDN](https://github.com/rdfjs/comunica-browser).
 
 Include this file in your webpage as follows:
 

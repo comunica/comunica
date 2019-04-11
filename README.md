@@ -11,17 +11,18 @@ Comunica is a highly modular and flexible query engine platform for the Web.
 As Comunica is a query engine _platform_,
 various configurations can be built for it,
 each leading to a different query engine.
-One example of such a configuration is [Comunica SPARQL](https://github.com/comunica/comunica/tree/master/packages/actor-init-sparql),
-which is an engine that is preconfigured to execute SPARQL queries over heterogeneous interfaces.
+
+**If you just want to query, have a look at these pre-built engines**:
+* [Comunica SPARQL](https://github.com/comunica/comunica/tree/master/packages/actor-init-sparql#readme): SPARQL/GraphQL querying from JavaScript applications or the CLI
+* [Comunica SPARQL File](https://github.com/comunica/comunica/tree/master/packages/actor-init-sparql-file#readme): Library to query over local RDF files
+* [Comunica SPARQL RDFJS](https://github.com/comunica/comunica/tree/master/packages/actor-init-sparql-rdfjs#readme): Library to query over local RDF files
+* [Comunica SPARQL HDT](https://github.com/comunica/comunica-actor-init-sparql-hdt#readme): Library to query over local HDT files
 
 This repository should be used by Comunica module **developers** as it contains multiple Comunica modules that can be composed.
 This repository is managed as a [monorepo](https://github.com/babel/babel/blob/master/doc/design/monorepo.md)
 using [Lerna](https://lernajs.io/).
 
-If you want to **use** Comunica, have a look at the [manual](http://comunica.readthedocs.io/en/latest/)
-or at [Comunica SPARQL](https://github.com/comunica/comunica/tree/master/packages/actor-init-sparql)
-if you want to execute SPARQL queries.
-
+More usage information and details can be found in our [manual](http://comunica.readthedocs.io/en/latest/).
 If you want more background information about the motivations of this work,
 be sure to have a look at our [article](https://comunica.github.io/Article-ISWC2018-Resource/).
 
@@ -29,6 +30,8 @@ Browser scripts of all engines in this repo are automatically built and made ava
 https://github.com/rdfjs/comunica-browser
 
 ## Development Setup
+
+_(JSDoc: https://comunica.github.io/comunica/)_
 
 If you want to develop new features
 or use the (potentially unstable) in-development version,

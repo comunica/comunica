@@ -36,14 +36,12 @@ const source = {
 // Create our engine, and query it.
 // If you intend to query multiple times, be sure to cache your engine for optimal performance.
 const myEngine = newEngine();
-myEngine.query('SELECT * { ?s ?p <http://dbpedia.org/resource/Belgium>. ?s ?p ?o } LIMIT 100',
-  { sources: [ { type: 'rdfjsSource', value: source } ] })
-  .then(function (result) {
-    result.bindingsStream.on('data', function (data) {
-      // Each data object contains a mapping from variables to RDFJS terms.
-      console.log(data.get('?s'));
-      console.log(data.get('?p'));
-      console.log(data.get('?o'));
-    });
-  });
+const result = await myEngine.query('SELECT * { ?s ?p <http://dbpedia.org/resource/Belgium>. ?s ?p ?o } LIMIT 100',
+  { sources: [ { type: 'rdfjsSource', value: source } ] });
+result.bindingsStream.on('data', (data) => {
+  // Each data object contains a mapping from variables to RDFJS terms.
+  console.log(data.get('?s'));
+  console.log(data.get('?p'));
+  console.log(data.get('?o'));
+});
 ```
