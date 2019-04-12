@@ -25,7 +25,7 @@ export class AggregateEvaluator {
   private throwError = false;
   private state: any;
 
-  constructor(expr: Algebra.AggregateExpression, start?: Bindings, throwError?: boolean) {
+  constructor(expr: Algebra.AggregateExpression, start: Bindings, throwError?: boolean) {
     this.expression = expr;
     this.evaluator = new SimpleEvaluator(expr.expression);
     this.aggregator = new aggregators[expr.aggregator as SetFunction](expr);
