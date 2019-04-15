@@ -13,7 +13,7 @@
     "files-cais:config/sets/join.json",
     "files-cais:config/sets/context-preprocess-rdf-source-identifiers.json",
     "files-cais:config/sets/resolve-federated.json",
-    "files-caisr:config/sets/resolve-rdfjs.json",
+    "files-cais:config/sets/resolve-rdfjs.json",
     "files-cais:config/sets/rdf-serializers.json",
     "files-cais:config/sets/sparql-init.json",
     "files-cais:config/sets/sparql-parsers.json",
