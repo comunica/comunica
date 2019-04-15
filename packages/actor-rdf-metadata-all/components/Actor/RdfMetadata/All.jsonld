@@ -1,0 +1,21 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-metadata-all/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-metadata/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-rdf-metadata-all",
+  "components": [
+    {
+      "@id": "carma:Actor/RdfMetadata/All",
+      "@type": "Class",
+      "extends": "cbrm:Actor/RdfMetadata",
+      "requireElement": "ActorRdfMetadataAll",
+      "comment": "A comunica All RDF Metadata Actor.",
+      "constructorArguments": [
+        {
+          "extends": "cbrm:Actor/RdfMetadata/constructorArgumentsObject"
+        }
+      ]
+    }
+  ]
+}

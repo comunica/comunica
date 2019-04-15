@@ -61,6 +61,7 @@
         "packages/actor-rdf-join-hash/package.json",
         "packages/actor-rdf-join-nestedloop/package.json",
         "packages/actor-rdf-join-symmetrichash/package.json",
+        "packages/actor-rdf-metadata-all/package.json",
         "packages/actor-rdf-metadata-extract-hydra-controls/package.json",
         "packages/actor-rdf-metadata-extract-hydra-count/package.json",
         "packages/actor-rdf-metadata-primary-topic/package.json",

@@ -1,0 +1,9 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-metadata-all/^1.0.0/components/context.jsonld",
+  "@id": "npmd:@comunica/actor-rdf-metadata-all",
+  "@type": "Module",
+  "requireName": "@comunica/actor-rdf-metadata-all",
+  "import": [
+    "files-carma:components/Actor/RdfMetadata/All.jsonld"
+  ]
+}
