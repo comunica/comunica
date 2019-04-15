@@ -102,6 +102,7 @@
     "@comunica/actor-rdf-resolve-quad-pattern-federated": "^1.8.0",
     "@comunica/actor-rdf-resolve-quad-pattern-file": "^1.8.0",
     "@comunica/actor-rdf-resolve-quad-pattern-hypermedia": "^1.8.0",
+    "@comunica/actor-rdf-resolve-quad-pattern-rdfjs-source": "^1.8.0",
     "@comunica/actor-rdf-resolve-quad-pattern-sparql-json": "^1.8.0",
     "@comunica/actor-rdf-serialize-jsonld": "^1.8.0",
     "@comunica/actor-rdf-serialize-n3": "^1.8.0",
