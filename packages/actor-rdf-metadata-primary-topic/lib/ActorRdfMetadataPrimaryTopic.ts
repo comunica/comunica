@@ -10,6 +10,7 @@ import {Readable} from "stream";
 export class ActorRdfMetadataPrimaryTopic extends ActorRdfMetadata {
 
   private readonly metadataToData: boolean;
+  private readonly dataToMetadataOnInvalidMetadataGraph: boolean;
 
   constructor(args: IActorRdfMetadataPrimaryTopicArgs) {
     super(args);
@@ -76,6 +77,11 @@ export class ActorRdfMetadataPrimaryTopic extends ActorRdfMetadata {
             for (const quad of graphs[graphName]) {
               data.push(quad);
             }
+            if (!metadataGraph && this.dataToMetadataOnInvalidMetadataGraph) {
+              for (const quad of graphs[graphName]) {
+                metadata.push(quad);
+              }
+            }
           }
         }
         data.push(null);
@@ -92,4 +98,5 @@ export class ActorRdfMetadataPrimaryTopic extends ActorRdfMetadata {
 export interface IActorRdfMetadataPrimaryTopicArgs
   extends IActorArgs<IActionRdfMetadata, IActorTest, IActorRdfMetadataOutput> {
   metadataToData: boolean;
+  dataToMetadataOnInvalidMetadataGraph: boolean;
 }

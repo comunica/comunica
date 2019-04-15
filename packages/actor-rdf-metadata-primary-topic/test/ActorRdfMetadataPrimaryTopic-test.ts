@@ -39,7 +39,8 @@ describe('ActorRdfMetadataPrimaryTopic', () => {
     let inputDifferent: Readable;
 
     beforeEach(() => {
-      actor = new ActorRdfMetadataPrimaryTopic({ name: 'actor', bus, metadataToData: false });
+      actor = new ActorRdfMetadataPrimaryTopic(
+        { name: 'actor', bus, metadataToData: false, dataToMetadataOnInvalidMetadataGraph: false });
       input = stream([
         quad('s1', 'p1', 'o1', ''),
         quad('o1', 'http://rdfs.org/ns/void#subset', 'o1?param', 'g1'),
@@ -94,7 +95,8 @@ describe('ActorRdfMetadataPrimaryTopic', () => {
     });
 
     it('should run with metadataToData true', () => {
-      const thisActor = new ActorRdfMetadataPrimaryTopic({ name: 'actor', bus, metadataToData: true });
+      const thisActor = new ActorRdfMetadataPrimaryTopic(
+        { name: 'actor', bus, metadataToData: true, dataToMetadataOnInvalidMetadataGraph: false });
       return thisActor.run({ pageUrl: 'o1?param', quads: input })
         .then(async (output) => {
           const data: RDF.Quad[] = await arrayifyStream(output.data);
@@ -158,6 +160,31 @@ describe('ActorRdfMetadataPrimaryTopic', () => {
             quad('s2', 'p2', 'o2', 'g1'),
           ]);
           expect(metadata).toEqual([]);
+        });
+    });
+
+    it('should run and make everything data and metadata with a primaryTopic triple that does not ' +
+      'match the pageUrl with dataToMetadataOnInvalidMetadataGraph true', () => {
+      const thisActor = new ActorRdfMetadataPrimaryTopic(
+        { name: 'actor', bus, metadataToData: false, dataToMetadataOnInvalidMetadataGraph: true });
+      return thisActor.run({ pageUrl: 'o1?param', quads: inputDifferent })
+        .then(async (output) => {
+          const data: RDF.Quad[] = await arrayifyStream(output.data);
+          const metadata: RDF.Quad[] = await arrayifyStream(output.metadata);
+          expect(data).toEqual([
+            quad('s1', 'p1', 'o1', ''),
+            quad('s3', 'p3', 'o3', ''),
+            quad('g1', 'http://xmlns.com/foaf/0.1/primaryTopic', 'o2', 'g1'),
+            quad('o2', 'http://rdfs.org/ns/void#subset', 'o2?param', 'g1'),
+            quad('s2', 'p2', 'o2', 'g1'),
+          ]);
+          expect(metadata).toEqual([
+            quad('s1', 'p1', 'o1', ''),
+            quad('s3', 'p3', 'o3', ''),
+            quad('g1', 'http://xmlns.com/foaf/0.1/primaryTopic', 'o2', 'g1'),
+            quad('o2', 'http://rdfs.org/ns/void#subset', 'o2?param', 'g1'),
+            quad('s2', 'p2', 'o2', 'g1'),
+          ]);
         });
     });
 
