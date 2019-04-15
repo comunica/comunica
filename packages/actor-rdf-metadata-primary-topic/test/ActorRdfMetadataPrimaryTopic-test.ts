@@ -39,7 +39,7 @@ describe('ActorRdfMetadataPrimaryTopic', () => {
     let inputDifferent: Readable;
 
     beforeEach(() => {
-      actor = new ActorRdfMetadataPrimaryTopic({ name: 'actor', bus });
+      actor = new ActorRdfMetadataPrimaryTopic({ name: 'actor', bus, metadataToData: false });
       input = stream([
         quad('s1', 'p1', 'o1', ''),
         quad('o1', 'http://rdfs.org/ns/void#subset', 'o1?param', 'g1'),
@@ -84,6 +84,27 @@ describe('ActorRdfMetadataPrimaryTopic', () => {
           expect(data).toEqual([
             quad('s1', 'p1', 'o1', ''),
             quad('s3', 'p3', 'o3', ''),
+          ]);
+          expect(metadata).toEqual([
+            quad('o1', 'http://rdfs.org/ns/void#subset', 'o1?param', 'g1'),
+            quad('g1', 'http://xmlns.com/foaf/0.1/primaryTopic', 'o1', 'g1'),
+            quad('s2', 'p2', 'o2', 'g1'),
+          ]);
+        });
+    });
+
+    it('should run with metadataToData true', () => {
+      const thisActor = new ActorRdfMetadataPrimaryTopic({ name: 'actor', bus, metadataToData: true });
+      return thisActor.run({ pageUrl: 'o1?param', quads: input })
+        .then(async (output) => {
+          const data: RDF.Quad[] = await arrayifyStream(output.data);
+          const metadata: RDF.Quad[] = await arrayifyStream(output.metadata);
+          expect(data).toEqual([
+            quad('s1', 'p1', 'o1', ''),
+            quad('s3', 'p3', 'o3', ''),
+            quad('o1', 'http://rdfs.org/ns/void#subset', 'o1?param', 'g1'),
+            quad('g1', 'http://xmlns.com/foaf/0.1/primaryTopic', 'o1', 'g1'),
+            quad('s2', 'p2', 'o2', 'g1'),
           ]);
           expect(metadata).toEqual([
             quad('o1', 'http://rdfs.org/ns/void#subset', 'o1?param', 'g1'),

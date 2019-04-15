@@ -11,9 +11,25 @@
       "extends": "cbrm:Actor/RdfMetadata",
       "requireElement": "ActorRdfMetadataPrimaryTopic",
       "comment": "A comunica Primary Topic RDF Metadata Actor.",
+      "parameters": [
+        {
+          "@id": "carmpt:Actor/RdfMetadata/PrimaryTopic#metadataToData",
+          "comment": "If detected metadata triples should also be emitted as data triples",
+          "range": "xsd:boolean",
+          "default": false,
+          "required": true,
+          "unique": true
+        }
+      ],
       "constructorArguments": [
         {
-          "extends": "cbrm:Actor/RdfMetadata/constructorArgumentsObject"
+          "extends": "cbrm:Actor/RdfMetadata/constructorArgumentsObject",
+          "fields": [
+            {
+              "keyRaw": "metadataToData",
+              "value": "carmpt:Actor/RdfMetadata/PrimaryTopic#metadataToData"
+            }
+          ]
         }
       ]
     }

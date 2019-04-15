@@ -9,7 +9,9 @@ import {Readable} from "stream";
  */
 export class ActorRdfMetadataPrimaryTopic extends ActorRdfMetadata {
 
-  constructor(args: IActorArgs<IActionRdfMetadata, IActorTest, IActorRdfMetadataOutput>) {
+  private readonly metadataToData: boolean;
+
+  constructor(args: IActorRdfMetadataPrimaryTopicArgs) {
     super(args);
   }
 
@@ -64,6 +66,12 @@ export class ActorRdfMetadataPrimaryTopic extends ActorRdfMetadata {
             for (const quad of graphs[graphName]) {
               metadata.push(quad);
             }
+            // Also emit metadata to data if requested
+            if (this.metadataToData) {
+              for (const quad of graphs[graphName]) {
+                data.push(quad);
+              }
+            }
           } else {
             for (const quad of graphs[graphName]) {
               data.push(quad);
@@ -79,4 +87,9 @@ export class ActorRdfMetadataPrimaryTopic extends ActorRdfMetadata {
     return { data, metadata };
   }
 
+}
+
+export interface IActorRdfMetadataPrimaryTopicArgs
+  extends IActorArgs<IActionRdfMetadata, IActorTest, IActorRdfMetadataOutput> {
+  metadataToData: boolean;
 }
