@@ -87,7 +87,7 @@ if (stream.length === 0) {
 
 **TODO** Add section about differences from the spec and which functions are affected (and which are implemented). See also [extensible value testing and error handling](https://www.w3.org/TR/sparql11-query/#extensionFunctions).
 
-**TODO** String literals (plain literals etc...)
+**Note about string literals:** See issue [#2 (simple literals are masked)](https://github.com/comunica/sparqlee/issues/2)
 
 **TODO** Replace with check marks
 
