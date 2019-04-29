@@ -121,7 +121,7 @@ Options:
     const requestUrl = url.parse(request.url, true);
     if (requestUrl.pathname !== '/sparql') {
       stdout.write('[404] Resource not found\n');
-      response.writeHead(404, { 'content-type': HttpServiceSparqlEndpoint.MIME_JSON });
+      response.writeHead(404, { 'content-type': HttpServiceSparqlEndpoint.MIME_JSON, 'Access-Control-Allow-Origin': '*' });
       response.end(JSON.stringify({ message: 'Resource not found' }));
       return;
     }
@@ -145,7 +145,7 @@ Options:
       break;
     default:
       stdout.write('[405] ' + request.method + ' to ' + requestUrl + '\n');
-      response.writeHead(405, { 'content-type': HttpServiceSparqlEndpoint.MIME_JSON });
+      response.writeHead(405, { 'content-type': HttpServiceSparqlEndpoint.MIME_JSON, 'Access-Control-Allow-Origin': '*' });
       response.end(JSON.stringify({ message: 'Incorrect HTTP method' }));
     }
   }
@@ -170,7 +170,7 @@ Options:
         stdout.write('[200] ' + request.method + ' to ' + request.url + '\n');
         stdout.write('      Requested media type: ' + mediaType + '\n');
         stdout.write('      Received query: ' + sparql + '\n');
-        response.writeHead(200, { 'content-type': mediaType });
+        response.writeHead(200, { 'content-type': mediaType, 'Access-Control-Allow-Origin': '*'  });
 
         if (headOnly) {
           response.end();
@@ -187,12 +187,12 @@ Options:
           eventEmitter = data;
         } catch (error) {
           stdout.write('[400] Bad request, invalid media type\n');
-          response.writeHead(400, { 'content-type': HttpServiceSparqlEndpoint.MIME_PLAIN });
+          response.writeHead(400, { 'content-type': HttpServiceSparqlEndpoint.MIME_PLAIN, 'Access-Control-Allow-Origin': '*' });
           response.end('The response for the given query could not be serialized for the requested media type\n');
         }
       }).catch((error) => {
         stdout.write('[400] Bad request\n');
-        response.writeHead(400, { 'content-type': HttpServiceSparqlEndpoint.MIME_PLAIN });
+        response.writeHead(400, { 'content-type': HttpServiceSparqlEndpoint.MIME_PLAIN, 'Access-Control-Allow-Origin': '*' });
         response.end(error.toString());
       });
 
