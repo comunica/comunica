@@ -27,17 +27,12 @@ store.addQuad(DataFactory.quad(
   DataFactory.namedNode('a'), DataFactory.namedNode('b'), DataFactory.namedNode('http://dbpedia.org/resource/Belgium')));
 store.addQuad(DataFactory.quad(
   DataFactory.namedNode('a'), DataFactory.namedNode('b'), DataFactory.namedNode('http://dbpedia.org/resource/Ghent')));
-const source = {
-  match: function(s, p, o, g) {
-    return require('streamify-array')(store.getQuads(s, p, o, g));
-  }
-};
 
 // Create our engine, and query it.
 // If you intend to query multiple times, be sure to cache your engine for optimal performance.
 const myEngine = newEngine();
 const result = await myEngine.query('SELECT * { ?s ?p <http://dbpedia.org/resource/Belgium>. ?s ?p ?o } LIMIT 100',
-  { sources: [ { type: 'rdfjsSource', value: source } ] });
+  { sources: [ { type: 'rdfjsSource', value: store } ] });
 result.bindingsStream.on('data', (data) => {
   // Each data object contains a mapping from variables to RDFJS terms.
   console.log(data.get('?s'));
