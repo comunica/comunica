@@ -1,6 +1,18 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v1.7.1"></a>
+## [v1.7.1](https://github.com/comunica/comunica/compare/v1.7.0...v1.7.1) - 2019-05-03
+
+### Fixed
+* [Restrict accept headers to 128 characters in browsers to fix CORS issues](https://github.com/comunica/comunica/commit/776cc210edfc1ff693748910081ed84a6c4f4513)
+* [Fix native HTTP actor not forwarding request errors, Closes #381](https://github.com/comunica/comunica/commit/e89aa1d2af29c4cd75c79fe1e40e53737116c7e9)
+
+### Changed
+* [Rescale default media type priorities](https://github.com/comunica/comunica/commit/6a16d9b7b1bdf36ec725f2956fd06732706d4388)
+* [Remove unneeded spaces and zeros in accept headers](https://github.com/comunica/comunica/commit/6248d906cc634e52f50a5cae15da5d703ff638d5)
+* [Add CORS headers for SPARQL interface](https://github.com/comunica/comunica/commit/bc62dd66ffcb90082157239c722cdf051ebea0f0)
+
 <a name="v1.7.0"></a>
 ## [v1.7.0](https://github.com/comunica/comunica/compare/v1.6.6...v1.7.0) - 2019-04-11
 

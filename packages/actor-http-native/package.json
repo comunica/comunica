@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-http-native",
-  "version": "1.6.3",
+  "version": "1.7.1",
   "description": "A native http actor",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-http-native",
   "lsd:components": "components/components.jsonld",
@@ -44,7 +44,7 @@
     "parse-link-header": "^1.0.1"
   },
   "devDependencies": {
-    "@comunica/bus-http": "^1.6.3",
+    "@comunica/bus-http": "^1.7.1",
     "@comunica/core": "^1.6.3",
     "@comunica/mediatortype-time": "^1.6.3"
   },

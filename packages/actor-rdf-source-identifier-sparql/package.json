@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-source-identifier-sparql",
-  "version": "1.6.6",
+  "version": "1.7.1",
   "description": "A sparql rdf-source-identifier actor",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-source-identifier-sparql",
   "lsd:components": "components/components.jsonld",
@@ -40,8 +40,8 @@
     "@comunica/core": "^1.0.0"
   },
   "devDependencies": {
-    "@comunica/bus-http": "^1.6.3",
-    "@comunica/bus-rdf-source-identifier": "^1.6.6",
+    "@comunica/bus-http": "^1.7.1",
+    "@comunica/bus-rdf-source-identifier": "^1.7.1",
     "@comunica/core": "^1.6.3",
     "@comunica/mediatortype-priority": "^1.6.3"
   },

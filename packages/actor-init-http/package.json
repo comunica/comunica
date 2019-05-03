@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-init-http",
-  "version": "1.6.6",
+  "version": "1.7.1",
   "description": "A Comunica engine for triggering HTTP requests",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-http",
   "lsd:components": "components/components.jsonld",
@@ -40,8 +40,8 @@
     "index.js"
   ],
   "dependencies": {
-    "@comunica/actor-http-node-fetch": "^1.6.3",
-    "@comunica/bus-http": "^1.6.3",
+    "@comunica/actor-http-node-fetch": "^1.7.1",
+    "@comunica/bus-http": "^1.7.1",
     "@comunica/bus-init": "^1.6.3",
     "@comunica/core": "^1.6.3",
     "@comunica/mediator-number": "^1.6.3",
