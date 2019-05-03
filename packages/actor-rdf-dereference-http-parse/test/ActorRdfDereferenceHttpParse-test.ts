@@ -84,34 +84,49 @@ describe('ActorRdfDereferenceHttpParse', () => {
     });
 
     it('should stringify empty media types to any', () => {
-      return expect(actor.mediaTypesToAcceptString({})).toEqual('*/*');
+      return expect(actor.mediaTypesToAcceptString({}, 100)).toEqual('*/*');
     });
 
     it('should stringify a single media type', () => {
-      return expect(actor.mediaTypesToAcceptString({ a: 1.0 })).toEqual('a');
+      return expect(actor.mediaTypesToAcceptString({ a: 1.0 }, 100)).toEqual('a');
     });
 
     it('should stringify a single prioritized media type', () => {
-      return expect(actor.mediaTypesToAcceptString({ a: 0.5 })).toEqual('a;q=0.5');
+      return expect(actor.mediaTypesToAcceptString({ a: 0.5 }, 100)).toEqual('a;q=0.5');
     });
 
     it('should stringify three media types', () => {
-      return expect(actor.mediaTypesToAcceptString({ a: 1.0, b: 1.0, c: 1.0 })).toEqual('a,b,c');
+      return expect(actor.mediaTypesToAcceptString({ a: 1.0, b: 1.0, c: 1.0 }, 100)).toEqual('a,b,c');
     });
 
     it('should stringify three prioritized media types', () => {
-      return expect(actor.mediaTypesToAcceptString({ a: 1.0, b: 0.8, c: 0.2 }))
+      return expect(actor.mediaTypesToAcceptString({ a: 1.0, b: 0.8, c: 0.2 }, 100))
         .toEqual('a,b;q=0.8,c;q=0.2');
     });
 
     it('should only allow 3 digits after decimal point', () => {
-      return expect(actor.mediaTypesToAcceptString({ a: 1.0, b: 0.811111111, c: 0.2111111111 }))
+      return expect(actor.mediaTypesToAcceptString({ a: 1.0, b: 0.811111111, c: 0.2111111111 }, 100))
         .toEqual('a,b;q=0.811,c;q=0.211');
     });
 
     it('should sort by decreasing priorities', () => {
-      return expect(actor.mediaTypesToAcceptString({ a: 0.2, b: 1.0, c: 0.8 }))
+      return expect(actor.mediaTypesToAcceptString({ a: 0.2, b: 1.0, c: 0.8 }, 100))
         .toEqual('b,c;q=0.8,a;q=0.2');
+    });
+
+    it('should cut off media types when too long', () => {
+      return expect(actor.mediaTypesToAcceptString({ a: 1.0, b: 0.8, c: 0.2 }, 13))
+        .toEqual('a,b;q=0.8');
+    });
+
+    it('should cut off media types when too long at edge (1)', () => {
+      return expect(actor.mediaTypesToAcceptString({ a: 1.0, b: 0.8, c: 0.2 }, 9))
+        .toEqual('a,b;q=0.8');
+    });
+
+    it('should cut off media types when too long at edge (2)', () => {
+      return expect(actor.mediaTypesToAcceptString({ a: 1.0, b: 0.8, c: 0.2 }, 10))
+        .toEqual('a,b;q=0.8');
     });
 
     it('should run with a web stream', () => {
