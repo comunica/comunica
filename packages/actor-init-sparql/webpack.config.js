@@ -22,19 +22,6 @@ module.exports = {
         use: []
       },
       {
-        // Makes rdf-sink use a modularized lodash function instead of requiring lodash completely
-        test: /rdf-sink\/index\.js$/,
-        loader: StringReplacePlugin.replace({
-          replacements: [
-            {
-              pattern: /lodash\/assign/i,
-              replacement: function () {
-                return 'lodash.assign';
-              }
-            }
-          ]})
-      },
-      {
         test: /\.js$/,
         use: {
           loader: 'babel-loader',
