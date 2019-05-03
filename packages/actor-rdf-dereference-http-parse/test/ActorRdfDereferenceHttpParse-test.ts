@@ -96,12 +96,17 @@ describe('ActorRdfDereferenceHttpParse', () => {
     });
 
     it('should stringify three media types', () => {
-      return expect(actor.mediaTypesToAcceptString({ a: 1.0, b: 1.0, c: 1.0 })).toEqual('a, b, c');
+      return expect(actor.mediaTypesToAcceptString({ a: 1.0, b: 1.0, c: 1.0 })).toEqual('a,b,c');
     });
 
     it('should stringify three prioritized media types', () => {
       return expect(actor.mediaTypesToAcceptString({ a: 1.0, b: 0.8, c: 0.2 }))
-        .toEqual('a, b;q=0.8, c;q=0.2');
+        .toEqual('a,b;q=0.8,c;q=0.2');
+    });
+
+    it('should only allow 3 digits after decimal point', () => {
+      return expect(actor.mediaTypesToAcceptString({ a: 1.0, b: 0.811111111, c: 0.2111111111 }))
+        .toEqual('a,b;q=0.811,c;q=0.211');
     });
 
     it('should run with a web stream', () => {

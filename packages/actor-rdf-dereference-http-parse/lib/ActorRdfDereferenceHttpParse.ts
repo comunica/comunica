@@ -77,12 +77,12 @@ export class ActorRdfDereferenceHttpParse extends ActorRdfDereferenceMediaMappin
     const parts: string[] = [];
     for (const mediaType in mediaTypes) {
       const priority: number = mediaTypes[mediaType];
-      parts.push(mediaType + (priority !== 1 ? ';q=' + priority : ''));
+      parts.push(mediaType + (priority !== 1 ? ';q=' + priority.toFixed(3).replace(/0*$/, '') : ''));
     }
     if (!parts.length) {
       return '*/*';
     }
-    return parts.join(', ');
+    return parts.join(',');
   }
 
 }
