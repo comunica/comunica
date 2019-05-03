@@ -42,6 +42,7 @@ export default class Requester {
       // response.pause(); // exit flow mode
       requestProxy.emit('response', response);
     });
+    request.on('error', (error) => requestProxy.emit('error', error));
     request.end();
     return requestProxy;
   }

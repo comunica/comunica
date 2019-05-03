@@ -23,6 +23,11 @@ function request(settings, func) {
 
   return {
     abort: () => { },
+    on: (type, callback) => {
+      if (type === 'error' && options.error) {
+        setImmediate(() => callback(new Error('Request Error!')));
+      }
+    },
     end: () => {}
   }
 }

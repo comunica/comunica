@@ -149,6 +149,12 @@ describe('ActorHttpNative', () => {
       const result: any = await actor.run({ input: 'http://example.com' });
       expect(result.body.cancel()).resolves.toBeFalsy();
     });
+
+    it('rejects on request errors', async () => {
+      mockSetup({ error: true });
+      expect(actor.run({ input: 'http://example.com/reqerror' }))
+        .rejects.toThrow(new Error('Request Error!'));
+    });
   });
 });
 
