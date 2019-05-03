@@ -75,9 +75,11 @@ export class ActorRdfDereferenceHttpParse extends ActorRdfDereferenceMediaMappin
 
   public mediaTypesToAcceptString(mediaTypes: {[id: string]: number}): string {
     const parts: string[] = [];
-    for (const mediaType in mediaTypes) {
-      const priority: number = mediaTypes[mediaType];
-      parts.push(mediaType + (priority !== 1 ? ';q=' + priority.toFixed(3).replace(/0*$/, '') : ''));
+    const sortedMediaTypes = Object.keys(mediaTypes)
+      .map((mediaType) => ({ mediaType, priority: mediaTypes[mediaType] }))
+      .sort((a, b) => b.priority - a.priority);
+    for (const entry of sortedMediaTypes) {
+      parts.push(entry.mediaType + (entry.priority !== 1 ? ';q=' + entry.priority.toFixed(3).replace(/0*$/, '') : ''));
     }
     if (!parts.length) {
       return '*/*';

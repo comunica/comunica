@@ -109,6 +109,11 @@ describe('ActorRdfDereferenceHttpParse', () => {
         .toEqual('a,b;q=0.811,c;q=0.211');
     });
 
+    it('should sort by decreasing priorities', () => {
+      return expect(actor.mediaTypesToAcceptString({ a: 0.2, b: 1.0, c: 0.8 }))
+        .toEqual('b,c;q=0.8,a;q=0.2');
+    });
+
     it('should run with a web stream', () => {
       return expect(actor.run({ url: 'https://www.google.com/' })).resolves
         .toMatchObject({ pageUrl: 'https://www.google.com/index.html', quads: 'fine', triples: true });
