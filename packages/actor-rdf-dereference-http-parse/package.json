@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-dereference-http-parse",
-  "version": "1.7.1",
+  "version": "1.7.2",
   "description": "A node-fetch http actor",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-dereference-http-parse",
   "lsd:components": "components/components.jsonld",

@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v1.7.2"></a>
+## [v1.7.2](https://github.com/comunica/comunica/compare/v1.7.1...v1.7.2) - 2019-05-03
+
+### Fixed
+* [Remove console.log in HTTP parse RDF dereference actor](https://github.com/comunica/comunica/commit/17fa2bf863d0bf03ceb5e15f94c835df392cf9a8)
+
 <a name="v1.7.1"></a>
 ## [v1.7.1](https://github.com/comunica/comunica/compare/v1.7.0...v1.7.1) - 2019-05-03
 
