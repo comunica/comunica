@@ -22,7 +22,7 @@
               { "mediaTypeKey": "application/n-quads",   "priorityValue": "0.7" },
               { "mediaTypeKey": "text/turtle",           "priorityValue": "0.6" },
               { "mediaTypeKey": "application/n-triples", "priorityValue": "0.3" },
-              { "mediaTypeKey": "text/n3",               "priorityValue": "0.2" }
+              { "mediaTypeKey": "text/n3",               "priorityValue": "0.1" }
             ]
           }
         }

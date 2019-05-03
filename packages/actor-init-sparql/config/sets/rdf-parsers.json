@@ -23,7 +23,7 @@
     {
       "@id": "config-sets:rdf-parsers.json#myRdfParserRdfXml",
       "@type": "ActorRdfParseRdfXml",
-      "priorityScale": 0.95
+      "priorityScale": 0.5
     }
   ]
 }
