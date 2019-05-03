@@ -43,7 +43,6 @@ export abstract class ActorRdfDereferenceHttpParseBase extends ActorRdfDereferen
       {context: action.context, mediaTypes: true}))
       .mediaTypes;
     const acceptHeader: string = this.mediaTypesToAcceptString(mediaTypes, this.getMaxAcceptHeaderLength());
-    console.log(acceptHeader); // TODO
 
     // Resolve HTTP URL using appropriate accept header
     const headers: Headers = new Headers();
