@@ -13,7 +13,7 @@ describe('ActorQueryOperationConstruct', () => {
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
     mediatorQueryOperation = {
-      mediate: (arg) => Promise.resolve({
+      mediate: (arg) => arg.operation.input ? Promise.resolve({
         bindingsStream: new ArrayIterator([
           Bindings({ '?a': literal('1') }),
           Bindings({ '?a': literal('2') }),
@@ -23,6 +23,14 @@ describe('ActorQueryOperationConstruct', () => {
         operated: arg,
         type: 'bindings',
         variables: ['a'],
+      }) : Promise.resolve({
+        bindingsStream: new ArrayIterator([
+          Bindings({}),
+        ]),
+        metadata: () => Promise.resolve({ totalItems: 1 }),
+        operated: arg,
+        type: 'bindings',
+        variables: [],
       }),
     };
   });
@@ -97,20 +105,23 @@ describe('ActorQueryOperationConstruct', () => {
       });
     });
 
-    it('should run on a template without variables', () => {
+    it('should run on a template with the empty binding and produce one result', () => {
       const op = { operation: { template: [
         quad(blankNode('s1'), namedNode('p1'), literal('o1')),
         quad(blankNode('s2'), namedNode('p2'), literal('o2')),
       ], type: 'construct' } };
       return actor.run(op).then(async (output: IActorQueryOperationOutputQuads) => {
-        expect(await output.metadata()).toEqual({ totalItems: 0 });
+        expect(await output.metadata()).toEqual({ totalItems: 2 });
         expect(output.type).toEqual('quads');
-        expect(await arrayifyStream(output.quadStream)).toEqual([]);
+        expect(await arrayifyStream(output.quadStream)).toEqual([
+          quad(blankNode('s10'), namedNode('p1'), literal('o1')),
+          quad(blankNode('s20'), namedNode('p2'), literal('o2')),
+        ]);
       });
     });
 
-    it('should run on a template with variables', () => {
-      const op = { operation: { template: [
+    it('should run on a template with input', () => {
+      const op = { operation: { input: true, template: [
         quad(blankNode('s1'), variable('a'), literal('o1')),
         quad(blankNode('s2'), namedNode('p2'), variable('a'), variable('a')),
       ], type: 'construct' } };

@@ -36,17 +36,8 @@ export class ActorQueryOperationConstruct extends ActorQueryOperationTypedMediat
 
   public async runOperation(pattern: Algebra.Construct, context: ActionContext)
     : Promise<IActorQueryOperationOutputQuads> {
-    // If our template is empty or contains no variables, no need to resolve a query.
-    const variables: RDF.Variable[] = ActorQueryOperationConstruct.getVariables(pattern.template);
-    if (variables.length === 0) {
-      return {
-        metadata: () => Promise.resolve({ totalItems: 0 }),
-        quadStream: new EmptyIterator(),
-        type: 'quads',
-      };
-    }
-
     // Apply a projection on our CONSTRUCT variables first, as the query may contain other variables as well.
+    const variables: RDF.Variable[] = ActorQueryOperationConstruct.getVariables(pattern.template);
     const operation: Algebra.Operation = { type: 'project', input: pattern.input, variables };
 
     // Evaluate the input query
