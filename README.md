@@ -15,7 +15,7 @@ each leading to a different query engine.
 **If you just want to query, have a look at these pre-built engines**:
 * [Comunica SPARQL](https://github.com/comunica/comunica/tree/master/packages/actor-init-sparql#readme): SPARQL/GraphQL querying from JavaScript applications or the CLI
 * [Comunica SPARQL File](https://github.com/comunica/comunica/tree/master/packages/actor-init-sparql-file#readme): Library to query over local RDF files
-* [Comunica SPARQL RDFJS](https://github.com/comunica/comunica/tree/master/packages/actor-init-sparql-rdfjs#readme): Library to query over local RDF files
+* [Comunica SPARQL RDFJS](https://github.com/comunica/comunica/tree/master/packages/actor-init-sparql-rdfjs#readme): Library to query over in-memory [RDFJS-compliant sources](https://rdf.js.org/stream-spec/#source-interface).
 * [Comunica SPARQL HDT](https://github.com/comunica/comunica-actor-init-sparql-hdt#readme): Library to query over local HDT files
 
 This repository should be used by Comunica module **developers** as it contains multiple Comunica modules that can be composed.
