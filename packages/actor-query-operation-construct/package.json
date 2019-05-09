@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-operation-construct",
-  "version": "1.6.5",
+  "version": "1.7.3",
   "description": "A construct query-operation actor",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-construct",
   "lsd:components": "components/components.jsonld",

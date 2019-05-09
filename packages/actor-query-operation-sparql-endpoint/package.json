@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-operation-sparql-endpoint",
-  "version": "1.7.1",
+  "version": "1.7.3",
   "description": "A sparql-endpoint query-operation actor",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-sparql-endpoint",
   "lsd:components": "components/components.jsonld",

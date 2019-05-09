@@ -1,6 +1,13 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v1.7.3"></a>
+## [v1.7.3](https://github.com/comunica/comunica/compare/v1.7.2...v1.7.3) - 2019-05-09
+
+### Fixed
+* [Fix bnodes in CONSTRUCT not working, Closes #449](https://github.com/comunica/comunica/commit/f13af0c99d811beb878ff793a8e64043ddb3a86d)
+* [Fix CONSTRUCT on empty WHERE clause producing no 1 result, Closes #448](https://github.com/comunica/comunica/commit/614576a2e397bddd804e38c589f4d03c64f6d6de)
+
 <a name="v1.7.2"></a>
 ## [v1.7.2](https://github.com/comunica/comunica/compare/v1.7.1...v1.7.2) - 2019-05-03
 
