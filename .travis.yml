@@ -24,7 +24,7 @@ script:
   - if [ "$DOCKER_BUILD" = "true" ]; then ( sh -c "`curl -fsSl https://raw.githubusercontent.com/comunica/comunica-lerna-docker/master/install.sh`" && ~/.comunica-lerna-docker/bin/comunica-lerna-docker build ) fi
 after_success:
   - yarn run coveralls-ci
-  - if [ "$DOCUMENTATION_BUILD" = "true" ]; then ( yarn global add typedoc && yarn run doc ) fi
+  - if [ "$DOCUMENTATION_BUILD" = "true" ]; then ( yarn run doc ) fi
 cache:
   yarn: true
   directories:

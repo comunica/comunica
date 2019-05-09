@@ -60,6 +60,8 @@
     "ts-jest": "^24.0.0",
     "tslint": "^5.7.0",
     "tslint-eslint-rules": "^5.1.0",
+    "typedoc": "^0.14.2",
+    "@strictsoftware/typedoc-plugin-monorepo": "^0.2.1",
     "typescript": "^3.1.6",
     "uglifyjs-webpack-plugin": "^2.1.1",
     "webpack": "^4.28.3",
@@ -107,7 +109,7 @@
     "build-watch": "tsc --watch",
     "publish": "yarn run build && lerna publish",
     "publish-bare": "lerna exec -- npm publish --silent",
-    "doc": "typedoc --name Comunica --exclude \"**/+(lib|node_modules|test|mocks)/*.ts\" --disableOutputCheck --mode modules --out documentation $(find packages ! -name 'packager' -type d -mindepth 1 -maxdepth 1)",
+    "doc": "typedoc --name Comunica --disableOutputCheck --external-modulemap '.*packages/([^/]+)/.*' --mode modules --out documentation",
     "preinstall": "node -e \"if (!fs.existsSync('packages/runner-cli/bin/run.js')) { var os = fs.createWriteStream('packages/runner-cli/bin/run.js'); os.write('#!/usr/bin/env node\\nconsole.error(\\'Temporary runner script during lerna installation. If you see this, please run yarn install again.\\');\\nprocess.exit(1);'); os.end(); }\" && node -e \"if (!fs.existsSync('packages/runner/bin/compile-config.js')) { var os = fs.createWriteStream('packages/runner/bin/compile-config.js'); os.write('#!/usr/bin/env node\\nconsole.error(\\'Temporary compile-config script during lerna installation. If you see this, please run yarn install again.\\');\\nprocess.exit(1);'); os.end(); }\"",
     "postinstall": "yarn run build && lerna run prepare",
     "version": "manual-git-changelog onversion"
