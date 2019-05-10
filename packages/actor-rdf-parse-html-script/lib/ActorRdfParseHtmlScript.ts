@@ -36,7 +36,6 @@ export class ActorRdfParseHtmlScript extends ActorRdfParseFixedMediaTypes {
         context,
         mediaTypes: true,
       })).mediaTypes);
-    supportedTypes.push("application/ld+json");
 
     const quads = new Readable({objectMode: true});
     let textStream: Readable;
@@ -45,16 +44,16 @@ export class ActorRdfParseHtmlScript extends ActorRdfParseFixedMediaTypes {
     quads._read = async () => {
       if (!initialized) {
         initialized = true;
-        let mediaTypeFound: string;
+        let lastMediaType: string;
         let isTextFound: boolean = false;
         let countScriptTexts: number = 0; // amount of script-texts that have been found for parsing
-        let ended: boolean = false;
-        let closed: boolean = false; // after onclosetag is called, htmlparser can return an empty text in ontext
+        let streamEnded: boolean = false;
+        let tagClosed: boolean = false; // after onclosetag is called, htmlparser can return an empty text in ontext
         const parser = new this.htmlparser.Parser({
           onclosetag: async () => {
             // Only process the first time it closes
-            if (!closed && mediaTypeFound) {
-              closed = true;
+            if (!tagClosed && lastMediaType) {
+              tagClosed = true;
               if (isTextFound) {
                 textStream.push(textBuffer);
                 textStream.push(null);
@@ -63,7 +62,7 @@ export class ActorRdfParseHtmlScript extends ActorRdfParseFixedMediaTypes {
                 const parseAction = {
                   context,
                   handle: {baseIRI: action.baseIRI, input: textStream},
-                  handleMediaType: mediaTypeFound,
+                  handleMediaType: lastMediaType,
                 };
                 const returned = (await this.mediatorRdfParse.mediate(parseAction)).handle;
                 returned.quads.on('data', (chunk: any) => {
@@ -72,7 +71,7 @@ export class ActorRdfParseHtmlScript extends ActorRdfParseFixedMediaTypes {
                 returned.quads.on('end', () => {
                   countScriptTexts--;
                   // When the document has been read and this is the last one, end the stream
-                  if (ended && countScriptTexts === 0) {
+                  if (streamEnded && countScriptTexts === 0) {
                     quads.push(null);
                   }
                 });
@@ -83,7 +82,7 @@ export class ActorRdfParseHtmlScript extends ActorRdfParseFixedMediaTypes {
           },
           // This method gets called after running all onopentags, ontexts and onendtags
           onend: () => {
-            ended = true;
+            streamEnded = true;
             // If all script texts are processed or none are found, end the stream
             if (countScriptTexts === 0) {
               quads.push(null);
@@ -91,19 +90,19 @@ export class ActorRdfParseHtmlScript extends ActorRdfParseFixedMediaTypes {
           },
           onopentag: (tagname: string, attribs: any) => {
             textBuffer = '';
-            closed = false;
+            tagClosed = false;
             isTextFound = false;
             if (tagname === "script" && supportedTypes.indexOf(attribs.type) > -1) {
               textStream = new Readable({objectMode: true});
-              mediaTypeFound = attribs.type;
+              lastMediaType = attribs.type;
               countScriptTexts++;
             } else {
-              mediaTypeFound = null; // the tag will not be processed in the ontext
+              lastMediaType = null; // the tag will not be processed in the ontext
             }
           },
           // ontext runs synchronously after onopentag
           ontext: (text: string) => {
-            if (!closed && mediaTypeFound) {
+            if (!tagClosed && lastMediaType) {
               textBuffer += text;
               isTextFound = true;
             }
