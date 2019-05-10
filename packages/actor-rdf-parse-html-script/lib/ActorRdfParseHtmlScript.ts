@@ -39,7 +39,6 @@ export class ActorRdfParseHtmlScript extends ActorRdfParseFixedMediaTypes {
 
     const quads = new Readable({objectMode: true});
     let textStream: Readable;
-    let textBuffer: string = '';
     let initialized: boolean = false;
     quads._read = async () => {
       if (!initialized) {
@@ -55,7 +54,6 @@ export class ActorRdfParseHtmlScript extends ActorRdfParseFixedMediaTypes {
             if (!tagClosed && lastMediaType) {
               tagClosed = true;
               if (isTextFound) {
-                textStream.push(textBuffer);
                 textStream.push(null);
 
                 // Send text to parser
@@ -89,7 +87,6 @@ export class ActorRdfParseHtmlScript extends ActorRdfParseFixedMediaTypes {
             }
           },
           onopentag: (tagname: string, attribs: any) => {
-            textBuffer = '';
             tagClosed = false;
             isTextFound = false;
             if (tagname === "script" && supportedTypes.indexOf(attribs.type) > -1) {
@@ -103,7 +100,7 @@ export class ActorRdfParseHtmlScript extends ActorRdfParseFixedMediaTypes {
           // ontext runs synchronously after onopentag
           ontext: (text: string) => {
             if (!tagClosed && lastMediaType) {
-              textBuffer += text;
+              textStream.push(text)
               isTextFound = true;
             }
           },

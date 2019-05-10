@@ -211,8 +211,8 @@ describe('ActorRdfParseHtml', () => {
             handleMediaType: 'text/html' })
           .then(async (output) => expect(await arrayifyStream(output.handle.quads)).toEqualRdfQuadArray([
             quad('http://example.org/a', 'http://example.org/b', '"http://example.org/c"'),
-            quad('http://example.org/a', 'http://example.org/d', '"http://example.org/e"'),
             quad('http://example.org/f', 'http://example.org/g', '"http://example.org/h"'),
+            quad('http://example.org/a', 'http://example.org/d', '"http://example.org/e"'),
             quad('http://example.org/f', 'http://example.org/i', '"http://example.org/j"'),
           ]));
       });
@@ -281,12 +281,12 @@ describe('ActorRdfParseHtml', () => {
           { context, handle: { input, baseIRI: '' },
             handleMediaType: 'text/html' })
           .then(async (output) => expect(await arrayifyStream(output.handle.quads)).toEqualRdfQuadArray([
-            quad("http://example.org/f", "http://example.org/g", "http://example.org/h", ""),
-            quad("http://example.org/f", "http://example.org/i", "http://example.org/j", ""),
             quad("http://example.org/a", "http://example.org/b", "http://example.org/c", ""),
-            quad("http://example.org/a", "http://example.org/d", "http://example.org/e", ""),
             quad("http://example.org/k", "http://example.org/l", "http://example.org/m", ""),
+            quad("http://example.org/a", "http://example.org/d", "http://example.org/e", ""),
             quad("http://example.org/k", "http://example.org/n", "http://example.org/o", ""),
+            quad("http://example.org/f", "http://example.org/g", "http://example.org/h", ""),
+            quad("http://example.org/f", "http://example.org/i", "http://example.org/j", "")
           ]));
       });
 
