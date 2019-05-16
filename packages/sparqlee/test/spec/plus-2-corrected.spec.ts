@@ -1,6 +1,6 @@
 import * as Data from './_data';
 
-import { aliases as a, testAll } from '../util/utils';
+import { aliases as a, testAll, testAllErrors, int, decimal } from '../util/utils';
 
 /**
  * REQUEST: plus-2-corrected.rq
@@ -26,10 +26,27 @@ import { aliases as a, testAll } from '../util/utils';
  *     .
  */
 
-describe.skip('We should respect the plus-2-corrected spec', () => {
-  const { } = Data.data();
-  testAll([
-    'BNODE() = "foo"',
+describe('We should respect the plus-2-corrected spec', () => {
+  const {
+    x1p, x1q,
+    x2q,
+    x3q,
+    x4p, x4q,
+    x5p, x5q,
+    x6p, x6q,
+    x7p, x7q,
+    x8p, x8q,
+  } = Data.dataBuiltin3();
+
+  testAllErrors([
+    `str(${x1p})             + str(${x1q}) = error`,
+    `str(BNODE())            + str(${x2q}) = error`,
+    `str(<http://example/a>) + str(${x3q}) = error`,
+    `str(${x4p})             + str(${x4q}) = error`,
+    `str(${x5p})             + str(${x5q}) = error`,
+    `str(${x6p})             + str(${x6q}) = error`,
+    `str(${x7p})             + str(${x7q}) = error`,
+    `str(${x8p})             + str(${x8q}) = error`,
   ]);
 });
 

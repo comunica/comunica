@@ -140,8 +140,25 @@ export function data4() {
 // :x7 :p  "1"^^xsd:string ; :q "2" .
 // :x8 :p "1"^^xsd:string ; :q 2 .
 
-export function dataBuiltin() {
-
+export function dataBuiltin3() {
+  return {
+    x1p: '"a"',
+    x1q: '1',
+    // x2p: '"1"',
+    x2q: '"1"',
+    // x3p: '',
+    x3q: '"1"',
+    x4p: '1',
+    x4q: '2',
+    x5p: '1.0',
+    x5q: '2',
+    x6p: '"1"',
+    x6q: '"2"',
+    x7p: '"1"^^xsd:string',
+    x7q: '"2"',
+    x8p: '"1"^^xsd:string',
+    x8q: '2',
+  };
 }
 
 // hash unicode ----------------------------------------------------------------

@@ -112,7 +112,7 @@ if (stream.length === 0) {
 | >=             | ✓ | ✓ | ? |   |   |
 | *              | ✓ | ✓ | ? |   |   |
 | /              | ✓ | ✓ | I |   | Occurs in coalesce |
-| +              | ✓ | ✓ | X |   |   |
+| +              | ✓ | ✓ | X |   | Depends on #28 |
 | -              | ✓ | ✓ | ? |   |   |
 | _Notes_        |   |   |   |   | Spec compliance depends on #13 and #14 |
 | [Functional Forms](https://www.w3.org/TR/sparql11-query/#func-forms)

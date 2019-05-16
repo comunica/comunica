@@ -1,6 +1,6 @@
 import * as Data from './_data';
 
-import { aliases as a, testAll } from '../util/utils';
+import { aliases as a, testAll, int, testAllErrors, decimal } from '../util/utils';
 
 /**
  * REQUEST: plus-1-corrected.rq
@@ -26,9 +26,29 @@ import { aliases as a, testAll } from '../util/utils';
  */
 
 describe.skip('We should respect the plus-1-corrected spec', () => {
-  const { } = Data.data();
+  const {
+    x1p, x1q,
+    x2q,
+    x3q,
+    x4p, x4q,
+    x5p, x5q,
+    x6p, x6q,
+    x7p, x7q,
+    x8p, x8q,
+  } = Data.dataBuiltin3();
+
   testAll([
-    'BNODE() = "foo"',
+    `${x4p} + ${x4q} = ${int('3')}`,
+    `${x5p} + ${x5q} = ${decimal('3.0')}`,
+  ]);
+
+  testAllErrors([
+    `${x1p} + ${x1q} = error`,
+    `BNODE() + ${x2q} = error`,
+    `<http://example/a> + ${x3q} = error`,
+    `${x6p} + ${x6q} = error`,
+    `${x7p} + ${x7q} = error`,
+    `${x8p} + ${x8q} = error`,
   ]);
 });
 
@@ -43,7 +63,7 @@ describe.skip('We should respect the plus-1-corrected spec', () => {
  *     <variable name="sum"/>
  *   </head>
  *   <results>
- *     <result>
+ *     <result>                                //x2
  *       <binding name="x">
  *         <bnode>b0</bnode>
  *       </binding>
@@ -51,7 +71,7 @@ describe.skip('We should respect the plus-1-corrected spec', () => {
  *         <literal>1</literal>
  *       </binding>
  *     </result>
- *     <result>
+ *     <result>                                //x3
  *       <binding name="x">
  *         <uri>http://example/a</uri>
  *       </binding>
@@ -59,7 +79,7 @@ describe.skip('We should respect the plus-1-corrected spec', () => {
  *         <literal>1</literal>
  *       </binding>
  *     </result>
- *     <result>
+ *     <result>                               //x6
  *       <binding name="x">
  *         <literal>1</literal>
  *       </binding>
@@ -67,7 +87,7 @@ describe.skip('We should respect the plus-1-corrected spec', () => {
  *         <literal>2</literal>
  *       </binding>
  *     </result>
- *     <result>
+ *     <result>                              //x4
  *       <binding name="x">
  *         <literal datatype="http://www.w3.org/2001/XMLSchema#integer">1</literal>
  *       </binding>
@@ -77,7 +97,7 @@ describe.skip('We should respect the plus-1-corrected spec', () => {
  *       <binding name="sum">
  *         <literal datatype="http://www.w3.org/2001/XMLSchema#integer">3</literal>
  *       </binding>
- *     </result>
+ *     </result>                            //x7
  *     <result>
  *       <binding name="x">
  *         <literal datatype="http://www.w3.org/2001/XMLSchema#string">1</literal>
@@ -86,7 +106,7 @@ describe.skip('We should respect the plus-1-corrected spec', () => {
  *         <literal>2</literal>
  *       </binding>
  *     </result>
- *     <result>
+ *     <result>                             //x8
  *       <binding name="x">
  *         <literal datatype="http://www.w3.org/2001/XMLSchema#string">1</literal>
  *       </binding>
@@ -94,7 +114,7 @@ describe.skip('We should respect the plus-1-corrected spec', () => {
  *         <literal datatype="http://www.w3.org/2001/XMLSchema#integer">2</literal>
  *       </binding>
  *     </result>
- *     <result>
+ *     <result>                             //x5
  *       <binding name="x">
  *         <literal datatype="http://www.w3.org/2001/XMLSchema#decimal">1.0</literal>
  *       </binding>
@@ -104,7 +124,7 @@ describe.skip('We should respect the plus-1-corrected spec', () => {
  *       <binding name="sum">
  *         <literal datatype="http://www.w3.org/2001/XMLSchema#decimal">3.0</literal>
  *       </binding>
- *     </result>
+ *     </result>                           //x1
  *     <result>
  *       <binding name="x">
  *         <literal>a</literal>
