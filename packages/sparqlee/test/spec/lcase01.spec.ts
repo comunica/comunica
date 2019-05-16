@@ -79,4 +79,3 @@ describe('We should respect the lcase01 spec', () => {
  * </results>
  * </sparql>
  */
-

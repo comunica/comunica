@@ -8,6 +8,7 @@
     "build": "tsc",
     "watch": "tsc --watch",
     "lint": "tslint --project .",
+    "lint-test": "tslint ./test/**/*.ts",
     "test": "jest",
     "test-ci": "jest --ci --maxWorkers=4 --coverage",
     "test-debug": "yarn test-debug-lin",

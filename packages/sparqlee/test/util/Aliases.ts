@@ -37,6 +37,7 @@ export const prefixes: { [key: string]: string } = {
   rdf: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#langString',
 };
 
+// tslint:disable-next-line: no-shadowed-variable
 export function stringToTermPrefix(str: string): RDF.Term {
   const term = stringToTerm(str) as RDF.Literal;
   if (term.termType !== 'Literal') { return term; }
@@ -96,7 +97,7 @@ export const numeric = {
   '1d': '"1"^^xsd:decimal',
   '2d': '"2"^^xsd:decimal',
   '3d': '"3"^^xsd:decimal',
-  '-5d': '"-5"^^xsd:decimal'
+  '-5d': '"-5"^^xsd:decimal',
 };
 
 export const dateTime = {

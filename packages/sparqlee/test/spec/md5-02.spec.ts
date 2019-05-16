@@ -47,4 +47,3 @@ describe('We should respect the md5-02 spec', () => {
  * </results>
  * </sparql>
  */
-

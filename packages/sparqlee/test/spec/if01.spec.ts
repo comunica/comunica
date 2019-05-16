@@ -109,4 +109,3 @@ describe('We should respect the if01 spec', () => {
  *   </results>
  * </sparql>
  */
-

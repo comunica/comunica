@@ -48,4 +48,3 @@ describe('We should respect the concat01 spec', () => {
  * </results>
  * </sparql>
  */
-

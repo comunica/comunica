@@ -100,4 +100,3 @@ describe('We should respect the strlang03 spec', () => {
  * </results>
  * </sparql>
  */
-

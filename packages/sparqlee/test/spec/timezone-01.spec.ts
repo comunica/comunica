@@ -54,7 +54,9 @@ describe('We should respect the timezone-01 spec', () => {
  *     </result>
  *     <result>
  *       <binding name="s"><uri>http://example.org/d2</uri></binding>
- *       <binding name="x"><literal datatype="http://www.w3.org/2001/XMLSchema#dayTimeDuration">-PT8H</literal></binding>
+ *       <binding name="x">
+ *         <literal datatype="http://www.w3.org/2001/XMLSchema#dayTimeDuration">-PT8H</literal>
+ *       </binding>
  *     </result>
  *     <result>
  *       <binding name="s"><uri>http://example.org/d3</uri></binding>
@@ -66,4 +68,3 @@ describe('We should respect the timezone-01 spec', () => {
  * </results>
  * </sparql>
  */
-

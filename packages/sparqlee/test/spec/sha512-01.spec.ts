@@ -1,3 +1,4 @@
+// tslint:disable:max-line-length
 import * as Data from './_data';
 
 import { aliases as a, testAll } from '../util/utils';
@@ -34,8 +35,7 @@ import { aliases as a, testAll } from '../util/utils';
 describe('We should respect the sha512-01 spec', () => {
   const { s1 } = Data.data();
   testAll([
-    // tslint:disable-next-line: max-line-length
-    `SHA512(${s1}) = "f7fbba6e0636f890e56fbbf3283e524c6fa3204ae298382d624741d0dc6638326e282c41be5e4254d8820772c5518a2c5a8c0c7f7eda19594a7eb539453e1ed7"`
+    `SHA512(${s1}) = "f7fbba6e0636f890e56fbbf3283e524c6fa3204ae298382d624741d0dc6638326e282c41be5e4254d8820772c5518a2c5a8c0c7f7eda19594a7eb539453e1ed7"`,
   ]);
 });
 

@@ -57,4 +57,3 @@ describe('We should respect the ends01 spec', () => {
  * </results>
  * </sparql>
  */
-

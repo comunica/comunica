@@ -37,4 +37,3 @@ describe('We should respect the in01 spec', () => {
  * <boolean>true</boolean>
  * </sparql>
  */
-

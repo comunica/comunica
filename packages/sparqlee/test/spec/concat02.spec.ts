@@ -98,10 +98,26 @@ describe('We should respect the concat02 spec', () => {
  *   <variable name="str"/>
  * </head>
  * <results>
- *   <result><binding name="str"><literal datatype="http://www.w3.org/2001/XMLSchema#string">abcabc</literal></binding></result>
- *   <result><binding name="str"><literal datatype="http://www.w3.org/2001/XMLSchema#string">abcdef</literal></binding></result>
- *   <result><binding name="str"><literal datatype="http://www.w3.org/2001/XMLSchema#string">defabc</literal></binding></result>
- *   <result><binding name="str"><literal datatype="http://www.w3.org/2001/XMLSchema#string">defdef</literal></binding></result>
+ *   <result>
+ *     <binding name="str">
+ *       <literal datatype="http://www.w3.org/2001/XMLSchema#string">abcabc</literal>
+ *     </binding>
+ *   </result>
+ *   <result>
+ *     <binding name="str">
+ *       <literal datatype="http://www.w3.org/2001/XMLSchema#string">abcdef</literal>
+ *     </binding>
+ *   </result>
+ *   <result>
+ *     <binding name="str">
+ *       <literal datatype="http://www.w3.org/2001/XMLSchema#string">defabc</literal>
+ *     </binding>
+ *   </result>
+ *   <result>
+ *     <binding name="str">
+ *       <literal datatype="http://www.w3.org/2001/XMLSchema#string">defdef</literal>
+ *     </binding>
+ *   </result>
  *   <result><binding name="str"><literal xml:lang="en">englishenglish</literal></binding></result>
  *   <result><binding name="str"><literal xml:lang="fr">françaisfrançais</literal></binding></result>
  *   <result><binding name="str"><literal xml:lang="ja">日本語日本語</literal></binding></result>
@@ -150,4 +166,3 @@ describe('We should respect the concat02 spec', () => {
  * </results>
  * </sparql>
  */
-

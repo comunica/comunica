@@ -88,4 +88,3 @@ describe('We should respect the encode01 spec', () => {
  * </results>
  * </sparql>
  */
-

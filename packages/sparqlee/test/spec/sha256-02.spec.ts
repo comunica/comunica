@@ -42,9 +42,10 @@ describe('We should respect the sha256-02 spec', () => {
  * </head>
  * <results>
  *     <result>
- *       <binding name="hash"><literal>0fbe868d1df356ca9df7ebff346da3a56280e059a7ea81186ef885b140d254ee</literal></binding>
+ *       <binding name="hash">
+ *         <literal>0fbe868d1df356ca9df7ebff346da3a56280e059a7ea81186ef885b140d254ee</literal>
+ *       </binding>
  *     </result>
  * </results>
  * </sparql>
  */
-

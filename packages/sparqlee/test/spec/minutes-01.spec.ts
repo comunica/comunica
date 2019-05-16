@@ -1,6 +1,6 @@
 import * as Data from './_data';
 
-import { aliases as a, testAll, int } from '../util/utils';
+import { aliases as a, int, testAll } from '../util/utils';
 
 /**
  * REQUEST: minutes-01.rq
@@ -64,4 +64,3 @@ describe('We should respect the minutes-01 spec', () => {
  * </results>
  * </sparql>
  */
-

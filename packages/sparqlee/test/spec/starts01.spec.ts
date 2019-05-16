@@ -71,4 +71,3 @@ describe('We should respect the starts01 spec', () => {
  * </results>
  * </sparql>
  */
-

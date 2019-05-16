@@ -58,4 +58,3 @@ describe('We should respect the abs01 spec', () => {
  * </results>
  * </sparql>
  */
-

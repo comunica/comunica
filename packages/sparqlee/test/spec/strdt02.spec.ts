@@ -51,4 +51,3 @@ describe('We should respect the strdt02 spec', () => {
  * </results>
  * </sparql>
  */
-

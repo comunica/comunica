@@ -1,6 +1,6 @@
 import * as Data from './_data';
 
-import { aliases as a, testAll, int, decimal } from '../util/utils';
+import { aliases as a, decimal, int, testAll } from '../util/utils';
 
 /**
  * REQUEST: round01.rq
@@ -76,4 +76,3 @@ describe('We should respect the round01 spec', () => {
  * </results>
  * </sparql>
  */
-

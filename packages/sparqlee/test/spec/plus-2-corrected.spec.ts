@@ -1,15 +1,15 @@
 import * as Data from './_data';
 
-import { aliases as a, testAll, testAllErrors, int, decimal } from '../util/utils';
+import { aliases as a, decimal, int, testAll, testAllErrors } from '../util/utils';
 
 /**
  * REQUEST: plus-2-corrected.rq
  *
  * PREFIX  : <http://example/>
- * 
+ *
  * SELECT  ?x ?y ( str(?x) + str(?y) AS ?sum)
  * WHERE
- *     { ?s :p ?x ; :q ?y . 
+ *     { ?s :p ?x ; :q ?y .
  *     }
  */
 
@@ -128,4 +128,3 @@ describe('We should respect the plus-2-corrected spec', () => {
  *   </results>
  * </sparql>
  */
-

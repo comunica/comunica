@@ -1,6 +1,6 @@
 import * as Data from './_data';
 
-import { aliases as a, testAll, int } from '../util/utils';
+import { aliases as a, int, testAll } from '../util/utils';
 
 /**
  * REQUEST: uuid01.rq
@@ -10,7 +10,9 @@ import { aliases as a, testAll, int } from '../util/utils';
  * SELECT (STRLEN(STR(?uuid)) AS ?length)
  * WHERE {
  *   BIND(UUID() AS ?uuid)
- *   FILTER(ISIRI(?uuid) && REGEX(STR(?uuid), "^urn:uuid:[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}$", "i"))
+ *   FILTER(ISIRI(?uuid)
+ *       && REGEX(STR(?uuid), "^urn:uuid:[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}$", "i")
+ *   )
  * }
  */
 
@@ -52,4 +54,3 @@ describe('We should respect the uuid01 spec', () => {
  *   </results>
  * </sparql>
  */
-

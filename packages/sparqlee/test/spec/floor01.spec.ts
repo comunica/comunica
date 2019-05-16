@@ -76,4 +76,3 @@ describe('We should respect the floor01 spec', () => {
  * </results>
  * </sparql>
  */
-

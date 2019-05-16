@@ -64,4 +64,3 @@ describe('We should respect the day-01 spec', () => {
  * </results>
  * </sparql>
  */
-

@@ -38,4 +38,3 @@ describe('We should respect the notin01 spec', () => {
  * <boolean>true</boolean>
  * </sparql>
  */
-

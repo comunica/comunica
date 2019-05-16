@@ -1,6 +1,6 @@
 import * as Data from './_data';
 
-import { aliases as a, testAll, int } from '../util/utils';
+import { aliases as a, int, testAll } from '../util/utils';
 
 /**
  * REQUEST: year-01.rq

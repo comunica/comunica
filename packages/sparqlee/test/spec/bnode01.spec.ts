@@ -78,4 +78,3 @@ describe.skip('We should respect the bnode01 spec', () => {
  * </sparql>
  *
  */
-

@@ -53,4 +53,3 @@ describe('We should respect the sha1-01 spec', () => {
  * </results>
  * </sparql>
  */
-

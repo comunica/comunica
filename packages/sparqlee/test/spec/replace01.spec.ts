@@ -94,4 +94,3 @@ describe('We should respect the replace01 spec', () => {
  * </results>
  * </sparql>
  */
-

@@ -64,4 +64,3 @@ describe('We should respect the hours-01 spec', () => {
  * </results>
  * </sparql>
  */
-

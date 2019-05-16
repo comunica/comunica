@@ -48,4 +48,3 @@ describe.skip('We should respect the replace03 spec', () => {
  * </results>
  * </sparql>
  */
-

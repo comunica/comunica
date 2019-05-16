@@ -82,4 +82,3 @@ describe('We should respect the strbefore01 spec', () => {
  * </results>
  * </sparql>
  */
-

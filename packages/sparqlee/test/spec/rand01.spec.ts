@@ -44,4 +44,3 @@ describe('We should respect the rand01 spec', () => {
  * <boolean>true</boolean>
  * </sparql>
  */
-

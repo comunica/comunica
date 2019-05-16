@@ -1,6 +1,6 @@
 import * as Data from './_data';
 
-import { aliases as a, testAll, int, testAllErrors, decimal } from '../util/utils';
+import { aliases as a, decimal, int, testAll, testAllErrors } from '../util/utils';
 
 /**
  * REQUEST: plus-1-corrected.rq
@@ -8,7 +8,7 @@ import { aliases as a, testAll, int, testAllErrors, decimal } from '../util/util
  * PREFIX  : <http://example/>
  * SELECT  ?x ?y ( ?x + ?y AS ?sum)
  * WHERE
- *     { ?s :p ?x ; :q ?y . 
+ *     { ?s :p ?x ; :q ?y .
  *     }
  */
 

@@ -50,4 +50,3 @@ describe.skip('We should respect the bnode02 spec', () => {
  * </sparql>
  *
  */
-

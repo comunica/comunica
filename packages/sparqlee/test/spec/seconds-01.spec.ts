@@ -64,4 +64,3 @@ describe('We should respect the seconds-01 spec', () => {
  * </results>
  * </sparql>
  */
-

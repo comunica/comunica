@@ -76,4 +76,3 @@ describe('We should respect the ceil01 spec', () => {
  * </results>
  * </sparql>
  */
-

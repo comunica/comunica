@@ -42,4 +42,3 @@ describe.skip('We should respect the now01 spec', () => {
  * <boolean>true</boolean>
  * </sparql>
  */
-

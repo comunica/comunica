@@ -49,4 +49,3 @@ describe('We should respect the strlang01 spec', () => {
  * </results>
  * </sparql>
  */
-

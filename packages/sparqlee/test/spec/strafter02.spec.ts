@@ -118,4 +118,3 @@ describe('We should respect the strafter02 spec', () => {
  * </results>
  * </sparql>
  */
-

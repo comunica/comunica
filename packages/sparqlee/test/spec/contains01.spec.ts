@@ -61,4 +61,3 @@ describe('We should respect the contains01 spec', () => {
  * </results>
  * </sparql>
  */
-

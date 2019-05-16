@@ -87,4 +87,3 @@ describe('We should respect the substring02 spec', () => {
  * </results>
  * </sparql>
  */
-
