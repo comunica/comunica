@@ -40,7 +40,7 @@
   },
   "dependencies": {
     "rdf-string": "^1.3.1",
-    "sparqlee": "0.2.0"
+    "sparqlee": "0.3.0"
   },
   "devDependencies": {
     "@comunica/actor-query-operation-filter-direct": "^1.6.5",
