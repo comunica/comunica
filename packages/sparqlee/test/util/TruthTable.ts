@@ -1,5 +1,6 @@
 import * as RDF from 'rdf-js';
 
+import { stringToTerm, termToString } from 'rdf-string';
 import { evaluate } from '../../util/Util';
 
 /*
@@ -92,7 +93,10 @@ class BinaryTable extends Table<[string, string, string]> {
       const { aliasMap, resultMap, op } = this.def;
       const expr = this.format([op, aliasMap[left], aliasMap[right]]);
       it(`${this.format([op, left, right])} should return ${result}`, () => {
-        return expect(evaluate(expr)).resolves.toEqual(resultMap[result]);
+        return expect(evaluate(expr)
+          .then(termToString))
+          .resolves
+          .toEqual(termToString(resultMap[result]));
       });
     });
 
@@ -123,7 +127,10 @@ class UnaryTable extends Table<[string, string]> {
       const { aliasMap, op, resultMap } = this.def;
       const expr = this.format([op, aliasMap[arg]]);
       it(`${this.format([op, arg])} should return ${result}`, () => {
-        return expect(evaluate(expr)).resolves.toEqual(resultMap[result]);
+        return expect(evaluate(expr)
+          .then(termToString))
+          .resolves
+          .toEqual(termToString(resultMap[result]));
       });
     });
 

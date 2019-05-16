@@ -142,7 +142,7 @@ if (stream.length === 0) {
 | STRLANG        | ✓ |   | X |   |
 | UUID           | ✓ |   |   |   |
 | STRUID         | ✓ |   |   |   |
-| _Notes_        |   |   |   | STRLANG test case is wrong (different case for lang-tag)  |
+| _Notes_        |   |   |   | STRLANG lowercases the language tag |
 | [On Strings](https://www.w3.org/TR/sparql11-query/#func-strings)
 | STRLEN         | ✓ | ✓ |   |   |
 | SUBSTR         | ✓ |   | ✓ |   |

@@ -25,7 +25,7 @@ async function testEval() {
   // const ex = new U.Example('DATATYPE(?r) = xsd:double && ?r >= 0.0 && ?r < 1.0', () => Bindings({
   //   '?r': RDF.literal('0.3', C.TypeURL.XSD_DOUBLE),
   // }));
-  const ex = new U.Example('concat()', () => Bindings({
+  const ex = new U.Example('"aa"^^xsd:string = "aa"', () => Bindings({
     '?r': RDF.literal('0.3', C.TypeURL.XSD_DOUBLE),
   }));
   // const ex = new U.Example('0.0');

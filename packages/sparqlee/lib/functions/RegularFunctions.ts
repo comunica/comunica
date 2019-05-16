@@ -194,7 +194,7 @@ const isNumeric = {
   arity: 1,
   overloads: declare()
     .onNumeric1((term) => bool(true))
-    .set(['nonlexical'], (term) => bool(false))
+    .onTerm1((term) => bool(false))
     .collect(),
 };
 
@@ -252,7 +252,7 @@ const STRLANG = {
   overloads: declare()
     .onBinaryTyped(
       ['string', 'string'],
-      (val: string, language: string) => new E.LangStringLiteral(val, language),
+      (val: string, language: string) => new E.LangStringLiteral(val, language.toLowerCase()),
     )
     .collect(),
 };
@@ -401,8 +401,9 @@ const STRBEFORE = {
     .onBinary(
       ['langString', 'string'],
       (arg1: E.LangStringLiteral, arg2: E.StringLiteral) => {
-        const sub = arg1.typedValue.substr(0, arg1.typedValue.indexOf(arg2.typedValue));
-        return (sub) ? langString(sub, arg1.language) : string(sub);
+        const [a1, a2] = [arg1.typedValue, arg2.typedValue];
+        const sub = arg1.typedValue.substr(0, a1.indexOf(a2));
+        return (sub || !a2) ? langString(sub, arg1.language) : string(sub);
       },
     )
     .onBinary(
@@ -411,8 +412,9 @@ const STRBEFORE = {
         if (arg1.language !== arg2.language) {
           throw new Err.IncompatibleLanguageOperation(arg1, arg2);
         }
-        const sub = arg1.typedValue.substr(0, arg1.typedValue.indexOf(arg2.typedValue));
-        return (sub) ? langString(sub, arg1.language) : string(sub);
+        const [a1, a2] = [arg1.typedValue, arg2.typedValue];
+        const sub = arg1.typedValue.substr(0, a1.indexOf(a2));
+        return (sub || !a2) ? langString(sub, arg1.language) : string(sub);
       })
     .collect(),
 };
@@ -429,7 +431,7 @@ const STRAFTER = {
       (arg1: E.LangStringLiteral, arg2: E.StringLiteral) => {
         const [a1, a2] = [arg1.typedValue, arg2.typedValue];
         const sub = a1.substr(a1.indexOf(a2)).substr(a2.length);
-        return (sub) ? langString(sub, arg1.language) : string(sub);
+        return (sub || !a2) ? langString(sub, arg1.language) : string(sub);
       },
     )
     .onBinary(
@@ -440,7 +442,7 @@ const STRAFTER = {
         }
         const [a1, a2] = [arg1.typedValue, arg2.typedValue];
         const sub = a1.substr(a1.indexOf(a2)).substr(a2.length);
-        return (sub) ? langString(sub, arg1.language) : string(sub);
+        return (sub || !a2) ? langString(sub, arg1.language) : string(sub);
       })
     .collect(),
 };

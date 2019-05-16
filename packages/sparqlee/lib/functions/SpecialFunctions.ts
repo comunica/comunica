@@ -198,10 +198,10 @@ async function inRecursiveAsync(
   try {
     const next = await evaluate(args.shift(), mapping);
     const isEqual = regularFunctions.get(C.RegularOperator.EQUAL);
-    if (isEqual.apply([needle, next])) {
+    if ((isEqual.apply([needle, next]) as E.BooleanLiteral).typedValue === true) {
       return bool(true);
     } else {
-      inRecursiveAsync(needle, { args, mapping, evaluate }, [...results, false]);
+      return inRecursiveAsync(needle, { args, mapping, evaluate }, [...results, false]);
     }
   } catch (err) {
     return inRecursiveAsync(needle, { args, mapping, evaluate }, [...results, err]);
@@ -226,10 +226,10 @@ function inRecursiveSync(
   try {
     const next = evaluate(args.shift(), mapping);
     const isEqual = regularFunctions.get(C.RegularOperator.EQUAL);
-    if (isEqual.apply([needle, next])) {
+    if ((isEqual.apply([needle, next]) as E.BooleanLiteral).typedValue === true) {
       return bool(true);
     } else {
-      inRecursiveSync(needle, { args, mapping, evaluate }, [...results, false]);
+      return inRecursiveSync(needle, { args, mapping, evaluate }, [...results, false]);
     }
   } catch (err) {
     return inRecursiveSync(needle, { args, mapping, evaluate }, [...results, err]);
