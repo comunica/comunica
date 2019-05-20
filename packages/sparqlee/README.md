@@ -67,20 +67,21 @@ try {
 }
 ```
 
-### Streams
+### Exists
 
-'Aggregates' and 'Exists' operations are annoying problems to tackle in the context of an expression evaluator, since they make the operation thing statefull and context dependant. They might span entire streams and, depending on the use case, have very different requirements for speed and memory consumption. Sparqlee has therefore decided to delegate this responsibility back to you.
+'Exists' operations are an annoying problem to tackle in the context of an expression evaluator, since they make the operation statefull and context dependant. They might span entire streams and, depending on the use case, have very different requirements for speed and memory consumption. Sparqlee has therefore decided to delegate this responsibility back to you.
 
 You can, if you want, pass hooks to the evaluators of the shape:
 
 ```ts
-type AggregateHook = (expression: Alg.AggregateExpression) => Promise<RDF.Term>;
-type ExistenceHook = (expression: Alg.ExistenceExpression, mapping: Bindings) => Promise<boolean>;
+exists?: (expression: Alg.ExistenceExpression, mapping: Bindings) => Promise<boolean>;
 ```
 
-If Sparqlee encounters any aggregate or existence expression, it will call this hook with the relevant information so you can resolve it yourself. If these hooks are not present, but an expression is encountered, an error is thrown.
+If Sparqlee encounters any or existence expression, it will call this hook with the relevant information so you can resolve it yourself. If these hooks are not present, but an existence expression is encountered, then an error is thrown.
 
-#### Aggregates
+An example consumer/hook can be found in [Comunica](https://github.com/comunica/comunica/blob/master/packages/actor-query-operation-filter-sparqlee/lib/ActorQueryOperationFilterSparqlee.ts).;
+
+### Aggregates
 
 We provide an `AggregateEvaluator` to which you can pass the individual bindings in the stream, end ask the aggregated result back. It uses Sparqlee's internal type system for operations such as `sum` and `avg`.
 
@@ -95,6 +96,14 @@ if (stream.length === 0) {
   return evaluator.result();
 }
 ```
+
+We have not found any SPARQL Algebra for which this occurs, but we happen to find any aggregate expressions nested in the expression (or even at the top level), we will call (similarly to EXISTS) an aggregate hook you might have provided.
+
+```ts
+aggregate?: (expression: Alg.AggregateExpression) => Promise<RDF.Term>;
+```
+
+You can probably ignore this.
 
 ### Custom functions
 
