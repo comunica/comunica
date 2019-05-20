@@ -25,7 +25,7 @@ import { aliases as a, decimal, int, testAll, testAllErrors } from '../util/util
  *     .
  */
 
-describe.skip('We should respect the plus-1-corrected spec', () => {
+describe('We should respect the plus-1-corrected spec', () => {
   const {
     x1p, x1q,
     x2q,
@@ -39,7 +39,7 @@ describe.skip('We should respect the plus-1-corrected spec', () => {
 
   testAll([
     `${x4p} + ${x4q} = ${int('3')}`,
-    `${x5p} + ${x5q} = ${decimal('3.0')}`,
+    `${x5p} + ${x5q} = ${decimal('3')}`,
   ]);
 
   testAllErrors([

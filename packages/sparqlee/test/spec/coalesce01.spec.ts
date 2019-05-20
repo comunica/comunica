@@ -40,7 +40,7 @@ import { aliases as a, decimal, int, testAll, testAllErrors } from '../util/util
 // :n2 :p 0 ; :q 2 .
 // :n3 :p 4 ; :q 2 .
 
-describe.skip('We should respect the coalesce01 spec', () => {
+describe('We should respect the coalesce01 spec', () => {
   const { n0, q0, n1, n2, n3, q1, q2, q3 } = {
     n0: int('1'),
     q0: '?unbound',
@@ -65,12 +65,12 @@ describe.skip('We should respect the coalesce01 spec', () => {
 
     // :n2
     `COALESCE(${q2}, -1) = ${q2}`,
-    `COALESCE(${n2}/${q2}, -2) = ${decimal('0.0')}`,
+    `COALESCE(${n2}/${q2}, -2) = ${decimal('0')}`,
     `COALESCE(?z, -3) = ${int('-3')}`,
 
     // :n3
     `COALESCE(${q3}, -1) = ${q3}`,
-    `COALESCE(${n3}/${q3}) = ${decimal('2.0')}`,
+    `COALESCE(${n3}/${q3}) = ${decimal('2')}`,
     `COALESCE(?z, -3) = ${int('-3')}`,
   ]);
 

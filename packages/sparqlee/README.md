@@ -151,13 +151,13 @@ To be fully spec compliant, the IRI/URI functions should take into account base 
 | >=             | ✓ | ✓ | ? |   |   |
 | *              | ✓ | ✓ | ? |   |   |
 | /              | ✓ | ✓ | I |   | Occurs in coalesce |
-| +              | ✓ | ✓ | X |   | Depends on #28 |
+| +              | ✓ | ✓ | ✓ |   |   |
 | -              | ✓ | ✓ | ? |   |   |
 | _Notes_        |   |   |   |   | Spec compliance depends on #13 and #14 |
 | [Functional Forms](https://www.w3.org/TR/sparql11-query/#func-forms)
 | BOUND          | ✓ | X | ? |   |   |
 | IF             | ✓ | X | ✓ |   |   |
-| COALESCE       | ✓ | X | X |   | Depends on #28 |
+| COALESCE       | ✓ | X | ✓ |   |   |
 | NOT EXISTS     | ✓ | X | X |   | Needs full SPARQL engine to really test |
 | EXISTS         | ✓ | X | X |   | Needs full SPARQL engine to really test |
 | logical-or     | ✓ | ✓ | I | ✓ | See operators |
