@@ -109,6 +109,26 @@ You can probably ignore this.
 
 **NOTE: Not yet implemented. On the roadmap.**
 
+### Binary
+
+Sparqlee also provides a binary for evaluating simple expressions from the command line. Example
+
+```bash
+# (npm binary)
+$ sparqlee 'concat("foo", "bar")'
+Literal {
+  value: 'foobar',
+  datatype: NamedNode { value: 'http://www.w3.org/2001/XMLSchema#string' },
+  language: '' }
+
+# (in development)
+$ node ./dist/bin/Sparqlee.js '7 + 3'
+Literal {
+  value: '10',
+  datatype: NamedNode { value: 'http://www.w3.org/2001/XMLSchema#integer' },
+  language: '' }
+```
+
 ### Context dependant functions
 
 Some functions (BNODE, NOW, IRI) need a (statefull) context from the caller to function correctly according to the spec. This context can be passed as an argument to Sparqlee (see the [config section](#config) for exact types). If they are not passed, Sparqlee will use a naive implementation that might do the trick for simple use cases.

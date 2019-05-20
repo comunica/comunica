@@ -17,7 +17,12 @@
     "coveralls-ci": "cat ./coverage/lcov.info | coveralls",
     "preversion": "yarn test",
     "version": "yarn run build",
-    "postversion": "git push && git push --tags"
+    "postversion": "git push && git push --tags",
+    "sparqlee": "./dist/bin/Sparqlee.js"
+
+  },
+  "bin": {
+    "sparqlee": "./dist/bin/Sparqlee.js"
   },
   "files": [
     "/dist/lib",
