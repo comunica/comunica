@@ -21,8 +21,8 @@ export class ActorQueryOperationFilterSparqlee extends ActorQueryOperationTypedM
 
   public async testOperation(pattern: Algebra.Filter, context: ActionContext): Promise<IActorTest> {
     // Will throw error for unsupported operators
-    const hooks = { existence: this.createExistenceResolver(context) };
-    const _ = new AsyncEvaluator(pattern.expression, hooks);
+    const config = { exists: this.createExistenceResolver(context) };
+    const _ = new AsyncEvaluator(pattern.expression, config);
     return true;
   }
 
@@ -34,8 +34,8 @@ export class ActorQueryOperationFilterSparqlee extends ActorQueryOperationTypedM
     ActorQueryOperation.validateQueryOutput(output, 'bindings');
     const { variables, metadata } = output;
 
-    const hooks = { existence: this.createExistenceResolver(context) };
-    const evaluator = new AsyncEvaluator(pattern.expression, hooks);
+    const config = { exists: this.createExistenceResolver(context) };
+    const evaluator = new AsyncEvaluator(pattern.expression, config);
 
     const transform = async (item: Bindings, next: any) => {
       try {

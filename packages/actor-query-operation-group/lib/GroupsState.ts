@@ -60,7 +60,8 @@ export class GroupsState {
       for (const i in this.pattern.aggregates) {
         const aggregate = this.pattern.aggregates[i];
         const key = termToString(aggregate.variable);
-        aggregators[key] = new AggregateEvaluator(aggregate, bindings);
+        aggregators[key] = new AggregateEvaluator(aggregate);
+        aggregators[key].put(bindings);
       }
 
       const group: IGroup = { aggregators, bindings: grouper };

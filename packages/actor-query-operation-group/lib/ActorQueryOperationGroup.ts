@@ -2,7 +2,7 @@
 import { ArrayIterator } from 'asynciterator';
 import { termToString } from 'rdf-string';
 import { Algebra } from "sparqlalgebrajs";
-import { SimpleEvaluator } from 'sparqlee';
+import { SyncEvaluator } from 'sparqlee';
 
 import {
   ActorQueryOperation,
@@ -26,7 +26,7 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
   public async testOperation(pattern: Algebra.Group, context: ActionContext): Promise<IActorTest> {
     for (const i in pattern.aggregates) {
       // Will throw for unsupported expressions
-      const _ = new SimpleEvaluator(pattern.aggregates[i].expression);
+      const _ = new SyncEvaluator(pattern.aggregates[i].expression);
     }
     return true;
   }
