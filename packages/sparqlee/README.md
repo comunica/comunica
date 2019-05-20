@@ -5,7 +5,7 @@
 [![Coverage Status](https://coveralls.io/repos/github/comunica/sparqlee/badge.svg?branch=master)](https://coveralls.io/github/comunica/sparqlee?branch=master)
 [![Gitter chat](https://badges.gitter.im/comunica.png)](https://gitter.im/comunica/Lobby)
 
-A simple SPARQL expression evaluator library.
+A simple spec-compliant SPARQL 1.1 expression evaluator library.
 
 This package is available on [npm](https://www.npmjs.com/package/sparqlee), type definitions are provided.
 
@@ -14,9 +14,10 @@ This package is available on [npm](https://www.npmjs.com/package/sparqlee), type
 ```ts
 const expression = ...some sparql algebra expression...;
 const bindings = ...some bindings/solution mapping...;
+const config = ...sparqlee config and optional context...;
 
 // Create an evaluator (a sync evaluator will exist in the future too)
-const evaluator = new AsyncEvaluator(expression)
+const evaluator = new AsyncEvaluator(expression, config);
 
 // evaluate it as a term
 const result: RDF.Term = await evaluator.evaluate(bindings);
