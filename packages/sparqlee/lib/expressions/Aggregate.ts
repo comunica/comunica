@@ -1,7 +1,5 @@
-import * as RDF from 'rdf-js';
 import { Algebra as Alg } from 'sparqlalgebrajs';
 
-import { AggregateHook } from './../Types';
 import {
   AggregateExpression,
   ExpressionType,
@@ -12,11 +10,6 @@ export class Aggregate implements AggregateExpression {
 
   constructor(
     public name: string,
-    public aggregator: AggregateHook,
     public expression: Alg.AggregateExpression,
   ) { }
-
-  aggregate(): Promise<RDF.Term> {
-    return this.aggregator(this.expression);
-  }
 }

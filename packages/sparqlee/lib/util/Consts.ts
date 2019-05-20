@@ -195,9 +195,9 @@ export enum RegularOperator {
   STR = 'str',
   LANG = 'lang',
   DATATYPE = 'datatype',
-  IRI = 'iri',
-  URI = 'uri',
-  BNODE = 'BNODE',
+  // IRI = 'iri', (see special operators)
+  // URI = 'uri', (see special operators)
+  // BNODE = 'BNODE', (see special operators)
   STRDT = 'strdt',
   STRLANG = 'strlang',
   UUID = 'uuid',
@@ -230,7 +230,7 @@ export enum RegularOperator {
 
   // Functions on Dates and Times
   // https://www.w3.org/TR/sparql11-query/#func-date-time
-  NOW = 'now',
+  // NOW = 'now' (see special operators)
   YEAR = 'year',
   MONTH = 'month',
   DAY = 'day',
@@ -267,8 +267,14 @@ export enum SpecialOperator {
   IN = 'in',
   NOT_IN = 'notin',
 
-  // Functions that are annoying
+  // Annoying functions
   CONCAT = 'concat', // Has variable arity
+
+  // Context dependant functions
+  NOW = 'now',
+  IRI = 'iri',
+  URI = 'uri',
+  BNODE = 'BNODE',
 }
 
 export const RegularOperators = Set(Object.values(RegularOperator));

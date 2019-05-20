@@ -32,7 +32,7 @@ async function testEval() {
   // tslint:disable-next-line:no-any
   console.log(ex.expression);
 
-  const evaluator = new AsyncEvaluator(ex.expression, U.mockHooks);
+  const evaluator = new AsyncEvaluator(ex.expression);
   const presult = evaluator.evaluateAsInternal(ex.mapping()).catch((err) => console.log(err));
   const val = await presult;
   console.log(val);

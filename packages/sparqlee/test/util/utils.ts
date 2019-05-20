@@ -1,10 +1,13 @@
 import { literal } from '@rdfjs/data-model';
+import * as RDF from 'rdf-js';
 import { stringToTerm, termToString } from 'rdf-string';
 
+import { AsyncEvaluator, AsyncEvaluatorConfig } from '../../lib/evaluators/AsyncEvaluator';
+import { Bindings } from '../../lib/Types';
 import { ExpressionError } from '../../lib/util/Errors';
-import { evaluate } from '../../util/Util';
+import { parse } from '../../util/Util';
 
-export function testAll(exprs: string[]) {
+export function testAll(exprs: string[], config?: AsyncEvaluatorConfig) {
   exprs.forEach((_expr) => {
     const expr = _expr.trim();
     const equals = expr.match(/ = [^=]*$/g).pop();
@@ -13,7 +16,7 @@ export function testAll(exprs: string[]) {
     const result = stringToTerm(replacePrefix(_result));
     // console.log(`${expr}\n${equals}\n${body}\n${_result}\n${result}`);
     it(`${body} should evaluate to ${_result}`, () => {
-      return expect(evaluate(body)
+      return expect(evaluate(body, config)
         .then(termToString))
         .resolves
         .toBe(termToString(result));
@@ -21,17 +24,23 @@ export function testAll(exprs: string[]) {
   });
 }
 
-export function testAllErrors(exprs: string[]) {
+export function testAllErrors(exprs: string[], config?: AsyncEvaluatorConfig) {
   exprs.forEach((_expr) => {
     const expr = _expr.trim();
     const equals = expr.match(/ = error *$/)[0];
     const body = expr.replace(equals, '');
     it(`${body} should error`, () => {
-      return expect(evaluate(body).then(termToString))
+      return expect(evaluate(body, config)
+        .then(termToString))
         .rejects
         .toThrowError(ExpressionError);
     });
   });
+}
+
+export function evaluate(expr: string, config?: AsyncEvaluatorConfig): Promise<RDF.Term> {
+  const evaluator = new AsyncEvaluator(parse(expr), config);
+  return evaluator.evaluate(Bindings({}));
 }
 
 export const aliases = {

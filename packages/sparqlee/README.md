@@ -28,6 +28,23 @@ const result: boolean = await evaluator.evaluateAsEBV(bindings);
 
 Note: If you want to use *aggregates*, or *exists* you should check out the [stream section](#streams).
 
+### Config
+
+Sparqlee accepts an optional config argument, that is not required for simple use cases, but for feature completeness and spec compliance it should be populated fully.
+
+```ts
+interface AsyncEvaluatorConfig {
+  now?: Date;
+  baseIRI?: string;
+
+  exists?: (expression: Alg.ExistenceExpression, mapping: Bindings) => Promise<boolean>;
+  aggregate?: (expression: Alg.AggregateExpression) => Promise<RDF.Term>;
+  bnode?: (input?: string) => Promise<RDF.BlankNode>;
+}
+```
+
+See the [stream](#streams) and [context dependant function](#context_dependant_functions) sections for more info.
+
 ### Errors
 
 Sparqlee exports an Error class called `ExpressionError` from which all SPARQL related errors inherit. These might include unbound variables, wrong types, invalid lexical forms, and much more. More info on errors [here](lib/util/Errors.ts). These errors can be caught, and may impact program execution in an expected way. All other errors are unexpected, and are thus programmer mistakes or mistakes in this library.
@@ -51,17 +68,16 @@ try {
 
 ### Streams
 
-'Aggregates' and 'Exists' operations are annoying problems to tackle in the context of an expression evaluator, since they make the whole thing statefull.
-They might span entire streams and, depending on the use case, have very different requirements for speed and memory consumption. Sparqlee has therefore decided to delegate this responsibility back to you.
+'Aggregates' and 'Exists' operations are annoying problems to tackle in the context of an expression evaluator, since they make the operation thing statefull and context dependant. They might span entire streams and, depending on the use case, have very different requirements for speed and memory consumption. Sparqlee has therefore decided to delegate this responsibility back to you.
 
 You can, if you want, pass hooks to the evaluators of the shape:
 
 ```ts
-export type AggregateHook = (expression: Alg.AggregateExpression) => Promise<RDF.Term>;
-export type ExistenceHook = (expression: Alg.ExistenceExpression, mapping: Bindings) => Promise<boolean>;
+type AggregateHook = (expression: Alg.AggregateExpression) => Promise<RDF.Term>;
+type ExistenceHook = (expression: Alg.ExistenceExpression, mapping: Bindings) => Promise<boolean>;
 ```
 
-If Sparqlee encounters any aggregate or existence expression, it will call this hook with the relevant information so you can resolve it yourself.
+If Sparqlee encounters any aggregate or existence expression, it will call this hook with the relevant information so you can resolve it yourself. If these hooks are not present, but an expression is encountered, an error is thrown.
 
 #### Aggregates
 
@@ -83,13 +99,35 @@ if (stream.length === 0) {
 
 **NOTE: Not yet implemented. On the roadmap.**
 
+### Context dependant functions
+
+Some functions (BNODE, NOW, IRI) need a (statefull) context from the caller to function correctly according to the spec. This context can be passed as an argument to Sparqlee (see the [config section](#config) for exact types). If they are not passed, Sparqlee will use a naive implementation that might do the trick for simple use cases.
+
+#### BNODE
+
+[spec](https://www.w3.org/TR/sparql11-query/#func-bnode)
+
+Blank nodes are very dependant on the rest of the SPARQL query, therefore, we provide the option of delegating the entire responsibility back to you by accepting a blank node constructor callback. If this is not found, we will use uuid (v4) to generate definitely unique blank nodes of the shape `blank_uuid`.
+
+`bnode(input?: string) => RDF.BlankNode`
+
+#### Now
+
+[spec](https://www.w3.org/TR/sparql11-query/#func-now)
+
+All calls to now in a query must return the same value, since we aren't aware of the rest of the query, you can provide a timestamp (`now: Date`). If it's not present, Sparqlee will use the timestamp of evaluator creation, this at least allows evaluation with multiple bindings to have the same `now` value.
+
+#### IRI
+
+[spec](https://www.w3.org/TR/sparql11-query/#func-iri)
+
+To be fully spec compliant, the IRI/URI functions should take into account base IRI of the query, which you can provide as `baseIRI: string` to the config.
+
 ## Spec compliance
 
 **TODO** Add section about differences from the spec and which functions are affected (and which are implemented). See also [extensible value testing and error handling](https://www.w3.org/TR/sparql11-query/#extensionFunctions).
 
 **Note about string literals:** See issue [#2 (simple literals are masked)](https://github.com/comunica/sparqlee/issues/2)
-
-**TODO** Replace with check marks
 
 - _Implemented_: The function is at least partially implemented.
 - _Tested_: There are tests for this function in this repo.
@@ -136,7 +174,7 @@ if (stream.length === 0) {
 | str            | ✓ | ✓ | I | ✓ | Occurs in many tests |
 | lang           | ✓ | ✓ | I | ✓ | Occurs in many tests |
 | datatype       | ✓ | ✓ | I | ✓ | Occurs in now01, rand01 |
-| IRI            | X | X | X | X |   |
+| IRI            | ✓ | X | ✓ |   |   |
 | BNODE          | X | X | X | X |   |
 | STRDT          | ✓ | X | ✓ |   |   |
 | STRLANG        | ✓ | X | ✓ |   |   |
@@ -167,7 +205,7 @@ if (stream.length === 0) {
 | RAND           | ✓ | X | ✓ |   |   |
 | _Notes         |   |   |   |   |   |
 | [On Dates and Times](https://www.w3.org/TR/sparql11-query/#func-date-time)
-| now            | X | X | X | X |   |
+| now            | ✓ | X | ✓ | ✓ | Whether this is spec compliant depends on whether you pass a spec compliant 'now' config argument |
 | year           | ✓ | X | ✓ |   |   |
 | month          | ✓ | X | ✓ |   |   |
 | day            | ✓ | X | ✓ |   |   |
@@ -200,20 +238,20 @@ if (stream.length === 0) {
 1. Install `yarn` (or `npm`) and `node`.
 2. Run `yarn install`.
 3. Use these evident commands (or check `package.json`):
-    * building once: `yarn run build`
-    * build and watch: `yarn run watch`
-    * testing: `yarn run test`
-    * benchmarking: `yarn run bench`
+    - building once: `yarn run build`
+    - build and watch: `yarn run watch`
+    - testing: `yarn run test`
+    - benchmarking: `yarn run bench`
 
-### Adding unimplemented functions
+### Adding or fixing functions
 
-Functions are defined in the [functions directory](lib/functions/), and you can add them there. All definitions are defined using a builder model defined in [Helpers.ts](lib/functions/Helpers.ts).
+Functions are defined in the [functions directory](lib/functions/), and you can add or fix them there. All definitions are defined using a builder model defined in [Helpers.ts](lib/functions/Helpers.ts).
 
 Three kinds exists:
 
-* Regular functions: Functions with a uniform interface, that only need their arguments to calculate their result.
-* Special functions: whose behaviour deviates enough from the norm to warrant the implementations taking full control over type checking and evaluation (these are mostly the functional forms).
-* Named functions: which correspond to the SPARQLAlgebra Named Expressions.
+- Regular functions: Functions with a uniform interface, that only need their arguments to calculate their result.
+- Special functions: whose behaviour deviates enough from the norm to warrant the implementations taking full control over type checking and evaluation (these are mostly the functional forms).
+- Named functions: which correspond to the SPARQLAlgebra Named Expressions.
 
 **TODO**: Explain this hot mess some more.
 
@@ -230,13 +268,11 @@ The type system is tailored for doing (supposedly) quick evaluation of overloade
 
 When a function object is called with some functions, it looks up a concrete implementation. If we can not find one, we consider the argument of invalid types.
 
-Since many derived types exist, we also associate every literal with it's primitive datatype when constructing a literal. This handles **subtype substitution**, as we define allowed types in function of these primitives types. Note: the derived type is not maintained after operation, since I found no functions for which this was relevant.
+Since many derived types exist, we also associate every literal with it's primitive datatype when constructing a literal. This handles **subtype substitution**, as we define allowed types in function of these primitives types. Note: the derived type is not maintained after an operation on the term, since I found no functions for which this was relevant.
 
 **Type promotion** is handled in a couple of ways. Firstly, a bit like C++ vtables, if we can not find a implementation for the concrete (primitive) types, we try to find an implementation for the term-types of all the arguments, if that fails, we look for an implementation on generic terms.
 
 We also handle type promotion by explicitly coding for it. This is done in the arithmetic functions `+, -, *, /`.
-
-Lastly for types that do not occur in any SPARQL function definitions on themselves, we simply consider their primitive type to the type they can be promototed to. This happens for `anyUri` (considered a string).
 
 ### Testing
 

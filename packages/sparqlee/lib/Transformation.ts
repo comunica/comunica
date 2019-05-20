@@ -12,10 +12,9 @@ import {
   regularFunctions,
   specialFunctions,
 } from './functions';
-import { AggregateHook, ExistenceHook, Hooks } from './Types';
 import { TypeURL as DT } from './util/Consts';
 
-export function transformAlgebra(expr: Alg.Expression, hooks: Hooks = {}): E.Expression {
+export function transformAlgebra(expr: Alg.Expression): E.Expression {
   if (!expr) { throw new Err.InvalidExpression(expr); }
 
   const types = Alg.expressionTypes;
@@ -28,9 +27,9 @@ export function transformAlgebra(expr: Alg.Expression, hooks: Hooks = {}): E.Exp
     case types.NAMED:
       return transformNamed(expr as Alg.NamedExpression);
     case types.EXISTENCE:
-      return transformExistence(expr as Alg.ExistenceExpression, hooks.existence);
+      return transformExistence(expr as Alg.ExistenceExpression);
     case types.AGGREGATE:
-      return transformAggregate(expr as Alg.AggregateExpression, hooks.aggregate);
+      return transformAggregate(expr as Alg.AggregateExpression);
     default: throw new Err.InvalidExpressionType(expr);
   }
 }
@@ -182,13 +181,11 @@ function hasCorrectArity(args: E.Expression[], arity: number | number[]): boolea
   return args.length === arity;
 }
 
-export function transformAggregate(expr: Alg.AggregateExpression, hook: AggregateHook) {
+export function transformAggregate(expr: Alg.AggregateExpression) {
   const name = expr.aggregator;
-  if (!hook) { throw new Err.NoAggregator(name); }
-  return new E.Aggregate(name, hook, expr);
+  return new E.Aggregate(name, expr);
 }
 
-export function transformExistence(expr: Alg.ExistenceExpression, hook: ExistenceHook) {
-  if (!hook) { throw new Err.NoExistenceHook(); }
-  return new E.Existence(hook, expr);
+export function transformExistence(expr: Alg.ExistenceExpression) {
+  return new E.Existence(expr);
 }

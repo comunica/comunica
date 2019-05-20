@@ -30,13 +30,11 @@ export type AggregateExpression = ExpressionProps & {
   expressionType: ExpressionType.Aggregate;
   name: string;
   expression: Algebra.AggregateExpression;
-  aggregate(): Promise<RDF.Term>;
 };
 
 export type ExistenceExpression = ExpressionProps & {
   expressionType: ExpressionType.Existence;
   expression: Algebra.ExistenceExpression;
-  exists_with(mapping: Bindings): Promise<boolean>
 };
 
 export type NamedExpression = ExpressionProps & {
@@ -55,14 +53,24 @@ export type OperatorExpression = ExpressionProps & {
   apply: SimpleApplication;
 };
 
-// TODO: Move to Types.ts?
-export type EvaluatorAsync = (expr: Expression, mapping: Bindings) => Promise<TermExpression>;
-export type EvalContextAsync = { args: Expression[], mapping: Bindings, evaluate: EvaluatorAsync };
-export type SpecialApplicationAsync = (context: EvalContextAsync) => Promise<TermExpression>;
+export type SpecialApplication<Term, BNode> = (context: EvalContext<Term, BNode>) => Term;
 
-export type EvaluatorSync = (expr: Expression, mapping: Bindings) => TermExpression;
-export type EvalContextSync = { args: Expression[], mapping: Bindings, evaluate: EvaluatorSync };
-export type SpecialApplicationSync = (context: EvalContextSync) => TermExpression;
+export type SpecialApplicationAsync = SpecialApplication<Promise<TermExpression>, Promise<RDF.BlankNode>>;
+export type EvalContextAsync = EvalContext<Promise<TermExpression>, Promise<RDF.BlankNode>>;
+
+export type SpecialApplicationSync = SpecialApplication<TermExpression, RDF.BlankNode>;
+export type EvalContextSync = EvalContext<TermExpression, RDF.BlankNode>;
+
+export type EvalContext<Term, BNode> = {
+  args: Expression[],
+  mapping: Bindings,
+  context: {
+    now: Date,
+    baseIRI?: string,
+    bnode(input?: string): BNode,
+  },
+  evaluate(expr: Expression, mapping: Bindings): Term,
+};
 
 export type SpecialOperatorExpression = ExpressionProps & {
   expressionType: ExpressionType.SpecialOperator,

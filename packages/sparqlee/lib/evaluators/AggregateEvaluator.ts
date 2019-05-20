@@ -15,19 +15,19 @@ import { number, string } from '../functions/Helpers';
 import { Bindings } from '../Types';
 import { parseXSDFloat } from '../util/Parsing';
 import { SetFunction, TypeURL } from './../util/Consts';
-import { SimpleEvaluator } from './SimpleEvaluator';
+import { SyncEvaluator } from './SyncEvaluator';
 
 // TODO: Support hooks
 export class AggregateEvaluator {
   private expression: Algebra.AggregateExpression;
   private aggregator: BaseAggregator<any>;
-  private evaluator: SimpleEvaluator;
+  private evaluator: SyncEvaluator;
   private throwError = false;
   private state: any;
 
   constructor(expr: Algebra.AggregateExpression, start: Bindings, throwError?: boolean) {
     this.expression = expr;
-    this.evaluator = new SimpleEvaluator(expr.expression);
+    this.evaluator = new SyncEvaluator(expr.expression);
     this.aggregator = new aggregators[expr.aggregator as SetFunction](expr);
     this.throwError = throwError;
     try {

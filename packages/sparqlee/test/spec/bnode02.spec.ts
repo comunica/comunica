@@ -1,5 +1,3 @@
-import * as Data from './_data';
-
 import { aliases as a, testAll } from '../util/utils';
 
 /**
@@ -25,10 +23,10 @@ import { aliases as a, testAll } from '../util/utils';
  *   .
  */
 
-describe.skip('We should respect the bnode02 spec', () => {
-  const { } = Data.data();
+// This does of course not correspond to the actual spec test.
+describe('We should respect the bnode02 spec', () => {
   testAll([
-    'BNODE() = "foo"',
+    `BNODE("test") != BNODE("a") = ${a.true}`,
   ]);
 });
 

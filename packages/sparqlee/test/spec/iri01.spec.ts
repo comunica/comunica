@@ -25,11 +25,12 @@ import { aliases as a, testAll } from '../util/utils';
  *   .
  */
 
-describe.skip('We should respect the iri01 spec', () => {
+describe('We should respect the iri01 spec', () => {
   const { } = Data.data();
   testAll([
-    'BNODE() = "foo"',
-  ]);
+    'URI("uri") = http://example.org/uri',
+    'IRI("iri") = http://example.org/iri',
+  ], { baseIRI: 'http://example.org' });
 });
 
 /**

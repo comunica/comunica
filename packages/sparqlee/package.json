@@ -70,6 +70,7 @@
     "immutable": "^3.8.2",
     "rdf-string": "^1.1.1",
     "sparqlalgebrajs": "^1.1.0",
+    "uri-js": "^4.2.2",
     "uuid": "^3.3.2"
   },
   "jest": {

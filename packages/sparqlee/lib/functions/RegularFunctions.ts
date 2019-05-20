@@ -219,21 +219,11 @@ const datatype = {
     .collect(),
 };
 
-// https://www.w3.org/TR/sparql11-query/#func-iri
-const IRI = {
-  arity: 1,
-  overloads: declare().unimplemented('IRI').collect(),
-};
+// See special operators
+// const IRI = {};
 
-// https://www.w3.org/TR/sparql11-query/#func-bnode
-// id has to be distinct over all id's in dataset
-const BNODE = {
-  arity: [0, 1],
-  overloads: declare()
-    // .set([], () => new E.BlankNode()) // TODO
-    .onString1Typed((val) => new E.BlankNode(val))
-    .collect(),
-};
+// See special functions
+// const BNODE = {};
 
 const STRDT = {
   arity: 2,
@@ -477,11 +467,6 @@ const REGEX = {
     .collect(),
 };
 
-const replace3 = (arg: string, pattern: string, replacement: string) =>
-  string(X.replace(arg, pattern, replacement));
-const replace4 = (arg: string, pattern: string, replacement: string, flags: string) =>
-  string(X.replace(arg, pattern, replacement, flags));
-
 const REPLACE = {
   arity: [3, 4],
   overloads: declare()
@@ -563,14 +548,11 @@ const rand = {
 // ----------------------------------------------------------------------------
 
 function parseDate(dateLit: E.DateTimeLiteral): P.SplittedDate {
-  // TODO: This is assuming datelits always have a string
-  return P.parseXSDDateTime(dateLit.strValue);
+  return P.parseXSDDateTime(dateLit.str());
 }
 
-const now = {
-  arity: 0,
-  overloads: declare().unimplemented('now').collect(),
-};
+// See special operators
+// const now = {};
 
 const year = {
   arity: 1,
@@ -721,9 +703,9 @@ const _definitions: { [key in C.RegularOperator]: Definition } = {
   'str': toString,
   'lang': lang,
   'datatype': datatype,
-  'iri': IRI,
-  'uri': IRI,
-  'BNODE': BNODE,
+  // 'iri': IRI (see special operators),
+  // 'uri': IRI (see special operators),
+  // 'BNODE': BNODE (see special operators),
   'strdt': STRDT,
   'strlang': STRLANG,
   'uuid': UUID,
@@ -762,7 +744,7 @@ const _definitions: { [key in C.RegularOperator]: Definition } = {
   // Functions on Dates and Times
   // https://www.w3.org/TR/sparql11-query/#func-date-time
   // --------------------------------------------------------------------------
-  'now': now,
+  // 'now': now (see special operators),
   'year': year,
   'month': month,
   'day': day,

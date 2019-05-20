@@ -361,3 +361,24 @@ export function log<T>(val: T, ...args: any[]): T {
   console.log(val, args);
   return val;
 }
+
+export function typeCheckLit<T>(
+  term: E.TermExpression,
+  allowed: ArgumentType[],
+  args: E.Expression[],
+  op: C.Operator,
+): E.Literal<T> {
+
+  if (term.termType !== 'literal') {
+    throw new Err.InvalidArgumentTypes(args, op);
+  }
+
+  // tslint:disable-next-line:no-any
+  const lit = term as E.Literal<any>;
+
+  if (!allowed.includes(lit.type)) {
+    throw new Err.InvalidArgumentTypes(args, op);
+  }
+
+  return lit;
+}

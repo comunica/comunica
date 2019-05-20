@@ -1,103 +1,59 @@
-import * as RDFDM from '@rdfjs/data-model';
 import * as RDF from 'rdf-js';
 import { Algebra as Alg } from 'sparqlalgebrajs';
 
 import * as E from '../expressions/Expressions';
-import * as C from '../util/Consts';
-import * as Err from '../util/Errors';
 
-import { transformAlgebra, transformRDFTermUnsafe } from '../Transformation';
-import { Bindings, Hooks } from '../Types';
+import { transformAlgebra } from '../Transformation';
+import { Bindings, ExpressionEvaluator } from '../Types';
+
+import { AsyncRecursiveEvaluator } from './RecursiveExpressionEvaluator';
 
 type Expression = E.Expression;
 type Term = E.TermExpression;
-type Variable = E.VariableExpression;
-type Existence = E.ExistenceExpression;
-type Operator = E.OperatorExpression;
-type SpecialOperator = E.SpecialOperatorExpression;
-type Named = E.NamedExpression;
-type Aggregate = E.AggregateExpression;
+
+export interface AsyncEvaluatorConfig {
+  now?: Date;
+  baseIRI?: string;
+
+  exists?: (expression: Alg.ExistenceExpression, mapping: Bindings) => Promise<boolean>;
+  aggregate?: (expression: Alg.AggregateExpression) => Promise<RDF.Term>;
+  bnode?: (input?: string) => Promise<RDF.BlankNode>;
+}
+
+export type AsyncEvaluatorContext = AsyncEvaluatorConfig & {
+  now: Date;
+};
 
 export class AsyncEvaluator {
   private expr: Expression;
+  private evaluator: ExpressionEvaluator<Expression, Promise<Term>>;
 
-  constructor(public algExpr: Alg.Expression, public hooks: Hooks = {}) {
-    this.expr = transformAlgebra(algExpr, hooks);
+  constructor(public algExpr: Alg.Expression, public config: AsyncEvaluatorConfig = {}) {
+    this.expr = transformAlgebra(algExpr);
+
+    const context = {
+      now: config.now || new Date(Date.now()),
+      baseIRI: config.baseIRI || undefined,
+      exists: config.exists,
+      aggregate: config.aggregate,
+    };
+
+    this.evaluator = new AsyncRecursiveEvaluator(context);
   }
 
   async evaluate(mapping: Bindings): Promise<RDF.Term> {
-    const result = await this.evalRecursive(this.expr, mapping);
+    const result = await this.evaluator.evaluate(this.expr, mapping);
     return log(result).toRDF();
   }
 
   async evaluateAsEBV(mapping: Bindings): Promise<boolean> {
-    const result = await this.evalRecursive(this.expr, mapping);
+    const result = await this.evaluator.evaluate(this.expr, mapping);
     return log(result).coerceEBV();
   }
 
   async evaluateAsInternal(mapping: Bindings): Promise<Term> {
-    return this.evalRecursive(this.expr, mapping);
-  }
-
-  // tslint:disable-next-line:member-ordering
-  private readonly evaluators: {
-    [key: string]: (expr: Expression, mapping: Bindings) => Promise<Term>;
-  } = {
-      [E.ExpressionType.Term]: this.evalTerm,
-      [E.ExpressionType.Variable]: this.evalVariable,
-      [E.ExpressionType.Operator]: this.evalOperator,
-      [E.ExpressionType.SpecialOperator]: this.evalSpecialOperator,
-      [E.ExpressionType.Named]: this.evalNamed,
-      [E.ExpressionType.Existence]: this.evalExistence,
-      [E.ExpressionType.Aggregate]: this.evalAggregate,
-    };
-
-  private async evalRecursive(expr: Expression, mapping: Bindings): Promise<Term> {
-    const evaluator = this.evaluators[expr.expressionType];
-    if (!evaluator) { throw new Err.InvalidExpressionType(expr); }
-    return evaluator.bind(this)(expr, mapping);
-  }
-
-  private async evalTerm(expr: Term, mapping: Bindings): Promise<Term> {
-    return expr;
-  }
-
-  private async evalVariable(expr: Variable, mapping: Bindings): Promise<Term> {
-    const term = mapping.get(expr.name);
-    if (!term) {
-      throw new Err.UnboundVariableError(expr.name, mapping);
-    }
-    return transformRDFTermUnsafe(term);
-  }
-
-  private async evalOperator(expr: Operator, mapping: Bindings): Promise<Term> {
-    const argPromises = expr.args.map((arg) => this.evalRecursive(arg, mapping));
-    const argResults = await Promise.all(argPromises);
-    return expr.apply(argResults);
-  }
-
-  private async evalSpecialOperator(expr: SpecialOperator, mapping: Bindings): Promise<Term> {
-    const evaluate = this.evalRecursive.bind(this);
-    const context = { args: expr.args, mapping, evaluate };
-    return expr.applyAsync(context);
-  }
-
-  private async evalNamed(expr: Named, mapping: Bindings): Promise<Term> {
-    const argPromises = expr.args.map((arg) => this.evalRecursive(arg, mapping));
-    const argResults = await Promise.all(argPromises);
-    return expr.apply(argResults);
-  }
-
-  private async evalExistence(expr: Existence, mapping: Bindings): Promise<Term> {
-    const result = await expr.exists_with(mapping);
-    return transformRDFTermUnsafe(
-      RDFDM.literal(result.toString(), C.make(C.TypeURL.XSD_BOOLEAN)),
-    );
-  }
-
-  // TODO: Remove?
-  private async evalAggregate(expr: Aggregate, _mapping: Bindings): Promise<Term> {
-    return transformRDFTermUnsafe(await expr.aggregate());
+    const result = await this.evaluator.evaluate(this.expr, mapping);
+    return log(result);
   }
 }
 

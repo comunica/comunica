@@ -1,15 +1,21 @@
 import { Map } from 'immutable';
+import * as URI from 'uri-js';
 
 import * as E from '../expressions';
 import * as C from '../util/Consts';
 import * as Err from '../util/Errors';
 
 import { Bindings } from '../Types';
-import { bool, langString, string } from './Helpers';
+import { bool, langString, string, typeCheckLit } from './Helpers';
 import { regularFunctions, specialFunctions } from './index';
+import uuid = require('uuid');
 
 type Term = E.TermExpression;
 type PTerm = Promise<E.TermExpression>;
+
+// ----------------------------------------------------------------------------
+// Functional forms
+// ----------------------------------------------------------------------------
 
 function _bound({ args, mapping }: { args: E.Expression[], mapping: Bindings }) {
   const variable = args[0] as E.VariableExpression;
@@ -172,21 +178,21 @@ const sameTerm = {
 const inSPARQL = {
   arity: Infinity,
   checkArity(args: E.Expression[]) { return args.length >= 1; },
-  async applyAsync({ args, mapping, evaluate }: E.EvalContextAsync): PTerm {
+  async applyAsync({ args, mapping, evaluate, context }: E.EvalContextAsync): PTerm {
     const [leftExpr, ...remaining] = args;
     const left = await evaluate(leftExpr, mapping);
-    return inRecursiveAsync(left, { args: remaining, mapping, evaluate }, []);
+    return inRecursiveAsync(left, { args: remaining, mapping, evaluate, context }, []);
   },
-  applySync({ args, mapping, evaluate }: E.EvalContextSync): Term {
+  applySync({ args, mapping, evaluate, context }: E.EvalContextSync): Term {
     const [leftExpr, ...remaining] = args;
     const left = evaluate(leftExpr, mapping);
-    return inRecursiveSync(left, { args: remaining, mapping, evaluate }, []);
+    return inRecursiveSync(left, { args: remaining, mapping, evaluate, context }, []);
   },
 };
 
 async function inRecursiveAsync(
   needle: Term,
-  { args, mapping, evaluate }: E.EvalContextAsync,
+  { args, mapping, evaluate, context }: E.EvalContextAsync,
   results: Array<Error | false>,
 ): PTerm {
 
@@ -201,16 +207,16 @@ async function inRecursiveAsync(
     if ((isEqual.apply([needle, next]) as E.BooleanLiteral).typedValue === true) {
       return bool(true);
     } else {
-      return inRecursiveAsync(needle, { args, mapping, evaluate }, [...results, false]);
+      return inRecursiveAsync(needle, { args, mapping, evaluate, context }, [...results, false]);
     }
   } catch (err) {
-    return inRecursiveAsync(needle, { args, mapping, evaluate }, [...results, err]);
+    return inRecursiveAsync(needle, { args, mapping, evaluate, context }, [...results, err]);
   }
 }
 
 function inRecursiveSync(
   needle: Term,
-  { args, mapping, evaluate }: E.EvalContextSync,
+  { args, mapping, evaluate, context }: E.EvalContextSync,
   results: Array<Error | false>,
 ): Term {
 
@@ -229,10 +235,10 @@ function inRecursiveSync(
     if ((isEqual.apply([needle, next]) as E.BooleanLiteral).typedValue === true) {
       return bool(true);
     } else {
-      return inRecursiveSync(needle, { args, mapping, evaluate }, [...results, false]);
+      return inRecursiveSync(needle, { args, mapping, evaluate, context }, [...results, false]);
     }
   } catch (err) {
-    return inRecursiveSync(needle, { args, mapping, evaluate }, [...results, err]);
+    return inRecursiveSync(needle, { args, mapping, evaluate, context }, [...results, err]);
   }
 }
 
@@ -252,32 +258,18 @@ const notInSPARQL = {
   },
 };
 
+// ----------------------------------------------------------------------------
+// Annoying functions
+// ----------------------------------------------------------------------------
+
 // CONCAT
-function typeCheckConcatArg(term: Term, args: E.Expression[]): E.Literal<string> | never {
-  if (term.termType !== 'literal') {
-    throw new Err.InvalidArgumentTypes(args, C.SpecialOperator.CONCAT);
-  }
-
-  // tslint:disable-next-line:no-any
-  const lit = term as E.Literal<any>;
-
-  if (lit.type !== 'string' && lit.type !== 'langString') {
-    throw new Err.InvalidArgumentTypes(args, C.SpecialOperator.CONCAT);
-  }
-
-  return lit as E.Literal<string>;
-}
-
-function langAllEqual(lits: Array<E.Literal<string>>): boolean {
-  return lits.length > 0 && lits.every((lit) => lit.language === lits[0].language);
-}
-
 const concat = {
   arity: Infinity,
   async applyAsync({ args, evaluate, mapping }: E.EvalContextAsync): PTerm {
     const pLits = args
       .map(async (expr) => evaluate(expr, mapping))
-      .map(async (pTerm) => typeCheckConcatArg(await pTerm, args));
+      .map(async (pTerm) =>
+        typeCheckLit<string>(await pTerm, ['string', 'langString'], args, C.SpecialOperator.CONCAT));
     const lits = await Promise.all(pLits);
     const strings = lits.map((lit) => lit.typedValue);
     const joined = strings.join('');
@@ -288,13 +280,96 @@ const concat = {
   applySync({ args, evaluate, mapping }: E.EvalContextSync): Term {
     const lits = args
       .map((expr) => evaluate(expr, mapping))
-      .map((pTerm) => typeCheckConcatArg(pTerm, args));
+      .map((pTerm) => typeCheckLit<string>(pTerm, ['string', 'langString'], args, C.SpecialOperator.CONCAT));
     const strings = lits.map((lit) => lit.typedValue);
     const joined = strings.join('');
     const lang = langAllEqual(lits) ? lits[0].language : undefined;
     return (lang) ? langString(joined, lang) : string(joined);
   },
 };
+
+function langAllEqual(lits: Array<E.Literal<string>>): boolean {
+  return lits.length > 0 && lits.every((lit) => lit.language === lits[0].language);
+}
+
+// ----------------------------------------------------------------------------
+// Context dependant functions
+// ----------------------------------------------------------------------------
+
+const now = {
+  arity: 0,
+  async applyAsync({ context }: E.EvalContextAsync): PTerm {
+    return new E.DateTimeLiteral(context.now, context.now.toUTCString());
+  },
+  applySync({ context }: E.EvalContextSync): Term {
+    return new E.DateTimeLiteral(context.now, context.now.toUTCString());
+  },
+};
+
+// https://www.w3.org/TR/sparql11-query/#func-iri
+const IRI = {
+  arity: 1,
+  async applyAsync({ args, evaluate, mapping, context }: E.EvalContextAsync): PTerm {
+    const input = await evaluate(args[0], mapping);
+    return IRI_(input, context.baseIRI, args);
+  },
+  applySync({ args, evaluate, mapping, context }: E.EvalContextSync): Term {
+    const input = evaluate(args[0], mapping);
+    return IRI_(input, context.baseIRI, args);
+  },
+};
+
+function IRI_(input: Term, baseIRI: string | undefined, args: E.Expression[]): Term {
+  const lit = (input.termType !== 'namedNode')
+    ? typeCheckLit<string>(input, ['string'], args, C.SpecialOperator.IRI)
+    : input as E.NamedNode;
+
+  const iri = URI.resolve(baseIRI || '', lit.str());
+  return new E.NamedNode(iri);
+}
+
+// https://www.w3.org/TR/sparql11-query/#func-bnode
+// id has to be distinct over all id's in dataset
+const BNODE = {
+  arity: Infinity,
+  checkArity(args: E.Expression[]) { return args.length === 0 || args.length === 1; },
+  async applyAsync({ args, evaluate, mapping, context }: E.EvalContextAsync): PTerm {
+    const input = (args.length === 1)
+      ? await evaluate(args[0], mapping)
+      : undefined;
+
+    const strInput = (input)
+      ? typeCheckLit(input, ['string'], args, C.SpecialOperator.BNODE).str()
+      : undefined;
+
+    if (context.bnode) {
+      const bnode = await context.bnode(strInput);
+      return new E.BlankNode(bnode.value);
+    }
+
+    return BNODE_(strInput);
+  },
+  applySync({ args, evaluate, mapping, context }: E.EvalContextSync): Term {
+    const input = (args.length === 1)
+      ? evaluate(args[0], mapping)
+      : undefined;
+
+    const strInput = (input)
+      ? typeCheckLit(input, ['string'], args, C.SpecialOperator.BNODE).str()
+      : undefined;
+
+    if (context.bnode) {
+      const bnode = context.bnode(strInput);
+      return new E.BlankNode(bnode.value);
+    }
+
+    return BNODE_(strInput);
+  },
+};
+
+function BNODE_(input?: string): E.BlankNode {
+  return new E.BlankNode('blank_' + uuid.v4());
+}
 
 // ----------------------------------------------------------------------------
 // Wrap these declarations into functions
@@ -323,6 +398,12 @@ const _specialDefinitions: { [key in C.SpecialOperator]: SpecialDefinition } = {
 
   // Annoying functions
   'concat': concat,
+
+  // Context dependent functions
+  'now': now,
+  'iri': IRI,
+  'uri': IRI,
+  'BNODE': BNODE,
 };
 
 export const specialDefinitions = Map<C.SpecialOperator, SpecialDefinition>(_specialDefinitions);

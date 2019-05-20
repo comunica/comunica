@@ -21,13 +21,17 @@ export function Bindings(hash: { [key: string]: RDF.Term }): Bindings {
   return Map(hash);
 }
 
-export type Hooks = {
-  existence?: ExistenceHook;
-  aggregate?: AggregateHook;
-  namedFunc?: NamedFuncHook;
-};
+export interface ExpressionEvaluator<ExpressionType, TermType> {
+  evaluate(expr: ExpressionType, mapping: Bindings): TermType;
+}
 
-// TODO: Document
-export type NamedFuncHook = (expression: Alg.NamedExpression) => Promise<RDF.Term>;
-export type AggregateHook = (expression: Alg.AggregateExpression) => Promise<RDF.Term>;
-export type ExistenceHook = (expression: Alg.ExistenceExpression, mapping: Bindings) => Promise<boolean>;
+// export type Hooks = {
+//   existence?: ExistenceHook;
+//   aggregate?: AggregateHook;
+//   namedFunc?: NamedFuncHook;
+// };
+
+// // TODO: Document
+// export type NamedFuncHook = (expression: Alg.NamedExpression) => Promise<RDF.Term>;
+// export type AggregateHook = (expression: Alg.AggregateExpression) => Promise<RDF.Term>;
+// export type ExistenceHook = (expression: Alg.ExistenceExpression, mapping: Bindings) => Promise<boolean>;
