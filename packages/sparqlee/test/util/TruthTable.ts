@@ -1,7 +1,7 @@
 import * as RDF from 'rdf-js';
 
-import { stringToTerm, termToString } from 'rdf-string';
-import { evaluate } from '../../util/Util';
+import { termToString } from 'rdf-string';
+import { evaluate } from '../util/utils';
 
 /*
  * Maps short strings to longer RDF term-literals for easy use in making
