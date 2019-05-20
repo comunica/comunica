@@ -15,7 +15,7 @@ import { number, string } from '../functions/Helpers';
 import { Bindings } from '../Types';
 import { parseXSDFloat } from '../util/Parsing';
 import { SetFunction, TypeURL } from './../util/Consts';
-import { SyncEvaluator } from './SyncEvaluator';
+import { SyncEvaluator, SyncEvaluatorConfig } from './SyncEvaluator';
 
 // TODO: Support hooks
 export class AggregateEvaluator {
@@ -25,22 +25,11 @@ export class AggregateEvaluator {
   private throwError = false;
   private state: any;
 
-  constructor(expr: Algebra.AggregateExpression, start: Bindings, throwError?: boolean) {
+  constructor(expr: Algebra.AggregateExpression, config?: SyncEvaluatorConfig, throwError?: boolean) {
     this.expression = expr;
-    this.evaluator = new SyncEvaluator(expr.expression);
+    this.evaluator = new SyncEvaluator(expr.expression, config);
     this.aggregator = new aggregators[expr.aggregator as SetFunction](expr);
     this.throwError = throwError;
-    try {
-      const startTerm = this.evaluator.evaluate(start);
-      this.state = this.aggregator.init(startTerm);
-    } catch (err) {
-      if (throwError) {
-        throw err;
-      } else {
-        this.put = () => { return; };
-        this.result = () => undefined;
-      }
-    }
   }
 
   /**
@@ -52,11 +41,11 @@ export class AggregateEvaluator {
    * @param throwError wether this function should respect the spec and throw an error if no empty value is defined
    */
   static emptyValue(expr: Algebra.AggregateExpression, throwError = false): RDF.Term {
-    if (throwError) {
+    const val = aggregators[expr.aggregator as SetFunction].emptyValue();
+    if (val === undefined && throwError) {
       throw new Err.EmptyAggregateError();
-    } else {
-      return aggregators[expr.aggregator as SetFunction].emptyValue();
     }
+    return val;
   }
 
   /**
@@ -64,24 +53,64 @@ export class AggregateEvaluator {
    *
    * If any binding evaluation errors, the corresponding aggregate variable should be unbound.
    * If this happens, calling @see result() will return @constant undefined
-   * @param bindings the bindings to pass tho the expression
+   *
+   * @param bindings the bindings to pass to the expression
    */
   put(bindings: Bindings): void {
-    try {
-      const term = this.evaluator.evaluate(bindings);
-      this.state = this.aggregator.put(this.state, term);
-    } catch (err) {
-      if (this.throwError) {
-        throw err;
-      } else {
-        this.put = () => { return; };
-        this.result = () => undefined;
-      }
+    this.init(bindings);
+    if (this.state) {
+      this.put = this.__put;
+      this.result = this.__result;
     }
   }
 
   result(): RDF.Term {
+    return (this.aggregator.constructor as AggregatorClass).emptyValue();
+  }
+
+  /**
+   * The actual put method. When the first binding has been given, and the state
+   * of the evaluators initialised. The .put API function will be replaced with this
+   * function, which implements the behaviour we want.
+   *
+   * @param bindings the bindings to pass to the expression
+   */
+  private __put(bindings: Bindings): void {
+    try {
+      const term = this.evaluator.evaluate(bindings);
+      this.state = this.aggregator.put(this.state, term);
+    } catch (err) {
+      this.safeThrow(err);
+    }
+  }
+
+  /**
+   * The actual result method. When the first binding has been given, and the state
+   * of the evaluators initialised. The .result API function will be replaced with this
+   * function, which implements the behaviour we want.
+   *
+   * @param bindings the bindings to pass to the expression
+   */
+  private __result(): RDF.Term {
     return this.aggregator.result(this.state);
+  }
+
+  private init(start: Bindings): void {
+    try {
+      const startTerm = this.evaluator.evaluate(start);
+      this.state = this.aggregator.init(startTerm);
+    } catch (err) {
+      this.safeThrow(err);
+    }
+  }
+
+  private safeThrow(err: Error): void {
+    if (this.throwError) {
+      throw err;
+    } else {
+      this.put = () => { return; };
+      this.result = () => undefined;
+    }
   }
 }
 

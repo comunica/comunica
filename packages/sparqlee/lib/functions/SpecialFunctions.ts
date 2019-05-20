@@ -1,5 +1,6 @@
 import { Map } from 'immutable';
 import * as URI from 'uri-js';
+import * as uuid from 'uuid';
 
 import * as E from '../expressions';
 import * as C from '../util/Consts';
@@ -8,7 +9,6 @@ import * as Err from '../util/Errors';
 import { Bindings } from '../Types';
 import { bool, langString, string, typeCheckLit } from './Helpers';
 import { regularFunctions, specialFunctions } from './index';
-import uuid = require('uuid');
 
 type Term = E.TermExpression;
 type PTerm = Promise<E.TermExpression>;

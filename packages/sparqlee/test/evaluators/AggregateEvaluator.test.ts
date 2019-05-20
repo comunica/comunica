@@ -11,8 +11,8 @@ function testCase({ expr, input, throwError }: TestCaseArgs): RDF.Term {
   if (input.length === 0) {
     return AggregateEvaluator.emptyValue(expr, throwError || false);
   } else {
-    const evaluator = new AggregateEvaluator(expr, input[0], throwError || false);
-    input.slice(1).forEach((bindings) => evaluator.put(bindings));
+    const evaluator = new AggregateEvaluator(expr, undefined, throwError || false);
+    input.forEach((bindings) => evaluator.put(bindings));
     return evaluator.result();
   }
 }
