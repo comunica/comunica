@@ -2,13 +2,31 @@
 import { literal, variable } from "@rdfjs/data-model";
 import { ArrayIterator } from "asynciterator";
 import { Map } from "immutable";
-import { Algebra, Factory } from "sparqlalgebrajs";
+import { Algebra, Factory, translate } from "sparqlalgebrajs";
 import * as sparqlee from "sparqlee";
 const arrayifyStream = require('arrayify-stream');
 
+import { KEY_CONTEXT_BASEIRI } from "@comunica/actor-init-sparql/index-browser";
 import { ActorQueryOperation, Bindings, IActorQueryOperationOutputBindings } from "@comunica/bus-query-operation";
 import { Bus } from "@comunica/core";
 import { ActorQueryOperationFilterSparqlee } from "../lib/ActorQueryOperationFilterSparqlee";
+
+function template(expr: string) {
+  return `
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX fn: <https://www.w3.org/TR/xpath-functions#>
+PREFIX err: <http://www.w3.org/2005/xqt-errors#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+SELECT * WHERE { ?s ?p ?o FILTER (${expr})}
+`;
+}
+
+function parse(query: string): Algebra.Expression {
+  const sparqlQuery = translate(template(query));
+  // Extract filter expression from complete query
+  return sparqlQuery.input.expression;
+}
 
 describe('ActorQueryOperationFilterSparqlee', () => {
   let bus;
@@ -18,38 +36,13 @@ describe('ActorQueryOperationFilterSparqlee', () => {
     variable('p'),
     variable('o'),
   )]);
-  const truthyExpression = {
-    expressionType: 'term',
-    term: literal("nonemptystring"),
-    type: 'expression',
-  };
-  const falsyExpression = {
-    expressionType: 'term',
-    term: literal(""),
-    type: 'expression',
-  };
-  const erroringExpression = {
-    type: "expression",
-    expressionType: "operator",
-    operator: "+",
-    args: [
-      {
-        type: "expression",
-        expressionType: "term",
-        term: variable('a'),
-      },
-      {
-        type: "expression",
-        expressionType: "term",
-        term: variable('a'),
-      },
-    ],
-  };
+  const truthyExpression = parse('"nonemptystring"');
+  const falsyExpression = parse('""');
+  const erroringExpression = parse('?a + ?a');
   const unknownExpression = {
     args: [],
-    expressionType: 'term',
+    expressionType: 'operator',
     operator: 'DUMMY',
-    type: 'operator',
   };
 
   beforeEach(() => {
@@ -146,6 +139,23 @@ describe('ActorQueryOperationFilterSparqlee', () => {
       const op = { operation: { type: 'filter', input: {}, expression: erroringExpression } };
       const output: IActorQueryOperationOutputBindings = await actor.run(op) as any;
       output.bindingsStream.on('error', () => next());
+    });
+
+    it('should use and respect the baseIRI from the expression context', async () => {
+      const expression = parse('str(IRI(?a)) = concat("http://example.com/", ?a)');
+      const context = Map({
+        [KEY_CONTEXT_BASEIRI]: "http://example.com",
+      });
+      const op = { operation: { type: 'filter', input: {}, expression }, context };
+      const output: IActorQueryOperationOutputBindings = await actor.run(op) as any;
+      expect(await arrayifyStream(output.bindingsStream)).toMatchObject([
+        Bindings({ '?a': literal('1') }),
+        Bindings({ '?a': literal('2') }),
+        Bindings({ '?a': literal('3') }),
+      ]);
+      expect(output.type).toEqual('bindings');
+      expect(output.metadata()).toMatchObject(Promise.resolve({ totalItems: 3 }));
+      expect(output.variables).toMatchObject(['a']);
     });
 
     describe('should be able to handle EXIST filters', () => {

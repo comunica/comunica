@@ -1,8 +1,10 @@
-import {Actor, IAction, IActorArgs, IActorTest} from "@comunica/core";
-import {AsyncIterator} from "asynciterator";
+import { AsyncIterator } from "asynciterator";
 import * as RDF from "rdf-js";
-import {Algebra} from "sparqlalgebrajs";
-import {BindingsStream} from "./Bindings";
+import { Algebra } from "sparqlalgebrajs";
+
+import { KEY_CONTEXT_BASEIRI } from "@comunica/actor-init-sparql/index-browser";
+import { ActionContext, Actor, IAction, IActorArgs, IActorTest } from "@comunica/core";
+import { BindingsStream } from "./Bindings";
 
 /**
  * A comunica actor for query-operation events.
@@ -75,6 +77,25 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
     }
   }
 
+  public static getExpressionContext(context: ActionContext): IExpressionContext {
+    if (context) {
+      const now = new Date(Date.now());
+      const baseIRI: string | undefined = context.get(KEY_CONTEXT_BASEIRI, undefined);
+      return { now, baseIRI };
+    } else {
+      return {
+        baseIRI: undefined,
+        now: undefined,
+      };
+    }
+  }
+
+}
+
+export interface IExpressionContext {
+  now?: Date;
+  baseIRI?: string;
+  // bnode?: (input?: string) => Promise<RDF.BlankNode>;
 }
 
 export interface IActionQueryOperation extends IAction {

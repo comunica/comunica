@@ -34,7 +34,11 @@ export class ActorQueryOperationFilterSparqlee extends ActorQueryOperationTypedM
     ActorQueryOperation.validateQueryOutput(output, 'bindings');
     const { variables, metadata } = output;
 
-    const config = { exists: this.createExistenceResolver(context) };
+    const expressionContext = ActorQueryOperation.getExpressionContext(context);
+    const config = {
+      ...expressionContext,
+      exists: this.createExistenceResolver(context),
+    };
     const evaluator = new AsyncEvaluator(pattern.expression, config);
 
     const transform = async (item: Bindings, next: any) => {
