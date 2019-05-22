@@ -136,7 +136,6 @@ export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs {
     let baseIRI: string;
     if (context && context.has(KEY_CONTEXT_BASEIRI)) {
       baseIRI = context.get(KEY_CONTEXT_BASEIRI);
-      context = context.delete(KEY_CONTEXT_BASEIRI);
     }
     let operation: Algebra.Operation = (await this.mediatorSparqlParse.mediate(
       { context, query, queryFormat, baseIRI })).operation;
