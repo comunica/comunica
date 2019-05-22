@@ -2,7 +2,7 @@ import { AsyncIterator } from "asynciterator";
 import * as RDF from "rdf-js";
 import { Algebra } from "sparqlalgebrajs";
 
-import { KEY_CONTEXT_BASEIRI } from "@comunica/actor-init-sparql/index-browser";
+import { KEY_CONTEXT_BASEIRI, KEY_CONTEXT_QUERY_TIMESTAMP } from "@comunica/actor-init-sparql/index-browser";
 import { ActionContext, Actor, IAction, IActorArgs, IActorTest } from "@comunica/core";
 import { BindingsStream } from "./Bindings";
 
@@ -79,7 +79,7 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
 
   public static getExpressionContext(context: ActionContext): IExpressionContext {
     if (context) {
-      const now = new Date(Date.now());
+      const now: Date | undefined = context.get(KEY_CONTEXT_QUERY_TIMESTAMP, undefined);
       const baseIRI: string | undefined = context.get(KEY_CONTEXT_BASEIRI, undefined);
       return { now, baseIRI };
     } else {

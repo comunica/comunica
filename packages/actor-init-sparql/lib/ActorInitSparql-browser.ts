@@ -117,6 +117,10 @@ export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs {
       context[KEY_CONTEXT_LOG] = this.logger;
     }
 
+    if (!context[KEY_CONTEXT_QUERY_TIMESTAMP]) {
+      context[KEY_CONTEXT_QUERY_TIMESTAMP] = new Date(Date.now());
+    }
+
     // Ensure sources are an async re-iterable
     if (Array.isArray(context[KEY_CONTEXT_SOURCES])) {
       context[KEY_CONTEXT_SOURCES] = AsyncReiterableArray.fromFixedData(context[KEY_CONTEXT_SOURCES]);
@@ -235,3 +239,4 @@ export interface IActorInitSparqlArgs extends IActorArgs<IActionInit, IActorTest
 export const KEY_CONTEXT_INITIALBINDINGS: string = '@comunica/actor-init-sparql:initialBindings';
 export const KEY_CONTEXT_QUERYFORMAT: string = '@comunica/actor-init-sparql:queryFormat';
 export const KEY_CONTEXT_BASEIRI: string = '@comunica/actor-init-sparql:baseIRI';
+export const KEY_CONTEXT_QUERY_TIMESTAMP: string = '@comunica/actor-init-sparql:queryTimestamp';
