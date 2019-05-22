@@ -46,10 +46,12 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
       .map(termToString)
       .concat(aggregates.map((agg) => termToString(agg.variable)));
 
+    const sparqleeConfig = { ...ActorQueryOperation.getExpressionContext(context) };
+
     // Return a new promise that completes when the stream has ended or when
     // an error occurs
     return new Promise((resolve, reject) => {
-      const groups = new GroupsState(pattern);
+      const groups = new GroupsState(pattern, sparqleeConfig);
 
       // Phase 2: Collect aggregator results
       // We can only return when the binding stream ends, when that happens
