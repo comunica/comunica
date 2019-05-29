@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-source-identifier-file-content-type",
-  "version": "1.7.1",
+  "version": "1.7.4",
   "description": "A file-content-type rdf-source-identifier actor",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-source-identifier-file-content-type",
   "lsd:components": "components/components.jsonld",

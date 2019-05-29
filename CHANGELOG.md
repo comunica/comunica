@@ -1,6 +1,13 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v1.7.4"></a>
+## [v1.7.4](https://github.com/comunica/comunica/compare/v1.7.3...v1.7.4) - 2019-05-29
+
+### Fixed
+* [Fix RDF source identifier joining content types incorrectly](https://github.com/comunica/comunica/commit/7c7c2a1aac8c3e5f170875e2abd6030ff1f7974e)
+* [Allow JSON-LD context to appear out-of-order](https://github.com/comunica/comunica/commit/2b4aa85885161f9def16828348b2537c60dd359e)
+
 <a name="v1.7.3"></a>
 ## [v1.7.3](https://github.com/comunica/comunica/compare/v1.7.2...v1.7.3) - 2019-05-09
 

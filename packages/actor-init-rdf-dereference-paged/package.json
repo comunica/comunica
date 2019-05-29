@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-init-rdf-dereference-paged",
-  "version": "1.7.2",
+  "version": "1.7.4",
   "description": "A Comunica engine for paging through RDF resources",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-rdf-dereference-paged",
   "lsd:components": "components/components.jsonld",
@@ -50,7 +50,7 @@
     "@comunica/actor-rdf-metadata-extract-hydra-count": "^1.6.3",
     "@comunica/actor-rdf-metadata-primary-topic": "^1.6.3",
     "@comunica/actor-rdf-metadata-triple-predicate": "^1.6.3",
-    "@comunica/actor-rdf-parse-jsonld": "^1.7.1",
+    "@comunica/actor-rdf-parse-jsonld": "^1.7.4",
     "@comunica/actor-rdf-parse-n3": "^1.7.1",
     "@comunica/bus-http": "^1.7.1",
     "@comunica/bus-init": "^1.6.3",
