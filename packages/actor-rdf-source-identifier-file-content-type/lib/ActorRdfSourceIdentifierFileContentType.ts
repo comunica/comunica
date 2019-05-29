@@ -22,7 +22,7 @@ export class ActorRdfSourceIdentifierFileContentType extends ActorRdfSourceIdent
   public async test(action: IActionRdfSourceIdentifier): Promise<IMediatorTypePriority> {
     const sourceUrl = this.getSourceUrl(action);
     const headers: Headers = new Headers();
-    headers.append('Accept', this.allowedMediaTypes.join(';'));
+    headers.append('Accept', this.allowedMediaTypes.join(','));
     const httpAction: IActionHttp = { context: action.context,
       init: { headers, method: 'HEAD' }, input: sourceUrl};
     const httpResponse: IActorHttpOutput = await this.mediatorHttp.mediate(httpAction);
