@@ -17,7 +17,8 @@ export class ActorRdfParseJsonLd extends ActorRdfParseFixedMediaTypes {
 
   public async runHandle(action: IActionRdfParse, mediaType: string, context: ActionContext)
     : Promise<IActorRdfParseOutput> {
-    const quads: RDF.Stream = <any> new JsonLdParser({ baseIRI: action.baseIRI }).import(action.input);
+    const quads: RDF.Stream = <any> new JsonLdParser({ baseIRI: action.baseIRI, allowOutOfOrderContext: true })
+      .import(action.input);
     return { quads };
   }
 
