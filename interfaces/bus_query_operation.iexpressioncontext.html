@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>actor-http-memento | Comunica</title>
+	<title>IExpressionContext | Comunica</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -56,65 +56,62 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="actor_http_memento.html">actor-http-memento</a>
+					<a href="../modules/bus_query_operation.html">bus-query-operation</a>
+				</li>
+				<li>
+					<a href="bus_query_operation.iexpressioncontext.html">IExpressionContext</a>
 				</li>
 			</ul>
-			<h1>Package actor-http-memento</h1>
+			<h1>Interface IExpressionContext</h1>
 		</div>
 	</div>
 </header>
 <div class="container container-main">
 	<div class="row">
 		<div class="col-8 col-content">
-			<section class="tsd-panel tsd-comment">
-				<div class="tsd-comment tsd-typography">
-					<h1 id="comunica-memento-http-actor">Comunica Memento Http Actor</h1>
-					<p>A comunica Memento Http Actor.</p>
-				</div>
+			<section class="tsd-panel tsd-hierarchy">
+				<h3>Hierarchy</h3>
+				<ul class="tsd-hierarchy">
+					<li>
+						<span class="target">IExpressionContext</span>
+					</li>
+				</ul>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">
 				<h2>Index</h2>
 				<section class="tsd-panel tsd-index-panel">
 					<div class="tsd-index-content">
 						<section class="tsd-index-section ">
-							<h3>Classes</h3>
+							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-class tsd-parent-kind-external-module"><a href="../classes/actor_http_memento.actorhttpmemento.html" class="tsd-kind-icon">Actor<wbr>Http<wbr>Memento</a></li>
-							</ul>
-						</section>
-						<section class="tsd-index-section ">
-							<h3>Interfaces</h3>
-							<ul class="tsd-index-list">
-								<li class="tsd-kind-interface tsd-parent-kind-external-module"><a href="../interfaces/actor_http_memento.iactorhttpmementoargs.html" class="tsd-kind-icon">IActor<wbr>Http<wbr>Memento<wbr>Args</a></li>
-							</ul>
-						</section>
-						<section class="tsd-index-section ">
-							<h3>Variables</h3>
-							<ul class="tsd-index-list">
-								<li class="tsd-kind-variable tsd-parent-kind-external-module"><a href="actor_http_memento.html#key_context_datetime" class="tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>DATETIME</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="bus_query_operation.iexpressioncontext.html#baseiri" class="tsd-kind-icon">baseIRI</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="bus_query_operation.iexpressioncontext.html#now" class="tsd-kind-icon">now</a></li>
 							</ul>
 						</section>
 					</div>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
-				<h2>Variables</h2>
-				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-external-module">
-					<a name="key_context_datetime" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagConst">Const</span> KEY_<wbr>CONTEXT_<wbr>DATETIME</h3>
-					<div class="tsd-signature tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>DATETIME<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"@comunica/actor-http-memento:datetime"</span><span class="tsd-signature-symbol"> =&nbsp;&quot;@comunica/actor-http-memento:datetime&quot;</span></div>
+				<h2>Properties</h2>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="baseiri" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> baseIRI</h3>
+					<div class="tsd-signature tsd-kind-icon">baseIRI<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/8d91e89/packages/actor-http-memento/lib/ActorHttpMemento.ts#L68">packages/actor-http-memento/lib/ActorHttpMemento.ts:68</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/8d91e89/packages/bus-query-operation/lib/ActorQueryOperation.ts#L97">packages/bus-query-operation/lib/ActorQueryOperation.ts:97</a></li>
 						</ul>
 					</aside>
-					<div class="tsd-comment tsd-typography">
-						<dl class="tsd-comment-tags">
-							<dt>type</dt>
-							<dd><p>{string} Context entry for the desired datetime.</p>
-							</dd>
-						</dl>
-					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="now" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> now</h3>
+					<div class="tsd-signature tsd-kind-icon">now<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Date</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/8d91e89/packages/bus-query-operation/lib/ActorQueryOperation.ts#L96">packages/bus-query-operation/lib/ActorQueryOperation.ts:96</a></li>
+						</ul>
+					</aside>
 				</section>
 			</section>
 		</div>
@@ -125,7 +122,7 @@
 						<a href="../globals.html"><em>Globals</em></a>
 					</li>
 					<li class="current tsd-kind-external-module">
-						<a href="actor_http_memento.html">actor-<wbr>http-<wbr>memento</a>
+						<a href="../modules/bus_query_operation.html">bus-<wbr>query-<wbr>operation</a>
 					</li>
 				</ul>
 			</nav>
@@ -134,16 +131,69 @@
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-external-module">
-						<a href="actor_http_memento.html" class="tsd-kind-icon">actor-<wbr>http-<wbr>memento</a>
+						<a href="../modules/bus_query_operation.html" class="tsd-kind-icon">bus-<wbr>query-<wbr>operation</a>
 						<ul>
 							<li class=" tsd-kind-class tsd-parent-kind-external-module">
-								<a href="../classes/actor_http_memento.actorhttpmemento.html" class="tsd-kind-icon">Actor<wbr>Http<wbr>Memento</a>
+								<a href="../classes/bus_query_operation.actorqueryoperation.html" class="tsd-kind-icon">Actor<wbr>Query<wbr>Operation</a>
+							</li>
+							<li class=" tsd-kind-class tsd-parent-kind-external-module tsd-has-type-parameter">
+								<a href="../classes/bus_query_operation.actorqueryoperationtyped.html" class="tsd-kind-icon">Actor<wbr>Query<wbr>Operation<wbr>Typed</a>
+							</li>
+							<li class=" tsd-kind-class tsd-parent-kind-external-module tsd-has-type-parameter">
+								<a href="../classes/bus_query_operation.actorqueryoperationtypedmediated.html" class="tsd-kind-icon">Actor<wbr>Query<wbr>Operation<wbr>Typed<wbr>Mediated</a>
 							</li>
 							<li class=" tsd-kind-interface tsd-parent-kind-external-module">
-								<a href="../interfaces/actor_http_memento.iactorhttpmementoargs.html" class="tsd-kind-icon">IActor<wbr>Http<wbr>Memento<wbr>Args</a>
+								<a href="bus_query_operation.iactionqueryoperation.html" class="tsd-kind-icon">IAction<wbr>Query<wbr>Operation</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-external-module">
+								<a href="bus_query_operation.iactorqueryoperationoutput.html" class="tsd-kind-icon">IActor<wbr>Query<wbr>Operation<wbr>Output</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-external-module">
+								<a href="bus_query_operation.iactorqueryoperationoutputbindings.html" class="tsd-kind-icon">IActor<wbr>Query<wbr>Operation<wbr>Output<wbr>Bindings</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-external-module">
+								<a href="bus_query_operation.iactorqueryoperationoutputboolean.html" class="tsd-kind-icon">IActor<wbr>Query<wbr>Operation<wbr>Output<wbr>Boolean</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-external-module">
+								<a href="bus_query_operation.iactorqueryoperationoutputquads.html" class="tsd-kind-icon">IActor<wbr>Query<wbr>Operation<wbr>Output<wbr>Quads</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-external-module">
+								<a href="bus_query_operation.iactorqueryoperationoutputstream.html" class="tsd-kind-icon">IActor<wbr>Query<wbr>Operation<wbr>Output<wbr>Stream</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-external-module">
+								<a href="bus_query_operation.iactorqueryoperationtypedmediatedargs.html" class="tsd-kind-icon">IActor<wbr>Query<wbr>Operation<wbr>Typed<wbr>Mediated<wbr>Args</a>
+							</li>
+							<li class="current tsd-kind-interface tsd-parent-kind-external-module">
+								<a href="bus_query_operation.iexpressioncontext.html" class="tsd-kind-icon">IExpression<wbr>Context</a>
+								<ul>
+									<li class=" tsd-kind-property tsd-parent-kind-interface">
+										<a href="bus_query_operation.iexpressioncontext.html#baseiri" class="tsd-kind-icon">baseIRI</a>
+									</li>
+									<li class=" tsd-kind-property tsd-parent-kind-interface">
+										<a href="bus_query_operation.iexpressioncontext.html#now" class="tsd-kind-icon">now</a>
+									</li>
+								</ul>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-external-module">
+								<a href="bus_query_operation.ipatternbindings.html" class="tsd-kind-icon">IPattern<wbr>Bindings</a>
+							</li>
+							<li class=" tsd-kind-type-alias tsd-parent-kind-external-module">
+								<a href="../modules/bus_query_operation.html#bindings" class="tsd-kind-icon">Bindings</a>
+							</li>
+							<li class=" tsd-kind-type-alias tsd-parent-kind-external-module">
+								<a href="../modules/bus_query_operation.html#bindingsstream" class="tsd-kind-icon">Bindings<wbr>Stream</a>
 							</li>
 							<li class=" tsd-kind-variable tsd-parent-kind-external-module">
-								<a href="actor_http_memento.html#key_context_datetime" class="tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>DATETIME</a>
+								<a href="../modules/bus_query_operation.html#key_context_bgp_currentmetadata" class="tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>BGP_<wbr>CURRENTMETADATA</a>
+							</li>
+							<li class=" tsd-kind-variable tsd-parent-kind-external-module">
+								<a href="../modules/bus_query_operation.html#key_context_bgp_parentmetadata" class="tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>BGP_<wbr>PARENTMETADATA</a>
+							</li>
+							<li class=" tsd-kind-variable tsd-parent-kind-external-module">
+								<a href="../modules/bus_query_operation.html#key_context_bgp_patternbindings" class="tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>BGP_<wbr>PATTERNBINDINGS</a>
+							</li>
+							<li class=" tsd-kind-variable tsd-parent-kind-external-module">
+								<a href="../modules/bus_query_operation.html#key_context_pattern_parentmetadata" class="tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>PATTERN_<wbr>PARENTMETADATA</a>
 							</li>
 						</ul>
 					</li>
