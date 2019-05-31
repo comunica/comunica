@@ -38,6 +38,7 @@ export class ActorQueryOperationOrderBySparqlee extends ActorQueryOperationTyped
     const output = ActorQueryOperation.getSafeBindings(outputRaw);
 
     const options = { window: this.window };
+    const sparqleeConfig = { ...ActorQueryOperation.getExpressionContext(context) };
     let bindingsStream = output.bindingsStream;
 
     for (let expr of pattern.expressions) {
@@ -45,7 +46,7 @@ export class ActorQueryOperationOrderBySparqlee extends ActorQueryOperationTyped
       expr = this.extractSortExpression(expr);
 
       // Transform the stream by annotating it with the expr result
-      const evaluator = new AsyncEvaluator(expr);
+      const evaluator = new AsyncEvaluator(expr, sparqleeConfig);
       interface IAnnotatedBinding { bindings: Bindings; result: Term; }
       const transform = async (bindings: Bindings, next: any) => {
         try {

@@ -1,7 +1,7 @@
 import { Term } from 'rdf-js';
 import { termToString } from 'rdf-string';
 import { Algebra } from 'sparqlalgebrajs';
-import { AggregateEvaluator } from 'sparqlee';
+import { AggregateEvaluator, SyncEvaluatorConfig } from 'sparqlee';
 
 import { AbstractBindingHash } from '@comunica/actor-abstract-bindings-hash';
 import { Bindings } from '@comunica/bus-query-operation';
@@ -31,7 +31,7 @@ export class GroupsState {
   private groupVariables: Set<string>;
   private distinctHashes: null | Map<BindingsHash, Set<BindingsHash>>;
 
-  constructor(private pattern: Algebra.Group) {
+  constructor(private pattern: Algebra.Group, private sparqleeConfig: SyncEvaluatorConfig) {
     this.groups = new Map();
     this.groupVariables = new Set(this.pattern.variables.map(termToString));
     this.distinctHashes = pattern.aggregates.some(({ distinct }) => distinct)
@@ -60,7 +60,8 @@ export class GroupsState {
       for (const i in this.pattern.aggregates) {
         const aggregate = this.pattern.aggregates[i];
         const key = termToString(aggregate.variable);
-        aggregators[key] = new AggregateEvaluator(aggregate, bindings);
+        aggregators[key] = new AggregateEvaluator(aggregate, this.sparqleeConfig);
+        aggregators[key].put(bindings);
       }
 
       const group: IGroup = { aggregators, bindings: grouper };

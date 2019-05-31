@@ -1,10 +1,8 @@
 // tslint:disable:object-literal-sort-keys
 import { literal, namedNode, variable } from "@rdfjs/data-model";
 import { ArrayIterator } from "asynciterator";
-import { Variable } from "rdf-js";
 import { Algebra } from 'sparqlalgebrajs';
 const arrayifyStream = require('arrayify-stream');
-import * as sparqlee from "sparqlee";
 
 import { ActorQueryOperation, Bindings, IActionQueryOperation } from "@comunica/bus-query-operation";
 import { Bus } from "@comunica/core";

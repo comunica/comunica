@@ -105,7 +105,8 @@
             { "contextShortcutKey": "queryFormat",     "contextShortcutValue": "@comunica/actor-init-sparql:queryFormat"        },
             { "contextShortcutKey": "baseIRI",         "contextShortcutValue": "@comunica/actor-init-sparql:baseIRI"            },
             { "contextShortcutKey": "log",             "contextShortcutValue": "@comunica/core:log"                             },
-            { "contextShortcutKey": "datetime",        "contextShortcutValue": "@comunica/actor-http-memento:datetime"          }
+            { "contextShortcutKey": "datetime",        "contextShortcutValue": "@comunica/actor-http-memento:datetime"          },
+            { "contextShortcutKey": "queryTimestamp",  "contextShortcutValue": "@comunica/actor-init-sparql:queryTimestamp"     }
           ]
         }
       ],
