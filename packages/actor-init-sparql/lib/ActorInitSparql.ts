@@ -10,8 +10,14 @@ import * as OS from "os";
 import {Readable} from "stream";
 import {
   ActorInitSparql as ActorInitSparqlBrowser,
-  IActorInitSparqlArgs, KEY_CONTEXT_BASEIRI,
+  IActorInitSparqlArgs, KEY_CONTEXT_BASEIRI, KEY_CONTEXT_QUERYFORMAT,
+} from "./ActorInitSparql-browser";
+
+export {
+  KEY_CONTEXT_INITIALBINDINGS,
   KEY_CONTEXT_QUERYFORMAT,
+  KEY_CONTEXT_BASEIRI,
+  KEY_CONTEXT_QUERY_TIMESTAMP,
 } from "./ActorInitSparql-browser";
 
 /**

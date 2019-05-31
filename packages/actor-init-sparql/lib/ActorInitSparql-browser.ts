@@ -118,7 +118,7 @@ export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs {
     }
 
     if (!context[KEY_CONTEXT_QUERY_TIMESTAMP]) {
-      context[KEY_CONTEXT_QUERY_TIMESTAMP] = new Date(Date.now());
+      context[KEY_CONTEXT_QUERY_TIMESTAMP] = new Date();
     }
 
     // Ensure sources are an async re-iterable
