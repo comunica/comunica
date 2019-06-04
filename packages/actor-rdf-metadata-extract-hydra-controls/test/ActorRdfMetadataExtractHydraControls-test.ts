@@ -410,5 +410,43 @@ describe('ActorRdfMetadataExtractHydraControls', () => {
         },
       } });
     });
+
+    it('should run when the page url is encoded while the page controls are decoded', () => {
+      return expect(actor.run({
+        metadata: stream([
+          quad('du-sacré-coeur', HYDRA + 'next', 'next'),
+          quad('du-sacré-coeur', HYDRA + 'previous', 'previous'),
+          quad('du-sacré-coeur', HYDRA + 'first', 'first'),
+          quad('du-sacré-coeur', HYDRA + 'last', 'last'),
+          quad('dataset', HYDRA + 'search', 'search1'),
+          quad('search1', HYDRA + 'template', 'http://example.org/{?a,b}'),
+          quad('search1', HYDRA + 'mapping', 'mapping1'),
+          quad('search1', HYDRA + 'mapping', 'mapping2'),
+          quad('mapping1', HYDRA + 'variable', 'a'),
+          quad('mapping1', HYDRA + 'property', 'propa'),
+          quad('mapping2', HYDRA + 'variable', 'b'),
+          quad('mapping2', HYDRA + 'property', 'propb'),
+          quad('du-sacré-coeur', 'somethingelse', 'somevalue'),
+        ]), pageUrl: 'du-sacr%C3%A9-coeur' })).resolves.toMatchObject({
+          metadata: {
+            first: 'first',
+            last: 'last',
+            next: 'next',
+            previous: 'previous',
+            searchForms: {
+              values: [
+                {
+                  // getUri,
+                  mappings: {
+                    propa: 'a',
+                    propb: 'b',
+                  },
+                  template: 'http://example.org/{?a,b}',
+                },
+              ],
+            },
+          },
+        });
+    });
   });
 });
