@@ -209,7 +209,7 @@ describe('ActorRdfParseHtml', () => {
         return actor.run(
           { context, handle: { input, baseIRI: '' },
             handleMediaType: 'text/html' })
-          .then(async (output) => expect(await arrayifyStream(output.handle.quads)).toEqualRdfQuadArray([
+          .then(async (output) => expect(await arrayifyStream(output.handle.quads)).toBeRdfIsomorphic([
             quad('http://example.org/a', 'http://example.org/b', '"http://example.org/c"'),
             quad('http://example.org/f', 'http://example.org/g', '"http://example.org/h"'),
             quad('http://example.org/a', 'http://example.org/d', '"http://example.org/e"'),
@@ -280,7 +280,7 @@ describe('ActorRdfParseHtml', () => {
         return actor.run(
           { context, handle: { input, baseIRI: '' },
             handleMediaType: 'text/html' })
-          .then(async (output) => expect(await arrayifyStream(output.handle.quads)).toEqualRdfQuadArray([
+          .then(async (output) => expect(await arrayifyStream(output.handle.quads)).toBeRdfIsomorphic([
             quad("http://example.org/a", "http://example.org/b", "http://example.org/c", ""),
             quad("http://example.org/k", "http://example.org/l", "http://example.org/m", ""),
             quad("http://example.org/a", "http://example.org/d", "http://example.org/e", ""),
