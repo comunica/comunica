@@ -194,6 +194,16 @@ export function ActionContext(hash: {[key: string]: any}): ActionContext {
 }
 
 /**
+ * Convert the given object to an action context object if it is not an action context object yet.
+ * If it already is an action context object, return the object as-is.
+ * @param maybeActionContext Any object.
+ * @return {ActionContext} An action context object.
+ */
+export function ensureActionContext(maybeActionContext: any): ActionContext {
+  return Map.isMap(maybeActionContext) ? maybeActionContext : ActionContext(maybeActionContext);
+}
+
+/**
  * Data interface for the type of action.
  */
 export interface IAction {
