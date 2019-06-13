@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-init-hello-world",
-  "version": "1.6.6",
+  "version": "1.8.0",
   "description": "A Hello World Comunica engine",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-hello-world",
   "lsd:components": "components/components.jsonld",
@@ -37,10 +37,10 @@
     "index.js"
   ],
   "dependencies": {
-    "@comunica/bus-init": "^1.6.3",
-    "@comunica/core": "^1.6.3",
-    "@comunica/runner": "^1.6.6",
-    "@comunica/runner-cli": "^1.6.6",
+    "@comunica/bus-init": "^1.8.0",
+    "@comunica/core": "^1.8.0",
+    "@comunica/runner": "^1.8.0",
+    "@comunica/runner-cli": "^1.8.0",
     "streamify-string": "^1.0.1"
   },
   "jest": {

@@ -1,6 +1,13 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v1.8.0"></a>
+## [v1.8.0](https://github.com/comunica/comunica/compare/v1.7.4...v1.8.0) - 2019-06-13
+
+### Changed
+* [Update sparqlee to 1.0.0](https://github.com/comunica/comunica/commit/8d91e89cf8a900b8c8f60f0a0a418ad4b742b439)
+* [Bump to new GraphQL-LD version](https://github.com/comunica/comunica/commit/3ad1864c0c253a055f3e2f65f043c8fd34cc7329)
+
 <a name="v1.7.4"></a>
 ## [v1.7.4](https://github.com/comunica/comunica/compare/v1.7.3...v1.7.4) - 2019-05-29
 
