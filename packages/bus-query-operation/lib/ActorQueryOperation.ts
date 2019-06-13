@@ -1,12 +1,7 @@
-import { AsyncIterator } from "asynciterator";
+import {ActionContext, Actor, IAction, IActorArgs, IActorTest} from "@comunica/core";
+import {AsyncIterator} from "asynciterator";
 import * as RDF from "rdf-js";
 import { Algebra } from "sparqlalgebrajs";
-
-import {
-  KEY_CONTEXT_BASEIRI,
-  KEY_CONTEXT_QUERY_TIMESTAMP,
-} from "@comunica/actor-init-sparql/lib/ActorInitSparql-browser";
-import { ActionContext, Actor, IAction, IActorArgs, IActorTest } from "@comunica/core";
 import { BindingsStream } from "./Bindings";
 
 /**
@@ -114,6 +109,10 @@ export interface IActorQueryOperationOutput {
    * The type of output.
    */
   type: string;
+  /**
+   * The resulting action context.
+   */
+  context?: ActionContext;
 }
 
 /**
@@ -212,6 +211,17 @@ export const KEY_CONTEXT_BGP_PATTERNBINDINGS: string = '@comunica/bus-query-oper
  * @value {any} A metadata hash.
  */
 export const KEY_CONTEXT_PATTERN_PARENTMETADATA: string = '@comunica/bus-query-operation:patternParentMetadata';
+/**
+ * @type {string} Context entry for query's base IRI.
+ * @value {any} A string.
+ */
+export const KEY_CONTEXT_BASEIRI: string = '@comunica/actor-init-sparql:baseIRI';
+/**
+ * @type {string} A timestamp representing the current time.
+ *                This is required for certain SPARQL operations such as NOW().
+ * @value {any} a date.
+ */
+export const KEY_CONTEXT_QUERY_TIMESTAMP: string = '@comunica/actor-init-sparql:queryTimestamp';
 
 /**
  * Binds a quad pattern term's position to a variable.

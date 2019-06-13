@@ -1,6 +1,6 @@
 export * from './lib/ActorInitSparql';
 export * from './lib/HttpServiceSparqlEndpoint';
-export {newEngine} from './index-browser';
+export {newEngine, evaluateQuery} from './index-browser';
 
 import {ActorInitSparql} from "./lib/ActorInitSparql";
 import {IQueryOptions, newEngineDynamicArged} from "./lib/QueryDynamic";

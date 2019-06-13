@@ -6,8 +6,8 @@ import { Algebra, Factory, translate } from "sparqlalgebrajs";
 import * as sparqlee from "sparqlee";
 const arrayifyStream = require('arrayify-stream');
 
-import { KEY_CONTEXT_BASEIRI } from "@comunica/actor-init-sparql/lib/ActorInitSparql-browser";
-import { ActorQueryOperation, Bindings, IActorQueryOperationOutputBindings } from "@comunica/bus-query-operation";
+import { ActorQueryOperation, Bindings, IActorQueryOperationOutputBindings,
+  KEY_CONTEXT_BASEIRI } from "@comunica/bus-query-operation";
 import { Bus } from "@comunica/core";
 import { ActorQueryOperationFilterSparqlee } from "../lib/ActorQueryOperationFilterSparqlee";
 

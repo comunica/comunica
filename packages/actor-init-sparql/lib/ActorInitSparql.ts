@@ -1,6 +1,6 @@
 import {KEY_CONTEXT_DATETIME} from "@comunica/actor-http-memento";
 import {IActionInit, IActorOutputInit} from "@comunica/bus-init";
-import {IActorQueryOperationOutput} from "@comunica/bus-query-operation";
+import {IActorQueryOperationOutput, KEY_CONTEXT_BASEIRI} from "@comunica/bus-query-operation";
 import {KEY_CONTEXT_SOURCES} from "@comunica/bus-rdf-resolve-quad-pattern";
 import {LoggerPretty} from "@comunica/logger-pretty";
 import {exec} from "child_process";
@@ -10,14 +10,12 @@ import * as OS from "os";
 import {Readable} from "stream";
 import {
   ActorInitSparql as ActorInitSparqlBrowser,
-  IActorInitSparqlArgs, KEY_CONTEXT_BASEIRI, KEY_CONTEXT_QUERYFORMAT,
+  IActorInitSparqlArgs, KEY_CONTEXT_QUERYFORMAT,
 } from "./ActorInitSparql-browser";
 
 export {
   KEY_CONTEXT_INITIALBINDINGS,
   KEY_CONTEXT_QUERYFORMAT,
-  KEY_CONTEXT_BASEIRI,
-  KEY_CONTEXT_QUERY_TIMESTAMP,
 } from "./ActorInitSparql-browser";
 
 /**

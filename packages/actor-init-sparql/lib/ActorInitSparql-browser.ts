@@ -3,7 +3,10 @@ import {IActionHttpInvalidate, IActorHttpInvalidateOutput} from "@comunica/bus-h
 import {ActorInit, IActionInit, IActorOutputInit} from "@comunica/bus-init";
 import {IActionOptimizeQueryOperation,
   IActorOptimizeQueryOperationOutput} from "@comunica/bus-optimize-query-operation";
-import {Bindings, IActionQueryOperation, IActorQueryOperationOutput} from "@comunica/bus-query-operation";
+import {
+  Bindings, ensureBindings, IActionQueryOperation,
+  IActorQueryOperationOutput, KEY_CONTEXT_BASEIRI, KEY_CONTEXT_QUERY_TIMESTAMP
+} from "@comunica/bus-query-operation";
 import {KEY_CONTEXT_SOURCES} from "@comunica/bus-rdf-resolve-quad-pattern";
 import {IActionSparqlParse, IActorSparqlParseOutput} from "@comunica/bus-sparql-parse";
 import {
@@ -98,11 +101,13 @@ export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs {
 
   /**
    * Evaluate the given query
-   * @param {string} query A query string.
+   * @param {string | Algebra.Operation} query A query string or algebra.
    * @param context An optional query context.
    * @return {Promise<IActorQueryOperationOutput>} A promise that resolves to the query output.
    */
-  public async query(query: string, context?: any): Promise<IActorQueryOperationOutput> {
+  public async query(query: string | Algebra.Operation, context?: any): Promise<IActorQueryOperationOutput> {
+    context = context || {};
+
     // Expand shortcuts
     for (const key in context) {
       if (this.contextKeyShortcuts[key]) {
@@ -126,30 +131,39 @@ export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs {
       context[KEY_CONTEXT_SOURCES] = AsyncReiterableArray.fromFixedData(context[KEY_CONTEXT_SOURCES]);
     }
 
+    // Prepare context
     context = ActionContext(context);
-
-    // Start, but don't await, context pre-processing
-    const combinationPromise = this.mediatorContextPreprocess.mediate({ context });
-
-    // Parse query
     let queryFormat: string = 'sparql';
     if (context && context.has(KEY_CONTEXT_QUERYFORMAT)) {
       queryFormat = context.get(KEY_CONTEXT_QUERYFORMAT);
       context = context.delete(KEY_CONTEXT_QUERYFORMAT);
+      if (queryFormat === 'graphql' && !context.has(KEY_CONTEXT_GRAPHQL_SINGULARIZEVARIABLES)) {
+        context = context.set(KEY_CONTEXT_GRAPHQL_SINGULARIZEVARIABLES, {});
+      }
     }
     let baseIRI: string;
     if (context && context.has(KEY_CONTEXT_BASEIRI)) {
       baseIRI = context.get(KEY_CONTEXT_BASEIRI);
     }
-    let operation: Algebra.Operation = (await this.mediatorSparqlParse.mediate(
-      { context, query, queryFormat, baseIRI })).operation;
+
+    // Start, but don't await, context pre-processing
+    const combinationPromise = this.mediatorContextPreprocess.mediate({ context });
+
+    // Parse query
+    let operation: Algebra.Operation;
+    if (typeof query === 'string') {
+      operation = (await this.mediatorSparqlParse.mediate({ context, query, queryFormat, baseIRI })).operation;
+    } else {
+      operation = query;
+    }
 
     // Block until context has been processed
     context = (await combinationPromise).context;
 
     // Apply initial bindings in context
     if (context.has(KEY_CONTEXT_INITIALBINDINGS)) {
-      operation = ActorInitSparql.applyInitialBindings(operation, context.get(KEY_CONTEXT_INITIALBINDINGS));
+      const bindings = context.get(KEY_CONTEXT_INITIALBINDINGS);
+      operation = ActorInitSparql.applyInitialBindings(operation, ensureBindings(bindings));
     }
 
     // Optimize the query operation
@@ -157,7 +171,9 @@ export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs {
 
     // Execute query
     const resolve: IActionQueryOperation = { context, operation };
-    return await this.mediatorQueryOperation.mediate(resolve);
+    const output = await this.mediatorQueryOperation.mediate(resolve);
+    output.context = context;
+    return output;
   }
 
   /**
@@ -238,5 +254,4 @@ export interface IActorInitSparqlArgs extends IActorArgs<IActionInit, IActorTest
 
 export const KEY_CONTEXT_INITIALBINDINGS: string = '@comunica/actor-init-sparql:initialBindings';
 export const KEY_CONTEXT_QUERYFORMAT: string = '@comunica/actor-init-sparql:queryFormat';
-export const KEY_CONTEXT_BASEIRI: string = '@comunica/actor-init-sparql:baseIRI';
-export const KEY_CONTEXT_QUERY_TIMESTAMP: string = '@comunica/actor-init-sparql:queryTimestamp';
+export const KEY_CONTEXT_GRAPHQL_SINGULARIZEVARIABLES: string = '@comunica/actor-init-sparql:singularizeVariables';
