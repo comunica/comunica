@@ -1,5 +1,5 @@
 import {ActorInit} from "@comunica/bus-init";
-import {Bindings} from "@comunica/bus-query-operation";
+import {Bindings, KEY_CONTEXT_QUERY_TIMESTAMP} from "@comunica/bus-query-operation";
 import {Bus, KEY_CONTEXT_LOG} from "@comunica/core";
 import {literal, namedNode, variable} from "@rdfjs/data-model";
 import {Factory} from "sparqlalgebrajs";
@@ -455,19 +455,26 @@ describe('ActorInitSparql', () => {
         return expect(actor.query('SELECT * WHERE { ?s ?p ?o }', ctx))
           .resolves.toBeTruthy();
       });
-    });
 
-    describe('query', () => {
       it('should apply bindings when initialBindings in the old format are passed via the context', () => {
         const ctx = { initialBindings: Bindings({ '?s': literal('sl') }) };
         return expect(actor.query('SELECT * WHERE { ?s ?p ?o }', ctx))
           .resolves.toBeTruthy();
       });
-    });
 
-    describe('query', () => {
       it('should apply bindings when sources in the old format are passed via the context', () => {
         const ctx = { sources: [] };
+        return expect(actor.query('SELECT * WHERE { ?s ?p ?o }', ctx))
+          .resolves.toBeTruthy();
+      });
+
+      it('should allow query to be called without context', () => {
+        return expect(actor.query('SELECT * WHERE { ?s ?p ?o }'))
+          .resolves.toBeTruthy();
+      });
+
+      it('should allow KEY_CONTEXT_QUERY_TIMESTAMP to be set', () => {
+        const ctx = { [KEY_CONTEXT_QUERY_TIMESTAMP]: new Date() };
         return expect(actor.query('SELECT * WHERE { ?s ?p ?o }', ctx))
           .resolves.toBeTruthy();
       });

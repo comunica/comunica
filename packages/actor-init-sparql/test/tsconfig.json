@@ -5,7 +5,8 @@
       "dom",
       "es6"
     ],
-    "noImplicitAny": false
+    "noImplicitAny": false,
+    "resolveJsonModule": true
   }
 }
 
