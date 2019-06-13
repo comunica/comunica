@@ -1,3 +1,4 @@
+import {KEY_CONTEXT_GRAPHQL_SINGULARIZEVARIABLES} from "@comunica/actor-init-sparql/lib/ActorInitSparql-browser";
 import {ActorSparqlParse, IActionSparqlParse, IActorSparqlParseOutput} from "@comunica/bus-sparql-parse";
 import {IActorArgs, IActorTest} from "@comunica/core";
 import {Converter} from "graphql-to-sparql";
@@ -22,8 +23,11 @@ export class ActorSparqlParseGraphql extends ActorSparqlParse {
   }
 
   public async run(action: IActionSparqlParse): Promise<IActorSparqlParseOutput> {
-    return { operation: this.graphqlToSparql.graphqlToSparqlAlgebra(action.query,
-      action.context && action.context.has('@context') ? action.context.get('@context') : {}) };
+    const context = action.context && action.context.has('@context') ? action.context.get('@context') : {};
+    const options = {
+      singularizeVariables: action.context.get(KEY_CONTEXT_GRAPHQL_SINGULARIZEVARIABLES),
+    };
+    return { operation: await this.graphqlToSparql.graphqlToSparqlAlgebra(action.query, context, options) };
   }
 
 }

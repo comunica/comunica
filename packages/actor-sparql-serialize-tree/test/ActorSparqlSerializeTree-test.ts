@@ -94,31 +94,29 @@ describe('ActorSparqlSerializeTree', () => {
             handleMediaType: 'tree'})).handle.data))).toEqual(
           `[
   {
-    "k1": [
-      "v1"
-    ]
-  },
-  {
     "k2": [
       "v2"
+    ],
+    "k1": [
+      "v1"
     ]
   }
 ]`);
       });
 
       it('should run on a bindings stream with a context', async () => {
-        const context = ActionContext({ "@context": { k1: { "@singular": true }, k2: { "@singular": false } } });
+        const context = ActionContext({
+          "@comunica/actor-init-sparql:singularizeVariables": { k1: true, k2: false },
+        });
         return expect((await stringifyStream((await actor.run(
           {handle: <any> { type: 'bindings', bindingsStream, variables, context },
             handleMediaType: 'tree'})).handle.data))).toEqual(
           `[
   {
-    "k1": "v1"
-  },
-  {
     "k2": [
       "v2"
-    ]
+    ],
+    "k1": "v1"
   }
 ]`);
       });

@@ -1,13 +1,12 @@
+import {KEY_CONTEXT_GRAPHQL_SINGULARIZEVARIABLES} from "@comunica/actor-init-sparql/lib/ActorInitSparql-browser";
 import {IActorQueryOperationOutputBindings} from "@comunica/bus-query-operation";
 import {BindingsStream} from "@comunica/bus-query-operation";
 import {ActorSparqlSerializeFixedMediaTypes, IActionSparqlSerialize,
   IActorSparqlSerializeFixedMediaTypesArgs, IActorSparqlSerializeOutput} from "@comunica/bus-sparql-serialize";
-import {ActionContext} from "@comunica/core";
-import {Map} from "immutable";
+import {ActionContext, ensureActionContext} from "@comunica/core";
 import * as RDF from "rdf-js";
 import {Converter, IConverterSettings, ISchema} from "sparqljson-to-tree";
 import {Readable} from "stream";
-import isMap = Map.isMap;
 
 /**
  * A comunica Tree SPARQL Serialize Actor.
@@ -28,19 +27,14 @@ export class ActorSparqlSerializeTree extends ActorSparqlSerializeFixedMediaType
    */
   public static bindingsStreamToGraphQl(bindingsStream: BindingsStream, context: ActionContext | {[key: string]: any},
                                         converterSettings?: IConverterSettings): Promise<string> {
-    const actionContext: ActionContext = isMap(context) ? <ActionContext> context : ActionContext(context);
+    const actionContext: ActionContext = ensureActionContext(context);
     return new Promise((resolve, reject) => {
       const bindingsArray: {[key: string]: RDF.Term}[] = [];
       const converter: Converter = new Converter(converterSettings);
 
-      const schema: ISchema = { singularizeVariables: {} };
-      if (actionContext && actionContext.has('@context')) {
-        for (const key of Object.keys(actionContext.get('@context'))) {
-          if (actionContext.get('@context')[key]['@singular']) {
-            schema.singularizeVariables[key] = true;
-          }
-        }
-      }
+      const schema: ISchema = {
+        singularizeVariables: actionContext.get(KEY_CONTEXT_GRAPHQL_SINGULARIZEVARIABLES) || {},
+      };
 
       bindingsStream.on('error', reject);
       bindingsStream.on('data', (bindings) => {
