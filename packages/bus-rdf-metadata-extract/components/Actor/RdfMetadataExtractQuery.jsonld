@@ -1,0 +1,37 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-metadata-extract/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/bus-rdf-metadata-extract",
+  "components": [
+    {
+      "@id": "cbrme:Actor/RdfMetadataExtractQuery",
+      "@type": "AbstractClass",
+      "extends": "cbrme:Actor/RdfMetadataExtract",
+      "requireElement": "ActorRdfMetadataExtract",
+      "comment": "A comunica actor for rdf-metadata-extract events using a GraphQL-LD query.",
+      "parameters": [
+        {
+          "@id": "cbrme:Actor/RdfMetadataExtractQuery#queryEngine",
+          "comment": "A SPARQL engine that is used to extract metadata from a stream",
+          "default": { "@id": "urn:comunica:sparqlinit" },
+          "required": true,
+          "unique": true
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "cbrme:Actor/RdfMetadataExtractQuery/constructorArgumentsObject",
+          "extends": "cbrme:Actor/RdfMetadataExtract/constructorArgumentsObject",
+          "fields": [
+            {
+              "keyRaw": "queryEngine",
+              "value": "cbrme:Actor/RdfMetadataExtractQuery#queryEngine"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

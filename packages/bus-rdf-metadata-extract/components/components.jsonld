@@ -5,6 +5,7 @@
   "requireName": "@comunica/bus-rdf-metadata-extract",
   "import": [
     "files-cbrme:components/Bus/RdfMetadataExtract.jsonld",
-    "files-cbrme:components/Actor/RdfMetadataExtract.jsonld"
+    "files-cbrme:components/Actor/RdfMetadataExtract.jsonld",
+    "files-cbrme:components/Actor/RdfMetadataExtractQuery.jsonld"
   ]
 }
