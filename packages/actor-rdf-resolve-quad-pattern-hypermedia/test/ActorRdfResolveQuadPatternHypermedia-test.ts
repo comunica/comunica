@@ -1,16 +1,15 @@
 import {ActorRdfResolveQuadPattern} from "@comunica/bus-rdf-resolve-quad-pattern";
 import {ActionContext, Bus} from "@comunica/core";
 import {ArrayIterator} from "asynciterator";
-import {Readable} from "stream";
 import {ActorRdfResolveQuadPatternHypermedia} from "../lib/ActorRdfResolveQuadPatternHypermedia";
 const arrayifyStream = require('arrayify-stream');
 import {blankNode, literal, namedNode, quad, variable} from "@rdfjs/data-model";
-import {MediatedQuadSource} from "../lib/MediatedQuadSource";
 
 // tslint:disable:object-literal-sort-keys
 
 // Skip pattern filtering
-MediatedQuadSource.matchPattern = () => true;
+const rdfTerms = require("rdf-terms");
+rdfTerms.matchPattern = () => true;
 
 describe('ActorRdfResolveQuadPatternHypermedia', () => {
   let bus;

@@ -1,12 +1,11 @@
 import {IActionRdfDereferencePaged, IActorRdfDereferencePagedOutput} from "@comunica/bus-rdf-dereference-paged";
 import {ILazyQuadSource} from "@comunica/bus-rdf-resolve-quad-pattern";
 import {ActionContext, Actor, IActorTest, Mediator} from "@comunica/core";
-import * as DataFactory from "@rdfjs/data-model";
 import {AsyncIterator} from "asynciterator";
 import {PromiseProxyIterator} from "asynciterator-promiseproxy";
 import * as RDF from "rdf-js";
 import {termToString} from "rdf-string";
-import {QUAD_TERM_NAMES, TRIPLE_TERM_NAMES} from "rdf-terms";
+import {matchPattern, TRIPLE_TERM_NAMES} from "rdf-terms";
 
 /**
  * A QPF quad source that uses a paged RDF dereference mediator
@@ -32,25 +31,6 @@ export class MediatedQuadSource implements ILazyQuadSource {
     this.mediatorRdfDereferencePaged = mediatorRdfDereferencePaged;
     this.uriConstructor = uriConstructor;
     this.context = context;
-  }
-
-  /**
-   * Check if the given pattern matches with the given quad.
-   * @param {Quad} pattern A quad pattern.
-   * @param {Quad} quad A quad.
-   * @return {boolean} If they match.
-   */
-  public static matchPattern(pattern: RDF.Quad, quad: RDF.Quad): boolean {
-    for (const termName of QUAD_TERM_NAMES) {
-      const patternTerm: RDF.Term = (<any> pattern)[termName];
-      if (patternTerm && patternTerm.termType !== 'Variable') {
-        const quadTerm: RDF.Term = (<any> quad)[termName];
-        if (!patternTerm.equals(quadTerm)) {
-          return false;
-        }
-      }
-    }
-    return true;
   }
 
   /**
@@ -127,8 +107,7 @@ export class MediatedQuadSource implements ILazyQuadSource {
       // The server is free to send any data in its response (such as metadata),
       // including quads that do not match the given matter.
       // Therefore, we have to filter away all non-matching quads here.
-      let filteredOutput = output.data.filter(MediatedQuadSource.matchPattern.bind(null,
-        DataFactory.quad(subject, predicate, object, graph || DataFactory.variable('v'))));
+      let filteredOutput = output.data.filter((quad) => matchPattern(quad, subject, predicate, object, graph));
 
       // Detect duplicate variables in the pattern
       const duplicateElementLinks: { [element: string]: string[] } = this
