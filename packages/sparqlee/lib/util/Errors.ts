@@ -155,7 +155,7 @@ export class UnimplementedError extends Error {
 
 export class InvalidArity extends Error {
   constructor(public args: E.Expression[], public op: C.Operator) {
-    super(`The amount of args don't match the arity of the operator '${pp(op)}'.`);
+    super(`The number of args does not match the arity of the operator '${pp(op)}'.`);
   }
 }
 
