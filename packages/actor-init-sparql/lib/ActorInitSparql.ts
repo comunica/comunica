@@ -146,7 +146,7 @@ Options:
     const queryResult: IActorQueryOperationOutput = await this.query(query, context);
 
     // Serialize output according to media type
-    const stdout: Readable = <Readable> (await this.resultToString(queryResult, args.t, context)).data;
+    const stdout: Readable = <Readable> (await this.resultToString(queryResult, args.t, queryResult.context)).data;
 
     return { stdout };
   }
