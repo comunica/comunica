@@ -51,7 +51,7 @@ export class MediatorNumber<A extends Actor<I, T, O>, I extends IAction, T exten
   }
 
   protected async mediateWith(action: I, testResults: IActorReply<A, I, T, O>[]): Promise<A> {
-    let promises = <Promise<T>[]> require('lodash.map')(testResults, 'reply');
+    let promises = testResults.map(({ reply }) => reply);
     const errors: Error[] = [];
     if (this.ignoreErrors) {
       const dummy: any = {};
