@@ -32,9 +32,6 @@
     "index.d.ts",
     "index.js"
   ],
-  "dependencies": {
-    "lodash.map": "^4.6.0"
-  },
   "peerDependencies": {
     "@comunica/core": "^1.0.0"
   },

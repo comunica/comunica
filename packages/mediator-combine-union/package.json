@@ -33,8 +33,7 @@
     "index.js"
   ],
   "dependencies": {
-    "lodash.defaults": "^4.2.0",
-    "lodash.map": "^4.6.0"
+    "lodash.defaults": "^4.2.0"
   },
   "peerDependencies": {
     "@comunica/core": "^1.0.0"

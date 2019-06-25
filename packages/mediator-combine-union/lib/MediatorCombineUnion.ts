@@ -20,7 +20,7 @@ export class MediatorCombineUnion<A extends Actor<I, T, O>, I extends IAction, T
     const testResults: IActorReply<A, I, T, O>[] = this.publish(action);
 
     // Delegate test errors.
-    await Promise.all(require('lodash.map')(testResults, 'reply'));
+    await Promise.all(testResults.map(({ reply }) => reply));
 
     // Run action on all actors.
     const results: O[] = await Promise.all(testResults.map((result) => result.actor.runObservable(action)));
@@ -36,7 +36,8 @@ export class MediatorCombineUnion<A extends Actor<I, T, O>, I extends IAction, T
   protected createCombiner(): (results: O[]) => O {
     return (results: O[]) => {
       const data: any = {};
-      data[this.field] = require('lodash.defaults').apply({}, [{}].concat(require('lodash.map')(results, this.field)));
+      data[this.field] = require('lodash.defaults').apply({},
+        [{}].concat(results.map((result: any) => result[this.field])));
       return data;
     };
   }

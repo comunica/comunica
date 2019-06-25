@@ -21,7 +21,7 @@ export class MediatorCombinePipeline<A extends Actor<H, T, H>, H extends IAction
     }
 
     // Delegate test errors.
-    await Promise.all(require('lodash.map')(testResults, 'reply'));
+    await Promise.all(testResults.map(({ reply }) => reply));
 
     // Pass action to first actor,
     // and each actor output as input to the following actor.
