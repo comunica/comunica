@@ -25,7 +25,8 @@ import {Algebra} from "sparqlalgebrajs";
  */
 export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs {
 
-  private static ALGEBRA_TYPES: string[] = Object.keys(Algebra.types).map((key) => (<any> Algebra.types)[key]);
+  private static ALGEBRA_TYPES: {[type: string]: boolean} = Object.keys(Algebra.types)
+    .reduce((acc: {[type: string]: boolean}, key) => { acc[(<any> Algebra.types)[key]] = true; return acc; }, {});
 
   public readonly mediatorOptimizeQueryOperation: Mediator<Actor<IActionOptimizeQueryOperation, IActorTest,
     IActorOptimizeQueryOperationOutput>, IActionOptimizeQueryOperation, IActorTest, IActorOptimizeQueryOperationOutput>;
@@ -66,12 +67,12 @@ export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs {
       if (Array.isArray(operation[key])) {
         if (key === 'variables') {
           copiedOperation[key] = operation[key].filter(
-            (variable: RDF.Variable) => initialBindings.keySeq().indexOf(termToString(variable)) < 0);
+            (variable: RDF.Variable) => !initialBindings.has(termToString(variable)));
         } else {
           copiedOperation[key] = operation[key].map(
             (subOperation: Algebra.Operation) => ActorInitSparql.applyInitialBindings(subOperation, initialBindings));
         }
-      } else if (operation[key] && ActorInitSparql.ALGEBRA_TYPES.indexOf(operation[key].type) >= 0) {
+      } else if (operation[key] && ActorInitSparql.ALGEBRA_TYPES[operation[key].type]) {
         copiedOperation[key] = ActorInitSparql.applyInitialBindings(operation[key], initialBindings);
       } else {
         copiedOperation[key] = operation[key];
