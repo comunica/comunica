@@ -12,8 +12,7 @@ export abstract class ActorQueryOperationTyped<O extends Algebra.Operation> exte
   public readonly operationName: string;
 
   constructor(args: IActorArgs<IActionQueryOperation, IActorTest, IActorQueryOperationOutput>, operationName: string) {
-    super(args);
-    this.operationName = operationName;
+    super(<any> { ...args, operationName });
     if (!this.operationName) {
       throw new Error('A valid "operationName" argument must be provided.');
     }
