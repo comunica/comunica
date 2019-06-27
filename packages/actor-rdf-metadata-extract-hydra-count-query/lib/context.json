@@ -1,0 +1,10 @@
+{
+  "@context": {
+    "hydra": "http://www.w3.org/ns/hydra/core#",
+    "void": "http://rdfs.org/ns/void#",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+
+    "totalItems": { "@id": "hydra:totalItems", "@type": "xsd:integer" },
+    "triples": { "@id": "void:triples", "@type": "xsd:integer" }
+  }
+}

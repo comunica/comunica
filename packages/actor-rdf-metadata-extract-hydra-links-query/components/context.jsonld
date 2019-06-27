@@ -1,0 +1,12 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
+      "carmehlq": "npmd:@comunica/actor-rdf-metadata-extract-hydra-links-query/",
+      "files-carmehlq": "carmehlq:^1.0.0/",
+
+      "ActorRdfMetadataExtractHydraLinksQuery": "carmehlq:Actor/RdfMetadataExtract/HydraLinksQuery"
+    }
+  ]
+}
