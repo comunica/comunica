@@ -10,7 +10,10 @@
       "ActionObserver": "cc:ActionObserver",
       "Actor": "cc:Actor",
       "Bus": "cc:Bus",
-      "Mediator": "cc:Mediator"
+      "Mediator": "cc:Mediator",
+
+      "actorIdentifierFields": "cc:BusIndexed#actorIdentifierFields",
+      "actionIdentifierFields": "cc:BusIndexed#actionIdentifierFields"
     }
   ]
 }

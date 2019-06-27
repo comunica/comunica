@@ -9,6 +9,7 @@
       "comment": "A publish-subscribe bus for sending actions to actors to test whether or not they can run an action.",
       "constructorArguments": [
         {
+          "@id": "cc:Bus#constructorArgumentsObject",
           "fields": [
             {
               "keyRaw": "name",
