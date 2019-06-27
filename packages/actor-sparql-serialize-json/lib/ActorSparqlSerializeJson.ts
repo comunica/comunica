@@ -36,7 +36,7 @@ export class ActorSparqlSerializeJson extends ActorSparqlSerializeFixedMediaType
       resultStream.on('error', (e) => data.emit('error', e));
       resultStream.on('data', (element) => {
         data.push(empty ? '\n' : ',\n');
-        data.push(JSON.stringify(element.map(RdfString.termToString)).trim());
+        data.push(JSON.stringify(element.map(RdfString.termToString)));
         empty = false;
       });
       resultStream.on('end', () => {
@@ -49,7 +49,7 @@ export class ActorSparqlSerializeJson extends ActorSparqlSerializeFixedMediaType
       resultStream.on('error', (e) => data.emit('error', e));
       resultStream.on('data', (element) => {
         data.push(empty ? '\n' : ',\n');
-        data.push(JSON.stringify(RdfString.quadToStringQuad(element)).trim());
+        data.push(JSON.stringify(RdfString.quadToStringQuad(element)));
         empty = false;
       });
       resultStream.on('end', () => {
