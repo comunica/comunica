@@ -33,7 +33,6 @@
   ],
   "dependencies": {
     "@comunica/actor-abstract-mediatyped": "^1.8.0",
-    "@comunica/actor-context-preprocess-rdf-source-identifier": "^1.8.0",
     "@comunica/actor-init-sparql": "^1.8.0",
     "@comunica/actor-query-operation-ask": "^1.8.0",
     "@comunica/actor-query-operation-bgp-empty": "^1.8.0",
@@ -78,7 +77,6 @@
     "@comunica/bus-rdf-join": "^1.8.0",
     "@comunica/bus-rdf-resolve-quad-pattern": "^1.8.0",
     "@comunica/bus-rdf-serialize": "^1.8.0",
-    "@comunica/bus-rdf-source-identifier": "^1.8.0",
     "@comunica/bus-sparql-parse": "^1.8.0",
     "@comunica/bus-sparql-serialize": "^1.8.0",
     "@comunica/core": "^1.8.0",

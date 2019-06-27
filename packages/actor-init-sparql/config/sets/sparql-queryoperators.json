@@ -52,9 +52,6 @@
       "@id": "config-sets:sparql-queryoperators.json#myServiceQueryOperator",
       "@type": "ActorQueryOperationService",
       "cbqo:mediatorQueryOperation": { "@id": "config-sets:sparql-queryoperators.json#mediatorQueryOperation" },
-      "caqoserv:Actor/QueryOperation/Service/mediatorRdfSourceIdentifier": {
-        "@id": "config-sets:context-preprocess-rdf-source-identifiers.json#mediatorRdfSourceIdentifier"
-      },
       "caqoserv:Actor/QueryOperation/Service/forceSparqlEndpoint": false
     },
 
