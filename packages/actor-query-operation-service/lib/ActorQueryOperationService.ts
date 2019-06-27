@@ -2,8 +2,7 @@ import {ActorQueryOperation, ActorQueryOperationTypedMediated,
   Bindings, IActorQueryOperationOutputBindings,
   IActorQueryOperationTypedMediatedArgs} from "@comunica/bus-query-operation";
 import {KEY_CONTEXT_SOURCE, KEY_CONTEXT_SOURCES} from "@comunica/bus-rdf-resolve-quad-pattern";
-import {IActionRdfSourceIdentifier, IActorRdfSourceIdentifierOutput} from "@comunica/bus-rdf-source-identifier";
-import {ActionContext, Actor, IActorTest, Mediator} from "@comunica/core";
+import {ActionContext, IActorTest} from "@comunica/core";
 import {SingletonIterator} from "asynciterator";
 import {AsyncReiterableArray} from "asyncreiterable";
 import {Algebra} from "sparqlalgebrajs";
@@ -15,8 +14,6 @@ import {Algebra} from "sparqlalgebrajs";
 export class ActorQueryOperationService extends ActorQueryOperationTypedMediated<Algebra.Service> {
 
   public readonly forceSparqlEndpoint: boolean;
-  public readonly mediatorRdfSourceIdentifier: Mediator<Actor<IActionRdfSourceIdentifier, IActorTest,
-    IActorRdfSourceIdentifierOutput>, IActionRdfSourceIdentifier, IActorTest, IActorRdfSourceIdentifierOutput>;
 
   constructor(args: IActorQueryOperationServiceArgs) {
     super(args, 'service');
@@ -36,8 +33,7 @@ export class ActorQueryOperationService extends ActorQueryOperationTypedMediated
     // Adjust our context to only have the endpoint as source
     context = context || ActionContext({});
     let subContext: ActionContext = context.delete(KEY_CONTEXT_SOURCE).delete(KEY_CONTEXT_SOURCES);
-    const sourceType = this.forceSparqlEndpoint ? 'sparql' : (await this.mediatorRdfSourceIdentifier
-      .mediate({ sourceValue: endpoint, context: subContext })).sourceType;
+    const sourceType = this.forceSparqlEndpoint ? 'sparql' : 'auto';
     subContext = subContext.set(KEY_CONTEXT_SOURCES,
       AsyncReiterableArray.fromFixedData([{ type: sourceType, value: endpoint }]));
 
@@ -66,6 +62,4 @@ export class ActorQueryOperationService extends ActorQueryOperationTypedMediated
 
 export interface IActorQueryOperationServiceArgs extends IActorQueryOperationTypedMediatedArgs {
   forceSparqlEndpoint: boolean;
-  mediatorRdfSourceIdentifier: Mediator<Actor<IActionRdfSourceIdentifier, IActorTest,
-    IActorRdfSourceIdentifierOutput>, IActionRdfSourceIdentifier, IActorTest, IActorRdfSourceIdentifierOutput>;
 }

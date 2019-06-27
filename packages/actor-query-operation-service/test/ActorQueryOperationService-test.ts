@@ -47,15 +47,11 @@ describe('ActorQueryOperationService', () => {
 
   describe('An ActorQueryOperationService instance', () => {
     let actor: ActorQueryOperationService;
-    let mediatorRdfSourceIdentifier;
     const forceSparqlEndpoint = true;
 
     beforeEach(() => {
-      mediatorRdfSourceIdentifier = {
-        mediate: () => Promise.resolve({ sourceType: 'hypermedia' }),
-      };
       actor = new ActorQueryOperationService(
-        { name: 'actor', bus, mediatorQueryOperation, forceSparqlEndpoint, mediatorRdfSourceIdentifier });
+        { name: 'actor', bus, mediatorQueryOperation, forceSparqlEndpoint });
     });
 
     it('should test on service', () => {
@@ -121,18 +117,14 @@ describe('ActorQueryOperationService', () => {
       return expect(actor.run(op)).rejects.toBeTruthy();
     });
 
-    it('should run and auto-identify the source when forceSparqlEndpoint is disabled', () => {
+    it('should run and use auto source type when forceSparqlEndpoint is disabled', () => {
       const op = { operation: { type: 'service', silent: false, name: literal('dummy') } };
-
-      const mediatorRdfSourceIdentifierThis: any = {
-        mediate: jest.fn(() => Promise.resolve({ sourceType: 'hypermedia' })),
-      };
       const actorThis = new ActorQueryOperationService(
-        { bus, forceSparqlEndpoint: false, mediatorQueryOperation,
-          mediatorRdfSourceIdentifier: mediatorRdfSourceIdentifierThis, name: 'actor' });
+        { bus, forceSparqlEndpoint: false, mediatorQueryOperation, name: 'actor' });
 
       return actorThis.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
-        expect(mediatorRdfSourceIdentifierThis.mediate).toHaveBeenCalledTimes(1);
+        expect((<any> output).operated.context.get('@comunica/bus-rdf-resolve-quad-pattern:sources').array[0].type)
+          .toEqual('auto');
         expect(output.variables).toEqual(['?a']);
         expect(await output.metadata()).toEqual({ totalItems: 3 });
         // tslint:disable:max-line-length
@@ -144,19 +136,14 @@ describe('ActorQueryOperationService', () => {
       });
     });
 
-    it('should run and not auto-identify the source when forceSparqlEndpoint is enabled', () => {
+    it('should run and use sparql source type when forceSparqlEndpoint is enabled', () => {
       const op = { operation: { type: 'service', silent: false, name: literal('dummy') } };
-
-      const mediatorRdfSourceIdentifierThis: any = {
-        mediate: jest.fn(() => Promise.resolve({ sourceType: 'hypermedia' })),
-      };
       const actorThis = new ActorQueryOperationService(
-        { bus, forceSparqlEndpoint: true, mediatorQueryOperation,
-          mediatorRdfSourceIdentifier: mediatorRdfSourceIdentifierThis, name: 'actor' });
+        { bus, forceSparqlEndpoint: true, mediatorQueryOperation, name: 'actor' });
 
       return actorThis.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
-        expect(mediatorRdfSourceIdentifierThis.mediate).toHaveBeenCalledTimes(0);
-        expect(output.variables).toEqual(['?a']);
+        expect((<any> output).operated.context.get('@comunica/bus-rdf-resolve-quad-pattern:sources').array[0].type)
+          .toEqual('sparql');
         expect(await output.metadata()).toEqual({ totalItems: 3 });
         // tslint:disable:max-line-length
         expect(await arrayifyStream(output.bindingsStream)).toEqual([

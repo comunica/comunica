@@ -13,12 +13,6 @@
       "comment": "A comunica Service Query Operation Actor.",
       "parameters": [
         {
-          "@id": "caqoserv:Actor/QueryOperation/Service/mediatorRdfSourceIdentifier",
-          "comment": "The RDF source identifier mediator",
-          "required": true,
-          "unique": true
-        },
-        {
           "@id": "caqoserv:Actor/QueryOperation/Service/forceSparqlEndpoint",
           "comment": "If the SERVICE target should be assumed to be a SPARQL endpoint",
           "range": "xsd:boolean",
@@ -32,10 +26,6 @@
           "@id": "caqoserv:Actor/QueryOperation/Service/constructorArgumentsObject",
           "extends": "cbqo:Actor/QueryOperationTypedMediated/constructorArgumentsObject",
           "fields": [
-            {
-              "keyRaw": "mediatorRdfSourceIdentifier",
-              "value": "caqoserv:Actor/QueryOperation/Service/mediatorRdfSourceIdentifier"
-            },
             {
               "keyRaw": "forceSparqlEndpoint",
               "value": "caqoserv:Actor/QueryOperation/Service/forceSparqlEndpoint"
