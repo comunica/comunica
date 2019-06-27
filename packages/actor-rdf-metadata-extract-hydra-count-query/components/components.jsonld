@@ -1,0 +1,9 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-metadata-extract-hydra-count-query/^1.0.0/components/context.jsonld",
+  "@id": "npmd:@comunica/actor-rdf-metadata-extract-hydra-count-query",
+  "@type": "Module",
+  "requireName": "@comunica/actor-rdf-metadata-extract-hydra-count-query",
+  "import": [
+    "files-carmehcq:components/Actor/RdfMetadataExtract/HydraCountQuery.jsonld"
+  ]
+}

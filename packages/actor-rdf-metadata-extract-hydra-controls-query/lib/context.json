@@ -1,0 +1,16 @@
+{
+  "@context": {
+    "hydra": "http://www.w3.org/ns/hydra/core#",
+    "void": "http://rdfs.org/ns/void#",
+
+    "Collection": "hydra:Collection",
+    "search": "hydra:search",
+    "template": "hydra:template",
+    "variableRepresentation": "hydra:variableRepresentation",
+    "mapping": "hydra:mapping",
+    "variable": "hydra:variable",
+    "property": "hydra:property",
+
+    "subset": "void:subset"
+  }
+}

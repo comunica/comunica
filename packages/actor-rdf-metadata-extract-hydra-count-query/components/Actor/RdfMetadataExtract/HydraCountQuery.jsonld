@@ -1,0 +1,21 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-metadata-extract-hydra-count-query/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-metadata-extract/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-rdf-metadata-extract-hydra-count-query",
+  "components": [
+    {
+      "@id": "carmehcq:Actor/RdfMetadataExtract/HydraCountQuery",
+      "@type": "Class",
+      "extends": "cbrme:Actor/RdfMetadataExtractQuery",
+      "requireElement": "ActorRdfMetadataExtractHydraCountQuery",
+      "comment": "A comunica Query-based Hydra Count RDF Metadata Extract Actor.",
+      "constructorArguments": [
+        {
+          "extends": "cbrme:Actor/RdfMetadataExtractQuery/constructorArgumentsObject"
+        }
+      ]
+    }
+  ]
+}

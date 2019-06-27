@@ -1,0 +1,15 @@
+{
+  "@context": {
+    "hydra": "http://www.w3.org/ns/hydra/core#",
+
+    "first": "hydra:first",
+    "next": "hydra:next",
+    "previous": "hydra:previous",
+    "last": "hydra:last",
+
+    "firstPage": "hydra:firstPage",
+    "nextPage": "hydra:nextPage",
+    "previousPage": "hydra:previousPage",
+    "lastPage": "hydra:lastPage"
+  }
+}
