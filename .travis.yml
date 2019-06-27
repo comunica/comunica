@@ -17,6 +17,7 @@ install: yarn install --pure-lockfile
 before_script: greenkeeper-lockfile-update
 after_script: greenkeeper-lockfile-upload
 script:
+  - .travis/validate_greenkeeper.sh
   - yarn run lint
   - yarn run test-ci
   - lerna run browser
