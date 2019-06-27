@@ -7,8 +7,8 @@
     },
     "allPackages": {
       "packages": [
-        "packages/actor-abstract-mediatyped/package.json",
         "packages/actor-abstract-bindings-hash/package.json",
+        "packages/actor-abstract-mediatyped/package.json",
         "packages/actor-abstract-path/package.json",
         "packages/actor-context-preprocess-rdf-source-identifier/package.json",
         "packages/actor-http-memento/package.json",
@@ -22,6 +22,7 @@
         "packages/actor-init-sparql/package.json",
         "packages/actor-init-sparql-file/package.json",
         "packages/actor-init-sparql-rdfjs/package.json",
+        "packages/actor-optimize-query-operation-join-bgp/package.json",
         "packages/actor-query-operation-ask/package.json",
         "packages/actor-query-operation-bgp-empty/package.json",
         "packages/actor-query-operation-bgp-left-deep-smallest/package.json",
@@ -34,8 +35,10 @@
         "packages/actor-query-operation-filter-direct/package.json",
         "packages/actor-query-operation-filter-sparqlee/package.json",
         "packages/actor-query-operation-from-quad/package.json",
+        "packages/actor-query-operation-group/package.json",
         "packages/actor-query-operation-join/package.json",
         "packages/actor-query-operation-leftjoin-nestedloop/package.json",
+        "packages/actor-query-operation-minus/package.json",
         "packages/actor-query-operation-orderby-direct/package.json",
         "packages/actor-query-operation-orderby-sparqlee/package.json",
         "packages/actor-query-operation-path-alt/package.json",
@@ -53,7 +56,6 @@
         "packages/actor-query-operation-slice/package.json",
         "packages/actor-query-operation-sparql-endpoint/package.json",
         "packages/actor-query-operation-union/package.json",
-        "packages/actor-query-operation-minus/package.json",
         "packages/actor-query-operation-values/package.json",
         "packages/actor-rdf-dereference-file/package.json",
         "packages/actor-rdf-dereference-http-parse/package.json",
@@ -76,9 +78,11 @@
         "packages/actor-rdf-parse-rdfxml/package.json",
         "packages/actor-rdf-parse-xml-rdfa/package.json",
         "packages/actor-rdf-parse-n3/package.json",
+        "packages/actor-rdf-parse-rdfxml/package.json",
+        "packages/actor-rdf-resolve-hypermedia-qpf/package.json",
         "packages/actor-rdf-resolve-quad-pattern-federated/package.json",
         "packages/actor-rdf-resolve-quad-pattern-file/package.json",
-        "packages/actor-rdf-resolve-quad-pattern-qpf/package.json",
+        "packages/actor-rdf-resolve-quad-pattern-hypermedia/package.json",
         "packages/actor-rdf-resolve-quad-pattern-rdfjs-source/package.json",
         "packages/actor-rdf-resolve-quad-pattern-sparql-json/package.json",
         "packages/actor-rdf-serialize-jsonld/package.json",
@@ -98,8 +102,9 @@
         "packages/actor-sparql-serialize-tree/package.json",
         "packages/bus-context-preprocess/package.json",
         "packages/bus-http/package.json",
-        "packages/bus-http-init/package.json",
+        "packages/bus-http-invalidate/package.json",
         "packages/bus-init/package.json",
+        "packages/bus-optimize-query-operation/package.json",
         "packages/bus-query-operation/package.json",
         "packages/bus-rdf-dereference/package.json",
         "packages/bus-rdf-dereference-paged/package.json",
@@ -108,6 +113,7 @@
         "packages/bus-rdf-metadata-extract/package.json",
         "packages/bus-rdf-parse/package.json",
         "packages/bus-rdf-parse-html/package.json",
+        "packages/bus-rdf-resolve-hypermedia/package.json",
         "packages/bus-rdf-resolve-quad-pattern/package.json",
         "packages/bus-rdf-serialize/package.json",
         "packages/bus-rdf-source-identifier/package.json",
@@ -128,7 +134,8 @@
         "packages/mediatortype-time/package.json",
         "packages/packager/package.json",
         "packages/runner/package.json",
-        "packages/runner-cli/package.json"
+        "packages/runner-cli/package.json",
+        "packages/utils-datasource/package.json"
       ]
     }
   }
