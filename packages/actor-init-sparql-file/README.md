@@ -9,7 +9,13 @@ This module is part of the [Comunica framework](https://github.com/comunica/comu
 ## Install
 
 ```bash
-$ yarn add @comunica/actor-init-sparql-file
+$ yarn global add @comunica/actor-init-sparql-file
+```
+
+or
+
+```bash
+$ npm install -g @comunica/actor-init-sparql-file
 ```
 
 ## Usage from the command line
