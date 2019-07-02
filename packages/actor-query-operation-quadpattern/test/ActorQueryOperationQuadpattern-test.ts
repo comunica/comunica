@@ -51,13 +51,11 @@ describe('ActorQueryOperationQuadpattern', () => {
     let actor: ActorQueryOperationQuadpattern;
     let mediator;
     let metadata;
-    let metadataRaw;
     let metadataContent;
 
     beforeEach(() => {
       metadataContent = { totalitems: 3};
-      metadataRaw = Promise.resolve(metadataContent);
-      metadata = () => metadataRaw;
+      metadata = () => Promise.resolve(metadataContent);
       mediator = {
         mediate: () => Promise.resolve({ data: new ArrayIterator([
           quad('s1', 'p1', 'o1', 'g1'),
