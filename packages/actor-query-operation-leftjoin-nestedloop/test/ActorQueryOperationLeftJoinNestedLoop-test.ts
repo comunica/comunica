@@ -59,7 +59,8 @@ describe('ActorQueryOperationLeftJoinNestedLoop', () => {
         left = !left;
         return Promise.resolve({
           bindingsStream: left ? bindingStreamLeft : bindingStreamRight,
-          metadata: () => Promise.resolve({ totalItems: 3 }),
+          metadata: () => arg.operation.hasOwnProperty("rejectMetadata") && arg.operation.rejectMetadata ?
+              Promise.reject(new Error('fail')) : Promise.resolve({ totalItems: 3 }),
           operated: arg,
           type: 'bindings',
           variables: left ? ['?a'] : ['?a', '?b'],
@@ -114,6 +115,27 @@ describe('ActorQueryOperationLeftJoinNestedLoop', () => {
         expect(await output.metadata()).toMatchObject({ totalItems: 9 });
         expect(output.type).toEqual('bindings');
         expect(output.variables).toMatchObject(['?a', '?b']);
+      });
+    });
+
+    it('should correctly handle rejecting promise in left and right', () => {
+      const op = { operation: { type: 'leftjoin', left: { rejectMetadata: true }, right: { rejectMetadata: true } } };
+      return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
+        expect(await output.metadata()).toMatchObject({ totalItems: Infinity });
+      });
+    });
+
+    it('should correctly handle rejecting promise in right', () => {
+      const op = { operation: { type: 'leftjoin', left: { rejectMetadata: true }, right: {} } };
+      return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
+        expect(await output.metadata()).toMatchObject({ totalItems: Infinity });
+      });
+    });
+
+    it('should correctly handle rejecting promise in left', () => {
+      const op = { operation: { type: 'leftjoin', left: {}, right: { rejectMetadata: true } } };
+      return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
+        expect(await output.metadata()).toMatchObject({ totalItems: Infinity });
       });
     });
 
