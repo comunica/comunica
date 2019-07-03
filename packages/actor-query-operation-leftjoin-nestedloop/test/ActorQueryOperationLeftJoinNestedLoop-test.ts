@@ -59,7 +59,7 @@ describe('ActorQueryOperationLeftJoinNestedLoop', () => {
         left = !left;
         return Promise.resolve({
           bindingsStream: left ? bindingStreamLeft : bindingStreamRight,
-          metadata: () => arg.operation.hasOwnProperty("rejectMetadata") && arg.operation.rejectMetadata ?
+          metadata: () => arg.operation.rejectMetadata ?
               Promise.reject(new Error('fail')) : Promise.resolve({ totalItems: 3 }),
           operated: arg,
           type: 'bindings',
