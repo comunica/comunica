@@ -125,14 +125,14 @@ describe('ActorQueryOperationLeftJoinNestedLoop', () => {
       });
     });
 
-    it('should correctly handle rejecting promise in right', () => {
+    it('should correctly handle rejecting promise in left', () => {
       const op = { operation: { type: 'leftjoin', left: { rejectMetadata: true }, right: {} } };
       return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
         expect(await output.metadata()).toMatchObject({ totalItems: Infinity });
       });
     });
 
-    it('should correctly handle rejecting promise in left', () => {
+    it('should correctly handle rejecting promise in right', () => {
       const op = { operation: { type: 'leftjoin', left: {}, right: { rejectMetadata: true } } };
       return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
         expect(await output.metadata()).toMatchObject({ totalItems: Infinity });
