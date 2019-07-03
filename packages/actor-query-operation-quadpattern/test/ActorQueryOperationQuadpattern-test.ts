@@ -51,11 +51,11 @@ describe('ActorQueryOperationQuadpattern', () => {
     let actor: ActorQueryOperationQuadpattern;
     let mediator;
     let metadata;
-    let metadataRaw;
+    let metadataContent;
 
     beforeEach(() => {
-      metadataRaw = Promise.resolve({ totalItems: 3 });
-      metadata = () => metadataRaw;
+      metadataContent = { totalitems: 3};
+      metadata = () => Promise.resolve(metadataContent);
       mediator = {
         mediate: () => Promise.resolve({ data: new ArrayIterator([
           quad('s1', 'p1', 'o1', 'g1'),
@@ -124,7 +124,7 @@ describe('ActorQueryOperationQuadpattern', () => {
       };
       return actor.run({ operation }).then(async (output: IActorQueryOperationOutputBindings) => {
         expect(output.variables).toEqual([ '?p' ]);
-        expect(output.metadata()).toBe(metadataRaw);
+        expect(await output.metadata()).toBe(metadataContent);
         expect(await arrayifyStream(output.bindingsStream)).toEqual(
           [ Bindings({ '?p': <RDF.Term> { value: 'p1' } }),
             Bindings({ '?p': <RDF.Term> { value: 'p2' } }),
@@ -144,7 +144,7 @@ describe('ActorQueryOperationQuadpattern', () => {
       const context = ActionContext({});
       return actor.run({ operation, context }).then(async (output: IActorQueryOperationOutputBindings) => {
         expect(output.variables).toEqual([ '?p' ]);
-        expect(output.metadata()).toBe(metadataRaw);
+        expect(await output.metadata()).toBe(metadataContent);
         expect(await arrayifyStream(output.bindingsStream)).toEqual(
           [ Bindings({ '?p': <RDF.Term> { value: 'p1' } }),
             Bindings({ '?p': <RDF.Term> { value: 'p2' } }),

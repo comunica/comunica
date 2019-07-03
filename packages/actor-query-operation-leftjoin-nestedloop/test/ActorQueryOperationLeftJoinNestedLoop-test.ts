@@ -59,7 +59,8 @@ describe('ActorQueryOperationLeftJoinNestedLoop', () => {
         left = !left;
         return Promise.resolve({
           bindingsStream: left ? bindingStreamLeft : bindingStreamRight,
-          metadata: () => Promise.resolve({ totalItems: 3 }),
+          metadata: () => arg.operation.rejectMetadata ?
+              Promise.reject(new Error('fail')) : Promise.resolve({ totalItems: 3 }),
           operated: arg,
           type: 'bindings',
           variables: left ? ['?a'] : ['?a', '?b'],
@@ -111,9 +112,30 @@ describe('ActorQueryOperationLeftJoinNestedLoop', () => {
           Bindings({ '?a': literal('3'), '?b': literal('1') }),
           Bindings({ '?a': literal('3'), '?b': literal('2') }),
         ]);
-        expect(output.metadata()).toMatchObject(Promise.resolve({ totalItems: 3 }));
+        expect(await output.metadata()).toMatchObject({ totalItems: 9 });
         expect(output.type).toEqual('bindings');
         expect(output.variables).toMatchObject(['?a', '?b']);
+      });
+    });
+
+    it('should correctly handle rejecting promise in left and right', () => {
+      const op = { operation: { type: 'leftjoin', left: { rejectMetadata: true }, right: { rejectMetadata: true } } };
+      return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
+        expect(await output.metadata()).toMatchObject({ totalItems: Infinity });
+      });
+    });
+
+    it('should correctly handle rejecting promise in left', () => {
+      const op = { operation: { type: 'leftjoin', left: { rejectMetadata: true }, right: {} } };
+      return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
+        expect(await output.metadata()).toMatchObject({ totalItems: Infinity });
+      });
+    });
+
+    it('should correctly handle rejecting promise in right', () => {
+      const op = { operation: { type: 'leftjoin', left: {}, right: { rejectMetadata: true } } };
+      return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
+        expect(await output.metadata()).toMatchObject({ totalItems: Infinity });
       });
     });
 
@@ -127,7 +149,7 @@ describe('ActorQueryOperationLeftJoinNestedLoop', () => {
           Bindings({ '?a': literal('3'), '?b': literal('1') }),
           Bindings({ '?a': literal('3'), '?b': literal('2') }),
         ]);
-        expect(output.metadata()).toMatchObject(Promise.resolve({ totalItems: 3 }));
+        expect(await output.metadata()).toMatchObject({ totalItems: 9 });
         expect(output.type).toEqual('bindings');
         expect(output.variables).toMatchObject(['?a', '?b']);
       });
@@ -142,7 +164,7 @@ describe('ActorQueryOperationLeftJoinNestedLoop', () => {
           Bindings({ '?a': literal('2') }),
           Bindings({ '?a': literal('3') }),
         ]);
-        expect(output.metadata()).toMatchObject(Promise.resolve({ totalItems: 3 }));
+        expect(await output.metadata()).toMatchObject({ totalItems: 9 });
         expect(output.type).toEqual('bindings');
         expect(output.variables).toMatchObject(['?a', '?b']);
       });
@@ -157,7 +179,7 @@ describe('ActorQueryOperationLeftJoinNestedLoop', () => {
           Bindings({ '?a': literal('2') }),
           Bindings({ '?a': literal('3') }),
         ]);
-        expect(output.metadata()).toMatchObject(Promise.resolve({ totalItems: 3 }));
+        expect(await output.metadata()).toMatchObject({ totalItems: 9 });
         expect(output.type).toEqual('bindings');
         expect(output.variables).toMatchObject(['?a', '?b']);
       });
