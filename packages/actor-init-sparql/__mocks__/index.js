@@ -9,7 +9,6 @@ class EngineMock {
 }
 
 function newEngineDynamic(options) {
-  console.log("newEngineDynamic Mock called!");
   return Promise.resolve(new EngineMock());
 }
 
