@@ -17,12 +17,13 @@ export class HttpServiceSparqlEndpoint {
   private static readonly MIME_PLAIN = 'text/plain';
   private static readonly MIME_JSON  = 'application/json';
 
+  public readonly engine: Promise<ActorInitSparql>;
+
   private readonly context: any;
   private readonly timeout: number;
   private readonly port: number;
-  private readonly invalidateCacheBeforeQuery: boolean;
 
-  private readonly engine: Promise<ActorInitSparql>;
+  private readonly invalidateCacheBeforeQuery: boolean;
 
   constructor(args?: IHttpServiceSparqlEndpointArgs) {
     args = args || {};
@@ -111,9 +112,9 @@ Options:
    * @param {module:http.IncomingMessage} request Request object.
    * @param {module:http.ServerResponse} response Response object.
    */
-  protected async handleRequest(engine: ActorInitSparql, variants: { type: string, quality: number }[],
-                                stdout: Writable, stderr: Writable,
-                                request: http.IncomingMessage, response: http.ServerResponse) {
+  public async handleRequest(engine: ActorInitSparql, variants: { type: string, quality: number }[],
+                             stdout: Writable, stderr: Writable,
+                             request: http.IncomingMessage, response: http.ServerResponse) {
     const mediaType: string = request.headers.accept && request.headers.accept !== '*/*'
       ? require('negotiate').choose(variants, request)[0].type : null;
 
@@ -161,9 +162,9 @@ Options:
    * @param {string} mediaType The requested response media type.
    * @param {boolean} headOnly If only the header should be written.
    */
-  protected writeQueryResult(engine: ActorInitSparql, stdout: Writable, stderr: Writable,
-                             request: http.IncomingMessage, response: http.ServerResponse,
-                             sparql: string, mediaType: string, headOnly: boolean) {
+  public writeQueryResult(engine: ActorInitSparql, stdout: Writable, stderr: Writable,
+                          request: http.IncomingMessage, response: http.ServerResponse,
+                          sparql: string, mediaType: string, headOnly: boolean) {
     let eventEmitter: EventEmitter;
     engine.query(sparql, this.context)
       .then(async (result) => {
@@ -216,7 +217,7 @@ Options:
    * @param {module:http.IncomingMessage} request Request object.
    * @return {Promise<string>} A promise resolving to a query string.
    */
-  protected parseBody(request: http.IncomingMessage): Promise<string> {
+  public parseBody(request: http.IncomingMessage): Promise<string> {
     return new Promise((resolve, reject) => {
       let body = '';
       request.setEncoding('utf8');
