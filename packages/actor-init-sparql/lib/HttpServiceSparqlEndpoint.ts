@@ -197,7 +197,15 @@ Options:
         response.end(error.toString());
       });
 
-    // Stop after timeout and if the connection is terminated
+    this.stopResponse(response, eventEmitter);
+  }
+
+  /**
+   * Stop after timeout or if the connection is terminated
+   * @param {module:http.ServerResponse} response Response object.
+   * @param {NodeJS.ReadableStream} eventEmitter Query result stream.
+   */
+  public stopResponse(response: http.ServerResponse, eventEmitter: EventEmitter) {
     // Note: socket or response timeouts seemed unreliable, hence the explicit timeout
     const killTimeout = setTimeout(killClient, this.timeout);
     response.on('close', killClient);
