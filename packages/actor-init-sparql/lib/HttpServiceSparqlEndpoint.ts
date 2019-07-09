@@ -14,16 +14,16 @@ import {IQueryOptions} from "./QueryDynamic";
  * An HTTP service that exposes a Comunica engine as a SPARQL endpoint.
  */
 export class HttpServiceSparqlEndpoint {
-  private static readonly MIME_PLAIN = 'text/plain';
-  private static readonly MIME_JSON  = 'application/json';
+  public static readonly MIME_PLAIN = 'text/plain';
+  public static readonly MIME_JSON  = 'application/json';
 
   public readonly engine: Promise<ActorInitSparql>;
 
-  private readonly context: any;
-  private readonly timeout: number;
-  private readonly port: number;
+  public readonly context: any;
+  public readonly timeout: number;
+  public readonly port: number;
 
-  private readonly invalidateCacheBeforeQuery: boolean;
+  public readonly invalidateCacheBeforeQuery: boolean;
 
   constructor(args?: IHttpServiceSparqlEndpointArgs) {
     args = args || {};
