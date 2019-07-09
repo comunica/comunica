@@ -1,4 +1,7 @@
 import * as querystring from "querystring";
+import {PassThrough} from "stream";
+import {http, ServerResponseMock} from "../../../__mocks__/http";
+import {parse} from "../../../__mocks__/url";
 import {newEngineDynamic} from "../__mocks__/index";
 import {HttpServiceSparqlEndpoint} from "../lib/HttpServiceSparqlEndpoint";
 const stringToStream = require('streamify-string');
@@ -11,12 +14,14 @@ jest.mock('../index', () => {
 
 describe('HttpServiceSparqlEndpoint', () => {
   describe('An HttpServiceSparqlEndpoint instance', () => {
+    let instance;
+    beforeEach(() => {
+      instance = new HttpServiceSparqlEndpoint({});
+    });
     describe('parseBody', () => {
-      let instance;
       let httpRequestMock;
       const testRequestBody = "teststring";
       beforeEach(() => {
-        instance = new HttpServiceSparqlEndpoint({});
         httpRequestMock = stringToStream(testRequestBody);
         httpRequestMock.headers = {'content-type': "contenttypewhichdefinitelydoesnotexist"};
       });
