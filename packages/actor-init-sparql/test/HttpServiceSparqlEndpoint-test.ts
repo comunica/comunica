@@ -13,6 +13,32 @@ jest.mock('../index', () => {
 });
 
 describe('HttpServiceSparqlEndpoint', () => {
+  describe('constructor', () => {
+    it("shouldn't error if no args are supplied", () => {
+      expect(() => new HttpServiceSparqlEndpoint()).not.toThrowError();
+    });
+
+    it("should set fields with values from args if present", () => {
+      const args = {context: {test: "test"}, timeout: 4321, port: 24321, invalidateCacheBeforeQuery: true};
+      const instance = new HttpServiceSparqlEndpoint(args);
+
+      expect(instance.context).toEqual({test: "test"});
+      expect(instance.timeout).toBe(4321);
+      expect(instance.port).toBe(24321);
+      expect(instance.invalidateCacheBeforeQuery).toBeTruthy();
+    });
+
+    it("should set default field values for fields that aren't in args", () => {
+      const args = {};
+      const instance = new HttpServiceSparqlEndpoint(args);
+
+      expect(instance.context).toEqual({});
+      expect(instance.timeout).toBe(60000);
+      expect(instance.port).toBe(3000);
+      expect(instance.invalidateCacheBeforeQuery).toBeFalsy();
+    });
+  });
+
   describe('An HttpServiceSparqlEndpoint instance', () => {
     let instance;
     beforeEach(() => {
