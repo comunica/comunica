@@ -12,6 +12,16 @@ jest.mock('../index', () => {
   };
 });
 
+jest.mock("url", () => {
+  return {
+    parse,
+  };
+});
+
+jest.mock("http", () => {
+  return http;
+});
+
 describe('HttpServiceSparqlEndpoint', () => {
   describe('constructor', () => {
     it("shouldn't error if no args are supplied", () => {
