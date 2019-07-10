@@ -1,3 +1,4 @@
+import {IActionInit, IActorOutputInit} from "@comunica/bus-init";
 import {LoggerPretty} from "@comunica/logger-pretty";
 import * as fs from "fs";
 import * as http from "http";
@@ -35,26 +36,10 @@ export class HttpServiceSparqlEndpoint {
     this.engine = newEngineDynamic(args);
   }
 
-  public static runArgsInProcess(moduleRootPath: string, defaultConfigPath: string) {
-    const args = minimist(process.argv.slice(2));
+  public static runArgsInProcess(args: any, stdout: Writable, stderr: Writable,
+                                 moduleRootPath: string, configResourceUrl: string) {
     if (args._.length !== 1 || args.h || args.help) {
-      // tslint:disable:max-line-length
-      process.stderr.write(`comunica-sparql-http exposes a Comunica engine as SPARQL endpoint
-
-context should be a JSON object or the path to such a JSON file.
-
-Usage:
-  comunica-sparql-http context.json [-p port] [-t timeout] [-l log-level] [-i] [--help]
-  comunica-sparql-http "{ \\"sources\\": [{ \\"type\\": \\"hypermedia\\", \\"value\\" : \\"http://fragments.dbpedia.org/2015/en\\" }]}" [-p port] [-t timeout] [-l log-level] [-i] [--help]
-
-Options:
-  -p            The HTTP port to run on (default: 3000)
-  -t            The query execution timeout in seconds (default: 60)
-  -l            Sets the log level (e.g., debug, info, warn, ... defaults to warn)
-  -i            A flag that enables cache invalidation before each query execution.
-  --help        print this help message
-`);
-      process.exit(1);
+      throw new Error("Invalid arguments error");
     }
 
     // allow both files as direct JSON objects for context
@@ -69,7 +54,7 @@ Options:
     }
 
     const options = {
-      configResourceUrl: process.env.COMUNICA_CONFIG ? process.env.COMUNICA_CONFIG : defaultConfigPath,
+      configResourceUrl,
       context,
       invalidateCacheBeforeQuery,
       mainModulePath: moduleRootPath,
@@ -78,7 +63,7 @@ Options:
     };
 
     // tslint:disable-next-line:no-console
-    new HttpServiceSparqlEndpoint(options).run(process.stdout, process.stderr).catch(console.error);
+    new HttpServiceSparqlEndpoint(options).run(stdout, stderr).catch(console.error);
   }
 
   /**
