@@ -36,10 +36,28 @@ export class HttpServiceSparqlEndpoint {
     this.engine = newEngineDynamic(args);
   }
 
-  public static runArgsInProcess(args: any, stdout: Writable, stderr: Writable,
-                                 moduleRootPath: string, configResourceUrl: string) {
+  public static runArgsInProcess(argv: string[], stdout: Writable, stderr: Writable,
+                                 moduleRootPath: string, configResourceUrl: string, exit: CallableFunction) {
+    const args = minimist(argv);
     if (args._.length !== 1 || args.h || args.help) {
-      throw new Error("Invalid arguments error");
+      // tslint:disable:max-line-length
+      stderr.write(`comunica-sparql-http exposes a Comunica engine as SPARQL endpoint
+
+context should be a JSON object or the path to such a JSON file.
+
+Usage:
+  comunica-sparql-http context.json [-p port] [-t timeout] [-l log-level] [-i] [--help]
+  comunica-sparql-http "{ \\"sources\\": [{ \\"type\\": \\"hypermedia\\", \\"value\\" : \\"http://fragments.dbpedia.org/2015/en\\" }]}" [-p port] [-t timeout] [-l log-level] [-i] [--help]
+
+Options:
+  -p            The HTTP port to run on (default: 3000)
+  -t            The query execution timeout in seconds (default: 60)
+  -l            Sets the log level (e.g., debug, info, warn, ... defaults to warn)
+  -i            A flag that enables cache invalidation before each query execution.
+  --help        print this help message
+`);
+
+      exit();
     }
 
     // allow both files as direct JSON objects for context
