@@ -24,7 +24,7 @@ export class ActorRdfMetadataExtractHydraCountQuery extends ActorRdfMetadataExtr
   }
 
   public async run(action: IActionRdfMetadataExtract): Promise<IActorRdfMetadataExtractOutput> {
-    const queryData = await this.queryData(action.metadata, { '?pageUrl': action.pageUrl });
+    const queryData = await this.queryData(action.metadata, { '?pageUrl': action.url });
     if ('totalItems' in queryData && typeof queryData.totalItems !== 'number') {
       queryData.totalItems = parseInt(queryData.totalItems, 10);
     }

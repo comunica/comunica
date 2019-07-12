@@ -27,7 +27,7 @@ export class ActorRdfMetadataExtractHydraLinksQuery extends ActorRdfMetadataExtr
   }
 
   public async run(action: IActionRdfMetadataExtract): Promise<IActorRdfMetadataExtractOutput> {
-    const metadata = await this.queryData(action.metadata, { '?pageUrl': action.pageUrl });
+    const metadata = await this.queryData(action.metadata, { '?pageUrl': action.url });
     delete metadata.graph;
     return { metadata };
   }
