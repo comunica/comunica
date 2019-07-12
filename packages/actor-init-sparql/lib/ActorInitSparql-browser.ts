@@ -217,11 +217,11 @@ export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs {
   /**
    * Invalidate all internal caches related to the given page URL.
    * If no page URL is given, then all pages will be invalidated.
-   * @param {string} pageUrl The page URL to invalidate.
+   * @param {string} url The page URL to invalidate.
    * @return {Promise<any>} A promise resolving when the caches have been invalidated.
    */
-  public invalidateHttpCache(pageUrl?: string): Promise<any> {
-    return this.mediatorHttpInvalidate.mediate({ pageUrl });
+  public invalidateHttpCache(url?: string): Promise<any> {
+    return this.mediatorHttpInvalidate.mediate({ url });
   }
 
   public async run(action: IActionInit): Promise<IActorOutputInit> {
