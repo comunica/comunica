@@ -38,21 +38,27 @@
     "@comunica/utils-datasource": "^1.8.0",
     "@rdfjs/data-model": "^1.1.1",
     "asynciterator-promiseproxy": "^2.0.0",
+    "lru-cache": "^5.1.1",
     "rdf-string": "^1.3.1",
     "rdf-terms": "^1.5.1"
   },
   "peerDependencies": {
     "@comunica/actor-rdf-metadata-extract-hydra-controls": "^1.0.0",
-    "@comunica/bus-rdf-dereference-paged": "^1.0.0",
+    "@comunica/bus-http-invalidate": "^1.0.0",
+    "@comunica/bus-rdf-dereference": "^1.0.0",
     "@comunica/bus-rdf-resolve-hypermedia": "^1.0.0",
+    "@comunica/bus-rdf-resolve-hypermedia-links": "^1.0.0",
     "@comunica/bus-rdf-resolve-quad-pattern": "^1.0.0",
     "@comunica/core": "^1.0.0",
     "@comunica/utils-datasource": "^1.0.0"
   },
   "devDependencies": {
     "@comunica/actor-rdf-metadata-extract-hydra-controls": "^1.8.0",
-    "@comunica/bus-rdf-dereference-paged": "^1.8.0",
+    "@comunica/actor-sparql-serialize-sparql-json": "^1.8.0",
+    "@comunica/bus-http-invalidate": "^1.8.0",
+    "@comunica/bus-rdf-dereference": "^1.8.0",
     "@comunica/bus-rdf-resolve-hypermedia": "^1.8.0",
+    "@comunica/bus-rdf-resolve-hypermedia-links": "^1.0.0",
     "@comunica/bus-rdf-resolve-quad-pattern": "^1.8.0",
     "@comunica/core": "^1.8.0",
     "@comunica/utils-datasource": "^1.4.5"
