@@ -8,6 +8,7 @@ import {N3Store, Store} from "n3";
 import * as RDF from "rdf-js";
 import {N3StoreIterator} from "./N3StoreIterator";
 import {N3StoreQuadSource} from "./N3StoreQuadSource";
+import {AsyncIterator} from "asynciterator";
 
 /**
  * A comunica File RDF Resolve Quad Pattern Actor.
@@ -26,7 +27,7 @@ export class ActorRdfResolveQuadPatternFile extends ActorRdfResolveQuadPatternSo
     super(args);
     this.cache = new LRUCache<string, any>({ max: this.cacheSize });
     this.httpInvalidator.addInvalidateListener(
-      ({ pageUrl }: IActionHttpInvalidate) => pageUrl ? this.cache.del(pageUrl) : this.cache.reset());
+      ({ url }: IActionHttpInvalidate) => url ? this.cache.del(url) : this.cache.reset());
   }
 
   public initializeFile(file: string, context: ActionContext): Promise<any> {
@@ -47,26 +48,24 @@ export class ActorRdfResolveQuadPatternFile extends ActorRdfResolveQuadPatternSo
   }
 
   public async test(action: IActionRdfResolveQuadPattern): Promise<IActorTest> {
-    if (!this.hasContextSingleSource('file', action.context)) {
+    if (!this.hasContextSingleSourceOfType('file', action.context)) {
       throw new Error(this.name + ' requires a single source with a file to be present in the context.');
     }
     return true;
   }
 
   protected async getSource(context: ActionContext): Promise<ILazyQuadSource> {
-    const file: string = this.getContextSourceUrl(context);
+    const file: string = this.getContextSourceUrl(this.getContextSource(context));
     if (!this.cache.has(file)) {
       await this.initializeFile(file, context);
     }
     return new N3StoreQuadSource(await this.cache.get(file));
   }
 
-  protected async getOutput(source: RDF.Source, pattern: RDF.Quad, context: ActionContext)
-  : Promise<IActorRdfResolveQuadPatternOutput> {
-    // Attach totalItems to the output
-    const output: IActorRdfResolveQuadPatternOutput = await super.getOutput(source, pattern, context);
-    output.metadata = () => new Promise((resolve, reject) => {
-      const file: string = this.getContextSourceUrl(context);
+  protected getMetadata(source: ILazyQuadSource, pattern: RDF.BaseQuad, context: ActionContext,
+                        data: AsyncIterator<RDF.Quad> & RDF.Stream): () => Promise<{[id: string]: any}> {
+    return () => new Promise((resolve, reject) => {
+      const file: string = this.getContextSourceUrl(this.getContextSource(context));
       this.cache.get(file).then((store) => {
         const totalItems: number = store.countQuads(
           N3StoreIterator.nullifyVariables(pattern.subject),
@@ -77,7 +76,6 @@ export class ActorRdfResolveQuadPatternFile extends ActorRdfResolveQuadPatternSo
         resolve({ totalItems });
       }, reject);
     });
-    return output;
   }
 
 }

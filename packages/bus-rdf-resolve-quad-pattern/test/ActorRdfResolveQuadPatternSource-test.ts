@@ -30,17 +30,15 @@ describe('ActorRdfResolveQuadPatternSource', () => {
 
     describe('getContextSourceUrl', () => {
       it('should return null when no source is available', () => {
-        return expect(actor.getContextSourceUrl(ActionContext({}))).toEqual(null);
+        return expect(actor.getContextSourceUrl(null)).toEqual(null);
       });
 
       it('should return when a source is available', () => {
-        const context = ActionContext({ [KEY_CONTEXT_SOURCE]: { value: 'abc' } });
-        return expect(actor.getContextSourceUrl(context)).toEqual('abc');
+        return expect(actor.getContextSourceUrl({ value: 'abc' })).toEqual('abc');
       });
 
       it('should strip away everything after the hash', () => {
-        const context = ActionContext({ [KEY_CONTEXT_SOURCE]: { value: 'http://ex.org/#abcdef#xyz' } });
-        return expect(actor.getContextSourceUrl(context)).toEqual('http://ex.org/');
+        return expect(actor.getContextSourceUrl({ value: 'http://ex.org/#abcdef#xyz' })).toEqual('http://ex.org/');
       });
     });
 

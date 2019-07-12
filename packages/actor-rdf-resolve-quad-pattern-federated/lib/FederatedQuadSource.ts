@@ -3,12 +3,12 @@ import {
   IActorRdfResolveQuadPatternOutput, IDataSource, ILazyQuadSource, KEY_CONTEXT_SOURCE, KEY_CONTEXT_SOURCES,
 } from "@comunica/bus-rdf-resolve-quad-pattern";
 import {ActionContext, Actor, IActorTest, Mediator} from "@comunica/core";
-import {quad} from "@rdfjs/data-model";
 import * as DataFactory from "@rdfjs/data-model";
 import {AsyncIterator, EmptyIterator} from "asynciterator";
 import {PromiseProxyIterator} from "asynciterator-promiseproxy";
 import {RoundRobinUnionIterator} from "asynciterator-union";
 import * as RDF from "rdf-js";
+import {Algebra, Factory} from "sparqlalgebrajs";
 
 /**
  * A FederatedQuadSource can evaluate quad pattern queries over the union of different heterogeneous sources.
@@ -22,6 +22,7 @@ export class FederatedQuadSource implements ILazyQuadSource {
   protected readonly contextDefault: ActionContext;
   protected readonly emptyPatterns: Map<IDataSource, RDF.BaseQuad[]>;
   protected readonly skipEmptyPatterns: boolean;
+  protected readonly algebraFactory: Factory;
 
   constructor(mediatorResolveQuadPattern: Mediator<Actor<IActionRdfResolveQuadPattern, IActorTest,
     IActorRdfResolveQuadPatternOutput>, IActionRdfResolveQuadPattern, IActorTest, IActorRdfResolveQuadPatternOutput>,
@@ -32,6 +33,7 @@ export class FederatedQuadSource implements ILazyQuadSource {
     this.contextDefault = context.delete(KEY_CONTEXT_SOURCES);
     this.emptyPatterns = emptyPatterns;
     this.skipEmptyPatterns = skipEmptyPatterns;
+    this.algebraFactory = new Factory();
 
     // Initialize sources in the emptyPatterns datastructure
     if (this.skipEmptyPatterns) {
@@ -150,7 +152,7 @@ export class FederatedQuadSource implements ILazyQuadSource {
 
       // If we can predict that the given source will have no bindings for the given pattern,
       // return an empty iterator.
-      const pattern: RDF.BaseQuad = quad(
+      const pattern: Algebra.Pattern = this.algebraFactory.createPattern(
         FederatedQuadSource.nullToVariable(subject, 's'),
         FederatedQuadSource.nullToVariable(predicate, 'p'),
         FederatedQuadSource.nullToVariable(object, 'o'),

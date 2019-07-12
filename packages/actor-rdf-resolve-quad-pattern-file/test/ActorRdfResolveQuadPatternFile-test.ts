@@ -209,7 +209,7 @@ describe('ActorRdfResolveQuadPatternFile', () => {
       await myActor.initialize();
       expect(myActor.cache.has('myFile1')).toBeTruthy();
       expect(myActor.cache.has('myFile2')).toBeTruthy();
-      await httpInvalidator.run({ pageUrl: 'myFile1' });
+      await httpInvalidator.run({ url: 'myFile1' });
       expect(myActor.cache.has('myFile1')).toBeFalsy();
       expect(myActor.cache.has('myFile2')).toBeTruthy();
     });

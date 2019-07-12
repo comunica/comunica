@@ -35,20 +35,6 @@ export class ActorRdfResolveQuadPatternFederated extends ActorRdfResolveQuadPatt
       this.emptyPatterns, this.skipEmptyPatterns);
   }
 
-  protected async getOutput(source: RDF.Source, pattern: RDF.Quad, context: ActionContext)
-  : Promise<IActorRdfResolveQuadPatternOutput> {
-    // Attach metadata to the output
-    const output: IActorRdfResolveQuadPatternOutput = await super.getOutput(source, pattern, context);
-    output.metadata = () => new Promise((resolve, reject) => {
-      output.data.on('error', reject);
-      output.data.on('end', () => reject(new Error('No metadata was found')));
-      output.data.on('metadata', (metadata) => {
-        resolve(metadata);
-      });
-    });
-    return output;
-  }
-
 }
 
 export interface IActorRdfResolveQuadPatternFederatedArgs

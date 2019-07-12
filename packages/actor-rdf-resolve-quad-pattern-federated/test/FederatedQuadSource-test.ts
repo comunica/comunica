@@ -1,12 +1,13 @@
 import {ActionContext} from "@comunica/core";
-import {blankNode, defaultGraph, literal, namedNode, quad, variable} from "@rdfjs/data-model";
+import {blankNode, defaultGraph, literal, namedNode, variable} from "@rdfjs/data-model";
 import {ArrayIterator, EmptyIterator} from "asynciterator";
 import {RoundRobinUnionIterator} from "asynciterator-union";
 import {AsyncReiterableArray} from "asyncreiterable";
-import * as RDF from "rdf-js";
+import Factory from "sparqlalgebrajs/lib/factory";
 import {FederatedQuadSource} from "../lib/FederatedQuadSource";
 const squad = require('rdf-quad');
 const arrayifyStream = require('arrayify-stream');
+const factory = new Factory();
 
 describe('FederatedQuadSource', () => {
   let mediator;
@@ -359,8 +360,8 @@ describe('FederatedQuadSource', () => {
 
       return expect(Array.from(emptyPatterns.entries())).toEqual([
         [subSource, [
-          quad<RDF.BaseQuad>(variable('s'), literal('p'), variable('o'), variable('g')),
-          quad<RDF.BaseQuad>(literal('s'), variable('p'), variable('o'), variable('g')),
+          factory.createPattern(variable('s'), literal('p'), variable('o'), variable('g')),
+          factory.createPattern(literal('s'), variable('p'), variable('o'), variable('g')),
         ]],
       ]);
     });
@@ -454,8 +455,8 @@ describe('FederatedQuadSource', () => {
 
       return expect(Array.from(emptyPatterns.entries())).toEqual([
         [subSource1, [
-          quad<RDF.BaseQuad>(variable('s'), literal('p'), variable('o'), variable('g')),
-          quad<RDF.BaseQuad>(literal('s'), variable('p'), variable('o'), variable('g')),
+          factory.createPattern(variable('s'), literal('p'), variable('o'), variable('g')),
+          factory.createPattern(literal('s'), variable('p'), variable('o'), variable('g')),
         ]],
         [subSource2, []],
       ]);
@@ -504,12 +505,12 @@ describe('FederatedQuadSource', () => {
 
       return expect(Array.from(emptyPatterns.entries())).toEqual([
         [subSource1, [
-          quad<RDF.BaseQuad>(variable('s'), literal('p'), variable('o'), variable('g')),
-          quad<RDF.BaseQuad>(literal('s'), variable('p'), variable('o'), variable('g')),
+          factory.createPattern(variable('s'), literal('p'), variable('o'), variable('g')),
+          factory.createPattern(literal('s'), variable('p'), variable('o'), variable('g')),
         ]],
         [subSource2, [
-          quad<RDF.BaseQuad>(variable('s'), literal('p'), variable('o'), variable('g')),
-          quad<RDF.BaseQuad>(literal('s'), variable('p'), variable('o'), variable('g')),
+          factory.createPattern(variable('s'), literal('p'), variable('o'), variable('g')),
+          factory.createPattern(literal('s'), variable('p'), variable('o'), variable('g')),
         ]],
       ]);
     });
@@ -555,8 +556,8 @@ describe('FederatedQuadSource', () => {
 
       return expect(Array.from(emptyPatterns.entries())).toEqual([
         [subSource, [
-          quad<RDF.BaseQuad>(variable('s'), literal('p'), variable('o'), variable('g')),
-          quad<RDF.BaseQuad>(literal('s'), variable('p'), variable('o'), variable('g')),
+          factory.createPattern(variable('s'), literal('p'), variable('o'), variable('g')),
+          factory.createPattern(literal('s'), variable('p'), variable('o'), variable('g')),
         ]],
       ]);
     });
