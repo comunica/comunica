@@ -70,6 +70,13 @@ describe('HttpServiceSparqlEndpoint', () => {
       stderr = new WritableStream();
     });
 
+    it("Should call .run on a created instance", async () => {
+      await HttpServiceSparqlEndpoint.runArgsInProcess([testCommandlineArgument],
+          stdout, stderr, moduleRootPath, configResourceUrl, exit);
+
+      expect(http.createServer).toBeCalled(); // Implicitly checking whether .run has been called
+    });
+
     it("should not exit if exactly one argument is supplied and -h and --help are not set", () => {
       HttpServiceSparqlEndpoint.runArgsInProcess([testCommandlineArgument],
           stdout, stderr, moduleRootPath, configResourceUrl, exit);
@@ -77,7 +84,7 @@ describe('HttpServiceSparqlEndpoint', () => {
       expect(exit).not.toHaveBeenCalled();
     });
 
-    it('should exit with help message if --help option is set', async () => {
+    it('should exit with help message if --help option is set', () => {
       HttpServiceSparqlEndpoint.runArgsInProcess([testCommandlineArgument, "--help"],
           stdout, stderr, moduleRootPath, configResourceUrl, exit);
 
@@ -85,7 +92,7 @@ describe('HttpServiceSparqlEndpoint', () => {
       expect(stderr.toString()).toBe(HttpServiceSparqlEndpoint.HELP_MESSAGE);
     });
 
-    it('should exit with help message if -h option is set', async () => {
+    it('should exit with help message if -h option is set', () => {
       HttpServiceSparqlEndpoint.runArgsInProcess([testCommandlineArgument, "-h"],
           stdout, stderr, moduleRootPath, configResourceUrl, exit);
 
@@ -93,7 +100,7 @@ describe('HttpServiceSparqlEndpoint', () => {
       expect(stderr.toString()).toBe(HttpServiceSparqlEndpoint.HELP_MESSAGE);
     });
 
-    it('should exit with help message if multiple arguments given', async () => {
+    it('should exit with help message if multiple arguments given', () => {
       HttpServiceSparqlEndpoint.runArgsInProcess([testCommandlineArgument, testCommandlineArgument],
           stdout, stderr, moduleRootPath, configResourceUrl, exit);
 
@@ -101,7 +108,7 @@ describe('HttpServiceSparqlEndpoint', () => {
       expect(stderr.toString()).toBe(HttpServiceSparqlEndpoint.HELP_MESSAGE);
     });
 
-    it('should exit with help message if no arguments given', async () => {
+    it('should exit with help message if no arguments given', () => {
       HttpServiceSparqlEndpoint.runArgsInProcess([],
           stdout, stderr, moduleRootPath, configResourceUrl, exit);
 
