@@ -2,6 +2,7 @@ import {ActionContext, Actor, IAction, IActorArgs, IActorOutput, IActorTest} fro
 import {AsyncIterator} from "asynciterator";
 import {AsyncReiterable} from "asyncreiterable";
 import * as RDF from "rdf-js";
+import {Algebra} from "sparqlalgebrajs";
 
 /**
  * A comunica actor for rdf-resolve-quad-pattern events.
@@ -19,16 +20,6 @@ export abstract class ActorRdfResolveQuadPattern extends Actor<IActionRdfResolve
 
   constructor(args: IActorArgs<IActionRdfResolveQuadPattern, IActorTest, IActorRdfResolveQuadPatternOutput>) {
     super(args);
-  }
-
-  /**
-   * Convert a metadata callback to a lazy callback where the response value is cached.
-   * @param {() => Promise<{[p: string]: any}>} metadata A metadata callback
-   * @return {() => Promise<{[p: string]: any}>} The callback where the response will be cached.
-   */
-  public static cachifyMetadata(metadata: () => Promise<{[id: string]: any}>): () => Promise<{[id: string]: any}> {
-    let lastReturn: Promise<{[id: string]: any}> = null;
-    return () => (lastReturn || (lastReturn = metadata()));
   }
 
   /**
@@ -51,11 +42,10 @@ export abstract class ActorRdfResolveQuadPattern extends Actor<IActionRdfResolve
 
   /**
    * Get the source's raw URL value from the given context.
-   * @param {ActionContext} context An optional context.
+   * @param {IDataSource} source A source.
    * @return {string} The URL or null.
    */
-  protected getContextSourceUrl(context: ActionContext): string {
-    const source = this.getContextSource(context);
+  protected getContextSourceUrl(source: IDataSource): string {
     if (source) {
       let fileUrl = source.value;
 
@@ -71,12 +61,22 @@ export abstract class ActorRdfResolveQuadPattern extends Actor<IActionRdfResolve
   }
 
   /**
+   * Check if the given context has a single source.
+   * @param {ActionContext} context An optional context.
+   * @return {boolean} If the given context has a single source of the given type.
+   */
+  protected hasContextSingleSource(context: ActionContext): boolean {
+    const source = this.getContextSource(context);
+    return !!(source && source.value);
+  }
+
+  /**
    * Check if the given context has a single source of the given type.
    * @param {string} requiredType The required source type name.
    * @param {ActionContext} context An optional context.
    * @return {boolean} If the given context has a single source of the given type.
    */
-  protected hasContextSingleSource(requiredType: string, context: ActionContext): boolean {
+  protected hasContextSingleSourceOfType(requiredType: string, context: ActionContext): boolean {
     const source = this.getContextSource(context);
     return !!(source && source.type === requiredType && source.value);
   }
@@ -84,7 +84,7 @@ export abstract class ActorRdfResolveQuadPattern extends Actor<IActionRdfResolve
 }
 
 export interface IDataSource {
-  type: string;
+  type?: string;
   value: any;
 }
 export type DataSources = AsyncReiterable<IDataSource>;
@@ -103,7 +103,7 @@ export interface IActionRdfResolveQuadPattern extends IAction {
   /**
    * The quad pattern to resolve.
    */
-  pattern: RDF.BaseQuad;
+  pattern: Algebra.Pattern;
 }
 
 export interface IActorRdfResolveQuadPatternOutput extends IActorOutput {
@@ -112,9 +112,12 @@ export interface IActorRdfResolveQuadPatternOutput extends IActorOutput {
    */
   data: AsyncIterator<RDF.Quad> & RDF.Stream;
   /**
-   * Callback that returns a promise that resolves to the metadata about the resulting stream.
-   * This metadata can contain things like the estimated number of total quads,
-   * or the order in which the quads appear.
+   * Callback that returns a promise that resolves to the metadata about the stream.
+   * This can contain things like the estimated number of total stream elements,
+   * or the order in which the bindings appear.
+   * This callback can be invoked multiple times.
+   * The actors that return this metadata will make sure that multiple calls properly cache this promise.
+   * Metadata will not be collected until this callback is invoked.
    */
-  metadata?: () => Promise<{[id: string]: any}>;
+  metadata: () => Promise<{[id: string]: any}>;
 }

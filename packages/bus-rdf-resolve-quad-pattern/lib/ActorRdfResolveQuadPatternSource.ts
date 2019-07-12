@@ -1,8 +1,12 @@
 import {ActionContext, IActorArgs, IActorTest} from "@comunica/core";
 import {AsyncIterator} from "asynciterator";
 import * as RDF from "rdf-js";
-import {ActorRdfResolveQuadPattern, IActionRdfResolveQuadPattern,
-  IActorRdfResolveQuadPatternOutput} from "./ActorRdfResolveQuadPattern";
+import {Algebra} from "sparqlalgebrajs";
+import {
+  ActorRdfResolveQuadPattern,
+  IActionRdfResolveQuadPattern,
+  IActorRdfResolveQuadPatternOutput,
+} from "./ActorRdfResolveQuadPattern";
 
 /**
  * A base implementation for rdf-resolve-quad-pattern events
@@ -23,54 +27,92 @@ export abstract class ActorRdfResolveQuadPatternSource extends ActorRdfResolveQu
     return term;
   }
 
+  /**
+   * Convert a metadata callback to a lazy callback where the response value is cached.
+   * @param {() => Promise<{[p: string]: any}>} metadata A metadata callback
+   * @return {() => Promise<{[p: string]: any}>} The callback where the response will be cached.
+   */
+  public static cachifyMetadata(metadata: () => Promise<{[id: string]: any}>): () => Promise<{[id: string]: any}> {
+    let lastReturn: Promise<{[id: string]: any}> = null;
+    return () => (lastReturn || (lastReturn = metadata()));
+  }
+
   public async test(action: IActionRdfResolveQuadPattern): Promise<IActorTest> {
     return true;
   }
 
   public async run(action: IActionRdfResolveQuadPattern): Promise<IActorRdfResolveQuadPatternOutput> {
-    const source: RDF.Source = await this.getSource(action.context);
-    const output: IActorRdfResolveQuadPatternOutput = await this.getOutput(source, action.pattern, action.context);
-    if (output.metadata) {
-      output.metadata = ActorRdfResolveQuadPattern.cachifyMetadata(output.metadata);
-    }
-    return output;
+    const source: RDF.Source = await this.getSource(action.context, action.pattern);
+    return await this.getOutput(source, action.pattern, action.context);
+  }
+
+  /**
+   * Get the metadata of the given action on a source.
+   *
+   * By default, this method is implemented by listening to the 'metadata' event
+   * in the data stream, and resolving the promise to its value.
+   *
+   * @param {RDF.Source} source An RDFJS source, possibly lazy.
+   * @param {Algebra.Operation} operation The operation to apply.
+   * @param ActionContext context Optional context data.
+   * @param {AsyncIterator<Quad> & Stream} data The data stream that was created by
+   *                                            executing source.matchLazy or source.match.
+   * @return {() => Promise<{[p: string]: any}>} A lazy promise behind a callback resolving to a metadata object.
+   */
+  protected getMetadata(source: ILazyQuadSource, pattern: RDF.BaseQuad, context: ActionContext,
+                        data: AsyncIterator<RDF.Quad> & RDF.Stream): () => Promise<{[id: string]: any}> {
+    return () => new Promise((resolve, reject) => {
+      data.on('error', reject);
+      data.on('end', () => resolve({}));
+      data.on('metadata', (metadata) => {
+        resolve(metadata);
+      });
+    });
   }
 
   /**
    * Get the output of the given action on a source.
    * @param {RDF.Source} source An RDFJS source, possibly lazy.
-   * @param {RDF.BaseQuad} pattern The resolve action.
+   * @param {Algebra.Operation} operation The operation to apply.
    * @param ActionContext context Optional context data.
    * @return {Promise<IActorRdfResolveQuadPatternOutput>} A promise that resolves to a hash containing
    *                                                      a data RDFJS stream and an optional metadata hash.
    */
   protected async getOutput(source: ILazyQuadSource, pattern: RDF.BaseQuad, context: ActionContext)
   : Promise<IActorRdfResolveQuadPatternOutput> {
+    // Create data stream
+    let data: AsyncIterator<RDF.Quad> & RDF.Stream;
     if (source.matchLazy) {
-      return { data: source.matchLazy(
+      data = source.matchLazy(
         ActorRdfResolveQuadPatternSource.variableToNull(pattern.subject),
         ActorRdfResolveQuadPatternSource.variableToNull(pattern.predicate),
         ActorRdfResolveQuadPatternSource.variableToNull(pattern.object),
         ActorRdfResolveQuadPatternSource.variableToNull(pattern.graph),
-      ) };
-    }
-    return { data:
+      );
+    } else {
       // TODO: AsyncIterator fix typings
-      (<any> AsyncIterator).wrap(source.match(
+      data = (<any> AsyncIterator).wrap(source.match(
         ActorRdfResolveQuadPatternSource.variableToNull(pattern.subject),
         ActorRdfResolveQuadPatternSource.variableToNull(pattern.predicate),
         ActorRdfResolveQuadPatternSource.variableToNull(pattern.object),
         ActorRdfResolveQuadPatternSource.variableToNull(pattern.graph),
-      )),
-    };
+      ));
+    }
+
+    // Create metadata callback
+    const metadata = ActorRdfResolveQuadPatternSource.cachifyMetadata(
+      this.getMetadata(source, pattern, context, data));
+
+    return { data, metadata };
   }
 
   /**
    * Get a source instance for the given context.
    * @param ActionContext context Optional context data.
+   * @param {Algebra.Pattern} operation The operation to apply.
    * @return {Promise<RDF.Source>} A promise that resolves to a source.
    */
-  protected abstract getSource(context: ActionContext): Promise<ILazyQuadSource>;
+  protected abstract getSource(context: ActionContext, operation: Algebra.Pattern): Promise<RDF.Source>;
 
 }
 

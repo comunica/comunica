@@ -12,7 +12,7 @@ export class ActorRdfResolveQuadPatternRdfJsSource extends ActorRdfResolveQuadPa
   }
 
   public async test(action: IActionRdfResolveQuadPattern): Promise<IActorTest> {
-    if (!this.hasContextSingleSource('rdfjsSource', action.context)) {
+    if (!this.hasContextSingleSourceOfType('rdfjsSource', action.context)) {
       throw new Error(this.name + ' requires a single source with an rdfjsSource to be present in the context.');
     }
     if (!this.getContextSource(action.context).value.match) {
