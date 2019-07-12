@@ -51,6 +51,16 @@ Options:
     this.engine = newEngineDynamic(args);
   }
 
+  /**
+   * Starts the server
+   * @param argv
+   * @param stdout
+   * @param stderr
+   * @param moduleRootPath
+   * @param configResourceUrl
+   * @param exit
+   * @return {Promise<void>} A promise that resolves when the server has been started.
+   */
   public static runArgsInProcess(argv: string[], stdout: Writable, stderr: Writable,
                                  moduleRootPath: string, configResourceUrl: string, exit: (code: number) => void) {
     const args = minimist(argv);
@@ -62,10 +72,20 @@ Options:
 
     const options = HttpServiceSparqlEndpoint.generateConstructorArguments(args, moduleRootPath, configResourceUrl);
 
-    // tslint:disable-next-line:no-console
-    new HttpServiceSparqlEndpoint(options).run(stdout, stderr).catch(console.error);
+    return new Promise((resolve) => {
+      new HttpServiceSparqlEndpoint(options).run(stdout, stderr)
+          .then(() => resolve())
+          // tslint:disable-next-line:no-console
+          .catch(console.error);
+    });
   }
 
+  /**
+   * Takes parsed commandline arguments and turns them into an object used in the HttpServiceSparqlEndpoint constructor
+   * @param {args: minimist.ParsedArgs} args
+   * @param {string} moduleRootPath
+   * @param {string} configResourceUrl
+   */
   public static generateConstructorArguments(args: minimist.ParsedArgs, moduleRootPath: string, configResourceUrl: string)
       : IHttpServiceSparqlEndpointArgs {
     // allow both files as direct JSON objects for context
