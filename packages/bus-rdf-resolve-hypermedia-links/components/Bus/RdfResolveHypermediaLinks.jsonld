@@ -1,0 +1,6 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-resolve-hypermedia-links/^1.0.0/components/context.jsonld",
+  "@id": "cbrrhl:Bus/RdfResolveHypermediaLinks",
+  "@type": "cc:Bus",
+  "comment": "A comunica bus for rdf-resolve-hypermedia-links events."
+}
