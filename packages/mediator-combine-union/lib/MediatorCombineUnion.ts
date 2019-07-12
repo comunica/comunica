@@ -17,7 +17,12 @@ export class MediatorCombineUnion<A extends Actor<I, T, O>, I extends IAction, T
   }
 
   public async mediate(action: I): Promise<O> {
-    const testResults: IActorReply<A, I, T, O>[] = this.publish(action);
+    let testResults: IActorReply<A, I, T, O>[];
+    try {
+      testResults = this.publish(action);
+    } catch (e) {
+      testResults = [];
+    }
 
     // Delegate test errors.
     await Promise.all(testResults.map(({ reply }) => reply));
