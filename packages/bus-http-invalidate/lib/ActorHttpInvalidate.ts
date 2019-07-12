@@ -24,7 +24,7 @@ export interface IActionHttpInvalidate extends IAction {
    * The URL that requires invalidation.
    * If not provided, then _all_ URLs need to be invalidated.
    */
-  pageUrl?: string;
+  url?: string;
 }
 
 export interface IActorHttpInvalidateOutput extends IActorOutput {

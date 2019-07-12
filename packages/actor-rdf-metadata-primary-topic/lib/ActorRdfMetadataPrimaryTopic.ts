@@ -45,7 +45,7 @@ export class ActorRdfMetadataPrimaryTopic extends ActorRdfMetadata {
       const primaryTopics: {[id: string]: string} = {};
       action.quads.on('data', (quad) => {
         if (quad.predicate.value === 'http://rdfs.org/ns/void#subset'
-          && quad.object.value === action.pageUrl) {
+          && quad.object.value === action.url) {
           endpointIdentifier = quad.subject.value;
         } else if (quad.predicate.value === 'http://xmlns.com/foaf/0.1/primaryTopic') {
           primaryTopics[quad.object.value] = quad.subject.value;

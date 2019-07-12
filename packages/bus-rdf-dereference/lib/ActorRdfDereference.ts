@@ -39,7 +39,7 @@ export interface IActorRdfDereferenceOutput extends IActorOutput {
    * This is not necessarily the same as the original input url,
    * as this may have changed due to redirects.
    */
-  pageUrl: string;
+  url: string;
   /**
    * The resulting quad stream.
    */

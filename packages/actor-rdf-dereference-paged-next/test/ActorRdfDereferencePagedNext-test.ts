@@ -70,16 +70,13 @@ describe('ActorRdfDereferencePagedNext', () => {
           switch (action.url) {
           case 'http://example.org/':
             return Promise.resolve(
-              { pageUrl: '0', quads: { data: stream0,
-                metadata: { next: 'http://example.org/1' }}, triples: true});
+              { url: '0', quads: { data: stream0, metadata: { next: 'http://example.org/1' }}, triples: true});
           case 'http://example.org/1':
             return Promise.resolve(
-              { pageUrl: '1', quads: { data: stream1,
-                metadata: { next: 'http://example.org/2' }}, triples: true});
+              { url: '1', quads: { data: stream1, metadata: { next: 'http://example.org/2' }}, triples: true});
           case 'http://example.org/2':
             return Promise.resolve(
-              { pageUrl: '2', quads: { data: stream2,
-                metadata: { next: null }}, triples: true});
+              { url: '2', quads: { data: stream2, metadata: { next: null }}, triples: true});
           default:
             return Promise.reject(new Error('Invalid paged-next URL in tests: ' + action.url));
           }
@@ -327,7 +324,7 @@ describe('ActorRdfDereferencePagedNext', () => {
       await actorCached.run({ url: 'http://example.org/2' });
       expect(actorCached.cache.has('http://example.org/1')).toBeTruthy();
       expect(actorCached.cache.has('http://example.org/2')).toBeTruthy();
-      await httpInvalidator.run({ pageUrl: 'http://example.org/1' });
+      await httpInvalidator.run({ url: 'http://example.org/1' });
       expect(actorCached.cache.has('http://example.org/1')).toBeFalsy();
       expect(actorCached.cache.has('http://example.org/2')).toBeTruthy();
     });

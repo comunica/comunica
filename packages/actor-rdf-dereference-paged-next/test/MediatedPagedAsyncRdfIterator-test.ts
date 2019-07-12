@@ -92,17 +92,17 @@ describe('MediatedPagedAsyncRdfIterator', () => {
 
       mediatorRdfDereference.mediate = (o) => {
         expect(o.url).toBe('URL');
-        return Promise.resolve({ pageUrl: 'PAGEURL', quads: 'QUADS' });
+        return Promise.resolve({ url: 'PAGEURL', quads: 'QUADS' });
       };
 
       mediatorMetadata.mediate = (o) => {
-        expect(o.pageUrl).toBe('PAGEURL');
+        expect(o.url).toBe('PAGEURL');
         expect(o.quads).toBe('QUADS');
         return Promise.resolve({ data: new SingletonIterator('DATA'), metadata: 'METADATA' });
       };
 
       mediatorMetadataExtract.mediate = (o) => {
-        expect(o.pageUrl).toBe('PAGEURL');
+        expect(o.url).toBe('PAGEURL');
         expect(o.metadata).toBe('METADATA');
         return Promise.resolve({ metadata: { next: 'NEXT' }});
       };
@@ -121,17 +121,17 @@ describe('MediatedPagedAsyncRdfIterator', () => {
 
       mediatorRdfDereference.mediate = (o) => {
         expect(o.url).toBe('URL');
-        return Promise.resolve({ pageUrl: 'PAGEURL', quads: 'QUADS' });
+        return Promise.resolve({ url: 'PAGEURL', quads: 'QUADS' });
       };
 
       mediatorMetadata.mediate = (o) => {
-        expect(o.pageUrl).toBe('PAGEURL');
+        expect(o.url).toBe('PAGEURL');
         expect(o.quads).toBe('QUADS');
         return Promise.resolve({ data: new SingletonIterator('DATA'), metadata: 'METADATA' });
       };
 
       mediatorMetadataExtract.mediate = (o) => {
-        expect(o.pageUrl).toBe('PAGEURL');
+        expect(o.url).toBe('PAGEURL');
         expect(o.metadata).toBe('METADATA');
         return Promise.reject('error');
       };

@@ -55,15 +55,15 @@ describe('ActorRdfMetadataAll', () => {
     });
 
     it('should test on a triple stream', () => {
-      return expect(actor.test({ pageUrl: '', quads: input, triples: true })).resolves.toBeTruthy();
+      return expect(actor.test({ url: '', quads: input, triples: true })).resolves.toBeTruthy();
     });
 
     it('should test on a quad stream', () => {
-      return expect(actor.test({ pageUrl: '', quads: input })).resolves.toBeTruthy();
+      return expect(actor.test({ url: '', quads: input })).resolves.toBeTruthy();
     });
 
     it('should run', () => {
-      return actor.run({ pageUrl: 'o1?param', quads: input })
+      return actor.run({ url: 'o1?param', quads: input })
         .then(async (output) => {
           const data: RDF.Quad[] = await arrayifyStream(output.data);
           const metadata: RDF.Quad[] = await arrayifyStream(output.metadata);
@@ -85,7 +85,7 @@ describe('ActorRdfMetadataAll', () => {
     });
 
     it('should run and delegate errors', () => {
-      return actor.run({ pageUrl: '', quads: input })
+      return actor.run({ url: '', quads: input })
         .then((output) => {
           setImmediate(() => input.emit('error', new Error('RDF Meta Primary Topic error')));
           output.data.on('data', () => { return; });
@@ -100,7 +100,7 @@ describe('ActorRdfMetadataAll', () => {
     });
 
     it('should run and not re-attach listeners after calling .read again', () => {
-      return actor.run({ pageUrl: 'o1?param', quads: inputDifferent })
+      return actor.run({ url: 'o1?param', quads: inputDifferent })
         .then(async (output) => {
           const data: RDF.Quad[] = await arrayifyStream(output.data);
           expect(data).toEqual([

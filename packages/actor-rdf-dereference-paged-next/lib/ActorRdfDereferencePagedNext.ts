@@ -28,7 +28,7 @@ export class ActorRdfDereferencePagedNext extends ActorRdfDereferencePaged imple
     this.cache = this.cacheSize ? new LRUCache<string, any>({ max: this.cacheSize }) : null;
     if (this.cache) {
       this.httpInvalidator.addInvalidateListener(
-        ({pageUrl}: IActionHttpInvalidate) => pageUrl ? this.cache.del(pageUrl) : this.cache.reset());
+        ({ url }: IActionHttpInvalidate) => url ? this.cache.del(url) : this.cache.reset());
     }
   }
 
@@ -74,14 +74,14 @@ export class ActorRdfDereferencePagedNext extends ActorRdfDereferencePaged imple
    */
   protected async runAsync(action: IActionRdfDereferencePaged): Promise<IActorRdfDereferencePagedOutput> {
     const firstPage: IActorRdfDereferenceOutput = await this.mediatorRdfDereference.mediate(action);
-    const firstPageUrl: string = firstPage.pageUrl;
+    const firstPageUrl: string = firstPage.url;
 
     const firstPageMetaSplit: IActorRdfMetadataOutput = await this.mediatorMetadata
-      .mediate({ context: action.context, pageUrl: firstPageUrl, quads: firstPage.quads, triples: firstPage.triples });
+      .mediate({ context: action.context, url: firstPageUrl, quads: firstPage.quads, triples: firstPage.triples });
     let materializedFirstPageMetadata: Promise<{[id: string]: any}> = null;
     const firstPageMetadata: () => Promise<{[id: string]: any}> = () => {
       return materializedFirstPageMetadata || (materializedFirstPageMetadata = this.mediatorMetadataExtract.mediate(
-        { context: action.context, pageUrl: firstPageUrl, metadata: firstPageMetaSplit.metadata })
+        { context: action.context, url: firstPageUrl, metadata: firstPageMetaSplit.metadata })
         .then((output) => output.metadata));
     };
 

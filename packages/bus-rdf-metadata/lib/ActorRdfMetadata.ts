@@ -24,7 +24,7 @@ export interface IActionRdfMetadata extends IAction {
   /**
    * The page URL from which the quads were retrieved.
    */
-  pageUrl: string;
+  url: string;
   /**
    * A quad stream.
    */

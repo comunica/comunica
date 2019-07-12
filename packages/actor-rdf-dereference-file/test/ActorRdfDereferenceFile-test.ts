@@ -75,12 +75,12 @@ describe('ActorRdfDereferenceFile', () => {
       const data = fs.readFileSync(p);
       return expect(actor.run({ url: p })).resolves.toMatchObject(
         {
-          pageUrl: p,
           quads: {
             data,
             mediaType: 'text/turtle',
           },
           triples: false,
+          url: p,
         });
     });
 
@@ -89,12 +89,12 @@ describe('ActorRdfDereferenceFile', () => {
       const data = fs.readFileSync(p);
       return expect(actor.run({ url: p, mediaType: 'text/turtle' })).resolves.toMatchObject(
         {
-          pageUrl: p,
           quads: {
             data,
             mediaType: 'text/turtle',
           },
           triples: false,
+          url: p,
         });
     });
 
@@ -104,12 +104,12 @@ describe('ActorRdfDereferenceFile', () => {
       p = 'file:///' + p;
       return expect(actor.run({ url: p, mediaType: 'text/turtle' })).resolves.toMatchObject(
         {
-          pageUrl: p,
           quads: {
             data,
             mediaType: 'text/turtle',
           },
           triples: false,
+          url: p,
         });
     });
 
@@ -118,11 +118,11 @@ describe('ActorRdfDereferenceFile', () => {
       const data = fs.readFileSync(p);
       return expect(actor.run({ url: p })).resolves.toMatchObject(
         {
-          pageUrl: p,
           quads: {
             data,
           },
           triples: false,
+          url: p,
         });
     });
 
@@ -131,11 +131,11 @@ describe('ActorRdfDereferenceFile', () => {
       const data = fs.readFileSync(p);
       return expect(actor.run({ url: p })).resolves.toMatchObject(
         {
-          pageUrl: p,
           quads: {
             data,
           },
           triples: false,
+          url: p,
         });
     });
   });

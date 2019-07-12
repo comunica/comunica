@@ -19,8 +19,8 @@ export class ActorRdfMetadataTriplePredicate extends ActorRdfMetadataQuadPredica
     return true;
   }
 
-  public isMetadata(quad: RDF.Quad, pageUrl: string, context: any): boolean {
-    if (quad.subject.value === pageUrl) {
+  public isMetadata(quad: RDF.Quad, url: string, context: any): boolean {
+    if (quad.subject.value === url) {
       return true;
     }
     for (const regex of this.predicateRegexes) {

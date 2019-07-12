@@ -49,15 +49,15 @@ describe('ActorRdfMetadataTriplePredicate', () => {
     });
 
     it('should not test on a triple stream', () => {
-      return expect(actor.test({ pageUrl: '', quads: input, triples: true })).resolves.toBeTruthy();
+      return expect(actor.test({ url: '', quads: input, triples: true })).resolves.toBeTruthy();
     });
 
     it('should test on a quad stream', () => {
-      return expect(actor.test({ pageUrl: '', quads: input })).resolves.toBeTruthy();
+      return expect(actor.test({ url: '', quads: input })).resolves.toBeTruthy();
     });
 
     it('should run', () => {
-      return actor.run({ pageUrl: 's3', quads: input })
+      return actor.run({ url: 's3', quads: input })
         .then(async (output) => {
           expect(await arrayifyStream(output.data)).toEqual([
             quad('s1', 'p1', 'o1', ''),
@@ -71,7 +71,7 @@ describe('ActorRdfMetadataTriplePredicate', () => {
     });
 
     it('should run and delegate errors', () => {
-      return actor.run({ pageUrl: '', quads: input })
+      return actor.run({ url: '', quads: input })
         .then((output) => {
           setImmediate(() => input.emit('error', new Error('RDF Meta Primary Topic error')));
           output.data.on('data', () => { return; });
