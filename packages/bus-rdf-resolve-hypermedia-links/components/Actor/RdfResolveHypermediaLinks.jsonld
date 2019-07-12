@@ -1,0 +1,32 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-resolve-hypermedia-links/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/bus-rdf-resolve-hypermedia-links",
+  "components": [
+    {
+      "@id": "cbrrhl:Actor/RdfResolveHypermediaLinks",
+      "@type": "AbstractClass",
+      "extends": "cc:Actor",
+      "requireElement": "ActorRdfResolveHypermediaLinks",
+      "comment": "A comunica actor for rdf-resolve-hypermedia-links events.",
+      "parameters": [
+        {
+          "@id": "cc:Actor/bus",
+          "defaultScoped": {
+            "defaultScope": "cbrrhl:Actor/RdfResolveHypermediaLinks",
+            "defaultScopedValue": { "@id": "cbrrhl:Bus/RdfResolveHypermediaLinks" }
+          }
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "cbrrhl:Actor/RdfResolveHypermediaLinks/constructorArgumentsObject",
+          "@type": "https://linkedsoftwaredependencies.org/vocabularies/object-oriented#Object",
+          "extends": "cc:Actor/constructorArgumentsObject"
+        }
+      ]
+    }
+  ]
+}
