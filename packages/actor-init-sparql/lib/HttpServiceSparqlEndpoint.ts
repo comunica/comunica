@@ -37,7 +37,7 @@ export class HttpServiceSparqlEndpoint {
   }
 
   public static runArgsInProcess(argv: string[], stdout: Writable, stderr: Writable,
-                                 moduleRootPath: string, configResourceUrl: string, exit: CallableFunction) {
+                                 moduleRootPath: string, configResourceUrl: string, exit: (code: number) => void) {
     const args = minimist(argv);
     if (args._.length !== 1 || args.h || args.help) {
       // tslint:disable:max-line-length
@@ -57,21 +57,29 @@ Options:
   --help        print this help message
 `);
 
-      exit();
+      exit(1);
     }
 
+    const options = HttpServiceSparqlEndpoint.generateConstructorArguments(args, moduleRootPath, configResourceUrl);
+
+    // tslint:disable-next-line:no-console
+    new HttpServiceSparqlEndpoint(options).run(stdout, stderr).catch(console.error);
+  }
+
+  public static generateConstructorArguments(args: minimist.ParsedArgs, moduleRootPath: string, configResourceUrl: string)
+      : IHttpServiceSparqlEndpointArgs {
     // allow both files as direct JSON objects for context
     const context = JSON.parse(fs.existsSync(args._[0]) ? fs.readFileSync(args._[0], 'utf8') : args._[0]);
-    const timeout = (parseInt(args.t, 10) || 60) * 1000;
-    const port = parseInt(args.p, 10) || 3000;
     const invalidateCacheBeforeQuery: boolean = args.i;
+    const port = parseInt(args.p, 10) || 3000;
+    const timeout = (parseInt(args.t, 10) || 60) * 1000;
 
     // Set the logger
     if (!context.log) {
       context.log = new LoggerPretty({ level: args.l || 'warn' });
     }
 
-    const options = {
+    return {
       configResourceUrl,
       context,
       invalidateCacheBeforeQuery,
@@ -79,9 +87,6 @@ Options:
       port,
       timeout,
     };
-
-    // tslint:disable-next-line:no-console
-    new HttpServiceSparqlEndpoint(options).run(stdout, stderr).catch(console.error);
   }
 
   /**
