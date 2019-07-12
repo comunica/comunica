@@ -33,8 +33,8 @@ describe('MediatorCombineUnion', () => {
     });
 
     describe('without actors', () => {
-      it('should not mediate', () => {
-        return expect(mediator.mediate({})).rejects.toBeTruthy();
+      it('should mediate', () => {
+        return expect(mediator.mediate({})).resolves.toEqual({ field: {} });
       });
     });
 
