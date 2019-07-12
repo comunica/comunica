@@ -1,7 +1,8 @@
 {
   "@context": [
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-resolve-quad-pattern-hypermedia/^1.0.0/components/context.jsonld",
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-resolve-quad-pattern/^1.0.0/components/context.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-resolve-quad-pattern/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-http-invalidate/^1.0.0/components/context.jsonld"
   ],
   "@id": "npmd:@comunica/actor-rdf-resolve-quad-pattern-hypermedia",
   "components": [
@@ -13,8 +14,20 @@
       "comment": "A comunica Hypermedia RDF Resolve Quad Pattern Actor.",
       "parameters": [
         {
-          "@id": "carrqph:Actor/RdfResolveQuadPattern/Hypermedia/mediatorRdfDereferencePaged",
-          "comment": "The paged RDF dereference mediator",
+          "@id": "carrqph:Actor/RdfResolveQuadPattern/Hypermedia/mediatorRdfDereference",
+          "comment": "The RDF dereference mediator",
+          "required": true,
+          "unique": true
+        },
+        {
+          "@id": "carrqph:Actor/RdfResolveQuadPattern/Hypermedia/mediatorMetadata",
+          "comment": "The metadata mediator",
+          "required": true,
+          "unique": true
+        },
+        {
+          "@id": "carrqph:Actor/RdfResolveQuadPattern/Hypermedia/mediatorMetadataExtract",
+          "comment": "The metadata extract mediator",
           "required": true,
           "unique": true
         },
@@ -25,31 +38,29 @@
           "unique": true
         },
         {
-          "@id": "carrqph:Actor/RdfResolveQuadPattern/Hypermedia/subjectUri",
-          "comment": "The URI that should be interpreted as subject URI",
-          "unique": true,
+          "@id": "carrqph:Actor/RdfResolveQuadPattern/Hypermedia/mediatorRdfResolveHypermediaLinks",
+          "comment": "The hypermedia links resolver",
           "required": true,
-          "default": "http://www.w3.org/1999/02/22-rdf-syntax-ns#subject"
+          "unique": true
         },
         {
-          "@id": "carrqph:Actor/RdfResolveQuadPattern/Hypermedia/predicateUri",
-          "comment": "The URI that should be interpreted as predicate URI",
-          "unique": true,
+          "@id": "carrqph:Actor/RdfResolveQuadPattern/Hypermedia/cacheSize",
+          "comment": "The maximum number of entries in the LRU cache, set to 0 to disable.",
+          "range": "xsd:integer",
+          "default": 100,
           "required": true,
-          "default": "http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate"
+          "unique": true
         },
         {
-          "@id": "carrqph:Actor/RdfResolveQuadPattern/Hypermedia/objectUri",
-          "comment": "The URI that should be interpreted as object URI",
-          "unique": true,
+          "@id": "carrqph:Actor/RdfResolveQuadPattern/Hypermedia/httpInvalidator",
+          "comment": "An actor that listens to HTTP invalidation events",
+          "range": "cbhi:Actor/HttpInvalidateListenable",
+          "default": {
+            "@id": "carrqph:Actor/RdfResolveQuadPattern/Hypermedia/httpInvalidator#default",
+            "@type": "cbhi:Actor/HttpInvalidateListenable"
+          },
           "required": true,
-          "default": "http://www.w3.org/1999/02/22-rdf-syntax-ns#object"
-        },
-        {
-          "@id": "carrqph:Actor/RdfResolveQuadPattern/Hypermedia/graphUri",
-          "comment": "The URI that should be interpreted as graph URI",
-          "unique": true,
-          "default": "http://www.w3.org/ns/sparql-service-description#graph"
+          "unique": true
         }
       ],
       "constructorArguments": [
@@ -57,28 +68,32 @@
           "extends": "cbrrqp:Actor/RdfResolveQuadPattern/constructorArgumentsObject",
           "fields": [
             {
-              "keyRaw": "mediatorRdfDereferencePaged",
-              "value": "carrqph:Actor/RdfResolveQuadPattern/Hypermedia/mediatorRdfDereferencePaged"
+              "keyRaw": "mediatorRdfDereference",
+              "value": "carrqph:Actor/RdfResolveQuadPattern/Hypermedia/mediatorRdfDereference"
+            },
+            {
+              "keyRaw": "mediatorMetadata",
+              "value": "carrqph:Actor/RdfResolveQuadPattern/Hypermedia/mediatorMetadata"
+            },
+            {
+              "keyRaw": "mediatorMetadataExtract",
+              "value": "carrqph:Actor/RdfResolveQuadPattern/Hypermedia/mediatorMetadataExtract"
             },
             {
               "keyRaw": "mediatorRdfResolveHypermedia",
               "value": "carrqph:Actor/RdfResolveQuadPattern/Hypermedia/mediatorRdfResolveHypermedia"
             },
             {
-              "keyRaw": "subjectUri",
-              "value": "carrqph:Actor/RdfResolveQuadPattern/Hypermedia/subjectUri"
+              "keyRaw": "mediatorRdfResolveHypermediaLinks",
+              "value": "carrqph:Actor/RdfResolveQuadPattern/Hypermedia/mediatorRdfResolveHypermediaLinks"
             },
             {
-              "keyRaw": "predicateUri",
-              "value": "carrqph:Actor/RdfResolveQuadPattern/Hypermedia/predicateUri"
+              "keyRaw": "cacheSize",
+              "value": "carrqph:Actor/RdfResolveQuadPattern/Hypermedia/cacheSize"
             },
             {
-              "keyRaw": "objectUri",
-              "value": "carrqph:Actor/RdfResolveQuadPattern/Hypermedia/objectUri"
-            },
-            {
-              "keyRaw": "graphUri",
-              "value": "carrqph:Actor/RdfResolveQuadPattern/Hypermedia/graphUri"
+              "keyRaw": "httpInvalidator",
+              "value": "carrqph:Actor/RdfResolveQuadPattern/Hypermedia/httpInvalidator"
             }
           ]
         }

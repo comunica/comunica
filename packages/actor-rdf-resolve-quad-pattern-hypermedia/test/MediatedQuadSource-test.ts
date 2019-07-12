@@ -1,58 +1,67 @@
-import {blankNode, namedNode, quad, variable} from "@rdfjs/data-model";
-import {ArrayIterator} from "asynciterator";
-import * as RDF from "rdf-js";
-import {Readable} from "stream";
+import {ActionContext} from "@comunica/core";
+import "jest-rdf";
+import {MediatedLinkedRdfSourcesAsyncRdfIterator} from "../lib/MediatedLinkedRdfSourcesAsyncRdfIterator";
 import {MediatedQuadSource} from "../lib/MediatedQuadSource";
 
+const streamifyArray = require('streamify-array');
+const arrayifyStream = require('arrayify-stream');
+const quad = require('rdf-quad');
+
 describe('MediatedQuadSource', () => {
-  let mediator;
-  let uriConstructor;
-  let S;
-  let P;
-  let O;
-  let G;
-  let V1;
-  let V2;
-  let V3;
-  let V4;
-  let BV1;
+  let context;
+  let mediatorRdfDereference;
+  let mediatorMetadata;
+  let mediatorMetadataExtract;
+  let mediatorRdfResolveHypermedia;
+  let mediatorRdfResolveHypermediaLinks;
+  let mediators;
 
   beforeEach(() => {
-    uriConstructor = (s, p, o, g) => Promise.resolve(s.value + ',' + p.value + ',' + o.value + ',' + g.value);
-    S = namedNode('S');
-    P = namedNode('P');
-    O = namedNode('O');
-    G = namedNode('G');
-    V1 = variable('v1');
-    V2 = variable('v2');
-    V3 = variable('v3');
-    V4 = variable('v4');
-    BV1 = blankNode('v1');
-    mediator = {};
-    mediator.mediate = (action) => new Promise((resolve, reject) => {
-      const readable = stream([
-        quad(namedNode('S'), namedNode('S'), namedNode('O'), namedNode('G')),
-        quad(namedNode('S'), namedNode('P'), namedNode('O'), namedNode('G')),
-        quad(namedNode('S'), namedNode('P'), namedNode('O'), namedNode('Ga')),
-        quad(namedNode('S'), namedNode('P'), namedNode('Oa'), namedNode('G')),
-        quad(namedNode('S'), namedNode('Pa'), namedNode('O'), namedNode('G')),
-        quad(namedNode('Sa'), namedNode('P'), namedNode('O'), namedNode('G')),
-        quad(namedNode('S'), namedNode('P'), namedNode('P'), namedNode('P')),
-      ]);
-      resolve({
-        data: readable,
-        firstPageMetadata: 'somemetadata',
-      });
-    });
+    context = ActionContext({});
+    mediatorRdfDereference = {
+      mediate: ({ url }) => Promise.resolve({
+        quads: url === 'firstUrl'
+          ? streamifyArray([
+            quad('s1', 'p1', 'o1'),
+            quad('s2', 'p2', 'o2'),
+          ])
+          : streamifyArray([
+            quad('s3', 'p3', 'o3'),
+            quad('s4', 'p4', 'o4'),
+          ]),
+        triples: true,
+        url,
+      }),
+    };
+    mediatorMetadata = {
+      mediate: ({ quads }) => Promise.resolve({ data: quads, metadata: { a: 1 } }),
+    };
+    mediatorMetadataExtract = {
+      mediate: ({ metadata }) => Promise.resolve({ metadata }),
+    };
+    mediatorRdfResolveHypermedia = {
+      mediate: ({ forceSourceType, handledDatasets, metadata, quads }) => Promise.resolve({
+        dataset: 'MYDATASET',
+        source: {
+          match: () => quads,
+        },
+      }),
+    };
+    mediatorRdfResolveHypermediaLinks = {
+      mediate: () => Promise.resolve({ urls: ['next'] }),
+    };
+    mediators = {
+      mediatorMetadata,
+      mediatorMetadataExtract,
+      mediatorRdfDereference,
+      mediatorRdfResolveHypermedia,
+      mediatorRdfResolveHypermediaLinks,
+    };
   });
 
   describe('The MediatedQuadSource module', () => {
     it('should be a function', () => {
       expect(MediatedQuadSource).toBeInstanceOf(Function);
-    });
-
-    it('should be a MediatedQuadSource constructor', () => {
-      expect(new MediatedQuadSource(mediator, uriConstructor, null)).toBeInstanceOf(MediatedQuadSource);
     });
   });
 
@@ -60,224 +69,123 @@ describe('MediatedQuadSource', () => {
     let source: MediatedQuadSource;
 
     beforeEach(() => {
-      source = new MediatedQuadSource(mediator, uriConstructor, null);
+      source = new MediatedQuadSource(context, 'firstUrl', 'forcedType', mediators);
     });
 
-    describe('for #getDuplicateElementLinks', () => {
-      it('should return falsy on a blank pattern', () => {
-        return expect(source.getDuplicateElementLinks()).toBeFalsy();
+    describe('matchLazy', () => {
+      it('should throw on regexps', () => {
+        return expect(() => source.matchLazy(/.*/))
+          .toThrow(new Error('MediatedQuadSource does not support matching by regular expressions.'));
       });
 
-      it('should return falsy on patterns with a single subject element', () => {
-        return expect(source.getDuplicateElementLinks(S)).toBeFalsy();
+      it('should return a MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
+        return expect(source.matchLazy()).toBeInstanceOf(MediatedLinkedRdfSourcesAsyncRdfIterator);
       });
 
-      it('should return falsy on patterns with a single predicate element', () => {
-        return expect(source.getDuplicateElementLinks(null, P)).toBeFalsy();
+      it('should return a stream', async () => {
+        expect(await arrayifyStream(source.matchLazy())).toEqualRdfQuadArray([
+          quad('s1', 'p1', 'o1'),
+          quad('s2', 'p2', 'o2'),
+          quad('s3', 'p3', 'o3'),
+          quad('s4', 'p4', 'o4'),
+        ]);
       });
 
-      it('should return falsy on patterns with a single object element', () => {
-        return expect(source.getDuplicateElementLinks(null, null, O)).toBeFalsy();
-      });
-
-      it('should return falsy on patterns with a single graph element', () => {
-        return expect(source.getDuplicateElementLinks(null, null, null, G)).toBeFalsy();
-      });
-
-      it('should return falsy on patterns with different elements', () => {
-        return expect(source.getDuplicateElementLinks(S, P, O, G)).toBeFalsy();
-      });
-
-      it('should return falsy on patterns with different variables', () => {
-        return expect(source.getDuplicateElementLinks(V1, V2, V3, V4)).toBeFalsy();
-      });
-
-      it('should return falsy on patterns when blank nodes and variables have the same value', () => {
-        return expect(source.getDuplicateElementLinks(V1, BV1, V3, V4)).toBeFalsy();
-      });
-
-      it('should return correctly on patterns with equal subject and predicate variables', () => {
-        return expect(source.getDuplicateElementLinks(V1, V1, V3, V4)).toEqual({ subject: [ 'predicate' ] });
-      });
-
-      it('should ignore patterns with equal subject and predicate blank nodes', () => {
-        return expect(source.getDuplicateElementLinks(BV1, BV1, V3, V4)).toEqual(null);
-      });
-
-      it('should return correctly on patterns with equal subject and object variables', () => {
-        return expect(source.getDuplicateElementLinks(V1, V2, V1, V4)).toEqual({ subject: [ 'object' ] });
-      });
-
-      it('should return correctly on patterns with equal subject and graph variables', () => {
-        return expect(source.getDuplicateElementLinks(V1, V2, V3, V1)).toEqual({ subject: [ 'graph' ] });
-      });
-
-      it('should return correctly on patterns with equal subject, predicate and object variables', () => {
-        return expect(source.getDuplicateElementLinks(V1, V1, V1, V4)).toEqual({ subject: [ 'predicate', 'object' ] });
-      });
-
-      it('should return correctly on patterns with equal subject, predicate and graph variables', () => {
-        return expect(source.getDuplicateElementLinks(V1, V1, V3, V1)).toEqual({ subject: [ 'predicate', 'graph' ] });
-      });
-
-      it('should return correctly on patterns with equal subject, object and graph variables', () => {
-        return expect(source.getDuplicateElementLinks(V1, V2, V1, V1)).toEqual({ subject: [ 'object', 'graph' ] });
-      });
-
-      it('should return correctly on patterns with equal subject, predicate, object and graph variables', () => {
-        return expect(source.getDuplicateElementLinks(V1, V1, V1, V1))
-          .toEqual({ subject: [ 'predicate', 'object', 'graph' ] });
-      });
-
-      it('should return correctly on patterns with equal predicate and object variables', () => {
-        return expect(source.getDuplicateElementLinks(V1, V2, V2, V4)).toEqual({ predicate: [ 'object' ] });
-      });
-
-      it('should return correctly on patterns with equal predicate and graph variables', () => {
-        return expect(source.getDuplicateElementLinks(V1, V2, V3, V2)).toEqual({ predicate: [ 'graph' ] });
-      });
-
-      it('should return correctly on patterns with equal predicate, object and graph variables', () => {
-        return expect(source.getDuplicateElementLinks(V1, V2, V2, V2)).toEqual({ predicate: [ 'object', 'graph' ] });
-      });
-
-      it('should return correctly on patterns with equal object and graph variables', () => {
-        return expect(source.getDuplicateElementLinks(V1, V2, V3, V3)).toEqual({ object: [ 'graph' ] });
-      });
-    });
-
-    it('should throw an error on a subject regex call', () => {
-      return expect(() => source.match(/.*/)).toThrow();
-    });
-
-    it('should throw an error on a predicate regex call', () => {
-      return expect(() => source.match(null, /.*/)).toThrow();
-    });
-
-    it('should throw an error on a object regex call', () => {
-      return expect(() => source.match(null, null, /.*/)).toThrow();
-    });
-
-    it('should throw an error on a graph regex call', () => {
-      return expect(() => source.match(null, null, null, /.*/)).toThrow();
-    });
-
-    it('should return the mediated stream', () => {
-      return new Promise((resolve, reject) => {
-        const output: RDF.Stream = source.match(S, P, O, G);
-        const list = [];
-        output.on('data', (e) => list.push(e));
-        output.on('error', reject);
-        output.on('end', () => {
-          expect(list).toEqual([
-            quad(namedNode('S'), namedNode('P'), namedNode('O'), namedNode('G')),
-          ]);
-          resolve();
+      it('should return a metadata event', async () => {
+        const out = source.matchLazy();
+        const metaPromise = new Promise((resolve, reject) => {
+          out.on('metadata', resolve);
+          out.on('end', () => reject(new Error('no metadata found')));
         });
+        expect(await arrayifyStream(out)).toEqualRdfQuadArray([
+          quad('s1', 'p1', 'o1'),
+          quad('s2', 'p2', 'o2'),
+          quad('s3', 'p3', 'o3'),
+          quad('s4', 'p4', 'o4'),
+        ]);
+        expect(await metaPromise).toEqual({ a: 1 });
+      });
+
+      it('should set the first source after the first matchLazy call', async () => {
+        source.matchLazy();
+        expect((await source.firstSource).metadata).toEqual({ a: 1 });
+        expect((await source.firstSource).source).toBeTruthy();
+      });
+
+      it('should allow a custom first source to be set', async () => {
+        source.firstSource = Promise.resolve({
+          metadata: { a: 2 },
+          source: {
+            match: () => streamifyArray([
+              quad('s1x', 'p1', 'o1'),
+              quad('s2x', 'p2', 'o2'),
+            ]),
+          },
+        });
+        return expect(await arrayifyStream(source.matchLazy())).toEqualRdfQuadArray([
+          quad('s1x', 'p1', 'o1'),
+          quad('s2x', 'p2', 'o2'),
+          quad('s3', 'p3', 'o3'),
+          quad('s4', 'p4', 'o4'),
+        ]);
+      });
+
+      it('should allow a custom first source to be set and emit a metadata event', async () => {
+        source.firstSource = Promise.resolve({
+          metadata: { a: 2 },
+          source: {
+            match: () => streamifyArray([
+              quad('s1x', 'p1', 'o1'),
+              quad('s2x', 'p2', 'o2'),
+            ]),
+          },
+        });
+        const out = source.matchLazy();
+        const metaPromise = new Promise((resolve, reject) => {
+          out.on('metadata', resolve);
+          out.on('end', () => reject(new Error('no metadata found')));
+        });
+        expect(await arrayifyStream(out)).toEqualRdfQuadArray([
+          quad('s1x', 'p1', 'o1'),
+          quad('s2x', 'p2', 'o2'),
+          quad('s3', 'p3', 'o3'),
+          quad('s4', 'p4', 'o4'),
+        ]);
+        expect(await metaPromise).toEqual({ a: 2 });
+      });
+
+      it('should match three chained sources', async () => {
+        let i = 0;
+        mediatorRdfResolveHypermediaLinks.mediate = () => Promise.resolve({ urls: ['next' + i] });
+        mediatorRdfResolveHypermedia.mediate = (args) => {
+          if (i < 3) {
+            i++;
+          }
+          return Promise.resolve({
+            dataset: 'MYDATASET' + i,
+            source: {
+              match: () => streamifyArray([
+                quad('s1' + i, 'p1' + i, 'o1' + i),
+                quad('s2' + i, 'p2' + i, 'o2' + i),
+              ]),
+            },
+          });
+        };
+        expect(await arrayifyStream(source.matchLazy())).toBeRdfIsomorphic([
+          quad('s11', 'p11', 'o11'),
+          quad('s21', 'p21', 'o21'),
+          quad('s12', 'p12', 'o12'),
+          quad('s22', 'p22', 'o22'),
+          quad('s13', 'p13', 'o13'),
+          quad('s23', 'p23', 'o23'),
+        ]);
       });
     });
 
-    it('should not filter the mediated stream for non-duplicate variables', () => {
-      return new Promise((resolve, reject) => {
-        const output: RDF.Stream = source.match(V1, V2, V3, V4);
-        const list = [];
-        output.on('data', (e) => list.push(e));
-        output.on('error', reject);
-        output.on('end', () => {
-          expect(list).toEqual([
-            quad(namedNode('S'), namedNode('S'), namedNode('O'), namedNode('G')),
-            quad(namedNode('S'), namedNode('P'), namedNode('O'), namedNode('G')),
-            quad(namedNode('S'), namedNode('P'), namedNode('O'), namedNode('Ga')),
-            quad(namedNode('S'), namedNode('P'), namedNode('Oa'), namedNode('G')),
-            quad(namedNode('S'), namedNode('Pa'), namedNode('O'), namedNode('G')),
-            quad(namedNode('Sa'), namedNode('P'), namedNode('O'), namedNode('G')),
-            quad(namedNode('S'), namedNode('P'), namedNode('P'), namedNode('P')),
-          ]);
-          resolve();
-        });
-      });
-    });
-
-    it('should filter the mediated stream for duplicate subject and predicate variables', () => {
-      return new Promise((resolve, reject) => {
-        const output: RDF.Stream = source.match(V1, V1, O, G);
-        const list = [];
-        output.on('data', (e) => list.push(e));
-        output.on('error', reject);
-        output.on('end', () => {
-          expect(list).toEqual([
-            quad(namedNode('S'), namedNode('S'), namedNode('O'), namedNode('G')),
-          ]);
-          resolve();
-        });
-      });
-    });
-
-    it('should filter the mediated stream for duplicate predicate, object and graph variables', () => {
-      return new Promise((resolve, reject) => {
-        const output: RDF.Stream = source.match(S, V2, V2, V2);
-        const list = [];
-        output.on('data', (e) => list.push(e));
-        output.on('error', reject);
-        output.on('end', () => {
-          expect(list).toEqual([
-            quad(namedNode('S'), namedNode('P'), namedNode('P'), namedNode('P')),
-          ]);
-          resolve();
-        });
-      });
-    });
-
-    it('should return the mediated metadata', () => {
-      return new Promise((resolve, reject) => {
-        const output: RDF.Stream = source.match(S, P, O, G);
-        output.on('metadata', (metadata) => {
-          expect(metadata).toEqual('somemetadata');
-          resolve();
-        });
-        output.on('error', reject);
-        output.on('end', reject);
-      });
-    });
-
-    it('should delegate promise rejections', () => {
-      const error = new Error('a');
-      mediator.mediate = (action) => new Promise((resolve, reject) => {
-        setImmediate(() => reject(error));
-      });
-      return new Promise((resolve, reject) => {
-        const output: RDF.Stream = source.match(S, P, O, G);
-        output.on('data', () => ({}));
-        output.on('error', (e) => {
-          expect(e).toEqual(error);
-          resolve();
-        });
-        output.on('end', reject);
-      });
-    });
-
-    it('should delegate errors', () => {
-      const data = stream([
-        quad(namedNode('S'), namedNode('P'), namedNode('O'), namedNode('G')),
-      ]);
-      mediator.mediate = (action) => Promise.resolve({ data });
-      const error = new Error('a');
-      return new Promise((resolve, reject) => {
-        const output: RDF.Stream = source.match(S, P, O, G);
-        output.on('data', () => {
-          data.emit('error', error);
-          return;
-        });
-        output.on('error', (e) => {
-          expect(e).toEqual(error);
-          resolve();
-        });
-        output.on('end', reject);
+    describe('match', () => {
+      it('should return a MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
+        return expect(source.match()).toBeInstanceOf(MediatedLinkedRdfSourcesAsyncRdfIterator);
       });
     });
   });
-
-  function stream(elements) {
-    return new ArrayIterator(elements);
-  }
 });
