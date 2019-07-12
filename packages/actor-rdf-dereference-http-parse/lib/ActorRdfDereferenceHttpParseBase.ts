@@ -58,7 +58,8 @@ export abstract class ActorRdfDereferenceHttpParseBase extends ActorRdfDereferen
 
     // Only parse if retrieval was successful
     if (httpResponse.status !== 200) {
-      throw new Error('Could not retrieve ' + action.url + ' (' + httpResponse.status + ')');
+      throw new Error(`Could not retrieve ${action.url} (${httpResponse.status}: ${
+        httpResponse.statusText || 'unknown error'})`);
     }
 
     // Parse the resulting response
