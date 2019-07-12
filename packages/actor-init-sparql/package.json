@@ -84,7 +84,6 @@
     "@comunica/actor-query-operation-union": "^1.8.0",
     "@comunica/actor-query-operation-values": "^1.8.0",
     "@comunica/actor-rdf-dereference-http-parse": "^1.8.0",
-    "@comunica/actor-rdf-dereference-paged-next": "^1.8.0",
     "@comunica/actor-rdf-join-nestedloop": "^1.8.0",
     "@comunica/actor-rdf-metadata-all": "^1.0.0",
     "@comunica/actor-rdf-metadata-extract-hydra-controls": "^1.8.0",
