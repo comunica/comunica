@@ -1,0 +1,21 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-resolve-hypermedia-links-next/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-resolve-hypermedia-links/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-rdf-resolve-hypermedia-links-next",
+  "components": [
+    {
+      "@id": "carrhln:Actor/RdfResolveHypermediaLinks/Next",
+      "@type": "Class",
+      "extends": "cbrrhl:Actor/RdfResolveHypermediaLinks",
+      "requireElement": "ActorRdfResolveHypermediaLinksNext",
+      "comment": "A comunica Next RDF Resolve Hypermedia Links Actor.",
+      "constructorArguments": [
+        {
+          "extends": "cbrrhl:Actor/RdfResolveHypermediaLinks/constructorArgumentsObject"
+        }
+      ]
+    }
+  ]
+}
