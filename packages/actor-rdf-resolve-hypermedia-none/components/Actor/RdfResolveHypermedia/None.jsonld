@@ -1,0 +1,21 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-resolve-hypermedia-none/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-resolve-hypermedia/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-rdf-resolve-hypermedia-none",
+  "components": [
+    {
+      "@id": "carrhn:Actor/RdfResolveHypermedia/None",
+      "@type": "Class",
+      "extends": "cbrrh:Actor/RdfResolveHypermedia",
+      "requireElement": "ActorRdfResolveHypermediaNone",
+      "comment": "A comunica None RDF Resolve Hypermedia Actor.",
+      "constructorArguments": [
+        {
+          "extends": "cbrrh:Actor/RdfResolveHypermedia/constructorArgumentsObject"
+        }
+      ]
+    }
+  ]
+}

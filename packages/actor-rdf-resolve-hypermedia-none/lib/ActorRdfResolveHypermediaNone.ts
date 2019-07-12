@@ -1,0 +1,25 @@
+import {ActorRdfResolveHypermedia, IActionRdfResolveHypermedia,
+  IActorRdfResolveHypermediaOutput} from "@comunica/bus-rdf-resolve-hypermedia";
+import {IActorRdfResolveHypermediaTest} from "@comunica/bus-rdf-resolve-hypermedia";
+import {IActorArgs} from "@comunica/core";
+import {storeStream} from "rdf-store-stream";
+
+/**
+ * A comunica None RDF Resolve Hypermedia Actor.
+ */
+export class ActorRdfResolveHypermediaNone extends ActorRdfResolveHypermedia {
+
+  constructor(args: IActorArgs<IActionRdfResolveHypermedia,
+    IActorRdfResolveHypermediaTest, IActorRdfResolveHypermediaOutput>) {
+    super(args, 'file');
+  }
+
+  public async testMetadata(action: IActionRdfResolveHypermedia): Promise<IActorRdfResolveHypermediaTest> {
+    return { filterFactor: 0 };
+  }
+
+  public async run(action: IActionRdfResolveHypermedia): Promise<IActorRdfResolveHypermediaOutput> {
+    return { source: await storeStream(action.quads) };
+  }
+
+}

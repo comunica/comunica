@@ -1,0 +1,9 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-resolve-hypermedia-none/^1.0.0/components/context.jsonld",
+  "@id": "npmd:@comunica/actor-rdf-resolve-hypermedia-none",
+  "@type": "Module",
+  "requireName": "@comunica/actor-rdf-resolve-hypermedia-none",
+  "import": [
+    "files-carrhn:components/Actor/RdfResolveHypermedia/None.jsonld"
+  ]
+}
