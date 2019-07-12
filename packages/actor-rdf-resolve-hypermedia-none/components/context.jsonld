@@ -1,0 +1,12 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
+      "carrhn": "npmd:@comunica/actor-rdf-resolve-hypermedia-none/",
+      "files-carrhn": "carrhn:^1.0.0/",
+
+      "ActorRdfResolveHypermediaNone": "carrhn:Actor/RdfResolveHypermedia/None"
+    }
+  ]
+}
