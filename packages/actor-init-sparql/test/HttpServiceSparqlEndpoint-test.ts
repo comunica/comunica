@@ -1,5 +1,8 @@
+import {LoggerPretty} from "@comunica/logger-pretty";
+import minimist = require("minimist");
 import * as querystring from "querystring";
 import {PassThrough} from "stream";
+import {fs, testArgumentDict, testFileContentDict} from "../../../__mocks__/fs";
 import {http, ServerResponseMock} from "../../../__mocks__/http";
 import {parse} from "../../../__mocks__/url";
 import {newEngineDynamic} from "../__mocks__/index";
@@ -20,6 +23,10 @@ jest.mock("url", () => {
 
 jest.mock("http", () => {
   return http;
+});
+
+jest.mock("fs", () => {
+  return fs;
 });
 
 describe('HttpServiceSparqlEndpoint', () => {
@@ -46,6 +53,116 @@ describe('HttpServiceSparqlEndpoint', () => {
       expect(instance.timeout).toBe(60000);
       expect(instance.port).toBe(3000);
       expect(instance.invalidateCacheBeforeQuery).toBeFalsy();
+    });
+  });
+
+  describe('runArgsInProcess', () => {
+    const testCommandlineArgument = '{ "sources": [{ "type": "file", "value" : "http://localhost:8080/data.jsonld" }]}';
+    const stdout = new PassThrough();
+    const stderr = new PassThrough();
+    const moduleRootPath = "test_modulerootpath";
+    const configResourceUrl = "test_configResourceUrl";
+    const exit = jest.fn();
+    beforeEach(() => {
+      // ok
+    });
+
+    it('should call run', async () => {
+      // TODO
+    });
+  });
+
+  describe("generateConstructorArguments", () => {
+    let testCommandlineArguments;
+    const contextCommandlineArgument = JSON.stringify(testArgumentDict);
+    const moduleRootPath = "test_modulerootpath";
+    const configResourceUrl = "test_configResourceUrl";
+    beforeEach(() => {
+      fs.existsSync.mockReturnValue(true);
+      testCommandlineArguments = [contextCommandlineArgument];
+    });
+
+    it('should return an object containing moduleRootPath and configResourceUrl', () => {
+      expect(HttpServiceSparqlEndpoint
+          .generateConstructorArguments(minimist(testCommandlineArguments), moduleRootPath, configResourceUrl))
+          .toMatchObject({configResourceUrl, mainModulePath: moduleRootPath});
+    });
+
+    it('should use logger from given context if available', () => {
+      fs.existsSync.mockReturnValue(false);
+      const context = {...testArgumentDict, ...{log: new LoggerPretty({level: "test_loglevel"})}};
+
+      const log = HttpServiceSparqlEndpoint
+          .generateConstructorArguments(minimist([JSON.stringify(context)]), moduleRootPath, configResourceUrl)
+          .context.log;
+
+      expect(log).toMatchObject({level: "test_loglevel"});
+    });
+
+    it('should use loglevel from commandline arguments if available', () => {
+      testCommandlineArguments.push("-l", "test_loglevel");
+      const log = HttpServiceSparqlEndpoint
+          .generateConstructorArguments(minimist(testCommandlineArguments), moduleRootPath, configResourceUrl)
+          .context.log;
+
+      expect(log).toBeInstanceOf(LoggerPretty);
+      expect(log.level).toBe('test_loglevel');
+    });
+
+    it('should set a logger with loglevel "warn" if none is defined in the given context', () => {
+      const log = HttpServiceSparqlEndpoint
+          .generateConstructorArguments(minimist(testCommandlineArguments), moduleRootPath, configResourceUrl)
+          .context.log;
+
+      expect(log).toBeInstanceOf(LoggerPretty);
+      expect(log.level).toBe('warn');
+    });
+
+    it('should read timeout from the commandline options or use correct default', () => {
+      expect(HttpServiceSparqlEndpoint
+          .generateConstructorArguments(minimist(testCommandlineArguments), moduleRootPath, configResourceUrl)
+          .timeout).toBe(60 * 1000);
+
+      testCommandlineArguments.push("-t", 5);
+      expect(HttpServiceSparqlEndpoint
+          .generateConstructorArguments(minimist(testCommandlineArguments), moduleRootPath, configResourceUrl)
+          .timeout).toBe(5 * 1000);
+    });
+
+    it('should read port from the commandline options or use correct default', () => {
+      expect(HttpServiceSparqlEndpoint
+          .generateConstructorArguments(minimist(testCommandlineArguments), moduleRootPath, configResourceUrl)
+          .port).toBe(3000);
+
+      testCommandlineArguments.push("-p", 4321);
+      expect(HttpServiceSparqlEndpoint
+          .generateConstructorArguments(minimist(testCommandlineArguments), moduleRootPath, configResourceUrl)
+          .port).toBe(4321);
+    });
+
+    it("should read cache invalidation from the commandline options or use correct default", () => {
+      expect(HttpServiceSparqlEndpoint
+          .generateConstructorArguments(minimist(testCommandlineArguments), moduleRootPath, configResourceUrl)
+          .invalidateCacheBeforeQuery).toBeFalsy();
+
+      testCommandlineArguments.push("-i");
+      expect(HttpServiceSparqlEndpoint
+          .generateConstructorArguments(minimist(testCommandlineArguments), moduleRootPath, configResourceUrl)
+          .invalidateCacheBeforeQuery).toBe(true);
+    });
+
+    it("should try to get context by parsing the commandline argument if it's not an existing file", () => {
+      fs.existsSync.mockReturnValue(false);
+
+      expect(HttpServiceSparqlEndpoint
+          .generateConstructorArguments(minimist(testCommandlineArguments), moduleRootPath, configResourceUrl)
+          .context).toMatchObject(testArgumentDict);
+    });
+
+    it('should read context from file if commandline argument is an existing file', () => {
+      expect(HttpServiceSparqlEndpoint
+          .generateConstructorArguments(minimist(testCommandlineArguments), moduleRootPath, configResourceUrl)
+          .context).toMatchObject(testFileContentDict);
     });
   });
 

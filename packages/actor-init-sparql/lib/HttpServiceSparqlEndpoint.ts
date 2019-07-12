@@ -1,4 +1,3 @@
-import {IActionInit, IActorOutputInit} from "@comunica/bus-init";
 import {LoggerPretty} from "@comunica/logger-pretty";
 import * as fs from "fs";
 import * as http from "http";
