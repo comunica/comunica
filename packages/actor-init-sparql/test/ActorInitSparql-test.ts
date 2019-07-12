@@ -153,6 +153,7 @@ describe('ActorInitSparql', () => {
   describe('An ActorInitSparql instance', () => {
     const hypermedia: string = "http://example.org/";
     const hypermedia2: string = "hypermedia@http://example.org/";
+    const otherSource: string = "other@http://example.org/";
     const queryString: string = "SELECT * WHERE { ?s ?p ?o } LIMIT 100";
     const context: any = JSON.stringify({ hypermedia });
     let actor: ActorInitSparql;
@@ -401,6 +402,17 @@ describe('ActorInitSparql', () => {
         });
     });
 
+    it('should run with an other source type and query file option from argv', () => {
+      return actor.run({ argv: [ otherSource, '-f' , __dirname + '/assets/all-100.sparql' ], env: {},
+        stdin: new PassThrough() })
+        .then((result) => {
+          return new Promise((resolve, reject) => {
+            result.stdout.on('data', (line) => expect(line).toBeTruthy());
+            result.stdout.on('end', resolve);
+          });
+        });
+    });
+
     it('should run with multiple hypermedias and a query option', () => {
       return expect(actor.run(
         { argv: [ hypermedia, hypermedia, '-q', queryString ], env: {}, stdin: new PassThrough() }))
@@ -445,7 +457,7 @@ describe('ActorInitSparql', () => {
       it('should call the HTTP invalidate mediator', async () => {
         jest.spyOn(mediatorHttpInvalidate, 'mediate');
         await actor.invalidateHttpCache('a');
-        expect(mediatorHttpInvalidate.mediate).toHaveBeenCalledWith({ pageUrl: 'a' });
+        expect(mediatorHttpInvalidate.mediate).toHaveBeenCalledWith({ url: 'a' });
       });
     });
 

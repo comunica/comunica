@@ -131,10 +131,8 @@ Options:
       args._.forEach((sourceValue: string) => {
         const source: {[id: string]: string} = {};
         const splitValues: string[] = sourceValue.split('@', 2);
-        if (splitValues.length === 1) {
-          // Set default type
-          source.type = 'auto';
-        } else {
+        if (splitValues.length > 1
+          && splitValues[0] !== 'auto' && splitValues[0] !== 'hypermedia') { // TODO: backwards compatibility
           source.type = splitValues[0];
         }
         source.value = splitValues[splitValues.length - 1];
