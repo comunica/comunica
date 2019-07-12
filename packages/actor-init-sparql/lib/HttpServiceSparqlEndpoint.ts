@@ -16,6 +16,22 @@ import {IQueryOptions} from "./QueryDynamic";
 export class HttpServiceSparqlEndpoint {
   public static readonly MIME_PLAIN = 'text/plain';
   public static readonly MIME_JSON  = 'application/json';
+  // tslint:disable:max-line-length
+  public static readonly HELP_MESSAGE = `comunica-sparql-http exposes a Comunica engine as SPARQL endpoint
+
+context should be a JSON object or the path to such a JSON file.
+
+Usage:
+  comunica-sparql-http context.json [-p port] [-t timeout] [-l log-level] [-i] [--help]
+  comunica-sparql-http "{ \\"sources\\": [{ \\"type\\": \\"hypermedia\\", \\"value\\" : \\"http://fragments.dbpedia.org/2015/en\\" }]}" [-p port] [-t timeout] [-l log-level] [-i] [--help]
+
+Options:
+  -p            The HTTP port to run on (default: 3000)
+  -t            The query execution timeout in seconds (default: 60)
+  -l            Sets the log level (e.g., debug, info, warn, ... defaults to warn)
+  -i            A flag that enables cache invalidation before each query execution.
+  --help        print this help message
+`;
 
   public readonly engine: Promise<ActorInitSparql>;
 
@@ -39,22 +55,7 @@ export class HttpServiceSparqlEndpoint {
                                  moduleRootPath: string, configResourceUrl: string, exit: (code: number) => void) {
     const args = minimist(argv);
     if (args._.length !== 1 || args.h || args.help) {
-      // tslint:disable:max-line-length
-      stderr.write(`comunica-sparql-http exposes a Comunica engine as SPARQL endpoint
-
-context should be a JSON object or the path to such a JSON file.
-
-Usage:
-  comunica-sparql-http context.json [-p port] [-t timeout] [-l log-level] [-i] [--help]
-  comunica-sparql-http "{ \\"sources\\": [{ \\"type\\": \\"hypermedia\\", \\"value\\" : \\"http://fragments.dbpedia.org/2015/en\\" }]}" [-p port] [-t timeout] [-l log-level] [-i] [--help]
-
-Options:
-  -p            The HTTP port to run on (default: 3000)
-  -t            The query execution timeout in seconds (default: 60)
-  -l            Sets the log level (e.g., debug, info, warn, ... defaults to warn)
-  -i            A flag that enables cache invalidation before each query execution.
-  --help        print this help message
-`);
+      stderr.write(this.HELP_MESSAGE);
 
       exit(1);
     }

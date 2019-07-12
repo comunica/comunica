@@ -19,7 +19,9 @@ class ServerMock {
   }
 }
 
-const http = jest.genMockFromModule('http');
+const http = {
+  ...jest.requireActual("http"),
+};
 http.createServer = jest.fn(() => {
   return new ServerMock();
 });

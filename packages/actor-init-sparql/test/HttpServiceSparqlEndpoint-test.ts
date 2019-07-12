@@ -1,4 +1,5 @@
 import {LoggerPretty} from "@comunica/logger-pretty";
+import {WritableStream} from "memory-streams";
 import minimist = require("minimist");
 import * as querystring from "querystring";
 import {PassThrough} from "stream";
@@ -58,17 +59,54 @@ describe('HttpServiceSparqlEndpoint', () => {
 
   describe('runArgsInProcess', () => {
     const testCommandlineArgument = '{ "sources": [{ "type": "file", "value" : "http://localhost:8080/data.jsonld" }]}';
-    const stdout = new PassThrough();
-    const stderr = new PassThrough();
+    let stdout;
+    let stderr;
     const moduleRootPath = "test_modulerootpath";
     const configResourceUrl = "test_configResourceUrl";
     const exit = jest.fn();
     beforeEach(() => {
-      // ok
+      exit.mockClear();
+      stdout = new WritableStream();
+      stderr = new WritableStream();
     });
 
-    it('should call run', async () => {
-      // TODO
+    it("should not exit if exactly one argument is supplied and -h and --help are not set", () => {
+      HttpServiceSparqlEndpoint.runArgsInProcess([testCommandlineArgument],
+          stdout, stderr, moduleRootPath, configResourceUrl, exit);
+
+      expect(exit).not.toHaveBeenCalled();
+    });
+
+    it('should exit with help message if --help option is set', async () => {
+      HttpServiceSparqlEndpoint.runArgsInProcess([testCommandlineArgument, "--help"],
+          stdout, stderr, moduleRootPath, configResourceUrl, exit);
+
+      expect(exit).toHaveBeenCalledWith(1);
+      expect(stderr.toString()).toBe(HttpServiceSparqlEndpoint.HELP_MESSAGE);
+    });
+
+    it('should exit with help message if -h option is set', async () => {
+      HttpServiceSparqlEndpoint.runArgsInProcess([testCommandlineArgument, "-h"],
+          stdout, stderr, moduleRootPath, configResourceUrl, exit);
+
+      expect(exit).toHaveBeenCalledWith(1);
+      expect(stderr.toString()).toBe(HttpServiceSparqlEndpoint.HELP_MESSAGE);
+    });
+
+    it('should exit with help message if multiple arguments given', async () => {
+      HttpServiceSparqlEndpoint.runArgsInProcess([testCommandlineArgument, testCommandlineArgument],
+          stdout, stderr, moduleRootPath, configResourceUrl, exit);
+
+      expect(exit).toHaveBeenCalledWith(1);
+      expect(stderr.toString()).toBe(HttpServiceSparqlEndpoint.HELP_MESSAGE);
+    });
+
+    it('should exit with help message if no arguments given', async () => {
+      HttpServiceSparqlEndpoint.runArgsInProcess([],
+          stdout, stderr, moduleRootPath, configResourceUrl, exit);
+
+      expect(exit).toHaveBeenCalledWith(1);
+      expect(stderr.toString()).toBe(HttpServiceSparqlEndpoint.HELP_MESSAGE);
     });
   });
 
