@@ -12,6 +12,7 @@ export class ActorRdfMetadataExtractHydraControlsQuery extends ActorRdfMetadataE
 
   public static readonly GRAPHQLLD_QUERY: string = `
     query($pageUrl: String) @single(scope: all) {
+      id
       graph
       subset(_: $pageUrl)
       search @plural {
@@ -36,7 +37,7 @@ export class ActorRdfMetadataExtractHydraControlsQuery extends ActorRdfMetadataE
   public async run(action: IActionRdfMetadataExtract): Promise<IActorRdfMetadataExtractOutput> {
     return {
       metadata: {
-        searchForms: await this.queryHydraControls(action.pageUrl, action.metadata),
+        searchForms: this.constructHydraControls(await this.queryData(action.metadata, { '?pageUrl': action.url })),
       },
     };
   }
@@ -55,17 +56,15 @@ export class ActorRdfMetadataExtractHydraControlsQuery extends ActorRdfMetadataE
   }
 
   /**
-   * Fetch all hydra controls for the given page URL and metadata stream.
-   * @param {string} pageUrl The current page URL.
-   * @param {RDF.Stream} metadata The metadata stream.
+   * Find all hydra controls within the given query results.
+   * @param queryResults The query results.
    * @return The discovered Hydra search forms.
    */
-  public async queryHydraControls(pageUrl: string, metadata: RDF.Stream): Promise<ISearchForms> {
-    const results = await this.queryData(metadata, { '?pageUrl': pageUrl });
-
+  public constructHydraControls(queryResults: any): ISearchForms {
+    const dataset: string = queryResults.id;
     const values: ISearchForm[] = [];
-    if (results.search) {
-      for (const search of results.search) {
+    if (queryResults.search) {
+      for (const search of queryResults.search) {
         const searchTemplate: UriTemplate = this.parseUriTemplateCached(search.template);
         const mappings = (search.mapping || []).reduce((acc: any, entry: any) => {
           acc[entry.property] = entry.variable;
@@ -78,6 +77,7 @@ export class ActorRdfMetadataExtractHydraControlsQuery extends ActorRdfMetadataE
           }, {}));
         };
         values.push({
+          dataset,
           getUri,
           mappings,
           template: search.template,
@@ -91,6 +91,10 @@ export class ActorRdfMetadataExtractHydraControlsQuery extends ActorRdfMetadataE
 }
 
 export interface ISearchForm {
+  /**
+   * The dataset in which the search form is defined.
+   */
+  dataset: string;
   /**
    * The URI template containing Hydra variables.
    */
