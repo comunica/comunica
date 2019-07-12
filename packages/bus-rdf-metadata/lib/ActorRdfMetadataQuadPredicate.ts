@@ -41,7 +41,7 @@ export abstract class ActorRdfMetadataQuadPredicate extends ActorRdfMetadata {
 
       const context = {};
       action.quads.on('data', (quad) => {
-        if (this.isMetadata(quad, action.pageUrl, context)) {
+        if (this.isMetadata(quad, action.url, context)) {
           metadata.push(quad);
         } else {
           data.push(quad);

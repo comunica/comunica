@@ -48,16 +48,16 @@ describe('ActorRdfMetadataExtractHydraCount', () => {
     });
 
     it('should test', () => {
-      return expect(actor.test({ pageUrl: '', metadata: input })).resolves.toBeTruthy();
+      return expect(actor.test({ url: '', metadata: input })).resolves.toBeTruthy();
     });
 
     it('should run on a stream where count is given', () => {
-      return expect(actor.run({ pageUrl: '', metadata: input })).resolves
+      return expect(actor.run({ url: '', metadata: input })).resolves
         .toEqual({ metadata: { totalItems: 12345 }});
     });
 
     it('should run on a stream where count is not given', () => {
-      return expect(actor.run({ pageUrl: '', metadata: inputNone })).resolves
+      return expect(actor.run({ url: '', metadata: inputNone })).resolves
         .toEqual({ metadata: { totalItems: Infinity }});
     });
   });
