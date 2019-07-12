@@ -1,6 +1,5 @@
 import {ActorRdfMetadataExtract} from "@comunica/bus-rdf-metadata-extract";
 import {Bus} from "@comunica/core";
-import {Readable} from "stream";
 import {ActorRdfMetadataExtractHydraControls} from "../lib/ActorRdfMetadataExtractHydraControls";
 const stream = require('streamify-array');
 const quad = require('rdf-quad');
@@ -109,6 +108,7 @@ describe('ActorRdfMetadataExtractHydraControls', () => {
       };
       return expect(actor.getSearchForms(hydraProperties)).toMatchObject({ values: [{
         // getUri,
+        dataset: 'mydataset',
         mappings: {},
         template: 'http://example.org/',
       }] });
@@ -143,6 +143,7 @@ describe('ActorRdfMetadataExtractHydraControls', () => {
       expect(searchForms).toMatchObject({ values: [
         {
           // getUri,
+          dataset: 'mydataset',
           mappings: {
             propa: 'a',
             propb: 'b',
@@ -151,6 +152,7 @@ describe('ActorRdfMetadataExtractHydraControls', () => {
         },
         {
           // getUri,
+          dataset: 'mydataset',
           mappings: {
             propc: 'c',
             propd: 'd',
@@ -373,7 +375,7 @@ describe('ActorRdfMetadataExtractHydraControls', () => {
     });
 
     it('should test', () => {
-      return expect(actor.test({ pageUrl: '', metadata: stream([]) })).resolves.toBeTruthy();
+      return expect(actor.test({ url: '', metadata: stream([]) })).resolves.toBeTruthy();
     });
 
     it('should run on valid controls', () => {
@@ -391,7 +393,7 @@ describe('ActorRdfMetadataExtractHydraControls', () => {
         quad('mapping2', HYDRA + 'variable', 'b'),
         quad('mapping2', HYDRA + 'property', 'propb'),
         quad('mypage', 'somethingelse', 'somevalue'),
-      ]), pageUrl: 'mypage' })).resolves.toMatchObject({ metadata: {
+      ]), url: 'mypage' })).resolves.toMatchObject({ metadata: {
         first: 'first',
         last: 'last',
         next: 'next',
