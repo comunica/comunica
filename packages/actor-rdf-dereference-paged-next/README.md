@@ -2,6 +2,8 @@
 
 [![npm version](https://badge.fury.io/js/%40comunica%2Factor-rdf-dereference-paged-next.svg)](https://www.npmjs.com/package/@comunica/actor-rdf-dereference-paged-next)
 
+**DEPRECATED in favor of actor-rdf-resolve-quad-pattern-hypermedia**
+
 A comunica Hydra RDF Dereference Paged Next Actor.
 
 This module is part of the [Comunica framework](https://github.com/comunica/comunica).
