@@ -89,5 +89,9 @@ describe('ActorRdfResolveQuadPatternRdfJsSource', () => {
           { type: 'rdfjsSource', value: source } })))
         .resolves.toMatchObject(source);
     });
+
+    it('should always expose empty metadata', async () => {
+      return expect(await (<any> actor).getMetadata()()).toEqual({});
+    });
   });
 });
