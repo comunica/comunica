@@ -58,7 +58,9 @@ describe('ActorRdfDereferenceHttpParse', () => {
           ? require('node-web-streams').toWebReadableStream(new PassThrough()) : new PassThrough(),
           headers: { get: () => 'a; charset=utf-8', has: () => !extension },
           status,
-          url: extension ? action.input : 'https://www.google.com/index.html',
+          url: extension
+            ? (action.input === 'https://www.google.com/rel.txt' ? 'relative' : action.input)
+            : 'https://www.google.com/index.html',
         };
       };
       actor = new ActorRdfDereferenceHttpParse({
@@ -142,6 +144,11 @@ describe('ActorRdfDereferenceHttpParse', () => {
     it('should run with a web stream with a known extension', () => {
       return expect(actor.run({ url: 'https://www.google.com/abc.y' })).resolves
         .toMatchObject({ pageUrl: 'https://www.google.com/abc.y', quads: 'fine', triples: true });
+    });
+
+    it('should run with a web stream with a relative response URL', () => {
+      return expect(actor.run({ url: 'https://www.google.com/rel.txt' })).resolves
+        .toMatchObject({ pageUrl: 'https://www.google.com/relative', quads: 'fine', triples: true });
     });
 
     it('should run with a Node.JS stream', () => {

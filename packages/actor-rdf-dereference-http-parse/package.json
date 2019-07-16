@@ -32,6 +32,9 @@
     "index.d.ts",
     "index.js"
   ],
+  "dependencies": {
+    "relative-to-absolute-iri": "^1.0.5"
+  },
   "peerDependencies": {
     "@comunica/bus-http": "^1.0.0",
     "@comunica/bus-rdf-dereference": "^1.0.0",
