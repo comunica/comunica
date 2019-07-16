@@ -1,0 +1,32 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-parse-html/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/bus-rdf-parse-html",
+  "components": [
+    {
+      "@id": "cbrph:Actor/RdfParseHtml",
+      "@type": "AbstractClass",
+      "extends": "cc:Actor",
+      "requireElement": "ActorRdfParseHtml",
+      "comment": "A comunica actor for rdf-parse-html events.",
+      "parameters": [
+        {
+          "@id": "cc:Actor/bus",
+          "defaultScoped": {
+            "defaultScope": "cbrph:Actor/RdfParseHtml",
+            "defaultScopedValue": { "@id": "cbrph:Bus/RdfParseHtml" }
+          }
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "cbrph:Actor/RdfParseHtml/constructorArgumentsObject",
+          "@type": "https://linkedsoftwaredependencies.org/vocabularies/object-oriented#Object",
+          "extends": "cc:Actor/constructorArgumentsObject"
+        }
+      ]
+    }
+  ]
+}

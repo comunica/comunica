@@ -1,0 +1,51 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-abstract-mediatyped/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-parse-html/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-parse-html/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-parse/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-rdf-parse-html",
+  "components": [
+    {
+      "@id": "carph:Actor/RdfParse/Html",
+      "@type": "Class",
+      "extends": "cbrp:Actor/RdfParseFixedMediaTypes",
+      "requireElement": "ActorRdfParseHtml",
+      "comment": "A comunica HTML RDF Parse Actor.",
+      "parameters": [
+        {
+          "@id": "caam:Actor/AbstractMediaTypedFixed/mediaTypeEntry",
+          "defaultScoped": {
+            "defaultScope": "carph:Actor/RdfParse/Html",
+            "defaultScopedValue": [
+              { "mediaTypeKey": "text/html", "priorityValue": "1.0" },
+              { "mediaTypeKey": "application/xhtml+xml", "priorityValue": "0.9" }
+            ]
+          }
+        },
+        {
+          "@id": "carph:busRdfParseHtml",
+          "comment": "The RDF Parse HTML bus for fetching HTML listeners",
+          "required": true,
+          "unique": true,
+          "defaultScoped": {
+            "defaultScope": "carph:Actor/RdfParse/Html",
+            "defaultScopedValue": { "@id": "cbrph:Bus/RdfParseHtml" }
+          }
+        }
+      ],
+      "constructorArguments": [
+        {
+          "extends": "cbrp:Actor/RdfParseFixedMediaTypes/constructorArgumentsObject",
+          "fields": [
+            {
+              "keyRaw": "busRdfParseHtml",
+              "value": "carph:busRdfParseHtml"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

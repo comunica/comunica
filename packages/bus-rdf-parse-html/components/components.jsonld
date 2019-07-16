@@ -1,0 +1,10 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-parse-html/^1.0.0/components/context.jsonld",
+  "@id": "npmd:@comunica/bus-rdf-parse-html",
+  "@type": "Module",
+  "requireName": "@comunica/bus-rdf-parse-html",
+  "import": [
+    "files-cbrph:components/Bus/RdfParseHtml.jsonld",
+    "files-cbrph:components/Actor/RdfParseHtml.jsonld"
+  ]
+}

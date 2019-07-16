@@ -1,0 +1,6 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-parse-html/^1.0.0/components/context.jsonld",
+  "@id": "cbrph:Bus/RdfParseHtml",
+  "@type": "cc:Bus",
+  "comment": "A comunica bus for rdf-parse-html events."
+}
