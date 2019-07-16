@@ -117,18 +117,18 @@ describe('ActorRdfDereferenceHttpParse', () => {
     });
 
     it('should cut off media types when too long', () => {
-      return expect(actor.mediaTypesToAcceptString({ a: 1.0, b: 0.8, c: 0.2 }, 13))
-        .toEqual('a,b;q=0.8');
+      return expect(actor.mediaTypesToAcceptString({ a: 1.0, b: 0.8, c: 0.2 }, 23))
+        .toEqual('a,b;q=0.8,*/*;q=0.1');
     });
 
     it('should cut off media types when too long at edge (1)', () => {
-      return expect(actor.mediaTypesToAcceptString({ a: 1.0, b: 0.8, c: 0.2 }, 9))
-        .toEqual('a,b;q=0.8');
+      return expect(actor.mediaTypesToAcceptString({ a: 1.0, b: 0.8, c: 0.2 }, 19))
+        .toEqual('a,b;q=0.8,*/*;q=0.1');
     });
 
     it('should cut off media types when too long at edge (2)', () => {
-      return expect(actor.mediaTypesToAcceptString({ a: 1.0, b: 0.8, c: 0.2 }, 10))
-        .toEqual('a,b;q=0.8');
+      return expect(actor.mediaTypesToAcceptString({ a: 1.0, b: 0.8, c: 0.2 }, 20))
+        .toEqual('a,b;q=0.8,*/*;q=0.1');
     });
 
     it('should run with a web stream', () => {
