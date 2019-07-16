@@ -1,0 +1,35 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-abstract-mediatyped/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-parse-xml-rdfa/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-parse/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-rdf-parse-xml-rdfa",
+  "components": [
+    {
+      "@id": "carpxr:Actor/RdfParse/XmlRdfa",
+      "@type": "Class",
+      "extends": "cbrp:Actor/RdfParseFixedMediaTypes",
+      "requireElement": "ActorRdfParseXmlRdfa",
+      "comment": "A comunica XML RDFa RDF Parse Actor.",
+      "parameters": [
+        {
+          "@id": "caam:Actor/AbstractMediaTypedFixed/mediaTypeEntry",
+          "defaultScoped": {
+            "defaultScope": "carpxr:Actor/RdfParse/XmlRdfa",
+            "defaultScopedValue": [
+              { "mediaTypeKey": "application/xml", "priorityValue": "1.0" },
+              { "mediaTypeKey": "text/xml",        "priorityValue": "1.0" },
+              { "mediaTypeKey": "image/svg+xml",   "priorityValue": "1.0" }
+            ]
+          }
+        }
+      ],
+      "constructorArguments": [
+        {
+          "extends": "cbrp:Actor/RdfParseFixedMediaTypes/constructorArgumentsObject"
+        }
+      ]
+    }
+  ]
+}
