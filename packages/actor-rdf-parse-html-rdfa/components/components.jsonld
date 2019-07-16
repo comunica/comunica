@@ -1,0 +1,9 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-parse-html-rdfa/^1.0.0/components/context.jsonld",
+  "@id": "npmd:@comunica/actor-rdf-parse-html-rdfa",
+  "@type": "Module",
+  "requireName": "@comunica/actor-rdf-parse-html-rdfa",
+  "import": [
+    "files-carphr:components/Actor/RdfParseHtml/Rdfa.jsonld"
+  ]
+}
