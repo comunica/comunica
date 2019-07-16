@@ -63,11 +63,15 @@ export abstract class ActorRdfDereferenceHttpParseBase extends ActorRdfDereferen
     let mediaType: string = httpResponse.headers.has('content-type')
       ? ActorRdfDereferenceHttpParseBase.REGEX_MEDIATYPE.exec(httpResponse.headers.get('content-type'))[0] : null;
     // If no media type could be found, try to determine it via the file extension
-    if (!mediaType) {
+    if (!mediaType || mediaType === 'text/plain') {
       mediaType = this.getMediaTypeFromExtension(httpResponse.url);
     }
 
-    const parseAction: IActionRdfParse = {input: responseStream, baseIRI: httpResponse.url};
+    const parseAction: IActionRdfParse = {
+      baseIRI: httpResponse.url,
+      headers: httpResponse.headers,
+      input: responseStream,
+    };
     const parseOutput: IActorRdfParseOutput = (await this.mediatorRdfParseHandle.mediate(
       { context: action.context, handle: parseAction, handleMediaType: mediaType })).handle;
 
