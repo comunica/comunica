@@ -39,6 +39,10 @@ export interface IActionRdfParse extends IAction {
    * The base IRI for parsed quads.
    */
   baseIRI: string;
+  /**
+   * The headers with which the RDF document should be parsed.
+   */
+  headers?: Headers;
 }
 
 export interface IActorRdfParseOutput extends IActorOutput {
