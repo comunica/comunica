@@ -29,7 +29,14 @@
             { "cbrd:extension": "n3",       "cbrd:mediaType": "text/n3" },
             { "cbrd:extension": "trig",     "cbrd:mediaType": "application/trig" },
             { "cbrd:extension": "jsonld",   "cbrd:mediaType": "application/ld+json" },
-            { "cbrd:extension": "json",     "cbrd:mediaType": "application/json" }
+            { "cbrd:extension": "json",     "cbrd:mediaType": "application/json" },
+            { "cbrd:extension": "html",     "cbrd:mediaType": "text/html" },
+            { "cbrd:extension": "htm",      "cbrd:mediaType": "text/html" },
+            { "cbrd:extension": "xhtml",    "cbrd:mediaType": "application/xhtml+xml" },
+            { "cbrd:extension": "xht",      "cbrd:mediaType": "application/xhtml+xml" },
+            { "cbrd:extension": "xml",      "cbrd:mediaType": "application/xml" },
+            { "cbrd:extension": "svg",      "cbrd:mediaType": "image/svg+xml" },
+            { "cbrd:extension": "svgz",     "cbrd:mediaType": "image/svg+xml" }
           ]
         }
       ],
