@@ -82,6 +82,8 @@ export abstract class ActorRdfDereferenceHttpParseBase extends ActorRdfDereferen
   }
 
   public mediaTypesToAcceptString(mediaTypes: { [id: string]: number }, maxLength: number): string {
+    maxLength -= 10; // Ensure a ',*/*;q=0.1' suffix
+
     const parts: string[] = [];
     const sortedMediaTypes = Object.keys(mediaTypes)
       .map((mediaType) => ({mediaType, priority: mediaTypes[mediaType]}))
@@ -90,6 +92,7 @@ export abstract class ActorRdfDereferenceHttpParseBase extends ActorRdfDereferen
     for (const entry of sortedMediaTypes) {
       const part = entry.mediaType + (entry.priority !== 1 ? ';q=' + entry.priority.toFixed(3).replace(/0*$/, '') : '');
       if (partsLength + part.length > maxLength) {
+        parts.push('*/*;q=0.1');
         break;
       }
       parts.push(part);
