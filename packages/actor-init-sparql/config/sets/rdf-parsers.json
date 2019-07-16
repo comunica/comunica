@@ -8,7 +8,10 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-parse-n3/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-parse-jsonld/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-parse-rdfxml/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-parse-html/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-parse-html-rdfa/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-parse-html-script/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-parse-xml-rdfa/^1.0.0/components/context.jsonld",
 
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-combine-union/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-race/^1.0.0/components/context.jsonld"
@@ -17,7 +20,8 @@
   "actors": [
     {
       "@id": "config-sets:rdf-parsers.json#myRdfParserN3",
-      "@type": "ActorRdfParseN3"
+      "@type": "ActorRdfParseN3",
+      "priorityScale": 1.0
     },
     {
       "@id": "config-sets:rdf-parsers.json#myRdfParserJsonLd",
@@ -25,14 +29,28 @@
       "priorityScale": 0.9
     },
     {
+      "@id": "config-sets:rdf-parsers.json#myRdfParserHtml",
+      "@type": "ActorRdfParseHtml",
+      "priorityScale": 0.8
+    },
+    {
       "@id": "config-sets:rdf-parsers.json#myRdfParserRdfXml",
       "@type": "ActorRdfParseRdfXml",
       "priorityScale": 0.5
     },
     {
+      "@id": "config-sets:rdf-parsers.json#myRdfParserXmlRdfa",
+      "@type": "ActorRdfParseXmlRdfa",
+      "priorityScale": 0.5
+    },
+
+    {
+      "@id": "config-sets:rdf-parsers.json#myRdfParserHtmlRdfa",
+      "@type": "ActorRdfParseHtmlRdfa"
+    },
+    {
       "@id": "config-sets:rdf-parsers.json#myRdfParserHtmlScript",
       "@type": "ActorRdfParseHtmlScript",
-      "priorityScale": 0.8,
       "carphs:mediatorRdfParseMediatypes": {
         "@id": "config-sets:rdf-parsers.json#mediatorRdfParseMediatypes",
         "@type": "MediatorCombineUnion",
