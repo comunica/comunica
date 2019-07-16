@@ -1,0 +1,12 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
+      "carphr": "npmd:@comunica/actor-rdf-parse-html-rdfa/",
+      "files-carphr": "carphr:^1.0.0/",
+
+      "ActorRdfParseHtmlRdfa": "carphr:Actor/RdfParseHtml/Rdfa"
+    }
+  ]
+}
