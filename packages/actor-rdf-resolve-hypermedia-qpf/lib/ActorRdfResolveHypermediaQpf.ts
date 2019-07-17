@@ -49,6 +49,7 @@ implements IActorRdfResolveHypermediaQpfArgs {
    * @return {Promise<IActorRdfResolveHypermediaOutput>} A promise resolving to a hypermedia form.
    */
   public async run(action: IActionRdfResolveHypermedia): Promise<IActorRdfResolveHypermediaOutput> {
+    this.logInfo(action.context, `Identified as qpf source: ${action.url}`);
     const source = this.createSource(action.metadata, action.context, action.quads);
     return { source, dataset: source.searchForm.dataset };
   }

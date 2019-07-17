@@ -39,7 +39,7 @@ describe('ActorRdfResolveHypermediaNone', () => {
     });
 
     it('should test', () => {
-      return expect(actor.test({ metadata: null, quads: null })).resolves.toEqual({ filterFactor: 0 });
+      return expect(actor.test({ metadata: null, quads: null, url: '' })).resolves.toEqual({ filterFactor: 0 });
     });
 
     it('should run', async () => {
@@ -47,7 +47,7 @@ describe('ActorRdfResolveHypermediaNone', () => {
         quad('s1', 'p1', 'o1'),
         quad('s2', 'p2', 'o2'),
       ]);
-      const { source } = await actor.run({ metadata: null, quads });
+      const { source } = await actor.run({ metadata: null, quads, url: '' });
       expect(source.match).toBeTruthy();
       expect(await arrayifyStream(source.match())).toEqualRdfQuadArray([
         quad('s1', 'p1', 'o1'),

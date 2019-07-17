@@ -37,6 +37,10 @@ export abstract class ActorRdfResolveHypermedia extends Actor<IActionRdfResolveH
 
 export interface IActionRdfResolveHypermedia extends IAction {
   /**
+   * The URL of the source that was fetched.
+   */
+  url: string;
+  /**
    * A metadata key-value mapping.
    */
   metadata: {[id: string]: any};

@@ -19,6 +19,7 @@ export class ActorRdfResolveHypermediaNone extends ActorRdfResolveHypermedia {
   }
 
   public async run(action: IActionRdfResolveHypermedia): Promise<IActorRdfResolveHypermediaOutput> {
+    this.logInfo(action.context, `Identified as file source: ${action.url}`);
     return { source: await storeStream(action.quads) };
   }
 

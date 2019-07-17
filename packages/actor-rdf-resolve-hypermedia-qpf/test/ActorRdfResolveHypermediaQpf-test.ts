@@ -150,6 +150,7 @@ describe('ActorRdfResolveHypermediaQpf', () => {
         context: ActionContext({
           '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'hypermedia', value: 'source' },
         }),
+        url: '',
       });
       expect(output.source).toBeInstanceOf(RdfSourceQpf);
       expect(output.dataset).toEqual('DATASET');
