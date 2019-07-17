@@ -79,7 +79,7 @@ export abstract class ActorRdfDereferenceHttpParseBase extends ActorRdfDereferen
       { context: action.context, handle: parseAction, handleMediaType: mediaType })).handle;
 
     // Return the parsed quad stream and whether or not only triples are supported
-    return { url: httpResponse.url, quads: parseOutput.quads, triples: parseOutput.triples };
+    return { url, quads: parseOutput.quads, triples: parseOutput.triples };
   }
 
   public mediaTypesToAcceptString(mediaTypes: { [id: string]: number }, maxLength: number): string {
