@@ -3,7 +3,9 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-sparql/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/runner/^1.0.0/components/context.jsonld",
 
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-resolve-quad-pattern-sparql-json/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-resolve-hypermedia-sparql/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-metadata-extract-sparql-service/^1.0.0/components/context.jsonld",
+
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-sparql-endpoint/^1.0.0/components/context.jsonld",
 
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-http/^1.0.0/components/context.jsonld"
@@ -12,10 +14,14 @@
   "actors": [
     {
       "@id": "config-sets:resolve-sparql.json#mySparqlQuadPatternResolver",
-      "@type": "ActorRdfResolveQuadPatternSparqlJson",
-      "carrqpsj:Actor/RdfResolveQuadPattern/SparqlJson/mediatorHttp": {
+      "@type": "ActorRdfResolveHypermediaSparql",
+      "carrhs:Actor/RdfResolveHypermedia/Sparql/mediatorHttp": {
         "@id": "config-sets:http.json#mediatorHttp"
       }
+    },
+    {
+      "@id": "config-sets:resolve-sparql.json#myRdfMetadataExtractSparqlService",
+      "@type": "ActorRdfMetadataExtractSparqlService"
     },
     {
       "@id": "config-sets:resolve-sparql.json#mySparqlEndpointResolver",

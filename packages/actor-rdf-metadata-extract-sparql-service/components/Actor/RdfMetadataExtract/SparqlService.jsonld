@@ -1,0 +1,21 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-metadata-extract-sparql-service/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-metadata-extract/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-rdf-metadata-extract-sparql-service",
+  "components": [
+    {
+      "@id": "carmess:Actor/RdfMetadataExtract/SparqlService",
+      "@type": "Class",
+      "extends": "cbrme:Actor/RdfMetadataExtract",
+      "requireElement": "ActorRdfMetadataExtractSparqlService",
+      "comment": "A comunica RDF Metadata Extract Actor for SPARQL service descriptions.",
+      "constructorArguments": [
+        {
+          "extends": "cbrme:Actor/RdfMetadataExtract/constructorArgumentsObject"
+        }
+      ]
+    }
+  ]
+}
