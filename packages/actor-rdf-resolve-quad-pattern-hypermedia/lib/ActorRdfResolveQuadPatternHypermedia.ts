@@ -8,7 +8,7 @@ import {
   IActorRdfResolveHypermediaLinksOutput,
 } from "@comunica/bus-rdf-resolve-hypermedia-links";
 import {
-  ActorRdfResolveQuadPatternSource,
+  ActorRdfResolveQuadPatternSource, getDataSourceType,
   IActionRdfResolveQuadPattern,
   IActorRdfResolveQuadPatternOutput,
   ILazyQuadSource,
@@ -67,7 +67,7 @@ export class ActorRdfResolveQuadPatternHypermedia extends ActorRdfResolveQuadPat
       source = this.cache.get(url);
     } else {
       // If not in cache, create a new source
-      source = new MediatedQuadSource(context, url, contextSource.type, {
+      source = new MediatedQuadSource(context, url, getDataSourceType(contextSource), {
         mediatorMetadata: this.mediatorMetadata,
         mediatorMetadataExtract: this.mediatorMetadataExtract,
         mediatorRdfDereference: this.mediatorRdfDereference,

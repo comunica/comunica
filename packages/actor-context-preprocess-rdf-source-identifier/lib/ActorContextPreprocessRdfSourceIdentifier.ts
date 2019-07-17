@@ -1,7 +1,7 @@
 import {ActorContextPreprocess,
   IActorContextPreprocessOutput} from "@comunica/bus-context-preprocess";
 import {
-  DataSources,
+  DataSources, getDataSourceType, getDataSourceValue,
   IDataSource,
   KEY_CONTEXT_SOURCE,
   KEY_CONTEXT_SOURCES,
@@ -53,7 +53,7 @@ export class ActorContextPreprocessRdfSourceIdentifier extends ActorContextPrepr
         const it = sources.iterator();
         it.on('data', (source: IDataSource) => {
           remainingSources++;
-          if (source.type === 'auto') {
+          if (getDataSourceType(source) === 'auto') {
             identificationPromises.push(this.identifySource(source, subContext)
               .then((identifiedSource) => {
                 newSources.push(identifiedSource);
@@ -82,10 +82,10 @@ export class ActorContextPreprocessRdfSourceIdentifier extends ActorContextPrepr
 
   private async identifySource(source: IDataSource, context: ActionContext): Promise<IDataSource> {
     return this.mediatorRdfSourceIdentifier.mediate(
-      { sourceValue: source.value, context })
+      { sourceValue: getDataSourceValue(source), context })
       .then((sourceIdentificationResult) => {
         if (sourceIdentificationResult.sourceType) {
-          source.type = sourceIdentificationResult.sourceType;
+          (<any> source).type = sourceIdentificationResult.sourceType;
         }
         return source;
       });

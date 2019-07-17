@@ -47,7 +47,7 @@ export abstract class ActorRdfResolveQuadPattern extends Actor<IActionRdfResolve
    */
   protected getContextSourceUrl(source: IDataSource): string {
     if (source) {
-      let fileUrl = source.value;
+      let fileUrl = getDataSourceValue(source);
 
       // Remove hashes from source
       const hashPosition = fileUrl.indexOf('#');
@@ -67,7 +67,7 @@ export abstract class ActorRdfResolveQuadPattern extends Actor<IActionRdfResolve
    */
   protected hasContextSingleSource(context: ActionContext): boolean {
     const source = this.getContextSource(context);
-    return !!(source && source.value);
+    return !!(source && (typeof source === 'string' || source.value));
   }
 
   /**
@@ -78,14 +78,20 @@ export abstract class ActorRdfResolveQuadPattern extends Actor<IActionRdfResolve
    */
   protected hasContextSingleSourceOfType(requiredType: string, context: ActionContext): boolean {
     const source = this.getContextSource(context);
-    return !!(source && source.type === requiredType && source.value);
+    return !!(source && getDataSourceType(source) === requiredType && getDataSourceValue(source));
   }
 
 }
 
-export interface IDataSource {
+export type IDataSource = string | {
   type?: string;
   value: any;
+};
+export function getDataSourceType(dataSource: IDataSource): string {
+  return typeof dataSource === 'string' ? '' : dataSource.type;
+}
+export function getDataSourceValue(dataSource: IDataSource): string {
+  return typeof dataSource === 'string' ? dataSource : dataSource.value;
 }
 export type DataSources = AsyncReiterable<IDataSource>;
 /**

@@ -87,10 +87,14 @@ Use `bin/query-dynamic.js` when running dynamically inside the Comunica monorepo
 Start a webservice exposing http://fragments.dbpedia.org/2015-10/en via the SPARQL protocol, i.e., a _SPARQL endpoint_.
 
 ```bash
-$ comunica-sparql-http "{ \"sources\": [{ \"value\" : \"http://fragments.dbpedia.org/2015/en\" }]}"
+$ comunica-sparql-http "{ \"sources\": [\"http://fragments.dbpedia.org/2015/en\"]}"
 ```
 
-_(Use `\"type\": \"file\"` if you want to query over remote RDF files)_
+or
+
+```bash
+$ comunica-sparql-http "{ \"sources\": [{ \"type\" : \"file\", \"value\" : \"https://ruben.verborgh.org/profile/\" }]}"
+```
 
 Show the help with all options:
 
@@ -129,7 +133,20 @@ For example, a `SELECT` query can be executed as follows:
 
 ```javascript
 const result = await myEngine.query('SELECT * WHERE { ?s ?p <http://dbpedia.org/resource/Belgium>. ?s ?p ?o } LIMIT 100',
-  { sources: [ { value: 'http://fragments.dbpedia.org/2015/en' } ] })
+  { sources: ['http://fragments.dbpedia.org/2015/en'] })
+result.bindingsStream.on('data', (data) => console.log(data.toObject()));
+```
+
+Optionally, specific types of sources can be specified (_otherwise, the type of source will be detected automatically_):
+
+```javascript
+const result = await myEngine.query('SELECT * WHERE { ?s ?p <http://dbpedia.org/resource/Belgium>. ?s ?p ?o } LIMIT 100',
+  { sources: [
+    'http://fragments.dbpedia.org/2015/en',
+    { type: 'sparql', value: 'https://dbpedia.org/sparql' },
+    { type: 'file', value: 'https://ruben.verborgh.org/profile/' },
+    { type: 'rdfjsSource', value: new N3Store() },
+  ] })
 result.bindingsStream.on('data', (data) => console.log(data.toObject()));
 ```
 
@@ -138,7 +155,7 @@ results can be collected as follows.
 
 ```javascript
 const result = await myEngine.query('CONSTRUCT { ?s ?p <http://dbpedia.org/resource/Belgium> } LIMIT 100',
-  { sources: [ { value: 'http://fragments.dbpedia.org/2015/en' } ] })
+  { sources: ['http://fragments.dbpedia.org/2015/en'] })
 result.quadStream.on('data', (data) => console.log(data.toObject()));
 ```
 
@@ -146,7 +163,7 @@ Finally, `ASK` queries return async booleans.
 
 ```javascript
 const result = await myEngine.query('ASK { ?s ?p <http://dbpedia.org/resource/Belgium> }',
-  { sources: [ { value: 'http://fragments.dbpedia.org/2015/en' } ] })
+  { sources: ['http://fragments.dbpedia.org/2015/en'] })
 const isPresent = await result.booleanResult;
 ```
 
@@ -154,7 +171,7 @@ const isPresent = await result.booleanResult;
 
 | **Key** | **Description** |
 | ------- | --------------- |
-| `sources` | An array of data sources, e.g. `[ { value: 'http://fragments.dbpedia.org/2015/en' } ]`. Optionally, a source can have a `type` field to _force_ a specific type. For example, `[ { type: 'file', value: 'http://fragments.dbpedia.org/2015/en' } ]` will make sure the source is seen as a file with all hypermedia ignored. Source types can be forced as: `sparql`, `file` |
+| `sources` | An array of data sources, e.g. `[ { value: 'http://fragments.dbpedia.org/2015/en' } ]`. Optionally, a source can have a `type` field to _force_ a specific type. For example, `[ { type: 'file', value: 'http://fragments.dbpedia.org/2015/en' } ]` will make sure the source is seen as a file with all hypermedia ignored. Source types can be forced as: `sparql`, `file`, `rdfjsSource` |
 | `initialBindings` | Variables that have to be pre-bound to values in the query, using the `Bindings` datastructure, e.g. `Bindings({ '?s': literal('sl') })`. |
 | `queryFormat` | Name of the provided query's format. Defaults to `sparql`, can also be `graphql` |
 | `baseIRI` | Base IRI for relative IRIs in SPARQL queries, e.g. `http://example.org/`. |
@@ -176,7 +193,7 @@ const bindingsStreamToGraphQl = require('@comunica/actor-sparql-serialize-tree')
 
 const myEngine = newEngine();
 const context = {
-  sources: [ { value: 'http://fragments.dbpedia.org/2016-04/en' } ],
+  sources: ['http://fragments.dbpedia.org/2016-04/en'],
   queryFormat: 'graphql',
   "@context": {
     "label": { "@id": "http://www.w3.org/2000/01/rdf-schema#label", "@singular": true },
@@ -231,7 +248,7 @@ After that, `Comunica.newEngine` can be called via JavaScript.
 ```javascript
 const myEngine = Comunica.newEngine();
 myEngine.query('SELECT * { ?s ?p <http://dbpedia.org/resource/Belgium>. ?s ?p ?o } LIMIT 100',
-  { sources: [ { value: 'http://fragments.dbpedia.org/2015/en' } ] })
+  { sources: ['http://fragments.dbpedia.org/2015/en'] })
   .then(function (result) {
     result.bindingsStream.on('data', function (data) {
       console.log(data.toObject());

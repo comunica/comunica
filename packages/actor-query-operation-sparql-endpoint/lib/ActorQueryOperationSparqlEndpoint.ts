@@ -1,14 +1,13 @@
 import {IActionHttp, IActorHttpOutput} from "@comunica/bus-http";
-import {ActorQueryOperation, Bindings, IActionQueryOperation,
-  IActorQueryOperationOutput, IActorQueryOperationOutputBindings} from "@comunica/bus-query-operation";
 import {
-  DataSources,
-  IDataSource,
-  KEY_CONTEXT_SOURCE,
-  KEY_CONTEXT_SOURCES,
-} from "@comunica/bus-rdf-resolve-quad-pattern";
-import {Actor, IActorArgs, IActorTest, Mediator} from "@comunica/core";
-import {ActionContext} from "@comunica/core";
+  ActorQueryOperation,
+  Bindings,
+  IActionQueryOperation,
+  IActorQueryOperationOutput,
+  IActorQueryOperationOutputBindings,
+} from "@comunica/bus-query-operation";
+import {getDataSourceType, getDataSourceValue, IDataSource} from "@comunica/bus-rdf-resolve-quad-pattern";
+import {ActionContext, Actor, IActorArgs, IActorTest, Mediator} from "@comunica/core";
 import {IMediatorTypeHttpRequests} from "@comunica/mediatortype-httprequests";
 import {DataSourceUtils} from "@comunica/utils-datasource";
 import {BufferedIterator} from "asynciterator";
@@ -23,7 +22,6 @@ import {Algebra, Factory, toSparql, Util} from "sparqlalgebrajs";
 export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
 
   protected static readonly FACTORY: Factory = new Factory();
-  private static ALGEBRA_TYPES: string[] = Object.keys(Algebra.types).map((key) => (<any> Algebra.types)[key]);
 
   public readonly mediatorHttp: Mediator<Actor<IActionHttp, IActorTest, IActorHttpOutput>,
     IActionHttp, IActorTest, IActorHttpOutput>;
@@ -58,14 +56,14 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
       throw new Error('Missing field \'operation\' in the query operation action: ' + require('util').inspect(action));
     }
     const source: IDataSource = await DataSourceUtils.getSingleSource(action.context);
-    if (source && source.type === 'sparql') {
+    if (source && getDataSourceType(source) === 'sparql') {
       return { httpRequests: 1 };
     }
     throw new Error(this.name + ' requires a single source with a \'sparql\' endpoint to be present in the context.');
   }
 
   public async run(action: IActionQueryOperation): Promise<IActorQueryOperationOutputBindings> {
-    const endpoint: string = (await DataSourceUtils.getSingleSource(action.context)).value;
+    const endpoint: string = getDataSourceValue(await DataSourceUtils.getSingleSource(action.context));
     const selectQuery: Algebra.Project = ActorQueryOperationSparqlEndpoint.patternToSelectQuery(action.operation);
     const query: string = toSparql(selectQuery);
 

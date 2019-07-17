@@ -7,7 +7,7 @@ import {
   Bindings, ensureBindings, IActionQueryOperation,
   IActorQueryOperationOutput, KEY_CONTEXT_BASEIRI, KEY_CONTEXT_QUERY_TIMESTAMP
 } from "@comunica/bus-query-operation";
-import {KEY_CONTEXT_SOURCES} from "@comunica/bus-rdf-resolve-quad-pattern";
+import {IDataSource, KEY_CONTEXT_SOURCES} from "@comunica/bus-rdf-resolve-quad-pattern";
 import {IActionSparqlParse, IActorSparqlParseOutput} from "@comunica/bus-sparql-parse";
 import {
   IActionRootSparqlParse, IActionSparqlSerialize, IActorOutputRootSparqlParse, IActorSparqlSerializeOutput,
@@ -129,6 +129,12 @@ export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs {
 
     // Ensure sources are an async re-iterable
     if (Array.isArray(context[KEY_CONTEXT_SOURCES])) {
+      // TODO: backwards compatibility
+      context[KEY_CONTEXT_SOURCES].map((source: IDataSource) => {
+        if (typeof source !== 'string' && (source.type === 'auto' || source.type === 'hypermedia')) {
+          delete source.type;
+        }
+      });
       context[KEY_CONTEXT_SOURCES] = AsyncReiterableArray.fromFixedData(context[KEY_CONTEXT_SOURCES]);
     }
 

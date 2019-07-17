@@ -1,5 +1,5 @@
 import {
-  DataSources, IActionRdfResolveQuadPattern,
+  DataSources, getDataSourceType, getDataSourceValue, IActionRdfResolveQuadPattern,
   IActorRdfResolveQuadPatternOutput, IDataSource, ILazyQuadSource, KEY_CONTEXT_SOURCE, KEY_CONTEXT_SOURCES,
 } from "@comunica/bus-rdf-resolve-quad-pattern";
 import {ActionContext, Actor, IActorTest, Mediator} from "@comunica/core";
@@ -161,7 +161,7 @@ export class FederatedQuadSource implements ILazyQuadSource {
 
       // Prepare the context for this specific source
       const context: ActionContext = this.contextDefault.set(KEY_CONTEXT_SOURCE,
-        { type: source.type, value: source.value });
+        { type: getDataSourceType(source), value: getDataSourceValue(source) });
 
       return new PromiseProxyIterator(async () => {
         let output: IActorRdfResolveQuadPatternOutput;
