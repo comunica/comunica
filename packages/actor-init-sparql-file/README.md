@@ -35,7 +35,7 @@ $ comunica-sparql-file path/to/my/file.ttl "CONSTRUCT WHERE { ?s ?p ?o } LIMIT 1
 Show all triples from a local and remote file:
 
 ```bash
-$ comunica-sparql-file path/to/my/file.ttl file@https://ruben.verborgh.org/profile/#me "CONSTRUCT WHERE { ?s ?p ?o } LIMIT 100"
+$ comunica-sparql-file path/to/my/file.ttl https://ruben.verborgh.org/profile/#me "CONSTRUCT WHERE { ?s ?p ?o } LIMIT 100"
 ```
 
 Show the help with all options:
@@ -56,7 +56,7 @@ const newEngine = require('@comunica/actor-init-sparql-file').newEngine;
 const myEngine = newEngine();
 
 const result = await myEngine.query('SELECT * WHERE { ?s ?p <http://dbpedia.org/resource/Belgium>. ?s ?p ?o } LIMIT 100',
-  { sources: [ { value: '/path/to/my/file.ttl' } ] })
+  { sources: ['/path/to/my/file.ttl'] })
 result.bindingsStream.on('data', (data) => console.log(data.toObject()));
 ```
 
@@ -67,7 +67,7 @@ result.bindingsStream.on('data', (data) => console.log(data.toObject()));
 Start a webservice exposing http://fragments.dbpedia.org/2015-10/en via the SPARQL protocol, i.e., a _SPARQL endpoint_.
 
 ```bash
-$ comunica-sparql-file-http "{ \"sources\": [{ \"value\" : \"/path/to/my/file.ttl" }]}"
+$ comunica-sparql-file-http "{ \"sources\": [\"/path/to/my/file.ttl\"]}"
 ```
 
 Show the help with all options:

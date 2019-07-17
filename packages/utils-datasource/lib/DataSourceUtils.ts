@@ -1,5 +1,5 @@
 import {
-  DataSources,
+  DataSources, getDataSourceType,
   IDataSource,
   KEY_CONTEXT_SOURCE,
   KEY_CONTEXT_SOURCES,
@@ -7,7 +7,7 @@ import {
 import {ActionContext} from "@comunica/core";
 
 /**
- * Comunica datasource utilities 
+ * Comunica datasource utilities
  */
 export abstract class DataSourceUtils {
 
@@ -41,7 +41,7 @@ export abstract class DataSourceUtils {
    */
   public static async getSingleSourceType(context: ActionContext): Promise<string> {
     const source = await this.getSingleSource(context);
-    return source ? source.type : null;
+    return source ? getDataSourceType(source) : null;
   }
 
   /**

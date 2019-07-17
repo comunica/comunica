@@ -17,7 +17,8 @@ export class ActorRdfResolveQuadPatternRdfJsSource extends ActorRdfResolveQuadPa
     if (!this.hasContextSingleSourceOfType('rdfjsSource', action.context)) {
       throw new Error(this.name + ' requires a single source with an rdfjsSource to be present in the context.');
     }
-    if (!this.getContextSource(action.context).value.match) {
+    const source = this.getContextSource(action.context);
+    if (typeof source === 'string' || !source.value.match) {
       throw new Error(this.name + ' received an invalid rdfjsSource.');
     }
     return true;
@@ -30,7 +31,7 @@ export class ActorRdfResolveQuadPatternRdfJsSource extends ActorRdfResolveQuadPa
   }
 
   protected async getSource(context: ActionContext): Promise<ILazyQuadSource> {
-    return <any> this.getContextSource(context).value;
+    return (<any> this.getContextSource(context)).value;
   }
 
 }
