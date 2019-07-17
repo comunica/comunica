@@ -148,7 +148,7 @@ describe('ActorRdfDereferenceHttpParse', () => {
 
     it('should run with a web stream with a relative response URL', () => {
       return expect(actor.run({ url: 'https://www.google.com/rel.txt' })).resolves
-        .toMatchObject({ pageUrl: 'https://www.google.com/relative', quads: 'fine', triples: true });
+        .toMatchObject({ url: 'https://www.google.com/relative', quads: 'fine', triples: true });
     });
 
     it('should run with a Node.JS stream', () => {
