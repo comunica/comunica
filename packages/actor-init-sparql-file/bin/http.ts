@@ -2,7 +2,6 @@
 import {HttpServiceSparqlEndpoint} from "@comunica/actor-init-sparql";
 
 const defaultConfigPath = __dirname + '/../config/config-default.json';
-const configResourceURL = process.env.COMUNICA_CONFIG ? process.env.COMUNICA_CONFIG : defaultConfigPath;
 
 HttpServiceSparqlEndpoint.runArgsInProcess(process.argv.slice(2), process.stdout, process.stderr,
-    __dirname + '/../', configResourceURL, () => process.exit(1));
+    __dirname + '/../', process.env, defaultConfigPath, () => process.exit(1));

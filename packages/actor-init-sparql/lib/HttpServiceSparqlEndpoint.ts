@@ -32,7 +32,7 @@ Options:
   -i            A flag that enables cache invalidation before each query execution.
   --help        print this help message
 `;
-
+  // tslint:enable:max-line-length
   public readonly engine: Promise<ActorInitSparql>;
 
   public readonly context: any;
@@ -53,40 +53,47 @@ Options:
 
   /**
    * Starts the server
-   * @param argv
-   * @param stdout
-   * @param stderr
-   * @param moduleRootPath
-   * @param configResourceUrl
-   * @param exit
+   * @param {string[]} argv The commandline arguments that the script was called with
+   * @param {module:stream.internal.Writable} stdout The output stream to log to.
+   * @param {module:stream.internal.Writable} stderr The error stream to log errors to.
+   * @param {string} moduleRootPath The path to the invoking module.
+   * @param {NodeJS.ProcessEnv} env The process env to get constants from.
+   * @param {string} defaultConfigPath The path to get the config from if none is defined in the environment.
+   * @param {(code: number) => void} exit The callback to invoke to stop the script.
    * @return {Promise<void>} A promise that resolves when the server has been started.
    */
   public static runArgsInProcess(argv: string[], stdout: Writable, stderr: Writable,
-                                 moduleRootPath: string, configResourceUrl: string, exit: (code: number) => void) {
+                                 moduleRootPath: string, env: NodeJS.ProcessEnv,
+                                 defaultConfigPath: string, exit: (code: number) => void): Promise<void> {
     const args = minimist(argv);
     if (args._.length !== 1 || args.h || args.help) {
       stderr.write(HttpServiceSparqlEndpoint.HELP_MESSAGE);
-
       exit(1);
     }
 
-    const options = HttpServiceSparqlEndpoint.generateConstructorArguments(args, moduleRootPath, configResourceUrl);
+    const options = HttpServiceSparqlEndpoint
+        .generateConstructorArguments(args, moduleRootPath, env, defaultConfigPath);
 
-    return new Promise((resolve) => {
+    return new Promise<void>((resolve) => {
       new HttpServiceSparqlEndpoint(options).run(stdout, stderr)
-          .then(() => resolve())
-          // tslint:disable-next-line:no-console
-          .catch(console.error);
+          .then(resolve)
+          .catch((reason) => {
+            stderr.write(reason);
+            exit(1);
+            resolve();
+          });
     });
   }
 
   /**
    * Takes parsed commandline arguments and turns them into an object used in the HttpServiceSparqlEndpoint constructor
-   * @param {args: minimist.ParsedArgs} args
-   * @param {string} moduleRootPath
-   * @param {string} configResourceUrl
+   * @param {args: minimist.ParsedArgs} args The commandline arguments that the script was called with
+   * @param {string} moduleRootPath The path to the invoking module.
+   * @param {NodeJS.ProcessEnv} env The process env to get constants from.
+   * @param {string} defaultConfigPath The path to get the config from if none is defined in the environment.
    */
-  public static generateConstructorArguments(args: minimist.ParsedArgs, moduleRootPath: string, configResourceUrl: string)
+  public static generateConstructorArguments(args: minimist.ParsedArgs, moduleRootPath: string,
+                                             env: NodeJS.ProcessEnv, defaultConfigPath: string)
       : IHttpServiceSparqlEndpointArgs {
     // allow both files as direct JSON objects for context
     const context = JSON.parse(fs.existsSync(args._[0]) ? fs.readFileSync(args._[0], 'utf8') : args._[0]);
@@ -98,6 +105,8 @@ Options:
     if (!context.log) {
       context.log = new LoggerPretty({ level: args.l || 'warn' });
     }
+
+    const configResourceUrl = env.COMUNICA_CONFIG ? env.COMUNICA_CONFIG : defaultConfigPath;
 
     return {
       configResourceUrl,
@@ -150,7 +159,8 @@ Options:
     const requestUrl = url.parse(request.url, true);
     if (requestUrl.pathname !== '/sparql') {
       stdout.write('[404] Resource not found\n');
-      response.writeHead(404, { 'content-type': HttpServiceSparqlEndpoint.MIME_JSON, 'Access-Control-Allow-Origin': '*' });
+      response.writeHead(404,
+          { 'content-type': HttpServiceSparqlEndpoint.MIME_JSON, 'Access-Control-Allow-Origin': '*' });
       response.end(JSON.stringify({ message: 'Resource not found' }));
       return;
     }
@@ -174,7 +184,8 @@ Options:
       break;
     default:
       stdout.write('[405] ' + request.method + ' to ' + requestUrl + '\n');
-      response.writeHead(405, { 'content-type': HttpServiceSparqlEndpoint.MIME_JSON, 'Access-Control-Allow-Origin': '*' });
+      response.writeHead(405,
+          { 'content-type': HttpServiceSparqlEndpoint.MIME_JSON, 'Access-Control-Allow-Origin': '*' });
       response.end(JSON.stringify({ message: 'Incorrect HTTP method' }));
     }
   }
@@ -216,12 +227,14 @@ Options:
           eventEmitter = data;
         } catch (error) {
           stdout.write('[400] Bad request, invalid media type\n');
-          response.writeHead(400, { 'content-type': HttpServiceSparqlEndpoint.MIME_PLAIN, 'Access-Control-Allow-Origin': '*' });
+          response.writeHead(400,
+              { 'content-type': HttpServiceSparqlEndpoint.MIME_PLAIN, 'Access-Control-Allow-Origin': '*' });
           response.end('The response for the given query could not be serialized for the requested media type\n');
         }
       }).catch((error) => {
         stdout.write('[400] Bad request\n');
-        response.writeHead(400, { 'content-type': HttpServiceSparqlEndpoint.MIME_PLAIN, 'Access-Control-Allow-Origin': '*' });
+        response.writeHead(400,
+            { 'content-type': HttpServiceSparqlEndpoint.MIME_PLAIN, 'Access-Control-Allow-Origin': '*' });
         response.end(error.toString());
       });
 

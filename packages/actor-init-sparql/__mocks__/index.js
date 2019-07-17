@@ -5,7 +5,7 @@ class EngineMock {
 
   }
 
-  query(sparql, context){ // deze methode mag teruggeven wat hij maar wilt, aangezien het resultaat enkel wordt doorgegeven naar resultToString
+  query(sparql, context){
     if (sparql === "query_reject"){
       return Promise.reject("Rejected query");
     }
@@ -33,7 +33,11 @@ function newEngineDynamic(options) {
   let mock = new EngineMock();
   mock.invalidateHttpCache = jest.fn();
 
-  return Promise.resolve(mock);
+  if (options && options.mainModulePath === "rejecting_engine_promise") {
+    return Promise.reject("REASON");
+  } else {
+    return Promise.resolve(mock);
+  }
 }
 
 module.exports = {
