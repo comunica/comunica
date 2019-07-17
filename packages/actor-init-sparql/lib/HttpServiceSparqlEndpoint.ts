@@ -65,7 +65,7 @@ Options:
                                  moduleRootPath: string, configResourceUrl: string, exit: (code: number) => void) {
     const args = minimist(argv);
     if (args._.length !== 1 || args.h || args.help) {
-      stderr.write(this.HELP_MESSAGE);
+      stderr.write(HttpServiceSparqlEndpoint.HELP_MESSAGE);
 
       exit(1);
     }
