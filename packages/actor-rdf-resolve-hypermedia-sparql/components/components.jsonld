@@ -1,0 +1,9 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-resolve-hypermedia-sparql/^1.0.0/components/context.jsonld",
+  "@id": "npmd:@comunica/actor-rdf-resolve-hypermedia-sparql",
+  "@type": "Module",
+  "requireName": "@comunica/actor-rdf-resolve-hypermedia-sparql",
+  "import": [
+    "files-carrhs:components/Actor/RdfResolveHypermedia/Sparql.jsonld"
+  ]
+}

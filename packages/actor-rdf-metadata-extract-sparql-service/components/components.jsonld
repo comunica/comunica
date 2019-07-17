@@ -1,0 +1,9 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-metadata-extract-sparql-service/^1.0.0/components/context.jsonld",
+  "@id": "npmd:@comunica/actor-rdf-metadata-extract-sparql-service",
+  "@type": "Module",
+  "requireName": "@comunica/actor-rdf-metadata-extract-sparql-service",
+  "import": [
+    "files-carmess:components/Actor/RdfMetadataExtract/SparqlService.jsonld"
+  ]
+}

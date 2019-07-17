@@ -1,0 +1,12 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
+      "carmess": "npmd:@comunica/actor-rdf-metadata-extract-sparql-service/",
+      "files-carmess": "carmess:^1.0.0/",
+
+      "ActorRdfMetadataExtractSparqlService": "carmess:Actor/RdfMetadataExtract/SparqlService"
+    }
+  ]
+}
