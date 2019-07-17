@@ -89,6 +89,7 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
       handledDatasets: this.handledDatasets,
       metadata,
       quads: rdfMetadataOuput.data,
+      url,
     });
     if (dataset) {
       // Mark the dataset as applied
