@@ -14,31 +14,10 @@ import {IQueryOptions} from "./QueryDynamic";
  * An HTTP service that exposes a Comunica engine as a SPARQL endpoint.
  */
 export class HttpServiceSparqlEndpoint {
-  private static readonly MIME_PLAIN = 'text/plain';
-  private static readonly MIME_JSON  = 'application/json';
-
-  private readonly context: any;
-  private readonly timeout: number;
-  private readonly port: number;
-  private readonly invalidateCacheBeforeQuery: boolean;
-
-  private readonly engine: Promise<ActorInitSparql>;
-
-  constructor(args?: IHttpServiceSparqlEndpointArgs) {
-    args = args || {};
-    this.context = args.context || {};
-    this.timeout = args.timeout || 60000;
-    this.port = args.port || 3000;
-    this.invalidateCacheBeforeQuery = args.invalidateCacheBeforeQuery;
-
-    this.engine = newEngineDynamic(args);
-  }
-
-  public static runArgsInProcess(moduleRootPath: string, defaultConfigPath: string) {
-    const args = minimist(process.argv.slice(2));
-    if (args._.length !== 1 || args.h || args.help) {
-      // tslint:disable:max-line-length
-      process.stderr.write(`comunica-sparql-http exposes a Comunica engine as SPARQL endpoint
+  public static readonly MIME_PLAIN = 'text/plain';
+  public static readonly MIME_JSON  = 'application/json';
+  // tslint:disable:max-line-length
+  public static readonly HELP_MESSAGE = `comunica-sparql-http exposes a Comunica engine as SPARQL endpoint
 
 context should be a JSON object or the path to such a JSON file.
 
@@ -52,32 +31,91 @@ Options:
   -l            Sets the log level (e.g., debug, info, warn, ... defaults to warn)
   -i            A flag that enables cache invalidation before each query execution.
   --help        print this help message
-`);
-      process.exit(1);
+`;
+  // tslint:enable:max-line-length
+  public readonly engine: Promise<ActorInitSparql>;
+
+  public readonly context: any;
+  public readonly timeout: number;
+  public readonly port: number;
+
+  public readonly invalidateCacheBeforeQuery: boolean;
+
+  constructor(args?: IHttpServiceSparqlEndpointArgs) {
+    args = args || {};
+    this.context = args.context || {};
+    this.timeout = args.timeout || 60000;
+    this.port = args.port || 3000;
+    this.invalidateCacheBeforeQuery = args.invalidateCacheBeforeQuery;
+
+    this.engine = newEngineDynamic(args);
+  }
+
+  /**
+   * Starts the server
+   * @param {string[]} argv The commandline arguments that the script was called with
+   * @param {module:stream.internal.Writable} stdout The output stream to log to.
+   * @param {module:stream.internal.Writable} stderr The error stream to log errors to.
+   * @param {string} moduleRootPath The path to the invoking module.
+   * @param {NodeJS.ProcessEnv} env The process env to get constants from.
+   * @param {string} defaultConfigPath The path to get the config from if none is defined in the environment.
+   * @param {(code: number) => void} exit The callback to invoke to stop the script.
+   * @return {Promise<void>} A promise that resolves when the server has been started.
+   */
+  public static runArgsInProcess(argv: string[], stdout: Writable, stderr: Writable,
+                                 moduleRootPath: string, env: NodeJS.ProcessEnv,
+                                 defaultConfigPath: string, exit: (code: number) => void): Promise<void> {
+    const args = minimist(argv);
+    if (args._.length !== 1 || args.h || args.help) {
+      stderr.write(HttpServiceSparqlEndpoint.HELP_MESSAGE);
+      exit(1);
     }
 
+    const options = HttpServiceSparqlEndpoint
+        .generateConstructorArguments(args, moduleRootPath, env, defaultConfigPath);
+
+    return new Promise<void>((resolve) => {
+      new HttpServiceSparqlEndpoint(options).run(stdout, stderr)
+          .then(resolve)
+          .catch((reason) => {
+            stderr.write(reason);
+            exit(1);
+            resolve();
+          });
+    });
+  }
+
+  /**
+   * Takes parsed commandline arguments and turns them into an object used in the HttpServiceSparqlEndpoint constructor
+   * @param {args: minimist.ParsedArgs} args The commandline arguments that the script was called with
+   * @param {string} moduleRootPath The path to the invoking module.
+   * @param {NodeJS.ProcessEnv} env The process env to get constants from.
+   * @param {string} defaultConfigPath The path to get the config from if none is defined in the environment.
+   */
+  public static generateConstructorArguments(args: minimist.ParsedArgs, moduleRootPath: string,
+                                             env: NodeJS.ProcessEnv, defaultConfigPath: string)
+      : IHttpServiceSparqlEndpointArgs {
     // allow both files as direct JSON objects for context
     const context = JSON.parse(fs.existsSync(args._[0]) ? fs.readFileSync(args._[0], 'utf8') : args._[0]);
-    const timeout = (parseInt(args.t, 10) || 60) * 1000;
-    const port = parseInt(args.p, 10) || 3000;
     const invalidateCacheBeforeQuery: boolean = args.i;
+    const port = parseInt(args.p, 10) || 3000;
+    const timeout = (parseInt(args.t, 10) || 60) * 1000;
 
     // Set the logger
     if (!context.log) {
       context.log = new LoggerPretty({ level: args.l || 'warn' });
     }
 
-    const options = {
-      configResourceUrl: process.env.COMUNICA_CONFIG ? process.env.COMUNICA_CONFIG : defaultConfigPath,
+    const configResourceUrl = env.COMUNICA_CONFIG ? env.COMUNICA_CONFIG : defaultConfigPath;
+
+    return {
+      configResourceUrl,
       context,
       invalidateCacheBeforeQuery,
       mainModulePath: moduleRootPath,
       port,
       timeout,
     };
-
-    // tslint:disable-next-line:no-console
-    new HttpServiceSparqlEndpoint(options).run(process.stdout, process.stderr).catch(console.error);
   }
 
   /**
@@ -111,9 +149,9 @@ Options:
    * @param {module:http.IncomingMessage} request Request object.
    * @param {module:http.ServerResponse} response Response object.
    */
-  protected async handleRequest(engine: ActorInitSparql, variants: { type: string, quality: number }[],
-                                stdout: Writable, stderr: Writable,
-                                request: http.IncomingMessage, response: http.ServerResponse) {
+  public async handleRequest(engine: ActorInitSparql, variants: { type: string, quality: number }[],
+                             stdout: Writable, stderr: Writable,
+                             request: http.IncomingMessage, response: http.ServerResponse) {
     const mediaType: string = request.headers.accept && request.headers.accept !== '*/*'
       ? require('negotiate').choose(variants, request)[0].type : null;
 
@@ -121,7 +159,8 @@ Options:
     const requestUrl = url.parse(request.url, true);
     if (requestUrl.pathname !== '/sparql') {
       stdout.write('[404] Resource not found\n');
-      response.writeHead(404, { 'content-type': HttpServiceSparqlEndpoint.MIME_JSON, 'Access-Control-Allow-Origin': '*' });
+      response.writeHead(404,
+          { 'content-type': HttpServiceSparqlEndpoint.MIME_JSON, 'Access-Control-Allow-Origin': '*' });
       response.end(JSON.stringify({ message: 'Resource not found' }));
       return;
     }
@@ -145,7 +184,8 @@ Options:
       break;
     default:
       stdout.write('[405] ' + request.method + ' to ' + requestUrl + '\n');
-      response.writeHead(405, { 'content-type': HttpServiceSparqlEndpoint.MIME_JSON, 'Access-Control-Allow-Origin': '*' });
+      response.writeHead(405,
+          { 'content-type': HttpServiceSparqlEndpoint.MIME_JSON, 'Access-Control-Allow-Origin': '*' });
       response.end(JSON.stringify({ message: 'Incorrect HTTP method' }));
     }
   }
@@ -161,9 +201,9 @@ Options:
    * @param {string} mediaType The requested response media type.
    * @param {boolean} headOnly If only the header should be written.
    */
-  protected writeQueryResult(engine: ActorInitSparql, stdout: Writable, stderr: Writable,
-                             request: http.IncomingMessage, response: http.ServerResponse,
-                             sparql: string, mediaType: string, headOnly: boolean) {
+  public writeQueryResult(engine: ActorInitSparql, stdout: Writable, stderr: Writable,
+                          request: http.IncomingMessage, response: http.ServerResponse,
+                          sparql: string, mediaType: string, headOnly: boolean) {
     let eventEmitter: EventEmitter;
     engine.query(sparql, this.context)
       .then(async (result) => {
@@ -187,16 +227,26 @@ Options:
           eventEmitter = data;
         } catch (error) {
           stdout.write('[400] Bad request, invalid media type\n');
-          response.writeHead(400, { 'content-type': HttpServiceSparqlEndpoint.MIME_PLAIN, 'Access-Control-Allow-Origin': '*' });
+          response.writeHead(400,
+              { 'content-type': HttpServiceSparqlEndpoint.MIME_PLAIN, 'Access-Control-Allow-Origin': '*' });
           response.end('The response for the given query could not be serialized for the requested media type\n');
         }
       }).catch((error) => {
         stdout.write('[400] Bad request\n');
-        response.writeHead(400, { 'content-type': HttpServiceSparqlEndpoint.MIME_PLAIN, 'Access-Control-Allow-Origin': '*' });
+        response.writeHead(400,
+            { 'content-type': HttpServiceSparqlEndpoint.MIME_PLAIN, 'Access-Control-Allow-Origin': '*' });
         response.end(error.toString());
       });
 
-    // Stop after timeout and if the connection is terminated
+    this.stopResponse(response, eventEmitter);
+  }
+
+  /**
+   * Stop after timeout or if the connection is terminated
+   * @param {module:http.ServerResponse} response Response object.
+   * @param {NodeJS.ReadableStream} eventEmitter Query result stream.
+   */
+  public stopResponse(response: http.ServerResponse, eventEmitter: EventEmitter) {
     // Note: socket or response timeouts seemed unreliable, hence the explicit timeout
     const killTimeout = setTimeout(killClient, this.timeout);
     response.on('close', killClient);
@@ -216,7 +266,7 @@ Options:
    * @param {module:http.IncomingMessage} request Request object.
    * @return {Promise<string>} A promise resolving to a query string.
    */
-  protected parseBody(request: http.IncomingMessage): Promise<string> {
+  public parseBody(request: http.IncomingMessage): Promise<string> {
     return new Promise((resolve, reject) => {
       let body = '';
       request.setEncoding('utf8');
