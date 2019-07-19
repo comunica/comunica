@@ -13,7 +13,8 @@
       "Mediator": "cc:Mediator",
 
       "actorIdentifierFields": "cc:BusIndexed#actorIdentifierFields",
-      "actionIdentifierFields": "cc:BusIndexed#actionIdentifierFields"
+      "actionIdentifierFields": "cc:BusIndexed#actionIdentifierFields",
+      "beforeActor": { "@id": "cc:Actor/beforeActor", "@type": "@id" }
     }
   ]
 }

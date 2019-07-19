@@ -13,6 +13,11 @@
           "range": "cc:Bus",
           "unique": true,
           "required": true
+        },
+        {
+          "@id": "cc:Actor/beforeActor",
+          "comment": "An actor that must be registered in the bus before this actor.",
+          "range": "cc:Actor"
         }
       ],
       "constructorArguments": [
@@ -26,6 +31,10 @@
             {
               "keyRaw": "bus",
               "value": "cc:Actor/bus"
+            },
+            {
+              "keyRaw": "beforeActors",
+              "value": "cc:Actor/beforeActor"
             }
           ]
         }
