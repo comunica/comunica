@@ -1,0 +1,36 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-http-proxy/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-http/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-http-proxy",
+  "components": [
+    {
+      "@id": "cahp:Actor/Http/Proxy",
+      "@type": "Class",
+      "extends": "cbh:Actor/Http",
+      "requireElement": "ActorHttpProxy",
+      "comment": "A comunica Proxy Http Actor.",
+      "parameters": [
+        {
+          "@id": "cahp:Actor/Http/Proxy/mediatorHttp",
+          "comment": "The HTTP mediator",
+          "required": true,
+          "unique": true
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "cahp:Actor/Http/Proxy/constructorArgumentsObject",
+          "extends": "cbh:Actor/Http/constructorArgumentsObject",
+          "fields": [
+            {
+              "keyRaw": "mediatorHttp",
+              "value": "cahp:Actor/Http/Proxy/mediatorHttp"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

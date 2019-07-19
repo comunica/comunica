@@ -1,0 +1,9 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-http-proxy/^1.0.0/components/context.jsonld",
+  "@id": "npmd:@comunica/actor-http-proxy",
+  "@type": "Module",
+  "requireName": "@comunica/actor-http-proxy",
+  "import": [
+    "files-cahp:components/Actor/Http/Proxy.jsonld"
+  ]
+}
