@@ -51,6 +51,7 @@
     "@comunica/actor-abstract-mediatyped": "^1.8.0",
     "@comunica/actor-http-memento": "^1.8.0",
     "@comunica/actor-http-native": "^1.8.0",
+    "@comunica/actor-http-proxy": "^1.0.0",
     "@comunica/actor-optimize-query-operation-join-bgp": "^1.8.0",
     "@comunica/actor-query-operation-ask": "^1.8.0",
     "@comunica/actor-query-operation-bgp-empty": "^1.8.0",
