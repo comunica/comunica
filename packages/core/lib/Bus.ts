@@ -22,6 +22,7 @@ export class Bus<A extends Actor<I, T, O>, I extends IAction, T extends IActorTe
   public readonly name: string;
   protected readonly actors: A[] = [];
   protected readonly observers: ActionObserver<I, O>[] = [];
+  protected readonly dependencyLinks: { dependent: A, dependency: A }[] = [];
 
   /**
    * All enumerable properties from the `args` object are inherited to this bus.
@@ -44,6 +45,7 @@ export class Bus<A extends Actor<I, T, O>, I extends IAction, T extends IActorTe
    */
   public subscribe(actor: A) {
     this.actors.push(actor);
+    this.reorderForDependencies();
   }
 
   /**
@@ -119,6 +121,42 @@ export class Bus<A extends Actor<I, T, O>, I extends IAction, T extends IActorTe
   public onRun(actor: Actor<I, T, O>, action: I, output: Promise<O>): void {
     for (const observer of this.observers) {
       observer.onRun(actor, action, output);
+    }
+  }
+
+  /**
+   * Indicate that the given actor has the given actor dependencies.
+   *
+   * This will ensure that the given actor will be present in the bus *after* the given dependencies.
+   *
+   * @param {A} dependent A dependent actor.
+   * @param {A[]} dependencies Actor dependencies.
+   */
+  public addDependencies(dependent: A, dependencies: A[]) {
+    for (const dependency of dependencies) {
+      this.dependencyLinks.push({ dependent, dependency });
+    }
+    this.reorderForDependencies();
+  }
+
+  /**
+   * Reorder the bus based on all present dependencies.
+   */
+  public reorderForDependencies() {
+    for (const dependencyLink of this.dependencyLinks) {
+      const dependentPos = this.actors.indexOf(dependencyLink.dependent);
+      const dependencyPos = this.actors.indexOf(dependencyLink.dependency);
+
+      // Ignore dependency link if one of the actors has not been subscribed yet.
+      if (dependentPos >= 0 && dependencyPos >= 0) {
+        // If the dependent is present after the dependency, move it right before it.
+        if (dependentPos > dependencyPos) {
+          // Remove the dependent
+          this.actors.splice(dependentPos, 1);
+          // Add the dependent right before the dependency
+          this.actors.splice(dependencyPos, 0, dependencyLink.dependent);
+        }
+      }
     }
   }
 

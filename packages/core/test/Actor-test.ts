@@ -18,6 +18,16 @@ describe('Actor', () => {
     it('should not be able to create new Actor objects without \'new\'', () => {
       expect(() => { (<any> Actor)(); }).toThrow();
     });
+
+    it('should be a Actor constructor with a beforeActors field', () => {
+      const beforeActors = ['a', 'b'];
+      const b = new Bus({ name: 'bus' });
+      const actor = new (<any> Actor)({ name: 'actor', bus: b, beforeActors });
+      expect((<any> b).dependencyLinks).toEqual([
+        { dependent: actor, dependency: 'a' },
+        { dependent: actor, dependency: 'b' },
+      ]);
+    });
   });
 
   describe('An Actor instance', () => {

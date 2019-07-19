@@ -23,6 +23,7 @@ export abstract class Actor<I extends IAction, T extends IActorTest, O extends I
 
   public readonly name: string;
   public readonly bus: Bus<Actor<I, T, O>, I, T, O>;
+  public readonly beforeActors: Actor<I, T, O>[] = [];
 
   /**
    * All enumerable properties from the `args` object are inherited to this actor.
@@ -38,6 +39,9 @@ export abstract class Actor<I extends IAction, T extends IActorTest, O extends I
   constructor(args: IActorArgs<I, T, O>) {
     require('lodash.assign')(this, args);
     this.bus.subscribe(this);
+    if (this.beforeActors.length) {
+      this.bus.addDependencies(this, this.beforeActors);
+    }
   }
 
   /**
@@ -161,6 +165,7 @@ export abstract class Actor<I extends IAction, T extends IActorTest, O extends I
 export interface IActorArgs<I extends IAction, T extends IActorTest, O extends IActorOutput> {
   name: string;
   bus: Bus<Actor<I, T, O>, I, T, O>;
+  beforeActors?: Actor<I, T, O>[];
 }
 
 /**
