@@ -99,14 +99,15 @@
             ]
           },
           "default": [
-            { "contextShortcutKey": "source",          "contextShortcutValue": "@comunica/bus-rdf-resolve-quad-pattern:source"  },
-            { "contextShortcutKey": "sources",         "contextShortcutValue": "@comunica/bus-rdf-resolve-quad-pattern:sources" },
-            { "contextShortcutKey": "initialBindings", "contextShortcutValue": "@comunica/actor-init-sparql:initialBindings"    },
-            { "contextShortcutKey": "queryFormat",     "contextShortcutValue": "@comunica/actor-init-sparql:queryFormat"        },
-            { "contextShortcutKey": "baseIRI",         "contextShortcutValue": "@comunica/actor-init-sparql:baseIRI"            },
-            { "contextShortcutKey": "log",             "contextShortcutValue": "@comunica/core:log"                             },
-            { "contextShortcutKey": "datetime",        "contextShortcutValue": "@comunica/actor-http-memento:datetime"          },
-            { "contextShortcutKey": "queryTimestamp",  "contextShortcutValue": "@comunica/actor-init-sparql:queryTimestamp"     }
+            { "contextShortcutKey": "source",           "contextShortcutValue": "@comunica/bus-rdf-resolve-quad-pattern:source"  },
+            { "contextShortcutKey": "sources",          "contextShortcutValue": "@comunica/bus-rdf-resolve-quad-pattern:sources" },
+            { "contextShortcutKey": "initialBindings",  "contextShortcutValue": "@comunica/actor-init-sparql:initialBindings"    },
+            { "contextShortcutKey": "queryFormat",      "contextShortcutValue": "@comunica/actor-init-sparql:queryFormat"        },
+            { "contextShortcutKey": "baseIRI",          "contextShortcutValue": "@comunica/actor-init-sparql:baseIRI"            },
+            { "contextShortcutKey": "log",              "contextShortcutValue": "@comunica/core:log"                             },
+            { "contextShortcutKey": "datetime",         "contextShortcutValue": "@comunica/actor-http-memento:datetime"          },
+            { "contextShortcutKey": "queryTimestamp",   "contextShortcutValue": "@comunica/actor-init-sparql:queryTimestamp"     },
+            { "contextShortcutKey": "httpProxyHandler", "contextShortcutValue": "@comunica/actor-http-proxy:httpProxyHandler"   }
           ]
         }
       ],

@@ -229,6 +229,31 @@ const context = {
 myEngine.query('...', context);
 ```
 
+_Proxy_
+
+Optionally, you can configure a proxy to redirect all HTTP(S) traffic.
+This is for example useful when Comunica is used in a Web browser where a [proxy enables CORS headers on all responses](https://www.npmjs.com/package/cors-anywhere).
+
+Via the command line, a proxy can be enabled as follows:
+```bash
+$ comunica-sparql http://fragments.dbpedia.org/2015-10/en "CONSTRUCT WHERE { ?s ?p ?o } LIMIT 100" -p http://myproxy.org/?uri=
+```
+
+This will cause all requests to be modified by appending the original URL to the proxy URL `http://myproxy.org/?uri=http://fragments.dbpedia.org/2015-10/en`.
+
+A proxy can also be configured via the programmatic API as follows:
+```javascript
+const ProxyHandlerStatic = require("@comunica/actor-http-proxy").ProxyHandlerStatic;
+
+const result = await myEngine.query('SELECT * WHERE { ?s ?p <http://dbpedia.org/resource/Belgium>. ?s ?p ?o } LIMIT 100',
+  {
+    sources: [ { type: 'hypermedia', value: 'http://fragments.dbpedia.org/2015/en' } ],
+    httpProxyHandler: new ProxyHandlerStatic('http://myproxy.org/?uri='),
+  });
+```
+
+Next to `ProxyHandlerStatic`, more advanced proxy handlers can be created by implementing [`IProxyHandler`](https://github.com/comunica/comunica/blob/master/packages/actor-http-proxy/lib/IProxyHandler.ts).
+
 ### Usage within browser
 
 _(Just want to quickly demo queries in the browser? Have a look at our [Web client](https://github.com/comunica/jQuery-Widget.js))_

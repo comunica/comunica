@@ -1,4 +1,5 @@
 import {KEY_CONTEXT_DATETIME} from "@comunica/actor-http-memento";
+import {KEY_CONTEXT_HTTPPROXYHANDLER, ProxyHandlerStatic} from "@comunica/actor-http-proxy";
 import {IActionInit, IActorOutputInit} from "@comunica/bus-init";
 import {IActorQueryOperationOutput, KEY_CONTEXT_BASEIRI} from "@comunica/bus-query-operation";
 import {KEY_CONTEXT_SOURCES} from "@comunica/bus-rdf-resolve-quad-pattern";
@@ -67,7 +68,8 @@ Options:
   -i            the query input format (e.g., graphql, defaults to sparql)
   -b            base IRI for the query (e.g., http://example.org/)
   -l            sets the log level (e.g., debug, info, warn, ... defaults to warn)
-  -d            sets a datetime for querying Memento-enabled archives'
+  -d            sets a datetime for querying Memento-enabled archives
+  -p            delegates all HTTP traffic through the given proxy (e.g. http://myproxy.org/?uri=)
   --help        print this help message
   --listformats prints the supported MIME types
   --version     prints version information
@@ -123,6 +125,11 @@ Options:
     // Define the datetime
     if (args.d) {
       context[KEY_CONTEXT_DATETIME] = new Date(args.d);
+    }
+
+    // Set the proxy
+    if (args.p) {
+      context[KEY_CONTEXT_HTTPPROXYHANDLER] = new ProxyHandlerStatic(args.p);
     }
 
     // Add sources to context

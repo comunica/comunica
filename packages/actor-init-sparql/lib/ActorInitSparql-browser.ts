@@ -1,16 +1,25 @@
 import {IActorContextPreprocessOutput} from "@comunica/bus-context-preprocess";
 import {IActionHttpInvalidate, IActorHttpInvalidateOutput} from "@comunica/bus-http-invalidate";
 import {ActorInit, IActionInit, IActorOutputInit} from "@comunica/bus-init";
-import {IActionOptimizeQueryOperation,
-  IActorOptimizeQueryOperationOutput} from "@comunica/bus-optimize-query-operation";
 import {
-  Bindings, ensureBindings, IActionQueryOperation,
-  IActorQueryOperationOutput, KEY_CONTEXT_BASEIRI, KEY_CONTEXT_QUERY_TIMESTAMP,
+  IActionOptimizeQueryOperation,
+  IActorOptimizeQueryOperationOutput,
+} from "@comunica/bus-optimize-query-operation";
+import {
+  Bindings,
+  ensureBindings,
+  IActionQueryOperation,
+  IActorQueryOperationOutput,
+  KEY_CONTEXT_BASEIRI,
+  KEY_CONTEXT_QUERY_TIMESTAMP,
 } from "@comunica/bus-query-operation";
 import {IDataSource, KEY_CONTEXT_SOURCES} from "@comunica/bus-rdf-resolve-quad-pattern";
 import {IActionSparqlParse, IActorSparqlParseOutput} from "@comunica/bus-sparql-parse";
 import {
-  IActionRootSparqlParse, IActionSparqlSerialize, IActorOutputRootSparqlParse, IActorSparqlSerializeOutput,
+  IActionRootSparqlParse,
+  IActionSparqlSerialize,
+  IActorOutputRootSparqlParse,
+  IActorSparqlSerializeOutput,
   IActorTestRootSparqlParse,
 } from "@comunica/bus-sparql-serialize";
 import {ActionContext, Actor, IAction, IActorArgs, IActorTest, KEY_CONTEXT_LOG, Logger, Mediator} from "@comunica/core";

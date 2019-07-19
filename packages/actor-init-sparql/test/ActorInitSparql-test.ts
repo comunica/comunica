@@ -1,3 +1,4 @@
+import {ProxyHandlerStatic} from "@comunica/actor-http-proxy";
 import {ActorInit} from "@comunica/bus-init";
 import {Bindings, KEY_CONTEXT_QUERY_TIMESTAMP} from "@comunica/bus-query-operation";
 import {Bus, KEY_CONTEXT_LOG} from "@comunica/core";
@@ -542,6 +543,24 @@ graph <exists02.ttl> {
             result.stdout.on('end', resolve);
           });
         });
+    });
+
+    it('should set proxy on the -p option', async () => {
+      const proxy = 'http://proxy.org/';
+      const med: any = {
+        mediate: (arg) => Promise.resolve({ handle: { data: arg.handleMediaType } }),
+      };
+      actor = new ActorInitSparql(
+        { bus, contextKeyShortcuts, logger, mediatorContextPreprocess, mediatorHttpInvalidate,
+          mediatorOptimizeQueryOperation, mediatorQueryOperation, mediatorSparqlParse,
+          mediatorSparqlSerialize: med, mediatorSparqlSerializeMediaTypeCombiner: med, name: 'actor', queryString });
+      const spy = jest.spyOn(actor, 'query');
+      expect((await actor.run({
+        argv: [ hypermedia, queryString, '-p', proxy ], env: {},
+        stdin: new PassThrough(),
+      }))).toBeTruthy();
+      expect(spy.mock.calls[0][1]['@comunica/actor-http-proxy:httpProxyHandler'])
+        .toEqual(new ProxyHandlerStatic('http://proxy.org/'));
     });
 
   });
