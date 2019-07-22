@@ -1,7 +1,10 @@
-import {ActorQueryOperationTypedMediated, IActorQueryOperationOutputBindings,
-    IActorQueryOperationTypedMediatedArgs } from "@comunica/bus-query-operation";
+import {
+  ActorQueryOperationTypedMediated, Bindings, IActorQueryOperationOutputBindings,
+  IActorQueryOperationTypedMediatedArgs,
+} from "@comunica/bus-query-operation";
 import {ActionContext, IActorTest} from "@comunica/core";
 import {createHash, getHashes, Hash} from "crypto";
+import {termToString} from "rdf-string";
 import {Algebra} from "sparqlalgebrajs";
 
 /**
@@ -45,12 +48,12 @@ export abstract class AbstractFilterHash<T extends Algebra.Operation> extends Ac
      * Create a string-based hash of the given object.
      * @param {string} hashAlgorithm A hash algorithm.
      * @param {string} digestAlgorithm A digest algorithm.
-     * @param object The object to hash.
+     * @param bindings The bindings to hash.
      * @return {string} The object's hash.
      */
-  public static hash(hashAlgorithm: string, digestAlgorithm: string, object: any): string {
+  public static hash(hashAlgorithm: string, digestAlgorithm: string, bindings: Bindings): string {
     const hash: Hash = createHash(hashAlgorithm);
-    hash.update(require('json-stable-stringify')(object));
+    hash.update(require('json-stable-stringify')(bindings.map(termToString)));
     return hash.digest(<any> digestAlgorithm);
   }
 

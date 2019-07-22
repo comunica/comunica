@@ -22,7 +22,7 @@ export class ActorQueryOperationMinus extends AbstractFilterHash<Algebra.Minus> 
         : (bindings: Bindings) => boolean {
     return (bindings: Bindings) => {
       const hash: string = ActorQueryOperationMinus.hash(hashAlgorithm, digestAlgorithm,
-          bindings.filter((v: RDF.Term, k: string) => commons[k]));
+          <Bindings> bindings.filter((v: RDF.Term, k: string) => commons[k]));
       return !(hash in hashes);
     };
   }

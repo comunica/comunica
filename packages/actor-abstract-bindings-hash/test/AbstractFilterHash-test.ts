@@ -1,6 +1,6 @@
 import { Bindings, IActorQueryOperationTypedMediatedArgs } from "@comunica/bus-query-operation";
 import {Actor, Bus} from "@comunica/core";
-import {literal} from "@rdfjs/data-model";
+import {literal, namedNode} from "@rdfjs/data-model";
 import {ArrayIterator} from "asynciterator";
 import {AbstractFilterHash} from "..";
 
@@ -97,25 +97,17 @@ describe('AbstractFilterHash', () => {
 
   describe('#hash', () => {
     it('should return the same hash for equal objects', () => {
-      expect(AbstractFilterHash.hash('sha1', 'base64', { a: 'b' }))
-                .toEqual(AbstractFilterHash.hash('sha1', 'base64', { a: 'b' }));
-      expect(AbstractFilterHash.hash('sha1', 'base64', { a: 'c' }))
-                .toEqual(AbstractFilterHash.hash('sha1', 'base64', { a: 'c' }));
-      expect(AbstractFilterHash.hash('sha1', 'base64', 123))
-                .toEqual(AbstractFilterHash.hash('sha1', 'base64', 123));
-      expect(AbstractFilterHash.hash('sha1', 'base64', 'abcdefg'))
-                .toEqual(AbstractFilterHash.hash('sha1', 'base64', 'abcdefg'));
+      expect(AbstractFilterHash.hash('sha1', 'base64', Bindings({ a: literal('b') })))
+        .toEqual(AbstractFilterHash.hash('sha1', 'base64', Bindings({ a: literal('b') })));
+      expect(AbstractFilterHash.hash('sha1', 'base64', Bindings({ a: namedNode('c') })))
+        .toEqual(AbstractFilterHash.hash('sha1', 'base64', Bindings({ a: namedNode('c') })));
     });
 
     it('should return a different hash for non-equal objects', () => {
-      expect(AbstractFilterHash.hash('sha1', 'base64', { a: 'c' })).not
-                .toEqual(AbstractFilterHash.hash('sha1', 'base64', { a: 'b' }));
-      expect(AbstractFilterHash.hash('sha1', 'base64', { a: 'b' })).not
-                .toEqual(AbstractFilterHash.hash('sha1', 'base64', { a: 'c' }));
-      expect(AbstractFilterHash.hash('sha1', 'base64', 124)).not
-                .toEqual(AbstractFilterHash.hash('sha1', 'base64', 123));
-      expect(AbstractFilterHash.hash('sha1', 'base64', 'abcdefz')).not
-                .toEqual(AbstractFilterHash.hash('sha1', 'base64', 'abcdefg'));
+      expect(AbstractFilterHash.hash('sha1', 'base64', Bindings({ a: literal('b') })))
+        .not.toEqual(AbstractFilterHash.hash('sha1', 'base64', Bindings({ a: literal('c') })));
+      expect(AbstractFilterHash.hash('sha1', 'base64', Bindings({ a: literal('b') })))
+        .not.toEqual(AbstractFilterHash.hash('sha1', 'base64', Bindings({ a: namedNode('b') })));
     });
   });
 });

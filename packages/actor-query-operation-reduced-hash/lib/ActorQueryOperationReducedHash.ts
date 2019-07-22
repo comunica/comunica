@@ -1,4 +1,5 @@
-import {AbstractBindingHash, IActorInitRdfDereferencePagedArgs} from "@comunica/actor-abstract-bindings-hash";
+import {AbstractBindingHash, AbstractFilterHash,
+  IActorInitRdfDereferencePagedArgs} from "@comunica/actor-abstract-bindings-hash";
 import {Bindings} from "@comunica/bus-query-operation";
 import LRU = require("lru-cache");
 import {Algebra} from "sparqlalgebrajs";
@@ -24,7 +25,7 @@ export class ActorQueryOperationReducedHash extends AbstractBindingHash<Algebra.
       : (bindings: Bindings) => boolean {
     const hashes = new LRU<string, boolean>({ max: this.cacheSize });
     return (bindings: Bindings) => {
-      const hash: string = ActorQueryOperationReducedHash.hash(hashAlgorithm, digestAlgorithm, bindings);
+      const hash: string = AbstractFilterHash.hash(hashAlgorithm, digestAlgorithm, bindings);
       return !(hashes.has(hash)) && hashes.set(hash, true);
     };
   }

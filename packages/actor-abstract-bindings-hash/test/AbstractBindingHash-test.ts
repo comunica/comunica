@@ -67,64 +67,6 @@ describe('AbstractBindingHash', () => {
     });
   });
 
-  describe('#doesHashAlgorithmExist', () => {
-    it('should be true on sha1', () => {
-      return expect(AbstractBindingHash.doesHashAlgorithmExist('sha1')).toBeTruthy();
-    });
-
-    it('should be true on md5', () => {
-      return expect(AbstractBindingHash.doesHashAlgorithmExist('md5')).toBeTruthy();
-    });
-
-    it('should not be true on something that does not exist', () => {
-      return expect(AbstractBindingHash.doesHashAlgorithmExist('somethingthatdoesnotexist'))
-                .toBeFalsy();
-    });
-  });
-
-  describe('#doesDigestAlgorithmExist', () => {
-    it('should be true on latin1', () => {
-      return expect(AbstractBindingHash.doesDigestAlgorithmExist('latin1')).toBeTruthy();
-    });
-
-    it('should be true on hex', () => {
-      return expect(AbstractBindingHash.doesDigestAlgorithmExist('hex')).toBeTruthy();
-    });
-
-    it('should be true on base64', () => {
-      return expect(AbstractBindingHash.doesDigestAlgorithmExist('base64')).toBeTruthy();
-    });
-
-    it('should not be true on something that does not exist', () => {
-      return expect(AbstractBindingHash.doesDigestAlgorithmExist('somethingthatdoesnotexist'))
-                .toBeFalsy();
-    });
-  });
-
-  describe('#hash', () => {
-    it('should return the same hash for equal objects', () => {
-      expect(AbstractBindingHash.hash('sha1', 'base64', { a: 'b' }))
-                .toEqual(AbstractBindingHash.hash('sha1', 'base64', { a: 'b' }));
-      expect(AbstractBindingHash.hash('sha1', 'base64', { a: 'c' }))
-                .toEqual(AbstractBindingHash.hash('sha1', 'base64', { a: 'c' }));
-      expect(AbstractBindingHash.hash('sha1', 'base64', 123))
-                .toEqual(AbstractBindingHash.hash('sha1', 'base64', 123));
-      expect(AbstractBindingHash.hash('sha1', 'base64', 'abcdefg'))
-                .toEqual(AbstractBindingHash.hash('sha1', 'base64', 'abcdefg'));
-    });
-
-    it('should return a different hash for non-equal objects', () => {
-      expect(AbstractBindingHash.hash('sha1', 'base64', { a: 'c' })).not
-                .toEqual(AbstractBindingHash.hash('sha1', 'base64', { a: 'b' }));
-      expect(AbstractBindingHash.hash('sha1', 'base64', { a: 'b' })).not
-                .toEqual(AbstractBindingHash.hash('sha1', 'base64', { a: 'c' }));
-      expect(AbstractBindingHash.hash('sha1', 'base64', 124)).not
-                .toEqual(AbstractBindingHash.hash('sha1', 'base64', 123));
-      expect(AbstractBindingHash.hash('sha1', 'base64', 'abcdefz')).not
-                .toEqual(AbstractBindingHash.hash('sha1', 'base64', 'abcdefg'));
-    });
-  });
-
   describe('An AbstractBindingHash instance', () => {
     let m: AbstractBindingHash<Algebra.Distinct>;
     beforeEach(() => {
