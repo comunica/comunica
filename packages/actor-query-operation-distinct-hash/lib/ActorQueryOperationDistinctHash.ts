@@ -1,4 +1,5 @@
-import {AbstractBindingHash, IActorInitRdfDereferencePagedArgs} from "@comunica/actor-abstract-bindings-hash";
+import {AbstractBindingHash, AbstractFilterHash,
+  IActorInitRdfDereferencePagedArgs} from "@comunica/actor-abstract-bindings-hash";
 import {Bindings} from "@comunica/bus-query-operation";
 import {Algebra} from "sparqlalgebrajs";
 
@@ -23,7 +24,7 @@ export class ActorQueryOperationDistinctHash extends AbstractBindingHash<Algebra
         : (bindings: Bindings) => boolean {
     const hashes: {[id: string]: boolean} = {};
     return (bindings: Bindings) => {
-      const hash: string = ActorQueryOperationDistinctHash.hash(hashAlgorithm, digestAlgorithm, bindings);
+      const hash: string = AbstractFilterHash.hash(hashAlgorithm, digestAlgorithm, bindings);
       return !(hash in hashes) && (hashes[hash] = true);
     };
   }

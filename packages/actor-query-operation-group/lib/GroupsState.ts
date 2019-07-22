@@ -3,7 +3,7 @@ import { termToString } from 'rdf-string';
 import { Algebra } from 'sparqlalgebrajs';
 import { AggregateEvaluator, SyncEvaluatorConfig } from 'sparqlee';
 
-import { AbstractBindingHash } from '@comunica/actor-abstract-bindings-hash';
+import { AbstractFilterHash } from '@comunica/actor-abstract-bindings-hash';
 import { Bindings } from '@comunica/bus-query-operation';
 
 /**
@@ -141,6 +141,6 @@ export class GroupsState {
    * @param {Bindings} bindings - Bindings to hash
    */
   private hashBindings(bindings: Bindings): BindingsHash {
-    return AbstractBindingHash.hash('sha1', 'hex', bindings);
+    return AbstractFilterHash.hash('sha1', 'hex', bindings);
   }
 }

@@ -48,34 +48,34 @@ describe('ActorQueryOperationReducedHash', () => {
 
     it('should create a filter that is a predicate', () => {
       const filter = actor.newHashFilter('sha1', 'base64');
-      return expect(filter(<any> 'abc')).toBe(true);
+      return expect(filter(Bindings({ a: literal('a') }))).toBe(true);
     });
 
     it('should create a filter that only returns true once for equal objects', () => {
       const filter = actor.newHashFilter('sha1', 'base64');
-      expect(filter(<any> 'abc')).toBe(true);
-      expect(filter(<any> 'abc')).toBe(false);
-      expect(filter(<any> 'abc')).toBe(false);
-      expect(filter(<any> 'abc')).toBe(false);
+      expect(filter(Bindings({ a: literal('a') }))).toBe(true);
+      expect(filter(Bindings({ a: literal('a') }))).toBe(false);
+      expect(filter(Bindings({ a: literal('a') }))).toBe(false);
+      expect(filter(Bindings({ a: literal('a') }))).toBe(false);
 
-      expect(filter(<any> { a: 'c' })).toBe(true);
-      expect(filter(<any> { a: 'c' })).toBe(false);
-      expect(filter(<any> { a: 'c' })).toBe(false);
-      expect(filter(<any> { a: 'c' })).toBe(false);
+      expect(filter(Bindings({ a: literal('b') }))).toBe(true);
+      expect(filter(Bindings({ a: literal('b') }))).toBe(false);
+      expect(filter(Bindings({ a: literal('b') }))).toBe(false);
+      expect(filter(Bindings({ a: literal('b') }))).toBe(false);
     });
 
     it('should create a filters that are independent', () => {
       const filter1 = actor.newHashFilter('sha1', 'base64');
       const filter2 = actor.newHashFilter('sha1', 'base64');
       const filter3 = actor.newHashFilter('sha1', 'base64');
-      expect(filter1(<any> 'abc')).toBe(true);
-      expect(filter1(<any> 'abc')).toBe(false);
+      expect(filter1(Bindings({ a: literal('b') }))).toBe(true);
+      expect(filter1(Bindings({ a: literal('b') }))).toBe(false);
 
-      expect(filter2(<any> 'abc')).toBe(true);
-      expect(filter2(<any> 'abc')).toBe(false);
+      expect(filter2(Bindings({ a: literal('b') }))).toBe(true);
+      expect(filter2(Bindings({ a: literal('b') }))).toBe(false);
 
-      expect(filter3(<any> 'abc')).toBe(true);
-      expect(filter3(<any> 'abc')).toBe(false);
+      expect(filter3(Bindings({ a: literal('b') }))).toBe(true);
+      expect(filter3(Bindings({ a: literal('b') }))).toBe(false);
     });
   });
 
