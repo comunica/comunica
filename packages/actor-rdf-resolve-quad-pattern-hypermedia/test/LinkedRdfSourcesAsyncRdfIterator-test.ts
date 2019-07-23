@@ -1,7 +1,7 @@
 import {literal as lit} from "@rdfjs/data-model";
 import {ArrayIterator} from "asynciterator";
 import * as RDF from "rdf-js";
-import {LinkedRdfSourcesAsyncRdfIterator} from "../lib/LinkedRdfSourcesAsyncRdfIterator";
+import {IFirstSource, LinkedRdfSourcesAsyncRdfIterator} from "../lib/LinkedRdfSourcesAsyncRdfIterator";
 
 const quad = require('rdf-quad');
 
@@ -23,9 +23,10 @@ class Dummy extends LinkedRdfSourcesAsyncRdfIterator {
     return metadata.next ? [metadata.next] : [];
   }
 
-  protected async getNextSource(url: string): Promise<{ source: RDF.Source, metadata: {[id: string]: any} }> {
+  protected async getNextSource(url: string): Promise<IFirstSource> {
     if (this.page >= this.data.length) {
       return {
+        handledDatasets: { [url]: true },
         metadata: {},
         source: <any> {
           match: () => new ArrayIterator<RDF.Quad>([]),
@@ -34,6 +35,7 @@ class Dummy extends LinkedRdfSourcesAsyncRdfIterator {
     }
     const newPage = this.page++;
     return {
+      handledDatasets: { [url]: true },
       metadata: { next: 'NEXT' },
       source: <any> {
         match: () => new ArrayIterator<RDF.Quad>(this.data[newPage].concat([])),
@@ -44,14 +46,14 @@ class Dummy extends LinkedRdfSourcesAsyncRdfIterator {
 
 // dummy class with a rejecting getNextSource
 class InvalidDummy extends Dummy { // tslint:disable-line max-classes-per-file
-  protected getNextSource(url: string): Promise<{ source: RDF.Source, metadata: {[id: string]: any} }> {
+  protected getNextSource(url: string): Promise<IFirstSource> {
     return Promise.reject(new Error('NextSource error'));
   }
 }
 
 // dummy class with a rejecting getNextSource on the second page
 class InvalidDummyNext extends Dummy { // tslint:disable-line max-classes-per-file
-  protected getNextSource(url: string): Promise<{ source: RDF.Source, metadata: {[id: string]: any} }> {
+  protected getNextSource(url: string): Promise<IFirstSource> {
     if (this.page >= 1) {
       return Promise.reject(new Error('NextSource2 error'));
     } else {
@@ -62,9 +64,10 @@ class InvalidDummyNext extends Dummy { // tslint:disable-line max-classes-per-fi
 
 // dummy class with a metadata override event on the first page
 class DummyMetaOverride extends Dummy { // tslint:disable-line max-classes-per-file
-  protected async getNextSource(url: string): Promise<{ source: RDF.Source, metadata: {[id: string]: any} }> {
+  protected async getNextSource(url: string): Promise<IFirstSource> {
     if (this.page >= this.data.length) {
       return {
+        handledDatasets: { [url]: true },
         metadata: {},
         source: <any> {
           match: () => new ArrayIterator<RDF.Quad>([]),
@@ -73,6 +76,7 @@ class DummyMetaOverride extends Dummy { // tslint:disable-line max-classes-per-f
     }
     const newPage = this.page++;
     return {
+      handledDatasets: { [url]: true },
       metadata: { next: 'NEXT' },
       source: <any> {
         match: () => {
@@ -94,8 +98,9 @@ class DummyMultiple extends Dummy { // tslint:disable-line max-classes-per-file
 
 // dummy class that emits an error in the source stream
 class DummyError extends Dummy { // tslint:disable-line max-classes-per-file
-  protected async getNextSource(url: string): Promise<{ source: RDF.Source, metadata: {[id: string]: any} }> {
+  protected async getNextSource(url: string): Promise<IFirstSource> {
     return {
+      handledDatasets: { [url]: true },
       metadata: { next: 'NEXT' },
       source: <any> {
         match: () => {
@@ -154,6 +159,37 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
         expect((<any> it).getNextUrls).toHaveBeenCalledTimes(2);
         expect((<any> it).getNextUrls).toHaveBeenCalledWith({ next: 'NEXT' });
         expect((<any> it).getNextUrls).toHaveBeenCalledWith({});
+        done();
+      });
+    });
+
+    it('handles a single page when the first source is pre-loaded from another iterator', (done) => {
+      const data = [[
+        ['a', 'b', 'c'],
+        ['d', 'e', 'f'],
+        ['g', 'h', 'i'],
+      ]];
+      const quads = toTerms(data);
+      const it1 = new Dummy(quads, null, null, null, null, 'first');
+      it1.loadFirstSource();
+      const it2 = new Dummy(quads, null, null, null, null, 'first');
+      it2.loadFirstSource(it1.firstSource);
+      jest.spyOn(<any> it2, 'getNextUrls');
+      const result = [];
+      it2.on('data', (d) => result.push(d));
+      it2.on('end', () => {
+        expect(result).toEqual(flatten(toTerms([[
+          ['a', 'b', 'c'],
+          ['d', 'e', 'f'],
+          ['g', 'h', 'i'],
+          ['a', 'b', 'c'],
+          ['d', 'e', 'f'],
+          ['g', 'h', 'i'],
+        ]])));
+        expect((<any> it2).getNextUrls).toHaveBeenCalledTimes(3);
+        expect((<any> it2).getNextUrls).toHaveBeenCalledWith({ next: 'NEXT' });
+        expect((<any> it2).getNextUrls).toHaveBeenCalledWith({});
+        expect((<any> it2).getNextUrls).toHaveBeenCalledWith({});
         done();
       });
     });

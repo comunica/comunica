@@ -2,6 +2,7 @@ import {ILazyQuadSource} from "@comunica/bus-rdf-resolve-quad-pattern";
 import {ActionContext} from "@comunica/core";
 import {AsyncIterator} from "asynciterator";
 import * as RDF from "rdf-js";
+import {IFirstSource} from "./LinkedRdfSourcesAsyncRdfIterator";
 import {IMediatorArgs, MediatedLinkedRdfSourcesAsyncRdfIterator} from "./MediatedLinkedRdfSourcesAsyncRdfIterator";
 
 /**
@@ -16,7 +17,7 @@ export class MediatedQuadSource implements ILazyQuadSource {
   public readonly forceSourceType: string;
   public readonly mediators: IMediatorArgs;
 
-  public firstSource: Promise<{ source: RDF.Source, metadata: {[id: string]: any} }>;
+  public firstSource: Promise<IFirstSource>;
 
   constructor(context: ActionContext, firstUrl: string, forceSourceType: string, mediators: IMediatorArgs) {
     this.context = context;

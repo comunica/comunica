@@ -8,7 +8,7 @@ import {
 } from "@comunica/bus-rdf-resolve-hypermedia-links";
 import {ActionContext, Actor, IActorTest, Mediator} from "@comunica/core";
 import * as RDF from "rdf-js";
-import {LinkedRdfSourcesAsyncRdfIterator} from "./LinkedRdfSourcesAsyncRdfIterator";
+import {IFirstSource, LinkedRdfSourcesAsyncRdfIterator} from "./LinkedRdfSourcesAsyncRdfIterator";
 
 /**
  * An quad iterator that can iterate over consecutive RDF sources
@@ -33,7 +33,6 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
   private readonly context: ActionContext;
   private readonly forceSourceType: string;
   private readonly handledUrls?: {[url: string]: boolean};
-  private readonly handledDatasets?: {[type: string]: boolean};
 
   constructor(context: ActionContext, forceSourceType: string,
               subject: RDF.Term, predicate: RDF.Term, object: RDF.Term, graph: RDF.Term,
@@ -47,7 +46,6 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
     this.mediatorRdfResolveHypermedia = mediators.mediatorRdfResolveHypermedia;
     this.mediatorRdfResolveHypermediaLinks = mediators.mediatorRdfResolveHypermediaLinks;
     this.handledUrls = {};
-    this.handledDatasets = {};
   }
 
   protected async getNextUrls(metadata: {[id: string]: any}): Promise<string[]> {
@@ -69,7 +67,7 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
     }
   }
 
-  protected async getNextSource(url: string): Promise<{ source: RDF.Source, metadata: {[id: string]: any} }> {
+  protected async getNextSource(url: string): Promise<IFirstSource> {
     // Get the RDF representation of the given document
     const context = this.context;
     const rdfDereferenceOutput: IActorRdfDereferenceOutput = await this.mediatorRdfDereference
@@ -91,6 +89,7 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
       quads: rdfMetadataOuput.data,
       url,
     });
+
     if (dataset) {
       // Mark the dataset as applied
       // This is needed to make sure that things like QPF search forms are only applied once,
@@ -98,7 +97,7 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
       this.handledDatasets[dataset] = true;
     }
 
-    return { source, metadata };
+    return { source, metadata, handledDatasets: this.handledDatasets };
   }
 
 }

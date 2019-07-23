@@ -95,11 +95,12 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
 
     describe('getNextSource', () => {
       it('should get urls based on mediatorRdfResolveHypermedia', async () => {
+        source.handledDatasets = {};
         expect(await source.getNextSource('startUrl')).toEqual({
+          handledDatasets: { MYDATASET: true },
           metadata: { myKey: 'METADATA' },
           source: { sourceContents: 'QUADS(startUrl)' },
         });
-        expect(source.handledDatasets.MYDATASET).toBeTruthy();
       });
 
       it('should get urls based on mediatorRdfResolveHypermedia without dataset id', async () => {
@@ -107,11 +108,12 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
           Promise.resolve({
             source: { sourceContents: quads },
           });
+        source.handledDatasets = {};
         expect(await source.getNextSource('startUrl')).toEqual({
+          handledDatasets: {},
           metadata: { myKey: 'METADATA' },
           source: { sourceContents: 'QUADS(startUrl)' },
         });
-        expect(source.handledDatasets.MYDATASET).toBeFalsy();
       });
     });
 

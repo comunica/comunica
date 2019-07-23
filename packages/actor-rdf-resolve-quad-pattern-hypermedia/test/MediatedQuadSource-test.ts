@@ -114,6 +114,7 @@ describe('MediatedQuadSource', () => {
 
       it('should allow a custom first source to be set', async () => {
         source.firstSource = Promise.resolve({
+          handledDatasets: {},
           metadata: { a: 2 },
           source: {
             match: () => streamifyArray([
@@ -132,6 +133,7 @@ describe('MediatedQuadSource', () => {
 
       it('should allow a custom first source to be set and emit a metadata event', async () => {
         source.firstSource = Promise.resolve({
+          handledDatasets: {},
           metadata: { a: 2 },
           source: {
             match: () => streamifyArray([
