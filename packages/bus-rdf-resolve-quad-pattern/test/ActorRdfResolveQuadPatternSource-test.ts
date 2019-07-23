@@ -1,7 +1,8 @@
-import {ActionContext, Bus} from "@comunica/core";
+import {Bus} from "@comunica/core";
 import {ArrayIterator} from "asynciterator";
-import {KEY_CONTEXT_SOURCE} from "../lib/ActorRdfResolveQuadPattern";
+import {getDataSourceType, getDataSourceValue} from "../lib/ActorRdfResolveQuadPattern";
 import {ActorRdfResolveQuadPatternSource} from "../lib/ActorRdfResolveQuadPatternSource";
+
 const arrayifyStream = require("arrayify-stream");
 
 describe('ActorRdfResolveQuadPatternSource', () => {
@@ -59,6 +60,26 @@ describe('ActorRdfResolveQuadPatternSource', () => {
       return actor.run({ pattern: {} }).then(async (output) => {
         expect(await arrayifyStream(output.data)).toEqual(['al', 'bl']);
       });
+    });
+  });
+
+  describe('getDataSourceType', () => {
+    it('should return on a string source', () => {
+      return expect(getDataSourceType('abc')).toEqual('');
+    });
+
+    it('should return on an object source', () => {
+      return expect(getDataSourceType({ type: 'T', value: 'abc' })).toEqual('T');
+    });
+  });
+
+  describe('getDataSourceValue', () => {
+    it('should return on a string source', () => {
+      return expect(getDataSourceValue('abc')).toEqual('abc');
+    });
+
+    it('should return on an object source', () => {
+      return expect(getDataSourceValue({ type: 'T', value: 'abc' })).toEqual('abc');
     });
   });
 });
