@@ -9,7 +9,8 @@ import * as RDF from "rdf-js";
  */
 export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<RDF.Quad> implements RDF.Stream {
 
-  public firstSource: Promise<{ source: RDF.Source, metadata: {[id: string]: any} }>;
+  public firstSource: Promise<IFirstSource>;
+  public handledDatasets?: {[type: string]: boolean};
 
   protected readonly subject: RDF.Term;
   protected readonly predicate: RDF.Term;
@@ -46,10 +47,14 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
    *
    * After calling this method, the `firstSource` field can be retrieved and optionally cached.
    *
-   * @param {Promise<{source: Source; metadata: {[p: string]: any}}>} firstSource An optional promise resolving
-   *                                                                              to the first source.
+   * This first source also contains a hash of all handled datasets that will be copied upon first use.
+   *
+   * @param {Promise<IFirstSource>} firstSource An optional promise resolving to the first source.
    */
-  public loadFirstSource(firstSource?: Promise<{ source: RDF.Source, metadata: {[id: string]: any} }>) {
+  public loadFirstSource(firstSource?: Promise<IFirstSource>) {
+    if (!firstSource) {
+      this.handledDatasets = {};
+    }
     this.firstSource = firstSource || this.getNextSource(this.firstUrl);
   }
 
@@ -60,8 +65,8 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
         this.loadFirstSource();
       }
       this.firstSource
-        .then(({ source, metadata }) => {
-          this.startIterator(source, metadata, true);
+        .then(({ source, metadata, handledDatasets }) => {
+          this.startIterator(source, metadata, handledDatasets, true);
           done();
         })
         .catch((e) => this.emit('error', e));
@@ -79,7 +84,7 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
               this.metadatas.push(metadata);
             }
 
-            this.startIterator(this.sources[0], this.metadatas[0], false);
+            this.startIterator(this.sources[0], this.metadatas[0], this.handledDatasets, false);
             this.sources.splice(0, 1);
             this.metadatas.splice(0, 1);
           }
@@ -93,16 +98,24 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
 
   protected abstract getNextUrls(metadata: {[id: string]: any}): Promise<string[]>;
 
-  protected abstract async getNextSource(url: string): Promise<{ source: RDF.Source, metadata: {[id: string]: any} }>;
+  protected abstract async getNextSource(url: string): Promise<IFirstSource>;
 
   /**
    * Start a new iterator for the given source.
    * Once the iterator is done, it will either determine a new source, or it will close the iterator.
    * @param {Source} startSource An RDF source.
    * @param {{[id: string]: any} startMetadata The metadata of the source.
+   * @param {{[type: string]: boolean}} handledDatasets The datasets that have been handled.
+   *                                                    This method will copy that hash if
+   *                                                    this.handledDatasets is undefined.
    * @param {boolean} emitMetadata If the metadata event should be emitted.
    */
-  protected startIterator(startSource: RDF.Source, startMetadata: {[id: string]: any}, emitMetadata: boolean) {
+  protected startIterator(startSource: RDF.Source, startMetadata: {[id: string]: any},
+                          handledDatasets: {[type: string]: boolean}, emitMetadata: boolean) {
+    if (!this.handledDatasets) {
+      this.handledDatasets = { ...handledDatasets };
+    }
+
     // Asynchronously execute the quad pattern query
     this.iterating = true;
     const it: RDF.Stream = startSource.match(this.subject, this.predicate, this.object, this.graph);
@@ -130,4 +143,10 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
       this.readable = true;
     });
   }
+}
+
+export interface IFirstSource {
+  source: RDF.Source;
+  metadata: {[id: string]: any};
+  handledDatasets: {[type: string]: boolean};
 }
