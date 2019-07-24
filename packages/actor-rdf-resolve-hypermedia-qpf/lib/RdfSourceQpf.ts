@@ -26,9 +26,8 @@ export class RdfSourceQpf implements RDF.Source {
   private readonly predicateUri: string;
   private readonly objectUri: string;
   private readonly graphUri?: string;
-  private readonly metadata: {[id: string]: any};
   private readonly context: ActionContext;
-  private readonly initialQuads: AsyncIterator<RDF.Quad>;
+  private readonly cachedQuads: {[patternId: string]: AsyncIterator<RDF.Quad>};
 
   constructor(mediatorMetadata: Mediator<Actor<IActionRdfMetadata, IActorTest, IActorRdfMetadataOutput>,
                 IActionRdfMetadata, IActorTest, IActorRdfMetadataOutput>,
@@ -45,11 +44,14 @@ export class RdfSourceQpf implements RDF.Source {
     this.predicateUri = predicateUri;
     this.objectUri = objectUri;
     this.graphUri = graphUri;
-    this.metadata = metadata;
     this.context = context;
-    this.initialQuads = initialQuads ? (<any> AsyncIterator).wrap(initialQuads).clone() : null;
-
-    this.searchForm = this.getSearchForm(this.metadata);
+    this.cachedQuads = {};
+    this.searchForm = this.getSearchForm(metadata);
+    if (initialQuads) {
+      const wrappedQuads = (<any> AsyncIterator).wrap(initialQuads);
+      wrappedQuads.setProperty('metadata', metadata);
+      this.cacheQuads(wrappedQuads);
+    }
   }
 
   /**
@@ -176,11 +178,10 @@ export class RdfSourceQpf implements RDF.Source {
       throw new Error("RdfSourceQpf does not support matching by regular expressions.");
     }
 
-    // If we are querying the empty pattern, just return the original quads and metadata.
-    if (!subject && !predicate && !object && (!graph || graph.termType === 'DefaultGraph')) {
-      const initialQuads = this.initialQuads.clone();
-      setImmediate(() => initialQuads.emit('metadata', this.metadata));
-      return initialQuads;
+    // Try to emit from cache
+    const cached = this.getCachedQuads(subject, predicate, object, graph);
+    if (cached) {
+      return cached;
     }
 
     const quads = new PromiseProxyIterator(async () => {
@@ -193,7 +194,10 @@ export class RdfSourceQpf implements RDF.Source {
         { context: this.context, url, quads: rdfDereferenceOutput.quads, triples: rdfDereferenceOutput.triples });
       this.mediatorMetadataExtract
         .mediate({ context: this.context, url, metadata: rdfMetadataOuput.metadata })
-        .then(({ metadata }) => quads.emit('metadata', metadata));
+        .then(({ metadata }) => {
+          quads.setProperty('metadata', metadata);
+          quads.emit('metadata', metadata);
+        });
 
       // The server is free to send any data in its response (such as metadata),
       // including quads that do not match the given matter.
@@ -225,7 +229,37 @@ export class RdfSourceQpf implements RDF.Source {
       return filteredOutput;
     });
 
-    return quads;
+    this.cacheQuads(quads, subject, predicate, object, graph);
+    return this.getCachedQuads(subject, predicate, object, graph);
+  }
+
+  protected getPatternId(subject?: RDF.Term, predicate?: RDF.Term, object?: RDF.Term, graph?: RDF.Term): string {
+    // tslint:disable:object-literal-sort-keys
+    return JSON.stringify({
+      s: termToString(subject),
+      p: termToString(predicate),
+      o: termToString(object),
+      g: termToString(graph),
+    });
+    // tslint:enable:object-literal-sort-keys
+  }
+
+  protected cacheQuads(quads: AsyncIterator<RDF.Quad>,
+                       subject?: RDF.Term, predicate?: RDF.Term, object?: RDF.Term, graph?: RDF.Term) {
+    const patternId = this.getPatternId(subject, predicate, object, graph);
+    this.cachedQuads[patternId] = quads.clone();
+  }
+
+  protected getCachedQuads(subject?: RDF.Term, predicate?: RDF.Term, object?: RDF.Term, graph?: RDF.Term)
+    : AsyncIterator<RDF.Quad> {
+    const patternId = this.getPatternId(subject, predicate, object, graph);
+    let quads = this.cachedQuads[patternId];
+    if (quads) {
+      quads = quads.clone();
+      quads.getProperty('metadata', (metadata) => quads.emit('metadata', metadata));
+      return quads;
+    }
+    return null;
   }
 
 }

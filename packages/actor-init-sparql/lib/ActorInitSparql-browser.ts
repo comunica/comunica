@@ -5,7 +5,7 @@ import {IActionOptimizeQueryOperation,
   IActorOptimizeQueryOperationOutput} from "@comunica/bus-optimize-query-operation";
 import {
   Bindings, ensureBindings, IActionQueryOperation,
-  IActorQueryOperationOutput, KEY_CONTEXT_BASEIRI, KEY_CONTEXT_QUERY_TIMESTAMP
+  IActorQueryOperationOutput, KEY_CONTEXT_BASEIRI, KEY_CONTEXT_QUERY_TIMESTAMP,
 } from "@comunica/bus-query-operation";
 import {IDataSource, KEY_CONTEXT_SOURCES} from "@comunica/bus-rdf-resolve-quad-pattern";
 import {IActionSparqlParse, IActorSparqlParseOutput} from "@comunica/bus-sparql-parse";

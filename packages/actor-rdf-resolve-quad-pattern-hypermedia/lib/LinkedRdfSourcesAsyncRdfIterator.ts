@@ -1,4 +1,5 @@
 import {BufferedIterator, BufferedIteratorOptions} from "asynciterator";
+import LRUCache = require("lru-cache");
 import * as RDF from "rdf-js";
 
 /**
@@ -9,30 +10,29 @@ import * as RDF from "rdf-js";
  */
 export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<RDF.Quad> implements RDF.Stream {
 
-  public firstSource: Promise<IFirstSource>;
-  public handledDatasets?: {[type: string]: boolean};
+  public sourcesState: ISourcesState;
 
   protected readonly subject: RDF.Term;
   protected readonly predicate: RDF.Term;
   protected readonly object: RDF.Term;
   protected readonly graph: RDF.Term;
-  protected sources: RDF.Source[];
-  protected metadatas: {[id: string]: any}[];
-  protected nextMetadata: {[id: string]: any};
+  protected sourceStates: ISourceState[];
+  protected nextSource: ISourceState;
 
+  private readonly cacheSize: number;
   private readonly firstUrl: string;
   private started: boolean;
   private iterating: boolean;
 
-  constructor(subject: RDF.Term, predicate: RDF.Term, object: RDF.Term, graph: RDF.Term,
+  constructor(cacheSize: number, subject: RDF.Term, predicate: RDF.Term, object: RDF.Term, graph: RDF.Term,
               firstUrl: string, options?: BufferedIteratorOptions) {
     super(options);
+    this.cacheSize = cacheSize;
     this.subject = subject;
     this.predicate = predicate;
     this.object = object;
     this.graph = graph;
-    this.sources = [];
-    this.metadatas = [];
+    this.sourceStates = [];
     this.firstUrl = firstUrl;
     this.started = false;
     this.iterating = false;
@@ -40,53 +40,56 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
 
   /**
    * This method can optionally called after constructing an instance
-   * for allowing the first source to be cached.
+   * for allowing the sources state to be cached.
    *
-   * When calling without args, then the default logic will be followed to determine the first source.
-   * When calling with an arg, then the given first source will be set instead of following the default logic.
+   * When calling without args, then the default logic will be followed to determine the sources state.
+   * When calling with an arg, then the given sources state will be set instead of following the default logic.
    *
-   * After calling this method, the `firstSource` field can be retrieved and optionally cached.
+   * After calling this method, the `sourcesState` field can be retrieved and optionally cached.
    *
-   * This first source also contains a hash of all handled datasets that will be copied upon first use.
+   * This sources state also contains a hash of all handled datasets that will be copied upon first use.
    *
-   * @param {Promise<IFirstSource>} firstSource An optional promise resolving to the first source.
+   * @param {ISourcesState} sourcesState An optional sources state.
    */
-  public loadFirstSource(firstSource?: Promise<IFirstSource>) {
-    if (!firstSource) {
-      this.handledDatasets = {};
+  public setSourcesState(sourcesState?: ISourcesState) {
+    if (sourcesState) {
+      this.sourcesState = sourcesState;
+    } else {
+      this.sourcesState =  {
+        sources: new LRUCache<string, Promise<ISourceState>>({ max: this.cacheSize }),
+      };
+      this.getNextSourceCached(this.firstUrl, {}); // Ignore the response, we just want the promise to be cached
     }
-    this.firstSource = firstSource || this.getNextSource(this.firstUrl);
   }
 
   public _read(count: number, done: () => void) {
     if (!this.started) {
       this.started = true;
-      if (!this.firstSource) {
-        this.loadFirstSource();
+      if (!this.sourcesState) {
+        this.setSourcesState();
       }
-      this.firstSource
-        .then(({ source, metadata, handledDatasets }) => {
-          this.startIterator(source, metadata, handledDatasets, true);
+      this.sourcesState.sources.get(this.firstUrl)
+        .then((sourceState) => {
+          this.startIterator(sourceState, true);
           done();
         })
         .catch((e) => this.emit('error', e));
-    } else if (!this.iterating && this.nextMetadata) {
-      const nextMetadata = this.nextMetadata;
-      this.nextMetadata = null;
-      this.getNextUrls(nextMetadata)
-        .then((nextUrls: string[]) => Promise.all(nextUrls.map((nextUrl) => this.getNextSource(nextUrl))))
-        .then((newSources) => {
-          if (newSources.length === 0 && this.sources.length === 0) {
+    } else if (!this.iterating && this.nextSource) {
+      const nextSource = this.nextSource;
+      this.nextSource = null;
+      this.getNextUrls(nextSource.metadata)
+        .then((nextUrls: string[]) => Promise.all(nextUrls
+          .map((nextUrl) => this.getNextSourceCached(nextUrl, nextSource.handledDatasets))))
+        .then((newSources: ISourceState[]) => {
+          if (newSources.length === 0 && this.sourceStates.length === 0) {
             this.close();
           } else {
-            for (const { source, metadata } of newSources) {
-              this.sources.push(source);
-              this.metadatas.push(metadata);
+            for (const sourceState of newSources) {
+              this.sourceStates.push(sourceState);
             }
 
-            this.startIterator(this.sources[0], this.metadatas[0], this.handledDatasets, false);
-            this.sources.splice(0, 1);
-            this.metadatas.splice(0, 1);
+            this.startIterator(this.sourceStates[0], false);
+            this.sourceStates.splice(0, 1);
           }
 
           done();
@@ -98,31 +101,35 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
 
   protected abstract getNextUrls(metadata: {[id: string]: any}): Promise<string[]>;
 
-  protected abstract async getNextSource(url: string): Promise<IFirstSource>;
+  protected abstract async getNextSource(url: string, handledDatasets: {[type: string]: boolean})
+    : Promise<ISourceState>;
+
+  protected getNextSourceCached(url: string, handledDatasets: {[type: string]: boolean}): Promise<ISourceState> {
+    let source = this.sourcesState.sources.get(url);
+    if (source) {
+      return source;
+    }
+    source = this.getNextSource(url, handledDatasets);
+    this.sourcesState.sources.set(url, source);
+    return source;
+  }
 
   /**
    * Start a new iterator for the given source.
    * Once the iterator is done, it will either determine a new source, or it will close the iterator.
-   * @param {Source} startSource An RDF source.
-   * @param {{[id: string]: any} startMetadata The metadata of the source.
-   * @param {{[type: string]: boolean}} handledDatasets The datasets that have been handled.
-   *                                                    This method will copy that hash if
-   *                                                    this.handledDatasets is undefined.
+   * @param {ISourceState} startSource The start source state.
    * @param {boolean} emitMetadata If the metadata event should be emitted.
    */
-  protected startIterator(startSource: RDF.Source, startMetadata: {[id: string]: any},
-                          handledDatasets: {[type: string]: boolean}, emitMetadata: boolean) {
-    if (!this.handledDatasets) {
-      this.handledDatasets = { ...handledDatasets };
-    }
-
+  protected startIterator(startSource: ISourceState, emitMetadata: boolean) {
     // Asynchronously execute the quad pattern query
     this.iterating = true;
-    const it: RDF.Stream = startSource.match(this.subject, this.predicate, this.object, this.graph);
+    const it: RDF.Stream = startSource.source.match(this.subject, this.predicate, this.object, this.graph);
+    let currentMetadata = startSource.metadata;
 
     // If the response emits metadata, override our metadata
+    // For example, this will always be called for QPF sources (if not, then something is going wrong)
     it.on('metadata', (metadata) => {
-      startMetadata = metadata;
+      currentMetadata = metadata;
     });
 
     it.on('data', (quad: RDF.Quad) => {
@@ -134,19 +141,47 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
 
       if (emitMetadata) {
         // Emit the metadata after all data has been processed.
-        this.emit('metadata', startMetadata);
+        this.emit('metadata', currentMetadata);
       }
 
       // Store the metadata for next ._read call
-      this.nextMetadata = startMetadata;
+      this.nextSource = {
+        handledDatasets: { ...startSource.handledDatasets },
+        metadata: currentMetadata,
+        source: null,
+      };
       this.iterating = false;
       this.readable = true;
     });
   }
 }
 
-export interface IFirstSource {
+/**
+ * A reusable sources state,
+ * containing a cache of all source states.
+ */
+export interface ISourcesState {
+  /**
+   * A cache for source URLs to source states.
+   */
+  sources: LRUCache<string, Promise<ISourceState>>;
+}
+
+/**
+ * The current state of a source.
+ * This is needed for following links within a source.
+ */
+export interface ISourceState {
+  /**
+   * A source.
+   */
   source: RDF.Source;
+  /**
+   * The source's initial metadata.
+   */
   metadata: {[id: string]: any};
+  /**
+   * All dataset identifiers that have been passed for this source.
+   */
   handledDatasets: {[type: string]: boolean};
 }

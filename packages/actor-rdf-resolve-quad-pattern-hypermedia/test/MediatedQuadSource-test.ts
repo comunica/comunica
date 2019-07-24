@@ -1,5 +1,7 @@
 import {ActionContext} from "@comunica/core";
 import "jest-rdf";
+import LRUCache = require("lru-cache");
+import {ISourceState} from "../lib/LinkedRdfSourcesAsyncRdfIterator";
 import {MediatedLinkedRdfSourcesAsyncRdfIterator} from "../lib/MediatedLinkedRdfSourcesAsyncRdfIterator";
 import {MediatedQuadSource} from "../lib/MediatedQuadSource";
 
@@ -69,7 +71,7 @@ describe('MediatedQuadSource', () => {
     let source: MediatedQuadSource;
 
     beforeEach(() => {
-      source = new MediatedQuadSource(context, 'firstUrl', 'forcedType', mediators);
+      source = new MediatedQuadSource(10, context, 'firstUrl', 'forcedType', mediators);
     });
 
     describe('matchLazy', () => {
@@ -108,12 +110,15 @@ describe('MediatedQuadSource', () => {
 
       it('should set the first source after the first matchLazy call', async () => {
         source.matchLazy();
-        expect((await source.firstSource).metadata).toEqual({ a: 1 });
-        expect((await source.firstSource).source).toBeTruthy();
+        expect((await source.sourcesState.sources.get('firstUrl')).metadata).toEqual({ a: 1 });
+        expect((await source.sourcesState.sources.get('firstUrl')).source).toBeTruthy();
       });
 
       it('should allow a custom first source to be set', async () => {
-        source.firstSource = Promise.resolve({
+        source.sourcesState = {
+          sources: new LRUCache<string, Promise<ISourceState>>(10),
+        };
+        source.sourcesState.sources.set('firstUrl', Promise.resolve({
           handledDatasets: {},
           metadata: { a: 2 },
           source: {
@@ -122,7 +127,7 @@ describe('MediatedQuadSource', () => {
               quad('s2x', 'p2', 'o2'),
             ]),
           },
-        });
+        }));
         return expect(await arrayifyStream(source.matchLazy())).toEqualRdfQuadArray([
           quad('s1x', 'p1', 'o1'),
           quad('s2x', 'p2', 'o2'),
@@ -132,7 +137,10 @@ describe('MediatedQuadSource', () => {
       });
 
       it('should allow a custom first source to be set and emit a metadata event', async () => {
-        source.firstSource = Promise.resolve({
+        source.sourcesState = {
+          sources: new LRUCache<string, Promise<ISourceState>>(10),
+        };
+        source.sourcesState.sources.set('firstUrl', Promise.resolve({
           handledDatasets: {},
           metadata: { a: 2 },
           source: {
@@ -141,7 +149,7 @@ describe('MediatedQuadSource', () => {
               quad('s2x', 'p2', 'o2'),
             ]),
           },
-        });
+        }));
         const out = source.matchLazy();
         const metaPromise = new Promise((resolve, reject) => {
           out.on('metadata', resolve);

@@ -54,7 +54,7 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
         mediatorRdfResolveHypermedia,
         mediatorRdfResolveHypermediaLinks,
       };
-      source = new MediatedLinkedRdfSourcesAsyncRdfIterator(context, 'forcedType', s, p, o, g, 'first', mediators);
+      source = new MediatedLinkedRdfSourcesAsyncRdfIterator(10, context, 'forcedType', s, p, o, g, 'first', mediators);
     });
 
     describe('getNextUrls', () => {
@@ -95,8 +95,7 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
 
     describe('getNextSource', () => {
       it('should get urls based on mediatorRdfResolveHypermedia', async () => {
-        source.handledDatasets = {};
-        expect(await source.getNextSource('startUrl')).toEqual({
+        expect(await source.getNextSource('startUrl', {})).toEqual({
           handledDatasets: { MYDATASET: true },
           metadata: { myKey: 'METADATA' },
           source: { sourceContents: 'QUADS(startUrl)' },
@@ -108,8 +107,7 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
           Promise.resolve({
             source: { sourceContents: quads },
           });
-        source.handledDatasets = {};
-        expect(await source.getNextSource('startUrl')).toEqual({
+        expect(await source.getNextSource('startUrl', {})).toEqual({
           handledDatasets: {},
           metadata: { myKey: 'METADATA' },
           source: { sourceContents: 'QUADS(startUrl)' },

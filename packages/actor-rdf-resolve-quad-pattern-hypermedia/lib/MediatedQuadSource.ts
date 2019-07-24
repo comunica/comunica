@@ -2,7 +2,7 @@ import {ILazyQuadSource} from "@comunica/bus-rdf-resolve-quad-pattern";
 import {ActionContext} from "@comunica/core";
 import {AsyncIterator} from "asynciterator";
 import * as RDF from "rdf-js";
-import {IFirstSource} from "./LinkedRdfSourcesAsyncRdfIterator";
+import {ISourcesState} from "./LinkedRdfSourcesAsyncRdfIterator";
 import {IMediatorArgs, MediatedLinkedRdfSourcesAsyncRdfIterator} from "./MediatedLinkedRdfSourcesAsyncRdfIterator";
 
 /**
@@ -17,9 +17,13 @@ export class MediatedQuadSource implements ILazyQuadSource {
   public readonly forceSourceType: string;
   public readonly mediators: IMediatorArgs;
 
-  public firstSource: Promise<IFirstSource>;
+  public sourcesState: ISourcesState;
 
-  constructor(context: ActionContext, firstUrl: string, forceSourceType: string, mediators: IMediatorArgs) {
+  private readonly cacheSize: number;
+
+  constructor(cacheSize: number, context: ActionContext, firstUrl: string,
+              forceSourceType: string, mediators: IMediatorArgs) {
+    this.cacheSize = cacheSize;
     this.context = context;
     this.firstUrl = firstUrl;
     this.forceSourceType = forceSourceType;
@@ -36,13 +40,13 @@ export class MediatedQuadSource implements ILazyQuadSource {
       || graph instanceof RegExp) {
       throw new Error("MediatedQuadSource does not support matching by regular expressions.");
     }
-    const it = new MediatedLinkedRdfSourcesAsyncRdfIterator(this.context, this.forceSourceType,
+    const it = new MediatedLinkedRdfSourcesAsyncRdfIterator(this.cacheSize, this.context, this.forceSourceType,
       subject, predicate, object, graph, this.firstUrl, this.mediators);
-    if (!this.firstSource) {
-      it.loadFirstSource();
-      this.firstSource = it.firstSource;
+    if (!this.sourcesState) {
+      it.setSourcesState();
+      this.sourcesState = it.sourcesState;
     } else {
-      it.loadFirstSource(this.firstSource);
+      it.setSourcesState(this.sourcesState);
     }
     return it;
   }
