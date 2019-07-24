@@ -88,7 +88,7 @@
       "ts",
       "js"
     ],
-    "setupTestFrameworkScriptFile": "./setup-jest.js",
+    "setupFilesAfterEnv": [ "./setup-jest.js" ],
     "collectCoverage": true,
     "coveragePathIgnorePatterns": [
       "/node_modules/",
