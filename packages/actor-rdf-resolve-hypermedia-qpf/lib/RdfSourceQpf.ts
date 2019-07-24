@@ -255,8 +255,10 @@ export class RdfSourceQpf implements RDF.Source {
     const patternId = this.getPatternId(subject, predicate, object, graph);
     let quads = this.cachedQuads[patternId];
     if (quads) {
-      quads = quads.clone();
-      quads.getProperty('metadata', (metadata) => quads.emit('metadata', metadata));
+      const quadsOriginal = quads;
+      // Make our iterator lazy to ensure that metadata event is emitted before end event.
+      quads = new PromiseProxyIterator(async () => quadsOriginal.clone());
+      quadsOriginal.getProperty('metadata', (metadata) => quads.emit('metadata', metadata));
       return quads;
     }
     return null;
