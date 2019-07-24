@@ -274,7 +274,7 @@ describe('Bus', () => {
 
       it('should change the order when adding 1 dependency', () => {
         bus.addDependencies(actor2, [actor1]);
-        expect(bus.actors).toEqual([actor2, actor1, actor3]);
+        expect(bus.actors).toEqual([actor2, actor3, actor1]);
 
         bus.addDependencies(actor3, [actor2]);
         expect(bus.actors).toEqual([actor3, actor2, actor1]);
@@ -288,14 +288,29 @@ describe('Bus', () => {
         expect(bus.actors).toEqual([actor2, actor3, actor1]);
       });
 
-      it('should not change the order when a dependency is added for an unsubscribed actor', () => {
+      it('should not change the effective order when a dependency is added for an unsubscribed actor', () => {
         bus.addDependencies(actor2, [{}]);
         expect(bus.actors).toEqual([actor1, actor2, actor3]);
       });
 
-      it('should not change the order when a dependent is added for an unsubscribed actor', () => {
+      it('should not change the effective order when a dependent is added for an unsubscribed actor', () => {
         bus.addDependencies({}, [actor2]);
-        expect(bus.actors).toEqual([actor1, actor2, actor3]);
+        expect(bus.actors).toEqual([actor1, actor3, actor2]);
+      });
+
+      it('should change the order for chained dependencies', () => {
+        bus.addDependencies(actor3, [actor2]);
+        expect(bus.actors).toEqual([actor1, actor3, actor2]);
+
+        bus.addDependencies(actor2, [actor1]);
+        expect(bus.actors).toEqual([actor3, actor2, actor1]);
+      });
+
+      it('should error on cyclic links', () => {
+        bus.addDependencies(actor1, [actor2]);
+        bus.addDependencies(actor2, [actor3]);
+        expect(() => bus.addDependencies(actor3, [actor1]))
+          .toThrow(new Error('Cyclic dependency links detected in bus bus'));
       });
     });
 
