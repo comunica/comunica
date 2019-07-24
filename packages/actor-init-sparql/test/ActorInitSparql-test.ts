@@ -2,7 +2,7 @@ import {ActorInit} from "@comunica/bus-init";
 import {Bindings, KEY_CONTEXT_QUERY_TIMESTAMP} from "@comunica/bus-query-operation";
 import {Bus, KEY_CONTEXT_LOG} from "@comunica/core";
 import {literal, namedNode, variable} from "@rdfjs/data-model";
-import {Factory} from "sparqlalgebrajs";
+import {Factory, translate} from "sparqlalgebrajs";
 import {PassThrough, Readable} from "stream";
 import {ActorInitSparql} from "../lib/ActorInitSparql";
 import {ActorInitSparql as ActorInitSparqlBrowser, KEY_CONTEXT_QUERYFORMAT} from "../lib/ActorInitSparql-browser";
@@ -488,6 +488,11 @@ describe('ActorInitSparql', () => {
       it('should allow KEY_CONTEXT_QUERY_TIMESTAMP to be set', () => {
         const ctx = { [KEY_CONTEXT_QUERY_TIMESTAMP]: new Date() };
         return expect(actor.query('SELECT * WHERE { ?s ?p ?o }', ctx))
+          .resolves.toBeTruthy();
+      });
+
+      it('should allow a parsed query to be passd', () => {
+        return expect(actor.query(translate('SELECT * WHERE { ?s ?p ?o }')))
           .resolves.toBeTruthy();
       });
     });
