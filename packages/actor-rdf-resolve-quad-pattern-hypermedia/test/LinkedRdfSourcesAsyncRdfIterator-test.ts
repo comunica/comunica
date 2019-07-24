@@ -91,6 +91,24 @@ class DummyMetaOverride extends Dummy { // tslint:disable-line max-classes-per-f
   }
 }
 
+// dummy class with a metadata override event on the first page
+class DummyMetaOverrideTooLate extends Dummy { // tslint:disable-line max-classes-per-file
+  protected async getNextSource(url: string): Promise<ISourceState> {
+    const requestedPage = 0;
+    return {
+      handledDatasets: { [url]: true },
+      metadata: { next: 'NEXT' },
+      source: <any> {
+        match: () => {
+          const quads = new ArrayIterator<RDF.Quad>([]);
+          setTimeout(() => quads.emit('metadata', { next: 'P' + (requestedPage + 1), override: true }), 10);
+          return quads;
+        },
+      },
+    };
+  }
+}
+
 // dummy class that produces multiple next page links
 class DummyMultiple extends Dummy { // tslint:disable-line max-classes-per-file
   protected async getNextUrls(metadata: {[id: string]: any}): Promise<string[]> {
@@ -350,6 +368,18 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
         expect((<any> it).getNextUrls).toHaveBeenCalledWith({});
         done();
       });
+    });
+
+    it('errors when the metadata event is emitted after the end event', async () => {
+      const data = [];
+      const quads = toTerms(data);
+      const it = new DummyMetaOverrideTooLate(quads, null, null, null, null, 'first');
+      jest.spyOn(<any> it, 'getNextUrls');
+      const result = [];
+      return expect(new Promise((resolve, reject) => {
+        it.on('data', (d) => result.push(d));
+        it.on('error', resolve);
+      })).resolves.toThrow(new Error('Received metadata AFTER the source iterator was ended.'));
     });
 
     it('calling _read while already iterating should not do anything', () => {

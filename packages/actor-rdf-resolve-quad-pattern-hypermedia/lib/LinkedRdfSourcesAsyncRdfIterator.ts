@@ -125,10 +125,14 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
     this.iterating = true;
     const it: RDF.Stream = startSource.source.match(this.subject, this.predicate, this.object, this.graph);
     let currentMetadata = startSource.metadata;
+    let ended = false;
 
     // If the response emits metadata, override our metadata
     // For example, this will always be called for QPF sources (if not, then something is going wrong)
     it.on('metadata', (metadata) => {
+      if (ended) {
+        (<any> this).destroy(new Error('Received metadata AFTER the source iterator was ended.'));
+      }
       currentMetadata = metadata;
     });
 
@@ -136,8 +140,9 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
       this._push(quad);
       this.readable = true;
     });
-    it.on('error', (e: Error) => this.emit('error', e));
+    it.on('error', (e: Error) => (<any> this).destroy(e));
     it.on('end', () => {
+      ended = true;
 
       if (emitMetadata) {
         // Emit the metadata after all data has been processed.
