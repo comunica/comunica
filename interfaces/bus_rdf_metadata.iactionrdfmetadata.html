@@ -90,9 +90,9 @@
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="bus_rdf_metadata.iactionrdfmetadata.html#context" class="tsd-kind-icon">context</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="bus_rdf_metadata.iactionrdfmetadata.html#pageurl" class="tsd-kind-icon">page<wbr>Url</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="bus_rdf_metadata.iactionrdfmetadata.html#quads" class="tsd-kind-icon">quads</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="bus_rdf_metadata.iactionrdfmetadata.html#triples" class="tsd-kind-icon">triples</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="bus_rdf_metadata.iactionrdfmetadata.html#url" class="tsd-kind-icon">url</a></li>
 							</ul>
 						</section>
 					</div>
@@ -117,27 +117,12 @@
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="pageurl" class="tsd-anchor"></a>
-					<h3>page<wbr>Url</h3>
-					<div class="tsd-signature tsd-kind-icon">page<wbr>Url<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/6535ebe/packages/bus-rdf-metadata/lib/ActorRdfMetadata.ts#L27">packages/bus-rdf-metadata/lib/ActorRdfMetadata.ts:27</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>The page URL from which the quads were retrieved.</p>
-						</div>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="quads" class="tsd-anchor"></a>
 					<h3>quads</h3>
 					<div class="tsd-signature tsd-kind-icon">quads<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Stream</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/6535ebe/packages/bus-rdf-metadata/lib/ActorRdfMetadata.ts#L31">packages/bus-rdf-metadata/lib/ActorRdfMetadata.ts:31</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/f6a7b61/packages/bus-rdf-metadata/lib/ActorRdfMetadata.ts#L31">packages/bus-rdf-metadata/lib/ActorRdfMetadata.ts:31</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -152,7 +137,7 @@
 					<div class="tsd-signature tsd-kind-icon">triples<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/6535ebe/packages/bus-rdf-metadata/lib/ActorRdfMetadata.ts#L37">packages/bus-rdf-metadata/lib/ActorRdfMetadata.ts:37</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/f6a7b61/packages/bus-rdf-metadata/lib/ActorRdfMetadata.ts#L37">packages/bus-rdf-metadata/lib/ActorRdfMetadata.ts:37</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -160,6 +145,21 @@
 							<p>An optional field indicating if the given quad stream originates from a triple-based serialization,
 								in which everything is serialized in the default graph.
 							If falsy, the quad stream contain actual quads, otherwise they should be interpreted as triples.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="url" class="tsd-anchor"></a>
+					<h3>url</h3>
+					<div class="tsd-signature tsd-kind-icon">url<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/f6a7b61/packages/bus-rdf-metadata/lib/ActorRdfMetadata.ts#L27">packages/bus-rdf-metadata/lib/ActorRdfMetadata.ts:27</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The page URL from which the quads were retrieved.</p>
 						</div>
 					</div>
 				</section>
@@ -196,13 +196,13 @@
 										<a href="bus_rdf_metadata.iactionrdfmetadata.html#context" class="tsd-kind-icon">context</a>
 									</li>
 									<li class=" tsd-kind-property tsd-parent-kind-interface">
-										<a href="bus_rdf_metadata.iactionrdfmetadata.html#pageurl" class="tsd-kind-icon">page<wbr>Url</a>
-									</li>
-									<li class=" tsd-kind-property tsd-parent-kind-interface">
 										<a href="bus_rdf_metadata.iactionrdfmetadata.html#quads" class="tsd-kind-icon">quads</a>
 									</li>
 									<li class=" tsd-kind-property tsd-parent-kind-interface">
 										<a href="bus_rdf_metadata.iactionrdfmetadata.html#triples" class="tsd-kind-icon">triples</a>
+									</li>
+									<li class=" tsd-kind-property tsd-parent-kind-interface">
+										<a href="bus_rdf_metadata.iactionrdfmetadata.html#url" class="tsd-kind-icon">url</a>
 									</li>
 								</ul>
 							</li>

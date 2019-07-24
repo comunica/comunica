@@ -89,7 +89,8 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="bus_rdf_resolve_hypermedia.iactorrdfresolvehypermediaoutput.html#searchform" class="tsd-kind-icon">search<wbr>Form</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="bus_rdf_resolve_hypermedia.iactorrdfresolvehypermediaoutput.html#dataset" class="tsd-kind-icon">dataset</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="bus_rdf_resolve_hypermedia.iactorrdfresolvehypermediaoutput.html#source" class="tsd-kind-icon">source</a></li>
 							</ul>
 						</section>
 					</div>
@@ -98,14 +99,36 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="searchform" class="tsd-anchor"></a>
-					<h3>search<wbr>Form</h3>
-					<div class="tsd-signature tsd-kind-icon">search<wbr>Form<span class="tsd-signature-symbol">:</span> <a href="_node_modules__comunica_actor_rdf_metadata_extract_hydra_controls_lib_actorrdfmetadataextracthydracontrols_.isearchform.html" class="tsd-signature-type">ISearchForm</a></div>
+					<a name="dataset" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> dataset</h3>
+					<div class="tsd-signature tsd-kind-icon">dataset<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/6535ebe/packages/bus-rdf-resolve-hypermedia/lib/ActorRdfResolveHypermedia.ts#L29">packages/bus-rdf-resolve-hypermedia/lib/ActorRdfResolveHypermedia.ts:29</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/f6a7b61/packages/bus-rdf-resolve-hypermedia/lib/ActorRdfResolveHypermedia.ts#L83">packages/bus-rdf-resolve-hypermedia/lib/ActorRdfResolveHypermedia.ts:83</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The dataset that was handled.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="source" class="tsd-anchor"></a>
+					<h3>source</h3>
+					<div class="tsd-signature tsd-kind-icon">source<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Source</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/f6a7b61/packages/bus-rdf-resolve-hypermedia/lib/ActorRdfResolveHypermedia.ts#L79">packages/bus-rdf-resolve-hypermedia/lib/ActorRdfResolveHypermedia.ts:79</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The new source of quads contained in the document.</p>
+						</div>
+						<p>Optionally, these sources can emit a &#39;metadata&#39; event with a metadata object
+						that will should override the metadata of this source.</p>
+					</div>
 				</section>
 			</section>
 		</div>
@@ -137,9 +160,15 @@
 								<a href="bus_rdf_resolve_hypermedia.iactorrdfresolvehypermediaoutput.html" class="tsd-kind-icon">IActor<wbr>Rdf<wbr>Resolve<wbr>Hypermedia<wbr>Output</a>
 								<ul>
 									<li class=" tsd-kind-property tsd-parent-kind-interface">
-										<a href="bus_rdf_resolve_hypermedia.iactorrdfresolvehypermediaoutput.html#searchform" class="tsd-kind-icon">search<wbr>Form</a>
+										<a href="bus_rdf_resolve_hypermedia.iactorrdfresolvehypermediaoutput.html#dataset" class="tsd-kind-icon">dataset</a>
+									</li>
+									<li class=" tsd-kind-property tsd-parent-kind-interface">
+										<a href="bus_rdf_resolve_hypermedia.iactorrdfresolvehypermediaoutput.html#source" class="tsd-kind-icon">source</a>
 									</li>
 								</ul>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-external-module">
+								<a href="bus_rdf_resolve_hypermedia.iactorrdfresolvehypermediatest.html" class="tsd-kind-icon">IActor<wbr>Rdf<wbr>Resolve<wbr>Hypermedia<wbr>Test</a>
 							</li>
 						</ul>
 					</li>

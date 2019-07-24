@@ -78,11 +78,11 @@
 					<pre><code class="language-bash">$ npm <span class="hljs-keyword">install</span> -g @comunica/actor-init-sparql-<span class="hljs-keyword">file</span></code></pre>
 					<h2 id="usage-from-the-command-line">Usage from the command line</h2>
 					<p>Show 100 triples from a remote FOAF profile:</p>
-					<pre><code class="language-bash"><span class="hljs-variable">$ </span>comunica-sparql-file file<span class="hljs-variable">@https</span><span class="hljs-symbol">://ruben</span>.verborgh.org/profile/<span class="hljs-comment">#me "CONSTRUCT WHERE { ?s ?p ?o } LIMIT 100"</span></code></pre>
+					<pre><code class="language-bash">$ comunica-sparql-<span class="hljs-keyword">file</span> http<span class="hljs-variable">s:</span>//ruben.verborgh.org/<span class="hljs-keyword">profile</span>/#me <span class="hljs-string">"CONSTRUCT WHERE { ?s ?p ?o } LIMIT 100"</span></code></pre>
 					<p>Show 100 triples from a local RDF file:</p>
-					<pre><code class="language-bash">$ comunica-sparql-<span class="hljs-built_in">file</span> <span class="hljs-built_in">file</span>@path/<span class="hljs-keyword">to</span>/<span class="hljs-keyword">my</span>/<span class="hljs-built_in">file</span>.ttl <span class="hljs-string">"CONSTRUCT WHERE { ?s ?p ?o } LIMIT 100"</span></code></pre>
+					<pre><code class="language-bash">$ comunica-sparql-<span class="hljs-built_in">file</span> path/<span class="hljs-keyword">to</span>/<span class="hljs-keyword">my</span>/<span class="hljs-built_in">file</span>.ttl <span class="hljs-string">"CONSTRUCT WHERE { ?s ?p ?o } LIMIT 100"</span></code></pre>
 					<p>Show all triples from a local and remote file:</p>
-					<pre><code class="language-bash"><span class="hljs-variable">$ </span>comunica-sparql-file file<span class="hljs-variable">@path</span>/to/my/file.ttl file<span class="hljs-variable">@https</span><span class="hljs-symbol">://ruben</span>.verborgh.org/profile/<span class="hljs-comment">#me "CONSTRUCT WHERE { ?s ?p ?o } LIMIT 100"</span></code></pre>
+					<pre><code class="language-bash">$ comunica-sparql-<span class="hljs-keyword">file</span> path/<span class="hljs-keyword">to</span>/my/<span class="hljs-keyword">file</span>.ttl http<span class="hljs-variable">s:</span>//ruben.verborgh.org/<span class="hljs-keyword">profile</span>/#me <span class="hljs-string">"CONSTRUCT WHERE { ?s ?p ?o } LIMIT 100"</span></code></pre>
 					<p>Show the help with all options:</p>
 					<pre><code class="language-bash">$ comunica-sparql-<span class="hljs-built_in">file</span> <span class="hljs-comment">--help</span></code></pre>
 					<p>Just like <a href="https://github.com/comunica/comunica/tree/master/packages/actor-init-sparql">Comunica SPARQL</a>,
@@ -93,12 +93,12 @@
 <span class="hljs-keyword">const</span> myEngine = newEngine();
 
 <p><span class="hljs-keyword">const</span> result = <span class="hljs-keyword">await</span> myEngine.query(<span class="hljs-string">&#39;SELECT * WHERE { ?s ?p &lt;<a href="http://dbpedia.org/resource/Belgium&gt;">http://dbpedia.org/resource/Belgium&gt;</a>. ?s ?p ?o } LIMIT 100&#39;</span>,
-  { sources: [ { <span class="hljs-keyword">type</span>: <span class="hljs-string">&#39;file&#39;</span>, value: <span class="hljs-string">&#39;/path/to/my/file.ttl&#39;</span> } ] })
+  { sources: [<span class="hljs-string">&#39;/path/to/my/file.ttl&#39;</span>] })
 result.bindingsStream.on(<span class="hljs-string">&#39;data&#39;</span>, <span class="hljs-function">(<span class="hljs-params">data</span>) =&gt;</span> <span class="hljs-built_in">console</span>.log(data.toObject()));</code></pre></p>
 					<p><a href="https://github.com/comunica/comunica/tree/master/packages/actor-init-sparql#usage-within-application">More details</a></p>
 					<h3 id="usage-as-a-sparql-endpoint">Usage as a SPARQL endpoint</h3>
 					<p>Start a webservice exposing <a href="http://fragments.dbpedia.org/2015-10/en">http://fragments.dbpedia.org/2015-10/en</a> via the SPARQL protocol, i.e., a <em>SPARQL endpoint</em>.</p>
-					<pre><code class="language-bash">$ comunica-sparql-file-http <span class="hljs-string">"{ <span class="hljs-subst">\"</span>sources<span class="hljs-subst">\"</span>: [{ <span class="hljs-subst">\"</span>type<span class="hljs-subst">\"</span>: <span class="hljs-subst">\"</span>file<span class="hljs-subst">\"</span>, <span class="hljs-subst">\"</span>value<span class="hljs-subst">\"</span> : <span class="hljs-subst">\"</span>/path/to/my/file.ttl"</span> }]}<span class="hljs-string">"</span></code></pre>
+					<pre><code class="language-bash">$ comunica-sparql-file-http <span class="hljs-string">"{ <span class="hljs-subst">\"</span>sources<span class="hljs-subst">\"</span>: [<span class="hljs-subst">\"</span>/path/to/my/file.ttl<span class="hljs-subst">\"</span>]}"</span></code></pre>
 					<p>Show the help with all options:</p>
 					<pre><code class="language-bash">$ comunica-sparql-<span class="hljs-built_in">file</span>-<span class="hljs-keyword">http</span> <span class="hljs-comment">--help</span></code></pre>
 					<p>The SPARQL endpoint can only be started dynamically.
@@ -134,7 +134,7 @@ result.bindingsStream.on(<span class="hljs-string">&#39;data&#39;</span>, <span 
 					<div class="tsd-signature tsd-kind-icon">default<wbr>Config<wbr>Path<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;__dirname + &#x27;/../config/config-default.json&#x27;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/6535ebe/packages/actor-init-sparql-file/bin/http.ts#L4">packages/actor-init-sparql-file/bin/http.ts:4</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/f6a7b61/packages/actor-init-sparql-file/bin/http.ts#L4">packages/actor-init-sparql-file/bin/http.ts:4</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -151,7 +151,7 @@ result.bindingsStream.on(<span class="hljs-string">&#39;data&#39;</span>, <span 
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/6535ebe/packages/actor-init-sparql-file/index-browser.ts#L7">packages/actor-init-sparql-file/index-browser.ts:7</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/f6a7b61/packages/actor-init-sparql-file/index-browser.ts#L7">packages/actor-init-sparql-file/index-browser.ts:7</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -174,7 +174,7 @@ result.bindingsStream.on(<span class="hljs-string">&#39;data&#39;</span>, <span 
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/6535ebe/packages/actor-init-sparql-file/index.ts#L11">packages/actor-init-sparql-file/index.ts:11</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/f6a7b61/packages/actor-init-sparql-file/index.ts#L11">packages/actor-init-sparql-file/index.ts:11</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">

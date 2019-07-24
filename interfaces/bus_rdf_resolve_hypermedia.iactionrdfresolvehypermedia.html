@@ -90,7 +90,11 @@
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="bus_rdf_resolve_hypermedia.iactionrdfresolvehypermedia.html#context" class="tsd-kind-icon">context</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="bus_rdf_resolve_hypermedia.iactionrdfresolvehypermedia.html#forcesourcetype" class="tsd-kind-icon">force<wbr>Source<wbr>Type</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="bus_rdf_resolve_hypermedia.iactionrdfresolvehypermedia.html#handleddatasets" class="tsd-kind-icon">handled<wbr>Datasets</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="bus_rdf_resolve_hypermedia.iactionrdfresolvehypermedia.html#metadata" class="tsd-kind-icon">metadata</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="bus_rdf_resolve_hypermedia.iactionrdfresolvehypermedia.html#quads" class="tsd-kind-icon">quads</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="bus_rdf_resolve_hypermedia.iactionrdfresolvehypermedia.html#url" class="tsd-kind-icon">url</a></li>
 							</ul>
 						</section>
 					</div>
@@ -115,14 +119,58 @@
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="forcesourcetype" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> force<wbr>Source<wbr>Type</h3>
+					<div class="tsd-signature tsd-kind-icon">force<wbr>Source<wbr>Type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/f6a7b61/packages/bus-rdf-resolve-hypermedia/lib/ActorRdfResolveHypermedia.ts#L59">packages/bus-rdf-resolve-hypermedia/lib/ActorRdfResolveHypermedia.ts:59</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The explicitly requested source type.
+							If set, the source type of the actor MUST explicitly match the given forced type.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="handleddatasets" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> handled<wbr>Datasets</h3>
+					<div class="tsd-signature tsd-kind-icon">handled<wbr>Datasets<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/f6a7b61/packages/bus-rdf-resolve-hypermedia/lib/ActorRdfResolveHypermedia.ts#L54">packages/bus-rdf-resolve-hypermedia/lib/ActorRdfResolveHypermedia.ts:54</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>A hash of all datasets that have been handled.</p>
+						</div>
+					</div>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter-index-signature">
+								<h5><span class="tsd-signature-symbol">[</span>type: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]: </span><span class="tsd-signature-type">boolean</span></h5>
+							</li>
+						</ul>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="metadata" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> metadata</h3>
+					<h3>metadata</h3>
 					<div class="tsd-signature tsd-kind-icon">metadata<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/6535ebe/packages/bus-rdf-resolve-hypermedia/lib/ActorRdfResolveHypermedia.ts#L25">packages/bus-rdf-resolve-hypermedia/lib/ActorRdfResolveHypermedia.ts:25</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/f6a7b61/packages/bus-rdf-resolve-hypermedia/lib/ActorRdfResolveHypermedia.ts#L46">packages/bus-rdf-resolve-hypermedia/lib/ActorRdfResolveHypermedia.ts:46</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>A metadata key-value mapping.</p>
+						</div>
+					</div>
 					<div class="tsd-type-declaration">
 						<h4>Type declaration</h4>
 						<ul class="tsd-parameters">
@@ -130,6 +178,36 @@
 								<h5><span class="tsd-signature-symbol">[</span>id: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]: </span><span class="tsd-signature-type">any</span></h5>
 							</li>
 						</ul>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="quads" class="tsd-anchor"></a>
+					<h3>quads</h3>
+					<div class="tsd-signature tsd-kind-icon">quads<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Stream</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/f6a7b61/packages/bus-rdf-resolve-hypermedia/lib/ActorRdfResolveHypermedia.ts#L50">packages/bus-rdf-resolve-hypermedia/lib/ActorRdfResolveHypermedia.ts:50</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>A stream of data quads.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="url" class="tsd-anchor"></a>
+					<h3>url</h3>
+					<div class="tsd-signature tsd-kind-icon">url<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/f6a7b61/packages/bus-rdf-resolve-hypermedia/lib/ActorRdfResolveHypermedia.ts#L42">packages/bus-rdf-resolve-hypermedia/lib/ActorRdfResolveHypermedia.ts:42</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The URL of the source that was fetched.</p>
+						</div>
 					</div>
 				</section>
 			</section>
@@ -162,12 +240,27 @@
 										<a href="bus_rdf_resolve_hypermedia.iactionrdfresolvehypermedia.html#context" class="tsd-kind-icon">context</a>
 									</li>
 									<li class=" tsd-kind-property tsd-parent-kind-interface">
+										<a href="bus_rdf_resolve_hypermedia.iactionrdfresolvehypermedia.html#forcesourcetype" class="tsd-kind-icon">force<wbr>Source<wbr>Type</a>
+									</li>
+									<li class=" tsd-kind-property tsd-parent-kind-interface">
+										<a href="bus_rdf_resolve_hypermedia.iactionrdfresolvehypermedia.html#handleddatasets" class="tsd-kind-icon">handled<wbr>Datasets</a>
+									</li>
+									<li class=" tsd-kind-property tsd-parent-kind-interface">
 										<a href="bus_rdf_resolve_hypermedia.iactionrdfresolvehypermedia.html#metadata" class="tsd-kind-icon">metadata</a>
+									</li>
+									<li class=" tsd-kind-property tsd-parent-kind-interface">
+										<a href="bus_rdf_resolve_hypermedia.iactionrdfresolvehypermedia.html#quads" class="tsd-kind-icon">quads</a>
+									</li>
+									<li class=" tsd-kind-property tsd-parent-kind-interface">
+										<a href="bus_rdf_resolve_hypermedia.iactionrdfresolvehypermedia.html#url" class="tsd-kind-icon">url</a>
 									</li>
 								</ul>
 							</li>
 							<li class=" tsd-kind-interface tsd-parent-kind-external-module">
 								<a href="bus_rdf_resolve_hypermedia.iactorrdfresolvehypermediaoutput.html" class="tsd-kind-icon">IActor<wbr>Rdf<wbr>Resolve<wbr>Hypermedia<wbr>Output</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-external-module">
+								<a href="bus_rdf_resolve_hypermedia.iactorrdfresolvehypermediatest.html" class="tsd-kind-icon">IActor<wbr>Rdf<wbr>Resolve<wbr>Hypermedia<wbr>Test</a>
 							</li>
 						</ul>
 					</li>

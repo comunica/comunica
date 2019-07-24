@@ -72,13 +72,11 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p>A QPF quad source that uses a paged RDF dereference mediator
-							and a quad pattern to URL constructor
-						to acts as an RDFJS source.</p>
+						<p>A lazy quad source that creates <a href="actor_rdf_resolve_quad_pattern_hypermedia.mediatedlinkedrdfsourcesasyncrdfiterator.html">MediatedLinkedRdfSourcesAsyncRdfIterator</a> instances when matching quads.</p>
 					</div>
 					<dl class="tsd-comment-tags">
 						<dt>see</dt>
-						<dd><p>RDF.Source</p>
+						<dd><p>MediatedLinkedRdfSourcesAsyncRdfIterator</p>
 						</dd>
 					</dl>
 				</div>
@@ -110,18 +108,19 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="actor_rdf_resolve_quad_pattern_hypermedia.mediatedquadsource.html#cachesize" class="tsd-kind-icon">cache<wbr>Size</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="actor_rdf_resolve_quad_pattern_hypermedia.mediatedquadsource.html#context" class="tsd-kind-icon">context</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="actor_rdf_resolve_quad_pattern_hypermedia.mediatedquadsource.html#mediatorrdfdereferencepaged" class="tsd-kind-icon">mediator<wbr>Rdf<wbr>Dereference<wbr>Paged</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="actor_rdf_resolve_quad_pattern_hypermedia.mediatedquadsource.html#uriconstructor" class="tsd-kind-icon">uri<wbr>Constructor</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="actor_rdf_resolve_quad_pattern_hypermedia.mediatedquadsource.html#firsturl" class="tsd-kind-icon">first<wbr>Url</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="actor_rdf_resolve_quad_pattern_hypermedia.mediatedquadsource.html#forcesourcetype" class="tsd-kind-icon">force<wbr>Source<wbr>Type</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="actor_rdf_resolve_quad_pattern_hypermedia.mediatedquadsource.html#mediators" class="tsd-kind-icon">mediators</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="actor_rdf_resolve_quad_pattern_hypermedia.mediatedquadsource.html#sourcesstate" class="tsd-kind-icon">sources<wbr>State</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="actor_rdf_resolve_quad_pattern_hypermedia.mediatedquadsource.html#getduplicateelementlinks" class="tsd-kind-icon">get<wbr>Duplicate<wbr>Element<wbr>Links</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="actor_rdf_resolve_quad_pattern_hypermedia.mediatedquadsource.html#match" class="tsd-kind-icon">match</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="actor_rdf_resolve_quad_pattern_hypermedia.mediatedquadsource.html#matchlazy" class="tsd-kind-icon">match<wbr>Lazy</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="actor_rdf_resolve_quad_pattern_hypermedia.mediatedquadsource.html#matchpattern" class="tsd-kind-icon">match<wbr>Pattern</a></li>
 							</ul>
 						</section>
 					</div>
@@ -133,52 +132,31 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Mediated<wbr>Quad<wbr>Source<span class="tsd-signature-symbol">(</span>mediatorRdfDereferencePaged<span class="tsd-signature-symbol">: </span><a href="_node_modules__comunica_core_lib_mediator_.mediator.html" class="tsd-signature-type">Mediator</a><span class="tsd-signature-symbol">&lt;</span><a href="_node_modules__comunica_core_lib_actor_.actor.html" class="tsd-signature-type">Actor</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/_node_modules__comunica_bus_rdf_dereference_paged_lib_actorrdfdereferencepaged_.iactionrdfdereferencepaged.html" class="tsd-signature-type">IActionRdfDereferencePaged</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/_node_modules__comunica_core_lib_actor_.iactortest.html" class="tsd-signature-type">IActorTest</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/_node_modules__comunica_bus_rdf_dereference_paged_lib_actorrdfdereferencepaged_.iactorrdfdereferencepagedoutput.html" class="tsd-signature-type">IActorRdfDereferencePagedOutput</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><a href="../interfaces/_node_modules__comunica_bus_rdf_dereference_paged_lib_actorrdfdereferencepaged_.iactionrdfdereferencepaged.html" class="tsd-signature-type">IActionRdfDereferencePaged</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/_node_modules__comunica_core_lib_actor_.iactortest.html" class="tsd-signature-type">IActorTest</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/_node_modules__comunica_bus_rdf_dereference_paged_lib_actorrdfdereferencepaged_.iactorrdfdereferencepagedoutput.html" class="tsd-signature-type">IActorRdfDereferencePagedOutput</a><span class="tsd-signature-symbol">&gt;</span>, uriConstructor<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">function</span>, context<span class="tsd-signature-symbol">: </span><a href="../modules/_node_modules__comunica_core_lib_actor_.html#actioncontext" class="tsd-signature-type">ActionContext</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="actor_rdf_resolve_quad_pattern_hypermedia.mediatedquadsource.html" class="tsd-signature-type">MediatedQuadSource</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Mediated<wbr>Quad<wbr>Source<span class="tsd-signature-symbol">(</span>cacheSize<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, context<span class="tsd-signature-symbol">: </span><a href="../modules/_node_modules__comunica_core_lib_actor_.html#actioncontext" class="tsd-signature-type">ActionContext</a>, firstUrl<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, forceSourceType<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, mediators<span class="tsd-signature-symbol">: </span><a href="../interfaces/actor_rdf_resolve_quad_pattern_hypermedia.imediatorargs.html" class="tsd-signature-type">IMediatorArgs</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="actor_rdf_resolve_quad_pattern_hypermedia.mediatedquadsource.html" class="tsd-signature-type">MediatedQuadSource</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/6535ebe/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedQuadSource.ts#L24">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedQuadSource.ts:24</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/f6a7b61/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedQuadSource.ts#L22">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedQuadSource.ts:22</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>mediatorRdfDereferencePaged: <a href="_node_modules__comunica_core_lib_mediator_.mediator.html" class="tsd-signature-type">Mediator</a><span class="tsd-signature-symbol">&lt;</span><a href="_node_modules__comunica_core_lib_actor_.actor.html" class="tsd-signature-type">Actor</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/_node_modules__comunica_bus_rdf_dereference_paged_lib_actorrdfdereferencepaged_.iactionrdfdereferencepaged.html" class="tsd-signature-type">IActionRdfDereferencePaged</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/_node_modules__comunica_core_lib_actor_.iactortest.html" class="tsd-signature-type">IActorTest</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/_node_modules__comunica_bus_rdf_dereference_paged_lib_actorrdfdereferencepaged_.iactorrdfdereferencepagedoutput.html" class="tsd-signature-type">IActorRdfDereferencePagedOutput</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><a href="../interfaces/_node_modules__comunica_bus_rdf_dereference_paged_lib_actorrdfdereferencepaged_.iactionrdfdereferencepaged.html" class="tsd-signature-type">IActionRdfDereferencePaged</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/_node_modules__comunica_core_lib_actor_.iactortest.html" class="tsd-signature-type">IActorTest</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/_node_modules__comunica_bus_rdf_dereference_paged_lib_actorrdfdereferencepaged_.iactorrdfdereferencepagedoutput.html" class="tsd-signature-type">IActorRdfDereferencePagedOutput</a><span class="tsd-signature-symbol">&gt;</span></h5>
-								</li>
-								<li>
-									<h5>uriConstructor: <span class="tsd-signature-type">function</span></h5>
-									<ul class="tsd-parameters">
-										<li class="tsd-parameter-siganture">
-											<ul class="tsd-signatures tsd-kind-type-literal tsd-is-not-exported">
-												<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>subject<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">RDF.Term</span>, predicate<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">RDF.Term</span>, object<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">RDF.Term</span>, graph<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">RDF.Term</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></li>
-											</ul>
-											<ul class="tsd-descriptions">
-												<li class="tsd-description">
-													<h4 class="tsd-parameters-title">Parameters</h4>
-													<ul class="tsd-parameters">
-														<li>
-															<h5><span class="tsd-flag ts-flagOptional">Optional</span> subject: <span class="tsd-signature-type">RDF.Term</span></h5>
-														</li>
-														<li>
-															<h5><span class="tsd-flag ts-flagOptional">Optional</span> predicate: <span class="tsd-signature-type">RDF.Term</span></h5>
-														</li>
-														<li>
-															<h5><span class="tsd-flag ts-flagOptional">Optional</span> object: <span class="tsd-signature-type">RDF.Term</span></h5>
-														</li>
-														<li>
-															<h5><span class="tsd-flag ts-flagOptional">Optional</span> graph: <span class="tsd-signature-type">RDF.Term</span></h5>
-														</li>
-													</ul>
-													<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></h4>
-												</li>
-											</ul>
-										</li>
-									</ul>
+									<h5>cacheSize: <span class="tsd-signature-type">number</span></h5>
 								</li>
 								<li>
 									<h5>context: <a href="../modules/_node_modules__comunica_core_lib_actor_.html#actioncontext" class="tsd-signature-type">ActionContext</a></h5>
+								</li>
+								<li>
+									<h5>firstUrl: <span class="tsd-signature-type">string</span></h5>
+								</li>
+								<li>
+									<h5>forceSourceType: <span class="tsd-signature-type">string</span></h5>
+								</li>
+								<li>
+									<h5>mediators: <a href="../interfaces/actor_rdf_resolve_quad_pattern_hypermedia.imediatorargs.html" class="tsd-signature-type">IMediatorArgs</a></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <a href="actor_rdf_resolve_quad_pattern_hypermedia.mediatedquadsource.html" class="tsd-signature-type">MediatedQuadSource</a></h4>
@@ -188,135 +166,69 @@
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
+					<a name="cachesize" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> cache<wbr>Size</h3>
+					<div class="tsd-signature tsd-kind-icon">cache<wbr>Size<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/f6a7b61/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedQuadSource.ts#L22">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedQuadSource.ts:22</a></li>
+						</ul>
+					</aside>
+				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="context" class="tsd-anchor"></a>
 					<h3>context</h3>
 					<div class="tsd-signature tsd-kind-icon">context<span class="tsd-signature-symbol">:</span> <a href="../modules/_node_modules__comunica_core_lib_actor_.html#actioncontext" class="tsd-signature-type">ActionContext</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/6535ebe/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedQuadSource.ts#L24">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedQuadSource.ts:24</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/f6a7b61/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedQuadSource.ts#L15">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedQuadSource.ts:15</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="mediatorrdfdereferencepaged" class="tsd-anchor"></a>
-					<h3>mediator<wbr>Rdf<wbr>Dereference<wbr>Paged</h3>
-					<div class="tsd-signature tsd-kind-icon">mediator<wbr>Rdf<wbr>Dereference<wbr>Paged<span class="tsd-signature-symbol">:</span> <a href="_node_modules__comunica_core_lib_mediator_.mediator.html" class="tsd-signature-type">Mediator</a><span class="tsd-signature-symbol">&lt;</span><a href="_node_modules__comunica_core_lib_actor_.actor.html" class="tsd-signature-type">Actor</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/_node_modules__comunica_bus_rdf_dereference_paged_lib_actorrdfdereferencepaged_.iactionrdfdereferencepaged.html" class="tsd-signature-type">IActionRdfDereferencePaged</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/_node_modules__comunica_core_lib_actor_.iactortest.html" class="tsd-signature-type">IActorTest</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/_node_modules__comunica_bus_rdf_dereference_paged_lib_actorrdfdereferencepaged_.iactorrdfdereferencepagedoutput.html" class="tsd-signature-type">IActorRdfDereferencePagedOutput</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><a href="../interfaces/_node_modules__comunica_bus_rdf_dereference_paged_lib_actorrdfdereferencepaged_.iactionrdfdereferencepaged.html" class="tsd-signature-type">IActionRdfDereferencePaged</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/_node_modules__comunica_core_lib_actor_.iactortest.html" class="tsd-signature-type">IActorTest</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/_node_modules__comunica_bus_rdf_dereference_paged_lib_actorrdfdereferencepaged_.iactorrdfdereferencepagedoutput.html" class="tsd-signature-type">IActorRdfDereferencePagedOutput</a><span class="tsd-signature-symbol">&gt;</span></div>
+					<a name="firsturl" class="tsd-anchor"></a>
+					<h3>first<wbr>Url</h3>
+					<div class="tsd-signature tsd-kind-icon">first<wbr>Url<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/6535ebe/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedQuadSource.ts#L20">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedQuadSource.ts:20</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/f6a7b61/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedQuadSource.ts#L16">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedQuadSource.ts:16</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="uriconstructor" class="tsd-anchor"></a>
-					<h3>uri<wbr>Constructor</h3>
-					<div class="tsd-signature tsd-kind-icon">uri<wbr>Constructor<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
+					<a name="forcesourcetype" class="tsd-anchor"></a>
+					<h3>force<wbr>Source<wbr>Type</h3>
+					<div class="tsd-signature tsd-kind-icon">force<wbr>Source<wbr>Type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/6535ebe/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedQuadSource.ts#L22">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedQuadSource.ts:22</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/f6a7b61/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedQuadSource.ts#L17">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedQuadSource.ts:17</a></li>
 						</ul>
 					</aside>
-					<div class="tsd-type-declaration">
-						<h4>Type declaration</h4>
-						<ul class="tsd-parameters">
-							<li class="tsd-parameter-siganture">
-								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property tsd-is-not-exported">
-									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>subject<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">RDF.Term</span>, predicate<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">RDF.Term</span>, object<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">RDF.Term</span>, graph<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">RDF.Term</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></li>
-								</ul>
-								<ul class="tsd-descriptions">
-									<li class="tsd-description">
-										<h4 class="tsd-parameters-title">Parameters</h4>
-										<ul class="tsd-parameters">
-											<li>
-												<h5><span class="tsd-flag ts-flagOptional">Optional</span> subject: <span class="tsd-signature-type">RDF.Term</span></h5>
-											</li>
-											<li>
-												<h5><span class="tsd-flag ts-flagOptional">Optional</span> predicate: <span class="tsd-signature-type">RDF.Term</span></h5>
-											</li>
-											<li>
-												<h5><span class="tsd-flag ts-flagOptional">Optional</span> object: <span class="tsd-signature-type">RDF.Term</span></h5>
-											</li>
-											<li>
-												<h5><span class="tsd-flag ts-flagOptional">Optional</span> graph: <span class="tsd-signature-type">RDF.Term</span></h5>
-											</li>
-										</ul>
-										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></h4>
-									</li>
-								</ul>
-							</li>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="mediators" class="tsd-anchor"></a>
+					<h3>mediators</h3>
+					<div class="tsd-signature tsd-kind-icon">mediators<span class="tsd-signature-symbol">:</span> <a href="../interfaces/actor_rdf_resolve_quad_pattern_hypermedia.imediatorargs.html" class="tsd-signature-type">IMediatorArgs</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/f6a7b61/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedQuadSource.ts#L18">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedQuadSource.ts:18</a></li>
 						</ul>
-					</div>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="sourcesstate" class="tsd-anchor"></a>
+					<h3>sources<wbr>State</h3>
+					<div class="tsd-signature tsd-kind-icon">sources<wbr>State<span class="tsd-signature-symbol">:</span> <a href="../interfaces/actor_rdf_resolve_quad_pattern_hypermedia.isourcesstate.html" class="tsd-signature-type">ISourcesState</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/f6a7b61/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedQuadSource.ts#L20">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedQuadSource.ts:20</a></li>
+						</ul>
+					</aside>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Methods</h2>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-					<a name="getduplicateelementlinks" class="tsd-anchor"></a>
-					<h3>get<wbr>Duplicate<wbr>Element<wbr>Links</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">get<wbr>Duplicate<wbr>Element<wbr>Links<span class="tsd-signature-symbol">(</span>subject<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">RDF.Term</span>, predicate<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">RDF.Term</span>, object<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">RDF.Term</span>, graph<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">RDF.Term</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">object</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/6535ebe/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedQuadSource.ts#L77">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedQuadSource.ts:77</a></li>
-								</ul>
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>A helper function to find a hash with quad elements that have duplicate variables.</p>
-								</div>
-							</div>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> subject: <span class="tsd-signature-type">RDF.Term</span></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>An optional subject term.</p>
-									</div>
-								</li>
-								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> predicate: <span class="tsd-signature-type">RDF.Term</span></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>An optional predicate term.</p>
-									</div>
-								</li>
-								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> object: <span class="tsd-signature-type">RDF.Term</span></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>An optional object term.</p>
-									</div>
-								</li>
-								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> graph: <span class="tsd-signature-type">RDF.Term</span></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>An optional graph term.</p>
-									</div>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">object</span></h4>
-							<p>If no equal variable names are present in the four terms, this returns null.
-								Otherwise, this maps quad elements (&#39;subject&#39;, &#39;predicate&#39;, &#39;object&#39;, &#39;graph&#39;)
-								to the list of quad elements it shares a variable name with.
-								If no links for a certain element exist, this element will
-								not be included in the hash.
-								Note 1: Quad elements will never have a link to themselves.
-								So this can never occur: { subject: [ &#39;subject&#39;] },
-								instead &#39;null&#39; would be returned.
-								Note 2: Links only exist in one direction,
-								this means that { subject: [ &#39;predicate&#39;], predicate: [ &#39;subject&#39; ] }
-								will not occur, instead only { subject: [ &#39;predicate&#39;] }
-							will be returned.</p>
-							<ul class="tsd-parameters">
-								<li class="tsd-parameter-index-signature">
-									<h5><span class="tsd-signature-symbol">[</span>element: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></h5>
-								</li>
-							</ul>
-						</li>
-					</ul>
-				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 					<a name="match" class="tsd-anchor"></a>
 					<h3>match</h3>
@@ -328,7 +240,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/_node_modules__comunica_bus_rdf_resolve_quad_pattern_lib_actorrdfresolvequadpatternsource_.ilazyquadsource.html">ILazyQuadSource</a>.<a href="../interfaces/_node_modules__comunica_bus_rdf_resolve_quad_pattern_lib_actorrdfresolvequadpatternsource_.ilazyquadsource.html#match">match</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/6535ebe/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedQuadSource.ts#L165">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedQuadSource.ts:165</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/f6a7b61/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedQuadSource.ts#L54">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedQuadSource.ts:54</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -361,7 +273,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/_node_modules__comunica_bus_rdf_resolve_quad_pattern_lib_actorrdfresolvequadpatternsource_.ilazyquadsource.html">ILazyQuadSource</a>.<a href="../interfaces/_node_modules__comunica_bus_rdf_resolve_quad_pattern_lib_actorrdfresolvequadpatternsource_.ilazyquadsource.html#matchlazy">matchLazy</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/6535ebe/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedQuadSource.ts#L109">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedQuadSource.ts:109</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/f6a7b61/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedQuadSource.ts#L33">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedQuadSource.ts:33</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -383,44 +295,6 @@
 								<span class="tsd-signature-symbol"> &amp; </span>
 								<span class="tsd-signature-type">Stream</span>
 							</h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
-					<a name="matchpattern" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagStatic">Static</span> match<wbr>Pattern</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
-						<li class="tsd-signature tsd-kind-icon">match<wbr>Pattern<span class="tsd-signature-symbol">(</span>pattern<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Quad</span>, quad<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/6535ebe/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedQuadSource.ts#L43">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/MediatedQuadSource.ts:43</a></li>
-								</ul>
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Check if the given pattern matches with the given quad.</p>
-								</div>
-							</div>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>pattern: <span class="tsd-signature-type">Quad</span></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>A quad pattern.</p>
-									</div>
-								</li>
-								<li>
-									<h5>quad: <span class="tsd-signature-type">Quad</span></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>A quad.</p>
-									</div>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
-							<p>If they match.</p>
 						</li>
 					</ul>
 				</section>
@@ -447,23 +321,35 @@
 							<li class=" tsd-kind-class tsd-parent-kind-external-module">
 								<a href="actor_rdf_resolve_quad_pattern_hypermedia.actorrdfresolvequadpatternhypermedia.html" class="tsd-kind-icon">Actor<wbr>Rdf<wbr>Resolve<wbr>Quad<wbr>Pattern<wbr>Hypermedia</a>
 							</li>
+							<li class=" tsd-kind-class tsd-parent-kind-external-module">
+								<a href="actor_rdf_resolve_quad_pattern_hypermedia.linkedrdfsourcesasyncrdfiterator.html" class="tsd-kind-icon">Linked<wbr>Rdf<wbr>Sources<wbr>Async<wbr>Rdf<wbr>Iterator</a>
+							</li>
+							<li class=" tsd-kind-class tsd-parent-kind-external-module">
+								<a href="actor_rdf_resolve_quad_pattern_hypermedia.mediatedlinkedrdfsourcesasyncrdfiterator.html" class="tsd-kind-icon">Mediated<wbr>Linked<wbr>Rdf<wbr>Sources<wbr>Async<wbr>Rdf<wbr>Iterator</a>
+							</li>
 							<li class="current tsd-kind-class tsd-parent-kind-external-module">
 								<a href="actor_rdf_resolve_quad_pattern_hypermedia.mediatedquadsource.html" class="tsd-kind-icon">Mediated<wbr>Quad<wbr>Source</a>
 								<ul>
 									<li class=" tsd-kind-constructor tsd-parent-kind-class">
 										<a href="actor_rdf_resolve_quad_pattern_hypermedia.mediatedquadsource.html#constructor" class="tsd-kind-icon">constructor</a>
 									</li>
+									<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
+										<a href="actor_rdf_resolve_quad_pattern_hypermedia.mediatedquadsource.html#cachesize" class="tsd-kind-icon">cache<wbr>Size</a>
+									</li>
 									<li class=" tsd-kind-property tsd-parent-kind-class">
 										<a href="actor_rdf_resolve_quad_pattern_hypermedia.mediatedquadsource.html#context" class="tsd-kind-icon">context</a>
 									</li>
 									<li class=" tsd-kind-property tsd-parent-kind-class">
-										<a href="actor_rdf_resolve_quad_pattern_hypermedia.mediatedquadsource.html#mediatorrdfdereferencepaged" class="tsd-kind-icon">mediator<wbr>Rdf<wbr>Dereference<wbr>Paged</a>
+										<a href="actor_rdf_resolve_quad_pattern_hypermedia.mediatedquadsource.html#firsturl" class="tsd-kind-icon">first<wbr>Url</a>
 									</li>
 									<li class=" tsd-kind-property tsd-parent-kind-class">
-										<a href="actor_rdf_resolve_quad_pattern_hypermedia.mediatedquadsource.html#uriconstructor" class="tsd-kind-icon">uri<wbr>Constructor</a>
+										<a href="actor_rdf_resolve_quad_pattern_hypermedia.mediatedquadsource.html#forcesourcetype" class="tsd-kind-icon">force<wbr>Source<wbr>Type</a>
 									</li>
-									<li class=" tsd-kind-method tsd-parent-kind-class">
-										<a href="actor_rdf_resolve_quad_pattern_hypermedia.mediatedquadsource.html#getduplicateelementlinks" class="tsd-kind-icon">get<wbr>Duplicate<wbr>Element<wbr>Links</a>
+									<li class=" tsd-kind-property tsd-parent-kind-class">
+										<a href="actor_rdf_resolve_quad_pattern_hypermedia.mediatedquadsource.html#mediators" class="tsd-kind-icon">mediators</a>
+									</li>
+									<li class=" tsd-kind-property tsd-parent-kind-class">
+										<a href="actor_rdf_resolve_quad_pattern_hypermedia.mediatedquadsource.html#sourcesstate" class="tsd-kind-icon">sources<wbr>State</a>
 									</li>
 									<li class=" tsd-kind-method tsd-parent-kind-class">
 										<a href="actor_rdf_resolve_quad_pattern_hypermedia.mediatedquadsource.html#match" class="tsd-kind-icon">match</a>
@@ -471,13 +357,19 @@
 									<li class=" tsd-kind-method tsd-parent-kind-class">
 										<a href="actor_rdf_resolve_quad_pattern_hypermedia.mediatedquadsource.html#matchlazy" class="tsd-kind-icon">match<wbr>Lazy</a>
 									</li>
-									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
-										<a href="actor_rdf_resolve_quad_pattern_hypermedia.mediatedquadsource.html#matchpattern" class="tsd-kind-icon">match<wbr>Pattern</a>
-									</li>
 								</ul>
 							</li>
 							<li class=" tsd-kind-interface tsd-parent-kind-external-module">
 								<a href="../interfaces/actor_rdf_resolve_quad_pattern_hypermedia.iactorrdfresolvequadpatternhypermediaargs.html" class="tsd-kind-icon">IActor<wbr>Rdf<wbr>Resolve<wbr>Quad<wbr>Pattern<wbr>Hypermedia<wbr>Args</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-external-module">
+								<a href="../interfaces/actor_rdf_resolve_quad_pattern_hypermedia.imediatorargs.html" class="tsd-kind-icon">IMediator<wbr>Args</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-external-module">
+								<a href="../interfaces/actor_rdf_resolve_quad_pattern_hypermedia.isourcestate.html" class="tsd-kind-icon">ISource<wbr>State</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-external-module">
+								<a href="../interfaces/actor_rdf_resolve_quad_pattern_hypermedia.isourcesstate.html" class="tsd-kind-icon">ISources<wbr>State</a>
 							</li>
 						</ul>
 					</li>

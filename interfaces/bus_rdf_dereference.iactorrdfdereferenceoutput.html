@@ -89,9 +89,9 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="bus_rdf_dereference.iactorrdfdereferenceoutput.html#pageurl" class="tsd-kind-icon">page<wbr>Url</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="bus_rdf_dereference.iactorrdfdereferenceoutput.html#quads" class="tsd-kind-icon">quads</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="bus_rdf_dereference.iactorrdfdereferenceoutput.html#triples" class="tsd-kind-icon">triples</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="bus_rdf_dereference.iactorrdfdereferenceoutput.html#url" class="tsd-kind-icon">url</a></li>
 							</ul>
 						</section>
 					</div>
@@ -100,29 +100,12 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="pageurl" class="tsd-anchor"></a>
-					<h3>page<wbr>Url</h3>
-					<div class="tsd-signature tsd-kind-icon">page<wbr>Url<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/6535ebe/packages/bus-rdf-dereference/lib/ActorRdfDereference.ts#L42">packages/bus-rdf-dereference/lib/ActorRdfDereference.ts:42</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>The page on which the output was found.</p>
-						</div>
-						<p>This is not necessarily the same as the original input url,
-						as this may have changed due to redirects.</p>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="quads" class="tsd-anchor"></a>
 					<h3>quads</h3>
 					<div class="tsd-signature tsd-kind-icon">quads<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Stream</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/6535ebe/packages/bus-rdf-dereference/lib/ActorRdfDereference.ts#L46">packages/bus-rdf-dereference/lib/ActorRdfDereference.ts:46</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/f6a7b61/packages/bus-rdf-dereference/lib/ActorRdfDereference.ts#L46">packages/bus-rdf-dereference/lib/ActorRdfDereference.ts:46</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -137,7 +120,7 @@
 					<div class="tsd-signature tsd-kind-icon">triples<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/6535ebe/packages/bus-rdf-dereference/lib/ActorRdfDereference.ts#L52">packages/bus-rdf-dereference/lib/ActorRdfDereference.ts:52</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/f6a7b61/packages/bus-rdf-dereference/lib/ActorRdfDereference.ts#L52">packages/bus-rdf-dereference/lib/ActorRdfDereference.ts:52</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -146,6 +129,23 @@
 								in which everything is serialized in the default graph.
 							If falsy, the quad stream contains actual quads, otherwise they should be interpreted as triples.</p>
 						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="url" class="tsd-anchor"></a>
+					<h3>url</h3>
+					<div class="tsd-signature tsd-kind-icon">url<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/f6a7b61/packages/bus-rdf-dereference/lib/ActorRdfDereference.ts#L42">packages/bus-rdf-dereference/lib/ActorRdfDereference.ts:42</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>The page on which the output was found.</p>
+						</div>
+						<p>This is not necessarily the same as the original input url,
+						as this may have changed due to redirects.</p>
 					</div>
 				</section>
 			</section>
@@ -184,13 +184,13 @@
 								<a href="bus_rdf_dereference.iactorrdfdereferenceoutput.html" class="tsd-kind-icon">IActor<wbr>Rdf<wbr>Dereference<wbr>Output</a>
 								<ul>
 									<li class=" tsd-kind-property tsd-parent-kind-interface">
-										<a href="bus_rdf_dereference.iactorrdfdereferenceoutput.html#pageurl" class="tsd-kind-icon">page<wbr>Url</a>
-									</li>
-									<li class=" tsd-kind-property tsd-parent-kind-interface">
 										<a href="bus_rdf_dereference.iactorrdfdereferenceoutput.html#quads" class="tsd-kind-icon">quads</a>
 									</li>
 									<li class=" tsd-kind-property tsd-parent-kind-interface">
 										<a href="bus_rdf_dereference.iactorrdfdereferenceoutput.html#triples" class="tsd-kind-icon">triples</a>
+									</li>
+									<li class=" tsd-kind-property tsd-parent-kind-interface">
+										<a href="bus_rdf_dereference.iactorrdfdereferenceoutput.html#url" class="tsd-kind-icon">url</a>
 									</li>
 								</ul>
 							</li>

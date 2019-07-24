@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>IDataSource | Comunica</title>
+	<title>IActorRdfResolveHypermediaSparqlArgs | Comunica</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -56,13 +56,13 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="../modules/bus_rdf_resolve_quad_pattern.html">bus-rdf-resolve-quad-pattern</a>
+					<a href="../modules/actor_rdf_resolve_hypermedia_sparql.html">actor-rdf-resolve-hypermedia-sparql</a>
 				</li>
 				<li>
-					<a href="bus_rdf_resolve_quad_pattern.idatasource.html">IDataSource</a>
+					<a href="actor_rdf_resolve_hypermedia_sparql.iactorrdfresolvehypermediasparqlargs.html">IActorRdfResolveHypermediaSparqlArgs</a>
 				</li>
 			</ul>
-			<h1>Interface IDataSource</h1>
+			<h1>Interface IActorRdfResolveHypermediaSparqlArgs</h1>
 		</div>
 	</div>
 </header>
@@ -73,7 +73,12 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">IDataSource</span>
+						<a href="_node_modules__comunica_core_lib_actor_.iactorargs.html" class="tsd-signature-type">IActorArgs</a><span class="tsd-signature-symbol">&lt;</span><a href="_node_modules__comunica_bus_rdf_resolve_hypermedia_lib_actorrdfresolvehypermedia_.iactionrdfresolvehypermedia.html" class="tsd-signature-type">IActionRdfResolveHypermedia</a><span class="tsd-signature-symbol">, </span><a href="_node_modules__comunica_bus_rdf_resolve_hypermedia_lib_actorrdfresolvehypermedia_.iactorrdfresolvehypermediatest.html" class="tsd-signature-type">IActorRdfResolveHypermediaTest</a><span class="tsd-signature-symbol">, </span><a href="_node_modules__comunica_bus_rdf_resolve_hypermedia_lib_actorrdfresolvehypermedia_.iactorrdfresolvehypermediaoutput.html" class="tsd-signature-type">IActorRdfResolveHypermediaOutput</a><span class="tsd-signature-symbol">&gt;</span>
+						<ul class="tsd-hierarchy">
+							<li>
+								<span class="target">IActorRdfResolveHypermediaSparqlArgs</span>
+							</li>
+						</ul>
 					</li>
 				</ul>
 			</section>
@@ -84,8 +89,9 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="bus_rdf_resolve_quad_pattern.idatasource.html#type" class="tsd-kind-icon">type</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="bus_rdf_resolve_quad_pattern.idatasource.html#value" class="tsd-kind-icon">value</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="actor_rdf_resolve_hypermedia_sparql.iactorrdfresolvehypermediasparqlargs.html#bus" class="tsd-kind-icon">bus</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="actor_rdf_resolve_hypermedia_sparql.iactorrdfresolvehypermediasparqlargs.html#mediatorhttp" class="tsd-kind-icon">mediator<wbr>Http</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="actor_rdf_resolve_hypermedia_sparql.iactorrdfresolvehypermediasparqlargs.html#name" class="tsd-kind-icon">name</a></li>
 							</ul>
 						</section>
 					</div>
@@ -93,23 +99,35 @@
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="type" class="tsd-anchor"></a>
-					<h3>type</h3>
-					<div class="tsd-signature tsd-kind-icon">type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+					<a name="bus" class="tsd-anchor"></a>
+					<h3>bus</h3>
+					<div class="tsd-signature tsd-kind-icon">bus<span class="tsd-signature-symbol">:</span> <a href="../classes/_node_modules__comunica_core_lib_bus_.bus.html" class="tsd-signature-type">Bus</a><span class="tsd-signature-symbol">&lt;</span><a href="../classes/_node_modules__comunica_core_lib_actor_.actor.html" class="tsd-signature-type">Actor</a><span class="tsd-signature-symbol">&lt;</span><a href="_node_modules__comunica_bus_rdf_resolve_hypermedia_lib_actorrdfresolvehypermedia_.iactionrdfresolvehypermedia.html" class="tsd-signature-type">IActionRdfResolveHypermedia</a><span class="tsd-signature-symbol">, </span><a href="_node_modules__comunica_bus_rdf_resolve_hypermedia_lib_actorrdfresolvehypermedia_.iactorrdfresolvehypermediatest.html" class="tsd-signature-type">IActorRdfResolveHypermediaTest</a><span class="tsd-signature-symbol">, </span><a href="_node_modules__comunica_bus_rdf_resolve_hypermedia_lib_actorrdfresolvehypermedia_.iactorrdfresolvehypermediaoutput.html" class="tsd-signature-type">IActorRdfResolveHypermediaOutput</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><a href="_node_modules__comunica_bus_rdf_resolve_hypermedia_lib_actorrdfresolvehypermedia_.iactionrdfresolvehypermedia.html" class="tsd-signature-type">IActionRdfResolveHypermedia</a><span class="tsd-signature-symbol">, </span><a href="_node_modules__comunica_bus_rdf_resolve_hypermedia_lib_actorrdfresolvehypermedia_.iactorrdfresolvehypermediatest.html" class="tsd-signature-type">IActorRdfResolveHypermediaTest</a><span class="tsd-signature-symbol">, </span><a href="_node_modules__comunica_bus_rdf_resolve_hypermedia_lib_actorrdfresolvehypermedia_.iactorrdfresolvehypermediaoutput.html" class="tsd-signature-type">IActorRdfResolveHypermediaOutput</a><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
+						<p>Inherited from <a href="_node_modules__comunica_core_lib_actor_.iactorargs.html">IActorArgs</a>.<a href="_node_modules__comunica_core_lib_actor_.iactorargs.html#bus">bus</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/6535ebe/packages/bus-rdf-resolve-quad-pattern/lib/ActorRdfResolveQuadPattern.ts#L87">packages/bus-rdf-resolve-quad-pattern/lib/ActorRdfResolveQuadPattern.ts:87</a></li>
+							<li>Defined in node_modules/@comunica/core/lib/Actor.ts:163</li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="value" class="tsd-anchor"></a>
-					<h3>value</h3>
-					<div class="tsd-signature tsd-kind-icon">value<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
+					<a name="mediatorhttp" class="tsd-anchor"></a>
+					<h3>mediator<wbr>Http</h3>
+					<div class="tsd-signature tsd-kind-icon">mediator<wbr>Http<span class="tsd-signature-symbol">:</span> <a href="../classes/_node_modules__comunica_core_lib_mediator_.mediator.html" class="tsd-signature-type">Mediator</a><span class="tsd-signature-symbol">&lt;</span><a href="../classes/_node_modules__comunica_core_lib_actor_.actor.html" class="tsd-signature-type">Actor</a><span class="tsd-signature-symbol">&lt;</span><a href="_node_modules__comunica_bus_http_lib_actorhttp_.iactionhttp.html" class="tsd-signature-type">IActionHttp</a><span class="tsd-signature-symbol">, </span><a href="_node_modules__comunica_core_lib_actor_.iactortest.html" class="tsd-signature-type">IActorTest</a><span class="tsd-signature-symbol">, </span><a href="_node_modules__comunica_bus_http_lib_actorhttp_.iactorhttpoutput.html" class="tsd-signature-type">IActorHttpOutput</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><a href="_node_modules__comunica_bus_http_lib_actorhttp_.iactionhttp.html" class="tsd-signature-type">IActionHttp</a><span class="tsd-signature-symbol">, </span><a href="_node_modules__comunica_core_lib_actor_.iactortest.html" class="tsd-signature-type">IActorTest</a><span class="tsd-signature-symbol">, </span><a href="_node_modules__comunica_bus_http_lib_actorhttp_.iactorhttpoutput.html" class="tsd-signature-type">IActorHttpOutput</a><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/6535ebe/packages/bus-rdf-resolve-quad-pattern/lib/ActorRdfResolveQuadPattern.ts#L88">packages/bus-rdf-resolve-quad-pattern/lib/ActorRdfResolveQuadPattern.ts:88</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/f6a7b61/packages/actor-rdf-resolve-hypermedia-sparql/lib/ActorRdfResolveHypermediaSparql.ts#L37">packages/actor-rdf-resolve-hypermedia-sparql/lib/ActorRdfResolveHypermediaSparql.ts:37</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+					<a name="name" class="tsd-anchor"></a>
+					<h3>name</h3>
+					<div class="tsd-signature tsd-kind-icon">name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+					<aside class="tsd-sources">
+						<p>Inherited from <a href="_node_modules__comunica_core_lib_actor_.iactorargs.html">IActorArgs</a>.<a href="_node_modules__comunica_core_lib_actor_.iactorargs.html#name">name</a></p>
+						<ul>
+							<li>Defined in node_modules/@comunica/core/lib/Actor.ts:162</li>
 						</ul>
 					</aside>
 				</section>
@@ -122,7 +140,7 @@
 						<a href="../globals.html"><em>Globals</em></a>
 					</li>
 					<li class="current tsd-kind-external-module">
-						<a href="../modules/bus_rdf_resolve_quad_pattern.html">bus-<wbr>rdf-<wbr>resolve-<wbr>quad-<wbr>pattern</a>
+						<a href="../modules/actor_rdf_resolve_hypermedia_sparql.html">actor-<wbr>rdf-<wbr>resolve-<wbr>hypermedia-<wbr>sparql</a>
 					</li>
 				</ul>
 			</nav>
@@ -131,42 +149,27 @@
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-external-module">
-						<a href="../modules/bus_rdf_resolve_quad_pattern.html" class="tsd-kind-icon">bus-<wbr>rdf-<wbr>resolve-<wbr>quad-<wbr>pattern</a>
+						<a href="../modules/actor_rdf_resolve_hypermedia_sparql.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>resolve-<wbr>hypermedia-<wbr>sparql</a>
 						<ul>
 							<li class=" tsd-kind-class tsd-parent-kind-external-module">
-								<a href="../classes/bus_rdf_resolve_quad_pattern.actorrdfresolvequadpattern.html" class="tsd-kind-icon">Actor<wbr>Rdf<wbr>Resolve<wbr>Quad<wbr>Pattern</a>
+								<a href="../classes/actor_rdf_resolve_hypermedia_sparql.actorrdfresolvehypermediasparql.html" class="tsd-kind-icon">Actor<wbr>Rdf<wbr>Resolve<wbr>Hypermedia<wbr>Sparql</a>
 							</li>
 							<li class=" tsd-kind-class tsd-parent-kind-external-module">
-								<a href="../classes/bus_rdf_resolve_quad_pattern.actorrdfresolvequadpatternsource.html" class="tsd-kind-icon">Actor<wbr>Rdf<wbr>Resolve<wbr>Quad<wbr>Pattern<wbr>Source</a>
-							</li>
-							<li class=" tsd-kind-interface tsd-parent-kind-external-module">
-								<a href="bus_rdf_resolve_quad_pattern.iactionrdfresolvequadpattern.html" class="tsd-kind-icon">IAction<wbr>Rdf<wbr>Resolve<wbr>Quad<wbr>Pattern</a>
-							</li>
-							<li class=" tsd-kind-interface tsd-parent-kind-external-module">
-								<a href="bus_rdf_resolve_quad_pattern.iactorrdfresolvequadpatternoutput.html" class="tsd-kind-icon">IActor<wbr>Rdf<wbr>Resolve<wbr>Quad<wbr>Pattern<wbr>Output</a>
+								<a href="../classes/actor_rdf_resolve_hypermedia_sparql.rdfsourcesparql.html" class="tsd-kind-icon">Rdf<wbr>Source<wbr>Sparql</a>
 							</li>
 							<li class="current tsd-kind-interface tsd-parent-kind-external-module">
-								<a href="bus_rdf_resolve_quad_pattern.idatasource.html" class="tsd-kind-icon">IData<wbr>Source</a>
+								<a href="actor_rdf_resolve_hypermedia_sparql.iactorrdfresolvehypermediasparqlargs.html" class="tsd-kind-icon">IActor<wbr>Rdf<wbr>Resolve<wbr>Hypermedia<wbr>Sparql<wbr>Args</a>
 								<ul>
-									<li class=" tsd-kind-property tsd-parent-kind-interface">
-										<a href="bus_rdf_resolve_quad_pattern.idatasource.html#type" class="tsd-kind-icon">type</a>
+									<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+										<a href="actor_rdf_resolve_hypermedia_sparql.iactorrdfresolvehypermediasparqlargs.html#bus" class="tsd-kind-icon">bus</a>
 									</li>
 									<li class=" tsd-kind-property tsd-parent-kind-interface">
-										<a href="bus_rdf_resolve_quad_pattern.idatasource.html#value" class="tsd-kind-icon">value</a>
+										<a href="actor_rdf_resolve_hypermedia_sparql.iactorrdfresolvehypermediasparqlargs.html#mediatorhttp" class="tsd-kind-icon">mediator<wbr>Http</a>
+									</li>
+									<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+										<a href="actor_rdf_resolve_hypermedia_sparql.iactorrdfresolvehypermediasparqlargs.html#name" class="tsd-kind-icon">name</a>
 									</li>
 								</ul>
-							</li>
-							<li class=" tsd-kind-interface tsd-parent-kind-external-module tsd-has-type-parameter">
-								<a href="bus_rdf_resolve_quad_pattern.ilazyquadsource.html" class="tsd-kind-icon">ILazy<wbr>Quad<wbr>Source</a>
-							</li>
-							<li class=" tsd-kind-type-alias tsd-parent-kind-external-module">
-								<a href="../modules/bus_rdf_resolve_quad_pattern.html#datasources" class="tsd-kind-icon">Data<wbr>Sources</a>
-							</li>
-							<li class=" tsd-kind-variable tsd-parent-kind-external-module">
-								<a href="../modules/bus_rdf_resolve_quad_pattern.html#key_context_source" class="tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>SOURCE</a>
-							</li>
-							<li class=" tsd-kind-variable tsd-parent-kind-external-module">
-								<a href="../modules/bus_rdf_resolve_quad_pattern.html#key_context_sources" class="tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>SOURCES</a>
 							</li>
 						</ul>
 					</li>
