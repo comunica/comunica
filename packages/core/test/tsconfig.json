@@ -4,6 +4,7 @@
     "lib": [
       "es6"
     ],
-    "noImplicitAny": false
+    "noImplicitAny": false,
+    "downlevelIteration": true
   }
 }

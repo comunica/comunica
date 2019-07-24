@@ -23,10 +23,10 @@ describe('Actor', () => {
       const beforeActors = ['a', 'b'];
       const b = new Bus({ name: 'bus' });
       const actor = new (<any> Actor)({ name: 'actor', bus: b, beforeActors });
-      expect((<any> b).dependencyLinks).toEqual([
-        { dependent: actor, dependency: 'a' },
-        { dependent: actor, dependency: 'b' },
-      ]);
+      const map = new Map();
+      map.set('a', [actor]);
+      map.set('b', [actor]);
+      expect((<any> b).dependencyLinks).toEqual(map);
     });
   });
 
