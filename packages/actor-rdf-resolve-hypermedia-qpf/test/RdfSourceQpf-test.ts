@@ -115,7 +115,7 @@ describe('RdfSourceQpf', () => {
         null,
       );
       expect(s).toBeInstanceOf(RdfSourceQpf);
-      expect((<any> s).initialQuads).toBe(null);
+      expect((<any> s).initialQuads).toBeFalsy();
     });
 
     it('should be constructable with initialQuads', async () => {
@@ -135,7 +135,7 @@ describe('RdfSourceQpf', () => {
         ]),
       );
       expect(s).toBeInstanceOf(RdfSourceQpf);
-      expect(await arrayifyStream((<any> s).initialQuads)).toBeRdfIsomorphic([
+      expect(await arrayifyStream((<any> s).getCachedQuads())).toBeRdfIsomorphic([
         quad('s1', 'p1', 'o1'),
         quad('s2', 'p2', 'o2'),
       ]);

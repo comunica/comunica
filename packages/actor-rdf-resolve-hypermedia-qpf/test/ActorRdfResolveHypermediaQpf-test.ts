@@ -96,9 +96,8 @@ describe('ActorRdfResolveHypermediaQpf', () => {
       expect((<any> source).predicateUri).toEqual('p');
       expect((<any> source).objectUri).toEqual('o');
       expect((<any> source).graphUri).toEqual('g');
-      expect((<any> source).metadata).toBe(meta);
       expect((<any> source).context).toBe(context);
-      expect((<any> source).initialQuads).toBeInstanceOf(ClonedIterator);
+      expect((<any> source).getCachedQuads()).toBeInstanceOf(ClonedIterator);
     });
   });
 

@@ -8,7 +8,7 @@ import {
 } from "@comunica/bus-rdf-resolve-hypermedia-links";
 import {ActionContext, Actor, IActorTest, Mediator} from "@comunica/core";
 import * as RDF from "rdf-js";
-import {IFirstSource, LinkedRdfSourcesAsyncRdfIterator} from "./LinkedRdfSourcesAsyncRdfIterator";
+import {ISourceState, LinkedRdfSourcesAsyncRdfIterator} from "./LinkedRdfSourcesAsyncRdfIterator";
 
 /**
  * An quad iterator that can iterate over consecutive RDF sources
@@ -34,10 +34,10 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
   private readonly forceSourceType: string;
   private readonly handledUrls?: {[url: string]: boolean};
 
-  constructor(context: ActionContext, forceSourceType: string,
+  constructor(cacheSize: number, context: ActionContext, forceSourceType: string,
               subject: RDF.Term, predicate: RDF.Term, object: RDF.Term, graph: RDF.Term,
               firstUrl: string, mediators: IMediatorArgs) {
-    super(subject, predicate, object, graph, firstUrl, { autoStart: false });
+    super(cacheSize, subject, predicate, object, graph, firstUrl, { autoStart: false });
     this.context = context;
     this.forceSourceType = forceSourceType;
     this.mediatorRdfDereference = mediators.mediatorRdfDereference;
@@ -67,7 +67,7 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
     }
   }
 
-  protected async getNextSource(url: string): Promise<IFirstSource> {
+  protected async getNextSource(url: string, handledDatasets: {[type: string]: boolean}): Promise<ISourceState> {
     // Get the RDF representation of the given document
     const context = this.context;
     const rdfDereferenceOutput: IActorRdfDereferenceOutput = await this.mediatorRdfDereference
@@ -84,7 +84,7 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
     const { source, dataset } = await this.mediatorRdfResolveHypermedia.mediate({
       context,
       forceSourceType: this.forceSourceType,
-      handledDatasets: this.handledDatasets,
+      handledDatasets,
       metadata,
       quads: rdfMetadataOuput.data,
       url,
@@ -94,10 +94,10 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
       // Mark the dataset as applied
       // This is needed to make sure that things like QPF search forms are only applied once,
       // and next page links are followed after that.
-      this.handledDatasets[dataset] = true;
+      handledDatasets[dataset] = true;
     }
 
-    return { source, metadata, handledDatasets: this.handledDatasets };
+    return { source, metadata, handledDatasets };
   }
 
 }

@@ -1,7 +1,7 @@
 import {literal as lit} from "@rdfjs/data-model";
 import {ArrayIterator} from "asynciterator";
 import * as RDF from "rdf-js";
-import {IFirstSource, LinkedRdfSourcesAsyncRdfIterator} from "../lib/LinkedRdfSourcesAsyncRdfIterator";
+import {ISourcesState, ISourceState, LinkedRdfSourcesAsyncRdfIterator} from "../lib/LinkedRdfSourcesAsyncRdfIterator";
 
 const quad = require('rdf-quad');
 
@@ -10,21 +10,24 @@ const quad = require('rdf-quad');
 class Dummy extends LinkedRdfSourcesAsyncRdfIterator {
 
   public data: RDF.Quad[][];
-  public page: number;
 
   constructor(data: RDF.Quad[][], subject: RDF.Term, predicate: RDF.Term, object: RDF.Term, graph: RDF.Term,
               firstUrl: string) {
-    super(subject, predicate, object, graph, firstUrl, { autoStart: false });
+    super(10, subject, predicate, object, graph, firstUrl, { autoStart: false });
     this.data = data;
-    this.page = 0;
   }
 
   protected async getNextUrls(metadata: {[id: string]: any}): Promise<string[]> {
     return metadata.next ? [metadata.next] : [];
   }
 
-  protected async getNextSource(url: string): Promise<IFirstSource> {
-    if (this.page >= this.data.length) {
+  protected getPage(url: string) {
+    return url.startsWith('P') ? parseInt(url.substr(1), 10) : 0;
+  }
+
+  protected async getNextSource(url: string): Promise<ISourceState> {
+    const requestedPage = this.getPage(url);
+    if (requestedPage >= this.data.length) {
       return {
         handledDatasets: { [url]: true },
         metadata: {},
@@ -33,12 +36,11 @@ class Dummy extends LinkedRdfSourcesAsyncRdfIterator {
         },
       };
     }
-    const newPage = this.page++;
     return {
       handledDatasets: { [url]: true },
-      metadata: { next: 'NEXT' },
+      metadata: { next: 'P' + (requestedPage + 1) },
       source: <any> {
-        match: () => new ArrayIterator<RDF.Quad>(this.data[newPage].concat([])),
+        match: () => new ArrayIterator<RDF.Quad>(this.data[requestedPage].concat([])),
       },
     };
   }
@@ -46,15 +48,15 @@ class Dummy extends LinkedRdfSourcesAsyncRdfIterator {
 
 // dummy class with a rejecting getNextSource
 class InvalidDummy extends Dummy { // tslint:disable-line max-classes-per-file
-  protected getNextSource(url: string): Promise<IFirstSource> {
+  protected getNextSource(url: string): Promise<ISourceState> {
     return Promise.reject(new Error('NextSource error'));
   }
 }
 
 // dummy class with a rejecting getNextSource on the second page
 class InvalidDummyNext extends Dummy { // tslint:disable-line max-classes-per-file
-  protected getNextSource(url: string): Promise<IFirstSource> {
-    if (this.page >= 1) {
+  protected getNextSource(url: string): Promise<ISourceState> {
+    if (this.getPage(url) >= 1) {
       return Promise.reject(new Error('NextSource2 error'));
     } else {
       return super.getNextSource(url);
@@ -64,8 +66,9 @@ class InvalidDummyNext extends Dummy { // tslint:disable-line max-classes-per-fi
 
 // dummy class with a metadata override event on the first page
 class DummyMetaOverride extends Dummy { // tslint:disable-line max-classes-per-file
-  protected async getNextSource(url: string): Promise<IFirstSource> {
-    if (this.page >= this.data.length) {
+  protected async getNextSource(url: string): Promise<ISourceState> {
+    const requestedPage = this.getPage(url);
+    if (requestedPage >= this.data.length) {
       return {
         handledDatasets: { [url]: true },
         metadata: {},
@@ -74,14 +77,13 @@ class DummyMetaOverride extends Dummy { // tslint:disable-line max-classes-per-f
         },
       };
     }
-    const newPage = this.page++;
     return {
       handledDatasets: { [url]: true },
-      metadata: { next: 'NEXT' },
+      metadata: { next: 'P' + (requestedPage + 1) },
       source: <any> {
         match: () => {
-          const quads = new ArrayIterator<RDF.Quad>(this.data[newPage].concat([]));
-          setImmediate(() => quads.emit('metadata', { next: 'OVERRIDE' }));
+          const quads = new ArrayIterator<RDF.Quad>(this.data[requestedPage].concat([]));
+          setImmediate(() => quads.emit('metadata', { next: 'P' + (requestedPage + 1), override: true }));
           return quads;
         },
       },
@@ -98,7 +100,7 @@ class DummyMultiple extends Dummy { // tslint:disable-line max-classes-per-file
 
 // dummy class that emits an error in the source stream
 class DummyError extends Dummy { // tslint:disable-line max-classes-per-file
-  protected async getNextSource(url: string): Promise<IFirstSource> {
+  protected async getNextSource(url: string): Promise<ISourceState> {
     return {
       handledDatasets: { [url]: true },
       metadata: { next: 'NEXT' },
@@ -136,7 +138,7 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
       it.on('end', () => {
         expect(result).toEqual(flatten(quads));
         expect((<any> it).getNextUrls).toHaveBeenCalledTimes(2);
-        expect((<any> it).getNextUrls).toHaveBeenCalledWith({ next: 'NEXT' });
+        expect((<any> it).getNextUrls).toHaveBeenCalledWith({ next: 'P1' });
         expect((<any> it).getNextUrls).toHaveBeenCalledWith({});
         done();
       });
@@ -150,14 +152,14 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
       ]];
       const quads = toTerms(data);
       const it = new Dummy(quads, null, null, null, null, 'first');
-      it.loadFirstSource();
+      it.setSourcesState();
       jest.spyOn(<any> it, 'getNextUrls');
       const result = [];
       it.on('data', (d) => result.push(d));
       it.on('end', () => {
         expect(result).toEqual(flatten(quads));
         expect((<any> it).getNextUrls).toHaveBeenCalledTimes(2);
-        expect((<any> it).getNextUrls).toHaveBeenCalledWith({ next: 'NEXT' });
+        expect((<any> it).getNextUrls).toHaveBeenCalledWith({ next: 'P1' });
         expect((<any> it).getNextUrls).toHaveBeenCalledWith({});
         done();
       });
@@ -171,24 +173,16 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
       ]];
       const quads = toTerms(data);
       const it1 = new Dummy(quads, null, null, null, null, 'first');
-      it1.loadFirstSource();
+      it1.setSourcesState();
       const it2 = new Dummy(quads, null, null, null, null, 'first');
-      it2.loadFirstSource(it1.firstSource);
+      it2.setSourcesState(it1.sourcesState);
       jest.spyOn(<any> it2, 'getNextUrls');
       const result = [];
       it2.on('data', (d) => result.push(d));
       it2.on('end', () => {
-        expect(result).toEqual(flatten(toTerms([[
-          ['a', 'b', 'c'],
-          ['d', 'e', 'f'],
-          ['g', 'h', 'i'],
-          ['a', 'b', 'c'],
-          ['d', 'e', 'f'],
-          ['g', 'h', 'i'],
-        ]])));
-        expect((<any> it2).getNextUrls).toHaveBeenCalledTimes(3);
-        expect((<any> it2).getNextUrls).toHaveBeenCalledWith({ next: 'NEXT' });
-        expect((<any> it2).getNextUrls).toHaveBeenCalledWith({});
+        expect(result).toEqual(flatten(quads));
+        expect((<any> it2).getNextUrls).toHaveBeenCalledTimes(2);
+        expect((<any> it2).getNextUrls).toHaveBeenCalledWith({ next: 'P1' });
         expect((<any> it2).getNextUrls).toHaveBeenCalledWith({});
         done();
       });
@@ -220,9 +214,9 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
       it.on('end', () => {
         expect(result).toEqual(flatten(quads));
         expect((<any> it).getNextUrls).toHaveBeenCalledTimes(4);
-        expect((<any> it).getNextUrls).toHaveBeenCalledWith({ next: 'NEXT' });
-        expect((<any> it).getNextUrls).toHaveBeenCalledWith({ next: 'NEXT' });
-        expect((<any> it).getNextUrls).toHaveBeenCalledWith({ next: 'NEXT' });
+        expect((<any> it).getNextUrls).toHaveBeenCalledWith({ next: 'P1' });
+        expect((<any> it).getNextUrls).toHaveBeenCalledWith({ next: 'P2' });
+        expect((<any> it).getNextUrls).toHaveBeenCalledWith({ next: 'P3' });
         expect((<any> it).getNextUrls).toHaveBeenCalledWith({});
         done();
       });
@@ -248,16 +242,16 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
       ];
       const quads = toTerms(data);
       const it = new Dummy(quads, null, null, null, null, 'first');
-      it.loadFirstSource();
+      it.setSourcesState();
       jest.spyOn(<any> it, 'getNextUrls');
       const result = [];
       it.on('data', (d) => result.push(d));
       it.on('end', () => {
         expect(result).toEqual(flatten(quads));
         expect((<any> it).getNextUrls).toHaveBeenCalledTimes(4);
-        expect((<any> it).getNextUrls).toHaveBeenCalledWith({ next: 'NEXT' });
-        expect((<any> it).getNextUrls).toHaveBeenCalledWith({ next: 'NEXT' });
-        expect((<any> it).getNextUrls).toHaveBeenCalledWith({ next: 'NEXT' });
+        expect((<any> it).getNextUrls).toHaveBeenCalledWith({ next: 'P1' });
+        expect((<any> it).getNextUrls).toHaveBeenCalledWith({ next: 'P2' });
+        expect((<any> it).getNextUrls).toHaveBeenCalledWith({ next: 'P3' });
         expect((<any> it).getNextUrls).toHaveBeenCalledWith({});
         done();
       });
@@ -282,12 +276,31 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
       const result = [];
       it.on('data', (d) => result.push(d));
       it.on('end', () => {
-        expect(result).toEqual(flatten(quads));
-        expect((<any> it).getNextUrls).toHaveBeenCalledTimes(5);
-        expect((<any> it).getNextUrls).toHaveBeenCalledWith({ next: 'NEXT' });
-        expect((<any> it).getNextUrls).toHaveBeenCalledWith({ next: 'NEXT' });
-        expect((<any> it).getNextUrls).toHaveBeenCalledWith({ next: 'NEXT' });
-        expect((<any> it).getNextUrls).toHaveBeenCalledWith({ next: 'NEXT' });
+        expect(result).toEqual(flatten(toTerms([
+          [
+            ['a', 'b', 'c'],
+            ['d', 'e', 'f'],
+            ['g', 'h', 'i'],
+          ],
+          [
+            ['a', 'b', '1'],
+            ['d', 'e', '2'],
+            ['g', 'h', '3'],
+          ],
+          [
+            ['a', 'b', '1'],
+            ['d', 'e', '2'],
+            ['g', 'h', '3'],
+          ],
+        ])));
+        expect((<any> it).getNextUrls).toHaveBeenCalledTimes(7);
+        expect((<any> it).getNextUrls).toHaveBeenCalledWith({ next: 'P1' });
+
+        expect((<any> it).getNextUrls).toHaveBeenCalledWith({ next: 'P2' });
+        expect((<any> it).getNextUrls).toHaveBeenCalledWith({ next: 'P2' });
+
+        expect((<any> it).getNextUrls).toHaveBeenCalledWith({});
+        expect((<any> it).getNextUrls).toHaveBeenCalledWith({});
         expect((<any> it).getNextUrls).toHaveBeenCalledWith({});
         done();
       });
@@ -332,8 +345,8 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
       it.on('end', () => {
         expect(result).toEqual(flatten(quads));
         expect((<any> it).getNextUrls).toHaveBeenCalledTimes(3);
-        expect((<any> it).getNextUrls).toHaveBeenCalledWith({ next: 'OVERRIDE' });
-        expect((<any> it).getNextUrls).toHaveBeenCalledWith({ next: 'OVERRIDE' });
+        expect((<any> it).getNextUrls).toHaveBeenCalledWith({ next: 'P1', override: true });
+        expect((<any> it).getNextUrls).toHaveBeenCalledWith({});
         expect((<any> it).getNextUrls).toHaveBeenCalledWith({});
         done();
       });
