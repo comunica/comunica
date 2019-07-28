@@ -122,6 +122,7 @@
 						<section class="tsd-index-section ">
 							<h3>Functions</h3>
 							<ul class="tsd-index-list">
+								<li class="tsd-kind-function tsd-parent-kind-external-module"><a href="core.html#actioncontext-1" class="tsd-kind-icon">Action<wbr>Context</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-external-module"><a href="core.html#ensureactioncontext" class="tsd-kind-icon">ensure<wbr>Action<wbr>Context</a></li>
 							</ul>
 						</section>
@@ -133,55 +134,29 @@
 				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-external-module">
 					<a name="actioncontext" class="tsd-anchor"></a>
 					<h3>Action<wbr>Context</h3>
-					<ul class="tsd-signatures tsd-kind-type-alias tsd-parent-kind-external-module">
-						<li class="tsd-signature tsd-kind-icon">Action<wbr>Context<span class="tsd-signature-symbol">(</span>hash<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="" class="tsd-signature-type">ActionContext</a></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/74b91f2/packages/core/lib/Actor.ts#L197">packages/core/lib/Actor.ts:197</a></li>
-								</ul>
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>A convenience constructor for <a href="core.html#actioncontext">ActionContext</a> based on a given hash.</p>
-								</div>
-								<p>Each bus should describe in its action interface which context entries are possible (non-restrictive)
-									and expose a <code>KEY_CONTEXT_${ENTRY_NAME}</code> constant for easy reuse.
-									If actors support any specific context entries next to those inherited by the bus action interface,
-								then this should be described in its README file.</p>
-								<p>To avoid entry conflicts, all keys must be properly namespaced using the following convention:
-									Each key must be prefixed with the package name followed by a <code>:</code>.
-									For example, the <code>rdf-resolve-quad-pattern</code> bus declares the <code>sources</code> entry,
-								which should be named as <code>@comunica/bus-rdf-resolve-quad-pattern:sources</code>.</p>
-								<p>This context can contain any information that might be relevant for certain actors.
-								For instance, this context can contain a list of datasources over which operators should query.</p>
-								<dl class="tsd-comment-tags">
-									<dt>constructor</dt>
-									<dd></dd>
-								</dl>
-							</div>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>hash: <span class="tsd-signature-type">object</span></h5>
-									<div class="tsd-comment tsd-typography">
-										<div class="lead">
-											<p>A hash that maps keys to values.</p>
-										</div>
-									</div>
-									<ul class="tsd-parameters">
-										<li class="tsd-parameter-index-signature">
-											<h5><span class="tsd-signature-symbol">[</span>key: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]: </span><span class="tsd-signature-type">any</span></h5>
-										</li>
-									</ul>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="" class="tsd-signature-type">ActionContext</a></h4>
-							<p>The immutable action context from the hash.</p>
-						</li>
-					</ul>
+					<div class="tsd-signature tsd-kind-icon">Action<wbr>Context<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/7c00e56/packages/core/lib/Actor.ts#L189">core/lib/Actor.ts:189</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>An immutable key-value mapped context that can be passed to any (@link IAction}.
+								All actors that receive a context must forward this context to any actor, mediator or bus that it calls.
+							This context may be transformed before forwarding.</p>
+						</div>
+						<p>Each bus should describe in its action interface which context entries are possible (non-restrictive)
+							and expose a <code>KEY_CONTEXT_${ENTRY_NAME}</code> constant for easy reuse.
+							If actors support any specific context entries next to those inherited by the bus action interface,
+						then this should be described in its README file.</p>
+						<p>To avoid entry conflicts, all keys must be properly namespaced using the following convention:
+							Each key must be prefixed with the package name followed by a <code>:</code>.
+							For example, the <code>rdf-resolve-quad-pattern</code> bus declares the <code>sources</code> entry,
+						which should be named as <code>@comunica/bus-rdf-resolve-quad-pattern:sources</code>.</p>
+						<p>This context can contain any information that might be relevant for certain actors.
+						For instance, this context can contain a list of datasources over which operators should query.</p>
+					</div>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
@@ -192,7 +167,7 @@
 					<div class="tsd-signature tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>LOG<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;@comunica/core:log&quot;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/74b91f2/packages/core/lib/Logger.ts#L42">packages/core/lib/Logger.ts:42</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/7c00e56/packages/core/lib/Logger.ts#L42">core/lib/Logger.ts:42</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -210,6 +185,47 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Functions</h2>
 				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-external-module">
+					<a name="actioncontext-1" class="tsd-anchor"></a>
+					<h3>Action<wbr>Context</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-external-module">
+						<li class="tsd-signature tsd-kind-icon">Action<wbr>Context<span class="tsd-signature-symbol">(</span>hash<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="" class="tsd-signature-type">ActionContext</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/7c00e56/packages/core/lib/Actor.ts#L197">core/lib/Actor.ts:197</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>A convenience constructor for <a href="core.html#actioncontext">ActionContext</a> based on a given hash.</p>
+								</div>
+								<dl class="tsd-comment-tags">
+									<dt>constructor</dt>
+									<dd></dd>
+								</dl>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>hash: <span class="tsd-signature-type">object</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>A hash that maps keys to values.</p>
+									</div>
+									<ul class="tsd-parameters">
+										<li class="tsd-parameter-index-signature">
+											<h5><span class="tsd-signature-symbol">[</span>key: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]: </span><span class="tsd-signature-type">any</span></h5>
+										</li>
+									</ul>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="" class="tsd-signature-type">ActionContext</a></h4>
+							<p>The immutable action context from the hash.</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-external-module">
 					<a name="ensureactioncontext" class="tsd-anchor"></a>
 					<h3>ensure<wbr>Action<wbr>Context</h3>
 					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-external-module">
@@ -219,7 +235,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/74b91f2/packages/core/lib/Actor.ts#L207">packages/core/lib/Actor.ts:207</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/7c00e56/packages/core/lib/Actor.ts#L207">core/lib/Actor.ts:207</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -314,6 +330,9 @@
 								<a href="core.html#key_context_log" class="tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>LOG</a>
 							</li>
 							<li class=" tsd-kind-function tsd-parent-kind-external-module">
+								<a href="core.html#actioncontext-1" class="tsd-kind-icon">Action<wbr>Context</a>
+							</li>
+							<li class=" tsd-kind-function tsd-parent-kind-external-module">
 								<a href="core.html#ensureactioncontext" class="tsd-kind-icon">ensure<wbr>Action<wbr>Context</a>
 							</li>
 						</ul>
@@ -337,6 +356,7 @@
 				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
 				<li class="tsd-kind-index-signature"><span class="tsd-kind-icon">Index signature</span></li>
 				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
+				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
 			</ul>
 			<ul class="tsd-legend">
 				<li class="tsd-kind-enum"><span class="tsd-kind-icon">Enumeration</span></li>
@@ -385,7 +405,7 @@
 	</div>
 </footer>
 <div class="container tsd-generator">
-	<p>Generated using <a href="http://typedoc.org/" target="_blank">TypeDoc</a></p>
+	<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p>
 </div>
 <div class="overlay"></div>
 <script src="../assets/js/main.js"></script>

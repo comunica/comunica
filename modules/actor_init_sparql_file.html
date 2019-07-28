@@ -92,7 +92,7 @@
 					<pre><code class="language-javascript"><span class="hljs-keyword">const</span> newEngine = <span class="hljs-built_in">require</span>(<span class="hljs-string">'@comunica/actor-init-sparql-file'</span>).newEngine;
 <span class="hljs-keyword">const</span> myEngine = newEngine();
 
-<p><span class="hljs-keyword">const</span> result = <span class="hljs-keyword">await</span> myEngine.query(<span class="hljs-string">&#39;SELECT * WHERE { ?s ?p &lt;<a href="http://dbpedia.org/resource/Belgium&gt;">http://dbpedia.org/resource/Belgium&gt;</a>. ?s ?p ?o } LIMIT 100&#39;</span>,
+<p><span class="hljs-keyword">const</span> result = <span class="hljs-keyword">await</span> myEngine.query(<span class="hljs-string">&#39;SELECT * WHERE { ?s ?p &lt;<a href="http://dbpedia.org/resource/Belgium">http://dbpedia.org/resource/Belgium</a>&gt;. ?s ?p ?o } LIMIT 100&#39;</span>,
   { sources: [<span class="hljs-string">&#39;/path/to/my/file.ttl&#39;</span>] })
 result.bindingsStream.on(<span class="hljs-string">&#39;data&#39;</span>, <span class="hljs-function">(<span class="hljs-params">data</span>) =&gt;</span> <span class="hljs-built_in">console</span>.log(data.toObject()));</code></pre></p>
 					<p><a href="https://github.com/comunica/comunica/tree/master/packages/actor-init-sparql#usage-within-application">More details</a></p>
@@ -134,7 +134,7 @@ result.bindingsStream.on(<span class="hljs-string">&#39;data&#39;</span>, <span 
 					<div class="tsd-signature tsd-kind-icon">default<wbr>Config<wbr>Path<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;__dirname + &#x27;/../config/config-default.json&#x27;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/74b91f2/packages/actor-init-sparql-file/bin/http.ts#L4">packages/actor-init-sparql-file/bin/http.ts:4</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/7c00e56/packages/actor-init-sparql-file/bin/http.ts#L4">actor-init-sparql-file/bin/http.ts:4</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -145,13 +145,13 @@ result.bindingsStream.on(<span class="hljs-string">&#39;data&#39;</span>, <span 
 					<a name="newengine" class="tsd-anchor"></a>
 					<h3>new<wbr>Engine</h3>
 					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-external-module">
-						<li class="tsd-signature tsd-kind-icon">new<wbr>Engine<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../classes/_node_modules__comunica_actor_init_sparql_lib_actorinitsparql_browser_.actorinitsparql.html" class="tsd-signature-type">ActorInitSparql</a></li>
+						<li class="tsd-signature tsd-kind-icon">new<wbr>Engine<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../classes/actor_init_sparql.actorinitsparql.html" class="tsd-signature-type">ActorInitSparql</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/74b91f2/packages/actor-init-sparql-file/index-browser.ts#L7">packages/actor-init-sparql-file/index-browser.ts:7</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/7c00e56/packages/actor-init-sparql-file/index-browser.ts#L7">actor-init-sparql-file/index-browser.ts:7</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -159,7 +159,7 @@ result.bindingsStream.on(<span class="hljs-string">&#39;data&#39;</span>, <span 
 									<p>Create a new comunica engine from the default config.</p>
 								</div>
 							</div>
-							<h4 class="tsd-returns-title">Returns <a href="../classes/_node_modules__comunica_actor_init_sparql_lib_actorinitsparql_browser_.actorinitsparql.html" class="tsd-signature-type">ActorInitSparql</a></h4>
+							<h4 class="tsd-returns-title">Returns <a href="../classes/actor_init_sparql.actorinitsparql.html" class="tsd-signature-type">ActorInitSparql</a></h4>
 							<p>A comunica engine.</p>
 						</li>
 					</ul>
@@ -168,13 +168,13 @@ result.bindingsStream.on(<span class="hljs-string">&#39;data&#39;</span>, <span 
 					<a name="newenginedynamic" class="tsd-anchor"></a>
 					<h3>new<wbr>Engine<wbr>Dynamic</h3>
 					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-external-module">
-						<li class="tsd-signature tsd-kind-icon">new<wbr>Engine<wbr>Dynamic<span class="tsd-signature-symbol">(</span>options<span class="tsd-signature-symbol">?: </span><a href="../interfaces/_node_modules__comunica_actor_init_sparql_lib_querydynamic_.iqueryoptions.html" class="tsd-signature-type">IQueryOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../classes/_node_modules__comunica_actor_init_sparql_lib_actorinitsparql_browser_.actorinitsparql.html" class="tsd-signature-type">ActorInitSparql</a><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">new<wbr>Engine<wbr>Dynamic<span class="tsd-signature-symbol">(</span>options<span class="tsd-signature-symbol">?: </span><a href="../interfaces/actor_init_sparql.iqueryoptions.html" class="tsd-signature-type">IQueryOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../classes/actor_init_sparql.actorinitsparql.html" class="tsd-signature-type">ActorInitSparql</a><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/74b91f2/packages/actor-init-sparql-file/index.ts#L11">packages/actor-init-sparql-file/index.ts:11</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/7c00e56/packages/actor-init-sparql-file/index.ts#L11">actor-init-sparql-file/index.ts:11</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -185,13 +185,13 @@ result.bindingsStream.on(<span class="hljs-string">&#39;data&#39;</span>, <span 
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> options: <a href="../interfaces/_node_modules__comunica_actor_init_sparql_lib_querydynamic_.iqueryoptions.html" class="tsd-signature-type">IQueryOptions</a></h5>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> options: <a href="../interfaces/actor_init_sparql.iqueryoptions.html" class="tsd-signature-type">IQueryOptions</a></h5>
 									<div class="tsd-comment tsd-typography">
 										<p>Optional options on how to instantiate the query evaluator.</p>
 									</div>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../classes/_node_modules__comunica_actor_init_sparql_lib_actorinitsparql_browser_.actorinitsparql.html" class="tsd-signature-type">ActorInitSparql</a><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../classes/actor_init_sparql.actorinitsparql.html" class="tsd-signature-type">ActorInitSparql</a><span class="tsd-signature-symbol">&gt;</span></h4>
 							<p>A promise that resolves to a fully wired comunica engine.</p>
 						</li>
 					</ul>
@@ -246,6 +246,7 @@ result.bindingsStream.on(<span class="hljs-string">&#39;data&#39;</span>, <span 
 				<li class="tsd-kind-function tsd-has-type-parameter"><span class="tsd-kind-icon">Function with type parameter</span></li>
 				<li class="tsd-kind-index-signature"><span class="tsd-kind-icon">Index signature</span></li>
 				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
+				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
 			</ul>
 			<ul class="tsd-legend">
 				<li class="tsd-kind-enum"><span class="tsd-kind-icon">Enumeration</span></li>
@@ -294,7 +295,7 @@ result.bindingsStream.on(<span class="hljs-string">&#39;data&#39;</span>, <span 
 	</div>
 </footer>
 <div class="container tsd-generator">
-	<p>Generated using <a href="http://typedoc.org/" target="_blank">TypeDoc</a></p>
+	<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p>
 </div>
 <div class="overlay"></div>
 <script src="../assets/js/main.js"></script>
