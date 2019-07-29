@@ -1,4 +1,3 @@
-import {KEY_CONTEXT_GRAPHQL_SINGULARIZEVARIABLES} from "@comunica/actor-init-sparql/lib/ActorInitSparql-browser";
 import {IActorQueryOperationOutputBindings} from "@comunica/bus-query-operation";
 import {BindingsStream} from "@comunica/bus-query-operation";
 import {ActorSparqlSerializeFixedMediaTypes, IActionSparqlSerialize,
@@ -33,7 +32,7 @@ export class ActorSparqlSerializeTree extends ActorSparqlSerializeFixedMediaType
       const converter: Converter = new Converter(converterSettings);
 
       const schema: ISchema = {
-        singularizeVariables: actionContext.get(KEY_CONTEXT_GRAPHQL_SINGULARIZEVARIABLES) || {},
+        singularizeVariables: actionContext.get('@comunica/actor-init-sparql:singularizeVariables') || {},
       };
 
       bindingsStream.on('error', reject);
