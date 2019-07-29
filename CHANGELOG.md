@@ -1,6 +1,49 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v1.9.0"></a>
+## [v1.9.0](https://github.com/comunica/comunica/compare/v1.8.0...v1.9.0) - 2019-07-29
+
+### Added
+* [Add HTML script tag parser](https://github.com/comunica/comunica/commit/bc652ea6fc1ff752aad4ef0ae5e8c33934814b1b)
+* [Plug RDFa parse into HTML parsing bus, Closes #138](https://github.com/comunica/comunica/commit/c9e6bbc9c1b97ed26225e9735a6be2d5e2a1fa52)
+* [Add RDF RDFa parser for XML documents](https://github.com/comunica/comunica/commit/560e110b9f5e87ebcb0fb0cfd28a23a420071b71)
+* [Add HTTP proxy actor, Closes #465](https://github.com/comunica/comunica/commit/b1331f7d796c700643e4b151e5845697717588e2)
+* [Allow actors to be registered before other actors in buses](https://github.com/comunica/comunica/commit/071aeb93dd3270fc25fd705d16f8b2eca10160e9)
+* [Add abstract GraphQL-LD-based hypermedia extractor](https://github.com/comunica/comunica/commit/36c7b695266d87cf79ae84ed0886661834a35801)
+* [Add query-based metadata extractors, Closes #115](https://github.com/comunica/comunica/commit/65691f82cd30ec093f6236c46f213f4056f34128)
+* [Add BusIndexed that indexes actors by type](https://github.com/comunica/comunica/commit/9e49a9ab858f50cc41dd4c34c4a1a6bb812efe56)
+
+### Fixed
+* [Fix broken docker images, Closes #469](https://github.com/comunica/comunica/commit/eb308d5fdf5ead9bce0169c38776f9fb773aa56b)
+* [Fix hashing breaking with different data factories, #438](https://github.com/comunica/comunica/commit/921dbf74236b9397cdbb3fee6f21a86ae1bc2046)
+* [Fix GraphQL-LD query results not singularizing](https://github.com/comunica/comunica/commit/9a96b46b1dbdf9f286fcfc4492a9d3976c76a8de)
+* [Fix RDF dereferencing not taking into account relative response URLs](https://github.com/comunica/comunica/commit/476b66f2dc0512fd13f15f2609f5ccd08dbd6bbc)
+
+### Changed
+* [Add RDFJS source actor to default SPARQL config](https://github.com/comunica/comunica/commit/dd1f6e754c9cedfffc5c2d70be25bd6fd7dd7db8)
+* [Bump sparqlee to 1.1.0, Closes #477](https://github.com/comunica/comunica/commit/81440eb2d007f558048056bbbd9cf5b6f27af698)
+* [Allow auto-sources to be defined as strings instead of objects](https://github.com/comunica/comunica/commit/21725d660406f49ec473afc4c770013ff830cfab)
+* [Add hypermedia-based SPARQL resolver using service descriptions](https://github.com/comunica/comunica/commit/3e5b09dbb93c6ea004d0f51f2fff750676cdfcdd)
+* [Log identified source](https://github.com/comunica/comunica/commit/e2a1c28da190437ad2adce6448bfa76671b5835c)
+* [Improve error message on RDF dereference HTTP errors](https://github.com/comunica/comunica/commit/d1f641b3a8d16b1eeddd6723af975c60140eb764)
+* [Allow combine union mediator to have an empty bus](https://github.com/comunica/comunica/commit/2b9d263e76f064cb1169fc0e3b1948bd8a15a7a6)
+* [Pass headers to RDF parse actors](https://github.com/comunica/comunica/commit/cf2dec03b5263a2edd113affb77cf5ebf71ffa6d)
+* [Append '*/*' in accept header when shortened, Closes #471](https://github.com/comunica/comunica/commit/53c7e7519f6125054ac5e80c79ca4b038f067a18)
+* [Deprecate triple predicate metadata identifier](https://github.com/comunica/comunica/commit/05e54cc2b1dd2509ebe8c46667a7cff4ac632e49)
+* [Add config option to allow metadata to also be emitted as data](https://github.com/comunica/comunica/commit/a2426b7e9712305b6417455174f3584a661e3683)
+* [Add fallback metadata actor that sees everything as both meta and data](https://github.com/comunica/comunica/commit/f44345e3c05e3b76685badf059dbdcbaa746a467)
+* [Make primary topic actor fallback to 'all data is also metadata'](https://github.com/comunica/comunica/commit/34f4a98a02ae19bc5fc7e1d6d176953d66c1ba03)
+* [Remove heuristical source identification](https://github.com/comunica/comunica/commit/8c67d4518f22ede696ee21e1d07fc072b660ca0e)
+* [Emit dataset id in Hydra controls extractor](https://github.com/comunica/comunica/commit/6d41e3be57b7e0bb54b8ee141afbb04fec499a9c)
+* [Rewrite quad pattern hypermedia resolver to be less restrictive](https://github.com/comunica/comunica/commit/fc6bbac3a78e663c35ebbbdd3d925e2a6d695bc0)
+* [Add hypermedia resolver for unknown sources](https://github.com/comunica/comunica/commit/9c700899553e1fb8ee32eeff46ca1280a1db1797)
+* [Refactor QPF-specific hypermedia resolver, #432](https://github.com/comunica/comunica/commit/a72bdf28a0316b57bb273b522dad51fd16344bda)
+* [Remove lodash.map from mediators](https://github.com/comunica/comunica/commit/2b91c72b75f2a68960b33e864ef8f69526d1ab61)
+* [Improve performance of applyInitialBindings](https://github.com/comunica/comunica/commit/1c37c6237bb28e574d7d8c5f9f0c02c7b6135b66)
+* [Index the query operation bus](https://github.com/comunica/comunica/commit/62d083c517aa5f26b0dada4c7c42e6e9ba47f850)
+* [Remove unneeded string trimming in SPARQL serialization](https://github.com/comunica/comunica/commit/2fccc31610ba7b06bd424cae315d47ea1504bd61)
+
 <a name="v1.8.0"></a>
 ## [v1.8.0](https://github.com/comunica/comunica/compare/v1.7.4...v1.8.0) - 2019-06-13
 

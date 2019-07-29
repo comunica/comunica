@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-operation-project",
-  "version": "1.8.0",
+  "version": "1.9.0",
   "description": "A project query-operation actor",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-project",
   "lsd:components": "components/components.jsonld",
@@ -42,8 +42,8 @@
     "rdf-string": "^1.3.1"
   },
   "devDependencies": {
-    "@comunica/bus-query-operation": "^1.8.0",
-    "@comunica/core": "^1.8.0"
+    "@comunica/bus-query-operation": "^1.9.0",
+    "@comunica/core": "^1.9.0"
   },
   "jest": {
     "globals": {

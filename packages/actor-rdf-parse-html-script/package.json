@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-parse-html-script",
-  "version": "1.0.0",
+  "version": "1.9.0",
   "description": "A html-script rdf-parse actor",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-parse-html-script",
   "lsd:components": "components/components.jsonld",
@@ -35,12 +35,12 @@
     "index.js"
   ],
   "peerDependencies": {
-    "@comunica/core": "^1.4.0",
-    "@comunica/bus-rdf-parse": "^1.4.0"
+    "@comunica/bus-rdf-parse": "^1.4.0",
+    "@comunica/core": "^1.4.0"
   },
   "devDependencies": {
-    "@comunica/core": "^1.4.0",
-    "@comunica/bus-rdf-parse": "^1.4.0"
+    "@comunica/bus-rdf-parse": "^1.9.0",
+    "@comunica/core": "^1.9.0"
   },
   "jest": {
     "globals": {

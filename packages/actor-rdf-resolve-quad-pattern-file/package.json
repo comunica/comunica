@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-resolve-quad-pattern-file",
-  "version": "1.8.0",
+  "version": "1.9.0",
   "description": "A file rdf-resolve-quad-pattern actor",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-resolve-quad-pattern-file",
   "lsd:components": "components/components.jsonld",
@@ -47,10 +47,10 @@
     "@comunica/core": "^1.0.0"
   },
   "devDependencies": {
-    "@comunica/bus-http-invalidate": "^1.8.0",
-    "@comunica/bus-rdf-dereference": "^1.8.0",
-    "@comunica/bus-rdf-resolve-quad-pattern": "^1.8.0",
-    "@comunica/core": "^1.8.0"
+    "@comunica/bus-http-invalidate": "^1.9.0",
+    "@comunica/bus-rdf-dereference": "^1.9.0",
+    "@comunica/bus-rdf-resolve-quad-pattern": "^1.9.0",
+    "@comunica/core": "^1.9.0"
   },
   "jest": {
     "globals": {
