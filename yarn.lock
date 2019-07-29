@@ -8132,10 +8132,10 @@ sparqlalgebrajs@^1.1.0, sparqlalgebrajs@^1.5.1, sparqlalgebrajs@^1.5.2:
     rdf-string "^1.3.1"
     sparqljs "^2.2.1"
 
-sparqlee@1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/sparqlee/-/sparqlee-1.0.0.tgz#5043e7b92b76a0e7430e130f78da0a5bcfc0b58f"
-  integrity sha512-DBcCdys5nuVARy8Vnsm3RV1V7/lGaCRBYH94kRIudO0lJPm1ENj54iX/oemUNXkq5wCNuw5kTL8hae40fDVClA==
+sparqlee@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/sparqlee/-/sparqlee-1.1.0.tgz#f58aeba1c1414cdb7d63dd8ef144d83a20674507"
+  integrity sha512-6gaQKD6jTIdcSXifpxCuEJja+8PAoSCOhAluSOel0xIMf5tRBo1NIGGnGozbPojh/q9XmZ8udmAEAK1aKfh61g==
   dependencies:
     "@rdfjs/data-model" "^1.1.0"
     "@types/asynciterator" "^1.1.0"
