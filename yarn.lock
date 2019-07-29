@@ -7369,7 +7369,7 @@ rdf-string@^1.1.1, rdf-string@^1.2.0, rdf-string@^1.3.1:
   dependencies:
     "@rdfjs/data-model" "^1.1.1"
 
-rdf-terms@^1.2.0, rdf-terms@^1.4.0, rdf-terms@^1.5.1:
+rdf-terms@^1.4.0, rdf-terms@^1.5.1:
   version "1.5.1"
   resolved "https://registry.yarnpkg.com/rdf-terms/-/rdf-terms-1.5.1.tgz#92a9d5b28ebcea77b7811c6c9efb5e9301e715ff"
   integrity sha512-dDhpUYxTAOWKT3Ln93A5k5UB5SftG8bPAzeZEjGeP4e7eboMhITUTDks8HDmUt9X1P+HpfnY/o6VSTSpf3Advw==
