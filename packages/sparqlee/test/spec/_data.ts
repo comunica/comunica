@@ -48,6 +48,11 @@ export function data() {
     d2: date('2010-12-21T15:38:02-08:00'),
     d3: date('2008-06-20T23:59:00Z'),
     d4: date('2011-02-01T01:02:03'),
+
+    dr1: date('2010-06-21'),
+    dr2: date('2010-12-21'),
+    dr3: date('2008-06-20'),
+    dr4: date('2011-02-01'),
   };
 }
 
@@ -194,4 +199,8 @@ function double(value: string): string {
 
 function date(value: string): string {
   return termToString(literal(value, 'xsd:dateTime'));
+}
+
+function dateRaw(value: string): string {
+  return termToString(literal(value, 'xsd:date'));
 }

@@ -16,6 +16,7 @@ export enum TypeURL {
   XSD_BOOLEAN = 'http://www.w3.org/2001/XMLSchema#boolean',
 
   XSD_DATE_TIME = 'http://www.w3.org/2001/XMLSchema#dateTime',
+  XSD_DATE = 'http://www.w3.org/2001/XMLSchema#date',
 
   // Numeric types
   XSD_INTEGER = 'http://www.w3.org/2001/XMLSchema#integer',
@@ -301,6 +302,7 @@ export type NamedOperator =
   | TypeURL.XSD_DECIMAL
   | TypeURL.XSD_INTEGER
   | TypeURL.XSD_DATE_TIME
+  | TypeURL.XSD_DATE
   | TypeURL.XSD_BOOLEAN;
 
 export const NamedOperators = Set([
@@ -310,5 +312,6 @@ export const NamedOperators = Set([
   TypeURL.XSD_DECIMAL,
   TypeURL.XSD_INTEGER,
   TypeURL.XSD_DATE_TIME,
+  TypeURL.XSD_DATE,
   TypeURL.XSD_BOOLEAN,
 ]);

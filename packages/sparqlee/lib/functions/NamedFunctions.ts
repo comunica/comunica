@@ -137,6 +137,7 @@ const _definitions: { [key in C.NamedOperator]: Definition } = {
   [TypeURL.XSD_DECIMAL]: toDecimal,
   [TypeURL.XSD_INTEGER]: toInteger,
   [TypeURL.XSD_DATE_TIME]: toDatetime,
+  [TypeURL.XSD_DATE]: toDatetime,
   [TypeURL.XSD_BOOLEAN]: toBoolean,
 };
 

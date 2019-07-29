@@ -234,7 +234,7 @@ To be fully spec compliant, the IRI/URI functions should take into account base 
 | floor          | ✓ | X | ✓ |   |   |
 | RAND           | ✓ | X | ✓ |   |   |
 | _Notes         |   |   |   |   |   |
-| [On Dates and Times](https://www.w3.org/TR/sparql11-query/#func-date-time)
+| [On Dates and Times](https://www.w3.org/TR/sparql11-query/#func-date-time) ||||| Only `xsd:dateTime` is specified, but we also support `xsd:date` |
 | now            | ✓ | X | ✓ | ✓ | Whether this is spec compliant depends on whether you pass a spec compliant 'now' config argument |
 | year           | ✓ | X | ✓ |   |   |
 | month          | ✓ | X | ✓ |   |   |

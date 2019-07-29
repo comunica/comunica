@@ -42,6 +42,16 @@ describe('util/parsing', () => {
         seconds: '03',
         timezone: '',
       });
+
+      expect(parseXSDDateTime('2011-02-01')).toEqual({
+        year: '2011',
+        month: '02',
+        day: '01',
+        hours: '00',
+        minutes: '00',
+        seconds: '00',
+        timezone: '',
+      });
     });
   });
 });

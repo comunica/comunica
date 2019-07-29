@@ -84,7 +84,8 @@ export function transformLiteral(lit: RDF.Literal): E.Literal<any> {
     case DT.RDF_LANG_STRING:
       return new E.LangStringLiteral(lit.value, lit.language);
 
-    case DT.XSD_DATE_TIME: {
+    case DT.XSD_DATE_TIME:
+    case DT.XSD_DATE: {
       const val: Date = new Date(lit.value);
       if (isNaN(val.getTime())) {
         return new E.NonLexicalLiteral(undefined, lit.datatype, lit.value);

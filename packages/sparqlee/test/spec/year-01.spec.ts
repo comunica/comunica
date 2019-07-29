@@ -64,3 +64,13 @@ describe('We should respect the year-01 spec', () => {
  * </results>
  * </sparql>
  */
+
+describe('We should allow YEAR on xsd:date', () => {
+  const { dr1, dr2, dr3, dr4 } = Data.data();
+  testAll([
+    `YEAR(${dr1}) = ${int('2010')}`,
+    `YEAR(${dr2}) = ${int('2010')}`,
+    `YEAR(${dr3}) = ${int('2008')}`,
+    `YEAR(${dr4}) = ${int('2011')}`,
+  ]);
+});
