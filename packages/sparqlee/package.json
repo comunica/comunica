@@ -15,8 +15,9 @@
     "test-debug-lin": "node --inspect-brk=5858 ./node_modules/.bin/jest",
     "test-debug-win": "node --inspect-brk=5858 ./node_modules/jest/bin/jest.js",
     "coveralls-ci": "cat ./coverage/lcov.info | coveralls",
+    "prepare": "yarn run build",
     "preversion": "yarn test",
-    "version": "yarn run build",
+    "version": "manual-git-changelog onversion",
     "postversion": "git push && git push --tags",
     "sparqlee": "./dist/bin/Sparqlee.js"
   },
@@ -60,6 +61,7 @@
     "coveralls": "^3.0.2",
     "jest": "^24.3.1",
     "jest-html-reporter": "^2.4.2",
+    "manual-git-changelog": "^1.0.1",
     "pre-commit": "^1.2.2",
     "ts-jest": "^24.0.0",
     "ts-node": "^8.0.3",
