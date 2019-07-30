@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-init-sparql-file",
-  "version": "1.9.0",
+  "version": "1.9.1",
   "description": "A Comunica engine for SPARQL query evaluation over RDF files",
   "lsd:importPaths": {
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-sparql-file/^1.0.0/config/": "config/"
@@ -40,7 +40,7 @@
     "engine-browser.js"
   ],
   "dependencies": {
-    "@comunica/actor-init-sparql": "^1.9.0",
+    "@comunica/actor-init-sparql": "^1.9.1",
     "@comunica/actor-rdf-dereference-file": "^1.9.0"
   },
   "scripts": {

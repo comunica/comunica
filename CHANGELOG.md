@@ -1,6 +1,13 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v1.9.1"></a>
+## [v1.9.1](https://github.com/comunica/comunica/compare/v1.9.0...v1.9.1) - 2019-07-30
+
+### TODO: categorize commits, choose titles from: Added, Changed, Deprecated, Removed, Fixed, Security.
+* [Fix file source not emitting metadata, resulting in slow queries](https://github.com/comunica/comunica/commit/67db04a8f7f028b6bb18302377fb384b94e9a271)
+* [Fix crash due to missing version bump in rdf-terms](https://github.com/comunica/comunica/commit/ae3f0c2e4e6e6085b80465e8f406b1e7c6661439)
+
 <a name="v1.9.0"></a>
 ## [v1.9.0](https://github.com/comunica/comunica/compare/v1.8.0...v1.9.0) - 2019-07-29
 

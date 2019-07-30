@@ -1,6 +1,6 @@
 {
   "name": "@comunica/packager",
-  "version": "1.9.0",
+  "version": "1.9.1",
   "description": "A tool for packaging Comunica modules in a single NPM package",
   "main": "index.js",
   "typings": "index",
@@ -32,7 +32,7 @@
     "@comunica/actor-init-rdf-dereference": "^1.9.0",
     "@comunica/actor-init-rdf-dereference-paged": "^1.9.0",
     "@comunica/actor-init-rdf-parse": "^1.9.0",
-    "@comunica/actor-init-sparql": "^1.9.0",
+    "@comunica/actor-init-sparql": "^1.9.1",
     "@comunica/actor-query-operation-ask": "^1.9.0",
     "@comunica/actor-query-operation-bgp-empty": "^1.9.0",
     "@comunica/actor-query-operation-bgp-left-deep-smallest": "^1.9.0",
