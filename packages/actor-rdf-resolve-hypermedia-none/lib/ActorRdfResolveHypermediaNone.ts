@@ -3,6 +3,7 @@ import {ActorRdfResolveHypermedia, IActionRdfResolveHypermedia,
 import {IActorRdfResolveHypermediaTest} from "@comunica/bus-rdf-resolve-hypermedia";
 import {IActorArgs} from "@comunica/core";
 import {storeStream} from "rdf-store-stream";
+import {RdfSourceMetadata} from "./RdfSourceMetadata";
 
 /**
  * A comunica None RDF Resolve Hypermedia Actor.
@@ -20,7 +21,7 @@ export class ActorRdfResolveHypermediaNone extends ActorRdfResolveHypermedia {
 
   public async run(action: IActionRdfResolveHypermedia): Promise<IActorRdfResolveHypermediaOutput> {
     this.logInfo(action.context, `Identified as file source: ${action.url}`);
-    return { source: await storeStream(action.quads) };
+    return { source: new RdfSourceMetadata(await storeStream(action.quads)) };
   }
 
 }
