@@ -3,10 +3,10 @@ import {WritableStream} from "memory-streams";
 import minimist = require("minimist");
 import * as querystring from "querystring";
 import {PassThrough} from "stream";
-import {fs, testArgumentDict, testFileContentDict} from "../../../__mocks__/fs";
-import {http, ServerResponseMock} from "../../../__mocks__/http";
-import {parse} from "../../../__mocks__/url";
+import {fs, testArgumentDict, testFileContentDict} from "../__mocks__/fs";
+import {http, ServerResponseMock} from "../__mocks__/http";
 import {newEngineDynamic} from "../__mocks__/index";
+import {parse} from "../__mocks__/url";
 import {HttpServiceSparqlEndpoint} from "../lib/HttpServiceSparqlEndpoint";
 const stringToStream = require('streamify-string');
 
