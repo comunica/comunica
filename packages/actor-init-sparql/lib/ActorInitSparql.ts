@@ -85,9 +85,6 @@ Options:
     // Define query
     let query: string = null;
     if (args.q) {
-      if (typeof args.q !== 'string') {
-        throw new Error('The query option must be a string');
-      }
       query = args.q;
     } else if (args.f) {
       query = readFileSync(args.f, { encoding: 'utf8' });
