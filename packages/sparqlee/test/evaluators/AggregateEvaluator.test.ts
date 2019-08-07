@@ -120,6 +120,20 @@ describe('an aggregate evaluator should be able to', () => {
       });
       expect(result).toEqual(double('2.5E3'));
     });
+
+    it('with accurate results', () => {
+      const result = testCase({
+        expr: makeAggregate('sum'),
+        input: [
+          Bindings({ '?x': decimal('1.0') }),
+          Bindings({ '?x': decimal('2.2') }),
+          Bindings({ '?x': decimal('2.2') }),
+          Bindings({ '?x': decimal('2.2') }),
+          Bindings({ '?x': decimal('3.5') }),
+        ],
+      });
+      expect(result).toEqual(decimal('11.1'));
+    });
   });
 
   describe('min', () => {
