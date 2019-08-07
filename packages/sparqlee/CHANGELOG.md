@@ -1,5 +1,11 @@
 # Changelog
 
+<a name="v1.2.0"></a>
+## [v1.2.0](https://github.com/comunica/sparqlee/compare/v1.1.0...v1.2.0) - 2019-08-07
+
+### Changed
+* [Use decimal.js for add, sub, mul and div](https://github.com/comunica/sparqlee/commit/1b70578e5a9425f39e9d6432ee6a6ea740dc81ce)
+
 <a name="v1.1.0"></a>
 ## [v1.1.0](https://github.com/comunica/sparqlee/compare/v1.0.0...v1.1.0) - 2019-07-29
 
