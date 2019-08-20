@@ -10,6 +10,8 @@
       "ActionObserver": "cc:ActionObserver",
       "Actor": "cc:Actor",
       "Bus": "cc:Bus",
+      "BusIndexed": "cc:BusIndexed",
+      "Logger": "cc:Logger",
       "Mediator": "cc:Mediator",
 
       "actorIdentifierFields": "cc:BusIndexed#actorIdentifierFields",

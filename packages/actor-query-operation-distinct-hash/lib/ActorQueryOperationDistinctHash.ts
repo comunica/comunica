@@ -1,4 +1,4 @@
-import {AbstractBindingHash, AbstractFilterHash,
+import {AbstractBindingsHash, AbstractFilterHash,
   IActorInitRdfDereferencePagedArgs} from "@comunica/actor-abstract-bindings-hash";
 import {Bindings} from "@comunica/bus-query-operation";
 import {Algebra} from "sparqlalgebrajs";
@@ -6,7 +6,7 @@ import {Algebra} from "sparqlalgebrajs";
 /**
  * A comunica Distinct Hash Query Operation Actor.
  */
-export class ActorQueryOperationDistinctHash extends AbstractBindingHash<Algebra.Distinct>
+export class ActorQueryOperationDistinctHash extends AbstractBindingsHash<Algebra.Distinct>
   implements IActorInitRdfDereferencePagedArgs {
 
   constructor(args: IActorInitRdfDereferencePagedArgs) {

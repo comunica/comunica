@@ -5,6 +5,7 @@
     {
       "@id": "cc:Mediator",
       "@type": "AbstractClass",
+      "requireElement": "Mediator",
       "comment": "A mediator can mediate an action over a bus of actors.",
       "parameters": [
         {

@@ -5,6 +5,7 @@
     {
       "@id": "cc:ActionObserver",
       "@type": "AbstractClass",
+      "requireElement": "ActionObserver",
       "comment": "An ActionObserver can passively listen to {@link Actor#run} inputs and outputs for all actors on a certain bus.",
       "parameters": [
         {

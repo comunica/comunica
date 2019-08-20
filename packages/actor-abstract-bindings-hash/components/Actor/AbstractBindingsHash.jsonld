@@ -9,7 +9,7 @@
       "@id": "caabh:Actor/AbstractBindingsHash",
       "@type": "AbstractClass",
       "extends": "caabh:Actor/AbstractFilterHash",
-      "requireElement": "ActorAbstractBindingsHash",
+      "requireElement": "AbstractBindingsHash",
       "comment": "An abstract comunica actor for handling binding query operators.",
       "parameters": [
         {

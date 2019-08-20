@@ -9,7 +9,7 @@
       "@id": "caabh:Actor/AbstractFilterHash",
       "@type": "AbstractClass",
       "extends": "cbqo:Actor/QueryOperationTypedMediated",
-      "requireElement": "ActorAbstractFilterHash",
+      "requireElement": "AbstractFilterHash",
       "comment": "An abstract comunica actor for operators that require hashing functionality.",
       "parameters": [
         {
