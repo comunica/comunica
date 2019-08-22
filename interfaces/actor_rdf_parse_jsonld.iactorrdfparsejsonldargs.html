@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>IActorQueryOperationServiceArgs | Comunica</title>
+	<title>IActorRdfParseJsonLdArgs | Comunica</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -56,13 +56,13 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="../modules/actor_query_operation_service.html">actor-query-operation-service</a>
+					<a href="../modules/actor_rdf_parse_jsonld.html">actor-rdf-parse-jsonld</a>
 				</li>
 				<li>
-					<a href="actor_query_operation_service.iactorqueryoperationserviceargs.html">IActorQueryOperationServiceArgs</a>
+					<a href="actor_rdf_parse_jsonld.iactorrdfparsejsonldargs.html">IActorRdfParseJsonLdArgs</a>
 				</li>
 			</ul>
-			<h1>Interface IActorQueryOperationServiceArgs</h1>
+			<h1>Interface IActorRdfParseJsonLdArgs</h1>
 		</div>
 	</div>
 </header>
@@ -73,10 +73,10 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<a href="bus_query_operation.iactorqueryoperationtypedmediatedargs.html" class="tsd-signature-type">IActorQueryOperationTypedMediatedArgs</a>
+						<a href="bus_rdf_parse.iactorrdfparsefixedmediatypesargs.html" class="tsd-signature-type">IActorRdfParseFixedMediaTypesArgs</a>
 						<ul class="tsd-hierarchy">
 							<li>
-								<span class="target">IActorQueryOperationServiceArgs</span>
+								<span class="target">IActorRdfParseJsonLdArgs</span>
 							</li>
 						</ul>
 					</li>
@@ -89,11 +89,12 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="actor_query_operation_service.iactorqueryoperationserviceargs.html#beforeactors" class="tsd-kind-icon">before<wbr>Actors</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="actor_query_operation_service.iactorqueryoperationserviceargs.html#bus" class="tsd-kind-icon">bus</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="actor_query_operation_service.iactorqueryoperationserviceargs.html#forcesparqlendpoint" class="tsd-kind-icon">force<wbr>Sparql<wbr>Endpoint</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="actor_query_operation_service.iactorqueryoperationserviceargs.html#mediatorqueryoperation" class="tsd-kind-icon">mediator<wbr>Query<wbr>Operation</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="actor_query_operation_service.iactorqueryoperationserviceargs.html#name" class="tsd-kind-icon">name</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="actor_rdf_parse_jsonld.iactorrdfparsejsonldargs.html#beforeactors" class="tsd-kind-icon">before<wbr>Actors</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="actor_rdf_parse_jsonld.iactorrdfparsejsonldargs.html#bus" class="tsd-kind-icon">bus</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="actor_rdf_parse_jsonld.iactorrdfparsejsonldargs.html#mediatypes" class="tsd-kind-icon">media<wbr>Types</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="actor_rdf_parse_jsonld.iactorrdfparsejsonldargs.html#mediatorhttp" class="tsd-kind-icon">mediator<wbr>Http</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="actor_rdf_parse_jsonld.iactorrdfparsejsonldargs.html#name" class="tsd-kind-icon">name</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="actor_rdf_parse_jsonld.iactorrdfparsejsonldargs.html#priorityscale" class="tsd-kind-icon">priority<wbr>Scale</a></li>
 							</ul>
 						</section>
 					</div>
@@ -104,7 +105,7 @@
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
 					<a name="beforeactors" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagOptional">Optional</span> before<wbr>Actors</h3>
-					<div class="tsd-signature tsd-kind-icon">before<wbr>Actors<span class="tsd-signature-symbol">:</span> <a href="../classes/core.actor.html" class="tsd-signature-type">Actor</a><span class="tsd-signature-symbol">&lt;</span><a href="bus_query_operation.iactionqueryoperation.html" class="tsd-signature-type">IActionQueryOperation</a><span class="tsd-signature-symbol">, </span><a href="core.iactortest.html" class="tsd-signature-type">IActorTest</a><span class="tsd-signature-symbol">, </span><a href="bus_query_operation.iactorqueryoperationoutput.html" class="tsd-signature-type">IActorQueryOperationOutput</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[]</span></div>
+					<div class="tsd-signature tsd-kind-icon">before<wbr>Actors<span class="tsd-signature-symbol">:</span> <a href="../classes/core.actor.html" class="tsd-signature-type">Actor</a><span class="tsd-signature-symbol">&lt;</span><a href="../modules/actor_abstract_mediatyped.html#iactionabstractmediatyped" class="tsd-signature-type">IActionAbstractMediaTyped</a><span class="tsd-signature-symbol">&lt;</span><a href="bus_rdf_parse.iactionrdfparse.html" class="tsd-signature-type">IActionRdfParse</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><a href="actor_abstract_mediatyped.iactortestabstractmediatyped.html" class="tsd-signature-type">IActorTestAbstractMediaTyped</a><span class="tsd-signature-symbol">&lt;</span><a href="core.iactortest.html" class="tsd-signature-type">IActorTest</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><a href="actor_abstract_mediatyped.iactoroutputabstractmediatyped.html" class="tsd-signature-type">IActorOutputAbstractMediaTyped</a><span class="tsd-signature-symbol">&lt;</span><a href="bus_rdf_parse.iactorrdfparseoutput.html" class="tsd-signature-type">IActorRdfParseOutput</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="core.iactorargs.html">IActorArgs</a>.<a href="core.iactorargs.html#beforeactors">beforeActors</a></p>
 						<ul>
@@ -115,7 +116,7 @@
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
 					<a name="bus" class="tsd-anchor"></a>
 					<h3>bus</h3>
-					<div class="tsd-signature tsd-kind-icon">bus<span class="tsd-signature-symbol">:</span> <a href="../classes/core.bus.html" class="tsd-signature-type">Bus</a><span class="tsd-signature-symbol">&lt;</span><a href="../classes/core.actor.html" class="tsd-signature-type">Actor</a><span class="tsd-signature-symbol">&lt;</span><a href="bus_query_operation.iactionqueryoperation.html" class="tsd-signature-type">IActionQueryOperation</a><span class="tsd-signature-symbol">, </span><a href="core.iactortest.html" class="tsd-signature-type">IActorTest</a><span class="tsd-signature-symbol">, </span><a href="bus_query_operation.iactorqueryoperationoutput.html" class="tsd-signature-type">IActorQueryOperationOutput</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><a href="bus_query_operation.iactionqueryoperation.html" class="tsd-signature-type">IActionQueryOperation</a><span class="tsd-signature-symbol">, </span><a href="core.iactortest.html" class="tsd-signature-type">IActorTest</a><span class="tsd-signature-symbol">, </span><a href="bus_query_operation.iactorqueryoperationoutput.html" class="tsd-signature-type">IActorQueryOperationOutput</a><span class="tsd-signature-symbol">&gt;</span></div>
+					<div class="tsd-signature tsd-kind-icon">bus<span class="tsd-signature-symbol">:</span> <a href="../classes/core.bus.html" class="tsd-signature-type">Bus</a><span class="tsd-signature-symbol">&lt;</span><a href="../classes/core.actor.html" class="tsd-signature-type">Actor</a><span class="tsd-signature-symbol">&lt;</span><a href="../modules/actor_abstract_mediatyped.html#iactionabstractmediatyped" class="tsd-signature-type">IActionAbstractMediaTyped</a><span class="tsd-signature-symbol">&lt;</span><a href="bus_rdf_parse.iactionrdfparse.html" class="tsd-signature-type">IActionRdfParse</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><a href="actor_abstract_mediatyped.iactortestabstractmediatyped.html" class="tsd-signature-type">IActorTestAbstractMediaTyped</a><span class="tsd-signature-symbol">&lt;</span><a href="core.iactortest.html" class="tsd-signature-type">IActorTest</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><a href="actor_abstract_mediatyped.iactoroutputabstractmediatyped.html" class="tsd-signature-type">IActorOutputAbstractMediaTyped</a><span class="tsd-signature-symbol">&lt;</span><a href="bus_rdf_parse.iactorrdfparseoutput.html" class="tsd-signature-type">IActorRdfParseOutput</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><a href="../modules/actor_abstract_mediatyped.html#iactionabstractmediatyped" class="tsd-signature-type">IActionAbstractMediaTyped</a><span class="tsd-signature-symbol">&lt;</span><a href="bus_rdf_parse.iactionrdfparse.html" class="tsd-signature-type">IActionRdfParse</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><a href="actor_abstract_mediatyped.iactortestabstractmediatyped.html" class="tsd-signature-type">IActorTestAbstractMediaTyped</a><span class="tsd-signature-symbol">&lt;</span><a href="core.iactortest.html" class="tsd-signature-type">IActorTest</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><a href="actor_abstract_mediatyped.iactoroutputabstractmediatyped.html" class="tsd-signature-type">IActorOutputAbstractMediaTyped</a><span class="tsd-signature-symbol">&lt;</span><a href="bus_rdf_parse.iactorrdfparseoutput.html" class="tsd-signature-type">IActorRdfParseOutput</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="core.iactorargs.html">IActorArgs</a>.<a href="core.iactorargs.html#bus">bus</a></p>
 						<ul>
@@ -123,24 +124,32 @@
 						</ul>
 					</aside>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="forcesparqlendpoint" class="tsd-anchor"></a>
-					<h3>force<wbr>Sparql<wbr>Endpoint</h3>
-					<div class="tsd-signature tsd-kind-icon">force<wbr>Sparql<wbr>Endpoint<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+					<a name="mediatypes" class="tsd-anchor"></a>
+					<h3>media<wbr>Types</h3>
+					<div class="tsd-signature tsd-kind-icon">media<wbr>Types<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 					<aside class="tsd-sources">
+						<p>Inherited from <a href="actor_abstract_mediatyped.iactorargsmediatypedfixed.html">IActorArgsMediaTypedFixed</a>.<a href="actor_abstract_mediatyped.iactorargsmediatypedfixed.html#mediatypes">mediaTypes</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/bb9f1f3/packages/actor-query-operation-service/lib/ActorQueryOperationService.ts#L64">actor-query-operation-service/lib/ActorQueryOperationService.ts:64</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/bb9f1f3/packages/actor-abstract-mediatyped/lib/ActorAbstractMediaTypedFixed.ts#L52">actor-abstract-mediatyped/lib/ActorAbstractMediaTypedFixed.ts:52</a></li>
 						</ul>
 					</aside>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter-index-signature">
+								<h5><span class="tsd-signature-symbol">[</span>id: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]: </span><span class="tsd-signature-type">number</span></h5>
+							</li>
+						</ul>
+					</div>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
-					<a name="mediatorqueryoperation" class="tsd-anchor"></a>
-					<h3>mediator<wbr>Query<wbr>Operation</h3>
-					<div class="tsd-signature tsd-kind-icon">mediator<wbr>Query<wbr>Operation<span class="tsd-signature-symbol">:</span> <a href="../classes/core.mediator.html" class="tsd-signature-type">Mediator</a><span class="tsd-signature-symbol">&lt;</span><a href="../classes/core.actor.html" class="tsd-signature-type">Actor</a><span class="tsd-signature-symbol">&lt;</span><a href="bus_query_operation.iactionqueryoperation.html" class="tsd-signature-type">IActionQueryOperation</a><span class="tsd-signature-symbol">, </span><a href="core.iactortest.html" class="tsd-signature-type">IActorTest</a><span class="tsd-signature-symbol">, </span><a href="bus_query_operation.iactorqueryoperationoutput.html" class="tsd-signature-type">IActorQueryOperationOutput</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><a href="bus_query_operation.iactionqueryoperation.html" class="tsd-signature-type">IActionQueryOperation</a><span class="tsd-signature-symbol">, </span><a href="core.iactortest.html" class="tsd-signature-type">IActorTest</a><span class="tsd-signature-symbol">, </span><a href="bus_query_operation.iactorqueryoperationoutput.html" class="tsd-signature-type">IActorQueryOperationOutput</a><span class="tsd-signature-symbol">&gt;</span></div>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="mediatorhttp" class="tsd-anchor"></a>
+					<h3>mediator<wbr>Http</h3>
+					<div class="tsd-signature tsd-kind-icon">mediator<wbr>Http<span class="tsd-signature-symbol">:</span> <a href="../classes/core.mediator.html" class="tsd-signature-type">Mediator</a><span class="tsd-signature-symbol">&lt;</span><a href="../classes/core.actor.html" class="tsd-signature-type">Actor</a><span class="tsd-signature-symbol">&lt;</span><a href="bus_http.iactionhttp.html" class="tsd-signature-type">IActionHttp</a><span class="tsd-signature-symbol">, </span><a href="core.iactortest.html" class="tsd-signature-type">IActorTest</a><span class="tsd-signature-symbol">, </span><a href="bus_http.iactorhttpoutput.html" class="tsd-signature-type">IActorHttpOutput</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><a href="bus_http.iactionhttp.html" class="tsd-signature-type">IActionHttp</a><span class="tsd-signature-symbol">, </span><a href="core.iactortest.html" class="tsd-signature-type">IActorTest</a><span class="tsd-signature-symbol">, </span><a href="bus_http.iactorhttpoutput.html" class="tsd-signature-type">IActorHttpOutput</a><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
-						<p>Inherited from <a href="bus_query_operation.iactorqueryoperationtypedmediatedargs.html">IActorQueryOperationTypedMediatedArgs</a>.<a href="bus_query_operation.iactorqueryoperationtypedmediatedargs.html#mediatorqueryoperation">mediatorQueryOperation</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/bb9f1f3/packages/bus-query-operation/lib/ActorQueryOperationTypedMediated.ts#L24">bus-query-operation/lib/ActorQueryOperationTypedMediated.ts:24</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/bb9f1f3/packages/actor-rdf-parse-jsonld/lib/ActorRdfParseJsonLd.ts#L36">actor-rdf-parse-jsonld/lib/ActorRdfParseJsonLd.ts:36</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -155,6 +164,17 @@
 						</ul>
 					</aside>
 				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+					<a name="priorityscale" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> priority<wbr>Scale</h3>
+					<div class="tsd-signature tsd-kind-icon">priority<wbr>Scale<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<aside class="tsd-sources">
+						<p>Inherited from <a href="actor_abstract_mediatyped.iactorargsmediatypedfixed.html">IActorArgsMediaTypedFixed</a>.<a href="actor_abstract_mediatyped.iactorargsmediatypedfixed.html#priorityscale">priorityScale</a></p>
+						<ul>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/bb9f1f3/packages/actor-abstract-mediatyped/lib/ActorAbstractMediaTypedFixed.ts#L53">actor-abstract-mediatyped/lib/ActorAbstractMediaTypedFixed.ts:53</a></li>
+						</ul>
+					</aside>
+				</section>
 			</section>
 		</div>
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
@@ -164,7 +184,7 @@
 						<a href="../globals.html"><em>Globals</em></a>
 					</li>
 					<li class="current tsd-kind-external-module">
-						<a href="../modules/actor_query_operation_service.html">actor-<wbr>query-<wbr>operation-<wbr>service</a>
+						<a href="../modules/actor_rdf_parse_jsonld.html">actor-<wbr>rdf-<wbr>parse-<wbr>jsonld</a>
 					</li>
 				</ul>
 			</nav>
@@ -173,28 +193,34 @@
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-external-module">
-						<a href="../modules/actor_query_operation_service.html" class="tsd-kind-icon">actor-<wbr>query-<wbr>operation-<wbr>service</a>
+						<a href="../modules/actor_rdf_parse_jsonld.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>parse-<wbr>jsonld</a>
 						<ul>
 							<li class=" tsd-kind-class tsd-parent-kind-external-module">
-								<a href="../classes/actor_query_operation_service.actorqueryoperationservice.html" class="tsd-kind-icon">Actor<wbr>Query<wbr>Operation<wbr>Service</a>
+								<a href="../classes/actor_rdf_parse_jsonld.actorrdfparsejsonld.html" class="tsd-kind-icon">Actor<wbr>Rdf<wbr>Parse<wbr>Json<wbr>Ld</a>
+							</li>
+							<li class=" tsd-kind-class tsd-parent-kind-external-module">
+								<a href="../classes/actor_rdf_parse_jsonld.documentloadermediated.html" class="tsd-kind-icon">Document<wbr>Loader<wbr>Mediated</a>
 							</li>
 							<li class="current tsd-kind-interface tsd-parent-kind-external-module">
-								<a href="actor_query_operation_service.iactorqueryoperationserviceargs.html" class="tsd-kind-icon">IActor<wbr>Query<wbr>Operation<wbr>Service<wbr>Args</a>
+								<a href="actor_rdf_parse_jsonld.iactorrdfparsejsonldargs.html" class="tsd-kind-icon">IActor<wbr>Rdf<wbr>Parse<wbr>Json<wbr>LdArgs</a>
 								<ul>
 									<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
-										<a href="actor_query_operation_service.iactorqueryoperationserviceargs.html#beforeactors" class="tsd-kind-icon">before<wbr>Actors</a>
+										<a href="actor_rdf_parse_jsonld.iactorrdfparsejsonldargs.html#beforeactors" class="tsd-kind-icon">before<wbr>Actors</a>
 									</li>
 									<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
-										<a href="actor_query_operation_service.iactorqueryoperationserviceargs.html#bus" class="tsd-kind-icon">bus</a>
+										<a href="actor_rdf_parse_jsonld.iactorrdfparsejsonldargs.html#bus" class="tsd-kind-icon">bus</a>
+									</li>
+									<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+										<a href="actor_rdf_parse_jsonld.iactorrdfparsejsonldargs.html#mediatypes" class="tsd-kind-icon">media<wbr>Types</a>
 									</li>
 									<li class=" tsd-kind-property tsd-parent-kind-interface">
-										<a href="actor_query_operation_service.iactorqueryoperationserviceargs.html#forcesparqlendpoint" class="tsd-kind-icon">force<wbr>Sparql<wbr>Endpoint</a>
+										<a href="actor_rdf_parse_jsonld.iactorrdfparsejsonldargs.html#mediatorhttp" class="tsd-kind-icon">mediator<wbr>Http</a>
 									</li>
 									<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
-										<a href="actor_query_operation_service.iactorqueryoperationserviceargs.html#mediatorqueryoperation" class="tsd-kind-icon">mediator<wbr>Query<wbr>Operation</a>
+										<a href="actor_rdf_parse_jsonld.iactorrdfparsejsonldargs.html#name" class="tsd-kind-icon">name</a>
 									</li>
 									<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
-										<a href="actor_query_operation_service.iactorqueryoperationserviceargs.html#name" class="tsd-kind-icon">name</a>
+										<a href="actor_rdf_parse_jsonld.iactorrdfparsejsonldargs.html#priorityscale" class="tsd-kind-icon">priority<wbr>Scale</a>
 									</li>
 								</ul>
 							</li>

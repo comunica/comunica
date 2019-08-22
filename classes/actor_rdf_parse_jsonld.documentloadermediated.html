@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>RdfSourceMetadata | Comunica</title>
+	<title>DocumentLoaderMediated | Comunica</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -56,13 +56,13 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="../modules/actor_rdf_resolve_hypermedia_none.html">actor-rdf-resolve-hypermedia-none</a>
+					<a href="../modules/actor_rdf_parse_jsonld.html">actor-rdf-parse-jsonld</a>
 				</li>
 				<li>
-					<a href="actor_rdf_resolve_hypermedia_none.rdfsourcemetadata.html">RdfSourceMetadata</a>
+					<a href="actor_rdf_parse_jsonld.documentloadermediated.html">DocumentLoaderMediated</a>
 				</li>
 			</ul>
-			<h1>Class RdfSourceMetadata&lt;Q&gt;</h1>
+			<h1>Class DocumentLoaderMediated</h1>
 		</div>
 	</div>
 </header>
@@ -72,30 +72,22 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p>A wrapper around an RDF source that emits totalItems metadata <em>before</em> the end event.</p>
+						<p>A JSON-LD document loader that fetches over an HTTP bus using a given mediator.</p>
 					</div>
 				</div>
-			</section>
-			<section class="tsd-panel tsd-type-parameters">
-				<h3>Type parameters</h3>
-				<ul class="tsd-type-parameters">
-					<li>
-						<h4>Q<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">BaseQuad</span></h4>
-					</li>
-				</ul>
 			</section>
 			<section class="tsd-panel tsd-hierarchy">
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">RdfSourceMetadata</span>
+						<span class="target">DocumentLoaderMediated</span>
 					</li>
 				</ul>
 			</section>
 			<section class="tsd-panel">
 				<h3>Implements</h3>
 				<ul class="tsd-hierarchy">
-					<li><span class="tsd-signature-type">Source</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Q</span><span class="tsd-signature-symbol">&gt;</span></li>
+					<li><span class="tsd-signature-type">IDocumentLoader</span></li>
 				</ul>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">
@@ -105,19 +97,20 @@
 						<section class="tsd-index-section ">
 							<h3>Constructors</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="actor_rdf_resolve_hypermedia_none.rdfsourcemetadata.html#constructor" class="tsd-kind-icon">constructor</a></li>
+								<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="actor_rdf_parse_jsonld.documentloadermediated.html#constructor" class="tsd-kind-icon">constructor</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section tsd-is-private tsd-is-private-protected">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="actor_rdf_resolve_hypermedia_none.rdfsourcemetadata.html#source" class="tsd-kind-icon">source</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="actor_rdf_parse_jsonld.documentloadermediated.html#context" class="tsd-kind-icon">context</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="actor_rdf_parse_jsonld.documentloadermediated.html#mediatorhttp" class="tsd-kind-icon">mediator<wbr>Http</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="actor_rdf_resolve_hypermedia_none.rdfsourcemetadata.html#match" class="tsd-kind-icon">match</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="actor_rdf_parse_jsonld.documentloadermediated.html#load" class="tsd-kind-icon">load</a></li>
 							</ul>
 						</section>
 					</div>
@@ -129,22 +122,25 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Rdf<wbr>Source<wbr>Metadata<span class="tsd-signature-symbol">(</span>source<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Source</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="actor_rdf_resolve_hypermedia_none.rdfsourcemetadata.html" class="tsd-signature-type">RdfSourceMetadata</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Document<wbr>Loader<wbr>Mediated<span class="tsd-signature-symbol">(</span>mediatorHttp<span class="tsd-signature-symbol">: </span><a href="core.mediator.html" class="tsd-signature-type">Mediator</a><span class="tsd-signature-symbol">&lt;</span><a href="core.actor.html" class="tsd-signature-type">Actor</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/bus_http.iactionhttp.html" class="tsd-signature-type">IActionHttp</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/core.iactortest.html" class="tsd-signature-type">IActorTest</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/bus_http.iactorhttpoutput.html" class="tsd-signature-type">IActorHttpOutput</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><a href="../interfaces/bus_http.iactionhttp.html" class="tsd-signature-type">IActionHttp</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/core.iactortest.html" class="tsd-signature-type">IActorTest</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/bus_http.iactorhttpoutput.html" class="tsd-signature-type">IActorHttpOutput</a><span class="tsd-signature-symbol">&gt;</span>, context<span class="tsd-signature-symbol">: </span><a href="../modules/core.html#actioncontext" class="tsd-signature-type">ActionContext</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="actor_rdf_parse_jsonld.documentloadermediated.html" class="tsd-signature-type">DocumentLoaderMediated</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/bb9f1f3/packages/actor-rdf-resolve-hypermedia-none/lib/RdfSourceMetadata.ts#L10">actor-rdf-resolve-hypermedia-none/lib/RdfSourceMetadata.ts:10</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/bb9f1f3/packages/actor-rdf-parse-jsonld/lib/DocumentLoaderMediated.ts#L13">actor-rdf-parse-jsonld/lib/DocumentLoaderMediated.ts:13</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>source: <span class="tsd-signature-type">Source</span></h5>
+									<h5>mediatorHttp: <a href="core.mediator.html" class="tsd-signature-type">Mediator</a><span class="tsd-signature-symbol">&lt;</span><a href="core.actor.html" class="tsd-signature-type">Actor</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/bus_http.iactionhttp.html" class="tsd-signature-type">IActionHttp</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/core.iactortest.html" class="tsd-signature-type">IActorTest</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/bus_http.iactorhttpoutput.html" class="tsd-signature-type">IActorHttpOutput</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><a href="../interfaces/bus_http.iactionhttp.html" class="tsd-signature-type">IActionHttp</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/core.iactortest.html" class="tsd-signature-type">IActorTest</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/bus_http.iactorhttpoutput.html" class="tsd-signature-type">IActorHttpOutput</a><span class="tsd-signature-symbol">&gt;</span></h5>
+								</li>
+								<li>
+									<h5>context: <a href="../modules/core.html#actioncontext" class="tsd-signature-type">ActionContext</a></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="actor_rdf_resolve_hypermedia_none.rdfsourcemetadata.html" class="tsd-signature-type">RdfSourceMetadata</a></h4>
+							<h4 class="tsd-returns-title">Returns <a href="actor_rdf_parse_jsonld.documentloadermediated.html" class="tsd-signature-type">DocumentLoaderMediated</a></h4>
 						</li>
 					</ul>
 				</section>
@@ -152,12 +148,22 @@
 			<section class="tsd-panel-group tsd-member-group tsd-is-private tsd-is-private-protected">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
-					<a name="source" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagPrivate">Private</span> source</h3>
-					<div class="tsd-signature tsd-kind-icon">source<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Source</span></div>
+					<a name="context" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> context</h3>
+					<div class="tsd-signature tsd-kind-icon">context<span class="tsd-signature-symbol">:</span> <a href="../modules/core.html#actioncontext" class="tsd-signature-type">ActionContext</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/bb9f1f3/packages/actor-rdf-resolve-hypermedia-none/lib/RdfSourceMetadata.ts#L10">actor-rdf-resolve-hypermedia-none/lib/RdfSourceMetadata.ts:10</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/bb9f1f3/packages/actor-rdf-parse-jsonld/lib/DocumentLoaderMediated.ts#L13">actor-rdf-parse-jsonld/lib/DocumentLoaderMediated.ts:13</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
+					<a name="mediatorhttp" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> mediator<wbr>Http</h3>
+					<div class="tsd-signature tsd-kind-icon">mediator<wbr>Http<span class="tsd-signature-symbol">:</span> <a href="core.mediator.html" class="tsd-signature-type">Mediator</a><span class="tsd-signature-symbol">&lt;</span><a href="core.actor.html" class="tsd-signature-type">Actor</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/bus_http.iactionhttp.html" class="tsd-signature-type">IActionHttp</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/core.iactortest.html" class="tsd-signature-type">IActorTest</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/bus_http.iactorhttpoutput.html" class="tsd-signature-type">IActorHttpOutput</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><a href="../interfaces/bus_http.iactionhttp.html" class="tsd-signature-type">IActionHttp</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/core.iactortest.html" class="tsd-signature-type">IActorTest</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/bus_http.iactorhttpoutput.html" class="tsd-signature-type">IActorHttpOutput</a><span class="tsd-signature-symbol">&gt;</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/bb9f1f3/packages/actor-rdf-parse-jsonld/lib/DocumentLoaderMediated.ts#L11">actor-rdf-parse-jsonld/lib/DocumentLoaderMediated.ts:11</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -165,34 +171,25 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Methods</h2>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-					<a name="match" class="tsd-anchor"></a>
-					<h3>match</h3>
+					<a name="load" class="tsd-anchor"></a>
+					<h3>load</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">match<span class="tsd-signature-symbol">(</span>subject<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">RDF.Term</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">RegExp</span>, predicate<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">RDF.Term</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">RegExp</span>, object<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">RDF.Term</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">RegExp</span>, graph<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">RDF.Term</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">RegExp</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Stream</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Q</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">load<span class="tsd-signature-symbol">(</span>url<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">IJsonLdContextNormalized</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/bb9f1f3/packages/actor-rdf-resolve-hypermedia-none/lib/RdfSourceMetadata.ts#L16">actor-rdf-resolve-hypermedia-none/lib/RdfSourceMetadata.ts:16</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/bb9f1f3/packages/actor-rdf-parse-jsonld/lib/DocumentLoaderMediated.ts#L22">actor-rdf-parse-jsonld/lib/DocumentLoaderMediated.ts:22</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> subject: <span class="tsd-signature-type">RDF.Term</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">RegExp</span></h5>
-								</li>
-								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> predicate: <span class="tsd-signature-type">RDF.Term</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">RegExp</span></h5>
-								</li>
-								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> object: <span class="tsd-signature-type">RDF.Term</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">RegExp</span></h5>
-								</li>
-								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> graph: <span class="tsd-signature-type">RDF.Term</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">RegExp</span></h5>
+									<h5>url: <span class="tsd-signature-type">string</span></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Stream</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Q</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">IJsonLdContextNormalized</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -205,7 +202,7 @@
 						<a href="../globals.html"><em>Globals</em></a>
 					</li>
 					<li class="current tsd-kind-external-module">
-						<a href="../modules/actor_rdf_resolve_hypermedia_none.html">actor-<wbr>rdf-<wbr>resolve-<wbr>hypermedia-<wbr>none</a>
+						<a href="../modules/actor_rdf_parse_jsonld.html">actor-<wbr>rdf-<wbr>parse-<wbr>jsonld</a>
 					</li>
 				</ul>
 			</nav>
@@ -214,24 +211,30 @@
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-external-module">
-						<a href="../modules/actor_rdf_resolve_hypermedia_none.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>resolve-<wbr>hypermedia-<wbr>none</a>
+						<a href="../modules/actor_rdf_parse_jsonld.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>parse-<wbr>jsonld</a>
 						<ul>
 							<li class=" tsd-kind-class tsd-parent-kind-external-module">
-								<a href="actor_rdf_resolve_hypermedia_none.actorrdfresolvehypermedianone.html" class="tsd-kind-icon">Actor<wbr>Rdf<wbr>Resolve<wbr>Hypermedia<wbr>None</a>
+								<a href="actor_rdf_parse_jsonld.actorrdfparsejsonld.html" class="tsd-kind-icon">Actor<wbr>Rdf<wbr>Parse<wbr>Json<wbr>Ld</a>
 							</li>
-							<li class="current tsd-kind-class tsd-parent-kind-external-module tsd-has-type-parameter">
-								<a href="actor_rdf_resolve_hypermedia_none.rdfsourcemetadata.html" class="tsd-kind-icon">Rdf<wbr>Source<wbr>Metadata</a>
+							<li class="current tsd-kind-class tsd-parent-kind-external-module">
+								<a href="actor_rdf_parse_jsonld.documentloadermediated.html" class="tsd-kind-icon">Document<wbr>Loader<wbr>Mediated</a>
 								<ul>
 									<li class=" tsd-kind-constructor tsd-parent-kind-class">
-										<a href="actor_rdf_resolve_hypermedia_none.rdfsourcemetadata.html#constructor" class="tsd-kind-icon">constructor</a>
+										<a href="actor_rdf_parse_jsonld.documentloadermediated.html#constructor" class="tsd-kind-icon">constructor</a>
 									</li>
 									<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
-										<a href="actor_rdf_resolve_hypermedia_none.rdfsourcemetadata.html#source" class="tsd-kind-icon">source</a>
+										<a href="actor_rdf_parse_jsonld.documentloadermediated.html#context" class="tsd-kind-icon">context</a>
+									</li>
+									<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
+										<a href="actor_rdf_parse_jsonld.documentloadermediated.html#mediatorhttp" class="tsd-kind-icon">mediator<wbr>Http</a>
 									</li>
 									<li class=" tsd-kind-method tsd-parent-kind-class">
-										<a href="actor_rdf_resolve_hypermedia_none.rdfsourcemetadata.html#match" class="tsd-kind-icon">match</a>
+										<a href="actor_rdf_parse_jsonld.documentloadermediated.html#load" class="tsd-kind-icon">load</a>
 									</li>
 								</ul>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-external-module">
+								<a href="../interfaces/actor_rdf_parse_jsonld.iactorrdfparsejsonldargs.html" class="tsd-kind-icon">IActor<wbr>Rdf<wbr>Parse<wbr>Json<wbr>LdArgs</a>
 							</li>
 						</ul>
 					</li>
