@@ -17,8 +17,9 @@ describe('ActorRdfParseHtml', () => {
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
+    const mediatorHttp = null;
     jsonldParser = new ActorRdfParseJsonLd(
-      { bus, mediaTypes: {'application/json': 0.1, 'application/ld+json': 1.0 }, name: 'jsonldParser' });
+      { bus, mediaTypes: {'application/json': 0.1, 'application/ld+json': 1.0 }, name: 'jsonldParser', mediatorHttp });
   });
 
   describe('The ActorRdfParseHtml module', () => {

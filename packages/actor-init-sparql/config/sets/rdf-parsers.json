@@ -26,7 +26,8 @@
     {
       "@id": "config-sets:rdf-parsers.json#myRdfParserJsonLd",
       "@type": "ActorRdfParseJsonLd",
-      "priorityScale": 0.9
+      "priorityScale": 0.9,
+      "crpjl:Actor/RdfParse/JsonLd/mediatorHttp": { "@id": "config-sets:http.json#mediatorHttp" }
     },
     {
       "@id": "config-sets:rdf-parsers.json#myRdfParserHtml",

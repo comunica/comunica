@@ -22,11 +22,24 @@
               { "mediaTypeKey": "application/json",    "priorityValue": "0.5" }
             ]
           }
+        },
+        {
+          "@id": "crpjl:Actor/RdfParse/JsonLd/mediatorHttp",
+          "comment": "The HTTP mediator",
+          "required": true,
+          "unique": true
         }
       ],
       "constructorArguments": [
         {
-          "extends": "cbrp:Actor/RdfParseFixedMediaTypes/constructorArgumentsObject"
+          "@id": "crpjl:Actor/RdfParse/JsonLd/constructorArgumentsObject",
+          "extends": "cbrp:Actor/RdfParseFixedMediaTypes/constructorArgumentsObject",
+          "fields": [
+            {
+              "keyRaw": "mediatorHttp",
+              "value": "crpjl:Actor/RdfParse/JsonLd/mediatorHttp"
+            }
+          ]
         }
       ]
     }

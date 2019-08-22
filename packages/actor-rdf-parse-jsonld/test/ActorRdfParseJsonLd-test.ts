@@ -5,12 +5,27 @@ import {ActorRdfParseJsonLd} from "../lib/ActorRdfParseJsonLd";
 const stringToStream = require('streamify-string');
 const arrayifyStream = require('arrayify-stream');
 const quad = require('rdf-quad');
+const streamifyString = require('streamify-string');
 
 describe('ActorRdfParseJsonLd', () => {
   let bus;
+  let mediatorHttp: any;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
+    mediatorHttp = {
+      mediate: (args) => args.input.indexOf('error') >= 0 ? Promise.resolve({
+        ok: false,
+        statusText: 'some error',
+      }) : Promise.resolve({
+        body: streamifyString(`{
+          "@context": {
+            "@vocab": "http://example.org/"
+          }
+        }`),
+        ok: true,
+      }),
+    };
   });
 
   describe('The ActorRdfParseJsonLd module', () => {
@@ -19,7 +34,7 @@ describe('ActorRdfParseJsonLd', () => {
     });
 
     it('should be a ActorRdfParseJsonLd constructor', () => {
-      expect(new (<any> ActorRdfParseJsonLd)({ name: 'actor', bus, mediaTypes: {} }))
+      expect(new (<any> ActorRdfParseJsonLd)({ name: 'actor', bus, mediaTypes: {}, mediatorHttp }))
         .toBeInstanceOf(ActorRdfParseJsonLd);
     });
 
@@ -28,21 +43,24 @@ describe('ActorRdfParseJsonLd', () => {
     });
 
     it('when constructed with optional mediaTypes should set the mediaTypes', () => {
-      expect(new ActorRdfParseJsonLd({ name: 'actor', bus, mediaTypes: {} }).mediaTypes).toEqual({});
+      expect(new ActorRdfParseJsonLd({ name: 'actor', bus, mediaTypes: {}, mediatorHttp }).mediaTypes).toEqual({});
     });
 
     it('should not throw an error when constructed with optional priorityScale', () => {
-      expect(() => { new ActorRdfParseJsonLd({ name: 'actor', bus, mediaTypes: {}, priorityScale: 0.5 }); })
+      expect(() => { new ActorRdfParseJsonLd(
+        { name: 'actor', bus, mediaTypes: {}, priorityScale: 0.5, mediatorHttp }); })
         .toBeTruthy();
     });
 
     it('when constructed with optional priorityScale should set the priorityScale', () => {
-      expect(new ActorRdfParseJsonLd({ name: 'actor', bus, mediaTypes: {}, priorityScale: 0.5 }).priorityScale)
+      expect(new ActorRdfParseJsonLd(
+        { name: 'actor', bus, mediaTypes: {}, priorityScale: 0.5, mediatorHttp }).priorityScale)
         .toEqual(0.5);
     });
 
     it('when constructed with optional priorityScale should scale the priorities', () => {
-      expect(new ActorRdfParseJsonLd({ name: 'actor', bus, mediaTypes: { A: 2, B: 1, C: 0 }, priorityScale: 0.5 })
+      expect(new ActorRdfParseJsonLd(
+        { name: 'actor', bus, mediaTypes: { A: 2, B: 1, C: 0 }, priorityScale: 0.5, mediatorHttp })
         .mediaTypes).toEqual({
           A: 1,
           B: 0.5,
@@ -55,12 +73,14 @@ describe('ActorRdfParseJsonLd', () => {
     let actor: ActorRdfParseJsonLd;
     let input: Readable;
     let inputGraphs: Readable;
+    let inputRemoteContext: Readable;
+    let inputRemoteContextErr: Readable;
 
     beforeEach(() => {
       actor = new ActorRdfParseJsonLd({ bus, mediaTypes: {
         'application/json': 1.0,
         'application/ld+json': 1.0,
-      }, name: 'actor'});
+      }, mediatorHttp, name: 'actor' });
     });
 
     describe('for parsing', () => {
@@ -91,6 +111,18 @@ describe('ActorRdfParseJsonLd', () => {
             ]
           }
             ]`);
+        inputRemoteContext = stringToStream(`{
+            "@context": "http://schema.org/",
+            "@id": "http://example.org/a",
+            "b": "http://example.org/c",
+            "d": "http://example.org/e"
+          }`);
+        inputRemoteContextErr = stringToStream(`{
+            "@context": "http://schema.org/error",
+            "@id": "http://example.org/a",
+            "b": "http://example.org/c",
+            "d": "http://example.org/e"
+          }`);
       });
 
       it('should test on application/json', () => {
@@ -125,6 +157,21 @@ describe('ActorRdfParseJsonLd', () => {
             quad('_:b1', 'http://example.org/d', '"http://example.org/e"', 'http://example.org/g1'),
           ]));
       });
+
+      it('should run for a remote context', () => {
+        return actor.run({ handle: { input: inputRemoteContext, baseIRI: '' }, handleMediaType: 'application/ld+json' })
+          .then(async (output) => expect(await arrayifyStream(output.handle.quads)).toEqualRdfQuadArray([
+            quad('http://example.org/a', 'http://example.org/b', '"http://example.org/c"'),
+            quad('http://example.org/a', 'http://example.org/d', '"http://example.org/e"'),
+          ]));
+      });
+
+      it('should run for an invalid remote context', () => {
+        return actor.run(
+          { handle: { input: inputRemoteContextErr, baseIRI: '' }, handleMediaType: 'application/ld+json' })
+          .then(async (output) => expect(arrayifyStream(output.handle.quads)).rejects
+            .toThrow(new Error('No valid context was found at http://schema.org/error: some error')));
+      });
     });
 
     describe('for getting media types', () => {
@@ -143,7 +190,7 @@ describe('ActorRdfParseJsonLd', () => {
         actor = new ActorRdfParseJsonLd({ bus, mediaTypes: {
           'application/json': 1.0,
           'application/ld+json': 1.0,
-        }, name: 'actor', priorityScale: 0.5 });
+        }, mediatorHttp, name: 'actor', priorityScale: 0.5 });
         return expect(actor.run({ mediaTypes: true })).resolves.toEqual({ mediaTypes: {
           'application/json': 0.5,
           'application/ld+json': 0.5,
@@ -154,7 +201,7 @@ describe('ActorRdfParseJsonLd', () => {
         actor = new ActorRdfParseJsonLd({ bus, mediaTypes: {
           'application/json': 1.0,
           'application/ld+json': 1.0,
-        }, name: 'actor', priorityScale: 0 });
+        }, mediatorHttp, name: 'actor', priorityScale: 0 });
         return expect(actor.run({ mediaTypes: true })).resolves.toEqual({ mediaTypes: {
           'application/json': 0,
           'application/ld+json': 0,
