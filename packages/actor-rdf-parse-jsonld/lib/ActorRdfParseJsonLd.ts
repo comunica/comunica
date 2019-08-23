@@ -30,6 +30,9 @@ export class ActorRdfParseJsonLd extends ActorRdfParseFixedMediaTypes {
       const linkHeader = parseLinkHeader(action.headers.get('Link'));
       for (const link of linkHeader.get('rel', 'http://www.w3.org/ns/json-ld#context')) {
         if (link.type === 'application/ld+json') {
+          if (context) {
+            throw new Error('Multiple JSON-LD context link headers were found on ' + action.baseIRI);
+          }
           context = link.uri;
         }
       }

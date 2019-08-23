@@ -221,6 +221,15 @@ describe('ActorRdfParseJsonLd', () => {
             quad('http://example.org/a', 'http://example.org/d', '"http://example.org/e"'),
           ]));
       });
+
+      it('should error for multiple context link headers', () => {
+        const headers = new Headers({ Link:
+          '<http://example.org/valid1>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json",'
+          + '<http://example.org/valid2>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' });
+        return expect(actor.run(
+          { handle: { input: inputLinkHeader, baseIRI: 'mult', headers }, handleMediaType: 'application/json' }))
+          .rejects.toThrow(new Error('Multiple JSON-LD context link headers were found on mult'));
+      });
     });
 
     describe('for getting media types', () => {
