@@ -14,17 +14,24 @@ describe('ActorRdfParseJsonLd', () => {
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
     mediatorHttp = {
-      mediate: (args) => args.input.indexOf('error') >= 0 ? Promise.resolve({
-        ok: false,
-        statusText: 'some error',
-      }) : Promise.resolve({
-        body: streamifyString(`{
+      mediate: (args) => {
+        // Error
+        if (args.input.indexOf('error') >= 0) {
+          return Promise.resolve({
+            ok: false,
+            statusText: 'some error',
+          });
+        }
+
+        return Promise.resolve({
+          body: streamifyString(`{
           "@context": {
             "@vocab": "http://example.org/"
           }
         }`),
-        ok: true,
-      }),
+          ok: true,
+        });
+      },
     };
   });
 
@@ -75,21 +82,22 @@ describe('ActorRdfParseJsonLd', () => {
     let inputGraphs: Readable;
     let inputRemoteContext: Readable;
     let inputRemoteContextErr: Readable;
+    let inputLinkHeader: Readable;
 
     beforeEach(() => {
       actor = new ActorRdfParseJsonLd({ bus, mediaTypes: {
         'application/json': 1.0,
         'application/ld+json': 1.0,
       }, mediatorHttp, name: 'actor' });
-    });
-
-    describe('for parsing', () => {
-      beforeEach(() => {
-        input = stringToStream(`{
+      input = stringToStream(`{
             "@id": "http://example.org/a",
             "http://example.org/b": "http://example.org/c",
             "http://example.org/d": "http://example.org/e"
           }`);
+    });
+
+    describe('for parsing', () => {
+      beforeEach(() => {
         inputGraphs = stringToStream(`[
           {
             "@id": "http://example.org/g0",
@@ -123,6 +131,10 @@ describe('ActorRdfParseJsonLd', () => {
             "b": "http://example.org/c",
             "d": "http://example.org/e"
           }`);
+        inputLinkHeader = stringToStream(`{
+          "@id": "http://www.example.org/",
+          "term": "value"
+        }`);
       });
 
       it('should test on application/json', () => {
@@ -166,11 +178,48 @@ describe('ActorRdfParseJsonLd', () => {
           ]));
       });
 
-      it('should run for an invalid remote context', () => {
+      it('should error for an invalid remote context', () => {
         return actor.run(
           { handle: { input: inputRemoteContextErr, baseIRI: '' }, handleMediaType: 'application/ld+json' })
           .then(async (output) => expect(arrayifyStream(output.handle.quads)).rejects
             .toThrow(new Error('No valid context was found at http://schema.org/error: some error')));
+      });
+
+      it('should run for a JSON doc with a context link header', () => {
+        // tslint:disable-next-line:max-line-length
+        const headers = new Headers({ Link: '<http://example.org/>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' });
+        return actor.run(
+          { handle: { input: inputLinkHeader, baseIRI: '', headers }, handleMediaType: 'application/json' })
+          .then(async (output) => expect(await arrayifyStream(output.handle.quads)).toEqualRdfQuadArray([
+            quad('http://www.example.org/', 'http://example.org/term', '"value"'),
+          ]));
+      });
+
+      it('should ignore a JSON doc with a context link header of invalid type', () => {
+        // tslint:disable-next-line:max-line-length
+        const headers = new Headers({ Link: '<http://example.org/>; rel="http://www.w3.org/ns/json-ld#context"; type="invalid"' });
+        return actor.run(
+          { handle: { input: inputLinkHeader, baseIRI: '', headers }, handleMediaType: 'application/json' })
+          .then(async (output) => expect(await arrayifyStream(output.handle.quads)).toEqualRdfQuadArray([]));
+      });
+
+      it('should ignore a JSON doc without a context link header', () => {
+        // tslint:disable-next-line:max-line-length
+        const headers = new Headers({});
+        return actor.run(
+          { handle: { input: inputLinkHeader, baseIRI: '', headers }, handleMediaType: 'application/json' })
+          .then(async (output) => expect(await arrayifyStream(output.handle.quads)).toEqualRdfQuadArray([]));
+      });
+
+      it('should ignore a context link header on a valid JSON-LD document', () => {
+        // tslint:disable-next-line:max-line-length
+        const headers = new Headers({ Link: '<http://example.org/error>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' });
+        return actor.run(
+          { handle: { input, baseIRI: '', headers }, handleMediaType: 'application/ld+json' })
+          .then(async (output) => expect(await arrayifyStream(output.handle.quads)).toEqualRdfQuadArray([
+            quad('http://example.org/a', 'http://example.org/b', '"http://example.org/c"'),
+            quad('http://example.org/a', 'http://example.org/d', '"http://example.org/e"'),
+          ]));
       });
     });
 
