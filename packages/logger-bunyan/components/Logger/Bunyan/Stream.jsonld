@@ -9,6 +9,7 @@
       "@id": "clb:Logger/Bunyan/Stream",
       "@type": "AbstractClass",
       "comment": "A bunyan output stream.",
+      "requireElement": "BunyanStreamProvider",
       "parameters": [
         {
           "@id": "clb:Logger/Bunyan/name"
