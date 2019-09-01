@@ -12,7 +12,7 @@ import {AbstractFilterHash, IActorInitRdfDereferencePagedArgs} from "./AbstractF
 /**
  * A comunica Hash Query Operation Actor.
  */
-export abstract class AbstractBindingHash<T extends Algebra.Operation> extends ActorQueryOperationTypedMediated<T>
+export abstract class AbstractBindingsHash<T extends Algebra.Operation> extends ActorQueryOperationTypedMediated<T>
     implements IActorInitRdfDereferencePagedArgs {
 
   public readonly hashAlgorithm: string;

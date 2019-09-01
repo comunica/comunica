@@ -5,6 +5,7 @@
     {
       "@id": "cc:Actor",
       "@type": "AbstractClass",
+      "requireElement": "Actor",
       "comment": "An actor can act on messages of certain types and provide output of a certain type.",
       "parameters": [
         {
