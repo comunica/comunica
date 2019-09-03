@@ -1,5 +1,6 @@
 node_modules
 .rdf-test-suite-cache
+.rdf-test-suite-ldf-cache
 .idea
 lerna-debug.log
 yarn-error.log
