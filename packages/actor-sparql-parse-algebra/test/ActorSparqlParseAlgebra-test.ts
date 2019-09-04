@@ -70,5 +70,40 @@ describe('ActorSparqlParseAlgebra', () => {
           },
         });
     });
+
+    it('should fail for an update query', () => {
+      return expect(actor.run({ query: "INSERT { <http://example/egbook> <http://ex.org/p> \"A\" } WHERE {}" }))
+        .rejects.toThrow(new Error('Translate only works on complete query objects.'));
+    });
+
+    it('should run with an overridden baseIRI', () => {
+      return expect(actor.run({ query: "BASE <http://example.org/book/> SELECT * WHERE { ?a a ?b }" }))
+        .resolves.toMatchObject(
+        {
+          baseIRI: 'http://example.org/book/',
+          operation: {
+            input: {
+              patterns: [
+                {
+                  graph: {value: ""},
+                  object: {value: "b"},
+                  predicate: {value: "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"},
+                  subject: {value: "a"},
+                  type: "pattern",
+                },
+              ],
+              type: "bgp"},
+            type: "project",
+            variables: [
+              {
+                value: "a",
+              },
+              {
+                value: "b",
+              },
+            ],
+          },
+        });
+    });
   });
 });

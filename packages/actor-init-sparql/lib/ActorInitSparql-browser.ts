@@ -162,19 +162,21 @@ export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs {
       baseIRI = context.get(KEY_CONTEXT_BASEIRI);
     }
 
-    // Start, but don't await, context pre-processing
-    const combinationPromise = this.mediatorContextPreprocess.mediate({ context });
+    // Pre-processing the context
+    context = (await this.mediatorContextPreprocess.mediate({ context })).context;
 
     // Parse query
     let operation: Algebra.Operation;
     if (typeof query === 'string') {
-      operation = (await this.mediatorSparqlParse.mediate({ context, query, queryFormat, baseIRI })).operation;
+      const queryParseOutput = await this.mediatorSparqlParse.mediate({ context, query, queryFormat, baseIRI });
+      operation = queryParseOutput.operation;
+      // Update the baseIRI in the context if the query modified it.
+      if (queryParseOutput.baseIRI) {
+        context = context.set(KEY_CONTEXT_BASEIRI, queryParseOutput.baseIRI);
+      }
     } else {
       operation = query;
     }
-
-    // Block until context has been processed
-    context = (await combinationPromise).context;
 
     // Apply initial bindings in context
     if (context.has(KEY_CONTEXT_INITIALBINDINGS)) {

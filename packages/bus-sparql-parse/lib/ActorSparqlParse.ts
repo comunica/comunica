@@ -40,4 +40,8 @@ export interface IActorSparqlParseOutput extends IActorOutput {
    * A parsed query in SPARQL algebra.
    */
   operation: Algebra.Operation;
+  /**
+   * An optionally overridden base IRI.
+   */
+  baseIRI?: string;
 }

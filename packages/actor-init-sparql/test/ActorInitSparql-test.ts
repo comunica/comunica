@@ -170,7 +170,10 @@ describe('ActorInitSparql', () => {
       };
       mediatorQueryOperation.mediate = (action) => action.operation.query !== 'INVALID'
         ? Promise.resolve({ bindingsStream: input }) : Promise.reject(new Error('a'));
-      mediatorSparqlParse.mediate = (action) => Promise.resolve({ operation: action });
+      mediatorSparqlParse.mediate = (action) => Promise.resolve({
+        baseIRI: action.query.indexOf('BASE') >= 0 ? 'myBaseIRI' : null,
+        operation: action,
+      });
       const defaultQueryInputFormat = 'sparql';
       actor = new ActorInitSparql(
         { bus, contextKeyShortcuts, defaultQueryInputFormat, logger, mediatorContextPreprocess,
@@ -495,6 +498,18 @@ describe('ActorInitSparql', () => {
       it('should allow a parsed query to be passd', () => {
         return expect(actor.query(translate('SELECT * WHERE { ?s ?p ?o }')))
           .resolves.toBeTruthy();
+      });
+
+      it('should not modify the baseIRI without BASE in query', async () => {
+        return expect((await actor.query('SELECT * WHERE { ?s ?p ?o }')).context
+          .toJS()['@comunica/actor-init-sparql:baseIRI']).toBeFalsy();
+      });
+
+      it('should allow a query to modify the context\'s baseIRI', async () => {
+        return expect((await actor.query('BASE <http://example.org/book/> SELECT * WHERE { ?s ?p ?o }')).context.toJS())
+          .toMatchObject({
+            "@comunica/actor-init-sparql:baseIRI": "myBaseIRI",
+          });
       });
     });
 

@@ -1891,6 +1891,11 @@
   dependencies:
     "@types/node" "*"
 
+"@types/sparqljs@^2.1.0":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@types/sparqljs/-/sparqljs-2.1.0.tgz#20f850e2003eeac9c61f0b73e72f9f0a6065776b"
+  integrity sha512-EubZv5M9U0PUQw+lvYWlwDjz2EL/KpYFXuGsUCF9P+eR38PTDfjzaUenIiP4KEmGc3t+DH19/+YIR/Nmd2swwA==
+
 "@types/stack-utils@^1.0.1":
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/@types/stack-utils/-/stack-utils-1.0.1.tgz#0a851d3bd96498fa25c33ab7278ed3bd65f06c3e"
@@ -8145,7 +8150,7 @@ sparqlee@^1.2.0:
     uri-js "^4.2.2"
     uuid "^3.3.2"
 
-sparqljs@^2.0.3, sparqljs@^2.2.1:
+sparqljs@^2.0.3, sparqljs@^2.2.1, sparqljs@^2.2.3:
   version "2.2.3"
   resolved "https://registry.yarnpkg.com/sparqljs/-/sparqljs-2.2.3.tgz#6eb7f5f69b27b99d3b646e89271c048bd61d9293"
   integrity sha512-lrzSQadbkiQk4O6RjXJjec/EevVIsnAfbNK3t8XJtocogNojfQM7KC/UttyRTAq4IOXa0vRVoFTRapcbgFVRWg==
