@@ -51,7 +51,7 @@
     "manual-git-changelog": "^1.0.0",
     "pre-commit": "^1.2.2",
     "rdf-quad": "^1.4.0",
-    "rdf-test-suite": "^1.8.1",
+    "rdf-test-suite": "^1.10.0",
     "sparqlalgebrajs": "^1.5.2",
     "stream-to-string": "^1.1.0",
     "streamify-array": "^1.0.0",
