@@ -20,7 +20,7 @@ export abstract class ActorQueryOperationTyped<O extends Algebra.Operation> exte
 
   public async test(action: IActionQueryOperation): Promise<IActorTest> {
     if (!action.operation) {
-      throw new Error('Missing field \'operation\' in the query operation action: ' + require('util').inspect(action));
+      throw new Error('Missing field \'operation\' in a query operation action.');
     }
     if (action.operation.type !== this.operationName) {
       throw new Error('Actor ' + this.name + ' only supports ' + this.operationName + ' operations, but got '

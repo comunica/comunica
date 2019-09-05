@@ -53,7 +53,7 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
 
   public async test(action: IActionQueryOperation): Promise<IMediatorTypeHttpRequests> {
     if (!action.operation) {
-      throw new Error('Missing field \'operation\' in the query operation action: ' + require('util').inspect(action));
+      throw new Error('Missing field \'operation\' in a query operation action.');
     }
     const source: IDataSource = await DataSourceUtils.getSingleSource(action.context);
     if (source && getDataSourceType(source) === 'sparql') {

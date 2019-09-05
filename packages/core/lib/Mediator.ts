@@ -1,4 +1,3 @@
-import {inspect} from "util";
 import {Actor, IAction, IActorOutput, IActorTest} from "./Actor";
 import {Bus, IActorReply} from "./Bus";
 
@@ -53,8 +52,7 @@ export abstract class Mediator<A extends Actor<I, T, O>,
     // Test all actors in the bus
     const actors: IActorReply<A, I, T, O>[] = this.bus.publish(action);
     if (!actors.length) {
-      throw new Error('No actors are able to reply to the message in the bus '
-        + this.bus.name + ': ' + inspect(action));
+      throw new Error('No actors are able to reply to a message in the bus ' + this.bus.name);
     }
     return actors;
   }
