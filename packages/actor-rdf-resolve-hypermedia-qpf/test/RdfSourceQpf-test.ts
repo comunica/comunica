@@ -23,11 +23,6 @@ describe('RdfSourceQpf', () => {
   let P;
   let O;
   let G;
-  let V1;
-  let V2;
-  let V3;
-  let V4;
-  let BV1;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -89,11 +84,6 @@ describe('RdfSourceQpf', () => {
     P = namedNode('P');
     O = namedNode('O');
     G = namedNode('G');
-    V1 = variable('v1');
-    V2 = variable('v2');
-    V3 = variable('v3');
-    V4 = variable('v4');
-    BV1 = blankNode('v1');
   });
 
   describe('#constructor', () => {
@@ -207,89 +197,6 @@ describe('RdfSourceQpf', () => {
     });
   });
 
-  describe('getDuplicateElementLinks', () => {
-    it('should return falsy on a blank pattern', () => {
-      return expect(source.getDuplicateElementLinks()).toBeFalsy();
-    });
-
-    it('should return falsy on patterns with a single subject element', () => {
-      return expect(source.getDuplicateElementLinks(S)).toBeFalsy();
-    });
-
-    it('should return falsy on patterns with a single predicate element', () => {
-      return expect(source.getDuplicateElementLinks(null, P)).toBeFalsy();
-    });
-
-    it('should return falsy on patterns with a single object element', () => {
-      return expect(source.getDuplicateElementLinks(null, null, O)).toBeFalsy();
-    });
-
-    it('should return falsy on patterns with a single graph element', () => {
-      return expect(source.getDuplicateElementLinks(null, null, null, G)).toBeFalsy();
-    });
-
-    it('should return falsy on patterns with different elements', () => {
-      return expect(source.getDuplicateElementLinks(S, P, O, G)).toBeFalsy();
-    });
-
-    it('should return falsy on patterns with different variables', () => {
-      return expect(source.getDuplicateElementLinks(V1, V2, V3, V4)).toBeFalsy();
-    });
-
-    it('should return falsy on patterns when blank nodes and variables have the same value', () => {
-      return expect(source.getDuplicateElementLinks(V1, BV1, V3, V4)).toBeFalsy();
-    });
-
-    it('should return correctly on patterns with equal subject and predicate variables', () => {
-      return expect(source.getDuplicateElementLinks(V1, V1, V3, V4)).toEqual({ subject: [ 'predicate' ] });
-    });
-
-    it('should ignore patterns with equal subject and predicate blank nodes', () => {
-      return expect(source.getDuplicateElementLinks(BV1, BV1, V3, V4)).toEqual(null);
-    });
-
-    it('should return correctly on patterns with equal subject and object variables', () => {
-      return expect(source.getDuplicateElementLinks(V1, V2, V1, V4)).toEqual({ subject: [ 'object' ] });
-    });
-
-    it('should return correctly on patterns with equal subject and graph variables', () => {
-      return expect(source.getDuplicateElementLinks(V1, V2, V3, V1)).toEqual({ subject: [ 'graph' ] });
-    });
-
-    it('should return correctly on patterns with equal subject, predicate and object variables', () => {
-      return expect(source.getDuplicateElementLinks(V1, V1, V1, V4)).toEqual({ subject: [ 'predicate', 'object' ] });
-    });
-
-    it('should return correctly on patterns with equal subject, predicate and graph variables', () => {
-      return expect(source.getDuplicateElementLinks(V1, V1, V3, V1)).toEqual({ subject: [ 'predicate', 'graph' ] });
-    });
-
-    it('should return correctly on patterns with equal subject, object and graph variables', () => {
-      return expect(source.getDuplicateElementLinks(V1, V2, V1, V1)).toEqual({ subject: [ 'object', 'graph' ] });
-    });
-
-    it('should return correctly on patterns with equal subject, predicate, object and graph variables', () => {
-      return expect(source.getDuplicateElementLinks(V1, V1, V1, V1))
-        .toEqual({ subject: [ 'predicate', 'object', 'graph' ] });
-    });
-
-    it('should return correctly on patterns with equal predicate and object variables', () => {
-      return expect(source.getDuplicateElementLinks(V1, V2, V2, V4)).toEqual({ predicate: [ 'object' ] });
-    });
-
-    it('should return correctly on patterns with equal predicate and graph variables', () => {
-      return expect(source.getDuplicateElementLinks(V1, V2, V3, V2)).toEqual({ predicate: [ 'graph' ] });
-    });
-
-    it('should return correctly on patterns with equal predicate, object and graph variables', () => {
-      return expect(source.getDuplicateElementLinks(V1, V2, V2, V2)).toEqual({ predicate: [ 'object', 'graph' ] });
-    });
-
-    it('should return correctly on patterns with equal object and graph variables', () => {
-      return expect(source.getDuplicateElementLinks(V1, V2, V3, V3)).toEqual({ object: [ 'graph' ] });
-    });
-  });
-
   describe('match', () => {
     it('should throw on RegExp args', async () => {
       return expect(() => source.match(new RegExp('.*')))
@@ -363,7 +270,9 @@ describe('RdfSourceQpf', () => {
       expect(await metadataPromise).toEqual({ next: 'NEXT' });
     });
 
-    it('should handle a pattern with variables that occur multiple times in the pattern', async () => {
+    // The following test is not applicable anymore.
+    // Filtering with shared variables has been moved up into the quad pattern query operation actor
+    /*it('should handle a pattern with variables that occur multiple times in the pattern', async () => {
       mediatorRdfDereference.mediate = (args) => Promise.resolve({
         url: args.url,
         quads: streamifyArray([
@@ -379,7 +288,7 @@ describe('RdfSourceQpf', () => {
         .toBeRdfIsomorphic([
           quad('t', 'p2', 't'),
         ]);
-    });
+    });*/
 
     it('should delegate errors from the RDF dereference stream', () => {
       const quads = new Readable();
