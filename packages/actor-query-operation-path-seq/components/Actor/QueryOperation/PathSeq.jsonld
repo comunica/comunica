@@ -27,7 +27,7 @@
           "fields": [
             {
               "keyRaw": "mediatorJoin",
-              "value": "caap:mediatorJoin"
+              "value": "caqops:mediatorJoin"
             }
           ]
         }
