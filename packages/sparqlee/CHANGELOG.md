@@ -1,5 +1,11 @@
 # Changelog
 
+<a name="v1.2.1"></a>
+## [v1.2.1](https://github.com/comunica/sparqlee/compare/v1.2.0...v1.2.1) - 2019-09-12
+
+### Fixed
+* [Make BNODE with argument create an exact labelled blank node](https://github.com/comunica/sparqlee/commit/64eeab767c926052538a572c1878b5e1a9fa4e7f)
+
 <a name="v1.2.0"></a>
 ## [v1.2.0](https://github.com/comunica/sparqlee/compare/v1.1.0...v1.2.0) - 2019-08-07
 
