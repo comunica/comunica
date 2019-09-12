@@ -1,7 +1,7 @@
 import {ActorQueryOperation, Bindings, IActorQueryOperationOutputBindings} from "@comunica/bus-query-operation";
 import {Bus} from "@comunica/core";
 import {blankNode, literal, variable} from "@rdfjs/data-model";
-import {SingletonIterator} from "asynciterator";
+import {ArrayIterator, SingletonIterator} from "asynciterator";
 import {ActorQueryOperationProject} from "../lib/ActorQueryOperationProject";
 const arrayifyStream = require('arrayify-stream');
 
@@ -86,6 +86,31 @@ describe('ActorQueryOperationProject', () => {
         expect(output.type).toEqual('bindings');
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({ '?a': literal('A'), '?missing': null }),
+        ]);
+      });
+    });
+
+    it('should run on a stream with equal blank nodes across bindings', () => {
+      mediatorQueryOperation.mediate = (arg) => Promise.resolve({
+        bindingsStream: new ArrayIterator([
+          Bindings({ '?a': blankNode('a'), '?b': literal('b') }),
+          Bindings({ '?a': blankNode('a'), '?b': literal('b') }),
+          Bindings({ '?a': blankNode('a'), '?b': literal('b') }),
+        ]),
+        metadata: () => 'M',
+        operated: arg,
+        type: 'bindings',
+        variables: ['?a'],
+      });
+      const op = { operation: { type: 'project', input: 'in', variables: [ variable('a') ] } };
+      return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
+        expect(output.metadata()).toEqual('M');
+        expect(output.variables).toEqual([ '?a' ]);
+        expect(output.type).toEqual('bindings');
+        expect(await arrayifyStream(output.bindingsStream)).toEqual([
+          Bindings({ '?a': blankNode('a1'), '?b': literal('b') }),
+          Bindings({ '?a': blankNode('a2'), '?b': literal('b') }),
+          Bindings({ '?a': blankNode('a3'), '?b': literal('b') }),
         ]);
       });
     });
