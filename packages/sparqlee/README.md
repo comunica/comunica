@@ -137,7 +137,7 @@ Some functions (BNODE, NOW, IRI) need a (statefull) context from the caller to f
 
 [spec](https://www.w3.org/TR/sparql11-query/#func-bnode)
 
-Blank nodes are very dependant on the rest of the SPARQL query, therefore, we provide the option of delegating the entire responsibility back to you by accepting a blank node constructor callback. If this is not found, we will use uuid (v4) to generate definitely unique blank nodes of the shape `blank_uuid`.
+Blank nodes are very dependant on the rest of the SPARQL query, therefore, we provide the option of delegating the entire responsibility back to you by accepting a blank node constructor callback. If this is not found, we create a blank node with the given label, or we use uuid (v4) for argument-less calls to generate definitely unique blank nodes of the shape `blank_uuid`.
 
 `bnode(input?: string) => RDF.BlankNode`
 

@@ -368,7 +368,7 @@ const BNODE = {
 };
 
 function BNODE_(input?: string): E.BlankNode {
-  return new E.BlankNode('blank_' + uuid.v4());
+  return new E.BlankNode(input || uuid.v4());
 }
 
 // ----------------------------------------------------------------------------
