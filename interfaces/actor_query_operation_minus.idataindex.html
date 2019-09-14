@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>IActionRdfParse | Comunica</title>
+	<title>IDataIndex | Comunica</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -56,119 +56,30 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="../modules/bus_rdf_parse.html">bus-rdf-parse</a>
+					<a href="../modules/actor_query_operation_minus.html">actor-query-operation-minus</a>
 				</li>
 				<li>
-					<a href="bus_rdf_parse.iactionrdfparse.html">IActionRdfParse</a>
+					<a href="actor_query_operation_minus.idataindex.html">IDataIndex</a>
 				</li>
 			</ul>
-			<h1>Interface IActionRdfParse</h1>
+			<h1>Interface IDataIndex</h1>
 		</div>
 	</div>
 </header>
 <div class="container container-main">
 	<div class="row">
 		<div class="col-8 col-content">
-			<section class="tsd-panel tsd-comment">
-				<div class="tsd-comment tsd-typography">
-					<div class="lead">
-						<p>The RDF parse input, which contains the input stream in the given media type.
-						One of the fields MUST be truthy.</p>
-					</div>
-				</div>
-			</section>
 			<section class="tsd-panel tsd-hierarchy">
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<a href="core.iaction.html" class="tsd-signature-type">IAction</a>
-						<ul class="tsd-hierarchy">
-							<li>
-								<span class="target">IActionRdfParse</span>
-							</li>
-						</ul>
+						<span class="target">IDataIndex</span>
 					</li>
 				</ul>
 			</section>
-			<section class="tsd-panel-group tsd-index-group">
-				<h2>Index</h2>
-				<section class="tsd-panel tsd-index-panel">
-					<div class="tsd-index-content">
-						<section class="tsd-index-section ">
-							<h3>Properties</h3>
-							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="bus_rdf_parse.iactionrdfparse.html#baseiri" class="tsd-kind-icon">baseIRI</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="bus_rdf_parse.iactionrdfparse.html#context" class="tsd-kind-icon">context</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="bus_rdf_parse.iactionrdfparse.html#headers" class="tsd-kind-icon">headers</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="bus_rdf_parse.iactionrdfparse.html#input" class="tsd-kind-icon">input</a></li>
-							</ul>
-						</section>
-					</div>
-				</section>
-			</section>
-			<section class="tsd-panel-group tsd-member-group ">
-				<h2>Properties</h2>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="baseiri" class="tsd-anchor"></a>
-					<h3>baseIRI</h3>
-					<div class="tsd-signature tsd-kind-icon">baseIRI<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/b9910dc/packages/bus-rdf-parse/lib/ActorRdfParse.ts#L41">bus-rdf-parse/lib/ActorRdfParse.ts:41</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>The base IRI for parsed quads.</p>
-						</div>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
-					<a name="context" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> context</h3>
-					<div class="tsd-signature tsd-kind-icon">context<span class="tsd-signature-symbol">:</span> <a href="../modules/core.html#actioncontext" class="tsd-signature-type">ActionContext</a></div>
-					<aside class="tsd-sources">
-						<p>Inherited from <a href="core.iaction.html">IAction</a>.<a href="core.iaction.html#context">context</a></p>
-						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/b9910dc/packages/core/lib/Actor.ts#L218">core/lib/Actor.ts:218</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>The optional input context that is passed through by actors.</p>
-						</div>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="headers" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> headers</h3>
-					<div class="tsd-signature tsd-kind-icon">headers<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Headers</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/b9910dc/packages/bus-rdf-parse/lib/ActorRdfParse.ts#L45">bus-rdf-parse/lib/ActorRdfParse.ts:45</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>The headers with which the RDF document should be parsed.</p>
-						</div>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="input" class="tsd-anchor"></a>
-					<h3>input</h3>
-					<div class="tsd-signature tsd-kind-icon">input<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">ReadableStream</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/b9910dc/packages/bus-rdf-parse/lib/ActorRdfParse.ts#L37">bus-rdf-parse/lib/ActorRdfParse.ts:37</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>A readable string stream in a certain RDF serialization that needs to be parsed.</p>
-						</div>
-					</div>
-				</section>
+			<section class="tsd-panel tsd-kind-interface tsd-parent-kind-external-module">
+				<h3 class="tsd-before-signature">Indexable</h3>
+				<div class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">[</span>key: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]: </span><a href="actor_query_operation_minus.idataindex.html" class="tsd-signature-type">IDataIndex</a></div>
 			</section>
 		</div>
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
@@ -178,7 +89,7 @@
 						<a href="../globals.html"><em>Globals</em></a>
 					</li>
 					<li class="current tsd-kind-external-module">
-						<a href="../modules/bus_rdf_parse.html">bus-<wbr>rdf-<wbr>parse</a>
+						<a href="../modules/actor_query_operation_minus.html">actor-<wbr>query-<wbr>operation-<wbr>minus</a>
 					</li>
 				</ul>
 			</nav>
@@ -187,45 +98,16 @@
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-external-module">
-						<a href="../modules/bus_rdf_parse.html" class="tsd-kind-icon">bus-<wbr>rdf-<wbr>parse</a>
+						<a href="../modules/actor_query_operation_minus.html" class="tsd-kind-icon">actor-<wbr>query-<wbr>operation-<wbr>minus</a>
 						<ul>
 							<li class=" tsd-kind-class tsd-parent-kind-external-module">
-								<a href="../classes/bus_rdf_parse.actorrdfparse.html" class="tsd-kind-icon">Actor<wbr>Rdf<wbr>Parse</a>
+								<a href="../classes/actor_query_operation_minus.actorqueryoperationminus.html" class="tsd-kind-icon">Actor<wbr>Query<wbr>Operation<wbr>Minus</a>
 							</li>
 							<li class=" tsd-kind-class tsd-parent-kind-external-module">
-								<a href="../classes/bus_rdf_parse.actorrdfparsefixedmediatypes.html" class="tsd-kind-icon">Actor<wbr>Rdf<wbr>Parse<wbr>Fixed<wbr>Media<wbr>Types</a>
+								<a href="../classes/actor_query_operation_minus.bindingsindex.html" class="tsd-kind-icon">Bindings<wbr>Index</a>
 							</li>
 							<li class="current tsd-kind-interface tsd-parent-kind-external-module">
-								<a href="bus_rdf_parse.iactionrdfparse.html" class="tsd-kind-icon">IAction<wbr>Rdf<wbr>Parse</a>
-								<ul>
-									<li class=" tsd-kind-property tsd-parent-kind-interface">
-										<a href="bus_rdf_parse.iactionrdfparse.html#baseiri" class="tsd-kind-icon">baseIRI</a>
-									</li>
-									<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
-										<a href="bus_rdf_parse.iactionrdfparse.html#context" class="tsd-kind-icon">context</a>
-									</li>
-									<li class=" tsd-kind-property tsd-parent-kind-interface">
-										<a href="bus_rdf_parse.iactionrdfparse.html#headers" class="tsd-kind-icon">headers</a>
-									</li>
-									<li class=" tsd-kind-property tsd-parent-kind-interface">
-										<a href="bus_rdf_parse.iactionrdfparse.html#input" class="tsd-kind-icon">input</a>
-									</li>
-								</ul>
-							</li>
-							<li class=" tsd-kind-interface tsd-parent-kind-external-module">
-								<a href="bus_rdf_parse.iactorrdfparsefixedmediatypesargs.html" class="tsd-kind-icon">IActor<wbr>Rdf<wbr>Parse<wbr>Fixed<wbr>Media<wbr>Types<wbr>Args</a>
-							</li>
-							<li class=" tsd-kind-interface tsd-parent-kind-external-module">
-								<a href="bus_rdf_parse.iactorrdfparseoutput.html" class="tsd-kind-icon">IActor<wbr>Rdf<wbr>Parse<wbr>Output</a>
-							</li>
-							<li class=" tsd-kind-type-alias tsd-parent-kind-external-module">
-								<a href="../modules/bus_rdf_parse.html#iactionrootrdfparse" class="tsd-kind-icon">IAction<wbr>Root<wbr>Rdf<wbr>Parse</a>
-							</li>
-							<li class=" tsd-kind-type-alias tsd-parent-kind-external-module">
-								<a href="../modules/bus_rdf_parse.html#iactoroutputrootrdfparse" class="tsd-kind-icon">IActor<wbr>Output<wbr>Root<wbr>Rdf<wbr>Parse</a>
-							</li>
-							<li class=" tsd-kind-type-alias tsd-parent-kind-external-module">
-								<a href="../modules/bus_rdf_parse.html#iactortestrootrdfparse" class="tsd-kind-icon">IActor<wbr>Test<wbr>Root<wbr>Rdf<wbr>Parse</a>
+								<a href="actor_query_operation_minus.idataindex.html" class="tsd-kind-icon">IData<wbr>Index</a>
 							</li>
 						</ul>
 					</li>
