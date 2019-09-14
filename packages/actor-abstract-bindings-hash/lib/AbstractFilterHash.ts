@@ -2,7 +2,7 @@ import {
   ActorQueryOperationTypedMediated, Bindings, IActorQueryOperationOutputBindings,
   IActorQueryOperationTypedMediatedArgs,
 } from "@comunica/bus-query-operation";
-import {ActionContext, IActorTest} from "@comunica/core";
+import {ActionContext} from "@comunica/core";
 import {createHash, getHashes, Hash} from "crypto";
 import {termToString} from "rdf-string";
 import {Algebra} from "sparqlalgebrajs";
@@ -55,10 +55,6 @@ export abstract class AbstractFilterHash<T extends Algebra.Operation> extends Ac
     const hash: Hash = createHash(hashAlgorithm);
     hash.update(require('json-stable-stringify')(bindings.map(termToString)));
     return hash.digest(<any> digestAlgorithm);
-  }
-
-  public async testOperation(pattern: T, context: ActionContext): Promise<IActorTest> {
-    return true;
   }
 
   public abstract async runOperation(pattern: T, context: ActionContext)

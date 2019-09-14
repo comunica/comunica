@@ -11,8 +11,6 @@ describe('ActorQueryOperationMinus', () => {
   let left;
   let right;
   let rightNoCommons;
-  let hashAlgorithm;
-  let digestAlgorithm;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -52,8 +50,6 @@ describe('ActorQueryOperationMinus', () => {
       type: 'bindings',
       variables: [ 'a' ],
     };
-    hashAlgorithm = 'sha1';
-    digestAlgorithm = 'base64';
   });
 
   describe('The ActorQueryOperationMinus module', () => {
@@ -63,10 +59,10 @@ describe('ActorQueryOperationMinus', () => {
 
     it('should be a ActorQueryOperationMinus constructor', () => {
       expect(new (<any> ActorQueryOperationMinus)
-        ({ name: 'actor', bus, mediatorQueryOperation, hashAlgorithm, digestAlgorithm }))
+        ({ name: 'actor', bus, mediatorQueryOperation }))
                 .toBeInstanceOf(ActorQueryOperationMinus);
       expect(new (<any> ActorQueryOperationMinus)
-        ({ name: 'actor', bus, mediatorQueryOperation, hashAlgorithm, digestAlgorithm }))
+        ({ name: 'actor', bus, mediatorQueryOperation }))
                 .toBeInstanceOf(ActorQueryOperation);
     });
 
@@ -80,7 +76,7 @@ describe('ActorQueryOperationMinus', () => {
 
     beforeEach(() => {
       actor = new ActorQueryOperationMinus(
-          { name: 'actor', bus, mediatorQueryOperation, hashAlgorithm, digestAlgorithm });
+          { name: 'actor', bus, mediatorQueryOperation });
     });
 
     it('should test on minus', () => {
@@ -120,7 +116,7 @@ describe('ActorQueryOperationMinus', () => {
     });
 
   });
-  describe('An ActorQueryOperationMinus instance', () => {
+  describe('An ActorQueryOperationMinus instance with variables in the right stream', () => {
     let actor: ActorQueryOperationMinus;
 
     beforeEach(() => {
@@ -134,54 +130,180 @@ describe('ActorQueryOperationMinus', () => {
         }),
       };
       left = {
-        metadata: () => Promise.resolve({totalItems: 11}),
+        metadata: () => Promise.resolve({totalItems: 3}),
         stream: new ArrayIterator([
-          Bindings({a: literal('1')}),
-          Bindings({a: literal('2')}),
-          Bindings({b: literal('1')}),
-          Bindings({b: literal('2')}),
-          Bindings({b: literal('3')}),
-          Bindings({a: literal('3')}),
-          Bindings({a: literal('4')}),
-          Bindings({a: literal('5')}),
-          Bindings({b: literal('4')}),
-          Bindings({b: literal('5')}),
-          Bindings({a: literal('6')}),
+          Bindings({
+            a: literal('1'),
+            b: literal('1'),
+          }),
+          Bindings({
+            a: literal('2'),
+            b: literal('2'),
+          }),
+          Bindings({
+            a: literal('3'),
+            b: literal('3'),
+          }),
         ]),
         type: 'bindings',
         variables: ['a', 'b'],
       };
       right = {
-        metadata: () => Promise.resolve({totalItems: 4}),
+        metadata: () => Promise.resolve({totalItems: 2}),
         stream: new ArrayIterator([
-          Bindings({a: literal('1')}),
-          Bindings({a: literal('2')}),
-          Bindings({b: literal('1')}),
-          Bindings({b: literal('2')}),
+          Bindings({
+            a: literal('1'),
+          }),
+          Bindings({
+            b: literal('3'),
+          }),
         ]),
         type: 'bindings',
         variables: ['a', 'b'],
       };
-      hashAlgorithm = 'sha1';
-      digestAlgorithm = 'base64';
       actor = new ActorQueryOperationMinus(
-            { name: 'actor', bus, mediatorQueryOperation, hashAlgorithm, digestAlgorithm });
+            { name: 'actor', bus, mediatorQueryOperation });
     });
 
     it('should run', () => {
       const op = { operation: { type: 'minus', left, right } };
       return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
-        expect(await output.metadata()).toEqual({ totalItems: 11 });
+        expect(await output.metadata()).toEqual({ totalItems: 3 });
         expect(output.variables).toEqual([ 'a', 'b' ]);
         expect(output.type).toEqual('bindings');
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
-          Bindings({b: literal('3')}),
-          Bindings({a: literal('3')}),
-          Bindings({a: literal('4')}),
-          Bindings({a: literal('5')}),
-          Bindings({b: literal('4')}),
-          Bindings({b: literal('5')}),
-          Bindings({a: literal('6')}),
+          Bindings({
+            a: literal('2'),
+            b: literal('2'),
+          }),
+        ]);
+      });
+    });
+  });
+
+  describe('An ActorQueryOperationMinus instance with variables in the left stream', () => {
+    let actor: ActorQueryOperationMinus;
+
+    beforeEach(() => {
+      bus = new Bus({name: 'bus'});
+      mediatorQueryOperation = {
+        mediate: (arg) => Promise.resolve({
+          bindingsStream: arg.operation.stream,
+          metadata: arg.operation.metadata,
+          type: 'bindings',
+          variables: arg.operation.variables,
+        }),
+      };
+      left = {
+        metadata: () => Promise.resolve({totalItems: 3}),
+        stream: new ArrayIterator([
+          Bindings({
+            a: literal('1'),
+          }),
+          Bindings({
+            a: literal('2'),
+            b: literal('2'),
+          }),
+          Bindings({
+            b: literal('3'),
+          }),
+        ]),
+        type: 'bindings',
+        variables: ['a', 'b'],
+      };
+      right = {
+        metadata: () => Promise.resolve({totalItems: 2}),
+        stream: new ArrayIterator([
+          Bindings({
+            a: literal('1'),
+            b: literal('1'),
+          }),
+          Bindings({
+            a: literal('3'),
+            b: literal('3'),
+          }),
+        ]),
+        type: 'bindings',
+        variables: ['a', 'b'],
+      };
+      actor = new ActorQueryOperationMinus(
+        { name: 'actor', bus, mediatorQueryOperation });
+    });
+
+    it('should run', () => {
+      const op = { operation: { type: 'minus', left, right } };
+      return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
+        expect(await output.metadata()).toEqual({ totalItems: 3 });
+        expect(output.variables).toEqual([ 'a', 'b' ]);
+        expect(output.type).toEqual('bindings');
+        expect(await arrayifyStream(output.bindingsStream)).toEqual([
+          Bindings({
+            a: literal('2'),
+            b: literal('2'),
+          }),
+        ]);
+      });
+    });
+  });
+
+  describe('An ActorQueryOperationMinus instance with variables in the left and right stream', () => {
+    let actor: ActorQueryOperationMinus;
+
+    beforeEach(() => {
+      bus = new Bus({name: 'bus'});
+      mediatorQueryOperation = {
+        mediate: (arg) => Promise.resolve({
+          bindingsStream: arg.operation.stream,
+          metadata: arg.operation.metadata,
+          type: 'bindings',
+          variables: arg.operation.variables,
+        }),
+      };
+      left = {
+        metadata: () => Promise.resolve({totalItems: 3}),
+        stream: new ArrayIterator([
+          Bindings({
+            a: literal('1'),
+          }),
+          Bindings({
+            a: literal('2'),
+            b: literal('2'),
+          }),
+          Bindings({
+            b: literal('3'),
+          }),
+        ]),
+        type: 'bindings',
+        variables: ['a', 'b'],
+      };
+      right = {
+        metadata: () => Promise.resolve({totalItems: 2}),
+        stream: new ArrayIterator([
+          Bindings({
+            a: literal('1'),
+          }),
+          Bindings({
+            a: literal('3'),
+          }),
+        ]),
+        type: 'bindings',
+        variables: ['a', 'b'],
+      };
+      actor = new ActorQueryOperationMinus(
+        { name: 'actor', bus, mediatorQueryOperation });
+    });
+
+    it('should run', () => {
+      const op = { operation: { type: 'minus', left, right } };
+      return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
+        expect(await output.metadata()).toEqual({ totalItems: 3 });
+        expect(output.variables).toEqual([ 'a', 'b' ]);
+        expect(output.type).toEqual('bindings');
+        expect(await arrayifyStream(output.bindingsStream)).toEqual([
+          Bindings({
+            a: literal('2'),
+            b: literal('2'),
+          }),
         ]);
       });
     });
