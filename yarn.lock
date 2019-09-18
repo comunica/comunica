@@ -7558,10 +7558,10 @@ rdf-terms@^1.4.0, rdf-terms@^1.5.1:
     "@rdfjs/data-model" "^1.1.1"
     lodash.uniqwith "^4.5.0"
 
-rdf-test-suite-ldf@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/rdf-test-suite-ldf/-/rdf-test-suite-ldf-1.1.0.tgz#f20c28b81527f3232114385ea00a3b5e4e1e104d"
-  integrity sha512-ddvLBPfWRkUDmsziVbOMFMhrqhACflUt3Nu0T16jTcfQzBmBkjxhQm654n/jGwh6B3azIiXFXbUqNRbCuozj/A==
+rdf-test-suite-ldf@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/rdf-test-suite-ldf/-/rdf-test-suite-ldf-1.1.1.tgz#b26ba481b1e08c62d95912f3517e2283f3ddd287"
+  integrity sha512-UaFtkVepqr8VN6WLOOOonnjnyBBFwCl2Bk+Ef849SqkIXgDK7KCJUPaArvJcFijwM2Ui7pHPNo+m7MojAfpGcg==
   dependencies:
     "@types/fs-extra" "^8.0.0"
     "@types/node-fetch" "^2.5.0"
