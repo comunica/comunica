@@ -20,8 +20,9 @@ script:
   - .travis/validate_greenkeeper.sh
   - yarn run lint
   - yarn run test-ci
-  - lerna run browser
-  - lerna run spec
+  - lerna run browser --concurrency 1
+  - lerna run spec --concurrency 1
+  - lerna run integration --concurrency 1
   - if [ "$DOCKER_BUILD" = "true" ]; then ( sh -c "`curl -fsSl https://raw.githubusercontent.com/comunica/comunica-lerna-docker/master/install.sh`" && ~/.comunica-lerna-docker/bin/comunica-lerna-docker build ) fi
 after_success:
   - yarn run coveralls-ci
@@ -31,6 +32,7 @@ cache:
   directories:
     - node_modules
     - .rdf-test-suite-cache
+    - .rdf-test-suite-ldf-cache
 deploy:
   - provider: pages
     skip-cleanup: true
