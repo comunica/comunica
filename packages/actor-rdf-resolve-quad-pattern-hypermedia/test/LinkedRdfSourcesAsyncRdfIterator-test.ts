@@ -38,7 +38,7 @@ class Dummy extends LinkedRdfSourcesAsyncRdfIterator {
     }
     return {
       handledDatasets: { [url]: true },
-      metadata: { next: 'P' + (requestedPage + 1) },
+      metadata: { firstPageToken: true, next: 'P' + (requestedPage + 1) },
       source: <any> {
         match: () => new ArrayIterator<RDF.Quad>(this.data[requestedPage].concat([])),
       },
@@ -79,7 +79,7 @@ class DummyMetaOverride extends Dummy { // tslint:disable-line max-classes-per-f
     }
     return {
       handledDatasets: { [url]: true },
-      metadata: { next: 'P' + (requestedPage + 1) },
+      metadata: { firstPageToken: true, next: 'P' + (requestedPage + 1) },
       source: <any> {
         match: () => {
           const quads = new ArrayIterator<RDF.Quad>(this.data[requestedPage].concat([]));
@@ -156,7 +156,7 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
       it.on('end', () => {
         expect(result).toEqual(flatten(quads));
         expect((<any> it).getNextUrls).toHaveBeenCalledTimes(2);
-        expect((<any> it).getNextUrls).toHaveBeenCalledWith({ next: 'P1' });
+        expect((<any> it).getNextUrls).toHaveBeenCalledWith({ firstPageToken: true, next: 'P1' });
         expect((<any> it).getNextUrls).toHaveBeenCalledWith({});
         done();
       });
@@ -177,7 +177,7 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
       it.on('end', () => {
         expect(result).toEqual(flatten(quads));
         expect((<any> it).getNextUrls).toHaveBeenCalledTimes(2);
-        expect((<any> it).getNextUrls).toHaveBeenCalledWith({ next: 'P1' });
+        expect((<any> it).getNextUrls).toHaveBeenCalledWith({ firstPageToken: true, next: 'P1' });
         expect((<any> it).getNextUrls).toHaveBeenCalledWith({});
         done();
       });
@@ -200,7 +200,7 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
       it2.on('end', () => {
         expect(result).toEqual(flatten(quads));
         expect((<any> it2).getNextUrls).toHaveBeenCalledTimes(2);
-        expect((<any> it2).getNextUrls).toHaveBeenCalledWith({ next: 'P1' });
+        expect((<any> it2).getNextUrls).toHaveBeenCalledWith({ firstPageToken: true, next: 'P1' });
         expect((<any> it2).getNextUrls).toHaveBeenCalledWith({});
         done();
       });
@@ -232,9 +232,9 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
       it.on('end', () => {
         expect(result).toEqual(flatten(quads));
         expect((<any> it).getNextUrls).toHaveBeenCalledTimes(4);
-        expect((<any> it).getNextUrls).toHaveBeenCalledWith({ next: 'P1' });
-        expect((<any> it).getNextUrls).toHaveBeenCalledWith({ next: 'P2' });
-        expect((<any> it).getNextUrls).toHaveBeenCalledWith({ next: 'P3' });
+        expect((<any> it).getNextUrls).toHaveBeenCalledWith({ firstPageToken: true, next: 'P1' });
+        expect((<any> it).getNextUrls).toHaveBeenCalledWith({ firstPageToken: true, next: 'P2' });
+        expect((<any> it).getNextUrls).toHaveBeenCalledWith({ firstPageToken: true, next: 'P3' });
         expect((<any> it).getNextUrls).toHaveBeenCalledWith({});
         done();
       });
@@ -267,9 +267,9 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
       it.on('end', () => {
         expect(result).toEqual(flatten(quads));
         expect((<any> it).getNextUrls).toHaveBeenCalledTimes(4);
-        expect((<any> it).getNextUrls).toHaveBeenCalledWith({ next: 'P1' });
-        expect((<any> it).getNextUrls).toHaveBeenCalledWith({ next: 'P2' });
-        expect((<any> it).getNextUrls).toHaveBeenCalledWith({ next: 'P3' });
+        expect((<any> it).getNextUrls).toHaveBeenCalledWith({ firstPageToken: true, next: 'P1' });
+        expect((<any> it).getNextUrls).toHaveBeenCalledWith({ firstPageToken: true, next: 'P2' });
+        expect((<any> it).getNextUrls).toHaveBeenCalledWith({ firstPageToken: true, next: 'P3' });
         expect((<any> it).getNextUrls).toHaveBeenCalledWith({});
         done();
       });
@@ -312,10 +312,10 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
           ],
         ])));
         expect((<any> it).getNextUrls).toHaveBeenCalledTimes(7);
-        expect((<any> it).getNextUrls).toHaveBeenCalledWith({ next: 'P1' });
+        expect((<any> it).getNextUrls).toHaveBeenCalledWith({ firstPageToken: true, next: 'P1' });
 
-        expect((<any> it).getNextUrls).toHaveBeenCalledWith({ next: 'P2' });
-        expect((<any> it).getNextUrls).toHaveBeenCalledWith({ next: 'P2' });
+        expect((<any> it).getNextUrls).toHaveBeenCalledWith({ firstPageToken: true, next: 'P2' });
+        expect((<any> it).getNextUrls).toHaveBeenCalledWith({ firstPageToken: true, next: 'P2' });
 
         expect((<any> it).getNextUrls).toHaveBeenCalledWith({});
         expect((<any> it).getNextUrls).toHaveBeenCalledWith({});
@@ -363,7 +363,7 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
       it.on('end', () => {
         expect(result).toEqual(flatten(quads));
         expect((<any> it).getNextUrls).toHaveBeenCalledTimes(3);
-        expect((<any> it).getNextUrls).toHaveBeenCalledWith({ next: 'P1', override: true });
+        expect((<any> it).getNextUrls).toHaveBeenCalledWith({ firstPageToken: true, next: 'P1', override: true });
         expect((<any> it).getNextUrls).toHaveBeenCalledWith({});
         expect((<any> it).getNextUrls).toHaveBeenCalledWith({});
         done();

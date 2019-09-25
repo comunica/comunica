@@ -133,7 +133,7 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
       if (ended) {
         (<any> this).destroy(new Error('Received metadata AFTER the source iterator was ended.'));
       }
-      currentMetadata = metadata;
+      currentMetadata = { ...currentMetadata, ...metadata };
     });
 
     it.on('data', (quad: RDF.Quad) => {
