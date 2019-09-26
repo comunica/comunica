@@ -192,7 +192,7 @@ const newEngine = require('@comunica/actor-init-sparql').newEngine;
 const bindingsStreamToGraphQl = require('@comunica/actor-sparql-serialize-tree').bindingsStreamToGraphQl;
 
 const myEngine = newEngine();
-const context = {
+const config = {
   sources: ['http://fragments.dbpedia.org/2016-04/en'],
   queryFormat: 'graphql',
   "@context": {
@@ -203,9 +203,15 @@ const context = {
     "artist_label": { "@singular": true }
   }
 };
-myEngine.query('{ label writer(label_en: \"Michael Jackson\") artist { label } }',context)
-  .then(function (result) { return bindingsStreamToGraphQl(result.bindingsStream, context); })
+myEngine.query('{ label writer(label_en: \"Michael Jackson\") artist { label } }', config)
+  .then(function (result) { return bindingsStreamToGraphQl(result.bindingsStream, config); })
   .then(console.log);
+```
+
+To run GraphQL queries from the command line, set the `-i` flag to `graphql` and refer to your config file with the JSON-LD context (`@context`) through the `-c` flag. To output your results as a GraphQL tree, set the MIME type of the output with `-t` to `tree`. For example:
+
+```bash
+$ comunica-sparql http://fragments.dbpedia.org/2015-10/en -q "{ label @single }" -c config-with-context.json -i graphql -t tree
 ```
 
 _Logging_
