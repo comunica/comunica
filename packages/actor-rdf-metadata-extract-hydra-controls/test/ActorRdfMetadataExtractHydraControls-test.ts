@@ -39,7 +39,12 @@ describe('ActorRdfMetadataExtractHydraControls', () => {
 
     it('should get no links for empty hydra properties', () => {
       const hydraProperties = {};
-      return expect(actor.getLinks('myPage', hydraProperties)).toEqual({});
+      return expect(actor.getLinks('myPage', hydraProperties)).toEqual({
+        first: null,
+        last: null,
+        next: null,
+        previous: null,
+      });
     });
 
     it('should get links for defined hydra properties', () => {

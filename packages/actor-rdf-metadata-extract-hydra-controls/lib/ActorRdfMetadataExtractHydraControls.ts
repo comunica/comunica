@@ -33,9 +33,7 @@ export class ActorRdfMetadataExtractHydraControls extends ActorRdfMetadataExtrac
       // First check the correct hydra:next, then the deprecated hydra:nextPage
       const links = hydraProperties[link] || hydraProperties[link + 'Page'];
       const linkTargets = links && links[pageUrl];
-      if (linkTargets && linkTargets.length > 0) {
-        metadata[link] = linkTargets[0];
-      }
+      metadata[link] = linkTargets && linkTargets.length > 0 ? linkTargets[0] : null;
       return metadata;
     }, {});
   }
