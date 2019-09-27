@@ -5735,7 +5735,15 @@ jsonld-context-parser@^1.1.0, jsonld-context-parser@^1.1.3, jsonld-context-parse
     isomorphic-fetch "^2.2.1"
     relative-to-absolute-iri "^1.0.2"
 
-jsonld-streaming-parser@^1.0.1, jsonld-streaming-parser@^1.1.0:
+jsonld-context-parser@^1.3.2:
+  version "1.3.2"
+  resolved "https://registry.yarnpkg.com/jsonld-context-parser/-/jsonld-context-parser-1.3.2.tgz#ad6a0de041495130b4a245d4391f1a44f358ffac"
+  integrity sha512-jc2ZBJ6yRjDKvWcWcYc8NWBUoslpSEfL1HfG4+NzHdIz/gm0biMzbuV90k6ypcoEVrjC6F9l1mItT5cx7+nuqA==
+  dependencies:
+    isomorphic-fetch "^2.2.1"
+    relative-to-absolute-iri "^1.0.2"
+
+jsonld-streaming-parser@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/jsonld-streaming-parser/-/jsonld-streaming-parser-1.1.0.tgz#1c869cd106590e34d25847b8f7781d15f74919d9"
   integrity sha512-DvK7vm02wTsL+YjK1QmGlMeXMdW03/kB7Mx9Nw8XnN55ALZDTWdMJxwlBfWnXRE17mQJdUPC6cOQKzwzRtvO/w==
@@ -5743,6 +5751,16 @@ jsonld-streaming-parser@^1.0.1, jsonld-streaming-parser@^1.1.0:
     "@rdfjs/data-model" "^1.1.1"
     "@types/rdf-js" "^2.0.1"
     jsonld-context-parser "^1.1.3"
+    jsonparse "^1.3.1"
+
+jsonld-streaming-parser@^1.1.1:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/jsonld-streaming-parser/-/jsonld-streaming-parser-1.1.1.tgz#61851d4f7493425c7e77e7eb379f1ffd85a71aec"
+  integrity sha512-/C+h4zxQnVFVO4FIPTqxzOjRT5Vd2wcX+y5MZ1oA3xv3xs0+GrywC/STyml8d4mOLJI7sSAvYyJ86439fNgt9g==
+  dependencies:
+    "@rdfjs/data-model" "^1.1.1"
+    "@types/rdf-js" "^2.0.1"
+    jsonld-context-parser "^1.3.2"
     jsonparse "^1.3.1"
 
 jsonld-streaming-serializer@^1.0.1:
@@ -7558,10 +7576,10 @@ rdf-terms@^1.4.0, rdf-terms@^1.5.1:
     "@rdfjs/data-model" "^1.1.1"
     lodash.uniqwith "^4.5.0"
 
-rdf-test-suite-ldf@^1.1.2:
-  version "1.1.2"
-  resolved "https://registry.yarnpkg.com/rdf-test-suite-ldf/-/rdf-test-suite-ldf-1.1.2.tgz#9a8dd1072775c0be31f88a3faf99005b9750d4ec"
-  integrity sha512-X1EO6iCUTBYhq51H6JlctkSkudrDw+QyMfdGEPGiWHGvMN+D2tz+ByF/gw+u1m8bVSAAV+x22PwUc+/pkDeDQg==
+rdf-test-suite-ldf@^1.1.3:
+  version "1.1.3"
+  resolved "https://registry.yarnpkg.com/rdf-test-suite-ldf/-/rdf-test-suite-ldf-1.1.3.tgz#9cde63e6401b9b75b7acfa6fe9a6d261be73eb0a"
+  integrity sha512-G7IKMAQ/y7Y/cgYD0rIlkoKITjRzzo08fBtelK5qqB3BLj0iYi+Ea/vDerUwa+sfRy31TERa1ZXrWKtDY0v27Q==
   dependencies:
     "@types/fs-extra" "^8.0.0"
     "@types/node-fetch" "^2.5.0"
@@ -7571,21 +7589,21 @@ rdf-test-suite-ldf@^1.1.2:
     n3 "^1.1.1"
     rdf-parse "^1.1.0"
     rdf-store-stream "^1.0.0"
-    rdf-test-suite "^1.9.3"
+    rdf-test-suite "^1.10.4"
     tcp-port-used "^1.0.1"
     url-exists "^1.0.3"
     winston "^3.2.1"
 
-rdf-test-suite@^1.10.1, rdf-test-suite@^1.9.3:
-  version "1.10.1"
-  resolved "https://registry.yarnpkg.com/rdf-test-suite/-/rdf-test-suite-1.10.1.tgz#8ed56f729225c8260b24350b55010018176de407"
-  integrity sha512-Gy+OZ2+S035D6H3EDE+g1HsTlDQ+VKvq81zvX1Tif8Gcyg2AMfq5XDA25gwHBftgMZIG5R0AByZ044ybp8gcLg==
+rdf-test-suite@^1.10.4, rdf-test-suite@^1.10.5:
+  version "1.10.5"
+  resolved "https://registry.yarnpkg.com/rdf-test-suite/-/rdf-test-suite-1.10.5.tgz#46813a34c210336bfe1181d9a9783f40c165175e"
+  integrity sha512-Zfd/KVG+6fS0B4VbWgJ3C+pEZM1UQmyeQDfpagtdb+Ac+P7XfbyTOIvT+4iGajdYq0FvdY7S+VIwTvNxHIvhDw==
   dependencies:
     "@rdfjs/data-model" "^1.1.1"
     arrayify-stream "^1.0.0"
     isomorphic-fetch "^2.2.1"
     json-stable-stringify "^1.0.1"
-    jsonld-streaming-parser "^1.0.1"
+    jsonld-streaming-parser "^1.1.1"
     log-symbols "^3.0.0"
     minimist "^1.2.0"
     n3 "^1.1.1"
@@ -7597,6 +7615,7 @@ rdf-test-suite@^1.10.1, rdf-test-suite@^1.9.3:
     rdf-string "^1.3.1"
     rdf-terms "^1.4.0"
     rdfxml-streaming-parser "^1.1.0"
+    relative-to-absolute-iri "^1.0.5"
     sparqljson-parse "^1.5.0"
     sparqlxml-parse "^1.2.1"
     stream-to-string "^1.1.0"
