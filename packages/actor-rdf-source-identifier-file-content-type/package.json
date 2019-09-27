@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-source-identifier-file-content-type",
-  "version": "1.9.0",
+  "version": "1.9.2",
   "description": "A file-content-type rdf-source-identifier actor",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-source-identifier-file-content-type",
   "lsd:components": "components/components.jsonld",
@@ -40,10 +40,10 @@
     "@comunica/core": "^1.0.0"
   },
   "devDependencies": {
-    "@comunica/bus-http": "^1.9.0",
-    "@comunica/bus-rdf-source-identifier": "^1.9.0",
-    "@comunica/core": "^1.9.0",
-    "@comunica/mediatortype-priority": "^1.9.0"
+    "@comunica/bus-http": "^1.9.2",
+    "@comunica/bus-rdf-source-identifier": "^1.9.2",
+    "@comunica/core": "^1.9.2",
+    "@comunica/mediatortype-priority": "^1.9.2"
   },
   "jest": {
     "globals": {

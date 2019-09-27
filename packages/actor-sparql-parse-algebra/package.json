@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-sparql-parse-algebra",
-  "version": "1.9.0",
+  "version": "1.9.2",
   "description": "A algebra sparql-parse actor",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-sparql-parse-algebra",
   "lsd:components": "components/components.jsonld",
@@ -36,16 +36,16 @@
   ],
   "dependencies": {
     "@types/sparqljs": "^2.1.0",
-    "sparqljs": "^2.2.3",
-    "sparqlalgebrajs": "^1.5.2"
+    "sparqlalgebrajs": "^1.5.2",
+    "sparqljs": "^2.2.3"
   },
   "peerDependencies": {
     "@comunica/bus-sparql-parse": "^1.0.0",
     "@comunica/core": "^1.0.0"
   },
   "devDependencies": {
-    "@comunica/bus-sparql-parse": "^1.9.0",
-    "@comunica/core": "^1.9.0"
+    "@comunica/bus-sparql-parse": "^1.9.2",
+    "@comunica/core": "^1.9.2"
   },
   "jest": {
     "globals": {

@@ -1,6 +1,29 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v1.9.2"></a>
+## [v1.9.2](https://github.com/comunica/comunica/compare/v1.9.1...v1.9.2) - 2019-09-27
+
+### Added
+* [Plug HTTP bus into JSON-LD parser, Closes #478](https://github.com/comunica/comunica/commit/bb9f1f32a7d7e5c15eaf21c670e195419c39b2d4)
+* [Detect JSON-LD contexts in link headers, Closes #486](https://github.com/comunica/comunica/commit/0d298327f6ce3b68fe6911c1c617c6cafe5e8231)
+* [Throw error when multiple JSON-LD link headers to contexts were detected](https://github.com/comunica/comunica/commit/39a4513679410f3c986d71750a2fc9c871660607)
+
+### Changed
+* [Emit missing metadata as null](https://github.com/comunica/comunica/commit/5864ca48e563f33cdc3ff25f3f53481233d1d70d)
+* [Remove deprecated util.inspect calls, Closes #488](https://github.com/comunica/comunica/commit/680f8fca0247252c73f789fd4cc61fd88ea39495)
+
+### Fixed
+* [Fix QPF sources never going beyond page 2](https://github.com/comunica/comunica/commit/7d5a5aa9ac42c6c63d9a08c0be5132f62dfbc46c)
+* [Reimplement MINUS operator to handle variables according to spec](https://github.com/comunica/comunica/commit/b9910dc04e374a619b074e6c958e0806099e1091)
+* [Ensure unique blank nodes across different bindings](https://github.com/comunica/comunica/commit/be3e47fbcd68d374c5b36c4d94a2882ab5bca7c0)
+* [Fix sequence path operator actor missing a join mediator](https://github.com/comunica/comunica/commit/89919d6d19e3673386320f0d09b62a6bca2e1b41)
+* [Filter quads from quad patterns with shared variables](https://github.com/comunica/comunica/commit/c4cb77e697eab81b5e20e5609f67a1c2f4242bda)
+* [Fix SPARQL BASE not propagating through operators](https://github.com/comunica/comunica/commit/5465821973790d9986e9cf270c0e66d21b2ce865)
+* [Fix actor-init-sparql bin being broken, Closes #493](https://github.com/comunica/comunica/commit/aff933d95d919f5da4deffe82807adf50f78fd78)
+* [Fix various small Components.js naming issues](https://github.com/comunica/comunica/commit/3a9160199493a0aaf2f229809386868107bb3d88)
+* [Update sparqlee to 1.2.0 to fix precision errors in basic arithmetics](https://github.com/comunica/comunica/commit/3937c4f5ef81ffce98bd1d66c4d3561f0ffc92b1)
+
 <a name="v1.9.1"></a>
 ## [v1.9.1](https://github.com/comunica/comunica/compare/v1.9.0...v1.9.1) - 2019-07-30
 

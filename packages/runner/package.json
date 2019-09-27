@@ -1,6 +1,6 @@
 {
   "name": "@comunica/runner",
-  "version": "1.9.0",
+  "version": "1.9.2",
   "description": "Utility module for Comunica runner modules",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/runner",
   "lsd:components": "components/components.jsonld",
@@ -47,8 +47,8 @@
     "lodash.defaults": "^4.2.0"
   },
   "devDependencies": {
-    "@comunica/bus-init": "^1.9.0",
-    "@comunica/core": "^1.9.0"
+    "@comunica/bus-init": "^1.9.2",
+    "@comunica/core": "^1.9.2"
   },
   "jest": {
     "globals": {
