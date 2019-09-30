@@ -30,6 +30,15 @@ export interface IActionRdfDereference extends IAction {
    * The mediatype of the source (if it can't be inferred from the source)
    */
   mediaType?: string;
+  /**
+   * Optional HTTP method to use.
+   * Defaults to GET.
+   */
+  method?: string;
+  /**
+   * Optional HTTP headers to pass.
+   */
+  headers?: {[key: string]: string};
 }
 
 export interface IActorRdfDereferenceOutput extends IActorOutput {
@@ -50,4 +59,8 @@ export interface IActorRdfDereferenceOutput extends IActorOutput {
    * If falsy, the quad stream contains actual quads, otherwise they should be interpreted as triples.
    */
   triples?: boolean;
+  /**
+   * The returned headers of the final URL.
+   */
+  headers?: {[key: string]: string};
 }

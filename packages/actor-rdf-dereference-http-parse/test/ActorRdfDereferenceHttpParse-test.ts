@@ -53,14 +53,26 @@ describe('ActorRdfDereferenceHttpParse', () => {
       mediatorHttp.mediate = (action) => {
         const status: number = action.input.startsWith('https://www.google.com/') ? 200 : 400;
         const extension = action.input.lastIndexOf('.') > action.input.lastIndexOf('/');
+        let url = 'https://www.google.com/index.html';
+        if (extension) {
+          url = action.input === 'https://www.google.com/rel.txt' ? 'relative' : action.input;
+        }
+        if (action.init.method) {
+          url = 'https://www.google.com/' + action.init.method + '.html';
+        }
+        if (action.init.headers.has('SomeKey')) {
+          url = 'https://www.google.com/' + action.init.headers.get('SomeKey') + '.html';
+        }
+        const headers = new Headers();
+        if (!extension) {
+          headers.set('content-type', 'a; charset=utf-8');
+        }
         return {
           body: action.input === 'https://www.google.com/noweb'
           ? require('node-web-streams').toWebReadableStream(new PassThrough()) : new PassThrough(),
-          headers: { get: () => 'a; charset=utf-8', has: () => !extension },
+          headers,
           status,
-          url: extension
-            ? (action.input === 'https://www.google.com/rel.txt' ? 'relative' : action.input)
-            : 'https://www.google.com/index.html',
+          url,
         };
       };
       actor = new ActorRdfDereferenceHttpParse({
@@ -132,32 +144,57 @@ describe('ActorRdfDereferenceHttpParse', () => {
     });
 
     it('should run with a web stream', () => {
+      const headers = {
+        'content-type': 'a; charset=utf-8',
+      };
       return expect(actor.run({ url: 'https://www.google.com/' })).resolves
-        .toMatchObject({ url: 'https://www.google.com/index.html', quads: 'fine', triples: true });
+        .toMatchObject({ url: 'https://www.google.com/index.html', quads: 'fine', triples: true, headers });
     });
 
     it('should run with a web stream with a known extension', () => {
+      const headers = {};
       return expect(actor.run({ url: 'https://www.google.com/abc.x' })).resolves
-        .toMatchObject({ url: 'https://www.google.com/abc.x', quads: 'fine', triples: true });
+        .toMatchObject({ url: 'https://www.google.com/abc.x', quads: 'fine', triples: true, headers });
     });
 
     it('should run with a web stream with a known extension', () => {
+      const headers = {};
       return expect(actor.run({ url: 'https://www.google.com/abc.y' })).resolves
-        .toMatchObject({ url: 'https://www.google.com/abc.y', quads: 'fine', triples: true });
+        .toMatchObject({ url: 'https://www.google.com/abc.y', quads: 'fine', triples: true, headers });
     });
 
     it('should run with a web stream with a relative response URL', () => {
+      const headers = {};
       return expect(actor.run({ url: 'https://www.google.com/rel.txt' })).resolves
-        .toMatchObject({ url: 'https://www.google.com/relative', quads: 'fine', triples: true });
+        .toMatchObject({ url: 'https://www.google.com/relative', quads: 'fine', triples: true, headers });
     });
 
     it('should run with a Node.JS stream', () => {
+      const headers = {
+        'content-type': 'a; charset=utf-8',
+      };
       return expect(actor.run({ url: 'https://www.google.com/noweb' })).resolves
-        .toMatchObject({ url: 'https://www.google.com/index.html', quads: 'fine', triples: true });
+        .toMatchObject({ url: 'https://www.google.com/index.html', quads: 'fine', triples: true, headers });
     });
 
     it('should not run on a 404', () => {
       return expect(actor.run({ url: 'https://www.nogoogle.com/notfound' })).rejects.toBeTruthy();
+    });
+
+    it('should run with another method', () => {
+      const headers = {
+        'content-type': 'a; charset=utf-8',
+      };
+      return expect(actor.run({ url: 'https://www.google.com/', method: 'PUT' })).resolves
+        .toMatchObject({ url: 'https://www.google.com/PUT.html', quads: 'fine', triples: true, headers });
+    });
+
+    it('should run with custom headers', () => {
+      const headers = {
+        'content-type': 'a; charset=utf-8',
+      };
+      return expect(actor.run({ url: 'https://www.google.com/', headers: { SomeKey: 'V' } })).resolves
+        .toMatchObject({ url: 'https://www.google.com/V.html', quads: 'fine', triples: true, headers });
     });
   });
 });

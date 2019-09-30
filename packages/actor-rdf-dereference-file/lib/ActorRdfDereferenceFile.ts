@@ -56,6 +56,7 @@ export class ActorRdfDereferenceFile extends ActorRdfDereferenceMediaMappings {
     const handle = (await this.mediatorRdfParse.mediate(parseAction)).handle;
 
     return {
+      headers: {},
       quads: handle.quads,
       triples: handle.triples,
       url: action.url,

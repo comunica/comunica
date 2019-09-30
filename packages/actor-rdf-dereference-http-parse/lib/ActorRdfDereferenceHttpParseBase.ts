@@ -48,9 +48,23 @@ export abstract class ActorRdfDereferenceHttpParseBase extends ActorRdfDereferen
     // Resolve HTTP URL using appropriate accept header
     const headers: Headers = new Headers();
     headers.append('Accept', acceptHeader);
-    const httpAction: IActionHttp = {context: action.context, input: action.url, init: {headers}};
+
+    // Append any custom passed headers
+    for (const key in action.headers) {
+      headers.append(key, action.headers[key]);
+    }
+
+    const httpAction: IActionHttp = {
+      context: action.context,
+      init: { headers, method: action.method },
+      input: action.url,
+    };
     const httpResponse: IActorHttpOutput = await this.mediatorHttp.mediate(httpAction);
     const url = resolveRelative(httpResponse.url, action.url); // The response URL can be relative to the given URL
+
+    // Convert output headers to a hash
+    const outputHeaders: {[key: string]: string} = {};
+    httpResponse.headers.forEach((value, key) => outputHeaders[key] = value);
 
     // Wrap WhatWG readable stream into a Node.js readable stream
     // If the body already is a Node.js stream (in the case of node-fetch), don't do explicit conversion.
@@ -79,7 +93,7 @@ export abstract class ActorRdfDereferenceHttpParseBase extends ActorRdfDereferen
       { context: action.context, handle: parseAction, handleMediaType: mediaType })).handle;
 
     // Return the parsed quad stream and whether or not only triples are supported
-    return { url, quads: parseOutput.quads, triples: parseOutput.triples };
+    return { url, quads: parseOutput.quads, triples: parseOutput.triples, headers: outputHeaders };
   }
 
   public mediaTypesToAcceptString(mediaTypes: { [id: string]: number }, maxLength: number): string {
