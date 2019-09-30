@@ -90,7 +90,9 @@
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="bus_rdf_dereference.iactionrdfdereference.html#context" class="tsd-kind-icon">context</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="bus_rdf_dereference.iactionrdfdereference.html#headers" class="tsd-kind-icon">headers</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="bus_rdf_dereference.iactionrdfdereference.html#mediatype" class="tsd-kind-icon">media<wbr>Type</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="bus_rdf_dereference.iactionrdfdereference.html#method" class="tsd-kind-icon">method</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="bus_rdf_dereference.iactionrdfdereference.html#url" class="tsd-kind-icon">url</a></li>
 							</ul>
 						</section>
@@ -106,7 +108,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="core.iaction.html">IAction</a>.<a href="core.iaction.html#context">context</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/dbe802d/packages/core/lib/Actor.ts#L218">core/lib/Actor.ts:218</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/51f0aa4/packages/core/lib/Actor.ts#L218">core/lib/Actor.ts:218</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -116,12 +118,35 @@
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="headers" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> headers</h3>
+					<div class="tsd-signature tsd-kind-icon">headers<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/51f0aa4/packages/bus-rdf-dereference/lib/ActorRdfDereference.ts#L41">bus-rdf-dereference/lib/ActorRdfDereference.ts:41</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Optional HTTP headers to pass.</p>
+						</div>
+					</div>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter-index-signature">
+								<h5><span class="tsd-signature-symbol">[</span>key: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]: </span><span class="tsd-signature-type">string</span></h5>
+							</li>
+						</ul>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="mediatype" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagOptional">Optional</span> media<wbr>Type</h3>
 					<div class="tsd-signature tsd-kind-icon">media<wbr>Type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/dbe802d/packages/bus-rdf-dereference/lib/ActorRdfDereference.ts#L32">bus-rdf-dereference/lib/ActorRdfDereference.ts:32</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/51f0aa4/packages/bus-rdf-dereference/lib/ActorRdfDereference.ts#L32">bus-rdf-dereference/lib/ActorRdfDereference.ts:32</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -131,12 +156,28 @@
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="method" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> method</h3>
+					<div class="tsd-signature tsd-kind-icon">method<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/51f0aa4/packages/bus-rdf-dereference/lib/ActorRdfDereference.ts#L37">bus-rdf-dereference/lib/ActorRdfDereference.ts:37</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Optional HTTP method to use.
+							Defaults to GET.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="url" class="tsd-anchor"></a>
 					<h3>url</h3>
 					<div class="tsd-signature tsd-kind-icon">url<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/dbe802d/packages/bus-rdf-dereference/lib/ActorRdfDereference.ts#L27">bus-rdf-dereference/lib/ActorRdfDereference.ts:27</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/51f0aa4/packages/bus-rdf-dereference/lib/ActorRdfDereference.ts#L27">bus-rdf-dereference/lib/ActorRdfDereference.ts:27</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -178,7 +219,13 @@
 										<a href="bus_rdf_dereference.iactionrdfdereference.html#context" class="tsd-kind-icon">context</a>
 									</li>
 									<li class=" tsd-kind-property tsd-parent-kind-interface">
+										<a href="bus_rdf_dereference.iactionrdfdereference.html#headers" class="tsd-kind-icon">headers</a>
+									</li>
+									<li class=" tsd-kind-property tsd-parent-kind-interface">
 										<a href="bus_rdf_dereference.iactionrdfdereference.html#mediatype" class="tsd-kind-icon">media<wbr>Type</a>
+									</li>
+									<li class=" tsd-kind-property tsd-parent-kind-interface">
+										<a href="bus_rdf_dereference.iactionrdfdereference.html#method" class="tsd-kind-icon">method</a>
 									</li>
 									<li class=" tsd-kind-property tsd-parent-kind-interface">
 										<a href="bus_rdf_dereference.iactionrdfdereference.html#url" class="tsd-kind-icon">url</a>
