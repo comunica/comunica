@@ -11,12 +11,13 @@ import * as OS from "os";
 import {Readable} from "stream";
 import {
   ActorInitSparql as ActorInitSparqlBrowser,
-  IActorInitSparqlArgs, KEY_CONTEXT_QUERYFORMAT,
+  IActorInitSparqlArgs, KEY_CONTEXT_LENIENT, KEY_CONTEXT_QUERYFORMAT,
 } from "./ActorInitSparql-browser";
 
 export {
   KEY_CONTEXT_INITIALBINDINGS,
   KEY_CONTEXT_QUERYFORMAT,
+  KEY_CONTEXT_LENIENT,
 } from "./ActorInitSparql-browser";
 
 /**
@@ -70,6 +71,7 @@ Options:
   -l            sets the log level (e.g., debug, info, warn, ... defaults to warn)
   -d            sets a datetime for querying Memento-enabled archives
   -p            delegates all HTTP traffic through the given proxy (e.g. http://myproxy.org/?uri=)
+  --lenient     if failing requests and parsing errors should be logged instead of causing a hard crash
   --help        print this help message
   --listformats prints the supported MIME types
   --version     prints version information
@@ -144,6 +146,11 @@ Options:
         source.value = splitValues[splitValues.length - 1];
         context[KEY_CONTEXT_SOURCES].push(source);
       });
+    }
+
+    // Define lenient-mode
+    if (args.lenient) {
+      context[KEY_CONTEXT_LENIENT] = true;
     }
 
     // Evaluate query

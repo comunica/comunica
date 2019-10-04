@@ -107,7 +107,8 @@
             { "contextShortcutKey": "log",              "contextShortcutValue": "@comunica/core:log"                             },
             { "contextShortcutKey": "datetime",         "contextShortcutValue": "@comunica/actor-http-memento:datetime"          },
             { "contextShortcutKey": "queryTimestamp",   "contextShortcutValue": "@comunica/actor-init-sparql:queryTimestamp"     },
-            { "contextShortcutKey": "httpProxyHandler", "contextShortcutValue": "@comunica/actor-http-proxy:httpProxyHandler"   }
+            { "contextShortcutKey": "httpProxyHandler", "contextShortcutValue": "@comunica/actor-http-proxy:httpProxyHandler"    },
+            { "contextShortcutKey": "lenient",          "contextShortcutValue": "@comunica/actor-init-sparql:lenient"            }
           ]
         }
       ],

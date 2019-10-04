@@ -59,7 +59,12 @@ export abstract class ActorRdfDereferenceHttpParseBase extends ActorRdfDereferen
       init: { headers, method: action.method },
       input: action.url,
     };
-    const httpResponse: IActorHttpOutput = await this.mediatorHttp.mediate(httpAction);
+    let httpResponse: IActorHttpOutput;
+    try {
+      httpResponse = await this.mediatorHttp.mediate(httpAction);
+    } catch (error) {
+      return this.handleDereferenceError(action, error);
+    }
     const url = resolveRelative(httpResponse.url, action.url); // The response URL can be relative to the given URL
 
     // Convert output headers to a hash
@@ -72,8 +77,9 @@ export abstract class ActorRdfDereferenceHttpParseBase extends ActorRdfDereferen
 
     // Only parse if retrieval was successful
     if (httpResponse.status !== 200) {
-      throw new Error(`Could not retrieve ${action.url} (${httpResponse.status}: ${
-        httpResponse.statusText || 'unknown error'})`);
+      const error = new Error(`Could not retrieve ${action.url} (${httpResponse.status}: ${
+      httpResponse.statusText || 'unknown error'})`);
+      return this.handleDereferenceError(action, error);
     }
 
     // Parse the resulting response
@@ -89,11 +95,18 @@ export abstract class ActorRdfDereferenceHttpParseBase extends ActorRdfDereferen
       headers: httpResponse.headers,
       input: responseStream,
     };
-    const parseOutput: IActorRdfParseOutput = (await this.mediatorRdfParseHandle.mediate(
-      { context: action.context, handle: parseAction, handleMediaType: mediaType })).handle;
+    let parseOutput: IActorRdfParseOutput;
+    try {
+      parseOutput = (await this.mediatorRdfParseHandle.mediate(
+        {context: action.context, handle: parseAction, handleMediaType: mediaType})).handle;
+    } catch (error) {
+      return this.handleDereferenceError(action, error);
+    }
+
+    const quads = this.handleDereferenceStreamErrors(action, parseOutput.quads);
 
     // Return the parsed quad stream and whether or not only triples are supported
-    return { url, quads: parseOutput.quads, triples: parseOutput.triples, headers: outputHeaders };
+    return { url, quads, triples: parseOutput.triples, headers: outputHeaders };
   }
 
   public mediaTypesToAcceptString(mediaTypes: { [id: string]: number }, maxLength: number): string {
@@ -131,4 +144,6 @@ export interface IActorRdfDereferenceHttpParseArgs extends
     IActorOutputRootRdfParse>, IActionRootRdfParse, IActorTestRootRdfParse, IActorOutputRootRdfParse>;
   mediatorRdfParseHandle: Mediator<Actor<IActionRootRdfParse, IActorTestRootRdfParse,
     IActorOutputRootRdfParse>, IActionRootRdfParse, IActorTestRootRdfParse, IActorOutputRootRdfParse>;
+  maxAcceptHeaderLength: number;
+  maxAcceptHeaderLengthBrowser: number;
 }

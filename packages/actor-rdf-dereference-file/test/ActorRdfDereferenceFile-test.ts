@@ -1,7 +1,8 @@
-import {ActorRdfDereference} from "@comunica/bus-rdf-dereference";
-import {Bus} from "@comunica/core";
+import {ActorRdfDereference, KEY_CONTEXT_LENIENT} from "@comunica/bus-rdf-dereference";
+import {ActionContext, Bus} from "@comunica/core";
 import * as fs from 'fs';
 import * as path from 'path';
+import {Readable} from "stream";
 import {ActorRdfDereferenceFile} from "../lib/ActorRdfDereferenceFile";
 
 const arrayifyStream = require('arrayify-stream');
@@ -46,12 +47,24 @@ describe('ActorRdfDereferenceFile', () => {
 
     beforeEach(() => {
       mediatorRdfParse = {
-        mediate: async (input) => {
-          const data = await arrayifyStream(input.handle.input);
-          return { handle: {
-            quads: { data: data[0], mediaType: input.handleMediaType },
-            triples: false,
-          }};
+        mediate: async (action) => {
+          const quads = new Readable();
+          if (action.context && action.context.has('emitParseError')) {
+            quads._read = () => {
+              quads.emit('error', new Error('Parse error'));
+            };
+            return { handle: { quads, triples: true } };
+          } else if (action.context && action.context.has('parseReject')) {
+            return Promise.reject(new Error('Parse reject error'));
+          } else {
+            const data = await arrayifyStream(action.handle.input);
+            return {
+              handle: {
+                quads: {data: data[0], mediaType: action.handleMediaType},
+                triples: false,
+              },
+            };
+          }
         },
       };
       mediaMappings = { ttl: 'text/turtle' };
@@ -142,6 +155,41 @@ describe('ActorRdfDereferenceFile', () => {
           triples: false,
           url: p,
         });
+    });
+
+    it('should run and receive parse errors', async () => {
+      const p = path.join(__dirname, 'dummy.ttl');
+      const context = ActionContext({ emitParseError: true });
+      const output = await actor.run({ url: p, context });
+      expect(output.url).toEqual(p);
+      await expect(arrayifyStream(output.quads)).rejects.toThrow(new Error('Parse error'));
+    });
+
+    it('should run and ignore parse errors in lenient mode', async () => {
+      const p = path.join(__dirname, 'dummy.ttl');
+      const context = ActionContext({ emitParseError: true, [KEY_CONTEXT_LENIENT]: true });
+      const spy = jest.spyOn(actor, <any> 'logError');
+      const output = await actor.run({ url: p, context });
+      expect(output.url).toEqual(p);
+      expect(await arrayifyStream(output.quads)).toEqual([]);
+      expect(spy).toHaveBeenCalledTimes(1);
+    });
+
+    it('should not run on parse rejects', () => {
+      const p = path.join(__dirname, 'dummy.ttl');
+      const context = ActionContext({ parseReject: true });
+      return expect(actor.run({ url: p, context }))
+        .rejects.toThrow(new Error('Parse reject error'));
+    });
+
+    it('should run and ignore parse rejects in lenient mode', async () => {
+      const p = path.join(__dirname, 'dummy.ttl');
+      const context = ActionContext({ parseReject: true, [KEY_CONTEXT_LENIENT]: true });
+      const spy = jest.spyOn(actor, <any> 'logError');
+      const output = await actor.run({ url: p, context });
+      expect(output.url).toEqual(p);
+      expect(await arrayifyStream(output.quads)).toEqual([]);
+      expect(spy).toHaveBeenCalledTimes(1);
     });
   });
 });

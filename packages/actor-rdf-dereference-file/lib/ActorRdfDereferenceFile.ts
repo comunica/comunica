@@ -4,6 +4,7 @@ import {
   ActorRdfParse,
   IActionRootRdfParse,
   IActorOutputRootRdfParse,
+  IActorRdfParseOutput,
   IActorTestRootRdfParse,
 } from "@comunica/bus-rdf-parse";
 import {IActorTest, Mediator} from "@comunica/core";
@@ -53,15 +54,21 @@ export class ActorRdfDereferenceFile extends ActorRdfDereferenceMediaMappings {
       parseAction.handleMediaType = mediaType;
     }
 
-    const handle = (await this.mediatorRdfParse.mediate(parseAction)).handle;
+    let parseOutput: IActorRdfParseOutput;
+    try {
+      parseOutput = (await this.mediatorRdfParse.mediate(parseAction)).handle;
+    } catch (error) {
+      return this.handleDereferenceError(action, error);
+    }
 
     return {
       headers: {},
-      quads: handle.quads,
-      triples: handle.triples,
+      quads: this.handleDereferenceStreamErrors(action, parseOutput.quads),
+      triples: parseOutput.triples,
       url: action.url,
     };
   }
+
 }
 
 export interface IActorRdfDereferenceFileArgs extends IActorRdfDereferenceMediaMappingsArgs {

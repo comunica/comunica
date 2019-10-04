@@ -273,3 +273,4 @@ export interface IActorInitSparqlArgs extends IActorArgs<IActionInit, IActorTest
 export const KEY_CONTEXT_INITIALBINDINGS: string = '@comunica/actor-init-sparql:initialBindings';
 export const KEY_CONTEXT_QUERYFORMAT: string = '@comunica/actor-init-sparql:queryFormat';
 export const KEY_CONTEXT_GRAPHQL_SINGULARIZEVARIABLES: string = '@comunica/actor-init-sparql:singularizeVariables';
+export const KEY_CONTEXT_LENIENT: string = '@comunica/actor-init-sparql:lenient';

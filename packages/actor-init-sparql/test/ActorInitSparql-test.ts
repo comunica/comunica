@@ -578,5 +578,21 @@ graph <exists02.ttl> {
         .toEqual(new ProxyHandlerStatic('http://proxy.org/'));
     });
 
+    it('should set leniency on the --lenient flag', async () => {
+      const med: any = {
+        mediate: (arg) => Promise.resolve({ handle: { data: arg.handleMediaType } }),
+      };
+      actor = new ActorInitSparql(
+        { bus, contextKeyShortcuts, logger, mediatorContextPreprocess, mediatorHttpInvalidate,
+          mediatorOptimizeQueryOperation, mediatorQueryOperation, mediatorSparqlParse,
+          mediatorSparqlSerialize: med, mediatorSparqlSerializeMediaTypeCombiner: med, name: 'actor', queryString });
+      const spy = jest.spyOn(actor, 'query');
+      expect((await actor.run({
+        argv: [ hypermedia, queryString, '--lenient' ], env: {},
+        stdin: new PassThrough(),
+      }))).toBeTruthy();
+      expect(spy.mock.calls[0][1]['@comunica/actor-init-sparql:lenient']).toBeTruthy();
+    });
+
   });
 });

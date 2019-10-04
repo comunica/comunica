@@ -177,6 +177,7 @@ const isPresent = await result.booleanResult;
 | `baseIRI` | Base IRI for relative IRIs in SPARQL queries, e.g. `http://example.org/`. |
 | `log` | Logger to use, e.g. `new LoggerPretty({ level: 'warn' })`. |
 | `datetime` | Datetime to handle time travel with [Memento](http://timetravel.mementoweb.org/), e.g. `new Date()`. |
+| `lenient` | If failing requests and parsing errors should be logged instead of causing a hard crash. Defaults to `false`. |
 
 _GraphQL-LD_
 
