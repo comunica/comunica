@@ -190,6 +190,10 @@ result.quadStream.<span class="hljs-literal">on</span>(<span class="hljs-string"
 								<td><code>datetime</code></td>
 								<td>Datetime to handle time travel with <a href="http://timetravel.mementoweb.org/">Memento</a>, e.g. <code>new Date()</code>.</td>
 							</tr>
+							<tr>
+								<td><code>lenient</code></td>
+								<td>If failing requests and parsing errors should be logged instead of causing a hard crash. Defaults to <code>false</code>.</td>
+							</tr>
 					</tbody></table>
 					<p><em>GraphQL-LD</em></p>
 					<p>Instead of SPARQL queries, you can also define <a href="https://graphql.org/">GraphQL</a> queries
@@ -293,6 +297,7 @@ myEngine.query(<span class="hljs-string">'SELECT * { ?s ?p &lt;http://dbpedia.or
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-variable tsd-parent-kind-external-module"><a href="actor_init_sparql.html#key_context_graphql_singularizevariables" class="tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>GRAPHQL_<wbr>SINGULARIZEVARIABLES</a></li>
 								<li class="tsd-kind-variable tsd-parent-kind-external-module"><a href="actor_init_sparql.html#key_context_initialbindings" class="tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>INITIALBINDINGS</a></li>
+								<li class="tsd-kind-variable tsd-parent-kind-external-module"><a href="actor_init_sparql.html#key_context_lenient" class="tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>LENIENT</a></li>
 								<li class="tsd-kind-variable tsd-parent-kind-external-module"><a href="actor_init_sparql.html#key_context_queryformat" class="tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>QUERYFORMAT</a></li>
 								<li class="tsd-kind-variable tsd-parent-kind-external-module tsd-is-not-exported"><a href="actor_init_sparql.html#defaultconfigpath" class="tsd-kind-icon">default<wbr>Config<wbr>Path</a></li>
 							</ul>
@@ -317,7 +322,7 @@ myEngine.query(<span class="hljs-string">'SELECT * { ?s ?p &lt;http://dbpedia.or
 					<div class="tsd-signature tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>GRAPHQL_<wbr>SINGULARIZEVARIABLES<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;@comunica/actor-init-sparql:singularizeVariables&quot;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/51f0aa4/packages/actor-init-sparql/lib/ActorInitSparql-browser.ts#L275">actor-init-sparql/lib/ActorInitSparql-browser.ts:275</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/12ce787/packages/actor-init-sparql/lib/ActorInitSparql-browser.ts#L275">actor-init-sparql/lib/ActorInitSparql-browser.ts:275</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -327,7 +332,17 @@ myEngine.query(<span class="hljs-string">'SELECT * { ?s ?p &lt;http://dbpedia.or
 					<div class="tsd-signature tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>INITIALBINDINGS<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;@comunica/actor-init-sparql:initialBindings&quot;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/51f0aa4/packages/actor-init-sparql/lib/ActorInitSparql-browser.ts#L273">actor-init-sparql/lib/ActorInitSparql-browser.ts:273</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/12ce787/packages/actor-init-sparql/lib/ActorInitSparql-browser.ts#L273">actor-init-sparql/lib/ActorInitSparql-browser.ts:273</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-external-module">
+					<a name="key_context_lenient" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagConst">Const</span> KEY_<wbr>CONTEXT_<wbr>LENIENT</h3>
+					<div class="tsd-signature tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>LENIENT<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;@comunica/actor-init-sparql:lenient&quot;</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/12ce787/packages/actor-init-sparql/lib/ActorInitSparql-browser.ts#L276">actor-init-sparql/lib/ActorInitSparql-browser.ts:276</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -337,7 +352,7 @@ myEngine.query(<span class="hljs-string">'SELECT * { ?s ?p &lt;http://dbpedia.or
 					<div class="tsd-signature tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>QUERYFORMAT<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;&quot;@comunica/actor-init-sparql:queryFormat&quot;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/51f0aa4/packages/actor-init-sparql/lib/ActorInitSparql-browser.ts#L274">actor-init-sparql/lib/ActorInitSparql-browser.ts:274</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/12ce787/packages/actor-init-sparql/lib/ActorInitSparql-browser.ts#L274">actor-init-sparql/lib/ActorInitSparql-browser.ts:274</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -347,7 +362,7 @@ myEngine.query(<span class="hljs-string">'SELECT * { ?s ?p &lt;http://dbpedia.or
 					<div class="tsd-signature tsd-kind-icon">default<wbr>Config<wbr>Path<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> =&nbsp;__dirname + &#x27;/../config/config-default.json&#x27;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/51f0aa4/packages/actor-init-sparql/bin/http.ts#L4">actor-init-sparql/bin/http.ts:4</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/12ce787/packages/actor-init-sparql/bin/http.ts#L4">actor-init-sparql/bin/http.ts:4</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -364,7 +379,7 @@ myEngine.query(<span class="hljs-string">'SELECT * { ?s ?p &lt;http://dbpedia.or
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/51f0aa4/packages/actor-init-sparql/index-browser.ts#L15">actor-init-sparql/index-browser.ts:15</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/12ce787/packages/actor-init-sparql/index-browser.ts#L15">actor-init-sparql/index-browser.ts:15</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -390,7 +405,7 @@ myEngine.query(<span class="hljs-string">'SELECT * { ?s ?p &lt;http://dbpedia.or
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/51f0aa4/packages/actor-init-sparql/index-browser.ts#L10">actor-init-sparql/index-browser.ts:10</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/12ce787/packages/actor-init-sparql/index-browser.ts#L10">actor-init-sparql/index-browser.ts:10</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -413,7 +428,7 @@ myEngine.query(<span class="hljs-string">'SELECT * { ?s ?p &lt;http://dbpedia.or
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/51f0aa4/packages/actor-init-sparql/index.ts#L13">actor-init-sparql/index.ts:13</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/12ce787/packages/actor-init-sparql/index.ts#L13">actor-init-sparql/index.ts:13</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -445,7 +460,7 @@ myEngine.query(<span class="hljs-string">'SELECT * { ?s ?p &lt;http://dbpedia.or
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/51f0aa4/packages/actor-init-sparql/lib/QueryDynamic.ts#L11">actor-init-sparql/lib/QueryDynamic.ts:11</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/12ce787/packages/actor-init-sparql/lib/QueryDynamic.ts#L11">actor-init-sparql/lib/QueryDynamic.ts:11</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -522,6 +537,9 @@ myEngine.query(<span class="hljs-string">'SELECT * { ?s ?p &lt;http://dbpedia.or
 							</li>
 							<li class=" tsd-kind-variable tsd-parent-kind-external-module">
 								<a href="actor_init_sparql.html#key_context_initialbindings" class="tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>INITIALBINDINGS</a>
+							</li>
+							<li class=" tsd-kind-variable tsd-parent-kind-external-module">
+								<a href="actor_init_sparql.html#key_context_lenient" class="tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>LENIENT</a>
 							</li>
 							<li class=" tsd-kind-variable tsd-parent-kind-external-module">
 								<a href="actor_init_sparql.html#key_context_queryformat" class="tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>QUERYFORMAT</a>
