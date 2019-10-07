@@ -16,7 +16,7 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
   protected readonly predicate: RDF.Term;
   protected readonly object: RDF.Term;
   protected readonly graph: RDF.Term;
-  protected sourceStates: ISourceState[];
+  protected nextUrls: string[];
   protected nextSource: ISourceState;
 
   private readonly cacheSize: number;
@@ -32,7 +32,7 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
     this.predicate = predicate;
     this.object = object;
     this.graph = graph;
-    this.sourceStates = [];
+    this.nextUrls = [];
     this.firstUrl = firstUrl;
     this.started = false;
     this.iterating = false;
@@ -78,18 +78,18 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
       const nextSource = this.nextSource;
       this.nextSource = null;
       this.getNextUrls(nextSource.metadata)
-        .then((nextUrls: string[]) => Promise.all(nextUrls
-          .map((nextUrl) => this.getNextSourceCached(nextUrl, nextSource.handledDatasets))))
-        .then((newSources: ISourceState[]) => {
-          if (newSources.length === 0 && this.sourceStates.length === 0) {
+        .then((nextUrls: string[]) => Promise.all(nextUrls))
+        .then(async (nextUrls: string[]) => {
+          if (nextUrls.length === 0 && this.nextUrls.length === 0) {
             this.close();
           } else {
-            for (const sourceState of newSources) {
-              this.sourceStates.push(sourceState);
+            for (const nextUrl of nextUrls) {
+              this.nextUrls.push(nextUrl);
             }
 
-            this.startIterator(this.sourceStates[0], false);
-            this.sourceStates.splice(0, 1);
+            const nextSourceState = await this.getNextSourceCached(this.nextUrls[0], nextSource.handledDatasets);
+            this.startIterator(nextSourceState, false);
+            this.nextUrls.splice(0, 1);
           }
 
           done();
