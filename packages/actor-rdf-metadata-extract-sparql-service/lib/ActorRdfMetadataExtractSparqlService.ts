@@ -1,4 +1,5 @@
-import {ActorRdfMetadataExtract, IActionRdfMetadataExtract, IActorRdfMetadataExtractOutput} from "@comunica/bus-rdf-metadata-extract";
+import {ActorRdfMetadataExtract,
+  IActionRdfMetadataExtract, IActorRdfMetadataExtractOutput} from "@comunica/bus-rdf-metadata-extract";
 import {IActorArgs, IActorTest} from "@comunica/core";
 
 /**

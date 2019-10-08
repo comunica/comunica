@@ -43,8 +43,11 @@ describe('ActorSparqlParseAlgebra', () => {
       return expect(actor.test({ query: 'a', queryFormat: 'sparql' })).resolves.toBeTruthy();
     });
 
-    it('should run', () => {
-      return expect(actor.run({ query: "SELECT * WHERE { ?a a ?b }" })).resolves.toMatchObject(
+    it('should run', async () => {
+      const result = await actor.run({ query: "SELECT * WHERE { ?a a ?b }" });
+
+      // TODO: I am unable to find why the match only works like this
+      return expect(JSON.parse(JSON.stringify(result))).toMatchObject(
         {
           operation: {
             input: {
@@ -76,34 +79,35 @@ describe('ActorSparqlParseAlgebra', () => {
         .rejects.toThrow(new Error('Translate only works on complete query objects.'));
     });
 
-    it('should run with an overridden baseIRI', () => {
-      return expect(actor.run({ query: "BASE <http://example.org/book/> SELECT * WHERE { ?a a ?b }" }))
-        .resolves.toMatchObject(
-        {
-          baseIRI: 'http://example.org/book/',
-          operation: {
-            input: {
-              patterns: [
-                {
-                  graph: {value: ""},
-                  object: {value: "b"},
-                  predicate: {value: "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"},
-                  subject: {value: "a"},
-                  type: "pattern",
-                },
-              ],
-              type: "bgp"},
-            type: "project",
-            variables: [
+    it('should run with an overridden baseIRI', async () => {
+      const result = await actor.run({ query: "BASE <http://example.org/book/> SELECT * WHERE { ?a a ?b }" });
+
+      // TODO: I am unable to find why the match only works like this
+      return expect(JSON.parse(JSON.stringify(result))).toMatchObject({
+        baseIRI: 'http://example.org/book/',
+        operation: {
+          input: {
+            patterns: [
               {
-                value: "a",
-              },
-              {
-                value: "b",
+                graph: {value: ""},
+                object: {value: "b"},
+                predicate: {value: "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"},
+                subject: {value: "a"},
+                type: "pattern",
               },
             ],
-          },
-        });
+            type: "bgp"},
+          type: "project",
+          variables: [
+            {
+              value: "a",
+            },
+            {
+              value: "b",
+            },
+          ],
+        },
+      });
     });
   });
 });
