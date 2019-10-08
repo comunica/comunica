@@ -2462,11 +2462,6 @@ lodash._reinterpolate@^3.0.0:
   resolved "https://registry.yarnpkg.com/lodash._reinterpolate/-/lodash._reinterpolate-3.0.0.tgz#0ccf2d89166af03b3663c796538b75ac6e114d9d"
   integrity sha1-DM8tiRZq8Ds2Y8eWU4t1rG4RTZ0=
 
-lodash.isequal@^4.5.0:
-  version "4.5.0"
-  resolved "https://registry.yarnpkg.com/lodash.isequal/-/lodash.isequal-4.5.0.tgz#415c4478f2bcc30120c22ce10ed3226f7d3e18e0"
-  integrity sha1-QVxEePK8wwEgwizhDtMib30+GOA=
-
 lodash.sortby@^4.7.0:
   version "4.7.0"
   resolved "https://registry.yarnpkg.com/lodash.sortby/-/lodash.sortby-4.7.0.tgz#edd14c824e2cc9c1e0b0a1b42bb5210516a42438"
@@ -2740,6 +2735,11 @@ ms@^2.1.1:
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.1.1.tgz#30a5864eb3ebb0a66f2ebe6d727af06a09d86e0a"
   integrity sha512-tgp+dl5cGk28utYktBsrFqA7HKgrhgPsg6Z/EfhWI4gl1Hwq8B/GmY/0oXZ6nF8hDVesS/FpnYaD/kOWhYQvyg==
+
+n3@^1.0.4:
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/n3/-/n3-1.2.1.tgz#8350b68527e5d0768dc0f0bb6e4531b7f4f8bb2f"
+  integrity sha512-5va8zsh02owDul7+5bj35cGOzWU7DeJHwQK3F8NDKtiYqPgWcFTg/zLxJs1JeRF2n6j5PI/eR9DCokS7nLrevA==
 
 nan@^2.12.1:
   version "2.13.2"
@@ -3608,21 +3608,23 @@ source-map@^0.6.0, source-map@^0.6.1, source-map@~0.6.1:
   resolved "https://registry.yarnpkg.com/source-map/-/source-map-0.6.1.tgz#74722af32e9614e9c287a8d0bbde48b5e2f1a263"
   integrity sha512-UjgapumWlbMhkBgzT7Ykc5YXUT46F0iKu8SGXq0bcwP5dz/h0Plj6enJqjz1Zbq2l5WaqYnrVbwWOWMyF3F47g==
 
-sparqlalgebrajs@^1.1.0:
-  version "1.5.2"
-  resolved "https://registry.yarnpkg.com/sparqlalgebrajs/-/sparqlalgebrajs-1.5.2.tgz#3b136382cf418706adf5340d20fe4a4da5459103"
-  integrity sha512-PaUnQI0iw+QBnAxWHWRW+VIjV50TbK3XaCwEv6jzgyaIBSo9fnE0OIhBN7Jn1KTZfMNHUTMUo7q/3Ok3ml29Lw==
+sparqlalgebrajs@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/sparqlalgebrajs/-/sparqlalgebrajs-2.0.0.tgz#23ae1c15ac21f94d236fc43b1ae0292f60795a96"
+  integrity sha512-HcRm3A1v7mSXBSV89BWlhKNynUZVb0JauL8o43zYAMMigkGK6hnwKV/PIUJuJ1zoEpkPgKrTfsYMKcZmQb6KzA==
   dependencies:
     "@rdfjs/data-model" "^1.1.1"
-    lodash.isequal "^4.5.0"
+    fast-deep-equal "^2.0.1"
     minimist "^1.2.0"
     rdf-string "^1.3.1"
-    sparqljs "^2.2.1"
+    sparqljs "^3.0.0"
 
-sparqljs@^2.2.1:
-  version "2.2.3"
-  resolved "https://registry.yarnpkg.com/sparqljs/-/sparqljs-2.2.3.tgz#6eb7f5f69b27b99d3b646e89271c048bd61d9293"
-  integrity sha512-lrzSQadbkiQk4O6RjXJjec/EevVIsnAfbNK3t8XJtocogNojfQM7KC/UttyRTAq4IOXa0vRVoFTRapcbgFVRWg==
+sparqljs@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/sparqljs/-/sparqljs-3.0.0.tgz#bc1f8ba39084b3ed8bece27ef60e860fa989c451"
+  integrity sha512-uPlGML5IWfex1Up2YSA2LnvEJjyL87KCNXQ2vDnDbgraWKivy/pHxarlJA+6NUWFllNgN+1LmWFzanTRg8mhZg==
+  dependencies:
+    n3 "^1.0.4"
 
 spawn-sync@^1.0.15:
   version "1.0.15"
