@@ -37,7 +37,7 @@
   "dependencies": {
     "@types/sparqljs": "^2.1.0",
     "sparqlalgebrajs": "^1.5.2",
-    "sparqljs": "^2.2.3"
+    "sparqljs": "^3.0.0"
   },
   "peerDependencies": {
     "@comunica/bus-sparql-parse": "^1.0.0",
