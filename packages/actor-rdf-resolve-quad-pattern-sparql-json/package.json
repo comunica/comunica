@@ -39,7 +39,7 @@
     "asynciterator": "^2.0.1",
     "asynciterator-promiseproxy": "^2.0.0",
     "rdf-terms": "^1.4.0",
-    "sparqlalgebrajs": "^1.5.2",
+    "sparqlalgebrajs": "^2.0.1",
     "sparqljson-parse": "^1.5.0"
   },
   "peerDependencies": {
