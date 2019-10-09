@@ -10,7 +10,7 @@ export class ActorSparqlParseAlgebra extends ActorSparqlParse {
 
   public readonly prefixes: {[id: string]: string};
 
-  constructor(args: IActorArgs<IActionSparqlParse, IActorTest, IActorSparqlParseOutput>) {
+  constructor(args: IActorSparqlParseAlgebraArgs) {
     super(args);
     this.prefixes = Object.freeze(this.prefixes);
   }
@@ -23,7 +23,8 @@ export class ActorSparqlParseAlgebra extends ActorSparqlParse {
   }
 
   public async run(action: IActionSparqlParse): Promise<IActorSparqlParseOutput> {
-    const parser = new SparqlParser(this.prefixes, action.baseIRI);
+    // TODO: will have to remove <any> once sparql.js types are updated
+    const parser = new SparqlParser(<any> { prefixes: this.prefixes, baseIRI: action.baseIRI });
     // resets the identifier counter used for blank nodes
     // provides nicer and more consistent output if there are multiple calls
     (<any> parser)._resetBlanks();
@@ -36,4 +37,12 @@ export class ActorSparqlParseAlgebra extends ActorSparqlParse {
     };
   }
 
+}
+
+export interface IActorSparqlParseAlgebraArgs
+  extends IActorArgs<IActionSparqlParse, IActorTest, IActorSparqlParseOutput> {
+  /**
+   * Default prefixes to use
+   */
+  prefixes?: { [id: string]: string };
 }
