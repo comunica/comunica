@@ -42,7 +42,7 @@
     "@comunica/actor-abstract-path": "^1.9.2",
     "asynciterator-union": "^2.1.1",
     "lodash.uniq": "^4.5.0",
-    "sparqlalgebrajs": "^2.0.0"
+    "sparqlalgebrajs": "^2.0.1"
   },
   "devDependencies": {
     "@comunica/bus-query-operation": "^1.9.2",
