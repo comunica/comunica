@@ -21,6 +21,8 @@ export class ActorHttpNodeFetch extends ActorHttp {
   }
 
   public run(action: IActionHttp): Promise<IActorHttpOutput> {
+    this.logInfo(action.context, `Requesting ${typeof action.input === 'string'
+      ? action.input : action.input.url}`);
     return fetch(action.input, action.init);
   }
 
