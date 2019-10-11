@@ -36,7 +36,7 @@
   ],
   "dependencies": {
     "@types/sparqljs": "^2.1.0",
-    "sparqlalgebrajs": "^1.5.2",
+    "sparqlalgebrajs": "^2.1.0",
     "sparqljs": "^2.2.3"
   },
   "peerDependencies": {
