@@ -30,6 +30,8 @@ export function transformAlgebra(expr: Alg.Expression): E.Expression {
       return transformExistence(expr as Alg.ExistenceExpression);
     case types.AGGREGATE:
       return transformAggregate(expr as Alg.AggregateExpression);
+    case types.WILDCARD:
+      return transformWildcard(expr as Alg.WildcardExpression);
     default: throw new Err.InvalidExpressionType(expr);
   }
 }
@@ -58,6 +60,12 @@ function transformTerm(term: Alg.TermExpression): E.Expression {
     case 'BlankNode': return new E.BlankNode(term.term.value);
     default: throw new Err.InvalidTermType(term);
   }
+}
+
+function transformWildcard(term: Alg.WildcardExpression): E.Expression {
+  if (!term.wildcard) { throw new Err.InvalidExpression(term); }
+
+  return new E.NamedNode(term.wildcard.value);
 }
 
 // TODO: Maybe do this with a map?
@@ -108,7 +116,6 @@ export function transformLiteral(lit: RDF.Literal): E.Literal<any> {
     case DT.XSD_NON_POSITIVE_INTEGER:
     case DT.XSD_POSITIVE_INTEGER:
     case DT.XSD_LONG:
-    case DT.XSD_INT:
     case DT.XSD_SHORT:
     case DT.XSD_BYTE:
     case DT.XSD_UNSIGNED_LONG:

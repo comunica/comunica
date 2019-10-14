@@ -22,7 +22,7 @@ function makeAggregate(aggregator: string, distinct = false, separator?: string)
   return {
     type: 'expression',
     expressionType: 'aggregate',
-    aggregator,
+    aggregator: aggregator as any,
     distinct,
     separator,
     expression: {

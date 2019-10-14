@@ -3608,10 +3608,10 @@ source-map@^0.6.0, source-map@^0.6.1, source-map@~0.6.1:
   resolved "https://registry.yarnpkg.com/source-map/-/source-map-0.6.1.tgz#74722af32e9614e9c287a8d0bbde48b5e2f1a263"
   integrity sha512-UjgapumWlbMhkBgzT7Ykc5YXUT46F0iKu8SGXq0bcwP5dz/h0Plj6enJqjz1Zbq2l5WaqYnrVbwWOWMyF3F47g==
 
-sparqlalgebrajs@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/sparqlalgebrajs/-/sparqlalgebrajs-2.0.0.tgz#23ae1c15ac21f94d236fc43b1ae0292f60795a96"
-  integrity sha512-HcRm3A1v7mSXBSV89BWlhKNynUZVb0JauL8o43zYAMMigkGK6hnwKV/PIUJuJ1zoEpkPgKrTfsYMKcZmQb6KzA==
+sparqlalgebrajs@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/sparqlalgebrajs/-/sparqlalgebrajs-2.1.0.tgz#1e56c1308af48378ebf958f602620de8296f4041"
+  integrity sha512-7Au010F8vqLn9nCJUo5M8wnlYBftUwjFLxPt+5MEdFguDAJEfdkGoLdqJQVWZ1H+Dn7lDSqIj29sVWZWJ7jnxw==
   dependencies:
     "@rdfjs/data-model" "^1.1.1"
     fast-deep-equal "^2.0.1"
