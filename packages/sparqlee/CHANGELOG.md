@@ -1,5 +1,12 @@
 # Changelog
 
+<a name="v1.3.0"></a>
+## [v1.3.0](https://github.com/comunica/sparqlee/compare/v1.2.1...v1.3.0) - 2019-10-14
+
+### Changed
+* [Support wildcards](https://github.com/comunica/sparqlee/commit/f1bc3c2ea6e9bcf896e33143b74d198be251d8c3)
+* [Update sparqlalgebrajs to version 2.0.0](https://github.com/comunica/sparqlee/commit/1c33ea4202b719615b907f45cecd0aafa2bd51e8)
+
 <a name="v1.2.1"></a>
 ## [v1.2.1](https://github.com/comunica/sparqlee/compare/v1.2.0...v1.2.1) - 2019-09-12
 
