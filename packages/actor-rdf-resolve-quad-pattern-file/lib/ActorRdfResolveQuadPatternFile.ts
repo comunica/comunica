@@ -3,12 +3,12 @@ import {IActionRdfDereference, IActorRdfDereferenceOutput} from "@comunica/bus-r
 import {ActorRdfResolveQuadPatternSource, IActionRdfResolveQuadPattern, IActorRdfResolveQuadPatternOutput,
   ILazyQuadSource} from "@comunica/bus-rdf-resolve-quad-pattern";
 import {ActionContext, Actor, IActorArgs, IActorTest, Mediator} from "@comunica/core";
+import {AsyncIterator} from "asynciterator";
 import * as LRUCache from "lru-cache";
 import {N3Store, Store} from "n3";
 import * as RDF from "rdf-js";
 import {N3StoreIterator} from "./N3StoreIterator";
 import {N3StoreQuadSource} from "./N3StoreQuadSource";
-import {AsyncIterator} from "asynciterator";
 
 /**
  * A comunica File RDF Resolve Quad Pattern Actor.

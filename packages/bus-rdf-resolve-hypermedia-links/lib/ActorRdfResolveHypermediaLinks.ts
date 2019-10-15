@@ -11,7 +11,8 @@ import {Actor, IAction, IActorArgs, IActorOutput, IActorTest} from "@comunica/co
  * @see IActionRdfResolveHypermediaLinks
  * @see IActorRdfResolveHypermediaLinksOutput
  */
-export abstract class ActorRdfResolveHypermediaLinks extends Actor<IActionRdfResolveHypermediaLinks, IActorTest, IActorRdfResolveHypermediaLinksOutput> {
+export abstract class ActorRdfResolveHypermediaLinks
+  extends Actor<IActionRdfResolveHypermediaLinks, IActorTest, IActorRdfResolveHypermediaLinksOutput> {
 
   constructor(args: IActorArgs<IActionRdfResolveHypermediaLinks, IActorTest, IActorRdfResolveHypermediaLinksOutput>) {
     super(args);

@@ -104,7 +104,7 @@ export class ActorRdfResolveQuadPatternSparqlJson
           [ActorRdfResolveQuadPatternSparqlJson.FACTORY.createBoundAggregate(
             variable('var0'),
             'count',
-            ActorRdfResolveQuadPatternSparqlJson.FACTORY.createTermExpression(namedNode('*')),
+            ActorRdfResolveQuadPatternSparqlJson.FACTORY.createWildcardExpression(),
             false,
           )],
         ),

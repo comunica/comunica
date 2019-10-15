@@ -103,7 +103,7 @@ export class RdfSourceSparql implements RDF.Source {
           [RdfSourceSparql.FACTORY.createBoundAggregate(
             variable('var0'),
             'count',
-            RdfSourceSparql.FACTORY.createTermExpression(namedNode('*')),
+            RdfSourceSparql.FACTORY.createWildcardExpression(),
             false,
           )],
         ),
