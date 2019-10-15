@@ -8351,7 +8351,7 @@ source-map@~0.1.38:
   dependencies:
     amdefine ">=0.0.4"
 
-sparqlalgebrajs@^1.1.0, sparqlalgebrajs@^1.5.1, sparqlalgebrajs@^1.5.2:
+sparqlalgebrajs@^1.5.1, sparqlalgebrajs@^1.5.2:
   version "1.5.2"
   resolved "https://registry.yarnpkg.com/sparqlalgebrajs/-/sparqlalgebrajs-1.5.2.tgz#3b136382cf418706adf5340d20fe4a4da5459103"
   integrity sha512-PaUnQI0iw+QBnAxWHWRW+VIjV50TbK3XaCwEv6jzgyaIBSo9fnE0OIhBN7Jn1KTZfMNHUTMUo7q/3Ok3ml29Lw==
@@ -8362,10 +8362,10 @@ sparqlalgebrajs@^1.1.0, sparqlalgebrajs@^1.5.1, sparqlalgebrajs@^1.5.2:
     rdf-string "^1.3.1"
     sparqljs "^2.2.1"
 
-sparqlalgebrajs@^2.0.1:
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/sparqlalgebrajs/-/sparqlalgebrajs-2.0.1.tgz#1f1c7f42c11784226ebb6dc3cafe98415b82f71f"
-  integrity sha512-cZe2s5pUG7T9Z6YuL17RuL+mCD8o+WvBVHj1zlrHiVKA9Z4ykiQ9NjQVNARmQ7tk7eOz02CBeEyJJMPmPl4QTw==
+sparqlalgebrajs@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/sparqlalgebrajs/-/sparqlalgebrajs-2.1.0.tgz#1e56c1308af48378ebf958f602620de8296f4041"
+  integrity sha512-7Au010F8vqLn9nCJUo5M8wnlYBftUwjFLxPt+5MEdFguDAJEfdkGoLdqJQVWZ1H+Dn7lDSqIj29sVWZWJ7jnxw==
   dependencies:
     "@rdfjs/data-model" "^1.1.1"
     fast-deep-equal "^2.0.1"
@@ -8373,10 +8373,10 @@ sparqlalgebrajs@^2.0.1:
     rdf-string "^1.3.1"
     sparqljs "^3.0.0"
 
-sparqlee@^1.2.1:
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/sparqlee/-/sparqlee-1.2.1.tgz#17d5cc662fe9980583b8f354fc88040f5a40d843"
-  integrity sha512-53k71TZny074twc8RHoOon4dlFvMjjqo4oScPkyN6cqrj33qea9rFNW2hCV/xv9oZApKSBaffUu4DoRre6Ytrg==
+sparqlee@^1.3.0:
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/sparqlee/-/sparqlee-1.3.0.tgz#d4663f9a76a5a6151dd30b3877ad767e07713479"
+  integrity sha512-zENiBZqBuWABcxbGWVtMAiEnPEVjRrPHwmzcQgR4t3KH2DYm3fqZLioi2sFC3wbschwrBA4beKbH3JxjmDa8iQ==
   dependencies:
     "@rdfjs/data-model" "^1.1.0"
     "@types/asynciterator" "^1.1.0"
@@ -8385,7 +8385,7 @@ sparqlee@^1.2.1:
     decimal.js "^10.2.0"
     immutable "^3.8.2"
     rdf-string "^1.1.1"
-    sparqlalgebrajs "^1.1.0"
+    sparqlalgebrajs "^2.1.0"
     uri-js "^4.2.2"
     uuid "^3.3.2"
 

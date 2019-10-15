@@ -447,7 +447,7 @@ describe('ActorQueryOperationGroup', () => {
       return {
         type: "expression",
         expressionType: "aggregate",
-        aggregator,
+        aggregator: <any> aggregator,
         expression: {
           type: "expression",
           expressionType: "term",
