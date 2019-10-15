@@ -1,4 +1,5 @@
-import {ActorQueryOperation, Bindings, IActorQueryOperationOutputBindings} from "@comunica/bus-query-operation";
+import {ActorQueryOperation, Bindings, IActorQueryOperationOutputBindings,
+  KEY_CONTEXT_QUERYOPERATION} from "@comunica/bus-query-operation";
 import {ActionContext, Bus} from "@comunica/core";
 import {blankNode, defaultGraph, literal, namedNode, quad, variable} from "@rdfjs/data-model";
 import {ArrayIterator, EmptyIterator, SingletonIterator} from "asynciterator";
@@ -529,7 +530,7 @@ describe('ActorQueryOperationBgpLeftDeepSmallest', () => {
         expect(mediatorQueryOperation.mediate).toHaveBeenCalledTimes(2);
         expect(mediatorQueryOperation.mediate).toHaveBeenCalledWith(
           {
-            context: ActionContext({ a: 'b' }),
+            context: ActionContext({ a: 'b', [KEY_CONTEXT_QUERYOPERATION]: op.operation }),
             operation: quad(variable('d'), namedNode('4'), namedNode('4'), namedNode('4')),
           });
         expect(await arrayifyStream(output.bindingsStream)).toEqual([

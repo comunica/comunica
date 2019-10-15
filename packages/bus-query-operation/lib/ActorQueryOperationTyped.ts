@@ -32,7 +32,8 @@ export abstract class ActorQueryOperationTyped<O extends Algebra.Operation> exte
 
   public async run(action: IActionQueryOperation): Promise<IActorQueryOperationOutput> {
     const operation: O = <O> action.operation;
-    const output: IActorQueryOperationOutput = await this.runOperation(operation, action.context);
+    const subContext = action.context ? action.context.set(KEY_CONTEXT_QUERYOPERATION, operation) : null;
+    const output: IActorQueryOperationOutput = await this.runOperation(operation, subContext);
     if ((<IActorQueryOperationOutputStream> output).metadata) {
       (<IActorQueryOperationOutputStream> output).metadata =
         ActorQueryOperation.cachifyMetadata((<IActorQueryOperationOutputStream> output).metadata);
@@ -45,3 +46,8 @@ export abstract class ActorQueryOperationTyped<O extends Algebra.Operation> exte
   protected abstract runOperation(operation: O, context: ActionContext): Promise<IActorQueryOperationOutput>;
 
 }
+
+/**
+ * @type {string} Context entry for the current query operation.
+ */
+export const KEY_CONTEXT_QUERYOPERATION = '@comunica/bus-query-operation:operation';
