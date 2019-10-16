@@ -16,7 +16,6 @@
     "@rdfjs/data-model": "^1.1.1",
     "@types/asynciterator": "^1.1.1",
     "@types/bunyan": "^1.8.4",
-    "@types/graphql": "^14.0.0",
     "@types/jest": "^24.0.0",
     "@types/lodash.assign": "^4.2.3",
     "@types/lodash.defaults": "^4.2.3",
