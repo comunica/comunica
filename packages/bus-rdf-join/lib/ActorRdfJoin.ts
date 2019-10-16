@@ -18,15 +18,22 @@ import {EmptyIterator} from "asynciterator";
 export abstract class ActorRdfJoin extends Actor<IActionRdfJoin, IMediatorTypeIterations, IActorQueryOperationOutput> {
 
   /**
-   * Can be used by subclasses to indicate the max number of streams that can be joined.
+   * Can be used by subclasses to indicate the max or min number of streams that can be joined.
    * 0 for infinity.
+   * By default, this indicates the max number, but can be inverted by setting limitEntriesMin to true.
    */
-  protected maxEntries: number;
+  protected limitEntries: number;
+  /**
+   * If true, the limitEntries field is a lower limit,
+   * otherwise, it is an upper limit.
+   */
+  protected limitEntriesMin: boolean;
 
   constructor(args: IActorArgs<IActionRdfJoin, IMediatorTypeIterations, IActorQueryOperationOutput>,
-              maxEntries?: number) {
+              limitEntries?: number, limitEntriesMin?: boolean) {
     super(args);
-    this.maxEntries = maxEntries;
+    this.limitEntries = limitEntries;
+    this.limitEntriesMin = limitEntriesMin;
   }
 
   /**
@@ -91,9 +98,11 @@ export abstract class ActorRdfJoin extends Actor<IActionRdfJoin, IMediatorTypeIt
     if (action.entries.length <= 1) {
       return { iterations: 0 };
     }
-    if (this.maxEntries && action.entries.length > this.maxEntries) {
-      throw new Error(this.name + ' supports ' + this.maxEntries
-        + ' sources at most. The input contained ' + action.entries.length + '.');
+    if (this.limitEntries && (this.limitEntriesMin
+      ? action.entries.length < this.limitEntries : action.entries.length > this.limitEntries)) {
+      throw new Error(this.name + ' requires ' + this.limitEntries
+        + ' sources at ' + (this.limitEntriesMin ? 'least' : 'most')
+        + '. The input contained ' + action.entries.length + '.');
     }
     for (const entry of action.entries) {
       if (entry.type !== 'bindings') {

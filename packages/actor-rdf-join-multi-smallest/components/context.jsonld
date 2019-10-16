@@ -1,0 +1,12 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
+      "carjms": "npmd:@comunica/actor-rdf-join-multi-smallest/",
+      "files-carjms": "carjms:^1.0.0/",
+
+      "ActorRdfJoinMultiSmallest": "carjms:Actor/RdfJoin/MultiSmallest"
+    }
+  ]
+}

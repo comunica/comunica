@@ -1,0 +1,9 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-join-multi-sequential/^1.0.0/components/context.jsonld",
+  "@id": "npmd:@comunica/actor-rdf-join-multi-sequential",
+  "@type": "Module",
+  "requireName": "@comunica/actor-rdf-join-multi-sequential",
+  "import": [
+    "files-carjms:components/Actor/RdfJoin/MultiSequential.jsonld"
+  ]
+}
