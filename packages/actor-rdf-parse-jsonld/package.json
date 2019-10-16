@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-parse-jsonld",
-  "version": "1.9.2",
+  "version": "1.9.3",
   "description": "A JSON-LD RDF Parse actor",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-parse-jsonld",
   "lsd:components": "components/components.jsonld",

@@ -1,6 +1,6 @@
 {
   "name": "@comunica/bus-rdf-resolve-hypermedia-links",
-  "version": "1.9.2",
+  "version": "1.9.3",
   "description": "A comunica bus for rdf-resolve-hypermedia-links events.",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-resolve-hypermedia-links",
   "lsd:components": "components/components.jsonld",

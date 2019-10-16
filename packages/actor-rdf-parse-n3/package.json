@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-parse-n3",
-  "version": "1.9.2",
+  "version": "1.9.3",
   "description": "A N3 RDF Parse actor",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-parse-n3",
   "lsd:components": "components/components.jsonld",

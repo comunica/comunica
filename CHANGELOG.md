@@ -1,6 +1,23 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v1.9.3"></a>
+## [v1.9.3](https://github.com/comunica/comunica/compare/v1.9.2...v1.9.3) - 2019-10-16
+
+### Added
+* [Add lenient mode for HTTP and parsing errors](https://github.com/comunica/comunica/commit/09903fa9c3ede45c925c85db73e891e3209c40e1)
+* [Store currently processing operation in context](https://github.com/comunica/comunica/commit/ef9b1a90138368df2101563e8e9a380c306dc713)
+* [Log requesting URLs in node-fetch HTTP actor](https://github.com/comunica/comunica/commit/a6f2792c669633864a7b31f9539ab4541db0a089)
+
+### Changed
+* [Tweak priorities of default RDF media types](https://github.com/comunica/comunica/commit/c4cc7f32ee6341c8231c5405b234127efa0b704e)
+* [Make hypermedia link following lazy](https://github.com/comunica/comunica/commit/8f955908a043b0cb8e545ad772f692fc8e62610d)
+* [Allow headers and method to be passed to RDF dereferencers](https://github.com/comunica/comunica/commit/51f0aa43148928f5a0710ec302d0fe8839340065)
+* [Update to Sparqlalgebra.js 2.x.x](https://github.com/comunica/comunica/commit/285e0ee3e4087261c91f0577f1b58208a457ff99)
+
+### Fixed
+* [Add missing stream-to-string to actor-rdf-parse-jsonld](https://github.com/comunica/comunica/commit/82a0d86292d0b6c40ba05acb05fa15f58ea519ab)
+
 <a name="v1.9.2"></a>
 ## [v1.9.2](https://github.com/comunica/comunica/compare/v1.9.1...v1.9.2) - 2019-09-27
 

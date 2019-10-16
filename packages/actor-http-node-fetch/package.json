@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-http-node-fetch",
-  "version": "1.9.2",
+  "version": "1.9.3",
   "description": "A node-fetch http actor",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-http-node-fetch",
   "lsd:components": "components/components.jsonld",

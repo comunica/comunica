@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-sparql-parse-algebra",
-  "version": "1.9.2",
+  "version": "1.9.3",
   "description": "A algebra sparql-parse actor",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-sparql-parse-algebra",
   "lsd:components": "components/components.jsonld",

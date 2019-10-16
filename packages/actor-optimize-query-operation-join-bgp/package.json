@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-optimize-query-operation-join-bgp",
-  "version": "1.9.2",
+  "version": "1.9.3",
   "description": "A join-bgp optimize-query-operation actor",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-optimize-query-operation-join-bgp",
   "lsd:components": "components/components.jsonld",
@@ -42,7 +42,7 @@
     "@comunica/core": "^1.4.0"
   },
   "devDependencies": {
-    "@comunica/bus-optimize-query-operation": "^1.9.2",
+    "@comunica/bus-optimize-query-operation": "^1.9.3",
     "@comunica/core": "^1.9.2"
   },
   "jest": {

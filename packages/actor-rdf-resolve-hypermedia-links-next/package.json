@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-resolve-hypermedia-links-next",
-  "version": "1.9.2",
+  "version": "1.9.3",
   "description": "A next rdf-resolve-hypermedia-links actor",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-resolve-hypermedia-links-next",
   "lsd:components": "components/components.jsonld",
@@ -39,7 +39,7 @@
     "@comunica/core": "^1.8.0"
   },
   "devDependencies": {
-    "@comunica/bus-rdf-resolve-hypermedia-links": "^1.9.2",
+    "@comunica/bus-rdf-resolve-hypermedia-links": "^1.9.3",
     "@comunica/core": "^1.9.2"
   },
   "jest": {
