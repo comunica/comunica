@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-init-rdf-dereference",
-  "version": "1.9.3",
+  "version": "1.9.4",
   "description": "A Comunica engine for dereferencing RDF resources",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-rdf-dereference",
   "lsd:components": "components/components.jsonld",
@@ -53,8 +53,8 @@
     "@comunica/mediator-combine-union": "^1.9.2",
     "@comunica/mediator-number": "^1.9.2",
     "@comunica/mediator-race": "^1.9.2",
-    "@comunica/runner": "^1.9.2",
-    "@comunica/runner-cli": "^1.9.2",
+    "@comunica/runner": "^1.9.4",
+    "@comunica/runner-cli": "^1.9.4",
     "rdf-string": "^1.3.1"
   },
   "jest": {

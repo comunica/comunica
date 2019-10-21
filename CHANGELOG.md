@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v1.9.4"></a>
+## [v1.9.4](https://github.com/comunica/comunica/compare/v1.9.3...v1.9.4) - 2019-10-21
+
+### Changed
+* [Bump to Components.js 3.3.0](https://github.com/comunica/comunica/commit/bfe72612b448e1a143d925be909b4c39921d46e1)
+
 <a name="v1.9.3"></a>
 ## [v1.9.3](https://github.com/comunica/comunica/compare/v1.9.2...v1.9.3) - 2019-10-16
 
