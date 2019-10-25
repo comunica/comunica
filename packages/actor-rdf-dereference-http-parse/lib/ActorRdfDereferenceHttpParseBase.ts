@@ -32,8 +32,8 @@ export abstract class ActorRdfDereferenceHttpParseBase extends ActorRdfDereferen
   }
 
   public async test(action: IActionRdfDereference): Promise<IActorTest> {
-    if (!action.url.startsWith("http:") && !action.url.startsWith("https:")) {
-      throw new Error('This actor can only handle URLs that start with \'http\' or \'https\'.');
+    if (!/^https?:/.test(action.url)) {
+      throw new Error(`Cannot retrieve ${action.url} because it is not an HTTP(S) URL.`);
     }
     return true;
   }
