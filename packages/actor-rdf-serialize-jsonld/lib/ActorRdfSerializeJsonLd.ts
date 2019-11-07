@@ -17,11 +17,8 @@ export class ActorRdfSerializeJsonLd extends ActorRdfSerializeFixedMediaTypes {
    */
   public readonly jsonStringifyIndentSpaces: number;
 
-  private readonly jsonLd: any;
-
   constructor(args: IActorRdfSerializeJsonLdArgs) {
     super(args);
-    this.jsonLd = require('jsonld')();
   }
 
   public async runHandle(action: IActionRdfSerialize, mediaType: string, context: ActionContext)
