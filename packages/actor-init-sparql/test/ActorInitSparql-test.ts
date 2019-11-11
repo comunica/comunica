@@ -5,8 +5,21 @@ import {Bus, KEY_CONTEXT_LOG} from "@comunica/core";
 import {literal, namedNode, variable} from "@rdfjs/data-model";
 import {Factory, translate} from "sparqlalgebrajs";
 import {PassThrough, Readable} from "stream";
+import { newEngine } from "../index-browser";
 import {ActorInitSparql} from "../lib/ActorInitSparql";
 import {ActorInitSparql as ActorInitSparqlBrowser, KEY_CONTEXT_QUERYFORMAT} from "../lib/ActorInitSparql-browser";
+
+describe('actorInitSparql.newEngine', () => {
+  let myEngine: any;
+  beforeEach(() => {
+    myEngine = newEngine();
+  });
+  it.skip('should emit an error for unresolvable URL', () => {
+    const promise = myEngine.query('CONSTRUCT WHERE { ?s ?p ?o }',
+    { source: { value: 'https://ruben.verborgh.orgz' } });
+    return expect(promise).rejects.toBeTruthy();
+  });
+});
 
 const FACTORY: Factory = new Factory();
 
