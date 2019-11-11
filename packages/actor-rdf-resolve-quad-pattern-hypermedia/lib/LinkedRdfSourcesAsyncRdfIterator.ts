@@ -58,7 +58,11 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
       this.sourcesState =  {
         sources: new LRUCache<string, Promise<ISourceState>>({ max: this.cacheSize }),
       };
-      this.getNextSourceCached(this.firstUrl, {}); // Ignore the response, we just want the promise to be cached
+      this.getNextSourceCached(this.firstUrl, {}).catch((e) => {
+        console.error('error in getNextSourceCached', e);
+        // throw e;
+        // Ignore the response, we just want the promise to be cached
+      });
     }
   }
 
