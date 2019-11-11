@@ -4,13 +4,11 @@ import {Actor, IActorArgs, IActorTest, Mediator} from "@comunica/core";
 import {PassThrough} from "stream";
 
 /**
- * A Hello World actor that listens on the 'init' bus.
+ * A http actor that listens on the 'init' bus.
  *
- * It takes an optional `hello` parameter, which defaults to 'Hello'.
- * When run, it will print the `hello` parameter to the console,
- * followed by all arguments it received.
+ * It will call `this.mediatorHttp.mediate`.
  */
-export class ActorInitHttp extends ActorInit implements IActorInitHelloWorldArgs {
+export class ActorInitHttp extends ActorInit implements IActorInitHttpArgs {
 
   public readonly mediatorHttp: Mediator<Actor<IActionHttp, IActorTest, IActorHttpOutput>,
     IActionHttp, IActorTest, IActorHttpOutput>;
@@ -18,7 +16,7 @@ export class ActorInitHttp extends ActorInit implements IActorInitHelloWorldArgs
   public readonly method?: string;
   public readonly headers?: string[];
 
-  constructor(args: IActorInitHelloWorldArgs) {
+  constructor(args: IActorInitHttpArgs) {
     super(args);
   }
 
@@ -59,7 +57,7 @@ export class ActorInitHttp extends ActorInit implements IActorInitHelloWorldArgs
 
 }
 
-export interface IActorInitHelloWorldArgs extends IActorArgs<IActionInit, IActorTest, IActorOutputInit> {
+export interface IActorInitHttpArgs extends IActorArgs<IActionInit, IActorTest, IActorOutputInit> {
   mediatorHttp: Mediator<Actor<IActionHttp, IActorTest, IActorHttpOutput>,
     IActionHttp, IActorTest, IActorHttpOutput>;
   url?: string;

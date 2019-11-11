@@ -4,11 +4,9 @@ import {IMediatorTypeTime} from "@comunica/mediatortype-time";
 import "isomorphic-fetch";
 
 /**
- * A Hello World actor that listens on the 'init' bus.
+ * A node-fetch actor that listens on the 'init' bus.
  *
- * It takes an optional `hello` parameter, which defaults to 'Hello'.
- * When run, it will print the `hello` parameter to the console,
- * followed by all arguments it received.
+ * It will call `fetch` with either action.input or action.url.
  */
 export class ActorHttpNodeFetch extends ActorHttp {
 
