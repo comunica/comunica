@@ -14,7 +14,7 @@ describe('actorInitSparql.newEngine', () => {
   beforeEach(() => {
     myEngine = newEngine();
   });
-  it.skip('should emit an error for unresolvable URL', () => {
+  it('should emit an error for unresolvable URL', () => {
     const promise = myEngine.query('CONSTRUCT WHERE { ?s ?p ?o }',
     { source: { value: 'https://ruben.verborgh.orgz' } });
     return expect(promise).rejects.toBeTruthy();
