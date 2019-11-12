@@ -22,7 +22,9 @@
     "member-ordering": [true, {
       "order": "fields-first"
     }],
-    "forin": false
+    "forin": false,
+    "no-unused-expression": true,
+    "no-floating-promises": true
   },
   "rulesDirectory": []
 }
