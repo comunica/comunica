@@ -199,6 +199,8 @@ export class ActorRdfResolveQuadPatternSparqlJson
           });
 
           superRead(count, done);
+        }).catch((e) => {
+          // ignore
         });
       } else {
         superRead(count, done);

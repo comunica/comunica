@@ -9,6 +9,7 @@ import {Stream} from "stream";
 
 const args: ParsedArgs = minimist(process.argv.slice(2));
 if (args._.length !== 1 || !args.o || args.h || args.help) {
+  // tslint:disable-next-line:no-console
   console.error(`comunica-package packages a Comunica config file into a new NPM package
 
 Usage:
@@ -94,4 +95,5 @@ compileConfig({ mainModulePath, scanGlobal }, configPath, configStreamRaw, confi
     // Write output files
     fs.writeFileSync(packageName + '/index.js', document);
     fs.writeFileSync(packageName + '/package.json', JSON.stringify(packageJson, null, '  '));
+    // tslint:disable-next-line:no-console
   }).catch(console.error);

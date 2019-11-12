@@ -47,7 +47,9 @@ export class ActorRdfSourceIdentifierHypermediaQpf extends ActorRdfSourceIdentif
 
     // Avoid memory leaks
     if (httpResponse.body) {
-      httpResponse.body.cancel();
+      httpResponse.body.cancel().catch((e) => {
+        // ignore
+      });
     }
 
     throw new Error(`${sourceUrl} is not a (QPF) hypermedia interface`);

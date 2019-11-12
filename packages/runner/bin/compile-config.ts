@@ -5,12 +5,13 @@
 
 import {compileConfig} from "componentsjs";
 import {createReadStream} from "fs";
-import {Stream} from "stream";
 import {sep} from "path";
+import {Stream} from "stream";
 
 const args = process.argv.slice(2);
 
 if (!args.length) {
+  // tslint:disable-next-line:no-console
   console.error('Usage: comunica-compile-config path/to/config.json [urn:of:init:actor]');
   process.exit(1);
 }
@@ -34,7 +35,9 @@ for (let i = pathParts.length; i > 0; i--) {
 }
 
 compileConfig({ mainModulePath }, configPath, configStreamRaw, configResourceUri, exportVariableName)
+  // tslint:disable-next-line:no-console
   .then(console.log).catch((e) => {
+    // tslint:disable-next-line:no-console
     console.error(e);
     process.exit(1);
   });

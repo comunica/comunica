@@ -4,6 +4,7 @@ import {runArgs} from "../lib/ArgsRunner";
 
 const argv = process.argv.slice(2);
 if (argv.length < 1 || /^--?h(elp)?$/.test(argv[0])) {
+  // tslint:disable-next-line:no-console
   console.log('usage: runner-cli config.json [args...]');
   process.exit(1);
 }

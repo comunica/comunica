@@ -144,6 +144,8 @@ export class RdfSourceQpf implements RDF.Source {
         .then(({ metadata }) => {
           quads.setProperty('metadata', metadata);
           quads.emit('metadata', metadata);
+        }).catch((e) => {
+          // ignore
         });
 
       // The server is free to send any data in its response (such as metadata),

@@ -27,7 +27,9 @@ export class ActorRdfSourceIdentifierSparql extends ActorRdfSourceIdentifier {
     const httpResponse: IActorHttpOutput = await this.mediatorHttp.mediate(httpAction);
 
     // No need to process the body. (HEAD requests would be better, but not all endpoints implement that properly)
-    httpResponse.body.cancel();
+    httpResponse.body.cancel().catch((e) => {
+      // ignore
+    });
 
     if (!httpResponse.ok || httpResponse.headers.get('Content-Type').indexOf('application/sparql-results+json') < 0) {
       throw new Error(`${sourceUrl} is not a SPARQL endpoint`);

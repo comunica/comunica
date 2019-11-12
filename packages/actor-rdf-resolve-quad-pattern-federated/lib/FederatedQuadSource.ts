@@ -181,6 +181,8 @@ export class FederatedQuadSource implements ILazyQuadSource {
               remainingSources--;
               checkEmitMetadata(subMetadata.totalItems, source, pattern, subMetadata);
             }
+          }).catch((e) => {
+            // ignore
           });
         } else {
           metadata.totalItems = Infinity;
