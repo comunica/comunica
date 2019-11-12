@@ -88,7 +88,7 @@ describe('ActorHttpMemento', () => {
               };
             },
             cancel() {
-              return;
+              return Promise.resolve();
             },
           },
           headers,
