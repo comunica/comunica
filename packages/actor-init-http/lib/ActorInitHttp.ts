@@ -43,7 +43,7 @@ export class ActorInitHttp extends ActorInit implements IActorInitHelloWorldArgs
       }
       http.init.headers = headers;
     }
-
+    console.log('here!!');
     const httpResponse: IActorHttpOutput = await this.mediatorHttp.mediate(http);
     const output: IActorOutputInit = {};
     // Wrap WhatWG readable stream into a Node.js readable stream

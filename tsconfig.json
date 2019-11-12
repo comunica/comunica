@@ -21,7 +21,8 @@
     "packages/*/index.ts",
     "packages/*/index-browser.ts",
     "packages/*/bin/**/*",
-    "packages/*/lib/**/*"
+    "packages/*/lib/**/*",
+    "packages/*/test/**/*"
   ],
   "exclude": [
     "**/node_modules",

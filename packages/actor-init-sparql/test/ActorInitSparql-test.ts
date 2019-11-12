@@ -14,10 +14,19 @@ describe('actorInitSparql.newEngine', () => {
   beforeEach(() => {
     myEngine = newEngine();
   });
-  it('should emit an error for unresolvable URL', () => {
-    const promise = myEngine.query('CONSTRUCT WHERE { ?s ?p ?o }',
-    { source: { value: 'https://ruben.verborgh.orgz' } });
-    return expect(promise).rejects.toBeTruthy();
+  it.only('should emit an error for unresolvable URL', async () => {
+    let result;
+    try {
+      console.log('before await');
+      await myEngine.query('CONSTRUCT WHERE { ?s ?p ?o }',
+        { source: { value: 'https://ruben.verborgh.orgz' } });
+      console.log('after await');
+      result = 'incorrect';
+    } catch (e) {
+      console.log('error caught');
+      result = 'correct';
+    }
+    return expect(result).toEqual('correct');
   });
 });
 

@@ -65,7 +65,11 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
   }
 
   public _read(count: number, done: () => void) {
+    // tslint-disable-next-line:no-console
+    console.log('_read called!');
     if (!this.started) {
+      // tslint-disable-next-line:no-console
+      console.log('starting');
       this.started = true;
       if (!this.sourcesState) {
         this.setSourcesState();
@@ -76,26 +80,27 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
           done();
         })
         .catch((e) => this.emit('error', e));
-    } else if (!this.iterating && this.nextSource) {
-      const nextSource = this.nextSource;
-      this.nextSource = null;
-      this.getNextUrls(nextSource.metadata)
-        .then((nextUrls: string[]) => Promise.all(nextUrls))
-        .then(async (nextUrls: string[]) => {
-          if (nextUrls.length === 0 && this.nextUrls.length === 0) {
-            this.close();
-          } else {
-            for (const nextUrl of nextUrls) {
-              this.nextUrls.push(nextUrl);
-            }
+    // } else if (!this.iterating && this.nextSource) {
+    //   const nextSource = this.nextSource;
+    //   this.nextSource = null;
+    //   this.getNextUrls(nextSource.metadata)
+    //     .then((nextUrls: string[]) => Promise.all(nextUrls))
+    //     .then(async (nextUrls: string[]) => {
+    //       console.log('next urls!', nextUrls);
+    //       if (nextUrls.length === 0 && this.nextUrls.length === 0) {
+    //         this.close();
+    //       } else {
+    //         for (const nextUrl of nextUrls) {
+    //           this.nextUrls.push(nextUrl);
+    //         }
 
-            const nextSourceState = await this.getNextSourceCached(this.nextUrls[0], nextSource.handledDatasets);
-            this.startIterator(nextSourceState, false);
-            this.nextUrls.splice(0, 1);
-          }
+    //         const nextSourceState = await this.getNextSourceCached(this.nextUrls[0], nextSource.handledDatasets);
+    //         this.startIterator(nextSourceState, false);
+    //         this.nextUrls.splice(0, 1);
+    //       }
 
-          done();
-        }).catch((e) => this.emit('error', e));
+    //       done();
+    //     }).catch((e) => this.emit('error', e));
     } else {
       done();
     }

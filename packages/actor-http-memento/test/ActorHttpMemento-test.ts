@@ -151,8 +151,7 @@ describe('ActorHttpMemento', () => {
       expect(result.status).toEqual(200);
 
       const body = result.body;
-      expect(body.getReader().read()).toEqual("memento1");
-      return;
+      return expect(body.getReader().read()).toEqual("memento1");
     });
 
     it('should run with old memento', async () => {
@@ -165,8 +164,7 @@ describe('ActorHttpMemento', () => {
       expect(result.status).toEqual(200);
 
       const body = result.body;
-      expect(body.getReader().read()).toEqual("memento2");
-      return;
+      return expect(body.getReader().read()).toEqual("memento2");
     });
 
     it('should not follow other link header', async () => {
@@ -179,8 +177,7 @@ describe('ActorHttpMemento', () => {
       expect(result.status).toEqual(200);
 
       const body = result.body;
-      expect(body.getReader().read()).toEqual("nolink");
-      return;
+      return expect(body.getReader().read()).toEqual("nolink");
     });
 
     it('should proxy request when memento', async () => {
