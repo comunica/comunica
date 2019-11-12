@@ -24,7 +24,8 @@
     }],
     "forin": false,
     "no-unused-expression": true,
-    "no-floating-promises": true
+    "no-floating-promises": true,
+    "no-return-await": true
   },
   "rulesDirectory": []
 }

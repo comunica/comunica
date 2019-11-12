@@ -26,7 +26,7 @@ export abstract class ActorAbstractMediaTypedFixed<HI, HT, HO> extends ActorAbst
     if (!(mediaType in this.mediaTypes)) {
       throw new Error('Unrecognized media type: ' + mediaType);
     }
-    return await this.testHandleChecked(action, context);
+    return this.testHandleChecked(action, context);
   }
 
   /**

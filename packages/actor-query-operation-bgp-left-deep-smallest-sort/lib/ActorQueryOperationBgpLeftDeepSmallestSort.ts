@@ -185,7 +185,7 @@ export class ActorQueryOperationBgpLeftDeepSmallestSort extends ActorQueryOperat
 
     // Resolve the metadata for all patterns
     const metadatas: {[id: string]: any}[] = await Promise.all(patternOutputs.map(
-      async (patternOutput) => patternOutput.metadata ? await patternOutput.metadata() : {}));
+      async (patternOutput) => patternOutput.metadata ? patternOutput.metadata() : {}));
 
     // Sort patterns by increasing total items
     const outputMetaTuples: IOutputMetaTuple[] = ActorQueryOperationBgpLeftDeepSmallestSort.sortPatterns(

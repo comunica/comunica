@@ -209,7 +209,7 @@ export class ActorQueryOperationBgpLeftDeepSmallest extends ActorQueryOperationT
 
     // Find the pattern with the smallest number of elements
     const metadatas: {[id: string]: any}[] = await Promise.all(patternOutputs.map(
-      async (patternOutput) => patternOutput.metadata ? await patternOutput.metadata() : {}));
+      async (patternOutput) => patternOutput.metadata ? patternOutput.metadata() : {}));
     const smallestId: number = ActorQueryOperationBgpLeftDeepSmallest.getSmallestPatternId(metadatas);
 
     this.logDebug(context, 'Smallest pattern: ',

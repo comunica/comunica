@@ -64,7 +64,7 @@ export class Setup {
     // Instantiate the given config file
     const loader = new Loader(properties);
     await loader.registerAvailableModuleResources();
-    return await loader.instantiateFromUrl(instanceUri, configResourceUrl);
+    return loader.instantiateFromUrl(instanceUri, configResourceUrl);
   }
 
 }
