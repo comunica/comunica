@@ -2,9 +2,9 @@ import {Bindings, IActorQueryOperationOutputBindings} from "@comunica/bus-query-
 import {ActorRdfJoin, IActionRdfJoin} from "@comunica/bus-rdf-join";
 import {Bus} from "@comunica/core";
 import {literal} from "@rdfjs/data-model";
+import arrayifyStream = require('arrayify-stream');
 import {ArrayIterator} from "asynciterator";
 import {ActorRdfJoinHash} from "../lib/ActorRdfJoinHash";
-const arrayifyStream = require('arrayify-stream');
 
 function bindingsToString(b: Bindings): string {
   const keys = b.keySeq().toArray().sort();

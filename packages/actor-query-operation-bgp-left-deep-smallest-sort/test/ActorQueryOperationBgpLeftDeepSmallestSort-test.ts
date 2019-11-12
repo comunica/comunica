@@ -1,11 +1,11 @@
 import {ActorQueryOperation, Bindings, IActorQueryOperationOutputBindings} from "@comunica/bus-query-operation";
 import {ActionContext, Bus} from "@comunica/core";
 import {blankNode, defaultGraph, literal, namedNode, quad, variable} from "@rdfjs/data-model";
+import arrayifyStream = require('arrayify-stream');
 import {ArrayIterator, EmptyIterator, SingletonIterator} from "asynciterator";
 import * as RDF from "rdf-js";
 import {Algebra} from "sparqlalgebrajs";
 import {ActorQueryOperationBgpLeftDeepSmallestSort} from "../lib/ActorQueryOperationBgpLeftDeepSmallestSort";
-const arrayifyStream = require('arrayify-stream');
 
 describe('ActorQueryOperationBgpLeftDeepSmallestSort', () => {
   let bus;

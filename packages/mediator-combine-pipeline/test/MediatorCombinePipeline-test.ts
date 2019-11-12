@@ -26,8 +26,11 @@ describe('MediatorCombinePipeline', () => {
 
     beforeEach(() => {
       mediator = new MediatorCombinePipeline({ name: 'mediator', bus });
+      // tslint:disable-next-line:no-unused-expression
       new DummyActor(10, bus);
+      // tslint:disable-next-line:no-unused-expression
       new DummyActor(100, bus);
+      // tslint:disable-next-line:no-unused-expression
       new DummyActor(1, bus);
     });
 

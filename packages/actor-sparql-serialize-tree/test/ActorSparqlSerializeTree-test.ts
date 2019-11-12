@@ -3,11 +3,10 @@ import {Bus} from "@comunica/core";
 import {ActionContext} from "@comunica/core";
 import {namedNode} from "@rdfjs/data-model";
 import {ArrayIterator} from "asynciterator";
+import quad = require('rdf-quad');
 import {Readable} from "stream";
+import stringifyStream = require('stream-to-string');
 import {ActorSparqlSerializeTree} from "../lib/ActorSparqlSerializeTree";
-
-const quad = require('rdf-quad');
-const stringifyStream = require('stream-to-string');
 
 describe('ActorSparqlSerializeTree', () => {
   let bus;

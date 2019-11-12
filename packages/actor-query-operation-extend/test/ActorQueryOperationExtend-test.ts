@@ -2,8 +2,8 @@ import { Actor } from '@comunica/core';
 // tslint:disable:object-literal-sort-keys
 import { Bus } from "@comunica/core";
 import { literal, namedNode } from "@rdfjs/data-model";
+import arrayifyStream = require('arrayify-stream');
 import { ArrayIterator } from "asynciterator";
-const arrayifyStream = require('arrayify-stream');
 import * as sparqlee from 'sparqlee';
 
 import { ActorQueryOperation, Bindings, IActorQueryOperationOutputBindings } from "@comunica/bus-query-operation";

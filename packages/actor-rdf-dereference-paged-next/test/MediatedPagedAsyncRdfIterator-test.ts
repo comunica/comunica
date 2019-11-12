@@ -8,6 +8,7 @@ import {
 } from "@comunica/bus-rdf-metadata-extract";
 import {ActionContext, IActorTest, Mediator} from "@comunica/core";
 import {SingletonIterator} from "asynciterator";
+import { promises } from "dns";
 import * as _ from "lodash";
 import * as RDF from "rdf-js";
 import {MediatedPagedAsyncRdfIterator} from "../lib/MediatedPagedAsyncRdfIterator";
@@ -70,11 +71,11 @@ describe('MediatedPagedAsyncRdfIterator', () => {
     it('handles the first page', (done) => {
       const callback = _.after(2, done);
 
-      actor.getIterator('URL', 0, (nextPage) => {
-        expect(nextPage).toBe('NEXT');
+      return actor.getIterator('URL', 0, (nextPage) => {
+        void expect(nextPage).toBe('NEXT');
         callback();
       }).then((stream) => {
-        expect(stream.read()).toBe('DATA');
+        void expect(stream.read()).toBe('DATA');
         callback();
       });
     });
@@ -107,7 +108,7 @@ describe('MediatedPagedAsyncRdfIterator', () => {
         return Promise.resolve({ metadata: { next: 'NEXT' }});
       };
 
-      actor.getIterator('URL', 1, (nextPage) => {
+      return actor.getIterator('URL', 1, (nextPage) => {
         expect(nextPage).toBe('NEXT');
         callback();
       }).then((stream) => {
@@ -116,28 +117,31 @@ describe('MediatedPagedAsyncRdfIterator', () => {
       });
     });
 
-    it('handles incorrect next page metadata', (done) => {
-      const callback = _.after(2, done);
+    it('handles incorrect next page metadata', async () => {
+      const promise = new Promise((done) => {
+        const callback = _.after(2, done);
 
-      mediatorRdfDereference.mediate = (o) => {
-        expect(o.url).toBe('URL');
-        return Promise.resolve({ url: 'PAGEURL', quads: 'QUADS' });
-      };
+        mediatorRdfDereference.mediate = (o) => {
+          expect(o.url).toBe('URL');
+          return Promise.resolve({ url: 'PAGEURL', quads: 'QUADS' });
+        };
 
-      mediatorMetadata.mediate = (o) => {
-        expect(o.url).toBe('PAGEURL');
-        expect(o.quads).toBe('QUADS');
-        return Promise.resolve({ data: new SingletonIterator('DATA'), metadata: 'METADATA' });
-      };
+        mediatorMetadata.mediate = (o) => {
+          expect(o.url).toBe('PAGEURL');
+          expect(o.quads).toBe('QUADS');
+          return Promise.resolve({ data: new SingletonIterator('DATA'), metadata: 'METADATA' });
+        };
 
-      mediatorMetadataExtract.mediate = (o) => {
-        expect(o.url).toBe('PAGEURL');
-        expect(o.metadata).toBe('METADATA');
-        return Promise.reject('error');
-      };
+        mediatorMetadataExtract.mediate = (o) => {
+          expect(o.url).toBe('PAGEURL');
+          expect(o.metadata).toBe('METADATA');
+          return Promise.reject('error');
+        };
 
-      actor.on('error', () => { done(); });
-      actor.getIterator('URL', 1, () => {}); // tslint:disable-line no-empty
+        actor.on('error', () => { done(); });
+      });
+      await actor.getIterator('URL', 1, () => {}); // tslint:disable-line no-empty
+      return promise;
     });
   });
 });

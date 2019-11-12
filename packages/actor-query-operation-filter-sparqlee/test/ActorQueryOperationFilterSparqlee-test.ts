@@ -1,10 +1,10 @@
 // tslint:disable:object-literal-sort-keys
 import { literal, variable } from "@rdfjs/data-model";
+import arrayifyStream = require('arrayify-stream');
 import { ArrayIterator } from "asynciterator";
 import { Map } from "immutable";
 import { Algebra, Factory, translate } from "sparqlalgebrajs";
 import * as sparqlee from "sparqlee";
-const arrayifyStream = require('arrayify-stream');
 
 import { ActorQueryOperation, Bindings, IActorQueryOperationOutputBindings,
   KEY_CONTEXT_BASEIRI } from "@comunica/bus-query-operation";

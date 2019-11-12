@@ -1,9 +1,9 @@
 import {ActorRdfParseFixedMediaTypes} from "@comunica/bus-rdf-parse";
 import {Bus} from "@comunica/core";
+import arrayifyStream = require('arrayify-stream');
 import {Readable} from "stream";
+import stringToStream = require('streamify-string');
 import {ActorRdfParseN3} from "../lib/ActorRdfParseN3";
-const stringToStream = require('streamify-string');
-const arrayifyStream = require('arrayify-stream');
 
 describe('ActorRdfParseN3', () => {
   let bus;
@@ -29,7 +29,7 @@ describe('ActorRdfParseN3', () => {
     });
 
     it('should not throw an error when constructed with required arguments', () => {
-      expect(() => { new ActorRdfParseN3({ name: 'actor', bus, mediaTypes: {} }); }).toBeTruthy();
+      expect(() => new ActorRdfParseN3({ name: 'actor', bus, mediaTypes: {} })).toBeTruthy();
     });
 
     it('when constructed with optional mediaTypes should set the mediaTypes', () => {
@@ -37,7 +37,7 @@ describe('ActorRdfParseN3', () => {
     });
 
     it('should not throw an error when constructed with optional priorityScale', () => {
-      expect(() => { new ActorRdfParseN3({ name: 'actor', bus, mediaTypes: {}, priorityScale: 0.5 }); }).toBeTruthy();
+      expect(new ActorRdfParseN3({ name: 'actor', bus, mediaTypes: {}, priorityScale: 0.5 })).toBeTruthy();
     });
 
     it('when constructed with optional priorityScale should set the priorityScale', () => {
@@ -55,7 +55,7 @@ describe('ActorRdfParseN3', () => {
     });
 
     it('should not throw an error when constructed with optional arguments', () => {
-      expect(() => { new ActorRdfParseN3({ name: 'actor', bus, mediaTypes: {}, priorityScale: 0.5 }); }).toBeTruthy();
+      expect(() => new ActorRdfParseN3({ name: 'actor', bus, mediaTypes: {}, priorityScale: 0.5 })).toBeTruthy();
     });
   });
 

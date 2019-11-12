@@ -7,9 +7,9 @@ import "jest-rdf";
 import {Readable} from "stream";
 import {ActorRdfParseHtml} from "../lib/ActorRdfParseHtml";
 
-const stringToStream = require('streamify-string');
-const arrayifyStream = require('arrayify-stream');
-const quad = require('rdf-quad');
+import arrayifyStream = require('arrayify-stream');
+import quad = require('rdf-quad');
+import stringToStream = require('streamify-string');
 
 describe('ActorRdfParseHtml', () => {
   let bus;
@@ -129,6 +129,7 @@ describe('ActorRdfParseHtml', () => {
           },
         };
 
+        // tslint:disable-next-line:no-unused-expression
         new ActorRdfParseHtmlScript({
           bus: busRdfParseHtml,
           mediatorRdfParseHandle: mediator,
@@ -181,12 +182,14 @@ describe('ActorRdfParseHtml', () => {
           },
         };
 
+        // tslint:disable-next-line:no-unused-expression
         new ActorRdfParseHtmlScript({
           bus: busRdfParseHtml,
           mediatorRdfParseHandle: mediator,
           mediatorRdfParseMediatypes: mediator,
           name: 'actor1',
         });
+        // tslint:disable-next-line:no-unused-expression
         new ActorRdfParseHtmlRdfa({
           bus: busRdfParseHtml,
           name: 'actor2',

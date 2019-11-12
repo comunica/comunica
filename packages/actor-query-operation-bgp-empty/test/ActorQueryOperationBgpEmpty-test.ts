@@ -1,7 +1,7 @@
 import {ActorQueryOperation, Bindings, IActorQueryOperationOutputBindings} from "@comunica/bus-query-operation";
 import {Bus} from "@comunica/core";
+import arrayifyStream = require('arrayify-stream');
 import {ActorQueryOperationBgpEmpty} from "../lib/ActorQueryOperationBgpEmpty";
-const arrayifyStream = require('arrayify-stream');
 
 describe('ActorQueryOperationBgpEmpty', () => {
   let bus;

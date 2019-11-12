@@ -1,12 +1,12 @@
 import {ActorHttpInvalidateListenable} from "@comunica/bus-http-invalidate";
 import {ActorRdfResolveQuadPattern} from "@comunica/bus-rdf-resolve-quad-pattern";
 import {ActionContext, Bus} from "@comunica/core";
+import arrayifyStream = require('arrayify-stream');
 import "jest-rdf";
 import {Store as N3Store} from "n3";
+import quad = require('rdf-quad');
+import streamifyArray = require('streamify-array');
 import {ActorRdfResolveQuadPatternFile} from "../lib/ActorRdfResolveQuadPatternFile";
-const arrayifyStream = require('arrayify-stream');
-const quad = require('rdf-quad');
-const streamifyArray = require('streamify-array');
 
 // tslint:disable:object-literal-sort-keys
 

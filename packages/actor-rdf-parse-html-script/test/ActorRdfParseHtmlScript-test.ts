@@ -6,7 +6,7 @@ import "jest-rdf";
 import {ActorRdfParseHtmlScript} from "../lib/ActorRdfParseHtmlScript";
 import {HtmlScriptListener} from "../lib/HtmlScriptListener";
 
-const quad = require('rdf-quad');
+import quad = require('rdf-quad');
 
 describe('ActorRdfParseHtml', () => {
   let bus;

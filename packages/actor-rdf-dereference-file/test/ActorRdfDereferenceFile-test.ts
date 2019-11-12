@@ -5,7 +5,7 @@ import * as path from 'path';
 import {Readable} from "stream";
 import {ActorRdfDereferenceFile} from "../lib/ActorRdfDereferenceFile";
 
-const arrayifyStream = require('arrayify-stream');
+import arrayifyStream = require('arrayify-stream');
 
 function fileUrl(str: string): string {
   let pathName = path.resolve(str).replace(/\\/g, '/');

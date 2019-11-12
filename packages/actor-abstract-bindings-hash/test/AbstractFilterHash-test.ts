@@ -49,14 +49,14 @@ describe('AbstractFilterHash', () => {
     });
 
     it('should not be able to create new AbstractFilterHash objects with an invalid hash algo', () => {
-      expect(() => { new (<any> AbstractFilterHash) (
-          { name: 'actor', bus, mediatorQueryOperation, hashAlgorithm: 'abc', digestAlgorithm }, 'distinct'); })
+      expect(() => new (<any> AbstractFilterHash) (
+          { name: 'actor', bus, mediatorQueryOperation, hashAlgorithm: 'abc', digestAlgorithm }, 'distinct'))
           .toThrow();
     });
 
     it('should not be able to create new AbstractFilterHash objects with an invalid digest algo', () => {
-      expect(() => { new (<any> AbstractFilterHash) (
-          { name: 'actor', bus, mediatorQueryOperation, hashAlgorithm, digestAlgorithm: 'abc' }, 'distinct'); })
+      expect(() => new (<any> AbstractFilterHash) (
+          { name: 'actor', bus, mediatorQueryOperation, hashAlgorithm, digestAlgorithm: 'abc' }, 'distinct'))
           .toThrow();
     });
   });

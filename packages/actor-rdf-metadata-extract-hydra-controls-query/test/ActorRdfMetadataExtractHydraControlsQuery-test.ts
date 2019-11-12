@@ -7,8 +7,8 @@ import {ArrayIterator} from "asynciterator";
 import "jest-rdf";
 import {ActorRdfMetadataExtractHydraControlsQuery} from "../lib/ActorRdfMetadataExtractHydraControlsQuery";
 
-const stream = require('streamify-array');
-const quad = require('rdf-quad');
+import quad = require('rdf-quad');
+import stream = require('streamify-array');
 
 // tslint:disable:object-literal-sort-keys
 const sparqlSerialer = new ActorSparqlSerializeSparqlJson(<any> { bus: new Bus({ name: 'b' }) });

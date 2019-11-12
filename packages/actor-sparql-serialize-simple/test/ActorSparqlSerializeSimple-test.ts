@@ -5,8 +5,8 @@ import {ArrayIterator} from "asynciterator";
 import {Readable} from "stream";
 import {ActorSparqlSerializeSimple} from "../lib/ActorSparqlSerializeSimple";
 
-const quad = require('rdf-quad');
-const stringifyStream = require('stream-to-string');
+import quad = require('rdf-quad');
+import stringifyStream = require('stream-to-string');
 
 describe('ActorSparqlSerializeSimple', () => {
   let bus;

@@ -5,10 +5,10 @@ import {
 } from "@comunica/bus-query-operation";
 import {Actor, Bus} from "@comunica/core";
 import {literal} from "@rdfjs/data-model";
+import arrayifyStream = require('arrayify-stream');
 import {ArrayIterator} from "asynciterator";
 import {Algebra} from "sparqlalgebrajs";
 import {AbstractBindingsHash} from "..";
-const arrayifyStream = require('arrayify-stream');
 
 describe('AbstractBindingsHash', () => {
   let bus;
@@ -43,26 +43,26 @@ describe('AbstractBindingsHash', () => {
     });
 
     it('should be a AbstractBindingsHash constructor', () => {
-      expect(new (<any> AbstractBindingsHash)
+      void expect(new (<any> AbstractBindingsHash)
       ({ bus: new Bus({ name: 'bus' }), name: 'actor', hashAlgorithm, digestAlgorithm}, 'distinct'))
               .toBeInstanceOf(AbstractBindingsHash);
-      expect(new (<any> AbstractBindingsHash)
+      return expect(new (<any> AbstractBindingsHash)
         ({ bus: new Bus({ name: 'bus' }), name: 'actor', hashAlgorithm, digestAlgorithm}, 'distinct'))
               .toBeInstanceOf(Actor);
     });
     it('should not be able to create new AbstractBindingsHash objects without \'new\'', () => {
-      expect(() => { (<any> AbstractBindingsHash)(); }).toThrow();
+      return expect(() => { (<any> AbstractBindingsHash)(); }).toThrow();
     });
 
     it('should not be able to create new AbstractBindingsHash objects with an invalid hash algo', () => {
-      expect(() => { new (<any> AbstractBindingsHash) (
-          { name: 'actor', bus, mediatorQueryOperation, hashAlgorithm: 'abc', digestAlgorithm }, 'distinct'); })
+      return expect(() => new (<any> AbstractBindingsHash) (
+          { name: 'actor', bus, mediatorQueryOperation, hashAlgorithm: 'abc', digestAlgorithm }, 'distinct'))
           .toThrow();
     });
 
     it('should not be able to create new AbstractBindingsHash objects with an invalid digest algo', () => {
-      expect(() => { new (<any> AbstractBindingsHash) (
-          { name: 'actor', bus, mediatorQueryOperation, hashAlgorithm, digestAlgorithm: 'abc' }, 'distinct'); })
+      return expect(() => new (<any> AbstractBindingsHash) (
+          { name: 'actor', bus, mediatorQueryOperation, hashAlgorithm, digestAlgorithm: 'abc' }, 'distinct'))
           .toThrow();
     });
   });
@@ -83,10 +83,10 @@ describe('AbstractBindingsHash', () => {
     it('should run', () => {
       const op = { operation: { type: 'distinct' } };
       return m.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
-        expect(await output.metadata()).toEqual({ totalItems: 5 });
-        expect(output.variables).toEqual([ 'a' ]);
-        expect(output.type).toEqual('bindings');
-        expect(await arrayifyStream(output.bindingsStream)).toEqual([
+        void expect(await output.metadata()).toEqual({ totalItems: 5 });
+        void expect(output.variables).toEqual([ 'a' ]);
+        void expect(output.type).toEqual('bindings');
+        return expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({ a: literal('1') }),
           Bindings({ a: literal('2') }),
           Bindings({ a: literal('1') }),

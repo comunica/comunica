@@ -3,8 +3,8 @@ import {ArrayIterator} from "asynciterator";
 import {Readable} from "stream";
 import {ActorRdfSerializeN3} from "../lib/ActorRdfSerializeN3";
 
-const quad = require('rdf-quad');
-const stringifyStream = require('stream-to-string');
+import quad = require('rdf-quad');
+import stringifyStream = require('stream-to-string');
 
 describe('ActorRdfSerializeN3', () => {
   let bus;

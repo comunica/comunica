@@ -3,7 +3,7 @@ import {ArrayIterator} from "asynciterator";
 import * as RDF from "rdf-js";
 import {ISourcesState, ISourceState, LinkedRdfSourcesAsyncRdfIterator} from "../lib/LinkedRdfSourcesAsyncRdfIterator";
 
-const quad = require('rdf-quad');
+import quad = require('rdf-quad');
 
 // dummy class for testing
 // input is array of arrays, with every array corresponding to a page

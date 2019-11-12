@@ -1,14 +1,14 @@
 import {ActorRdfResolveQuadPattern} from "@comunica/bus-rdf-resolve-quad-pattern";
 import {ActionContext, Bus} from "@comunica/core";
 import {blankNode, literal, namedNode} from "@rdfjs/data-model";
+import arrayifyStream = require('arrayify-stream');
 import "isomorphic-fetch";
 import {Factory} from "sparqlalgebrajs";
 import {PassThrough} from "stream";
+import streamifyString = require('streamify-string');
 import {ActorRdfResolveQuadPatternSparqlJson} from "../lib/ActorRdfResolveQuadPatternSparqlJson";
-const arrayifyStream = require('arrayify-stream');
-const streamifyString = require('streamify-string');
 
-const quad = require('rdf-quad');
+import quad = require('rdf-quad');
 
 // tslint:disable:object-literal-sort-keys
 

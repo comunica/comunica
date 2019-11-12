@@ -1,11 +1,11 @@
 import {Bindings} from "@comunica/bus-query-operation";
 import {Bus} from "@comunica/core";
 import {literal, namedNode} from "@rdfjs/data-model";
+import arrayifyStream = require("arrayify-stream");
+import quad = require('rdf-quad');
+import streamifyArray = require("streamify-array");
+import streamifyString = require("streamify-string");
 import {ActorRdfMetadataExtractQuery} from "../lib/ActorRdfMetadataExtractQuery";
-const streamifyArray = require("streamify-array");
-const streamifyString = require("streamify-string");
-const arrayifyStream = require("arrayify-stream");
-const quad = require('rdf-quad');
 
 describe('ActorRdfMetadataExtractQuery', () => {
   const context = {

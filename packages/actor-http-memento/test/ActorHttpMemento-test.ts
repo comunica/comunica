@@ -190,8 +190,7 @@ describe('ActorHttpMemento', () => {
       expect(result.status).toEqual(200);
 
       const body = result.body;
-      expect(body.getReader().read()).toEqual("memento1");
-      return;
+      return expect(body.getReader().read()).toEqual("memento1");
     });
   });
 });

@@ -1,11 +1,11 @@
 import {Bus} from "@comunica/core";
+import arrayifyStream = require('arrayify-stream');
 import "jest-rdf";
+import quad = require('rdf-quad');
 import {Readable} from "stream";
+import stringToStream = require('streamify-string');
+import streamifyString = require('streamify-string');
 import {ActorRdfParseJsonLd} from "../lib/ActorRdfParseJsonLd";
-const stringToStream = require('streamify-string');
-const arrayifyStream = require('arrayify-stream');
-const quad = require('rdf-quad');
-const streamifyString = require('streamify-string');
 
 describe('ActorRdfParseJsonLd', () => {
   let bus;
@@ -54,8 +54,8 @@ describe('ActorRdfParseJsonLd', () => {
     });
 
     it('should not throw an error when constructed with optional priorityScale', () => {
-      expect(() => { new ActorRdfParseJsonLd(
-        { name: 'actor', bus, mediaTypes: {}, priorityScale: 0.5, mediatorHttp }); })
+      expect(() => new ActorRdfParseJsonLd(
+        { name: 'actor', bus, mediaTypes: {}, priorityScale: 0.5, mediatorHttp }))
         .toBeTruthy();
     });
 

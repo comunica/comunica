@@ -1,10 +1,10 @@
 import {ActorQueryOperation, Bindings} from "@comunica/bus-query-operation";
 import {Bus} from "@comunica/core";
 import {literal, namedNode, variable} from "@rdfjs/data-model";
+import arrayifyStream = require('arrayify-stream');
 import {ArrayIterator} from "asynciterator";
 import {Algebra, Factory} from "sparqlalgebrajs";
 import {ActorQueryOperationPathLink} from "../lib/ActorQueryOperationPathLink";
-const arrayifyStream = require('arrayify-stream');
 
 describe('ActorQueryOperationPathLink', () => {
   let bus;

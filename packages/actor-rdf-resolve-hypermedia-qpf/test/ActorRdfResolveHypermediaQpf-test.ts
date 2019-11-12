@@ -77,8 +77,8 @@ describe('ActorRdfResolveHypermediaQpf', () => {
     });
 
     it('should not throw an error when constructed without optional graph uri', () => {
-      return expect(() => { new (<any> ActorRdfResolveHypermediaQpf)({ bus,
-        name: 'actor', objectUri: 'o', predicateUri: 'p', subjectUri: 's' }); }).not.toThrow();
+      return expect(() => new (<any> ActorRdfResolveHypermediaQpf)({ bus,
+        name: 'actor', objectUri: 'o', predicateUri: 'p', subjectUri: 's' })).not.toThrow();
     });
   });
 

@@ -5,9 +5,9 @@ import * as RDF from "rdf-js";
 import {Readable} from "stream";
 import {RdfSourceQpf} from "../lib/RdfSourceQpf";
 
-const arrayifyStream = require('arrayify-stream');
-const streamifyArray = require('streamify-array');
-const quad = require('rdf-quad');
+import arrayifyStream = require('arrayify-stream');
+import quad = require('rdf-quad');
+import streamifyArray = require('streamify-array');
 
 // tslint:disable:object-literal-sort-keys
 

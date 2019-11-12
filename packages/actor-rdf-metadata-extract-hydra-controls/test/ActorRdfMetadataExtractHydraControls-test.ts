@@ -1,8 +1,8 @@
 import {ActorRdfMetadataExtract} from "@comunica/bus-rdf-metadata-extract";
 import {Bus} from "@comunica/core";
+import quad = require('rdf-quad');
+import stream = require('streamify-array');
 import {ActorRdfMetadataExtractHydraControls} from "../lib/ActorRdfMetadataExtractHydraControls";
-const stream = require('streamify-array');
-const quad = require('rdf-quad');
 
 const HYDRA: string = 'http://www.w3.org/ns/hydra/core#';
 

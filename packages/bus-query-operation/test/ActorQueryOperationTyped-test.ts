@@ -10,16 +10,16 @@ describe('ActorQueryOperationTyped', () => {
     });
 
     it('should be a ActorQueryOperationTyped constructor', () => {
-      expect(new (<any> ActorQueryOperationTyped)({ name: 'actor', bus }, 'bla'))
+      return expect(new (<any> ActorQueryOperationTyped)({ name: 'actor', bus }, 'bla'))
         .toBeInstanceOf(ActorQueryOperationTyped);
     });
 
     it('should not be able to create new ActorQueryOperationTyped objects without \'new\'', () => {
-      expect(() => { (<any> ActorQueryOperationTyped)(); }).toThrow();
+      return expect(() => { (<any> ActorQueryOperationTyped)(); }).toThrow();
     });
 
     it('should not be able to create new ActorQueryOperationTyped objects without an operation name', () => {
-      expect(() => { new (<any> ActorQueryOperationTyped)({ name: 'actor', bus }, null); }).toThrow();
+      return expect(() => new (<any> ActorQueryOperationTyped)({ name: 'actor', bus }, null)).toThrow();
     });
   });
 

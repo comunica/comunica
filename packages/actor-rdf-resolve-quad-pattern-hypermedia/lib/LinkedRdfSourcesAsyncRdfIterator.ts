@@ -65,10 +65,9 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
   }
 
   public _read(count: number, done: () => void) {
-    // tslint-disable-next-line:no-console
     console.log('_read called!');
+    throw new Error('where?');
     if (!this.started) {
-      // tslint-disable-next-line:no-console
       console.log('starting');
       this.started = true;
       if (!this.sourcesState) {

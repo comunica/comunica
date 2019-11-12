@@ -1,10 +1,10 @@
 import {ActorRdfResolveQuadPattern} from "@comunica/bus-rdf-resolve-quad-pattern";
 import {ActionContext, Bus} from "@comunica/core";
+import arrayifyStream = require('arrayify-stream');
 import {ArrayIterator} from "asynciterator";
 import {AsyncReiterableArray} from "asyncreiterable";
+import squad = require('rdf-quad');
 import {ActorRdfResolveQuadPatternFederated} from "../lib/ActorRdfResolveQuadPatternFederated";
-const squad = require('rdf-quad');
-const arrayifyStream = require('arrayify-stream');
 
 // tslint:disable:object-literal-sort-keys
 

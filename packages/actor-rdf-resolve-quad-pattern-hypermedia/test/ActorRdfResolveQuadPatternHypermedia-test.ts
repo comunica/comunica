@@ -1,11 +1,10 @@
 import {ActionContext, Bus} from "@comunica/core";
+import arrayifyStream = require('arrayify-stream');
 import "jest-rdf";
+import quad = require('rdf-quad');
+import streamifyArray = require('streamify-array');
 import {MediatedQuadSource} from "..";
 import {ActorRdfResolveQuadPatternHypermedia} from "../lib/ActorRdfResolveQuadPatternHypermedia";
-
-const streamifyArray = require('streamify-array');
-const arrayifyStream = require('arrayify-stream');
-const quad = require('rdf-quad');
 
 // tslint:disable:object-literal-sort-keys
 

@@ -18,23 +18,23 @@ describe('Setup', () => {
     });
 
     it('should not be a function', () => {
-      expect(Setup).toBeInstanceOf(Function);
+      return expect(Setup).toBeInstanceOf(Function);
     });
 
     it('should throw an error when constructed', () => {
-      expect(() => { new (<any> Setup)(); }).toThrow();
+      return expect(() => new (<any> Setup)()).toThrow();
     });
 
     it('should have a \'run\' function', () => {
-      expect(Setup.run).toBeInstanceOf(Function);
+      return expect(Setup.run).toBeInstanceOf(Function);
     });
 
     it('should allow \'run\' to be called without optional arguments', () => {
-      Setup.run('', { argv: [], env: {}, stdin: new Readable() });
+      return Setup.run('', { argv: [], env: {}, stdin: new Readable() });
     });
 
     it('should allow \'run\' to be called with optional arguments', () => {
-      Setup.run('', { argv: [], env: {}, stdin: new Readable() }, 'myuri', {});
+      return Setup.run('', { argv: [], env: {}, stdin: new Readable() }, 'myuri', {});
     });
 
     it('should throw an error when the runner resolves to false when calling \'run\'', async () => {

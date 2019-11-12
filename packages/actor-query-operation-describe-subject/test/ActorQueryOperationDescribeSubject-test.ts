@@ -1,10 +1,10 @@
 import {ActorQueryOperation, IActorQueryOperationOutputQuads} from "@comunica/bus-query-operation";
 import {ActionContext, Bus} from "@comunica/core";
 import {namedNode, quad, variable} from "@rdfjs/data-model";
+import arrayifyStream = require('arrayify-stream');
 import {ArrayIterator} from "asynciterator";
-import {ActorQueryOperationDescribeSubject} from "../lib/ActorQueryOperationDescribeSubject";
-const arrayifyStream = require('arrayify-stream');
 import * as RDF from "rdf-js";
+import {ActorQueryOperationDescribeSubject} from "../lib/ActorQueryOperationDescribeSubject";
 
 describe('ActorQueryOperationDescribeSubject', () => {
   let bus;

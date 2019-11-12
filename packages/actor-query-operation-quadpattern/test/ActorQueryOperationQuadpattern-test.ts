@@ -2,12 +2,12 @@ import {ActorQueryOperation, IActorQueryOperationOutputBindings} from "@comunica
 import {Bindings} from "@comunica/bus-query-operation";
 import {ActionContext, Bus} from "@comunica/core";
 import {blankNode, namedNode, variable} from "@rdfjs/data-model";
+import arrayifyStream = require('arrayify-stream');
 import {ArrayIterator} from "asynciterator";
 import * as RDF from "rdf-js";
+import quad = require('rdf-quad');
 import {Algebra} from "sparqlalgebrajs";
 import {ActorQueryOperationQuadpattern} from "../lib/ActorQueryOperationQuadpattern";
-const quad = require('rdf-quad');
-const arrayifyStream = require('arrayify-stream');
 
 describe('ActorQueryOperationQuadpattern', () => {
   let bus;

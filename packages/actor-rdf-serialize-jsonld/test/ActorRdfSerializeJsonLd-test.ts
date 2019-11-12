@@ -1,8 +1,8 @@
 import {Bus} from "@comunica/core";
 import {ArrayIterator, AsyncIterator} from "asynciterator";
+import quad = require('rdf-quad');
+import stringifyStream = require('stream-to-string');
 import {ActorRdfSerializeJsonLd} from "../lib/ActorRdfSerializeJsonLd";
-const quad = require('rdf-quad');
-const stringifyStream = require('stream-to-string');
 
 describe('ActorRdfSerializeJsonLd', () => {
   let bus;

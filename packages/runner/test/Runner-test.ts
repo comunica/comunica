@@ -11,31 +11,31 @@ describe('Runner', () => {
 
   describe('The Runner module', () => {
     it('should be a function', () => {
-      expect(Runner).toBeInstanceOf(Function);
+      return expect(Runner).toBeInstanceOf(Function);
     });
 
     it('should be a Runner constructor', () => {
-      expect(new (<any> Runner)({ busInit: bus, actors: [] })).toBeInstanceOf(Runner);
+      return expect(new (<any> Runner)({ busInit: bus, actors: [] })).toBeInstanceOf(Runner);
     });
 
     it('should not be able to create new Runner objects without \'new\'', () => {
-      expect(() => { (<any> Runner)(); }).toThrow();
+      return expect(() => (<any> Runner)()).toThrow();
     });
 
     it('should throw an error when constructed without actors', () => {
-      expect(() => { new (<any> Runner)({ busInit: bus }); }).toThrow();
+      return expect(() => new (<any> Runner)({ busInit: bus })).toThrow();
     });
 
     it('should throw an error when constructed without a bus', () => {
-      expect(() => { new (<any> Runner)({ actors: [] }); }).toThrow();
+      return expect(() => new (<any> Runner)({ actors: [] })).toThrow();
     });
 
     it('should throw an error when constructed without a name and bus', () => {
-      expect(() => { new (<any> Runner)({}); }).toThrow();
+      return expect(() => new (<any> Runner)({})).toThrow();
     });
 
     it('should throw an error when constructed without arguments', () => {
-      expect(() => { new (<any> Runner)(); }).toThrow();
+      return expect(() => new (<any> Runner)()).toThrow();
     });
   });
 

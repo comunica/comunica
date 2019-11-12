@@ -2,11 +2,10 @@ import {Bindings, BindingsStream} from "@comunica/bus-query-operation";
 import {Bus} from "@comunica/core";
 import {blankNode, defaultGraph, literal, namedNode} from "@rdfjs/data-model";
 import {ArrayIterator} from "asynciterator";
+import quad = require('rdf-quad');
 import {PassThrough} from "stream";
+import stringifyStream = require('stream-to-string');
 import {ActorSparqlSerializeSparqlJson} from "../lib/ActorSparqlSerializeSparqlJson";
-
-const quad = require('rdf-quad');
-const stringifyStream = require('stream-to-string');
 
 describe('ActorSparqlSerializeSparqlJson', () => {
   let bus;

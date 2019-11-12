@@ -1,12 +1,11 @@
 import {ActorRdfResolveHypermedia} from "@comunica/bus-rdf-resolve-hypermedia";
 import {Bus} from "@comunica/core";
+import arrayifyStream = require('arrayify-stream');
 import "jest-rdf";
+import quad = require('rdf-quad');
 import {Readable} from "stream";
+import streamifyArray = require('streamify-array');
 import {ActorRdfResolveHypermediaNone} from "../lib/ActorRdfResolveHypermediaNone";
-
-const streamifyArray = require('streamify-array');
-const arrayifyStream = require('arrayify-stream');
-const quad = require('rdf-quad');
 
 describe('ActorRdfResolveHypermediaNone', () => {
   let bus;

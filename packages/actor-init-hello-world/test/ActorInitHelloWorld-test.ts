@@ -1,8 +1,8 @@
 import {ActorInit, IActorOutputInit} from "@comunica/bus-init";
 import {Bus} from "@comunica/core";
+import arrayifyStream = require('arrayify-stream');
 import {PassThrough} from "stream";
 import {ActorInitHelloWorld} from "../lib/ActorInitHelloWorld";
-const arrayifyStream = require('arrayify-stream');
 
 describe('ActorInitHelloWorld', () => {
   let bus;
@@ -30,7 +30,7 @@ describe('ActorInitHelloWorld', () => {
     });
 
     it('should not throw an error when constructed with a \'hello\' parameter', () => {
-      expect(() => { new ActorInitHelloWorld({ name: 'actor', bus, hello: 'Hi' }); }).not.toThrow();
+      expect(() => new ActorInitHelloWorld({ name: 'actor', bus, hello: 'Hi' })).not.toThrow();
     });
 
     it('should store the \'hello\' parameter', () => {

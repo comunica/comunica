@@ -1,13 +1,13 @@
 import {ActorQueryOperation, Bindings} from "@comunica/bus-query-operation";
 import {ActionContext, Bus} from "@comunica/core";
 import {namedNode, variable} from "@rdfjs/data-model";
+import arrayifyStream = require('arrayify-stream');
 import {AsyncReiterableArray} from "asyncreiterable";
 import {SparqlEndpointFetcher} from "fetch-sparql-endpoint";
 import {Headers} from "node-fetch";
 import {Factory} from "sparqlalgebrajs";
+import streamifyString = require('streamify-string');
 import {ActorQueryOperationSparqlEndpoint} from "../lib/ActorQueryOperationSparqlEndpoint";
-const arrayifyStream = require('arrayify-stream');
-const streamifyString = require('streamify-string');
 
 const factory = new Factory();
 
@@ -158,7 +158,9 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
           namedNode('http://o')) };
       const thisActor = new ActorQueryOperationSparqlEndpoint({ name: 'actor', bus, mediatorHttp: thisMediator });
       return expect(new Promise((resolve, reject) => {
-        thisActor.run(op).then(async (output) => output.bindingsStream.on('error', resolve));
+        thisActor.run(op).then(async (output) => output.bindingsStream.on('error', resolve)).catch((e) => {
+          reject(e);
+        });
       })).resolves.toEqual(new Error('Invalid SPARQL endpoint (http://ex) response: Error!'));
     });
   });

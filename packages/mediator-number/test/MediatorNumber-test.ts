@@ -21,14 +21,14 @@ describe('MediatorNumber', () => {
     });
 
     it('should not throw an error when constructed with \'field\' and \'type\' parameters', () => {
-      expect(() => { new MediatorNumber({ name: 'mediator', bus, field: 'field', type: MediatorNumber.MIN }); })
+      expect(() => new MediatorNumber({ name: 'mediator', bus, field: 'field', type: MediatorNumber.MIN }))
         .not.toThrow();
-      expect(() => { new MediatorNumber({ name: 'mediator', bus, field: 'field', type: MediatorNumber.MAX }); })
+      expect(() => new MediatorNumber({ name: 'mediator', bus, field: 'field', type: MediatorNumber.MAX }))
         .not.toThrow();
     });
 
     it('should throw an error when constructed without arguments', () => {
-      expect(() => { new MediatorNumber({ name: 'mediator', bus, field: 'field', type: 'invalidType' }); }).toThrow();
+      expect(() => new MediatorNumber({ name: 'mediator', bus, field: 'field', type: 'invalidType' })).toThrow();
     });
 
     it('should store the \'field\' and \'type\' parameters', () => {

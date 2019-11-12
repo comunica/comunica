@@ -3,7 +3,7 @@ import {Bus} from "@comunica/core";
 import {RDFA_FEATURES, RdfaParser} from "rdfa-streaming-parser";
 import {ActorRdfParseHtmlRdfa} from "../lib/ActorRdfParseHtmlRdfa";
 
-const quad = require('rdf-quad');
+import quad = require('rdf-quad');
 
 describe('ActorRdfParseHtmlRdfa', () => {
   let bus;

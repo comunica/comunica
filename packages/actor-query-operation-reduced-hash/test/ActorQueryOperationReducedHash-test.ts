@@ -1,9 +1,9 @@
 import {Bindings, IActorQueryOperationOutputBindings} from "@comunica/bus-query-operation";
 import {Bus} from "@comunica/core";
 import {literal} from "@rdfjs/data-model";
+import arrayifyStream = require('arrayify-stream');
 import {ArrayIterator} from "asynciterator";
 import {ActorQueryOperationReducedHash} from "..";
-const arrayifyStream = require('arrayify-stream');
 
 describe('ActorQueryOperationReducedHash', () => {
   let bus;

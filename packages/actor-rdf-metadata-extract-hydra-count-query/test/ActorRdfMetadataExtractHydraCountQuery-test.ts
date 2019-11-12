@@ -3,7 +3,7 @@ import {Bus} from "@comunica/core";
 import {Readable} from "stream";
 import {ActorRdfMetadataExtractHydraCountQuery} from "../lib/ActorRdfMetadataExtractHydraCountQuery";
 
-const stream = require('streamify-array');
+import stream = require('streamify-array');
 
 describe('ActorRdfMetadataExtractHydraCountQuery', () => {
   let bus;

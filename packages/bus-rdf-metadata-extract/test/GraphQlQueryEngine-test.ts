@@ -1,6 +1,6 @@
+import quad = require('rdf-quad');
+import streamifyString = require("streamify-string");
 import {GraphQlQueryEngine} from "../lib/GraphQlQueryEngine";
-const streamifyString = require("streamify-string");
-const quad = require('rdf-quad');
 
 describe('GraphQlQueryEngine', () => {
   const engine: any = {

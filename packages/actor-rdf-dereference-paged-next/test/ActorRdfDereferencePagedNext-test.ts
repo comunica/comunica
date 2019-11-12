@@ -1,10 +1,10 @@
 import {ActorHttpInvalidateListenable} from "@comunica/bus-http-invalidate";
 import {ActorRdfDereferencePaged} from "@comunica/bus-rdf-dereference-paged";
 import {Bus} from "@comunica/core";
+import arrayifyStream = require('arrayify-stream');
 import {ClonedIterator} from "asynciterator";
+import stream = require('streamify-array');
 import {ActorRdfDereferencePagedNext} from "../lib/ActorRdfDereferencePagedNext";
-const stream = require('streamify-array');
-const arrayifyStream = require('arrayify-stream');
 
 describe('ActorRdfDereferencePagedNext', () => {
   let bus;
@@ -201,9 +201,9 @@ describe('ActorRdfDereferencePagedNext', () => {
         name: 'actor',
       });
       return currentActor.run({ url: 'http://example.org/' })
-        .then((output) => {
-          expect(output.firstPageMetadata()).rejects.toEqual(error);
-          expect(arrayifyStream(output.data)).rejects.toEqual(error);
+        .then(async (output) => {
+          await expect(output.firstPageMetadata()).rejects.toEqual(error);
+          return expect(arrayifyStream(output.data)).rejects.toEqual(error);
         });
     });
 

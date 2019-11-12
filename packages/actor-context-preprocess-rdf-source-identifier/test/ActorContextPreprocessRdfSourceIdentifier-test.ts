@@ -1,8 +1,8 @@
 import {ActorContextPreprocess} from "@comunica/bus-context-preprocess";
 import {ActionContext, Bus} from "@comunica/core";
+import arrayifyStream = require('arrayify-stream');
 import {AsyncReiterableArray} from "asyncreiterable";
 import {ActorContextPreprocessRdfSourceIdentifier} from "../lib/ActorContextPreprocessRdfSourceIdentifier";
-const arrayifyStream = require('arrayify-stream');
 
 describe('ActorContextPreprocessRdfSourceIdentifier', () => {
   let bus;

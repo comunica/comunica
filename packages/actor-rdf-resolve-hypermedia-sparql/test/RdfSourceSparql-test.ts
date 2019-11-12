@@ -6,9 +6,9 @@ import {Factory} from "sparqlalgebrajs";
 import {PassThrough} from "stream";
 import {RdfSourceSparql} from "../lib/RdfSourceSparql";
 
-const arrayifyStream = require('arrayify-stream');
-const quad = require('rdf-quad');
-const streamifyString = require('streamify-string');
+import arrayifyStream = require('arrayify-stream');
+import quad = require('rdf-quad');
+import streamifyString = require('streamify-string');
 
 // tslint:disable:object-literal-sort-keys
 

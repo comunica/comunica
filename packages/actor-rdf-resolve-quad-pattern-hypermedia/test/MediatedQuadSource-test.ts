@@ -1,13 +1,12 @@
 import {ActionContext} from "@comunica/core";
+import arrayifyStream = require('arrayify-stream');
 import "jest-rdf";
 import LRUCache = require("lru-cache");
+import quad = require('rdf-quad');
+import streamifyArray = require('streamify-array');
 import {ISourceState} from "../lib/LinkedRdfSourcesAsyncRdfIterator";
 import {MediatedLinkedRdfSourcesAsyncRdfIterator} from "../lib/MediatedLinkedRdfSourcesAsyncRdfIterator";
 import {MediatedQuadSource} from "../lib/MediatedQuadSource";
-
-const streamifyArray = require('streamify-array');
-const arrayifyStream = require('arrayify-stream');
-const quad = require('rdf-quad');
 
 describe('MediatedQuadSource', () => {
   let context;

@@ -1,8 +1,8 @@
 import { literal, variable } from "@rdfjs/data-model";
+import arrayifyStream = require('arrayify-stream');
 import { ArrayIterator } from "asynciterator";
 import { Algebra } from "sparqlalgebrajs";
 import * as sparqlee from "sparqlee";
-const arrayifyStream = require('arrayify-stream');
 
 import { ActorQueryOperation, Bindings } from "@comunica/bus-query-operation";
 import { Bus } from "@comunica/core";

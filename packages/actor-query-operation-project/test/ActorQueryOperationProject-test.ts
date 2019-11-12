@@ -1,9 +1,9 @@
 import {ActorQueryOperation, Bindings, IActorQueryOperationOutputBindings} from "@comunica/bus-query-operation";
 import {Bus} from "@comunica/core";
 import {blankNode, literal, variable} from "@rdfjs/data-model";
+import arrayifyStream = require('arrayify-stream');
 import {ArrayIterator, SingletonIterator} from "asynciterator";
 import {ActorQueryOperationProject} from "../lib/ActorQueryOperationProject";
-const arrayifyStream = require('arrayify-stream');
 
 describe('ActorQueryOperationProject', () => {
   let bus;
@@ -57,9 +57,9 @@ describe('ActorQueryOperationProject', () => {
     it('should run on a stream with variables that should not be deleted or are missing', () => {
       const op = { operation: { type: 'project', input: 'in', variables: [ variable('a'), blankNode('delet') ] } };
       return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
-        expect(output.metadata()).toEqual('M');
-        expect(output.variables).toEqual([ '?a', '_:delet' ]);
-        expect(output.type).toEqual('bindings');
+        void expect(output.metadata()).toEqual('M');
+        void expect(output.variables).toEqual([ '?a', '_:delet' ]);
+        void expect(output.type).toEqual('bindings');
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({ '?a': literal('A'), '_:delet': literal('deleteMe') }),
         ]);
@@ -69,8 +69,8 @@ describe('ActorQueryOperationProject', () => {
     it('should run on a stream with variables that should be deleted', () => {
       const op = { operation: { type: 'project', input: 'in', variables: [ variable('a') ] } };
       return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
-        expect(output.metadata()).toEqual('M');
-        expect(output.variables).toEqual([ '?a' ]);
+        void expect(output.metadata()).toEqual('M');
+        void expect(output.variables).toEqual([ '?a' ]);
         expect(output.type).toEqual('bindings');
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({ '?a': literal('A') }),
@@ -81,10 +81,10 @@ describe('ActorQueryOperationProject', () => {
     it('should run on a stream with variables that should be deleted and are missing', () => {
       const op = { operation: { type: 'project', input: 'in', variables: [ variable('a'), variable('missing') ] } };
       return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
-        expect(output.metadata()).toEqual('M');
-        expect(output.variables).toEqual([ '?a', '?missing' ]);
-        expect(output.type).toEqual('bindings');
-        expect(await arrayifyStream(output.bindingsStream)).toEqual([
+        void expect(output.metadata()).toEqual('M');
+        void expect(output.variables).toEqual([ '?a', '?missing' ]);
+        void expect(output.type).toEqual('bindings');
+        return expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({ '?a': literal('A'), '?missing': null }),
         ]);
       });
@@ -104,10 +104,10 @@ describe('ActorQueryOperationProject', () => {
       });
       const op = { operation: { type: 'project', input: 'in', variables: [ variable('a') ] } };
       return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
-        expect(output.metadata()).toEqual('M');
-        expect(output.variables).toEqual([ '?a' ]);
-        expect(output.type).toEqual('bindings');
-        expect(await arrayifyStream(output.bindingsStream)).toEqual([
+        void expect(output.metadata()).toEqual('M');
+        void expect(output.variables).toEqual([ '?a' ]);
+        void expect(output.type).toEqual('bindings');
+        return expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({ '?a': blankNode('a1'), '?b': literal('b') }),
           Bindings({ '?a': blankNode('a2'), '?b': literal('b') }),
           Bindings({ '?a': blankNode('a3'), '?b': literal('b') }),

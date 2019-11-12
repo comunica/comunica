@@ -1,7 +1,7 @@
 import {ActorInit, IActionInit, IActorOutputInit} from "@comunica/bus-init";
 import {IActorArgs, IActorTest} from "@comunica/core";
 import {PassThrough} from "stream";
-const stringToStream = require('streamify-string'); // tslint:disable-line:no-var-requires
+import stringToStream = require('streamify-string'); // tslint:disable-line:no-var-requires
 
 /**
  * A Hello World actor that listens on the 'init' bus.

@@ -2,15 +2,14 @@
 import {ActorHttp} from "@comunica/bus-http";
 import {Bus} from "@comunica/core";
 import {Setup} from "@comunica/runner";
+import arrayifyStream = require('arrayify-stream');
 import "isomorphic-fetch";
 import {Readable} from "stream";
 import * as url from "url";
 import * as zlib from "zlib";
 import {ActorHttpNative} from "../lib/ActorHttpNative";
 import Requester from "../lib/Requester";
-
-const arrayifyStream = require('arrayify-stream');
-const mockSetup = require('./__mocks__/follow-redirects').mockSetup;
+import { mockSetup } from './__mocks__/follow-redirects';
 
 describe('ActorHttpNative', () => {
   let bus;
@@ -141,18 +140,18 @@ describe('ActorHttpNative', () => {
       mockSetup({ statusCode: 200 });
       const result: any = await actor.run({ init: { headers: new Headers({ a: 'b' }), method: 'HEAD' },
         input: 'http://example.com'});
-      expect(result).toMatchObject({ status: 200 });
+      return expect(result).toMatchObject({ status: 200 });
     });
 
     it('can cancel responses', async () => {
       mockSetup({ statusCode: 200 });
       const result: any = await actor.run({ input: 'http://example.com' });
-      expect(result.body.cancel()).resolves.toBeFalsy();
+      return expect(result.body.cancel()).resolves.toBeFalsy();
     });
 
     it('rejects on request errors', async () => {
       mockSetup({ error: true });
-      expect(actor.run({ input: 'http://example.com/reqerror' }))
+      return expect(actor.run({ input: 'http://example.com/reqerror' }))
         .rejects.toThrow(new Error('Request Error!'));
     });
   });

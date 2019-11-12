@@ -1,12 +1,12 @@
 import {ActionContext} from "@comunica/core";
 import {blankNode, defaultGraph, literal, namedNode, variable} from "@rdfjs/data-model";
+import arrayifyStream = require('arrayify-stream');
 import {ArrayIterator, EmptyIterator} from "asynciterator";
 import {RoundRobinUnionIterator} from "asynciterator-union";
 import {AsyncReiterableArray} from "asyncreiterable";
+import squad = require('rdf-quad');
 import Factory from "sparqlalgebrajs/lib/factory";
 import {FederatedQuadSource} from "../lib/FederatedQuadSource";
-const squad = require('rdf-quad');
-const arrayifyStream = require('arrayify-stream');
 const factory = new Factory();
 
 describe('FederatedQuadSource', () => {

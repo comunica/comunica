@@ -4,7 +4,7 @@ import {ArrayIterator} from "asynciterator";
 import * as RDF from "rdf-js";
 import {BindingsToQuadsIterator} from "../lib/BindingsToQuadsIterator";
 
-const arrayifyStream = require('arrayify-stream');
+import arrayifyStream = require('arrayify-stream');
 
 describe('BindingsToQuadsIterator', () => {
   describe('#bindTerm', () => {

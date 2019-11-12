@@ -3,12 +3,12 @@ import {WritableStream} from "memory-streams";
 import minimist = require("minimist");
 import * as querystring from "querystring";
 import {PassThrough} from "stream";
+import stringToStream = require('streamify-string');
 import {fs, testArgumentDict, testFileContentDict} from "../__mocks__/fs";
 import {http, ServerResponseMock} from "../__mocks__/http";
 import {newEngineDynamic} from "../__mocks__/index";
 import {parse} from "../__mocks__/url";
 import {HttpServiceSparqlEndpoint} from "../lib/HttpServiceSparqlEndpoint";
-const stringToStream = require('streamify-string');
 
 jest.mock('../index', () => {
   return {
@@ -86,39 +86,39 @@ describe('HttpServiceSparqlEndpoint', () => {
       expect(http.createServer).toBeCalled(); // Implicitly checking whether .run has been called
     });
 
-    it("should not exit if exactly one argument is supplied and -h and --help are not set", () => {
-      HttpServiceSparqlEndpoint.runArgsInProcess([testCommandlineArgument],
+    it("should not exit if exactly one argument is supplied and -h and --help are not set", async () => {
+      await HttpServiceSparqlEndpoint.runArgsInProcess([testCommandlineArgument],
           stdout, stderr, moduleRootPath, env, defaultConfigPath, exit);
 
       expect(exit).not.toHaveBeenCalled();
     });
 
-    it('should exit with help message if --help option is set', () => {
-      HttpServiceSparqlEndpoint.runArgsInProcess([testCommandlineArgument, "--help"],
+    it('should exit with help message if --help option is set', async () => {
+      await HttpServiceSparqlEndpoint.runArgsInProcess([testCommandlineArgument, "--help"],
           stdout, stderr, moduleRootPath, env, defaultConfigPath, exit);
 
       expect(exit).toHaveBeenCalledWith(1);
       expect(stderr.toString()).toBe(HttpServiceSparqlEndpoint.HELP_MESSAGE);
     });
 
-    it('should exit with help message if -h option is set', () => {
-      HttpServiceSparqlEndpoint.runArgsInProcess([testCommandlineArgument, "-h"],
+    it('should exit with help message if -h option is set', async () => {
+      await HttpServiceSparqlEndpoint.runArgsInProcess([testCommandlineArgument, "-h"],
           stdout, stderr, moduleRootPath, env, defaultConfigPath, exit);
 
       expect(exit).toHaveBeenCalledWith(1);
       expect(stderr.toString()).toBe(HttpServiceSparqlEndpoint.HELP_MESSAGE);
     });
 
-    it('should exit with help message if multiple arguments given', () => {
-      HttpServiceSparqlEndpoint.runArgsInProcess([testCommandlineArgument, testCommandlineArgument],
+    it('should exit with help message if multiple arguments given', async () => {
+      await HttpServiceSparqlEndpoint.runArgsInProcess([testCommandlineArgument, testCommandlineArgument],
           stdout, stderr, moduleRootPath, env, defaultConfigPath, exit);
 
       expect(exit).toHaveBeenCalledWith(1);
       expect(stderr.toString()).toBe(HttpServiceSparqlEndpoint.HELP_MESSAGE);
     });
 
-    it('should exit with help message if no arguments given', () => {
-      HttpServiceSparqlEndpoint.runArgsInProcess([],
+    it('should exit with help message if no arguments given', async () => {
+      await HttpServiceSparqlEndpoint.runArgsInProcess([],
           stdout, stderr, moduleRootPath, env, defaultConfigPath, exit);
 
       expect(exit).toHaveBeenCalledWith(1);

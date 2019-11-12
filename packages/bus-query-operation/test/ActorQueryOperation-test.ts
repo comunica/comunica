@@ -45,7 +45,7 @@ describe('ActorQueryOperation', () => {
     });
 
     it('should error for non-boolean', () => {
-      expect(() => ActorQueryOperation.getSafeBoolean({ type: 'no-boolean' })).toThrow();
+      return expect(() => ActorQueryOperation.getSafeBoolean({ type: 'no-boolean' })).toThrow();
     });
   });
 
@@ -53,19 +53,19 @@ describe('ActorQueryOperation', () => {
     it('should remember an instance', () => {
       const cb = jest.fn(() => 'ABC');
       const cached = ActorQueryOperation.cachifyMetadata(<any> cb);
-      expect(cached()).toEqual('ABC');
-      expect(cached()).toEqual('ABC');
-      expect(cb).toHaveBeenCalledTimes(1);
+      return expect(cached()).toEqual('ABC') &&
+        expect(cached()).toEqual('ABC') &&
+        expect(cb).toHaveBeenCalledTimes(1);
     });
   });
 
   describe('#validateQueryOutput', () => {
     it('should return for boolean', () => {
-      expect(() => ActorQueryOperation.validateQueryOutput({ type: 'boolean' }, 'boolean')).not.toThrow();
+      return expect(() => ActorQueryOperation.validateQueryOutput({ type: 'boolean' }, 'boolean')).not.toThrow();
     });
 
     it('should error for non-boolean', () => {
-      expect(() => ActorQueryOperation.validateQueryOutput({ type: 'no-boolean' }, 'boolean')).toThrow();
+      return expect(() => ActorQueryOperation.validateQueryOutput({ type: 'no-boolean' }, 'boolean')).toThrow();
     });
   });
 });
