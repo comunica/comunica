@@ -44,7 +44,7 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
 
         return new PromiseProxyIterator<Bindings>(
           async () => {
-            const it = new BufferedIterator<Term>();
+            const it = new BufferedIterator<Term>({ autoStart: false });
             await this.ALP(val, predicate.path, context, V, it, { count: 0 });
             return it.transform<Bindings>({
               transform: (item, next) => {

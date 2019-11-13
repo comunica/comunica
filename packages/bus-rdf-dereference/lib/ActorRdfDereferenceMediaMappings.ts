@@ -18,6 +18,7 @@ export abstract class ActorRdfDereferenceMediaMappings extends ActorRdfDereferen
 
   constructor(args: IActorRdfDereferenceMediaMappingsArgs) {
     super(args);
+    console.log('constructed ActorRdfDereferenceMediaMappings')
   }
 
   /**

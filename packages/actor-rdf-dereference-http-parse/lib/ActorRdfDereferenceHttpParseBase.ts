@@ -39,6 +39,7 @@ export abstract class ActorRdfDereferenceHttpParseBase extends ActorRdfDereferen
   }
 
   public async run(action: IActionRdfDereference): Promise<IActorRdfDereferenceOutput> {
+    console.log('run ActorRdfDereferenceHttpParseBase')
     // Define accept header based on available media types.
     const mediaTypes: { [id: string]: number } = (await this.mediatorRdfParseMediatypes.mediate(
       {context: action.context, mediaTypes: true}))
@@ -61,52 +62,60 @@ export abstract class ActorRdfDereferenceHttpParseBase extends ActorRdfDereferen
     };
     let httpResponse: IActorHttpOutput;
     try {
+      console.log('mediating!!');
       httpResponse = await this.mediatorHttp.mediate(httpAction);
+      console.log('ActorRdfDereferenceHttpParseBase has received its httpResponse', httpResponse);
     } catch (error) {
+      console.log('ActorRdfDereferenceHttpParseBase handling error!', error);
       return this.handleDereferenceError(action, error);
     }
-    const url = resolveRelative(httpResponse.url, action.url); // The response URL can be relative to the given URL
-
-    // Convert output headers to a hash
-    const outputHeaders: {[key: string]: string} = {};
-    httpResponse.headers.forEach((value, key) => outputHeaders[key] = value);
-
-    // Wrap WhatWG readable stream into a Node.js readable stream
-    // If the body already is a Node.js stream (in the case of node-fetch), don't do explicit conversion.
-    const responseStream: NodeJS.ReadableStream = ActorHttp.toNodeReadable(httpResponse.body);
-
-    // Only parse if retrieval was successful
-    if (httpResponse.status !== 200) {
-      const error = new Error(`Could not retrieve ${action.url} (${httpResponse.status}: ${
-      httpResponse.statusText || 'unknown error'})`);
-      return this.handleDereferenceError(action, error);
-    }
-
-    // Parse the resulting response
-    let mediaType: string = httpResponse.headers.has('content-type')
-      ? ActorRdfDereferenceHttpParseBase.REGEX_MEDIATYPE.exec(httpResponse.headers.get('content-type'))[0] : null;
-    // If no media type could be found, try to determine it via the file extension
-    if (!mediaType || mediaType === 'text/plain') {
-      mediaType = this.getMediaTypeFromExtension(httpResponse.url);
-    }
-
-    const parseAction: IActionRdfParse = {
-      baseIRI: url,
-      headers: httpResponse.headers,
-      input: responseStream,
-    };
-    let parseOutput: IActorRdfParseOutput;
+    console.log('ActorRdfDereferenceHttpParseBase httpResponse obtained!', httpResponse);
     try {
-      parseOutput = (await this.mediatorRdfParseHandle.mediate(
-        {context: action.context, handle: parseAction, handleMediaType: mediaType})).handle;
+      const url = resolveRelative(httpResponse.url, action.url); // The response URL can be relative to the given URL
+
+      // Convert output headers to a hash
+      const outputHeaders: {[key: string]: string} = {};
+      httpResponse.headers.forEach((value, key) => outputHeaders[key] = value);
+
+      // Wrap WhatWG readable stream into a Node.js readable stream
+      // If the body already is a Node.js stream (in the case of node-fetch), don't do explicit conversion.
+      const responseStream: NodeJS.ReadableStream = ActorHttp.toNodeReadable(httpResponse.body);
+
+      // Only parse if retrieval was successful
+      if (httpResponse.status !== 200) {
+        const error = new Error(`Could not retrieve ${action.url} (${httpResponse.status}: ${
+        httpResponse.statusText || 'unknown error'})`);
+        return this.handleDereferenceError(action, error);
+      }
+
+      // Parse the resulting response
+      let mediaType: string = httpResponse.headers.has('content-type')
+        ? ActorRdfDereferenceHttpParseBase.REGEX_MEDIATYPE.exec(httpResponse.headers.get('content-type'))[0] : null;
+      // If no media type could be found, try to determine it via the file extension
+      if (!mediaType || mediaType === 'text/plain') {
+        mediaType = this.getMediaTypeFromExtension(httpResponse.url);
+      }
+
+      const parseAction: IActionRdfParse = {
+        baseIRI: url,
+        headers: httpResponse.headers,
+        input: responseStream,
+      };
+      let parseOutput: IActorRdfParseOutput;
+      try {
+        parseOutput = (await this.mediatorRdfParseHandle.mediate(
+          {context: action.context, handle: parseAction, handleMediaType: mediaType})).handle;
+      } catch (error) {
+        return this.handleDereferenceError(action, error);
+      }
+
+      const quads = this.handleDereferenceStreamErrors(action, parseOutput.quads);
+
+      // Return the parsed quad stream and whether or not only triples are supported
+      return { url, quads, triples: parseOutput.triples, headers: outputHeaders };
     } catch (error) {
-      return this.handleDereferenceError(action, error);
+      console.error('error after httpResponse was delivered!');
     }
-
-    const quads = this.handleDereferenceStreamErrors(action, parseOutput.quads);
-
-    // Return the parsed quad stream and whether or not only triples are supported
-    return { url, quads, triples: parseOutput.triples, headers: outputHeaders };
   }
 
   public mediaTypesToAcceptString(mediaTypes: { [id: string]: number }, maxLength: number): string {

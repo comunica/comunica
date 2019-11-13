@@ -119,9 +119,13 @@ export class Bus<A extends Actor<I, T, O>, I extends IAction, T extends IActorTe
    * @param {Promise<O>} output A promise resolving to the final action output.
    */
   public onRun(actor: Actor<I, T, O>, action: I, output: Promise<O>): void {
-    for (const observer of this.observers) {
-      observer.onRun(actor, action, output);
-    }
+    // for (const observer of this.observers) {
+    //   try {
+    //     observer.onRun(actor, action, output);
+    //   } catch (e) {
+    //     console.error('error running observer', e);
+    //   }
+    // }
   }
 
   /**

@@ -41,6 +41,7 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
     this.context = context;
     this.forceSourceType = forceSourceType;
     this.mediatorRdfDereference = mediators.mediatorRdfDereference;
+    console.log('mediators', mediators);
     this.mediatorMetadata = mediators.mediatorMetadata;
     this.mediatorMetadataExtract = mediators.mediatorMetadataExtract;
     this.mediatorRdfResolveHypermedia = mediators.mediatorRdfResolveHypermedia;
@@ -69,14 +70,22 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
 
   protected async getNextSource(url: string, handledDatasets: {[type: string]: boolean}): Promise<ISourceState> {
     // Get the RDF representation of the given document
+    console.log('MediatedLinkedRdfSourcesAsyncRdfIterator#getNextSource!');
+
     const context = this.context;
+    console.log('calling await this.mediatorRdfDereference.mediate', context, url, this.mediatorRdfDereference);
     const rdfDereferenceOutput: IActorRdfDereferenceOutput = await this.mediatorRdfDereference
       .mediate({ context, url });
+    console.log('called await this.mediatorRdfDereference.mediate', rdfDereferenceOutput);
     url = rdfDereferenceOutput.url;
+    return;
 
     // Determine the metadata
     const rdfMetadataOuput: IActorRdfMetadataOutput = await this.mediatorMetadata.mediate(
       { context, url, quads: rdfDereferenceOutput.quads, triples: rdfDereferenceOutput.triples });
+
+
+  
     const { metadata } = await this.mediatorMetadataExtract
       .mediate({ context, url, metadata: rdfMetadataOuput.metadata });
 

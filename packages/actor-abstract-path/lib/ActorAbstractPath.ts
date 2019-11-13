@@ -52,7 +52,7 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
   // returns all nodes visited by infinitely repeating the given predicate, starting from x
   public async ALPeval(x: Term, predicate: Algebra.PropertyPathSymbol, context: ActionContext)
     : Promise<AsyncIterator<Term>> {
-    const it = new BufferedIterator<Term>();
+    const it = new BufferedIterator<Term>({ autoStart: false });
     await this.ALP(x, predicate, context, {}, it, { count: 0 });
 
     return it;

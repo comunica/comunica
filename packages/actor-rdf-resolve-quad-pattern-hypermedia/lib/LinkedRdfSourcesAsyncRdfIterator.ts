@@ -26,7 +26,7 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
 
   constructor(cacheSize: number, subject: RDF.Term, predicate: RDF.Term, object: RDF.Term, graph: RDF.Term,
               firstUrl: string, options?: BufferedIteratorOptions) {
-    super(options);
+    super(Object.assign(options, { autoStart: false }));
     this.cacheSize = cacheSize;
     this.subject = subject;
     this.predicate = predicate;

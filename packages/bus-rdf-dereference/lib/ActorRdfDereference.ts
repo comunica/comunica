@@ -17,6 +17,7 @@ export abstract class ActorRdfDereference extends Actor<IActionRdfDereference, I
 
   constructor(args: IActorArgs<IActionRdfDereference, IActorTest, IActorRdfDereferenceOutput>) {
     super(args);
+    console.log('ActorRdfDereference!!')
   }
 
   /**
@@ -25,6 +26,7 @@ export abstract class ActorRdfDereference extends Actor<IActionRdfDereference, I
    * @return {boolean} If hard errors are enabled.
    */
   protected isHardError(action: IActionRdfDereference): boolean {
+    console.log('is hard error?', action);
     return !action.context || !action.context.get(KEY_CONTEXT_LENIENT);
   }
 
@@ -35,6 +37,7 @@ export abstract class ActorRdfDereference extends Actor<IActionRdfDereference, I
    * @return {Stream} The resulting quad stream.
    */
   protected handleDereferenceStreamErrors(action: IActionRdfDereference, quads: RDF.Stream): RDF.Stream {
+    console.log('actin error!');
     // If we don't emit hard errors, make parsing error events log instead, and silence them downstream.
     if (!this.isHardError(action)) {
       quads.on('error', (error) => {
@@ -56,6 +59,7 @@ export abstract class ActorRdfDereference extends Actor<IActionRdfDereference, I
    */
   protected async handleDereferenceError(action: IActionRdfDereference, error: Error)
     : Promise<IActorRdfDereferenceOutput> {
+    console.log('handle erroraas');
     if (this.isHardError(action)) {
       throw error;
     } else {

@@ -30,6 +30,7 @@ export class ActorHttpNative extends ActorHttp {
   }
 
   public async run(action: IActionHttp): Promise<IActorHttpOutput> {
+    console.log('ActorHttpNative!', action);
     const options: any = {};
     // input can be a Request object or a string
     // if it is a Request object it can contain the same settings as the init object
@@ -62,19 +63,40 @@ export class ActorHttpNative extends ActorHttp {
     // not all options are supported
 
     return new Promise<IActorHttpOutput>((resolve, reject) => {
+      let failed = false;
+      // reject('trying oops')
       const req = this.requester.createRequest(options);
-      req.on('error', reject);
+      req.on('error', () => {
+        failed = true;
+        console.log('req error!')
+        reject()
+      });
+      if (failed) {
+        console.log('failed 1!');
+        return;
+      }
       req.on('response', (httpResponse) => {
         httpResponse.on('error', (e: Error) => {
           httpResponse = null;
+          failed = true;
           reject(e);
         });
+        if (failed) {
+          console.log('failed 1!');
+          return;
+        }  
         // Avoid memory leak on HEAD requests
         if (options.method === 'HEAD') {
           httpResponse.destroy();
         }
+        console.log('before setImmediate', failed)
         // using setImmediate so error can be caught should it be thrown
         setImmediate(() => {
+          if (failed) {
+            console.log('error in setImmediate!')
+            return;
+          }
+          console.log('inside setImmediate huh?')
           if (httpResponse) {
             // Expose fetch cancel promise
             httpResponse.cancel = () => Promise.resolve(httpResponse.destroy());

@@ -19,6 +19,7 @@ export class ActorInitRdfDereference extends ActorInit implements IActorInitRdfP
 
   constructor(args: IActorInitRdfParseArgs) {
     super(args);
+    console.log('constructing ActorInitRdfDereference');
   }
 
   public async test(action: IActionInit): Promise<IActorTest> {
@@ -26,6 +27,7 @@ export class ActorInitRdfDereference extends ActorInit implements IActorInitRdfP
   }
 
   public async run(action: IActionInit): Promise<IActorOutputInit> {
+    console.log('running ActorInitRdfDereference');
     const dereference: IActionRdfDereference = {
       context: action.context,
       url: action.argv.length > 0 ? action.argv[0] : this.url,

@@ -10,7 +10,7 @@ export class N3StoreIterator extends BufferedIterator<RDF.Quad> {
   protected readonly graph?: RDF.Term;
 
   constructor(store: any, subject?: RDF.Term, predicate?: RDF.Term, object?: RDF.Term, graph?: RDF.Term) {
-    super();
+    super({ autoStart: false });
     this.store = store;
     this.subject = N3StoreIterator.nullifyVariables(subject);
     this.predicate = N3StoreIterator.nullifyVariables(predicate);

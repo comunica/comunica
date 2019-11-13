@@ -15,6 +15,7 @@ export class ActorInitRdfDereferencePaged extends ActorInit implements IActorIni
 
   constructor(args: IActorInitRdfDereferencePagedArgs) {
     super(args);
+    console.log('constructing ActorInitRdfDereferencePaged');
   }
 
   public async test(action: IActionInit): Promise<IActorTest> {
@@ -22,6 +23,7 @@ export class ActorInitRdfDereferencePaged extends ActorInit implements IActorIni
   }
 
   public async run(action: IActionInit): Promise<IActorOutputInit> {
+    throw new Error('run deref!');
     const dereference: IActionRdfDereferencePaged = {
       context: action.context,
       url: action.argv.length > 0 ? action.argv[0] : this.url,

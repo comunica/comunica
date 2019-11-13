@@ -18,8 +18,11 @@ describe('actorInitSparql.newEngine', () => {
     let result;
     try {
       console.log('before await');
-      await myEngine.query('CONSTRUCT WHERE { ?s ?p ?o }',
+      result = await myEngine.query('CONSTRUCT WHERE { ?s ?p ?o }',
         { source: { value: 'https://ruben.verborgh.orgz' } });
+      result.on('error', (e) => {
+        console.error('error on lazy stream')
+      });
       console.log('after await');
       result = 'incorrect';
     } catch (e) {

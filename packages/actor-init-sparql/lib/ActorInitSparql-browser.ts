@@ -117,7 +117,7 @@ export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs {
    */
   public async query(query: string | Algebra.Operation, context?: any): Promise<IActorQueryOperationOutput> {
     context = context || {};
-
+    console.log('query!');
     // Expand shortcuts
     for (const key in context) {
       if (this.contextKeyShortcuts[key]) {
@@ -161,9 +161,10 @@ export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs {
     if (context && context.has(KEY_CONTEXT_BASEIRI)) {
       baseIRI = context.get(KEY_CONTEXT_BASEIRI);
     }
-
+    console.log('preprocessing!');
     // Pre-processing the context
     context = (await this.mediatorContextPreprocess.mediate({ context })).context;
+    console.log('parsing query!');
 
     // Parse query
     let operation: Algebra.Operation;
@@ -183,13 +184,19 @@ export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs {
       const bindings = context.get(KEY_CONTEXT_INITIALBINDINGS);
       operation = ActorInitSparql.applyInitialBindings(operation, ensureBindings(bindings));
     }
-
+    console.log('optimizing!');
     // Optimize the query operation
     operation = (await this.mediatorOptimizeQueryOperation.mediate({ context, operation })).operation;
-
+    
     // Execute query
     const resolve: IActionQueryOperation = { context, operation };
+    console.log('awaiting mediate', this.mediatorQueryOperation);
     const output = await this.mediatorQueryOperation.mediate(resolve);
+    // output.quadStream.on('error', (e) => {
+    //   console.error('QuadStream error!');
+    // });
+    console.log('query output obtained, but it is lazy so it will not know how to stop', output);
+    // throw new Error('how far?');
     output.context = context;
     return output;
   }

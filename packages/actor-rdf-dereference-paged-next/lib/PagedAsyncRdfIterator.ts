@@ -11,13 +11,15 @@ export abstract class PagedAsyncRdfIterator extends BufferedIterator<RDF.Quad> i
   private page: number;
 
   constructor(startUrl: string, options?: BufferedIteratorOptions) {
-    super(options);
+    super(Object.assign(options, { autoStart: false }));
+    console.log('PagedAsyncRdfIterator', startUrl);
     this.page = 0;
     this.startUrl = startUrl;
     this.nextUrl = startUrl;
   }
 
   public _read(count: number, done: () => void) {
+    done();
     if (this.nextUrl) {
       this.startIterator(this.nextUrl, this.page++)
         .then(done)

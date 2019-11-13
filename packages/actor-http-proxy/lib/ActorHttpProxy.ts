@@ -26,6 +26,7 @@ export class ActorHttpProxy extends ActorHttp {
   }
 
   public async run(action: IActionHttp): Promise<IActorHttpOutput> {
+    console.log('ActorHttpProxy!', action);
     const requestedUrl = typeof action.input === 'string' ? action.input : action.input.url;
     const proxyHandler: IProxyHandler = action.context.get(KEY_CONTEXT_HTTPPROXYHANDLER);
 

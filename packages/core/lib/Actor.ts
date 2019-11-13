@@ -81,8 +81,10 @@ export abstract class Actor<I extends IAction, T extends IActorTest, O extends I
    * @return {Promise<T>} A promise that resolves to the run result.
    */
   public runObservable(action: I): Promise<O> {
-    const output: Promise<O> = this.run(action);
-    this.bus.onRun(this, action, output);
+    const output: Promise<O> = this.run(action).catch((e) => {
+      throw new Error('error running action');
+    });
+    // this.bus.onRun(this, action, output);
     return output;
   }
 
