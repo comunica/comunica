@@ -104,7 +104,7 @@
     "coveralls": "jest --coverage && cat ./coverage/lcov.info | coveralls",
     "test-ci": "jest --ci --maxWorkers=4 --coverage",
     "coveralls-ci": "cat ./coverage/lcov.info | coveralls",
-    "lint": "tslint packages/*/lib/**/*.ts packages/*/test/**/*.ts --exclude '**/*.d.ts'",
+    "lint": "tslint -p . -c tslint.json",
     "clean": "rm -rf ./node_modules && rm -rf ./packages/*/node_modules",
     "build": "tsc",
     "build-watch": "tsc --watch",

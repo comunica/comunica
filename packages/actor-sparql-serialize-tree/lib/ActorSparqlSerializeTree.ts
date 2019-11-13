@@ -73,6 +73,8 @@ export class ActorSparqlSerializeTree extends ActorSparqlSerializeFixedMediaType
       .then((result: any) => {
         data.push(JSON.stringify(result, null, '  '));
         data.push(null);
+      }).catch((e) => {
+        // Ignore
       });
 
     return { data };

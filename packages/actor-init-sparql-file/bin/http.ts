@@ -4,4 +4,6 @@ import {HttpServiceSparqlEndpoint} from "@comunica/actor-init-sparql";
 const defaultConfigPath = __dirname + '/../config/config-default.json';
 
 HttpServiceSparqlEndpoint.runArgsInProcess(process.argv.slice(2), process.stdout, process.stderr,
-    __dirname + '/../', process.env, defaultConfigPath, () => process.exit(1));
+    __dirname + '/../', process.env, defaultConfigPath, () => process.exit(1)).catch((e) => {
+      // Ignore
+    });

@@ -175,6 +175,8 @@ export class RdfSourceSparql implements RDF.Source {
           });
 
           superRead(count, done);
+        }).catch((e) => {
+          // Ignore
         });
       } else {
         superRead(count, done);
@@ -228,7 +230,9 @@ export class RdfSourceSparql implements RDF.Source {
           });
         });
       })
-      .then((metadata) => quads.emit('metadata', metadata));
+      .then((metadata) => quads.emit('metadata', metadata)).catch((e) => {
+        // Ignore
+      });
 
     // Materialize the queried pattern using each found binding.
     const quads: AsyncIterator<RDF.Quad> & RDF.Stream = new PromiseProxyIterator(async () =>

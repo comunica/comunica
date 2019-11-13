@@ -30,7 +30,7 @@ export abstract class ActorRdfDereferenceMediaMappings extends ActorRdfDereferen
     const dotIndex = path.lastIndexOf('.');
     if (dotIndex >= 0) {
       const ext = path.substr(dotIndex);
-      // ignore dot
+      // Ignore dot
       return this.mediaMappings[ext.substring(1)] || '';
     }
     return '';

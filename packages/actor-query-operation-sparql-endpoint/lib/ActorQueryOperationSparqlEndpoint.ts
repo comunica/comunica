@@ -82,6 +82,8 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
           bindingsStream.emit('metadata', { totalItems });
           bindingsStream.close();
         });
+      }).catch((e) => {
+        // Ignore
       });
 
     const metadata = ActorQueryOperationSparqlEndpoint.cachifyMetadata(

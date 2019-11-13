@@ -67,6 +67,8 @@ export class HtmlScriptListener implements IHtmlParseListener {
           textStream.push(textChunk);
         }
         textStream.push(null);
+      }).catch((e) => {
+        // Ignore
       });
 
       // Reset the media type and text stream
