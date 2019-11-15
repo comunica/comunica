@@ -35,7 +35,7 @@
     "index.js"
   ],
   "dependencies": {
-    "asynciterator-union": "^2.1.1",
+    "asynciterator-union": "^2.1.2",
     "lodash.union": "^4.6.0"
   },
   "peerDependencies": {

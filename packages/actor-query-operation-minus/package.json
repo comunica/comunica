@@ -36,7 +36,7 @@
   ],
   "dependencies": {
     "@comunica/actor-abstract-bindings-hash": "^1.9.3",
-    "asynciterator-promiseproxy": "^2.0.0"
+    "asynciterator-promiseproxy": "^2.1.0"
   },
   "peerDependencies": {
     "@comunica/bus-query-operation": "^1.2.0",

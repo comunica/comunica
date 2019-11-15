@@ -2364,10 +2364,17 @@ asynciterator-promiseproxy@^2.0.0:
   dependencies:
     asynciterator "^2.0.0"
 
-asynciterator-union@^2.1.1:
-  version "2.1.1"
-  resolved "https://registry.yarnpkg.com/asynciterator-union/-/asynciterator-union-2.1.1.tgz#0eb7f54af98259dfeb521695c17abfbb8190e9f2"
-  integrity sha512-GdBwEaTebKLHlHv6MgseEzmKmfpARlw53YV7tijxEkgsB7azlUpZoXg8FDRfCb1FkoHA2cN77mPPro26lKABCA==
+asynciterator-promiseproxy@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/asynciterator-promiseproxy/-/asynciterator-promiseproxy-2.1.0.tgz#5a8f7378e7a0ba118577e35f0beb51f20e76615e"
+  integrity sha512-SIUlNe40pmPWDJ7N5yHK3ej694r90j0cblWAsh+8OBJLwlzGVdaehmAao2rgzjnzf1U3BhmEP9Fs4ddvDNoBTg==
+  dependencies:
+    asynciterator "^2.0.0"
+
+asynciterator-union@^2.1.2:
+  version "2.1.2"
+  resolved "https://registry.yarnpkg.com/asynciterator-union/-/asynciterator-union-2.1.2.tgz#340da0c7b151325278abe94bb26217a10e244079"
+  integrity sha512-zCtGuL1LX5NTvsmk7YXL9OQ9RB/AcuhGGJMubs3n1pv9yDwK85jZHuUMkqGseO3sxjDs4/TEDqSqOXbMluaE9w==
   dependencies:
     asynciterator "^2.0.0"
 
