@@ -145,8 +145,10 @@ export class FederatedQuadSource implements ILazyQuadSource {
       }
     };
 
+    // TODO: A solution without cloning would be preferred here.
+    //       See discussion at https://github.com/comunica/comunica/issues/553
     const sourcesIt = this.sources.iterator();
-    const it: RoundRobinUnionIterator<RDF.Quad> = new RoundRobinUnionIterator(sourcesIt.map((source) => {
+    const proxyIt: AsyncIterator<PromiseProxyIterator<RDF.Quad>> = sourcesIt.map((source) => {
       remainingSources++;
       sourcesCount++;
 
@@ -190,10 +192,11 @@ export class FederatedQuadSource implements ILazyQuadSource {
 
         return output.data;
       });
-    }));
+    });
+    const it: RoundRobinUnionIterator<RDF.Quad> = new RoundRobinUnionIterator(proxyIt.clone());
     it.on('newListener', (eventName) => {
       if (eventName === 'metadata') {
-        setImmediate(() => it._fillBuffer());
+        setImmediate(() => proxyIt.clone().each((proxy) => proxy.loadSource()));
       }
     });
 
