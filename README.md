@@ -43,7 +43,7 @@ Comunica is tested on OSX, Linux and Windows.
 This project can be setup by cloning and installing it as follows:
 
 ```bash
-$ git clone git@github.com:comunica/comunica
+$ git clone https://github.com/comunica/comunica.git
 $ cd comunica
 $ yarn install
 ```
