@@ -138,7 +138,7 @@ describe('RdfSourceSparql', () => {
         mediate: (action) => {
           // tslint:disable: no-trailing-whitespace
           return {
-            body: require('node-web-streams').toWebReadableStream(action.input.indexOf('COUNT') > 0 ?
+            body: require('web-streams-node').toWebReadableStream(action.input.indexOf('COUNT') > 0 ?
               streamifyString(`{
   "head": { "vars": [ "count" ]
   } ,

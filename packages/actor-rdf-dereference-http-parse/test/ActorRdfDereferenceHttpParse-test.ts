@@ -101,7 +101,7 @@ describe('ActorRdfDereferenceHttpParse', () => {
         }
         return {
           body: action.input === 'https://www.google.com/noweb'
-          ? require('node-web-streams').toWebReadableStream(new PassThrough()) : new PassThrough(),
+          ? require('web-streams-node').toWebReadableStream(new PassThrough()) : new PassThrough(),
           headers,
           status,
           url,

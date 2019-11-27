@@ -38,7 +38,7 @@
   },
   "dependencies": {
     "is-stream": "^2.0.0",
-    "node-web-streams": "^0.2.2"
+    "web-streams-node": "^0.4.0"
   },
   "devDependencies": {
     "@comunica/core": "^1.9.2"
