@@ -57,7 +57,7 @@ describe('ActorInitHttp', () => {
       const actorFetch: ActorHttpNodeFetch = new ActorHttpNodeFetch({ name: 'actor-node-fetch', bus });
       (<any> actorFetch).run = (action) => Promise.resolve({
         body: action.input === 'https://www.google.com/noweb'
-          ? require('node-web-streams').toWebReadableStream(new PassThrough()) : new PassThrough(),
+          ? require('web-streams-node').toWebReadableStream(new PassThrough()) : new PassThrough(),
         status: action.input.startsWith('https://www.google.com/') ? 200 : 404,
       });
       busInit.subscribe(actorFetch);
