@@ -124,7 +124,8 @@ describe('ActorSparqlSerializeTree', () => {
       it('should emit an error when a bindings stream emits an error', async () => {
         return expect(stringifyStream((await actor.run(
           {handle: <any> { type: 'bindings', bindingsStream: streamError, variables },
-            handleMediaType: 'tree'})).handle.data)).rejects.toBeTruthy();
+            handleMediaType: 'tree'})).handle.data)).rejects
+          .toThrow(new Error('actor sparql serialize tree test error'));
       });
     });
   });
