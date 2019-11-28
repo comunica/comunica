@@ -4,7 +4,7 @@ import {LoggerPretty} from "../lib/LoggerPretty";
 describe('LoggerPretty', () => {
 
   beforeEach(() => {
-    (<any> global).console = { error: jest.fn() };
+    console.error = jest.fn();
   });
 
   describe('a LoggerPretty instance on trace level', () => {
