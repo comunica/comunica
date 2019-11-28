@@ -62,11 +62,11 @@ describe('ActorRdfResolveHypermediaQpf', () => {
     });
 
     it('should be a ActorRdfResolveHypermediaQpf constructor', () => {
-      const isOwnClass: boolean = expect(new (<any> ActorRdfResolveHypermediaQpf)({ bus, mediatorMetadata,
+      expect(new (<any> ActorRdfResolveHypermediaQpf)({ bus, mediatorMetadata,
         mediatorMetadataExtract, mediatorRdfDereference, name: 'actor', objectUri: 'o', predicateUri: 'p',
         subjectUri: 's' }))
         .toBeInstanceOf(ActorRdfResolveHypermediaQpf);
-      return isOwnClass && expect(new (<any> ActorRdfResolveHypermediaQpf)({ bus, mediatorMetadata,
+      expect(new (<any> ActorRdfResolveHypermediaQpf)({ bus, mediatorMetadata,
         mediatorMetadataExtract, mediatorRdfDereference, graphUri: 'g',
         name: 'actor', objectUri: 'o', predicateUri: 'p', subjectUri: 's' }))
         .toBeInstanceOf(ActorRdfResolveHypermedia);

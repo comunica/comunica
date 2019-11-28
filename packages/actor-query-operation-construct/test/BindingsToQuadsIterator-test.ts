@@ -314,7 +314,7 @@ describe('BindingsToQuadsIterator', () => {
         blankNode('p'),
         literal('o'),
         defaultGraph(),
-      ))).toEqual(quad(
+      ))).toEqual(quad<RDF.BaseQuad>(
         variable('s'),
         blankNode('p0'),
         literal('o'),
@@ -356,7 +356,7 @@ describe('BindingsToQuadsIterator', () => {
         blankNode('p'),
         blankNode('o'),
         blankNode('g'),
-      ))).toEqual(quad(
+      ))).toEqual(quad<RDF.BaseQuad>(
         blankNode('s0'),
         blankNode('p0'),
         blankNode('o0'),
@@ -370,7 +370,7 @@ describe('BindingsToQuadsIterator', () => {
         blankNode('a'),
         blankNode('a'),
         blankNode('a'),
-      ))).toEqual(quad(
+      ))).toEqual(quad<RDF.BaseQuad>(
         blankNode('a0'),
         blankNode('a0'),
         blankNode('a0'),
@@ -384,7 +384,7 @@ describe('BindingsToQuadsIterator', () => {
         blankNode('p'),
         blankNode('o'),
         blankNode('g'),
-      ))).toEqual(quad(
+      ))).toEqual(quad<RDF.BaseQuad>(
         blankNode('s0'),
         blankNode('p0'),
         blankNode('o0'),
@@ -396,7 +396,7 @@ describe('BindingsToQuadsIterator', () => {
         blankNode('p'),
         blankNode('o'),
         blankNode('g'),
-      ))).toEqual(quad(
+      ))).toEqual(quad<RDF.BaseQuad>(
         blankNode('s1'),
         blankNode('p1'),
         blankNode('o1'),
@@ -408,7 +408,7 @@ describe('BindingsToQuadsIterator', () => {
         blankNode('p'),
         blankNode('o'),
         blankNode('g'),
-      ))).toEqual(quad(
+      ))).toEqual(quad<RDF.BaseQuad>(
         blankNode('s2'),
         blankNode('p2'),
         blankNode('o2'),
