@@ -4057,21 +4057,21 @@ fecha@^2.3.3:
   resolved "https://registry.yarnpkg.com/fecha/-/fecha-2.3.3.tgz#948e74157df1a32fd1b12c3a3c3cdcb6ec9d96cd"
   integrity sha512-lUGBnIamTAwk4znq5BcqsDaxSmZ9nDVJaij6NvRt/Tg4R69gERA+otPKbS86ROw9nxVMw2/mp1fnaiWqbs6Sdg==
 
-fetch-sparql-endpoint@^1.4.1:
-  version "1.4.1"
-  resolved "https://registry.yarnpkg.com/fetch-sparql-endpoint/-/fetch-sparql-endpoint-1.4.1.tgz#ca5e2aae0ae310e0d51130fc0cef7e88cc7ed95d"
-  integrity sha512-cC5++/akJotHciV/PcUmKW3O5NleFxIDOMOQTohwiS82QjjgF6808lMlhXFiNsNQf/e1/uSOG/M/OEWvc2xkRw==
+fetch-sparql-endpoint@^1.5.0:
+  version "1.5.0"
+  resolved "https://registry.yarnpkg.com/fetch-sparql-endpoint/-/fetch-sparql-endpoint-1.5.0.tgz#4547da15285fb041884e76ca9f7de89f61a8a73c"
+  integrity sha512-3a3iRXQOZ2MDUwIiMT7IeYXp0pRa9T+CXpz2r6HeEOIL3O4qUjS0XYkyDUOGT8mATSOfd1WA6RayEa/iSxgk/A==
   dependencies:
     is-stream "^2.0.0"
     isomorphic-fetch "^2.2.1"
     minimist "^1.2.0"
     n3 "^1.0.0"
-    node-web-streams "^0.2.2"
     rdf-string "^1.3.1"
     sparqljs "^3.0.0"
     sparqljson-parse "^1.5.0"
     sparqlxml-parse "^1.2.0"
     stream-to-string "^1.1.0"
+    web-streams-node "^0.4.0"
 
 figgy-pudding@^3.4.1, figgy-pudding@^3.5.1:
   version "3.5.1"
