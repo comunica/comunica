@@ -15,3 +15,14 @@ $ yarn add @comunica/actor-query-operation-quadpattern
 ## Usage
 
 TODO
+
+### Quad-pattern-level context
+
+Optionally, quad pattern operations may have a `context` field
+that is of type `ActionContext`.
+If such a quad-pattern-level context is detected,
+it will be merged with the actor operation context.
+
+This feature is useful if you want to attach specific flags
+to quad patterns within the query plan,
+such as the source(s) it should query over.

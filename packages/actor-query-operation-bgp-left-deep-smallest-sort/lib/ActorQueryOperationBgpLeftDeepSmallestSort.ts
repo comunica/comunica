@@ -116,7 +116,7 @@ export class ActorQueryOperationBgpLeftDeepSmallestSort extends ActorQueryOperat
   public static materializePattern(pattern: Algebra.Pattern, bindings: Bindings): Algebra.Pattern {
     return <Algebra.Pattern> Object.assign(mapTerms(pattern,
       (term: RDF.Term) => ActorQueryOperationBgpLeftDeepSmallestSort.materializeTerm(term, bindings)),
-      { type: 'pattern' });
+      { type: 'pattern', context: pattern.context });
   }
 
   /**

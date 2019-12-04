@@ -139,7 +139,7 @@ export class ActorQueryOperationBgpLeftDeepSmallest extends ActorQueryOperationT
         }
         return materializedTerm;
       }),
-      { type: 'pattern' });
+      { type: 'pattern', context: pattern.context });
     return { pattern: patternOut, bindings: bindingsOut };
   }
 
