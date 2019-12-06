@@ -62,6 +62,8 @@
         "packages/actor-rdf-dereference-http-parse/package.json",
         "packages/actor-rdf-dereference-paged-next/package.json",
         "packages/actor-rdf-join-hash/package.json",
+        "packages/actor-rdf-join-multi-sequential/package.json",
+        "packages/actor-rdf-join-multi-smallest/package.json",
         "packages/actor-rdf-join-nestedloop/package.json",
         "packages/actor-rdf-join-symmetrichash/package.json",
         "packages/actor-rdf-metadata-all/package.json",

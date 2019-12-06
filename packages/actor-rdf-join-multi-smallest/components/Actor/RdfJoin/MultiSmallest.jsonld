@@ -1,0 +1,35 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-join-multi-smallest/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-join/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-rdf-join-multi-smallest",
+  "components": [
+    {
+      "@id": "carjms:Actor/RdfJoin/MultiSmallest",
+      "@type": "Class",
+      "extends": "cbrj:Actor/RdfJoin",
+      "requireElement": "ActorRdfJoinMultiSmallest",
+      "comment": "A comunica Multi Smallest RDF Join Actor.",
+      "parameters": [
+        {
+          "@id": "carjms:mediatorJoin",
+          "comment": "A mediator for joining Bindings streams",
+          "required": true,
+          "unique": true
+        }
+      ],
+      "constructorArguments": [
+        {
+          "extends": "cbrj:Actor/RdfJoin/constructorArgumentsObject",
+          "fields": [
+            {
+              "keyRaw": "mediatorJoin",
+              "value": "carjms:mediatorJoin"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
