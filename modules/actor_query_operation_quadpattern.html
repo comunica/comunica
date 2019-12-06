@@ -76,6 +76,14 @@
 					<pre><code class="language-bash">$ yarn <span class="hljs-keyword">add</span><span class="bash"> @comunica/actor-query-operation-quadpattern</span></code></pre>
 					<h2 id="usage">Usage</h2>
 					<p>TODO</p>
+					<h3 id="quad-pattern-level-context">Quad-pattern-level context</h3>
+					<p>Optionally, quad pattern operations may have a <code>context</code> field
+						that is of type <code>ActionContext</code>.
+						If such a quad-pattern-level context is detected,
+					it will be merged with the actor operation context.</p>
+					<p>This feature is useful if you want to attach specific flags
+						to quad patterns within the query plan,
+					such as the source(s) it should query over.</p>
 				</div>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">
