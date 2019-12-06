@@ -179,7 +179,72 @@ const isPresent = await result.booleanResult;
 | `datetime` | Datetime to handle time travel with [Memento](http://timetravel.mementoweb.org/), e.g. `new Date()`. |
 | `lenient` | If failing requests and parsing errors should be logged instead of causing a hard crash. Defaults to `false`. |
 
-_GraphQL-LD_
+#### *(Optional)* Result formatting
+
+As mentioned before, query results are either a `bindingsStream` (for `SELECT` queries),
+`quadStream` (for `CONSTRUCT` queries), or `booleanResult` (for `ASK` queries).
+
+Using the `@comunica/actor-sparql-serialize-*` actors,
+Comunica allows these results to be serialized into standard formats in a streaming manner.
+
+For example, serializing results to the [SPARQL/JSON](https://www.w3.org/TR/sparql11-results-json/) format
+can be done as follows:
+
+```javascript
+const result = await myEngine.query('SELECT * WHERE { ?s ?p <http://dbpedia.org/resource/Belgium>. ?s ?p ?o } LIMIT 100',
+  { sources: ['http://fragments.dbpedia.org/2015/en'] });
+const { data } = await myEngine.resultToString(result, 'application/sparql-results+json');
+data.pipe(process.stdout);
+```
+
+Passing a media type as second argument is optional.
+If none is supplied, then `application/json` will be picked for bindings,
+`application/trig` for quads, and `simple` for booleans.
+
+By default, the following result formats are available:
+
+| **Media type** | **Description** |
+| ------- | --------------- |
+| [`application/json`](https://github.com/comunica/comunica/tree/master/packages/actor-sparql-serialize-json) | A custom, simplified JSON result format. |
+| [`simple`](https://github.com/comunica/comunica/tree/master/packages/actor-sparql-serialize-simple) | A custom, text-based result format. |
+| [`application/sparql-results+json`](https://github.com/comunica/comunica/tree/master/packages/actor-sparql-serialize-sparql-json) | The [SPARQL/JSON](https://www.w3.org/TR/sparql11-results-json/) results format. |
+| [`application/sparql-results+xml`](https://github.com/comunica/comunica/tree/master/packages/actor-sparql-serialize-sparql-xml) | The [SPARQL/XML](https://www.w3.org/TR/rdf-sparql-XMLres/) results format. |
+| [`stats`](https://github.com/comunica/comunica/tree/master/packages/actor-sparql-serialize-stats) | A custom results format for testing and debugging. |
+| [`table`](https://github.com/comunica/comunica/tree/master/packages/actor-sparql-serialize-table) | A text-based visual table result format. |
+| [`tree`](https://github.com/comunica/comunica/tree/master/packages/actor-sparql-serialize-tree) | A tree-based result format for GraphQL-LD result compacting. |
+| [`application/trig`](https://github.com/comunica/comunica/tree/master/packages/actor-sparql-serialize-rdf) | The [TriG](https://www.w3.org/TR/trig/) RDF serialization. |
+| [`application/n-quads`](https://github.com/comunica/comunica/tree/master/packages/actor-sparql-serialize-rdf) | The [N-Quads](https://www.w3.org/TR/n-quads/) RDF serialization. |
+| [`text/turtle`](https://github.com/comunica/comunica/tree/master/packages/actor-sparql-serialize-rdf) | The [Turtle](https://www.w3.org/TR/turtle/) RDF serialization. |
+| [`application/n-triples`](https://github.com/comunica/comunica/tree/master/packages/actor-sparql-serialize-rdf) | The [N-Triples](https://www.w3.org/TR/n-triples/) RDF serialization. |
+| [`text/n3`](https://github.com/comunica/comunica/tree/master/packages/actor-sparql-serialize-rdf) | The [Notation3](https://www.w3.org/TeamSubmission/n3/) serialization. |
+| [`application/ld+json`](https://github.com/comunica/comunica/tree/master/packages/actor-sparql-serialize-rdf) | The [JSON-LD](https://json-ld.org/) RDF serialization. |
+
+This list of available formats can also be retrieved dynamically by invoking the (asynchronous) `engine.getResultMediaTypes()` method.
+
+On the command-line, the result format can be set using the `-t` flag:
+
+```bash
+$ comunica-sparql http://dbpedia.org/resource/Belgium "SELECT * WHERE { ?s ?p ?o }" -t 'application/sparql-results+json'
+```
+
+All available result formats can be listed from the command-line using `--listformats`:
+
+```bash
+$ comunica-sparql --listformats
+```
+
+#### *(Optional)* Cache handling
+
+When remote documents are fetched over HTTP, a Comunica engine can cache documents to optimize future reuse.
+If your application works over volatile resources, then you may want to invalidate this cache,
+which can be done as follows:
+
+```javascript
+myEngine.invalidateHttpCache(); // Invalidate the full cache
+myEngine.invalidateHttpCache('http://example.org/page.html'); // Invalidate a single document
+```
+
+#### *(Optional)* GraphQL-LD
 
 Instead of SPARQL queries, you can also define [GraphQL](https://graphql.org/) queries
 (with a [JSON-LD](https://json-ld.org/) context).
@@ -215,7 +280,7 @@ To run GraphQL queries from the command line, set the `-i` flag to `graphql` and
 $ comunica-sparql http://fragments.dbpedia.org/2015-10/en -q "{ label @single }" -c config-with-context.json -i graphql -t tree
 ```
 
-_Logging_
+#### *(Optional)* Logging
 
 Optionally, a custom logger can be used inside Comunica.
 By default, [`@comunica/logger-void`](https://github.com/comunica/comunica/tree/master/packages/logger-void/) is used,
@@ -236,7 +301,7 @@ const context = {
 myEngine.query('...', context);
 ```
 
-_Proxy_
+#### *(Optional)* Proxy
 
 Optionally, you can configure a proxy to redirect all HTTP(S) traffic.
 This is for example useful when Comunica is used in a Web browser where a [proxy enables CORS headers on all responses](https://www.npmjs.com/package/cors-anywhere).
