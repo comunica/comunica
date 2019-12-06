@@ -1,5 +1,11 @@
 # Changelog
 
+<a name="v1.3.1"></a>
+## [v1.3.1](https://github.com/comunica/sparqlee/compare/v1.3.0...v1.3.1) - 2019-12-06
+
+### Fixed
+* [Fix compilation issue in Consts#make, Closes #51](https://github.com/comunica/sparqlee/commit/823f17ef06d17123a7f929a4e92a62ac12bbda17)
+
 <a name="v1.3.0"></a>
 ## [v1.3.0](https://github.com/comunica/sparqlee/compare/v1.2.1...v1.3.0) - 2019-10-14
 
