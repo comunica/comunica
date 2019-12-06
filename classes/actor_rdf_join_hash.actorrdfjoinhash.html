@@ -110,7 +110,8 @@
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="actor_rdf_join_hash.actorrdfjoinhash.html#beforeactors" class="tsd-kind-icon">before<wbr>Actors</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="actor_rdf_join_hash.actorrdfjoinhash.html#bus" class="tsd-kind-icon">bus</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="actor_rdf_join_hash.actorrdfjoinhash.html#maxentries" class="tsd-kind-icon">max<wbr>Entries</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="actor_rdf_join_hash.actorrdfjoinhash.html#limitentries" class="tsd-kind-icon">limit<wbr>Entries</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="actor_rdf_join_hash.actorrdfjoinhash.html#limitentriesmin" class="tsd-kind-icon">limit<wbr>Entries<wbr>Min</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="actor_rdf_join_hash.actorrdfjoinhash.html#name" class="tsd-kind-icon">name</a></li>
 							</ul>
 						</section>
@@ -155,7 +156,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="bus_rdf_join.actorrdfjoin.html">ActorRdfJoin</a>.<a href="bus_rdf_join.actorrdfjoin.html#constructor">constructor</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/621576e/packages/actor-rdf-join-hash/lib/ActorRdfJoinHash.ts#L10">actor-rdf-join-hash/lib/ActorRdfJoinHash.ts:10</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/928b005/packages/actor-rdf-join-hash/lib/ActorRdfJoinHash.ts#L10">actor-rdf-join-hash/lib/ActorRdfJoinHash.ts:10</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -179,7 +180,7 @@
 						<p>Implementation of <a href="../interfaces/core.iactorargs.html">IActorArgs</a>.<a href="../interfaces/core.iactorargs.html#beforeactors">beforeActors</a></p>
 						<p>Inherited from <a href="core.actor.html">Actor</a>.<a href="core.actor.html#beforeactors">beforeActors</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/621576e/packages/core/lib/Actor.ts#L26">core/lib/Actor.ts:26</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/928b005/packages/core/lib/Actor.ts#L26">core/lib/Actor.ts:26</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -191,24 +192,42 @@
 						<p>Implementation of <a href="../interfaces/core.iactorargs.html">IActorArgs</a>.<a href="../interfaces/core.iactorargs.html#bus">bus</a></p>
 						<p>Inherited from <a href="core.actor.html">Actor</a>.<a href="core.actor.html#bus">bus</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/621576e/packages/core/lib/Actor.ts#L25">core/lib/Actor.ts:25</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/928b005/packages/core/lib/Actor.ts#L25">core/lib/Actor.ts:25</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
-					<a name="maxentries" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagProtected">Protected</span> max<wbr>Entries</h3>
-					<div class="tsd-signature tsd-kind-icon">max<wbr>Entries<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<a name="limitentries" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> limit<wbr>Entries</h3>
+					<div class="tsd-signature tsd-kind-icon">limit<wbr>Entries<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
-						<p>Inherited from <a href="bus_rdf_join.actorrdfjoin.html">ActorRdfJoin</a>.<a href="bus_rdf_join.actorrdfjoin.html#maxentries">maxEntries</a></p>
+						<p>Inherited from <a href="bus_rdf_join.actorrdfjoin.html">ActorRdfJoin</a>.<a href="bus_rdf_join.actorrdfjoin.html#limitentries">limitEntries</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/621576e/packages/bus-rdf-join/lib/ActorRdfJoin.ts#L24">bus-rdf-join/lib/ActorRdfJoin.ts:24</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/928b005/packages/bus-rdf-join/lib/ActorRdfJoin.ts#L25">bus-rdf-join/lib/ActorRdfJoin.ts:25</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>Can be used by subclasses to indicate the max number of streams that can be joined.
-							0 for infinity.</p>
+							<p>Can be used by subclasses to indicate the max or min number of streams that can be joined.
+								0 for infinity.
+							By default, this indicates the max number, but can be inverted by setting limitEntriesMin to true.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
+					<a name="limitentriesmin" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> limit<wbr>Entries<wbr>Min</h3>
+					<div class="tsd-signature tsd-kind-icon">limit<wbr>Entries<wbr>Min<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
+					<aside class="tsd-sources">
+						<p>Inherited from <a href="bus_rdf_join.actorrdfjoin.html">ActorRdfJoin</a>.<a href="bus_rdf_join.actorrdfjoin.html#limitentriesmin">limitEntriesMin</a></p>
+						<ul>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/928b005/packages/bus-rdf-join/lib/ActorRdfJoin.ts#L30">bus-rdf-join/lib/ActorRdfJoin.ts:30</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>If true, the limitEntries field is a lower limit,
+							otherwise, it is an upper limit.</p>
 						</div>
 					</div>
 				</section>
@@ -220,7 +239,7 @@
 						<p>Implementation of <a href="../interfaces/core.iactorargs.html">IActorArgs</a>.<a href="../interfaces/core.iactorargs.html#name">name</a></p>
 						<p>Inherited from <a href="core.actor.html">Actor</a>.<a href="core.actor.html#name">name</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/621576e/packages/core/lib/Actor.ts#L24">core/lib/Actor.ts:24</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/928b005/packages/core/lib/Actor.ts#L24">core/lib/Actor.ts:24</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -238,7 +257,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="core.actor.html">Actor</a>.<a href="core.actor.html#deinitialize">deinitialize</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/621576e/packages/core/lib/Actor.ts#L107">core/lib/Actor.ts:107</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/928b005/packages/core/lib/Actor.ts#L107">core/lib/Actor.ts:107</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -264,7 +283,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="core.actor.html">Actor</a>.<a href="core.actor.html#getdefaultlogdata">getDefaultLogData</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/621576e/packages/core/lib/Actor.ts#L113">core/lib/Actor.ts:113</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/928b005/packages/core/lib/Actor.ts#L113">core/lib/Actor.ts:113</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -291,7 +310,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="bus_rdf_join.actorrdfjoin.html">ActorRdfJoin</a>.<a href="bus_rdf_join.actorrdfjoin.html#getiterations">getIterations</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/621576e/packages/actor-rdf-join-hash/lib/ActorRdfJoinHash.ts#L35">actor-rdf-join-hash/lib/ActorRdfJoinHash.ts:35</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/928b005/packages/actor-rdf-join-hash/lib/ActorRdfJoinHash.ts#L35">actor-rdf-join-hash/lib/ActorRdfJoinHash.ts:35</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -315,7 +334,7 @@
 							<aside class="tsd-sources">
 								<p>Overrides <a href="bus_rdf_join.actorrdfjoin.html">ActorRdfJoin</a>.<a href="bus_rdf_join.actorrdfjoin.html#getoutput">getOutput</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/621576e/packages/actor-rdf-join-hash/lib/ActorRdfJoinHash.ts#L27">actor-rdf-join-hash/lib/ActorRdfJoinHash.ts:27</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/928b005/packages/actor-rdf-join-hash/lib/ActorRdfJoinHash.ts#L27">actor-rdf-join-hash/lib/ActorRdfJoinHash.ts:27</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -339,7 +358,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="core.actor.html">Actor</a>.<a href="core.actor.html#initialize">initialize</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/621576e/packages/core/lib/Actor.ts#L96">core/lib/Actor.ts:96</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/928b005/packages/core/lib/Actor.ts#L96">core/lib/Actor.ts:96</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -365,7 +384,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="core.actor.html">Actor</a>.<a href="core.actor.html#logdebug">logDebug</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/621576e/packages/core/lib/Actor.ts#L128">core/lib/Actor.ts:128</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/928b005/packages/core/lib/Actor.ts#L128">core/lib/Actor.ts:128</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -395,7 +414,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="core.actor.html">Actor</a>.<a href="core.actor.html#logerror">logError</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/621576e/packages/core/lib/Actor.ts#L149">core/lib/Actor.ts:149</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/928b005/packages/core/lib/Actor.ts#L149">core/lib/Actor.ts:149</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -425,7 +444,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="core.actor.html">Actor</a>.<a href="core.actor.html#logfatal">logFatal</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/621576e/packages/core/lib/Actor.ts#L156">core/lib/Actor.ts:156</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/928b005/packages/core/lib/Actor.ts#L156">core/lib/Actor.ts:156</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -455,7 +474,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="core.actor.html">Actor</a>.<a href="core.actor.html#loginfo">logInfo</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/621576e/packages/core/lib/Actor.ts#L135">core/lib/Actor.ts:135</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/928b005/packages/core/lib/Actor.ts#L135">core/lib/Actor.ts:135</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -485,7 +504,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="core.actor.html">Actor</a>.<a href="core.actor.html#logtrace">logTrace</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/621576e/packages/core/lib/Actor.ts#L121">core/lib/Actor.ts:121</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/928b005/packages/core/lib/Actor.ts#L121">core/lib/Actor.ts:121</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -515,7 +534,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="core.actor.html">Actor</a>.<a href="core.actor.html#logwarn">logWarn</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/621576e/packages/core/lib/Actor.ts#L142">core/lib/Actor.ts:142</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/928b005/packages/core/lib/Actor.ts#L142">core/lib/Actor.ts:142</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -546,7 +565,7 @@
 								<p>Inherited from <a href="bus_rdf_join.actorrdfjoin.html">ActorRdfJoin</a>.<a href="bus_rdf_join.actorrdfjoin.html#run">run</a></p>
 								<p>Overrides <a href="core.actor.html">Actor</a>.<a href="core.actor.html#run">run</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/621576e/packages/bus-rdf-join/lib/ActorRdfJoin.ts#L116">bus-rdf-join/lib/ActorRdfJoin.ts:116</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/928b005/packages/bus-rdf-join/lib/ActorRdfJoin.ts#L125">bus-rdf-join/lib/ActorRdfJoin.ts:125</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -575,7 +594,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="core.actor.html">Actor</a>.<a href="core.actor.html#runobservable">runObservable</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/621576e/packages/core/lib/Actor.ts#L83">core/lib/Actor.ts:83</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/928b005/packages/core/lib/Actor.ts#L83">core/lib/Actor.ts:83</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -610,7 +629,7 @@
 								<p>Inherited from <a href="bus_rdf_join.actorrdfjoin.html">ActorRdfJoin</a>.<a href="bus_rdf_join.actorrdfjoin.html#test">test</a></p>
 								<p>Overrides <a href="core.actor.html">Actor</a>.<a href="core.actor.html#test">test</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/621576e/packages/bus-rdf-join/lib/ActorRdfJoin.ts#L90">bus-rdf-join/lib/ActorRdfJoin.ts:90</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/928b005/packages/bus-rdf-join/lib/ActorRdfJoin.ts#L97">bus-rdf-join/lib/ActorRdfJoin.ts:97</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -645,7 +664,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="core.actor.html">Actor</a>.<a href="core.actor.html#getcontextlogger">getContextLogger</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/621576e/packages/core/lib/Actor.ts#L52">core/lib/Actor.ts:52</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/928b005/packages/core/lib/Actor.ts#L52">core/lib/Actor.ts:52</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -677,7 +696,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/621576e/packages/actor-rdf-join-hash/lib/ActorRdfJoinHash.ts#L23">actor-rdf-join-hash/lib/ActorRdfJoinHash.ts:23</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/928b005/packages/actor-rdf-join-hash/lib/ActorRdfJoinHash.ts#L23">actor-rdf-join-hash/lib/ActorRdfJoinHash.ts:23</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -710,7 +729,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="bus_rdf_join.actorrdfjoin.html">ActorRdfJoin</a>.<a href="bus_rdf_join.actorrdfjoin.html#iteratorshavemetadata">iteratorsHaveMetadata</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/621576e/packages/bus-rdf-join/lib/ActorRdfJoin.ts#L74">bus-rdf-join/lib/ActorRdfJoin.ts:74</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/928b005/packages/bus-rdf-join/lib/ActorRdfJoin.ts#L81">bus-rdf-join/lib/ActorRdfJoin.ts:81</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -742,7 +761,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="bus_rdf_join.actorrdfjoin.html">ActorRdfJoin</a>.<a href="bus_rdf_join.actorrdfjoin.html#join">join</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/621576e/packages/bus-rdf-join/lib/ActorRdfJoin.ts#L55">bus-rdf-join/lib/ActorRdfJoin.ts:55</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/928b005/packages/bus-rdf-join/lib/ActorRdfJoin.ts#L62">bus-rdf-join/lib/ActorRdfJoin.ts:62</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -771,7 +790,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="bus_rdf_join.actorrdfjoin.html">ActorRdfJoin</a>.<a href="bus_rdf_join.actorrdfjoin.html#joinvariables">joinVariables</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/621576e/packages/bus-rdf-join/lib/ActorRdfJoin.ts#L46">bus-rdf-join/lib/ActorRdfJoin.ts:46</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/928b005/packages/bus-rdf-join/lib/ActorRdfJoin.ts#L53">bus-rdf-join/lib/ActorRdfJoin.ts:53</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -800,7 +819,7 @@
 							<aside class="tsd-sources">
 								<p>Inherited from <a href="bus_rdf_join.actorrdfjoin.html">ActorRdfJoin</a>.<a href="bus_rdf_join.actorrdfjoin.html#overlappingvariables">overlappingVariables</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/621576e/packages/bus-rdf-join/lib/ActorRdfJoin.ts#L37">bus-rdf-join/lib/ActorRdfJoin.ts:37</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/928b005/packages/bus-rdf-join/lib/ActorRdfJoin.ts#L44">bus-rdf-join/lib/ActorRdfJoin.ts:44</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -851,7 +870,10 @@
 										<a href="actor_rdf_join_hash.actorrdfjoinhash.html#bus" class="tsd-kind-icon">bus</a>
 									</li>
 									<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
-										<a href="actor_rdf_join_hash.actorrdfjoinhash.html#maxentries" class="tsd-kind-icon">max<wbr>Entries</a>
+										<a href="actor_rdf_join_hash.actorrdfjoinhash.html#limitentries" class="tsd-kind-icon">limit<wbr>Entries</a>
+									</li>
+									<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
+										<a href="actor_rdf_join_hash.actorrdfjoinhash.html#limitentriesmin" class="tsd-kind-icon">limit<wbr>Entries<wbr>Min</a>
 									</li>
 									<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
 										<a href="actor_rdf_join_hash.actorrdfjoinhash.html#name" class="tsd-kind-icon">name</a>
