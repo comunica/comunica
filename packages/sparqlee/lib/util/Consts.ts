@@ -42,7 +42,7 @@ export enum TypeURL {
   XSD_DAYTIME_DURATION = 'http://www.w3.org/2001/XMLSchema#dayTimeDuration',
 }
 
-export function make(dt: TypeURL) {
+export function make(dt: TypeURL): RDF.NamedNode {
   return RDFDM.namedNode(dt);
 }
 
