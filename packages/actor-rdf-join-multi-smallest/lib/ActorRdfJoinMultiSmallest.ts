@@ -4,8 +4,8 @@ import {IActorArgs, IActorTest, Mediator} from "@comunica/core";
 import {IMediatorTypeIterations} from "@comunica/mediatortype-iterations";
 
 /**
- * A comunica Multi Smallest RDF Join Actor.
- * It accepts 3 or streams at once, joins the smallest two, and joins the result with the remaining streams.
+ * A Multi Smallest RDF Join Actor.
+ * It accepts 3 or more streams, joins the smallest two, and joins the result with the remaining streams.
  */
 export class ActorRdfJoinMultiSmallest extends ActorRdfJoin {
 
@@ -45,7 +45,7 @@ export class ActorRdfJoinMultiSmallest extends ActorRdfJoin {
     // Join the two selected streams, and then join the result with the remaining streams
     const firstEntry: IActorQueryOperationOutputBindings = <IActorQueryOperationOutputBindings> await
       this.mediatorJoin.mediate({ entries: [ smallestItem1, smallestItem2 ] });
-    entries.unshift(firstEntry);
+    entries.push(firstEntry);
     return <IActorQueryOperationOutputBindings> await this.mediatorJoin.mediate({ entries });
   }
 

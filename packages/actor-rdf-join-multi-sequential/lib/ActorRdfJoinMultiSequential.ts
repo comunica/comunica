@@ -4,8 +4,8 @@ import {IActorArgs, IActorTest, Mediator} from "@comunica/core";
 import {IMediatorTypeIterations} from "@comunica/mediatortype-iterations";
 
 /**
- * A comunica Multi Sequential RDF Join Actor.
- * It accepts 3 or streams at once, joins the first two, and joins the result with the remaining streams.
+ * A Multi Sequential RDF Join Actor.
+ * It accepts 3 or more streams, joins the first two, and joins the result with the remaining streams.
  */
 export class ActorRdfJoinMultiSequential extends ActorRdfJoin {
 
@@ -20,8 +20,8 @@ export class ActorRdfJoinMultiSequential extends ActorRdfJoin {
     // Join the two first streams, and then join the result with the remaining streams
     const firstEntry: IActorQueryOperationOutputBindings = <IActorQueryOperationOutputBindings> await
       this.mediatorJoin.mediate({ entries: [ action.entries[0], action.entries[1] ] });
-    const remainingEntries: IActorQueryOperationOutputBindings[] = action.entries.slice(2);
-    remainingEntries.unshift(firstEntry);
+    const remainingEntries: IActorQueryOperationOutputBindings[] = action.entries.slice(1);
+    remainingEntries[0] = firstEntry;
     return <IActorQueryOperationOutputBindings> await this.mediatorJoin.mediate({ entries: remainingEntries });
   }
 

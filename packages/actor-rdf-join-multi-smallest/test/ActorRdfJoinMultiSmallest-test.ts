@@ -182,7 +182,7 @@ describe('ActorRdfJoinMultiSmallest', () => {
     it('should run on 3 streams', async () => {
       const output = await actor.run(action3);
       expect(output.type).toEqual('bindings');
-      expect(output.variables).toEqual(['a', 'b', 'c']);
+      expect(output.variables).toEqual(['a', 'c', 'b']);
       expect(await output.metadata()).toEqual({ totalItems: 40 });
       expect(await arrayifyStream(output.bindingsStream)).toEqual([
         Bindings({ a: literal('a1'), b: literal('b1'), c: literal('c1')}),
@@ -198,7 +198,7 @@ describe('ActorRdfJoinMultiSmallest', () => {
     it('should run on 4 streams', async () => {
       const output = await actor.run(action4);
       expect(output.type).toEqual('bindings');
-      expect(output.variables).toEqual(['a', 'b', 'd', 'c']);
+      expect(output.variables).toEqual(['a', 'c', 'd', 'b']);
       expect(await output.metadata()).toEqual({ totalItems: 80 });
       expect(await arrayifyStream(output.bindingsStream)).toEqual([
         Bindings({ a: literal('a1'), b: literal('b1'), c: literal('c1'), d: literal('d1')}),
@@ -215,7 +215,7 @@ describe('ActorRdfJoinMultiSmallest', () => {
     it('should run on 3 streams with one not having any totalItems metadata value', async () => {
       const output = await actor.run(action3PartialMeta);
       expect(output.type).toEqual('bindings');
-      expect(output.variables).toEqual(['a', 'b', 'c']);
+      expect(output.variables).toEqual(['a', 'c', 'b']);
       expect(output.metadata).toBeFalsy();
       expect(await arrayifyStream(output.bindingsStream)).toEqual([
         Bindings({ a: literal('a1'), b: literal('b1'), c: literal('c1')}),
