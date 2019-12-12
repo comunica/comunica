@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-serialize-jsonld",
-  "version": "1.9.2",
+  "version": "1.10.0",
   "description": "A jsonld rdf-serialize actor",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-serialize-jsonld",
   "lsd:components": "components/components.jsonld",

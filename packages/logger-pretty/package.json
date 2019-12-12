@@ -1,6 +1,6 @@
 {
   "name": "@comunica/logger-pretty",
-  "version": "1.9.2",
+  "version": "1.10.0",
   "description": "A comunica logger that pretty-prints.",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/logger-pretty",
   "lsd:components": "components/components.jsonld",

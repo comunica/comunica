@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-operation-path-inv",
-  "version": "1.9.3",
+  "version": "1.10.0",
   "description": "A path-inv query-operation actor",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-path-inv",
   "lsd:components": "components/components.jsonld",
@@ -39,7 +39,7 @@
     "@comunica/core": "^1.2.0"
   },
   "dependencies": {
-    "@comunica/actor-abstract-path": "^1.9.3"
+    "@comunica/actor-abstract-path": "^1.10.0"
   },
   "devDependencies": {
     "@comunica/bus-query-operation": "^1.9.3",

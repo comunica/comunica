@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-sparql-serialize-tree",
-  "version": "1.9.3",
+  "version": "1.10.0",
   "description": "A tree sparql-serialize actor",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-sparql-serialize-tree",
   "lsd:components": "components/components.jsonld",

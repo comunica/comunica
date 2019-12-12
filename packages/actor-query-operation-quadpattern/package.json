@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-operation-quadpattern",
-  "version": "1.9.3",
+  "version": "1.10.0",
   "description": "A quadpattern query-operation actor",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-quadpattern",
   "lsd:components": "components/components.jsonld",

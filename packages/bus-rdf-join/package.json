@@ -1,6 +1,6 @@
 {
   "name": "@comunica/bus-rdf-join",
-  "version": "1.9.3",
+  "version": "1.10.0",
   "description": "A comunica bus for rdf-join events.",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-join",
   "lsd:components": "components/components.jsonld",

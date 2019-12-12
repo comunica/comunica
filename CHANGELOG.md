@@ -1,6 +1,22 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v1.10.0"></a>
+## [v1.10.0](https://github.com/comunica/comunica/compare/v1.9.4...v1.10.0) - 2019-12-12
+
+### Added
+* [Add actors for joining more than two streams pair-wise](https://github.com/comunica/comunica/commit/928b005abd21d43d8c763507c884863cd6c15b16)
+* [Allow quad-pattern-level contexts to be defined](https://github.com/comunica/comunica/commit/a672b7db7addc7f64540fa029299b21065d802c6)
+
+### Changed
+* [Manually load sources for federated metadata](https://github.com/comunica/comunica/commit/ea35f6b943afff8d14f2dc2ecfd0ca036eac7328)
+* [Clarify dereferencing error message.](https://github.com/comunica/comunica/commit/827d51a9fae73c3f8391fdc0d8a1058665af4ddf)
+
+### Fixed
+* [Fix unresolved promise rejections in SPARQL tree serialization](https://github.com/comunica/comunica/commit/8ab8624d93d2c3e32eed785148264d29461e9c0b)
+* [Swap node-web-streams package with web-streams-node](https://github.com/comunica/comunica/commit/0a3e85ff66acd7f256477ad119fc7c6efdd7a6e0)
+* [Remove unused jsonld dependency](https://github.com/comunica/comunica/commit/b01db8677b46c841834a80f81d65db94d861b3aa)
+
 <a name="v1.9.4"></a>
 ## [v1.9.4](https://github.com/comunica/comunica/compare/v1.9.3...v1.9.4) - 2019-10-21
 

@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-resolve-quad-pattern-hypermedia",
-  "version": "1.9.3",
+  "version": "1.10.0",
   "description": "A hypermedia rdf-resolve-quad-pattern actor",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-resolve-quad-pattern-hypermedia",
   "lsd:components": "components/components.jsonld",
