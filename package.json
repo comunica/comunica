@@ -30,7 +30,7 @@
     "@types/lru-cache": "^5.1.0",
     "@types/minimist": "^1.2.0",
     "@types/n3": "^1.1.0",
-    "@types/node": "^12.6.8",
+    "@types/node": "^13.1.0",
     "@types/node-fetch": "^2.1.0",
     "@types/parse-link-header": "^1.0.0",
     "@types/rdf-js": "^2.0.2",
