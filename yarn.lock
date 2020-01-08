@@ -1618,7 +1618,7 @@
     once "^1.4.0"
     universal-user-agent "^4.0.0"
 
-"@rdfjs/data-model@^1.1.0", "@rdfjs/data-model@^1.1.1":
+"@rdfjs/data-model@^1.1.0", "@rdfjs/data-model@^1.1.1", "@rdfjs/data-model@^1.1.2":
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/@rdfjs/data-model/-/data-model-1.1.2.tgz#e2f48a422c7e837b8a7d96d240732be3287df713"
   integrity sha512-pk/G/JLYGaXesoBLvEmoC/ic0H3B79fTyS0Ujjh5YQB2DZW+mn05ZowFFv88rjB9jf7c1XE5XSmf8jzn6U0HHA==
@@ -4017,6 +4017,11 @@ fast-deep-equal@^2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/fast-deep-equal/-/fast-deep-equal-2.0.1.tgz#7b05218ddf9667bf7f370bf7fdb2cb15fdd0aa49"
   integrity sha1-ewUhjd+WZ79/Nwv3/bLLFf3Qqkk=
+
+fast-deep-equal@^3.1.1:
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/fast-deep-equal/-/fast-deep-equal-3.1.1.tgz#545145077c501491e33b15ec408c294376e94ae4"
+  integrity sha512-8UEa58QDLauDNfpbrX55Q9jrGHThw2ZMdOky5Gl1CDtVeJDPVrG4Jxx1N8jw2gkWaff5UUuX1KJd+9zGe2B+ZA==
 
 fast-glob@^2.2.6:
   version "2.2.7"
@@ -8350,6 +8355,17 @@ sparqlalgebrajs@^2.0.0, sparqlalgebrajs@^2.1.0:
     rdf-string "^1.3.1"
     sparqljs "^3.0.0"
 
+sparqlalgebrajs@^2.2.0:
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/sparqlalgebrajs/-/sparqlalgebrajs-2.2.0.tgz#97ad975ae1e07a7e57716b5e192c6d0f7ddd0b7f"
+  integrity sha512-brOLIcmQ5Oa68v/s777zpTE3kVwginlEXEtrL14APteopJDz7/ZZXPMDvoDJ10NJrKMJoYpdmw5VF3YRYrxgoQ==
+  dependencies:
+    "@rdfjs/data-model" "^1.1.2"
+    fast-deep-equal "^3.1.1"
+    minimist "^1.2.0"
+    rdf-string "^1.3.1"
+    sparqljs "^3.0.1"
+
 sparqlee@^1.3.0:
   version "1.3.0"
   resolved "https://registry.yarnpkg.com/sparqlee/-/sparqlee-1.3.0.tgz#d4663f9a76a5a6151dd30b3877ad767e07713479"
@@ -8370,6 +8386,13 @@ sparqljs@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/sparqljs/-/sparqljs-3.0.0.tgz#bc1f8ba39084b3ed8bece27ef60e860fa989c451"
   integrity sha512-uPlGML5IWfex1Up2YSA2LnvEJjyL87KCNXQ2vDnDbgraWKivy/pHxarlJA+6NUWFllNgN+1LmWFzanTRg8mhZg==
+  dependencies:
+    n3 "^1.0.4"
+
+sparqljs@^3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/sparqljs/-/sparqljs-3.0.1.tgz#334639af00fef4e541225e424209ea46ae77cbb1"
+  integrity sha512-1kkmqUctPvHyOcJjRR/NWrwVsJj3DydGgz+QZJWrW+uVtWWAsBk74uUYhHS2M7YMZ0xJmSnpGiWr9C4+urNJFA==
   dependencies:
     n3 "^1.0.4"
 
