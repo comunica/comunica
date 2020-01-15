@@ -1633,12 +1633,19 @@
     highlight.js "^9.15.6"
     marked "^0.6.1"
 
-"@types/asynciterator@^1.1.0", "@types/asynciterator@^1.1.1":
+"@types/asynciterator@^1.1.0":
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/@types/asynciterator/-/asynciterator-1.1.1.tgz#21ae5e3729ab2e87d324a044b2cd6288226da7fc"
   integrity sha512-KgjXxTtWbMW7UA4oZauIfg2rCl5+5LbsoVF5DwwpXVQxzSbez2PQ9NAlbJlBjIHqKLOpWcdjqL+wyrNepvTZOg==
   dependencies:
     "@types/events" "*"
+    "@types/node" "*"
+
+"@types/asynciterator@^1.1.3":
+  version "1.1.3"
+  resolved "https://registry.yarnpkg.com/@types/asynciterator/-/asynciterator-1.1.3.tgz#041d6c4d906536eca415ff8f68c6f3e2e8eae5e1"
+  integrity sha512-F/Hji5v/C7wPDmrTt3C3KrSa3Ztn/C/j72jvdhVZwzSTRoow8jQPW59G/0ML5S0SUXu5rjzuDaxHsZs4GRyFOw==
+  dependencies:
     "@types/node" "*"
 
 "@types/babel__core@^7.1.0":
@@ -1844,7 +1851,7 @@
   dependencies:
     "@types/node" "*"
 
-"@types/node@*", "@types/node@^12.6.8":
+"@types/node@*":
   version "12.11.1"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-12.11.1.tgz#1fd7b821f798b7fa29f667a1be8f3442bb8922a3"
   integrity sha512-TJtwsqZ39pqcljJpajeoofYRfeZ7/I/OMUQ5pR4q5wOKf2ocrUvBAZUMhWsOvKx3dVc/aaV5GluBivt0sWqA5A==
@@ -1853,6 +1860,11 @@
   version "10.14.22"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-10.14.22.tgz#34bcdf6b6cb5fc0db33d24816ad9d3ece22feea4"
   integrity sha512-9taxKC944BqoTVjE+UT3pQH0nHZlTvITwfsOZqyc+R3sfJuxaTtxWjfn1K2UlxyPcKHf0rnaXcVFrS9F9vf0bw==
+
+"@types/node@^13.1.7":
+  version "13.1.7"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-13.1.7.tgz#db51d28b8dfacfe4fb2d0da88f5eb0a2eca00675"
+  integrity sha512-HU0q9GXazqiKwviVxg9SI/+t/nAsGkvLDkIdxz+ObejG2nX6Si00TeLqHMoS+a/1tjH7a8YpKVQwtgHuMQsldg==
 
 "@types/parse-link-header@^1.0.0":
   version "1.0.0"
