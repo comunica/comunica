@@ -79,7 +79,7 @@
     "rdf-string": "^1.1.1",
     "sparqlalgebrajs": "^2.1.0",
     "uri-js": "^4.2.2",
-    "uuid": "^3.3.2"
+    "uuid": "^7.0.0"
   },
   "jest": {
     "testEnvironment": "node",
