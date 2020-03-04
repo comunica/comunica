@@ -23,7 +23,7 @@ script:
   - lerna run browser --concurrency 1
   - lerna run spec --concurrency 1
   - lerna run integration --concurrency 1
-  - if [ "$DOCKER_BUILD" = "true" ]; then ( sh -c "`curl -fsSl https://raw.githubusercontent.com/comunica/comunica-lerna-docker/master/install.sh`" && ~/.comunica-lerna-docker/bin/comunica-lerna-docker build ) fi
+  - if [ "$DOCKER_BUILD" = "true" ]; then ( sh -c "`curl -fsSl https://raw.githubusercontent.com/rubensworks/lerna-docker/master/install.sh`" && ~/.lerna-docker/bin/lerna-docker comunica build ) fi
 after_success:
   - yarn run coveralls-ci
   - if [ "$DOCUMENTATION_BUILD" = "true" ]; then ( yarn run doc ) fi
@@ -46,7 +46,7 @@ deploy:
       os: "linux"
   - provider: script
     skip-cleanup: true
-    script: ~/.comunica-lerna-docker/bin/comunica-lerna-docker push
+    script: ~/.lerna-docker/bin/lerna-docker comunica push
     on:
       tags: false
       branch: master
@@ -54,7 +54,7 @@ deploy:
       os: "linux"
   - provider: script
     skip-cleanup: true
-    script: ~/.comunica-lerna-docker/bin/comunica-lerna-docker push
+    script: ~/.lerna-docker/bin/lerna-docker comunica push
     on:
       tags: true
       all_branches: true
