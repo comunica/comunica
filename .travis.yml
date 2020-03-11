@@ -6,7 +6,7 @@ matrix:
   include:
     - node_js: '8'
     - node_js: '10'
-    - node_js: 'node'
+    - node_js: '12'
       env: DOCUMENTATION_BUILD=true DOCKER_BUILD=true
 os:
  - linux
