@@ -150,6 +150,8 @@ const result = await myEngine.query('SELECT * WHERE { ?s ?p <http://dbpedia.org/
 result.bindingsStream.on('data', (data) => console.log(data.toObject()));
 ```
 
+**Note: Some SPARQL endpoints may be recognised as a file instead of a SPARQL endpoint due to them not supporting [SPARQL Service Description](https://www.w3.org/TR/sparql11-service-description/), which may produce incorrect results. For these cases, the `sparql` type MUST be set.**
+
 For `CONSTRUCT` and `DESCRIBE` queries,
 results can be collected as follows.
 
