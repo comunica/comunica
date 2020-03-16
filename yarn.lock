@@ -1936,7 +1936,7 @@
   resolved "https://registry.yarnpkg.com/@types/lru-cache/-/lru-cache-5.1.0.tgz#57f228f2b80c046b4a1bd5cac031f81f207f4f03"
   integrity sha512-RaE0B+14ToE4l6UqdarKPnXwVDuigfFv+5j9Dze/Nqr23yyuqdNvzcZi3xB+3Agvi5R4EOgAksfv3lXX4vBt9w==
 
-"@types/minimatch@*", "@types/minimatch@3.0.3":
+"@types/minimatch@*":
   version "3.0.3"
   resolved "https://registry.yarnpkg.com/@types/minimatch/-/minimatch-3.0.3.tgz#3dca0e3f33b200fc7d1139c0cd96c1268cadfd9d"
   integrity sha512-tHq6qdbT9U1IRSGf14CL0pUlULksvY9OZ+5eEgl1N7t+OA3tGvNpxJCzuKQlsNgCVwbAs670L1vcVQi8j9HjnA==
@@ -9208,22 +9208,21 @@ typedarray@^0.0.6:
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
 
-typedoc-default-themes@^0.7.1:
-  version "0.7.1"
-  resolved "https://registry.yarnpkg.com/typedoc-default-themes/-/typedoc-default-themes-0.7.1.tgz#1b92999162dc816b52b8094f503f254c87f07c28"
-  integrity sha512-s3jeUHc4EY8snIta6lNkUu9+36WMDUnkKm0UQ59w5iPo/4Y2d4+M9CDIKoenYKT5hkg/UnTc3oX48VZZytv8Xw==
+typedoc-default-themes@^0.8.0:
+  version "0.8.0"
+  resolved "https://registry.yarnpkg.com/typedoc-default-themes/-/typedoc-default-themes-0.8.0.tgz#991d6121d492e662eb371f30edc982440fe04a63"
+  integrity sha512-0bzAjVEX6ClhE3jLRdU7vR8Fsfbt4ZcPa+gkqyAVgTlQ1fLo/7AkCbTP+hC5XAiByDfRfsAGqj9y6FNjJh0p4A==
   dependencies:
     backbone "^1.4.0"
     jquery "^3.4.1"
     lunr "^2.3.8"
-    underscore "^1.9.1"
+    underscore "^1.9.2"
 
-typedoc@^0.16.0:
-  version "0.16.6"
-  resolved "https://registry.yarnpkg.com/typedoc/-/typedoc-0.16.6.tgz#e9157af4c34999fea10a1fa05cee7cb15c926166"
-  integrity sha512-1k4HXW5o6/rk5U3NEXEM+UVMPWaM0xW1/WJo1wlptb0gzsqtahymLDFSBX8Nqi7cToKOuiJPUr8j8UU368UNoA==
+typedoc@^0.17.0:
+  version "0.17.0"
+  resolved "https://registry.yarnpkg.com/typedoc/-/typedoc-0.17.0.tgz#25dcd68d51e7bdb04af3cd1a3fd591d23d9886df"
+  integrity sha512-HviZ/SLDPAgJdYqaCor+7rmJnM80Ra2oI0Nj+L/sOIBvh9pY1aCzDtSg3p3n4cgqCmvGu6O90fvMQyjEvlqM+g==
   dependencies:
-    "@types/minimatch" "3.0.3"
     fs-extra "^8.1.0"
     handlebars "^4.7.2"
     highlight.js "^9.17.1"
@@ -9232,10 +9231,9 @@ typedoc@^0.16.0:
     minimatch "^3.0.0"
     progress "^2.0.3"
     shelljs "^0.8.3"
-    typedoc-default-themes "^0.7.1"
-    typescript "3.7.x"
+    typedoc-default-themes "^0.8.0"
 
-typescript@3.7.x, typescript@^3.3.1:
+typescript@^3.3.1:
   version "3.7.4"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.7.4.tgz#1743a5ec5fef6a1fa9f3e4708e33c81c73876c19"
   integrity sha512-A25xv5XCtarLwXpcDNZzCGvW2D1S3/bACratYBx2sax8PefsFhlYmkQicKHvpYflFS8if4zne5zT5kpJ7pzuvw==
@@ -9273,7 +9271,7 @@ umask@^1.1.0:
   resolved "https://registry.yarnpkg.com/umask/-/umask-1.1.0.tgz#f29cebf01df517912bb58ff9c4e50fde8e33320d"
   integrity sha1-8pzr8B31F5ErtY/5xOUP3o4zMg0=
 
-underscore@>=1.8.3, underscore@^1.9.1:
+underscore@>=1.8.3, underscore@^1.9.2:
   version "1.9.2"
   resolved "https://registry.yarnpkg.com/underscore/-/underscore-1.9.2.tgz#0c8d6f536d6f378a5af264a72f7bec50feb7cf2f"
   integrity sha512-D39qtimx0c1fI3ya1Lnhk3E9nONswSKhnffBI0gME9C99fYOkNi04xs8K6pePLhvl1frbDemkaBQ5ikWllR2HQ==
