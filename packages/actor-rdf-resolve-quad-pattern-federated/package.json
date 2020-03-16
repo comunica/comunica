@@ -39,7 +39,8 @@
     "asynciterator": "^2.0.1",
     "asynciterator-promiseproxy": "^2.1.0",
     "asynciterator-union": "^2.1.2",
-    "lodash.omit": "^4.5.0"
+    "lodash.omit": "^4.5.0",
+    "rdf-terms": "^1.5.1"
   },
   "peerDependencies": {
     "@comunica/bus-rdf-resolve-quad-pattern": "^1.0.0",
