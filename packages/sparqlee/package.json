@@ -65,7 +65,7 @@
     "pre-commit": "^1.2.2",
     "ts-jest": "^25.1.0",
     "ts-node": "^8.0.3",
-    "tslint": "^5.8.0",
+    "tslint": "^6.0.0",
     "tslint-eslint-rules": "^5.4.0",
     "typescript": "^3.0.3"
   },
