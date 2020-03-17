@@ -264,15 +264,14 @@ const config = {
   sources: ['http://fragments.dbpedia.org/2016-04/en'],
   queryFormat: 'graphql',
   "@context": {
-    "label": { "@id": "http://www.w3.org/2000/01/rdf-schema#label", "@singular": true },
+    "label": { "@id": "http://www.w3.org/2000/01/rdf-schema#label" },
     "label_en": { "@id": "http://www.w3.org/2000/01/rdf-schema#label", "@language": "en" },
-    "writer": { "@id": "http://dbpedia.org/ontology/writer", "@singular": true },
-    "artist": { "@id": "http://dbpedia.org/ontology/musicalArtist", "@singular": true },
-    "artist_label": { "@singular": true }
+    "writer": { "@id": "http://dbpedia.org/ontology/writer" },
+    "artist": { "@id": "http://dbpedia.org/ontology/musicalArtist" }
   }
 };
-myEngine.query('{ label writer(label_en: \"Michael Jackson\") artist { label } }', config)
-  .then(function (result) { return bindingsStreamToGraphQl(result.bindingsStream, config); })
+myEngine.query('{ label @single writer(label_en: \"Michael Jackson\") @single artist @single { label @single } }', config)
+  .then(function (result) { return bindingsStreamToGraphQl(result.bindingsStream, result.context); })
   .then(console.log);
 ```
 
