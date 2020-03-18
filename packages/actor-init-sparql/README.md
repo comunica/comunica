@@ -158,7 +158,7 @@ results can be collected as follows.
 ```javascript
 const result = await myEngine.query('CONSTRUCT WHERE { ?s ?p <http://dbpedia.org/resource/Belgium> } LIMIT 100',
   { sources: ['http://fragments.dbpedia.org/2015/en'] })
-result.quadStream.on('data', (data) => console.log(data.toObject()));
+result.quadStream.on('data', (data) => console.log(data));
 ```
 
 Finally, `ASK` queries return async booleans.
