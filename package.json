@@ -52,7 +52,7 @@
     "rdf-quad": "^1.4.0",
     "rdf-test-suite": "^1.12.0",
     "rdf-test-suite-ldf": "^1.1.4",
-    "sparqlalgebrajs": "^2.2.0",
+    "sparqlalgebrajs": "^2.2.1",
     "stream-to-string": "^1.1.0",
     "streamify-array": "^1.0.0",
     "streamify-string": "^1.0.1",
