@@ -1,6 +1,11 @@
-import {ActorQueryOperation, Bindings, IActorQueryOperationOutputBindings} from "@comunica/bus-query-operation";
+import {
+  ActorQueryOperation,
+  Bindings,
+  IActorQueryOperationOutputBindings,
+  IActorQueryOperationOutputQuads
+} from "@comunica/bus-query-operation";
 import {Bus} from "@comunica/core";
-import {literal} from "@rdfjs/data-model";
+import {literal, namedNode, quad} from "@rdfjs/data-model";
 import {ArrayIterator} from "asynciterator";
 import {ActorQueryOperationSlice} from "../lib/ActorQueryOperationSlice";
 const arrayifyStream = require('arrayify-stream');
@@ -10,6 +15,8 @@ describe('ActorQueryOperationSlice', () => {
   let mediatorQueryOperation;
   let mediatorQueryOperationNoMeta;
   let mediatorQueryOperationMetaInf;
+  let mediatorQueryOperationQuads;
+  let mediatorQueryOperationBoolean;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -50,6 +57,24 @@ describe('ActorQueryOperationSlice', () => {
         operated: arg,
         type: 'bindings',
         variables: ['a'],
+      }),
+    };
+    mediatorQueryOperationQuads = {
+      mediate: (arg) => Promise.resolve({
+        quadStream: new ArrayIterator([
+          quad(namedNode('http://example.com/s'), namedNode('http://example.com/p'), literal('1')),
+          quad(namedNode('http://example.com/s'), namedNode('http://example.com/p'), literal('2')),
+          quad(namedNode('http://example.com/s'), namedNode('http://example.com/p'), literal('3')),
+        ]),
+        metadata: () => Promise.resolve({ totalItems: 3 }),
+        operated: arg,
+        type: 'quads'
+      }),
+    };
+    mediatorQueryOperationBoolean = {
+      mediate: (arg) => Promise.resolve({
+        booleanResult: true,
+        type: 'boolean'
       }),
     };
   });
@@ -290,6 +315,27 @@ describe('ActorQueryOperationSlice', () => {
           Bindings({ a: literal('3') }),
         ]);
       });
+    });
+
+    it('should run on a stream of quads for start 0 and length 2', () => {
+      actor = new ActorQueryOperationSlice({ bus, mediatorQueryOperation: mediatorQueryOperationQuads,
+        name: 'actor' });
+      const op = { operation: { type: 'project', start: 0, length: 2 } };
+      return actor.run(op).then(async (output: IActorQueryOperationOutputQuads) => {
+        expect(await output.metadata()).toEqual({ totalItems: 2 });
+        expect(output.type).toEqual('quads');
+        expect(await arrayifyStream(output.quadStream)).toEqual([
+          quad(namedNode('http://example.com/s'), namedNode('http://example.com/p'), literal('1')),
+          quad(namedNode('http://example.com/s'), namedNode('http://example.com/p'), literal('2')),
+        ]);
+      });
+    });
+
+    it('should error if the output is neither quads nor bindings', () => {
+      actor = new ActorQueryOperationSlice({ bus, mediatorQueryOperation: mediatorQueryOperationBoolean,
+        name: 'actor' });
+      const op = { operation: { type: 'project', start: 0 } };
+      expect(actor.run(op)).rejects.toBeTruthy();
     });
   });
 });
