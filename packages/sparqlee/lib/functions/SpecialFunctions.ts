@@ -299,10 +299,10 @@ function langAllEqual(lits: Array<E.Literal<string>>): boolean {
 const now = {
   arity: 0,
   async applyAsync({ context }: E.EvalContextAsync): PTerm {
-    return new E.DateTimeLiteral(context.now, context.now.toUTCString());
+    return new E.DateTimeLiteral(context.now, context.now.toISOString());
   },
   applySync({ context }: E.EvalContextSync): Term {
-    return new E.DateTimeLiteral(context.now, context.now.toUTCString());
+    return new E.DateTimeLiteral(context.now, context.now.toISOString());
   },
 };
 
