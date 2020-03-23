@@ -1,0 +1,12 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
+      "caqolld": "npmd:@comunica/actor-query-operation-leftjoin-left-deep/",
+      "files-caqolld": "caqolld:^1.0.0/",
+
+      "ActorQueryOperationLeftJoinLeftDeep": "caqolld:Actor/QueryOperation/LeftJoinLeftDeep"
+    }
+  ]
+}

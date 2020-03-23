@@ -1,0 +1,21 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-leftjoin-left-deep/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-query-operation/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-query-operation-leftjoin-left-deep",
+  "components": [
+    {
+      "@id": "caqolld:Actor/QueryOperation/LeftJoinLeftDeep",
+      "@type": "Class",
+      "extends": "cbqo:Actor/QueryOperationTypedMediated",
+      "requireElement": "ActorQueryOperationLeftJoinLeftDeep",
+      "comment": "A comunica LeftJoin left-deep Query Operation Actor.",
+      "constructorArguments": [
+        {
+          "extends": "cbqo:Actor/QueryOperationTypedMediated/constructorArgumentsObject"
+        }
+      ]
+    }
+  ]
+}
