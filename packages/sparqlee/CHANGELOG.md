@@ -1,5 +1,11 @@
 # Changelog
 
+<a name="v1.3.2"></a>
+## [v1.3.2](https://github.com/comunica/sparqlee/compare/v1.3.1...v1.3.2) - 2020-03-23
+
+### Fixed
+* [Use xsd:dateTime format (ISO 8601) for NOW.](https://github.com/comunica/sparqlee/commit/7cbf7ffe429771fa101368687a775a6c8136c1b6)
+
 <a name="v1.3.1"></a>
 ## [v1.3.1](https://github.com/comunica/sparqlee/compare/v1.3.0...v1.3.1) - 2019-12-06
 
