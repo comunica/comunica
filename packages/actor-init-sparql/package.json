@@ -65,6 +65,7 @@
     "@comunica/actor-query-operation-from-quad": "^1.9.3",
     "@comunica/actor-query-operation-group": "^1.9.3",
     "@comunica/actor-query-operation-join": "^1.10.0",
+    "@comunica/actor-query-operation-leftjoin-left-deep": "^1.0.0",
     "@comunica/actor-query-operation-leftjoin-nestedloop": "^1.10.0",
     "@comunica/actor-query-operation-minus": "^1.10.0",
     "@comunica/actor-query-operation-orderby-sparqlee": "^1.9.3",
