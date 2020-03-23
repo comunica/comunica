@@ -31,7 +31,8 @@ describe('ActorRdfResolveHypermediaSparql', () => {
     let actor: ActorRdfResolveHypermediaSparql;
 
     beforeEach(() => {
-      actor = new ActorRdfResolveHypermediaSparql({ name: 'actor', bus, mediatorHttp: <any> 'mediator' });
+      actor = new ActorRdfResolveHypermediaSparql(
+        { name: 'actor', bus, mediatorHttp: <any> 'mediator', checkUrlSuffix: true });
     });
 
     describe('#test', () => {
@@ -52,7 +53,26 @@ describe('ActorRdfResolveHypermediaSparql', () => {
 
       it('should not test without a sparql service metadata', async () => {
         return expect(actor.test({ url: 'URL', metadata: {}, quads: null }))
-          .rejects.toThrow(new Error('Actor actor could not detect a SPARQL service description.'));
+          .rejects.toThrow(new Error('Actor actor could not detect a SPARQL service description or URL ending on /sparql.'));
+      });
+
+      it('should test with an URL ending with /sparql', async () => {
+        return expect(await actor.test({ url: 'URL/sparql', metadata: {}, quads: null }))
+          .toEqual({ filterFactor: 1 });
+      });
+
+      it('should not test with an URL ending with /sparql if checkUrlSuffix is false', async () => {
+        actor = new ActorRdfResolveHypermediaSparql(
+          { name: 'actor', bus, mediatorHttp: <any> 'mediator', checkUrlSuffix: false });
+        return expect(actor.test({ url: 'URL/sparql', metadata: {}, quads: null }))
+          .rejects.toThrow(new Error('Actor actor could not detect a SPARQL service description or URL ending on /sparql.'));
+      });
+
+      it('should not test with an URL ending with /sparql if the type is forced to something else', async () => {
+        actor = new ActorRdfResolveHypermediaSparql(
+          { name: 'actor', bus, mediatorHttp: <any> 'mediator', checkUrlSuffix: false });
+        return expect(actor.test({ url: 'URL/sparql', metadata: {}, quads: null, forceSourceType: 'file' }))
+          .rejects.toThrow(new Error('Actor actor is not able to handle source type file.'));
       });
     });
 
