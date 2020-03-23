@@ -17,6 +17,14 @@
           "comment": "The HTTP mediator",
           "required": true,
           "unique": true
+        },
+        {
+          "@id": "carrhs:Actor/RdfResolveHypermedia/Sparql/checkUrlSuffix",
+          "comment": "If URLs ending with '/sparql' should also be considered SPARQL endpoints.",
+          "required": true,
+          "unique": true,
+          "range": "xsd:boolean",
+          "default": true
         }
       ],
       "constructorArguments": [
@@ -26,6 +34,10 @@
             {
               "keyRaw": "mediatorHttp",
               "value": "carrhs:Actor/RdfResolveHypermedia/Sparql/mediatorHttp"
+            },
+            {
+              "keyRaw": "checkUrlSuffix",
+              "value": "carrhs:Actor/RdfResolveHypermedia/Sparql/checkUrlSuffix"
             }
           ]
         }
