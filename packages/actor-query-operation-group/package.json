@@ -37,7 +37,7 @@
   "dependencies": {
     "@comunica/actor-abstract-bindings-hash": "^1.9.3",
     "rdf-string": "^1.3.1",
-    "sparqlee": "^1.3.0"
+    "sparqlee": "^1.3.2"
   },
   "peerDependencies": {
     "@comunica/bus-query-operation": "^1.6.0",
