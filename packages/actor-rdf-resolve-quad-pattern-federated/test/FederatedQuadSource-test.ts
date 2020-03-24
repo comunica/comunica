@@ -141,7 +141,8 @@ describe('FederatedQuadSource', () => {
     });
 
     it('should change a skolemized blank node in the proper source', () => {
-      expect(FederatedQuadSource.deskolemizeTerm(new BlankNodeScoped('abc', namedNode('urn:comunica_skolem:source_0:abc')), '0'))
+      expect(FederatedQuadSource.deskolemizeTerm(new BlankNodeScoped('abc',
+        namedNode('urn:comunica_skolem:source_0:abc')), '0'))
         .toEqual(blankNode('abc'));
     });
 
@@ -151,12 +152,14 @@ describe('FederatedQuadSource', () => {
     });
 
     it('should change a skolemized blank node in the wrong source', () => {
-      expect(FederatedQuadSource.deskolemizeTerm(new BlankNodeScoped('abc', namedNode('urn:comunica_skolem:source_0:abc')), '1'))
+      expect(FederatedQuadSource.deskolemizeTerm(new BlankNodeScoped('abc',
+        namedNode('urn:comunica_skolem:source_0:abc')), '1'))
         .toBeFalsy();
     });
 
     it('should change a skolemized named node in the wrong source', () => {
-      expect(FederatedQuadSource.deskolemizeTerm(new BlankNodeScoped('abc', namedNode('urn:comunica_skolem:source_0:abc')), '1'))
+      expect(FederatedQuadSource.deskolemizeTerm(new BlankNodeScoped('abc',
+        namedNode('urn:comunica_skolem:source_0:abc')), '1'))
         .toBeFalsy();
     });
   });
@@ -991,7 +994,8 @@ describe('FederatedQuadSource', () => {
     });
 
     it('should match will all sources for plain blank nodes', async () => {
-      const a = await arrayifyStream(source.match(new BlankNodeScoped('abc', namedNode('abc'))));
+      const a = await arrayifyStream(source.match(new BlankNodeScoped('abc',
+        namedNode('abc'))));
       return expect(a).toEqual([
         quad<RDF.BaseQuad>(
           new BlankNodeScoped('bc_0_s1',
@@ -1029,7 +1033,8 @@ describe('FederatedQuadSource', () => {
     });
 
     it('should match the first source for blank nodes coming from the first source', async () => {
-      const a = await arrayifyStream(source.match(new BlankNodeScoped('abc', namedNode('urn:comunica_skolem:source_0:s1'))));
+      const a = await arrayifyStream(source.match(new BlankNodeScoped('abc',
+        namedNode('urn:comunica_skolem:source_0:s1'))));
       return expect(a).toEqual([
         quad<RDF.BaseQuad>(
           new BlankNodeScoped('bc_0_s1',
@@ -1051,7 +1056,8 @@ describe('FederatedQuadSource', () => {
     });
 
     it('should match the second source for blank nodes coming from the second source', async () => {
-      const a = await arrayifyStream(source.match(new BlankNodeScoped('abc', namedNode('urn:comunica_skolem:source_1:s1'))));
+      const a = await arrayifyStream(source.match(new BlankNodeScoped('abc',
+        namedNode('urn:comunica_skolem:source_1:s1'))));
       return expect(a).toEqual([
         quad<RDF.BaseQuad>(
           new BlankNodeScoped('bc_1_s1',
@@ -1073,7 +1079,8 @@ describe('FederatedQuadSource', () => {
     });
 
     it('should match no source for blank nodes coming from an unknown source', async () => {
-      const a = await arrayifyStream(source.match(new BlankNodeScoped('abc', namedNode('urn:comunica_skolem:source_2:s1'))));
+      const a = await arrayifyStream(source.match(new BlankNodeScoped('abc',
+        namedNode('urn:comunica_skolem:source_2:s1'))));
       return expect(a).toEqual([]);
     });
 
