@@ -232,6 +232,7 @@ export class FederatedQuadSource implements ILazyQuadSource {
 
       return new PromiseProxyIterator(async () => {
         // Deskolemize terms, so we send the original blank nodes to each source.
+        // Note that some sources may not match bnodes by label. SPARQL endpoints for example consider them variables.
         const s = FederatedQuadSource.deskolemizeTerm(FederatedQuadSource.nullToVariable(subject, 's'), sourceId);
         const p = FederatedQuadSource.deskolemizeTerm(FederatedQuadSource.nullToVariable(predicate, 'p'), sourceId);
         const o = FederatedQuadSource.deskolemizeTerm(FederatedQuadSource.nullToVariable(object, 'o'), sourceId);
