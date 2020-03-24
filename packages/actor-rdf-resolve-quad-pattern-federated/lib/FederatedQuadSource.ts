@@ -98,8 +98,8 @@ export class FederatedQuadSource implements ILazyQuadSource {
    */
   public static skolemizeTerm(term: RDF.Term, sourceId: number): RDF.Term | BlankNodeScoped {
     if (term.termType === 'BlankNode') {
-      const skolemized = `urn:comunica_skolem:source_${sourceId}:${term.value}`;
-      return new BlankNodeScoped(skolemized, DataFactory.namedNode(skolemized));
+      return new BlankNodeScoped(`bc_${sourceId}_${term.value}`,
+        DataFactory.namedNode(`urn:comunica_skolem:source_${sourceId}:${term.value}`));
     }
     return term;
   }
@@ -123,7 +123,10 @@ export class FederatedQuadSource implements ILazyQuadSource {
    * @param sourceId A numerical source identifier.
    */
   public static deskolemizeTerm(term: RDF.Term, sourceId: number): RDF.Term | false {
-    if (term.termType === 'NamedNode' || term.termType === 'BlankNode') {
+    if (term.termType === 'BlankNode' && 'skolemized' in term) {
+      term = (<BlankNodeScoped> term).skolemized;
+    }
+    if (term.termType === 'NamedNode') {
       const match = /^urn:comunica_skolem:source_([0-9]+):(.+)$/.exec(term.value);
       if (match) {
         // We had a skolemized term
