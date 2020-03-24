@@ -68,29 +68,29 @@ describe('FederatedQuadSource', () => {
 
   describe('#skolemizeTerm', () => {
     it('should not change a variable', () => {
-      expect(FederatedQuadSource.skolemizeTerm(variable('abc'), 0))
+      expect(FederatedQuadSource.skolemizeTerm(variable('abc'), '0'))
         .toEqualRdfTerm(variable('abc'));
     });
 
     it('should not change a named node', () => {
-      expect(FederatedQuadSource.skolemizeTerm(namedNode('abc'), 0))
+      expect(FederatedQuadSource.skolemizeTerm(namedNode('abc'), '0'))
         .toEqualRdfTerm(namedNode('abc'));
     });
 
     it('should not change a literal', () => {
-      expect(FederatedQuadSource.skolemizeTerm(literal('abc'), 0))
+      expect(FederatedQuadSource.skolemizeTerm(literal('abc'), '0'))
         .toEqualRdfTerm(literal('abc'));
     });
 
     it('should not change a default graph', () => {
-      expect(FederatedQuadSource.skolemizeTerm(defaultGraph(), 0))
+      expect(FederatedQuadSource.skolemizeTerm(defaultGraph(), '0'))
         .toEqualRdfTerm(defaultGraph());
     });
 
     it('should change a blank node', () => {
-      expect(FederatedQuadSource.skolemizeTerm(blankNode('abc'), 0))
+      expect(FederatedQuadSource.skolemizeTerm(blankNode('abc'), '0'))
         .toEqualRdfTerm(blankNode('urn:comunica_skolem:source_0:abc'));
-      expect((<BlankNodeScoped> FederatedQuadSource.skolemizeTerm(blankNode('abc'), 0)).skolemized)
+      expect((<BlankNodeScoped> FederatedQuadSource.skolemizeTerm(blankNode('abc'), '0')).skolemized)
         .toEqualRdfTerm(namedNode('urn:comunica_skolem:source_0:abc'));
     });
   });
@@ -98,13 +98,13 @@ describe('FederatedQuadSource', () => {
   describe('#skolemizeQuad', () => {
     it('should not skolemize named nodes', () => {
       expect(FederatedQuadSource.skolemizeQuad(
-        quad(namedNode('s'), namedNode('p'), namedNode('o'), namedNode('g')), 0))
+        quad(namedNode('s'), namedNode('p'), namedNode('o'), namedNode('g')), '0'))
         .toEqualRdfQuad(quad(namedNode('s'), namedNode('p'), namedNode('o'), namedNode('g')));
     });
 
     it('should not skolemize blank nodes', () => {
       expect(FederatedQuadSource.skolemizeQuad(
-        quad<RDF.BaseQuad>(blankNode('s'), blankNode('p'), blankNode('o'), blankNode('g')), 0))
+        quad<RDF.BaseQuad>(blankNode('s'), blankNode('p'), blankNode('o'), blankNode('g')), '0'))
         .toEqualRdfQuad(quad<RDF.BaseQuad>(
           blankNode('urn:comunica_skolem:source_0:s'),
           blankNode('urn:comunica_skolem:source_0:p'),
@@ -116,47 +116,47 @@ describe('FederatedQuadSource', () => {
 
   describe('#deskolemizeTerm', () => {
     it('should not change a variable', () => {
-      expect(FederatedQuadSource.deskolemizeTerm(variable('abc'), 0))
+      expect(FederatedQuadSource.deskolemizeTerm(variable('abc'), '0'))
         .toEqual(variable('abc'));
     });
 
     it('should not change a non-skolemized named node', () => {
-      expect(FederatedQuadSource.deskolemizeTerm(namedNode('abc'), 0))
+      expect(FederatedQuadSource.deskolemizeTerm(namedNode('abc'), '0'))
         .toEqual(namedNode('abc'));
     });
 
     it('should not change a literal', () => {
-      expect(FederatedQuadSource.deskolemizeTerm(literal('abc'), 0))
+      expect(FederatedQuadSource.deskolemizeTerm(literal('abc'), '0'))
         .toEqual(literal('abc'));
     });
 
     it('should not change a default graph', () => {
-      expect(FederatedQuadSource.deskolemizeTerm(defaultGraph(), 0))
+      expect(FederatedQuadSource.deskolemizeTerm(defaultGraph(), '0'))
         .toEqual(defaultGraph());
     });
 
     it('should not change a plain blank node', () => {
-      expect(FederatedQuadSource.deskolemizeTerm(blankNode('abc'), 0))
+      expect(FederatedQuadSource.deskolemizeTerm(blankNode('abc'), '0'))
         .toEqual(blankNode('abc'));
     });
 
     it('should change a skolemized blank node in the proper source', () => {
-      expect(FederatedQuadSource.deskolemizeTerm(new BlankNodeScoped('abc', namedNode('urn:comunica_skolem:source_0:abc')), 0))
+      expect(FederatedQuadSource.deskolemizeTerm(new BlankNodeScoped('abc', namedNode('urn:comunica_skolem:source_0:abc')), '0'))
         .toEqual(blankNode('abc'));
     });
 
     it('should change a skolemized named node in the proper source', () => {
-      expect(FederatedQuadSource.deskolemizeTerm(namedNode('urn:comunica_skolem:source_0:abc'), 0))
+      expect(FederatedQuadSource.deskolemizeTerm(namedNode('urn:comunica_skolem:source_0:abc'), '0'))
         .toEqual(blankNode('abc'));
     });
 
     it('should change a skolemized blank node in the wrong source', () => {
-      expect(FederatedQuadSource.deskolemizeTerm(new BlankNodeScoped('abc', namedNode('urn:comunica_skolem:source_0:abc')), 1))
+      expect(FederatedQuadSource.deskolemizeTerm(new BlankNodeScoped('abc', namedNode('urn:comunica_skolem:source_0:abc')), '1'))
         .toBeFalsy();
     });
 
     it('should change a skolemized named node in the wrong source', () => {
-      expect(FederatedQuadSource.deskolemizeTerm(new BlankNodeScoped('abc', namedNode('urn:comunica_skolem:source_0:abc')), 1))
+      expect(FederatedQuadSource.deskolemizeTerm(new BlankNodeScoped('abc', namedNode('urn:comunica_skolem:source_0:abc')), '1'))
         .toBeFalsy();
     });
   });

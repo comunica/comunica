@@ -20,12 +20,14 @@ import {Quad} from "rdf-js";
  */
 export class FederatedQuadSource implements ILazyQuadSource {
 
+  private static readonly SKOLEM_PREFIX = 'urn:comunica_skolem:source_';
+
   protected readonly mediatorResolveQuadPattern: Mediator<Actor<IActionRdfResolveQuadPattern, IActorTest,
     IActorRdfResolveQuadPatternOutput>, IActionRdfResolveQuadPattern, IActorTest, IActorRdfResolveQuadPatternOutput>;
   protected readonly sources: DataSources;
   protected readonly contextDefault: ActionContext;
   protected readonly emptyPatterns: Map<IDataSource, RDF.BaseQuad[]>;
-  protected readonly sourceIds: Map<IDataSource, number>;
+  protected readonly sourceIds: Map<IDataSource, string>;
   protected readonly skipEmptyPatterns: boolean;
   protected readonly algebraFactory: Factory;
 
@@ -93,13 +95,13 @@ export class FederatedQuadSource implements ILazyQuadSource {
    * If the given term is a blank node, return a deterministic named node for it
    * based on the source id and the blank node value.
    * @param term Any RDF term.
-   * @param sourceId A numerical source identifier.
+   * @param sourceId A source identifier.
    * @return If the given term was a blank node, this will return a skolemized named node, otherwise the original term.
    */
-  public static skolemizeTerm(term: RDF.Term, sourceId: number): RDF.Term | BlankNodeScoped {
+  public static skolemizeTerm(term: RDF.Term, sourceId: string): RDF.Term | BlankNodeScoped {
     if (term.termType === 'BlankNode') {
       return new BlankNodeScoped(`bc_${sourceId}_${term.value}`,
-        DataFactory.namedNode(`urn:comunica_skolem:source_${sourceId}:${term.value}`));
+        DataFactory.namedNode(`${FederatedQuadSource.SKOLEM_PREFIX}${sourceId}:${term.value}`));
     }
     return term;
   }
@@ -107,10 +109,10 @@ export class FederatedQuadSource implements ILazyQuadSource {
   /**
    * Skolemize all terms in the given quad.
    * @param quad An RDF quad.
-   * @param sourceId A numerical source identifier.
+   * @param sourceId A source identifier.
    * @return The skolemized quad.
    */
-  public static skolemizeQuad<Q extends BaseQuad = Quad>(quad: Q, sourceId: number): Q {
+  public static skolemizeQuad<Q extends BaseQuad = Quad>(quad: Q, sourceId: string): Q {
     return mapTerms(quad, (term) => FederatedQuadSource.skolemizeTerm(term, sourceId));
   }
 
@@ -120,22 +122,24 @@ export class FederatedQuadSource implements ILazyQuadSource {
    * If the given term was a skolemized named node for another source, return false.
    * If the given term was not a skolemized named node, return the original term.
    * @param term Any RDF term.
-   * @param sourceId A numerical source identifier.
+   * @param sourceId A source identifier.
    */
-  public static deskolemizeTerm(term: RDF.Term, sourceId: number): RDF.Term | false {
+  public static deskolemizeTerm(term: RDF.Term, sourceId: string): RDF.Term | null {
     if (term.termType === 'BlankNode' && 'skolemized' in term) {
       term = (<BlankNodeScoped> term).skolemized;
     }
     if (term.termType === 'NamedNode') {
-      const match = /^urn:comunica_skolem:source_([0-9]+):(.+)$/.exec(term.value);
-      if (match) {
+      if (term.value.startsWith(FederatedQuadSource.SKOLEM_PREFIX)) {
+        const colonSeparator = term.value.indexOf(':', FederatedQuadSource.SKOLEM_PREFIX.length);
+        const termSourceId = term.value.substr(FederatedQuadSource.SKOLEM_PREFIX.length, colonSeparator - FederatedQuadSource.SKOLEM_PREFIX.length);
         // We had a skolemized term
-        if (parseInt(match[1], 10) === sourceId) {
+        if (termSourceId === sourceId) {
           // It can from the correct source
-          return DataFactory.blankNode(match[2]);
+          const termLabel = term.value.substr(colonSeparator + 1, term.value.length);
+          return DataFactory.blankNode(termLabel);
         } else {
           // It came from a different source
-          return false;
+          return null;
         }
       }
     }
@@ -172,12 +176,12 @@ export class FederatedQuadSource implements ILazyQuadSource {
   /**
    * Get the unique, deterministic id for the given source.
    * @param source A data source.
-   * @return The numerical id of the given source.
+   * @return The id of the given source.
    */
-  public getSourceId(source: IDataSource): number {
+  public getSourceId(source: IDataSource): string {
     let sourceId = this.sourceIds.get(source);
     if (sourceId === undefined) {
-      sourceId = this.sourceIds.size;
+      sourceId = `${this.sourceIds.size}`;
       this.sourceIds.set(source, sourceId);
     }
     return sourceId;
