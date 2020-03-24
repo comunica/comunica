@@ -78,20 +78,6 @@ export class FederatedQuadSource implements ILazyQuadSource {
   }
 
   /**
-   * Converts falsy terms to variables.
-   * This is the reverse operation of {@link ActorRdfResolveQuadPatternSource#variableToNull}.
-   * @param {Term} term A term or null.
-   * @param {string} label The label to use if we have a variable.
-   * @return {Term} A term.
-   */
-  public static nullToVariable(term: RDF.Term, label: string): RDF.Term {
-    if (!term) {
-      return DataFactory.variable('v' + label);
-    }
-    return term;
-  }
-
-  /**
    * If the given term is a blank node, return a deterministic named node for it
    * based on the source id and the blank node value.
    * @param term Any RDF term.
@@ -231,12 +217,13 @@ export class FederatedQuadSource implements ILazyQuadSource {
       sourcesCount++;
 
       return new PromiseProxyIterator(async () => {
+        // Convert falsy terms to variables, reverse operation of {@link ActorRdfResolveQuadPatternSource#variableToNull}.
         // Deskolemize terms, so we send the original blank nodes to each source.
         // Note that some sources may not match bnodes by label. SPARQL endpoints for example consider them variables.
-        const s = FederatedQuadSource.deskolemizeTerm(FederatedQuadSource.nullToVariable(subject, 's'), sourceId);
-        const p = FederatedQuadSource.deskolemizeTerm(FederatedQuadSource.nullToVariable(predicate, 'p'), sourceId);
-        const o = FederatedQuadSource.deskolemizeTerm(FederatedQuadSource.nullToVariable(object, 'o'), sourceId);
-        const g = FederatedQuadSource.deskolemizeTerm(FederatedQuadSource.nullToVariable(graph, 'g'), sourceId);
+        const s = !subject   ? DataFactory.variable('vs') : FederatedQuadSource.deskolemizeTerm(subject,   sourceId);
+        const p = !predicate ? DataFactory.variable('vp') : FederatedQuadSource.deskolemizeTerm(predicate, sourceId);
+        const o = !object    ? DataFactory.variable('vo') : FederatedQuadSource.deskolemizeTerm(object,    sourceId);
+        const g = !graph     ? DataFactory.variable('vg') : FederatedQuadSource.deskolemizeTerm(graph,     sourceId);
         let pattern: Algebra.Pattern;
 
         // Prepare the context for this specific source
