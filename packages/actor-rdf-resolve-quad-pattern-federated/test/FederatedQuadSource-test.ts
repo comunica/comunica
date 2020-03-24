@@ -6,7 +6,7 @@ import {AsyncReiterableArray} from "asyncreiterable";
 import "jest-rdf";
 import * as RDF from "rdf-js";
 import Factory from "sparqlalgebrajs/lib/factory";
-import {BlankNodeSkolemizable} from "../lib/BlankNodeSkolemizable";
+import {BlankNodeScoped} from "../lib/BlankNodeScoped";
 import {FederatedQuadSource} from "../lib/FederatedQuadSource";
 const squad = require('rdf-quad');
 const arrayifyStream = require('arrayify-stream');
@@ -90,7 +90,7 @@ describe('FederatedQuadSource', () => {
     it('should change a blank node', () => {
       expect(FederatedQuadSource.skolemizeTerm(blankNode('abc'), 0))
         .toEqualRdfTerm(blankNode('urn:comunica_skolem:source_0:abc'));
-      expect((<BlankNodeSkolemizable> FederatedQuadSource.skolemizeTerm(blankNode('abc'), 0)).skolemized)
+      expect((<BlankNodeScoped> FederatedQuadSource.skolemizeTerm(blankNode('abc'), 0)).skolemized)
         .toEqualRdfTerm(namedNode('urn:comunica_skolem:source_0:abc'));
     });
   });
@@ -913,35 +913,35 @@ describe('FederatedQuadSource', () => {
       const a = await arrayifyStream(source.match());
       return expect(a).toEqual([
         quad<RDF.BaseQuad>(
-          new BlankNodeSkolemizable('urn:comunica_skolem:source_0:s1',
+          new BlankNodeScoped('urn:comunica_skolem:source_0:s1',
             namedNode('urn:comunica_skolem:source_0:s1')),
-          new BlankNodeSkolemizable('urn:comunica_skolem:source_0:p1',
+          new BlankNodeScoped('urn:comunica_skolem:source_0:p1',
             namedNode('urn:comunica_skolem:source_0:p1')),
-          new BlankNodeSkolemizable('urn:comunica_skolem:source_0:o1',
+          new BlankNodeScoped('urn:comunica_skolem:source_0:o1',
             namedNode('urn:comunica_skolem:source_0:o1')),
         ),
         quad<RDF.BaseQuad>(
-          new BlankNodeSkolemizable('urn:comunica_skolem:source_1:s1',
+          new BlankNodeScoped('urn:comunica_skolem:source_1:s1',
             namedNode('urn:comunica_skolem:source_1:s1')),
-          new BlankNodeSkolemizable('urn:comunica_skolem:source_1:p1',
+          new BlankNodeScoped('urn:comunica_skolem:source_1:p1',
             namedNode('urn:comunica_skolem:source_1:p1')),
-          new BlankNodeSkolemizable('urn:comunica_skolem:source_1:o1',
+          new BlankNodeScoped('urn:comunica_skolem:source_1:o1',
             namedNode('urn:comunica_skolem:source_1:o1')),
         ),
         quad<RDF.BaseQuad>(
-          new BlankNodeSkolemizable('urn:comunica_skolem:source_0:s2',
+          new BlankNodeScoped('urn:comunica_skolem:source_0:s2',
             namedNode('urn:comunica_skolem:source_0:s2')),
-          new BlankNodeSkolemizable('urn:comunica_skolem:source_0:p2',
+          new BlankNodeScoped('urn:comunica_skolem:source_0:p2',
             namedNode('urn:comunica_skolem:source_0:p2')),
-          new BlankNodeSkolemizable('urn:comunica_skolem:source_0:o2',
+          new BlankNodeScoped('urn:comunica_skolem:source_0:o2',
             namedNode('urn:comunica_skolem:source_0:o2')),
         ),
         quad<RDF.BaseQuad>(
-          new BlankNodeSkolemizable('urn:comunica_skolem:source_1:s2',
+          new BlankNodeScoped('urn:comunica_skolem:source_1:s2',
             namedNode('urn:comunica_skolem:source_1:s2')),
-          new BlankNodeSkolemizable('urn:comunica_skolem:source_1:p2',
+          new BlankNodeScoped('urn:comunica_skolem:source_1:p2',
             namedNode('urn:comunica_skolem:source_1:p2')),
-          new BlankNodeSkolemizable('urn:comunica_skolem:source_1:o2',
+          new BlankNodeScoped('urn:comunica_skolem:source_1:o2',
             namedNode('urn:comunica_skolem:source_1:o2')),
         ),
       ]);
@@ -951,35 +951,35 @@ describe('FederatedQuadSource', () => {
       const a = await arrayifyStream(source.match(namedNode('abc')));
       return expect(a).toEqual([
         quad<RDF.BaseQuad>(
-          new BlankNodeSkolemizable('urn:comunica_skolem:source_0:s1',
+          new BlankNodeScoped('urn:comunica_skolem:source_0:s1',
             namedNode('urn:comunica_skolem:source_0:s1')),
-          new BlankNodeSkolemizable('urn:comunica_skolem:source_0:p1',
+          new BlankNodeScoped('urn:comunica_skolem:source_0:p1',
             namedNode('urn:comunica_skolem:source_0:p1')),
-          new BlankNodeSkolemizable('urn:comunica_skolem:source_0:o1',
+          new BlankNodeScoped('urn:comunica_skolem:source_0:o1',
             namedNode('urn:comunica_skolem:source_0:o1')),
         ),
         quad<RDF.BaseQuad>(
-          new BlankNodeSkolemizable('urn:comunica_skolem:source_1:s1',
+          new BlankNodeScoped('urn:comunica_skolem:source_1:s1',
             namedNode('urn:comunica_skolem:source_1:s1')),
-          new BlankNodeSkolemizable('urn:comunica_skolem:source_1:p1',
+          new BlankNodeScoped('urn:comunica_skolem:source_1:p1',
             namedNode('urn:comunica_skolem:source_1:p1')),
-          new BlankNodeSkolemizable('urn:comunica_skolem:source_1:o1',
+          new BlankNodeScoped('urn:comunica_skolem:source_1:o1',
             namedNode('urn:comunica_skolem:source_1:o1')),
         ),
         quad<RDF.BaseQuad>(
-          new BlankNodeSkolemizable('urn:comunica_skolem:source_0:s2',
+          new BlankNodeScoped('urn:comunica_skolem:source_0:s2',
             namedNode('urn:comunica_skolem:source_0:s2')),
-          new BlankNodeSkolemizable('urn:comunica_skolem:source_0:p2',
+          new BlankNodeScoped('urn:comunica_skolem:source_0:p2',
             namedNode('urn:comunica_skolem:source_0:p2')),
-          new BlankNodeSkolemizable('urn:comunica_skolem:source_0:o2',
+          new BlankNodeScoped('urn:comunica_skolem:source_0:o2',
             namedNode('urn:comunica_skolem:source_0:o2')),
         ),
         quad<RDF.BaseQuad>(
-          new BlankNodeSkolemizable('urn:comunica_skolem:source_1:s2',
+          new BlankNodeScoped('urn:comunica_skolem:source_1:s2',
             namedNode('urn:comunica_skolem:source_1:s2')),
-          new BlankNodeSkolemizable('urn:comunica_skolem:source_1:p2',
+          new BlankNodeScoped('urn:comunica_skolem:source_1:p2',
             namedNode('urn:comunica_skolem:source_1:p2')),
-          new BlankNodeSkolemizable('urn:comunica_skolem:source_1:o2',
+          new BlankNodeScoped('urn:comunica_skolem:source_1:o2',
             namedNode('urn:comunica_skolem:source_1:o2')),
         ),
       ]);
@@ -989,35 +989,35 @@ describe('FederatedQuadSource', () => {
       const a = await arrayifyStream(source.match(blankNode('abc')));
       return expect(a).toEqual([
         quad<RDF.BaseQuad>(
-          new BlankNodeSkolemizable('urn:comunica_skolem:source_0:s1',
+          new BlankNodeScoped('urn:comunica_skolem:source_0:s1',
             namedNode('urn:comunica_skolem:source_0:s1')),
-          new BlankNodeSkolemizable('urn:comunica_skolem:source_0:p1',
+          new BlankNodeScoped('urn:comunica_skolem:source_0:p1',
             namedNode('urn:comunica_skolem:source_0:p1')),
-          new BlankNodeSkolemizable('urn:comunica_skolem:source_0:o1',
+          new BlankNodeScoped('urn:comunica_skolem:source_0:o1',
             namedNode('urn:comunica_skolem:source_0:o1')),
         ),
         quad<RDF.BaseQuad>(
-          new BlankNodeSkolemizable('urn:comunica_skolem:source_1:s1',
+          new BlankNodeScoped('urn:comunica_skolem:source_1:s1',
             namedNode('urn:comunica_skolem:source_1:s1')),
-          new BlankNodeSkolemizable('urn:comunica_skolem:source_1:p1',
+          new BlankNodeScoped('urn:comunica_skolem:source_1:p1',
             namedNode('urn:comunica_skolem:source_1:p1')),
-          new BlankNodeSkolemizable('urn:comunica_skolem:source_1:o1',
+          new BlankNodeScoped('urn:comunica_skolem:source_1:o1',
             namedNode('urn:comunica_skolem:source_1:o1')),
         ),
         quad<RDF.BaseQuad>(
-          new BlankNodeSkolemizable('urn:comunica_skolem:source_0:s2',
+          new BlankNodeScoped('urn:comunica_skolem:source_0:s2',
             namedNode('urn:comunica_skolem:source_0:s2')),
-          new BlankNodeSkolemizable('urn:comunica_skolem:source_0:p2',
+          new BlankNodeScoped('urn:comunica_skolem:source_0:p2',
             namedNode('urn:comunica_skolem:source_0:p2')),
-          new BlankNodeSkolemizable('urn:comunica_skolem:source_0:o2',
+          new BlankNodeScoped('urn:comunica_skolem:source_0:o2',
             namedNode('urn:comunica_skolem:source_0:o2')),
         ),
         quad<RDF.BaseQuad>(
-          new BlankNodeSkolemizable('urn:comunica_skolem:source_1:s2',
+          new BlankNodeScoped('urn:comunica_skolem:source_1:s2',
             namedNode('urn:comunica_skolem:source_1:s2')),
-          new BlankNodeSkolemizable('urn:comunica_skolem:source_1:p2',
+          new BlankNodeScoped('urn:comunica_skolem:source_1:p2',
             namedNode('urn:comunica_skolem:source_1:p2')),
-          new BlankNodeSkolemizable('urn:comunica_skolem:source_1:o2',
+          new BlankNodeScoped('urn:comunica_skolem:source_1:o2',
             namedNode('urn:comunica_skolem:source_1:o2')),
         ),
       ]);
@@ -1027,19 +1027,19 @@ describe('FederatedQuadSource', () => {
       const a = await arrayifyStream(source.match(blankNode('urn:comunica_skolem:source_0:s1')));
       return expect(a).toEqual([
         quad<RDF.BaseQuad>(
-          new BlankNodeSkolemizable('urn:comunica_skolem:source_0:s1',
+          new BlankNodeScoped('urn:comunica_skolem:source_0:s1',
             namedNode('urn:comunica_skolem:source_0:s1')),
-          new BlankNodeSkolemizable('urn:comunica_skolem:source_0:p1',
+          new BlankNodeScoped('urn:comunica_skolem:source_0:p1',
             namedNode('urn:comunica_skolem:source_0:p1')),
-          new BlankNodeSkolemizable('urn:comunica_skolem:source_0:o1',
+          new BlankNodeScoped('urn:comunica_skolem:source_0:o1',
             namedNode('urn:comunica_skolem:source_0:o1')),
         ),
         quad<RDF.BaseQuad>(
-          new BlankNodeSkolemizable('urn:comunica_skolem:source_0:s2',
+          new BlankNodeScoped('urn:comunica_skolem:source_0:s2',
             namedNode('urn:comunica_skolem:source_0:s2')),
-          new BlankNodeSkolemizable('urn:comunica_skolem:source_0:p2',
+          new BlankNodeScoped('urn:comunica_skolem:source_0:p2',
             namedNode('urn:comunica_skolem:source_0:p2')),
-          new BlankNodeSkolemizable('urn:comunica_skolem:source_0:o2',
+          new BlankNodeScoped('urn:comunica_skolem:source_0:o2',
             namedNode('urn:comunica_skolem:source_0:o2')),
         ),
       ]);
@@ -1049,19 +1049,19 @@ describe('FederatedQuadSource', () => {
       const a = await arrayifyStream(source.match(blankNode('urn:comunica_skolem:source_1:s1')));
       return expect(a).toEqual([
         quad<RDF.BaseQuad>(
-          new BlankNodeSkolemizable('urn:comunica_skolem:source_1:s1',
+          new BlankNodeScoped('urn:comunica_skolem:source_1:s1',
             namedNode('urn:comunica_skolem:source_1:s1')),
-          new BlankNodeSkolemizable('urn:comunica_skolem:source_1:p1',
+          new BlankNodeScoped('urn:comunica_skolem:source_1:p1',
             namedNode('urn:comunica_skolem:source_1:p1')),
-          new BlankNodeSkolemizable('urn:comunica_skolem:source_1:o1',
+          new BlankNodeScoped('urn:comunica_skolem:source_1:o1',
             namedNode('urn:comunica_skolem:source_1:o1')),
         ),
         quad<RDF.BaseQuad>(
-          new BlankNodeSkolemizable('urn:comunica_skolem:source_1:s2',
+          new BlankNodeScoped('urn:comunica_skolem:source_1:s2',
             namedNode('urn:comunica_skolem:source_1:s2')),
-          new BlankNodeSkolemizable('urn:comunica_skolem:source_1:p2',
+          new BlankNodeScoped('urn:comunica_skolem:source_1:p2',
             namedNode('urn:comunica_skolem:source_1:p2')),
-          new BlankNodeSkolemizable('urn:comunica_skolem:source_1:o2',
+          new BlankNodeScoped('urn:comunica_skolem:source_1:o2',
             namedNode('urn:comunica_skolem:source_1:o2')),
         ),
       ]);
@@ -1076,19 +1076,19 @@ describe('FederatedQuadSource', () => {
       const a = await arrayifyStream(source.match(namedNode('urn:comunica_skolem:source_0:s1')));
       return expect(a).toEqual([
         quad<RDF.BaseQuad>(
-          new BlankNodeSkolemizable('urn:comunica_skolem:source_0:s1',
+          new BlankNodeScoped('urn:comunica_skolem:source_0:s1',
             namedNode('urn:comunica_skolem:source_0:s1')),
-          new BlankNodeSkolemizable('urn:comunica_skolem:source_0:p1',
+          new BlankNodeScoped('urn:comunica_skolem:source_0:p1',
             namedNode('urn:comunica_skolem:source_0:p1')),
-          new BlankNodeSkolemizable('urn:comunica_skolem:source_0:o1',
+          new BlankNodeScoped('urn:comunica_skolem:source_0:o1',
             namedNode('urn:comunica_skolem:source_0:o1')),
         ),
         quad<RDF.BaseQuad>(
-          new BlankNodeSkolemizable('urn:comunica_skolem:source_0:s2',
+          new BlankNodeScoped('urn:comunica_skolem:source_0:s2',
             namedNode('urn:comunica_skolem:source_0:s2')),
-          new BlankNodeSkolemizable('urn:comunica_skolem:source_0:p2',
+          new BlankNodeScoped('urn:comunica_skolem:source_0:p2',
             namedNode('urn:comunica_skolem:source_0:p2')),
-          new BlankNodeSkolemizable('urn:comunica_skolem:source_0:o2',
+          new BlankNodeScoped('urn:comunica_skolem:source_0:o2',
             namedNode('urn:comunica_skolem:source_0:o2')),
         ),
       ]);
@@ -1098,19 +1098,19 @@ describe('FederatedQuadSource', () => {
       const a = await arrayifyStream(source.match(namedNode('urn:comunica_skolem:source_1:s1')));
       return expect(a).toEqual([
         quad<RDF.BaseQuad>(
-          new BlankNodeSkolemizable('urn:comunica_skolem:source_1:s1',
+          new BlankNodeScoped('urn:comunica_skolem:source_1:s1',
             namedNode('urn:comunica_skolem:source_1:s1')),
-          new BlankNodeSkolemizable('urn:comunica_skolem:source_1:p1',
+          new BlankNodeScoped('urn:comunica_skolem:source_1:p1',
             namedNode('urn:comunica_skolem:source_1:p1')),
-          new BlankNodeSkolemizable('urn:comunica_skolem:source_1:o1',
+          new BlankNodeScoped('urn:comunica_skolem:source_1:o1',
             namedNode('urn:comunica_skolem:source_1:o1')),
         ),
         quad<RDF.BaseQuad>(
-          new BlankNodeSkolemizable('urn:comunica_skolem:source_1:s2',
+          new BlankNodeScoped('urn:comunica_skolem:source_1:s2',
             namedNode('urn:comunica_skolem:source_1:s2')),
-          new BlankNodeSkolemizable('urn:comunica_skolem:source_1:p2',
+          new BlankNodeScoped('urn:comunica_skolem:source_1:p2',
             namedNode('urn:comunica_skolem:source_1:p2')),
-          new BlankNodeSkolemizable('urn:comunica_skolem:source_1:o2',
+          new BlankNodeScoped('urn:comunica_skolem:source_1:o2',
             namedNode('urn:comunica_skolem:source_1:o2')),
         ),
       ]);

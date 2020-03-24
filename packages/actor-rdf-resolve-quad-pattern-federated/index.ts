@@ -1,3 +1,3 @@
 export * from './lib/ActorRdfResolveQuadPatternFederated';
-export * from './lib/BlankNodeSkolemizable';
+export * from './lib/BlankNodeScoped';
 export * from './lib/FederatedQuadSource';

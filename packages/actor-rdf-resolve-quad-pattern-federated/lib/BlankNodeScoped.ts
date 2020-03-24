@@ -1,6 +1,9 @@
 import * as RDF from "rdf-js";
 
-export class BlankNodeSkolemizable implements RDF.BlankNode {
+/**
+ * A blank node that is scoped to a certain source.
+ */
+export class BlankNodeScoped implements RDF.BlankNode {
   public readonly termType: 'BlankNode' = 'BlankNode';
   public readonly value: string;
   /**

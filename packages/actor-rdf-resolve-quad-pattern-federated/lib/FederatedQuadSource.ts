@@ -10,7 +10,7 @@ import {RoundRobinUnionIterator} from "asynciterator-union";
 import * as RDF from "rdf-js";
 import {mapTerms} from "rdf-terms";
 import {Algebra, Factory} from "sparqlalgebrajs";
-import {BlankNodeSkolemizable} from "./BlankNodeSkolemizable";
+import {BlankNodeScoped} from "./BlankNodeScoped";
 import {BaseQuad} from "rdf-js";
 import {Quad} from "rdf-js";
 
@@ -96,10 +96,10 @@ export class FederatedQuadSource implements ILazyQuadSource {
    * @param sourceId A numerical source identifier.
    * @return If the given term was a blank node, this will return a skolemized named node, otherwise the original term.
    */
-  public static skolemizeTerm(term: RDF.Term, sourceId: number): RDF.Term | BlankNodeSkolemizable {
+  public static skolemizeTerm(term: RDF.Term, sourceId: number): RDF.Term | BlankNodeScoped {
     if (term.termType === 'BlankNode') {
       const skolemized = `urn:comunica_skolem:source_${sourceId}:${term.value}`;
-      return new BlankNodeSkolemizable(skolemized, DataFactory.namedNode(skolemized));
+      return new BlankNodeScoped(skolemized, DataFactory.namedNode(skolemized));
     }
     return term;
   }
