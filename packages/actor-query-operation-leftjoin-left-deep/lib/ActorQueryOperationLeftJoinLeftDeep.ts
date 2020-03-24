@@ -119,6 +119,9 @@ export class ActorQueryOperationLeftJoinLeftDeep extends ActorQueryOperationType
     const right = ActorQueryOperation.getSafeBindings(await this.mediatorQueryOperation
       .mediate({ operation: pattern.right, context }));
 
+    // Close the right stream, since we don't need that one
+    right.bindingsStream.close();
+
     // If an expression was defined, wrap the right operation in a filter expression.
     const rightOperation = pattern.expression
       ? ActorQueryOperationLeftJoinLeftDeep.FACTORY.createFilter(pattern.right, pattern.expression)
@@ -135,6 +138,12 @@ export class ActorQueryOperationLeftJoinLeftDeep extends ActorQueryOperationType
       .then((metadatas) => metadatas.reduce((acc, val) => acc * val.totalItems, 1))
       .catch(() => Infinity)
       .then((totalItems) => ({ totalItems }));
+
+    // TODO: We manually trigger the left metadata to be resolved.
+    //       If we don't do this, the inner metadata event seems to be lost in some cases,
+    //       the left promise above is never resolved, this whole metadata promise is never resolved,
+    //       and the application terminates without producing any results.
+    left.metadata().catch(() => { return; });
 
     return { type: 'bindings', bindingsStream, metadata, variables };
   }
