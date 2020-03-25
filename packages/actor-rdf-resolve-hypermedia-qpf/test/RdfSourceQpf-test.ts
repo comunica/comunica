@@ -1,5 +1,5 @@
 import {ActionContext, Bus} from "@comunica/core";
-import {blankNode, defaultGraph, namedNode, variable} from "@rdfjs/data-model";
+import {defaultGraph, namedNode} from "@rdfjs/data-model";
 import "jest-rdf";
 import * as RDF from "rdf-js";
 import {Readable} from "stream";
@@ -343,4 +343,175 @@ describe('RdfSourceQpf', () => {
       ]);
     });
   });
+});
+
+describe('RdfSourceQpf with a custom default graph', () => {
+
+  let source: RdfSourceQpf;
+  let bus;
+  let metadata;
+  let mediatorMetadata;
+  let mediatorMetadataExtract;
+  let mediatorRdfDereference;
+
+  let S;
+  let P;
+  let O;
+  let G;
+
+  beforeEach(() => {
+    bus = new Bus({ name: 'bus' });
+
+    mediatorMetadata = {
+      mediate: (args) => Promise.resolve({
+        data: args.quads,
+        metadata: null,
+      }),
+    };
+    mediatorMetadataExtract = {
+      mediate: () => Promise.resolve({ metadata: { next: 'NEXT' } }),
+    };
+    mediatorRdfDereference = {
+      mediate: (args) => Promise.resolve({
+        url: args.url,
+        quads: streamifyArray([
+          quad('s1', 'p1', 'o1', 'DEFAULT_GRAPH'),
+          quad('s2', 'p2', 'o2', 'DEFAULT_GRAPH'),
+          quad('s1', 'p3', 'o1', 'CUSTOM_GRAPH'),
+          quad('s2', 'p4', 'o2', 'CUSTOM_GRAPH'),
+          quad('DEFAULT_GRAPH', 'defaultInSubject', 'o2', 'DEFAULT_GRAPH'),
+          quad('s1-', 'actualDefaultGraph', 'o1'),
+        ]),
+        triples: false,
+      }),
+    };
+
+    metadata = {
+      defaultGraph: 'DEFAULT_GRAPH',
+      searchForms: {
+        values: [
+          {
+            getUri: (entries) => (entries.s || '_') + ',' + (entries.p || '_') + ',' + (entries.o || '_')
+              + ',' + (entries.g || '_'),
+            mappings: {
+              g: 'G',
+              o: 'O',
+              p: 'P',
+              s: 'S',
+            },
+          },
+        ],
+      },
+    };
+
+    source = new RdfSourceQpf(
+      mediatorMetadata,
+      mediatorMetadataExtract,
+      mediatorRdfDereference,
+      's',
+      'p',
+      'o',
+      'g',
+      metadata,
+      ActionContext({}),
+      streamifyArray([
+        quad('s1', 'p1', 'o1', 'DEFAULT_GRAPH'),
+        quad('s2', 'p2', 'o2', 'DEFAULT_GRAPH'),
+        quad('s1', 'p3', 'o1', 'CUSTOM_GRAPH'),
+        quad('s2', 'p4', 'o2', 'CUSTOM_GRAPH'),
+        quad('DEFAULT_GRAPH', 'defaultInSubject', 'o2', 'DEFAULT_GRAPH'),
+        quad('s1-', 'actualDefaultGraph', 'o1'),
+      ]),
+    );
+
+    S = namedNode('S');
+    P = namedNode('P');
+    O = namedNode('O');
+    G = namedNode('G');
+  });
+
+  describe('match', () => {
+    it('should return quads in the overridden default graph', async () => {
+      expect(await arrayifyStream(source.match(
+        namedNode('s1'), null, namedNode('o1'), defaultGraph())))
+        .toBeRdfIsomorphic([
+          quad('s1', 'p1', 'o1'),
+        ]);
+      expect(await arrayifyStream(source.match(
+        namedNode('s2'), null, namedNode('o2'), defaultGraph())))
+        .toBeRdfIsomorphic([
+          quad('s2', 'p2', 'o2'),
+        ]);
+      expect(await arrayifyStream(source.match(
+        namedNode('s3'), null, namedNode('o3'), defaultGraph())))
+        .toBeRdfIsomorphic([]);
+    });
+
+    it('should return quads in all graphs', async () => {
+      expect(await arrayifyStream(source.match(
+        namedNode('s1'), null, namedNode('o1'), null)))
+        .toBeRdfIsomorphic([
+          quad('s1', 'p1', 'o1'),
+          quad('s1', 'p3', 'o1', 'CUSTOM_GRAPH'),
+        ]);
+      expect(await arrayifyStream(source.match(
+        namedNode('s2'), null, namedNode('o2'), null)))
+        .toBeRdfIsomorphic([
+          quad('s2', 'p2', 'o2'),
+          quad('s2', 'p4', 'o2', 'CUSTOM_GRAPH'),
+        ]);
+      expect(await arrayifyStream(source.match(
+        namedNode('s3'), null, namedNode('o3'), null)))
+        .toBeRdfIsomorphic([]);
+    });
+
+    it('should return quads in a custom graph', async () => {
+      expect(await arrayifyStream(source.match(
+        namedNode('s1'), null, namedNode('o1'), namedNode('CUSTOM_GRAPH'))))
+        .toBeRdfIsomorphic([
+          quad('s1', 'p3', 'o1', 'CUSTOM_GRAPH'),
+        ]);
+      expect(await arrayifyStream(source.match(
+        namedNode('s2'), null, namedNode('o2'), namedNode('CUSTOM_GRAPH'))))
+        .toBeRdfIsomorphic([
+          quad('s2', 'p4', 'o2', 'CUSTOM_GRAPH'),
+        ]);
+      expect(await arrayifyStream(source.match(
+        namedNode('s3'), null, namedNode('o3'), namedNode('CUSTOM_GRAPH'))))
+        .toBeRdfIsomorphic([]);
+    });
+
+    it('should not modify an overridden default graph in the subject position', async () => {
+      expect(await arrayifyStream(source.match(
+        null, namedNode('defaultInSubject'), null, null)))
+        .toBeRdfIsomorphic([
+          quad('DEFAULT_GRAPH', 'defaultInSubject', 'o2', defaultGraph()),
+        ]);
+    });
+
+    it('should also return triples from the actual default graph', async () => {
+      expect(await arrayifyStream(source.match(
+        null, namedNode('actualDefaultGraph'), null, null)))
+        .toBeRdfIsomorphic([
+          quad('s1-', 'actualDefaultGraph', 'o1', defaultGraph()),
+        ]);
+      expect(await arrayifyStream(source.match(
+        null, namedNode('actualDefaultGraph'), null, defaultGraph())))
+        .toBeRdfIsomorphic([
+          quad('s1-', 'actualDefaultGraph', 'o1', defaultGraph()),
+        ]);
+    });
+
+    it('should return a mapped copy of the initial quads for the empty pattern', async () => {
+      return expect(await arrayifyStream(source.match())).toBeRdfIsomorphic([
+        quad('s1', 'p1', 'o1', defaultGraph()),
+        quad('s2', 'p2', 'o2', defaultGraph()),
+        quad('s1', 'p3', 'o1', 'CUSTOM_GRAPH'),
+        quad('s2', 'p4', 'o2', 'CUSTOM_GRAPH'),
+        quad('DEFAULT_GRAPH', 'defaultInSubject', 'o2', defaultGraph()),
+        quad('s1-', 'actualDefaultGraph', 'o1'),
+      ]);
+    });
+  })
+
 });
