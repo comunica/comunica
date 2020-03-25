@@ -11,12 +11,8 @@ os:
  - linux
 # - osx # Temporary disabled, not very stable yet on Travis
 # - windows # Temporary disabled, not very stable yet on Travis
-before_install: yarn global add greenkeeper-lockfile@1
 install: yarn install --pure-lockfile
-before_script: greenkeeper-lockfile-update
-after_script: greenkeeper-lockfile-upload
 script:
-  - .travis/validate_greenkeeper.sh
   - yarn run lint
   - yarn run test-ci
   - lerna run browser --concurrency 1

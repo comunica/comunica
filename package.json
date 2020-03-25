@@ -115,16 +115,5 @@
     "preinstall": "node -e \"if (!fs.existsSync('packages/runner-cli/bin/run.js')) { var os = fs.createWriteStream('packages/runner-cli/bin/run.js'); os.write('#!/usr/bin/env node\\nconsole.error(\\'Temporary runner script during lerna installation. If you see this, please run yarn install again.\\');\\nprocess.exit(1);'); os.end(); }\" && node -e \"if (!fs.existsSync('packages/runner/bin/compile-config.js')) { var os = fs.createWriteStream('packages/runner/bin/compile-config.js'); os.write('#!/usr/bin/env node\\nconsole.error(\\'Temporary compile-config script during lerna installation. If you see this, please run yarn install again.\\');\\nprocess.exit(1);'); os.end(); }\"",
     "postinstall": "yarn run build && lerna run prepare",
     "version": "manual-git-changelog onversion"
-  },
-  "greenkeeper": {
-    "commitMessages": {
-      "initialBadge": "Add Greenkeeper badge",
-      "initialDependencies": "Update dependencies",
-      "initialBranches": "Whitelist greenkeeper branches",
-      "dependencyUpdate": "Update ${dependency} to version ${version}",
-      "devDependencyUpdate": "Update dev ${dependency} to version ${version}",
-      "dependencyPin": "Pin ${dependency} to ${oldVersion}",
-      "devDependencyPin": "Pin ${dependency} to ${oldVersion}"
-    }
   }
 }
