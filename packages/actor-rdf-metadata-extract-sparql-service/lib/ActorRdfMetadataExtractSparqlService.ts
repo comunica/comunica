@@ -22,22 +22,21 @@ export class ActorRdfMetadataExtractSparqlService extends ActorRdfMetadataExtrac
       action.metadata.on('error', reject);
 
       // Immediately resolve when a SPARQL service endpoint URL has been found
+      const metadata: any = {};
       action.metadata.on('data', (quad) => {
         if (quad.predicate.value === 'http://www.w3.org/ns/sparql-service-description#endpoint'
           && (quad.subject.termType === 'BlankNode' || quad.subject.value === action.url)) {
-          resolve({
-            metadata: {
-              sparqlService: quad.object.termType === 'Literal'
+          metadata.sparqlService = quad.object.termType === 'Literal'
                 ? resolveIri(quad.object.value, action.url)
-                : quad.object.value
-            },
-          });
+                : quad.object.value;
+        } else if (quad.predicate.value === 'http://www.w3.org/ns/sparql-service-description#defaultGraph') {
+          metadata.defaultGraph = quad.object.value;
         }
       });
 
       // If no value has been found, emit nothing.
       action.metadata.on('end', () => {
-        resolve({ metadata: {} });
+        resolve({ metadata });
       });
     });
   }
