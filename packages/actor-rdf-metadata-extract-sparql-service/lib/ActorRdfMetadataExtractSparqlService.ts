@@ -24,7 +24,7 @@ export class ActorRdfMetadataExtractSparqlService extends ActorRdfMetadataExtrac
       // Immediately resolve when a SPARQL service endpoint URL has been found
       action.metadata.on('data', (quad) => {
         if (quad.predicate.value === 'http://www.w3.org/ns/sparql-service-description#endpoint'
-          && quad.subject.value === action.url) {
+          && (quad.subject.termType === 'BlankNode' || quad.subject.value === action.url)) {
           resolve({ metadata: { sparqlService: resolveIri(quad.object.value, action.url) }});
         }
       });

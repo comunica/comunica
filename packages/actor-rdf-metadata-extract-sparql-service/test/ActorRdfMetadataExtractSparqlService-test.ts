@@ -34,6 +34,7 @@ describe('ActorRdfMetadataExtractSparqlService', () => {
     let input: Readable;
     let inputNone: Readable;
     let inputRelative: Readable;
+    let inputBlankSubject: Readable;
 
     beforeEach(() => {
       actor = new ActorRdfMetadataExtractSparqlService({ name: 'actor', bus });
@@ -50,6 +51,12 @@ describe('ActorRdfMetadataExtractSparqlService', () => {
         quad('s1', 'p1', 'o1', ''),
         quad('http://example.org/', 'http://www.w3.org/ns/sparql-service-description#endpoint', 'ENDPOINT', ''),
         quad('s2', 'px', '5678', ''),
+        quad('s3', 'p3', 'o3', ''),
+      ]);
+      inputBlankSubject = stream([
+        quad('_:b', 'p1', 'o1', ''),
+        quad('_:b', 'http://www.w3.org/ns/sparql-service-description#endpoint', 'http://example2.org/ENDPOINT', ''),
+        quad('_:b', 'px', '5678', ''),
         quad('s3', 'p3', 'o3', ''),
       ]);
     });
@@ -76,6 +83,11 @@ describe('ActorRdfMetadataExtractSparqlService', () => {
     it('should run on a stream where an endpoint is defined as a relative IRI', () => {
       return expect(actor.run({ url: 'http://example.org/', metadata: inputRelative })).resolves
         .toEqual({ metadata: { sparqlService: 'http://example.org/ENDPOINT' }});
+    });
+
+    it('should run on a stream where the service description subject is a blank node', () => {
+      return expect(actor.run({ url: 'http://example.org/', metadata: inputBlankSubject })).resolves
+        .toEqual({ metadata: { sparqlService: 'http://example2.org/ENDPOINT' }});
     });
   });
 });
