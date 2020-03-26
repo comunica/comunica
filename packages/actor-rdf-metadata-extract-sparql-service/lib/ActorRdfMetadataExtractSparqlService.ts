@@ -25,7 +25,13 @@ export class ActorRdfMetadataExtractSparqlService extends ActorRdfMetadataExtrac
       action.metadata.on('data', (quad) => {
         if (quad.predicate.value === 'http://www.w3.org/ns/sparql-service-description#endpoint'
           && (quad.subject.termType === 'BlankNode' || quad.subject.value === action.url)) {
-          resolve({ metadata: { sparqlService: resolveIri(quad.object.value, action.url) }});
+          resolve({
+            metadata: {
+              sparqlService: quad.object.termType === 'Literal'
+                ? resolveIri(quad.object.value, action.url)
+                : quad.object.value
+            },
+          });
         }
       });
 
