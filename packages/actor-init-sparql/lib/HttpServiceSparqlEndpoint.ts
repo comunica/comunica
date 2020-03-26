@@ -9,6 +9,12 @@ import * as url from "url";
 import {newEngineDynamic} from "../index";
 import {ActorInitSparql} from "./ActorInitSparql";
 import {IQueryOptions} from "./QueryDynamic";
+import {ArrayIterator} from "asynciterator";
+import * as RDF from "rdf-js";
+import {ActionContext} from "@comunica/core";
+import {IActorQueryOperationOutputQuads} from "@comunica/bus-query-operation";
+// tslint:disable:no-var-requires
+const quad = require('rdf-quad');
 
 /**
  * An HTTP service that exposes a Comunica engine as a SPARQL endpoint.
@@ -204,6 +210,10 @@ Options:
   public writeQueryResult(engine: ActorInitSparql, stdout: Writable, stderr: Writable,
                           request: http.IncomingMessage, response: http.ServerResponse,
                           sparql: string, mediaType: string, headOnly: boolean) {
+    if (!sparql) {
+      return this.writeServiceDescription(engine, stdout, stderr, request, response, mediaType, headOnly);
+    }
+
     let eventEmitter: EventEmitter;
     engine.query(sparql, this.context)
       .then(async (result) => {
@@ -238,6 +248,62 @@ Options:
         response.end(error.toString());
       });
 
+    this.stopResponse(response, eventEmitter);
+  }
+
+  public async writeServiceDescription(engine: ActorInitSparql, stdout: Writable, stderr: Writable,
+                                 request: http.IncomingMessage, response: http.ServerResponse,
+                                 mediaType: string, headOnly: boolean) {
+    stdout.write('[200] ' + request.method + ' to ' + request.url + '\n');
+    stdout.write('      Requested media type: ' + mediaType + '\n');
+    stdout.write('      Received query for service description. ' + '\n');
+    response.writeHead(200, { 'content-type': mediaType, 'Access-Control-Allow-Origin': '*'  });
+
+    if (headOnly) {
+      response.end();
+      return;
+    }
+
+    const s = request.url;
+    const sd = 'http://www.w3.org/ns/sparql-service-description#';
+    const quads: RDF.Quad[] = [
+      // Basic metadata
+      quad(s, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', sd + 'Service'),
+      quad(s, sd + 'endpoint', '/sparql'),
+      quad(s, sd + 'url', '/sparql'),
+
+      // Features
+      quad(s, sd + 'feature', sd + 'BasicFederatedQuery'),
+      quad(s, sd + 'supportedLanguage', sd + 'SPARQL10Query'),
+      quad(s, sd + 'supportedLanguage', sd + 'SPARQL11Query'),
+    ];
+
+    let eventEmitter: EventEmitter;
+    try {
+      // Append result formats
+      const formats = await engine.getResultMediaTypeFormats(ActionContext(this.context));
+      for (const m in formats) {
+        quads.push(quad(s, sd + 'resultFormat', formats[m]));
+      }
+
+      // Flush results
+      const data: NodeJS.ReadableStream = (await engine.resultToString(<IActorQueryOperationOutputQuads> {
+        type: 'quads',
+        quadStream: new ArrayIterator(quads),
+      }, mediaType)).data;
+      data.on('error', (e: Error) => {
+        stdout.write('[500] Server error in results: ' + e + ' \n');
+        response.end('An internal server error occurred.\n');
+      });
+      data.pipe(response);
+      eventEmitter = data;
+    } catch (error) {
+      stdout.write('[400] Bad request, invalid media type\n');
+      response.writeHead(400,
+        { 'content-type': HttpServiceSparqlEndpoint.MIME_PLAIN, 'Access-Control-Allow-Origin': '*' });
+      response.end('The response for the given query could not be serialized for the requested media type\n');
+      return;
+    }
     this.stopResponse(response, eventEmitter);
   }
 

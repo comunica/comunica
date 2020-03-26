@@ -148,11 +148,13 @@
     "@comunica/mediator-race": "^1.9.2",
     "@comunica/runner": "^1.9.4",
     "@comunica/runner-cli": "^1.9.4",
+    "asynciterator": "^2.0.1",
     "asyncreiterable": "^1.1.1",
     "minimist": "^1.2.0",
     "negotiate": "^1.0.1",
     "rdf-string": "^1.3.1",
     "rdf-terms": "^1.4.0",
+    "rdf-quad": "^1.4.0",
     "streamify-string": "^1.0.1"
   },
   "devDependencies": {

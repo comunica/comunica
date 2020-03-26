@@ -8,7 +8,9 @@ import {http, ServerResponseMock} from "../__mocks__/http";
 import {newEngineDynamic} from "../__mocks__/index";
 import {parse} from "../__mocks__/url";
 import {HttpServiceSparqlEndpoint} from "../lib/HttpServiceSparqlEndpoint";
+import {ArrayIterator} from "asynciterator";
 const stringToStream = require('streamify-string');
+const quad = require('rdf-quad');
 
 jest.mock('../index', () => {
   return {
@@ -396,6 +398,7 @@ describe('HttpServiceSparqlEndpoint', () => {
       beforeEach(() => {
         response = new ServerResponseMock();
         request = stringToStream("default_request_content");
+        request.url = 'http://example.org/sparql';
         query = "default_test_query";
         mediaType = "default_test_mediatype";
         endCalledPromise = new Promise((resolve) => response.onEnd = resolve);
@@ -455,6 +458,100 @@ describe('HttpServiceSparqlEndpoint', () => {
             {'content-type': mediaType, 'Access-Control-Allow-Origin': '*'});
         expect(response.end).toHaveBeenCalled();
         expect(response.toString()).toBe("");
+      });
+
+      it('should write the service description when no query was defined', async () => {
+        // Create spies
+        const engine = await newEngineDynamic();
+        const spyWriteServiceDescription = jest.spyOn(instance, 'writeServiceDescription');
+        const spyGetResultMediaTypeFormats = jest.spyOn(engine, 'getResultMediaTypeFormats');
+        const spyResultToString = jest.spyOn(engine, 'resultToString');
+
+        // Invoke writeQueryResult
+        await instance.writeQueryResult(engine, new PassThrough(), new PassThrough(),
+          request, response, '', mediaType, false);
+
+        // Check output
+        await expect(endCalledPromise).resolves.toBeFalsy();
+        expect(response.writeHead).toHaveBeenCalledTimes(1);
+        expect(response.writeHead).toHaveBeenLastCalledWith(200,
+          {'content-type': mediaType, 'Access-Control-Allow-Origin': '*'});
+        expect(response.toString()).toBe("test_query_result");
+
+        // Check if the SD logic has been called
+        expect(spyWriteServiceDescription).toHaveBeenCalledTimes(1);
+
+        // Check if result media type formats have been retrieved
+        expect(spyGetResultMediaTypeFormats).toHaveBeenCalledTimes(1);
+
+        // Check if result to string has been called with the correct arguments
+        expect(spyResultToString).toHaveBeenCalledTimes(1);
+        expect(spyResultToString.mock.calls[0][1]).toEqual(mediaType);
+        const s = 'http://example.org/sparql';
+        const sd = 'http://www.w3.org/ns/sparql-service-description#';
+        expect(spyResultToString.mock.calls[0][0]).toEqual({
+          type: 'quads',
+          quadStream: new ArrayIterator([
+            quad(s, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', sd + 'Service'),
+            quad(s, sd + 'endpoint', '/sparql'),
+            quad(s, sd + 'url', '/sparql'),
+            quad(s, sd + 'feature', sd + 'BasicFederatedQuery'),
+            quad(s, sd + 'supportedLanguage', sd + 'SPARQL10Query'),
+            quad(s, sd + 'supportedLanguage', sd + 'SPARQL11Query'),
+            quad(s, sd + 'resultFormat', 'ONE'),
+            quad(s, sd + 'resultFormat', 'TWO'),
+            quad(s, sd + 'resultFormat', 'THREE'),
+            quad(s, sd + 'resultFormat', 'FOUR'),
+          ]),
+        });
+      });
+
+      it('should write the service description when no query was defined for HEAD', async () => {
+        // Create spies
+        const engine = await newEngineDynamic();
+        const spyWriteServiceDescription = jest.spyOn(instance, 'writeServiceDescription');
+        const spyGetResultMediaTypeFormats = jest.spyOn(engine, 'getResultMediaTypeFormats');
+        const spyResultToString = jest.spyOn(engine, 'resultToString');
+
+        // Invoke writeQueryResult
+        await instance.writeQueryResult(engine, new PassThrough(), new PassThrough(),
+          request, response, '', mediaType, true);
+
+        // Check output
+        await expect(endCalledPromise).resolves.toBeFalsy();
+        expect(response.writeHead).toHaveBeenCalledTimes(1);
+        expect(response.writeHead).toHaveBeenLastCalledWith(200,
+          {'content-type': mediaType, 'Access-Control-Allow-Origin': '*'});
+        expect(response.toString()).toBe("");
+
+        // Check if the SD logic has been called
+        expect(spyWriteServiceDescription).toHaveBeenCalledTimes(1);
+
+        // Check if further processing is not done
+        expect(spyGetResultMediaTypeFormats).toHaveBeenCalledTimes(0);
+        expect(spyResultToString).toHaveBeenCalledTimes(0);
+      });
+
+      it('should handle errors in service description stringification', async () => {
+        mediaType = "mediatype_queryresultstreamerror";
+        await instance.writeQueryResult(await newEngineDynamic(), new PassThrough(), new PassThrough(),
+          request, response, '', mediaType, false);
+
+        await expect(endCalledPromise).resolves.toBe("An internal server error occurred.\n");
+        expect(response.writeHead).toHaveBeenCalledTimes(1);
+        expect(response.writeHead).toHaveBeenLastCalledWith(200,
+          {'content-type': mediaType, 'Access-Control-Allow-Origin': '*'});
+      });
+
+      it('should handle an invalid media type in service description', async () => {
+        mediaType = "mediatype_queryresultstreamerror";
+        await instance.writeQueryResult(await newEngineDynamic(), new PassThrough(), new PassThrough(),
+          request, response, '', 'mediatype_throwerror', false);
+
+        await expect(endCalledPromise).resolves.toBe(
+          "The response for the given query could not be serialized for the requested media type\n");
+        expect(response.writeHead).toHaveBeenLastCalledWith(400,
+          {'content-type': 'text/plain', 'Access-Control-Allow-Origin': '*'});
       });
     });
 

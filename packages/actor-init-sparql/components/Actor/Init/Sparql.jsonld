@@ -44,6 +44,12 @@
           "unique": true
         },
         {
+          "@id": "cais:mediatorSparqlSerializeMediaTypeFormatCombiner",
+          "comment": "The query serialize media type format combinator",
+          "required": true,
+          "unique": true
+        },
+        {
           "@id": "cais:mediatorContextPreprocess",
           "comment": "The context processing combinator",
           "required": true,
@@ -135,6 +141,10 @@
             {
               "keyRaw": "mediatorSparqlSerializeMediaTypeCombiner",
               "value": "cais:mediatorSparqlSerializeMediaTypeCombiner"
+            },
+            {
+              "keyRaw": "mediatorSparqlSerializeMediaTypeFormatCombiner",
+              "value": "cais:mediatorSparqlSerializeMediaTypeFormatCombiner"
             },
             {
               "keyRaw": "mediatorContextPreprocess",

@@ -27,6 +27,12 @@ class EngineMock {
       "mtype_1": 1,"mtype_2": 2,"mtype_3": 3, "mtype_4": 4,
     }
   }
+
+  getResultMediaTypeFormats(context) {
+    return {
+      "mtype_1": 'ONE', "mtype_2": 'TWO', "mtype_3": 'THREE', "mtype_4": 'FOUR',
+    }
+  }
 }
 
 function newEngineDynamic(options) {
