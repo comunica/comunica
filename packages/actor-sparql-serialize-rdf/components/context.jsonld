@@ -8,7 +8,8 @@
 
       "ActorSparqlSerializeRdf": "cassr:Actor/SparqlSerialize/Rdf",
       "mediatorRdfSerialize": "cassr:Actor/SparqlSerialize/Rdf/mediatorRdfSerialize",
-      "mediatorRdfSerializeMediaTypeCombiner": "cassr:Actor/SparqlSerialize/Rdf/mediatorRdfSerializeMediaTypeCombiner"
+      "mediatorRdfSerializeMediaTypeCombiner": "cassr:Actor/SparqlSerialize/Rdf/mediatorRdfSerializeMediaTypeCombiner",
+      "mediatorRdfSerializeMediaTypeFormatCombiner": "cassr:Actor/SparqlSerialize/Rdf/mediatorRdfSerializeMediaTypeFormatCombiner"
     }
   ]
 }

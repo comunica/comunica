@@ -18,7 +18,7 @@
           "defaultScoped": {
             "defaultScope": "carsjl:Actor/RdfSerialize/JsonLd",
             "defaultScopedValue": [
-              { "mediaTypeKey": "application/ld+json", "priorityValue": "1.0" }
+              { "mediaTypeKey": "application/ld+json", "priorityValue": "1.0", "mediaTypeFormat": "http://www.w3.org/ns/formats/JSON-LD" }
             ]
           }
         },

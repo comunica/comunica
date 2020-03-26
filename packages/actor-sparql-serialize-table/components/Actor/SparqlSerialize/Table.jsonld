@@ -18,7 +18,7 @@
           "defaultScoped": {
             "defaultScope": "casst:Actor/SparqlSerialize/Table",
             "defaultScopedValue": [
-              { "mediaTypeKey": "table", "priorityValue": "1.0" }
+              { "mediaTypeKey": "table", "priorityValue": "1.0", "mediaTypeFormat": "https://comunica.linkeddatafragments.org/#results_table" }
             ]
           }
         },

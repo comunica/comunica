@@ -18,7 +18,7 @@
           "defaultScoped": {
             "defaultScope": "casssj:Actor/SparqlSerialize/SparqlJson",
             "defaultScopedValue": [
-              { "mediaTypeKey": "application/sparql-results+json", "priorityValue": "1.0" }
+              { "mediaTypeKey": "application/sparql-results+json", "priorityValue": "1.0", "mediaTypeFormat": "http://www.w3.org/ns/formats/SPARQL_Results_JSON" }
             ]
           }
         }

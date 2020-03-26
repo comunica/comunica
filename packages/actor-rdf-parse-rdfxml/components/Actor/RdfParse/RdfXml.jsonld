@@ -18,7 +18,7 @@
             "defaultScoped": {
               "defaultScope": "carpr:Actor/RdfParse/RdfXml",
               "defaultScopedValue": [
-                { "mediaTypeKey": "application/rdf+xml",      "priorityValue": "1.0" }
+                { "mediaTypeKey": "application/rdf+xml",      "priorityValue": "1.0", "mediaTypeFormat": "http://www.w3.org/ns/formats/RDF_XML" }
               ]
             }
           }

@@ -25,6 +25,12 @@
                 "unique": true
               },
               {
+                "@id": "caam:Actor/AbstractMediaTypedFixed/MediaTypeEntry/format",
+                "comment": "The IRI of this media type",
+                "required": true,
+                "unique": true
+              },
+              {
                 "@id": "caam:Actor/AbstractMediaTypedFixed/MediaTypeEntry/priority",
                 "comment": "A media type priority, with values between [0, 1]",
                 "default": "1",
@@ -54,6 +60,18 @@
                     "collectEntries": "caam:Actor/AbstractMediaTypedFixed/mediaTypeEntry",
                     "key": "caam:Actor/AbstractMediaTypedFixed/MediaTypeEntry/mediaType",
                     "value": "caam:Actor/AbstractMediaTypedFixed/MediaTypeEntry/priority"
+                  }
+                ]
+              }
+            },
+            {
+              "keyRaw": "mediaTypeFormats",
+              "value": {
+                "fields": [
+                  {
+                    "collectEntries": "caam:Actor/AbstractMediaTypedFixed/mediaTypeEntry",
+                    "key": "caam:Actor/AbstractMediaTypedFixed/MediaTypeEntry/mediaType",
+                    "value": "caam:Actor/AbstractMediaTypedFixed/MediaTypeEntry/format"
                   }
                 ]
               }
