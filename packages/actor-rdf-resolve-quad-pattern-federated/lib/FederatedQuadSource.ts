@@ -8,7 +8,11 @@ import {AsyncIterator, EmptyIterator} from "asynciterator";
 import {PromiseProxyIterator} from "asynciterator-promiseproxy";
 import {RoundRobinUnionIterator} from "asynciterator-union";
 import * as RDF from "rdf-js";
+import {mapTerms} from "rdf-terms";
 import {Algebra, Factory} from "sparqlalgebrajs";
+import {BlankNodeScoped} from "./BlankNodeScoped";
+import {BaseQuad} from "rdf-js";
+import {Quad} from "rdf-js";
 
 /**
  * A FederatedQuadSource can evaluate quad pattern queries over the union of different heterogeneous sources.
@@ -16,11 +20,14 @@ import {Algebra, Factory} from "sparqlalgebrajs";
  */
 export class FederatedQuadSource implements ILazyQuadSource {
 
+  private static readonly SKOLEM_PREFIX = 'urn:comunica_skolem:source_';
+
   protected readonly mediatorResolveQuadPattern: Mediator<Actor<IActionRdfResolveQuadPattern, IActorTest,
     IActorRdfResolveQuadPatternOutput>, IActionRdfResolveQuadPattern, IActorTest, IActorRdfResolveQuadPatternOutput>;
   protected readonly sources: DataSources;
   protected readonly contextDefault: ActionContext;
   protected readonly emptyPatterns: Map<IDataSource, RDF.BaseQuad[]>;
+  protected readonly sourceIds: Map<IDataSource, string>;
   protected readonly skipEmptyPatterns: boolean;
   protected readonly algebraFactory: Factory;
 
@@ -32,6 +39,7 @@ export class FederatedQuadSource implements ILazyQuadSource {
     this.sources = context.get(KEY_CONTEXT_SOURCES);
     this.contextDefault = context.delete(KEY_CONTEXT_SOURCES);
     this.emptyPatterns = emptyPatterns;
+    this.sourceIds = new Map();
     this.skipEmptyPatterns = skipEmptyPatterns;
     this.algebraFactory = new Factory();
 
@@ -70,15 +78,56 @@ export class FederatedQuadSource implements ILazyQuadSource {
   }
 
   /**
-   * Converts falsy terms to variables.
-   * This is the reverse operation of {@link ActorRdfResolveQuadPatternSource#variableToNull}.
-   * @param {Term} term A term or null.
-   * @param {string} label The label to use if we have a variable.
-   * @return {Term} A term.
+   * If the given term is a blank node, return a deterministic named node for it
+   * based on the source id and the blank node value.
+   * @param term Any RDF term.
+   * @param sourceId A source identifier.
+   * @return If the given term was a blank node, this will return a skolemized named node, otherwise the original term.
    */
-  public static nullToVariable(term: RDF.Term, label: string): RDF.Term {
-    if (!term) {
-      return DataFactory.variable('v' + label);
+  public static skolemizeTerm(term: RDF.Term, sourceId: string): RDF.Term | BlankNodeScoped {
+    if (term.termType === 'BlankNode') {
+      return new BlankNodeScoped(`bc_${sourceId}_${term.value}`,
+        DataFactory.namedNode(`${FederatedQuadSource.SKOLEM_PREFIX}${sourceId}:${term.value}`));
+    }
+    return term;
+  }
+
+  /**
+   * Skolemize all terms in the given quad.
+   * @param quad An RDF quad.
+   * @param sourceId A source identifier.
+   * @return The skolemized quad.
+   */
+  public static skolemizeQuad<Q extends BaseQuad = Quad>(quad: Q, sourceId: string): Q {
+    return mapTerms(quad, (term) => FederatedQuadSource.skolemizeTerm(term, sourceId));
+  }
+
+  /**
+   * If a given term was a skolemized named node for the given source id,
+   * deskolemize it again to a blank node.
+   * If the given term was a skolemized named node for another source, return false.
+   * If the given term was not a skolemized named node, return the original term.
+   * @param term Any RDF term.
+   * @param sourceId A source identifier.
+   */
+  public static deskolemizeTerm(term: RDF.Term, sourceId: string): RDF.Term | null {
+    if (term.termType === 'BlankNode' && 'skolemized' in term) {
+      term = (<BlankNodeScoped> term).skolemized;
+    }
+    if (term.termType === 'NamedNode') {
+      if (term.value.startsWith(FederatedQuadSource.SKOLEM_PREFIX)) {
+        const colonSeparator = term.value.indexOf(':', FederatedQuadSource.SKOLEM_PREFIX.length);
+        const termSourceId = term.value.substr(FederatedQuadSource.SKOLEM_PREFIX.length, colonSeparator - FederatedQuadSource.SKOLEM_PREFIX.length);
+        // We had a skolemized term
+        if (termSourceId === sourceId) {
+          // It came from the correct source
+          const termLabel = term.value.substr(colonSeparator + 1, term.value.length);
+          return DataFactory.blankNode(termLabel);
+        } else {
+          // It came from a different source
+          return null;
+        }
+      }
     }
     return term;
   }
@@ -108,6 +157,20 @@ export class FederatedQuadSource implements ILazyQuadSource {
       }
     }
     return false;
+  }
+
+  /**
+   * Get the unique, deterministic id for the given source.
+   * @param source A data source.
+   * @return The id of the given source.
+   */
+  public getSourceId(source: IDataSource): string {
+    let sourceId = this.sourceIds.get(source);
+    if (sourceId === undefined) {
+      sourceId = `${this.sourceIds.size}`;
+      this.sourceIds.set(source, sourceId);
+    }
+    return sourceId;
   }
 
   public matchLazy(subject?: RegExp | RDF.Term,
@@ -149,25 +212,30 @@ export class FederatedQuadSource implements ILazyQuadSource {
     //       See discussion at https://github.com/comunica/comunica/issues/553
     const sourcesIt = this.sources.iterator();
     const proxyIt: AsyncIterator<PromiseProxyIterator<RDF.Quad>> = sourcesIt.map((source) => {
+      const sourceId = this.getSourceId(source);
       remainingSources++;
       sourcesCount++;
 
-      // If we can predict that the given source will have no bindings for the given pattern,
-      // return an empty iterator.
-      const pattern: Algebra.Pattern = this.algebraFactory.createPattern(
-        FederatedQuadSource.nullToVariable(subject, 's'),
-        FederatedQuadSource.nullToVariable(predicate, 'p'),
-        FederatedQuadSource.nullToVariable(object, 'o'),
-        FederatedQuadSource.nullToVariable(graph, 'g'),
-      );
-
-      // Prepare the context for this specific source
-      const context: ActionContext = this.contextDefault.set(KEY_CONTEXT_SOURCE,
-        { type: getDataSourceType(source), value: getDataSourceValue(source) });
-
       return new PromiseProxyIterator(async () => {
+        // Convert falsy terms to variables, reverse operation of {@link ActorRdfResolveQuadPatternSource#variableToNull}.
+        // Deskolemize terms, so we send the original blank nodes to each source.
+        // Note that some sources may not match bnodes by label. SPARQL endpoints for example consider them variables.
+        const s = !subject   ? DataFactory.variable('vs') : FederatedQuadSource.deskolemizeTerm(subject,   sourceId);
+        const p = !predicate ? DataFactory.variable('vp') : FederatedQuadSource.deskolemizeTerm(predicate, sourceId);
+        const o = !object    ? DataFactory.variable('vo') : FederatedQuadSource.deskolemizeTerm(object,    sourceId);
+        const g = !graph     ? DataFactory.variable('vg') : FederatedQuadSource.deskolemizeTerm(graph,     sourceId);
+        let pattern: Algebra.Pattern;
+
+        // Prepare the context for this specific source
+        const context: ActionContext = this.contextDefault.set(KEY_CONTEXT_SOURCE,
+          { type: getDataSourceType(source), value: getDataSourceValue(source) });
+
         let output: IActorRdfResolveQuadPatternOutput;
-        if (this.isSourceEmpty(source, pattern)) {
+        // If any of the deskolemized blank nodes originate from another source,
+        // or if we can predict that the given source will have no bindings for the given pattern,
+        // return an empty iterator.
+        if (!s || !p || !o || !g
+          || this.isSourceEmpty(source, pattern = this.algebraFactory.createPattern(s, p, o, g))) {
           output = { data: new EmptyIterator(), metadata: () => Promise.resolve({ totalItems: 0 }) };
         } else {
           output = await this.mediatorResolveQuadPattern.mediate({ pattern, context });
@@ -190,7 +258,7 @@ export class FederatedQuadSource implements ILazyQuadSource {
           checkEmitMetadata(Infinity, source, pattern);
         }
 
-        return output.data;
+        return output.data.map((quad) => FederatedQuadSource.skolemizeQuad(quad, sourceId));
       });
     });
     const it: RoundRobinUnionIterator<RDF.Quad> = new RoundRobinUnionIterator(proxyIt.clone());
