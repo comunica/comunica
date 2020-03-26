@@ -48,6 +48,9 @@ export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs {
   public readonly mediatorSparqlSerializeMediaTypeCombiner: Mediator<Actor<IActionRootSparqlParse,
     IActorTestRootSparqlParse, IActorOutputRootSparqlParse>, IActionRootSparqlParse, IActorTestRootSparqlParse,
     IActorOutputRootSparqlParse>;
+  public readonly mediatorSparqlSerializeMediaTypeFormatCombiner: Mediator<Actor<IActionRootSparqlParse,
+    IActorTestRootSparqlParse, IActorOutputRootSparqlParse>, IActionRootSparqlParse, IActorTestRootSparqlParse,
+    IActorOutputRootSparqlParse>;
   public readonly mediatorContextPreprocess: Mediator<Actor<IAction, IActorTest,
     IActorContextPreprocessOutput>, IAction, IActorTest, IActorContextPreprocessOutput>;
   public readonly mediatorHttpInvalidate: Mediator<Actor<IActionHttpInvalidate, IActorTest, IActorHttpInvalidateOutput>,
@@ -203,6 +206,14 @@ export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs {
   }
 
   /**
+   * @param context An optional context.
+   * @return {Promise<{[p: string]: number}>} All available SPARQL result media type formats.
+   */
+  public async getResultMediaTypeFormats(context: ActionContext): Promise<{[id: string]: string}> {
+    return (await this.mediatorSparqlSerializeMediaTypeFormatCombiner.mediate({ context, mediaTypeFormats: true })).mediaTypeFormats;
+  }
+
+  /**
    * Convert a query result to a string stream based on a certain media type.
    * @param {IActorQueryOperationOutput} queryResult A query result.
    * @param {string} mediaType A media type.
@@ -257,6 +268,9 @@ export interface IActorInitSparqlArgs extends IActorArgs<IActionInit, IActorTest
   mediatorSparqlSerialize: Mediator<Actor<IActionRootSparqlParse, IActorTestRootSparqlParse,
     IActorOutputRootSparqlParse>, IActionRootSparqlParse, IActorTestRootSparqlParse, IActorOutputRootSparqlParse>;
   mediatorSparqlSerializeMediaTypeCombiner: Mediator<Actor<IActionRootSparqlParse,
+    IActorTestRootSparqlParse, IActorOutputRootSparqlParse>, IActionRootSparqlParse, IActorTestRootSparqlParse,
+    IActorOutputRootSparqlParse>;
+  mediatorSparqlSerializeMediaTypeFormatCombiner: Mediator<Actor<IActionRootSparqlParse,
     IActorTestRootSparqlParse, IActorOutputRootSparqlParse>, IActionRootSparqlParse, IActorTestRootSparqlParse,
     IActorOutputRootSparqlParse>;
   mediatorContextPreprocess: Mediator<Actor<IAction, IActorTest, IActorContextPreprocessOutput>,

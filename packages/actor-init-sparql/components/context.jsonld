@@ -13,6 +13,7 @@
       "mediatorSparqlParse": "cais:mediatorSparqlParse",
       "mediatorSparqlSerialize": "cais:mediatorSparqlSerialize",
       "mediatorSparqlSerializeMediaTypeCombiner": "cais:mediatorSparqlSerializeMediaTypeCombiner",
+      "mediatorSparqlSerializeMediaTypeFormatCombiner": "cais:mediatorSparqlSerializeMediaTypeFormatCombiner",
       "mediatorContextPreprocess": "cais:mediatorContextPreprocess",
       "mediatorHttpInvalidate": "cais:mediatorHttpInvalidate",
 

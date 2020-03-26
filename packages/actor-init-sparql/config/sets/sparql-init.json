@@ -42,6 +42,11 @@
         "cc:Mediator/bus": { "@id": "cbss:Bus/SparqlSerialize" },
         "cmcu:Mediator/CombineUnion/field": "mediaTypes"
       },
+      "mediatorSparqlSerializeMediaTypeFormatCombiner": {
+        "@type": "MediatorCombineUnion",
+        "cc:Mediator/bus": { "@id": "cbss:Bus/SparqlSerialize" },
+        "cmcu:Mediator/CombineUnion/field": "mediaTypeFormats"
+      },
       "mediatorContextPreprocess": {
         "@id": "config-sets:sparql-init.json#mediatorContextPreprocess",
         "@type": "MediatorCombinePipeline",
