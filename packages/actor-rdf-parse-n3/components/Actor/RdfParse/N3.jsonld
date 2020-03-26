@@ -18,11 +18,11 @@
           "defaultScoped": {
             "defaultScope": "crpn3:Actor/RdfParse/N3",
             "defaultScopedValue": [
-              { "mediaTypeKey": "application/n-quads",   "priorityValue": "1.0"  },
-              { "mediaTypeKey": "application/trig",      "priorityValue": "0.95" },
-              { "mediaTypeKey": "application/n-triples", "priorityValue": "0.8"  },
-              { "mediaTypeKey": "text/turtle",           "priorityValue": "0.5"  },
-              { "mediaTypeKey": "text/n3",               "priorityValue": "0.35" }
+              { "mediaTypeKey": "application/n-quads",   "priorityValue": "1.0",  "mediaTypeFormat": "http://www.w3.org/ns/formats/N-Quads" },
+              { "mediaTypeKey": "application/trig",      "priorityValue": "0.95", "mediaTypeFormat": "http://www.w3.org/ns/formats/TriG" },
+              { "mediaTypeKey": "application/n-triples", "priorityValue": "0.8",  "mediaTypeFormat": "http://www.w3.org/ns/formats/N-Triples" },
+              { "mediaTypeKey": "text/turtle",           "priorityValue": "0.5",  "mediaTypeFormat": "http://www.w3.org/ns/formats/Turtle" },
+              { "mediaTypeKey": "text/n3",               "priorityValue": "0.35", "mediaTypeFormat": "http://www.w3.org/ns/formats/N3" }
             ]
           }
         }

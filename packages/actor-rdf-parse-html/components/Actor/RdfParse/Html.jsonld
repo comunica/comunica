@@ -19,8 +19,8 @@
           "defaultScoped": {
             "defaultScope": "carph:Actor/RdfParse/Html",
             "defaultScopedValue": [
-              { "mediaTypeKey": "text/html", "priorityValue": "1.0" },
-              { "mediaTypeKey": "application/xhtml+xml", "priorityValue": "0.9" }
+              { "mediaTypeKey": "text/html",             "priorityValue": "1.0", "mediaTypeFormat": "http://www.w3.org/ns/formats/HTML" },
+              { "mediaTypeKey": "application/xhtml+xml", "priorityValue": "0.9", "mediaTypeFormat": "http://www.w3.org/ns/formats/HTML" }
             ]
           }
         },

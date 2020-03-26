@@ -4,13 +4,14 @@
     {
       "caam": "npmd:@comunica/actor-abstract-mediatyped/",
       "files-caam": "caam:^1.0.0/",
-      
+
       "AbstractMediaTyped": "caam:Actor/AbstractMediaTyped",
       "AbstractMediaTypedFixed": "caam:Actor/AbstractMediaTypedFixed",
       "mediaTypeEntry": "caam:Actor/AbstractMediaTypedFixed/mediaTypeEntry",
       "mediaTypeKey": "caam:Actor/AbstractMediaTypedFixed/MediaTypeEntry/mediaType",
       "priorityValue": "caam:Actor/AbstractMediaTypedFixed/MediaTypeEntry/priority",
-      "priorityScale": "caam:Actor/AbstractMediaTypedFixed/priorityScale"
+      "priorityScale": "caam:Actor/AbstractMediaTypedFixed/priorityScale",
+      "mediaTypeFormat": "caam:Actor/AbstractMediaTypedFixed/MediaTypeEntry/format"
     }
   ]
 }

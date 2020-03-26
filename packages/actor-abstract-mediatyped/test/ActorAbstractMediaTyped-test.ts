@@ -29,6 +29,11 @@ describe('ActorAbstractMediaTyped', () => {
       return expect(actor.test({ mediaTypes: true })).resolves.toBeTruthy();
     });
 
+    it('should test for a media type format action', () => {
+      actor.testMediaTypeFormats = () => Promise.resolve(true);
+      return expect(actor.test({ mediaTypeFormats: true })).resolves.toBeTruthy();
+    });
+
     it('should test for a handle action', () => {
       actor.testHandle = () => Promise.resolve(true);
       return expect(actor.test({ handle: true, handleMediaType: 'a' })).resolves.toBeTruthy();
@@ -41,6 +46,11 @@ describe('ActorAbstractMediaTyped', () => {
     it('should run for a media type action', () => {
       actor.getMediaTypes = () => Promise.resolve(true);
       return expect(actor.run({ mediaTypes: true })).resolves.toBeTruthy();
+    });
+
+    it('should run for a media type format action', () => {
+      actor.getMediaTypeFormats = () => Promise.resolve(true);
+      return expect(actor.run({ mediaTypeFormats: true })).resolves.toBeTruthy();
     });
 
     it('should run for a handle action', () => {

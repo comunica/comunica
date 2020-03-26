@@ -28,17 +28,23 @@ describe('ActorSparqlSerializeRdf', () => {
     let actor: ActorSparqlSerializeRdf;
     let mediatorRdfSerialize;
     let mediatorMediaTypeCombiner;
+    let mediatorMediaTypeFormatCombiner;
 
     beforeEach(() => {
       mediatorRdfSerialize = {
         mediate: (arg) => Promise.resolve(arg.mediaTypes ? { mediaTypes: {
           'application/ld+json': 1.0,
           'text/turtle': 1.0,
-        } }
-          : { handle: arg.handle }),
+        } } : (
+          arg.mediaTypeFormats ? { mediaTypeFormats: {
+            'application/ld+json': 'JSON-LD',
+            'text/turtle': 'TURTLE',
+          } } : { handle: arg.handle })),
       };
       mediatorMediaTypeCombiner = mediatorRdfSerialize;
-      actor = new ActorSparqlSerializeRdf({ mediatorRdfSerialize, mediatorMediaTypeCombiner, name: 'actor', bus });
+      mediatorMediaTypeFormatCombiner = mediatorRdfSerialize;
+      actor = new ActorSparqlSerializeRdf(
+        { mediatorRdfSerialize, mediatorMediaTypeCombiner, mediatorMediaTypeFormatCombiner, name: 'actor', bus });
     });
 
     describe('for serializing', () => {
@@ -73,6 +79,19 @@ describe('ActorSparqlSerializeRdf', () => {
         return expect(actor.run({ mediaTypes: true })).resolves.toEqual({ mediaTypes: {
           'application/ld+json': 1.0,
           'text/turtle': 1.0,
+        }});
+      });
+    });
+
+    describe('for getting media type formats', () => {
+      it('should test', () => {
+        return expect(actor.test({ mediaTypeFormats: true })).resolves.toBeTruthy();
+      });
+
+      it('should run', () => {
+        return expect(actor.run({ mediaTypeFormats: true })).resolves.toEqual({ mediaTypeFormats: {
+          'application/ld+json': 'JSON-LD',
+          'text/turtle': 'TURTLE',
         }});
       });
     });

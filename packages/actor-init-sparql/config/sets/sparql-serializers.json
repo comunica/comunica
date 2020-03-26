@@ -35,6 +35,11 @@
         "@type": "MediatorCombineUnion",
         "cc:Mediator/bus": { "@id": "cbrs:Bus/RdfSerialize" },
         "cmcu:Mediator/CombineUnion/field": "mediaTypes"
+      },
+      "mediatorRdfSerializeMediaTypeFormatCombiner": {
+        "@type": "MediatorCombineUnion",
+        "cc:Mediator/bus": { "@id": "cbrs:Bus/RdfSerialize" },
+        "cmcu:Mediator/CombineUnion/field": "mediaTypeFormats"
       }
     },
     {

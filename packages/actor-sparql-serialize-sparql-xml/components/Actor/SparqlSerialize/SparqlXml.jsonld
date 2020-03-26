@@ -18,7 +18,7 @@
           "defaultScoped": {
             "defaultScope": "casssx:Actor/SparqlSerialize/SparqlXml",
             "defaultScopedValue": [
-              { "mediaTypeKey": "application/sparql-results+xml", "priorityValue": "1.0" }
+              { "mediaTypeKey": "application/sparql-results+xml", "priorityValue": "1.0", "mediaTypeFormat": "http://www.w3.org/ns/formats/SPARQL_Results_XML" }
             ]
           }
         }

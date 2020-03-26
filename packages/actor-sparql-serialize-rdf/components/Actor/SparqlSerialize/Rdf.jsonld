@@ -24,6 +24,12 @@
           "comment": "The RDF Serialize media types combiner",
           "required": true,
           "unique": true
+        },
+        {
+          "@id": "cassr:Actor/SparqlSerialize/Rdf/mediatorRdfSerializeMediaTypeFormatCombiner",
+          "comment": "The RDF Serialize media type formats combiner",
+          "required": true,
+          "unique": true
         }
       ],
       "constructorArguments": [
@@ -38,6 +44,10 @@
             {
               "keyRaw": "mediatorMediaTypeCombiner",
               "value": "cassr:Actor/SparqlSerialize/Rdf/mediatorRdfSerializeMediaTypeCombiner"
+            },
+            {
+              "keyRaw": "mediatorMediaTypeFormatCombiner",
+              "value": "cassr:Actor/SparqlSerialize/Rdf/mediatorRdfSerializeMediaTypeFormatCombiner"
             }
           ]
         }

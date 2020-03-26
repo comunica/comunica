@@ -18,7 +18,7 @@
           "defaultScoped": {
             "defaultScope": "cassj:Actor/SparqlSerialize/Json",
             "defaultScopedValue": [
-              { "mediaTypeKey": "application/json", "priorityValue": "1.0" }
+              { "mediaTypeKey": "application/json", "priorityValue": "1.0", "mediaTypeFormat": "https://comunica.linkeddatafragments.org/#results_JSON" }
             ]
           }
         }

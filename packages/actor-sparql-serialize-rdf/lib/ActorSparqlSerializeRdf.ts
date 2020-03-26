@@ -18,6 +18,8 @@ export class ActorSparqlSerializeRdf extends ActorSparqlSerialize implements IAc
     IActorOutputRootRdfSerialize>, IActionRootRdfSerialize, IActorTestRootRdfSerialize, IActorOutputRootRdfSerialize>;
   public readonly mediatorMediaTypeCombiner: Mediator<Actor<IActionRootRdfSerialize, IActorTestRootRdfSerialize,
     IActorOutputRootRdfSerialize>, IActionRootRdfSerialize, IActorTestRootRdfSerialize, IActorOutputRootRdfSerialize>;
+  public readonly mediatorMediaTypeFormatCombiner: Mediator<Actor<IActionRootRdfSerialize, IActorTestRootRdfSerialize,
+    IActorOutputRootRdfSerialize>, IActionRootRdfSerialize, IActorTestRootRdfSerialize, IActorOutputRootRdfSerialize>;
 
   constructor(args: IActorSparqlSerializeRdfArgs) {
     super(args);
@@ -55,6 +57,14 @@ export class ActorSparqlSerializeRdf extends ActorSparqlSerialize implements IAc
     return (await this.mediatorMediaTypeCombiner.mediate({ context, mediaTypes: true })).mediaTypes;
   }
 
+  public async testMediaTypeFormats(context: ActionContext): Promise<boolean> {
+    return true;
+  }
+
+  public async getMediaTypeFormats(context: ActionContext): Promise<{[id: string]: string}> {
+    return (await this.mediatorMediaTypeFormatCombiner.mediate({ context, mediaTypeFormats: true })).mediaTypeFormats;
+  }
+
 }
 
 export interface IActorSparqlSerializeRdfArgs
@@ -62,5 +72,7 @@ export interface IActorSparqlSerializeRdfArgs
   mediatorRdfSerialize: Mediator<Actor<IActionRootRdfSerialize, IActorTestRootRdfSerialize,
     IActorOutputRootRdfSerialize>, IActionRootRdfSerialize, IActorTestRootRdfSerialize, IActorOutputRootRdfSerialize>;
   mediatorMediaTypeCombiner: Mediator<Actor<IActionRootRdfSerialize, IActorTestRootRdfSerialize,
+    IActorOutputRootRdfSerialize>, IActionRootRdfSerialize, IActorTestRootRdfSerialize, IActorOutputRootRdfSerialize>;
+  mediatorMediaTypeFormatCombiner: Mediator<Actor<IActionRootRdfSerialize, IActorTestRootRdfSerialize,
     IActorOutputRootRdfSerialize>, IActionRootRdfSerialize, IActorTestRootRdfSerialize, IActorOutputRootRdfSerialize>;
 }

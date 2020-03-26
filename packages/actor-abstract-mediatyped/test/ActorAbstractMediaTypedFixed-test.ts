@@ -25,8 +25,8 @@ describe('ActorAbstractMediaTypedFixed', () => {
   });
 
   describe('An ActorAbstractMediaTypedFixed instance', () => {
-    const actor = new (<any> ActorAbstractMediaTypedFixed)({ bus, mediaTypes: { a: 0.5 }, name: 'actor',
-      priorityScale: 0.5 });
+    const actor = new (<any> ActorAbstractMediaTypedFixed)({ bus, mediaTypes: { a: 0.5 }, mediaTypeFormats: { a: 'a' },
+      name: 'actor', priorityScale: 0.5 });
     actor.testHandleChecked = () => Promise.resolve(true);
 
     it('should have a \'priorityScale\' field', () => {
@@ -51,6 +51,14 @@ describe('ActorAbstractMediaTypedFixed', () => {
 
     it('should runMediaType', () => {
       return expect(actor.getMediaTypes()).resolves.toEqual({ a: 0.25 });
+    });
+
+    it('should always testMediaTypeFormats', () => {
+      return expect(actor.testMediaTypeFormats()).resolves.toBeTruthy();
+    });
+
+    it('should runMediaTypeFormats', () => {
+      return expect(actor.getMediaTypeFormats()).resolves.toEqual({ a: 'a' });
     });
   });
 });

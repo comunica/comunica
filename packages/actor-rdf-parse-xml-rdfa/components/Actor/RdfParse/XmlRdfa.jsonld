@@ -18,9 +18,9 @@
           "defaultScoped": {
             "defaultScope": "carpxr:Actor/RdfParse/XmlRdfa",
             "defaultScopedValue": [
-              { "mediaTypeKey": "application/xml", "priorityValue": "1.0" },
-              { "mediaTypeKey": "text/xml",        "priorityValue": "1.0" },
-              { "mediaTypeKey": "image/svg+xml",   "priorityValue": "1.0" }
+              { "mediaTypeKey": "application/xml", "priorityValue": "1.0", "mediaTypeFormat": "http://www.w3.org/ns/formats/RDFa" },
+              { "mediaTypeKey": "text/xml",        "priorityValue": "1.0", "mediaTypeFormat": "http://www.w3.org/ns/formats/RDFa" },
+              { "mediaTypeKey": "image/svg+xml",   "priorityValue": "1.0", "mediaTypeFormat": "http://www.w3.org/ns/formats/RDFa" }
             ]
           }
         }

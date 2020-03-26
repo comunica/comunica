@@ -9,6 +9,10 @@ export abstract class ActorAbstractMediaTypedFixed<HI, HT, HO> extends ActorAbst
    */
   public readonly mediaTypes: {[id: string]: number};
   /**
+   * A hash of media types, with media type name as key, and its format IRI as value.
+   */
+  public readonly mediaTypeFormats: {[id: string]: string};
+  /**
    * A multiplier for media type priorities.
    * This can be used for keeping the original media types in place,
    * but scaling all of their scores with a certain value.
@@ -20,6 +24,7 @@ export abstract class ActorAbstractMediaTypedFixed<HI, HT, HO> extends ActorAbst
     const scale: number = this.priorityScale || this.priorityScale === 0 ? this.priorityScale : 1;
     this.mediaTypes = require('lodash.mapvalues')(this.mediaTypes, (priority: number) => priority * scale);
     this.mediaTypes = Object.freeze(this.mediaTypes);
+    this.mediaTypeFormats = Object.freeze(this.mediaTypeFormats);
   }
 
   public async testHandle(action: HI, mediaType: string, context: ActionContext): Promise<HT> {
@@ -44,6 +49,14 @@ export abstract class ActorAbstractMediaTypedFixed<HI, HT, HO> extends ActorAbst
 
   public async getMediaTypes(context: ActionContext): Promise<{[id: string]: number}> {
     return this.mediaTypes;
+  }
+
+  public async testMediaTypeFormats(context: ActionContext): Promise<boolean> {
+    return true;
+  }
+
+  public async getMediaTypeFormats(context: ActionContext): Promise<{[id: string]: string}> {
+    return this.mediaTypeFormats;
   }
 
 }
