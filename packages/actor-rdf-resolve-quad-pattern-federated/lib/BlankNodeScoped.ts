@@ -19,7 +19,7 @@ export class BlankNodeScoped implements RDF.BlankNode {
   }
 
   public equals(other: RDF.Term | null | undefined): boolean {
-    return other && other.termType === 'BlankNode' && other.value === this.value;
+    return !!other && other.termType === 'BlankNode' && other.value === this.value;
   }
 
 }

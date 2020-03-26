@@ -120,7 +120,7 @@ export class FederatedQuadSource implements ILazyQuadSource {
         const termSourceId = term.value.substr(FederatedQuadSource.SKOLEM_PREFIX.length, colonSeparator - FederatedQuadSource.SKOLEM_PREFIX.length);
         // We had a skolemized term
         if (termSourceId === sourceId) {
-          // It can from the correct source
+          // It came from the correct source
           const termLabel = term.value.substr(colonSeparator + 1, term.value.length);
           return DataFactory.blankNode(termLabel);
         } else {
