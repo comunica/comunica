@@ -54,6 +54,8 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
     const endpoint: string = getDataSourceValue(await DataSourceUtils.getSingleSource(action.context));
     this.lastContext = action.context;
 
+    // Determine the full SPARQL query that needs to be sent to the endpoint
+    // Also check the type of the query (SELECT, CONSTRUCT (includes DESCRIBE) or ASK)
     let query: string;
     let type: string;
     let variables: RDF.Variable[];
@@ -61,47 +63,62 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
       query = toSparql(action.operation);
       // This will throw an error in case the result is an invalid SPARQL query
       type = this.endpointFetcher.getQueryType(query);
+    } catch (e) {
+      // Ignore errors
     }
-    // This happens if the input is a partial query
-    catch (e) {
+    // If the input is an sub-query, wrap this in a SELECT
+    if (!type || type === 'UNKNOWN') {
       variables = Util.inScopeVariables(action.operation);
       query = toSparql(ActorQueryOperationSparqlEndpoint.FACTORY.createProject(action.operation, variables));
       type = 'SELECT';
     }
 
-    if (type === 'SELECT') {
+    // Execute the query against the endpoint depending on the type
+    switch (type) {
+    case 'SELECT':
       if (!variables)
         variables = Util.inScopeVariables(action.operation);
-      return this.handleOutput(endpoint, query, false, variables);
+      return this.executeQuery(endpoint, query, false, variables);
+    case 'CONSTRUCT':
+      return this.executeQuery(endpoint, query, true);
+    case 'ASK':
+      return <IActorQueryOperationOutputBoolean>{
+        type: 'boolean',
+        booleanResult: this.endpointFetcher.fetchAsk(endpoint, query),
+      };
     }
-
-    if (type === 'CONSTRUCT')
-      return this.handleOutput(endpoint, query, true);
-
-    if (type === 'ASK')
-      return <IActorQueryOperationOutputBoolean>{ type: 'boolean', booleanResult: this.endpointFetcher.fetchAsk(endpoint, query) };
-
-    throw new Error('Unsupported query type.');
   }
 
-  private handleOutput(endpoint: string, query: string, quads: boolean, variables?: RDF.Variable[]): IActorQueryOperationOutput {
+  /**
+   * Execute the given SELECT or CONSTRUCT query against the given endpoint.
+   * @param endpoint A SPARQL endpoint URL.
+   * @param query A SELECT or CONSTRUCT query.
+   * @param quads If the query returns quads, i.e., if it is a CONSTRUCT query.
+   * @param variables Variables for SELECT queries.
+   */
+  public executeQuery(endpoint: string, query: string, quads: boolean, variables?: RDF.Variable[])
+    : IActorQueryOperationOutput {
     const stream: BufferedIterator<any> = new BufferedIterator<any>(
       { autoStart: false, maxBufferSize: Infinity });
-    const inputStream: Promise<EventEmitter> = quads ? this.endpointFetcher.fetchTriples(endpoint, query) : this.endpointFetcher.fetchBindings(endpoint, query);
-    inputStream.then((rawStream) => {
-      let totalItems = 0;
-      rawStream.on('error', (error) => stream.emit('error', error));
+    const inputStream: Promise<EventEmitter> = quads
+      ? this.endpointFetcher.fetchTriples(endpoint, query)
+      : this.endpointFetcher.fetchBindings(endpoint, query);
+    inputStream
+      .then((rawStream) => {
+        let totalItems = 0;
+        rawStream.on('error', (error) => stream.emit('error', error));
 
-      rawStream.on('data', (rawData) => {
-        totalItems++;
-        stream._push(quads ? rawData : Bindings(rawData));
-      });
+        rawStream.on('data', (rawData) => {
+          totalItems++;
+          stream._push(quads ? rawData : Bindings(rawData));
+        });
 
-      rawStream.on('end', () => {
-        stream.emit('metadata', { totalItems });
-        stream.close();
-      });
-    });
+        rawStream.on('end', () => {
+          stream.emit('metadata', { totalItems });
+          stream.close();
+        });
+      })
+      .catch((error) => stream.emit('error', error));
 
     const metadata: () => Promise<{[id: string]: any}> = ActorQueryOperationSparqlEndpoint.cachifyMetadata(
       () => new Promise((resolve, reject) => {
@@ -112,8 +129,17 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
       }));
 
     if (quads)
-      return <IActorQueryOperationOutputQuads> { type: 'quads', quadStream: stream, metadata };
-    return <IActorQueryOperationOutputBindings> { type: 'bindings', bindingsStream: stream, metadata, variables: variables.map(termToString) };
+      return <IActorQueryOperationOutputQuads> {
+        type: 'quads',
+        quadStream: stream,
+        metadata,
+      };
+    return <IActorQueryOperationOutputBindings> {
+      type: 'bindings',
+      bindingsStream: stream,
+      metadata,
+      variables: variables.map(termToString),
+    };
   }
 
 }
