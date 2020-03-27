@@ -40,7 +40,6 @@ export class ActorRdfParseJsonLd extends ActorRdfParseFixedMediaTypes {
 
     // Parse the JSON-LD
     const quads: RDF.Stream = <any> new JsonLdParser({
-      allowOutOfOrderContext: true,
       baseIRI: action.baseIRI,
       context,
       documentLoader: new DocumentLoaderMediated(this.mediatorHttp, actionContext),

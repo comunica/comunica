@@ -1,6 +1,6 @@
 import {ActorHttp, IActionHttp, IActorHttpOutput} from "@comunica/bus-http";
 import {ActionContext, Actor, IActorTest, Mediator} from "@comunica/core";
-import {IDocumentLoader, IJsonLdContextNormalized} from "jsonld-context-parser";
+import {IDocumentLoader, IJsonLdContext} from "jsonld-context-parser";
 import * as stringifyStream from "stream-to-string";
 
 /**
@@ -19,7 +19,7 @@ export class DocumentLoaderMediated implements IDocumentLoader {
     this.context = context;
   }
 
-  public async load(url: string): Promise<IJsonLdContextNormalized> {
+  public async load(url: string): Promise<IJsonLdContext> {
     const response = await this.mediatorHttp.mediate(
       { input: url, init: { headers: new Headers({ accept: 'application/ld+json' }) }, context: this.context });
     if (response.ok) {
