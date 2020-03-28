@@ -28,7 +28,7 @@ export class ActorRdfParseHtmlScript extends ActorRdfParseHtml {
     const supportedTypes: {[id: string]: number} = (await this.mediatorRdfParseMediatypes
       .mediate({ context: action.context, mediaTypes: true })).mediaTypes;
     const htmlParseListener = new HtmlScriptListener(this.mediatorRdfParseHandle, action.emit, action.error, action.end,
-      supportedTypes, action.context, action.baseIRI);
+      supportedTypes, action.context, action.baseIRI, action.headers);
     return { htmlParseListener };
   }
 }

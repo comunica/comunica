@@ -19,6 +19,7 @@ export class HtmlScriptListener implements IHtmlParseListener {
   private readonly supportedTypes: {[id: string]: number};
   private readonly context: ActionContext;
   private baseIRI: string;
+  private readonly headers: Headers;
   private readonly onlyFirstScript: boolean;
   private readonly targetScriptId: string | null;
 
@@ -32,7 +33,7 @@ export class HtmlScriptListener implements IHtmlParseListener {
   constructor(mediatorRdfParseHandle: Mediator<Actor<IActionRootRdfParse, IActorTestRootRdfParse,
                 IActorOutputRootRdfParse>, IActionRootRdfParse, IActorTestRootRdfParse, IActorOutputRootRdfParse>,
               cbQuad: (quad: RDF.Quad) => void, cbError: (error: Error) => void, cbEnd: () => void,
-              supportedTypes: {[id: string]: number}, context: ActionContext, baseIRI: string) {
+              supportedTypes: {[id: string]: number}, context: ActionContext, baseIRI: string, headers: Headers) {
     this.mediatorRdfParseHandle = mediatorRdfParseHandle;
     this.cbQuad = cbQuad;
     this.cbError = cbError;
@@ -40,6 +41,7 @@ export class HtmlScriptListener implements IHtmlParseListener {
     this.supportedTypes = supportedTypes;
     this.context = context;
     this.baseIRI = baseIRI;
+    this.headers = headers;
     this.onlyFirstScript = context && context.get('extractAllScripts') === false;
     const fragmentPos = this.baseIRI.indexOf('#');
     this.targetScriptId = fragmentPos > 0 ? this.baseIRI.substr(fragmentPos + 1, this.baseIRI.length) : null;
@@ -93,7 +95,7 @@ export class HtmlScriptListener implements IHtmlParseListener {
         // Send all collected text to parser
         const parseAction = {
           context: this.context,
-          handle: { baseIRI: this.baseIRI, input: textStream },
+          handle: { baseIRI: this.baseIRI, input: textStream, headers: this.headers },
           handleMediaType: this.handleMediaType,
         };
         this.mediatorRdfParseHandle.mediate(parseAction)
