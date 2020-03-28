@@ -147,6 +147,11 @@ describe('ActorRdfParseJsonLd', () => {
           .resolves.toBeTruthy();
       });
 
+      it('should test on bla+json', () => {
+        return expect(actor.test({ handle: { input, baseIRI: '' }, handleMediaType: 'bla+json' }))
+          .resolves.toBeTruthy();
+      });
+
       it('should not test on N-Triples', () => {
         return expect(actor.test({ handle: { input, baseIRI: '' }, handleMediaType: 'application/n-triples' }))
           .rejects.toBeTruthy();
@@ -191,6 +196,16 @@ describe('ActorRdfParseJsonLd', () => {
         const headers = new Headers({ Link: '<http://example.org/>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' });
         return actor.run(
           { handle: { input: inputLinkHeader, baseIRI: '', headers }, handleMediaType: 'application/json' })
+          .then(async (output) => expect(await arrayifyStream(output.handle.quads)).toEqualRdfQuadArray([
+            quad('http://www.example.org/', 'http://example.org/term', '"value"'),
+          ]));
+      });
+
+      it('should run for a doc with JSON extension type with a context link header', () => {
+        // tslint:disable-next-line:max-line-length
+        const headers = new Headers({ Link: '<http://example.org/>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' });
+        return actor.run(
+          { handle: { input: inputLinkHeader, baseIRI: '', headers }, handleMediaType: 'bla+json' })
           .then(async (output) => expect(await arrayifyStream(output.handle.quads)).toEqualRdfQuadArray([
             quad('http://www.example.org/', 'http://example.org/term', '"value"'),
           ]));

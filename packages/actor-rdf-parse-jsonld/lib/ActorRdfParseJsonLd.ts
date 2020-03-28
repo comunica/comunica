@@ -28,6 +28,13 @@ export class ActorRdfParseJsonLd extends ActorRdfParseFixedMediaTypes {
     return error;
   }
 
+  public async testHandle(action: IActionRdfParse, mediaType: string, context: ActionContext): Promise<IActorTest> {
+    if (!(mediaType in this.mediaTypes) && !mediaType.endsWith('+json')) {
+      throw new Error('Unrecognized media type: ' + mediaType);
+    }
+    return await this.testHandleChecked(action);
+  }
+
   public async runHandle(action: IActionRdfParse, mediaType: string, actionContext: ActionContext)
     : Promise<IActorRdfParseOutput> {
     // Try to extract a JSON-LD context link header (https://w3c.github.io/json-ld-syntax/#interpreting-json-as-json-ld)
