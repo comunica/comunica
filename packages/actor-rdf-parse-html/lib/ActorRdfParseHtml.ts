@@ -66,24 +66,40 @@ export class ActorRdfParseHtml extends ActorRdfParseFixedMediaTypes {
           // Create parser
           const parser = new HtmlParser({
             onclosetag: () => {
-              for (const htmlParseListener of htmlParseListeners) {
-                htmlParseListener.onTagClose();
+              try {
+                for (const htmlParseListener of htmlParseListeners) {
+                  htmlParseListener.onTagClose();
+                }
+              } catch (e) {
+                error(e);
               }
             },
             onend: () => {
-              for (const htmlParseListener of htmlParseListeners) {
-                htmlParseListener.onEnd();
+              try {
+                for (const htmlParseListener of htmlParseListeners) {
+                  htmlParseListener.onEnd();
+                }
+              } catch (e) {
+                error(e);
               }
               end();
             },
             onopentag: (name: string, attributes: {[s: string]: string}) => {
-              for (const htmlParseListener of htmlParseListeners) {
-                htmlParseListener.onTagOpen(name, attributes);
+              try {
+                for (const htmlParseListener of htmlParseListeners) {
+                  htmlParseListener.onTagOpen(name, attributes);
+                }
+              } catch (e) {
+                error(e);
               }
             },
             ontext: (data: string) => {
-              for (const htmlParseListener of htmlParseListeners) {
-                htmlParseListener.onText(data);
+              try {
+                for (const htmlParseListener of htmlParseListeners) {
+                  htmlParseListener.onText(data);
+                }
+              } catch (e) {
+                error(e);
               }
             },
           }, {

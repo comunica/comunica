@@ -45,6 +45,7 @@ describe('ActorRdfParseHtml', () => {
     let inputScript: Readable;
     let inputScriptError: Readable;
     let inputScriptRdfa: Readable;
+    let inputSimple: Readable;
     let context;
 
     beforeEach(() => {
@@ -74,6 +75,8 @@ describe('ActorRdfParseHtml', () => {
             "http://example.org/d": "http://example.org/e"
         }</script>
         </body>`);
+      inputSimple = stringToStream(
+        `<strong>Hi!</strong>`);
       context = ActionContext({});
     });
 
@@ -202,6 +205,94 @@ describe('ActorRdfParseHtml', () => {
             quad('http://example.org/a', 'http://example.org/b', '"http://example.org/c"'),
             quad('http://example.org/a', 'http://example.org/d', '"http://example.org/e"'),
           ]);
+      });
+    });
+
+    describe('run with a listener error on end', () => {
+      beforeEach(() => {
+        busRdfParseHtml.subscribe(<any> {
+          test: () => true,
+          run: () => ({
+            htmlParseListener: {
+              onEnd: () => { throw new Error('ERROR END'); },
+              onTagClose: () => { return; },
+              onTagOpen: () => { return; },
+              onText: () => { return; },
+            }
+          }),
+        });
+      });
+
+      it('should emit an error in the quad stream', async () => {
+        return expect(arrayifyStream((await actor.run(
+          { context, handle: { input: inputSimple, baseIRI: 'http://ex.org/' }, handleMediaType: 'text/html' }))
+          .handle.quads)).rejects.toThrow(new Error('ERROR END'));
+      });
+    });
+
+    describe('run with a listener error on close tag', () => {
+      beforeEach(() => {
+        busRdfParseHtml.subscribe(<any> {
+          test: () => true,
+          run: () => ({
+            htmlParseListener: {
+              onEnd: () => { return; },
+              onTagClose: () => { throw new Error('ERROR CLOSE'); },
+              onTagOpen: () => { return; },
+              onText: () => { return; },
+            }
+          }),
+        });
+      });
+
+      it('should emit an error in the quad stream', async () => {
+        return expect(arrayifyStream((await actor.run(
+          { context, handle: { input: inputSimple, baseIRI: 'http://ex.org/' }, handleMediaType: 'text/html' }))
+          .handle.quads)).rejects.toThrow(new Error('ERROR CLOSE'));
+      });
+    });
+
+    describe('run with a listener error on open tag', () => {
+      beforeEach(() => {
+        busRdfParseHtml.subscribe(<any> {
+          test: () => true,
+          run: () => ({
+            htmlParseListener: {
+              onEnd: () => { return; },
+              onTagClose: () => { return; },
+              onTagOpen: () => { throw new Error('ERROR OPEN'); },
+              onText: () => { return; },
+            }
+          }),
+        });
+      });
+
+      it('should emit an error in the quad stream', async () => {
+        return expect(arrayifyStream((await actor.run(
+          { context, handle: { input: inputSimple, baseIRI: 'http://ex.org/' }, handleMediaType: 'text/html' }))
+          .handle.quads)).rejects.toThrow(new Error('ERROR OPEN'));
+      });
+    });
+
+    describe('run with a listener error on text', () => {
+      beforeEach(() => {
+        busRdfParseHtml.subscribe(<any> {
+          test: () => true,
+          run: () => ({
+            htmlParseListener: {
+              onEnd: () => { return; },
+              onTagClose: () => { return; },
+              onTagOpen: () => { return; },
+              onText: () => { throw new Error('ERROR TEXT'); },
+            }
+          }),
+        });
+      });
+
+      it('should emit an error in the quad stream', async () => {
+        return expect(arrayifyStream((await actor.run(
+          { context, handle: { input: inputSimple, baseIRI: 'http://ex.org/' }, handleMediaType: 'text/html' }))
+          .handle.quads)).rejects.toThrow(new Error('ERROR TEXT'));
       });
     });
   });
