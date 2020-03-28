@@ -22,19 +22,33 @@ export class ActorRdfParseJsonLd extends ActorRdfParseFixedMediaTypes {
     super(args);
   }
 
+  public static newErrorCoded(message: string, code: string) {
+    const error = new Error(message);
+    (<any> error).code = code;
+    return error;
+  }
+
   public async runHandle(action: IActionRdfParse, mediaType: string, actionContext: ActionContext)
     : Promise<IActorRdfParseOutput> {
     // Try to extract a JSON-LD context link header (https://w3c.github.io/json-ld-syntax/#interpreting-json-as-json-ld)
     let context: JsonLdContext;
-    if (mediaType !== 'application/ld+json' && action.headers && action.headers.has('Link')) {
-      const linkHeader = parseLinkHeader(action.headers.get('Link'));
-      for (const link of linkHeader.get('rel', 'http://www.w3.org/ns/json-ld#context')) {
-        if (link.type === 'application/ld+json') {
-          if (context) {
-            throw new Error('Multiple JSON-LD context link headers were found on ' + action.baseIRI);
+    if (mediaType !== 'application/ld+json') {
+      if (action.headers && action.headers.has('Link')) {
+        const linkHeader = parseLinkHeader(action.headers.get('Link'));
+        for (const link of linkHeader.get('rel', 'http://www.w3.org/ns/json-ld#context')) {
+          if (link.type === 'application/ld+json') {
+            if (context) {
+              throw ActorRdfParseJsonLd.newErrorCoded(
+                'Multiple JSON-LD context link headers were found on ' + action.baseIRI,
+                'multiple context link headers');
+            }
+            context = link.uri;
           }
-          context = link.uri;
         }
+      }
+      if (!context) {
+        throw ActorRdfParseJsonLd.newErrorCoded(`Missing context link header for media type ${mediaType} on ${action.baseIRI}`,
+          'loading document failed');
       }
     }
 
