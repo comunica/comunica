@@ -211,12 +211,14 @@ describe('ActorRdfParseJsonLd', () => {
           ]));
       });
 
-      it('should error on a JSON doc with a context link header of invalid type', () => {
+      it('should error on a JSON doc with a context link header without type', () => {
         // tslint:disable-next-line:max-line-length
-        const headers = new Headers({ Link: '<http://example.org/>; rel="http://www.w3.org/ns/json-ld#context"; type="invalid"' });
-        return expect(actor.run(
-          { handle: { input: inputLinkHeader, baseIRI: 'IRI', headers }, handleMediaType: 'application/json' })).rejects
-            .toThrow(new Error('Missing context link header for media type application/json on IRI'));
+        const headers = new Headers({ Link: '<http://example.org/>; rel="http://www.w3.org/ns/json-ld#context"' });
+        return actor.run(
+          { handle: { input: inputLinkHeader, baseIRI: '', headers }, handleMediaType: 'bla+json' })
+          .then(async (output) => expect(await arrayifyStream(output.handle.quads)).toEqualRdfQuadArray([
+            quad('http://www.example.org/', 'http://example.org/term', '"value"'),
+          ]));
       });
 
       it('should error on a JSON doc without a context link header', () => {
