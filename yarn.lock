@@ -7980,10 +7980,10 @@ rdf-terms@^1.4.0, rdf-terms@^1.5.1:
     "@rdfjs/data-model" "^1.1.1"
     lodash.uniqwith "^4.5.0"
 
-rdf-test-suite-ldf@^1.1.4:
-  version "1.1.4"
-  resolved "https://registry.yarnpkg.com/rdf-test-suite-ldf/-/rdf-test-suite-ldf-1.1.4.tgz#5e4d03f70715846e01a3cb329f4f959e0549d488"
-  integrity sha512-dfYVZMtaxrkG9DuYKCod5s9Hmyd+JBxdathZ1F9Vk9kUk7IjtVTwViN0696OB0m0KjgqfOyfK3d5y/H2apCyBA==
+rdf-test-suite-ldf@^1.1.5:
+  version "1.1.5"
+  resolved "https://registry.yarnpkg.com/rdf-test-suite-ldf/-/rdf-test-suite-ldf-1.1.5.tgz#981ce32bbb5773eafad212eb9cb075d775211024"
+  integrity sha512-PGq0dMci9NY8YL3du3C8jyliiNKk10/QioJlCJaLCZNcZK6rxWp3B7uQSUdzliDz0Re4BiAF/K3EKi1Dh7NHZw==
   dependencies:
     "@types/fs-extra" "^8.0.0"
     "@types/node-fetch" "^2.5.0"
@@ -7993,12 +7993,12 @@ rdf-test-suite-ldf@^1.1.4:
     n3 "^1.1.1"
     rdf-parse "^1.1.0"
     rdf-store-stream "^1.0.0"
-    rdf-test-suite "^1.10.5"
+    rdf-test-suite "^1.12.0"
     tcp-port-used "^1.0.1"
     url-exists "^1.0.3"
     winston "^3.2.1"
 
-rdf-test-suite@^1.10.5, rdf-test-suite@^1.12.0:
+rdf-test-suite@^1.12.0:
   version "1.12.0"
   resolved "https://registry.yarnpkg.com/rdf-test-suite/-/rdf-test-suite-1.12.0.tgz#9b1bddf1111b685679ac1ca085350f2ffff7610d"
   integrity sha512-YqWVo72RbhfdSuU/cNyVSE2buLhRhWjKa9pUqhYu08KhWBnFovX5lnWfc2aOCKLMHdE6qV9j+jQ82gHg62FfGQ==
