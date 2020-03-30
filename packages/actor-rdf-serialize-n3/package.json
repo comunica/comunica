@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-serialize-n3",
-  "version": "1.9.2",
+  "version": "1.11.0",
   "description": "A n3 rdf-serialize actor",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-serialize-n3",
   "lsd:components": "components/components.jsonld",
@@ -43,7 +43,7 @@
     "@comunica/core": "^1.0.0"
   },
   "devDependencies": {
-    "@comunica/bus-rdf-serialize": "^1.9.2",
+    "@comunica/bus-rdf-serialize": "^1.11.0",
     "@comunica/core": "^1.9.2"
   },
   "jest": {

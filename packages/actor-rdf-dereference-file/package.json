@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-dereference-file",
-  "version": "1.9.3",
+  "version": "1.11.0",
   "description": "A file rdf-dereference actor",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-dereference-file",
   "lsd:components": "components/components.jsonld",
@@ -41,7 +41,7 @@
   },
   "devDependencies": {
     "@comunica/bus-rdf-dereference": "^1.9.3",
-    "@comunica/bus-rdf-parse": "^1.9.2",
+    "@comunica/bus-rdf-parse": "^1.11.0",
     "@comunica/core": "^1.9.2"
   },
   "jest": {

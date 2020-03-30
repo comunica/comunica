@@ -1,6 +1,27 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v1.11.0"></a>
+## [v1.11.0](https://github.com/comunica/comunica/compare/v1.10.0...v1.11.0) - 2020-03-30
+
+### Added
+* [Add more efficient optional actor](https://github.com/comunica/comunica/commit/6b8d0c64250bafaca8399e82c6fa2d32524e950e)
+* [Expose SPARQL service description in HTTP tool, Closes #219](https://github.com/comunica/comunica/commit/fe0770c5a6fba235004d8d300957bcdb5f6c3650)
+
+### Changed
+* [Optimize default graph handling in QPF sources](https://github.com/comunica/comunica/commit/6d1ac14b52076feb3da737c96fac7d424a691288)
+* [Scope blank nodes to each federated source](https://github.com/comunica/comunica/commit/cb7b9b23fc3e7891febad401d26019e23a616cc8)
+
+### Fixed
+* [Fix application aborting on some optional queries](https://github.com/comunica/comunica/commit/c7a6d0d7f2ecf28f1e38f142a1245cbaebe19b1c)
+* [Use xsd:dateTime format (ISO 8601) for NOW](https://github.com/comunica/comunica/commit/a422b6c1e1e4fd4f2dadea68ad02bfbe06644147)
+* Fix several issues with SPARQL endpoints:
+    * [Fix crash when slicing construct queries](https://github.com/comunica/comunica/commit/1564acfeea8f199a61122f18cda8e60312b6a163)
+    * [Fix only SELECT queries being handleable by SPARQL endpoints](https://github.com/comunica/comunica/commit/0688c7c2dea85550a6da97c1d7222a6026943951)
+    * [Fix SPARQL endpoint detection failing when SD uses blank node subjects #619](https://github.com/comunica/comunica/commit/256815fa4d345788ed2007909a6a906790dc30eb)
+    * [Fix SPARQL endpoint detection failing for relative IRIs #619](https://github.com/comunica/comunica/commit/8181249107b856327b890d3fa5c4c84bd43613c8)
+    * [Consider sources ending with '/sparql' as SPARQL endpoints, Closes #535](https://github.com/comunica/comunica/commit/5c39a00ab3da90bb06c5946c83b93a3fac36f01a)
+
 <a name="v1.10.0"></a>
 ## [v1.10.0](https://github.com/comunica/comunica/compare/v1.9.4...v1.10.0) - 2019-12-12
 

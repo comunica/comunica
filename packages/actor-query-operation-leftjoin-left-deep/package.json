@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-operation-leftjoin-left-deep",
-  "version": "1.0.0",
+  "version": "1.11.0",
   "description": "A leftjoin-left-deep query-operation actor",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-leftjoin-left-deep",
   "lsd:components": "components/components.jsonld",
@@ -35,12 +35,12 @@
     "index.js"
   ],
   "peerDependencies": {
-    "@comunica/core": "^1.9.2",
-    "@comunica/bus-query-operation": "^1.9.3"
+    "@comunica/bus-query-operation": "^1.9.3",
+    "@comunica/core": "^1.9.2"
   },
   "devDependencies": {
-    "@comunica/core": "^1.9.2",
-    "@comunica/bus-query-operation": "^1.9.3"
+    "@comunica/bus-query-operation": "^1.9.3",
+    "@comunica/core": "^1.9.2"
   },
   "jest": {
     "globals": {

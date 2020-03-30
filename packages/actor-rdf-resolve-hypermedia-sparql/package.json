@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-resolve-hypermedia-sparql",
-  "version": "1.10.0",
+  "version": "1.11.0",
   "description": "A sparql rdf-resolve-hypermedia actor",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-resolve-hypermedia-sparql",
   "lsd:components": "components/components.jsonld",

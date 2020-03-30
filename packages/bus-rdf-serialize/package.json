@@ -1,6 +1,6 @@
 {
   "name": "@comunica/bus-rdf-serialize",
-  "version": "1.9.2",
+  "version": "1.11.0",
   "description": "A comunica bus for rdf-serialize events.",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-serialize",
   "lsd:components": "components/components.jsonld",
@@ -40,7 +40,7 @@
     "@comunica/core": "^1.9.2"
   },
   "dependencies": {
-    "@comunica/actor-abstract-mediatyped": "^1.9.2"
+    "@comunica/actor-abstract-mediatyped": "^1.11.0"
   },
   "jest": {
     "globals": {

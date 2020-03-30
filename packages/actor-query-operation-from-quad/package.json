@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-operation-from-quad",
-  "version": "1.9.3",
+  "version": "1.11.0",
   "description": "A from query-operation actor",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-from-quad",
   "lsd:components": "components/components.jsonld",
