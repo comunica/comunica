@@ -2,13 +2,12 @@ import {ProxyHandlerStatic} from "@comunica/actor-http-proxy";
 import {ActorInit} from "@comunica/bus-init";
 import {Bindings, KEY_CONTEXT_QUERY_TIMESTAMP} from "@comunica/bus-query-operation";
 import {Bus, KEY_CONTEXT_LOG} from "@comunica/core";
-import {literal, namedNode, variable} from "@rdfjs/data-model";
-import {Factory, translate} from "sparqlalgebrajs";
+import {literal, variable} from "@rdfjs/data-model";
+import {translate} from "sparqlalgebrajs";
 import {PassThrough, Readable} from "stream";
 import {ActorInitSparql} from "../lib/ActorInitSparql";
 import {ActorInitSparql as ActorInitSparqlBrowser, KEY_CONTEXT_QUERYFORMAT} from "../lib/ActorInitSparql-browser";
-
-const FACTORY: Factory = new Factory();
+import Factory from "sparqlalgebrajs/lib/factory";
 
 describe('ActorInitSparqlBrowser', () => {
   it('should not allow invoking its run method', () => {
@@ -69,88 +68,6 @@ describe('ActorInitSparql', () => {
     });
   });
 
-  describe('#applyInitialBindings', () => {
-    it('should filter out project variables that are defined', () => {
-      const input = FACTORY.createProject(FACTORY.createBgp([
-        FACTORY.createPattern(namedNode('s'), namedNode('p'), namedNode('o'), namedNode('g')),
-      ]), [ variable('a'), variable('b'), variable('c') ]);
-      expect(ActorInitSparql.applyInitialBindings(input, Bindings({ '?b': literal('bl') }))).toEqual(
-        FACTORY.createProject(FACTORY.createBgp([
-          FACTORY.createPattern(namedNode('s'), namedNode('p'), namedNode('o'), namedNode('g')),
-        ]), [ variable('a'), variable('c') ]),
-      );
-    });
-
-    it('should not change a BGP without variables', () => {
-      const input = FACTORY.createBgp([
-        FACTORY.createPattern(namedNode('s'), namedNode('p'), namedNode('o'), namedNode('g')),
-      ]);
-      expect(ActorInitSparql.applyInitialBindings(input, Bindings({}))).toEqual(input);
-    });
-
-    it('should not change a BGP with unbound variables', () => {
-      const input = FACTORY.createBgp([
-        FACTORY.createPattern(variable('s'), variable('p'), variable('o'), variable('g')),
-      ]);
-      expect(ActorInitSparql.applyInitialBindings(input, Bindings({
-        '?g1': literal('gl'),
-        '?o1': literal('ol'),
-        '?p1': literal('pl'),
-        '?s1': literal('sl'),
-      }))).toEqual(input);
-    });
-
-    it('should change a BGP with bound variables', () => {
-      const input = FACTORY.createBgp([
-        FACTORY.createPattern(variable('s'), variable('p'), variable('o'), variable('g')),
-      ]);
-      expect(ActorInitSparql.applyInitialBindings(input, Bindings({
-        '?g': literal('gl'),
-        '?o': literal('ol'),
-        '?p': literal('pl'),
-        '?s': literal('sl'),
-      }))).toEqual(FACTORY.createBgp([
-        FACTORY.createPattern(literal('sl'), literal('pl'), literal('ol'), literal('gl')),
-      ]));
-    });
-
-    it('should not change a path expression without bound variables', () => {
-      const input = FACTORY.createPath(variable('s'), FACTORY.createNps([namedNode('p')]),
-        variable('o'), variable('g'));
-      expect(ActorInitSparql.applyInitialBindings(input, Bindings({
-        '?g1': literal('gl'),
-        '?o1': literal('ol'),
-        '?p1': literal('pl'),
-        '?s1': literal('sl'),
-      }))).toEqual(FACTORY.createPath(variable('s'), FACTORY.createNps([namedNode('p')]),
-        variable('o'), variable('g')));
-    });
-
-    it('should change a path expression with bound variables', () => {
-      const input = FACTORY.createPath(variable('s'), FACTORY.createNps([namedNode('p')]),
-        variable('o'), variable('g'));
-      expect(ActorInitSparql.applyInitialBindings(input, Bindings({
-        '?g': literal('gl'),
-        '?o': literal('ol'),
-        '?p': literal('pl'),
-        '?s': literal('sl'),
-      }))).toEqual(FACTORY.createPath(literal('sl'), FACTORY.createNps([namedNode('p')]),
-        literal('ol'), literal('gl')));
-    });
-
-    it('should correctly map describe operations', () => {
-      const input = FACTORY.createDescribe(FACTORY.createBgp([
-        FACTORY.createPattern(namedNode('s'), namedNode('p'), namedNode('o'), namedNode('g')),
-      ]), [ namedNode('a'), namedNode('b') ]);
-      expect(ActorInitSparql.applyInitialBindings(input, Bindings({}))).toEqual(input);
-    });
-
-    it('should correctly map values operations', () => {
-      const input = FACTORY.createValues([ variable('a') ], [{ '?a': namedNode('b') }]);
-      expect(ActorInitSparql.applyInitialBindings(input, Bindings({}))).toEqual(input);
-    });
-  });
-
   describe('An ActorInitSparql instance', () => {
     const hypermedia: string = "http://example.org/";
     const hypermedia2: string = "hypermedia@http://example.org/";
@@ -168,12 +85,24 @@ describe('ActorInitSparql', () => {
         input.push({ a: 'triple' });
         input.push(null);
       };
+      const factory = new Factory();
       mediatorQueryOperation.mediate = (action) => action.operation.query !== 'INVALID'
         ? Promise.resolve({ bindingsStream: input }) : Promise.reject(new Error('a'));
-      mediatorSparqlParse.mediate = (action) => Promise.resolve({
-        baseIRI: action.query.indexOf('BASE') >= 0 ? 'myBaseIRI' : null,
-        operation: action,
-      });
+      mediatorSparqlParse.mediate = (action) => action.query === 'INVALID'
+        ? Promise.resolve(action.query)
+        : Promise.resolve({
+          baseIRI: action.query.indexOf('BASE') >= 0 ? 'myBaseIRI' : null,
+          operation: factory.createProject(
+            factory.createBgp([
+              factory.createPattern(variable('s'), variable('p'), variable('o')),
+            ]),
+            [
+              variable('s'),
+              variable('p'),
+              variable('o')
+            ]
+          ),
+        });
       const defaultQueryInputFormat = 'sparql';
       actor = new ActorInitSparql(
         { bus, contextKeyShortcuts, defaultQueryInputFormat, logger, mediatorContextPreprocess,

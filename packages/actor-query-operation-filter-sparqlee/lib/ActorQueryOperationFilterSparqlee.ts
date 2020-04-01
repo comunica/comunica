@@ -1,14 +1,14 @@
-import * as RDF from 'rdf-js';
-import { termToString } from 'rdf-string';
-import { Algebra, Factory, Util } from "sparqlalgebrajs";
-import { AsyncEvaluator, isExpressionError } from "sparqlee";
-
+import {Algebra} from "sparqlalgebrajs";
+import {AsyncEvaluator, isExpressionError} from "sparqlee";
 import {
-  ActorQueryOperation, ActorQueryOperationTypedMediated, Bindings,
+  ActorQueryOperation,
+  ActorQueryOperationTypedMediated,
+  Bindings,
   IActorQueryOperationOutputBindings,
   IActorQueryOperationTypedMediatedArgs,
+  materializeOperation,
 } from "@comunica/bus-query-operation";
-import { ActionContext, IActorTest } from "@comunica/core";
+import {ActionContext, IActorTest} from "@comunica/core";
 
 /**
  * A comunica Filter Sparqlee Query Operation Actor.
@@ -62,7 +62,7 @@ export class ActorQueryOperationFilterSparqlee extends ActorQueryOperationTypedM
   private createExistenceResolver(context: ActionContext):
     (expr: Algebra.ExistenceExpression, bindings: Bindings) => Promise<boolean> {
     return async (expr, bindings) => {
-      const operation = this.substitute(expr.input, bindings);
+      const operation = materializeOperation(expr.input, bindings);
 
       const outputRaw = await this.mediatorQueryOperation.mediate({ operation, context });
       const output = ActorQueryOperation.getSafeBindings(outputRaw);
@@ -84,37 +84,4 @@ export class ActorQueryOperationFilterSparqlee extends ActorQueryOperationTypedM
     };
   }
 
-  private substitute(operation: Algebra.Operation, bindings: Bindings): Algebra.Operation {
-    return Util.mapOperation(operation, {
-      path: (op: Algebra.Path, factory: Factory) => {
-        return {
-          recurse: false,
-          result: factory.createPath(
-            this.substituteSingle(op.subject, bindings),
-            op.predicate,
-            this.substituteSingle(op.object, bindings),
-            this.substituteSingle(op.graph, bindings),
-          ),
-        };
-      },
-      pattern: (op: Algebra.Pattern, factory: Factory) => {
-        return {
-          recurse: false,
-          result: factory.createPattern(
-            this.substituteSingle(op.subject, bindings),
-            this.substituteSingle(op.predicate, bindings),
-            this.substituteSingle(op.object, bindings),
-            this.substituteSingle(op.graph, bindings),
-          ),
-        };
-      },
-    });
-  }
-
-  private substituteSingle(term: RDF.Term, bindings: Bindings): RDF.Term {
-    if (term.termType === 'Variable') {
-      return bindings.get(termToString(term), term);
-    }
-    return term;
-  }
 }
