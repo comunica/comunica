@@ -21,11 +21,32 @@
               { "mediaTypeKey": "stats", "priorityValue": "1.0", "mediaTypeFormat": "https://comunica.linkeddatafragments.org/#results_stats" }
             ]
           }
+        },
+        {
+          "@id": "cassst:Actor/SparqlSerialize/Stats/httpObserver",
+          "comment": "Observes HTTP actions, and maintains a counter of the number of requests.",
+          "range": "cassst:ActionObserver/Http/Stats",
+          "required": true,
+          "unique": true,
+          "defaultScoped": {
+            "defaultScope": "cassst:Actor/SparqlSerialize/Stats",
+            "defaultScopedValue": {
+              "@id": "cassst:Actor/SparqlSerialize/Stats/httpObserver/default",
+              "@type": "cassst:ActionObserver/Http/Stats"
+            }
+          }
         }
       ],
       "constructorArguments": [
         {
-          "extends": "cbss:Actor/SparqlSerializeFixedMediaTypes/constructorArgumentsObject"
+          "@id": "cassst:Actor/SparqlSerialize/Stats/constructorArgumentsObject",
+          "extends": "cbss:Actor/SparqlSerializeFixedMediaTypes/constructorArgumentsObject",
+          "fields": [
+            {
+              "keyRaw": "httpObserver",
+              "value": "cassst:Actor/SparqlSerialize/Stats/httpObserver"
+            }
+          ]
         }
       ]
     }

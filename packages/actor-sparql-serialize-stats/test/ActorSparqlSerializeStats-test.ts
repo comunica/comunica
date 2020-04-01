@@ -4,6 +4,7 @@ import {namedNode} from "@rdfjs/data-model";
 import {ArrayIterator} from "asynciterator";
 import {Readable} from "stream";
 import {ActorSparqlSerializeStats} from "../lib/ActorSparqlSerializeStats";
+import {ActionObserverHttp} from "..";
 
 const quad = require('rdf-quad');
 const stringifyStream = require('stream-to-string');
@@ -30,15 +31,25 @@ describe('ActorSparqlSerializeStats', () => {
   });
 
   describe('An ActorSparqlSerializeStats instance', () => {
+    let httpObserver: ActionObserverHttp;
     let actor: ActorSparqlSerializeStats;
     let bindingsStream: BindingsStream;
     let quadStream;
     let streamError;
 
     beforeEach(() => {
-      actor = new ActorSparqlSerializeStats({ bus, mediaTypes: {
-        debug: 1.0,
-      }, name: 'actor'});
+      httpObserver = new ActionObserverHttp({
+        name: 'observer',
+        bus,
+      });
+      actor = new ActorSparqlSerializeStats({
+        bus,
+        mediaTypes: {
+          debug: 1.0,
+        },
+        name: 'actor',
+        httpObserver,
+      });
 
       bindingsStream = new ArrayIterator([
         Bindings({ k1: namedNode('v1'), k2: null }),
@@ -91,15 +102,27 @@ describe('ActorSparqlSerializeStats', () => {
         .rejects.toBeTruthy();
       });
 
-      // tslint:disable:no-trailing-whitespace
       it('should run on a bindings stream', async () => {
         return expect((await stringifyStream((await actor.run(
         {handle: <any> { type: 'bindings', bindingsStream }, handleMediaType: 'debug'})
         ).handle.data))).toEqual(
-        `Result,Delay (ms)
-1,3.14
-2,3.14
-TOTAL,3.14
+        `Result,Delay (ms),HTTP requests
+1,3.14,0
+2,3.14,0
+TOTAL,3.14,0
+`);
+      });
+
+      it('should run on a bindings stream with http requests', async () => {
+        httpObserver.onRun(null, null, null);
+        httpObserver.onRun(null, null, null);
+        return expect((await stringifyStream((await actor.run(
+            {handle: <any> { type: 'bindings', bindingsStream }, handleMediaType: 'debug'})
+        ).handle.data))).toEqual(
+          `Result,Delay (ms),HTTP requests
+1,3.14,2
+2,3.14,2
+TOTAL,3.14,2
 `);
       });
 
@@ -107,10 +130,10 @@ TOTAL,3.14
         return expect((await stringifyStream((await actor.run(
           { handle: <any> { type: 'quads', quadStream },
             handleMediaType: 'debug' })).handle.data))).toEqual(
-        `Result,Delay (ms)
-1,3.14
-2,3.14
-TOTAL,3.14
+        `Result,Delay (ms),HTTP requests
+1,3.14,0
+2,3.14,0
+TOTAL,3.14,0
 `);
       });
 

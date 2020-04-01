@@ -4,13 +4,16 @@ import {ActorSparqlSerializeFixedMediaTypes, IActionSparqlSerialize,
   IActorSparqlSerializeFixedMediaTypesArgs, IActorSparqlSerializeOutput} from "@comunica/bus-sparql-serialize";
 import {ActionContext} from "@comunica/core";
 import {Readable} from "stream";
+import {ActionObserverHttp} from "./ActionObserverHttp";
 
 /**
  * Serializes SPARQL results for testing and debugging.
  */
 export class ActorSparqlSerializeStats extends ActorSparqlSerializeFixedMediaTypes {
 
-  constructor(args: IActorSparqlSerializeFixedMediaTypesArgs) {
+  public readonly httpObserver: ActionObserverHttp;
+
+  constructor(args: IActorSparqlSerializeStatsArgs) {
     super(args);
   }
 
@@ -22,19 +25,19 @@ export class ActorSparqlSerializeStats extends ActorSparqlSerializeFixedMediaTyp
   }
 
   public pushHeader(data: Readable) {
-    const header: string = ['Result', 'Delay (ms)',
+    const header: string = ['Result', 'Delay (ms)', 'HTTP requests',
     ].join(',');
     data.push(header + '\n');
   }
 
   public pushStat(data: Readable, startTime: [number, number], result: number) {
-    const row: string = [result, this.delay(startTime),
+    const row: string = [result, this.delay(startTime), this.httpObserver.requests,
     ].join(',');
     data.push(row + '\n');
   }
 
   public pushFooter(data: Readable, startTime: [number, number]) {
-    const footer: string = ['TOTAL', this.delay(startTime),
+    const footer: string = ['TOTAL', this.delay(startTime), this.httpObserver.requests,
     ].join(',');
     data.push(footer + '\n');
     data.push(null);
@@ -67,4 +70,8 @@ export class ActorSparqlSerializeStats extends ActorSparqlSerializeFixedMediaTyp
     const time: [number, number] = process.hrtime(startTime);
     return time[0] * 1000 + (time[1] / 1000000);
   }
+}
+
+export interface IActorSparqlSerializeStatsArgs extends IActorSparqlSerializeFixedMediaTypesArgs {
+  httpObserver: ActionObserverHttp;
 }

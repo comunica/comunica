@@ -6,6 +6,7 @@
       "cassst": "npmd:@comunica/actor-sparql-serialize-stats/",
       "files-cassst": "cassst:^1.0.0/",
 
+      "ActionObserverHttpStats": "cassst:ActionObserver/Http/Stats",
       "ActorSparqlSerializeStats": "cassst:Actor/SparqlSerialize/Stats"
     }
   ]
