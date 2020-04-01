@@ -22,8 +22,7 @@ export function newEngineDynamicArged(options: IQueryOptions, moduleRootPath: st
   const runnerInstanceUri: string = options.runnerInstanceUri || 'urn:comunica:my';
 
   // this needs to happen before any promise gets generated
-  const rootAction = { argv: process.argv, env: process.env, stdin: process.stdin };
-  return Setup.instantiateComponent(configResourceUrl, runnerInstanceUri, rootAction, options)
+  return Setup.instantiateComponent(configResourceUrl, runnerInstanceUri, options)
     .then((runner: Runner) => {
       let actor = null;
       for (const runningActor of runner.actors) {

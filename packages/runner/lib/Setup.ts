@@ -30,7 +30,7 @@ export class Setup {
       runnerUri = 'urn:comunica:my';
     }
 
-    const runner: Runner = await Setup.instantiateComponent(configResourceUrl, runnerUri, action, properties);
+    const runner: Runner = await Setup.instantiateComponent(configResourceUrl, runnerUri, properties);
     await runner.initialize();
     let output: IActorOutputInit[];
     try {
@@ -48,12 +48,10 @@ export class Setup {
    *
    * @param {string} configResourceUrl    The URL or local path to a Components.js config file.
    * @param {string} instanceUri          A URI identifying the component to instantiate.
-   * @param {any[]}  action               The action to pass to the runner.
    * @param {LoaderProperties} properties Properties to pass to the Components.js loader.
    * @return {Promise<any>}               A promise that resolves to the instance.
    */
   public static async instantiateComponent(configResourceUrl: string, instanceUri: string,
-                                           action: IActionInit,
                                            properties?: ISetupProperties): Promise<any> {
     // Handle optional arguments
     if (!properties) {
