@@ -22,6 +22,7 @@ This repository is managed as a [monorepo](https://github.com/babel/babel/blob/m
 using [Lerna](https://lernajs.io/).
 
 More usage information and details can be found in our [manual](http://comunica.readthedocs.io/en/latest/).
+Some examples illustrating the usage of Comunica can be found in our dedicated [examples repository](https://github.com/comunica/examples).
 If you want more background information about the motivations of this work,
 be sure to have a look at our [article](https://comunica.github.io/Article-ISWC2018-Resource/).
 
