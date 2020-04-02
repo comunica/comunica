@@ -59,6 +59,43 @@ export class Runner implements IRunnerArgs {
     return Promise.all(this.actors.map((actor) => actor.deinitialize())).then(() => true);
   }
 
+  /**
+   * Collect the given actors that are available in this runner.
+   *
+   * Example:
+   * <pre>
+   *   const { engine } = runner.collectActors({ engine: 'urn:comunica:sparqlinit' };
+   *   // engine is an actor instance
+   * </pre>
+   *
+   * An error will be thrown if any of the actors could not be found in the runner.
+   *
+   * @param actorIdentifiers A mapping of keys to actor identifiers.
+   * @return A mapping of keys to actor instances.
+   */
+  public collectActors(actorIdentifiers: {[key: string]: string})
+    : {[key: string]: Actor<IAction, IActorTest, IActorOutput>} {
+    const actors: {[key: string]: Actor<IAction, IActorTest, IActorOutput>} = {};
+
+    // Collect all required actors
+    for (const key in actorIdentifiers) {
+      for (const actor of this.actors) {
+        if (actor.name === actorIdentifiers[key]) {
+          actors[key] = actor;
+        }
+      }
+    }
+
+    // Error if we are missing actors
+    for (const key in actorIdentifiers) {
+      if (!(key in actors)) {
+        throw new Error(`No actor for key ${key} was found for IRI ${actorIdentifiers[key]}.`);
+      }
+    }
+
+    return actors;
+  }
+
 }
 
 /**

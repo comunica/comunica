@@ -103,5 +103,31 @@ describe('Runner', () => {
       runner.actors = [ actor1, actor2 ];
       return expect(runner.deinitialize()).resolves.toBeTruthy();
     });
+
+    describe('collectActors', () => {
+      it('should collect for no identifiers', () => {
+        return expect(runner.collectActors({})).toEqual({});
+      });
+
+      it('should collect for valid identifiers', () => {
+        runner.actors = [ actor1, actor2 ];
+        return expect(runner.collectActors({
+          a: 'actor1',
+          b: 'actor2',
+        })).toEqual({
+          a: actor1,
+          b: actor2,
+        });
+      });
+
+      it('should throw for a missing actor', () => {
+        runner.actors = [ actor1, actor2 ];
+        return expect(() => runner.collectActors({
+          a: 'actor1',
+          b: 'actor2',
+          c: 'actor3',
+        })).toThrow(new Error('No actor for key c was found for IRI actor3.'));
+      });
+    });
   });
 });

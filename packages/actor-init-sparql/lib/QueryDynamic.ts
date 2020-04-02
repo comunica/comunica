@@ -23,19 +23,7 @@ export function newEngineDynamicArged(options: IQueryOptions, moduleRootPath: st
 
   // this needs to happen before any promise gets generated
   return Setup.instantiateComponent(configResourceUrl, runnerInstanceUri, options)
-    .then((runner: Runner) => {
-      let actor = null;
-      for (const runningActor of runner.actors) {
-        if (runningActor.name === instanceUri) {
-          actor = <any> runningActor;
-        }
-      }
-      if (!actor) {
-        throw new Error('No SPARQL init actor was found with the name "' + instanceUri + '" in runner "'
-          + runnerInstanceUri + '".');
-      }
-      return actor;
-    });
+    .then((runner: Runner) => <ActorInitSparql> runner.collectActors({ engine: instanceUri }).engine);
 }
 
 /**

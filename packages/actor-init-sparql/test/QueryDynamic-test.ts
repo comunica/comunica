@@ -46,7 +46,6 @@ describe('newEngineDynamic', () => {
       instanceUri: 'urn:comunica:myUNKNOWN',
     };
     return expect(newEngineDynamicArged(opts, __dirname + '/../', __dirname + '/../config/config-default.json'))
-      .rejects.toThrow(new Error('No SPARQL init actor was found with the name \"urn:comunica:myUNKNOWN\" ' +
-        'in runner \"urn:comunica:my\".'));
+      .rejects.toThrow(new Error('No actor for key engine was found for IRI urn:comunica:myUNKNOWN.'));
   });
 });
