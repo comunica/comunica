@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-metadata-extract-hydra-controls-query",
-  "version": "1.11.0",
+  "version": "1.11.1",
   "description": "A hydra-controls-query rdf-metadata-extract actor",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-metadata-extract-hydra-controls-query",
   "lsd:components": "components/components.jsonld",
@@ -43,7 +43,7 @@
     "@comunica/core": "^1.8.0"
   },
   "devDependencies": {
-    "@comunica/actor-sparql-serialize-sparql-json": "^1.11.0",
+    "@comunica/actor-sparql-serialize-sparql-json": "^1.11.1",
     "@comunica/bus-rdf-metadata-extract": "^1.9.3",
     "@comunica/core": "^1.9.2",
     "asynciterator": "^2.0.1"

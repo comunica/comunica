@@ -1,6 +1,19 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v1.11.1"></a>
+## [v1.11.1](https://github.com/comunica/comunica/compare/v1.11.0...v1.11.1) - 2020-04-02
+
+### Added
+* [Add Runner.collectActors method](https://github.com/comunica/comunica/commit/a9a48156a09f10d4aa57ee188f5fa99dc1e842af)
+
+### Fixed
+* [Fix initialBindings not applied on full query](https://github.com/comunica/comunica/commit/1e2461bf7300e5c398a41cbc63db65cddd63a27f)
+
+### Changed
+* [Output number of HTTP requests in stats serializer](https://github.com/comunica/comunica/commit/52f7a12ac0e99746ce4def9e663166d43bbf037a)
+* [Remove unneeded action argument in Setup.instantiateComponent](https://github.com/comunica/comunica/commit/ec48359dd495930fe1a697ffe14fcfae8f3355f8)
+
 <a name="v1.11.0"></a>
 ## [v1.11.0](https://github.com/comunica/comunica/compare/v1.10.0...v1.11.0) - 2020-03-30
 

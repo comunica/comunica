@@ -1,6 +1,6 @@
 {
   "name": "@comunica/runner",
-  "version": "1.9.4",
+  "version": "1.11.1",
   "description": "Utility module for Comunica runner modules",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/runner",
   "lsd:components": "components/components.jsonld",

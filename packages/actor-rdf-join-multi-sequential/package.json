@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-join-multi-sequential",
-  "version": "1.10.0",
+  "version": "1.11.1",
   "description": "A multi-sequential rdf-join actor",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-join-multi-sequential",
   "lsd:components": "components/components.jsonld",
@@ -39,8 +39,8 @@
     "@comunica/core": "^1.9.2"
   },
   "devDependencies": {
-    "@comunica/bus-query-operation": "^1.9.2",
-    "@comunica/bus-rdf-join": "^1.10.0",
+    "@comunica/bus-query-operation": "^1.11.1",
+    "@comunica/bus-rdf-join": "^1.11.1",
     "@comunica/core": "^1.9.2",
     "@comunica/mediatortype-iterations": "^1.9.2"
   },

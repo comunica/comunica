@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-operation-path-link",
-  "version": "1.11.0",
+  "version": "1.11.1",
   "description": "A path-link query-operation actor",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-path-link",
   "lsd:components": "components/components.jsonld",
@@ -39,11 +39,11 @@
     "@comunica/core": "^1.2.0"
   },
   "dependencies": {
-    "@comunica/actor-abstract-path": "^1.11.0",
+    "@comunica/actor-abstract-path": "^1.11.1",
     "sparqlalgebrajs": "^2.2.1"
   },
   "devDependencies": {
-    "@comunica/bus-query-operation": "^1.9.3",
+    "@comunica/bus-query-operation": "^1.11.1",
     "@comunica/core": "^1.9.2"
   },
   "jest": {

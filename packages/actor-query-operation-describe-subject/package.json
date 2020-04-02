@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-operation-describe-subject",
-  "version": "1.10.0",
+  "version": "1.11.1",
   "description": "A describe-subject query-operation actor",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-describe-subject",
   "lsd:components": "components/components.jsonld",
@@ -35,7 +35,7 @@
     "index.js"
   ],
   "dependencies": {
-    "@comunica/actor-query-operation-union": "^1.10.0",
+    "@comunica/actor-query-operation-union": "^1.11.1",
     "@rdfjs/data-model": "^1.1.1",
     "asynciterator-union": "^2.1.2"
   },
@@ -44,7 +44,7 @@
     "@comunica/core": "^1.0.0"
   },
   "devDependencies": {
-    "@comunica/bus-query-operation": "^1.9.3",
+    "@comunica/bus-query-operation": "^1.11.1",
     "@comunica/core": "^1.9.2"
   },
   "jest": {

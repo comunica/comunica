@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-operation-reduced-hash",
-  "version": "1.9.3",
+  "version": "1.11.1",
   "description": "A reduced-hash query-operation actor",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-reduced-hash",
   "lsd:components": "components/components.jsonld",
@@ -41,7 +41,7 @@
   },
   "devDependencies": {
     "@comunica/actor-abstract-bindings-hash": "^1.2.0",
-    "@comunica/bus-query-operation": "^1.9.3",
+    "@comunica/bus-query-operation": "^1.11.1",
     "@comunica/core": "^1.9.2"
   },
   "jest": {
@@ -68,7 +68,7 @@
     "validate": "npm ls"
   },
   "dependencies": {
-    "@comunica/actor-abstract-bindings-hash": "^1.9.3",
+    "@comunica/actor-abstract-bindings-hash": "^1.11.1",
     "lru-cache": "^5.1.1"
   }
 }

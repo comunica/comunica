@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-init-http",
-  "version": "1.10.0",
+  "version": "1.11.1",
   "description": "A Comunica engine for triggering HTTP requests",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-http",
   "lsd:components": "components/components.jsonld",
@@ -45,8 +45,8 @@
     "@comunica/bus-init": "^1.9.2",
     "@comunica/core": "^1.9.2",
     "@comunica/mediator-number": "^1.9.2",
-    "@comunica/runner": "^1.9.4",
-    "@comunica/runner-cli": "^1.9.4"
+    "@comunica/runner": "^1.11.1",
+    "@comunica/runner-cli": "^1.11.1"
   },
   "devDependencies": {
     "@comunica/bus-http": "^1.2.0",

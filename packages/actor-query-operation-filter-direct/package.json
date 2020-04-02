@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-operation-filter-direct",
-  "version": "1.9.3",
+  "version": "1.11.1",
   "description": "A filter-direct query-operation actor",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-filter-direct",
   "lsd:components": "components/components.jsonld",
@@ -42,7 +42,7 @@
     "rdf-string": "^1.3.1"
   },
   "devDependencies": {
-    "@comunica/bus-query-operation": "^1.9.3",
+    "@comunica/bus-query-operation": "^1.11.1",
     "@comunica/core": "^1.9.2"
   },
   "jest": {

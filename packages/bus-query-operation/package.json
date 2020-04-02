@@ -1,6 +1,6 @@
 {
   "name": "@comunica/bus-query-operation",
-  "version": "1.9.3",
+  "version": "1.11.1",
   "description": "A comunica bus for query-operation events.",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-query-operation",
   "lsd:components": "components/components.jsonld",

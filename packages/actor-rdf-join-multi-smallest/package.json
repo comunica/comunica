@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-join-multi-smallest",
-  "version": "1.10.0",
+  "version": "1.11.1",
   "description": "A multi-smallest rdf-join actor",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-join-multi-smallest",
   "lsd:components": "components/components.jsonld",
@@ -39,7 +39,7 @@
     "@comunica/core": "^1.9.2"
   },
   "devDependencies": {
-    "@comunica/bus-rdf-join": "^1.10.0",
+    "@comunica/bus-rdf-join": "^1.11.1",
     "@comunica/core": "^1.9.2"
   },
   "jest": {

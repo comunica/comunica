@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-sparql-serialize-simple",
-  "version": "1.11.0",
+  "version": "1.11.1",
   "description": "A simple sparql-serialize actor",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-sparql-serialize-simple",
   "lsd:components": "components/components.jsonld",
@@ -39,8 +39,8 @@
     "@comunica/core": "^1.0.0"
   },
   "devDependencies": {
-    "@comunica/bus-query-operation": "^1.9.3",
-    "@comunica/bus-sparql-serialize": "^1.11.0",
+    "@comunica/bus-query-operation": "^1.11.1",
+    "@comunica/bus-sparql-serialize": "^1.11.1",
     "@comunica/core": "^1.9.2"
   },
   "jest": {
