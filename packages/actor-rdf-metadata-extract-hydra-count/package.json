@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-metadata-extract-hydra-count",
-  "version": "1.9.3",
+  "version": "1.12.0",
   "description": "A hydra-count rdf-metadata-extract actor",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-metadata-extract-hydra-count",
   "lsd:components": "components/components.jsonld",
@@ -39,7 +39,7 @@
     "@comunica/core": "^1.0.0"
   },
   "devDependencies": {
-    "@comunica/bus-rdf-metadata-extract": "^1.9.3",
+    "@comunica/bus-rdf-metadata-extract": "^1.12.0",
     "@comunica/core": "^1.9.2"
   },
   "jest": {

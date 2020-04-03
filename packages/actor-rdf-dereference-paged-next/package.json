@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-dereference-paged-next",
-  "version": "1.9.3",
+  "version": "1.12.0",
   "description": "A hydra rdf-dereference-paged actor",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-dereference-paged-next",
   "lsd:components": "components/components.jsonld",
@@ -51,7 +51,7 @@
     "@comunica/bus-rdf-dereference": "^1.9.3",
     "@comunica/bus-rdf-dereference-paged": "^1.9.2",
     "@comunica/bus-rdf-metadata": "^1.9.2",
-    "@comunica/bus-rdf-metadata-extract": "^1.9.3",
+    "@comunica/bus-rdf-metadata-extract": "^1.12.0",
     "@comunica/core": "^1.9.2"
   },
   "jest": {

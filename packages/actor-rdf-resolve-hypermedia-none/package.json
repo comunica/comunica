@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-resolve-hypermedia-none",
-  "version": "1.9.3",
+  "version": "1.12.0",
   "description": "A none rdf-resolve-hypermedia actor",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-resolve-hypermedia-none",
   "lsd:components": "components/components.jsonld",
@@ -42,7 +42,7 @@
     "@comunica/core": "^1.8.0"
   },
   "devDependencies": {
-    "@comunica/bus-rdf-resolve-hypermedia": "^1.9.3",
+    "@comunica/bus-rdf-resolve-hypermedia": "^1.12.0",
     "@comunica/core": "^1.9.2"
   },
   "jest": {

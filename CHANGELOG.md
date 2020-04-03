@@ -1,6 +1,21 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v1.12.0"></a>
+## [v1.12.0](https://github.com/comunica/comunica/compare/v1.11.1...v1.12.0) - 2020-04-03
+
+### Changed
+* [Update to JSON-LD parser to 1.1](https://github.com/comunica/comunica/commit/cb47af1f3d29629e36c431b481e6752dccdf8227)
+
+### Added
+* [Handle JSON-LD via JSON extension types as well](https://github.com/comunica/comunica/commit/ea6da5ea9b392413e701aaa82c611fa3ebad4573)
+* [Pass HTTP headers to HTML script parsers](https://github.com/comunica/comunica/commit/1d7b9e7e4fd89d2985735fe5c1b9cb10cb873ee6)
+* [Allow HTML scripts to be targeted by id via fragments](https://github.com/comunica/comunica/commit/138a73ed682d01b7b402e721445edfab8ed7c6bc)
+* [Throw error on application/json without valid JSON-LD link header](https://github.com/comunica/comunica/commit/42e0999f088ddab271568424bac39143bdc15ecc)
+
+### Fixed
+* [Fix HTML parser not forwarding errors within listeners](https://github.com/comunica/comunica/commit/cfdfef2fc6d689afc2b1f91d3b89db385aff3885)
+
 <a name="v1.11.1"></a>
 ## [v1.11.1](https://github.com/comunica/comunica/compare/v1.11.0...v1.11.1) - 2020-04-02
 
