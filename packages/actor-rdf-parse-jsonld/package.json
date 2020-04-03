@@ -43,7 +43,7 @@
     "@comunica/core": "^1.9.2"
   },
   "dependencies": {
-    "jsonld-streaming-parser": "^1.1.0",
+    "jsonld-streaming-parser": "^2.0.0",
     "stream-to-string": "^1.2.0"
   },
   "jest": {

@@ -74,10 +74,30 @@ describe('ActorSparqlParseGraphql', () => {
         });
     });
 
-    it('should not run without @context that has a required URI', () => {
+    it('should run with empty @context that has a required URI', () => {
       const query = '{ label }';
       const context = ActionContext({});
-      return expect(actor.run({ query, queryFormat: 'graphql', context })).rejects.toBeTruthy();
+      return expect(actor.run({ query, queryFormat: 'graphql', context })).resolves.toMatchObject({
+        operation: {
+          input: {
+            patterns: [
+              {
+                graph: {value: ""},
+                object: {value: "label"},
+                predicate: {value: "label"},
+                subject: {value: "b2"},
+                type: "pattern",
+              },
+            ],
+            type: "bgp"},
+          type: "project",
+          variables: [
+            {
+              value: "label",
+            },
+          ],
+        },
+      });
     });
 
     it('should not run without context that has a required URI', () => {

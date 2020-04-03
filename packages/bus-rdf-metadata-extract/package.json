@@ -34,7 +34,7 @@
     "index.js"
   ],
   "dependencies": {
-    "graphql-ld": "^1.0.1",
+    "graphql-ld": "^1.1.0",
     "rdf-store-stream": "^1.0.0"
   },
   "peerDependencies": {
