@@ -1,0 +1,921 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>actor-init-sparql | Comunica</title>
+	<meta name="description" content="">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.js" data-base="..">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="../index.html" class="title">Comunica</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+							<input type="checkbox" id="tsd-filter-only-exported" />
+							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="../globals.html">Globals</a>
+				</li>
+				<li>
+					<a href="actor_init_sparql.html">actor-init-sparql</a>
+				</li>
+			</ul>
+			<h1>Package actor-init-sparql</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<a href="#comunica-sparql" id="comunica-sparql" style="color: inherit; text-decoration: none;">
+						<h1>Comunica SPARQL</h1>
+					</a>
+					<p><a href="https://www.npmjs.com/package/@comunica/actor-init-sparql"><img src="https://badge.fury.io/js/%40comunica%2Factor-init-sparql.svg" alt="npm version"></a>
+					<a href="https://hub.docker.com/r/comunica/actor-init-sparql/"><img src="https://img.shields.io/docker/pulls/comunica/actor-init-sparql.svg" alt="Docker Pulls"></a></p>
+					<p>Linked Data on the Web is being published in different ways,
+						such as <a href="http://downloads.dbpedia.org/3.9/en/">data dumps</a>,
+						<a href="http://dbpedia.org/page/Linked_data">subject pages</a>,
+						<a href="http://dbpedia.org/sparql?default-graph-uri=http%3A%2F%2Fdbpedia.org&amp;query=CONSTRUCT+%7B+%3Fp+a+dbpedia-owl%3AArtist+%7D%0D%0AWHERE+%7B+%3Fp+a+dbpedia-owl%3AArtist+%7D&amp;format=text%2Fturtle">results of SPARQL queries</a>,
+						and <a href="http://data.linkeddatafragments.org/dbpedia2014?subject=&amp;predicate=rdf%3Atype&amp;object=dbpedia-owl%3ARestaurant">Triple Pattern Fragments</a>.
+					This client is able to solve queries over such <em>heterogeneous interfaces</em>.</p>
+					<p>Concretely, Comunica SPARQL is a module that is preconfigured with a configuration file to initialize
+						the <a href="https://github.com/comunica/comunica">Comunica engine</a> with actors to evaluate SPARQL queries
+					over heterogeneous interfaces.</p>
+					<p>It&#39;s main distinguishing features are the following:</p>
+					<ul>
+						<li>High modularity enabling easy extensions and customization.</li>
+						<li>Federated querying over heterogeneous interfaces.</li>
+						<li>Can run using <a href="http://nodejs.org/">Node.JS</a>, in the browser, and via the command-line.</li>
+					</ul>
+					<p>Comunica can either be invoked <strong>dynamically</strong> using a configuration file,
+						or <strong>statically</strong> using a pre-compiled configuration file.
+					The latter will be faster to start because the dependency-injection phase can be avoided.</p>
+					<p><strong>This actor can not query over local files for security reasons, but <a href="https://github.com/comunica/comunica/tree/master/packages/actor-init-sparql-file#readme">Comunica SPARQL file</a> can.</strong></p>
+					<a href="#installation" id="installation" style="color: inherit; text-decoration: none;">
+						<h2>Installation</h2>
+					</a>
+					<p>Comunica requires <a href="http://nodejs.org/">Node.JS</a> 8.0 or higher and is tested on OSX and Linux.</p>
+					<p>The easiest way to install the client is by installing it from NPM as follows:</p>
+					<pre><code class="language-bash">$ [sudo] npm install -g @comunica/actor-init-sparql</code></pre>
+					<p>Alternatively, you can install from the latest GitHub sources.
+					For this, please refer to the README of the <a href="https://github.com/comunica/comunica">Comunica monorepo</a>.</p>
+					<a href="#execute-sparql-queries" id="execute-sparql-queries" style="color: inherit; text-decoration: none;">
+						<h2>Execute SPARQL queries</h2>
+					</a>
+					<p>This actor can be used to execute SPARQL queries from
+					the command line, HTTP (SPARQL protocol), within a Node.JS application, or from a browser.</p>
+					<a href="#usage-from-the-command-line" id="usage-from-the-command-line" style="color: inherit; text-decoration: none;">
+						<h3>Usage from the command line</h3>
+					</a>
+					<p>Show 100 triples from <a href="http://fragments.dbpedia.org/2015-10/en">http://fragments.dbpedia.org/2015-10/en</a>:</p>
+					<pre><code class="language-bash">$ comunica-sparql http://fragments.dbpedia.org/2015-10/en <span class="hljs-string">"CONSTRUCT WHERE { ?s ?p ?o } LIMIT 100"</span></code></pre>
+					<p>Show all triples from <a href="http://dbpedia.org/resource/Belgium">http://dbpedia.org/resource/Belgium</a>:</p>
+					<pre><code class="language-bash">$ comunica-sparql http://dbpedia.org/resource/Belgium <span class="hljs-string">"CONSTRUCT WHERE { ?s ?p ?o }"</span></code></pre>
+					<p>Combine multiple sources:</p>
+					<pre><code class="language-bash">$ comunica-sparql http://fragments.dbpedia.org/2015-10/en file@http://dbpedia.org/resource/Belgium <span class="hljs-string">"CONSTRUCT WHERE { ?s ?p ?o } LIMIT 100"</span></code></pre>
+					<p>Show the help with all options:</p>
+					<pre><code class="language-bash">$ comunica-sparql --<span class="hljs-built_in">help</span></code></pre>
+					<p>The dynamic variant of this executable is <code>comunica-dynamic-sparql</code>.
+					An alternative config file can be passed via the <code>COMUNICA_CONFIG</code> environment variable.</p>
+					<p>When you are working with this module in the Comunica monorepo development environment,
+					this command can be invoked directly as follows (when inside the <code>packages/actor-init-sparql</code> folder):</p>
+					<pre><code class="language-bash">node bin/query.js http://fragments.dbpedia.org/2016-04/en <span class="hljs-string">"CONSTRUCT WHERE { ?s ?p ?o } LIMIT 100"</span></code></pre>
+					<p>Use <code>bin/query-dynamic.js</code> when running dynamically inside the Comunica monorepo development environment.</p>
+					<a href="#usage-as-a-sparql-endpoint" id="usage-as-a-sparql-endpoint" style="color: inherit; text-decoration: none;">
+						<h3>Usage as a SPARQL endpoint</h3>
+					</a>
+					<p>Start a webservice exposing <a href="http://fragments.dbpedia.org/2015-10/en">http://fragments.dbpedia.org/2015-10/en</a> via the SPARQL protocol, i.e., a <em>SPARQL endpoint</em>.</p>
+					<pre><code class="language-bash">$ comunica-sparql-http <span class="hljs-string">"{ \"sources\": [\"http://fragments.dbpedia.org/2015/en\"]}"</span></code></pre>
+					<p>or</p>
+					<pre><code class="language-bash">$ comunica-sparql-http <span class="hljs-string">"{ \"sources\": [{ \"type\" : \"file\", \"value\" : \"https://ruben.verborgh.org/profile/\" }]}"</span></code></pre>
+					<p>Show the help with all options:</p>
+					<pre><code class="language-bash">$ comunica-sparql-http --<span class="hljs-built_in">help</span></code></pre>
+					<p>The SPARQL endpoint can only be started dynamically.
+					An alternative config file can be passed via the <code>COMUNICA_CONFIG</code> environment variable.</p>
+					<p>Use <code>bin/http.js</code> when running in the Comunica monorepo development environment.</p>
+					<a href="#usage-within-application" id="usage-within-application" style="color: inherit; text-decoration: none;">
+						<h3>Usage within application</h3>
+					</a>
+					<p>The easiest way to create an engine (with default config) is as follows:</p>
+					<pre><code class="language-javascript"><span class="hljs-keyword">const</span> newEngine = <span class="hljs-built_in">require</span>(<span class="hljs-string">'@comunica/actor-init-sparql'</span>).newEngine;
+
+<span class="hljs-keyword">const</span> myEngine = newEngine();</code></pre>
+					<p>Alternatively, an engine can also be created dynamically with a custom config:</p>
+					<pre><code class="language-javascript"><span class="hljs-keyword">const</span> newEngineDynamic = <span class="hljs-built_in">require</span>(<span class="hljs-string">'@comunica/actor-init-sparql'</span>).newEngineDynamic;
+
+<span class="hljs-keyword">const</span> myEngine = <span class="hljs-keyword">await</span> newEngineDynamic({ <span class="hljs-attr">configResourceUrl</span>: <span class="hljs-string">'path/to/config.json'</span> });</code></pre>
+					<p>Once you have created your query engine,
+						you can use it to call the async <code>query(queryString, context)</code> method,
+					which returns an output of type that depends on the given query string.</p>
+					<p>For example, a <code>SELECT</code> query can be executed as follows:</p>
+					<pre><code class="language-javascript"><span class="hljs-keyword">const</span> result = <span class="hljs-keyword">await</span> myEngine.query(<span class="hljs-string">'SELECT * WHERE { ?s ?p &lt;http://dbpedia.org/resource/Belgium&gt;. ?s ?p ?o } LIMIT 100'</span>,
+  { <span class="hljs-attr">sources</span>: [<span class="hljs-string">'http://fragments.dbpedia.org/2015/en'</span>] })
+result.bindingsStream.on(<span class="hljs-string">'data'</span>, (data) =&gt; <span class="hljs-built_in">console</span>.log(data.toObject()));</code></pre>
+					<p>Optionally, specific types of sources can be specified (<em>otherwise, the type of source will be detected automatically</em>):</p>
+					<pre><code class="language-javascript"><span class="hljs-keyword">const</span> result = <span class="hljs-keyword">await</span> myEngine.query(<span class="hljs-string">'SELECT * WHERE { ?s ?p &lt;http://dbpedia.org/resource/Belgium&gt;. ?s ?p ?o } LIMIT 100'</span>,
+  { <span class="hljs-attr">sources</span>: [
+    <span class="hljs-string">'http://fragments.dbpedia.org/2015/en'</span>,
+    { <span class="hljs-attr">type</span>: <span class="hljs-string">'sparql'</span>, <span class="hljs-attr">value</span>: <span class="hljs-string">'https://dbpedia.org/sparql'</span> },
+    { <span class="hljs-attr">type</span>: <span class="hljs-string">'file'</span>, <span class="hljs-attr">value</span>: <span class="hljs-string">'https://ruben.verborgh.org/profile/'</span> },
+    { <span class="hljs-attr">type</span>: <span class="hljs-string">'rdfjsSource'</span>, <span class="hljs-attr">value</span>: <span class="hljs-keyword">new</span> N3Store() },
+  ] })
+result.bindingsStream.on(<span class="hljs-string">'data'</span>, (data) =&gt; <span class="hljs-built_in">console</span>.log(data.toObject()));</code></pre>
+					<p><strong>Note: Some SPARQL endpoints may be recognised as a file instead of a SPARQL endpoint due to them not supporting <a href="https://www.w3.org/TR/sparql11-service-description/">SPARQL Service Description</a>, which may produce incorrect results. For these cases, the <code>sparql</code> type MUST be set.</strong></p>
+					<p>For <code>CONSTRUCT</code> and <code>DESCRIBE</code> queries,
+					results can be collected as follows.</p>
+					<pre><code class="language-javascript"><span class="hljs-keyword">const</span> result = <span class="hljs-keyword">await</span> myEngine.query(<span class="hljs-string">'CONSTRUCT WHERE { ?s ?p &lt;http://dbpedia.org/resource/Belgium&gt; } LIMIT 100'</span>,
+  { <span class="hljs-attr">sources</span>: [<span class="hljs-string">'http://fragments.dbpedia.org/2015/en'</span>] })
+result.quadStream.on(<span class="hljs-string">'data'</span>, (data) =&gt; <span class="hljs-built_in">console</span>.log(data));</code></pre>
+					<p>Finally, <code>ASK</code> queries return async booleans.</p>
+					<pre><code class="language-javascript"><span class="hljs-keyword">const</span> result = <span class="hljs-keyword">await</span> myEngine.query(<span class="hljs-string">'ASK { ?s ?p &lt;http://dbpedia.org/resource/Belgium&gt; }'</span>,
+  { <span class="hljs-attr">sources</span>: [<span class="hljs-string">'http://fragments.dbpedia.org/2015/en'</span>] })
+<span class="hljs-keyword">const</span> isPresent = <span class="hljs-keyword">await</span> result.booleanResult;</code></pre>
+					<p><strong>Context options:</strong></p>
+					<table>
+						<thead>
+							<tr>
+								<th><strong>Key</strong></th>
+								<th><strong>Description</strong></th>
+							</tr>
+						</thead>
+						<tbody><tr>
+								<td><code>sources</code></td>
+								<td>An array of data sources, e.g. <code>[ { value: &#39;http://fragments.dbpedia.org/2015/en&#39; } ]</code>. Optionally, a source can have a <code>type</code> field to <em>force</em> a specific type. For example, <code>[ { type: &#39;file&#39;, value: &#39;http://fragments.dbpedia.org/2015/en&#39; } ]</code> will make sure the source is seen as a file with all hypermedia ignored. Source types can be forced as: <code>sparql</code>, <code>file</code>, <code>rdfjsSource</code></td>
+							</tr>
+							<tr>
+								<td><code>initialBindings</code></td>
+								<td>Variables that have to be pre-bound to values in the query, using the <code>Bindings</code> datastructure, e.g. <code>Bindings({ &#39;?s&#39;: literal(&#39;sl&#39;) })</code>.</td>
+							</tr>
+							<tr>
+								<td><code>queryFormat</code></td>
+								<td>Name of the provided query&#39;s format. Defaults to <code>sparql</code>, can also be <code>graphql</code></td>
+							</tr>
+							<tr>
+								<td><code>baseIRI</code></td>
+								<td>Base IRI for relative IRIs in SPARQL queries, e.g. <code>http://example.org/</code>.</td>
+							</tr>
+							<tr>
+								<td><code>log</code></td>
+								<td>Logger to use, e.g. <code>new LoggerPretty({ level: &#39;warn&#39; })</code>.</td>
+							</tr>
+							<tr>
+								<td><code>datetime</code></td>
+								<td>Datetime to handle time travel with <a href="http://timetravel.mementoweb.org/">Memento</a>, e.g. <code>new Date()</code>.</td>
+							</tr>
+							<tr>
+								<td><code>lenient</code></td>
+								<td>If failing requests and parsing errors should be logged instead of causing a hard crash. Defaults to <code>false</code>.</td>
+							</tr>
+					</tbody></table>
+					<a href="#emoptionalem-result-formatting" id="emoptionalem-result-formatting" style="color: inherit; text-decoration: none;">
+						<h4><em>(Optional)</em> Result formatting</h4>
+					</a>
+					<p>As mentioned before, query results are either a <code>bindingsStream</code> (for <code>SELECT</code> queries),
+					<code>quadStream</code> (for <code>CONSTRUCT</code> queries), or <code>booleanResult</code> (for <code>ASK</code> queries).</p>
+					<p>Using the <code>@comunica/actor-sparql-serialize-*</code> actors,
+					Comunica allows these results to be serialized into standard formats in a streaming manner.</p>
+					<p>For example, serializing results to the <a href="https://www.w3.org/TR/sparql11-results-json/">SPARQL/JSON</a> format
+					can be done as follows:</p>
+					<pre><code class="language-javascript"><span class="hljs-keyword">const</span> result = <span class="hljs-keyword">await</span> myEngine.query(<span class="hljs-string">'SELECT * WHERE { ?s ?p &lt;http://dbpedia.org/resource/Belgium&gt;. ?s ?p ?o } LIMIT 100'</span>,
+  { <span class="hljs-attr">sources</span>: [<span class="hljs-string">'http://fragments.dbpedia.org/2015/en'</span>] });
+<span class="hljs-keyword">const</span> { data } = <span class="hljs-keyword">await</span> myEngine.resultToString(result, <span class="hljs-string">'application/sparql-results+json'</span>);
+data.pipe(process.stdout);</code></pre>
+					<p>Passing a media type as second argument is optional.
+						If none is supplied, then <code>application/json</code> will be picked for bindings,
+					<code>application/trig</code> for quads, and <code>simple</code> for booleans.</p>
+					<p>By default, the following result formats are available:</p>
+					<table>
+						<thead>
+							<tr>
+								<th><strong>Media type</strong></th>
+								<th><strong>Description</strong></th>
+							</tr>
+						</thead>
+						<tbody><tr>
+								<td><a href="https://github.com/comunica/comunica/tree/master/packages/actor-sparql-serialize-json"><code>application/json</code></a></td>
+								<td>A custom, simplified JSON result format.</td>
+							</tr>
+							<tr>
+								<td><a href="https://github.com/comunica/comunica/tree/master/packages/actor-sparql-serialize-simple"><code>simple</code></a></td>
+								<td>A custom, text-based result format.</td>
+							</tr>
+							<tr>
+								<td><a href="https://github.com/comunica/comunica/tree/master/packages/actor-sparql-serialize-sparql-json"><code>application/sparql-results+json</code></a></td>
+								<td>The <a href="https://www.w3.org/TR/sparql11-results-json/">SPARQL/JSON</a> results format.</td>
+							</tr>
+							<tr>
+								<td><a href="https://github.com/comunica/comunica/tree/master/packages/actor-sparql-serialize-sparql-xml"><code>application/sparql-results+xml</code></a></td>
+								<td>The <a href="https://www.w3.org/TR/rdf-sparql-XMLres/">SPARQL/XML</a> results format.</td>
+							</tr>
+							<tr>
+								<td><a href="https://github.com/comunica/comunica/tree/master/packages/actor-sparql-serialize-stats"><code>stats</code></a></td>
+								<td>A custom results format for testing and debugging.</td>
+							</tr>
+							<tr>
+								<td><a href="https://github.com/comunica/comunica/tree/master/packages/actor-sparql-serialize-table"><code>table</code></a></td>
+								<td>A text-based visual table result format.</td>
+							</tr>
+							<tr>
+								<td><a href="https://github.com/comunica/comunica/tree/master/packages/actor-sparql-serialize-tree"><code>tree</code></a></td>
+								<td>A tree-based result format for GraphQL-LD result compacting.</td>
+							</tr>
+							<tr>
+								<td><a href="https://github.com/comunica/comunica/tree/master/packages/actor-sparql-serialize-rdf"><code>application/trig</code></a></td>
+								<td>The <a href="https://www.w3.org/TR/trig/">TriG</a> RDF serialization.</td>
+							</tr>
+							<tr>
+								<td><a href="https://github.com/comunica/comunica/tree/master/packages/actor-sparql-serialize-rdf"><code>application/n-quads</code></a></td>
+								<td>The <a href="https://www.w3.org/TR/n-quads/">N-Quads</a> RDF serialization.</td>
+							</tr>
+							<tr>
+								<td><a href="https://github.com/comunica/comunica/tree/master/packages/actor-sparql-serialize-rdf"><code>text/turtle</code></a></td>
+								<td>The <a href="https://www.w3.org/TR/turtle/">Turtle</a> RDF serialization.</td>
+							</tr>
+							<tr>
+								<td><a href="https://github.com/comunica/comunica/tree/master/packages/actor-sparql-serialize-rdf"><code>application/n-triples</code></a></td>
+								<td>The <a href="https://www.w3.org/TR/n-triples/">N-Triples</a> RDF serialization.</td>
+							</tr>
+							<tr>
+								<td><a href="https://github.com/comunica/comunica/tree/master/packages/actor-sparql-serialize-rdf"><code>text/n3</code></a></td>
+								<td>The <a href="https://www.w3.org/TeamSubmission/n3/">Notation3</a> serialization.</td>
+							</tr>
+							<tr>
+								<td><a href="https://github.com/comunica/comunica/tree/master/packages/actor-sparql-serialize-rdf"><code>application/ld+json</code></a></td>
+								<td>The <a href="https://json-ld.org/">JSON-LD</a> RDF serialization.</td>
+							</tr>
+					</tbody></table>
+					<p>This list of available formats can also be retrieved dynamically by invoking the (asynchronous) <code>engine.getResultMediaTypes()</code> method.</p>
+					<p>On the command-line, the result format can be set using the <code>-t</code> flag:</p>
+					<pre><code class="language-bash">$ comunica-sparql http://dbpedia.org/resource/Belgium <span class="hljs-string">"SELECT * WHERE { ?s ?p ?o }"</span> -t <span class="hljs-string">'application/sparql-results+json'</span></code></pre>
+					<p>All available result formats can be listed from the command-line using <code>--listformats</code>:</p>
+					<pre><code class="language-bash">$ comunica-sparql --listformats</code></pre>
+					<a href="#emoptionalem-cache-handling" id="emoptionalem-cache-handling" style="color: inherit; text-decoration: none;">
+						<h4><em>(Optional)</em> Cache handling</h4>
+					</a>
+					<p>When remote documents are fetched over HTTP, a Comunica engine can cache documents to optimize future reuse.
+						If your application works over volatile resources, then you may want to invalidate this cache,
+					which can be done as follows:</p>
+					<pre><code class="language-javascript">myEngine.invalidateHttpCache(); <span class="hljs-comment">// Invalidate the full cache</span>
+myEngine.invalidateHttpCache(<span class="hljs-string">'http://example.org/page.html'</span>); <span class="hljs-comment">// Invalidate a single document</span></code></pre>
+					<a href="#emoptionalem-graphql-ld" id="emoptionalem-graphql-ld" style="color: inherit; text-decoration: none;">
+						<h4><em>(Optional)</em> GraphQL-LD</h4>
+					</a>
+					<p>Instead of SPARQL queries, you can also define <a href="https://graphql.org/">GraphQL</a> queries
+					(with a <a href="https://json-ld.org/">JSON-LD</a> context).</p>
+					<p>If you want to convert your results to a GraphQL tree,
+						then you will need the <code>@comunica/actor-sparql-serialize-tree</code> dependency,
+					otherwise you can consume the bindings stream manually.</p>
+					<pre><code class="language-javascript"><span class="hljs-keyword">const</span> newEngine = <span class="hljs-built_in">require</span>(<span class="hljs-string">'@comunica/actor-init-sparql'</span>).newEngine;
+<span class="hljs-keyword">const</span> bindingsStreamToGraphQl = <span class="hljs-built_in">require</span>(<span class="hljs-string">'@comunica/actor-sparql-serialize-tree'</span>).bindingsStreamToGraphQl;
+
+<span class="hljs-keyword">const</span> myEngine = newEngine();
+<span class="hljs-keyword">const</span> config = {
+  <span class="hljs-attr">sources</span>: [<span class="hljs-string">'http://fragments.dbpedia.org/2016-04/en'</span>],
+  <span class="hljs-attr">queryFormat</span>: <span class="hljs-string">'graphql'</span>,
+  <span class="hljs-string">"@context"</span>: {
+    <span class="hljs-string">"label"</span>: { <span class="hljs-string">"@id"</span>: <span class="hljs-string">"http://www.w3.org/2000/01/rdf-schema#label"</span> },
+    <span class="hljs-string">"label_en"</span>: { <span class="hljs-string">"@id"</span>: <span class="hljs-string">"http://www.w3.org/2000/01/rdf-schema#label"</span>, <span class="hljs-string">"@language"</span>: <span class="hljs-string">"en"</span> },
+    <span class="hljs-string">"writer"</span>: { <span class="hljs-string">"@id"</span>: <span class="hljs-string">"http://dbpedia.org/ontology/writer"</span> },
+    <span class="hljs-string">"artist"</span>: { <span class="hljs-string">"@id"</span>: <span class="hljs-string">"http://dbpedia.org/ontology/musicalArtist"</span> }
+  }
+};
+myEngine.query(<span class="hljs-string">'{ label @single writer(label_en: \"Michael Jackson\") @single artist @single { label @single } }'</span>, config)
+  .then(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">result</span>) </span>{ <span class="hljs-keyword">return</span> bindingsStreamToGraphQl(result.bindingsStream, result.context); })
+  .then(<span class="hljs-built_in">console</span>.log);</code></pre>
+					<p>To run GraphQL queries from the command line, set the <code>-i</code> flag to <code>graphql</code> and refer to your config file with the JSON-LD context (<code>@context</code>) through the <code>-c</code> flag. To output your results as a GraphQL tree, set the MIME type of the output with <code>-t</code> to <code>tree</code>. For example:</p>
+					<pre><code class="language-bash">$ comunica-sparql http://fragments.dbpedia.org/2015-10/en -q <span class="hljs-string">"{ label @single }"</span> -c config-with-context.json -i graphql -t tree</code></pre>
+					<a href="#emoptionalem-logging" id="emoptionalem-logging" style="color: inherit; text-decoration: none;">
+						<h4><em>(Optional)</em> Logging</h4>
+					</a>
+					<p>Optionally, a custom logger can be used inside Comunica.
+						By default, <a href="https://github.com/comunica/comunica/tree/master/packages/logger-void/"><code>@comunica/logger-void</code></a> is used,
+						which will simply void all log calls.
+					(<em>This default can be changed in the <a href="https://github.com/comunica/comunica/blob/master/packages/actor-init-sparql/config/config-default.json">configuration file</a></em>)</p>
+					<p>Alternatively, <a href="https://github.com/comunica/comunica/tree/master/packages/logger-pretty/"><code>@comunica/logger-pretty</code></a>,
+						<a href="https://github.com/comunica/comunica/tree/master/packages/logger-bunyan/"><code>@comunica/logger-bunyan</code></a>,
+					or a custom logger implementing the <a href="https://github.com/comunica/comunica/blob/master/packages/core/lib/Logger.ts"><code>Logger</code></a> interface can be used.</p>
+					<p>These loggers can be configured through the context as follows:</p>
+					<pre><code class="language-javascript"><span class="hljs-keyword">import</span> {LoggerPretty} <span class="hljs-keyword">from</span> <span class="hljs-string">"@comunica/logger-pretty"</span>;
+
+<span class="hljs-keyword">const</span> context = {
+  <span class="hljs-attr">log</span>: <span class="hljs-keyword">new</span> LoggerPretty({ <span class="hljs-attr">level</span>: <span class="hljs-string">'warn'</span> });
+};
+myEngine.query(<span class="hljs-string">'...'</span>, context);</code></pre>
+					<a href="#emoptionalem-proxy" id="emoptionalem-proxy" style="color: inherit; text-decoration: none;">
+						<h4><em>(Optional)</em> Proxy</h4>
+					</a>
+					<p>Optionally, you can configure a proxy to redirect all HTTP(S) traffic.
+					This is for example useful when Comunica is used in a Web browser where a <a href="https://www.npmjs.com/package/cors-anywhere">proxy enables CORS headers on all responses</a>.</p>
+					<p>Via the command line, a proxy can be enabled as follows:</p>
+					<pre><code class="language-bash">$ comunica-sparql http://fragments.dbpedia.org/2015-10/en <span class="hljs-string">"CONSTRUCT WHERE { ?s ?p ?o } LIMIT 100"</span> -p http://myproxy.org/?uri=</code></pre>
+					<p>This will cause all requests to be modified by appending the original URL to the proxy URL <code>http://myproxy.org/?uri=http://fragments.dbpedia.org/2015-10/en</code>.</p>
+					<p>A proxy can also be configured via the programmatic API as follows:</p>
+					<pre><code class="language-javascript"><span class="hljs-keyword">const</span> ProxyHandlerStatic = <span class="hljs-built_in">require</span>(<span class="hljs-string">"@comunica/actor-http-proxy"</span>).ProxyHandlerStatic;
+
+<span class="hljs-keyword">const</span> result = <span class="hljs-keyword">await</span> myEngine.query(<span class="hljs-string">'SELECT * WHERE { ?s ?p &lt;http://dbpedia.org/resource/Belgium&gt;. ?s ?p ?o } LIMIT 100'</span>,
+  {
+    <span class="hljs-attr">sources</span>: [ { <span class="hljs-attr">type</span>: <span class="hljs-string">'hypermedia'</span>, <span class="hljs-attr">value</span>: <span class="hljs-string">'http://fragments.dbpedia.org/2015/en'</span> } ],
+    <span class="hljs-attr">httpProxyHandler</span>: <span class="hljs-keyword">new</span> ProxyHandlerStatic(<span class="hljs-string">'http://myproxy.org/?uri='</span>),
+  });</code></pre>
+					<p>Next to <code>ProxyHandlerStatic</code>, more advanced proxy handlers can be created by implementing <a href="https://github.com/comunica/comunica/blob/master/packages/actor-http-proxy/lib/IProxyHandler.ts"><code>IProxyHandler</code></a>.</p>
+					<a href="#usage-within-browser" id="usage-within-browser" style="color: inherit; text-decoration: none;">
+						<h3>Usage within browser</h3>
+					</a>
+					<p><em>(Just want to quickly demo queries in the browser? Have a look at our <a href="https://github.com/comunica/jQuery-Widget.js">Web client</a>)</em></p>
+					<p>This engine can run in the browser using <a href="https://www.npmjs.com/package/webpack">Webpack</a>.
+						To create a web-packed version of the engine, run <code>yarn run browser</code> (when inside the <code>packages/actor-init-sparql</code> folder) to create <code>comunica-browser.js</code>.
+					Alternatively, just <a href="https://github.com/rdfjs/comunica-browser">use a pre-built version from our CDN</a>.</p>
+					<p>Include this file in your webpage as follows:</p>
+					<pre><code class="language-html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"path/to/comunica-browser.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
+					<p>After that, <code>Comunica.newEngine</code> can be called via JavaScript.</p>
+					<pre><code class="language-javascript"><span class="hljs-keyword">const</span> myEngine = Comunica.newEngine();
+myEngine.query(<span class="hljs-string">'SELECT * { ?s ?p &lt;http://dbpedia.org/resource/Belgium&gt;. ?s ?p ?o } LIMIT 100'</span>,
+  { <span class="hljs-attr">sources</span>: [<span class="hljs-string">'http://fragments.dbpedia.org/2015/en'</span>] })
+  .then(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">result</span>) </span>{
+    result.bindingsStream.on(<span class="hljs-string">'data'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">data</span>) </span>{
+      <span class="hljs-built_in">console</span>.log(data.toObject());
+    });
+  });</code></pre>
+					<p>The browser script is pre-compiled using a config file and can therefore only be invoked dynamically.
+					See the <code>prepare</code> and <code>browser</code> scripts in <code>package.json</code> to compile using a custom config file.</p>
+					<p><em>If you want to use GraphQL-LD here as well, you can do this similar as in the Node.JS API using <code>Comunica.bindingsStreamToGraphQl</code></em></p>
+				</div>
+			</section>
+			<section class="tsd-panel-group tsd-index-group">
+				<h2>Index</h2>
+				<section class="tsd-panel tsd-index-panel">
+					<div class="tsd-index-content">
+						<section class="tsd-index-section ">
+							<h3>References</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-reference tsd-parent-kind-module"><a href="actor_init_sparql.html#actorinitsparql" class="tsd-kind-icon">Actor<wbr>Init<wbr>Sparql</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module"><a href="actor_init_sparql.html#actorinitsparql-1" class="tsd-kind-icon">Actor<wbr>Init<wbr>Sparql</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module"><a href="actor_init_sparql.html#httpservicesparqlendpoint" class="tsd-kind-icon">Http<wbr>Service<wbr>Sparql<wbr>Endpoint</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module"><a href="actor_init_sparql.html#iactorinitsparqlargs" class="tsd-kind-icon">IActor<wbr>Init<wbr>Sparql<wbr>Args</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module"><a href="actor_init_sparql.html#ihttpservicesparqlendpointargs" class="tsd-kind-icon">IHttp<wbr>Service<wbr>Sparql<wbr>Endpoint<wbr>Args</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module"><a href="actor_init_sparql.html#key_context_graphql_singularizevariables" class="tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>GRAPHQL_<wbr>SINGULARIZEVARIABLES</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module"><a href="actor_init_sparql.html#key_context_initialbindings" class="tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>INITIALBINDINGS</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module"><a href="actor_init_sparql.html#key_context_initialbindings-1" class="tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>INITIALBINDINGS</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module"><a href="actor_init_sparql.html#key_context_initialbindings-2" class="tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>INITIALBINDINGS</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module"><a href="actor_init_sparql.html#key_context_lenient" class="tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>LENIENT</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module"><a href="actor_init_sparql.html#key_context_lenient-1" class="tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>LENIENT</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module"><a href="actor_init_sparql.html#key_context_lenient-2" class="tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>LENIENT</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module"><a href="actor_init_sparql.html#key_context_queryformat" class="tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>QUERYFORMAT</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module"><a href="actor_init_sparql.html#key_context_queryformat-1" class="tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>QUERYFORMAT</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module"><a href="actor_init_sparql.html#key_context_queryformat-2" class="tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>QUERYFORMAT</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module"><a href="actor_init_sparql.html#bindingsstreamtographql" class="tsd-kind-icon">bindings<wbr>Stream<wbr>ToGraph<wbr>Ql</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module"><a href="actor_init_sparql.html#evaluatequery" class="tsd-kind-icon">evaluate<wbr>Query</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module"><a href="actor_init_sparql.html#newengine" class="tsd-kind-icon">new<wbr>Engine</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Classes</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-class tsd-parent-kind-module"><a href="../classes/actor_init_sparql.actorinitsparql-2.html" class="tsd-kind-icon">Actor<wbr>Init<wbr>Sparql</a></li>
+								<li class="tsd-kind-class tsd-parent-kind-module"><a href="../classes/actor_init_sparql.actorinitsparql-3.html" class="tsd-kind-icon">Actor<wbr>Init<wbr>Sparql</a></li>
+								<li class="tsd-kind-class tsd-parent-kind-module"><a href="../classes/actor_init_sparql.httpservicesparqlendpoint-1.html" class="tsd-kind-icon">Http<wbr>Service<wbr>Sparql<wbr>Endpoint</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Interfaces</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-interface tsd-parent-kind-module"><a href="../interfaces/actor_init_sparql.iactorinitsparqlargs-1.html" class="tsd-kind-icon">IActor<wbr>Init<wbr>Sparql<wbr>Args</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module"><a href="../interfaces/actor_init_sparql.ihttpservicesparqlendpointargs-1.html" class="tsd-kind-icon">IHttp<wbr>Service<wbr>Sparql<wbr>Endpoint<wbr>Args</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module"><a href="../interfaces/actor_init_sparql.iqueryoptions.html" class="tsd-kind-icon">IQuery<wbr>Options</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Variables</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-variable tsd-parent-kind-module tsd-is-not-exported"><a href="actor_init_sparql.html#eventemitter" class="tsd-kind-icon">Event<wbr>Emitter</a></li>
+								<li class="tsd-kind-variable tsd-parent-kind-module"><a href="actor_init_sparql.html#key_context_graphql_singularizevariables-1" class="tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>GRAPHQL_<wbr>SINGULARIZEVARIABLES</a></li>
+								<li class="tsd-kind-variable tsd-parent-kind-module"><a href="actor_init_sparql.html#key_context_initialbindings-3" class="tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>INITIALBINDINGS</a></li>
+								<li class="tsd-kind-variable tsd-parent-kind-module"><a href="actor_init_sparql.html#key_context_lenient-3" class="tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>LENIENT</a></li>
+								<li class="tsd-kind-variable tsd-parent-kind-module"><a href="actor_init_sparql.html#key_context_queryformat-3" class="tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>QUERYFORMAT</a></li>
+								<li class="tsd-kind-variable tsd-parent-kind-module tsd-is-not-exported"><a href="actor_init_sparql.html#defaultconfigpath" class="tsd-kind-icon">default<wbr>Config<wbr>Path</a></li>
+								<li class="tsd-kind-variable tsd-parent-kind-module tsd-is-not-exported"><a href="actor_init_sparql.html#minimist" class="tsd-kind-icon">minimist</a></li>
+								<li class="tsd-kind-variable tsd-parent-kind-module tsd-is-not-exported"><a href="actor_init_sparql.html#minimist-1" class="tsd-kind-icon">minimist</a></li>
+								<li class="tsd-kind-variable tsd-parent-kind-module tsd-is-not-exported"><a href="actor_init_sparql.html#quad" class="tsd-kind-icon">quad</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Functions</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-function tsd-parent-kind-module"><a href="actor_init_sparql.html#evaluatequery-1" class="tsd-kind-icon">evaluate<wbr>Query</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-module"><a href="actor_init_sparql.html#newengine-1" class="tsd-kind-icon">new<wbr>Engine</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-module"><a href="actor_init_sparql.html#newenginedynamic" class="tsd-kind-icon">new<wbr>Engine<wbr>Dynamic</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-module"><a href="actor_init_sparql.html#newenginedynamicarged" class="tsd-kind-icon">new<wbr>Engine<wbr>Dynamic<wbr>Arged</a></li>
+							</ul>
+						</section>
+					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>References</h2>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module">
+					<a name="actorinitsparql" class="tsd-anchor"></a>
+					<h3>Actor<wbr>Init<wbr>Sparql</h3>
+					Re-exports <a href="../classes/actor_init_sparql.actorinitsparql-2.html">ActorInitSparql</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module">
+					<a name="actorinitsparql-1" class="tsd-anchor"></a>
+					<h3>Actor<wbr>Init<wbr>Sparql</h3>
+					Re-exports <a href="../classes/actor_init_sparql.actorinitsparql-3.html">ActorInitSparql</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module">
+					<a name="httpservicesparqlendpoint" class="tsd-anchor"></a>
+					<h3>Http<wbr>Service<wbr>Sparql<wbr>Endpoint</h3>
+					Re-exports <a href="../classes/actor_init_sparql.httpservicesparqlendpoint-1.html">HttpServiceSparqlEndpoint</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module">
+					<a name="iactorinitsparqlargs" class="tsd-anchor"></a>
+					<h3>IActor<wbr>Init<wbr>Sparql<wbr>Args</h3>
+					Re-exports <a href="../interfaces/actor_init_sparql.iactorinitsparqlargs-1.html">IActorInitSparqlArgs</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module">
+					<a name="ihttpservicesparqlendpointargs" class="tsd-anchor"></a>
+					<h3>IHttp<wbr>Service<wbr>Sparql<wbr>Endpoint<wbr>Args</h3>
+					Re-exports <a href="../interfaces/actor_init_sparql.ihttpservicesparqlendpointargs-1.html">IHttpServiceSparqlEndpointArgs</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module">
+					<a name="key_context_graphql_singularizevariables" class="tsd-anchor"></a>
+					<h3>KEY_<wbr>CONTEXT_<wbr>GRAPHQL_<wbr>SINGULARIZEVARIABLES</h3>
+					Re-exports <a href="actor_init_sparql.html#key_context_graphql_singularizevariables-1">KEY_CONTEXT_GRAPHQL_SINGULARIZEVARIABLES</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module">
+					<a name="key_context_initialbindings" class="tsd-anchor"></a>
+					<h3>KEY_<wbr>CONTEXT_<wbr>INITIALBINDINGS</h3>
+					Re-exports <a href="actor_init_sparql.html#key_context_initialbindings-3">KEY_CONTEXT_INITIALBINDINGS</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module">
+					<a name="key_context_initialbindings-1" class="tsd-anchor"></a>
+					<h3>KEY_<wbr>CONTEXT_<wbr>INITIALBINDINGS</h3>
+					Re-exports <a href="actor_init_sparql.html#key_context_initialbindings-3">KEY_CONTEXT_INITIALBINDINGS</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module">
+					<a name="key_context_initialbindings-2" class="tsd-anchor"></a>
+					<h3>KEY_<wbr>CONTEXT_<wbr>INITIALBINDINGS</h3>
+					Re-exports <a href="actor_init_sparql.html#key_context_initialbindings-3">KEY_CONTEXT_INITIALBINDINGS</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module">
+					<a name="key_context_lenient" class="tsd-anchor"></a>
+					<h3>KEY_<wbr>CONTEXT_<wbr>LENIENT</h3>
+					Re-exports <a href="actor_init_sparql.html#key_context_lenient-3">KEY_CONTEXT_LENIENT</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module">
+					<a name="key_context_lenient-1" class="tsd-anchor"></a>
+					<h3>KEY_<wbr>CONTEXT_<wbr>LENIENT</h3>
+					Re-exports <a href="actor_init_sparql.html#key_context_lenient-3">KEY_CONTEXT_LENIENT</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module">
+					<a name="key_context_lenient-2" class="tsd-anchor"></a>
+					<h3>KEY_<wbr>CONTEXT_<wbr>LENIENT</h3>
+					Re-exports <a href="actor_init_sparql.html#key_context_lenient-3">KEY_CONTEXT_LENIENT</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module">
+					<a name="key_context_queryformat" class="tsd-anchor"></a>
+					<h3>KEY_<wbr>CONTEXT_<wbr>QUERYFORMAT</h3>
+					Re-exports <a href="actor_init_sparql.html#key_context_queryformat-3">KEY_CONTEXT_QUERYFORMAT</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module">
+					<a name="key_context_queryformat-1" class="tsd-anchor"></a>
+					<h3>KEY_<wbr>CONTEXT_<wbr>QUERYFORMAT</h3>
+					Re-exports <a href="actor_init_sparql.html#key_context_queryformat-3">KEY_CONTEXT_QUERYFORMAT</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module">
+					<a name="key_context_queryformat-2" class="tsd-anchor"></a>
+					<h3>KEY_<wbr>CONTEXT_<wbr>QUERYFORMAT</h3>
+					Re-exports <a href="actor_init_sparql.html#key_context_queryformat-3">KEY_CONTEXT_QUERYFORMAT</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module">
+					<a name="bindingsstreamtographql" class="tsd-anchor"></a>
+					<h3>bindings<wbr>Stream<wbr>ToGraph<wbr>Ql</h3>
+					Re-exports <a href="actor_sparql_serialize_tree.html#bindingsstreamtographql">bindingsStreamToGraphQl</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module">
+					<a name="evaluatequery" class="tsd-anchor"></a>
+					<h3>evaluate<wbr>Query</h3>
+					Re-exports <a href="actor_init_sparql.html#evaluatequery-1">evaluateQuery</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module">
+					<a name="newengine" class="tsd-anchor"></a>
+					<h3>new<wbr>Engine</h3>
+					Re-exports <a href="actor_init_sparql.html#newengine-1">newEngine</a>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Variables</h2>
+				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-module tsd-is-not-exported">
+					<a name="eventemitter" class="tsd-anchor"></a>
+					<h3>Event<wbr>Emitter</h3>
+					<div class="tsd-signature tsd-kind-icon">Event<wbr>Emitter<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/ae85221/packages/actor-init-sparql/lib/HttpServiceSparqlEndpoint.ts#L4">packages/actor-init-sparql/lib/HttpServiceSparqlEndpoint.ts:4</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-module">
+					<a name="key_context_graphql_singularizevariables-1" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagConst">Const</span> KEY_<wbr>CONTEXT_<wbr>GRAPHQL_<wbr>SINGULARIZEVARIABLES</h3>
+					<div class="tsd-signature tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>GRAPHQL_<wbr>SINGULARIZEVARIABLES<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &quot;@comunica/actor-init-sparql:singularizeVariables&quot;</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/ae85221/packages/actor-init-sparql/lib/ActorInitSparql-browser.ts#L243">packages/actor-init-sparql/lib/ActorInitSparql-browser.ts:243</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-module">
+					<a name="key_context_initialbindings-3" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagConst">Const</span> KEY_<wbr>CONTEXT_<wbr>INITIALBINDINGS</h3>
+					<div class="tsd-signature tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>INITIALBINDINGS<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &quot;@comunica/actor-init-sparql:initialBindings&quot;</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/ae85221/packages/actor-init-sparql/lib/ActorInitSparql-browser.ts#L241">packages/actor-init-sparql/lib/ActorInitSparql-browser.ts:241</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-module">
+					<a name="key_context_lenient-3" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagConst">Const</span> KEY_<wbr>CONTEXT_<wbr>LENIENT</h3>
+					<div class="tsd-signature tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>LENIENT<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &quot;@comunica/actor-init-sparql:lenient&quot;</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/ae85221/packages/actor-init-sparql/lib/ActorInitSparql-browser.ts#L244">packages/actor-init-sparql/lib/ActorInitSparql-browser.ts:244</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-module">
+					<a name="key_context_queryformat-3" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagConst">Const</span> KEY_<wbr>CONTEXT_<wbr>QUERYFORMAT</h3>
+					<div class="tsd-signature tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>QUERYFORMAT<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &quot;@comunica/actor-init-sparql:queryFormat&quot;</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/ae85221/packages/actor-init-sparql/lib/ActorInitSparql-browser.ts#L242">packages/actor-init-sparql/lib/ActorInitSparql-browser.ts:242</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-module tsd-is-not-exported">
+					<a name="defaultconfigpath" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagConst">Const</span> default<wbr>Config<wbr>Path</h3>
+					<div class="tsd-signature tsd-kind-icon">default<wbr>Config<wbr>Path<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = __dirname + &#x27;/../config/config-default.json&#x27;</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/ae85221/packages/actor-init-sparql/bin/http.ts#L4">packages/actor-init-sparql/bin/http.ts:4</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-module tsd-is-not-exported">
+					<a name="minimist" class="tsd-anchor"></a>
+					<h3>minimist</h3>
+					<div class="tsd-signature tsd-kind-icon">minimist<span class="tsd-signature-symbol">:</span> <a href="actor_init_sparql.html#minimist" class="tsd-signature-type">minimist</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/ae85221/packages/actor-init-sparql/lib/ActorInitSparql.ts#L9">packages/actor-init-sparql/lib/ActorInitSparql.ts:9</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-module tsd-is-not-exported">
+					<a name="minimist-1" class="tsd-anchor"></a>
+					<h3>minimist</h3>
+					<div class="tsd-signature tsd-kind-icon">minimist<span class="tsd-signature-symbol">:</span> <a href="actor_init_sparql.html#minimist" class="tsd-signature-type">minimist</a></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/ae85221/packages/actor-init-sparql/lib/HttpServiceSparqlEndpoint.ts#L5">packages/actor-init-sparql/lib/HttpServiceSparqlEndpoint.ts:5</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-module tsd-is-not-exported">
+					<a name="quad" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagConst">Const</span> quad</h3>
+					<div class="tsd-signature tsd-kind-icon">quad<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> = require(&#x27;rdf-quad&#x27;)</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/ae85221/packages/actor-init-sparql/lib/HttpServiceSparqlEndpoint.ts#L17">packages/actor-init-sparql/lib/HttpServiceSparqlEndpoint.ts:17</a></li>
+						</ul>
+					</aside>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Functions</h2>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module">
+					<a name="evaluatequery-1" class="tsd-anchor"></a>
+					<h3>evaluate<wbr>Query</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module">
+						<li class="tsd-signature tsd-kind-icon">evaluate<wbr>Query<span class="tsd-signature-symbol">(</span>query<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, context<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/ae85221/packages/actor-init-sparql/index-browser.ts#L15">packages/actor-init-sparql/index-browser.ts:15</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>query: <span class="tsd-signature-type">string</span></h5>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> context: <span class="tsd-signature-type">any</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">any</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module">
+					<a name="newengine-1" class="tsd-anchor"></a>
+					<h3>new<wbr>Engine</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module">
+						<li class="tsd-signature tsd-kind-icon">new<wbr>Engine<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../classes/actor_init_sparql.actorinitsparql-2.html" class="tsd-signature-type">ActorInitSparql</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/ae85221/packages/actor-init-sparql/index-browser.ts#L10">packages/actor-init-sparql/index-browser.ts:10</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Create a new comunica engine from the default config.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <a href="../classes/actor_init_sparql.actorinitsparql-2.html" class="tsd-signature-type">ActorInitSparql</a></h4>
+							<p>A comunica engine.</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module">
+					<a name="newenginedynamic" class="tsd-anchor"></a>
+					<h3>new<wbr>Engine<wbr>Dynamic</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module">
+						<li class="tsd-signature tsd-kind-icon">new<wbr>Engine<wbr>Dynamic<span class="tsd-signature-symbol">(</span>options<span class="tsd-signature-symbol">?: </span><a href="../interfaces/actor_init_sparql.iqueryoptions.html" class="tsd-signature-type">IQueryOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../classes/actor_init_sparql.actorinitsparql-3.html" class="tsd-signature-type">ActorInitSparql</a><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/ae85221/packages/actor-init-sparql/index.ts#L13">packages/actor-init-sparql/index.ts:13</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Create a new dynamic comunica engine from a given config file.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> options: <a href="../interfaces/actor_init_sparql.iqueryoptions.html" class="tsd-signature-type">IQueryOptions</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Optional options on how to instantiate the query evaluator.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../classes/actor_init_sparql.actorinitsparql-3.html" class="tsd-signature-type">ActorInitSparql</a><span class="tsd-signature-symbol">&gt;</span></h4>
+							<p>A promise that resolves to a fully wired comunica engine.</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module">
+					<a name="newenginedynamicarged" class="tsd-anchor"></a>
+					<h3>new<wbr>Engine<wbr>Dynamic<wbr>Arged</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module">
+						<li class="tsd-signature tsd-kind-icon">new<wbr>Engine<wbr>Dynamic<wbr>Arged<span class="tsd-signature-symbol">(</span>options<span class="tsd-signature-symbol">: </span><a href="../interfaces/actor_init_sparql.iqueryoptions.html" class="tsd-signature-type">IQueryOptions</a>, moduleRootPath<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, defaultConfigPath<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../classes/actor_init_sparql.actorinitsparql-3.html" class="tsd-signature-type">ActorInitSparql</a><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/ae85221/packages/actor-init-sparql/lib/QueryDynamic.ts#L11">packages/actor-init-sparql/lib/QueryDynamic.ts:11</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Create a new dynamic comunica engine.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>options: <a href="../interfaces/actor_init_sparql.iqueryoptions.html" class="tsd-signature-type">IQueryOptions</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Optional options on how to instantiate the query evaluator.</p>
+									</div>
+								</li>
+								<li>
+									<h5>moduleRootPath: <span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The path to the invoking module.</p>
+									</div>
+								</li>
+								<li>
+									<h5>defaultConfigPath: <span class="tsd-signature-type">string</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The path to the config file.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../classes/actor_init_sparql.actorinitsparql-3.html" class="tsd-signature-type">ActorInitSparql</a><span class="tsd-signature-symbol">&gt;</span></h4>
+							<p>A promise that resolves to a fully wired comunica engine.</p>
+						</li>
+					</ul>
+				</section>
+			</section>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="globals  ">
+						<a href="../globals.html"><em>Globals</em></a>
+					</li>
+					<li class="current tsd-kind-module">
+						<a href="actor_init_sparql.html">actor-<wbr>init-<wbr>sparql</a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+				</ul>
+				<ul class="current">
+					<li class="current tsd-kind-module">
+						<a href="actor_init_sparql.html" class="tsd-kind-icon">actor-<wbr>init-<wbr>sparql</a>
+						<ul>
+							<li class=" tsd-kind-reference tsd-parent-kind-module">
+								<a href="actor_init_sparql.html#actorinitsparql" class="tsd-kind-icon">Actor<wbr>Init<wbr>Sparql</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module">
+								<a href="actor_init_sparql.html#actorinitsparql-1" class="tsd-kind-icon">Actor<wbr>Init<wbr>Sparql</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module">
+								<a href="actor_init_sparql.html#httpservicesparqlendpoint" class="tsd-kind-icon">Http<wbr>Service<wbr>Sparql<wbr>Endpoint</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module">
+								<a href="actor_init_sparql.html#iactorinitsparqlargs" class="tsd-kind-icon">IActor<wbr>Init<wbr>Sparql<wbr>Args</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module">
+								<a href="actor_init_sparql.html#ihttpservicesparqlendpointargs" class="tsd-kind-icon">IHttp<wbr>Service<wbr>Sparql<wbr>Endpoint<wbr>Args</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module">
+								<a href="actor_init_sparql.html#key_context_graphql_singularizevariables" class="tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>GRAPHQL_<wbr>SINGULARIZEVARIABLES</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module">
+								<a href="actor_init_sparql.html#key_context_initialbindings" class="tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>INITIALBINDINGS</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module">
+								<a href="actor_init_sparql.html#key_context_initialbindings-1" class="tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>INITIALBINDINGS</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module">
+								<a href="actor_init_sparql.html#key_context_initialbindings-2" class="tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>INITIALBINDINGS</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module">
+								<a href="actor_init_sparql.html#key_context_lenient" class="tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>LENIENT</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module">
+								<a href="actor_init_sparql.html#key_context_lenient-1" class="tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>LENIENT</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module">
+								<a href="actor_init_sparql.html#key_context_lenient-2" class="tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>LENIENT</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module">
+								<a href="actor_init_sparql.html#key_context_queryformat" class="tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>QUERYFORMAT</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module">
+								<a href="actor_init_sparql.html#key_context_queryformat-1" class="tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>QUERYFORMAT</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module">
+								<a href="actor_init_sparql.html#key_context_queryformat-2" class="tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>QUERYFORMAT</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module">
+								<a href="actor_init_sparql.html#bindingsstreamtographql" class="tsd-kind-icon">bindings<wbr>Stream<wbr>ToGraph<wbr>Ql</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module">
+								<a href="actor_init_sparql.html#evaluatequery" class="tsd-kind-icon">evaluate<wbr>Query</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module">
+								<a href="actor_init_sparql.html#newengine" class="tsd-kind-icon">new<wbr>Engine</a>
+							</li>
+							<li class=" tsd-kind-class tsd-parent-kind-module">
+								<a href="../classes/actor_init_sparql.actorinitsparql-2.html" class="tsd-kind-icon">Actor<wbr>Init<wbr>Sparql</a>
+							</li>
+							<li class=" tsd-kind-class tsd-parent-kind-module">
+								<a href="../classes/actor_init_sparql.actorinitsparql-3.html" class="tsd-kind-icon">Actor<wbr>Init<wbr>Sparql</a>
+							</li>
+							<li class=" tsd-kind-class tsd-parent-kind-module">
+								<a href="../classes/actor_init_sparql.httpservicesparqlendpoint-1.html" class="tsd-kind-icon">Http<wbr>Service<wbr>Sparql<wbr>Endpoint</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module">
+								<a href="../interfaces/actor_init_sparql.iactorinitsparqlargs-1.html" class="tsd-kind-icon">IActor<wbr>Init<wbr>Sparql<wbr>Args</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module">
+								<a href="../interfaces/actor_init_sparql.ihttpservicesparqlendpointargs-1.html" class="tsd-kind-icon">IHttp<wbr>Service<wbr>Sparql<wbr>Endpoint<wbr>Args</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module">
+								<a href="../interfaces/actor_init_sparql.iqueryoptions.html" class="tsd-kind-icon">IQuery<wbr>Options</a>
+							</li>
+							<li class=" tsd-kind-variable tsd-parent-kind-module tsd-is-not-exported">
+								<a href="actor_init_sparql.html#eventemitter" class="tsd-kind-icon">Event<wbr>Emitter</a>
+							</li>
+							<li class=" tsd-kind-variable tsd-parent-kind-module">
+								<a href="actor_init_sparql.html#key_context_graphql_singularizevariables-1" class="tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>GRAPHQL_<wbr>SINGULARIZEVARIABLES</a>
+							</li>
+							<li class=" tsd-kind-variable tsd-parent-kind-module">
+								<a href="actor_init_sparql.html#key_context_initialbindings-3" class="tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>INITIALBINDINGS</a>
+							</li>
+							<li class=" tsd-kind-variable tsd-parent-kind-module">
+								<a href="actor_init_sparql.html#key_context_lenient-3" class="tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>LENIENT</a>
+							</li>
+							<li class=" tsd-kind-variable tsd-parent-kind-module">
+								<a href="actor_init_sparql.html#key_context_queryformat-3" class="tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>QUERYFORMAT</a>
+							</li>
+							<li class=" tsd-kind-variable tsd-parent-kind-module tsd-is-not-exported">
+								<a href="actor_init_sparql.html#defaultconfigpath" class="tsd-kind-icon">default<wbr>Config<wbr>Path</a>
+							</li>
+							<li class=" tsd-kind-variable tsd-parent-kind-module tsd-is-not-exported">
+								<a href="actor_init_sparql.html#minimist" class="tsd-kind-icon">minimist</a>
+							</li>
+							<li class=" tsd-kind-variable tsd-parent-kind-module tsd-is-not-exported">
+								<a href="actor_init_sparql.html#minimist-1" class="tsd-kind-icon">minimist</a>
+							</li>
+							<li class=" tsd-kind-variable tsd-parent-kind-module tsd-is-not-exported">
+								<a href="actor_init_sparql.html#quad" class="tsd-kind-icon">quad</a>
+							</li>
+							<li class=" tsd-kind-function tsd-parent-kind-module">
+								<a href="actor_init_sparql.html#evaluatequery-1" class="tsd-kind-icon">evaluate<wbr>Query</a>
+							</li>
+							<li class=" tsd-kind-function tsd-parent-kind-module">
+								<a href="actor_init_sparql.html#newengine-1" class="tsd-kind-icon">new<wbr>Engine</a>
+							</li>
+							<li class=" tsd-kind-function tsd-parent-kind-module">
+								<a href="actor_init_sparql.html#newenginedynamic" class="tsd-kind-icon">new<wbr>Engine<wbr>Dynamic</a>
+							</li>
+							<li class=" tsd-kind-function tsd-parent-kind-module">
+								<a href="actor_init_sparql.html#newenginedynamicarged" class="tsd-kind-icon">new<wbr>Engine<wbr>Dynamic<wbr>Arged</a>
+							</li>
+						</ul>
+					</li>
+				</ul>
+				<ul class="after-current">
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="../assets/js/main.js"></script>
+<script>if (location.protocol == 'file:') document.write('<script src="../assets/js/search.js"><' + '/script>');</script>
+</body>
+</html>
