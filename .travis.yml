@@ -6,7 +6,7 @@ matrix:
   include:
     - node_js: '10'
     - node_js: '12'
-      env: DOCUMENTATION_BUILD=true DOCKER_BUILD=true
+      env: NODE_MAIN=true
 os:
  - linux
 # - osx # Temporary disabled, not very stable yet on Travis
@@ -18,10 +18,10 @@ script:
   - lerna run browser --concurrency 1
   - lerna run spec --concurrency 1
   - lerna run integration --concurrency 1
-  - if [ "$DOCKER_BUILD" = "true" ]; then ( sh -c "`curl -fsSl https://raw.githubusercontent.com/rubensworks/lerna-docker/master/install.sh`" && ~/.lerna-docker/bin/lerna-docker comunica build ) fi
+  - if [ "$NODE_MAIN" = "true" ]; then ( sh -c "`curl -fsSl https://raw.githubusercontent.com/rubensworks/lerna-docker/master/install.sh`" && ~/.lerna-docker/bin/lerna-docker comunica build ) fi
 after_success:
   - yarn run coveralls-ci
-  - if [ "$DOCUMENTATION_BUILD" = "true" ]; then ( yarn run doc ) fi
+  - if [ "$NODE_MAIN" = "true" ]; then ( yarn run doc ) fi
 cache:
   yarn: true
   directories:
@@ -37,7 +37,7 @@ deploy:
     on:
       tags: false
       branch: master
-      node_js: "node"
+      condition: $NODE_MAIN = true
       os: "linux"
   - provider: script
     skip-cleanup: true
@@ -45,7 +45,7 @@ deploy:
     on:
       tags: false
       branch: master
-      node_js: "node"
+      condition: $NODE_MAIN = true
       os: "linux"
   - provider: script
     skip-cleanup: true
@@ -53,7 +53,7 @@ deploy:
     on:
       tags: true
       all_branches: true
-      node_js: "node"
+      condition: $NODE_MAIN = true
       os: "linux"
   - provider: script
     skip-cleanup: true
@@ -61,7 +61,7 @@ deploy:
     on:
       tags: false
       branch: master
-      node_js: "node"
+      condition: $NODE_MAIN = true
       os: "linux"
   - provider: script
     skip-cleanup: true
@@ -69,5 +69,5 @@ deploy:
     on:
       tags: true
       all_branches: true
-      node_js: "node"
+      condition: $NODE_MAIN = true
       os: "linux"
