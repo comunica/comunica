@@ -14,11 +14,11 @@ export class RdfSourceSparql implements RDF.Source {
   protected static readonly FACTORY: Factory = new Factory();
 
   private readonly url: string;
-  private readonly context: ActionContext;
+  private readonly context: ActionContext | undefined;
   private readonly mediatorHttp: Mediator<Actor<IActionHttp, IActorTest, IActorHttpOutput>,
     IActionHttp, IActorTest, IActorHttpOutput>;
 
-  constructor(url: string, context: ActionContext,
+  constructor(url: string, context: ActionContext | undefined,
               mediatorHttp: Mediator<Actor<IActionHttp, IActorTest, IActorHttpOutput>,
                 IActionHttp, IActorTest, IActorHttpOutput>) {
     this.url = url;
@@ -116,15 +116,15 @@ export class RdfSourceSparql implements RDF.Source {
 
   /**
    * Return a new variable if the term is undefined, or the term as-is.
-   * @param {Term | null} term A term or null.
+   * @param {Term | undefined} term A term or undefined.
    * @param {string} variableName A variable name to assign when the term was null.
    * @return {Term} A term.
    */
-  public static materializeOptionalTerm(term: RDF.Term | null, variableName: string): RDF.Term {
+  public static materializeOptionalTerm(term: RDF.Term | undefined, variableName: string): RDF.Term {
     return term || variable(variableName);
   }
 
-  public async fetchBindingsStream(endpoint: string, query: string, context: ActionContext)
+  public async fetchBindingsStream(endpoint: string, query: string, context?: ActionContext)
     : Promise<NodeJS.ReadableStream> {
     const url: string = endpoint + '?query=' + encodeURIComponent(query);
 
@@ -154,7 +154,7 @@ export class RdfSourceSparql implements RDF.Source {
    * @param {ActionContext} context An optional context.
    * @return {Promise<BindingsStream>} A promise resolving to a stream of bindings.
    */
-  public async queryBindings(endpoint: string, query: string, context: ActionContext): Promise<BindingsStream> {
+  public async queryBindings(endpoint: string, query: string, context?: ActionContext): Promise<BindingsStream> {
     // Parse each binding and push it in our buffered iterator
     const bindingsStream: BufferedIterator<Bindings> = new BufferedIterator<Bindings>(
       { autoStart: false, maxBufferSize: Infinity });

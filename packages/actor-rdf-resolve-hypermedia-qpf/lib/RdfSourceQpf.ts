@@ -28,7 +28,7 @@ export class RdfSourceQpf implements RDF.Source {
   private readonly objectUri: string;
   private readonly graphUri?: string;
   private readonly defaultGraph?: RDF.NamedNode;
-  private readonly context: ActionContext;
+  private readonly context?: ActionContext;
   private readonly cachedQuads: {[patternId: string]: AsyncIterator<RDF.Quad>};
 
   constructor(mediatorMetadata: Mediator<Actor<IActionRdfMetadata, IActorTest, IActorRdfMetadataOutput>,
@@ -37,8 +37,8 @@ export class RdfSourceQpf implements RDF.Source {
                 IActorRdfMetadataExtractOutput>, IActionRdfMetadataExtract, IActorTest, IActorRdfMetadataExtractOutput>,
               mediatorRdfDereference: Mediator<Actor<IActionRdfDereference, IActorTest,
                 IActorRdfDereferenceOutput>, IActionRdfDereference, IActorTest, IActorRdfDereferenceOutput>,
-              subjectUri: string, predicateUri: string, objectUri: string, graphUri: string,
-              metadata: {[id: string]: any}, context: ActionContext, initialQuads?: RDF.Stream) {
+              subjectUri: string, predicateUri: string, objectUri: string, graphUri: string | undefined,
+              metadata: {[id: string]: any}, context: ActionContext | undefined, initialQuads?: RDF.Stream) {
     this.mediatorMetadata = mediatorMetadata;
     this.mediatorMetadataExtract = mediatorMetadataExtract;
     this.mediatorRdfDereference = mediatorRdfDereference;
@@ -48,8 +48,12 @@ export class RdfSourceQpf implements RDF.Source {
     this.graphUri = graphUri;
     this.context = context;
     this.cachedQuads = {};
-    this.searchForm = this.getSearchForm(metadata);
-    this.defaultGraph = metadata.defaultGraph ? namedNode(metadata.defaultGraph) : null;
+    const searchForm = this.getSearchForm(metadata);
+    if (!searchForm) {
+      throw new Error('Illegal state: found no search form anymore in metadata.');
+    }
+    this.searchForm = searchForm;
+    this.defaultGraph = metadata.defaultGraph ? namedNode(metadata.defaultGraph) : undefined;
     if (initialQuads) {
       let wrappedQuads = (<any> AsyncIterator).wrap(initialQuads);
       if (this.defaultGraph) {
@@ -65,9 +69,9 @@ export class RdfSourceQpf implements RDF.Source {
    * @param {{[p: string]: any}} metadata A metadata object.
    * @return {ISearchForm} A search form, or null if none could be found.
    */
-  public getSearchForm(metadata: {[id: string]: any}): ISearchForm {
+  public getSearchForm(metadata: {[id: string]: any}): ISearchForm | undefined {
     if (!metadata.searchForms || !metadata.searchForms.values) {
-      return null;
+      return undefined;
     }
 
     // Find a quad pattern or triple pattern search form
@@ -90,21 +94,19 @@ export class RdfSourceQpf implements RDF.Source {
         return searchForm;
       }
     }
-
-    return null;
   }
 
   /**
    * Create a QPF fragment IRI for the given quad pattern.
    * @param {ISearchForm} searchForm A search form.
-   * @param {Term} subject A term or null.
-   * @param {Term} predicate A term or null.
-   * @param {Term} object A term or null.
-   * @param {Term} graph A term or null.
+   * @param {Term} subject A term or undefined.
+   * @param {Term} predicate A term or undefined.
+   * @param {Term} object A term or undefined.
+   * @param {Term} graph A term or undefined.
    * @return {string} A URI.
    */
   public createFragmentUri(searchForm: ISearchForm,
-                           subject: RDF.Term, predicate: RDF.Term, object: RDF.Term, graph: RDF.Term): string {
+                           subject?: RDF.Term, predicate?: RDF.Term, object?: RDF.Term, graph?: RDF.Term): string {
     const entries: {[id: string]: string} = {};
     const input = [
       { uri: this.subjectUri, term: subject },
@@ -183,7 +185,7 @@ export class RdfSourceQpf implements RDF.Source {
     });
 
     this.cacheQuads(quads, subject, predicate, object, graph);
-    return this.getCachedQuads(subject, predicate, object, graph);
+    return <RDF.Stream> this.getCachedQuads(subject, predicate, object, graph);
   }
 
   protected reverseMapQuadsToDefaultGraph(quads: AsyncIterator<RDF.Quad>): AsyncIterator<RDF.Quad> {
@@ -210,7 +212,7 @@ export class RdfSourceQpf implements RDF.Source {
   }
 
   protected getCachedQuads(subject?: RDF.Term, predicate?: RDF.Term, object?: RDF.Term, graph?: RDF.Term)
-    : AsyncIterator<RDF.Quad> {
+    : AsyncIterator<RDF.Quad> | undefined {
     const patternId = this.getPatternId(subject, predicate, object, graph);
     let quads = this.cachedQuads[patternId];
     if (quads) {
@@ -220,7 +222,6 @@ export class RdfSourceQpf implements RDF.Source {
       quadsOriginal.getProperty('metadata', (metadata) => quads.emit('metadata', metadata));
       return quads;
     }
-    return null;
   }
 
 }

@@ -8,5 +8,5 @@ if (argv.length < 1 || /^--?h(elp)?$/.test(argv[0])) {
   process.exit(1);
 }
 
-const configResourceUrl = argv.shift();
+const configResourceUrl = <string> argv.shift();
 runArgs(configResourceUrl, argv, process.stdin, process.stdout, process.stderr, process.env);

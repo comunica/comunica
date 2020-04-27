@@ -32,7 +32,8 @@ export class ActorQueryOperationPathAlt extends ActorAbstractPath {
     ])).map((op) => ActorQueryOperation.getSafeBindings(op));
 
     const bindingsStream = new RoundRobinUnionIterator(subOperations.map((op) => op.bindingsStream));
-    const variables = require('lodash.uniq')([].concat.apply([], subOperations.map((op) => op.variables)));
+    const variables = require('lodash.uniq')((<string[]> []).concat
+      .apply([], subOperations.map((op) => op.variables)));
 
     return { type: 'bindings', bindingsStream, variables };
   }

@@ -24,7 +24,7 @@ export class ActorSparqlParseGraphql extends ActorSparqlParse {
   public async run(action: IActionSparqlParse): Promise<IActorSparqlParseOutput> {
     const context = action.context && action.context.has('@context') ? action.context.get('@context') : {};
     const options = {
-      singularizeVariables: action.context.get('@comunica/actor-init-sparql:singularizeVariables'),
+      singularizeVariables: action.context && action.context.get('@comunica/actor-init-sparql:singularizeVariables'),
     };
     return { operation: await this.graphqlToSparql.graphqlToSparqlAlgebra(action.query, context, options) };
   }

@@ -1,9 +1,12 @@
 import {ActorHttp, IActionHttp, IActorHttpOutput} from "@comunica/bus-http";
 import {Bindings, BindingsStream} from "@comunica/bus-query-operation";
-import {ActorRdfResolveQuadPattern, IActionRdfResolveQuadPattern,
-  IActorRdfResolveQuadPatternOutput} from "@comunica/bus-rdf-resolve-quad-pattern";
+import {
+  ActorRdfResolveQuadPattern,
+  IActionRdfResolveQuadPattern,
+  IActorRdfResolveQuadPatternOutput
+} from "@comunica/bus-rdf-resolve-quad-pattern";
 import {ActionContext, Actor, IActorArgs, IActorTest, Mediator} from "@comunica/core";
-import {blankNode, literal, namedNode, variable} from "@rdfjs/data-model";
+import {variable} from "@rdfjs/data-model";
 import {AsyncIterator, BufferedIterator} from "asynciterator";
 import {PromiseProxyIterator} from "asynciterator-promiseproxy";
 import * as RDF from "rdf-js";
@@ -123,7 +126,7 @@ export class ActorRdfResolveQuadPatternSparqlJson
   }
 
   public async run(action: IActionRdfResolveQuadPattern): Promise<IActorRdfResolveQuadPatternOutput> {
-    const endpoint: string = this.getContextSourceUrl(this.getContextSource(action.context));
+    const endpoint: string = <string> this.getContextSourceUrl(this.getContextSource(action.context));
     const pattern = ActorRdfResolveQuadPatternSparqlJson.replaceBlankNodes(action.pattern);
     const selectQuery: string = ActorRdfResolveQuadPatternSparqlJson.patternToSelectQuery(pattern);
     const countQuery: string = ActorRdfResolveQuadPatternSparqlJson.patternToCountQuery(pattern);
@@ -178,7 +181,7 @@ export class ActorRdfResolveQuadPatternSparqlJson
    * @param {ActionContext} context An optional context.
    * @return {Promise<BindingsStream>} A promise resolving to a stream of bindings.
    */
-  public async queryBindings(endpoint: string, query: string, context: ActionContext): Promise<BindingsStream> {
+  public async queryBindings(endpoint: string, query: string, context?: ActionContext): Promise<BindingsStream> {
     // Parse each binding and push it in our buffered iterator
     const bindingsStream: BufferedIterator<Bindings> = new BufferedIterator<Bindings>(
       { autoStart: false, maxBufferSize: Infinity });
@@ -208,7 +211,7 @@ export class ActorRdfResolveQuadPatternSparqlJson
     return bindingsStream;
   }
 
-  protected async fetchBindingsStream(endpoint: string, query: string, context: ActionContext)
+  protected async fetchBindingsStream(endpoint: string, query: string, context?: ActionContext)
     : Promise<NodeJS.ReadableStream> {
     const url: string = endpoint + '?query=' + encodeURIComponent(query);
 

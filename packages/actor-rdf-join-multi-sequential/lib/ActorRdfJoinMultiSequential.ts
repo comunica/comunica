@@ -1,4 +1,8 @@
-import {IActorQueryOperationOutput, IActorQueryOperationOutputBindings} from "@comunica/bus-query-operation";
+import {
+  getMetadata,
+  IActorQueryOperationOutput,
+  IActorQueryOperationOutputBindings
+} from "@comunica/bus-query-operation";
 import {ActorRdfJoin, IActionRdfJoin} from "@comunica/bus-rdf-join";
 import {IActorArgs, IActorTest, Mediator} from "@comunica/core";
 import {IMediatorTypeIterations} from "@comunica/mediatortype-iterations";
@@ -26,7 +30,7 @@ export class ActorRdfJoinMultiSequential extends ActorRdfJoin {
   }
 
   protected async getIterations(action: IActionRdfJoin): Promise<number> {
-    return (await Promise.all(action.entries.map((entry) => entry.metadata())))
+    return (await Promise.all(action.entries.map(getMetadata)))
       .reduce((acc, value) => acc * value.totalItems, 1);
   }
 

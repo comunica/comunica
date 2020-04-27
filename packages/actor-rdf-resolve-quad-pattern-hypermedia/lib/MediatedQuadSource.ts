@@ -14,7 +14,7 @@ export class MediatedQuadSource implements ILazyQuadSource {
 
   public readonly context: ActionContext;
   public readonly firstUrl: string;
-  public readonly forceSourceType: string;
+  public readonly forceSourceType?: string;
   public readonly mediators: IMediatorArgs;
 
   public sourcesState: ISourcesState;
@@ -22,7 +22,7 @@ export class MediatedQuadSource implements ILazyQuadSource {
   private readonly cacheSize: number;
 
   constructor(cacheSize: number, context: ActionContext, firstUrl: string,
-              forceSourceType: string, mediators: IMediatorArgs) {
+              forceSourceType: string | undefined, mediators: IMediatorArgs) {
     this.cacheSize = cacheSize;
     this.context = context;
     this.firstUrl = firstUrl;
@@ -44,7 +44,7 @@ export class MediatedQuadSource implements ILazyQuadSource {
       subject, predicate, object, graph, this.firstUrl, this.mediators);
     if (!this.sourcesState) {
       it.setSourcesState();
-      this.sourcesState = it.sourcesState;
+      this.sourcesState = <ISourcesState> it.sourcesState;
     } else {
       it.setSourcesState(this.sourcesState);
     }

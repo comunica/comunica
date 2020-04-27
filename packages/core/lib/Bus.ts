@@ -167,7 +167,7 @@ export class Bus<A extends Actor<I, T, O>, I extends IAction, T extends IActorTe
         let activeActorAfterId = -1;
         for (let i = 0; i < actorsAfter.length; i++) {
           let validLink = true;
-          for (const dependency of this.dependencyLinks.get(actorsAfter[i])) {
+          for (const dependency of <A[]> this.dependencyLinks.get(actorsAfter[i])) {
             if (this.actors.indexOf(dependency) < 0 && actorsAfter.indexOf(dependency) >= 0) {
               validLink = false;
               break;

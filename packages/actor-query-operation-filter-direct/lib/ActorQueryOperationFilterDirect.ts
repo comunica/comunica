@@ -29,7 +29,7 @@ export class ActorQueryOperationFilterDirect extends ActorQueryOperationTypedMed
     const filter = (bindings: Bindings) => {
       try {
         const term = exprFunc(bindings);
-        return term && term.value !== 'false' && term.value !== '0';
+        return !!term && term.value !== 'false' && term.value !== '0';
       } catch (e) {
         bindingsStream.emit('error', e);
         return false;

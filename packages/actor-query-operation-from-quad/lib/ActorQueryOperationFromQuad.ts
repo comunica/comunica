@@ -151,7 +151,8 @@ export class ActorQueryOperationFromQuad extends ActorQueryOperationTypedMediate
     } else if (operations.length === 2) {
       return ActorQueryOperationFromQuad.FACTORY.createJoin(operations[0], operations[1]);
     } else if (operations.length > 2) {
-      return ActorQueryOperationFromQuad.FACTORY.createJoin(operations.shift(), this.joinOperations(operations));
+      return ActorQueryOperationFromQuad.FACTORY.createJoin(<Algebra.Operation> operations.shift(),
+        this.joinOperations(operations));
     } else {
       throw new Error('A join can only be applied on at least one operation');
     }
@@ -168,7 +169,8 @@ export class ActorQueryOperationFromQuad extends ActorQueryOperationTypedMediate
     } else if (operations.length === 2) {
       return ActorQueryOperationFromQuad.FACTORY.createUnion(operations[0], operations[1]);
     } else if (operations.length > 2) {
-      return ActorQueryOperationFromQuad.FACTORY.createUnion(operations.shift(), this.unionOperations(operations));
+      return ActorQueryOperationFromQuad.FACTORY.createUnion(<Algebra.Operation> operations.shift(),
+        this.unionOperations(operations));
     } else {
       throw new Error('A union can only be applied on at least one operation');
     }

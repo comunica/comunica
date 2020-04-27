@@ -27,7 +27,7 @@ export class MediatedPagedAsyncRdfIterator extends PagedAsyncRdfIterator {
     IActionRdfMetadata, IActorTest, IActorRdfMetadataOutput>;
   public readonly mediatorMetadataExtract: Mediator<Actor<IActionRdfMetadataExtract, IActorTest,
     IActorRdfMetadataExtractOutput>, IActionRdfMetadataExtract, IActorTest, IActorRdfMetadataExtractOutput>;
-  public readonly context: ActionContext;
+  public readonly context?: ActionContext;
 
   constructor(firstPageUrl: string, firstPageData: RDF.Stream, firstPageMetadata: () => Promise<{[id: string]: any}>,
               mediatorRdfDereference: Mediator<Actor<IActionRdfDereference, IActorTest,
@@ -37,7 +37,7 @@ export class MediatedPagedAsyncRdfIterator extends PagedAsyncRdfIterator {
               mediatorMetadataExtract: Mediator<Actor<IActionRdfMetadataExtract, IActorTest,
                 IActorRdfMetadataExtractOutput>, IActionRdfMetadataExtract, IActorTest,
                 IActorRdfMetadataExtractOutput>,
-              context: ActionContext) {
+              context?: ActionContext) {
     super(firstPageUrl, { autoStart: false });
     this.firstPageData = firstPageData;
     this.firstPageMetadata = firstPageMetadata;
@@ -53,7 +53,7 @@ export class MediatedPagedAsyncRdfIterator extends PagedAsyncRdfIterator {
     // Don't call mediators again if we are on the first page
     if (!page) {
       pageData = this.firstPageData;
-      let next: string;
+      let next: string = '';
       try {
         next = (await this.firstPageMetadata()).next;
       } catch (e) {

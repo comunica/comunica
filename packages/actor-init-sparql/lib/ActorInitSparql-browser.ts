@@ -18,9 +18,16 @@ import {IActionSparqlParse, IActorSparqlParseOutput} from "@comunica/bus-sparql-
 import {
   IActionRootSparqlParse,
   IActionSparqlSerialize,
+  IActionSparqlSerializeHandle,
+  IActionSparqlSerializeMediaTypeFormats,
+  IActionSparqlSerializeMediaTypes,
   IActorOutputRootSparqlParse,
+  IActorOutputSparqlSerializeHandle, IActorOutputSparqlSerializeMediaTypeFormats,
+  IActorOutputSparqlSerializeMediaTypes,
   IActorSparqlSerializeOutput,
   IActorTestRootSparqlParse,
+  IActorTestSparqlSerializeHandle, IActorTestSparqlSerializeMediaTypeFormats,
+  IActorTestSparqlSerializeMediaTypes,
 } from "@comunica/bus-sparql-serialize";
 import {ActionContext, Actor, IAction, IActorArgs, IActorTest, KEY_CONTEXT_LOG, Logger, Mediator} from "@comunica/core";
 import {AsyncReiterableArray} from "asyncreiterable";
@@ -40,14 +47,17 @@ export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs {
     IActionQueryOperation, IActorTest, IActorQueryOperationOutput>;
   public readonly mediatorSparqlParse: Mediator<Actor<IActionSparqlParse, IActorTest, IActorSparqlParseOutput>,
     IActionSparqlParse, IActorTest, IActorSparqlParseOutput>;
-  public readonly mediatorSparqlSerialize: Mediator<Actor<IActionRootSparqlParse, IActorTestRootSparqlParse,
-    IActorOutputRootSparqlParse>, IActionRootSparqlParse, IActorTestRootSparqlParse, IActorOutputRootSparqlParse>;
-  public readonly mediatorSparqlSerializeMediaTypeCombiner: Mediator<Actor<IActionRootSparqlParse,
-    IActorTestRootSparqlParse, IActorOutputRootSparqlParse>, IActionRootSparqlParse, IActorTestRootSparqlParse,
-    IActorOutputRootSparqlParse>;
-  public readonly mediatorSparqlSerializeMediaTypeFormatCombiner: Mediator<Actor<IActionRootSparqlParse,
-    IActorTestRootSparqlParse, IActorOutputRootSparqlParse>, IActionRootSparqlParse, IActorTestRootSparqlParse,
-    IActorOutputRootSparqlParse>;
+  public readonly mediatorSparqlSerialize: Mediator<
+    Actor<IActionSparqlSerializeHandle, IActorTestSparqlSerializeHandle, IActorOutputSparqlSerializeHandle>,
+    IActionSparqlSerializeHandle, IActorTestSparqlSerializeHandle, IActorOutputSparqlSerializeHandle>;
+  public readonly mediatorSparqlSerializeMediaTypeCombiner: Mediator<
+    Actor<IActionSparqlSerializeMediaTypes, IActorTestSparqlSerializeMediaTypes, IActorOutputSparqlSerializeMediaTypes>,
+    IActionSparqlSerializeMediaTypes, IActorTestSparqlSerializeMediaTypes, IActorOutputSparqlSerializeMediaTypes>;
+  public readonly mediatorSparqlSerializeMediaTypeFormatCombiner: Mediator<
+    Actor<IActionSparqlSerializeMediaTypeFormats, IActorTestSparqlSerializeMediaTypeFormats,
+      IActorOutputSparqlSerializeMediaTypeFormats>,
+    IActionSparqlSerializeMediaTypeFormats, IActorTestSparqlSerializeMediaTypeFormats,
+    IActorOutputSparqlSerializeMediaTypeFormats>;
   public readonly mediatorContextPreprocess: Mediator<Actor<IAction, IActorTest,
     IActorContextPreprocessOutput>, IAction, IActorTest, IActorContextPreprocessOutput>;
   public readonly mediatorHttpInvalidate: Mediator<Actor<IActionHttpInvalidate, IActorTest, IActorHttpInvalidateOutput>,
@@ -114,7 +124,7 @@ export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs {
         context = context.set(KEY_CONTEXT_GRAPHQL_SINGULARIZEVARIABLES, {});
       }
     }
-    let baseIRI: string;
+    let baseIRI: string | undefined;
     if (context && context.has(KEY_CONTEXT_BASEIRI)) {
       baseIRI = context.get(KEY_CONTEXT_BASEIRI);
     }
@@ -155,7 +165,7 @@ export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs {
    * @param context An optional context.
    * @return {Promise<{[p: string]: number}>} All available SPARQL (weighted) result media types.
    */
-  public async getResultMediaTypes(context: ActionContext): Promise<{[id: string]: number}> {
+  public async getResultMediaTypes(context?: ActionContext): Promise<{[id: string]: number}> {
     return (await this.mediatorSparqlSerializeMediaTypeCombiner.mediate({ context, mediaTypes: true })).mediaTypes;
   }
 
@@ -219,14 +229,17 @@ export interface IActorInitSparqlArgs extends IActorArgs<IActionInit, IActorTest
     IActionQueryOperation, IActorTest, IActorQueryOperationOutput>;
   mediatorSparqlParse: Mediator<Actor<IActionSparqlParse, IActorTest, IActorSparqlParseOutput>,
     IActionSparqlParse, IActorTest, IActorSparqlParseOutput>;
-  mediatorSparqlSerialize: Mediator<Actor<IActionRootSparqlParse, IActorTestRootSparqlParse,
-    IActorOutputRootSparqlParse>, IActionRootSparqlParse, IActorTestRootSparqlParse, IActorOutputRootSparqlParse>;
-  mediatorSparqlSerializeMediaTypeCombiner: Mediator<Actor<IActionRootSparqlParse,
-    IActorTestRootSparqlParse, IActorOutputRootSparqlParse>, IActionRootSparqlParse, IActorTestRootSparqlParse,
-    IActorOutputRootSparqlParse>;
-  mediatorSparqlSerializeMediaTypeFormatCombiner: Mediator<Actor<IActionRootSparqlParse,
-    IActorTestRootSparqlParse, IActorOutputRootSparqlParse>, IActionRootSparqlParse, IActorTestRootSparqlParse,
-    IActorOutputRootSparqlParse>;
+  mediatorSparqlSerialize: Mediator<
+    Actor<IActionSparqlSerializeHandle, IActorTestSparqlSerializeHandle, IActorOutputSparqlSerializeHandle>,
+    IActionSparqlSerializeHandle, IActorTestSparqlSerializeHandle, IActorOutputSparqlSerializeHandle>;
+  mediatorSparqlSerializeMediaTypeCombiner: Mediator<
+    Actor<IActionSparqlSerializeMediaTypes, IActorTestSparqlSerializeMediaTypes, IActorOutputSparqlSerializeMediaTypes>,
+    IActionSparqlSerializeMediaTypes, IActorTestSparqlSerializeMediaTypes, IActorOutputSparqlSerializeMediaTypes>;
+  mediatorSparqlSerializeMediaTypeFormatCombiner: Mediator<
+    Actor<IActionSparqlSerializeMediaTypeFormats, IActorTestSparqlSerializeMediaTypeFormats,
+      IActorOutputSparqlSerializeMediaTypeFormats>,
+    IActionSparqlSerializeMediaTypeFormats, IActorTestSparqlSerializeMediaTypeFormats,
+    IActorOutputSparqlSerializeMediaTypeFormats>;
   mediatorContextPreprocess: Mediator<Actor<IAction, IActorTest, IActorContextPreprocessOutput>,
     IAction, IActorTest, IActorContextPreprocessOutput>;
   mediatorHttpInvalidate: Mediator<Actor<IActionHttpInvalidate, IActorTest, IActorHttpInvalidateOutput>,

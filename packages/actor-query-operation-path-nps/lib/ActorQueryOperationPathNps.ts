@@ -34,7 +34,7 @@ export class ActorQueryOperationPathNps extends ActorAbstractPath {
       },
       transform: (item, next) => {
         bindingsStream._push(item.delete(blankName));
-        next(null);
+        next();
       },
     });
 

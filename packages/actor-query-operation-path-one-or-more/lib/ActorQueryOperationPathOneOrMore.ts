@@ -49,7 +49,7 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
             return it.transform<Bindings>({
               transform: (item, next) => {
                 bindingsStream._push(Bindings({ [o]: item }));
-                next(null);
+                next();
               },
             });
           }, { autoStart: true, maxBufferSize: 128 });
@@ -78,7 +78,7 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
         filter: (item) => item.get(bString).equals(path.object),
         transform: (item, next) => {
           bindingsStream._push(Bindings({ }));
-          next(null);
+          next();
         },
       });
       return { type: 'bindings', bindingsStream, variables: [] };

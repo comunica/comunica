@@ -23,13 +23,12 @@ export class ActorSparqlParseAlgebra extends ActorSparqlParse {
   }
 
   public async run(action: IActionSparqlParse): Promise<IActorSparqlParseOutput> {
-    // TODO: will have to remove <any> once sparql.js types are updated
-    const parser = new SparqlParser(<any> { prefixes: this.prefixes, baseIRI: action.baseIRI });
+    const parser = new SparqlParser({ prefixes: this.prefixes, baseIRI: action.baseIRI });
     // resets the identifier counter used for blank nodes
     // provides nicer and more consistent output if there are multiple calls
     (<any> parser)._resetBlanks();
     const parsedSyntax = parser.parse(action.query);
-    const baseIRI: string = parsedSyntax.type === 'query' ? parsedSyntax.base : null;
+    const baseIRI = parsedSyntax.type === 'query' ? parsedSyntax.base : undefined;
     return {
       baseIRI,
       operation: translate(parsedSyntax,

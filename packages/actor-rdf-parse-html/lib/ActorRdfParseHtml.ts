@@ -32,7 +32,7 @@ export class ActorRdfParseHtml extends ActorRdfParseFixedMediaTypes {
     const quads = new Readable({ objectMode: true });
     quads._read = async () => {
       // Only initialize once
-      quads._read = null;
+      quads._read = () => { return; };
 
       // Create callbacks action
       let endBarrier = 1;

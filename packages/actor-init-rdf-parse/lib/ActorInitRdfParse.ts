@@ -1,6 +1,14 @@
 import {ActorInit, IActionInit, IActorOutputInit} from "@comunica/bus-init";
-import {IActionRdfParse, IActionRootRdfParse, IActorOutputRootRdfParse, IActorRdfParseOutput,
-  IActorTestRootRdfParse} from "@comunica/bus-rdf-parse";
+import {
+  IActionHandleRdfParse,
+  IActionRdfParse,
+  IActionRootRdfParse,
+  IActorOutputHandleRdfParse,
+  IActorOutputRootRdfParse,
+  IActorRdfParseOutput,
+  IActorTestHandleRdfParse,
+  IActorTestRootRdfParse
+} from "@comunica/bus-rdf-parse";
 import {Actor, IActorArgs, IActorTest, Mediator} from "@comunica/core";
 import * as RdfString from "rdf-string";
 import {PassThrough, Readable} from "stream";
@@ -13,8 +21,9 @@ import {PassThrough, Readable} from "stream";
  */
 export class ActorInitRdfParse extends ActorInit implements IActorInitRdfParseArgs {
 
-  public readonly mediatorRdfParse: Mediator<Actor<IActionRootRdfParse, IActorTestRootRdfParse,
-    IActorOutputRootRdfParse>, IActionRootRdfParse, IActorTestRootRdfParse, IActorOutputRootRdfParse>;
+  public readonly mediatorRdfParse: Mediator<
+    Actor<IActionHandleRdfParse, IActorTestHandleRdfParse, IActorOutputHandleRdfParse>,
+    IActionHandleRdfParse, IActorTestHandleRdfParse, IActorOutputHandleRdfParse>;
   public readonly mediaType: string;
 
   constructor(args: IActorInitRdfParseArgs) {
@@ -22,7 +31,7 @@ export class ActorInitRdfParse extends ActorInit implements IActorInitRdfParseAr
   }
 
   public async test(action: IActionInit): Promise<IActorTest> {
-    return null;
+    return true;
   }
 
   public async run(action: IActionInit): Promise<IActorOutputInit> {
@@ -44,7 +53,8 @@ export class ActorInitRdfParse extends ActorInit implements IActorInitRdfParseAr
 }
 
 export interface IActorInitRdfParseArgs extends IActorArgs<IActionInit, IActorTest, IActorOutputInit> {
-  mediatorRdfParse: Mediator<Actor<IActionRootRdfParse, IActorTestRootRdfParse,
-    IActorOutputRootRdfParse>, IActionRootRdfParse, IActorTestRootRdfParse, IActorOutputRootRdfParse>;
+  mediatorRdfParse: Mediator<
+    Actor<IActionHandleRdfParse, IActorTestHandleRdfParse, IActorOutputHandleRdfParse>,
+    IActionHandleRdfParse, IActorTestHandleRdfParse, IActorOutputHandleRdfParse>;
   mediaType: string;
 }

@@ -10,7 +10,7 @@ import {
 import {
   ActorRdfResolveQuadPatternSource, getDataSourceType,
   IActionRdfResolveQuadPattern,
-  IActorRdfResolveQuadPatternOutput,
+  IActorRdfResolveQuadPatternOutput, IDataSource,
   ILazyQuadSource,
 } from "@comunica/bus-rdf-resolve-quad-pattern";
 import {ActionContext, Actor, IActorArgs, IActorTest, Mediator} from "@comunica/core";
@@ -37,15 +37,16 @@ export class ActorRdfResolveQuadPatternHypermedia extends ActorRdfResolveQuadPat
     IActorRdfResolveHypermediaLinksOutput>, IActionRdfResolveHypermediaLinks, IActorTest,
     IActorRdfResolveHypermediaLinksOutput>;
   public readonly cacheSize: number;
-  public readonly cache: LRUCache<string, MediatedQuadSource>;
+  public readonly cache?: LRUCache<string, MediatedQuadSource>;
   public readonly httpInvalidator: ActorHttpInvalidateListenable;
 
   constructor(args: IActorRdfResolveQuadPatternHypermediaArgs) {
     super(args);
-    this.cache = this.cacheSize ? new LRUCache<string, any>({ max: this.cacheSize }) : null;
-    if (this.cache) {
+    this.cache = this.cacheSize ? new LRUCache<string, any>({ max: this.cacheSize }) : undefined;
+    const cache = this.cache;
+    if (cache) {
       this.httpInvalidator.addInvalidateListener(
-        ({ url }: IActionHttpInvalidate) => url ? this.cache.del(url) : this.cache.reset());
+        ({ url }: IActionHttpInvalidate) => url ? cache.del(url) : cache.reset());
     }
   }
 
@@ -58,13 +59,13 @@ export class ActorRdfResolveQuadPatternHypermedia extends ActorRdfResolveQuadPat
   }
 
   protected getSource(context: ActionContext, operation: Algebra.Pattern): Promise<ILazyQuadSource> {
-    const contextSource = this.getContextSource(context);
-    const url = this.getContextSourceUrl(contextSource);
+    const contextSource = <IDataSource> this.getContextSource(context);
+    const url = <string> this.getContextSourceUrl(contextSource);
     let source: MediatedQuadSource;
 
     // Try to read from cache
-    if (this.cacheSize && this.cache.has(url)) {
-      source = this.cache.get(url);
+    if (this.cache && this.cache.has(url)) {
+      source = <MediatedQuadSource> this.cache.get(url);
     } else {
       // If not in cache, create a new source
       source = new MediatedQuadSource(this.cacheSize, context, url, getDataSourceType(contextSource), {
@@ -76,7 +77,7 @@ export class ActorRdfResolveQuadPatternHypermedia extends ActorRdfResolveQuadPat
       });
 
       // Set in cache
-      if (this.cacheSize) {
+      if (this.cache) {
         this.cache.set(url, source);
       }
     }

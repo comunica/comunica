@@ -1,6 +1,20 @@
-import {ActorAbstractMediaTyped, IActionAbstractMediaTyped, IActorArgsMediaTyped,
-  IActorOutputAbstractMediaTyped, IActorTestAbstractMediaTyped} from "@comunica/actor-abstract-mediatyped";
-import {IActorQueryOperationOutput} from "@comunica/bus-query-operation";
+import {
+  ActorAbstractMediaTyped,
+  IActionAbstractMediaTyped,
+  IActionAbstractMediaTypedHandle,
+  IActionAbstractMediaTypedMediaTypeFormats,
+  IActionAbstractMediaTypedMediaTypes,
+  IActorArgsMediaTyped,
+  IActorOutputAbstractMediaTyped,
+  IActorOutputAbstractMediaTypedHandle,
+  IActorOutputAbstractMediaTypedMediaTypeFormats,
+  IActorOutputAbstractMediaTypedMediaTypes,
+  IActorTestAbstractMediaTyped,
+  IActorTestAbstractMediaTypedHandle,
+  IActorTestAbstractMediaTypedMediaTypeFormats,
+  IActorTestAbstractMediaTypedMediaTypes
+} from "@comunica/actor-abstract-mediatyped";
+import {IActorQueryOperationOutputBase} from "@comunica/bus-query-operation";
 import {IAction, IActorOutput, IActorTest} from "@comunica/core";
 
 /**
@@ -27,7 +41,19 @@ export type IActionRootSparqlParse = IActionAbstractMediaTyped<IActionSparqlSeri
 export type IActorTestRootSparqlParse = IActorTestAbstractMediaTyped<IActorTest>;
 export type IActorOutputRootSparqlParse = IActorOutputAbstractMediaTyped<IActorSparqlSerializeOutput>;
 
-export interface IActionSparqlSerialize extends IAction, IActorQueryOperationOutput {
+export type IActionSparqlSerializeHandle = IActionAbstractMediaTypedHandle<IActionSparqlSerialize>;
+export type IActorTestSparqlSerializeHandle = IActorTestAbstractMediaTypedHandle<IActorTest>;
+export type IActorOutputSparqlSerializeHandle = IActorOutputAbstractMediaTypedHandle<IActorSparqlSerializeOutput>;
+
+export type IActionSparqlSerializeMediaTypes = IActionAbstractMediaTypedMediaTypes;
+export type IActorTestSparqlSerializeMediaTypes = IActorTestAbstractMediaTypedMediaTypes;
+export type IActorOutputSparqlSerializeMediaTypes = IActorOutputAbstractMediaTypedMediaTypes;
+
+export type IActionSparqlSerializeMediaTypeFormats = IActionAbstractMediaTypedMediaTypeFormats;
+export type IActorTestSparqlSerializeMediaTypeFormats = IActorTestAbstractMediaTypedMediaTypeFormats;
+export type IActorOutputSparqlSerializeMediaTypeFormats = IActorOutputAbstractMediaTypedMediaTypeFormats;
+
+export interface IActionSparqlSerialize extends IAction, IActorQueryOperationOutputBase {
 }
 
 export interface IActorSparqlSerializeOutput extends IActorOutput {

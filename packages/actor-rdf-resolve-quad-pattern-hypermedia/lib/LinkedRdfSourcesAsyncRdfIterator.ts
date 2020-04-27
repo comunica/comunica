@@ -10,21 +10,22 @@ import * as RDF from "rdf-js";
  */
 export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<RDF.Quad> implements RDF.Stream {
 
-  public sourcesState: ISourcesState;
+  public sourcesState?: ISourcesState;
 
-  protected readonly subject: RDF.Term;
-  protected readonly predicate: RDF.Term;
-  protected readonly object: RDF.Term;
-  protected readonly graph: RDF.Term;
+  protected readonly subject?: RDF.Term;
+  protected readonly predicate?: RDF.Term;
+  protected readonly object?: RDF.Term;
+  protected readonly graph?: RDF.Term;
   protected nextUrls: string[];
-  protected nextSource: ISourceState;
+  protected nextSource?: ISourceState;
 
   private readonly cacheSize: number;
   private readonly firstUrl: string;
   private started: boolean;
   private iterating: boolean;
 
-  constructor(cacheSize: number, subject: RDF.Term, predicate: RDF.Term, object: RDF.Term, graph: RDF.Term,
+  constructor(cacheSize: number, subject: RDF.Term | undefined, predicate: RDF.Term | undefined,
+              object: RDF.Term | undefined, graph: RDF.Term | undefined,
               firstUrl: string, options?: BufferedIteratorOptions) {
     super(options);
     this.cacheSize = cacheSize;
@@ -68,7 +69,7 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
       if (!this.sourcesState) {
         this.setSourcesState();
       }
-      this.sourcesState.sources.get(this.firstUrl)
+      (<Promise<ISourceState>> (<ISourcesState> this.sourcesState).sources.get(this.firstUrl))
         .then((sourceState) => {
           this.startIterator(sourceState, true);
           done();
@@ -76,7 +77,7 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
         .catch((e) => this.emit('error', e));
     } else if (!this.iterating && this.nextSource) {
       const nextSource = this.nextSource;
-      this.nextSource = null;
+      this.nextSource = undefined;
       this.getNextUrls(nextSource.metadata)
         .then((nextUrls: string[]) => Promise.all(nextUrls))
         .then(async (nextUrls: string[]) => {
@@ -105,12 +106,12 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
     : Promise<ISourceState>;
 
   protected getNextSourceCached(url: string, handledDatasets: {[type: string]: boolean}): Promise<ISourceState> {
-    let source = this.sourcesState.sources.get(url);
+    let source = (<ISourcesState> this.sourcesState).sources.get(url);
     if (source) {
       return source;
     }
     source = this.getNextSource(url, handledDatasets);
-    this.sourcesState.sources.set(url, source);
+    (<ISourcesState> this.sourcesState).sources.set(url, source);
     return source;
   }
 
@@ -123,7 +124,7 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
   protected startIterator(startSource: ISourceState, emitMetadata: boolean) {
     // Asynchronously execute the quad pattern query
     this.iterating = true;
-    const it: RDF.Stream = startSource.source.match(this.subject, this.predicate, this.object, this.graph);
+    const it: RDF.Stream = (<RDF.Source> startSource.source).match(this.subject, this.predicate, this.object, this.graph);
     let currentMetadata = startSource.metadata;
     let ended = false;
 
@@ -153,7 +154,7 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
       this.nextSource = {
         handledDatasets: { ...startSource.handledDatasets },
         metadata: currentMetadata,
-        source: null,
+        source: undefined,
       };
       this.iterating = false;
       this.readable = true;
@@ -180,7 +181,7 @@ export interface ISourceState {
   /**
    * A source.
    */
-  source: RDF.Source;
+  source?: RDF.Source;
   /**
    * The source's initial metadata.
    */

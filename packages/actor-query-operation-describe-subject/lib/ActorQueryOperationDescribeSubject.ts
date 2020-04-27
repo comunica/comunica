@@ -1,6 +1,8 @@
 import {ActorQueryOperationUnion} from "@comunica/actor-query-operation-union";
-import {ActorQueryOperation, ActorQueryOperationTypedMediated,
-  IActorQueryOperationOutputQuads, IActorQueryOperationTypedMediatedArgs} from "@comunica/bus-query-operation";
+import {
+  ActorQueryOperation, ActorQueryOperationTypedMediated, getMetadata,
+  IActorQueryOperationOutputQuads, IActorQueryOperationTypedMediatedArgs
+} from "@comunica/bus-query-operation";
 import {ActionContext, IActorTest} from "@comunica/core";
 import {triple, variable} from "@rdfjs/data-model";
 import {RoundRobinUnionIterator} from "asynciterator-union";
@@ -75,9 +77,7 @@ export class ActorQueryOperationDescribeSubject extends ActorQueryOperationTyped
 
     // Take union of metadata
     const metadata: () => Promise<{[id: string]: any}> = () => Promise.all(outputs
-        .map((output) => output.metadata)
-        .filter((m) => !!m)
-        .map((m) => m()))
+        .map(getMetadata))
       .then(ActorQueryOperationUnion.unionMetadata);
 
     return { type: 'quads', quadStream, metadata };

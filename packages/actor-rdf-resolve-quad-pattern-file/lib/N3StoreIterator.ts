@@ -4,10 +4,10 @@ import * as RDF from "rdf-js";
 
 export class N3StoreIterator extends BufferedIterator<RDF.Quad> {
   protected readonly store: N3Store;
-  protected readonly subject?: RDF.Term;
-  protected readonly predicate?: RDF.Term;
-  protected readonly object?: RDF.Term;
-  protected readonly graph?: RDF.Term;
+  protected readonly subject: RDF.Term | null;
+  protected readonly predicate: RDF.Term | null;
+  protected readonly object: RDF.Term | null;
+  protected readonly graph: RDF.Term | null;
 
   constructor(store: any, subject?: RDF.Term, predicate?: RDF.Term, object?: RDF.Term, graph?: RDF.Term) {
     super();
@@ -18,7 +18,7 @@ export class N3StoreIterator extends BufferedIterator<RDF.Quad> {
     this.graph = N3StoreIterator.nullifyVariables(graph);
   }
 
-  public static nullifyVariables(term: RDF.Term): RDF.Term {
+  public static nullifyVariables(term?: RDF.Term): RDF.Term | null {
     return !term || term.termType === 'Variable' ? null : term;
   }
 

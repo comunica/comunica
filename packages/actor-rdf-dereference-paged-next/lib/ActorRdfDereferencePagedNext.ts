@@ -20,15 +20,16 @@ export class ActorRdfDereferencePagedNext extends ActorRdfDereferencePaged imple
   public readonly mediatorMetadataExtract: Mediator<Actor<IActionRdfMetadataExtract, IActorTest,
     IActorRdfMetadataExtractOutput>, IActionRdfMetadataExtract, IActorTest, IActorRdfMetadataExtractOutput>;
   public readonly cacheSize: number;
-  public readonly cache: LRUCache<string, Promise<IActorRdfDereferencePagedOutput>>;
+  public readonly cache?: LRUCache<string, Promise<IActorRdfDereferencePagedOutput>>;
   public readonly httpInvalidator: ActorHttpInvalidateListenable;
 
   constructor(args: IActorRdfDereferencePaged) {
     super(args);
-    this.cache = this.cacheSize ? new LRUCache<string, any>({ max: this.cacheSize }) : null;
-    if (this.cache) {
+    this.cache = this.cacheSize ? new LRUCache<string, any>({ max: this.cacheSize }) : undefined;
+    const cache = this.cache;
+    if (cache) {
       this.httpInvalidator.addInvalidateListener(
-        ({ url }: IActionHttpInvalidate) => url ? this.cache.del(url) : this.cache.reset());
+        ({ url }: IActionHttpInvalidate) => url ? cache.del(url) : cache.reset());
     }
   }
 
@@ -38,11 +39,11 @@ export class ActorRdfDereferencePagedNext extends ActorRdfDereferencePaged imple
   }
 
   public run(action: IActionRdfDereferencePaged): Promise<IActorRdfDereferencePagedOutput> {
-    if (this.cacheSize && this.cache.has(action.url)) {
-      return this.cloneOutput(this.cache.get(action.url));
+    if (this.cache && this.cache.has(action.url)) {
+      return this.cloneOutput(<Promise<IActorRdfDereferencePagedOutput>> this.cache.get(action.url));
     }
     const output: Promise<IActorRdfDereferencePagedOutput> = this.runAsync(action);
-    if (this.cacheSize) {
+    if (this.cache) {
       this.cache.set(action.url, output);
       return this.cloneOutput(output);
     } else {
@@ -78,7 +79,7 @@ export class ActorRdfDereferencePagedNext extends ActorRdfDereferencePaged imple
 
     const firstPageMetaSplit: IActorRdfMetadataOutput = await this.mediatorMetadata
       .mediate({ context: action.context, url: firstPageUrl, quads: firstPage.quads, triples: firstPage.triples });
-    let materializedFirstPageMetadata: Promise<{[id: string]: any}> = null;
+    let materializedFirstPageMetadata: Promise<{[id: string]: any}> | undefined;
     const firstPageMetadata: () => Promise<{[id: string]: any}> = () => {
       return materializedFirstPageMetadata || (materializedFirstPageMetadata = this.mediatorMetadataExtract.mediate(
         { context: action.context, url: firstPageUrl, metadata: firstPageMetaSplit.metadata })

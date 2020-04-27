@@ -47,11 +47,11 @@ export class BindingsToQuadsIterator extends MultiTransformIterator<Bindings, RD
    * a falsy value will be returned.
    * @param {Bindings} bindings A bindings object.
    * @param {RDF.Quad} pattern  An RDF quad.
-   * @return {RDF.Quad}         A bound RDF quad or falsy.
+   * @return {RDF.Quad}         A bound RDF quad or undefined.
    */
-  public static bindQuad(bindings: Bindings, pattern: RDF.Quad): RDF.Quad {
+  public static bindQuad(bindings: Bindings, pattern: RDF.BaseQuad): RDF.Quad | undefined {
     try {
-      return mapTerms(pattern, (term) => {
+      return mapTerms(<RDF.Quad> pattern, (term) => {
         const boundTerm: RDF.Term = BindingsToQuadsIterator.bindTerm(bindings, term);
         if (!boundTerm) {
           throw new Error('Unbound term');
@@ -59,7 +59,7 @@ export class BindingsToQuadsIterator extends MultiTransformIterator<Bindings, RD
         return boundTerm;
       });
     } catch (error) {
-      return null;
+      return undefined;
     }
   }
 
@@ -85,7 +85,7 @@ export class BindingsToQuadsIterator extends MultiTransformIterator<Bindings, RD
    * @return {RDF.BaseQuad}                 A quad.
    */
   public static localizeQuad(blankNodeCounter: number,
-                             pattern: RDF.BaseQuad): RDF.BaseQuad {
+                             pattern: RDF.Quad): RDF.Quad {
     return mapTerms(pattern, (term) => BindingsToQuadsIterator.localizeBlankNode(blankNodeCounter, term));
   }
 

@@ -1,5 +1,13 @@
-import {ActorAbstractMediaTyped, IActionAbstractMediaTyped, IActorArgsMediaTyped,
-  IActorOutputAbstractMediaTyped, IActorTestAbstractMediaTyped} from "@comunica/actor-abstract-mediatyped";
+import {
+  ActorAbstractMediaTyped,
+  IActionAbstractMediaTyped,
+  IActionAbstractMediaTypedHandle, IActionAbstractMediaTypedMediaTypes,
+  IActorArgsMediaTyped,
+  IActorOutputAbstractMediaTyped,
+  IActorOutputAbstractMediaTypedHandle, IActorOutputAbstractMediaTypedMediaTypes,
+  IActorTestAbstractMediaTyped,
+  IActorTestAbstractMediaTypedHandle, IActorTestAbstractMediaTypedMediaTypes
+} from "@comunica/actor-abstract-mediatyped";
 import {IAction, IActorOutput, IActorTest} from "@comunica/core";
 import * as RDF from "rdf-js";
 
@@ -25,6 +33,14 @@ export abstract class ActorRdfParse extends
 export type IActionRootRdfParse = IActionAbstractMediaTyped<IActionRdfParse>;
 export type IActorTestRootRdfParse = IActorTestAbstractMediaTyped<IActorTest>;
 export type IActorOutputRootRdfParse = IActorOutputAbstractMediaTyped<IActorRdfParseOutput>;
+
+export type IActionHandleRdfParse = IActionAbstractMediaTypedHandle<IActionRdfParse>;
+export type IActorTestHandleRdfParse = IActorTestAbstractMediaTypedHandle<IActorTest>;
+export type IActorOutputHandleRdfParse = IActorOutputAbstractMediaTypedHandle<IActorRdfParseOutput>;
+
+export type IActionMediaTypesRdfParse = IActionAbstractMediaTypedMediaTypes;
+export type IActorTestMediaTypesRdfParse = IActorTestAbstractMediaTypedMediaTypes;
+export type IActorOutputMediaTypesRdfParse = IActorOutputAbstractMediaTypedMediaTypes;
 
 /**
  * The RDF parse input, which contains the input stream in the given media type.

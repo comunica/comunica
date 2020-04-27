@@ -1,4 +1,4 @@
-import {IActionRootRdfParse, IActorOutputRootRdfParse, IActorTestRootRdfParse} from "@comunica/bus-rdf-parse";
+import {IActionHandleRdfParse, IActorOutputHandleRdfParse, IActorTestHandleRdfParse} from "@comunica/bus-rdf-parse";
 import {IHtmlParseListener} from "@comunica/bus-rdf-parse-html";
 import {ActionContext, Actor, Mediator} from "@comunica/core";
 import * as RDF from "rdf-js";
@@ -11,29 +11,32 @@ import {resolve as resolveIri} from "relative-to-absolute-iri";
  */
 export class HtmlScriptListener implements IHtmlParseListener {
 
-  private readonly mediatorRdfParseHandle: Mediator<Actor<IActionRootRdfParse, IActorTestRootRdfParse,
-    IActorOutputRootRdfParse>, IActionRootRdfParse, IActorTestRootRdfParse, IActorOutputRootRdfParse>;
+  private readonly mediatorRdfParseHandle: Mediator<
+    Actor<IActionHandleRdfParse, IActorTestHandleRdfParse, IActorOutputHandleRdfParse>,
+    IActionHandleRdfParse, IActorTestHandleRdfParse, IActorOutputHandleRdfParse>;
   private readonly cbQuad: (quad: RDF.Quad) => void;
   private readonly cbError: (error: Error) => void;
   private readonly cbEnd: () => void;
   private readonly supportedTypes: {[id: string]: number};
-  private readonly context: ActionContext;
+  private readonly context?: ActionContext;
   private baseIRI: string;
-  private readonly headers: Headers;
+  private readonly headers?: Headers;
   private readonly onlyFirstScript: boolean;
   private readonly targetScriptId: string | null;
 
-  private handleMediaType: string = null;
-  private textChunks: string[] = null;
+  private handleMediaType?: string;
+  private textChunks?: string[];
   private textChunksJsonLd: string[] = [];
   private endBarrier: number = 1;
   private passedScripts: number = 0;
   private isFinalJsonLdProcessing: boolean = false;
 
-  constructor(mediatorRdfParseHandle: Mediator<Actor<IActionRootRdfParse, IActorTestRootRdfParse,
-                IActorOutputRootRdfParse>, IActionRootRdfParse, IActorTestRootRdfParse, IActorOutputRootRdfParse>,
+  constructor(mediatorRdfParseHandle: Mediator<
+                Actor<IActionHandleRdfParse, IActorTestHandleRdfParse, IActorOutputHandleRdfParse>,
+                IActionHandleRdfParse, IActorTestHandleRdfParse, IActorOutputHandleRdfParse>,
               cbQuad: (quad: RDF.Quad) => void, cbError: (error: Error) => void, cbEnd: () => void,
-              supportedTypes: {[id: string]: number}, context: ActionContext, baseIRI: string, headers: Headers) {
+              supportedTypes: {[id: string]: number}, context: ActionContext | undefined, baseIRI: string,
+              headers: Headers | undefined) {
     this.mediatorRdfParseHandle = mediatorRdfParseHandle;
     this.cbQuad = cbQuad;
     this.cbError = cbError;
@@ -42,7 +45,7 @@ export class HtmlScriptListener implements IHtmlParseListener {
     this.context = context;
     this.baseIRI = baseIRI;
     this.headers = headers;
-    this.onlyFirstScript = context && context.get('extractAllScripts') === false;
+    this.onlyFirstScript = context && context.get('extractAllScripts') === false || false;
     const fragmentPos = this.baseIRI.indexOf('#');
     this.targetScriptId = fragmentPos > 0 ? this.baseIRI.substr(fragmentPos + 1, this.baseIRI.length) : null;
   }
@@ -82,8 +85,8 @@ export class HtmlScriptListener implements IHtmlParseListener {
     if (this.handleMediaType) {
       if (this.requiresCustomJsonLdHandling(this.handleMediaType) && !this.isFinalJsonLdProcessing) {
         // Reset the media type and text stream
-        this.handleMediaType = null;
-        this.textChunks = null;
+        this.handleMediaType = undefined;
+        this.textChunks = undefined;
 
         this.onEnd();
       } else {
@@ -91,6 +94,9 @@ export class HtmlScriptListener implements IHtmlParseListener {
         const textStream = new Readable({ objectMode: true });
         textStream._read = () => { return; };
         const textChunksLocal = this.textChunks;
+        if (!textChunksLocal) {
+          throw new Error('Illegal state: text chunks in HTML script listener is undefined.')
+        }
 
         // Send all collected text to parser
         const parseAction = {
@@ -99,7 +105,7 @@ export class HtmlScriptListener implements IHtmlParseListener {
           handleMediaType: this.handleMediaType,
         };
         this.mediatorRdfParseHandle.mediate(parseAction)
-          .then(({handle}) => {
+          .then(({ handle }) => {
             // Initialize text parsing
             handle.quads
               .on('error', (error) => this.cbError(HtmlScriptListener.newErrorCoded(error.message, 'invalid script element')))
@@ -115,8 +121,8 @@ export class HtmlScriptListener implements IHtmlParseListener {
           .catch(this.cbError);
 
         // Reset the media type and text stream
-        this.handleMediaType = null;
-        this.textChunks = null;
+        this.handleMediaType = undefined;
+        this.textChunks = undefined;
       }
     }
   }
@@ -133,7 +139,7 @@ export class HtmlScriptListener implements IHtmlParseListener {
       if (this.supportedTypes[attributes.type]) {
         if (this.onlyFirstScript && this.passedScripts > 0) {
           // Ignore script tag if only one should be extracted
-          this.handleMediaType = null;
+          this.handleMediaType = undefined;
         } else {
           this.passedScripts++;
           this.handleMediaType = attributes.type;
@@ -151,12 +157,15 @@ export class HtmlScriptListener implements IHtmlParseListener {
           'loading document failed'));
       }
     } else {
-      this.handleMediaType = null;
+      this.handleMediaType = undefined;
     }
   }
 
   public onText(data: string): void {
     if (this.handleMediaType) {
+      if (!this.textChunks) {
+        throw new Error('Illegal state: text chunks in HTML script listener is undefined.')
+      }
       this.textChunks.push(data);
     }
   }

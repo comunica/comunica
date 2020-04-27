@@ -53,7 +53,7 @@ export abstract class ActorAbstractMediaTyped<HI, HT, HO>
    * @param {ActionContext} context An optional context.
    * @return {Promise<T>} A promise that resolves to the handle test result.
    */
-  public abstract async testHandle(action: HI, mediaType: string, context: ActionContext): Promise<HT>;
+  public abstract async testHandle(action: HI, mediaType?: string, context?: ActionContext): Promise<HT>;
 
   /**
    * Run the given handle action on this actor.
@@ -63,7 +63,7 @@ export abstract class ActorAbstractMediaTyped<HI, HT, HO>
    * @param {ActionContext} context An optional context.
    * @return {Promise<T>} A promise that resolves to the handle run result.
    */
-  public abstract runHandle(action: HI, mediaType: string, context: ActionContext): Promise<HO>;
+  public abstract runHandle(action: HI, mediaType?: string, context?: ActionContext): Promise<HO>;
 
   /**
    * Check if this actor can emit its media types.
@@ -71,7 +71,7 @@ export abstract class ActorAbstractMediaTyped<HI, HT, HO>
    * @param {ActionContext} context An optional context.
    * @return {Promise<boolean>} A promise that resolves to the media type run result.
    */
-  public abstract testMediaType(context: ActionContext): Promise<boolean>;
+  public abstract testMediaType(context?: ActionContext): Promise<boolean>;
 
   /**
    * Get the media type of this given actor.
@@ -79,7 +79,7 @@ export abstract class ActorAbstractMediaTyped<HI, HT, HO>
    * @param {ActionContext} context An optional context.
    * @return {Promise<{[id: string]: number}>} A promise that resolves to the media types.
    */
-  public abstract getMediaTypes(context: ActionContext): Promise<{[id: string]: number}>;
+  public abstract getMediaTypes(context?: ActionContext): Promise<{[id: string]: number}>;
 
   /**
    * Check if this actor can emit its media type formats.
@@ -87,7 +87,7 @@ export abstract class ActorAbstractMediaTyped<HI, HT, HO>
    * @param {ActionContext} context An optional context.
    * @return {Promise<boolean>} A promise that resolves to the media type run result.
    */
-  public abstract testMediaTypeFormats(context: ActionContext): Promise<boolean>;
+  public abstract testMediaTypeFormats(context?: ActionContext): Promise<boolean>;
 
   /**
    * Get the media type formats of this given actor.
@@ -95,7 +95,7 @@ export abstract class ActorAbstractMediaTyped<HI, HT, HO>
    * @param {ActionContext} context An optional context.
    * @return {Promise<{[id: string]: string}>} A promise that resolves to the media types.
    */
-  public abstract getMediaTypeFormats(context: ActionContext): Promise<{[id: string]: string}>;
+  public abstract getMediaTypeFormats(context?: ActionContext): Promise<{[id: string]: string}>;
 
 }
 
@@ -104,7 +104,6 @@ export interface IActorArgsMediaTyped<HI, HT, HO> extends IActorArgs<IActionAbst
 
 export type IActionAbstractMediaTyped<HI> = IActionAbstractMediaTypedHandle<HI> | IActionAbstractMediaTypedMediaTypes
   | IActionAbstractMediaTypedMediaTypeFormats;
-
 export interface IActionAbstractMediaTypedHandle<HI> extends IAction {
   /**
    * The handle action input.
@@ -131,18 +130,24 @@ export interface IActionAbstractMediaTypedMediaTypeFormats extends IAction {
 }
 
 /**
- * Either 'handle' must be truthy, or 'mediaTypes' must be truthy.
- * Both groups may not be truthy at the same time.
+ * Either 'handle', or 'mediaTypes' or 'mediaTypeFormats' must be truthy.
+ * Groups may not be truthy at the same time.
  */
-export interface IActorTestAbstractMediaTyped<HT> extends IActorTest {
+export type IActorTestAbstractMediaTyped<HT> = IActorTestAbstractMediaTypedHandle<HT>
+  | IActorTestAbstractMediaTypedMediaTypes | IActorTestAbstractMediaTypedMediaTypeFormats;
+export interface IActorTestAbstractMediaTypedHandle<HT> extends IActorTest {
   /**
    * The handle test output.
    */
-  handle?: HT;
+  handle: HT;
+}
+export interface IActorTestAbstractMediaTypedMediaTypes extends IActorTest {
   /**
    * True if media types can be retrieved.
    */
-  mediaTypes?: boolean;
+  mediaTypes: boolean;
+}
+export interface IActorTestAbstractMediaTypedMediaTypeFormats extends IActorTest {
   /**
    * True if media type formats can be retrieved.
    */
@@ -150,22 +155,28 @@ export interface IActorTestAbstractMediaTyped<HT> extends IActorTest {
 }
 
 /**
- * Either 'handle' must be truthy, or 'mediaTypes' must be truthy.
- * Both groups may not be truthy at the same time.
+ * Either 'handle', or 'mediaTypes' or 'mediaTypeFormats' must be truthy.
+ * Groups may not be truthy at the same time.
  */
-export interface IActorOutputAbstractMediaTyped<HO> extends IActorOutput {
+export type IActorOutputAbstractMediaTyped<HO> = IActorOutputAbstractMediaTypedHandle<HO>
+  | IActorOutputAbstractMediaTypedMediaTypes | IActorOutputAbstractMediaTypedMediaTypeFormats;
+export interface IActorOutputAbstractMediaTypedHandle<HO> extends IActorOutput {
   /**
    * The handle action output.
    */
-  handle?: HO;
+  handle: HO;
+}
+export interface IActorOutputAbstractMediaTypedMediaTypes extends IActorOutput {
   /**
    * An object containing media types as keys,
    * and preferences as values, with values ranging from 0 to 1.
    */
-  mediaTypes?: {[id: string]: number};
+  mediaTypes: {[id: string]: number};
+}
+export interface IActorOutputAbstractMediaTypedMediaTypeFormats extends IActorOutput {
   /**
    * An object containing media types as keys,
    * and format IRIs as values.
    */
-  mediaTypeFormats?: {[id: string]: string};
+  mediaTypeFormats: {[id: string]: string};
 }

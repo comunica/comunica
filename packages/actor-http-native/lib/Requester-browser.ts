@@ -72,7 +72,7 @@ export default class Requester {
         const resource = this.removeQuery(resHeaders['content-location'] || settings.url);
         if (!this.negotiatedResources[resource]) {
           // Ensure the resource is not a timegate
-          const links = resHeaders.link && parseLink(<string> resHeaders.link);
+          const links = resHeaders.link && parseLink(<string> resHeaders.link) || undefined;
           const timegate = this.removeQuery(links && links.timegate && links.timegate.url);
           if (resource !== timegate) {
             this.negotiatedResources[resource] = true;
@@ -94,7 +94,7 @@ export default class Requester {
   }
 
   // Removes the query string from a URL
-  private removeQuery(url: string): string {
+  private removeQuery(url?: string): string {
     return url ? url.replace(/\?.*$/, '') : '';
   }
 }

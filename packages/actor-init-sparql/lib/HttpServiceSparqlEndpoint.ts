@@ -12,7 +12,7 @@ import {IQueryOptions} from "./QueryDynamic";
 import {ArrayIterator} from "asynciterator";
 import * as RDF from "rdf-js";
 import {ActionContext} from "@comunica/core";
-import {IActorQueryOperationOutputQuads} from "@comunica/bus-query-operation";
+import {IActorQueryOperationOutput, IActorQueryOperationOutputQuads} from "@comunica/bus-query-operation";
 // tslint:disable:no-var-requires
 const quad = require('rdf-quad');
 
@@ -52,7 +52,7 @@ Options:
     this.context = args.context || {};
     this.timeout = args.timeout || 60000;
     this.port = args.port || 3000;
-    this.invalidateCacheBeforeQuery = args.invalidateCacheBeforeQuery;
+    this.invalidateCacheBeforeQuery = !!args.invalidateCacheBeforeQuery;
 
     this.engine = newEngineDynamic(args);
   }
@@ -133,7 +133,7 @@ Options:
     const engine: ActorInitSparql = await this.engine;
 
     // Determine the allowed media types for requests
-    const mediaTypes: {[id: string]: number} = await engine.getResultMediaTypes(null);
+    const mediaTypes: {[id: string]: number} = await engine.getResultMediaTypes();
     const variants: { type: string, quality: number }[] = [];
     for (const type of Object.keys(mediaTypes)) {
       variants.push({ type, quality: mediaTypes[type] });
@@ -162,7 +162,7 @@ Options:
       ? require('negotiate').choose(variants, request)[0].type : null;
 
     // Verify the path
-    const requestUrl = url.parse(request.url, true);
+    const requestUrl = url.parse(request.url || '', true);
     if (requestUrl.pathname !== '/sparql') {
       stdout.write('[404] Resource not found\n');
       response.writeHead(404,
@@ -207,46 +207,49 @@ Options:
    * @param {string} mediaType The requested response media type.
    * @param {boolean} headOnly If only the header should be written.
    */
-  public writeQueryResult(engine: ActorInitSparql, stdout: Writable, stderr: Writable,
+  public async writeQueryResult(engine: ActorInitSparql, stdout: Writable, stderr: Writable,
                           request: http.IncomingMessage, response: http.ServerResponse,
                           sparql: string, mediaType: string, headOnly: boolean) {
     if (!sparql) {
       return this.writeServiceDescription(engine, stdout, stderr, request, response, mediaType, headOnly);
     }
 
-    let eventEmitter: EventEmitter;
-    engine.query(sparql, this.context)
-      .then(async (result) => {
-        stdout.write('[200] ' + request.method + ' to ' + request.url + '\n');
-        stdout.write('      Requested media type: ' + mediaType + '\n');
-        stdout.write('      Received query: ' + sparql + '\n');
-        response.writeHead(200, { 'content-type': mediaType, 'Access-Control-Allow-Origin': '*'  });
+    let result: IActorQueryOperationOutput;
+    try {
+      result = await engine.query(sparql, this.context);
+    } catch (error) {
+      stdout.write('[400] Bad request\n');
+      response.writeHead(400,
+        { 'content-type': HttpServiceSparqlEndpoint.MIME_PLAIN, 'Access-Control-Allow-Origin': '*' });
+      response.end(error.toString());
+      return;
+    }
 
-        if (headOnly) {
-          response.end();
-          return;
-        }
+    stdout.write('[200] ' + request.method + ' to ' + request.url + '\n');
+    stdout.write('      Requested media type: ' + mediaType + '\n');
+    stdout.write('      Received query: ' + sparql + '\n');
+    response.writeHead(200, { 'content-type': mediaType, 'Access-Control-Allow-Origin': '*'  });
 
-        try {
-          const data: NodeJS.ReadableStream = (await engine.resultToString(result, mediaType)).data;
-          data.on('error', (e: Error) => {
-            stdout.write('[500] Server error in results: ' + e + ' \n');
-            response.end('An internal server error occurred.\n');
-          });
-          data.pipe(response);
-          eventEmitter = data;
-        } catch (error) {
-          stdout.write('[400] Bad request, invalid media type\n');
-          response.writeHead(400,
-              { 'content-type': HttpServiceSparqlEndpoint.MIME_PLAIN, 'Access-Control-Allow-Origin': '*' });
-          response.end('The response for the given query could not be serialized for the requested media type\n');
-        }
-      }).catch((error) => {
-        stdout.write('[400] Bad request\n');
-        response.writeHead(400,
-            { 'content-type': HttpServiceSparqlEndpoint.MIME_PLAIN, 'Access-Control-Allow-Origin': '*' });
-        response.end(error.toString());
+    if (headOnly) {
+      response.end();
+      return;
+    }
+
+    let eventEmitter: EventEmitter | undefined;
+    try {
+      const data: NodeJS.ReadableStream = (await engine.resultToString(result, mediaType)).data;
+      data.on('error', (e: Error) => {
+        stdout.write('[500] Server error in results: ' + e + ' \n');
+        response.end('An internal server error occurred.\n');
       });
+      data.pipe(response);
+      eventEmitter = data;
+    } catch (error) {
+      stdout.write('[400] Bad request, invalid media type\n');
+      response.writeHead(400,
+        { 'content-type': HttpServiceSparqlEndpoint.MIME_PLAIN, 'Access-Control-Allow-Origin': '*' });
+      response.end('The response for the given query could not be serialized for the requested media type\n');
+    }
 
     this.stopResponse(response, eventEmitter);
   }
@@ -312,7 +315,7 @@ Options:
    * @param {module:http.ServerResponse} response Response object.
    * @param {NodeJS.ReadableStream} eventEmitter Query result stream.
    */
-  public stopResponse(response: http.ServerResponse, eventEmitter: EventEmitter) {
+  public stopResponse(response: http.ServerResponse, eventEmitter?: EventEmitter) {
     // Note: socket or response timeouts seemed unreliable, hence the explicit timeout
     const killTimeout = setTimeout(killClient, this.timeout);
     response.on('close', killClient);
@@ -339,10 +342,10 @@ Options:
       request.on('error', reject);
       request.on('data', (chunk) => { body += chunk; });
       request.on('end', () => {
-        const contentType: string = request.headers['content-type'];
-        if (contentType.indexOf('application/sparql-query') >= 0) {
+        const contentType: string | undefined = request.headers['content-type'];
+        if (contentType && contentType.indexOf('application/sparql-query') >= 0) {
           return resolve(body);
-        } else if (contentType.indexOf('application/x-www-form-urlencoded') >= 0) {
+        } else if (contentType && contentType.indexOf('application/x-www-form-urlencoded') >= 0) {
           return resolve(<string> querystring.parse(body).query || '');
         } else {
           return resolve(body);

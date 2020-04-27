@@ -28,12 +28,12 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
     IActionHttp, IActorTest, IActorHttpOutput>;
   public readonly endpointFetcher: SparqlEndpointFetcher;
 
-  protected lastContext: ActionContext;
+  protected lastContext?: ActionContext;
 
   constructor(args: IActorQueryOperationSparqlEndpointArgs) {
     super(args);
     this.endpointFetcher = new SparqlEndpointFetcher({
-      fetch: (input?: Request | string, init?: RequestInit) => this.mediatorHttp.mediate(
+      fetch: (input: Request | string, init?: RequestInit) => this.mediatorHttp.mediate(
         { input, init, context: this.lastContext }),
       prefixVariableQuestionMark: true,
     });
@@ -43,7 +43,7 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
     if (!action.operation) {
       throw new Error('Missing field \'operation\' in a query operation action.');
     }
-    const source: IDataSource = await DataSourceUtils.getSingleSource(action.context);
+    const source = await DataSourceUtils.getSingleSource(action.context);
     if (source && getDataSourceType(source) === 'sparql') {
       return { httpRequests: 1 };
     }
@@ -51,14 +51,18 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
   }
 
   public async run(action: IActionQueryOperation): Promise<IActorQueryOperationOutput> {
-    const endpoint: string = getDataSourceValue(await DataSourceUtils.getSingleSource(action.context));
+    const source = await DataSourceUtils.getSingleSource(action.context);
+    if (!source) {
+      throw new Error('Illegal state: undefined sparql endpoint source.');
+    }
+    const endpoint: string = getDataSourceValue(source);
     this.lastContext = action.context;
 
     // Determine the full SPARQL query that needs to be sent to the endpoint
     // Also check the type of the query (SELECT, CONSTRUCT (includes DESCRIBE) or ASK)
-    let query: string;
-    let type: string;
-    let variables: RDF.Variable[];
+    let query: string | undefined;
+    let type: 'SELECT' | 'CONSTRUCT' | 'ASK' | 'UNKNOWN' | undefined;
+    let variables: RDF.Variable[] | undefined;
     try {
       query = toSparql(action.operation);
       // This will throw an error in case the result is an invalid SPARQL query
@@ -78,13 +82,13 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
     case 'SELECT':
       if (!variables)
         variables = Util.inScopeVariables(action.operation);
-      return this.executeQuery(endpoint, query, false, variables);
+      return this.executeQuery(endpoint, <string> query, false, variables);
     case 'CONSTRUCT':
-      return this.executeQuery(endpoint, query, true);
+      return this.executeQuery(endpoint, <string> query, true);
     case 'ASK':
       return <IActorQueryOperationOutputBoolean>{
         type: 'boolean',
-        booleanResult: this.endpointFetcher.fetchAsk(endpoint, query),
+        booleanResult: this.endpointFetcher.fetchAsk(endpoint, <string> query),
       };
     }
   }
@@ -138,7 +142,7 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
       type: 'bindings',
       bindingsStream: stream,
       metadata,
-      variables: variables.map(termToString),
+      variables: variables ? variables.map(termToString) : [],
     };
   }
 

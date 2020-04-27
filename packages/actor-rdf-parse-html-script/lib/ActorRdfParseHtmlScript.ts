@@ -1,4 +1,11 @@
-import {IActionRootRdfParse, IActorOutputRootRdfParse, IActorTestRootRdfParse} from "@comunica/bus-rdf-parse";
+import {
+  IActionHandleRdfParse,
+  IActionMediaTypesRdfParse,
+  IActorOutputHandleRdfParse,
+  IActorOutputMediaTypesRdfParse,
+  IActorTestHandleRdfParse,
+  IActorTestMediaTypesRdfParse
+} from "@comunica/bus-rdf-parse";
 import {ActorRdfParseHtml, IActionRdfParseHtml, IActorRdfParseHtmlOutput} from "@comunica/bus-rdf-parse-html";
 import {Actor, IActorArgs, IActorTest, Mediator} from "@comunica/core";
 import {HtmlScriptListener} from "./HtmlScriptListener";
@@ -11,10 +18,12 @@ import {HtmlScriptListener} from "./HtmlScriptListener";
  */
 export class ActorRdfParseHtmlScript extends ActorRdfParseHtml {
 
-  private readonly mediatorRdfParseMediatypes: Mediator<Actor<IActionRootRdfParse, IActorTestRootRdfParse,
-    IActorOutputRootRdfParse>, IActionRootRdfParse, IActorTestRootRdfParse, IActorOutputRootRdfParse>;
-  private readonly mediatorRdfParseHandle: Mediator<Actor<IActionRootRdfParse, IActorTestRootRdfParse,
-    IActorOutputRootRdfParse>, IActionRootRdfParse, IActorTestRootRdfParse, IActorOutputRootRdfParse>;
+  private readonly mediatorRdfParseMediatypes: Mediator<
+    Actor<IActionMediaTypesRdfParse, IActorTestMediaTypesRdfParse, IActorOutputMediaTypesRdfParse>,
+    IActionMediaTypesRdfParse, IActorTestMediaTypesRdfParse, IActorOutputMediaTypesRdfParse>;
+  private readonly mediatorRdfParseHandle: Mediator<
+    Actor<IActionHandleRdfParse, IActorTestHandleRdfParse, IActorOutputHandleRdfParse>,
+    IActionHandleRdfParse, IActorTestHandleRdfParse, IActorOutputHandleRdfParse>;
 
   constructor(args: IActorRdfParseHtmlScriptArgs) {
     super(args);
@@ -35,8 +44,10 @@ export class ActorRdfParseHtmlScript extends ActorRdfParseHtml {
 
 export interface IActorRdfParseHtmlScriptArgs
   extends IActorArgs<IActionRdfParseHtml, IActorTest, IActorRdfParseHtmlOutput> {
-  mediatorRdfParseMediatypes: Mediator<Actor<IActionRootRdfParse, IActorTestRootRdfParse,
-    IActorOutputRootRdfParse>, IActionRootRdfParse, IActorTestRootRdfParse, IActorOutputRootRdfParse>;
-  mediatorRdfParseHandle: Mediator<Actor<IActionRootRdfParse, IActorTestRootRdfParse,
-    IActorOutputRootRdfParse>, IActionRootRdfParse, IActorTestRootRdfParse, IActorOutputRootRdfParse>;
+  mediatorRdfParseMediatypes: Mediator<
+    Actor<IActionMediaTypesRdfParse, IActorTestMediaTypesRdfParse, IActorOutputMediaTypesRdfParse>,
+    IActionMediaTypesRdfParse, IActorTestMediaTypesRdfParse, IActorOutputMediaTypesRdfParse>;
+  mediatorRdfParseHandle: Mediator<
+    Actor<IActionHandleRdfParse, IActorTestHandleRdfParse, IActorOutputHandleRdfParse>,
+    IActionHandleRdfParse, IActorTestHandleRdfParse, IActorOutputHandleRdfParse>;
 }

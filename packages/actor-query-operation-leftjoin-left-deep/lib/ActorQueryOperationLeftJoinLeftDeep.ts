@@ -2,7 +2,7 @@ import {
   ActorQueryOperation,
   ActorQueryOperationTypedMediated,
   Bindings,
-  BindingsStream,
+  BindingsStream, getMetadata,
   IActorQueryOperationOutputBindings,
   IActorQueryOperationTypedMediatedArgs,
   materializeOperation,
@@ -78,7 +78,7 @@ export class ActorQueryOperationLeftJoinLeftDeep extends ActorQueryOperationType
 
     // Determine variables and metadata
     const variables = ActorRdfJoin.joinVariables({ entries: [left, right] });
-    const metadata = () => Promise.all([left, right].map((entry) => entry.metadata()))
+    const metadata = () => Promise.all([left, right].map(getMetadata))
       .then((metadatas) => metadatas.reduce((acc, val) => acc * val.totalItems, 1))
       .catch(() => Infinity)
       .then((totalItems) => ({ totalItems }));
@@ -87,7 +87,7 @@ export class ActorQueryOperationLeftJoinLeftDeep extends ActorQueryOperationType
     //       If we don't do this, the inner metadata event seems to be lost in some cases,
     //       the left promise above is never resolved, this whole metadata promise is never resolved,
     //       and the application terminates without producing any results.
-    left.metadata().catch(() => { return; });
+    getMetadata(left).catch(() => { return; });
 
     return { type: 'bindings', bindingsStream, metadata, variables };
   }

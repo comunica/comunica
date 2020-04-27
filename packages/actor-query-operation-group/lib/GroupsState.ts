@@ -49,12 +49,13 @@ export class GroupsState {
   public consumeBindings(bindings: Bindings) {
     // Select the bindings on which we group
     const grouper = bindings
-      .filter((_, variable) => this.groupVariables.has(variable))
+      .filter((_, variable: string) => this.groupVariables.has(variable))
       .toMap();
     const groupHash = this.hashBindings(grouper);
 
     // First member of group -> create new group
-    if (!this.groups.has(groupHash)) {
+    let group: IGroup | undefined = this.groups.get(groupHash);
+    if (!group) {
       // Initialize state for all aggregators for new group
       const aggregators: { [key: string]: AggregateEvaluator } = {};
       for (const i in this.pattern.aggregates) {
@@ -64,7 +65,7 @@ export class GroupsState {
         aggregators[key].put(bindings);
       }
 
-      const group: IGroup = { aggregators, bindings: grouper };
+      group = { aggregators, bindings: grouper };
       this.groups.set(groupHash, group);
 
       if (this.distinctHashes) {
@@ -75,17 +76,16 @@ export class GroupsState {
     } else {
       // Group already exists
       // Update all the aggregators with the input binding
-      const group = this.groups.get(groupHash);
       for (const i in this.pattern.aggregates) {
         const aggregate = this.pattern.aggregates[i];
 
         // If distinct, check first wether we have inserted these values already
         if (aggregate.distinct) {
           const hash = this.hashBindings(bindings);
-          if (this.distinctHashes!.get(groupHash).has(hash)) {
+          if (this.distinctHashes!.get(groupHash)?.has(hash)) {
             continue;
           } else {
-            this.distinctHashes!.get(groupHash).add(hash);
+            this.distinctHashes!.get(groupHash)?.add(hash);
           }
         }
 

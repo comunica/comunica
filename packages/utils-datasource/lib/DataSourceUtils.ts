@@ -14,9 +14,9 @@ export abstract class DataSourceUtils {
   /**
    * Get the single source if the context contains just a single source.
    * @param {ActionContext} context A context, can be null.
-   * @return {Promise<IDataSource>} A promise resolving to the single datasource or null.
+   * @return {Promise<IDataSource>} A promise resolving to the single datasource or undefined.
    */
-  public static async getSingleSource(context: ActionContext): Promise<IDataSource> {
+  public static async getSingleSource(context?: ActionContext): Promise<IDataSource | undefined> {
     if (context && context.has(KEY_CONTEXT_SOURCE)) {
       // If the single source is set
       return context.get(KEY_CONTEXT_SOURCE);
@@ -31,17 +31,16 @@ export abstract class DataSourceUtils {
         }
       }
     }
-    return null;
   }
 
   /**
    * Get the type of a single source
    * @param {ActionContext} context A context, can be null.
-   * @return {Promise<string>} A promise resolving to the type of the source, can be null if source is null.
+   * @return {Promise<string>} A promise resolving to the type of the source, can be undefined if source is undefined.
    */
-  public static async getSingleSourceType(context: ActionContext): Promise<string> {
+  public static async getSingleSourceType(context: ActionContext): Promise<string | undefined> {
     const source = await this.getSingleSource(context);
-    return source ? getDataSourceType(source) : null;
+    return source ? getDataSourceType(source) : undefined;
   }
 
   /**

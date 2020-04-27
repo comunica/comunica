@@ -24,7 +24,7 @@ export abstract class ActorHttp extends Actor<IActionHttp, IActorTest, IActorHtt
    * @param {ReadableStream} body
    * @returns {NodeJS.ReadableStream}
    */
-  public static toNodeReadable(body: ReadableStream): NodeJS.ReadableStream {
+  public static toNodeReadable(body: ReadableStream | null): NodeJS.ReadableStream {
     return require('is-stream')(body) ? body : require('web-streams-node').toNodeReadable(body);
   }
 

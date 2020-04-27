@@ -1,5 +1,4 @@
 import {Actor, IActorArgs, IActorTest, Mediator} from "@comunica/core";
-import {AsyncIterator, BufferedIterator, SimpleTransformIteratorOptions} from "asynciterator";
 import {Algebra} from "sparqlalgebrajs";
 import {IActionQueryOperation, IActorQueryOperationOutput} from "./ActorQueryOperation";
 import {ActorQueryOperationTyped} from "./ActorQueryOperationTyped";

@@ -28,7 +28,7 @@ export class ActorRdfSourceIdentifierHypermediaQpf extends ActorRdfSourceIdentif
 
     const httpAction: IActionHttp = { context: action.context, input: sourceUrl, init: { headers } };
     const httpResponse: IActorHttpOutput = await this.mediatorHttp.mediate(httpAction);
-    if (httpResponse.ok) {
+    if (httpResponse.ok && httpResponse.body) {
       const stream = ActorHttp.toNodeReadable(httpResponse.body);
       const body = (await require('stream-to-string')(stream));
 

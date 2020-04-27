@@ -7,7 +7,7 @@ import * as RDF from "rdf-js";
 export abstract class PagedAsyncRdfIterator extends BufferedIterator<RDF.Quad> implements RDF.Stream {
 
   private readonly startUrl: string;
-  private nextUrl: string;
+  private nextUrl?: string;
   private page: number;
 
   constructor(startUrl: string, options?: BufferedIteratorOptions) {
@@ -45,7 +45,7 @@ export abstract class PagedAsyncRdfIterator extends BufferedIterator<RDF.Quad> i
    * @return {Promise<any>} A promise that resolves when a new iterator was started (but not necessarily ended).
    */
   protected async startIterator(url: string, page: number): Promise<any> {
-    this.nextUrl = null;
+    this.nextUrl = undefined;
     let ended: boolean = false;
     let shouldClose: boolean = false;
     const it: RDF.Stream = await this.getIterator(url, page, (nextPage?: string) => {

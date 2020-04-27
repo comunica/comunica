@@ -27,10 +27,12 @@ if (args.length > 1) {
 // Hack our require path so that compilation in a monorepo dev environment always works properly
 // Otherwise, Components.js will think that we are running inside the 'runner' package,
 // and it will use its node_modules.
-require.main.paths = [];
-const pathParts = mainModulePath.split(sep);
-for (let i = pathParts.length; i > 0; i--) {
-  require.main.paths.push(pathParts.slice(0, i).join(sep) + sep + 'node_modules');
+if (require.main) {
+  require.main.paths = [];
+  const pathParts = mainModulePath.split(sep);
+  for (let i = pathParts.length; i > 0; i--) {
+    require.main.paths.push(pathParts.slice(0, i).join(sep) + sep + 'node_modules');
+  }
 }
 
 compileConfig({ mainModulePath }, configPath, configStreamRaw, configResourceUri, exportVariableName)

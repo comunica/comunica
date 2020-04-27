@@ -1,5 +1,5 @@
 import {
-  ActorQueryOperation, ActorQueryOperationTypedMediated, Bindings, IActorQueryOperationOutputBindings,
+  ActorQueryOperation, ActorQueryOperationTypedMediated, Bindings, getMetadata, IActorQueryOperationOutputBindings,
   IActorQueryOperationTypedMediatedArgs,
 } from "@comunica/bus-query-operation";
 import { ActorRdfJoin } from "@comunica/bus-rdf-join";
@@ -31,7 +31,7 @@ export class ActorQueryOperationLeftJoinNestedLoop extends ActorQueryOperationTy
 
     // TODO: refactor custom handling of pattern.expression. Should be pushed on the bus instead as a filter operation.
     const config = { ...ActorQueryOperation.getExpressionContext(context) };
-    const evaluator = (pattern.expression)
+    const evaluator = pattern.expression
       ? new AsyncEvaluator(pattern.expression, config)
       : null;
 
@@ -41,7 +41,7 @@ export class ActorQueryOperationLeftJoinNestedLoop extends ActorQueryOperationTy
           transform: async (innerItem: Bindings, nextInner: any) => {
             const joinedBindings = ActorRdfJoin.join(outerItem, innerItem);
             if (!joinedBindings) { nextInner(); return; }
-            if (!pattern.expression) {
+            if (!evaluator) {
               joinedStream._push({ joinedBindings, result: true });
               nextInner();
               return;
@@ -79,7 +79,7 @@ export class ActorQueryOperationLeftJoinNestedLoop extends ActorQueryOperationTy
       .transform<Bindings>({ optional: true, transform });
 
     const variables = ActorRdfJoin.joinVariables({ entries: [left, right] });
-    const metadata = () => Promise.all([left, right].map((entry) => entry.metadata()))
+    const metadata = () => Promise.all([left, right].map(getMetadata))
       .then((metadatas) => metadatas.reduce((acc, val) => acc * val.totalItems, 1))
       .catch(() => Infinity)
       .then((totalItems) => ({ totalItems }));

@@ -2,7 +2,7 @@ import {Actor, IAction, IActorOutput, IActorReply, IActorTest, IMediatorArgs, Me
 
 /**
  * A comunica mediator that runs all actors that resolve their test.
- * This mediator will always resolve to `null`.
+ * This mediator will always resolve to the first actor's output.
  */
 export class MediatorAll<A extends Actor<I, T, O>, I extends IAction, T extends IActorTest, O extends IActorOutput>
   extends Mediator<A, I, T, O> {
@@ -30,13 +30,13 @@ export class MediatorAll<A extends Actor<I, T, O>, I extends IAction, T extends 
     }
 
     // Send action to all valid actors
-    await Promise.all(validActors.map((actor) => actor.runObservable(action)));
+    const outputs = await Promise.all(validActors.map((actor) => actor.runObservable(action)));
 
-    return null;
+    return outputs[0];
   }
 
   protected async mediateWith(action: I, testResults: IActorReply<A, I, T, O>[]): Promise<A> {
-    return null;
+    throw new Error('Unsupported operation: MediatorAll#mediateWith');
   }
 
 }

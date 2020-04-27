@@ -42,7 +42,7 @@ export class ActorQueryOperationPathSeq extends ActorAbstractPath {
     const bindingsStream = join.bindingsStream.transform<Bindings>({
       transform: (item, next) => {
         bindingsStream._push(item.delete(blankName));
-        next(null);
+        next();
       },
     });
 

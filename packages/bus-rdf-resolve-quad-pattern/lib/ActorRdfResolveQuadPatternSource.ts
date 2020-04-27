@@ -20,9 +20,9 @@ export abstract class ActorRdfResolveQuadPatternSource extends ActorRdfResolveQu
     super(args);
   }
 
-  public static variableToNull(term?: RDF.Term): RDF.Term {
+  public static variableToUndefined(term: RDF.Term | undefined): RDF.Term | undefined {
     if (term && term.termType === 'Variable') {
-      return null;
+      return undefined;
     }
     return term;
   }
@@ -33,7 +33,7 @@ export abstract class ActorRdfResolveQuadPatternSource extends ActorRdfResolveQu
    * @return {() => Promise<{[p: string]: any}>} The callback where the response will be cached.
    */
   public static cachifyMetadata(metadata: () => Promise<{[id: string]: any}>): () => Promise<{[id: string]: any}> {
-    let lastReturn: Promise<{[id: string]: any}> = null;
+    let lastReturn: Promise<{[id: string]: any}> | undefined;
     return () => (lastReturn || (lastReturn = metadata()));
   }
 
@@ -59,7 +59,7 @@ export abstract class ActorRdfResolveQuadPatternSource extends ActorRdfResolveQu
    *                                            executing source.matchLazy or source.match.
    * @return {() => Promise<{[p: string]: any}>} A lazy promise behind a callback resolving to a metadata object.
    */
-  protected getMetadata(source: ILazyQuadSource, pattern: RDF.BaseQuad, context: ActionContext,
+  protected getMetadata(source: ILazyQuadSource, pattern: RDF.BaseQuad, context: ActionContext | undefined,
                         data: AsyncIterator<RDF.Quad> & RDF.Stream): () => Promise<{[id: string]: any}> {
     return () => new Promise((resolve, reject) => {
       data.on('error', reject);
@@ -78,24 +78,23 @@ export abstract class ActorRdfResolveQuadPatternSource extends ActorRdfResolveQu
    * @return {Promise<IActorRdfResolveQuadPatternOutput>} A promise that resolves to a hash containing
    *                                                      a data RDFJS stream and an optional metadata hash.
    */
-  protected async getOutput(source: ILazyQuadSource, pattern: RDF.BaseQuad, context: ActionContext)
+  protected async getOutput(source: ILazyQuadSource, pattern: RDF.BaseQuad, context?: ActionContext)
   : Promise<IActorRdfResolveQuadPatternOutput> {
     // Create data stream
     let data: AsyncIterator<RDF.Quad> & RDF.Stream;
     if (source.matchLazy) {
       data = source.matchLazy(
-        ActorRdfResolveQuadPatternSource.variableToNull(pattern.subject),
-        ActorRdfResolveQuadPatternSource.variableToNull(pattern.predicate),
-        ActorRdfResolveQuadPatternSource.variableToNull(pattern.object),
-        ActorRdfResolveQuadPatternSource.variableToNull(pattern.graph),
+        ActorRdfResolveQuadPatternSource.variableToUndefined(pattern.subject),
+        ActorRdfResolveQuadPatternSource.variableToUndefined(pattern.predicate),
+        ActorRdfResolveQuadPatternSource.variableToUndefined(pattern.object),
+        ActorRdfResolveQuadPatternSource.variableToUndefined(pattern.graph),
       );
     } else {
-      // TODO: AsyncIterator fix typings
-      data = (<any> AsyncIterator).wrap(source.match(
-        ActorRdfResolveQuadPatternSource.variableToNull(pattern.subject),
-        ActorRdfResolveQuadPatternSource.variableToNull(pattern.predicate),
-        ActorRdfResolveQuadPatternSource.variableToNull(pattern.object),
-        ActorRdfResolveQuadPatternSource.variableToNull(pattern.graph),
+      data = AsyncIterator.wrap(<any> source.match(
+        ActorRdfResolveQuadPatternSource.variableToUndefined(pattern.subject),
+        ActorRdfResolveQuadPatternSource.variableToUndefined(pattern.predicate),
+        ActorRdfResolveQuadPatternSource.variableToUndefined(pattern.object),
+        ActorRdfResolveQuadPatternSource.variableToUndefined(pattern.graph),
       ));
     }
 
@@ -108,11 +107,11 @@ export abstract class ActorRdfResolveQuadPatternSource extends ActorRdfResolveQu
 
   /**
    * Get a source instance for the given context.
-   * @param ActionContext context Optional context data.
+   * @param {ActionContext} context Optional context data.
    * @param {Algebra.Pattern} operation The operation to apply.
    * @return {Promise<RDF.Source>} A promise that resolves to a source.
    */
-  protected abstract getSource(context: ActionContext, operation: Algebra.Pattern): Promise<RDF.Source>;
+  protected abstract getSource(context: ActionContext | undefined, operation: Algebra.Pattern): Promise<RDF.Source>;
 
 }
 

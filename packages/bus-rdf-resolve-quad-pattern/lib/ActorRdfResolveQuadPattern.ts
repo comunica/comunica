@@ -25,19 +25,19 @@ export abstract class ActorRdfResolveQuadPattern extends Actor<IActionRdfResolve
   /**
    * Get the sources from the given context.
    * @param {ActionContext} context An optional context.
-   * @return {IDataSource[]} The array of sources or null.
+   * @return {IDataSource[]} The array of sources or undefined.
    */
-  protected getContextSources(context: ActionContext): IDataSource[] {
-    return context ? context.get(KEY_CONTEXT_SOURCES) : null;
+  protected getContextSources(context?: ActionContext): IDataSource[] | undefined {
+    return context ? context.get(KEY_CONTEXT_SOURCES) : undefined;
   }
 
   /**
    * Get the source from the given context.
    * @param {ActionContext} context An optional context.
-   * @return {IDataSource} The source or null.
+   * @return {IDataSource} The source or undefined.
    */
-  protected getContextSource(context: ActionContext): IDataSource {
-    return context ? context.get(KEY_CONTEXT_SOURCE) : null;
+  protected getContextSource(context?: ActionContext): IDataSource | undefined {
+    return context ? context.get(KEY_CONTEXT_SOURCE) : undefined;
   }
 
   /**
@@ -45,7 +45,7 @@ export abstract class ActorRdfResolveQuadPattern extends Actor<IActionRdfResolve
    * @param {IDataSource} source A source.
    * @return {string} The URL or null.
    */
-  protected getContextSourceUrl(source: IDataSource): string {
+  protected getContextSourceUrl(source?: IDataSource): string | undefined {
     if (source) {
       let fileUrl = getDataSourceValue(source);
 
@@ -57,7 +57,6 @@ export abstract class ActorRdfResolveQuadPattern extends Actor<IActionRdfResolve
 
       return fileUrl;
     }
-    return null;
   }
 
   /**
@@ -65,7 +64,7 @@ export abstract class ActorRdfResolveQuadPattern extends Actor<IActionRdfResolve
    * @param {ActionContext} context An optional context.
    * @return {boolean} If the given context has a single source of the given type.
    */
-  protected hasContextSingleSource(context: ActionContext): boolean {
+  protected hasContextSingleSource(context?: ActionContext): boolean {
     const source = this.getContextSource(context);
     return !!(source && (typeof source === 'string' || source.value));
   }
@@ -76,7 +75,7 @@ export abstract class ActorRdfResolveQuadPattern extends Actor<IActionRdfResolve
    * @param {ActionContext} context An optional context.
    * @return {boolean} If the given context has a single source of the given type.
    */
-  protected hasContextSingleSourceOfType(requiredType: string, context: ActionContext): boolean {
+  protected hasContextSingleSourceOfType(requiredType: string, context?: ActionContext): boolean {
     const source = this.getContextSource(context);
     return !!(source && getDataSourceType(source) === requiredType && getDataSourceValue(source));
   }
@@ -87,7 +86,7 @@ export type IDataSource = string | {
   type?: string;
   value: any;
 };
-export function getDataSourceType(dataSource: IDataSource): string {
+export function getDataSourceType(dataSource: IDataSource): string | undefined {
   return typeof dataSource === 'string' ? '' : dataSource.type;
 }
 export function getDataSourceValue(dataSource: IDataSource): string {

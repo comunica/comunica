@@ -5,6 +5,7 @@
     "packages/*/lib/**/*"
   ],
   "compilerOptions": {
-    "noImplicitAny": false
+    "noImplicitAny": false,
+    "strictNullChecks": true
   }
 }

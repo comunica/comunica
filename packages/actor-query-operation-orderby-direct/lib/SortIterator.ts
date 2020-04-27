@@ -50,7 +50,7 @@ export class SortIterator<T> extends TransformIterator<T, T> {
     }
     // Push the smallest item in the window
     if (length === this.windowLength) {
-      this._push(this.sorted.pop());
+      this._push(<T> this.sorted.pop());
     }
     done();
   }
@@ -59,7 +59,7 @@ export class SortIterator<T> extends TransformIterator<T, T> {
   public _flush(done: () => void) {
     let length = this.sorted.length;
     while (length--) {
-      this._push(this.sorted.pop());
+      this._push(<T> this.sorted.pop());
     }
     done();
   }

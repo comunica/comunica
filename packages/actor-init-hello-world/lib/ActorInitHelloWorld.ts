@@ -22,7 +22,7 @@ export class ActorInitHelloWorld extends ActorInit implements IActorInitHelloWor
   }
 
   public async test(action: IActionInit): Promise<IActorTest> {
-    return null;
+    return true;
   }
 
   public async run(action: IActionInit): Promise<IActorOutputInit> {

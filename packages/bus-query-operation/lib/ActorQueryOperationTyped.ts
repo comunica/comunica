@@ -32,7 +32,7 @@ export abstract class ActorQueryOperationTyped<O extends Algebra.Operation> exte
 
   public async run(action: IActionQueryOperation): Promise<IActorQueryOperationOutput> {
     const operation: O = <O> action.operation;
-    const subContext = action.context ? action.context.set(KEY_CONTEXT_QUERYOPERATION, operation) : null;
+    const subContext = action.context && action.context.set(KEY_CONTEXT_QUERYOPERATION, operation);
     const output: IActorQueryOperationOutput = await this.runOperation(operation, subContext);
     if ((<IActorQueryOperationOutputStream> output).metadata) {
       (<IActorQueryOperationOutputStream> output).metadata =
@@ -41,9 +41,9 @@ export abstract class ActorQueryOperationTyped<O extends Algebra.Operation> exte
     return output;
   }
 
-  protected abstract async testOperation(operation: O, context: ActionContext): Promise<IActorTest>;
+  protected abstract async testOperation(operation: O, context: ActionContext | undefined): Promise<IActorTest>;
 
-  protected abstract runOperation(operation: O, context: ActionContext): Promise<IActorQueryOperationOutput>;
+  protected abstract runOperation(operation: O, context: ActionContext | undefined): Promise<IActorQueryOperationOutput>;
 
 }
 

@@ -13,7 +13,7 @@ export class SparqlExpressionEvaluator {
    * @param {Expression} expr
    * @returns {(bindings: Bindings) => Term}
    */
-  public static createEvaluator(expr: Algebra.Expression): (bindings: Bindings) => RDF.Term {
+  public static createEvaluator(expr: Algebra.Expression): (bindings: Bindings) => (RDF.Term | undefined) {
     const func = SparqlExpressionEvaluator.handleExpression(expr);
     // internally the expression evaluator uses primitives, so these have to be converted back
     return (bindings: Bindings) => {
@@ -25,7 +25,7 @@ export class SparqlExpressionEvaluator {
     };
   }
 
-  private static handleExpression(expr: Algebra.Expression): (bindings: Bindings) => string {
+  private static handleExpression(expr: Algebra.Expression): (bindings: Bindings) => (string | undefined) {
     if (expr.expressionType === Algebra.expressionTypes.TERM) {
       return SparqlExpressionEvaluator.handleTermExpression(<Algebra.TermExpression> expr);
     }
@@ -41,7 +41,7 @@ export class SparqlExpressionEvaluator {
     throw new Error('Unsupported Expression type: ' + expr.expressionType);
   }
 
-  private static handleTermExpression(expr: Algebra.TermExpression): (bindings: Bindings) => string {
+  private static handleTermExpression(expr: Algebra.TermExpression): (bindings: Bindings) => (string | undefined) {
     if (expr.term.termType === 'Variable') {
       return (bindings) => {
         const str = termToString(expr.term);
@@ -78,11 +78,11 @@ export class SparqlExpressionEvaluator {
 
     const funcArgs = args.map(SparqlExpressionEvaluator.handleExpression);
 
-    return ((operator: any, argumentExpressions: ((bindings: Bindings) => string)[]) => {
+    return ((operator: any, argumentExpressions: ((bindings: Bindings) => (string | undefined))[]) => {
       return (bindings: Bindings): string => {
         // Evaluate the arguments
-        const resolvedArgs: (number|boolean|string)[] = new Array(argumentExpressions.length);
-        const origArgs: string[] = new Array(argumentExpressions.length);
+        const resolvedArgs: (number|boolean|string|undefined)[] = new Array(argumentExpressions.length);
+        const origArgs: (string | undefined)[] = new Array(argumentExpressions.length);
         for (let i = 0; i < argumentExpressions.length; i++) {
           const arg = resolvedArgs[i] = origArgs[i] = argumentExpressions[i](bindings);
           // Convert the arguments if necessary
@@ -120,20 +120,23 @@ function isLiteral(entity: any) {
   return typeof entity === 'string' && entity[0] === '"';
 }
 
-function literalValue(literal: string) {
+function literalValue(literal: string | undefined) {
+  if (!literal) {
+    return '';
+  }
   const match = /^"([^]*)"/.exec(literal);
-  return match[1];
+  return match && match[1] || '';
 }
 
 function getLiteralType(literal: string) {
   const match = /^"[^]*"(?:\^\^([^"]+)|(@)[^@"]+)?$/.exec(literal);
-  return match[1] || (match[2]
+  return match && match[1] || (match && match[2]
     ? 'http://www.w3.org/1999/02/22-rdf-syntax-ns#langString' : 'http://www.w3.org/2001/XMLSchema#string');
 }
 
 function getLiteralLanguage(literal: string) {
   const match = /^"[^]*"(?:@([^@"]+)|\^\^[^"]+)?$/.exec(literal);
-  return match[1] ? match[1].toLowerCase() : '';
+  return match && match[1] ? match[1].toLowerCase() : '';
 }
 
 const XSD = 'http://www.w3.org/2001/XMLSchema#';
@@ -159,7 +162,7 @@ const operators: any = {
   '!'(a: boolean): boolean              { return !a;      },
   '&&'(a: boolean, b: boolean): boolean { return a &&  b; },
   '||'(a: boolean, b: boolean): boolean { return a ||  b; },
-  'lang'(a: any): string {
+  'lang'(a: any): string | undefined {
     return isLiteral(a) ? '"' + getLiteralLanguage(a).toLowerCase() + '"' : undefined;
   },
   'langmatches'(langTag: string, langRange: string): boolean {

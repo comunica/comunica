@@ -80,12 +80,12 @@ Options:
 
     // Print supported MIME types
     if (args.listformats) {
-      const mediaTypes: {[id: string]: number} = await this.getResultMediaTypes(null);
+      const mediaTypes: {[id: string]: number} = await this.getResultMediaTypes();
       return { stdout: require('streamify-string')(Object.keys(mediaTypes).join('\n')) };
     }
 
     // Define query
-    let query: string = null;
+    let query: string | undefined;
     if (args.q) {
       if (typeof args.q !== 'string') {
         throw new Error('The query option must be a string');
@@ -96,7 +96,7 @@ Options:
     } else {
       query = args._.pop();
       if (!query) {
-        query = this.queryString;
+        query = this.queryString || '';
       }
     }
 

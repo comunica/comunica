@@ -1,4 +1,8 @@
-import {IActorQueryOperationOutput, IActorQueryOperationOutputBindings} from "@comunica/bus-query-operation";
+import {
+  getMetadata,
+  IActorQueryOperationOutput,
+  IActorQueryOperationOutputBindings
+} from "@comunica/bus-query-operation";
 import {ActorRdfJoin, IActionRdfJoin} from "@comunica/bus-rdf-join";
 import {IActorArgs, IActorTest, Mediator} from "@comunica/core";
 import {IMediatorTypeIterations} from "@comunica/mediatortype-iterations";
@@ -33,7 +37,7 @@ export class ActorRdfJoinMultiSmallest extends ActorRdfJoin {
     const entries: IActorQueryOperationOutputBindings[] = action.entries.slice();
 
     // Determine the two smallest streams by estimated count
-    const entriesTotalItems = (await Promise.all(action.entries.map((entry) => entry.metadata())))
+    const entriesTotalItems = (await Promise.all(action.entries.map(getMetadata)))
       .map((metadata) => 'totalItems' in metadata ? metadata.totalItems : Infinity);
     const smallestIndex1: number = ActorRdfJoinMultiSmallest.getSmallestPatternId(entriesTotalItems);
     const smallestItem1 = entries.splice(smallestIndex1, 1)[0];
@@ -50,7 +54,7 @@ export class ActorRdfJoinMultiSmallest extends ActorRdfJoin {
   }
 
   protected async getIterations(action: IActionRdfJoin): Promise<number> {
-    return (await Promise.all(action.entries.map((entry) => entry.metadata())))
+    return (await Promise.all(action.entries.map(getMetadata)))
       .reduce((acc, value) => acc * value.totalItems, 1);
   }
 

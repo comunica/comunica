@@ -21,17 +21,17 @@ export class ActorInitHttp extends ActorInit implements IActorInitHttpArgs {
   }
 
   public async test(action: IActionInit): Promise<IActorTest> {
-    return null;
+    return true;
   }
 
   public async run(action: IActionInit): Promise<IActorOutputInit> {
     const http: IActionHttp = {
       context: action.context,
       init: {},
-      input: action.argv.length > 0 ? action.argv[0] : this.url,
+      input: action.argv.length > 0 ? action.argv[0] : this.url || '',
     };
     if (this.method) {
-      http.init.method = this.method;
+      (<RequestInit> http.init).method = this.method;
     }
     if (this.headers) {
       const headers: Headers = new Headers();
@@ -39,7 +39,7 @@ export class ActorInitHttp extends ActorInit implements IActorInitHttpArgs {
         const i: number = value.indexOf(':');
         headers.append(value.substr(0, i).toLowerCase(), value.substr(i + 2));
       }
-      http.init.headers = headers;
+      (<RequestInit> http.init).headers = headers;
     }
 
     const httpResponse: IActorHttpOutput = await this.mediatorHttp.mediate(http);

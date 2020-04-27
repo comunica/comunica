@@ -65,7 +65,7 @@ if (args.p) {
   mainModulePath = __dirname + '/../';
 }
 
-let exportVariableName: string = null;
+let exportVariableName: string | undefined;
 if (args.e) {
   exportVariableName = args.e;
 }

@@ -28,7 +28,7 @@ export class ActorInitRdfDereference extends ActorInit implements IActorInitRdfP
   public async run(action: IActionInit): Promise<IActorOutputInit> {
     const dereference: IActionRdfDereference = {
       context: action.context,
-      url: action.argv.length > 0 ? action.argv[0] : this.url,
+      url: action.argv.length > 0 ? action.argv[0] : this.url || '',
     };
     if (!dereference.url) {
       throw new Error('A URL must be given either in the config or as CLI arg');

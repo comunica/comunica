@@ -48,7 +48,7 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
    *
    * @param {RDF.Quad} pattern A quad pattern.
    *
-   * @return {{[p: string]: string[]}} If no equal variable names are present in the four terms, this returns null.
+   * @return {{[p: string]: string[]}} If no equal variable names are present in the four terms, this returns undefined.
    *                                   Otherwise, this maps quad elements ('subject', 'predicate', 'object', 'graph')
    *                                   to the list of quad elements it shares a variable name with.
    *                                   If no links for a certain element exist, this element will
@@ -61,7 +61,7 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
    *                                           will not occur, instead only { subject: [ 'predicate'] }
    *                                           will be returned.
    */
-  public static getDuplicateElementLinks(pattern: RDF.BaseQuad): {[element: string]: string[]} {
+  public static getDuplicateElementLinks(pattern: RDF.BaseQuad): {[element: string]: string[]} | undefined {
     // Collect a variable to quad elements mapping.
     const variableElements: {[variableName: string]: string[]} = {};
     let duplicateVariables = false;
@@ -74,7 +74,7 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
     }
 
     if (!duplicateVariables) {
-      return null;
+      return undefined;
     }
 
     // Collect quad element to elements with equal variables mapping.
@@ -129,7 +129,7 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
       let filteredOutput = result.data;
 
       // Detect duplicate variables in the pattern
-      const duplicateElementLinks: { [element: string]: string[] } = ActorQueryOperationQuadpattern
+      const duplicateElementLinks: { [element: string]: string[] } | undefined = ActorQueryOperationQuadpattern
         .getDuplicateElementLinks(pattern);
 
       // If there are duplicate variables in the search pattern,

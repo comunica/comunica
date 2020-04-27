@@ -33,7 +33,7 @@ implements IActorRdfResolveHypermediaQpfArgs {
   }
 
   public async testMetadata(action: IActionRdfResolveHypermedia): Promise<IActorRdfResolveHypermediaTest> {
-    const searchForm = this.createSource(action.metadata, action.context, null).searchForm;
+    const searchForm = this.createSource(action.metadata, action.context).searchForm;
     if (!searchForm) {
       throw new Error(`Actor ${this.name} could not detect a TPF/QPF search form.`);
     }
@@ -54,7 +54,7 @@ implements IActorRdfResolveHypermediaQpfArgs {
     return { source, dataset: source.searchForm.dataset };
   }
 
-  protected createSource(metadata: {[id: string]: any}, context: ActionContext, quads: RDF.Stream): RdfSourceQpf {
+  protected createSource(metadata: {[id: string]: any}, context?: ActionContext, quads?: RDF.Stream): RdfSourceQpf {
     return new RdfSourceQpf(this.mediatorMetadata, this.mediatorMetadataExtract, this.mediatorRdfDereference,
       this.subjectUri, this.predicateUri, this.objectUri, this.graphUri, metadata, context, quads);
   }

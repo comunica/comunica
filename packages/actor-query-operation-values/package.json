@@ -36,7 +36,7 @@
   ],
   "dependencies": {
     "asynciterator": "^2.0.1",
-    "rdf-string": "^1.3.1"
+    "rdf-string": "^1.4.2"
   },
   "peerDependencies": {
     "@comunica/bus-query-operation": "^1.0.0",

@@ -16,7 +16,7 @@ export class N3StoreQuadSource implements ILazyQuadSource {
     return this.matchLazy(subject, predicate, object, graph);
   }
 
-  public matchLazy?(subject?: RDF.Term | RegExp, predicate?: RDF.Term | RegExp, object?: RDF.Term | RegExp,
+  public matchLazy(subject?: RDF.Term | RegExp, predicate?: RDF.Term | RegExp, object?: RDF.Term | RegExp,
                     graph?: RDF.Term | RegExp): AsyncIterator<RDF.Quad> & RDF.Stream {
     if (subject instanceof RegExp
       || predicate  instanceof RegExp

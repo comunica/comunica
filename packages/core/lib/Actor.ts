@@ -47,10 +47,10 @@ export abstract class Actor<I extends IAction, T extends IActorTest, O extends I
   /**
    * Get the logger from the given context.
    * @param {ActionContext} context An optional context.
-   * @return {Logger} The logger or null.
+   * @return {Logger} The logger or undefined.
    */
-  public static getContextLogger(context: ActionContext): Logger {
-    return context ? context.get(KEY_CONTEXT_LOG) : null;
+  public static getContextLogger(context: ActionContext | undefined): Logger | undefined {
+    return context && context.get(KEY_CONTEXT_LOG);
   }
 
   /**
@@ -110,7 +110,7 @@ export abstract class Actor<I extends IAction, T extends IActorTest, O extends I
 
   /* Proxy methods for the (optional) logger that is defined in the context */
 
-  protected getDefaultLogData(context: ActionContext, data?: any): any {
+  protected getDefaultLogData(context: ActionContext | undefined, data?: any): any {
     if (!data) {
       data = {};
     }
@@ -118,43 +118,43 @@ export abstract class Actor<I extends IAction, T extends IActorTest, O extends I
     return data;
   }
 
-  protected logTrace(context: ActionContext, message: string, data?: any): void {
-    const logger: Logger = Actor.getContextLogger(context);
+  protected logTrace(context: ActionContext | undefined, message: string, data?: any): void {
+    const logger: Logger | undefined = Actor.getContextLogger(context);
     if (logger) {
       logger.trace(message, this.getDefaultLogData(context, data));
     }
   }
 
-  protected logDebug(context: ActionContext, message: string, data?: any): void {
-    const logger: Logger = Actor.getContextLogger(context);
+  protected logDebug(context: ActionContext | undefined, message: string, data?: any): void {
+    const logger: Logger | undefined = Actor.getContextLogger(context);
     if (logger) {
       logger.debug(message, this.getDefaultLogData(context, data));
     }
   }
 
-  protected logInfo(context: ActionContext, message: string, data?: any): void {
-    const logger: Logger = Actor.getContextLogger(context);
+  protected logInfo(context: ActionContext | undefined, message: string, data?: any): void {
+    const logger: Logger | undefined = Actor.getContextLogger(context);
     if (logger) {
       logger.info(message, this.getDefaultLogData(context, data));
     }
   }
 
-  protected logWarn(context: ActionContext, message: string, data?: any): void {
-    const logger: Logger = Actor.getContextLogger(context);
+  protected logWarn(context: ActionContext | undefined, message: string, data?: any): void {
+    const logger: Logger | undefined = Actor.getContextLogger(context);
     if (logger) {
       logger.warn(message, this.getDefaultLogData(context, data));
     }
   }
 
-  protected logError(context: ActionContext, message: string, data?: any): void {
-    const logger: Logger = Actor.getContextLogger(context);
+  protected logError(context: ActionContext | undefined, message: string, data?: any): void {
+    const logger: Logger | undefined = Actor.getContextLogger(context);
     if (logger) {
       logger.error(message, this.getDefaultLogData(context, data));
     }
   }
 
-  protected logFatal(context: ActionContext, message: string, data?: any): void {
-    const logger: Logger = Actor.getContextLogger(context);
+  protected logFatal(context: ActionContext | undefined, message: string, data?: any): void {
+    const logger: Logger | undefined = Actor.getContextLogger(context);
     if (logger) {
       logger.fatal(message, this.getDefaultLogData(context, data));
     }

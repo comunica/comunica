@@ -17,7 +17,7 @@ export class ActorRdfParseHtmlRdfa extends ActorRdfParseHtml {
 
   public async run(action: IActionRdfParseHtml): Promise<IActorRdfParseHtmlOutput> {
     const mediaType = action.headers ? action.headers.get('content-type') : null;
-    const language = action.headers ? action.headers.get('content-language') : null;
+    const language = action.headers && action.headers.get('content-language') || undefined;
     const profile = mediaType && mediaType.indexOf('xml') >= 0 ? 'xhtml' : 'html';
 
     const htmlParseListener = new RdfaParser({ baseIRI: action.baseIRI, profile, language });

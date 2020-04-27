@@ -1,6 +1,10 @@
-import {ActorQueryOperation, ActorQueryOperationTypedMediated, IActorQueryOperationOutputBindings,
-  IActorQueryOperationTypedMediatedArgs} from "@comunica/bus-query-operation";
-import {BindingsStream} from "@comunica/bus-query-operation";
+import {
+  ActorQueryOperation,
+  ActorQueryOperationTypedMediated,
+  BindingsStream,
+  IActorQueryOperationOutputBindings,
+  IActorQueryOperationTypedMediatedArgs
+} from "@comunica/bus-query-operation";
 import {ActionContext, IActorTest} from "@comunica/core";
 import {RoundRobinUnionIterator} from "asynciterator-union";
 import {Algebra} from "sparqlalgebrajs";
@@ -56,9 +60,12 @@ export class ActorQueryOperationUnion extends ActorQueryOperationTypedMediated<A
 
     const bindingsStream: BindingsStream = new RoundRobinUnionIterator(outputs.map(
       (output: IActorQueryOperationOutputBindings) => output.bindingsStream));
-    const metadata: () => Promise<{[id: string]: any}> = outputs[0].metadata && outputs[1].metadata ? () =>
-        Promise.all([outputs[0].metadata(), outputs[1].metadata()]).then(ActorQueryOperationUnion.unionMetadata)
-      : null;
+    const metadata: (() => Promise<{[id: string]: any}>) | undefined = outputs[0].metadata && outputs[1].metadata ? () =>
+        Promise.all([
+          (<() => Promise<{[id: string]: any}>> outputs[0].metadata)(),
+          (<() => Promise<{[id: string]: any}>> outputs[1].metadata)()
+        ]).then(ActorQueryOperationUnion.unionMetadata)
+      : undefined;
     const variables: string[] = ActorQueryOperationUnion.unionVariables(
       outputs.map((output: IActorQueryOperationOutputBindings) => output.variables));
     return { type: 'bindings', bindingsStream, metadata, variables };

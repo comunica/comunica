@@ -59,9 +59,11 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
    * @param {() => Promise<{[p: string]: any}>} metadata A metadata callback
    * @return {() => Promise<{[p: string]: any}>} The callback where the response will be cached.
    */
-  public static cachifyMetadata(metadata: () => Promise<{[id: string]: any}>): () => Promise<{[id: string]: any}> {
-    let lastReturn: Promise<{[id: string]: any}> = null;
-    return () => (lastReturn || (lastReturn = metadata()));
+  public static cachifyMetadata
+  <T extends (() => Promise<{[id: string]: any}>) | (undefined | (() => Promise<{[id: string]: any}>))>
+  (metadata: T): T {
+    let lastReturn: Promise<{[id: string]: any}>;
+    return <T> (metadata && (() => (lastReturn || (lastReturn = metadata()))));
   }
 
   /**
@@ -151,7 +153,11 @@ export interface IActionQueryOperation extends IAction {
  * Query operation output.
  * @see IActorQueryOperationOutputBindings, IActorQueryOperationOutputQuads, IActorQueryOperationOutputBoolean
  */
-export interface IActorQueryOperationOutput {
+export type IActorQueryOperationOutput =
+  IActorQueryOperationOutputStream |
+  IActorQueryOperationOutputQuads |
+  IActorQueryOperationOutputBoolean;
+export interface IActorQueryOperationOutputBase {
   /**
    * The type of output.
    */
@@ -166,7 +172,7 @@ export interface IActorQueryOperationOutput {
  * Super interface for query operation outputs that represent some for of stream.
  * @see IActorQueryOperationOutputBindings, IActorQueryOperationOutputQuads
  */
-export interface IActorQueryOperationOutputStream extends IActorQueryOperationOutput {
+export interface IActorQueryOperationOutputStream extends IActorQueryOperationOutputBase {
   /**
    * Callback that returns a promise that resolves to the metadata about the stream.
    * This can contain things like the estimated number of total stream elements,
@@ -176,6 +182,18 @@ export interface IActorQueryOperationOutputStream extends IActorQueryOperationOu
    * Metadata will not be collected until this callback is invoked.
    */
   metadata?: () => Promise<{[id: string]: any}>;
+}
+
+/**
+ * Helper function to get the metadata of an action output.
+ * @param actionOutput An action output, with an optional metadata function.
+ * @return The metadata.
+ */
+export function getMetadata(actionOutput: IActorQueryOperationOutputStream): Promise<{[id: string]: any}> {
+  if (!actionOutput.metadata) {
+    return Promise.resolve({});
+  }
+  return actionOutput.metadata();
 }
 
 /**
@@ -218,7 +236,7 @@ export interface IActorQueryOperationOutputQuads extends IActorQueryOperationOut
  * Query operation output for quads.
  * For example: SPARQL ASK results
  */
-export interface IActorQueryOperationOutputBoolean extends IActorQueryOperationOutput {
+export interface IActorQueryOperationOutputBoolean extends IActorQueryOperationOutputBase {
   /**
    * The type of output.
    */

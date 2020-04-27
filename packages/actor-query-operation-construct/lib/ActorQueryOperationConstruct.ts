@@ -27,7 +27,8 @@ export class ActorQueryOperationConstruct extends ActorQueryOperationTypedMediat
    * @return {RDF.Variable[]} The variables in the triple patterns.
    */
   public static getVariables(patterns: RDF.BaseQuad[]): RDF.Variable[] {
-    return uniqTerms([].concat.apply([], patterns.map((pattern) => getVariables(getTerms(pattern)))));
+    return uniqTerms((<RDF.Variable[]> []).concat
+      .apply([], patterns.map((pattern) => getVariables(getTerms(pattern)))));
   }
 
   public async testOperation(pattern: Algebra.Construct, context: ActionContext): Promise<IActorTest> {
@@ -48,16 +49,13 @@ export class ActorQueryOperationConstruct extends ActorQueryOperationTypedMediat
     const quadStream: AsyncIterator<RDF.Quad> = new BindingsToQuadsIterator(pattern.template, output.bindingsStream);
 
     // Let the final metadata contain the estimated number of triples
-    let metadata: () => Promise<{[id: string]: any}> = null;
+    let metadata: (() => Promise<{[id: string]: any}>) | undefined;
     if (output.metadata) {
-      metadata = () => output.metadata().then((m) => {
-        if (m) {
-          if (m.totalItems) {
-            return Object.assign({}, m, { totalItems: m.totalItems * pattern.template.length });
-          }
-          return m;
+      metadata = () => (<() => Promise<{[id: string]: any}>> output.metadata)().then((m) => {
+        if (m.totalItems) {
+          return Object.assign({}, m, { totalItems: m.totalItems * pattern.template.length });
         }
-        return null;
+        return m;
       });
     }
 

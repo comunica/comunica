@@ -31,7 +31,7 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
           filter: (item) => item.equals(path.object),
           transform: (item, next) => {
             bindingsStream._push(Bindings({ }));
-            next(null);
+            next();
           },
         });
       return { type: 'bindings', bindingsStream, variables: [] };
@@ -42,7 +42,7 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
         .transform<Bindings>({
           transform: (item, next) => {
             bindingsStream._push(Bindings({ [v]: item }));
-            next(null);
+            next();
           },
         });
       return { type: 'bindings', bindingsStream, variables: [v] };

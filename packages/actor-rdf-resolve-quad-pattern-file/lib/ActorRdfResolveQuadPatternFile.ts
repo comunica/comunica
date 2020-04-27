@@ -30,7 +30,7 @@ export class ActorRdfResolveQuadPatternFile extends ActorRdfResolveQuadPatternSo
       ({ url }: IActionHttpInvalidate) => url ? this.cache.del(url) : this.cache.reset());
   }
 
-  public initializeFile(file: string, context: ActionContext): Promise<any> {
+  public initializeFile(file: string, context?: ActionContext): Promise<any> {
     const storePromise = this.mediatorRdfDereference.mediate({ context, url: file })
       .then((page: IActorRdfDereferenceOutput) => new Promise<N3Store>((resolve, reject) => {
         const store: N3Store = new Store();
@@ -43,7 +43,7 @@ export class ActorRdfResolveQuadPatternFile extends ActorRdfResolveQuadPatternSo
   }
 
   public async initialize(): Promise<any> {
-    (this.files || []).forEach((file) => this.initializeFile(file, null));
+    (this.files || []).forEach((file) => this.initializeFile(file));
     return null;
   }
 
@@ -55,7 +55,10 @@ export class ActorRdfResolveQuadPatternFile extends ActorRdfResolveQuadPatternSo
   }
 
   protected async getSource(context: ActionContext): Promise<ILazyQuadSource> {
-    const file: string = this.getContextSourceUrl(this.getContextSource(context));
+    const file: string | undefined = this.getContextSourceUrl(this.getContextSource(context));
+    if (!file) {
+      throw new Error('Illegal state: Invalid file source found.');
+    }
     if (!this.cache.has(file)) {
       await this.initializeFile(file, context);
     }
@@ -65,8 +68,15 @@ export class ActorRdfResolveQuadPatternFile extends ActorRdfResolveQuadPatternSo
   protected getMetadata(source: ILazyQuadSource, pattern: RDF.BaseQuad, context: ActionContext,
                         data: AsyncIterator<RDF.Quad> & RDF.Stream): () => Promise<{[id: string]: any}> {
     return () => new Promise((resolve, reject) => {
-      const file: string = this.getContextSourceUrl(this.getContextSource(context));
-      this.cache.get(file).then((store) => {
+      const file: string | undefined = this.getContextSourceUrl(this.getContextSource(context));
+      if (!file) {
+        throw new Error('Illegal state: Invalid file source found.');
+      }
+      const cached = this.cache.get(file);
+      if (!cached) {
+        throw new Error('Illegal state: Missing file source cache entry during metadata retrieval.');
+      }
+      cached.then((store) => {
         const totalItems: number = store.countQuads(
           N3StoreIterator.nullifyVariables(pattern.subject),
           N3StoreIterator.nullifyVariables(pattern.predicate),

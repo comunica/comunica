@@ -47,19 +47,19 @@ export class ActorQueryOperationSlice extends ActorQueryOperationTypedMediated<A
   private sliceStream(stream: AsyncIterator<any>, pattern: Algebra.Slice): AsyncIterator<any> {
     const hasLength: boolean = !!pattern.length || pattern.length === 0;
     return stream.range(pattern.start,
-      hasLength ? pattern.start + pattern.length - 1 : Infinity);
+      hasLength ? pattern.start + (<number> pattern.length) - 1 : Infinity);
   }
 
   // If we find metadata, apply slicing on the total number of items
-  private sliceMetadata(output: IActorQueryOperationOutputStream, pattern: Algebra.Slice): () => Promise<{[id: string]: any}> {
+  private sliceMetadata(output: IActorQueryOperationOutputStream, pattern: Algebra.Slice): (() => Promise<{[id: string]: any}>) | undefined {
     const hasLength: boolean = !!pattern.length || pattern.length === 0;
-    return !output.metadata ? null : () => output.metadata()
+    return !output.metadata ? undefined : () => (<() => Promise<{[id: string]: any}>> output.metadata)()
       .then((subMetadata) => {
         let totalItems: number = subMetadata.totalItems;
         if (isFinite(totalItems)) {
           totalItems = Math.max(0, totalItems - pattern.start);
           if (hasLength) {
-            totalItems = Math.min(totalItems, pattern.length);
+            totalItems = Math.min(totalItems, <number> pattern.length);
           }
         }
         return Object.assign({}, subMetadata, { totalItems });

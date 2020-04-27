@@ -39,7 +39,7 @@
     "arrayify-stream": "^1.0.0",
     "asynciterator": "^2.0.1",
     "fetch-sparql-endpoint": "^1.5.0",
-    "rdf-string": "^1.3.1",
+    "rdf-string": "^1.4.2",
     "rdf-terms": "^1.4.0",
     "sparqlalgebrajs": "^2.2.2"
   },

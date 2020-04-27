@@ -79,16 +79,10 @@ describe('ActorQueryOperationProject', () => {
       });
     });
 
-    it('should run on a stream with variables that should be deleted and are missing', () => {
+    it('should error run on a stream with variables that should be deleted and are missing', async () => {
       const op = { operation: { type: 'project', input: 'in', variables: [ variable('a'), variable('missing') ] } };
-      return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
-        expect(output.metadata()).toEqual('M');
-        expect(output.variables).toEqual([ '?a', '?missing' ]);
-        expect(output.type).toEqual('bindings');
-        expect(await arrayifyStream(output.bindingsStream)).toEqual([
-          Bindings({ '?a': literal('A'), '?missing': null }),
-        ]);
-      });
+      return expect(actor.run(op)).rejects
+        .toThrow('Variables \'[\'missing\']\' are used in the projection result, but are not assigned.');
     });
 
     it('should run on a stream with equal blank nodes across bindings', () => {

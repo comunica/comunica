@@ -8,14 +8,17 @@
       "esnext.asynciterable"
     ],
     "target": "es2017",
-    "noImplicitAny": true,
     "removeComments": false,
     "preserveConstEnums": true,
     "sourceMap": true,
     "inlineSources": true,
     "declaration": true,
     "resolveJsonModule": true,
-    "downlevelIteration": true
+    "downlevelIteration": true,
+
+    "strict": true,
+    "strictFunctionTypes": false,
+    "strictPropertyInitialization": false
   },
   "include": [
     "packages/*/index.ts",

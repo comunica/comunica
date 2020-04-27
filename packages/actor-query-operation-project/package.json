@@ -40,7 +40,7 @@
   },
   "dependencies": {
     "@comunica/data-factory": "^1.12.1",
-    "rdf-string": "^1.3.1"
+    "rdf-string": "^1.4.2"
   },
   "devDependencies": {
     "@comunica/bus-query-operation": "^1.12.1",

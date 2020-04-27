@@ -26,7 +26,7 @@ export function runArgsInProcess(moduleRootPath: string, defaultConfigPath: stri
   runArgs(process.env.COMUNICA_CONFIG
     ? process.cwd() + '/' + process.env.COMUNICA_CONFIG : defaultConfigPath, argv,
     process.stdin, process.stdout, process.stderr, process.env,
-    null, { mainModulePath: moduleRootPath });
+    undefined, { mainModulePath: moduleRootPath });
 }
 
 export function runArgsInProcessStatic(actor: any) {

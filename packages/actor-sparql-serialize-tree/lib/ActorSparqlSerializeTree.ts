@@ -24,7 +24,8 @@ export class ActorSparqlSerializeTree extends ActorSparqlSerializeFixedMediaType
    * @param {IConverterSettings} converterSettings
    * @return {Promise<string>}
    */
-  public static bindingsStreamToGraphQl(bindingsStream: BindingsStream, context: ActionContext | {[key: string]: any},
+  public static bindingsStreamToGraphQl(bindingsStream: BindingsStream,
+                                        context: ActionContext | {[key: string]: any} | undefined,
                                         converterSettings?: IConverterSettings): Promise<string> {
     const actionContext: ActionContext = ensureActionContext(context);
     return new Promise((resolve, reject) => {

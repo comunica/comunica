@@ -31,11 +31,12 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
     IActorRdfResolveHypermediaLinksOutput>;
 
   private readonly context: ActionContext;
-  private readonly forceSourceType: string;
-  private readonly handledUrls?: {[url: string]: boolean};
+  private readonly forceSourceType?: string;
+  private readonly handledUrls: {[url: string]: boolean};
 
-  constructor(cacheSize: number, context: ActionContext, forceSourceType: string,
-              subject: RDF.Term, predicate: RDF.Term, object: RDF.Term, graph: RDF.Term,
+  constructor(cacheSize: number, context: ActionContext, forceSourceType: string | undefined,
+              subject: RDF.Term | undefined, predicate: RDF.Term | undefined,
+              object: RDF.Term | undefined, graph: RDF.Term | undefined,
               firstUrl: string, mediators: IMediatorArgs) {
     super(cacheSize, subject, predicate, object, graph, firstUrl, { autoStart: false });
     this.context = context;

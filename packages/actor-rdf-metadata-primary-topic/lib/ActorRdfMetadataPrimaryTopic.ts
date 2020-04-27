@@ -41,7 +41,7 @@ export class ActorRdfMetadataPrimaryTopic extends ActorRdfMetadata {
       // First pass over data to categorize in graphs,
       // and to detect the primaryTopic triple.
       const graphs: {[id: string]: RDF.Quad[]} = {};
-      let endpointIdentifier: string = null;
+      let endpointIdentifier: string | undefined;
       const primaryTopics: {[id: string]: string} = {};
       action.quads.on('data', (quad) => {
         if (quad.predicate.value === 'http://rdfs.org/ns/void#subset'
@@ -61,7 +61,7 @@ export class ActorRdfMetadataPrimaryTopic extends ActorRdfMetadata {
       // determine the appropriate metadata graph,
       // and emit all quads to the appropriate streams.
       action.quads.on('end', () => {
-        const metadataGraph: string = endpointIdentifier ? primaryTopics[endpointIdentifier] : null;
+        const metadataGraph: string | undefined = endpointIdentifier ? primaryTopics[endpointIdentifier] : undefined;
         for (const graphName in graphs) {
           if (graphName === metadataGraph) {
             for (const quad of graphs[graphName]) {

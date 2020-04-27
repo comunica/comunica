@@ -148,7 +148,7 @@ export class FederatedQuadSource implements ILazyQuadSource {
     if (!this.skipEmptyPatterns) {
       return false;
     }
-    const emptyPatterns: RDF.BaseQuad[] = this.emptyPatterns.get(source);
+    const emptyPatterns: RDF.BaseQuad[] | undefined = this.emptyPatterns.get(source);
     if (emptyPatterns) {
       for (const emptyPattern of emptyPatterns) {
         if (FederatedQuadSource.isSubPatternOf(pattern, emptyPattern)) {
@@ -191,11 +191,11 @@ export class FederatedQuadSource implements ILazyQuadSource {
 
     // Anonymous function to handle totalItems from metadata
     const checkEmitMetadata = (currentTotalItems: number, source: IDataSource,
-                               pattern: RDF.BaseQuad, lastMetadata?: {[id: string]: any}) => {
+                               pattern: RDF.BaseQuad | undefined, lastMetadata?: {[id: string]: any}) => {
       if (this.skipEmptyPatterns && !currentTotalItems) {
         // Because another call may have added more information in the meantime
-        if (!this.isSourceEmpty(source, pattern)) {
-          this.emptyPatterns.get(source).push(pattern);
+        if (pattern && !this.isSourceEmpty(source, pattern)) {
+          (<RDF.BaseQuad[]> this.emptyPatterns.get(source)).push(pattern);
         }
       }
       if (!remainingSources) {
@@ -217,14 +217,14 @@ export class FederatedQuadSource implements ILazyQuadSource {
       sourcesCount++;
 
       return new PromiseProxyIterator(async () => {
-        // Convert falsy terms to variables, reverse operation of {@link ActorRdfResolveQuadPatternSource#variableToNull}.
+        // Convert falsy terms to variables, reverse operation of {@link ActorRdfResolveQuadPatternSource#variableToUndefined}.
         // Deskolemize terms, so we send the original blank nodes to each source.
         // Note that some sources may not match bnodes by label. SPARQL endpoints for example consider them variables.
         const s = !subject   ? DataFactory.variable('vs') : FederatedQuadSource.deskolemizeTerm(subject,   sourceId);
         const p = !predicate ? DataFactory.variable('vp') : FederatedQuadSource.deskolemizeTerm(predicate, sourceId);
         const o = !object    ? DataFactory.variable('vo') : FederatedQuadSource.deskolemizeTerm(object,    sourceId);
         const g = !graph     ? DataFactory.variable('vg') : FederatedQuadSource.deskolemizeTerm(graph,     sourceId);
-        let pattern: Algebra.Pattern;
+        let pattern: Algebra.Pattern | undefined;
 
         // Prepare the context for this specific source
         const context: ActionContext = this.contextDefault.set(KEY_CONTEXT_SOURCE,

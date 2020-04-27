@@ -1,4 +1,9 @@
-import {Bindings, IActorQueryOperationOutput, IActorQueryOperationOutputBindings} from "@comunica/bus-query-operation";
+import {
+  Bindings,
+  getMetadata,
+  IActorQueryOperationOutput,
+  IActorQueryOperationOutputBindings
+} from "@comunica/bus-query-operation";
 import {ActorRdfJoin, IActionRdfJoin} from "@comunica/bus-rdf-join";
 import {IActorArgs} from "@comunica/core";
 import {IMediatorTypeIterations} from "@comunica/mediatortype-iterations";
@@ -28,12 +33,12 @@ export class ActorRdfJoinHash extends ActorRdfJoin {
     const variables = ActorRdfJoin.overlappingVariables(action);
     const join = new HashJoin<Bindings, string, Bindings>(
       action.entries[0].bindingsStream, action.entries[1].bindingsStream,
-      (entry) => ActorRdfJoinHash.hash(entry, variables), ActorRdfJoin.join);
+      (entry) => ActorRdfJoinHash.hash(entry, variables), <any> ActorRdfJoin.join);
     return { type: 'bindings', bindingsStream: join, variables: ActorRdfJoin.joinVariables(action) };
   }
 
   protected async getIterations(action: IActionRdfJoin): Promise<number> {
-    return (await action.entries[0].metadata()).totalItems + (await action.entries[1].metadata()).totalItems;
+    return (await getMetadata(action.entries[0])).totalItems + (await getMetadata(action.entries[1])).totalItems;
   }
 
 }

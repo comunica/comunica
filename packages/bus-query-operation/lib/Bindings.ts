@@ -174,7 +174,7 @@ export function materializeOperation(operation: Algebra.Operation, bindings: Bin
         const variables = op.variables.filter((variable) => !bindings.has(termToString(variable)));
         const valueBindings = op.bindings.map((binding) => {
           const newBinding = { ...binding };
-          bindings.forEach((value, key) => delete newBinding[key]);
+          bindings.forEach((value: RDF.NamedNode, key: string) => delete newBinding[key]);
           return newBinding;
         });
         return {
@@ -198,7 +198,9 @@ export function materializeOperation(operation: Algebra.Operation, bindings: Bin
           result: factory.createTermExpression(materializeTerm(op.term, bindings)),
         }
       }
-      if (op.expressionType === 'aggregate' && 'variable' in op && bindings.has(termToString(op.variable))) {
+      if (op.expressionType === 'aggregate'
+        && 'variable' in op
+        && bindings.has(termToString(<RDF.Variable> op.variable))) {
         // Materialize a bound aggregate operation.
         // If strictTargetVariables is true, we throw if the expression target variable is attempted to be bound.
         // Otherwise, we ignore this operation.

@@ -1,8 +1,20 @@
 import {ActorHttp, IActionHttp, IActorHttpOutput} from "@comunica/bus-http";
-import {ActorRdfDereferenceMediaMappings, IActionRdfDereference,
-  IActorRdfDereferenceMediaMappingsArgs, IActorRdfDereferenceOutput} from "@comunica/bus-rdf-dereference";
-import {IActionRdfParse, IActionRootRdfParse, IActorOutputRootRdfParse, IActorRdfParseOutput,
-  IActorTestRootRdfParse} from "@comunica/bus-rdf-parse";
+import {
+  ActorRdfDereferenceMediaMappings,
+  IActionRdfDereference,
+  IActorRdfDereferenceMediaMappingsArgs,
+  IActorRdfDereferenceOutput
+} from "@comunica/bus-rdf-dereference";
+import {
+  IActionHandleRdfParse,
+  IActionMediaTypesRdfParse,
+  IActionRdfParse,
+  IActorOutputHandleRdfParse,
+  IActorOutputMediaTypesRdfParse,
+  IActorRdfParseOutput,
+  IActorTestHandleRdfParse,
+  IActorTestMediaTypesRdfParse
+} from "@comunica/bus-rdf-parse";
 import {Actor, IActorTest, Mediator} from "@comunica/core";
 import {resolve as resolveRelative} from "relative-to-absolute-iri";
 
@@ -20,10 +32,12 @@ export abstract class ActorRdfDereferenceHttpParseBase extends ActorRdfDereferen
 
   public readonly mediatorHttp: Mediator<Actor<IActionHttp, IActorTest, IActorHttpOutput>,
     IActionHttp, IActorTest, IActorHttpOutput>;
-  public readonly mediatorRdfParseMediatypes: Mediator<Actor<IActionRootRdfParse, IActorTestRootRdfParse,
-    IActorOutputRootRdfParse>, IActionRootRdfParse, IActorTestRootRdfParse, IActorOutputRootRdfParse>;
-  public readonly mediatorRdfParseHandle: Mediator<Actor<IActionRootRdfParse, IActorTestRootRdfParse,
-    IActorOutputRootRdfParse>, IActionRootRdfParse, IActorTestRootRdfParse, IActorOutputRootRdfParse>;
+  public readonly mediatorRdfParseMediatypes: Mediator<
+    Actor<IActionMediaTypesRdfParse, IActorTestMediaTypesRdfParse, IActorOutputMediaTypesRdfParse>,
+    IActionMediaTypesRdfParse, IActorTestMediaTypesRdfParse, IActorOutputMediaTypesRdfParse>;
+  public readonly mediatorRdfParseHandle: Mediator<
+    Actor<IActionHandleRdfParse, IActorTestHandleRdfParse, IActorOutputHandleRdfParse>,
+    IActionHandleRdfParse, IActorTestHandleRdfParse, IActorOutputHandleRdfParse>;
   public readonly maxAcceptHeaderLength: number;
   public readonly maxAcceptHeaderLengthBrowser: number;
 
@@ -83,8 +97,8 @@ export abstract class ActorRdfDereferenceHttpParseBase extends ActorRdfDereferen
     }
 
     // Parse the resulting response
-    let mediaType: string = httpResponse.headers.has('content-type')
-      ? ActorRdfDereferenceHttpParseBase.REGEX_MEDIATYPE.exec(httpResponse.headers.get('content-type'))[0] : null;
+    const match = ActorRdfDereferenceHttpParseBase.REGEX_MEDIATYPE.exec(httpResponse.headers.get('content-type') || '');
+    let mediaType: string | undefined = match ? match[0] : undefined;
     // If no media type could be found, try to determine it via the file extension
     if (!mediaType || mediaType === 'text/plain') {
       mediaType = this.getMediaTypeFromExtension(httpResponse.url);
@@ -140,10 +154,12 @@ export interface IActorRdfDereferenceHttpParseArgs extends
   IActorRdfDereferenceMediaMappingsArgs {
   mediatorHttp: Mediator<Actor<IActionHttp, IActorTest, IActorHttpOutput>,
     IActionHttp, IActorTest, IActorHttpOutput>;
-  mediatorRdfParseMediatypes: Mediator<Actor<IActionRootRdfParse, IActorTestRootRdfParse,
-    IActorOutputRootRdfParse>, IActionRootRdfParse, IActorTestRootRdfParse, IActorOutputRootRdfParse>;
-  mediatorRdfParseHandle: Mediator<Actor<IActionRootRdfParse, IActorTestRootRdfParse,
-    IActorOutputRootRdfParse>, IActionRootRdfParse, IActorTestRootRdfParse, IActorOutputRootRdfParse>;
+  mediatorRdfParseMediatypes: Mediator<
+    Actor<IActionMediaTypesRdfParse, IActorTestMediaTypesRdfParse, IActorOutputMediaTypesRdfParse>,
+    IActionMediaTypesRdfParse, IActorTestMediaTypesRdfParse, IActorOutputMediaTypesRdfParse>;
+  mediatorRdfParseHandle: Mediator<
+    Actor<IActionHandleRdfParse, IActorTestHandleRdfParse, IActorOutputHandleRdfParse>,
+    IActionHandleRdfParse, IActorTestHandleRdfParse, IActorOutputHandleRdfParse>;
   maxAcceptHeaderLength: number;
   maxAcceptHeaderLengthBrowser: number;
 }
