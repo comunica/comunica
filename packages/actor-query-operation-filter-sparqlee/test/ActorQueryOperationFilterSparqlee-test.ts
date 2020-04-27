@@ -161,7 +161,7 @@ describe('ActorQueryOperationFilterSparqlee', () => {
     describe('should be able to handle EXIST filters', () => {
       it('like a simple EXIST that is true', async () => {
         // tslint:disable-next-line: no-string-literal
-        const resolver = actor['createExistenceResolver'](Map());
+        const resolver = ActorQueryOperation.createExistenceResolver(Map(), actor.mediatorQueryOperation);
         const expr: Algebra.ExistenceExpression = factory.createExistenceExpression(
           false,
           factory.createBgp([]),
@@ -172,7 +172,7 @@ describe('ActorQueryOperationFilterSparqlee', () => {
 
       it('like a simple EXIST that is false', async () => {
         // tslint:disable-next-line: no-string-literal
-        const resolver = actor['createExistenceResolver'](Map());
+        const resolver = ActorQueryOperation.createExistenceResolver(Map(), actor.mediatorQueryOperation);
         mediatorQueryOperation.mediate = (arg) => Promise.resolve({
           bindingsStream: new ArrayIterator([]),
           metadata: () => Promise.resolve({ totalItems: 0 }),
@@ -190,7 +190,7 @@ describe('ActorQueryOperationFilterSparqlee', () => {
 
       it('like a NOT EXISTS', async () => {
         // tslint:disable-next-line: no-string-literal
-        const resolver = actor['createExistenceResolver'](Map());
+        const resolver = ActorQueryOperation.createExistenceResolver(Map(), actor.mediatorQueryOperation);
         mediatorQueryOperation.mediate = (arg) => Promise.resolve({
           bindingsStream: new ArrayIterator([]),
           metadata: () => Promise.resolve({ totalItems: 0 }),
@@ -208,7 +208,7 @@ describe('ActorQueryOperationFilterSparqlee', () => {
 
       it('like an EXIST that errors', async () => {
         // tslint:disable-next-line: no-string-literal
-        const resolver = actor['createExistenceResolver'](Map());
+        const resolver = ActorQueryOperation.createExistenceResolver(Map(), actor.mediatorQueryOperation);
         const bindingsStream = new ArrayIterator([{}, {}, {}]).transform({
           transform: (item, done) => {
             bindingsStream._push(item);

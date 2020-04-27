@@ -1,5 +1,7 @@
-import {Bus} from "@comunica/core";
-import {ActorQueryOperation} from "../lib/ActorQueryOperation";
+import {ActionContext, Bus} from "@comunica/core";
+import {ActorQueryOperation, Bindings, KEY_CONTEXT_BASEIRI, KEY_CONTEXT_QUERY_TIMESTAMP} from "..";
+import {Algebra, Factory} from "sparqlalgebrajs";
+import {ArrayIterator} from "asynciterator";
 
 describe('ActorQueryOperation', () => {
   const bus = new Bus({ name: 'bus' });
@@ -66,6 +68,59 @@ describe('ActorQueryOperation', () => {
 
     it('should error for non-boolean', () => {
       expect(() => ActorQueryOperation.validateQueryOutput({ type: 'no-boolean' }, 'boolean')).toThrow();
+    });
+  });
+
+  describe('#getExpressionContext', () => {
+    describe('without mediatorQueryOperation', () => {
+      it('should create an empty object for an empty context', () => {
+        expect(ActorQueryOperation.getExpressionContext(ActionContext({}))).toEqual({});
+      });
+
+      it('should create an non-empty object for a filled context', () => {
+        const date = new Date();
+        expect(ActorQueryOperation.getExpressionContext(ActionContext({
+          [KEY_CONTEXT_QUERY_TIMESTAMP]: date,
+          [KEY_CONTEXT_BASEIRI]: 'http://base.org/',
+        }))).toEqual({
+          now: date,
+          baseIRI: 'http://base.org/',
+        });
+      });
+    });
+
+    describe('with mediatorQueryOperation', () => {
+      let mediatorQueryOperation;
+
+      beforeEach(() => {
+        mediatorQueryOperation = {
+          mediate: (arg) => Promise.resolve({
+            bindingsStream: new ArrayIterator([]),
+            metadata: () => Promise.resolve({ totalItems: 0 }),
+            operated: arg,
+            type: 'bindings',
+            variables: ['a'],
+          }),
+        };
+      });
+
+      it('should create an object with a resolver', () => {
+        const resolver = (<any> ActorQueryOperation
+          .getExpressionContext(ActionContext({}), mediatorQueryOperation)).exists;
+        expect(resolver).toBeTruthy();
+      });
+
+      it('should allow a resolver to be invoked', async () => {
+        const resolver = (<any> ActorQueryOperation
+          .getExpressionContext(ActionContext({}), mediatorQueryOperation)).exists;
+        const factory = new Factory();
+        const expr: Algebra.ExistenceExpression = factory.createExistenceExpression(
+          true,
+          factory.createBgp([]),
+        );
+        const result = resolver(expr, Bindings({}));
+        return expect(await result).toBe(true);
+      });
     });
   });
 });

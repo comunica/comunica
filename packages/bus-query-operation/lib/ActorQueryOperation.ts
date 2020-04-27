@@ -1,8 +1,8 @@
-import {ActionContext, Actor, IAction, IActorArgs, IActorTest} from "@comunica/core";
+import {ActionContext, Actor, IAction, IActorArgs, IActorTest, Mediator} from "@comunica/core";
 import {AsyncIterator} from "asynciterator";
 import * as RDF from "rdf-js";
 import { Algebra } from "sparqlalgebrajs";
-import { BindingsStream } from "./Bindings";
+import {Bindings, BindingsStream, materializeOperation} from "./Bindings";
 
 /**
  * A comunica actor for query-operation events.
@@ -75,14 +75,60 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
     }
   }
 
-  public static getExpressionContext(context: ActionContext): IExpressionContext {
+  /**
+   * Create an options object that can be used to construct a sparqlee evaluator.
+   * @param context An action context.
+   * @param mediatorQueryOperation An optional query query operation mediator.
+   *                               If defined, the existence resolver will be defined as `exists`.
+   */
+  public static getExpressionContext(context: ActionContext, mediatorQueryOperation?: Mediator<
+    Actor<IActionQueryOperation, IActorTest, IActorQueryOperationOutput>,
+    IActionQueryOperation, IActorTest, IActorQueryOperationOutput>): IExpressionContext {
     if (context) {
       const now: Date = context.get(KEY_CONTEXT_QUERY_TIMESTAMP);
       const baseIRI: string = context.get(KEY_CONTEXT_BASEIRI);
-      return { now, baseIRI };
+      return {
+        now,
+        baseIRI,
+        ...mediatorQueryOperation ? {
+          exists: ActorQueryOperation.createExistenceResolver(context, mediatorQueryOperation),
+        } : {},
+      };
     } else {
       return {};
     }
+  }
+
+  /**
+   * Create an existence resolver for usage within an expression context.
+   * @param context An action context.
+   * @param mediatorQueryOperation A query operation mediator.
+   */
+  public static createExistenceResolver(context: ActionContext, mediatorQueryOperation: Mediator<
+    Actor<IActionQueryOperation, IActorTest, IActorQueryOperationOutput>,
+    IActionQueryOperation, IActorTest, IActorQueryOperationOutput>):
+    (expr: Algebra.ExistenceExpression, bindings: Bindings) => Promise<boolean> {
+    return async (expr, bindings) => {
+      const operation = materializeOperation(expr.input, bindings);
+
+      const outputRaw = await mediatorQueryOperation.mediate({ operation, context });
+      const output = ActorQueryOperation.getSafeBindings(outputRaw);
+
+      return new Promise(
+        (resolve, reject) => {
+          output.bindingsStream.on('end', () => {
+            resolve(false);
+          });
+
+          output.bindingsStream.on('error', reject);
+
+          output.bindingsStream.on('data', () => {
+            output.bindingsStream.close();
+            resolve(true);
+          });
+        })
+        .then((exists: boolean) => expr.not ? !exists : exists);
+    };
   }
 
 }
@@ -90,6 +136,7 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
 export interface IExpressionContext {
   now?: Date;
   baseIRI?: string;
+  // exists?: (expr: Algebra.ExistenceExpression, bindings: Bindings) => Promise<boolean>;
   // bnode?: (input?: string) => Promise<RDF.BlankNode>;
 }
 

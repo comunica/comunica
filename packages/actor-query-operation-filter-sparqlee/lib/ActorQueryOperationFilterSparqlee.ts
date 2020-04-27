@@ -21,8 +21,8 @@ export class ActorQueryOperationFilterSparqlee extends ActorQueryOperationTypedM
 
   public async testOperation(pattern: Algebra.Filter, context: ActionContext): Promise<IActorTest> {
     // Will throw error for unsupported operators
-    const config = { exists: this.createExistenceResolver(context) };
-    const _ = new AsyncEvaluator(pattern.expression, config);
+    const _ = new AsyncEvaluator(pattern.expression,
+      ActorQueryOperation.getExpressionContext(context, this.mediatorQueryOperation));
     return true;
   }
 
@@ -34,11 +34,7 @@ export class ActorQueryOperationFilterSparqlee extends ActorQueryOperationTypedM
     ActorQueryOperation.validateQueryOutput(output, 'bindings');
     const { variables, metadata } = output;
 
-    const expressionContext = ActorQueryOperation.getExpressionContext(context);
-    const config = {
-      ...expressionContext,
-      exists: this.createExistenceResolver(context),
-    };
+    const config = ActorQueryOperation.getExpressionContext(context, this.mediatorQueryOperation);
     const evaluator = new AsyncEvaluator(pattern.expression, config);
 
     const transform = async (item: Bindings, next: any) => {
@@ -57,31 +53,6 @@ export class ActorQueryOperationFilterSparqlee extends ActorQueryOperationTypedM
 
     const bindingsStream = output.bindingsStream.transform<Bindings>({ transform });
     return { type: 'bindings', bindingsStream, metadata, variables };
-  }
-
-  private createExistenceResolver(context: ActionContext):
-    (expr: Algebra.ExistenceExpression, bindings: Bindings) => Promise<boolean> {
-    return async (expr, bindings) => {
-      const operation = materializeOperation(expr.input, bindings);
-
-      const outputRaw = await this.mediatorQueryOperation.mediate({ operation, context });
-      const output = ActorQueryOperation.getSafeBindings(outputRaw);
-
-      return new Promise(
-        (resolve, reject) => {
-          output.bindingsStream.on('end', () => {
-            resolve(false);
-          });
-
-          output.bindingsStream.on('error', reject);
-
-          output.bindingsStream.on('data', () => {
-            output.bindingsStream.close();
-            resolve(true);
-          });
-        })
-        .then((exists: boolean) => expr.not ? !exists : exists);
-    };
   }
 
 }
