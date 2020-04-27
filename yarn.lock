@@ -2134,10 +2134,10 @@
   dependencies:
     "@types/node" "*"
 
-"@types/sparqljs@^2.1.0":
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/@types/sparqljs/-/sparqljs-2.1.0.tgz#20f850e2003eeac9c61f0b73e72f9f0a6065776b"
-  integrity sha512-EubZv5M9U0PUQw+lvYWlwDjz2EL/KpYFXuGsUCF9P+eR38PTDfjzaUenIiP4KEmGc3t+DH19/+YIR/Nmd2swwA==
+"@types/sparqljs@^3.0.0":
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/@types/sparqljs/-/sparqljs-3.0.0.tgz#ddeda9b22b52362ac6a4df878a6d2ae104186f19"
+  integrity sha512-HCwxGm6xhwD54Hpl0TpWsyoqfExu2ESfozA8JSueBEK9WRUD2ssg46J5CRsS6EHar5JeT7Lgjdn3UsvT0ba9sg==
 
 "@types/stack-utils@^1.0.1":
   version "1.0.1"
