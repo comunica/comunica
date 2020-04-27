@@ -1,6 +1,13 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v1.12.1"></a>
+## [v1.12.1](https://github.com/comunica/comunica/compare/v1.11.1...v1.12.1) - 2020-04-27
+
+### Fixed
+* [Fix EXISTS in BIND failing, Closes #650](https://github.com/comunica/comunica/commit/99ed974930bb7718a8d89aeb4ee46435df5dbcfe)
+* [Fix project operator removing scoped blank nodes, solid/query-ldflex#64](https://github.com/comunica/comunica/commit/05852bbf6080dd4d99b75aa979f392c463b066c1)
+
 <a name="v1.12.0"></a>
 ## [v1.12.0](https://github.com/comunica/comunica/compare/v1.11.1...v1.12.0) - 2020-04-03
 

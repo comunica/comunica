@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-resolve-quad-pattern-federated",
-  "version": "1.11.0",
+  "version": "1.12.1",
   "description": "A federated rdf-resolve-quad-pattern actor",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-resolve-quad-pattern-federated",
   "lsd:components": "components/components.jsonld",
@@ -35,7 +35,7 @@
     "index.js"
   ],
   "dependencies": {
-    "@comunica/data-factory": "^1.0.0",
+    "@comunica/data-factory": "^1.12.1",
     "@rdfjs/data-model": "^1.1.1",
     "asynciterator": "^2.0.1",
     "asynciterator-promiseproxy": "^2.1.0",

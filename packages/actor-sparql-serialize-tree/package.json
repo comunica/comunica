@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-sparql-serialize-tree",
-  "version": "1.11.1",
+  "version": "1.12.1",
   "description": "A tree sparql-serialize actor",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-sparql-serialize-tree",
   "lsd:components": "components/components.jsonld",
@@ -42,8 +42,8 @@
     "@comunica/core": "^1.0.0"
   },
   "devDependencies": {
-    "@comunica/bus-query-operation": "^1.11.1",
-    "@comunica/bus-sparql-serialize": "^1.11.1",
+    "@comunica/bus-query-operation": "^1.12.1",
+    "@comunica/bus-sparql-serialize": "^1.12.1",
     "@comunica/core": "^1.9.2"
   },
   "jest": {
