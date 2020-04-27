@@ -35,6 +35,7 @@
     "index.js"
   ],
   "dependencies": {
+    "@comunica/data-factory": "^1.0.0",
     "@rdfjs/data-model": "^1.1.1",
     "asynciterator": "^2.0.1",
     "asynciterator-promiseproxy": "^2.1.0",

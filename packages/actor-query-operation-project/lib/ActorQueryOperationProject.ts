@@ -1,10 +1,10 @@
 import {ActorQueryOperation, ActorQueryOperationTypedMediated, Bindings, IActorQueryOperationOutputBindings,
-  IActorQueryOperationTypedMediatedArgs} from "@comunica/bus-query-operation";
+  IActorQueryOperationTypedMediatedArgs, BindingsStream} from "@comunica/bus-query-operation";
 import {ActionContext, IActorTest} from "@comunica/core";
+import {BlankNodeScoped} from "@comunica/data-factory";
 import {blankNode} from "@rdfjs/data-model";
 import {termToString} from "rdf-string";
 import {Algebra} from "sparqlalgebrajs";
-import {BindingsStream} from "../../bus-query-operation/lib/Bindings";
 
 /**
  * A comunica Project Query Operation Actor.
@@ -46,11 +46,15 @@ export class ActorQueryOperationProject extends ActorQueryOperationTypedMediated
 
     // Make sure that blank nodes with same labels are not reused over different bindings, as required by SPARQL 1.1.
     // Required for the BNODE() function: https://www.w3.org/TR/sparql11-query/#func-bnode
+    // When we have a scoped blank node, make sure the skolemized value is maintained.
     let blankNodeCounter: number = 0;
     bindingsStream = bindingsStream.map((bindings: Bindings) => {
       blankNodeCounter++;
       return <Bindings> bindings.map((term) => {
         if (term && term.termType === 'BlankNode') {
+          if (term instanceof BlankNodeScoped) {
+            return new BlankNodeScoped(term.value + blankNodeCounter, (<BlankNodeScoped> term).skolemized);
+          }
           return blankNode(term.value + blankNodeCounter);
         }
         return term;

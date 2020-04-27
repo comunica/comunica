@@ -3,6 +3,7 @@ import {
   IActorRdfResolveQuadPatternOutput, IDataSource, ILazyQuadSource, KEY_CONTEXT_SOURCE, KEY_CONTEXT_SOURCES,
 } from "@comunica/bus-rdf-resolve-quad-pattern";
 import {ActionContext, Actor, IActorTest, Mediator} from "@comunica/core";
+import {BlankNodeScoped} from "@comunica/data-factory";
 import * as DataFactory from "@rdfjs/data-model";
 import {AsyncIterator, EmptyIterator} from "asynciterator";
 import {PromiseProxyIterator} from "asynciterator-promiseproxy";
@@ -10,7 +11,6 @@ import {RoundRobinUnionIterator} from "asynciterator-union";
 import * as RDF from "rdf-js";
 import {mapTerms} from "rdf-terms";
 import {Algebra, Factory} from "sparqlalgebrajs";
-import {BlankNodeScoped} from "./BlankNodeScoped";
 import {BaseQuad} from "rdf-js";
 import {Quad} from "rdf-js";
 

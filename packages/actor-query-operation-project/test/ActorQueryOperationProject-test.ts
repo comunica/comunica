@@ -1,6 +1,7 @@
 import {ActorQueryOperation, Bindings, IActorQueryOperationOutputBindings} from "@comunica/bus-query-operation";
 import {Bus} from "@comunica/core";
-import {blankNode, literal, variable} from "@rdfjs/data-model";
+import {BlankNodeScoped} from "@comunica/data-factory";
+import {blankNode, literal, namedNode, variable} from "@rdfjs/data-model";
 import {ArrayIterator, SingletonIterator} from "asynciterator";
 import {ActorQueryOperationProject} from "../lib/ActorQueryOperationProject";
 const arrayifyStream = require('arrayify-stream');
@@ -111,6 +112,31 @@ describe('ActorQueryOperationProject', () => {
           Bindings({ '?a': blankNode('a1'), '?b': literal('b') }),
           Bindings({ '?a': blankNode('a2'), '?b': literal('b') }),
           Bindings({ '?a': blankNode('a3'), '?b': literal('b') }),
+        ]);
+      });
+    });
+
+    it('should run on a stream with equal scoped blank nodes across bindings', () => {
+      mediatorQueryOperation.mediate = (arg) => Promise.resolve({
+        bindingsStream: new ArrayIterator([
+          Bindings({ '?a': new BlankNodeScoped('a', namedNode('A')), '?b': literal('b') }),
+          Bindings({ '?a': new BlankNodeScoped('a', namedNode('B')), '?b': literal('b') }),
+          Bindings({ '?a': new BlankNodeScoped('a', namedNode('C')), '?b': literal('b') }),
+        ]),
+        metadata: () => 'M',
+        operated: arg,
+        type: 'bindings',
+        variables: ['?a'],
+      });
+      const op = { operation: { type: 'project', input: 'in', variables: [ variable('a') ] } };
+      return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
+        expect(output.metadata()).toEqual('M');
+        expect(output.variables).toEqual([ '?a' ]);
+        expect(output.type).toEqual('bindings');
+        expect(await arrayifyStream(output.bindingsStream)).toEqual([
+          Bindings({ '?a': new BlankNodeScoped('a1', namedNode('A')), '?b': literal('b') }),
+          Bindings({ '?a': new BlankNodeScoped('a2', namedNode('B')), '?b': literal('b') }),
+          Bindings({ '?a': new BlankNodeScoped('a3', namedNode('C')), '?b': literal('b') }),
         ]);
       });
     });
