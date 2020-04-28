@@ -60,7 +60,6 @@
     "benchmark": "^2.1.4",
     "coveralls": "^3.0.2",
     "jest": "^25.0.0",
-    "jest-html-reporter": "^2.4.2",
     "manual-git-changelog": "^1.0.1",
     "pre-commit": "^1.2.2",
     "ts-jest": "^25.1.0",
@@ -90,7 +89,6 @@
     "collectCoverageFrom": [
       "<rootDir>/lib/**"
     ],
-    "testResultsProcessor": "./node_modules/jest-html-reporter",
     "moduleFileExtensions": [
       "ts",
       "js"
