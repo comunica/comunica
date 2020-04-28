@@ -6,6 +6,8 @@ matrix:
   include:
     - node_js: '10'
     - node_js: '12'
+    - node_js: '14'
+    - node_js: 'lts/*'
       env: NODE_MAIN=true
 os:
  - linux
