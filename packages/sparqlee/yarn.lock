@@ -568,10 +568,10 @@
   dependencies:
     "@types/node" "*"
 
-"@types/rdf-js@^2.0.4":
-  version "2.0.4"
-  resolved "https://registry.yarnpkg.com/@types/rdf-js/-/rdf-js-2.0.4.tgz#43e1327cca51e2cfe5e321d31a1cbb9eeb6e9219"
-  integrity sha512-JPeHNs5ioxSqv4aVddCw7eEJVA37zz6O15l8ACCT6cDJa/q6pnbCk8Ti30hIJJn4oV6r0lDI5uzTd/UQynEBCg==
+"@types/rdf-js@^3.0.0":
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/@types/rdf-js/-/rdf-js-3.0.0.tgz#7c45210d34b3ccc301b84f462bec5698d63bea1a"
+  integrity sha512-IUUXkMAt1iU7XhrNnjwPHeYkk5s71T8m95FoZmpjhi/3ngA0hyeQxST5i1Ul1y/dh/lePH1u4BwTH3ZKULYSIg==
   dependencies:
     "@types/node" "*"
 
