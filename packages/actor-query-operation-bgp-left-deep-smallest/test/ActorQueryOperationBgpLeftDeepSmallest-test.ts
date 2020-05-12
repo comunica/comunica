@@ -1,5 +1,7 @@
-import {ActorQueryOperation, Bindings, IActorQueryOperationOutputBindings,
-  KEY_CONTEXT_QUERYOPERATION} from "@comunica/bus-query-operation";
+import {
+  ActorQueryOperation, Bindings, IActorQueryOperationOutputBindings, IPatternBindings,
+  KEY_CONTEXT_QUERYOPERATION
+} from "@comunica/bus-query-operation";
 import {ActionContext, Bus} from "@comunica/core";
 import {blankNode, defaultGraph, literal, namedNode, quad, variable} from "@rdfjs/data-model";
 import {ArrayIterator, EmptyIterator, SingletonIterator} from "asynciterator";
@@ -9,13 +11,13 @@ import {ActorQueryOperationBgpLeftDeepSmallest} from "../lib/ActorQueryOperation
 const arrayifyStream = require('arrayify-stream');
 
 describe('ActorQueryOperationBgpLeftDeepSmallest', () => {
-  let bus;
-  let mediatorQueryOperation;
+  let bus: any;
+  let mediatorQueryOperation: any;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
     mediatorQueryOperation = {
-      mediate: (arg) => Promise.resolve({
+      mediate: (arg: any) => Promise.resolve({
         bindingsStream: new SingletonIterator(Bindings({
           graph: arg.operation.graph,
           object: arg.operation.object,
@@ -261,7 +263,7 @@ describe('ActorQueryOperationBgpLeftDeepSmallest', () => {
       });
 
       it('should return Infinity when a falsy metadata is given', () => {
-        return expect(ActorQueryOperationBgpLeftDeepSmallest.getTotalItems(null)).toBe(Infinity);
+        return expect(ActorQueryOperationBgpLeftDeepSmallest.getTotalItems()).toBe(Infinity);
       });
 
       it('should return Infinity when an empty metadata is given', () => {
@@ -282,17 +284,17 @@ describe('ActorQueryOperationBgpLeftDeepSmallest', () => {
     describe('estimateCombinedTotalItems', () => {
       it('should return Infinity when no metadata is present', () => {
         return expect(ActorQueryOperationBgpLeftDeepSmallest.estimateCombinedTotalItems(
-          null, [null])).toBe(Infinity);
+          undefined, [undefined])).toBe(Infinity);
       });
 
       it('should return Infinity when no smallest metadata is present', () => {
         return expect(ActorQueryOperationBgpLeftDeepSmallest.estimateCombinedTotalItems(
-          null, [{ totalItems: 10 }])).toBe(Infinity);
+          undefined, [{ totalItems: 10 }])).toBe(Infinity);
       });
 
       it('should return Infinity when no other metadata is present', () => {
         return expect(ActorQueryOperationBgpLeftDeepSmallest.estimateCombinedTotalItems(
-          { totalItems: 10 }, [null])).toBe(Infinity);
+          { totalItems: 10 }, [undefined])).toBe(Infinity);
       });
 
       it('should return Infinity when smallest metadata is has infinity', () => {
@@ -344,7 +346,7 @@ describe('ActorQueryOperationBgpLeftDeepSmallest', () => {
 
       it('should return 0 for a single falsy metadata', () => {
         return expect(ActorQueryOperationBgpLeftDeepSmallest.getSmallestPatternId(
-          [null])).toBe(0);
+          [undefined])).toBe(0);
       });
 
       it('should return 0 for a single empty metadata', () => {
@@ -359,7 +361,7 @@ describe('ActorQueryOperationBgpLeftDeepSmallest', () => {
 
       it('should return 2 for a three falsy metadatas', () => {
         return expect(ActorQueryOperationBgpLeftDeepSmallest.getSmallestPatternId(
-          [null, null, null])).toBe(2);
+          [undefined, undefined, undefined])).toBe(2);
       });
 
       it('should return 2 for a three empty metadatas', () => {
@@ -415,12 +417,13 @@ describe('ActorQueryOperationBgpLeftDeepSmallest', () => {
     });
 
     describe('createLeftDeepStream', () => {
-      const binder: any = (patterns) => new SingletonIterator(Bindings({
-        graph: patterns[0].pattern.graph,
-        object: patterns[1].pattern.object,
-        predicate: patterns[2].pattern.predicate,
-        subject: patterns[3].pattern.subject,
-      }));
+      const binder: any = (patterns: { pattern: Algebra.Pattern, bindings: IPatternBindings }[]) => new SingletonIterator(
+        Bindings({
+          graph: patterns[0].pattern.graph,
+          object: patterns[1].pattern.object,
+          predicate: patterns[2].pattern.predicate,
+          subject: patterns[3].pattern.subject,
+        }));
       const pattern1 = <Algebra.Pattern> quad(namedNode('1'), namedNode('1'), namedNode('1'), variable('a'));
       const pattern2 = <Algebra.Pattern> quad(namedNode('2'), namedNode('2'), variable('b'), namedNode('2'));
       const pattern3 = <Algebra.Pattern> quad(namedNode('3'), blankNode('c'), namedNode('3'), namedNode('3'));
@@ -508,7 +511,7 @@ describe('ActorQueryOperationBgpLeftDeepSmallest', () => {
       return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
         expect(output.variables).toEqual(['a']);
         expect(output.type).toEqual('bindings');
-        expect(await output.metadata()).toEqual({ totalItems: 100 });
+        expect((<any> await output).metadata()).toEqual({ totalItems: 100 });
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({
             graph: namedNode('4'),
@@ -526,7 +529,7 @@ describe('ActorQueryOperationBgpLeftDeepSmallest', () => {
       return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
         expect(output.variables).toEqual([]);
         expect(output.type).toEqual('bindings');
-        expect(await output.metadata()).toEqual({ totalItems: Infinity });
+        expect((<any> await output).metadata()).toEqual({ totalItems: Infinity });
         expect(mediatorQueryOperation.mediate).toHaveBeenCalledTimes(2);
         expect(mediatorQueryOperation.mediate).toHaveBeenCalledWith(
           {
@@ -546,7 +549,7 @@ describe('ActorQueryOperationBgpLeftDeepSmallest', () => {
 
     it('should run for an empty pattern response', () => {
       const thisMediatorQueryOperation: any = {
-        mediate: (arg) => Promise.resolve({
+        mediate: (arg: any) => Promise.resolve({
           bindingsStream: new EmptyIterator(),
           metadata: () => Promise.resolve({ totalItems: 0 }),
           type: 'bindings',
@@ -559,14 +562,14 @@ describe('ActorQueryOperationBgpLeftDeepSmallest', () => {
       return thisActor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
         expect(output.variables).toEqual([]);
         expect(output.type).toEqual('bindings');
-        expect(await output.metadata()).toEqual({ totalItems: 0 });
+        expect((<any> await output).metadata()).toEqual({ totalItems: 0 });
         expect(await arrayifyStream(output.bindingsStream)).toEqual([]);
       });
     });
 
     it('should run for responses with unknown metadata', () => {
       const thisMediatorQueryOperation: any = {
-        mediate: (arg) => Promise.resolve({
+        mediate: (arg: any) => Promise.resolve({
           bindingsStream: new EmptyIterator(),
           metadata: null,
           type: 'bindings',
@@ -579,7 +582,7 @@ describe('ActorQueryOperationBgpLeftDeepSmallest', () => {
       return thisActor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
         expect(output.variables).toEqual([]);
         expect(output.type).toEqual('bindings');
-        expect(await output.metadata()).toEqual({ totalItems: Infinity });
+        expect((<any> await output).metadata()).toEqual({ totalItems: Infinity });
         expect(await arrayifyStream(output.bindingsStream)).toEqual([]);
       });
     });

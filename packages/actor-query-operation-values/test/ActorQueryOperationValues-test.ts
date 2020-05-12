@@ -5,7 +5,7 @@ import {ActorQueryOperationValues} from "../lib/ActorQueryOperationValues";
 const arrayifyStream = require('arrayify-stream');
 
 describe('ActorQueryOperationValues', () => {
-  let bus;
+  let bus: any;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -50,7 +50,7 @@ describe('ActorQueryOperationValues', () => {
       const bindings = [{ '?v': namedNode('v1') }];
       const op = { operation: { type: 'values', variables, bindings } };
       return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
-        expect(await output.metadata()).toEqual({ totalItems: 1 });
+        expect((<any> await output).metadata()).toEqual({ totalItems: 1 });
         expect(output.variables).toEqual([ '?v' ]);
         expect(output.type).toEqual('bindings');
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
@@ -64,7 +64,7 @@ describe('ActorQueryOperationValues', () => {
       const bindings = [{ '?v': namedNode('v1') }, { '?v': namedNode('v2') }];
       const op = { operation: { type: 'values', variables, bindings } };
       return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
-        expect(await output.metadata()).toEqual({ totalItems: 2 });
+        expect((<any> await output).metadata()).toEqual({ totalItems: 2 });
         expect(output.variables).toEqual([ '?v' ]);
         expect(output.type).toEqual('bindings');
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
@@ -82,7 +82,7 @@ describe('ActorQueryOperationValues', () => {
       ];
       const op = { operation: { type: 'values', variables, bindings } };
       return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
-        expect(await output.metadata()).toEqual({ totalItems: 2 });
+        expect((<any> await output).metadata()).toEqual({ totalItems: 2 });
         expect(output.variables).toEqual([ '?v', '?w' ]);
         expect(output.type).toEqual('bindings');
         expect(await arrayifyStream(output.bindingsStream)).toEqual([

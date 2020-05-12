@@ -6,7 +6,7 @@ const stringToStream = require('streamify-string');
 const arrayifyStream = require('arrayify-stream');
 
 describe('ActorRdfParseN3', () => {
-  let bus;
+  let bus: any;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -111,17 +111,17 @@ describe('ActorRdfParseN3', () => {
 
       it('should run on text/turtle', () => {
         return actor.run({ handle: { input, baseIRI: '' }, handleMediaType: 'text/turtle' })
-          .then(async (output) => expect(await arrayifyStream(output.handle.quads)).toHaveLength(2));
+          .then(async (output: any) => expect(await arrayifyStream(output.handle.quads)).toHaveLength(2));
       });
 
       it('should run on application/trig', () => {
         return actor.run({ handle: { input, baseIRI: '' }, handleMediaType: 'application/trig' })
-          .then(async (output) => expect(await arrayifyStream(output.handle.quads)).toHaveLength(2));
+          .then(async (output: any) => expect(await arrayifyStream(output.handle.quads)).toHaveLength(2));
       });
 
       it('should forward stream errors', async () => {
-        return expect(arrayifyStream((await actor.run(
-          { handle: { input: inputError, baseIRI: '' }, handleMediaType: 'application/trig' }))
+        return expect(arrayifyStream((<any> (await actor.run(
+          { handle: { input: inputError, baseIRI: '' }, handleMediaType: 'application/trig' })))
           .handle.quads)).rejects.toBeTruthy();
       });
     });

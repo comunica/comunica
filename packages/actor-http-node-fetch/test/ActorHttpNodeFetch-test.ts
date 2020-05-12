@@ -3,12 +3,12 @@ import {Bus} from "@comunica/core";
 import {ActorHttpNodeFetch} from "../lib/ActorHttpNodeFetch";
 
 // Mock fetch
-(<any> global).fetch = (input, init) => {
+(<any> global).fetch = (input: any, init: any) => {
   return Promise.resolve({ status: input.url === 'https://www.google.com/' ? 200 : 404 });
 };
 
 describe('ActorHttpNodeFetch', () => {
-  let bus;
+  let bus: any;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });

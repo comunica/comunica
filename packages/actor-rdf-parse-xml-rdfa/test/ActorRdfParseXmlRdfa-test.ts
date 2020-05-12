@@ -9,7 +9,7 @@ const arrayifyStream = require('arrayify-stream');
 const quad = require('rdf-quad');
 
 describe('ActorRdfParseXmlRdfa', () => {
-  let bus;
+  let bus: any;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -96,12 +96,12 @@ xmlns="http://www.w3.org/2000/svg" version="1.2" baseProfile="tiny">
 
       it('should run on application/xml', () => {
         return actor.run({ handle: { input, baseIRI: 'http://ex.org/' }, handleMediaType: 'application/xml' })
-          .then(async (output) => expect(await arrayifyStream(output.handle.quads)).toHaveLength(1));
+          .then(async (output: any) => expect(await arrayifyStream(output.handle.quads)).toHaveLength(1));
       });
 
       it('should parse application/xml correctly', () => {
         return actor.run({ handle: { input, baseIRI: 'http://ex.org/' }, handleMediaType: 'application/xml' })
-          .then(async (output) => expect(await arrayifyStream(output.handle.quads)).toEqualRdfQuadArray([
+          .then(async (output: any) => expect(await arrayifyStream(output.handle.quads)).toEqualRdfQuadArray([
             quad('http://ex.org/', 'http://purl.org/dc/terms/description',
               '"A yellow rectangle with sharp corners."'),
           ]));
@@ -110,15 +110,15 @@ xmlns="http://www.w3.org/2000/svg" version="1.2" baseProfile="tiny">
       it('should parse application/xml with a content language header', () => {
         const headers: any = { get: () => 'en-us' };
         return actor.run({ handle: { input, baseIRI: 'http://ex.org/', headers }, handleMediaType: 'application/xml' })
-          .then(async (output) => expect(await arrayifyStream(output.handle.quads)).toEqualRdfQuadArray([
+          .then(async (output: any) => expect(await arrayifyStream(output.handle.quads)).toEqualRdfQuadArray([
             quad('http://ex.org/', 'http://purl.org/dc/terms/description',
               '"A yellow rectangle with sharp corners."@en-us'),
           ]));
       });
 
       it('should forward stream errors', async () => {
-        return expect(arrayifyStream((await actor.run(
-          { handle: { input: inputError, baseIRI: '' }, handleMediaType: 'application/trig' }))
+        return expect(arrayifyStream((<any> (await actor.run(
+          { handle: { input: inputError, baseIRI: '' }, handleMediaType: 'application/trig' })))
           .handle.quads)).rejects.toBeTruthy();
       });
     });

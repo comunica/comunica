@@ -8,7 +8,7 @@ import {ActorRdfJoinMultiSequential} from "../lib/ActorRdfJoinMultiSequential";
 const arrayifyStream = require('arrayify-stream');
 
 describe('ActorRdfJoinMultiSequential', () => {
-  let bus;
+  let bus: any;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -36,12 +36,12 @@ describe('ActorRdfJoinMultiSequential', () => {
     let actor: ActorRdfJoinMultiSequential;
     let action3: IActionRdfJoin;
     let action4: IActionRdfJoin;
-    let invocationCounter;
+    let invocationCounter: any;
 
     beforeEach(() => {
       invocationCounter = 0;
       mediatorJoin = {
-        mediate: (a) => {
+        mediate: (a: any) => {
           if (a.entries.length === 2) {
             a.entries[0].called = invocationCounter;
             a.entries[1].called = invocationCounter;
@@ -131,11 +131,11 @@ describe('ActorRdfJoinMultiSequential', () => {
     });
 
     it('should test on 1 stream', () => {
-      return expect(actor.test({ entries: [null] })).resolves.toEqual({ iterations: 0 });
+      return expect(actor.test({ entries: [<any> null] })).resolves.toEqual({ iterations: 0 });
     });
 
     it('should not test on 2 streams', () => {
-      return expect(actor.test({ entries: [null, null] })).rejects
+      return expect(actor.test({ entries: [<any> null, <any> null] })).rejects
         .toThrow(new Error('actor requires 3 sources at least. The input contained 2.'));
     });
 
@@ -151,7 +151,7 @@ describe('ActorRdfJoinMultiSequential', () => {
       const output = await actor.run(action3);
       expect(output.type).toEqual('bindings');
       expect(output.variables).toEqual(['a', 'b', 'c']);
-      expect(await output.metadata()).toEqual({ totalItems: 40 });
+      expect((<any> await output).metadata()).toEqual({ totalItems: 40 });
       expect(await arrayifyStream(output.bindingsStream)).toEqual([
         Bindings({ a: literal('a1'), b: literal('b1'), c: literal('c1')}),
         Bindings({ a: literal('a2'), b: literal('b2'), c: literal('c2')}),
@@ -167,7 +167,7 @@ describe('ActorRdfJoinMultiSequential', () => {
       const output = await actor.run(action4);
       expect(output.type).toEqual('bindings');
       expect(output.variables).toEqual(['a', 'b', 'c', 'd']);
-      expect(await output.metadata()).toEqual({ totalItems: 80 });
+      expect((<any> await output).metadata()).toEqual({ totalItems: 80 });
       expect(await arrayifyStream(output.bindingsStream)).toEqual([
         Bindings({ a: literal('a1'), b: literal('b1'), c: literal('c1'), d: literal('d1')}),
         Bindings({ a: literal('a2'), b: literal('b2'), c: literal('c2'), d: literal('d2')}),

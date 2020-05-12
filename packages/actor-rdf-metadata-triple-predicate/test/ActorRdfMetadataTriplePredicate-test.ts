@@ -1,14 +1,14 @@
 import {ActorRdfMetadata} from "@comunica/bus-rdf-metadata";
 import {Bus} from "@comunica/core";
-import * as RDF from "rdf-js";
 import {Readable} from "stream";
 import {ActorRdfMetadataTriplePredicate} from "../lib/ActorRdfMetadataTriplePredicate";
+
 const stream = require('streamify-array');
 const quad = require('rdf-quad');
 const arrayifyStream = require('arrayify-stream');
 
 describe('ActorRdfMetadataTriplePredicate', () => {
-  let bus;
+  let bus: any;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });

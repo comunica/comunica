@@ -5,8 +5,8 @@ import {Factory} from "sparqlalgebrajs";
 import {ActorOptimizeQueryOperationJoinBgp} from "../lib/ActorOptimizeQueryOperationJoinBgp";
 
 describe('ActorOptimizeQueryOperationJoinBgp', () => {
-  let bus;
-  let factory;
+  let bus: any;
+  let factory: Factory;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -38,7 +38,7 @@ describe('ActorOptimizeQueryOperationJoinBgp', () => {
     });
 
     it('should always test', () => {
-      return expect(actor.test({ operation: null })).resolves.toBeTruthy();
+      return expect(actor.test({ operation: <any> null })).resolves.toBeTruthy();
     });
 
     it('should run on and not modify a BGP', () => {

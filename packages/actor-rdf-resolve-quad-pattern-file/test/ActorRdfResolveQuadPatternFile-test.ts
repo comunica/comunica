@@ -11,8 +11,8 @@ const streamifyArray = require('streamify-array');
 // tslint:disable:object-literal-sort-keys
 
 describe('ActorRdfResolveQuadPatternFile', () => {
-  let bus;
-  let httpInvalidator;
+  let bus: any;
+  let httpInvalidator: any;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -38,11 +38,11 @@ describe('ActorRdfResolveQuadPatternFile', () => {
 
   describe('An ActorRdfResolveQuadPatternFile instance', () => {
     let actor: ActorRdfResolveQuadPatternFile;
-    let mediatorRdfDereference;
+    let mediatorRdfDereference: any;
 
     beforeEach(() => {
       mediatorRdfDereference = {
-        mediate: (action) => action.url ? Promise.resolve({ quads: streamifyArray([
+        mediate: (action: any) => action.url ? Promise.resolve({ quads: streamifyArray([
           quad('s1', 'p1', 'o1'),
           quad('s1', 'p1', 'o2'),
           quad('s1', 'p2', 'o1'),
@@ -59,51 +59,51 @@ describe('ActorRdfResolveQuadPatternFile', () => {
     });
 
     it('should test', () => {
-      return expect(actor.test({ pattern: null, context: ActionContext(
+      return expect(actor.test({ pattern: <any> null, context: ActionContext(
         { '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'file', value: 'abc' }}) }))
         .resolves.toBeTruthy();
     });
 
     it('should not test without a context', () => {
-      return expect(actor.test({ pattern: null, context: null })).rejects.toBeTruthy();
+      return expect(actor.test({ pattern: <any> null, context: undefined })).rejects.toBeTruthy();
     });
 
     it('should not test without a file', () => {
-      return expect(actor.test({ pattern: null, context: ActionContext({}) })).rejects.toBeTruthy();
+      return expect(actor.test({ pattern: <any> null, context: ActionContext({}) })).rejects.toBeTruthy();
     });
 
     it('should not test on an invalid file', () => {
-      return expect(actor.test({ pattern: null, context: ActionContext(
-        { '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'file', value: null  }}) }))
+      return expect(actor.test({ pattern: <any> null, context: ActionContext(
+        { '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'file', value: undefined  }}) }))
         .rejects.toBeTruthy();
     });
 
     it('should not test on no file', () => {
-      return expect(actor.test({ pattern: null, context: ActionContext(
-        { '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'entrypoint', value: null  }}) }))
+      return expect(actor.test({ pattern: <any> null, context: ActionContext(
+        { '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'entrypoint', value: undefined  }}) }))
         .rejects.toBeTruthy();
     });
 
     it('should not test on no sources', () => {
-      return expect(actor.test({ pattern: null, context: ActionContext(
+      return expect(actor.test({ pattern: <any> null, context: ActionContext(
         { '@comunica/bus-rdf-resolve-quad-pattern:sources': [] }) }))
         .rejects.toBeTruthy();
     });
 
     it('should not test on multiple sources', () => {
       return expect(actor.test(
-        { pattern: null, context: ActionContext(
+        { pattern: <any> null, context: ActionContext(
           { '@comunica/bus-rdf-resolve-quad-pattern:sources': [{ type: 'file', value: 'a' },
               { type: 'file', value: 'b' }] }) }))
         .rejects.toBeTruthy();
     });
 
     it('should allow file initialization with a valid file', () => {
-      return expect(actor.initializeFile('myfile', null)).resolves.toBeTruthy();
+      return expect(actor.initializeFile('myfile', undefined)).resolves.toBeTruthy();
     });
 
     it('should fail on file initialization with an invalid file', () => {
-      return expect(actor.initializeFile(null, null)).rejects.toBeTruthy();
+      return expect(actor.initializeFile(<any> null, undefined)).rejects.toBeTruthy();
     });
 
     it('should allow a file quad source to be created for a context with a valid file', () => {
@@ -117,7 +117,7 @@ describe('ActorRdfResolveQuadPatternFile', () => {
     });
 
     it('should create only a file quad source only once per file', () => {
-      let doc1 = null;
+      let doc1: undefined;
       return (<any> actor).getSource(ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:source':
           { type: 'file', value: 'myFile'  }}))
         .then((file: any) => {
@@ -131,7 +131,7 @@ describe('ActorRdfResolveQuadPatternFile', () => {
     });
 
     it('should create different documents in file quad source for different files', () => {
-      let doc1 = null;
+      let doc1: undefined;
       return (<any> actor).getSource(ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:source':
           { type: 'file', value: 'myFile1'  }}))
         .then((file: any) => {
@@ -156,7 +156,7 @@ describe('ActorRdfResolveQuadPatternFile', () => {
       return actor.run({ pattern, context: ActionContext(
           { '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'file', value: 'abc'  }}) })
         .then(async (output) => {
-          expect(await output.metadata()).toEqual({ totalItems: 8 });
+          expect((<any> await output).metadata()).toEqual({ totalItems: 8 });
           expect(await arrayifyStream(output.data)).toEqualRdfQuadArray([
             quad('s1', 'p1', 'o1'),
             quad('s1', 'p1', 'o2'),
@@ -175,7 +175,7 @@ describe('ActorRdfResolveQuadPatternFile', () => {
       return actor.run({ pattern, context: ActionContext(
           { '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'file', value: 'abc' }}) })
         .then(async (output) => {
-          expect(await output.metadata()).toEqual({ totalItems: 4 });
+          expect((<any> await output).metadata()).toEqual({ totalItems: 4 });
           expect(await arrayifyStream(output.data)).toEqualRdfQuadArray([
             quad('s1', 'p1', 'o1'),
             quad('s1', 'p1', 'o2'),
@@ -190,7 +190,7 @@ describe('ActorRdfResolveQuadPatternFile', () => {
       return actor.run({ pattern, context: ActionContext(
           { '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'file', value: 'abc' }}) })
         .then(async (output) => {
-          expect(await output.metadata()).toEqual({ totalItems: 0 });
+          expect((<any> await output).metadata()).toEqual({ totalItems: 0 });
           expect(await arrayifyStream(output.data)).toEqualRdfQuadArray([]);
         });
     });

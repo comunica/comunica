@@ -5,9 +5,9 @@ import {PassThrough, Readable} from "stream";
 import {ActorInitRdfDereference} from "../lib/ActorInitRdfDereference";
 
 describe('ActorInitRdfDereference', () => {
-  let bus;
-  let busInit;
-  let mediator;
+  let bus: any;
+  let busInit: any;
+  let mediator: any;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -63,8 +63,8 @@ describe('ActorInitRdfDereference', () => {
       return actor.run({ argv: [ 'https://www.google.com/' ], env: {}, stdin: new PassThrough() })
       .then((result) => {
         return new Promise((resolve, reject) => {
-          result.stdout.on('data', (line) => expect(line).toBeTruthy());
-          result.stdout.on('end', resolve);
+          (<any> result).stdout.on('data', (line: any) => expect(line).toBeTruthy());
+          (<any> result).stdout.on('end', resolve);
         });
       });
     });
@@ -74,8 +74,8 @@ describe('ActorInitRdfDereference', () => {
       return actor.run({ argv: [], env: {}, stdin: new PassThrough() })
         .then((result) => {
           return new Promise((resolve, reject) => {
-            result.stdout.on('data', (line) => expect(line).toBeTruthy());
-            result.stdout.on('end', resolve);
+            (<any> result).stdout.on('data', (line: any) => expect(line).toBeTruthy());
+            (<any> result).stdout.on('end', resolve);
           });
         });
     });

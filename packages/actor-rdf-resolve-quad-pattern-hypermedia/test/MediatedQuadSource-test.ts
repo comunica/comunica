@@ -10,18 +10,18 @@ const arrayifyStream = require('arrayify-stream');
 const quad = require('rdf-quad');
 
 describe('MediatedQuadSource', () => {
-  let context;
+  let context: ActionContext;
   let mediatorRdfDereference;
   let mediatorMetadata;
   let mediatorMetadataExtract;
-  let mediatorRdfResolveHypermedia;
-  let mediatorRdfResolveHypermediaLinks;
-  let mediators;
+  let mediatorRdfResolveHypermedia: any;
+  let mediatorRdfResolveHypermediaLinks: any;
+  let mediators: any;
 
   beforeEach(() => {
     context = ActionContext({});
     mediatorRdfDereference = {
-      mediate: ({ url }) => Promise.resolve({
+      mediate: ({ url }: any) => Promise.resolve({
         quads: url === 'firstUrl'
           ? streamifyArray([
             quad('s1', 'p1', 'o1'),
@@ -36,13 +36,13 @@ describe('MediatedQuadSource', () => {
       }),
     };
     mediatorMetadata = {
-      mediate: ({ quads }) => Promise.resolve({ data: quads, metadata: { a: 1 } }),
+      mediate: ({ quads }: any) => Promise.resolve({ data: quads, metadata: { a: 1 } }),
     };
     mediatorMetadataExtract = {
-      mediate: ({ metadata }) => Promise.resolve({ metadata }),
+      mediate: ({ metadata }: any) => Promise.resolve({ metadata }),
     };
     mediatorRdfResolveHypermedia = {
-      mediate: ({ forceSourceType, handledDatasets, metadata, quads }) => Promise.resolve({
+      mediate: ({ forceSourceType, handledDatasets, metadata, quads }: any) => Promise.resolve({
         dataset: 'MYDATASET',
         source: {
           match: () => quads,
@@ -110,8 +110,8 @@ describe('MediatedQuadSource', () => {
 
       it('should set the first source after the first matchLazy call', async () => {
         source.matchLazy();
-        expect((await source.sourcesState.sources.get('firstUrl')).metadata).toEqual({ a: 1 });
-        expect((await source.sourcesState.sources.get('firstUrl')).source).toBeTruthy();
+        expect((<any> (await source.sourcesState.sources.get('firstUrl'))).metadata).toEqual({ a: 1 });
+        expect((<any> (await source.sourcesState.sources.get('firstUrl'))).source).toBeTruthy();
       });
 
       it('should allow a custom first source to be set', async () => {
@@ -167,7 +167,7 @@ describe('MediatedQuadSource', () => {
       it('should match three chained sources', async () => {
         let i = 0;
         mediatorRdfResolveHypermediaLinks.mediate = () => Promise.resolve({ urls: ['next' + i] });
-        mediatorRdfResolveHypermedia.mediate = (args) => {
+        mediatorRdfResolveHypermedia.mediate = (args: any) => {
           if (i < 3) {
             i++;
           }

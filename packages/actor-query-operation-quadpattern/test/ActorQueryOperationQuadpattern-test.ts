@@ -10,7 +10,7 @@ const quad = require('rdf-quad');
 const arrayifyStream = require('arrayify-stream');
 
 describe('ActorQueryOperationQuadpattern', () => {
-  let bus;
+  let bus: any;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -126,9 +126,9 @@ describe('ActorQueryOperationQuadpattern', () => {
 
   describe('An ActorQueryOperationQuadpattern instance', () => {
     let actor: ActorQueryOperationQuadpattern;
-    let mediatorResolveQuadPattern;
-    let metadata;
-    let metadataContent;
+    let mediatorResolveQuadPattern: any;
+    let metadata: any;
+    let metadataContent: any;
 
     beforeEach(() => {
       metadataContent = { totalitems: 3 };
@@ -202,7 +202,7 @@ describe('ActorQueryOperationQuadpattern', () => {
       };
       return actor.run({ operation }).then(async (output: IActorQueryOperationOutputBindings) => {
         expect(output.variables).toEqual([ '?p' ]);
-        expect(await output.metadata()).toBe(metadataContent);
+        expect((<any> await output).metadata()).toBe(metadataContent);
         expect(await arrayifyStream(output.bindingsStream)).toEqual(
           [ Bindings({ '?p': <RDF.Term> { value: 'p1' } }),
             Bindings({ '?p': <RDF.Term> { value: 'p2' } }),
@@ -222,7 +222,7 @@ describe('ActorQueryOperationQuadpattern', () => {
       const context = ActionContext({});
       return actor.run({ operation, context }).then(async (output: IActorQueryOperationOutputBindings) => {
         expect(output.variables).toEqual([ '?p' ]);
-        expect(await output.metadata()).toBe(metadataContent);
+        expect((<any> await output).metadata()).toBe(metadataContent);
         expect(await arrayifyStream(output.bindingsStream)).toEqual(
           [ Bindings({ '?p': <RDF.Term> { value: 'p1' } }),
             Bindings({ '?p': <RDF.Term> { value: 'p2' } }),
@@ -252,7 +252,7 @@ describe('ActorQueryOperationQuadpattern', () => {
 
       return actor.run({ operation }).then(async (output: IActorQueryOperationOutputBindings) => {
         expect(output.variables).toEqual([ '?v' ]);
-        expect(await output.metadata()).toBe(metadataContent);
+        expect((<any> await output).metadata()).toBe(metadataContent);
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({ '?v': <RDF.Term> { value: 'w' } }),
         ]);

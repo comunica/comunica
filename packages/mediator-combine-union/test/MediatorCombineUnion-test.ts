@@ -1,8 +1,8 @@
 import {Actor, Bus, IAction, IActorOutput, IActorTest, Mediator} from "@comunica/core";
-import {MediatorCombineUnion} from "../lib/MediatorCombineUnion";
+import {MediatorCombineUnion} from "..";
 
 describe('MediatorCombineUnion', () => {
-  let bus;
+  let bus: Bus<DummyActor, IAction, IDummyTest, IDummyTest>;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });

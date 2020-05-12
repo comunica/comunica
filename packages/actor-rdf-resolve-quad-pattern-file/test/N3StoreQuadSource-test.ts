@@ -4,7 +4,7 @@ import {N3StoreIterator} from "../lib/N3StoreIterator";
 import {N3StoreQuadSource} from "../lib/N3StoreQuadSource";
 
 describe('N3StoreQuadSource', () => {
-  let store;
+  let store: any;
 
   beforeEach(() => {
     store = new N3Store([]);
@@ -32,15 +32,15 @@ describe('N3StoreQuadSource', () => {
     });
 
     it('should throw an error on a predicate regex call', () => {
-      return expect(() => source.match(null, /.*/)).toThrow();
+      return expect(() => source.match(undefined, /.*/)).toThrow();
     });
 
     it('should throw an error on a object regex call', () => {
-      return expect(() => source.match(null, null, /.*/)).toThrow();
+      return expect(() => source.match(undefined, undefined, /.*/)).toThrow();
     });
 
     it('should throw an error on a graph regex call', () => {
-      return expect(() => source.match(null, null, null, /.*/)).toThrow();
+      return expect(() => source.match(undefined, undefined, undefined, /.*/)).toThrow();
     });
 
     it('should return a N3StoreIterator', () => {

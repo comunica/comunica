@@ -9,9 +9,9 @@ const arrayifyStream = require('arrayify-stream');
 // tslint:disable:object-literal-sort-keys
 
 describe('ActorRdfResolveQuadPatternFederated', () => {
-  let bus;
-  let mediatorResolveQuadPattern;
-  let skipEmptyPatterns;
+  let bus: any;
+  let mediatorResolveQuadPattern: any;
+  let skipEmptyPatterns: any;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -54,22 +54,22 @@ describe('ActorRdfResolveQuadPatternFederated', () => {
     });
 
     it('should test with sources', () => {
-      return expect(actor.test({ pattern: null, context: ActionContext(
+      return expect(actor.test({ pattern: <any> null, context: ActionContext(
         { '@comunica/bus-rdf-resolve-quad-pattern:sources': 'something' }) })).resolves.toBeTruthy();
     });
 
     it('should not test with a single source', () => {
-      return expect(actor.test({ pattern: null, context: ActionContext(
+      return expect(actor.test({ pattern: <any> null, context: ActionContext(
           { '@comunica/bus-rdf-resolve-quad-pattern:source': {} }) })).rejects.toBeTruthy();
     });
 
     it('should not test without sources', () => {
-      return expect(actor.test({ pattern: null, context: ActionContext(
+      return expect(actor.test({ pattern: <any> null, context: ActionContext(
         { '@comunica/bus-rdf-resolve-quad-pattern:sources': null }) })).rejects.toBeTruthy();
     });
 
     it('should not test without context', () => {
-      return expect(actor.test({ pattern: null, context: null })).rejects.toBeTruthy();
+      return expect(actor.test({ pattern: <any> null, context: undefined })).rejects.toBeTruthy();
     });
 
     it('should run', () => {
@@ -81,7 +81,7 @@ describe('ActorRdfResolveQuadPatternFederated', () => {
           ])});
       return actor.run({ pattern, context })
         .then(async (output) => {
-          expect(await output.metadata()).toEqual({ totalItems: 4 });
+          expect((<any> await output).metadata()).toEqual({ totalItems: 4 });
           expect(await arrayifyStream(output.data)).toEqual([
             squad('s1', 'p1', 'o1'),
             squad('s1', 'p1', 'o1'),
@@ -92,7 +92,7 @@ describe('ActorRdfResolveQuadPatternFederated', () => {
     });
 
     it('should run lazily', () => {
-      const thisMediator: any = { mediate: (action) => { throw new Error('This should not be called'); } };
+      const thisMediator: any = { mediate: (action: any) => { throw new Error('This should not be called'); } };
       const thisActor = new ActorRdfResolveQuadPatternFederated(
         { name: 'actor', bus, mediatorResolveQuadPattern: thisMediator, skipEmptyPatterns });
       const pattern = squad('?s', 'p', 'o', '?g');

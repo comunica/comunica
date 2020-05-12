@@ -7,10 +7,10 @@ import {ActorRdfDereferenceHttpParse} from "../lib/ActorRdfDereferenceHttpParse"
 const arrayifyStream = require("arrayify-stream");
 
 describe('ActorRdfDereferenceHttpParse', () => {
-  let bus;
-  let mediatorHttp;
-  let mediatorRdfParse;
-  let mediaMappings;
+  let bus: any;
+  let mediatorHttp: any;
+  let mediatorRdfParse: any;
+  let mediaMappings: any;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -44,7 +44,7 @@ describe('ActorRdfDereferenceHttpParse', () => {
     let actor: ActorRdfDereferenceHttpParse;
 
     beforeEach(() => {
-      mediatorRdfParse.mediate = (action) => {
+      mediatorRdfParse.mediate = (action: any) => {
         if (action.mediaTypes) {
           return { mediaTypes: { a: 1.0 }};
         } else {
@@ -61,12 +61,12 @@ describe('ActorRdfDereferenceHttpParse', () => {
               action.handle.input.read(1);
               quads.push(null);
             };
-            action.handle.input.on('error', (error) => quads.emit('error', error));
+            action.handle.input.on('error', (error: Error) => quads.emit('error', error));
             return { handle: { quads, triples: true } };
           }
         }
       };
-      mediatorHttp.mediate = (action) => {
+      mediatorHttp.mediate = (action: any) => {
         if (action.context && action.context.has('httpReject')) {
           return Promise.reject(new Error('Http reject error'));
         }

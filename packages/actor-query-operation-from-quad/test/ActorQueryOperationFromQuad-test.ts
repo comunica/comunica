@@ -7,13 +7,13 @@ const arrayifyStream = require('arrayify-stream');
 const quad = require('rdf-quad');
 
 describe('ActorQueryOperationFromQuad', () => {
-  let bus;
-  let mediatorQueryOperation;
+  let bus: any;
+  let mediatorQueryOperation: any;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
     mediatorQueryOperation = {
-      mediate: (arg) => Promise.resolve({
+      mediate: (arg: any) => Promise.resolve({
         bindingsStream: new ArrayIterator([
           Bindings({ a: literal('1') }),
           Bindings({ a: literal('2') }),
@@ -541,7 +541,7 @@ describe('ActorQueryOperationFromQuad', () => {
         Bindings({ a: literal('2') }),
         Bindings({ a: literal('3') }),
       ]);
-      expect(await output.metadata()).toMatchObject(Promise.resolve({ totalItems: 3 }));
+      expect((<any> await output).metadata()).toMatchObject(Promise.resolve({ totalItems: 3 }));
       expect(output.type).toEqual('bindings');
       expect(output.variables).toMatchObject(['a']);
     });

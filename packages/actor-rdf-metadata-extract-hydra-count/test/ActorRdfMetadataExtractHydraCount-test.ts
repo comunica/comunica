@@ -6,7 +6,7 @@ const stream = require('streamify-array');
 const quad = require('rdf-quad');
 
 describe('ActorRdfMetadataExtractHydraCount', () => {
-  let bus;
+  let bus: any;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });

@@ -8,9 +8,9 @@ const stringToStream = require('streamify-string');
 const arrayifyStream = require('arrayify-stream');
 
 describe('ActorInitRdfParse', () => {
-  let bus;
-  let busInit;
-  let mediator;
+  let bus: any;
+  let busInit: any;
+  let mediator: any;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -88,7 +88,7 @@ describe('ActorInitRdfParse', () => {
     it('should run', () => {
       return actor.run({ argv: [ 'text/turtle', 'x:' ], env: {}, stdin: input })
         .then(async (output) => {
-          return expect((await arrayifyStream(output.stdout)).map((b) => JSON.parse(b.toString()))).toEqual([
+          return expect((await arrayifyStream(output.stdout)).map((b: any) => JSON.parse(b.toString()))).toEqual([
             { subject: 'x:a', predicate: 'x:b', object: 'x:c', graph: ''},
             { subject: 'x:d', predicate: 'x:e', object: 'x:f', graph: 'x:g'},
           ]);

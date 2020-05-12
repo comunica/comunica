@@ -2,7 +2,7 @@ import {Actor, Bus, IAction, IActorOutput, IActorTest, Mediator} from "@comunica
 import {MediatorCombinePipeline} from "../lib/MediatorCombinePipeline";
 
 describe('MediatorCombinePipeline', () => {
-  let bus;
+  let bus: Bus<DummyActor, IDummyAction, IActorTest, IDummyAction>;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });

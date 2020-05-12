@@ -161,9 +161,9 @@ describe('materializeOperation', () => {
 
   it('should materialize a path expression with non-empty bindings', () => {
     return expect(materializeOperation(
-      factory.createPath(termVariableA, null, termVariableC, termNamedNode),
+      factory.createPath(termVariableA, <any> null, termVariableC, termNamedNode),
       bindingsA))
-      .toEqual(factory.createPath(valueA, null, termVariableC, termNamedNode));
+      .toEqual(factory.createPath(valueA, <any> null, termVariableC, termNamedNode));
   });
 
   it('should materialize a nested path expression with non-empty bindings', () => {

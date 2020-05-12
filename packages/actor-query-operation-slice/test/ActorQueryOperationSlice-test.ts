@@ -11,17 +11,17 @@ import {ActorQueryOperationSlice} from "../lib/ActorQueryOperationSlice";
 const arrayifyStream = require('arrayify-stream');
 
 describe('ActorQueryOperationSlice', () => {
-  let bus;
-  let mediatorQueryOperation;
-  let mediatorQueryOperationNoMeta;
-  let mediatorQueryOperationMetaInf;
-  let mediatorQueryOperationQuads;
-  let mediatorQueryOperationBoolean;
+  let bus: any;
+  let mediatorQueryOperation: any;
+  let mediatorQueryOperationNoMeta: any;
+  let mediatorQueryOperationMetaInf: any;
+  let mediatorQueryOperationQuads: any;
+  let mediatorQueryOperationBoolean: any;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
     mediatorQueryOperation = {
-      mediate: (arg) => Promise.resolve({
+      mediate: (arg: any) => Promise.resolve({
         bindingsStream: new ArrayIterator([
           Bindings({ a: literal('1') }),
           Bindings({ a: literal('2') }),
@@ -34,7 +34,7 @@ describe('ActorQueryOperationSlice', () => {
       }),
     };
     mediatorQueryOperationNoMeta = {
-      mediate: (arg) => Promise.resolve({
+      mediate: (arg: any) => Promise.resolve({
         bindingsStream: new ArrayIterator([
           Bindings({ a: literal('1') }),
           Bindings({ a: literal('2') }),
@@ -47,7 +47,7 @@ describe('ActorQueryOperationSlice', () => {
       }),
     };
     mediatorQueryOperationMetaInf = {
-      mediate: (arg) => Promise.resolve({
+      mediate: (arg: any) => Promise.resolve({
         bindingsStream: new ArrayIterator([
           Bindings({ a: literal('1') }),
           Bindings({ a: literal('2') }),
@@ -60,7 +60,7 @@ describe('ActorQueryOperationSlice', () => {
       }),
     };
     mediatorQueryOperationQuads = {
-      mediate: (arg) => Promise.resolve({
+      mediate: (arg: any) => Promise.resolve({
         quadStream: new ArrayIterator([
           quad(namedNode('http://example.com/s'), namedNode('http://example.com/p'), literal('1')),
           quad(namedNode('http://example.com/s'), namedNode('http://example.com/p'), literal('2')),
@@ -72,7 +72,7 @@ describe('ActorQueryOperationSlice', () => {
       }),
     };
     mediatorQueryOperationBoolean = {
-      mediate: (arg) => Promise.resolve({
+      mediate: (arg: any) => Promise.resolve({
         booleanResult: true,
         type: 'boolean'
       }),
@@ -114,7 +114,7 @@ describe('ActorQueryOperationSlice', () => {
     it('should run on a stream for start 0 and length 100', () => {
       const op = { operation: { type: 'project', start: 0, length: 100 } };
       return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
-        expect(await output.metadata()).toEqual({ totalItems: 3 });
+        expect((<any> await output).metadata()).toEqual({ totalItems: 3 });
         expect(output.variables).toEqual([ 'a' ]);
         expect(output.type).toEqual('bindings');
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
@@ -128,7 +128,7 @@ describe('ActorQueryOperationSlice', () => {
     it('should run on a stream for start 1 and length 100', () => {
       const op = { operation: { type: 'project', start: 1, length: 100 } };
       return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
-        expect(await output.metadata()).toEqual({ totalItems: 2 });
+        expect((<any> await output).metadata()).toEqual({ totalItems: 2 });
         expect(output.variables).toEqual([ 'a' ]);
         expect(output.type).toEqual('bindings');
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
@@ -141,7 +141,7 @@ describe('ActorQueryOperationSlice', () => {
     it('should run on a stream for start 3 and length 100', () => {
       const op = { operation: { type: 'project', start: 3, length: 100 } };
       return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
-        expect(await output.metadata()).toEqual({ totalItems: 0 });
+        expect((<any> await output).metadata()).toEqual({ totalItems: 0 });
         expect(output.variables).toEqual([ 'a' ]);
         expect(output.type).toEqual('bindings');
         expect(await arrayifyStream(output.bindingsStream)).toEqual([]);
@@ -151,7 +151,7 @@ describe('ActorQueryOperationSlice', () => {
     it('should run on a stream for start 0 and length 3', () => {
       const op = { operation: { type: 'project', start: 0, length: 3 } };
       return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
-        expect(await output.metadata()).toEqual({ totalItems: 3 });
+        expect((<any> await output).metadata()).toEqual({ totalItems: 3 });
         expect(output.variables).toEqual([ 'a' ]);
         expect(output.type).toEqual('bindings');
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
@@ -165,7 +165,7 @@ describe('ActorQueryOperationSlice', () => {
     it('should run on a stream for start 0 and length 2', () => {
       const op = { operation: { type: 'project', start: 0, length: 2 } };
       return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
-        expect(await output.metadata()).toEqual({ totalItems: 2 });
+        expect((<any> await output).metadata()).toEqual({ totalItems: 2 });
         expect(output.variables).toEqual([ 'a' ]);
         expect(output.type).toEqual('bindings');
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
@@ -178,7 +178,7 @@ describe('ActorQueryOperationSlice', () => {
     it('should run on a stream for start 0 and length 0', () => {
       const op = { operation: { type: 'project', start: 0, length: 0 } };
       return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
-        expect(await output.metadata()).toEqual({ totalItems: 0 });
+        expect((<any> await output).metadata()).toEqual({ totalItems: 0 });
         expect(output.variables).toEqual([ 'a' ]);
         expect(output.type).toEqual('bindings');
         expect(await arrayifyStream(output.bindingsStream)).toEqual([]);
@@ -188,7 +188,7 @@ describe('ActorQueryOperationSlice', () => {
     it('should run on a stream for start 1 and length 3', () => {
       const op = { operation: { type: 'project', start: 1, length: 3 } };
       return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
-        expect(await output.metadata()).toEqual({ totalItems: 2 });
+        expect((<any> await output).metadata()).toEqual({ totalItems: 2 });
         expect(output.variables).toEqual([ 'a' ]);
         expect(output.type).toEqual('bindings');
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
@@ -201,7 +201,7 @@ describe('ActorQueryOperationSlice', () => {
     it('should run on a stream for start 1 and length 1', () => {
       const op = { operation: { type: 'project', start: 1, length: 1 } };
       return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
-        expect(await output.metadata()).toEqual({ totalItems: 1 });
+        expect((<any> await output).metadata()).toEqual({ totalItems: 1 });
         expect(output.variables).toEqual([ 'a' ]);
         expect(output.type).toEqual('bindings');
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
@@ -213,7 +213,7 @@ describe('ActorQueryOperationSlice', () => {
     it('should run on a stream for start 2 and length 1', () => {
       const op = { operation: { type: 'project', start: 2, length: 1 } };
       return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
-        expect(await output.metadata()).toEqual({ totalItems: 1 });
+        expect((<any> await output).metadata()).toEqual({ totalItems: 1 });
         expect(output.variables).toEqual([ 'a' ]);
         expect(output.type).toEqual('bindings');
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
@@ -225,7 +225,7 @@ describe('ActorQueryOperationSlice', () => {
     it('should run on a stream for start 2 and length 0', () => {
       const op = { operation: { type: 'project', start: 2, length: 0 } };
       return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
-        expect(await output.metadata()).toEqual({ totalItems: 0 });
+        expect((<any> await output).metadata()).toEqual({ totalItems: 0 });
         expect(output.variables).toEqual([ 'a' ]);
         expect(output.type).toEqual('bindings');
         expect(await arrayifyStream(output.bindingsStream)).toEqual([]);
@@ -235,7 +235,7 @@ describe('ActorQueryOperationSlice', () => {
     it('should run on a stream for start 3 and length 1', () => {
       const op = { operation: { type: 'project', start: 3, length: 1 } };
       return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
-        expect(await output.metadata()).toEqual({ totalItems: 0 });
+        expect((<any> await output).metadata()).toEqual({ totalItems: 0 });
         expect(output.variables).toEqual([ 'a' ]);
         expect(await arrayifyStream(output.bindingsStream)).toEqual([]);
       });
@@ -244,7 +244,7 @@ describe('ActorQueryOperationSlice', () => {
     it('should run on a stream for start 3 and length 0', () => {
       const op = { operation: { type: 'project', start: 3, length: 1 } };
       return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
-        expect(await output.metadata()).toEqual({ totalItems: 0 });
+        expect((<any> await output).metadata()).toEqual({ totalItems: 0 });
         expect(output.variables).toEqual([ 'a' ]);
         expect(output.type).toEqual('bindings');
         expect(await arrayifyStream(output.bindingsStream)).toEqual([]);
@@ -254,7 +254,7 @@ describe('ActorQueryOperationSlice', () => {
     it('should run on a stream for start 4 and length 1', () => {
       const op = { operation: { type: 'project', start: 4, length: 1 } };
       return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
-        expect(await output.metadata()).toEqual({ totalItems: 0 });
+        expect((<any> await output).metadata()).toEqual({ totalItems: 0 });
         expect(output.variables).toEqual([ 'a' ]);
         expect(output.type).toEqual('bindings');
         expect(await arrayifyStream(output.bindingsStream)).toEqual([]);
@@ -264,7 +264,7 @@ describe('ActorQueryOperationSlice', () => {
     it('should run on a stream for start 4 and length 0', () => {
       const op = { operation: { type: 'project', start: 4, length: 1 } };
       return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
-        expect(await output.metadata()).toEqual({ totalItems: 0 });
+        expect((<any> await output).metadata()).toEqual({ totalItems: 0 });
         expect(output.variables).toEqual([ 'a' ]);
         expect(output.type).toEqual('bindings');
         expect(await arrayifyStream(output.bindingsStream)).toEqual([]);
@@ -292,7 +292,7 @@ describe('ActorQueryOperationSlice', () => {
         name: 'actor' });
       const op = { operation: { type: 'project', start: 0, length: 100 } };
       return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
-        expect(await output.metadata()).toEqual({ totalItems: Infinity });
+        expect((<any> await output).metadata()).toEqual({ totalItems: Infinity });
         expect(output.variables).toEqual([ 'a' ]);
         expect(output.type).toEqual('bindings');
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
@@ -306,7 +306,7 @@ describe('ActorQueryOperationSlice', () => {
     it('should run on a stream for start 0 and no length', () => {
       const op = { operation: { type: 'project', start: 0 } };
       return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
-        expect(await output.metadata()).toEqual({ totalItems: 3 });
+        expect((<any> await output).metadata()).toEqual({ totalItems: 3 });
         expect(output.variables).toEqual([ 'a' ]);
         expect(output.type).toEqual('bindings');
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
@@ -322,7 +322,7 @@ describe('ActorQueryOperationSlice', () => {
         name: 'actor' });
       const op = { operation: { type: 'project', start: 0, length: 2 } };
       return actor.run(op).then(async (output: IActorQueryOperationOutputQuads) => {
-        expect(await output.metadata()).toEqual({ totalItems: 2 });
+        expect((<any> await output).metadata()).toEqual({ totalItems: 2 });
         expect(output.type).toEqual('quads');
         expect(await arrayifyStream(output.quadStream)).toEqual([
           quad(namedNode('http://example.com/s'), namedNode('http://example.com/p'), literal('1')),

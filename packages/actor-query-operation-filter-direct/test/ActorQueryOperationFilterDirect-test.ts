@@ -7,8 +7,8 @@ import { SparqlExpressionEvaluator } from "../lib/SparqlExpressionEvaluator";
 const arrayifyStream = require('arrayify-stream');
 
 describe('ActorQueryOperationFilterDirect', () => {
-  let bus;
-  let mediatorQueryOperation;
+  let bus: any;
+  let mediatorQueryOperation: any;
   const truthyExpression = {
     expressionType: 'term',
     term: { termType: 'Literal', value: 'true' },
@@ -29,7 +29,7 @@ describe('ActorQueryOperationFilterDirect', () => {
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
     mediatorQueryOperation = {
-      mediate: (arg) => Promise.resolve({
+      mediate: (arg: any) => Promise.resolve({
         bindingsStream: new ArrayIterator([
           Bindings({ '?a': literal('1') }),
           Bindings({ '?a': literal('2') }),
@@ -91,7 +91,7 @@ describe('ActorQueryOperationFilterDirect', () => {
         Bindings({ '?a': literal('3') }),
       ]);
       expect(output.type).toEqual('bindings');
-      expect(await output.metadata()).toMatchObject({ totalItems: 3 });
+      expect((<any> await output).metadata()).toMatchObject({ totalItems: 3 });
       expect(output.variables).toMatchObject(['a']);
     });
 
@@ -99,7 +99,7 @@ describe('ActorQueryOperationFilterDirect', () => {
       const op = { operation: { type: 'filter', input: {}, expression: falsyExpression } };
       const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
       expect(await arrayifyStream(output.bindingsStream)).toMatchObject([]);
-      expect(await output.metadata()).toMatchObject({ totalItems: 3 });
+      expect((<any> await output).metadata()).toMatchObject({ totalItems: 3 });
       expect(output.type).toEqual('bindings');
       expect(output.variables).toMatchObject(['a']);
     });

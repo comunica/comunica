@@ -3,13 +3,14 @@ import {Bus} from "@comunica/core";
 import {blankNode, namedNode} from "@rdfjs/data-model";
 import {ArrayIterator} from "asynciterator";
 import {Readable} from "stream";
-import {ActorSparqlSerializeJson} from "../lib/ActorSparqlSerializeJson";
+import {ActorSparqlSerializeJson} from "..";
+import * as RDF from "rdf-js";
 
 const quad = require('rdf-quad');
 const stringifyStream = require('stream-to-string');
 
 describe('ActorSparqlSerializeJson', () => {
-  let bus;
+  let bus: any;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -32,9 +33,9 @@ describe('ActorSparqlSerializeJson', () => {
   describe('An ActorSparqlSerializeJson instance', () => {
     let actor: ActorSparqlSerializeJson;
     let bindingsStream: BindingsStream;
-    let quadStream;
-    let bindingsStreamEmpty;
-    let streamError;
+    let quadStream: RDF.Stream;
+    let bindingsStreamEmpty: BindingsStream;
+    let streamError: Readable;
 
     beforeEach(() => {
       actor = new ActorSparqlSerializeJson({ bus, mediaTypes: {
@@ -96,8 +97,8 @@ describe('ActorSparqlSerializeJson', () => {
       });
 
       it('should run on a bindings stream', async () => {
-        return expect((await stringifyStream((await actor.run(
-          {handle: <any> { type: 'bindings', bindingsStream }, handleMediaType: 'application/json'})).handle.data)))
+        return expect((await stringifyStream((<any> (await actor.run(
+          {handle: <any> { type: 'bindings', bindingsStream }, handleMediaType: 'application/json'}))).handle.data)))
           .toEqual(
 `[
 {"k1":"v1"},
@@ -108,8 +109,8 @@ describe('ActorSparqlSerializeJson', () => {
 
       // tslint:disable:max-line-length
       it('should run on a quad stream', async () => {
-        return expect((await stringifyStream((await actor.run(
-          { handle: <any> { type: 'quads', quadStream }, handleMediaType: 'application/json' })).handle.data))).toEqual(
+        return expect((await stringifyStream((<any> (await actor.run(
+          { handle: <any> { type: 'quads', quadStream }, handleMediaType: 'application/json' }))).handle.data))).toEqual(
 `[
 {"subject":"http://example.org/a","predicate":"http://example.org/b","object":"http://example.org/c","graph":""},
 {"subject":"http://example.org/a","predicate":"http://example.org/d","object":"http://example.org/e","graph":""}
@@ -118,53 +119,53 @@ describe('ActorSparqlSerializeJson', () => {
       });
 
       it('should run on an empty bindings stream', async () => {
-        return expect((await stringifyStream((await actor.run(
+        return expect((await stringifyStream((<any> (await actor.run(
           { handle: <any> { type: 'bindings', bindingsStream: bindingsStreamEmpty },
-            handleMediaType: 'application/json'})).handle.data)))
+            handleMediaType: 'application/json'}))).handle.data)))
           .toEqual(`[]
 `);
       });
 
       it('should run on an empty quad stream', async () => {
-        return expect((await stringifyStream((await actor.run(
+        return expect((await stringifyStream((<any> (await actor.run(
           { handle: <any> { type: 'quads', quadStream: bindingsStreamEmpty },
-            handleMediaType: 'application/json'})).handle.data)))
+            handleMediaType: 'application/json'}))).handle.data)))
           .toEqual(`[]
 `);
       });
 
       it('should run on a boolean result resolving to true', async () => {
-        return expect((await stringifyStream((await actor.run(
+        return expect((await stringifyStream((<any> (await actor.run(
           {handle: <any> { type: 'boolean', booleanResult: Promise.resolve(true) },
-            handleMediaType: 'application/json'})).handle.data)))
+            handleMediaType: 'application/json'}))).handle.data)))
           .toEqual(`true
 `);
       });
 
       it('should run on a boolean result resolving to false', async () => {
-        return expect((await stringifyStream((await actor.run(
+        return expect((await stringifyStream((<any> (await actor.run(
           {handle: <any> { type: 'boolean', booleanResult: Promise.resolve(false) },
-            handleMediaType: 'application/json'})).handle.data)))
+            handleMediaType: 'application/json'}))).handle.data)))
           .toEqual(`false
 `);
       });
 
       it('should emit an error when a bindings stream emits an error', async () => {
-        return expect(stringifyStream((await actor.run(
+        return expect(stringifyStream((<any> (await actor.run(
           {handle: <any> { type: 'bindings', bindingsStream: streamError },
-            handleMediaType: 'application/json'})).handle.data)).rejects.toBeTruthy();
+            handleMediaType: 'application/json'}))).handle.data)).rejects.toBeTruthy();
       });
 
       it('should emit an error when a quad stream emits an error', async () => {
-        return expect(stringifyStream((await actor.run(
+        return expect(stringifyStream((<any> (await actor.run(
           {handle: <any> { type: 'quads', quadStream: streamError },
-            handleMediaType: 'application/json'})).handle.data)).rejects.toBeTruthy();
+            handleMediaType: 'application/json'}))).handle.data)).rejects.toBeTruthy();
       });
 
       it('should emit an error when the boolean is rejected', async () => {
-        return expect(stringifyStream((await actor.run(
+        return expect(stringifyStream((<any> (await actor.run(
           {handle: <any> { type: 'boolean', booleanResult: Promise.reject(new Error()) },
-            handleMediaType: 'application/json'})).handle.data)).rejects.toBeTruthy();
+            handleMediaType: 'application/json'}))).handle.data)).rejects.toBeTruthy();
       });
     });
   });

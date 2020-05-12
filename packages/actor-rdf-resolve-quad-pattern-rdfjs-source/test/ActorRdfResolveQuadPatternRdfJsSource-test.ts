@@ -6,7 +6,7 @@ import {ActorRdfResolveQuadPatternRdfJsSource} from "../lib/ActorRdfResolveQuadP
 // tslint:disable:object-literal-sort-keys
 
 describe('ActorRdfResolveQuadPatternRdfJsSource', () => {
-  let bus;
+  let bus: any;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -35,43 +35,43 @@ describe('ActorRdfResolveQuadPatternRdfJsSource', () => {
 
     beforeEach(() => {
       actor = new ActorRdfResolveQuadPatternRdfJsSource({ name: 'actor', bus });
-      source = { match: () => null };
+      source = { match: () => <any> null };
     });
 
     it('should test', () => {
-      return expect(actor.test({ pattern: null, context: ActionContext(
+      return expect(actor.test({ pattern: <any> null, context: ActionContext(
         { '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'rdfjsSource', value: source  } }) }))
         .resolves.toBeTruthy();
     });
 
     it('should not test without a context', () => {
-      return expect(actor.test({ pattern: null, context: null })).rejects.toBeTruthy();
+      return expect(actor.test({ pattern: <any> null, context: undefined })).rejects.toBeTruthy();
     });
 
     it('should not test without a source', () => {
-      return expect(actor.test({ pattern: null, context: ActionContext({}) })).rejects.toBeTruthy();
+      return expect(actor.test({ pattern: <any> null, context: ActionContext({}) })).rejects.toBeTruthy();
     });
 
     it('should not test on an invalid source', () => {
-      return expect(actor.test({ pattern: null, context: ActionContext(
-        { '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'rdfjsSource', value: null } }) }))
+      return expect(actor.test({ pattern: <any> null, context: ActionContext(
+        { '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'rdfjsSource', value: undefined } }) }))
         .rejects.toBeTruthy();
     });
 
     it('should not test on an invalid source type', () => {
-      return expect(actor.test({ pattern: null, context: ActionContext(
+      return expect(actor.test({ pattern: <any> null, context: ActionContext(
         { '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'rdfjsSource', value: {} } }) }))
         .rejects.toBeTruthy();
     });
 
     it('should not test on no source', () => {
-      return expect(actor.test({ pattern: null, context: ActionContext(
+      return expect(actor.test({ pattern: <any> null, context: ActionContext(
         { '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'entrypoint', value: null } }) }))
         .rejects.toBeTruthy();
     });
 
     it('should not test on no sources', () => {
-      return expect(actor.test({ pattern: null, context: ActionContext(
+      return expect(actor.test({ pattern: <any> null, context: ActionContext(
         { '@comunica/bus-rdf-resolve-quad-pattern:sources': [] }) }))
         .rejects.toBeTruthy();
     });
@@ -80,7 +80,7 @@ describe('ActorRdfResolveQuadPatternRdfJsSource', () => {
       return expect(actor.test(
         { context: ActionContext(
           { '@comunica/bus-rdf-resolve-quad-pattern:sources': [{ type: 'rdfjsSource', value: source },
-          { type: 'rdfjsSource', value: source }] }), pattern: null }))
+          { type: 'rdfjsSource', value: source }] }), pattern: <any> null }))
         .rejects.toBeTruthy();
     });
 

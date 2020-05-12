@@ -1,9 +1,7 @@
-import {Actor} from "../lib/Actor";
-import {Bus} from "../lib/Bus";
-import {Mediator} from "../lib/Mediator";
+import {Actor, Bus, IAction, IActorOutput, IActorTest, Mediator} from "..";
 
 describe('Mediator', () => {
-  let bus: any;
+  let bus: Bus<Actor<IAction, IActorTest, IActorOutput>, IAction, IActorTest, IActorOutput>;;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });

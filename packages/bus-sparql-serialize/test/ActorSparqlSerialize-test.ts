@@ -1,5 +1,5 @@
 import {Bus} from "@comunica/core";
-import {ActorSparqlSerialize} from "../lib/ActorSparqlSerialize";
+import {ActorSparqlSerialize} from "..";
 
 describe('ActorSparqlSerialize', () => {
   const bus = new Bus({ name: 'bus' });

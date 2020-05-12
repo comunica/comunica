@@ -6,16 +6,16 @@ import {ActorQueryOperationUnion} from "../lib/ActorQueryOperationUnion";
 const arrayifyStream = require('arrayify-stream');
 
 describe('ActorQueryOperationUnion', () => {
-  let bus;
-  let mediatorQueryOperation;
-  let left;
-  let leftNoMeta;
-  let right;
+  let bus: any;
+  let mediatorQueryOperation: any;
+  let left: any;
+  let leftNoMeta: any;
+  let right: any;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
     mediatorQueryOperation = {
-      mediate: (arg) => Promise.resolve({
+      mediate: (arg: any) => Promise.resolve({
         bindingsStream: arg.operation.stream,
         metadata: arg.operation.metadata,
         type: 'bindings',
@@ -185,7 +185,7 @@ describe('ActorQueryOperationUnion', () => {
     it('should run', () => {
       const op = { operation: { type: 'union', left, right } };
       return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
-        expect(await output.metadata()).toEqual({ totalItems: 5 });
+        expect((<any> await output).metadata()).toEqual({ totalItems: 5 });
         expect(output.variables).toEqual([ 'a', 'b' ]);
         expect(output.type).toEqual('bindings');
         expect(await arrayifyStream(output.bindingsStream)).toEqual([

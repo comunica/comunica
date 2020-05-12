@@ -57,7 +57,7 @@ const sumZ: Algebra.BoundAggregate = {
 };
 
 const getDefaultMediatorQueryOperation = () => ({
-  mediate: (arg) => Promise.resolve({
+  mediate: (arg: any) => Promise.resolve({
     bindingsStream: new ArrayIterator([
       Bindings({ a: literal('1') }),
       Bindings({ a: literal('2') }),
@@ -92,7 +92,7 @@ function constructCase(
     mediatorQueryOperation = getDefaultMediatorQueryOperation();
   } else {
     mediatorQueryOperation = {
-      mediate: (arg) => Promise.resolve({
+      mediate: (arg: any) => Promise.resolve({
         bindingsStream: new ArrayIterator(inputBindings),
         metadata: () => Promise.resolve({ totalItems: inputBindings.length }),
         operated: arg,
@@ -127,8 +127,8 @@ function decimal(value: string) {
 }
 
 describe('ActorQueryOperationGroup', () => {
-  let bus;
-  let mediatorQueryOperation;
+  let bus: any;
+  let mediatorQueryOperation: any;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -371,7 +371,7 @@ describe('ActorQueryOperationGroup', () => {
         },
       });
       const myMediatorQueryOperation = {
-        mediate: (arg) => Promise.resolve({
+        mediate: (arg: any) => Promise.resolve({
           bindingsStream,
           metadata: () => Promise.resolve({ totalItems: inputBindings.length }),
           operated: arg,

@@ -9,13 +9,13 @@ import { Bus } from "@comunica/core";
 import { ActorQueryOperationOrderBySparqlee } from "../lib/ActorQueryOperationOrderBySparqlee";
 
 describe('ActorQueryOperationOrderBySparqlee', () => {
-  let bus;
-  let mediatorQueryOperation;
+  let bus: any;
+  let mediatorQueryOperation: any;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
     mediatorQueryOperation = {
-      mediate: (arg) => Promise.resolve({
+      mediate: (arg: any) => Promise.resolve({
         bindingsStream: new ArrayIterator([
           Bindings({ '?a': literal('22') }),
           Bindings({ '?a': literal('1') }),

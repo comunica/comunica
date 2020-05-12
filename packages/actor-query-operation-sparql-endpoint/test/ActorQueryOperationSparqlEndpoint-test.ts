@@ -18,13 +18,13 @@ import "jest-rdf";
 const factory = new Factory();
 
 describe('ActorQueryOperationSparqlEndpoint', () => {
-  let bus;
-  let mediatorHttp;
+  let bus: any;
+  let mediatorHttp: any;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
     mediatorHttp = {
-      mediate: (action) => {
+      mediate: (action: any) => {
         let body;
         if (action.input.startsWith('http://example.org/sparql-construct')) {
           body = streamifyString(`<http://ex.org/s> <http://ex.org/p> <http://ex.org/o1>, <http://ex.org/o2>.`);
@@ -105,7 +105,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
       const context = ActionContext({
         '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'sparql' },
       });
-      const op = { operation: null, context };
+      const op: any = { operation: null, context };
       return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
@@ -117,7 +117,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
           namedNode('http://o')) };
       const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
       expect(output.variables).toEqual(['?p']);
-      expect(await output.metadata()).toEqual({ totalItems: 3 });
+      expect((<any> await output).metadata()).toEqual({ totalItems: 3 });
       // tslint:disable:max-line-length
       expect(await arrayifyStream(output.bindingsStream)).toEqual([
         Bindings({ '?p': namedNode('http://example.org/sparql-select?query=SELECT%20%3Fp%20WHERE%20%7B%20%3Chttp%3A%2F%2Fs%3E%20%3Fp%20%3Chttp%3A%2F%2Fo%3E.%20%7D/1') }),
@@ -136,7 +136,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
         ) };
       const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
       expect(output.variables).toEqual(['?myP']);
-      expect(await output.metadata()).toEqual({ totalItems: 3 });
+      expect((<any> await output).metadata()).toEqual({ totalItems: 3 });
       // tslint:disable:max-line-length
       expect(await arrayifyStream(output.bindingsStream)).toEqual([
         Bindings({ '?p': namedNode('http://example.org/sparql-select?query=SELECT%20%3FmyP%20WHERE%20%7B%20%3Chttp%3A%2F%2Fs%3E%20%3Fp%20%3Chttp%3A%2F%2Fo%3E.%20%7D/1') }),
@@ -166,7 +166,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
           [ factory.createPattern(namedNode('http://s'), variable('p'), namedNode('http://o')) ]) };
       const output: IActorQueryOperationOutputQuads = <any> await actor.run(op);
       // tslint:disable:max-line-length
-      expect(await output.metadata()).toEqual({ totalItems: 2 });
+      expect((<any> await output).metadata()).toEqual({ totalItems: 2 });
       // tslint:disable:max-line-length
       expect(await arrayifyStream(output.quadStream)).toBeRdfIsomorphic([
         quad('http://ex.org/s', 'http://ex.org/p', 'http://ex.org/o1'),

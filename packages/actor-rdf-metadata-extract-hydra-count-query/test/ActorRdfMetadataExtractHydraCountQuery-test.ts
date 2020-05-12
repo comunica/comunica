@@ -6,7 +6,7 @@ import {ActorRdfMetadataExtractHydraCountQuery} from "../lib/ActorRdfMetadataExt
 const stream = require('streamify-array');
 
 describe('ActorRdfMetadataExtractHydraCountQuery', () => {
-  let bus;
+  let bus: any;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -34,7 +34,7 @@ describe('ActorRdfMetadataExtractHydraCountQuery', () => {
     let input: Readable;
 
     beforeEach(() => {
-      actor = new ActorRdfMetadataExtractHydraCountQuery({ name: 'actor', bus, queryEngine: null });
+      actor = new ActorRdfMetadataExtractHydraCountQuery({ name: 'actor', bus, queryEngine: <any> null });
       input = stream([]);
     });
 

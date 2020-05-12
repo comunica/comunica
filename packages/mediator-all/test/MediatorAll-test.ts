@@ -2,7 +2,7 @@ import {Actor, Bus, IAction, IActorOutput, IActorTest, Mediator} from "@comunica
 import {MediatorAll} from "../lib/MediatorAll";
 
 describe('MediatorAll', () => {
-  let bus;
+  let bus: Bus<DummyActor, IAction, IDummyTest, IDummyTest>;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -24,7 +24,7 @@ describe('MediatorAll', () => {
   describe('An MediatorAll instance', () => {
 
     describe('without actors', () => {
-      let busm;
+      let busm: Bus<DummyActor, IAction, IDummyTest, IDummyTest>;
       let mediator: MediatorAll<DummyActor, IAction, IDummyTest, IDummyTest>;
 
       beforeEach(() => {
@@ -42,11 +42,11 @@ describe('MediatorAll', () => {
     });
 
     describe('with resolving actors', () => {
-      let busm;
+      let busm: Bus<DummyActor, IAction, IDummyTest, IDummyTest>;
       let mediator: MediatorAll<DummyActor, IAction, IDummyTest, IDummyTest>;
-      let a0;
-      let a1;
-      let a2;
+      let a0: DummyActor;
+      let a1: DummyActor;
+      let a2: DummyActor;
 
       beforeEach(() => {
         busm = new Bus({ name: 'bus' });
@@ -68,11 +68,11 @@ describe('MediatorAll', () => {
     });
 
     describe('with rejecting actors', () => {
-      let busm;
+      let busm: Bus<DummyActor, IAction, IDummyTest, IDummyTest>;
       let mediator: MediatorAll<DummyActor, IAction, IDummyTest, IDummyTest>;
-      let a0;
-      let a1;
-      let a2;
+      let a0: DummyActor;
+      let a1: DummyActor;
+      let a2: DummyActor;
 
       beforeEach(() => {
         busm = new Bus({ name: 'bus' });
@@ -94,11 +94,11 @@ describe('MediatorAll', () => {
     });
 
     describe('with resolving and rejecting actors', () => {
-      let busm;
+      let busm: Bus<DummyActor, IAction, IDummyTest, IDummyTest>;
       let mediator: MediatorAll<DummyActor, IAction, IDummyTest, IDummyTest>;
-      let a0;
-      let a1;
-      let a2;
+      let a0: DummyActor;
+      let a1: DummyActor;
+      let a2: DummyActor;
 
       beforeEach(() => {
         busm = new Bus({ name: 'bus' });

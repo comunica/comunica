@@ -6,16 +6,16 @@ import {ActorQueryOperationReducedHash} from "..";
 const arrayifyStream = require('arrayify-stream');
 
 describe('ActorQueryOperationReducedHash', () => {
-  let bus;
-  let mediatorQueryOperation;
-  let hashAlgorithm;
-  let digestAlgorithm;
-  let cacheSize;
+  let bus: any;
+  let mediatorQueryOperation: any;
+  let hashAlgorithm: any;
+  let digestAlgorithm: any;
+  let cacheSize: any;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
     mediatorQueryOperation = {
-      mediate: (arg) => Promise.resolve({
+      mediate: (arg: any) => Promise.resolve({
         bindingsStream: new ArrayIterator([
           Bindings({ a: literal('1') }),
           Bindings({ a: literal('2') }),
@@ -100,7 +100,7 @@ describe('ActorQueryOperationReducedHash', () => {
     it('should run', () => {
       const op = { operation: { type: 'reduced' } };
       return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
-        expect(await output.metadata()).toEqual({ totalItems: 5 });
+        expect((<any> await output).metadata()).toEqual({ totalItems: 5 });
         expect(output.variables).toEqual([ 'a' ]);
         expect(output.type).toEqual('bindings');
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
@@ -115,11 +115,11 @@ describe('ActorQueryOperationReducedHash', () => {
 
 describe('Smaller cache than number of queries', () => {
   let actor: ActorQueryOperationReducedHash;
-  let bus;
-  let mediatorQueryOperation;
-  let hashAlgorithm;
-  let digestAlgorithm;
-  let cacheSize;
+  let bus: any;
+  let mediatorQueryOperation: any;
+  let hashAlgorithm: any;
+  let digestAlgorithm: any;
+  let cacheSize: any;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -127,7 +127,7 @@ describe('Smaller cache than number of queries', () => {
     digestAlgorithm = 'base64';
     cacheSize = 1;
     mediatorQueryOperation = {
-      mediate: (arg) => Promise.resolve({
+      mediate: (arg: any) => Promise.resolve({
         bindingsStream: new ArrayIterator([
           Bindings({ a: literal('1') }),
           Bindings({ a: literal('1') }),
@@ -150,7 +150,7 @@ describe('Smaller cache than number of queries', () => {
   it('should run', () => {
     const op = { operation: { type: 'reduced' } };
     return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
-      expect(await output.metadata()).toEqual({ totalItems: 7 });
+      expect((<any> await output).metadata()).toEqual({ totalItems: 7 });
       expect(output.variables).toEqual([ 'a' ]);
       expect(output.type).toEqual('bindings');
       expect(await arrayifyStream(output.bindingsStream)).toEqual([

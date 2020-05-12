@@ -7,12 +7,12 @@ import {RdfSourceQpf} from "../lib/RdfSourceQpf";
 // tslint:disable:object-literal-sort-keys
 
 describe('ActorRdfResolveHypermediaQpf', () => {
-  let bus;
-  let actor;
-  let metadata;
-  let mediatorMetadata;
-  let mediatorMetadataExtract;
-  let mediatorRdfDereference;
+  let bus: any;
+  let actor: any;
+  let metadata: any;
+  let mediatorMetadata: any;
+  let mediatorMetadataExtract: any;
+  let mediatorRdfDereference: any;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -43,7 +43,7 @@ describe('ActorRdfResolveHypermediaQpf', () => {
       searchForms: { values: [
         {
           dataset: 'DATASET',
-          getlUri: (entries) => (entries.s || '_') + ',' + (entries.p || '_') + ',' + (entries.o || '_')
+          getlUri: (entries: any) => (entries.s || '_') + ',' + (entries.p || '_') + ',' + (entries.o || '_')
           + ',' + (entries.g || '_'),
           mappings: {
             g: 'G',

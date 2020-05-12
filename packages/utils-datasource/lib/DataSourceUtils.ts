@@ -35,10 +35,10 @@ export abstract class DataSourceUtils {
 
   /**
    * Get the type of a single source
-   * @param {ActionContext} context A context, can be null.
+   * @param {ActionContext} context A context, can be undefined.
    * @return {Promise<string>} A promise resolving to the type of the source, can be undefined if source is undefined.
    */
-  public static async getSingleSourceType(context: ActionContext): Promise<string | undefined> {
+  public static async getSingleSourceType(context?: ActionContext): Promise<string | undefined> {
     const source = await this.getSingleSource(context);
     return source ? getDataSourceType(source) : undefined;
   }
@@ -49,7 +49,7 @@ export abstract class DataSourceUtils {
    * @param {string} requiredType The required source type name.
    * @return {boolean} If the given context has a single source of the given type.
    */
-  public static async singleSourceHasType(context: ActionContext, requiredType: string): Promise<boolean> {
+  public static async singleSourceHasType(context: ActionContext | undefined, requiredType: string): Promise<boolean> {
     const actualType = await this.getSingleSourceType(context);
     const result = actualType ? actualType === requiredType : false;
     return result;

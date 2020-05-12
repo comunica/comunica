@@ -1,9 +1,9 @@
-import {Actor} from "@comunica/core";
+import {Actor, IAction, IActorOutput, IActorTest} from "@comunica/core";
 import {Bus} from "@comunica/core";
 import {Runner} from "../lib/Runner";
 
 describe('Runner', () => {
-  let bus;
+  let bus: Bus<Actor<IAction, IActorTest, IActorOutput>, IAction, IActorTest, IActorOutput>;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -40,9 +40,9 @@ describe('Runner', () => {
   });
 
   describe('A Runner instance', () => {
-    let runner;
-    let actor1;
-    let actor2;
+    let runner: Runner;
+    let actor1: Actor<IAction, IActorTest, IActorOutput>;
+    let actor2: Actor<IAction, IActorTest, IActorOutput>;
 
     const actorTest = (action: any) => {
       return new Promise((resolve) => {
@@ -60,10 +60,10 @@ describe('Runner', () => {
       actor1 = new (<any> Actor)({ name: 'actor1', bus: new Bus({ name: 'bus1' }) });
       actor2 = new (<any> Actor)({ name: 'actor2', bus: new Bus({ name: 'bus2' }) });
 
-      actor1.test = actorTest;
-      actor2.test = actorTest;
-      actor1.run = actorRun;
-      actor2.run = actorRun;
+      (<any> actor1).test = actorTest;
+      (<any> actor2).test = actorTest;
+      (<any> actor1).run = actorRun;
+      (<any> actor2).run = actorRun;
 
       jest.spyOn(actor1, 'test');
       jest.spyOn(actor2, 'test');
@@ -83,24 +83,24 @@ describe('Runner', () => {
     });
 
     it('should delegate \'init\' actions to actors on the bus', async () => {
-      await runner.run({ args: [ 'a', 'b' ], env: { c: 'd' } });
+      await runner.run({ argv: [ 'a', 'b' ], env: { c: 'd' }, stdin: <any> undefined });
 
       expect(actor1.test).toHaveBeenCalledTimes(1);
       expect(actor2.test).toHaveBeenCalledTimes(1);
       expect(actor1.run).toHaveBeenCalledTimes(1);
       expect(actor2.run).toHaveBeenCalledTimes(1);
 
-      expect(actor1.run).toHaveBeenCalledWith({ args: [ 'a', 'b' ], env: { c: 'd' } });
-      expect(actor2.run).toHaveBeenCalledWith({ args: [ 'a', 'b' ], env: { c: 'd' } });
+      expect(actor1.run).toHaveBeenCalledWith({ argv: [ 'a', 'b' ], env: { c: 'd' } });
+      expect(actor2.run).toHaveBeenCalledWith({ argv: [ 'a', 'b' ], env: { c: 'd' } });
     });
 
     it('should be initializable', () => {
-      runner.actors = [ actor1, actor2 ];
+      (<any> runner).actors = [ actor1, actor2 ];
       return expect(runner.initialize()).resolves.toBeTruthy();
     });
 
     it('should be deinitializable', () => {
-      runner.actors = [ actor1, actor2 ];
+      (<any> runner).actors = [ actor1, actor2 ];
       return expect(runner.deinitialize()).resolves.toBeTruthy();
     });
 
@@ -110,7 +110,7 @@ describe('Runner', () => {
       });
 
       it('should collect for valid identifiers', () => {
-        runner.actors = [ actor1, actor2 ];
+        (<any> runner).actors = [ actor1, actor2 ];
         return expect(runner.collectActors({
           a: 'actor1',
           b: 'actor2',
@@ -121,7 +121,7 @@ describe('Runner', () => {
       });
 
       it('should throw for a missing actor', () => {
-        runner.actors = [ actor1, actor2 ];
+        (<any> runner).actors = [ actor1, actor2 ];
         return expect(() => runner.collectActors({
           a: 'actor1',
           b: 'actor2',

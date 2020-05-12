@@ -3,9 +3,13 @@ import {WritableStream} from "memory-streams";
 import minimist = require("minimist");
 import * as querystring from "querystring";
 import {PassThrough} from "stream";
+// @ts-ignore
 import {fs, testArgumentDict, testFileContentDict} from "../__mocks__/fs";
+// @ts-ignore
 import {http, ServerResponseMock} from "../__mocks__/http";
+// @ts-ignore
 import {newEngineDynamic} from "../__mocks__/index";
+// @ts-ignore
 import {parse} from "../__mocks__/url";
 import {HttpServiceSparqlEndpoint} from "../lib/HttpServiceSparqlEndpoint";
 import {ArrayIterator} from "asynciterator";
@@ -61,8 +65,8 @@ describe('HttpServiceSparqlEndpoint', () => {
 
   describe('runArgsInProcess', () => {
     const testCommandlineArgument = '{ "sources": [{ "type": "file", "value" : "http://localhost:8080/data.jsonld" }]}';
-    let stdout;
-    let stderr;
+    let stdout: any;
+    let stderr: any;
     const moduleRootPath = "test_modulerootpath";
     const env = {COMUNICA_CONFIG: "test_config"};
     const defaultConfigPath = "test_defaultConfigPath";
@@ -129,10 +133,10 @@ describe('HttpServiceSparqlEndpoint', () => {
   });
 
   describe("generateConstructorArguments", () => {
-    let testCommandlineArguments;
+    let testCommandlineArguments: any;
     const contextCommandlineArgument = JSON.stringify(testArgumentDict);
     const moduleRootPath = "test_modulerootpath";
-    let env;
+    let env: any;
     const defaultConfigPath = "test_defaultConfigPath";
     beforeEach(() => {
       env = {COMUNICA_CONFIG: "test_config"};
@@ -232,7 +236,7 @@ describe('HttpServiceSparqlEndpoint', () => {
   });
 
   describe('An HttpServiceSparqlEndpoint instance', () => {
-    let instance;
+    let instance: any;
     beforeEach(() => {
       instance = new HttpServiceSparqlEndpoint({});
     });
@@ -278,12 +282,12 @@ describe('HttpServiceSparqlEndpoint', () => {
     });
 
     describe("handleRequest", () => {
-      let engine;
-      let variants;
+      let engine: any;
+      let variants: any;
       const stdout = new PassThrough();
       const stderr = new PassThrough();
-      let request;
-      let response;
+      let request: any;
+      let response: any;
       beforeEach(async () => {
         instance.writeQueryResult = jest.fn();
         engine = await newEngineDynamic();
@@ -390,11 +394,11 @@ describe('HttpServiceSparqlEndpoint', () => {
     });
 
     describe("writeQueryResult", () => {
-      let response;
-      let request;
-      let query;
-      let mediaType;
-      let endCalledPromise;
+      let response: any;
+      let request: any;
+      let query: any;
+      let mediaType: any;
+      let endCalledPromise: any;
       beforeEach(() => {
         response = new ServerResponseMock();
         request = stringToStream("default_request_content");
@@ -556,8 +560,8 @@ describe('HttpServiceSparqlEndpoint', () => {
     });
 
     describe("stopResponse", () => {
-      let response;
-      let eventEmitter;
+      let response: any;
+      let eventEmitter: any;
       const endListener = jest.fn();
       beforeEach(() => {
         endListener.mockClear();
@@ -598,7 +602,7 @@ describe('HttpServiceSparqlEndpoint', () => {
     });
 
     describe('parseBody', () => {
-      let httpRequestMock;
+      let httpRequestMock: any;
       const testRequestBody = "teststring";
       beforeEach(() => {
         httpRequestMock = stringToStream(testRequestBody);

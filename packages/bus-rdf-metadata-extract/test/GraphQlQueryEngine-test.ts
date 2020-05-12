@@ -1,4 +1,5 @@
-import {GraphQlQueryEngine} from "../lib/GraphQlQueryEngine";
+import {GraphQlQueryEngine} from "..";
+
 const streamifyString = require("streamify-string");
 const quad = require('rdf-quad');
 

@@ -5,8 +5,8 @@ import {ArrayIterator} from "asynciterator";
 import {AbstractFilterHash} from "..";
 
 describe('AbstractFilterHash', () => {
-  let bus;
-  let mediatorQueryOperation;
+  let bus: any;
+  let mediatorQueryOperation: any;
   let hashAlgorithm: string;
   let digestAlgorithm: string;
 

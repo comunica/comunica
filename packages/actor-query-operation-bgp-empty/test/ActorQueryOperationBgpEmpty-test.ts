@@ -4,7 +4,7 @@ import {ActorQueryOperationBgpEmpty} from "../lib/ActorQueryOperationBgpEmpty";
 const arrayifyStream = require('arrayify-stream');
 
 describe('ActorQueryOperationBgpEmpty', () => {
-  let bus;
+  let bus: any;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -49,7 +49,7 @@ describe('ActorQueryOperationBgpEmpty', () => {
       return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
         expect(await arrayifyStream(output.bindingsStream)).toEqual([Bindings({})]);
         expect(output.variables).toEqual([]);
-        expect(await output.metadata()).toMatchObject({ totalItems: 1 });
+        expect((<any> await output).metadata()).toMatchObject({ totalItems: 1 });
       });
     });
   });

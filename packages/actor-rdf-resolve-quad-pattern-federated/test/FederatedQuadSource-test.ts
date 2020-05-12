@@ -13,12 +13,12 @@ const arrayifyStream = require('arrayify-stream');
 const factory = new Factory();
 
 describe('FederatedQuadSource', () => {
-  let mediator;
-  let context;
+  let mediator: any;
+  let context: ActionContext;
 
   beforeEach(() => {
     mediator = {
-      mediate: (action) => {
+      mediate: (action: any) => {
         const type = action.context.get('@comunica/bus-rdf-resolve-quad-pattern:source').type;
         if (type === 'emptySource') {
           return Promise.resolve({ data: new EmptyIterator(),
@@ -315,7 +315,7 @@ describe('FederatedQuadSource', () => {
   });
 
   describe('A FederatedQuadSource instance with predefined empty patterns', () => {
-    let subSource;
+    let subSource: any;
     let source: FederatedQuadSource;
     let emptyPatterns;
 
@@ -331,15 +331,15 @@ describe('FederatedQuadSource', () => {
     });
 
     it('should throw an error on a predicate regex call', () => {
-      return expect(() => source.match(null, /.*/)).toThrow();
+      return expect(() => source.match(undefined, /.*/)).toThrow();
     });
 
     it('should throw an error on a object regex call', () => {
-      return expect(() => source.match(null, null, /.*/)).toThrow();
+      return expect(() => source.match(undefined, undefined, /.*/)).toThrow();
     });
 
     it('should throw an error on a graph regex call', () => {
-      return expect(() => source.match(null, null, null, /.*/)).toThrow();
+      return expect(() => source.match(undefined, undefined, undefined, /.*/)).toThrow();
     });
 
     it('should return an AsyncIterator', () => {
@@ -371,8 +371,7 @@ describe('FederatedQuadSource', () => {
   });
 
   describe('A FederatedQuadSource instance with skipEmptyPatterns set to false', () => {
-
-    let subSource;
+    let subSource: any;
     let source: FederatedQuadSource;
     let emptyPatterns;
 
@@ -432,9 +431,9 @@ describe('FederatedQuadSource', () => {
   });
 
   describe('A FederatedQuadSource instance over one empty source', () => {
-    let subSource;
+    let subSource: any;
     let source: FederatedQuadSource;
-    let emptyPatterns;
+    let emptyPatterns: any;
     let contextSingleEmpty;
 
     beforeEach(() => {
@@ -475,9 +474,9 @@ describe('FederatedQuadSource', () => {
   });
 
   describe('A FederatedQuadSource instance over one non-empty source', () => {
-    let subSource;
+    let subSource: any;
     let source: FederatedQuadSource;
-    let emptyPatterns;
+    let emptyPatterns: any;
     let contextSingle;
 
     beforeEach(() => {
@@ -518,10 +517,10 @@ describe('FederatedQuadSource', () => {
   });
 
   describe('A FederatedQuadSource instance over one empty source and one non-empty source', () => {
-    let subSource1;
-    let subSource2;
+    let subSource1: any;
+    let subSource2: any;
     let source: FederatedQuadSource;
-    let emptyPatterns;
+    let emptyPatterns: any;
     let contextSingleEmpty;
 
     beforeEach(() => {
@@ -571,10 +570,10 @@ describe('FederatedQuadSource', () => {
   });
 
   describe('A FederatedQuadSource instance over two equal empty sources', () => {
-    let subSource1;
-    let subSource2;
+    let subSource1: any;
+    let subSource2: any;
     let source: FederatedQuadSource;
-    let emptyPatterns;
+    let emptyPatterns: any;
     let contextSingleEmpty;
 
     beforeEach(() => {
@@ -624,9 +623,9 @@ describe('FederatedQuadSource', () => {
   });
 
   describe('A FederatedQuadSource instance over two identical empty sources', () => {
-    let subSource;
+    let subSource: any;
     let source: FederatedQuadSource;
-    let emptyPatterns;
+    let emptyPatterns: any;
     let contextSingleEmpty;
 
     beforeEach(() => {
@@ -672,7 +671,7 @@ describe('FederatedQuadSource', () => {
 
   describe('A FederatedQuadSource instance over two equal empty sources with skip empty sources false', () => {
     let source: FederatedQuadSource;
-    let emptyPatterns;
+    let emptyPatterns: any;
     let contextSingleEmpty;
 
     beforeEach(() => {
@@ -711,10 +710,10 @@ describe('FederatedQuadSource', () => {
   });
 
   describe('A FederatedQuadSource instance over two non-empty sources', () => {
-    let subSource1;
-    let subSource2;
+    let subSource1: any;
+    let subSource2: any;
     let source: FederatedQuadSource;
-    let emptyPatterns;
+    let emptyPatterns: any;
     let contextSingleEmpty;
 
     beforeEach(() => {

@@ -1,21 +1,20 @@
 import {ActorQueryOperation, Bindings, IActorQueryOperationOutputBoolean} from "@comunica/bus-query-operation";
 import {Bus} from "@comunica/core";
-import {Setup} from "@comunica/runner";
 import {literal} from "@rdfjs/data-model";
 import {ArrayIterator, AsyncIterator, BufferedIterator, EmptyIterator} from "asynciterator";
 import {ActorQueryOperationAsk} from "../lib/ActorQueryOperationAsk";
 
 describe('ActorQueryOperationAsk', () => {
-  let bus;
-  let mediatorQueryOperation;
-  let mediatorQueryOperationEmpty;
-  let mediatorQueryOperationError;
-  let mediatorQueryOperationInf;
+  let bus: any;
+  let mediatorQueryOperation: any;
+  let mediatorQueryOperationEmpty: any;
+  let mediatorQueryOperationError: any;
+  let mediatorQueryOperationInf: any;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
     mediatorQueryOperation = {
-      mediate: (arg) => Promise.resolve({
+      mediate: (arg: any) => Promise.resolve({
         bindingsStream: new ArrayIterator([
           Bindings({ a: literal('1') }),
           Bindings({ a: literal('2') }),
@@ -28,7 +27,7 @@ describe('ActorQueryOperationAsk', () => {
       }),
     };
     mediatorQueryOperationEmpty = {
-      mediate: (arg) => Promise.resolve({
+      mediate: (arg: any) => Promise.resolve({
         bindingsStream: new EmptyIterator(),
         metadata: () => Promise.resolve({ totalItems: 0 }),
         operated: arg,
@@ -37,7 +36,7 @@ describe('ActorQueryOperationAsk', () => {
       }),
     };
     mediatorQueryOperationError = {
-      mediate: (arg) => new Promise((resolve, reject) => {
+      mediate: (arg: any) => new Promise((resolve, reject) => {
         const bindingsStream = new BufferedIterator();
         setImmediate(() => bindingsStream.emit('error', new Error('Error!')));
         resolve({
@@ -50,7 +49,7 @@ describe('ActorQueryOperationAsk', () => {
       }),
     };
     mediatorQueryOperationInf = {
-      mediate: (arg) => Promise.resolve({
+      mediate: (arg: any) => Promise.resolve({
         bindingsStream: AsyncIterator.range(0),
         metadata: () => Promise.resolve({ totalItems: 0 }),
         operated: arg,

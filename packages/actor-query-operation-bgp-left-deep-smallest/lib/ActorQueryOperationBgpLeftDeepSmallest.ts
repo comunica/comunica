@@ -70,11 +70,11 @@ export class ActorQueryOperationBgpLeftDeepSmallest extends ActorQueryOperationT
    * @param {{[p: string]: any}[]} metadatas An array of optional metadata objects for the patterns.
    * @return {number} The index of the pattern with the smallest number of elements.
    */
-  public static getSmallestPatternId(metadatas: {[id: string]: any}[]) {
+  public static getSmallestPatternId(metadatas: ({[id: string]: any} | undefined)[]) {
     let smallestId: number = -1;
     let smallestCount: number = Infinity;
     for (let i = 0; i < metadatas.length; i++) {
-      const meta: {[id: string]: any} = metadatas[i];
+      const meta: {[id: string]: any} | undefined = metadatas[i];
       const count: number = ActorQueryOperationBgpLeftDeepSmallest.getTotalItems(meta);
       if (count <= smallestCount) {
         smallestCount = count;
@@ -91,8 +91,8 @@ export class ActorQueryOperationBgpLeftDeepSmallest extends ActorQueryOperationT
    * @param {{[p: string]: any}[]} otherPatterns The array of optional metadata for the other patterns.
    * @return {number} The estimated number of total items.
    */
-  public static estimateCombinedTotalItems(smallestPattern: {[id: string]: any},
-                                           otherPatterns: {[id: string]: any}[]): number {
+  public static estimateCombinedTotalItems(smallestPattern: {[id: string]: any} | undefined,
+                                           otherPatterns: ({[id: string]: any} | undefined)[]): number {
     const smallestCount: number = ActorQueryOperationBgpLeftDeepSmallest.getTotalItems(smallestPattern);
     return otherPatterns
       .map((otherPattern) => smallestCount * ActorQueryOperationBgpLeftDeepSmallest.getTotalItems(

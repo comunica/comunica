@@ -20,9 +20,6 @@ describe('BindingsIndex', () => {
         expect(index.contains(Bindings({
           a: variable('b'),
         }))).toBeFalsy();
-        expect(index.contains(Bindings({
-          a: null,
-        }))).toBeFalsy();
       });
     });
 
@@ -40,9 +37,6 @@ describe('BindingsIndex', () => {
         expect(index.contains(Bindings({}))).toBeFalsy();
         expect(index.contains(Bindings({
           a: variable('b'),
-        }))).toBeFalsy();
-        expect(index.contains(Bindings({
-          a: null,
         }))).toBeFalsy();
       });
     });
@@ -65,9 +59,6 @@ describe('BindingsIndex', () => {
         expect(index.contains(Bindings({
           a: variable('b'),
         }))).toBeTruthy();
-        expect(index.contains(Bindings({
-          a: null,
-        }))).toBeFalsy();
       });
     });
 
@@ -95,9 +86,6 @@ describe('BindingsIndex', () => {
         expect(index.contains(Bindings({
           a: variable('b'),
         }))).toBeTruthy();
-        expect(index.contains(Bindings({
-          a: null,
-        }))).toBeFalsy();
       });
     });
   });
@@ -123,11 +111,6 @@ describe('BindingsIndex', () => {
           b: variable('2'),
           c: variable('3'),
         }))).toBeTruthy();
-        expect(index.contains(Bindings({
-          a: null,
-          b: null,
-          c: null,
-        }))).toBeFalsy();
       });
 
       it('should not contain partially concrete terms', () => {
@@ -194,35 +177,24 @@ describe('BindingsIndex', () => {
         expect(index.contains(Bindings({
           a: variable('b'),
         }))).toBeTruthy();
-        expect(index.contains(Bindings({
-          a: null,
-        }))).toBeFalsy();
       });
 
       it('should contain partially matching concrete terms', () => {
         expect(index.contains(Bindings({
           a: namedNode('1'),
           b: namedNode('2'),
-          c: null,
         }))).toBeTruthy();
         expect(index.contains(Bindings({
           a: namedNode('1'),
-          b: null,
           c: namedNode('3'),
         }))).toBeTruthy();
         expect(index.contains(Bindings({
           a: namedNode('1'),
-          b: null,
-          c: null,
         }))).toBeTruthy();
         expect(index.contains(Bindings({
-          a: null,
           b: namedNode('2'),
-          c: null,
         }))).toBeTruthy();
         expect(index.contains(Bindings({
-          a: null,
-          b: null,
           c: namedNode('3'),
         }))).toBeTruthy();
       });
@@ -231,26 +203,18 @@ describe('BindingsIndex', () => {
         expect(index.contains(Bindings({
           a: namedNode('1'),
           b: namedNode('2x'),
-          c: null,
         }))).toBeFalsy();
         expect(index.contains(Bindings({
           a: namedNode('1x'),
-          b: null,
           c: namedNode('3x'),
         }))).toBeFalsy();
         expect(index.contains(Bindings({
           a: namedNode('1x'),
-          b: null,
-          c: null,
         }))).toBeFalsy();
         expect(index.contains(Bindings({
-          a: null,
           b: namedNode('2x'),
-          c: null,
         }))).toBeFalsy();
         expect(index.contains(Bindings({
-          a: null,
-          b: null,
           c: namedNode('3x'),
         }))).toBeFalsy();
       });
@@ -316,35 +280,24 @@ describe('BindingsIndex', () => {
         expect(index.contains(Bindings({
           a: variable('b'),
         }))).toBeTruthy();
-        expect(index.contains(Bindings({
-          a: null,
-        }))).toBeFalsy();
       });
 
       it('should contain partially matching concrete terms', () => {
         expect(index.contains(Bindings({
           a: namedNode('1'),
           b: namedNode('ABC'),
-          c: null,
         }))).toBeTruthy();
         expect(index.contains(Bindings({
           a: namedNode('1'),
-          b: null,
           c: namedNode('3'),
         }))).toBeTruthy();
         expect(index.contains(Bindings({
           a: namedNode('1'),
-          b: null,
-          c: null,
         }))).toBeTruthy();
         expect(index.contains(Bindings({
-          a: null,
           b: namedNode('ABC'),
-          c: null,
         }))).toBeTruthy();
         expect(index.contains(Bindings({
-          a: null,
-          b: null,
           c: namedNode('3'),
         }))).toBeTruthy();
       });
@@ -353,26 +306,18 @@ describe('BindingsIndex', () => {
         expect(index.contains(Bindings({
           a: namedNode('1x'),
           b: namedNode('2'),
-          c: null,
         }))).toBeFalsy();
         expect(index.contains(Bindings({
           a: namedNode('1x'),
-          b: null,
           c: namedNode('3x'),
         }))).toBeFalsy();
         expect(index.contains(Bindings({
           a: namedNode('1x'),
-          b: null,
-          c: null,
         }))).toBeFalsy();
         expect(index.contains(Bindings({
-          a: null,
           b: namedNode('2x'),
-          c: null,
         }))).toBeTruthy();
         expect(index.contains(Bindings({
-          a: null,
-          b: null,
           c: namedNode('3x'),
         }))).toBeFalsy();
       });
@@ -455,86 +400,59 @@ describe('BindingsIndex', () => {
           b: variable('b'),
           c: variable('b'),
         }))).toBeTruthy();
-        expect(index.contains(Bindings({
-          a: null,
-          b: null,
-          c: null,
-        }))).toBeFalsy();
       });
 
       it('should contain partially matching concrete terms', () => {
         expect(index.contains(Bindings({
           a: namedNode('1'),
           b: namedNode('2a'),
-          c: null,
         }))).toBeTruthy();
         expect(index.contains(Bindings({
           a: namedNode('1'),
           b: namedNode('2b'),
-          c: null,
         }))).toBeTruthy();
         expect(index.contains(Bindings({
           a: namedNode('1x'),
           b: namedNode('2y'),
-          c: null,
         }))).toBeTruthy();
 
         expect(index.contains(Bindings({
           a: namedNode('1'),
-          b: null,
           c: namedNode('3a'),
         }))).toBeTruthy();
         expect(index.contains(Bindings({
           a: namedNode('1'),
-          b: null,
           c: namedNode('3a'),
         }))).toBeTruthy();
         expect(index.contains(Bindings({
           a: namedNode('1x'),
-          b: null,
           c: namedNode('3z'),
         }))).toBeTruthy();
 
         expect(index.contains(Bindings({
           a: namedNode('1'),
-          b: null,
-          c: null,
         }))).toBeTruthy();
         expect(index.contains(Bindings({
           a: namedNode('1x'),
-          b: null,
-          c: null,
         }))).toBeTruthy();
 
         expect(index.contains(Bindings({
-          a: null,
           b: namedNode('2a'),
-          c: null,
         }))).toBeTruthy();
         expect(index.contains(Bindings({
-          a: null,
           b: namedNode('2b'),
-          c: null,
         }))).toBeTruthy();
         expect(index.contains(Bindings({
-          a: null,
           b: namedNode('2y'),
-          c: null,
         }))).toBeTruthy();
 
         expect(index.contains(Bindings({
-          a: null,
-          b: null,
           c: namedNode('3a'),
         }))).toBeTruthy();
         expect(index.contains(Bindings({
-          a: null,
-          b: null,
           c: namedNode('3a'),
         }))).toBeTruthy();
         expect(index.contains(Bindings({
-          a: null,
-          b: null,
           c: namedNode('3z'),
         }))).toBeTruthy();
       });
@@ -543,26 +461,18 @@ describe('BindingsIndex', () => {
         expect(index.contains(Bindings({
           a: namedNode('1'),
           b: namedNode('2x'),
-          c: null,
         }))).toBeFalsy();
         expect(index.contains(Bindings({
           a: namedNode('1x'),
-          b: null,
           c: namedNode('3x'),
         }))).toBeFalsy();
         expect(index.contains(Bindings({
           a: namedNode('1y'),
-          b: null,
-          c: null,
         }))).toBeFalsy();
         expect(index.contains(Bindings({
-          a: null,
           b: namedNode('2x'),
-          c: null,
         }))).toBeFalsy();
         expect(index.contains(Bindings({
-          a: null,
-          b: null,
           c: namedNode('3x'),
         }))).toBeFalsy();
       });
@@ -652,51 +562,37 @@ describe('BindingsIndex', () => {
           a: variable('b'),
           b: variable('b'),
         }))).toBeTruthy();
-        expect(index.contains(Bindings({
-          a: null,
-          b: null,
-        }))).toBeFalsy();
       });
 
       it('should contain partially matching concrete terms', () => {
         expect(index.contains(Bindings({
           a: namedNode('1a'),
-          b: null,
         }))).toBeTruthy();
         expect(index.contains(Bindings({
-          a: null,
           b: namedNode('2a'),
         }))).toBeTruthy();
         expect(index.contains(Bindings({
-          a: null,
-          b: null,
         }))).toBeFalsy();
 
         expect(index.contains(Bindings({
           a: namedNode('1a'),
-          b: null,
         }))).toBeTruthy();
         expect(index.contains(Bindings({
-          a: null,
           b: namedNode('ANY'),
         }))).toBeTruthy();
 
         expect(index.contains(Bindings({
-          a: null,
           b: namedNode('2b'),
         }))).toBeTruthy();
         expect(index.contains(Bindings({
           a: namedNode('ANY'),
-          b: null,
         }))).toBeTruthy();
 
         expect(index.contains(Bindings({
-          a: null,
           b: namedNode('2d'),
         }))).toBeTruthy();
         expect(index.contains(Bindings({
           a: namedNode('1d'),
-          b: null,
         }))).toBeTruthy();
       });
 

@@ -1,5 +1,5 @@
 import {Bus} from "@comunica/core";
-import {ActorQueryOperationTyped} from "../lib/ActorQueryOperationTyped";
+import {ActorQueryOperationTyped} from "..";
 
 describe('ActorQueryOperationTyped', () => {
   const bus = new Bus({ name: 'bus' });

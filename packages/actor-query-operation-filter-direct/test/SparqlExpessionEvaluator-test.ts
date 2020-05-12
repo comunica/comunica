@@ -3,7 +3,7 @@ import {blankNode, literal, namedNode, variable} from "@rdfjs/data-model";
 import {Algebra} from "sparqlalgebrajs";
 import {SparqlExpressionEvaluator} from "../lib/SparqlExpressionEvaluator";
 
-function termExpression(term): Algebra.TermExpression {
+function termExpression(term: any): Algebra.TermExpression {
   return { type: 'expression', expressionType: 'term', term };
 }
 
@@ -113,7 +113,7 @@ describe('SparqlExpressionEvaluator', () => {
     });
 
     it('supports + for unbound values', () => {
-      const exprFunc = SparqlExpressionEvaluator.createEvaluator(
+      const exprFunc: any = SparqlExpressionEvaluator.createEvaluator(
         operatorExpression('+', [termExpression(variable('unbound')), termExpression(literal('3'))]),
       );
       expect(exprFunc(bindings).value).toEqual('NaN');

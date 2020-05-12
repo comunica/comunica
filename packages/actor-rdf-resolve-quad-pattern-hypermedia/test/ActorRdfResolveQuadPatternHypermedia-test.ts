@@ -10,17 +10,17 @@ const quad = require('rdf-quad');
 // tslint:disable:object-literal-sort-keys
 
 describe('ActorRdfResolveQuadPatternHypermedia', () => {
-  let bus;
-  let mediatorRdfDereference;
-  let mediatorMetadata;
-  let mediatorMetadataExtract;
-  let mediatorRdfResolveHypermedia;
-  let mediatorRdfResolveHypermediaLinks;
+  let bus: any;
+  let mediatorRdfDereference: any;
+  let mediatorMetadata: any;
+  let mediatorMetadataExtract: any;
+  let mediatorRdfResolveHypermedia: any;
+  let mediatorRdfResolveHypermediaLinks: any;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
     mediatorRdfDereference = {
-      mediate: ({ url }) => Promise.resolve({
+      mediate: ({ url }: any) => Promise.resolve({
         quads: url === 'firstUrl'
           ? streamifyArray([
             quad('s1', 'p1', 'o1'),
@@ -35,13 +35,13 @@ describe('ActorRdfResolveQuadPatternHypermedia', () => {
       }),
     };
     mediatorMetadata = {
-      mediate: ({ quads }) => Promise.resolve({ data: quads, metadata: { a: 1 } }),
+      mediate: ({ quads }: any) => Promise.resolve({ data: quads, metadata: { a: 1 } }),
     };
     mediatorMetadataExtract = {
-      mediate: ({ metadata }) => Promise.resolve({ metadata }),
+      mediate: ({ metadata }: any) => Promise.resolve({ metadata }),
     };
     mediatorRdfResolveHypermedia = {
-      mediate: ({ forceSourceType, handledDatasets, metadata, quads }) => Promise.resolve({
+      mediate: ({ forceSourceType, handledDatasets, metadata, quads }: any) => Promise.resolve({
         dataset: 'MYDATASET',
         source: {
           match: () => quads,
@@ -72,7 +72,7 @@ describe('ActorRdfResolveQuadPatternHypermedia', () => {
     it('should be a ActorRdfResolveQuadPatternHypermedia constructor constructable with cache', () => {
       let listener = null;
       const httpInvalidator = {
-        addInvalidateListener: (l) => listener = l,
+        addInvalidateListener: (l: any) => listener = l,
       };
       expect(new (<any> ActorRdfResolveQuadPatternHypermedia)({
         bus,
@@ -93,15 +93,15 @@ describe('ActorRdfResolveQuadPatternHypermedia', () => {
   });
 
   describe('An ActorRdfResolveQuadPatternHypermedia instance', () => {
-    let actor;
-    let context;
-    let pattern;
-    let httpInvalidator;
-    let listener;
+    let actor: any;
+    let context: ActionContext;
+    let pattern: any;
+    let httpInvalidator: any;
+    let listener: any;
 
     beforeEach(() => {
       httpInvalidator = {
-        addInvalidateListener: (l) => listener = l,
+        addInvalidateListener: (l: any) => listener = l,
       };
       actor = new ActorRdfResolveQuadPatternHypermedia({
         bus,

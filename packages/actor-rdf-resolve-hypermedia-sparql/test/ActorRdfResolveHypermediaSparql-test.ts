@@ -4,7 +4,7 @@ import {ActorRdfResolveHypermediaSparql} from "../lib/ActorRdfResolveHypermediaS
 import {RdfSourceSparql} from "../lib/RdfSourceSparql";
 
 describe('ActorRdfResolveHypermediaSparql', () => {
-  let bus;
+  let bus: any;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -37,54 +37,54 @@ describe('ActorRdfResolveHypermediaSparql', () => {
 
     describe('#test', () => {
       it('should test with a forced sparql source type', async () => {
-        return expect(await actor.test({ url: 'URL', metadata: {}, quads: null, forceSourceType: 'sparql' }))
+        return expect(await actor.test({ url: 'URL', metadata: {}, quads: <any> null, forceSourceType: 'sparql' }))
           .toEqual({ filterFactor: 1 });
       });
 
       it('should not test with a forced unknown source type', async () => {
-        return expect(actor.test({ url: 'URL', metadata: {}, quads: null, forceSourceType: 'unknown' }))
+        return expect(actor.test({ url: 'URL', metadata: {}, quads: <any> null, forceSourceType: 'unknown' }))
           .rejects.toThrow(new Error('Actor actor is not able to handle source type unknown.'));
       });
 
       it('should test with a sparql service metadata', async () => {
-        return expect(await actor.test({ url: 'URL', metadata: { sparqlService: 'SERVICE' }, quads: null }))
+        return expect(await actor.test({ url: 'URL', metadata: { sparqlService: 'SERVICE' }, quads: <any> null }))
           .toEqual({ filterFactor: 1 });
       });
 
       it('should not test without a sparql service metadata', async () => {
-        return expect(actor.test({ url: 'URL', metadata: {}, quads: null }))
+        return expect(actor.test({ url: 'URL', metadata: {}, quads: <any> null }))
           .rejects.toThrow(new Error('Actor actor could not detect a SPARQL service description or URL ending on /sparql.'));
       });
 
       it('should test with an URL ending with /sparql', async () => {
-        return expect(await actor.test({ url: 'URL/sparql', metadata: {}, quads: null }))
+        return expect(await actor.test({ url: 'URL/sparql', metadata: {}, quads: <any> null }))
           .toEqual({ filterFactor: 1 });
       });
 
       it('should not test with an URL ending with /sparql if checkUrlSuffix is false', async () => {
         actor = new ActorRdfResolveHypermediaSparql(
           { name: 'actor', bus, mediatorHttp: <any> 'mediator', checkUrlSuffix: false });
-        return expect(actor.test({ url: 'URL/sparql', metadata: {}, quads: null }))
+        return expect(actor.test({ url: 'URL/sparql', metadata: {}, quads: <any> null }))
           .rejects.toThrow(new Error('Actor actor could not detect a SPARQL service description or URL ending on /sparql.'));
       });
 
       it('should not test with an URL ending with /sparql if the type is forced to something else', async () => {
         actor = new ActorRdfResolveHypermediaSparql(
           { name: 'actor', bus, mediatorHttp: <any> 'mediator', checkUrlSuffix: false });
-        return expect(actor.test({ url: 'URL/sparql', metadata: {}, quads: null, forceSourceType: 'file' }))
+        return expect(actor.test({ url: 'URL/sparql', metadata: {}, quads: <any> null, forceSourceType: 'file' }))
           .rejects.toThrow(new Error('Actor actor is not able to handle source type file.'));
       });
     });
 
     describe('#run', () => {
       it('should return a source', async () => {
-        const output = await actor.run({ url: 'URL', metadata: { sparqlService: 'SERVICE' }, quads: null });
+        const output = await actor.run({ url: 'URL', metadata: { sparqlService: 'SERVICE' }, quads: <any> null });
         expect(output.source).toBeInstanceOf(RdfSourceSparql);
         expect((<any> output.source).url).toEqual('SERVICE');
       });
 
       it('should return a source when no sparqlService was defined in metadata', async () => {
-        const output = await actor.run({ url: 'URL', metadata: {}, quads: null, forceSourceType: 'sparql' });
+        const output = await actor.run({ url: 'URL', metadata: {}, quads: <any> null, forceSourceType: 'sparql' });
         expect(output.source).toBeInstanceOf(RdfSourceSparql);
         expect((<any> output.source).url).toEqual('URL');
       });

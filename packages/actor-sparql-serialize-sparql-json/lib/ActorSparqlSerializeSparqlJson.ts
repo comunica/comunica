@@ -46,7 +46,7 @@ export class ActorSparqlSerializeSparqlJson extends ActorSparqlSerializeFixedMed
     return true;
   }
 
-  public async runHandle(action: IActionSparqlSerialize, mediaType: string, context: ActionContext)
+  public async runHandle(action: IActionSparqlSerialize, mediaType?: string, context?: ActionContext)
     : Promise<IActorSparqlSerializeOutput> {
     const data = new Readable();
     data._read = () => {

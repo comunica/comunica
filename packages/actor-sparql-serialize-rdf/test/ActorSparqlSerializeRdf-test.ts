@@ -3,7 +3,7 @@ import {Bus} from "@comunica/core";
 import {ActorSparqlSerializeRdf} from "../lib/ActorSparqlSerializeRdf";
 
 describe('ActorSparqlSerializeRdf', () => {
-  let bus;
+  let bus: any;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -26,13 +26,13 @@ describe('ActorSparqlSerializeRdf', () => {
 
   describe('An ActorSparqlSerializeRdf instance', () => {
     let actor: ActorSparqlSerializeRdf;
-    let mediatorRdfSerialize;
-    let mediatorMediaTypeCombiner;
-    let mediatorMediaTypeFormatCombiner;
+    let mediatorRdfSerialize: any;
+    let mediatorMediaTypeCombiner: any;
+    let mediatorMediaTypeFormatCombiner: any;
 
     beforeEach(() => {
       mediatorRdfSerialize = {
-        mediate: (arg) => Promise.resolve(arg.mediaTypes ? { mediaTypes: {
+        mediate: (arg: any) => Promise.resolve(arg.mediaTypes ? { mediaTypes: {
           'application/ld+json': 1.0,
           'text/turtle': 1.0,
         } } : (

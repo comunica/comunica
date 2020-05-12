@@ -7,14 +7,14 @@ import {ActorQueryOperationPathInv} from "../lib/ActorQueryOperationPathInv";
 const arrayifyStream = require('arrayify-stream');
 
 describe('ActorQueryOperationPathInv', () => {
-  let bus;
-  let mediatorQueryOperation;
+  let bus: any;
+  let mediatorQueryOperation: any;
   const factory: Factory = new Factory();
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
     mediatorQueryOperation = {
-      mediate: (arg) => Promise.resolve({
+      mediate: (arg: any) => Promise.resolve({
         bindingsStream: new ArrayIterator([
           Bindings({ '?x': namedNode('1') }),
           Bindings({ '?x': namedNode('2') }),

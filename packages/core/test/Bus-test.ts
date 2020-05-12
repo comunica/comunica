@@ -1,6 +1,4 @@
-import {ActionObserver} from "../lib/ActionObserver";
-import {Actor} from "../lib/Actor";
-import {Bus} from "../lib/Bus";
+import {ActionObserver, Actor, Bus, IAction, IActorOutput, IActorTest} from "..";
 
 describe('Bus', () => {
   describe('The Bus module', () => {
@@ -315,18 +313,18 @@ describe('Bus', () => {
     });
 
     describe('with ordered actors', () => {
-      let actor1o;
-      let actor2o;
-      let actor3o;
+      let actor1o: Actor<IAction, IActorTest, IActorOutput>;
+      let actor2o: Actor<IAction, IActorTest, IActorOutput>;
+      let actor3o: Actor<IAction, IActorTest, IActorOutput>;
 
       beforeEach(() => {
         actor1o = new (<any> Actor)({ name: 'actor1o', bus });
         actor2o = new (<any> Actor)({ name: 'actor2o', bus, beforeActors: [actor1o] });
         actor3o = new (<any> Actor)({ name: 'actor3o', bus, beforeActors: [actor2o] });
 
-        actor1o.test = actorTest;
-        actor2o.test = actorTest;
-        actor3o.test = actorTest;
+        (<any> actor1o).test = actorTest;
+        (<any> actor2o).test = actorTest;
+        (<any> actor3o).test = actorTest;
       });
 
       it('should receive correct publication replies', () => {

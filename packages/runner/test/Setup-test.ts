@@ -1,7 +1,6 @@
-import Bluebird = require("bluebird");
 import {Loader} from "componentsjs";
 import {Readable} from "stream";
-import {Setup} from "../lib/Setup";
+import {Setup} from "..";
 
 describe('Setup', () => {
 

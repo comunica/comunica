@@ -29,8 +29,8 @@ function parse(query: string): Algebra.Expression {
 }
 
 describe('ActorQueryOperationFilterSparqlee', () => {
-  let bus;
-  let mediatorQueryOperation;
+  let bus: any;
+  let mediatorQueryOperation: any;
   const simpleSPOInput = new Factory().createBgp([new Factory().createPattern(
     variable('s'),
     variable('p'),
@@ -48,7 +48,7 @@ describe('ActorQueryOperationFilterSparqlee', () => {
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
     mediatorQueryOperation = {
-      mediate: (arg) => Promise.resolve({
+      mediate: (arg: any) => Promise.resolve({
         bindingsStream: new ArrayIterator([
           Bindings({ '?a': literal('1') }),
           Bindings({ '?a': literal('2') }),
@@ -112,7 +112,7 @@ describe('ActorQueryOperationFilterSparqlee', () => {
         Bindings({ '?a': literal('3') }),
       ]);
       expect(output.type).toEqual('bindings');
-      expect(await output.metadata()).toMatchObject({ totalItems: 3 });
+      expect((<any> await output).metadata()).toMatchObject({ totalItems: 3 });
       expect(output.variables).toMatchObject(['a']);
     });
 
@@ -120,7 +120,7 @@ describe('ActorQueryOperationFilterSparqlee', () => {
       const op = { operation: { type: 'filter', input: {}, expression: falsyExpression } };
       const output: IActorQueryOperationOutputBindings = await actor.run(op) as any;
       expect(await arrayifyStream(output.bindingsStream)).toMatchObject([]);
-      expect(await output.metadata()).toMatchObject({ totalItems: 3 });
+      expect((<any> await output).metadata()).toMatchObject({ totalItems: 3 });
       expect(output.type).toEqual('bindings');
       expect(output.variables).toMatchObject(['a']);
     });
@@ -129,7 +129,7 @@ describe('ActorQueryOperationFilterSparqlee', () => {
       const op = { operation: { type: 'filter', input: {}, expression: erroringExpression } };
       const output: IActorQueryOperationOutputBindings = await actor.run(op) as any;
       expect(await arrayifyStream(output.bindingsStream)).toMatchObject([]);
-      expect(await output.metadata()).toMatchObject({ totalItems: 3 });
+      expect((<any> await output).metadata()).toMatchObject({ totalItems: 3 });
       expect(output.type).toEqual('bindings');
       expect(output.variables).toMatchObject(['a']);
     });
@@ -154,7 +154,7 @@ describe('ActorQueryOperationFilterSparqlee', () => {
         Bindings({ '?a': literal('3') }),
       ]);
       expect(output.type).toEqual('bindings');
-      expect(await output.metadata()).toMatchObject({ totalItems: 3 });
+      expect((<any> await output).metadata()).toMatchObject({ totalItems: 3 });
       expect(output.variables).toMatchObject(['a']);
     });
 

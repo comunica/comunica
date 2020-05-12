@@ -10,10 +10,10 @@ import { ActorQueryOperation, Bindings, IActorQueryOperationOutputBindings } fro
 import { ActorQueryOperationExtend } from "../lib/ActorQueryOperationExtend";
 
 describe('ActorQueryOperationExtend', () => {
-  let bus;
-  let mediatorQueryOperation;
+  let bus: any;
+  let mediatorQueryOperation: any;
 
-  const example = (expression) => ({
+  const example = (expression: any) => ({
     type: 'extend',
     input: {
       type: "bgp",
@@ -70,7 +70,7 @@ describe('ActorQueryOperationExtend', () => {
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
     mediatorQueryOperation = {
-      mediate: (arg) => Promise.resolve({
+      mediate: (arg: any) => Promise.resolve({
         bindingsStream: new ArrayIterator(input),
         metadata: () => Promise.resolve({ totalItems: 3 }),
         operated: arg,
@@ -133,7 +133,7 @@ describe('ActorQueryOperationExtend', () => {
       ]);
 
       expect(output.type).toEqual('bindings');
-      expect(await output.metadata()).toMatchObject({ totalItems: 3 });
+      expect((<any> await output).metadata()).toMatchObject({ totalItems: 3 });
       expect(output.variables).toMatchObject(['?a', '?l']);
     });
 
@@ -147,7 +147,7 @@ describe('ActorQueryOperationExtend', () => {
       expect(await arrayifyStream(output.bindingsStream)).toMatchObject(input);
       expect(warn).toHaveBeenCalledTimes(3);
       expect(output.type).toEqual('bindings');
-      expect(await output.metadata()).toMatchObject({ totalItems: 3 });
+      expect((<any> await output).metadata()).toMatchObject({ totalItems: 3 });
       expect(output.variables).toMatchObject(['?a', '?l']);
     });
 

@@ -11,8 +11,8 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
   });
 
   describe('A MediatedLinkedRdfSourcesAsyncRdfIterator instance', () => {
-    let context;
-    let source;
+    let context: ActionContext;
+    let source: any;
     let s;
     let p;
     let o;
@@ -20,8 +20,8 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
     let mediatorRdfDereference;
     let mediatorMetadata;
     let mediatorMetadataExtract;
-    let mediatorRdfResolveHypermedia;
-    let mediatorRdfResolveHypermediaLinks;
+    let mediatorRdfResolveHypermedia: any;
+    let mediatorRdfResolveHypermediaLinks: any;
 
     beforeEach(() => {
       context = ActionContext({});
@@ -30,24 +30,24 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
       o = namedNode('o');
       g = namedNode('g');
       mediatorRdfDereference = {
-        mediate: ({ url }) => Promise.resolve({ url, quads: `QUADS(${url})+METADATA`, triples: true }),
+        mediate: ({ url }: any) => Promise.resolve({ url, quads: `QUADS(${url})+METADATA`, triples: true }),
       };
       mediatorMetadata = {
-        mediate: ({ quads }) => Promise.resolve({ data: quads.split('+')[0], metadata: quads.split('+')[1] }),
+        mediate: ({ quads }: any) => Promise.resolve({ data: quads.split('+')[0], metadata: quads.split('+')[1] }),
       };
       mediatorMetadataExtract = {
-        mediate: ({ metadata }) => Promise.resolve({ metadata: { myKey: metadata } }),
+        mediate: ({ metadata }: any) => Promise.resolve({ metadata: { myKey: metadata } }),
       };
       mediatorRdfResolveHypermedia = {
-        mediate: ({ forceSourceType, handledDatasets, metadata, quads }) => Promise.resolve({
+        mediate: ({ forceSourceType, handledDatasets, metadata, quads }: any) => Promise.resolve({
           dataset: 'MYDATASET',
           source: { sourceContents: quads },
         }),
       };
       mediatorRdfResolveHypermediaLinks = {
-        mediate: ({ metadata }) => Promise.resolve({ urls: [metadata.baseURL + 'url1', metadata.baseURL + 'url2'] }),
+        mediate: ({ metadata }: any) => Promise.resolve({ urls: [metadata.baseURL + 'url1', metadata.baseURL + 'url2'] }),
       };
-      const mediators = {
+      const mediators: any = {
         mediatorMetadata,
         mediatorMetadataExtract,
         mediatorRdfDereference,
@@ -103,7 +103,7 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
       });
 
       it('should get urls based on mediatorRdfResolveHypermedia without dataset id', async () => {
-        mediatorRdfResolveHypermedia.mediate = ({ forceSourceType, handledDatasets, metadata, quads }) =>
+        mediatorRdfResolveHypermedia.mediate = ({ forceSourceType, handledDatasets, metadata, quads }: any) =>
           Promise.resolve({
             source: { sourceContents: quads },
           });

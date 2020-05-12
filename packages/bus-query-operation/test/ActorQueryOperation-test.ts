@@ -90,11 +90,11 @@ describe('ActorQueryOperation', () => {
     });
 
     describe('with mediatorQueryOperation', () => {
-      let mediatorQueryOperation;
+      let mediatorQueryOperation: any;
 
       beforeEach(() => {
         mediatorQueryOperation = {
-          mediate: (arg) => Promise.resolve({
+          mediate: (arg: any) => Promise.resolve({
             bindingsStream: new ArrayIterator([]),
             metadata: () => Promise.resolve({ totalItems: 0 }),
             operated: arg,

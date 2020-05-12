@@ -16,13 +16,13 @@ describe('ActorInitSparqlBrowser', () => {
 });
 
 describe('ActorInitSparql', () => {
-  let bus;
-  let logger;
-  let mediatorOptimizeQueryOperation;
-  let mediatorQueryOperation;
-  let mediatorSparqlParse;
-  let mediatorSparqlSerialize;
-  let mediatorHttpInvalidate;
+  let bus: any;
+  let logger: any;
+  let mediatorOptimizeQueryOperation: any;
+  let mediatorQueryOperation: any;
+  let mediatorSparqlParse: any;
+  let mediatorSparqlSerialize: any;
+  let mediatorHttpInvalidate: any;
 
   const contextKeyShortcuts = {
     initialBindings: '@comunica/actor-init-sparql:initialBindings',
@@ -36,16 +36,16 @@ describe('ActorInitSparql', () => {
     bus = new Bus({ name: 'bus' });
     logger = null;
     mediatorOptimizeQueryOperation = {
-      mediate: (arg) => Promise.resolve(arg),
+      mediate: (arg: any) => Promise.resolve(arg),
     };
     mediatorQueryOperation = {};
     mediatorSparqlParse = {};
     mediatorSparqlSerialize = {
-      mediate: (arg) => Promise.resolve(arg.mediaTypes ? { mediaTypes: arg }
+      mediate: (arg: any) => Promise.resolve(arg.mediaTypes ? { mediaTypes: arg }
       : { handle: { data: arg.handle.bindingsStream } }),
     };
     mediatorHttpInvalidate = {
-      mediate: (arg) => Promise.resolve(true),
+      mediate: (arg: any) => Promise.resolve(true),
     };
   });
 
@@ -76,7 +76,7 @@ describe('ActorInitSparql', () => {
     const context: any = JSON.stringify({ hypermedia });
     let actor: ActorInitSparql;
     const mediatorContextPreprocess: any = {
-      mediate: (action) => Promise.resolve(action),
+      mediate: (action: any) => Promise.resolve(action),
     };
 
     beforeEach(() => {
@@ -86,9 +86,9 @@ describe('ActorInitSparql', () => {
         input.push(null);
       };
       const factory = new Factory();
-      mediatorQueryOperation.mediate = (action) => action.operation.query !== 'INVALID'
+      mediatorQueryOperation.mediate = (action: any) => action.operation.query !== 'INVALID'
         ? Promise.resolve({ bindingsStream: input }) : Promise.reject(new Error('a'));
-      mediatorSparqlParse.mediate = (action) => action.query === 'INVALID'
+      mediatorSparqlParse.mediate = (action: any) => action.query === 'INVALID'
         ? Promise.resolve(action.query)
         : Promise.resolve({
           baseIRI: action.query.indexOf('BASE') >= 0 ? 'myBaseIRI' : null,
@@ -177,7 +177,7 @@ describe('ActorInitSparql', () => {
 
     it('should allow a media type to be passed with -t', async () => {
       const med: any = {
-        mediate: (arg) => Promise.resolve({ handle: { data: arg.handleMediaType } }),
+        mediate: (arg: any) => Promise.resolve({ handle: { data: arg.handleMediaType } }),
       };
       actor = new ActorInitSparql(
         { bus, contextKeyShortcuts, logger, mediatorContextPreprocess, mediatorHttpInvalidate,
@@ -190,10 +190,10 @@ describe('ActorInitSparql', () => {
 
     it('should default to media type application/json when a bindingsStream is returned', async () => {
       const m1: any = {
-        mediate: (arg) => Promise.resolve({ type: 'bindings', bindingsStream: true }),
+        mediate: (arg: any) => Promise.resolve({ type: 'bindings', bindingsStream: true }),
       };
       const m2: any = {
-        mediate: (arg) => Promise.resolve({ handle: { data: arg.handleMediaType } }),
+        mediate: (arg: any) => Promise.resolve({ handle: { data: arg.handleMediaType } }),
       };
       actor = new ActorInitSparql(
         { bus, contextKeyShortcuts, logger, mediatorContextPreprocess, mediatorHttpInvalidate,
@@ -206,10 +206,10 @@ describe('ActorInitSparql', () => {
 
     it('should default to media type application/trig when a quadStream is returned', async () => {
       const m1: any = {
-        mediate: (arg) => Promise.resolve({ type: 'quads', quadStream: true }),
+        mediate: (arg: any) => Promise.resolve({ type: 'quads', quadStream: true }),
       };
       const m2: any = {
-        mediate: (arg) => Promise.resolve({ handle: { data: arg.handleMediaType } }),
+        mediate: (arg: any) => Promise.resolve({ handle: { data: arg.handleMediaType } }),
       };
       actor = new ActorInitSparql(
         { bus, contextKeyShortcuts, logger, mediatorContextPreprocess, mediatorHttpInvalidate,
@@ -222,10 +222,10 @@ describe('ActorInitSparql', () => {
 
     it('should default to media type simple when a boolean is returned', async () => {
       const m1: any = {
-        mediate: (arg) => Promise.resolve({ type: 'boolean', booleanResult: Promise.resolve(true) }),
+        mediate: (arg: any) => Promise.resolve({ type: 'boolean', booleanResult: Promise.resolve(true) }),
       };
       const m2: any = {
-        mediate: (arg) => Promise.resolve({ handle: { data: arg.handleMediaType } }),
+        mediate: (arg: any) => Promise.resolve({ handle: { data: arg.handleMediaType } }),
       };
       actor = new ActorInitSparql(
         { bus, contextKeyShortcuts, logger, mediatorContextPreprocess, mediatorHttpInvalidate,
@@ -246,8 +246,8 @@ describe('ActorInitSparql', () => {
       return actor.run({ argv: [ ], env: {}, stdin: new PassThrough() })
         .then((result) => {
           return new Promise((resolve, reject) => {
-            result.stdout.on('data', (line) => expect(line).toBeTruthy());
-            result.stdout.on('end', resolve);
+            (<any> result).stdout.on('data', (line: any) => expect(line).toBeTruthy());
+            (<any> result).stdout.on('end', resolve);
           });
         });
     });
@@ -262,8 +262,8 @@ describe('ActorInitSparql', () => {
       return actor.run({ argv: [ ], env: {}, stdin: new PassThrough() })
         .then((result) => {
           return new Promise((resolve, reject) => {
-            result.stdout.on('data', (line) => expect(line).toBeTruthy());
-            result.stdout.on('end', resolve);
+            (<any> result).stdout.on('data', (line: any) => expect(line).toBeTruthy());
+            (<any> result).stdout.on('end', resolve);
           });
         });
     });
@@ -285,7 +285,8 @@ describe('ActorInitSparql', () => {
           mediatorOptimizeQueryOperation, mediatorQueryOperation, mediatorSparqlParse,
           mediatorSparqlSerialize,
           mediatorSparqlSerializeMediaTypeCombiner: mediatorSparqlSerialize,
-          mediatorSparqlSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize, name: 'actor', queryString: null });
+          mediatorSparqlSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
+          name: 'actor', queryString: <any> null });
       return expect(actor.run({ argv: [ ], env: {}, stdin: new PassThrough() })).resolves
         .toHaveProperty('stderr');
     });
@@ -294,8 +295,8 @@ describe('ActorInitSparql', () => {
       return actor.run({ argv: [ hypermedia, queryString ], env: {}, stdin: new PassThrough() })
         .then((result) => {
           return new Promise((resolve, reject) => {
-            result.stdout.on('data', (line) => expect(line).toBeTruthy());
-            result.stdout.on('end', resolve);
+            (<any> result).stdout.on('data', (line: any) => expect(line).toBeTruthy());
+            (<any> result).stdout.on('end', resolve);
           });
         });
     });
@@ -314,8 +315,8 @@ describe('ActorInitSparql', () => {
       return actor.run({ argv: [ hypermedia, '-q' , queryString ], env: {}, stdin: new PassThrough() })
         .then((result) => {
           return new Promise((resolve, reject) => {
-            result.stdout.on('data', (line) => expect(line).toBeTruthy());
-            result.stdout.on('end', resolve);
+            (<any> result).stdout.on('data', (line: any) => expect(line).toBeTruthy());
+            (<any> result).stdout.on('end', resolve);
           });
         });
     });
@@ -329,8 +330,8 @@ describe('ActorInitSparql', () => {
         stdin: new PassThrough() })
         .then((result) => {
           return new Promise((resolve, reject) => {
-            result.stdout.on('data', (line) => expect(line).toBeTruthy());
-            result.stdout.on('end', resolve);
+            (<any> result).stdout.on('data', (line: any) => expect(line).toBeTruthy());
+            (<any> result).stdout.on('end', resolve);
           });
         });
     });
@@ -340,8 +341,8 @@ describe('ActorInitSparql', () => {
         stdin: new PassThrough() })
         .then((result) => {
           return new Promise((resolve, reject) => {
-            result.stdout.on('data', (line) => expect(line).toBeTruthy());
-            result.stdout.on('end', resolve);
+            (<any> result).stdout.on('data', (line: any) => expect(line).toBeTruthy());
+            (<any> result).stdout.on('end', resolve);
           });
         });
     });
@@ -351,8 +352,8 @@ describe('ActorInitSparql', () => {
         stdin: new PassThrough() })
         .then((result) => {
           return new Promise((resolve, reject) => {
-            result.stdout.on('data', (line) => expect(line).toBeTruthy());
-            result.stdout.on('end', resolve);
+            (<any> result).stdout.on('data', (line: any) => expect(line).toBeTruthy());
+            (<any> result).stdout.on('end', resolve);
           });
         });
     });
@@ -384,8 +385,8 @@ describe('ActorInitSparql', () => {
         stdin: new PassThrough() })
         .then((result) => {
           return new Promise((resolve, reject) => {
-            result.stdout.on('data', (line) => expect(line).toBeTruthy());
-            result.stdout.on('end', resolve);
+            (<any> result).stdout.on('data', (line: any) => expect(line).toBeTruthy());
+            (<any> result).stdout.on('end', resolve);
           });
         });
     });
@@ -441,12 +442,12 @@ describe('ActorInitSparql', () => {
       });
 
       it('should not modify the baseIRI without BASE in query', async () => {
-        return expect((await actor.query('SELECT * WHERE { ?s ?p ?o }')).context
+        return expect((<any> (await actor.query('SELECT * WHERE { ?s ?p ?o }')).context)
           .toJS()['@comunica/actor-init-sparql:baseIRI']).toBeFalsy();
       });
 
       it('should allow a query to modify the context\'s baseIRI', async () => {
-        return expect((await actor.query('BASE <http://example.org/book/> SELECT * WHERE { ?s ?p ?o }')).context.toJS())
+        return expect((<any> (await actor.query('BASE <http://example.org/book/> SELECT * WHERE { ?s ?p ?o }')).context).toJS())
           .toMatchObject({
             "@comunica/actor-init-sparql:baseIRI": "myBaseIRI",
           });
@@ -456,7 +457,7 @@ describe('ActorInitSparql', () => {
     it('should set datetime on the -d option', async () => {
       const dt: Date = new Date();
       const med: any = {
-        mediate: (arg) => Promise.resolve({ handle: { data: arg.handleMediaType } }),
+        mediate: (arg: any) => Promise.resolve({ handle: { data: arg.handleMediaType } }),
       };
       actor = new ActorInitSparql(
         { bus, contextKeyShortcuts, logger, mediatorContextPreprocess, mediatorHttpInvalidate,
@@ -471,7 +472,7 @@ describe('ActorInitSparql', () => {
 
     it('should set logger on the -l option', async () => {
       const med: any = {
-        mediate: (arg) => Promise.resolve({ handle: { data: arg.context.get(KEY_CONTEXT_LOG) } }),
+        mediate: (arg: any) => Promise.resolve({ handle: { data: arg.context.get(KEY_CONTEXT_LOG) } }),
       };
       actor = new ActorInitSparql(
         { bus, contextKeyShortcuts, logger, mediatorContextPreprocess, mediatorHttpInvalidate,
@@ -496,8 +497,8 @@ graph <exists02.ttl> {
       return actor.run({ argv: [ hypermedia, '-q' , relativeQuery, '-b', baseIRI ], env: {}, stdin: new PassThrough() })
         .then((result) => {
           return new Promise((resolve, reject) => {
-            result.stdout.on('data', (line) => expect(line).toBeTruthy());
-            result.stdout.on('end', resolve);
+            (<any> result).stdout.on('data', (line: any) => expect(line).toBeTruthy());
+            (<any> result).stdout.on('end', resolve);
           });
         });
     });
@@ -505,7 +506,7 @@ graph <exists02.ttl> {
     it('should set proxy on the -p option', async () => {
       const proxy = 'http://proxy.org/';
       const med: any = {
-        mediate: (arg) => Promise.resolve({ handle: { data: arg.handleMediaType } }),
+        mediate: (arg: any) => Promise.resolve({ handle: { data: arg.handleMediaType } }),
       };
       actor = new ActorInitSparql(
         { bus, contextKeyShortcuts, logger, mediatorContextPreprocess, mediatorHttpInvalidate,
@@ -523,7 +524,7 @@ graph <exists02.ttl> {
 
     it('should set leniency on the --lenient flag', async () => {
       const med: any = {
-        mediate: (arg) => Promise.resolve({ handle: { data: arg.handleMediaType } }),
+        mediate: (arg: any) => Promise.resolve({ handle: { data: arg.handleMediaType } }),
       };
       actor = new ActorInitSparql(
         { bus, contextKeyShortcuts, logger, mediatorContextPreprocess, mediatorHttpInvalidate,
@@ -541,14 +542,14 @@ graph <exists02.ttl> {
     describe('getResultMediaTypeFormats', () => {
       it('should return the media type formats', () => {
         const med: any = {
-          mediate: (arg) => Promise.resolve({ mediaTypeFormats: { data: 'DATA' } }),
+          mediate: (arg: any) => Promise.resolve({ mediaTypeFormats: { data: 'DATA' } }),
         };
         actor = new ActorInitSparql(
           { bus, contextKeyShortcuts, logger, mediatorContextPreprocess, mediatorHttpInvalidate,
             mediatorOptimizeQueryOperation, mediatorQueryOperation, mediatorSparqlParse,
             mediatorSparqlSerialize: med, mediatorSparqlSerializeMediaTypeCombiner: med,
             mediatorSparqlSerializeMediaTypeFormatCombiner: med, name: 'actor', queryString });
-        return expect(actor.getResultMediaTypeFormats(null))
+        return expect(actor.getResultMediaTypeFormats())
           .resolves.toEqual({ data: 'DATA' });
       });
     });

@@ -1,5 +1,5 @@
-import {Actor, Bus} from "@comunica/core";
-import {ActorRdfParse} from "../lib/ActorRdfParse";
+import {Bus} from "@comunica/core";
+import {ActorRdfParse} from "..";
 
 describe('ActorRdfParse', () => {
   describe('The ActorRdfParse module', () => {

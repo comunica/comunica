@@ -8,13 +8,13 @@ const quad = require('rdf-quad');
 const streamifyString = require('streamify-string');
 
 describe('ActorRdfParseJsonLd', () => {
-  let bus;
+  let bus: any;
   let mediatorHttp: any;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
     mediatorHttp = {
-      mediate: (args) => {
+      mediate: (args: any) => {
         // Error
         if (args.input.indexOf('error') >= 0) {
           return Promise.resolve({
@@ -159,7 +159,7 @@ describe('ActorRdfParseJsonLd', () => {
 
       it('should run', () => {
         return actor.run({ handle: { input, baseIRI: '' }, handleMediaType: 'application/ld+json' })
-          .then(async (output) => expect(await arrayifyStream(output.handle.quads)).toEqualRdfQuadArray([
+          .then(async (output: any) => expect(await arrayifyStream(output.handle.quads)).toEqualRdfQuadArray([
             quad('http://example.org/a', 'http://example.org/b', '"http://example.org/c"'),
             quad('http://example.org/a', 'http://example.org/d', '"http://example.org/e"'),
           ]));
@@ -167,7 +167,7 @@ describe('ActorRdfParseJsonLd', () => {
 
       it('should run for graphs', () => {
         return actor.run({ handle: { input: inputGraphs, baseIRI: '' }, handleMediaType: 'application/ld+json' })
-          .then(async (output) => expect(await arrayifyStream(output.handle.quads)).toEqualRdfQuadArray([
+          .then(async (output: any) => expect(await arrayifyStream(output.handle.quads)).toEqualRdfQuadArray([
             quad('http://example.org/a', 'http://example.org/b', '"http://example.org/c"', 'http://example.org/g0'),
             quad('http://example.org/a', 'http://example.org/d', '"http://example.org/e"@nl', 'http://example.org/g0'),
             quad('_:b1', 'http://example.org/b', '"http://example.org/c"', 'http://example.org/g1'),
@@ -177,7 +177,7 @@ describe('ActorRdfParseJsonLd', () => {
 
       it('should run for a remote context', () => {
         return actor.run({ handle: { input: inputRemoteContext, baseIRI: '' }, handleMediaType: 'application/ld+json' })
-          .then(async (output) => expect(await arrayifyStream(output.handle.quads)).toEqualRdfQuadArray([
+          .then(async (output: any) => expect(await arrayifyStream(output.handle.quads)).toEqualRdfQuadArray([
             quad('http://example.org/a', 'http://example.org/b', '"http://example.org/c"'),
             quad('http://example.org/a', 'http://example.org/d', '"http://example.org/e"'),
           ]));
@@ -186,7 +186,7 @@ describe('ActorRdfParseJsonLd', () => {
       it('should error for an invalid remote context', () => {
         return actor.run(
           { handle: { input: inputRemoteContextErr, baseIRI: '' }, handleMediaType: 'application/ld+json' })
-          .then(async (output) => expect(arrayifyStream(output.handle.quads)).rejects
+          .then(async (output: any) => expect(arrayifyStream(output.handle.quads)).rejects
             .toThrow(new Error('Failed to load remote context http://schema.org/error: ' +
               'No valid context was found at http://schema.org/error: some error')));
       });
@@ -196,7 +196,7 @@ describe('ActorRdfParseJsonLd', () => {
         const headers = new Headers({ Link: '<http://example.org/>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' });
         return actor.run(
           { handle: { input: inputLinkHeader, baseIRI: '', headers }, handleMediaType: 'application/json' })
-          .then(async (output) => expect(await arrayifyStream(output.handle.quads)).toEqualRdfQuadArray([
+          .then(async (output: any) => expect(await arrayifyStream(output.handle.quads)).toEqualRdfQuadArray([
             quad('http://www.example.org/', 'http://example.org/term', '"value"'),
           ]));
       });
@@ -206,7 +206,7 @@ describe('ActorRdfParseJsonLd', () => {
         const headers = new Headers({ Link: '<http://example.org/>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' });
         return actor.run(
           { handle: { input: inputLinkHeader, baseIRI: '', headers }, handleMediaType: 'bla+json' })
-          .then(async (output) => expect(await arrayifyStream(output.handle.quads)).toEqualRdfQuadArray([
+          .then(async (output: any) => expect(await arrayifyStream(output.handle.quads)).toEqualRdfQuadArray([
             quad('http://www.example.org/', 'http://example.org/term', '"value"'),
           ]));
       });
@@ -216,7 +216,7 @@ describe('ActorRdfParseJsonLd', () => {
         const headers = new Headers({ Link: '<http://example.org/>; rel="http://www.w3.org/ns/json-ld#context"' });
         return actor.run(
           { handle: { input: inputLinkHeader, baseIRI: '', headers }, handleMediaType: 'bla+json' })
-          .then(async (output) => expect(await arrayifyStream(output.handle.quads)).toEqualRdfQuadArray([
+          .then(async (output: any) => expect(await arrayifyStream(output.handle.quads)).toEqualRdfQuadArray([
             quad('http://www.example.org/', 'http://example.org/term', '"value"'),
           ]));
       });
@@ -234,7 +234,7 @@ describe('ActorRdfParseJsonLd', () => {
         const headers = new Headers({ Link: '<http://example.org/error>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' });
         return actor.run(
           { handle: { input, baseIRI: '', headers }, handleMediaType: 'application/ld+json' })
-          .then(async (output) => expect(await arrayifyStream(output.handle.quads)).toEqualRdfQuadArray([
+          .then(async (output: any) => expect(await arrayifyStream(output.handle.quads)).toEqualRdfQuadArray([
             quad('http://example.org/a', 'http://example.org/b', '"http://example.org/c"'),
             quad('http://example.org/a', 'http://example.org/d', '"http://example.org/e"'),
           ]));
@@ -286,7 +286,7 @@ describe('ActorRdfParseJsonLd', () => {
 
       it('should not have duplicate results on multiple _read calls', () => {
         return actor.run({ handle: { input, baseIRI: '' }, handleMediaType: 'application/ld+json' })
-          .then(async (output) => {
+          .then(async (output: any) => {
             (<any> output.handle.quads)._read();
             (<any> output.handle.quads)._read();
             expect(await arrayifyStream(output.handle.quads)).toEqualRdfQuadArray([

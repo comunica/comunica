@@ -6,7 +6,7 @@ import {ActorRdfParseHtmlRdfa} from "../lib/ActorRdfParseHtmlRdfa";
 const quad = require('rdf-quad');
 
 describe('ActorRdfParseHtmlRdfa', () => {
-  let bus;
+  let bus: any;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -41,12 +41,12 @@ describe('ActorRdfParseHtmlRdfa', () => {
     });
 
     describe('run', () => {
-      let baseIRI;
-      let headers;
-      let emit;
-      let error;
-      let end;
-      let action;
+      let baseIRI: string;
+      let headers: any;
+      let emit: any;
+      let error: any;
+      let end: any;
+      let action: any;
 
       beforeEach(() => {
         baseIRI = 'http://example.org/';

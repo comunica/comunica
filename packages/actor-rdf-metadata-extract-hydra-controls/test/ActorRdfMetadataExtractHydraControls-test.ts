@@ -7,7 +7,7 @@ const quad = require('rdf-quad');
 const HYDRA: string = 'http://www.w3.org/ns/hydra/core#';
 
 describe('ActorRdfMetadataExtractHydraControls', () => {
-  let bus;
+  let bus: any;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });

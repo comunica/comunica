@@ -1,9 +1,9 @@
 import {ActorSparqlParse} from "@comunica/bus-sparql-parse";
 import {Bus} from "@comunica/core";
-import {ActorSparqlParseAlgebra} from "../lib/ActorSparqlParseAlgebra";
+import {ActorSparqlParseAlgebra} from "..";
 
 describe('ActorSparqlParseAlgebra', () => {
-  let bus;
+  let bus: any;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });

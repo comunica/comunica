@@ -12,7 +12,7 @@ function bindingsToString(b: Bindings): string {
 }
 
 describe('ActorRdfJoinNestedLoop', () => {
-  let bus;
+  let bus: any;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -62,13 +62,13 @@ describe('ActorRdfJoinNestedLoop', () => {
 
     it('should generate correct test metadata', async () => {
       return expect(actor.test(action)).resolves.toHaveProperty('iterations',
-        (await action.entries[0].metadata()).totalItems * (await action.entries[1].metadata()).totalItems);
+        ((<any> await action.entries[0]).metadata()).totalItems * ((<any> await action.entries[1]).metadata()).totalItems);
     });
 
     it('should generate correct metadata', async () => {
       return actor.run(action).then(async (result: IActorQueryOperationOutputBindings) => {
-        return expect(result.metadata()).resolves.toHaveProperty('totalItems',
-          (await action.entries[0].metadata()).totalItems * (await action.entries[1].metadata()).totalItems);
+        return expect((<any> result).metadata()).resolves.toHaveProperty('totalItems',
+          ((<any> await action.entries[0]).metadata()).totalItems * ((<any> await action.entries[1]).metadata()).totalItems);
       });
     });
 

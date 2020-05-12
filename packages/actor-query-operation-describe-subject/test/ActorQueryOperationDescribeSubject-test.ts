@@ -7,13 +7,13 @@ const arrayifyStream = require('arrayify-stream');
 import * as RDF from "rdf-js";
 
 describe('ActorQueryOperationDescribeSubject', () => {
-  let bus;
-  let mediatorQueryOperation;
+  let bus: any;
+  let mediatorQueryOperation: any;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
     mediatorQueryOperation = {
-      mediate: (arg) => {
+      mediate: (arg: any) => {
         if (arg.operation.input.type === 'join') {
           const patterns = arg.operation.input.left.patterns.concat(arg.operation.input.right.patterns);
           return {
@@ -76,7 +76,7 @@ describe('ActorQueryOperationDescribeSubject', () => {
         operation: { type: 'describe', terms: [namedNode('a'), namedNode('b')], input: { type: 'bgp', patterns: [] } },
       };
       return actor.run(op).then(async (output: IActorQueryOperationOutputQuads) => {
-        expect(await output.metadata()).toEqual({ totalItems: 2 });
+        expect((<any> await output).metadata()).toEqual({ totalItems: 2 });
         expect(output.type).toEqual('quads');
         expect(await arrayifyStream(output.quadStream)).toEqual([
           quad(namedNode('a'), namedNode('__predicate'), namedNode('__object')),
@@ -95,7 +95,7 @@ describe('ActorQueryOperationDescribeSubject', () => {
         },
       };
       return actor.run(op).then(async (output: IActorQueryOperationOutputQuads) => {
-        expect(await output.metadata()).toEqual({ totalItems: 3 });
+        expect((<any> await output).metadata()).toEqual({ totalItems: 3 });
         expect(output.type).toEqual('quads');
         expect(await arrayifyStream(output.quadStream)).toEqual([
           quad(namedNode('a'), namedNode('b'), namedNode('dummy')),
@@ -115,7 +115,7 @@ describe('ActorQueryOperationDescribeSubject', () => {
         },
       };
       return actor.run(op).then(async (output: IActorQueryOperationOutputQuads) => {
-        expect(await output.metadata()).toEqual({ totalItems: 4 });
+        expect((<any> await output).metadata()).toEqual({ totalItems: 4 });
         expect(output.type).toEqual('quads');
         expect(await arrayifyStream(output.quadStream)).toEqual([
           quad(namedNode('c'), namedNode('__predicate'), namedNode('__object')),

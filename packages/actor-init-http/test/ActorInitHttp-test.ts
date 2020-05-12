@@ -7,9 +7,9 @@ import {PassThrough} from "stream";
 import {ActorInitHttp} from "../lib/ActorInitHttp";
 
 describe('ActorInitHttp', () => {
-  let bus;
-  let busInit;
-  let mediator;
+  let bus: any;
+  let busInit: any;
+  let mediator: any;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -55,7 +55,7 @@ describe('ActorInitHttp', () => {
     beforeEach(() => {
       actor = new ActorInitHttp({ name: 'actor', bus, mediatorHttp: mediator });
       const actorFetch: ActorHttpNodeFetch = new ActorHttpNodeFetch({ name: 'actor-node-fetch', bus });
-      (<any> actorFetch).run = (action) => Promise.resolve({
+      (<any> actorFetch).run = (action: any) => Promise.resolve({
         body: action.input === 'https://www.google.com/noweb'
           ? require('web-streams-node').toWebReadableStream(new PassThrough()) : new PassThrough(),
         status: action.input.startsWith('https://www.google.com/') ? 200 : 404,

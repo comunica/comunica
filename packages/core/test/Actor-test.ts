@@ -1,7 +1,5 @@
-import {LoggerVoid} from "../../logger-void/lib/LoggerVoid";
-import {ActionContext, Actor} from "../lib/Actor";
-import {Bus} from "../lib/Bus";
-import {KEY_CONTEXT_LOG} from "../lib/Logger";
+import {LoggerVoid} from "@comunica/logger-void";
+import {ActionContext, Actor, Bus, KEY_CONTEXT_LOG} from "..";
 
 describe('Actor', () => {
   const bus = new Bus({ name: 'bus' });
@@ -91,8 +89,8 @@ describe('Actor', () => {
     });
 
     describe('logger proxy methods with logger', () => {
-      let logger;
-      let context;
+      let logger: LoggerVoid;
+      let context: ActionContext;
 
       beforeEach(() => {
         logger = new LoggerVoid();
@@ -144,7 +142,7 @@ describe('Actor', () => {
 
   describe('#getContextLogger', () => {
     it('for a falsy context should return a falsy value', () => {
-      return expect(Actor.getContextLogger(null)).toBeFalsy();
+      return expect(Actor.getContextLogger()).toBeFalsy();
     });
 
     it('for a context without logger should return a falsy value', () => {

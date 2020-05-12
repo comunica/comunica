@@ -1,6 +1,5 @@
-import {Actor, Bus} from "@comunica/core";
-import {ActorRdfParse} from "../lib/ActorRdfParse";
-import {ActorRdfParseFixedMediaTypes} from "../lib/ActorRdfParseFixedMediaTypes";
+import {Bus} from "@comunica/core";
+import {ActorRdfParseFixedMediaTypes} from "..";
 
 describe('ActorRdfParseFixedMediaTypes', () => {
   const bus = new Bus({ name: 'bus' });

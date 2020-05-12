@@ -4,12 +4,13 @@ import {namedNode} from "@rdfjs/data-model";
 import {ArrayIterator} from "asynciterator";
 import {Readable} from "stream";
 import {ActorSparqlSerializeTable} from "../lib/ActorSparqlSerializeTable";
+import * as RDF from "rdf-js";
 
 const quad = require('rdf-quad');
 const stringifyStream = require('stream-to-string');
 
 describe('ActorSparqlSerializeTable', () => {
-  let bus;
+  let bus: any;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -33,17 +34,17 @@ describe('ActorSparqlSerializeTable', () => {
   describe('An ActorSparqlSerializeTable instance', () => {
     let actor: ActorSparqlSerializeTable;
     let bindingsStream: BindingsStream;
-    let quadStream;
-    let streamError;
-    let variables;
+    let quadStream: RDF.Stream;
+    let streamError: Readable;
+    let variables: string[];
 
     beforeEach(() => {
       actor = new ActorSparqlSerializeTable({ bus, columnWidth: 10, mediaTypes: {
         table: 1.0,
       }, name: 'actor' });
       bindingsStream = new ArrayIterator([
-        Bindings({ k1: namedNode('v1'), k2: null }),
-        Bindings({ k1: null, k2: namedNode('v2') }),
+        Bindings({ k1: namedNode('v1') }),
+        Bindings({ k2: namedNode('v2') }),
       ]);
       quadStream = new ArrayIterator([
         quad('http://example.org/a', 'http://example.org/b', 'http://example.org/c'),
@@ -86,9 +87,9 @@ describe('ActorSparqlSerializeTable', () => {
 
       // tslint:disable:no-trailing-whitespace
       it('should run on a bindings stream', async () => {
-        return expect((await stringifyStream((await actor.run(
+        return expect((await stringifyStream((<any> (await actor.run(
           {handle: <any> { type: 'bindings', bindingsStream, variables },
-            handleMediaType: 'table'})).handle.data))).toEqual(
+            handleMediaType: 'table'}))).handle.data))).toEqual(
 `k1         k2        
 ---------------------
 v1                   
@@ -97,9 +98,9 @@ v1
       });
 
       it('should run on a quad stream', async () => {
-        return expect((await stringifyStream((await actor.run(
+        return expect((await stringifyStream((<any> (await actor.run(
           { handle: <any> { type: 'quads', quadStream },
-            handleMediaType: 'table' })).handle.data))).toEqual(
+            handleMediaType: 'table' }))).handle.data))).toEqual(
 `subject    predicate  object     graph     
 -------------------------------------------
 http://ex… http://ex… http://ex…           
@@ -108,15 +109,15 @@ http://ex… http://ex… http://ex…
       });
 
       it('should emit an error when a bindings stream emits an error', async () => {
-        return expect(stringifyStream((await actor.run(
+        return expect(stringifyStream((<any> (await actor.run(
           {handle: <any> { type: 'bindings', bindingsStream: streamError, variables },
-            handleMediaType: 'application/json'})).handle.data)).rejects.toBeTruthy();
+            handleMediaType: 'application/json'}))).handle.data)).rejects.toBeTruthy();
       });
 
       it('should emit an error when a quad stream emits an error', async () => {
-        return expect(stringifyStream((await actor.run(
+        return expect(stringifyStream((<any> (await actor.run(
           {handle: <any> { type: 'quads', quadStream: streamError, variables },
-            handleMediaType: 'application/json'})).handle.data)).rejects.toBeTruthy();
+            handleMediaType: 'application/json'}))).handle.data)).rejects.toBeTruthy();
       });
     });
   });

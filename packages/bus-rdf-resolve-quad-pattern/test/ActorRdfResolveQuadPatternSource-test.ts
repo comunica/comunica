@@ -1,7 +1,6 @@
 import {Bus} from "@comunica/core";
 import {ArrayIterator} from "asynciterator";
-import {getDataSourceType, getDataSourceValue} from "../lib/ActorRdfResolveQuadPattern";
-import {ActorRdfResolveQuadPatternSource} from "../lib/ActorRdfResolveQuadPatternSource";
+import {ActorRdfResolveQuadPatternSource, getDataSourceType, getDataSourceValue} from "..";
 
 const arrayifyStream = require("arrayify-stream");
 

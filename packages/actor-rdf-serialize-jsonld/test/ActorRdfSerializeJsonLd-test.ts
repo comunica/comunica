@@ -1,11 +1,11 @@
 import {Bus} from "@comunica/core";
-import {ArrayIterator, AsyncIterator} from "asynciterator";
+import {ArrayIterator} from "asynciterator";
 import {ActorRdfSerializeJsonLd} from "../lib/ActorRdfSerializeJsonLd";
 const quad = require('rdf-quad');
 const stringifyStream = require('stream-to-string');
 
 describe('ActorRdfSerializeJsonLd', () => {
-  let bus;
+  let bus: any;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -28,7 +28,7 @@ describe('ActorRdfSerializeJsonLd', () => {
 
   describe('An ActorRdfSerializeJsonLd instance configured with two spaces', () => {
     let actor: ActorRdfSerializeJsonLd;
-    let quads;
+    let quads: any;
 
     beforeEach(() => {
       actor = new ActorRdfSerializeJsonLd({ bus, jsonStringifyIndentSpaces: 2, mediaTypes: {
@@ -47,7 +47,7 @@ describe('ActorRdfSerializeJsonLd', () => {
 
       it('should run', () => {
         return actor.run({ handle: { quads }, handleMediaType: 'application/ld+json' })
-          .then(async (output) => expect(await stringifyStream(output.handle.data)).toEqual(
+          .then(async (output: any) => expect(await stringifyStream(output.handle.data)).toEqual(
 `[
   {
     "@id": "http://example.org/a",
@@ -77,7 +77,7 @@ describe('ActorRdfSerializeJsonLd', () => {
       ]);
 
       return actor.run({ handle: { quads }, handleMediaType: 'application/ld+json' })
-        .then(async (output) => expect(await stringifyStream(output.handle.data)).toEqual(
+        .then(async (output: any) => expect(await stringifyStream(output.handle.data)).toEqual(
           `[
   {
     "@id": "http://example.org/a",
@@ -112,7 +112,7 @@ describe('ActorRdfSerializeJsonLd', () => {
 
   describe('An ActorRdfSerializeJsonLd instance', () => {
     let actor: ActorRdfSerializeJsonLd;
-    let quads;
+    let quads: any;
 
     beforeEach(() => {
       actor = new ActorRdfSerializeJsonLd({ bus, jsonStringifyIndentSpaces: 0, mediaTypes: {
@@ -143,7 +143,7 @@ describe('ActorRdfSerializeJsonLd', () => {
 
       it('should run', () => {
         return actor.run({ handle: { quads }, handleMediaType: 'application/ld+json' })
-          .then(async (output) => expect(await stringifyStream(output.handle.data)).toEqual('[{"@id":' +
+          .then(async (output: any) => expect(await stringifyStream(output.handle.data)).toEqual('[{"@id":' +
             '"http://example.org/a","http://example.org/b":[{"@id":"http://example.org/c"}],"http://example.org/d":' +
             '[{"@id":"http://example.org/e"}]}]'));
       });

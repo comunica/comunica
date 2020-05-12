@@ -1,5 +1,5 @@
 import {Bus} from "@comunica/core";
-import {ActorHttpInvalidateListenable} from "../lib/ActorHttpInvalidateListenable";
+import {ActorHttpInvalidateListenable, IInvalidateListener} from "..";
 
 describe('ActorHttpInvalidateListenable', () => {
   const bus = new Bus({ name: 'bus' });
@@ -20,7 +20,7 @@ describe('ActorHttpInvalidateListenable', () => {
   });
 
   describe('An ActorHttpInvalidateListenable instance without listeners', () => {
-    let actor;
+    let actor: ActorHttpInvalidateListenable;
     beforeEach(() => {
       actor = new ActorHttpInvalidateListenable({ bus, name: 'actor' });
     });
@@ -35,9 +35,9 @@ describe('ActorHttpInvalidateListenable', () => {
   });
 
   describe('An ActorHttpInvalidateListenable instance with listeners', () => {
-    let actor;
-    let l0;
-    let l1;
+    let actor: ActorHttpInvalidateListenable;
+    let l0: IInvalidateListener;
+    let l1: IInvalidateListener;
     beforeEach(() => {
       actor = new ActorHttpInvalidateListenable({ bus, name: 'actor' });
       l0 = jest.fn();
@@ -59,9 +59,9 @@ describe('ActorHttpInvalidateListenable', () => {
     });
 
     it('should run with URL', async () => {
-      expect(await actor.run({ pageUrl: 'abc' })).toBeTruthy();
-      expect(l0).toHaveBeenCalledWith({ pageUrl: 'abc' });
-      expect(l1).toHaveBeenCalledWith({ pageUrl: 'abc' });
+      expect(await actor.run({ url: 'abc' })).toBeTruthy();
+      expect(l0).toHaveBeenCalledWith({ url: 'abc' });
+      expect(l1).toHaveBeenCalledWith({ url: 'abc' });
     });
   });
 });

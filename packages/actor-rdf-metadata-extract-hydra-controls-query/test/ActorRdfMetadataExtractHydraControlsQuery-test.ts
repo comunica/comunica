@@ -35,14 +35,14 @@ const queryEngine: any = {
       ]),
     };
   },
-  resultToString: ({ bindingsStream }) => sparqlSerialer
-    .runHandle(<any> { type: 'bindings', bindingsStream, variables: ['v'] }, null, null),
+  resultToString: ({ bindingsStream }: any) => sparqlSerialer
+    .runHandle(<any> { type: 'bindings', bindingsStream, variables: ['v'] }, undefined, undefined),
 };
 
 const HYDRA: string = 'http://www.w3.org/ns/hydra/core#';
 
 describe('ActorRdfMetadataExtractHydraControlsQuery', () => {
-  let bus;
+  let bus: any;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });

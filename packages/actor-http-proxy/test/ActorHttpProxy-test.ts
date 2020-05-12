@@ -6,7 +6,7 @@ import {ActorHttpProxy, KEY_CONTEXT_HTTPPROXYHANDLER} from "../lib/ActorHttpProx
 import {ProxyHandlerStatic} from "../lib/ProxyHandlerStatic";
 
 describe('ActorHttpProxy', () => {
-  let bus;
+  let bus: any;
   let mediatorHttp;
 
   beforeEach(() => {

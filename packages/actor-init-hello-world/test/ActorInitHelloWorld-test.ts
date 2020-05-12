@@ -5,7 +5,7 @@ import {ActorInitHelloWorld} from "../lib/ActorInitHelloWorld";
 const arrayifyStream = require('arrayify-stream');
 
 describe('ActorInitHelloWorld', () => {
-  let bus;
+  let bus: any;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -52,7 +52,8 @@ describe('ActorInitHelloWorld', () => {
     it('should run', () => {
       return actor.run({ argv: [ 'John' ], env: {}, stdin: new PassThrough() })
         .then(async (result: IActorOutputInit) => {
-          expect((await arrayifyStream(result.stdout)).map((chunk) => chunk.toString()).join('')).toBe('Hi John\n');
+          expect((await arrayifyStream(result.stdout)).map((chunk: any) => chunk.toString()).join(''))
+            .toBe('Hi John\n');
         });
     });
   });

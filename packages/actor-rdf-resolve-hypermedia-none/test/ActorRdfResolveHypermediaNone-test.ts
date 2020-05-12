@@ -9,7 +9,7 @@ const arrayifyStream = require('arrayify-stream');
 const quad = require('rdf-quad');
 
 describe('ActorRdfResolveHypermediaNone', () => {
-  let bus;
+  let bus: any;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -40,7 +40,7 @@ describe('ActorRdfResolveHypermediaNone', () => {
     });
 
     it('should test', () => {
-      return expect(actor.test({ metadata: null, quads: null, url: '' })).resolves.toEqual({ filterFactor: 0 });
+      return expect(actor.test({ metadata: <any> null, quads: <any> null, url: '' })).resolves.toEqual({ filterFactor: 0 });
     });
 
     it('should run', async () => {
@@ -48,7 +48,7 @@ describe('ActorRdfResolveHypermediaNone', () => {
         quad('s1', 'p1', 'o1'),
         quad('s2', 'p2', 'o2'),
       ]);
-      const { source } = await actor.run({ metadata: null, quads, url: '' });
+      const { source } = await actor.run({ metadata: <any> null, quads, url: '' });
       expect(source.match).toBeTruthy();
       await expect(new Promise((resolve, reject) => {
         const stream = source.match();
@@ -68,7 +68,7 @@ describe('ActorRdfResolveHypermediaNone', () => {
         quad('s2', 'p2', 'o2'),
       ]);
       await expect(new Promise(async (resolve, reject) => {
-        const { source } = await actor.run({ metadata: null, quads, url: '' });
+        const { source } = await actor.run({ metadata: <any> null, quads, url: '' });
         (<any> source).source.match = () => {
           const str = new Readable();
           str._read = () => {

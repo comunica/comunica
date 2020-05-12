@@ -77,8 +77,8 @@ export class ActorQueryOperationBgpLeftDeepSmallestSort extends ActorQueryOperat
    * @param {{[p: string]: any}[]} otherPatterns The array of optional metadata for the other patterns.
    * @return {number} The estimated number of total items.
    */
-  public static estimateCombinedTotalItems(smallestPattern: {[id: string]: any},
-                                           otherPatterns: {[id: string]: any}[]): number {
+  public static estimateCombinedTotalItems(smallestPattern: {[id: string]: any} | undefined,
+                                           otherPatterns: ({[id: string]: any} | undefined)[]): number {
     const smallestCount: number = ActorQueryOperationBgpLeftDeepSmallestSort.getTotalItems(smallestPattern);
     return otherPatterns
       .map((otherPattern) => smallestCount * ActorQueryOperationBgpLeftDeepSmallestSort.getTotalItems(
@@ -226,5 +226,5 @@ export class ActorQueryOperationBgpLeftDeepSmallestSort extends ActorQueryOperat
 export interface IOutputMetaTuple {
   input: Algebra.Pattern;
   output: IActorQueryOperationOutputBindings;
-  meta: {[id: string]: any};
+  meta?: {[id: string]: any};
 }

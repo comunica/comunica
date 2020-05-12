@@ -7,13 +7,13 @@ import {ActorQueryOperationProject} from "../lib/ActorQueryOperationProject";
 const arrayifyStream = require('arrayify-stream');
 
 describe('ActorQueryOperationProject', () => {
-  let bus;
-  let mediatorQueryOperation;
+  let bus: any;
+  let mediatorQueryOperation: any;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
     mediatorQueryOperation = {
-      mediate: (arg) => Promise.resolve({
+      mediate: (arg: any) => Promise.resolve({
         bindingsStream: new SingletonIterator(Bindings({ '?a': literal('A'), '_:delet': literal('deleteMe') })),
         metadata: () => 'M',
         operated: arg,
@@ -58,7 +58,7 @@ describe('ActorQueryOperationProject', () => {
     it('should run on a stream with variables that should not be deleted or are missing', () => {
       const op = { operation: { type: 'project', input: 'in', variables: [ variable('a'), blankNode('delet') ] } };
       return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
-        expect(output.metadata()).toEqual('M');
+        expect((<any> output).metadata()).toEqual('M');
         expect(output.variables).toEqual([ '?a', '_:delet' ]);
         expect(output.type).toEqual('bindings');
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
@@ -70,7 +70,7 @@ describe('ActorQueryOperationProject', () => {
     it('should run on a stream with variables that should be deleted', () => {
       const op = { operation: { type: 'project', input: 'in', variables: [ variable('a') ] } };
       return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
-        expect(output.metadata()).toEqual('M');
+        expect((<any> output).metadata()).toEqual('M');
         expect(output.variables).toEqual([ '?a' ]);
         expect(output.type).toEqual('bindings');
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
@@ -86,7 +86,7 @@ describe('ActorQueryOperationProject', () => {
     });
 
     it('should run on a stream with equal blank nodes across bindings', () => {
-      mediatorQueryOperation.mediate = (arg) => Promise.resolve({
+      mediatorQueryOperation.mediate = (arg: any) => Promise.resolve({
         bindingsStream: new ArrayIterator([
           Bindings({ '?a': blankNode('a'), '?b': literal('b') }),
           Bindings({ '?a': blankNode('a'), '?b': literal('b') }),
@@ -99,7 +99,7 @@ describe('ActorQueryOperationProject', () => {
       });
       const op = { operation: { type: 'project', input: 'in', variables: [ variable('a') ] } };
       return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
-        expect(output.metadata()).toEqual('M');
+        expect((<any> output).metadata()).toEqual('M');
         expect(output.variables).toEqual([ '?a' ]);
         expect(output.type).toEqual('bindings');
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
@@ -111,7 +111,7 @@ describe('ActorQueryOperationProject', () => {
     });
 
     it('should run on a stream with equal scoped blank nodes across bindings', () => {
-      mediatorQueryOperation.mediate = (arg) => Promise.resolve({
+      mediatorQueryOperation.mediate = (arg: any) => Promise.resolve({
         bindingsStream: new ArrayIterator([
           Bindings({ '?a': new BlankNodeScoped('a', namedNode('A')), '?b': literal('b') }),
           Bindings({ '?a': new BlankNodeScoped('a', namedNode('B')), '?b': literal('b') }),
@@ -124,7 +124,7 @@ describe('ActorQueryOperationProject', () => {
       });
       const op = { operation: { type: 'project', input: 'in', variables: [ variable('a') ] } };
       return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
-        expect(output.metadata()).toEqual('M');
+        expect((<any> output).metadata()).toEqual('M');
         expect(output.variables).toEqual([ '?a' ]);
         expect(output.type).toEqual('bindings');
         expect(await arrayifyStream(output.bindingsStream)).toEqual([

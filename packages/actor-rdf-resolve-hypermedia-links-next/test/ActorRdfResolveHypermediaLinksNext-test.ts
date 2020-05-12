@@ -3,7 +3,7 @@ import {Bus} from "@comunica/core";
 import {ActorRdfResolveHypermediaLinksNext} from "../lib/ActorRdfResolveHypermediaLinksNext";
 
 describe('ActorRdfResolveHypermediaLinksNext', () => {
-  let bus;
+  let bus: any;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });

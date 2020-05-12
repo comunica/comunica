@@ -9,7 +9,7 @@ const arrayifyStream = require('arrayify-stream');
 const quad = require('rdf-quad');
 
 describe('ActorRdfParseRdfXml', () => {
-  let bus;
+  let bus: any;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -94,13 +94,13 @@ describe('ActorRdfParseRdfXml', () => {
 
       it('should run on application/rdf+xml', () => {
         return actor.run({ handle: { input, baseIRI: '' }, handleMediaType: 'application/rdf+xml' })
-                    .then(async (output) => expect(await arrayifyStream(output.handle.quads)).toHaveLength(4));
+                    .then(async (output: any) => expect(await arrayifyStream(output.handle.quads)).toHaveLength(4));
       });
 
       it('should parse application/rdf+xml correctly', () => {
         // noinspection TsLint
         return actor.run({ handle: { input, baseIRI: '' }, handleMediaType: 'application/rdf+xml' })
-            .then(async (output) => expect(await arrayifyStream(output.handle.quads)).toEqualRdfQuadArray([
+            .then(async (output: any) => expect(await arrayifyStream(output.handle.quads)).toEqualRdfQuadArray([
               quad('http://www.w3.org/TR/rdf-syntax-grammar', 'http://purl.org/dc/elements/1.1/title',
                   '"RDF1.1 XML Syntax"'),
               quad('http://www.w3.org/TR/rdf-syntax-grammar', 'http://example.org/stuff/1.0/editor', "_:b4"),
@@ -109,8 +109,8 @@ describe('ActorRdfParseRdfXml', () => {
       });
 
       it('should forward stream errors', async () => {
-        return expect(arrayifyStream((await actor.run(
-                    { handle: { input: inputError, baseIRI: '' }, handleMediaType: 'application/trig' }))
+        return expect(arrayifyStream((<any> (await actor.run(
+                    { handle: { input: inputError, baseIRI: '' }, handleMediaType: 'application/trig' })))
                     .handle.quads)).rejects.toBeTruthy();
       });
     });

@@ -11,7 +11,8 @@ class Dummy extends LinkedRdfSourcesAsyncRdfIterator {
 
   public data: RDF.Quad[][];
 
-  constructor(data: RDF.Quad[][], subject: RDF.Term, predicate: RDF.Term, object: RDF.Term, graph: RDF.Term,
+  constructor(data: RDF.Quad[][], subject: RDF.Term | undefined, predicate: RDF.Term | undefined,
+              object: RDF.Term | undefined, graph: RDF.Term | undefined,
               firstUrl: string) {
     super(10, subject, predicate, object, graph, firstUrl, { autoStart: false });
     this.data = data;
@@ -149,9 +150,9 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
         ['g', 'h', 'i'],
       ]];
       const quads = toTerms(data);
-      const it = new Dummy(quads, null, null, null, null, 'first');
+      const it = new Dummy(quads, undefined, undefined, undefined, undefined, 'first');
       jest.spyOn(<any> it, 'getNextUrls');
-      const result = [];
+      const result: any = [];
       it.on('data', (d) => result.push(d));
       it.on('end', () => {
         expect(result).toEqual(flatten(quads));
@@ -169,10 +170,10 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
         ['g', 'h', 'i'],
       ]];
       const quads = toTerms(data);
-      const it = new Dummy(quads, null, null, null, null, 'first');
+      const it = new Dummy(quads, undefined, undefined, undefined, undefined, 'first');
       it.setSourcesState();
       jest.spyOn(<any> it, 'getNextUrls');
-      const result = [];
+      const result: any = [];
       it.on('data', (d) => result.push(d));
       it.on('end', () => {
         expect(result).toEqual(flatten(quads));
@@ -190,12 +191,12 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
         ['g', 'h', 'i'],
       ]];
       const quads = toTerms(data);
-      const it1 = new Dummy(quads, null, null, null, null, 'first');
+      const it1 = new Dummy(quads, undefined, undefined, undefined, undefined, 'first');
       it1.setSourcesState();
-      const it2 = new Dummy(quads, null, null, null, null, 'first');
+      const it2 = new Dummy(quads, undefined, undefined, undefined, undefined, 'first');
       it2.setSourcesState(it1.sourcesState);
       jest.spyOn(<any> it2, 'getNextUrls');
-      const result = [];
+      const result: any = [];
       it2.on('data', (d) => result.push(d));
       it2.on('end', () => {
         expect(result).toEqual(flatten(quads));
@@ -225,9 +226,9 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
         ],
       ];
       const quads = toTerms(data);
-      const it = new Dummy(quads, null, null, null, null, 'first');
+      const it = new Dummy(quads, undefined, undefined, undefined, undefined, 'first');
       jest.spyOn(<any> it, 'getNextUrls');
-      const result = [];
+      const result: any = [];
       it.on('data', (d) => result.push(d));
       it.on('end', () => {
         expect(result).toEqual(flatten(quads));
@@ -259,10 +260,10 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
         ],
       ];
       const quads = toTerms(data);
-      const it = new Dummy(quads, null, null, null, null, 'first');
+      const it = new Dummy(quads, undefined, undefined, undefined, undefined, 'first');
       it.setSourcesState();
       jest.spyOn(<any> it, 'getNextUrls');
-      const result = [];
+      const result: any = [];
       it.on('data', (d) => result.push(d));
       it.on('end', () => {
         expect(result).toEqual(flatten(quads));
@@ -289,10 +290,10 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
         ],
       ];
       const quads = toTerms(data);
-      const it = new DummyMultiple(quads, null, null, null, null, 'first');
+      const it = new DummyMultiple(quads, undefined, undefined, undefined, undefined, 'first');
       jest.spyOn(<any> it, 'getNextUrls');
-      const result = [];
-      it.on('data', (d) => result.push(d));
+      const result: any = [];
+      it.on('data', (d: any) => result.push(d));
       it.on('end', () => {
         expect(result).toEqual(flatten(toTerms([
           [
@@ -325,7 +326,7 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
     });
 
     it('catches invalid getNextSource results', async () => {
-      const it = new InvalidDummy([[]], null, null, null, null, 'first');
+      const it = new InvalidDummy([[]], undefined, undefined, undefined, undefined, 'first');
       expect(await new Promise((resolve, reject) => {
         it.on('error', resolve);
         it.on('end', reject);
@@ -334,7 +335,7 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
     });
 
     it('catches invalid getNextSource results on next page', async () => {
-      const it = new InvalidDummyNext([[], []], null, null, null, null, 'first');
+      const it = new InvalidDummyNext([[], []], undefined, undefined, undefined, undefined, 'first');
       expect(await new Promise((resolve, reject) => {
         it.on('error', resolve);
         it.on('end', reject);
@@ -356,9 +357,9 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
         ],
       ];
       const quads = toTerms(data);
-      const it = new DummyMetaOverride(quads, null, null, null, null, 'first');
+      const it = new DummyMetaOverride(quads, undefined, undefined, undefined, undefined, 'first');
       jest.spyOn(<any> it, 'getNextUrls');
-      const result = [];
+      const result: any = [];
       it.on('data', (d) => result.push(d));
       it.on('end', () => {
         expect(result).toEqual(flatten(quads));
@@ -371,9 +372,9 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
     });
 
     it('errors when the metadata event is emitted after the end event', async () => {
-      const data = [];
+      const data: any = [];
       const quads = toTerms(data);
-      const it = new DummyMetaOverrideTooLate(quads, null, null, null, null, 'first');
+      const it = new DummyMetaOverrideTooLate(quads, undefined, undefined, undefined, undefined, 'first');
       jest.spyOn(<any> it, 'getNextUrls');
       const result = [];
       return expect(new Promise((resolve, reject) => {
@@ -389,7 +390,7 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
         ['g', 'h', 'i'],
       ]];
       const quads = toTerms(data);
-      const it = new Dummy(quads, null, null, null, null, 'first');
+      const it = new Dummy(quads, undefined, undefined, undefined, undefined, 'first');
       jest.spyOn(<any> it, 'getNextUrls');
       (<any> it).started = true;
       (<any> it).iterating = true;
@@ -398,7 +399,7 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
     });
 
     it('delegates error events from the source', async () => {
-      const it = new DummyError([[], []], null, null, null, null, 'first');
+      const it = new DummyError([[], []], undefined, undefined, undefined, undefined, 'first');
       expect(await new Promise((resolve, reject) => {
         it.on('error', resolve);
         it.on('end', reject);
@@ -408,10 +409,10 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
   });
 });
 
-function toTerms(data) {
-  return data.map((page) => page.map((terms) => lit.call(null, terms)));
+function toTerms(data: any) {
+  return data.map((page: any) => page.map((terms: any) => lit.call(null, terms)));
 }
 
-function flatten(a) {
+function flatten(a: any) {
   return [].concat.apply([], a);
 }

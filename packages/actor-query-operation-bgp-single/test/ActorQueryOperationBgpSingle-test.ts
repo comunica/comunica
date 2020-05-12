@@ -4,13 +4,13 @@ import {ActionContext, Bus} from "@comunica/core";
 import {ActorQueryOperationBgpSingle} from "../lib/ActorQueryOperationBgpSingle";
 
 describe('ActorQueryOperationBgpSingle', () => {
-  let bus;
-  let mediatorQueryOperation;
+  let bus: any;
+  let mediatorQueryOperation: any;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
     mediatorQueryOperation = {
-      mediate: (arg) => Promise.resolve({ operated: arg }),
+      mediate: (arg: any) => Promise.resolve({ operated: arg }),
     };
   });
 

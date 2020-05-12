@@ -6,14 +6,14 @@ import {ActorQueryOperationJoin} from "../lib/ActorQueryOperationJoin";
 const arrayifyStream = require('arrayify-stream');
 
 describe('ActorQueryOperationJoin', () => {
-  let bus;
-  let mediatorQueryOperation;
-  let mediatorJoin;
+  let bus: any;
+  let mediatorQueryOperation: any;
+  let mediatorJoin: any;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
     mediatorQueryOperation = {
-      mediate: (arg) => Promise.resolve({
+      mediate: (arg: any) => Promise.resolve({
         bindingsStream: new ArrayIterator([
           Bindings({ a: literal('1') }),
           Bindings({ a: literal('2') }),
@@ -26,7 +26,7 @@ describe('ActorQueryOperationJoin', () => {
       }),
     };
     mediatorJoin = {
-      mediate: (arg) => Promise.resolve({
+      mediate: (arg: any) => Promise.resolve({
         bindingsStream: new ArrayIterator([
           Bindings({ a: literal('1'), b: literal('1') }),
           Bindings({ a: literal('2'), b: literal('2') }),
@@ -78,7 +78,7 @@ describe('ActorQueryOperationJoin', () => {
       return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
         expect(output.variables).toEqual(['a', 'b']);
         expect(output.type).toEqual('bindings');
-        expect(await output.metadata()).toEqual({ totalItems: 2 });
+        expect((<any> await output).metadata()).toEqual({ totalItems: 2 });
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({ a: literal('1'), b: literal('1') }),
           Bindings({ a: literal('2'), b: literal('2') }),

@@ -1,8 +1,8 @@
 import {Actor, Bus, IAction, IActorOutput, IActorTest} from "@comunica/core";
-import {MediatorRace} from "../lib/MediatorRace";
+import {MediatorRace} from "..";
 
 describe('MediatorRace', () => {
-  let bus;
+  let bus: Bus<Actor<IAction, IActorTest, IActorOutput>, IAction, IActorTest, IActorOutput>;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -21,7 +21,7 @@ describe('MediatorRace', () => {
   describe('An MediatorRace instance', () => {
 
     describe('with resolving actors', () => {
-      let busm;
+      let busm: Bus<DummyActor, IAction, IDummyTest, IDummyTest>;
       let mediator: MediatorRace<DummyActor, IAction, IDummyTest, IDummyTest>;
 
       beforeEach(() => {
@@ -38,7 +38,7 @@ describe('MediatorRace', () => {
     });
 
     describe('with rejecting actors', () => {
-      let busm;
+      let busm: Bus<DummyActor, IAction, IDummyTest, IDummyTest>;
       let mediator: MediatorRace<DummyActor, IAction, IDummyTest, IDummyTest>;
 
       beforeEach(() => {
@@ -55,7 +55,7 @@ describe('MediatorRace', () => {
     });
 
     describe('with resolving and rejecting actors', () => {
-      let busm;
+      let busm: Bus<DummyActor, IAction, IDummyTest, IDummyTest>;
       let mediator: MediatorRace<DummyActor, IAction, IDummyTest, IDummyTest>;
       let actor0;
       let actor1;

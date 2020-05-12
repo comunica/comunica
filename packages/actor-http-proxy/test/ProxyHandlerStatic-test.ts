@@ -2,7 +2,7 @@ import "isomorphic-fetch";
 import {ProxyHandlerStatic} from "../lib/ProxyHandlerStatic";
 
 describe('ProxyHandlerStatic', () => {
-  let proxy;
+  let proxy: any;
 
   beforeEach(() => {
     proxy = new ProxyHandlerStatic('http://prefix.org/');

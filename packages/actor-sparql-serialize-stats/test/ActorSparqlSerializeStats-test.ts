@@ -3,14 +3,14 @@ import {Bus} from "@comunica/core";
 import {namedNode} from "@rdfjs/data-model";
 import {ArrayIterator} from "asynciterator";
 import {Readable} from "stream";
-import {ActorSparqlSerializeStats} from "../lib/ActorSparqlSerializeStats";
-import {ActionObserverHttp} from "..";
+import {ActionObserverHttp, ActorSparqlSerializeStats} from "..";
+import * as RDF from "rdf-js";
 
 const quad = require('rdf-quad');
 const stringifyStream = require('stream-to-string');
 
 describe('ActorSparqlSerializeStats', () => {
-  let bus;
+  let bus: any;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -34,8 +34,8 @@ describe('ActorSparqlSerializeStats', () => {
     let httpObserver: ActionObserverHttp;
     let actor: ActorSparqlSerializeStats;
     let bindingsStream: BindingsStream;
-    let quadStream;
-    let streamError;
+    let quadStream: RDF.Stream;
+    let streamError: Readable;
 
     beforeEach(() => {
       httpObserver = new ActionObserverHttp({
@@ -52,8 +52,8 @@ describe('ActorSparqlSerializeStats', () => {
       });
 
       bindingsStream = new ArrayIterator([
-        Bindings({ k1: namedNode('v1'), k2: null }),
-        Bindings({ k1: null, k2: namedNode('v2') }),
+        Bindings({ k1: namedNode('v1') }),
+        Bindings({ k2: namedNode('v2') }),
       ]);
       quadStream = new ArrayIterator([
         quad('http://example.org/a', 'http://example.org/b', 'http://example.org/c'),
@@ -103,9 +103,9 @@ describe('ActorSparqlSerializeStats', () => {
       });
 
       it('should run on a bindings stream', async () => {
-        return expect((await stringifyStream((await actor.run(
+        return expect((await stringifyStream((<any> (await actor.run(
         {handle: <any> { type: 'bindings', bindingsStream }, handleMediaType: 'debug'})
-        ).handle.data))).toEqual(
+        )).handle.data))).toEqual(
         `Result,Delay (ms),HTTP requests
 1,3.14,0
 2,3.14,0
@@ -114,11 +114,11 @@ TOTAL,3.14,0
       });
 
       it('should run on a bindings stream with http requests', async () => {
-        httpObserver.onRun(null, null, null);
-        httpObserver.onRun(null, null, null);
-        return expect((await stringifyStream((await actor.run(
+        (<any> httpObserver).onRun(null, null, null);
+        (<any> httpObserver).onRun(null, null, null);
+        return expect((await stringifyStream((<any> (await actor.run(
             {handle: <any> { type: 'bindings', bindingsStream }, handleMediaType: 'debug'})
-        ).handle.data))).toEqual(
+        )).handle.data))).toEqual(
           `Result,Delay (ms),HTTP requests
 1,3.14,2
 2,3.14,2
@@ -127,9 +127,9 @@ TOTAL,3.14,2
       });
 
       it('should run on a quad stream', async () => {
-        return expect((await stringifyStream((await actor.run(
+        return expect((await stringifyStream((<any> (await actor.run(
           { handle: <any> { type: 'quads', quadStream },
-            handleMediaType: 'debug' })).handle.data))).toEqual(
+            handleMediaType: 'debug' }))).handle.data))).toEqual(
         `Result,Delay (ms),HTTP requests
 1,3.14,0
 2,3.14,0
@@ -138,15 +138,15 @@ TOTAL,3.14,0
       });
 
       it('should emit an error when a bindings stream emits an error', async () => {
-        return expect(stringifyStream((await actor.run(
+        return expect(stringifyStream((<any> (await actor.run(
           {handle: <any> { type: 'bindings', bindingsStream: streamError },
-            handleMediaType: 'application/json'})).handle.data)).rejects.toBeTruthy();
+            handleMediaType: 'application/json'}))).handle.data)).rejects.toBeTruthy();
       });
 
       it('should emit an error when a quad stream emits an error', async () => {
-        return expect(stringifyStream((await actor.run(
+        return expect(stringifyStream((<any> (await actor.run(
           {handle: <any> { type: 'quads', quadStream: streamError },
-            handleMediaType: 'application/json'})).handle.data)).rejects.toBeTruthy();
+            handleMediaType: 'application/json'}))).handle.data)).rejects.toBeTruthy();
       });
     });
   });

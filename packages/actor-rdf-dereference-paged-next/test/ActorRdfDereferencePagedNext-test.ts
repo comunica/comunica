@@ -7,9 +7,9 @@ const stream = require('streamify-array');
 const arrayifyStream = require('arrayify-stream');
 
 describe('ActorRdfDereferencePagedNext', () => {
-  let bus;
-  let mediator;
-  let httpInvalidator;
+  let bus: any;
+  let mediator: any;
+  let httpInvalidator: any;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -49,24 +49,24 @@ describe('ActorRdfDereferencePagedNext', () => {
   describe('An ActorRdfDereferencePagedNext instance', () => {
     let actor: ActorRdfDereferencePagedNext;
     let actorCached: ActorRdfDereferencePagedNext;
-    let mediatorMetadata;
-    let mediatorMetadataExtract;
-    let mediatorRdfDereference;
-    let stream0;
-    let stream1;
-    let stream2;
-    let cacheSize;
+    let mediatorMetadata: any;
+    let mediatorMetadataExtract: any;
+    let mediatorRdfDereference: any;
+    let stream0: any;
+    let stream1: any;
+    let stream2: any;
+    let cacheSize: any;
 
     beforeEach(() => {
       stream0 = stream([ '0a', '0b', '0c' ]);
       stream1 = stream([ '1a', '1b', '1c' ]);
       stream2 = stream([ '2a', '2b', '2c' ]);
 
-      mediatorMetadata = { mediate: (action) => Promise.resolve(
+      mediatorMetadata = { mediate: (action: any) => Promise.resolve(
         { data: action.quads.data, metadata: action.quads.metadata }) };
-      mediatorMetadataExtract = { mediate: (action) => Promise.resolve({ metadata: action.metadata }) };
+      mediatorMetadataExtract = { mediate: (action: any) => Promise.resolve({ metadata: action.metadata }) };
       mediatorRdfDereference = {
-        mediate: (action) => {
+        mediate: (action: any) => {
           switch (action.url) {
           case 'http://example.org/':
             return Promise.resolve(
@@ -81,7 +81,7 @@ describe('ActorRdfDereferencePagedNext', () => {
             return Promise.reject(new Error('Invalid paged-next URL in tests: ' + action.url));
           }
         },
-        mediateActor: (action) => {
+        mediateActor: (action: any) => {
           return action.url === 'http://example.org/'
             ? Promise.resolve(true) : Promise.reject(new Error('Invalid paged-next URL in tests'));
         },
@@ -132,7 +132,7 @@ describe('ActorRdfDereferencePagedNext', () => {
     });
 
     it('should run when metadata extraction is delayed', () => {
-      const mediatorMetadataExtractSlow: any = { mediate: (action) => {
+      const mediatorMetadataExtractSlow: any = { mediate: (action: any) => {
         return new Promise((resolve, reject) => {
           setImmediate(() => {
             mediatorMetadataExtract.mediate(action).then(resolve).catch(reject);
@@ -226,7 +226,7 @@ describe('ActorRdfDereferencePagedNext', () => {
 
     it('should run and delegate errors originating from a metadata mediator after page 0', () => {
       const error = new Error('some error after page 0');
-      const mediatorMetadataTemp: any = { mediate: (action) => {
+      const mediatorMetadataTemp: any = { mediate: (action: any) => {
         const ret = mediatorMetadata.mediate(action);
         mediatorMetadataTemp.mediate = () => Promise.reject(error);
         return ret;
@@ -246,7 +246,7 @@ describe('ActorRdfDereferencePagedNext', () => {
 
     it('should run and delegate errors originating from an extract mediator after page 0', () => {
       const error = new Error('some error');
-      const mediatorMetadataExtractTemp: any = { mediate: (action) => {
+      const mediatorMetadataExtractTemp: any = { mediate: (action: any) => {
         const ret = mediatorMetadataExtract.mediate(action);
         mediatorMetadataExtractTemp.mediate = () => Promise.reject(error);
         return ret;
@@ -266,7 +266,7 @@ describe('ActorRdfDereferencePagedNext', () => {
 
     it('should run and delegate errors originating from a dereference mediator after page 0', () => {
       const error = new Error('some error');
-      const mediatorRdfDereferenceTemp: any = { mediate: (action) => {
+      const mediatorRdfDereferenceTemp: any = { mediate: (action: any) => {
         const ret = mediatorRdfDereference.mediate(action);
         mediatorRdfDereferenceTemp.mediate = () => Promise.reject(error);
         return ret;
@@ -322,21 +322,21 @@ describe('ActorRdfDereferencePagedNext', () => {
     it('should invalidate by URL', async () => {
       await actorCached.run({ url: 'http://example.org/1' });
       await actorCached.run({ url: 'http://example.org/2' });
-      expect(actorCached.cache.has('http://example.org/1')).toBeTruthy();
-      expect(actorCached.cache.has('http://example.org/2')).toBeTruthy();
+      expect((<any> actorCached).cache.has('http://example.org/1')).toBeTruthy();
+      expect((<any> actorCached).cache.has('http://example.org/2')).toBeTruthy();
       await httpInvalidator.run({ url: 'http://example.org/1' });
-      expect(actorCached.cache.has('http://example.org/1')).toBeFalsy();
-      expect(actorCached.cache.has('http://example.org/2')).toBeTruthy();
+      expect((<any> actorCached).cache.has('http://example.org/1')).toBeFalsy();
+      expect((<any> actorCached).cache.has('http://example.org/2')).toBeTruthy();
     });
 
     it('should invalidate by all URLs', async () => {
       await actorCached.run({ url: 'http://example.org/1' });
       await actorCached.run({ url: 'http://example.org/2' });
-      expect(actorCached.cache.has('http://example.org/1')).toBeTruthy();
-      expect(actorCached.cache.has('http://example.org/2')).toBeTruthy();
+      expect((<any> actorCached).cache.has('http://example.org/1')).toBeTruthy();
+      expect((<any> actorCached).cache.has('http://example.org/2')).toBeTruthy();
       await httpInvalidator.run({});
-      expect(actorCached.cache.has('http://example.org/1')).toBeFalsy();
-      expect(actorCached.cache.has('http://example.org/2')).toBeFalsy();
+      expect((<any> actorCached).cache.has('http://example.org/1')).toBeFalsy();
+      expect((<any> actorCached).cache.has('http://example.org/2')).toBeFalsy();
     });
   });
 });

@@ -1,9 +1,9 @@
 import {ActorSparqlParse} from "@comunica/bus-sparql-parse";
 import {ActionContext, Bus} from "@comunica/core";
-import {ActorSparqlParseGraphql} from "../lib/ActorSparqlParseGraphql";
+import {ActorSparqlParseGraphql} from "..";
 
 describe('ActorSparqlParseGraphql', () => {
-  let bus;
+  let bus: any;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -102,7 +102,7 @@ describe('ActorSparqlParseGraphql', () => {
 
     it('should not run without context that has a required URI', () => {
       const query = '{ label }';
-      const context = null;
+      const context = undefined;
       return expect(actor.run({ query, queryFormat: 'graphql', context })).rejects.toBeTruthy();
     });
   });

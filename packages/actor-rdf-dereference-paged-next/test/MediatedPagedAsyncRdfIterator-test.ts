@@ -52,13 +52,13 @@ describe('MediatedPagedAsyncRdfIterator', () => {
   describe('A MediatedPagedAsyncRdfIterator instance', () => {
 
     let actor: Dummy;
-    let firstPageMetadata;
-    let mediatorRdfDereference;
-    let mediatorMetadata;
-    let mediatorMetadataExtract;
+    let firstPageMetadata: any;
+    let mediatorRdfDereference: any;
+    let mediatorMetadata: any;
+    let mediatorMetadataExtract: any;
 
     beforeEach(() => {
-      firstPageMetadata = () => ({ then: (f) => f({ next: 'NEXT' }) });
+      firstPageMetadata = () => ({ then: (f: any) => f({ next: 'NEXT' }) });
       mediatorRdfDereference = {};
       mediatorMetadata = {};
       mediatorMetadataExtract = {};
@@ -90,18 +90,18 @@ describe('MediatedPagedAsyncRdfIterator', () => {
     it('handles the next page', (done) => {
       const callback = _.after(2, done);
 
-      mediatorRdfDereference.mediate = (o) => {
+      mediatorRdfDereference.mediate = (o: any) => {
         expect(o.url).toBe('URL');
         return Promise.resolve({ url: 'PAGEURL', quads: 'QUADS' });
       };
 
-      mediatorMetadata.mediate = (o) => {
+      mediatorMetadata.mediate = (o: any) => {
         expect(o.url).toBe('PAGEURL');
         expect(o.quads).toBe('QUADS');
         return Promise.resolve({ data: new SingletonIterator('DATA'), metadata: 'METADATA' });
       };
 
-      mediatorMetadataExtract.mediate = (o) => {
+      mediatorMetadataExtract.mediate = (o: any) => {
         expect(o.url).toBe('PAGEURL');
         expect(o.metadata).toBe('METADATA');
         return Promise.resolve({ metadata: { next: 'NEXT' }});
@@ -119,18 +119,18 @@ describe('MediatedPagedAsyncRdfIterator', () => {
     it('handles incorrect next page metadata', (done) => {
       const callback = _.after(2, done);
 
-      mediatorRdfDereference.mediate = (o) => {
+      mediatorRdfDereference.mediate = (o: any) => {
         expect(o.url).toBe('URL');
         return Promise.resolve({ url: 'PAGEURL', quads: 'QUADS' });
       };
 
-      mediatorMetadata.mediate = (o) => {
+      mediatorMetadata.mediate = (o: any) => {
         expect(o.url).toBe('PAGEURL');
         expect(o.quads).toBe('QUADS');
         return Promise.resolve({ data: new SingletonIterator('DATA'), metadata: 'METADATA' });
       };
 
-      mediatorMetadataExtract.mediate = (o) => {
+      mediatorMetadataExtract.mediate = (o: any) => {
         expect(o.url).toBe('PAGEURL');
         expect(o.metadata).toBe('METADATA');
         return Promise.reject('error');

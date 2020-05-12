@@ -7,7 +7,7 @@ const quad = require('rdf-quad');
 const stringifyStream = require('stream-to-string');
 
 describe('ActorRdfSerializeN3', () => {
-  let bus;
+  let bus: any;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -29,8 +29,8 @@ describe('ActorRdfSerializeN3', () => {
 
   describe('An ActorRdfSerializeN3 instance', () => {
     let actor: ActorRdfSerializeN3;
-    let quads;
-    let quadsError;
+    let quads: any;
+    let quadsError: any;
 
     beforeEach(() => {
       actor = new ActorRdfSerializeN3({ bus, mediaTypes: {
@@ -63,35 +63,35 @@ describe('ActorRdfSerializeN3', () => {
 
       it('should run', () => {
         return actor.run({ handle: { quads }, handleMediaType: 'text/turtle' })
-          .then(async (output) => expect(await stringifyStream(output.handle.data)).toEqual(
+          .then(async (output: any) => expect(await stringifyStream(output.handle.data)).toEqual(
 `<http://example.org/a> <http://example.org/b> <http://example.org/c>;
     <http://example.org/d> <http://example.org/e>.
 `));
       });
 
       it('should run and output triples for text/turtle', async () => {
-        return expect((await actor.run({ handle: { quads }, handleMediaType: 'text/turtle' }))
+        return expect((<any> (await actor.run({ handle: { quads }, handleMediaType: 'text/turtle' })))
           .handle.triples).toBeTruthy();
       });
 
       it('should run and output triples for application/n-triples', async () => {
-        return expect((await actor.run({ handle: { quads }, handleMediaType: 'application/n-triples' }))
+        return expect((<any> (await actor.run({ handle: { quads }, handleMediaType: 'application/n-triples' })))
           .handle.triples).toBeTruthy();
       });
 
       it('should run and output triples for text/n3', async () => {
-        return expect((await actor.run({ handle: { quads }, handleMediaType: 'text/n3' }))
+        return expect((<any> (await actor.run({ handle: { quads }, handleMediaType: 'text/n3' })))
           .handle.triples).toBeTruthy();
       });
 
       it('should run and output non-triples for application/trig', async () => {
-        return expect((await actor.run({ handle: { quads }, handleMediaType: 'application/trig' }))
+        return expect((<any> (await actor.run({ handle: { quads }, handleMediaType: 'application/trig' })))
           .handle.triples).toBeFalsy();
       });
 
       it('should forward stream errors', async () => {
-        return expect(stringifyStream((await actor.run(
-          { handle: { quads: quadsError }, handleMediaType: 'application/trig' }))
+        return expect(stringifyStream((<any> (await actor.run(
+          { handle: { quads: quadsError }, handleMediaType: 'application/trig' })))
           .handle.data)).rejects.toBeTruthy();
       });
     });

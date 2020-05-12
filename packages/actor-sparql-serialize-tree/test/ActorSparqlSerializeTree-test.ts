@@ -1,16 +1,16 @@
 import {Bindings, BindingsStream} from "@comunica/bus-query-operation";
-import {Bus} from "@comunica/core";
-import {ActionContext} from "@comunica/core";
+import {ActionContext, Bus} from "@comunica/core";
 import {namedNode} from "@rdfjs/data-model";
+import * as RDF from "rdf-js";
 import {ArrayIterator} from "asynciterator";
 import {Readable} from "stream";
-import {ActorSparqlSerializeTree} from "../lib/ActorSparqlSerializeTree";
+import {ActorSparqlSerializeTree} from "..";
 
 const quad = require('rdf-quad');
 const stringifyStream = require('stream-to-string');
 
 describe('ActorSparqlSerializeTree', () => {
-  let bus;
+  let bus: any;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -34,15 +34,15 @@ describe('ActorSparqlSerializeTree', () => {
   describe('An ActorSparqlSerializeTree instance', () => {
     let actor: ActorSparqlSerializeTree;
     let bindingsStream: BindingsStream;
-    let quadStream;
-    let streamError;
-    let variables;
+    let quadStream: RDF.Stream;
+    let streamError: Readable;
+    let variables: string[];
 
     beforeEach(() => {
       actor = new ActorSparqlSerializeTree({ bus, name: 'actor', mediaTypes: { tree: 1.0 } });
       bindingsStream = new ArrayIterator([
-        Bindings({ '?k1': namedNode('v1'), '?k2': null }),
-        Bindings({ '?k1': null, '?k2': namedNode('v2') }),
+        Bindings({ '?k1': namedNode('v1') }),
+        Bindings({ '?k2': namedNode('v2') }),
       ]);
       quadStream = new ArrayIterator([
         quad('http://example.org/a', 'http://example.org/b', 'http://example.org/c'),
@@ -89,9 +89,9 @@ describe('ActorSparqlSerializeTree', () => {
 
       // tslint:disable:no-trailing-whitespace
       it('should run on a bindings stream', async () => {
-        return expect((await stringifyStream((await actor.run(
+        return expect((await stringifyStream((<any> (await actor.run(
           {handle: <any> { type: 'bindings', bindingsStream, variables },
-            handleMediaType: 'tree'})).handle.data))).toEqual(
+            handleMediaType: 'tree'}))).handle.data))).toEqual(
           `[
   {
     "k2": [
@@ -108,9 +108,9 @@ describe('ActorSparqlSerializeTree', () => {
         const context = ActionContext({
           "@comunica/actor-init-sparql:singularizeVariables": { k1: true, k2: false },
         });
-        return expect((await stringifyStream((await actor.run(
+        return expect((await stringifyStream((<any> (await actor.run(
           {handle: <any> { type: 'bindings', bindingsStream, variables, context },
-            handleMediaType: 'tree'})).handle.data))).toEqual(
+            handleMediaType: 'tree'}))).handle.data))).toEqual(
           `[
   {
     "k2": [
@@ -122,9 +122,9 @@ describe('ActorSparqlSerializeTree', () => {
       });
 
       it('should emit an error when a bindings stream emits an error', async () => {
-        return expect(stringifyStream((await actor.run(
+        return expect(stringifyStream((<any> (await actor.run(
           {handle: <any> { type: 'bindings', bindingsStream: streamError, variables },
-            handleMediaType: 'tree'})).handle.data)).rejects
+            handleMediaType: 'tree'}))).handle.data)).rejects
           .toThrow(new Error('actor sparql serialize tree test error'));
       });
     });

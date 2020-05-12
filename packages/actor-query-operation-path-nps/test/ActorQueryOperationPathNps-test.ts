@@ -9,15 +9,15 @@ import {ActorQueryOperationPathNps} from "../lib/ActorQueryOperationPathNps";
 const arrayifyStream = require('arrayify-stream');
 
 describe('ActorQueryOperationPathNps', () => {
-  let bus;
-  let mediatorQueryOperation;
+  let bus: any;
+  let mediatorQueryOperation: any;
   const factory: Factory = new Factory();
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
     mediatorQueryOperation = {
-      mediate: (arg) => {
-        const vars = [];
+      mediate: (arg: any) => {
+        const vars: any = [];
         for (const name of QUAD_TERM_NAMES) {
           if (arg.operation[name].termType === 'Variable' || arg.operation[name].termType === 'BlankNode') {
             vars.push(termToString(arg.operation[name]));
@@ -27,7 +27,7 @@ describe('ActorQueryOperationPathNps', () => {
         const bindings = [];
         if (vars.length > 0) {
           for (let i = 0; i < 3; ++i) {
-            const bind = {};
+            const bind: any = {};
             for (let j = 0; j < vars.length; ++j) {
               bind[vars[j]] = namedNode('' + (1 + i + j));
             }

@@ -1,16 +1,10 @@
-import {
-  Bindings,
-  IActorQueryOperationOutputBindings,
-  IActorQueryOperationTypedMediatedArgs,
-} from "@comunica/bus-query-operation";
-import {DataSources, KEY_CONTEXT_SOURCES} from "@comunica/bus-rdf-resolve-quad-pattern";
-import {ActionContext, Bus} from "@comunica/core";
+import {ActionContext} from "@comunica/core";
 import {AsyncReiterableArray} from "asyncreiterable";
 import {DataSourceUtils} from "..";
 
 describe('DataSourceUtils', () => {
 
-  const contextNull: ActionContext = null;
+  const contextUndefined = undefined;
   const contextWithSource: ActionContext = ActionContext(
     { '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'a-type', value: 'a-value' }},
   );
@@ -35,9 +29,9 @@ describe('DataSourceUtils', () => {
       return expect(source).resolves.toEqual({ type: 'a-type', value: 'a-value' });
     });
 
-    it('should return null when context null', () => {
-      const source = DataSourceUtils.getSingleSource(contextNull);
-      return expect(source).resolves.toEqual(null);
+    it('should return undefined when context undefined', () => {
+      const source = DataSourceUtils.getSingleSource(contextUndefined);
+      return expect(source).resolves.toEqual(undefined);
     });
 
     it('should return the first source when one sources is defined in the list of sources', () => {
@@ -45,14 +39,14 @@ describe('DataSourceUtils', () => {
       return expect(source).resolves.toEqual({ type: 'a-type', value: 'a-value' });
     });
 
-    it('should return null when multiple sources are defined in the list of sources', () => {
+    it('should return undefined when multiple sources are defined in the list of sources', () => {
       const source = DataSourceUtils.getSingleSource(contextWithMultipleSources);
-      return expect(source).resolves.toEqual(null);
+      return expect(source).resolves.toEqual(undefined);
     });
 
-    it('return null for sources that are not ended', async () => {
+    it('return undefined for sources that are not ended', async () => {
       const source = DataSourceUtils.getSingleSource(contextNotEnded);
-      return expect(source).resolves.toEqual(null);
+      return expect(source).resolves.toEqual(undefined);
     });
   });
 
@@ -62,14 +56,14 @@ describe('DataSourceUtils', () => {
       return expect(sourceType).resolves.toEqual('a-type');
     });
 
-    it('should return null when non singular source', () => {
+    it('should return undefined when non singular source', () => {
       const sourceType = DataSourceUtils.getSingleSourceType(contextWithMultipleSources);
-      return expect(sourceType).resolves.toEqual(null);
+      return expect(sourceType).resolves.toEqual(undefined);
     });
 
-    it('should return null when no source', () => {
-      const sourceType = DataSourceUtils.getSingleSourceType(contextNull);
-      return expect(sourceType).resolves.toEqual(null);
+    it('should return undefined when no source', () => {
+      const sourceType = DataSourceUtils.getSingleSourceType(contextUndefined);
+      return expect(sourceType).resolves.toEqual(undefined);
     });
 
     it('should return type when only one source in the list of sources', () => {
@@ -100,7 +94,7 @@ describe('DataSourceUtils', () => {
     });
 
     it('should return false when no source', () => {
-      const sourceType = DataSourceUtils.singleSourceHasType(contextNull, "a-type");
+      const sourceType = DataSourceUtils.singleSourceHasType(contextUndefined, "a-type");
       return expect(sourceType).resolves.toEqual(false);
     });
 

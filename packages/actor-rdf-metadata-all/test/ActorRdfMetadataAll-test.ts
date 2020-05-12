@@ -8,7 +8,7 @@ const quad = require('rdf-quad');
 const arrayifyStream = require('arrayify-stream');
 
 describe('ActorRdfMetadataAll', () => {
-  let bus;
+  let bus: any;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });

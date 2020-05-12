@@ -76,7 +76,7 @@
   "jest": {
     "globals": {
       "ts-jest": {
-        "tsConfig": "tsconfig-test-root.json"
+        "tsConfig": "tsconfig-test.json"
       }
     },
     "transform": {

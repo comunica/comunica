@@ -1,7 +1,4 @@
-import {ActionObserver} from "../lib/ActionObserver";
-import {Actor} from "../lib/Actor";
-import {Bus} from "../lib/Bus";
-import {BusIndexed} from "../lib/BusIndexed";
+import {ActionObserver, Actor, Bus, BusIndexed} from "..";
 
 describe('BusIndexed', () => {
   describe('The BusIndexed module', () => {

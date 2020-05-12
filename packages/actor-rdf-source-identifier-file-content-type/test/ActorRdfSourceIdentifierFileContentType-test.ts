@@ -1,10 +1,10 @@
 import {ActorRdfSourceIdentifier} from "@comunica/bus-rdf-source-identifier";
 import {Bus} from "@comunica/core";
 import "isomorphic-fetch";
-import {ActorRdfSourceIdentifierFileContentType} from "../lib/ActorRdfSourceIdentifierFileContentType";
+import {ActorRdfSourceIdentifierFileContentType} from "..";
 
 describe('ActorRdfSourceIdentifierFileContentType', () => {
-  let bus;
+  let bus: any;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -32,10 +32,10 @@ describe('ActorRdfSourceIdentifierFileContentType', () => {
 
     beforeEach(() => {
       const mediatorHttp: any = {
-        mediate: (action) => {
+        mediate: (action: any) => {
           const ok: boolean = action.input.indexOf('ok') >= 0;
           return Promise.resolve({
-            headers: { get: () => ok ? 'abc' : 'def', has: (key) => key === 'Content-Type' },
+            headers: { get: () => ok ? 'abc' : 'def', has: (key: string) => key === 'Content-Type' },
             ok,
           });
         },
@@ -62,7 +62,7 @@ describe('ActorRdfSourceIdentifierFileContentType', () => {
     });
 
     it('should run', () => {
-      return expect(actor.run(null)).resolves.toMatchObject({ sourceType: 'file' });
+      return expect(actor.run(<any> null)).resolves.toMatchObject({ sourceType: 'file' });
     });
   });
 });

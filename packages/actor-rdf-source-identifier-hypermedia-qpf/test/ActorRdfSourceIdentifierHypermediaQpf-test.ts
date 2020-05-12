@@ -4,7 +4,7 @@ import "isomorphic-fetch";
 import {ActorRdfSourceIdentifierHypermediaQpf} from "../lib/ActorRdfSourceIdentifierHypermediaQpf";
 
 describe('ActorRdfSourceIdentifierHypermediaQpf', () => {
-  let bus;
+  let bus: any;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -32,7 +32,7 @@ describe('ActorRdfSourceIdentifierHypermediaQpf', () => {
 
     beforeEach(() => {
       const mediatorHttp: any = {
-        mediate: (action) => {
+        mediate: (action: any) => {
           if (action.input.indexOf('nobody') >= 0) {
             return Promise.resolve({ ok: false });
           }
@@ -77,7 +77,7 @@ describe('ActorRdfSourceIdentifierHypermediaQpf', () => {
     });
 
     it('should run', () => {
-      return expect(actor.run(null)).resolves.toMatchObject({ sourceType: 'hypermedia' });
+      return expect(actor.run(<any> null)).resolves.toMatchObject({ sourceType: 'hypermedia' });
     });
   });
 });

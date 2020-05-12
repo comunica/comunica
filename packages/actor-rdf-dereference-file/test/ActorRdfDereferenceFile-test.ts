@@ -19,7 +19,7 @@ function fileUrl(str: string): string {
 }
 
 describe('ActorRdfDereferenceFile', () => {
-  let bus;
+  let bus: any;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -42,12 +42,12 @@ describe('ActorRdfDereferenceFile', () => {
 
   describe('An ActorRdfDereferenceFile instance', () => {
     let actor: ActorRdfDereferenceFile;
-    let mediatorRdfParse;
-    let mediaMappings;
+    let mediatorRdfParse: any;
+    let mediaMappings: any;
 
     beforeEach(() => {
       mediatorRdfParse = {
-        mediate: async (action) => {
+        mediate: async (action: any) => {
           const quads = new Readable();
           if (action.context && action.context.has('emitParseError')) {
             quads._read = () => {

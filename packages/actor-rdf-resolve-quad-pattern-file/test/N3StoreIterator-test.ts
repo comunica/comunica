@@ -6,7 +6,7 @@ const arrayifyStream = require('arrayify-stream');
 const quad = require('rdf-quad');
 
 describe('N3StoreIterator', () => {
-  let store;
+  let store: any;
 
   beforeEach(() => {
     store = new N3Store([

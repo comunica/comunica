@@ -7,20 +7,20 @@ import {HtmlScriptListener} from "../lib/HtmlScriptListener";
 const quad = require('rdf-quad');
 
 describe('ActorRdfParseHtml', () => {
-  let bus;
-  let mediator;
-  let context;
+  let bus: any;
+  let mediator: any;
+  let context: ActionContext;
 
   let jsonldParser: ActorRdfParseJsonLd;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
-    const mediatorHttp = null;
+    const mediatorHttp: any = null;
     jsonldParser = new ActorRdfParseJsonLd(
       { bus, mediaTypes: { 'application/ld+json': 1.0 }, name: 'jsonldParser', mediatorHttp });
 
     mediator = {
-      mediate: async (action) => {
+      mediate: async (action: any) => {
         if (action.mediaTypes === true) {
           return Promise.resolve({ mediaTypes: {
             "application/ld+json": 1,
@@ -29,7 +29,7 @@ describe('ActorRdfParseHtml', () => {
           action.input = action.handle.input;
           action.baseIRI = action.handle.baseIRI;
 
-          let output;
+          let output: any;
           switch (action.handleMediaType) {
           case "application/ld+json":
             output = await jsonldParser.runHandle(action, action.handleMediaType, context);
@@ -79,13 +79,13 @@ describe('ActorRdfParseHtml', () => {
     });
 
     describe('run', () => {
-      let baseIRI;
-      let headers;
-      let emit;
-      let error;
-      let end;
-      let onEnd;
-      let action;
+      let baseIRI: string;
+      let headers: any;
+      let emit: any;
+      let error: any;
+      let end: any;
+      let onEnd: any;
+      let action: any;
 
       beforeEach(() => {
         baseIRI = 'http://example.org/';
@@ -104,7 +104,7 @@ describe('ActorRdfParseHtml', () => {
       });
 
       describe('the html listener', () => {
-        let listener;
+        let listener: any;
         beforeEach(async () => {
           listener = (await actor.run(action)).htmlParseListener;
         });
@@ -349,13 +349,13 @@ describe('ActorRdfParseHtml', () => {
     });
 
     describe('run for a target script', () => {
-      let baseIRI;
-      let headers;
-      let emit;
-      let error;
-      let end;
-      let onEnd;
-      let action;
+      let baseIRI: string;
+      let headers: any;
+      let emit: any;
+      let error: any;
+      let end: any;
+      let onEnd: any;
+      let action: any;
 
       beforeEach(() => {
         baseIRI = 'http://example.org/#scriptId';
@@ -374,7 +374,7 @@ describe('ActorRdfParseHtml', () => {
       });
 
       describe('the html listener', () => {
-        let listener;
+        let listener: any;
         beforeEach(async () => {
           listener = (await actor.run(action)).htmlParseListener;
         });
@@ -481,13 +481,13 @@ describe('ActorRdfParseHtml', () => {
     });
 
     describe('run for a single script', () => {
-      let baseIRI;
-      let headers;
-      let emit;
-      let error;
-      let end;
-      let onEnd;
-      let action;
+      let baseIRI: string;
+      let headers: any;
+      let emit: any;
+      let error: any;
+      let end: any;
+      let onEnd: any;
+      let action: any;
 
       beforeEach(() => {
         baseIRI = 'http://example.org/';
@@ -506,7 +506,7 @@ describe('ActorRdfParseHtml', () => {
       });
 
       describe('the html listener', () => {
-        let listener;
+        let listener: any;
         beforeEach(async () => {
           listener = (await actor.run(action)).htmlParseListener;
         });
@@ -547,13 +547,13 @@ describe('ActorRdfParseHtml', () => {
     });
 
     describe('run for a single target script', () => {
-      let baseIRI;
-      let headers;
-      let emit;
-      let error;
-      let end;
-      let onEnd;
-      let action;
+      let baseIRI: string;
+      let headers: any;
+      let emit: any;
+      let error: any;
+      let end: any;
+      let onEnd: any;
+      let action: any;
 
       beforeEach(() => {
         baseIRI = 'http://example.org/#scriptId';
@@ -572,7 +572,7 @@ describe('ActorRdfParseHtml', () => {
       });
 
       describe('the html listener', () => {
-        let listener;
+        let listener: any;
         beforeEach(async () => {
           listener = (await actor.run(action)).htmlParseListener;
         });
