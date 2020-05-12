@@ -76,7 +76,7 @@ describe('ActorQueryOperationDescribeSubject', () => {
         operation: { type: 'describe', terms: [namedNode('a'), namedNode('b')], input: { type: 'bgp', patterns: [] } },
       };
       return actor.run(op).then(async (output: IActorQueryOperationOutputQuads) => {
-        expect((<any> await output).metadata()).toEqual({ totalItems: 2 });
+        expect(await (<any> output).metadata()).toEqual({ totalItems: 2 });
         expect(output.type).toEqual('quads');
         expect(await arrayifyStream(output.quadStream)).toEqual([
           quad(namedNode('a'), namedNode('__predicate'), namedNode('__object')),
@@ -95,7 +95,7 @@ describe('ActorQueryOperationDescribeSubject', () => {
         },
       };
       return actor.run(op).then(async (output: IActorQueryOperationOutputQuads) => {
-        expect((<any> await output).metadata()).toEqual({ totalItems: 3 });
+        expect(await (<any> output).metadata()).toEqual({ totalItems: 3 });
         expect(output.type).toEqual('quads');
         expect(await arrayifyStream(output.quadStream)).toEqual([
           quad(namedNode('a'), namedNode('b'), namedNode('dummy')),
@@ -115,7 +115,7 @@ describe('ActorQueryOperationDescribeSubject', () => {
         },
       };
       return actor.run(op).then(async (output: IActorQueryOperationOutputQuads) => {
-        expect((<any> await output).metadata()).toEqual({ totalItems: 4 });
+        expect(await (<any> output).metadata()).toEqual({ totalItems: 4 });
         expect(output.type).toEqual('quads');
         expect(await arrayifyStream(output.quadStream)).toEqual([
           quad(namedNode('c'), namedNode('__predicate'), namedNode('__object')),

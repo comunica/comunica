@@ -34,9 +34,6 @@ implements IActorRdfResolveHypermediaQpfArgs {
 
   public async testMetadata(action: IActionRdfResolveHypermedia): Promise<IActorRdfResolveHypermediaTest> {
     const searchForm = this.createSource(action.metadata, action.context).searchForm;
-    if (!searchForm) {
-      throw new Error(`Actor ${this.name} could not detect a TPF/QPF search form.`);
-    }
     if (action.handledDatasets && action.handledDatasets[searchForm.dataset]) {
       throw new Error(`Actor ${this.name} can only be applied for the first page of a QPF dataset.`);
     }

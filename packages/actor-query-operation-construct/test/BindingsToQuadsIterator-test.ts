@@ -309,7 +309,7 @@ describe('BindingsToQuadsIterator', () => {
     });
 
     it('should localize a quad with a predicate blank node', () => {
-      return expect(BindingsToQuadsIterator.localizeQuad(0, quad<RDF.BaseQuad>(
+      return expect(BindingsToQuadsIterator.localizeQuad(0, <any> quad<RDF.BaseQuad>(
         variable('s'),
         blankNode('p'),
         literal('o'),
@@ -351,7 +351,7 @@ describe('BindingsToQuadsIterator', () => {
     });
 
     it('should localize a quad with subject, predicate, object and graph blank nodes', () => {
-      return expect(BindingsToQuadsIterator.localizeQuad(0, quad(
+      return expect(BindingsToQuadsIterator.localizeQuad(0, <any> quad(
         blankNode('s'),
         blankNode('p'),
         blankNode('o'),
@@ -365,7 +365,7 @@ describe('BindingsToQuadsIterator', () => {
     });
 
     it('should localize a quad with equal subject, predicate, object and graph blank nodes', () => {
-      return expect(BindingsToQuadsIterator.localizeQuad(0, quad(
+      return expect(BindingsToQuadsIterator.localizeQuad(0, <any> quad(
         blankNode('a'),
         blankNode('a'),
         blankNode('a'),
@@ -379,7 +379,7 @@ describe('BindingsToQuadsIterator', () => {
     });
 
     it('should localize a quad multiple times with blank nodes with different counters', () => {
-      expect(BindingsToQuadsIterator.localizeQuad(0, quad(
+      expect(BindingsToQuadsIterator.localizeQuad(0, <any> quad(
         blankNode('s'),
         blankNode('p'),
         blankNode('o'),
@@ -391,7 +391,7 @@ describe('BindingsToQuadsIterator', () => {
         blankNode('g0'),
       ));
 
-      expect(BindingsToQuadsIterator.localizeQuad(1, quad(
+      expect(BindingsToQuadsIterator.localizeQuad(1, <any> quad(
         blankNode('s'),
         blankNode('p'),
         blankNode('o'),
@@ -403,7 +403,7 @@ describe('BindingsToQuadsIterator', () => {
         blankNode('g1'),
       ));
 
-      expect(BindingsToQuadsIterator.localizeQuad(2, quad(
+      expect(BindingsToQuadsIterator.localizeQuad(2, <any> quad(
         blankNode('s'),
         blankNode('p'),
         blankNode('o'),

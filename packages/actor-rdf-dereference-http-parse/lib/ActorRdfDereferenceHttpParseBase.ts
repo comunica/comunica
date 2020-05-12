@@ -97,8 +97,9 @@ export abstract class ActorRdfDereferenceHttpParseBase extends ActorRdfDereferen
     }
 
     // Parse the resulting response
-    const match = ActorRdfDereferenceHttpParseBase.REGEX_MEDIATYPE.exec(httpResponse.headers.get('content-type') || '');
-    let mediaType: string | undefined = match ? match[0] : undefined;
+    const match: RegExpExecArray = <RegExpExecArray> ActorRdfDereferenceHttpParseBase.REGEX_MEDIATYPE
+      .exec(httpResponse.headers.get('content-type') || '');
+    let mediaType: string | undefined = match[0];
     // If no media type could be found, try to determine it via the file extension
     if (!mediaType || mediaType === 'text/plain') {
       mediaType = this.getMediaTypeFromExtension(httpResponse.url);

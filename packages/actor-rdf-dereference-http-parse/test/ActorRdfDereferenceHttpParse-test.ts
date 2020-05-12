@@ -99,6 +99,12 @@ describe('ActorRdfDereferenceHttpParse', () => {
         if (!extension) {
           headers.set('content-type', 'a; charset=utf-8');
         }
+        if (action.input.indexOf('emptycontenttype') >= 0) {
+          headers.set('content-type', '');
+        }
+        if (action.input.indexOf('missingcontenttype') >= 0) {
+          headers.delete('content-type');
+        }
         return {
           body: action.input === 'https://www.google.com/noweb'
           ? require('web-streams-node').toWebReadableStream(new PassThrough()) : new PassThrough(),
@@ -192,6 +198,26 @@ describe('ActorRdfDereferenceHttpParse', () => {
       const headers = {};
       const output = await actor.run({ url: 'https://www.google.com/abc.x' });
       expect(output.url).toEqual('https://www.google.com/abc.x');
+      expect(output.triples).toEqual(true);
+      expect(output.headers).toEqual(headers);
+      expect(await arrayifyStream(output.quads)).toEqual([]);
+    });
+
+    it('should run with an empty content type', async () => {
+      const headers = {
+        'content-type': '',
+      };
+      const output = await actor.run({ url: 'https://www.google.com/emptycontenttype' });
+      expect(output.url).toEqual('https://www.google.com/index.html');
+      expect(output.triples).toEqual(true);
+      expect(output.headers).toEqual(headers);
+      expect(await arrayifyStream(output.quads)).toEqual([]);
+    });
+
+    it('should run with a missing content type', async () => {
+      const headers = {};
+      const output = await actor.run({ url: 'https://www.google.com/missingcontenttype' });
+      expect(output.url).toEqual('https://www.google.com/index.html');
       expect(output.triples).toEqual(true);
       expect(output.headers).toEqual(headers);
       expect(await arrayifyStream(output.quads)).toEqual([]);

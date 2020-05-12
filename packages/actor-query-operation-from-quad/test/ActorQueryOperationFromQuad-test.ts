@@ -541,7 +541,7 @@ describe('ActorQueryOperationFromQuad', () => {
         Bindings({ a: literal('2') }),
         Bindings({ a: literal('3') }),
       ]);
-      expect((<any> await output).metadata()).toMatchObject(Promise.resolve({ totalItems: 3 }));
+      expect(await (<any> output).metadata()).toMatchObject(Promise.resolve({ totalItems: 3 }));
       expect(output.type).toEqual('bindings');
       expect(output.variables).toMatchObject(['a']);
     });

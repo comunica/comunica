@@ -155,6 +155,13 @@ describe('ActorRdfParseHtml', () => {
           .handle.quads))
           .rejects.toThrow(new Error('Unexpected COMMA(",") in state KEY'));
       });
+
+      it('should allow multiple reads', async () => {
+        const quads = (<any> (await actor.run(
+          { context, handle: { input: inputScript, baseIRI: '' }, handleMediaType: 'text/html' }))).handle.quads;
+        quads._read();
+        quads._read();
+      });
     });
 
     describe('run with a html script and rdfa listener', () => {

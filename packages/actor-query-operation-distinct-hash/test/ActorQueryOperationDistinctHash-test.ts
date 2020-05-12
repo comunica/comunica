@@ -97,7 +97,7 @@ describe('ActorQueryOperationDistinctHash', () => {
     it('should run', () => {
       const op = { operation: { type: 'distinct' } };
       return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
-        expect((<any> await output).metadata()).toEqual({ totalItems: 5 });
+        expect(await (<any> output).metadata()).toEqual({ totalItems: 5 });
         expect(output.variables).toEqual([ 'a' ]);
         expect(output.type).toEqual('bindings');
         expect(await arrayifyStream(output.bindingsStream)).toEqual([

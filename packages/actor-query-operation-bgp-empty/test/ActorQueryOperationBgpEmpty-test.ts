@@ -49,7 +49,7 @@ describe('ActorQueryOperationBgpEmpty', () => {
       return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
         expect(await arrayifyStream(output.bindingsStream)).toEqual([Bindings({})]);
         expect(output.variables).toEqual([]);
-        expect((<any> await output).metadata()).toMatchObject({ totalItems: 1 });
+        expect(await (<any> output).metadata()).toMatchObject({ totalItems: 1 });
       });
     });
   });

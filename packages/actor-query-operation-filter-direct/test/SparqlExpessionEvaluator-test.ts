@@ -230,6 +230,15 @@ describe('SparqlExpressionEvaluator', () => {
       expect(exprFunc(bindings)).toMatchObject(literal('true', namedNode('http://www.w3.org/2001/XMLSchema#boolean')));
     });
 
+    it('supports || for empty strings', () => {
+      const exprFunc = SparqlExpressionEvaluator.createEvaluator(
+        operatorExpression('||', [
+          termExpression(literal('', namedNode('http://www.w3.org/2001/XMLSchema#boolean'))),
+          termExpression(literal('', namedNode('http://www.w3.org/2001/XMLSchema#boolean')))]),
+      );
+      expect(exprFunc(bindings)).toMatchObject(literal('true', namedNode('http://www.w3.org/2001/XMLSchema#boolean')));
+    });
+
     it('supports lang', () => {
       const exprFunc = SparqlExpressionEvaluator.createEvaluator(
         operatorExpression('lang', [

@@ -81,7 +81,7 @@ describe('ActorRdfResolveQuadPatternFederated', () => {
           ])});
       return actor.run({ pattern, context })
         .then(async (output) => {
-          expect((<any> await output).metadata()).toEqual({ totalItems: 4 });
+          expect(await (<any> output).metadata()).toEqual({ totalItems: 4 });
           expect(await arrayifyStream(output.data)).toEqual([
             squad('s1', 'p1', 'o1'),
             squad('s1', 'p1', 'o1'),

@@ -66,7 +66,7 @@ describe('ActorSparqlSerializeRdf', () => {
       it('should run for a valid media type and a quad stream', () => {
         const handle: any = { quadStream: true, type: 'quads' };
         return expect(actor.run({ handle, handleMediaType: 'text/turtle' })).resolves.toEqual(
-          { handle: { quads: true } });
+          { handle: { quadStream: true, type: 'quads' } });
       });
     });
 

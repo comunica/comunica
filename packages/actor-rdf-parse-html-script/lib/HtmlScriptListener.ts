@@ -93,10 +93,7 @@ export class HtmlScriptListener implements IHtmlParseListener {
         // Create a temporary text stream for pushing all the text chunks
         const textStream = new Readable({ objectMode: true });
         textStream._read = () => { return; };
-        const textChunksLocal = this.textChunks;
-        if (!textChunksLocal) {
-          throw new Error('Illegal state: text chunks in HTML script listener is undefined.')
-        }
+        const textChunksLocal = <string[]> this.textChunks;
 
         // Send all collected text to parser
         const parseAction = {
@@ -163,10 +160,7 @@ export class HtmlScriptListener implements IHtmlParseListener {
 
   public onText(data: string): void {
     if (this.handleMediaType) {
-      if (!this.textChunks) {
-        throw new Error('Illegal state: text chunks in HTML script listener is undefined.')
-      }
-      this.textChunks.push(data);
+      (<string[]> this.textChunks).push(data);
     }
   }
 

@@ -96,7 +96,7 @@ Options:
     } else {
       query = args._.pop();
       if (!query) {
-        query = this.queryString || '';
+        query = <string> this.queryString; // If we get here, this.queryString will always be defined
       }
     }
 

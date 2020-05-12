@@ -76,7 +76,7 @@ describe('ActorQueryOperationService', () => {
       const op = { operation: { type: 'service', silent: false, name: literal('dummy') }, context };
       return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
         expect(output.variables).toEqual(['?a']);
-        expect((<any> await output).metadata()).toEqual({ totalItems: 3 });
+        expect(await (<any> output).metadata()).toEqual({ totalItems: 3 });
         // tslint:disable:max-line-length
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({ a: literal('1') }),
@@ -90,7 +90,7 @@ describe('ActorQueryOperationService', () => {
       const op = { operation: { type: 'service', silent: false, name: literal('dummy') } };
       return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
         expect(output.variables).toEqual(['?a']);
-        expect((<any> await output).metadata()).toEqual({ totalItems: 3 });
+        expect(await (<any> output).metadata()).toEqual({ totalItems: 3 });
         // tslint:disable:max-line-length
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({ a: literal('1') }),
@@ -126,7 +126,7 @@ describe('ActorQueryOperationService', () => {
         expect((<any> output).operated.context.get('@comunica/bus-rdf-resolve-quad-pattern:sources').array[0].type)
           .toEqual('auto');
         expect(output.variables).toEqual(['?a']);
-        expect((<any> await output).metadata()).toEqual({ totalItems: 3 });
+        expect(await (<any> output).metadata()).toEqual({ totalItems: 3 });
         // tslint:disable:max-line-length
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({ a: literal('1') }),
@@ -144,7 +144,7 @@ describe('ActorQueryOperationService', () => {
       return actorThis.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
         expect((<any> output).operated.context.get('@comunica/bus-rdf-resolve-quad-pattern:sources').array[0].type)
           .toEqual('sparql');
-        expect((<any> await output).metadata()).toEqual({ totalItems: 3 });
+        expect(await (<any> output).metadata()).toEqual({ totalItems: 3 });
         // tslint:disable:max-line-length
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({ a: literal('1') }),

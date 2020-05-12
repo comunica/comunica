@@ -50,7 +50,7 @@ export class RdfSourceQpf implements RDF.Source {
     this.cachedQuads = {};
     const searchForm = this.getSearchForm(metadata);
     if (!searchForm) {
-      throw new Error('Illegal state: found no search form anymore in metadata.');
+      throw new Error('Illegal state: found no TPF/QPF search form anymore in metadata.');
     }
     this.searchForm = searchForm;
     this.defaultGraph = metadata.defaultGraph ? namedNode(metadata.defaultGraph) : undefined;

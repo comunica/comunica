@@ -391,6 +391,16 @@ describe('HttpServiceSparqlEndpoint', () => {
               'content-type': HttpServiceSparqlEndpoint.MIME_JSON});
             expect(response.end).toHaveBeenCalledWith(JSON.stringify({ message: 'Resource not found' }));
           });
+
+      it("should respond with 404 and end the response with the correct error message if url is undefined"
+        , async () => {
+          request.url = undefined;
+          await instance.handleRequest(engine, variants, stdout, stderr, request, response);
+
+          expect(response.writeHead).toHaveBeenCalledWith(404, { 'Access-Control-Allow-Origin': '*',
+            'content-type': HttpServiceSparqlEndpoint.MIME_JSON});
+          expect(response.end).toHaveBeenCalledWith(JSON.stringify({ message: 'Resource not found' }));
+        });
     });
 
     describe("writeQueryResult", () => {

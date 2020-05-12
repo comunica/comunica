@@ -347,7 +347,7 @@ describe('ActorQueryOperationBgpLeftDeepSmallestSort', () => {
           },
           {
             input: <any> 'I1',
-            meta: null,
+            meta: undefined,
             output: <any> 'O1',
           },
           {
@@ -479,7 +479,7 @@ describe('ActorQueryOperationBgpLeftDeepSmallestSort', () => {
       return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
         expect(output.variables).toEqual(['a']);
         expect(output.type).toEqual('bindings');
-        expect((<any> await output).metadata()).toEqual({ totalItems: 100 });
+        expect(await (<any> output).metadata()).toEqual({ totalItems: 100 });
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({
             graph: namedNode('a'),
@@ -496,7 +496,7 @@ describe('ActorQueryOperationBgpLeftDeepSmallestSort', () => {
       return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
         expect(output.variables).toEqual([]);
         expect(output.type).toEqual('bindings');
-        expect((<any> await output).metadata()).toEqual({ totalItems: Infinity });
+        expect(await (<any> output).metadata()).toEqual({ totalItems: Infinity });
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({
             graph: namedNode('a'),
@@ -523,7 +523,7 @@ describe('ActorQueryOperationBgpLeftDeepSmallestSort', () => {
       return thisActor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
         expect(output.variables).toEqual([]);
         expect(output.type).toEqual('bindings');
-        expect((<any> await output).metadata()).toEqual({ totalItems: 0 });
+        expect(await (<any> output).metadata()).toEqual({ totalItems: 0 });
         expect(await arrayifyStream(output.bindingsStream)).toEqual([]);
       });
     });
@@ -543,7 +543,7 @@ describe('ActorQueryOperationBgpLeftDeepSmallestSort', () => {
       return thisActor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
         expect(output.variables).toEqual([]);
         expect(output.type).toEqual('bindings');
-        expect((<any> await output).metadata()).toEqual({ totalItems: Infinity });
+        expect(await (<any> output).metadata()).toEqual({ totalItems: Infinity });
         expect(await arrayifyStream(output.bindingsStream)).toEqual([]);
       });
     });

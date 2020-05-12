@@ -116,14 +116,11 @@ export class SparqlExpressionEvaluator {
   }
 }
 
-function isLiteral(entity: any) {
+function isLiteral(entity: any): entity is string {
   return typeof entity === 'string' && entity[0] === '"';
 }
 
-function literalValue(literal: string | undefined) {
-  if (!literal) {
-    return '';
-  }
+function literalValue(literal: string) {
   const match = /^"([^]*)"/.exec(literal);
   return match && match[1] || '';
 }

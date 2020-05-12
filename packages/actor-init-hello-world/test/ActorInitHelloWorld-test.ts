@@ -46,7 +46,7 @@ describe('ActorInitHelloWorld', () => {
     });
 
     it('should test', () => {
-      return expect(actor.test({ argv: [], env: {}, stdin: new PassThrough() })).resolves.toBe(null);
+      return expect(actor.test({ argv: [], env: {}, stdin: new PassThrough() })).resolves.toBe(true);
     });
 
     it('should run', () => {

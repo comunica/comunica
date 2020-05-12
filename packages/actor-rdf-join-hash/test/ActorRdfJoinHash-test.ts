@@ -62,13 +62,13 @@ describe('ActorRdfJoinHash', () => {
 
     it('should generate correct test metadata', async () => {
       return expect(actor.test(action)).resolves.toHaveProperty('iterations',
-        ((<any> await action.entries[0]).metadata()).totalItems + ((<any> await action.entries[1]).metadata()).totalItems);
+        (await (<any> action.entries[0]).metadata()).totalItems + (await (<any> action.entries[1]).metadata()).totalItems);
     });
 
     it('should generate correct metadata', async () => {
       return actor.run(action).then(async (result: IActorQueryOperationOutputBindings) => {
         return expect((<any> result).metadata()).resolves.toHaveProperty('totalItems',
-          ((<any> await action.entries[0]).metadata()).totalItems * ((<any> await action.entries[1]).metadata()).totalItems);
+          (await (<any> action.entries[0]).metadata()).totalItems * (await (<any> action.entries[1]).metadata()).totalItems);
       });
     });
 

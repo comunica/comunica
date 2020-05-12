@@ -49,6 +49,14 @@ describe('ActorHttpMemento', () => {
           bodyText = 'nolink';
           break;
 
+        case "http://example.com/nobody":
+          headers.set('link', '<http://example.com/tg/http%3A%2F%2Fexample.com%2For>; rel="timegate"');
+          return Promise.resolve({
+            headers,
+            ok: true,
+            status,
+          });
+
         case "http://example.com/tg/http%3A%2F%2Fexample.com%2For":
 
           if (requestHeaders.has("accept-datetime") &&
@@ -146,6 +154,19 @@ describe('ActorHttpMemento', () => {
       const action: IActionHttp = {
         context: ActionContext({ [KEY_CONTEXT_DATETIME]: new Date() }),
         input: new Request('http://example.com/or'),
+      };
+      const result = await actor.run(action);
+      expect(result.status).toEqual(200);
+
+      const body: any = result.body;
+      expect(body.getReader().read()).toEqual("memento1");
+      return;
+    });
+
+    it('should run with new memento without timegate body', async () => {
+      const action: IActionHttp = {
+        context: ActionContext({ [KEY_CONTEXT_DATETIME]: new Date() }),
+        input: new Request('http://example.com/nobody'),
       };
       const result = await actor.run(action);
       expect(result.status).toEqual(200);

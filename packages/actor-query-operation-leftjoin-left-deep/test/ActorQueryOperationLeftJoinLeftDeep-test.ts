@@ -107,7 +107,7 @@ describe('ActorQueryOperationLeftJoinLeftDeep', () => {
       return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
         expect(output.variables).toEqual(['a']);
         expect(output.type).toEqual('bindings');
-        expect((<any> await output).metadata()).toEqual({ totalItems: 100 });
+        expect(await (<any> output).metadata()).toEqual({ totalItems: 100 });
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({
             '?a': namedNode('bound-a'),
@@ -127,7 +127,7 @@ describe('ActorQueryOperationLeftJoinLeftDeep', () => {
       return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
         expect(output.variables).toEqual(['a']);
         expect(output.type).toEqual('bindings');
-        expect((<any> await output).metadata()).toEqual({ totalItems: 100 });
+        expect(await (<any> output).metadata()).toEqual({ totalItems: 100 });
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({
             '?+a': namedNode('bound-+a1'),
@@ -151,7 +151,7 @@ describe('ActorQueryOperationLeftJoinLeftDeep', () => {
       return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
         expect(output.variables).toEqual(['a']);
         expect(output.type).toEqual('bindings');
-        expect((<any> await output).metadata()).toEqual({ totalItems: 100 });
+        expect(await (<any> output).metadata()).toEqual({ totalItems: 100 });
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({
             '?a': namedNode('bound-a'),
@@ -175,7 +175,7 @@ describe('ActorQueryOperationLeftJoinLeftDeep', () => {
       return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
         expect(output.variables).toEqual(['a']);
         expect(output.type).toEqual('bindings');
-        expect((<any> await output).metadata()).toEqual({ totalItems: 100 });
+        expect(await (<any> output).metadata()).toEqual({ totalItems: 100 });
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({
             '?+a': namedNode('bound-+a1'),
@@ -207,7 +207,7 @@ describe('ActorQueryOperationLeftJoinLeftDeep', () => {
       return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
         expect(output.variables).toEqual(['a']);
         expect(output.type).toEqual('bindings');
-        expect((<any> await output).metadata()).toEqual({ totalItems: 100 });
+        expect(await (<any> output).metadata()).toEqual({ totalItems: 100 });
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({
             '?a': namedNode('bound-a'),
@@ -226,7 +226,7 @@ describe('ActorQueryOperationLeftJoinLeftDeep', () => {
       return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
         expect(output.variables).toEqual(['a']);
         expect(output.type).toEqual('bindings');
-        expect((<any> await output).metadata()).toEqual({ totalItems: 100 });
+        expect(await (<any> output).metadata()).toEqual({ totalItems: 100 });
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({
             '?+a': namedNode('bound-+a1'),
@@ -247,7 +247,7 @@ describe('ActorQueryOperationLeftJoinLeftDeep', () => {
       operation.left.rejectMetadata = true;
       const op = { operation, context: ActionContext({ totalItems: 10, variables: ['a'] }) };
       return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
-        expect((<any> await output).metadata()).toMatchObject({ totalItems: Infinity });
+        expect(await (<any> output).metadata()).toMatchObject({ totalItems: Infinity });
       });
     });
 
@@ -260,7 +260,7 @@ describe('ActorQueryOperationLeftJoinLeftDeep', () => {
       operation.right.rejectMetadata = true;
       const op = { operation, context: ActionContext({ totalItems: 10, variables: ['a'] }) };
       return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
-        expect((<any> await output).metadata()).toMatchObject({ totalItems: Infinity });
+        expect(await (<any> output).metadata()).toMatchObject({ totalItems: Infinity });
       });
     });
 
@@ -274,7 +274,7 @@ describe('ActorQueryOperationLeftJoinLeftDeep', () => {
       operation.right.rejectMetadata = true;
       const op = { operation, context: ActionContext({ totalItems: 10, variables: ['a'] }) };
       return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
-        expect((<any> await output).metadata()).toMatchObject({ totalItems: Infinity });
+        expect(await (<any> output).metadata()).toMatchObject({ totalItems: Infinity });
       });
     });
 
@@ -288,7 +288,7 @@ describe('ActorQueryOperationLeftJoinLeftDeep', () => {
       return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
         expect(output.variables).toEqual(['a']);
         expect(output.type).toEqual('bindings');
-        expect((<any> await output).metadata()).toEqual({ totalItems: 100 });
+        expect(await (<any> output).metadata()).toEqual({ totalItems: 100 });
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({
             '?a': namedNode('bound-a'),

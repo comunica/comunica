@@ -78,7 +78,7 @@ describe('ActorQueryOperationJoin', () => {
       return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
         expect(output.variables).toEqual(['a', 'b']);
         expect(output.type).toEqual('bindings');
-        expect((<any> await output).metadata()).toEqual({ totalItems: 2 });
+        expect(await (<any> output).metadata()).toEqual({ totalItems: 2 });
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({ a: literal('1'), b: literal('1') }),
           Bindings({ a: literal('2'), b: literal('2') }),

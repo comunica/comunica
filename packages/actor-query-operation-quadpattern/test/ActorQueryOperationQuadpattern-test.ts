@@ -70,7 +70,7 @@ describe('ActorQueryOperationQuadpattern', () => {
 
     it('should ignore patterns with equal subject and predicate blank nodes', () => {
       return expect(ActorQueryOperationQuadpattern.getDuplicateElementLinks(quad('_:v1', '_:v1', '?v3', '?v4')))
-        .toEqual(null);
+        .toEqual(undefined);
     });
 
     it('should return correctly on patterns with equal subject and object variables', () => {
@@ -202,7 +202,7 @@ describe('ActorQueryOperationQuadpattern', () => {
       };
       return actor.run({ operation }).then(async (output: IActorQueryOperationOutputBindings) => {
         expect(output.variables).toEqual([ '?p' ]);
-        expect((<any> await output).metadata()).toBe(metadataContent);
+        expect(await (<any> output).metadata()).toBe(metadataContent);
         expect(await arrayifyStream(output.bindingsStream)).toEqual(
           [ Bindings({ '?p': <RDF.Term> { value: 'p1' } }),
             Bindings({ '?p': <RDF.Term> { value: 'p2' } }),
@@ -222,7 +222,7 @@ describe('ActorQueryOperationQuadpattern', () => {
       const context = ActionContext({});
       return actor.run({ operation, context }).then(async (output: IActorQueryOperationOutputBindings) => {
         expect(output.variables).toEqual([ '?p' ]);
-        expect((<any> await output).metadata()).toBe(metadataContent);
+        expect(await (<any> output).metadata()).toBe(metadataContent);
         expect(await arrayifyStream(output.bindingsStream)).toEqual(
           [ Bindings({ '?p': <RDF.Term> { value: 'p1' } }),
             Bindings({ '?p': <RDF.Term> { value: 'p2' } }),
@@ -252,7 +252,7 @@ describe('ActorQueryOperationQuadpattern', () => {
 
       return actor.run({ operation }).then(async (output: IActorQueryOperationOutputBindings) => {
         expect(output.variables).toEqual([ '?v' ]);
-        expect((<any> await output).metadata()).toBe(metadataContent);
+        expect(await (<any> output).metadata()).toBe(metadataContent);
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({ '?v': <RDF.Term> { value: 'w' } }),
         ]);

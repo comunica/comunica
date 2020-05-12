@@ -82,7 +82,7 @@ describe('ActorQueryOperationProject', () => {
     it('should error run on a stream with variables that should be deleted and are missing', async () => {
       const op = { operation: { type: 'project', input: 'in', variables: [ variable('a'), variable('missing') ] } };
       return expect(actor.run(op)).rejects
-        .toThrow('Variables \'[\'missing\']\' are used in the projection result, but are not assigned.');
+        .toThrow('Variables \'?missing\' are used in the projection result, but are not assigned.');
     });
 
     it('should run on a stream with equal blank nodes across bindings', () => {

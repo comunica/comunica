@@ -511,7 +511,7 @@ describe('ActorQueryOperationBgpLeftDeepSmallest', () => {
       return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
         expect(output.variables).toEqual(['a']);
         expect(output.type).toEqual('bindings');
-        expect((<any> await output).metadata()).toEqual({ totalItems: 100 });
+        expect(await (<any> output).metadata()).toEqual({ totalItems: 100 });
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({
             graph: namedNode('4'),
@@ -529,7 +529,7 @@ describe('ActorQueryOperationBgpLeftDeepSmallest', () => {
       return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
         expect(output.variables).toEqual([]);
         expect(output.type).toEqual('bindings');
-        expect((<any> await output).metadata()).toEqual({ totalItems: Infinity });
+        expect(await (<any> output).metadata()).toEqual({ totalItems: Infinity });
         expect(mediatorQueryOperation.mediate).toHaveBeenCalledTimes(2);
         expect(mediatorQueryOperation.mediate).toHaveBeenCalledWith(
           {
@@ -562,7 +562,7 @@ describe('ActorQueryOperationBgpLeftDeepSmallest', () => {
       return thisActor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
         expect(output.variables).toEqual([]);
         expect(output.type).toEqual('bindings');
-        expect((<any> await output).metadata()).toEqual({ totalItems: 0 });
+        expect(await (<any> output).metadata()).toEqual({ totalItems: 0 });
         expect(await arrayifyStream(output.bindingsStream)).toEqual([]);
       });
     });
@@ -582,7 +582,7 @@ describe('ActorQueryOperationBgpLeftDeepSmallest', () => {
       return thisActor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
         expect(output.variables).toEqual([]);
         expect(output.type).toEqual('bindings');
-        expect((<any> await output).metadata()).toEqual({ totalItems: Infinity });
+        expect(await (<any> output).metadata()).toEqual({ totalItems: Infinity });
         expect(await arrayifyStream(output.bindingsStream)).toEqual([]);
       });
     });

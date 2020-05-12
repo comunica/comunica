@@ -112,7 +112,7 @@ describe('ActorQueryOperationFilterSparqlee', () => {
         Bindings({ '?a': literal('3') }),
       ]);
       expect(output.type).toEqual('bindings');
-      expect((<any> await output).metadata()).toMatchObject({ totalItems: 3 });
+      expect(await (<any> output).metadata()).toMatchObject({ totalItems: 3 });
       expect(output.variables).toMatchObject(['a']);
     });
 
@@ -120,7 +120,7 @@ describe('ActorQueryOperationFilterSparqlee', () => {
       const op = { operation: { type: 'filter', input: {}, expression: falsyExpression } };
       const output: IActorQueryOperationOutputBindings = await actor.run(op) as any;
       expect(await arrayifyStream(output.bindingsStream)).toMatchObject([]);
-      expect((<any> await output).metadata()).toMatchObject({ totalItems: 3 });
+      expect(await (<any> output).metadata()).toMatchObject({ totalItems: 3 });
       expect(output.type).toEqual('bindings');
       expect(output.variables).toMatchObject(['a']);
     });
@@ -129,7 +129,7 @@ describe('ActorQueryOperationFilterSparqlee', () => {
       const op = { operation: { type: 'filter', input: {}, expression: erroringExpression } };
       const output: IActorQueryOperationOutputBindings = await actor.run(op) as any;
       expect(await arrayifyStream(output.bindingsStream)).toMatchObject([]);
-      expect((<any> await output).metadata()).toMatchObject({ totalItems: 3 });
+      expect(await (<any> output).metadata()).toMatchObject({ totalItems: 3 });
       expect(output.type).toEqual('bindings');
       expect(output.variables).toMatchObject(['a']);
     });
@@ -154,7 +154,7 @@ describe('ActorQueryOperationFilterSparqlee', () => {
         Bindings({ '?a': literal('3') }),
       ]);
       expect(output.type).toEqual('bindings');
-      expect((<any> await output).metadata()).toMatchObject({ totalItems: 3 });
+      expect(await (<any> output).metadata()).toMatchObject({ totalItems: 3 });
       expect(output.variables).toMatchObject(['a']);
     });
 
@@ -173,7 +173,7 @@ describe('ActorQueryOperationFilterSparqlee', () => {
       it('like a simple EXIST that is false', async () => {
         // tslint:disable-next-line: no-string-literal
         const resolver = ActorQueryOperation.createExistenceResolver(Map(), actor.mediatorQueryOperation);
-        mediatorQueryOperation.mediate = (arg) => Promise.resolve({
+        mediatorQueryOperation.mediate = (arg: any) => Promise.resolve({
           bindingsStream: new ArrayIterator([]),
           metadata: () => Promise.resolve({ totalItems: 0 }),
           operated: arg,
@@ -191,7 +191,7 @@ describe('ActorQueryOperationFilterSparqlee', () => {
       it('like a NOT EXISTS', async () => {
         // tslint:disable-next-line: no-string-literal
         const resolver = ActorQueryOperation.createExistenceResolver(Map(), actor.mediatorQueryOperation);
-        mediatorQueryOperation.mediate = (arg) => Promise.resolve({
+        mediatorQueryOperation.mediate = (arg: any) => Promise.resolve({
           bindingsStream: new ArrayIterator([]),
           metadata: () => Promise.resolve({ totalItems: 0 }),
           operated: arg,
@@ -215,7 +215,7 @@ describe('ActorQueryOperationFilterSparqlee', () => {
             bindingsStream.emit('error', 'Test error');
           },
         });
-        mediatorQueryOperation.mediate = (arg) => Promise.resolve({
+        mediatorQueryOperation.mediate = (arg: any) => Promise.resolve({
           bindingsStream,
           metadata: () => Promise.resolve({ totalItems: 3 }),
           operated: arg,

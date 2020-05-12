@@ -30,7 +30,7 @@ describe('ActorRdfResolveQuadPatternSource', () => {
 
     describe('getContextSourceUrl', () => {
       it('should return null when no source is available', () => {
-        return expect(actor.getContextSourceUrl(null)).toEqual(null);
+        return expect(actor.getContextSourceUrl(null)).toEqual(undefined);
       });
 
       it('should return when a source is available', () => {
@@ -47,7 +47,7 @@ describe('ActorRdfResolveQuadPatternSource', () => {
     });
 
     it('should run', () => {
-      return actor.run({ pattern: {} }).then(async (output) => {
+      return actor.run({ pattern: {} }).then(async (output: any) => {
         expect(await arrayifyStream(output.data)).toEqual(['a', 'b']);
       });
     });
@@ -56,7 +56,7 @@ describe('ActorRdfResolveQuadPatternSource', () => {
       actor.getSource = () => ({
         matchLazy: () => new ArrayIterator(['al', 'bl']),
       });
-      return actor.run({ pattern: {} }).then(async (output) => {
+      return actor.run({ pattern: {} }).then(async (output: any) => {
         expect(await arrayifyStream(output.data)).toEqual(['al', 'bl']);
       });
     });

@@ -56,11 +56,11 @@ export abstract class ActorRdfJoin extends Actor<IActionRdfJoin, IMediatorTypeIt
   }
 
   /**
-   * Returns the result of joining bindings, or `undefined` if no join is possible.
+   * Returns the result of joining bindings, or `null` if no join is possible.
    * @param {Bindings[]} bindings
    * @returns {Bindings}
    */
-  public static join(...bindings: Bindings[]): Bindings | undefined {
+  public static join(...bindings: Bindings[]): Bindings | null {
     try {
       return bindings.reduce((acc: Bindings, val: Bindings) => acc.mergeWith((l: RDF.Term, r: RDF.Term) => {
         if (!l.equals(r)) {
@@ -69,7 +69,7 @@ export abstract class ActorRdfJoin extends Actor<IActionRdfJoin, IMediatorTypeIt
         return l;
       }, val));
     } catch (e) {
-      return undefined;
+      return null;
     }
   }
 

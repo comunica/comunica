@@ -109,6 +109,13 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
       return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
+    it('should fail to run for a missing source', async () => {
+      const context = ActionContext({});
+      const op = { context, operation: factory.createPattern(namedNode('http://s'), variable('p'),
+          namedNode('http://o')) };
+      await expect(actor.run(op)).rejects.toThrow(new Error('Illegal state: undefined sparql endpoint source.'));
+    });
+
     it('should run for a sub-query', async () => {
       const context = ActionContext({
         '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'sparql', value: 'http://example.org/sparql-select' },
@@ -117,7 +124,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
           namedNode('http://o')) };
       const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
       expect(output.variables).toEqual(['?p']);
-      expect((<any> await output).metadata()).toEqual({ totalItems: 3 });
+      expect(await (<any> output).metadata()).toEqual({ totalItems: 3 });
       // tslint:disable:max-line-length
       expect(await arrayifyStream(output.bindingsStream)).toEqual([
         Bindings({ '?p': namedNode('http://example.org/sparql-select?query=SELECT%20%3Fp%20WHERE%20%7B%20%3Chttp%3A%2F%2Fs%3E%20%3Fp%20%3Chttp%3A%2F%2Fo%3E.%20%7D/1') }),
@@ -136,7 +143,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
         ) };
       const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
       expect(output.variables).toEqual(['?myP']);
-      expect((<any> await output).metadata()).toEqual({ totalItems: 3 });
+      expect(await (<any> output).metadata()).toEqual({ totalItems: 3 });
       // tslint:disable:max-line-length
       expect(await arrayifyStream(output.bindingsStream)).toEqual([
         Bindings({ '?p': namedNode('http://example.org/sparql-select?query=SELECT%20%3FmyP%20WHERE%20%7B%20%3Chttp%3A%2F%2Fs%3E%20%3Fp%20%3Chttp%3A%2F%2Fo%3E.%20%7D/1') }),
@@ -166,7 +173,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
           [ factory.createPattern(namedNode('http://s'), variable('p'), namedNode('http://o')) ]) };
       const output: IActorQueryOperationOutputQuads = <any> await actor.run(op);
       // tslint:disable:max-line-length
-      expect((<any> await output).metadata()).toEqual({ totalItems: 2 });
+      expect(await (<any> output).metadata()).toEqual({ totalItems: 2 });
       // tslint:disable:max-line-length
       expect(await arrayifyStream(output.quadStream)).toBeRdfIsomorphic([
         quad('http://ex.org/s', 'http://ex.org/p', 'http://ex.org/o1'),

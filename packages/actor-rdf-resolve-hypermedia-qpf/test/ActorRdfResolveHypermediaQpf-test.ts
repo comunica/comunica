@@ -84,10 +84,9 @@ describe('ActorRdfResolveHypermediaQpf', () => {
 
   describe('#createSource', () => {
     it('should create an RdfSourceQpf', () => {
-      const meta = {};
       const context = {};
       const quads = {};
-      const source = actor.createSource(meta, context, quads);
+      const source = actor.createSource(metadata, context, quads);
       expect(source).toBeInstanceOf(RdfSourceQpf);
       expect((<any> source).mediatorMetadata).toBe(mediatorMetadata);
       expect((<any> source).mediatorMetadataExtract).toBe(mediatorMetadataExtract);
@@ -131,7 +130,7 @@ describe('ActorRdfResolveHypermediaQpf', () => {
       metadata = {};
       return expect(actor.test({metadata, context: ActionContext
         ({ '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'hypermedia', value: 'source' }}),
-      })).rejects.toThrow(new Error('Actor actor could not detect a TPF/QPF search form.'));
+      })).rejects.toThrow(new Error('Illegal state: found no TPF/QPF search form anymore in metadata.'));
     });
 
     it('should when the dataset has already been handled', () => {

@@ -65,7 +65,7 @@ describe('ActorInitRdfParse', () => {
     });
 
     it('should test', () => {
-      return expect(actor.test({ argv: [], env: {}, stdin: input })).resolves.toBe(null);
+      return expect(actor.test({ argv: [], env: {}, stdin: input })).resolves.toBe(true);
     });
 
     it('should run', () => {

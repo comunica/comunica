@@ -64,7 +64,7 @@ describe('ActorInitHttp', () => {
     });
 
     it('should test', () => {
-      return expect(actor.test({ argv: [], env: {}, stdin: new PassThrough() })).resolves.toBe(null);
+      return expect(actor.test({ argv: [], env: {}, stdin: new PassThrough() })).resolves.toBe(true);
     });
 
     it('should run with a web stream', () => {
@@ -92,6 +92,12 @@ describe('ActorInitHttp', () => {
     it('should run with argv', () => {
       return expect(actor
         .run({ argv: [ 'https://www.nogoogle.com/this/is/not/a/page' ], env: {}, stdin: new PassThrough() }))
+        .resolves.toHaveProperty('stderr');
+    });
+
+    it('should run with empty argv', () => {
+      return expect(actor
+        .run({ argv: [], env: {}, stdin: new PassThrough() }))
         .resolves.toHaveProperty('stderr');
     });
   });

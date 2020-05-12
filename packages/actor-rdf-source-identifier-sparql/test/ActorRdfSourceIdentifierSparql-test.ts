@@ -33,6 +33,12 @@ describe('ActorRdfSourceIdentifierSparql', () => {
     beforeEach(() => {
       const mediatorHttp: any = {
         mediate: (action: any) => {
+          if (action.input.indexOf('nobody') >= 0) {
+            return Promise.resolve({
+              headers: { get: () => 'application/sparql-results+json' },
+              ok: action.input.indexOf('ok') >= 0,
+            });
+          }
           return Promise.resolve({
             body : {
               cancel: () => null,
@@ -60,6 +66,10 @@ describe('ActorRdfSourceIdentifierSparql', () => {
 
     it('should not test on invalid requests', () => {
       return expect(actor.test({ sourceValue: 'http://fail' })).rejects.toBeTruthy();
+    });
+
+    it('should test on valid https requests without body', () => {
+      return expect(actor.test({ sourceValue: 'https://ok/nobody' })).resolves.toBeTruthy();
     });
 
     it('should run', () => {

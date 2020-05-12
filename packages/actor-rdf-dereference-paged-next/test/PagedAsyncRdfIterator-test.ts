@@ -15,7 +15,7 @@ class Dummy extends PagedAsyncRdfIterator {
   }
 
   protected getIterator(url: string, page: number, onNextPage: (nextPage?: string) => void) {
-    onNextPage(page >= this.data.length ? null : 'valid');
+    onNextPage(page >= this.data.length ? undefined : 'valid');
     return Promise.resolve(new ArrayIterator<RDF.Quad>(page >= this.data.length ? [] : this.data[page]));
   }
 }
@@ -34,7 +34,7 @@ class DelayedDummy extends Dummy {// tslint:disable-line max-classes-per-file
 
   protected getIterator(url: string, page: number, onNextPage: (nextPage?: string) => void) {
     setTimeout(() => {
-      onNextPage(page >= this.data.length ? null : 'valid');
+      onNextPage(page >= this.data.length ? undefined : 'valid');
     }, 150);
     return Promise.resolve(new ArrayIterator<RDF.Quad>(page >= this.data.length ? [] : this.data[page]));
   }
@@ -57,7 +57,7 @@ describe('PagedAsyncRdfIterator', () => {
       ]];
       const quads = toTerms(data);
       const it = new Dummy(quads);
-      const result = [];
+      const result: any = [];
       it.on('data', (d) => result.push(d));
       it.on('end', () => {
         expect(result).toEqual(flatten(quads));
@@ -85,7 +85,7 @@ describe('PagedAsyncRdfIterator', () => {
       ];
       const quads = toTerms(data);
       const it = new Dummy(quads);
-      const result = [];
+      const result: any = [];
       it.on('data', (d) => result.push(d));
       it.on('end', () => {
         expect(result).toEqual(flatten(quads));
@@ -108,7 +108,7 @@ describe('PagedAsyncRdfIterator', () => {
       ]];
       const quads = toTerms(data);
       const it = new DelayedDummy(quads);
-      const result = [];
+      const result: any = [];
       it.on('data', (d) => result.push(d));
       it.on('end', () => {
         expect(result).toEqual(flatten(quads));
@@ -136,7 +136,7 @@ describe('PagedAsyncRdfIterator', () => {
       ];
       const quads = toTerms(data);
       const it = new DelayedDummy(quads);
-      const result = [];
+      const result: any = [];
       it.on('data', (d) => result.push(d));
       it.on('end', () => {
         expect(result).toEqual(flatten(quads));
@@ -146,10 +146,10 @@ describe('PagedAsyncRdfIterator', () => {
   });
 });
 
-function toTerms(data) {
-  return data.map((page) => page.map((terms) => lit.call(null, terms)));
+function toTerms(data: any) {
+  return data.map((page: any) => page.map((terms: any) => lit.call(null, terms)));
 }
 
-function flatten(a) {
+function flatten(a: any) {
   return [].concat.apply([], a);
 }

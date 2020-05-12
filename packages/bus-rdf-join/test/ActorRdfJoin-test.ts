@@ -37,8 +37,8 @@ describe('ActorRdfJoin', () => {
 
   beforeEach(() => {
     action = { entries: [
-      { bindingsStream: null, variables: [], type: 'bindings' },
-      { bindingsStream: null, variables: [], type: 'bindings' },
+      { bindingsStream: <any> null, variables: [], type: 'bindings' },
+      { bindingsStream: <any> null, variables: [], type: 'bindings' },
     ]};
   });
 
@@ -207,10 +207,10 @@ describe('ActorRdfJoin', () => {
     it('returns an empty stream for empty input', () => {
       action.entries = [];
 
-      return instance.run(action).then((result) => {
+      return instance.run(action).then(async (result: any) => {
         expect(result.bindingsStream).toEqual(new EmptyIterator());
         expect(result.variables).toEqual([]);
-        return expect(result.metadata()).resolves.toEqual({ totalItems: 0 });
+        return expect(await result.metadata()).toEqual({ totalItems: 0 });
       });
     });
 
@@ -226,8 +226,8 @@ describe('ActorRdfJoin', () => {
     it('calculates totalItems if metadata is supplied', async () => {
       action.entries[0].metadata = () => Promise.resolve({ totalItems: 5 });
       action.entries[1].metadata = () => Promise.resolve({ totalItems: 10 });
-      return instance.run(action).then((result) => {
-        return expect(result.metadata()).resolves.toEqual({ totalItems: 50 });
+      return instance.run(action).then(async (result: any) => {
+        return expect(await result.metadata()).toEqual({ totalItems: 50 });
       });
     });
 
@@ -235,8 +235,8 @@ describe('ActorRdfJoin', () => {
       const metaInstance = new Dummy({ keep: true });
       action.entries[0].metadata = () => Promise.resolve({ totalItems: 5 });
       action.entries[1].metadata = () => Promise.resolve({ totalItems: 10 });
-      return metaInstance.run(action).then((result) => {
-        return expect(result.metadata()).resolves.toEqual({ keep: true, totalItems: 50 });
+      return metaInstance.run(action).then(async (result: any) => {
+        return expect(await result.metadata()).toEqual({ keep: true, totalItems: 50 });
       });
     });
 
@@ -244,8 +244,8 @@ describe('ActorRdfJoin', () => {
       const metaInstance = new Dummy({ totalItems: 10 });
       action.entries[0].metadata = () => Promise.resolve({ totalItems: 5 });
       action.entries[1].metadata = () => Promise.resolve({ totalItems: 10 });
-      return metaInstance.run(action).then((result) => {
-        return expect(result.metadata()).resolves.toEqual({ totalItems: 10 });
+      return metaInstance.run(action).then(async (result: any) => {
+        return expect(await result.metadata()).toEqual({ totalItems: 10 });
       });
     });
   });

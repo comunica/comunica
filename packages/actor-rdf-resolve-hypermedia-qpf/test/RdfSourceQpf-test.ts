@@ -166,20 +166,20 @@ describe('RdfSourceQpf', () => {
           ],
         },
       };
-      return expect(source.getSearchForm(metadata)).toBe(null);
+      return expect(source.getSearchForm(metadata)).toBe(undefined);
     });
 
     it('should return null when no values are present', () => {
       metadata = {
         searchForms: {},
       };
-      return expect(source.getSearchForm(metadata)).toBe(null);
+      return expect(source.getSearchForm(metadata)).toBe(undefined);
     });
 
     it('should return null when no search forms are present', () => {
       metadata = {
       };
-      return expect(source.getSearchForm(metadata)).toBe(null);
+      return expect(source.getSearchForm(metadata)).toBe(undefined);
     });
   });
 

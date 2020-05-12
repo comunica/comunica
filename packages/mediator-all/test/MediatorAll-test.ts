@@ -33,11 +33,12 @@ describe('MediatorAll', () => {
       });
 
       it('should mediate to all resolving actors', async () => {
-        expect(await mediator.mediate(<any> { a: 'b' })).toBe(null);
+        expect(await mediator.mediate(<any> { a: 'b' })).toBe(undefined);
       });
 
-      it('should return null for mediateWith', async () => {
-        expect(await (<any> mediator).mediateWith(null, null)).toBe(null);
+      it('should throw for mediateWith', async () => {
+        expect((<any> mediator).mediateWith(undefined, undefined)).rejects
+          .toThrow(new Error('Unsupported operation: MediatorAll#mediateWith'));
       });
     });
 
@@ -60,7 +61,7 @@ describe('MediatorAll', () => {
       });
 
       it('should mediate to all resolving actors', async () => {
-        expect(await mediator.mediate(<any> { a: 'b' })).toBe(null);
+        expect(await mediator.mediate(<any> { a: 'b' })).toEqual({ field: 10 });
         expect(a0.runObservable).toHaveBeenCalledWith({ a: 'b' });
         expect(a1.runObservable).toHaveBeenCalledWith({ a: 'b' });
         expect(a2.runObservable).toHaveBeenCalledWith({ a: 'b' });
@@ -86,7 +87,7 @@ describe('MediatorAll', () => {
       });
 
       it('should mediate over no actors', async () => {
-        expect(await mediator.mediate(<any> { a: 'b' })).toBe(null);
+        expect(await mediator.mediate(<any> { a: 'b' })).toBe(undefined);
         expect(a0.runObservable).not.toHaveBeenCalled();
         expect(a1.runObservable).not.toHaveBeenCalled();
         expect(a2.runObservable).not.toHaveBeenCalled();
@@ -112,7 +113,7 @@ describe('MediatorAll', () => {
       });
 
       it('should mediate over the non-rejecting actors', async () => {
-        expect(await mediator.mediate(<any> { a: 'b' })).toBe(null);
+        expect(await mediator.mediate(<any> { a: 'b' })).toEqual({ field: 10 });
         expect(a0.runObservable).toHaveBeenCalledWith({ a: 'b' });
         expect(a1.runObservable).not.toHaveBeenCalled();
         expect(a2.runObservable).toHaveBeenCalledWith({ a: 'b' });

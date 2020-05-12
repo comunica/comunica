@@ -42,10 +42,7 @@ export class ActorSparqlSerializeTree extends ActorSparqlSerializeFixedMediaType
         const reKeyedBindings: {[key: string]: RDF.Term} = {};
         // Removes the '?' prefix
         for (const key in rawBindings) {
-          const bindingValue = rawBindings[key];
-          if (bindingValue) {
-            reKeyedBindings[key.substr(1)] = bindingValue;
-          }
+          reKeyedBindings[key.substr(1)] = rawBindings[key];
         }
         bindingsArray.push(reKeyedBindings);
       });

@@ -183,7 +183,7 @@ describe('ActorRdfJoinMultiSmallest', () => {
       const output = await actor.run(action3);
       expect(output.type).toEqual('bindings');
       expect(output.variables).toEqual(['a', 'c', 'b']);
-      expect((<any> await output).metadata()).toEqual({ totalItems: 40 });
+      expect(await (<any> output).metadata()).toEqual({ totalItems: 40 });
       expect(await arrayifyStream(output.bindingsStream)).toEqual([
         Bindings({ a: literal('a1'), b: literal('b1'), c: literal('c1')}),
         Bindings({ a: literal('a2'), b: literal('b2'), c: literal('c2')}),
@@ -199,7 +199,7 @@ describe('ActorRdfJoinMultiSmallest', () => {
       const output = await actor.run(action4);
       expect(output.type).toEqual('bindings');
       expect(output.variables).toEqual(['a', 'c', 'd', 'b']);
-      expect((<any> await output).metadata()).toEqual({ totalItems: 80 });
+      expect(await (<any> output).metadata()).toEqual({ totalItems: 80 });
       expect(await arrayifyStream(output.bindingsStream)).toEqual([
         Bindings({ a: literal('a1'), b: literal('b1'), c: literal('c1'), d: literal('d1')}),
         Bindings({ a: literal('a2'), b: literal('b2'), c: literal('c2'), d: literal('d2')}),

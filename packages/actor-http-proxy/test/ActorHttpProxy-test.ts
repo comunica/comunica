@@ -7,7 +7,7 @@ import {ProxyHandlerStatic} from "../lib/ProxyHandlerStatic";
 
 describe('ActorHttpProxy', () => {
   let bus: any;
-  let mediatorHttp;
+  let mediatorHttp: any;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -35,7 +35,7 @@ describe('ActorHttpProxy', () => {
 
   describe('An ActorHttpProxy instance', () => {
     let actor: ActorHttpProxy;
-    let context;
+    let context: any;
 
     beforeEach(() => {
       actor = new ActorHttpProxy({ name: 'actor', bus, mediatorHttp });
@@ -47,6 +47,12 @@ describe('ActorHttpProxy', () => {
     it('should test on a valid proxy handler', () => {
       const input = 'http://example.org';
       return expect(actor.test({ input, context })).resolves.toEqual({ time: Infinity });
+    });
+
+    it('should not test on a missing context', () => {
+      const input = 'http://example.org';
+      return expect(actor.test({ input })).rejects
+        .toThrow(new Error('Actor actor could not find a context.'));
     });
 
     it('should not test on a no proxy handler', () => {
@@ -62,6 +68,11 @@ describe('ActorHttpProxy', () => {
       });
       return expect(actor.test({ input, context })).rejects
         .toThrow(new Error('Actor actor could not determine a proxy for the given request.'));
+    });
+
+    it('should fail to run on a request input without context', async () => {
+      const input = new Request('http://example.org/');
+      expect(actor.run({ input })).rejects.toThrow(new Error('Illegal state: missing context'));
     });
 
     it('should run when the proxy does not return an x-final-url header', async () => {

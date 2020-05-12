@@ -133,7 +133,7 @@ describe('ActorQueryOperationExtend', () => {
       ]);
 
       expect(output.type).toEqual('bindings');
-      expect((<any> await output).metadata()).toMatchObject({ totalItems: 3 });
+      expect(await (<any> output).metadata()).toMatchObject({ totalItems: 3 });
       expect(output.variables).toMatchObject(['?a', '?l']);
     });
 
@@ -147,7 +147,7 @@ describe('ActorQueryOperationExtend', () => {
       expect(await arrayifyStream(output.bindingsStream)).toMatchObject(input);
       expect(warn).toHaveBeenCalledTimes(3);
       expect(output.type).toEqual('bindings');
-      expect((<any> await output).metadata()).toMatchObject({ totalItems: 3 });
+      expect(await (<any> output).metadata()).toMatchObject({ totalItems: 3 });
       expect(output.variables).toMatchObject(['?a', '?l']);
     });
 

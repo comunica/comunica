@@ -1,5 +1,5 @@
 import {ActionContext, Bus} from "@comunica/core";
-import {ActorQueryOperation, Bindings, KEY_CONTEXT_BASEIRI, KEY_CONTEXT_QUERY_TIMESTAMP} from "..";
+import {ActorQueryOperation, Bindings, getMetadata, KEY_CONTEXT_BASEIRI, KEY_CONTEXT_QUERY_TIMESTAMP} from "..";
 import {Algebra, Factory} from "sparqlalgebrajs";
 import {ArrayIterator} from "asynciterator";
 
@@ -121,6 +121,17 @@ describe('ActorQueryOperation', () => {
         const result = resolver(expr, Bindings({}));
         return expect(await result).toBe(true);
       });
+    });
+  });
+
+  describe('#getMetadata', () => {
+    it('should an empty promise for missing metadata', async () => {
+      expect(await getMetadata({ type: 'none' })).toEqual({});
+    });
+
+    it('should an empty promise for missing metadata', async () => {
+      expect(await getMetadata({ type: 'none', metadata: async () => ({ bla: true }) }))
+        .toEqual({ bla: true });
     });
   });
 });

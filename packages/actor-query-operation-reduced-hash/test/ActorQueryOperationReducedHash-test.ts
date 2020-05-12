@@ -100,7 +100,7 @@ describe('ActorQueryOperationReducedHash', () => {
     it('should run', () => {
       const op = { operation: { type: 'reduced' } };
       return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
-        expect((<any> await output).metadata()).toEqual({ totalItems: 5 });
+        expect(await (<any> output).metadata()).toEqual({ totalItems: 5 });
         expect(output.variables).toEqual([ 'a' ]);
         expect(output.type).toEqual('bindings');
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
@@ -150,7 +150,7 @@ describe('Smaller cache than number of queries', () => {
   it('should run', () => {
     const op = { operation: { type: 'reduced' } };
     return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
-      expect((<any> await output).metadata()).toEqual({ totalItems: 7 });
+      expect(await (<any> output).metadata()).toEqual({ totalItems: 7 });
       expect(output.variables).toEqual([ 'a' ]);
       expect(output.type).toEqual('bindings');
       expect(await arrayifyStream(output.bindingsStream)).toEqual([

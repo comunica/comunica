@@ -91,7 +91,7 @@ describe('ActorQueryOperationFilterDirect', () => {
         Bindings({ '?a': literal('3') }),
       ]);
       expect(output.type).toEqual('bindings');
-      expect((<any> await output).metadata()).toMatchObject({ totalItems: 3 });
+      expect(await (<any> output).metadata()).toMatchObject({ totalItems: 3 });
       expect(output.variables).toMatchObject(['a']);
     });
 
@@ -99,7 +99,7 @@ describe('ActorQueryOperationFilterDirect', () => {
       const op = { operation: { type: 'filter', input: {}, expression: falsyExpression } };
       const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
       expect(await arrayifyStream(output.bindingsStream)).toMatchObject([]);
-      expect((<any> await output).metadata()).toMatchObject({ totalItems: 3 });
+      expect(await (<any> output).metadata()).toMatchObject({ totalItems: 3 });
       expect(output.type).toEqual('bindings');
       expect(output.variables).toMatchObject(['a']);
     });

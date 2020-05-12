@@ -82,10 +82,10 @@ export class GroupsState {
         // If distinct, check first wether we have inserted these values already
         if (aggregate.distinct) {
           const hash = this.hashBindings(bindings);
-          if (this.distinctHashes!.get(groupHash)?.has(hash)) {
+          if ((<Set<string>> this.distinctHashes!.get(groupHash)).has(hash)) {
             continue;
           } else {
-            this.distinctHashes!.get(groupHash)?.add(hash);
+            (<Set<string>> this.distinctHashes!.get(groupHash)).add(hash);
           }
         }
 
