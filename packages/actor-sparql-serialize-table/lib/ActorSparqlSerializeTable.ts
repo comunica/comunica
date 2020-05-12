@@ -1,4 +1,8 @@
-import {IActorQueryOperationOutputBindings, IActorQueryOperationOutputQuads} from "@comunica/bus-query-operation";
+import {
+  Bindings,
+  IActorQueryOperationOutputBindings,
+  IActorQueryOperationOutputQuads
+} from "@comunica/bus-query-operation";
 import {ActorSparqlSerializeFixedMediaTypes, IActionSparqlSerialize,
   IActorSparqlSerializeFixedMediaTypesArgs, IActorSparqlSerializeOutput} from "@comunica/bus-sparql-serialize";
 import {ActionContext} from "@comunica/core";
@@ -44,6 +48,13 @@ export class ActorSparqlSerializeTable extends ActorSparqlSerializeFixedMediaTyp
     data.push(header + '\n' + ActorSparqlSerializeTable.repeat('-', header.length) + '\n');
   }
 
+  public pushRow(data: Readable, labels: string[], bindings: Bindings) {
+    data.push(labels
+      .map((label) => bindings.has(label) ? bindings.get(label).value : '')
+      .map(this.pad, this)
+      .join(' ') + '\n');
+  }
+
   public async runHandle(action: IActionSparqlSerialize, mediaType: string, context: ActionContext)
     : Promise<IActorSparqlSerializeOutput> {
     const data = new Readable();
@@ -54,10 +65,10 @@ export class ActorSparqlSerializeTable extends ActorSparqlSerializeFixedMediaTyp
     let resultStream: NodeJS.EventEmitter;
     if (action.type === 'bindings') {
       resultStream = (<IActorQueryOperationOutputBindings> action).bindingsStream;
-      this.pushHeader(data, (<IActorQueryOperationOutputBindings> action).variables);
+      const labels = (<IActorQueryOperationOutputBindings> action).variables;
+      this.pushHeader(data, labels);
       resultStream.on('error', (e) => data.emit('error', e));
-      resultStream.on('data', (bindings) => data.push(bindings.map(
-        (value: RDF.Term, key: string) => this.pad(value ? value.value : '')).join(' ') + '\n'));
+      resultStream.on('data', (bindings) => this.pushRow(data, labels, bindings));
     } else {
       resultStream = (<IActorQueryOperationOutputQuads> action).quadStream;
       this.pushHeader(data, QUAD_TERM_NAMES);
