@@ -1,6 +1,17 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v1.13.0"></a>
+## [v1.13.0](https://github.com/comunica/comunica/compare/v1.12.1...v1.13.0) - 2020-06-03
+
+### Fixed
+* [Modify JSON-LD document loader to consider redirects](https://github.com/comunica/comunica/commit/073281ec9b6d3a31d6c26a9ae7aa5c2f53230bc6)
+* [Fix table serializer producing inconsistent column orders, Closes #643](https://github.com/comunica/comunica/commit/357ed81eb98649b8e738966542be7984077f2fb7)
+* [Update sparqlalgebra to fix invalid COUNT queries to endpoints](https://github.com/comunica/comunica/commit/6481a4186b78fe032c4e4c5fb3156a6cc4e4518b)
+
+### Changed
+* [Enable stricter TypeScript compilation, Closes #628](https://github.com/comunica/comunica/commit/27017c6f7526dffe2b38a476dee910c144c4fc22)
+
 <a name="v1.12.1"></a>
 ## [v1.12.1](https://github.com/comunica/comunica/compare/v1.11.1...v1.12.1) - 2020-04-27
 

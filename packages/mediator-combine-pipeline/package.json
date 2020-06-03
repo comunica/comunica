@@ -1,6 +1,6 @@
 {
   "name": "@comunica/mediator-combine-pipeline",
-  "version": "1.9.2",
+  "version": "1.13.0",
   "description": "A sequential combine mediator",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-combine-pipeline",
   "lsd:components": "components/components.jsonld",
@@ -36,7 +36,7 @@
     "@comunica/core": "^1.0.0"
   },
   "devDependencies": {
-    "@comunica/core": "^1.9.2"
+    "@comunica/core": "^1.13.0"
   },
   "jest": {
     "globals": {

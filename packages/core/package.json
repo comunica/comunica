@@ -1,6 +1,6 @@
 {
   "name": "@comunica/core",
-  "version": "1.9.2",
+  "version": "1.13.0",
   "description": "Lightweight, semantic and modular actor framework",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core",
   "lsd:components": "components/components.jsonld",

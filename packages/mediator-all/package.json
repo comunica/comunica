@@ -1,6 +1,6 @@
 {
   "name": "@comunica/mediator-all",
-  "version": "1.9.2",
+  "version": "1.13.0",
   "description": "A all mediator",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-all",
   "lsd:components": "components/components.jsonld",
@@ -39,7 +39,7 @@
     "@comunica/core": "^1.4.0"
   },
   "devDependencies": {
-    "@comunica/core": "^1.9.2"
+    "@comunica/core": "^1.13.0"
   },
   "jest": {
     "globals": {
