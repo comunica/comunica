@@ -20,6 +20,8 @@ describe('ActorRdfParseJsonLd', () => {
           return Promise.resolve({
             ok: false,
             statusText: 'some error',
+            status: 500,
+            headers: new Headers({}),
           });
         }
 
@@ -30,6 +32,8 @@ describe('ActorRdfParseJsonLd', () => {
           }
         }`),
           ok: true,
+          status: 200,
+          headers: new Headers({ 'Content-Type': 'application/ld+json' }),
         });
       },
     };
@@ -187,8 +191,7 @@ describe('ActorRdfParseJsonLd', () => {
         return actor.run(
           { handle: { input: inputRemoteContextErr, baseIRI: '' }, handleMediaType: 'application/ld+json' })
           .then(async (output: any) => expect(arrayifyStream(output.handle.quads)).rejects
-            .toThrow(new Error('Failed to load remote context http://schema.org/error: ' +
-              'No valid context was found at http://schema.org/error: some error')));
+            .toThrow(new Error('Failed to load remote context http://schema.org/error: some error')));
       });
 
       it('should run for a JSON doc with a context link header', () => {

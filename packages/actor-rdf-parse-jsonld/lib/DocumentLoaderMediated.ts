@@ -1,12 +1,12 @@
 import {ActorHttp, IActionHttp, IActorHttpOutput} from "@comunica/bus-http";
 import {ActionContext, Actor, IActorTest, Mediator} from "@comunica/core";
-import {IDocumentLoader, IJsonLdContext} from "jsonld-context-parser";
+import {FetchDocumentLoader} from "jsonld-context-parser";
 import * as stringifyStream from "stream-to-string";
 
 /**
  * A JSON-LD document loader that fetches over an HTTP bus using a given mediator.
  */
-export class DocumentLoaderMediated implements IDocumentLoader {
+export class DocumentLoaderMediated extends FetchDocumentLoader {
 
   private readonly mediatorHttp: Mediator<Actor<IActionHttp, IActorTest, IActorHttpOutput>,
     IActionHttp, IActorTest, IActorHttpOutput>;
@@ -15,18 +15,20 @@ export class DocumentLoaderMediated implements IDocumentLoader {
   constructor(mediatorHttp: Mediator<Actor<IActionHttp, IActorTest, IActorHttpOutput>,
                 IActionHttp, IActorTest, IActorHttpOutput>,
               context: ActionContext) {
+    super(DocumentLoaderMediated.createFetcher(mediatorHttp, context));
     this.mediatorHttp = mediatorHttp;
     this.context = context;
   }
 
-  public async load(url: string): Promise<IJsonLdContext> {
-    const response = await this.mediatorHttp.mediate(
-      { input: url, init: { headers: new Headers({ accept: 'application/ld+json' }) }, context: this.context });
-    if (response.ok) {
-      return JSON.parse(await stringifyStream(ActorHttp.toNodeReadable(response.body)));
-    } else {
-      throw new Error(`No valid context was found at ${url}: ${response.statusText}`);
-    }
+  protected static createFetcher(mediatorHttp: Mediator<Actor<IActionHttp, IActorTest, IActorHttpOutput>,
+                                   IActionHttp, IActorTest, IActorHttpOutput>,
+                                 context: ActionContext):
+    (input: RequestInfo, init: RequestInit) => Promise<Response> {
+    return async (url: string, init: RequestInit) => {
+      const response = await mediatorHttp.mediate({ input: url, init, context });
+      response.json = async () => JSON.parse(await stringifyStream(ActorHttp.toNodeReadable(response.body)));
+      return response;
+    };
   }
 
 }
