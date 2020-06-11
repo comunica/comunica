@@ -203,7 +203,7 @@ export class ActorQueryOperationBgpLeftDeepSmallest extends ActorQueryOperationT
         bindingsStream: new EmptyIterator(),
         metadata: () => Promise.resolve({ totalItems: 0 }),
         type: 'bindings',
-        variables: [],
+        variables: ActorQueryOperationBgpLeftDeepSmallest.getCombinedVariables(patternOutputs),
       };
     }
 

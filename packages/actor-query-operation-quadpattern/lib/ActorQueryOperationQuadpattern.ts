@@ -35,7 +35,7 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
    * Get all variables in the given pattern.
    * No duplicates are returned.
    * @param {RDF.BaseQuad} pattern A quad pattern.
-   * @return {string[]} The variables in this pattern, without '?' prefix.
+   * @return {string[]} The variables in this pattern, with '?' prefix.
    */
   public static getVariables(pattern: RDF.BaseQuad): string[] {
     return uniqTerms(getTerms(pattern)

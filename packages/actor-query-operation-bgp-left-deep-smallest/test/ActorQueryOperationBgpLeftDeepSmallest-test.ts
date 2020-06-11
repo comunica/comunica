@@ -553,14 +553,14 @@ describe('ActorQueryOperationBgpLeftDeepSmallest', () => {
           bindingsStream: new EmptyIterator(),
           metadata: () => Promise.resolve({ totalItems: 0 }),
           type: 'bindings',
-          variables: (arg.context || {}).variables || [],
+          variables: (arg.context || {}).variables || [ '?a', '?d' ],
         }),
       };
       const thisActor = new ActorQueryOperationBgpLeftDeepSmallest(
         { name: 'actor', bus, mediatorQueryOperation: thisMediatorQueryOperation });
       const op = { operation: { type: 'bgp', patterns } };
       return thisActor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
-        expect(output.variables).toEqual([]);
+        expect(output.variables).toEqual([ '?a', '?d' ]);
         expect(output.type).toEqual('bindings');
         expect(await (<any> output).metadata()).toEqual({ totalItems: 0 });
         expect(await arrayifyStream(output.bindingsStream)).toEqual([]);
