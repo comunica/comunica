@@ -1,6 +1,13 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v1.13.1"></a>
+## [v1.13.1](https://github.com/comunica/comunica/compare/v1.13.0...v1.13.1) - 2020-06-11
+
+### Fixed
+* [Fix crash when using CONSTRUCT queries](https://github.com/comunica/comunica/commit/52cf6b021b598eb8bcb02ac10c11b885ae12b73c)
+* [Fix unasigned variables in projection result](https://github.com/comunica/comunica/commit/4a20b8d15fc0dfa6dcc97a4ef349ade5986f5e70)
+
 <a name="v1.13.0"></a>
 ## [v1.13.0](https://github.com/comunica/comunica/compare/v1.12.1...v1.13.0) - 2020-06-03
 
