@@ -28,7 +28,7 @@ describe('ActorRdfSerializeJsonLd', () => {
 
   describe('An ActorRdfSerializeJsonLd instance configured with two spaces', () => {
     let actor: ActorRdfSerializeJsonLd;
-    let quads: any;
+    let quadStream: any;
 
     beforeEach(() => {
       actor = new ActorRdfSerializeJsonLd({ bus, jsonStringifyIndentSpaces: 2, mediaTypes: {
@@ -39,14 +39,14 @@ describe('ActorRdfSerializeJsonLd', () => {
 
     describe('for parsing', () => {
       beforeEach(() => {
-        quads = new ArrayIterator([
+        quadStream = new ArrayIterator([
           quad('http://example.org/a', 'http://example.org/b', 'http://example.org/c'),
           quad('http://example.org/a', 'http://example.org/d', 'http://example.org/e'),
         ]);
       });
 
       it('should run', () => {
-        return actor.run({ handle: { quads }, handleMediaType: 'application/ld+json' })
+        return actor.run({ handle: { quadStream }, handleMediaType: 'application/ld+json' })
           .then(async (output: any) => expect(await stringifyStream(output.handle.data)).toEqual(
 `[
   {
@@ -68,7 +68,7 @@ describe('ActorRdfSerializeJsonLd', () => {
     });
 
     it('should run with multiple array entries', () => {
-      quads = new ArrayIterator([
+      quadStream = new ArrayIterator([
         quad('http://example.org/a', 'http://example.org/b', 'http://example.org/c'),
         quad('http://example.org/a', 'http://example.org/d', 'http://example.org/e'),
 
@@ -76,7 +76,7 @@ describe('ActorRdfSerializeJsonLd', () => {
         quad('http://example.org/a2', 'http://example.org/d', 'http://example.org/e'),
       ]);
 
-      return actor.run({ handle: { quads }, handleMediaType: 'application/ld+json' })
+      return actor.run({ handle: { quadStream }, handleMediaType: 'application/ld+json' })
         .then(async (output: any) => expect(await stringifyStream(output.handle.data)).toEqual(
           `[
   {
@@ -112,7 +112,7 @@ describe('ActorRdfSerializeJsonLd', () => {
 
   describe('An ActorRdfSerializeJsonLd instance', () => {
     let actor: ActorRdfSerializeJsonLd;
-    let quads: any;
+    let quadStream: any;
 
     beforeEach(() => {
       actor = new ActorRdfSerializeJsonLd({ bus, jsonStringifyIndentSpaces: 0, mediaTypes: {
@@ -123,26 +123,26 @@ describe('ActorRdfSerializeJsonLd', () => {
 
     describe('for serializing', () => {
       beforeEach(() => {
-        quads = new ArrayIterator([
+        quadStream = new ArrayIterator([
           quad('http://example.org/a', 'http://example.org/b', 'http://example.org/c'),
           quad('http://example.org/a', 'http://example.org/d', 'http://example.org/e'),
         ]);
       });
 
       it('should test on application/json', () => {
-        return expect(actor.test({ handle: { quads }, handleMediaType: 'application/json' })).resolves.toBeTruthy();
+        return expect(actor.test({ handle: { quadStream }, handleMediaType: 'application/json' })).resolves.toBeTruthy();
       });
 
       it('should test on application/ld+json', () => {
-        return expect(actor.test({ handle: { quads }, handleMediaType: 'application/ld+json' })).resolves.toBeTruthy();
+        return expect(actor.test({ handle: { quadStream }, handleMediaType: 'application/ld+json' })).resolves.toBeTruthy();
       });
 
       it('should not test on N-Triples', () => {
-        return expect(actor.test({ handle: { quads }, handleMediaType: 'application/n-triples' })).rejects.toBeTruthy();
+        return expect(actor.test({ handle: { quadStream }, handleMediaType: 'application/n-triples' })).rejects.toBeTruthy();
       });
 
       it('should run', () => {
-        return actor.run({ handle: { quads }, handleMediaType: 'application/ld+json' })
+        return actor.run({ handle: { quadStream }, handleMediaType: 'application/ld+json' })
           .then(async (output: any) => expect(await stringifyStream(output.handle.data)).toEqual('[{"@id":' +
             '"http://example.org/a","http://example.org/b":[{"@id":"http://example.org/c"}],"http://example.org/d":' +
             '[{"@id":"http://example.org/e"}]}]'));

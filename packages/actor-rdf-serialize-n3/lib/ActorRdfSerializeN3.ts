@@ -21,9 +21,9 @@ export class ActorRdfSerializeN3 extends ActorRdfSerializeFixedMediaTypes {
       return;
     };
 
-    action.quads.on('error', (e) => data.emit('error', e));
-    action.quads.on('data', (quad: RDF.Quad) => n3Triples.push(quad));
-    action.quads.on('end', () => n3Triples.emit('end'));
+    action.quadStream.on('error', (e) => data.emit('error', e));
+    action.quadStream.on('data', (quad: RDF.Quad) => n3Triples.push(quad));
+    action.quadStream.on('end', () => n3Triples.emit('end'));
     const data = n3Triples.pipe(new StreamWriter({ format: mediaType }));
 
     return { data,

@@ -2,6 +2,7 @@ import {ActorAbstractMediaTyped, IActionAbstractMediaTyped, IActorArgsMediaTyped
   IActorOutputAbstractMediaTyped, IActorTestAbstractMediaTyped} from "@comunica/actor-abstract-mediatyped";
 import {IAction, IActorOutput, IActorTest} from "@comunica/core";
 import * as RDF from "rdf-js";
+import {AsyncIterator} from "asynciterator";
 
 /**
  * A comunica actor for RDF parse events.
@@ -29,9 +30,9 @@ export type IActorOutputRootRdfSerialize = IActorOutputAbstractMediaTyped<IActor
 
 export interface IActionRdfSerialize extends IAction {
   /**
-   * A quad stream.
+   * The stream of quads.
    */
-  quads: RDF.Stream;
+  quadStream: RDF.Stream;
 }
 
 export interface IActorRdfSerializeOutput extends IActorOutput {

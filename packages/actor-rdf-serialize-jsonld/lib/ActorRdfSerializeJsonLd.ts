@@ -24,7 +24,7 @@ export class ActorRdfSerializeJsonLd extends ActorRdfSerializeFixedMediaTypes {
   public async runHandle(action: IActionRdfSerialize, mediaType: string, context: ActionContext)
     : Promise<IActorRdfSerializeOutput> {
     const data: NodeJS.ReadableStream = <any> new JsonLdSerializer(
-      { space: ' '.repeat(this.jsonStringifyIndentSpaces) }).import(action.quads);
+      { space: ' '.repeat(this.jsonStringifyIndentSpaces) }).import(action.quadStream);
     return { data };
   }
 
