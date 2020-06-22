@@ -1,4 +1,4 @@
-import {ActorHttp, IActionHttp, IActorHttpOutput} from "@comunica/bus-http";
+import {IActionHttp, IActorHttpOutput} from "@comunica/bus-http";
 import {Bindings, BindingsStream} from "@comunica/bus-query-operation";
 import {
   ActorRdfResolveQuadPattern,
@@ -7,12 +7,12 @@ import {
 } from "@comunica/bus-rdf-resolve-quad-pattern";
 import {ActionContext, Actor, IActorArgs, IActorTest, Mediator} from "@comunica/core";
 import {variable} from "@rdfjs/data-model";
-import {AsyncIterator, BufferedIterator} from "asynciterator";
+import {AsyncIterator} from "asynciterator";
 import {PromiseProxyIterator} from "asynciterator-promiseproxy";
 import * as RDF from "rdf-js";
 import {getTerms, getVariables, mapTerms} from "rdf-terms";
 import {Algebra, Factory, toSparql} from "sparqlalgebrajs";
-import {SparqlJsonParser} from "sparqljson-parse";
+import {AsyncIteratorJsonBindings} from "./AsyncIteratorJsonBindings";
 
 /**
  * A comunica SPARQL JSON RDF Resolve Quad Pattern Actor.
@@ -182,56 +182,7 @@ export class ActorRdfResolveQuadPatternSparqlJson
    * @return {Promise<BindingsStream>} A promise resolving to a stream of bindings.
    */
   public async queryBindings(endpoint: string, query: string, context?: ActionContext): Promise<BindingsStream> {
-    // Parse each binding and push it in our buffered iterator
-    const bindingsStream: BufferedIterator<Bindings> = new BufferedIterator<Bindings>(
-      { autoStart: false, maxBufferSize: Infinity });
-    let initialized: boolean = false;
-    const superRead = bindingsStream._read;
-    bindingsStream._read = (count: number, done: () => void) => {
-      if (!initialized) {
-        initialized = true;
-        this.fetchBindingsStream(endpoint, query, context).then((responseStream) => {
-          const rawBindingsStream = new SparqlJsonParser({ prefixVariableQuestionMark: true })
-            .parseJsonResultsStream(responseStream);
-          responseStream.on('error', (error) => rawBindingsStream.emit('error', error));
-
-          rawBindingsStream.on('error', (error) => bindingsStream.emit('error', error));
-          rawBindingsStream.on('data', (rawBindings) => bindingsStream._push(Bindings(rawBindings)));
-          rawBindingsStream.on('end', () => {
-            bindingsStream.close();
-          });
-
-          superRead(count, done);
-        });
-      } else {
-        superRead(count, done);
-      }
-    };
-
-    return bindingsStream;
-  }
-
-  protected async fetchBindingsStream(endpoint: string, query: string, context?: ActionContext)
-    : Promise<NodeJS.ReadableStream> {
-    const url: string = endpoint + '?query=' + encodeURIComponent(query);
-
-    // Initiate request
-    const headers: Headers = new Headers();
-    headers.append('Accept', 'application/sparql-results+json');
-    const httpAction: IActionHttp = { context, input: url, init: { headers } };
-    const httpResponse: IActorHttpOutput = await this.mediatorHttp.mediate(httpAction);
-
-    // Wrap WhatWG readable stream into a Node.js readable stream
-    // If the body already is a Node.js stream (in the case of node-fetch), don't do explicit conversion.
-    const responseStream: NodeJS.ReadableStream = ActorHttp.toNodeReadable(httpResponse.body);
-
-    // Emit an error if the server returned an invalid response
-    if (!httpResponse.ok) {
-      setImmediate(() => responseStream.emit('error', new Error('Invalid SPARQL endpoint (' + endpoint + ') response: '
-        + httpResponse.statusText)));
-    }
-
-    return responseStream;
+    return new AsyncIteratorJsonBindings(endpoint, query, context, this.mediatorHttp);
   }
 
 }

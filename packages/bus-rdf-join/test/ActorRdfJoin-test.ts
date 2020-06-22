@@ -1,8 +1,9 @@
 import {Bindings} from "@comunica/bus-query-operation";
 import {Bus} from "@comunica/core";
 import {literal} from "@rdfjs/data-model";
-import {EmptyIterator} from "asynciterator";
 import {ActorRdfJoin, IActionRdfJoin} from "..";
+
+const arrayifyStream = require('arrayify-stream');
 
 // dummy class to test instance of abstract class
 class Dummy extends ActorRdfJoin {
@@ -208,7 +209,7 @@ describe('ActorRdfJoin', () => {
       action.entries = [];
 
       return instance.run(action).then(async (result: any) => {
-        expect(result.bindingsStream).toEqual(new EmptyIterator());
+        expect(await arrayifyStream(result.bindingsStream)).toEqual([]);
         expect(result.variables).toEqual([]);
         return expect(await result.metadata()).toEqual({ totalItems: 0 });
       });

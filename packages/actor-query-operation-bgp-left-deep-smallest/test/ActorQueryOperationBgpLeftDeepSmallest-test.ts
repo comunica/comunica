@@ -550,7 +550,7 @@ describe('ActorQueryOperationBgpLeftDeepSmallest', () => {
     it('should run for an empty pattern response', () => {
       const thisMediatorQueryOperation: any = {
         mediate: (arg: any) => Promise.resolve({
-          bindingsStream: new EmptyIterator(),
+          bindingsStream: new ArrayIterator([], { autoStart: false }),
           metadata: () => Promise.resolve({ totalItems: 0 }),
           type: 'bindings',
           variables: (arg.context || {}).variables || [ '?a', '?d' ],
@@ -570,7 +570,7 @@ describe('ActorQueryOperationBgpLeftDeepSmallest', () => {
     it('should run for responses with unknown metadata', () => {
       const thisMediatorQueryOperation: any = {
         mediate: (arg: any) => Promise.resolve({
-          bindingsStream: new EmptyIterator(),
+          bindingsStream: new ArrayIterator([], { autoStart: false }),
           metadata: null,
           type: 'bindings',
           variables: (arg.context || {}).variables || [],

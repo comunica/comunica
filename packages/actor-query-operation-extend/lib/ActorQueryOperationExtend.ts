@@ -39,17 +39,17 @@ export class ActorQueryOperationExtend extends ActorQueryOperationTypedMediated<
     const evaluator = new AsyncEvaluator(expression, config);
 
     // Transform the stream by extending each Bindings with the expression result
-    const transform = async (bindings: Bindings, next: any) => {
+    const transform = async (bindings: Bindings, next: any, push: (bindings: Bindings) => void) => {
       try {
         const result = await evaluator.evaluate(bindings);
         // Extend operation is undefined when the key already exists
         // We just override it here.
         const extended = bindings.set(extendKey, result);
-        bindingsStream._push(extended);
+        push(extended);
       } catch (err) {
         if (isExpressionError(err)) {
           // Errors silently don't actually extend according to the spec
-          bindingsStream._push(bindings);
+          push(bindings);
           // But let's warn anyway
           this.logWarn(context, `Expression error for extend operation with bindings '${JSON.stringify(bindings)}'`);
         } else {

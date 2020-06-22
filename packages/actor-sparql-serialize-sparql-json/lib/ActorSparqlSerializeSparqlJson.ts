@@ -98,7 +98,7 @@ export class ActorSparqlSerializeSparqlJson extends ActorSparqlSerializeFixedMed
         data.push('"boolean":' + await (<IActorQueryOperationOutputBoolean> action).booleanResult + '\n}\n');
         data.push(null);
       } catch (e) {
-        setImmediate(() => data.emit('error', e));
+        data.once('newListener', () => data.emit('error', e));
       }
     }
 

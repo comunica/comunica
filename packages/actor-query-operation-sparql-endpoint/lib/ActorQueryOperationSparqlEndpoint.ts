@@ -4,13 +4,15 @@ import {
   Bindings,
   IActionQueryOperation,
   IActorQueryOperationOutput,
-  IActorQueryOperationOutputBindings, IActorQueryOperationOutputBoolean, IActorQueryOperationOutputQuads,
+  IActorQueryOperationOutputBindings,
+  IActorQueryOperationOutputBoolean,
+  IActorQueryOperationOutputQuads,
 } from "@comunica/bus-query-operation";
 import {getDataSourceType, getDataSourceValue} from "@comunica/bus-rdf-resolve-quad-pattern";
 import {ActionContext, Actor, IActorArgs, IActorTest, Mediator} from "@comunica/core";
 import {IMediatorTypeHttpRequests} from "@comunica/mediatortype-httprequests";
 import {DataSourceUtils} from "@comunica/utils-datasource";
-import {BufferedIterator} from "asynciterator";
+import {wrap} from "asynciterator";
 import {SparqlEndpointFetcher} from "fetch-sparql-endpoint";
 import * as RDF from "rdf-js";
 import {termToString} from "rdf-string";
@@ -102,31 +104,22 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
    */
   public executeQuery(endpoint: string, query: string, quads: boolean, variables?: RDF.Variable[])
     : IActorQueryOperationOutput {
-    const stream: BufferedIterator<any> = new BufferedIterator<any>(
-      { autoStart: false, maxBufferSize: Infinity });
     const inputStream: Promise<EventEmitter> = quads
       ? this.endpointFetcher.fetchTriples(endpoint, query)
       : this.endpointFetcher.fetchBindings(endpoint, query);
-    inputStream
-      .then((rawStream) => {
-        let totalItems = 0;
-        rawStream.on('error', (error) => stream.emit('error', error));
-
-        rawStream.on('data', (rawData) => {
-          totalItems++;
-          stream._push(quads ? rawData : Bindings(rawData));
-        });
-
-        rawStream.on('end', () => {
-          stream.emit('metadata', { totalItems });
-          stream.close();
-        });
-      })
-      .catch((error) => stream.emit('error', error));
+    let totalItems = 0;
+    const stream = wrap<any>(inputStream, { autoStart: false, maxBufferSize: Infinity })
+      .map((rawData) => {
+        totalItems++;
+        return quads ? rawData : Bindings(rawData);
+      });
+    inputStream.then(
+      (s) => s.on('end', () => stream.emit('metadata', { totalItems })),
+      () => { return; });
 
     const metadata: () => Promise<{[id: string]: any}> = ActorQueryOperationSparqlEndpoint.cachifyMetadata(
       () => new Promise((resolve, reject) => {
-        stream._fillBuffer();
+        (<any> stream)._fillBuffer();
         stream.on('error', reject);
         stream.on('end', () => reject(new Error('No metadata was found')));
         stream.on('metadata', resolve);

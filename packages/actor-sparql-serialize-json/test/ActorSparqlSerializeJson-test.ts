@@ -44,12 +44,12 @@ describe('ActorSparqlSerializeJson', () => {
       bindingsStream = new ArrayIterator([
         Bindings({ k1: namedNode('v1') }),
         Bindings({ k2: blankNode('v2') }),
-      ]);
+      ], { autoStart: false });
       quadStream = new ArrayIterator([
         quad('http://example.org/a', 'http://example.org/b', 'http://example.org/c'),
         quad('http://example.org/a', 'http://example.org/d', 'http://example.org/e'),
-      ]);
-      bindingsStreamEmpty = new ArrayIterator([]);
+      ], { autoStart: false });
+      bindingsStreamEmpty = new ArrayIterator([], { autoStart: false });
       streamError = new Readable();
       streamError._read = () => streamError.emit('error', new Error());
     });

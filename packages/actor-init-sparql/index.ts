@@ -1,6 +1,6 @@
 export * from './lib/ActorInitSparql';
 export * from './lib/HttpServiceSparqlEndpoint';
-export {newEngine, evaluateQuery} from './index-browser';
+export {newEngine, evaluateQuery, bindingsStreamToGraphQl} from './index-browser';
 
 import {ActorInitSparql} from "./lib/ActorInitSparql";
 import {IQueryOptions, newEngineDynamicArged} from "./lib/QueryDynamic";

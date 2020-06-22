@@ -3,7 +3,7 @@ import {IActionRdfDereference, IActorRdfDereferenceOutput} from "@comunica/bus-r
 import {IActionRdfMetadata, IActorRdfMetadataOutput} from "@comunica/bus-rdf-metadata";
 import {IActionRdfMetadataExtract, IActorRdfMetadataExtractOutput} from "@comunica/bus-rdf-metadata-extract";
 import {ActionContext, Actor, IActorTest, Mediator} from "@comunica/core";
-import {AsyncIterator} from "asynciterator";
+import {AsyncIterator, wrap} from "asynciterator";
 import {PromiseProxyIterator} from "asynciterator-promiseproxy";
 import * as RDF from "rdf-js";
 import {termToString} from "rdf-string";
@@ -55,7 +55,7 @@ export class RdfSourceQpf implements RDF.Source {
     this.searchForm = searchForm;
     this.defaultGraph = metadata.defaultGraph ? namedNode(metadata.defaultGraph) : undefined;
     if (initialQuads) {
-      let wrappedQuads = (<any> AsyncIterator).wrap(initialQuads);
+      let wrappedQuads: AsyncIterator<RDF.Quad> = wrap<RDF.Quad>(initialQuads);
       if (this.defaultGraph) {
         wrappedQuads = this.reverseMapQuadsToDefaultGraph(wrappedQuads);
       }
@@ -167,7 +167,7 @@ export class RdfSourceQpf implements RDF.Source {
       // including quads that do not match the given matter.
       // Therefore, we have to filter away all non-matching quads here.
       const actualDefaultGraph = defaultGraph();
-      let filteredOutput: AsyncIterator<RDF.Quad> = (<any> AsyncIterator).wrap(rdfMetadataOuput.data)
+      let filteredOutput: AsyncIterator<RDF.Quad> = wrap<RDF.Quad>(rdfMetadataOuput.data)
         .filter((quad: RDF.Quad) => {
           if (matchPattern(quad, subject, predicate, object, <RDF.Term> graph)) {
             return true;

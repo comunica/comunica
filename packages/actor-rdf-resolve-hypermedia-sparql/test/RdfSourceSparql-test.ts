@@ -2,7 +2,6 @@ import {ActionContext} from "@comunica/core";
 import {defaultGraph, namedNode} from "@rdfjs/data-model";
 import "isomorphic-fetch"; // Needed to load Headers
 import "jest-rdf";
-import {Factory} from "sparqlalgebrajs";
 import {PassThrough} from "stream";
 import {RdfSourceSparql} from "../lib/RdfSourceSparql";
 
@@ -50,67 +49,6 @@ describe('RdfSourceSparql', () => {
       };
     },
   };
-
-  describe('#replaceBlankNodes', () => {
-    it('should replace blank nodes with variables', () => {
-      return expect(RdfSourceSparql.replaceBlankNodes(quad('s', 'p', '_:o')))
-        .toEqual(quad('s', 'p', '?o'));
-    });
-
-    it('should make sure blank and variable names don\'t overlap', () => {
-      return expect(RdfSourceSparql.replaceBlankNodes(quad('?x', '?x0', '_:x')))
-        .toEqual(quad('?x', '?x0', '?x1'));
-    });
-
-    it('should make sure blank and variable names don\'t overlap (2)', () => {
-      return expect(RdfSourceSparql.replaceBlankNodes(quad('?x', '_:x0', '_:x')))
-        .toEqual(quad('?x', '?x0', '?x1'));
-    });
-
-    it('should blank names change consistently', () => {
-      return expect(RdfSourceSparql.replaceBlankNodes(quad('?x', '_:x', '_:x')))
-        .toEqual(quad('?x', '?x0', '?x0'));
-    });
-  });
-
-  describe('#patternToBgp', () => {
-    it('should convert a quad to a BGP pattern', () => {
-      return expect(RdfSourceSparql.patternToBgp(quad('s', 'p', 'o')))
-        .toEqual({
-          patterns: [ new Factory().createPattern(namedNode('s'), namedNode('p'), namedNode('o')) ],
-          type: 'bgp',
-        });
-    });
-  });
-
-  describe('#patternToSelectQuery', () => {
-    it('should convert a quad with named nodes to a select query', () => {
-      return expect(RdfSourceSparql.patternToSelectQuery(quad('http://s', 'http://p', 'http://o')))
-        .toEqual('SELECT * WHERE { <http://s> <http://p> <http://o>. }');
-    });
-
-    it('should convert a quad with variables to a select query', () => {
-      return expect(RdfSourceSparql.patternToSelectQuery(quad('?s', '?p', '?o', '?g')))
-        .toEqual('SELECT ?s ?p ?o ?g WHERE { GRAPH ?g { ?s ?p ?o. } }');
-    });
-  });
-
-  describe('#patternToCountQuery', () => {
-    it('should convert a quad with named nodes to a count query', () => {
-      return expect(RdfSourceSparql.patternToCountQuery(quad('http://s', 'http://p', 'http://o')))
-        .toEqual('SELECT (COUNT(*) AS ?count) WHERE { <http://s> <http://p> <http://o>. }');
-    });
-
-    it('should convert a quad with a variable to a count query', () => {
-      return expect(RdfSourceSparql.patternToCountQuery(quad('?s', 'http://p', 'http://o')))
-        .toEqual('SELECT (COUNT(*) AS ?count) WHERE { ?s <http://p> <http://o>. }');
-    });
-
-    it('should convert a quad with variables to a count query', () => {
-      return expect(RdfSourceSparql.patternToCountQuery(quad('?s', '?p', '?o')))
-        .toEqual('SELECT (COUNT(*) AS ?count) WHERE { ?s ?p ?o. }');
-    });
-  });
 
   describe('an instance', () => {
     let source: RdfSourceSparql;
@@ -360,10 +298,9 @@ describe('RdfSourceSparql', () => {
     });
 
     it('should allow multiple _read calls on query bindings', () => {
-      return source.queryBindings('http://ex', '', undefined).then((data) => {
-        (<any> data)._read(1, () => { return; });
-        (<any> data)._read(1, () => { return; });
-      });
+      const data = source.queryBindings('http://ex', '', undefined);
+      (<any> data)._read(1, () => { return; });
+      (<any> data)._read(1, () => { return; });
     });
 
   });
