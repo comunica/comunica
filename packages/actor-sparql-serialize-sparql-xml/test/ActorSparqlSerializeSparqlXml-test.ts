@@ -77,12 +77,12 @@ describe('ActorSparqlSerializeSparqlXml', () => {
       bindingsStream = new ArrayIterator([
         Bindings({ '?k1': namedNode('v1') }),
         Bindings({ '?k2': namedNode('v2') }),
-      ]);
+      ], { autoStart: false });
       bindingsStreamPartial = new ArrayIterator([
         Bindings({ '?k1': namedNode('v1') }),
         Bindings({ '?k2': namedNode('v2') }),
         Bindings({}),
-      ]);
+      ], { autoStart: false });
       bindingsStreamError = <any> new PassThrough();
       (<any> bindingsStreamError)._read = <any> (() => { bindingsStreamError.emit('error', new Error()); });
       quadStream = new ArrayIterator([

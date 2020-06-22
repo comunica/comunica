@@ -38,9 +38,7 @@
     "@comunica/data-factory": "^1.13.0",
     "@rdfjs/data-model": "^1.1.1",
     "@types/rdf-js": "^3.0.0",
-    "asynciterator": "^2.0.1",
-    "asynciterator-promiseproxy": "^2.1.0",
-    "asynciterator-union": "^2.1.2",
+    "asynciterator": "^3.0.0-beta.5",
     "lodash.omit": "^4.5.0",
     "rdf-terms": "^1.5.1"
   },

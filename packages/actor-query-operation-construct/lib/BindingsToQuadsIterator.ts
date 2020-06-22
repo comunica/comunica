@@ -16,7 +16,7 @@ export class BindingsToQuadsIterator extends MultiTransformIterator<Bindings, RD
   protected blankNodeCounter: number;
 
   constructor(template: RDF.BaseQuad[], bindingsStream: BindingsStream) {
-    super(bindingsStream);
+    super(bindingsStream, { autoStart: false });
     this.template = template;
     this.blankNodeCounter = 0;
   }

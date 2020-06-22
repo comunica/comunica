@@ -48,15 +48,15 @@ export class ActorQueryOperationOrderBySparqlee extends ActorQueryOperationTyped
       // Transform the stream by annotating it with the expr result
       const evaluator = new AsyncEvaluator(expr, sparqleeConfig);
       interface IAnnotatedBinding { bindings: Bindings; result: Term | undefined; }
-      const transform = async (bindings: Bindings, next: any) => {
+      const transform = async (bindings: Bindings, next: any, push: (result: IAnnotatedBinding) => void) => {
         try {
           const result = await evaluator.evaluate(bindings);
-          transformedStream._push({ bindings, result });
+          push({ bindings, result });
         } catch (err) {
           if (!isExpressionError(err)) {
             bindingsStream.emit('error', err);
           }
-          transformedStream._push({ bindings, result: undefined });
+          push({ bindings, result: undefined });
         }
         next();
       };

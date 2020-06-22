@@ -84,7 +84,7 @@ class DummyMetaOverride extends Dummy { // tslint:disable-line max-classes-per-f
       source: <any> {
         match: () => {
           const quads = new ArrayIterator<RDF.Quad>(this.data[requestedPage].concat([]));
-          setImmediate(() => quads.emit('metadata', { next: 'P' + (requestedPage + 1), override: true }));
+          quads.on('newListener', () => quads.emit('metadata', { next: 'P' + (requestedPage + 1), override: true }));
           return quads;
         },
       },
@@ -102,7 +102,9 @@ class DummyMetaOverrideTooLate extends Dummy { // tslint:disable-line max-classe
       source: <any> {
         match: () => {
           const quads = new ArrayIterator<RDF.Quad>([]);
-          setTimeout(() => quads.emit('metadata', { next: 'P' + (requestedPage + 1), override: true }), 10);
+          quads.on('end', () => {
+            quads.emit('metadata', {next: 'P' + (requestedPage + 1), override: true});
+          });
           return quads;
         },
       },
@@ -125,8 +127,12 @@ class DummyError extends Dummy { // tslint:disable-line max-classes-per-file
       metadata: { next: 'NEXT' },
       source: <any> {
         match: () => {
-          const quads = new ArrayIterator<RDF.Quad>([]);
-          setImmediate(() => quads.emit('error', new Error('Emitted error!')));
+          const quads = new ArrayIterator<RDF.Quad>([], { autoStart: false });
+          quads.on('newListener', (event) => {
+            if (event === 'end') {
+              quads.emit('error', new Error('Emitted error!'));
+            }
+          });
           return quads;
         },
       },
@@ -135,12 +141,6 @@ class DummyError extends Dummy { // tslint:disable-line max-classes-per-file
 }
 
 describe('LinkedRdfSourcesAsyncRdfIterator', () => {
-
-  describe('The LinkedRdfSourcesAsyncRdfIterator module', () => {
-    it('should be a function', () => {
-      expect(LinkedRdfSourcesAsyncRdfIterator).toBeInstanceOf(Function);
-    });
-  });
 
   describe('A LinkedRdfSourcesAsyncRdfIterator instance', () => {
     it('handles a single page', (done) => {
@@ -400,11 +400,11 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
 
     it('delegates error events from the source', async () => {
       const it = new DummyError([[], []], undefined, undefined, undefined, undefined, 'first');
-      expect(await new Promise((resolve, reject) => {
-        it.on('error', resolve);
-        it.on('end', reject);
+      await expect(new Promise((resolve, reject) => {
+        it.on('error', reject);
+        it.on('end', resolve);
         it.on('data', () => {}); // tslint:disable-line no-empty
-      })).toEqual(new Error('Emitted error!'));
+      })).rejects.toThrow(new Error('Emitted error!'));
     });
   });
 });

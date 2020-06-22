@@ -2,7 +2,7 @@ import {Bindings, IActorQueryOperationOutput,
   IActorQueryOperationOutputBindings} from "@comunica/bus-query-operation";
 import {Actor, IAction, IActorArgs} from "@comunica/core";
 import {IMediatorTypeIterations} from "@comunica/mediatortype-iterations";
-import {EmptyIterator} from "asynciterator";
+import {ArrayIterator, EmptyIterator} from "asynciterator";
 import * as RDF from "rdf-js";
 
 /**
@@ -128,7 +128,7 @@ export abstract class ActorRdfJoin extends Actor<IActionRdfJoin, IMediatorTypeIt
   public async run(action: IActionRdfJoin): Promise<IActorQueryOperationOutputBindings> {
     if (action.entries.length === 0) {
       return {
-        bindingsStream: new EmptyIterator(),
+        bindingsStream: new ArrayIterator([], { autoStart: false }),
         metadata: () => Promise.resolve({ totalItems: 0 }),
         type: 'bindings',
         variables: [],

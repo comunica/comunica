@@ -142,7 +142,7 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
       this.readable = true;
     });
     it.on('error', (e: Error) => (<any> this).destroy(e));
-    it.on('end', () => {
+    it.prependListener('end', () => {
       ended = true;
 
       if (emitMetadata) {

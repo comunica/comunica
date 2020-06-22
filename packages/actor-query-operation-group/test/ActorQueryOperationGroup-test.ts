@@ -62,7 +62,7 @@ const getDefaultMediatorQueryOperation = () => ({
       Bindings({ a: literal('1') }),
       Bindings({ a: literal('2') }),
       Bindings({ a: literal('3') }),
-    ]),
+    ], { autoStart: false }),
     metadata: () => Promise.resolve({ totalItems: 3 }),
     operated: arg,
     type: 'bindings',
@@ -93,7 +93,7 @@ function constructCase(
   } else {
     mediatorQueryOperation = {
       mediate: (arg: any) => Promise.resolve({
-        bindingsStream: new ArrayIterator(inputBindings),
+        bindingsStream: new ArrayIterator(inputBindings, { autoStart: false }),
         metadata: () => Promise.resolve({ totalItems: inputBindings.length }),
         operated: arg,
         type: 'bindings',
@@ -364,10 +364,10 @@ describe('ActorQueryOperationGroup', () => {
         Bindings({ '?x': literal('c'), '?y': int('3') }),
       ];
       const bindingsStream = new ArrayIterator(inputBindings).transform({
-        transform: (result, done) => {
-          bindingsStream._push(result);
+        transform: (result, done, push) => {
+          push(result);
           bindingsStream.emit('error', 'Test error');
-          done(result);
+          done();
         },
       });
       const myMediatorQueryOperation = {

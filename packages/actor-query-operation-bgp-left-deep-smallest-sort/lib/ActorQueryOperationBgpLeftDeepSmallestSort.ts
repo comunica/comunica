@@ -8,7 +8,7 @@ import {
   IActorQueryOperationTypedMediatedArgs,
 } from "@comunica/bus-query-operation";
 import {ActionContext, IActorTest} from "@comunica/core";
-import {EmptyIterator, MultiTransformIterator} from "asynciterator";
+import {ArrayIterator, MultiTransformIterator} from "asynciterator";
 import {PromiseProxyIterator} from "asynciterator-promiseproxy";
 import * as RDF from "rdf-js";
 import {termToString} from "rdf-string";
@@ -39,14 +39,12 @@ export class ActorQueryOperationBgpLeftDeepSmallestSort extends ActorQueryOperat
   public static createLeftDeepStream(baseStream: BindingsStream, patterns: Algebra.Pattern[],
                                      patternBinder: (patterns: Algebra.Pattern[]) =>
                                        Promise<BindingsStream>): BindingsStream {
-    const bindingsStream: MultiTransformIterator<Bindings, Bindings> = new MultiTransformIterator(baseStream);
-    bindingsStream._createTransformer = (bindings: Bindings) => {
+    return new MultiTransformIterator(baseStream, (bindings: Bindings) => {
       const bindingsMerger = (subBindings: Bindings) => subBindings.merge(bindings);
       return new PromiseProxyIterator(
         async () => (await patternBinder(ActorQueryOperationBgpLeftDeepSmallestSort.materializePatterns(patterns,
           bindings))).map(bindingsMerger), { autoStart: true, maxBufferSize: 128 });
-    };
-    return bindingsStream;
+    });
   }
 
   /**
@@ -176,7 +174,7 @@ export class ActorQueryOperationBgpLeftDeepSmallestSort extends ActorQueryOperat
     // If a triple pattern has no matches, the entire graph pattern has no matches.
     if (await ActorQueryOperationBgpLeftDeepSmallestSort.hasOneEmptyPatternOutput(patternOutputs)) {
       return {
-        bindingsStream: new EmptyIterator(),
+        bindingsStream: new ArrayIterator([], { autoStart: false }),
         metadata: () => Promise.resolve({ totalItems: 0 }),
         type: 'bindings',
         variables: [],

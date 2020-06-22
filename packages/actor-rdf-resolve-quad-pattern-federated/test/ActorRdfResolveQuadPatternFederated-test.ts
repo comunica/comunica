@@ -20,7 +20,7 @@ describe('ActorRdfResolveQuadPatternFederated', () => {
         return Promise.resolve({ data: new ArrayIterator([
           squad('s1', 'p1', 'o1'),
           squad('s1', 'p1', 'o2'),
-        ]), metadata: () => Promise.resolve({ totalItems: 2 }) });
+        ], { autoStart: false }), metadata: () => Promise.resolve({ totalItems: 2 }) });
       },
     };
     skipEmptyPatterns = true;

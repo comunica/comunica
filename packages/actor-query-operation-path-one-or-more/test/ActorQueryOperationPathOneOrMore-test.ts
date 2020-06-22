@@ -38,7 +38,7 @@ describe('ActorQueryOperationPathOneOrMore', () => {
         }
 
         return Promise.resolve({
-          bindingsStream: new ArrayIterator(bindings),
+          bindingsStream: new ArrayIterator(bindings, { autoStart: false }),
           metadata: () => Promise.resolve({totalItems: 3}),
           operated: arg,
           type: 'bindings',

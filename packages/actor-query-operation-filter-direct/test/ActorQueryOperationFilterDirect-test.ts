@@ -34,7 +34,7 @@ describe('ActorQueryOperationFilterDirect', () => {
           Bindings({ '?a': literal('1') }),
           Bindings({ '?a': literal('2') }),
           Bindings({ '?a': literal('3') }),
-        ]),
+        ], { autoStart: false }),
         metadata: () => Promise.resolve({ totalItems: 3 }),
         operated: arg,
         type: 'bindings',
@@ -105,7 +105,7 @@ describe('ActorQueryOperationFilterDirect', () => {
     });
 
     it('should emit an error for an erroring filter', async () => {
-      SparqlExpressionEvaluator.createEvaluator = () => () => { throw new Error('error'); };
+      SparqlExpressionEvaluator.createEvaluator = () => () => { throw new Error('filter direct error'); };
       const op = { operation: { type: 'filter', input: {}, expression: falsyExpression } };
       const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
       return expect(arrayifyStream(output.bindingsStream)).rejects.toBeTruthy();
