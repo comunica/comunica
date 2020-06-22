@@ -1,13 +1,13 @@
 import {ActionContext} from "@comunica/core";
 import {BlankNodeScoped} from "@comunica/data-factory";
 import {blankNode, defaultGraph, literal, namedNode, quad, variable} from "@rdfjs/data-model";
-import {ArrayIterator, EmptyIterator} from "asynciterator";
-import {RoundRobinUnionIterator} from "asynciterator-union";
+import {ArrayIterator, UnionIterator} from "asynciterator";
 import {AsyncReiterableArray} from "asyncreiterable";
 import "jest-rdf";
 import * as RDF from "rdf-js";
 import Factory from "sparqlalgebrajs/lib/factory";
 import {FederatedQuadSource} from "../lib/FederatedQuadSource";
+
 const squad = require('rdf-quad');
 const arrayifyStream = require('arrayify-stream');
 const factory = new Factory();
@@ -21,31 +21,31 @@ describe('FederatedQuadSource', () => {
       mediate: (action: any) => {
         const type = action.context.get('@comunica/bus-rdf-resolve-quad-pattern:source').type;
         if (type === 'emptySource') {
-          return Promise.resolve({ data: new EmptyIterator(),
+          return Promise.resolve({ data: new ArrayIterator([], { autoStart: false }),
             metadata: () => Promise.resolve({ totalItems: 0 }) });
         }
         if (type === 'nonEmptySourceNoMeta') {
           return Promise.resolve({ data: new ArrayIterator([
             squad('s1', 'p1', 'o1'),
             squad('s1', 'p1', 'o2'),
-          ]), metadata: null });
+          ], { autoStart: false }), metadata: null });
         }
         if (type === 'nonEmptySourceInfMeta') {
           return Promise.resolve({ data: new ArrayIterator([
             squad('s1', 'p1', 'o1'),
             squad('s1', 'p1', 'o2'),
-          ]), metadata: () => Promise.resolve({ totalItems: Infinity }) });
+          ], { autoStart: false }), metadata: () => Promise.resolve({ totalItems: Infinity }) });
         }
         if (type === 'blankNodeSource') {
           return Promise.resolve({ data: new ArrayIterator([
             squad('_:s1', '_:p1', '_:o1'),
             squad('_:s2', '_:p2', '_:o2'),
-          ]), metadata: () => Promise.resolve({ totalItems: Infinity }) });
+          ], { autoStart: false }), metadata: () => Promise.resolve({ totalItems: Infinity }) });
         }
         return Promise.resolve({ data: new ArrayIterator([
           squad('s1', 'p1', 'o1'),
           squad('s1', 'p1', 'o2'),
-        ]), metadata: () => Promise.resolve({ totalItems: 2, otherMetadata: true }) });
+        ], { autoStart: false }), metadata: () => Promise.resolve({ totalItems: 2, otherMetadata: true }) });
       },
     };
     context = ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:sources':
@@ -344,7 +344,7 @@ describe('FederatedQuadSource', () => {
 
     it('should return an AsyncIterator', () => {
       return expect(source.match(variable('v'), variable('v'), variable('v'), variable('v')))
-        .toBeInstanceOf(RoundRobinUnionIterator);
+        .toBeInstanceOf(UnionIterator);
     });
 
     describe('when calling isSourceEmpty', () => {

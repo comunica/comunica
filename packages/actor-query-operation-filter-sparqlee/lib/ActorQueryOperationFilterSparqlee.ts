@@ -37,11 +37,11 @@ export class ActorQueryOperationFilterSparqlee extends ActorQueryOperationTypedM
     const config = ActorQueryOperation.getExpressionContext(context, this.mediatorQueryOperation);
     const evaluator = new AsyncEvaluator(pattern.expression, config);
 
-    const transform = async (item: Bindings, next: any) => {
+    const transform = async (item: Bindings, next: any, push: (bindings: Bindings) => void) => {
       try {
         const result = await evaluator.evaluateAsEBV(item);
         if (result) {
-          bindingsStream._push(item);
+          push(item);
         }
       } catch (err) {
         if (!isExpressionError(err)) {

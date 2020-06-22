@@ -23,7 +23,7 @@ export class SortIterator<T> extends TransformIterator<T, T> {
     let item;
     let length = this.sorted.length;
     // Try to read items until we reach the desired window length
-    while (length !== this.windowLength) {
+    while (this.source && length !== this.windowLength) {
       item = this.source.read();
       if (item === null) {
         break;

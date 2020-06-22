@@ -5,7 +5,7 @@ import {ActorRdfResolveQuadPatternSource, IActionRdfResolveQuadPattern, IActorRd
 import {ActionContext, Actor, IActorArgs, IActorTest, Mediator} from "@comunica/core";
 import {AsyncIterator} from "asynciterator";
 import * as LRUCache from "lru-cache";
-import {N3Store, Store} from "n3";
+import {Store} from "n3";
 import * as RDF from "rdf-js";
 import {N3StoreIterator} from "./N3StoreIterator";
 import {N3StoreQuadSource} from "./N3StoreQuadSource";
@@ -20,7 +20,7 @@ export class ActorRdfResolveQuadPatternFile extends ActorRdfResolveQuadPatternSo
     IActionRdfDereference, IActorTest, IActorRdfDereferenceOutput>;
   public readonly files?: string[];
   public readonly cacheSize: number;
-  public readonly cache: LRUCache<string, Promise<N3Store>>;
+  public readonly cache: LRUCache<string, Promise<Store>>;
   public readonly httpInvalidator: ActorHttpInvalidateListenable;
 
   constructor(args: IActorRdfResolveQuadPatternFileArgs) {
@@ -32,8 +32,8 @@ export class ActorRdfResolveQuadPatternFile extends ActorRdfResolveQuadPatternSo
 
   public initializeFile(file: string, context?: ActionContext): Promise<any> {
     const storePromise = this.mediatorRdfDereference.mediate({ context, url: file })
-      .then((page: IActorRdfDereferenceOutput) => new Promise<N3Store>((resolve, reject) => {
-        const store: N3Store = new Store();
+      .then((page: IActorRdfDereferenceOutput) => new Promise<Store>((resolve, reject) => {
+        const store: Store = new Store();
         page.quads.on('data', (quad) => store.addQuad(quad));
         page.quads.on('error', reject);
         page.quads.on('end', () => resolve(store));

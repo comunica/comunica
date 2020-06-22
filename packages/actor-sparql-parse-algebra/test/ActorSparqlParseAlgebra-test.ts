@@ -74,9 +74,24 @@ describe('ActorSparqlParseAlgebra', () => {
         });
     });
 
-    it('should fail for an update query', () => {
-      return expect(actor.run({ query: "INSERT { <http://example/egbook> <http://ex.org/p> \"A\" } WHERE {}" }))
-        .rejects.toThrow(new Error('Translate only works on complete query objects.'));
+    it('should run for an update query', async () => {
+      const result = await actor.run({query: "INSERT { <http://example/egbook> <http://ex.org/p> \"A\" } WHERE {}"});
+
+      // TODO: I am unable to find why the match only works like this
+      return expect(JSON.parse(JSON.stringify(result))).toMatchObject({
+        operation: {
+          insert: [
+            {
+              graph: {value: ""},
+              object: {value: "A"},
+              predicate: {value: "http://ex.org/p"},
+              subject: {value: "http://example/egbook"},
+              type: "pattern",
+            },
+          ],
+          type: "deleteinsert",
+        },
+      });
     });
 
     it('should run with an overridden baseIRI', async () => {

@@ -35,7 +35,7 @@ export class ActorQueryOperationFilterDirect extends ActorQueryOperationTypedMed
         return false;
       }
     };
-    const bindingsStream = output.bindingsStream.filter(filter);
+    const bindingsStream = output.bindingsStream.transform<Bindings>({ filter, autoStart: false });
 
     return { type: 'bindings', bindingsStream, metadata: output.metadata, variables: output.variables };
   }

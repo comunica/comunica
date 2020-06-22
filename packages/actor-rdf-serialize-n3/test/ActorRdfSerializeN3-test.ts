@@ -61,12 +61,12 @@ describe('ActorRdfSerializeN3', () => {
         return expect(actor.test({ handle: { quadStream }, handleMediaType: 'application/json' })).rejects.toBeTruthy();
       });
 
-      it('should run', () => {
-        return actor.run({ handle: { quadStream }, handleMediaType: 'text/turtle' })
-          .then(async (output: any) => expect(await stringifyStream(output.handle.data)).toEqual(
+      it('should run', async () => {
+        const output: any = await actor.run({ handle: { quadStream }, handleMediaType: 'text/turtle' });
+        return expect(await stringifyStream(output.handle.data)).toEqual(
 `<http://example.org/a> <http://example.org/b> <http://example.org/c>;
     <http://example.org/d> <http://example.org/e>.
-`));
+`);
       });
 
       it('should run and output triples for text/turtle', async () => {

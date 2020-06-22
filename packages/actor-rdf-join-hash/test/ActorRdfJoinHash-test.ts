@@ -41,13 +41,13 @@ describe('ActorRdfJoinHash', () => {
       actor = new ActorRdfJoinHash({ name: 'actor', bus });
       action = { entries: [
         {
-          bindingsStream: new ArrayIterator([]),
+          bindingsStream: new ArrayIterator([], { autoStart: false }),
           metadata: () => Promise.resolve({ totalItems: 4 }),
           type: 'bindings',
           variables: [],
         },
         {
-          bindingsStream: new ArrayIterator([]),
+          bindingsStream: new ArrayIterator([], { autoStart: false }),
           metadata: () => Promise.resolve({ totalItems: 5 }),
           type: 'bindings',
           variables: [],

@@ -53,7 +53,7 @@ describe('ActorQueryOperationFilterSparqlee', () => {
           Bindings({ '?a': literal('1') }),
           Bindings({ '?a': literal('2') }),
           Bindings({ '?a': literal('3') }),
-        ]),
+        ], { autoStart: false }),
         metadata: () => Promise.resolve({ totalItems: 3 }),
         operated: arg,
         type: 'bindings',
@@ -174,7 +174,7 @@ describe('ActorQueryOperationFilterSparqlee', () => {
         // tslint:disable-next-line: no-string-literal
         const resolver = ActorQueryOperation.createExistenceResolver(Map(), actor.mediatorQueryOperation);
         mediatorQueryOperation.mediate = (arg: any) => Promise.resolve({
-          bindingsStream: new ArrayIterator([]),
+          bindingsStream: new ArrayIterator([], { autoStart: false }),
           metadata: () => Promise.resolve({ totalItems: 0 }),
           operated: arg,
           type: 'bindings',
@@ -192,7 +192,7 @@ describe('ActorQueryOperationFilterSparqlee', () => {
         // tslint:disable-next-line: no-string-literal
         const resolver = ActorQueryOperation.createExistenceResolver(Map(), actor.mediatorQueryOperation);
         mediatorQueryOperation.mediate = (arg: any) => Promise.resolve({
-          bindingsStream: new ArrayIterator([]),
+          bindingsStream: new ArrayIterator([], { autoStart: false }),
           metadata: () => Promise.resolve({ totalItems: 0 }),
           operated: arg,
           type: 'bindings',
@@ -210,9 +210,10 @@ describe('ActorQueryOperationFilterSparqlee', () => {
         // tslint:disable-next-line: no-string-literal
         const resolver = ActorQueryOperation.createExistenceResolver(Map(), actor.mediatorQueryOperation);
         const bindingsStream = new ArrayIterator([{}, {}, {}]).transform({
-          transform: (item, done) => {
-            bindingsStream._push(item);
+          transform: (item, done, push) => {
+            push(item);
             bindingsStream.emit('error', 'Test error');
+            done();
           },
         });
         mediatorQueryOperation.mediate = (arg: any) => Promise.resolve({

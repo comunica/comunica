@@ -1,5 +1,5 @@
 import {ActionContext, IActorArgs, IActorTest} from "@comunica/core";
-import {AsyncIterator} from "asynciterator";
+import {AsyncIterator, wrap as wrapAsyncIterator} from "asynciterator";
 import * as RDF from "rdf-js";
 import {Algebra} from "sparqlalgebrajs";
 import {
@@ -90,7 +90,7 @@ export abstract class ActorRdfResolveQuadPatternSource extends ActorRdfResolveQu
         ActorRdfResolveQuadPatternSource.variableToUndefined(pattern.graph),
       );
     } else {
-      data = AsyncIterator.wrap(<any> source.match(
+      data = wrapAsyncIterator(<any> source.match(
         ActorRdfResolveQuadPatternSource.variableToUndefined(pattern.subject),
         ActorRdfResolveQuadPatternSource.variableToUndefined(pattern.predicate),
         ActorRdfResolveQuadPatternSource.variableToUndefined(pattern.object),

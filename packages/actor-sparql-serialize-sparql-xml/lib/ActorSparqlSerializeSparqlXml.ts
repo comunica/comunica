@@ -84,7 +84,7 @@ export class ActorSparqlSerializeSparqlXml extends ActorSparqlSerializeFixedMedi
       resultStream.on('end', () => {
         results.close();
         root.close();
-        data.push(null);
+        setImmediate(() => data.push(null));
       });
     } else {
       try {

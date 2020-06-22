@@ -46,8 +46,9 @@ export class ActorQueryOperationSlice extends ActorQueryOperationTypedMediated<A
   // Slice the stream based on the pattern values
   private sliceStream(stream: AsyncIterator<any>, pattern: Algebra.Slice): AsyncIterator<any> {
     const hasLength: boolean = !!pattern.length || pattern.length === 0;
-    return stream.range(pattern.start,
-      hasLength ? pattern.start + (<number> pattern.length) - 1 : Infinity);
+    const start = pattern.start;
+    const end = hasLength ? pattern.start + (<number> pattern.length) - 1 : Infinity;
+    return stream.transform({ offset: start, limit: Math.max(end - start + 1, 0), autoStart: false })
   }
 
   // If we find metadata, apply slicing on the total number of items

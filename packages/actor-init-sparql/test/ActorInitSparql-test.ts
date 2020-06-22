@@ -5,9 +5,22 @@ import {Bus, KEY_CONTEXT_LOG} from "@comunica/core";
 import {literal, variable} from "@rdfjs/data-model";
 import {translate} from "sparqlalgebrajs";
 import {PassThrough, Readable} from "stream";
-import {ActorInitSparql} from "../lib/ActorInitSparql";
-import {ActorInitSparql as ActorInitSparqlBrowser, KEY_CONTEXT_QUERYFORMAT} from "../lib/ActorInitSparql-browser";
+import {
+  ActorInitSparql,
+  KEY_CONTEXT_INITIALBINDINGS,
+  KEY_CONTEXT_LENIENT,
+  KEY_CONTEXT_QUERYFORMAT
+} from "../lib/ActorInitSparql";
+import {ActorInitSparql as ActorInitSparqlBrowser} from "../lib/ActorInitSparql-browser";
 import Factory from "sparqlalgebrajs/lib/factory";
+
+describe('exported constants', () => {
+  it('should be correct', () => {
+    expect(KEY_CONTEXT_INITIALBINDINGS).toEqual('@comunica/actor-init-sparql:initialBindings');
+    expect(KEY_CONTEXT_QUERYFORMAT).toEqual('@comunica/actor-init-sparql:queryFormat');
+    expect(KEY_CONTEXT_LENIENT).toEqual('@comunica/actor-init-sparql:lenient');
+  });
+});
 
 describe('ActorInitSparqlBrowser', () => {
   it('should not allow invoking its run method', () => {
