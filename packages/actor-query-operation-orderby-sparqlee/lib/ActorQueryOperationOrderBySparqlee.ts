@@ -41,10 +41,11 @@ export class ActorQueryOperationOrderBySparqlee extends ActorQueryOperationTyped
     const sparqleeConfig = { ...ActorQueryOperation.getExpressionContext(context) };
     let bindingsStream = output.bindingsStream;
 
-    for (let expr of pattern.expressions) {
+    //sorting backwards since the first one is the most important therefore should be ordered last.
+    for(let i = pattern.expressions.length-1; i >= 0 ;i--){
+      let expr = pattern.expressions[i];
       const isAscending = this.isAscending(expr);
       expr = this.extractSortExpression(expr);
-
       // Transform the stream by annotating it with the expr result
       const evaluator = new AsyncEvaluator(expr, sparqleeConfig);
       interface IAnnotatedBinding { bindings: Bindings; result: Term | undefined; }
@@ -69,7 +70,7 @@ export class ActorQueryOperationOrderBySparqlee extends ActorQueryOperationTyped
         if (!orderA || !orderB) {
           return 0;
         }
-        return orderA > orderB === isAscending ? 1 : -1;
+        return orderA >= orderB === isAscending ? 1 : -1;
       }, options);
 
       // Remove the annotation
