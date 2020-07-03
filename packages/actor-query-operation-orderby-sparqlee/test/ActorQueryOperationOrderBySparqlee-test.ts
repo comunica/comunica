@@ -177,15 +177,11 @@ describe('ActorQueryOperationOrderBySparqleeMultipleComparators', () => {
     let descOrderB: Algebra.OperatorExpression;
     let orderA1: Algebra.OperatorExpression;
     let orderB1: Algebra.OperatorExpression;
-    let ascOrderA: Algebra.OperatorExpression;
-    let ascOrderB: Algebra.OperatorExpression;
 
     beforeEach(() => {
       actor = new ActorQueryOperationOrderBySparqlee({ name: 'actor', bus, mediatorQueryOperation });
       orderA = { type: 'expression', expressionType: 'term', term: variable('a') };
       orderB = { type: 'expression', expressionType: 'term', term: variable('b') };
-      ascOrderA = { type: 'expression', expressionType: 'operator', operator: 'asc', args: [orderA] };
-      ascOrderB = { type: 'expression', expressionType: 'operator', operator: 'asc', args: [orderB] };
       descOrderA = { type: 'expression', expressionType: 'operator', operator: 'desc', args: [orderA] };
       descOrderB = { type: 'expression', expressionType: 'operator', operator: 'desc', args: [orderB] };
       orderA1 = { args: [orderA], expressionType: 'operator', operator: 'strlen', type: 'expression' };
@@ -226,29 +222,15 @@ describe('ActorQueryOperationOrderBySparqleeMultipleComparators', () => {
       ]);
     });
 
-    // Testing explicit ascending with multiple comparators
-    // TODO ask if it should be available or is it cleaned somwhere anyway
-    /*
-    it('should order priority B and secondary A, explicit ascending', async () => {
-      const op = { operation: { type: 'orderby', input: {}, expressions: [ascOrderB, ascOrderA] } };
-      const output = await actor.run(op);
-      const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
-      expect(array).toMatchObject([
-        Bindings({ '?a': literal('Vermeulen'),'?b': literal('Ben') }),
-        Bindings({ '?a': literal("Bosmans"),'?b': literal('Jos') }),
-        Bindings({ '?a': literal('Vermeulen'),'?b': literal('Jos') }),
-      ]);
-    });*/
-
     // Testing descending with multiple comparators
     it('descending order A multiple orderby', async () => {
       const op = { operation: { type: 'orderby', input: {}, expressions: [descOrderA] } };
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
-          Bindings({ '?a': literal('Vermeulen'),'?b': literal('Jos') }),
-          Bindings({ '?a': literal('Vermeulen'),'?b': literal('Ben') }),
-          Bindings({ '?a': literal("Bosmans"),'?b': literal('Jos')  }),
+        Bindings({ '?a': literal('Vermeulen'),'?b': literal('Jos') }),
+        Bindings({ '?a': literal('Vermeulen'),'?b': literal('Ben') }),
+        Bindings({ '?a': literal("Bosmans"),'?b': literal('Jos')  }),
       ]);
     });
 
@@ -258,14 +240,14 @@ describe('ActorQueryOperationOrderBySparqleeMultipleComparators', () => {
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
         Bindings({ '?a': literal('Vermeulen'),'?b': literal('Jos') }),
-          Bindings({ '?a': literal("Bosmans"),'?b': literal('Jos')  }),
-          Bindings({ '?a': literal('Vermeulen'),'?b': literal('Ben') }),
+        Bindings({ '?a': literal("Bosmans"),'?b': literal('Jos')  }),
+        Bindings({ '?a': literal('Vermeulen'),'?b': literal('Ben') }),
       ]);
     });
 
     // Testing with strlen operator
     it('backup', async () => {
-      //priority goes to orderB1 then we secondarily sort by orderA1
+      // Priority goes to orderB1 then we secondarily sort by orderA1
       const op = { operation: { type: 'orderby', input: {}, expressions: [orderB1, orderA1] } };
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
