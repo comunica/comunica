@@ -2,6 +2,7 @@ import { Term } from "rdf-js";
 import { termToString } from "rdf-string";
 import { Algebra } from "sparqlalgebrajs";
 import { AsyncEvaluator, isExpressionError } from 'sparqlee';
+import { type } from 'sparqlee/dist/lib/util/Consts';
 
 import {
   ActorQueryOperation, ActorQueryOperationTypedMediated,
@@ -67,10 +68,37 @@ export class ActorQueryOperationOrderBySparqlee extends ActorQueryOperationTyped
       const sortedStream = new SortIterator(transformedStream, (a, b) => {
         const orderA = termToString(a.result);
         const orderB = termToString(b.result);
-        if (!orderA || !orderB || orderA === orderB) {
-          return 0;
+        // Type of the elements
+        const typeURLA = this.getLiteralType(orderA||"");
+        const typeURLB = this.getLiteralType(orderB||"");
+        const typeA = type(typeURLA);
+        const typeB = type(typeURLB);
+        if (typeA === typeB) {
+          let numA = 0;
+          let numB = 0;
+          let isString = true;
+          switch (typeA) {
+            case "integer":
+              numA = parseInt(""+this.literalValue(""+termToString(a.result)));
+              numB = parseInt(""+this.literalValue(""+termToString(b.result)));
+              isString = false;
+              break;
+            case "float":
+            case "decimal": 
+            case "double":
+              numA = parseFloat(""+this.literalValue("" + termToString(a.result)));
+              numB = parseFloat(""+this.literalValue("" + termToString(b.result)));
+              isString = false;
+              break;
+            default:
+              break;
+          }
+          return isString ? this.order(orderA, orderB, isAscending) : this.order(numA, numB, isAscending);
         }
-        return orderA > orderB === isAscending ? 1 : -1;
+
+        //different types automatically use string compare
+        return this.order(orderA, orderB, isAscending);
+        
       }, options);
 
       // Remove the annotation
@@ -94,6 +122,24 @@ export class ActorQueryOperationOrderBySparqlee extends ActorQueryOperationTyped
     if (expressionType !== Algebra.expressionTypes.OPERATOR) { return true; }
     return operator !== 'desc';
   }
+
+  private getLiteralType(literal: string) {
+    const match = /^"[^]*"(?:\^\^([^"]+)|(@)[^@"]+)?$/.exec(literal);
+    return match && match[1] || 'http://www.w3.org/2001/XMLSchema#string';
+  }
+
+  private literalValue(literal: string) {
+    const match = /^"([^]*)"/.exec(literal);  
+    return match && match[1];
+  }
+
+  private order(orderA:number|string|undefined, orderB: number|string|undefined, isAscending:boolean){
+    if (!orderA || !orderB || orderA === orderB) {
+      return 0;
+    }
+    return orderA > orderB === isAscending ? 1 : -1;
+  }
+
 }
 
 /**
