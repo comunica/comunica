@@ -146,3 +146,114 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
     });
   });
 });
+
+describe('ActorQueryOperationOrderBySparqlee with multiple comparators', () => {
+  let bus: any;
+  let mediatorQueryOperation: any;
+
+  beforeEach(() => {
+    bus = new Bus({ name: 'bus' });
+    mediatorQueryOperation = {
+      mediate: (arg: any) => Promise.resolve({
+        bindingsStream: new ArrayIterator([
+          Bindings({ '?a': literal('Vermeulen'),'?b': literal('Jos') }),
+          Bindings({ '?a': literal("Bosmans"),'?b': literal('Jos')  }),
+          Bindings({ '?a': literal('Vermeulen'),'?b': literal('Ben') }),
+        ]),
+        metadata: () => Promise.resolve({ totalItems: 3 }),
+        operated: arg,
+        type: 'bindings',
+        variables: ['?a', '?b'],
+      }),
+    };
+  });
+
+
+  describe('An ActorQueryOperationOrderBySparqlee instance multiple comparators', () => {
+    let actor: ActorQueryOperationOrderBySparqlee;
+    let orderA: Algebra.TermExpression;
+    let orderB: Algebra.TermExpression;
+    let descOrderA: Algebra.OperatorExpression;
+    let descOrderB: Algebra.OperatorExpression;
+    let orderA1: Algebra.OperatorExpression;
+    let orderB1: Algebra.OperatorExpression;
+
+    beforeEach(() => {
+      actor = new ActorQueryOperationOrderBySparqlee({ name: 'actor', bus, mediatorQueryOperation });
+      orderA = { type: 'expression', expressionType: 'term', term: variable('a') };
+      orderB = { type: 'expression', expressionType: 'term', term: variable('b') };
+      descOrderA = { type: 'expression', expressionType: 'operator', operator: 'desc', args: [orderA] };
+      descOrderB = { type: 'expression', expressionType: 'operator', operator: 'desc', args: [orderB] };
+      orderA1 = { args: [orderA], expressionType: 'operator', operator: 'strlen', type: 'expression' };
+      orderB1 = { args: [orderB], expressionType: 'operator', operator: 'strlen', type: 'expression' };
+    });
+
+    it('should order A', async () => {
+      const op = { operation: { type: 'orderby', input: {}, expressions: [orderA] } };
+      const output = await actor.run(op);
+      const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
+      expect(array).toMatchObject([
+        Bindings({ '?a': literal("Bosmans"),'?b': literal('Jos') }),
+        Bindings({ '?a': literal('Vermeulen'),'?b': literal('Jos') }),
+        Bindings({ '?a': literal('Vermeulen'),'?b': literal('Ben') }),
+      ]);
+    });
+
+    it('should order B', async () => {
+      const op = { operation: { type: 'orderby', input: {}, expressions: [orderB] } };
+      const output = await actor.run(op);
+      const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
+      expect(array).toMatchObject([
+        Bindings({ '?a': literal('Vermeulen'),'?b': literal('Ben') }),
+        Bindings({ '?a': literal('Vermeulen'),'?b': literal('Jos') }),
+        Bindings({ '?a': literal("Bosmans"),'?b': literal('Jos') }),
+      ]);
+    });
+
+    it('should order priority B and secondary A, ascending', async () => {
+      const op = { operation: { type: 'orderby', input: {}, expressions: [orderB, orderA] } };
+      const output = await actor.run(op);
+      const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
+      expect(array).toMatchObject([
+        Bindings({ '?a': literal('Vermeulen'),'?b': literal('Ben') }),
+        Bindings({ '?a': literal("Bosmans"),'?b': literal('Jos') }),
+        Bindings({ '?a': literal('Vermeulen'),'?b': literal('Jos') }),
+      ]);
+    });
+
+    it('descending order A multiple orderby', async () => {
+      const op = { operation: { type: 'orderby', input: {}, expressions: [descOrderA] } };
+      const output = await actor.run(op);
+      const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
+      expect(array).toMatchObject([
+        Bindings({ '?a': literal('Vermeulen'),'?b': literal('Jos') }),
+        Bindings({ '?a': literal('Vermeulen'),'?b': literal('Ben') }),
+        Bindings({ '?a': literal("Bosmans"),'?b': literal('Jos')  }),
+      ]);
+    });
+
+    it('descending order B multiple orderby', async () => {
+      const op = { operation: { type: 'orderby', input: {}, expressions: [descOrderB] } };
+      const output = await actor.run(op);
+      const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
+      expect(array).toMatchObject([
+        Bindings({ '?a': literal('Vermeulen'),'?b': literal('Jos') }),
+        Bindings({ '?a': literal("Bosmans"),'?b': literal('Jos')  }),
+        Bindings({ '?a': literal('Vermeulen'),'?b': literal('Ben') }),
+      ]);
+    });
+
+    it('strlen orderby with multiple comparators', async () => {
+      // Priority goes to orderB1 then we secondarily sort by orderA1
+      const op = { operation: { type: 'orderby', input: {}, expressions: [orderB1, orderA1] } };
+      const output = await actor.run(op);
+      const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
+      expect(array).toMatchObject([
+        Bindings({ '?a': literal("Bosmans"),'?b': literal('Jos')  }),
+        Bindings({ '?a': literal('Vermeulen'),'?b': literal('Jos') }),
+        Bindings({ '?a': literal('Vermeulen'),'?b': literal('Ben') })
+      ]);
+    });
+
+  });
+});
