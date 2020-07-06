@@ -67,10 +67,7 @@ export class ActorQueryOperationOrderBySparqlee extends ActorQueryOperationTyped
       const sortedStream = new SortIterator(transformedStream, (a, b) => {
         const orderA = termToString(a.result);
         const orderB = termToString(b.result);
-        if (!orderA || !orderB) {
-          return 0;
-        }
-        if(orderA === orderB){
+        if (!orderA || !orderB || orderA === orderB) {
           return 0;
         }
         return orderA > orderB === isAscending ? 1 : -1;
