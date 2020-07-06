@@ -42,7 +42,7 @@ export class ActorQueryOperationOrderBySparqlee extends ActorQueryOperationTyped
     let bindingsStream = output.bindingsStream;
 
     //sorting backwards since the first one is the most important therefore should be ordered last.
-    for(let i = pattern.expressions.length-1; i >= 0 ;i--){
+    for (let i = pattern.expressions.length-1; i >= 0 ;i--) {
       let expr = pattern.expressions[i];
       const isAscending = this.isAscending(expr);
       expr = this.extractSortExpression(expr);
@@ -70,11 +70,10 @@ export class ActorQueryOperationOrderBySparqlee extends ActorQueryOperationTyped
         if (!orderA || !orderB) {
           return 0;
         }
-        if(isAscending){
-          return orderA >= orderB === true ? 1 : -1;
-        }else{
-          return orderA > orderB === false ? 1 : -1;
+        if(orderA === orderB){
+          return 0;
         }
+        return orderA > orderB === isAscending ? 1 : -1;
       }, options);
 
       // Remove the annotation

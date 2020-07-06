@@ -147,7 +147,7 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
   });
 });
 
-describe('ActorQueryOperationOrderBySparqleeMultipleComparators', () => {
+describe('ActorQueryOperationOrderBySparqlee with multiple comparators', () => {
   let bus: any;
   let mediatorQueryOperation: any;
 
@@ -188,7 +188,6 @@ describe('ActorQueryOperationOrderBySparqleeMultipleComparators', () => {
       orderB1 = { args: [orderB], expressionType: 'operator', operator: 'strlen', type: 'expression' };
     });
 
-    // Testing implicit ascending with multiple comparators
     it('should order A', async () => {
       const op = { operation: { type: 'orderby', input: {}, expressions: [orderA] } };
       const output = await actor.run(op);
@@ -222,7 +221,6 @@ describe('ActorQueryOperationOrderBySparqleeMultipleComparators', () => {
       ]);
     });
 
-    // Testing descending with multiple comparators
     it('descending order A multiple orderby', async () => {
       const op = { operation: { type: 'orderby', input: {}, expressions: [descOrderA] } };
       const output = await actor.run(op);
@@ -245,8 +243,7 @@ describe('ActorQueryOperationOrderBySparqleeMultipleComparators', () => {
       ]);
     });
 
-    // Testing with strlen operator
-    it('backup', async () => {
+    it('strlen orderby with multiple comparators', async () => {
       // Priority goes to orderB1 then we secondarily sort by orderA1
       const op = { operation: { type: 'orderby', input: {}, expressions: [orderB1, orderA1] } };
       const output = await actor.run(op);
