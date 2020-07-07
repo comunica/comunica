@@ -5,7 +5,7 @@ import {
   IActorQueryOperationTypedMediatedArgs,
 } from "@comunica/bus-query-operation";
 import {ActionContext, IActorTest} from "@comunica/core";
-import {PromiseProxyIterator} from "asynciterator-promiseproxy";
+import {TransformIterator} from "asynciterator";
 import {Algebra} from "sparqlalgebrajs";
 import {BindingsIndex} from "./BindingsIndex";
 
@@ -36,13 +36,13 @@ export class ActorQueryOperationMinus extends ActorQueryOperationTypedMediated<A
        * Then we save these triples in `index` and use it to filter our A-stream.
        */
       const index: BindingsIndex = new BindingsIndex(commons);
-      const bindingsStream = new PromiseProxyIterator(async () => {
+      const bindingsStream = new TransformIterator(async () => {
         await new Promise((resolve) => {
           buffer.bindingsStream.on('data', (data) => index.add(data));
           buffer.bindingsStream.on('end', resolve);
         });
         return output.bindingsStream.filter((data) => !index.contains(data));
-      });
+      }, { autoStart: false });
       return { type: 'bindings', bindingsStream, variables: output.variables, metadata: output.metadata};
     } else {
       return output;

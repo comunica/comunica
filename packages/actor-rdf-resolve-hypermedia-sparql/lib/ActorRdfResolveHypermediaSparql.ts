@@ -2,7 +2,7 @@ import {IActionHttp, IActorHttpOutput} from "@comunica/bus-http";
 import {ActorRdfResolveHypermedia, IActionRdfResolveHypermedia,
   IActorRdfResolveHypermediaOutput} from "@comunica/bus-rdf-resolve-hypermedia";
 import {Actor, IActorArgs, IActorTest, Mediator} from "@comunica/core";
-import {IActorRdfResolveHypermediaTest} from "../../bus-rdf-resolve-hypermedia";
+import {IActorRdfResolveHypermediaTest} from "@comunica/bus-rdf-resolve-hypermedia";
 import {RdfSourceSparql} from "./RdfSourceSparql";
 
 /**

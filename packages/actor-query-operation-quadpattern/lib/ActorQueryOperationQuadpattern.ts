@@ -3,7 +3,7 @@ import {ActorQueryOperationTyped, Bindings, BindingsStream,
   IActorQueryOperationOutputBindings} from "@comunica/bus-query-operation";
 import {IActionRdfResolveQuadPattern, IActorRdfResolveQuadPatternOutput} from "@comunica/bus-rdf-resolve-quad-pattern";
 import {ActionContext, Actor, IActorArgs, IActorTest, Mediator} from "@comunica/core";
-import {PromiseProxyIterator} from "asynciterator-promiseproxy";
+import {TransformIterator} from "asynciterator";
 import * as RDF from "rdf-js";
 import {termToString} from "rdf-string";
 import {getTerms, QUAD_TERM_NAMES, QuadTermName, reduceTerms, TRIPLE_TERM_NAMES, uniqTerms} from "rdf-terms";
@@ -125,7 +125,7 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
     };
 
     // Optionally filter, and construct bindings
-    const bindingsStream: BindingsStream = new PromiseProxyIterator(async () => {
+    const bindingsStream: BindingsStream = new TransformIterator(async () => {
       let filteredOutput = result.data;
 
       // Detect duplicate variables in the pattern
@@ -152,7 +152,7 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
       return filteredOutput.map((quad) => {
         return Bindings(reduceTerms(quad, quadBindingsReducer, {}));
       }, { autoStart: true, maxBufferSize: 128 });
-    });
+    }, { autoStart: false });
 
     return { type: 'bindings', bindingsStream, variables, metadata: result.metadata };
   }

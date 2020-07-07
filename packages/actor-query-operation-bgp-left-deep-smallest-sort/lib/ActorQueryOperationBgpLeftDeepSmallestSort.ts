@@ -8,8 +8,7 @@ import {
   IActorQueryOperationTypedMediatedArgs,
 } from "@comunica/bus-query-operation";
 import {ActionContext, IActorTest} from "@comunica/core";
-import {ArrayIterator, MultiTransformIterator} from "asynciterator";
-import {PromiseProxyIterator} from "asynciterator-promiseproxy";
+import {ArrayIterator, MultiTransformIterator, TransformIterator} from "asynciterator";
 import * as RDF from "rdf-js";
 import {termToString} from "rdf-string";
 import {mapTerms} from "rdf-terms";
@@ -41,9 +40,9 @@ export class ActorQueryOperationBgpLeftDeepSmallestSort extends ActorQueryOperat
                                        Promise<BindingsStream>): BindingsStream {
     return new MultiTransformIterator(baseStream, (bindings: Bindings) => {
       const bindingsMerger = (subBindings: Bindings) => subBindings.merge(bindings);
-      return new PromiseProxyIterator(
+      return new TransformIterator(
         async () => (await patternBinder(ActorQueryOperationBgpLeftDeepSmallestSort.materializePatterns(patterns,
-          bindings))).map(bindingsMerger), { autoStart: true, maxBufferSize: 128 });
+          bindings))).map(bindingsMerger), { autoStart: false, maxBufferSize: 128 });
     });
   }
 

@@ -7,8 +7,7 @@ import {
 } from "@comunica/bus-rdf-resolve-quad-pattern";
 import {ActionContext, Actor, IActorArgs, IActorTest, Mediator} from "@comunica/core";
 import {variable} from "@rdfjs/data-model";
-import {AsyncIterator} from "asynciterator";
-import {PromiseProxyIterator} from "asynciterator-promiseproxy";
+import {AsyncIterator, TransformIterator} from "asynciterator";
 import * as RDF from "rdf-js";
 import {getTerms, getVariables, mapTerms} from "rdf-terms";
 import {Algebra, Factory, toSparql} from "sparqlalgebrajs";
@@ -157,7 +156,7 @@ export class ActorRdfResolveQuadPatternSparqlJson
       });
 
     // Materialize the queried pattern using each found binding.
-    const data: AsyncIterator<RDF.Quad> & RDF.Stream = new PromiseProxyIterator(async () =>
+    const data: AsyncIterator<RDF.Quad> & RDF.Stream = new TransformIterator(async () =>
       (await this.queryBindings(endpoint, selectQuery, action.context))
         .map((bindings: Bindings) => <RDF.Quad> mapTerms(pattern, (value: RDF.Term) => {
           if (value.termType === 'Variable') {
@@ -169,7 +168,7 @@ export class ActorRdfResolveQuadPatternSparqlJson
             return boundValue;
           }
           return value;
-        })));
+        })), { autoStart: false });
 
     return { data, metadata };
   }

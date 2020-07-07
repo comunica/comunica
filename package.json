@@ -19,7 +19,7 @@
     "@types/jest": "^26.0.0",
     "@types/node": "^13.1.7",
     "arrayify-stream": "^1.0.0",
-    "asynciterator": "^v3.0.0-beta.5",
+    "asynciterator": "^v3.0.0-beta.6",
     "babel-loader": "^8.1.0",
     "coveralls": "^3.0.0",
     "immutable": "^3.8.2",
