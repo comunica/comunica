@@ -37,8 +37,7 @@
   "dependencies": {
     "@rdfjs/data-model": "^1.1.1",
     "@types/rdf-js": "^3.0.0",
-    "asynciterator": "^3.0.0-beta.5",
-    "asynciterator-promiseproxy": "^2.1.0",
+    "asynciterator": "^3.0.0-beta.6",
     "rdf-terms": "^1.4.0",
     "sparqlalgebrajs": "^2.2.2",
     "sparqljson-parse": "^1.5.0"

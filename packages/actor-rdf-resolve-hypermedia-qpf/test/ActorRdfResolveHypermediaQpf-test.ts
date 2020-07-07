@@ -1,6 +1,6 @@
 import {ActorRdfResolveHypermedia} from "@comunica/bus-rdf-resolve-hypermedia";
 import {ActionContext, Bus} from "@comunica/core";
-import {PromiseProxyIterator} from "asynciterator-promiseproxy";
+import {TransformIterator} from "asynciterator";
 import {ActorRdfResolveHypermediaQpf} from "../lib/ActorRdfResolveHypermediaQpf";
 import {RdfSourceQpf} from "../lib/RdfSourceQpf";
 
@@ -96,7 +96,7 @@ describe('ActorRdfResolveHypermediaQpf', () => {
       expect((<any> source).objectUri).toEqual('o');
       expect((<any> source).graphUri).toEqual('g');
       expect((<any> source).context).toBe(context);
-      expect((<any> source).getCachedQuads()).toBeInstanceOf(PromiseProxyIterator);
+      expect((<any> source).getCachedQuads()).toBeInstanceOf(TransformIterator);
     });
   });
 

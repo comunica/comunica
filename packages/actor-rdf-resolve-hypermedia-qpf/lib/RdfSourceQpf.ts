@@ -3,8 +3,7 @@ import {IActionRdfDereference, IActorRdfDereferenceOutput} from "@comunica/bus-r
 import {IActionRdfMetadata, IActorRdfMetadataOutput} from "@comunica/bus-rdf-metadata";
 import {IActionRdfMetadataExtract, IActorRdfMetadataExtractOutput} from "@comunica/bus-rdf-metadata-extract";
 import {ActionContext, Actor, IActorTest, Mediator} from "@comunica/core";
-import {AsyncIterator, wrap} from "asynciterator";
-import {PromiseProxyIterator} from "asynciterator-promiseproxy";
+import {AsyncIterator, TransformIterator, wrap} from "asynciterator";
 import * as RDF from "rdf-js";
 import {termToString} from "rdf-string";
 import {mapTerms, matchPattern} from "rdf-terms";
@@ -148,7 +147,7 @@ export class RdfSourceQpf implements RDF.Source {
       return cached;
     }
 
-    const quads = new PromiseProxyIterator(async () => {
+    const quads = new TransformIterator(async () => {
       let url: string = await this.createFragmentUri(this.searchForm, subject, predicate, object, <RDF.Term> graph);
       const rdfDereferenceOutput = await this.mediatorRdfDereference.mediate({ context: this.context, url });
       url = rdfDereferenceOutput.url;
@@ -182,7 +181,7 @@ export class RdfSourceQpf implements RDF.Source {
       }
 
       return filteredOutput;
-    });
+    }, { autoStart: false });
 
     this.cacheQuads(quads, subject, predicate, object, graph);
     return <RDF.Stream> this.getCachedQuads(subject, predicate, object, graph);
@@ -218,7 +217,7 @@ export class RdfSourceQpf implements RDF.Source {
     if (quads) {
       const quadsOriginal = quads;
       // Make our iterator lazy to ensure that metadata event is emitted before end event.
-      quads = new PromiseProxyIterator(async () => quadsOriginal.clone());
+      quads = new TransformIterator(async () => quadsOriginal.clone(), { autoStart: false });
       quadsOriginal.getProperty('metadata', (metadata) => quads.emit('metadata', metadata));
       return quads;
     }

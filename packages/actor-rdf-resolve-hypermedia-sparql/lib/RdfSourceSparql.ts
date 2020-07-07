@@ -3,7 +3,6 @@ import {Bindings, BindingsStream} from "@comunica/bus-query-operation";
 import {ActionContext, Actor, IActorTest, Mediator} from "@comunica/core";
 import {variable} from "@rdfjs/data-model";
 import {AsyncIterator} from "asynciterator";
-import {PromiseProxyIterator} from "asynciterator-promiseproxy";
 import * as RDF from "rdf-js";
 import {mapTerms} from "rdf-terms";
 import {Factory} from "sparqlalgebrajs";

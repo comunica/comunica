@@ -6,7 +6,7 @@ import {
   IActorQueryOperationTypedMediatedArgs
 } from "@comunica/bus-query-operation";
 import {ActionContext, IActorTest} from "@comunica/core";
-import {RoundRobinUnionIterator} from "asynciterator-union";
+import {UnionIterator} from "asynciterator";
 import {Algebra} from "sparqlalgebrajs";
 
 /**
@@ -58,8 +58,8 @@ export class ActorQueryOperationUnion extends ActorQueryOperationTypedMediated<A
       this.mediatorQueryOperation.mediate({ operation: pattern.right, context }),
     ])).map(ActorQueryOperation.getSafeBindings);
 
-    const bindingsStream: BindingsStream = new RoundRobinUnionIterator(outputs.map(
-      (output: IActorQueryOperationOutputBindings) => output.bindingsStream));
+    const bindingsStream: BindingsStream = new UnionIterator(outputs.map(
+      (output: IActorQueryOperationOutputBindings) => output.bindingsStream), { autoStart: false });
     const metadata: (() => Promise<{[id: string]: any}>) | undefined = outputs[0].metadata && outputs[1].metadata ? () =>
         Promise.all([
           (<() => Promise<{[id: string]: any}>> outputs[0].metadata)(),
