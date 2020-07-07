@@ -48,7 +48,7 @@ export class ActorQueryOperationBgpLeftDeepSmallest extends ActorQueryOperationT
       const bindingsMerger = (subBindings: Bindings) => subBindings.merge(bindings);
       return new TransformIterator(
         async () => (await patternBinder(ActorQueryOperationBgpLeftDeepSmallest.materializePatterns(patterns,
-          bindings))).map(bindingsMerger), { autoStart: false, maxBufferSize: 128 });
+          bindings))).map(bindingsMerger), { maxBufferSize: 128 });
     });
   }
 
