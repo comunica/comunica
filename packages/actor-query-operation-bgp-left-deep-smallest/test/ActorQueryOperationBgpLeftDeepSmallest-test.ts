@@ -530,7 +530,7 @@ describe('ActorQueryOperationBgpLeftDeepSmallest', () => {
         expect(output.variables).toEqual([]);
         expect(output.type).toEqual('bindings');
         expect(await (<any> output).metadata()).toEqual({ totalItems: Infinity });
-        expect(mediatorQueryOperation.mediate).toHaveBeenCalledTimes(2);
+        expect(mediatorQueryOperation.mediate).toHaveBeenCalledTimes(3);
         expect(mediatorQueryOperation.mediate).toHaveBeenCalledWith(
           {
             context: ActionContext({ a: 'b', [KEY_CONTEXT_QUERYOPERATION]: op.operation }),
