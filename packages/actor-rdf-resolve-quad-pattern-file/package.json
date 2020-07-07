@@ -38,7 +38,7 @@
     "@types/lru-cache": "^5.1.0",
     "@types/n3": "^1.4.2",
     "@types/rdf-js": "^3.0.0",
-    "asynciterator": "^3.0.0-beta.5",
+    "asynciterator": "^3.0.0-beta.6",
     "lru-cache": "^5.1.1",
     "n3": "^1.0.0",
     "rdf-string": "^1.4.2"

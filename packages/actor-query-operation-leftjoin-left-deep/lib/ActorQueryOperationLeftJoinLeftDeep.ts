@@ -11,7 +11,7 @@ import {ActorRdfJoin} from "@comunica/bus-rdf-join";
 import {ActionContext, IActorTest} from "@comunica/core";
 import {MultiTransformIterator} from "asynciterator";
 import {Algebra, Factory} from "sparqlalgebrajs";
-import {PromiseProxyIterator} from "asynciterator-promiseproxy";
+import {TransformIterator} from "asynciterator";
 
 /**
  * A comunica LeftJoin left-deep Query Operation Actor.
@@ -41,9 +41,9 @@ export class ActorQueryOperationLeftJoinLeftDeep extends ActorQueryOperationType
     return new MultiTransformIterator(leftStream, {
       multiTransform: (bindings: Bindings) => {
         const bindingsMerger = (subBindings: Bindings) => subBindings.merge(bindings);
-        return new PromiseProxyIterator(
+        return new TransformIterator(
           async () => (await operationBinder(materializeOperation(rightOperation, bindings)))
-            .map(bindingsMerger), { autoStart: true, maxBufferSize: 128 });
+            .map(bindingsMerger), { maxBufferSize: 128 });
       },
       optional: true,
     });

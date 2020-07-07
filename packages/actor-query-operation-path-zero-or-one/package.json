@@ -40,7 +40,7 @@
   },
   "dependencies": {
     "@comunica/actor-abstract-path": "^1.13.0",
-    "asynciterator": "^3.0.0-beta.5",
+    "asynciterator": "^3.0.0-beta.6",
     "rdf-string": "^1.4.2"
   },
   "devDependencies": {
