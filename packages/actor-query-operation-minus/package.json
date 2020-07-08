@@ -37,7 +37,7 @@
   "dependencies": {
     "@comunica/actor-abstract-bindings-hash": "^1.13.0",
     "@types/rdf-js": "^3.0.0",
-    "asynciterator": "^3.0.0-beta.6"
+    "asynciterator": "^3.0.0"
   },
   "peerDependencies": {
     "@comunica/bus-query-operation": "^1.2.0",
