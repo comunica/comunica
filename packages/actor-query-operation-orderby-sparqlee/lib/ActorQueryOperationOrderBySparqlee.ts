@@ -1,7 +1,7 @@
 import { Term } from "rdf-js";
 import { Algebra } from "sparqlalgebrajs";
 import { AsyncEvaluator, isExpressionError } from 'sparqlee';
-import { orderTypes } from 'sparqlee/dist/lib/Transformation';
+import { orderTypes } from 'sparqlee/dist/lib/util/Ordering';
 
 import {
   ActorQueryOperation, ActorQueryOperationTypedMediated,
