@@ -1,8 +1,7 @@
 import { Term } from "rdf-js";
-import { termToString } from "rdf-string";
 import { Algebra } from "sparqlalgebrajs";
 import { AsyncEvaluator, isExpressionError } from 'sparqlee';
-import { orderTypes } from 'sparqlee/dist/lib/util/Consts';
+import { orderTypes } from 'sparqlee/dist/lib/Transformation';
 
 import {
   ActorQueryOperation, ActorQueryOperationTypedMediated,
@@ -54,6 +53,7 @@ export class ActorQueryOperationOrderBySparqlee extends ActorQueryOperationTyped
         try {
           const result = await evaluator.evaluate(bindings);
           transformedStream._push({ bindings, result });
+          
         } catch (err) {
           if (!isExpressionError(err)) {
             bindingsStream.emit('error', err);
@@ -66,9 +66,7 @@ export class ActorQueryOperationOrderBySparqlee extends ActorQueryOperationTyped
 
       // Sort the annoted stream
       const sortedStream = new SortIterator(transformedStream, (a, b) => {
-        const orderA = "" + termToString(a.result);
-        const orderB = "" + termToString(b.result);
-        return orderTypes(orderA, orderB, isAscending);
+        return orderTypes(a.result, b.result, isAscending);
       }, options);
 
       // Remove the annotation
@@ -92,7 +90,6 @@ export class ActorQueryOperationOrderBySparqlee extends ActorQueryOperationTyped
     if (expressionType !== Algebra.expressionTypes.OPERATOR) { return true; }
     return operator !== 'desc';
   }
-  
 }
 
 /**

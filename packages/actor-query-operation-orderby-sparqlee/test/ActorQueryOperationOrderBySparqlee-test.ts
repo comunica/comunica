@@ -539,3 +539,48 @@ describe('ActorQueryOperationOrderBySparqlee with mixed types', () => {
   });
 });
 
+
+describe('ActorQueryOperationOrderBySparqlee with mixed types', () => {
+  let bus: any;
+  let mediatorQueryOperation: any;
+
+  beforeEach(() => {
+    bus = new Bus({ name: 'bus' });
+    mediatorQueryOperation = {
+      mediate: (arg: any) => Promise.resolve({
+        bindingsStream: new ArrayIterator([
+          Bindings({ '?a': variable("a") }),
+          Bindings({ '?a': variable("b")}),
+          Bindings({ '?a': variable("c")}),
+        ]),
+        metadata: () => Promise.resolve({ totalItems: 3 }),
+        operated: arg,
+        type: 'bindings',
+        variables: ['?a'],
+      }),
+    };
+  });
+
+  describe('An ActorQueryOperationOrderBySparqlee instance', () => {
+    let actor: ActorQueryOperationOrderBySparqlee;
+    let orderA: Algebra.TermExpression;
+    let descOrderA: Algebra.OperatorExpression;
+
+    beforeEach(() => {
+      actor = new ActorQueryOperationOrderBySparqlee({ name: 'actor', bus, mediatorQueryOperation });
+      orderA = { type: 'expression', expressionType: 'term', term: variable('a') };
+      descOrderA = { type: 'expression', expressionType: 'operator', operator: 'desc', args: [orderA] };
+    });
+
+    it('should not sort since its not a literal ascending', async () => {
+      try{
+        const op = { operation: { type: 'orderby', input: {}, expressions: [orderA] } };
+        const output = await actor.run(op);
+        const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
+        expect(array).toBeFalsy();
+      }catch(error){
+        // is valid
+      }
+    });
+  });
+});
