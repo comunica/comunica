@@ -56,7 +56,7 @@
     "@types/create-hash": "^1.2.0",
     "@types/jest": "^26.0.0",
     "@types/uuid": "^8.0.0",
-    "asynciterator": "^2.0.0",
+    "asynciterator": "^3.0.0",
     "benchmark": "^2.1.4",
     "coveralls": "^3.0.2",
     "jest": "^26.0.0",
