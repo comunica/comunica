@@ -1,7 +1,6 @@
 import { Term } from "rdf-js";
 import { Algebra } from "sparqlalgebrajs";
-import { AsyncEvaluator, isExpressionError } from 'sparqlee';
-import { orderTypes } from 'sparqlee/dist/lib/util/Ordering';
+import { AsyncEvaluator, isExpressionError, orderTypes } from 'sparqlee';
 
 import {
   ActorQueryOperation, ActorQueryOperationTypedMediated,
@@ -53,7 +52,6 @@ export class ActorQueryOperationOrderBySparqlee extends ActorQueryOperationTyped
         try {
           const result = await evaluator.evaluate(bindings);
           transformedStream._push({ bindings, result });
-          
         } catch (err) {
           if (!isExpressionError(err)) {
             bindingsStream.emit('error', err);
