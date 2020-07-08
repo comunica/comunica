@@ -14,7 +14,7 @@ jest.mock('../lib/ActorInitSparql', () => {
 
 import {evaluateQuery, newEngineDynamic} from '../index';
 
-jest.setTimeout(20000);
+jest.setTimeout(30000);
 
 describe('index', () => {
   it('newEngineDynamic should return a query engine', () => {
