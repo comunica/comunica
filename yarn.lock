@@ -2690,12 +2690,17 @@ asynciterator@^2.0.0, asynciterator@^2.0.1:
   resolved "https://registry.yarnpkg.com/asynciterator/-/asynciterator-2.0.1.tgz#94d6a059fee4bc63e862ad1edb685c5f5fa26be6"
   integrity sha512-aVLheZsDNU5qpOv6jZEHnFv79GfEi+N0w/OLmMmXZfGD8XFFmPsRhkSqleNl9jS6mqy/DNoV7tXGcI0S3cUvHQ==
 
-asyncjoin@^0.3.0:
-  version "0.3.0"
-  resolved "https://registry.yarnpkg.com/asyncjoin/-/asyncjoin-0.3.0.tgz#464e822e94629d571323ae179ea79a4fcd169111"
-  integrity sha512-lk4+p17bjyo4DUsGtqb54KBAymjoWDfGgMidrCDk+axPB3k5wKkMHb7k+ipGpOy1USpFqdo0wXDjgu7TugVEAQ==
+asynciterator@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/asynciterator/-/asynciterator-3.0.0.tgz#0dd253bb8cc314469a5644eea1f88596fc16ffda"
+  integrity sha512-8aq8lNFDG47H/LlEFHLze17T+zjsHP7yscvEdyWh8MYBEI9CkpBbKuFx6FT4dmMVsBZ0D1LUq8aIh8+vHd/74Q==
+
+asyncjoin@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/asyncjoin/-/asyncjoin-1.0.0.tgz#1161dbedfd0cccfdbd8057e024d0f26539aaefd3"
+  integrity sha512-YEs85P8UBKZnwzZrVk+N8pkQwraFiURWuaroVq/KqbCNNIFeTL0EpwCCAFeNOcX26WXt6qeTgjTnqma6A3UdBw==
   dependencies:
-    asynciterator "^2.0.0"
+    asynciterator "^3.0.0"
 
 asynckit@^0.4.0:
   version "0.4.0"
