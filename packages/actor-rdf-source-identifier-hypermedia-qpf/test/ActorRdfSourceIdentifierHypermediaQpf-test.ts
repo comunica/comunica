@@ -1,6 +1,6 @@
 import {ActorRdfSourceIdentifier} from "@comunica/bus-rdf-source-identifier";
 import {Bus} from "@comunica/core";
-import "isomorphic-fetch";
+import "cross-fetch/polyfill";
 import {ActorRdfSourceIdentifierHypermediaQpf} from "../lib/ActorRdfSourceIdentifierHypermediaQpf";
 
 describe('ActorRdfSourceIdentifierHypermediaQpf', () => {

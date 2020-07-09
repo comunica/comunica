@@ -1,6 +1,6 @@
 import {ActionContext} from "@comunica/core";
 import {defaultGraph, namedNode} from "@rdfjs/data-model";
-import "isomorphic-fetch"; // Needed to load Headers
+import "cross-fetch/polyfill"; // Needed to load Headers
 import "jest-rdf";
 import {Factory} from "sparqlalgebrajs";
 import {PassThrough} from "stream";

@@ -1,6 +1,7 @@
 import { ActorHttp, IActionHttp, IActorHttpOutput } from "@comunica/bus-http";
 import { ActionContext, IActorArgs, IActorTest, Mediator } from "@comunica/core";
-import "isomorphic-fetch";
+import "cross-fetch/polyfill";
+
 import * as parseLink from 'parse-link-header';
 
 /**

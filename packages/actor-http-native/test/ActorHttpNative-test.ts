@@ -2,7 +2,6 @@
 import {ActorHttp} from "@comunica/bus-http";
 import {Bus} from "@comunica/core";
 import {Setup} from "@comunica/runner";
-import "isomorphic-fetch";
 import {Readable} from "stream";
 import * as url from "url";
 import * as zlib from "zlib";
@@ -59,6 +58,17 @@ describe('ActorHttpNative', () => {
 
     it('should test', () => {
       return expect(actor.test({ input: new Request('https://www.google.com/')})).resolves.toEqual({ time: Infinity });
+    });
+
+    it('should test if headers is iterable', () => {
+      const requestHeaders: HeadersInit = new Headers();
+      requestHeaders.set('Content-Type', 'application/json');
+      requestHeaders.set('Accept-Language', 'en-US,en;q=0.5');
+      let i = 0;
+      (<Headers> requestHeaders).forEach((val: any, key: any) => {
+        i++;
+      });
+      expect(i).toBe(2);
     });
 
     it('should run', () => {

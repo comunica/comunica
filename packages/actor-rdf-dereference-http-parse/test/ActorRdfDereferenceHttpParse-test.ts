@@ -1,7 +1,7 @@
 import {ActorRdfDereference, KEY_CONTEXT_LENIENT} from "@comunica/bus-rdf-dereference";
 import {ActionContext, Bus} from "@comunica/core";
 import {MediatorRace} from "@comunica/mediator-race";
-import "isomorphic-fetch";
+import "cross-fetch/polyfill";
 import {PassThrough, Readable} from "stream";
 import {ActorRdfDereferenceHttpParse} from "../lib/ActorRdfDereferenceHttpParse";
 const arrayifyStream = require("arrayify-stream");
