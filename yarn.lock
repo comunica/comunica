@@ -2161,7 +2161,7 @@
   dependencies:
     "@types/node" "*"
 
-"@types/rdf-js@^2.0.1", "@types/rdf-js@^2.0.10", "@types/rdf-js@^2.0.11", "@types/rdf-js@^2.0.2", "@types/rdf-js@^2.0.4":
+"@types/rdf-js@^2.0.1", "@types/rdf-js@^2.0.10", "@types/rdf-js@^2.0.11", "@types/rdf-js@^2.0.2":
   version "2.0.12"
   resolved "https://registry.yarnpkg.com/@types/rdf-js/-/rdf-js-2.0.12.tgz#d305a0b6fd105e33f58d5c1b3de33ff8edcb3210"
   integrity sha512-NBzHFHp2vHOJkPlSqzsOrkEsD9grKn+PdFjZieIw59pc0FlRG6WEQAjQZvHzFxJlYzC6ZDCFyTA1wBvUnnzUQw==
@@ -9076,21 +9076,21 @@ sparqlalgebrajs@^2.0.0, sparqlalgebrajs@^2.1.0, sparqlalgebrajs@^2.2.1, sparqlal
     rdf-string "^1.3.1"
     sparqljs "^3.0.1"
 
-sparqlee@^1.3.2:
-  version "1.3.2"
-  resolved "https://registry.yarnpkg.com/sparqlee/-/sparqlee-1.3.2.tgz#ba6b5e19ee862ffb87808699c51868d75e6da03d"
-  integrity sha512-ignTokSpdXjY5JMyAnObaxWsCQm0LAb1ZHlBHw0Ry61D5fCxfzE4e6YgidatmTlECBJojBLqshGsH0fBggdHnQ==
+sparqlee@^1.4.0:
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/sparqlee/-/sparqlee-1.4.0.tgz#c047ec41b8f26cba9f91bae5b3dc3518b7efaf51"
+  integrity sha512-3pFuPlIdgn5aVCO7+ei3sPvho+DETFxixIe1SnEFuFxUZ4n8GuNt8dSb3b4awvJIIFz8JYW6WhH5OmkHAbgJYA==
   dependencies:
     "@rdfjs/data-model" "^1.1.0"
     "@types/asynciterator" "^1.1.0"
-    "@types/rdf-js" "^2.0.4"
+    "@types/rdf-js" "^3.0.0"
     create-hash "^1.2.0"
     decimal.js "^10.2.0"
     immutable "^3.8.2"
     rdf-string "^1.1.1"
     sparqlalgebrajs "^2.1.0"
     uri-js "^4.2.2"
-    uuid "^7.0.0"
+    uuid "^8.0.0"
 
 sparqljs@^3.0.0, sparqljs@^3.0.1:
   version "3.0.1"
@@ -10111,10 +10111,15 @@ uuid@^3.0.1, uuid@^3.3.2:
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-3.4.0.tgz#b23e4358afa8a202fe7a100af1f5f883f02007ee"
   integrity sha512-HjSDRw6gZE5JMggctHBcjVak08+KEVhSIiDzFnT9S9aegmp85S/bReBVTb4QTFaRNptJ9kuYaNhnbNEOkbKb/A==
 
-uuid@^7.0.0, uuid@^7.0.3:
+uuid@^7.0.3:
   version "7.0.3"
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-7.0.3.tgz#c5c9f2c8cf25dc0a372c4df1441c41f5bd0c680b"
   integrity sha512-DPSke0pXhTZgoF/d+WSt2QaKMCFSfx7QegxEWT+JOuHF5aWrKEn0G+ztjuJg/gG8/ItK+rbPCD/yNv8yyih6Cg==
+
+uuid@^8.0.0:
+  version "8.2.0"
+  resolved "https://registry.yarnpkg.com/uuid/-/uuid-8.2.0.tgz#cb10dd6b118e2dada7d0cd9730ba7417c93d920e"
+  integrity sha512-CYpGiFTUrmI6OBMkAdjSDM0k5h8SkkiTP4WAjQgDgNB1S3Ou9VBEvr6q0Kv2H1mMk7IWfxYGpMH5sd5AvcIV2Q==
 
 v8-compile-cache@2.0.3:
   version "2.0.3"
