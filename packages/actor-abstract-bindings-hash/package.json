@@ -67,7 +67,7 @@
     "validate": "npm ls"
   },
   "dependencies": {
-    "json-stable-stringify": "^1.0.1",
+    "canonicalize": "^1.0.1",
     "rdf-string": "^1.4.2"
   }
 }

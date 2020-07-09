@@ -53,7 +53,7 @@ export abstract class AbstractFilterHash<T extends Algebra.Operation> extends Ac
      */
   public static hash(hashAlgorithm: string, digestAlgorithm: string, bindings: Bindings): string {
     const hash: Hash = createHash(hashAlgorithm);
-    hash.update(require('json-stable-stringify')(bindings.map(termToString)));
+    hash.update(require('canonicalize')(bindings.map(termToString)));
     return hash.digest(<any> digestAlgorithm);
   }
 

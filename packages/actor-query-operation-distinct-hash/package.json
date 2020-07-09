@@ -35,8 +35,7 @@
     "index.js"
   ],
   "dependencies": {
-    "@comunica/actor-abstract-bindings-hash": "^1.13.0",
-    "json-stable-stringify": "^1.0.1"
+    "@comunica/actor-abstract-bindings-hash": "^1.13.0"
   },
   "peerDependencies": {
     "@comunica/bus-query-operation": "^1.0.0",
