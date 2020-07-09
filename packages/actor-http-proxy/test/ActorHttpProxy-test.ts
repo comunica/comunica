@@ -1,7 +1,7 @@
 import {ActorHttp} from "@comunica/bus-http";
 import {Bus} from "@comunica/core";
 import {ActionContext} from "@comunica/core";
-import "isomorphic-fetch";
+import "cross-fetch/polyfill";
 import {ActorHttpProxy, KEY_CONTEXT_HTTPPROXYHANDLER} from "../lib/ActorHttpProxy";
 import {ProxyHandlerStatic} from "../lib/ProxyHandlerStatic";
 

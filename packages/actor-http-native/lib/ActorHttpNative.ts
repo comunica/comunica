@@ -1,7 +1,7 @@
 import {ActorHttp, IActionHttp, IActorHttpOutput} from "@comunica/bus-http";
 import {IActorArgs} from "@comunica/core";
 import {IMediatorTypeTime} from "@comunica/mediatortype-time";
-import "isomorphic-fetch";
+import "cross-fetch/polyfill";
 import Requester from "./Requester";
 
 /**
@@ -41,6 +41,8 @@ export class ActorHttpNative extends ActorHttp {
     }
     if (action.init) {
       Object.assign(options, action.init);
+    } else {
+      options.headers = (<Request> action.input).headers;
     }
     if (options.headers) {
       const headers: any = {};

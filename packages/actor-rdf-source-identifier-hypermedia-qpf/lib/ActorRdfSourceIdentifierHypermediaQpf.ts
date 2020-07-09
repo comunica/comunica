@@ -5,7 +5,7 @@ import {
 } from "@comunica/bus-rdf-source-identifier";
 import {Actor, IActorTest, Mediator} from "@comunica/core";
 import {IMediatorTypePriority} from "@comunica/mediatortype-priority";
-import "isomorphic-fetch";
+import "cross-fetch/polyfill";
 
 /**
  * A comunica Hypermedia Qpf RDF Source Identifier Actor.
