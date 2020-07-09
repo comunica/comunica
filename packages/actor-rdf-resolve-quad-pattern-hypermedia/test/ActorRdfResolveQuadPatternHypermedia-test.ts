@@ -125,6 +125,12 @@ describe('ActorRdfResolveQuadPatternHypermedia', () => {
           .resolves.toBeTruthy();
       });
 
+      it('should test on raw source form', () => {
+        return expect(actor.test({ pattern: null, context: ActionContext(
+              { '@comunica/bus-rdf-resolve-quad-pattern:source': 'abc'}) }))
+            .resolves.toBeTruthy();
+      });
+
       it('should not test without a context', () => {
         return expect(actor.test({ pattern: null, context: null })).rejects.toBeTruthy();
       });

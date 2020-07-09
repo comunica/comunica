@@ -48,14 +48,16 @@ export abstract class ActorRdfResolveQuadPattern extends Actor<IActionRdfResolve
   protected getContextSourceUrl(source?: IDataSource): string | undefined {
     if (source) {
       let fileUrl = getDataSourceValue(source);
+      if (typeof fileUrl === 'string') {
 
-      // Remove hashes from source
-      const hashPosition = fileUrl.indexOf('#');
-      if (hashPosition >= 0) {
-        fileUrl = fileUrl.substr(0, hashPosition);
+        // Remove hashes from source
+        const hashPosition = fileUrl.indexOf('#');
+        if (hashPosition >= 0) {
+          fileUrl = fileUrl.substr(0, hashPosition);
+        }
+
+        return fileUrl;
       }
-
-      return fileUrl;
     }
   }
 
@@ -66,7 +68,7 @@ export abstract class ActorRdfResolveQuadPattern extends Actor<IActionRdfResolve
    */
   protected hasContextSingleSource(context?: ActionContext): boolean {
     const source = this.getContextSource(context);
-    return !!(source && (typeof source === 'string' || source.value));
+    return !!(source && (isDataSourceRawType(source) || source.value));
   }
 
   /**
@@ -82,15 +84,18 @@ export abstract class ActorRdfResolveQuadPattern extends Actor<IActionRdfResolve
 
 }
 
-export type IDataSource = string | {
+export type IDataSource = string | RDF.Source | {
   type?: string;
-  value: any;
+  value: string | RDF.Source;
 };
-export function getDataSourceType(dataSource: IDataSource): string | undefined {
-  return typeof dataSource === 'string' ? '' : dataSource.type;
+export function isDataSourceRawType(dataSource: IDataSource): dataSource is string | RDF.Source {
+  return typeof dataSource === 'string' || 'match' in dataSource;
 }
-export function getDataSourceValue(dataSource: IDataSource): string {
-  return typeof dataSource === 'string' ? dataSource : dataSource.value;
+export function getDataSourceType(dataSource: IDataSource): string | undefined {
+  return typeof dataSource === 'string' ? '' : ('match' in dataSource ? 'rdfjsSource' : dataSource.type);
+}
+export function getDataSourceValue(dataSource: IDataSource): string | RDF.Source {
+  return isDataSourceRawType(dataSource) ? dataSource : dataSource.value;
 }
 export type DataSources = AsyncReiterable<IDataSource>;
 /**

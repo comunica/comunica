@@ -46,6 +46,12 @@ describe('ActorRdfResolveQuadPatternRdfJsSource', () => {
         .resolves.toBeTruthy();
     });
 
+    it('should test on raw source form', () => {
+      return expect(actor.test({ pattern: <any> null, context: ActionContext(
+            { '@comunica/bus-rdf-resolve-quad-pattern:source': source }) }))
+          .resolves.toBeTruthy();
+    });
+
     it('should not test without a context', () => {
       return expect(actor.test({ pattern: <any> null, context: undefined })).rejects.toBeTruthy();
     });
@@ -90,6 +96,11 @@ describe('ActorRdfResolveQuadPatternRdfJsSource', () => {
       return expect((<any> actor).getSource(ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:source':
           { type: 'rdfjsSource', value: source } })))
         .resolves.toMatchObject(source);
+    });
+
+    it('should get the source on raw source form', () => {
+      return expect((<any> actor).getSource(ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:source': source })))
+          .resolves.toMatchObject(source);
     });
 
     it('should use countQuads for metadata if available', async () => {
