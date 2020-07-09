@@ -35,7 +35,7 @@
     "index.js"
   ],
   "dependencies": {
-    "isomorphic-fetch": "^2.2.1",
+    "cross-fetch": "^3.0.5",
     "parse-link-header": "^1.0.1"
   },
   "peerDependencies": {
