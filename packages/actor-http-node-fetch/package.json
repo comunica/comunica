@@ -33,7 +33,7 @@
     "index.js"
   ],
   "dependencies": {
-    "isomorphic-fetch": "^2.2.1"
+    "cross-fetch": "^3.0.5"
   },
   "peerDependencies": {
     "@comunica/bus-http": "^1.0.0",
