@@ -1,5 +1,17 @@
 # Changelog
 
+<a name="v1.4.0"></a>
+## [v1.4.0](https://github.com/comunica/sparqlee/compare/v1.3.2...v1.4.0) - 2020-07-09
+
+### Added
+* [Expose function to order two terms](https://github.com/comunica/sparqlee/commit/073c5c22c7f8b8d884c6b8f1d8477ff08878603b)
+
+### Changed
+* [Update dependency asynciterator to v3](https://github.com/comunica/sparqlee/commit/3c40febcae0dda5d308b860cd2e66e2c23ad1c02)
+* [Update dependency @types/uuid to v8](https://github.com/comunica/sparqlee/commit/7b19adfa2cbca37b0013463d09f2badec2365690)
+* [Update dependency uuid to v8](https://github.com/comunica/sparqlee/commit/b28a74160e0010233f7dac0deb5ec8eff2c78bd1)
+* [Update dependency @types/rdf-js to v3, Closes #62](https://github.com/comunica/sparqlee/commit/cfde56a35ea8eb57a9e462503a7b2582fcf60240)
+
 <a name="v1.3.2"></a>
 ## [v1.3.2](https://github.com/comunica/sparqlee/compare/v1.3.1...v1.3.2) - 2020-03-23
 
