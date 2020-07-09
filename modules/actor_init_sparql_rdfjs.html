@@ -98,13 +98,25 @@ store.addQuad(DataFactory.quad(
 <span class="hljs-comment">// If you intend to query multiple times, be sure to cache your engine for optimal performance.</span>
 <span class="hljs-keyword">const</span> myEngine = newEngine();
 <span class="hljs-keyword">const</span> result = <span class="hljs-keyword">await</span> myEngine.query(<span class="hljs-string">'SELECT * { ?s ?p &lt;http://dbpedia.org/resource/Belgium&gt;. ?s ?p ?o } LIMIT 100'</span>,
-  { <span class="hljs-attr">sources</span>: [ { <span class="hljs-attr">type</span>: <span class="hljs-string">'rdfjsSource'</span>, <span class="hljs-attr">value</span>: store } ] });
+  { <span class="hljs-attr">sources</span>: [store] });
 result.bindingsStream.on(<span class="hljs-string">'data'</span>, (data) =&gt; {
   <span class="hljs-comment">// Each data object contains a mapping from variables to RDFJS terms.</span>
   <span class="hljs-built_in">console</span>.log(data.get(<span class="hljs-string">'?s'</span>));
   <span class="hljs-built_in">console</span>.log(data.get(<span class="hljs-string">'?p'</span>));
   <span class="hljs-built_in">console</span>.log(data.get(<span class="hljs-string">'?o'</span>));
 });</code></pre>
+					<a href="#optimization" id="optimization" style="color: inherit; text-decoration: none;">
+						<h2>Optimization</h2>
+					</a>
+					<p>The RDFJS <a href="http://rdf.js.org/#source-interface">Source interface</a> by default only exposed the <code>match</code> method.
+						In order to allow Comunica to produce more efficient query plans,
+						you can optionally expose a <code>countQuads</code> method that has the same signature as <code>match</code>,
+						but returns a <code>number</code> or <code>Promise&lt;number&gt;</code> that represents (an estimate of)
+						the number of quads that would match the given quad pattern.
+						Certain <code>Source</code> implementations may be able to provide an efficient implementation of this method,
+					which would lead to better query performance.</p>
+					<p>If Comunica does not detect a <code>countQuads</code> method, it will fallback to a sub-optimal counting mechanism
+					where <code>match</code> will be called again to manually count the number of matches.</p>
 				</div>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">
@@ -147,7 +159,7 @@ result.bindingsStream.on(<span class="hljs-string">'data'</span>, (data) =&gt; {
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1a947ad/packages/actor-init-sparql-rdfjs/index-browser.ts#L7">packages/actor-init-sparql-rdfjs/index-browser.ts:7</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/f13c76c/packages/actor-init-sparql-rdfjs/index-browser.ts#L7">packages/actor-init-sparql-rdfjs/index-browser.ts:7</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -170,7 +182,7 @@ result.bindingsStream.on(<span class="hljs-string">'data'</span>, (data) =&gt; {
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1a947ad/packages/actor-init-sparql-rdfjs/index.ts#L11">packages/actor-init-sparql-rdfjs/index.ts:11</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/f13c76c/packages/actor-init-sparql-rdfjs/index.ts#L11">packages/actor-init-sparql-rdfjs/index.ts:11</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">

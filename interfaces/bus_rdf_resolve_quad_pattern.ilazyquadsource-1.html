@@ -114,6 +114,7 @@
 						<section class="tsd-index-section ">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
+								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="bus_rdf_resolve_quad_pattern.ilazyquadsource-1.html#countquads" class="tsd-kind-icon">count<wbr>Quads</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface tsd-is-inherited"><a href="bus_rdf_resolve_quad_pattern.ilazyquadsource-1.html#match" class="tsd-kind-icon">match</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="bus_rdf_resolve_quad_pattern.ilazyquadsource-1.html#matchlazy" class="tsd-kind-icon">match<wbr>Lazy</a></li>
 							</ul>
@@ -123,6 +124,56 @@
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Methods</h2>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+					<a name="countquads" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> count<wbr>Quads</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
+						<li class="tsd-signature tsd-kind-icon">count<wbr>Quads<span class="tsd-signature-symbol">(</span>subject<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">RDF.Term</span>, predicate<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">RDF.Term</span>, object<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">RDF.Term</span>, graph<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">RDF.Term</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/f13c76c/packages/bus-rdf-resolve-quad-pattern/lib/ActorRdfResolveQuadPatternSource.ts#L147">packages/bus-rdf-resolve-quad-pattern/lib/ActorRdfResolveQuadPatternSource.ts:147</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Return an estimated count of the number of quads matching the given pattern.</p>
+								</div>
+								<p>The better the estimate, the better the query engine will be able to optimize the query.</p>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> subject: <span class="tsd-signature-type">RDF.Term</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>An optional subject.</p>
+									</div>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> predicate: <span class="tsd-signature-type">RDF.Term</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>An optional predicate.</p>
+									</div>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> object: <span class="tsd-signature-type">RDF.Term</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>An optional object.</p>
+									</div>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> graph: <span class="tsd-signature-type">RDF.Term</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>An optional graph.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span></h4>
+						</li>
+					</ul>
+				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface tsd-is-inherited">
 					<a name="match" class="tsd-anchor"></a>
 					<h3>match</h3>
@@ -184,7 +235,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1a947ad/packages/bus-rdf-resolve-quad-pattern/lib/ActorRdfResolveQuadPatternSource.ts#L134">packages/bus-rdf-resolve-quad-pattern/lib/ActorRdfResolveQuadPatternSource.ts:134</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/f13c76c/packages/bus-rdf-resolve-quad-pattern/lib/ActorRdfResolveQuadPatternSource.ts#L134">packages/bus-rdf-resolve-quad-pattern/lib/ActorRdfResolveQuadPatternSource.ts:134</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -277,6 +328,9 @@
 							<li class=" tsd-kind-reference tsd-parent-kind-module">
 								<a href="../modules/bus_rdf_resolve_quad_pattern.html#getdatasourcevalue" class="tsd-kind-icon">get<wbr>Data<wbr>Source<wbr>Value</a>
 							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module">
+								<a href="../modules/bus_rdf_resolve_quad_pattern.html#isdatasourcerawtype" class="tsd-kind-icon">is<wbr>Data<wbr>Source<wbr>Raw<wbr>Type</a>
+							</li>
 							<li class=" tsd-kind-class tsd-parent-kind-module">
 								<a href="../classes/bus_rdf_resolve_quad_pattern.actorrdfresolvequadpattern-1.html" class="tsd-kind-icon">Actor<wbr>Rdf<wbr>Resolve<wbr>Quad<wbr>Pattern</a>
 							</li>
@@ -292,6 +346,9 @@
 							<li class="current tsd-kind-interface tsd-parent-kind-module tsd-has-type-parameter">
 								<a href="bus_rdf_resolve_quad_pattern.ilazyquadsource-1.html" class="tsd-kind-icon">ILazy<wbr>Quad<wbr>Source</a>
 								<ul>
+									<li class=" tsd-kind-method tsd-parent-kind-interface">
+										<a href="bus_rdf_resolve_quad_pattern.ilazyquadsource-1.html#countquads" class="tsd-kind-icon">count<wbr>Quads</a>
+									</li>
 									<li class=" tsd-kind-method tsd-parent-kind-interface tsd-is-inherited">
 										<a href="bus_rdf_resolve_quad_pattern.ilazyquadsource-1.html#match" class="tsd-kind-icon">match</a>
 									</li>
@@ -317,6 +374,9 @@
 							</li>
 							<li class=" tsd-kind-function tsd-parent-kind-module">
 								<a href="../modules/bus_rdf_resolve_quad_pattern.html#getdatasourcevalue-1" class="tsd-kind-icon">get<wbr>Data<wbr>Source<wbr>Value</a>
+							</li>
+							<li class=" tsd-kind-function tsd-parent-kind-module">
+								<a href="../modules/bus_rdf_resolve_quad_pattern.html#isdatasourcerawtype-1" class="tsd-kind-icon">is<wbr>Data<wbr>Source<wbr>Raw<wbr>Type</a>
 							</li>
 						</ul>
 					</li>
