@@ -1,5 +1,7 @@
-import {ActorRdfResolveQuadPatternSource, IActionRdfResolveQuadPattern, IActorRdfResolveQuadPatternOutput,
-  ILazyQuadSource} from "@comunica/bus-rdf-resolve-quad-pattern";
+import {
+  ActorRdfResolveQuadPatternSource, IActionRdfResolveQuadPattern, IActorRdfResolveQuadPatternOutput, IDataSource,
+  ILazyQuadSource
+} from "@comunica/bus-rdf-resolve-quad-pattern";
 import {ActionContext, IActorArgs, IActorTest} from "@comunica/core";
 import {AsyncIterator} from "asynciterator";
 import * as RDF from "rdf-js";
@@ -22,7 +24,7 @@ export class ActorRdfResolveQuadPatternRdfJsSource extends ActorRdfResolveQuadPa
       throw new Error(this.name + ' requires a single source with an rdfjsSource to be present in the context.');
     }
     const source = this.getContextSource(action.context);
-    if (!source || typeof source === 'string' || !source.value.match) {
+    if (!source || typeof source === 'string' || (!('match' in source) && !source.value.match)) {
       throw new Error(this.name + ' received an invalid rdfjsSource.');
     }
     return true;
@@ -60,7 +62,8 @@ export class ActorRdfResolveQuadPatternRdfJsSource extends ActorRdfResolveQuadPa
   }
 
   protected async getSource(context: ActionContext): Promise<ILazyQuadSource> {
-    return (<any> this.getContextSource(context)).value;
+    const source: any = <any> this.getContextSource(context);
+    return 'match' in source ? source : source.value;
   }
 
 }

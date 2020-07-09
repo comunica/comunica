@@ -82,7 +82,7 @@ export class ActorContextPreprocessRdfSourceIdentifier extends ActorContextPrepr
 
   private async identifySource(source: IDataSource, context: ActionContext): Promise<IDataSource> {
     return this.mediatorRdfSourceIdentifier.mediate(
-      { sourceValue: getDataSourceValue(source), context })
+      { sourceValue: <any> getDataSourceValue(source), context })
       .then((sourceIdentificationResult) => {
         if (sourceIdentificationResult.sourceType) {
           (<any> source).type = sourceIdentificationResult.sourceType;

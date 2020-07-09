@@ -32,7 +32,7 @@ store.addQuad(DataFactory.quad(
 // If you intend to query multiple times, be sure to cache your engine for optimal performance.
 const myEngine = newEngine();
 const result = await myEngine.query('SELECT * { ?s ?p <http://dbpedia.org/resource/Belgium>. ?s ?p ?o } LIMIT 100',
-  { sources: [ { type: 'rdfjsSource', value: store } ] });
+  { sources: [store] });
 result.bindingsStream.on('data', (data) => {
   // Each data object contains a mapping from variables to RDFJS terms.
   console.log(data.get('?s'));
