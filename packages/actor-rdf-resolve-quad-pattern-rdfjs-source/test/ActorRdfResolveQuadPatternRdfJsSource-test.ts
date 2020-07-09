@@ -2,6 +2,8 @@ import {ActorRdfResolveQuadPattern} from "@comunica/bus-rdf-resolve-quad-pattern
 import {ActionContext, Bus} from "@comunica/core";
 import * as RDF from "rdf-js";
 import {ActorRdfResolveQuadPatternRdfJsSource} from "../lib/ActorRdfResolveQuadPatternRdfJsSource";
+import {ArrayIterator} from "asynciterator";
+import {namedNode, variable} from "@rdfjs/data-model";
 
 // tslint:disable:object-literal-sort-keys
 
@@ -90,8 +92,16 @@ describe('ActorRdfResolveQuadPatternRdfJsSource', () => {
         .resolves.toMatchObject(source);
     });
 
-    it('should always expose empty metadata', async () => {
-      return expect(await (<any> actor).getMetadata()()).toEqual({});
+    it('should use countQuads for metadata if available', async () => {
+      source = <any> { countQuads: () => 123 };
+      return expect(await (<any> actor).getMetadata(source,
+          { subject: variable('s'), predicate: namedNode('p') })()).toEqual({ totalItems: 123 });
+    });
+
+    it('should use match for metadata if countQuads is not available', async () => {
+      source = <any> { match: () => new ArrayIterator([0, 1, 2]) };
+      return expect(await (<any> actor).getMetadata(source,
+          { subject: variable('s'), predicate: namedNode('p') })()).toEqual({ totalItems: 3 });
     });
   });
 });

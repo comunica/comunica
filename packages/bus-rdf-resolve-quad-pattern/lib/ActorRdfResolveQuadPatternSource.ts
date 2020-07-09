@@ -133,4 +133,16 @@ export interface ILazyQuadSource<Q extends RDF.BaseQuad = RDF.Quad> extends RDF.
    */
   matchLazy?(subject?: RDF.Term | RegExp, predicate?: RDF.Term | RegExp, object?: RDF.Term | RegExp,
              graph?: RDF.Term | RegExp): AsyncIterator<Q> & RDF.Stream<Q>;
+
+  /**
+   * Return an estimated count of the number of quads matching the given pattern.
+   *
+   * The better the estimate, the better the query engine will be able to optimize the query.
+   *
+   * @param subject   An optional subject.
+   * @param predicate An optional predicate.
+   * @param object    An optional object.
+   * @param graph     An optional graph.
+   */
+  countQuads?(subject?: RDF.Term, predicate?: RDF.Term, object?: RDF.Term, graph?: RDF.Term): Promise<number> | number;
 }
