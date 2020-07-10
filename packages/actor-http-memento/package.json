@@ -35,7 +35,9 @@
     "index.js"
   ],
   "dependencies": {
+
     "cross-fetch": "^3.0.5",
+    "@types/parse-link-header": "^1.0.0",
     "parse-link-header": "^1.0.1"
   },
   "peerDependencies": {
