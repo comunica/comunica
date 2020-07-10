@@ -35,6 +35,7 @@
     "index.js"
   ],
   "dependencies": {
+    "@types/parse-link-header": "^1.0.0",
     "isomorphic-fetch": "^2.2.1",
     "parse-link-header": "^1.0.1"
   },

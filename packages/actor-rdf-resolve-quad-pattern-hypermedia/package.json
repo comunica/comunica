@@ -37,6 +37,8 @@
   "dependencies": {
     "@comunica/utils-datasource": "^1.13.0",
     "@rdfjs/data-model": "^1.1.1",
+    "@types/lru-cache": "^5.1.0",
+    "@types/rdf-js": "^3.0.0",
     "asynciterator-promiseproxy": "^2.1.0",
     "lru-cache": "^5.1.1",
     "rdf-string": "^1.4.2",

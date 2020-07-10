@@ -35,6 +35,7 @@
     "index.js"
   ],
   "dependencies": {
+    "@types/lodash.union": "^4.6.3",
     "asynciterator-union": "^2.1.2",
     "lodash.union": "^4.6.0"
   },

@@ -39,6 +39,7 @@
     "index.js"
   ],
   "dependencies": {
+    "@types/lodash.assign": "^4.2.3",
     "immutable": "^3.8.2",
     "lodash.assign": "^4.2.0"
   },

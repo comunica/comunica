@@ -39,6 +39,7 @@
     "@comunica/core": "^1.0.0"
   },
   "dependencies": {
+    "@types/rdf-js": "^3.0.0",
     "rdf-string": "^1.4.2"
   },
   "devDependencies": {

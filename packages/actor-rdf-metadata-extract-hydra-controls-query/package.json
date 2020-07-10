@@ -36,6 +36,8 @@
     "index.js"
   ],
   "dependencies": {
+    "@types/uritemplate": "^0.3.4",
+    "@types/rdf-js": "^3.0.0",
     "uritemplate": "0.3.4"
   },
   "peerDependencies": {
