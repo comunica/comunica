@@ -53,9 +53,7 @@
   "homepage": "https://github.com/comunica/sparqlee#readme",
   "devDependencies": {
     "@types/benchmark": "^1.0.30",
-    "@types/create-hash": "^1.2.0",
     "@types/jest": "^26.0.0",
-    "@types/uuid": "^8.0.0",
     "asynciterator": "^3.0.0",
     "benchmark": "^2.1.4",
     "coveralls": "^3.0.2",
@@ -70,7 +68,8 @@
   },
   "dependencies": {
     "@rdfjs/data-model": "^1.1.0",
-    "@types/asynciterator": "^1.1.0",
+    "@types/create-hash": "^1.2.0",
+    "@types/uuid": "^8.0.0",
     "@types/rdf-js": "^3.0.0",
     "create-hash": "^1.2.0",
     "decimal.js": "^10.2.0",
