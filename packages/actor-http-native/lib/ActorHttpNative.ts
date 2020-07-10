@@ -4,6 +4,10 @@ import {IMediatorTypeTime} from "@comunica/mediatortype-time";
 import "cross-fetch/polyfill";
 import Requester from "./Requester";
 
+type HeaderOptions = {
+  [key: string]: string;
+}
+
 /**
  * A comunica Follow Redirects Http Actor.
  */
@@ -39,23 +43,38 @@ export class ActorHttpNative extends ActorHttp {
     } else {
       options.url = action.input;
     }
+
+    let headers;
     if (action.init) {
       Object.assign(options, action.init);
+      headers = options.headers;
     } else {
-      options.headers = (<Request> action.input).headers;
+      headers = (<Request> action.input).headers;
     }
-    if (options.headers) {
-      const headers: any = {};
-      (<Headers> options.headers).forEach((val: any, key: any) => {
-        headers[key] = val;
-      });
-      options.headers = headers;
-    } else {
+
+    if (!headers) {
       options.headers = {};
+      headers = new Headers();
     }
-    if (!options.headers['user-agent']) {
-      options.headers['user-agent'] = this.userAgent;
+
+    let found = false;
+    let data : HeaderOptions = {};
+    (<Headers> headers).forEach((val: string, key: string) => {
+      data[key] = val;
+      if (key === 'user-agent') {
+        found = true;
+      }
+    });
+    if (!found) {
+      data['user-agent'] = this.userAgent;
     }
+    
+    options.headers = data;
+    options.headers[Symbol.iterator] = function* () {
+      for (let element of Object.keys(data)){
+         yield [element, data[element]];
+      }
+    };
 
     options.method = options.method || 'GET';
 

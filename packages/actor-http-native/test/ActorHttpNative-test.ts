@@ -60,15 +60,18 @@ describe('ActorHttpNative', () => {
       return expect(actor.test({ input: new Request('https://www.google.com/')})).resolves.toEqual({ time: Infinity });
     });
 
-    it('should test if headers is iterable', () => {
-      const requestHeaders: HeadersInit = new Headers();
+    it('should test if headers is iterable', async () => {
+      const requestHeaders = new Headers();
       requestHeaders.set('Content-Type', 'application/json');
       requestHeaders.set('Accept-Language', 'en-US,en;q=0.5');
-      let i = 0;
-      (<Headers> requestHeaders).forEach((val: any, key: any) => {
-        i++;
-      });
-      expect(i).toBe(2);
+      const result: any = await actor.run({ input: 'http://example.com', init: { headers: requestHeaders }});
+      const res: string[] = [];
+      for (const element of result.body.input.headers) {
+        res.push(element);
+      }
+      expect(res[0]).toStrictEqual(['accept-language', 'en-US,en;q=0.5']);
+      expect(res[1]).toStrictEqual(['content-type', 'application/json']);
+      expect(res[2][0]).toStrictEqual('user-agent');
     });
 
     it('should run', () => {
