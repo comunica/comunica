@@ -30,7 +30,7 @@
   ],
   "dependencies": {
     "arrayify-stream": "^1.0.0",
-    "asynciterator": "^2.0.0",
+    "asynciterator": "^3.0.0",
     "asyncreiterable": "^1.2.0"
   },
   "peerDependencies": {

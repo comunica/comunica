@@ -18,7 +18,7 @@
     "@types/jest": "^26.0.0",
     "@types/node": "^13.1.7",
     "arrayify-stream": "^1.0.0",
-    "asynciterator": "^2.0.1",
+    "asynciterator": "^3.0.0",
     "babel-loader": "^8.1.0",
     "coveralls": "^3.0.0",
     "immutable": "^3.8.2",

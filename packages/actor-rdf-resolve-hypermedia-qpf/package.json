@@ -37,7 +37,7 @@
   "dependencies": {
     "@rdfjs/data-model": "^1.1.0",
     "@types/rdf-js": "^3.0.0",
-    "asynciterator": "^2.0.1",
+    "asynciterator": "^3.0.0",
     "asynciterator-promiseproxy": "^2.1.0",
     "rdf-string": "^1.4.2",
     "rdf-terms": "^1.5.1"

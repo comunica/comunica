@@ -2671,10 +2671,15 @@ asynciterator-union@^2.1.2:
   dependencies:
     asynciterator "^2.0.0"
 
-asynciterator@^2.0.0, asynciterator@^2.0.1:
+asynciterator@^2.0.0:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/asynciterator/-/asynciterator-2.0.1.tgz#94d6a059fee4bc63e862ad1edb685c5f5fa26be6"
   integrity sha512-aVLheZsDNU5qpOv6jZEHnFv79GfEi+N0w/OLmMmXZfGD8XFFmPsRhkSqleNl9jS6mqy/DNoV7tXGcI0S3cUvHQ==
+
+asynciterator@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/asynciterator/-/asynciterator-3.0.0.tgz#0dd253bb8cc314469a5644eea1f88596fc16ffda"
+  integrity sha512-8aq8lNFDG47H/LlEFHLze17T+zjsHP7yscvEdyWh8MYBEI9CkpBbKuFx6FT4dmMVsBZ0D1LUq8aIh8+vHd/74Q==
 
 asyncjoin@^0.3.0:
   version "0.3.0"
