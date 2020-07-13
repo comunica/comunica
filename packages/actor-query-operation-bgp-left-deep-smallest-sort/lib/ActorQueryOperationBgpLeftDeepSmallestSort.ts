@@ -38,11 +38,14 @@ export class ActorQueryOperationBgpLeftDeepSmallestSort extends ActorQueryOperat
   public static createLeftDeepStream(baseStream: BindingsStream, patterns: Algebra.Pattern[],
                                      patternBinder: (patterns: Algebra.Pattern[]) =>
                                        Promise<BindingsStream>): BindingsStream {
-    return new MultiTransformIterator(baseStream, (bindings: Bindings) => {
-      const bindingsMerger = (subBindings: Bindings) => subBindings.merge(bindings);
-      return new TransformIterator(
-        async () => (await patternBinder(ActorQueryOperationBgpLeftDeepSmallestSort.materializePatterns(patterns,
-          bindings))).map(bindingsMerger), { maxBufferSize: 128 });
+    return new MultiTransformIterator(baseStream, {
+      autoStart: false,
+      multiTransform: (bindings: Bindings) => {
+        const bindingsMerger = (subBindings: Bindings) => subBindings.merge(bindings);
+        return new TransformIterator(
+            async () => (await patternBinder(ActorQueryOperationBgpLeftDeepSmallestSort.materializePatterns(patterns,
+                bindings))).map(bindingsMerger), { maxBufferSize: 128 });
+      },
     });
   }
 
