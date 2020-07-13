@@ -364,6 +364,7 @@ describe('ActorQueryOperationGroup', () => {
         Bindings({ '?x': literal('c'), '?y': int('3') }),
       ];
       const bindingsStream = new ArrayIterator(inputBindings).transform({
+        autoStart: false,
         transform: (result, done, push) => {
           push(result);
           bindingsStream.emit('error', 'Test error');
@@ -392,7 +393,7 @@ describe('ActorQueryOperationGroup', () => {
         bus,
         mediatorQueryOperation: myMediatorQueryOperation as any,
       });
-      expect((async () => arrayifyStream(await actor.run(op)))())
+      await expect((async () => arrayifyStream(await actor.run(op)))())
         .rejects
         .toBeTruthy();
     });

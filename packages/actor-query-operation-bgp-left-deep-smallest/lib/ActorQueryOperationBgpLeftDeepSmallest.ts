@@ -44,11 +44,14 @@ export class ActorQueryOperationBgpLeftDeepSmallest extends ActorQueryOperationT
                                      patternBinder:
                                        (patterns: { pattern: Algebra.Pattern, bindings: IPatternBindings }[]) =>
                                         Promise<BindingsStream>): BindingsStream {
-    return new MultiTransformIterator(baseStream, (bindings: Bindings) => {
-      const bindingsMerger = (subBindings: Bindings) => subBindings.merge(bindings);
-      return new TransformIterator(
-        async () => (await patternBinder(ActorQueryOperationBgpLeftDeepSmallest.materializePatterns(patterns,
-          bindings))).map(bindingsMerger), { maxBufferSize: 128 });
+    return new MultiTransformIterator(baseStream, {
+      autoStart: false,
+      multiTransform: (bindings: Bindings) => {
+        const bindingsMerger = (subBindings: Bindings) => subBindings.merge(bindings);
+        return new TransformIterator(
+            async () => (await patternBinder(ActorQueryOperationBgpLeftDeepSmallest.materializePatterns(patterns,
+                bindings))).map(bindingsMerger), { maxBufferSize: 128 });
+      },
     });
   }
 

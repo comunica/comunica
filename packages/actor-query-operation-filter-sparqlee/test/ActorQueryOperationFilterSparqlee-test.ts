@@ -210,6 +210,7 @@ describe('ActorQueryOperationFilterSparqlee', () => {
         // tslint:disable-next-line: no-string-literal
         const resolver = ActorQueryOperation.createExistenceResolver(Map(), actor.mediatorQueryOperation);
         const bindingsStream = new ArrayIterator([{}, {}, {}]).transform({
+          autoStart: false,
           transform: (item, done, push) => {
             push(item);
             bindingsStream.emit('error', 'Test error');
