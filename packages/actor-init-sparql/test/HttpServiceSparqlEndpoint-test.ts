@@ -37,6 +37,7 @@ jest.mock("fs", () => {
 });
 
 describe('HttpServiceSparqlEndpoint', () => {
+
   describe('constructor', () => {
     it("shouldn't error if no args are supplied", () => {
       expect(() => new HttpServiceSparqlEndpoint()).not.toThrowError();
@@ -382,25 +383,39 @@ describe('HttpServiceSparqlEndpoint', () => {
         expect(engine.invalidateHttpCache).toHaveBeenCalled();
       });
 
-      it("should respond with 404 and end the response with the correct error message if path is incorrect"
-          , async () => {
-            request.url = "not_urlsparql";
-            await instance.handleRequest(engine, variants, stdout, stderr, request, response);
+      it("should respond with 404 when not sparql url or root url"
+        , async () => {
+          request.url =  "not_urlsparql";
+          await instance.handleRequest(engine, variants, stdout, stderr, request, response);
 
-            expect(response.writeHead).toHaveBeenCalledWith(404, { 'Access-Control-Allow-Origin': '*',
-              'content-type': HttpServiceSparqlEndpoint.MIME_JSON});
-            expect(response.end).toHaveBeenCalledWith(JSON.stringify({ message: 'Resource not found' }));
-          });
+          expect(response.writeHead).toHaveBeenCalledWith(404, {
+            'content-type': HttpServiceSparqlEndpoint.MIME_JSON,
+            'Access-Control-Allow-Origin': '*' });
+          expect(response.end).toHaveBeenCalledWith(JSON.stringify({ message: 'Resource not found. Queries are accepted on localhost:<port>/sparql.' }));
+        });
 
-      it("should respond with 404 and end the response with the correct error message if url is undefined"
+      it("should respond with 404 when url undefined"
         , async () => {
           request.url = undefined;
           await instance.handleRequest(engine, variants, stdout, stderr, request, response);
 
-          expect(response.writeHead).toHaveBeenCalledWith(404, { 'Access-Control-Allow-Origin': '*',
-            'content-type': HttpServiceSparqlEndpoint.MIME_JSON});
-          expect(response.end).toHaveBeenCalledWith(JSON.stringify({ message: 'Resource not found' }));
+          expect(response.writeHead).toHaveBeenCalledWith(404, {
+            'content-type': HttpServiceSparqlEndpoint.MIME_JSON,
+            'Access-Control-Allow-Origin': '*' });
+          expect(response.end).toHaveBeenCalledWith(JSON.stringify({ message: 'Resource not found. Queries are accepted on localhost:<port>/sparql.' }));
         });
+
+      it("should respond with 301 when GET method called on root url"
+      , async () => {
+        request.method = "GET";
+        request.url = "/";
+        await instance.handleRequest(engine, variants, stdout, stderr, request, response);
+        expect(response.writeHead).toHaveBeenCalledWith(301, {
+          'content-type': HttpServiceSparqlEndpoint.MIME_JSON,
+          'Access-Control-Allow-Origin': '*',
+          'Location': 'http://localhost:3000/sparql'});
+        expect(response.end).toHaveBeenCalledWith(JSON.stringify({ message: 'Queries are accepted on localhost:<port>/sparql. Redirected.' }));
+      });
     });
 
     describe("writeQueryResult", () => {
