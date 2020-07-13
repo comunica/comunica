@@ -7,7 +7,6 @@ import * as url from "url";
 import * as zlib from "zlib";
 import {ActorHttpNative} from "../lib/ActorHttpNative";
 import Requester from "../lib/Requester";
-
 const arrayifyStream = require('arrayify-stream');
 const mockSetup = require('./__mocks__/follow-redirects').mockSetup;
 
