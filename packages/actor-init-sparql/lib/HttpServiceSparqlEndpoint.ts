@@ -170,7 +170,7 @@ Options:
           { 'content-type': HttpServiceSparqlEndpoint.MIME_JSON, 
           'Access-Control-Allow-Origin': '*' ,
           'Location': 'http://localhost:' + this.port + '/sparql'});
-      response.end(JSON.stringify({ message: 'Queries are accepted on localhost:<port>/sparql. Redirected.'}));
+      response.end(JSON.stringify({ message: 'Queries are accepted on /sparql. Redirected.'}));
       return;
     } else if (requestUrl.pathname !== '/sparql') {
       console.log(requestUrl.pathname);
