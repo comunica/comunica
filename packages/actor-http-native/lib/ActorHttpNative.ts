@@ -7,7 +7,6 @@ import Requester from "./Requester";
 type HeaderOptions = {
   [key: string]: string;
 }
-
 /**
  * A comunica Follow Redirects Http Actor.
  */
@@ -44,36 +43,35 @@ export class ActorHttpNative extends ActorHttp {
       options.url = action.input;
     }
 
-    let headers;
     if (action.init) {
       Object.assign(options, action.init);
-      headers = options.headers;
     } else {
-      headers = (<Request> action.input).headers;
+      options.headers = (<Request> action.input).headers;
     }
 
-    if (!headers) {
-      options.headers = {};
-      headers = new Headers();
-    }
+    if (options.headers){
+      let found = false;
+      let data : HeaderOptions = {};
+      (<Headers> options.headers).forEach((val: string, key: string) => {
+        data[key] = val;
+        if (key === 'user-agent') {
+          found = true;
+        }
+      });
+      if (!found) {
+        data['user-agent'] = this.userAgent;
+      }
+      if (!options.headers.get('user-agent')) {
+        options.headers.append('user-agent', this.userAgent);
+      }
 
-    let found = false;
-    let data : HeaderOptions = {};
-    (<Headers> headers).forEach((val: string, key: string) => {
-      data[key] = val;
-      if (key === 'user-agent') {
-        found = true;
+      options.headers[Symbol.iterator] = function* () {
+        for (let element of Object.keys(data)){
+          yield [element, data[element]];
+        }
       }
-    });
-    if (!found) {
-      data['user-agent'] = this.userAgent;
-    }
-    
-    options.headers = data;
-    options.headers[Symbol.iterator] = function* () {
-      for (let element of Object.keys(data)){
-         yield [element, data[element]];
-      }
+    } else {
+      options.headers = new Headers().append('user-agent', this.userAgent);
     };
 
     options.method = options.method || 'GET';
