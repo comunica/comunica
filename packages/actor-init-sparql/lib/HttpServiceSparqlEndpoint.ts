@@ -178,7 +178,7 @@ Options:
       response.writeHead(404,
           { 'content-type': HttpServiceSparqlEndpoint.MIME_JSON, 
           'Access-Control-Allow-Origin': '*'});
-      response.end(JSON.stringify({ message: 'Resource not found. Queries are accepted on localhost:<port>/sparql.'}));
+      response.end(JSON.stringify({ message: 'Resource not found. Queries are accepted on /sparql.'}));
       return;
     }
 
