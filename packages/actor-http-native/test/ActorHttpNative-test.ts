@@ -62,8 +62,8 @@ describe('ActorHttpNative', () => {
 
     it('should test if headers is iterable', async () => {
       const requestHeaders = new Headers();
-      requestHeaders.set('Content-Type', 'application/json');
-      requestHeaders.set('Accept-Language', 'en-US,en;q=0.5');
+      requestHeaders.append('Content-Type', 'application/json');
+      requestHeaders.append('Accept-Language', 'en-US,en;q=0.5');
       const result: any = await actor.run({ input: 'http://example.com', init: { headers: requestHeaders }});
       const res: string[] = [];
       for (const element of result.body.input.headers) {
@@ -98,14 +98,16 @@ describe('ActorHttpNative', () => {
       const result: any = await actor.run(
         { input: new Request('http://example.com', { headers: new Headers({ a: 'b' }) })});
       expect(result).toMatchObject({ status: 200 });
-      expect(result.body.input).toMatchObject({ headers: { a: 'b' }});
+      expect(result.body.input.headers.get('a')).toStrictEqual('b');
+      expect(result.body.input.headers.get('user-agent')).toBeTruthy();
     });
 
     it('can have headers in the init object', async () => {
       mockSetup({ statusCode: 200 });
       const result: any = await actor.run({ input: 'http://example.com', init: { headers: new Headers({ a: 'b' }) }});
       expect(result).toMatchObject({ status: 200 });
-      expect(result.body.input).toMatchObject({ headers: { a: 'b' }});
+      expect(result.body.input.headers.get('a')).toStrictEqual('b');
+      expect(result.body.input.headers.get('user-agent')).toBeTruthy();
     });
 
     it('uses Content-Location header as URL when set', async () => {
@@ -119,7 +121,7 @@ describe('ActorHttpNative', () => {
       const result: any = await actor.run(
         { input: new Request('http://example.com', { headers: new Headers({ 'user-agent': 'b' }) })});
       expect(result).toMatchObject({ status: 200 });
-      expect(result.body.input).toMatchObject({ headers: { 'user-agent': 'b' }});
+      expect(result.body.input.headers.get('user-agent')).toBe('b');
     });
 
     it('should set a user agent if none has been set', async () => {
@@ -127,7 +129,7 @@ describe('ActorHttpNative', () => {
       const result: any = await actor.run(
         { input: new Request('http://example.com', { headers: new Headers({}) })});
       expect(result).toMatchObject({ status: 200 });
-      expect(result.body.input.headers['user-agent']).toBeTruthy();
+      expect(result.body.input.headers.get('user-agent')).toBeTruthy();
     });
 
     it('can decode gzipped streams', async () => {
@@ -150,7 +152,7 @@ describe('ActorHttpNative', () => {
         .toMatchObject(new Error('Unsupported encoding: invalid'));
     });
 
-    it('can have headers in the init object', async () => {
+    it('should return valid status', async () => {
       mockSetup({ statusCode: 200 });
       const result: any = await actor.run({ init: { headers: new Headers({ a: 'b' }), method: 'HEAD' },
         input: 'http://example.com'});
