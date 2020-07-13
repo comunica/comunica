@@ -6,7 +6,7 @@ import {
   IActorQueryOperationOutput,
   IActorQueryOperationOutputBindings, IActorQueryOperationOutputBoolean, IActorQueryOperationOutputQuads,
 } from "@comunica/bus-query-operation";
-import {getDataSourceType, getDataSourceValue, IDataSource} from "@comunica/bus-rdf-resolve-quad-pattern";
+import {getDataSourceType, getDataSourceValue} from "@comunica/bus-rdf-resolve-quad-pattern";
 import {ActionContext, Actor, IActorArgs, IActorTest, Mediator} from "@comunica/core";
 import {IMediatorTypeHttpRequests} from "@comunica/mediatortype-httprequests";
 import {DataSourceUtils} from "@comunica/utils-datasource";
@@ -55,7 +55,7 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
     if (!source) {
       throw new Error('Illegal state: undefined sparql endpoint source.');
     }
-    const endpoint: string = getDataSourceValue(source);
+    const endpoint: string = <string> getDataSourceValue(source);
     this.lastContext = action.context;
 
     // Determine the full SPARQL query that needs to be sent to the endpoint

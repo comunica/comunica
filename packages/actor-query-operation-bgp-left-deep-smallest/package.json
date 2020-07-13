@@ -35,6 +35,8 @@
     "index.js"
   ],
   "dependencies": {
+    "@types/lodash.uniq": "^4.5.3",
+    "@types/rdf-js": "^3.0.0",
     "asynciterator-promiseproxy": "^2.1.0",
     "lodash.uniq": "^4.5.0",
     "rdf-string": "^1.4.2",

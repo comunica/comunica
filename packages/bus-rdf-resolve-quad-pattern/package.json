@@ -34,6 +34,7 @@
     "index.js"
   ],
   "dependencies": {
+    "@types/rdf-js": "^3.0.0",
     "asynciterator": "^2.0.1",
     "asyncreiterable": "^1.2.0"
   },

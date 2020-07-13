@@ -35,6 +35,7 @@
     "index.js"
   ],
   "dependencies": {
+    "@types/rdf-js": "^3.0.0",
     "relative-to-absolute-iri": "^1.0.5"
   },
   "peerDependencies": {

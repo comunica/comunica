@@ -35,6 +35,8 @@
     "index.js"
   ],
   "dependencies": {
+    "@types/lru-cache": "^5.1.0",
+    "@types/rdf-js": "^3.0.0",
     "asynciterator": "^2.0.1",
     "lru-cache": "^5.1.1"
   },
