@@ -164,8 +164,7 @@ Options:
     // Verify the path
     const requestUrl = url.parse(request.url || '', true);
     if (requestUrl.pathname === '/' || request.url === "/") {
-      console.log(requestUrl.pathname);
-      stdout.write('[301] Permanently moved. Redirected to localhost:' + this.port + '/sparql.');
+      stdout.write('[301] Permanently moved. Redirected to /sparql.');
       response.writeHead(301,
           { 'content-type': HttpServiceSparqlEndpoint.MIME_JSON, 
           'Access-Control-Allow-Origin': '*' ,
@@ -173,8 +172,7 @@ Options:
       response.end(JSON.stringify({ message: 'Queries are accepted on /sparql. Redirected.'}));
       return;
     } else if (requestUrl.pathname !== '/sparql') {
-      console.log(requestUrl.pathname);
-      stdout.write('[404] Resource not found. Queries are accepted on localhost:' + this.port + '/sparql.\n');
+      stdout.write('[404] Resource not found. Queries are accepted on /sparql.\n');
       response.writeHead(404,
           { 'content-type': HttpServiceSparqlEndpoint.MIME_JSON, 
           'Access-Control-Allow-Origin': '*'});

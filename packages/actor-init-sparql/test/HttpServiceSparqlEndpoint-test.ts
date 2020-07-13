@@ -391,7 +391,7 @@ describe('HttpServiceSparqlEndpoint', () => {
           expect(response.writeHead).toHaveBeenCalledWith(404, {
             'content-type': HttpServiceSparqlEndpoint.MIME_JSON,
             'Access-Control-Allow-Origin': '*' });
-          expect(response.end).toHaveBeenCalledWith(JSON.stringify({ message: 'Resource not found. Queries are accepted on localhost:<port>/sparql.' }));
+          expect(response.end).toHaveBeenCalledWith(JSON.stringify({ message: 'Resource not found. Queries are accepted on /sparql.' }));
         });
 
       it("should respond with 404 when url undefined"
@@ -402,7 +402,7 @@ describe('HttpServiceSparqlEndpoint', () => {
           expect(response.writeHead).toHaveBeenCalledWith(404, {
             'content-type': HttpServiceSparqlEndpoint.MIME_JSON,
             'Access-Control-Allow-Origin': '*' });
-          expect(response.end).toHaveBeenCalledWith(JSON.stringify({ message: 'Resource not found. Queries are accepted on localhost:<port>/sparql.' }));
+          expect(response.end).toHaveBeenCalledWith(JSON.stringify({ message: 'Resource not found. Queries are accepted on /sparql.' }));
         });
 
       it("should respond with 301 when GET method called on root url"
@@ -414,7 +414,7 @@ describe('HttpServiceSparqlEndpoint', () => {
           'content-type': HttpServiceSparqlEndpoint.MIME_JSON,
           'Access-Control-Allow-Origin': '*',
           'Location': 'http://localhost:3000/sparql'});
-        expect(response.end).toHaveBeenCalledWith(JSON.stringify({ message: 'Queries are accepted on localhost:<port>/sparql. Redirected.' }));
+        expect(response.end).toHaveBeenCalledWith(JSON.stringify({ message: 'Queries are accepted on /sparql. Redirected.' }));
       });
     });
 
