@@ -38,7 +38,7 @@
     "@types/lru-cache": "^5.1.0",
     "@types/rdf-js": "^3.0.0",
     "asynciterator": "^3.0.0",
-    "lru-cache": "^5.1.1"
+    "lru-cache": "^6.0.0"
   },
   "peerDependencies": {
     "@comunica/bus-http-invalidate": "^1.0.0",
