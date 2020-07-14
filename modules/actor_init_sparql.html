@@ -109,26 +109,26 @@
 						<h3>Usage from the command line</h3>
 					</a>
 					<p>Show 100 triples from <a href="http://fragments.dbpedia.org/2015-10/en">http://fragments.dbpedia.org/2015-10/en</a>:</p>
-					<pre><code class="language-bash">$ comunica-sparql http://fragments.dbpedia.org/2015-10/en <span class="hljs-string">"CONSTRUCT WHERE { ?s ?p ?o } LIMIT 100"</span></code></pre>
+					<pre><code class="language-bash">$ comunica-sparql http://fragments.dbpedia.org/2015-10/en <span class="hljs-string">&quot;CONSTRUCT WHERE { ?s ?p ?o } LIMIT 100&quot;</span></code></pre>
 					<p>Show all triples from <a href="http://dbpedia.org/resource/Belgium">http://dbpedia.org/resource/Belgium</a>:</p>
-					<pre><code class="language-bash">$ comunica-sparql http://dbpedia.org/resource/Belgium <span class="hljs-string">"CONSTRUCT WHERE { ?s ?p ?o }"</span></code></pre>
+					<pre><code class="language-bash">$ comunica-sparql http://dbpedia.org/resource/Belgium <span class="hljs-string">&quot;CONSTRUCT WHERE { ?s ?p ?o }&quot;</span></code></pre>
 					<p>Combine multiple sources:</p>
-					<pre><code class="language-bash">$ comunica-sparql http://fragments.dbpedia.org/2015-10/en file@http://dbpedia.org/resource/Belgium <span class="hljs-string">"CONSTRUCT WHERE { ?s ?p ?o } LIMIT 100"</span></code></pre>
+					<pre><code class="language-bash">$ comunica-sparql http://fragments.dbpedia.org/2015-10/en file@http://dbpedia.org/resource/Belgium <span class="hljs-string">&quot;CONSTRUCT WHERE { ?s ?p ?o } LIMIT 100&quot;</span></code></pre>
 					<p>Show the help with all options:</p>
 					<pre><code class="language-bash">$ comunica-sparql --<span class="hljs-built_in">help</span></code></pre>
 					<p>The dynamic variant of this executable is <code>comunica-dynamic-sparql</code>.
 					An alternative config file can be passed via the <code>COMUNICA_CONFIG</code> environment variable.</p>
 					<p>When you are working with this module in the Comunica monorepo development environment,
 					this command can be invoked directly as follows (when inside the <code>packages/actor-init-sparql</code> folder):</p>
-					<pre><code class="language-bash">node bin/query.js http://fragments.dbpedia.org/2016-04/en <span class="hljs-string">"CONSTRUCT WHERE { ?s ?p ?o } LIMIT 100"</span></code></pre>
+					<pre><code class="language-bash">node bin/query.js http://fragments.dbpedia.org/2016-04/en <span class="hljs-string">&quot;CONSTRUCT WHERE { ?s ?p ?o } LIMIT 100&quot;</span></code></pre>
 					<p>Use <code>bin/query-dynamic.js</code> when running dynamically inside the Comunica monorepo development environment.</p>
 					<a href="#usage-as-a-sparql-endpoint" id="usage-as-a-sparql-endpoint" style="color: inherit; text-decoration: none;">
 						<h3>Usage as a SPARQL endpoint</h3>
 					</a>
 					<p>Start a webservice exposing <a href="http://fragments.dbpedia.org/2015-10/en">http://fragments.dbpedia.org/2015-10/en</a> via the SPARQL protocol, i.e., a <em>SPARQL endpoint</em>.</p>
-					<pre><code class="language-bash">$ comunica-sparql-http <span class="hljs-string">"{ \"sources\": [\"http://fragments.dbpedia.org/2015/en\"]}"</span></code></pre>
+					<pre><code class="language-bash">$ comunica-sparql-http <span class="hljs-string">&quot;{ \&quot;sources\&quot;: [\&quot;http://fragments.dbpedia.org/2015/en\&quot;]}&quot;</span></code></pre>
 					<p>or</p>
-					<pre><code class="language-bash">$ comunica-sparql-http <span class="hljs-string">"{ \"sources\": [{ \"type\" : \"file\", \"value\" : \"https://ruben.verborgh.org/profile/\" }]}"</span></code></pre>
+					<pre><code class="language-bash">$ comunica-sparql-http <span class="hljs-string">&quot;{ \&quot;sources\&quot;: [{ \&quot;type\&quot; : \&quot;file\&quot;, \&quot;value\&quot; : \&quot;https://ruben.verborgh.org/profile/\&quot; }]}&quot;</span></code></pre>
 					<p>Show the help with all options:</p>
 					<pre><code class="language-bash">$ comunica-sparql-http --<span class="hljs-built_in">help</span></code></pre>
 					<p>The SPARQL endpoint can only be started dynamically.
@@ -138,38 +138,38 @@
 						<h3>Usage within application</h3>
 					</a>
 					<p>The easiest way to create an engine (with default config) is as follows:</p>
-					<pre><code class="language-javascript"><span class="hljs-keyword">const</span> newEngine = <span class="hljs-built_in">require</span>(<span class="hljs-string">'@comunica/actor-init-sparql'</span>).newEngine;
+					<pre><code class="language-javascript"><span class="hljs-keyword">const</span> newEngine = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;@comunica/actor-init-sparql&#x27;</span>).newEngine;
 
 <span class="hljs-keyword">const</span> myEngine = newEngine();</code></pre>
 					<p>Alternatively, an engine can also be created dynamically with a custom config:</p>
-					<pre><code class="language-javascript"><span class="hljs-keyword">const</span> newEngineDynamic = <span class="hljs-built_in">require</span>(<span class="hljs-string">'@comunica/actor-init-sparql'</span>).newEngineDynamic;
+					<pre><code class="language-javascript"><span class="hljs-keyword">const</span> newEngineDynamic = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;@comunica/actor-init-sparql&#x27;</span>).newEngineDynamic;
 
-<span class="hljs-keyword">const</span> myEngine = <span class="hljs-keyword">await</span> newEngineDynamic({ <span class="hljs-attr">configResourceUrl</span>: <span class="hljs-string">'path/to/config.json'</span> });</code></pre>
+<span class="hljs-keyword">const</span> myEngine = <span class="hljs-keyword">await</span> newEngineDynamic({ <span class="hljs-attr">configResourceUrl</span>: <span class="hljs-string">&#x27;path/to/config.json&#x27;</span> });</code></pre>
 					<p>Once you have created your query engine,
 						you can use it to call the async <code>query(queryString, context)</code> method,
 					which returns an output of type that depends on the given query string.</p>
 					<p>For example, a <code>SELECT</code> query can be executed as follows:</p>
-					<pre><code class="language-javascript"><span class="hljs-keyword">const</span> result = <span class="hljs-keyword">await</span> myEngine.query(<span class="hljs-string">'SELECT * WHERE { ?s ?p &lt;http://dbpedia.org/resource/Belgium&gt;. ?s ?p ?o } LIMIT 100'</span>,
-  { <span class="hljs-attr">sources</span>: [<span class="hljs-string">'http://fragments.dbpedia.org/2015/en'</span>] })
-result.bindingsStream.on(<span class="hljs-string">'data'</span>, (data) =&gt; <span class="hljs-built_in">console</span>.log(data.toObject()));</code></pre>
+					<pre><code class="language-javascript"><span class="hljs-keyword">const</span> result = <span class="hljs-keyword">await</span> myEngine.query(<span class="hljs-string">&#x27;SELECT * WHERE { ?s ?p &lt;http://dbpedia.org/resource/Belgium&gt;. ?s ?p ?o } LIMIT 100&#x27;</span>,
+  { <span class="hljs-attr">sources</span>: [<span class="hljs-string">&#x27;http://fragments.dbpedia.org/2015/en&#x27;</span>] })
+result.bindingsStream.on(<span class="hljs-string">&#x27;data&#x27;</span>, <span class="hljs-function">(<span class="hljs-params">data</span>) =&gt;</span> <span class="hljs-built_in">console</span>.log(data.toObject()));</code></pre>
 					<p>Optionally, specific types of sources can be specified (<em>otherwise, the type of source will be detected automatically</em>):</p>
-					<pre><code class="language-javascript"><span class="hljs-keyword">const</span> result = <span class="hljs-keyword">await</span> myEngine.query(<span class="hljs-string">'SELECT * WHERE { ?s ?p &lt;http://dbpedia.org/resource/Belgium&gt;. ?s ?p ?o } LIMIT 100'</span>,
+					<pre><code class="language-javascript"><span class="hljs-keyword">const</span> result = <span class="hljs-keyword">await</span> myEngine.query(<span class="hljs-string">&#x27;SELECT * WHERE { ?s ?p &lt;http://dbpedia.org/resource/Belgium&gt;. ?s ?p ?o } LIMIT 100&#x27;</span>,
   { <span class="hljs-attr">sources</span>: [
-    <span class="hljs-string">'http://fragments.dbpedia.org/2015/en'</span>,
-    { <span class="hljs-attr">type</span>: <span class="hljs-string">'sparql'</span>, <span class="hljs-attr">value</span>: <span class="hljs-string">'https://dbpedia.org/sparql'</span> },
-    { <span class="hljs-attr">type</span>: <span class="hljs-string">'file'</span>, <span class="hljs-attr">value</span>: <span class="hljs-string">'https://ruben.verborgh.org/profile/'</span> },
-    { <span class="hljs-attr">type</span>: <span class="hljs-string">'rdfjsSource'</span>, <span class="hljs-attr">value</span>: <span class="hljs-keyword">new</span> N3Store() },
+    <span class="hljs-string">&#x27;http://fragments.dbpedia.org/2015/en&#x27;</span>,
+    { <span class="hljs-attr">type</span>: <span class="hljs-string">&#x27;sparql&#x27;</span>, <span class="hljs-attr">value</span>: <span class="hljs-string">&#x27;https://dbpedia.org/sparql&#x27;</span> },
+    { <span class="hljs-attr">type</span>: <span class="hljs-string">&#x27;file&#x27;</span>, <span class="hljs-attr">value</span>: <span class="hljs-string">&#x27;https://ruben.verborgh.org/profile/&#x27;</span> },
+    { <span class="hljs-attr">type</span>: <span class="hljs-string">&#x27;rdfjsSource&#x27;</span>, <span class="hljs-attr">value</span>: <span class="hljs-keyword">new</span> N3Store() },
   ] })
-result.bindingsStream.on(<span class="hljs-string">'data'</span>, (data) =&gt; <span class="hljs-built_in">console</span>.log(data.toObject()));</code></pre>
+result.bindingsStream.on(<span class="hljs-string">&#x27;data&#x27;</span>, <span class="hljs-function">(<span class="hljs-params">data</span>) =&gt;</span> <span class="hljs-built_in">console</span>.log(data.toObject()));</code></pre>
 					<p><strong>Note: Some SPARQL endpoints may be recognised as a file instead of a SPARQL endpoint due to them not supporting <a href="https://www.w3.org/TR/sparql11-service-description/">SPARQL Service Description</a>, which may produce incorrect results. For these cases, the <code>sparql</code> type MUST be set.</strong></p>
 					<p>For <code>CONSTRUCT</code> and <code>DESCRIBE</code> queries,
 					results can be collected as follows.</p>
-					<pre><code class="language-javascript"><span class="hljs-keyword">const</span> result = <span class="hljs-keyword">await</span> myEngine.query(<span class="hljs-string">'CONSTRUCT WHERE { ?s ?p &lt;http://dbpedia.org/resource/Belgium&gt; } LIMIT 100'</span>,
-  { <span class="hljs-attr">sources</span>: [<span class="hljs-string">'http://fragments.dbpedia.org/2015/en'</span>] })
-result.quadStream.on(<span class="hljs-string">'data'</span>, (data) =&gt; <span class="hljs-built_in">console</span>.log(data));</code></pre>
+					<pre><code class="language-javascript"><span class="hljs-keyword">const</span> result = <span class="hljs-keyword">await</span> myEngine.query(<span class="hljs-string">&#x27;CONSTRUCT WHERE { ?s ?p &lt;http://dbpedia.org/resource/Belgium&gt; } LIMIT 100&#x27;</span>,
+  { <span class="hljs-attr">sources</span>: [<span class="hljs-string">&#x27;http://fragments.dbpedia.org/2015/en&#x27;</span>] })
+result.quadStream.on(<span class="hljs-string">&#x27;data&#x27;</span>, <span class="hljs-function">(<span class="hljs-params">data</span>) =&gt;</span> <span class="hljs-built_in">console</span>.log(data));</code></pre>
 					<p>Finally, <code>ASK</code> queries return async booleans.</p>
-					<pre><code class="language-javascript"><span class="hljs-keyword">const</span> result = <span class="hljs-keyword">await</span> myEngine.query(<span class="hljs-string">'ASK { ?s ?p &lt;http://dbpedia.org/resource/Belgium&gt; }'</span>,
-  { <span class="hljs-attr">sources</span>: [<span class="hljs-string">'http://fragments.dbpedia.org/2015/en'</span>] })
+					<pre><code class="language-javascript"><span class="hljs-keyword">const</span> result = <span class="hljs-keyword">await</span> myEngine.query(<span class="hljs-string">&#x27;ASK { ?s ?p &lt;http://dbpedia.org/resource/Belgium&gt; }&#x27;</span>,
+  { <span class="hljs-attr">sources</span>: [<span class="hljs-string">&#x27;http://fragments.dbpedia.org/2015/en&#x27;</span>] })
 <span class="hljs-keyword">const</span> isPresent = <span class="hljs-keyword">await</span> result.booleanResult;</code></pre>
 					<p><strong>Context options:</strong></p>
 					<table>
@@ -217,9 +217,9 @@ result.quadStream.on(<span class="hljs-string">'data'</span>, (data) =&gt; <span
 					Comunica allows these results to be serialized into standard formats in a streaming manner.</p>
 					<p>For example, serializing results to the <a href="https://www.w3.org/TR/sparql11-results-json/">SPARQL/JSON</a> format
 					can be done as follows:</p>
-					<pre><code class="language-javascript"><span class="hljs-keyword">const</span> result = <span class="hljs-keyword">await</span> myEngine.query(<span class="hljs-string">'SELECT * WHERE { ?s ?p &lt;http://dbpedia.org/resource/Belgium&gt;. ?s ?p ?o } LIMIT 100'</span>,
-  { <span class="hljs-attr">sources</span>: [<span class="hljs-string">'http://fragments.dbpedia.org/2015/en'</span>] });
-<span class="hljs-keyword">const</span> { data } = <span class="hljs-keyword">await</span> myEngine.resultToString(result, <span class="hljs-string">'application/sparql-results+json'</span>);
+					<pre><code class="language-javascript"><span class="hljs-keyword">const</span> result = <span class="hljs-keyword">await</span> myEngine.query(<span class="hljs-string">&#x27;SELECT * WHERE { ?s ?p &lt;http://dbpedia.org/resource/Belgium&gt;. ?s ?p ?o } LIMIT 100&#x27;</span>,
+  { <span class="hljs-attr">sources</span>: [<span class="hljs-string">&#x27;http://fragments.dbpedia.org/2015/en&#x27;</span>] });
+<span class="hljs-keyword">const</span> { data } = <span class="hljs-keyword">await</span> myEngine.resultToString(result, <span class="hljs-string">&#x27;application/sparql-results+json&#x27;</span>);
 data.pipe(process.stdout);</code></pre>
 					<p>Passing a media type as second argument is optional.
 						If none is supplied, then <code>application/json</code> will be picked for bindings,
@@ -287,7 +287,7 @@ data.pipe(process.stdout);</code></pre>
 					</tbody></table>
 					<p>This list of available formats can also be retrieved dynamically by invoking the (asynchronous) <code>engine.getResultMediaTypes()</code> method.</p>
 					<p>On the command-line, the result format can be set using the <code>-t</code> flag:</p>
-					<pre><code class="language-bash">$ comunica-sparql http://dbpedia.org/resource/Belgium <span class="hljs-string">"SELECT * WHERE { ?s ?p ?o }"</span> -t <span class="hljs-string">'application/sparql-results+json'</span></code></pre>
+					<pre><code class="language-bash">$ comunica-sparql http://dbpedia.org/resource/Belgium <span class="hljs-string">&quot;SELECT * WHERE { ?s ?p ?o }&quot;</span> -t <span class="hljs-string">&#x27;application/sparql-results+json&#x27;</span></code></pre>
 					<p>All available result formats can be listed from the command-line using <code>--listformats</code>:</p>
 					<pre><code class="language-bash">$ comunica-sparql --listformats</code></pre>
 					<a href="#optional-cache-handling" id="optional-cache-handling" style="color: inherit; text-decoration: none;">
@@ -297,7 +297,7 @@ data.pipe(process.stdout);</code></pre>
 						If your application works over volatile resources, then you may want to invalidate this cache,
 					which can be done as follows:</p>
 					<pre><code class="language-javascript">myEngine.invalidateHttpCache(); <span class="hljs-comment">// Invalidate the full cache</span>
-myEngine.invalidateHttpCache(<span class="hljs-string">'http://example.org/page.html'</span>); <span class="hljs-comment">// Invalidate a single document</span></code></pre>
+myEngine.invalidateHttpCache(<span class="hljs-string">&#x27;http://example.org/page.html&#x27;</span>); <span class="hljs-comment">// Invalidate a single document</span></code></pre>
 					<a href="#optional-graphql-ld" id="optional-graphql-ld" style="color: inherit; text-decoration: none;">
 						<h4><em>(Optional)</em> GraphQL-LD</h4>
 					</a>
@@ -306,25 +306,25 @@ myEngine.invalidateHttpCache(<span class="hljs-string">'http://example.org/page.
 					<p>If you want to convert your results to a GraphQL tree,
 						then you will need the <code>@comunica/actor-sparql-serialize-tree</code> dependency,
 					otherwise you can consume the bindings stream manually.</p>
-					<pre><code class="language-javascript"><span class="hljs-keyword">const</span> newEngine = <span class="hljs-built_in">require</span>(<span class="hljs-string">'@comunica/actor-init-sparql'</span>).newEngine;
-<span class="hljs-keyword">const</span> bindingsStreamToGraphQl = <span class="hljs-built_in">require</span>(<span class="hljs-string">'@comunica/actor-sparql-serialize-tree'</span>).bindingsStreamToGraphQl;
+					<pre><code class="language-javascript"><span class="hljs-keyword">const</span> newEngine = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;@comunica/actor-init-sparql&#x27;</span>).newEngine;
+<span class="hljs-keyword">const</span> bindingsStreamToGraphQl = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;@comunica/actor-sparql-serialize-tree&#x27;</span>).bindingsStreamToGraphQl;
 
 <span class="hljs-keyword">const</span> myEngine = newEngine();
 <span class="hljs-keyword">const</span> config = {
-  <span class="hljs-attr">sources</span>: [<span class="hljs-string">'http://fragments.dbpedia.org/2016-04/en'</span>],
-  <span class="hljs-attr">queryFormat</span>: <span class="hljs-string">'graphql'</span>,
-  <span class="hljs-string">"@context"</span>: {
-    <span class="hljs-string">"label"</span>: { <span class="hljs-string">"@id"</span>: <span class="hljs-string">"http://www.w3.org/2000/01/rdf-schema#label"</span> },
-    <span class="hljs-string">"label_en"</span>: { <span class="hljs-string">"@id"</span>: <span class="hljs-string">"http://www.w3.org/2000/01/rdf-schema#label"</span>, <span class="hljs-string">"@language"</span>: <span class="hljs-string">"en"</span> },
-    <span class="hljs-string">"writer"</span>: { <span class="hljs-string">"@id"</span>: <span class="hljs-string">"http://dbpedia.org/ontology/writer"</span> },
-    <span class="hljs-string">"artist"</span>: { <span class="hljs-string">"@id"</span>: <span class="hljs-string">"http://dbpedia.org/ontology/musicalArtist"</span> }
+  <span class="hljs-attr">sources</span>: [<span class="hljs-string">&#x27;http://fragments.dbpedia.org/2016-04/en&#x27;</span>],
+  <span class="hljs-attr">queryFormat</span>: <span class="hljs-string">&#x27;graphql&#x27;</span>,
+  <span class="hljs-string">&quot;@context&quot;</span>: {
+    <span class="hljs-string">&quot;label&quot;</span>: { <span class="hljs-string">&quot;@id&quot;</span>: <span class="hljs-string">&quot;http://www.w3.org/2000/01/rdf-schema#label&quot;</span> },
+    <span class="hljs-string">&quot;label_en&quot;</span>: { <span class="hljs-string">&quot;@id&quot;</span>: <span class="hljs-string">&quot;http://www.w3.org/2000/01/rdf-schema#label&quot;</span>, <span class="hljs-string">&quot;@language&quot;</span>: <span class="hljs-string">&quot;en&quot;</span> },
+    <span class="hljs-string">&quot;writer&quot;</span>: { <span class="hljs-string">&quot;@id&quot;</span>: <span class="hljs-string">&quot;http://dbpedia.org/ontology/writer&quot;</span> },
+    <span class="hljs-string">&quot;artist&quot;</span>: { <span class="hljs-string">&quot;@id&quot;</span>: <span class="hljs-string">&quot;http://dbpedia.org/ontology/musicalArtist&quot;</span> }
   }
 };
-myEngine.query(<span class="hljs-string">'{ label @single writer(label_en: \"Michael Jackson\") @single artist @single { label @single } }'</span>, config)
+myEngine.query(<span class="hljs-string">&#x27;{ label @single writer(label_en: \&quot;Michael Jackson\&quot;) @single artist @single { label @single } }&#x27;</span>, config)
   .then(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">result</span>) </span>{ <span class="hljs-keyword">return</span> bindingsStreamToGraphQl(result.bindingsStream, result.context); })
   .then(<span class="hljs-built_in">console</span>.log);</code></pre>
 					<p>To run GraphQL queries from the command line, set the <code>-i</code> flag to <code>graphql</code> and refer to your config file with the JSON-LD context (<code>@context</code>) through the <code>-c</code> flag. To output your results as a GraphQL tree, set the MIME type of the output with <code>-t</code> to <code>tree</code>. For example:</p>
-					<pre><code class="language-bash">$ comunica-sparql http://fragments.dbpedia.org/2015-10/en -q <span class="hljs-string">"{ label @single }"</span> -c config-with-context.json -i graphql -t tree</code></pre>
+					<pre><code class="language-bash">$ comunica-sparql http://fragments.dbpedia.org/2015-10/en -q <span class="hljs-string">&quot;{ label @single }&quot;</span> -c config-with-context.json -i graphql -t tree</code></pre>
 					<a href="#optional-logging" id="optional-logging" style="color: inherit; text-decoration: none;">
 						<h4><em>(Optional)</em> Logging</h4>
 					</a>
@@ -336,27 +336,27 @@ myEngine.query(<span class="hljs-string">'{ label @single writer(label_en: \"Mic
 						<a href="https://github.com/comunica/comunica/tree/master/packages/logger-bunyan/"><code>@comunica/logger-bunyan</code></a>,
 					or a custom logger implementing the <a href="https://github.com/comunica/comunica/blob/master/packages/core/lib/Logger.ts"><code>Logger</code></a> interface can be used.</p>
 					<p>These loggers can be configured through the context as follows:</p>
-					<pre><code class="language-javascript"><span class="hljs-keyword">import</span> {LoggerPretty} <span class="hljs-keyword">from</span> <span class="hljs-string">"@comunica/logger-pretty"</span>;
+					<pre><code class="language-javascript"><span class="hljs-keyword">import</span> {LoggerPretty} <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;@comunica/logger-pretty&quot;</span>;
 
 <span class="hljs-keyword">const</span> context = {
-  <span class="hljs-attr">log</span>: <span class="hljs-keyword">new</span> LoggerPretty({ <span class="hljs-attr">level</span>: <span class="hljs-string">'warn'</span> });
+  <span class="hljs-attr">log</span>: <span class="hljs-keyword">new</span> LoggerPretty({ <span class="hljs-attr">level</span>: <span class="hljs-string">&#x27;warn&#x27;</span> });
 };
-myEngine.query(<span class="hljs-string">'...'</span>, context);</code></pre>
+myEngine.query(<span class="hljs-string">&#x27;...&#x27;</span>, context);</code></pre>
 					<a href="#optional-proxy" id="optional-proxy" style="color: inherit; text-decoration: none;">
 						<h4><em>(Optional)</em> Proxy</h4>
 					</a>
 					<p>Optionally, you can configure a proxy to redirect all HTTP(S) traffic.
 					This is for example useful when Comunica is used in a Web browser where a <a href="https://www.npmjs.com/package/cors-anywhere">proxy enables CORS headers on all responses</a>.</p>
 					<p>Via the command line, a proxy can be enabled as follows:</p>
-					<pre><code class="language-bash">$ comunica-sparql http://fragments.dbpedia.org/2015-10/en <span class="hljs-string">"CONSTRUCT WHERE { ?s ?p ?o } LIMIT 100"</span> -p http://myproxy.org/?uri=</code></pre>
+					<pre><code class="language-bash">$ comunica-sparql http://fragments.dbpedia.org/2015-10/en <span class="hljs-string">&quot;CONSTRUCT WHERE { ?s ?p ?o } LIMIT 100&quot;</span> -p http://myproxy.org/?uri=</code></pre>
 					<p>This will cause all requests to be modified by appending the original URL to the proxy URL <code>http://myproxy.org/?uri=http://fragments.dbpedia.org/2015-10/en</code>.</p>
 					<p>A proxy can also be configured via the programmatic API as follows:</p>
-					<pre><code class="language-javascript"><span class="hljs-keyword">const</span> ProxyHandlerStatic = <span class="hljs-built_in">require</span>(<span class="hljs-string">"@comunica/actor-http-proxy"</span>).ProxyHandlerStatic;
+					<pre><code class="language-javascript"><span class="hljs-keyword">const</span> ProxyHandlerStatic = <span class="hljs-built_in">require</span>(<span class="hljs-string">&quot;@comunica/actor-http-proxy&quot;</span>).ProxyHandlerStatic;
 
-<span class="hljs-keyword">const</span> result = <span class="hljs-keyword">await</span> myEngine.query(<span class="hljs-string">'SELECT * WHERE { ?s ?p &lt;http://dbpedia.org/resource/Belgium&gt;. ?s ?p ?o } LIMIT 100'</span>,
+<span class="hljs-keyword">const</span> result = <span class="hljs-keyword">await</span> myEngine.query(<span class="hljs-string">&#x27;SELECT * WHERE { ?s ?p &lt;http://dbpedia.org/resource/Belgium&gt;. ?s ?p ?o } LIMIT 100&#x27;</span>,
   {
-    <span class="hljs-attr">sources</span>: [ { <span class="hljs-attr">type</span>: <span class="hljs-string">'hypermedia'</span>, <span class="hljs-attr">value</span>: <span class="hljs-string">'http://fragments.dbpedia.org/2015/en'</span> } ],
-    <span class="hljs-attr">httpProxyHandler</span>: <span class="hljs-keyword">new</span> ProxyHandlerStatic(<span class="hljs-string">'http://myproxy.org/?uri='</span>),
+    <span class="hljs-attr">sources</span>: [ { <span class="hljs-attr">type</span>: <span class="hljs-string">&#x27;hypermedia&#x27;</span>, <span class="hljs-attr">value</span>: <span class="hljs-string">&#x27;http://fragments.dbpedia.org/2015/en&#x27;</span> } ],
+    <span class="hljs-attr">httpProxyHandler</span>: <span class="hljs-keyword">new</span> ProxyHandlerStatic(<span class="hljs-string">&#x27;http://myproxy.org/?uri=&#x27;</span>),
   });</code></pre>
 					<p>Next to <code>ProxyHandlerStatic</code>, more advanced proxy handlers can be created by implementing <a href="https://github.com/comunica/comunica/blob/master/packages/actor-http-proxy/lib/IProxyHandler.ts"><code>IProxyHandler</code></a>.</p>
 					<a href="#usage-within-browser" id="usage-within-browser" style="color: inherit; text-decoration: none;">
@@ -367,13 +367,13 @@ myEngine.query(<span class="hljs-string">'...'</span>, context);</code></pre>
 						To create a web-packed version of the engine, run <code>yarn run browser</code> (when inside the <code>packages/actor-init-sparql</code> folder) to create <code>comunica-browser.js</code>.
 					Alternatively, just <a href="https://github.com/rdfjs/comunica-browser">use a pre-built version from our CDN</a>.</p>
 					<p>Include this file in your webpage as follows:</p>
-					<pre><code class="language-html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">"path/to/comunica-browser.js"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
+					<pre><code class="language-html"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">&quot;path/to/comunica-browser.js&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></code></pre>
 					<p>After that, <code>Comunica.newEngine</code> can be called via JavaScript.</p>
 					<pre><code class="language-javascript"><span class="hljs-keyword">const</span> myEngine = Comunica.newEngine();
-myEngine.query(<span class="hljs-string">'SELECT * { ?s ?p &lt;http://dbpedia.org/resource/Belgium&gt;. ?s ?p ?o } LIMIT 100'</span>,
-  { <span class="hljs-attr">sources</span>: [<span class="hljs-string">'http://fragments.dbpedia.org/2015/en'</span>] })
+myEngine.query(<span class="hljs-string">&#x27;SELECT * { ?s ?p &lt;http://dbpedia.org/resource/Belgium&gt;. ?s ?p ?o } LIMIT 100&#x27;</span>,
+  { <span class="hljs-attr">sources</span>: [<span class="hljs-string">&#x27;http://fragments.dbpedia.org/2015/en&#x27;</span>] })
   .then(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">result</span>) </span>{
-    result.bindingsStream.on(<span class="hljs-string">'data'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">data</span>) </span>{
+    result.bindingsStream.on(<span class="hljs-string">&#x27;data&#x27;</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">data</span>) </span>{
       <span class="hljs-built_in">console</span>.log(data.toObject());
     });
   });</code></pre>
@@ -405,6 +405,7 @@ myEngine.query(<span class="hljs-string">'SELECT * { ?s ?p &lt;http://dbpedia.or
 								<li class="tsd-kind-reference tsd-parent-kind-module"><a href="actor_init_sparql.html#key_context_queryformat-1" class="tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>QUERYFORMAT</a></li>
 								<li class="tsd-kind-reference tsd-parent-kind-module"><a href="actor_init_sparql.html#key_context_queryformat-2" class="tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>QUERYFORMAT</a></li>
 								<li class="tsd-kind-reference tsd-parent-kind-module"><a href="actor_init_sparql.html#bindingsstreamtographql" class="tsd-kind-icon">bindings<wbr>Stream<wbr>ToGraph<wbr>Ql</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module"><a href="actor_init_sparql.html#bindingsstreamtographql-1" class="tsd-kind-icon">bindings<wbr>Stream<wbr>ToGraph<wbr>Ql</a></li>
 								<li class="tsd-kind-reference tsd-parent-kind-module"><a href="actor_init_sparql.html#evaluatequery" class="tsd-kind-icon">evaluate<wbr>Query</a></li>
 								<li class="tsd-kind-reference tsd-parent-kind-module"><a href="actor_init_sparql.html#newengine" class="tsd-kind-icon">new<wbr>Engine</a></li>
 							</ul>
@@ -534,6 +535,11 @@ myEngine.query(<span class="hljs-string">'SELECT * { ?s ?p &lt;http://dbpedia.or
 					Re-exports <a href="actor_sparql_serialize_tree.html#bindingsstreamtographql">bindingsStreamToGraphQl</a>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module">
+					<a name="bindingsstreamtographql-1" class="tsd-anchor"></a>
+					<h3>bindings<wbr>Stream<wbr>ToGraph<wbr>Ql</h3>
+					Re-exports <a href="actor_sparql_serialize_tree.html#bindingsstreamtographql">bindingsStreamToGraphQl</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module">
 					<a name="evaluatequery" class="tsd-anchor"></a>
 					<h3>evaluate<wbr>Query</h3>
 					Re-exports <a href="actor_init_sparql.html#evaluatequery-1">evaluateQuery</a>
@@ -552,7 +558,7 @@ myEngine.query(<span class="hljs-string">'SELECT * { ?s ?p &lt;http://dbpedia.or
 					<div class="tsd-signature tsd-kind-icon">Event<wbr>Emitter<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/e4d9a98/packages/actor-init-sparql/lib/HttpServiceSparqlEndpoint.ts#L4">packages/actor-init-sparql/lib/HttpServiceSparqlEndpoint.ts:4</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/512b17f/packages/actor-init-sparql/lib/HttpServiceSparqlEndpoint.ts#L4">packages/actor-init-sparql/lib/HttpServiceSparqlEndpoint.ts:4</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -562,7 +568,7 @@ myEngine.query(<span class="hljs-string">'SELECT * { ?s ?p &lt;http://dbpedia.or
 					<div class="tsd-signature tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>GRAPHQL_<wbr>SINGULARIZEVARIABLES<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &quot;@comunica/actor-init-sparql:singularizeVariables&quot;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/e4d9a98/packages/actor-init-sparql/lib/ActorInitSparql-browser.ts#L256">packages/actor-init-sparql/lib/ActorInitSparql-browser.ts:256</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/512b17f/packages/actor-init-sparql/lib/ActorInitSparql-browser.ts#L256">packages/actor-init-sparql/lib/ActorInitSparql-browser.ts:256</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -572,7 +578,7 @@ myEngine.query(<span class="hljs-string">'SELECT * { ?s ?p &lt;http://dbpedia.or
 					<div class="tsd-signature tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>INITIALBINDINGS<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &quot;@comunica/actor-init-sparql:initialBindings&quot;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/e4d9a98/packages/actor-init-sparql/lib/ActorInitSparql-browser.ts#L254">packages/actor-init-sparql/lib/ActorInitSparql-browser.ts:254</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/512b17f/packages/actor-init-sparql/lib/ActorInitSparql-browser.ts#L254">packages/actor-init-sparql/lib/ActorInitSparql-browser.ts:254</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -582,7 +588,7 @@ myEngine.query(<span class="hljs-string">'SELECT * { ?s ?p &lt;http://dbpedia.or
 					<div class="tsd-signature tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>LENIENT<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &quot;@comunica/actor-init-sparql:lenient&quot;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/e4d9a98/packages/actor-init-sparql/lib/ActorInitSparql-browser.ts#L257">packages/actor-init-sparql/lib/ActorInitSparql-browser.ts:257</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/512b17f/packages/actor-init-sparql/lib/ActorInitSparql-browser.ts#L257">packages/actor-init-sparql/lib/ActorInitSparql-browser.ts:257</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -592,7 +598,7 @@ myEngine.query(<span class="hljs-string">'SELECT * { ?s ?p &lt;http://dbpedia.or
 					<div class="tsd-signature tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>QUERYFORMAT<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &quot;@comunica/actor-init-sparql:queryFormat&quot;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/e4d9a98/packages/actor-init-sparql/lib/ActorInitSparql-browser.ts#L255">packages/actor-init-sparql/lib/ActorInitSparql-browser.ts:255</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/512b17f/packages/actor-init-sparql/lib/ActorInitSparql-browser.ts#L255">packages/actor-init-sparql/lib/ActorInitSparql-browser.ts:255</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -602,7 +608,7 @@ myEngine.query(<span class="hljs-string">'SELECT * { ?s ?p &lt;http://dbpedia.or
 					<div class="tsd-signature tsd-kind-icon">default<wbr>Config<wbr>Path<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = __dirname + &#x27;/../config/config-default.json&#x27;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/e4d9a98/packages/actor-init-sparql/bin/http.ts#L4">packages/actor-init-sparql/bin/http.ts:4</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/512b17f/packages/actor-init-sparql/bin/http.ts#L4">packages/actor-init-sparql/bin/http.ts:4</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -612,7 +618,7 @@ myEngine.query(<span class="hljs-string">'SELECT * { ?s ?p &lt;http://dbpedia.or
 					<div class="tsd-signature tsd-kind-icon">minimist<span class="tsd-signature-symbol">:</span> <a href="actor_init_sparql.html#minimist" class="tsd-signature-type">minimist</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/e4d9a98/packages/actor-init-sparql/lib/ActorInitSparql.ts#L9">packages/actor-init-sparql/lib/ActorInitSparql.ts:9</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/512b17f/packages/actor-init-sparql/lib/ActorInitSparql.ts#L9">packages/actor-init-sparql/lib/ActorInitSparql.ts:9</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -622,7 +628,7 @@ myEngine.query(<span class="hljs-string">'SELECT * { ?s ?p &lt;http://dbpedia.or
 					<div class="tsd-signature tsd-kind-icon">minimist<span class="tsd-signature-symbol">:</span> <a href="actor_init_sparql.html#minimist" class="tsd-signature-type">minimist</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/e4d9a98/packages/actor-init-sparql/lib/HttpServiceSparqlEndpoint.ts#L5">packages/actor-init-sparql/lib/HttpServiceSparqlEndpoint.ts:5</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/512b17f/packages/actor-init-sparql/lib/HttpServiceSparqlEndpoint.ts#L5">packages/actor-init-sparql/lib/HttpServiceSparqlEndpoint.ts:5</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -632,7 +638,7 @@ myEngine.query(<span class="hljs-string">'SELECT * { ?s ?p &lt;http://dbpedia.or
 					<div class="tsd-signature tsd-kind-icon">quad<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> = require(&#x27;rdf-quad&#x27;)</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/e4d9a98/packages/actor-init-sparql/lib/HttpServiceSparqlEndpoint.ts#L17">packages/actor-init-sparql/lib/HttpServiceSparqlEndpoint.ts:17</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/512b17f/packages/actor-init-sparql/lib/HttpServiceSparqlEndpoint.ts#L17">packages/actor-init-sparql/lib/HttpServiceSparqlEndpoint.ts:17</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -649,7 +655,7 @@ myEngine.query(<span class="hljs-string">'SELECT * { ?s ?p &lt;http://dbpedia.or
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/e4d9a98/packages/actor-init-sparql/index-browser.ts#L15">packages/actor-init-sparql/index-browser.ts:15</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/512b17f/packages/actor-init-sparql/index-browser.ts#L15">packages/actor-init-sparql/index-browser.ts:15</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -675,7 +681,7 @@ myEngine.query(<span class="hljs-string">'SELECT * { ?s ?p &lt;http://dbpedia.or
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/e4d9a98/packages/actor-init-sparql/index-browser.ts#L10">packages/actor-init-sparql/index-browser.ts:10</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/512b17f/packages/actor-init-sparql/index-browser.ts#L10">packages/actor-init-sparql/index-browser.ts:10</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -698,7 +704,7 @@ myEngine.query(<span class="hljs-string">'SELECT * { ?s ?p &lt;http://dbpedia.or
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/e4d9a98/packages/actor-init-sparql/index.ts#L13">packages/actor-init-sparql/index.ts:13</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/512b17f/packages/actor-init-sparql/index.ts#L13">packages/actor-init-sparql/index.ts:13</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -730,7 +736,7 @@ myEngine.query(<span class="hljs-string">'SELECT * { ?s ?p &lt;http://dbpedia.or
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/e4d9a98/packages/actor-init-sparql/lib/QueryDynamic.ts#L11">packages/actor-init-sparql/lib/QueryDynamic.ts:11</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/512b17f/packages/actor-init-sparql/lib/QueryDynamic.ts#L11">packages/actor-init-sparql/lib/QueryDynamic.ts:11</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -833,6 +839,9 @@ myEngine.query(<span class="hljs-string">'SELECT * { ?s ?p &lt;http://dbpedia.or
 								<a href="actor_init_sparql.html#bindingsstreamtographql" class="tsd-kind-icon">bindings<wbr>Stream<wbr>ToGraph<wbr>Ql</a>
 							</li>
 							<li class=" tsd-kind-reference tsd-parent-kind-module">
+								<a href="actor_init_sparql.html#bindingsstreamtographql-1" class="tsd-kind-icon">bindings<wbr>Stream<wbr>ToGraph<wbr>Ql</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module">
 								<a href="actor_init_sparql.html#evaluatequery" class="tsd-kind-icon">evaluate<wbr>Query</a>
 							</li>
 							<li class=" tsd-kind-reference tsd-parent-kind-module">
@@ -931,6 +940,5 @@ myEngine.query(<span class="hljs-string">'SELECT * { ?s ?p &lt;http://dbpedia.or
 </div>
 <div class="overlay"></div>
 <script src="../assets/js/main.js"></script>
-<script>if (location.protocol == 'file:') document.write('<script src="../assets/js/search.js"><' + '/script>');</script>
 </body>
 </html>

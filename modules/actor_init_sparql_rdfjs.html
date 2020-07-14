@@ -82,28 +82,28 @@
 					<a href="#usage" id="usage" style="color: inherit; text-decoration: none;">
 						<h2>Usage</h2>
 					</a>
-					<pre><code class="language-javascript"><span class="hljs-keyword">const</span> newEngine = <span class="hljs-built_in">require</span>(<span class="hljs-string">'@comunica/actor-init-sparql-rdfjs'</span>).newEngine;
-<span class="hljs-keyword">const</span> N3Store = <span class="hljs-built_in">require</span>(<span class="hljs-string">'n3'</span>).Store;
-<span class="hljs-keyword">const</span> DataFactory = <span class="hljs-built_in">require</span>(<span class="hljs-string">'n3'</span>).DataFactory;
+					<pre><code class="language-javascript"><span class="hljs-keyword">const</span> newEngine = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;@comunica/actor-init-sparql-rdfjs&#x27;</span>).newEngine;
+<span class="hljs-keyword">const</span> N3Store = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;n3&#x27;</span>).Store;
+<span class="hljs-keyword">const</span> DataFactory = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;n3&#x27;</span>).DataFactory;
 
 <span class="hljs-comment">// This can be any RDFJS source</span>
 <span class="hljs-comment">// In this example, we wrap an N3Store</span>
 <span class="hljs-keyword">const</span> store = <span class="hljs-keyword">new</span> N3Store();
 store.addQuad(DataFactory.quad(
-  DataFactory.namedNode(<span class="hljs-string">'a'</span>), DataFactory.namedNode(<span class="hljs-string">'b'</span>), DataFactory.namedNode(<span class="hljs-string">'http://dbpedia.org/resource/Belgium'</span>)));
+  DataFactory.namedNode(<span class="hljs-string">&#x27;a&#x27;</span>), DataFactory.namedNode(<span class="hljs-string">&#x27;b&#x27;</span>), DataFactory.namedNode(<span class="hljs-string">&#x27;http://dbpedia.org/resource/Belgium&#x27;</span>)));
 store.addQuad(DataFactory.quad(
-  DataFactory.namedNode(<span class="hljs-string">'a'</span>), DataFactory.namedNode(<span class="hljs-string">'b'</span>), DataFactory.namedNode(<span class="hljs-string">'http://dbpedia.org/resource/Ghent'</span>)));
+  DataFactory.namedNode(<span class="hljs-string">&#x27;a&#x27;</span>), DataFactory.namedNode(<span class="hljs-string">&#x27;b&#x27;</span>), DataFactory.namedNode(<span class="hljs-string">&#x27;http://dbpedia.org/resource/Ghent&#x27;</span>)));
 
 <span class="hljs-comment">// Create our engine, and query it.</span>
 <span class="hljs-comment">// If you intend to query multiple times, be sure to cache your engine for optimal performance.</span>
 <span class="hljs-keyword">const</span> myEngine = newEngine();
-<span class="hljs-keyword">const</span> result = <span class="hljs-keyword">await</span> myEngine.query(<span class="hljs-string">'SELECT * { ?s ?p &lt;http://dbpedia.org/resource/Belgium&gt;. ?s ?p ?o } LIMIT 100'</span>,
+<span class="hljs-keyword">const</span> result = <span class="hljs-keyword">await</span> myEngine.query(<span class="hljs-string">&#x27;SELECT * { ?s ?p &lt;http://dbpedia.org/resource/Belgium&gt;. ?s ?p ?o } LIMIT 100&#x27;</span>,
   { <span class="hljs-attr">sources</span>: [store] });
-result.bindingsStream.on(<span class="hljs-string">'data'</span>, (data) =&gt; {
+result.bindingsStream.on(<span class="hljs-string">&#x27;data&#x27;</span>, <span class="hljs-function">(<span class="hljs-params">data</span>) =&gt;</span> {
   <span class="hljs-comment">// Each data object contains a mapping from variables to RDFJS terms.</span>
-  <span class="hljs-built_in">console</span>.log(data.get(<span class="hljs-string">'?s'</span>));
-  <span class="hljs-built_in">console</span>.log(data.get(<span class="hljs-string">'?p'</span>));
-  <span class="hljs-built_in">console</span>.log(data.get(<span class="hljs-string">'?o'</span>));
+  <span class="hljs-built_in">console</span>.log(data.get(<span class="hljs-string">&#x27;?s&#x27;</span>));
+  <span class="hljs-built_in">console</span>.log(data.get(<span class="hljs-string">&#x27;?p&#x27;</span>));
+  <span class="hljs-built_in">console</span>.log(data.get(<span class="hljs-string">&#x27;?o&#x27;</span>));
 });</code></pre>
 					<a href="#optimization" id="optimization" style="color: inherit; text-decoration: none;">
 						<h2>Optimization</h2>
@@ -159,7 +159,7 @@ result.bindingsStream.on(<span class="hljs-string">'data'</span>, (data) =&gt; {
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/e4d9a98/packages/actor-init-sparql-rdfjs/index-browser.ts#L7">packages/actor-init-sparql-rdfjs/index-browser.ts:7</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/512b17f/packages/actor-init-sparql-rdfjs/index-browser.ts#L7">packages/actor-init-sparql-rdfjs/index-browser.ts:7</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -182,7 +182,7 @@ result.bindingsStream.on(<span class="hljs-string">'data'</span>, (data) =&gt; {
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/e4d9a98/packages/actor-init-sparql-rdfjs/index.ts#L11">packages/actor-init-sparql-rdfjs/index.ts:11</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/512b17f/packages/actor-init-sparql-rdfjs/index.ts#L11">packages/actor-init-sparql-rdfjs/index.ts:11</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -269,6 +269,5 @@ result.bindingsStream.on(<span class="hljs-string">'data'</span>, (data) =&gt; {
 </div>
 <div class="overlay"></div>
 <script src="../assets/js/main.js"></script>
-<script>if (location.protocol == 'file:') document.write('<script src="../assets/js/search.js"><' + '/script>');</script>
 </body>
 </html>
