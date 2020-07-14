@@ -1,29 +1,27 @@
-import {ActorAbstractPath} from "@comunica/actor-abstract-path";
+import { ActorAbstractPath } from '@comunica/actor-abstract-path';
 import {
   ActorQueryOperation,
   Bindings, IActorQueryOperationOutput, IActorQueryOperationOutputBindings,
   IActorQueryOperationTypedMediatedArgs,
-} from "@comunica/bus-query-operation";
-import {ActorRdfJoin, IActionRdfJoin} from "@comunica/bus-rdf-join";
-import {ActionContext, Mediator} from "@comunica/core";
-import {IMediatorTypeIterations} from "@comunica/mediatortype-iterations";
-import {termToString} from "rdf-string";
-import {Algebra} from "sparqlalgebrajs";
+} from '@comunica/bus-query-operation';
+import { ActorRdfJoin, IActionRdfJoin } from '@comunica/bus-rdf-join';
+import { ActionContext, Mediator } from '@comunica/core';
+import { IMediatorTypeIterations } from '@comunica/mediatortype-iterations';
+import { termToString } from 'rdf-string';
+import { Algebra } from 'sparqlalgebrajs';
 
 /**
  * A comunica Path Seq Query Operation Actor.
  */
 export class ActorQueryOperationPathSeq extends ActorAbstractPath {
-
   public readonly mediatorJoin: Mediator<ActorRdfJoin,
-    IActionRdfJoin, IMediatorTypeIterations, IActorQueryOperationOutput>;
+  IActionRdfJoin, IMediatorTypeIterations, IActorQueryOperationOutput>;
 
-  constructor(args: IActorQueryOperationPathSeq) {
+  public constructor(args: IActorQueryOperationPathSeq) {
     super(args, Algebra.types.SEQ);
   }
 
-  public async runOperation(path: Algebra.Path, context: ActionContext)
-    : Promise<IActorQueryOperationOutputBindings> {
+  public async runOperation(path: Algebra.Path, context: ActionContext): Promise<IActorQueryOperationOutputBindings> {
     const predicate = <Algebra.Seq> path.predicate;
     const blank = this.generateBlankNode(path);
     const blankName = termToString(blank);
@@ -35,12 +33,12 @@ export class ActorQueryOperationPathSeq extends ActorAbstractPath {
       this.mediatorQueryOperation.mediate({
         context, operation: ActorAbstractPath.FACTORY.createPath(blank, predicate.right, path.object, path.graph),
       }),
-    ])).map((op) => ActorQueryOperation.getSafeBindings(op));
+    ])).map(op => ActorQueryOperation.getSafeBindings(op));
 
     const join = ActorQueryOperation.getSafeBindings(await this.mediatorJoin.mediate({ entries: subOperations }));
-    // remove the generated blank nodes from the bindings
+    // Remove the generated blank nodes from the bindings
     const bindingsStream = join.bindingsStream.transform<Bindings>({
-      transform: (item, next, push) => {
+      transform(item, next, push) {
         push(item.delete(blankName));
         next();
       },
@@ -48,7 +46,6 @@ export class ActorQueryOperationPathSeq extends ActorAbstractPath {
 
     return { type: 'bindings', bindingsStream, variables: join.variables };
   }
-
 }
 
 export interface IActorQueryOperationPathSeq extends IActorQueryOperationTypedMediatedArgs {

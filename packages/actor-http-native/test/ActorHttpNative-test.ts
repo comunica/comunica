@@ -1,12 +1,12 @@
+/* eslint-disable unicorn/filename-case */
+import { Readable } from 'stream';
+import * as url from 'url';
+import * as zlib from 'zlib';
+import { ActorHttp } from '@comunica/bus-http';
+import { Bus } from '@comunica/core';
+import { ActorHttpNative } from '../lib/ActorHttpNative';
+import Requester from '../lib/Requester';
 
-import {ActorHttp} from "@comunica/bus-http";
-import {Bus} from "@comunica/core";
-import {Setup} from "@comunica/runner";
-import {Readable} from "stream";
-import * as url from "url";
-import * as zlib from "zlib";
-import {ActorHttpNative} from "../lib/ActorHttpNative";
-import Requester from "../lib/Requester";
 const arrayifyStream = require('arrayify-stream');
 const mockSetup = require('./__mocks__/follow-redirects').mockSetup;
 

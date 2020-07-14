@@ -1,21 +1,21 @@
-/*! @license MIT ©2013-2016 Ruben Verborgh, Ghent University - imec */
+/* eslint-disable unicorn/filename-case */
+/* ! @license MIT ©2013-2016 Ruben Verborgh, Ghent University - imec */
 /* Single-function HTTP(S) request module for browsers */
 /* Translated from https://github.com/LinkedDataFragments/Client.js/blob/master/lib/browser/Request.js */
 
-import {EventEmitter} from 'events';
-import {IncomingMessage} from "http";
+import { EventEmitter } from 'events';
+import { IncomingMessage } from 'http';
+import { Readable } from 'stream';
 import * as parseLink from 'parse-link-header';
-import {Readable} from "stream";
 
 // Headers we cannot send (see https://www.w3.org/TR/XMLHttpRequest/#the-setrequestheader()-method)
-const UNSAFE_REQUEST_HEADERS = {'accept-encoding': true, 'user-agent': true, 'referer': true};
+const UNSAFE_REQUEST_HEADERS = { 'accept-encoding': true, 'user-agent': true, referer: true };
 
 export default class Requester {
-
   // Resources that were already time-negotiated
   private negotiatedResources: {[id: string]: boolean};
 
-  constructor() {
+  public constructor() {
     this.negotiatedResources = {};
   }
 
@@ -42,7 +42,9 @@ export default class Requester {
 
     // Create a proxy for the XMLHttpRequest
     const requestProxy = new EventEmitter();
-    (<any> requestProxy).abort = () => { request.abort(); };
+    (<any> requestProxy).abort = () => {
+      request.abort();
+    };
 
     // Handle the arrival of a response
     request.onload = () => {
@@ -57,7 +59,7 @@ export default class Requester {
       response.headers = {};
       const resHeaders = response.headers;
       const rawHeaders = request.getAllResponseHeaders() || '';
-      const headerMatcher = /^([^:\n\r]+):[ \t]*([^\r\n]*)$/mg;
+      const headerMatcher = /^([^\n\r:]+):[\t ]*([^\n\r]*)$/gmu;
       let match = headerMatcher.exec(rawHeaders);
       while (match) {
         resHeaders[match[1].toLowerCase()] = match[2];
@@ -70,10 +72,10 @@ export default class Requester {
       // If the resource was time-negotiated, store its queryless URI
       // to enable the PERFORMANCE HACK explained above
       if (reqHeaders['accept-datetime'] && resHeaders['memento-datetime']) {
-        const resource = this.removeQuery(resHeaders['content-location'] || settings.url);
+        const resource = this.removeQuery(resHeaders['content-location'] ?? settings.url);
         if (!this.negotiatedResources[resource]) {
           // Ensure the resource is not a timegate
-          const links = resHeaders.link && parseLink(<string> resHeaders.link) || undefined;
+          const links = (resHeaders.link && parseLink(<string> resHeaders.link)) ?? undefined;
           const timegate = this.removeQuery(links && links.timegate && links.timegate.url);
           if (resource !== timegate) {
             this.negotiatedResources[resource] = true;
@@ -83,10 +85,10 @@ export default class Requester {
     };
     // Report errors and timeouts
     request.onerror = () => {
-      requestProxy.emit('error', new Error('Error requesting ' + settings.url));
+      requestProxy.emit('error', new Error(`Error requesting ${settings.url}`));
     };
     request.ontimeout = () => {
-      requestProxy.emit('error', new Error('Timeout requesting ' + settings.url));
+      requestProxy.emit('error', new Error(`Timeout requesting ${settings.url}`));
     };
 
     // Execute the request
@@ -96,6 +98,6 @@ export default class Requester {
 
   // Removes the query string from a URL
   private removeQuery(url?: string): string {
-    return url ? url.replace(/\?.*$/, '') : '';
+    return url ? url.replace(/\?.*$/u, '') : '';
   }
 }

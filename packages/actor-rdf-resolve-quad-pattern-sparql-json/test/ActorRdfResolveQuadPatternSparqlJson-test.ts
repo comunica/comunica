@@ -10,7 +10,7 @@ const streamifyString = require('streamify-string');
 
 const quad = require('rdf-quad');
 
-// tslint:disable:object-literal-sort-keys
+
 
 describe('ActorRdfResolveQuadPatternSparqlJson', () => {
   let bus: any;
@@ -104,7 +104,7 @@ describe('ActorRdfResolveQuadPatternSparqlJson', () => {
         { type: 'sparql', value: 'http://ex' } });
     const mediatorHttp: any = {
       mediate: (action: any) => {
-        // tslint:disable: no-trailing-whitespace
+
         return {
           body: action.input.indexOf('COUNT') > 0 ?
             streamifyString(`{
@@ -137,7 +137,7 @@ describe('ActorRdfResolveQuadPatternSparqlJson', () => {
 }`),
           ok: true,
         };
-        // tslint:enable: no-trailing-whitespace
+
       },
     };
 
@@ -215,7 +215,7 @@ describe('ActorRdfResolveQuadPatternSparqlJson', () => {
     it('should run and return infinity count for invalid count results', () => {
       const thisMediator: any = {
         mediate: (action: any) => {
-          // tslint:disable: no-trailing-whitespace
+
           return {
             body: action.input.indexOf('COUNT') > 0 ?
               streamifyString(`{
@@ -248,7 +248,7 @@ describe('ActorRdfResolveQuadPatternSparqlJson', () => {
 }`),
             ok: true,
           };
-          // tslint:enable: no-trailing-whitespace
+
         },
       };
       const thisActor = new ActorRdfResolveQuadPatternSparqlJson({ name: 'actor', bus, mediatorHttp: thisMediator });
@@ -260,7 +260,7 @@ describe('ActorRdfResolveQuadPatternSparqlJson', () => {
     it('should run and return infinity count for missing count results', () => {
       const thisMediator: any = {
         mediate: (action: any) => {
-          // tslint:disable: no-trailing-whitespace
+
           return {
             body: action.input.indexOf('COUNT') > 0 ?
               streamifyString(`{
@@ -293,7 +293,7 @@ describe('ActorRdfResolveQuadPatternSparqlJson', () => {
 }`),
             ok: true,
           };
-          // tslint:enable: no-trailing-whitespace
+
         },
       };
       const thisActor = new ActorRdfResolveQuadPatternSparqlJson({ name: 'actor', bus, mediatorHttp: thisMediator });
@@ -305,7 +305,7 @@ describe('ActorRdfResolveQuadPatternSparqlJson', () => {
     it('should run and error for a invalid binding result', () => {
       const thisMediator: any = {
         mediate: (action: any) => {
-          // tslint:disable: no-trailing-whitespace
+
           return {
             body: action.input.indexOf('COUNT') > 0 ?
               streamifyString(`{
@@ -338,7 +338,7 @@ describe('ActorRdfResolveQuadPatternSparqlJson', () => {
 }`),
             ok: true,
           };
-          // tslint:enable: no-trailing-whitespace
+
         },
       };
       const thisActor = new ActorRdfResolveQuadPatternSparqlJson({ name: 'actor', bus, mediatorHttp: thisMediator });
@@ -353,7 +353,7 @@ describe('ActorRdfResolveQuadPatternSparqlJson', () => {
     it('should run for a web stream', () => {
       const thisMediator: any = {
         mediate: (action: any) => {
-          // tslint:disable: no-trailing-whitespace
+
           return {
             body: require('web-streams-node').toWebReadableStream(action.input.indexOf('COUNT') > 0 ?
               streamifyString(`{
@@ -386,7 +386,7 @@ describe('ActorRdfResolveQuadPatternSparqlJson', () => {
 }`)),
             ok: true,
           };
-          // tslint:enable: no-trailing-whitespace
+
         },
       };
       const thisActor = new ActorRdfResolveQuadPatternSparqlJson({ name: 'actor', bus, mediatorHttp: thisMediator });

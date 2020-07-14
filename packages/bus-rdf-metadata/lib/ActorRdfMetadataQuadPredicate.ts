@@ -1,15 +1,14 @@
-import {IActorArgs, IActorTest} from "@comunica/core";
-import * as RDF from "rdf-js";
-import {Readable} from "stream";
-import {ActorRdfMetadata, IActionRdfMetadata, IActorRdfMetadataOutput} from "./ActorRdfMetadata";
+import { Readable } from 'stream';
+import { IActorArgs, IActorTest } from '@comunica/core';
+import * as RDF from 'rdf-js';
+import { ActorRdfMetadata, IActionRdfMetadata, IActorRdfMetadataOutput } from './ActorRdfMetadata';
 
 /**
  * An abstract implementation of {@link ActorRdfMetadata} that
  * only requires the quad test {@link ActorRdfMetadata#isMetadata} method to be overridden.
  */
 export abstract class ActorRdfMetadataQuadPredicate extends ActorRdfMetadata {
-
-  constructor(args: IActorArgs<IActionRdfMetadata, IActorTest, IActorRdfMetadataOutput>) {
+  public constructor(args: IActorArgs<IActionRdfMetadata, IActorTest, IActorRdfMetadataOutput>) {
     super(args);
   }
 
@@ -29,18 +28,21 @@ export abstract class ActorRdfMetadataQuadPredicate extends ActorRdfMetadata {
     const metadata: Readable = new Readable({ objectMode: true });
 
     // Delay attachment of listeners until the data or metadata stream is being read.
-    const attachListeners = () => {
+    // eslint-disable-next-line func-style
+    const attachListeners = (): void => {
       // Attach listeners only once
-      data._read = metadata._read = () => { return; };
+      data._read = metadata._read = () => {
+        // Do nothing
+      };
 
       // Forward errors
-      action.quads.on('error', (error) => {
+      action.quads.on('error', error => {
         data.emit('error', error);
         metadata.emit('error', error);
       });
 
       const context = {};
-      action.quads.on('data', (quad) => {
+      action.quads.on('data', quad => {
         if (this.isMetadata(quad, action.url, context)) {
           metadata.push(quad);
         } else {
@@ -53,9 +55,10 @@ export abstract class ActorRdfMetadataQuadPredicate extends ActorRdfMetadata {
         metadata.push(null);
       });
     };
-    data._read = metadata._read = () => { attachListeners(); };
+    data._read = metadata._read = () => {
+      attachListeners();
+    };
 
     return { data, metadata };
   }
-
 }

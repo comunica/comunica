@@ -1,17 +1,16 @@
-import {ActorRdfResolveHypermedia, IActionRdfResolveHypermedia,
-  IActorRdfResolveHypermediaOutput} from "@comunica/bus-rdf-resolve-hypermedia";
-import {IActorRdfResolveHypermediaTest} from "@comunica/bus-rdf-resolve-hypermedia";
-import {IActorArgs} from "@comunica/core";
-import {storeStream} from "rdf-store-stream";
-import {RdfSourceMetadata} from "./RdfSourceMetadata";
+import { ActorRdfResolveHypermedia, IActionRdfResolveHypermedia,
+  IActorRdfResolveHypermediaOutput, IActorRdfResolveHypermediaTest } from '@comunica/bus-rdf-resolve-hypermedia';
+
+import { IActorArgs } from '@comunica/core';
+import { storeStream } from 'rdf-store-stream';
+import { RdfSourceMetadata } from './RdfSourceMetadata';
 
 /**
  * A comunica None RDF Resolve Hypermedia Actor.
  */
 export class ActorRdfResolveHypermediaNone extends ActorRdfResolveHypermedia {
-
-  constructor(args: IActorArgs<IActionRdfResolveHypermedia,
-    IActorRdfResolveHypermediaTest, IActorRdfResolveHypermediaOutput>) {
+  public constructor(args: IActorArgs<IActionRdfResolveHypermedia,
+  IActorRdfResolveHypermediaTest, IActorRdfResolveHypermediaOutput>) {
     super(args, 'file');
   }
 
@@ -23,5 +22,4 @@ export class ActorRdfResolveHypermediaNone extends ActorRdfResolveHypermedia {
     this.logInfo(action.context, `Identified as file source: ${action.url}`);
     return { source: new RdfSourceMetadata(await storeStream(action.quads)) };
   }
-
 }

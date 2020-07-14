@@ -1,24 +1,23 @@
-import {ActorContextPreprocess,
-  IActorContextPreprocessOutput} from "@comunica/bus-context-preprocess";
+import { ActorContextPreprocess,
+  IActorContextPreprocessOutput } from '@comunica/bus-context-preprocess';
 import {
   DataSources, getDataSourceType, getDataSourceValue,
   IDataSource,
   KEY_CONTEXT_SOURCE,
   KEY_CONTEXT_SOURCES,
-} from "@comunica/bus-rdf-resolve-quad-pattern";
-import {IActionRdfSourceIdentifier, IActorRdfSourceIdentifierOutput} from "@comunica/bus-rdf-source-identifier";
-import {ActionContext, Actor, IAction, IActorArgs, IActorTest, Mediator} from "@comunica/core";
-import {AsyncReiterableArray} from "asyncreiterable";
+} from '@comunica/bus-rdf-resolve-quad-pattern';
+import { IActionRdfSourceIdentifier, IActorRdfSourceIdentifierOutput } from '@comunica/bus-rdf-source-identifier';
+import { ActionContext, Actor, IAction, IActorArgs, IActorTest, Mediator } from '@comunica/core';
+import { AsyncReiterableArray } from 'asyncreiterable';
 
 /**
  * A comunica RDF Source Identifier Context Preprocess Actor.
  */
 export class ActorContextPreprocessRdfSourceIdentifier extends ActorContextPreprocess {
-
   public readonly mediatorRdfSourceIdentifier: Mediator<Actor<IActionRdfSourceIdentifier, IActorTest,
-    IActorRdfSourceIdentifierOutput>, IActionRdfSourceIdentifier, IActorTest, IActorRdfSourceIdentifierOutput>;
+  IActorRdfSourceIdentifierOutput>, IActionRdfSourceIdentifier, IActorTest, IActorRdfSourceIdentifierOutput>;
 
-  constructor(args: IActorContextPreprocessRdfSourceIdentifierArgs) {
+  public constructor(args: IActorContextPreprocessRdfSourceIdentifierArgs) {
     super(args);
   }
 
@@ -30,17 +29,18 @@ export class ActorContextPreprocessRdfSourceIdentifier extends ActorContextPrepr
     if (action.context) {
       if (action.context.get(KEY_CONTEXT_SOURCE)) {
         let source = action.context.get(KEY_CONTEXT_SOURCE);
-        let context = action.context;
+        let { context } = action;
         if (source.type === 'auto') {
           context = action.context.delete(KEY_CONTEXT_SOURCE);
           source = await this.identifySource(source, context);
           context = context.set(KEY_CONTEXT_SOURCE, source);
         }
         return { context };
-      } else if (action.context.get(KEY_CONTEXT_SOURCES)) {
+      }
+      if (action.context.get(KEY_CONTEXT_SOURCES)) {
         const subContext: ActionContext = action.context.delete(KEY_CONTEXT_SOURCES);
 
-        const endSource = () => {
+        const endSource = (): void => {
           if (--remainingSources === 0) {
             newSources.push(null);
           }
@@ -55,7 +55,7 @@ export class ActorContextPreprocessRdfSourceIdentifier extends ActorContextPrepr
           remainingSources++;
           if (getDataSourceType(source) === 'auto') {
             identificationPromises.push(this.identifySource(source, subContext)
-              .then((identifiedSource) => {
+              .then(identifiedSource => {
                 newSources.push(identifiedSource);
                 endSource();
               }));
@@ -70,11 +70,11 @@ export class ActorContextPreprocessRdfSourceIdentifier extends ActorContextPrepr
 
         // If the sources are fixed, block until all sources are transformed.
         if (sources.isEnded()) {
-          await new Promise((resolve) => it.on('end', resolve));
+          await new Promise(resolve => it.on('end', resolve));
           await Promise.all(identificationPromises);
         }
 
-        return {context: action.context.set(KEY_CONTEXT_SOURCES, newSources)};
+        return { context: action.context.set(KEY_CONTEXT_SOURCES, newSources) };
       }
     }
     return action;
@@ -82,19 +82,19 @@ export class ActorContextPreprocessRdfSourceIdentifier extends ActorContextPrepr
 
   private async identifySource(source: IDataSource, context: ActionContext): Promise<IDataSource> {
     return this.mediatorRdfSourceIdentifier.mediate(
-      { sourceValue: <any> getDataSourceValue(source), context })
-      .then((sourceIdentificationResult) => {
+      { sourceValue: <any> getDataSourceValue(source), context },
+    )
+      .then(sourceIdentificationResult => {
         if (sourceIdentificationResult.sourceType) {
           (<any> source).type = sourceIdentificationResult.sourceType;
         }
         return source;
       });
   }
-
 }
 
 export interface IActorContextPreprocessRdfSourceIdentifierArgs
   extends IActorArgs<IAction, IActorTest, IActorContextPreprocessOutput> {
   mediatorRdfSourceIdentifier: Mediator<Actor<IActionRdfSourceIdentifier, IActorTest,
-    IActorRdfSourceIdentifierOutput>, IActionRdfSourceIdentifier, IActorTest, IActorRdfSourceIdentifierOutput>;
+  IActorRdfSourceIdentifierOutput>, IActionRdfSourceIdentifier, IActorTest, IActorRdfSourceIdentifierOutput>;
 }

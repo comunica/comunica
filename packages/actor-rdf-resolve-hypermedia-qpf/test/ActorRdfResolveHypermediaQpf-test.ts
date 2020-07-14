@@ -4,7 +4,7 @@ import {TransformIterator} from "asynciterator";
 import {ActorRdfResolveHypermediaQpf} from "../lib/ActorRdfResolveHypermediaQpf";
 import {RdfSourceQpf} from "../lib/RdfSourceQpf";
 
-// tslint:disable:object-literal-sort-keys
+
 
 describe('ActorRdfResolveHypermediaQpf', () => {
   let bus: any;

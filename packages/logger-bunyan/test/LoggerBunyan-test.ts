@@ -1,4 +1,4 @@
-// tslint:disable:object-literal-sort-keys
+
 jest.mock('bunyan', () => {
   return {
     createLogger: (args: any) => ({

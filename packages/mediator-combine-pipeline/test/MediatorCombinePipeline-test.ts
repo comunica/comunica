@@ -57,7 +57,7 @@ class DummyActor extends Actor<IDummyAction, IActorTest, IDummyAction> {
 
   public readonly id: number;
 
-  constructor(id: number, bus: Bus<DummyActor, IDummyAction, IActorTest, IDummyAction>) {
+  public constructor(id: number, bus: Bus<DummyActor, IDummyAction, IActorTest, IDummyAction>) {
     super({ name: 'dummy' + id, bus });
     this.id = id;
   }

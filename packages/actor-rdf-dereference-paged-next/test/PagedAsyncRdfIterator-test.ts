@@ -9,7 +9,7 @@ class Dummy extends PagedAsyncRdfIterator {
 
   public data: RDF.Quad[][];
 
-  constructor(data: RDF.Quad[][]) {
+  public constructor(data: RDF.Quad[][]) {
     super('url');
     this.data = data;
   }
@@ -22,14 +22,14 @@ class Dummy extends PagedAsyncRdfIterator {
 }
 
 // dummy class with an invalid getIterator function
-class InvalidDummy extends Dummy { // tslint:disable-line max-classes-per-file
+class InvalidDummy extends Dummy {
   protected getIterator(url: string, page: number, onNextPage: (nextPage?: string) => void) {
     return Promise.reject('');
   }
 }
 
 // dummy class where the onNextPage function call is delayed
-class DelayedDummy extends Dummy {// tslint:disable-line max-classes-per-file
+class DelayedDummy extends Dummy {
 
   public data: RDF.Quad[][];
 
@@ -91,7 +91,7 @@ describe('PagedAsyncRdfIterator', () => {
 
     it('catches invalid getIterator results', (done) => {
       const it = new InvalidDummy([[]]);
-      it.on('data', () => {}); // tslint:disable-line no-empty
+      it.on('data', () => {});
       it.on('error', done);
       // will timeout if no error is thrown
     });

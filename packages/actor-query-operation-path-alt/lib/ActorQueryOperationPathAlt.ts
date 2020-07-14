@@ -1,23 +1,21 @@
-import {ActorAbstractPath} from "@comunica/actor-abstract-path";
+import { ActorAbstractPath } from '@comunica/actor-abstract-path';
 import {
   ActorQueryOperation,
   IActorQueryOperationOutputBindings, IActorQueryOperationTypedMediatedArgs,
-} from "@comunica/bus-query-operation";
-import {ActionContext} from "@comunica/core";
-import {UnionIterator} from "asynciterator";
-import {Algebra} from "sparqlalgebrajs";
+} from '@comunica/bus-query-operation';
+import { ActionContext } from '@comunica/core';
+import { UnionIterator } from 'asynciterator';
+import { Algebra } from 'sparqlalgebrajs';
 
 /**
  * A comunica Path Alt Query Operation Actor.
  */
 export class ActorQueryOperationPathAlt extends ActorAbstractPath {
-
-  constructor(args: IActorQueryOperationTypedMediatedArgs) {
+  public constructor(args: IActorQueryOperationTypedMediatedArgs) {
     super(args, Algebra.types.ALT);
   }
 
-  public async runOperation(path: Algebra.Path, context: ActionContext)
-    : Promise<IActorQueryOperationOutputBindings> {
+  public async runOperation(path: Algebra.Path, context: ActionContext): Promise<IActorQueryOperationOutputBindings> {
     const predicate = <Algebra.Alt> path.predicate;
 
     const subOperations: IActorQueryOperationOutputBindings[] = (await Promise.all([
@@ -29,13 +27,12 @@ export class ActorQueryOperationPathAlt extends ActorAbstractPath {
         context,
         operation: ActorAbstractPath.FACTORY.createPath(path.subject, predicate.right, path.object, path.graph),
       }),
-    ])).map((op) => ActorQueryOperation.getSafeBindings(op));
+    ])).map(op => ActorQueryOperation.getSafeBindings(op));
 
-    const bindingsStream = new UnionIterator(subOperations.map((op) => op.bindingsStream), { autoStart: false });
+    const bindingsStream = new UnionIterator(subOperations.map(op => op.bindingsStream), { autoStart: false });
     const variables = require('lodash.uniq')((<string[]> []).concat
-      .apply([], subOperations.map((op) => op.variables)));
+      .apply([], subOperations.map(op => op.variables)));
 
     return { type: 'bindings', bindingsStream, variables };
   }
-
 }

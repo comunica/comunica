@@ -1,7 +1,6 @@
-import {ActorAbstractMediaTypedFixed, IActorArgsMediaTypedFixed} from "@comunica/actor-abstract-mediatyped";
-import {IActorTest} from "@comunica/core";
-import {IActionRdfParse, IActorRdfParseOutput,
-} from "./ActorRdfParse";
+import { ActorAbstractMediaTypedFixed, IActorArgsMediaTypedFixed } from '@comunica/actor-abstract-mediatyped';
+import { IActorTest } from '@comunica/core';
+import { IActionRdfParse, IActorRdfParseOutput } from './ActorRdfParse';
 
 /**
  * A base actor for listening to RDF parse events that has fixed media types.
@@ -14,16 +13,14 @@ import {IActionRdfParse, IActorRdfParseOutput,
  * @see IActionInit
  */
 export abstract class ActorRdfParseFixedMediaTypes extends ActorAbstractMediaTypedFixed<
-  IActionRdfParse, IActorTest, IActorRdfParseOutput> implements IActorRdfParseFixedMediaTypesArgs {
-
-  constructor(args: IActorRdfParseFixedMediaTypesArgs) {
+IActionRdfParse, IActorTest, IActorRdfParseOutput> implements IActorRdfParseFixedMediaTypesArgs {
+  public constructor(args: IActorRdfParseFixedMediaTypesArgs) {
     super(args);
   }
 
-  public async testHandleChecked(action: IActionRdfParse) {
+  public async testHandleChecked(action: IActionRdfParse): Promise<boolean> {
     return true;
   }
-
 }
 
 export interface IActorRdfParseFixedMediaTypesArgs

@@ -1,6 +1,6 @@
-import {Bindings} from "@comunica/bus-query-operation";
-import * as RDF from "rdf-js";
-import {termToString} from "rdf-string";
+import { Bindings } from '@comunica/bus-query-operation';
+import * as RDF from 'rdf-js';
+import { termToString } from 'rdf-string';
 
 /**
  * A simple efficient tree-based index for maintaining bindings,
@@ -10,11 +10,10 @@ import {termToString} from "rdf-string";
  * as a 'match-all' with other terms.
  */
 export class BindingsIndex {
-
   private readonly keys: string[];
   private readonly data: IDataIndex = {};
 
-  constructor(keys: string[]) {
+  public constructor(keys: string[]) {
     this.keys = keys;
   }
 
@@ -26,7 +25,7 @@ export class BindingsIndex {
    * Add the given bindings to the index.
    * @param {Bindings} bindings A bindings.
    */
-  public add(bindings: Bindings) {
+  public add(bindings: Bindings): void {
     if (this.isBindingsValid(bindings)) {
       let dataIt = this.data;
       for (const key of this.keys) {
@@ -51,11 +50,11 @@ export class BindingsIndex {
       return false;
     }
 
-    return this.containsRecursive(bindings, this.keys, [this.data]);
+    return this.containsRecursive(bindings, this.keys, [ this.data ]);
   }
 
   protected isBindingsValid(bindings: Bindings): boolean {
-    let validKeys: boolean = false;
+    let validKeys = false;
     for (const key of this.keys) {
       if (bindings.get(key)) {
         validKeys = true;
@@ -71,13 +70,14 @@ export class BindingsIndex {
     }
 
     let key: string;
-    [key, ...keys] = keys;
+    // eslint-disable-next-line prefer-const
+    [ key, ...keys ] = keys;
     for (const data of dataIndexes) {
       // If the index contained a variable, all terms will match.
       const dataKey = BindingsIndex.hashTerm(bindings.get(key));
       if (!dataKey) {
         // Iterate over all entries
-        let subDatas = Object.keys(data).map((k) => data[k]);
+        let subDatas = Object.keys(data).map(subKey => data[subKey]);
         if (subDatas.length === 0) {
           subDatas = [{}];
         }
@@ -86,7 +86,7 @@ export class BindingsIndex {
         }
       } else {
         // Check the entry for the term, and the variable term.
-        const subDatas = [data[dataKey], data['']].filter((e) => !!e);
+        const subDatas = [ data[dataKey], data[''] ].filter(Boolean);
         if (subDatas.length === 0) {
           continue;
         }
@@ -97,7 +97,6 @@ export class BindingsIndex {
     }
     return false;
   }
-
 }
 
 export interface IDataIndex {

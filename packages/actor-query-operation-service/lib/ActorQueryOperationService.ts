@@ -1,21 +1,20 @@
-import {ActorQueryOperation, ActorQueryOperationTypedMediated,
+import { ActorQueryOperation, ActorQueryOperationTypedMediated,
   Bindings, IActorQueryOperationOutputBindings,
-  IActorQueryOperationTypedMediatedArgs} from "@comunica/bus-query-operation";
-import {KEY_CONTEXT_SOURCE, KEY_CONTEXT_SOURCES} from "@comunica/bus-rdf-resolve-quad-pattern";
-import {ActionContext, IActorTest} from "@comunica/core";
-import {SingletonIterator} from "asynciterator";
-import {AsyncReiterableArray} from "asyncreiterable";
-import {Algebra} from "sparqlalgebrajs";
+  IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
+import { KEY_CONTEXT_SOURCE, KEY_CONTEXT_SOURCES } from '@comunica/bus-rdf-resolve-quad-pattern';
+import { ActionContext, IActorTest } from '@comunica/core';
+import { SingletonIterator } from 'asynciterator';
+import { AsyncReiterableArray } from 'asyncreiterable';
+import { Algebra } from 'sparqlalgebrajs';
 
 /**
  * A comunica Service Query Operation Actor.
  * It unwraps the SERVICE operation and executes it on the given source.
  */
 export class ActorQueryOperationService extends ActorQueryOperationTypedMediated<Algebra.Service> {
-
   public readonly forceSparqlEndpoint: boolean;
 
-  constructor(args: IActorQueryOperationServiceArgs) {
+  public constructor(args: IActorQueryOperationServiceArgs) {
     super(args, 'service');
   }
 
@@ -26,8 +25,8 @@ export class ActorQueryOperationService extends ActorQueryOperationTypedMediated
     return true;
   }
 
-  public async runOperation(pattern: Algebra.Service, context: ActionContext)
-    : Promise<IActorQueryOperationOutputBindings> {
+  public async runOperation(pattern: Algebra.Service, context: ActionContext):
+  Promise<IActorQueryOperationOutputBindings> {
     const endpoint: string = pattern.name.value;
 
     // Adjust our context to only have the endpoint as source
@@ -41,8 +40,9 @@ export class ActorQueryOperationService extends ActorQueryOperationTypedMediated
     let output: IActorQueryOperationOutputBindings;
     try {
       output = ActorQueryOperation.getSafeBindings(
-        await this.mediatorQueryOperation.mediate({ operation: pattern.input, context: subContext }));
-    } catch (e) {
+        await this.mediatorQueryOperation.mediate({ operation: pattern.input, context: subContext }),
+      );
+    } catch (error) {
       if (pattern.silent) {
         // Emit a single empty binding
         output = {
@@ -51,13 +51,12 @@ export class ActorQueryOperationService extends ActorQueryOperationTypedMediated
           variables: [],
         };
       } else {
-        throw e;
+        throw error;
       }
     }
 
     return output;
   }
-
 }
 
 export interface IActorQueryOperationServiceArgs extends IActorQueryOperationTypedMediatedArgs {

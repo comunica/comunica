@@ -1,16 +1,15 @@
-import {ActorHttp, IActionHttp, IActorHttpOutput} from "@comunica/bus-http";
-import {IActorArgs, IActorTest, Mediator} from "@comunica/core";
-import {IMediatorTypeTime} from "@comunica/mediatortype-time";
-import {IProxyHandler} from "./IProxyHandler";
+import { ActorHttp, IActionHttp, IActorHttpOutput } from '@comunica/bus-http';
+import { IActorArgs, IActorTest, Mediator } from '@comunica/core';
+import { IMediatorTypeTime } from '@comunica/mediatortype-time';
+import { IProxyHandler } from './IProxyHandler';
 
 /**
  * A comunica Proxy Http Actor.
  */
 export class ActorHttpProxy extends ActorHttp {
-
   public readonly mediatorHttp: Mediator<ActorHttp, IActionHttp, IActorTest, IActorHttpOutput>;
 
-  constructor(args: IActorHttpProxyArgs) {
+  public constructor(args: IActorHttpProxyArgs) {
     super(args);
   }
 
@@ -42,14 +41,13 @@ export class ActorHttpProxy extends ActorHttp {
     });
 
     // Modify the response URL
-    (<any> output).url = output.headers.get('x-final-url') || requestedUrl;
+    (<any> output).url = output.headers.get('x-final-url') ?? requestedUrl;
     return output;
   }
-
 }
 
 export interface IActorHttpProxyArgs extends IActorArgs<IActionHttp, IActorTest, IActorHttpOutput> {
   mediatorHttp: Mediator<ActorHttp, IActionHttp, IActorTest, IActorHttpOutput>;
 }
 
-export const KEY_CONTEXT_HTTPPROXYHANDLER: string = '@comunica/actor-http-proxy:httpProxyHandler';
+export const KEY_CONTEXT_HTTPPROXYHANDLER = '@comunica/actor-http-proxy:httpProxyHandler';

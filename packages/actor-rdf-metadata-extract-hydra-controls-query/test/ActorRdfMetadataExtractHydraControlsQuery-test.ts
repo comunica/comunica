@@ -10,7 +10,7 @@ import {ActorRdfMetadataExtractHydraControlsQuery} from "../lib/ActorRdfMetadata
 const stream = require('streamify-array');
 const quad = require('rdf-quad');
 
-// tslint:disable:object-literal-sort-keys
+
 const sparqlSerialer = new ActorSparqlSerializeSparqlJson(<any> { bus: new Bus({ name: 'b' }) });
 const queryEngine: any = {
   query: async () => {

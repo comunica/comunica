@@ -1,17 +1,16 @@
-import { ActorHttp, IActionHttp, IActorHttpOutput } from "@comunica/bus-http";
-import { ActionContext, IActorArgs, IActorTest, Mediator } from "@comunica/core";
-import "cross-fetch/polyfill";
+import { ActorHttp, IActionHttp, IActorHttpOutput } from '@comunica/bus-http';
+import { IActorArgs, IActorTest, Mediator } from '@comunica/core';
+import 'cross-fetch/polyfill';
 import * as parseLink from 'parse-link-header';
 
 /**
  * A comunica Memento Http Actor.
  */
 export class ActorHttpMemento extends ActorHttp {
-
   public readonly mediatorHttp: Mediator<ActorHttp,
-    IActionHttp, IActorTest, IActorHttpOutput>;
+  IActionHttp, IActorTest, IActorHttpOutput>;
 
-  constructor(args: IActorHttpMementoArgs) {
+  public constructor(args: IActorHttpMementoArgs) {
     super(args);
   }
 
@@ -20,7 +19,7 @@ export class ActorHttpMemento extends ActorHttp {
           action.context.get(KEY_CONTEXT_DATETIME) instanceof Date)) {
       throw new Error('This actor only handles request with a set valid datetime.');
     }
-    if (action.init && new Headers(action.init.headers || {}).has('accept-datetime')) {
+    if (action.init && new Headers(action.init.headers ?? {}).has('accept-datetime')) {
       throw new Error('The request already has a set datetime.');
     }
     return true;
@@ -28,8 +27,8 @@ export class ActorHttpMemento extends ActorHttp {
 
   public async run(action: IActionHttp): Promise<IActorHttpOutput> {
     // Duplicate the ActionHttp to append a datetime header to the request.
-    const init: RequestInit = action.init ? {...action.init} : {};
-    const headers: Headers = init.headers = new Headers(init.headers || {});
+    const init: RequestInit = action.init ? { ...action.init } : {};
+    const headers: Headers = init.headers = new Headers(init.headers ?? {});
 
     if (action.context && action.context.has(KEY_CONTEXT_DATETIME)) {
       headers.append('accept-datetime', action.context.get(KEY_CONTEXT_DATETIME).toUTCString());

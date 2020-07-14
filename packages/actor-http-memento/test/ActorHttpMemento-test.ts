@@ -30,7 +30,7 @@ describe('ActorHttpMemento', () => {
 
     const mediatorHttp: any = {
       mediate: (action: IActionHttp) => {
-        // tslint:disable: no-trailing-whitespace
+
         const requestUrl: string = action.input instanceof Request ?
                                   (<Request> action.input).url : <string> action.input;
         const requestHeaders: Headers = action.init ? new Headers(action.init.headers) : new Headers();

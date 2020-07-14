@@ -1,6 +1,5 @@
-import {ActorInit, IActionInit, IActorOutputInit} from "@comunica/bus-init";
-import {Actor, IAction, IActorOutput, IActorTest} from "@comunica/core";
-import {Bus, IActorReply} from "@comunica/core";
+import { ActorInit, IActionInit, IActorOutputInit } from '@comunica/bus-init';
+import { Actor, Bus, IAction, IActorOutput, IActorReply, IActorTest } from '@comunica/core';
 
 /**
  * A Runner is used to instantiate a comunica workflow.
@@ -11,11 +10,10 @@ import {Bus, IActorReply} from "@comunica/core";
  * The {@link Runner#run} function must be called to instantiate the workflow.
  */
 export class Runner implements IRunnerArgs {
-
   public readonly busInit: Bus<ActorInit, IActionInit, IActorTest, IActorOutputInit>;
   public readonly actors: Actor<IAction, IActorTest, IActorOutput>[];
 
-  constructor(args: IRunnerArgs) {
+  public constructor(args: IRunnerArgs) {
     require('lodash.assign')(this, args);
     if (!this.busInit) {
       throw new Error('A valid "busInit" argument must be provided.');
@@ -34,7 +32,7 @@ export class Runner implements IRunnerArgs {
   public async run(action: IActionInit): Promise<IActorOutputInit[]> {
     const replies: IActorReply<ActorInit, IActionInit, IActorTest, IActorOutputInit>[] =
       await Promise.all(this.busInit.publish(action));
-    return Promise.all(replies.map((reply) => reply.actor.runObservable(action)));
+    return Promise.all(replies.map(reply => reply.actor.runObservable(action)));
   }
 
   /**
@@ -45,7 +43,7 @@ export class Runner implements IRunnerArgs {
    * @return {Promise<void>} A promise that resolves when the actors have been initialized.
    */
   public initialize(): Promise<any> {
-    return Promise.all(this.actors.map((actor) => actor.initialize())).then(() => true);
+    return Promise.all(this.actors.map(actor => actor.initialize())).then(() => true);
   }
 
   /**
@@ -56,7 +54,7 @@ export class Runner implements IRunnerArgs {
    * @return {Promise<void>} A promise that resolves when the actors have been deinitialized.
    */
   public async deinitialize(): Promise<any> {
-    return Promise.all(this.actors.map((actor) => actor.deinitialize())).then(() => true);
+    return Promise.all(this.actors.map(actor => actor.deinitialize())).then(() => true);
   }
 
   /**
@@ -73,8 +71,8 @@ export class Runner implements IRunnerArgs {
    * @param actorIdentifiers A mapping of keys to actor identifiers.
    * @return A mapping of keys to actor instances.
    */
-  public collectActors(actorIdentifiers: {[key: string]: string})
-    : {[key: string]: Actor<IAction, IActorTest, IActorOutput>} {
+  public collectActors(actorIdentifiers: {[key: string]: string}):
+  {[key: string]: Actor<IAction, IActorTest, IActorOutput>} {
     const actors: {[key: string]: Actor<IAction, IActorTest, IActorOutput>} = {};
 
     // Collect all required actors
@@ -95,7 +93,6 @@ export class Runner implements IRunnerArgs {
 
     return actors;
   }
-
 }
 
 /**

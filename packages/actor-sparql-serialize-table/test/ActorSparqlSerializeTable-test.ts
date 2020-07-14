@@ -85,7 +85,7 @@ describe('ActorSparqlSerializeTable', () => {
           .rejects.toBeTruthy();
       });
 
-      // tslint:disable:no-trailing-whitespace
+
       it('should run on a bindings stream', async () => {
         return expect((await stringifyStream((<any> (await actor.run(
           {handle: <any> { type: 'bindings', bindingsStream, variables },

@@ -12,7 +12,7 @@ class Dummy extends ActorRdfJoin {
   public metadata: any;
 
   // just here to have a valid dummy class
-  constructor(metadata?: any) {
+  public constructor(metadata?: any) {
     super({name: 'name', bus: new Bus({ name: 'bus' })});
     this.metadata = metadata;
   }

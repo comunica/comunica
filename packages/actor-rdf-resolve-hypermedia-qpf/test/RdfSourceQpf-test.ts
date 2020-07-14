@@ -9,7 +9,7 @@ const arrayifyStream = require('arrayify-stream');
 const streamifyArray = require('streamify-array');
 const quad = require('rdf-quad');
 
-// tslint:disable:object-literal-sort-keys
+
 
 describe('RdfSourceQpf', () => {
   let source: RdfSourceQpf;

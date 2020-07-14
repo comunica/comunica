@@ -1,4 +1,4 @@
-import {Actor, IAction, IActorOutput, IActorReply, IActorTest, IMediatorArgs, Mediator} from "@comunica/core";
+import { Actor, IAction, IActorOutput, IActorReply, IActorTest, Mediator, IMediatorArgs } from '@comunica/core';
 
 /**
  * A mediator that can mediate over a single number field.
@@ -9,18 +9,18 @@ import {Actor, IAction, IActorOutput, IActorReply, IActorTest, IMediatorArgs, Me
  */
 export class MediatorNumber<A extends Actor<I, T, O>, I extends IAction, T extends IActorTest, O extends IActorOutput>
   extends Mediator<A, I, T, O> implements IMediatorNumberArgs<A, I, T, O> {
+  public static MIN: string = 'https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-number/' +
+    'Mediator/Number/type/TypeMin';
 
-  public static MIN: string = "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-number/" +
-    "Mediator/Number/type/TypeMin";
-  public static MAX: string = "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-number/" +
-    "Mediator/Number/type/TypeMax";
+  public static MAX: string = 'https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-number/' +
+    'Mediator/Number/type/TypeMax';
 
   public readonly field: string;
   public readonly type: string;
   public readonly ignoreErrors: boolean;
   public readonly indexPicker: (tests: T[]) => number;
 
-  constructor(args: IMediatorNumberArgs<A, I, T, O>) {
+  public constructor(args: IMediatorNumberArgs<A, I, T, O>) {
     super(args);
     this.indexPicker = this.createIndexPicker();
   }
@@ -31,19 +31,20 @@ export class MediatorNumber<A extends Actor<I, T, O>, I extends IAction, T exten
    */
   protected createIndexPicker(): (tests: (T | undefined)[]) => number {
     switch (this.type) {
-    case MediatorNumber.MIN:
-      return (tests: (T | undefined)[]) => <number> tests.reduce((a, b, i) => {
-        const val: number = this.getOrDefault((<any> b)[this.field], Infinity);
-        return val !== null && (isNaN(a[0]) || a[0] > val) ? [val, i] : a;
-      }, [ NaN, -1 ])[1];
-    case MediatorNumber.MAX:
-      return (tests: (T | undefined)[]) => <number> tests.reduce((a, b, i) => {
-        const val: number = this.getOrDefault((<any> b)[this.field], -Infinity);
-        return val !== null && (isNaN(a[0]) || a[0] < val) ? [val, i] : a;
-      }, [ NaN, -1 ])[1];
+      case MediatorNumber.MIN:
+        return (tests: (T | undefined)[]): number => tests.reduce((prev, curr, i) => {
+          const val: number = this.getOrDefault((<any> curr)[this.field], Infinity);
+          return val !== null && (isNaN(prev[0]) || prev[0] > val) ? [ val, i ] : prev;
+        }, [ NaN, -1 ])[1];
+      case MediatorNumber.MAX:
+        return (tests: (T | undefined)[]): number => tests.reduce((prev, curr, i) => {
+          const val: number = this.getOrDefault((<any> curr)[this.field], -Infinity);
+          return val !== null && (isNaN(prev[0]) || prev[0] < val) ? [ val, i ] : prev;
+        }, [ NaN, -1 ])[1];
+      default:
+        throw new Error(`No valid "type" value was given, must be either ${
+          MediatorNumber.MIN} or ${MediatorNumber.MAX}, but got: ${this.type}`);
     }
-    throw new Error('No valid "type" value was given, must be either '
-      + MediatorNumber.MIN + ' or ' + MediatorNumber.MAX + ', but got: ' + this.type);
   }
 
   protected getOrDefault(value: number | undefined, defaultValue: number): number {
@@ -56,7 +57,7 @@ export class MediatorNumber<A extends Actor<I, T, O>, I extends IAction, T exten
     if (this.ignoreErrors) {
       const dummy: any = {};
       dummy[this.field] = null;
-      promises = promises.map((p) => p.catch((error) => {
+      promises = promises.map(promise => promise.catch(error => {
         errors.push(error);
         return dummy;
       }));
@@ -64,12 +65,11 @@ export class MediatorNumber<A extends Actor<I, T, O>, I extends IAction, T exten
     const results = await Promise.all(promises);
     const index = this.indexPicker(results);
     if (index < 0) {
-      throw new Error('All actors rejected their test in ' + this.name + '\n'
-        + errors.map((e) => e.toString()).join('\n'));
+      throw new Error(`All actors rejected their test in ${this.name}\n${
+        errors.map(error => error.message).join('\n')}`);
     }
     return testResults[index].actor;
   }
-
 }
 
 export interface IMediatorNumberArgs<A extends Actor<I, T, O>, I extends IAction, T extends IActorTest,

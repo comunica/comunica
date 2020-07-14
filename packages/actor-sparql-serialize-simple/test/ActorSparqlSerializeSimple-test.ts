@@ -103,7 +103,7 @@ k2: v2
 `);
       });
 
-      // tslint:disable:no-trailing-whitespace
+
       it('should run on a quad stream', async () => {
         return expect((await stringifyStream((<any> (await actor.run(
           { handle: <any> { type: 'quads', quadStream }, handleMediaType: 'simple' }))).handle.data))).toEqual(

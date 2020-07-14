@@ -1,6 +1,6 @@
-import {BufferedIterator, BufferedIteratorOptions} from "asynciterator";
-import LRUCache = require("lru-cache");
-import * as RDF from "rdf-js";
+import { BufferedIterator, BufferedIteratorOptions } from 'asynciterator';
+import LRUCache = require('lru-cache');
+import * as RDF from 'rdf-js';
 
 /**
  * An abstract quad iterator that can iterate over consecutive RDF sources.
@@ -9,7 +9,6 @@ import * as RDF from "rdf-js";
  * For each source, its collected metadata is maintained.
  */
 export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<RDF.Quad> implements RDF.Stream {
-
   public sourcesState?: ISourcesState;
 
   protected readonly subject?: RDF.Term;
@@ -24,9 +23,9 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
   private started: boolean;
   private iterating: boolean;
 
-  constructor(cacheSize: number, subject: RDF.Term | undefined, predicate: RDF.Term | undefined,
-              object: RDF.Term | undefined, graph: RDF.Term | undefined,
-              firstUrl: string, options?: BufferedIteratorOptions) {
+  public constructor(cacheSize: number, subject: RDF.Term | undefined, predicate: RDF.Term | undefined,
+    object: RDF.Term | undefined, graph: RDF.Term | undefined,
+    firstUrl: string, options?: BufferedIteratorOptions) {
     super(options);
     this.cacheSize = cacheSize;
     this.subject = subject;
@@ -52,35 +51,36 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
    *
    * @param {ISourcesState} sourcesState An optional sources state.
    */
-  public setSourcesState(sourcesState?: ISourcesState) {
+  public setSourcesState(sourcesState?: ISourcesState): void {
     if (sourcesState) {
       this.sourcesState = sourcesState;
     } else {
-      this.sourcesState =  {
+      this.sourcesState = {
         sources: new LRUCache<string, Promise<ISourceState>>({ max: this.cacheSize }),
       };
-      this.getNextSourceCached(this.firstUrl, {}); // Ignore the response, we just want the promise to be cached
+      // Ignore the response, we just want the promise to be cached
+      this.getNextSourceCached(this.firstUrl, {});
     }
   }
 
-  public _read(count: number, done: () => void) {
+  public _read(count: number, done: () => void): void {
     if (!this.started) {
       this.started = true;
       if (!this.sourcesState) {
         this.setSourcesState();
       }
       (<Promise<ISourceState>> (<ISourcesState> this.sourcesState).sources.get(this.firstUrl))
-        .then((sourceState) => {
+        .then(sourceState => {
           this.startIterator(sourceState, true);
           done();
         })
-        .catch((e) => this.emit('error', e));
+        .catch(error => this.emit('error', error));
     } else if (!this.iterating && this.nextSource) {
       const nextSource = this.nextSource;
       this.nextSource = undefined;
       this.getNextUrls(nextSource.metadata)
         .then((nextUrls: string[]) => Promise.all(nextUrls))
-        .then(async (nextUrls: string[]) => {
+        .then(async(nextUrls: string[]) => {
           if (nextUrls.length === 0 && this.nextUrls.length === 0) {
             this.close();
           } else {
@@ -94,7 +94,7 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
           }
 
           done();
-        }).catch((e) => this.emit('error', e));
+        }).catch(error => this.emit('error', error));
     } else {
       done();
     }
@@ -102,8 +102,8 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
 
   protected abstract getNextUrls(metadata: {[id: string]: any}): Promise<string[]>;
 
-  protected abstract async getNextSource(url: string, handledDatasets: {[type: string]: boolean})
-    : Promise<ISourceState>;
+  protected abstract async getNextSource(url: string, handledDatasets: {[type: string]: boolean}):
+  Promise<ISourceState>;
 
   protected getNextSourceCached(url: string, handledDatasets: {[type: string]: boolean}): Promise<ISourceState> {
     let source = (<ISourcesState> this.sourcesState).sources.get(url);
@@ -121,16 +121,17 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
    * @param {ISourceState} startSource The start source state.
    * @param {boolean} emitMetadata If the metadata event should be emitted.
    */
-  protected startIterator(startSource: ISourceState, emitMetadata: boolean) {
+  protected startIterator(startSource: ISourceState, emitMetadata: boolean): void {
     // Asynchronously execute the quad pattern query
     this.iterating = true;
-    const it: RDF.Stream = (<RDF.Source> startSource.source).match(this.subject, this.predicate, this.object, this.graph);
+    const it: RDF.Stream = (<RDF.Source> startSource.source)
+      .match(this.subject, this.predicate, this.object, this.graph);
     let currentMetadata = startSource.metadata;
     let ended = false;
 
     // If the response emits metadata, override our metadata
     // For example, this will always be called for QPF sources (if not, then something is going wrong)
-    it.on('metadata', (metadata) => {
+    it.on('metadata', metadata => {
       if (ended) {
         (<any> this).destroy(new Error('Received metadata AFTER the source iterator was ended.'));
       }
@@ -141,7 +142,7 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
       this._push(quad);
       this.readable = true;
     });
-    it.on('error', (e: Error) => (<any> this).destroy(e));
+    it.on('error', (error: Error) => this.destroy(error));
     it.prependListener('end', () => {
       ended = true;
 

@@ -1,5 +1,5 @@
-import {Actor, IAction, IActorArgs, IActorOutput, IActorTest} from "@comunica/core";
-import * as RDF from "rdf-js";
+import { Actor, IAction, IActorArgs, IActorOutput, IActorTest } from '@comunica/core';
+import * as RDF from 'rdf-js';
 
 /**
  * A comunica actor for rdf-metadata events.
@@ -13,11 +13,9 @@ import * as RDF from "rdf-js";
  * @see IActorRdfDereferenceOutput
  */
 export abstract class ActorRdfMetadata extends Actor<IActionRdfMetadata, IActorTest, IActorRdfMetadataOutput> {
-
-  constructor(args: IActorArgs<IActionRdfMetadata, IActorTest, IActorRdfMetadataOutput>) {
+  public constructor(args: IActorArgs<IActionRdfMetadata, IActorTest, IActorRdfMetadataOutput>) {
     super(args);
   }
-
 }
 
 export interface IActionRdfMetadata extends IAction {

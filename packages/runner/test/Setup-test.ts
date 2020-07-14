@@ -1,6 +1,6 @@
 import {Loader} from "componentsjs";
 import {Readable} from "stream";
-import {Setup} from "..";
+import * as Setup from "..";
 
 describe('Setup', () => {
 
@@ -14,10 +14,6 @@ describe('Setup', () => {
           registerAvailableModuleResources: jest.fn(),
         };
       });
-    });
-
-    it('should not be a function', () => {
-      expect(Setup).toBeInstanceOf(Function);
     });
 
     it('should throw an error when constructed', () => {

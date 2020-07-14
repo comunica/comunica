@@ -1,16 +1,15 @@
-import {ActorRdfMetadataExtract, IActionRdfMetadataExtract,
-  IActorRdfMetadataExtractOutput} from "@comunica/bus-rdf-metadata-extract";
-import {IActorArgs, IActorTest} from "@comunica/core";
+import { ActorRdfMetadataExtract, IActionRdfMetadataExtract,
+  IActorRdfMetadataExtractOutput } from '@comunica/bus-rdf-metadata-extract';
+import { IActorArgs, IActorTest } from '@comunica/core';
 
 /**
  * An RDF Metadata Extract Actor that extracts total items counts from a metadata stream based on the given predicates.
  */
 export class ActorRdfMetadataExtractHydraCount extends ActorRdfMetadataExtract
   implements IActorRdfParseFixedMediaTypesArgs {
-
   public readonly predicates: string[];
 
-  constructor(args: IActorRdfParseFixedMediaTypesArgs) {
+  public constructor(args: IActorRdfParseFixedMediaTypesArgs) {
     super(args);
   }
 
@@ -24,19 +23,18 @@ export class ActorRdfMetadataExtractHydraCount extends ActorRdfMetadataExtract
       action.metadata.on('error', reject);
 
       // Immediately resolve when a value has been found.
-      action.metadata.on('data', (quad) => {
-        if (this.predicates.indexOf(quad.predicate.value) >= 0) {
+      action.metadata.on('data', quad => {
+        if (this.predicates.includes(quad.predicate.value)) {
           resolve({ metadata: { totalItems: parseInt(quad.object.value, 10) }});
         }
       });
 
       // If no value has been found, assume infinity.
       action.metadata.on('end', () => {
-        resolve({ metadata: { totalItems: Infinity } });
+        resolve({ metadata: { totalItems: Infinity }});
       });
     });
   }
-
 }
 
 export interface IActorRdfParseFixedMediaTypesArgs

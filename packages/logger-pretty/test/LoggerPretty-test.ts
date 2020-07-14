@@ -1,10 +1,10 @@
 import {LoggerPretty} from "../lib/LoggerPretty";
 
-// tslint:disable:no-console
+
 describe('LoggerPretty', () => {
 
   beforeEach(() => {
-    console.error = jest.fn();
+    process.stderr.write = jest.fn();
   });
 
   describe('a LoggerPretty instance on trace level', () => {
@@ -16,32 +16,32 @@ describe('LoggerPretty', () => {
 
     it('should log for trace', () => {
       logger.trace('bla', {});
-      return expect(console.error).toHaveBeenCalledTimes(1);
+      return expect(process.stderr.write).toHaveBeenCalledTimes(1);
     });
 
     it('should log for debug', () => {
       logger.debug('bla', {});
-      return expect(console.error).toHaveBeenCalledTimes(1);
+      return expect(process.stderr.write).toHaveBeenCalledTimes(1);
     });
 
     it('should log for info', () => {
       logger.info('bla', {});
-      return expect(console.error).toHaveBeenCalledTimes(1);
+      return expect(process.stderr.write).toHaveBeenCalledTimes(1);
     });
 
     it('should log for warn', () => {
       logger.warn('bla', {});
-      return expect(console.error).toHaveBeenCalledTimes(1);
+      return expect(process.stderr.write).toHaveBeenCalledTimes(1);
     });
 
     it('should log for error', () => {
       logger.error('bla', {});
-      return expect(console.error).toHaveBeenCalledTimes(1);
+      return expect(process.stderr.write).toHaveBeenCalledTimes(1);
     });
 
     it('should log for fatal', () => {
       logger.fatal('bla', {});
-      return expect(console.error).toHaveBeenCalledTimes(1);
+      return expect(process.stderr.write).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -54,32 +54,32 @@ describe('LoggerPretty', () => {
 
     it('should void for trace', () => {
       logger.trace('bla', {});
-      return expect(console.error).toHaveBeenCalledTimes(0);
+      return expect(process.stderr.write).toHaveBeenCalledTimes(0);
     });
 
     it('should log for debug', () => {
       logger.debug('bla', {});
-      return expect(console.error).toHaveBeenCalledTimes(1);
+      return expect(process.stderr.write).toHaveBeenCalledTimes(1);
     });
 
     it('should log for info', () => {
       logger.info('bla', {});
-      return expect(console.error).toHaveBeenCalledTimes(1);
+      return expect(process.stderr.write).toHaveBeenCalledTimes(1);
     });
 
     it('should log for warn', () => {
       logger.warn('bla', {});
-      return expect(console.error).toHaveBeenCalledTimes(1);
+      return expect(process.stderr.write).toHaveBeenCalledTimes(1);
     });
 
     it('should log for error', () => {
       logger.error('bla', {});
-      return expect(console.error).toHaveBeenCalledTimes(1);
+      return expect(process.stderr.write).toHaveBeenCalledTimes(1);
     });
 
     it('should log for fatal', () => {
       logger.fatal('bla', {});
-      return expect(console.error).toHaveBeenCalledTimes(1);
+      return expect(process.stderr.write).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -92,32 +92,32 @@ describe('LoggerPretty', () => {
 
     it('should void for trace', () => {
       logger.trace('bla', {});
-      return expect(console.error).toHaveBeenCalledTimes(0);
+      return expect(process.stderr.write).toHaveBeenCalledTimes(0);
     });
 
     it('should log for debug', () => {
       logger.debug('bla', {});
-      return expect(console.error).toHaveBeenCalledTimes(0);
+      return expect(process.stderr.write).toHaveBeenCalledTimes(0);
     });
 
     it('should log for info', () => {
       logger.info('bla', {});
-      return expect(console.error).toHaveBeenCalledTimes(1);
+      return expect(process.stderr.write).toHaveBeenCalledTimes(1);
     });
 
     it('should log for warn', () => {
       logger.warn('bla', {});
-      return expect(console.error).toHaveBeenCalledTimes(1);
+      return expect(process.stderr.write).toHaveBeenCalledTimes(1);
     });
 
     it('should log for error', () => {
       logger.error('bla', {});
-      return expect(console.error).toHaveBeenCalledTimes(1);
+      return expect(process.stderr.write).toHaveBeenCalledTimes(1);
     });
 
     it('should log for fatal', () => {
       logger.fatal('bla', {});
-      return expect(console.error).toHaveBeenCalledTimes(1);
+      return expect(process.stderr.write).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -130,32 +130,32 @@ describe('LoggerPretty', () => {
 
     it('should void for trace', () => {
       logger.trace('bla', {});
-      return expect(console.error).toHaveBeenCalledTimes(0);
+      return expect(process.stderr.write).toHaveBeenCalledTimes(0);
     });
 
     it('should log for debug', () => {
       logger.debug('bla', {});
-      return expect(console.error).toHaveBeenCalledTimes(0);
+      return expect(process.stderr.write).toHaveBeenCalledTimes(0);
     });
 
     it('should log for info', () => {
       logger.info('bla', {});
-      return expect(console.error).toHaveBeenCalledTimes(0);
+      return expect(process.stderr.write).toHaveBeenCalledTimes(0);
     });
 
     it('should log for warn', () => {
       logger.warn('bla', {});
-      return expect(console.error).toHaveBeenCalledTimes(1);
+      return expect(process.stderr.write).toHaveBeenCalledTimes(1);
     });
 
     it('should log for error', () => {
       logger.error('bla', {});
-      return expect(console.error).toHaveBeenCalledTimes(1);
+      return expect(process.stderr.write).toHaveBeenCalledTimes(1);
     });
 
     it('should log for fatal', () => {
       logger.fatal('bla', {});
-      return expect(console.error).toHaveBeenCalledTimes(1);
+      return expect(process.stderr.write).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -168,32 +168,32 @@ describe('LoggerPretty', () => {
 
     it('should void for trace', () => {
       logger.trace('bla', {});
-      return expect(console.error).toHaveBeenCalledTimes(0);
+      return expect(process.stderr.write).toHaveBeenCalledTimes(0);
     });
 
     it('should log for debug', () => {
       logger.debug('bla', {});
-      return expect(console.error).toHaveBeenCalledTimes(0);
+      return expect(process.stderr.write).toHaveBeenCalledTimes(0);
     });
 
     it('should log for info', () => {
       logger.info('bla', {});
-      return expect(console.error).toHaveBeenCalledTimes(0);
+      return expect(process.stderr.write).toHaveBeenCalledTimes(0);
     });
 
     it('should log for warn', () => {
       logger.warn('bla', {});
-      return expect(console.error).toHaveBeenCalledTimes(0);
+      return expect(process.stderr.write).toHaveBeenCalledTimes(0);
     });
 
     it('should log for error', () => {
       logger.error('bla', {});
-      return expect(console.error).toHaveBeenCalledTimes(1);
+      return expect(process.stderr.write).toHaveBeenCalledTimes(1);
     });
 
     it('should log for fatal', () => {
       logger.fatal('bla', {});
-      return expect(console.error).toHaveBeenCalledTimes(1);
+      return expect(process.stderr.write).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -206,32 +206,32 @@ describe('LoggerPretty', () => {
 
     it('should void for trace', () => {
       logger.trace('bla', {});
-      return expect(console.error).toHaveBeenCalledTimes(0);
+      return expect(process.stderr.write).toHaveBeenCalledTimes(0);
     });
 
     it('should log for debug', () => {
       logger.debug('bla', {});
-      return expect(console.error).toHaveBeenCalledTimes(0);
+      return expect(process.stderr.write).toHaveBeenCalledTimes(0);
     });
 
     it('should log for info', () => {
       logger.info('bla', {});
-      return expect(console.error).toHaveBeenCalledTimes(0);
+      return expect(process.stderr.write).toHaveBeenCalledTimes(0);
     });
 
     it('should log for warn', () => {
       logger.warn('bla', {});
-      return expect(console.error).toHaveBeenCalledTimes(0);
+      return expect(process.stderr.write).toHaveBeenCalledTimes(0);
     });
 
     it('should log for error', () => {
       logger.error('bla', {});
-      return expect(console.error).toHaveBeenCalledTimes(0);
+      return expect(process.stderr.write).toHaveBeenCalledTimes(0);
     });
 
     it('should log for fatal', () => {
       logger.fatal('bla', {});
-      return expect(console.error).toHaveBeenCalledTimes(1);
+      return expect(process.stderr.write).toHaveBeenCalledTimes(1);
     });
   });
 });

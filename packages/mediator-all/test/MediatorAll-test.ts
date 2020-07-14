@@ -128,7 +128,7 @@ class DummyActor extends Actor<IAction, IDummyTest, IDummyTest> {
   public readonly delay: number;
   public readonly reject: boolean;
 
-  constructor(id: number, delay: number, bus: Bus<DummyActor, IAction, IDummyTest, IDummyTest>, reject: boolean) {
+  public constructor(id: number, delay: number, bus: Bus<DummyActor, IAction, IDummyTest, IDummyTest>, reject: boolean) {
     super({ name: 'dummy' + id, bus });
     this.id = id;
     this.delay = delay;

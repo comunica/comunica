@@ -16,7 +16,7 @@ import {ArrayIterator} from "asynciterator";
 const stringToStream = require('streamify-string');
 const quad = require('rdf-quad');
 
-jest.mock('../index', () => {
+jest.mock('..', () => {
   return {
     newEngineDynamic,
   };
@@ -645,7 +645,7 @@ describe('HttpServiceSparqlEndpoint', () => {
         return expect(httpRequestMock._readableState.encoding).toEqual('utf8');
       });
 
-      // tslint:disable-next-line:max-line-length
+
       it('should return the empty string if the query is invalid and the content-type is application/x-www-form-urlencoded', () => {
         httpRequestMock.headers = {'content-type': "application/x-www-form-urlencoded"};
         return expect(instance.parseBody(httpRequestMock)).resolves.toBe('');

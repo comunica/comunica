@@ -107,7 +107,7 @@ describe('ActorSparqlSerializeJson', () => {
 `);
       });
 
-      // tslint:disable:max-line-length
+
       it('should run on a quad stream', async () => {
         return expect((await stringifyStream((<any> (await actor.run(
           { handle: <any> { type: 'quads', quadStream }, handleMediaType: 'application/json' }))).handle.data))).toEqual(

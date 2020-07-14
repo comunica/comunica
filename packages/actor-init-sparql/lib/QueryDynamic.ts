@@ -1,5 +1,5 @@
-import {ISetupProperties, Runner, Setup} from "@comunica/runner";
-import {ActorInitSparql} from "./ActorInitSparql";
+import { ISetupProperties, Runner, instantiateComponent } from '@comunica/runner';
+import { ActorInitSparql } from './ActorInitSparql';
 
 /**
  * Create a new dynamic comunica engine.
@@ -9,20 +9,20 @@ import {ActorInitSparql} from "./ActorInitSparql";
  * @return {Promise<ActorInitSparql>} A promise that resolves to a fully wired comunica engine.
  */
 export function newEngineDynamicArged(options: IQueryOptions, moduleRootPath: string,
-                                      defaultConfigPath: string): Promise<ActorInitSparql> {
+  defaultConfigPath: string): Promise<ActorInitSparql> {
   if (!options.mainModulePath) {
     // This makes sure that our configuration is found by Components.js
     options.mainModulePath = moduleRootPath;
   }
-  const configResourceUrl: string = options.configResourceUrl || defaultConfigPath;
-  const instanceUri: string = options.instanceUri || 'urn:comunica:sparqlinit';
+  const configResourceUrl: string = options.configResourceUrl ?? defaultConfigPath;
+  const instanceUri: string = options.instanceUri ?? 'urn:comunica:sparqlinit';
 
   // Instantiate the main runner so that all other actors are instantiated as well,
   // and find the SPARQL init actor with the given name
-  const runnerInstanceUri: string = options.runnerInstanceUri || 'urn:comunica:my';
+  const runnerInstanceUri: string = options.runnerInstanceUri ?? 'urn:comunica:my';
 
-  // this needs to happen before any promise gets generated
-  return Setup.instantiateComponent(configResourceUrl, runnerInstanceUri, options)
+  // This needs to happen before any promise gets generated
+  return instantiateComponent(configResourceUrl, runnerInstanceUri, options)
     .then((runner: Runner) => <ActorInitSparql> runner.collectActors({ engine: instanceUri }).engine);
 }
 

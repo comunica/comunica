@@ -1,7 +1,7 @@
 jest.mock('../lib/ActorInitSparql', () => {
   return {
-    // tslint:disable:only-arrow-functions
-    // tslint:disable:object-literal-shorthand
+
+
     ActorInitSparql: function() {
       return {
         mocked: true,

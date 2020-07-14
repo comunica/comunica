@@ -1,13 +1,12 @@
-import {ActorRdfMetadata, IActionRdfMetadata, IActorRdfMetadataOutput} from "@comunica/bus-rdf-metadata";
-import {IActorArgs, IActorTest} from "@comunica/core";
-import {Readable} from "stream";
+import { Readable } from 'stream';
+import { ActorRdfMetadata, IActionRdfMetadata, IActorRdfMetadataOutput } from '@comunica/bus-rdf-metadata';
+import { IActorArgs, IActorTest } from '@comunica/core';
 
 /**
  * A comunica All RDF Metadata Actor.
  */
 export class ActorRdfMetadataAll extends ActorRdfMetadata {
-
-  constructor(args: IActorArgs<IActionRdfMetadata, IActorTest, IActorRdfMetadataOutput>) {
+  public constructor(args: IActorArgs<IActionRdfMetadata, IActorTest, IActorRdfMetadataOutput>) {
     super(args);
   }
 
@@ -20,18 +19,20 @@ export class ActorRdfMetadataAll extends ActorRdfMetadata {
     const metadata: Readable = new Readable({ objectMode: true });
 
     // Delay attachment of listeners until the data or metadata stream is being read.
-    const attachListeners = () => {
+    const attachListeners = (): void => {
       // Attach listeners only once
-      data._read = metadata._read = () => { return; };
+      data._read = metadata._read = () => {
+        // Do nothing
+      };
 
       // Forward errors
-      action.quads.on('error', (error) => {
+      action.quads.on('error', error => {
         data.emit('error', error);
         metadata.emit('error', error);
       });
 
       // Forward quads to both streams
-      action.quads.on('data', (quad) => {
+      action.quads.on('data', quad => {
         data.push(quad);
         metadata.push(quad);
       });
@@ -42,9 +43,10 @@ export class ActorRdfMetadataAll extends ActorRdfMetadata {
         metadata.push(null);
       });
     };
-    data._read = metadata._read = () => { attachListeners(); };
+    data._read = metadata._read = () => {
+      attachListeners();
+    };
 
     return { data, metadata };
   }
-
 }

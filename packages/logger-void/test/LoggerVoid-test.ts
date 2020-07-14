@@ -10,27 +10,27 @@ describe('LoggerVoid', () => {
     });
 
     it('should void for trace', () => {
-      logger.trace('bla', {});
+      logger.trace();
     });
 
     it('should void for debug', () => {
-      logger.debug('bla', {});
+      logger.debug();
     });
 
     it('should void for info', () => {
-      logger.info('bla', {});
+      logger.info();
     });
 
     it('should void for warn', () => {
-      logger.warn('bla', {});
+      logger.warn();
     });
 
     it('should void for error', () => {
-      logger.error('bla', {});
+      logger.error();
     });
 
     it('should void for fatal', () => {
-      logger.fatal('bla', {});
+      logger.fatal();
     });
   });
 });

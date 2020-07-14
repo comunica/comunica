@@ -15,7 +15,7 @@ import {PagedAsyncRdfIterator} from "../lib/PagedAsyncRdfIterator";
 
 // used to access protected functions
 class Dummy extends MediatedPagedAsyncRdfIterator {
-  constructor(firstPageUrl: string,
+  public constructor(firstPageUrl: string,
               firstPageData: RDF.Stream,
               firstPageMetadata: () => Promise<{[id: string]: any}>,
               mediatorRdfDereference: Mediator<ActorRdfDereference,
@@ -133,7 +133,7 @@ describe('MediatedPagedAsyncRdfIterator', () => {
       };
 
       actor.on('error', () => { done(); });
-      actor.getIterator('URL', 1, () => {}); // tslint:disable-line no-empty
+      actor.getIterator('URL', 1, () => {});
     });
   });
 });

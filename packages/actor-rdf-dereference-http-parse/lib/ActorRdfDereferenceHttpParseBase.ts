@@ -1,10 +1,10 @@
-import {ActorHttp, IActionHttp, IActorHttpOutput} from "@comunica/bus-http";
+import { ActorHttp, IActionHttp, IActorHttpOutput } from '@comunica/bus-http';
 import {
   ActorRdfDereferenceMediaMappings,
   IActionRdfDereference,
   IActorRdfDereferenceMediaMappingsArgs,
-  IActorRdfDereferenceOutput
-} from "@comunica/bus-rdf-dereference";
+  IActorRdfDereferenceOutput,
+} from '@comunica/bus-rdf-dereference';
 import {
   IActionHandleRdfParse,
   IActionMediaTypesRdfParse,
@@ -13,10 +13,10 @@ import {
   IActorOutputMediaTypesRdfParse,
   IActorRdfParseOutput,
   IActorTestHandleRdfParse,
-  IActorTestMediaTypesRdfParse
-} from "@comunica/bus-rdf-parse";
-import {Actor, IActorTest, Mediator} from "@comunica/core";
-import {resolve as resolveRelative} from "relative-to-absolute-iri";
+  IActorTestMediaTypesRdfParse,
+} from '@comunica/bus-rdf-parse';
+import { Actor, IActorTest, Mediator } from '@comunica/core';
+import { resolve as resolveRelative } from 'relative-to-absolute-iri';
 
 /**
  * An actor that listens on the 'rdf-dereference' bus.
@@ -27,26 +27,28 @@ import {resolve as resolveRelative} from "relative-to-absolute-iri";
  */
 export abstract class ActorRdfDereferenceHttpParseBase extends ActorRdfDereferenceMediaMappings
   implements IActorRdfDereferenceHttpParseArgs {
-
-  public static readonly REGEX_MEDIATYPE: RegExp = /^[^ ;]*/;
+  public static readonly REGEX_MEDIATYPE: RegExp = /^[^ ;]*/u;
 
   public readonly mediatorHttp: Mediator<Actor<IActionHttp, IActorTest, IActorHttpOutput>,
-    IActionHttp, IActorTest, IActorHttpOutput>;
+  IActionHttp, IActorTest, IActorHttpOutput>;
+
   public readonly mediatorRdfParseMediatypes: Mediator<
-    Actor<IActionMediaTypesRdfParse, IActorTestMediaTypesRdfParse, IActorOutputMediaTypesRdfParse>,
-    IActionMediaTypesRdfParse, IActorTestMediaTypesRdfParse, IActorOutputMediaTypesRdfParse>;
+  Actor<IActionMediaTypesRdfParse, IActorTestMediaTypesRdfParse, IActorOutputMediaTypesRdfParse>,
+  IActionMediaTypesRdfParse, IActorTestMediaTypesRdfParse, IActorOutputMediaTypesRdfParse>;
+
   public readonly mediatorRdfParseHandle: Mediator<
-    Actor<IActionHandleRdfParse, IActorTestHandleRdfParse, IActorOutputHandleRdfParse>,
-    IActionHandleRdfParse, IActorTestHandleRdfParse, IActorOutputHandleRdfParse>;
+  Actor<IActionHandleRdfParse, IActorTestHandleRdfParse, IActorOutputHandleRdfParse>,
+  IActionHandleRdfParse, IActorTestHandleRdfParse, IActorOutputHandleRdfParse>;
+
   public readonly maxAcceptHeaderLength: number;
   public readonly maxAcceptHeaderLengthBrowser: number;
 
-  constructor(args: IActorRdfDereferenceHttpParseArgs) {
+  public constructor(args: IActorRdfDereferenceHttpParseArgs) {
     super(args);
   }
 
   public async test(action: IActionRdfDereference): Promise<IActorTest> {
-    if (!/^https?:/.test(action.url)) {
+    if (!/^https?:/u.test(action.url)) {
       throw new Error(`Cannot retrieve ${action.url} because it is not an HTTP(S) URL.`);
     }
     return true;
@@ -54,9 +56,9 @@ export abstract class ActorRdfDereferenceHttpParseBase extends ActorRdfDereferen
 
   public async run(action: IActionRdfDereference): Promise<IActorRdfDereferenceOutput> {
     // Define accept header based on available media types.
-    const mediaTypes: { [id: string]: number } = (await this.mediatorRdfParseMediatypes.mediate(
-      {context: action.context, mediaTypes: true}))
-      .mediaTypes;
+    const { mediaTypes } = await this.mediatorRdfParseMediatypes.mediate(
+      { context: action.context, mediaTypes: true },
+    );
     const acceptHeader: string = this.mediaTypesToAcceptString(mediaTypes, this.getMaxAcceptHeaderLength());
 
     // Resolve HTTP URL using appropriate accept header
@@ -79,10 +81,12 @@ export abstract class ActorRdfDereferenceHttpParseBase extends ActorRdfDereferen
     } catch (error) {
       return this.handleDereferenceError(action, error);
     }
-    const url = resolveRelative(httpResponse.url, action.url); // The response URL can be relative to the given URL
+    // The response URL can be relative to the given URL
+    const url = resolveRelative(httpResponse.url, action.url);
 
     // Convert output headers to a hash
     const outputHeaders: {[key: string]: string} = {};
+    // eslint-disable-next-line no-return-assign
     httpResponse.headers.forEach((value, key) => outputHeaders[key] = value);
 
     // Wrap WhatWG readable stream into a Node.js readable stream
@@ -92,13 +96,13 @@ export abstract class ActorRdfDereferenceHttpParseBase extends ActorRdfDereferen
     // Only parse if retrieval was successful
     if (httpResponse.status !== 200) {
       const error = new Error(`Could not retrieve ${action.url} (${httpResponse.status}: ${
-      httpResponse.statusText || 'unknown error'})`);
+        httpResponse.statusText || 'unknown error'})`);
       return this.handleDereferenceError(action, error);
     }
 
     // Parse the resulting response
     const match: RegExpExecArray = <RegExpExecArray> ActorRdfDereferenceHttpParseBase.REGEX_MEDIATYPE
-      .exec(httpResponse.headers.get('content-type') || '');
+      .exec(httpResponse.headers.get('content-type') ?? '');
     let mediaType: string | undefined = match[0];
     // If no media type could be found, try to determine it via the file extension
     if (!mediaType || mediaType === 'text/plain') {
@@ -113,7 +117,8 @@ export abstract class ActorRdfDereferenceHttpParseBase extends ActorRdfDereferen
     let parseOutput: IActorRdfParseOutput;
     try {
       parseOutput = (await this.mediatorRdfParseHandle.mediate(
-        {context: action.context, handle: parseAction, handleMediaType: mediaType})).handle;
+        { context: action.context, handle: parseAction, handleMediaType: mediaType },
+      )).handle;
     } catch (error) {
       return this.handleDereferenceError(action, error);
     }
@@ -125,15 +130,18 @@ export abstract class ActorRdfDereferenceHttpParseBase extends ActorRdfDereferen
   }
 
   public mediaTypesToAcceptString(mediaTypes: { [id: string]: number }, maxLength: number): string {
-    maxLength -= 10; // Ensure a ',*/*;q=0.1' suffix
+    // Ensure a ',*/*;q=0.1' suffix
+    maxLength -= 10;
 
     const parts: string[] = [];
     const sortedMediaTypes = Object.keys(mediaTypes)
-      .map((mediaType) => ({mediaType, priority: mediaTypes[mediaType]}))
-      .sort((a, b) => b.priority - a.priority);
+      .map(mediaType => ({ mediaType, priority: mediaTypes[mediaType] }))
+      .sort((left, right) => right.priority - left.priority);
     let partsLength = 0;
     for (const entry of sortedMediaTypes) {
-      const part = entry.mediaType + (entry.priority !== 1 ? ';q=' + entry.priority.toFixed(3).replace(/0*$/, '') : '');
+      const part = entry.mediaType + (entry.priority !== 1 ?
+        `;q=${entry.priority.toFixed(3).replace(/0*$/u, '')}` :
+        '');
       if (partsLength + part.length > maxLength) {
         parts.push('*/*;q=0.1');
         break;
@@ -141,26 +149,25 @@ export abstract class ActorRdfDereferenceHttpParseBase extends ActorRdfDereferen
       parts.push(part);
       partsLength += part.length;
     }
-    if (!parts.length) {
+    if (parts.length === 0) {
       return '*/*';
     }
     return parts.join(',');
   }
 
   protected abstract getMaxAcceptHeaderLength(): number;
-
 }
 
 export interface IActorRdfDereferenceHttpParseArgs extends
   IActorRdfDereferenceMediaMappingsArgs {
   mediatorHttp: Mediator<Actor<IActionHttp, IActorTest, IActorHttpOutput>,
-    IActionHttp, IActorTest, IActorHttpOutput>;
+  IActionHttp, IActorTest, IActorHttpOutput>;
   mediatorRdfParseMediatypes: Mediator<
-    Actor<IActionMediaTypesRdfParse, IActorTestMediaTypesRdfParse, IActorOutputMediaTypesRdfParse>,
-    IActionMediaTypesRdfParse, IActorTestMediaTypesRdfParse, IActorOutputMediaTypesRdfParse>;
+  Actor<IActionMediaTypesRdfParse, IActorTestMediaTypesRdfParse, IActorOutputMediaTypesRdfParse>,
+  IActionMediaTypesRdfParse, IActorTestMediaTypesRdfParse, IActorOutputMediaTypesRdfParse>;
   mediatorRdfParseHandle: Mediator<
-    Actor<IActionHandleRdfParse, IActorTestHandleRdfParse, IActorOutputHandleRdfParse>,
-    IActionHandleRdfParse, IActorTestHandleRdfParse, IActorOutputHandleRdfParse>;
+  Actor<IActionHandleRdfParse, IActorTestHandleRdfParse, IActorOutputHandleRdfParse>,
+  IActionHandleRdfParse, IActorTestHandleRdfParse, IActorOutputHandleRdfParse>;
   maxAcceptHeaderLength: number;
   maxAcceptHeaderLengthBrowser: number;
 }

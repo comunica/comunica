@@ -6,7 +6,7 @@ import {ActorRdfResolveQuadPatternFederated} from "../lib/ActorRdfResolveQuadPat
 const squad = require('rdf-quad');
 const arrayifyStream = require('arrayify-stream');
 
-// tslint:disable:object-literal-sort-keys
+
 
 describe('ActorRdfResolveQuadPatternFederated', () => {
   let bus: any;

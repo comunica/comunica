@@ -1,48 +1,49 @@
+import * as fs from 'fs';
+import { URL } from 'url';
+import { promisify } from 'util';
 import {
   ActorRdfDereferenceMediaMappings,
   IActionRdfDereference,
   IActorRdfDereferenceMediaMappingsArgs,
-  IActorRdfDereferenceOutput
-} from "@comunica/bus-rdf-dereference";
+  IActorRdfDereferenceOutput,
+} from '@comunica/bus-rdf-dereference';
 import {
   IActionHandleRdfParse,
   IActorOutputHandleRdfParse,
   IActorRdfParseOutput,
   IActorTestHandleRdfParse,
-} from "@comunica/bus-rdf-parse";
-import {Actor, IActorTest, Mediator} from "@comunica/core";
-import * as fs from "fs";
-import {URL} from "url";
-import {promisify} from "util";
+} from '@comunica/bus-rdf-parse';
+import { Actor, IActorTest, Mediator } from '@comunica/core';
 
 /**
  * A comunica File RDF Dereference Actor.
  */
 export class ActorRdfDereferenceFile extends ActorRdfDereferenceMediaMappings {
-
   public readonly mediatorRdfParse: Mediator<
-    Actor<IActionHandleRdfParse, IActorTestHandleRdfParse, IActorOutputHandleRdfParse>,
-    IActionHandleRdfParse, IActorTestHandleRdfParse, IActorOutputHandleRdfParse>;
+  Actor<IActionHandleRdfParse, IActorTestHandleRdfParse, IActorOutputHandleRdfParse>,
+  IActionHandleRdfParse, IActorTestHandleRdfParse, IActorOutputHandleRdfParse>;
 
-  constructor(args: IActorRdfDereferenceFileArgs) {
+  public constructor(args: IActorRdfDereferenceFileArgs) {
     super(args);
   }
 
   public async test(action: IActionRdfDereference): Promise<IActorTest> {
     try {
       await promisify(fs.access)(
-        action.url.startsWith('file://') ? new URL(action.url) : action.url, fs.constants.F_OK);
-    } catch (e) {
+        action.url.startsWith('file://') ? new URL(action.url) : action.url, fs.constants.F_OK,
+      );
+    } catch (error) {
       throw new Error(
-        'This actor only works on existing local files. (' + e + ')');
+        `This actor only works on existing local files. (${error})`,
+      );
     }
     return true;
   }
 
   public async run(action: IActionRdfDereference): Promise<IActorRdfDereferenceOutput> {
-    let mediaType = action.mediaType;
+    let { mediaType } = action;
 
-    // deduce media type from file extension if possible
+    // Deduce media type from file extension if possible
     if (!mediaType) {
       mediaType = this.getMediaTypeFromExtension(action.url);
     }
@@ -72,7 +73,6 @@ export class ActorRdfDereferenceFile extends ActorRdfDereferenceMediaMappings {
       url: action.url,
     };
   }
-
 }
 
 export interface IActorRdfDereferenceFileArgs extends IActorRdfDereferenceMediaMappingsArgs {
@@ -80,6 +80,6 @@ export interface IActorRdfDereferenceFileArgs extends IActorRdfDereferenceMediaM
    * Mediator used for parsing the file contents.
    */
   mediatorRdfParse: Mediator<
-    Actor<IActionHandleRdfParse, IActorTestHandleRdfParse, IActorOutputHandleRdfParse>,
-    IActionHandleRdfParse, IActorTestHandleRdfParse, IActorOutputHandleRdfParse>;
+  Actor<IActionHandleRdfParse, IActorTestHandleRdfParse, IActorOutputHandleRdfParse>,
+  IActionHandleRdfParse, IActorTestHandleRdfParse, IActorOutputHandleRdfParse>;
 }

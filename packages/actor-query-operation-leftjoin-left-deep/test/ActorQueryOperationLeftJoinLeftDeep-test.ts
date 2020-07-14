@@ -1,4 +1,4 @@
-// tslint:disable:object-literal-sort-keys
+
 import {namedNode, variable} from "@rdfjs/data-model";
 import {ArrayIterator, EmptyIterator, SingletonIterator} from "asynciterator";
 import {forEachTerms} from "rdf-terms";

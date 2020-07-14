@@ -1,23 +1,21 @@
-import {ActorAbstractPath} from "@comunica/actor-abstract-path";
+import { ActorAbstractPath } from '@comunica/actor-abstract-path';
 import {
   Bindings, IActorQueryOperationOutputBindings,
   IActorQueryOperationTypedMediatedArgs,
-} from "@comunica/bus-query-operation";
-import {ActionContext} from "@comunica/core";
-import {termToString} from "rdf-string";
-import {Algebra} from "sparqlalgebrajs";
+} from '@comunica/bus-query-operation';
+import { ActionContext } from '@comunica/core';
+import { termToString } from 'rdf-string';
+import { Algebra } from 'sparqlalgebrajs';
 
 /**
  * A comunica Path ZeroOrMore Query Operation Actor.
  */
 export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
-
-  constructor(args: IActorQueryOperationTypedMediatedArgs) {
+  public constructor(args: IActorQueryOperationTypedMediatedArgs) {
     super(args, Algebra.types.ZERO_OR_MORE_PATH);
   }
 
-  public async runOperation(path: Algebra.Path, context: ActionContext)
-    : Promise<IActorQueryOperationOutputBindings> {
+  public async runOperation(path: Algebra.Path, context: ActionContext): Promise<IActorQueryOperationOutputBindings> {
     const predicate = <Algebra.ZeroOrMorePath> path.predicate;
 
     const sVar = path.subject.termType === 'Variable';
@@ -28,25 +26,25 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
     } else if (!sVar && !oVar) {
       const bindingsStream = (await this.ALPeval(path.subject, predicate.path, context))
         .transform<Bindings>({
-          filter: (item) => item.equals(path.object),
-          transform: (item, next, push) => {
-            push(Bindings({ }));
-            next();
-          },
-        });
-      return { type: 'bindings', bindingsStream, variables: [] };
-    } else { // if (sVar || oVar)
-      const v = termToString(sVar ? path.subject : path.object);
+        filter: item => item.equals(path.object),
+        transform(item, next, push) {
+          push(Bindings({ }));
+          next();
+        },
+      });
+      return { type: 'bindings', bindingsStream, variables: []};
+    } else {
+      // If (sVar || oVar)
+      const value = termToString(sVar ? path.subject : path.object);
       const pred = sVar ? ActorAbstractPath.FACTORY.createInv(predicate.path) : predicate.path;
       const bindingsStream = (await this.ALPeval(sVar ? path.object : path.subject, pred, context))
         .transform<Bindings>({
-          transform: (item, next, push) => {
-            push(Bindings({ [v]: item }));
-            next();
-          },
-        });
-      return { type: 'bindings', bindingsStream, variables: [v] };
+        transform(item, next, push) {
+          push(Bindings({ [value]: item }));
+          next();
+        },
+      });
+      return { type: 'bindings', bindingsStream, variables: [ value ]};
     }
   }
-
 }

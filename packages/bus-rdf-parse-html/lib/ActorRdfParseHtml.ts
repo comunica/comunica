@@ -1,5 +1,5 @@
-import {Actor, IAction, IActorArgs, IActorOutput, IActorTest} from "@comunica/core";
-import * as RDF from "rdf-js";
+import { Actor, IAction, IActorArgs, IActorOutput, IActorTest } from '@comunica/core';
+import * as RDF from 'rdf-js';
 
 /**
  * A comunica actor for rdf-parse-html events.
@@ -13,11 +13,9 @@ import * as RDF from "rdf-js";
  * @see IActorRdfParseHtmlOutput
  */
 export abstract class ActorRdfParseHtml extends Actor<IActionRdfParseHtml, IActorTest, IActorRdfParseHtmlOutput> {
-
-  constructor(args: IActorArgs<IActionRdfParseHtml, IActorTest, IActorRdfParseHtmlOutput>) {
+  public constructor(args: IActorArgs<IActionRdfParseHtml, IActorTest, IActorRdfParseHtmlOutput>) {
     super(args);
   }
-
 }
 
 export interface IActionRdfParseHtml extends IAction {

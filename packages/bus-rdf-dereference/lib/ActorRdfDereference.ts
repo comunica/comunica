@@ -1,6 +1,8 @@
-import {Actor, IAction, IActorArgs, IActorOutput, IActorTest} from "@comunica/core";
-import * as RDF from "rdf-js";
-import {PassThrough, Readable} from "stream";
+import { PassThrough, Readable } from 'stream';
+import { Actor, IAction, IActorArgs, IActorOutput, IActorTest } from '@comunica/core';
+import * as RDF from 'rdf-js';
+
+export const KEY_CONTEXT_LENIENT = '@comunica/actor-init-sparql:lenient';
 
 /**
  * A base actor for dereferencing URLs to quad streams.
@@ -14,8 +16,7 @@ import {PassThrough, Readable} from "stream";
  * @see IActorRdfDereferenceOutput
  */
 export abstract class ActorRdfDereference extends Actor<IActionRdfDereference, IActorTest, IActorRdfDereferenceOutput> {
-
-  constructor(args: IActorArgs<IActionRdfDereference, IActorTest, IActorRdfDereferenceOutput>) {
+  public constructor(args: IActorArgs<IActionRdfDereference, IActorTest, IActorRdfDereferenceOutput>) {
     super(args);
   }
 
@@ -37,7 +38,7 @@ export abstract class ActorRdfDereference extends Actor<IActionRdfDereference, I
   protected handleDereferenceStreamErrors(action: IActionRdfDereference, quads: RDF.Stream): RDF.Stream {
     // If we don't emit hard errors, make parsing error events log instead, and silence them downstream.
     if (!this.isHardError(action)) {
-      quads.on('error', (error) => {
+      quads.on('error', error => {
         this.logError(action.context, error.message, { url: action.url });
         // Make sure the errored stream is ended.
         (<any> quads).push(null);
@@ -54,8 +55,8 @@ export abstract class ActorRdfDereference extends Actor<IActionRdfDereference, I
    * @param {Error} error An error that has occured.
    * @return {Promise<IActorRdfDereferenceOutput>} A promise that rejects or resolves to an empty output.
    */
-  protected async handleDereferenceError(action: IActionRdfDereference, error: Error)
-    : Promise<IActorRdfDereferenceOutput> {
+  protected async handleDereferenceError(action: IActionRdfDereference, error: Error):
+  Promise<IActorRdfDereferenceOutput> {
     if (this.isHardError(action)) {
       throw error;
     } else {
@@ -65,7 +66,6 @@ export abstract class ActorRdfDereference extends Actor<IActionRdfDereference, I
       return { url: action.url, quads };
     }
   }
-
 }
 
 export interface IActionRdfDereference extends IAction {
@@ -112,5 +112,3 @@ export interface IActorRdfDereferenceOutput extends IActorOutput {
    */
   headers?: {[key: string]: string};
 }
-
-export const KEY_CONTEXT_LENIENT: string = '@comunica/actor-init-sparql:lenient';

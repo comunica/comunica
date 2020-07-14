@@ -29,6 +29,7 @@
     "index.js"
   ],
   "dependencies": {
+    "@comunica/bus-rdf-resolve-quad-pattern": "^1.13.0",
     "arrayify-stream": "^1.0.0",
     "asynciterator": "^3.0.0",
     "asyncreiterable": "^2.0.0"
@@ -58,7 +59,6 @@
   "scripts": {
     "test": "node \"../../node_modules/jest/bin/jest.js\" ${1}",
     "test-watch": "node \"../../node_modules/jest/bin/jest.js\" ${1} --watch",
-    "lint": "node \"../../node_modules/tslint/bin/tslint\" lib/**/*.ts test/**/*.ts --exclude '**/*.d.ts'",
     "build": "node \"../../node_modules/typescript/bin/tsc\"",
     "validate": "npm ls"
   }

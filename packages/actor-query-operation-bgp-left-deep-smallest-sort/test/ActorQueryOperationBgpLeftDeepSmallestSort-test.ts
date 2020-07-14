@@ -412,7 +412,7 @@ describe('ActorQueryOperationBgpLeftDeepSmallestSort', () => {
               'object': namedNode('b'),
               'predicate': namedNode('c'),
               'subject': namedNode('d'),
-              '?a': namedNode('A'), // tslint:disable-line:object-literal-sort-keys
+              '?a': namedNode('A'),
             }),
           ]);
       });
@@ -426,21 +426,21 @@ describe('ActorQueryOperationBgpLeftDeepSmallestSort', () => {
             'object': namedNode('b'),
             'predicate': blankNode('c'),
             'subject': blankNode('d'),
-            '?a': namedNode('A'), // tslint:disable-line:object-literal-sort-keys
+            '?a': namedNode('A'),
           }),
           Bindings({
             'graph': namedNode('a'),
             'object': namedNode('B'),
             'predicate': blankNode('c'),
             'subject': blankNode('d'),
-            '?b': namedNode('B'), // tslint:disable-line:object-literal-sort-keys
+            '?b': namedNode('B'),
           }),
           Bindings({
             'graph': namedNode('a'),
             'object': namedNode('b'),
             'predicate': blankNode('c'),
             'subject': blankNode('d'),
-            '_:c': namedNode('C'), // tslint:disable-line:object-literal-sort-keys
+            '_:c': namedNode('C'),
           }),
         ]);
       });

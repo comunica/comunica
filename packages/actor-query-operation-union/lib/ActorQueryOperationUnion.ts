@@ -3,18 +3,17 @@ import {
   ActorQueryOperationTypedMediated,
   BindingsStream,
   IActorQueryOperationOutputBindings,
-  IActorQueryOperationTypedMediatedArgs
-} from "@comunica/bus-query-operation";
-import {ActionContext, IActorTest} from "@comunica/core";
-import {UnionIterator} from "asynciterator";
-import {Algebra} from "sparqlalgebrajs";
+  IActorQueryOperationTypedMediatedArgs,
+} from '@comunica/bus-query-operation';
+import { ActionContext, IActorTest } from '@comunica/core';
+import { UnionIterator } from 'asynciterator';
+import { Algebra } from 'sparqlalgebrajs';
 
 /**
  * A comunica Union Query Operation Actor.
  */
 export class ActorQueryOperationUnion extends ActorQueryOperationTypedMediated<Algebra.Union> {
-
-  constructor(args: IActorQueryOperationTypedMediatedArgs) {
+  public constructor(args: IActorQueryOperationTypedMediatedArgs) {
     super(args, 'union');
   }
 
@@ -35,7 +34,7 @@ export class ActorQueryOperationUnion extends ActorQueryOperationTypedMediated<A
    * @return {{[p: string]: any}} Union of the metadata.
    */
   public static unionMetadata(metadatas: {[id: string]: any}[]): {[id: string]: any} {
-    let totalItems: number = 0;
+    let totalItems = 0;
     for (const metadata of metadatas) {
       if (metadata.totalItems && isFinite(metadata.totalItems)) {
         totalItems += metadata.totalItems;
@@ -51,24 +50,26 @@ export class ActorQueryOperationUnion extends ActorQueryOperationTypedMediated<A
     return true;
   }
 
-  public async runOperation(pattern: Algebra.Union, context: ActionContext)
-  : Promise<IActorQueryOperationOutputBindings> {
+  public async runOperation(pattern: Algebra.Union, context: ActionContext):
+  Promise<IActorQueryOperationOutputBindings> {
     const outputs: IActorQueryOperationOutputBindings[] = (await Promise.all([
       this.mediatorQueryOperation.mediate({ operation: pattern.left, context }),
       this.mediatorQueryOperation.mediate({ operation: pattern.right, context }),
     ])).map(ActorQueryOperation.getSafeBindings);
 
     const bindingsStream: BindingsStream = new UnionIterator(outputs.map(
-      (output: IActorQueryOperationOutputBindings) => output.bindingsStream), { autoStart: false });
-    const metadata: (() => Promise<{[id: string]: any}>) | undefined = outputs[0].metadata && outputs[1].metadata ? () =>
+      (output: IActorQueryOperationOutputBindings) => output.bindingsStream,
+    ), { autoStart: false });
+    const metadata: (() => Promise<{[id: string]: any}>) | undefined = outputs[0].metadata && outputs[1].metadata ?
+      () =>
         Promise.all([
-          (<() => Promise<{[id: string]: any}>> outputs[0].metadata)(),
-          (<() => Promise<{[id: string]: any}>> outputs[1].metadata)()
-        ]).then(ActorQueryOperationUnion.unionMetadata)
-      : undefined;
+          (<() => Promise<{ [id: string]: any }>>outputs[0].metadata)(),
+          (<() => Promise<{ [id: string]: any }>>outputs[1].metadata)(),
+        ]).then(ActorQueryOperationUnion.unionMetadata) :
+      undefined;
     const variables: string[] = ActorQueryOperationUnion.unionVariables(
-      outputs.map((output: IActorQueryOperationOutputBindings) => output.variables));
+      outputs.map((output: IActorQueryOperationOutputBindings) => output.variables),
+    );
     return { type: 'bindings', bindingsStream, metadata, variables };
   }
-
 }

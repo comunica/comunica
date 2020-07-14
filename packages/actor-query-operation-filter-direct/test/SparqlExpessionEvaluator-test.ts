@@ -1,7 +1,7 @@
 import {Bindings} from "@comunica/bus-query-operation";
 import {blankNode, literal, namedNode, variable} from "@rdfjs/data-model";
 import {Algebra} from "sparqlalgebrajs";
-import {SparqlExpressionEvaluator} from "../lib/SparqlExpressionEvaluator";
+import * as SparqlExpressionEvaluator from "../lib/SparqlExpressionEvaluator";
 
 function termExpression(term: any): Algebra.TermExpression {
   return { type: 'expression', expressionType: 'term', term };

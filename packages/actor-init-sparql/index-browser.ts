@@ -1,7 +1,9 @@
+/* eslint-disable unicorn/filename-case */
 export * from './lib/ActorInitSparql-browser';
-export {bindingsStreamToGraphQl} from "@comunica/actor-sparql-serialize-tree";
+export { bindingsStreamToGraphQl } from '@comunica/actor-sparql-serialize-tree';
 
-import {ActorInitSparql} from './lib/ActorInitSparql-browser';
+// eslint-disable-next-line no-duplicate-imports
+import { ActorInitSparql } from './lib/ActorInitSparql-browser';
 
 /**
  * Create a new comunica engine from the default config.

@@ -1,4 +1,4 @@
-import {Actor, IAction, IActorArgs, IActorOutput, IActorTest} from "@comunica/core";
+import { Actor, IAction, IActorArgs, IActorOutput, IActorTest } from '@comunica/core';
 
 /**
  * A comunica actor for rdf-resolve-hypermedia-links events.
@@ -13,11 +13,10 @@ import {Actor, IAction, IActorArgs, IActorOutput, IActorTest} from "@comunica/co
  */
 export abstract class ActorRdfResolveHypermediaLinks
   extends Actor<IActionRdfResolveHypermediaLinks, IActorTest, IActorRdfResolveHypermediaLinksOutput> {
-
-  constructor(args: IActorArgs<IActionRdfResolveHypermediaLinks, IActorTest, IActorRdfResolveHypermediaLinksOutput>) {
+  public constructor(args:
+  IActorArgs<IActionRdfResolveHypermediaLinks, IActorTest, IActorRdfResolveHypermediaLinksOutput>) {
     super(args);
   }
-
 }
 
 export interface IActionRdfResolveHypermediaLinks extends IAction {

@@ -9,7 +9,7 @@ const arrayifyStream = require('arrayify-stream');
 const quad = require('rdf-quad');
 const streamifyString = require('streamify-string');
 
-// tslint:disable:object-literal-sort-keys
+
 
 describe('RdfSourceSparql', () => {
   const context = ActionContext({});
@@ -74,7 +74,7 @@ describe('RdfSourceSparql', () => {
     it('should return data for a web stream', async () => {
       const thisMediator: any = {
         mediate: (action: any) => {
-          // tslint:disable: no-trailing-whitespace
+
           return {
             body: require('web-streams-node').toWebReadableStream(action.input.indexOf('COUNT') > 0 ?
               streamifyString(`{
@@ -107,7 +107,7 @@ describe('RdfSourceSparql', () => {
 }`)),
             ok: true,
           };
-          // tslint:enable: no-trailing-whitespace
+
         },
       };
       source = new RdfSourceSparql('http://example.org/sparql', context, thisMediator);
@@ -146,7 +146,7 @@ describe('RdfSourceSparql', () => {
     it('should emit an error for invalid binding results', async () => {
       const thisMediator: any = {
         mediate: (action: any) => {
-          // tslint:disable: no-trailing-whitespace
+
           return {
             body: action.input.indexOf('COUNT') > 0 ?
               streamifyString(`{
@@ -179,7 +179,7 @@ describe('RdfSourceSparql', () => {
 }`),
             ok: true,
           };
-          // tslint:enable: no-trailing-whitespace
+
         },
       };
       source = new RdfSourceSparql('http://example.org/sparql', context, thisMediator);
@@ -206,7 +206,7 @@ describe('RdfSourceSparql', () => {
     it('should emit metadata with infinity count for invalid count results', async () => {
       const thisMediator: any = {
         mediate: (action: any) => {
-          // tslint:disable: no-trailing-whitespace
+
           return {
             body: action.input.indexOf('COUNT') > 0 ?
               streamifyString(`{
@@ -239,7 +239,7 @@ describe('RdfSourceSparql', () => {
 }`),
             ok: true,
           };
-          // tslint:enable: no-trailing-whitespace
+
         },
       };
       source = new RdfSourceSparql('http://example.org/sparql', context, thisMediator);
@@ -253,7 +253,7 @@ describe('RdfSourceSparql', () => {
     it('should emit metadata with infinity count for missing count results', async () => {
       const thisMediator: any = {
         mediate: (action: any) => {
-          // tslint:disable: no-trailing-whitespace
+
           return {
             body: action.input.indexOf('COUNT') > 0 ?
               streamifyString(`{
@@ -286,7 +286,7 @@ describe('RdfSourceSparql', () => {
 }`),
             ok: true,
           };
-          // tslint:enable: no-trailing-whitespace
+
         },
       };
       source = new RdfSourceSparql('http://example.org/sparql', context, thisMediator);

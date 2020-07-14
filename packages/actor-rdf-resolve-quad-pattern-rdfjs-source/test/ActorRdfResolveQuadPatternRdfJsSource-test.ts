@@ -5,7 +5,7 @@ import {ActorRdfResolveQuadPatternRdfJsSource} from "../lib/ActorRdfResolveQuadP
 import {ArrayIterator} from "asynciterator";
 import {namedNode, variable} from "@rdfjs/data-model";
 
-// tslint:disable:object-literal-sort-keys
+
 
 describe('ActorRdfResolveQuadPatternRdfJsSource', () => {
   let bus: any;

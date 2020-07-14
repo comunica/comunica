@@ -1,8 +1,8 @@
-import {Bindings, BindingsStream} from "@comunica/bus-query-operation";
-import {blankNode} from "@rdfjs/data-model";
-import {ArrayIterator, AsyncIterator, MultiTransformIterator} from "asynciterator";
-import * as RDF from "rdf-js";
-import {mapTerms} from "rdf-terms";
+import { Bindings, BindingsStream } from '@comunica/bus-query-operation';
+import { blankNode } from '@rdfjs/data-model';
+import { ArrayIterator, AsyncIterator, MultiTransformIterator } from 'asynciterator';
+import * as RDF from 'rdf-js';
+import { mapTerms } from 'rdf-terms';
 
 /**
  * Transforms a bindings stream into a quad stream given a quad template.
@@ -11,11 +11,10 @@ import {mapTerms} from "rdf-terms";
  * https://www.w3.org/TR/sparql11-query/#rConstructTriples
  */
 export class BindingsToQuadsIterator extends MultiTransformIterator<Bindings, RDF.Quad> {
-
   protected template: RDF.BaseQuad[];
   protected blankNodeCounter: number;
 
-  constructor(template: RDF.BaseQuad[], bindingsStream: BindingsStream) {
+  public constructor(template: RDF.BaseQuad[], bindingsStream: BindingsStream) {
     super(bindingsStream, { autoStart: false });
     this.template = template;
     this.blankNodeCounter = 0;
@@ -36,7 +35,7 @@ export class BindingsToQuadsIterator extends MultiTransformIterator<Bindings, RD
    */
   public static bindTerm(bindings: Bindings, term: RDF.Term): RDF.Term {
     if (term.termType === 'Variable') {
-      return bindings.get('?' + term.value);
+      return bindings.get(`?${term.value}`);
     }
     return term;
   }
@@ -51,7 +50,7 @@ export class BindingsToQuadsIterator extends MultiTransformIterator<Bindings, RD
    */
   public static bindQuad(bindings: Bindings, pattern: RDF.BaseQuad): RDF.Quad | undefined {
     try {
-      return mapTerms(<RDF.Quad> pattern, (term) => {
+      return mapTerms(<RDF.Quad> pattern, term => {
         const boundTerm: RDF.Term = BindingsToQuadsIterator.bindTerm(bindings, term);
         if (!boundTerm) {
           throw new Error('Unbound term');
@@ -71,9 +70,9 @@ export class BindingsToQuadsIterator extends MultiTransformIterator<Bindings, RD
    * @return {RDF.Term}                  A term.
    */
   public static localizeBlankNode(blankNodeCounter: number,
-                                  term: RDF.Term): RDF.Term {
+    term: RDF.Term): RDF.Term {
     if (term.termType === 'BlankNode') {
-      return blankNode(term.value + blankNodeCounter);
+      return blankNode(`${term.value}${blankNodeCounter}`);
     }
     return term;
   }
@@ -85,8 +84,8 @@ export class BindingsToQuadsIterator extends MultiTransformIterator<Bindings, RD
    * @return {RDF.BaseQuad}                 A quad.
    */
   public static localizeQuad(blankNodeCounter: number,
-                             pattern: RDF.Quad): RDF.Quad {
-    return mapTerms(pattern, (term) => BindingsToQuadsIterator.localizeBlankNode(blankNodeCounter, term));
+    pattern: RDF.Quad): RDF.Quad {
+    return mapTerms(pattern, term => BindingsToQuadsIterator.localizeBlankNode(blankNodeCounter, term));
   }
 
   /**
@@ -97,19 +96,19 @@ export class BindingsToQuadsIterator extends MultiTransformIterator<Bindings, RD
    * @return {RDF.Quad[]}                    A list of quads.
    */
   public static bindTemplate(bindings: Bindings, template: RDF.BaseQuad[],
-                             blankNodeCounter: number): RDF.Quad[] {
+    blankNodeCounter: number): RDF.Quad[] {
     return template
       // Bind variables to bound terms
-      .map(BindingsToQuadsIterator.bindQuad.bind(null, bindings))
+      .map(x => BindingsToQuadsIterator.bindQuad.bind(null, bindings)(x))
       // Remove quads that contained unbound terms, i.e., variables.
-      .filter((q) => !!q)
+      .filter(Boolean)
       // Make sure the multiple instantiations of the template contain different blank nodes, as required by SPARQL 1.1.
       .map(BindingsToQuadsIterator.localizeQuad.bind(null, blankNodeCounter));
   }
 
   public _createTransformer(bindings: Bindings): AsyncIterator<RDF.Quad> {
     return new ArrayIterator(BindingsToQuadsIterator.bindTemplate(
-      bindings, this.template, this.blankNodeCounter++));
+      bindings, this.template, this.blankNodeCounter++,
+    ));
   }
-
 }

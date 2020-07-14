@@ -1,4 +1,4 @@
-// tslint:disable:object-literal-sort-keys
+
 import { literal, namedNode, variable } from "@rdfjs/data-model";
 import { ArrayIterator } from "asynciterator";
 import { Algebra } from 'sparqlalgebrajs';

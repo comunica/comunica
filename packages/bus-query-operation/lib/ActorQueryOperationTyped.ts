@@ -1,17 +1,21 @@
-import {ActionContext, IActorArgs, IActorTest} from "@comunica/core";
-import {Algebra} from "sparqlalgebrajs";
-import {
-  ActorQueryOperation, IActionQueryOperation, IActorQueryOperationOutput,
-  IActorQueryOperationOutputStream } from "./ActorQueryOperation";
+import { ActionContext, IActorArgs, IActorTest } from '@comunica/core';
+import { Algebra } from 'sparqlalgebrajs';
+import { ActorQueryOperation, IActionQueryOperation, IActorQueryOperationOutput,
+  IActorQueryOperationOutputStream } from './ActorQueryOperation';
+
+/**
+ * @type {string} Context entry for the current query operation.
+ */
+export const KEY_CONTEXT_QUERYOPERATION = '@comunica/bus-query-operation:operation';
 
 /**
  * A base implementation for query operation actors for a specific operation type.
  */
 export abstract class ActorQueryOperationTyped<O extends Algebra.Operation> extends ActorQueryOperation {
-
   public readonly operationName: string;
 
-  constructor(args: IActorArgs<IActionQueryOperation, IActorTest, IActorQueryOperationOutput>, operationName: string) {
+  protected constructor(args: IActorArgs<IActionQueryOperation, IActorTest, IActorQueryOperationOutput>,
+    operationName: string) {
     super(<any> { ...args, operationName });
     if (!this.operationName) {
       throw new Error('A valid "operationName" argument must be provided.');
@@ -23,8 +27,8 @@ export abstract class ActorQueryOperationTyped<O extends Algebra.Operation> exte
       throw new Error('Missing field \'operation\' in a query operation action.');
     }
     if (action.operation.type !== this.operationName) {
-      throw new Error('Actor ' + this.name + ' only supports ' + this.operationName + ' operations, but got '
-        + action.operation.type);
+      throw new Error(`Actor ${this.name} only supports ${this.operationName} operations, but got ${
+        action.operation.type}`);
     }
     const operation: O = <O> action.operation;
     return this.testOperation(operation, action.context);
@@ -43,11 +47,6 @@ export abstract class ActorQueryOperationTyped<O extends Algebra.Operation> exte
 
   protected abstract async testOperation(operation: O, context: ActionContext | undefined): Promise<IActorTest>;
 
-  protected abstract runOperation(operation: O, context: ActionContext | undefined): Promise<IActorQueryOperationOutput>;
-
+  protected abstract runOperation(operation: O, context: ActionContext | undefined):
+  Promise<IActorQueryOperationOutput>;
 }
-
-/**
- * @type {string} Context entry for the current query operation.
- */
-export const KEY_CONTEXT_QUERYOPERATION = '@comunica/bus-query-operation:operation';

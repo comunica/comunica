@@ -7,7 +7,7 @@ const streamifyArray = require('streamify-array');
 const arrayifyStream = require('arrayify-stream');
 const quad = require('rdf-quad');
 
-// tslint:disable:object-literal-sort-keys
+
 
 describe('ActorRdfResolveQuadPatternHypermedia', () => {
   let bus: any;

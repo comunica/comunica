@@ -1,27 +1,30 @@
-import {ISearchForm, ISearchForms} from "@comunica/actor-rdf-metadata-extract-hydra-controls";
-import {IActionRdfDereference, IActorRdfDereferenceOutput} from "@comunica/bus-rdf-dereference";
-import {IActionRdfMetadata, IActorRdfMetadataOutput} from "@comunica/bus-rdf-metadata";
-import {IActionRdfMetadataExtract, IActorRdfMetadataExtractOutput} from "@comunica/bus-rdf-metadata-extract";
-import {ActionContext, Actor, IActorTest, Mediator} from "@comunica/core";
-import {AsyncIterator, TransformIterator, wrap} from "asynciterator";
-import * as RDF from "rdf-js";
-import {termToString} from "rdf-string";
-import {mapTerms, matchPattern} from "rdf-terms";
-import {namedNode, defaultGraph} from "@rdfjs/data-model";
+/* eslint-disable id-length */
+import { ISearchForm } from '@comunica/actor-rdf-metadata-extract-hydra-controls';
+import { IActionRdfDereference, IActorRdfDereferenceOutput } from '@comunica/bus-rdf-dereference';
+import { IActionRdfMetadata, IActorRdfMetadataOutput } from '@comunica/bus-rdf-metadata';
+import { IActionRdfMetadataExtract, IActorRdfMetadataExtractOutput } from '@comunica/bus-rdf-metadata-extract';
+import { ActionContext, Actor, IActorTest, Mediator } from '@comunica/core';
+import { defaultGraph, namedNode } from '@rdfjs/data-model';
+import { AsyncIterator, TransformIterator, wrap } from 'asynciterator';
+import * as RDF from 'rdf-js';
+import { termToString } from 'rdf-string';
+import { mapTerms, matchPattern } from 'rdf-terms';
 
 /**
  * An RDF source that executes a quad pattern over a QPF interface and fetches its first page.
  */
 export class RdfSourceQpf implements RDF.Source {
-
   public readonly searchForm: ISearchForm;
 
   private readonly mediatorMetadata: Mediator<Actor<IActionRdfMetadata, IActorTest, IActorRdfMetadataOutput>,
-    IActionRdfMetadata, IActorTest, IActorRdfMetadataOutput>;
+  IActionRdfMetadata, IActorTest, IActorRdfMetadataOutput>;
+
   private readonly mediatorMetadataExtract: Mediator<Actor<IActionRdfMetadataExtract, IActorTest,
-    IActorRdfMetadataExtractOutput>, IActionRdfMetadataExtract, IActorTest, IActorRdfMetadataExtractOutput>;
+  IActorRdfMetadataExtractOutput>, IActionRdfMetadataExtract, IActorTest, IActorRdfMetadataExtractOutput>;
+
   private readonly mediatorRdfDereference: Mediator<Actor<IActionRdfDereference, IActorTest,
-    IActorRdfDereferenceOutput>, IActionRdfDereference, IActorTest, IActorRdfDereferenceOutput>;
+  IActorRdfDereferenceOutput>, IActionRdfDereference, IActorTest, IActorRdfDereferenceOutput>;
+
   private readonly subjectUri: string;
   private readonly predicateUri: string;
   private readonly objectUri: string;
@@ -30,14 +33,14 @@ export class RdfSourceQpf implements RDF.Source {
   private readonly context?: ActionContext;
   private readonly cachedQuads: {[patternId: string]: AsyncIterator<RDF.Quad>};
 
-  constructor(mediatorMetadata: Mediator<Actor<IActionRdfMetadata, IActorTest, IActorRdfMetadataOutput>,
-                IActionRdfMetadata, IActorTest, IActorRdfMetadataOutput>,
-              mediatorMetadataExtract: Mediator<Actor<IActionRdfMetadataExtract, IActorTest,
-                IActorRdfMetadataExtractOutput>, IActionRdfMetadataExtract, IActorTest, IActorRdfMetadataExtractOutput>,
-              mediatorRdfDereference: Mediator<Actor<IActionRdfDereference, IActorTest,
-                IActorRdfDereferenceOutput>, IActionRdfDereference, IActorTest, IActorRdfDereferenceOutput>,
-              subjectUri: string, predicateUri: string, objectUri: string, graphUri: string | undefined,
-              metadata: {[id: string]: any}, context: ActionContext | undefined, initialQuads?: RDF.Stream) {
+  public constructor(mediatorMetadata: Mediator<Actor<IActionRdfMetadata, IActorTest, IActorRdfMetadataOutput>,
+  IActionRdfMetadata, IActorTest, IActorRdfMetadataOutput>,
+  mediatorMetadataExtract: Mediator<Actor<IActionRdfMetadataExtract, IActorTest,
+  IActorRdfMetadataExtractOutput>, IActionRdfMetadataExtract, IActorTest, IActorRdfMetadataExtractOutput>,
+  mediatorRdfDereference: Mediator<Actor<IActionRdfDereference, IActorTest,
+  IActorRdfDereferenceOutput>, IActionRdfDereference, IActorTest, IActorRdfDereferenceOutput>,
+  subjectUri: string, predicateUri: string, objectUri: string, graphUri: string | undefined,
+  metadata: {[id: string]: any}, context: ActionContext | undefined, initialQuads?: RDF.Stream) {
     this.mediatorMetadata = mediatorMetadata;
     this.mediatorMetadataExtract = mediatorMetadataExtract;
     this.mediatorRdfDereference = mediatorRdfDereference;
@@ -74,22 +77,22 @@ export class RdfSourceQpf implements RDF.Source {
     }
 
     // Find a quad pattern or triple pattern search form
-    const searchForms: ISearchForms = metadata.searchForms;
+    const { searchForms } = metadata;
 
     // TODO: in the future, a query-based search form getter should be used.
     for (const searchForm of searchForms.values) {
-      if (this.graphUri
-        && this.subjectUri in searchForm.mappings
-        && this.predicateUri in searchForm.mappings
-        && this.objectUri in searchForm.mappings
-        && this.graphUri in searchForm.mappings
-        && Object.keys(searchForm.mappings).length === 4) {
+      if (this.graphUri &&
+        this.subjectUri in searchForm.mappings &&
+        this.predicateUri in searchForm.mappings &&
+        this.objectUri in searchForm.mappings &&
+        this.graphUri in searchForm.mappings &&
+        Object.keys(searchForm.mappings).length === 4) {
         return searchForm;
       }
-      if (this.subjectUri in searchForm.mappings
-        && this.predicateUri in searchForm.mappings
-        && this.objectUri in searchForm.mappings
-        && Object.keys(searchForm.mappings).length === 3) {
+      if (this.subjectUri in searchForm.mappings &&
+        this.predicateUri in searchForm.mappings &&
+        this.objectUri in searchForm.mappings &&
+        Object.keys(searchForm.mappings).length === 3) {
         return searchForm;
       }
     }
@@ -105,7 +108,7 @@ export class RdfSourceQpf implements RDF.Source {
    * @return {string} A URI.
    */
   public createFragmentUri(searchForm: ISearchForm,
-                           subject?: RDF.Term, predicate?: RDF.Term, object?: RDF.Term, graph?: RDF.Term): string {
+    subject?: RDF.Term, predicate?: RDF.Term, object?: RDF.Term, graph?: RDF.Term): string {
     const entries: {[id: string]: string} = {};
     const input = [
       { uri: this.subjectUri, term: subject },
@@ -122,14 +125,14 @@ export class RdfSourceQpf implements RDF.Source {
   }
 
   public match(subject?: RegExp | RDF.Term,
-               predicate?: RegExp | RDF.Term,
-               object?: RegExp | RDF.Term,
-               graph?: RegExp | RDF.Term): RDF.Stream {
-    if (subject instanceof RegExp
-      || predicate  instanceof RegExp
-      || object instanceof RegExp
-      || graph instanceof RegExp) {
-      throw new Error("RdfSourceQpf does not support matching by regular expressions.");
+    predicate?: RegExp | RDF.Term,
+    object?: RegExp | RDF.Term,
+    graph?: RegExp | RDF.Term): RDF.Stream {
+    if (subject instanceof RegExp ||
+      predicate instanceof RegExp ||
+      object instanceof RegExp ||
+      graph instanceof RegExp) {
+      throw new Error('RdfSourceQpf does not support matching by regular expressions.');
     }
 
     // If we are querying the default graph,
@@ -147,14 +150,15 @@ export class RdfSourceQpf implements RDF.Source {
       return cached;
     }
 
-    const quads = new TransformIterator(async () => {
-      let url: string = await this.createFragmentUri(this.searchForm, subject, predicate, object, <RDF.Term> graph);
+    const quads = new TransformIterator(async() => {
+      let url: string = this.createFragmentUri(this.searchForm, subject, predicate, object, <RDF.Term> graph);
       const rdfDereferenceOutput = await this.mediatorRdfDereference.mediate({ context: this.context, url });
       url = rdfDereferenceOutput.url;
 
       // Determine the metadata and emit it
       const rdfMetadataOuput: IActorRdfMetadataOutput = await this.mediatorMetadata.mediate(
-        { context: this.context, url, quads: rdfDereferenceOutput.quads, triples: rdfDereferenceOutput.triples });
+        { context: this.context, url, quads: rdfDereferenceOutput.quads, triples: rdfDereferenceOutput.triples },
+      );
       const metadataExtractPromise = this.mediatorMetadataExtract
         .mediate({ context: this.context, url, metadata: rdfMetadataOuput.metadata })
         .then(({ metadata }) => {
@@ -182,7 +186,9 @@ export class RdfSourceQpf implements RDF.Source {
 
       // Swallow error events, as they will be emitted in the metadata stream as well,
       // and therefore thrown async next.
-      filteredOutput.on('error', () => {});
+      filteredOutput.on('error', () => {
+        // Do nothing
+      });
       // Ensures metadata event is emitted before end-event
       await metadataExtractPromise;
 
@@ -196,37 +202,36 @@ export class RdfSourceQpf implements RDF.Source {
   protected reverseMapQuadsToDefaultGraph(quads: AsyncIterator<RDF.Quad>): AsyncIterator<RDF.Quad> {
     const actualDefaultGraph = defaultGraph();
     return quads.map(
-      (quad) => mapTerms(quad, (term, key) => key === 'graph' && term.equals(this.defaultGraph) ? actualDefaultGraph : term));
+      quad => mapTerms(quad,
+        (term, key) => key === 'graph' && term.equals(this.defaultGraph) ? actualDefaultGraph : term),
+    );
   }
 
   protected getPatternId(subject?: RDF.Term, predicate?: RDF.Term, object?: RDF.Term, graph?: RDF.Term): string {
-    // tslint:disable:object-literal-sort-keys
     return JSON.stringify({
       s: termToString(subject),
       p: termToString(predicate),
       o: termToString(object),
       g: termToString(graph),
     });
-    // tslint:enable:object-literal-sort-keys
   }
 
   protected cacheQuads(quads: AsyncIterator<RDF.Quad>,
-                       subject?: RDF.Term, predicate?: RDF.Term, object?: RDF.Term, graph?: RDF.Term) {
+    subject?: RDF.Term, predicate?: RDF.Term, object?: RDF.Term, graph?: RDF.Term): void {
     const patternId = this.getPatternId(subject, predicate, object, graph);
     this.cachedQuads[patternId] = quads.clone();
   }
 
-  protected getCachedQuads(subject?: RDF.Term, predicate?: RDF.Term, object?: RDF.Term, graph?: RDF.Term)
-    : AsyncIterator<RDF.Quad> | undefined {
+  protected getCachedQuads(subject?: RDF.Term, predicate?: RDF.Term, object?: RDF.Term, graph?: RDF.Term):
+  AsyncIterator<RDF.Quad> | undefined {
     const patternId = this.getPatternId(subject, predicate, object, graph);
     let quads = this.cachedQuads[patternId];
     if (quads) {
       const quadsOriginal = quads;
       // Make our iterator lazy to ensure that metadata event is emitted before end event.
-      quads = new TransformIterator(async () => quadsOriginal.clone(), { autoStart: false });
-      quadsOriginal.getProperty('metadata', (metadata) => quads.emit('metadata', metadata));
+      quads = new TransformIterator(async() => quadsOriginal.clone(), { autoStart: false });
+      quadsOriginal.getProperty('metadata', metadata => quads.emit('metadata', metadata));
       return quads;
     }
   }
-
 }

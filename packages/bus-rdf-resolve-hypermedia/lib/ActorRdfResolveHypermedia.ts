@@ -1,5 +1,5 @@
-import {Actor, IAction, IActorArgs, IActorOutput, IActorTest} from "@comunica/core";
-import * as RDF from "rdf-js";
+import { Actor, IAction, IActorArgs, IActorOutput, IActorTest } from '@comunica/core';
+import * as RDF from 'rdf-js';
 
 /**
  * A comunica actor for rdf-resolve-hypermedia bus.
@@ -13,13 +13,12 @@ import * as RDF from "rdf-js";
  * @see IActorRdfResolveQuadPatternOutput
  */
 export abstract class ActorRdfResolveHypermedia extends Actor<IActionRdfResolveHypermedia,
-  IActorRdfResolveHypermediaTest, IActorRdfResolveHypermediaOutput> {
-
+IActorRdfResolveHypermediaTest, IActorRdfResolveHypermediaOutput> {
   protected readonly sourceType: string;
 
-  constructor(args: IActorArgs<IActionRdfResolveHypermedia, IActorRdfResolveHypermediaTest,
-    IActorRdfResolveHypermediaOutput>,
-              sourceType: string) {
+  public constructor(args: IActorArgs<IActionRdfResolveHypermedia, IActorRdfResolveHypermediaTest,
+  IActorRdfResolveHypermediaOutput>,
+  sourceType: string) {
     super(args);
     this.sourceType = sourceType;
   }
@@ -32,7 +31,6 @@ export abstract class ActorRdfResolveHypermedia extends Actor<IActionRdfResolveH
   }
 
   public abstract testMetadata(action: IActionRdfResolveHypermedia): Promise<IActorRdfResolveHypermediaTest>;
-
 }
 
 export interface IActionRdfResolveHypermedia extends IAction {

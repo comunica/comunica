@@ -1,5 +1,5 @@
 import { Actor } from '@comunica/core';
-// tslint:disable:object-literal-sort-keys
+
 import { Bus } from "@comunica/core";
 import { literal, namedNode } from "@rdfjs/data-model";
 import { ArrayIterator } from "asynciterator";

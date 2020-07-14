@@ -1,13 +1,12 @@
-import {ActorRdfMetadataExtractQuery, IActionRdfMetadataExtract, IActorRdfMetadataExtractOutput,
-  IActorRdfMetadataExtractQueryArgs} from "@comunica/bus-rdf-metadata-extract";
-import {IActorTest} from "@comunica/core";
-import * as GRAPHQLLD_CONTEXT from "./context.json";
+import { ActorRdfMetadataExtractQuery, IActionRdfMetadataExtract, IActorRdfMetadataExtractOutput,
+  IActorRdfMetadataExtractQueryArgs } from '@comunica/bus-rdf-metadata-extract';
+import { IActorTest } from '@comunica/core';
+import * as GRAPHQLLD_CONTEXT from './context.json';
 
 /**
  * An RDF Metadata Extract Actor that extracts total items counts from a metadata stream based on the given predicates.
  */
 export class ActorRdfMetadataExtractHydraCountQuery extends ActorRdfMetadataExtractQuery {
-
   public static readonly GRAPHQLLD_QUERY: string = `
     query($pageUrl: String) @single(scope: all) {
       graph
@@ -15,7 +14,7 @@ export class ActorRdfMetadataExtractHydraCountQuery extends ActorRdfMetadataExtr
       totalItems(alt: triples)
     }`;
 
-  constructor(args: IActorRdfMetadataExtractQueryArgs) {
+  public constructor(args: IActorRdfMetadataExtractQueryArgs) {
     super(GRAPHQLLD_CONTEXT, ActorRdfMetadataExtractHydraCountQuery.GRAPHQLLD_QUERY, args);
   }
 
@@ -34,5 +33,4 @@ export class ActorRdfMetadataExtractHydraCountQuery extends ActorRdfMetadataExtr
       },
     };
   }
-
 }

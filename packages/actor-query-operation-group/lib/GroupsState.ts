@@ -1,10 +1,9 @@
+import { AbstractFilterHash } from '@comunica/actor-abstract-bindings-hash';
+import { Bindings } from '@comunica/bus-query-operation';
 import { Term } from 'rdf-js';
 import { termToString } from 'rdf-string';
 import { Algebra } from 'sparqlalgebrajs';
 import { AggregateEvaluator, SyncEvaluatorConfig } from 'sparqlee';
-
-import { AbstractFilterHash } from '@comunica/actor-abstract-bindings-hash';
-import { Bindings } from '@comunica/bus-query-operation';
 
 /**
  * A simple type alias for strings that should be hashes of Bindings
@@ -19,7 +18,7 @@ export type BindingsHash = string;
 export interface IGroup {
   bindings: Bindings;
   aggregators: {
-    [key: string]: AggregateEvaluator,
+    [key: string]: AggregateEvaluator;
   };
 }
 
@@ -27,16 +26,16 @@ export interface IGroup {
  * A state manager for the groups constructed by consuming the bindings-stream.
  */
 export class GroupsState {
-  private groups: Map<BindingsHash, IGroup>;
-  private groupVariables: Set<string>;
-  private distinctHashes: null | Map<BindingsHash, Set<BindingsHash>>;
+  private readonly groups: Map<BindingsHash, IGroup>;
+  private readonly groupVariables: Set<string>;
+  private readonly distinctHashes: null | Map<BindingsHash, Set<BindingsHash>>;
 
-  constructor(private pattern: Algebra.Group, private sparqleeConfig: SyncEvaluatorConfig) {
+  public constructor(private readonly pattern: Algebra.Group, private readonly sparqleeConfig: SyncEvaluatorConfig) {
     this.groups = new Map();
-    this.groupVariables = new Set(this.pattern.variables.map(termToString));
-    this.distinctHashes = pattern.aggregates.some(({ distinct }) => distinct)
-      ? new Map()
-      : null;
+    this.groupVariables = new Set(this.pattern.variables.map(x => termToString(x)));
+    this.distinctHashes = pattern.aggregates.some(({ distinct }) => distinct) ?
+      new Map() :
+      null;
   }
 
   /**
@@ -46,7 +45,7 @@ export class GroupsState {
    *
    * @param {Bindings} bindings - The Bindings to consume
    */
-  public consumeBindings(bindings: Bindings) {
+  public consumeBindings(bindings: Bindings): void {
     // Select the bindings on which we group
     const grouper = bindings
       .filter((_, variable: string) => this.groupVariables.has(variable))
@@ -58,8 +57,7 @@ export class GroupsState {
     if (!group) {
       // Initialize state for all aggregators for new group
       const aggregators: { [key: string]: AggregateEvaluator } = {};
-      for (const i in this.pattern.aggregates) {
-        const aggregate = this.pattern.aggregates[i];
+      for (const aggregate of this.pattern.aggregates) {
         const key = termToString(aggregate.variable);
         aggregators[key] = new AggregateEvaluator(aggregate, this.sparqleeConfig);
         aggregators[key].put(bindings);
@@ -70,15 +68,12 @@ export class GroupsState {
 
       if (this.distinctHashes) {
         const bindingsHash = this.hashBindings(bindings);
-        this.distinctHashes.set(groupHash, new Set([bindingsHash]));
+        this.distinctHashes.set(groupHash, new Set([ bindingsHash ]));
       }
-
     } else {
       // Group already exists
       // Update all the aggregators with the input binding
-      for (const i in this.pattern.aggregates) {
-        const aggregate = this.pattern.aggregates[i];
-
+      for (const aggregate of this.pattern.aggregates) {
         // If distinct, check first wether we have inserted these values already
         if (aggregate.distinct) {
           const hash = this.hashBindings(bindings);
@@ -101,7 +96,7 @@ export class GroupsState {
    */
   public collectResults(): Bindings[] {
     // Collect groups
-    let rows: Bindings[] = Array.from(this.groups, ([_, group]) => {
+    let rows: Bindings[] = [ ...this.groups ].map(([ _, group ]) => {
       const { bindings: groupBindings, aggregators } = group;
 
       // Collect aggregator bindings
@@ -109,7 +104,8 @@ export class GroupsState {
       const aggBindings: { [key: string]: Term } = {};
       for (const variable in aggregators) {
         const value = aggregators[variable].result();
-        if (value !== undefined) { // Filter undefined
+        if (value !== undefined) {
+          // Filter undefined
           aggBindings[variable] = value;
         }
       }
@@ -123,15 +119,14 @@ export class GroupsState {
     // Result is a single Bindings
     if (rows.length === 0) {
       const single: { [key: string]: Term } = {};
-      for (const i in this.pattern.aggregates) {
-        const aggregate = this.pattern.aggregates[i];
+      for (const aggregate of this.pattern.aggregates) {
         const key = termToString(aggregate.variable);
         const value = AggregateEvaluator.emptyValue(aggregate);
         if (value !== undefined) {
           single[key] = value;
         }
       }
-      rows = [Bindings(single)];
+      rows = [ Bindings(single) ];
     }
 
     return rows;

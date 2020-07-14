@@ -57,7 +57,6 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
           headers: new Headers({ 'Content-Type': SparqlEndpointFetcher.CONTENTTYPE_SPARQL_JSON }),
           ok: true,
         };
-        // tslint:enable: no-trailing-whitespace
       },
     };
   });
@@ -126,7 +125,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
       const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
       expect(output.variables).toEqual(['?p']);
       expect(await (<any> output).metadata()).toEqual({ totalItems: 3 });
-      // tslint:disable:max-line-length
+
       expect(await arrayifyStream(output.bindingsStream)).toEqual([
         Bindings({ '?p': namedNode('http://example.org/sparql-select?query=SELECT%20%3Fp%20WHERE%20%7B%20%3Chttp%3A%2F%2Fs%3E%20%3Fp%20%3Chttp%3A%2F%2Fo%3E.%20%7D/1') }),
         Bindings({ '?p': namedNode('http://example.org/sparql-select?query=SELECT%20%3Fp%20WHERE%20%7B%20%3Chttp%3A%2F%2Fs%3E%20%3Fp%20%3Chttp%3A%2F%2Fo%3E.%20%7D/2') }),
@@ -145,7 +144,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
       const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
       expect(output.variables).toEqual(['?myP']);
       expect(await (<any> output).metadata()).toEqual({ totalItems: 3 });
-      // tslint:disable:max-line-length
+
       expect(await arrayifyStream(output.bindingsStream)).toEqual([
         Bindings({ '?p': namedNode('http://example.org/sparql-select?query=SELECT%20%3FmyP%20WHERE%20%7B%20%3Chttp%3A%2F%2Fs%3E%20%3Fp%20%3Chttp%3A%2F%2Fo%3E.%20%7D/1') }),
         Bindings({ '?p': namedNode('http://example.org/sparql-select?query=SELECT%20%3FmyP%20WHERE%20%7B%20%3Chttp%3A%2F%2Fs%3E%20%3Fp%20%3Chttp%3A%2F%2Fo%3E.%20%7D/2') }),
@@ -161,7 +160,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
           factory.createPattern(namedNode('http://s'), variable('p'), namedNode('http://o'))
         ) };
       const output: IActorQueryOperationOutputBoolean = <any> await actor.run(op);
-      // tslint:disable:max-line-length
+
       expect(await output.booleanResult).toEqual(true);
     });
 
@@ -173,9 +172,9 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
         factory.createPattern(namedNode('http://s'), variable('p'), namedNode('http://o')),
           [ factory.createPattern(namedNode('http://s'), variable('p'), namedNode('http://o')) ]) };
       const output: IActorQueryOperationOutputQuads = <any> await actor.run(op);
-      // tslint:disable:max-line-length
+
       expect(await (<any> output).metadata()).toEqual({ totalItems: 2 });
-      // tslint:disable:max-line-length
+
       expect(await arrayifyStream(output.quadStream)).toBeRdfIsomorphic([
         quad('http://ex.org/s', 'http://ex.org/p', 'http://ex.org/o1'),
         quad('http://ex.org/s', 'http://ex.org/p', 'http://ex.org/o2'),

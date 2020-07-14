@@ -3,20 +3,19 @@ import {
   Bindings,
   IActionQueryOperation,
   IActorQueryOperationOutput,
-  IActorQueryOperationOutputBindings
-} from "@comunica/bus-query-operation";
-import {ActionContext, IActorArgs, IActorTest} from "@comunica/core";
-import {SingletonIterator} from "asynciterator";
-import {Algebra} from "sparqlalgebrajs";
-import {getTerms, uniqTerms} from "rdf-terms";
-import {termToString} from "rdf-string";
+  IActorQueryOperationOutputBindings,
+} from '@comunica/bus-query-operation';
+import { ActionContext, IActorArgs, IActorTest } from '@comunica/core';
+import { SingletonIterator } from 'asynciterator';
+import { termToString } from 'rdf-string';
+import { getTerms, uniqTerms } from 'rdf-terms';
+import { Algebra } from 'sparqlalgebrajs';
 
 /**
  * A comunica Query Operation Actor for empty BGPs.
  */
 export class ActorQueryOperationBgpEmpty extends ActorQueryOperationTyped<Algebra.Bgp> {
-
-  constructor(args: IActorArgs<IActionQueryOperation, IActorTest, IActorQueryOperationOutput>) {
+  public constructor(args: IActorArgs<IActionQueryOperation, IActorTest, IActorQueryOperationOutput>) {
     super(args, 'bgp');
   }
 
@@ -31,18 +30,17 @@ export class ActorQueryOperationBgpEmpty extends ActorQueryOperationTyped<Algebr
       .map(pattern => getTerms(pattern)
         .filter(term => term.termType === 'Variable'))
       .reduce((acc, val) => acc.concat(val), []))
-      .map(termToString);
+      .map(x => termToString(x));
   }
 
   public async testOperation(pattern: Algebra.Bgp, context: ActionContext): Promise<IActorTest> {
-    if (pattern.patterns.length !== 0) {
-      throw new Error('Actor ' + this.name + ' can only operate on empty BGPs.');
+    if (pattern.patterns.length > 0) {
+      throw new Error(`Actor ${this.name} can only operate on empty BGPs.`);
     }
     return true;
   }
 
-  public async runOperation(pattern: Algebra.Bgp, context: ActionContext)
-  : Promise<IActorQueryOperationOutputBindings> {
+  public async runOperation(pattern: Algebra.Bgp, context: ActionContext): Promise<IActorQueryOperationOutputBindings> {
     return {
       bindingsStream: new SingletonIterator(Bindings({})),
       metadata: () => Promise.resolve({ totalItems: 1 }),
@@ -50,5 +48,4 @@ export class ActorQueryOperationBgpEmpty extends ActorQueryOperationTyped<Algebr
       variables: ActorQueryOperationBgpEmpty.getVariables(pattern.patterns),
     };
   }
-
 }

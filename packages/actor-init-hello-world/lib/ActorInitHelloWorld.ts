@@ -1,7 +1,7 @@
-import {ActorInit, IActionInit, IActorOutputInit} from "@comunica/bus-init";
-import {IActorArgs, IActorTest} from "@comunica/core";
-import {PassThrough} from "stream";
-const stringToStream = require('streamify-string'); // tslint:disable-line:no-var-requires
+import { PassThrough } from 'stream';
+import { ActorInit, IActionInit, IActorOutputInit } from '@comunica/bus-init';
+import { IActorArgs, IActorTest } from '@comunica/core';
+const stringToStream = require('streamify-string');
 
 /**
  * A Hello World actor that listens on the 'init' bus.
@@ -11,10 +11,9 @@ const stringToStream = require('streamify-string'); // tslint:disable-line:no-va
  * followed by all arguments it received.
  */
 export class ActorInitHelloWorld extends ActorInit implements IActorInitHelloWorldArgs {
-
   public readonly hello: string;
 
-  constructor(args: IActorInitHelloWorldArgs) {
+  public constructor(args: IActorInitHelloWorldArgs) {
     super(args);
     if (!this.hello) {
       this.hello = 'Hello';
@@ -28,10 +27,9 @@ export class ActorInitHelloWorld extends ActorInit implements IActorInitHelloWor
   public async run(action: IActionInit): Promise<IActorOutputInit> {
     return {
       stderr: new PassThrough(),
-      stdout: stringToStream(this.hello + ' ' + action.argv.join(' ') + '\n'),
+      stdout: stringToStream(`${this.hello} ${action.argv.join(' ')}\n`),
     };
   }
-
 }
 
 export interface IActorInitHelloWorldArgs extends IActorArgs<IActionInit, IActorTest, IActorOutputInit> {

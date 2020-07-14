@@ -159,15 +159,15 @@ describe('MediatorNumber', () => {
       it('should not mediate to the minimum value for type MIN', () => {
         return expect(mediatorMin.mediate({})).rejects.toThrow(new Error(
           'All actors rejected their test in mediatorMin\n' +
-          'Error: abc\n' +
-          'Error: abc'));
+          'abc\n' +
+          'abc'));
       });
 
       it('should not mediate to the maximum value for type MAX', () => {
         return expect(mediatorMax.mediate({})).rejects.toThrow(new Error(
           'All actors rejected their test in mediatorMax\n' +
-          'Error: abc\n' +
-          'Error: abc'));
+          'abc\n' +
+          'abc'));
       });
     });
 
@@ -191,12 +191,12 @@ describe('MediatorNumber', () => {
   });
 });
 
-// tslint:disable:max-classes-per-file
+
 class DummyActor extends Actor<IAction, IDummyTest, IDummyTest> {
 
   public readonly id: number | undefined;
 
-  constructor(id: number | undefined, bus: Bus<DummyActor, IAction, IDummyTest, IDummyTest>) {
+  public constructor(id: number | undefined, bus: Bus<DummyActor, IAction, IDummyTest, IDummyTest>) {
     super({ name: 'dummy' + id, bus });
     this.id = id;
   }
@@ -215,7 +215,7 @@ class DummyActorInvalid extends Actor<IAction, IDummyTest, IDummyTest> {
 
   public readonly id: number;
 
-  constructor(id: number, bus: Bus<DummyActor, IAction, IDummyTest, IDummyTest>) {
+  public constructor(id: number, bus: Bus<DummyActor, IAction, IDummyTest, IDummyTest>) {
     super({ name: 'dummy' + id, bus });
     this.id = id;
   }
@@ -230,7 +230,7 @@ class DummyActorInvalid extends Actor<IAction, IDummyTest, IDummyTest> {
 
 }
 
-// tslint:disable-next-line:max-classes-per-file
+
 class ErrorDummyActor extends DummyActor {
   public async test(action: IAction): Promise<IDummyTest> {
     throw new Error('abc');

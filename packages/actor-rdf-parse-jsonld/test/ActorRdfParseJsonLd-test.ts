@@ -195,7 +195,7 @@ describe('ActorRdfParseJsonLd', () => {
       });
 
       it('should run for a JSON doc with a context link header', () => {
-        // tslint:disable-next-line:max-line-length
+
         const headers = new Headers({ Link: '<http://example.org/>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' });
         return actor.run(
           { handle: { input: inputLinkHeader, baseIRI: '', headers }, handleMediaType: 'application/json' })
@@ -205,7 +205,7 @@ describe('ActorRdfParseJsonLd', () => {
       });
 
       it('should run for a doc with JSON extension type with a context link header', () => {
-        // tslint:disable-next-line:max-line-length
+
         const headers = new Headers({ Link: '<http://example.org/>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' });
         return actor.run(
           { handle: { input: inputLinkHeader, baseIRI: '', headers }, handleMediaType: 'bla+json' })
@@ -215,7 +215,7 @@ describe('ActorRdfParseJsonLd', () => {
       });
 
       it('should error on a JSON doc with a context link header without type', () => {
-        // tslint:disable-next-line:max-line-length
+
         const headers = new Headers({ Link: '<http://example.org/>; rel="http://www.w3.org/ns/json-ld#context"' });
         return actor.run(
           { handle: { input: inputLinkHeader, baseIRI: '', headers }, handleMediaType: 'bla+json' })
@@ -225,7 +225,7 @@ describe('ActorRdfParseJsonLd', () => {
       });
 
       it('should error on a JSON doc without a context link header', () => {
-        // tslint:disable-next-line:max-line-length
+
         const headers = new Headers({});
         return expect(actor.run(
           { handle: { input: inputLinkHeader, baseIRI: 'IRI', headers }, handleMediaType: 'application/json' })).rejects
@@ -233,7 +233,7 @@ describe('ActorRdfParseJsonLd', () => {
       });
 
       it('should ignore a context link header on a valid JSON-LD document', () => {
-        // tslint:disable-next-line:max-line-length
+
         const headers = new Headers({ Link: '<http://example.org/error>; rel="http://www.w3.org/ns/json-ld#context"; type="application/ld+json"' });
         return actor.run(
           { handle: { input, baseIRI: '', headers }, handleMediaType: 'application/ld+json' })

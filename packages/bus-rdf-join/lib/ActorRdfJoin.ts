@@ -1,9 +1,9 @@
-import {Bindings, IActorQueryOperationOutput,
-  IActorQueryOperationOutputBindings} from "@comunica/bus-query-operation";
-import {Actor, IAction, IActorArgs} from "@comunica/core";
-import {IMediatorTypeIterations} from "@comunica/mediatortype-iterations";
-import {ArrayIterator, EmptyIterator} from "asynciterator";
-import * as RDF from "rdf-js";
+import { Bindings, IActorQueryOperationOutput,
+  IActorQueryOperationOutputBindings } from '@comunica/bus-query-operation';
+import { Actor, IAction, IActorArgs } from '@comunica/core';
+import { IMediatorTypeIterations } from '@comunica/mediatortype-iterations';
+import { ArrayIterator } from 'asynciterator';
+import * as RDF from 'rdf-js';
 
 /**
  * A comunica actor for joining 2 binding streams.
@@ -17,7 +17,6 @@ import * as RDF from "rdf-js";
  * @see IActorQueryOperationOutput
  */
 export abstract class ActorRdfJoin extends Actor<IActionRdfJoin, IMediatorTypeIterations, IActorQueryOperationOutput> {
-
   /**
    * Can be used by subclasses to indicate the max or min number of streams that can be joined.
    * 0 for infinity.
@@ -30,11 +29,11 @@ export abstract class ActorRdfJoin extends Actor<IActionRdfJoin, IMediatorTypeIt
    */
   protected limitEntriesMin: boolean;
 
-  constructor(args: IActorArgs<IActionRdfJoin, IMediatorTypeIterations, IActorQueryOperationOutput>,
-              limitEntries?: number, limitEntriesMin?: boolean) {
+  public constructor(args: IActorArgs<IActionRdfJoin, IMediatorTypeIterations, IActorQueryOperationOutput>,
+    limitEntries?: number, limitEntriesMin?: boolean) {
     super(args);
-    this.limitEntries = limitEntries || Infinity;
-    this.limitEntriesMin = limitEntriesMin || false;
+    this.limitEntries = limitEntries ?? Infinity;
+    this.limitEntriesMin = limitEntriesMin ?? false;
   }
 
   /**
@@ -43,7 +42,7 @@ export abstract class ActorRdfJoin extends Actor<IActionRdfJoin, IMediatorTypeIt
    * @returns {string[]}
    */
   public static overlappingVariables(action: IActionRdfJoin): string[] {
-    return require('lodash.intersection').apply(this, action.entries.map((entry) => entry.variables));
+    return require('lodash.intersection').apply(this, action.entries.map(entry => entry.variables));
   }
 
   /**
@@ -52,7 +51,7 @@ export abstract class ActorRdfJoin extends Actor<IActionRdfJoin, IMediatorTypeIt
    * @returns {string[]}
    */
   public static joinVariables(action: IActionRdfJoin): string[] {
-    return require('lodash.union').apply(this, action.entries.map((entry) => entry.variables));
+    return require('lodash.union').apply(this, action.entries.map(entry => entry.variables));
   }
 
   /**
@@ -62,13 +61,13 @@ export abstract class ActorRdfJoin extends Actor<IActionRdfJoin, IMediatorTypeIt
    */
   public static join(...bindings: Bindings[]): Bindings | null {
     try {
-      return bindings.reduce((acc: Bindings, val: Bindings) => acc.mergeWith((l: RDF.Term, r: RDF.Term) => {
-        if (!l.equals(r)) {
-          throw new Error();
+      return bindings.reduce((acc: Bindings, val: Bindings) => acc.mergeWith((left: RDF.Term, right: RDF.Term) => {
+        if (!left.equals(right)) {
+          throw new Error('Join failure');
         }
-        return l;
+        return left;
       }, val));
-    } catch (e) {
+    } catch (error) {
       return null;
     }
   }
@@ -80,13 +79,13 @@ export abstract class ActorRdfJoin extends Actor<IActionRdfJoin, IMediatorTypeIt
    * @returns {boolean}
    */
   public static async iteratorsHaveMetadata(action: IActionRdfJoin, key: string): Promise<boolean> {
-    return Promise.all(action.entries.map(async (entry) => {
+    return Promise.all(action.entries.map(async entry => {
       if (!entry.metadata) {
-        throw new Error();
+        throw new Error('Missibg metadata');
       }
       const metadata = await entry.metadata();
-      if (!metadata.hasOwnProperty(key)) {
-        throw new Error();
+      if (!(key in metadata)) {
+        throw new Error('Missing metadata value');
       }
     })).then(() => true).catch(() => false);
   }
@@ -103,17 +102,17 @@ export abstract class ActorRdfJoin extends Actor<IActionRdfJoin, IMediatorTypeIt
       return { iterations: 0 };
     }
     if (this.limitEntriesMin ? action.entries.length < this.limitEntries : action.entries.length > this.limitEntries) {
-      throw new Error(this.name + ' requires ' + this.limitEntries
-        + ' sources at ' + (this.limitEntriesMin ? 'least' : 'most')
-        + '. The input contained ' + action.entries.length + '.');
+      throw new Error(`${this.name} requires ${this.limitEntries
+      } sources at ${this.limitEntriesMin ? 'least' : 'most'
+      }. The input contained ${action.entries.length}.`);
     }
     for (const entry of action.entries) {
       if (entry.type !== 'bindings') {
-        throw new Error('Invalid type of a join entry: Expected \'bindings\' but got \'' + entry.type + '\'');
+        throw new Error(`Invalid type of a join entry: Expected 'bindings' but got '${entry.type}'`);
       }
     }
 
-    if (!(await ActorRdfJoin.iteratorsHaveMetadata(action, 'totalItems'))) {
+    if (!await ActorRdfJoin.iteratorsHaveMetadata(action, 'totalItems')) {
       return { iterations: Infinity };
     }
 
@@ -140,24 +139,26 @@ export abstract class ActorRdfJoin extends Actor<IActionRdfJoin, IMediatorTypeIt
 
     const result = this.getOutput(action);
 
-    if (await ActorRdfJoin.iteratorsHaveMetadata(action, 'totalItems')) {
-      const totalItems = () => Promise.all(action.entries
-        .map((entry) => (<() => Promise<{[id: string]: any}>> entry.metadata)()))
-        .then((metadatas) => metadatas.reduce((acc, val) => acc * val.totalItems, 1));
+    function totalItems(): Promise<number> {
+      return Promise.all(action.entries
+        .map(entry => (<() => Promise<{[id: string]: any}>> entry.metadata)()))
+        .then(metadatas => metadatas.reduce((acc, val) => acc * val.totalItems, 1));
+    }
 
-      // update the result promise to also add the estimated total items
+    if (await ActorRdfJoin.iteratorsHaveMetadata(action, 'totalItems')) {
+      // Update the result promise to also add the estimated total items
       const unwrapped = await result;
       if (unwrapped.metadata) {
         const oldMetadata = unwrapped.metadata;
-        unwrapped.metadata = () => oldMetadata().then(async (metadata) => {
-          // don't overwrite metadata if it was generated by implementation
-          if (!metadata.hasOwnProperty('totalItems')) {
+        unwrapped.metadata = () => oldMetadata().then(async metadata => {
+          // Don't overwrite metadata if it was generated by implementation
+          if (!('totalItems' in metadata)) {
             metadata.totalItems = await totalItems();
           }
           return metadata;
         });
       } else {
-        unwrapped.metadata = () => totalItems().then((t) => ({ totalItems: t }));
+        unwrapped.metadata = () => totalItems().then(totalItemsValue => ({ totalItems: totalItemsValue }));
       }
       return unwrapped;
     }
@@ -180,7 +181,6 @@ export abstract class ActorRdfJoin extends Actor<IActionRdfJoin, IMediatorTypeIt
    * @returns {number} The estimated number of iterations when joining the given iterators.
    */
   protected abstract getIterations(action: IActionRdfJoin): Promise<number>;
-
 }
 
 export interface IActionRdfJoin extends IAction {

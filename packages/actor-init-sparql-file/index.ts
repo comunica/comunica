@@ -1,5 +1,5 @@
-import {ActorInitSparql} from '@comunica/actor-init-sparql/lib/ActorInitSparql-browser';
-import {IQueryOptions, newEngineDynamicArged} from "@comunica/actor-init-sparql/lib/QueryDynamic";
+import { ActorInitSparql } from '@comunica/actor-init-sparql/lib/ActorInitSparql-browser';
+import { IQueryOptions, newEngineDynamicArged } from '@comunica/actor-init-sparql/lib/QueryDynamic';
 
 /**
  * Create a new comunica engine from the default config.
@@ -15,5 +15,5 @@ export function newEngine(): ActorInitSparql {
  * @return {Promise<QueryEngine>} A promise that resolves to a fully wired comunica engine.
  */
 export function newEngineDynamic(options?: IQueryOptions): Promise<ActorInitSparql> {
-  return newEngineDynamicArged(options || {}, __dirname, __dirname + '/config/config-default.json');
+  return newEngineDynamicArged(options ?? {}, __dirname, `${__dirname}/config/config-default.json`);
 }

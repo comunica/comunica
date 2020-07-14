@@ -11,7 +11,7 @@ class Dummy extends LinkedRdfSourcesAsyncRdfIterator {
 
   public data: RDF.Quad[][];
 
-  constructor(data: RDF.Quad[][], subject: RDF.Term | undefined, predicate: RDF.Term | undefined,
+  public constructor(data: RDF.Quad[][], subject: RDF.Term | undefined, predicate: RDF.Term | undefined,
               object: RDF.Term | undefined, graph: RDF.Term | undefined,
               firstUrl: string) {
     super(10, subject, predicate, object, graph, firstUrl, { autoStart: false });
@@ -48,14 +48,14 @@ class Dummy extends LinkedRdfSourcesAsyncRdfIterator {
 }
 
 // dummy class with a rejecting getNextSource
-class InvalidDummy extends Dummy { // tslint:disable-line max-classes-per-file
+class InvalidDummy extends Dummy {
   protected getNextSource(url: string): Promise<ISourceState> {
     return Promise.reject(new Error('NextSource error'));
   }
 }
 
 // dummy class with a rejecting getNextSource on the second page
-class InvalidDummyNext extends Dummy { // tslint:disable-line max-classes-per-file
+class InvalidDummyNext extends Dummy {
   protected getNextSource(url: string): Promise<ISourceState> {
     if (this.getPage(url) >= 1) {
       return Promise.reject(new Error('NextSource2 error'));
@@ -66,7 +66,7 @@ class InvalidDummyNext extends Dummy { // tslint:disable-line max-classes-per-fi
 }
 
 // dummy class with a metadata override event on the first page
-class DummyMetaOverride extends Dummy { // tslint:disable-line max-classes-per-file
+class DummyMetaOverride extends Dummy {
   protected async getNextSource(url: string): Promise<ISourceState> {
     const requestedPage = this.getPage(url);
     if (requestedPage >= this.data.length) {
@@ -93,7 +93,7 @@ class DummyMetaOverride extends Dummy { // tslint:disable-line max-classes-per-f
 }
 
 // dummy class with a metadata override event on the first page
-class DummyMetaOverrideTooLate extends Dummy { // tslint:disable-line max-classes-per-file
+class DummyMetaOverrideTooLate extends Dummy {
   protected async getNextSource(url: string): Promise<ISourceState> {
     const requestedPage = 0;
     return {
@@ -113,14 +113,14 @@ class DummyMetaOverrideTooLate extends Dummy { // tslint:disable-line max-classe
 }
 
 // dummy class that produces multiple next page links
-class DummyMultiple extends Dummy { // tslint:disable-line max-classes-per-file
+class DummyMultiple extends Dummy {
   protected async getNextUrls(metadata: {[id: string]: any}): Promise<string[]> {
     return metadata.next ? [metadata.next, metadata.next] : [];
   }
 }
 
 // dummy class that emits an error in the source stream
-class DummyError extends Dummy { // tslint:disable-line max-classes-per-file
+class DummyError extends Dummy {
   protected async getNextSource(url: string): Promise<ISourceState> {
     return {
       handledDatasets: { [url]: true },
@@ -330,7 +330,7 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
       expect(await new Promise((resolve, reject) => {
         it.on('error', resolve);
         it.on('end', reject);
-        it.on('data', () => {}); // tslint:disable-line no-empty
+        it.on('data', () => {});
       })).toEqual(new Error('NextSource error'));
     });
 
@@ -339,7 +339,7 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
       expect(await new Promise((resolve, reject) => {
         it.on('error', resolve);
         it.on('end', reject);
-        it.on('data', () => {}); // tslint:disable-line no-empty
+        it.on('data', () => {});
       })).toEqual(new Error('NextSource2 error'));
     });
 
@@ -403,7 +403,7 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
       await expect(new Promise((resolve, reject) => {
         it.on('error', reject);
         it.on('end', resolve);
-        it.on('data', () => {}); // tslint:disable-line no-empty
+        it.on('data', () => {});
       })).rejects.toThrow(new Error('Emitted error!'));
     });
   });

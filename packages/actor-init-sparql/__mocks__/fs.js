@@ -1,7 +1,7 @@
 const testFileContentDict = {
   "@context": {
     "foaf": "http://xmlns.com/foaf/0.1/",
-    // tslint:disable-next-line:object-literal-sort-keys
+
     "@base": "http://example.com/my-ontology#",
     "dbpedia": "http://dbpedia.org/resource/",
     "dbpprop": "http://dbpedia.org/property/",
@@ -11,13 +11,13 @@ const testFileContentDict = {
     {
       "@id": "joachimvh",
       "rdfs:label": { "@value": "Joachim Van Herwegen", "@language": "en"},
-      // tslint:disable-next-line:object-literal-sort-keys
+
       "dbpprop:occupation": { "@id": "dbpedia:Computer_scientist"},
     },
     {
       "@id": "http://www.rubensworks.net/#me",
       "rdfs:label": { "@value": "Ruben Taelman", "@language": "en"},
-      // tslint:disable-next-line:object-literal-sort-keys
+
       "dbpprop:occupation": { "@id": "dbpedia:Computer_scientist"},
     },
     {

@@ -1,5 +1,5 @@
-import {Actor, IAction, IActorOutput, IActorTest} from "./Actor";
-import {Bus, IActorReply, IBusArgs} from "./Bus";
+import { Actor, IAction, IActorOutput, IActorTest } from './Actor';
+import { Bus, IActorReply, IBusArgs } from './Bus';
 
 /**
  * A bus that indexes identified actors,
@@ -19,7 +19,6 @@ import {Bus, IActorReply, IBusArgs} from "./Bus";
  */
 export class BusIndexed<A extends Actor<I, T, O>, I extends IAction, T extends IActorTest, O extends IActorOutput>
   extends Bus<A, I, T, O> {
-
   protected readonly actorsIndex: {[id: string]: A[]} = {};
   protected readonly actorIdentifierFields: string[];
   protected readonly actionIdentifierFields: string[];
@@ -31,11 +30,11 @@ export class BusIndexed<A extends Actor<I, T, O>, I extends IAction, T extends I
    * @param {string} args.name The name for the bus
    * @throws When required arguments are missing.
    */
-  constructor(args: IBusIndexedArgs) {
+  public constructor(args: IBusIndexedArgs) {
     super(args);
   }
 
-  public subscribe(actor: A) {
+  public subscribe(actor: A): void {
     const actorId = this.getActorIdentifier(actor) || '_undefined_';
     let actors = this.actorsIndex[actorId];
     if (!actors) {
@@ -64,22 +63,18 @@ export class BusIndexed<A extends Actor<I, T, O>, I extends IAction, T extends I
     const actionId = this.getActionIdentifier(action);
     if (actionId) {
       const actors = (this.actorsIndex[actionId] || []).concat(this.actorsIndex._undefined_ || []);
-      return actors.map((actor: A) => {
-        return { actor, reply: actor.test(action) };
-      });
-    } else {
-      return super.publish(action);
+      return actors.map((actor: A): IActorReply<A, I, T, O> => ({ actor, reply: actor.test(action) }));
     }
+    return super.publish(action);
   }
 
   protected getActorIdentifier(actor: A): string {
-    return this.actorIdentifierFields.reduce((object: any, field) => object[field], actor);
+    return this.actorIdentifierFields.reduce((object: any, field): A => object[field], actor);
   }
 
   protected getActionIdentifier(action: I): string {
-    return this.actionIdentifierFields.reduce((object: any, field) => object[field], action);
+    return this.actionIdentifierFields.reduce((object: any, field): A => object[field], action);
   }
-
 }
 
 export interface IBusIndexedArgs extends IBusArgs {

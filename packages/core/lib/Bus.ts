@@ -1,5 +1,5 @@
-import {ActionObserver} from "./ActionObserver";
-import {Actor, IAction, IActorOutput, IActorTest} from "./Actor";
+import { ActionObserver } from './ActionObserver';
+import { Actor, IAction, IActorOutput, IActorTest } from './Actor';
 
 /**
  * A publish-subscribe bus for sending actions to actors
@@ -16,13 +16,13 @@ import {Actor, IAction, IActorOutput, IActorTest} from "./Actor";
  * @template T The test type of an actor.
  * @template O The output type of an actor.
  */
-export class Bus<A extends Actor<I, T, O>, I extends IAction, T extends IActorTest, O extends IActorOutput>
-  implements IBusArgs {
-
+export class Bus<A extends Actor<I, T, O>, I extends IAction, T extends IActorTest, O extends IActorOutput> implements
+    IBusArgs {
   public readonly name: string;
   protected readonly actors: A[] = [];
   protected readonly observers: ActionObserver<I, O>[] = [];
-  protected readonly dependencyLinks: Map<A, A[]> = new Map(); // Mapping from dependency (after) to dependents (before)
+  // Mapping from dependency (after) to dependents (before)
+  protected readonly dependencyLinks: Map<A, A[]> = new Map();
 
   /**
    * All enumerable properties from the `args` object are inherited to this bus.
@@ -31,7 +31,7 @@ export class Bus<A extends Actor<I, T, O>, I extends IAction, T extends IActorTe
    * @param {string} args.name The name for the bus
    * @throws When required arguments are missing.
    */
-  constructor(args: IBusArgs) {
+  public constructor(args: IBusArgs) {
     require('lodash.assign')(this, args);
   }
 
@@ -43,7 +43,7 @@ export class Bus<A extends Actor<I, T, O>, I extends IAction, T extends IActorTe
    *
    * @param {A} actor The actor to subscribe.
    */
-  public subscribe(actor: A) {
+  public subscribe(actor: A): void {
     this.actors.push(actor);
     this.reorderForDependencies();
   }
@@ -56,7 +56,7 @@ export class Bus<A extends Actor<I, T, O>, I extends IAction, T extends IActorTe
    *
    * @param {ActionObserver<I, O>} observer The observer to subscribe.
    */
-  public subscribeObserver(observer: ActionObserver<I, O>) {
+  public subscribeObserver(observer: ActionObserver<I, O>): void {
     this.observers.push(observer);
   }
 
@@ -69,7 +69,7 @@ export class Bus<A extends Actor<I, T, O>, I extends IAction, T extends IActorTe
    * @return {boolean} If the given actor was successfully unsubscribed,
    *         otherwise it was not subscribed before.
    */
-  public unsubscribe(actor: A) {
+  public unsubscribe(actor: A): boolean {
     const index: number = this.actors.indexOf(actor);
     if (index >= 0) {
       this.actors.splice(index, 1);
@@ -87,7 +87,7 @@ export class Bus<A extends Actor<I, T, O>, I extends IAction, T extends IActorTe
    * @return {boolean} If the given observer was successfully unsubscribed,
    *         otherwise it was not subscribed before.
    */
-  public unsubscribeObserver(observer: ActionObserver<I, O>) {
+  public unsubscribeObserver(observer: ActionObserver<I, O>): boolean {
     const index: number = this.observers.indexOf(observer);
     if (index >= 0) {
       this.observers.splice(index, 1);
@@ -106,9 +106,7 @@ export class Bus<A extends Actor<I, T, O>, I extends IAction, T extends IActorTe
    *         and a promise to its {@link Actor#test} result.
    */
   public publish(action: I): IActorReply<A, I, T, O>[] {
-    return this.actors.map((actor: A) => {
-      return { actor, reply: actor.test(action) };
-    });
+    return this.actors.map((actor: A): IActorReply<A, I, T, O> => ({ actor, reply: actor.test(action) }));
   }
 
   /**
@@ -132,7 +130,7 @@ export class Bus<A extends Actor<I, T, O>, I extends IAction, T extends IActorTe
    * @param {A} dependent A dependent actor that will be placed before the given actors.
    * @param {A[]} dependencies Actor dependencies that will be placed after the given actor.
    */
-  public addDependencies(dependent: A, dependencies: A[]) {
+  public addDependencies(dependent: A, dependencies: A[]): void {
     for (const dependency of dependencies) {
       let existingDependencies = this.dependencyLinks.get(dependency);
       if (!existingDependencies) {
@@ -147,7 +145,7 @@ export class Bus<A extends Actor<I, T, O>, I extends IAction, T extends IActorTe
   /**
    * Reorder the bus based on all present dependencies.
    */
-  public reorderForDependencies() {
+  public reorderForDependencies(): void {
     if (this.dependencyLinks.size > 0) {
       const actorsAfter = [];
 
@@ -168,7 +166,7 @@ export class Bus<A extends Actor<I, T, O>, I extends IAction, T extends IActorTe
         for (let i = 0; i < actorsAfter.length; i++) {
           let validLink = true;
           for (const dependency of <A[]> this.dependencyLinks.get(actorsAfter[i])) {
-            if (this.actors.indexOf(dependency) < 0 && actorsAfter.indexOf(dependency) >= 0) {
+            if (!this.actors.includes(dependency) && actorsAfter.includes(dependency)) {
               validLink = false;
               break;
             }
@@ -181,7 +179,7 @@ export class Bus<A extends Actor<I, T, O>, I extends IAction, T extends IActorTe
 
         // If none of the pending links are possible, there must be a cyclic dependency
         if (activeActorAfterId < 0) {
-          throw new Error('Cyclic dependency links detected in bus ' + this.name);
+          throw new Error(`Cyclic dependency links detected in bus ${this.name}`);
         }
 
         // The dependent may not be available (yet), so we don't add it to the array (yet).
@@ -190,7 +188,6 @@ export class Bus<A extends Actor<I, T, O>, I extends IAction, T extends IActorTe
       }
     }
   }
-
 }
 
 export interface IBusArgs {

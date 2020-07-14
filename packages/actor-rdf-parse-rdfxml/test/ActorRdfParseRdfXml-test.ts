@@ -98,7 +98,6 @@ describe('ActorRdfParseRdfXml', () => {
       });
 
       it('should parse application/rdf+xml correctly', () => {
-        // noinspection TsLint
         return actor.run({ handle: { input, baseIRI: '' }, handleMediaType: 'application/rdf+xml' })
             .then(async (output: any) => expect(await arrayifyStream(output.handle.quads)).toEqualRdfQuadArray([
               quad('http://www.w3.org/TR/rdf-syntax-grammar', 'http://purl.org/dc/elements/1.1/title',

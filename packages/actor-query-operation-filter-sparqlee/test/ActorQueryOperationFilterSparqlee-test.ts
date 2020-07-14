@@ -1,4 +1,4 @@
-// tslint:disable:object-literal-sort-keys
+
 import { literal, variable } from "@rdfjs/data-model";
 import { ArrayIterator } from "asynciterator";
 import { Map } from "immutable";
@@ -160,7 +160,7 @@ describe('ActorQueryOperationFilterSparqlee', () => {
 
     describe('should be able to handle EXIST filters', () => {
       it('like a simple EXIST that is true', async () => {
-        // tslint:disable-next-line: no-string-literal
+
         const resolver = ActorQueryOperation.createExistenceResolver(Map(), actor.mediatorQueryOperation);
         const expr: Algebra.ExistenceExpression = factory.createExistenceExpression(
           false,
@@ -171,7 +171,7 @@ describe('ActorQueryOperationFilterSparqlee', () => {
       });
 
       it('like a simple EXIST that is false', async () => {
-        // tslint:disable-next-line: no-string-literal
+
         const resolver = ActorQueryOperation.createExistenceResolver(Map(), actor.mediatorQueryOperation);
         mediatorQueryOperation.mediate = (arg: any) => Promise.resolve({
           bindingsStream: new ArrayIterator([], { autoStart: false }),
@@ -189,7 +189,7 @@ describe('ActorQueryOperationFilterSparqlee', () => {
       });
 
       it('like a NOT EXISTS', async () => {
-        // tslint:disable-next-line: no-string-literal
+
         const resolver = ActorQueryOperation.createExistenceResolver(Map(), actor.mediatorQueryOperation);
         mediatorQueryOperation.mediate = (arg: any) => Promise.resolve({
           bindingsStream: new ArrayIterator([], { autoStart: false }),
@@ -207,7 +207,7 @@ describe('ActorQueryOperationFilterSparqlee', () => {
       });
 
       it('like an EXIST that errors', async () => {
-        // tslint:disable-next-line: no-string-literal
+
         const resolver = ActorQueryOperation.createExistenceResolver(Map(), actor.mediatorQueryOperation);
         const bindingsStream = new ArrayIterator([{}, {}, {}]).transform({
           autoStart: false,

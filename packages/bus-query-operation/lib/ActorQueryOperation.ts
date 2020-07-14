@@ -1,8 +1,48 @@
-import {ActionContext, Actor, IAction, IActorArgs, IActorTest, Mediator} from "@comunica/core";
-import {AsyncIterator} from "asynciterator";
-import * as RDF from "rdf-js";
-import { Algebra } from "sparqlalgebrajs";
-import {Bindings, BindingsStream, materializeOperation} from "./Bindings";
+import { ActionContext, Actor, IAction, IActorArgs, IActorTest, Mediator } from '@comunica/core';
+import { AsyncIterator } from 'asynciterator';
+import * as RDF from 'rdf-js';
+import { Algebra } from 'sparqlalgebrajs';
+import { Bindings, BindingsStream, materializeOperation } from './Bindings';
+
+/**
+ * @type {string} Context entry for current metadata.
+ *                I.e., the metadata that was used to determine the next BGP operation.
+ * @value {any} A metadata hash.
+ */
+export const KEY_CONTEXT_BGP_CURRENTMETADATA = '@comunica/bus-query-operation:bgpCurrentMetadata';
+/**
+ * @type {string} Context entry for an array of parent metadata.
+ *                I.e., an array of the metadata that was present before materializing the current BGP operations.
+ *                This can be passed in 'bgp' actions.
+ *                The array entries should correspond to the pattern entries in the BGP.
+ * @value {any} An array of metadata hashes.
+ */
+export const KEY_CONTEXT_BGP_PARENTMETADATA = '@comunica/bus-query-operation:bgpParentMetadata';
+/**
+ * @type {string} Context entry for indicating which patterns were bound from variables.
+ *                I.e., an array of the same length as the value of KEY_CONTEXT_BGP_PARENTMETADATA,
+ *                where each array value corresponds to the pattern bindings for the corresponding pattern.
+ * @value {any} An array of {@link IPatternBindings}.
+ */
+export const KEY_CONTEXT_BGP_PATTERNBINDINGS = '@comunica/bus-query-operation:bgpPatternBindings';
+/**
+ * @type {string} Context entry for parent metadata.
+ *                I.e., the metadata that was present before materializing the current operation.
+ *                This can be passed in 'pattern' actions.
+ * @value {any} A metadata hash.
+ */
+export const KEY_CONTEXT_PATTERN_PARENTMETADATA = '@comunica/bus-query-operation:patternParentMetadata';
+/**
+ * @type {string} Context entry for query's base IRI.
+ * @value {any} A string.
+ */
+export const KEY_CONTEXT_BASEIRI = '@comunica/actor-init-sparql:baseIRI';
+/**
+ * @type {string} A timestamp representing the current time.
+ *                This is required for certain SPARQL operations such as NOW().
+ * @value {any} a date.
+ */
+export const KEY_CONTEXT_QUERY_TIMESTAMP = '@comunica/actor-init-sparql:queryTimestamp';
 
 /**
  * A comunica actor for query-operation events.
@@ -16,8 +56,7 @@ import {Bindings, BindingsStream, materializeOperation} from "./Bindings";
  * @see IActorQueryOperationOutput
  */
 export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, IActorTest, IActorQueryOperationOutput> {
-
-  constructor(args: IActorArgs<IActionQueryOperation, IActorTest, IActorQueryOperationOutput>) {
+  protected constructor(args: IActorArgs<IActionQueryOperation, IActorTest, IActorQueryOperationOutput>) {
     super(args);
   }
 
@@ -59,10 +98,10 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
    * @param {() => Promise<{[p: string]: any}>} metadata A metadata callback
    * @return {() => Promise<{[p: string]: any}>} The callback where the response will be cached.
    */
-  public static cachifyMetadata
-  <T extends (() => Promise<{[id: string]: any}>) | (undefined | (() => Promise<{[id: string]: any}>))>
-  (metadata: T): T {
+  public static cachifyMetadata<T extends (() => Promise<{[id: string]: any}>)
+  | (undefined | (() => Promise<{[id: string]: any}>))>(metadata: T): T {
     let lastReturn: Promise<{[id: string]: any}>;
+    // eslint-disable-next-line no-return-assign,@typescript-eslint/no-misused-promises
     return <T> (metadata && (() => (lastReturn || (lastReturn = metadata()))));
   }
 
@@ -71,9 +110,9 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
    * @param {IActorQueryOperationOutput} output A query operation output.
    * @param {string} expectedType The expected output type.
    */
-  public static validateQueryOutput(output: IActorQueryOperationOutput, expectedType: string) {
+  public static validateQueryOutput(output: IActorQueryOperationOutput, expectedType: string): void {
     if (output.type !== expectedType) {
-      throw new Error('Invalid query output type: Expected \'' + expectedType + '\' but got \'' + output.type + '\'');
+      throw new Error(`Invalid query output type: Expected '${expectedType}' but got '${output.type}'`);
     }
   }
 
@@ -84,21 +123,22 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
    *                               If defined, the existence resolver will be defined as `exists`.
    */
   public static getExpressionContext(context: ActionContext, mediatorQueryOperation?: Mediator<
-    Actor<IActionQueryOperation, IActorTest, IActorQueryOperationOutput>,
-    IActionQueryOperation, IActorTest, IActorQueryOperationOutput>): IExpressionContext {
+  Actor<IActionQueryOperation, IActorTest, IActorQueryOperationOutput>,
+  IActionQueryOperation, IActorTest, IActorQueryOperationOutput>): IExpressionContext {
     if (context) {
       const now: Date = context.get(KEY_CONTEXT_QUERY_TIMESTAMP);
       const baseIRI: string = context.get(KEY_CONTEXT_BASEIRI);
       return {
         now,
         baseIRI,
-        ...mediatorQueryOperation ? {
-          exists: ActorQueryOperation.createExistenceResolver(context, mediatorQueryOperation),
-        } : {},
+        ...mediatorQueryOperation ?
+          {
+            exists: ActorQueryOperation.createExistenceResolver(context, mediatorQueryOperation),
+          } :
+          {},
       };
-    } else {
-      return {};
     }
+    return {};
   }
 
   /**
@@ -107,10 +147,10 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
    * @param mediatorQueryOperation A query operation mediator.
    */
   public static createExistenceResolver(context: ActionContext, mediatorQueryOperation: Mediator<
-    Actor<IActionQueryOperation, IActorTest, IActorQueryOperationOutput>,
-    IActionQueryOperation, IActorTest, IActorQueryOperationOutput>):
+  Actor<IActionQueryOperation, IActorTest, IActorQueryOperationOutput>,
+  IActionQueryOperation, IActorTest, IActorQueryOperationOutput>):
     (expr: Algebra.ExistenceExpression, bindings: Bindings) => Promise<boolean> {
-    return async (expr, bindings) => {
+    return async(expr, bindings) => {
       const operation = materializeOperation(expr.input, bindings);
 
       const outputRaw = await mediatorQueryOperation.mediate({ operation, context });
@@ -128,17 +168,17 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
             output.bindingsStream.close();
             resolve(true);
           });
-        })
+        },
+      )
         .then((exists: boolean) => expr.not ? !exists : exists);
     };
   }
-
 }
 
 export interface IExpressionContext {
   now?: Date;
   baseIRI?: string;
-  // exists?: (expr: Algebra.ExistenceExpression, bindings: Bindings) => Promise<boolean>;
+  // Exists?: (expr: Algebra.ExistenceExpression, bindings: Bindings) => Promise<boolean>;
   // bnode?: (input?: string) => Promise<RDF.BlankNode>;
 }
 
@@ -247,46 +287,6 @@ export interface IActorQueryOperationOutputBoolean extends IActorQueryOperationO
   booleanResult: Promise<boolean>;
 
 }
-
-/**
- * @type {string} Context entry for current metadata.
- *                I.e., the metadata that was used to determine the next BGP operation.
- * @value {any} A metadata hash.
- */
-export const KEY_CONTEXT_BGP_CURRENTMETADATA: string = '@comunica/bus-query-operation:bgpCurrentMetadata';
-/**
- * @type {string} Context entry for an array of parent metadata.
- *                I.e., an array of the metadata that was present before materializing the current BGP operations.
- *                This can be passed in 'bgp' actions.
- *                The array entries should correspond to the pattern entries in the BGP.
- * @value {any} An array of metadata hashes.
- */
-export const KEY_CONTEXT_BGP_PARENTMETADATA: string = '@comunica/bus-query-operation:bgpParentMetadata';
-/**
- * @type {string} Context entry for indicating which patterns were bound from variables.
- *                I.e., an array of the same length as the value of KEY_CONTEXT_BGP_PARENTMETADATA,
- *                where each array value corresponds to the pattern bindings for the corresponding pattern.
- * @value {any} An array of {@link IPatternBindings}.
- */
-export const KEY_CONTEXT_BGP_PATTERNBINDINGS: string = '@comunica/bus-query-operation:bgpPatternBindings';
-/**
- * @type {string} Context entry for parent metadata.
- *                I.e., the metadata that was present before materializing the current operation.
- *                This can be passed in 'pattern' actions.
- * @value {any} A metadata hash.
- */
-export const KEY_CONTEXT_PATTERN_PARENTMETADATA: string = '@comunica/bus-query-operation:patternParentMetadata';
-/**
- * @type {string} Context entry for query's base IRI.
- * @value {any} A string.
- */
-export const KEY_CONTEXT_BASEIRI: string = '@comunica/actor-init-sparql:baseIRI';
-/**
- * @type {string} A timestamp representing the current time.
- *                This is required for certain SPARQL operations such as NOW().
- * @value {any} a date.
- */
-export const KEY_CONTEXT_QUERY_TIMESTAMP: string = '@comunica/actor-init-sparql:queryTimestamp';
 
 /**
  * Binds a quad pattern term's position to a variable.

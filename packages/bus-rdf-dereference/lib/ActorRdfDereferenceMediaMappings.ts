@@ -1,5 +1,5 @@
-import {IActorArgs, IActorTest} from "@comunica/core";
-import {ActorRdfDereference, IActionRdfDereference, IActorRdfDereferenceOutput} from "./ActorRdfDereference";
+import { IActorArgs, IActorTest } from '@comunica/core';
+import { ActorRdfDereference, IActionRdfDereference, IActorRdfDereferenceOutput } from './ActorRdfDereference';
 
 /**
  * A base actor for dereferencing URLs to quad streams.
@@ -13,10 +13,9 @@ import {ActorRdfDereference, IActionRdfDereference, IActorRdfDereferenceOutput} 
  * @see IActorRdfDereferenceOutput
  */
 export abstract class ActorRdfDereferenceMediaMappings extends ActorRdfDereference {
-
   public readonly mediaMappings: { [id: string]: string };
 
-  constructor(args: IActorRdfDereferenceMediaMappingsArgs) {
+  public constructor(args: IActorRdfDereferenceMediaMappingsArgs) {
     super(args);
   }
 
@@ -29,13 +28,12 @@ export abstract class ActorRdfDereferenceMediaMappings extends ActorRdfDereferen
   public getMediaTypeFromExtension(path: string): string {
     const dotIndex = path.lastIndexOf('.');
     if (dotIndex >= 0) {
-      const ext = path.substr(dotIndex);
-      // ignore dot
-      return this.mediaMappings[ext.substring(1)] || '';
+      const ext = path.slice(dotIndex);
+      // Ignore dot
+      return this.mediaMappings[ext.slice(1)] || '';
     }
     return '';
   }
-
 }
 
 export interface IActorRdfDereferenceMediaMappingsArgs
