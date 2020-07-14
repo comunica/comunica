@@ -155,7 +155,7 @@ export class RdfSourceQpf implements RDF.Source {
       // Determine the metadata and emit it
       const rdfMetadataOuput: IActorRdfMetadataOutput = await this.mediatorMetadata.mediate(
         { context: this.context, url, quads: rdfDereferenceOutput.quads, triples: rdfDereferenceOutput.triples });
-      this.mediatorMetadataExtract
+      const metadataExtractPromise = this.mediatorMetadataExtract
         .mediate({ context: this.context, url, metadata: rdfMetadataOuput.metadata })
         .then(({ metadata }) => {
           quads.setProperty('metadata', metadata);
@@ -179,6 +179,12 @@ export class RdfSourceQpf implements RDF.Source {
         // Reverse-map the overridden default graph back to the actual default graph
         filteredOutput = this.reverseMapQuadsToDefaultGraph(filteredOutput);
       }
+
+      // Swallow error events, as they will be emitted in the metadata stream as well,
+      // and therefore thrown async next.
+      filteredOutput.on('error', () => {});
+      // Ensures metadata event is emitted before end-event
+      await metadataExtractPromise;
 
       return filteredOutput;
     }, { autoStart: false });

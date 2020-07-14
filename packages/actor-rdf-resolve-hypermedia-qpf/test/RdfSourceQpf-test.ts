@@ -30,11 +30,14 @@ describe('RdfSourceQpf', () => {
     mediatorMetadata = {
       mediate: (args: any) => Promise.resolve({
         data: args.quads,
-        metadata: null,
+        metadata: args.quads,
       }),
     };
     mediatorMetadataExtract = {
-      mediate: () => Promise.resolve({ metadata: { next: 'NEXT' } }),
+      mediate: (action: any) => new Promise((resolve, reject) => {
+        action.metadata.on('error', reject);
+        action.metadata.on('end', () => resolve({ metadata: { next: 'NEXT' } }));
+      }),
     };
     mediatorRdfDereference = {
       mediate: (args: any) => Promise.resolve({
@@ -320,7 +323,7 @@ describe('RdfSourceQpf', () => {
       };
       mediatorMetadata.mediate = () => Promise.resolve({
         data: quads,
-        metadata: null,
+        metadata: quads,
       });
 
       const error = new Error('a');
