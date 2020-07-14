@@ -2219,10 +2219,10 @@
   resolved "https://registry.yarnpkg.com/@types/prettier/-/prettier-2.0.2.tgz#5bb52ee68d0f8efa9cc0099920e56be6cc4e37f3"
   integrity sha512-IkVfat549ggtkZUthUzEX49562eGikhSYeVGX97SkMFn+sTZrgRewXjQ4tPKFPCykZHkX1Zfd9OoELGqKU2jJA==
 
-"@types/rdf-js@*", "@types/rdf-js@3.0.2", "@types/rdf-js@^2.0.1", "@types/rdf-js@^2.0.11", "@types/rdf-js@^2.0.2", "@types/rdf-js@^3.0.0", "@types/rdf-js@^3.0.2":
-  version "3.0.2"
-  resolved "https://registry.yarnpkg.com/@types/rdf-js/-/rdf-js-3.0.2.tgz#b7ffe19073f39ffef3894baad84e6c8a7a0ed3e7"
-  integrity sha512-MWZrO1DXlxmeDGsjQPsgkceAJdxYb+d4WSjZZivusYzuXqvgdXqUwO6zPJYu6KsQ/Tkh3yNSUdOHqQ86xQH2Og==
+"@types/rdf-js@*", "@types/rdf-js@3.0.3", "@types/rdf-js@^2.0.1", "@types/rdf-js@^2.0.11", "@types/rdf-js@^2.0.2", "@types/rdf-js@^3.0.0", "@types/rdf-js@^3.0.2":
+  version "3.0.3"
+  resolved "https://registry.yarnpkg.com/@types/rdf-js/-/rdf-js-3.0.3.tgz#3c606f9bd25b2429b87249d6203c2ffeaab55c98"
+  integrity sha512-1dvodNHh/YpLovHA/b046Nu+xERVt0KcYJFQH1A8S4ZcMj+stYtx4ypXw0X2/oatbREUo4JW+cjoBll3CVtwSQ==
   dependencies:
     "@types/node" "*"
 
