@@ -106,6 +106,6 @@
     "version": "manual-git-changelog onversion"
   },
   "resolutions": {
-    "@types/rdf-js": "3.0.2"
+    "@types/rdf-js": "3.0.3"
   }
 }
