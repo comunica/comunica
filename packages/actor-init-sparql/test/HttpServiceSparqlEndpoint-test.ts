@@ -8,15 +8,7 @@ import {fs, testArgumentDict, testFileContentDict} from "../__mocks__/fs";
 // @ts-ignore
 import {http, ServerResponseMock} from "../__mocks__/http";
 // @ts-ignore
-import {newEngineDynamic} from "../__mocks__/index";
-// @ts-ignore
-import {newEngineDynamic2} from "../__mocks__/index2";
-// @ts-ignore
-import {newEngineDynamic3} from "../__mocks__/index3";
-// @ts-ignore
-import {newEngineDynamic4} from "../__mocks__/index4";
-// @ts-ignore
-import {newEngineDynamic5} from "../__mocks__/index5";
+import {newEngineDynamic, newEngineDynamicQuads, newEngineDynamicBoolean, newEngineDynamicBindings, newEngineDynamicOther} from "../__mocks__/index";
 // @ts-ignore
 import {parse} from "../__mocks__/url";
 import {HttpServiceSparqlEndpoint} from "../lib/HttpServiceSparqlEndpoint";
@@ -317,7 +309,7 @@ describe('HttpServiceSparqlEndpoint', () => {
 
       it("should call writeQueryResult with the same quality in the possibility list"
           , async () => {
-            const engine4 = await newEngineDynamic4();
+            const engine4 = await newEngineDynamicBindings();
             request.method = "GET";
             request.url = "url_undefined_query";
             await instance.handleRequest(engine4, variants, stdout, stderr, request, response);
@@ -328,7 +320,7 @@ describe('HttpServiceSparqlEndpoint', () => {
 
       it("should call writeQueryResult with null as mediatype"
       , async () => {
-        const engine4 = await newEngineDynamic4();
+        const engine4 = await newEngineDynamicBindings();
         request.method = "GET";
         request.url = "url_undefined_query";
         request.headers = {'content-type': "contenttypewhichdefinitelydoesnotexist",
@@ -411,7 +403,7 @@ describe('HttpServiceSparqlEndpoint', () => {
       });
 
       it('pass multiple formats choose first with best quality, bindings type possible default', async () => {
-        await instance.writeQueryResult(await newEngineDynamic4(), new PassThrough(), new PassThrough(),
+        await instance.writeQueryResult(await newEngineDynamicBindings(), new PassThrough(), new PassThrough(),
             request, response, query, mediaType, true, ['other', 'application/json']);
         expect(response.writeHead).toHaveBeenCalledTimes(1);
         expect(response.writeHead).toHaveBeenLastCalledWith(200,
@@ -421,7 +413,7 @@ describe('HttpServiceSparqlEndpoint', () => {
       });
 
       it('pass multiple formats choose first with best quality, bindings type not possiible', async () => {
-        await instance.writeQueryResult(await newEngineDynamic4(), new PassThrough(), new PassThrough(),
+        await instance.writeQueryResult(await newEngineDynamicBindings(), new PassThrough(), new PassThrough(),
             request, response, query, mediaType, true, ['other']);
         expect(response.writeHead).toHaveBeenCalledTimes(1);
         expect(response.writeHead).toHaveBeenLastCalledWith(200,
@@ -431,7 +423,7 @@ describe('HttpServiceSparqlEndpoint', () => {
       });
 
       it('pass multiple formats choose first with best quality, boolean type possible default', async () => {
-        await instance.writeQueryResult(await newEngineDynamic3(), new PassThrough(), new PassThrough(),
+        await instance.writeQueryResult(await newEngineDynamicBoolean(), new PassThrough(), new PassThrough(),
             request, response, query, mediaType, true, ['other', 'application/json', 'simple']);
         expect(response.writeHead).toHaveBeenCalledTimes(1);
         expect(response.writeHead).toHaveBeenLastCalledWith(200,
@@ -441,7 +433,7 @@ describe('HttpServiceSparqlEndpoint', () => {
       });
 
       it('pass multiple formats choose first with best quality, boolean type not possible', async () => {
-        await instance.writeQueryResult(await newEngineDynamic3(), new PassThrough(), new PassThrough(),
+        await instance.writeQueryResult(await newEngineDynamicBoolean(), new PassThrough(), new PassThrough(),
             request, response, query, mediaType, true, ['other', 'application/json']);
         expect(response.writeHead).toHaveBeenCalledTimes(1);
         expect(response.writeHead).toHaveBeenLastCalledWith(200,
@@ -451,7 +443,7 @@ describe('HttpServiceSparqlEndpoint', () => {
       });
 
       it('pass multiple formats choose first with best quality, quads type possible default', async () => {
-        await instance.writeQueryResult(await newEngineDynamic2(), new PassThrough(), new PassThrough(),
+        await instance.writeQueryResult(await newEngineDynamicQuads(), new PassThrough(), new PassThrough(),
             request, response, query, mediaType, true, ['other', 'application/json', 'simple', 'application/trig']);
         expect(response.writeHead).toHaveBeenCalledTimes(1);
         expect(response.writeHead).toHaveBeenLastCalledWith(200,
@@ -461,7 +453,7 @@ describe('HttpServiceSparqlEndpoint', () => {
       });
 
       it('pass multiple formats choose first with best quality, quads type not possible', async () => {
-        await instance.writeQueryResult(await newEngineDynamic2(), new PassThrough(), new PassThrough(),
+        await instance.writeQueryResult(await newEngineDynamicQuads(), new PassThrough(), new PassThrough(),
             request, response, query, mediaType, true, ['other', 'application/json', 'simple']);
         expect(response.writeHead).toHaveBeenCalledTimes(1);
         expect(response.writeHead).toHaveBeenLastCalledWith(200,
@@ -471,7 +463,7 @@ describe('HttpServiceSparqlEndpoint', () => {
       });
 
       it('no default option, should take current mediatype', async () => {
-        await instance.writeQueryResult(await newEngineDynamic5(), new PassThrough(), new PassThrough(),
+        await instance.writeQueryResult(await newEngineDynamicOther(), new PassThrough(), new PassThrough(),
             request, response, query, mediaType, true, ['other', 'mock']);
         expect(response.writeHead).toHaveBeenCalledTimes(1);
         expect(response.writeHead).toHaveBeenLastCalledWith(200,
