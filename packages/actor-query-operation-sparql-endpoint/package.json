@@ -36,6 +36,7 @@
   ],
   "dependencies": {
     "@comunica/utils-datasource": "^1.13.0",
+    "@types/rdf-js": "^3.0.0",
     "arrayify-stream": "^1.0.0",
     "asynciterator": "^2.0.1",
     "fetch-sparql-endpoint": "^1.5.0",

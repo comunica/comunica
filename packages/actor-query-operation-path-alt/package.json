@@ -40,6 +40,7 @@
   },
   "dependencies": {
     "@comunica/actor-abstract-path": "^1.13.0",
+    "@types/lodash.uniq": "^4.5.3",
     "asynciterator-union": "^2.1.2",
     "lodash.uniq": "^4.5.0",
     "sparqlalgebrajs": "^2.2.2"

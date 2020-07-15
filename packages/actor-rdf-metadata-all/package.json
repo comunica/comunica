@@ -34,6 +34,9 @@
     "index.d.ts",
     "index.js"
   ],
+  "dependencies": {
+    "@types/rdf-js": "^3.0.0"
+  },
   "peerDependencies": {
     "@comunica/bus-rdf-metadata": "^1.6.3",
     "@comunica/core": "^1.6.3"

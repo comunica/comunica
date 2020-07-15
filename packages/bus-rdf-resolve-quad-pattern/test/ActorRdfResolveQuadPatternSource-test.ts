@@ -1,11 +1,13 @@
 import {Bus} from "@comunica/core";
 import {ArrayIterator} from "asynciterator";
-import {ActorRdfResolveQuadPatternSource, getDataSourceType, getDataSourceValue} from "..";
+import {ActorRdfResolveQuadPatternSource, getDataSourceType, getDataSourceValue, isDataSourceRawType} from "..";
+import * as RDF from "rdf-js";
 
 const arrayifyStream = require("arrayify-stream");
 
 describe('ActorRdfResolveQuadPatternSource', () => {
   const bus = new Bus({ name: 'bus' });
+  const rdfjsSource: RDF.Source = <any> { match: true };
 
   describe('The ActorRdfResolveQuadPatternSource module', () => {
     it('should be a function', () => {
@@ -62,13 +64,39 @@ describe('ActorRdfResolveQuadPatternSource', () => {
     });
   });
 
+  describe('isDataSourceRawType', () => {
+    it('should return on a string source', () => {
+      return expect(isDataSourceRawType('abc')).toEqual(true);
+    });
+
+    it('should return on an rdfjs source', () => {
+      return expect(isDataSourceRawType(rdfjsSource)).toEqual(true);
+    });
+
+    it('should return on an object source', () => {
+      return expect(isDataSourceRawType({type: 'T', value: 'abc'})).toEqual(false);
+    });
+  });
+
   describe('getDataSourceType', () => {
     it('should return on a string source', () => {
       return expect(getDataSourceType('abc')).toEqual('');
     });
 
+    it('should return on an rdfjs source', () => {
+      return expect(getDataSourceType(rdfjsSource)).toEqual('rdfjsSource');
+    });
+
     it('should return on an object source', () => {
       return expect(getDataSourceType({ type: 'T', value: 'abc' })).toEqual('T');
+    });
+
+    it('should return on an object source with implicit rdfjs source', () => {
+      return expect(getDataSourceType({ value: rdfjsSource })).toEqual(undefined);
+    });
+
+    it('should return on an object source with explicit rdfjs source', () => {
+      return expect(getDataSourceType({ type: 'rdfjsSource', value: rdfjsSource })).toEqual('rdfjsSource');
     });
   });
 
@@ -77,8 +105,20 @@ describe('ActorRdfResolveQuadPatternSource', () => {
       return expect(getDataSourceValue('abc')).toEqual('abc');
     });
 
+    it('should return on a rdfjs source source', () => {
+      return expect(getDataSourceValue(rdfjsSource)).toEqual(rdfjsSource);
+    });
+
     it('should return on an object source', () => {
       return expect(getDataSourceValue({ type: 'T', value: 'abc' })).toEqual('abc');
+    });
+
+    it('should return on an object source with implicit rdfjs source', () => {
+      return expect(getDataSourceValue({ value: rdfjsSource })).toEqual(rdfjsSource);
+    });
+
+    it('should return on an object source with explicit rdfjs source', () => {
+      return expect(getDataSourceValue({ type: 'rdfjsSource', value: rdfjsSource })).toEqual(rdfjsSource);
     });
   });
 });

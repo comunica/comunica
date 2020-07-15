@@ -34,6 +34,7 @@
     "index.js"
   ],
   "dependencies": {
+    "@types/rdf-js": "^3.0.0",
     "graphql-ld": "^1.1.0",
     "rdf-store-stream": "^1.0.0"
   },

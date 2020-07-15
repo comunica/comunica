@@ -1,7 +1,6 @@
 import { Term } from "rdf-js";
-import { termToString } from "rdf-string";
 import { Algebra } from "sparqlalgebrajs";
-import { AsyncEvaluator, isExpressionError } from 'sparqlee';
+import { AsyncEvaluator, isExpressionError, orderTypes } from 'sparqlee';
 
 import {
   ActorQueryOperation, ActorQueryOperationTypedMediated,
@@ -65,12 +64,7 @@ export class ActorQueryOperationOrderBySparqlee extends ActorQueryOperationTyped
 
       // Sort the annoted stream
       const sortedStream = new SortIterator(transformedStream, (a, b) => {
-        const orderA = termToString(a.result);
-        const orderB = termToString(b.result);
-        if (!orderA || !orderB || orderA === orderB) {
-          return 0;
-        }
-        return orderA > orderB === isAscending ? 1 : -1;
+        return orderTypes(a.result, b.result, isAscending);
       }, options);
 
       // Remove the annotation

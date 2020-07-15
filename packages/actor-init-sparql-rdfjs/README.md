@@ -32,7 +32,7 @@ store.addQuad(DataFactory.quad(
 // If you intend to query multiple times, be sure to cache your engine for optimal performance.
 const myEngine = newEngine();
 const result = await myEngine.query('SELECT * { ?s ?p <http://dbpedia.org/resource/Belgium>. ?s ?p ?o } LIMIT 100',
-  { sources: [ { type: 'rdfjsSource', value: store } ] });
+  { sources: [store] });
 result.bindingsStream.on('data', (data) => {
   // Each data object contains a mapping from variables to RDFJS terms.
   console.log(data.get('?s'));
@@ -40,3 +40,16 @@ result.bindingsStream.on('data', (data) => {
   console.log(data.get('?o'));
 });
 ```
+
+## Optimization
+
+The RDFJS [Source interface](http://rdf.js.org/#source-interface) by default only exposed the `match` method.
+In order to allow Comunica to produce more efficient query plans,
+you can optionally expose a `countQuads` method that has the same signature as `match`,
+but returns a `number` or `Promise<number>` that represents (an estimate of)
+the number of quads that would match the given quad pattern.
+Certain `Source` implementations may be able to provide an efficient implementation of this method,
+which would lead to better query performance.
+
+If Comunica does not detect a `countQuads` method, it will fallback to a sub-optimal counting mechanism
+where `match` will be called again to manually count the number of matches.
