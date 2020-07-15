@@ -46,13 +46,12 @@ export class ActorHttpNative extends ActorHttp {
       options.headers = (<Request> action.input).headers;
     }
 
-    if (options.headers){
-      if (!options.headers.get('user-agent')) {
-        options.headers.append('user-agent', this.userAgent);
-      }
-    } else {
-      options.headers = new Headers().append('user-agent', this.userAgent);
-    };
+    if (!options.headers) {
+      options.headers = new Headers();
+    }
+    if (!options.headers.has('user-agent')) {
+      options.headers.append('user-agent', this.userAgent);
+    }
 
     options.method = options.method || 'GET';
 
