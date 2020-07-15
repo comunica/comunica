@@ -1,6 +1,6 @@
 const stringToStream = require('streamify-string');
 
-class EngineMock {
+class EngineMock3 {
   constructor(){
 
   }
@@ -9,7 +9,7 @@ class EngineMock {
     if (sparql === "query_reject"){
       return Promise.reject("Rejected query");
     }
-    return Promise.resolve();
+    return {type: "boolean"};
   }
 
   resultToString(queryResult, mediaType){
@@ -35,8 +35,8 @@ class EngineMock {
   }
 }
 
-function newEngineDynamic(options) {
-  let mock = new EngineMock();
+function newEngineDynamic3(options) {
+  let mock = new EngineMock3();
   mock.invalidateHttpCache = jest.fn();
 
   if (options && options.mainModulePath === "rejecting_engine_promise") {
@@ -47,5 +47,5 @@ function newEngineDynamic(options) {
 }
 
 module.exports = {
-  newEngineDynamic: newEngineDynamic,
+  newEngineDynamic3: newEngineDynamic3,
 };

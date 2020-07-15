@@ -1,6 +1,6 @@
 const stringToStream = require('streamify-string');
 
-class EngineMock {
+class EngineMock4 {
   constructor(){
 
   }
@@ -9,11 +9,13 @@ class EngineMock {
     if (sparql === "query_reject"){
       return Promise.reject("Rejected query");
     }
-    return Promise.resolve();
+    return {type: "bindings"};
   }
 
   resultToString(queryResult, mediaType){
     let result = stringToStream("test_query_result");
+    console.log("result to string");
+    console.log(result);
     if (mediaType === "mediatype_queryresultstreamerror"){
       result.pipe = () => result.emit('error', new Error('error'));
     } else if (mediaType === "mediatype_throwerror") {
@@ -35,8 +37,8 @@ class EngineMock {
   }
 }
 
-function newEngineDynamic(options) {
-  let mock = new EngineMock();
+function newEngineDynamic4(options) {
+  let mock = new EngineMock4();
   mock.invalidateHttpCache = jest.fn();
 
   if (options && options.mainModulePath === "rejecting_engine_promise") {
@@ -47,5 +49,5 @@ function newEngineDynamic(options) {
 }
 
 module.exports = {
-  newEngineDynamic: newEngineDynamic,
+  newEngineDynamic4: newEngineDynamic4,
 };

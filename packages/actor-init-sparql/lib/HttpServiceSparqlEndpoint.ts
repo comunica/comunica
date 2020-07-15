@@ -158,8 +158,41 @@ Options:
   public async handleRequest(engine: ActorInitSparql, variants: { type: string, quality: number }[],
                              stdout: Writable, stderr: Writable,
                              request: http.IncomingMessage, response: http.ServerResponse) {
-    const mediaType: string = request.headers.accept && request.headers.accept !== '*/*'
-      ? require('negotiate').choose(variants, request)[0].type : null;
+
+    // Negotiate the best mediatype format
+    let negotiation = undefined;
+    let mediaType = null;
+    let mediaTypePossibilities = [];
+    try {
+      negotiation = require('negotiate').choose(variants, request);
+      mediaType = request.headers.accept && request.headers.accept !== '*/*' && negotiation
+      ? negotiation[0].type : null;
+
+      // Retrieve all mediatypes with equal quality in this case
+      let listSameQuality: any[] = [];
+      if (mediaType && negotiation) {
+        listSameQuality = [negotiation[0]];
+        let i = 1;
+        const quality = negotiation[0].quality;
+        while (negotiation[i] && negotiation[i].quality === quality) {
+          listSameQuality.push(negotiation[i]);
+          i++;
+        }
+      }
+
+      // Make a list with other possible media types beside the already chosen one
+      let i = 0;
+      for (const element of listSameQuality) {
+        const currentType = element.type;
+        if (currentType === 'application/json' || currentType === 'application/trig' || currentType === 'simple') {
+          mediaTypePossibilities.push(listSameQuality[i].type);
+        }
+        i++;
+      }
+
+    } catch (exception) {
+      // nothing
+    }
 
     // Verify the path
     const requestUrl = url.parse(request.url || '', true);
@@ -181,12 +214,12 @@ Options:
     switch (request.method) {
     case 'POST':
       sparql = await this.parseBody(request);
-      this.writeQueryResult(engine, stdout, stderr, request, response, sparql, mediaType, false);
+      this.writeQueryResult(engine, stdout, stderr, request, response, sparql, mediaType, false, mediaTypePossibilities);
       break;
     case 'HEAD':
     case 'GET':
       sparql = <string> (<querystring.ParsedUrlQuery> requestUrl.query).query || '';
-      this.writeQueryResult(engine, stdout, stderr, request, response, sparql, mediaType, request.method === 'HEAD');
+      this.writeQueryResult(engine, stdout, stderr, request, response, sparql, mediaType, request.method === 'HEAD', mediaTypePossibilities);
       break;
     default:
       stdout.write('[405] ' + request.method + ' to ' + requestUrl + '\n');
@@ -209,14 +242,39 @@ Options:
    */
   public async writeQueryResult(engine: ActorInitSparql, stdout: Writable, stderr: Writable,
                           request: http.IncomingMessage, response: http.ServerResponse,
-                          sparql: string, mediaType: string, headOnly: boolean) {
+                          sparql: string, mediaType: string, headOnly: boolean, mediaTypePossibilities: any[]) {
     if (!sparql) {
+      if (mediaTypePossibilities && mediaTypePossibilities.includes('application/json')) {
+        mediaType = 'application/json';
+      }
       return this.writeServiceDescription(engine, stdout, stderr, request, response, mediaType, headOnly);
     }
 
     let result: IActorQueryOperationOutput;
     try {
       result = await engine.query(sparql, this.context);
+      // Check if the result type is of the following type then update the mediatype only if it is an allowed possibility
+      if (result && result.type) {
+        switch (result.type) {
+          case 'bindings':
+            if (mediaTypePossibilities.includes('application/json')) {
+              mediaType = 'application/json';
+            }
+            break;
+          case 'quads':
+            if (mediaTypePossibilities.includes('application/trig')) {
+              mediaType = 'application/trig';
+            }
+            break;
+          case 'boolean':
+            if (mediaTypePossibilities.includes('simple')) {
+              mediaType = 'simple';
+            }
+            break;
+          default:
+            break;
+        }
+      }
     } catch (error) {
       stdout.write('[400] Bad request\n');
       response.writeHead(400,
