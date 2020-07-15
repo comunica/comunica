@@ -811,7 +811,7 @@ describe('HttpServiceSparqlEndpoint', () => {
 
             expect(response.writeHead).toHaveBeenCalledWith(404, { 'Access-Control-Allow-Origin': '*',
               'content-type': HttpServiceSparqlEndpoint.MIME_JSON});
-            expect(response.end).toHaveBeenCalledWith(JSON.stringify({ message: 'Resource not found' }));
+            expect(response.end).toHaveBeenCalledWith(JSON.stringify({ message: 'Resource not found. Queries are accepted on /sparql.' }));
           });
 
       it("should respond with 404 and end the response with the correct error message if url is undefined"
@@ -821,7 +821,7 @@ describe('HttpServiceSparqlEndpoint', () => {
 
           expect(response.writeHead).toHaveBeenCalledWith(404, { 'Access-Control-Allow-Origin': '*',
             'content-type': HttpServiceSparqlEndpoint.MIME_JSON});
-          expect(response.end).toHaveBeenCalledWith(JSON.stringify({ message: 'Resource not found' }));
+          expect(response.end).toHaveBeenCalledWith(JSON.stringify({ message: 'Resource not found. Queries are accepted on /sparql.' }));
         });
     });
   });
