@@ -37,6 +37,7 @@ jest.mock("fs", () => {
 });
 
 describe('HttpServiceSparqlEndpoint', () => {
+
   describe('constructor', () => {
     it("shouldn't error if no args are supplied", () => {
       expect(() => new HttpServiceSparqlEndpoint()).not.toThrowError();
@@ -329,6 +330,40 @@ describe('HttpServiceSparqlEndpoint', () => {
 
         expect(instance.writeQueryResult).toHaveBeenCalledWith(engine4, stdout, stderr,
             request, response, '', null, false, []);
+      });
+
+      it("should respond with 404 when not sparql url or root url"
+        , async () => {
+          request.url =  "not_urlsparql";
+          await instance.handleRequest(engine, variants, stdout, stderr, request, response);
+
+          expect(response.writeHead).toHaveBeenCalledWith(404, {
+            'content-type': HttpServiceSparqlEndpoint.MIME_JSON,
+            'Access-Control-Allow-Origin': '*' });
+          expect(response.end).toHaveBeenCalledWith(JSON.stringify({ message: 'Resource not found. Queries are accepted on /sparql.' }));
+        });
+
+      it("should respond with 404 when url undefined"
+        , async () => {
+          request.url = undefined;
+          await instance.handleRequest(engine, variants, stdout, stderr, request, response);
+
+          expect(response.writeHead).toHaveBeenCalledWith(404, {
+            'content-type': HttpServiceSparqlEndpoint.MIME_JSON,
+            'Access-Control-Allow-Origin': '*' });
+          expect(response.end).toHaveBeenCalledWith(JSON.stringify({ message: 'Resource not found. Queries are accepted on /sparql.' }));
+        });
+
+      it("should respond with 301 when GET method called on root url"
+      , async () => {
+        request.method = "GET";
+        request.url = "/";
+        await instance.handleRequest(engine, variants, stdout, stderr, request, response);
+        expect(response.writeHead).toHaveBeenCalledWith(301, {
+          'content-type': HttpServiceSparqlEndpoint.MIME_JSON,
+          'Access-Control-Allow-Origin': '*',
+          'Location': 'http://localhost:3000/sparql'});
+        expect(response.end).toHaveBeenCalledWith(JSON.stringify({ message: 'Queries are accepted on /sparql. Redirected.' }));
       });
     });
 

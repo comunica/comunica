@@ -4,7 +4,7 @@ import {
   IActorQueryOperationOutputBindings, IActorQueryOperationTypedMediatedArgs,
 } from "@comunica/bus-query-operation";
 import {ActionContext} from "@comunica/core";
-import {RoundRobinUnionIterator} from "asynciterator-union";
+import {UnionIterator} from "asynciterator";
 import {Algebra} from "sparqlalgebrajs";
 
 /**
@@ -31,7 +31,7 @@ export class ActorQueryOperationPathAlt extends ActorAbstractPath {
       }),
     ])).map((op) => ActorQueryOperation.getSafeBindings(op));
 
-    const bindingsStream = new RoundRobinUnionIterator(subOperations.map((op) => op.bindingsStream));
+    const bindingsStream = new UnionIterator(subOperations.map((op) => op.bindingsStream), { autoStart: false });
     const variables = require('lodash.uniq')((<string[]> []).concat
       .apply([], subOperations.map((op) => op.variables)));
 

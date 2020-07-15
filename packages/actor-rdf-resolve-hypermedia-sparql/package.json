@@ -35,12 +35,12 @@
     "index.js"
   ],
   "dependencies": {
+    "@comunica/actor-rdf-resolve-quad-pattern-sparql-json": "1.13.0",
     "@rdfjs/data-model": "^1.1.1",
-    "asynciterator": "^2.0.1",
-    "asynciterator-promiseproxy": "^2.1.0",
+    "@types/rdf-js": "^3.0.0",
+    "asynciterator": "^3.0.0",
     "rdf-terms": "^1.4.0",
-    "sparqlalgebrajs": "^2.2.2",
-    "sparqljson-parse": "^1.5.0"
+    "sparqlalgebrajs": "^2.2.2"
   },
   "peerDependencies": {
     "@comunica/bus-rdf-resolve-hypermedia": "^1.8.0",

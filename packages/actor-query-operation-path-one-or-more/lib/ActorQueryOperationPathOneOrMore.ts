@@ -5,8 +5,7 @@ import {
   IActorQueryOperationTypedMediatedArgs,
 } from "@comunica/bus-query-operation";
 import {ActionContext} from "@comunica/core";
-import {BufferedIterator, MultiTransformIterator} from "asynciterator";
-import {PromiseProxyIterator} from "asynciterator-promiseproxy";
+import {BufferedIterator, MultiTransformIterator, TransformIterator} from "asynciterator";
 import {Term} from "rdf-js";
 import {termToString} from "rdf-string";
 import {Algebra} from "sparqlalgebrajs";
@@ -38,22 +37,24 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
       const V = {};
 
       const bindingsStream
-        : MultiTransformIterator<Bindings, Bindings> = new MultiTransformIterator(results.bindingsStream);
-      bindingsStream._createTransformer = (bindings: Bindings) => {
-        const val = bindings.get(o);
-
-        return new PromiseProxyIterator<Bindings>(
-          async () => {
-            const it = new BufferedIterator<Term>();
-            await this.ALP(val, predicate.path, context, V, it, { count: 0 });
-            return it.transform<Bindings>({
-              transform: (item, next) => {
-                bindingsStream._push(Bindings({ [o]: item }));
-                next();
-              },
-            });
-          }, { autoStart: true, maxBufferSize: 128 });
-      };
+        : MultiTransformIterator<Bindings, Bindings> = new MultiTransformIterator(results.bindingsStream,
+          {
+            multiTransform: (bindings: Bindings) => {
+              const val = bindings.get(o);
+              return new TransformIterator<Bindings>(
+                  async () => {
+                    const it = new BufferedIterator<Term>();
+                    await this.ALP(val, predicate.path, context, V, it, { count: 0 });
+                    return it.transform<Bindings>({
+                      transform: (item, next, push) => {
+                        push(Bindings({ [o]: item }));
+                        next();
+                      },
+                    });
+                  }, { maxBufferSize: 128 });
+            },
+            autoStart: false,
+          });
       return { type: 'bindings', bindingsStream, variables: [o] };
     } else if (sVar && oVar) {
       throw new Error('ZeroOrMore path expressions with 2 variables not supported yet');
@@ -76,8 +77,8 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
       }));
       const bindingsStream = results.bindingsStream.transform<Bindings>({
         filter: (item) => item.get(bString).equals(path.object),
-        transform: (item, next) => {
-          bindingsStream._push(Bindings({ }));
+        transform: (item, next, push) => {
+          push(Bindings({ }));
           next();
         },
       });

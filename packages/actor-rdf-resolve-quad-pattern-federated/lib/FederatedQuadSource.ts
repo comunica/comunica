@@ -5,9 +5,7 @@ import {
 import {ActionContext, Actor, IActorTest, Mediator} from "@comunica/core";
 import {BlankNodeScoped} from "@comunica/data-factory";
 import * as DataFactory from "@rdfjs/data-model";
-import {AsyncIterator, EmptyIterator} from "asynciterator";
-import {PromiseProxyIterator} from "asynciterator-promiseproxy";
-import {RoundRobinUnionIterator} from "asynciterator-union";
+import {AsyncIterator, EmptyIterator, TransformIterator, UnionIterator} from "asynciterator";
 import * as RDF from "rdf-js";
 import {mapTerms} from "rdf-terms";
 import {Algebra, Factory} from "sparqlalgebrajs";
@@ -211,12 +209,12 @@ export class FederatedQuadSource implements ILazyQuadSource {
     // TODO: A solution without cloning would be preferred here.
     //       See discussion at https://github.com/comunica/comunica/issues/553
     const sourcesIt = this.sources.iterator();
-    const proxyIt: AsyncIterator<PromiseProxyIterator<RDF.Quad>> = sourcesIt.map((source) => {
+    const proxyIt: AsyncIterator<TransformIterator<RDF.Quad>> = sourcesIt.map((source) => {
       const sourceId = this.getSourceId(source);
       remainingSources++;
       sourcesCount++;
 
-      return new PromiseProxyIterator(async () => {
+      return new TransformIterator(async () => {
         // Convert falsy terms to variables, reverse operation of {@link ActorRdfResolveQuadPatternSource#variableToUndefined}.
         // Deskolemize terms, so we send the original blank nodes to each source.
         // Note that some sources may not match bnodes by label. SPARQL endpoints for example consider them variables.
@@ -259,12 +257,12 @@ export class FederatedQuadSource implements ILazyQuadSource {
         }
 
         return output.data.map((quad) => FederatedQuadSource.skolemizeQuad(quad, sourceId));
-      });
+      }, { autoStart: false });
     });
-    const it: RoundRobinUnionIterator<RDF.Quad> = new RoundRobinUnionIterator(proxyIt.clone());
+    const it: UnionIterator<RDF.Quad> = new UnionIterator(proxyIt.clone(), { autoStart: false });
     it.on('newListener', (eventName) => {
       if (eventName === 'metadata') {
-        setImmediate(() => proxyIt.clone().each((proxy) => proxy.loadSource()));
+        setImmediate(() => proxyIt.clone().forEach((proxy) => proxy.source));
       }
     });
 

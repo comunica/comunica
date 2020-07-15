@@ -1,7 +1,7 @@
 import {ActorQueryOperation, Bindings, IActorQueryOperationOutputBoolean} from "@comunica/bus-query-operation";
 import {Bus} from "@comunica/core";
 import {literal} from "@rdfjs/data-model";
-import {ArrayIterator, AsyncIterator, BufferedIterator, EmptyIterator} from "asynciterator";
+import {ArrayIterator, AsyncIterator, BufferedIterator, range} from "asynciterator";
 import {ActorQueryOperationAsk} from "../lib/ActorQueryOperationAsk";
 
 describe('ActorQueryOperationAsk', () => {
@@ -19,7 +19,7 @@ describe('ActorQueryOperationAsk', () => {
           Bindings({ a: literal('1') }),
           Bindings({ a: literal('2') }),
           Bindings({ a: literal('3') }),
-        ]),
+        ], { autoStart: false }),
         metadata: () => Promise.resolve({ totalItems: 3 }),
         operated: arg,
         type: 'bindings',
@@ -28,7 +28,7 @@ describe('ActorQueryOperationAsk', () => {
     };
     mediatorQueryOperationEmpty = {
       mediate: (arg: any) => Promise.resolve({
-        bindingsStream: new EmptyIterator(),
+        bindingsStream: new ArrayIterator([], { autoStart: false }),
         metadata: () => Promise.resolve({ totalItems: 0 }),
         operated: arg,
         type: 'bindings',
@@ -50,7 +50,7 @@ describe('ActorQueryOperationAsk', () => {
     };
     mediatorQueryOperationInf = {
       mediate: (arg: any) => Promise.resolve({
-        bindingsStream: AsyncIterator.range(0),
+        bindingsStream: range(0, Infinity),
         metadata: () => Promise.resolve({ totalItems: 0 }),
         operated: arg,
         type: 'bindings',

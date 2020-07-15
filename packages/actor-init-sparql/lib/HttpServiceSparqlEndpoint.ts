@@ -143,7 +143,7 @@ Options:
     const server = http.createServer(this.handleRequest.bind(this, engine, variants, stdout, stderr));
     server.listen(this.port);
     server.setTimeout(2 * this.timeout); // unreliable mechanism, set too high on purpose
-    stderr.write('Server running on http://localhost:' + this.port + '/\n');
+    stderr.write('Server running on http://localhost:' + this.port + '/sparql\n');
   }
 
   /**
@@ -196,11 +196,20 @@ Options:
 
     // Verify the path
     const requestUrl = url.parse(request.url || '', true);
-    if (requestUrl.pathname !== '/sparql') {
-      stdout.write('[404] Resource not found\n');
+    if (requestUrl.pathname === '/' || request.url === "/") {
+      stdout.write('[301] Permanently moved. Redirected to /sparql.');
+      response.writeHead(301,
+          { 'content-type': HttpServiceSparqlEndpoint.MIME_JSON, 
+          'Access-Control-Allow-Origin': '*' ,
+          'Location': 'http://localhost:' + this.port + '/sparql'});
+      response.end(JSON.stringify({ message: 'Queries are accepted on /sparql. Redirected.'}));
+      return;
+    } else if (requestUrl.pathname !== '/sparql') {
+      stdout.write('[404] Resource not found. Queries are accepted on /sparql.\n');
       response.writeHead(404,
-          { 'content-type': HttpServiceSparqlEndpoint.MIME_JSON, 'Access-Control-Allow-Origin': '*' });
-      response.end(JSON.stringify({ message: 'Resource not found' }));
+          { 'content-type': HttpServiceSparqlEndpoint.MIME_JSON, 
+          'Access-Control-Allow-Origin': '*'});
+      response.end(JSON.stringify({ message: 'Resource not found. Queries are accepted on /sparql.'}));
       return;
     }
 

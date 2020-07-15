@@ -11,7 +11,7 @@ import {ActorRdfJoin} from "@comunica/bus-rdf-join";
 import {ActionContext, IActorTest} from "@comunica/core";
 import {MultiTransformIterator} from "asynciterator";
 import {Algebra, Factory} from "sparqlalgebrajs";
-import {PromiseProxyIterator} from "asynciterator-promiseproxy";
+import {TransformIterator} from "asynciterator";
 
 /**
  * A comunica LeftJoin left-deep Query Operation Actor.
@@ -38,15 +38,15 @@ export class ActorQueryOperationLeftJoinLeftDeep extends ActorQueryOperationType
   public static createLeftDeepStream(leftStream: BindingsStream, rightOperation: Algebra.Operation,
                                      operationBinder: (operation: Algebra.Operation) => Promise<BindingsStream>)
     : BindingsStream {
-    const bindingsStream: MultiTransformIterator<Bindings, Bindings> = new MultiTransformIterator(leftStream,
-      { optional: true });
-    bindingsStream._createTransformer = (bindings: Bindings) => {
-      const bindingsMerger = (subBindings: Bindings) => subBindings.merge(bindings);
-      return new PromiseProxyIterator(
-        async () => (await operationBinder(materializeOperation(rightOperation, bindings)))
-          .map(bindingsMerger), { autoStart: true, maxBufferSize: 128 });
-    };
-    return bindingsStream;
+    return new MultiTransformIterator(leftStream, {
+      multiTransform: (bindings: Bindings) => {
+        const bindingsMerger = (subBindings: Bindings) => subBindings.merge(bindings);
+        return new TransformIterator(
+          async () => (await operationBinder(materializeOperation(rightOperation, bindings)))
+            .map(bindingsMerger), { maxBufferSize: 128 });
+      },
+      optional: true,
+    });
   }
 
   public async testOperation(pattern: Algebra.LeftJoin, context: ActionContext): Promise<IActorTest> {

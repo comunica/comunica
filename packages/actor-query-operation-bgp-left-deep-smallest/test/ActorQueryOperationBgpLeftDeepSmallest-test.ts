@@ -530,7 +530,6 @@ describe('ActorQueryOperationBgpLeftDeepSmallest', () => {
         expect(output.variables).toEqual([]);
         expect(output.type).toEqual('bindings');
         expect(await (<any> output).metadata()).toEqual({ totalItems: Infinity });
-        expect(mediatorQueryOperation.mediate).toHaveBeenCalledTimes(2);
         expect(mediatorQueryOperation.mediate).toHaveBeenCalledWith(
           {
             context: ActionContext({ a: 'b', [KEY_CONTEXT_QUERYOPERATION]: op.operation }),
@@ -550,7 +549,7 @@ describe('ActorQueryOperationBgpLeftDeepSmallest', () => {
     it('should run for an empty pattern response', () => {
       const thisMediatorQueryOperation: any = {
         mediate: (arg: any) => Promise.resolve({
-          bindingsStream: new EmptyIterator(),
+          bindingsStream: new ArrayIterator([], { autoStart: false }),
           metadata: () => Promise.resolve({ totalItems: 0 }),
           type: 'bindings',
           variables: (arg.context || {}).variables || [ '?a', '?d' ],
@@ -570,7 +569,7 @@ describe('ActorQueryOperationBgpLeftDeepSmallest', () => {
     it('should run for responses with unknown metadata', () => {
       const thisMediatorQueryOperation: any = {
         mediate: (arg: any) => Promise.resolve({
-          bindingsStream: new EmptyIterator(),
+          bindingsStream: new ArrayIterator([], { autoStart: false }),
           metadata: null,
           type: 'bindings',
           variables: (arg.context || {}).variables || [],

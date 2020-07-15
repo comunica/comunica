@@ -35,6 +35,8 @@
     "index.js"
   ],
   "dependencies": {
+    "@types/xml": "^1.0.2",
+    "@types/rdf-js": "^3.0.0",
     "xml": "^1.0.1"
   },
   "peerDependencies": {

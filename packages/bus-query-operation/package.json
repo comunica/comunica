@@ -34,7 +34,8 @@
     "index.js"
   ],
   "dependencies": {
-    "asynciterator": "^2.0.1",
+    "@types/rdf-js": "^3.0.0",
+    "asynciterator": "^3.0.0",
     "immutable": "^3.8.2"
   },
   "peerDependencies": {

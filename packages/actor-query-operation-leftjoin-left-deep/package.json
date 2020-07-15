@@ -34,6 +34,10 @@
     "index.d.ts",
     "index.js"
   ],
+  "dependencies": {
+    "@types/rdf-js": "^3.0.0",
+    "asynciterator": "^3.0.0"
+  },
   "peerDependencies": {
     "@comunica/bus-query-operation": "^1.9.3",
     "@comunica/core": "^1.9.2"

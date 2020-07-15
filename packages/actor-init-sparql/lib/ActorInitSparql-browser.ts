@@ -13,7 +13,7 @@ import {
   KEY_CONTEXT_QUERY_TIMESTAMP,
   materializeOperation,
 } from "@comunica/bus-query-operation";
-import {IDataSource, KEY_CONTEXT_SOURCES} from "@comunica/bus-rdf-resolve-quad-pattern";
+import {IDataSource, isDataSourceRawType, KEY_CONTEXT_SOURCES} from "@comunica/bus-rdf-resolve-quad-pattern";
 import {IActionSparqlParse, IActorSparqlParseOutput} from "@comunica/bus-sparql-parse";
 import {
   IActionRootSparqlParse,
@@ -107,7 +107,7 @@ export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs {
     if (Array.isArray(context[KEY_CONTEXT_SOURCES])) {
       // TODO: backwards compatibility
       context[KEY_CONTEXT_SOURCES].map((source: IDataSource) => {
-        if (typeof source !== 'string' && (source.type === 'auto' || source.type === 'hypermedia')) {
+        if (!isDataSourceRawType(source) && (source.type === 'auto' || source.type === 'hypermedia')) {
           delete source.type;
         }
       });

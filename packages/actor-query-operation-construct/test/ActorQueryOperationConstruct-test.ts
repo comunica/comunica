@@ -18,7 +18,7 @@ describe('ActorQueryOperationConstruct', () => {
           Bindings({ '?a': literal('1') }),
           Bindings({ '?a': literal('2') }),
           Bindings({ '?a': literal('3') }),
-        ]),
+        ], { autoStart: false }),
         metadata: () => Promise.resolve({ totalItems: 3 }),
         operated: arg,
         type: 'bindings',
@@ -26,7 +26,7 @@ describe('ActorQueryOperationConstruct', () => {
       }) : Promise.resolve({
         bindingsStream: new ArrayIterator([
           Bindings({}),
-        ]),
+        ], { autoStart: false }),
         metadata: () => Promise.resolve({ totalItems: 1 }),
         operated: arg,
         type: 'bindings',

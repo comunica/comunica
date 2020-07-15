@@ -42,6 +42,7 @@
     "lodash.assign": "^4.2.0"
   },
   "dependencies": {
+    "@types/n3": "^1.4.2",
     "n3": "^1.0.0"
   },
   "jest": {

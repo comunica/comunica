@@ -34,8 +34,9 @@
     "index.js"
   ],
   "dependencies": {
-    "asynciterator": "^2.0.0",
-    "asyncreiterable": "^1.2.0"
+    "@types/rdf-js": "^3.0.0",
+    "asynciterator": "^3.0.0",
+    "asyncreiterable": "^2.0.0"
   },
   "peerDependencies": {
     "@comunica/actor-rdf-metadata-extract-hydra-controls": "^1.0.0",

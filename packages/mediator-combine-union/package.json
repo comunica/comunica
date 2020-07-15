@@ -33,6 +33,7 @@
     "index.js"
   ],
   "dependencies": {
+    "@types/lodash.defaults": "^4.2.3",
     "lodash.defaults": "^4.2.0"
   },
   "peerDependencies": {

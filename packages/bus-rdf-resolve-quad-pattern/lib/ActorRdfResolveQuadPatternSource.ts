@@ -1,5 +1,5 @@
 import {ActionContext, IActorArgs, IActorTest} from "@comunica/core";
-import {AsyncIterator} from "asynciterator";
+import {AsyncIterator, wrap as wrapAsyncIterator} from "asynciterator";
 import * as RDF from "rdf-js";
 import {Algebra} from "sparqlalgebrajs";
 import {
@@ -90,7 +90,7 @@ export abstract class ActorRdfResolveQuadPatternSource extends ActorRdfResolveQu
         ActorRdfResolveQuadPatternSource.variableToUndefined(pattern.graph),
       );
     } else {
-      data = AsyncIterator.wrap(<any> source.match(
+      data = wrapAsyncIterator(<any> source.match(
         ActorRdfResolveQuadPatternSource.variableToUndefined(pattern.subject),
         ActorRdfResolveQuadPatternSource.variableToUndefined(pattern.predicate),
         ActorRdfResolveQuadPatternSource.variableToUndefined(pattern.object),
@@ -133,4 +133,16 @@ export interface ILazyQuadSource<Q extends RDF.BaseQuad = RDF.Quad> extends RDF.
    */
   matchLazy?(subject?: RDF.Term | RegExp, predicate?: RDF.Term | RegExp, object?: RDF.Term | RegExp,
              graph?: RDF.Term | RegExp): AsyncIterator<Q> & RDF.Stream<Q>;
+
+  /**
+   * Return an estimated count of the number of quads matching the given pattern.
+   *
+   * The better the estimate, the better the query engine will be able to optimize the query.
+   *
+   * @param subject   An optional subject.
+   * @param predicate An optional predicate.
+   * @param object    An optional object.
+   * @param graph     An optional graph.
+   */
+  countQuads?(subject?: RDF.Term, predicate?: RDF.Term, object?: RDF.Term, graph?: RDF.Term): Promise<number> | number;
 }

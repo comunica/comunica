@@ -16,7 +16,8 @@ class Dummy extends PagedAsyncRdfIterator {
 
   protected getIterator(url: string, page: number, onNextPage: (nextPage?: string) => void) {
     onNextPage(page >= this.data.length ? undefined : 'valid');
-    return Promise.resolve(new ArrayIterator<RDF.Quad>(page >= this.data.length ? [] : this.data[page]));
+    return Promise.resolve(new ArrayIterator<RDF.Quad>(page >= this.data.length ? [] : this.data[page],
+        { autoStart: false }));
   }
 }
 
@@ -36,17 +37,12 @@ class DelayedDummy extends Dummy {// tslint:disable-line max-classes-per-file
     setTimeout(() => {
       onNextPage(page >= this.data.length ? undefined : 'valid');
     }, 150);
-    return Promise.resolve(new ArrayIterator<RDF.Quad>(page >= this.data.length ? [] : this.data[page]));
+    return Promise.resolve(new ArrayIterator<RDF.Quad>(page >= this.data.length ? [] : this.data[page],
+        { autoStart: false }));
   }
 }
 
 describe('PagedAsyncRdfIterator', () => {
-
-  describe('The PagedAsyncRdfIterator module', () => {
-    it('should be a function', () => {
-      expect(PagedAsyncRdfIterator).toBeInstanceOf(Function);
-    });
-  });
 
   describe('A PagedAsyncRdfIterator instance', () => {
     it('handles a single page', (done) => {

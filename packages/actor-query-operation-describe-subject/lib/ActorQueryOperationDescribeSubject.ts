@@ -5,7 +5,7 @@ import {
 } from "@comunica/bus-query-operation";
 import {ActionContext, IActorTest} from "@comunica/core";
 import {triple, variable} from "@rdfjs/data-model";
-import {RoundRobinUnionIterator} from "asynciterator-union";
+import {UnionIterator} from "asynciterator";
 import * as RDF from "rdf-js";
 import {Algebra} from "sparqlalgebrajs";
 
@@ -73,7 +73,7 @@ export class ActorQueryOperationDescribeSubject extends ActorQueryOperationTyped
       .map(ActorQueryOperation.getSafeQuads);
 
     // Take the union of all quad streams
-    const quadStream = new RoundRobinUnionIterator(outputs.map((output) => output.quadStream));
+    const quadStream = new UnionIterator(outputs.map((output) => output.quadStream), { autoStart: false });
 
     // Take union of metadata
     const metadata: () => Promise<{[id: string]: any}> = () => Promise.all(outputs

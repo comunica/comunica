@@ -39,6 +39,7 @@
     "@comunica/core": "^1.0.0"
   },
   "dependencies": {
+    "@types/parse-link-header": "^1.0.0",
     "follow-redirects": "^1.5.1",
     "isomorphic-fetch": "^2.2.1",
     "parse-link-header": "^1.0.1"

@@ -3,8 +3,7 @@ import {IActionRdfDereference, IActorRdfDereferenceOutput} from "@comunica/bus-r
 import {IActionRdfMetadata, IActorRdfMetadataOutput} from "@comunica/bus-rdf-metadata";
 import {IActionRdfMetadataExtract, IActorRdfMetadataExtractOutput} from "@comunica/bus-rdf-metadata-extract";
 import {ActionContext, Actor, IActorTest, Mediator} from "@comunica/core";
-import {AsyncIterator} from "asynciterator";
-import {PromiseProxyIterator} from "asynciterator-promiseproxy";
+import {AsyncIterator, TransformIterator, wrap} from "asynciterator";
 import * as RDF from "rdf-js";
 import {termToString} from "rdf-string";
 import {mapTerms, matchPattern} from "rdf-terms";
@@ -55,7 +54,7 @@ export class RdfSourceQpf implements RDF.Source {
     this.searchForm = searchForm;
     this.defaultGraph = metadata.defaultGraph ? namedNode(metadata.defaultGraph) : undefined;
     if (initialQuads) {
-      let wrappedQuads = (<any> AsyncIterator).wrap(initialQuads);
+      let wrappedQuads: AsyncIterator<RDF.Quad> = wrap<RDF.Quad>(initialQuads);
       if (this.defaultGraph) {
         wrappedQuads = this.reverseMapQuadsToDefaultGraph(wrappedQuads);
       }
@@ -148,7 +147,7 @@ export class RdfSourceQpf implements RDF.Source {
       return cached;
     }
 
-    const quads = new PromiseProxyIterator(async () => {
+    const quads = new TransformIterator(async () => {
       let url: string = await this.createFragmentUri(this.searchForm, subject, predicate, object, <RDF.Term> graph);
       const rdfDereferenceOutput = await this.mediatorRdfDereference.mediate({ context: this.context, url });
       url = rdfDereferenceOutput.url;
@@ -156,7 +155,7 @@ export class RdfSourceQpf implements RDF.Source {
       // Determine the metadata and emit it
       const rdfMetadataOuput: IActorRdfMetadataOutput = await this.mediatorMetadata.mediate(
         { context: this.context, url, quads: rdfDereferenceOutput.quads, triples: rdfDereferenceOutput.triples });
-      this.mediatorMetadataExtract
+      const metadataExtractPromise = this.mediatorMetadataExtract
         .mediate({ context: this.context, url, metadata: rdfMetadataOuput.metadata })
         .then(({ metadata }) => {
           quads.setProperty('metadata', metadata);
@@ -167,7 +166,7 @@ export class RdfSourceQpf implements RDF.Source {
       // including quads that do not match the given matter.
       // Therefore, we have to filter away all non-matching quads here.
       const actualDefaultGraph = defaultGraph();
-      let filteredOutput: AsyncIterator<RDF.Quad> = (<any> AsyncIterator).wrap(rdfMetadataOuput.data)
+      let filteredOutput: AsyncIterator<RDF.Quad> = wrap<RDF.Quad>(rdfMetadataOuput.data)
         .filter((quad: RDF.Quad) => {
           if (matchPattern(quad, subject, predicate, object, <RDF.Term> graph)) {
             return true;
@@ -181,8 +180,14 @@ export class RdfSourceQpf implements RDF.Source {
         filteredOutput = this.reverseMapQuadsToDefaultGraph(filteredOutput);
       }
 
+      // Swallow error events, as they will be emitted in the metadata stream as well,
+      // and therefore thrown async next.
+      filteredOutput.on('error', () => {});
+      // Ensures metadata event is emitted before end-event
+      await metadataExtractPromise;
+
       return filteredOutput;
-    });
+    }, { autoStart: false });
 
     this.cacheQuads(quads, subject, predicate, object, graph);
     return <RDF.Stream> this.getCachedQuads(subject, predicate, object, graph);
@@ -218,7 +223,7 @@ export class RdfSourceQpf implements RDF.Source {
     if (quads) {
       const quadsOriginal = quads;
       // Make our iterator lazy to ensure that metadata event is emitted before end event.
-      quads = new PromiseProxyIterator(async () => quadsOriginal.clone());
+      quads = new TransformIterator(async () => quadsOriginal.clone(), { autoStart: false });
       quadsOriginal.getProperty('metadata', (metadata) => quads.emit('metadata', metadata));
       return quads;
     }

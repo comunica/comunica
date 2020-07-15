@@ -85,7 +85,8 @@ describe('ActorSparqlSerializeSparqlJson', () => {
         Bindings({ '?k2': namedNode('v2') }),
         Bindings({}),
       ]);
-      bindingsStreamEmpty = new ArrayIterator([]);
+      bindingsStreamEmpty = <any> new PassThrough();
+      (<any> bindingsStreamEmpty)._read = <any> (() => { bindingsStreamEmpty.emit('end'); });
       bindingsStreamError = <any> new PassThrough();
       (<any> bindingsStreamError)._read = <any> (() => { bindingsStreamError.emit('error', new Error()); });
       quadStream = new ArrayIterator([

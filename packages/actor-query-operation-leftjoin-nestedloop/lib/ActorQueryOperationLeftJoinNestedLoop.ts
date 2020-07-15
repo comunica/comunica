@@ -4,7 +4,7 @@ import {
 } from "@comunica/bus-query-operation";
 import { ActorRdfJoin } from "@comunica/bus-rdf-join";
 import { ActionContext, IActorTest } from "@comunica/core";
-import { ClonedIterator } from "asynciterator";
+import { AsyncIterator } from "asynciterator";
 import { Algebra } from "sparqlalgebrajs";
 import { AsyncEvaluator, isExpressionError } from 'sparqlee';
 
@@ -35,20 +35,20 @@ export class ActorQueryOperationLeftJoinNestedLoop extends ActorQueryOperationTy
       ? new AsyncEvaluator(pattern.expression, config)
       : null;
 
-    const leftJoinInner = (outerItem: Bindings, innerStream: ClonedIterator<Bindings>) => {
+    const leftJoinInner = (outerItem: Bindings, innerStream: AsyncIterator<Bindings>) => {
       const joinedStream = innerStream
         .transform({
-          transform: async (innerItem: Bindings, nextInner: any) => {
+          transform: async (innerItem: Bindings, nextInner: any, push) => {
             const joinedBindings = ActorRdfJoin.join(outerItem, innerItem);
             if (!joinedBindings) { nextInner(); return; }
             if (!evaluator) {
-              joinedStream._push({ joinedBindings, result: true });
+              push({ joinedBindings, result: true });
               nextInner();
               return;
             }
             try {
               const result = await evaluator.evaluateAsEBV(joinedBindings);
-              joinedStream._push({ joinedBindings, result });
+              push({ joinedBindings, result });
             } catch (err) {
               if (!isExpressionError(err)) {
                 bindingsStream.emit('error', err);
@@ -60,7 +60,7 @@ export class ActorQueryOperationLeftJoinNestedLoop extends ActorQueryOperationTy
       return joinedStream;
     };
 
-    const leftJoinOuter = (leftItem: Bindings, nextLeft: any) => {
+    const leftJoinOuter = (leftItem: Bindings, nextLeft: any, push: (bindings: Bindings) => void) => {
       const innerStream = right.bindingsStream.clone();
       const joinedStream = leftJoinInner(leftItem, innerStream);
 
@@ -69,7 +69,7 @@ export class ActorQueryOperationLeftJoinNestedLoop extends ActorQueryOperationTy
       joinedStream.on('end', () => nextLeft());
       joinedStream.on('data', async ({ joinedBindings, result }) => {
         if (result) {
-          bindingsStream._push(joinedBindings);
+          push(joinedBindings);
         }
       });
     };

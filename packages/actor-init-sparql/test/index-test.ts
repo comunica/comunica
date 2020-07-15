@@ -12,11 +12,27 @@ jest.mock('../lib/ActorInitSparql', () => {
   };
 });
 
-import {evaluateQuery, newEngineDynamic} from '../index';
+jest.mock('../engine-default.js', () => {
+  return {
+    mocked: true,
+    name: 'urn:comunica:sparqlinit',
+    query: () => ({ queried: true }),
+  };
+});
 
-jest.setTimeout(20000);
+import {evaluateQuery, newEngine, newEngineDynamic, bindingsStreamToGraphQl} from '../index';
+
+jest.setTimeout(30000);
 
 describe('index', () => {
+  it('bindingsStreamToGraphQl to be a function', () => {
+    return expect(bindingsStreamToGraphQl).toBeInstanceOf(Function);
+  });
+
+  it('newEngine should return a query engine', () => {
+    return expect(newEngine()).toMatchObject({ mocked: true });
+  });
+
   it('newEngineDynamic should return a query engine', () => {
     return expect(newEngineDynamic()).resolves.toMatchObject({ mocked: true });
   });

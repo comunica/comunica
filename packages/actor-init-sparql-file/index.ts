@@ -1,7 +1,13 @@
-export {newEngine} from './index-browser';
-
 import {ActorInitSparql} from '@comunica/actor-init-sparql/lib/ActorInitSparql-browser';
 import {IQueryOptions, newEngineDynamicArged} from "@comunica/actor-init-sparql/lib/QueryDynamic";
+
+/**
+ * Create a new comunica engine from the default config.
+ * @return {ActorInitSparql} A comunica engine.
+ */
+export function newEngine(): ActorInitSparql {
+  return require('./engine-default.js');
+}
 
 /**
  * Create a new dynamic comunica engine from a given config file.

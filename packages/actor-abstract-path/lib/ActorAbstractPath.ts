@@ -65,7 +65,7 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
       return;
     }
 
-    it._push(x);
+    (<any> it)._push(x);
     V[s] = x;
 
     const b = this.generateBlankNode();
