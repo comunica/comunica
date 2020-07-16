@@ -44,7 +44,7 @@
   "dependencies": {
     "@types/lodash.assign": "^4.2.3",
     "@types/lodash.defaults": "^4.2.3",
-    "componentsjs": "^3.3.0",
+    "componentsjs": "^3.4.1",
     "lodash.assign": "^4.2.0",
     "lodash.defaults": "^4.2.0"
   },

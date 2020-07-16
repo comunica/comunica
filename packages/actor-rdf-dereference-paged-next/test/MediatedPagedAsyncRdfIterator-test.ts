@@ -37,10 +37,6 @@ class Dummy extends MediatedPagedAsyncRdfIterator {
 describe('MediatedPagedAsyncRdfIterator', () => {
 
   describe('The MediatedPagedAsyncRdfIterator module', () => {
-    it('should be a function', () => {
-      expect(MediatedPagedAsyncRdfIterator).toBeInstanceOf(Function);
-    });
-
     it('should be a MediatedPagedAsyncRdfIterator constructor', () => {
       expect(new (<any> MediatedPagedAsyncRdfIterator)('url', new SingletonIterator(''), {}, {}, {}, {} ))
         .toBeInstanceOf(MediatedPagedAsyncRdfIterator);

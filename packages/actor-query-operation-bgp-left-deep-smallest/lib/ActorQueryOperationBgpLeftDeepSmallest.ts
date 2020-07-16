@@ -12,8 +12,7 @@ import {
   KEY_CONTEXT_BGP_PATTERNBINDINGS,
 } from "@comunica/bus-query-operation";
 import {ActionContext, IActorTest} from "@comunica/core";
-import {EmptyIterator, MultiTransformIterator} from "asynciterator";
-import {PromiseProxyIterator} from "asynciterator-promiseproxy";
+import {ArrayIterator, MultiTransformIterator, TransformIterator} from "asynciterator";
 import * as RDF from "rdf-js";
 import {termToString} from "rdf-string";
 import {mapTerms, QuadTermName} from "rdf-terms";
@@ -45,14 +44,15 @@ export class ActorQueryOperationBgpLeftDeepSmallest extends ActorQueryOperationT
                                      patternBinder:
                                        (patterns: { pattern: Algebra.Pattern, bindings: IPatternBindings }[]) =>
                                         Promise<BindingsStream>): BindingsStream {
-    const bindingsStream: MultiTransformIterator<Bindings, Bindings> = new MultiTransformIterator(baseStream);
-    bindingsStream._createTransformer = (bindings: Bindings) => {
-      const bindingsMerger = (subBindings: Bindings) => subBindings.merge(bindings);
-      return new PromiseProxyIterator(
-        async () => (await patternBinder(ActorQueryOperationBgpLeftDeepSmallest.materializePatterns(patterns,
-          bindings))).map(bindingsMerger), { autoStart: true, maxBufferSize: 128 });
-    };
-    return bindingsStream;
+    return new MultiTransformIterator(baseStream, {
+      autoStart: false,
+      multiTransform: (bindings: Bindings) => {
+        const bindingsMerger = (subBindings: Bindings) => subBindings.merge(bindings);
+        return new TransformIterator(
+            async () => (await patternBinder(ActorQueryOperationBgpLeftDeepSmallest.materializePatterns(patterns,
+                bindings))).map(bindingsMerger), { maxBufferSize: 128 });
+      },
+    });
   }
 
   /**
@@ -200,7 +200,7 @@ export class ActorQueryOperationBgpLeftDeepSmallest extends ActorQueryOperationT
     // If a triple pattern has no matches, the entire graph pattern has no matches.
     if (await ActorQueryOperationBgpLeftDeepSmallest.hasOneEmptyPatternOutput(patternOutputs)) {
       return {
-        bindingsStream: new EmptyIterator(),
+        bindingsStream: new ArrayIterator([], { autoStart: false }),
         metadata: () => Promise.resolve({ totalItems: 0 }),
         type: 'bindings',
         variables: ActorQueryOperationBgpLeftDeepSmallest.getCombinedVariables(patternOutputs),

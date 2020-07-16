@@ -14,6 +14,7 @@ const arrayifyStream = require('arrayify-stream');
 const streamifyString = require('streamify-string');
 const quad = require('rdf-quad');
 import "jest-rdf";
+import {createLogger} from "bunyan";
 
 const factory = new Factory();
 
@@ -181,7 +182,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
       ]);
     });
 
-    it('should run and error for a server error', () => {
+    it('should run and error for a server error', async () => {
       const thisMediator: any = {
         mediate: () => {
           return {
@@ -199,9 +200,9 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
       const op = { context, operation: factory.createPattern(namedNode('http://s'), variable('p'),
           namedNode('http://o')) };
       const thisActor = new ActorQueryOperationSparqlEndpoint({ name: 'actor', bus, mediatorHttp: thisMediator });
-      return expect(new Promise((resolve, reject) => {
-        thisActor.run(op).then(async (output) => (<any> output).bindingsStream.on('error', resolve));
-      })).resolves.toEqual(new Error('Invalid SPARQL endpoint (http://ex) response: Error!'));
+      const x = ActorQueryOperation.getSafeBindings(await thisActor.run(op)).bindingsStream;
+      return expect(arrayifyStream(x))
+        .rejects.toThrow(new Error('Invalid SPARQL endpoint (http://ex) response: Error!'));
     });
 
     it('should run and error for a fetching error', () => {

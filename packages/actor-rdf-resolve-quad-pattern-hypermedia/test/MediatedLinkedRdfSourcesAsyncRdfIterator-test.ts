@@ -4,12 +4,6 @@ import {MediatedLinkedRdfSourcesAsyncRdfIterator} from "../lib/MediatedLinkedRdf
 
 describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
 
-  describe('The MediatedLinkedRdfSourcesAsyncRdfIterator module', () => {
-    it('should be a function', () => {
-      expect(MediatedLinkedRdfSourcesAsyncRdfIterator).toBeInstanceOf(Function);
-    });
-  });
-
   describe('A MediatedLinkedRdfSourcesAsyncRdfIterator instance', () => {
     let context: ActionContext;
     let source: any;

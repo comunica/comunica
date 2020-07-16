@@ -40,8 +40,8 @@ export class ActorQueryOperationPathSeq extends ActorAbstractPath {
     const join = ActorQueryOperation.getSafeBindings(await this.mediatorJoin.mediate({ entries: subOperations }));
     // remove the generated blank nodes from the bindings
     const bindingsStream = join.bindingsStream.transform<Bindings>({
-      transform: (item, next) => {
-        bindingsStream._push(item.delete(blankName));
+      transform: (item, next, push) => {
+        push(item.delete(blankName));
         next();
       },
     });

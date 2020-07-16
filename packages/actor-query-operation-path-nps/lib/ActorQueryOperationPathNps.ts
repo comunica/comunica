@@ -32,8 +32,8 @@ export class ActorQueryOperationPathNps extends ActorAbstractPath {
       filter: (bindings) => {
         return !predicate.iris.some((iri) => iri.equals(bindings.get(blankName)));
       },
-      transform: (item, next) => {
-        bindingsStream._push(item.delete(blankName));
+      transform: (item, next, push) => {
+        push(item.delete(blankName));
         next();
       },
     });

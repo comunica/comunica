@@ -41,8 +41,7 @@
   "dependencies": {
     "@comunica/actor-abstract-path": "^1.13.0",
     "@types/rdf-js": "^3.0.0",
-    "asynciterator": "^2.0.1",
-    "asynciterator-promiseproxy": "^2.1.0",
+    "asynciterator": "^3.0.0",
     "rdf-string": "^1.4.2",
     "sparqlalgebrajs": "^2.2.2"
   },

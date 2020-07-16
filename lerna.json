@@ -17,5 +17,8 @@
   "version": "1.13.1",
   "loglevel": "success",
   "registry": "https://registry.npmjs.org/",
-  "npmClient": "yarn"
+  "npmClient": "yarn",
+  "npmClientArgs": [
+    "--pure-lockfile"
+  ]
 }
