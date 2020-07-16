@@ -14,7 +14,6 @@
     "@babel/polyfill": "^7.8.7",
     "@babel/preset-env": "^7.9.5",
     "@rdfjs/data-model": "^1.1.1",
-    "@strictsoftware/typedoc-plugin-monorepo": "^0.3.0",
     "@types/asynciterator": "^1.1.4",
     "@types/jest": "^26.0.0",
     "@types/node": "^13.1.7",
