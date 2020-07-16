@@ -13,6 +13,7 @@ import {ArrayIterator} from "asynciterator";
 import * as RDF from "rdf-js";
 import {ActionContext} from "@comunica/core";
 import {IActorQueryOperationOutput, IActorQueryOperationOutputQuads} from "@comunica/bus-query-operation";
+
 // tslint:disable:no-var-requires
 const quad = require('rdf-quad');
 
@@ -162,32 +163,39 @@ Options:
     // Negotiate the best mediatype format
     let negotiation = undefined;
     let mediaType = null;
-    let mediaTypePossibilities = [];
     try {
+
       negotiation = require('negotiate').choose(variants, request);
-      mediaType = request.headers.accept && request.headers.accept !== '*/*' && negotiation
-      ? negotiation[0].type : null;
+      const isValid = request.headers.accept && request.headers.accept !== '*/*' && negotiation;
+      mediaType = isValid ? negotiation[0].type : null;
 
-      // Retrieve all mediatypes with equal quality in this case
-      let listSameQuality: any[] = [];
-      if (mediaType && negotiation) {
-        listSameQuality = [negotiation[0]];
-        let i = 1;
-        const quality = negotiation[0].quality;
-        while (negotiation[i] && negotiation[i].quality === quality) {
-          listSameQuality.push(negotiation[i]);
-          i++;
+      if (isValid && negotiation.length > 1) {
+        // The preferred negotiation
+        let finalNegotiation = negotiation[0];
+        // Best quality achievable
+        const quality = negotiation[0].q;
+        let found = false;
+        let k = 0;
+        // Iterate through all the variants in order
+        while (!found) {
+          const variant = variants[k];
+          let foundNegotiation = false;
+          let l = 0;
+          // Iterate through all the negotiation
+          while (!foundNegotiation) {
+            const negotiationElement = negotiation[l];
+            if(negotiationElement.type === variant.type){
+              foundNegotiation = true;
+              if(negotiationElement.q === quality){
+                found = true;
+                finalNegotiation = negotiationElement;
+              }
+            }
+            l++;
+          }
+          k++;
         }
-      }
-
-      // Make a list with other possible media types beside the already chosen one
-      let i = 0;
-      for (const element of listSameQuality) {
-        const currentType = element.type;
-        if (currentType === 'application/json' || currentType === 'application/trig' || currentType === 'simple') {
-          mediaTypePossibilities.push(listSameQuality[i].type);
-        }
-        i++;
+        mediaType = finalNegotiation.type;
       }
 
     } catch (exception) {
@@ -223,12 +231,12 @@ Options:
     switch (request.method) {
     case 'POST':
       sparql = await this.parseBody(request);
-      this.writeQueryResult(engine, stdout, stderr, request, response, sparql, mediaType, false, mediaTypePossibilities);
+      this.writeQueryResult(engine, stdout, stderr, request, response, sparql, mediaType, false);
       break;
     case 'HEAD':
     case 'GET':
       sparql = <string> (<querystring.ParsedUrlQuery> requestUrl.query).query || '';
-      this.writeQueryResult(engine, stdout, stderr, request, response, sparql, mediaType, request.method === 'HEAD', mediaTypePossibilities);
+      this.writeQueryResult(engine, stdout, stderr, request, response, sparql, mediaType, request.method === 'HEAD');
       break;
     default:
       stdout.write('[405] ' + request.method + ' to ' + requestUrl + '\n');
@@ -251,39 +259,14 @@ Options:
    */
   public async writeQueryResult(engine: ActorInitSparql, stdout: Writable, stderr: Writable,
                           request: http.IncomingMessage, response: http.ServerResponse,
-                          sparql: string, mediaType: string, headOnly: boolean, mediaTypePossibilities: any[]) {
+                          sparql: string, mediaType: string, headOnly: boolean) {
     if (!sparql) {
-      if (mediaTypePossibilities && mediaTypePossibilities.includes('application/json')) {
-        mediaType = 'application/json';
-      }
       return this.writeServiceDescription(engine, stdout, stderr, request, response, mediaType, headOnly);
     }
 
     let result: IActorQueryOperationOutput;
     try {
       result = await engine.query(sparql, this.context);
-      // Check if the result type is of the following type then update the mediatype only if it is an allowed possibility
-      if (result && result.type) {
-        switch (result.type) {
-          case 'bindings':
-            if (mediaTypePossibilities.includes('application/json')) {
-              mediaType = 'application/json';
-            }
-            break;
-          case 'quads':
-            if (mediaTypePossibilities.includes('application/trig')) {
-              mediaType = 'application/trig';
-            }
-            break;
-          case 'boolean':
-            if (mediaTypePossibilities.includes('simple')) {
-              mediaType = 'simple';
-            }
-            break;
-          default:
-            break;
-        }
-      }
     } catch (error) {
       stdout.write('[400] Bad request\n');
       response.writeHead(400,

@@ -36,6 +36,190 @@ jest.mock("fs", () => {
   return fs;
 });
 
+const variantsDefault = [ { type: 'application/json', quality: 1 },
+    { type: 'simple', quality: 1 },
+    { type: 'application/sparql-results+json', quality: 1 },
+    { type: 'application/sparql-results+xml', quality: 1 },
+    { type: 'table', quality: 1 },
+    { type: 'tree', quality: 0.9 },
+    { type: 'stats', quality: 1 },
+    { type: 'application/trig', quality: 1 },
+    { type: 'application/n-quads', quality: 0.7 },
+    { type: 'text/turtle', quality: 0.6 },
+    { type: 'application/n-triples', quality: 0.3 },
+    { type: 'text/n3', quality: 0.2 },
+    { type: 'application/ld+json', quality: 0.9 } ];
+
+const negotiation = [ { type: 'stats',
+  quality: 1,
+  qm: 1,
+  qt: 0.8,
+  qts: 2,
+  ql: 0.5,
+  qls: 0,
+  qc: 1,
+  qcs: 0,
+  qe: 1,
+  qes: 0,
+  qs: 1,
+  q: 0.4 },
+  { type: 'application/json',
+    quality: 1,
+    qm: 1,
+    qt: 0.8,
+    qts: 2,
+    ql: 0.5,
+    qls: 0,
+    qc: 1,
+    qcs: 0,
+    qe: 1,
+    qes: 0,
+    qs: 1,
+    q: 0.4 },
+  { type: 'application/sparql-results+json',
+    quality: 1,
+    qm: 1,
+    qt: 0.8,
+    qts: 2,
+    ql: 0.5,
+    qls: 0,
+    qc: 1,
+    qcs: 0,
+    qe: 1,
+    qes: 0,
+    qs: 1,
+    q: 0.4 },
+  { type: 'application/sparql-results+xml',
+    quality: 1,
+    qm: 1,
+    qt: 0.8,
+    qts: 2,
+    ql: 0.5,
+    qls: 0,
+    qc: 1,
+    qcs: 0,
+    qe: 1,
+    qes: 0,
+    qs: 1,
+    q: 0.4 },
+  { type: 'table',
+    quality: 1,
+    qm: 1,
+    qt: 0.8,
+    qts: 2,
+    ql: 0.5,
+    qls: 0,
+    qc: 1,
+    qcs: 0,
+    qe: 1,
+    qes: 0,
+    qs: 1,
+    q: 0.4 },
+  { type: 'application/trig',
+    quality: 1,
+    qm: 1,
+    qt: 0.8,
+    qts: 2,
+    ql: 0.5,
+    qls: 0,
+    qc: 1,
+    qcs: 0,
+    qe: 1,
+    qes: 0,
+    qs: 1,
+    q: 0.4 },
+  { type: 'simple',
+    quality: 1,
+    qm: 1,
+    qt: 0.8,
+    qts: 2,
+    ql: 0.5,
+    qls: 0,
+    qc: 1,
+    qcs: 0,
+    qe: 1,
+    qes: 0,
+    qs: 1,
+    q: 0.4 },
+  { type: 'tree',
+    quality: 0.9,
+    qm: 1,
+    qt: 0.8,
+    qts: 2,
+    ql: 0.5,
+    qls: 0,
+    qc: 1,
+    qcs: 0,
+    qe: 1,
+    qes: 0,
+    qs: 0.9,
+    q: 0.36 },
+  { type: 'application/ld+json',
+    quality: 0.9,
+    qm: 1,
+    qt: 0.8,
+    qts: 2,
+    ql: 0.5,
+    qls: 0,
+    qc: 1,
+    qcs: 0,
+    qe: 1,
+    qes: 0,
+    qs: 0.9,
+    q: 0.36 },
+  { type: 'application/n-quads',
+    quality: 0.7,
+    qm: 1,
+    qt: 0.8,
+    qts: 2,
+    ql: 0.5,
+    qls: 0,
+    qc: 1,
+    qcs: 0,
+    qe: 1,
+    qes: 0,
+    qs: 0.7,
+    q: 0.28 },
+  { type: 'text/turtle',
+    quality: 0.6,
+    qm: 1,
+    qt: 0.8,
+    qts: 2,
+    ql: 0.5,
+    qls: 0,
+    qc: 1,
+    qcs: 0,
+    qe: 1,
+    qes: 0,
+    qs: 0.6,
+    q: 0.24 },
+  { type: 'application/n-triples',
+    quality: 0.3,
+    qm: 1,
+    qt: 0.8,
+    qts: 2,
+    ql: 0.5,
+    qls: 0,
+    qc: 1,
+    qcs: 0,
+    qe: 1,
+    qes: 0,
+    qs: 0.3,
+    q: 0.12 },
+  { type: 'text/n3',
+    quality: 0.2,
+    qm: 1,
+    qt: 0.8,
+    qts: 2,
+    ql: 0.5,
+    qls: 0,
+    qc: 1,
+    qcs: 0,
+    qe: 1,
+    qes: 0,
+    qs: 0.2,
+    q: 0.08 } ];
+
 describe('HttpServiceSparqlEndpoint', () => {
 
   describe('constructor', () => {
@@ -265,9 +449,9 @@ describe('HttpServiceSparqlEndpoint', () => {
       it("should call bind handleRequest with the correct arguments", async () => {
         // See mock implementation of getResultMediaTypes in ../index
         const variants = [ { type: 'application/trig', quality: 0.4 },
-                            { type: 'stats', quality: 1 },
-                            { type: 'application/json', quality: 1 },
-                            { type: 'simple', quality: 0.5 } ];
+                                    { type: 'stats', quality: 1 },
+                                    { type: 'application/json', quality: 1 },
+                                    { type: 'simple', quality: 0.5 } ];
         await instance.run(stdout, stderr);
 
         expect(instance.handleRequest.bind).toBeCalledTimes(1);
@@ -282,7 +466,7 @@ describe('HttpServiceSparqlEndpoint', () => {
       });
     });
 
-    describe("handleNegotiation", () => {
+    describe("handleNegotiationNull", () => {
       let engine: any;
       let variants: any;
       const stdout = new PassThrough();
@@ -304,20 +488,9 @@ describe('HttpServiceSparqlEndpoint', () => {
         request = stringToStream("default_test_request_content");
         request.url = "url_sparql";
         request.headers = {'content-type': "contenttypewhichdefinitelydoesnotexist",
-          'accept': 'application/trig,simple,application/json,stats'};
+          'accept': 'application/json,application/trig,simple,stats'};
         return request;
       }
-
-      it("should call writeQueryResult with the same quality in the possibility list"
-          , async () => {
-            const engine4 = await newEngineDynamicBindings();
-            request.method = "GET";
-            request.url = "url_undefined_query";
-            await instance.handleRequest(engine4, variants, stdout, stderr, request, response);
-
-            expect(instance.writeQueryResult).toHaveBeenCalledWith(engine4, stdout, stderr,
-                request, response, '', "stats", false, ["application/json"]);
-          });
 
       it("should call writeQueryResult with null as mediatype"
       , async () => {
@@ -329,8 +502,37 @@ describe('HttpServiceSparqlEndpoint', () => {
         await instance.handleRequest(engine4, variants, stdout, stderr, request, response);
 
         expect(instance.writeQueryResult).toHaveBeenCalledWith(engine4, stdout, stderr,
-            request, response, '', null, false, []);
+            request, response, "", null, false);
       });
+
+    });
+
+    describe("handleNegotiation", () => {
+      let engine: any;
+      let variants: any;
+      const stdout = new PassThrough();
+      const stderr = new PassThrough();
+      let request: any;
+      let response: any;
+
+      beforeEach(async () => {
+        instance.writeQueryResult = jest.fn();
+        engine = await newEngineDynamic();
+        variants = [ { type: 'application/trig', quality: 0.4 },
+                    { type: 'stats', quality: 1 },
+                    { type: 'application/json', quality: 1 },
+                    { type: 'simple', quality: 0.5 } ];
+        request = makeRequest();
+        response = new ServerResponseMock();
+      });
+
+      function makeRequest() {
+        request = stringToStream("default_test_request_content");
+        request.url = "url_sparql";
+        request.headers = {'content-type': "contenttypewhichdefinitelydoesnotexist",
+          'accept': 'application/json,application/trig,simple,stats'};
+        return request;
+      }
 
       it("should respond with 404 when not sparql url or root url"
         , async () => {
@@ -396,7 +598,7 @@ describe('HttpServiceSparqlEndpoint', () => {
           , async () => {
             mediaType = "mediatype_throwerror";
             await instance.writeQueryResult(await newEngineDynamic(), new PassThrough(), new PassThrough(),
-                request, response, query, mediaType, false, []);
+                request, response, query, mediaType, false);
 
             await expect(endCalledPromise).resolves.toBe(
                 'The response for the given query could not be serialized for the requested media type\n');
@@ -406,7 +608,7 @@ describe('HttpServiceSparqlEndpoint', () => {
 
       it('should put the query result in the response if the query was successful', async () => {
         await instance.writeQueryResult(await newEngineDynamic(), new PassThrough(), new PassThrough(),
-            request, response, query, mediaType, false, []);
+            request, response, query, mediaType, false);
 
         await expect(endCalledPromise).resolves.toBeFalsy();
         expect(response.writeHead).toHaveBeenCalledTimes(1);
@@ -419,7 +621,7 @@ describe('HttpServiceSparqlEndpoint', () => {
           , async () => {
             mediaType = "mediatype_queryresultstreamerror";
             await instance.writeQueryResult(await newEngineDynamic(), new PassThrough(), new PassThrough(),
-                request, response, query, mediaType, false, []);
+                request, response, query, mediaType, false);
 
             await expect(endCalledPromise).resolves.toBe("An internal server error occurred.\n");
             expect(response.writeHead).toHaveBeenCalledTimes(1);
@@ -429,77 +631,8 @@ describe('HttpServiceSparqlEndpoint', () => {
 
       it('should only write the head when headOnly is true', async () => {
         await instance.writeQueryResult(await newEngineDynamic(), new PassThrough(), new PassThrough(),
-            request, response, query, mediaType, true, []);
-        expect(response.writeHead).toHaveBeenCalledTimes(1);
-        expect(response.writeHead).toHaveBeenLastCalledWith(200,
-            {'content-type': mediaType, 'Access-Control-Allow-Origin': '*'});
-        expect(response.end).toHaveBeenCalled();
-        expect(response.toString()).toBe("");
-      });
+            request, response, query, mediaType, true);
 
-      it('pass multiple formats choose first with best quality, bindings type possible default', async () => {
-        await instance.writeQueryResult(await newEngineDynamicBindings(), new PassThrough(), new PassThrough(),
-            request, response, query, mediaType, true, ['other', 'application/json']);
-        expect(response.writeHead).toHaveBeenCalledTimes(1);
-        expect(response.writeHead).toHaveBeenLastCalledWith(200,
-            {'content-type': 'application/json', 'Access-Control-Allow-Origin': '*'});
-        expect(response.end).toHaveBeenCalled();
-        expect(response.toString()).toBe("");
-      });
-
-      it('pass multiple formats choose first with best quality, bindings type not possiible', async () => {
-        await instance.writeQueryResult(await newEngineDynamicBindings(), new PassThrough(), new PassThrough(),
-            request, response, query, mediaType, true, ['other']);
-        expect(response.writeHead).toHaveBeenCalledTimes(1);
-        expect(response.writeHead).toHaveBeenLastCalledWith(200,
-            {'content-type': mediaType, 'Access-Control-Allow-Origin': '*'});
-        expect(response.end).toHaveBeenCalled();
-        expect(response.toString()).toBe("");
-      });
-
-      it('pass multiple formats choose first with best quality, boolean type possible default', async () => {
-        await instance.writeQueryResult(await newEngineDynamicBoolean(), new PassThrough(), new PassThrough(),
-            request, response, query, mediaType, true, ['other', 'application/json', 'simple']);
-        expect(response.writeHead).toHaveBeenCalledTimes(1);
-        expect(response.writeHead).toHaveBeenLastCalledWith(200,
-            {'content-type': 'simple', 'Access-Control-Allow-Origin': '*'});
-        expect(response.end).toHaveBeenCalled();
-        expect(response.toString()).toBe("");
-      });
-
-      it('pass multiple formats choose first with best quality, boolean type not possible', async () => {
-        await instance.writeQueryResult(await newEngineDynamicBoolean(), new PassThrough(), new PassThrough(),
-            request, response, query, mediaType, true, ['other', 'application/json']);
-        expect(response.writeHead).toHaveBeenCalledTimes(1);
-        expect(response.writeHead).toHaveBeenLastCalledWith(200,
-            {'content-type': mediaType, 'Access-Control-Allow-Origin': '*'});
-        expect(response.end).toHaveBeenCalled();
-        expect(response.toString()).toBe("");
-      });
-
-      it('pass multiple formats choose first with best quality, quads type possible default', async () => {
-        await instance.writeQueryResult(await newEngineDynamicQuads(), new PassThrough(), new PassThrough(),
-            request, response, query, mediaType, true, ['other', 'application/json', 'simple', 'application/trig']);
-        expect(response.writeHead).toHaveBeenCalledTimes(1);
-        expect(response.writeHead).toHaveBeenLastCalledWith(200,
-            {'content-type': 'application/trig', 'Access-Control-Allow-Origin': '*'});
-        expect(response.end).toHaveBeenCalled();
-        expect(response.toString()).toBe("");
-      });
-
-      it('pass multiple formats choose first with best quality, quads type not possible', async () => {
-        await instance.writeQueryResult(await newEngineDynamicQuads(), new PassThrough(), new PassThrough(),
-            request, response, query, mediaType, true, ['other', 'application/json', 'simple']);
-        expect(response.writeHead).toHaveBeenCalledTimes(1);
-        expect(response.writeHead).toHaveBeenLastCalledWith(200,
-            {'content-type': mediaType, 'Access-Control-Allow-Origin': '*'});
-        expect(response.end).toHaveBeenCalled();
-        expect(response.toString()).toBe("");
-      });
-
-      it('no default option, should take current mediatype', async () => {
-        await instance.writeQueryResult(await newEngineDynamicOther(), new PassThrough(), new PassThrough(),
-            request, response, query, mediaType, true, ['other', 'mock']);
         expect(response.writeHead).toHaveBeenCalledTimes(1);
         expect(response.writeHead).toHaveBeenLastCalledWith(200,
             {'content-type': mediaType, 'Access-Control-Allow-Origin': '*'});
@@ -577,22 +710,6 @@ describe('HttpServiceSparqlEndpoint', () => {
         // Check if further processing is not done
         expect(spyGetResultMediaTypeFormats).toHaveBeenCalledTimes(0);
         expect(spyResultToString).toHaveBeenCalledTimes(0);
-      });
-
-      it('If not sparql and possibility is application/json, take as default', async () => {
-        // Create spies
-        const engine = await newEngineDynamic();
-
-        // Invoke writeQueryResult
-        await instance.writeQueryResult(engine, new PassThrough(), new PassThrough(),
-          request, response, '', mediaType, true, ['simple', 'application/json']);
-
-        // Check output
-        await expect(endCalledPromise).resolves.toBeFalsy();
-        expect(response.writeHead).toHaveBeenCalledTimes(1);
-        expect(response.writeHead).toHaveBeenLastCalledWith(200,
-          {'content-type': 'application/json', 'Access-Control-Allow-Origin': '*'});
-        expect(response.toString()).toBe("");
       });
 
       it('should handle errors in service description stringification', async () => {
@@ -702,127 +819,173 @@ describe('HttpServiceSparqlEndpoint', () => {
         return expect(instance.parseBody(httpRequestMock)).resolves.toBe(testRequestBody);
       });
     });
+  });
+});
 
-    describe("handleRequest", () => {
-      let engine: any;
-      let variants: any;
-      const stdout = new PassThrough();
-      const stderr = new PassThrough();
-      let request: any;
-      let response: any;
-      beforeEach(async () => {
-        instance.writeQueryResult = jest.fn();
-        engine = await newEngineDynamic();
-        variants = {type: "test_type", quality: 1};
-        request = makeRequest();
-        response = new ServerResponseMock();
-      });
+describe('A second HttpServiceSparqlEndpoint instance', () => {
+  let instance: any;
+  beforeEach(() => {
+    instance = new HttpServiceSparqlEndpoint({});
+  });
 
-      function makeRequest() {
-        request = stringToStream("default_test_request_content");
-        request.url = "url_sparql";
-        request.headers = {'content-type': "contenttypewhichdefinitelydoesnotexist", 'accept': "*/*"};
-        return request;
-      }
+  describe("handleRequest", () => {
+    let engine: any;
+    let variants: any;
+    const stdout = new PassThrough();
+    const stderr = new PassThrough();
+    let request: any;
+    let response: any;
 
-      it("should use the empty query string when the request method equals GET and url parsing fails"
-          , async () => {
-            request.method = "GET";
-            request.url = "url_undefined_query";
-            await instance.handleRequest(engine, variants, stdout, stderr, request, response);
+    beforeEach(async () => {
+      instance.writeQueryResult = jest.fn();
+      engine = await newEngineDynamic();
+      variants = {type: "test_type", quality: 1};
+      request = makeRequest();
+      response = new ServerResponseMock();
+    });
 
-            expect(instance.writeQueryResult).toHaveBeenCalledWith(engine, stdout, stderr,
-                request, response, '', null, false, []);
-          });
+    function makeRequest() {
+      request = stringToStream("default_test_request_content");
+      request.url = "url_sparql";
+      request.headers = {'content-type': "contenttypewhichdefinitelydoesnotexist", 'accept': "*/*"};
+      return request;
+    }
 
-      it("should use the parsed query string when the request method equals GET"
-          , async () => {
-            request.method = "GET";
-            await instance.handleRequest(engine, variants, stdout, stderr, request, response);
-
-            expect(instance.writeQueryResult).toHaveBeenCalledWith(engine, stdout, stderr,
-                request, response, 'test_query', null, false, []);
-          });
-
-      it("should set headonly and use the empty query string when the request method is HEAD and url parsing fails"
-          , async () => {
-            request.method = "HEAD";
-            request.url = "url_undefined_query";
-            await instance.handleRequest(engine, variants, stdout, stderr, request, response);
-
-            expect(instance.writeQueryResult).toHaveBeenCalledWith(engine, stdout, stderr,
-                request, response, '', null, true, []);
-          });
-
-      it("should set headonly and use the parsed query string when the request method is HEAD"
-          , async () => {
-            request.method = "HEAD";
-            await instance.handleRequest(engine, variants, stdout, stderr, request, response);
-
-            expect(instance.writeQueryResult).toHaveBeenCalledWith(engine, stdout, stderr,
-                request, response, 'test_query', null, true, []);
-          });
-
-      it("should call writeQueryResult with correct arguments if request method equals POST", async () => {
-        instance.parseBody = jest.fn(() => Promise.resolve("test_parseBody_result"));
-        request.method = "POST";
-        await instance.handleRequest(engine, variants, stdout, stderr, request, response);
-
-        expect(instance.writeQueryResult).toHaveBeenCalledWith(engine, stdout, stderr,
-            request, response, "test_parseBody_result", null, false, []);
-      });
-
-      it("should choose a mediaType if accept header is set", async () => {
-        const chosen = "test_chosen_mediatype";
-        const choose = jest.fn(() => [{type: chosen}]);
-        jest.doMock("negotiate", () => {
-          return {
-            choose,
-          };
-        });
-        request.headers = {accept: "mediaType"};
-
-        instance.parseBody = jest.fn(() => Promise.resolve("test_parseBody_result"));
-        request.method = "POST";
-        await instance.handleRequest(engine, variants, stdout, stderr, request, response);
-
-        expect(instance.writeQueryResult).toHaveBeenCalledWith(engine, stdout, stderr,
-            request, response, "test_parseBody_result", chosen, false, []);
-      });
-
-      it("should only invalidate cache if invalidateCacheBeforeQuery is set to true", async () => {
-        instance.invalidateCacheBeforeQuery = false;
-        await instance.handleRequest(engine, variants, stdout, stderr, request, response);
-
-        expect(engine.invalidateHttpCache).not.toHaveBeenCalled();
-      });
-
-      it("should invalidate cache if invalidateCacheBeforeQuery is set to true", async () => {
-        instance.invalidateCacheBeforeQuery = true;
-        await instance.handleRequest(engine, variants, stdout, stderr, request, response);
-
-        expect(engine.invalidateHttpCache).toHaveBeenCalled();
-      });
-
-      it("should respond with 404 and end the response with the correct error message if path is incorrect"
-          , async () => {
-            request.url = "not_urlsparql";
-            await instance.handleRequest(engine, variants, stdout, stderr, request, response);
-
-            expect(response.writeHead).toHaveBeenCalledWith(404, { 'Access-Control-Allow-Origin': '*',
-              'content-type': HttpServiceSparqlEndpoint.MIME_JSON});
-            expect(response.end).toHaveBeenCalledWith(JSON.stringify({ message: 'Resource not found. Queries are accepted on /sparql.' }));
-          });
-
-      it("should respond with 404 and end the response with the correct error message if url is undefined"
+    it("should use the empty query string when the request method equals GET and url parsing fails"
         , async () => {
-          request.url = undefined;
+          request.method = "GET";
+          request.url = "url_undefined_query";
+          await instance.handleRequest(engine, variants, stdout, stderr, request, response);
+
+          expect(instance.writeQueryResult).toHaveBeenCalledWith(engine, stdout, stderr,
+              request, response, '', null, false);
+        });
+
+    it("should use the parsed query string when the request method equals GET"
+        , async () => {
+          request.method = "GET";
+          await instance.handleRequest(engine, variants, stdout, stderr, request, response);
+
+          expect(instance.writeQueryResult).toHaveBeenCalledWith(engine, stdout, stderr,
+              request, response, 'test_query', null, false);
+        });
+
+    it("should set headonly and use the empty query string when the request method is HEAD and url parsing fails"
+        , async () => {
+          request.method = "HEAD";
+          request.url = "url_undefined_query";
+          await instance.handleRequest(engine, variants, stdout, stderr, request, response);
+
+          expect(instance.writeQueryResult).toHaveBeenCalledWith(engine, stdout, stderr,
+              request, response, '', null, true);
+        });
+
+    it("should set headonly and use the parsed query string when the request method is HEAD"
+        , async () => {
+          request.method = "HEAD";
+          await instance.handleRequest(engine, variants, stdout, stderr, request, response);
+
+          expect(instance.writeQueryResult).toHaveBeenCalledWith(engine, stdout, stderr,
+              request, response, 'test_query', null, true);
+        });
+
+    it("should call writeQueryResult with correct arguments if request method equals POST", async () => {
+      instance.parseBody = jest.fn(() => Promise.resolve("test_parseBody_result"));
+      request.method = "POST";
+      await instance.handleRequest(engine, variants, stdout, stderr, request, response);
+
+      expect(instance.writeQueryResult).toHaveBeenCalledWith(engine, stdout, stderr,
+          request, response, "test_parseBody_result", null, false);
+    });
+
+    it("should choose a mediaType if accept header is set", async () => {
+      request.headers = {'accept': "mediaType"};
+      instance.parseBody = jest.fn(() => Promise.resolve("test_parseBody_result"));
+      request.method = "POST";
+      await instance.handleRequest(engine, variantsDefault, stdout, stderr, request, response);
+
+      expect(instance.writeQueryResult).toHaveBeenCalledWith(engine, stdout, stderr,
+          request, response, "test_parseBody_result", "application/json", false);
+    });
+
+    it("should only invalidate cache if invalidateCacheBeforeQuery is set to true", async () => {
+      instance.invalidateCacheBeforeQuery = false;
+      await instance.handleRequest(engine, variants, stdout, stderr, request, response);
+
+      expect(engine.invalidateHttpCache).not.toHaveBeenCalled();
+    });
+
+    it("should invalidate cache if invalidateCacheBeforeQuery is set to true", async () => {
+      instance.invalidateCacheBeforeQuery = true;
+      await instance.handleRequest(engine, variants, stdout, stderr, request, response);
+
+      expect(engine.invalidateHttpCache).toHaveBeenCalled();
+    });
+
+    it("should respond with 404 and end the response with the correct error message if path is incorrect"
+        , async () => {
+          request.url = "not_urlsparql";
           await instance.handleRequest(engine, variants, stdout, stderr, request, response);
 
           expect(response.writeHead).toHaveBeenCalledWith(404, { 'Access-Control-Allow-Origin': '*',
             'content-type': HttpServiceSparqlEndpoint.MIME_JSON});
           expect(response.end).toHaveBeenCalledWith(JSON.stringify({ message: 'Resource not found. Queries are accepted on /sparql.' }));
         });
+
+    it("should respond with 404 and end the response with the correct error message if url is undefined"
+      , async () => {
+        request.url = undefined;
+        await instance.handleRequest(engine, variants, stdout, stderr, request, response);
+
+        expect(response.writeHead).toHaveBeenCalledWith(404, { 'Access-Control-Allow-Origin': '*',
+          'content-type': HttpServiceSparqlEndpoint.MIME_JSON});
+        expect(response.end).toHaveBeenCalledWith(JSON.stringify({ message: 'Resource not found. Queries are accepted on /sparql.' }));
+      });
+  });
+});
+
+
+describe('A third HttpServiceSparqlEndpoint instance', () => {
+  let instance: any;
+  beforeEach(() => {
+    instance = new HttpServiceSparqlEndpoint({});
+  });
+
+  describe("handleRequest2", () => {
+    let engine: any;
+    const stdout = new PassThrough();
+    const stderr = new PassThrough();
+    let request: any;
+    let response: any;
+
+    beforeEach(async () => {
+      instance.writeQueryResult = jest.fn();
+      engine = await newEngineDynamic();
+      request = makeRequest();
+      response = new ServerResponseMock();
     });
+
+    function makeRequest() {
+      request = stringToStream("default_test_request_content");
+      request.url = "url_sparql";
+      request.headers = {'content-type': "contenttypewhichdefinitelydoesnotexist",
+        'accept': 'application/json,application/trig,simple,stats'};
+      return request;
+    }
+
+    it("should call writeQueryResult with the preferred default"
+          , async () => {
+            const choose = jest.fn(() => negotiation);
+            jest.doMock("negotiate", () => {
+              return {
+                choose,
+              };
+            });
+            request.method = "GET";
+            await instance.handleRequest(engine, variantsDefault, stdout, stderr, request, response);
+
+            expect(instance.writeQueryResult).toHaveBeenCalledWith(engine, stdout, stderr,
+                request, response, "test_query", "application/json", false);
+          });
   });
 });
