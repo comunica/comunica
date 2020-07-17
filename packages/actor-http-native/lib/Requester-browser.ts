@@ -33,9 +33,10 @@ export default class Requester {
     const reqHeaders = settings.headers;
     request.open(settings.method, settings.url, true);
     request.timeout = settings.timeout;
-    for (const header in reqHeaders) {
-      if (!(header in UNSAFE_REQUEST_HEADERS) && reqHeaders[header]) {
-        request.setRequestHeader(header, reqHeaders[header]);
+
+    for (const header of reqHeaders) {
+      if (!(header[0] in UNSAFE_REQUEST_HEADERS) && header[1]) {
+        request.setRequestHeader(header[0], header[1]);
       }
     }
 

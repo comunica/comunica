@@ -53,7 +53,7 @@
     "@comunica/bus-init": "^1.2.0",
     "@comunica/core": "^1.2.0",
     "@comunica/mediatortype-time": "^1.13.0",
-    "isomorphic-fetch": "^2.2.1"
+    "cross-fetch": "^3.0.5"
   },
   "jest": {
     "globals": {
