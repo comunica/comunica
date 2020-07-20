@@ -950,7 +950,7 @@ describe('A third HttpServiceSparqlEndpoint instance', () => {
     instance = new HttpServiceSparqlEndpoint({});
   });
 
-  describe("handleRequest2", () => {
+  describe("handleRequest", () => {
     let engine: any;
     const stdout = new PassThrough();
     const stderr = new PassThrough();

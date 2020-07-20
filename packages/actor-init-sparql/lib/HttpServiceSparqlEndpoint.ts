@@ -161,36 +161,29 @@ Options:
                              request: http.IncomingMessage, response: http.ServerResponse) {
 
     // Negotiate the best mediatype format
-    let negotiation = undefined;
     let mediaType = null;
+    const isValid = request.headers.accept && request.headers.accept !== '*/*';
+    let negotiation = isValid ? require('negotiate').choose(variants, request) : null;
+    mediaType = negotiation && negotiation.length > 0 ? negotiation[0].type : null;
 
-    try {
-      negotiation = require('negotiate').choose(variants, request);
-      const isValid = request.headers.accept && request.headers.accept !== '*/*' && negotiation;
-      mediaType = isValid ? require('negotiate').choose(variants, request)[0].type : null;
+    if (negotiation && negotiation.length > 1) {
+      let sameQualityList:string[] = [negotiation[0].type];
+      let quality = negotiation[0].q;
+      let i = 1;
+      // Add all same quality negotiations from front of list 
+      while (i < negotiation.length && negotiation[i].q === quality) {
+        sameQualityList.push(negotiation[i].type);
+        i++;
+      }
 
-      if (isValid && negotiation.length > 1) {
-        let sameQualityList:string[] = [negotiation[0].type];
-        let quality = negotiation[0].q;
-
-        let i = 1;
-        // Add all same quality negotiations from front of list 
-        while (i < negotiation.length && negotiation[i].q === quality) {
-          sameQualityList.push(negotiation[i].type);
-          i++;
-        }
-        
-        for (const variant of variants) {
-          if (sameQualityList.includes(variant.type)) {
-            mediaType = variant.type;
-            break;
-          }
+      // Get preferred default variant type
+      for (const variant of variants) {
+        if (sameQualityList.includes(variant.type)) {
+          mediaType = variant.type;
+          break;
         }
       }
-    } catch (exception) {
-      // Do nothing
     }
-
 
     // Verify the path
     const requestUrl = url.parse(request.url || '', true);
