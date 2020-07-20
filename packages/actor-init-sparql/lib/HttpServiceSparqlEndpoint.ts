@@ -163,44 +163,34 @@ Options:
     // Negotiate the best mediatype format
     let negotiation = undefined;
     let mediaType = null;
-    try {
 
+    try {
       negotiation = require('negotiate').choose(variants, request);
       const isValid = request.headers.accept && request.headers.accept !== '*/*' && negotiation;
-      mediaType = isValid ? negotiation[0].type : null;
+      mediaType = isValid ? require('negotiate').choose(variants, request)[0].type : null;
 
       if (isValid && negotiation.length > 1) {
-        // The preferred negotiation
-        let finalNegotiation = negotiation[0];
-        // Best quality achievable
-        const quality = negotiation[0].q;
-        let found = false;
-        let k = 0;
-        // Iterate through all the variants in order
-        while (!found) {
-          const variant = variants[k];
-          let foundNegotiation = false;
-          let l = 0;
-          // Iterate through all the negotiation
-          while (!foundNegotiation) {
-            const negotiationElement = negotiation[l];
-            if(negotiationElement.type === variant.type){
-              foundNegotiation = true;
-              if(negotiationElement.q === quality){
-                found = true;
-                finalNegotiation = negotiationElement;
-              }
-            }
-            l++;
-          }
-          k++;
-        }
-        mediaType = finalNegotiation.type;
-      }
+        let sameQualityList:string[] = [negotiation[0].type];
+        let quality = negotiation[0].q;
 
+        let i = 1;
+        // Add all same quality negotiations from front of list 
+        while (i < negotiation.length && negotiation[i].q === quality) {
+          sameQualityList.push(negotiation[i].type);
+          i++;
+        }
+        
+        for (const variant of variants) {
+          if (sameQualityList.includes(variant.type)) {
+            mediaType = variant.type;
+            break;
+          }
+        }
+      }
     } catch (exception) {
-      // nothing
+      // Do nothing
     }
+
 
     // Verify the path
     const requestUrl = url.parse(request.url || '', true);

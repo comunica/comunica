@@ -911,7 +911,6 @@ describe('A second HttpServiceSparqlEndpoint instance', () => {
     it("should only invalidate cache if invalidateCacheBeforeQuery is set to true", async () => {
       instance.invalidateCacheBeforeQuery = false;
       await instance.handleRequest(engine, variants, stdout, stderr, request, response);
-
       expect(engine.invalidateHttpCache).not.toHaveBeenCalled();
     });
 
