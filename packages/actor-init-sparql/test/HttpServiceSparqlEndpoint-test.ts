@@ -65,7 +65,8 @@ describe('HttpServiceSparqlEndpoint', () => {
   });
 
   describe('runArgsInProcess', () => {
-    const testCommandlineArgument = '{ "sources": [{ "type": "file", "value" : "http://localhost:8080/data.jsonld" }]}';
+    const testCommandlineArgument = 'http://localhost:8080/data.jsonld';
+    const testCommandlineArgumentContext = '{ "sources": [{ "type": "file", "value" : "http://localhost:8080/data.jsonld" }]}';
     let stdout: any;
     let stderr: any;
     const moduleRootPath = 'test_modulerootpath';
@@ -103,14 +104,16 @@ describe('HttpServiceSparqlEndpoint', () => {
       expect(http.createServer).toBeCalled(); // Implicitly checking whether .run has been called
     });
 
-    it('should not exit if exactly one argument is supplied and -h and --help are not set', async() => {
-      await HttpServiceSparqlEndpoint.runArgsInProcess([ testCommandlineArgument ],
-        stdout,
-        stderr,
-        moduleRootPath,
-        env,
-        defaultConfigPath,
-        exit);
+    it('should parse JSON context and call .run on an HttpServiceSparqlEndpoint instance', async () => {
+      await HttpServiceSparqlEndpoint.runArgsInProcess([testCommandlineArgumentContext, "-c"],
+        stdout, stderr, moduleRootPath, env, defaultConfigPath, exit);
+
+      expect(http.createServer).toBeCalled(); // Implicitly checking whether .run has been called
+    });
+
+    it("should not exit if exactly one argument is supplied and -h and --help are not set", () => {
+      HttpServiceSparqlEndpoint.runArgsInProcess([testCommandlineArgument],
+          stdout, stderr, moduleRootPath, env, defaultConfigPath, exit);
 
       expect(exit).not.toHaveBeenCalled();
     });
@@ -177,7 +180,7 @@ describe('HttpServiceSparqlEndpoint', () => {
     beforeEach(() => {
       env = { COMUNICA_CONFIG: 'test_config' };
       fs.existsSync.mockReturnValue(true);
-      testCommandlineArguments = [ contextCommandlineArgument ];
+      testCommandlineArguments = [contextCommandlineArgument, "-c"];
     });
 
     it('should return an object containing the correct moduleRootPath configResourceUrl', () => {
@@ -198,8 +201,8 @@ describe('HttpServiceSparqlEndpoint', () => {
       const context = { ...testArgumentDict, ...{ log: new LoggerPretty({ level: 'test_loglevel' }) }};
 
       const log = HttpServiceSparqlEndpoint
-        .generateConstructorArguments(minimist([ JSON.stringify(context) ]), moduleRootPath, env, defaultConfigPath)
-        .context.log;
+          .generateConstructorArguments(minimist([JSON.stringify(context), "-c"]), moduleRootPath, env, defaultConfigPath)
+          .context.log;
 
       expect(log).toMatchObject({ level: 'test_loglevel' });
     });

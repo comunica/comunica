@@ -72,7 +72,7 @@ Options:
     moduleRootPath: string, env: NodeJS.ProcessEnv,
     defaultConfigPath: string, exit: (code: number) => void): Promise<void> {
     const args = minimist(argv);
-    if (args._.length !== 1 || args.h || args.help) {
+    if ((args.c && args._.length !== 1) || args.h || args.help) {
       stderr.write(HttpServiceSparqlEndpoint.HELP_MESSAGE);
       exit(1);
     }
@@ -99,10 +99,15 @@ Options:
    * @param {string} defaultConfigPath The path to get the config from if none is defined in the environment.
    */
   public static generateConstructorArguments(args: minimist.ParsedArgs, moduleRootPath: string,
-    env: NodeJS.ProcessEnv, defaultConfigPath: string): IHttpServiceSparqlEndpointArgs {
-    // Allow both files as direct JSON objects for context
-    // eslint-disable-next-line no-sync
-    const context = JSON.parse(fs.existsSync(args._[0]) ? fs.readFileSync(args._[0], 'utf8') : args._[0]);
+                                             env: NodeJS.ProcessEnv, defaultConfigPath: string)
+      : IHttpServiceSparqlEndpointArgs {
+    // allow both files as direct JSON objects for context
+    let context;
+    if (args.c || args._[0].charAt(0) === '{') {
+      context = JSON.parse(fs.existsSync(args._[0]) ? fs.readFileSync(args._[0], 'utf8') : args._[0]);
+    } else {
+      context = {sources: args._.map(source => { return {value: source}})};
+    }
     const invalidateCacheBeforeQuery: boolean = args.i;
     const port = parseInt(args.p, 10) || 3000;
     const timeout = (parseInt(args.t, 10) || 60) * 1000;
