@@ -92,14 +92,13 @@
 							<h3>References</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-reference tsd-parent-kind-module"><a href="actor_query_operation_filter_direct.html#actorqueryoperationfilterdirect" class="tsd-kind-icon">Actor<wbr>Query<wbr>Operation<wbr>Filter<wbr>Direct</a></li>
-								<li class="tsd-kind-reference tsd-parent-kind-module"><a href="actor_query_operation_filter_direct.html#sparqlexpressionevaluator" class="tsd-kind-icon">Sparql<wbr>Expression<wbr>Evaluator</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module"><a href="actor_query_operation_filter_direct.html#createevaluator" class="tsd-kind-icon">create<wbr>Evaluator</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
 							<h3>Classes</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-class tsd-parent-kind-module"><a href="../classes/actor_query_operation_filter_direct.actorqueryoperationfilterdirect-1.html" class="tsd-kind-icon">Actor<wbr>Query<wbr>Operation<wbr>Filter<wbr>Direct</a></li>
-								<li class="tsd-kind-class tsd-parent-kind-module"><a href="../classes/actor_query_operation_filter_direct.sparqlexpressionevaluator-1.html" class="tsd-kind-icon">Sparql<wbr>Expression<wbr>Evaluator</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section tsd-is-not-exported">
@@ -114,11 +113,17 @@
 								<li class="tsd-kind-variable tsd-parent-kind-module tsd-is-not-exported"><a href="actor_query_operation_filter_direct.html#xsd_true" class="tsd-kind-icon">XSD_<wbr>TRUE</a></li>
 							</ul>
 						</section>
-						<section class="tsd-index-section tsd-is-not-exported">
+						<section class="tsd-index-section ">
 							<h3>Functions</h3>
 							<ul class="tsd-index-list">
+								<li class="tsd-kind-function tsd-parent-kind-module"><a href="actor_query_operation_filter_direct.html#createevaluator-1" class="tsd-kind-icon">create<wbr>Evaluator</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-module tsd-is-not-exported"><a href="actor_query_operation_filter_direct.html#getliterallanguage" class="tsd-kind-icon">get<wbr>Literal<wbr>Language</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-module tsd-is-not-exported"><a href="actor_query_operation_filter_direct.html#getliteraltype" class="tsd-kind-icon">get<wbr>Literal<wbr>Type</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-module tsd-is-not-exported"><a href="actor_query_operation_filter_direct.html#handleexpression" class="tsd-kind-icon">handle<wbr>Expression</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-module tsd-is-not-exported"><a href="actor_query_operation_filter_direct.html#handlefunction" class="tsd-kind-icon">handle<wbr>Function</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-module tsd-is-not-exported"><a href="actor_query_operation_filter_direct.html#handlenamedexpression" class="tsd-kind-icon">handle<wbr>Named<wbr>Expression</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-module tsd-is-not-exported"><a href="actor_query_operation_filter_direct.html#handleoperatorexpression" class="tsd-kind-icon">handle<wbr>Operator<wbr>Expression</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-module tsd-is-not-exported"><a href="actor_query_operation_filter_direct.html#handletermexpression" class="tsd-kind-icon">handle<wbr>Term<wbr>Expression</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-module tsd-is-not-exported"><a href="actor_query_operation_filter_direct.html#isliteral" class="tsd-kind-icon">is<wbr>Literal</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-module tsd-is-not-exported"><a href="actor_query_operation_filter_direct.html#literalvalue" class="tsd-kind-icon">literal<wbr>Value</a></li>
 							</ul>
@@ -140,9 +145,9 @@
 					Re-exports <a href="../classes/actor_query_operation_filter_direct.actorqueryoperationfilterdirect-1.html">ActorQueryOperationFilterDirect</a>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module">
-					<a name="sparqlexpressionevaluator" class="tsd-anchor"></a>
-					<h3>Sparql<wbr>Expression<wbr>Evaluator</h3>
-					Re-exports <a href="../classes/actor_query_operation_filter_direct.sparqlexpressionevaluator-1.html">SparqlExpressionEvaluator</a>
+					<a name="createevaluator" class="tsd-anchor"></a>
+					<h3>create<wbr>Evaluator</h3>
+					Re-exports <a href="actor_query_operation_filter_direct.html#createevaluator-1">createEvaluator</a>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group tsd-is-not-exported">
@@ -153,73 +158,122 @@
 					<div class="tsd-signature tsd-kind-icon">XSD<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"http://www.w3.org/2001/XMLSchema#"</span><span class="tsd-signature-symbol"> = &quot;http://www.w3.org/2001/XMLSchema#&quot;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/996d286/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L139">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:139</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1b23e96/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L134">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:134</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-module tsd-is-not-exported">
 					<a name="xsd_boolean" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagConst">Const</span> XSD_<wbr>BOOLEAN</h3>
-					<div class="tsd-signature tsd-kind-icon">XSD_<wbr>BOOLEAN<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = XSD + &#x27;boolean&#x27;</span></div>
+					<div class="tsd-signature tsd-kind-icon">XSD_<wbr>BOOLEAN<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &#x60;${XSD}boolean&#x60;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/996d286/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L142">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:142</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1b23e96/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L137">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:137</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-module tsd-is-not-exported">
 					<a name="xsd_double" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagConst">Const</span> XSD_<wbr>DOUBLE</h3>
-					<div class="tsd-signature tsd-kind-icon">XSD_<wbr>DOUBLE<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = XSD + &#x27;double&#x27;</span></div>
+					<div class="tsd-signature tsd-kind-icon">XSD_<wbr>DOUBLE<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &#x60;${XSD}double&#x60;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/996d286/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L141">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:141</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1b23e96/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L136">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:136</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-module tsd-is-not-exported">
 					<a name="xsd_false" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagConst">Const</span> XSD_<wbr>FALSE</h3>
-					<div class="tsd-signature tsd-kind-icon">XSD_<wbr>FALSE<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &#x27;&quot;false&quot;^^&#x27; + XSD_BOOLEAN</span></div>
+					<div class="tsd-signature tsd-kind-icon">XSD_<wbr>FALSE<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &#x60;&quot;false&quot;^^${XSD_BOOLEAN}&#x60;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/996d286/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L145">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:145</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1b23e96/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L140">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:140</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-module tsd-is-not-exported">
 					<a name="xsd_integer" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagConst">Const</span> XSD_<wbr>INTEGER</h3>
-					<div class="tsd-signature tsd-kind-icon">XSD_<wbr>INTEGER<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = XSD + &#x27;integer&#x27;</span></div>
+					<div class="tsd-signature tsd-kind-icon">XSD_<wbr>INTEGER<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &#x60;${XSD}integer&#x60;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/996d286/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L140">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:140</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1b23e96/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L135">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:135</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-module tsd-is-not-exported">
 					<a name="xsd_string" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagConst">Const</span> XSD_<wbr>STRING</h3>
-					<div class="tsd-signature tsd-kind-icon">XSD_<wbr>STRING<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = XSD + &#x27;string&#x27;</span></div>
+					<div class="tsd-signature tsd-kind-icon">XSD_<wbr>STRING<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &#x60;${XSD}string&#x60;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/996d286/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L143">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:143</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1b23e96/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L138">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:138</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-module tsd-is-not-exported">
 					<a name="xsd_true" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagConst">Const</span> XSD_<wbr>TRUE</h3>
-					<div class="tsd-signature tsd-kind-icon">XSD_<wbr>TRUE<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &#x27;&quot;true&quot;^^&#x27;  + XSD_BOOLEAN</span></div>
+					<div class="tsd-signature tsd-kind-icon">XSD_<wbr>TRUE<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &#x60;&quot;true&quot;^^${XSD_BOOLEAN}&#x60;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/996d286/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L144">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:144</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1b23e96/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L139">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:139</a></li>
 						</ul>
 					</aside>
 				</section>
 			</section>
-			<section class="tsd-panel-group tsd-member-group tsd-is-not-exported">
+			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Functions</h2>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module">
+					<a name="createevaluator-1" class="tsd-anchor"></a>
+					<h3>create<wbr>Evaluator</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module">
+						<li class="tsd-signature tsd-kind-icon">create<wbr>Evaluator<span class="tsd-signature-symbol">(</span>expr<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Expression</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>bindings<span class="tsd-signature-symbol">: </span><a href="bus_query_operation.html#bindings-1" class="tsd-signature-type">Bindings</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">NamedNode</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">BlankNode</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Literal</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Variable</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">DefaultGraph</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1b23e96/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L15">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:15</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Creates an evaluator function that executes the given Sxpression on the given Bindings.
+										This implementation is copied from the original LDF Client implementation.
+										THIS IMPLEMENTATION IS NOT FULLY SPEC COMPATIBLE!!!
+									But covers most of the standard cases.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>expr: <span class="tsd-signature-type">Expression</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-symbol">(</span>bindings<span class="tsd-signature-symbol">: </span><a href="bus_query_operation.html#bindings-1" class="tsd-signature-type">Bindings</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">NamedNode</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">BlankNode</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Literal</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Variable</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">DefaultGraph</span></h4>
+							<ul class="tsd-parameters">
+								<li class="tsd-parameter-signature">
+									<ul class="tsd-signatures tsd-kind-type-literal">
+										<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>bindings<span class="tsd-signature-symbol">: </span><a href="bus_query_operation.html#bindings-1" class="tsd-signature-type">Bindings</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">NamedNode</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">BlankNode</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Literal</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Variable</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">DefaultGraph</span></li>
+									</ul>
+									<ul class="tsd-descriptions">
+										<li class="tsd-description">
+											<h4 class="tsd-parameters-title">Parameters</h4>
+											<ul class="tsd-parameters">
+												<li>
+													<h5>bindings: <a href="bus_query_operation.html#bindings-1" class="tsd-signature-type">Bindings</a></h5>
+												</li>
+											</ul>
+											<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">NamedNode</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">BlankNode</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Literal</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Variable</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">DefaultGraph</span></h4>
+										</li>
+									</ul>
+								</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
 				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module tsd-is-not-exported">
 					<a name="getliterallanguage" class="tsd-anchor"></a>
 					<h3>get<wbr>Literal<wbr>Language</h3>
@@ -230,7 +284,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/996d286/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L134">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:134</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1b23e96/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L129">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:129</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -253,7 +307,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/996d286/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L128">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:128</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1b23e96/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L122">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:122</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -267,6 +321,214 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module tsd-is-not-exported">
+					<a name="handleexpression" class="tsd-anchor"></a>
+					<h3>handle<wbr>Expression</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module tsd-is-not-exported">
+						<li class="tsd-signature tsd-kind-icon">handle<wbr>Expression<span class="tsd-signature-symbol">(</span>expr<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Expression</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>bindings<span class="tsd-signature-symbol">: </span><a href="bus_query_operation.html#bindings-1" class="tsd-signature-type">Bindings</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1b23e96/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L27">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:27</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>expr: <span class="tsd-signature-type">Expression</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-symbol">(</span>bindings<span class="tsd-signature-symbol">: </span><a href="bus_query_operation.html#bindings-1" class="tsd-signature-type">Bindings</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></h4>
+							<ul class="tsd-parameters">
+								<li class="tsd-parameter-signature">
+									<ul class="tsd-signatures tsd-kind-type-literal tsd-is-not-exported">
+										<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>bindings<span class="tsd-signature-symbol">: </span><a href="bus_query_operation.html#bindings-1" class="tsd-signature-type">Bindings</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></li>
+									</ul>
+									<ul class="tsd-descriptions">
+										<li class="tsd-description">
+											<h4 class="tsd-parameters-title">Parameters</h4>
+											<ul class="tsd-parameters">
+												<li>
+													<h5>bindings: <a href="bus_query_operation.html#bindings-1" class="tsd-signature-type">Bindings</a></h5>
+												</li>
+											</ul>
+											<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></h4>
+										</li>
+									</ul>
+								</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module tsd-is-not-exported">
+					<a name="handlefunction" class="tsd-anchor"></a>
+					<h3>handle<wbr>Function</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module tsd-is-not-exported">
+						<li class="tsd-signature tsd-kind-icon">handle<wbr>Function<span class="tsd-signature-symbol">(</span>operatorName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, args<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Expression</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>bindings<span class="tsd-signature-symbol">: </span><a href="bus_query_operation.html#bindings-1" class="tsd-signature-type">Bindings</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">string</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1b23e96/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L62">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:62</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>operatorName: <span class="tsd-signature-type">string</span></h5>
+								</li>
+								<li>
+									<h5>args: <span class="tsd-signature-type">Expression</span><span class="tsd-signature-symbol">[]</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-symbol">(</span>bindings<span class="tsd-signature-symbol">: </span><a href="bus_query_operation.html#bindings-1" class="tsd-signature-type">Bindings</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">string</span></h4>
+							<ul class="tsd-parameters">
+								<li class="tsd-parameter-signature">
+									<ul class="tsd-signatures tsd-kind-type-literal tsd-is-not-exported">
+										<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>bindings<span class="tsd-signature-symbol">: </span><a href="bus_query_operation.html#bindings-1" class="tsd-signature-type">Bindings</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
+									</ul>
+									<ul class="tsd-descriptions">
+										<li class="tsd-description">
+											<h4 class="tsd-parameters-title">Parameters</h4>
+											<ul class="tsd-parameters">
+												<li>
+													<h5>bindings: <a href="bus_query_operation.html#bindings-1" class="tsd-signature-type">Bindings</a></h5>
+												</li>
+											</ul>
+											<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
+										</li>
+									</ul>
+								</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module tsd-is-not-exported">
+					<a name="handlenamedexpression" class="tsd-anchor"></a>
+					<h3>handle<wbr>Named<wbr>Expression</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module tsd-is-not-exported">
+						<li class="tsd-signature tsd-kind-icon">handle<wbr>Named<wbr>Expression<span class="tsd-signature-symbol">(</span>expr<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">NamedExpression</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>bindings<span class="tsd-signature-symbol">: </span><a href="bus_query_operation.html#bindings-1" class="tsd-signature-type">Bindings</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">string</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1b23e96/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L54">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:54</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>expr: <span class="tsd-signature-type">NamedExpression</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-symbol">(</span>bindings<span class="tsd-signature-symbol">: </span><a href="bus_query_operation.html#bindings-1" class="tsd-signature-type">Bindings</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">string</span></h4>
+							<ul class="tsd-parameters">
+								<li class="tsd-parameter-signature">
+									<ul class="tsd-signatures tsd-kind-type-literal tsd-is-not-exported">
+										<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>bindings<span class="tsd-signature-symbol">: </span><a href="bus_query_operation.html#bindings-1" class="tsd-signature-type">Bindings</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
+									</ul>
+									<ul class="tsd-descriptions">
+										<li class="tsd-description">
+											<h4 class="tsd-parameters-title">Parameters</h4>
+											<ul class="tsd-parameters">
+												<li>
+													<h5>bindings: <a href="bus_query_operation.html#bindings-1" class="tsd-signature-type">Bindings</a></h5>
+												</li>
+											</ul>
+											<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
+										</li>
+									</ul>
+								</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module tsd-is-not-exported">
+					<a name="handleoperatorexpression" class="tsd-anchor"></a>
+					<h3>handle<wbr>Operator<wbr>Expression</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module tsd-is-not-exported">
+						<li class="tsd-signature tsd-kind-icon">handle<wbr>Operator<wbr>Expression<span class="tsd-signature-symbol">(</span>expr<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">OperatorExpression</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>bindings<span class="tsd-signature-symbol">: </span><a href="bus_query_operation.html#bindings-1" class="tsd-signature-type">Bindings</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">string</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1b23e96/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L58">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:58</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>expr: <span class="tsd-signature-type">OperatorExpression</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-symbol">(</span>bindings<span class="tsd-signature-symbol">: </span><a href="bus_query_operation.html#bindings-1" class="tsd-signature-type">Bindings</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">string</span></h4>
+							<ul class="tsd-parameters">
+								<li class="tsd-parameter-signature">
+									<ul class="tsd-signatures tsd-kind-type-literal tsd-is-not-exported">
+										<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>bindings<span class="tsd-signature-symbol">: </span><a href="bus_query_operation.html#bindings-1" class="tsd-signature-type">Bindings</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
+									</ul>
+									<ul class="tsd-descriptions">
+										<li class="tsd-description">
+											<h4 class="tsd-parameters-title">Parameters</h4>
+											<ul class="tsd-parameters">
+												<li>
+													<h5>bindings: <a href="bus_query_operation.html#bindings-1" class="tsd-signature-type">Bindings</a></h5>
+												</li>
+											</ul>
+											<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
+										</li>
+									</ul>
+								</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module tsd-is-not-exported">
+					<a name="handletermexpression" class="tsd-anchor"></a>
+					<h3>handle<wbr>Term<wbr>Expression</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module tsd-is-not-exported">
+						<li class="tsd-signature tsd-kind-icon">handle<wbr>Term<wbr>Expression<span class="tsd-signature-symbol">(</span>expr<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">TermExpression</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">(</span>bindings<span class="tsd-signature-symbol">: </span><a href="bus_query_operation.html#bindings-1" class="tsd-signature-type">Bindings</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1b23e96/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L43">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:43</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>expr: <span class="tsd-signature-type">TermExpression</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-symbol">(</span>bindings<span class="tsd-signature-symbol">: </span><a href="bus_query_operation.html#bindings-1" class="tsd-signature-type">Bindings</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></h4>
+							<ul class="tsd-parameters">
+								<li class="tsd-parameter-signature">
+									<ul class="tsd-signatures tsd-kind-type-literal tsd-is-not-exported">
+										<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>bindings<span class="tsd-signature-symbol">: </span><a href="bus_query_operation.html#bindings-1" class="tsd-signature-type">Bindings</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></li>
+									</ul>
+									<ul class="tsd-descriptions">
+										<li class="tsd-description">
+											<h4 class="tsd-parameters-title">Parameters</h4>
+											<ul class="tsd-parameters">
+												<li>
+													<h5>bindings: <a href="bus_query_operation.html#bindings-1" class="tsd-signature-type">Bindings</a></h5>
+												</li>
+											</ul>
+											<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></h4>
+										</li>
+									</ul>
+								</li>
+							</ul>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module tsd-is-not-exported">
 					<a name="isliteral" class="tsd-anchor"></a>
 					<h3>is<wbr>Literal</h3>
 					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module tsd-is-not-exported">
@@ -276,7 +538,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/996d286/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L119">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:119</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1b23e96/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L113">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:113</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -299,7 +561,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/996d286/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L123">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:123</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/1b23e96/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L117">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:117</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -321,7 +583,7 @@
 					<div class="tsd-signature tsd-kind-icon">operators<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/996d286/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L148">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:148</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1b23e96/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L143">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:143</a></li>
 						</ul>
 					</aside>
 					<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-object-literal tsd-is-not-exported">
@@ -334,7 +596,7 @@
 							<li class="tsd-description">
 								<aside class="tsd-sources">
 									<ul>
-										<li>Defined in <a href="https://github.com/comunica/comunica/blob/996d286/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L159">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:159</a></li>
+										<li>Defined in <a href="https://github.com/comunica/comunica/blob/1b23e96/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L174">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:174</a></li>
 									</ul>
 								</aside>
 								<h4 class="tsd-parameters-title">Parameters</h4>
@@ -357,7 +619,7 @@
 							<li class="tsd-description">
 								<aside class="tsd-sources">
 									<ul>
-										<li>Defined in <a href="https://github.com/comunica/comunica/blob/996d286/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L154">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:154</a></li>
+										<li>Defined in <a href="https://github.com/comunica/comunica/blob/1b23e96/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L159">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:159</a></li>
 									</ul>
 								</aside>
 								<h4 class="tsd-parameters-title">Parameters</h4>
@@ -383,7 +645,7 @@
 							<li class="tsd-description">
 								<aside class="tsd-sources">
 									<ul>
-										<li>Defined in <a href="https://github.com/comunica/comunica/blob/996d286/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L160">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:160</a></li>
+										<li>Defined in <a href="https://github.com/comunica/comunica/blob/1b23e96/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L177">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:177</a></li>
 									</ul>
 								</aside>
 								<h4 class="tsd-parameters-title">Parameters</h4>
@@ -409,7 +671,7 @@
 							<li class="tsd-description">
 								<aside class="tsd-sources">
 									<ul>
-										<li>Defined in <a href="https://github.com/comunica/comunica/blob/996d286/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L151">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:151</a></li>
+										<li>Defined in <a href="https://github.com/comunica/comunica/blob/1b23e96/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L150">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:150</a></li>
 									</ul>
 								</aside>
 								<h4 class="tsd-parameters-title">Parameters</h4>
@@ -435,7 +697,7 @@
 							<li class="tsd-description">
 								<aside class="tsd-sources">
 									<ul>
-										<li>Defined in <a href="https://github.com/comunica/comunica/blob/996d286/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L149">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:149</a></li>
+										<li>Defined in <a href="https://github.com/comunica/comunica/blob/1b23e96/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L144">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:144</a></li>
 									</ul>
 								</aside>
 								<h4 class="tsd-parameters-title">Parameters</h4>
@@ -461,7 +723,7 @@
 							<li class="tsd-description">
 								<aside class="tsd-sources">
 									<ul>
-										<li>Defined in <a href="https://github.com/comunica/comunica/blob/996d286/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L150">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:150</a></li>
+										<li>Defined in <a href="https://github.com/comunica/comunica/blob/1b23e96/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L147">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:147</a></li>
 									</ul>
 								</aside>
 								<h4 class="tsd-parameters-title">Parameters</h4>
@@ -487,7 +749,7 @@
 							<li class="tsd-description">
 								<aside class="tsd-sources">
 									<ul>
-										<li>Defined in <a href="https://github.com/comunica/comunica/blob/996d286/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L152">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:152</a></li>
+										<li>Defined in <a href="https://github.com/comunica/comunica/blob/1b23e96/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L153">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:153</a></li>
 									</ul>
 								</aside>
 								<h4 class="tsd-parameters-title">Parameters</h4>
@@ -513,7 +775,7 @@
 							<li class="tsd-description">
 								<aside class="tsd-sources">
 									<ul>
-										<li>Defined in <a href="https://github.com/comunica/comunica/blob/996d286/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L155">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:155</a></li>
+										<li>Defined in <a href="https://github.com/comunica/comunica/blob/1b23e96/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L162">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:162</a></li>
 									</ul>
 								</aside>
 								<h4 class="tsd-parameters-title">Parameters</h4>
@@ -539,7 +801,7 @@
 							<li class="tsd-description">
 								<aside class="tsd-sources">
 									<ul>
-										<li>Defined in <a href="https://github.com/comunica/comunica/blob/996d286/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L156">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:156</a></li>
+										<li>Defined in <a href="https://github.com/comunica/comunica/blob/1b23e96/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L165">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:165</a></li>
 									</ul>
 								</aside>
 								<h4 class="tsd-parameters-title">Parameters</h4>
@@ -565,7 +827,7 @@
 							<li class="tsd-description">
 								<aside class="tsd-sources">
 									<ul>
-										<li>Defined in <a href="https://github.com/comunica/comunica/blob/996d286/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L153">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:153</a></li>
+										<li>Defined in <a href="https://github.com/comunica/comunica/blob/1b23e96/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L156">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:156</a></li>
 									</ul>
 								</aside>
 								<h4 class="tsd-parameters-title">Parameters</h4>
@@ -591,7 +853,7 @@
 							<li class="tsd-description">
 								<aside class="tsd-sources">
 									<ul>
-										<li>Defined in <a href="https://github.com/comunica/comunica/blob/996d286/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L157">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:157</a></li>
+										<li>Defined in <a href="https://github.com/comunica/comunica/blob/1b23e96/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L168">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:168</a></li>
 									</ul>
 								</aside>
 								<h4 class="tsd-parameters-title">Parameters</h4>
@@ -617,7 +879,7 @@
 							<li class="tsd-description">
 								<aside class="tsd-sources">
 									<ul>
-										<li>Defined in <a href="https://github.com/comunica/comunica/blob/996d286/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L158">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:158</a></li>
+										<li>Defined in <a href="https://github.com/comunica/comunica/blob/1b23e96/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L171">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:171</a></li>
 									</ul>
 								</aside>
 								<h4 class="tsd-parameters-title">Parameters</h4>
@@ -643,7 +905,7 @@
 							<li class="tsd-description">
 								<aside class="tsd-sources">
 									<ul>
-										<li>Defined in <a href="https://github.com/comunica/comunica/blob/996d286/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L198">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:198</a></li>
+										<li>Defined in <a href="https://github.com/comunica/comunica/blob/1b23e96/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L224">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:224</a></li>
 									</ul>
 								</aside>
 								<h4 class="tsd-parameters-title">Parameters</h4>
@@ -666,7 +928,7 @@
 							<li class="tsd-description">
 								<aside class="tsd-sources">
 									<ul>
-										<li>Defined in <a href="https://github.com/comunica/comunica/blob/996d286/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L176">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:176</a></li>
+										<li>Defined in <a href="https://github.com/comunica/comunica/blob/1b23e96/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L199">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:199</a></li>
 									</ul>
 								</aside>
 								<h4 class="tsd-parameters-title">Parameters</h4>
@@ -692,7 +954,7 @@
 							<li class="tsd-description">
 								<aside class="tsd-sources">
 									<ul>
-										<li>Defined in <a href="https://github.com/comunica/comunica/blob/996d286/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L193">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:193</a></li>
+										<li>Defined in <a href="https://github.com/comunica/comunica/blob/1b23e96/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L217">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:217</a></li>
 									</ul>
 								</aside>
 								<h4 class="tsd-parameters-title">Parameters</h4>
@@ -715,7 +977,7 @@
 							<li class="tsd-description">
 								<aside class="tsd-sources">
 									<ul>
-										<li>Defined in <a href="https://github.com/comunica/comunica/blob/996d286/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L190">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:190</a></li>
+										<li>Defined in <a href="https://github.com/comunica/comunica/blob/1b23e96/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L214">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:214</a></li>
 									</ul>
 								</aside>
 								<h4 class="tsd-parameters-title">Parameters</h4>
@@ -738,7 +1000,7 @@
 							<li class="tsd-description">
 								<aside class="tsd-sources">
 									<ul>
-										<li>Defined in <a href="https://github.com/comunica/comunica/blob/996d286/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L162">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:162</a></li>
+										<li>Defined in <a href="https://github.com/comunica/comunica/blob/1b23e96/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L183">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:183</a></li>
 									</ul>
 								</aside>
 								<h4 class="tsd-parameters-title">Parameters</h4>
@@ -761,7 +1023,7 @@
 							<li class="tsd-description">
 								<aside class="tsd-sources">
 									<ul>
-										<li>Defined in <a href="https://github.com/comunica/comunica/blob/996d286/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L165">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:165</a></li>
+										<li>Defined in <a href="https://github.com/comunica/comunica/blob/1b23e96/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L186">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:186</a></li>
 									</ul>
 								</aside>
 								<h4 class="tsd-parameters-title">Parameters</h4>
@@ -787,7 +1049,7 @@
 							<li class="tsd-description">
 								<aside class="tsd-sources">
 									<ul>
-										<li>Defined in <a href="https://github.com/comunica/comunica/blob/996d286/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L181">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:181</a></li>
+										<li>Defined in <a href="https://github.com/comunica/comunica/blob/1b23e96/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L204">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:204</a></li>
 									</ul>
 								</aside>
 								<h4 class="tsd-parameters-title">Parameters</h4>
@@ -813,7 +1075,7 @@
 							<li class="tsd-description">
 								<aside class="tsd-sources">
 									<ul>
-										<li>Defined in <a href="https://github.com/comunica/comunica/blob/996d286/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L187">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:187</a></li>
+										<li>Defined in <a href="https://github.com/comunica/comunica/blob/1b23e96/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L211">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:211</a></li>
 									</ul>
 								</aside>
 								<h4 class="tsd-parameters-title">Parameters</h4>
@@ -836,7 +1098,7 @@
 							<li class="tsd-description">
 								<aside class="tsd-sources">
 									<ul>
-										<li>Defined in <a href="https://github.com/comunica/comunica/blob/996d286/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L161">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:161</a></li>
+										<li>Defined in <a href="https://github.com/comunica/comunica/blob/1b23e96/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L180">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:180</a></li>
 									</ul>
 								</aside>
 								<h4 class="tsd-parameters-title">Parameters</h4>
@@ -877,13 +1139,10 @@
 								<a href="actor_query_operation_filter_direct.html#actorqueryoperationfilterdirect" class="tsd-kind-icon">Actor<wbr>Query<wbr>Operation<wbr>Filter<wbr>Direct</a>
 							</li>
 							<li class=" tsd-kind-reference tsd-parent-kind-module">
-								<a href="actor_query_operation_filter_direct.html#sparqlexpressionevaluator" class="tsd-kind-icon">Sparql<wbr>Expression<wbr>Evaluator</a>
+								<a href="actor_query_operation_filter_direct.html#createevaluator" class="tsd-kind-icon">create<wbr>Evaluator</a>
 							</li>
 							<li class=" tsd-kind-class tsd-parent-kind-module">
 								<a href="../classes/actor_query_operation_filter_direct.actorqueryoperationfilterdirect-1.html" class="tsd-kind-icon">Actor<wbr>Query<wbr>Operation<wbr>Filter<wbr>Direct</a>
-							</li>
-							<li class=" tsd-kind-class tsd-parent-kind-module">
-								<a href="../classes/actor_query_operation_filter_direct.sparqlexpressionevaluator-1.html" class="tsd-kind-icon">Sparql<wbr>Expression<wbr>Evaluator</a>
 							</li>
 							<li class=" tsd-kind-variable tsd-parent-kind-module tsd-is-not-exported">
 								<a href="actor_query_operation_filter_direct.html#xsd" class="tsd-kind-icon">XSD</a>
@@ -906,11 +1165,29 @@
 							<li class=" tsd-kind-variable tsd-parent-kind-module tsd-is-not-exported">
 								<a href="actor_query_operation_filter_direct.html#xsd_true" class="tsd-kind-icon">XSD_<wbr>TRUE</a>
 							</li>
+							<li class=" tsd-kind-function tsd-parent-kind-module">
+								<a href="actor_query_operation_filter_direct.html#createevaluator-1" class="tsd-kind-icon">create<wbr>Evaluator</a>
+							</li>
 							<li class=" tsd-kind-function tsd-parent-kind-module tsd-is-not-exported">
 								<a href="actor_query_operation_filter_direct.html#getliterallanguage" class="tsd-kind-icon">get<wbr>Literal<wbr>Language</a>
 							</li>
 							<li class=" tsd-kind-function tsd-parent-kind-module tsd-is-not-exported">
 								<a href="actor_query_operation_filter_direct.html#getliteraltype" class="tsd-kind-icon">get<wbr>Literal<wbr>Type</a>
+							</li>
+							<li class=" tsd-kind-function tsd-parent-kind-module tsd-is-not-exported">
+								<a href="actor_query_operation_filter_direct.html#handleexpression" class="tsd-kind-icon">handle<wbr>Expression</a>
+							</li>
+							<li class=" tsd-kind-function tsd-parent-kind-module tsd-is-not-exported">
+								<a href="actor_query_operation_filter_direct.html#handlefunction" class="tsd-kind-icon">handle<wbr>Function</a>
+							</li>
+							<li class=" tsd-kind-function tsd-parent-kind-module tsd-is-not-exported">
+								<a href="actor_query_operation_filter_direct.html#handlenamedexpression" class="tsd-kind-icon">handle<wbr>Named<wbr>Expression</a>
+							</li>
+							<li class=" tsd-kind-function tsd-parent-kind-module tsd-is-not-exported">
+								<a href="actor_query_operation_filter_direct.html#handleoperatorexpression" class="tsd-kind-icon">handle<wbr>Operator<wbr>Expression</a>
+							</li>
+							<li class=" tsd-kind-function tsd-parent-kind-module tsd-is-not-exported">
+								<a href="actor_query_operation_filter_direct.html#handletermexpression" class="tsd-kind-icon">handle<wbr>Term<wbr>Expression</a>
 							</li>
 							<li class=" tsd-kind-function tsd-parent-kind-module tsd-is-not-exported">
 								<a href="actor_query_operation_filter_direct.html#isliteral" class="tsd-kind-icon">is<wbr>Literal</a>
