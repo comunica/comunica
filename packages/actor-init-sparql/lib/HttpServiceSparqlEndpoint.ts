@@ -25,18 +25,21 @@ export class HttpServiceSparqlEndpoint {
 
   public static readonly HELP_MESSAGE = `comunica-sparql-http exposes a Comunica engine as SPARQL endpoint
 
-context should be a JSON object or the path to such a JSON file.
-
 Usage:
-  comunica-sparql-http context.json [-p port] [-t timeout] [-l log-level] [-i] [--help]
-  comunica-sparql-http "{ \\"sources\\": [{ \\"type\\": \\"hypermedia\\", \\"value\\" : \\"http://fragments.dbpedia.org/2015/en\\" }]}" [-p port] [-t timeout] [-l log-level] [-i] [--help]
+  comunica-sparql-http -c context.json [-p port] [-t timeout] [-l log-level] [-i] [-b] [--help] [--version] [--lenient]
+  comunica-sparql-http -c "{ \\"sources\\": [{ \\"type\\": \\"hypermedia\\", \\"value\\" : \\"http://fragments.dbpedia.org/2015/en\\" }]}" [-p port] [-t timeout] [-l log-level] [-i] [-b] [--help] [--version] [--lenient]
+  comunica-sparql-http hypermedia@http://fragments.dbpedia.org/2015/en [-p port] [-t timeout] [-l log-level] [-i] [-b] [--help] [--version] [--lenient]
 
 Options:
+  -c            Context should be a JSON object or the path to such a JSON file.
   -p            The HTTP port to run on (default: 3000)
   -t            The query execution timeout in seconds (default: 60)
+  -b            base IRI for the query (e.g., http://example.org/)
   -l            Sets the log level (e.g., debug, info, warn, ... defaults to warn)
   -i            A flag that enables cache invalidation before each query execution.
+  --lenient     if failing requests and parsing errors should be logged instead of causing a hard crash
   --help        print this help message
+  --version     prints version information
 `;
 
   public readonly engine: Promise<ActorInitSparql>;
@@ -68,17 +71,12 @@ Options:
    * @param {(code: number) => void} exit The callback to invoke to stop the script.
    * @return {Promise<void>} A promise that resolves when the server has been started.
    */
-  public static runArgsInProcess(argv: string[], stdout: Writable, stderr: Writable,
-    moduleRootPath: string, env: NodeJS.ProcessEnv,
-    defaultConfigPath: string, exit: (code: number) => void): Promise<void> {
+  public static async runArgsInProcess(argv: string[], stdout: Writable, stderr: Writable,
+                                 moduleRootPath: string, env: NodeJS.ProcessEnv,
+                                 defaultConfigPath: string, exit: (code: number) => void): Promise<void> {
     const args = minimist(argv);
-    if ((args.c && args._.length !== 1) || args.h || args.help) {
-      stderr.write(HttpServiceSparqlEndpoint.HELP_MESSAGE);
-      exit(1);
-    }
-
-    const options = HttpServiceSparqlEndpoint
-      .generateConstructorArguments(args, moduleRootPath, env, defaultConfigPath);
+    const options = await HttpServiceSparqlEndpoint
+        .generateConstructorArguments(args, moduleRootPath, env, defaultConfigPath, stderr, exit);
 
     return new Promise<void>(resolve => {
       new HttpServiceSparqlEndpoint(options).run(stdout, stderr)
@@ -98,24 +96,21 @@ Options:
    * @param {NodeJS.ProcessEnv} env The process env to get constants from.
    * @param {string} defaultConfigPath The path to get the config from if none is defined in the environment.
    */
-  public static generateConstructorArguments(args: minimist.ParsedArgs, moduleRootPath: string,
-                                             env: NodeJS.ProcessEnv, defaultConfigPath: string)
-      : IHttpServiceSparqlEndpointArgs {
+  public static async generateConstructorArguments(args: minimist.ParsedArgs, moduleRootPath: string,
+                                             env: NodeJS.ProcessEnv, defaultConfigPath: string, stderr: Writable,
+                                             exit: (code: number) => void)
+      : Promise<IHttpServiceSparqlEndpointArgs> {
     // allow both files as direct JSON objects for context
-    let context;
-    if (args.c || args._[0].charAt(0) === '{') {
-      context = JSON.parse(fs.existsSync(args._[0]) ? fs.readFileSync(args._[0], 'utf8') : args._[0]);
-    } else {
-      context = {sources: args._.map(source => { return {value: source}})};
+    const context = await ActorInitSparql.buildContext(args, 1, HttpServiceSparqlEndpoint.HELP_MESSAGE);
+
+    if (context.stderr) {
+      stderr.write(context.stderr.str ? context.stderr.str : context.stderr);
+      exit(1);
     }
+
     const invalidateCacheBeforeQuery: boolean = args.i;
     const port = parseInt(args.p, 10) || 3000;
     const timeout = (parseInt(args.t, 10) || 60) * 1000;
-
-    // Set the logger
-    if (!context.log) {
-      context.log = new LoggerPretty({ level: args.l || 'warn' });
-    }
 
     const configResourceUrl = env.COMUNICA_CONFIG ? env.COMUNICA_CONFIG : defaultConfigPath;
 
