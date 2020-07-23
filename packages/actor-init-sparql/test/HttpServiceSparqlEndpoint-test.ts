@@ -151,7 +151,7 @@ describe('HttpServiceSparqlEndpoint', () => {
         defaultConfigPath,
         exit).then(res => {
         expect(exit).toHaveBeenCalledWith(1);
-        expect(stderr.toString()).toBeDefined();
+        expect(stderr.toString()).toBe(`${HttpServiceSparqlEndpoint.HELP_MESSAGE}Server running on http://localhost:3000/sparql\n`);
       });
     });
 
@@ -164,7 +164,7 @@ describe('HttpServiceSparqlEndpoint', () => {
         defaultConfigPath,
         exit).then(res => {
         expect(exit).toHaveBeenCalledWith(1);
-        expect(stderr.toString()).toBeDefined();
+        expect(stderr.toString()).toBe(`${HttpServiceSparqlEndpoint.HELP_MESSAGE}Server running on http://localhost:3000/sparql\n`);
       });
     });
 
@@ -204,7 +204,7 @@ describe('HttpServiceSparqlEndpoint', () => {
         defaultConfigPath,
         exit).then(res => {
         expect(exit).toHaveBeenCalledWith(1);
-        expect(stderr.toString()).toBeDefined();
+        expect(stderr.toString()).toBe(`${HttpServiceSparqlEndpoint.HELP_MESSAGE}Server running on http://localhost:3000/sparql\n`);
       });
     });
   });

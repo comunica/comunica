@@ -11,7 +11,7 @@ import { LoggerPretty } from '@comunica/logger-pretty';
 import minimist = require('minimist');
 import {
   ActorInitSparql as ActorInitSparqlBrowser,
-  KEY_CONTEXT_LENIENT, KEY_CONTEXT_QUERYFORMAT,
+  KEY_CONTEXT_LENIENT, KEY_CONTEXT_QUERYFORMAT, IActorInitSparqlArgs,
 } from './ActorInitSparql-browser';
 
 // eslint-disable-next-line no-duplicate-imports
@@ -25,7 +25,7 @@ export {
  * A comunica SPARQL Init Actor.
  */
 export class ActorInitSparql extends ActorInitSparqlBrowser {
-  public static readonly HELP_MESSAGE = require('streamify-string')(`comunica-sparql evaluates SPARQL queries
+  public static readonly HELP_MESSAGE = `comunica-sparql evaluates SPARQL queries
 
   Usage:
     comunica-sparql http://fragments.dbpedia.org/2016-04/en [-q] 'SELECT * WHERE { ?s ?p ?o }'
@@ -48,7 +48,11 @@ export class ActorInitSparql extends ActorInitSparqlBrowser {
     --help        print this help message
     --listformats prints the supported MIME types
     --version     prints version information
-  `);
+  `;
+
+  public constructor(args: IActorInitSparqlArgs) {
+    super(args);
+  }
 
   public static getScriptOutput(command: string, fallback: string): Promise<string> {
     return new Promise((resolve, reject) => {
@@ -65,10 +69,8 @@ export class ActorInitSparql extends ActorInitSparqlBrowser {
     return existsSync(`${__dirname}/../test`);
   }
 
-  public static async buildContext(args: minimist.ParsedArgs, queryOrHttp: number, helpMessage: string,
+  public static async buildContext(args: minimist.ParsedArgs, queryContext: boolean, helpMessage: string,
     queryString?: string): Promise<any> {
-    const query: boolean = queryOrHttp === 0;
-
     // Print version information
     if (args.v || args.version) {
       const comunicaVersion: string = require('../package.json').version;
@@ -87,15 +89,15 @@ export class ActorInitSparql extends ActorInitSparqlBrowser {
 | Operating System    | ${os}
 `);
 
-      return { stderr: message };
+      return Promise.reject(message);
     }
 
-    if (args.h || args.help ||
-        (query && (!args.listformats && (!queryString && (!(args.q || args.f) && args._.length < (args.c ? 1 : 2) ||
+    if (args.h || args.help || (queryContext &&
+        (!args.listformats && (!queryString && (!(args.q || args.f) && args._.length < (args.c ? 1 : 2) ||
         args._.length < (args.c ? 0 : 1))))) ||
-        (!query && ((args.c && args._.length > 0) || (!args.c && args._.length === 0)))) {
+        (!queryContext && ((args.c && args._.length > 0) || (!args.c && args._.length === 0)))) {
       // Print command usage
-      return { stderr: helpMessage };
+      return Promise.reject(require('streamify-string')(helpMessage));
     }
 
     // Define context
@@ -103,7 +105,7 @@ export class ActorInitSparql extends ActorInitSparqlBrowser {
     if (args.c) {
       context = JSON.parse(existsSync(args.c) ? readFileSync(args.c, 'utf8') : args.c);
       // For backwards compatibility http
-    } else if (!query && args._[0] && args._[0].startsWith('{')) {
+    } else if (!queryContext && args._[0] && args._[0].startsWith('{')) {
       context = JSON.parse(args._[0]);
       args._.shift();
     }
@@ -143,10 +145,11 @@ export class ActorInitSparql extends ActorInitSparqlBrowser {
   public async run(action: IActionInit): Promise<IActorOutputInit> {
     const args = minimist(action.argv);
 
-    const context: any = await ActorInitSparql.buildContext(args, 0, ActorInitSparql.HELP_MESSAGE, this.queryString);
-
-    if (context.stderr) {
-      return context;
+    let context: any;
+    try {
+      context = await ActorInitSparql.buildContext(args, true, ActorInitSparql.HELP_MESSAGE, this.queryString);
+    } catch (error) {
+      return { stderr: error };
     }
 
     // Print supported MIME types

@@ -26,9 +26,10 @@ export class HttpServiceSparqlEndpoint {
   public static readonly HELP_MESSAGE = `comunica-sparql-http exposes a Comunica engine as SPARQL endpoint
 
 Usage:
-  comunica-sparql-http -c context.json [-p port] [-t timeout] [-l log-level] [-i] [-b] [--help] [--version] [--lenient]
-  comunica-sparql-http -c "{ \\"sources\\": [{ \\"type\\": \\"hypermedia\\", \\"value\\" : \\"http://fragments.dbpedia.org/2015/en\\" }]}" [-p port] [-t timeout] [-l log-level] [-i] [-b] [--help] [--version] [--lenient]
-  comunica-sparql-http hypermedia@http://fragments.dbpedia.org/2015/en [-p port] [-t timeout] [-l log-level] [-i] [-b] [--help] [--version] [--lenient]
+  comunica-sparql-http hypermedia@http://fragments.dbpedia.org/2015/en
+  comunica-sparql-http http://fragments.dbpedia.org/2015/en http://fragments.dbpedia.org/2016-04/en
+  comunica-sparql-http -c context.json 
+  comunica-sparql-http -c "{ \\"sources\\": [{ \\"type\\": \\"hypermedia\\", \\"value\\" : \\"http://fragments.dbpedia.org/2015/en\\" }]}" 
 
 Options:
   -c            Context should be a JSON object or the path to such a JSON file.
@@ -100,10 +101,11 @@ Options:
     env: NodeJS.ProcessEnv, defaultConfigPath: string, stderr: Writable,
     exit: (code: number) => void): Promise<IHttpServiceSparqlEndpointArgs> {
     // Allow both files as direct JSON objects for context
-    const context = await ActorInitSparql.buildContext(args, 1, HttpServiceSparqlEndpoint.HELP_MESSAGE);
-
-    if (context.stderr) {
-      stderr.write(context.stderr.str ? context.stderr.str : context.stderr);
+    let context: any;
+    try {
+      context = await ActorInitSparql.buildContext(args, false, HttpServiceSparqlEndpoint.HELP_MESSAGE);
+    } catch (error) {
+      stderr.write(error.str);
       exit(1);
     }
 
