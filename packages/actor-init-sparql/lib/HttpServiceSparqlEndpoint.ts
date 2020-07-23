@@ -161,24 +161,22 @@ Options:
                              request: http.IncomingMessage, response: http.ServerResponse) {
 
     // Negotiate the best mediatype format
-    let mediaType = null;
     const isValid = request.headers.accept && request.headers.accept !== '*/*';
     let negotiation = isValid ? require('negotiate').choose(variants, request) : null;
-    mediaType = negotiation && negotiation.length > 0 ? negotiation[0].type : null;
+    let mediaType = negotiation && negotiation.length > 0 ? negotiation[0].type : null;
 
-    if (negotiation && negotiation.length > 1) {
-      let sameQualityList:string[] = [negotiation[0].type];
+    let negotiationsIndexed:any = {};
+    if (mediaType) {
       let quality = negotiation[0].q;
-      let i = 1;
-      // Add all same quality negotiations from front of list 
-      while (i < negotiation.length && negotiation[i].q === quality) {
-        sameQualityList.push(negotiation[i].type);
-        i++;
-      }
+      // Assuming variants is sorted by q in decreasing order (pseudocode)
+      // Create negotiationsIndexed so that it is a hash containing the media types from 'negotiation' as keys.
+      negotiation.filter((element:any) => element.q === quality)
+                .reduce((_0:any, element:any) => negotiationsIndexed[element.type] = element.type);
+      
+      // Preferred media type selected
 
-      // Get preferred default variant type
       for (const variant of variants) {
-        if (sameQualityList.includes(variant.type)) {
+        if (negotiationsIndexed[variant.type]) {
           mediaType = variant.type;
           break;
         }
