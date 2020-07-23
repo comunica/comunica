@@ -1,10 +1,10 @@
-import {ActorHttpInvalidateListenable} from "@comunica/bus-http-invalidate";
-import {ActorRdfDereferencePaged} from "@comunica/bus-rdf-dereference-paged";
-import {Bus} from "@comunica/core";
-import {ClonedIterator} from "asynciterator";
-import {ActorRdfDereferencePagedNext} from "../lib/ActorRdfDereferencePagedNext";
-const stream = require('streamify-array');
+import { ActorHttpInvalidateListenable } from '@comunica/bus-http-invalidate';
+import { ActorRdfDereferencePaged } from '@comunica/bus-rdf-dereference-paged';
+import { Bus } from '@comunica/core';
+import { ClonedIterator } from 'asynciterator';
+import { ActorRdfDereferencePagedNext } from '../lib/ActorRdfDereferencePagedNext';
 const arrayifyStream = require('arrayify-stream');
+const stream = require('streamify-array');
 
 describe('ActorRdfDereferencePagedNext', () => {
   let bus: any;
@@ -63,27 +63,32 @@ describe('ActorRdfDereferencePagedNext', () => {
       stream2 = stream([ '2a', '2b', '2c' ]);
 
       mediatorMetadata = { mediate: (action: any) => Promise.resolve(
-        { data: action.quads.data, metadata: action.quads.metadata }) };
+        { data: action.quads.data, metadata: action.quads.metadata },
+      ) };
       mediatorMetadataExtract = { mediate: (action: any) => Promise.resolve({ metadata: action.metadata }) };
       mediatorRdfDereference = {
-        mediate: (action: any) => {
+        mediate(action: any) {
           switch (action.url) {
-          case 'http://example.org/':
-            return Promise.resolve(
-              { url: '0', quads: { data: stream0, metadata: { next: 'http://example.org/1' }}, triples: true});
-          case 'http://example.org/1':
-            return Promise.resolve(
-              { url: '1', quads: { data: stream1, metadata: { next: 'http://example.org/2' }}, triples: true});
-          case 'http://example.org/2':
-            return Promise.resolve(
-              { url: '2', quads: { data: stream2, metadata: { next: null }}, triples: true});
-          default:
-            return Promise.reject(new Error('Invalid paged-next URL in tests: ' + action.url));
+            case 'http://example.org/':
+              return Promise.resolve(
+                { url: '0', quads: { data: stream0, metadata: { next: 'http://example.org/1' }}, triples: true },
+              );
+            case 'http://example.org/1':
+              return Promise.resolve(
+                { url: '1', quads: { data: stream1, metadata: { next: 'http://example.org/2' }}, triples: true },
+              );
+            case 'http://example.org/2':
+              return Promise.resolve(
+                { url: '2', quads: { data: stream2, metadata: { next: null }}, triples: true },
+              );
+            default:
+              return Promise.reject(new Error(`Invalid paged-next URL in tests: ${action.url}`));
           }
         },
-        mediateActor: (action: any) => {
-          return action.url === 'http://example.org/'
-            ? Promise.resolve(true) : Promise.reject(new Error('Invalid paged-next URL in tests'));
+        mediateActor(action: any) {
+          return action.url === 'http://example.org/' ?
+            Promise.resolve(true) :
+            Promise.reject(new Error('Invalid paged-next URL in tests'));
         },
       };
       cacheSize = 0;
@@ -118,7 +123,7 @@ describe('ActorRdfDereferencePagedNext', () => {
 
     it('should run', () => {
       return actor.run({ url: 'http://example.org/' })
-        .then(async (output) => {
+        .then(async output => {
           expect(output.firstPageUrl).toEqual('0');
           expect(output.triples).toEqual(true);
           expect(await output.firstPageMetadata()).toEqual({ next: 'http://example.org/1' });
@@ -132,13 +137,13 @@ describe('ActorRdfDereferencePagedNext', () => {
     });
 
     it('should run when metadata extraction is delayed', () => {
-      const mediatorMetadataExtractSlow: any = { mediate: (action: any) => {
+      const mediatorMetadataExtractSlow: any = { mediate(action: any) {
         return new Promise((resolve, reject) => {
           setImmediate(() => {
             mediatorMetadataExtract.mediate(action).then(resolve).catch(reject);
           });
         });
-      }};
+      } };
       const currentActor = new ActorRdfDereferencePagedNext({
         bus,
         cacheSize,
@@ -149,7 +154,7 @@ describe('ActorRdfDereferencePagedNext', () => {
         name: 'actor',
       });
       return currentActor.run({ url: 'http://example.org/' })
-        .then(async (output) => {
+        .then(async output => {
           expect(output.firstPageUrl).toEqual('0');
           expect(output.triples).toEqual(true);
           expect(await output.firstPageMetadata()).toEqual({ next: 'http://example.org/1' });
@@ -165,7 +170,7 @@ describe('ActorRdfDereferencePagedNext', () => {
       const error = new Error('some error');
       stream1._read = () => stream1.emit('error', error);
       return actor.run({ url: 'http://example.org/' })
-        .then((output) => expect(arrayifyStream(output.data)).rejects.toEqual(error));
+        .then(output => expect(arrayifyStream(output.data)).rejects.toEqual(error));
     });
 
     it('should not run on errors originating from a metadata mediator on page 0', () => {
@@ -201,7 +206,7 @@ describe('ActorRdfDereferencePagedNext', () => {
         name: 'actor',
       });
       return currentActor.run({ url: 'http://example.org/' })
-        .then((output) => {
+        .then(output => {
           expect(output.firstPageMetadata()).rejects.toEqual(error);
           expect(arrayifyStream(output.data)).rejects.toEqual(error);
         });
@@ -226,11 +231,11 @@ describe('ActorRdfDereferencePagedNext', () => {
 
     it('should run and delegate errors originating from a metadata mediator after page 0', () => {
       const error = new Error('some error after page 0');
-      const mediatorMetadataTemp: any = { mediate: (action: any) => {
+      const mediatorMetadataTemp: any = { mediate(action: any) {
         const ret = mediatorMetadata.mediate(action);
         mediatorMetadataTemp.mediate = () => Promise.reject(error);
         return ret;
-      }};
+      } };
       const currentActor = new ActorRdfDereferencePagedNext({
         bus,
         cacheSize,
@@ -241,16 +246,16 @@ describe('ActorRdfDereferencePagedNext', () => {
         name: 'actor',
       });
       return currentActor.run({ url: 'http://example.org/' })
-        .then((output) => expect(arrayifyStream(output.data)).rejects.toEqual(error));
+        .then(output => expect(arrayifyStream(output.data)).rejects.toEqual(error));
     });
 
     it('should run and delegate errors originating from an extract mediator after page 0', () => {
       const error = new Error('some error');
-      const mediatorMetadataExtractTemp: any = { mediate: (action: any) => {
+      const mediatorMetadataExtractTemp: any = { mediate(action: any) {
         const ret = mediatorMetadataExtract.mediate(action);
         mediatorMetadataExtractTemp.mediate = () => Promise.reject(error);
         return ret;
-      }};
+      } };
       actor = new ActorRdfDereferencePagedNext({
         bus,
         cacheSize,
@@ -261,16 +266,16 @@ describe('ActorRdfDereferencePagedNext', () => {
         name: 'actor',
       });
       return actor.run({ url: 'http://example.org/' })
-        .then((output) => expect(arrayifyStream(output.data)).rejects.toEqual(error));
+        .then(output => expect(arrayifyStream(output.data)).rejects.toEqual(error));
     });
 
     it('should run and delegate errors originating from a dereference mediator after page 0', () => {
       const error = new Error('some error');
-      const mediatorRdfDereferenceTemp: any = { mediate: (action: any) => {
+      const mediatorRdfDereferenceTemp: any = { mediate(action: any) {
         const ret = mediatorRdfDereference.mediate(action);
         mediatorRdfDereferenceTemp.mediate = () => Promise.reject(error);
         return ret;
-      }};
+      } };
       actor = new ActorRdfDereferencePagedNext({
         bus,
         cacheSize,
@@ -281,12 +286,12 @@ describe('ActorRdfDereferencePagedNext', () => {
         name: 'actor',
       });
       return actor.run({ url: 'http://example.org/' })
-        .then((output) => expect(arrayifyStream(output.data)).rejects.toEqual(error));
+        .then(output => expect(arrayifyStream(output.data)).rejects.toEqual(error));
     });
 
     it('should run with an enabled cache', () => {
       return actorCached.run({ url: 'http://example.org/' })
-        .then(async (output) => {
+        .then(async output => {
           expect(output.firstPageUrl).toEqual('0');
           expect(output.triples).toEqual(true);
           expect(await output.firstPageMetadata()).toEqual({ next: 'http://example.org/1' });
@@ -303,7 +308,7 @@ describe('ActorRdfDereferencePagedNext', () => {
       return Promise.all([
         actorCached.run({ url: 'http://example.org/' }),
         actorCached.run({ url: 'http://example.org/' }),
-      ]).then(async (outputs) => {
+      ]).then(async outputs => {
         for (const output of outputs) {
           expect(output.firstPageUrl).toEqual('0');
           expect(output.triples).toEqual(true);
@@ -319,7 +324,7 @@ describe('ActorRdfDereferencePagedNext', () => {
       });
     });
 
-    it('should invalidate by URL', async () => {
+    it('should invalidate by URL', async() => {
       await actorCached.run({ url: 'http://example.org/1' });
       await actorCached.run({ url: 'http://example.org/2' });
       expect((<any> actorCached).cache.has('http://example.org/1')).toBeTruthy();
@@ -329,7 +334,7 @@ describe('ActorRdfDereferencePagedNext', () => {
       expect((<any> actorCached).cache.has('http://example.org/2')).toBeTruthy();
     });
 
-    it('should invalidate by all URLs', async () => {
+    it('should invalidate by all URLs', async() => {
       await actorCached.run({ url: 'http://example.org/1' });
       await actorCached.run({ url: 'http://example.org/2' });
       expect((<any> actorCached).cache.has('http://example.org/1')).toBeTruthy();

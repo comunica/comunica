@@ -1,19 +1,18 @@
-import {ActorSparqlSerializeSparqlJson} from "@comunica/actor-sparql-serialize-sparql-json";
-import {Bindings} from "@comunica/bus-query-operation";
-import {ActorRdfMetadataExtract} from "@comunica/bus-rdf-metadata-extract";
-import {Bus} from "@comunica/core";
-import {namedNode} from "@rdfjs/data-model";
-import {ArrayIterator} from "asynciterator";
-import "jest-rdf";
-import {ActorRdfMetadataExtractHydraControlsQuery} from "../lib/ActorRdfMetadataExtractHydraControlsQuery";
+import { ActorSparqlSerializeSparqlJson } from '@comunica/actor-sparql-serialize-sparql-json';
+import { Bindings } from '@comunica/bus-query-operation';
+import { ActorRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extract';
+import { Bus } from '@comunica/core';
+import { namedNode } from '@rdfjs/data-model';
+import { ArrayIterator } from 'asynciterator';
+import 'jest-rdf';
+import { ActorRdfMetadataExtractHydraControlsQuery } from '../lib/ActorRdfMetadataExtractHydraControlsQuery';
 
-const stream = require('streamify-array');
 const quad = require('rdf-quad');
-
+const stream = require('streamify-array');
 
 const sparqlSerialer = new ActorSparqlSerializeSparqlJson(<any> { bus: new Bus({ name: 'b' }) });
 const queryEngine: any = {
-  query: async () => {
+  async query() {
     return {
       bindingsStream: new ArrayIterator([
         Bindings({
@@ -36,10 +35,10 @@ const queryEngine: any = {
     };
   },
   resultToString: ({ bindingsStream }: any) => sparqlSerialer
-    .runHandle(<any> { type: 'bindings', bindingsStream, variables: ['v'] }, undefined, undefined),
+    .runHandle(<any> { type: 'bindings', bindingsStream, variables: [ 'v' ]}, undefined, undefined),
 };
 
-const HYDRA: string = 'http://www.w3.org/ns/hydra/core#';
+const HYDRA = 'http://www.w3.org/ns/hydra/core#';
 
 describe('ActorRdfMetadataExtractHydraControlsQuery', () => {
   let bus: any;
@@ -76,18 +75,18 @@ describe('ActorRdfMetadataExtractHydraControlsQuery', () => {
       return expect(actor.test({ url: '', metadata: stream([]) })).resolves.toBeTruthy();
     });
 
-    it('should run on valid controls', async () => {
+    it('should run on valid controls', async() => {
       const output = await actor.run({
         metadata: stream([
-          quad('subset', HYDRA + 'search', 'search1'),
-          quad('search1', HYDRA + 'template', 'http://example.org/{?a,b}'),
-          quad('search1', HYDRA + 'mapping', 'mapping1'),
-          quad('search1', HYDRA + 'mapping', 'mapping2'),
-          quad('mapping1', HYDRA + 'variable', 'a'),
-          quad('mapping1', HYDRA + 'property', 'propa'),
-          quad('mapping2', HYDRA + 'variable', 'b'),
-          quad('mapping2', HYDRA + 'property', 'propb'),
-          quad('subset', 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', HYDRA + 'Collection'),
+          quad('subset', `${HYDRA}search`, 'search1'),
+          quad('search1', `${HYDRA}template`, 'http://example.org/{?a,b}'),
+          quad('search1', `${HYDRA}mapping`, 'mapping1'),
+          quad('search1', `${HYDRA}mapping`, 'mapping2'),
+          quad('mapping1', `${HYDRA}variable`, 'a'),
+          quad('mapping1', `${HYDRA}property`, 'propa'),
+          quad('mapping2', `${HYDRA}variable`, 'b'),
+          quad('mapping2', `${HYDRA}property`, 'propb'),
+          quad('subset', 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', `${HYDRA}Collection`),
           quad('subset', 'http://rdfs.org/ns/void#subset', 'mypage'),
           quad('mypage', 'somethingelse', 'somevalue'),
         ]),
@@ -95,12 +94,12 @@ describe('ActorRdfMetadataExtractHydraControlsQuery', () => {
       });
       expect(output.metadata.searchForms.values[0].getUri({ propa: 'A', propb: 'B' }))
         .toEqual('http://example.org/?a=A&b=B');
-      return expect(output).toMatchObject({
+      expect(output).toMatchObject({
         metadata: {
           searchForms: {
             values: [
               {
-                // getUri,
+                // GetUri,
                 dataset: 'subset',
                 mappings: {
                   propa: 'a',
@@ -115,7 +114,7 @@ describe('ActorRdfMetadataExtractHydraControlsQuery', () => {
     });
 
     describe('parseUriTemplateCached', () => {
-      it('should return a uri template', async () => {
+      it('should return a uri template', async() => {
         const template = actor.parseUriTemplateCached('http://example.org/{?a,b}');
         expect(template).toMatchObject({
           templateText: 'http://example.org/{?a,b}',
@@ -123,7 +122,7 @@ describe('ActorRdfMetadataExtractHydraControlsQuery', () => {
         expect(template.expand({ a: 'A', b: 'B' })).toEqual('http://example.org/?a=A&b=B');
       });
 
-      it('should cache its outputs', async () => {
+      it('should cache its outputs', async() => {
         const o1 = actor.parseUriTemplateCached('http://example.org/{?a,b}');
         const o2 = actor.parseUriTemplateCached('http://example.org/{?a,b}');
         const o3 = actor.parseUriTemplateCached('http://example.org/{?a,c}');
@@ -160,7 +159,7 @@ describe('ActorRdfMetadataExtractHydraControlsQuery', () => {
         })).toMatchObject({
           values: [
             {
-              // getUri,
+              // GetUri,
               dataset: 'DATASET',
               mappings: {
                 propa: 'a',
@@ -202,7 +201,7 @@ describe('ActorRdfMetadataExtractHydraControlsQuery', () => {
         })).toMatchObject({
           values: [
             {
-              // getUri,
+              // GetUri,
               dataset: 'DATASET',
               mappings: {
                 propa: 'a',
@@ -211,7 +210,7 @@ describe('ActorRdfMetadataExtractHydraControlsQuery', () => {
               template: 'http://example.org/{?a,b}',
             },
             {
-              // getUri,
+              // GetUri,
               dataset: 'DATASET',
               mappings: {
                 propa: 'a',
@@ -243,7 +242,7 @@ describe('ActorRdfMetadataExtractHydraControlsQuery', () => {
         })).toMatchObject({
           values: [
             {
-              // getUri,
+              // GetUri,
               dataset: 'DATASET',
               template: 'http://example.org/{?a,b}',
             },
@@ -262,7 +261,7 @@ describe('ActorRdfMetadataExtractHydraControlsQuery', () => {
         })).toMatchObject({
           values: [
             {
-              // getUri,
+              // GetUri,
               dataset: 'DATASET',
               template: 'http://example.org/{?a,b}',
             },

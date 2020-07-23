@@ -1,13 +1,13 @@
-import {ActorQueryOperation, IActorQueryOperationOutputBindings} from "@comunica/bus-query-operation";
-import {Bindings} from "@comunica/bus-query-operation";
-import {ActionContext, Bus} from "@comunica/core";
-import {blankNode, namedNode, variable} from "@rdfjs/data-model";
-import {ArrayIterator} from "asynciterator";
-import * as RDF from "rdf-js";
-import {Algebra} from "sparqlalgebrajs";
-import {ActorQueryOperationQuadpattern} from "../lib/ActorQueryOperationQuadpattern";
-const quad = require('rdf-quad');
+import { ActorQueryOperation, IActorQueryOperationOutputBindings, Bindings } from '@comunica/bus-query-operation';
+
+import { ActionContext, Bus } from '@comunica/core';
+import { blankNode, namedNode, variable } from '@rdfjs/data-model';
+import { ArrayIterator } from 'asynciterator';
+import * as RDF from 'rdf-js';
+import { Algebra } from 'sparqlalgebrajs';
+import { ActorQueryOperationQuadpattern } from '../lib/ActorQueryOperationQuadpattern';
 const arrayifyStream = require('arrayify-stream');
+const quad = require('rdf-quad');
 
 describe('ActorQueryOperationQuadpattern', () => {
   let bus: any;
@@ -22,9 +22,9 @@ describe('ActorQueryOperationQuadpattern', () => {
     });
 
     it('should be a ActorQueryOperationQuadpattern constructor', () => {
-      expect(new (<any> ActorQueryOperationQuadpattern)({ name: 'actor', bus, mediatorResolveQuadPattern: {} }))
+      expect(new (<any> ActorQueryOperationQuadpattern)({ name: 'actor', bus, mediatorResolveQuadPattern: {}}))
         .toBeInstanceOf(ActorQueryOperationQuadpattern);
-      expect(new (<any> ActorQueryOperationQuadpattern)({ name: 'actor', bus, mediatorResolveQuadPattern: {} }))
+      expect(new (<any> ActorQueryOperationQuadpattern)({ name: 'actor', bus, mediatorResolveQuadPattern: {}}))
         .toBeInstanceOf(ActorQueryOperation);
     });
 
@@ -65,7 +65,7 @@ describe('ActorQueryOperationQuadpattern', () => {
 
     it('should return correctly on patterns with equal subject and predicate variables', () => {
       return expect(ActorQueryOperationQuadpattern.getDuplicateElementLinks(quad('?v1', '?v1', '?v3', '?v4')))
-        .toEqual({ subject: [ 'predicate' ] });
+        .toEqual({ subject: [ 'predicate' ]});
     });
 
     it('should ignore patterns with equal subject and predicate blank nodes', () => {
@@ -75,52 +75,52 @@ describe('ActorQueryOperationQuadpattern', () => {
 
     it('should return correctly on patterns with equal subject and object variables', () => {
       return expect(ActorQueryOperationQuadpattern.getDuplicateElementLinks(quad('?v1', '?v2', '?v1', '?v4')))
-        .toEqual({ subject: [ 'object' ] });
+        .toEqual({ subject: [ 'object' ]});
     });
 
     it('should return correctly on patterns with equal subject and graph variables', () => {
       return expect(ActorQueryOperationQuadpattern.getDuplicateElementLinks(quad('?v1', '?v2', '?v3', '?v1')))
-        .toEqual({ subject: [ 'graph' ] });
+        .toEqual({ subject: [ 'graph' ]});
     });
 
     it('should return correctly on patterns with equal subject, predicate and object variables', () => {
       return expect(ActorQueryOperationQuadpattern.getDuplicateElementLinks(quad('?v1', '?v1', '?v1', '?v4')))
-        .toEqual({ subject: [ 'predicate', 'object' ] });
+        .toEqual({ subject: [ 'predicate', 'object' ]});
     });
 
     it('should return correctly on patterns with equal subject, predicate and graph variables', () => {
       return expect(ActorQueryOperationQuadpattern.getDuplicateElementLinks(quad('?v1', '?v1', '?v3', '?v1')))
-        .toEqual({ subject: [ 'predicate', 'graph' ] });
+        .toEqual({ subject: [ 'predicate', 'graph' ]});
     });
 
     it('should return correctly on patterns with equal subject, object and graph variables', () => {
       return expect(ActorQueryOperationQuadpattern.getDuplicateElementLinks(quad('?v1', '?v2', '?v1', '?v1')))
-        .toEqual({ subject: [ 'object', 'graph' ] });
+        .toEqual({ subject: [ 'object', 'graph' ]});
     });
 
     it('should return correctly on patterns with equal subject, predicate, object and graph variables', () => {
       return expect(ActorQueryOperationQuadpattern.getDuplicateElementLinks(quad('?v1', '?v1', '?v1', '?v1')))
-        .toEqual({ subject: [ 'predicate', 'object', 'graph' ] });
+        .toEqual({ subject: [ 'predicate', 'object', 'graph' ]});
     });
 
     it('should return correctly on patterns with equal predicate and object variables', () => {
       return expect(ActorQueryOperationQuadpattern.getDuplicateElementLinks(quad('?v1', '?v2', '?v2', '?v4')))
-        .toEqual({ predicate: [ 'object' ] });
+        .toEqual({ predicate: [ 'object' ]});
     });
 
     it('should return correctly on patterns with equal predicate and graph variables', () => {
       return expect(ActorQueryOperationQuadpattern.getDuplicateElementLinks(quad('?v1', '?v2', '?v3', '?v2')))
-        .toEqual({ predicate: [ 'graph' ] });
+        .toEqual({ predicate: [ 'graph' ]});
     });
 
     it('should return correctly on patterns with equal predicate, object and graph variables', () => {
       return expect(ActorQueryOperationQuadpattern.getDuplicateElementLinks(quad('?v1', '?v2', '?v2', '?v2')))
-        .toEqual({ predicate: [ 'object', 'graph' ] });
+        .toEqual({ predicate: [ 'object', 'graph' ]});
     });
 
     it('should return correctly on patterns with equal object and graph variables', () => {
       return expect(ActorQueryOperationQuadpattern.getDuplicateElementLinks(quad('?v1', '?v2', '?v3', '?v3')))
-        .toEqual({ object: [ 'graph' ] });
+        .toEqual({ object: [ 'graph' ]});
     });
   });
 
@@ -139,21 +139,23 @@ describe('ActorQueryOperationQuadpattern', () => {
             quad('s1', 'p1', 'o1', 'g1'),
             quad('s2', 'p2', 'o2', 'g2'),
             quad('s3', 'p3', 'o3', 'g3'),
-          ]), metadata })),
+          ]),
+          metadata }),
+        ),
       };
       actor = new ActorQueryOperationQuadpattern({ name: 'actor', bus, mediatorResolveQuadPattern });
     });
 
     it('should test on quad pattern operations', () => {
-      return expect(actor.test({ operation: { type: 'pattern' } })).resolves.toBeTruthy();
+      return expect(actor.test({ operation: { type: 'pattern' }})).resolves.toBeTruthy();
     });
 
     it('should not test on dummy operations', () => {
-      return expect(actor.test({ operation: { type: 'dummy' } })).rejects.toBeTruthy();
+      return expect(actor.test({ operation: { type: 'dummy' }})).rejects.toBeTruthy();
     });
 
     it('should not test on invalid operations', () => {
-      return expect(actor.test({ operation: <Algebra.Operation> {} })).rejects.toBeTruthy();
+      return expect(actor.test({ operation: <Algebra.Operation> {}})).rejects.toBeTruthy();
     });
 
     it('should get variables ?s, ?p, ?o, ?g from pattern ?s ?p ?o ?g', () => {
@@ -180,7 +182,7 @@ describe('ActorQueryOperationQuadpattern', () => {
         object: namedNode('o'),
         predicate: namedNode('p'),
         subject: variable('s'),
-      })).toEqual([ '?s'  ]);
+      })).toEqual([ '?s' ]);
     });
 
     it('should get variable ?p from pattern ?p ?p ?p g', () => {
@@ -200,14 +202,15 @@ describe('ActorQueryOperationQuadpattern', () => {
         subject: namedNode('s'),
         type: 'pattern',
       };
-      return actor.run({ operation }).then(async (output: IActorQueryOperationOutputBindings) => {
+      return actor.run({ operation }).then(async(output: IActorQueryOperationOutputBindings) => {
         expect(output.variables).toEqual([ '?p' ]);
         expect(await (<any> output).metadata()).toBe(metadataContent);
         expect(await arrayifyStream(output.bindingsStream)).toEqual(
-          [ Bindings({ '?p': <RDF.Term> { value: 'p1' } }),
-            Bindings({ '?p': <RDF.Term> { value: 'p2' } }),
-            Bindings({ '?p': <RDF.Term> { value: 'p3' } }),
-          ]);
+          [ Bindings({ '?p': <RDF.Term> { value: 'p1' }}),
+            Bindings({ '?p': <RDF.Term> { value: 'p2' }}),
+            Bindings({ '?p': <RDF.Term> { value: 'p3' }}),
+          ],
+        );
       });
     });
 
@@ -220,14 +223,15 @@ describe('ActorQueryOperationQuadpattern', () => {
         type: 'pattern',
       };
       const context = ActionContext({});
-      return actor.run({ operation, context }).then(async (output: IActorQueryOperationOutputBindings) => {
+      return actor.run({ operation, context }).then(async(output: IActorQueryOperationOutputBindings) => {
         expect(output.variables).toEqual([ '?p' ]);
         expect(await (<any> output).metadata()).toBe(metadataContent);
         expect(await arrayifyStream(output.bindingsStream)).toEqual(
-          [ Bindings({ '?p': <RDF.Term> { value: 'p1' } }),
-            Bindings({ '?p': <RDF.Term> { value: 'p2' } }),
-            Bindings({ '?p': <RDF.Term> { value: 'p3' } }),
-          ]);
+          [ Bindings({ '?p': <RDF.Term> { value: 'p1' }}),
+            Bindings({ '?p': <RDF.Term> { value: 'p2' }}),
+            Bindings({ '?p': <RDF.Term> { value: 'p3' }}),
+          ],
+        );
       });
     });
 
@@ -241,25 +245,25 @@ describe('ActorQueryOperationQuadpattern', () => {
       };
 
       mediatorResolveQuadPattern = {
-        mediate: () => Promise.resolve({
-          data: new ArrayIterator([
-            quad('s1', 'p1', 'o1', 'g1'),
-            quad('s2', 'p2', 'o2', 'g2'),
-            quad('s3', 'w', 'w', 'g3'),
-          ]), metadata }),
+        mediate: () => Promise.resolve({ data: new ArrayIterator([
+          quad('s1', 'p1', 'o1', 'g1'),
+          quad('s2', 'p2', 'o2', 'g2'),
+          quad('s3', 'w', 'w', 'g3'),
+        ]),
+        metadata }),
       };
       actor = new ActorQueryOperationQuadpattern({ name: 'actor', bus, mediatorResolveQuadPattern });
 
-      return actor.run({ operation }).then(async (output: IActorQueryOperationOutputBindings) => {
+      return actor.run({ operation }).then(async(output: IActorQueryOperationOutputBindings) => {
         expect(output.variables).toEqual([ '?v' ]);
         expect(await (<any> output).metadata()).toBe(metadataContent);
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
-          Bindings({ '?v': <RDF.Term> { value: 'w' } }),
+          Bindings({ '?v': <RDF.Term> { value: 'w' }}),
         ]);
       });
     });
 
-    it('should accept a quad-pattern-level context without an operation context', async () => {
+    it('should accept a quad-pattern-level context without an operation context', async() => {
       const operation = {
         context: ActionContext({ a: 'overridden' }),
         graph: namedNode('g'),
@@ -274,7 +278,7 @@ describe('ActorQueryOperationQuadpattern', () => {
         .toHaveBeenCalledWith({ pattern: operation, context: operation.context });
     });
 
-    it('should accept a quad-pattern-level context with an operation context', async () => {
+    it('should accept a quad-pattern-level context with an operation context', async() => {
       const operation = {
         context: ActionContext({ a: 'overridden' }),
         graph: namedNode('g'),
@@ -289,8 +293,8 @@ describe('ActorQueryOperationQuadpattern', () => {
         .toHaveBeenCalledWith({
           context: ActionContext({
             '@comunica/bus-query-operation:operation': operation,
-            'a': 'overridden',
-            'b': 'b',
+            a: 'overridden',
+            b: 'b',
           }),
           pattern: operation,
         });

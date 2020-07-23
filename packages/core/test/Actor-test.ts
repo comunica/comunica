@@ -1,5 +1,5 @@
-import {LoggerVoid} from "@comunica/logger-void";
-import {ActionContext, Actor, Bus, KEY_CONTEXT_LOG} from "..";
+import { LoggerVoid } from '@comunica/logger-void';
+import { ActionContext, Actor, Bus, KEY_CONTEXT_LOG } from '..';
 
 describe('Actor', () => {
   const bus = new Bus({ name: 'bus' });
@@ -18,19 +18,21 @@ describe('Actor', () => {
     });
 
     it('should be a Actor constructor with a beforeActors field', () => {
-      const beforeActors = ['a', 'b'];
+      const beforeActors = [ 'a', 'b' ];
       const b = new Bus({ name: 'bus' });
       const actor = new (<any> Actor)({ name: 'actor', bus: b, beforeActors });
       const map = new Map();
-      map.set('a', [actor]);
-      map.set('b', [actor]);
+      map.set('a', [ actor ]);
+      map.set('b', [ actor ]);
       expect((<any> b).dependencyLinks).toEqual(map);
     });
   });
 
   describe('An Actor instance', () => {
     const actor = new (<any> Actor)({ name: 'actor', bus });
-    actor.run = () => { return; };
+    actor.run = () => {
+      // Do nothing
+    };
 
     beforeEach(() => {
       jest.spyOn(actor, 'run');

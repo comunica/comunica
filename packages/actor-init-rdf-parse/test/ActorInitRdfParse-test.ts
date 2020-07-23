@@ -1,11 +1,11 @@
-import {ActorRdfParseN3} from "@comunica/actor-rdf-parse-n3";
-import {ActorInit} from "@comunica/bus-init";
-import {Bus} from "@comunica/core";
-import {MediatorRace} from "@comunica/mediator-race";
-import {Readable} from "stream";
-import {ActorInitRdfParse} from "../lib/ActorInitRdfParse";
-const stringToStream = require('streamify-string');
+import { Readable } from 'stream';
+import { ActorRdfParseN3 } from '@comunica/actor-rdf-parse-n3';
+import { ActorInit } from '@comunica/bus-init';
+import { Bus } from '@comunica/core';
+import { MediatorRace } from '@comunica/mediator-race';
+import { ActorInitRdfParse } from '../lib/ActorInitRdfParse';
 const arrayifyStream = require('arrayify-stream');
+const stringToStream = require('streamify-string');
 
 describe('ActorInitRdfParse', () => {
   let bus: any;
@@ -51,13 +51,15 @@ describe('ActorInitRdfParse', () => {
 
     beforeEach(() => {
       actor = new ActorInitRdfParse({ name: 'actor', bus, mediatorRdfParse: mediator, mediaType: 'text/turtle' });
-      busInit.subscribe(new ActorRdfParseN3({ bus, mediaTypes: {
-        'application/trig': 1.0,
-        'application/n-quads': 0.7,
-        'text/turtle': 0.6,
-        'application/n-triples': 0.3,
-        'text/n3': 0.2,
-      }, name: 'actor-rdf-parse' }));
+      busInit.subscribe(new ActorRdfParseN3({ bus,
+        mediaTypes: {
+          'application/trig': 1,
+          'application/n-quads': 0.7,
+          'text/turtle': 0.6,
+          'application/n-triples': 0.3,
+          'text/n3': 0.2,
+        },
+        name: 'actor-rdf-parse' }));
       input = stringToStream(`
       <a> <b> <c>.
       <d> <e> <f> <g>.
@@ -78,19 +80,19 @@ describe('ActorInitRdfParse', () => {
         .toHaveProperty('stdout');
     });
 
-    it('should run', () => {
+    it('should run with valid output', () => {
       return actor.run({ argv: [ 'text/turtle' ], env: {}, stdin: input })
-        .then(async (output) => {
+        .then(async output => {
           return expect(await arrayifyStream(output.stdout)).toBeTruthy();
         });
     });
 
-    it('should run', () => {
+    it('should run with two params', () => {
       return actor.run({ argv: [ 'text/turtle', 'x:' ], env: {}, stdin: input })
-        .then(async (output) => {
+        .then(async output => {
           return expect((await arrayifyStream(output.stdout)).map((b: any) => JSON.parse(b.toString()))).toEqual([
-            { subject: 'x:a', predicate: 'x:b', object: 'x:c', graph: ''},
-            { subject: 'x:d', predicate: 'x:e', object: 'x:f', graph: 'x:g'},
+            { subject: 'x:a', predicate: 'x:b', object: 'x:c', graph: '' },
+            { subject: 'x:d', predicate: 'x:e', object: 'x:f', graph: 'x:g' },
           ]);
         });
     });

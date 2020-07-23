@@ -1,10 +1,10 @@
-import {ActorHttpNodeFetch} from "@comunica/actor-http-node-fetch";
-import {ActorInit} from "@comunica/bus-init";
-import {Bus} from "@comunica/core";
-import {MediatorNumber} from "@comunica/mediator-number";
-import "cross-fetch/polyfill";
-import {PassThrough} from "stream";
-import {ActorInitHttp} from "../lib/ActorInitHttp";
+import { PassThrough } from 'stream';
+import { ActorHttpNodeFetch } from '@comunica/actor-http-node-fetch';
+import { ActorInit } from '@comunica/bus-init';
+import { Bus } from '@comunica/core';
+import { MediatorNumber } from '@comunica/mediator-number';
+import 'cross-fetch/polyfill';
+import { ActorInitHttp } from '../lib/ActorInitHttp';
 
 describe('ActorInitHttp', () => {
   let bus: any;
@@ -44,7 +44,7 @@ describe('ActorInitHttp', () => {
     });
 
     it('should store the \'headers\' parameter', () => {
-      expect(new ActorInitHttp({ name: 'actor', bus, mediatorHttp: mediator, headers: [ 'abc', 'def' ] }).headers)
+      expect(new ActorInitHttp({ name: 'actor', bus, mediatorHttp: mediator, headers: [ 'abc', 'def' ]}).headers)
         .toEqual([ 'abc', 'def' ]);
     });
   });
@@ -56,8 +56,9 @@ describe('ActorInitHttp', () => {
       actor = new ActorInitHttp({ name: 'actor', bus, mediatorHttp: mediator });
       const actorFetch: ActorHttpNodeFetch = new ActorHttpNodeFetch({ name: 'actor-node-fetch', bus });
       (<any> actorFetch).run = (action: any) => Promise.resolve({
-        body: action.input === 'https://www.google.com/noweb'
-          ? require('web-streams-node').toWebReadableStream(new PassThrough()) : new PassThrough(),
+        body: action.input === 'https://www.google.com/noweb' ?
+          require('web-streams-node').toWebReadableStream(new PassThrough()) :
+          new PassThrough(),
         status: action.input.startsWith('https://www.google.com/') ? 200 : 404,
       });
       busInit.subscribe(actorFetch);

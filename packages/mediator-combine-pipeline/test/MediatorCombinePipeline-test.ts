@@ -1,5 +1,5 @@
-import {Actor, Bus, IAction, IActorOutput, IActorTest, Mediator} from "@comunica/core";
-import {MediatorCombinePipeline} from "../lib/MediatorCombinePipeline";
+import { Actor, Bus, IAction, IActorOutput, IActorTest, Mediator } from '@comunica/core';
+import { MediatorCombinePipeline } from '../lib/MediatorCombinePipeline';
 
 describe('MediatorCombinePipeline', () => {
   let bus: Bus<DummyActor, IDummyAction, IActorTest, IDummyAction>;
@@ -54,11 +54,10 @@ describe('MediatorCombinePipeline', () => {
 });
 
 class DummyActor extends Actor<IDummyAction, IActorTest, IDummyAction> {
-
   public readonly id: number;
 
   public constructor(id: number, bus: Bus<DummyActor, IDummyAction, IActorTest, IDummyAction>) {
-    super({ name: 'dummy' + id, bus });
+    super({ name: `dummy${id}`, bus });
     this.id = id;
   }
 
@@ -69,7 +68,6 @@ class DummyActor extends Actor<IDummyAction, IActorTest, IDummyAction> {
   public async run(action: IDummyAction): Promise<IDummyAction> {
     return { field: action.field * this.id + this.id };
   }
-
 }
 
 interface IDummyAction extends IAction, IActorOutput {

@@ -1,13 +1,11 @@
-import {ActionContext, Bus} from "@comunica/core";
-import "jest-rdf";
-import {MediatedQuadSource} from "..";
-import {ActorRdfResolveQuadPatternHypermedia} from "../lib/ActorRdfResolveQuadPatternHypermedia";
+import { ActionContext, Bus } from '@comunica/core';
+import 'jest-rdf';
+import { MediatedQuadSource } from '..';
+import { ActorRdfResolveQuadPatternHypermedia } from '../lib/ActorRdfResolveQuadPatternHypermedia';
 
-const streamifyArray = require('streamify-array');
 const arrayifyStream = require('arrayify-stream');
 const quad = require('rdf-quad');
-
-
+const streamifyArray = require('streamify-array');
 
 describe('ActorRdfResolveQuadPatternHypermedia', () => {
   let bus: any;
@@ -21,12 +19,12 @@ describe('ActorRdfResolveQuadPatternHypermedia', () => {
     bus = new Bus({ name: 'bus' });
     mediatorRdfDereference = {
       mediate: ({ url }: any) => Promise.resolve({
-        quads: url === 'firstUrl'
-          ? streamifyArray([
+        quads: url === 'firstUrl' ?
+          streamifyArray([
             quad('s1', 'p1', 'o1'),
             quad('s2', 'p2', 'o2'),
-          ])
-          : streamifyArray([
+          ]) :
+          streamifyArray([
             quad('s3', 'p3', 'o3'),
             quad('s4', 'p4', 'o4'),
           ]),
@@ -35,7 +33,7 @@ describe('ActorRdfResolveQuadPatternHypermedia', () => {
       }),
     };
     mediatorMetadata = {
-      mediate: ({ quads }: any) => Promise.resolve({ data: quads, metadata: { a: 1 } }),
+      mediate: ({ quads }: any) => Promise.resolve({ data: quads, metadata: { a: 1 }}),
     };
     mediatorMetadataExtract = {
       mediate: ({ metadata }: any) => Promise.resolve({ metadata }),
@@ -49,7 +47,7 @@ describe('ActorRdfResolveQuadPatternHypermedia', () => {
       }),
     };
     mediatorRdfResolveHypermediaLinks = {
-      mediate: () => Promise.resolve({ urls: ['next'] }),
+      mediate: () => Promise.resolve({ urls: [ 'next' ]}),
     };
   });
 
@@ -120,15 +118,19 @@ describe('ActorRdfResolveQuadPatternHypermedia', () => {
 
     describe('test', () => {
       it('should test', () => {
-        return expect(actor.test({ pattern: null, context: ActionContext(
-            { '@comunica/bus-rdf-resolve-quad-pattern:source': { value: 'abc' }}) }))
+        return expect(actor.test({ pattern: null,
+          context: ActionContext(
+            { '@comunica/bus-rdf-resolve-quad-pattern:source': { value: 'abc' }},
+          ) }))
           .resolves.toBeTruthy();
       });
 
       it('should test on raw source form', () => {
-        return expect(actor.test({ pattern: null, context: ActionContext(
-              { '@comunica/bus-rdf-resolve-quad-pattern:source': 'abc'}) }))
-            .resolves.toBeTruthy();
+        return expect(actor.test({ pattern: null,
+          context: ActionContext(
+            { '@comunica/bus-rdf-resolve-quad-pattern:source': 'abc' },
+          ) }))
+          .resolves.toBeTruthy();
       });
 
       it('should not test without a context', () => {
@@ -140,78 +142,101 @@ describe('ActorRdfResolveQuadPatternHypermedia', () => {
       });
 
       it('should not test on an invalid value', () => {
-        return expect(actor.test({ pattern: null, context: ActionContext(
-            { '@comunica/bus-rdf-resolve-quad-pattern:source': { value: null  }}) }))
+        return expect(actor.test({ pattern: null,
+          context: ActionContext(
+            { '@comunica/bus-rdf-resolve-quad-pattern:source': { value: null }},
+          ) }))
           .rejects.toBeTruthy();
       });
 
       it('should not test on no sources', () => {
-        return expect(actor.test({ pattern: null, context: ActionContext(
-            { '@comunica/bus-rdf-resolve-quad-pattern:sources': [] }) }))
+        return expect(actor.test({ pattern: null,
+          context: ActionContext(
+            { '@comunica/bus-rdf-resolve-quad-pattern:sources': []},
+          ) }))
           .rejects.toBeTruthy();
       });
 
       it('should not test on multiple sources', () => {
         return expect(actor.test(
-          { pattern: null, context: ActionContext(
-              { '@comunica/bus-rdf-resolve-quad-pattern:sources': [{ value: 'a' }, { value: 'b' }] }) }))
+          { pattern: null,
+            context: ActionContext(
+              { '@comunica/bus-rdf-resolve-quad-pattern:sources': [{ value: 'a' }, { value: 'b' }]},
+            ) },
+        ))
           .rejects.toBeTruthy();
       });
     });
 
     describe('getSource', () => {
-      it('should return a MediatedQuadSource', async () => {
-        return expect(await actor.getSource(context, pattern)).toBeInstanceOf(MediatedQuadSource);
+      it('should return a MediatedQuadSource', async() => {
+        expect(await actor.getSource(context, pattern)).toBeInstanceOf(MediatedQuadSource);
       });
 
-      it('should cache the source', async () => {
+      it('should cache the source', async() => {
         const source1 = await actor.getSource(ActionContext(
-          { '@comunica/bus-rdf-resolve-quad-pattern:source': { value: 'source1' }}), pattern);
+          { '@comunica/bus-rdf-resolve-quad-pattern:source': { value: 'source1' }},
+        ), pattern);
         const source2 = await actor.getSource(ActionContext(
-          { '@comunica/bus-rdf-resolve-quad-pattern:source': { value: 'source2' }}), pattern);
+          { '@comunica/bus-rdf-resolve-quad-pattern:source': { value: 'source2' }},
+        ), pattern);
         expect(await actor.getSource(ActionContext(
-          { '@comunica/bus-rdf-resolve-quad-pattern:source': { value: 'source1' }}), pattern)).toBe(source1);
+          { '@comunica/bus-rdf-resolve-quad-pattern:source': { value: 'source1' }},
+        ), pattern)).toBe(source1);
         expect(await actor.getSource(ActionContext(
-          { '@comunica/bus-rdf-resolve-quad-pattern:source': { value: 'source2' }}), pattern)).toBe(source2);
+          { '@comunica/bus-rdf-resolve-quad-pattern:source': { value: 'source2' }},
+        ), pattern)).toBe(source2);
       });
 
-      it('should cache the source and allow invalidation for a specific url', async () => {
+      it('should cache the source and allow invalidation for a specific url', async() => {
         const source1 = await actor.getSource(ActionContext(
-          { '@comunica/bus-rdf-resolve-quad-pattern:source': { value: 'source1' }}), pattern);
+          { '@comunica/bus-rdf-resolve-quad-pattern:source': { value: 'source1' }},
+        ), pattern);
         const source2 = await actor.getSource(ActionContext(
-          { '@comunica/bus-rdf-resolve-quad-pattern:source': { value: 'source2' }}), pattern);
+          { '@comunica/bus-rdf-resolve-quad-pattern:source': { value: 'source2' }},
+        ), pattern);
         expect(await actor.getSource(ActionContext(
-          { '@comunica/bus-rdf-resolve-quad-pattern:source': { value: 'source1' }}), pattern)).toBe(source1);
+          { '@comunica/bus-rdf-resolve-quad-pattern:source': { value: 'source1' }},
+        ), pattern)).toBe(source1);
         expect(await actor.getSource(ActionContext(
-          { '@comunica/bus-rdf-resolve-quad-pattern:source': { value: 'source2' }}), pattern)).toBe(source2);
+          { '@comunica/bus-rdf-resolve-quad-pattern:source': { value: 'source2' }},
+        ), pattern)).toBe(source2);
 
         listener({ url: 'source1' });
 
         expect(await actor.getSource(ActionContext(
-          { '@comunica/bus-rdf-resolve-quad-pattern:source': { value: 'source1' }}), pattern)).not.toBe(source1);
+          { '@comunica/bus-rdf-resolve-quad-pattern:source': { value: 'source1' }},
+        ), pattern)).not.toBe(source1);
         expect(await actor.getSource(ActionContext(
-          { '@comunica/bus-rdf-resolve-quad-pattern:source': { value: 'source2' }}), pattern)).toBe(source2);
+          { '@comunica/bus-rdf-resolve-quad-pattern:source': { value: 'source2' }},
+        ), pattern)).toBe(source2);
       });
 
-      it('should cache the source and allow invalidation for all urls', async () => {
+      it('should cache the source and allow invalidation for all urls', async() => {
         const source1 = await actor.getSource(ActionContext(
-          { '@comunica/bus-rdf-resolve-quad-pattern:source': { value: 'source1' }}), pattern);
+          { '@comunica/bus-rdf-resolve-quad-pattern:source': { value: 'source1' }},
+        ), pattern);
         const source2 = await actor.getSource(ActionContext(
-          { '@comunica/bus-rdf-resolve-quad-pattern:source': { value: 'source2' }}), pattern);
+          { '@comunica/bus-rdf-resolve-quad-pattern:source': { value: 'source2' }},
+        ), pattern);
         expect(await actor.getSource(ActionContext(
-          { '@comunica/bus-rdf-resolve-quad-pattern:source': { value: 'source1' }}), pattern)).toBe(source1);
+          { '@comunica/bus-rdf-resolve-quad-pattern:source': { value: 'source1' }},
+        ), pattern)).toBe(source1);
         expect(await actor.getSource(ActionContext(
-          { '@comunica/bus-rdf-resolve-quad-pattern:source': { value: 'source2' }}), pattern)).toBe(source2);
+          { '@comunica/bus-rdf-resolve-quad-pattern:source': { value: 'source2' }},
+        ), pattern)).toBe(source2);
 
         listener({});
 
         expect(await actor.getSource(ActionContext(
-          { '@comunica/bus-rdf-resolve-quad-pattern:source': { value: 'source1' }}), pattern)).not.toBe(source1);
+          { '@comunica/bus-rdf-resolve-quad-pattern:source': { value: 'source1' }},
+        ), pattern)).not.toBe(source1);
         expect(await actor.getSource(ActionContext(
-          { '@comunica/bus-rdf-resolve-quad-pattern:source': { value: 'source2' }}), pattern)).not.toBe(source2);
+          { '@comunica/bus-rdf-resolve-quad-pattern:source': { value: 'source2' }},
+        ), pattern)).not.toBe(source2);
       });
 
-      it('should not cache the source with cache size 0', async () => {
+      it('should not cache the source with cache size 0', async() => {
         actor = new ActorRdfResolveQuadPatternHypermedia({
           bus,
           cacheSize: 0,
@@ -225,18 +250,22 @@ describe('ActorRdfResolveQuadPatternHypermedia', () => {
         });
 
         const source1 = await actor.getSource(ActionContext(
-          { '@comunica/bus-rdf-resolve-quad-pattern:source': { value: 'source1' }}), pattern);
+          { '@comunica/bus-rdf-resolve-quad-pattern:source': { value: 'source1' }},
+        ), pattern);
         const source2 = await actor.getSource(ActionContext(
-          { '@comunica/bus-rdf-resolve-quad-pattern:source': { value: 'source2' }}), pattern);
+          { '@comunica/bus-rdf-resolve-quad-pattern:source': { value: 'source2' }},
+        ), pattern);
         expect(await actor.getSource(ActionContext(
-          { '@comunica/bus-rdf-resolve-quad-pattern:source': { value: 'source1' }}), pattern)).not.toBe(source1);
+          { '@comunica/bus-rdf-resolve-quad-pattern:source': { value: 'source1' }},
+        ), pattern)).not.toBe(source1);
         expect(await actor.getSource(ActionContext(
-          { '@comunica/bus-rdf-resolve-quad-pattern:source': { value: 'source2' }}), pattern)).not.toBe(source2);
+          { '@comunica/bus-rdf-resolve-quad-pattern:source': { value: 'source2' }},
+        ), pattern)).not.toBe(source2);
       });
     });
 
     describe('run', () => {
-      it('should return a quad stream and metadata', async () => {
+      it('should return a quad stream and metadata', async() => {
         const { data, metadata } = await actor.run({ context, pattern });
         const metaPromise = metadata();
         expect(await arrayifyStream(data)).toEqualRdfQuadArray([

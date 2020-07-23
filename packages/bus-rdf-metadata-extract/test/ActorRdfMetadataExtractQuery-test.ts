@@ -1,12 +1,12 @@
-import {Bindings} from "@comunica/bus-query-operation";
-import {Bus} from "@comunica/core";
-import {literal, namedNode} from "@rdfjs/data-model";
-import {ActorRdfMetadataExtractQuery} from "..";
+import { Bindings } from '@comunica/bus-query-operation';
+import { Bus } from '@comunica/core';
+import { literal, namedNode } from '@rdfjs/data-model';
+import { ActorRdfMetadataExtractQuery } from '..';
 
-const streamifyArray = require("streamify-array");
-const streamifyString = require("streamify-string");
-const arrayifyStream = require("arrayify-stream");
+const arrayifyStream = require('arrayify-stream');
 const quad = require('rdf-quad');
+const streamifyArray = require('streamify-array');
+const streamifyString = require('streamify-string');
 
 describe('ActorRdfMetadataExtractQuery', () => {
   const context = {
@@ -17,11 +17,11 @@ describe('ActorRdfMetadataExtractQuery', () => {
   const queryEngine: any = {
     query: jest.fn((operation, options) => ({
       bindings: Promise.resolve(streamifyArray([
-        Bindings({ person: namedNode('p1' + options.source.type), name: literal('P1' + options.source.value.size) }),
-        Bindings({ person: namedNode('p2' + options.source.type), name: literal('P2' + options.source.value.size) }),
+        Bindings({ person: namedNode(`p1${options.source.type}`), name: literal(`P1${options.source.value.size}`) }),
+        Bindings({ person: namedNode(`p2${options.source.type}`), name: literal(`P2${options.source.value.size}`) }),
       ])),
     })),
-    resultToString: jest.fn(async (p) => ({
+    resultToString: jest.fn(async p => ({
       data: streamifyString(JSON.stringify({
         results: {
           bindings: await arrayifyStream(await p.bindings),
@@ -50,22 +50,19 @@ describe('ActorRdfMetadataExtractQuery', () => {
     const actor = new (<any> ActorRdfMetadataExtractQuery)(context, query, { name: 'actor', bus, queryEngine });
 
     describe('queryData', () => {
-
-      it('should query results', async () => {
+      it('should query results', async() => {
         const data = streamifyArray([
           quad('s1In', 'p1In', 'o1In'),
           quad('s2In', 'p2In', 'o2In'),
         ]);
         expect(await actor.queryData(data)).toEqual([
           {
-            name: ["P12", "P22"],
-            person: ["p1rdfjsSource", "p2rdfjsSource"],
+            name: [ 'P12', 'P22' ],
+            person: [ 'p1rdfjsSource', 'p2rdfjsSource' ],
           },
         ]);
       });
-
     });
-
   });
 
   describe('An ActorRdfMetadataExtractQuery instance with query parameters', () => {
@@ -73,34 +70,31 @@ describe('ActorRdfMetadataExtractQuery', () => {
     const actor = new (<any> ActorRdfMetadataExtractQuery)(context, queryParam, { name: 'actor', bus, queryEngine });
 
     describe('queryData', () => {
-
-      it('should query results without initial bindings', async () => {
+      it('should query results without initial bindings', async() => {
         const data = streamifyArray([
           quad('s1In', 'p1In', 'o1In'),
           quad('s2In', 'p2In', 'o2In'),
         ]);
         expect(await actor.queryData(data)).toEqual([
           {
-            name: ["P12", "P22"],
-            person: ["p1rdfjsSource", "p2rdfjsSource"],
+            name: [ 'P12', 'P22' ],
+            person: [ 'p1rdfjsSource', 'p2rdfjsSource' ],
           },
         ]);
       });
 
-      it('should query results with initial bindings', async () => {
+      it('should query results with initial bindings', async() => {
         const data = streamifyArray([
           quad('s1In', 'p1In', 'o1In'),
           quad('s2In', 'p2In', 'o2In'),
         ]);
         expect(await actor.queryData(data, { '?var': namedNode('V1') })).toEqual([
           {
-            name: ["P12", "P22"],
-            person: ["p1rdfjsSource", "p2rdfjsSource"],
+            name: [ 'P12', 'P22' ],
+            person: [ 'p1rdfjsSource', 'p2rdfjsSource' ],
           },
         ]);
       });
-
     });
-
   });
 });

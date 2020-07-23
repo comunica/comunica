@@ -1,6 +1,6 @@
-import {ActorRdfResolveHypermediaLinks} from "@comunica/bus-rdf-resolve-hypermedia-links";
-import {Bus} from "@comunica/core";
-import {ActorRdfResolveHypermediaLinksNext} from "../lib/ActorRdfResolveHypermediaLinksNext";
+import { ActorRdfResolveHypermediaLinks } from '@comunica/bus-rdf-resolve-hypermedia-links';
+import { Bus } from '@comunica/core';
+import { ActorRdfResolveHypermediaLinksNext } from '../lib/ActorRdfResolveHypermediaLinksNext';
 
 describe('ActorRdfResolveHypermediaLinksNext', () => {
   let bus: any;
@@ -43,7 +43,7 @@ describe('ActorRdfResolveHypermediaLinksNext', () => {
     });
 
     it('should run', () => {
-      return expect(actor.run({ metadata: { next: 'NEXT' }})).resolves.toMatchObject({ urls: ['NEXT'] });
+      return expect(actor.run({ metadata: { next: 'NEXT' }})).resolves.toMatchObject({ urls: [ 'NEXT' ]});
     });
   });
 });

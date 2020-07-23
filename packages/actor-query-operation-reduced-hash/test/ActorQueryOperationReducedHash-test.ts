@@ -1,8 +1,8 @@
-import {Bindings, IActorQueryOperationOutputBindings} from "@comunica/bus-query-operation";
-import {Bus} from "@comunica/core";
-import {literal} from "@rdfjs/data-model";
-import {ArrayIterator} from "asynciterator";
-import {ActorQueryOperationReducedHash} from "..";
+import { Bindings, IActorQueryOperationOutputBindings } from '@comunica/bus-query-operation';
+import { Bus } from '@comunica/core';
+import { literal } from '@rdfjs/data-model';
+import { ArrayIterator } from 'asynciterator';
+import { ActorQueryOperationReducedHash } from '..';
 const arrayifyStream = require('arrayify-stream');
 
 describe('ActorQueryOperationReducedHash', () => {
@@ -26,7 +26,7 @@ describe('ActorQueryOperationReducedHash', () => {
         metadata: () => Promise.resolve({ totalItems: 5 }),
         operated: arg,
         type: 'bindings',
-        variables: ['a'],
+        variables: [ 'a' ],
       }),
     };
     hashAlgorithm = 'sha1';
@@ -39,11 +39,12 @@ describe('ActorQueryOperationReducedHash', () => {
 
     beforeEach(() => {
       actor = new ActorQueryOperationReducedHash(
-            { name: 'actor', bus, mediatorQueryOperation, hashAlgorithm, digestAlgorithm, cacheSize });
+        { name: 'actor', bus, mediatorQueryOperation, hashAlgorithm, digestAlgorithm, cacheSize },
+      );
     });
     it('should create a filter', () => {
       return expect(actor.newHashFilter('sha1', 'base64'))
-                .toBeInstanceOf(Function);
+        .toBeInstanceOf(Function);
     });
 
     it('should create a filter that is a predicate', () => {
@@ -84,22 +85,23 @@ describe('ActorQueryOperationReducedHash', () => {
 
     beforeEach(() => {
       actor = new ActorQueryOperationReducedHash(
-                { name: 'actor', bus, mediatorQueryOperation, hashAlgorithm, digestAlgorithm, cacheSize });
+        { name: 'actor', bus, mediatorQueryOperation, hashAlgorithm, digestAlgorithm, cacheSize },
+      );
     });
 
     it('should test on reduced', () => {
-      const op = { operation: { type: 'reduced' } };
+      const op = { operation: { type: 'reduced' }};
       return expect(actor.test(op)).resolves.toBeTruthy();
     });
 
     it('should not test on non-reduced', () => {
-      const op = { operation: { type: 'some-other-type' } };
+      const op = { operation: { type: 'some-other-type' }};
       return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
     it('should run', () => {
-      const op = { operation: { type: 'reduced' } };
-      return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
+      const op = { operation: { type: 'reduced' }};
+      return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
         expect(await (<any> output).metadata()).toEqual({ totalItems: 5 });
         expect(output.variables).toEqual([ 'a' ]);
         expect(output.type).toEqual('bindings');
@@ -140,16 +142,16 @@ describe('Smaller cache than number of queries', () => {
         metadata: () => Promise.resolve({ totalItems: 7 }),
         operated: arg,
         type: 'bindings',
-        variables: ['a'],
+        variables: [ 'a' ],
       }),
     };
     actor = new ActorQueryOperationReducedHash(
-          { name: 'actor', bus, mediatorQueryOperation, hashAlgorithm, digestAlgorithm, cacheSize });
-
+      { name: 'actor', bus, mediatorQueryOperation, hashAlgorithm, digestAlgorithm, cacheSize },
+    );
   });
   it('should run', () => {
-    const op = { operation: { type: 'reduced' } };
-    return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
+    const op = { operation: { type: 'reduced' }};
+    return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
       expect(await (<any> output).metadata()).toEqual({ totalItems: 7 });
       expect(output.variables).toEqual([ 'a' ]);
       expect(output.type).toEqual('bindings');

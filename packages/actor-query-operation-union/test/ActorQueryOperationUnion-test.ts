@@ -1,8 +1,8 @@
-import {ActorQueryOperation, Bindings, IActorQueryOperationOutputBindings} from "@comunica/bus-query-operation";
-import {Bus} from "@comunica/core";
-import {literal} from "@rdfjs/data-model";
-import {ArrayIterator} from "asynciterator";
-import {ActorQueryOperationUnion} from "../lib/ActorQueryOperationUnion";
+import { ActorQueryOperation, Bindings, IActorQueryOperationOutputBindings } from '@comunica/bus-query-operation';
+import { Bus } from '@comunica/core';
+import { literal } from '@rdfjs/data-model';
+import { ArrayIterator } from 'asynciterator';
+import { ActorQueryOperationUnion } from '../lib/ActorQueryOperationUnion';
 const arrayifyStream = require('arrayify-stream');
 
 describe('ActorQueryOperationUnion', () => {
@@ -80,28 +80,29 @@ describe('ActorQueryOperationUnion', () => {
     });
 
     it('should return a for a single input a', () => {
-      return expect(ActorQueryOperationUnion.unionVariables([['a']])).toEqual(['a']);
+      return expect(ActorQueryOperationUnion.unionVariables([[ 'a' ]])).toEqual([ 'a' ]);
     });
 
     it('should return a for a inputs a and a', () => {
-      return expect(ActorQueryOperationUnion.unionVariables([['a'], ['a']])).toEqual(['a']);
+      return expect(ActorQueryOperationUnion.unionVariables([[ 'a' ], [ 'a' ]])).toEqual([ 'a' ]);
     });
 
     it('should return a and b for a inputs a, b and a', () => {
-      return expect(ActorQueryOperationUnion.unionVariables([['a', 'b'], ['a']])).toEqual(['a', 'b']);
+      return expect(ActorQueryOperationUnion.unionVariables([[ 'a', 'b' ], [ 'a' ]])).toEqual([ 'a', 'b' ]);
     });
 
     it('should return a and b for a inputs a, b and a, b', () => {
-      return expect(ActorQueryOperationUnion.unionVariables([['a', 'b'], ['a', 'b']])).toEqual(['a', 'b']);
+      return expect(ActorQueryOperationUnion.unionVariables([[ 'a', 'b' ], [ 'a', 'b' ]])).toEqual([ 'a', 'b' ]);
     });
 
     it('should return a, b and c for a inputs a, b and a, b, c', () => {
-      return expect(ActorQueryOperationUnion.unionVariables([['a', 'b'], ['a', 'b', 'c']])).toEqual(['a', 'b', 'c']);
+      return expect(ActorQueryOperationUnion.unionVariables([[ 'a', 'b' ], [ 'a', 'b', 'c' ]]))
+        .toEqual([ 'a', 'b', 'c' ]);
     });
 
     it('should return a, b and c for a inputs a, b and a, b, c and empty', () => {
-      return expect(ActorQueryOperationUnion.unionVariables([['a', 'b'], ['a', 'b', 'c'], []]))
-        .toEqual(['a', 'b', 'c']);
+      return expect(ActorQueryOperationUnion.unionVariables([[ 'a', 'b' ], [ 'a', 'b', 'c' ], []]))
+        .toEqual([ 'a', 'b', 'c' ]);
     });
   });
 
@@ -173,18 +174,18 @@ describe('ActorQueryOperationUnion', () => {
     });
 
     it('should test on union', () => {
-      const op = { operation: { type: 'union', left, right } };
+      const op = { operation: { type: 'union', left, right }};
       return expect(actor.test(op)).resolves.toBeTruthy();
     });
 
     it('should not test on non-union', () => {
-      const op = { operation: { type: 'some-other-type', left, right } };
+      const op = { operation: { type: 'some-other-type', left, right }};
       return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
     it('should run', () => {
-      const op = { operation: { type: 'union', left, right } };
-      return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
+      const op = { operation: { type: 'union', left, right }};
+      return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
         expect(await (<any> output).metadata()).toEqual({ totalItems: 5 });
         expect(output.variables).toEqual([ 'a', 'b' ]);
         expect(output.type).toEqual('bindings');
@@ -199,8 +200,8 @@ describe('ActorQueryOperationUnion', () => {
     });
 
     it('should run with a left stream without metadata', () => {
-      const op = { operation: { type: 'union', left: leftNoMeta, right } };
-      return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
+      const op = { operation: { type: 'union', left: leftNoMeta, right }};
+      return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
         expect(output.metadata).toBeFalsy();
         expect(output.variables).toEqual([ 'a', 'b' ]);
         expect(output.type).toEqual('bindings');

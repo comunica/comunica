@@ -1,5 +1,5 @@
-import {Bus} from "@comunica/core";
-import {ActorHttpInvalidateListenable, IInvalidateListener} from "..";
+import { Bus } from '@comunica/core';
+import { ActorHttpInvalidateListenable, IInvalidateListener } from '..';
 
 describe('ActorHttpInvalidateListenable', () => {
   const bus = new Bus({ name: 'bus' });
@@ -46,19 +46,19 @@ describe('ActorHttpInvalidateListenable', () => {
       actor.addInvalidateListener(l1);
     });
 
-    it('should test', async () => {
+    it('should test', async() => {
       expect(await actor.test({})).toBeTruthy();
       expect(l0).not.toHaveBeenCalled();
       expect(l1).not.toHaveBeenCalled();
     });
 
-    it('should run without URL', async () => {
+    it('should run without URL', async() => {
       expect(await actor.run({})).toBeTruthy();
       expect(l0).toHaveBeenCalledWith({});
       expect(l1).toHaveBeenCalledWith({});
     });
 
-    it('should run with URL', async () => {
+    it('should run with URL', async() => {
       expect(await actor.run({ url: 'abc' })).toBeTruthy();
       expect(l0).toHaveBeenCalledWith({ url: 'abc' });
       expect(l1).toHaveBeenCalledWith({ url: 'abc' });

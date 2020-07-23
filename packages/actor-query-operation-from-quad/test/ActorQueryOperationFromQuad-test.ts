@@ -1,8 +1,8 @@
-import {ActorQueryOperation, Bindings, IActorQueryOperationOutputBindings} from "@comunica/bus-query-operation";
-import {Bus} from "@comunica/core";
-import {literal, namedNode, variable} from "@rdfjs/data-model";
-import {ArrayIterator} from "asynciterator";
-import {ActorQueryOperationFromQuad} from "../lib/ActorQueryOperationFromQuad";
+import { ActorQueryOperation, Bindings, IActorQueryOperationOutputBindings } from '@comunica/bus-query-operation';
+import { Bus } from '@comunica/core';
+import { literal, namedNode, variable } from '@rdfjs/data-model';
+import { ArrayIterator } from 'asynciterator';
+import { ActorQueryOperationFromQuad } from '../lib/ActorQueryOperationFromQuad';
 const arrayifyStream = require('arrayify-stream');
 const quad = require('rdf-quad');
 
@@ -22,7 +22,7 @@ describe('ActorQueryOperationFromQuad', () => {
         metadata: () => Promise.resolve({ totalItems: 3 }),
         operated: arg,
         type: 'bindings',
-        variables: ['a'],
+        variables: [ 'a' ],
       }),
     };
   });
@@ -47,24 +47,27 @@ describe('ActorQueryOperationFromQuad', () => {
   describe('#applyOperationDefaultGraph', () => {
     it('should transform a BGP with a default graph pattern', () => {
       const result = ActorQueryOperationFromQuad.applyOperationDefaultGraph(
-        { patterns: [Object.assign(quad('s', 'p', 'o'), { type: 'pattern' })], type: 'bgp' },
-      [namedNode('g')]);
+        { patterns: [ Object.assign(quad('s', 'p', 'o'), { type: 'pattern' }) ], type: 'bgp' },
+        [ namedNode('g') ],
+      );
       expect(result.type).toEqual('bgp');
       expect(result.patterns[0].equals(quad('s', 'p', 'o', 'g'))).toBeTruthy();
     });
 
     it('should not transform a BGP with a non-default graph pattern', () => {
       const result = ActorQueryOperationFromQuad.applyOperationDefaultGraph(
-        { patterns: [Object.assign(quad('s', 'p', 'o', 'gother'), { type: 'pattern' })], type: 'bgp' },
-        [namedNode('g')]);
+        { patterns: [ Object.assign(quad('s', 'p', 'o', 'gother'), { type: 'pattern' }) ], type: 'bgp' },
+        [ namedNode('g') ],
+      );
       expect(result.type).toEqual('bgp');
       expect(result.patterns[0].equals(quad('s', 'p', 'o', 'gother'))).toBeTruthy();
     });
 
     it('should transform a BGP with default graph patterns', () => {
       const result = ActorQueryOperationFromQuad.applyOperationDefaultGraph(
-        { patterns: [Object.assign(quad('s', 'p', 'o'), { type: 'pattern' })], type: 'bgp' },
-        [namedNode('g'), namedNode('h')]);
+        { patterns: [ Object.assign(quad('s', 'p', 'o'), { type: 'pattern' }) ], type: 'bgp' },
+        [ namedNode('g'), namedNode('h') ],
+      );
       expect(result.type).toEqual('union');
       expect(result.left.type).toEqual('bgp');
       expect(result.left.patterns[0].equals(quad('s', 'p', 'o', 'g'))).toBeTruthy();
@@ -74,29 +77,33 @@ describe('ActorQueryOperationFromQuad', () => {
 
     it('should not transform a BGP with non-default graph patterns', () => {
       const result = ActorQueryOperationFromQuad.applyOperationDefaultGraph(
-        { patterns: [Object.assign(quad('s', 'p', 'o', 'gother'), { type: 'pattern' })], type: 'bgp' },
-        [namedNode('g'), namedNode('h')]);
+        { patterns: [ Object.assign(quad('s', 'p', 'o', 'gother'), { type: 'pattern' }) ], type: 'bgp' },
+        [ namedNode('g'), namedNode('h') ],
+      );
       expect(result.type).toEqual('bgp');
       expect(result.patterns[0].equals(quad('s', 'p', 'o', 'gother'))).toBeTruthy();
     });
 
     it('should transform a Path with a default graph pattern', () => {
       const result = ActorQueryOperationFromQuad.applyOperationDefaultGraph(
-        Object.assign(quad('s', 'p', 'o'), { type: 'path' }), [namedNode('g')]);
+        Object.assign(quad('s', 'p', 'o'), { type: 'path' }), [ namedNode('g') ],
+      );
       expect(result.type).toEqual('path');
       expect(quad('s', 'p', 'o', 'g').equals(result)).toBeTruthy();
     });
 
     it('should not transform a Path with a non-default graph pattern', () => {
       const result = ActorQueryOperationFromQuad.applyOperationDefaultGraph(
-        Object.assign(quad('s', 'p', 'o', 'gother'), { type: 'path' }), [namedNode('g')]);
+        Object.assign(quad('s', 'p', 'o', 'gother'), { type: 'path' }), [ namedNode('g') ],
+      );
       expect(result.type).toEqual('path');
       expect(quad('s', 'p', 'o', 'gother').equals(result)).toBeTruthy();
     });
 
     it('should transform a Path with default graph patterns', () => {
       const result = ActorQueryOperationFromQuad.applyOperationDefaultGraph(
-        Object.assign(quad('s', 'p', 'o'), { type: 'path' }), [namedNode('g'), namedNode('h')]);
+        Object.assign(quad('s', 'p', 'o'), { type: 'path' }), [ namedNode('g'), namedNode('h') ],
+      );
       expect(result.type).toEqual('join');
       expect(result.left.type).toEqual('path');
       expect(quad('s', 'p', 'o', 'g').equals(result.left)).toBeTruthy();
@@ -106,7 +113,8 @@ describe('ActorQueryOperationFromQuad', () => {
 
     it('should not transform a Path with non-default graph patterns', () => {
       const result = ActorQueryOperationFromQuad.applyOperationDefaultGraph(
-        Object.assign(quad('s', 'p', 'o', 'gother'), { type: 'path' }), [namedNode('g'), namedNode('h')]);
+        Object.assign(quad('s', 'p', 'o', 'gother'), { type: 'path' }), [ namedNode('g'), namedNode('h') ],
+      );
       expect(result.type).toEqual('path');
       expect(quad('s', 'p', 'o', 'gother').equals(result)).toBeTruthy();
     });
@@ -116,29 +124,34 @@ describe('ActorQueryOperationFromQuad', () => {
         {
           stuff: [
             { type: 'blabla', input: Object.assign(quad('s', 'p', 'o'), { type: 'path' }) },
-            { type: 'someunknownthing', variables: [ variable('V') ] },
+            { type: 'someunknownthing', variables: [ variable('V') ]},
           ],
           type: 'bla',
-        }, [namedNode('g')]);
+        }, [ namedNode('g') ],
+      );
       expect(result.type).toEqual('bla');
       expect(result.stuff).toHaveLength(2);
       expect(quad('s', 'p', 'o', 'g').equals(result.stuff[0].input)).toBeTruthy();
-      expect(result.stuff[1]).toEqual({ type: 'someunknownthing', variables: [ variable('V') ] });
+      expect(result.stuff[1]).toEqual({ type: 'someunknownthing', variables: [ variable('V') ]});
     });
   });
 
   describe('#applyOperationNamedGraph', () => {
     it('should transform a pattern with a default graph pattern to a no-op', () => {
       const result = ActorQueryOperationFromQuad.applyOperationNamedGraph(
-        { patterns: [Object.assign(quad('s', 'p', 'o'), { type: 'pattern' })], type: 'bgp' },
-        [namedNode('g')], []);
-      expect(result).toEqual({ type: 'bgp', patterns: [] });
+        { patterns: [ Object.assign(quad('s', 'p', 'o'), { type: 'pattern' }) ], type: 'bgp' },
+        [ namedNode('g') ],
+        [],
+      );
+      expect(result).toEqual({ type: 'bgp', patterns: []});
     });
 
     it('should transform a pattern with a variable graph pattern', () => {
       const result = ActorQueryOperationFromQuad.applyOperationNamedGraph(
-        { patterns: [Object.assign(quad('s', 'p', 'o', '?g'), { type: 'pattern' })], type: 'bgp' },
-        [namedNode('g')], []);
+        { patterns: [ Object.assign(quad('s', 'p', 'o', '?g'), { type: 'pattern' }) ], type: 'bgp' },
+        [ namedNode('g') ],
+        [],
+      );
       expect(result.type).toEqual('join');
       expect(result.left.type).toEqual('values');
       expect(result.left.variables.length).toEqual(1);
@@ -150,38 +163,48 @@ describe('ActorQueryOperationFromQuad', () => {
 
     it('should transform a pattern with a non-available non-default graph pattern to a no-op', () => {
       const result = ActorQueryOperationFromQuad.applyOperationNamedGraph(
-        { patterns: [Object.assign(quad('s', 'p', 'o', 'gother'), { type: 'pattern' })], type: 'bgp' },
-        [namedNode('g')], []);
-      expect(result).toEqual({ type: 'bgp', patterns: [] });
+        { patterns: [ Object.assign(quad('s', 'p', 'o', 'gother'), { type: 'pattern' }) ], type: 'bgp' },
+        [ namedNode('g') ],
+        [],
+      );
+      expect(result).toEqual({ type: 'bgp', patterns: []});
     });
 
     it('should not transform a pattern with a non-available non-default graph pattern but available as default', () => {
       const result = ActorQueryOperationFromQuad.applyOperationNamedGraph(
-        { patterns: [Object.assign(quad('s', 'p', 'o', 'gother'), { type: 'pattern' })], type: 'bgp' },
-        [namedNode('g')], [namedNode('gother')]);
+        { patterns: [ Object.assign(quad('s', 'p', 'o', 'gother'), { type: 'pattern' }) ], type: 'bgp' },
+        [ namedNode('g') ],
+        [ namedNode('gother') ],
+      );
       expect(result.type).toEqual('bgp');
       expect(quad('s', 'p', 'o', 'gother').equals(result.patterns[0])).toBeTruthy();
     });
 
     it('should not transform a pattern with an available non-default graph pattern', () => {
       const result = ActorQueryOperationFromQuad.applyOperationNamedGraph(
-        { patterns: [Object.assign(quad('s', 'p', 'o', 'g'), { type: 'pattern' })], type: 'bgp' },
-        [namedNode('g')], []);
+        { patterns: [ Object.assign(quad('s', 'p', 'o', 'g'), { type: 'pattern' }) ], type: 'bgp' },
+        [ namedNode('g') ],
+        [],
+      );
       expect(result.type).toEqual('bgp');
       expect(result.patterns[0].equals(quad('s', 'p', 'o', 'g'))).toBeTruthy();
     });
 
     it('should transform a pattern with default graph patterns to a no-op', () => {
       const result = ActorQueryOperationFromQuad.applyOperationNamedGraph(
-        { patterns: [Object.assign(quad('s', 'p', 'o'), { type: 'pattern' })], type: 'bgp' },
-        [namedNode('g'), namedNode('h')], []);
-      expect(result).toEqual({ type: 'bgp', patterns: [] });
+        { patterns: [ Object.assign(quad('s', 'p', 'o'), { type: 'pattern' }) ], type: 'bgp' },
+        [ namedNode('g'), namedNode('h') ],
+        [],
+      );
+      expect(result).toEqual({ type: 'bgp', patterns: []});
     });
 
     it('should transform a pattern with variable graph patterns', () => {
       const result = ActorQueryOperationFromQuad.applyOperationNamedGraph(
-        { patterns: [Object.assign(quad('s', 'p', 'o', '?g'), { type: 'pattern' })], type: 'bgp' },
-        [namedNode('g'), namedNode('h')], []);
+        { patterns: [ Object.assign(quad('s', 'p', 'o', '?g'), { type: 'pattern' }) ], type: 'bgp' },
+        [ namedNode('g'), namedNode('h') ],
+        [],
+      );
       expect(result.type).toEqual('union');
 
       expect(result.left.type).toEqual('join');
@@ -203,28 +226,34 @@ describe('ActorQueryOperationFromQuad', () => {
 
     it('should transform a pattern with non-available non-default graph patterns to a no-op', () => {
       const result = ActorQueryOperationFromQuad.applyOperationNamedGraph(
-        { patterns: [Object.assign(quad('s', 'p', 'o', 'gother'), { type: 'pattern' })], type: 'bgp' },
-        [namedNode('g'), namedNode('h')], []);
-      expect(result).toEqual({ type: 'bgp', patterns: [] });
+        { patterns: [ Object.assign(quad('s', 'p', 'o', 'gother'), { type: 'pattern' }) ], type: 'bgp' },
+        [ namedNode('g'), namedNode('h') ],
+        [],
+      );
+      expect(result).toEqual({ type: 'bgp', patterns: []});
     });
 
     it('should transform a pattern with available non-default graph patterns', () => {
       const result = ActorQueryOperationFromQuad.applyOperationNamedGraph(
-        { patterns: [Object.assign(quad('s', 'p', 'o', 'g'), { type: 'pattern' })], type: 'bgp' },
-        [namedNode('g'), namedNode('h')], []);
+        { patterns: [ Object.assign(quad('s', 'p', 'o', 'g'), { type: 'pattern' }) ], type: 'bgp' },
+        [ namedNode('g'), namedNode('h') ],
+        [],
+      );
       expect(result.type).toEqual('bgp');
       expect(result.patterns[0].equals(quad('s', 'p', 'o', 'g'))).toBeTruthy();
     });
 
     it('should transform a Path with a default graph pattern to a no-op', () => {
       const result = ActorQueryOperationFromQuad.applyOperationNamedGraph(
-        Object.assign(quad('s', 'p', 'o'), { type: 'path' }), [namedNode('g')], []);
-      expect(result).toEqual({ type: 'bgp', patterns: [] });
+        Object.assign(quad('s', 'p', 'o'), { type: 'path' }), [ namedNode('g') ], [],
+      );
+      expect(result).toEqual({ type: 'bgp', patterns: []});
     });
 
     it('should transform a Path with a variable graph pattern', () => {
       const result = ActorQueryOperationFromQuad.applyOperationNamedGraph(
-        Object.assign(quad('s', 'p', 'o', '?g'), { type: 'path' }), [namedNode('g')], []);
+        Object.assign(quad('s', 'p', 'o', '?g'), { type: 'path' }), [ namedNode('g') ], [],
+      );
       expect(result.type).toEqual('join');
       expect(result.left.type).toEqual('values');
       expect(result.left.variables.length).toEqual(1);
@@ -236,26 +265,30 @@ describe('ActorQueryOperationFromQuad', () => {
 
     it('should transform a Path with a non-available non-default graph pattern to a no-op', () => {
       const result = ActorQueryOperationFromQuad.applyOperationNamedGraph(
-        Object.assign(quad('s', 'p', 'o', 'gother'), { type: 'path' }), [namedNode('g')], []);
-      expect(result).toEqual({ type: 'bgp', patterns: [] });
+        Object.assign(quad('s', 'p', 'o', 'gother'), { type: 'path' }), [ namedNode('g') ], [],
+      );
+      expect(result).toEqual({ type: 'bgp', patterns: []});
     });
 
     it('should transform a Path with an available non-default graph pattern', () => {
       const result = ActorQueryOperationFromQuad.applyOperationNamedGraph(
-        Object.assign(quad('s', 'p', 'o', 'g'), { type: 'path' }), [namedNode('g')], []);
+        Object.assign(quad('s', 'p', 'o', 'g'), { type: 'path' }), [ namedNode('g') ], [],
+      );
       expect(result.type).toEqual('path');
       expect(quad('s', 'p', 'o', 'g').equals(result)).toBeTruthy();
     });
 
     it('should transform a Path with default graph patterns to a no-op', () => {
       const result = ActorQueryOperationFromQuad.applyOperationNamedGraph(
-        Object.assign(quad('s', 'p', 'o'), { type: 'path' }), [namedNode('g'), namedNode('h')], []);
-      expect(result).toEqual({ type: 'bgp', patterns: [] });
+        Object.assign(quad('s', 'p', 'o'), { type: 'path' }), [ namedNode('g'), namedNode('h') ], [],
+      );
+      expect(result).toEqual({ type: 'bgp', patterns: []});
     });
 
     it('should transform a Path with variable graph patterns', () => {
       const result = ActorQueryOperationFromQuad.applyOperationNamedGraph(
-        Object.assign(quad('s', 'p', 'o', '?g'), { type: 'path' }), [namedNode('g'), namedNode('h')], []);
+        Object.assign(quad('s', 'p', 'o', '?g'), { type: 'path' }), [ namedNode('g'), namedNode('h') ], [],
+      );
       expect(result.type).toEqual('union');
 
       expect(result.left.type).toEqual('join');
@@ -277,15 +310,17 @@ describe('ActorQueryOperationFromQuad', () => {
 
     it('should not transform a Path with available non-default graph patterns', () => {
       const result = ActorQueryOperationFromQuad.applyOperationNamedGraph(
-        Object.assign(quad('s', 'p', 'o', 'g'), { type: 'path' }), [namedNode('g'), namedNode('h')], []);
+        Object.assign(quad('s', 'p', 'o', 'g'), { type: 'path' }), [ namedNode('g'), namedNode('h') ], [],
+      );
       expect(result.type).toEqual('path');
       expect(quad('s', 'p', 'o', 'g').equals(result)).toBeTruthy();
     });
 
     it('should not transform a Path with non-available non-default graph patterns to a no-op', () => {
       const result = ActorQueryOperationFromQuad.applyOperationNamedGraph(
-        Object.assign(quad('s', 'p', 'o', 'gother'), { type: 'path' }), [namedNode('g'), namedNode('h')], []);
-      expect(result).toEqual({ type: 'bgp', patterns: [] });
+        Object.assign(quad('s', 'p', 'o', 'gother'), { type: 'path' }), [ namedNode('g'), namedNode('h') ], [],
+      );
+      expect(result).toEqual({ type: 'bgp', patterns: []});
     });
 
     it('should transform other types of operations', () => {
@@ -293,10 +328,11 @@ describe('ActorQueryOperationFromQuad', () => {
         {
           stuff: [
             { type: 'blabla', input: Object.assign(quad('s', 'p', 'o', '?g'), { type: 'path' }) },
-            { type: 'someunknownthing', variables: [ variable('V') ] },
+            { type: 'someunknownthing', variables: [ variable('V') ]},
           ],
           type: 'bla',
-        }, [namedNode('g')], []);
+        }, [ namedNode('g') ], [],
+      );
       expect(result.type).toEqual('bla');
       expect(result.stuff).toHaveLength(2);
 
@@ -309,7 +345,7 @@ describe('ActorQueryOperationFromQuad', () => {
       expect(result.stuff[0].input.right.type).toEqual('path');
       expect(quad('s', 'p', 'o', 'g').equals(result.stuff[0].input.right)).toBeTruthy();
 
-      expect(result.stuff[1]).toEqual({ type: 'someunknownthing', variables: [ variable('V') ] });
+      expect(result.stuff[1]).toEqual({ type: 'someunknownthing', variables: [ variable('V') ]});
     });
   });
 
@@ -379,7 +415,7 @@ describe('ActorQueryOperationFromQuad', () => {
 
   describe('#createOperation', () => {
     it('should transform without default graphs and without named graphs', () => {
-      const pattern: any = {type: 'from', default: [], named: [], input: 'in'};
+      const pattern: any = { type: 'from', default: [], named: [], input: 'in' };
       expect(ActorQueryOperationFromQuad.createOperation(pattern))
         .toEqual('in');
     });
@@ -415,7 +451,8 @@ describe('ActorQueryOperationFromQuad', () => {
         input: { patterns: [
           Object.assign(quad('s', 'p', 'o1'), { type: 'pattern' }),
           Object.assign(quad('s', 'p', 'o2'), { type: 'pattern' }),
-        ], type: 'bgp' },
+        ],
+        type: 'bgp' },
         named: [],
         type: 'from',
       };
@@ -523,18 +560,18 @@ describe('ActorQueryOperationFromQuad', () => {
     });
 
     it('should test on from', () => {
-      const op = { operation: { type: 'from' } };
+      const op = { operation: { type: 'from' }};
       return expect(actor.test(op)).resolves.toBeTruthy();
     });
 
     it('should not test on non-from', () => {
-      const op = { operation: { type: 'some-other-type' } };
+      const op = { operation: { type: 'some-other-type' }};
       return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
-    it('should run', async () => {
+    it('should run', async() => {
       const input = Object.assign(quad('s', 'p', 'o'), { type: 'path' });
-      const op = { operation: { type: 'from', default: [ namedNode('g') ], named: [], input } };
+      const op = { operation: { type: 'from', default: [ namedNode('g') ], named: [], input }};
       const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
       expect(await arrayifyStream(output.bindingsStream)).toMatchObject([
         Bindings({ a: literal('1') }),
@@ -543,7 +580,7 @@ describe('ActorQueryOperationFromQuad', () => {
       ]);
       expect(await (<any> output).metadata()).toMatchObject(Promise.resolve({ totalItems: 3 }));
       expect(output.type).toEqual('bindings');
-      expect(output.variables).toMatchObject(['a']);
+      expect(output.variables).toMatchObject([ 'a' ]);
     });
   });
 });

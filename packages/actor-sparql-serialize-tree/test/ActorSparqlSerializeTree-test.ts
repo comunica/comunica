@@ -1,10 +1,10 @@
-import {Bindings, BindingsStream} from "@comunica/bus-query-operation";
-import {ActionContext, Bus} from "@comunica/core";
-import {namedNode} from "@rdfjs/data-model";
-import * as RDF from "rdf-js";
-import {ArrayIterator} from "asynciterator";
-import {Readable} from "stream";
-import {ActorSparqlSerializeTree} from "..";
+import { Readable } from 'stream';
+import { Bindings, BindingsStream } from '@comunica/bus-query-operation';
+import { ActionContext, Bus } from '@comunica/core';
+import { namedNode } from '@rdfjs/data-model';
+import { ArrayIterator } from 'asynciterator';
+import * as RDF from 'rdf-js';
+import { ActorSparqlSerializeTree } from '..';
 
 const quad = require('rdf-quad');
 const stringifyStream = require('stream-to-string');
@@ -22,7 +22,7 @@ describe('ActorSparqlSerializeTree', () => {
     });
 
     it('should be a ActorSparqlSerializeTree constructor', () => {
-      expect(new (<any> ActorSparqlSerializeTree)({ name: 'actor', bus, mediaTypes: { tree: 1.0 } }))
+      expect(new (<any> ActorSparqlSerializeTree)({ name: 'actor', bus, mediaTypes: { tree: 1 }}))
         .toBeInstanceOf(ActorSparqlSerializeTree);
     });
 
@@ -39,7 +39,7 @@ describe('ActorSparqlSerializeTree', () => {
     let variables: string[];
 
     beforeEach(() => {
-      actor = new ActorSparqlSerializeTree({ bus, name: 'actor', mediaTypes: { tree: 1.0 } });
+      actor = new ActorSparqlSerializeTree({ bus, name: 'actor', mediaTypes: { tree: 1 }});
       bindingsStream = new ArrayIterator([
         Bindings({ '?k1': namedNode('v1') }),
         Bindings({ '?k2': namedNode('v2') }),
@@ -59,7 +59,7 @@ describe('ActorSparqlSerializeTree', () => {
       });
 
       it('should run', () => {
-        return expect(actor.run({ mediaTypes: true })).resolves.toEqual({ mediaTypes: { tree: 1.0 }});
+        return expect(actor.run({ mediaTypes: true })).resolves.toEqual({ mediaTypes: { tree: 1 }});
       });
     });
 
@@ -83,15 +83,16 @@ describe('ActorSparqlSerializeTree', () => {
 
       it('should not test on unknown types', () => {
         return expect(actor.test(
-          { handle: <any> { type: 'unknown' }, handleMediaType: 'tree' }))
+          { handle: <any> { type: 'unknown' }, handleMediaType: 'tree' },
+        ))
           .rejects.toBeTruthy();
       });
 
-
-      it('should run on a bindings stream', async () => {
-        return expect((await stringifyStream((<any> (await actor.run(
-          {handle: <any> { type: 'bindings', bindingsStream, variables },
-            handleMediaType: 'tree'}))).handle.data))).toEqual(
+      it('should run on a bindings stream', async() => {
+        expect(await stringifyStream((<any> (await actor.run(
+          { handle: <any> { type: 'bindings', bindingsStream, variables },
+            handleMediaType: 'tree' },
+        ))).handle.data)).toEqual(
           `[
   {
     "k2": [
@@ -101,16 +102,18 @@ describe('ActorSparqlSerializeTree', () => {
       "v1"
     ]
   }
-]`);
+]`,
+        );
       });
 
-      it('should run on a bindings stream with a context', async () => {
+      it('should run on a bindings stream with a context', async() => {
         const context = ActionContext({
-          "@comunica/actor-init-sparql:singularizeVariables": { k1: true, k2: false },
+          '@comunica/actor-init-sparql:singularizeVariables': { k1: true, k2: false },
         });
-        return expect((await stringifyStream((<any> (await actor.run(
-          {handle: <any> { type: 'bindings', bindingsStream, variables, context },
-            handleMediaType: 'tree'}))).handle.data))).toEqual(
+        expect(await stringifyStream((<any> (await actor.run(
+          { handle: <any> { type: 'bindings', bindingsStream, variables, context },
+            handleMediaType: 'tree' },
+        ))).handle.data)).toEqual(
           `[
   {
     "k2": [
@@ -118,13 +121,15 @@ describe('ActorSparqlSerializeTree', () => {
     ],
     "k1": "v1"
   }
-]`);
+]`,
+        );
       });
 
-      it('should emit an error when a bindings stream emits an error', async () => {
-        return expect(stringifyStream((<any> (await actor.run(
-          {handle: <any> { type: 'bindings', bindingsStream: streamError, variables },
-            handleMediaType: 'tree'}))).handle.data)).rejects
+      it('should emit an error when a bindings stream emits an error', async() => {
+        await expect(stringifyStream((<any> (await actor.run(
+          { handle: <any> { type: 'bindings', bindingsStream: streamError, variables },
+            handleMediaType: 'tree' },
+        ))).handle.data)).rejects
           .toThrow(new Error('actor sparql serialize tree test error'));
       });
     });

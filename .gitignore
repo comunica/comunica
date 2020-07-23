@@ -4,6 +4,7 @@ node_modules
 .idea
 lerna-debug.log
 yarn-error.log
+.eslintcache
 **/lib/**/*.js
 **/lib/**/*.js.map
 **/lib/**/*.d.ts

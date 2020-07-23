@@ -1,8 +1,8 @@
-import {ActorQueryOperation, Bindings, IActorQueryOperationOutputBindings} from "@comunica/bus-query-operation";
-import {Bus} from "@comunica/core";
-import {ActorQueryOperationBgpEmpty} from "../lib/ActorQueryOperationBgpEmpty";
-import Factory from "sparqlalgebrajs/lib/factory";
-import {namedNode, variable} from "@rdfjs/data-model";
+import { ActorQueryOperation, Bindings, IActorQueryOperationOutputBindings } from '@comunica/bus-query-operation';
+import { Bus } from '@comunica/core';
+import { namedNode, variable } from '@rdfjs/data-model';
+import Factory from 'sparqlalgebrajs/lib/factory';
+import { ActorQueryOperationBgpEmpty } from '../lib/ActorQueryOperationBgpEmpty';
 const arrayifyStream = require('arrayify-stream');
 
 const factory = new Factory();
@@ -32,7 +32,6 @@ describe('ActorQueryOperationBgpEmpty', () => {
   });
 
   describe('#getVariables', () => {
-
     it('should get an empty array for an empty array of patterns', () => {
       return expect(ActorQueryOperationBgpEmpty.getVariables([])).toEqual([]);
     });
@@ -50,7 +49,6 @@ describe('ActorQueryOperationBgpEmpty', () => {
         factory.createPattern(variable('s'), namedNode('p'), variable('o')),
       ])).toEqual([ '?s', '?o' ]);
     });
-
   });
 
   describe('An ActorQueryOperationBgpEmpty instance', () => {
@@ -61,31 +59,32 @@ describe('ActorQueryOperationBgpEmpty', () => {
     });
 
     it('should test on empty BGPs', () => {
-      const op = { operation: { type: 'bgp', patterns: [] } };
+      const op = { operation: { type: 'bgp', patterns: []}};
       return expect(actor.test(op)).resolves.toBeTruthy();
     });
 
     it('should not test on non-empty BGPs', () => {
-      const op = { operation: { type: 'bgp', patterns: [ 'abc' ] } };
+      const op = { operation: { type: 'bgp', patterns: [ 'abc' ]}};
       return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
     it('should run on an empty BGP', () => {
-      const op = { operation: { type: 'bgp', patterns: [] } };
-      return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
-        expect(await arrayifyStream(output.bindingsStream)).toEqual([Bindings({})]);
+      const op = { operation: { type: 'bgp', patterns: []}};
+      return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
+        expect(await arrayifyStream(output.bindingsStream)).toEqual([ Bindings({}) ]);
         expect(output.variables).toEqual([]);
         expect(await (<any> output).metadata()).toMatchObject({ totalItems: 1 });
       });
     });
 
     it('should run on a non-empty BGP', () => {
-      const op = { operation: { type: 'bgp', patterns: [
-        factory.createPattern(variable('s1'), namedNode('p1'), namedNode('o1')),
-        factory.createPattern(namedNode('s2'), namedNode('p2'), variable('o2')),
-      ] } };
-      return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
-        expect(await arrayifyStream(output.bindingsStream)).toEqual([Bindings({})]);
+      const op = { operation: { type: 'bgp',
+        patterns: [
+          factory.createPattern(variable('s1'), namedNode('p1'), namedNode('o1')),
+          factory.createPattern(namedNode('s2'), namedNode('p2'), variable('o2')),
+        ]}};
+      return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
+        expect(await arrayifyStream(output.bindingsStream)).toEqual([ Bindings({}) ]);
         expect(output.variables).toEqual([ '?s1', '?o2' ]);
         expect(await (<any> output).metadata()).toMatchObject({ totalItems: 1 });
       });

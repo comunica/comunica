@@ -1,7 +1,7 @@
-import {ActorQueryOperation, Bindings, IActorQueryOperationOutputBindings} from "@comunica/bus-query-operation";
-import {Bus} from "@comunica/core";
-import {namedNode, variable} from "@rdfjs/data-model";
-import {ActorQueryOperationValues} from "../lib/ActorQueryOperationValues";
+import { ActorQueryOperation, Bindings, IActorQueryOperationOutputBindings } from '@comunica/bus-query-operation';
+import { Bus } from '@comunica/core';
+import { namedNode, variable } from '@rdfjs/data-model';
+import { ActorQueryOperationValues } from '../lib/ActorQueryOperationValues';
 const arrayifyStream = require('arrayify-stream');
 
 describe('ActorQueryOperationValues', () => {
@@ -36,20 +36,20 @@ describe('ActorQueryOperationValues', () => {
     });
 
     it('should test on values', () => {
-      const op = { operation: { type: 'values' } };
+      const op = { operation: { type: 'values' }};
       return expect(actor.test(op)).resolves.toBeTruthy();
     });
 
     it('should not test on non-values', () => {
-      const op = { operation: { type: 'some-other-type' } };
+      const op = { operation: { type: 'some-other-type' }};
       return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
     it('should run on a 1 variable and 1 value', () => {
-      const variables = [variable('v')];
+      const variables = [ variable('v') ];
       const bindings = [{ '?v': namedNode('v1') }];
-      const op = { operation: { type: 'values', variables, bindings } };
-      return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
+      const op = { operation: { type: 'values', variables, bindings }};
+      return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
         expect(await (<any> output).metadata()).toEqual({ totalItems: 1 });
         expect(output.variables).toEqual([ '?v' ]);
         expect(output.type).toEqual('bindings');
@@ -60,10 +60,10 @@ describe('ActorQueryOperationValues', () => {
     });
 
     it('should run on a 1 variable and 2 values', () => {
-      const variables = [variable('v')];
+      const variables = [ variable('v') ];
       const bindings = [{ '?v': namedNode('v1') }, { '?v': namedNode('v2') }];
-      const op = { operation: { type: 'values', variables, bindings } };
-      return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
+      const op = { operation: { type: 'values', variables, bindings }};
+      return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
         expect(await (<any> output).metadata()).toEqual({ totalItems: 2 });
         expect(output.variables).toEqual([ '?v' ]);
         expect(output.type).toEqual('bindings');
@@ -75,13 +75,13 @@ describe('ActorQueryOperationValues', () => {
     });
 
     it('should run on a 2 variables and 2 values', () => {
-      const variables = [variable('v'), variable('w')];
+      const variables = [ variable('v'), variable('w') ];
       const bindings = [
         { '?v': namedNode('v1'), '?w': namedNode('w1') },
         { '?v': namedNode('v2'), '?w': namedNode('w2') },
       ];
-      const op = { operation: { type: 'values', variables, bindings } };
-      return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
+      const op = { operation: { type: 'values', variables, bindings }};
+      return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
         expect(await (<any> output).metadata()).toEqual({ totalItems: 2 });
         expect(output.variables).toEqual([ '?v', '?w' ]);
         expect(output.type).toEqual('bindings');

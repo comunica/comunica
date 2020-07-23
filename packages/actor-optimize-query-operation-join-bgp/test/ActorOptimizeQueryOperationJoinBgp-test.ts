@@ -1,8 +1,8 @@
-import {ActorOptimizeQueryOperation} from "@comunica/bus-optimize-query-operation";
-import {Bus} from "@comunica/core";
-import {namedNode} from "@rdfjs/data-model";
-import {Factory} from "sparqlalgebrajs";
-import {ActorOptimizeQueryOperationJoinBgp} from "../lib/ActorOptimizeQueryOperationJoinBgp";
+import { ActorOptimizeQueryOperation } from '@comunica/bus-optimize-query-operation';
+import { Bus } from '@comunica/core';
+import { namedNode } from '@rdfjs/data-model';
+import { Factory } from 'sparqlalgebrajs';
+import { ActorOptimizeQueryOperationJoinBgp } from '../lib/ActorOptimizeQueryOperationJoinBgp';
 
 describe('ActorOptimizeQueryOperationJoinBgp', () => {
   let bus: any;

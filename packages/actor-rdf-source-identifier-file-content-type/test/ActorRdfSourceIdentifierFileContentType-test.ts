@@ -1,7 +1,7 @@
-import {ActorRdfSourceIdentifier} from "@comunica/bus-rdf-source-identifier";
-import {Bus} from "@comunica/core";
-import "cross-fetch/polyfill";
-import {ActorRdfSourceIdentifierFileContentType} from "..";
+import { ActorRdfSourceIdentifier } from '@comunica/bus-rdf-source-identifier';
+import { Bus } from '@comunica/core';
+import 'cross-fetch/polyfill';
+import { ActorRdfSourceIdentifierFileContentType } from '..';
 
 describe('ActorRdfSourceIdentifierFileContentType', () => {
   let bus: any;
@@ -32,17 +32,18 @@ describe('ActorRdfSourceIdentifierFileContentType', () => {
 
     beforeEach(() => {
       const mediatorHttp: any = {
-        mediate: (action: any) => {
-          const ok: boolean = action.input.indexOf('ok') >= 0;
+        mediate(action: any) {
+          const ok: boolean = action.input.includes('ok');
           return Promise.resolve({
             headers: { get: () => ok ? 'abc' : 'def', has: (key: string) => key === 'Content-Type' },
             ok,
           });
         },
       };
-      const allowedMediaTypes = ['abc'];
+      const allowedMediaTypes = [ 'abc' ];
       actor = new ActorRdfSourceIdentifierFileContentType(
-        { name: 'actor', bus, mediatorHttp, allowedMediaTypes, priority: 0 });
+        { name: 'actor', bus, mediatorHttp, allowedMediaTypes, priority: 0 },
+      );
     });
 
     it('should not test on non-http requests', () => {

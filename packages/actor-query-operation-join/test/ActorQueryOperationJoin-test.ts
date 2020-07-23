@@ -1,8 +1,8 @@
-import {ActorQueryOperation, Bindings, IActorQueryOperationOutputBindings} from "@comunica/bus-query-operation";
-import {Bus} from "@comunica/core";
-import {literal} from "@rdfjs/data-model";
-import {ArrayIterator} from "asynciterator";
-import {ActorQueryOperationJoin} from "../lib/ActorQueryOperationJoin";
+import { ActorQueryOperation, Bindings, IActorQueryOperationOutputBindings } from '@comunica/bus-query-operation';
+import { Bus } from '@comunica/core';
+import { literal } from '@rdfjs/data-model';
+import { ArrayIterator } from 'asynciterator';
+import { ActorQueryOperationJoin } from '../lib/ActorQueryOperationJoin';
 const arrayifyStream = require('arrayify-stream');
 
 describe('ActorQueryOperationJoin', () => {
@@ -22,7 +22,7 @@ describe('ActorQueryOperationJoin', () => {
         metadata: () => Promise.resolve({ totalItems: 3 }),
         operated: arg,
         type: 'bindings',
-        variables: ['a'],
+        variables: [ 'a' ],
       }),
     };
     mediatorJoin = {
@@ -34,7 +34,7 @@ describe('ActorQueryOperationJoin', () => {
         metadata: () => Promise.resolve({ totalItems: 2 }),
         operated: arg,
         type: 'bindings',
-        variables: ['a', 'b'],
+        variables: [ 'a', 'b' ],
       }),
     };
   });
@@ -64,19 +64,19 @@ describe('ActorQueryOperationJoin', () => {
     });
 
     it('should test on join', () => {
-      const op = { operation: { type: 'join' } };
+      const op = { operation: { type: 'join' }};
       return expect(actor.test(op)).resolves.toBeTruthy();
     });
 
     it('should not test on non-join', () => {
-      const op = { operation: { type: 'some-other-type' } };
+      const op = { operation: { type: 'some-other-type' }};
       return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
     it('should run', () => {
-      const op = { operation: { type: 'join' } };
-      return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
-        expect(output.variables).toEqual(['a', 'b']);
+      const op = { operation: { type: 'join' }};
+      return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
+        expect(output.variables).toEqual([ 'a', 'b' ]);
         expect(output.type).toEqual('bindings');
         expect(await (<any> output).metadata()).toEqual({ totalItems: 2 });
         expect(await arrayifyStream(output.bindingsStream)).toEqual([

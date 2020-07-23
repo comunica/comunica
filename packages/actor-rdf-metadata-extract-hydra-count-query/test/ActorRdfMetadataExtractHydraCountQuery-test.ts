@@ -1,7 +1,7 @@
-import {ActorRdfMetadataExtract} from "@comunica/bus-rdf-metadata-extract";
-import {Bus} from "@comunica/core";
-import {Readable} from "stream";
-import {ActorRdfMetadataExtractHydraCountQuery} from "../lib/ActorRdfMetadataExtractHydraCountQuery";
+import { Readable } from 'stream';
+import { ActorRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extract';
+import { Bus } from '@comunica/core';
+import { ActorRdfMetadataExtractHydraCountQuery } from '../lib/ActorRdfMetadataExtractHydraCountQuery';
 
 const stream = require('streamify-array');
 

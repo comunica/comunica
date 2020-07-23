@@ -8,6 +8,7 @@ module.exports = {
   plugins: [
     'eslint-plugin-tsdoc',
     'eslint-plugin-import',
+    'eslint-plugin-jest',
     'eslint-plugin-unused-imports'
   ],
   extends: [
@@ -66,6 +67,8 @@ module.exports = {
     'default-case': 'off', // TSC already takes care of these checks
     'no-loop-func': 'off',
     'unicorn/no-fn-reference-in-iterator': 'off',
+    'extended/consistent-err-names': 'off',
+    'unicorn/prefer-replace-all': 'off',
 
     // TS
     '@typescript-eslint/array-type': ['error', { default: 'array' }],
@@ -116,6 +119,41 @@ module.exports = {
           'case': 'kebabCase'
         }],
         'no-process-env': 'off',
+      }
+    },
+    {
+      // Specific rules for test files
+      files: ['**/test/*.ts'],
+      env: {
+        'jest/globals': true,
+      },
+      globals: {
+        'spyOn': false,
+      },
+      rules: {
+        'mocha/no-synchronous-tests': 'off',
+        'mocha/valid-test-description': 'off',
+        'mocha/no-sibling-hooks': 'off',
+
+        'max-statements-per-line': 'off',
+        'id-length': 'off',
+        'arrow-body-style': 'off',
+        'line-comment-position': 'off',
+        'no-inline-comments': 'off',
+        'unicorn/filename-case': 'off',
+        'no-new': 'off',
+        'unicorn/no-nested-ternary': 'off',
+        'no-return-assign': 'off',
+        'no-useless-call': 'off',
+        'no-sync': 'off',
+
+        '@typescript-eslint/brace-style': 'off',
+        '@typescript-eslint/ban-ts-comment': 'off',
+        '@typescript-eslint/ban-ts-ignore': 'off',
+        '@typescript-eslint/explicit-function-return-type': 'off',
+        '@typescript-eslint/unbound-method': 'off',
+        '@typescript-eslint/no-extra-parens': 'off',
+        '@typescript-eslint/restrict-plus-operands': 'off'
       }
     }
   ],

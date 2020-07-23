@@ -1,10 +1,10 @@
-import {ActorRdfJoinNestedLoop} from "@comunica/actor-rdf-join-nestedloop";
-import {Bindings} from "@comunica/bus-query-operation";
-import {ActorRdfJoin, IActionRdfJoin} from "@comunica/bus-rdf-join";
-import {Bus} from "@comunica/core";
-import {literal} from "@rdfjs/data-model";
-import {ArrayIterator} from "asynciterator";
-import {ActorRdfJoinMultiSequential} from "../lib/ActorRdfJoinMultiSequential";
+import { ActorRdfJoinNestedLoop } from '@comunica/actor-rdf-join-nestedloop';
+import { Bindings } from '@comunica/bus-query-operation';
+import { ActorRdfJoin, IActionRdfJoin } from '@comunica/bus-rdf-join';
+import { Bus } from '@comunica/core';
+import { literal } from '@rdfjs/data-model';
+import { ArrayIterator } from 'asynciterator';
+import { ActorRdfJoinMultiSequential } from '../lib/ActorRdfJoinMultiSequential';
 const arrayifyStream = require('arrayify-stream');
 
 describe('ActorRdfJoinMultiSequential', () => {
@@ -41,15 +41,14 @@ describe('ActorRdfJoinMultiSequential', () => {
     beforeEach(() => {
       invocationCounter = 0;
       mediatorJoin = {
-        mediate: (a: any) => {
+        mediate(a: any) {
           if (a.entries.length === 2) {
             a.entries[0].called = invocationCounter;
             a.entries[1].called = invocationCounter;
             invocationCounter++;
             return new ActorRdfJoinNestedLoop({ name: 'actor', bus }).run(a);
-          } else {
-            return actor.run(a);
           }
+          return actor.run(a);
         },
       };
       actor = new ActorRdfJoinMultiSequential({ name: 'actor', bus, mediatorJoin });
@@ -57,30 +56,30 @@ describe('ActorRdfJoinMultiSequential', () => {
         entries: [
           {
             bindingsStream: new ArrayIterator([
-              Bindings({ a: literal('a1'), b: literal('b1')}),
-              Bindings({ a: literal('a2'), b: literal('b2')}),
+              Bindings({ a: literal('a1'), b: literal('b1') }),
+              Bindings({ a: literal('a2'), b: literal('b2') }),
             ]),
             metadata: () => Promise.resolve({ totalItems: 4 }),
             type: 'bindings',
-            variables: ['a', 'b'],
+            variables: [ 'a', 'b' ],
           },
           {
             bindingsStream: new ArrayIterator([
-              Bindings({ a: literal('a1'), c: literal('c1')}),
-              Bindings({ a: literal('a2'), c: literal('c2')}),
+              Bindings({ a: literal('a1'), c: literal('c1') }),
+              Bindings({ a: literal('a2'), c: literal('c2') }),
             ]),
             metadata: () => Promise.resolve({ totalItems: 5 }),
             type: 'bindings',
-            variables: ['a', 'c'],
+            variables: [ 'a', 'c' ],
           },
           {
             bindingsStream: new ArrayIterator([
-              Bindings({ a: literal('a1'), b: literal('b1')}),
-              Bindings({ a: literal('a2'), b: literal('b2')}),
+              Bindings({ a: literal('a1'), b: literal('b1') }),
+              Bindings({ a: literal('a2'), b: literal('b2') }),
             ]),
             metadata: () => Promise.resolve({ totalItems: 2 }),
             type: 'bindings',
-            variables: ['a', 'b'],
+            variables: [ 'a', 'b' ],
           },
         ],
       };
@@ -88,54 +87,54 @@ describe('ActorRdfJoinMultiSequential', () => {
         entries: [
           {
             bindingsStream: new ArrayIterator([
-              Bindings({ a: literal('a1'), b: literal('b1')}),
-              Bindings({ a: literal('a2'), b: literal('b2')}),
+              Bindings({ a: literal('a1'), b: literal('b1') }),
+              Bindings({ a: literal('a2'), b: literal('b2') }),
             ]),
             metadata: () => Promise.resolve({ totalItems: 4 }),
             type: 'bindings',
-            variables: ['a', 'b'],
+            variables: [ 'a', 'b' ],
           },
           {
             bindingsStream: new ArrayIterator([
-              Bindings({ a: literal('a1'), c: literal('c1')}),
-              Bindings({ a: literal('a2'), c: literal('c2')}),
+              Bindings({ a: literal('a1'), c: literal('c1') }),
+              Bindings({ a: literal('a2'), c: literal('c2') }),
             ]),
             metadata: () => Promise.resolve({ totalItems: 5 }),
             type: 'bindings',
-            variables: ['a', 'c'],
+            variables: [ 'a', 'c' ],
           },
           {
             bindingsStream: new ArrayIterator([
-              Bindings({ a: literal('a1'), b: literal('b1')}),
-              Bindings({ a: literal('a2'), b: literal('b2')}),
+              Bindings({ a: literal('a1'), b: literal('b1') }),
+              Bindings({ a: literal('a2'), b: literal('b2') }),
             ]),
             metadata: () => Promise.resolve({ totalItems: 2 }),
             type: 'bindings',
-            variables: ['a', 'b'],
+            variables: [ 'a', 'b' ],
           },
           {
             bindingsStream: new ArrayIterator([
-              Bindings({ a: literal('a1'), d: literal('d1')}),
-              Bindings({ a: literal('a2'), d: literal('d2')}),
+              Bindings({ a: literal('a1'), d: literal('d1') }),
+              Bindings({ a: literal('a2'), d: literal('d2') }),
             ]),
             metadata: () => Promise.resolve({ totalItems: 2 }),
             type: 'bindings',
-            variables: ['a', 'd'],
+            variables: [ 'a', 'd' ],
           },
         ],
       };
     });
 
     it('should test on 0 streams', () => {
-      return expect(actor.test({ entries: [] })).resolves.toEqual({ iterations: 0 });
+      return expect(actor.test({ entries: []})).resolves.toEqual({ iterations: 0 });
     });
 
     it('should test on 1 stream', () => {
-      return expect(actor.test({ entries: [<any> null] })).resolves.toEqual({ iterations: 0 });
+      return expect(actor.test({ entries: [ <any> null ]})).resolves.toEqual({ iterations: 0 });
     });
 
     it('should not test on 2 streams', () => {
-      return expect(actor.test({ entries: [<any> null, <any> null] })).rejects
+      return expect(actor.test({ entries: [ <any> null, <any> null ]})).rejects
         .toThrow(new Error('actor requires 3 sources at least. The input contained 2.'));
     });
 
@@ -147,14 +146,14 @@ describe('ActorRdfJoinMultiSequential', () => {
       return expect(actor.test(action4)).resolves.toEqual({ iterations: 80 });
     });
 
-    it('should run on 3 streams', async () => {
+    it('should run on 3 streams', async() => {
       const output = await actor.run(action3);
       expect(output.type).toEqual('bindings');
-      expect(output.variables).toEqual(['a', 'b', 'c']);
+      expect(output.variables).toEqual([ 'a', 'b', 'c' ]);
       expect(await (<any> output).metadata()).toEqual({ totalItems: 40 });
       expect(await arrayifyStream(output.bindingsStream)).toEqual([
-        Bindings({ a: literal('a1'), b: literal('b1'), c: literal('c1')}),
-        Bindings({ a: literal('a2'), b: literal('b2'), c: literal('c2')}),
+        Bindings({ a: literal('a1'), b: literal('b1'), c: literal('c1') }),
+        Bindings({ a: literal('a2'), b: literal('b2'), c: literal('c2') }),
       ]);
 
       // Check join order
@@ -163,14 +162,14 @@ describe('ActorRdfJoinMultiSequential', () => {
       expect((<any> action3.entries[2]).called).toBe(1);
     });
 
-    it('should run on 4 streams', async () => {
+    it('should run on 4 streams', async() => {
       const output = await actor.run(action4);
       expect(output.type).toEqual('bindings');
-      expect(output.variables).toEqual(['a', 'b', 'c', 'd']);
+      expect(output.variables).toEqual([ 'a', 'b', 'c', 'd' ]);
       expect(await (<any> output).metadata()).toEqual({ totalItems: 80 });
       expect(await arrayifyStream(output.bindingsStream)).toEqual([
-        Bindings({ a: literal('a1'), b: literal('b1'), c: literal('c1'), d: literal('d1')}),
-        Bindings({ a: literal('a2'), b: literal('b2'), c: literal('c2'), d: literal('d2')}),
+        Bindings({ a: literal('a1'), b: literal('b1'), c: literal('c1'), d: literal('d1') }),
+        Bindings({ a: literal('a2'), b: literal('b2'), c: literal('c2'), d: literal('d2') }),
       ]);
 
       // Check join order

@@ -1,13 +1,12 @@
-
-import {namedNode, variable} from "@rdfjs/data-model";
-import {ArrayIterator, EmptyIterator, SingletonIterator} from "asynciterator";
-import {forEachTerms} from "rdf-terms";
-import {ActorQueryOperation, Bindings, IActorQueryOperationOutputBindings} from "@comunica/bus-query-operation";
-import {ActionContext, Bus} from "@comunica/core";
-import {ActorQueryOperationLeftJoinLeftDeep} from "../lib/ActorQueryOperationLeftJoinLeftDeep";
-import {Factory} from "sparqlalgebrajs";
-import {termToString} from "rdf-string";
-import * as RDF from "rdf-js";
+import { ActorQueryOperation, Bindings, IActorQueryOperationOutputBindings } from '@comunica/bus-query-operation';
+import { ActionContext, Bus } from '@comunica/core';
+import { namedNode, variable } from '@rdfjs/data-model';
+import { ArrayIterator, EmptyIterator, SingletonIterator } from 'asynciterator';
+import * as RDF from 'rdf-js';
+import { termToString } from 'rdf-string';
+import { forEachTerms } from 'rdf-terms';
+import { Factory } from 'sparqlalgebrajs';
+import { ActorQueryOperationLeftJoinLeftDeep } from '../lib/ActorQueryOperationLeftJoinLeftDeep';
 
 const arrayifyStream = require('arrayify-stream');
 const factory = new Factory();
@@ -19,7 +18,7 @@ describe('ActorQueryOperationLeftJoinLeftDeep', () => {
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
     mediatorQueryOperation = {
-      mediate: (arg: any) => {
+      mediate(arg: any) {
         let filter = false;
         if (arg.operation.type === 'filter') {
           filter = true;
@@ -28,14 +27,14 @@ describe('ActorQueryOperationLeftJoinLeftDeep', () => {
 
         const bindings: any = {};
         let amount = 1;
-        forEachTerms(arg.operation, (term) => {
+        forEachTerms(arg.operation, term => {
           if (term.termType === 'Variable') {
             if (term.value.startsWith('+')) {
               amount = 2;
             } else if (term.value.startsWith('-')) {
               amount = 0;
             }
-            bindings[termToString(term)] = namedNode('bound-' + term.value + (filter ? '-FILTERED' : ''));
+            bindings[termToString(term)] = namedNode(`bound-${term.value}${filter ? '-FILTERED' : ''}`);
           }
         });
 
@@ -46,16 +45,16 @@ describe('ActorQueryOperationLeftJoinLeftDeep', () => {
           bindingsStream = new SingletonIterator(Bindings(bindings));
         } else {
           bindingsStream = new ArrayIterator([
-            Bindings(bindings).map((v: RDF.Term) => namedNode(v.value + '1')),
-            Bindings(bindings).map((v: RDF.Term) => namedNode(v.value + '2')),
+            Bindings(bindings).map((v: RDF.Term) => namedNode(`${v.value}1`)),
+            Bindings(bindings).map((v: RDF.Term) => namedNode(`${v.value}2`)),
           ]);
         }
 
         return Promise.resolve({
           bindingsStream,
-          metadata: () => arg.operation.rejectMetadata
-            ? Promise.reject(new Error('fail'))
-            : Promise.resolve({ totalItems: (arg.context || ActionContext({})).get('totalItems') }),
+          metadata: () => arg.operation.rejectMetadata ?
+            Promise.reject(new Error('fail')) :
+            Promise.resolve({ totalItems: (arg.context || ActionContext({})).get('totalItems') }),
           type: 'bindings',
           variables: (arg.context || ActionContext({})).get('variables') || [],
         });
@@ -69,14 +68,14 @@ describe('ActorQueryOperationLeftJoinLeftDeep', () => {
     });
 
     it('should be a ActorQueryOperationLeftJoinLeftDeep constructor', () => {
-      expect(new (ActorQueryOperationLeftJoinLeftDeep as any)({ name: 'actor', bus, mediatorQueryOperation }))
+      expect(new (<any> ActorQueryOperationLeftJoinLeftDeep)({ name: 'actor', bus, mediatorQueryOperation }))
         .toBeInstanceOf(ActorQueryOperationLeftJoinLeftDeep);
-      expect(new (ActorQueryOperationLeftJoinLeftDeep as any)({ name: 'actor', bus, mediatorQueryOperation }))
+      expect(new (<any> ActorQueryOperationLeftJoinLeftDeep)({ name: 'actor', bus, mediatorQueryOperation }))
         .toBeInstanceOf(ActorQueryOperation);
     });
 
     it('should not be able to create new ActorQueryOperationLeftJoinLeftDeep objects without \'new\'', () => {
-      expect(() => { (ActorQueryOperationLeftJoinLeftDeep as any)(); }).toThrow();
+      expect(() => { (<any> ActorQueryOperationLeftJoinLeftDeep)(); }).toThrow();
     });
   });
 
@@ -88,12 +87,12 @@ describe('ActorQueryOperationLeftJoinLeftDeep', () => {
     });
 
     it('should test on leftjoin', () => {
-      const op = { operation: { type: 'leftjoin' } };
+      const op = { operation: { type: 'leftjoin' }};
       return expect(actor.test(op)).resolves.toBeTruthy();
     });
 
     it('should not test on non-leftjoin', () => {
-      const op = { operation: { type: 'some-other-type' } };
+      const op = { operation: { type: 'some-other-type' }};
       return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
@@ -103,9 +102,9 @@ describe('ActorQueryOperationLeftJoinLeftDeep', () => {
         factory.createPattern(variable('a'), variable('b'), namedNode('2'), namedNode('b')),
         undefined,
       );
-      const op = { operation, context: ActionContext({ totalItems: 10, variables: ['a'] }) };
-      return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
-        expect(output.variables).toEqual(['a']);
+      const op = { operation, context: ActionContext({ totalItems: 10, variables: [ 'a' ]}) };
+      return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
+        expect(output.variables).toEqual([ 'a' ]);
         expect(output.type).toEqual('bindings');
         expect(await (<any> output).metadata()).toEqual({ totalItems: 100 });
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
@@ -123,9 +122,9 @@ describe('ActorQueryOperationLeftJoinLeftDeep', () => {
         factory.createPattern(variable('+a'), variable('b'), namedNode('2'), namedNode('b')),
         undefined,
       );
-      const op = { operation, context: ActionContext({ totalItems: 10, variables: ['a'] }) };
-      return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
-        expect(output.variables).toEqual(['a']);
+      const op = { operation, context: ActionContext({ totalItems: 10, variables: [ 'a' ]}) };
+      return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
+        expect(output.variables).toEqual([ 'a' ]);
         expect(output.type).toEqual('bindings');
         expect(await (<any> output).metadata()).toEqual({ totalItems: 100 });
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
@@ -147,9 +146,9 @@ describe('ActorQueryOperationLeftJoinLeftDeep', () => {
         factory.createPattern(variable('a'), variable('+b'), namedNode('2'), namedNode('b')),
         undefined,
       );
-      const op = { operation, context: ActionContext({ totalItems: 10, variables: ['a'] }) };
-      return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
-        expect(output.variables).toEqual(['a']);
+      const op = { operation, context: ActionContext({ totalItems: 10, variables: [ 'a' ]}) };
+      return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
+        expect(output.variables).toEqual([ 'a' ]);
         expect(output.type).toEqual('bindings');
         expect(await (<any> output).metadata()).toEqual({ totalItems: 100 });
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
@@ -171,9 +170,9 @@ describe('ActorQueryOperationLeftJoinLeftDeep', () => {
         factory.createPattern(variable('+a'), variable('+b'), namedNode('2'), namedNode('b')),
         undefined,
       );
-      const op = { operation, context: ActionContext({ totalItems: 10, variables: ['a'] }) };
-      return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
-        expect(output.variables).toEqual(['a']);
+      const op = { operation, context: ActionContext({ totalItems: 10, variables: [ 'a' ]}) };
+      return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
+        expect(output.variables).toEqual([ 'a' ]);
         expect(output.type).toEqual('bindings');
         expect(await (<any> output).metadata()).toEqual({ totalItems: 100 });
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
@@ -203,9 +202,9 @@ describe('ActorQueryOperationLeftJoinLeftDeep', () => {
         factory.createPattern(variable('a'), variable('-b'), namedNode('2'), namedNode('b')),
         undefined,
       );
-      const op = { operation, context: ActionContext({ totalItems: 10, variables: ['a'] }) };
-      return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
-        expect(output.variables).toEqual(['a']);
+      const op = { operation, context: ActionContext({ totalItems: 10, variables: [ 'a' ]}) };
+      return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
+        expect(output.variables).toEqual([ 'a' ]);
         expect(output.type).toEqual('bindings');
         expect(await (<any> output).metadata()).toEqual({ totalItems: 100 });
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
@@ -222,9 +221,9 @@ describe('ActorQueryOperationLeftJoinLeftDeep', () => {
         factory.createPattern(variable('+a'), variable('-b'), namedNode('2'), namedNode('b')),
         undefined,
       );
-      const op = { operation, context: ActionContext({ totalItems: 10, variables: ['a'] }) };
-      return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
-        expect(output.variables).toEqual(['a']);
+      const op = { operation, context: ActionContext({ totalItems: 10, variables: [ 'a' ]}) };
+      return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
+        expect(output.variables).toEqual([ 'a' ]);
         expect(output.type).toEqual('bindings');
         expect(await (<any> output).metadata()).toEqual({ totalItems: 100 });
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
@@ -245,8 +244,8 @@ describe('ActorQueryOperationLeftJoinLeftDeep', () => {
         undefined,
       );
       operation.left.rejectMetadata = true;
-      const op = { operation, context: ActionContext({ totalItems: 10, variables: ['a'] }) };
-      return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
+      const op = { operation, context: ActionContext({ totalItems: 10, variables: [ 'a' ]}) };
+      return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
         expect(await (<any> output).metadata()).toMatchObject({ totalItems: Infinity });
       });
     });
@@ -258,8 +257,8 @@ describe('ActorQueryOperationLeftJoinLeftDeep', () => {
         undefined,
       );
       operation.right.rejectMetadata = true;
-      const op = { operation, context: ActionContext({ totalItems: 10, variables: ['a'] }) };
-      return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
+      const op = { operation, context: ActionContext({ totalItems: 10, variables: [ 'a' ]}) };
+      return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
         expect(await (<any> output).metadata()).toMatchObject({ totalItems: Infinity });
       });
     });
@@ -272,8 +271,8 @@ describe('ActorQueryOperationLeftJoinLeftDeep', () => {
       );
       operation.left.rejectMetadata = true;
       operation.right.rejectMetadata = true;
-      const op = { operation, context: ActionContext({ totalItems: 10, variables: ['a'] }) };
-      return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
+      const op = { operation, context: ActionContext({ totalItems: 10, variables: [ 'a' ]}) };
+      return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
         expect(await (<any> output).metadata()).toMatchObject({ totalItems: Infinity });
       });
     });
@@ -284,9 +283,9 @@ describe('ActorQueryOperationLeftJoinLeftDeep', () => {
         factory.createPattern(variable('a'), variable('b'), namedNode('2'), namedNode('b')),
         factory.createTermExpression(namedNode('EXPRESSION')),
       );
-      const op = { operation, context: ActionContext({ totalItems: 10, variables: ['a'] }) };
-      return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
-        expect(output.variables).toEqual(['a']);
+      const op = { operation, context: ActionContext({ totalItems: 10, variables: [ 'a' ]}) };
+      return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
+        expect(output.variables).toEqual([ 'a' ]);
         expect(output.type).toEqual('bindings');
         expect(await (<any> output).metadata()).toEqual({ totalItems: 100 });
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
@@ -297,6 +296,5 @@ describe('ActorQueryOperationLeftJoinLeftDeep', () => {
         ]);
       });
     });
-
   });
 });

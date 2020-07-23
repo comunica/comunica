@@ -1,5 +1,5 @@
-import {Actor, Bus} from "@comunica/core";
-import {ActorAbstractMediaTyped} from "../lib/ActorAbstractMediaTyped";
+import { Actor, Bus } from '@comunica/core';
+import { ActorAbstractMediaTyped } from '../lib/ActorAbstractMediaTyped';
 
 describe('ActorAbstractMediaTyped', () => {
   const bus = new Bus({ name: 'bus' });

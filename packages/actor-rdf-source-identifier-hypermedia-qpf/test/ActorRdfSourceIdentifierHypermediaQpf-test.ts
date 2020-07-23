@@ -1,7 +1,7 @@
-import {ActorRdfSourceIdentifier} from "@comunica/bus-rdf-source-identifier";
-import {Bus} from "@comunica/core";
-import "cross-fetch/polyfill";
-import {ActorRdfSourceIdentifierHypermediaQpf} from "../lib/ActorRdfSourceIdentifierHypermediaQpf";
+import { ActorRdfSourceIdentifier } from '@comunica/bus-rdf-source-identifier';
+import { Bus } from '@comunica/core';
+import 'cross-fetch/polyfill';
+import { ActorRdfSourceIdentifierHypermediaQpf } from '../lib/ActorRdfSourceIdentifierHypermediaQpf';
 
 describe('ActorRdfSourceIdentifierHypermediaQpf', () => {
   let bus: any;
@@ -32,20 +32,21 @@ describe('ActorRdfSourceIdentifierHypermediaQpf', () => {
 
     beforeEach(() => {
       const mediatorHttp: any = {
-        mediate: (action: any) => {
-          if (action.input.indexOf('nobody') >= 0) {
+        mediate(action: any) {
+          if (action.input.includes('nobody')) {
             return Promise.resolve({ ok: false });
           }
           const body = require('streamify-string')(action.input);
           body.cancel = () => Promise.resolve();
-          return Promise.resolve({ ok: action.input.indexOf('ok') >= 0, body });
+          return Promise.resolve({ ok: action.input.includes('ok'), body });
         },
       };
       const acceptHeader = 'abc';
       const toContain = [ 'def' ];
       const priority = 1;
       actor = new ActorRdfSourceIdentifierHypermediaQpf(
-        { name: 'actor', bus, mediatorHttp, acceptHeader, toContain, priority });
+        { name: 'actor', bus, mediatorHttp, acceptHeader, toContain, priority },
+      );
     });
 
     it('should not test on non-http requests', () => {

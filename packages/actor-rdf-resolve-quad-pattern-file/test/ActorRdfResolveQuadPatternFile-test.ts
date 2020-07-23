@@ -1,14 +1,12 @@
-import {ActorHttpInvalidateListenable} from "@comunica/bus-http-invalidate";
-import {ActorRdfResolveQuadPattern} from "@comunica/bus-rdf-resolve-quad-pattern";
-import {ActionContext, Bus} from "@comunica/core";
-import "jest-rdf";
-import {Store as N3Store} from "n3";
-import {ActorRdfResolveQuadPatternFile} from "../lib/ActorRdfResolveQuadPatternFile";
+import { ActorHttpInvalidateListenable } from '@comunica/bus-http-invalidate';
+import { ActorRdfResolveQuadPattern } from '@comunica/bus-rdf-resolve-quad-pattern';
+import { ActionContext, Bus } from '@comunica/core';
+import 'jest-rdf';
+import { Store as N3Store } from 'n3';
+import { ActorRdfResolveQuadPatternFile } from '../lib/ActorRdfResolveQuadPatternFile';
 const arrayifyStream = require('arrayify-stream');
 const quad = require('rdf-quad');
 const streamifyArray = require('streamify-array');
-
-
 
 describe('ActorRdfResolveQuadPatternFile', () => {
   let bus: any;
@@ -42,25 +40,32 @@ describe('ActorRdfResolveQuadPatternFile', () => {
 
     beforeEach(() => {
       mediatorRdfDereference = {
-        mediate: (action: any) => action.url ? Promise.resolve({ quads: streamifyArray([
-          quad('s1', 'p1', 'o1'),
-          quad('s1', 'p1', 'o2'),
-          quad('s1', 'p2', 'o1'),
-          quad('s1', 'p2', 'o2'),
-          quad('s2', 'p1', 'o1'),
-          quad('s2', 'p1', 'o2'),
-          quad('s2', 'p2', 'o1'),
-          quad('s2', 'p2', 'o2'),
-        ]) }) : Promise.reject('No test file'),
+        mediate: (action: any) => action.url ?
+          Promise.resolve({
+            quads: streamifyArray([
+              quad('s1', 'p1', 'o1'),
+              quad('s1', 'p1', 'o2'),
+              quad('s1', 'p2', 'o1'),
+              quad('s1', 'p2', 'o2'),
+              quad('s2', 'p1', 'o1'),
+              quad('s2', 'p1', 'o2'),
+              quad('s2', 'p2', 'o1'),
+              quad('s2', 'p2', 'o2'),
+            ]),
+          }) :
+          Promise.reject(new Error('No test file')),
       };
       httpInvalidator = new ActorHttpInvalidateListenable({ name: 'httpInvalidator', bus });
       actor = new ActorRdfResolveQuadPatternFile(
-        { name: 'actor', bus, mediatorRdfDereference, cacheSize: 10, httpInvalidator });
+        { name: 'actor', bus, mediatorRdfDereference, cacheSize: 10, httpInvalidator },
+      );
     });
 
     it('should test', () => {
-      return expect(actor.test({ pattern: <any> null, context: ActionContext(
-        { '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'file', value: 'abc' }}) }))
+      return expect(actor.test({ pattern: <any> null,
+        context: ActionContext(
+          { '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'file', value: 'abc' }},
+        ) }))
         .resolves.toBeTruthy();
     });
 
@@ -73,28 +78,37 @@ describe('ActorRdfResolveQuadPatternFile', () => {
     });
 
     it('should not test on an invalid file', () => {
-      return expect(actor.test({ pattern: <any> null, context: ActionContext(
-        { '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'file', value: undefined  }}) }))
+      return expect(actor.test({ pattern: <any> null,
+        context: ActionContext(
+          { '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'file', value: undefined }},
+        ) }))
         .rejects.toBeTruthy();
     });
 
     it('should not test on no file', () => {
-      return expect(actor.test({ pattern: <any> null, context: ActionContext(
-        { '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'entrypoint', value: undefined  }}) }))
+      return expect(actor.test({ pattern: <any> null,
+        context: ActionContext(
+          { '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'entrypoint', value: undefined }},
+        ) }))
         .rejects.toBeTruthy();
     });
 
     it('should not test on no sources', () => {
-      return expect(actor.test({ pattern: <any> null, context: ActionContext(
-        { '@comunica/bus-rdf-resolve-quad-pattern:sources': [] }) }))
+      return expect(actor.test({ pattern: <any> null,
+        context: ActionContext(
+          { '@comunica/bus-rdf-resolve-quad-pattern:sources': []},
+        ) }))
         .rejects.toBeTruthy();
     });
 
     it('should not test on multiple sources', () => {
       return expect(actor.test(
-        { pattern: <any> null, context: ActionContext(
-          { '@comunica/bus-rdf-resolve-quad-pattern:sources': [{ type: 'file', value: 'a' },
-              { type: 'file', value: 'b' }] }) }))
+        { pattern: <any> null,
+          context: ActionContext(
+            { '@comunica/bus-rdf-resolve-quad-pattern:sources': [{ type: 'file', value: 'a' },
+              { type: 'file', value: 'b' }]},
+          ) },
+      ))
         .rejects.toBeTruthy();
     });
 
@@ -108,12 +122,12 @@ describe('ActorRdfResolveQuadPatternFile', () => {
 
     it('should allow a file quad source to be created for a context with a valid file', () => {
       return expect((<any> actor).getSource(ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:source':
-          { type: 'file', value: 'myFile'  }}))).resolves.toBeTruthy();
+          { type: 'file', value: 'myFile' }}))).resolves.toBeTruthy();
     });
 
     it('should fail on creating a file quad source for a context with an invalid file', () => {
       return expect((<any> actor).getSource(ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:source':
-          { type: 'file', value: null  }}))).rejects.toBeTruthy();
+          { type: 'file', value: null }}))).rejects.toBeTruthy();
     });
 
     it('should fail on creating a file quad source for a context with a missing source', () => {
@@ -124,11 +138,11 @@ describe('ActorRdfResolveQuadPatternFile', () => {
     it('should create only a file quad source only once per file', () => {
       let doc1: undefined;
       return (<any> actor).getSource(ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:source':
-          { type: 'file', value: 'myFile'  }}))
+          { type: 'file', value: 'myFile' }}))
         .then((file: any) => {
           doc1 = file.store;
           return (<any> actor).getSource(ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:source':
-              { type: 'file', value: 'myFile'  }}));
+              { type: 'file', value: 'myFile' }}));
         })
         .then((file: any) => {
           expect(file.store).toBe(doc1);
@@ -138,29 +152,32 @@ describe('ActorRdfResolveQuadPatternFile', () => {
     it('should create different documents in file quad source for different files', () => {
       let doc1: undefined;
       return (<any> actor).getSource(ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:source':
-          { type: 'file', value: 'myFile1'  }}))
+          { type: 'file', value: 'myFile1' }}))
         .then((file: any) => {
           doc1 = file.store;
           return (<any> actor).getSource(ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:source':
-              { type: 'file', value: 'myFile2'  }}));
+              { type: 'file', value: 'myFile2' }}));
         })
         .then((file: any) => {
           expect(file.store).not.toBe(doc1);
         });
     });
 
-    it('should initialize file sources when passed to the constructor', async () => {
+    it('should initialize file sources when passed to the constructor', async() => {
       const myActor = new ActorRdfResolveQuadPatternFile(
-        { name: 'actor', bus, files: ['myFile'], mediatorRdfDereference, cacheSize: 10, httpInvalidator });
+        { name: 'actor', bus, files: [ 'myFile' ], mediatorRdfDereference, cacheSize: 10, httpInvalidator },
+      );
       await myActor.initialize();
-      return expect(myActor.cache.get('myFile')).resolves.toBeInstanceOf(N3Store);
+      await expect(myActor.cache.get('myFile')).resolves.toBeInstanceOf(N3Store);
     });
 
     it('should run on ? ? ?', () => {
       const pattern = quad('?', '?', '?');
-      return actor.run({ pattern, context: ActionContext(
-          { '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'file', value: 'abc'  }}) })
-        .then(async (output) => {
+      return actor.run({ pattern,
+        context: ActionContext(
+          { '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'file', value: 'abc' }},
+        ) })
+        .then(async output => {
           expect(await (<any> output).metadata()).toEqual({ totalItems: 8 });
           expect(await arrayifyStream(output.data)).toEqualRdfQuadArray([
             quad('s1', 'p1', 'o1'),
@@ -177,9 +194,11 @@ describe('ActorRdfResolveQuadPatternFile', () => {
 
     it('should run on s1 ? ?', () => {
       const pattern = quad('s1', '?', '?');
-      return actor.run({ pattern, context: ActionContext(
-          { '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'file', value: 'abc' }}) })
-        .then(async (output) => {
+      return actor.run({ pattern,
+        context: ActionContext(
+          { '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'file', value: 'abc' }},
+        ) })
+        .then(async output => {
           expect(await (<any> output).metadata()).toEqual({ totalItems: 4 });
           expect(await arrayifyStream(output.data)).toEqualRdfQuadArray([
             quad('s1', 'p1', 'o1'),
@@ -192,9 +211,11 @@ describe('ActorRdfResolveQuadPatternFile', () => {
 
     it('should run on s3 ? ?', () => {
       const pattern = quad('s3', '?', '?');
-      return actor.run({ pattern, context: ActionContext(
-          { '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'file', value: 'abc' }}) })
-        .then(async (output) => {
+      return actor.run({ pattern,
+        context: ActionContext(
+          { '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'file', value: 'abc' }},
+        ) })
+        .then(async output => {
           expect(await (<any> output).metadata()).toEqual({ totalItems: 0 });
           expect(await arrayifyStream(output.data)).toEqualRdfQuadArray([]);
         });
@@ -208,9 +229,10 @@ describe('ActorRdfResolveQuadPatternFile', () => {
       return expect(() => actor.deinitialize()).not.toThrow();
     });
 
-    it('should invalidate by URL', async () => {
+    it('should invalidate by URL', async() => {
       const myActor = new ActorRdfResolveQuadPatternFile(
-        { name: 'actor', bus, files: ['myFile1', 'myFile2'], mediatorRdfDereference, cacheSize: 10, httpInvalidator });
+        { name: 'actor', bus, files: [ 'myFile1', 'myFile2' ], mediatorRdfDereference, cacheSize: 10, httpInvalidator },
+      );
       await myActor.initialize();
       expect(myActor.cache.has('myFile1')).toBeTruthy();
       expect(myActor.cache.has('myFile2')).toBeTruthy();
@@ -219,9 +241,10 @@ describe('ActorRdfResolveQuadPatternFile', () => {
       expect(myActor.cache.has('myFile2')).toBeTruthy();
     });
 
-    it('should invalidate by all URLs', async () => {
+    it('should invalidate by all URLs', async() => {
       const myActor = new ActorRdfResolveQuadPatternFile(
-        { name: 'actor', bus, files: ['myFile1', 'myFile2'], mediatorRdfDereference, cacheSize: 10, httpInvalidator });
+        { name: 'actor', bus, files: [ 'myFile1', 'myFile2' ], mediatorRdfDereference, cacheSize: 10, httpInvalidator },
+      );
       await myActor.initialize();
       expect(myActor.cache.has('myFile1')).toBeTruthy();
       expect(myActor.cache.has('myFile2')).toBeTruthy();
@@ -237,7 +260,7 @@ describe('ActorRdfResolveQuadPatternFile', () => {
 
     it('should throw an illegal state error when metadata finds no cached source', () => {
       return expect((<any> actor).getMetadata(null, null, ActionContext(
-        { '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'file', value: 'abc' }}
+        { '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'file', value: 'abc' }},
       ))).rejects
         .toThrow(new Error('Illegal state: Missing file source cache entry during metadata retrieval.'));
     });

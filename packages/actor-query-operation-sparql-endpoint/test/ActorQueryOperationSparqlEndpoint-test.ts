@@ -1,20 +1,21 @@
+/* eslint-disable max-len */
 import {
   ActorQueryOperation,
   Bindings,
   IActorQueryOperationOutputBindings,
-  IActorQueryOperationOutputBoolean, IActorQueryOperationOutputQuads
-} from "@comunica/bus-query-operation";
-import {ActionContext, Bus} from "@comunica/core";
-import {namedNode, variable} from "@rdfjs/data-model";
-import {SparqlEndpointFetcher} from "fetch-sparql-endpoint";
-import {Headers} from "node-fetch";
-import {Factory} from "sparqlalgebrajs";
-import {ActorQueryOperationSparqlEndpoint} from "../lib/ActorQueryOperationSparqlEndpoint";
+  IActorQueryOperationOutputBoolean, IActorQueryOperationOutputQuads,
+} from '@comunica/bus-query-operation';
+import { ActionContext, Bus } from '@comunica/core';
+import { namedNode, variable } from '@rdfjs/data-model';
+
+import { SparqlEndpointFetcher } from 'fetch-sparql-endpoint';
+import { Headers } from 'node-fetch';
+import { Factory } from 'sparqlalgebrajs';
+import { ActorQueryOperationSparqlEndpoint } from '../lib/ActorQueryOperationSparqlEndpoint';
 const arrayifyStream = require('arrayify-stream');
-const streamifyString = require('streamify-string');
 const quad = require('rdf-quad');
-import "jest-rdf";
-import {createLogger} from "bunyan";
+const streamifyString = require('streamify-string');
+import 'jest-rdf';
 
 const factory = new Factory();
 
@@ -25,7 +26,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
     mediatorHttp = {
-      mediate: (action: any) => {
+      mediate(action: any) {
         let body;
         if (action.input.startsWith('http://example.org/sparql-construct')) {
           body = streamifyString(`<http://ex.org/s> <http://ex.org/p> <http://ex.org/o1>, <http://ex.org/o2>.`);
@@ -109,21 +110,21 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
       return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
-    it('should fail to run for a missing source', async () => {
+    it('should fail to run for a missing source', async() => {
       const context = ActionContext({});
-      const op = { context, operation: factory.createPattern(namedNode('http://s'), variable('p'),
-          namedNode('http://o')) };
+      const op = { context,
+        operation: factory.createPattern(namedNode('http://s'), variable('p'), namedNode('http://o')) };
       await expect(actor.run(op)).rejects.toThrow(new Error('Illegal state: undefined sparql endpoint source.'));
     });
 
-    it('should run for a sub-query', async () => {
+    it('should run for a sub-query', async() => {
       const context = ActionContext({
         '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'sparql', value: 'http://example.org/sparql-select' },
       });
-      const op = { context, operation: factory.createPattern(namedNode('http://s'), variable('p'),
-          namedNode('http://o')) };
+      const op = { context,
+        operation: factory.createPattern(namedNode('http://s'), variable('p'), namedNode('http://o')) };
       const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
-      expect(output.variables).toEqual(['?p']);
+      expect(output.variables).toEqual([ '?p' ]);
       expect(await (<any> output).metadata()).toEqual({ totalItems: 3 });
 
       expect(await arrayifyStream(output.bindingsStream)).toEqual([
@@ -133,16 +134,17 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
       ]);
     });
 
-    it('should run for a SELECT query', async () => {
+    it('should run for a SELECT query', async() => {
       const context = ActionContext({
         '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'sparql', value: 'http://example.org/sparql-select' },
       });
-      const op = { context, operation: factory.createProject(
+      const op = { context,
+        operation: factory.createProject(
           factory.createPattern(namedNode('http://s'), variable('p'), namedNode('http://o')),
-          [ variable('myP') ]
+          [ variable('myP') ],
         ) };
       const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
-      expect(output.variables).toEqual(['?myP']);
+      expect(output.variables).toEqual([ '?myP' ]);
       expect(await (<any> output).metadata()).toEqual({ totalItems: 3 });
 
       expect(await arrayifyStream(output.bindingsStream)).toEqual([
@@ -152,25 +154,28 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
       ]);
     });
 
-    it('should run for an ASK query', async () => {
+    it('should run for an ASK query', async() => {
       const context = ActionContext({
         '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'sparql', value: 'http://example.org/sparql-ask' },
       });
-      const op = { context, operation: factory.createAsk(
-          factory.createPattern(namedNode('http://s'), variable('p'), namedNode('http://o'))
+      const op = { context,
+        operation: factory.createAsk(
+          factory.createPattern(namedNode('http://s'), variable('p'), namedNode('http://o')),
         ) };
       const output: IActorQueryOperationOutputBoolean = <any> await actor.run(op);
 
       expect(await output.booleanResult).toEqual(true);
     });
 
-    it('should run for a CONSTRUCT query', async () => {
+    it('should run for a CONSTRUCT query', async() => {
       const context = ActionContext({
         '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'sparql', value: 'http://example.org/sparql-construct' },
       });
-      const op = { context, operation: factory.createConstruct(
-        factory.createPattern(namedNode('http://s'), variable('p'), namedNode('http://o')),
-          [ factory.createPattern(namedNode('http://s'), variable('p'), namedNode('http://o')) ]) };
+      const op = { context,
+        operation: factory.createConstruct(
+          factory.createPattern(namedNode('http://s'), variable('p'), namedNode('http://o')),
+          [ factory.createPattern(namedNode('http://s'), variable('p'), namedNode('http://o')) ],
+        ) };
       const output: IActorQueryOperationOutputQuads = <any> await actor.run(op);
 
       expect(await (<any> output).metadata()).toEqual({ totalItems: 2 });
@@ -181,9 +186,9 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
       ]);
     });
 
-    it('should run and error for a server error', async () => {
+    it('should run and error for a server error', async() => {
       const thisMediator: any = {
-        mediate: () => {
+        mediate() {
           return {
             body: streamifyString(``),
             headers: new Headers({ 'Content-Type': SparqlEndpointFetcher.CONTENTTYPE_SPARQL_JSON }),
@@ -196,11 +201,11 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
       const context = ActionContext({
         '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'sparql', value: 'http://ex' },
       });
-      const op = { context, operation: factory.createPattern(namedNode('http://s'), variable('p'),
-          namedNode('http://o')) };
+      const op = { context,
+        operation: factory.createPattern(namedNode('http://s'), variable('p'), namedNode('http://o')) };
       const thisActor = new ActorQueryOperationSparqlEndpoint({ name: 'actor', bus, mediatorHttp: thisMediator });
       const x = ActorQueryOperation.getSafeBindings(await thisActor.run(op)).bindingsStream;
-      return expect(arrayifyStream(x))
+      await expect(arrayifyStream(x))
         .rejects.toThrow(new Error('Invalid SPARQL endpoint (http://ex) response: Error!'));
     });
 
@@ -208,11 +213,11 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
       const context = ActionContext({
         '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'sparql', value: 'http://ex' },
       });
-      const op = { context, operation: factory.createPattern(namedNode('http://s'), variable('p'),
-          namedNode('http://o')) };
+      const op = { context,
+        operation: factory.createPattern(namedNode('http://s'), variable('p'), namedNode('http://o')) };
       actor.endpointFetcher.fetchBindings = () => Promise.reject(new Error('MY ERROR'));
       return expect(new Promise((resolve, reject) => {
-        actor.run(op).then(async (output) => (<any> output).bindingsStream.on('error', resolve));
+        actor.run(op).then(async output => (<any> output).bindingsStream.on('error', resolve));
       })).resolves.toEqual(new Error('MY ERROR'));
     });
   });

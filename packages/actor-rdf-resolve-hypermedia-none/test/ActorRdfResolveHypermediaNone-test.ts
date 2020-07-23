@@ -1,12 +1,12 @@
-import {ActorRdfResolveHypermedia} from "@comunica/bus-rdf-resolve-hypermedia";
-import {Bus} from "@comunica/core";
-import "jest-rdf";
-import {Readable} from "stream";
-import {ActorRdfResolveHypermediaNone} from "../lib/ActorRdfResolveHypermediaNone";
+import { Readable } from 'stream';
+import { ActorRdfResolveHypermedia } from '@comunica/bus-rdf-resolve-hypermedia';
+import { Bus } from '@comunica/core';
+import 'jest-rdf';
+import { ActorRdfResolveHypermediaNone } from '../lib/ActorRdfResolveHypermediaNone';
 
-const streamifyArray = require('streamify-array');
 const arrayifyStream = require('arrayify-stream');
 const quad = require('rdf-quad');
+const streamifyArray = require('streamify-array');
 
 describe('ActorRdfResolveHypermediaNone', () => {
   let bus: any;
@@ -40,10 +40,11 @@ describe('ActorRdfResolveHypermediaNone', () => {
     });
 
     it('should test', () => {
-      return expect(actor.test({ metadata: <any> null, quads: <any> null, url: '' })).resolves.toEqual({ filterFactor: 0 });
+      return expect(actor.test({ metadata: <any> null, quads: <any> null, url: '' }))
+        .resolves.toEqual({ filterFactor: 0 });
     });
 
-    it('should run', async () => {
+    it('should run', async() => {
       const quads = streamifyArray([
         quad('s1', 'p1', 'o1'),
         quad('s2', 'p2', 'o2'),
@@ -53,7 +54,9 @@ describe('ActorRdfResolveHypermediaNone', () => {
       await expect(new Promise((resolve, reject) => {
         const stream = source.match();
         stream.on('metadata', resolve);
-        stream.on('data', () => { return; });
+        stream.on('data', () => {
+          // Do nothing
+        });
         stream.on('end', () => reject(new Error('Got end event before metadata event.')));
       })).resolves.toEqual({ totalItems: 2 });
       expect(await arrayifyStream(source.match())).toEqualRdfQuadArray([
@@ -62,12 +65,12 @@ describe('ActorRdfResolveHypermediaNone', () => {
       ]);
     });
 
-    it('should run and delegate error events', async () => {
+    it('should run and delegate error events', async() => {
       const quads = streamifyArray([
         quad('s1', 'p1', 'o1'),
         quad('s2', 'p2', 'o2'),
       ]);
-      await expect(new Promise(async (resolve, reject) => {
+      await expect(new Promise(async(resolve, reject) => {
         const { source } = await actor.run({ metadata: <any> null, quads, url: '' });
         (<any> source).source.match = () => {
           const str = new Readable();
@@ -78,7 +81,9 @@ describe('ActorRdfResolveHypermediaNone', () => {
         };
         const stream = source.match();
         stream.on('error', resolve);
-        stream.on('data', () => { return; });
+        stream.on('data', () => {
+          // Do nothing
+        });
         stream.on('end', () => reject(new Error('Got no error event.')));
       })).resolves.toEqual(new Error('Dummy error'));
     });

@@ -1,7 +1,7 @@
-import {blankNode, defaultGraph, literal, namedNode, variable} from "@rdfjs/data-model";
-import {Map} from "immutable";
-import {Bindings, ensureBindings, isBindings, materializeOperation, materializeTerm} from "..";
-import {Factory} from "sparqlalgebrajs";
+import { blankNode, defaultGraph, literal, namedNode, variable } from '@rdfjs/data-model';
+import { Map } from 'immutable';
+import { Factory } from 'sparqlalgebrajs';
+import { Bindings, ensureBindings, isBindings, materializeOperation, materializeTerm } from '..';
 
 describe('Bindings', () => {
   it('should create a map', () => {
@@ -45,9 +45,9 @@ const valueA = literal('A');
 const valueC = literal('C');
 
 const bindingsEmpty = Bindings({});
-const bindingsA = Bindings({'?a': literal('A')});
-const bindingsC = Bindings({'_:c': literal('C')});
-const bindingsAC = Bindings({'?a': valueA, '_:c': valueC});
+const bindingsA = Bindings({ '?a': literal('A') });
+const bindingsC = Bindings({ '_:c': literal('C') });
+const bindingsAC = Bindings({ '?a': valueA, '_:c': valueC });
 
 describe('materializeTerm', () => {
   it('should not materialize a named node with empty bindings', () => {
@@ -135,14 +135,16 @@ describe('materializeOperation', () => {
   it('should materialize a quad pattern with empty bindings', () => {
     return expect(materializeOperation(
       factory.createPattern(termVariableA, termNamedNode, termVariableC, termNamedNode),
-      bindingsEmpty))
+      bindingsEmpty,
+    ))
       .toEqual(factory.createPattern(termVariableA, termNamedNode, termVariableC, termNamedNode));
   });
 
   it('should materialize a quad pattern with non-empty bindings', () => {
     return expect(materializeOperation(
       factory.createPattern(termVariableA, termNamedNode, termVariableC, termNamedNode),
-      bindingsA))
+      bindingsA,
+    ))
       .toEqual(factory.createPattern(valueA, termNamedNode, termVariableC, termNamedNode));
   });
 
@@ -152,7 +154,8 @@ describe('materializeOperation', () => {
         factory.createPattern(termVariableA, termNamedNode, termVariableC, termNamedNode),
         factory.createPattern(termNamedNode, termVariableB, termVariableC, termNamedNode),
       ]),
-      bindingsA))
+      bindingsA,
+    ))
       .toEqual(factory.createBgp([
         factory.createPattern(valueA, termNamedNode, termVariableC, termNamedNode),
         factory.createPattern(termNamedNode, termVariableB, termVariableC, termNamedNode),
@@ -162,7 +165,8 @@ describe('materializeOperation', () => {
   it('should materialize a path expression with non-empty bindings', () => {
     return expect(materializeOperation(
       factory.createPath(termVariableA, <any> null, termVariableC, termNamedNode),
-      bindingsA))
+      bindingsA,
+    ))
       .toEqual(factory.createPath(valueA, <any> null, termVariableC, termNamedNode));
   });
 
@@ -171,18 +175,19 @@ describe('materializeOperation', () => {
       factory.createPath(
         termVariableA,
         factory.createAlt(
-          factory.createNps([namedNode('A')]),
-          factory.createNps([namedNode('B')]),
+          factory.createNps([ namedNode('A') ]),
+          factory.createNps([ namedNode('B') ]),
         ),
         termVariableC,
         termNamedNode,
       ),
-      bindingsA))
+      bindingsA,
+    ))
       .toEqual(factory.createPath(
         valueA,
         factory.createAlt(
-          factory.createNps([namedNode('A')]),
-          factory.createNps([namedNode('B')]),
+          factory.createNps([ namedNode('A') ]),
+          factory.createNps([ namedNode('B') ]),
         ),
         termVariableC,
         termNamedNode,
@@ -194,13 +199,14 @@ describe('materializeOperation', () => {
       factory.createExtend(
         factory.createPattern(termVariableB, termNamedNode, termVariableC, termNamedNode),
         termVariableB,
-        factory.createTermExpression(termVariableB)
+        factory.createTermExpression(termVariableB),
       ),
-      bindingsA))
+      bindingsA,
+    ))
       .toEqual(factory.createExtend(
         factory.createPattern(termVariableB, termNamedNode, termVariableC, termNamedNode),
         termVariableB,
-        factory.createTermExpression(termVariableB)
+        factory.createTermExpression(termVariableB),
       ));
   });
 
@@ -209,24 +215,28 @@ describe('materializeOperation', () => {
       factory.createExtend(
         factory.createPattern(termVariableA, termNamedNode, termVariableC, termNamedNode),
         termVariableB,
-        factory.createTermExpression(termVariableA)
+        factory.createTermExpression(termVariableA),
       ),
-      bindingsA))
+      bindingsA,
+    ))
       .toEqual(factory.createExtend(
         factory.createPattern(valueA, termNamedNode, termVariableC, termNamedNode),
         termVariableB,
-        factory.createTermExpression(valueA)
+        factory.createTermExpression(valueA),
       ));
   });
 
-  it('should error on an extend operation with a binding variable equal to the target variable for strictTargetVariables', () => {
+  it('should error on an extend operation with ' +
+    'a binding variable equal to the target variable for strictTargetVariables', () => {
     return expect(() => materializeOperation(
       factory.createExtend(
         factory.createPattern(termVariableA, termNamedNode, termVariableC, termNamedNode),
         termVariableA,
-        factory.createTermExpression(termVariableA)
+        factory.createTermExpression(termVariableA),
       ),
-      bindingsA, true)).toThrow(new Error('Tried to bind variable ?a in a BIND operator.'));
+      bindingsA,
+      true,
+    )).toThrow(new Error('Tried to bind variable ?a in a BIND operator.'));
   });
 
   it('should modify an extend operation with binding variable equal to the target variable', () => {
@@ -234,9 +244,10 @@ describe('materializeOperation', () => {
       factory.createExtend(
         factory.createPattern(termVariableA, termNamedNode, termVariableC, termNamedNode),
         termVariableA,
-        factory.createTermExpression(termVariableC)
+        factory.createTermExpression(termVariableC),
       ),
-      bindingsA))
+      bindingsA,
+    ))
       .toEqual(factory.createPattern(valueA, termNamedNode, termVariableC, termNamedNode));
   });
 
@@ -244,24 +255,25 @@ describe('materializeOperation', () => {
     return expect(materializeOperation(
       factory.createGroup(
         factory.createPattern(termVariableB, termNamedNode, termVariableC, termNamedNode),
-        [termVariableB, termVariableD],
-        [factory.createBoundAggregate(
+        [ termVariableB, termVariableD ],
+        [ factory.createBoundAggregate(
           termVariableB,
           'SUM',
           factory.createTermExpression(termVariableB),
           true,
-        )]
+        ) ],
       ),
-      bindingsA))
+      bindingsA,
+    ))
       .toEqual(factory.createGroup(
         factory.createPattern(termVariableB, termNamedNode, termVariableC, termNamedNode),
-        [termVariableB, termVariableD],
-        [factory.createBoundAggregate(
+        [ termVariableB, termVariableD ],
+        [ factory.createBoundAggregate(
           termVariableB,
           'SUM',
           factory.createTermExpression(termVariableB),
           true,
-        )]
+        ) ],
       ));
   });
 
@@ -269,104 +281,113 @@ describe('materializeOperation', () => {
     return expect(materializeOperation(
       factory.createGroup(
         factory.createPattern(termVariableA, termNamedNode, termVariableC, termNamedNode),
-        [termVariableB, termVariableD],
-        [factory.createBoundAggregate(
+        [ termVariableB, termVariableD ],
+        [ factory.createBoundAggregate(
           termVariableB,
           'SUM',
           factory.createTermExpression(termVariableA),
           true,
-        )]
+        ) ],
       ),
-      bindingsA))
+      bindingsA,
+    ))
       .toEqual(factory.createGroup(
         factory.createPattern(valueA, termNamedNode, termVariableC, termNamedNode),
-        [termVariableB, termVariableD],
-        [factory.createBoundAggregate(
+        [ termVariableB, termVariableD ],
+        [ factory.createBoundAggregate(
           termVariableB,
           'SUM',
           factory.createTermExpression(valueA),
           true,
-        )]
+        ) ],
       ));
   });
 
-  it('should error on a group operation with a binding variable equal to the target variable for strictTargetVariables', () => {
+  it('should error on a group operation with ' +
+    'a binding variable equal to the target variable for strictTargetVariables', () => {
     return expect(() => materializeOperation(
       factory.createGroup(
         factory.createPattern(termVariableA, termNamedNode, termVariableC, termNamedNode),
-        [termVariableA, termVariableD],
-        [factory.createBoundAggregate(
+        [ termVariableA, termVariableD ],
+        [ factory.createBoundAggregate(
           termVariableB,
           'SUM',
           factory.createTermExpression(termVariableA),
           true,
-        )]
+        ) ],
       ),
-      bindingsA, true)).toThrow(new Error('Tried to bind variable ?a in a GROUP BY operator.'));
+      bindingsA,
+      true,
+    )).toThrow(new Error('Tried to bind variable ?a in a GROUP BY operator.'));
   });
 
   it('should modify a group operation with a binding variable equal to the target variable', () => {
     return expect(materializeOperation(
       factory.createGroup(
         factory.createPattern(termVariableA, termNamedNode, termVariableC, termNamedNode),
-        [termVariableA, termVariableD],
-        [factory.createBoundAggregate(
+        [ termVariableA, termVariableD ],
+        [ factory.createBoundAggregate(
           termVariableB,
           'SUM',
           factory.createTermExpression(termVariableA),
           true,
-        )]
+        ) ],
       ),
-      bindingsA))
+      bindingsA,
+    ))
       .toEqual(factory.createGroup(
         factory.createPattern(valueA, termNamedNode, termVariableC, termNamedNode),
-        [termVariableD],
-        [factory.createBoundAggregate(
+        [ termVariableD ],
+        [ factory.createBoundAggregate(
           termVariableB,
           'SUM',
           factory.createTermExpression(valueA),
           true,
-        )]
+        ) ],
       ));
   });
 
-  it('should error on a group operation with a binding variable equal to the bound aggregate variable for strictTargetVariables', () => {
+  it('should error on a group operation with ' +
+    'a binding variable equal to the bound aggregate variable for strictTargetVariables', () => {
     return expect(() => materializeOperation(
       factory.createGroup(
         factory.createPattern(termVariableA, termNamedNode, termVariableC, termNamedNode),
-        [termVariableB, termVariableD],
-        [factory.createBoundAggregate(
+        [ termVariableB, termVariableD ],
+        [ factory.createBoundAggregate(
           termVariableA,
           'SUM',
           factory.createTermExpression(termVariableA),
           true,
-        )]
+        ) ],
       ),
-      bindingsA, true)).toThrow(new Error('Tried to bind ?a in a SUM aggregate.'));
+      bindingsA,
+      true,
+    )).toThrow(new Error('Tried to bind ?a in a SUM aggregate.'));
   });
 
   it('should modify a group operation with aa binding variable equal to the bound aggregate variable', () => {
     return expect(materializeOperation(
       factory.createGroup(
         factory.createPattern(termVariableA, termNamedNode, termVariableC, termNamedNode),
-        [termVariableB, termVariableD],
-        [factory.createBoundAggregate(
+        [ termVariableB, termVariableD ],
+        [ factory.createBoundAggregate(
           termVariableA,
           'SUM',
           factory.createTermExpression(termVariableA),
           true,
-        )]
+        ) ],
       ),
-      bindingsA))
+      bindingsA,
+    ))
       .toEqual(factory.createGroup(
         factory.createPattern(valueA, termNamedNode, termVariableC, termNamedNode),
-        [termVariableB, termVariableD],
-        [factory.createBoundAggregate(
+        [ termVariableB, termVariableD ],
+        [ factory.createBoundAggregate(
           termVariableA,
           'SUM',
           factory.createTermExpression(valueA),
           true,
-        )]
+        ) ],
       ));
   });
 
@@ -374,12 +395,13 @@ describe('materializeOperation', () => {
     return expect(materializeOperation(
       factory.createProject(
         factory.createPattern(termVariableB, termNamedNode, termVariableC, termNamedNode),
-        [termVariableB, termVariableD],
+        [ termVariableB, termVariableD ],
       ),
-      bindingsA))
+      bindingsA,
+    ))
       .toEqual(factory.createProject(
         factory.createPattern(termVariableB, termNamedNode, termVariableC, termNamedNode),
-        [termVariableB, termVariableD],
+        [ termVariableB, termVariableD ],
       ));
   });
 
@@ -387,12 +409,13 @@ describe('materializeOperation', () => {
     return expect(materializeOperation(
       factory.createProject(
         factory.createPattern(termVariableA, termNamedNode, termVariableC, termNamedNode),
-        [termVariableB, termVariableD],
+        [ termVariableB, termVariableD ],
       ),
-      bindingsA))
+      bindingsA,
+    ))
       .toEqual(factory.createProject(
         factory.createPattern(valueA, termNamedNode, termVariableC, termNamedNode),
-        [termVariableB, termVariableD],
+        [ termVariableB, termVariableD ],
       ));
   });
 
@@ -400,46 +423,53 @@ describe('materializeOperation', () => {
     return expect(materializeOperation(
       factory.createProject(
         factory.createPattern(termVariableA, termNamedNode, termVariableC, termNamedNode),
-        [termVariableB, termVariableD],
+        [ termVariableB, termVariableD ],
       ),
-      bindingsA, true))
+      bindingsA,
+      true,
+    ))
       .toEqual(factory.createProject(
         factory.createPattern(valueA, termNamedNode, termVariableC, termNamedNode),
-        [termVariableB, termVariableD],
+        [ termVariableB, termVariableD ],
       ));
   });
 
-  it('should error on a project operation with a binding variable equal to the target variable for strictTargetVariables', () => {
+  it('should error on a project operation with ' +
+    'a binding variable equal to the target variable for strictTargetVariables', () => {
     return expect(() => materializeOperation(
       factory.createProject(
         factory.createPattern(termVariableA, termNamedNode, termVariableC, termNamedNode),
-        [termVariableA, termVariableD],
+        [ termVariableA, termVariableD ],
       ),
-      bindingsA, true)).toThrow(new Error('Tried to bind variable ?a in a SELECT operator.'));
+      bindingsA,
+      true,
+    )).toThrow(new Error('Tried to bind variable ?a in a SELECT operator.'));
   });
 
   it('should modify a project operation with a binding variable equal to the target variable', () => {
     return expect(materializeOperation(
       factory.createProject(
         factory.createPattern(termVariableA, termNamedNode, termVariableC, termNamedNode),
-        [termVariableA, termVariableD],
+        [ termVariableA, termVariableD ],
       ),
-      bindingsA))
+      bindingsA,
+    ))
       .toEqual(factory.createProject(
         factory.createPattern(valueA, termNamedNode, termVariableC, termNamedNode),
-        [termVariableD],
+        [ termVariableD ],
       ));
   });
 
   it('should not modify a values operation without matching variables', () => {
     return expect(materializeOperation(
       factory.createValues(
-        [termVariableB, termVariableD],
+        [ termVariableB, termVariableD ],
         [{ '?b': valueC }],
       ),
-      bindingsA))
+      bindingsA,
+    ))
       .toEqual(factory.createValues(
-        [termVariableB, termVariableD],
+        [ termVariableB, termVariableD ],
         [{ '?b': valueC }],
       ));
   });
@@ -447,34 +477,40 @@ describe('materializeOperation', () => {
   it('should not modify a values operation without matching variables for strictTargetVariables', () => {
     return expect(materializeOperation(
       factory.createValues(
-        [termVariableB, termVariableD],
+        [ termVariableB, termVariableD ],
         [{ '?b': valueC }],
       ),
-      bindingsA, true))
+      bindingsA,
+      true,
+    ))
       .toEqual(factory.createValues(
-        [termVariableB, termVariableD],
+        [ termVariableB, termVariableD ],
         [{ '?b': valueC }],
       ));
   });
 
-  it('should error on a values operation with a binding variable equal to the target variable for strictTargetVariables', () => {
+  it('should error on a values operation with ' +
+    'a binding variable equal to the target variable for strictTargetVariables', () => {
     return expect(() => materializeOperation(
       factory.createValues(
-        [termVariableA, termVariableD],
+        [ termVariableA, termVariableD ],
         [{ '?a': valueC, '?d': valueC }],
       ),
-      bindingsA, true)).toThrow(new Error('Tried to bind variable ?a in a VALUES operator.'));
+      bindingsA,
+      true,
+    )).toThrow(new Error('Tried to bind variable ?a in a VALUES operator.'));
   });
 
   it('should modify a values operation with a binding variable equal to the target variable', () => {
     return expect(materializeOperation(
       factory.createValues(
-        [termVariableA, termVariableD],
+        [ termVariableA, termVariableD ],
         [{ '?a': valueC, '?d': valueC }],
       ),
-      bindingsA))
+      bindingsA,
+    ))
       .toEqual(factory.createValues(
-        [termVariableD],
+        [ termVariableD ],
         [{ '?d': valueC }],
       ));
   });
@@ -488,10 +524,11 @@ describe('materializeOperation', () => {
         ]),
         factory.createOperatorExpression('contains', [
           factory.createTermExpression(termVariableB),
-          factory.createTermExpression(termVariableB)
-        ])
+          factory.createTermExpression(termVariableB),
+        ]),
       ),
-      bindingsA))
+      bindingsA,
+    ))
       .toEqual(factory.createFilter(
         factory.createBgp([
           factory.createPattern(termVariableB, termNamedNode, termVariableC, termNamedNode),
@@ -499,8 +536,8 @@ describe('materializeOperation', () => {
         ]),
         factory.createOperatorExpression('contains', [
           factory.createTermExpression(termVariableB),
-          factory.createTermExpression(termVariableB)
-        ])
+          factory.createTermExpression(termVariableB),
+        ]),
       ));
   });
 
@@ -513,10 +550,11 @@ describe('materializeOperation', () => {
         ]),
         factory.createOperatorExpression('contains', [
           factory.createTermExpression(termVariableA),
-          factory.createTermExpression(termVariableB)
-        ])
+          factory.createTermExpression(termVariableB),
+        ]),
       ),
-      bindingsA))
+      bindingsA,
+    ))
       .toEqual(factory.createFilter(
         factory.createBgp([
           factory.createPattern(valueA, termNamedNode, termVariableC, termNamedNode),
@@ -524,8 +562,8 @@ describe('materializeOperation', () => {
         ]),
         factory.createOperatorExpression('contains', [
           factory.createTermExpression(valueA),
-          factory.createTermExpression(termVariableB)
-        ])
+          factory.createTermExpression(termVariableB),
+        ]),
       ));
   });
 });

@@ -1,7 +1,7 @@
-import {variable} from "@rdfjs/data-model";
-import {Store as N3Store} from "n3";
-import {N3StoreIterator} from "../lib/N3StoreIterator";
-import {N3StoreQuadSource} from "../lib/N3StoreQuadSource";
+import { variable } from '@rdfjs/data-model';
+import { Store as N3Store } from 'n3';
+import { N3StoreIterator } from '../lib/N3StoreIterator';
+import { N3StoreQuadSource } from '../lib/N3StoreQuadSource';
 
 describe('N3StoreQuadSource', () => {
   let store: any;
@@ -28,19 +28,19 @@ describe('N3StoreQuadSource', () => {
     });
 
     it('should throw an error on a subject regex call', () => {
-      return expect(() => source.match(/.*/)).toThrow();
+      return expect(() => source.match(/.*/u)).toThrow();
     });
 
     it('should throw an error on a predicate regex call', () => {
-      return expect(() => source.match(undefined, /.*/)).toThrow();
+      return expect(() => source.match(undefined, /.*/u)).toThrow();
     });
 
     it('should throw an error on a object regex call', () => {
-      return expect(() => source.match(undefined, undefined, /.*/)).toThrow();
+      return expect(() => source.match(undefined, undefined, /.*/u)).toThrow();
     });
 
     it('should throw an error on a graph regex call', () => {
-      return expect(() => source.match(undefined, undefined, undefined, /.*/)).toThrow();
+      return expect(() => source.match(undefined, undefined, undefined, /.*/u)).toThrow();
     });
 
     it('should return a N3StoreIterator', () => {

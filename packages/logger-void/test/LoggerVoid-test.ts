@@ -1,8 +1,7 @@
-import {LoggerVoid} from "../lib/LoggerVoid";
+import { LoggerVoid } from '../lib/LoggerVoid';
 
 describe('LoggerVoid', () => {
   describe('a LoggerVoid instance', () => {
-
     let logger: LoggerVoid;
 
     beforeEach(() => {

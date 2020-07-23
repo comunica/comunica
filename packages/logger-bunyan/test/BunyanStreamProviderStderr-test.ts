@@ -1,4 +1,4 @@
-import {BunyanStreamProviderStderr} from "../lib/stream/BunyanStreamProviderStderr";
+import { BunyanStreamProviderStderr } from '../lib/stream/BunyanStreamProviderStderr';
 
 describe('BunyanStreamProviderStderr', () => {
   it('should create a stderr stream', () => {

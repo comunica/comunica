@@ -1,7 +1,7 @@
-import {Actor, Bus, IAction, IActorOutput, IActorTest, Mediator} from "..";
+import { Actor, Bus, IAction, IActorOutput, IActorTest, Mediator } from '..';
 
 describe('Mediator', () => {
-  let bus: Bus<Actor<IAction, IActorTest, IActorOutput>, IAction, IActorTest, IActorOutput>;;
+  let bus: Bus<Actor<IAction, IActorTest, IActorOutput>, IAction, IActorTest, IActorOutput>;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -42,19 +42,19 @@ describe('Mediator', () => {
     let actor3: any;
 
     const actorTest = (action: any) => {
-      return new Promise((resolve) => {
+      return new Promise(resolve => {
         resolve({ type: 'test', sent: action });
       });
     };
     const actorRun = (action: any) => {
-      return new Promise((resolve) => {
+      return new Promise(resolve => {
         resolve({ type: 'run', sent: action });
       });
     };
-    const mediateWithFirst = async (action: any, testResults: any) => {
+    const mediateWithFirst = async(action: any, testResults: any) => {
       return testResults[0].actor;
     };
-    const mediateWithFirstError = async () => {
+    const mediateWithFirstError = async() => {
       throw new Error('some error');
     };
 

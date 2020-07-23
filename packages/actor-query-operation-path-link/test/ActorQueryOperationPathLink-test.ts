@@ -1,9 +1,9 @@
-import {ActorQueryOperation, Bindings} from "@comunica/bus-query-operation";
-import {Bus} from "@comunica/core";
-import {literal, namedNode, variable} from "@rdfjs/data-model";
-import {ArrayIterator} from "asynciterator";
-import {Algebra, Factory} from "sparqlalgebrajs";
-import {ActorQueryOperationPathLink} from "../lib/ActorQueryOperationPathLink";
+import { ActorQueryOperation, Bindings } from '@comunica/bus-query-operation';
+import { Bus } from '@comunica/core';
+import { literal, namedNode, variable } from '@rdfjs/data-model';
+import { ArrayIterator } from 'asynciterator';
+import { Algebra, Factory } from 'sparqlalgebrajs';
+import { ActorQueryOperationPathLink } from '../lib/ActorQueryOperationPathLink';
 const arrayifyStream = require('arrayify-stream');
 
 describe('ActorQueryOperationPathLink', () => {
@@ -23,7 +23,7 @@ describe('ActorQueryOperationPathLink', () => {
         metadata: () => Promise.resolve({ totalItems: 3 }),
         operated: arg,
         type: 'bindings',
-        variables: ['a'],
+        variables: [ 'a' ],
       }),
     };
   });
@@ -53,16 +53,16 @@ describe('ActorQueryOperationPathLink', () => {
     });
 
     it('should test on Link paths', () => {
-      const op = { operation: { type: Algebra.types.PATH, predicate: { type: Algebra.types.LINK }} };
+      const op = { operation: { type: Algebra.types.PATH, predicate: { type: Algebra.types.LINK }}};
       return expect(actor.test(op)).resolves.toBeTruthy();
     });
 
     it('should test on different paths', () => {
-      const op = { operation: { type: Algebra.types.PATH, predicate: { type: 'dummy' }} };
+      const op = { operation: { type: Algebra.types.PATH, predicate: { type: 'dummy' }}};
       return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
-    it('should support Link paths', async () => {
+    it('should support Link paths', async() => {
       const op = { operation: factory.createPath(namedNode('s'), factory.createLink(namedNode('p')), variable('x')) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       expect(await arrayifyStream(output.bindingsStream)).toEqual([

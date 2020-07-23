@@ -1,10 +1,10 @@
-import {ActorRdfMetadataExtract} from "@comunica/bus-rdf-metadata-extract";
-import {Bus} from "@comunica/core";
-import {ActorRdfMetadataExtractHydraControls} from "../lib/ActorRdfMetadataExtractHydraControls";
-const stream = require('streamify-array');
+import { ActorRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extract';
+import { Bus } from '@comunica/core';
+import { ActorRdfMetadataExtractHydraControls } from '../lib/ActorRdfMetadataExtractHydraControls';
 const quad = require('rdf-quad');
+const stream = require('streamify-array');
 
-const HYDRA: string = 'http://www.w3.org/ns/hydra/core#';
+const HYDRA = 'http://www.w3.org/ns/hydra/core#';
 
 describe('ActorRdfMetadataExtractHydraControls', () => {
   let bus: any;
@@ -49,11 +49,11 @@ describe('ActorRdfMetadataExtractHydraControls', () => {
 
     it('should get links for defined hydra properties', () => {
       const hydraProperties = {
-        first: { otherPage: [ 'first2' ], myPage: [ 'first1' ] },
-        last: { myPage: [ 'last1' ] },
-        next: { myPage: [ 'next1' ] },
-        previous: { myPage: [ 'previous1' ] },
-        somethingElse: { myPage: [ 'next1' ] },
+        first: { otherPage: [ 'first2' ], myPage: [ 'first1' ]},
+        last: { myPage: [ 'last1' ]},
+        next: { myPage: [ 'next1' ]},
+        previous: { myPage: [ 'previous1' ]},
+        somethingElse: { myPage: [ 'next1' ]},
       };
       return expect(actor.getLinks('myPage', hydraProperties)).toEqual({
         first: 'first1',
@@ -65,40 +65,40 @@ describe('ActorRdfMetadataExtractHydraControls', () => {
 
     it('should get no search forms for empty hydra properties', () => {
       const hydraProperties = {};
-      return expect(actor.getSearchForms(hydraProperties)).toEqual({ values: [] });
+      return expect(actor.getSearchForms(hydraProperties)).toEqual({ values: []});
     });
 
     it('should get a search forms without mappings', () => {
       const hydraProperties = {
-        search: { mydataset: [ 'search1' ] },
+        search: { mydataset: [ 'search1' ]},
         template: {
           search1: [ 'http://example.org/' ],
         },
       };
       return expect(actor.getSearchForms(hydraProperties)).toMatchObject({ values: [{
-        // getUri,
+        // GetUri,
         mappings: {},
         template: 'http://example.org/',
-      }] });
+      }]});
     });
 
     it('should get a search forms multiple times without mappings', () => {
       const hydraProperties = {
-        search: { mydataset: [ 'search1' ] },
+        search: { mydataset: [ 'search1' ]},
         template: {
           search1: [ 'http://example.org/' ],
         },
       };
       expect(actor.getSearchForms(hydraProperties)).toMatchObject({ values: [{
-        // getUri,
+        // GetUri,
         mappings: {},
         template: 'http://example.org/',
-      }] });
+      }]});
       expect(actor.getSearchForms(hydraProperties)).toMatchObject({ values: [{
-        // getUri,
+        // GetUri,
         mappings: {},
         template: 'http://example.org/',
-      }] });
+      }]});
     });
 
     it('should get a search forms without valid mappings', () => {
@@ -106,17 +106,17 @@ describe('ActorRdfMetadataExtractHydraControls', () => {
         mapping: {
           searchInvalid: [ 'noMaping' ],
         },
-        search: { mydataset: [ 'search1' ] },
+        search: { mydataset: [ 'search1' ]},
         template: {
           search1: [ 'http://example.org/' ],
         },
       };
       return expect(actor.getSearchForms(hydraProperties)).toMatchObject({ values: [{
-        // getUri,
+        // GetUri,
         dataset: 'mydataset',
         mappings: {},
         template: 'http://example.org/',
-      }] });
+      }]});
     });
 
     it('should get search forms for defined hydra properties', () => {
@@ -132,7 +132,7 @@ describe('ActorRdfMetadataExtractHydraControls', () => {
           mapping3: [ 'propc' ],
           mapping4: [ 'propd' ],
         },
-        search: { mydataset: [ 'search1', 'search2' ] },
+        search: { mydataset: [ 'search1', 'search2' ]},
         template: {
           search1: [ 'http://example.org/{?a,b}' ],
           search2: [ 'http://example.org/sub/{?c,d}' ],
@@ -147,7 +147,7 @@ describe('ActorRdfMetadataExtractHydraControls', () => {
       const searchForms = actor.getSearchForms(hydraProperties);
       expect(searchForms).toMatchObject({ values: [
         {
-          // getUri,
+          // GetUri,
           dataset: 'mydataset',
           mappings: {
             propa: 'a',
@@ -156,7 +156,7 @@ describe('ActorRdfMetadataExtractHydraControls', () => {
           template: 'http://example.org/{?a,b}',
         },
         {
-          // getUri,
+          // GetUri,
           dataset: 'mydataset',
           mappings: {
             propc: 'c',
@@ -185,7 +185,7 @@ describe('ActorRdfMetadataExtractHydraControls', () => {
           mapping1: [ 'propa' ],
           mapping2: [ 'propb' ],
         },
-        search: { mydataset: [ 'search1' ] },
+        search: { mydataset: [ 'search1' ]},
         template: {
           search1: [],
         },
@@ -206,7 +206,7 @@ describe('ActorRdfMetadataExtractHydraControls', () => {
           mapping1: [ 'propa' ],
           mapping2: [ 'propb' ],
         },
-        search: { mydataset: [ 'search1' ] },
+        search: { mydataset: [ 'search1' ]},
         template: {},
         variable: {
           mapping1: [ 'a' ],
@@ -225,7 +225,7 @@ describe('ActorRdfMetadataExtractHydraControls', () => {
           mapping1: [ 'propa' ],
           mapping2: [ 'propb' ],
         },
-        search: { mydataset: [ 'search1' ] },
+        search: { mydataset: [ 'search1' ]},
         variable: {
           mapping1: [ 'a' ],
           mapping2: [ 'b' ],
@@ -243,7 +243,7 @@ describe('ActorRdfMetadataExtractHydraControls', () => {
           mapping1: [ 'propa' ],
           mapping2: [ 'propb' ],
         },
-        search: { mydataset: [ 'search1' ] },
+        search: { mydataset: [ 'search1' ]},
         template: {
           search1: [ 'http://example.org/{?a,b}' ],
         },
@@ -264,7 +264,7 @@ describe('ActorRdfMetadataExtractHydraControls', () => {
           mapping1: [ 'propa' ],
           mapping2: [ 'propb' ],
         },
-        search: { mydataset: [ 'search1' ] },
+        search: { mydataset: [ 'search1' ]},
         template: {
           search1: [ 'http://example.org/{?a,b}' ],
         },
@@ -284,7 +284,7 @@ describe('ActorRdfMetadataExtractHydraControls', () => {
           mapping1: [ 'propa' ],
           mapping2: [ 'propb' ],
         },
-        search: { mydataset: [ 'search1' ] },
+        search: { mydataset: [ 'search1' ]},
         template: {
           search1: [ 'http://example.org/{?a,b}' ],
         },
@@ -301,7 +301,7 @@ describe('ActorRdfMetadataExtractHydraControls', () => {
           mapping1: [],
           mapping2: [ 'propb' ],
         },
-        search: { mydataset: [ 'search1' ] },
+        search: { mydataset: [ 'search1' ]},
         template: {
           search1: [ 'http://example.org/{?a,b}' ],
         },
@@ -321,7 +321,7 @@ describe('ActorRdfMetadataExtractHydraControls', () => {
         property: {
           mapping2: [ 'propb' ],
         },
-        search: { mydataset: [ 'search1' ] },
+        search: { mydataset: [ 'search1' ]},
         template: {
           search1: [ 'http://example.org/{?a,b}' ],
         },
@@ -338,7 +338,7 @@ describe('ActorRdfMetadataExtractHydraControls', () => {
         mapping: {
           search1: [ 'mapping1', 'mapping2' ],
         },
-        search: { mydataset: [ 'search1' ] },
+        search: { mydataset: [ 'search1' ]},
         template: {
           search1: [ 'http://example.org/{?a,b}' ],
         },
@@ -352,30 +352,30 @@ describe('ActorRdfMetadataExtractHydraControls', () => {
 
     it('should get hydra properties from stream', () => {
       return expect(actor.getHydraProperties(stream([
-        quad('mypage', HYDRA + 'next', 'next'),
-        quad('mypage', HYDRA + 'previous', 'previous'),
-        quad('mypage2', HYDRA + 'previous', 'previous2'),
-        quad('mypage', HYDRA + 'first', 'first'),
-        quad('mypage', HYDRA + 'last', 'last'),
-        quad('dataset', HYDRA + 'search', 'search1'),
-        quad('search1', HYDRA + 'template', 'template1'),
-        quad('search1', HYDRA + 'mapping', 'mapping1'),
-        quad('search1', HYDRA + 'mapping', 'mapping2'),
-        quad('mapping1', HYDRA + 'variable', 'a'),
-        quad('mapping1', HYDRA + 'property', 'propa'),
-        quad('mapping2', HYDRA + 'variable', 'b'),
-        quad('mapping2', HYDRA + 'property', 'propb'),
+        quad('mypage', `${HYDRA}next`, 'next'),
+        quad('mypage', `${HYDRA}previous`, 'previous'),
+        quad('mypage2', `${HYDRA}previous`, 'previous2'),
+        quad('mypage', `${HYDRA}first`, 'first'),
+        quad('mypage', `${HYDRA}last`, 'last'),
+        quad('dataset', `${HYDRA}search`, 'search1'),
+        quad('search1', `${HYDRA}template`, 'template1'),
+        quad('search1', `${HYDRA}mapping`, 'mapping1'),
+        quad('search1', `${HYDRA}mapping`, 'mapping2'),
+        quad('mapping1', `${HYDRA}variable`, 'a'),
+        quad('mapping1', `${HYDRA}property`, 'propa'),
+        quad('mapping2', `${HYDRA}variable`, 'b'),
+        quad('mapping2', `${HYDRA}property`, 'propb'),
         quad('mypage', 'somethingelse', 'somevalue'),
       ]))).resolves.toMatchObject({
-        first: { mypage: [ 'first' ] },
-        last: { mypage: [ 'last' ] },
-        mapping: { search1: [ 'mapping1', 'mapping2' ] },
-        next: { mypage: [ 'next' ] },
-        previous: { mypage: [ 'previous' ], mypage2: [ 'previous2' ] },
-        property: { mapping1: [ 'propa' ], mapping2: [ 'propb' ] },
-        search: { dataset: [ 'search1' ] },
-        template: { search1: [ 'template1' ] },
-        variable: { mapping1: [ 'a' ], mapping2: [ 'b' ] },
+        first: { mypage: [ 'first' ]},
+        last: { mypage: [ 'last' ]},
+        mapping: { search1: [ 'mapping1', 'mapping2' ]},
+        next: { mypage: [ 'next' ]},
+        previous: { mypage: [ 'previous' ], mypage2: [ 'previous2' ]},
+        property: { mapping1: [ 'propa' ], mapping2: [ 'propb' ]},
+        search: { dataset: [ 'search1' ]},
+        template: { search1: [ 'template1' ]},
+        variable: { mapping1: [ 'a' ], mapping2: [ 'b' ]},
       });
     });
 
@@ -385,20 +385,21 @@ describe('ActorRdfMetadataExtractHydraControls', () => {
 
     it('should run on valid controls', () => {
       return expect(actor.run({ metadata: stream([
-        quad('mypage', HYDRA + 'next', 'next'),
-        quad('mypage', HYDRA + 'previous', 'previous'),
-        quad('mypage', HYDRA + 'first', 'first'),
-        quad('mypage', HYDRA + 'last', 'last'),
-        quad('dataset', HYDRA + 'search', 'search1'),
-        quad('search1', HYDRA + 'template', 'http://example.org/{?a,b}'),
-        quad('search1', HYDRA + 'mapping', 'mapping1'),
-        quad('search1', HYDRA + 'mapping', 'mapping2'),
-        quad('mapping1', HYDRA + 'variable', 'a'),
-        quad('mapping1', HYDRA + 'property', 'propa'),
-        quad('mapping2', HYDRA + 'variable', 'b'),
-        quad('mapping2', HYDRA + 'property', 'propb'),
+        quad('mypage', `${HYDRA}next`, 'next'),
+        quad('mypage', `${HYDRA}previous`, 'previous'),
+        quad('mypage', `${HYDRA}first`, 'first'),
+        quad('mypage', `${HYDRA}last`, 'last'),
+        quad('dataset', `${HYDRA}search`, 'search1'),
+        quad('search1', `${HYDRA}template`, 'http://example.org/{?a,b}'),
+        quad('search1', `${HYDRA}mapping`, 'mapping1'),
+        quad('search1', `${HYDRA}mapping`, 'mapping2'),
+        quad('mapping1', `${HYDRA}variable`, 'a'),
+        quad('mapping1', `${HYDRA}property`, 'propa'),
+        quad('mapping2', `${HYDRA}variable`, 'b'),
+        quad('mapping2', `${HYDRA}property`, 'propb'),
         quad('mypage', 'somethingelse', 'somevalue'),
-      ]), url: 'mypage' })).resolves.toMatchObject({ metadata: {
+      ]),
+      url: 'mypage' })).resolves.toMatchObject({ metadata: {
         first: 'first',
         last: 'last',
         next: 'next',
@@ -406,7 +407,7 @@ describe('ActorRdfMetadataExtractHydraControls', () => {
         searchForms: {
           values: [
             {
-              // getUri,
+              // GetUri,
               mappings: {
                 propa: 'a',
                 propb: 'b',
@@ -415,7 +416,7 @@ describe('ActorRdfMetadataExtractHydraControls', () => {
             },
           ],
         },
-      } });
+      }});
     });
   });
 });

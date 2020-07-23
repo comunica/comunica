@@ -1,6 +1,6 @@
-import {ActorSparqlParse} from "@comunica/bus-sparql-parse";
-import {Bus} from "@comunica/core";
-import {ActorSparqlParseAlgebra} from "..";
+import { ActorSparqlParse } from '@comunica/bus-sparql-parse';
+import { Bus } from '@comunica/core';
+import { ActorSparqlParseAlgebra } from '..';
 
 describe('ActorSparqlParseAlgebra', () => {
   let bus: any;
@@ -43,82 +43,81 @@ describe('ActorSparqlParseAlgebra', () => {
       return expect(actor.test({ query: 'a', queryFormat: 'sparql' })).resolves.toBeTruthy();
     });
 
-    it('should run', async () => {
-      const result = await actor.run({ query: "SELECT * WHERE { ?a a ?b }" });
+    it('should run', async() => {
+      const result = await actor.run({ query: 'SELECT * WHERE { ?a a ?b }' });
 
       // TODO: I am unable to find why the match only works like this
-      return expect(JSON.parse(JSON.stringify(result))).toMatchObject(
+      expect(JSON.parse(JSON.stringify(result))).toMatchObject(
         {
           operation: {
-            input: {
-              patterns: [
-                {
-                  graph: {value: ""},
-                  object: {value: "b"},
-                  predicate: {value: "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"},
-                  subject: {value: "a"},
-                  type: "pattern",
-                },
-              ],
-              type: "bgp"},
-            type: "project",
+            input: { patterns: [
+              {
+                graph: { value: '' },
+                object: { value: 'b' },
+                predicate: { value: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type' },
+                subject: { value: 'a' },
+                type: 'pattern',
+              },
+            ],
+            type: 'bgp' },
+            type: 'project',
             variables: [
               {
-                value: "a",
+                value: 'a',
               },
               {
-                value: "b",
+                value: 'b',
               },
             ],
           },
-        });
+        },
+      );
     });
 
-    it('should run for an update query', async () => {
-      const result = await actor.run({query: "INSERT { <http://example/egbook> <http://ex.org/p> \"A\" } WHERE {}"});
+    it('should run for an update query', async() => {
+      const result = await actor.run({ query: 'INSERT { <http://example/egbook> <http://ex.org/p> "A" } WHERE {}' });
 
       // TODO: I am unable to find why the match only works like this
-      return expect(JSON.parse(JSON.stringify(result))).toMatchObject({
+      expect(JSON.parse(JSON.stringify(result))).toMatchObject({
         operation: {
           insert: [
             {
-              graph: {value: ""},
-              object: {value: "A"},
-              predicate: {value: "http://ex.org/p"},
-              subject: {value: "http://example/egbook"},
-              type: "pattern",
+              graph: { value: '' },
+              object: { value: 'A' },
+              predicate: { value: 'http://ex.org/p' },
+              subject: { value: 'http://example/egbook' },
+              type: 'pattern',
             },
           ],
-          type: "deleteinsert",
+          type: 'deleteinsert',
         },
       });
     });
 
-    it('should run with an overridden baseIRI', async () => {
-      const result = await actor.run({ query: "BASE <http://example.org/book/> SELECT * WHERE { ?a a ?b }" });
+    it('should run with an overridden baseIRI', async() => {
+      const result = await actor.run({ query: 'BASE <http://example.org/book/> SELECT * WHERE { ?a a ?b }' });
 
       // TODO: I am unable to find why the match only works like this
-      return expect(JSON.parse(JSON.stringify(result))).toMatchObject({
+      expect(JSON.parse(JSON.stringify(result))).toMatchObject({
         baseIRI: 'http://example.org/book/',
         operation: {
-          input: {
-            patterns: [
-              {
-                graph: {value: ""},
-                object: {value: "b"},
-                predicate: {value: "http://www.w3.org/1999/02/22-rdf-syntax-ns#type"},
-                subject: {value: "a"},
-                type: "pattern",
-              },
-            ],
-            type: "bgp"},
-          type: "project",
+          input: { patterns: [
+            {
+              graph: { value: '' },
+              object: { value: 'b' },
+              predicate: { value: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type' },
+              subject: { value: 'a' },
+              type: 'pattern',
+            },
+          ],
+          type: 'bgp' },
+          type: 'project',
           variables: [
             {
-              value: "a",
+              value: 'a',
             },
             {
-              value: "b",
+              value: 'b',
             },
           ],
         },

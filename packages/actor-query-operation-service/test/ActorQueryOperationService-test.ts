@@ -1,8 +1,8 @@
-import {ActorQueryOperation, Bindings, IActorQueryOperationOutputBindings} from "@comunica/bus-query-operation";
-import {ActionContext, Bus} from "@comunica/core";
-import {literal, namedNode} from "@rdfjs/data-model";
-import {ArrayIterator} from "asynciterator";
-import {ActorQueryOperationService} from "../lib/ActorQueryOperationService";
+import { ActorQueryOperation, Bindings, IActorQueryOperationOutputBindings } from '@comunica/bus-query-operation';
+import { ActionContext, Bus } from '@comunica/core';
+import { literal, namedNode } from '@rdfjs/data-model';
+import { ArrayIterator } from 'asynciterator';
+import { ActorQueryOperationService } from '../lib/ActorQueryOperationService';
 const arrayifyStream = require('arrayify-stream');
 
 describe('ActorQueryOperationService', () => {
@@ -12,9 +12,9 @@ describe('ActorQueryOperationService', () => {
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
     mediatorQueryOperation = {
-      mediate: (arg: any) => arg.operation === 'error'
-        ? Promise.reject(new Error('Endpoint error'))
-        : Promise.resolve({
+      mediate: (arg: any) => arg.operation === 'error' ?
+        Promise.reject(new Error('Endpoint error')) :
+        Promise.resolve({
           bindingsStream: new ArrayIterator([
             Bindings({ a: literal('1') }),
             Bindings({ a: literal('2') }),
@@ -23,7 +23,7 @@ describe('ActorQueryOperationService', () => {
           metadata: () => Promise.resolve({ totalItems: 3 }),
           operated: arg,
           type: 'bindings',
-          variables: ['?a'],
+          variables: [ '?a' ],
         }),
     };
   });
@@ -51,21 +51,22 @@ describe('ActorQueryOperationService', () => {
 
     beforeEach(() => {
       actor = new ActorQueryOperationService(
-        { name: 'actor', bus, mediatorQueryOperation, forceSparqlEndpoint });
+        { name: 'actor', bus, mediatorQueryOperation, forceSparqlEndpoint },
+      );
     });
 
     it('should test on service', () => {
-      const op = { operation: { type: 'service', silent: false, name: namedNode('dummy') } };
+      const op = { operation: { type: 'service', silent: false, name: namedNode('dummy') }};
       return expect(actor.test(op)).resolves.toBeTruthy();
     });
 
     it('should not test on non-service', () => {
-      const op = { operation: { type: 'some-other-type' } };
+      const op = { operation: { type: 'some-other-type' }};
       return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
     it('should not test on service with a non-named node name', () => {
-      const op = { operation: { type: 'service', silent: false, name: literal('dummy') } };
+      const op = { operation: { type: 'service', silent: false, name: literal('dummy') }};
       return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
@@ -74,8 +75,8 @@ describe('ActorQueryOperationService', () => {
         '@comunica/bus-rdf-resolve-quad-pattern:sources': { type: 'bla', value: 'blabla' },
       });
       const op = { operation: { type: 'service', silent: false, name: literal('dummy') }, context };
-      return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
-        expect(output.variables).toEqual(['?a']);
+      return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
+        expect(output.variables).toEqual([ '?a' ]);
         expect(await (<any> output).metadata()).toEqual({ totalItems: 3 });
 
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
@@ -87,9 +88,9 @@ describe('ActorQueryOperationService', () => {
     });
 
     it('should run without context', () => {
-      const op = { operation: { type: 'service', silent: false, name: literal('dummy') } };
-      return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
-        expect(output.variables).toEqual(['?a']);
+      const op = { operation: { type: 'service', silent: false, name: literal('dummy') }};
+      return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
+        expect(output.variables).toEqual([ '?a' ]);
         expect(await (<any> output).metadata()).toEqual({ totalItems: 3 });
 
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
@@ -101,8 +102,8 @@ describe('ActorQueryOperationService', () => {
     });
 
     it('should run on a silent operation when the endpoint errors', () => {
-      const op = { operation: { type: 'service', silent: true, name: literal('dummy'), input: 'error' } };
-      return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
+      const op = { operation: { type: 'service', silent: true, name: literal('dummy'), input: 'error' }};
+      return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
         expect(output.variables).toEqual([]);
         expect(output.metadata).toBeFalsy();
 
@@ -113,19 +114,20 @@ describe('ActorQueryOperationService', () => {
     });
 
     it('should not run on a non-silent operation when the endpoint errors', () => {
-      const op = { operation: { type: 'service', silent: false, name: literal('dummy'), input: 'error' } };
+      const op = { operation: { type: 'service', silent: false, name: literal('dummy'), input: 'error' }};
       return expect(actor.run(op)).rejects.toBeTruthy();
     });
 
     it('should run and use auto source type when forceSparqlEndpoint is disabled', () => {
-      const op = { operation: { type: 'service', silent: false, name: literal('dummy') } };
+      const op = { operation: { type: 'service', silent: false, name: literal('dummy') }};
       const actorThis = new ActorQueryOperationService(
-        { bus, forceSparqlEndpoint: false, mediatorQueryOperation, name: 'actor' });
+        { bus, forceSparqlEndpoint: false, mediatorQueryOperation, name: 'actor' },
+      );
 
-      return actorThis.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
+      return actorThis.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
         expect((<any> output).operated.context.get('@comunica/bus-rdf-resolve-quad-pattern:sources').array[0].type)
           .toEqual('auto');
-        expect(output.variables).toEqual(['?a']);
+        expect(output.variables).toEqual([ '?a' ]);
         expect(await (<any> output).metadata()).toEqual({ totalItems: 3 });
 
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
@@ -137,11 +139,12 @@ describe('ActorQueryOperationService', () => {
     });
 
     it('should run and use sparql source type when forceSparqlEndpoint is enabled', () => {
-      const op = { operation: { type: 'service', silent: false, name: literal('dummy') } };
+      const op = { operation: { type: 'service', silent: false, name: literal('dummy') }};
       const actorThis = new ActorQueryOperationService(
-        { bus, forceSparqlEndpoint: true, mediatorQueryOperation, name: 'actor' });
+        { bus, forceSparqlEndpoint: true, mediatorQueryOperation, name: 'actor' },
+      );
 
-      return actorThis.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
+      return actorThis.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
         expect((<any> output).operated.context.get('@comunica/bus-rdf-resolve-quad-pattern:sources').array[0].type)
           .toEqual('sparql');
         expect(await (<any> output).metadata()).toEqual({ totalItems: 3 });

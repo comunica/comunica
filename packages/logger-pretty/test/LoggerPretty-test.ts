@@ -1,8 +1,6 @@
-import {LoggerPretty} from "../lib/LoggerPretty";
-
+import { LoggerPretty } from '../lib/LoggerPretty';
 
 describe('LoggerPretty', () => {
-
   beforeEach(() => {
     process.stderr.write = jest.fn();
   });

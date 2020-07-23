@@ -1,5 +1,5 @@
-import {Actor, Bus, IAction, IActorOutput, IActorTest} from "@comunica/core";
-import {MediatorRace} from "..";
+import { Actor, Bus, IAction, IActorOutput, IActorTest } from '@comunica/core';
+import { MediatorRace } from '..';
 
 describe('MediatorRace', () => {
   let bus: Bus<Actor<IAction, IActorTest, IActorOutput>, IAction, IActorTest, IActorOutput>;
@@ -19,7 +19,6 @@ describe('MediatorRace', () => {
   });
 
   describe('An MediatorRace instance', () => {
-
     describe('with resolving actors', () => {
       let busm: Bus<DummyActor, IAction, IDummyTest, IDummyTest>;
       let mediator: MediatorRace<DummyActor, IAction, IDummyTest, IDummyTest>;
@@ -77,13 +76,15 @@ describe('MediatorRace', () => {
 });
 
 class DummyActor extends Actor<IAction, IDummyTest, IDummyTest> {
-
   public readonly id: number;
   public readonly delay: number;
   public readonly reject: boolean;
 
-  public constructor(id: number, delay: number, bus: Bus<DummyActor, IAction, IDummyTest, IDummyTest>, reject: boolean) {
-    super({ name: 'dummy' + id, bus });
+  public constructor(id: number,
+    delay: number,
+    bus: Bus<DummyActor, IAction, IDummyTest, IDummyTest>,
+    reject: boolean) {
+    super({ name: `dummy${id}`, bus });
     this.id = id;
     this.delay = delay;
     this.reject = reject;
@@ -91,7 +92,7 @@ class DummyActor extends Actor<IAction, IDummyTest, IDummyTest> {
 
   public test(action: IAction): Promise<IDummyTest> {
     if (this.reject) {
-      return Promise.reject(new Error('' + this.id));
+      return Promise.reject(new Error(`${this.id}`));
     }
     return new Promise((resolve, reject) => setTimeout(() => resolve({ field: this.id }), this.delay));
   }
@@ -99,7 +100,6 @@ class DummyActor extends Actor<IAction, IDummyTest, IDummyTest> {
   public run(action: IAction): Promise<IDummyTest> {
     return new Promise((resolve, reject) => setTimeout(() => resolve({ field: this.id }), this.delay));
   }
-
 }
 
 interface IDummyTest extends IActorTest, IActorOutput {

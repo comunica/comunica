@@ -1,7 +1,7 @@
-import {ActorInit} from "@comunica/bus-init";
-import {Bus} from "@comunica/core";
-import {PassThrough, Readable} from "stream";
-import {ActorInitRdfDereferencePaged} from "../lib/ActorInitRdfDereferencePaged";
+import { PassThrough, Readable } from 'stream';
+import { ActorInit } from '@comunica/bus-init';
+import { Bus } from '@comunica/core';
+import { ActorInitRdfDereferencePaged } from '../lib/ActorInitRdfDereferencePaged';
 
 describe('ActorInitRdfDereferencePaged', () => {
   let bus: any;
@@ -48,7 +48,7 @@ describe('ActorInitRdfDereferencePaged', () => {
 
     it('should run with URL from argv', () => {
       return actor.run({ argv: [ 'https://www.google.com/' ], env: {}, stdin: new PassThrough() })
-        .then((result) => {
+        .then(result => {
           return new Promise((resolve, reject) => {
             (<any> result).stdout.on('data', (line: any) => expect(line).toBeTruthy());
             (<any> result).stdout.on('end', resolve);
@@ -58,9 +58,10 @@ describe('ActorInitRdfDereferencePaged', () => {
 
     it('should run with configured URL', () => {
       actor = new ActorInitRdfDereferencePaged(
-        { name: 'actor', bus, mediatorRdfDereferencePaged: mediator, url: 'abc' });
+        { name: 'actor', bus, mediatorRdfDereferencePaged: mediator, url: 'abc' },
+      );
       return actor.run({ argv: [], env: {}, stdin: new PassThrough() })
-        .then((result) => {
+        .then(result => {
           return new Promise((resolve, reject) => {
             (<any> result).stdout.on('data', (line: any) => expect(line).toBeTruthy());
             (<any> result).stdout.on('end', resolve);

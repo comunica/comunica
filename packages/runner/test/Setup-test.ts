@@ -1,11 +1,9 @@
-import {Loader} from "componentsjs";
-import {Readable} from "stream";
-import * as Setup from "..";
+import { Readable } from 'stream';
+import { Loader } from 'componentsjs';
+import * as Setup from '..';
 
 describe('Setup', () => {
-
   describe('The Setup module', () => {
-
     beforeEach(() => {
       // Mock Loader
       (<any> Loader) = jest.fn(() => {
@@ -32,16 +30,18 @@ describe('Setup', () => {
       Setup.run('', { argv: [], env: {}, stdin: new Readable() }, 'myuri', {});
     });
 
-    it('should throw an error when the runner resolves to false when calling \'run\'', async () => {
+    it('should throw an error when the runner resolves to false when calling \'run\'', async() => {
       (<any> Loader) = jest.fn(() => {
         return {
           instantiateFromUrl: () => Promise.resolve(
-            { deinitialize: jest.fn(), initialize: jest.fn(),
-              run: () => Promise.reject(new Error('Failure setup runner')) }),
+            { deinitialize: jest.fn(),
+              initialize: jest.fn(),
+              run: () => Promise.reject(new Error('Failure setup runner')) },
+          ),
           registerAvailableModuleResources: jest.fn(),
         };
       });
-      return expect(Setup.run('', { argv: [], env: {}, stdin: new Readable() }, 'myuri', {})).rejects
+      await expect(Setup.run('', { argv: [], env: {}, stdin: new Readable() }, 'myuri', {})).rejects
         .toBeTruthy();
     });
   });

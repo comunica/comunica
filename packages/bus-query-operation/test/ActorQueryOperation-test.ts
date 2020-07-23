@@ -1,7 +1,7 @@
-import {ActionContext, Bus} from "@comunica/core";
-import {ActorQueryOperation, Bindings, getMetadata, KEY_CONTEXT_BASEIRI, KEY_CONTEXT_QUERY_TIMESTAMP} from "..";
-import {Algebra, Factory} from "sparqlalgebrajs";
-import {ArrayIterator} from "asynciterator";
+import { ActionContext, Bus } from '@comunica/core';
+import { ArrayIterator } from 'asynciterator';
+import { Algebra, Factory } from 'sparqlalgebrajs';
+import { ActorQueryOperation, Bindings, getMetadata, KEY_CONTEXT_BASEIRI, KEY_CONTEXT_QUERY_TIMESTAMP } from '..';
 
 describe('ActorQueryOperation', () => {
   const bus = new Bus({ name: 'bus' });
@@ -99,7 +99,7 @@ describe('ActorQueryOperation', () => {
             metadata: () => Promise.resolve({ totalItems: 0 }),
             operated: arg,
             type: 'bindings',
-            variables: ['a'],
+            variables: [ 'a' ],
           }),
         };
       });
@@ -110,7 +110,7 @@ describe('ActorQueryOperation', () => {
         expect(resolver).toBeTruthy();
       });
 
-      it('should allow a resolver to be invoked', async () => {
+      it('should allow a resolver to be invoked', async() => {
         const resolver = (<any> ActorQueryOperation
           .getExpressionContext(ActionContext({}), mediatorQueryOperation)).exists;
         const factory = new Factory();
@@ -119,18 +119,18 @@ describe('ActorQueryOperation', () => {
           factory.createBgp([]),
         );
         const result = resolver(expr, Bindings({}));
-        return expect(await result).toBe(true);
+        expect(await result).toBe(true);
       });
     });
   });
 
   describe('#getMetadata', () => {
-    it('should an empty promise for missing metadata', async () => {
+    it('should handle an empty promise for missing metadata', async() => {
       expect(await getMetadata({ type: 'none' })).toEqual({});
     });
 
-    it('should an empty promise for missing metadata', async () => {
-      expect(await getMetadata({ type: 'none', metadata: async () => ({ bla: true }) }))
+    it('should handle a promise for metadata', async() => {
+      expect(await getMetadata({ type: 'none', metadata: async() => ({ bla: true }) }))
         .toEqual({ bla: true });
     });
   });

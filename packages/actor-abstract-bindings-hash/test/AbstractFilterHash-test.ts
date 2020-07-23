@@ -1,8 +1,8 @@
-import { Bindings, IActorQueryOperationTypedMediatedArgs } from "@comunica/bus-query-operation";
-import {Actor, Bus} from "@comunica/core";
-import {literal, namedNode} from "@rdfjs/data-model";
-import {ArrayIterator} from "asynciterator";
-import {AbstractFilterHash} from "..";
+import { Bindings, IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
+import { Actor, Bus } from '@comunica/core';
+import { literal, namedNode } from '@rdfjs/data-model';
+import { ArrayIterator } from 'asynciterator';
+import { AbstractFilterHash } from '..';
 
 describe('AbstractFilterHash', () => {
   let bus: any;
@@ -24,7 +24,7 @@ describe('AbstractFilterHash', () => {
         metadata: () => Promise.resolve({ totalItems: 5 }),
         operated: arg,
         type: 'bindings',
-        variables: ['a'],
+        variables: [ 'a' ],
       }),
     };
     hashAlgorithm = 'sha1';
@@ -37,27 +37,31 @@ describe('AbstractFilterHash', () => {
     });
 
     it('should be a AbstractFilterHash constructor', () => {
+      // eslint-disable-next-line @typescript-eslint/func-call-spacing
       expect(new (<any> AbstractFilterHash)
-      ({ bus: new Bus({ name: 'bus' }), name: 'actor', hashAlgorithm, digestAlgorithm}, 'distinct'))
-              .toBeInstanceOf(AbstractFilterHash);
+      ({ bus: new Bus({ name: 'bus' }), name: 'actor', hashAlgorithm, digestAlgorithm }, 'distinct'))
+        .toBeInstanceOf(AbstractFilterHash);
+      // eslint-disable-next-line @typescript-eslint/func-call-spacing
       expect(new (<any> AbstractFilterHash)
-        ({ bus: new Bus({ name: 'bus' }), name: 'actor', hashAlgorithm, digestAlgorithm}, 'distinct'))
-              .toBeInstanceOf(Actor);
+      ({ bus: new Bus({ name: 'bus' }), name: 'actor', hashAlgorithm, digestAlgorithm }, 'distinct'))
+        .toBeInstanceOf(Actor);
     });
     it('should not be able to create new AbstractFilterHash objects without \'new\'', () => {
       expect(() => { (<any> AbstractFilterHash)(); }).toThrow();
     });
 
     it('should not be able to create new AbstractFilterHash objects with an invalid hash algo', () => {
-      expect(() => { new (<any> AbstractFilterHash) (
-          { name: 'actor', bus, mediatorQueryOperation, hashAlgorithm: 'abc', digestAlgorithm }, 'distinct'); })
-          .toThrow();
+      expect(() => { new (<any> AbstractFilterHash)(
+        { name: 'actor', bus, mediatorQueryOperation, hashAlgorithm: 'abc', digestAlgorithm }, 'distinct',
+      ); })
+        .toThrow();
     });
 
     it('should not be able to create new AbstractFilterHash objects with an invalid digest algo', () => {
-      expect(() => { new (<any> AbstractFilterHash) (
-          { name: 'actor', bus, mediatorQueryOperation, hashAlgorithm, digestAlgorithm: 'abc' }, 'distinct'); })
-          .toThrow();
+      expect(() => { new (<any> AbstractFilterHash)(
+        { name: 'actor', bus, mediatorQueryOperation, hashAlgorithm, digestAlgorithm: 'abc' }, 'distinct',
+      ); })
+        .toThrow();
     });
   });
 
@@ -72,7 +76,7 @@ describe('AbstractFilterHash', () => {
 
     it('should not be true on something that does not exist', () => {
       return expect(AbstractFilterHash.doesHashAlgorithmExist('somethingthatdoesnotexist'))
-                .toBeFalsy();
+        .toBeFalsy();
     });
   });
 
@@ -91,7 +95,7 @@ describe('AbstractFilterHash', () => {
 
     it('should not be true on something that does not exist', () => {
       return expect(AbstractFilterHash.doesDigestAlgorithmExist('somethingthatdoesnotexist'))
-                .toBeFalsy();
+        .toBeFalsy();
     });
   });
 

@@ -1,7 +1,7 @@
-import {GraphQlQueryEngine} from "..";
+import { GraphQlQueryEngine } from '..';
 
-const streamifyString = require("streamify-string");
 const quad = require('rdf-quad');
+const streamifyString = require('streamify-string');
 
 describe('GraphQlQueryEngine', () => {
   const engine: any = {
@@ -11,7 +11,7 @@ describe('GraphQlQueryEngine', () => {
         quad('s2', 'p2', 'o2'),
       ]),
     })),
-    resultToString: jest.fn(async (p) => ({ data: streamifyString(JSON.stringify(await p.data)) })),
+    resultToString: jest.fn(async p => ({ data: streamifyString(JSON.stringify(await p.data)) })),
   };
 
   describe('The GraphQlQueryEngine module', () => {
@@ -30,11 +30,10 @@ describe('GraphQlQueryEngine', () => {
   });
 
   describe('An GraphQlQueryEngine instance', () => {
-
     describe('query', () => {
       const graphQlEngine = new GraphQlQueryEngine(engine);
 
-      it('should return a JSON object', async () => {
+      it('should return a JSON object', async() => {
         const query: any = 'abc';
         const options = {};
         expect(await graphQlEngine.query(query, options)).toEqual([
