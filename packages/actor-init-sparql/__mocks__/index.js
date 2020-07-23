@@ -1,7 +1,9 @@
 const stringToStream = require('streamify-string');
 
 class EngineMock {
-  constructor(){}
+  constructor(){
+
+  }
 
   query(sparql, context){
     if (sparql === "query_reject"){

@@ -166,15 +166,14 @@ Options:
     let mediaType = negotiation && negotiation.length > 0 ? negotiation[0].type : null;
 
     let negotiationsIndexed:any = {};
-    if (mediaType) {
+    if (negotiation && negotiation.length > 1) {
       let quality = negotiation[0].q;
       // Assuming variants is sorted by q in decreasing order (pseudocode)
       // Create negotiationsIndexed so that it is a hash containing the media types from 'negotiation' as keys.
       negotiation.filter((element:any) => element.q === quality)
-                .reduce((_0:any, element:any) => negotiationsIndexed[element.type] = element.type);
+                .reduce((_:any, element:any) => negotiationsIndexed[element.type] = element.type, 0);
       
-      // Preferred media type selected
-
+      // Preferred media type selected if high quality
       for (const variant of variants) {
         if (negotiationsIndexed[variant.type]) {
           mediaType = variant.type;

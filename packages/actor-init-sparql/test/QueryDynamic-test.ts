@@ -1,7 +1,7 @@
 import {ActorInitSparql} from "../lib/ActorInitSparql";
 import {newEngineDynamicArged} from "../lib/QueryDynamic";
 
-jest.setTimeout(20000);
+jest.setTimeout(30000);
 
 describe('newEngineDynamic', () => {
   it('should return a query engine', async () => {
