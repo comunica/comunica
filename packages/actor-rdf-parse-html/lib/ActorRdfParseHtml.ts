@@ -116,7 +116,7 @@ export class ActorRdfParseHtml extends ActorRdfParseFixedMediaTypes {
           // Push stream to parser
           action.input.on('error', error);
           action.input.pipe(<any> parser);
-        });
+        }).catch(error);
     };
 
     return { quads };

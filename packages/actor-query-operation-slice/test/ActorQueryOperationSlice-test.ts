@@ -334,12 +334,12 @@ describe('ActorQueryOperationSlice', () => {
       });
     });
 
-    it('should error if the output is neither quads nor bindings', () => {
+    it('should error if the output is neither quads nor bindings', async() => {
       actor = new ActorQueryOperationSlice({ bus,
         mediatorQueryOperation: mediatorQueryOperationBoolean,
         name: 'actor' });
       const op = { operation: { type: 'project', start: 0 }};
-      expect(actor.run(op)).rejects.toBeTruthy();
+      await expect(actor.run(op)).rejects.toBeTruthy();
     });
   });
 });

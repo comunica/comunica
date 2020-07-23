@@ -72,7 +72,7 @@ describe('ActorHttpProxy', () => {
 
     it('should fail to run on a request input without context', async() => {
       const input = new Request('http://example.org/');
-      expect(actor.run({ input })).rejects.toThrow(new Error('Illegal state: missing context'));
+      await expect(actor.run({ input })).rejects.toThrow(new Error('Illegal state: missing context'));
     });
 
     it('should run when the proxy does not return an x-final-url header', async() => {

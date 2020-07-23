@@ -217,7 +217,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
         operation: factory.createPattern(namedNode('http://s'), variable('p'), namedNode('http://o')) };
       actor.endpointFetcher.fetchBindings = () => Promise.reject(new Error('MY ERROR'));
       return expect(new Promise((resolve, reject) => {
-        actor.run(op).then(async output => (<any> output).bindingsStream.on('error', resolve));
+        return actor.run(op).then(async output => (<any> output).bindingsStream.on('error', resolve));
       })).resolves.toEqual(new Error('MY ERROR'));
     });
   });

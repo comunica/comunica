@@ -106,7 +106,6 @@ module.exports = {
     '@typescript-eslint/no-require-imports': 'off',
     '@typescript-eslint/no-var-requires': 'off',
     '@typescript-eslint/no-unused-vars': 'off',
-    '@typescript-eslint/no-floating-promises': 'off',
     'import/no-extraneous-dependencies': 'off', // Disabled for now since it errors on rdf-js imports
     'tsdoc/syntax': 'off',
   },

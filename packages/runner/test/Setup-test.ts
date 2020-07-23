@@ -23,11 +23,11 @@ describe('Setup', () => {
     });
 
     it('should allow \'run\' to be called without optional arguments', () => {
-      Setup.run('', { argv: [], env: {}, stdin: new Readable() });
+      return Setup.run('', { argv: [], env: {}, stdin: new Readable() });
     });
 
     it('should allow \'run\' to be called with optional arguments', () => {
-      Setup.run('', { argv: [], env: {}, stdin: new Readable() }, 'myuri', {});
+      return Setup.run('', { argv: [], env: {}, stdin: new Readable() }, 'myuri', {});
     });
 
     it('should throw an error when the runner resolves to false when calling \'run\'', async() => {

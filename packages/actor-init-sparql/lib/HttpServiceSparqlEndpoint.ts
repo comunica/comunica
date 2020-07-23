@@ -193,12 +193,13 @@ Options:
     switch (request.method) {
       case 'POST':
         sparql = await this.parseBody(request);
-        this.writeQueryResult(engine, stdout, stderr, request, response, sparql, mediaType, false);
+        await this.writeQueryResult(engine, stdout, stderr, request, response, sparql, mediaType, false);
         break;
       case 'HEAD':
       case 'GET':
         sparql = <string> requestUrl.query.query || '';
-        this.writeQueryResult(engine, stdout, stderr, request, response, sparql, mediaType, request.method === 'HEAD');
+        await this
+          .writeQueryResult(engine, stdout, stderr, request, response, sparql, mediaType, request.method === 'HEAD');
         break;
       default:
         stdout.write(`[405] ${request.method} to ${request.url}\n`);

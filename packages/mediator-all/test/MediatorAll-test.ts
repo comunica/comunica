@@ -36,7 +36,7 @@ describe('MediatorAll', () => {
       });
 
       it('should throw for mediateWith', async() => {
-        expect((<any> mediator).mediateWith(undefined, undefined)).rejects
+        await expect((<any> mediator).mediateWith(undefined, undefined)).rejects
           .toThrow(new Error('Unsupported operation: MediatorAll#mediateWith'));
       });
     });

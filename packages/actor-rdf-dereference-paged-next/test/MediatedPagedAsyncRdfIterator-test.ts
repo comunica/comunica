@@ -79,7 +79,7 @@ describe('MediatedPagedAsyncRdfIterator', () => {
       }).then(stream => {
         expect(stream.read()).toBe('DATA');
         callback();
-      });
+      }).catch(done);
     });
 
     it('handles incorrect first page metadata', done => {
@@ -123,7 +123,7 @@ describe('MediatedPagedAsyncRdfIterator', () => {
       }).then(stream => {
         expect(stream.read()).toBe('DATA');
         callback();
-      });
+      }).catch(done);
     });
 
     it('handles incorrect next page metadata', done => {
@@ -150,7 +150,7 @@ describe('MediatedPagedAsyncRdfIterator', () => {
       actor.on('error', () => { done(); });
       actor.getIterator('URL', 1, () => {
         // Do nothing
-      });
+      }).catch(done);
     });
   });
 });

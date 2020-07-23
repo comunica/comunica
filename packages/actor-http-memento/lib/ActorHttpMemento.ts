@@ -45,7 +45,7 @@ export class ActorHttpMemento extends ActorHttp {
       const links = result.headers.has('link') && parseLink(<string> result.headers.get('link'));
       if (links && links.timegate) {
         if (result.body) {
-          result.body.cancel();
+          await result.body.cancel();
         }
         // Respond with a time-negotiated response from the timegate instead
         const followLink: IActionHttp = { context: action.context, input: links.timegate.url, init };

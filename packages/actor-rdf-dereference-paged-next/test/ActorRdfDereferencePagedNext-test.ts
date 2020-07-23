@@ -206,9 +206,9 @@ describe('ActorRdfDereferencePagedNext', () => {
         name: 'actor',
       });
       return currentActor.run({ url: 'http://example.org/' })
-        .then(output => {
-          expect(output.firstPageMetadata()).rejects.toEqual(error);
-          expect(arrayifyStream(output.data)).rejects.toEqual(error);
+        .then(async output => {
+          await expect(output.firstPageMetadata()).rejects.toEqual(error);
+          await expect(arrayifyStream(output.data)).rejects.toEqual(error);
         });
     });
 

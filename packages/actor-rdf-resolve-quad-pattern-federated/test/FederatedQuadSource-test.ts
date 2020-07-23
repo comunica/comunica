@@ -45,6 +45,12 @@ describe('FederatedQuadSource', () => {
           ], { autoStart: false }),
           metadata: () => Promise.resolve({ totalItems: Infinity }) });
         }
+        if (type === 'rejectingMetadata') {
+          return Promise.resolve({
+            data: new ArrayIterator([], { autoStart: false }),
+            metadata: () => Promise.reject(new Error('federated metadata reject')),
+          });
+        }
         return Promise.resolve({ data: new ArrayIterator([
           squad('s1', 'p1', 'o1'),
           squad('s1', 'p1', 'o2'),
@@ -1136,6 +1142,29 @@ describe('FederatedQuadSource', () => {
     it('should match no source for named nodes coming from an unknown source', async() => {
       const a = await arrayifyStream(source.match(namedNode('urn:comunica_skolem:source_2:s1')));
       expect(a).toEqual([]);
+    });
+  });
+
+  describe('A FederatedQuadSource instance with rejecting metadata', () => {
+    let subSource: any;
+    let source: FederatedQuadSource;
+    let emptyPatterns: any;
+    let contextSingleEmpty;
+
+    beforeEach(() => {
+      subSource = { type: 'rejectingMetadata', value: 'I will reject metadata' };
+      emptyPatterns = new Map();
+      contextSingleEmpty = ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:sources':
+          AsyncReiterableArray.fromFixedData([ subSource ]) });
+      source = new FederatedQuadSource(mediator, contextSingleEmpty, emptyPatterns, true);
+    });
+
+    it('should emit metadata with Infinity totalItems', async() => {
+      const stream = source.match();
+      await expect(new Promise((resolve, reject) => {
+        stream.on('metadata', resolve);
+        stream.on('end', reject);
+      })).resolves.toEqual({ totalItems: Infinity });
     });
   });
 });

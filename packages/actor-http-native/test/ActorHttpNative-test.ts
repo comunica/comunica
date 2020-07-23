@@ -163,12 +163,12 @@ describe('ActorHttpNative', () => {
     it('can cancel responses', async() => {
       mockSetup({ statusCode: 200 });
       const result: any = await actor.run({ input: 'http://example.com' });
-      expect(result.body.cancel()).resolves.toBeFalsy();
+      await expect(result.body.cancel()).resolves.toBeFalsy();
     });
 
     it('rejects on request errors', async() => {
       mockSetup({ error: true });
-      expect(actor.run({ input: 'http://example.com/reqerror' }))
+      await expect(actor.run({ input: 'http://example.com/reqerror' }))
         .rejects.toThrow(new Error('Request Error!'));
     });
   });

@@ -27,7 +27,7 @@ export class ActorRdfSourceIdentifierSparql extends ActorRdfSourceIdentifier {
 
     // No need to process the body. (HEAD requests would be better, but not all endpoints implement that properly)
     if (httpResponse.body) {
-      httpResponse.body.cancel();
+      await httpResponse.body.cancel();
     }
 
     const contentType = httpResponse.headers.get('Content-Type');

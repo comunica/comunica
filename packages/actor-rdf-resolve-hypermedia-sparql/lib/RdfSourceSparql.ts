@@ -68,7 +68,8 @@ export class RdfSourceSparql implements RDF.Source {
     const countQuery: string = ActorRdfResolveQuadPatternSparqlJson.patternToCountQuery(pattern);
     const selectQuery: string = ActorRdfResolveQuadPatternSparqlJson.patternToSelectQuery(pattern);
 
-    // Emit metadata containing the estimated count
+    // Emit metadata containing the estimated count (reject is never called)
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     new Promise(resolve => {
       const bindingsStream: BindingsStream = this.queryBindings(this.url, countQuery, this.context);
       bindingsStream.on('data', (bindings: Bindings) => {
@@ -84,7 +85,8 @@ export class RdfSourceSparql implements RDF.Source {
       });
       bindingsStream.on('error', () => resolve({ totalItems: Infinity }));
       bindingsStream.on('end', () => resolve({ totalItems: Infinity }));
-    }).then(metadata => quads.emit('metadata', metadata));
+    })
+      .then(metadata => quads.emit('metadata', metadata));
 
     // Materialize the queried pattern using each found binding.
     const quads: AsyncIterator<RDF.Quad> & RDF.Stream = this.queryBindings(this.url, selectQuery, this.context)

@@ -246,18 +246,25 @@ export class FederatedQuadSource implements ILazyQuadSource {
           output = await this.mediatorResolveQuadPattern.mediate({ pattern, context });
         }
         if (output.metadata) {
-          output.metadata().then((subMetadata: {[id: string]: any}) => {
-            if ((!subMetadata.totalItems && subMetadata.totalItems !== 0) || !isFinite(subMetadata.totalItems)) {
-              // We're already at infinite, so ignore any later metadata
+          output.metadata()
+            .then((subMetadata: { [id: string]: any }) => {
+              if ((!subMetadata.totalItems && subMetadata.totalItems !== 0) || !isFinite(subMetadata.totalItems)) {
+                // We're already at infinite, so ignore any later metadata
+                metadata.totalItems = Infinity;
+                remainingSources = 0;
+                checkEmitMetadata(Infinity, source, pattern, subMetadata);
+              } else {
+                metadata.totalItems += subMetadata.totalItems;
+                remainingSources--;
+                checkEmitMetadata(subMetadata.totalItems, source, pattern, subMetadata);
+              }
+            })
+            .catch(error => {
+              // Emit as infinite
               metadata.totalItems = Infinity;
               remainingSources = 0;
-              checkEmitMetadata(Infinity, source, pattern, subMetadata);
-            } else {
-              metadata.totalItems += subMetadata.totalItems;
-              remainingSources--;
-              checkEmitMetadata(subMetadata.totalItems, source, pattern, subMetadata);
-            }
-          });
+              checkEmitMetadata(Infinity, source, pattern, metadata);
+            });
         } else {
           // We're already at infinite, so ignore any later metadata
           metadata.totalItems = Infinity;
