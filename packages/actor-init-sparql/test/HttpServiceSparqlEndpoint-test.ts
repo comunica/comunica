@@ -11,10 +11,9 @@ import { fs, testArgumentDict, testFileContentDict } from '../__mocks__/fs';
 // @ts-ignore
 import { http, ServerResponseMock } from '../__mocks__/http';
 // @ts-ignore
-import {parse} from "../__mocks__/url";
-import {HttpServiceSparqlEndpoint} from "../lib/HttpServiceSparqlEndpoint";
-import { ActorInitSparql } from "../lib/ActorInitSparql";
-import { doesNotMatch } from "assert";
+import { parse } from '../__mocks__/url';
+import { ActorInitSparql } from '../lib/ActorInitSparql';
+import { HttpServiceSparqlEndpoint } from '../lib/HttpServiceSparqlEndpoint';
 const quad = require('rdf-quad');
 const stringToStream = require('streamify-string');
 
@@ -67,7 +66,8 @@ describe('HttpServiceSparqlEndpoint', () => {
 
   describe('runArgsInProcess', () => {
     const testCommandlineArgument = 'http://localhost:8080/data.jsonld';
-    const testCommandlineArgumentContext = '{ "sources": [{ "type": "file", "value" : "http://localhost:8080/data.jsonld" }]}';
+    const testCommandlineArgumentContext =
+      '{ "sources": [{ "type": "file", "value" : "http://localhost:8080/data.jsonld" }]}';
     let stdout: any;
     let stderr: any;
     const moduleRootPath = 'test_modulerootpath';
@@ -106,66 +106,106 @@ describe('HttpServiceSparqlEndpoint', () => {
       expect(http.createServer).toBeCalled(); // Implicitly checking whether .run has been called
     });
 
-    it('should parse JSON context and call .run on an HttpServiceSparqlEndpoint instance', async () => {
-      await HttpServiceSparqlEndpoint.runArgsInProcess(["-c", testCommandlineArgumentContext],
-        stdout, stderr, moduleRootPath, env, defaultConfigPath, exit);
+    it('should parse JSON context and call .run on an HttpServiceSparqlEndpoint instance', async() => {
+      await HttpServiceSparqlEndpoint.runArgsInProcess([ '-c', testCommandlineArgumentContext ],
+        stdout,
+        stderr,
+        moduleRootPath,
+        env,
+        defaultConfigPath,
+        exit);
 
       expect(http.createServer).toBeCalled(); // Implicitly checking whether .run has been called
     });
 
-    it('should be backwards compatible and parse JSON context, even without the -c argument been set', async () => {
-      await HttpServiceSparqlEndpoint.runArgsInProcess([testCommandlineArgumentContext],
-        stdout, stderr, moduleRootPath, env, defaultConfigPath, exit);
+    it('should be backwards compatible and parse JSON context, even without the -c argument been set', async() => {
+      await HttpServiceSparqlEndpoint.runArgsInProcess([ testCommandlineArgumentContext ],
+        stdout,
+        stderr,
+        moduleRootPath,
+        env,
+        defaultConfigPath,
+        exit);
 
       expect(http.createServer).toBeCalled(); // Implicitly checking whether .run has been called
     });
 
-    it("should not exit if exactly one argument is supplied and -h and --help are not set", async () => {
-      await HttpServiceSparqlEndpoint.runArgsInProcess([testCommandlineArgument],
-          stdout, stderr, moduleRootPath, env, defaultConfigPath, exit);
+    it('should not exit if exactly one argument is supplied and -h and --help are not set', async() => {
+      await HttpServiceSparqlEndpoint.runArgsInProcess([ testCommandlineArgument ],
+        stdout,
+        stderr,
+        moduleRootPath,
+        env,
+        defaultConfigPath,
+        exit);
 
       expect(exit).not.toHaveBeenCalled();
     });
 
-    it('should exit with help message if --help option is set', async () => {
-      HttpServiceSparqlEndpoint.runArgsInProcess([testCommandlineArgument, "--help"],
-          stdout, stderr, moduleRootPath, env, defaultConfigPath, exit).then(res => {
-            expect(exit).toHaveBeenCalledWith(1);
-            expect(stderr.toString()).toBeDefined();
-          });
+    it('should exit with help message if --help option is set', async() => {
+      await HttpServiceSparqlEndpoint.runArgsInProcess([ testCommandlineArgument, '--help' ],
+        stdout,
+        stderr,
+        moduleRootPath,
+        env,
+        defaultConfigPath,
+        exit).then(res => {
+        expect(exit).toHaveBeenCalledWith(1);
+        expect(stderr.toString()).toBeDefined();
+      });
     });
 
-    it('should exit with help message if -h option is set', async () => {
-      HttpServiceSparqlEndpoint.runArgsInProcess([testCommandlineArgument, "-h"],
-          stdout, stderr, moduleRootPath, env, defaultConfigPath, exit).then(res => {
-            expect(exit).toHaveBeenCalledWith(1);
-            expect(stderr.toString()).toBeDefined();
-          });
+    it('should exit with help message if -h option is set', async() => {
+      await HttpServiceSparqlEndpoint.runArgsInProcess([ testCommandlineArgument, '-h' ],
+        stdout,
+        stderr,
+        moduleRootPath,
+        env,
+        defaultConfigPath,
+        exit).then(res => {
+        expect(exit).toHaveBeenCalledWith(1);
+        expect(stderr.toString()).toBeDefined();
+      });
     });
 
-    it('should exit with version message if --version option is set', async () => {
-      await HttpServiceSparqlEndpoint.runArgsInProcess([testCommandlineArgument, "--version"],
-          stdout, stderr, moduleRootPath, env, defaultConfigPath, exit);
+    it('should exit with version message if --version option is set', async() => {
+      await HttpServiceSparqlEndpoint.runArgsInProcess([ testCommandlineArgument, '--version' ],
+        stdout,
+        stderr,
+        moduleRootPath,
+        env,
+        defaultConfigPath,
+        exit);
 
       expect(exit).toHaveBeenCalledWith(1);
       expect(stderr.toString()).toBeDefined();
     });
 
-    it('should exit with version message if -v option is set', async () => {
-      jest.spyOn(ActorInitSparql, "isDevelopmentEnvironment").mockReturnValue(false);
-      await HttpServiceSparqlEndpoint.runArgsInProcess([testCommandlineArgument, "-v"],
-          stdout, stderr, moduleRootPath, env, defaultConfigPath, exit);
+    it('should exit with version message if -v option is set', async() => {
+      jest.spyOn(ActorInitSparql, 'isDevelopmentEnvironment').mockReturnValue(false);
+      await HttpServiceSparqlEndpoint.runArgsInProcess([ testCommandlineArgument, '-v' ],
+        stdout,
+        stderr,
+        moduleRootPath,
+        env,
+        defaultConfigPath,
+        exit);
 
       expect(exit).toHaveBeenCalledWith(1);
       expect(stderr.toString()).toBeDefined();
     });
 
-    it('should exit with help message if no arguments given', async () => {
-      HttpServiceSparqlEndpoint.runArgsInProcess([],
-          stdout, stderr, moduleRootPath, env, defaultConfigPath, exit).then(res => {
-            expect(exit).toHaveBeenCalledWith(1);
-            expect(stderr.toString()).toBeDefined();
-          });
+    it('should exit with help message if no arguments given', async() => {
+      await HttpServiceSparqlEndpoint.runArgsInProcess([],
+        stdout,
+        stderr,
+        moduleRootPath,
+        env,
+        defaultConfigPath,
+        exit).then(res => {
+        expect(exit).toHaveBeenCalledWith(1);
+        expect(stderr.toString()).toBeDefined();
+      });
     });
   });
 
@@ -176,102 +216,167 @@ describe('HttpServiceSparqlEndpoint', () => {
     let env: any;
     let stderr: any;
     const exit = jest.fn();
-    const defaultConfigPath = "test_defaultConfigPath";
+    const defaultConfigPath = 'test_defaultConfigPath';
     beforeEach(() => {
       env = { COMUNICA_CONFIG: 'test_config' };
       fs.existsSync.mockReturnValue(true);
-      testCommandlineArguments = ["-c", contextCommandlineArgument];
+      testCommandlineArguments = [ '-c', contextCommandlineArgument ];
       stderr = new WritableStream();
       exit.mockClear();
     });
 
-    it('should return an object containing the correct moduleRootPath configResourceUrl', async () => {
+    it('should return an object containing the correct moduleRootPath configResourceUrl', async() => {
       expect((await HttpServiceSparqlEndpoint
-          .generateConstructorArguments(minimist(testCommandlineArguments), moduleRootPath, env, defaultConfigPath, stderr, exit)))
-          .toMatchObject({configResourceUrl: env.COMUNICA_CONFIG, mainModulePath: moduleRootPath});
+        .generateConstructorArguments(minimist(testCommandlineArguments),
+          moduleRootPath,
+          env,
+          defaultConfigPath,
+          stderr,
+          exit)))
+        .toMatchObject({ configResourceUrl: env.COMUNICA_CONFIG, mainModulePath: moduleRootPath });
     });
 
-    it('should use defaultConfigPath if env has no COMUNICA_CONFIG constant', async () => {
+    it('should use defaultConfigPath if env has no COMUNICA_CONFIG constant', async() => {
       env = {};
       expect((await HttpServiceSparqlEndpoint
-          .generateConstructorArguments(minimist(testCommandlineArguments), moduleRootPath, env, defaultConfigPath, stderr, exit)))
-          .toMatchObject({configResourceUrl: defaultConfigPath, mainModulePath: moduleRootPath});
+        .generateConstructorArguments(minimist(testCommandlineArguments),
+          moduleRootPath,
+          env,
+          defaultConfigPath,
+          stderr,
+          exit)))
+        .toMatchObject({ configResourceUrl: defaultConfigPath, mainModulePath: moduleRootPath });
     });
 
-    it('should use logger from given context if available', async () => {
+    it('should use logger from given context if available', async() => {
       fs.existsSync.mockReturnValue(false);
       const context = { ...testArgumentDict, ...{ log: new LoggerPretty({ level: 'test_loglevel' }) }};
 
       const log = (await HttpServiceSparqlEndpoint
-          .generateConstructorArguments(minimist(["-c", JSON.stringify(context)]), moduleRootPath, env, defaultConfigPath, stderr, exit)).context.log;
+        .generateConstructorArguments(minimist([ '-c', JSON.stringify(context) ]),
+          moduleRootPath,
+          env,
+          defaultConfigPath,
+          stderr,
+          exit)).context.log;
 
       expect(log).toMatchObject({ level: 'test_loglevel' });
     });
 
-    it('should use loglevel from commandline arguments if available', async () => {
-      testCommandlineArguments.push("-l", "test_loglevel");
+    it('should use loglevel from commandline arguments if available', async() => {
+      testCommandlineArguments.push('-l', 'test_loglevel');
       const log = (await HttpServiceSparqlEndpoint
-          .generateConstructorArguments(minimist(testCommandlineArguments), moduleRootPath, env, defaultConfigPath, stderr, exit))
-          .context.log;
+        .generateConstructorArguments(minimist(testCommandlineArguments),
+          moduleRootPath,
+          env,
+          defaultConfigPath,
+          stderr,
+          exit))
+        .context.log;
 
       expect(log).toBeInstanceOf(LoggerPretty);
       expect(log.level).toBe('test_loglevel');
     });
 
-    it('should set a logger with loglevel "warn" if none is defined in the given context', async () => {
+    it('should set a logger with loglevel "warn" if none is defined in the given context', async() => {
       const log = (await HttpServiceSparqlEndpoint
-          .generateConstructorArguments(minimist(testCommandlineArguments), moduleRootPath, env, defaultConfigPath, stderr, exit))
-          .context.log;
+        .generateConstructorArguments(minimist(testCommandlineArguments),
+          moduleRootPath,
+          env,
+          defaultConfigPath,
+          stderr,
+          exit))
+        .context.log;
 
       expect(log).toBeInstanceOf(LoggerPretty);
       expect(log.level).toBe('warn');
     });
 
-    it('should read timeout from the commandline options or use correct default', async () => {
+    it('should read timeout from the commandline options or use correct default', async() => {
       expect((await HttpServiceSparqlEndpoint
-          .generateConstructorArguments(minimist(testCommandlineArguments), moduleRootPath, env, defaultConfigPath, stderr, exit))
-          .timeout).toBe(60 * 1000);
+        .generateConstructorArguments(minimist(testCommandlineArguments),
+          moduleRootPath,
+          env,
+          defaultConfigPath,
+          stderr,
+          exit))
+        .timeout).toBe(60 * 1000);
 
-      testCommandlineArguments.push("-t", 5);
+      testCommandlineArguments.push('-t', 5);
       expect((await HttpServiceSparqlEndpoint
-          .generateConstructorArguments(minimist(testCommandlineArguments), moduleRootPath, env, defaultConfigPath, stderr, exit))
-          .timeout).toBe(5 * 1000);
+        .generateConstructorArguments(minimist(testCommandlineArguments),
+          moduleRootPath,
+          env,
+          defaultConfigPath,
+          stderr,
+          exit))
+        .timeout).toBe(5 * 1000);
     });
 
-    it('should read port from the commandline options or use correct default', async () => {
+    it('should read port from the commandline options or use correct default', async() => {
       expect((await HttpServiceSparqlEndpoint
-          .generateConstructorArguments(minimist(testCommandlineArguments), moduleRootPath, env, defaultConfigPath, stderr, exit))
-          .port).toBe(3000);
+        .generateConstructorArguments(minimist(testCommandlineArguments),
+          moduleRootPath,
+          env,
+          defaultConfigPath,
+          stderr,
+          exit))
+        .port).toBe(3000);
 
-      testCommandlineArguments.push("-p", 4321);
+      testCommandlineArguments.push('-p', 4321);
       expect((await HttpServiceSparqlEndpoint
-          .generateConstructorArguments(minimist(testCommandlineArguments), moduleRootPath, env, defaultConfigPath, stderr, exit))
-          .port).toBe(4321);
+        .generateConstructorArguments(minimist(testCommandlineArguments),
+          moduleRootPath,
+          env,
+          defaultConfigPath,
+          stderr,
+          exit))
+        .port).toBe(4321);
     });
 
-    it("should read cache invalidation from the commandline options or use correct default", async () => {
+    it('should read cache invalidation from the commandline options or use correct default', async() => {
       expect((await HttpServiceSparqlEndpoint
-          .generateConstructorArguments(minimist(testCommandlineArguments), moduleRootPath, env, defaultConfigPath, stderr, exit))
-          .invalidateCacheBeforeQuery).toBeFalsy();
+        .generateConstructorArguments(minimist(testCommandlineArguments),
+          moduleRootPath,
+          env,
+          defaultConfigPath,
+          stderr,
+          exit))
+        .invalidateCacheBeforeQuery).toBeFalsy();
 
-      testCommandlineArguments.push("-i");
+      testCommandlineArguments.push('-i');
       expect((await HttpServiceSparqlEndpoint
-          .generateConstructorArguments(minimist(testCommandlineArguments), moduleRootPath, env, defaultConfigPath, stderr, exit))
-          .invalidateCacheBeforeQuery).toBe(true);
+        .generateConstructorArguments(minimist(testCommandlineArguments),
+          moduleRootPath,
+          env,
+          defaultConfigPath,
+          stderr,
+          exit))
+        .invalidateCacheBeforeQuery).toBe(true);
     });
 
-    it("should try to get context by parsing the commandline argument if it's not an existing file", async() => {
+    it('should try to get context by parsing the commandline argument if it\'s not an existing file', async() => {
       fs.existsSync.mockReturnValue(false);
 
       expect((await HttpServiceSparqlEndpoint
-          .generateConstructorArguments(minimist(testCommandlineArguments), moduleRootPath, env, defaultConfigPath, stderr, exit))
-          .context).toMatchObject(testArgumentDict);
+        .generateConstructorArguments(minimist(testCommandlineArguments),
+          moduleRootPath,
+          env,
+          defaultConfigPath,
+          stderr,
+          exit))
+        .context).toMatchObject(testArgumentDict);
     });
 
-    it('should read context from file if commandline argument is an existing file', async () => {
+    it('should read context from file if commandline argument is an existing file', async() => {
       expect((await HttpServiceSparqlEndpoint
-          .generateConstructorArguments(minimist(testCommandlineArguments), moduleRootPath, env, defaultConfigPath, stderr, exit))
-          .context).toMatchObject(testFileContentDict);
+        .generateConstructorArguments(minimist(testCommandlineArguments),
+          moduleRootPath,
+          env,
+          defaultConfigPath,
+          stderr,
+          exit))
+        .context).toMatchObject(testFileContentDict);
     });
   });
 

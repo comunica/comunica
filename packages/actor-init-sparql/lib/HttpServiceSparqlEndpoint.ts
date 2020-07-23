@@ -1,12 +1,12 @@
 import { EventEmitter } from 'events';
-import * as fs from 'fs';
+
 import * as http from 'http';
 import * as querystring from 'querystring';
 import { Writable } from 'stream';
 import * as url from 'url';
 import { IActorQueryOperationOutput, IActorQueryOperationOutputQuads } from '@comunica/bus-query-operation';
 import { ActionContext } from '@comunica/core';
-import { LoggerPretty } from '@comunica/logger-pretty';
+
 import { ArrayIterator } from 'asynciterator';
 import minimist = require('minimist');
 import * as RDF from 'rdf-js';
@@ -72,11 +72,11 @@ Options:
    * @return {Promise<void>} A promise that resolves when the server has been started.
    */
   public static async runArgsInProcess(argv: string[], stdout: Writable, stderr: Writable,
-                                 moduleRootPath: string, env: NodeJS.ProcessEnv,
-                                 defaultConfigPath: string, exit: (code: number) => void): Promise<void> {
+    moduleRootPath: string, env: NodeJS.ProcessEnv,
+    defaultConfigPath: string, exit: (code: number) => void): Promise<void> {
     const args = minimist(argv);
     const options = await HttpServiceSparqlEndpoint
-        .generateConstructorArguments(args, moduleRootPath, env, defaultConfigPath, stderr, exit);
+      .generateConstructorArguments(args, moduleRootPath, env, defaultConfigPath, stderr, exit);
 
     return new Promise<void>(resolve => {
       new HttpServiceSparqlEndpoint(options).run(stdout, stderr)
@@ -97,10 +97,9 @@ Options:
    * @param {string} defaultConfigPath The path to get the config from if none is defined in the environment.
    */
   public static async generateConstructorArguments(args: minimist.ParsedArgs, moduleRootPath: string,
-                                             env: NodeJS.ProcessEnv, defaultConfigPath: string, stderr: Writable,
-                                             exit: (code: number) => void)
-      : Promise<IHttpServiceSparqlEndpointArgs> {
-    // allow both files as direct JSON objects for context
+    env: NodeJS.ProcessEnv, defaultConfigPath: string, stderr: Writable,
+    exit: (code: number) => void): Promise<IHttpServiceSparqlEndpointArgs> {
+    // Allow both files as direct JSON objects for context
     const context = await ActorInitSparql.buildContext(args, 1, HttpServiceSparqlEndpoint.HELP_MESSAGE);
 
     if (context.stderr) {

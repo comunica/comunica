@@ -1,21 +1,18 @@
 import { exec } from 'child_process';
 import { existsSync, readFileSync } from 'fs';
+import * as OS from 'os';
+import { Readable } from 'stream';
 import { KEY_CONTEXT_DATETIME } from '@comunica/actor-http-memento';
 import { KEY_CONTEXT_HTTPPROXYHANDLER, ProxyHandlerStatic } from '@comunica/actor-http-proxy';
 import { IActionInit, IActorOutputInit } from '@comunica/bus-init';
 import { IActorQueryOperationOutput, KEY_CONTEXT_BASEIRI } from '@comunica/bus-query-operation';
-import { KEY_CONTEXT_SOURCES } from '@comunica/bus-rdf-resolve-quad-pattern';
+
 import { LoggerPretty } from '@comunica/logger-pretty';
 import minimist = require('minimist');
-import * as OS from "os";
-import * as fs from "fs";
-import {Readable, Writable} from "stream";
 import {
   ActorInitSparql as ActorInitSparqlBrowser,
-  IActorInitSparqlArgs, KEY_CONTEXT_LENIENT, KEY_CONTEXT_QUERYFORMAT,
-} from "./ActorInitSparql-browser";
-import { stderr } from "process";
-
+  KEY_CONTEXT_LENIENT, KEY_CONTEXT_QUERYFORMAT,
+} from './ActorInitSparql-browser';
 
 // eslint-disable-next-line no-duplicate-imports
 export {
@@ -53,27 +50,24 @@ export class ActorInitSparql extends ActorInitSparqlBrowser {
     --version     prints version information
   `);
 
-  constructor(args: IActorInitSparqlArgs) {
-    super(args);
-  }
-
   public static getScriptOutput(command: string, fallback: string): Promise<string> {
     return new Promise((resolve, reject) => {
       exec(command, (error, stdout, stderr) => {
         if (error) {
           resolve(fallback);
         }
-        resolve((stdout || stderr).trimRight());
+        resolve((stdout || stderr).trimEnd());
       });
     });
   }
 
   public static isDevelopmentEnvironment(): boolean {
-    return existsSync(__dirname + '/../test');
+    return existsSync(`${__dirname}/../test`);
   }
 
-  static async buildContext(args: minimist.ParsedArgs, queryOrHttp: number, helpMessage: string, queryString?: string) : Promise<any> {
-    const query : boolean = queryOrHttp === 0;
+  public static async buildContext(args: minimist.ParsedArgs, queryOrHttp: number, helpMessage: string,
+    queryString?: string): Promise<any> {
+    const query: boolean = queryOrHttp === 0;
 
     // Print version information
     if (args.v || args.version) {
@@ -82,7 +76,7 @@ export class ActorInitSparql extends ActorInitSparqlBrowser {
       const nodeVersion: string = process.version;
       const npmVersion: string = await this.getScriptOutput('npm -v', '_NPM is unavailable_');
       const yarnVersion: string = await this.getScriptOutput('yarn -v', '_Yarn is unavailable_');
-      const os: string = `${OS.platform()} (${OS.type()} ${OS.release()})`;
+      const os = `${OS.platform()} (${OS.type()} ${OS.release()})`;
 
       const message = require('streamify-string')(`| software            | version
 | ------------------- | -------
@@ -97,10 +91,9 @@ export class ActorInitSparql extends ActorInitSparqlBrowser {
     }
 
     if (args.h || args.help ||
-        (query && (!args.listformats && (!queryString && (!(args.q || args.f) && args._.length < (args.c ? 1 : 2)
-        || args._.length < (args.c ? 0 : 1))))) ||
-        (!query && ((args.c && args._.length !== 0) || (!args.c && args._.length === 0)))) {
-
+        (query && (!args.listformats && (!queryString && (!(args.q || args.f) && args._.length < (args.c ? 1 : 2) ||
+        args._.length < (args.c ? 0 : 1))))) ||
+        (!query && ((args.c && args._.length > 0) || (!args.c && args._.length === 0)))) {
       // Print command usage
       return { stderr: helpMessage };
     }
@@ -108,8 +101,9 @@ export class ActorInitSparql extends ActorInitSparqlBrowser {
     // Define context
     let context: any = {};
     if (args.c) {
-      context = JSON.parse(fs.existsSync(args.c) ? fs.readFileSync(args.c, 'utf8') : args.c);
-    } else if (!query && args._[0] && args._[0].charAt(0) === '{') { // for backwards compatibility http
+      context = JSON.parse(existsSync(args.c) ? readFileSync(args.c, 'utf8') : args.c);
+      // For backwards compatibility http
+    } else if (!query && args._[0] && args._[0].startsWith('{')) {
       context = JSON.parse(args._[0]);
       args._.shift();
     }
@@ -199,7 +193,7 @@ export class ActorInitSparql extends ActorInitSparqlBrowser {
 
     // Serialize output according to media type
     const stdout: Readable = <Readable> (await this.resultToString(queryResult, args.t, queryResult.context)).data;
-    
+
     return { stdout };
   }
 }
