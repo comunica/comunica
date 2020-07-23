@@ -419,5 +419,6 @@ function toTerms(data: any) {
 }
 
 function flatten(a: any) {
-  return a.flat();
+  // eslint-disable-next-line prefer-spread
+  return [].concat.apply([], a);
 }
