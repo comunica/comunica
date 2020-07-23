@@ -1,20 +1,20 @@
-import {LoggerPretty} from "@comunica/logger-pretty";
-import * as fs from "fs";
-import * as http from "http";
 import { EventEmitter } from 'events';
-import minimist = require("minimist");
-import * as querystring from "querystring";
-import {Writable} from "stream";
-import * as url from "url";
-import {newEngineDynamic} from "../index";
-import {ActorInitSparql} from "./ActorInitSparql";
-import {IQueryOptions} from "./QueryDynamic";
-import {ArrayIterator} from "asynciterator";
-import * as RDF from "rdf-js";
-import {ActionContext} from "@comunica/core";
-import {IActorQueryOperationOutput, IActorQueryOperationOutputQuads} from "@comunica/bus-query-operation";
+import * as fs from 'fs';
+import * as http from 'http';
+import * as querystring from 'querystring';
+import { Writable } from 'stream';
+import * as url from 'url';
+import { IActorQueryOperationOutput, IActorQueryOperationOutputQuads } from '@comunica/bus-query-operation';
+import { ActionContext } from '@comunica/core';
+import { LoggerPretty } from '@comunica/logger-pretty';
+import { ArrayIterator } from 'asynciterator';
+import minimist = require('minimist');
+import * as RDF from 'rdf-js';
+import { newEngineDynamic } from '..';
+import { ActorInitSparql } from './ActorInitSparql';
+import { IQueryOptions } from './QueryDynamic';
 
-// tslint:disable:no-var-requires
+// Tslint:disable:no-var-requires
 const quad = require('rdf-quad');
 
 /**
@@ -158,23 +158,25 @@ Options:
    * @param {module:http.ServerResponse} response Response object.
    */
 
-  public async handleRequest(engine: ActorInitSparql, variants: { type: string, quality: number }[],
-                             stdout: Writable, stderr: Writable,
-                             request: http.IncomingMessage, response: http.ServerResponse) {
-
+  public async handleRequest(engine: ActorInitSparql, variants: { type: string; quality: number }[],
+    stdout: Writable, stderr: Writable,
+    request: http.IncomingMessage, response: http.ServerResponse): Promise<any> {
     // Negotiate the best mediatype format
     const isValid = request.headers.accept && request.headers.accept !== '*/*';
-    let negotiation = isValid ? require('negotiate').choose(variants, request) : null;
+    const negotiation = isValid ? require('negotiate').choose(variants, request) : null;
     let mediaType = negotiation && negotiation.length > 0 ? negotiation[0].type : null;
 
-    let negotiationsIndexed:any = {};
+    const negotiationsIndexed: any = {};
     if (negotiation && negotiation.length > 1) {
-      let quality = negotiation[0].q;
+      const quality = negotiation[0].q;
       // Assuming variants is sorted by q in decreasing order (pseudocode)
       // Create negotiationsIndexed so that it is a hash containing the media types from 'negotiation' as keys.
-      negotiation.filter((element:any) => element.q === quality)
-                .reduce((_:any, element:any) => negotiationsIndexed[element.type] = element.type, 0);
-      
+      negotiation.filter((element: any) => element.q === quality)
+        .reduce((_: any, element: any) => {
+          negotiationsIndexed[element.type] = element.type;
+          return negotiationsIndexed;
+        }, {});
+
       // Preferred media type selected if high quality
       for (const variant of variants) {
         if (negotiationsIndexed[variant.type]) {
