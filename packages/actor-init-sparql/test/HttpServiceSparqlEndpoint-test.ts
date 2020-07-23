@@ -1,38 +1,41 @@
-import {LoggerPretty} from "@comunica/logger-pretty";
-import {WritableStream} from "memory-streams";
-import minimist = require("minimist");
-import * as querystring from "querystring";
-import {PassThrough} from "stream";
+import * as querystring from 'querystring';
+import { PassThrough } from 'stream';
+import { LoggerPretty } from '@comunica/logger-pretty';
+import { ArrayIterator } from 'asynciterator';
+import { WritableStream } from 'memory-streams';
+import minimist = require('minimist');
 // @ts-ignore
-import {fs, testArgumentDict, testFileContentDict} from "../__mocks__/fs";
+import { newEngineDynamic } from '../__mocks__';
 // @ts-ignore
-import {http, ServerResponseMock} from "../__mocks__/http";
+import { fs, testArgumentDict, testFileContentDict } from '../__mocks__/fs';
 // @ts-ignore
-import {newEngineDynamic, newEngineDynamicQuads, newEngineDynamicBoolean, newEngineDynamicBindings, newEngineDynamicOther} from "../__mocks__/index";
-// @ts-ignore
-import {parse} from "../__mocks__/url";
-import {HttpServiceSparqlEndpoint} from "../lib/HttpServiceSparqlEndpoint";
-import {ArrayIterator} from "asynciterator";
-const stringToStream = require('streamify-string');
-const quad = require('rdf-quad');
 
-jest.mock('../index', () => {
+import {newEngineDynamic, newEngineDynamicBindings} from "../__mocks__/index";
+
+// @ts-ignore
+// @ts-ignore
+import { parse } from '../__mocks__/url';
+import { HttpServiceSparqlEndpoint } from '../lib/HttpServiceSparqlEndpoint';
+const quad = require('rdf-quad');
+const stringToStream = require('streamify-string');
+
+jest.mock('..', () => {
   return {
     newEngineDynamic,
   };
 });
 
-jest.mock("url", () => {
+jest.mock('url', () => {
   return {
     parse,
   };
 });
 
-jest.mock("http", () => {
+jest.mock('http', () => {
   return http;
 });
 
-jest.mock("fs", () => {
+jest.mock('fs', () => {
   return fs;
 });
 
@@ -221,23 +224,22 @@ const negotiation = [ { type: 'stats',
     q: 0.08 } ];
 
 describe('HttpServiceSparqlEndpoint', () => {
-
   describe('constructor', () => {
-    it("shouldn't error if no args are supplied", () => {
+    it('shouldn\'t error if no args are supplied', () => {
       expect(() => new HttpServiceSparqlEndpoint()).not.toThrowError();
     });
 
-    it("should set fields with values from args if present", () => {
-      const args = {context: {test: "test"}, timeout: 4321, port: 24321, invalidateCacheBeforeQuery: true};
+    it('should set fields with values from args if present', () => {
+      const args = { context: { test: 'test' }, timeout: 4321, port: 24321, invalidateCacheBeforeQuery: true };
       const instance = new HttpServiceSparqlEndpoint(args);
 
-      expect(instance.context).toEqual({test: "test"});
+      expect(instance.context).toEqual({ test: 'test' });
       expect(instance.timeout).toBe(4321);
       expect(instance.port).toBe(24321);
       expect(instance.invalidateCacheBeforeQuery).toBeTruthy();
     });
 
-    it("should set default field values for fields that aren't in args", () => {
+    it('should set default field values for fields that aren\'t in args', () => {
       const args = {};
       const instance = new HttpServiceSparqlEndpoint(args);
 
@@ -252,9 +254,9 @@ describe('HttpServiceSparqlEndpoint', () => {
     const testCommandlineArgument = '{ "sources": [{ "type": "file", "value" : "http://localhost:8080/data.jsonld" }]}';
     let stdout: any;
     let stderr: any;
-    const moduleRootPath = "test_modulerootpath";
-    const env = {COMUNICA_CONFIG: "test_config"};
-    const defaultConfigPath = "test_defaultConfigPath";
+    const moduleRootPath = 'test_modulerootpath';
+    const env = { COMUNICA_CONFIG: 'test_config' };
+    const defaultConfigPath = 'test_defaultConfigPath';
     const exit = jest.fn();
     beforeEach(() => {
       exit.mockClear();
@@ -262,102 +264,137 @@ describe('HttpServiceSparqlEndpoint', () => {
       stderr = new WritableStream();
     });
 
-    it("Should exit on error", async () => {
-      await HttpServiceSparqlEndpoint.runArgsInProcess([testCommandlineArgument],
-          stdout, stderr, "rejecting_engine_promise", env, defaultConfigPath, exit);
+    it('Should exit on error', async() => {
+      await HttpServiceSparqlEndpoint.runArgsInProcess([ testCommandlineArgument ],
+        stdout,
+        stderr,
+        'rejecting_engine_promise',
+        env,
+        defaultConfigPath,
+        exit);
 
       expect(exit).toHaveBeenCalledWith(1);
-      expect(stderr.toString()).toBe("REASON");
+      expect(stderr.toString()).toBe('REASON');
     });
 
-    it("Should call .run on an HttpServiceSparqlEndpoint instance", async () => {
-      await HttpServiceSparqlEndpoint.runArgsInProcess([testCommandlineArgument],
-          stdout, stderr, moduleRootPath, env, defaultConfigPath, exit);
+    it('Should call .run on an HttpServiceSparqlEndpoint instance', async() => {
+      await HttpServiceSparqlEndpoint.runArgsInProcess([ testCommandlineArgument ],
+        stdout,
+        stderr,
+        moduleRootPath,
+        env,
+        defaultConfigPath,
+        exit);
 
       expect(http.createServer).toBeCalled(); // Implicitly checking whether .run has been called
     });
 
-    it("should not exit if exactly one argument is supplied and -h and --help are not set", () => {
-      HttpServiceSparqlEndpoint.runArgsInProcess([testCommandlineArgument],
-          stdout, stderr, moduleRootPath, env, defaultConfigPath, exit);
+    it('should not exit if exactly one argument is supplied and -h and --help are not set', async() => {
+      await HttpServiceSparqlEndpoint.runArgsInProcess([ testCommandlineArgument ],
+        stdout,
+        stderr,
+        moduleRootPath,
+        env,
+        defaultConfigPath,
+        exit);
 
       expect(exit).not.toHaveBeenCalled();
     });
 
-    it('should exit with help message if --help option is set', () => {
-      HttpServiceSparqlEndpoint.runArgsInProcess([testCommandlineArgument, "--help"],
-          stdout, stderr, moduleRootPath, env, defaultConfigPath, exit);
+    it('should exit with help message if --help option is set', async() => {
+      await HttpServiceSparqlEndpoint.runArgsInProcess([ testCommandlineArgument, '--help' ],
+        stdout,
+        stderr,
+        moduleRootPath,
+        env,
+        defaultConfigPath,
+        exit);
 
       expect(exit).toHaveBeenCalledWith(1);
-      expect(stderr.toString()).toBe(HttpServiceSparqlEndpoint.HELP_MESSAGE);
+      expect(stderr.toString()).toBe(`${HttpServiceSparqlEndpoint.HELP_MESSAGE}Server running on http://localhost:3000/sparql\n`);
     });
 
-    it('should exit with help message if -h option is set', () => {
-      HttpServiceSparqlEndpoint.runArgsInProcess([testCommandlineArgument, "-h"],
-          stdout, stderr, moduleRootPath, env, defaultConfigPath, exit);
+    it('should exit with help message if -h option is set', async() => {
+      await HttpServiceSparqlEndpoint.runArgsInProcess([ testCommandlineArgument, '-h' ],
+        stdout,
+        stderr,
+        moduleRootPath,
+        env,
+        defaultConfigPath,
+        exit);
 
       expect(exit).toHaveBeenCalledWith(1);
-      expect(stderr.toString()).toBe(HttpServiceSparqlEndpoint.HELP_MESSAGE);
+      expect(stderr.toString()).toBe(`${HttpServiceSparqlEndpoint.HELP_MESSAGE}Server running on http://localhost:3000/sparql\n`);
     });
 
-    it('should exit with help message if multiple arguments given', () => {
-      HttpServiceSparqlEndpoint.runArgsInProcess([testCommandlineArgument, testCommandlineArgument],
-          stdout, stderr, moduleRootPath, env, defaultConfigPath, exit);
+    it('should exit with help message if multiple arguments given', async() => {
+      await HttpServiceSparqlEndpoint.runArgsInProcess([ testCommandlineArgument, testCommandlineArgument ],
+        stdout,
+        stderr,
+        moduleRootPath,
+        env,
+        defaultConfigPath,
+        exit);
 
       expect(exit).toHaveBeenCalledWith(1);
-      expect(stderr.toString()).toBe(HttpServiceSparqlEndpoint.HELP_MESSAGE);
+      expect(stderr.toString()).toBe(`${HttpServiceSparqlEndpoint.HELP_MESSAGE}Server running on http://localhost:3000/sparql\n`);
     });
 
-    it('should exit with help message if no arguments given', () => {
-      HttpServiceSparqlEndpoint.runArgsInProcess([],
-          stdout, stderr, moduleRootPath, env, defaultConfigPath, exit);
+    it('should exit with help message if no arguments given', async() => {
+      await HttpServiceSparqlEndpoint.runArgsInProcess([],
+        stdout,
+        stderr,
+        moduleRootPath,
+        env,
+        defaultConfigPath,
+        exit);
 
       expect(exit).toHaveBeenCalledWith(1);
-      expect(stderr.toString()).toBe(HttpServiceSparqlEndpoint.HELP_MESSAGE);
+      expect(stderr.toString()).toBe(`${HttpServiceSparqlEndpoint.HELP_MESSAGE}Server running on http://localhost:3000/sparql\n`);
     });
   });
 
-  describe("generateConstructorArguments", () => {
+  describe('generateConstructorArguments', () => {
     let testCommandlineArguments: any;
     const contextCommandlineArgument = JSON.stringify(testArgumentDict);
-    const moduleRootPath = "test_modulerootpath";
+    const moduleRootPath = 'test_modulerootpath';
     let env: any;
-    const defaultConfigPath = "test_defaultConfigPath";
+    const defaultConfigPath = 'test_defaultConfigPath';
     beforeEach(() => {
-      env = {COMUNICA_CONFIG: "test_config"};
+      env = { COMUNICA_CONFIG: 'test_config' };
       fs.existsSync.mockReturnValue(true);
-      testCommandlineArguments = [contextCommandlineArgument];
+      testCommandlineArguments = [ contextCommandlineArgument ];
     });
 
     it('should return an object containing the correct moduleRootPath configResourceUrl', () => {
       expect(HttpServiceSparqlEndpoint
-          .generateConstructorArguments(minimist(testCommandlineArguments), moduleRootPath, env, defaultConfigPath))
-          .toMatchObject({configResourceUrl: env.COMUNICA_CONFIG, mainModulePath: moduleRootPath});
+        .generateConstructorArguments(minimist(testCommandlineArguments), moduleRootPath, env, defaultConfigPath))
+        .toMatchObject({ configResourceUrl: env.COMUNICA_CONFIG, mainModulePath: moduleRootPath });
     });
 
     it('should use defaultConfigPath if env has no COMUNICA_CONFIG constant', () => {
       env = {};
       expect(HttpServiceSparqlEndpoint
-          .generateConstructorArguments(minimist(testCommandlineArguments), moduleRootPath, env, defaultConfigPath))
-          .toMatchObject({configResourceUrl: defaultConfigPath, mainModulePath: moduleRootPath});
+        .generateConstructorArguments(minimist(testCommandlineArguments), moduleRootPath, env, defaultConfigPath))
+        .toMatchObject({ configResourceUrl: defaultConfigPath, mainModulePath: moduleRootPath });
     });
 
     it('should use logger from given context if available', () => {
       fs.existsSync.mockReturnValue(false);
-      const context = {...testArgumentDict, ...{log: new LoggerPretty({level: "test_loglevel"})}};
+      const context = { ...testArgumentDict, ...{ log: new LoggerPretty({ level: 'test_loglevel' }) }};
 
       const log = HttpServiceSparqlEndpoint
-          .generateConstructorArguments(minimist([JSON.stringify(context)]), moduleRootPath, env, defaultConfigPath)
-          .context.log;
+        .generateConstructorArguments(minimist([ JSON.stringify(context) ]), moduleRootPath, env, defaultConfigPath)
+        .context.log;
 
-      expect(log).toMatchObject({level: "test_loglevel"});
+      expect(log).toMatchObject({ level: 'test_loglevel' });
     });
 
     it('should use loglevel from commandline arguments if available', () => {
-      testCommandlineArguments.push("-l", "test_loglevel");
+      testCommandlineArguments.push('-l', 'test_loglevel');
       const log = HttpServiceSparqlEndpoint
-          .generateConstructorArguments(minimist(testCommandlineArguments), moduleRootPath, env, defaultConfigPath)
-          .context.log;
+        .generateConstructorArguments(minimist(testCommandlineArguments), moduleRootPath, env, defaultConfigPath)
+        .context.log;
 
       expect(log).toBeInstanceOf(LoggerPretty);
       expect(log.level).toBe('test_loglevel');
@@ -365,8 +402,8 @@ describe('HttpServiceSparqlEndpoint', () => {
 
     it('should set a logger with loglevel "warn" if none is defined in the given context', () => {
       const log = HttpServiceSparqlEndpoint
-          .generateConstructorArguments(minimist(testCommandlineArguments), moduleRootPath, env, defaultConfigPath)
-          .context.log;
+        .generateConstructorArguments(minimist(testCommandlineArguments), moduleRootPath, env, defaultConfigPath)
+        .context.log;
 
       expect(log).toBeInstanceOf(LoggerPretty);
       expect(log.level).toBe('warn');
@@ -374,49 +411,49 @@ describe('HttpServiceSparqlEndpoint', () => {
 
     it('should read timeout from the commandline options or use correct default', () => {
       expect(HttpServiceSparqlEndpoint
-          .generateConstructorArguments(minimist(testCommandlineArguments), moduleRootPath, env, defaultConfigPath)
-          .timeout).toBe(60 * 1000);
+        .generateConstructorArguments(minimist(testCommandlineArguments), moduleRootPath, env, defaultConfigPath)
+        .timeout).toBe(60 * 1000);
 
-      testCommandlineArguments.push("-t", 5);
+      testCommandlineArguments.push('-t', 5);
       expect(HttpServiceSparqlEndpoint
-          .generateConstructorArguments(minimist(testCommandlineArguments), moduleRootPath, env, defaultConfigPath)
-          .timeout).toBe(5 * 1000);
+        .generateConstructorArguments(minimist(testCommandlineArguments), moduleRootPath, env, defaultConfigPath)
+        .timeout).toBe(5 * 1000);
     });
 
     it('should read port from the commandline options or use correct default', () => {
       expect(HttpServiceSparqlEndpoint
-          .generateConstructorArguments(minimist(testCommandlineArguments), moduleRootPath, env, defaultConfigPath)
-          .port).toBe(3000);
+        .generateConstructorArguments(minimist(testCommandlineArguments), moduleRootPath, env, defaultConfigPath)
+        .port).toBe(3000);
 
-      testCommandlineArguments.push("-p", 4321);
+      testCommandlineArguments.push('-p', 4321);
       expect(HttpServiceSparqlEndpoint
-          .generateConstructorArguments(minimist(testCommandlineArguments), moduleRootPath, env, defaultConfigPath)
-          .port).toBe(4321);
+        .generateConstructorArguments(minimist(testCommandlineArguments), moduleRootPath, env, defaultConfigPath)
+        .port).toBe(4321);
     });
 
-    it("should read cache invalidation from the commandline options or use correct default", () => {
+    it('should read cache invalidation from the commandline options or use correct default', () => {
       expect(HttpServiceSparqlEndpoint
-          .generateConstructorArguments(minimist(testCommandlineArguments), moduleRootPath, env, defaultConfigPath)
-          .invalidateCacheBeforeQuery).toBeFalsy();
+        .generateConstructorArguments(minimist(testCommandlineArguments), moduleRootPath, env, defaultConfigPath)
+        .invalidateCacheBeforeQuery).toBeFalsy();
 
-      testCommandlineArguments.push("-i");
+      testCommandlineArguments.push('-i');
       expect(HttpServiceSparqlEndpoint
-          .generateConstructorArguments(minimist(testCommandlineArguments), moduleRootPath, env, defaultConfigPath)
-          .invalidateCacheBeforeQuery).toBe(true);
+        .generateConstructorArguments(minimist(testCommandlineArguments), moduleRootPath, env, defaultConfigPath)
+        .invalidateCacheBeforeQuery).toBe(true);
     });
 
-    it("should try to get context by parsing the commandline argument if it's not an existing file", () => {
+    it('should try to get context by parsing the commandline argument if it\'s not an existing file', () => {
       fs.existsSync.mockReturnValue(false);
 
       expect(HttpServiceSparqlEndpoint
-          .generateConstructorArguments(minimist(testCommandlineArguments), moduleRootPath, env, defaultConfigPath)
-          .context).toMatchObject(testArgumentDict);
+        .generateConstructorArguments(minimist(testCommandlineArguments), moduleRootPath, env, defaultConfigPath)
+        .context).toMatchObject(testArgumentDict);
     });
 
     it('should read context from file if commandline argument is an existing file', () => {
       expect(HttpServiceSparqlEndpoint
-          .generateConstructorArguments(minimist(testCommandlineArguments), moduleRootPath, env, defaultConfigPath)
-          .context).toMatchObject(testFileContentDict);
+        .generateConstructorArguments(minimist(testCommandlineArguments), moduleRootPath, env, defaultConfigPath)
+        .context).toMatchObject(testFileContentDict);
     });
   });
 
@@ -426,15 +463,15 @@ describe('HttpServiceSparqlEndpoint', () => {
       instance = new HttpServiceSparqlEndpoint({});
     });
 
-    describe("run", () => {
+    describe('run', () => {
       const stdout = new PassThrough();
       const stderr = new PassThrough();
       beforeEach(() => {
         http.createServer.mockClear();
-        instance.handleRequest.bind = jest.fn(() => "handleRequest_bound");
+        instance.handleRequest.bind = jest.fn(() => 'handleRequest_bound');
       });
 
-      it("should set the server's timeout and port number correctly", async () => {
+      it('should set the server\'s timeout and port number correctly', async() => {
         const port = 201331;
         const timeout = 201331;
         instance.port = port;
@@ -446,8 +483,9 @@ describe('HttpServiceSparqlEndpoint', () => {
         expect(server.setTimeout).toHaveBeenCalledWith(2 * timeout);
       });
 
-      it("should call bind handleRequest with the correct arguments", async () => {
+      it('should call bind handleRequest with the correct arguments', async() => {
         // See mock implementation of getResultMediaTypes in ../index
+
         const variants = [ { type: 'application/trig', quality: 0.4 },
                                     { type: 'stats', quality: 1 },
                                     { type: 'application/json', quality: 1 },
@@ -458,13 +496,14 @@ describe('HttpServiceSparqlEndpoint', () => {
         expect(instance.handleRequest.bind).toBeCalledWith(instance, await instance.engine, variants, stdout, stderr);
       });
 
-      it("should call createServer with the correct arguments", async () => {
+      it('should call createServer with the correct arguments', async() => {
         await instance.run(stdout, stderr);
 
         expect(http.createServer).toBeCalledTimes(1);
         expect(http.createServer).toHaveBeenLastCalledWith(instance.handleRequest.bind());
       });
     });
+
 
     describe("handleNegotiationNull", () => {
       let engine: any;
@@ -473,9 +512,10 @@ describe('HttpServiceSparqlEndpoint', () => {
       const stderr = new PassThrough();
       let request: any;
       let response: any;
-      beforeEach(async () => {
+      beforeEach(async() => {
         instance.writeQueryResult = jest.fn();
         engine = await newEngineDynamic();
+
         variants = [ { type: 'application/trig', quality: 0.4 },
                     { type: 'stats', quality: 1 },
                     { type: 'application/json', quality: 1 },
@@ -504,7 +544,6 @@ describe('HttpServiceSparqlEndpoint', () => {
         expect(instance.writeQueryResult).toHaveBeenCalledWith(engine4, stdout, stderr,
             request, response, "", null, false);
       });
-
     });
 
     describe("handleNegotiation", () => {
@@ -514,6 +553,7 @@ describe('HttpServiceSparqlEndpoint', () => {
       const stderr = new PassThrough();
       let request: any;
       let response: any;
+
 
       beforeEach(async () => {
         instance.writeQueryResult = jest.fn();
@@ -534,42 +574,42 @@ describe('HttpServiceSparqlEndpoint', () => {
         return request;
       }
 
-      it("should respond with 404 when not sparql url or root url"
-        , async () => {
-          request.url =  "not_urlsparql";
+      it('should respond with 404 when not sparql url or root url'
+        , async() => {
+          request.url = 'not_urlsparql';
           await instance.handleRequest(engine, variants, stdout, stderr, request, response);
 
-          expect(response.writeHead).toHaveBeenCalledWith(404, {
-            'content-type': HttpServiceSparqlEndpoint.MIME_JSON,
+          expect(response.writeHead).toHaveBeenCalledWith(404, { 'content-type': HttpServiceSparqlEndpoint.MIME_JSON,
             'Access-Control-Allow-Origin': '*' });
-          expect(response.end).toHaveBeenCalledWith(JSON.stringify({ message: 'Resource not found. Queries are accepted on /sparql.' }));
+          expect(response.end)
+            .toHaveBeenCalledWith(JSON.stringify({ message: 'Resource not found. Queries are accepted on /sparql.' }));
         });
 
-      it("should respond with 404 when url undefined"
-        , async () => {
+      it('should respond with 404 when url undefined'
+        , async() => {
           request.url = undefined;
           await instance.handleRequest(engine, variants, stdout, stderr, request, response);
 
-          expect(response.writeHead).toHaveBeenCalledWith(404, {
-            'content-type': HttpServiceSparqlEndpoint.MIME_JSON,
+          expect(response.writeHead).toHaveBeenCalledWith(404, { 'content-type': HttpServiceSparqlEndpoint.MIME_JSON,
             'Access-Control-Allow-Origin': '*' });
-          expect(response.end).toHaveBeenCalledWith(JSON.stringify({ message: 'Resource not found. Queries are accepted on /sparql.' }));
+          expect(response.end)
+            .toHaveBeenCalledWith(JSON.stringify({ message: 'Resource not found. Queries are accepted on /sparql.' }));
         });
 
-      it("should respond with 301 when GET method called on root url"
-      , async () => {
-        request.method = "GET";
-        request.url = "/";
-        await instance.handleRequest(engine, variants, stdout, stderr, request, response);
-        expect(response.writeHead).toHaveBeenCalledWith(301, {
-          'content-type': HttpServiceSparqlEndpoint.MIME_JSON,
-          'Access-Control-Allow-Origin': '*',
-          'Location': 'http://localhost:3000/sparql'});
-        expect(response.end).toHaveBeenCalledWith(JSON.stringify({ message: 'Queries are accepted on /sparql. Redirected.' }));
-      });
+      it('should respond with 301 when GET method called on root url'
+        , async() => {
+          request.method = 'GET';
+          request.url = '/';
+          await instance.handleRequest(engine, variants, stdout, stderr, request, response);
+          expect(response.writeHead).toHaveBeenCalledWith(301, { 'content-type': HttpServiceSparqlEndpoint.MIME_JSON,
+            'Access-Control-Allow-Origin': '*',
+            Location: 'http://localhost:3000/sparql' });
+          expect(response.end)
+            .toHaveBeenCalledWith(JSON.stringify({ message: 'Queries are accepted on /sparql. Redirected.' }));
+        });
     });
 
-    describe("writeQueryResult", () => {
+    describe('writeQueryResult', () => {
       let response: any;
       let request: any;
       let query: any;
@@ -577,70 +617,101 @@ describe('HttpServiceSparqlEndpoint', () => {
       let endCalledPromise: any;
       beforeEach(() => {
         response = new ServerResponseMock();
-        request = stringToStream("default_request_content");
+        request = stringToStream('default_request_content');
         request.url = 'http://example.org/sparql';
-        query = "default_test_query";
-        mediaType = "default_test_mediatype";
-        endCalledPromise = new Promise((resolve) => response.onEnd = resolve);
+        query = 'default_test_query';
+        mediaType = 'default_test_mediatype';
+        endCalledPromise = new Promise(resolve => response.onEnd = resolve);
       });
 
-      it('should end the response with error message content when the query rejects', async () => {
-        query = "query_reject";
-        await instance.writeQueryResult(await newEngineDynamic(), new PassThrough(), new PassThrough(),
-            request, response, query, mediaType, false);
+      it('should end the response with error message content when the query rejects', async() => {
+        query = 'query_reject';
+        await instance.writeQueryResult(await newEngineDynamic(),
+          new PassThrough(),
+          new PassThrough(),
+          request,
+          response,
+          query,
+          mediaType,
+          false);
 
-        await expect(endCalledPromise).resolves.toBe("Rejected query");
+        await expect(endCalledPromise).resolves.toBe('Rejected query');
         expect(response.writeHead).toHaveBeenLastCalledWith(400,
-            { 'content-type': HttpServiceSparqlEndpoint.MIME_PLAIN, 'Access-Control-Allow-Origin': '*' });
+          { 'content-type': HttpServiceSparqlEndpoint.MIME_PLAIN, 'Access-Control-Allow-Origin': '*' });
       });
 
       it('should end the response with correct error message when the query cannot be serialized for given mediatype'
-          , async () => {
-            mediaType = "mediatype_throwerror";
-            await instance.writeQueryResult(await newEngineDynamic(), new PassThrough(), new PassThrough(),
-                request, response, query, mediaType, false);
+        , async() => {
+          mediaType = 'mediatype_throwerror';
+          await instance.writeQueryResult(await newEngineDynamic(),
+            new PassThrough(),
+            new PassThrough(),
+            request,
+            response,
+            query,
+            mediaType,
+            false);
 
-            await expect(endCalledPromise).resolves.toBe(
-                'The response for the given query could not be serialized for the requested media type\n');
-            expect(response.writeHead).toHaveBeenLastCalledWith(400,
-                { 'content-type': HttpServiceSparqlEndpoint.MIME_PLAIN, 'Access-Control-Allow-Origin': '*' });
-          });
+          await expect(endCalledPromise).resolves.toBe(
+            'The response for the given query could not be serialized for the requested media type\n',
+          );
+          expect(response.writeHead).toHaveBeenLastCalledWith(400,
+            { 'content-type': HttpServiceSparqlEndpoint.MIME_PLAIN, 'Access-Control-Allow-Origin': '*' });
+        });
 
-      it('should put the query result in the response if the query was successful', async () => {
-        await instance.writeQueryResult(await newEngineDynamic(), new PassThrough(), new PassThrough(),
-            request, response, query, mediaType, false);
+      it('should put the query result in the response if the query was successful', async() => {
+        await instance.writeQueryResult(await newEngineDynamic(),
+          new PassThrough(),
+          new PassThrough(),
+          request,
+          response,
+          query,
+          mediaType,
+          false);
 
         await expect(endCalledPromise).resolves.toBeFalsy();
         expect(response.writeHead).toHaveBeenCalledTimes(1);
         expect(response.writeHead).toHaveBeenLastCalledWith(200,
-            {'content-type': mediaType, 'Access-Control-Allow-Origin': '*'});
-        expect(response.toString()).toBe("test_query_result");
+          { 'content-type': mediaType, 'Access-Control-Allow-Origin': '*' });
+        expect(response.toString()).toBe('test_query_result');
       });
 
       it('should end the response with an internal server error message when the queryresult stream emits an error'
-          , async () => {
-            mediaType = "mediatype_queryresultstreamerror";
-            await instance.writeQueryResult(await newEngineDynamic(), new PassThrough(), new PassThrough(),
-                request, response, query, mediaType, false);
+        , async() => {
+          mediaType = 'mediatype_queryresultstreamerror';
+          await instance.writeQueryResult(await newEngineDynamic(),
+            new PassThrough(),
+            new PassThrough(),
+            request,
+            response,
+            query,
+            mediaType,
+            false);
 
-            await expect(endCalledPromise).resolves.toBe("An internal server error occurred.\n");
-            expect(response.writeHead).toHaveBeenCalledTimes(1);
-            expect(response.writeHead).toHaveBeenLastCalledWith(200,
-                {'content-type': mediaType, 'Access-Control-Allow-Origin': '*'});
-          });
+          await expect(endCalledPromise).resolves.toBe('An internal server error occurred.\n');
+          expect(response.writeHead).toHaveBeenCalledTimes(1);
+          expect(response.writeHead).toHaveBeenLastCalledWith(200,
+            { 'content-type': mediaType, 'Access-Control-Allow-Origin': '*' });
+        });
 
-      it('should only write the head when headOnly is true', async () => {
-        await instance.writeQueryResult(await newEngineDynamic(), new PassThrough(), new PassThrough(),
-            request, response, query, mediaType, true);
+      it('should only write the head when headOnly is true', async() => {
+        await instance.writeQueryResult(await newEngineDynamic(),
+          new PassThrough(),
+          new PassThrough(),
+          request,
+          response,
+          query,
+          mediaType,
+          true);
 
         expect(response.writeHead).toHaveBeenCalledTimes(1);
         expect(response.writeHead).toHaveBeenLastCalledWith(200,
-            {'content-type': mediaType, 'Access-Control-Allow-Origin': '*'});
+          { 'content-type': mediaType, 'Access-Control-Allow-Origin': '*' });
         expect(response.end).toHaveBeenCalled();
-        expect(response.toString()).toBe("");
+        expect(response.toString()).toBe('');
       });
 
-      it('should write the service description when no query was defined', async () => {
+      it('should write the service description when no query was defined', async() => {
         // Create spies
         const engine = await newEngineDynamic();
         const spyWriteServiceDescription = jest.spyOn(instance, 'writeServiceDescription');
@@ -648,15 +719,21 @@ describe('HttpServiceSparqlEndpoint', () => {
         const spyResultToString = jest.spyOn(engine, 'resultToString');
 
         // Invoke writeQueryResult
-        await instance.writeQueryResult(engine, new PassThrough(), new PassThrough(),
-          request, response, '', mediaType, false);
+        await instance.writeQueryResult(engine,
+          new PassThrough(),
+          new PassThrough(),
+          request,
+          response,
+          '',
+          mediaType,
+          false);
 
         // Check output
         await expect(endCalledPromise).resolves.toBeFalsy();
         expect(response.writeHead).toHaveBeenCalledTimes(1);
         expect(response.writeHead).toHaveBeenLastCalledWith(200,
-          {'content-type': mediaType, 'Access-Control-Allow-Origin': '*'});
-        expect(response.toString()).toBe("test_query_result");
+          { 'content-type': mediaType, 'Access-Control-Allow-Origin': '*' });
+        expect(response.toString()).toBe('test_query_result');
 
         // Check if the SD logic has been called
         expect(spyWriteServiceDescription).toHaveBeenCalledTimes(1);
@@ -672,21 +749,21 @@ describe('HttpServiceSparqlEndpoint', () => {
         expect(spyResultToString.mock.calls[0][0]).toEqual({
           type: 'quads',
           quadStream: new ArrayIterator([
-            quad(s, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', sd + 'Service'),
-            quad(s, sd + 'endpoint', '/sparql'),
-            quad(s, sd + 'url', '/sparql'),
-            quad(s, sd + 'feature', sd + 'BasicFederatedQuery'),
-            quad(s, sd + 'supportedLanguage', sd + 'SPARQL10Query'),
-            quad(s, sd + 'supportedLanguage', sd + 'SPARQL11Query'),
-            quad(s, sd + 'resultFormat', 'ONE'),
-            quad(s, sd + 'resultFormat', 'TWO'),
-            quad(s, sd + 'resultFormat', 'THREE'),
-            quad(s, sd + 'resultFormat', 'FOUR'),
+            quad(s, 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type', `${sd}Service`),
+            quad(s, `${sd}endpoint`, '/sparql'),
+            quad(s, `${sd}url`, '/sparql'),
+            quad(s, `${sd}feature`, `${sd}BasicFederatedQuery`),
+            quad(s, `${sd}supportedLanguage`, `${sd}SPARQL10Query`),
+            quad(s, `${sd}supportedLanguage`, `${sd}SPARQL11Query`),
+            quad(s, `${sd}resultFormat`, 'ONE'),
+            quad(s, `${sd}resultFormat`, 'TWO'),
+            quad(s, `${sd}resultFormat`, 'THREE'),
+            quad(s, `${sd}resultFormat`, 'FOUR'),
           ]),
         });
       });
 
-      it('should write the service description when no query was defined for HEAD', async () => {
+      it('should write the service description when no query was defined for HEAD', async() => {
         // Create spies
         const engine = await newEngineDynamic();
         const spyWriteServiceDescription = jest.spyOn(instance, 'writeServiceDescription');
@@ -694,15 +771,21 @@ describe('HttpServiceSparqlEndpoint', () => {
         const spyResultToString = jest.spyOn(engine, 'resultToString');
 
         // Invoke writeQueryResult
-        await instance.writeQueryResult(engine, new PassThrough(), new PassThrough(),
-          request, response, '', mediaType, true);
+        await instance.writeQueryResult(engine,
+          new PassThrough(),
+          new PassThrough(),
+          request,
+          response,
+          '',
+          mediaType,
+          true);
 
         // Check output
         await expect(endCalledPromise).resolves.toBeFalsy();
         expect(response.writeHead).toHaveBeenCalledTimes(1);
         expect(response.writeHead).toHaveBeenLastCalledWith(200,
-          {'content-type': mediaType, 'Access-Control-Allow-Origin': '*'});
-        expect(response.toString()).toBe("");
+          { 'content-type': mediaType, 'Access-Control-Allow-Origin': '*' });
+        expect(response.toString()).toBe('');
 
         // Check if the SD logic has been called
         expect(spyWriteServiceDescription).toHaveBeenCalledTimes(1);
@@ -712,30 +795,43 @@ describe('HttpServiceSparqlEndpoint', () => {
         expect(spyResultToString).toHaveBeenCalledTimes(0);
       });
 
-      it('should handle errors in service description stringification', async () => {
-        mediaType = "mediatype_queryresultstreamerror";
-        await instance.writeQueryResult(await newEngineDynamic(), new PassThrough(), new PassThrough(),
-          request, response, '', mediaType, false);
+      it('should handle errors in service description stringification', async() => {
+        mediaType = 'mediatype_queryresultstreamerror';
+        await instance.writeQueryResult(await newEngineDynamic(),
+          new PassThrough(),
+          new PassThrough(),
+          request,
+          response,
+          '',
+          mediaType,
+          false);
 
-        await expect(endCalledPromise).resolves.toBe("An internal server error occurred.\n");
+        await expect(endCalledPromise).resolves.toBe('An internal server error occurred.\n');
         expect(response.writeHead).toHaveBeenCalledTimes(1);
         expect(response.writeHead).toHaveBeenLastCalledWith(200,
-          {'content-type': mediaType, 'Access-Control-Allow-Origin': '*'});
+          { 'content-type': mediaType, 'Access-Control-Allow-Origin': '*' });
       });
 
-      it('should handle an invalid media type in service description', async () => {
-        mediaType = "mediatype_queryresultstreamerror";
-        await instance.writeQueryResult(await newEngineDynamic(), new PassThrough(), new PassThrough(),
-          request, response, '', 'mediatype_throwerror', false);
+      it('should handle an invalid media type in service description', async() => {
+        mediaType = 'mediatype_queryresultstreamerror';
+        await instance.writeQueryResult(await newEngineDynamic(),
+          new PassThrough(),
+          new PassThrough(),
+          request,
+          response,
+          '',
+          'mediatype_throwerror',
+          false);
 
         await expect(endCalledPromise).resolves.toBe(
-          "The response for the given query could not be serialized for the requested media type\n");
+          'The response for the given query could not be serialized for the requested media type\n',
+        );
         expect(response.writeHead).toHaveBeenLastCalledWith(400,
-          {'content-type': 'text/plain', 'Access-Control-Allow-Origin': '*'});
+          { 'content-type': 'text/plain', 'Access-Control-Allow-Origin': '*' });
       });
     });
 
-    describe("stopResponse", () => {
+    describe('stopResponse', () => {
       let response: any;
       let eventEmitter: any;
       const endListener = jest.fn();
@@ -743,46 +839,46 @@ describe('HttpServiceSparqlEndpoint', () => {
         endListener.mockClear();
         instance.timeout = 1500;
         response = new ServerResponseMock();
-        eventEmitter = stringToStream("queryresult");
-        eventEmitter.addListener("test", endListener);
+        eventEmitter = stringToStream('queryresult');
+        eventEmitter.addListener('test', endListener);
       });
 
-      it("should not error when eventEmitter is undefined", async () => {
+      it('should not error when eventEmitter is undefined', async() => {
         expect(() => instance.stopResponse(response, undefined)).not.toThrowError();
       });
 
-      it('should do nothing when no timeout or close event occurs', async () => {
+      it('should do nothing when no timeout or close event occurs', async() => {
         instance.stopResponse(response, eventEmitter);
         // Not waiting for timeout to occur
 
-        expect(eventEmitter.listeners("test").length).toEqual(1);
+        expect(eventEmitter.listeners('test').length).toEqual(1);
         expect(response.end).not.toHaveBeenCalled();
         expect(endListener).not.toHaveBeenCalled();
       });
 
-      it('should remove event eventlisteners from eventEmitter if timeout occurs', async () => {
+      it('should remove event eventlisteners from eventEmitter if timeout occurs', async() => {
         instance.stopResponse(response, eventEmitter);
-        await new Promise((resolve) => setTimeout(resolve, 1600)); // Wait for timeout to occur
+        await new Promise(resolve => setTimeout(resolve, 1600)); // Wait for timeout to occur
 
-        expect(eventEmitter.listeners("test").length).toEqual(0);
+        expect(eventEmitter.listeners('test').length).toEqual(0);
         expect(response.end).toHaveBeenCalled();
       });
 
-      it('should remove event eventlisteners from eventEmitter when response is closed', async () => {
+      it('should remove event eventlisteners from eventEmitter when response is closed', async() => {
         instance.stopResponse(response, eventEmitter);
-        response.emit("close");
+        response.emit('close');
 
-        expect(eventEmitter.listeners("test").length).toEqual(0);
+        expect(eventEmitter.listeners('test').length).toEqual(0);
         expect(response.end).toHaveBeenCalled();
       });
     });
 
     describe('parseBody', () => {
       let httpRequestMock: any;
-      const testRequestBody = "teststring";
+      const testRequestBody = 'teststring';
       beforeEach(() => {
         httpRequestMock = stringToStream(testRequestBody);
-        httpRequestMock.headers = {'content-type': "contenttypewhichdefinitelydoesnotexist"};
+        httpRequestMock.headers = { 'content-type': 'contenttypewhichdefinitelydoesnotexist' };
       });
 
       it('should reject if the stream emits an error', () => {
@@ -796,16 +892,16 @@ describe('HttpServiceSparqlEndpoint', () => {
         return expect(httpRequestMock._readableState.encoding).toEqual('utf8');
       });
 
-      // tslint:disable-next-line:max-line-length
-      it('should return the empty string if the query is invalid and the content-type is application/x-www-form-urlencoded', () => {
-        httpRequestMock.headers = {'content-type': "application/x-www-form-urlencoded"};
+      it('should return the empty string if the query is invalid ' +
+        'and the content-type is application/x-www-form-urlencoded', () => {
+        httpRequestMock.headers = { 'content-type': 'application/x-www-form-urlencoded' };
         return expect(instance.parseBody(httpRequestMock)).resolves.toBe('');
       });
 
       it('should parse query from url if the content-type is application/x-www-form-urlencoded', () => {
-        const exampleQueryString = "query=SELECT%20*%20WHERE%20%7B%3Fs%20%3Fp%20%3Fo%7D";
+        const exampleQueryString = 'query=SELECT%20*%20WHERE%20%7B%3Fs%20%3Fp%20%3Fo%7D';
         httpRequestMock = stringToStream(exampleQueryString);
-        httpRequestMock.headers = {'content-type': "application/x-www-form-urlencoded"};
+        httpRequestMock.headers = { 'content-type': 'application/x-www-form-urlencoded' };
 
         return expect(instance.parseBody(httpRequestMock)).resolves.toBe(querystring.parse(exampleQueryString).query);
       });
@@ -815,7 +911,7 @@ describe('HttpServiceSparqlEndpoint', () => {
       });
 
       it('should return input body if content-type is application/sparql-query', () => {
-        httpRequestMock.headers = {'content-type': "application/sparql-query"};
+        httpRequestMock.headers = { 'content-type': 'application/sparql-query' };
         return expect(instance.parseBody(httpRequestMock)).resolves.toBe(testRequestBody);
       });
     });

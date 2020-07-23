@@ -1,7 +1,7 @@
-import {Bus} from "@comunica/core";
-import {ArrayIterator} from "asynciterator";
-import {Readable} from "stream";
-import {ActorRdfSerializeN3} from "../lib/ActorRdfSerializeN3";
+import { Readable } from 'stream';
+import { Bus } from '@comunica/core';
+import { ArrayIterator } from 'asynciterator';
+import { ActorRdfSerializeN3 } from '../lib/ActorRdfSerializeN3';
 
 const quad = require('rdf-quad');
 const stringifyStream = require('stream-to-string');
@@ -33,10 +33,12 @@ describe('ActorRdfSerializeN3', () => {
     let quadsError: any;
 
     beforeEach(() => {
-      actor = new ActorRdfSerializeN3({ bus, mediaTypes: {
-        'application/trig': 1.0,
-        'text/turtle': 1.0,
-      }, name: 'actor' });
+      actor = new ActorRdfSerializeN3({ bus,
+        mediaTypes: {
+          'application/trig': 1,
+          'text/turtle': 1,
+        },
+        name: 'actor' });
     });
 
     describe('for serializing', () => {
@@ -50,7 +52,8 @@ describe('ActorRdfSerializeN3', () => {
       });
 
       it('should test on application/trig', () => {
-        return expect(actor.test({ handle: { quadStream }, handleMediaType: 'application/trig' })).resolves.toBeTruthy();
+        return expect(actor.test({ handle: { quadStream }, handleMediaType: 'application/trig' }))
+          .resolves.toBeTruthy();
       });
 
       it('should test on text/turtle', () => {
@@ -61,37 +64,39 @@ describe('ActorRdfSerializeN3', () => {
         return expect(actor.test({ handle: { quadStream }, handleMediaType: 'application/json' })).rejects.toBeTruthy();
       });
 
-      it('should run', async () => {
+      it('should run', async() => {
         const output: any = await actor.run({ handle: { quadStream }, handleMediaType: 'text/turtle' });
-        return expect(await stringifyStream(output.handle.data)).toEqual(
-`<http://example.org/a> <http://example.org/b> <http://example.org/c>;
+        expect(await stringifyStream(output.handle.data)).toEqual(
+          `<http://example.org/a> <http://example.org/b> <http://example.org/c>;
     <http://example.org/d> <http://example.org/e>.
-`);
+`,
+        );
       });
 
-      it('should run and output triples for text/turtle', async () => {
-        return expect((<any> (await actor.run({ handle: { quadStream }, handleMediaType: 'text/turtle' })))
+      it('should run and output triples for text/turtle', async() => {
+        expect((<any> (await actor.run({ handle: { quadStream }, handleMediaType: 'text/turtle' })))
           .handle.triples).toBeTruthy();
       });
 
-      it('should run and output triples for application/n-triples', async () => {
-        return expect((<any> (await actor.run({ handle: { quadStream }, handleMediaType: 'application/n-triples' })))
+      it('should run and output triples for application/n-triples', async() => {
+        expect((<any> (await actor.run({ handle: { quadStream }, handleMediaType: 'application/n-triples' })))
           .handle.triples).toBeTruthy();
       });
 
-      it('should run and output triples for text/n3', async () => {
-        return expect((<any> (await actor.run({ handle: { quadStream }, handleMediaType: 'text/n3' })))
+      it('should run and output triples for text/n3', async() => {
+        expect((<any> (await actor.run({ handle: { quadStream }, handleMediaType: 'text/n3' })))
           .handle.triples).toBeTruthy();
       });
 
-      it('should run and output non-triples for application/trig', async () => {
-        return expect((<any> (await actor.run({ handle: { quadStream }, handleMediaType: 'application/trig' })))
+      it('should run and output non-triples for application/trig', async() => {
+        expect((<any> (await actor.run({ handle: { quadStream }, handleMediaType: 'application/trig' })))
           .handle.triples).toBeFalsy();
       });
 
-      it('should forward stream errors', async () => {
-        return expect(stringifyStream((<any> (await actor.run(
-          { handle: { quadStream: quadsError }, handleMediaType: 'application/trig' })))
+      it('should forward stream errors', async() => {
+        await expect(stringifyStream((<any> (await actor.run(
+          { handle: { quadStream: quadsError }, handleMediaType: 'application/trig' },
+        )))
           .handle.data)).rejects.toBeTruthy();
       });
     });
@@ -103,8 +108,8 @@ describe('ActorRdfSerializeN3', () => {
 
       it('should run', () => {
         return expect(actor.run({ mediaTypes: true })).resolves.toEqual({ mediaTypes: {
-          'application/trig': 1.0,
-          'text/turtle': 1.0,
+          'application/trig': 1,
+          'text/turtle': 1,
         }});
       });
     });

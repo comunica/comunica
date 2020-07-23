@@ -1,10 +1,10 @@
-import {ActorRdfDereference, KEY_CONTEXT_LENIENT} from "@comunica/bus-rdf-dereference";
-import {ActionContext, Bus} from "@comunica/core";
-import {MediatorRace} from "@comunica/mediator-race";
-import "isomorphic-fetch";
-import {PassThrough, Readable} from "stream";
-import {ActorRdfDereferenceHttpParse} from "../lib/ActorRdfDereferenceHttpParse";
-const arrayifyStream = require("arrayify-stream");
+import { PassThrough, Readable } from 'stream';
+import { ActorRdfDereference, KEY_CONTEXT_LENIENT } from '@comunica/bus-rdf-dereference';
+import { ActionContext, Bus } from '@comunica/core';
+import { MediatorRace } from '@comunica/mediator-race';
+import 'cross-fetch/polyfill';
+import { ActorRdfDereferenceHttpParse } from '../lib/ActorRdfDereferenceHttpParse';
+const arrayifyStream = require('arrayify-stream');
 
 describe('ActorRdfDereferenceHttpParse', () => {
   let bus: any;
@@ -28,10 +28,12 @@ describe('ActorRdfDereferenceHttpParse', () => {
 
     it('should be a ActorRdfDereferenceHttpParse constructor', () => {
       expect(new (<any> ActorRdfDereferenceHttpParse)(
-        { name: 'actor', bus, mediatorHttp, mediatorRdfParse, mediaMappings }))
+        { name: 'actor', bus, mediatorHttp, mediatorRdfParse, mediaMappings },
+      ))
         .toBeInstanceOf(ActorRdfDereferenceHttpParse);
       expect(new (<any> ActorRdfDereferenceHttpParse)(
-        { name: 'actor', bus, mediatorHttp, mediatorRdfParse, mediaMappings }))
+        { name: 'actor', bus, mediatorHttp, mediatorRdfParse, mediaMappings },
+      ))
         .toBeInstanceOf(ActorRdfDereference);
     });
 
@@ -46,31 +48,29 @@ describe('ActorRdfDereferenceHttpParse', () => {
     beforeEach(() => {
       mediatorRdfParse.mediate = (action: any) => {
         if (action.mediaTypes) {
-          return { mediaTypes: { a: 1.0 }};
-        } else {
-          const quads = new Readable();
-          if (action.context && action.context.has('emitParseError')) {
-            quads._read = () => {
-              quads.emit('error', new Error('Parse error'));
-            };
-            return { handle: { quads, triples: true } };
-          } else if (action.context && action.context.has('parseReject')) {
-            return Promise.reject(new Error('Parse reject error'));
-          } else {
-            quads._read = () => {
-              action.handle.input.read(1);
-              quads.push(null);
-            };
-            action.handle.input.on('error', (error: Error) => quads.emit('error', error));
-            return { handle: { quads, triples: true } };
-          }
+          return { mediaTypes: { a: 1 }};
         }
+        const quads = new Readable();
+        if (action.context && action.context.has('emitParseError')) {
+          quads._read = () => {
+            quads.emit('error', new Error('Parse error'));
+          };
+          return { handle: { quads, triples: true }};
+        } if (action.context && action.context.has('parseReject')) {
+          return Promise.reject(new Error('Parse reject error'));
+        }
+        quads._read = () => {
+          action.handle.input.read(1);
+          quads.push(null);
+        };
+        action.handle.input.on('error', (error: Error) => quads.emit('error', error));
+        return { handle: { quads, triples: true }};
       };
       mediatorHttp.mediate = (action: any) => {
         if (action.context && action.context.has('httpReject')) {
           return Promise.reject(new Error('Http reject error'));
         }
-        if (action.input.indexOf('error') >= 0) {
+        if (action.input.includes('error')) {
           const body = new Readable();
           body._read = () => {
             body.emit('error', new Error('Body stream error'));
@@ -90,24 +90,25 @@ describe('ActorRdfDereferenceHttpParse', () => {
           url = action.input === 'https://www.google.com/rel.txt' ? 'relative' : action.input;
         }
         if (action.init.method) {
-          url = 'https://www.google.com/' + action.init.method + '.html';
+          url = `https://www.google.com/${action.init.method}.html`;
         }
         if (action.init.headers.has('SomeKey')) {
-          url = 'https://www.google.com/' + action.init.headers.get('SomeKey') + '.html';
+          url = `https://www.google.com/${action.init.headers.get('SomeKey')}.html`;
         }
         const headers = new Headers();
         if (!extension) {
           headers.set('content-type', 'a; charset=utf-8');
         }
-        if (action.input.indexOf('emptycontenttype') >= 0) {
+        if (action.input.includes('emptycontenttype')) {
           headers.set('content-type', '');
         }
-        if (action.input.indexOf('missingcontenttype') >= 0) {
+        if (action.input.includes('missingcontenttype')) {
           headers.delete('content-type');
         }
         return {
-          body: action.input === 'https://www.google.com/noweb'
-          ? require('web-streams-node').toWebReadableStream(new PassThrough()) : new PassThrough(),
+          body: action.input === 'https://www.google.com/noweb' ?
+            require('web-streams-node').toWebReadableStream(new PassThrough()) :
+            new PassThrough(),
           headers,
           status,
           url,
@@ -142,7 +143,7 @@ describe('ActorRdfDereferenceHttpParse', () => {
     });
 
     it('should stringify a single media type', () => {
-      return expect(actor.mediaTypesToAcceptString({ a: 1.0 }, 100)).toEqual('a');
+      return expect(actor.mediaTypesToAcceptString({ a: 1 }, 100)).toEqual('a');
     });
 
     it('should stringify a single prioritized media type', () => {
@@ -150,40 +151,40 @@ describe('ActorRdfDereferenceHttpParse', () => {
     });
 
     it('should stringify three media types', () => {
-      return expect(actor.mediaTypesToAcceptString({ a: 1.0, b: 1.0, c: 1.0 }, 100)).toEqual('a,b,c');
+      return expect(actor.mediaTypesToAcceptString({ a: 1, b: 1, c: 1 }, 100)).toEqual('a,b,c');
     });
 
     it('should stringify three prioritized media types', () => {
-      return expect(actor.mediaTypesToAcceptString({ a: 1.0, b: 0.8, c: 0.2 }, 100))
+      return expect(actor.mediaTypesToAcceptString({ a: 1, b: 0.8, c: 0.2 }, 100))
         .toEqual('a,b;q=0.8,c;q=0.2');
     });
 
     it('should only allow 3 digits after decimal point', () => {
-      return expect(actor.mediaTypesToAcceptString({ a: 1.0, b: 0.811111111, c: 0.2111111111 }, 100))
+      return expect(actor.mediaTypesToAcceptString({ a: 1, b: 0.811111111, c: 0.2111111111 }, 100))
         .toEqual('a,b;q=0.811,c;q=0.211');
     });
 
     it('should sort by decreasing priorities', () => {
-      return expect(actor.mediaTypesToAcceptString({ a: 0.2, b: 1.0, c: 0.8 }, 100))
+      return expect(actor.mediaTypesToAcceptString({ a: 0.2, b: 1, c: 0.8 }, 100))
         .toEqual('b,c;q=0.8,a;q=0.2');
     });
 
     it('should cut off media types when too long', () => {
-      return expect(actor.mediaTypesToAcceptString({ a: 1.0, b: 0.8, c: 0.2 }, 23))
+      return expect(actor.mediaTypesToAcceptString({ a: 1, b: 0.8, c: 0.2 }, 23))
         .toEqual('a,b;q=0.8,*/*;q=0.1');
     });
 
     it('should cut off media types when too long at edge (1)', () => {
-      return expect(actor.mediaTypesToAcceptString({ a: 1.0, b: 0.8, c: 0.2 }, 19))
+      return expect(actor.mediaTypesToAcceptString({ a: 1, b: 0.8, c: 0.2 }, 19))
         .toEqual('a,b;q=0.8,*/*;q=0.1');
     });
 
     it('should cut off media types when too long at edge (2)', () => {
-      return expect(actor.mediaTypesToAcceptString({ a: 1.0, b: 0.8, c: 0.2 }, 20))
+      return expect(actor.mediaTypesToAcceptString({ a: 1, b: 0.8, c: 0.2 }, 20))
         .toEqual('a,b;q=0.8,*/*;q=0.1');
     });
 
-    it('should run with a web stream', async () => {
+    it('should run with a web stream', async() => {
       const headers = {
         'content-type': 'a; charset=utf-8',
       };
@@ -194,7 +195,7 @@ describe('ActorRdfDereferenceHttpParse', () => {
       expect(await arrayifyStream(output.quads)).toEqual([]);
     });
 
-    it('should run with a web stream with a known extension', async () => {
+    it('should run with a web stream with a known extension', async() => {
       const headers = {};
       const output = await actor.run({ url: 'https://www.google.com/abc.x' });
       expect(output.url).toEqual('https://www.google.com/abc.x');
@@ -203,7 +204,7 @@ describe('ActorRdfDereferenceHttpParse', () => {
       expect(await arrayifyStream(output.quads)).toEqual([]);
     });
 
-    it('should run with an empty content type', async () => {
+    it('should run with an empty content type', async() => {
       const headers = {
         'content-type': '',
       };
@@ -214,7 +215,7 @@ describe('ActorRdfDereferenceHttpParse', () => {
       expect(await arrayifyStream(output.quads)).toEqual([]);
     });
 
-    it('should run with a missing content type', async () => {
+    it('should run with a missing content type', async() => {
       const headers = {};
       const output = await actor.run({ url: 'https://www.google.com/missingcontenttype' });
       expect(output.url).toEqual('https://www.google.com/index.html');
@@ -223,7 +224,7 @@ describe('ActorRdfDereferenceHttpParse', () => {
       expect(await arrayifyStream(output.quads)).toEqual([]);
     });
 
-    it('should run with a web stream with a known extension', async () => {
+    it('should run with a web stream with another known extension', async() => {
       const headers = {};
       const output = await actor.run({ url: 'https://www.google.com/abc.y' });
       expect(output.url).toEqual('https://www.google.com/abc.y');
@@ -232,7 +233,7 @@ describe('ActorRdfDereferenceHttpParse', () => {
       expect(await arrayifyStream(output.quads)).toEqual([]);
     });
 
-    it('should run with a web stream with a relative response URL', async () => {
+    it('should run with a web stream with a relative response URL', async() => {
       const headers = {};
       const output = await actor.run({ url: 'https://www.google.com/rel.txt' });
       expect(output.url).toEqual('https://www.google.com/relative');
@@ -241,7 +242,7 @@ describe('ActorRdfDereferenceHttpParse', () => {
       expect(await arrayifyStream(output.quads)).toEqual([]);
     });
 
-    it('should run with a Node.JS stream', async () => {
+    it('should run with a Node.JS stream', async() => {
       const headers = {
         'content-type': 'a; charset=utf-8',
       };
@@ -256,7 +257,7 @@ describe('ActorRdfDereferenceHttpParse', () => {
       return expect(actor.run({ url: 'https://www.nogoogle.com/notfound' })).rejects.toBeTruthy();
     });
 
-    it('should run on a 404 in lenient mode', async () => {
+    it('should run on a 404 in lenient mode', async() => {
       const context = ActionContext({ [KEY_CONTEXT_LENIENT]: true });
       const spy = jest.spyOn(actor, <any> 'logError');
       const output = await actor.run({ url: 'https://www.nogoogle.com/notfound', context });
@@ -265,7 +266,7 @@ describe('ActorRdfDereferenceHttpParse', () => {
       expect(spy).toHaveBeenCalledTimes(1);
     });
 
-    it('should run with another method', async () => {
+    it('should run with another method', async() => {
       const headers = {
         'content-type': 'a; charset=utf-8',
       };
@@ -276,24 +277,24 @@ describe('ActorRdfDereferenceHttpParse', () => {
       expect(await arrayifyStream(output.quads)).toEqual([]);
     });
 
-    it('should run with custom headers', async () => {
+    it('should run with custom headers', async() => {
       const headers = {
         'content-type': 'a; charset=utf-8',
       };
-      const output = await actor.run({ url: 'https://www.google.com/', headers: { SomeKey: 'V' } });
+      const output = await actor.run({ url: 'https://www.google.com/', headers: { SomeKey: 'V' }});
       expect(output.url).toEqual('https://www.google.com/V.html');
       expect(output.triples).toEqual(true);
       expect(output.headers).toEqual(headers);
       expect(await arrayifyStream(output.quads)).toEqual([]);
     });
 
-    it('should run and receive stream errors', async () => {
+    it('should run and receive stream errors', async() => {
       const output = await actor.run({ url: 'https://www.google.com/error' });
       expect(output.url).toEqual('https://www.google.com/error');
       await expect(arrayifyStream(output.quads)).rejects.toThrow(new Error('Body stream error'));
     });
 
-    it('should run and ignore stream errors in lenient mode', async () => {
+    it('should run and ignore stream errors in lenient mode', async() => {
       const context = ActionContext({ [KEY_CONTEXT_LENIENT]: true });
       const spy = jest.spyOn(actor, <any> 'logError');
       const output = await actor.run({ url: 'https://www.google.com/error', context });
@@ -302,14 +303,14 @@ describe('ActorRdfDereferenceHttpParse', () => {
       expect(spy).toHaveBeenCalledTimes(1);
     });
 
-    it('should run and receive parse errors', async () => {
+    it('should run and receive parse errors', async() => {
       const context = ActionContext({ emitParseError: true });
       const output = await actor.run({ url: 'https://www.google.com/', context });
       expect(output.url).toEqual('https://www.google.com/index.html');
       await expect(arrayifyStream(output.quads)).rejects.toThrow(new Error('Parse error'));
     });
 
-    it('should run and ignore parse errors in lenient mode', async () => {
+    it('should run and ignore parse errors in lenient mode', async() => {
       const context = ActionContext({ emitParseError: true, [KEY_CONTEXT_LENIENT]: true });
       const spy = jest.spyOn(actor, <any> 'logError');
       const output = await actor.run({ url: 'https://www.google.com/', context });
@@ -324,7 +325,7 @@ describe('ActorRdfDereferenceHttpParse', () => {
         .rejects.toThrow(new Error('Http reject error'));
     });
 
-    it('should run and ignore http rejects in lenient mode', async () => {
+    it('should run and ignore http rejects in lenient mode', async() => {
       const context = ActionContext({ httpReject: true, [KEY_CONTEXT_LENIENT]: true });
       const spy = jest.spyOn(actor, <any> 'logError');
       const output = await actor.run({ url: 'https://www.google.com/', context });
@@ -339,7 +340,7 @@ describe('ActorRdfDereferenceHttpParse', () => {
         .rejects.toThrow(new Error('Parse reject error'));
     });
 
-    it('should run and ignore parse rejects in lenient mode', async () => {
+    it('should run and ignore parse rejects in lenient mode', async() => {
       const context = ActionContext({ parseReject: true, [KEY_CONTEXT_LENIENT]: true });
       const spy = jest.spyOn(actor, <any> 'logError');
       const output = await actor.run({ url: 'https://www.google.com/', context });

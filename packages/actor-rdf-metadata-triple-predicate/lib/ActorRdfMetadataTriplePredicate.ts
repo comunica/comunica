@@ -1,6 +1,6 @@
-import {ActorRdfMetadataQuadPredicate, IActionRdfMetadata, IActorRdfMetadataOutput} from "@comunica/bus-rdf-metadata";
-import {IActorArgs, IActorTest} from "@comunica/core";
-import * as RDF from "rdf-js";
+import { ActorRdfMetadataQuadPredicate, IActionRdfMetadata, IActorRdfMetadataOutput } from '@comunica/bus-rdf-metadata';
+import { IActorArgs, IActorTest } from '@comunica/core';
+import * as RDF from 'rdf-js';
 
 /**
  * An RDF Metadata Actor that splits off the metadata based on the existence of a preconfigured set of predicates
@@ -8,10 +8,9 @@ import * as RDF from "rdf-js";
  */
 export class ActorRdfMetadataTriplePredicate extends ActorRdfMetadataQuadPredicate
   implements IActorRdfParseFixedMediaTypesArgs {
-
   public readonly predicateRegexes: string[];
 
-  constructor(args: IActorRdfParseFixedMediaTypesArgs) {
+  public constructor(args: IActorRdfParseFixedMediaTypesArgs) {
     super(args);
   }
 
@@ -24,13 +23,13 @@ export class ActorRdfMetadataTriplePredicate extends ActorRdfMetadataQuadPredica
       return true;
     }
     for (const regex of this.predicateRegexes) {
+      // eslint-disable-next-line @typescript-eslint/prefer-regexp-exec
       if (quad.predicate.value.match(regex)) {
         return true;
       }
     }
     return false;
   }
-
 }
 
 export interface IActorRdfParseFixedMediaTypesArgs

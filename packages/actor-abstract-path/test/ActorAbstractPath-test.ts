@@ -1,7 +1,7 @@
-import {Actor, Bus} from "@comunica/core";
-import {blankNode, namedNode} from "@rdfjs/data-model";
-import {Factory} from "sparqlalgebrajs";
-import {ActorAbstractPath} from "../lib/ActorAbstractPath";
+import { Actor, Bus } from '@comunica/core';
+import { blankNode, namedNode } from '@rdfjs/data-model';
+import { Factory } from 'sparqlalgebrajs';
+import { ActorAbstractPath } from '../lib/ActorAbstractPath';
 
 describe('ActorAbstractPath', () => {
   const bus = new Bus({ name: 'bus' });

@@ -1,12 +1,10 @@
-// tslint:disable:object-literal-sort-keys
-import { literal, variable } from "@rdfjs/data-model";
-import { ArrayIterator } from "asynciterator";
-import * as sparqlee from "sparqlee";
+import { ActorQueryOperation, Bindings, IActorQueryOperationOutputBindings } from '@comunica/bus-query-operation';
+import { Bus } from '@comunica/core';
+import { literal, variable } from '@rdfjs/data-model';
+import { ArrayIterator } from 'asynciterator';
+import * as sparqlee from 'sparqlee';
+import { ActorQueryOperationLeftJoinNestedLoop } from '../lib/ActorQueryOperationLeftJoinNestedLoop';
 const arrayifyStream = require('arrayify-stream');
-
-import { ActorQueryOperation, Bindings, IActorQueryOperationOutputBindings } from "@comunica/bus-query-operation";
-import { Bus } from "@comunica/core";
-import { ActorQueryOperationLeftJoinNestedLoop } from "../lib/ActorQueryOperationLeftJoinNestedLoop";
 
 describe('ActorQueryOperationLeftJoinNestedLoop', () => {
   let bus: any;
@@ -15,27 +13,27 @@ describe('ActorQueryOperationLeftJoinNestedLoop', () => {
 
   const truthyExpression = {
     expressionType: 'term',
-    term: literal("nonemptystring"),
+    term: literal('nonemptystring'),
     type: 'expression',
   };
   const falsyExpression = {
     expressionType: 'term',
-    term: literal(""),
+    term: literal(''),
     type: 'expression',
   };
   const erroringExpression = {
-    type: "expression",
-    expressionType: "operator",
-    operator: "+",
+    type: 'expression',
+    expressionType: 'operator',
+    operator: '+',
     args: [
       {
-        type: "expression",
-        expressionType: "term",
+        type: 'expression',
+        expressionType: 'term',
         term: variable('a'),
       },
       {
-        type: "expression",
-        expressionType: "term",
+        type: 'expression',
+        expressionType: 'term',
         term: variable('a'),
       },
     ],
@@ -55,15 +53,16 @@ describe('ActorQueryOperationLeftJoinNestedLoop', () => {
       Bindings({ '?a': literal('3'), '?b': literal('2') }),
     ]);
     mediatorQueryOperation = {
-      mediate: (arg: any) => {
+      mediate(arg: any) {
         left = !left;
         return Promise.resolve({
           bindingsStream: left ? bindingStreamLeft : bindingStreamRight,
           metadata: () => arg.operation.rejectMetadata ?
-              Promise.reject(new Error('fail')) : Promise.resolve({ totalItems: 3 }),
+            Promise.reject(new Error('fail')) :
+            Promise.resolve({ totalItems: 3 }),
           operated: arg,
           type: 'bindings',
-          variables: left ? ['?a'] : ['?a', '?b'],
+          variables: left ? [ '?a' ] : [ '?a', '?b' ],
         });
       },
     };
@@ -75,14 +74,14 @@ describe('ActorQueryOperationLeftJoinNestedLoop', () => {
     });
 
     it('should be a ActorQueryOperationLeftJoinNestedLoop constructor', () => {
-      expect(new (ActorQueryOperationLeftJoinNestedLoop as any)({ name: 'actor', bus, mediatorQueryOperation }))
+      expect(new (<any> ActorQueryOperationLeftJoinNestedLoop)({ name: 'actor', bus, mediatorQueryOperation }))
         .toBeInstanceOf(ActorQueryOperationLeftJoinNestedLoop);
-      expect(new (ActorQueryOperationLeftJoinNestedLoop as any)({ name: 'actor', bus, mediatorQueryOperation }))
+      expect(new (<any> ActorQueryOperationLeftJoinNestedLoop)({ name: 'actor', bus, mediatorQueryOperation }))
         .toBeInstanceOf(ActorQueryOperation);
     });
 
     it('should not be able to create new ActorQueryOperationLeftJoinNestedLoop objects without \'new\'', () => {
-      expect(() => { (ActorQueryOperationLeftJoinNestedLoop as any)(); }).toThrow();
+      expect(() => { (<any> ActorQueryOperationLeftJoinNestedLoop)(); }).toThrow();
     });
   });
 
@@ -94,18 +93,18 @@ describe('ActorQueryOperationLeftJoinNestedLoop', () => {
     });
 
     it('should test on leftjoin', () => {
-      const op = { operation: { type: 'leftjoin' } };
+      const op = { operation: { type: 'leftjoin' }};
       return expect(actor.test(op)).resolves.toBeTruthy();
     });
 
     it('should not test on non-leftjoin', () => {
-      const op = { operation: { type: 'some-other-type' } };
+      const op = { operation: { type: 'some-other-type' }};
       return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
     it('should run', () => {
-      const op = { operation: { type: 'leftjoin', left: {}, right: {} } };
-      return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
+      const op = { operation: { type: 'leftjoin', left: {}, right: {}}};
+      return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({ '?a': literal('1'), '?b': literal('1') }),
           Bindings({ '?a': literal('2') }),
@@ -114,35 +113,35 @@ describe('ActorQueryOperationLeftJoinNestedLoop', () => {
         ]);
         expect(await (<any> output).metadata()).toMatchObject({ totalItems: 9 });
         expect(output.type).toEqual('bindings');
-        expect(output.variables).toMatchObject(['?a', '?b']);
+        expect(output.variables).toMatchObject([ '?a', '?b' ]);
       });
     });
 
     it('should correctly handle rejecting promise in left and right', () => {
-      const op = { operation: { type: 'leftjoin', left: { rejectMetadata: true }, right: { rejectMetadata: true } } };
-      return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
+      const op = { operation: { type: 'leftjoin', left: { rejectMetadata: true }, right: { rejectMetadata: true }}};
+      return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
         expect(await (<any> output).metadata()).toMatchObject({ totalItems: Infinity });
       });
     });
 
     it('should correctly handle rejecting promise in left', () => {
-      const op = { operation: { type: 'leftjoin', left: { rejectMetadata: true }, right: {} } };
-      return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
+      const op = { operation: { type: 'leftjoin', left: { rejectMetadata: true }, right: {}}};
+      return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
         expect(await (<any> output).metadata()).toMatchObject({ totalItems: Infinity });
       });
     });
 
     it('should correctly handle rejecting promise in right', () => {
-      const op = { operation: { type: 'leftjoin', left: {}, right: { rejectMetadata: true } } };
-      return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
+      const op = { operation: { type: 'leftjoin', left: {}, right: { rejectMetadata: true }}};
+      return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
         expect(await (<any> output).metadata()).toMatchObject({ totalItems: Infinity });
       });
     });
 
-    it('should correctly handle truthy expressions', async () => {
+    it('should correctly handle truthy expressions', async() => {
       const expression = truthyExpression;
-      const op = { operation: { type: 'leftjoin', left: {}, right: {}, expression } };
-      return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
+      const op = { operation: { type: 'leftjoin', left: {}, right: {}, expression }};
+      await actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({ '?a': literal('1'), '?b': literal('1') }),
           Bindings({ '?a': literal('2') }),
@@ -151,14 +150,14 @@ describe('ActorQueryOperationLeftJoinNestedLoop', () => {
         ]);
         expect(await (<any> output).metadata()).toMatchObject({ totalItems: 9 });
         expect(output.type).toEqual('bindings');
-        expect(output.variables).toMatchObject(['?a', '?b']);
+        expect(output.variables).toMatchObject([ '?a', '?b' ]);
       });
     });
 
-    it('should correctly handle falsy expressions', async () => {
+    it('should correctly handle falsy expressions', async() => {
       const expression = falsyExpression;
-      const op = { operation: { type: 'leftjoin', left: {}, right: {}, expression } };
-      return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
+      const op = { operation: { type: 'leftjoin', left: {}, right: {}, expression }};
+      await actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({ '?a': literal('1') }),
           Bindings({ '?a': literal('2') }),
@@ -166,14 +165,14 @@ describe('ActorQueryOperationLeftJoinNestedLoop', () => {
         ]);
         expect(await (<any> output).metadata()).toMatchObject({ totalItems: 9 });
         expect(output.type).toEqual('bindings');
-        expect(output.variables).toMatchObject(['?a', '?b']);
+        expect(output.variables).toMatchObject([ '?a', '?b' ]);
       });
     });
 
-    it('should correctly handle erroring expressions', async () => {
+    it('should correctly handle erroring expressions', async() => {
       const expression = erroringExpression;
-      const op = { operation: { type: 'leftjoin', left: {}, right: {}, expression } };
-      return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
+      const op = { operation: { type: 'leftjoin', left: {}, right: {}, expression }};
+      await actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({ '?a': literal('1') }),
           Bindings({ '?a': literal('2') }),
@@ -181,15 +180,15 @@ describe('ActorQueryOperationLeftJoinNestedLoop', () => {
         ]);
         expect(await (<any> output).metadata()).toMatchObject({ totalItems: 9 });
         expect(output.type).toEqual('bindings');
-        expect(output.variables).toMatchObject(['?a', '?b']);
+        expect(output.variables).toMatchObject([ '?a', '?b' ]);
       });
     });
 
-    it('should emit an error on a hard erroring expression', async (next) => {
+    it('should emit an error on a hard erroring expression', async next => {
       // Mock the expression error test so we can force 'a programming error' and test the branch
       spyOn(sparqlee, 'isExpressionError').and.returnValue(false);
-      const op = { operation: { type: 'leftjoin', input: {}, expression: erroringExpression } };
-      const output: IActorQueryOperationOutputBindings = await actor.run(op) as any;
+      const op = { operation: { type: 'leftjoin', input: {}, expression: erroringExpression }};
+      const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
       output.bindingsStream.on('error', () => next());
     });
   });

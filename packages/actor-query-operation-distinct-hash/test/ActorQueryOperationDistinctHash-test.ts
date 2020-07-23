@@ -1,8 +1,8 @@
-import {Bindings, IActorQueryOperationOutputBindings} from "@comunica/bus-query-operation";
-import {Bus} from "@comunica/core";
-import {literal} from "@rdfjs/data-model";
-import {ArrayIterator} from "asynciterator";
-import {ActorQueryOperationDistinctHash} from "..";
+import { Bindings, IActorQueryOperationOutputBindings } from '@comunica/bus-query-operation';
+import { Bus } from '@comunica/core';
+import { literal } from '@rdfjs/data-model';
+import { ArrayIterator } from 'asynciterator';
+import { ActorQueryOperationDistinctHash } from '..';
 const arrayifyStream = require('arrayify-stream');
 
 describe('ActorQueryOperationDistinctHash', () => {
@@ -25,7 +25,7 @@ describe('ActorQueryOperationDistinctHash', () => {
         metadata: () => Promise.resolve({ totalItems: 5 }),
         operated: arg,
         type: 'bindings',
-        variables: ['a'],
+        variables: [ 'a' ],
       }),
     };
     hashAlgorithm = 'sha1';
@@ -37,7 +37,8 @@ describe('ActorQueryOperationDistinctHash', () => {
 
     beforeEach(() => {
       actor = new ActorQueryOperationDistinctHash(
-            { name: 'actor', bus, mediatorQueryOperation, hashAlgorithm, digestAlgorithm });
+        { name: 'actor', bus, mediatorQueryOperation, hashAlgorithm, digestAlgorithm },
+      );
     });
     it('should create a filter', () => {
       return expect(actor.newHashFilter('sha1', 'base64'))
@@ -81,22 +82,23 @@ describe('ActorQueryOperationDistinctHash', () => {
     let actor: ActorQueryOperationDistinctHash;
     beforeEach(() => {
       actor = new ActorQueryOperationDistinctHash(
-        { name: 'actor', bus, mediatorQueryOperation, hashAlgorithm, digestAlgorithm });
+        { name: 'actor', bus, mediatorQueryOperation, hashAlgorithm, digestAlgorithm },
+      );
     });
 
     it('should test on distinct', () => {
-      const op = { operation: { type: 'distinct' } };
+      const op = { operation: { type: 'distinct' }};
       return expect(actor.test(op)).resolves.toBeTruthy();
     });
 
     it('should not test on non-distinct', () => {
-      const op = { operation: { type: 'some-other-type' } };
+      const op = { operation: { type: 'some-other-type' }};
       return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
     it('should run', () => {
-      const op = { operation: { type: 'distinct' } };
-      return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
+      const op = { operation: { type: 'distinct' }};
+      return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
         expect(await (<any> output).metadata()).toEqual({ totalItems: 5 });
         expect(output.variables).toEqual([ 'a' ]);
         expect(output.type).toEqual('bindings');

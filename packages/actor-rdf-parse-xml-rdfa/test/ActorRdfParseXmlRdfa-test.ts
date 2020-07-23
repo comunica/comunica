@@ -1,12 +1,12 @@
-import {ActorRdfParseN3} from "@comunica/actor-rdf-parse-n3";
-import {ActorRdfParseFixedMediaTypes} from "@comunica/bus-rdf-parse";
-import {Bus} from "@comunica/core";
-import "jest-rdf";
-import {Readable} from "stream";
-import {ActorRdfParseXmlRdfa} from "..";
-const stringToStream = require('streamify-string');
+import { Readable } from 'stream';
+import { ActorRdfParseN3 } from '@comunica/actor-rdf-parse-n3';
+import { ActorRdfParseFixedMediaTypes } from '@comunica/bus-rdf-parse';
+import { Bus } from '@comunica/core';
+import 'jest-rdf';
+import { ActorRdfParseXmlRdfa } from '..';
 const arrayifyStream = require('arrayify-stream');
 const quad = require('rdf-quad');
+const stringToStream = require('streamify-string');
 
 describe('ActorRdfParseXmlRdfa', () => {
   let bus: any;
@@ -21,9 +21,9 @@ describe('ActorRdfParseXmlRdfa', () => {
     });
 
     it('should be a ActorRdfParseXmlRdfa constructor', () => {
-      expect(new (<any> ActorRdfParseXmlRdfa)({ name: 'actor', bus, mediaTypes: {} }))
+      expect(new (<any> ActorRdfParseXmlRdfa)({ name: 'actor', bus, mediaTypes: {}}))
         .toBeInstanceOf(ActorRdfParseFixedMediaTypes);
-      expect(new (<any> ActorRdfParseXmlRdfa)({ name: 'actor', bus, mediaTypes: {} }))
+      expect(new (<any> ActorRdfParseXmlRdfa)({ name: 'actor', bus, mediaTypes: {}}))
         .toBeInstanceOf(ActorRdfParseFixedMediaTypes);
     });
 
@@ -32,11 +32,11 @@ describe('ActorRdfParseXmlRdfa', () => {
     });
 
     it('should not throw an error when constructed with required arguments', () => {
-      expect(() => { new ActorRdfParseXmlRdfa({ name: 'actor', bus, mediaTypes: {} }); }).toBeTruthy();
+      expect(() => { new ActorRdfParseXmlRdfa({ name: 'actor', bus, mediaTypes: {}}); }).toBeTruthy();
     });
 
     it('when constructed with optional mediaTypes should set the mediaTypes', () => {
-      expect(new ActorRdfParseXmlRdfa({ name: 'actor', bus, mediaTypes: {} }).mediaTypes).toEqual({});
+      expect(new ActorRdfParseXmlRdfa({ name: 'actor', bus, mediaTypes: {}}).mediaTypes).toEqual({});
     });
 
     it('should not throw an error when constructed with optional priorityScale', () => {
@@ -51,10 +51,10 @@ describe('ActorRdfParseXmlRdfa', () => {
     it('when constructed with optional priorityScale should scale the priorities', () => {
       expect(new ActorRdfParseXmlRdfa({ name: 'actor', bus, mediaTypes: { A: 2, B: 1, C: 0 }, priorityScale: 0.5 })
         .mediaTypes).toEqual({
-          A: 1,
-          B: 0.5,
-          C: 0,
-        });
+        A: 1,
+        B: 0.5,
+        C: 0,
+      });
     });
 
     it('should not throw an error when constructed with optional arguments', () => {
@@ -69,9 +69,11 @@ describe('ActorRdfParseXmlRdfa', () => {
     let inputError: Readable;
 
     beforeEach(() => {
-      actor = new ActorRdfParseXmlRdfa({ bus, mediaTypes: {
-        'application/xml': 1.0,
-      }, name: 'actor' });
+      actor = new ActorRdfParseXmlRdfa({ bus,
+        mediaTypes: {
+          'application/xml': 1,
+        },
+        name: 'actor' });
     });
 
     describe('for parsing', () => {
@@ -96,29 +98,30 @@ xmlns="http://www.w3.org/2000/svg" version="1.2" baseProfile="tiny">
 
       it('should run on application/xml', () => {
         return actor.run({ handle: { input, baseIRI: 'http://ex.org/' }, handleMediaType: 'application/xml' })
-          .then(async (output: any) => expect(await arrayifyStream(output.handle.quads)).toHaveLength(1));
+          .then(async(output: any) => expect(await arrayifyStream(output.handle.quads)).toHaveLength(1));
       });
 
       it('should parse application/xml correctly', () => {
         return actor.run({ handle: { input, baseIRI: 'http://ex.org/' }, handleMediaType: 'application/xml' })
-          .then(async (output: any) => expect(await arrayifyStream(output.handle.quads)).toEqualRdfQuadArray([
-            quad('http://ex.org/', 'http://purl.org/dc/terms/description',
-              '"A yellow rectangle with sharp corners."'),
+          .then(async(output: any) => expect(await arrayifyStream(output.handle.quads)).toEqualRdfQuadArray([
+            quad('http://ex.org/', 'http://purl.org/dc/terms/description', '"A yellow rectangle with sharp corners."'),
           ]));
       });
 
       it('should parse application/xml with a content language header', () => {
         const headers: any = { get: () => 'en-us' };
         return actor.run({ handle: { input, baseIRI: 'http://ex.org/', headers }, handleMediaType: 'application/xml' })
-          .then(async (output: any) => expect(await arrayifyStream(output.handle.quads)).toEqualRdfQuadArray([
-            quad('http://ex.org/', 'http://purl.org/dc/terms/description',
+          .then(async(output: any) => expect(await arrayifyStream(output.handle.quads)).toEqualRdfQuadArray([
+            quad('http://ex.org/',
+              'http://purl.org/dc/terms/description',
               '"A yellow rectangle with sharp corners."@en-us'),
           ]));
       });
 
-      it('should forward stream errors', async () => {
-        return expect(arrayifyStream((<any> (await actor.run(
-          { handle: { input: inputError, baseIRI: '' }, handleMediaType: 'application/trig' })))
+      it('should forward stream errors', async() => {
+        await expect(arrayifyStream((<any> (await actor.run(
+          { handle: { input: inputError, baseIRI: '' }, handleMediaType: 'application/trig' },
+        )))
           .handle.quads)).rejects.toBeTruthy();
       });
     });
@@ -130,7 +133,7 @@ xmlns="http://www.w3.org/2000/svg" version="1.2" baseProfile="tiny">
 
       it('should run', () => {
         return expect(actor.run({ mediaTypes: true })).resolves.toEqual({ mediaTypes: {
-          'application/xml': 1.0,
+          'application/xml': 1,
         }});
       });
 

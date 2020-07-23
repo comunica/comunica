@@ -12,10 +12,10 @@ import {
   IActorTestAbstractMediaTyped,
   IActorTestAbstractMediaTypedHandle,
   IActorTestAbstractMediaTypedMediaTypeFormats,
-  IActorTestAbstractMediaTypedMediaTypes
-} from "@comunica/actor-abstract-mediatyped";
-import {IActorQueryOperationOutputBase} from "@comunica/bus-query-operation";
-import {IAction, IActorOutput, IActorTest} from "@comunica/core";
+  IActorTestAbstractMediaTypedMediaTypes,
+} from '@comunica/actor-abstract-mediatyped';
+import { IActorQueryOperationOutputBase } from '@comunica/bus-query-operation';
+import { IAction, IActorOutput, IActorTest } from '@comunica/core';
 
 /**
  * A comunica actor for sparql-serialize events.
@@ -30,11 +30,9 @@ import {IAction, IActorOutput, IActorTest} from "@comunica/core";
  */
 export abstract class ActorSparqlSerialize
   extends ActorAbstractMediaTyped<IActionSparqlSerialize, IActorTest, IActorSparqlSerializeOutput> {
-
-  constructor(args: IActorArgsMediaTyped<IActionSparqlSerialize, IActorTest, IActorSparqlSerializeOutput>) {
+  public constructor(args: IActorArgsMediaTyped<IActionSparqlSerialize, IActorTest, IActorSparqlSerializeOutput>) {
     super(args);
   }
-
 }
 
 export type IActionRootSparqlParse = IActionAbstractMediaTyped<IActionSparqlSerialize>;

@@ -1,6 +1,6 @@
-import {Bus} from "@comunica/core";
-import {ArrayIterator} from "asynciterator";
-import {ActorRdfSerializeJsonLd} from "../lib/ActorRdfSerializeJsonLd";
+import { Bus } from '@comunica/core';
+import { ArrayIterator } from 'asynciterator';
+import { ActorRdfSerializeJsonLd } from '../lib/ActorRdfSerializeJsonLd';
 const quad = require('rdf-quad');
 const stringifyStream = require('stream-to-string');
 
@@ -17,7 +17,7 @@ describe('ActorRdfSerializeJsonLd', () => {
     });
 
     it('should be a ActorRdfSerializeJsonLd constructor', () => {
-      expect(new (<any> ActorRdfSerializeJsonLd)({ name: 'actor', bus, mediaTypes: {} }))
+      expect(new (<any> ActorRdfSerializeJsonLd)({ name: 'actor', bus, mediaTypes: {}}))
         .toBeInstanceOf(ActorRdfSerializeJsonLd);
     });
 
@@ -31,10 +31,13 @@ describe('ActorRdfSerializeJsonLd', () => {
     let quadStream: any;
 
     beforeEach(() => {
-      actor = new ActorRdfSerializeJsonLd({ bus, jsonStringifyIndentSpaces: 2, mediaTypes: {
-        'application/json': 1.0,
-        'application/ld+json': 1.0,
-      }, name: 'actor'});
+      actor = new ActorRdfSerializeJsonLd({ bus,
+        jsonStringifyIndentSpaces: 2,
+        mediaTypes: {
+          'application/json': 1,
+          'application/ld+json': 1,
+        },
+        name: 'actor' });
     });
 
     describe('for parsing', () => {
@@ -47,8 +50,8 @@ describe('ActorRdfSerializeJsonLd', () => {
 
       it('should run', () => {
         return actor.run({ handle: { quadStream }, handleMediaType: 'application/ld+json' })
-          .then(async (output: any) => expect(await stringifyStream(output.handle.data)).toEqual(
-`[
+          .then(async(output: any) => expect(await stringifyStream(output.handle.data)).toEqual(
+            `[
   {
     "@id": "http://example.org/a",
     "http://example.org/b": [
@@ -63,7 +66,8 @@ describe('ActorRdfSerializeJsonLd', () => {
     ]
   }
 ]
-`));
+`,
+          ));
       });
     });
 
@@ -77,7 +81,7 @@ describe('ActorRdfSerializeJsonLd', () => {
       ]);
 
       return actor.run({ handle: { quadStream }, handleMediaType: 'application/ld+json' })
-        .then(async (output: any) => expect(await stringifyStream(output.handle.data)).toEqual(
+        .then(async(output: any) => expect(await stringifyStream(output.handle.data)).toEqual(
           `[
   {
     "@id": "http://example.org/a",
@@ -106,7 +110,8 @@ describe('ActorRdfSerializeJsonLd', () => {
     ]
   }
 ]
-`));
+`,
+        ));
     });
   });
 
@@ -115,10 +120,13 @@ describe('ActorRdfSerializeJsonLd', () => {
     let quadStream: any;
 
     beforeEach(() => {
-      actor = new ActorRdfSerializeJsonLd({ bus, jsonStringifyIndentSpaces: 0, mediaTypes: {
-        'application/json': 1.0,
-        'application/ld+json': 1.0,
-      }, name: 'actor'});
+      actor = new ActorRdfSerializeJsonLd({ bus,
+        jsonStringifyIndentSpaces: 0,
+        mediaTypes: {
+          'application/json': 1,
+          'application/ld+json': 1,
+        },
+        name: 'actor' });
     });
 
     describe('for serializing', () => {
@@ -130,20 +138,23 @@ describe('ActorRdfSerializeJsonLd', () => {
       });
 
       it('should test on application/json', () => {
-        return expect(actor.test({ handle: { quadStream }, handleMediaType: 'application/json' })).resolves.toBeTruthy();
+        return expect(actor.test({ handle: { quadStream }, handleMediaType: 'application/json' }))
+          .resolves.toBeTruthy();
       });
 
       it('should test on application/ld+json', () => {
-        return expect(actor.test({ handle: { quadStream }, handleMediaType: 'application/ld+json' })).resolves.toBeTruthy();
+        return expect(actor.test({ handle: { quadStream }, handleMediaType: 'application/ld+json' }))
+          .resolves.toBeTruthy();
       });
 
       it('should not test on N-Triples', () => {
-        return expect(actor.test({ handle: { quadStream }, handleMediaType: 'application/n-triples' })).rejects.toBeTruthy();
+        return expect(actor.test({ handle: { quadStream }, handleMediaType: 'application/n-triples' }))
+          .rejects.toBeTruthy();
       });
 
       it('should run', () => {
         return actor.run({ handle: { quadStream }, handleMediaType: 'application/ld+json' })
-          .then(async (output: any) => expect(await stringifyStream(output.handle.data)).toEqual('[{"@id":' +
+          .then(async(output: any) => expect(await stringifyStream(output.handle.data)).toEqual('[{"@id":' +
             '"http://example.org/a","http://example.org/b":[{"@id":"http://example.org/c"}],"http://example.org/d":' +
             '[{"@id":"http://example.org/e"}]}]'));
       });
@@ -156,16 +167,20 @@ describe('ActorRdfSerializeJsonLd', () => {
 
       it('should run', () => {
         return expect(actor.run({ mediaTypes: true })).resolves.toEqual({ mediaTypes: {
-          'application/json': 1.0,
-          'application/ld+json': 1.0,
+          'application/json': 1,
+          'application/ld+json': 1,
         }});
       });
 
       it('should run with scaled priorities 0.5', () => {
-        actor = new ActorRdfSerializeJsonLd({ bus, jsonStringifyIndentSpaces: 2, mediaTypes: {
-          'application/json': 1.0,
-          'application/ld+json': 1.0,
-        }, name: 'actor', priorityScale: 0.5 });
+        actor = new ActorRdfSerializeJsonLd({ bus,
+          jsonStringifyIndentSpaces: 2,
+          mediaTypes: {
+            'application/json': 1,
+            'application/ld+json': 1,
+          },
+          name: 'actor',
+          priorityScale: 0.5 });
         return expect(actor.run({ mediaTypes: true })).resolves.toEqual({ mediaTypes: {
           'application/json': 0.5,
           'application/ld+json': 0.5,
@@ -173,10 +188,14 @@ describe('ActorRdfSerializeJsonLd', () => {
       });
 
       it('should run with scaled priorities 0', () => {
-        actor = new ActorRdfSerializeJsonLd({ bus, jsonStringifyIndentSpaces: 2, mediaTypes: {
-          'application/json': 1.0,
-          'application/ld+json': 1.0,
-        }, name: 'actor', priorityScale: 0 });
+        actor = new ActorRdfSerializeJsonLd({ bus,
+          jsonStringifyIndentSpaces: 2,
+          mediaTypes: {
+            'application/json': 1,
+            'application/ld+json': 1,
+          },
+          name: 'actor',
+          priorityScale: 0 });
         return expect(actor.run({ mediaTypes: true })).resolves.toEqual({ mediaTypes: {
           'application/json': 0,
           'application/ld+json': 0,

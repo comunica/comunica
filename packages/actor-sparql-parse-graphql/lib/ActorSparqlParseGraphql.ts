@@ -1,15 +1,14 @@
-import {ActorSparqlParse, IActionSparqlParse, IActorSparqlParseOutput} from "@comunica/bus-sparql-parse";
-import {IActorArgs, IActorTest} from "@comunica/core";
-import {Converter} from "graphql-to-sparql";
+import { ActorSparqlParse, IActionSparqlParse, IActorSparqlParseOutput } from '@comunica/bus-sparql-parse';
+import { IActorArgs, IActorTest } from '@comunica/core';
+import { Converter } from 'graphql-to-sparql';
 
 /**
  * A comunica GraphQL SPARQL Parse Actor.
  */
 export class ActorSparqlParseGraphql extends ActorSparqlParse {
-
   private readonly graphqlToSparql: Converter;
 
-  constructor(args: IActorArgs<IActionSparqlParse, IActorTest, IActorSparqlParseOutput>) {
+  public constructor(args: IActorArgs<IActionSparqlParse, IActorTest, IActorSparqlParseOutput>) {
     super(args);
     this.graphqlToSparql = new Converter({ requireContext: true });
   }
@@ -28,5 +27,4 @@ export class ActorSparqlParseGraphql extends ActorSparqlParse {
     };
     return { operation: await this.graphqlToSparql.graphqlToSparqlAlgebra(action.query, context, options) };
   }
-
 }

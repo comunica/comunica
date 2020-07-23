@@ -1,10 +1,10 @@
-import {ActorQueryOperation, IActorQueryOperationOutputQuads} from "@comunica/bus-query-operation";
-import {ActionContext, Bus} from "@comunica/core";
-import {namedNode, quad, variable} from "@rdfjs/data-model";
-import {ArrayIterator} from "asynciterator";
-import {ActorQueryOperationDescribeSubject} from "../lib/ActorQueryOperationDescribeSubject";
+import { ActorQueryOperation, IActorQueryOperationOutputQuads } from '@comunica/bus-query-operation';
+import { ActionContext, Bus } from '@comunica/core';
+import { namedNode, quad, variable } from '@rdfjs/data-model';
+import { ArrayIterator } from 'asynciterator';
+import * as RDF from 'rdf-js';
+import { ActorQueryOperationDescribeSubject } from '../lib/ActorQueryOperationDescribeSubject';
 const arrayifyStream = require('arrayify-stream');
-import * as RDF from "rdf-js";
 
 describe('ActorQueryOperationDescribeSubject', () => {
   let bus: any;
@@ -13,15 +13,17 @@ describe('ActorQueryOperationDescribeSubject', () => {
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
     mediatorQueryOperation = {
-      mediate: (arg: any) => {
+      mediate(arg: any) {
         if (arg.operation.input.type === 'join') {
           const patterns = arg.operation.input.left.patterns.concat(arg.operation.input.right.patterns);
           return {
-            metadata: () => Promise.resolve({ totalItems: arg.operation.input.left.patterns.length
-            + arg.operation.input.right.patterns.length }),
+            metadata: () => Promise.resolve({ totalItems: arg.operation.input.left.patterns.length +
+            arg.operation.input.right.patterns.length }),
             quadStream: new ArrayIterator(patterns.map(
               (pattern: RDF.Quad) => quad(namedNode(pattern.subject.value),
-                namedNode(pattern.predicate.value), namedNode(pattern.object.value)))),
+                namedNode(pattern.predicate.value),
+                namedNode(pattern.object.value)),
+            )),
             type: 'quads',
           };
         }
@@ -29,7 +31,9 @@ describe('ActorQueryOperationDescribeSubject', () => {
           metadata: () => Promise.resolve({ totalItems: arg.operation.input.patterns.length }),
           quadStream: new ArrayIterator(arg.operation.input.patterns.map(
             (pattern: RDF.Quad) => quad(namedNode(pattern.subject.value),
-              namedNode(pattern.predicate.value), namedNode(pattern.object.value)))),
+              namedNode(pattern.predicate.value),
+              namedNode(pattern.object.value)),
+          )),
           type: 'quads',
         };
       },
@@ -61,21 +65,21 @@ describe('ActorQueryOperationDescribeSubject', () => {
     });
 
     it('should test on describe', () => {
-      const op = { operation: { type: 'describe' } };
+      const op = { operation: { type: 'describe' }};
       return expect(actor.test(op)).resolves.toBeTruthy();
     });
 
     it('should not test on non-describe', () => {
-      const op = { operation: { type: 'some-other-type' } };
+      const op = { operation: { type: 'some-other-type' }};
       return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
     it('should run without variable terms', () => {
       const op = {
         context: ActionContext({ name: 'context' }),
-        operation: { type: 'describe', terms: [namedNode('a'), namedNode('b')], input: { type: 'bgp', patterns: [] } },
+        operation: { type: 'describe', terms: [ namedNode('a'), namedNode('b') ], input: { type: 'bgp', patterns: []}},
       };
-      return actor.run(op).then(async (output: IActorQueryOperationOutputQuads) => {
+      return actor.run(op).then(async(output: IActorQueryOperationOutputQuads) => {
         expect(await (<any> output).metadata()).toEqual({ totalItems: 2 });
         expect(output.type).toEqual('quads');
         expect(await arrayifyStream(output.quadStream)).toEqual([
@@ -89,12 +93,12 @@ describe('ActorQueryOperationDescribeSubject', () => {
       const op = {
         context: ActionContext({ name: 'context' }),
         operation: {
-          input: { type: 'bgp', patterns: [quad(variable('a'), variable('b'), namedNode('dummy'))] },
-          terms: [variable('a'), variable('b')],
+          input: { type: 'bgp', patterns: [ quad(variable('a'), variable('b'), namedNode('dummy')) ]},
+          terms: [ variable('a'), variable('b') ],
           type: 'describe',
         },
       };
-      return actor.run(op).then(async (output: IActorQueryOperationOutputQuads) => {
+      return actor.run(op).then(async(output: IActorQueryOperationOutputQuads) => {
         expect(await (<any> output).metadata()).toEqual({ totalItems: 3 });
         expect(output.type).toEqual('quads');
         expect(await arrayifyStream(output.quadStream)).toEqual([
@@ -109,12 +113,12 @@ describe('ActorQueryOperationDescribeSubject', () => {
       const op = {
         context: ActionContext({ name: 'context' }),
         operation: {
-          input: { type: 'bgp', patterns: [quad(variable('a'), variable('b'), namedNode('dummy'))] },
-          terms: [variable('a'), variable('b'), namedNode('c')],
+          input: { type: 'bgp', patterns: [ quad(variable('a'), variable('b'), namedNode('dummy')) ]},
+          terms: [ variable('a'), variable('b'), namedNode('c') ],
           type: 'describe',
         },
       };
-      return actor.run(op).then(async (output: IActorQueryOperationOutputQuads) => {
+      return actor.run(op).then(async(output: IActorQueryOperationOutputQuads) => {
         expect(await (<any> output).metadata()).toEqual({ totalItems: 4 });
         expect(output.type).toEqual('quads');
         expect(await arrayifyStream(output.quadStream)).toEqual([

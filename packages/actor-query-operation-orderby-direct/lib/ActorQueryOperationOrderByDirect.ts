@@ -1,27 +1,26 @@
-import {SparqlExpressionEvaluator} from "@comunica/actor-query-operation-filter-direct";
-import {ActorQueryOperation, ActorQueryOperationTypedMediated,
-  IActorQueryOperationOutputBindings, IActorQueryOperationTypedMediatedArgs} from "@comunica/bus-query-operation";
-import {ActionContext, IActorTest} from "@comunica/core";
-import {termToString} from "rdf-string";
-import {Algebra} from "sparqlalgebrajs";
-import {SortIterator} from "./SortIterator";
+import * as SparqlExpressionEvaluator from '@comunica/actor-query-operation-filter-direct';
+import { ActorQueryOperation, ActorQueryOperationTypedMediated,
+  IActorQueryOperationOutputBindings, IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
+import { ActionContext, IActorTest } from '@comunica/core';
+import { termToString } from 'rdf-string';
+import { Algebra } from 'sparqlalgebrajs';
+import { SortIterator } from './SortIterator';
 
 /**
  * A comunica OrderBy Direct Query Operation Actor.
  */
 export class ActorQueryOperationOrderByDirect extends ActorQueryOperationTypedMediated<Algebra.OrderBy> {
+  private readonly window: number;
 
-  private window: number;
-
-  constructor(args: IActorQueryOperationOrderByDirectArgs) {
+  public constructor(args: IActorQueryOperationOrderByDirectArgs) {
     super(args, 'orderby');
-    this.window = args.window || Infinity;
+    this.window = args.window ?? Infinity;
   }
 
   public async testOperation(pattern: Algebra.OrderBy, context: ActionContext): Promise<IActorTest> {
-    // will throw error for unsupported operators
+    // Will throw error for unsupported operators
     for (let expr of pattern.expressions) {
-      // remove descending operator
+      // Remove descending operator
       if (expr.expressionType === Algebra.expressionTypes.OPERATOR) {
         const op = <Algebra.OperatorExpression> expr;
         if (op.operator === 'desc') {
@@ -33,14 +32,15 @@ export class ActorQueryOperationOrderByDirect extends ActorQueryOperationTypedMe
     return true;
   }
 
-  public async runOperation(pattern: Algebra.OrderBy, context: ActionContext)
-    : Promise<IActorQueryOperationOutputBindings> {
+  public async runOperation(pattern: Algebra.OrderBy, context: ActionContext):
+  Promise<IActorQueryOperationOutputBindings> {
     const output: IActorQueryOperationOutputBindings =
       ActorQueryOperation.getSafeBindings(await this.mediatorQueryOperation.mediate(
-        { operation: pattern.input, context }));
+        { operation: pattern.input, context },
+      ));
 
     const options = { window: this.window };
-    let bindingsStream = output.bindingsStream;
+    let { bindingsStream } = output;
     for (let expr of pattern.expressions) {
       let ascending = true;
       if (expr.expressionType === Algebra.expressionTypes.OPERATOR) {
@@ -51,9 +51,9 @@ export class ActorQueryOperationOrderByDirect extends ActorQueryOperationTypedMe
         }
       }
       const order = SparqlExpressionEvaluator.createEvaluator(expr);
-      bindingsStream = new SortIterator(bindingsStream, (a, b) => {
-        const orderA = termToString(order(a));
-        const orderB = termToString(order(b));
+      bindingsStream = new SortIterator(bindingsStream, (left, right) => {
+        const orderA = termToString(order(left));
+        const orderB = termToString(order(right));
         if (!orderA || !orderB) {
           return 0;
         }
@@ -63,7 +63,6 @@ export class ActorQueryOperationOrderByDirect extends ActorQueryOperationTypedMe
 
     return { type: 'bindings', bindingsStream, metadata: output.metadata, variables: output.variables };
   }
-
 }
 
 /**

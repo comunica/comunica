@@ -1,9 +1,9 @@
-import {ActorQueryOperation, Bindings} from "@comunica/bus-query-operation";
-import {Bus} from "@comunica/core";
-import {namedNode, variable} from "@rdfjs/data-model";
-import {ArrayIterator} from "asynciterator";
-import {Algebra, Factory} from "sparqlalgebrajs";
-import {ActorQueryOperationPathInv} from "../lib/ActorQueryOperationPathInv";
+import { ActorQueryOperation, Bindings } from '@comunica/bus-query-operation';
+import { Bus } from '@comunica/core';
+import { namedNode, variable } from '@rdfjs/data-model';
+import { ArrayIterator } from 'asynciterator';
+import { Algebra, Factory } from 'sparqlalgebrajs';
+import { ActorQueryOperationPathInv } from '../lib/ActorQueryOperationPathInv';
 const arrayifyStream = require('arrayify-stream');
 
 describe('ActorQueryOperationPathInv', () => {
@@ -23,7 +23,7 @@ describe('ActorQueryOperationPathInv', () => {
         metadata: () => Promise.resolve({ totalItems: 3 }),
         operated: arg,
         type: 'bindings',
-        variables: ['a'],
+        variables: [ 'a' ],
       }),
     };
   });
@@ -53,21 +53,21 @@ describe('ActorQueryOperationPathInv', () => {
     });
 
     it('should test on Inv paths', () => {
-      const op = { operation: { type: Algebra.types.PATH, predicate: { type: Algebra.types.INV }} };
+      const op = { operation: { type: Algebra.types.PATH, predicate: { type: Algebra.types.INV }}};
       return expect(actor.test(op)).resolves.toBeTruthy();
     });
 
     it('should test on different paths', () => {
-      const op = { operation: { type: Algebra.types.PATH, predicate: { type: 'dummy' }} };
+      const op = { operation: { type: Algebra.types.PATH, predicate: { type: 'dummy' }}};
       return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
-    it('should support Inv paths', async () => {
+    it('should support Inv paths', async() => {
       const op = { operation: factory.createPath(
-          namedNode('s'),
-          factory.createInv(factory.createLink(namedNode('p'))),
-          variable('x'),
-        )};
+        namedNode('s'),
+        factory.createInv(factory.createLink(namedNode('p'))),
+        variable('x'),
+      ) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       expect(await arrayifyStream(output.bindingsStream)).toEqual([
         Bindings({ '?x': namedNode('1') }),
@@ -75,7 +75,8 @@ describe('ActorQueryOperationPathInv', () => {
         Bindings({ '?x': namedNode('3') }),
       ]);
       expect((<any> output).operated.operation).toEqual(
-        factory.createPath(variable('x'), factory.createLink(namedNode('p')), namedNode('s')));
+        factory.createPath(variable('x'), factory.createLink(namedNode('p')), namedNode('s')),
+      );
     });
   });
 });

@@ -1,13 +1,10 @@
-
-import {ActorHttp} from "@comunica/bus-http";
-import {Bus} from "@comunica/core";
-import {Setup} from "@comunica/runner";
-import "isomorphic-fetch";
-import {Readable} from "stream";
-import * as url from "url";
-import * as zlib from "zlib";
-import {ActorHttpNative} from "../lib/ActorHttpNative";
-import Requester from "../lib/Requester";
+import { Readable } from 'stream';
+import * as url from 'url';
+import * as zlib from 'zlib';
+import { ActorHttp } from '@comunica/bus-http';
+import { Bus } from '@comunica/core';
+import { ActorHttpNative } from '../lib/ActorHttpNative';
+import Requester from '../lib/Requester';
 
 const arrayifyStream = require('arrayify-stream');
 const mockSetup = require('./__mocks__/follow-redirects').mockSetup;
@@ -37,7 +34,7 @@ describe('ActorHttpNative', () => {
   describe('#createUserAgent', () => {
     it('should create a user agent in the browser', () => {
       if (!(<any> global).window) {
-        (<any> global).window = { navigator: { userAgent: 'Dummy' } };
+        (<any> global).window = { navigator: { userAgent: 'Dummy' }};
       }
       return expect(ActorHttpNative.createUserAgent())
         .toEqual(`Comunica/actor-http-native (Browser-${window.navigator.userAgent})`);
@@ -58,70 +55,89 @@ describe('ActorHttpNative', () => {
     });
 
     it('should test', () => {
-      return expect(actor.test({ input: new Request('https://www.google.com/')})).resolves.toEqual({ time: Infinity });
+      return expect(actor.test({ input: new Request('https://www.google.com/') })).resolves.toEqual({ time: Infinity });
+    });
+
+    it('should test if headers is iterable', async() => {
+      const requestHeaders = new Headers();
+      requestHeaders.append('Content-Type', 'application/json');
+      requestHeaders.append('Accept-Language', 'en-US,en;q=0.5');
+      const result: any = await actor.run({ input: 'http://example.com', init: { headers: requestHeaders }});
+      const res: string[] = [];
+      for (const element of result.body.input.headers) {
+        res.push(element);
+      }
+      expect(res[0]).toStrictEqual([ 'accept-language', 'en-US,en;q=0.5' ]);
+      expect(res[1]).toStrictEqual([ 'content-type', 'application/json' ]);
+      expect(res[2][0]).toStrictEqual('user-agent');
     });
 
     it('should run', () => {
       mockSetup({ statusCode: 404 });
-      return expect(actor.run({ input: new Request('http://example.com')})).resolves
+      return expect(actor.run({ input: new Request('http://example.com') })).resolves
         .toMatchObject({ status: 404 });
     });
 
     it('should run https', () => {
       mockSetup({ statusCode: 404 });
-      return expect(actor.run({ input: new Request('https://example.com')})).resolves
+      return expect(actor.run({ input: new Request('https://example.com') })).resolves
         .toMatchObject({ status: 404 });
     });
 
     it('should run with agent options', () => {
       actor = new ActorHttpNative({ name: 'actor', bus, agentOptions: '{ "name": "007" }' });
       mockSetup({ statusCode: 404 });
-      return expect(actor.run({ input: new Request('http://example.com')})).resolves
+      return expect(actor.run({ input: new Request('http://example.com') })).resolves
         .toMatchObject({ status: 404 });
     });
 
-    it('can have headers', async () => {
+    it('can have headers', async() => {
       mockSetup({ statusCode: 200 });
       const result: any = await actor.run(
-        { input: new Request('http://example.com', { headers: new Headers({ a: 'b' }) })});
+        { input: new Request('http://example.com', { headers: new Headers({ a: 'b' }) }) },
+      );
       expect(result).toMatchObject({ status: 200 });
-      expect(result.body.input).toMatchObject({ headers: { a: 'b' }});
+      expect(result.body.input.headers.get('a')).toStrictEqual('b');
+      expect(result.body.input.headers.get('user-agent')).toBeTruthy();
     });
 
-    it('can have headers in the init object', async () => {
+    it('can have headers in the init object', async() => {
       mockSetup({ statusCode: 200 });
       const result: any = await actor.run({ input: 'http://example.com', init: { headers: new Headers({ a: 'b' }) }});
       expect(result).toMatchObject({ status: 200 });
-      expect(result.body.input).toMatchObject({ headers: { a: 'b' }});
+      expect(result.body.input.headers.get('a')).toStrictEqual('b');
+      expect(result.body.input.headers.get('user-agent')).toBeTruthy();
     });
 
-    it('uses Content-Location header as URL when set', async () => {
-      mockSetup({ headers: {'content-location': 'http://example.com/contentlocation'}});
+    it('uses Content-Location header as URL when set', async() => {
+      mockSetup({ headers: { 'content-location': 'http://example.com/contentlocation' }});
       const result: any = await actor.run({ input: 'http://example.com' });
       expect(result).toMatchObject({ url: 'http://example.com/contentlocation' });
     });
 
-    it('should set no user agent if one has been set', async () => {
+    it('should set no user agent if one has been set', async() => {
       mockSetup({ statusCode: 200 });
       const result: any = await actor.run(
-        { input: new Request('http://example.com', { headers: new Headers({ 'user-agent': 'b' }) })});
+        { input: new Request('http://example.com', { headers: new Headers({ 'user-agent': 'b' }) }) },
+      );
       expect(result).toMatchObject({ status: 200 });
-      expect(result.body.input).toMatchObject({ headers: { 'user-agent': 'b' }});
+      expect(result.body.input.headers.get('user-agent')).toBe('b');
     });
 
-    it('should set a user agent if none has been set', async () => {
+    it('should set a user agent if none has been set', async() => {
       mockSetup({ statusCode: 200 });
       const result: any = await actor.run(
-        { input: new Request('http://example.com', { headers: new Headers({}) })});
+        { input: new Request('http://example.com', { headers: new Headers({}) }) },
+      );
       expect(result).toMatchObject({ status: 200 });
-      expect(result.body.input.headers['user-agent']).toBeTruthy();
+      expect(result.body.input.headers.get('user-agent')).toBeTruthy();
     });
 
-    it('can decode gzipped streams', async () => {
+    it('can decode gzipped streams', async() => {
       const body = new Readable();
       body.push(zlib.gzipSync('apple'));
       body.push(null);
-      mockSetup({ statusCode: 200, body, headers: { 'content-encoding': 'gzip' } });
+      mockSetup({ statusCode: 200, body, headers: { 'content-encoding': 'gzip' }});
       const result: any = await actor.run({ input: 'http://example.com' });
       expect(result).toMatchObject({ status: 200 });
       const output = await arrayifyStream(result.body);
@@ -132,27 +148,27 @@ describe('ActorHttpNative', () => {
       const body = new Readable();
       body.push(zlib.gzipSync('apple'));
       body.push(null);
-      mockSetup({ statusCode: 200, body, headers: { 'content-encoding': 'invalid' } });
-      return expect(actor.run({ input: new Request('http://example.com')})).rejects
+      mockSetup({ statusCode: 200, body, headers: { 'content-encoding': 'invalid' }});
+      return expect(actor.run({ input: new Request('http://example.com') })).rejects
         .toMatchObject(new Error('Unsupported encoding: invalid'));
     });
 
-    it('can have headers in the init object', async () => {
+    it('can have headers in the init object with HEAD', async() => {
       mockSetup({ statusCode: 200 });
       const result: any = await actor.run({ init: { headers: new Headers({ a: 'b' }), method: 'HEAD' },
-        input: 'http://example.com'});
+        input: 'http://example.com' });
       expect(result).toMatchObject({ status: 200 });
     });
 
-    it('can cancel responses', async () => {
+    it('can cancel responses', async() => {
       mockSetup({ statusCode: 200 });
       const result: any = await actor.run({ input: 'http://example.com' });
-      expect(result.body.cancel()).resolves.toBeFalsy();
+      await expect(result.body.cancel()).resolves.toBeFalsy();
     });
 
-    it('rejects on request errors', async () => {
+    it('rejects on request errors', async() => {
       mockSetup({ error: true });
-      expect(actor.run({ input: 'http://example.com/reqerror' }))
+      await expect(actor.run({ input: 'http://example.com/reqerror' }))
         .rejects.toThrow(new Error('Request Error!'));
     });
   });
@@ -163,8 +179,8 @@ describe('Requester', () => {
     mockSetup({ statusCode: 405 });
     const requester = new Requester();
     const req = requester.createRequest(url.parse('http://example.com/test'));
-    return new Promise((resolve) => {
-      req.on('response', (response) => {
+    return new Promise(resolve => {
+      req.on('response', response => {
         expect(response).toMatchObject({ statusCode: 405 });
         expect(response.input).toMatchObject({ href: 'http://example.com/test' });
         resolve();

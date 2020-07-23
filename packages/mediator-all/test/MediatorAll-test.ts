@@ -1,5 +1,5 @@
-import {Actor, Bus, IAction, IActorOutput, IActorTest, Mediator} from "@comunica/core";
-import {MediatorAll} from "../lib/MediatorAll";
+import { Actor, Bus, IAction, IActorOutput, IActorTest, Mediator } from '@comunica/core';
+import { MediatorAll } from '../lib/MediatorAll';
 
 describe('MediatorAll', () => {
   let bus: Bus<DummyActor, IAction, IDummyTest, IDummyTest>;
@@ -22,7 +22,6 @@ describe('MediatorAll', () => {
   });
 
   describe('An MediatorAll instance', () => {
-
     describe('without actors', () => {
       let busm: Bus<DummyActor, IAction, IDummyTest, IDummyTest>;
       let mediator: MediatorAll<DummyActor, IAction, IDummyTest, IDummyTest>;
@@ -32,12 +31,12 @@ describe('MediatorAll', () => {
         mediator = new MediatorAll({ name: 'mediator', bus: busm });
       });
 
-      it('should mediate to all resolving actors', async () => {
+      it('should mediate to all resolving actors', async() => {
         expect(await mediator.mediate(<any> { a: 'b' })).toBe(undefined);
       });
 
-      it('should throw for mediateWith', async () => {
-        expect((<any> mediator).mediateWith(undefined, undefined)).rejects
+      it('should throw for mediateWith', async() => {
+        await expect((<any> mediator).mediateWith(undefined, undefined)).rejects
           .toThrow(new Error('Unsupported operation: MediatorAll#mediateWith'));
       });
     });
@@ -60,7 +59,7 @@ describe('MediatorAll', () => {
         jest.spyOn(a2, 'runObservable');
       });
 
-      it('should mediate to all resolving actors', async () => {
+      it('should mediate to all resolving actors', async() => {
         expect(await mediator.mediate(<any> { a: 'b' })).toEqual({ field: 10 });
         expect(a0.runObservable).toHaveBeenCalledWith({ a: 'b' });
         expect(a1.runObservable).toHaveBeenCalledWith({ a: 'b' });
@@ -86,7 +85,7 @@ describe('MediatorAll', () => {
         jest.spyOn(a2, 'runObservable');
       });
 
-      it('should mediate over no actors', async () => {
+      it('should mediate over no actors', async() => {
         expect(await mediator.mediate(<any> { a: 'b' })).toBe(undefined);
         expect(a0.runObservable).not.toHaveBeenCalled();
         expect(a1.runObservable).not.toHaveBeenCalled();
@@ -112,7 +111,7 @@ describe('MediatorAll', () => {
         jest.spyOn(a2, 'runObservable');
       });
 
-      it('should mediate over the non-rejecting actors', async () => {
+      it('should mediate over the non-rejecting actors', async() => {
         expect(await mediator.mediate(<any> { a: 'b' })).toEqual({ field: 10 });
         expect(a0.runObservable).toHaveBeenCalledWith({ a: 'b' });
         expect(a1.runObservable).not.toHaveBeenCalled();
@@ -123,13 +122,17 @@ describe('MediatorAll', () => {
 });
 
 class DummyActor extends Actor<IAction, IDummyTest, IDummyTest> {
-
   public readonly id: number;
   public readonly delay: number;
   public readonly reject: boolean;
 
-  constructor(id: number, delay: number, bus: Bus<DummyActor, IAction, IDummyTest, IDummyTest>, reject: boolean) {
-    super({ name: 'dummy' + id, bus });
+  public constructor(
+    id: number,
+    delay: number,
+    bus: Bus<DummyActor, IAction, IDummyTest, IDummyTest>,
+    reject: boolean,
+  ) {
+    super({ name: `dummy${id}`, bus });
     this.id = id;
     this.delay = delay;
     this.reject = reject;
@@ -138,7 +141,7 @@ class DummyActor extends Actor<IAction, IDummyTest, IDummyTest> {
   public test(action: IAction): Promise<IDummyTest> {
     if (this.reject) {
       return new Promise((resolve, reject) => {
-        setTimeout(() => reject(new Error('' + this.id)), 10);
+        setTimeout(() => reject(new Error(`${this.id}`)), 10);
       });
     }
     return new Promise((resolve, reject) => setTimeout(() => resolve({ field: this.id }), this.delay));
@@ -147,7 +150,6 @@ class DummyActor extends Actor<IAction, IDummyTest, IDummyTest> {
   public run(action: IAction): Promise<IDummyTest> {
     return new Promise((resolve, reject) => setTimeout(() => resolve({ field: this.id }), this.delay));
   }
-
 }
 
 interface IDummyTest extends IActorTest, IActorOutput {

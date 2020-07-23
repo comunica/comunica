@@ -1,27 +1,26 @@
-import {BufferedIterator, BufferedIteratorOptions} from "asynciterator";
-import * as RDF from "rdf-js";
+import { BufferedIterator, BufferedIteratorOptions } from 'asynciterator';
+import * as RDF from 'rdf-js';
 
 /**
  * An abstract quad iterator that iterates over several pages.
  */
 export abstract class PagedAsyncRdfIterator extends BufferedIterator<RDF.Quad> implements RDF.Stream {
-
   private readonly startUrl: string;
   private nextUrl?: string;
   private page: number;
 
-  constructor(startUrl: string, options?: BufferedIteratorOptions) {
+  public constructor(startUrl: string, options?: BufferedIteratorOptions) {
     super(options);
     this.page = 0;
     this.startUrl = startUrl;
     this.nextUrl = startUrl;
   }
 
-  public _read(count: number, done: () => void) {
+  public _read(count: number, done: () => void): void {
     if (this.nextUrl) {
       this.startIterator(this.nextUrl, this.page++)
         .then(done)
-        .catch((e) => this.emit('error', e));
+        .catch(error => this.emit('error', error));
     } else {
       done();
     }
@@ -35,8 +34,8 @@ export abstract class PagedAsyncRdfIterator extends BufferedIterator<RDF.Quad> i
    *                                                This may be falsy if the last page was found
    * @return {Promise<RDF.Stream>} A promise that resolves to the quad data stream for the given page.
    */
-  protected abstract getIterator(url: string, page: number, onNextPage: (nextPage?: string) => void)
-  : Promise<RDF.Stream>;
+  protected abstract getIterator(url: string, page: number, onNextPage: (nextPage?: string) => void):
+  Promise<RDF.Stream>;
 
   /**
    * Start an iterator for the given page and inherit all its data elements and error event.
@@ -46,18 +45,16 @@ export abstract class PagedAsyncRdfIterator extends BufferedIterator<RDF.Quad> i
    */
   protected async startIterator(url: string, page: number): Promise<any> {
     this.nextUrl = undefined;
-    let ended: boolean = false;
-    let shouldClose: boolean = false;
+    let ended = false;
+    let shouldClose = false;
     const it: RDF.Stream = await this.getIterator(url, page, (nextPage?: string) => {
       if (nextPage) {
         this.nextUrl = nextPage;
         this.readable = true;
+      } else if (!ended) {
+        shouldClose = true;
       } else {
-        if (!ended) {
-          shouldClose = true;
-        } else {
-          this.close();
-        }
+        this.close();
       }
     });
 
@@ -66,7 +63,7 @@ export abstract class PagedAsyncRdfIterator extends BufferedIterator<RDF.Quad> i
       this.readable = true;
     });
 
-    it.on('error', (e: Error) => this.emit('error', e));
+    it.on('error', (error: Error) => this.emit('error', error));
 
     it.on('end', () => {
       ended = true;

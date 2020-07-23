@@ -1,4 +1,4 @@
-import {Actor, IAction, IActorArgs, IActorOutput, IActorTest} from "@comunica/core";
+import { Actor, IAction, IActorArgs, IActorOutput, IActorTest } from '@comunica/core';
 
 /**
  * A comunica actor for http-invalidate events.
@@ -12,11 +12,9 @@ import {Actor, IAction, IActorArgs, IActorOutput, IActorTest} from "@comunica/co
  * @see IActorHttpInvalidateOutput
  */
 export abstract class ActorHttpInvalidate extends Actor<IActionHttpInvalidate, IActorTest, IActorHttpInvalidateOutput> {
-
-  constructor(args: IActorArgs<IActionHttpInvalidate, IActorTest, IActorHttpInvalidateOutput>) {
+  public constructor(args: IActorArgs<IActionHttpInvalidate, IActorTest, IActorHttpInvalidateOutput>) {
     super(args);
   }
-
 }
 
 export interface IActionHttpInvalidate extends IAction {

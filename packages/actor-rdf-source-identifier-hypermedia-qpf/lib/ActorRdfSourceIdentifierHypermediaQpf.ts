@@ -1,23 +1,23 @@
-import {ActorHttp, IActionHttp, IActorHttpOutput} from "@comunica/bus-http";
+import { ActorHttp, IActionHttp, IActorHttpOutput } from '@comunica/bus-http';
 import {
   ActorRdfSourceIdentifier, IActionRdfSourceIdentifier, IActorRdfSourceIdentifierArgs,
   IActorRdfSourceIdentifierOutput,
-} from "@comunica/bus-rdf-source-identifier";
-import {Actor, IActorTest, Mediator} from "@comunica/core";
-import {IMediatorTypePriority} from "@comunica/mediatortype-priority";
-import "isomorphic-fetch";
+} from '@comunica/bus-rdf-source-identifier';
+import { Actor, IActorTest, Mediator } from '@comunica/core';
+import { IMediatorTypePriority } from '@comunica/mediatortype-priority';
+import 'cross-fetch/polyfill';
 
 /**
  * A comunica Hypermedia Qpf RDF Source Identifier Actor.
  */
 export class ActorRdfSourceIdentifierHypermediaQpf extends ActorRdfSourceIdentifier {
-
   public readonly mediatorHttp: Mediator<Actor<IActionHttp, IActorTest, IActorHttpOutput>,
-    IActionHttp, IActorTest, IActorHttpOutput>;
+  IActionHttp, IActorTest, IActorHttpOutput>;
+
   public readonly acceptHeader: string;
   public readonly toContain: string[];
 
-  constructor(args: IActorRdfSourceIdentifierHypermediaQpfArgs) {
+  public constructor(args: IActorRdfSourceIdentifierHypermediaQpfArgs) {
     super(args);
   }
 
@@ -26,16 +26,16 @@ export class ActorRdfSourceIdentifierHypermediaQpf extends ActorRdfSourceIdentif
     const headers: Headers = new Headers();
     headers.append('Accept', this.acceptHeader);
 
-    const httpAction: IActionHttp = { context: action.context, input: sourceUrl, init: { headers } };
+    const httpAction: IActionHttp = { context: action.context, input: sourceUrl, init: { headers }};
     const httpResponse: IActorHttpOutput = await this.mediatorHttp.mediate(httpAction);
     if (httpResponse.ok && httpResponse.body) {
       const stream = ActorHttp.toNodeReadable(httpResponse.body);
-      const body = (await require('stream-to-string')(stream));
+      const body = await require('stream-to-string')(stream);
 
       // Check if body contains all required things
       let valid = true;
       for (const line of this.toContain) {
-        if (body.indexOf(line) < 0) {
+        if (!body.includes(line)) {
           valid = false;
           break;
         }
@@ -47,7 +47,7 @@ export class ActorRdfSourceIdentifierHypermediaQpf extends ActorRdfSourceIdentif
 
     // Avoid memory leaks
     if (httpResponse.body) {
-      httpResponse.body.cancel();
+      await httpResponse.body.cancel();
     }
 
     throw new Error(`${sourceUrl} is not a (QPF) hypermedia interface`);
@@ -56,13 +56,12 @@ export class ActorRdfSourceIdentifierHypermediaQpf extends ActorRdfSourceIdentif
   public async run(action: IActionRdfSourceIdentifier): Promise<IActorRdfSourceIdentifierOutput> {
     return { sourceType: 'hypermedia' };
   }
-
 }
 
 export interface IActorRdfSourceIdentifierHypermediaQpfArgs
   extends IActorRdfSourceIdentifierArgs {
   mediatorHttp: Mediator<Actor<IActionHttp, IActorTest, IActorHttpOutput>,
-    IActionHttp, IActorTest, IActorHttpOutput>;
+  IActionHttp, IActorTest, IActorHttpOutput>;
   acceptHeader: string;
   toContain: string[];
 }

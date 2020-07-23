@@ -1,1 +1,1 @@
-export * from "./lib/BlankNodeScoped";
+export * from './lib/BlankNodeScoped';

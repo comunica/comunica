@@ -1,4 +1,5 @@
 export * from './lib/ActorSparqlSerializeTree';
-import {ActorSparqlSerializeTree} from './lib/ActorSparqlSerializeTree';
-const bindingsStreamToGraphQl = ActorSparqlSerializeTree.bindingsStreamToGraphQl;
+// eslint-disable-next-line no-duplicate-imports
+import { ActorSparqlSerializeTree } from './lib/ActorSparqlSerializeTree';
+const { bindingsStreamToGraphQl } = ActorSparqlSerializeTree;
 export { bindingsStreamToGraphQl };

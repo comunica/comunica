@@ -1,4 +1,4 @@
-import {IActorTest} from "@comunica/core";
+import { IActorTest } from '@comunica/core';
 
 /**
  * A mediator type that has an iterations parameter.

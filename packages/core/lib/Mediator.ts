@@ -1,5 +1,5 @@
-import {Actor, IAction, IActorOutput, IActorTest} from "./Actor";
-import {Bus, IActorReply} from "./Bus";
+import { Actor, IAction, IActorOutput, IActorTest } from './Actor';
+import { Bus, IActorReply } from './Bus';
 
 /**
  * A mediator can mediate an action over a bus of actors.
@@ -20,7 +20,6 @@ import {Bus, IActorReply} from "./Bus";
  */
 export abstract class Mediator<A extends Actor<I, T, O>,
   I extends IAction, T extends IActorTest, O extends IActorOutput> implements IMediatorArgs<A, I, T, O> {
-
   public readonly name: string;
   public readonly bus: Bus<A, I, T, O>;
 
@@ -34,7 +33,7 @@ export abstract class Mediator<A extends Actor<I, T, O>,
    *        The bus this mediator will mediate over.
    * @throws When required arguments are missing.
    */
-  constructor(args: IMediatorArgs<A, I, T, O>) {
+  protected constructor(args: IMediatorArgs<A, I, T, O>) {
     require('lodash.assign')(this, args);
   }
 
@@ -51,8 +50,8 @@ export abstract class Mediator<A extends Actor<I, T, O>,
   public publish(action: I): IActorReply<A, I, T, O>[] {
     // Test all actors in the bus
     const actors: IActorReply<A, I, T, O>[] = this.bus.publish(action);
-    if (!actors.length) {
-      throw new Error('No actors are able to reply to a message in the bus ' + this.bus.name);
+    if (actors.length === 0) {
+      throw new Error(`No actors are able to reply to a message in the bus ${this.bus.name}`);
     }
     return actors;
   }
@@ -99,7 +98,6 @@ export abstract class Mediator<A extends Actor<I, T, O>,
    * @return {Promise<A extends Actor<I, T, O>>} A promise that resolves to the _best_ actor.
    */
   protected abstract async mediateWith(action: I, testResults: IActorReply<A, I, T, O>[]): Promise<A>;
-
 }
 
 export interface IMediatorArgs<A extends Actor<I, T, O>,

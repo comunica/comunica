@@ -1,12 +1,12 @@
-import {ActorRdfParseN3} from "@comunica/actor-rdf-parse-n3";
-import {ActorRdfParseFixedMediaTypes} from "@comunica/bus-rdf-parse";
-import {Bus} from "@comunica/core";
-import "jest-rdf";
-import {Readable} from "stream";
-import {ActorRdfParseRdfXml} from "..";
-const stringToStream = require('streamify-string');
+import { Readable } from 'stream';
+import { ActorRdfParseN3 } from '@comunica/actor-rdf-parse-n3';
+import { ActorRdfParseFixedMediaTypes } from '@comunica/bus-rdf-parse';
+import { Bus } from '@comunica/core';
+import 'jest-rdf';
+import { ActorRdfParseRdfXml } from '..';
 const arrayifyStream = require('arrayify-stream');
 const quad = require('rdf-quad');
+const stringToStream = require('streamify-string');
 
 describe('ActorRdfParseRdfXml', () => {
   let bus: any;
@@ -21,10 +21,10 @@ describe('ActorRdfParseRdfXml', () => {
     });
 
     it('should be a ActorRdfParseRdfXml constructor', () => {
-      expect(new (<any> ActorRdfParseRdfXml)({ name: 'actor', bus, mediaTypes: {} }))
-          .toBeInstanceOf(ActorRdfParseFixedMediaTypes);
-      expect(new (<any> ActorRdfParseRdfXml)({ name: 'actor', bus, mediaTypes: {} }))
-          .toBeInstanceOf(ActorRdfParseFixedMediaTypes);
+      expect(new (<any> ActorRdfParseRdfXml)({ name: 'actor', bus, mediaTypes: {}}))
+        .toBeInstanceOf(ActorRdfParseFixedMediaTypes);
+      expect(new (<any> ActorRdfParseRdfXml)({ name: 'actor', bus, mediaTypes: {}}))
+        .toBeInstanceOf(ActorRdfParseFixedMediaTypes);
     });
 
     it('should not be able to create new ActorRdfParseRdfXml objects without \'new\'', () => {
@@ -32,11 +32,11 @@ describe('ActorRdfParseRdfXml', () => {
     });
 
     it('should not throw an error when constructed with required arguments', () => {
-      expect(() => { new ActorRdfParseRdfXml({ name: 'actor', bus, mediaTypes: {} }); }).toBeTruthy();
+      expect(() => { new ActorRdfParseRdfXml({ name: 'actor', bus, mediaTypes: {}}); }).toBeTruthy();
     });
 
     it('when constructed with optional mediaTypes should set the mediaTypes', () => {
-      expect(new ActorRdfParseRdfXml({ name: 'actor', bus, mediaTypes: {} }).mediaTypes).toEqual({});
+      expect(new ActorRdfParseRdfXml({ name: 'actor', bus, mediaTypes: {}}).mediaTypes).toEqual({});
     });
 
     it('should not throw an error when constructed with optional priorityScale', () => {
@@ -45,21 +45,21 @@ describe('ActorRdfParseRdfXml', () => {
 
     it('when constructed with optional priorityScale should set the priorityScale', () => {
       expect(new ActorRdfParseRdfXml({ name: 'actor', bus, mediaTypes: {}, priorityScale: 0.5 }).priorityScale)
-            .toEqual(0.5);
+        .toEqual(0.5);
     });
 
     it('when constructed with optional priorityScale should scale the priorities', () => {
       expect(new ActorRdfParseRdfXml({ name: 'actor', bus, mediaTypes: { A: 2, B: 1, C: 0 }, priorityScale: 0.5 })
-          .mediaTypes).toEqual({
-            A: 1,
-            B: 0.5,
-            C: 0,
-          });
+        .mediaTypes).toEqual({
+        A: 1,
+        B: 0.5,
+        C: 0,
+      });
     });
 
     it('should not throw an error when constructed with optional arguments', () => {
       expect(() => { new ActorRdfParseRdfXml({ name: 'actor', bus, mediaTypes: {}, priorityScale: 0.5 }); })
-          .toBeTruthy();
+        .toBeTruthy();
     });
   });
 
@@ -69,9 +69,11 @@ describe('ActorRdfParseRdfXml', () => {
     let inputError: Readable;
 
     beforeEach(() => {
-      actor = new ActorRdfParseRdfXml({ bus, mediaTypes: {
-        'application/rdf+xml': 1.0,
-      }, name: 'actor' });
+      actor = new ActorRdfParseRdfXml({ bus,
+        mediaTypes: {
+          'application/rdf+xml': 1,
+        },
+        name: 'actor' });
     });
 
     describe('for parsing', () => {
@@ -94,24 +96,25 @@ describe('ActorRdfParseRdfXml', () => {
 
       it('should run on application/rdf+xml', () => {
         return actor.run({ handle: { input, baseIRI: '' }, handleMediaType: 'application/rdf+xml' })
-                    .then(async (output: any) => expect(await arrayifyStream(output.handle.quads)).toHaveLength(4));
+          .then(async(output: any) => expect(await arrayifyStream(output.handle.quads)).toHaveLength(4));
       });
 
       it('should parse application/rdf+xml correctly', () => {
-        // noinspection TsLint
         return actor.run({ handle: { input, baseIRI: '' }, handleMediaType: 'application/rdf+xml' })
-            .then(async (output: any) => expect(await arrayifyStream(output.handle.quads)).toEqualRdfQuadArray([
-              quad('http://www.w3.org/TR/rdf-syntax-grammar', 'http://purl.org/dc/elements/1.1/title',
-                  '"RDF1.1 XML Syntax"'),
-              quad('http://www.w3.org/TR/rdf-syntax-grammar', 'http://example.org/stuff/1.0/editor', "_:b4"),
-              quad('_:b4', 'http://example.org/stuff/1.0/fullName', '"Dave Beckett"'),
-              quad('_:b4', 'http://example.org/stuff/1.0/homePage', "http://purl.org/net/dajobe/")]));
+          .then(async(output: any) => expect(await arrayifyStream(output.handle.quads)).toEqualRdfQuadArray([
+            quad('http://www.w3.org/TR/rdf-syntax-grammar',
+              'http://purl.org/dc/elements/1.1/title',
+              '"RDF1.1 XML Syntax"'),
+            quad('http://www.w3.org/TR/rdf-syntax-grammar', 'http://example.org/stuff/1.0/editor', '_:b4'),
+            quad('_:b4', 'http://example.org/stuff/1.0/fullName', '"Dave Beckett"'),
+            quad('_:b4', 'http://example.org/stuff/1.0/homePage', 'http://purl.org/net/dajobe/') ]));
       });
 
-      it('should forward stream errors', async () => {
-        return expect(arrayifyStream((<any> (await actor.run(
-                    { handle: { input: inputError, baseIRI: '' }, handleMediaType: 'application/trig' })))
-                    .handle.quads)).rejects.toBeTruthy();
+      it('should forward stream errors', async() => {
+        await expect(arrayifyStream((<any> (await actor.run(
+          { handle: { input: inputError, baseIRI: '' }, handleMediaType: 'application/trig' },
+        )))
+          .handle.quads)).rejects.toBeTruthy();
       });
     });
 
@@ -122,7 +125,7 @@ describe('ActorRdfParseRdfXml', () => {
 
       it('should run', () => {
         return expect(actor.run({ mediaTypes: true })).resolves.toEqual({ mediaTypes: {
-          'application/rdf+xml': 1.0,
+          'application/rdf+xml': 1,
         }});
       });
 

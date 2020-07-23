@@ -3,12 +3,11 @@
  * and emits them in a certain way.
  */
 export abstract class Logger {
-
   /**
    * All available logging levels.
    * @type {{trace: number; debug: number; info: number; warn: number; error: number; fatal: number}}
    */
-  // tslint:disable:object-literal-sort-keys
+
   public static readonly LEVELS: {[id: string]: number} = {
     trace: 0,
     debug: 1,
@@ -39,4 +38,4 @@ export abstract class Logger {
  * @type {string} Context entry for a logger instance.
  * @value {Logger} A logger.
  */
-export const KEY_CONTEXT_LOG: string = '@comunica/core:log';
+export const KEY_CONTEXT_LOG = '@comunica/core:log';

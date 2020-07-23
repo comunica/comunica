@@ -1,24 +1,23 @@
-import {Bindings} from "@comunica/bus-query-operation";
-import {Bus} from "@comunica/core";
-import {literal} from "@rdfjs/data-model";
-import {ActorRdfJoin, IActionRdfJoin} from "..";
+import { Bindings } from '@comunica/bus-query-operation';
+import { Bus } from '@comunica/core';
+import { literal } from '@rdfjs/data-model';
+import { ActorRdfJoin, IActionRdfJoin } from '..';
 
 const arrayifyStream = require('arrayify-stream');
 
-// dummy class to test instance of abstract class
+// Dummy class to test instance of abstract class
 class Dummy extends ActorRdfJoin {
-
   public maxEntries: number;
   public metadata: any;
 
-  // just here to have a valid dummy class
-  constructor(metadata?: any) {
-    super({name: 'name', bus: new Bus({ name: 'bus' })});
+  // Just here to have a valid dummy class
+  public constructor(metadata?: any) {
+    super({ name: 'name', bus: new Bus({ name: 'bus' }) });
     this.metadata = metadata;
   }
 
   public async getOutput(action: IActionRdfJoin) {
-    const result = (<any> { dummy: 'dummy' });
+    const result = <any> { dummy: 'dummy' };
 
     if (this.metadata) {
       result.metadata = () => Promise.resolve(this.metadata);
@@ -33,7 +32,6 @@ class Dummy extends ActorRdfJoin {
 }
 
 describe('ActorRdfJoin', () => {
-
   let action: IActionRdfJoin;
 
   beforeEach(() => {
@@ -52,7 +50,7 @@ describe('ActorRdfJoin', () => {
     });
 
     it('should return 0 iterations if there is 1 entry', () => {
-      action.entries = [action.entries[0]];
+      action.entries = [ action.entries[0] ];
       return expect(instance.test(action)).resolves.toHaveProperty('iterations', 0);
     });
 
@@ -73,9 +71,9 @@ describe('ActorRdfJoin', () => {
       return expect(instance.test(action)).resolves.toHaveProperty('iterations', Infinity);
     });
 
-    it('should return infinity if the left metadata object is missing', async () => {
+    it('should return infinity if the left metadata object is missing', async() => {
       action.entries[1].metadata = () => Promise.resolve({ totalItems: 5 });
-      return expect(instance.test(action)).resolves.toHaveProperty('iterations', Infinity);
+      await expect(instance.test(action)).resolves.toHaveProperty('iterations', Infinity);
     });
 
     it('should return infinity if the right metadata object is missing', () => {
@@ -91,52 +89,49 @@ describe('ActorRdfJoin', () => {
   });
 
   describe('The overlappingVariables function', () => {
-
     it('should return an empty array if there is no overlap', () => {
       expect(ActorRdfJoin.overlappingVariables(action)).toEqual([]);
-      action.entries[0].variables = ['a', 'b'];
-      action.entries[1].variables = ['c', 'd'];
+      action.entries[0].variables = [ 'a', 'b' ];
+      action.entries[1].variables = [ 'c', 'd' ];
       expect(ActorRdfJoin.overlappingVariables(action)).toEqual([]);
     });
 
     it('should return a correct array if there is overlap', () => {
-      action.entries[0].variables = ['a', 'b'];
-      action.entries[1].variables = ['a', 'd'];
-      expect(ActorRdfJoin.overlappingVariables(action)).toEqual(['a']);
+      action.entries[0].variables = [ 'a', 'b' ];
+      action.entries[1].variables = [ 'a', 'd' ];
+      expect(ActorRdfJoin.overlappingVariables(action)).toEqual([ 'a' ]);
 
-      action.entries[0].variables = ['a', 'b'];
-      action.entries[1].variables = ['a', 'b'];
-      expect(ActorRdfJoin.overlappingVariables(action)).toEqual(['a', 'b']);
+      action.entries[0].variables = [ 'a', 'b' ];
+      action.entries[1].variables = [ 'a', 'b' ];
+      expect(ActorRdfJoin.overlappingVariables(action)).toEqual([ 'a', 'b' ]);
 
-      action.entries[0].variables = ['c', 'b'];
-      action.entries[1].variables = ['a', 'b'];
-      expect(ActorRdfJoin.overlappingVariables(action)).toEqual(['b']);
+      action.entries[0].variables = [ 'c', 'b' ];
+      action.entries[1].variables = [ 'a', 'b' ];
+      expect(ActorRdfJoin.overlappingVariables(action)).toEqual([ 'b' ]);
     });
   });
 
   describe('The joinVariables function', () => {
-
     it('should join variables', () => {
       expect(ActorRdfJoin.joinVariables(action)).toEqual([]);
 
-      action.entries[0].variables = ['a', 'b'];
-      action.entries[1].variables = ['c', 'd'];
-      expect(ActorRdfJoin.joinVariables(action)).toEqual(['a', 'b', 'c', 'd']);
+      action.entries[0].variables = [ 'a', 'b' ];
+      action.entries[1].variables = [ 'c', 'd' ];
+      expect(ActorRdfJoin.joinVariables(action)).toEqual([ 'a', 'b', 'c', 'd' ]);
     });
 
     it('should deduplicate the result', () => {
-      action.entries[0].variables = ['a', 'b'];
-      action.entries[1].variables = ['b', 'd'];
-      expect(ActorRdfJoin.joinVariables(action)).toEqual(['a', 'b', 'd']);
+      action.entries[0].variables = [ 'a', 'b' ];
+      action.entries[1].variables = [ 'b', 'd' ];
+      expect(ActorRdfJoin.joinVariables(action)).toEqual([ 'a', 'b', 'd' ]);
 
-      action.entries[0].variables = ['a', 'b'];
-      action.entries[1].variables = ['b', 'a'];
-      expect(ActorRdfJoin.joinVariables(action)).toEqual(['a', 'b']);
+      action.entries[0].variables = [ 'a', 'b' ];
+      action.entries[1].variables = [ 'b', 'a' ];
+      expect(ActorRdfJoin.joinVariables(action)).toEqual([ 'a', 'b' ]);
     });
   });
 
   describe('The join function', () => {
-
     it('should return the right binding if the left is empty', () => {
       const left = Bindings({});
       const right = Bindings({ x: literal('a'), y: literal('b') });
@@ -151,28 +146,26 @@ describe('ActorRdfJoin', () => {
 
     it('should join 2 bindings with no overlapping variables', () => {
       const left = Bindings({ x: literal('a'), y: literal('b') });
-      const right = Bindings({ v: literal('d'), w: literal('e' )});
+      const right = Bindings({ v: literal('d'), w: literal('e') });
       const result = Bindings({ x: literal('a'), y: literal('b'), v: literal('d'), w: literal('e') });
       return expect(ActorRdfJoin.join(left, right)).toEqual(result);
     });
 
     it('should join 2 bindings with overlapping variables', () => {
       const left = Bindings({ x: literal('a'), y: literal('b') });
-      const right = Bindings({ x: literal('a'), w: literal('e' )});
+      const right = Bindings({ x: literal('a'), w: literal('e') });
       const result = Bindings({ x: literal('a'), y: literal('b'), w: literal('e') });
       return expect(ActorRdfJoin.join(left, right)).toEqual(result);
     });
 
     it('should not join bindings with conflicting mappings', () => {
       const left = Bindings({ x: literal('a'), y: literal('b') });
-      const right = Bindings({ x: literal('b'), w: literal('e' )});
+      const right = Bindings({ x: literal('b'), w: literal('e') });
       return expect(ActorRdfJoin.join(left, right)).toBeFalsy();
     });
-
   });
 
   describe('The iteratorsHaveMetadata function', () => {
-
     it('should return false if there is no left metadata', () => {
       action.entries[1].metadata = () => Promise.resolve({});
       return expect(ActorRdfJoin.iteratorsHaveMetadata(action, 'key')).resolves.toBeFalsy();
@@ -208,7 +201,7 @@ describe('ActorRdfJoin', () => {
     it('returns an empty stream for empty input', () => {
       action.entries = [];
 
-      return instance.run(action).then(async (result: any) => {
+      return instance.run(action).then(async(result: any) => {
         expect(await arrayifyStream(result.bindingsStream)).toEqual([]);
         expect(result.variables).toEqual([]);
         return expect(await result.metadata()).toEqual({ totalItems: 0 });
@@ -216,36 +209,36 @@ describe('ActorRdfJoin', () => {
     });
 
     it('returns the input if there is only one', () => {
-      action.entries = [action.entries[0]];
+      action.entries = [ action.entries[0] ];
       return expect(instance.run(action)).resolves.toEqual(action.entries[0]);
     });
 
-    it('calls getOutput if there are 2+ entries', async () => {
-      return expect(instance.run(action)).resolves.toEqual(await instance.getOutput(action));
+    it('calls getOutput if there are 2+ entries', async() => {
+      await expect(instance.run(action)).resolves.toEqual(await instance.getOutput(action));
     });
 
-    it('calculates totalItems if metadata is supplied', async () => {
+    it('calculates totalItems if metadata is supplied', async() => {
       action.entries[0].metadata = () => Promise.resolve({ totalItems: 5 });
       action.entries[1].metadata = () => Promise.resolve({ totalItems: 10 });
-      return instance.run(action).then(async (result: any) => {
+      await instance.run(action).then(async(result: any) => {
         return expect(await result.metadata()).toEqual({ totalItems: 50 });
       });
     });
 
-    it('keeps generated metadata', async () => {
+    it('keeps generated metadata', async() => {
       const metaInstance = new Dummy({ keep: true });
       action.entries[0].metadata = () => Promise.resolve({ totalItems: 5 });
       action.entries[1].metadata = () => Promise.resolve({ totalItems: 10 });
-      return metaInstance.run(action).then(async (result: any) => {
+      await metaInstance.run(action).then(async(result: any) => {
         return expect(await result.metadata()).toEqual({ keep: true, totalItems: 50 });
       });
     });
 
-    it('does not overwrite calculated totalItems', async () => {
+    it('does not overwrite calculated totalItems', async() => {
       const metaInstance = new Dummy({ totalItems: 10 });
       action.entries[0].metadata = () => Promise.resolve({ totalItems: 5 });
       action.entries[1].metadata = () => Promise.resolve({ totalItems: 10 });
-      return metaInstance.run(action).then(async (result: any) => {
+      await metaInstance.run(action).then(async(result: any) => {
         return expect(await result.metadata()).toEqual({ totalItems: 10 });
       });
     });

@@ -1,9 +1,8 @@
-import {Bindings} from "@comunica/bus-query-operation";
-import {namedNode, variable} from "@rdfjs/data-model";
-import {BindingsIndex} from "../lib/BindingsIndex";
+import { Bindings } from '@comunica/bus-query-operation';
+import { namedNode, variable } from '@rdfjs/data-model';
+import { BindingsIndex } from '../lib/BindingsIndex';
 
 describe('BindingsIndex', () => {
-
   let index: BindingsIndex;
 
   describe('without keys', () => {
@@ -44,7 +43,7 @@ describe('BindingsIndex', () => {
 
   describe('with one key', () => {
     beforeEach(() => {
-      index = new BindingsIndex(['a']);
+      index = new BindingsIndex([ 'a' ]);
     });
 
     describe('without bindings', () => {
@@ -92,7 +91,7 @@ describe('BindingsIndex', () => {
 
   describe('with three keys', () => {
     beforeEach(() => {
-      index = new BindingsIndex(['a', 'b', 'c']);
+      index = new BindingsIndex([ 'a', 'b', 'c' ]);
     });
 
     describe('without bindings', () => {
@@ -481,7 +480,7 @@ describe('BindingsIndex', () => {
 
   describe('with two keys', () => {
     beforeEach(() => {
-      index = new BindingsIndex(['a', 'b']);
+      index = new BindingsIndex([ 'a', 'b' ]);
     });
 
     describe('with mixed bindings', () => {
@@ -595,15 +594,13 @@ describe('BindingsIndex', () => {
           a: namedNode('1d'),
         }))).toBeTruthy();
       });
-
     });
-
   });
 
   describe('with three keys and one extra key', () => {
     // Based on spec test http://www.w3.org/2009/sparql/docs/tests/data-sparql11/negation/manifest#full-minuend
     beforeEach(() => {
-      index = new BindingsIndex(['b', 'c']);
+      index = new BindingsIndex([ 'b', 'c' ]);
       index.add(Bindings({
         d: namedNode('d0'),
       }));
@@ -646,5 +643,4 @@ describe('BindingsIndex', () => {
       }))).toBeFalsy();
     });
   });
-
 });

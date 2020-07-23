@@ -1,6 +1,6 @@
-import {Map} from "immutable";
-import {Bus} from "./Bus";
-import {KEY_CONTEXT_LOG, Logger} from "./Logger";
+import { Map } from 'immutable';
+import { Bus } from './Bus';
+import { KEY_CONTEXT_LOG, Logger } from './Logger';
 
 /**
  * An actor can act on messages of certain types and provide output of a certain type.
@@ -18,9 +18,8 @@ import {KEY_CONTEXT_LOG, Logger} from "./Logger";
  * @template T The test type of an actor.
  * @template O The output type of an actor.
  */
-export abstract class Actor<I extends IAction, T extends IActorTest, O extends IActorOutput>
-  implements IActorArgs<I, T, O> {
-
+export abstract class Actor<I extends IAction, T extends IActorTest, O extends IActorOutput> implements
+    IActorArgs<I, T, O> {
   public readonly name: string;
   public readonly bus: Bus<Actor<I, T, O>, I, T, O>;
   public readonly beforeActors: Actor<I, T, O>[] = [];
@@ -36,10 +35,10 @@ export abstract class Actor<I extends IAction, T extends IActorTest, O extends I
    *        The bus this actor subscribes to.
    * @throws When required arguments are missing.
    */
-  constructor(args: IActorArgs<I, T, O>) {
+  protected constructor(args: IActorArgs<I, T, O>) {
     require('lodash.assign')(this, args);
     this.bus.subscribe(this);
-    if (this.beforeActors.length) {
+    if (this.beforeActors.length > 0) {
       this.bus.addDependencies(this, this.beforeActors);
     }
   }
@@ -159,7 +158,6 @@ export abstract class Actor<I extends IAction, T extends IActorTest, O extends I
       logger.fatal(message, this.getDefaultLogData(context, data));
     }
   }
-
 }
 
 export interface IActorArgs<I extends IAction, T extends IActorTest, O extends IActorOutput> {
@@ -212,6 +210,7 @@ export function ensureActionContext(maybeActionContext: any): ActionContext {
  * Data interface for the type of action.
  */
 export interface IAction {
+
   /**
    * The optional input context that is passed through by actors.
    */

@@ -1,14 +1,14 @@
-import {ActorInitSparql} from "@comunica/actor-init-sparql";
-import {IActorArgs, IActorTest} from "@comunica/core";
-import {Client as GraphQlClient, IGraphQlToSparqlResult} from "graphql-ld";
-import * as RDF from "rdf-js";
-import {storeStream} from "rdf-store-stream";
+import { ActorInitSparql } from '@comunica/actor-init-sparql';
+import { IActorArgs, IActorTest } from '@comunica/core';
+import { Client as GraphQlClient, IGraphQlToSparqlResult } from 'graphql-ld';
+import * as RDF from 'rdf-js';
+import { storeStream } from 'rdf-store-stream';
 import {
   ActorRdfMetadataExtract,
   IActionRdfMetadataExtract,
   IActorRdfMetadataExtractOutput,
-} from "./ActorRdfMetadataExtract";
-import {GraphQlQueryEngine} from "./GraphQlQueryEngine";
+} from './ActorRdfMetadataExtract';
+import { GraphQlQueryEngine } from './GraphQlQueryEngine';
 
 /**
  * An {@link ActorRdfMetadataExtract} that extracts metadata based on a GraphQL-LD query.
@@ -20,13 +20,12 @@ import {GraphQlQueryEngine} from "./GraphQlQueryEngine";
  * @see ActorRdfMetadataExtract
  */
 export abstract class ActorRdfMetadataExtractQuery extends ActorRdfMetadataExtract {
-
   private readonly queryEngine: ActorInitSparql;
   private readonly graphqlClient: GraphQlClient;
   private readonly sparqlOperation: Promise<IGraphQlToSparqlResult>;
 
-  constructor(context: any, query: string,
-              args: IActorArgs<IActionRdfMetadataExtract, IActorTest, IActorRdfMetadataExtractOutput>) {
+  public constructor(context: any, query: string,
+    args: IActorArgs<IActionRdfMetadataExtract, IActorTest, IActorRdfMetadataExtractOutput>) {
     super(args);
 
     // Pre-parse GraphQL-LD query
@@ -54,7 +53,6 @@ export abstract class ActorRdfMetadataExtractQuery extends ActorRdfMetadataExtra
 
     return data;
   }
-
 }
 
 export interface IActorRdfMetadataExtractQueryArgs

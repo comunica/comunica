@@ -1,19 +1,18 @@
-import {ActorRdfMetadataExtract, IActionRdfMetadataExtract,
-  IActorRdfMetadataExtractOutput} from "@comunica/bus-rdf-metadata-extract";
-import {IActorArgs, IActorTest} from "@comunica/core";
-import * as RDF from "rdf-js";
-import {parse as parseUriTemplate, UriTemplate} from "uritemplate";
+import { ActorRdfMetadataExtract, IActionRdfMetadataExtract,
+  IActorRdfMetadataExtractOutput } from '@comunica/bus-rdf-metadata-extract';
+import { IActorArgs, IActorTest } from '@comunica/core';
+import * as RDF from 'rdf-js';
+import { parse as parseUriTemplate, UriTemplate } from 'uritemplate';
 
 /**
  * An RDF Metadata Extract Actor that extracts all Hydra controls from the metadata stream.
  */
 export class ActorRdfMetadataExtractHydraControls extends ActorRdfMetadataExtract {
-
   public static readonly HYDRA: string = 'http://www.w3.org/ns/hydra/core#';
-  public static readonly LINK_TYPES: string[] = ['first', 'next', 'previous', 'last'];
+  public static readonly LINK_TYPES: string[] = [ 'first', 'next', 'previous', 'last' ];
   protected readonly parsedUriTemplateCache: {[url: string]: UriTemplate} = {};
 
-  constructor(args: IActorArgs<IActionRdfMetadataExtract, IActorTest, IActorRdfMetadataExtractOutput>) {
+  public constructor(args: IActorArgs<IActionRdfMetadataExtract, IActorTest, IActorRdfMetadataExtractOutput>) {
     super(args);
   }
 
@@ -27,11 +26,11 @@ export class ActorRdfMetadataExtractHydraControls extends ActorRdfMetadataExtrac
    * @param hydraProperties The collected Hydra properties.
    * @return The Hydra links
    */
-  public getLinks(pageUrl: string, hydraProperties: {[property: string]: {[subject: string]: string[]}})
-  : {[id: string]: any} {
+  public getLinks(pageUrl: string, hydraProperties: {[property: string]: {[subject: string]: string[]}}):
+  {[id: string]: any} {
     return ActorRdfMetadataExtractHydraControls.LINK_TYPES.reduce((metadata: {[id: string]: any}, link) => {
       // First check the correct hydra:next, then the deprecated hydra:nextPage
-      const links = hydraProperties[link] || hydraProperties[link + 'Page'];
+      const links = hydraProperties[link] || hydraProperties[`${link}Page`];
       const linkTargets = links && links[pageUrl];
       metadata[link] = linkTargets && linkTargets.length > 0 ? linkTargets[0] : null;
       return metadata;
@@ -48,6 +47,7 @@ export class ActorRdfMetadataExtractHydraControls extends ActorRdfMetadataExtrac
     if (cachedUriTemplate) {
       return cachedUriTemplate;
     }
+    // eslint-disable-next-line no-return-assign
     return this.parsedUriTemplateCache[template] = parseUriTemplate(template);
   }
 
@@ -66,7 +66,7 @@ export class ActorRdfMetadataExtractHydraControls extends ActorRdfMetadataExtrac
 
           // Parse the template
           if (searchTemplates.length !== 1) {
-            throw new Error('Expected 1 hydra:template for ' + searchFormId);
+            throw new Error(`Expected 1 hydra:template for ${searchFormId}`);
           }
           const template: string = searchTemplates[0];
           const searchTemplate: UriTemplate = this.parseUriTemplateCached(template);
@@ -77,22 +77,21 @@ export class ActorRdfMetadataExtractHydraControls extends ActorRdfMetadataExtrac
               const variable = ((hydraProperties.variable || {})[mapping] || [])[0];
               const property = ((hydraProperties.property || {})[mapping] || [])[0];
               if (!variable) {
-                throw new Error('Expected a hydra:variable for ' + mapping);
+                throw new Error(`Expected a hydra:variable for ${mapping}`);
               }
               if (!property) {
-                throw new Error('Expected a hydra:property for ' + mapping);
+                throw new Error(`Expected a hydra:property for ${mapping}`);
               }
               acc[property] = variable;
               return acc;
             }, {});
 
           // Gets the URL of the Triple Pattern Fragment with the given triple pattern
-          const getUri = (entries: {[id: string]: string}) => {
-            return searchTemplate.expand(Object.keys(entries).reduce((variables: {[id: string]: string}, key) => {
+          const getUri = (entries: {[id: string]: string}): string => searchTemplate
+            .expand(Object.keys(entries).reduce((variables: { [id: string]: string }, key) => {
               variables[mappings[key]] = entries[key];
               return variables;
             }, {}));
-          };
 
           searchForms.push({ dataset, template, mappings, getUri });
         }
@@ -113,9 +112,9 @@ export class ActorRdfMetadataExtractHydraControls extends ActorRdfMetadataExtrac
 
       // Collect all hydra properties in a nice convenient nested hash (property / subject / objects).
       const hydraProperties: {[property: string]: {[subject: string]: string[]}} = {};
-      metadata.on('data', (quad) => {
+      metadata.on('data', quad => {
         if (quad.predicate.value.startsWith(ActorRdfMetadataExtractHydraControls.HYDRA)) {
-          const property = quad.predicate.value.substr(ActorRdfMetadataExtractHydraControls.HYDRA.length);
+          const property = quad.predicate.value.slice(ActorRdfMetadataExtractHydraControls.HYDRA.length);
           const subjectProperties = hydraProperties[property] || (hydraProperties[property] = {});
           const objects = subjectProperties[quad.subject.value] || (subjectProperties[quad.subject.value] = []);
           objects.push(quad.object.value);
@@ -133,7 +132,6 @@ export class ActorRdfMetadataExtractHydraControls extends ActorRdfMetadataExtrac
     metadata.searchForms = this.getSearchForms(hydraProperties);
     return { metadata };
   }
-
 }
 
 export interface ISearchForm {

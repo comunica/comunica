@@ -1,4 +1,4 @@
-import {Actor, IAction, IActorArgs, IActorOutput, IActorTest} from "@comunica/core";
+import { Actor, IAction, IActorArgs, IActorOutput, IActorTest } from '@comunica/core';
 
 /**
  * A base actor for listening to HTTP events.
@@ -13,8 +13,7 @@ import {Actor, IAction, IActorArgs, IActorOutput, IActorTest} from "@comunica/co
  * @see IActorHttpOutput
  */
 export abstract class ActorHttp extends Actor<IActionHttp, IActorTest, IActorHttpOutput> {
-
-  constructor(args: IActorArgs<IActionHttp, IActorTest, IActorHttpOutput>) {
+  public constructor(args: IActorArgs<IActionHttp, IActorTest, IActorHttpOutput>) {
     super(args);
   }
 
@@ -27,7 +26,6 @@ export abstract class ActorHttp extends Actor<IActionHttp, IActorTest, IActorHtt
   public static toNodeReadable(body: ReadableStream | null): NodeJS.ReadableStream {
     return require('is-stream')(body) ? body : require('web-streams-node').toNodeReadable(body);
   }
-
 }
 
 /**

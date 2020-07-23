@@ -1,6 +1,6 @@
-import {Actor, Bus} from "@comunica/core";
-import {ActorAbstractMediaTyped} from "../lib/ActorAbstractMediaTyped";
-import {ActorAbstractMediaTypedFixed} from "../lib/ActorAbstractMediaTypedFixed";
+import { Actor, Bus } from '@comunica/core';
+import { ActorAbstractMediaTyped } from '../lib/ActorAbstractMediaTyped';
+import { ActorAbstractMediaTypedFixed } from '../lib/ActorAbstractMediaTypedFixed';
 
 describe('ActorAbstractMediaTypedFixed', () => {
   const bus = new Bus({ name: 'bus' });
@@ -11,11 +11,14 @@ describe('ActorAbstractMediaTypedFixed', () => {
     });
 
     it('should be a ActorAbstractMediaTypedFixed constructor', () => {
-      expect(new (<any> ActorAbstractMediaTypedFixed)({ bus: new Bus({ name: 'bus' }), mediaTypes: {},
+      expect(new (<any> ActorAbstractMediaTypedFixed)({ bus: new Bus({ name: 'bus' }),
+        mediaTypes: {},
         name: 'actor' })).toBeInstanceOf(ActorAbstractMediaTypedFixed);
-      expect(new (<any> ActorAbstractMediaTypedFixed)({ bus: new Bus({ name: 'bus' }), mediaTypes: {},
+      expect(new (<any> ActorAbstractMediaTypedFixed)({ bus: new Bus({ name: 'bus' }),
+        mediaTypes: {},
         name: 'actor' })).toBeInstanceOf(ActorAbstractMediaTyped);
-      expect(new (<any> ActorAbstractMediaTypedFixed)({ bus: new Bus({ name: 'bus' }), mediaTypes: {},
+      expect(new (<any> ActorAbstractMediaTypedFixed)({ bus: new Bus({ name: 'bus' }),
+        mediaTypes: {},
         name: 'actor' })).toBeInstanceOf(Actor);
     });
 
@@ -25,8 +28,11 @@ describe('ActorAbstractMediaTypedFixed', () => {
   });
 
   describe('An ActorAbstractMediaTypedFixed instance', () => {
-    const actor = new (<any> ActorAbstractMediaTypedFixed)({ bus, mediaTypes: { a: 0.5 }, mediaTypeFormats: { a: 'a' },
-      name: 'actor', priorityScale: 0.5 });
+    const actor = new (<any> ActorAbstractMediaTypedFixed)({ bus,
+      mediaTypes: { a: 0.5 },
+      mediaTypeFormats: { a: 'a' },
+      name: 'actor',
+      priorityScale: 0.5 });
     actor.testHandleChecked = () => Promise.resolve(true);
 
     it('should have a \'priorityScale\' field', () => {

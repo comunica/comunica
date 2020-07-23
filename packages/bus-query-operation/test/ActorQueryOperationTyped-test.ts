@@ -1,5 +1,5 @@
-import {Bus} from "@comunica/core";
-import {ActorQueryOperationTyped} from "..";
+import { Bus } from '@comunica/core';
+import { ActorQueryOperationTyped } from '..';
 
 describe('ActorQueryOperationTyped', () => {
   const bus = new Bus({ name: 'bus' });
@@ -33,15 +33,15 @@ describe('ActorQueryOperationTyped', () => {
     });
 
     it('should not test with an invalid operation', () => {
-      return expect(actor.test({ operation: { type: 'other-op' } })).rejects.toBeTruthy();
+      return expect(actor.test({ operation: { type: 'other-op' }})).rejects.toBeTruthy();
     });
 
     it('should test with a valid operation', () => {
-      return expect(actor.test({ operation: { type: 'op' } })).resolves.toBeTruthy();
+      return expect(actor.test({ operation: { type: 'op' }})).resolves.toBeTruthy();
     });
 
     it('should run', () => {
-      return expect(actor.run({ operation: { type: 'op' } })).resolves.toBeTruthy();
+      return expect(actor.run({ operation: { type: 'op' }})).resolves.toBeTruthy();
     });
   });
 });

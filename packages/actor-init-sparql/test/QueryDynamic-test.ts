@@ -1,51 +1,55 @@
-import {ActorInitSparql} from "../lib/ActorInitSparql";
-import {newEngineDynamicArged} from "../lib/QueryDynamic";
+import { ActorInitSparql } from '../lib/ActorInitSparql';
+import { newEngineDynamicArged } from '../lib/QueryDynamic';
 
 jest.setTimeout(30000);
 
 describe('newEngineDynamic', () => {
-  it('should return a query engine', async () => {
-    return expect(await newEngineDynamicArged({}, __dirname + '/../', __dirname + '/../config/config-default.json'))
+  it('should return a query engine', async() => {
+    expect(await newEngineDynamicArged({}, `${__dirname}/../`, `${__dirname}/../config/config-default.json`))
       .toBeInstanceOf(ActorInitSparql);
   });
 
-  it('with mainModulePath option', async () => {
+  it('with mainModulePath option', async() => {
     const opts = {
-      mainModulePath: __dirname + '/../',
+      mainModulePath: `${__dirname}/../`,
     };
-    return expect(await newEngineDynamicArged(opts, __dirname + '/../', __dirname + '/../config/config-default.json'))
+    expect(await newEngineDynamicArged(opts,
+      `${__dirname}/../`,
+      `${__dirname}/../config/config-default.json`))
       .toBeInstanceOf(ActorInitSparql);
   });
 
-  it('with configResourceUrl option', async () => {
+  it('with configResourceUrl option', async() => {
     const opts = {
-      configResourceUrl: __dirname + '/../config/config-default.json',
+      configResourceUrl: `${__dirname}/../config/config-default.json`,
     };
-    return expect(await newEngineDynamicArged(opts, __dirname + '/../', __dirname + '/../config/config-default.json'))
+    expect(await newEngineDynamicArged(opts,
+      `${__dirname}/../`,
+      `${__dirname}/../config/config-default.json`))
       .toBeInstanceOf(ActorInitSparql);
   });
 
-  it('with instanceUri option', async () => {
+  it('with instanceUri option', async() => {
     const opts = {
       instanceUri: 'urn:comunica:sparqlinit',
     };
-    return expect(await newEngineDynamicArged(opts, __dirname + '/../', __dirname + '/../config/config-default.json'))
+    expect(await newEngineDynamicArged(opts, `${__dirname}/../`, `${__dirname}/../config/config-default.json`))
       .toBeInstanceOf(ActorInitSparql);
   });
 
-  it('with runnerInstanceUri option', async () => {
+  it('with runnerInstanceUri option', async() => {
     const opts = {
       runnerInstanceUri: 'urn:comunica:my',
     };
-    return expect(await newEngineDynamicArged(opts, __dirname + '/../', __dirname + '/../config/config-default.json'))
+    expect(await newEngineDynamicArged(opts, `${__dirname}/../`, `${__dirname}/../config/config-default.json`))
       .toBeInstanceOf(ActorInitSparql);
   });
 
-  it('with invalid instanceUri option', async () => {
+  it('with invalid instanceUri option', async() => {
     const opts = {
       instanceUri: 'urn:comunica:myUNKNOWN',
     };
-    return expect(newEngineDynamicArged(opts, __dirname + '/../', __dirname + '/../config/config-default.json'))
+    await expect(newEngineDynamicArged(opts, `${__dirname}/../`, `${__dirname}/../config/config-default.json`))
       .rejects.toThrow(new Error('No actor for key engine was found for IRI urn:comunica:myUNKNOWN.'));
   });
 });

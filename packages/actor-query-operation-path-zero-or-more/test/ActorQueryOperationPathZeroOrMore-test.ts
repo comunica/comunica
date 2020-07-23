@@ -1,11 +1,11 @@
-import {ActorQueryOperation, Bindings} from "@comunica/bus-query-operation";
-import {Bus} from "@comunica/core";
-import {namedNode, variable} from "@rdfjs/data-model";
-import {ArrayIterator} from "asynciterator";
-import {termToString} from "rdf-string";
-import {QUAD_TERM_NAMES} from "rdf-terms";
-import {Algebra, Factory} from "sparqlalgebrajs";
-import {ActorQueryOperationPathZeroOrMore} from "../lib/ActorQueryOperationPathZeroOrMore";
+import { ActorQueryOperation, Bindings } from '@comunica/bus-query-operation';
+import { Bus } from '@comunica/core';
+import { namedNode, variable } from '@rdfjs/data-model';
+import { ArrayIterator } from 'asynciterator';
+import { termToString } from 'rdf-string';
+import { QUAD_TERM_NAMES } from 'rdf-terms';
+import { Algebra, Factory } from 'sparqlalgebrajs';
+import { ActorQueryOperationPathZeroOrMore } from '../lib/ActorQueryOperationPathZeroOrMore';
 const arrayifyStream = require('arrayify-stream');
 
 describe('ActorQueryOperationPathZeroOrMore', () => {
@@ -16,7 +16,7 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
     mediatorQueryOperation = {
-      mediate: (arg: any) => {
+      mediate(arg: any) {
         const vars: any = [];
         for (const name of QUAD_TERM_NAMES) {
           if (arg.operation[name].termType === 'Variable' || arg.operation[name].termType === 'BlankNode') {
@@ -28,8 +28,8 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
         if (vars.length > 0) {
           for (let i = 0; i < 3; ++i) {
             const bind: any = {};
-            for (let j = 0; j < vars.length; ++j) {
-              bind[vars[j]] = namedNode('' + (1 + i + j));
+            for (const [ j, element ] of vars.entries()) {
+              bind[element] = namedNode(`${1 + i + j}`);
             }
             bindings.push(Bindings(bind));
           }
@@ -39,7 +39,7 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
 
         return Promise.resolve({
           bindingsStream: new ArrayIterator(bindings),
-          metadata: () => Promise.resolve({totalItems: 3}),
+          metadata: () => Promise.resolve({ totalItems: 3 }),
           operated: arg,
           type: 'bindings',
           variables: vars,
@@ -73,23 +73,23 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
     });
 
     it('should test on ZeroOrMore paths', () => {
-      const op = { operation: { type: Algebra.types.PATH, predicate: { type: Algebra.types.ZERO_OR_MORE_PATH }} };
+      const op = { operation: { type: Algebra.types.PATH, predicate: { type: Algebra.types.ZERO_OR_MORE_PATH }}};
       return expect(actor.test(op)).resolves.toBeTruthy();
     });
 
     it('should test on different paths', () => {
-      const op = { operation: { type: Algebra.types.PATH, predicate: { type: 'dummy' }} };
+      const op = { operation: { type: Algebra.types.PATH, predicate: { type: 'dummy' }}};
       return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
-    it('should support ZeroOrMore paths (:s :p* ?o)', async () => {
+    it('should support ZeroOrMore paths (:s :p* ?o)', async() => {
       const op = { operation: factory.createPath(
-          namedNode('s'),
-          factory.createZeroOrMorePath(factory.createLink(namedNode('p'))),
-          variable('x'),
-        )};
+        namedNode('s'),
+        factory.createZeroOrMorePath(factory.createLink(namedNode('p'))),
+        variable('x'),
+      ) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
-      expect(output.variables).toEqual(['?x']);
+      expect(output.variables).toEqual([ '?x' ]);
       expect(await arrayifyStream(output.bindingsStream)).toEqual([
         Bindings({ '?x': namedNode('s') }),
         Bindings({ '?x': namedNode('1') }),
@@ -98,14 +98,14 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
       ]);
     });
 
-    it('should support ZeroOrMore paths (?s :p* :o)', async () => {
+    it('should support ZeroOrMore paths (?s :p* :o)', async() => {
       const op = { operation: factory.createPath(
-          variable('x'),
-          factory.createZeroOrMorePath(factory.createLink(namedNode('p'))),
-          namedNode('o'),
-        )};
+        variable('x'),
+        factory.createZeroOrMorePath(factory.createLink(namedNode('p'))),
+        namedNode('o'),
+      ) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
-      expect(output.variables).toEqual(['?x']);
+      expect(output.variables).toEqual([ '?x' ]);
       expect(await arrayifyStream(output.bindingsStream)).toEqual([
         Bindings({ '?x': namedNode('o') }),
         Bindings({ '?x': namedNode('1') }),
@@ -114,12 +114,12 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
       ]);
     });
 
-    it('should support ZeroOrMore paths (:s :p* :o)', async () => {
+    it('should support ZeroOrMore paths (:s :p* :o)', async() => {
       const op = { operation: factory.createPath(
-          namedNode('s'),
-          factory.createZeroOrMorePath(factory.createLink(namedNode('p'))),
-          namedNode('1'),
-        )};
+        namedNode('s'),
+        factory.createZeroOrMorePath(factory.createLink(namedNode('p'))),
+        namedNode('1'),
+      ) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       expect(output.variables).toEqual([]);
       expect(await arrayifyStream(output.bindingsStream)).toEqual([
@@ -129,10 +129,10 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
 
     it('should not support ZeroOrMore paths with 2 variables', () => {
       const op = { operation: factory.createPath(
-          variable('x'),
-          factory.createZeroOrMorePath(factory.createLink(namedNode('p'))),
-          variable('y'),
-        )};
+        variable('x'),
+        factory.createZeroOrMorePath(factory.createLink(namedNode('p'))),
+        variable('y'),
+      ) };
       return expect(actor.run(op)).rejects.toBeTruthy();
     });
   });

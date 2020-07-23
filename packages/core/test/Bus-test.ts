@@ -1,4 +1,4 @@
-import {ActionObserver, Actor, Bus, IAction, IActorOutput, IActorTest} from "..";
+import { ActionObserver, Actor, Bus, IAction, IActorOutput, IActorTest } from '..';
 
 describe('Bus', () => {
   describe('The Bus module', () => {
@@ -22,7 +22,7 @@ describe('Bus', () => {
     const observer3 = new (<any> ActionObserver)({ name: 'observer3', bus: new Bus({ name: 'bus3' }) });
 
     const actorTest = (action: any) => {
-      return new Promise((resolve) => {
+      return new Promise(resolve => {
         resolve({ type: 'test', sent: action });
       });
     };
@@ -32,9 +32,15 @@ describe('Bus', () => {
       actor2.test = actorTest;
       actor3.test = actorTest;
 
-      observer1.onRun = () => { return; };
-      observer2.onRun = () => { return; };
-      observer3.onRun = () => { return; };
+      observer1.onRun = () => {
+        // Do nothing
+      };
+      observer2.onRun = () => {
+        // Do nothing
+      };
+      observer3.onRun = () => {
+        // Do nothing
+      };
 
       jest.spyOn(actor1, 'test');
       jest.spyOn(actor2, 'test');
@@ -204,7 +210,7 @@ describe('Bus', () => {
       it('should receive a correct publication reply', () => {
         expect(bus.publish({ a: 'b' })[0].actor).toEqual(actor1);
         expect(bus.publish({ a: 'b' })[0].reply).toBeInstanceOf(Promise);
-        return expect(bus.publish({ a: 'b' })[0].reply).resolves.toEqual({ type: 'test', sent: { a: 'b' } });
+        return expect(bus.publish({ a: 'b' })[0].reply).resolves.toEqual({ type: 'test', sent: { a: 'b' }});
       });
     });
 
@@ -262,52 +268,52 @@ describe('Bus', () => {
       });
 
       it('should be ordered by insertion order by default', () => {
-        expect(bus.actors).toEqual([actor1, actor2, actor3]);
+        expect(bus.actors).toEqual([ actor1, actor2, actor3 ]);
       });
 
       it('should not change the order when calling reordering without dependencies', () => {
         bus.reorderForDependencies();
-        expect(bus.actors).toEqual([actor1, actor2, actor3]);
+        expect(bus.actors).toEqual([ actor1, actor2, actor3 ]);
       });
 
       it('should change the order when adding 1 dependency', () => {
-        bus.addDependencies(actor2, [actor1]);
-        expect(bus.actors).toEqual([actor2, actor3, actor1]);
+        bus.addDependencies(actor2, [ actor1 ]);
+        expect(bus.actors).toEqual([ actor2, actor3, actor1 ]);
 
-        bus.addDependencies(actor3, [actor2]);
-        expect(bus.actors).toEqual([actor3, actor2, actor1]);
+        bus.addDependencies(actor3, [ actor2 ]);
+        expect(bus.actors).toEqual([ actor3, actor2, actor1 ]);
       });
 
       it('should change the order when adding 2 dependencies', () => {
-        bus.addDependencies(actor2, [actor1, actor3]);
-        expect(bus.actors).toEqual([actor2, actor1, actor3]);
+        bus.addDependencies(actor2, [ actor1, actor3 ]);
+        expect(bus.actors).toEqual([ actor2, actor1, actor3 ]);
 
-        bus.addDependencies(actor3, [actor1]);
-        expect(bus.actors).toEqual([actor2, actor3, actor1]);
+        bus.addDependencies(actor3, [ actor1 ]);
+        expect(bus.actors).toEqual([ actor2, actor3, actor1 ]);
       });
 
       it('should not change the effective order when a dependency is added for an unsubscribed actor', () => {
         bus.addDependencies(actor2, [{}]);
-        expect(bus.actors).toEqual([actor1, actor2, actor3]);
+        expect(bus.actors).toEqual([ actor1, actor2, actor3 ]);
       });
 
       it('should not change the effective order when a dependent is added for an unsubscribed actor', () => {
-        bus.addDependencies({}, [actor2]);
-        expect(bus.actors).toEqual([actor1, actor3, actor2]);
+        bus.addDependencies({}, [ actor2 ]);
+        expect(bus.actors).toEqual([ actor1, actor3, actor2 ]);
       });
 
       it('should change the order for chained dependencies', () => {
-        bus.addDependencies(actor3, [actor2]);
-        expect(bus.actors).toEqual([actor1, actor3, actor2]);
+        bus.addDependencies(actor3, [ actor2 ]);
+        expect(bus.actors).toEqual([ actor1, actor3, actor2 ]);
 
-        bus.addDependencies(actor2, [actor1]);
-        expect(bus.actors).toEqual([actor3, actor2, actor1]);
+        bus.addDependencies(actor2, [ actor1 ]);
+        expect(bus.actors).toEqual([ actor3, actor2, actor1 ]);
       });
 
       it('should error on cyclic links', () => {
-        bus.addDependencies(actor1, [actor2]);
-        bus.addDependencies(actor2, [actor3]);
-        expect(() => bus.addDependencies(actor3, [actor1]))
+        bus.addDependencies(actor1, [ actor2 ]);
+        bus.addDependencies(actor2, [ actor3 ]);
+        expect(() => bus.addDependencies(actor3, [ actor1 ]))
           .toThrow(new Error('Cyclic dependency links detected in bus bus'));
       });
     });
@@ -319,8 +325,8 @@ describe('Bus', () => {
 
       beforeEach(() => {
         actor1o = new (<any> Actor)({ name: 'actor1o', bus });
-        actor2o = new (<any> Actor)({ name: 'actor2o', bus, beforeActors: [actor1o] });
-        actor3o = new (<any> Actor)({ name: 'actor3o', bus, beforeActors: [actor2o] });
+        actor2o = new (<any> Actor)({ name: 'actor2o', bus, beforeActors: [ actor1o ]});
+        actor3o = new (<any> Actor)({ name: 'actor3o', bus, beforeActors: [ actor2o ]});
 
         (<any> actor1o).test = actorTest;
         (<any> actor2o).test = actorTest;
@@ -338,6 +344,5 @@ describe('Bus', () => {
         expect(bus.publish({ a: 'b' })[2].reply).toBeInstanceOf(Promise);
       });
     });
-
   });
 });

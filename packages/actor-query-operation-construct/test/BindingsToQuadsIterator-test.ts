@@ -1,8 +1,8 @@
-import {Bindings} from "@comunica/bus-query-operation";
-import {blankNode, defaultGraph, literal, namedNode, quad, variable} from "@rdfjs/data-model";
-import {ArrayIterator} from "asynciterator";
-import * as RDF from "rdf-js";
-import {BindingsToQuadsIterator} from "../lib/BindingsToQuadsIterator";
+import { Bindings } from '@comunica/bus-query-operation';
+import { blankNode, defaultGraph, literal, namedNode, quad, variable } from '@rdfjs/data-model';
+import { ArrayIterator } from 'asynciterator';
+import * as RDF from 'rdf-js';
+import { BindingsToQuadsIterator } from '../lib/BindingsToQuadsIterator';
 
 const arrayifyStream = require('arrayify-stream');
 
@@ -121,7 +121,7 @@ describe('BindingsToQuadsIterator', () => {
     });
 
     describe('with non-empty bindings', () => {
-      const bindings = Bindings({'?a': namedNode('a'), '?b': namedNode('b')});
+      const bindings = Bindings({ '?a': namedNode('a'), '?b': namedNode('b') });
 
       it('should not bind a quad without variables', () => {
         return expect(BindingsToQuadsIterator.bindQuad(bindings, quad(
@@ -351,7 +351,7 @@ describe('BindingsToQuadsIterator', () => {
     });
 
     it('should localize a quad with subject, predicate, object and graph blank nodes', () => {
-      return expect(BindingsToQuadsIterator.localizeQuad(0, <any> quad(
+      return expect(BindingsToQuadsIterator.localizeQuad(0, quad<any>(
         blankNode('s'),
         blankNode('p'),
         blankNode('o'),
@@ -365,7 +365,7 @@ describe('BindingsToQuadsIterator', () => {
     });
 
     it('should localize a quad with equal subject, predicate, object and graph blank nodes', () => {
-      return expect(BindingsToQuadsIterator.localizeQuad(0, <any> quad(
+      return expect(BindingsToQuadsIterator.localizeQuad(0, quad<any>(
         blankNode('a'),
         blankNode('a'),
         blankNode('a'),
@@ -379,7 +379,7 @@ describe('BindingsToQuadsIterator', () => {
     });
 
     it('should localize a quad multiple times with blank nodes with different counters', () => {
-      expect(BindingsToQuadsIterator.localizeQuad(0, <any> quad(
+      expect(BindingsToQuadsIterator.localizeQuad(0, quad<any>(
         blankNode('s'),
         blankNode('p'),
         blankNode('o'),
@@ -391,7 +391,7 @@ describe('BindingsToQuadsIterator', () => {
         blankNode('g0'),
       ));
 
-      expect(BindingsToQuadsIterator.localizeQuad(1, <any> quad(
+      expect(BindingsToQuadsIterator.localizeQuad(1, quad<any>(
         blankNode('s'),
         blankNode('p'),
         blankNode('o'),
@@ -403,7 +403,7 @@ describe('BindingsToQuadsIterator', () => {
         blankNode('g1'),
       ));
 
-      expect(BindingsToQuadsIterator.localizeQuad(2, <any> quad(
+      expect(BindingsToQuadsIterator.localizeQuad(2, quad<any>(
         blankNode('s'),
         blankNode('p'),
         blankNode('o'),
@@ -489,23 +489,29 @@ describe('BindingsToQuadsIterator', () => {
       ]));
     });
 
-    it('should be transformed to a valid triple stream', async () => {
-      return expect(await arrayifyStream(iterator)).toEqual([
+    it('should be transformed to a valid triple stream', async() => {
+      expect(await arrayifyStream(iterator)).toEqual([
         quad(namedNode('a1'), namedNode('p1'), namedNode('o1')),
         quad(blankNode('bnode0'), namedNode('b1'), blankNode('bnode0')),
         quad(blankNode('bnode0'), namedNode('a1'), namedNode('b1')),
-        quad<RDF.BaseQuad>(blankNode('bnode0'), blankNode('otherbnode0'),
-          blankNode('otherbnode0'), blankNode('otherbnode0')),
+        quad<RDF.BaseQuad>(blankNode('bnode0'),
+          blankNode('otherbnode0'),
+          blankNode('otherbnode0'),
+          blankNode('otherbnode0')),
 
         quad(namedNode('a2'), namedNode('p1'), namedNode('o1')),
         quad(blankNode('bnode1'), namedNode('b2'), blankNode('bnode1')),
         quad(blankNode('bnode1'), namedNode('a2'), namedNode('b2')),
-        quad<RDF.BaseQuad>(blankNode('bnode1'), blankNode('otherbnode1'),
-          blankNode('otherbnode1'), blankNode('otherbnode1')),
+        quad<RDF.BaseQuad>(blankNode('bnode1'),
+          blankNode('otherbnode1'),
+          blankNode('otherbnode1'),
+          blankNode('otherbnode1')),
 
         quad(namedNode('a3'), namedNode('p1'), namedNode('o1')),
-        quad<RDF.BaseQuad>(blankNode('bnode2'), blankNode('otherbnode2'),
-          blankNode('otherbnode2'), blankNode('otherbnode2')),
+        quad<RDF.BaseQuad>(blankNode('bnode2'),
+          blankNode('otherbnode2'),
+          blankNode('otherbnode2'),
+          blankNode('otherbnode2')),
       ]);
     });
   });

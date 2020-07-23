@@ -1,8 +1,8 @@
-import {ActorQueryOperation, Bindings, IActorQueryOperationOutputBoolean} from "@comunica/bus-query-operation";
-import {Bus} from "@comunica/core";
-import {literal} from "@rdfjs/data-model";
-import {ArrayIterator, AsyncIterator, BufferedIterator, range} from "asynciterator";
-import {ActorQueryOperationAsk} from "../lib/ActorQueryOperationAsk";
+import { ActorQueryOperation, Bindings, IActorQueryOperationOutputBoolean } from '@comunica/bus-query-operation';
+import { Bus } from '@comunica/core';
+import { literal } from '@rdfjs/data-model';
+import { ArrayIterator, BufferedIterator, range } from 'asynciterator';
+import { ActorQueryOperationAsk } from '../lib/ActorQueryOperationAsk';
 
 describe('ActorQueryOperationAsk', () => {
   let bus: any;
@@ -23,7 +23,7 @@ describe('ActorQueryOperationAsk', () => {
         metadata: () => Promise.resolve({ totalItems: 3 }),
         operated: arg,
         type: 'bindings',
-        variables: ['a'],
+        variables: [ 'a' ],
       }),
     };
     mediatorQueryOperationEmpty = {
@@ -32,7 +32,7 @@ describe('ActorQueryOperationAsk', () => {
         metadata: () => Promise.resolve({ totalItems: 0 }),
         operated: arg,
         type: 'bindings',
-        variables: ['a'],
+        variables: [ 'a' ],
       }),
     };
     mediatorQueryOperationError = {
@@ -44,7 +44,7 @@ describe('ActorQueryOperationAsk', () => {
           metadata: () => Promise.resolve({ totalItems: 0 }),
           operated: arg,
           type: 'bindings',
-          variables: ['a'],
+          variables: [ 'a' ],
         });
       }),
     };
@@ -54,7 +54,7 @@ describe('ActorQueryOperationAsk', () => {
         metadata: () => Promise.resolve({ totalItems: 0 }),
         operated: arg,
         type: 'bindings',
-        variables: ['a'],
+        variables: [ 'a' ],
       }),
     };
   });
@@ -84,38 +84,40 @@ describe('ActorQueryOperationAsk', () => {
     });
 
     it('should test on ask', () => {
-      const op = { operation: { type: 'ask' } };
+      const op = { operation: { type: 'ask' }};
       return expect(actor.test(op)).resolves.toBeTruthy();
     });
 
     it('should not test on non-ask', () => {
-      const op = { operation: { type: 'some-other-type' } };
+      const op = { operation: { type: 'some-other-type' }};
       return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
     it('should run on a non-empty stream', () => {
-      const op = { operation: { type: 'ask' } };
-      return actor.run(op).then(async (output: IActorQueryOperationOutputBoolean) => {
+      const op = { operation: { type: 'ask' }};
+      return actor.run(op).then(async(output: IActorQueryOperationOutputBoolean) => {
         expect(output.type).toEqual('boolean');
         expect(await output.booleanResult).toBeTruthy();
       });
     });
 
     it('should run on an empty stream', () => {
-      const op = { operation: { type: 'ask' } };
+      const op = { operation: { type: 'ask' }};
       const actorEmpty = new ActorQueryOperationAsk(
-        { name: 'actor', bus, mediatorQueryOperation: mediatorQueryOperationEmpty });
-      return actorEmpty.run(op).then(async (output: IActorQueryOperationOutputBoolean) => {
+        { name: 'actor', bus, mediatorQueryOperation: mediatorQueryOperationEmpty },
+      );
+      return actorEmpty.run(op).then(async(output: IActorQueryOperationOutputBoolean) => {
         expect(output.type).toEqual('boolean');
         expect(await output.booleanResult).toBeFalsy();
       });
     });
 
     it('should run and return a rejecting promise on an errorring stream', () => {
-      const op = { operation: { type: 'ask' } };
+      const op = { operation: { type: 'ask' }};
       const actorError = new ActorQueryOperationAsk(
-        { name: 'actor', bus, mediatorQueryOperation: mediatorQueryOperationError });
-      return actorError.run(op).then(async (output: IActorQueryOperationOutputBoolean) => {
+        { name: 'actor', bus, mediatorQueryOperation: mediatorQueryOperationError },
+      );
+      return actorError.run(op).then(async(output: IActorQueryOperationOutputBoolean) => {
         expect(output.type).toEqual('boolean');
         return expect(output.booleanResult).rejects.toBeTruthy();
       });

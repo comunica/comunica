@@ -1,9 +1,8 @@
-import {ActionContext} from "@comunica/core";
-import {AsyncReiterableArray} from "asyncreiterable";
-import {DataSourceUtils} from "..";
+import { ActionContext } from '@comunica/core';
+import { AsyncReiterableArray } from 'asyncreiterable';
+import { DataSourceUtils } from '..';
 
 describe('DataSourceUtils', () => {
-
   const contextUndefined = undefined;
   const contextWithSource: ActionContext = ActionContext(
     { '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'a-type', value: 'a-value' }},
@@ -44,9 +43,9 @@ describe('DataSourceUtils', () => {
       return expect(source).resolves.toEqual(undefined);
     });
 
-    it('return undefined for sources that are not ended', async () => {
+    it('return undefined for sources that are not ended', async() => {
       const source = DataSourceUtils.getSingleSource(contextNotEnded);
-      return expect(source).resolves.toEqual(undefined);
+      await expect(source).resolves.toEqual(undefined);
     });
   });
 
@@ -74,29 +73,28 @@ describe('DataSourceUtils', () => {
 
   describe('#singleSourceHasType', () => {
     it('should return true if type of source is equal to required type', () => {
-      const sourceType = DataSourceUtils.singleSourceHasType(contextWithSource, "a-type");
+      const sourceType = DataSourceUtils.singleSourceHasType(contextWithSource, 'a-type');
       return expect(sourceType).resolves.toEqual(true);
     });
 
     it('should return false if type of source is not equal to required type', () => {
-      const sourceType = DataSourceUtils.singleSourceHasType(contextWithSource, "some-other-type");
+      const sourceType = DataSourceUtils.singleSourceHasType(contextWithSource, 'some-other-type');
       return expect(sourceType).resolves.toEqual(false);
     });
 
     it('should return true when only one source in sources list', () => {
-      const sourceType = DataSourceUtils.singleSourceHasType(contextWithSingleMultipleSources, "a-type");
+      const sourceType = DataSourceUtils.singleSourceHasType(contextWithSingleMultipleSources, 'a-type');
       return expect(sourceType).resolves.toEqual(true);
     });
 
     it('should return false when non singular source', () => {
-      const sourceType = DataSourceUtils.singleSourceHasType(contextWithMultipleSources, "a-type");
+      const sourceType = DataSourceUtils.singleSourceHasType(contextWithMultipleSources, 'a-type');
       return expect(sourceType).resolves.toEqual(false);
     });
 
     it('should return false when no source', () => {
-      const sourceType = DataSourceUtils.singleSourceHasType(contextUndefined, "a-type");
+      const sourceType = DataSourceUtils.singleSourceHasType(contextUndefined, 'a-type');
       return expect(sourceType).resolves.toEqual(false);
     });
-
   });
 });

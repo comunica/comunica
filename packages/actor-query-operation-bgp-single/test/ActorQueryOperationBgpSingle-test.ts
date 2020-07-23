@@ -1,7 +1,7 @@
-import {ActorQueryOperation, KEY_CONTEXT_BGP_PARENTMETADATA,
-  KEY_CONTEXT_PATTERN_PARENTMETADATA, KEY_CONTEXT_QUERYOPERATION} from "@comunica/bus-query-operation";
-import {ActionContext, Bus} from "@comunica/core";
-import {ActorQueryOperationBgpSingle} from "../lib/ActorQueryOperationBgpSingle";
+import { ActorQueryOperation, KEY_CONTEXT_BGP_PARENTMETADATA,
+  KEY_CONTEXT_PATTERN_PARENTMETADATA, KEY_CONTEXT_QUERYOPERATION } from '@comunica/bus-query-operation';
+import { ActionContext, Bus } from '@comunica/core';
+import { ActorQueryOperationBgpSingle } from '../lib/ActorQueryOperationBgpSingle';
 
 describe('ActorQueryOperationBgpSingle', () => {
   let bus: any;
@@ -39,27 +39,27 @@ describe('ActorQueryOperationBgpSingle', () => {
     });
 
     it('should not test on empty BGPs', () => {
-      const op = { operation: { type: 'bgp', patterns: [] } };
+      const op = { operation: { type: 'bgp', patterns: []}};
       return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
     it('should test on BGPs with a single pattern', () => {
-      const op = { operation: { type: 'bgp', patterns: [ 'abc' ] } };
+      const op = { operation: { type: 'bgp', patterns: [ 'abc' ]}};
       return expect(actor.test(op)).resolves.toBeTruthy();
     });
 
     it('should not test on BGPs with more than one pattern', () => {
-      const op = { operation: { type: 'bgp', patterns: [ 'abc', 'def' ] } };
+      const op = { operation: { type: 'bgp', patterns: [ 'abc', 'def' ]}};
       return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
     it('should run with a context and delegate the pattern to the mediator', () => {
-      const op = { operation: { type: 'bgp', patterns: [ 'abc' ] }, context: ActionContext({ c: 'C' }) };
-      return actor.run(op).then(async (output) => {
+      const op = { operation: { type: 'bgp', patterns: [ 'abc' ]}, context: ActionContext({ c: 'C' }) };
+      return actor.run(op).then(async output => {
         expect(output).toMatchObject({ operated: {
           context: ActionContext({ c: 'C', [KEY_CONTEXT_QUERYOPERATION]: op.operation }),
           operation: 'abc',
-        } });
+        }});
       });
     });
 
@@ -69,8 +69,8 @@ describe('ActorQueryOperationBgpSingle', () => {
           a: 'b',
         }],
       });
-      const op = { operation: { type: 'bgp', patterns: [ 'abc' ] }, context };
-      return actor.run(op).then(async (output) => {
+      const op = { operation: { type: 'bgp', patterns: [ 'abc' ]}, context };
+      return actor.run(op).then(async output => {
         expect(output).toMatchObject({
           operated: {
             context: ActionContext({
@@ -84,9 +84,9 @@ describe('ActorQueryOperationBgpSingle', () => {
     });
 
     it('should run without a context and delegate the pattern to the mediator', () => {
-      const op = { operation: { type: 'bgp', patterns: [ 'abc' ] } };
-      return actor.run(op).then(async (output) => {
-        expect(output).toMatchObject({ operated: { operation: 'abc' } });
+      const op = { operation: { type: 'bgp', patterns: [ 'abc' ]}};
+      return actor.run(op).then(async output => {
+        expect(output).toMatchObject({ operated: { operation: 'abc' }});
       });
     });
   });

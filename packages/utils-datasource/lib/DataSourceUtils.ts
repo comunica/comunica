@@ -1,26 +1,27 @@
 import {
-  DataSources, getDataSourceType,
+  DataSources,
+  getDataSourceType,
   IDataSource,
   KEY_CONTEXT_SOURCE,
   KEY_CONTEXT_SOURCES,
-} from "@comunica/bus-rdf-resolve-quad-pattern";
-import {ActionContext} from "@comunica/core";
+} from '@comunica/bus-rdf-resolve-quad-pattern';
+import { ActionContext } from '@comunica/core';
 
 /**
  * Comunica datasource utilities
  */
-export abstract class DataSourceUtils {
-
+export const DataSourceUtils = {
   /**
    * Get the single source if the context contains just a single source.
    * @param {ActionContext} context A context, can be null.
    * @return {Promise<IDataSource>} A promise resolving to the single datasource or undefined.
    */
-  public static async getSingleSource(context?: ActionContext): Promise<IDataSource | undefined> {
+  async getSingleSource(context?: ActionContext): Promise<IDataSource | undefined> {
     if (context && context.has(KEY_CONTEXT_SOURCE)) {
       // If the single source is set
       return context.get(KEY_CONTEXT_SOURCE);
-    } else if (context && context.has(KEY_CONTEXT_SOURCES)) {
+    }
+    if (context && context.has(KEY_CONTEXT_SOURCES)) {
       // If multiple sources are set
       const datasources: DataSources = context.get(KEY_CONTEXT_SOURCES);
       if (datasources.isEnded()) {
@@ -31,17 +32,17 @@ export abstract class DataSourceUtils {
         }
       }
     }
-  }
+  },
 
   /**
    * Get the type of a single source
    * @param {ActionContext} context A context, can be undefined.
    * @return {Promise<string>} A promise resolving to the type of the source, can be undefined if source is undefined.
    */
-  public static async getSingleSourceType(context?: ActionContext): Promise<string | undefined> {
+  async getSingleSourceType(context?: ActionContext): Promise<string | undefined> {
     const source = await this.getSingleSource(context);
     return source ? getDataSourceType(source) : undefined;
-  }
+  },
 
   /**
    * Check if the given context has a single source of the given type.
@@ -49,9 +50,8 @@ export abstract class DataSourceUtils {
    * @param {string} requiredType The required source type name.
    * @return {boolean} If the given context has a single source of the given type.
    */
-  public static async singleSourceHasType(context: ActionContext | undefined, requiredType: string): Promise<boolean> {
+  async singleSourceHasType(context: ActionContext | undefined, requiredType: string): Promise<boolean> {
     const actualType = await this.getSingleSourceType(context);
-    const result = actualType ? actualType === requiredType : false;
-    return result;
-  }
-}
+    return actualType ? actualType === requiredType : false;
+  },
+};

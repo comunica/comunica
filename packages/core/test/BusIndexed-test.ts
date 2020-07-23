@@ -1,4 +1,4 @@
-import {ActionObserver, Actor, Bus, BusIndexed} from "..";
+import { ActionObserver, Actor, Bus, BusIndexed } from '..';
 
 describe('BusIndexed', () => {
   describe('The BusIndexed module', () => {
@@ -7,7 +7,7 @@ describe('BusIndexed', () => {
     });
 
     it('should be a BusIndexed constructor', () => {
-      expect(new BusIndexed({ name: 'BusIndexed', actorIdentifierFields: [], actionIdentifierFields: [] }))
+      expect(new BusIndexed({ name: 'BusIndexed', actorIdentifierFields: [], actionIdentifierFields: []}))
         .toBeInstanceOf(BusIndexed);
     });
   });
@@ -23,7 +23,7 @@ describe('BusIndexed', () => {
     const observer3 = new (<any> ActionObserver)({ name: 'observer3', bus: new Bus({ name: 'bus3' }) });
 
     const actorTest = (action: any) => {
-      return new Promise((resolve) => {
+      return new Promise(resolve => {
         resolve({ type: 'test', sent: action });
       });
     };
@@ -33,9 +33,15 @@ describe('BusIndexed', () => {
       actor2.test = actorTest;
       actor3.test = actorTest;
 
-      observer1.onRun = () => { return; };
-      observer2.onRun = () => { return; };
-      observer3.onRun = () => { return; };
+      observer1.onRun = () => {
+        // Do nothing
+      };
+      observer2.onRun = () => {
+        // Do nothing
+      };
+      observer3.onRun = () => {
+        // Do nothing
+      };
 
       jest.spyOn(actor1, 'test');
       jest.spyOn(actor2, 'test');
@@ -45,7 +51,7 @@ describe('BusIndexed', () => {
       jest.spyOn(observer2, 'onRun');
       jest.spyOn(observer3, 'onRun');
 
-      bus = new BusIndexed({ name: 'bus', actorIdentifierFields: ['ACTOR'], actionIdentifierFields: ['ACTION'] });
+      bus = new BusIndexed({ name: 'bus', actorIdentifierFields: [ 'ACTOR' ], actionIdentifierFields: [ 'ACTION' ]});
     });
 
     it('should have a \'name\' field', () => {
@@ -139,7 +145,7 @@ describe('BusIndexed', () => {
       it('should receive a correct publication reply', () => {
         expect(bus.publish({ a: 'b' })[0].actor).toEqual(actor1);
         expect(bus.publish({ a: 'b' })[0].reply).toBeInstanceOf(Promise);
-        return expect(bus.publish({ a: 'b' })[0].reply).resolves.toEqual({ type: 'test', sent: { a: 'b' } });
+        return expect(bus.publish({ a: 'b' })[0].reply).resolves.toEqual({ type: 'test', sent: { a: 'b' }});
       });
     });
 
@@ -188,7 +194,6 @@ describe('BusIndexed', () => {
         expect(bus.publish({ a: 'b' })[2].reply).toBeInstanceOf(Promise);
       });
     });
-
   });
 
   describe('A BusIndexed instance with simple actorIdentifierFields and actionIdentifierFields', () => {
@@ -203,7 +208,7 @@ describe('BusIndexed', () => {
     const observer3 = new (<any> ActionObserver)({ name: 'observer3', bus: new Bus({ name: 'bus3' }) });
 
     const actorTest = (action: any) => {
-      return new Promise((resolve) => {
+      return new Promise(resolve => {
         resolve({ type: 'test', sent: action });
       });
     };
@@ -214,9 +219,15 @@ describe('BusIndexed', () => {
       actor3.test = actorTest;
       actor4.test = actorTest;
 
-      observer1.onRun = () => { return; };
-      observer2.onRun = () => { return; };
-      observer3.onRun = () => { return; };
+      observer1.onRun = () => {
+        // Do nothing
+      };
+      observer2.onRun = () => {
+        // Do nothing
+      };
+      observer3.onRun = () => {
+        // Do nothing
+      };
 
       jest.spyOn(actor1, 'test');
       jest.spyOn(actor2, 'test');
@@ -227,7 +238,7 @@ describe('BusIndexed', () => {
       jest.spyOn(observer2, 'onRun');
       jest.spyOn(observer3, 'onRun');
 
-      bus = new BusIndexed({ name: 'bus', actorIdentifierFields: ['type'], actionIdentifierFields: ['a'] });
+      bus = new BusIndexed({ name: 'bus', actorIdentifierFields: [ 'type' ], actionIdentifierFields: [ 'a' ]});
     });
 
     it('should have a \'name\' field', () => {
@@ -238,7 +249,7 @@ describe('BusIndexed', () => {
       bus.subscribe(actor1);
       expect(bus.actors).toContain(actor1);
       expect(bus.actors).toHaveLength(1);
-      expect(bus.actorsIndex).toEqual({ 1: [actor1] });
+      expect(bus.actorsIndex).toEqual({ 1: [ actor1 ]});
     });
 
     it('should not allow an unsubscribed identified actor to be unsubscribed', () => {
@@ -258,7 +269,7 @@ describe('BusIndexed', () => {
       bus.subscribe(actor1);
       expect(bus.actors).toContain(actor1);
       expect(bus.actors).toHaveLength(1);
-      expect(bus.actorsIndex).toEqual({ 1: [actor1] });
+      expect(bus.actorsIndex).toEqual({ 1: [ actor1 ]});
       expect(bus.unsubscribe(actor1)).toBeTruthy();
       expect(bus.actors).not.toContain(actor1);
       expect(bus.actors).toHaveLength(0);
@@ -269,7 +280,7 @@ describe('BusIndexed', () => {
       bus.subscribe(actor4);
       expect(bus.actors).toContain(actor4);
       expect(bus.actors).toHaveLength(1);
-      expect(bus.actorsIndex).toEqual({ _undefined_: [actor4] });
+      expect(bus.actorsIndex).toEqual({ _undefined_: [ actor4 ]});
       expect(bus.unsubscribe(actor4)).toBeTruthy();
       expect(bus.actors).not.toContain(actor4);
       expect(bus.actors).toHaveLength(0);
@@ -284,12 +295,12 @@ describe('BusIndexed', () => {
       expect(bus.actors).toContain(actor2);
       expect(bus.actors).toContain(actor3);
       expect(bus.actors).toHaveLength(3);
-      expect(bus.actorsIndex).toEqual({ 1: [actor1, actor3], 2: [actor2] });
+      expect(bus.actorsIndex).toEqual({ 1: [ actor1, actor3 ], 2: [ actor2 ]});
       expect(bus.unsubscribe(actor1)).toBeTruthy();
-      expect(bus.actorsIndex).toEqual({ 1: [actor3], 2: [actor2] });
+      expect(bus.actorsIndex).toEqual({ 1: [ actor3 ], 2: [ actor2 ]});
       expect(bus.actors).toHaveLength(2);
       expect(bus.unsubscribe(actor3)).toBeTruthy();
-      expect(bus.actorsIndex).toEqual({ 2: [actor2] });
+      expect(bus.actorsIndex).toEqual({ 2: [ actor2 ]});
       expect(bus.actors).not.toContain(actor1);
       expect(bus.actors).toContain(actor2);
       expect(bus.actors).not.toContain(actor3);
@@ -306,19 +317,19 @@ describe('BusIndexed', () => {
       expect(bus.actors).toContain(actor3);
       expect(bus.actors).toContain(actor4);
       expect(bus.actors).toHaveLength(4);
-      expect(bus.actorsIndex).toEqual({ 1: [actor1, actor3], 2: [actor2], _undefined_: [actor4] });
+      expect(bus.actorsIndex).toEqual({ 1: [ actor1, actor3 ], 2: [ actor2 ], _undefined_: [ actor4 ]});
       expect(bus.unsubscribe(actor1)).toBeTruthy();
-      expect(bus.actorsIndex).toEqual({ 1: [actor3], 2: [actor2], _undefined_: [actor4] });
+      expect(bus.actorsIndex).toEqual({ 1: [ actor3 ], 2: [ actor2 ], _undefined_: [ actor4 ]});
       expect(bus.actors).toHaveLength(3);
       expect(bus.unsubscribe(actor3)).toBeTruthy();
-      expect(bus.actorsIndex).toEqual({ 2: [actor2], _undefined_: [actor4] });
+      expect(bus.actorsIndex).toEqual({ 2: [ actor2 ], _undefined_: [ actor4 ]});
       expect(bus.actors).not.toContain(actor1);
       expect(bus.actors).toContain(actor2);
       expect(bus.actors).not.toContain(actor3);
       expect(bus.actors).toContain(actor4);
       expect(bus.actors).toHaveLength(2);
       expect(bus.unsubscribe(actor4)).toBeTruthy();
-      expect(bus.actorsIndex).toEqual({ 2: [actor2] });
+      expect(bus.actorsIndex).toEqual({ 2: [ actor2 ]});
       expect(bus.actors).not.toContain(actor1);
       expect(bus.actors).toContain(actor2);
       expect(bus.actors).not.toContain(actor3);
@@ -330,7 +341,7 @@ describe('BusIndexed', () => {
       bus.subscribe(actor1);
       bus.subscribe(actor1);
       bus.subscribe(actor1);
-      expect(bus.actorsIndex).toEqual({ 1: [actor1, actor1, actor1] });
+      expect(bus.actorsIndex).toEqual({ 1: [ actor1, actor1, actor1 ]});
       expect(bus.actors).toHaveLength(3);
     });
 
@@ -388,13 +399,13 @@ describe('BusIndexed', () => {
         expect(bus.publish({ a: '1' })).toHaveLength(2);
       });
 
-      it('should receive a correct publication reply', async () => {
+      it('should receive a correct publication reply', async() => {
         expect(bus.publish({ a: '1' })[0].actor).toEqual(actor1);
         expect(bus.publish({ a: '1' })[0].reply).toBeInstanceOf(Promise);
         expect(bus.publish({ a: '1' })[1].actor).toEqual(actor3);
         expect(bus.publish({ a: '1' })[1].reply).toBeInstanceOf(Promise);
-        expect(await bus.publish({ a: '1' })[0].reply).toEqual({ type: 'test', sent: { a: '1' } });
-        expect(await bus.publish({ a: '1' })[1].reply).toEqual({ type: 'test', sent: { a: '1' } });
+        expect(await bus.publish({ a: '1' })[0].reply).toEqual({ type: 'test', sent: { a: '1' }});
+        expect(await bus.publish({ a: '1' })[1].reply).toEqual({ type: 'test', sent: { a: '1' }});
       });
     });
 
@@ -422,15 +433,14 @@ describe('BusIndexed', () => {
         expect(actor4.test).toHaveBeenCalledTimes(1);
       });
 
-      it('should receive a correct publication reply', async () => {
+      it('should receive a correct publication reply', async() => {
         expect(bus.publish({ a: '1' })[0].actor).toEqual(actor1);
         expect(bus.publish({ a: '1' })[0].reply).toBeInstanceOf(Promise);
         expect(bus.publish({ a: '1' })[1].actor).toEqual(actor4);
         expect(bus.publish({ a: '1' })[1].reply).toBeInstanceOf(Promise);
-        expect(await bus.publish({ a: '1' })[0].reply).toEqual({ type: 'test', sent: { a: '1' } });
-        expect(await bus.publish({ a: '1' })[1].reply).toEqual({ type: 'test', sent: { a: '1' } });
+        expect(await bus.publish({ a: '1' })[0].reply).toEqual({ type: 'test', sent: { a: '1' }});
+        expect(await bus.publish({ a: '1' })[1].reply).toEqual({ type: 'test', sent: { a: '1' }});
       });
     });
-
   });
 });

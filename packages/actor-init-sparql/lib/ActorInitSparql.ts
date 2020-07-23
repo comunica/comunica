@@ -1,38 +1,38 @@
-import {KEY_CONTEXT_DATETIME} from "@comunica/actor-http-memento";
-import {KEY_CONTEXT_HTTPPROXYHANDLER, ProxyHandlerStatic} from "@comunica/actor-http-proxy";
-import {IActionInit, IActorOutputInit} from "@comunica/bus-init";
-import {IActorQueryOperationOutput, KEY_CONTEXT_BASEIRI} from "@comunica/bus-query-operation";
-import {KEY_CONTEXT_SOURCES} from "@comunica/bus-rdf-resolve-quad-pattern";
-import {LoggerPretty} from "@comunica/logger-pretty";
-import {exec} from "child_process";
-import {existsSync, readFileSync} from "fs";
+import { exec } from 'child_process';
+import { existsSync, readFileSync } from 'fs';
+import * as OS from 'os';
+import { Readable } from 'stream';
+import { KEY_CONTEXT_DATETIME } from '@comunica/actor-http-memento';
+import { KEY_CONTEXT_HTTPPROXYHANDLER, ProxyHandlerStatic } from '@comunica/actor-http-proxy';
+import { IActionInit, IActorOutputInit } from '@comunica/bus-init';
+import { IActorQueryOperationOutput, KEY_CONTEXT_BASEIRI } from '@comunica/bus-query-operation';
+import { KEY_CONTEXT_SOURCES } from '@comunica/bus-rdf-resolve-quad-pattern';
+import { LoggerPretty } from '@comunica/logger-pretty';
 import minimist = require('minimist');
-import * as OS from "os";
-import {Readable} from "stream";
 import {
   ActorInitSparql as ActorInitSparqlBrowser,
   IActorInitSparqlArgs, KEY_CONTEXT_LENIENT, KEY_CONTEXT_QUERYFORMAT,
-} from "./ActorInitSparql-browser";
+} from './ActorInitSparql-browser';
 
+// eslint-disable-next-line no-duplicate-imports
 export {
   KEY_CONTEXT_INITIALBINDINGS,
   KEY_CONTEXT_QUERYFORMAT,
   KEY_CONTEXT_LENIENT,
-} from "./ActorInitSparql-browser";
+} from './ActorInitSparql-browser';
 
 /**
  * A comunica SPARQL Init Actor.
  */
 export class ActorInitSparql extends ActorInitSparqlBrowser {
-
-  constructor(args: IActorInitSparqlArgs) {
+  public constructor(args: IActorInitSparqlArgs) {
     super(args);
   }
 
   public async run(action: IActionInit): Promise<IActorOutputInit> {
     const args = minimist(action.argv);
-    if (!args.listformats && (!this.queryString && (!(args.q || args.f) && args._.length < (args.c ? 1 : 2)
-        || args._.length < (args.c ? 0 : 1) || args.h || args.help || args.v || args.version))) {
+    if (!args.listformats && (!this.queryString && (!(args.q || args.f) && args._.length < (args.c ? 1 : 2) ||
+        args._.length < (args.c ? 0 : 1) || args.h || args.help || args.v || args.version))) {
       // Print version information
       if (args.v || args.version) {
         const comunicaVersion: string = require('../package.json').version;
@@ -40,7 +40,7 @@ export class ActorInitSparql extends ActorInitSparqlBrowser {
         const nodeVersion: string = process.version;
         const npmVersion: string = await this.getScriptOutput('npm -v', '_NPM is unavailable_');
         const yarnVersion: string = await this.getScriptOutput('yarn -v', '_Yarn is unavailable_');
-        const os: string = `${OS.platform()} (${OS.type()} ${OS.release()})`;
+        const os = `${OS.platform()} (${OS.type()} ${OS.release()})`;
         return { stderr: require('streamify-string')(`| software            | version
 | ------------------- | -------
 | Comunica Init Actor | ${comunicaVersion} ${dev}
@@ -96,7 +96,8 @@ Options:
     } else {
       query = args._.pop();
       if (!query) {
-        query = <string> this.queryString; // If we get here, this.queryString will always be defined
+        // If we get here, this.queryString will always be defined
+        query = <string> this.queryString;
       }
     }
 
@@ -168,13 +169,12 @@ Options:
         if (error) {
           resolve(fallback);
         }
-        resolve((stdout || stderr).trimRight());
+        resolve((stdout || stderr).trimEnd());
       });
     });
   }
 
   public isDevelopmentEnvironment(): boolean {
-    return existsSync(__dirname + '/../test');
+    return existsSync(`${__dirname}/../test`);
   }
-
 }

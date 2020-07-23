@@ -1,13 +1,12 @@
-import { Actor } from '@comunica/core';
-// tslint:disable:object-literal-sort-keys
-import { Bus } from "@comunica/core";
-import { literal, namedNode } from "@rdfjs/data-model";
-import { ArrayIterator } from "asynciterator";
-const arrayifyStream = require('arrayify-stream');
+import { ActorQueryOperation, Bindings, IActorQueryOperationOutputBindings } from '@comunica/bus-query-operation';
+import { Actor, Bus } from '@comunica/core';
+
+import { literal, namedNode } from '@rdfjs/data-model';
+import { ArrayIterator } from 'asynciterator';
 import * as sparqlee from 'sparqlee';
 
-import { ActorQueryOperation, Bindings, IActorQueryOperationOutputBindings } from "@comunica/bus-query-operation";
-import { ActorQueryOperationExtend } from "../lib/ActorQueryOperationExtend";
+import { ActorQueryOperationExtend } from '../lib/ActorQueryOperationExtend';
+const arrayifyStream = require('arrayify-stream');
 
 describe('ActorQueryOperationExtend', () => {
   let bus: any;
@@ -16,27 +15,27 @@ describe('ActorQueryOperationExtend', () => {
   const example = (expression: any) => ({
     type: 'extend',
     input: {
-      type: "bgp",
+      type: 'bgp',
       patterns: [{
-        subject: { value: "s" },
-        predicate: { value: "p" },
-        object: { value: "o" },
-        graph: { value: "" },
-        type: "pattern",
+        subject: { value: 's' },
+        predicate: { value: 'p' },
+        object: { value: 'o' },
+        graph: { value: '' },
+        type: 'pattern',
       }],
     },
-    variable: { termType: 'Variable', value: "l" },
+    variable: { termType: 'Variable', value: 'l' },
     expression,
   });
 
   const defaultExpression = {
-    type: "expression",
-    expressionType: "operator",
-    operator: "strlen",
+    type: 'expression',
+    expressionType: 'operator',
+    operator: 'strlen',
     args: [
       {
-        type: "expression",
-        expressionType: "term",
+        type: 'expression',
+        expressionType: 'term',
         term: { termType: 'Variable', value: 'a' },
       },
     ],
@@ -44,18 +43,18 @@ describe('ActorQueryOperationExtend', () => {
 
   // We sum 2 strings, which should error
   const faultyExpression = {
-    type: "expression",
-    expressionType: "operator",
-    operator: "+",
+    type: 'expression',
+    expressionType: 'operator',
+    operator: '+',
     args: [
       {
-        type: "expression",
-        expressionType: "term",
+        type: 'expression',
+        expressionType: 'term',
         term: { termType: 'Variable', value: 'a' },
       },
       {
-        type: "expression",
-        expressionType: "term",
+        type: 'expression',
+        expressionType: 'term',
         term: { termType: 'Variable', value: 'a' },
       },
     ],
@@ -75,7 +74,7 @@ describe('ActorQueryOperationExtend', () => {
         metadata: () => Promise.resolve({ totalItems: 3 }),
         operated: arg,
         type: 'bindings',
-        variables: ['?a'],
+        variables: [ '?a' ],
       }),
     };
   });
@@ -86,14 +85,14 @@ describe('ActorQueryOperationExtend', () => {
     });
 
     it('should be a ActorQueryOperationExtend constructor', () => {
-      expect(new (ActorQueryOperationExtend as any)({ name: 'actor', bus, mediatorQueryOperation }))
+      expect(new (<any> ActorQueryOperationExtend)({ name: 'actor', bus, mediatorQueryOperation }))
         .toBeInstanceOf(ActorQueryOperationExtend);
-      expect(new (ActorQueryOperationExtend as any)({ name: 'actor', bus, mediatorQueryOperation }))
+      expect(new (<any> ActorQueryOperationExtend)({ name: 'actor', bus, mediatorQueryOperation }))
         .toBeInstanceOf(ActorQueryOperation);
     });
 
     it('should not be able to create new ActorQueryOperationExtend objects without \'new\'', () => {
-      expect(() => { (ActorQueryOperationExtend as any)(); }).toThrow();
+      expect(() => { (<any> ActorQueryOperationExtend)(); }).toThrow();
     });
   });
 
@@ -110,13 +109,13 @@ describe('ActorQueryOperationExtend', () => {
     });
 
     it('should not test on non-extend', () => {
-      const op = { operation: { type: 'some-other-type' } };
+      const op = { operation: { type: 'some-other-type' }};
       return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
-    it('should run', async () => {
+    it('should run', async() => {
       const op = { operation: example(defaultExpression) };
-      const output: IActorQueryOperationOutputBindings = await actor.run(op) as any;
+      const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
       expect(await arrayifyStream(output.bindingsStream)).toMatchObject([
         Bindings({
           '?a': literal('1'),
@@ -134,33 +133,32 @@ describe('ActorQueryOperationExtend', () => {
 
       expect(output.type).toEqual('bindings');
       expect(await (<any> output).metadata()).toMatchObject({ totalItems: 3 });
-      expect(output.variables).toMatchObject(['?a', '?l']);
+      expect(output.variables).toMatchObject([ '?a', '?l' ]);
     });
 
-    it('should not extend bindings on erroring expressions', async () => {
+    it('should not extend bindings on erroring expressions', async() => {
       const warn = jest.fn();
-      spyOn(Actor, "getContextLogger").and.returnValue({ warn });
+      spyOn(Actor, 'getContextLogger').and.returnValue({ warn });
 
       const op = { operation: example(faultyExpression) };
-      const output: IActorQueryOperationOutputBindings = await actor.run(op) as any;
+      const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
 
       expect(await arrayifyStream(output.bindingsStream)).toMatchObject(input);
       expect(warn).toHaveBeenCalledTimes(3);
       expect(output.type).toEqual('bindings');
       expect(await (<any> output).metadata()).toMatchObject({ totalItems: 3 });
-      expect(output.variables).toMatchObject(['?a', '?l']);
+      expect(output.variables).toMatchObject([ '?a', '?l' ]);
     });
 
-    it('should emit error when evaluation code returns a hard error', async (next) => {
+    it('should emit error when evaluation code returns a hard error', async next => {
       const warn = jest.fn();
-      spyOn(Actor, "getContextLogger").and.returnValue({ warn });
+      spyOn(Actor, 'getContextLogger').and.returnValue({ warn });
       spyOn(sparqlee, 'isExpressionError').and.returnValue(false);
 
       const op = { operation: example(faultyExpression) };
-      const output: IActorQueryOperationOutputBindings = await actor.run(op) as any;
+      const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
       output.bindingsStream.on('error', () => next());
       expect(warn).toBeCalledTimes(0);
     });
-
   });
 });

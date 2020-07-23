@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 
-import {runArgs} from "../lib/ArgsRunner";
+import { runArgs } from '../lib/ArgsRunner';
 
 const argv = process.argv.slice(2);
-if (argv.length < 1 || /^--?h(elp)?$/.test(argv[0])) {
-  console.log('usage: runner-cli config.json [args...]');
+if (argv.length === 0 || /^--?h(elp)?$/u.test(argv[0])) {
+  process.stdout.write('usage: runner-cli config.json [args...]`n');
   process.exit(1);
 }
 

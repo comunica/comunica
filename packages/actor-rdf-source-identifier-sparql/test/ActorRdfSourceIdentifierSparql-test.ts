@@ -1,7 +1,7 @@
-import {ActorRdfSourceIdentifier} from "@comunica/bus-rdf-source-identifier";
-import {Bus} from "@comunica/core";
-import "isomorphic-fetch";
-import {ActorRdfSourceIdentifierSparql} from "..";
+import { ActorRdfSourceIdentifier } from '@comunica/bus-rdf-source-identifier';
+import { Bus } from '@comunica/core';
+import 'cross-fetch/polyfill';
+import { ActorRdfSourceIdentifierSparql } from '..';
 
 describe('ActorRdfSourceIdentifierSparql', () => {
   let bus: any;
@@ -32,19 +32,19 @@ describe('ActorRdfSourceIdentifierSparql', () => {
 
     beforeEach(() => {
       const mediatorHttp: any = {
-        mediate: (action: any) => {
-          if (action.input.indexOf('nobody') >= 0) {
+        mediate(action: any) {
+          if (action.input.includes('nobody')) {
             return Promise.resolve({
               headers: { get: () => 'application/sparql-results+json' },
-              ok: action.input.indexOf('ok') >= 0,
+              ok: action.input.includes('ok'),
             });
           }
           return Promise.resolve({
-            body : {
+            body: {
               cancel: () => null,
             },
             headers: { get: () => 'application/sparql-results+json' },
-            ok: action.input.indexOf('ok') >= 0,
+            ok: action.input.includes('ok'),
           });
         },
       };

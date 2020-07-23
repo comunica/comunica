@@ -1,9 +1,9 @@
-import {ActorRdfMetadataExtract} from "@comunica/bus-rdf-metadata-extract";
-import {Bus} from "@comunica/core";
-import {Readable} from "stream";
-import {ActorRdfMetadataExtractSparqlService} from "../lib/ActorRdfMetadataExtractSparqlService";
-const stream = require('streamify-array');
+import { Readable } from 'stream';
+import { ActorRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extract';
+import { Bus } from '@comunica/core';
+import { ActorRdfMetadataExtractSparqlService } from '../lib/ActorRdfMetadataExtractSparqlService';
 const quad = require('rdf-quad');
+const stream = require('streamify-array');
 
 describe('ActorRdfMetadataExtractSparqlService', () => {
   let bus: any;
@@ -43,7 +43,10 @@ describe('ActorRdfMetadataExtractSparqlService', () => {
       actor = new ActorRdfMetadataExtractSparqlService({ name: 'actor', bus });
       input = stream([
         quad('s1', 'p1', 'o1', ''),
-        quad('http://example.org/', 'http://www.w3.org/ns/sparql-service-description#endpoint', 'http://example2.org/ENDPOINT', ''),
+        quad('http://example.org/',
+          'http://www.w3.org/ns/sparql-service-description#endpoint',
+          'http://example2.org/ENDPOINT',
+          ''),
         quad('s2', 'px', '5678', ''),
         quad('s3', 'p3', 'o3', ''),
       ]);

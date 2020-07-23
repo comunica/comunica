@@ -1,8 +1,32 @@
-import {ActionContext, Actor, IAction, IActorArgs, IActorOutput, IActorTest} from "@comunica/core";
-import {AsyncIterator} from "asynciterator";
-import {AsyncReiterable} from "asyncreiterable";
-import * as RDF from "rdf-js";
-import {Algebra} from "sparqlalgebrajs";
+import { ActionContext, Actor, IAction, IActorArgs, IActorOutput, IActorTest } from '@comunica/core';
+import { AsyncIterator } from 'asynciterator';
+import { AsyncReiterable } from 'asyncreiterable';
+import * as RDF from 'rdf-js';
+import { Algebra } from 'sparqlalgebrajs';
+
+/**
+ * @type {string} Context entry for data sources.
+ * @value {DataSources} An array or stream of sources.
+ */
+export const KEY_CONTEXT_SOURCES = '@comunica/bus-rdf-resolve-quad-pattern:sources';
+/**
+ * @type {string} Context entry for a data source.
+ * @value {IDataSource} A source.
+ */
+export const KEY_CONTEXT_SOURCE = '@comunica/bus-rdf-resolve-quad-pattern:source';
+
+export function isDataSourceRawType(dataSource: IDataSource): dataSource is string | RDF.Source {
+  return typeof dataSource === 'string' || 'match' in dataSource;
+}
+export function getDataSourceType(dataSource: IDataSource): string | undefined {
+  if (typeof dataSource === 'string') {
+    return '';
+  }
+  return 'match' in dataSource ? 'rdfjsSource' : dataSource.type;
+}
+export function getDataSourceValue(dataSource: IDataSource): string | RDF.Source {
+  return isDataSourceRawType(dataSource) ? dataSource : dataSource.value;
+}
 
 /**
  * A comunica actor for rdf-resolve-quad-pattern events.
@@ -16,9 +40,8 @@ import {Algebra} from "sparqlalgebrajs";
  * @see IActorRdfResolveQuadPatternOutput
  */
 export abstract class ActorRdfResolveQuadPattern extends Actor<IActionRdfResolveQuadPattern, IActorTest,
-  IActorRdfResolveQuadPatternOutput> {
-
-  constructor(args: IActorArgs<IActionRdfResolveQuadPattern, IActorTest, IActorRdfResolveQuadPatternOutput>) {
+IActorRdfResolveQuadPatternOutput> {
+  public constructor(args: IActorArgs<IActionRdfResolveQuadPattern, IActorTest, IActorRdfResolveQuadPatternOutput>) {
     super(args);
   }
 
@@ -49,11 +72,10 @@ export abstract class ActorRdfResolveQuadPattern extends Actor<IActionRdfResolve
     if (source) {
       let fileUrl = getDataSourceValue(source);
       if (typeof fileUrl === 'string') {
-
         // Remove hashes from source
         const hashPosition = fileUrl.indexOf('#');
         if (hashPosition >= 0) {
-          fileUrl = fileUrl.substr(0, hashPosition);
+          fileUrl = fileUrl.slice(0, hashPosition);
         }
 
         return fileUrl;
@@ -68,7 +90,7 @@ export abstract class ActorRdfResolveQuadPattern extends Actor<IActionRdfResolve
    */
   protected hasContextSingleSource(context?: ActionContext): boolean {
     const source = this.getContextSource(context);
-    return !!(source && (isDataSourceRawType(source) || source.value));
+    return Boolean(source && (isDataSourceRawType(source) || source.value));
   }
 
   /**
@@ -79,35 +101,15 @@ export abstract class ActorRdfResolveQuadPattern extends Actor<IActionRdfResolve
    */
   protected hasContextSingleSourceOfType(requiredType: string, context?: ActionContext): boolean {
     const source = this.getContextSource(context);
-    return !!(source && getDataSourceType(source) === requiredType && getDataSourceValue(source));
+    return Boolean(source && getDataSourceType(source) === requiredType && getDataSourceValue(source));
   }
-
 }
 
 export type IDataSource = string | RDF.Source | {
   type?: string;
   value: string | RDF.Source;
 };
-export function isDataSourceRawType(dataSource: IDataSource): dataSource is string | RDF.Source {
-  return typeof dataSource === 'string' || 'match' in dataSource;
-}
-export function getDataSourceType(dataSource: IDataSource): string | undefined {
-  return typeof dataSource === 'string' ? '' : ('match' in dataSource ? 'rdfjsSource' : dataSource.type);
-}
-export function getDataSourceValue(dataSource: IDataSource): string | RDF.Source {
-  return isDataSourceRawType(dataSource) ? dataSource : dataSource.value;
-}
 export type DataSources = AsyncReiterable<IDataSource>;
-/**
- * @type {string} Context entry for data sources.
- * @value {DataSources} An array or stream of sources.
- */
-export const KEY_CONTEXT_SOURCES: string = '@comunica/bus-rdf-resolve-quad-pattern:sources';
-/**
- * @type {string} Context entry for a data source.
- * @value {IDataSource} A source.
- */
-export const KEY_CONTEXT_SOURCE: string = '@comunica/bus-rdf-resolve-quad-pattern:source';
 
 export interface IActionRdfResolveQuadPattern extends IAction {
   /**

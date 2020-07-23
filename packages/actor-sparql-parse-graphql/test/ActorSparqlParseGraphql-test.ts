@@ -1,6 +1,6 @@
-import {ActorSparqlParse} from "@comunica/bus-sparql-parse";
-import {ActionContext, Bus} from "@comunica/core";
-import {ActorSparqlParseGraphql} from "..";
+import { ActorSparqlParse } from '@comunica/bus-sparql-parse';
+import { ActionContext, Bus } from '@comunica/core';
+import { ActorSparqlParseGraphql } from '..';
 
 describe('ActorSparqlParseGraphql', () => {
   let bus: any;
@@ -46,28 +46,27 @@ describe('ActorSparqlParseGraphql', () => {
     it('should run', () => {
       const query = '{ label }';
       const context = ActionContext({
-        "@context": {
-          label: { "@id": "http://www.w3.org/2000/01/rdf-schema#label" },
+        '@context': {
+          label: { '@id': 'http://www.w3.org/2000/01/rdf-schema#label' },
         },
       });
       return expect(actor.run({ query, queryFormat: 'graphql', context })).resolves
         .toMatchObject({
           operation: {
-            input: {
-              patterns: [
-                {
-                  graph: {value: ""},
-                  object: {value: "label"},
-                  predicate: {value: "http://www.w3.org/2000/01/rdf-schema#label"},
-                  subject: {value: "b1"},
-                  type: "pattern",
-                },
-              ],
-              type: "bgp"},
-            type: "project",
+            input: { patterns: [
+              {
+                graph: { value: '' },
+                object: { value: 'label' },
+                predicate: { value: 'http://www.w3.org/2000/01/rdf-schema#label' },
+                subject: { value: 'b1' },
+                type: 'pattern',
+              },
+            ],
+            type: 'bgp' },
+            type: 'project',
             variables: [
               {
-                value: "label",
+                value: 'label',
               },
             ],
           },
@@ -79,21 +78,20 @@ describe('ActorSparqlParseGraphql', () => {
       const context = ActionContext({});
       return expect(actor.run({ query, queryFormat: 'graphql', context })).resolves.toMatchObject({
         operation: {
-          input: {
-            patterns: [
-              {
-                graph: {value: ""},
-                object: {value: "label"},
-                predicate: {value: "label"},
-                subject: {value: "b2"},
-                type: "pattern",
-              },
-            ],
-            type: "bgp"},
-          type: "project",
+          input: { patterns: [
+            {
+              graph: { value: '' },
+              object: { value: 'label' },
+              predicate: { value: 'label' },
+              subject: { value: 'b2' },
+              type: 'pattern',
+            },
+          ],
+          type: 'bgp' },
+          type: 'project',
           variables: [
             {
-              value: "label",
+              value: 'label',
             },
           ],
         },
@@ -105,21 +103,20 @@ describe('ActorSparqlParseGraphql', () => {
       const context = undefined;
       return expect(actor.run({ query, queryFormat: 'graphql', context })).resolves.toMatchObject({
         operation: {
-          input: {
-            patterns: [
-              {
-                graph: {value: ""},
-                object: {value: "label"},
-                predicate: {value: "label"},
-                subject: {value: "b3"},
-                type: "pattern",
-              },
-            ],
-            type: "bgp"},
-          type: "project",
+          input: { patterns: [
+            {
+              graph: { value: '' },
+              object: { value: 'label' },
+              predicate: { value: 'label' },
+              subject: { value: 'b3' },
+              type: 'pattern',
+            },
+          ],
+          type: 'bgp' },
+          type: 'project',
           variables: [
             {
-              value: "label",
+              value: 'label',
             },
           ],
         },

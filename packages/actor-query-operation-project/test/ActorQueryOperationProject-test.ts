@@ -1,9 +1,9 @@
-import {ActorQueryOperation, Bindings, IActorQueryOperationOutputBindings} from "@comunica/bus-query-operation";
-import {Bus} from "@comunica/core";
-import {BlankNodeScoped} from "@comunica/data-factory";
-import {blankNode, literal, namedNode, variable} from "@rdfjs/data-model";
-import {ArrayIterator, SingletonIterator} from "asynciterator";
-import {ActorQueryOperationProject} from "../lib/ActorQueryOperationProject";
+import { ActorQueryOperation, Bindings, IActorQueryOperationOutputBindings } from '@comunica/bus-query-operation';
+import { Bus } from '@comunica/core';
+import { BlankNodeScoped } from '@comunica/data-factory';
+import { blankNode, literal, namedNode, variable } from '@rdfjs/data-model';
+import { ArrayIterator, SingletonIterator } from 'asynciterator';
+import { ActorQueryOperationProject } from '../lib/ActorQueryOperationProject';
 const arrayifyStream = require('arrayify-stream');
 
 describe('ActorQueryOperationProject', () => {
@@ -18,7 +18,7 @@ describe('ActorQueryOperationProject', () => {
         metadata: () => 'M',
         operated: arg,
         type: 'bindings',
-        variables: ['?a', '_:delet'],
+        variables: [ '?a', '_:delet' ],
       }),
     };
   });
@@ -46,18 +46,18 @@ describe('ActorQueryOperationProject', () => {
     });
 
     it('should test on projects', () => {
-      const op = { operation: { type: 'project', input: 'in' } };
+      const op = { operation: { type: 'project', input: 'in' }};
       return expect(actor.test(op)).resolves.toBeTruthy();
     });
 
     it('should not test on non-projects', () => {
-      const op = { operation: { type: 'bgp', input: 'in' } };
+      const op = { operation: { type: 'bgp', input: 'in' }};
       return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
     it('should run on a stream with variables that should not be deleted or are missing', () => {
-      const op = { operation: { type: 'project', input: 'in', variables: [ variable('a'), blankNode('delet') ] } };
-      return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
+      const op = { operation: { type: 'project', input: 'in', variables: [ variable('a'), blankNode('delet') ]}};
+      return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
         expect((<any> output).metadata()).toEqual('M');
         expect(output.variables).toEqual([ '?a', '_:delet' ]);
         expect(output.type).toEqual('bindings');
@@ -68,8 +68,8 @@ describe('ActorQueryOperationProject', () => {
     });
 
     it('should run on a stream with variables that should be deleted', () => {
-      const op = { operation: { type: 'project', input: 'in', variables: [ variable('a') ] } };
-      return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
+      const op = { operation: { type: 'project', input: 'in', variables: [ variable('a') ]}};
+      return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
         expect((<any> output).metadata()).toEqual('M');
         expect(output.variables).toEqual([ '?a' ]);
         expect(output.type).toEqual('bindings');
@@ -79,9 +79,9 @@ describe('ActorQueryOperationProject', () => {
       });
     });
 
-    it('should error run on a stream with variables that should be deleted and are missing', async () => {
-      const op = { operation: { type: 'project', input: 'in', variables: [ variable('a'), variable('missing') ] } };
-      return expect(actor.run(op)).rejects
+    it('should error run on a stream with variables that should be deleted and are missing', async() => {
+      const op = { operation: { type: 'project', input: 'in', variables: [ variable('a'), variable('missing') ]}};
+      await expect(actor.run(op)).rejects
         .toThrow('Variables \'?missing\' are used in the projection result, but are not assigned.');
     });
 
@@ -95,10 +95,10 @@ describe('ActorQueryOperationProject', () => {
         metadata: () => 'M',
         operated: arg,
         type: 'bindings',
-        variables: ['?a'],
+        variables: [ '?a' ],
       });
-      const op = { operation: { type: 'project', input: 'in', variables: [ variable('a') ] } };
-      return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
+      const op = { operation: { type: 'project', input: 'in', variables: [ variable('a') ]}};
+      return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
         expect((<any> output).metadata()).toEqual('M');
         expect(output.variables).toEqual([ '?a' ]);
         expect(output.type).toEqual('bindings');
@@ -120,10 +120,10 @@ describe('ActorQueryOperationProject', () => {
         metadata: () => 'M',
         operated: arg,
         type: 'bindings',
-        variables: ['?a'],
+        variables: [ '?a' ],
       });
-      const op = { operation: { type: 'project', input: 'in', variables: [ variable('a') ] } };
-      return actor.run(op).then(async (output: IActorQueryOperationOutputBindings) => {
+      const op = { operation: { type: 'project', input: 'in', variables: [ variable('a') ]}};
+      return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
         expect((<any> output).metadata()).toEqual('M');
         expect(output.variables).toEqual([ '?a' ]);
         expect(output.type).toEqual('bindings');

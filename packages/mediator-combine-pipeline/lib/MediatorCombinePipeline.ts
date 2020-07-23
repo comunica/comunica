@@ -1,4 +1,4 @@
-import {Actor, IAction, IActorOutput, IActorReply, IActorTest, IMediatorArgs, Mediator} from "@comunica/core";
+import { Actor, IAction, IActorOutput, IActorReply, IActorTest, IMediatorArgs, Mediator } from '@comunica/core';
 
 /**
  * A comunica mediator that goes over all actors in sequence and forwards I/O.
@@ -6,8 +6,7 @@ import {Actor, IAction, IActorOutput, IActorReply, IActorTest, IMediatorArgs, Me
  */
 export class MediatorCombinePipeline<A extends Actor<H, T, H>, H extends IAction | IActorOutput, T extends IActorTest>
   extends Mediator<A, H, T, H> {
-
-  constructor(args: IMediatorArgs<A, H, T, H>) {
+  public constructor(args: IMediatorArgs<A, H, T, H>) {
     super(args);
   }
 
@@ -15,7 +14,7 @@ export class MediatorCombinePipeline<A extends Actor<H, T, H>, H extends IAction
     let testResults: IActorReply<A, H, T, H>[];
     try {
       testResults = this.publish(action);
-    } catch (e) {
+    } catch (error) {
       // If no actors are available, just return the input as output
       return action;
     }
@@ -26,7 +25,7 @@ export class MediatorCombinePipeline<A extends Actor<H, T, H>, H extends IAction
     // Pass action to first actor,
     // and each actor output as input to the following actor.
     let handle: H = action;
-    for (const actor of testResults.map((result) => result.actor)) {
+    for (const actor of testResults.map(result => result.actor)) {
       handle = await actor.runObservable(handle);
     }
 
@@ -34,8 +33,7 @@ export class MediatorCombinePipeline<A extends Actor<H, T, H>, H extends IAction
     return handle;
   }
 
-  protected mediateWith(action: H, testResults: IActorReply<A, H, T, H>[]): Promise<A> {
-    throw new Error("Method not supported.");
+  protected mediateWith(): Promise<A> {
+    throw new Error('Method not supported.');
   }
-
 }

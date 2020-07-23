@@ -1,21 +1,19 @@
-import {Algebra} from "sparqlalgebrajs";
-import {AsyncEvaluator, isExpressionError} from "sparqlee";
 import {
   ActorQueryOperation,
   ActorQueryOperationTypedMediated,
   Bindings,
   IActorQueryOperationOutputBindings,
   IActorQueryOperationTypedMediatedArgs,
-  materializeOperation,
-} from "@comunica/bus-query-operation";
-import {ActionContext, IActorTest} from "@comunica/core";
+} from '@comunica/bus-query-operation';
+import { ActionContext, IActorTest } from '@comunica/core';
+import { Algebra } from 'sparqlalgebrajs';
+import { AsyncEvaluator, isExpressionError } from 'sparqlee';
 
 /**
  * A comunica Filter Sparqlee Query Operation Actor.
  */
 export class ActorQueryOperationFilterSparqlee extends ActorQueryOperationTypedMediated<Algebra.Filter> {
-
-  constructor(args: IActorQueryOperationTypedMediatedArgs) {
+  public constructor(args: IActorQueryOperationTypedMediatedArgs) {
     super(args, 'filter');
   }
 
@@ -26,9 +24,8 @@ export class ActorQueryOperationFilterSparqlee extends ActorQueryOperationTypedM
     return true;
   }
 
-  public async runOperation(pattern: Algebra.Filter, context: ActionContext)
-    : Promise<IActorQueryOperationOutputBindings> {
-
+  public async runOperation(pattern: Algebra.Filter, context: ActionContext):
+  Promise<IActorQueryOperationOutputBindings> {
     const outputRaw = await this.mediatorQueryOperation.mediate({ operation: pattern.input, context });
     const output = ActorQueryOperation.getSafeBindings(outputRaw);
     ActorQueryOperation.validateQueryOutput(output, 'bindings');
@@ -37,15 +34,15 @@ export class ActorQueryOperationFilterSparqlee extends ActorQueryOperationTypedM
     const config = ActorQueryOperation.getExpressionContext(context, this.mediatorQueryOperation);
     const evaluator = new AsyncEvaluator(pattern.expression, config);
 
-    const transform = async (item: Bindings, next: any, push: (bindings: Bindings) => void) => {
+    const transform = async(item: Bindings, next: any, push: (bindings: Bindings) => void): Promise<void> => {
       try {
         const result = await evaluator.evaluateAsEBV(item);
         if (result) {
           push(item);
         }
-      } catch (err) {
-        if (!isExpressionError(err)) {
-          bindingsStream.emit('error', err);
+      } catch (error) {
+        if (!isExpressionError(error)) {
+          bindingsStream.emit('error', error);
         }
       }
       next();
@@ -54,5 +51,4 @@ export class ActorQueryOperationFilterSparqlee extends ActorQueryOperationTypedM
     const bindingsStream = output.bindingsStream.transform<Bindings>({ transform });
     return { type: 'bindings', bindingsStream, metadata, variables };
   }
-
 }

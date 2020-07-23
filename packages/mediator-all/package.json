@@ -44,7 +44,7 @@
   "jest": {
     "globals": {
       "ts-jest": {
-        "tsConfig": "test/tsconfig.json"
+        "tsConfig": "../../tsconfig.json"
       }
     },
     "transform": {
@@ -60,7 +60,6 @@
   "scripts": {
     "test": "node \"../../node_modules/jest/bin/jest.js\" ${1}",
     "test-watch": "node \"../../node_modules/jest/bin/jest.js\" ${1} --watch",
-    "lint": "node \"../../node_modules/tslint/bin/tslint\" lib/**/*.ts test/**/*.ts --exclude '**/*.d.ts'",
     "build": "node \"../../node_modules/typescript/bin/tsc\"",
     "validate": "npm ls"
   }

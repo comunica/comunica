@@ -6,10 +6,10 @@ import {
   IActorOutputAbstractMediaTyped,
   IActorOutputAbstractMediaTypedHandle, IActorOutputAbstractMediaTypedMediaTypes,
   IActorTestAbstractMediaTyped,
-  IActorTestAbstractMediaTypedHandle, IActorTestAbstractMediaTypedMediaTypes
-} from "@comunica/actor-abstract-mediatyped";
-import {IAction, IActorOutput, IActorTest} from "@comunica/core";
-import * as RDF from "rdf-js";
+  IActorTestAbstractMediaTypedHandle, IActorTestAbstractMediaTypedMediaTypes,
+} from '@comunica/actor-abstract-mediatyped';
+import { IAction, IActorOutput, IActorTest } from '@comunica/core';
+import * as RDF from 'rdf-js';
 
 /**
  * A base actor for listening to RDF parse events.
@@ -23,11 +23,9 @@ import * as RDF from "rdf-js";
  */
 export abstract class ActorRdfParse extends
   ActorAbstractMediaTyped<IActionRdfParse, IActorTest, IActorRdfParseOutput> {
-
-  constructor(args: IActorArgsMediaTyped<IActionRdfParse, IActorTest, IActorRdfParseOutput>) {
+  public constructor(args: IActorArgsMediaTyped<IActionRdfParse, IActorTest, IActorRdfParseOutput>) {
     super(args);
   }
-
 }
 
 export type IActionRootRdfParse = IActionAbstractMediaTyped<IActionRdfParse>;

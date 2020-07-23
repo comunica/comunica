@@ -1,6 +1,6 @@
-import {BufferedIterator} from "asynciterator";
-import {Store} from "n3";
-import * as RDF from "rdf-js";
+import { BufferedIterator } from 'asynciterator';
+import { Store } from 'n3';
+import * as RDF from 'rdf-js';
 
 export class N3StoreIterator extends BufferedIterator<RDF.Quad> {
   protected readonly store: Store;
@@ -9,7 +9,7 @@ export class N3StoreIterator extends BufferedIterator<RDF.Quad> {
   protected readonly object: RDF.Term | null;
   protected readonly graph: RDF.Term | null;
 
-  constructor(store: any, subject?: RDF.Term, predicate?: RDF.Term, object?: RDF.Term, graph?: RDF.Term) {
+  public constructor(store: any, subject?: RDF.Term, predicate?: RDF.Term, object?: RDF.Term, graph?: RDF.Term) {
     super({ autoStart: false });
     this.store = store;
     this.subject = N3StoreIterator.nullifyVariables(subject);
@@ -24,9 +24,11 @@ export class N3StoreIterator extends BufferedIterator<RDF.Quad> {
 
   public _read(count: number, done: () => void): void {
     this.store.forEach((quad: RDF.Quad) => this._push(quad),
-      this.subject, this.predicate, this.object, this.graph);
+      this.subject,
+      this.predicate,
+      this.object,
+      this.graph);
     done();
     this.close();
   }
-
 }

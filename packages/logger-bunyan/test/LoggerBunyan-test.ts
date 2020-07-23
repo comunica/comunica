@@ -1,4 +1,3 @@
-// tslint:disable:object-literal-sort-keys
 jest.mock('bunyan', () => {
   return {
     createLogger: (args: any) => ({
@@ -13,24 +12,23 @@ jest.mock('bunyan', () => {
   };
 });
 
-import {LoggerBunyan} from "../lib/LoggerBunyan";
-import {BunyanStreamProviderStderr} from "../lib/stream/BunyanStreamProviderStderr";
+import { LoggerBunyan } from '../lib/LoggerBunyan';
+import { BunyanStreamProviderStderr } from '../lib/stream/BunyanStreamProviderStderr';
 
 describe('LoggerBunyan', () => {
-
   it('should create streams from providers during construction', () => {
     const myProvider = new BunyanStreamProviderStderr({ name: 'def', level: 'warn' });
     jest.spyOn(myProvider, 'createStream');
-    const myLogger = new LoggerBunyan({ name: 'abc', streamProviders: [ myProvider ] });
+    const myLogger = new LoggerBunyan({ name: 'abc', streamProviders: [ myProvider ]});
     expect(myProvider.createStream).toHaveBeenCalledTimes(1);
-    expect((<any> myLogger).bunyanLogger.streams).toEqual([myProvider.createStream()]);
+    expect((<any> myLogger).bunyanLogger.streams).toEqual([ myProvider.createStream() ]);
   });
 
   describe('a LoggerBunyan instance', () => {
     let logger: LoggerBunyan;
 
     beforeEach(() => {
-      logger = new LoggerBunyan({ name: 'abc', a: 'a', b: 'b', streamProviders: [] });
+      logger = new LoggerBunyan({ name: 'abc', a: 'a', b: 'b', streamProviders: []});
     });
 
     it('should pass all args except for streamProviders', () => {

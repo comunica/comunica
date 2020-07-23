@@ -1,18 +1,17 @@
-import {Bindings, IActorQueryOperationOutputBindings,
-  IActorQueryOperationOutputBoolean} from "@comunica/bus-query-operation";
-import {ActorSparqlSerializeFixedMediaTypes, IActionSparqlSerialize,
-  IActorSparqlSerializeFixedMediaTypesArgs, IActorSparqlSerializeOutput} from "@comunica/bus-sparql-serialize";
-import {ActionContext} from "@comunica/core";
-import * as RDF from "rdf-js";
-import {Readable} from "stream";
-import * as xml from "xml";
+import { Readable } from 'stream';
+import { Bindings, IActorQueryOperationOutputBindings,
+  IActorQueryOperationOutputBoolean } from '@comunica/bus-query-operation';
+import { ActorSparqlSerializeFixedMediaTypes, IActionSparqlSerialize,
+  IActorSparqlSerializeFixedMediaTypesArgs, IActorSparqlSerializeOutput } from '@comunica/bus-sparql-serialize';
+import { ActionContext } from '@comunica/core';
+import * as RDF from 'rdf-js';
+import * as xml from 'xml';
 
 /**
  * A comunica sparql-results+xml Serialize Actor.
  */
 export class ActorSparqlSerializeSparqlXml extends ActorSparqlSerializeFixedMediaTypes {
-
-  constructor(args: IActorSparqlSerializeFixedMediaTypesArgs) {
+  public constructor(args: IActorSparqlSerializeFixedMediaTypesArgs) {
     super(args);
   }
 
@@ -25,44 +24,44 @@ export class ActorSparqlSerializeSparqlXml extends ActorSparqlSerializeFixedMedi
   public static bindingToXmlBindings(value: RDF.Term, key: string): any {
     let xmlValue: any;
     if (value.termType === 'Literal') {
-      const literal: RDF.Literal = <RDF.Literal> value;
+      const literal: RDF.Literal = value;
       xmlValue = { literal: literal.value };
-      const language: string = literal.language;
-      const datatype: RDF.NamedNode = literal.datatype;
+      const { language } = literal;
+      const { datatype } = literal;
       if (language) {
-        xmlValue.literal = [{ _attr: { 'xml:lang': language } }, xmlValue.literal];
+        xmlValue.literal = [{ _attr: { 'xml:lang': language }}, xmlValue.literal ];
       } else if (datatype && datatype.value !== 'http://www.w3.org/2001/XMLSchema#string') {
-        xmlValue.literal = [{ _attr: { datatype: datatype.value } }, xmlValue.literal];
+        xmlValue.literal = [{ _attr: { datatype: datatype.value }}, xmlValue.literal ];
       }
     } else if (value.termType === 'BlankNode') {
       xmlValue = { bnode: value.value };
     } else {
       xmlValue = { uri: value.value };
     }
-    return { binding: [{ _attr: { name: key.substring(1) } }, xmlValue] };
+    return { binding: [{ _attr: { name: key.slice(1) }}, xmlValue ]};
   }
 
-  public async testHandleChecked(action: IActionSparqlSerialize, context: ActionContext) {
-    if (['bindings', 'boolean'].indexOf(action.type) < 0) {
+  public async testHandleChecked(action: IActionSparqlSerialize, context: ActionContext): Promise<boolean> {
+    if (![ 'bindings', 'boolean' ].includes(action.type)) {
       throw new Error('This actor can only handle bindings streams or booleans.');
     }
     return true;
   }
 
-  public async runHandle(action: IActionSparqlSerialize, mediaType: string, context: ActionContext)
-    : Promise<IActorSparqlSerializeOutput> {
+  public async runHandle(action: IActionSparqlSerialize, mediaType: string, context: ActionContext):
+  Promise<IActorSparqlSerializeOutput> {
     const data = new Readable();
     data._read = () => {
-      return;
+      // Do nothing
     };
 
     // Write head
-    const root = xml.element({ _attr: { xlmns: 'http://www.w3.org/2005/sparql-results#' } });
+    const root = xml.element({ _attr: { xlmns: 'http://www.w3.org/2005/sparql-results#' }});
     (<NodeJS.ReadableStream> <any> xml({ sparql: root }, { stream: true, indent: '  ', declaration: true }))
-      .on('data', (chunk) => data.push(chunk + '\n'));
-    if (action.type === 'bindings' && (<IActorQueryOperationOutputBindings> action).variables.length) {
+      .on('data', chunk => data.push(`${chunk}\n`));
+    if (action.type === 'bindings' && (<IActorQueryOperationOutputBindings> action).variables.length > 0) {
       root.push({ head: (<IActorQueryOperationOutputBindings> action).variables
-        .map((v) => ({ variable: { _attr: { name: v.substr(1) } } }))});
+        .map(variable => ({ variable: { _attr: { name: variable.slice(1) }}})) });
     }
 
     if (action.type === 'bindings') {
@@ -71,13 +70,13 @@ export class ActorSparqlSerializeSparqlXml extends ActorSparqlSerializeFixedMedi
       const resultStream: NodeJS.EventEmitter = (<IActorQueryOperationOutputBindings> action).bindingsStream;
 
       // Write bindings
-      resultStream.on('error', (e: Error) => {
-        data.emit('error', e);
+      resultStream.on('error', (error: Error) => {
+        data.emit('error', error);
       });
       resultStream.on('data', (bindings: Bindings) => {
         // XML SPARQL results spec does not allow unbound variables and blank node bindings
-        const realBindings = bindings.filter((v: RDF.Term, k: string) => !!v && k.startsWith('?'));
-        results.push({result: realBindings.map(ActorSparqlSerializeSparqlXml.bindingToXmlBindings)});
+        const realBindings = bindings.filter((value: RDF.Term, key: string) => Boolean(value) && key.startsWith('?'));
+        results.push({ result: realBindings.map(ActorSparqlSerializeSparqlXml.bindingToXmlBindings) });
       });
 
       // Close streams
@@ -91,12 +90,11 @@ export class ActorSparqlSerializeSparqlXml extends ActorSparqlSerializeFixedMedi
         root.push({ boolean: await (<IActorQueryOperationOutputBoolean> action).booleanResult });
         root.close();
         setImmediate(() => data.push(null));
-      } catch (e) {
-        setImmediate(() => data.emit('error', e));
+      } catch (error) {
+        setImmediate(() => data.emit('error', error));
       }
     }
 
     return { data };
   }
-
 }

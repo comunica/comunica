@@ -1,9 +1,9 @@
-import {ActorQueryOperation, Bindings} from "@comunica/bus-query-operation";
-import {Bus} from "@comunica/core";
-import {literal, variable} from "@rdfjs/data-model";
-import {ArrayIterator} from "asynciterator";
-import {Algebra} from "sparqlalgebrajs";
-import {ActorQueryOperationOrderByDirect} from "../lib/ActorQueryOperationOrderByDirect";
+import { ActorQueryOperation, Bindings } from '@comunica/bus-query-operation';
+import { Bus } from '@comunica/core';
+import { literal, variable } from '@rdfjs/data-model';
+import { ArrayIterator } from 'asynciterator';
+import { Algebra } from 'sparqlalgebrajs';
+import { ActorQueryOperationOrderByDirect } from '../lib/ActorQueryOperationOrderByDirect';
 const arrayifyStream = require('arrayify-stream');
 
 describe('ActorQueryOperationOrderByDirect', () => {
@@ -22,7 +22,7 @@ describe('ActorQueryOperationOrderByDirect', () => {
         metadata: () => Promise.resolve({ totalItems: 3 }),
         operated: arg,
         type: 'bindings',
-        variables: ['?a'],
+        variables: [ '?a' ],
       }),
     };
   });
@@ -55,33 +55,35 @@ describe('ActorQueryOperationOrderByDirect', () => {
       actor = new ActorQueryOperationOrderByDirect({ name: 'actor', bus, mediatorQueryOperation });
       orderA = { type: 'expression', expressionType: 'term', term: variable('a') };
       orderB = { type: 'expression', expressionType: 'term', term: variable('b') };
-      descOrderA = { type: 'expression', expressionType: 'operator', operator: 'desc', args: [orderA] };
-      orderA1 = { args: [orderA, { type: 'expression', expressionType: 'term', term: literal('1') }],
-        expressionType: 'operator', operator: '+', type: 'expression' };
+      descOrderA = { type: 'expression', expressionType: 'operator', operator: 'desc', args: [ orderA ]};
+      orderA1 = { args: [ orderA, { type: 'expression', expressionType: 'term', term: literal('1') }],
+        expressionType: 'operator',
+        operator: '+',
+        type: 'expression' };
     });
 
     it('should test on orderby', () => {
-      const op = { operation: { type: 'orderby', expressions: [] } };
+      const op = { operation: { type: 'orderby', expressions: []}};
       return expect(actor.test(op)).resolves.toBeTruthy();
     });
 
     it('should test on a descending orderby', () => {
-      const op = { operation: { type: 'orderby', expressions: [ descOrderA ] } };
+      const op = { operation: { type: 'orderby', expressions: [ descOrderA ]}};
       return expect(actor.test(op)).resolves.toBeTruthy();
     });
 
     it('should test on multiple expressions', () => {
-      const op = { operation: { type: 'orderby', expressions: [ orderA, descOrderA, orderA1 ] } };
+      const op = { operation: { type: 'orderby', expressions: [ orderA, descOrderA, orderA1 ]}};
       return expect(actor.test(op)).resolves.toBeTruthy();
     });
 
     it('should not test on non-orderby', () => {
-      const op = { operation: { type: 'some-other-type' } };
+      const op = { operation: { type: 'some-other-type' }};
       return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
-    it('should run', async () => {
-      const op = { operation: { type: 'orderby', input: {}, expressions: [orderA] } };
+    it('should run', async() => {
+      const op = { operation: { type: 'orderby', input: {}, expressions: [ orderA ]}};
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
@@ -91,9 +93,9 @@ describe('ActorQueryOperationOrderByDirect', () => {
       ]);
     });
 
-    it('should run with a window', async () => {
+    it('should run with a window', async() => {
       actor = new ActorQueryOperationOrderByDirect({ name: 'actor', bus, mediatorQueryOperation, window: 1 });
-      const op = { operation: { type: 'orderby', input: {}, expressions: [orderA] } };
+      const op = { operation: { type: 'orderby', input: {}, expressions: [ orderA ]}};
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
@@ -103,8 +105,8 @@ describe('ActorQueryOperationOrderByDirect', () => {
       ]);
     });
 
-    it('should run operator expressions', async () => {
-      const op = { operation: { type: 'orderby', input: {}, expressions: [orderA1] } };
+    it('should run operator expressions', async() => {
+      const op = { operation: { type: 'orderby', input: {}, expressions: [ orderA1 ]}};
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
@@ -114,8 +116,8 @@ describe('ActorQueryOperationOrderByDirect', () => {
       ]);
     });
 
-    it('should run descend', async () => {
-      const op = { operation: { type: 'orderby', input: {}, expressions: [descOrderA] } };
+    it('should run descend', async() => {
+      const op = { operation: { type: 'orderby', input: {}, expressions: [ descOrderA ]}};
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
@@ -125,8 +127,8 @@ describe('ActorQueryOperationOrderByDirect', () => {
       ]);
     });
 
-    it('should ignore undefined results', async () => {
-      const op = { operation: { type: 'orderby', input: {}, expressions: [orderB] } };
+    it('should ignore undefined results', async() => {
+      const op = { operation: { type: 'orderby', input: {}, expressions: [ orderB ]}};
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([

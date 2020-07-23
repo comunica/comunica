@@ -1,6 +1,6 @@
-import {ActorSparqlSerialize} from "@comunica/bus-sparql-serialize";
-import {Bus} from "@comunica/core";
-import {ActorSparqlSerializeRdf} from "../lib/ActorSparqlSerializeRdf";
+import { ActorSparqlSerialize } from '@comunica/bus-sparql-serialize';
+import { Bus } from '@comunica/core';
+import { ActorSparqlSerializeRdf } from '../lib/ActorSparqlSerializeRdf';
 
 describe('ActorSparqlSerializeRdf', () => {
   let bus: any;
@@ -32,19 +32,27 @@ describe('ActorSparqlSerializeRdf', () => {
 
     beforeEach(() => {
       mediatorRdfSerialize = {
-        mediate: (arg: any) => Promise.resolve(arg.mediaTypes ? { mediaTypes: {
-          'application/ld+json': 1.0,
-          'text/turtle': 1.0,
-        } } : (
-          arg.mediaTypeFormats ? { mediaTypeFormats: {
-            'application/ld+json': 'JSON-LD',
-            'text/turtle': 'TURTLE',
-          } } : { handle: arg.handle })),
+        mediate: (arg: any) => Promise.resolve(arg.mediaTypes ?
+          {
+            mediaTypes: {
+              'application/ld+json': 1,
+              'text/turtle': 1,
+            },
+          } :
+          (arg.mediaTypeFormats ?
+            {
+              mediaTypeFormats: {
+                'application/ld+json': 'JSON-LD',
+                'text/turtle': 'TURTLE',
+              },
+            } :
+            { handle: arg.handle })),
       };
       mediatorMediaTypeCombiner = mediatorRdfSerialize;
       mediatorMediaTypeFormatCombiner = mediatorRdfSerialize;
       actor = new ActorSparqlSerializeRdf(
-        { mediatorRdfSerialize, mediatorMediaTypeCombiner, mediatorMediaTypeFormatCombiner, name: 'actor', bus });
+        { mediatorRdfSerialize, mediatorMediaTypeCombiner, mediatorMediaTypeFormatCombiner, name: 'actor', bus },
+      );
     });
 
     describe('for serializing', () => {
@@ -66,7 +74,8 @@ describe('ActorSparqlSerializeRdf', () => {
       it('should run for a valid media type and a quad stream', () => {
         const handle: any = { quadStream: true, type: 'quads' };
         return expect(actor.run({ handle, handleMediaType: 'text/turtle' })).resolves.toEqual(
-          { handle: { quadStream: true, type: 'quads' } });
+          { handle: { quadStream: true, type: 'quads' }},
+        );
       });
     });
 
@@ -77,8 +86,8 @@ describe('ActorSparqlSerializeRdf', () => {
 
       it('should run', () => {
         return expect(actor.run({ mediaTypes: true })).resolves.toEqual({ mediaTypes: {
-          'application/ld+json': 1.0,
-          'text/turtle': 1.0,
+          'application/ld+json': 1,
+          'text/turtle': 1,
         }});
       });
     });

@@ -1,5 +1,5 @@
-import {Actor, IAction, IActorArgs, IActorOutput, IActorTest} from "@comunica/core";
-import {Algebra} from "sparqlalgebrajs";
+import { Actor, IAction, IActorArgs, IActorOutput, IActorTest } from '@comunica/core';
+import { Algebra } from 'sparqlalgebrajs';
 
 /**
  * A comunica actor for sparql-parse events.
@@ -13,11 +13,9 @@ import {Algebra} from "sparqlalgebrajs";
  * @see IActorSparqlParseOutput
  */
 export abstract class ActorSparqlParse extends Actor<IActionSparqlParse, IActorTest, IActorSparqlParseOutput> {
-
-  constructor(args: IActorArgs<IActionSparqlParse, IActorTest, IActorSparqlParseOutput>) {
+  public constructor(args: IActorArgs<IActionSparqlParse, IActorTest, IActorSparqlParseOutput>) {
     super(args);
   }
-
 }
 
 export interface IActionSparqlParse extends IAction {

@@ -35,8 +35,8 @@
     "index.js"
   ],
   "dependencies": {
+    "cross-fetch": "^3.0.5",
     "@types/parse-link-header": "^1.0.0",
-    "isomorphic-fetch": "^2.2.1",
     "parse-link-header": "^1.0.1"
   },
   "peerDependencies": {
@@ -50,7 +50,7 @@
   "jest": {
     "globals": {
       "ts-jest": {
-        "tsConfig": "test/tsconfig.json"
+        "tsConfig": "../../tsconfig.json"
       }
     },
     "transform": {
@@ -66,7 +66,6 @@
   "scripts": {
     "test": "node \"../../node_modules/jest/bin/jest.js\" ${1}",
     "test-watch": "node \"../../node_modules/jest/bin/jest.js\" ${1} --watch",
-    "lint": "node \"../../node_modules/tslint/bin/tslint\" lib/**/*.ts test/**/*.ts --exclude '**/*.d.ts'",
     "build": "node \"../../node_modules/typescript/bin/tsc\"",
     "validate": "npm ls"
   }

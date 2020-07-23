@@ -1,5 +1,5 @@
-import {blankNode, namedNode} from "@rdfjs/data-model";
-import {BlankNodeScoped} from "..";
+import { blankNode, namedNode } from '@rdfjs/data-model';
+import { BlankNodeScoped } from '..';
 
 describe('BlankNodeScoped', () => {
   describe('equals', () => {

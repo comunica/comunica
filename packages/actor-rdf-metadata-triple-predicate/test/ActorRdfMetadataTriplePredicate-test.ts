@@ -1,11 +1,11 @@
-import {ActorRdfMetadata} from "@comunica/bus-rdf-metadata";
-import {Bus} from "@comunica/core";
-import {Readable} from "stream";
-import {ActorRdfMetadataTriplePredicate} from "../lib/ActorRdfMetadataTriplePredicate";
+import { Readable } from 'stream';
+import { ActorRdfMetadata } from '@comunica/bus-rdf-metadata';
+import { Bus } from '@comunica/core';
+import { ActorRdfMetadataTriplePredicate } from '../lib/ActorRdfMetadataTriplePredicate';
 
-const stream = require('streamify-array');
-const quad = require('rdf-quad');
 const arrayifyStream = require('arrayify-stream');
+const quad = require('rdf-quad');
+const stream = require('streamify-array');
 
 describe('ActorRdfMetadataTriplePredicate', () => {
   let bus: any;
@@ -20,9 +20,9 @@ describe('ActorRdfMetadataTriplePredicate', () => {
     });
 
     it('should be a ActorRdfMetadataTriplePredicate constructor', () => {
-      expect(new (<any> ActorRdfMetadataTriplePredicate)({ name: 'actor', bus, predicateRegexes: [] }))
+      expect(new (<any> ActorRdfMetadataTriplePredicate)({ name: 'actor', bus, predicateRegexes: []}))
         .toBeInstanceOf(ActorRdfMetadataTriplePredicate);
-      expect(new (<any> ActorRdfMetadataTriplePredicate)({ name: 'actor', bus, predicateRegexes: [] }))
+      expect(new (<any> ActorRdfMetadataTriplePredicate)({ name: 'actor', bus, predicateRegexes: []}))
         .toBeInstanceOf(ActorRdfMetadata);
     });
 
@@ -36,10 +36,12 @@ describe('ActorRdfMetadataTriplePredicate', () => {
     let input: Readable;
 
     beforeEach(() => {
-      actor = new ActorRdfMetadataTriplePredicate({ bus, name: 'actor', predicateRegexes: [
-        '^px.*',
-        '.*py$',
-      ] });
+      actor = new ActorRdfMetadataTriplePredicate({ bus,
+        name: 'actor',
+        predicateRegexes: [
+          '^px.*',
+          '.*py$',
+        ]});
       input = stream([
         quad('s1', 'p1', 'o1', ''),
         quad('g1', '-py', 'o1', ''),
@@ -58,7 +60,7 @@ describe('ActorRdfMetadataTriplePredicate', () => {
 
     it('should run', () => {
       return actor.run({ url: 's3', quads: input })
-        .then(async (output) => {
+        .then(async output => {
           expect(await arrayifyStream(output.data)).toEqual([
             quad('s1', 'p1', 'o1', ''),
           ]);
@@ -72,14 +74,16 @@ describe('ActorRdfMetadataTriplePredicate', () => {
 
     it('should run and delegate errors', () => {
       return actor.run({ url: '', quads: input })
-        .then((output) => {
+        .then(output => {
           setImmediate(() => input.emit('error', new Error('RDF Meta Primary Topic error')));
-          output.data.on('data', () => { return; });
-          return Promise.all([new Promise((resolve, reject) => {
+          output.data.on('data', () => {
+            // Do nothing
+          });
+          return Promise.all([ new Promise((resolve, reject) => {
             output.data.on('error', resolve);
           }), new Promise((resolve, reject) => {
             output.metadata.on('error', resolve);
-          })]).then((errors) => {
+          }) ]).then(errors => {
             return expect(errors).toHaveLength(2);
           });
         });

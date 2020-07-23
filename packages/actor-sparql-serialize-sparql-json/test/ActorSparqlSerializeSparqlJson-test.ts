@@ -1,10 +1,10 @@
-import {Bindings, BindingsStream} from "@comunica/bus-query-operation";
-import {Bus} from "@comunica/core";
-import {blankNode, defaultGraph, literal, namedNode} from "@rdfjs/data-model";
-import {ArrayIterator} from "asynciterator";
-import {PassThrough} from "stream";
-import {ActorSparqlSerializeSparqlJson} from "..";
-import * as RDF from "rdf-js";
+import { PassThrough } from 'stream';
+import { Bindings, BindingsStream } from '@comunica/bus-query-operation';
+import { Bus } from '@comunica/core';
+import { blankNode, defaultGraph, literal, namedNode } from '@rdfjs/data-model';
+import { ArrayIterator } from 'asynciterator';
+import * as RDF from 'rdf-js';
+import { ActorSparqlSerializeSparqlJson } from '..';
 
 const quad = require('rdf-quad');
 const stringifyStream = require('stream-to-string');
@@ -54,7 +54,7 @@ describe('ActorSparqlSerializeSparqlJson', () => {
 
     it('should convert literals with a language', () => {
       return expect(ActorSparqlSerializeSparqlJson.bindingToJsonBindings(literal('abc', 'en-us')))
-        .toEqual({ 'value': 'abc', 'type': 'literal', 'xml:lang': 'en-us' });
+        .toEqual({ value: 'abc', type: 'literal', 'xml:lang': 'en-us' });
     });
 
     it('should convert literals with a datatype', () => {
@@ -73,9 +73,11 @@ describe('ActorSparqlSerializeSparqlJson', () => {
     let variables: string[];
 
     beforeEach(() => {
-      actor = new ActorSparqlSerializeSparqlJson({ bus, mediaTypes: {
-        'sparql-results+json': 1.0,
-      }, name: 'actor' });
+      actor = new ActorSparqlSerializeSparqlJson({ bus,
+        mediaTypes: {
+          'sparql-results+json': 1,
+        },
+        name: 'actor' });
       bindingsStream = new ArrayIterator([
         Bindings({ '?k1': namedNode('v1') }),
         Bindings({ '?k2': namedNode('v2') }),
@@ -103,7 +105,7 @@ describe('ActorSparqlSerializeSparqlJson', () => {
 
       it('should run', () => {
         return expect(actor.run({ mediaTypes: true })).resolves.toEqual({ mediaTypes: {
-          'sparql-results+json': 1.0,
+          'sparql-results+json': 1,
         }});
       });
     });
@@ -133,83 +135,97 @@ describe('ActorSparqlSerializeSparqlJson', () => {
           .rejects.toBeTruthy();
       });
 
-      it('should run on a bindings stream', async () => {
-        return expect((await stringifyStream((<any> (await actor.run(
-          {handle: <any> {bindingsStream, type: 'bindings', variables},
-            handleMediaType: 'json'}))).handle.data))).toEqual(
-`{"head": {"vars":["k1","k2"]},
+      it('should run on a bindings stream', async() => {
+        expect(await stringifyStream((<any> (await actor.run(
+          { handle: <any> { bindingsStream, type: 'bindings', variables },
+            handleMediaType: 'json' },
+        ))).handle.data)).toEqual(
+          `{"head": {"vars":["k1","k2"]},
 "results": { "bindings": [
 {"k1":{"value":"v1","type":"uri"}},
 {"k2":{"value":"v2","type":"uri"}}
 ]}}
-`);
+`,
+        );
       });
 
-      it('should run on a bindings stream without variables', async () => {
-        return expect((await stringifyStream((<any> (await actor.run(
-          {handle: <any> { bindingsStream, type: 'bindings', variables: [] },
-            handleMediaType: 'json'}))).handle.data))).toEqual(
-`{"head": {},
+      it('should run on a bindings stream without variables', async() => {
+        expect(await stringifyStream((<any> (await actor.run(
+          { handle: <any> { bindingsStream, type: 'bindings', variables: []},
+            handleMediaType: 'json' },
+        ))).handle.data)).toEqual(
+          `{"head": {},
 "results": { "bindings": [
 {"k1":{"value":"v1","type":"uri"}},
 {"k2":{"value":"v2","type":"uri"}}
 ]}}
-`);
+`,
+        );
       });
 
-      it('should run on a bindings stream with unbound variables', async () => {
-        return expect((await stringifyStream((<any> (await actor.run(
-          {handle: <any> { bindingsStream: bindingsStreamPartial, type: 'bindings', variables: [] },
-            handleMediaType: 'json'}))).handle.data))).toEqual(
-`{"head": {},
+      it('should run on a bindings stream with unbound variables', async() => {
+        expect(await stringifyStream((<any> (await actor.run(
+          { handle: <any> { bindingsStream: bindingsStreamPartial, type: 'bindings', variables: []},
+            handleMediaType: 'json' },
+        ))).handle.data)).toEqual(
+          `{"head": {},
 "results": { "bindings": [
 {"k1":{"value":"v1","type":"uri"}},
 {"k2":{"value":"v2","type":"uri"}},
 {}
 ]}}
-`);
+`,
+        );
       });
     });
 
-    it('should run on an empty bindings stream', async () => {
-      return expect((await stringifyStream((<any> (await actor.run(
-        {handle: <any> { bindingsStream: bindingsStreamEmpty, type: 'bindings', variables },
-          handleMediaType: 'json'}))).handle.data))).toEqual(
-`{"head": {"vars":["k1","k2"]},
+    it('should run on an empty bindings stream', async() => {
+      expect(await stringifyStream((<any> (await actor.run(
+        { handle: <any> { bindingsStream: bindingsStreamEmpty, type: 'bindings', variables },
+          handleMediaType: 'json' },
+      ))).handle.data)).toEqual(
+        `{"head": {"vars":["k1","k2"]},
 "results": { "bindings": [] }}
-`);
+`,
+      );
     });
 
-    it('should emit an error on an errorring bindings stream', async () => {
-      return expect((stringifyStream((<any> (await actor.run(
-        {handle: <any> { bindingsStream: bindingsStreamError, type: 'bindings', variables },
-          handleMediaType: 'json'}))).handle.data))).rejects.toBeTruthy();
+    it('should emit an error on an errorring bindings stream', async() => {
+      await expect(stringifyStream((<any> (await actor.run(
+        { handle: <any> { bindingsStream: bindingsStreamError, type: 'bindings', variables },
+          handleMediaType: 'json' },
+      ))).handle.data)).rejects.toBeTruthy();
     });
 
-    it('should run on a boolean result that resolves to true', async () => {
-      return expect((await stringifyStream((<any> (await actor.run(
-        {handle: <any> { type: 'boolean', booleanResult: Promise.resolve(true), variables: [] },
-          handleMediaType: 'simple'}))).handle.data))).toEqual(
-`{"head": {},
+    it('should run on a boolean result that resolves to true', async() => {
+      expect(await stringifyStream((<any> (await actor.run(
+        { handle: <any> { type: 'boolean', booleanResult: Promise.resolve(true), variables: []},
+          handleMediaType: 'simple' },
+      ))).handle.data)).toEqual(
+        `{"head": {},
 "boolean":true
 }
-`);
+`,
+      );
     });
 
-    it('should run on a boolean result that resolves to false', async () => {
-      return expect((await stringifyStream((<any> (await actor.run(
-        {handle: <any> { type: 'boolean', booleanResult: Promise.resolve(false), variables: [] },
-          handleMediaType: 'simple'}))).handle.data))).toEqual(
-`{"head": {},
+    it('should run on a boolean result that resolves to false', async() => {
+      expect(await stringifyStream((<any> (await actor.run(
+        { handle: <any> { type: 'boolean', booleanResult: Promise.resolve(false), variables: []},
+          handleMediaType: 'simple' },
+      ))).handle.data)).toEqual(
+        `{"head": {},
 "boolean":false
 }
-`);
+`,
+      );
     });
 
-    it('should emit an error on a boolean result that rejects', async () => {
-      return expect((stringifyStream((<any> (await actor.run(
-        {handle: <any> { type: 'boolean', booleanResult: Promise.reject(new Error('e')), variables: [] },
-          handleMediaType: 'simple'}))).handle.data))).rejects.toBeTruthy();
+    it('should emit an error on a boolean result that rejects', async() => {
+      await expect(stringifyStream((<any> (await actor.run(
+        { handle: <any> { type: 'boolean', booleanResult: Promise.reject(new Error('e')), variables: []},
+          handleMediaType: 'simple' },
+      ))).handle.data)).rejects.toBeTruthy();
     });
   });
 });

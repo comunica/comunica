@@ -1,5 +1,5 @@
-import {Actor, IAction, IActorArgs, IActorOutput, IActorTest} from "@comunica/core";
-import {Algebra} from "sparqlalgebrajs";
+import { Actor, IAction, IActorArgs, IActorOutput, IActorTest } from '@comunica/core';
+import { Algebra } from 'sparqlalgebrajs';
 
 /**
  * A comunica actor for optimize-query-operation events.
@@ -14,11 +14,9 @@ import {Algebra} from "sparqlalgebrajs";
  */
 export abstract class ActorOptimizeQueryOperation
   extends Actor<IActionOptimizeQueryOperation, IActorTest, IActorOptimizeQueryOperationOutput> {
-
-  constructor(args: IActorArgs<IActionOptimizeQueryOperation, IActorTest, IActorOptimizeQueryOperationOutput>) {
+  public constructor(args: IActorArgs<IActionOptimizeQueryOperation, IActorTest, IActorOptimizeQueryOperationOutput>) {
     super(args);
   }
-
 }
 
 export interface IActionOptimizeQueryOperation extends IAction {

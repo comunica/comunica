@@ -1,9 +1,9 @@
-import {ActorRdfMetadataExtract} from "@comunica/bus-rdf-metadata-extract";
-import {Bus} from "@comunica/core";
-import {Readable} from "stream";
-import {ActorRdfMetadataExtractHydraCount} from "../lib/ActorRdfMetadataExtractHydraCount";
-const stream = require('streamify-array');
+import { Readable } from 'stream';
+import { ActorRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extract';
+import { Bus } from '@comunica/core';
+import { ActorRdfMetadataExtractHydraCount } from '../lib/ActorRdfMetadataExtractHydraCount';
 const quad = require('rdf-quad');
+const stream = require('streamify-array');
 
 describe('ActorRdfMetadataExtractHydraCount', () => {
   let bus: any;
@@ -18,9 +18,9 @@ describe('ActorRdfMetadataExtractHydraCount', () => {
     });
 
     it('should be a ActorRdfMetadataExtractHydraCount constructor', () => {
-      expect(new (<any> ActorRdfMetadataExtractHydraCount)({ name: 'actor', bus, predicates: [] }))
+      expect(new (<any> ActorRdfMetadataExtractHydraCount)({ name: 'actor', bus, predicates: []}))
         .toBeInstanceOf(ActorRdfMetadataExtractHydraCount);
-      expect(new (<any> ActorRdfMetadataExtractHydraCount)({ name: 'actor', bus, predicates: [] }))
+      expect(new (<any> ActorRdfMetadataExtractHydraCount)({ name: 'actor', bus, predicates: []}))
         .toBeInstanceOf(ActorRdfMetadataExtract);
     });
 
@@ -35,7 +35,7 @@ describe('ActorRdfMetadataExtractHydraCount', () => {
     let inputNone: Readable;
 
     beforeEach(() => {
-      actor = new ActorRdfMetadataExtractHydraCount({ name: 'actor', bus, predicates: [ 'px', 'py' ] });
+      actor = new ActorRdfMetadataExtractHydraCount({ name: 'actor', bus, predicates: [ 'px', 'py' ]});
       input = stream([
         quad('s1', 'p1', 'o1', ''),
         quad('g1', 'py', '12345', ''),

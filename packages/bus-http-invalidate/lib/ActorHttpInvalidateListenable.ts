@@ -1,5 +1,5 @@
-import {IActorArgs, IActorTest} from "@comunica/core";
-import {ActorHttpInvalidate, IActionHttpInvalidate, IActorHttpInvalidateOutput} from "./ActorHttpInvalidate";
+import { IActorArgs, IActorTest } from '@comunica/core';
+import { ActorHttpInvalidate, IActionHttpInvalidate, IActorHttpInvalidateOutput } from './ActorHttpInvalidate';
 
 /**
  * An ActorHttpInvalidate actor that allows listeners to be attached.
@@ -7,15 +7,14 @@ import {ActorHttpInvalidate, IActionHttpInvalidate, IActorHttpInvalidateOutput} 
  * @see ActorHttpInvalidate
  */
 export class ActorHttpInvalidateListenable extends ActorHttpInvalidate {
-
   private readonly invalidateListeners: IInvalidateListener[];
 
-  constructor(args: IActorArgs<IActionHttpInvalidate, IActorTest, IActorHttpInvalidateOutput>) {
+  public constructor(args: IActorArgs<IActionHttpInvalidate, IActorTest, IActorHttpInvalidateOutput>) {
     super(args);
     this.invalidateListeners = [];
   }
 
-  public addInvalidateListener(listener: IInvalidateListener) {
+  public addInvalidateListener(listener: IInvalidateListener): void {
     this.invalidateListeners.push(listener);
   }
 
@@ -29,7 +28,6 @@ export class ActorHttpInvalidateListenable extends ActorHttpInvalidate {
     }
     return true;
   }
-
 }
 
 /**

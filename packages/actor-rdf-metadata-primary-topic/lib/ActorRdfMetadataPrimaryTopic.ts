@@ -1,18 +1,17 @@
-import {ActorRdfMetadata, IActionRdfMetadata, IActorRdfMetadataOutput} from "@comunica/bus-rdf-metadata";
-import {IActorArgs, IActorTest} from "@comunica/core";
-import * as RDF from "rdf-js";
-import {Readable} from "stream";
+import { Readable } from 'stream';
+import { ActorRdfMetadata, IActionRdfMetadata, IActorRdfMetadataOutput } from '@comunica/bus-rdf-metadata';
+import { IActorArgs, IActorTest } from '@comunica/core';
+import * as RDF from 'rdf-js';
 
 /**
  * An RDF Metadata Actor that splits off the metadata based on the existence of a 'foaf:primaryTopic' link.
  * Only non-triple quad streams are supported.
  */
 export class ActorRdfMetadataPrimaryTopic extends ActorRdfMetadata {
-
   private readonly metadataToData: boolean;
   private readonly dataToMetadataOnInvalidMetadataGraph: boolean;
 
-  constructor(args: IActorRdfMetadataPrimaryTopicArgs) {
+  public constructor(args: IActorRdfMetadataPrimaryTopicArgs) {
     super(args);
   }
 
@@ -28,12 +27,14 @@ export class ActorRdfMetadataPrimaryTopic extends ActorRdfMetadata {
     const metadata: Readable = new Readable({ objectMode: true });
 
     // Delay attachment of listeners until the data or metadata stream is being read.
-    const attachListeners = () => {
+    const attachListeners = (): void => {
       // Attach listeners only once
-      data._read = metadata._read = () => { return; };
+      data._read = metadata._read = () => {
+        // Do nothing
+      };
 
       // Forward errors
-      action.quads.on('error', (error) => {
+      action.quads.on('error', error => {
         data.emit('error', error);
         metadata.emit('error', error);
       });
@@ -43,9 +44,9 @@ export class ActorRdfMetadataPrimaryTopic extends ActorRdfMetadata {
       const graphs: {[id: string]: RDF.Quad[]} = {};
       let endpointIdentifier: string | undefined;
       const primaryTopics: {[id: string]: string} = {};
-      action.quads.on('data', (quad) => {
-        if (quad.predicate.value === 'http://rdfs.org/ns/void#subset'
-          && quad.object.value === action.url) {
+      action.quads.on('data', quad => {
+        if (quad.predicate.value === 'http://rdfs.org/ns/void#subset' &&
+          quad.object.value === action.url) {
           endpointIdentifier = quad.subject.value;
         } else if (quad.predicate.value === 'http://xmlns.com/foaf/0.1/primaryTopic') {
           primaryTopics[quad.object.value] = quad.subject.value;
@@ -88,11 +89,12 @@ export class ActorRdfMetadataPrimaryTopic extends ActorRdfMetadata {
         metadata.push(null);
       });
     };
-    data._read = metadata._read = () => { attachListeners(); };
+    data._read = metadata._read = () => {
+      attachListeners();
+    };
 
     return { data, metadata };
   }
-
 }
 
 export interface IActorRdfMetadataPrimaryTopicArgs

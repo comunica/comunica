@@ -1,6 +1,6 @@
-import {ActorHttp} from "@comunica/bus-http";
-import {Bus} from "@comunica/core";
-import {ActorHttpNodeFetch} from "../lib/ActorHttpNodeFetch";
+import { ActorHttp } from '@comunica/bus-http';
+import { Bus } from '@comunica/core';
+import { ActorHttpNodeFetch } from '../lib/ActorHttpNodeFetch';
 
 // Mock fetch
 (<any> global).fetch = (input: any, init: any) => {
@@ -51,16 +51,16 @@ describe('ActorHttpNodeFetch', () => {
         .toMatchObject({ status: 404 });
     });
 
-    it('should run for an input object and log', async () => {
+    it('should run for an input object and log', async() => {
       const spy = jest.spyOn(actor, <any> 'logInfo');
       await actor.run({ input: 'https://www.google.com/' });
-      return expect(spy).toHaveBeenCalledWith(undefined, 'Requesting https://www.google.com/');
+      expect(spy).toHaveBeenCalledWith(undefined, 'Requesting https://www.google.com/');
     });
 
-    it('should run for an input string and log', async () => {
+    it('should run for an input string and log', async() => {
       const spy = jest.spyOn(actor, <any> 'logInfo');
       await actor.run({ input: <Request> { url: 'https://www.google.com/' }});
-      return expect(spy).toHaveBeenCalledWith(undefined, 'Requesting https://www.google.com/');
+      expect(spy).toHaveBeenCalledWith(undefined, 'Requesting https://www.google.com/');
     });
   });
 });

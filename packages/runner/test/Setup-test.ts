@@ -1,11 +1,9 @@
-import {Loader} from "componentsjs";
-import {Readable} from "stream";
-import {Setup} from "..";
+import { Readable } from 'stream';
+import { Loader } from 'componentsjs';
+import * as Setup from '..';
 
 describe('Setup', () => {
-
   describe('The Setup module', () => {
-
     beforeEach(() => {
       // Mock Loader
       (<any> Loader) = jest.fn(() => {
@@ -14,10 +12,6 @@ describe('Setup', () => {
           registerAvailableModuleResources: jest.fn(),
         };
       });
-    });
-
-    it('should not be a function', () => {
-      expect(Setup).toBeInstanceOf(Function);
     });
 
     it('should throw an error when constructed', () => {
@@ -29,23 +23,25 @@ describe('Setup', () => {
     });
 
     it('should allow \'run\' to be called without optional arguments', () => {
-      Setup.run('', { argv: [], env: {}, stdin: new Readable() });
+      return Setup.run('', { argv: [], env: {}, stdin: new Readable() });
     });
 
     it('should allow \'run\' to be called with optional arguments', () => {
-      Setup.run('', { argv: [], env: {}, stdin: new Readable() }, 'myuri', {});
+      return Setup.run('', { argv: [], env: {}, stdin: new Readable() }, 'myuri', {});
     });
 
-    it('should throw an error when the runner resolves to false when calling \'run\'', async () => {
+    it('should throw an error when the runner resolves to false when calling \'run\'', async() => {
       (<any> Loader) = jest.fn(() => {
         return {
           instantiateFromUrl: () => Promise.resolve(
-            { deinitialize: jest.fn(), initialize: jest.fn(),
-              run: () => Promise.reject(new Error('Failure setup runner')) }),
+            { deinitialize: jest.fn(),
+              initialize: jest.fn(),
+              run: () => Promise.reject(new Error('Failure setup runner')) },
+          ),
           registerAvailableModuleResources: jest.fn(),
         };
       });
-      return expect(Setup.run('', { argv: [], env: {}, stdin: new Readable() }, 'myuri', {})).rejects
+      await expect(Setup.run('', { argv: [], env: {}, stdin: new Readable() }, 'myuri', {})).rejects
         .toBeTruthy();
     });
   });

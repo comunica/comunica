@@ -1,7 +1,6 @@
 jest.mock('../lib/ActorInitSparql', () => {
   return {
-    // tslint:disable:only-arrow-functions
-    // tslint:disable:object-literal-shorthand
+    // eslint-disable-next-line object-shorthand
     ActorInitSparql: function() {
       return {
         mocked: true,
@@ -20,7 +19,7 @@ jest.mock('../engine-default.js', () => {
   };
 });
 
-import {evaluateQuery, newEngine, newEngineDynamic, bindingsStreamToGraphQl} from '../index';
+import { evaluateQuery, newEngine, newEngineDynamic, bindingsStreamToGraphQl } from '..';
 
 jest.setTimeout(30000);
 
@@ -37,9 +36,9 @@ describe('index', () => {
     return expect(newEngineDynamic()).resolves.toMatchObject({ mocked: true });
   });
 
-  it('evaluateQuery should evaluate a query', async () => {
+  it('evaluateQuery should evaluate a query', async() => {
     const context = {
-      sources: ['http://fragments.dbpedia.org/2016-04/en'],
+      sources: [ 'http://fragments.dbpedia.org/2016-04/en' ],
     };
     expect(await evaluateQuery('select * where { ?s ?p ?o } limit 1', context)).toEqual({ queried: true });
   });

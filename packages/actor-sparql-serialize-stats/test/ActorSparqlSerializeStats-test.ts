@@ -1,10 +1,10 @@
-import {Bindings, BindingsStream} from "@comunica/bus-query-operation";
-import {Bus} from "@comunica/core";
-import {namedNode} from "@rdfjs/data-model";
-import {ArrayIterator} from "asynciterator";
-import {Readable} from "stream";
-import {ActionObserverHttp, ActorSparqlSerializeStats} from "..";
-import * as RDF from "rdf-js";
+import { Readable } from 'stream';
+import { Bindings, BindingsStream } from '@comunica/bus-query-operation';
+import { Bus } from '@comunica/core';
+import { namedNode } from '@rdfjs/data-model';
+import { ArrayIterator } from 'asynciterator';
+import * as RDF from 'rdf-js';
+import { ActionObserverHttp, ActorSparqlSerializeStats } from '..';
 
 const quad = require('rdf-quad');
 const stringifyStream = require('stream-to-string');
@@ -45,7 +45,7 @@ describe('ActorSparqlSerializeStats', () => {
       actor = new ActorSparqlSerializeStats({
         bus,
         mediaTypes: {
-          debug: 1.0,
+          debug: 1,
         },
         name: 'actor',
         httpObserver,
@@ -69,7 +69,7 @@ describe('ActorSparqlSerializeStats', () => {
 
       it('should run', () => {
         return expect(actor.run({ mediaTypes: true })).resolves.toEqual({ mediaTypes: {
-          debug: 1.0,
+          debug: 1,
         }});
       });
     });
@@ -93,60 +93,69 @@ describe('ActorSparqlSerializeStats', () => {
       it('should not test on N-Triples', () => {
         return expect(actor.test({ handle: <any> { type: 'quads', quadStream },
           handleMediaType: 'application/n-triples' }))
-        .rejects.toBeTruthy();
+          .rejects.toBeTruthy();
       });
 
       it('should not test on unknown types', () => {
         return expect(actor.test(
-        { handle: <any> { type: 'unknown' }, handleMediaType: 'debug' }))
-        .rejects.toBeTruthy();
+          { handle: <any> { type: 'unknown' }, handleMediaType: 'debug' },
+        ))
+          .rejects.toBeTruthy();
       });
 
-      it('should run on a bindings stream', async () => {
-        return expect((await stringifyStream((<any> (await actor.run(
-        {handle: <any> { type: 'bindings', bindingsStream }, handleMediaType: 'debug'})
-        )).handle.data))).toEqual(
-        `Result,Delay (ms),HTTP requests
+      it('should run on a bindings stream', async() => {
+        expect(await stringifyStream((<any> (await actor.run(
+          { handle: <any> { type: 'bindings', bindingsStream }, handleMediaType: 'debug' },
+        )
+        )).handle.data)).toEqual(
+          `Result,Delay (ms),HTTP requests
 1,3.14,0
 2,3.14,0
 TOTAL,3.14,0
-`);
+`,
+        );
       });
 
-      it('should run on a bindings stream with http requests', async () => {
+      it('should run on a bindings stream with http requests', async() => {
         (<any> httpObserver).onRun(null, null, null);
         (<any> httpObserver).onRun(null, null, null);
-        return expect((await stringifyStream((<any> (await actor.run(
-            {handle: <any> { type: 'bindings', bindingsStream }, handleMediaType: 'debug'})
-        )).handle.data))).toEqual(
+        expect(await stringifyStream((<any> (await actor.run(
+          { handle: <any> { type: 'bindings', bindingsStream }, handleMediaType: 'debug' },
+        )
+        )).handle.data)).toEqual(
           `Result,Delay (ms),HTTP requests
 1,3.14,2
 2,3.14,2
 TOTAL,3.14,2
-`);
+`,
+        );
       });
 
-      it('should run on a quad stream', async () => {
-        return expect((await stringifyStream((<any> (await actor.run(
+      it('should run on a quad stream', async() => {
+        expect(await stringifyStream((<any> (await actor.run(
           { handle: <any> { type: 'quads', quadStream },
-            handleMediaType: 'debug' }))).handle.data))).toEqual(
-        `Result,Delay (ms),HTTP requests
+            handleMediaType: 'debug' },
+        ))).handle.data)).toEqual(
+          `Result,Delay (ms),HTTP requests
 1,3.14,0
 2,3.14,0
 TOTAL,3.14,0
-`);
+`,
+        );
       });
 
-      it('should emit an error when a bindings stream emits an error', async () => {
-        return expect(stringifyStream((<any> (await actor.run(
-          {handle: <any> { type: 'bindings', bindingsStream: streamError },
-            handleMediaType: 'application/json'}))).handle.data)).rejects.toBeTruthy();
+      it('should emit an error when a bindings stream emits an error', async() => {
+        await expect(stringifyStream((<any> (await actor.run(
+          { handle: <any> { type: 'bindings', bindingsStream: streamError },
+            handleMediaType: 'application/json' },
+        ))).handle.data)).rejects.toBeTruthy();
       });
 
-      it('should emit an error when a quad stream emits an error', async () => {
-        return expect(stringifyStream((<any> (await actor.run(
-          {handle: <any> { type: 'quads', quadStream: streamError },
-            handleMediaType: 'application/json'}))).handle.data)).rejects.toBeTruthy();
+      it('should emit an error when a quad stream emits an error', async() => {
+        await expect(stringifyStream((<any> (await actor.run(
+          { handle: <any> { type: 'quads', quadStream: streamError },
+            handleMediaType: 'application/json' },
+        ))).handle.data)).rejects.toBeTruthy();
       });
     });
   });

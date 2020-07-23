@@ -1,13 +1,13 @@
-import {ActionContext} from "@comunica/core";
-import "jest-rdf";
-import LRUCache = require("lru-cache");
-import {ISourceState} from "../lib/LinkedRdfSourcesAsyncRdfIterator";
-import {MediatedLinkedRdfSourcesAsyncRdfIterator} from "../lib/MediatedLinkedRdfSourcesAsyncRdfIterator";
-import {MediatedQuadSource} from "../lib/MediatedQuadSource";
+import { ActionContext } from '@comunica/core';
+import 'jest-rdf';
+import LRUCache = require('lru-cache');
+import { ISourceState } from '../lib/LinkedRdfSourcesAsyncRdfIterator';
+import { MediatedLinkedRdfSourcesAsyncRdfIterator } from '../lib/MediatedLinkedRdfSourcesAsyncRdfIterator';
+import { MediatedQuadSource } from '../lib/MediatedQuadSource';
 
-const streamifyArray = require('streamify-array');
 const arrayifyStream = require('arrayify-stream');
 const quad = require('rdf-quad');
+const streamifyArray = require('streamify-array');
 
 describe('MediatedQuadSource', () => {
   let context: ActionContext;
@@ -22,12 +22,12 @@ describe('MediatedQuadSource', () => {
     context = ActionContext({});
     mediatorRdfDereference = {
       mediate: ({ url }: any) => Promise.resolve({
-        quads: url === 'firstUrl'
-          ? streamifyArray([
+        quads: url === 'firstUrl' ?
+          streamifyArray([
             quad('s1', 'p1', 'o1'),
             quad('s2', 'p2', 'o2'),
-          ])
-          : streamifyArray([
+          ]) :
+          streamifyArray([
             quad('s3', 'p3', 'o3'),
             quad('s4', 'p4', 'o4'),
           ]),
@@ -36,7 +36,7 @@ describe('MediatedQuadSource', () => {
       }),
     };
     mediatorMetadata = {
-      mediate: ({ quads }: any) => Promise.resolve({ data: quads, metadata: { a: 1 } }),
+      mediate: ({ quads }: any) => Promise.resolve({ data: quads, metadata: { a: 1 }}),
     };
     mediatorMetadataExtract = {
       mediate: ({ metadata }: any) => Promise.resolve({ metadata }),
@@ -50,7 +50,7 @@ describe('MediatedQuadSource', () => {
       }),
     };
     mediatorRdfResolveHypermediaLinks = {
-      mediate: () => Promise.resolve({ urls: ['next'] }),
+      mediate: () => Promise.resolve({ urls: [ 'next' ]}),
     };
     mediators = {
       mediatorMetadata,
@@ -76,7 +76,7 @@ describe('MediatedQuadSource', () => {
 
     describe('matchLazy', () => {
       it('should throw on regexps', () => {
-        return expect(() => source.matchLazy(/.*/))
+        return expect(() => source.matchLazy(/.*/u))
           .toThrow(new Error('MediatedQuadSource does not support matching by regular expressions.'));
       });
 
@@ -84,7 +84,7 @@ describe('MediatedQuadSource', () => {
         return expect(source.matchLazy()).toBeInstanceOf(MediatedLinkedRdfSourcesAsyncRdfIterator);
       });
 
-      it('should return a stream', async () => {
+      it('should return a stream', async() => {
         expect(await arrayifyStream(source.matchLazy())).toEqualRdfQuadArray([
           quad('s1', 'p1', 'o1'),
           quad('s2', 'p2', 'o2'),
@@ -93,7 +93,7 @@ describe('MediatedQuadSource', () => {
         ]);
       });
 
-      it('should return a metadata event', async () => {
+      it('should return a metadata event', async() => {
         const out = source.matchLazy();
         const metaPromise = new Promise((resolve, reject) => {
           out.on('metadata', resolve);
@@ -108,13 +108,13 @@ describe('MediatedQuadSource', () => {
         expect(await metaPromise).toEqual({ a: 1 });
       });
 
-      it('should set the first source after the first matchLazy call', async () => {
+      it('should set the first source after the first matchLazy call', async() => {
         source.matchLazy();
         expect((<any> (await source.sourcesState.sources.get('firstUrl'))).metadata).toEqual({ a: 1 });
         expect((<any> (await source.sourcesState.sources.get('firstUrl'))).source).toBeTruthy();
       });
 
-      it('should allow a custom first source to be set', async () => {
+      it('should allow a custom first source to be set', async() => {
         source.sourcesState = {
           sources: new LRUCache<string, Promise<ISourceState>>(10),
         };
@@ -128,7 +128,7 @@ describe('MediatedQuadSource', () => {
             ]),
           },
         }));
-        return expect(await arrayifyStream(source.matchLazy())).toEqualRdfQuadArray([
+        expect(await arrayifyStream(source.matchLazy())).toEqualRdfQuadArray([
           quad('s1x', 'p1', 'o1'),
           quad('s2x', 'p2', 'o2'),
           quad('s3', 'p3', 'o3'),
@@ -136,7 +136,7 @@ describe('MediatedQuadSource', () => {
         ]);
       });
 
-      it('should allow a custom first source to be set and emit a metadata event', async () => {
+      it('should allow a custom first source to be set and emit a metadata event', async() => {
         source.sourcesState = {
           sources: new LRUCache<string, Promise<ISourceState>>(10),
         };
@@ -164,19 +164,19 @@ describe('MediatedQuadSource', () => {
         expect(await metaPromise).toEqual({ a: 2 });
       });
 
-      it('should match three chained sources', async () => {
+      it('should match three chained sources', async() => {
         let i = 0;
-        mediatorRdfResolveHypermediaLinks.mediate = () => Promise.resolve({ urls: ['next' + i] });
+        mediatorRdfResolveHypermediaLinks.mediate = () => Promise.resolve({ urls: [ `next${i}` ]});
         mediatorRdfResolveHypermedia.mediate = (args: any) => {
           if (i < 3) {
             i++;
           }
           return Promise.resolve({
-            dataset: 'MYDATASET' + i,
+            dataset: `MYDATASET${i}`,
             source: {
               match: () => streamifyArray([
-                quad('s1' + i, 'p1' + i, 'o1' + i),
-                quad('s2' + i, 'p2' + i, 'o2' + i),
+                quad(`s1${i}`, `p1${i}`, `o1${i}`),
+                quad(`s2${i}`, `p2${i}`, `o2${i}`),
               ]),
             },
           });

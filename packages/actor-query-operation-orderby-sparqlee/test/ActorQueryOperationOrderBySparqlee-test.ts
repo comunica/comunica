@@ -1,12 +1,11 @@
-import { literal, variable, namedNode } from "@rdfjs/data-model";
-import { ArrayIterator } from "asynciterator";
-import { Algebra } from "sparqlalgebrajs";
-import * as sparqlee from "sparqlee";
+import { ActorQueryOperation, Bindings } from '@comunica/bus-query-operation';
+import { Bus } from '@comunica/core';
+import { literal, variable, namedNode } from '@rdfjs/data-model';
+import { ArrayIterator } from 'asynciterator';
+import { Algebra } from 'sparqlalgebrajs';
+import * as sparqlee from 'sparqlee';
+import { ActorQueryOperationOrderBySparqlee } from '../lib/ActorQueryOperationOrderBySparqlee';
 const arrayifyStream = require('arrayify-stream');
-
-import { ActorQueryOperation, Bindings } from "@comunica/bus-query-operation";
-import { Bus } from "@comunica/core";
-import { ActorQueryOperationOrderBySparqlee } from "../lib/ActorQueryOperationOrderBySparqlee";
 
 describe('ActorQueryOperationOrderBySparqlee', () => {
   let bus: any;
@@ -24,7 +23,7 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
         metadata: () => Promise.resolve({ totalItems: 3 }),
         operated: arg,
         type: 'bindings',
-        variables: ['?a'],
+        variables: [ '?a' ],
       }),
     };
   });
@@ -35,14 +34,14 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
     });
 
     it('should be a ActorQueryOperationOrderBySparqlee constructor', () => {
-      expect(new (ActorQueryOperationOrderBySparqlee as any)({ name: 'actor', bus, mediatorQueryOperation }))
-        .toBeInstanceOf(ActorQueryOperationOrderBySparqlee as any);
-      expect(new (ActorQueryOperationOrderBySparqlee)({ name: 'actor', bus, mediatorQueryOperation }))
+      expect(new (<any> ActorQueryOperationOrderBySparqlee)({ name: 'actor', bus, mediatorQueryOperation }))
+        .toBeInstanceOf(<any> ActorQueryOperationOrderBySparqlee);
+      expect(new ActorQueryOperationOrderBySparqlee({ name: 'actor', bus, mediatorQueryOperation }))
         .toBeInstanceOf(ActorQueryOperation);
     });
 
     it('should not be able to create new ActorQueryOperationOrderBySparqlee objects without \'new\'', () => {
-      expect(() => { (ActorQueryOperationOrderBySparqlee as any)(); }).toThrow();
+      expect(() => { (<any> ActorQueryOperationOrderBySparqlee)(); }).toThrow();
     });
   });
 
@@ -57,32 +56,32 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
       actor = new ActorQueryOperationOrderBySparqlee({ name: 'actor', bus, mediatorQueryOperation });
       orderA = { type: 'expression', expressionType: 'term', term: variable('a') };
       orderB = { type: 'expression', expressionType: 'term', term: variable('b') };
-      descOrderA = { type: 'expression', expressionType: 'operator', operator: 'desc', args: [orderA] };
-      orderA1 = { args: [orderA], expressionType: 'operator', operator: 'strlen', type: 'expression' };
+      descOrderA = { type: 'expression', expressionType: 'operator', operator: 'desc', args: [ orderA ]};
+      orderA1 = { args: [ orderA ], expressionType: 'operator', operator: 'strlen', type: 'expression' };
     });
 
     it('should test on orderby', () => {
-      const op = { operation: { type: 'orderby', expressions: [] } };
+      const op = { operation: { type: 'orderby', expressions: []}};
       return expect(actor.test(op)).resolves.toBeTruthy();
     });
 
     it('should test on a descending orderby', () => {
-      const op = { operation: { type: 'orderby', expressions: [descOrderA] } };
+      const op = { operation: { type: 'orderby', expressions: [ descOrderA ]}};
       return expect(actor.test(op)).resolves.toBeTruthy();
     });
 
     it('should test on multiple expressions', () => {
-      const op = { operation: { type: 'orderby', expressions: [orderA, descOrderA, orderA1] } };
+      const op = { operation: { type: 'orderby', expressions: [ orderA, descOrderA, orderA1 ]}};
       return expect(actor.test(op)).resolves.toBeTruthy();
     });
 
     it('should not test on non-orderby', () => {
-      const op = { operation: { type: 'some-other-type' } };
+      const op = { operation: { type: 'some-other-type' }};
       return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
-    it('should run', async () => {
-      const op = { operation: { type: 'orderby', input: {}, expressions: [orderA] } };
+    it('should run', async() => {
+      const op = { operation: { type: 'orderby', input: {}, expressions: [ orderA ]}};
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
@@ -92,9 +91,9 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
       ]);
     });
 
-    it('should run with a window', async () => {
+    it('should run with a window', async() => {
       actor = new ActorQueryOperationOrderBySparqlee({ name: 'actor', bus, mediatorQueryOperation, window: 1 });
-      const op = { operation: { type: 'orderby', input: {}, expressions: [orderA] } };
+      const op = { operation: { type: 'orderby', input: {}, expressions: [ orderA ]}};
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
@@ -104,8 +103,8 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
       ]);
     });
 
-    it('should run operator expressions', async () => {
-      const op = { operation: { type: 'orderby', input: {}, expressions: [orderA1] } };
+    it('should run operator expressions', async() => {
+      const op = { operation: { type: 'orderby', input: {}, expressions: [ orderA1 ]}};
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
@@ -115,8 +114,8 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
       ]);
     });
 
-    it('should run descend', async () => {
-      const op = { operation: { type: 'orderby', input: {}, expressions: [descOrderA] } };
+    it('should run descend', async() => {
+      const op = { operation: { type: 'orderby', input: {}, expressions: [ descOrderA ]}};
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
@@ -126,8 +125,8 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
       ]);
     });
 
-    it('should ignore undefined results', async () => {
-      const op = { operation: { type: 'orderby', input: {}, expressions: [orderB] } };
+    it('should ignore undefined results', async() => {
+      const op = { operation: { type: 'orderby', input: {}, expressions: [ orderB ]}};
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
@@ -137,11 +136,11 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
       ]);
     });
 
-    it('should emit an error on a hard erroring expression', async (next) => {
+    it('should emit an error on a hard erroring expression', async next => {
       // Mock the expression error test so we can force 'a programming error' and test the branch
       spyOn(sparqlee, 'isExpressionError').and.returnValue(false);
-      const op = { operation: { type: 'orderby', input: {}, expressions: [orderB] } };
-      const output = await actor.run(op) as any;
+      const op = { operation: { type: 'orderby', input: {}, expressions: [ orderB ]}};
+      const output = <any> await actor.run(op);
       output.bindingsStream.on('error', () => next());
     });
   });
@@ -156,18 +155,17 @@ describe('ActorQueryOperationOrderBySparqlee with multiple comparators', () => {
     mediatorQueryOperation = {
       mediate: (arg: any) => Promise.resolve({
         bindingsStream: new ArrayIterator([
-          Bindings({ '?a': literal('Vermeulen'),'?b': literal('Jos') }),
-          Bindings({ '?a': literal("Bosmans"),'?b': literal('Jos')  }),
-          Bindings({ '?a': literal('Vermeulen'),'?b': literal('Ben') }),
+          Bindings({ '?a': literal('Vermeulen'), '?b': literal('Jos') }),
+          Bindings({ '?a': literal('Bosmans'), '?b': literal('Jos') }),
+          Bindings({ '?a': literal('Vermeulen'), '?b': literal('Ben') }),
         ]),
         metadata: () => Promise.resolve({ totalItems: 3 }),
         operated: arg,
         type: 'bindings',
-        variables: ['?a', '?b'],
+        variables: [ '?a', '?b' ],
       }),
     };
   });
-
 
   describe('An ActorQueryOperationOrderBySparqlee instance multiple comparators', () => {
     let actor: ActorQueryOperationOrderBySparqlee;
@@ -182,79 +180,78 @@ describe('ActorQueryOperationOrderBySparqlee with multiple comparators', () => {
       actor = new ActorQueryOperationOrderBySparqlee({ name: 'actor', bus, mediatorQueryOperation });
       orderA = { type: 'expression', expressionType: 'term', term: variable('a') };
       orderB = { type: 'expression', expressionType: 'term', term: variable('b') };
-      descOrderA = { type: 'expression', expressionType: 'operator', operator: 'desc', args: [orderA] };
-      descOrderB = { type: 'expression', expressionType: 'operator', operator: 'desc', args: [orderB] };
-      orderA1 = { args: [orderA], expressionType: 'operator', operator: 'strlen', type: 'expression' };
-      orderB1 = { args: [orderB], expressionType: 'operator', operator: 'strlen', type: 'expression' };
+      descOrderA = { type: 'expression', expressionType: 'operator', operator: 'desc', args: [ orderA ]};
+      descOrderB = { type: 'expression', expressionType: 'operator', operator: 'desc', args: [ orderB ]};
+      orderA1 = { args: [ orderA ], expressionType: 'operator', operator: 'strlen', type: 'expression' };
+      orderB1 = { args: [ orderB ], expressionType: 'operator', operator: 'strlen', type: 'expression' };
     });
 
-    it('should order A', async () => {
-      const op = { operation: { type: 'orderby', input: {}, expressions: [orderA] } };
+    it('should order A', async() => {
+      const op = { operation: { type: 'orderby', input: {}, expressions: [ orderA ]}};
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
-        Bindings({ '?a': literal("Bosmans"),'?b': literal('Jos') }),
-        Bindings({ '?a': literal('Vermeulen'),'?b': literal('Jos') }),
-        Bindings({ '?a': literal('Vermeulen'),'?b': literal('Ben') }),
+        Bindings({ '?a': literal('Bosmans'), '?b': literal('Jos') }),
+        Bindings({ '?a': literal('Vermeulen'), '?b': literal('Jos') }),
+        Bindings({ '?a': literal('Vermeulen'), '?b': literal('Ben') }),
       ]);
     });
 
-    it('should order B', async () => {
-      const op = { operation: { type: 'orderby', input: {}, expressions: [orderB] } };
+    it('should order B', async() => {
+      const op = { operation: { type: 'orderby', input: {}, expressions: [ orderB ]}};
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
-        Bindings({ '?a': literal('Vermeulen'),'?b': literal('Ben') }),
-        Bindings({ '?a': literal('Vermeulen'),'?b': literal('Jos') }),
-        Bindings({ '?a': literal("Bosmans"),'?b': literal('Jos') }),
+        Bindings({ '?a': literal('Vermeulen'), '?b': literal('Ben') }),
+        Bindings({ '?a': literal('Vermeulen'), '?b': literal('Jos') }),
+        Bindings({ '?a': literal('Bosmans'), '?b': literal('Jos') }),
       ]);
     });
 
-    it('should order priority B and secondary A, ascending', async () => {
-      const op = { operation: { type: 'orderby', input: {}, expressions: [orderB, orderA] } };
+    it('should order priority B and secondary A, ascending', async() => {
+      const op = { operation: { type: 'orderby', input: {}, expressions: [ orderB, orderA ]}};
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
-        Bindings({ '?a': literal('Vermeulen'),'?b': literal('Ben') }),
-        Bindings({ '?a': literal("Bosmans"),'?b': literal('Jos') }),
-        Bindings({ '?a': literal('Vermeulen'),'?b': literal('Jos') }),
+        Bindings({ '?a': literal('Vermeulen'), '?b': literal('Ben') }),
+        Bindings({ '?a': literal('Bosmans'), '?b': literal('Jos') }),
+        Bindings({ '?a': literal('Vermeulen'), '?b': literal('Jos') }),
       ]);
     });
 
-    it('descending order A multiple orderby', async () => {
-      const op = { operation: { type: 'orderby', input: {}, expressions: [descOrderA] } };
+    it('descending order A multiple orderby', async() => {
+      const op = { operation: { type: 'orderby', input: {}, expressions: [ descOrderA ]}};
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
-        Bindings({ '?a': literal('Vermeulen'),'?b': literal('Jos') }),
-        Bindings({ '?a': literal('Vermeulen'),'?b': literal('Ben') }),
-        Bindings({ '?a': literal("Bosmans"),'?b': literal('Jos')  }),
+        Bindings({ '?a': literal('Vermeulen'), '?b': literal('Jos') }),
+        Bindings({ '?a': literal('Vermeulen'), '?b': literal('Ben') }),
+        Bindings({ '?a': literal('Bosmans'), '?b': literal('Jos') }),
       ]);
     });
 
-    it('descending order B multiple orderby', async () => {
-      const op = { operation: { type: 'orderby', input: {}, expressions: [descOrderB] } };
+    it('descending order B multiple orderby', async() => {
+      const op = { operation: { type: 'orderby', input: {}, expressions: [ descOrderB ]}};
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
-        Bindings({ '?a': literal('Vermeulen'),'?b': literal('Jos') }),
-        Bindings({ '?a': literal("Bosmans"),'?b': literal('Jos')  }),
-        Bindings({ '?a': literal('Vermeulen'),'?b': literal('Ben') }),
+        Bindings({ '?a': literal('Vermeulen'), '?b': literal('Jos') }),
+        Bindings({ '?a': literal('Bosmans'), '?b': literal('Jos') }),
+        Bindings({ '?a': literal('Vermeulen'), '?b': literal('Ben') }),
       ]);
     });
 
-    it('strlen orderby with multiple comparators', async () => {
+    it('strlen orderby with multiple comparators', async() => {
       // Priority goes to orderB1 then we secondarily sort by orderA1
-      const op = { operation: { type: 'orderby', input: {}, expressions: [orderB1, orderA1] } };
+      const op = { operation: { type: 'orderby', input: {}, expressions: [ orderB1, orderA1 ]}};
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
-        Bindings({ '?a': literal("Bosmans"),'?b': literal('Jos')  }),
-        Bindings({ '?a': literal('Vermeulen'),'?b': literal('Jos') }),
-        Bindings({ '?a': literal('Vermeulen'),'?b': literal('Ben') })
+        Bindings({ '?a': literal('Bosmans'), '?b': literal('Jos') }),
+        Bindings({ '?a': literal('Vermeulen'), '?b': literal('Jos') }),
+        Bindings({ '?a': literal('Vermeulen'), '?b': literal('Ben') }),
       ]);
     });
-
   });
 });
 
@@ -267,14 +264,14 @@ describe('ActorQueryOperationOrderBySparqlee with integer type', () => {
     mediatorQueryOperation = {
       mediate: (arg: any) => Promise.resolve({
         bindingsStream: new ArrayIterator([
-          Bindings({ '?a': literal("1", namedNode("http://www.w3.org/2001/XMLSchema#integer")) }),
-          Bindings({ '?a': literal("11", namedNode("http://www.w3.org/2001/XMLSchema#integer")) }),
-          Bindings({ '?a': literal("2", namedNode("http://www.w3.org/2001/XMLSchema#integer")) }),
+          Bindings({ '?a': literal('1', namedNode('http://www.w3.org/2001/XMLSchema#integer')) }),
+          Bindings({ '?a': literal('11', namedNode('http://www.w3.org/2001/XMLSchema#integer')) }),
+          Bindings({ '?a': literal('2', namedNode('http://www.w3.org/2001/XMLSchema#integer')) }),
         ]),
         metadata: () => Promise.resolve({ totalItems: 3 }),
         operated: arg,
         type: 'bindings',
-        variables: ['?a'],
+        variables: [ '?a' ],
       }),
     };
   });
@@ -287,28 +284,28 @@ describe('ActorQueryOperationOrderBySparqlee with integer type', () => {
     beforeEach(() => {
       actor = new ActorQueryOperationOrderBySparqlee({ name: 'actor', bus, mediatorQueryOperation });
       orderA = { type: 'expression', expressionType: 'term', term: variable('a') };
-      descOrderA = { type: 'expression', expressionType: 'operator', operator: 'desc', args: [orderA] };
+      descOrderA = { type: 'expression', expressionType: 'operator', operator: 'desc', args: [ orderA ]};
     });
 
-    it('should sort as an ascending integer', async () => {
-      const op = { operation: { type: 'orderby', input: {}, expressions: [orderA] } };
+    it('should sort as an ascending integer', async() => {
+      const op = { operation: { type: 'orderby', input: {}, expressions: [ orderA ]}};
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
-        Bindings({ '?a': literal("1", namedNode("http://www.w3.org/2001/XMLSchema#integer")) }),
-        Bindings({ '?a': literal("2", namedNode("http://www.w3.org/2001/XMLSchema#integer")) }),
-        Bindings({ '?a': literal("11", namedNode("http://www.w3.org/2001/XMLSchema#integer")) }),
+        Bindings({ '?a': literal('1', namedNode('http://www.w3.org/2001/XMLSchema#integer')) }),
+        Bindings({ '?a': literal('2', namedNode('http://www.w3.org/2001/XMLSchema#integer')) }),
+        Bindings({ '?a': literal('11', namedNode('http://www.w3.org/2001/XMLSchema#integer')) }),
       ]);
     });
 
-    it('should sort as an descending integer', async () => {
-      const op = { operation: { type: 'orderby', input: {}, expressions: [descOrderA] } };
+    it('should sort as an descending integer', async() => {
+      const op = { operation: { type: 'orderby', input: {}, expressions: [ descOrderA ]}};
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
-        Bindings({ '?a': literal("11", namedNode("http://www.w3.org/2001/XMLSchema#integer")) }),
-        Bindings({ '?a': literal("2", namedNode("http://www.w3.org/2001/XMLSchema#integer")) }),
-        Bindings({ '?a': literal("1", namedNode("http://www.w3.org/2001/XMLSchema#integer")) }),
+        Bindings({ '?a': literal('11', namedNode('http://www.w3.org/2001/XMLSchema#integer')) }),
+        Bindings({ '?a': literal('2', namedNode('http://www.w3.org/2001/XMLSchema#integer')) }),
+        Bindings({ '?a': literal('1', namedNode('http://www.w3.org/2001/XMLSchema#integer')) }),
       ]);
     });
   });
@@ -323,14 +320,14 @@ describe('ActorQueryOperationOrderBySparqlee with double type', () => {
     mediatorQueryOperation = {
       mediate: (arg: any) => Promise.resolve({
         bindingsStream: new ArrayIterator([
-          Bindings({ '?a': literal("1.0e6", namedNode("http://www.w3.org/2001/XMLSchema#double")) }),
-          Bindings({ '?a': literal("11.0e6", namedNode("http://www.w3.org/2001/XMLSchema#double")) }),
-          Bindings({ '?a': literal("2.0e6", namedNode("http://www.w3.org/2001/XMLSchema#double")) }),
+          Bindings({ '?a': literal('1.0e6', namedNode('http://www.w3.org/2001/XMLSchema#double')) }),
+          Bindings({ '?a': literal('11.0e6', namedNode('http://www.w3.org/2001/XMLSchema#double')) }),
+          Bindings({ '?a': literal('2.0e6', namedNode('http://www.w3.org/2001/XMLSchema#double')) }),
         ]),
         metadata: () => Promise.resolve({ totalItems: 3 }),
         operated: arg,
         type: 'bindings',
-        variables: ['?a'],
+        variables: [ '?a' ],
       }),
     };
   });
@@ -343,28 +340,28 @@ describe('ActorQueryOperationOrderBySparqlee with double type', () => {
     beforeEach(() => {
       actor = new ActorQueryOperationOrderBySparqlee({ name: 'actor', bus, mediatorQueryOperation });
       orderA = { type: 'expression', expressionType: 'term', term: variable('a') };
-      descOrderA = { type: 'expression', expressionType: 'operator', operator: 'desc', args: [orderA] };
+      descOrderA = { type: 'expression', expressionType: 'operator', operator: 'desc', args: [ orderA ]};
     });
 
-    it('should sort as an ascending double', async () => {
-      const op = { operation: { type: 'orderby', input: {}, expressions: [orderA] } };
+    it('should sort as an ascending double', async() => {
+      const op = { operation: { type: 'orderby', input: {}, expressions: [ orderA ]}};
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
-        Bindings({ '?a': literal("1.0e6", namedNode("http://www.w3.org/2001/XMLSchema#double")) }),
-        Bindings({ '?a': literal("2.0e6", namedNode("http://www.w3.org/2001/XMLSchema#double")) }),
-        Bindings({ '?a': literal("11.0e6", namedNode("http://www.w3.org/2001/XMLSchema#double")) }),
+        Bindings({ '?a': literal('1.0e6', namedNode('http://www.w3.org/2001/XMLSchema#double')) }),
+        Bindings({ '?a': literal('2.0e6', namedNode('http://www.w3.org/2001/XMLSchema#double')) }),
+        Bindings({ '?a': literal('11.0e6', namedNode('http://www.w3.org/2001/XMLSchema#double')) }),
       ]);
     });
 
-    it('should sort as an descending double', async () => {
-      const op = { operation: { type: 'orderby', input: {}, expressions: [descOrderA] } };
+    it('should sort as an descending double', async() => {
+      const op = { operation: { type: 'orderby', input: {}, expressions: [ descOrderA ]}};
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
-        Bindings({ '?a': literal("11.0e6", namedNode("http://www.w3.org/2001/XMLSchema#double")) }),
-        Bindings({ '?a': literal("2.0e6", namedNode("http://www.w3.org/2001/XMLSchema#double")) }),
-        Bindings({ '?a': literal("1.0e6", namedNode("http://www.w3.org/2001/XMLSchema#double")) }),
+        Bindings({ '?a': literal('11.0e6', namedNode('http://www.w3.org/2001/XMLSchema#double')) }),
+        Bindings({ '?a': literal('2.0e6', namedNode('http://www.w3.org/2001/XMLSchema#double')) }),
+        Bindings({ '?a': literal('1.0e6', namedNode('http://www.w3.org/2001/XMLSchema#double')) }),
       ]);
     });
   });
@@ -379,14 +376,14 @@ describe('ActorQueryOperationOrderBySparqlee with decimal type', () => {
     mediatorQueryOperation = {
       mediate: (arg: any) => Promise.resolve({
         bindingsStream: new ArrayIterator([
-          Bindings({ '?a': literal("1", namedNode("http://www.w3.org/2001/XMLSchema#decimal")) }),
-          Bindings({ '?a': literal("11", namedNode("http://www.w3.org/2001/XMLSchema#decimal")) }),
-          Bindings({ '?a': literal("2", namedNode("http://www.w3.org/2001/XMLSchema#decimal")) }),
+          Bindings({ '?a': literal('1', namedNode('http://www.w3.org/2001/XMLSchema#decimal')) }),
+          Bindings({ '?a': literal('11', namedNode('http://www.w3.org/2001/XMLSchema#decimal')) }),
+          Bindings({ '?a': literal('2', namedNode('http://www.w3.org/2001/XMLSchema#decimal')) }),
         ]),
         metadata: () => Promise.resolve({ totalItems: 3 }),
         operated: arg,
         type: 'bindings',
-        variables: ['?a'],
+        variables: [ '?a' ],
       }),
     };
   });
@@ -399,28 +396,28 @@ describe('ActorQueryOperationOrderBySparqlee with decimal type', () => {
     beforeEach(() => {
       actor = new ActorQueryOperationOrderBySparqlee({ name: 'actor', bus, mediatorQueryOperation });
       orderA = { type: 'expression', expressionType: 'term', term: variable('a') };
-      descOrderA = { type: 'expression', expressionType: 'operator', operator: 'desc', args: [orderA] };
+      descOrderA = { type: 'expression', expressionType: 'operator', operator: 'desc', args: [ orderA ]};
     });
 
-    it('should sort as an ascending decimal', async () => {
-      const op = { operation: { type: 'orderby', input: {}, expressions: [orderA] } };
+    it('should sort as an ascending decimal', async() => {
+      const op = { operation: { type: 'orderby', input: {}, expressions: [ orderA ]}};
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
-        Bindings({ '?a': literal("1", namedNode("http://www.w3.org/2001/XMLSchema#decimal")) }),
-        Bindings({ '?a': literal("2", namedNode("http://www.w3.org/2001/XMLSchema#decimal")) }),
-        Bindings({ '?a': literal("11", namedNode("http://www.w3.org/2001/XMLSchema#decimal")) }),
+        Bindings({ '?a': literal('1', namedNode('http://www.w3.org/2001/XMLSchema#decimal')) }),
+        Bindings({ '?a': literal('2', namedNode('http://www.w3.org/2001/XMLSchema#decimal')) }),
+        Bindings({ '?a': literal('11', namedNode('http://www.w3.org/2001/XMLSchema#decimal')) }),
       ]);
     });
 
-    it('should sort as an descending decimal', async () => {
-      const op = { operation: { type: 'orderby', input: {}, expressions: [descOrderA] } };
+    it('should sort as an descending decimal', async() => {
+      const op = { operation: { type: 'orderby', input: {}, expressions: [ descOrderA ]}};
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
-        Bindings({ '?a': literal("11", namedNode("http://www.w3.org/2001/XMLSchema#decimal")) }),
-        Bindings({ '?a': literal("2", namedNode("http://www.w3.org/2001/XMLSchema#decimal")) }),
-        Bindings({ '?a': literal("1", namedNode("http://www.w3.org/2001/XMLSchema#decimal")) }),
+        Bindings({ '?a': literal('11', namedNode('http://www.w3.org/2001/XMLSchema#decimal')) }),
+        Bindings({ '?a': literal('2', namedNode('http://www.w3.org/2001/XMLSchema#decimal')) }),
+        Bindings({ '?a': literal('1', namedNode('http://www.w3.org/2001/XMLSchema#decimal')) }),
       ]);
     });
   });
@@ -435,14 +432,14 @@ describe('ActorQueryOperationOrderBySparqlee with float type', () => {
     mediatorQueryOperation = {
       mediate: (arg: any) => Promise.resolve({
         bindingsStream: new ArrayIterator([
-          Bindings({ '?a': literal("1.0e6", namedNode("http://www.w3.org/2001/XMLSchema#float")) }),
-          Bindings({ '?a': literal("11.0e6", namedNode("http://www.w3.org/2001/XMLSchema#float")) }),
-          Bindings({ '?a': literal("2.0e6", namedNode("http://www.w3.org/2001/XMLSchema#float")) }),
+          Bindings({ '?a': literal('1.0e6', namedNode('http://www.w3.org/2001/XMLSchema#float')) }),
+          Bindings({ '?a': literal('11.0e6', namedNode('http://www.w3.org/2001/XMLSchema#float')) }),
+          Bindings({ '?a': literal('2.0e6', namedNode('http://www.w3.org/2001/XMLSchema#float')) }),
         ]),
         metadata: () => Promise.resolve({ totalItems: 3 }),
         operated: arg,
         type: 'bindings',
-        variables: ['?a'],
+        variables: [ '?a' ],
       }),
     };
   });
@@ -455,33 +452,32 @@ describe('ActorQueryOperationOrderBySparqlee with float type', () => {
     beforeEach(() => {
       actor = new ActorQueryOperationOrderBySparqlee({ name: 'actor', bus, mediatorQueryOperation });
       orderA = { type: 'expression', expressionType: 'term', term: variable('a') };
-      descOrderA = { type: 'expression', expressionType: 'operator', operator: 'desc', args: [orderA] };
+      descOrderA = { type: 'expression', expressionType: 'operator', operator: 'desc', args: [ orderA ]};
     });
 
-    it('should sort as an ascending float', async () => {
-      const op = { operation: { type: 'orderby', input: {}, expressions: [orderA] } };
+    it('should sort as an ascending float', async() => {
+      const op = { operation: { type: 'orderby', input: {}, expressions: [ orderA ]}};
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
-        Bindings({ '?a': literal("1.0e6", namedNode("http://www.w3.org/2001/XMLSchema#float")) }),
-        Bindings({ '?a': literal("2.0e6", namedNode("http://www.w3.org/2001/XMLSchema#float")) }),
-        Bindings({ '?a': literal("11.0e6", namedNode("http://www.w3.org/2001/XMLSchema#float")) }),
+        Bindings({ '?a': literal('1.0e6', namedNode('http://www.w3.org/2001/XMLSchema#float')) }),
+        Bindings({ '?a': literal('2.0e6', namedNode('http://www.w3.org/2001/XMLSchema#float')) }),
+        Bindings({ '?a': literal('11.0e6', namedNode('http://www.w3.org/2001/XMLSchema#float')) }),
       ]);
     });
 
-    it('should sort as an descending float', async () => {
-      const op = { operation: { type: 'orderby', input: {}, expressions: [descOrderA] } };
+    it('should sort as an descending float', async() => {
+      const op = { operation: { type: 'orderby', input: {}, expressions: [ descOrderA ]}};
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
-        Bindings({ '?a': literal("11.0e6", namedNode("http://www.w3.org/2001/XMLSchema#float")) }),
-        Bindings({ '?a': literal("2.0e6", namedNode("http://www.w3.org/2001/XMLSchema#float")) }),
-        Bindings({ '?a': literal("1.0e6", namedNode("http://www.w3.org/2001/XMLSchema#float")) }),
+        Bindings({ '?a': literal('11.0e6', namedNode('http://www.w3.org/2001/XMLSchema#float')) }),
+        Bindings({ '?a': literal('2.0e6', namedNode('http://www.w3.org/2001/XMLSchema#float')) }),
+        Bindings({ '?a': literal('1.0e6', namedNode('http://www.w3.org/2001/XMLSchema#float')) }),
       ]);
     });
   });
 });
-
 
 describe('ActorQueryOperationOrderBySparqlee with mixed types', () => {
   let bus: any;
@@ -492,14 +488,14 @@ describe('ActorQueryOperationOrderBySparqlee with mixed types', () => {
     mediatorQueryOperation = {
       mediate: (arg: any) => Promise.resolve({
         bindingsStream: new ArrayIterator([
-          Bindings({ '?a': literal("1", namedNode("http://www.w3.org/2001/XMLSchema#integer")) }),
-          Bindings({ '?a': literal("11", namedNode("http://www.w3.org/2001/XMLSchema#string")) }),
-          Bindings({ '?a': literal("2.0e6", namedNode("http://www.w3.org/2001/XMLSchema#double")) }),
+          Bindings({ '?a': literal('1', namedNode('http://www.w3.org/2001/XMLSchema#integer')) }),
+          Bindings({ '?a': literal('11', namedNode('http://www.w3.org/2001/XMLSchema#string')) }),
+          Bindings({ '?a': literal('2.0e6', namedNode('http://www.w3.org/2001/XMLSchema#double')) }),
         ]),
         metadata: () => Promise.resolve({ totalItems: 3 }),
         operated: arg,
         type: 'bindings',
-        variables: ['?a'],
+        variables: [ '?a' ],
       }),
     };
   });
@@ -512,35 +508,34 @@ describe('ActorQueryOperationOrderBySparqlee with mixed types', () => {
     beforeEach(() => {
       actor = new ActorQueryOperationOrderBySparqlee({ name: 'actor', bus, mediatorQueryOperation });
       orderA = { type: 'expression', expressionType: 'term', term: variable('a') };
-      descOrderA = { type: 'expression', expressionType: 'operator', operator: 'desc', args: [orderA] };
+      descOrderA = { type: 'expression', expressionType: 'operator', operator: 'desc', args: [ orderA ]};
     });
 
-    it('should sort as an ascending integer', async () => {
-      const op = { operation: { type: 'orderby', input: {}, expressions: [orderA] } };
+    it('should sort as an ascending integer', async() => {
+      const op = { operation: { type: 'orderby', input: {}, expressions: [ orderA ]}};
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
-        Bindings({ '?a': literal("1", namedNode("http://www.w3.org/2001/XMLSchema#integer")) }),
-        Bindings({ '?a': literal("11", namedNode("http://www.w3.org/2001/XMLSchema#string")) }),
-        Bindings({ '?a': literal("2.0e6", namedNode("http://www.w3.org/2001/XMLSchema#double")) }),
+        Bindings({ '?a': literal('1', namedNode('http://www.w3.org/2001/XMLSchema#integer')) }),
+        Bindings({ '?a': literal('11', namedNode('http://www.w3.org/2001/XMLSchema#string')) }),
+        Bindings({ '?a': literal('2.0e6', namedNode('http://www.w3.org/2001/XMLSchema#double')) }),
       ]);
     });
 
-    it('should sort as an descending integer', async () => {
-      const op = { operation: { type: 'orderby', input: {}, expressions: [descOrderA] } };
+    it('should sort as an descending integer', async() => {
+      const op = { operation: { type: 'orderby', input: {}, expressions: [ descOrderA ]}};
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
-        Bindings({ '?a': literal("2.0e6", namedNode("http://www.w3.org/2001/XMLSchema#double")) }),
-        Bindings({ '?a': literal("11", namedNode("http://www.w3.org/2001/XMLSchema#string")) }),
-        Bindings({ '?a': literal("1", namedNode("http://www.w3.org/2001/XMLSchema#integer")) }),
+        Bindings({ '?a': literal('2.0e6', namedNode('http://www.w3.org/2001/XMLSchema#double')) }),
+        Bindings({ '?a': literal('11', namedNode('http://www.w3.org/2001/XMLSchema#string')) }),
+        Bindings({ '?a': literal('1', namedNode('http://www.w3.org/2001/XMLSchema#integer')) }),
       ]);
     });
   });
 });
 
-
-describe('ActorQueryOperationOrderBySparqlee with mixed types', () => {
+describe('Another ActorQueryOperationOrderBySparqlee with mixed types', () => {
   let bus: any;
   let mediatorQueryOperation: any;
 
@@ -549,14 +544,14 @@ describe('ActorQueryOperationOrderBySparqlee with mixed types', () => {
     mediatorQueryOperation = {
       mediate: (arg: any) => Promise.resolve({
         bindingsStream: new ArrayIterator([
-          Bindings({ '?a': variable("a") }),
-          Bindings({ '?a': variable("b")}),
-          Bindings({ '?a': variable("c")}),
+          Bindings({ '?a': variable('a') }),
+          Bindings({ '?a': variable('b') }),
+          Bindings({ '?a': variable('c') }),
         ]),
         metadata: () => Promise.resolve({ totalItems: 3 }),
         operated: arg,
         type: 'bindings',
-        variables: ['?a'],
+        variables: [ '?a' ],
       }),
     };
   });
@@ -569,17 +564,17 @@ describe('ActorQueryOperationOrderBySparqlee with mixed types', () => {
     beforeEach(() => {
       actor = new ActorQueryOperationOrderBySparqlee({ name: 'actor', bus, mediatorQueryOperation });
       orderA = { type: 'expression', expressionType: 'term', term: variable('a') };
-      descOrderA = { type: 'expression', expressionType: 'operator', operator: 'desc', args: [orderA] };
+      descOrderA = { type: 'expression', expressionType: 'operator', operator: 'desc', args: [ orderA ]};
     });
 
-    it('should not sort since its not a literal ascending', async () => {
-      try{
-        const op = { operation: { type: 'orderby', input: {}, expressions: [orderA] } };
+    it('should not sort since its not a literal ascending', async() => {
+      try {
+        const op = { operation: { type: 'orderby', input: {}, expressions: [ orderA ]}};
         const output = await actor.run(op);
         const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
         expect(array).toBeFalsy();
-      }catch(error){
-        // is valid
+      } catch (error) {
+        // Is valid
       }
     });
   });

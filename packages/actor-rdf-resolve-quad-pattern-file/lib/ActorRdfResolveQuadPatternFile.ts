@@ -1,40 +1,41 @@
-import {ActorHttpInvalidateListenable, IActionHttpInvalidate} from "@comunica/bus-http-invalidate";
-import {IActionRdfDereference, IActorRdfDereferenceOutput} from "@comunica/bus-rdf-dereference";
-import {ActorRdfResolveQuadPatternSource, IActionRdfResolveQuadPattern, IActorRdfResolveQuadPatternOutput,
-  ILazyQuadSource} from "@comunica/bus-rdf-resolve-quad-pattern";
-import {ActionContext, Actor, IActorArgs, IActorTest, Mediator} from "@comunica/core";
-import {AsyncIterator} from "asynciterator";
-import * as LRUCache from "lru-cache";
-import {Store} from "n3";
-import * as RDF from "rdf-js";
-import {N3StoreIterator} from "./N3StoreIterator";
-import {N3StoreQuadSource} from "./N3StoreQuadSource";
+import { ActorHttpInvalidateListenable, IActionHttpInvalidate } from '@comunica/bus-http-invalidate';
+import { IActionRdfDereference, IActorRdfDereferenceOutput } from '@comunica/bus-rdf-dereference';
+import { ActorRdfResolveQuadPatternSource, IActionRdfResolveQuadPattern, IActorRdfResolveQuadPatternOutput,
+  ILazyQuadSource } from '@comunica/bus-rdf-resolve-quad-pattern';
+import { ActionContext, Actor, IActorArgs, IActorTest, Mediator } from '@comunica/core';
+import { AsyncIterator } from 'asynciterator';
+import * as LRUCache from 'lru-cache';
+import { Store } from 'n3';
+import * as RDF from 'rdf-js';
+import { N3StoreIterator } from './N3StoreIterator';
+import { N3StoreQuadSource } from './N3StoreQuadSource';
 
 /**
  * A comunica File RDF Resolve Quad Pattern Actor.
  */
 export class ActorRdfResolveQuadPatternFile extends ActorRdfResolveQuadPatternSource
   implements IActorRdfResolveQuadPatternFileArgs {
-
   public readonly mediatorRdfDereference: Mediator<Actor<IActionRdfDereference, IActorTest, IActorRdfDereferenceOutput>,
-    IActionRdfDereference, IActorTest, IActorRdfDereferenceOutput>;
+  IActionRdfDereference, IActorTest, IActorRdfDereferenceOutput>;
+
   public readonly files?: string[];
   public readonly cacheSize: number;
   public readonly cache: LRUCache<string, Promise<Store>>;
   public readonly httpInvalidator: ActorHttpInvalidateListenable;
 
-  constructor(args: IActorRdfResolveQuadPatternFileArgs) {
+  public constructor(args: IActorRdfResolveQuadPatternFileArgs) {
     super(args);
     this.cache = new LRUCache<string, any>({ max: this.cacheSize });
     this.httpInvalidator.addInvalidateListener(
-      ({ url }: IActionHttpInvalidate) => url ? this.cache.del(url) : this.cache.reset());
+      ({ url }: IActionHttpInvalidate) => url ? this.cache.del(url) : this.cache.reset(),
+    );
   }
 
   public initializeFile(file: string, context?: ActionContext): Promise<any> {
     const storePromise = this.mediatorRdfDereference.mediate({ context, url: file })
       .then((page: IActorRdfDereferenceOutput) => new Promise<Store>((resolve, reject) => {
         const store: Store = new Store();
-        page.quads.on('data', (quad) => store.addQuad(quad));
+        page.quads.on('data', quad => store.addQuad(quad));
         page.quads.on('error', reject);
         page.quads.on('end', () => resolve(store));
       }));
@@ -43,13 +44,13 @@ export class ActorRdfResolveQuadPatternFile extends ActorRdfResolveQuadPatternSo
   }
 
   public async initialize(): Promise<any> {
-    (this.files || []).forEach((file) => this.initializeFile(file));
+    (this.files ?? []).forEach(file => this.initializeFile(file));
     return null;
   }
 
   public async test(action: IActionRdfResolveQuadPattern): Promise<IActorTest> {
     if (!this.hasContextSingleSourceOfType('file', action.context)) {
-      throw new Error(this.name + ' requires a single source with a file to be present in the context.');
+      throw new Error(`${this.name} requires a single source with a file to be present in the context.`);
     }
     return true;
   }
@@ -66,7 +67,7 @@ export class ActorRdfResolveQuadPatternFile extends ActorRdfResolveQuadPatternSo
   }
 
   protected getMetadata(source: ILazyQuadSource, pattern: RDF.BaseQuad, context: ActionContext,
-                        data: AsyncIterator<RDF.Quad> & RDF.Stream): () => Promise<{[id: string]: any}> {
+    data: AsyncIterator<RDF.Quad> & RDF.Stream): () => Promise<{[id: string]: any}> {
     return () => new Promise((resolve, reject) => {
       const file: string | undefined = this.getContextSourceUrl(this.getContextSource(context));
       if (!file) {
@@ -76,7 +77,7 @@ export class ActorRdfResolveQuadPatternFile extends ActorRdfResolveQuadPatternSo
       if (!cached) {
         throw new Error('Illegal state: Missing file source cache entry during metadata retrieval.');
       }
-      cached.then((store) => {
+      cached.then(store => {
         const totalItems: number = store.countQuads(
           N3StoreIterator.nullifyVariables(pattern.subject),
           N3StoreIterator.nullifyVariables(pattern.predicate),
@@ -87,7 +88,6 @@ export class ActorRdfResolveQuadPatternFile extends ActorRdfResolveQuadPatternSo
       }, reject);
     });
   }
-
 }
 
 export interface IActorRdfResolveQuadPatternFileArgs
@@ -96,7 +96,7 @@ export interface IActorRdfResolveQuadPatternFileArgs
    * The mediator to use for dereferencing files.
    */
   mediatorRdfDereference: Mediator<Actor<IActionRdfDereference, IActorTest, IActorRdfDereferenceOutput>,
-    IActionRdfDereference, IActorTest, IActorRdfDereferenceOutput>;
+  IActionRdfDereference, IActorTest, IActorRdfDereferenceOutput>;
   /**
    * The files to preload.
    */

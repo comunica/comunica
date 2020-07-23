@@ -1,4 +1,4 @@
-import {BunyanStreamProviderStdout} from "../lib/stream/BunyanStreamProviderStdout";
+import { BunyanStreamProviderStdout } from '../lib/stream/BunyanStreamProviderStdout';
 
 describe('BunyanStreamProviderStdout', () => {
   it('should create a stdout stream', () => {

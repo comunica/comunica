@@ -1,15 +1,13 @@
-import {ActionContext, Bus} from "@comunica/core";
-import {defaultGraph, namedNode} from "@rdfjs/data-model";
-import "jest-rdf";
-import * as RDF from "rdf-js";
-import {Readable} from "stream";
-import {RdfSourceQpf} from "../lib/RdfSourceQpf";
+import { Readable } from 'stream';
+import { ActionContext, Bus } from '@comunica/core';
+import { defaultGraph, namedNode } from '@rdfjs/data-model';
+import 'jest-rdf';
+import * as RDF from 'rdf-js';
+import { RdfSourceQpf } from '../lib/RdfSourceQpf';
 
 const arrayifyStream = require('arrayify-stream');
-const streamifyArray = require('streamify-array');
 const quad = require('rdf-quad');
-
-// tslint:disable:object-literal-sort-keys
+const streamifyArray = require('streamify-array');
 
 describe('RdfSourceQpf', () => {
   let source: RdfSourceQpf;
@@ -36,7 +34,7 @@ describe('RdfSourceQpf', () => {
     mediatorMetadataExtract = {
       mediate: (action: any) => new Promise((resolve, reject) => {
         action.metadata.on('error', reject);
-        action.metadata.on('end', () => resolve({ metadata: { next: 'NEXT' } }));
+        action.metadata.on('end', () => resolve({ metadata: { next: 'NEXT' }}));
       }),
     };
     mediatorRdfDereference = {
@@ -54,8 +52,8 @@ describe('RdfSourceQpf', () => {
       searchForms: {
         values: [
           {
-            getUri: (entries: any) => (entries.s || '_') + ',' + (entries.p || '_') + ',' + (entries.o || '_')
-              + ',' + (entries.g || '_'),
+            getUri: (entries: any) => `${entries.s || '_'},${entries.p || '_'},${entries.o || '_'
+            },${entries.g || '_'}`,
             mappings: {
               g: 'G',
               o: 'O',
@@ -111,7 +109,7 @@ describe('RdfSourceQpf', () => {
       expect((<any> s).initialQuads).toBeFalsy();
     });
 
-    it('should be constructable with initialQuads', async () => {
+    it('should be constructable with initialQuads', async() => {
       const s = new RdfSourceQpf(
         mediatorMetadata,
         mediatorMetadataExtract,
@@ -145,8 +143,8 @@ describe('RdfSourceQpf', () => {
         searchForms: {
           values: [
             {
-              getUri: (entries: any) => (entries.s || '_') + ',' + (entries.p || '_') + ',' + (entries.o || '_')
-                + ',' + (entries.g || '_'),
+              getUri: (entries: any) => `${entries.s || '_'},${entries.p || '_'},${entries.o || '_'
+              },${entries.g || '_'}`,
               mappings: {
                 o: 'O',
                 p: 'P',
@@ -189,31 +187,37 @@ describe('RdfSourceQpf', () => {
   describe('createFragmentUri', () => {
     it('should create a valid fragment URI with materialized terms', () => {
       return expect(source.createFragmentUri(metadata.searchForms.values[0],
-        namedNode('S'), namedNode('P'), namedNode('O'), namedNode('G')))
+        namedNode('S'),
+        namedNode('P'),
+        namedNode('O'),
+        namedNode('G')))
         .toEqual('S,P,O,G');
     });
 
     it('should create a valid fragment URI with only a few materialized terms', () => {
       return expect(source.createFragmentUri(metadata.searchForms.values[0],
-        undefined, namedNode('P'), undefined, namedNode('G')))
+        undefined,
+        namedNode('P'),
+        undefined,
+        namedNode('G')))
         .toEqual('_,P,_,G');
     });
   });
 
   describe('match', () => {
-    it('should throw on RegExp args', async () => {
-      return expect(() => source.match(new RegExp('.*')))
+    it('should throw on RegExp args', async() => {
+      expect(() => source.match(/.*/u))
         .toThrow(new Error('RdfSourceQpf does not support matching by regular expressions.'));
     });
 
-    it('should return a copy of the initial quads for the empty pattern', async () => {
-      return expect(await arrayifyStream(source.match())).toBeRdfIsomorphic([
+    it('should return a copy of the initial quads for the empty pattern', async() => {
+      expect(await arrayifyStream(source.match())).toBeRdfIsomorphic([
         quad('s1', 'p1', 'o1'),
         quad('s2', 'p2', 'o2'),
       ]);
     });
 
-    it('should emit metadata for the empty pattern', async () => {
+    it('should emit metadata for the empty pattern', async() => {
       const output = source.match();
       const metadataPromise = new Promise((resolve, reject) => {
         output.on('metadata', resolve);
@@ -223,16 +227,17 @@ describe('RdfSourceQpf', () => {
       expect(await metadataPromise).toBe(metadata);
     });
 
-    it('should return a copy of the initial quads for the empty pattern with the default graph', async () => {
-      return expect(await arrayifyStream(source.match(
-        undefined, undefined, undefined, defaultGraph())))
+    it('should return a copy of the initial quads for the empty pattern with the default graph', async() => {
+      expect(await arrayifyStream(source.match(
+        undefined, undefined, undefined, defaultGraph(),
+      )))
         .toBeRdfIsomorphic([
           quad('s1', 'p1', 'o1'),
           quad('s2', 'p2', 'o2'),
         ]);
     });
 
-    it('should return multiple copies of the initial quads for the empty pattern', async () => {
+    it('should return multiple copies of the initial quads for the empty pattern', async() => {
       expect(await arrayifyStream(source.match())).toBeRdfIsomorphic([
         quad('s1', 'p1', 'o1'),
         quad('s2', 'p2', 'o2'),
@@ -247,23 +252,26 @@ describe('RdfSourceQpf', () => {
       ]);
     });
 
-    it('should handle a non-empty pattern and filter only matching quads', async () => {
+    it('should handle a non-empty pattern and filter only matching quads', async() => {
       expect(await arrayifyStream(source.match(
-        namedNode('s1'), undefined, namedNode('o1'))))
+        namedNode('s1'), undefined, namedNode('o1'),
+      )))
         .toBeRdfIsomorphic([
           quad('s1', 'p1', 'o1'),
         ]);
       expect(await arrayifyStream(source.match(
-        namedNode('s2'), undefined, namedNode('o2'))))
+        namedNode('s2'), undefined, namedNode('o2'),
+      )))
         .toBeRdfIsomorphic([
           quad('s2', 'p2', 'o2'),
         ]);
       expect(await arrayifyStream(source.match(
-        namedNode('s3'), undefined, namedNode('o3'))))
+        namedNode('s3'), undefined, namedNode('o3'),
+      )))
         .toBeRdfIsomorphic([]);
     });
 
-    it('should emit metadata for a non-empty pattern', async () => {
+    it('should emit metadata for a non-empty pattern', async() => {
       const output = source.match(namedNode('s1'), undefined, namedNode('o1'));
       const metadataPromise = new Promise((resolve, reject) => {
         output.on('metadata', resolve);
@@ -275,23 +283,23 @@ describe('RdfSourceQpf', () => {
 
     // The following test is not applicable anymore.
     // Filtering with shared variables has been moved up into the quad pattern query operation actor
-    /*it('should handle a pattern with variables that occur multiple times in the pattern', async () => {
-      mediatorRdfDereference.mediate = (args) => Promise.resolve({
-        url: args.url,
-        quads: streamifyArray([
-          quad('s1', 'p1', 'o1'),
-          quad('s2', 'p2', 'o2'),
-          quad('t', 'p2', 't'),
-        ]),
-        triples: false,
-      });
-
-      expect(await arrayifyStream(source.match(
-        variable('v'), null, variable('v'))))
-        .toBeRdfIsomorphic([
-          quad('t', 'p2', 't'),
-        ]);
-    });*/
+    // it('should handle a pattern with variables that occur multiple times in the pattern', async () => {
+    // mediatorRdfDereference.mediate = (args) => Promise.resolve({
+    //     url: args.url,
+    //     quads: streamifyArray([
+    //       quad('s1', 'p1', 'o1'),
+    //       quad('s2', 'p2', 'o2'),
+    //       quad('t', 'p2', 't'),
+    //     ]),
+    //     triples: false,
+    // });
+    //
+    // expect(await arrayifyStream(source.match(
+    //     variable('v'), null, variable('v'))))
+    //     .toBeRdfIsomorphic([
+    //       quad('t', 'p2', 't'),
+    //     ]);
+    // });
 
     it('should delegate errors from the RDF dereference stream', () => {
       const quads = new Readable();
@@ -307,7 +315,7 @@ describe('RdfSourceQpf', () => {
       const error = new Error('a');
       return new Promise((resolve, reject) => {
         const output: RDF.Stream = source.match(S, P, O, G);
-        output.on('error', (e) => {
+        output.on('error', e => {
           expect(e).toEqual(error);
           resolve();
         });
@@ -329,7 +337,7 @@ describe('RdfSourceQpf', () => {
       const error = new Error('a');
       return new Promise((resolve, reject) => {
         const output: RDF.Stream = source.match(S, P, O, G);
-        output.on('error', (e) => {
+        output.on('error', e => {
           expect(e).toEqual(error);
           resolve();
         });
@@ -338,9 +346,9 @@ describe('RdfSourceQpf', () => {
       });
     });
 
-    it('should ignore errors from the metadata extract mediator', async () => {
+    it('should ignore errors from the metadata extract mediator', async() => {
       mediatorMetadataExtract.mediate = () => Promise.reject(new Error('abc'));
-      return expect(await arrayifyStream(source.match())).toBeRdfIsomorphic([
+      expect(await arrayifyStream(source.match())).toBeRdfIsomorphic([
         quad('s1', 'p1', 'o1'),
         quad('s2', 'p2', 'o2'),
       ]);
@@ -349,7 +357,6 @@ describe('RdfSourceQpf', () => {
 });
 
 describe('RdfSourceQpf with a custom default graph', () => {
-
   let source: RdfSourceQpf;
   let bus: any;
   let metadata: any;
@@ -372,7 +379,7 @@ describe('RdfSourceQpf with a custom default graph', () => {
       }),
     };
     mediatorMetadataExtract = {
-      mediate: () => Promise.resolve({ metadata: { next: 'NEXT' } }),
+      mediate: () => Promise.resolve({ metadata: { next: 'NEXT' }}),
     };
     mediatorRdfDereference = {
       mediate: (args: any) => Promise.resolve({
@@ -394,8 +401,8 @@ describe('RdfSourceQpf with a custom default graph', () => {
       searchForms: {
         values: [
           {
-            getUri: (entries: any) => (entries.s || '_') + ',' + (entries.p || '_') + ',' + (entries.o || '_')
-              + ',' + (entries.g || '_'),
+            getUri: (entries: any) => `${entries.s || '_'},${entries.p || '_'},${entries.o || '_'
+            },${entries.g || '_'}`,
             mappings: {
               g: 'G',
               o: 'O',
@@ -434,79 +441,91 @@ describe('RdfSourceQpf with a custom default graph', () => {
   });
 
   describe('match', () => {
-    it('should return quads in the overridden default graph', async () => {
+    it('should return quads in the overridden default graph', async() => {
       expect(await arrayifyStream(source.match(
-        namedNode('s1'), undefined, namedNode('o1'), defaultGraph())))
+        namedNode('s1'), undefined, namedNode('o1'), defaultGraph(),
+      )))
         .toBeRdfIsomorphic([
           quad('s1', 'p1', 'o1'),
         ]);
       expect(await arrayifyStream(source.match(
-        namedNode('s2'), undefined, namedNode('o2'), defaultGraph())))
+        namedNode('s2'), undefined, namedNode('o2'), defaultGraph(),
+      )))
         .toBeRdfIsomorphic([
           quad('s2', 'p2', 'o2'),
         ]);
       expect(await arrayifyStream(source.match(
-        namedNode('s3'), undefined, namedNode('o3'), defaultGraph())))
+        namedNode('s3'), undefined, namedNode('o3'), defaultGraph(),
+      )))
         .toBeRdfIsomorphic([]);
     });
 
-    it('should return quads in all graphs', async () => {
+    it('should return quads in all graphs', async() => {
       expect(await arrayifyStream(source.match(
-        namedNode('s1'), undefined, namedNode('o1'), undefined)))
+        namedNode('s1'), undefined, namedNode('o1'), undefined,
+      )))
         .toBeRdfIsomorphic([
           quad('s1', 'p1', 'o1'),
           quad('s1', 'p3', 'o1', 'CUSTOM_GRAPH'),
         ]);
       expect(await arrayifyStream(source.match(
-        namedNode('s2'), undefined, namedNode('o2'), undefined)))
+        namedNode('s2'), undefined, namedNode('o2'), undefined,
+      )))
         .toBeRdfIsomorphic([
           quad('s2', 'p2', 'o2'),
           quad('s2', 'p4', 'o2', 'CUSTOM_GRAPH'),
         ]);
       expect(await arrayifyStream(source.match(
-        namedNode('s3'), undefined, namedNode('o3'), undefined)))
+        namedNode('s3'), undefined, namedNode('o3'), undefined,
+      )))
         .toBeRdfIsomorphic([]);
     });
 
-    it('should return quads in a custom graph', async () => {
+    it('should return quads in a custom graph', async() => {
       expect(await arrayifyStream(source.match(
-        namedNode('s1'), undefined, namedNode('o1'), namedNode('CUSTOM_GRAPH'))))
+        namedNode('s1'), undefined, namedNode('o1'), namedNode('CUSTOM_GRAPH'),
+      )))
         .toBeRdfIsomorphic([
           quad('s1', 'p3', 'o1', 'CUSTOM_GRAPH'),
         ]);
       expect(await arrayifyStream(source.match(
-        namedNode('s2'), undefined, namedNode('o2'), namedNode('CUSTOM_GRAPH'))))
+        namedNode('s2'), undefined, namedNode('o2'), namedNode('CUSTOM_GRAPH'),
+      )))
         .toBeRdfIsomorphic([
           quad('s2', 'p4', 'o2', 'CUSTOM_GRAPH'),
         ]);
       expect(await arrayifyStream(source.match(
-        namedNode('s3'), undefined, namedNode('o3'), namedNode('CUSTOM_GRAPH'))))
+        namedNode('s3'), undefined, namedNode('o3'), namedNode('CUSTOM_GRAPH'),
+      )))
         .toBeRdfIsomorphic([]);
     });
 
-    it('should not modify an overridden default graph in the subject position', async () => {
+    it('should not modify an overridden default graph in the subject position', async() => {
       expect(await arrayifyStream(source.match(
-        undefined, namedNode('defaultInSubject'), undefined, undefined)))
+        undefined, namedNode('defaultInSubject'), undefined, undefined,
+      )))
         .toBeRdfIsomorphic([
           quad('DEFAULT_GRAPH', 'defaultInSubject', 'o2', defaultGraph()),
         ]);
     });
 
-    it('should also return triples from the actual default graph', async () => {
+    it('should also return triples from the actual default graph', async() => {
       expect(await arrayifyStream(source.match(
-        undefined, namedNode('actualDefaultGraph'), undefined, undefined)))
+        undefined, namedNode('actualDefaultGraph'), undefined, undefined,
+      )))
         .toBeRdfIsomorphic([
           quad('s1-', 'actualDefaultGraph', 'o1', defaultGraph()),
         ]);
       expect(await arrayifyStream(source.match(
-        undefined, namedNode('actualDefaultGraph'), undefined, defaultGraph())))
+        undefined, namedNode('actualDefaultGraph'), undefined, defaultGraph(),
+      )))
         .toBeRdfIsomorphic([
           quad('s1-', 'actualDefaultGraph', 'o1', defaultGraph()),
         ]);
     });
 
-    it('should return a mapped copy of the initial quads for the empty pattern', async () => {
-      return expect(await arrayifyStream(source.match())).toBeRdfIsomorphic([
+    it('should return a mapped copy of the initial quads for the empty pattern', async() => {
+      expect(await arrayifyStream(source.match())).toBeRdfIsomorphic([
         quad('s1', 'p1', 'o1', defaultGraph()),
         quad('s2', 'p2', 'o2', defaultGraph()),
         quad('s1', 'p3', 'o1', 'CUSTOM_GRAPH'),
@@ -515,6 +534,5 @@ describe('RdfSourceQpf with a custom default graph', () => {
         quad('s1-', 'actualDefaultGraph', 'o1'),
       ]);
     });
-  })
-
+  });
 });

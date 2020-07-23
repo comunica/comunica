@@ -1,6 +1,6 @@
-import {Actor, IAction, IActorArgs, IActorOutput, IActorTest} from "@comunica/core";
-import {AsyncIterator} from "asynciterator";
-import * as RDF from "rdf-js";
+import { Actor, IAction, IActorArgs, IActorOutput, IActorTest } from '@comunica/core';
+import { AsyncIterator } from 'asynciterator';
+import * as RDF from 'rdf-js';
 
 /**
  * A base actor for dereferencing URLs to quad streams and following pages.
@@ -15,11 +15,9 @@ import * as RDF from "rdf-js";
  */
 export abstract class ActorRdfDereferencePaged
   extends Actor<IActionRdfDereferencePaged, IActorTest, IActorRdfDereferencePagedOutput> {
-
-  constructor(args: IActorArgs<IActionRdfDereferencePaged, IActorTest, IActorRdfDereferencePagedOutput>) {
+  public constructor(args: IActorArgs<IActionRdfDereferencePaged, IActorTest, IActorRdfDereferencePagedOutput>) {
     super(args);
   }
-
 }
 
 export interface IActionRdfDereferencePaged extends IAction {

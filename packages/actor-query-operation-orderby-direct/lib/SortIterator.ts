@@ -1,14 +1,12 @@
+import { AsyncIterator, TransformIterator } from 'asynciterator';
 
-import {AsyncIterator, TransformIterator} from "asynciterator";
-
-// based on https://github.com/LinkedDataFragments/Client.js/blob/master/lib/sparql/SortIterator.js
+// Based on https://github.com/LinkedDataFragments/Client.js/blob/master/lib/sparql/SortIterator.js
 export class SortIterator<T> extends TransformIterator<T, T> {
+  private readonly windowLength: number;
+  private readonly sort: (left: T, right: T) => number;
+  private readonly sorted: T[];
 
-  private windowLength: number;
-  private sort: (left: T, right: T) => number;
-  private sorted: T[];
-
-  constructor(source: AsyncIterator<T>, sort: (left: T, right: T) => number, options?: any) {
+  public constructor(source: AsyncIterator<T>, sort: (left: T, right: T) => number, options?: any) {
     super(source, options);
 
     // The `window` parameter indicates the length of the sliding window to apply sorting
@@ -19,9 +17,9 @@ export class SortIterator<T> extends TransformIterator<T, T> {
   }
 
   // Reads the smallest item in the current sorting window
-  public _read(count: number, done: () => void) {
+  public _read(count: number, done: () => void): void {
     let item;
-    let length = this.sorted.length;
+    let { length } = this.sorted;
     // Try to read items until we reach the desired window length
     while (this.source && length !== this.windowLength) {
       item = this.source.read();
@@ -37,7 +35,7 @@ export class SortIterator<T> extends TransformIterator<T, T> {
         mid = Math.trunc((left + right) / 2);
         order = this.sort(item, this.sorted[mid]);
         if (order < 0) {
-          left  = mid + 1;
+          left = mid + 1;
         } else if (order > 0) {
           right = mid - 1;
         } else {
@@ -56,8 +54,8 @@ export class SortIterator<T> extends TransformIterator<T, T> {
   }
 
   // Flushes remaining data after the source has ended
-  public _flush(done: () => void) {
-    let length = this.sorted.length;
+  public _flush(done: () => void): void {
+    let { length } = this.sorted;
     while (length--) {
       this._push(<T> this.sorted.pop());
     }

@@ -1,8 +1,8 @@
-import {ActorRdfParseJsonLd} from "@comunica/actor-rdf-parse-jsonld";
-import {ActionContext, Bus} from "@comunica/core";
-import "jest-rdf";
-import {ActorRdfParseHtmlScript} from "../lib/ActorRdfParseHtmlScript";
-import {HtmlScriptListener} from "../lib/HtmlScriptListener";
+import { ActorRdfParseJsonLd } from '@comunica/actor-rdf-parse-jsonld';
+import { ActionContext, Bus } from '@comunica/core';
+import 'jest-rdf';
+import { ActorRdfParseHtmlScript } from '../lib/ActorRdfParseHtmlScript';
+import { HtmlScriptListener } from '../lib/HtmlScriptListener';
 
 const quad = require('rdf-quad');
 
@@ -17,26 +17,26 @@ describe('ActorRdfParseHtml', () => {
     bus = new Bus({ name: 'bus' });
     const mediatorHttp: any = null;
     jsonldParser = new ActorRdfParseJsonLd(
-      { bus, mediaTypes: { 'application/ld+json': 1.0 }, name: 'jsonldParser', mediatorHttp });
+      { bus, mediaTypes: { 'application/ld+json': 1 }, name: 'jsonldParser', mediatorHttp },
+    );
 
     mediator = {
-      mediate: async (action: any) => {
+      async mediate(action: any) {
         if (action.mediaTypes === true) {
           return Promise.resolve({ mediaTypes: {
-            "application/ld+json": 1,
-          } });
-        } else {
-          action.input = action.handle.input;
-          action.baseIRI = action.handle.baseIRI;
+            'application/ld+json': 1,
+          }});
+        }
+        action.input = action.handle.input;
+        action.baseIRI = action.handle.baseIRI;
 
-          let output: any;
-          switch (action.handleMediaType) {
-          case "application/ld+json":
+        let output: any;
+        switch (action.handleMediaType) {
+          case 'application/ld+json':
             output = await jsonldParser.runHandle(action, action.handleMediaType, context);
             break;
-          }
-          return Promise.resolve({ handle: { quads: output.quads } });
         }
+        return Promise.resolve({ handle: { quads: output.quads }});
       },
     };
 
@@ -49,7 +49,7 @@ describe('ActorRdfParseHtml', () => {
     });
 
     it('should be a ActorRdfParseHtmlScript constructor', () => {
-      expect(new (<any> ActorRdfParseHtmlScript)({name: 'actor', bus, mediaTypes: {}}))
+      expect(new (<any> ActorRdfParseHtmlScript)({ name: 'actor', bus, mediaTypes: {}}))
         .toBeInstanceOf(ActorRdfParseHtmlScript);
     });
 
@@ -73,8 +73,8 @@ describe('ActorRdfParseHtml', () => {
     });
 
     describe('test', () => {
-      it('should return true', async () => {
-        return expect(await actor.test(<any> {})).toBeTruthy();
+      it('should return true', async() => {
+        expect(await actor.test(<any> {})).toBeTruthy();
       });
     });
 
@@ -98,18 +98,18 @@ describe('ActorRdfParseHtml', () => {
         action = { baseIRI, headers, emit, error, end };
       });
 
-      it('should return an HtmlScriptListener', async () => {
+      it('should return an HtmlScriptListener', async() => {
         const listener = (await actor.run(action)).htmlParseListener;
         expect(listener).toBeInstanceOf(HtmlScriptListener);
       });
 
       describe('the html listener', () => {
         let listener: any;
-        beforeEach(async () => {
+        beforeEach(async() => {
           listener = (await actor.run(action)).htmlParseListener;
         });
 
-        it('should handle a jsonld script tag', async () => {
+        it('should handle a jsonld script tag', async() => {
           listener.onTagOpen('html', {});
           listener.onTagOpen('body', {});
           listener.onTagOpen('script', { type: 'application/ld+json' });
@@ -127,14 +127,16 @@ describe('ActorRdfParseHtml', () => {
 
           expect(emit).toHaveBeenCalledTimes(2);
           expect(emit).toHaveBeenCalledWith(
-            quad('http://example.org/a', 'http://example.org/b', '"http://example.org/c"'));
+            quad('http://example.org/a', 'http://example.org/b', '"http://example.org/c"'),
+          );
           expect(emit).toHaveBeenCalledWith(
-            quad('http://example.org/a', 'http://example.org/d', '"http://example.org/e"'));
+            quad('http://example.org/a', 'http://example.org/d', '"http://example.org/e"'),
+          );
           expect(error).not.toHaveBeenCalled();
           expect(end).toHaveBeenCalledTimes(1);
         });
 
-        it('should handle two jsonld script tags', async () => {
+        it('should handle two jsonld script tags', async() => {
           listener.onTagOpen('html', {});
           listener.onTagOpen('body', {});
           listener.onTagOpen('script', { type: 'application/ld+json' });
@@ -159,18 +161,22 @@ describe('ActorRdfParseHtml', () => {
 
           expect(emit).toHaveBeenCalledTimes(4);
           expect(emit).toHaveBeenCalledWith(
-            quad('http://example.org/a', 'http://example.org/b', '"http://example.org/c"'));
+            quad('http://example.org/a', 'http://example.org/b', '"http://example.org/c"'),
+          );
           expect(emit).toHaveBeenCalledWith(
-            quad('http://example.org/a', 'http://example.org/d', '"http://example.org/e"'));
+            quad('http://example.org/a', 'http://example.org/d', '"http://example.org/e"'),
+          );
           expect(emit).toHaveBeenCalledWith(
-            quad('http://example.org/A', 'http://example.org/b', '"http://example.org/c"'));
+            quad('http://example.org/A', 'http://example.org/b', '"http://example.org/c"'),
+          );
           expect(emit).toHaveBeenCalledWith(
-            quad('http://example.org/A', 'http://example.org/d', '"http://example.org/e"'));
+            quad('http://example.org/A', 'http://example.org/d', '"http://example.org/e"'),
+          );
           expect(error).not.toHaveBeenCalled();
           expect(end).toHaveBeenCalledTimes(1);
         });
 
-        it('should handle two jsonld script tags in graphs', async () => {
+        it('should handle two jsonld script tags in graphs', async() => {
           listener.onTagOpen('html', {});
           listener.onTagOpen('body', {});
           listener.onTagOpen('script', { type: 'application/ld+json' });
@@ -199,18 +205,22 @@ describe('ActorRdfParseHtml', () => {
 
           expect(emit).toHaveBeenCalledTimes(4);
           expect(emit).toHaveBeenCalledWith(
-            quad('http://example.org/a', 'http://example.org/b', '"http://example.org/c"', '_:b3'));
+            quad('http://example.org/a', 'http://example.org/b', '"http://example.org/c"', '_:b3'),
+          );
           expect(emit).toHaveBeenCalledWith(
-            quad('http://example.org/a', 'http://example.org/d', '"http://example.org/e"', '_:b3'));
+            quad('http://example.org/a', 'http://example.org/d', '"http://example.org/e"', '_:b3'),
+          );
           expect(emit).toHaveBeenCalledWith(
-            quad('http://example.org/A', 'http://example.org/b', '"http://example.org/c"', '_:b4'));
+            quad('http://example.org/A', 'http://example.org/b', '"http://example.org/c"', '_:b4'),
+          );
           expect(emit).toHaveBeenCalledWith(
-            quad('http://example.org/A', 'http://example.org/d', '"http://example.org/e"', '_:b4'));
+            quad('http://example.org/A', 'http://example.org/d', '"http://example.org/e"', '_:b4'),
+          );
           expect(error).not.toHaveBeenCalled();
           expect(end).toHaveBeenCalledTimes(1);
         });
 
-        it('should handle a jsonld script tag and inherit baseIRI', async () => {
+        it('should handle a jsonld script tag and inherit baseIRI', async() => {
           listener.onTagOpen('html', {});
           listener.onTagOpen('body', {});
           listener.onTagOpen('script', { type: 'application/ld+json' });
@@ -228,14 +238,16 @@ describe('ActorRdfParseHtml', () => {
 
           expect(emit).toHaveBeenCalledTimes(2);
           expect(emit).toHaveBeenCalledWith(
-            quad('http://example.org/', 'http://example.org/b', '"http://example.org/c"'));
+            quad('http://example.org/', 'http://example.org/b', '"http://example.org/c"'),
+          );
           expect(emit).toHaveBeenCalledWith(
-            quad('http://example.org/', 'http://example.org/d', '"http://example.org/e"'));
+            quad('http://example.org/', 'http://example.org/d', '"http://example.org/e"'),
+          );
           expect(error).not.toHaveBeenCalled();
           expect(end).toHaveBeenCalledTimes(1);
         });
 
-        it('should ignore an unknown script tag', async () => {
+        it('should ignore an unknown script tag', async() => {
           listener.onTagOpen('html', {});
           listener.onTagOpen('body', {});
           listener.onTagOpen('script', { type: 'text/plain' });
@@ -256,7 +268,7 @@ describe('ActorRdfParseHtml', () => {
           expect(end).toHaveBeenCalledTimes(1);
         });
 
-        it('should ignore an script tag without type', async () => {
+        it('should ignore an script tag without type', async() => {
           listener.onTagOpen('html', {});
           listener.onTagOpen('body', {});
           listener.onTagOpen('script', {});
@@ -277,7 +289,7 @@ describe('ActorRdfParseHtml', () => {
           expect(end).toHaveBeenCalledTimes(1);
         });
 
-        it('should delegate error events', async () => {
+        it('should delegate error events', async() => {
           listener.onTagOpen('html', {});
           listener.onTagOpen('body', {});
           listener.onTagOpen('script', { type: 'application/ld+json' });
@@ -291,10 +303,10 @@ describe('ActorRdfParseHtml', () => {
           listener.onTagClose();
           listener.onEnd();
 
-          return expect(onEnd).rejects.toThrow(new Error('Unexpected STRING("@id") in state COLON'));
+          await expect(onEnd).rejects.toThrow(new Error('Unexpected STRING("@id") in state COLON'));
         });
 
-        it('should handle an absolute base tag', async () => {
+        it('should handle an absolute base tag', async() => {
           listener.onTagOpen('html', {});
           listener.onTagOpen('body', {});
           listener.onTagOpen('base', { href: 'http://base.org/' });
@@ -313,14 +325,16 @@ describe('ActorRdfParseHtml', () => {
 
           expect(emit).toHaveBeenCalledTimes(2);
           expect(emit).toHaveBeenCalledWith(
-            quad('http://base.org/a', 'http://example.org/b', '"http://example.org/c"'));
+            quad('http://base.org/a', 'http://example.org/b', '"http://example.org/c"'),
+          );
           expect(emit).toHaveBeenCalledWith(
-            quad('http://base.org/a', 'http://example.org/d', '"http://example.org/e"'));
+            quad('http://base.org/a', 'http://example.org/d', '"http://example.org/e"'),
+          );
           expect(error).not.toHaveBeenCalled();
           expect(end).toHaveBeenCalledTimes(1);
         });
 
-        it('should handle a relative base tag', async () => {
+        it('should handle a relative base tag', async() => {
           listener.onTagOpen('html', {});
           listener.onTagOpen('body', {});
           listener.onTagOpen('base', { href: 'subBase/' });
@@ -339,9 +353,11 @@ describe('ActorRdfParseHtml', () => {
 
           expect(emit).toHaveBeenCalledTimes(2);
           expect(emit).toHaveBeenCalledWith(
-            quad('http://example.org/subBase/a', 'http://example.org/b', '"http://example.org/c"'));
+            quad('http://example.org/subBase/a', 'http://example.org/b', '"http://example.org/c"'),
+          );
           expect(emit).toHaveBeenCalledWith(
-            quad('http://example.org/subBase/a', 'http://example.org/d', '"http://example.org/e"'));
+            quad('http://example.org/subBase/a', 'http://example.org/d', '"http://example.org/e"'),
+          );
           expect(error).not.toHaveBeenCalled();
           expect(end).toHaveBeenCalledTimes(1);
         });
@@ -365,24 +381,24 @@ describe('ActorRdfParseHtml', () => {
           end = jest.fn(resolve);
           error = jest.fn(reject);
         });
-        action = {baseIRI, headers, emit, error, end};
+        action = { baseIRI, headers, emit, error, end };
       });
 
-      it('should return an HtmlScriptListener', async () => {
+      it('should return an HtmlScriptListener', async() => {
         const listener = (await actor.run(action)).htmlParseListener;
         expect(listener).toBeInstanceOf(HtmlScriptListener);
       });
 
       describe('the html listener', () => {
         let listener: any;
-        beforeEach(async () => {
+        beforeEach(async() => {
           listener = (await actor.run(action)).htmlParseListener;
         });
 
-        it('should handle a jsonld script tag with the given id', async () => {
+        it('should handle a jsonld script tag with the given id', async() => {
           listener.onTagOpen('html', {});
           listener.onTagOpen('body', {});
-          listener.onTagOpen('script', {type: 'application/ld+json', id: 'scriptId'});
+          listener.onTagOpen('script', { type: 'application/ld+json', id: 'scriptId' });
           listener.onText(`{
             "@id": "http://example.org/a",
             "http://example.org/b": "http://example.org/c",
@@ -397,31 +413,33 @@ describe('ActorRdfParseHtml', () => {
 
           expect(emit).toHaveBeenCalledTimes(2);
           expect(emit).toHaveBeenCalledWith(
-            quad('http://example.org/a', 'http://example.org/b', '"http://example.org/c"'));
+            quad('http://example.org/a', 'http://example.org/b', '"http://example.org/c"'),
+          );
           expect(emit).toHaveBeenCalledWith(
-            quad('http://example.org/a', 'http://example.org/d', '"http://example.org/e"'));
+            quad('http://example.org/a', 'http://example.org/d', '"http://example.org/e"'),
+          );
           expect(error).not.toHaveBeenCalled();
           expect(end).toHaveBeenCalledTimes(1);
         });
 
-        it('should handle a jsonld script tag with the given id and ignore others', async () => {
+        it('should handle a jsonld script tag with the given id and ignore others', async() => {
           listener.onTagOpen('html', {});
           listener.onTagOpen('body', {});
-          listener.onTagOpen('script', {type: 'application/ld+json', id: 'scriptIdIgnore1'});
+          listener.onTagOpen('script', { type: 'application/ld+json', id: 'scriptIdIgnore1' });
           listener.onText(`{
             "@id": "http://example.org/A1",
             "http://example.org/b": "http://example.org/c",
             "http://example.org/d": "http://example.org/e"
         }`);
           listener.onTagClose();
-          listener.onTagOpen('script', {type: 'application/ld+json', id: 'scriptId'});
+          listener.onTagOpen('script', { type: 'application/ld+json', id: 'scriptId' });
           listener.onText(`{
             "@id": "http://example.org/a",
             "http://example.org/b": "http://example.org/c",
             "http://example.org/d": "http://example.org/e"
         }`);
           listener.onTagClose();
-          listener.onTagOpen('script', {type: 'application/ld+json', id: 'scriptIdIgnore2'});
+          listener.onTagOpen('script', { type: 'application/ld+json', id: 'scriptIdIgnore2' });
           listener.onText(`{
             "@id": "http://example.org/A2",
             "http://example.org/b": "http://example.org/c",
@@ -436,17 +454,19 @@ describe('ActorRdfParseHtml', () => {
 
           expect(emit).toHaveBeenCalledTimes(2);
           expect(emit).toHaveBeenCalledWith(
-            quad('http://example.org/a', 'http://example.org/b', '"http://example.org/c"'));
+            quad('http://example.org/a', 'http://example.org/b', '"http://example.org/c"'),
+          );
           expect(emit).toHaveBeenCalledWith(
-            quad('http://example.org/a', 'http://example.org/d', '"http://example.org/e"'));
+            quad('http://example.org/a', 'http://example.org/d', '"http://example.org/e"'),
+          );
           expect(error).not.toHaveBeenCalled();
           expect(end).toHaveBeenCalledTimes(1);
         });
 
-        it('should error when no script with the given id was found', async () => {
+        it('should error when no script with the given id was found', async() => {
           listener.onTagOpen('html', {});
           listener.onTagOpen('body', {});
-          listener.onTagOpen('script', {type: 'application/ld+json', id: 'otherScriptId'});
+          listener.onTagOpen('script', { type: 'application/ld+json', id: 'otherScriptId' });
           listener.onText(`{
             "@id": "http://example.org/a",
             "http://example.org/b": "http://example.org/c",
@@ -457,13 +477,13 @@ describe('ActorRdfParseHtml', () => {
           listener.onTagClose();
           listener.onEnd();
 
-          return expect(onEnd).rejects.toThrow(new Error('Failed to find targeted script id "scriptId"'));
+          await expect(onEnd).rejects.toThrow(new Error('Failed to find targeted script id "scriptId"'));
         });
 
-        it('should error when a script with the given id was found with an unsupported content type', async () => {
+        it('should error when a script with the given id was found with an unsupported content type', async() => {
           listener.onTagOpen('html', {});
           listener.onTagOpen('body', {});
-          listener.onTagOpen('script', {type: 'application/json', id: 'scriptId'});
+          listener.onTagOpen('script', { type: 'application/json', id: 'scriptId' });
           listener.onText(`{
             "@id": "http://example.org/a",
             "http://example.org/b": "http://example.org/c",
@@ -474,9 +494,8 @@ describe('ActorRdfParseHtml', () => {
           listener.onTagClose();
           listener.onEnd();
 
-          return expect(onEnd).rejects.toThrow(new Error('Targeted script "scriptId" does not have a supported type'));
+          await expect(onEnd).rejects.toThrow(new Error('Targeted script "scriptId" does not have a supported type'));
         });
-
       });
     });
 
@@ -497,21 +516,21 @@ describe('ActorRdfParseHtml', () => {
           end = jest.fn(resolve);
           error = jest.fn(reject);
         });
-        action = {baseIRI, headers, emit, error, end, context: ActionContext({ extractAllScripts: false })};
+        action = { baseIRI, headers, emit, error, end, context: ActionContext({ extractAllScripts: false }) };
       });
 
-      it('should return an HtmlScriptListener', async () => {
+      it('should return an HtmlScriptListener', async() => {
         const listener = (await actor.run(action)).htmlParseListener;
         expect(listener).toBeInstanceOf(HtmlScriptListener);
       });
 
       describe('the html listener', () => {
         let listener: any;
-        beforeEach(async () => {
+        beforeEach(async() => {
           listener = (await actor.run(action)).htmlParseListener;
         });
 
-        it('should handle the first of two jsonld script tags', async () => {
+        it('should handle the first of two jsonld script tags', async() => {
           listener.onTagOpen('html', {});
           listener.onTagOpen('body', {});
           listener.onTagOpen('script', { type: 'application/ld+json' });
@@ -536,13 +555,14 @@ describe('ActorRdfParseHtml', () => {
 
           expect(emit).toHaveBeenCalledTimes(2);
           expect(emit).toHaveBeenCalledWith(
-            quad('http://example.org/a', 'http://example.org/b', '"http://example.org/c"'));
+            quad('http://example.org/a', 'http://example.org/b', '"http://example.org/c"'),
+          );
           expect(emit).toHaveBeenCalledWith(
-            quad('http://example.org/a', 'http://example.org/d', '"http://example.org/e"'));
+            quad('http://example.org/a', 'http://example.org/d', '"http://example.org/e"'),
+          );
           expect(error).not.toHaveBeenCalled();
           expect(end).toHaveBeenCalledTimes(1);
         });
-
       });
     });
 
@@ -563,24 +583,24 @@ describe('ActorRdfParseHtml', () => {
           end = jest.fn(resolve);
           error = jest.fn(reject);
         });
-        action = {baseIRI, headers, emit, error, end, context: ActionContext({ extractAllScripts: false })};
+        action = { baseIRI, headers, emit, error, end, context: ActionContext({ extractAllScripts: false }) };
       });
 
-      it('should return an HtmlScriptListener', async () => {
+      it('should return an HtmlScriptListener', async() => {
         const listener = (await actor.run(action)).htmlParseListener;
         expect(listener).toBeInstanceOf(HtmlScriptListener);
       });
 
       describe('the html listener', () => {
         let listener: any;
-        beforeEach(async () => {
+        beforeEach(async() => {
           listener = (await actor.run(action)).htmlParseListener;
         });
 
-        it('should handle a jsonld script tag with the given id', async () => {
+        it('should handle a jsonld script tag with the given id', async() => {
           listener.onTagOpen('html', {});
           listener.onTagOpen('body', {});
-          listener.onTagOpen('script', {type: 'application/ld+json', id: 'scriptId'});
+          listener.onTagOpen('script', { type: 'application/ld+json', id: 'scriptId' });
           listener.onText(`{
             "@id": "http://example.org/a",
             "http://example.org/b": "http://example.org/c",
@@ -595,31 +615,33 @@ describe('ActorRdfParseHtml', () => {
 
           expect(emit).toHaveBeenCalledTimes(2);
           expect(emit).toHaveBeenCalledWith(
-            quad('http://example.org/a', 'http://example.org/b', '"http://example.org/c"'));
+            quad('http://example.org/a', 'http://example.org/b', '"http://example.org/c"'),
+          );
           expect(emit).toHaveBeenCalledWith(
-            quad('http://example.org/a', 'http://example.org/d', '"http://example.org/e"'));
+            quad('http://example.org/a', 'http://example.org/d', '"http://example.org/e"'),
+          );
           expect(error).not.toHaveBeenCalled();
           expect(end).toHaveBeenCalledTimes(1);
         });
 
-        it('should handle a jsonld script tag with the given id and ignore others', async () => {
+        it('should handle a jsonld script tag with the given id and ignore others', async() => {
           listener.onTagOpen('html', {});
           listener.onTagOpen('body', {});
-          listener.onTagOpen('script', {type: 'application/ld+json', id: 'scriptIdIgnore1'});
+          listener.onTagOpen('script', { type: 'application/ld+json', id: 'scriptIdIgnore1' });
           listener.onText(`{
             "@id": "http://example.org/A1",
             "http://example.org/b": "http://example.org/c",
             "http://example.org/d": "http://example.org/e"
         }`);
           listener.onTagClose();
-          listener.onTagOpen('script', {type: 'application/ld+json', id: 'scriptId'});
+          listener.onTagOpen('script', { type: 'application/ld+json', id: 'scriptId' });
           listener.onText(`{
             "@id": "http://example.org/a",
             "http://example.org/b": "http://example.org/c",
             "http://example.org/d": "http://example.org/e"
         }`);
           listener.onTagClose();
-          listener.onTagOpen('script', {type: 'application/ld+json', id: 'scriptIdIgnore2'});
+          listener.onTagOpen('script', { type: 'application/ld+json', id: 'scriptIdIgnore2' });
           listener.onText(`{
             "@id": "http://example.org/A2",
             "http://example.org/b": "http://example.org/c",
@@ -634,17 +656,19 @@ describe('ActorRdfParseHtml', () => {
 
           expect(emit).toHaveBeenCalledTimes(2);
           expect(emit).toHaveBeenCalledWith(
-            quad('http://example.org/a', 'http://example.org/b', '"http://example.org/c"'));
+            quad('http://example.org/a', 'http://example.org/b', '"http://example.org/c"'),
+          );
           expect(emit).toHaveBeenCalledWith(
-            quad('http://example.org/a', 'http://example.org/d', '"http://example.org/e"'));
+            quad('http://example.org/a', 'http://example.org/d', '"http://example.org/e"'),
+          );
           expect(error).not.toHaveBeenCalled();
           expect(end).toHaveBeenCalledTimes(1);
         });
 
-        it('should error when no script with the given id was found', async () => {
+        it('should error when no script with the given id was found', async() => {
           listener.onTagOpen('html', {});
           listener.onTagOpen('body', {});
-          listener.onTagOpen('script', {type: 'application/ld+json', id: 'otherScriptId'});
+          listener.onTagOpen('script', { type: 'application/ld+json', id: 'otherScriptId' });
           listener.onText(`{
             "@id": "http://example.org/a",
             "http://example.org/b": "http://example.org/c",
@@ -655,13 +679,13 @@ describe('ActorRdfParseHtml', () => {
           listener.onTagClose();
           listener.onEnd();
 
-          return expect(onEnd).rejects.toThrow(new Error('Failed to find targeted script id "scriptId"'));
+          await expect(onEnd).rejects.toThrow(new Error('Failed to find targeted script id "scriptId"'));
         });
 
-        it('should error when a script with the given id was found with an unsupported content type', async () => {
+        it('should error when a script with the given id was found with an unsupported content type', async() => {
           listener.onTagOpen('html', {});
           listener.onTagOpen('body', {});
-          listener.onTagOpen('script', {type: 'application/json', id: 'scriptId'});
+          listener.onTagOpen('script', { type: 'application/json', id: 'scriptId' });
           listener.onText(`{
             "@id": "http://example.org/a",
             "http://example.org/b": "http://example.org/c",
@@ -672,9 +696,8 @@ describe('ActorRdfParseHtml', () => {
           listener.onTagClose();
           listener.onEnd();
 
-          return expect(onEnd).rejects.toThrow(new Error('Targeted script "scriptId" does not have a supported type'));
+          await expect(onEnd).rejects.toThrow(new Error('Targeted script "scriptId" does not have a supported type'));
         });
-
       });
     });
   });

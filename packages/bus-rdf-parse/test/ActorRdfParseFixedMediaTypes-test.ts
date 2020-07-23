@@ -1,5 +1,5 @@
-import {Bus} from "@comunica/core";
-import {ActorRdfParseFixedMediaTypes} from "..";
+import { Bus } from '@comunica/core';
+import { ActorRdfParseFixedMediaTypes } from '..';
 
 describe('ActorRdfParseFixedMediaTypes', () => {
   const bus = new Bus({ name: 'bus' });
@@ -10,7 +10,8 @@ describe('ActorRdfParseFixedMediaTypes', () => {
     });
 
     it('should be a ActorRdfParseFixedMediaTypes constructor', () => {
-      expect(new (<any> ActorRdfParseFixedMediaTypes)({ bus: new Bus({ name: 'bus' }), mediaTypes: {},
+      expect(new (<any> ActorRdfParseFixedMediaTypes)({ bus: new Bus({ name: 'bus' }),
+        mediaTypes: {},
         name: 'actor' })).toBeInstanceOf(ActorRdfParseFixedMediaTypes);
     });
 
@@ -20,7 +21,9 @@ describe('ActorRdfParseFixedMediaTypes', () => {
   });
 
   describe('An ActorRdfParseFixedMediaTypes instance', () => {
-    const actor = new (<any> ActorRdfParseFixedMediaTypes)({ bus, mediaTypes: { a: 0.5 }, name: 'actor',
+    const actor = new (<any> ActorRdfParseFixedMediaTypes)({ bus,
+      mediaTypes: { a: 0.5 },
+      name: 'actor',
       priorityScale: 0.5 });
 
     it('should always resolve testHandleChecked', () => {
