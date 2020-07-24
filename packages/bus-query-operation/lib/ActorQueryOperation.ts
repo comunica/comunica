@@ -250,6 +250,10 @@ export interface IActorQueryOperationOutputBindings extends IActorQueryOperation
    */
   bindingsStream: BindingsStream;
   /**
+   * The collection of bindings after an 'end' event occured.
+   */
+  bindings?: () => Promise<any[]>;
+  /**
    * The list of variable names (without '?') for which bindings are provided in the stream.
    */
   variables: string[];
@@ -269,6 +273,10 @@ export interface IActorQueryOperationOutputQuads extends IActorQueryOperationOut
    * The stream of quads.
    */
   quadStream: RDF.Stream & AsyncIterator<RDF.Quad>;
+  /**
+   * The collection of bindings after an 'end' event occured.
+   */
+  bindings?: () => Promise<any[]>;
 
 }
 

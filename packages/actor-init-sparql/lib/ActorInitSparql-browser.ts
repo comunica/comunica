@@ -6,16 +6,16 @@ import {
   IActionOptimizeQueryOperation,
   IActorOptimizeQueryOperationOutput,
 } from '@comunica/bus-optimize-query-operation';
-import {
-  ensureBindings,
+import { ensureBindings,
   IActionQueryOperation,
   IActorQueryOperationOutput,
   KEY_CONTEXT_BASEIRI,
   KEY_CONTEXT_QUERY_TIMESTAMP,
   materializeOperation,
-} from '@comunica/bus-query-operation';
+  IActorQueryOperationOutputBindings, IActorQueryOperationOutputQuads } from '@comunica/bus-query-operation';
 import { IDataSource, isDataSourceRawType, KEY_CONTEXT_SOURCES } from '@comunica/bus-rdf-resolve-quad-pattern';
 import { IActionSparqlParse, IActorSparqlParseOutput } from '@comunica/bus-sparql-parse';
+
 import {
 
   IActionSparqlSerialize,
@@ -169,6 +169,32 @@ export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs {
     // Execute query
     const resolve: IActionQueryOperation = { context, operation };
     const output = await this.mediatorQueryOperation.mediate(resolve);
+    // Set bindings
+    if ((<any> output).bindingsStream) {
+      (<IActorQueryOperationOutputBindings> output).bindings = () => {
+        const result: any[] = [];
+        (<IActorQueryOperationOutputBindings> output).bindingsStream.on('data', data => {
+          result.push(data.toObject());
+        });
+        return new Promise((resolveP, reject) => {
+          (<IActorQueryOperationOutputBindings> output).bindingsStream.on('end', () => {
+            resolveP(result);
+          });
+        });
+      };
+    } else if ((<any> output).quadStream) {
+      (<IActorQueryOperationOutputQuads> output).bindings = () => {
+        const result: any[] = [];
+        (<IActorQueryOperationOutputQuads> output).quadStream.on('data', data => {
+          result.push(data);
+        });
+        return new Promise((resolveP, reject) => {
+          (<IActorQueryOperationOutputQuads> output).quadStream.on('end', () => {
+            resolveP(result);
+          });
+        });
+      };
+    }
     output.context = context;
     return output;
   }
