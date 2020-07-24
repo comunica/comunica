@@ -166,7 +166,9 @@ export class ActorInitSparql extends ActorInitSparqlBrowser {
     } else if (args.f) {
       query = readFileSync(args.f, { encoding: 'utf8' });
     } else {
-      query = args._[args._.length - 1];
+      if (args._.length > 0) {
+        query = args._[args._.length - 1];
+      }
       if (!query) {
         // If we get here, this.queryString will always be defined
         query = <string> this.queryString;
