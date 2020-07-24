@@ -591,13 +591,6 @@ describe('ActorInitSparql', () => {
       expect(array).toEqual([{ a: 'triple' }]);
     });
 
-    it('bindings() should collect all bindings until "end" event occurs on quads', async() => {
-      const ctx = { sources: []};
-      const result = await actor.query('CONSTRUCT WHERE { ?s ?p ?o }', ctx);
-      const array = await (<any> result).bindings();
-      expect(array).toEqual([{ a: 'triple' }]);
-    });
-
     it('should set datetime on the -d option', async() => {
       const dt: Date = new Date();
       const med: any = {
