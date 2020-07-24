@@ -105,7 +105,7 @@ Options:
     try {
       context = await ActorInitSparql.buildContext(args, false, HttpServiceSparqlEndpoint.HELP_MESSAGE);
     } catch (error) {
-      stderr.write(error.str);
+      stderr.write(error.message);
       exit(1);
     }
 

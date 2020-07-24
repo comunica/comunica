@@ -80,16 +80,16 @@ export class ActorInitSparql extends ActorInitSparqlBrowser {
       const yarnVersion: string = await this.getScriptOutput('yarn -v', '_Yarn is unavailable_');
       const os = `${OS.platform()} (${OS.type()} ${OS.release()})`;
 
-      const message = require('streamify-string')(`| software            | version
+      const message = `| software            | version
 | ------------------- | -------
 | Comunica Init Actor | ${comunicaVersion} ${dev}
 | node                | ${nodeVersion}
 | npm                 | ${npmVersion}
 | yarn                | ${yarnVersion}
 | Operating System    | ${os}
-`);
+`;
 
-      return Promise.reject(message);
+      return Promise.reject(new Error(message));
     }
 
     if (args.h || args.help || (queryContext &&
@@ -97,7 +97,7 @@ export class ActorInitSparql extends ActorInitSparqlBrowser {
         args._.length < (args.c ? 0 : 1))))) ||
         (!queryContext && ((args.c && args._.length > 0) || (!args.c && args._.length === 0)))) {
       // Print command usage
-      return Promise.reject(require('streamify-string')(helpMessage));
+      return Promise.reject(new Error(helpMessage));
     }
 
     // Define context
@@ -108,6 +108,11 @@ export class ActorInitSparql extends ActorInitSparqlBrowser {
     } else if (!queryContext && args._[0] && args._[0].startsWith('{')) {
       context = JSON.parse(args._[0]);
       args._.shift();
+    }
+
+    // Remove query so it does not become a source
+    if (queryContext && !args.q && !args.f) {
+      args._.pop();
     }
 
     // Add sources to context
@@ -145,13 +150,6 @@ export class ActorInitSparql extends ActorInitSparqlBrowser {
   public async run(action: IActionInit): Promise<IActorOutputInit> {
     const args = minimist(action.argv);
 
-    let context: any;
-    try {
-      context = await ActorInitSparql.buildContext(args, true, ActorInitSparql.HELP_MESSAGE, this.queryString);
-    } catch (error) {
-      return { stderr: error };
-    }
-
     // Print supported MIME types
     if (args.listformats) {
       const mediaTypes: {[id: string]: number} = await this.getResultMediaTypes();
@@ -168,11 +166,18 @@ export class ActorInitSparql extends ActorInitSparqlBrowser {
     } else if (args.f) {
       query = readFileSync(args.f, { encoding: 'utf8' });
     } else {
-      query = args._.pop();
+      query = args._[args._.length - 1];
       if (!query) {
         // If we get here, this.queryString will always be defined
         query = <string> this.queryString;
       }
+    }
+
+    let context: any;
+    try {
+      context = await ActorInitSparql.buildContext(args, true, ActorInitSparql.HELP_MESSAGE, this.queryString);
+    } catch (error) {
+      return { stderr: require('streamify-string')(error.message) };
     }
 
     // Define the query format
