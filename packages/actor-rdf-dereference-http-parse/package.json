@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-dereference-http-parse",
-  "version": "1.13.0",
+  "version": "1.14.0",
   "description": "A node-fetch http actor",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-dereference-http-parse",
   "lsd:components": "components/components.jsonld",
@@ -42,11 +42,11 @@
     "@comunica/core": "^1.0.0"
   },
   "devDependencies": {
-    "@comunica/bus-http": "^1.13.0",
-    "@comunica/bus-rdf-dereference": "^1.13.0",
-    "@comunica/bus-rdf-parse": "^1.13.0",
-    "@comunica/core": "^1.13.0",
-    "@comunica/mediator-race": "^1.13.0"
+    "@comunica/bus-http": "^1.14.0",
+    "@comunica/bus-rdf-dereference": "^1.14.0",
+    "@comunica/bus-rdf-parse": "^1.14.0",
+    "@comunica/core": "^1.14.0",
+    "@comunica/mediator-race": "^1.14.0"
   },
   "jest": {
     "globals": {
