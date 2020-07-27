@@ -763,16 +763,6 @@ describe('A second HttpServiceSparqlEndpoint instance', () => {
         .toHaveBeenCalledWith(engine, stdout, stderr, request, response, 'test_parseBody_result', null, false);
     });
 
-    it('should choose a mediaType if accept header is set', async() => {
-      request.headers = { accept: 'mediaType' };
-      instance.parseBody = jest.fn(() => Promise.resolve('test_result'));
-      request.method = 'POST';
-      await instance.handleRequest(engine, variantsDefault, stdout, stderr, request, response);
-
-      expect(instance.writeQueryResult)
-        .toHaveBeenCalledWith(engine, stdout, stderr, request, response, 'test_result', 'application/json', false);
-    });
-
     it('should only invalidate cache if invalidateCacheBeforeQuery is set to true', async() => {
       instance.invalidateCacheBeforeQuery = false;
       await instance.handleRequest(engine, variants, stdout, stderr, request, response);
@@ -1042,4 +1032,14 @@ describe('HandleNegotiation', () => {
         accept: '*/*' };
       expect(instance.contentNegotiation(request, variants)).toEqual(null);
     });
+
+  it('should choose a mediaType if accept header is set', async() => {
+    request.headers = { accept: 'mediaType' };
+    instance.parseBody = jest.fn(() => Promise.resolve('test_result'));
+    request.method = 'POST';
+    await instance.handleRequest(engine, variantsDefault, stdout, stderr, request, response);
+
+    expect(instance.writeQueryResult)
+      .toHaveBeenCalledWith(engine, stdout, stderr, request, response, 'test_result', 'application/json', false);
+  });
 });
