@@ -58,6 +58,15 @@ Furthermore, this will add [pre-commit hooks](https://www.npmjs.com/package/pre-
 to build, lint and test.
 These hooks can temporarily be disabled at your own risk by adding the `-n` flag to the commit command.
 
+### Development tips and tricks
+
+* Only do `yarn install` in the repo root, and *never* in one of the sub-packages, as this can break your repo.
+* `yarn run build` will (re)build all TypeScript to JavaScript. This can also be executed on package-level.
+* `yarn run build-watch` will continuously build the TypeScript to JavaScript. This is useful during development.
+* `yarn test` and `yarn run lint` execute the tests and linter checks locally. Before a PR is opened, these must always pass, and testing coverage must be 100%.
+* When editing configuration files in packages like `actor-init-sparql`, `yarn run prepare` can be executed to compile the JSON files to JavaScript before they can be executed. (not needed when executing dynamically)
+* When modifying a dependency package such as [sparqlee](https://github.com/comunica/sparqlee), [Yarn's link functionality](https://classic.yarnpkg.com/en/docs/cli/link/) can be used to force your local version of that dependency to be used in Comunica.
+
 ## Benchmarking
 
 If you want to do benchmarking with Comunica in Node.js,
