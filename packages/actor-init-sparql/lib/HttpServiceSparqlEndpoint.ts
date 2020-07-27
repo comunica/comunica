@@ -153,7 +153,7 @@ Options:
    * @param {module:http.IncomingMessage} request Request object.
    * @param {{type: string; quality: number}[]} variants Allowed variants sorted in preferred order.
    */
-  public contentNegotiation(request: http.IncomingMessage,
+  public determineMediaType(request: http.IncomingMessage,
     variants: { type: string; quality: number }[]): string {
     const isValid = request.headers.accept && request.headers.accept !== '*/*';
     const negotiation = isValid ? require('negotiate').choose(variants, request) : null;
@@ -177,7 +177,6 @@ Options:
           break;
         }
       }
-      return mediaType;
     }
     return mediaType;
   }
@@ -195,8 +194,7 @@ Options:
   public async handleRequest(engine: ActorInitSparql, variants: { type: string; quality: number }[],
     stdout: Writable, stderr: Writable,
     request: http.IncomingMessage, response: http.ServerResponse): Promise<void> {
-    // Negotiate the best mediatype format
-    const mediaType = this.contentNegotiation(request, variants);
+    const mediaType = this.determineMediaType(request, variants);
 
     // Verify the path
     const requestUrl = url.parse(request.url ?? '', true);
