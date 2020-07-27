@@ -994,7 +994,7 @@ const negotiation = [{ type: 'stats',
   qs: 0.2,
   q: 0.08 }];
 
-describe('HttpServiceSparqlEndpointThree', () => {
+describe('HandleNegotiation', () => {
   let instance: any;
   let engine: any;
   const stdout = new PassThrough();
