@@ -87,7 +87,12 @@ export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs {
     super(args);
   }
 
-  public static enhanceQueryResults(results: IQueryResult): IQueryResult {
+  /**
+   * Add convenience methods to query results
+   * @param {IActorQueryOperationOutput} results Basic query results.
+   * @return {IQueryResult} Same query results with added fields.
+   */
+  public static enhanceQueryResults(results: IActorQueryOperationOutput): IQueryResult {
     // Set bindings
     if ((<IQueryResultBindings> results).bindingsStream) {
       (<IQueryResultBindings> results).bindings = () => {
@@ -116,7 +121,7 @@ export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs {
         });
       };
     }
-    return results;
+    return <IQueryResult> results;
   }
 
   public async test(action: IActionInit): Promise<IActorTest> {

@@ -237,7 +237,7 @@ export function getMetadata(actionOutput: IActorQueryOperationOutputStream): Pro
 }
 
 /**
- * Query operation output for a bindings stream. (without bindings operator)
+ * Query operation output for a bindings stream.
  * For example: SPARQL SELECT results
  */
 export interface IActorQueryOperationOutputBindings extends IActorQueryOperationOutputStream {
@@ -257,7 +257,7 @@ export interface IActorQueryOperationOutputBindings extends IActorQueryOperation
 }
 
 /**
- * Query operation output for quads. (without quads operator)
+ * Query operation output for quads.
  * For example: SPARQL CONSTRUCT results
  */
 export interface IActorQueryOperationOutputQuads extends IActorQueryOperationOutputStream {
