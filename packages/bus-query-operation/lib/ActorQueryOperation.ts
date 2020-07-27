@@ -237,7 +237,7 @@ export function getMetadata(actionOutput: IActorQueryOperationOutputStream): Pro
 }
 
 /**
- * Query operation output for a bindings stream.
+ * Query operation output for a bindings stream. (without bindings operator)
  * For example: SPARQL SELECT results
  */
 export interface IActorQueryOperationOutputBindings extends IActorQueryOperationOutputStream {
@@ -250,10 +250,6 @@ export interface IActorQueryOperationOutputBindings extends IActorQueryOperation
    */
   bindingsStream: BindingsStream;
   /**
-   * The collection of bindings after an 'end' event occured.
-   */
-  bindings?: () => Promise<any[]>;
-  /**
    * The list of variable names (without '?') for which bindings are provided in the stream.
    */
   variables: string[];
@@ -261,7 +257,7 @@ export interface IActorQueryOperationOutputBindings extends IActorQueryOperation
 }
 
 /**
- * Query operation output for quads.
+ * Query operation output for quads. (without quads operator)
  * For example: SPARQL CONSTRUCT results
  */
 export interface IActorQueryOperationOutputQuads extends IActorQueryOperationOutputStream {
@@ -273,11 +269,6 @@ export interface IActorQueryOperationOutputQuads extends IActorQueryOperationOut
    * The stream of quads.
    */
   quadStream: RDF.Stream & AsyncIterator<RDF.Quad>;
-  /**
-   * The collection of bindings after an 'end' event occured.
-   */
-  bindings?: () => Promise<any[]>;
-
 }
 
 /**

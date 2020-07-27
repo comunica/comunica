@@ -12,7 +12,9 @@ import { ensureBindings,
   KEY_CONTEXT_BASEIRI,
   KEY_CONTEXT_QUERY_TIMESTAMP,
   materializeOperation,
-  IActorQueryOperationOutputBindings, IActorQueryOperationOutputQuads } from '@comunica/bus-query-operation';
+  IActorQueryOperationOutputBindings,
+  IActorQueryOperationOutputQuads,
+  IActorQueryOperationOutputBoolean } from '@comunica/bus-query-operation';
 import { IDataSource, isDataSourceRawType, KEY_CONTEXT_SOURCES } from '@comunica/bus-rdf-resolve-quad-pattern';
 import { IActionSparqlParse, IActorSparqlParseOutput } from '@comunica/bus-sparql-parse';
 
@@ -33,6 +35,7 @@ import {
 import { ActionContext, Actor, IAction, IActorArgs, IActorTest,
   KEY_CONTEXT_LOG, Logger, Mediator } from '@comunica/core';
 import { AsyncReiterableArray } from 'asyncreiterable';
+import * as RDF from 'rdf-js';
 import { Algebra } from 'sparqlalgebrajs';
 
 /**
@@ -84,6 +87,38 @@ export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs {
     super(args);
   }
 
+  public static enhanceQueryResults(results: IQueryResult): IQueryResult {
+    // Set bindings
+    if ((<IQueryResultBindings> results).bindingsStream) {
+      (<IQueryResultBindings> results).bindings = () => {
+        const result: RDF.Term[] = [];
+        (<IQueryResultBindings> results).bindingsStream.on('data', data => {
+          result.push(data);
+        });
+        return new Promise((resolve, reject) => {
+          (<IQueryResultBindings> results).bindingsStream.on('end', () => {
+            resolve(result);
+          });
+          (<IQueryResultBindings> results).bindingsStream.on('error', reject);
+        });
+      };
+    } else if ((<IQueryResultQuads> results).quadStream) {
+      (<IQueryResultQuads> results).quads = () => {
+        const result: RDF.Quad[] = [];
+        (<IQueryResultQuads> results).quadStream.on('data', data => {
+          result.push(data);
+        });
+        return new Promise((resolve, reject) => {
+          (<IQueryResultQuads> results).quadStream.on('end', () => {
+            resolve(result);
+          });
+          (<IQueryResultQuads> results).quadStream.on('error', reject);
+        });
+      };
+    }
+    return results;
+  }
+
   public async test(action: IActionInit): Promise<IActorTest> {
     return true;
   }
@@ -94,7 +129,7 @@ export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs {
    * @param context An optional query context.
    * @return {Promise<IActorQueryOperationOutput>} A promise that resolves to the query output.
    */
-  public async query(query: string | Algebra.Operation, context?: any): Promise<IActorQueryOperationOutput> {
+  public async query(query: string | Algebra.Operation, context?: any): Promise<IQueryResult> {
     context = context || {};
 
     // Expand shortcuts
@@ -168,33 +203,8 @@ export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs {
 
     // Execute query
     const resolve: IActionQueryOperation = { context, operation };
-    const output = await this.mediatorQueryOperation.mediate(resolve);
-    // Set bindings
-    if ((<any> output).bindingsStream) {
-      (<IActorQueryOperationOutputBindings> output).bindings = () => {
-        const result: any[] = [];
-        (<IActorQueryOperationOutputBindings> output).bindingsStream.on('data', data => {
-          result.push(data.toObject());
-        });
-        return new Promise((resolveP, reject) => {
-          (<IActorQueryOperationOutputBindings> output).bindingsStream.on('end', () => {
-            resolveP(result);
-          });
-        });
-      };
-    } else if ((<any> output).quadStream) {
-      (<IActorQueryOperationOutputQuads> output).bindings = () => {
-        const result: any[] = [];
-        (<IActorQueryOperationOutputQuads> output).quadStream.on('data', data => {
-          result.push(data);
-        });
-        return new Promise((resolveP, reject) => {
-          (<IActorQueryOperationOutputQuads> output).quadStream.on('end', () => {
-            resolveP(result);
-          });
-        });
-      };
-    }
+    let output = <IQueryResult> await this.mediatorQueryOperation.mediate(resolve);
+    output = ActorInitSparql.enhanceQueryResults(output);
     output.context = context;
     return output;
   }
@@ -288,6 +298,36 @@ export interface IActorInitSparqlArgs extends IActorArgs<IActionInit, IActorTest
   context?: string;
   contextKeyShortcuts: {[shortcut: string]: string};
 }
+
+/**
+ * Query operation output for a bindings stream.
+ * For example: SPARQL SELECT results
+ */
+export interface IQueryResultBindings extends IActorQueryOperationOutputBindings {
+  /**
+   * The collection of bindings after an 'end' event occured.
+   */
+  bindings: () => Promise<RDF.Term[]>;
+}
+
+/**
+ * Query operation output for quads.
+ * For example: SPARQL CONSTRUCT results
+ */
+export interface IQueryResultQuads extends IActorQueryOperationOutputQuads {
+  /**
+   * The collection of bindings after an 'end' event occured.
+   */
+  quads: () => Promise<RDF.Quad[]>;
+}
+
+/**
+ * Query operation output for quads.
+ * For example: SPARQL ASK results
+ */
+export interface IQueryResultBoolean extends IActorQueryOperationOutputBoolean {}
+
+export type IQueryResult = IQueryResultBindings | IQueryResultQuads | IQueryResultBoolean;
 
 export const KEY_CONTEXT_INITIALBINDINGS = '@comunica/actor-init-sparql:initialBindings';
 export const KEY_CONTEXT_QUERYFORMAT = '@comunica/actor-init-sparql:queryFormat';

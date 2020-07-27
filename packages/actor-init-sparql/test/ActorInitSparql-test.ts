@@ -12,7 +12,11 @@ import {
   KEY_CONTEXT_LENIENT,
   KEY_CONTEXT_QUERYFORMAT,
 } from '../lib/ActorInitSparql';
-import { ActorInitSparql as ActorInitSparqlBrowser } from '../lib/ActorInitSparql-browser';
+import {
+  ActorInitSparql as ActorInitSparqlBrowser,
+  IQueryResultQuads,
+  IQueryResultBindings,
+} from '../lib/ActorInitSparql-browser';
 
 describe('exported constants', () => {
   it('should be correct', () => {
@@ -98,7 +102,7 @@ describe('ActorInitSparql', () => {
     beforeEach(() => {
       const input = new Readable({ objectMode: true });
       input._read = () => {
-        const triple = { toObject() { return { a: 'triple' }; } };
+        const triple = { a: 'triple' };
         input.push(triple);
         input.push(null);
       };
@@ -587,8 +591,30 @@ describe('ActorInitSparql', () => {
     it('bindings() should collect all bindings until "end" event occurs on triples', async() => {
       const ctx = { sources: []};
       const result = await actor.query('SELECT * WHERE { ?s ?p ?o }', ctx);
-      const array = await (<any> result).bindings();
+      const array = await (<IQueryResultBindings> result).bindings();
       expect(array).toEqual([{ a: 'triple' }]);
+    });
+
+    it('bindings() should return empty list if no solutions', async() => {
+      const ctx = { sources: []};
+      // Set input empty
+      const input = new Readable({ objectMode: true });
+      input._read = () => {
+        input.push(null);
+      };
+      mediatorQueryOperation.mediate = (action: any) => action.operation.query !== 'INVALID' ?
+        Promise.resolve({ bindingsStream: input }) :
+        Promise.reject(new Error('a'));
+      const result = await actor.query('SELECT * WHERE { ?s ?p ?o }', ctx);
+      const array = await (<IQueryResultBindings> result).bindings();
+      expect(array).toEqual([]);
+    });
+
+    it('should return a rejected promise on an invalid request', () => {
+      const ctx = { sources: []};
+      // Make it reject instead of reading input
+      mediatorQueryOperation.mediate = (action: any) => Promise.reject(new Error('a'));
+      return expect(actor.query('INVALID QUERY', ctx)).rejects.toBeTruthy();
     });
 
     it('should set datetime on the -d option', async() => {
@@ -801,16 +827,38 @@ graph <exists02.ttl> {
       );
     });
 
-    it('bindings() should collect all bindings until "end" event occurs on quads', async() => {
+    it('quads() should collect all bindings until "end" event occurfs on quads', async() => {
       const ctx = { sources: []};
       const result = await actor.query('CONSTRUCT WHERE { ?s ?p ?o }', ctx);
-      const array = await (<any> result).bindings();
+      const array = await (<IQueryResultQuads> result).quads();
       expect(array).toEqual([ quad(
         namedNode('http://dbpedia.org/resource/Renault_Dauphine'),
         namedNode('http://dbpedia.org/ontology/assembly'),
         namedNode('http://dbpedia.org/resource/Belgium'),
         defaultGraph(),
       ) ]);
+    });
+
+    it('quads() should return empty list if no solutions', async() => {
+      const ctx = { sources: []};
+      // Set input empty
+      const input = new Readable({ objectMode: true });
+      input._read = () => {
+        input.push(null);
+      };
+      mediatorQueryOperation.mediate = (action: any) => action.operation.query !== 'INVALID' ?
+        Promise.resolve({ quadStream: input }) :
+        Promise.reject(new Error('a'));
+      const result = await actor.query('CONSTRUCT * WHERE { ?s ?p ?o }', ctx);
+      const array = await (<IQueryResultQuads> result).quads();
+      expect(array).toEqual([]);
+    });
+
+    it('should return a rejected promise on an invalid request', () => {
+      const ctx = { sources: []};
+      // Make it reject instead of reading input
+      mediatorQueryOperation.mediate = (action: any) => Promise.reject(new Error('a'));
+      return expect(actor.query('INVALID QUERY', ctx)).rejects.toBeTruthy();
     });
   });
 });
