@@ -149,19 +149,12 @@ Options:
   }
 
   /**
-   * Handles an HTTP request.
-   * @param {ActorInitSparql} engine A SPARQL engine.
-   * @param {{type: string; quality: number}[]} variants Allowed variants.
-   * @param {module:stream.internal.Writable} stdout Output stream.
-   * @param {module:stream.internal.Writable} stderr Error output stream.
+   * Negotiatiate the best mediatype format
    * @param {module:http.IncomingMessage} request Request object.
-   * @param {module:http.ServerResponse} response Response object.
+   * @param {{type: string; quality: number}[]} variants Allowed variants sorted in preferred order.
    */
-
-  public async handleRequest(engine: ActorInitSparql, variants: { type: string; quality: number }[],
-    stdout: Writable, stderr: Writable,
-    request: http.IncomingMessage, response: http.ServerResponse): Promise<any> {
-    // Negotiate the best mediatype format
+  public contentNegotiation(request: http.IncomingMessage,
+    variants: { type: string; quality: number }[]): string {
     const isValid = request.headers.accept && request.headers.accept !== '*/*';
     const negotiation = isValid ? require('negotiate').choose(variants, request) : null;
     let mediaType = negotiation && negotiation.length > 0 ? negotiation[0].type : null;
@@ -184,7 +177,26 @@ Options:
           break;
         }
       }
+      return mediaType;
     }
+    return mediaType;
+  }
+
+  /**
+   * Handles an HTTP request.
+   * @param {ActorInitSparql} engine A SPARQL engine.
+   * @param {{type: string; quality: number}[]} variants Allowed variants.
+   * @param {module:stream.internal.Writable} stdout Output stream.
+   * @param {module:stream.internal.Writable} stderr Error output stream.
+   * @param {module:http.IncomingMessage} request Request object.
+   * @param {module:http.ServerResponse} response Response object.
+   */
+
+  public async handleRequest(engine: ActorInitSparql, variants: { type: string; quality: number }[],
+    stdout: Writable, stderr: Writable,
+    request: http.IncomingMessage, response: http.ServerResponse): Promise<any> {
+    // Negotiate the best mediatype format
+    const mediaType = this.contentNegotiation(request, variants);
 
     // Verify the path
     const requestUrl = url.parse(request.url ?? '', true);
