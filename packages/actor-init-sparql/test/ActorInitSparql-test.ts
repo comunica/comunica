@@ -827,7 +827,7 @@ graph <exists02.ttl> {
       );
     });
 
-    it('quads() should collect all bindings until "end" event occurfs on quads', async() => {
+    it('quads() should collect all quads until "end" event occurs', async() => {
       const ctx = { sources: []};
       const result = await actor.query('CONSTRUCT WHERE { ?s ?p ?o }', ctx);
       const array = await (<IQueryResultQuads> result).quads();
