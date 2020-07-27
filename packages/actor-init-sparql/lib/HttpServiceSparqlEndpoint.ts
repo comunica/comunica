@@ -166,18 +166,18 @@ Options:
     const negotiation = isValid ? require('negotiate').choose(variants, request) : null;
     let mediaType = negotiation && negotiation.length > 0 ? negotiation[0].type : null;
 
-    const negotiationsIndexed: any = {};
+    // If we have multiple possible negotiated variants, pick the one with the highest quality
     if (negotiation && negotiation.length > 1) {
+      // Highest achievable quality
       const quality = negotiation[0].q;
-      // Assuming variants is sorted by q in decreasing order (pseudocode)
-      // Create negotiationsIndexed so that it is a hash containing the media types from 'negotiation' as keys.
-      negotiation.filter((element: any) => element.q === quality)
-        .reduce((_: any, element: any) => {
-          negotiationsIndexed[element.type] = element.type;
-          return negotiationsIndexed;
+      // Accumulate the negotiation variants with the highest quality
+      const negotiationsIndexed = negotiation.filter((element: any) => element.q === quality)
+        .reduce((acc: any, element: any) => {
+          acc[element.type] = element.type;
+          return acc;
         }, {});
 
-      // Preferred media type selected if high quality
+      // Pick the first configured variant that has the desired quality.
       for (const variant of variants) {
         if (negotiationsIndexed[variant.type]) {
           mediaType = variant.type;
