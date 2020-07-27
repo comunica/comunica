@@ -179,7 +179,6 @@ describe('HttpServiceSparqlEndpoint', () => {
 
       expect(exit).toHaveBeenCalledWith(1);
       expect(stderr.toString()).toBeDefined();
-
     });
 
     it('should exit with version message if -v option is set', async() => {
