@@ -46,5 +46,5 @@ function newEngineDynamic(options) {
   }
 }
 module.exports = {
-  newEngineDynamic: newEngineDynamic
+  newEngineDynamic: newEngineDynamic,
 };

@@ -194,7 +194,7 @@ Options:
 
   public async handleRequest(engine: ActorInitSparql, variants: { type: string; quality: number }[],
     stdout: Writable, stderr: Writable,
-    request: http.IncomingMessage, response: http.ServerResponse): Promise<any> {
+    request: http.IncomingMessage, response: http.ServerResponse): Promise<void> {
     // Negotiate the best mediatype format
     const mediaType = this.contentNegotiation(request, variants);
 
