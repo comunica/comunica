@@ -5,7 +5,7 @@ import { ArrayIterator } from 'asynciterator';
 import { WritableStream } from 'memory-streams';
 import minimist = require('minimist');
 // @ts-ignore
-import { newEngineDynamic, newEngineDynamicBindings } from '../__mocks__';
+import { newEngineDynamic } from '../__mocks__';
 // @ts-ignore
 import { fs, testArgumentDict, testFileContentDict } from '../__mocks__/fs';
 // @ts-ignore
@@ -35,190 +35,6 @@ jest.mock('http', () => {
 jest.mock('fs', () => {
   return fs;
 });
-
-const variantsDefault = [{ type: 'application/json', quality: 1 },
-  { type: 'simple', quality: 1 },
-  { type: 'application/sparql-results+json', quality: 1 },
-  { type: 'application/sparql-results+xml', quality: 1 },
-  { type: 'table', quality: 1 },
-  { type: 'tree', quality: 0.9 },
-  { type: 'stats', quality: 1 },
-  { type: 'application/trig', quality: 1 },
-  { type: 'application/n-quads', quality: 0.7 },
-  { type: 'text/turtle', quality: 0.6 },
-  { type: 'application/n-triples', quality: 0.3 },
-  { type: 'text/n3', quality: 0.2 },
-  { type: 'application/ld+json', quality: 0.9 }];
-
-const negotiation = [{ type: 'stats',
-  quality: 1,
-  qm: 1,
-  qt: 0.8,
-  qts: 2,
-  ql: 0.5,
-  qls: 0,
-  qc: 1,
-  qcs: 0,
-  qe: 1,
-  qes: 0,
-  qs: 1,
-  q: 0.4 },
-{ type: 'application/json',
-  quality: 1,
-  qm: 1,
-  qt: 0.8,
-  qts: 2,
-  ql: 0.5,
-  qls: 0,
-  qc: 1,
-  qcs: 0,
-  qe: 1,
-  qes: 0,
-  qs: 1,
-  q: 0.4 },
-{ type: 'application/sparql-results+json',
-  quality: 1,
-  qm: 1,
-  qt: 0.8,
-  qts: 2,
-  ql: 0.5,
-  qls: 0,
-  qc: 1,
-  qcs: 0,
-  qe: 1,
-  qes: 0,
-  qs: 1,
-  q: 0.4 },
-{ type: 'application/sparql-results+xml',
-  quality: 1,
-  qm: 1,
-  qt: 0.8,
-  qts: 2,
-  ql: 0.5,
-  qls: 0,
-  qc: 1,
-  qcs: 0,
-  qe: 1,
-  qes: 0,
-  qs: 1,
-  q: 0.4 },
-{ type: 'table',
-  quality: 1,
-  qm: 1,
-  qt: 0.8,
-  qts: 2,
-  ql: 0.5,
-  qls: 0,
-  qc: 1,
-  qcs: 0,
-  qe: 1,
-  qes: 0,
-  qs: 1,
-  q: 0.4 },
-{ type: 'application/trig',
-  quality: 1,
-  qm: 1,
-  qt: 0.8,
-  qts: 2,
-  ql: 0.5,
-  qls: 0,
-  qc: 1,
-  qcs: 0,
-  qe: 1,
-  qes: 0,
-  qs: 1,
-  q: 0.4 },
-{ type: 'simple',
-  quality: 1,
-  qm: 1,
-  qt: 0.8,
-  qts: 2,
-  ql: 0.5,
-  qls: 0,
-  qc: 1,
-  qcs: 0,
-  qe: 1,
-  qes: 0,
-  qs: 1,
-  q: 0.4 },
-{ type: 'tree',
-  quality: 0.9,
-  qm: 1,
-  qt: 0.8,
-  qts: 2,
-  ql: 0.5,
-  qls: 0,
-  qc: 1,
-  qcs: 0,
-  qe: 1,
-  qes: 0,
-  qs: 0.9,
-  q: 0.36 },
-{ type: 'application/ld+json',
-  quality: 0.9,
-  qm: 1,
-  qt: 0.8,
-  qts: 2,
-  ql: 0.5,
-  qls: 0,
-  qc: 1,
-  qcs: 0,
-  qe: 1,
-  qes: 0,
-  qs: 0.9,
-  q: 0.36 },
-{ type: 'application/n-quads',
-  quality: 0.7,
-  qm: 1,
-  qt: 0.8,
-  qts: 2,
-  ql: 0.5,
-  qls: 0,
-  qc: 1,
-  qcs: 0,
-  qe: 1,
-  qes: 0,
-  qs: 0.7,
-  q: 0.28 },
-{ type: 'text/turtle',
-  quality: 0.6,
-  qm: 1,
-  qt: 0.8,
-  qts: 2,
-  ql: 0.5,
-  qls: 0,
-  qc: 1,
-  qcs: 0,
-  qe: 1,
-  qes: 0,
-  qs: 0.6,
-  q: 0.24 },
-{ type: 'application/n-triples',
-  quality: 0.3,
-  qm: 1,
-  qt: 0.8,
-  qts: 2,
-  ql: 0.5,
-  qls: 0,
-  qc: 1,
-  qcs: 0,
-  qe: 1,
-  qes: 0,
-  qs: 0.3,
-  q: 0.12 },
-{ type: 'text/n3',
-  quality: 0.2,
-  qm: 1,
-  qt: 0.8,
-  qts: 2,
-  ql: 0.5,
-  qls: 0,
-  qc: 1,
-  qcs: 0,
-  qe: 1,
-  qes: 0,
-  qs: 0.2,
-  q: 0.08 }];
 
 describe('HttpServiceSparqlEndpoint', () => {
   describe('constructor', () => {
@@ -500,48 +316,7 @@ describe('HttpServiceSparqlEndpoint', () => {
       });
     });
 
-    describe('handleNegotiationNull', () => {
-      let engine: any;
-      let variants: any;
-      const stdout = new PassThrough();
-      const stderr = new PassThrough();
-      let request: any;
-      let response: any;
-      beforeEach(async() => {
-        instance.writeQueryResult = jest.fn();
-        engine = await newEngineDynamic();
-
-        variants = [{ type: 'application/trig', quality: 0.4 },
-          { type: 'stats', quality: 1 },
-          { type: 'application/json', quality: 1 },
-          { type: 'simple', quality: 0.5 }];
-        request = makeRequest();
-        response = new ServerResponseMock();
-      });
-
-      function makeRequest() {
-        request = stringToStream('default_test_request_content');
-        request.url = 'url_sparql';
-        request.headers = { 'content-type': 'contenttypewhichdefinitelydoesnotexist',
-          accept: 'application/json,application/trig,simple,stats' };
-        return request;
-      }
-
-      it('should call writeQueryResult with null as mediatype'
-        , async() => {
-          const engine4 = await newEngineDynamicBindings();
-          request.method = 'GET';
-          request.url = 'url_undefined_query';
-          request.headers = { 'content-type': 'contenttypewhichdefinitelydoesnotexist',
-            accept: '*/*' };
-          await instance.handleRequest(engine4, variants, stdout, stderr, request, response);
-
-          expect(instance.writeQueryResult)
-            .toHaveBeenCalledWith(engine4, stdout, stderr, request, response, '', null, false);
-        });
-    });
-
-    describe('handleNegotiation', () => {
+    describe('handleError', () => {
       let engine: any;
       let variants: any;
       const stdout = new PassThrough();
@@ -1035,47 +810,236 @@ describe('A second HttpServiceSparqlEndpoint instance', () => {
   });
 });
 
-describe('A third HttpServiceSparqlEndpoint instance', () => {
+const variantsDefault = [{ type: 'application/json', quality: 1 },
+  { type: 'simple', quality: 1 },
+  { type: 'application/sparql-results+json', quality: 1 },
+  { type: 'application/sparql-results+xml', quality: 1 },
+  { type: 'table', quality: 1 },
+  { type: 'tree', quality: 0.9 },
+  { type: 'stats', quality: 1 },
+  { type: 'application/trig', quality: 1 },
+  { type: 'application/n-quads', quality: 0.7 },
+  { type: 'text/turtle', quality: 0.6 },
+  { type: 'application/n-triples', quality: 0.3 },
+  { type: 'text/n3', quality: 0.2 },
+  { type: 'application/ld+json', quality: 0.9 }];
+
+const negotiation = [{ type: 'stats',
+  quality: 1,
+  qm: 1,
+  qt: 0.8,
+  qts: 2,
+  ql: 0.5,
+  qls: 0,
+  qc: 1,
+  qcs: 0,
+  qe: 1,
+  qes: 0,
+  qs: 1,
+  q: 0.4 },
+{ type: 'application/json',
+  quality: 1,
+  qm: 1,
+  qt: 0.8,
+  qts: 2,
+  ql: 0.5,
+  qls: 0,
+  qc: 1,
+  qcs: 0,
+  qe: 1,
+  qes: 0,
+  qs: 1,
+  q: 0.4 },
+{ type: 'application/sparql-results+json',
+  quality: 1,
+  qm: 1,
+  qt: 0.8,
+  qts: 2,
+  ql: 0.5,
+  qls: 0,
+  qc: 1,
+  qcs: 0,
+  qe: 1,
+  qes: 0,
+  qs: 1,
+  q: 0.4 },
+{ type: 'application/sparql-results+xml',
+  quality: 1,
+  qm: 1,
+  qt: 0.8,
+  qts: 2,
+  ql: 0.5,
+  qls: 0,
+  qc: 1,
+  qcs: 0,
+  qe: 1,
+  qes: 0,
+  qs: 1,
+  q: 0.4 },
+{ type: 'table',
+  quality: 1,
+  qm: 1,
+  qt: 0.8,
+  qts: 2,
+  ql: 0.5,
+  qls: 0,
+  qc: 1,
+  qcs: 0,
+  qe: 1,
+  qes: 0,
+  qs: 1,
+  q: 0.4 },
+{ type: 'application/trig',
+  quality: 1,
+  qm: 1,
+  qt: 0.8,
+  qts: 2,
+  ql: 0.5,
+  qls: 0,
+  qc: 1,
+  qcs: 0,
+  qe: 1,
+  qes: 0,
+  qs: 1,
+  q: 0.4 },
+{ type: 'simple',
+  quality: 1,
+  qm: 1,
+  qt: 0.8,
+  qts: 2,
+  ql: 0.5,
+  qls: 0,
+  qc: 1,
+  qcs: 0,
+  qe: 1,
+  qes: 0,
+  qs: 1,
+  q: 0.4 },
+{ type: 'tree',
+  quality: 0.9,
+  qm: 1,
+  qt: 0.8,
+  qts: 2,
+  ql: 0.5,
+  qls: 0,
+  qc: 1,
+  qcs: 0,
+  qe: 1,
+  qes: 0,
+  qs: 0.9,
+  q: 0.36 },
+{ type: 'application/ld+json',
+  quality: 0.9,
+  qm: 1,
+  qt: 0.8,
+  qts: 2,
+  ql: 0.5,
+  qls: 0,
+  qc: 1,
+  qcs: 0,
+  qe: 1,
+  qes: 0,
+  qs: 0.9,
+  q: 0.36 },
+{ type: 'application/n-quads',
+  quality: 0.7,
+  qm: 1,
+  qt: 0.8,
+  qts: 2,
+  ql: 0.5,
+  qls: 0,
+  qc: 1,
+  qcs: 0,
+  qe: 1,
+  qes: 0,
+  qs: 0.7,
+  q: 0.28 },
+{ type: 'text/turtle',
+  quality: 0.6,
+  qm: 1,
+  qt: 0.8,
+  qts: 2,
+  ql: 0.5,
+  qls: 0,
+  qc: 1,
+  qcs: 0,
+  qe: 1,
+  qes: 0,
+  qs: 0.6,
+  q: 0.24 },
+{ type: 'application/n-triples',
+  quality: 0.3,
+  qm: 1,
+  qt: 0.8,
+  qts: 2,
+  ql: 0.5,
+  qls: 0,
+  qc: 1,
+  qcs: 0,
+  qe: 1,
+  qes: 0,
+  qs: 0.3,
+  q: 0.12 },
+{ type: 'text/n3',
+  quality: 0.2,
+  qm: 1,
+  qt: 0.8,
+  qts: 2,
+  ql: 0.5,
+  qls: 0,
+  qc: 1,
+  qcs: 0,
+  qe: 1,
+  qes: 0,
+  qs: 0.2,
+  q: 0.08 }];
+
+describe('HttpServiceSparqlEndpointThree', () => {
   let instance: any;
-  beforeEach(() => {
+  let engine: any;
+  const stdout = new PassThrough();
+  const stderr = new PassThrough();
+  let request: any;
+  let response: any;
+  let variants: any;
+
+  beforeEach(async() => {
     instance = new HttpServiceSparqlEndpoint({});
+    instance.writeQueryResult = jest.fn();
+    engine = await newEngineDynamic();
+    request = makeRequest();
+    response = new ServerResponseMock();
+    variants = [{ type: 'application/trig', quality: 0.4 },
+      { type: 'stats', quality: 1 },
+      { type: 'application/json', quality: 1 },
+      { type: 'simple', quality: 0.5 }];
   });
 
-  describe('handleRequest', () => {
-    let engine: any;
-    const stdout = new PassThrough();
-    const stderr = new PassThrough();
-    let request: any;
-    let response: any;
+  function makeRequest() {
+    request = stringToStream('default_test_request_content');
+    request.url = 'url_sparql';
+    request.headers = { 'content-type': 'contenttypewhichdefinitelydoesnotexist',
+      accept: 'application/json,application/trig,simple,stats' };
+    request.method = 'GET';
+    return request;
+  }
 
-    beforeEach(async() => {
-      instance.writeQueryResult = jest.fn();
-      engine = await newEngineDynamic();
-      request = makeRequest();
-      response = new ServerResponseMock();
+  it('should call writeQueryResult with the preferred default'
+    , async() => {
+      const choose = jest.fn(() => negotiation);
+      jest.doMock('negotiate', () => {
+        return {
+          choose,
+        };
+      });
+      expect(instance.contentNegotiation(request, variants)).toEqual('application/trig');
     });
 
-    function makeRequest() {
-      request = stringToStream('default_test_request_content');
-      request.url = 'url_sparql';
+  it('should call writeQueryResult with null as mediatype'
+    , async() => {
+      request.url = 'url_undefined_query';
       request.headers = { 'content-type': 'contenttypewhichdefinitelydoesnotexist',
-        accept: 'application/json,application/trig,simple,stats' };
-      return request;
-    }
-
-    it('should call writeQueryResult with the preferred default'
-      , async() => {
-        const choose = jest.fn(() => negotiation);
-        jest.doMock('negotiate', () => {
-          return {
-            choose,
-          };
-        });
-        request.method = 'GET';
-        await instance.handleRequest(engine, variantsDefault, stdout, stderr, request, response);
-
-        expect(instance.writeQueryResult)
-          .toHaveBeenCalledWith(engine, stdout, stderr, request, response, 'test_query', 'application/json', false);
-      });
-  });
+        accept: '*/*' };
+      expect(instance.contentNegotiation(request, variants)).toEqual(null);
+    });
 });
