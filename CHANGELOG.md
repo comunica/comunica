@@ -1,6 +1,29 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v1.14.0"></a>
+## [v1.14.0](https://github.com/comunica/comunica/compare/v1.13.1...v1.14.0) - 2020-07-24
+
+### Added
+* [Enable cardinality estimates in RDFJS sources](https://github.com/comunica/comunica/commit/88b8850c07f864a9abfcb5d0335fa51cd9c5df93)
+* [Redirect default HTTP index to /sparql, Closes #663](https://github.com/comunica/comunica/commit/e4d9a989ca9aec43e74ac4d599d0619fb71c92ea)
+* [Simplify how RDFJS sources can be passed](https://github.com/comunica/comunica/commit/f13c76cb6c159c2efa29d2d09aa9544f9246aa16)
+
+### Changed
+* [Migrate to asynciterator to 3 to improve performance in browsers](https://github.com/comunica/comunica/commit/00ab75acfe60af8572dd7def454be673d724a2e8)
+* [Update dependency lru-cache to v6](https://github.com/comunica/comunica/commit/87dc51a4a4a4a2799752f34de74d6175d6eb41ff)
+* [Move relevant @types to dependencies, Closes #294](https://github.com/comunica/comunica/commit/3a3c40fb442f3a67f2ca964523494e94b8ac8413)
+* [Replace json-stable-stringify dependency with canonicalize, Closes #590](https://github.com/comunica/comunica/commit/3400465376830528dde1ba829e1367be01354aaf)
+
+### Fixed
+* [Fix floating promises](https://github.com/comunica/comunica/commit/072db561e3bca7b9dd652b7bf10e70707edf7266)
+* [Fix test failures on Node 10](https://github.com/comunica/comunica/commit/1b23e9640098eba2f3d99c11928d8e4ded9005d0)
+* [Use latest fetch API with cross-fetch to fix fetch-related compatibility issues](https://github.com/comunica/comunica/commit/996d286500c9f71b8eb5c1786017b9c2ea54227f)
+* [Fix orderby not taking numerical types into account](https://github.com/comunica/comunica/commit/638b64872e07b8794407aaab7d0a4e8966599c17)
+* [Fix invalid RDFJS actor IRI](https://github.com/comunica/comunica/commit/343ad6962f0132c0cf4589b278df521914146f04)
+* [Fix newEngine in SPARQL init file exporting browser build, Closes #648](https://github.com/comunica/comunica/commit/4b6bd248860f3c58b820ed6dff4b56c3d35c7bfc)
+* [Fix orderby not properly handing multiple comparators, Closes #598](https://github.com/comunica/comunica/commit/eb1c91f83903a044a582de1b246377f5563da96c)
+
 <a name="v1.13.1"></a>
 ## [v1.13.1](https://github.com/comunica/comunica/compare/v1.13.0...v1.13.1) - 2020-06-11
 

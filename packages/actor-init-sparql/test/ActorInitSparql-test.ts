@@ -521,7 +521,7 @@ describe('ActorInitSparql', () => {
 
     describe('getScriptOutput', () => {
       it('should return the fallback for a failing command', () => {
-        return expect(actor.getScriptOutput('acommandthatdefinitelydoesnotexist', 'fallback'))
+        return expect(ActorInitSparql.getScriptOutput('acommandthatdefinitelydoesnotexist', 'fallback'))
           .resolves.toEqual('fallback');
       });
     });
