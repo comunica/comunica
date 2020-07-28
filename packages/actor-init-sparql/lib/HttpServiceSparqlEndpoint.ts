@@ -26,8 +26,8 @@ export class HttpServiceSparqlEndpoint {
   public static readonly HELP_MESSAGE = `comunica-sparql-http exposes a Comunica engine as SPARQL endpoint
 
 Usage:
-  comunica-sparql-http hypermedia@http://fragments.dbpedia.org/2015/en
-  comunica-sparql-http http://fragments.dbpedia.org/2015/en http://fragments.dbpedia.org/2016-04/en
+  comunica-sparql-http http://fragments.dbpedia.org/2015/en
+  comunica-sparql-http http://fragments.dbpedia.org/2015/en hypermedia@http://fragments.dbpedia.org/2016-04/en
   comunica-sparql-http -c context.json 
   comunica-sparql-http -c "{ \\"sources\\": [{ \\"type\\": \\"hypermedia\\", \\"value\\" : \\"http://fragments.dbpedia.org/2015/en\\" }]}" 
 

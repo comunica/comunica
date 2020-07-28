@@ -87,14 +87,10 @@ Use `bin/query-dynamic.js` when running dynamically inside the Comunica monorepo
 Start a webservice exposing http://fragments.dbpedia.org/2015-10/en via the SPARQL protocol, i.e., a _SPARQL endpoint_.
 
 ```bash
-$ comunica-sparql-http "{ \"sources\": [\"http://fragments.dbpedia.org/2015/en\"]}"
+$ comunica-sparql-http http://fragments.dbpedia.org/2015/en
 ```
 
-or
-
-```bash
-$ comunica-sparql-http "{ \"sources\": [{ \"type\" : \"file\", \"value\" : \"https://ruben.verborgh.org/profile/\" }]}"
-```
+This command has a similar signature to `comunica-sparql`, minus the query input options.
 
 Show the help with all options:
 
