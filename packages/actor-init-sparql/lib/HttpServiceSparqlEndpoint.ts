@@ -13,8 +13,6 @@ import * as RDF from 'rdf-js';
 import { newEngineDynamic } from '..';
 import { ActorInitSparql } from './ActorInitSparql';
 import { IQueryOptions } from './QueryDynamic';
-
-// Tslint:disable:no-var-requires
 const quad = require('rdf-quad');
 
 /**
