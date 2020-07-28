@@ -41,7 +41,7 @@
   "dependencies": {
     "@types/rdf-js": "^3.0.0",
     "rdf-string": "^1.4.2",
-    "sparqlee": "^1.4.0"
+    "sparqlee": "^1.4.1"
   },
   "devDependencies": {
     "@comunica/actor-query-operation-filter-direct": "^1.14.0",
