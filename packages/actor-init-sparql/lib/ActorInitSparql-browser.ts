@@ -94,32 +94,28 @@ export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs {
    */
   public static enhanceQueryResults(results: IActorQueryOperationOutput): IQueryResult {
     // Set bindings
-    if ((<IQueryResultBindings> results).bindingsStream) {
-      (<IQueryResultBindings> results).bindings = () => {
+    if ((<IQueryResultBindings>results).bindingsStream) {
+      (<IQueryResultBindings>results).bindings = () => new Promise((resolve, reject) => {
         const result: RDF.Term[] = [];
-        (<IQueryResultBindings> results).bindingsStream.on('data', data => {
+        (<IQueryResultBindings>results).bindingsStream.on('data', data => {
           result.push(data);
         });
-        return new Promise((resolve, reject) => {
-          (<IQueryResultBindings> results).bindingsStream.on('end', () => {
-            resolve(result);
-          });
-          (<IQueryResultBindings> results).bindingsStream.on('error', reject);
+        (<IQueryResultBindings>results).bindingsStream.on('end', () => {
+          resolve(result);
         });
-      };
-    } else if ((<IQueryResultQuads> results).quadStream) {
-      (<IQueryResultQuads> results).quads = () => {
+        (<IQueryResultBindings>results).bindingsStream.on('error', reject);
+      });
+    } else if ((<IQueryResultQuads>results).quadStream) {
+      (<IQueryResultQuads>results).quads = () => new Promise((resolve, reject) => {
         const result: RDF.Quad[] = [];
-        (<IQueryResultQuads> results).quadStream.on('data', data => {
+        (<IQueryResultQuads>results).quadStream.on('data', data => {
           result.push(data);
         });
-        return new Promise((resolve, reject) => {
-          (<IQueryResultQuads> results).quadStream.on('end', () => {
-            resolve(result);
-          });
-          (<IQueryResultQuads> results).quadStream.on('error', reject);
+        (<IQueryResultQuads>results).quadStream.on('end', () => {
+          resolve(result);
         });
-      };
+        (<IQueryResultQuads>results).quadStream.on('error', reject);
+      });
     }
     return <IQueryResult> results;
   }
