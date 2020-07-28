@@ -1,5 +1,14 @@
 # Changelog
 
+<a name="v1.4.1"></a>
+## [v1.4.1](https://github.com/comunica/sparqlee/compare/v1.4.0...v1.4.1) - 2020-07-28
+
+### Fixed
+* [Enable min/max over non-numerical literals](https://github.com/comunica/sparqlee/commit/c6a5a9373619e132bfb72b94aa7bb1f1443bbeac)
+
+### Changed
+* [Move relevant @types to dependencies](https://github.com/comunica/sparqlee/commit/f80f1b69a36b9ecbac6422ba36c6ff2c74b0b595)
+
 <a name="v1.4.0"></a>
 ## [v1.4.0](https://github.com/comunica/sparqlee/compare/v1.3.2...v1.4.0) - 2020-07-09
 
