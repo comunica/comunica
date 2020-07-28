@@ -33,6 +33,10 @@ function makeAggregate(aggregator: string, distinct = false, separator?: string)
   };
 }
 
+function nonLiteral(): RDF.Term {
+  return namedNode('http://example.org/');
+}
+
 function int(value: string): RDF.Term {
   return literal(value, 'http://www.w3.org/2001/XMLSchema#integer');
 }
@@ -47,6 +51,10 @@ function decimal(value: string): RDF.Term {
 
 function double(value: string): RDF.Term {
   return literal(value, 'http://www.w3.org/2001/XMLSchema#double');
+}
+
+function string(value: string): RDF.Term {
+  return literal(value, 'http://www.w3.org/2001/XMLSchema#string');
 }
 
 describe('an aggregate evaluator should be able to', () => {
@@ -137,6 +145,7 @@ describe('an aggregate evaluator should be able to', () => {
   });
 
   describe('min', () => {
+    
     it('a list of bindings', () => {
       const result = testCase({
         expr: makeAggregate('min'),
@@ -148,6 +157,19 @@ describe('an aggregate evaluator should be able to', () => {
         ],
       });
       expect(result).toEqual(int('1'));
+    });
+
+    it('a list of string bindings', () => {
+      const result = testCase({
+        expr: makeAggregate('min'),
+        input: [
+          Bindings({ '?x': string('11') }),
+          Bindings({ '?x': string('2') }),
+          Bindings({ '?x': string('1') }),
+          Bindings({ '?x': string('3') }),
+        ],
+      });
+      expect(result).toEqual(string('1'));
     });
 
     it('with respect to empty input', () => {
@@ -171,6 +193,19 @@ describe('an aggregate evaluator should be able to', () => {
         ],
       });
       expect(result).toEqual(int('4'));
+    });
+
+    it('a list of string bindings', () => {
+      const result = testCase({
+        expr: makeAggregate('max'),
+        input: [
+          Bindings({ '?x': string('11') }),
+          Bindings({ '?x': string('2') }),
+          Bindings({ '?x': string('1') }),
+          Bindings({ '?x': string('3') }),
+        ],
+      });
+      expect(result).toEqual(string('3'));
     });
 
     it('with respect to empty input', () => {
@@ -290,19 +325,6 @@ describe('an aggregate evaluator should be able to', () => {
     });
   });
 
-  describe('handle errors', () => {
-    it('in the first value', () => {
-      expect((() => {
-        testCase({
-          expr: makeAggregate('sum'),
-          input: [
-            Bindings({ '?x': literal('1') }),
-            Bindings({ '?x': int('1') }),
-          ],
-        });
-      })()).toEqual(undefined);
-    });
-
     it('on a put', () => {
       expect((() => {
         testCase({
@@ -313,6 +335,55 @@ describe('an aggregate evaluator should be able to', () => {
           ],
         });
       })()).toEqual(undefined);
+    });
+
+    it('different types compared in min should return undefined', () => {
+      const result = testCase({
+        expr: makeAggregate('min'),
+        input: [
+          Bindings({ '?x': string('11') }),
+          Bindings({ '?x': int('2') }),
+          Bindings({ '?x': string('3') }),
+        ],
+      });
+      expect(result).toEqual(undefined);
+    });
+
+    it('different types compared in max should return undefined', () => {
+      const result = testCase({
+        expr: makeAggregate('max'),
+        input: [
+          Bindings({ '?x': string('11') }),
+          Bindings({ '?x': int('2') }),
+          Bindings({ '?x': string('3') }),
+        ],
+      });
+      expect(result).toEqual(undefined);
+    });
+
+    it('passing a non-literal to max should not be accepted', () => {
+      const result = testCase({
+        expr: makeAggregate('max'),
+        input: [
+          Bindings({ '?x': nonLiteral() }),
+          Bindings({ '?x': int('2') }),
+          Bindings({ '?x': int('3') }),
+        ],
+      });
+      expect(result).toEqual(undefined);
+    });
+
+    it('passing a non-literal to sum should not be accepted', () => {
+      const result = testCase({
+        expr: makeAggregate('sum'),
+        input: [
+          Bindings({ '?x': nonLiteral() }),
+          Bindings({ '?x': int('2') }),
+          Bindings({ '?x': int('3') }),
+          Bindings({ '?x': int('4') }),
+        ],
+      });
+      expect(undefined);
     });
 
     describe('when we ask for throwing errors', () => {
@@ -350,7 +421,6 @@ describe('an aggregate evaluator should be able to', () => {
             throwError: true,
           });
         }).toThrow();
-      });
     });
   });
 });

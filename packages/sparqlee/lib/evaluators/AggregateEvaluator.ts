@@ -16,6 +16,7 @@ import { Bindings } from '../Types';
 import { parseXSDFloat } from '../util/Parsing';
 import { SetFunction, TypeURL } from './../util/Consts';
 import { SyncEvaluator, SyncEvaluatorConfig } from './SyncEvaluator';
+import { transformLiteral } from '../Transformation';
 
 // TODO: Support hooks
 export class AggregateEvaluator {
@@ -178,49 +179,52 @@ class Sum extends BaseAggregator<SumState> {
   }
 }
 
-type MinState = { minNum: number, minTerm: RDF.Term };
-class Min extends BaseAggregator<MinState> {
-  init(start: RDF.Term): MinState {
-    const { value } = extractNumericValueAndTypeOrError(start);
-    return { minNum: value, minTerm: start };
+type ExtremeState = { extremeValue: number, term: RDF.Literal };
+class Min extends BaseAggregator<ExtremeState> {
+  init(start: RDF.Term): ExtremeState {
+    const {value} = extractValue(null, start);
+    if (start.termType === 'Literal') {
+      return { extremeValue:value, term: start };
+    }
   }
 
-  put(state: MinState, term: RDF.Term): MinState {
-    const { value } = extractNumericValueAndTypeOrError(term);
-    if (value < state.minNum) {
+  put(state: ExtremeState, term: RDF.Term): ExtremeState {
+    const extracted = extractValue(state.term, term);
+    if (extracted.value < state.extremeValue && term.termType === 'Literal') {
       return {
-        minNum: value,
-        minTerm: term,
+        extremeValue: extracted.value ,
+        term,
       };
     }
     return state;
   }
 
-  result(state: MinState): RDF.Term {
-    return state.minTerm;
+  result(state: ExtremeState): RDF.Term {
+    return state.term;
   }
 }
 
-type MaxState = { maxNum: number, maxTerm: RDF.Term };
-class Max extends BaseAggregator<MaxState> {
-  init(start: RDF.Term): MaxState {
-    const { value } = extractNumericValueAndTypeOrError(start);
-    return { maxNum: value, maxTerm: start };
+class Max extends BaseAggregator<ExtremeState> {
+  init(start: RDF.Term): ExtremeState {
+    const {value} = extractValue(null, start);
+    if (start.termType === 'Literal') {
+      return { extremeValue:value, term: start };
+    }
   }
 
-  put(state: MaxState, term: RDF.Term): MaxState {
-    const { value } = extractNumericValueAndTypeOrError(term);
-    if (value >= state.maxNum) {
+  put(state: ExtremeState, term: RDF.Term): ExtremeState {
+    const extracted = extractValue(state.term, term);
+    if (extracted.value > state.extremeValue && term.termType === 'Literal') {
       return {
-        maxNum: value,
-        maxTerm: term,
+        extremeValue: extracted.value ,
+        term,
       };
     }
     return state;
   }
 
-  result(state: MaxState): RDF.Term {
-    return state.maxTerm;
+  result(state: ExtremeState): RDF.Term {
+    return state.term;
   }
 }
 
@@ -305,11 +309,25 @@ export const aggregators: Readonly<{ [key in SetFunction]: AggregatorClass }> = 
 
 function extractNumericValueAndTypeOrError(term: RDF.Term): { value: number, type: C.NumericTypeURL } {
   // TODO: Check behaviour
-  if (term.termType !== 'Literal' || !C.NumericTypeURLs.contains(term.datatype.value)) {
-    throw new Error('Term is not numeric');
+  if (term.termType !== 'Literal') {
+    throw new Error('Term with value ' + term.value + ' has type ' + term.termType +' and is not a numeric literal');
+  } else if (!C.NumericTypeURLs.contains(term.datatype.value)) {
+    throw new Error('Term datatype '+ term.datatype.value +' with value ' + term.value + ' has type ' + term.termType +' and is not a numeric literal');
   }
 
   const type: C.NumericTypeURL = term.datatype.value as unknown as C.NumericTypeURL;
   const value = parseXSDFloat(term.value);
   return { type, value };
+}
+
+function extractValue(extremeTerm: RDF.Literal, term: RDF.Term): {value: any, type:string}  {
+  if (term.termType !== 'Literal') {
+    throw new Error('Term with value ' + term.value + ' has type ' + term.termType +' and is not a literal');
+  } else if (extremeTerm && extremeTerm.datatype.value !== term.datatype.value) {
+    throw new Error('Inconsistent types were found. Previous term types were of type ' +
+      extremeTerm.datatype.value + ' now type is ' + term.datatype.value +'.');
+  }
+
+  const transformedLit = transformLiteral(term);
+  return {type: transformedLit.typeURL.value, value: transformedLit.typedValue};
 }
