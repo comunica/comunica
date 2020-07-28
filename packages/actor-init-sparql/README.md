@@ -147,7 +147,10 @@ const result = await myEngine.query('SELECT * WHERE { ?s ?p <http://dbpedia.org/
     { type: 'file', value: 'https://ruben.verborgh.org/profile/' },
     { type: 'rdfjsSource', value: new N3Store() },
   ] })
+// Stream-based processing of results
 result.bindingsStream.on('data', (data) => console.log(data.toObject()));
+// Or directly collect the stream in an array
+const bindings = await result.bindings();
 ```
 
 **Note: Some SPARQL endpoints may be recognised as a file instead of a SPARQL endpoint due to them not supporting [SPARQL Service Description](https://www.w3.org/TR/sparql11-service-description/), which may produce incorrect results. For these cases, the `sparql` type MUST be set.**
@@ -158,7 +161,10 @@ results can be collected as follows.
 ```javascript
 const result = await myEngine.query('CONSTRUCT WHERE { ?s ?p <http://dbpedia.org/resource/Belgium> } LIMIT 100',
   { sources: ['http://fragments.dbpedia.org/2015/en'] })
+// Stream-based processing of results
 result.quadStream.on('data', (data) => console.log(data));
+// Or directly collect the stream in an array
+const quads = await result.quads();
 ```
 
 Finally, `ASK` queries return async booleans.
