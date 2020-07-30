@@ -325,7 +325,7 @@ const STRSTARTS = {
     )
     .onBinaryTyped(
       ['langString', 'string'],
-      (arg1: string, arg2: string) => bool(arg1.includes(arg2)),
+      (arg1: string, arg2: string) => bool(arg1.startsWith(arg2)),
     )
     .onBinary(
       ['langString', 'langString'],
@@ -347,7 +347,7 @@ const STRENDS = {
     )
     .onBinaryTyped(
       ['langString', 'string'],
-      (arg1: string, arg2: string) => bool(arg1.includes(arg2)),
+      (arg1: string, arg2: string) => bool(arg1.endsWith(arg2)),
     )
     .onBinary(
       ['langString', 'langString'],
