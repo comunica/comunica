@@ -170,11 +170,12 @@ describe('ActorHttpNative', () => {
       const req = requester.createRequest(options);
       req.on('response', httpResponse => {
         httpResponse.rawHeaders = raw;
-        processHttpResponse(httpResponse, options, (arg: any) =>
+        processHttpResponse(httpResponse, options, (result: any) =>
         {
-          // Empty
+          expect(result).toMatchObject({ status: 200 });
+          expect(result.body.input.headers.get('server')).toBeTruthy();
         }, () => {
-          // Empty
+          // Error will not occur
         });
       });
     });
