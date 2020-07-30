@@ -918,37 +918,47 @@ describe('determineMediaType', () => {
     });
 
   it('should choose default mediatype if it is present in accept', async() => {
-    request.headers = { accept: 'application/json,application/trig,simple,stats' };
+    request.headers = { accept: 'application/json;q=1,application/trig;q=1,simple;q=1,stats;q=1' };
     instance.parseBody = jest.fn(() => Promise.resolve('test_result'));
     request.method = 'POST';
     expect(instance.determineMediaType(request, variantsDefault)).toEqual('application/json');
   });
 
   it('should choose second preferred mediatype if it is present in accept', async() => {
-    request.headers = { accept: 'application/trig,simple,stats' };
+    request.headers = { accept: 'application/trig;q=1,simple;q=1,stats;q=1' };
     instance.parseBody = jest.fn(() => Promise.resolve('test_result'));
     request.method = 'POST';
     expect(instance.determineMediaType(request, variantsDefault)).toEqual('simple');
   });
 
   it('should choose the next preferred variant available in accept', async() => {
-    request.headers = { accept: 'application/trig,stats' };
+    request.headers = { accept: 'application/trig;q=1,stats;q=1' };
     instance.parseBody = jest.fn(() => Promise.resolve('test_result'));
     request.method = 'POST';
     expect(instance.determineMediaType(request, variantsDefault)).toEqual('stats');
   });
 
   it('should choose the preferred variant with different q values', async() => {
-    request.headers = { accept: 'application/n-quads,tree,application/n-triples,application/ld+json' };
+    request.headers = { accept: 'aapplication/n-quads;q=0.7,tree;q=0.9,' +
+      'application/n-triples;q=0.3,application/ld+json;q=0.9' };
     instance.parseBody = jest.fn(() => Promise.resolve('test_result'));
     request.method = 'POST';
     expect(instance.determineMediaType(request, variantsDefault)).toEqual('tree');
   });
 
   it('should choose the preferred variant with different q values and with q=1 included', async() => {
-    request.headers = { accept: 'application/n-quads,tree,application/n-triples,application/ld+json,application/trig' };
+    request.headers = { accept: 'application/n-quads;q=0.7,tree;q=0.9,application/n-triples;' +
+      'q=0.3,application/ld+json;q=0.9,application/trig;q=1' };
     instance.parseBody = jest.fn(() => Promise.resolve('test_result'));
     request.method = 'POST';
     expect(instance.determineMediaType(request, variantsDefault)).toEqual('application/trig');
+  });
+
+  it('should choose the preferred variant with different q than negotiatie', async() => {
+    request.headers = { accept: 'application/n-quads;q=0.7,tree;q=0.3,application/n-triples;q=0.3,' +
+      'application/ld+json;q=0.9,application/trig;q=0.5' };
+    instance.parseBody = jest.fn(() => Promise.resolve('test_result'));
+    request.method = 'POST';
+    expect(instance.determineMediaType(request, variantsDefault)).toEqual('application/ld+json');
   });
 });
