@@ -33,7 +33,8 @@
     "index.js"
   ],
   "dependencies": {
-    "relative-to-absolute-iri": "^1.0.5"
+    "relative-to-absolute-iri": "^1.0.5",
+    "cross-fetch": "^3.0.5"
   },
   "peerDependencies": {
     "@comunica/bus-http": "^1.0.0",
