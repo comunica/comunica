@@ -944,4 +944,11 @@ describe('determineMediaType', () => {
     request.method = 'POST';
     expect(instance.determineMediaType(request, variantsDefault)).toEqual('tree');
   });
+
+  it('should choose the preferred variant with different q values and with q=1 included', async() => {
+    request.headers = { accept: 'application/n-quads,tree,application/n-triples,application/ld+json,application/trig' };
+    instance.parseBody = jest.fn(() => Promise.resolve('test_result'));
+    request.method = 'POST';
+    expect(instance.determineMediaType(request, variantsDefault)).toEqual('application/trig');
+  });
 });
