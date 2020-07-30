@@ -889,21 +889,16 @@ const variantsDefault = [{ type: 'application/json', quality: 1 },
 describe('determineMediaType', () => {
   let instance: any;
   let request: any;
-  let response: any;
-  let variants: any;
 
   beforeEach(async() => {
     instance = new HttpServiceSparqlEndpoint({});
-    instance.writeQueryResult = jest.fn();
     request = makeRequest();
-    response = new ServerResponseMock();
   });
 
   function makeRequest() {
     request = stringToStream('default_test_request_content');
     request.url = 'url_sparql';
-    request.headers = { 'content-type': 'contenttypewhichdefinitelydoesnotexist',
-      accept: 'application/json,application/trig,simple,stats' };
+    request.headers = { accept: 'application/json,application/trig,simple,stats' };
     request.method = 'GET';
     return request;
   }
@@ -911,16 +906,15 @@ describe('determineMediaType', () => {
   it('should return a null mediatype when given */* accept header'
     , async() => {
       request.url = 'url_undefined_query';
-      request.headers = { 'content-type': 'contenttypewhichdefinitelydoesnotexist',
-        accept: '*/*' };
-      expect(instance.determineMediaType(request, variants)).toEqual(null);
+      request.headers = { accept: '*/*' };
+      expect(instance.determineMediaType(request, variantsDefault)).toEqual(null);
     });
 
   it('should return a null mediatype when no accept header'
     , async() => {
       request.url = 'url_undefined_query';
-      request.headers = { 'content-type': 'contenttypewhichdefinitelydoesnotexist' };
-      expect(instance.determineMediaType(request, variants)).toEqual(null);
+      request.headers = {};
+      expect(instance.determineMediaType(request, variantsDefault)).toEqual(null);
     });
 
   it('should choose default mediatype if it is present in accept', async() => {
@@ -942,5 +936,12 @@ describe('determineMediaType', () => {
     instance.parseBody = jest.fn(() => Promise.resolve('test_result'));
     request.method = 'POST';
     expect(instance.determineMediaType(request, variantsDefault)).toEqual('stats');
+  });
+
+  it('should choose the preferred variant with different q values', async() => {
+    request.headers = { accept: 'application/n-quads,tree,application/n-triples,application/ld+json' };
+    instance.parseBody = jest.fn(() => Promise.resolve('test_result'));
+    request.method = 'POST';
+    expect(instance.determineMediaType(request, variantsDefault)).toEqual('tree');
   });
 });
