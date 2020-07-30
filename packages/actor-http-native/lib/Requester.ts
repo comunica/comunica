@@ -34,8 +34,20 @@ export default class Requester {
     const requestProxy = new EventEmitter();
     const requester = settings.protocol === 'http:' ? http : https;
     settings.agents = this.agents;
+
+    const headers = settings.headers;
+    // Unpacking headers object into a plain object
+    const headersObject: any = {};
+    if (settings.headers) {
+      for (const header of settings.headers) {
+        headersObject[header[0]] = header[1];
+      }
+    }
+    settings.headers = headersObject;
+
     const request: ClientRequest = requester.request(settings, (response: IncomingMessage) => {
       response = this.decode(response);
+      settings.headers = headers;
       response.setEncoding('utf8');
       // This was removed compared to the original LDF client implementation
       // response.pause(); // exit flow mode
@@ -56,7 +68,12 @@ export default class Requester {
         response.pipe(decoded);
         // Copy response properties
         decoded.statusCode = response.statusCode;
-        decoded.headers = response.headers;
+        // Wrap headers into an header object type
+        const responseHeaders: any = new Headers();
+        for (const header in response.headers) {
+          responseHeaders[header[0]] = header[1];
+        }
+        decoded.headers = responseHeaders;
         return decoded;
       }
       // Error when no suitable decoder found
@@ -64,6 +81,11 @@ export default class Requester {
         response.emit('error', new Error(`Unsupported encoding: ${encoding}`));
       });
     }
+    const responseHeaders: any = new Headers();
+    for (const header in response.headers) {
+      responseHeaders[header[0]] = header[1];
+    }
+    response.headers = responseHeaders;
     return response;
   }
 }

@@ -3,11 +3,40 @@ import * as url from 'url';
 import * as zlib from 'zlib';
 import { ActorHttp } from '@comunica/bus-http';
 import { Bus } from '@comunica/core';
-import { ActorHttpNative } from '../lib/ActorHttpNative';
+import { ActorHttpNative, processHttpResponse } from '../lib/ActorHttpNative';
 import Requester from '../lib/Requester';
 
+const http = require('http');
 const arrayifyStream = require('arrayify-stream');
 const mockSetup = require('./__mocks__/follow-redirects').mockSetup;
+const raw = [
+  'server',
+  'nginx/1.13.6',
+  'date',
+  'Thu, 30 Jul 2020 05:46:32 GMT',
+  'content-type',
+  'application/ld+json;charset=utf-8' ];
+
+const options = {
+  url: 'http://example.com/reqerror',
+  headers: new Headers(
+    { 'user-agent': 'b' },
+  ),
+  method: 'GET',
+  protocol: 'http:',
+  slashes: true,
+  auth: null,
+  host: 'example.com',
+  port: null,
+  hostname: 'example.com',
+  hash: null,
+  search: null,
+  query: null,
+  pathname: '/reqerror',
+  path: '/reqerror',
+  href: 'http://example.com/reqerror',
+  agents: { http: new http.Agent({}), https: new http.Agent({}) },
+};
 
 describe('ActorHttpNative', () => {
   let bus: any;
@@ -49,9 +78,11 @@ describe('ActorHttpNative', () => {
 
   describe('An ActorHttpNative instance', () => {
     let actor: ActorHttpNative;
+    let mock;
 
     beforeEach(() => {
       actor = new ActorHttpNative({ name: 'actor', bus });
+      mock = jest.fn();
     });
 
     it('should test', () => {
@@ -109,9 +140,19 @@ describe('ActorHttpNative', () => {
       expect(result.body.input.headers.get('user-agent')).toBeTruthy();
     });
 
-    it('uses Content-Location header as URL when set', async() => {
-      mockSetup({ headers: { 'content-location': 'http://example.com/contentlocation' }});
-      const result: any = await actor.run({ input: 'http://example.com' });
+    it('uses Content-Location header as URL when set with init', async() => {
+      const result: any = await actor.run(
+        { input: 'http://example.com',
+          init: { headers: new Headers({ 'content-location': 'http://example.com/contentlocation' }) }},
+      );
+      expect(result).toMatchObject({ url: 'http://example.com/contentlocation' });
+    });
+
+    it('uses Content-Location header as URL when set with input', async() => {
+      const result: any = await actor.run(
+        { input: new Request('http://example.com',
+          { headers: new Headers({ 'content-location': 'http://example.com/contentlocation' }) }) },
+      );
       expect(result).toMatchObject({ url: 'http://example.com/contentlocation' });
     });
 
@@ -122,6 +163,20 @@ describe('ActorHttpNative', () => {
       );
       expect(result).toMatchObject({ status: 200 });
       expect(result.body.input.headers.get('user-agent')).toBe('b');
+    });
+
+    it('should use raw headers', async() => {
+      const requester = new Requester();
+      const req = requester.createRequest(options);
+      req.on('response', httpResponse => {
+        httpResponse.rawHeaders = raw;
+        processHttpResponse(httpResponse, options, (arg: any) =>
+        {
+          // Empty
+        }, () => {
+          // Empty
+        });
+      });
     });
 
     it('should set a user agent if none has been set', async() => {

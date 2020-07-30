@@ -63,39 +63,54 @@ export class ActorHttpNative extends ActorHttp {
       const req = this.requester.createRequest(options);
       req.on('error', reject);
       req.on('response', httpResponse => {
-        httpResponse.on('error', (error: Error) => {
-          httpResponse = null;
-          reject(error);
-        });
-        // Avoid memory leak on HEAD requests
-        if (options.method === 'HEAD') {
-          httpResponse.destroy();
-        }
-        // Using setImmediate so error can be caught should it be thrown
-        setImmediate(() => {
-          if (httpResponse) {
-            // Expose fetch cancel promise
-            httpResponse.cancel = () => {
-              httpResponse.destroy();
-              return Promise.resolve(undefined);
-            };
-            // Missing several of the required fetch fields
-            const headers = new Headers(httpResponse.headers);
-            const result = <IActorHttpOutput> {
-              body: httpResponse,
-              headers,
-              ok: httpResponse.statusCode < 300,
-              redirected: options.url !== httpResponse.responseUrl,
-              status: httpResponse.statusCode,
-              // When the content came from another resource because of conneg, let Content-Location deliver the url
-              url: headers.has('content-location') ? headers.get('content-location') : httpResponse.responseUrl,
-            };
-            resolve(result);
-          }
-        });
+        processHttpResponse(httpResponse, options, resolve, reject);
       });
     });
   }
+}
+
+export function processHttpResponse(httpResponse: any, options: any, resolve: any, reject: any): void {
+  httpResponse.on('error', (error: Error) => {
+    httpResponse = null;
+    reject(error);
+  });
+  // Avoid memory leak on HEAD requests
+  if (options.method === 'HEAD') {
+    httpResponse.destroy();
+  }
+  // Using setImmediate so error can be caught should it be thrown
+  setImmediate(() => {
+    if (httpResponse) {
+      // Expose fetch cancel promise
+      httpResponse.cancel = () => {
+        httpResponse.destroy();
+        return Promise.resolve(undefined);
+      };
+      // Missing several of the required fetch fields
+
+      let headers = new Headers(httpResponse.headers);
+      if (httpResponse && httpResponse.input && httpResponse.input.headers) {
+        headers = httpResponse.input.headers;
+      }
+
+      if (httpResponse && httpResponse.rawHeaders) {
+        for (let i = 0; i + 1 < httpResponse.rawHeaders.length; i += 2) {
+          headers.set(httpResponse.rawHeaders[i], httpResponse.rawHeaders[i + 1]);
+        }
+      }
+
+      const result = <IActorHttpOutput> {
+        body: httpResponse,
+        headers,
+        ok: httpResponse.statusCode < 300,
+        redirected: options.url !== httpResponse.responseUrl,
+        status: httpResponse.statusCode,
+        // When the content came from another resource because of conneg, let Content-Location deliver the url
+        url: headers.has('content-location') ? headers.get('content-location') : httpResponse.responseUrl,
+      };
+      resolve(result);
+    }
+  });
 }
 
 // Try to keep connections open, and set a maximum number of connections per server
