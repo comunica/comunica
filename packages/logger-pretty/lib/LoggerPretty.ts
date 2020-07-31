@@ -40,7 +40,7 @@ export class LoggerPretty extends Logger {
 
   protected log(level: string, message: string, data?: any): void {
     if (Logger.getLevelOrdinal(level) >= this.levelOrdinal) {
-      process.stderr.write(`[${new Date().toISOString()}]  ${level.toUpperCase()}: ${message} ${inspect(data)}`);
+      process.stderr.write(`[${new Date().toISOString()}]  ${level.toUpperCase()}: ${message} ${inspect(data)}\n`);
     }
   }
 }
