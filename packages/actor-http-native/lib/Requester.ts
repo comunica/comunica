@@ -68,12 +68,7 @@ export default class Requester {
         response.pipe(decoded);
         // Copy response properties
         decoded.statusCode = response.statusCode;
-        // Wrap headers into an header object type
-        const responseHeaders: any = new Headers();
-        for (const header in response.headers) {
-          responseHeaders[header[0]] = header[1];
-        }
-        decoded.headers = responseHeaders;
+        decoded.headers = this.convertFetchHeadersToHash(response);
         return decoded;
       }
       // Error when no suitable decoder found
@@ -81,11 +76,17 @@ export default class Requester {
         response.emit('error', new Error(`Unsupported encoding: ${encoding}`));
       });
     }
+
+    response.headers = this.convertFetchHeadersToHash(response);
+    return response;
+  }
+
+  // Wrap headers into an header object type
+  private convertFetchHeadersToHash(response: IncomingMessage): any {
     const responseHeaders: any = new Headers();
     for (const header in response.headers) {
       responseHeaders[header[0]] = header[1];
     }
-    response.headers = responseHeaders;
-    return response;
+    return responseHeaders;
   }
 }
