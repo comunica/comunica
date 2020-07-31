@@ -1,7 +1,7 @@
 import { Bindings, IActorQueryOperationOutputBindings } from '@comunica/bus-query-operation';
 import { ActorRdfJoin, IActionRdfJoin } from '@comunica/bus-rdf-join';
 import { Bus } from '@comunica/core';
-import { literal } from '@rdfjs/data-model';
+import { literal, namedNode } from '@rdfjs/data-model';
 import { ArrayIterator } from 'asynciterator';
 import { ActorRdfJoinSymmetricHash } from '../lib/ActorRdfJoinSymmetricHash';
 const arrayifyStream = require('arrayify-stream');
@@ -147,6 +147,20 @@ describe('ActorRdfJoinSymmetricHash', () => {
           // eslint-disable-next-line @typescript-eslint/require-array-sort-compare
           .toEqual(expected.map(bindingsToString).sort());
       });
+    });
+
+    it('should hash to concatenation of values of variables', () => {
+      expect(ActorRdfJoinSymmetricHash.hash(
+        Bindings({ '?x': namedNode('http://www.example.org/instance#a'),
+          '?y': namedNode('http://www.example.org/instance#b') }), [ '?x', '?y' ],
+      )).toEqual('http://www.example.org/instance#ahttp://www.example.org/instance#b');
+    });
+
+    it('should not let hash being influenced by a variable that is not present in bindings', () => {
+      expect(ActorRdfJoinSymmetricHash.hash(
+        Bindings({ '?x': namedNode('http://www.example.org/instance#a'),
+          '?y': namedNode('http://www.example.org/instance#b') }), [ '?x', '?y', '?z' ],
+      )).toEqual('http://www.example.org/instance#ahttp://www.example.org/instance#b');
     });
   });
 });

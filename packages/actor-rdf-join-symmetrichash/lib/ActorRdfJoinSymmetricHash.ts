@@ -24,8 +24,8 @@ export class ActorRdfJoinSymmetricHash extends ActorRdfJoin {
    * @param {string[]} variables
    * @returns {string}
    */
-  protected static hash(bindings: Bindings, variables: string[]): string {
-    return variables.map(variable => bindings.get(variable)).join('');
+  public static hash(bindings: Bindings, variables: string[]): string {
+    return variables.filter(variable => bindings.has(variable)).map(variable => bindings.get(variable).value).join('');
   }
 
   public async getOutput(action: IActionRdfJoin): Promise<IActorQueryOperationOutputBindings> {
