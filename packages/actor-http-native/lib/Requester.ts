@@ -13,7 +13,7 @@ const { https } = require('follow-redirects');
 // Decode encoded streams with these decoders
 const DECODERS = { gzip: zlib.createGunzip, deflate: zlib.createInflate };
 
-export default class Requester {
+export class Requester {
   private readonly agents: any;
 
   public constructor(agentOptions?: AgentOptions) {
@@ -35,7 +35,6 @@ export default class Requester {
     const requester = settings.protocol === 'http:' ? http : https;
     settings.agents = this.agents;
 
-    const headers = settings.headers;
     // Unpacking headers object into a plain object
     const headersObject: any = {};
     if (settings.headers) {
@@ -47,7 +46,7 @@ export default class Requester {
 
     const request: ClientRequest = requester.request(settings, (response: IncomingMessage) => {
       response = this.decode(response);
-      settings.headers = headers;
+      settings.headers = response.headers;
       response.setEncoding('utf8');
       // This was removed compared to the original LDF client implementation
       // response.pause(); // exit flow mode
@@ -68,7 +67,7 @@ export default class Requester {
         response.pipe(decoded);
         // Copy response properties
         decoded.statusCode = response.statusCode;
-        decoded.headers = this.convertFetchHeadersToHash(response.headers);
+        decoded.headers = convertFetchHeadersToHash(response);
         return decoded;
       }
       // Error when no suitable decoder found
@@ -77,16 +76,21 @@ export default class Requester {
       });
     }
 
-    response.headers = this.convertFetchHeadersToHash(response.headers);
+    response.headers = convertFetchHeadersToHash(response);
     return response;
   }
+}
 
-  // Wrap headers into an header object type
-  private convertFetchHeadersToHash(headers: any): any {
-    const responseHeaders: any = new Headers();
-    for (const header in headers) {
-      responseHeaders[header[0]] = header[1];
+// Wrap headers into an header object type
+export function convertFetchHeadersToHash(response: any): any {
+  const responseHeaders: Headers = new Headers();
+  if (response.input && response.input.headers) {
+    for (const header in response.input.headers) {
+      responseHeaders.append(header, response.input.headers[header]);
     }
-    return responseHeaders;
   }
+  for (const header in response.headers) {
+    responseHeaders.append(header, response.headers[header]);
+  }
+  return responseHeaders;
 }

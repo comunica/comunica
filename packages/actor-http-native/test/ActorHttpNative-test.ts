@@ -3,10 +3,9 @@ import * as url from 'url';
 import * as zlib from 'zlib';
 import { ActorHttp } from '@comunica/bus-http';
 import { Bus } from '@comunica/core';
-import { ActorHttpNative, processHttpResponse } from '../lib/ActorHttpNative';
-import Requester from '../lib/Requester';
+import { ActorHttpNative } from '../lib/ActorHttpNative';
+import { convertFetchHeadersToHash, Requester } from '../lib/Requester';
 
-const http = require('http');
 const arrayifyStream = require('arrayify-stream');
 const mockSetup = require('./__mocks__/follow-redirects').mockSetup;
 
@@ -137,48 +136,6 @@ describe('ActorHttpNative', () => {
       expect(result.body.input.headers.get('user-agent')).toBe('b');
     });
 
-    it('should use raw headers', async() => {
-      const requester = new Requester();
-      const raw = [
-        'server',
-        'nginx/1.13.6',
-        'date',
-        'Thu, 30 Jul 2020 05:46:32 GMT',
-        'content-type',
-        'application/ld+json;charset=utf-8' ];
-      const options = {
-        url: 'http://example.com/reqerror',
-        headers: new Headers(
-          { 'user-agent': 'b' },
-        ),
-        method: 'GET',
-        protocol: 'http:',
-        slashes: true,
-        auth: null,
-        host: 'example.com',
-        port: null,
-        hostname: 'example.com',
-        hash: null,
-        search: null,
-        query: null,
-        pathname: '/reqerror',
-        path: '/reqerror',
-        href: 'http://example.com/reqerror',
-        agents: { http: new http.Agent({}), https: new http.Agent({}) },
-      };
-      const req = requester.createRequest(options);
-      req.on('response', httpResponse => {
-        httpResponse.rawHeaders = raw;
-        processHttpResponse(httpResponse, options, (result: any) =>
-        {
-          expect(result).toMatchObject({ status: 200 });
-          expect(result.body.input.headers.get('server')).toBeTruthy();
-        }, () => {
-          // Error will not occur
-        });
-      });
-    });
-
     it('should set a user agent if none has been set', async() => {
       mockSetup({ statusCode: 200 });
       const result: any = await actor.run(
@@ -238,6 +195,60 @@ describe('Requester', () => {
       req.on('response', response => {
         expect(response).toMatchObject({ statusCode: 405 });
         expect(response.input).toMatchObject({ href: 'http://example.com/test' });
+        resolve();
+      });
+    });
+  });
+});
+
+describe('convertFetchHeadersToHash', () => {
+  it('works with input and response headers', () => {
+    const requester = new Requester();
+    const req = requester.createRequest(url.parse('http://example.com/test'));
+    return new Promise(resolve => {
+      req.on('response', response => {
+        response.input = { headers: { a: 'b' }};
+        response.headers = { other: 'more' };
+        expect(convertFetchHeadersToHash(response)).toEqual(new Headers({ a: 'b', other: 'more' }));
+        resolve();
+      });
+    });
+  });
+
+  it('works with only response headers', () => {
+    const requester = new Requester();
+    const req = requester.createRequest(url.parse('http://example.com/test'));
+    return new Promise(resolve => {
+      req.on('response', response => {
+        response.input.headers = {};
+        response.headers = { other: 'more' };
+        expect(convertFetchHeadersToHash(response)).toEqual(new Headers({ other: 'more' }));
+        resolve();
+      });
+    });
+  });
+
+  it('works with no input nor response headers', () => {
+    const requester = new Requester();
+    const req = requester.createRequest(url.parse('http://example.com/test'));
+    return new Promise(resolve => {
+      req.on('response', response => {
+        response.input.headers = {};
+        response.headers = {};
+        expect(convertFetchHeadersToHash(response)).toEqual(new Headers({}));
+        resolve();
+      });
+    });
+  });
+
+  it('works with undefined input', () => {
+    const requester = new Requester();
+    const req = requester.createRequest(url.parse('http://example.com/test'));
+    return new Promise(resolve => {
+      req.on('response', response => {
+        response.input.headers = undefined;
+        response.headers = {};
+        expect(convertFetchHeadersToHash(response)).toEqual(new Headers({}));
         resolve();
       });
     });
