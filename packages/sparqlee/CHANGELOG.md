@@ -1,5 +1,11 @@
 # Changelog
 
+<a name="v1.4.2"></a>
+## [v1.4.2](https://github.com/comunica/sparqlee/compare/v1.4.1...v1.4.2) - 2020-07-31
+
+### Fixed
+* [Fix strtswith and endswith incorrectly calling includes, Closes #72](https://github.com/comunica/sparqlee/commit/b558c446bc526430d3fb378f17cfbc4cb6d7254d)
+
 <a name="v1.4.1"></a>
 ## [v1.4.1](https://github.com/comunica/sparqlee/compare/v1.4.0...v1.4.1) - 2020-07-28
 
