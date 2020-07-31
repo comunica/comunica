@@ -88,10 +88,7 @@ export function processHttpResponse(httpResponse: any, options: any, resolve: an
       };
       // Missing several of the required fetch fields
 
-      let headers = new Headers(httpResponse.headers);
-      if (httpResponse && httpResponse.input && httpResponse.input.headers) {
-        headers = httpResponse.input.headers;
-      }
+      const headers = httpResponse.input?.headers || new Headers();
 
       if (httpResponse && httpResponse.rawHeaders) {
         for (let i = 0; i + 1 < httpResponse.rawHeaders.length; i += 2) {
