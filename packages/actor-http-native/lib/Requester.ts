@@ -68,7 +68,7 @@ export default class Requester {
         response.pipe(decoded);
         // Copy response properties
         decoded.statusCode = response.statusCode;
-        decoded.headers = this.convertFetchHeadersToHash(response);
+        decoded.headers = this.convertFetchHeadersToHash(response.headers);
         return decoded;
       }
       // Error when no suitable decoder found
@@ -77,14 +77,14 @@ export default class Requester {
       });
     }
 
-    response.headers = this.convertFetchHeadersToHash(response);
+    response.headers = this.convertFetchHeadersToHash(response.headers);
     return response;
   }
 
   // Wrap headers into an header object type
-  private convertFetchHeadersToHash(response: IncomingMessage): any {
+  private convertFetchHeadersToHash(headers: any): any {
     const responseHeaders: any = new Headers();
-    for (const header in response.headers) {
+    for (const header in headers) {
       responseHeaders[header[0]] = header[1];
     }
     return responseHeaders;

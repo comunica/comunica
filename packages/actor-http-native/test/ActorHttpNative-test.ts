@@ -9,34 +9,6 @@ import Requester from '../lib/Requester';
 const http = require('http');
 const arrayifyStream = require('arrayify-stream');
 const mockSetup = require('./__mocks__/follow-redirects').mockSetup;
-const raw = [
-  'server',
-  'nginx/1.13.6',
-  'date',
-  'Thu, 30 Jul 2020 05:46:32 GMT',
-  'content-type',
-  'application/ld+json;charset=utf-8' ];
-
-const options = {
-  url: 'http://example.com/reqerror',
-  headers: new Headers(
-    { 'user-agent': 'b' },
-  ),
-  method: 'GET',
-  protocol: 'http:',
-  slashes: true,
-  auth: null,
-  host: 'example.com',
-  port: null,
-  hostname: 'example.com',
-  hash: null,
-  search: null,
-  query: null,
-  pathname: '/reqerror',
-  path: '/reqerror',
-  href: 'http://example.com/reqerror',
-  agents: { http: new http.Agent({}), https: new http.Agent({}) },
-};
 
 describe('ActorHttpNative', () => {
   let bus: any;
@@ -167,6 +139,33 @@ describe('ActorHttpNative', () => {
 
     it('should use raw headers', async() => {
       const requester = new Requester();
+      const raw = [
+        'server',
+        'nginx/1.13.6',
+        'date',
+        'Thu, 30 Jul 2020 05:46:32 GMT',
+        'content-type',
+        'application/ld+json;charset=utf-8' ];
+      const options = {
+        url: 'http://example.com/reqerror',
+        headers: new Headers(
+          { 'user-agent': 'b' },
+        ),
+        method: 'GET',
+        protocol: 'http:',
+        slashes: true,
+        auth: null,
+        host: 'example.com',
+        port: null,
+        hostname: 'example.com',
+        hash: null,
+        search: null,
+        query: null,
+        pathname: '/reqerror',
+        path: '/reqerror',
+        href: 'http://example.com/reqerror',
+        agents: { http: new http.Agent({}), https: new http.Agent({}) },
+      };
       const req = requester.createRequest(options);
       req.on('response', httpResponse => {
         httpResponse.rawHeaders = raw;
