@@ -9995,10 +9995,10 @@ sparqlalgebrajs@^2.0.0, sparqlalgebrajs@^2.1.0, sparqlalgebrajs@^2.2.1, sparqlal
     rdf-string "^1.3.1"
     sparqljs "^3.0.1"
 
-sparqlee@^1.4.1:
-  version "1.4.1"
-  resolved "https://registry.yarnpkg.com/sparqlee/-/sparqlee-1.4.1.tgz#af20cc7b80963e3042086e7bac3499c051f166c4"
-  integrity sha512-eIUjjW5J2Pm2iOzgtZbwXtew7OrV4rjvcXBxSDI9TLi6tX64STeNWY9xlm0h0Dk8uI315eszz2nhApmVoGVlvg==
+sparqlee@^1.4.2:
+  version "1.4.2"
+  resolved "https://registry.yarnpkg.com/sparqlee/-/sparqlee-1.4.2.tgz#de7430e59e30bcb01ce982ebf89cc6730505c770"
+  integrity sha512-6lE4u0i3CCLjOUA/E8SC2fV7L/e7By4QVG+mtreYGpPoh15iFZLPMeH9+54X2tA7doLr8LmV40u66BQ1rpzkKA==
   dependencies:
     "@rdfjs/data-model" "^1.1.0"
     "@types/create-hash" "^1.2.0"
