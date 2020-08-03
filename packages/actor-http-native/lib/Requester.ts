@@ -13,7 +13,7 @@ const { https } = require('follow-redirects');
 // Decode encoded streams with these decoders
 const DECODERS = { gzip: zlib.createGunzip, deflate: zlib.createInflate };
 
-export class Requester {
+export default class Requester {
   private readonly agents: any;
 
   public constructor(agentOptions?: AgentOptions) {
@@ -57,6 +57,20 @@ export class Requester {
     return requestProxy;
   }
 
+  // Wrap headers into an header object type
+  public convertFetchHeadersToHash(response: any): any {
+    const responseHeaders: Headers = new Headers();
+    if (response.input && response.input.headers) {
+      for (const header in response.input.headers) {
+        responseHeaders.append(header, response.input.headers[header]);
+      }
+    }
+    for (const header in response.headers) {
+      responseHeaders.append(header, response.headers[header]);
+    }
+    return responseHeaders;
+  }
+
   // Returns a decompressed stream from the HTTP response
   private decode(response: IncomingMessage): IncomingMessage {
     const encoding = response.headers['content-encoding'];
@@ -67,7 +81,7 @@ export class Requester {
         response.pipe(decoded);
         // Copy response properties
         decoded.statusCode = response.statusCode;
-        decoded.headers = convertFetchHeadersToHash(response);
+        decoded.headers = this.convertFetchHeadersToHash(response);
         return decoded;
       }
       // Error when no suitable decoder found
@@ -76,21 +90,7 @@ export class Requester {
       });
     }
 
-    response.headers = convertFetchHeadersToHash(response);
+    response.headers = this.convertFetchHeadersToHash(response);
     return response;
   }
-}
-
-// Wrap headers into an header object type
-export function convertFetchHeadersToHash(response: any): any {
-  const responseHeaders: Headers = new Headers();
-  if (response.input && response.input.headers) {
-    for (const header in response.input.headers) {
-      responseHeaders.append(header, response.input.headers[header]);
-    }
-  }
-  for (const header in response.headers) {
-    responseHeaders.append(header, response.headers[header]);
-  }
-  return responseHeaders;
 }

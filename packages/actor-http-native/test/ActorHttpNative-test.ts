@@ -4,7 +4,7 @@ import * as zlib from 'zlib';
 import { ActorHttp } from '@comunica/bus-http';
 import { Bus } from '@comunica/core';
 import { ActorHttpNative } from '../lib/ActorHttpNative';
-import { convertFetchHeadersToHash, Requester } from '../lib/Requester';
+import Requester from '../lib/Requester';
 
 const arrayifyStream = require('arrayify-stream');
 const mockSetup = require('./__mocks__/follow-redirects').mockSetup;
@@ -209,7 +209,7 @@ describe('convertFetchHeadersToHash', () => {
       req.on('response', response => {
         response.input = { headers: { a: 'b' }};
         response.headers = { other: 'more' };
-        expect(convertFetchHeadersToHash(response)).toEqual(new Headers({ a: 'b', other: 'more' }));
+        expect(requester.convertFetchHeadersToHash(response)).toEqual(new Headers({ a: 'b', other: 'more' }));
         resolve();
       });
     });
@@ -222,7 +222,7 @@ describe('convertFetchHeadersToHash', () => {
       req.on('response', response => {
         response.input.headers = {};
         response.headers = { other: 'more' };
-        expect(convertFetchHeadersToHash(response)).toEqual(new Headers({ other: 'more' }));
+        expect(requester.convertFetchHeadersToHash(response)).toEqual(new Headers({ other: 'more' }));
         resolve();
       });
     });
@@ -235,7 +235,7 @@ describe('convertFetchHeadersToHash', () => {
       req.on('response', response => {
         response.input.headers = {};
         response.headers = {};
-        expect(convertFetchHeadersToHash(response)).toEqual(new Headers({}));
+        expect(requester.convertFetchHeadersToHash(response)).toEqual(new Headers({}));
         resolve();
       });
     });
@@ -248,7 +248,7 @@ describe('convertFetchHeadersToHash', () => {
       req.on('response', response => {
         response.input.headers = undefined;
         response.headers = {};
-        expect(convertFetchHeadersToHash(response)).toEqual(new Headers({}));
+        expect(requester.convertFetchHeadersToHash(response)).toEqual(new Headers({}));
         resolve();
       });
     });

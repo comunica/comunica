@@ -2,7 +2,7 @@ import { ActorHttp, IActionHttp, IActorHttpOutput } from '@comunica/bus-http';
 import { IActorArgs } from '@comunica/core';
 import { IMediatorTypeTime } from '@comunica/mediatortype-time';
 import 'cross-fetch/polyfill';
-import { Requester } from './Requester';
+import Requester from './Requester';
 
 /**
  * A comunica Follow Redirects Http Actor.
