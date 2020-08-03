@@ -38,8 +38,8 @@ export default class Requester {
     // Unpacking headers object into a plain object
     const headersObject: any = {};
     if (settings.headers) {
-      for (const header of settings.headers) {
-        headersObject[header[0]] = header[1];
+      for (const [ header, val ] of settings.headers.entries()) {
+        headersObject[header] = val;
       }
     }
     settings.headers = headersObject;
