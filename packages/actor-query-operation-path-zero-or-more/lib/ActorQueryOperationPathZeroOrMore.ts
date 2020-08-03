@@ -44,6 +44,7 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
           next();
         },
       });
+
       return { type: 'bindings', bindingsStream, variables: [ value ]};
     }
   }

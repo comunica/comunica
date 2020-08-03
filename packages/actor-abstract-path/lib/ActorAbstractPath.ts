@@ -80,14 +80,14 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
 
     (<any> it)._push(x);
     termHashes[termString] = x;
+    counter.count++;
 
-    const thisBlankNode = this.generateBlankNode();
+    const thisBlankNode = this.generateVariable();
     const bString = termToString(thisBlankNode);
     const path = ActorAbstractPath.FACTORY.createPath(x, predicate, thisBlankNode);
     const results = ActorQueryOperation.getSafeBindings(
       await this.mediatorQueryOperation.mediate({ operation: path, context }),
     );
-    counter.count++;
     results.bindingsStream.on('data', async bindings => {
       const result = bindings.get(bString);
       await this.ALP(result, predicate, context, termHashes, it, counter);
