@@ -4,9 +4,9 @@ import {
   IActorQueryOperationTypedMediatedArgs,
 } from '@comunica/bus-query-operation';
 import { ActionContext, IActorTest } from '@comunica/core';
-import { blankNode } from '@rdfjs/data-model';
+import { blankNode, variable } from '@rdfjs/data-model';
 import { AsyncIterator, BufferedIterator } from 'asynciterator';
-import { BlankNode, Term } from 'rdf-js';
+import { BlankNode, Term, Variable } from 'rdf-js';
 import { termToString } from 'rdf-string';
 import { Algebra, Factory } from 'sparqlalgebrajs';
 
@@ -45,6 +45,20 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
     }
 
     return blankNode(name);
+  }
+
+  // Generates a blank node that does not yet occur in the path
+  public generateVariable(path?: Algebra.Path, name?: string): Variable {
+    if (!name) {
+      return this.generateVariable(path, 'b');
+    }
+
+    // Path predicates can't contain variables/blank nodes
+    if (path && (path.subject.value === name || path.object.value === name)) {
+      return this.generateVariable(path, `${name}b`);
+    }
+
+    return variable(name);
   }
 
   // Based on definition in spec https://www.w3.org/TR/sparql11-query/

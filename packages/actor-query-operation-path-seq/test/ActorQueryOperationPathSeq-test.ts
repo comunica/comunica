@@ -34,6 +34,7 @@ describe('ActorQueryOperationPathSeq', () => {
               bind[element] = namedNode(`${1 + i + j}`);
             }
             bindings.push(Bindings(bind));
+            bindings.push(Bindings(bind));
           }
         } else {
           bindings.push(Bindings({}));
@@ -111,6 +112,20 @@ describe('ActorQueryOperationPathSeq', () => {
     it('should support Seq paths', async() => {
       const op = { operation: factory.createPath(
         namedNode('s'),
+        factory.createSeq(factory.createLink(namedNode('p1')), factory.createLink(namedNode('p2'))),
+        variable('x'),
+      ) };
+      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      expect(await arrayifyStream(output.bindingsStream)).toEqual([
+        Bindings({ '?x': namedNode('2') }),
+        Bindings({ '?x': namedNode('3') }),
+        Bindings({ '?x': namedNode('4') }),
+      ]);
+    });
+
+    it('should name variable bb because b already used', async() => {
+      const op = { operation: factory.createPath(
+        namedNode('b'),
         factory.createSeq(factory.createLink(namedNode('p1')), factory.createLink(namedNode('p2'))),
         variable('x'),
       ) };

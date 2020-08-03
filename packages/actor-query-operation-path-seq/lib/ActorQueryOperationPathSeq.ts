@@ -7,9 +7,9 @@ import {
 import { ActorRdfJoin, IActionRdfJoin } from '@comunica/bus-rdf-join';
 import { ActionContext, Mediator } from '@comunica/core';
 import { IMediatorTypeIterations } from '@comunica/mediatortype-iterations';
+import { is } from 'immutable';
 import { termToString } from 'rdf-string';
 import { Algebra } from 'sparqlalgebrajs';
-
 /**
  * A comunica Path Seq Query Operation Actor.
  */
@@ -23,7 +23,7 @@ export class ActorQueryOperationPathSeq extends ActorAbstractPath {
 
   public async runOperation(path: Algebra.Path, context: ActionContext): Promise<IActorQueryOperationOutputBindings> {
     const predicate = <Algebra.Seq> path.predicate;
-    const blank = this.generateBlankNode(path);
+    const blank = this.generateVariable(path);
     const blankName = termToString(blank);
 
     const subOperations: IActorQueryOperationOutputBindings[] = (await Promise.all([
@@ -36,11 +36,17 @@ export class ActorQueryOperationPathSeq extends ActorAbstractPath {
     ])).map(op => ActorQueryOperation.getSafeBindings(op));
 
     const join = ActorQueryOperation.getSafeBindings(await this.mediatorJoin.mediate({ entries: subOperations }));
-    // Remove the generated blank nodes from the bindings
+    // Remove the generated blank nodes from the bindings + duplicates
+    const bindings: Bindings[] = [];
     const bindingsStream = join.bindingsStream.transform<Bindings>({
       transform(item, next, push) {
-        push(item.delete(blankName));
-        next();
+        const deleted = item.delete(blankName);
+        if (bindings.some(binding => is(binding, deleted))) {
+          return next();
+        }
+        bindings.push(deleted);
+        push(deleted);
+        return next();
       },
     });
 
