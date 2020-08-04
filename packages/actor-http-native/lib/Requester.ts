@@ -37,7 +37,11 @@ export default class Requester {
 
     // Unpacking headers object into a plain object
     const headersObject: any = {};
-    if (settings.headers) {
+    if (settings.headers && settings.headers._headers) {
+      for (const header in settings.headers._headers) {
+        headersObject[header] = settings.headers._headers[header];
+      }
+    } else if (settings.headers) {
       for (const [ header, val ] of settings.headers.entries()) {
         headersObject[header] = val;
       }

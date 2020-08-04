@@ -253,4 +253,21 @@ describe('convertFetchHeadersToHash', () => {
       });
     });
   });
+
+  it('works with settings headers in _headers field', () => {
+    const requester = new Requester();
+    const settings: any = {};
+    settings.headers = { _headers: { accept: [
+      'application/sparql-results+json;q=1.0,application/sparql-results+xml;q=0.7',
+    ]}};
+    const req = requester.createRequest(settings);
+    return new Promise(resolve => {
+      req.on('response', response => {
+        response.input.headers = {};
+        response.headers = { other: 'more' };
+        expect(requester.convertFetchHeadersToHash(response)).toEqual(new Headers({ other: 'more' }));
+        resolve();
+      });
+    });
+  });
 });
