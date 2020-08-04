@@ -37,16 +37,16 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
       const subjectString = termToString(path.subject);
       const objectString = termToString(path.object);
 
-      const subjects: string[] = [];
+      const subjects: Set<string> = new Set();
 
       const bindingsStream: MultiTransformIterator<Bindings, Bindings> = new MultiTransformIterator(
         results.bindingsStream,
         {
           multiTransform: (bindings: Bindings) => {
-            if (subjects.some(sub => sub === bindings.get(subjectString).value)) {
+            if (subjects.has(bindings.get(subjectString).value)) {
               return new EmptyIterator();
             }
-            subjects.push(bindings.get(subjectString).value);
+            subjects.add(bindings.get(subjectString).value);
             const val = bindings.get(subjectString);
             return new TransformIterator<Bindings>(
               async() => ActorQueryOperation.getSafeBindings(await this.mediatorQueryOperation.mediate({
