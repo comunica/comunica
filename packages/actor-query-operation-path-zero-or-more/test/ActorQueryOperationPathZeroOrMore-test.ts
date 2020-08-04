@@ -8,6 +8,8 @@ import { Algebra, Factory } from 'sparqlalgebrajs';
 import { ActorQueryOperationPathZeroOrMore } from '../lib/ActorQueryOperationPathZeroOrMore';
 const arrayifyStream = require('arrayify-stream');
 
+jest.setTimeout(30000);
+
 describe('ActorQueryOperationPathZeroOrMore', () => {
   let bus: any;
   let mediatorQueryOperation: any;
@@ -18,9 +20,21 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
     mediatorQueryOperation = {
       mediate(arg: any) {
         const vars: any = [];
-        for (const name of QUAD_TERM_NAMES) {
-          if (arg.operation[name].termType === 'Variable' || arg.operation[name].termType === 'BlankNode') {
-            vars.push(termToString(arg.operation[name]));
+        if (arg.operation.type === 'union') {
+          for (const name of QUAD_TERM_NAMES) {
+            if (arg.operation.left[name].termType === 'Variable' || arg.operation.left[name].termType === 'BlankNode') {
+              vars.push(termToString(arg.operation.left[name]));
+            }
+            if (arg.operation.right[name].termType === 'Variable' ||
+            arg.operation.right[name].termType === 'BlankNode') {
+              vars.push(termToString(arg.operation.right[name]));
+            }
+          }
+        } else {
+          for (const name of QUAD_TERM_NAMES) {
+            if (arg.operation[name].termType === 'Variable' || arg.operation[name].termType === 'BlankNode') {
+              vars.push(termToString(arg.operation[name]));
+            }
           }
         }
 
@@ -32,6 +46,9 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
               bind[element] = namedNode(`${1 + i + j}`);
             }
             bindings.push(Bindings(bind));
+            if (arg.operation.type === 'union') {
+              bindings.push(Bindings(bind));
+            }
           }
         } else {
           bindings.push(Bindings({}));
@@ -127,13 +144,25 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
       ]);
     });
 
-    it('should not support ZeroOrMore paths with 2 variables', () => {
+    it('should support ZeroOrMore paths with 2 variables', async() => {
       const op = { operation: factory.createPath(
         variable('x'),
         factory.createZeroOrMorePath(factory.createLink(namedNode('p'))),
         variable('y'),
       ) };
-      return expect(actor.run(op)).rejects.toBeTruthy();
+      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      expect(output.variables).toEqual([ '?x', '?y' ]);
+      expect(await arrayifyStream(output.bindingsStream)).toEqual([
+        Bindings({ '?x': namedNode('6'), '?y': namedNode('1') }),
+        Bindings({ '?x': namedNode('6'), '?y': namedNode('2') }),
+        Bindings({ '?x': namedNode('6'), '?y': namedNode('3') }),
+        Bindings({ '?x': namedNode('7'), '?y': namedNode('1') }),
+        Bindings({ '?x': namedNode('7'), '?y': namedNode('2') }),
+        Bindings({ '?x': namedNode('7'), '?y': namedNode('3') }),
+        Bindings({ '?x': namedNode('8'), '?y': namedNode('1') }),
+        Bindings({ '?x': namedNode('8'), '?y': namedNode('2') }),
+        Bindings({ '?x': namedNode('8'), '?y': namedNode('3') }),
+      ]);
     });
   });
 });
