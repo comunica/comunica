@@ -5,7 +5,7 @@ import {
   IActorQueryOperationTypedMediatedArgs,
 } from '@comunica/bus-query-operation';
 import { ActionContext } from '@comunica/core';
-import { BufferedIterator, MultiTransformIterator, TransformIterator } from 'asynciterator';
+import { BufferedIterator, MultiTransformIterator, TransformIterator, EmptyIterator } from 'asynciterator';
 import { Term } from 'rdf-js';
 import { termToString } from 'rdf-string';
 import { Algebra } from 'sparqlalgebrajs';
@@ -59,8 +59,42 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
       return { type: 'bindings', bindingsStream, variables: [ objectString ]};
     }
     if (sVar && oVar) {
-      throw new Error('ZeroOrMore path expressions with 2 variables not supported yet');
-    } else if (sVar && !oVar) {
+      // Get all the results of subjects with same predicate, but once, then fill in first variable for those
+      const predVar = this.generateVariable(path);
+      const single = ActorAbstractPath.FACTORY.createPath(path.subject, path.predicate.path, path.object, path.graph);
+      const results = ActorQueryOperation.getSafeBindings(
+        await this.mediatorQueryOperation.mediate({ context, operation: single }),
+      );
+      const subjectString = termToString(path.subject);
+      const objectString = termToString(path.object);
+
+      const subjects: Set<string> = new Set();
+
+      const bindingsStream: MultiTransformIterator<Bindings, Bindings> = new MultiTransformIterator(
+        results.bindingsStream,
+        {
+          multiTransform: (bindings: Bindings) => {
+            if (subjects.has(bindings.get(subjectString).value)) {
+              return new EmptyIterator();
+            }
+            subjects.add(bindings.get(subjectString).value);
+            const val = bindings.get(subjectString);
+            return new TransformIterator<Bindings>(
+              async() => ActorQueryOperation.getSafeBindings(await this.mediatorQueryOperation.mediate({
+                context, operation: ActorAbstractPath.FACTORY.createPath(val, predicate, path.object, path.graph),
+              })).bindingsStream.transform<Bindings>({
+                transform(item, next, push) {
+                  push(item.merge(Bindings({ [subjectString]: val })));
+                  next();
+                },
+              }),
+            );
+          },
+        },
+      );
+      return { type: 'bindings', bindingsStream, variables: [ subjectString, objectString ]};
+    }
+    if (sVar && !oVar) {
       return <Promise<IActorQueryOperationOutputBindings>> this.mediatorQueryOperation.mediate({
         context,
         operation: ActorAbstractPath.FACTORY.createPath(
@@ -72,22 +106,21 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
           path.graph,
         ),
       });
-    } else {
-      // If (!sVar && !oVar)
-      const blankNode = this.generateBlankNode();
-      const bString = termToString(blankNode);
-      const results = ActorQueryOperation.getSafeBindings(await this.mediatorQueryOperation.mediate({
-        context,
-        operation: ActorAbstractPath.FACTORY.createPath(path.subject, predicate, blankNode, path.graph),
-      }));
-      const bindingsStream = results.bindingsStream.transform<Bindings>({
-        filter: item => item.get(bString).equals(path.object),
-        transform(item, next, push) {
-          push(Bindings({ }));
-          next();
-        },
-      });
-      return { type: 'bindings', bindingsStream, variables: []};
     }
+    // If (!sVar && !oVar)
+    const blankNode = this.generateBlankNode();
+    const bString = termToString(blankNode);
+    const results = ActorQueryOperation.getSafeBindings(await this.mediatorQueryOperation.mediate({
+      context,
+      operation: ActorAbstractPath.FACTORY.createPath(path.subject, predicate, blankNode, path.graph),
+    }));
+    const bindingsStream = results.bindingsStream.transform<Bindings>({
+      filter: item => item.get(bString).equals(path.object),
+      transform(item, next, push) {
+        push(Bindings({ }));
+        next();
+      },
+    });
+    return { type: 'bindings', bindingsStream, variables: []};
   }
 }

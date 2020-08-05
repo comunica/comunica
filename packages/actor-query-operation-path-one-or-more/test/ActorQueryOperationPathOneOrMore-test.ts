@@ -32,6 +32,9 @@ describe('ActorQueryOperationPathOneOrMore', () => {
               bind[element] = namedNode(`${1 + i + j}`);
             }
             bindings.push(Bindings(bind));
+            if (arg.operation.predicate.type === 'seq') {
+              bindings.push(Bindings(bind));
+            }
           }
         } else {
           bindings.push(Bindings({}));
@@ -125,13 +128,26 @@ describe('ActorQueryOperationPathOneOrMore', () => {
       ]);
     });
 
-    it('should not support OneOrMore paths with 2 variables', () => {
+    it('should support OneOrMore paths with 2 variables', async() => {
       const op = { operation: factory.createPath(
         variable('x'),
-        factory.createOneOrMorePath(factory.createLink(namedNode('p'))),
+        factory.createOneOrMorePath(factory.createSeq(factory.createLink(namedNode('p')),
+          factory.createLink(namedNode('p')))),
         variable('y'),
       ) };
-      return expect(actor.run(op)).rejects.toBeTruthy();
+      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      expect(output.variables).toEqual([ '?x', '?y' ]);
+      expect(await arrayifyStream(output.bindingsStream)).toEqual([
+        Bindings({ '?x': namedNode('1'), '?y': namedNode('1') }),
+        Bindings({ '?x': namedNode('1'), '?y': namedNode('2') }),
+        Bindings({ '?x': namedNode('1'), '?y': namedNode('3') }),
+        Bindings({ '?x': namedNode('2'), '?y': namedNode('1') }),
+        Bindings({ '?x': namedNode('2'), '?y': namedNode('2') }),
+        Bindings({ '?x': namedNode('2'), '?y': namedNode('3') }),
+        Bindings({ '?x': namedNode('3'), '?y': namedNode('1') }),
+        Bindings({ '?x': namedNode('3'), '?y': namedNode('2') }),
+        Bindings({ '?x': namedNode('3'), '?y': namedNode('3') }),
+      ]);
     });
   });
 });
