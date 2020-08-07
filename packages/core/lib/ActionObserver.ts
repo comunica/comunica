@@ -1,3 +1,4 @@
+import { assign } from '@comunica/actor-init-sparql/lib/lodash';
 import { Actor, IAction, IActorOutput, IActorTest } from './Actor';
 import { Bus } from './Bus';
 
@@ -26,7 +27,7 @@ export abstract class ActionObserver<I extends IAction, O extends IActorOutput> 
    * @throws When required arguments are missing.
    */
   protected constructor(args: IActionObserverArgs<I, O>) {
-    require('lodash.assign')(this, args);
+    assign(this, [ args ]);
   }
 
   /**

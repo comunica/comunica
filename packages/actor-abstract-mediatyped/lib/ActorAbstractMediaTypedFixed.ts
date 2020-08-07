@@ -1,3 +1,4 @@
+import { mapValues } from '@comunica/actor-init-sparql/lib/lodash';
 import { ActionContext } from '@comunica/core';
 import { ActorAbstractMediaTyped, IActorArgsMediaTyped } from './ActorAbstractMediaTyped';
 
@@ -21,7 +22,7 @@ export abstract class ActorAbstractMediaTypedFixed<HI, HT, HO> extends ActorAbst
   public constructor(args: IActorArgsMediaTypedFixed<HI, HT, HO>) {
     super(args);
     const scale: number = this.priorityScale || this.priorityScale === 0 ? this.priorityScale : 1;
-    this.mediaTypes = require('lodash.mapvalues')(this.mediaTypes, (priority: number) => priority * scale);
+    mapValues(this.mediaTypes, (key, value, index) => value * scale);
     this.mediaTypes = Object.freeze(this.mediaTypes);
     this.mediaTypeFormats = Object.freeze(this.mediaTypeFormats);
   }

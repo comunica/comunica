@@ -1,3 +1,4 @@
+import { uniq } from '@comunica/actor-init-sparql/lib/lodash';
 import {
   ActorQueryOperation,
   ActorQueryOperationTypedMediated,
@@ -61,7 +62,7 @@ export class ActorQueryOperationBgpLeftDeepSmallest extends ActorQueryOperationT
    * @return {string[]} The array of variable names.
    */
   public static getCombinedVariables(patternOutputs: IActorQueryOperationOutputBindings[]): string[] {
-    return require('lodash.uniq')((<string[]> []).concat.apply([],
+    return uniq((<string[]> []).concat.apply([],
       patternOutputs.map(patternOutput => patternOutput.variables)));
   }
 

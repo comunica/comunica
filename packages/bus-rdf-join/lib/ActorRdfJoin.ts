@@ -1,3 +1,4 @@
+import { union, intersection } from '@comunica/actor-init-sparql/lib/lodash';
 import { Bindings, IActorQueryOperationOutput,
   IActorQueryOperationOutputBindings } from '@comunica/bus-query-operation';
 import { Actor, IAction, IActorArgs } from '@comunica/core';
@@ -42,7 +43,7 @@ export abstract class ActorRdfJoin extends Actor<IActionRdfJoin, IMediatorTypeIt
    * @returns {string[]}
    */
   public static overlappingVariables(action: IActionRdfJoin): string[] {
-    return require('lodash.intersection').apply(this, action.entries.map(entry => entry.variables));
+    return intersection(action.entries.map(entry => entry.variables));
   }
 
   /**
@@ -51,7 +52,7 @@ export abstract class ActorRdfJoin extends Actor<IActionRdfJoin, IMediatorTypeIt
    * @returns {string[]}
    */
   public static joinVariables(action: IActionRdfJoin): string[] {
-    return require('lodash.union').apply(this, action.entries.map(entry => entry.variables));
+    return union(action.entries.map(entry => entry.variables));
   }
 
   /**

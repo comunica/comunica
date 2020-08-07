@@ -1,3 +1,4 @@
+import { assign } from '@comunica/actor-init-sparql/lib/lodash';
 import { ActorInit, IActionInit, IActorOutputInit } from '@comunica/bus-init';
 import { Actor, Bus, IAction, IActorOutput, IActorReply, IActorTest } from '@comunica/core';
 
@@ -14,7 +15,7 @@ export class Runner implements IRunnerArgs {
   public readonly actors: Actor<IAction, IActorTest, IActorOutput>[];
 
   public constructor(args: IRunnerArgs) {
-    require('lodash.assign')(this, args);
+    assign(this, [ args ]);
     if (!this.busInit) {
       throw new Error('A valid "busInit" argument must be provided.');
     }

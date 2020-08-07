@@ -1,3 +1,4 @@
+import { assign } from '@comunica/actor-init-sparql/lib/lodash';
 import { Actor, IAction, IActorOutput, IActorTest } from './Actor';
 import { Bus, IActorReply } from './Bus';
 
@@ -34,7 +35,7 @@ export abstract class Mediator<A extends Actor<I, T, O>,
    * @throws When required arguments are missing.
    */
   protected constructor(args: IMediatorArgs<A, I, T, O>) {
-    require('lodash.assign')(this, args);
+    assign(this, [ args ]);
   }
 
   /**

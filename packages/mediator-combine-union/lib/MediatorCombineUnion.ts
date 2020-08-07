@@ -1,3 +1,4 @@
+import { defaults } from '@comunica/actor-init-sparql/lib/lodash';
 import { Actor, IAction, IActorOutput, IActorReply, IActorTest, IMediatorArgs, Mediator } from '@comunica/core';
 
 /**
@@ -40,7 +41,7 @@ export class MediatorCombineUnion<A extends Actor<I, T, O>, I extends IAction, T
   protected createCombiner(): (results: O[]) => O {
     return (results: O[]) => {
       const data: any = {};
-      data[this.field] = require('lodash.defaults').apply({},
+      data[this.field] = defaults({},
         [{}].concat(results.map((result: any) => result[this.field])));
       return data;
     };
