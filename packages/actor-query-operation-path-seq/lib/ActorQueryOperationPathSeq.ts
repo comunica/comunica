@@ -50,7 +50,10 @@ export class ActorQueryOperationPathSeq extends ActorAbstractPath {
       },
     });
 
-    return { type: 'bindings', bindingsStream, variables: join.variables };
+    const variables = join.variables;
+    const indexOfBlank = variables.indexOf(blankName);
+    variables.splice(indexOfBlank, 1);
+    return { type: 'bindings', bindingsStream, variables };
   }
 }
 
