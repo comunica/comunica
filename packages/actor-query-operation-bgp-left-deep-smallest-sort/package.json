@@ -35,12 +35,8 @@
     "index.js"
   ],
   "dependencies": {
-    "@types/lodash.sortby": "^4.7.3",
-    "@types/lodash.uniq": "^4.5.3",
     "@types/rdf-js": "^3.0.0",
     "asynciterator": "^3.0.0",
-    "lodash.sortby": "^4.7.0",
-    "lodash.uniq": "^4.5.0",
     "rdf-string": "^1.4.2",
     "rdf-terms": "^1.4.0"
   },

@@ -36,4 +36,15 @@ function defaults(object: any, sources: any[]): any {
   return object;
 }
 
-export { mapValues, uniq, union, intersection, assign, defaults };
+function after(number: number, func: any): any {
+  let counter = 1;
+  return () => {
+    if (counter === number) {
+      func();
+    } else {
+      counter += 1;
+    }
+  };
+}
+
+export { mapValues, uniq, union, intersection, assign, defaults, after };

@@ -35,10 +35,8 @@
     "index.js"
   ],
   "dependencies": {
-    "@types/lodash.assign": "^4.2.3",
     "@types/rdf-js": "^3.0.0",
     "@types/uritemplate": "^0.3.4",
-    "lodash.assign": "^4.2.0",
     "uritemplate": "0.3.4"
   },
   "peerDependencies": {
