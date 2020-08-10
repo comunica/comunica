@@ -11,7 +11,18 @@ function uniq(array: any[]): any[] {
 }
 
 function union(arrays: any[][]): any[] {
-  return uniq(arrays.flat());
+  return uniq(flatten(arrays));
+}
+
+function flatten(array: any[], depth = 1, stack: any[] = []): any[] {
+  for (const item of array) {
+    if (depth > 0 && Array.isArray(item)) {
+      flatten(item, depth - 1, stack);
+    } else {
+      stack.push(item);
+    }
+  }
+  return stack;
 }
 
 function intersection(arrays: any[][]): any[] {
