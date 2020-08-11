@@ -1,4 +1,3 @@
-import { union } from '@comunica/actor-init-sparql/lib/lodash';
 import {
   ActorQueryOperation,
   ActorQueryOperationTypedMediated,
@@ -25,7 +24,8 @@ export class ActorQueryOperationUnion extends ActorQueryOperationTypedMediated<A
    * @return {string[]} The union of the given variables.
    */
   public static unionVariables(variables: string[][]): string[] {
-    return union(variables);
+    const withDuplicates = variables.reduce((acc, it) => [ ...acc, ...it ], []);
+    return withDuplicates.filter((value, index) => withDuplicates.indexOf(value) === index);
   }
 
   /**

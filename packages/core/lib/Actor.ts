@@ -1,4 +1,3 @@
-import { assign } from '@comunica/actor-init-sparql/lib/lodash';
 import { Map } from 'immutable';
 import { Bus } from './Bus';
 import { KEY_CONTEXT_LOG, Logger } from './Logger';
@@ -37,7 +36,7 @@ export abstract class Actor<I extends IAction, T extends IActorTest, O extends I
    * @throws When required arguments are missing.
    */
   protected constructor(args: IActorArgs<I, T, O>) {
-    assign(this, [ args ]);
+    Object.assign(this, args);
     this.bus.subscribe(this);
     if (this.beforeActors.length > 0) {
       this.bus.addDependencies(this, this.beforeActors);

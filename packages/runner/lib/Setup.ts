@@ -1,4 +1,3 @@
-import { defaults } from '@comunica/actor-init-sparql/lib/lodash';
 import { IActionInit, IActorOutputInit } from '@comunica/bus-init';
 import { Loader, LoaderProperties } from 'componentsjs';
 import { Runner } from './Runner';
@@ -24,7 +23,7 @@ export async function instantiateComponent(configResourceUrl: string, instanceUr
   if (!properties) {
     properties = {};
   }
-  defaults(properties, [{ mainModulePath: process.cwd() }]);
+  properties = { ...properties, ...{ mainModulePath: process.cwd() }};
 
   // Instantiate the given config file
   const loader = new Loader(properties);

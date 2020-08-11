@@ -1,4 +1,3 @@
-import { after } from '@comunica/actor-init-sparql/lib/lodash';
 import { ActorRdfDereference, IActionRdfDereference, IActorRdfDereferenceOutput } from '@comunica/bus-rdf-dereference';
 import { ActorRdfMetadata, IActionRdfMetadata, IActorRdfMetadataOutput } from '@comunica/bus-rdf-metadata';
 import {
@@ -8,6 +7,7 @@ import {
 } from '@comunica/bus-rdf-metadata-extract';
 import { ActionContext, IActorTest, Mediator } from '@comunica/core';
 import { SingletonIterator } from 'asynciterator';
+import * as _ from 'lodash';
 import * as RDF from 'rdf-js';
 import { MediatedPagedAsyncRdfIterator } from '../lib/MediatedPagedAsyncRdfIterator';
 import { PagedAsyncRdfIterator } from '../lib/PagedAsyncRdfIterator';
@@ -71,7 +71,7 @@ describe('MediatedPagedAsyncRdfIterator', () => {
 
     it('handles the first page', done => {
       // eslint-disable-next-line import/namespace
-      const callback = after(2, done);
+      const callback = _.after(2, done);
 
       actor.getIterator('URL', 0, nextPage => {
         expect(nextPage).toBe('NEXT');
@@ -98,7 +98,7 @@ describe('MediatedPagedAsyncRdfIterator', () => {
 
     it('handles the next page', done => {
       // eslint-disable-next-line import/namespace
-      const callback = after(2, done);
+      const callback = _.after(2, done);
 
       mediatorRdfDereference.mediate = (o: any) => {
         expect(o.url).toBe('URL');
@@ -128,7 +128,7 @@ describe('MediatedPagedAsyncRdfIterator', () => {
 
     it('handles incorrect next page metadata', done => {
       // eslint-disable-next-line import/namespace
-      const callback = after(2, done);
+      const callback = _.after(2, done);
 
       mediatorRdfDereference.mediate = (o: any) => {
         expect(o.url).toBe('URL');

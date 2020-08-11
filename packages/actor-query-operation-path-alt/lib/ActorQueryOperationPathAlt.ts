@@ -1,5 +1,4 @@
 import { ActorAbstractPath } from '@comunica/actor-abstract-path';
-import { uniq } from '@comunica/actor-init-sparql/lib/lodash';
 import {
   ActorQueryOperation,
   IActorQueryOperationOutputBindings, IActorQueryOperationTypedMediatedArgs,
@@ -31,9 +30,12 @@ export class ActorQueryOperationPathAlt extends ActorAbstractPath {
     ])).map(op => ActorQueryOperation.getSafeBindings(op));
 
     const bindingsStream = new UnionIterator(subOperations.map(op => op.bindingsStream), { autoStart: false });
-    const variables = uniq((<string[]> []).concat
-      .apply([], subOperations.map(op => op.variables)));
+    const variables = (<string[]> []).concat
+      .apply([], subOperations.map(op => op.variables));
 
-    return { type: 'bindings', bindingsStream, variables };
+    return { type: 'bindings',
+      bindingsStream,
+      variables:
+      variables.filter((value, index) => variables.indexOf(value) === index) };
   }
 }

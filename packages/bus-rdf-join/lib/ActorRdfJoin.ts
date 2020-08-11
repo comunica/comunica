@@ -1,4 +1,3 @@
-import { union, intersection } from '@comunica/actor-init-sparql/lib/lodash';
 import { Bindings, IActorQueryOperationOutput,
   IActorQueryOperationOutputBindings } from '@comunica/bus-query-operation';
 import { Actor, IAction, IActorArgs } from '@comunica/core';
@@ -43,7 +42,12 @@ export abstract class ActorRdfJoin extends Actor<IActionRdfJoin, IMediatorTypeIt
    * @returns {string[]}
    */
   public static overlappingVariables(action: IActionRdfJoin): string[] {
-    return intersection(action.entries.map(entry => entry.variables));
+    const variables = action.entries.map(entry => entry.variables);
+    let baseArray = variables[0];
+    for (const array of variables.slice(1)) {
+      baseArray = baseArray.filter(el => array.includes(el));
+    }
+    return baseArray;
   }
 
   /**
@@ -52,7 +56,9 @@ export abstract class ActorRdfJoin extends Actor<IActionRdfJoin, IMediatorTypeIt
    * @returns {string[]}
    */
   public static joinVariables(action: IActionRdfJoin): string[] {
-    return union(action.entries.map(entry => entry.variables));
+    const variables = action.entries.map(entry => entry.variables);
+    const withDuplicates = variables.reduce((acc, it) => [ ...acc, ...it ], []);
+    return withDuplicates.filter((value, index) => withDuplicates.indexOf(value) === index);
   }
 
   /**
