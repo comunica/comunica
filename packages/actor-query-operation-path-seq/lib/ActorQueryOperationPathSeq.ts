@@ -7,7 +7,7 @@ import {
 import { ActorRdfJoin, IActionRdfJoin } from '@comunica/bus-rdf-join';
 import { ActionContext, Mediator } from '@comunica/core';
 import { IMediatorTypeIterations } from '@comunica/mediatortype-iterations';
-import { is } from 'immutable';
+
 import { termToString } from 'rdf-string';
 import { Algebra } from 'sparqlalgebrajs';
 /**
@@ -37,16 +37,11 @@ export class ActorQueryOperationPathSeq extends ActorAbstractPath {
 
     const join = ActorQueryOperation.getSafeBindings(await this.mediatorJoin.mediate({ entries: subOperations }));
     // Remove the generated blank nodes from the bindings + duplicates
-    const bindings: Bindings[] = [];
     const bindingsStream = join.bindingsStream.transform<Bindings>({
       transform(item, next, push) {
         const deleted = item.delete(blankName);
-        if (bindings.some(binding => is(binding, deleted))) {
-          return next();
-        }
-        bindings.push(deleted);
         push(deleted);
-        return next();
+        next();
       },
     });
 

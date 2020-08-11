@@ -34,7 +34,6 @@ describe('ActorQueryOperationPathSeq', () => {
               bind[element] = namedNode(`${1 + i + j}`);
             }
             bindings.push(Bindings(bind));
-            bindings.push(Bindings(bind));
           }
         } else {
           bindings.push(Bindings({}));

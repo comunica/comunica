@@ -6,6 +6,7 @@ import {
 } from '@comunica/bus-query-operation';
 import { ActionContext } from '@comunica/core';
 import { BufferedIterator, MultiTransformIterator, TransformIterator, EmptyIterator } from 'asynciterator';
+import { Map } from 'immutable';
 import { Term } from 'rdf-js';
 import { termToString } from 'rdf-string';
 import { Algebra } from 'sparqlalgebrajs';
@@ -19,6 +20,21 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
   }
 
   public async runOperation(path: Algebra.Path, context: ActionContext): Promise<IActorQueryOperationOutputBindings> {
+    // Such connectivity matching does not introduce duplicates (it does not incorporate any count of the number
+    // of ways the connection can be made) even if the repeated path itself would otherwise result in duplicates.
+    // https://www.w3.org/TR/sparql11-query/#propertypaths
+    if (!context || !context.get('isPathArbitraryLengthDistinct')) {
+      context = context ?
+        context.set('isPathArbitraryLengthDistinct', true) :
+        Map.of('isPathArbitraryLengthDistinct', true);
+      return ActorQueryOperation.getSafeBindings(await this.mediatorQueryOperation.mediate({
+        operation: ActorAbstractPath.FACTORY.createDistinct(path),
+        context,
+      }));
+    }
+
+    context = context.set('isPathArbitraryLengthDistinct', false);
+
     const predicate = <Algebra.OneOrMorePath> path.predicate;
 
     const sVar = path.subject.termType === 'Variable';
@@ -26,10 +42,13 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
 
     if (!sVar && oVar) {
       // Get all the results of applying this once, then do zeroOrMore for those
-      const single = ActorAbstractPath.FACTORY.createPath(path.subject, predicate.path, path.object, path.graph);
+      const single = ActorAbstractPath.FACTORY.createDistinct(
+        ActorAbstractPath.FACTORY.createPath(path.subject, predicate.path, path.object, path.graph),
+      );
       const results = ActorQueryOperation.getSafeBindings(
         await this.mediatorQueryOperation.mediate({ context, operation: single }),
       );
+
       const objectString = termToString(path.object);
 
       // All branches need to share the same termHashes to prevent duplicates
@@ -60,7 +79,6 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
     }
     if (sVar && oVar) {
       // Get all the results of subjects with same predicate, but once, then fill in first variable for those
-      const predVar = this.generateVariable(path);
       const single = ActorAbstractPath.FACTORY.createPath(path.subject, path.predicate.path, path.object, path.graph);
       const results = ActorQueryOperation.getSafeBindings(
         await this.mediatorQueryOperation.mediate({ context, operation: single }),

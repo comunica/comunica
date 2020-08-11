@@ -6,7 +6,7 @@ import {
 } from '@comunica/bus-query-operation';
 import { ActionContext } from '@comunica/core';
 import { MultiTransformIterator, TransformIterator, EmptyIterator } from 'asynciterator';
-
+import { Map } from 'immutable';
 import { termToString } from 'rdf-string';
 import { Algebra } from 'sparqlalgebrajs';
 
@@ -19,6 +19,21 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
   }
 
   public async runOperation(path: Algebra.Path, context: ActionContext): Promise<IActorQueryOperationOutputBindings> {
+    // Such connectivity matching does not introduce duplicates (it does not incorporate any count of the number
+    // of ways the connection can be made) even if the repeated path itself would otherwise result in duplicates.
+    // https://www.w3.org/TR/sparql11-query/#propertypaths
+    if (!context || !context.get('isPathArbitraryLengthDistinct')) {
+      context = context ?
+        context.set('isPathArbitraryLengthDistinct', true) :
+        Map.of('isPathArbitraryLengthDistinct', true);
+      return ActorQueryOperation.getSafeBindings(await this.mediatorQueryOperation.mediate({
+        operation: ActorAbstractPath.FACTORY.createDistinct(path),
+        context,
+      }));
+    }
+
+    context = context.set('isPathArbitraryLengthDistinct', false);
+
     const predicate = <Algebra.ZeroOrMorePath> path.predicate;
 
     const sVar = path.subject.termType === 'Variable';
