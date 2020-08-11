@@ -36,7 +36,7 @@ export class ActorQueryOperationPathSeq extends ActorAbstractPath {
     ])).map(op => ActorQueryOperation.getSafeBindings(op));
 
     const join = ActorQueryOperation.getSafeBindings(await this.mediatorJoin.mediate({ entries: subOperations }));
-    // Remove the generated blank nodes from the bindings
+    // Remove the generated variable from the bindings
     const bindingsStream = join.bindingsStream.transform<Bindings>({
       transform(item, next, push) {
         push(item.delete(blankName));
@@ -44,6 +44,7 @@ export class ActorQueryOperationPathSeq extends ActorAbstractPath {
       },
     });
 
+    // Remove the generated variable from the list of variables
     const variables = join.variables;
     const indexOfBlank = variables.indexOf(blankName);
     variables.splice(indexOfBlank, 1);

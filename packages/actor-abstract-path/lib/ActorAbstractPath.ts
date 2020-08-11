@@ -4,9 +4,10 @@ import {
   IActorQueryOperationTypedMediatedArgs,
 } from '@comunica/bus-query-operation';
 import { ActionContext, IActorTest } from '@comunica/core';
-import { blankNode, variable } from '@rdfjs/data-model';
+import { variable } from '@rdfjs/data-model';
 import { AsyncIterator, BufferedIterator } from 'asynciterator';
-import { BlankNode, Term, Variable } from 'rdf-js';
+import { Map } from 'immutable';
+import { Term, Variable } from 'rdf-js';
 import { termToString } from 'rdf-string';
 import { Algebra, Factory } from 'sparqlalgebrajs';
 
@@ -34,20 +35,6 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
   }
 
   // Generates a blank node that does not yet occur in the path
-  public generateBlankNode(path?: Algebra.Path, name?: string): BlankNode {
-    if (!name) {
-      return this.generateBlankNode(path, 'b');
-    }
-
-    // Path predicates can't contain variables/blank nodes
-    if (path && (path.subject.value === name || path.object.value === name)) {
-      return this.generateBlankNode(path, `${name}b`);
-    }
-
-    return blankNode(name);
-  }
-
-  // Generates a blank node that does not yet occur in the path
   public generateVariable(path?: Algebra.Path, name?: string): Variable {
     if (!name) {
       return this.generateVariable(path, 'b');
@@ -59,6 +46,19 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
     }
 
     return variable(name);
+  }
+
+  // Such connectivity matching does not introduce duplicates (it does not incorporate any count of the number
+  // of ways the connection can be made) even if the repeated path itself would otherwise result in duplicates.
+  // https://www.w3.org/TR/sparql11-query/#propertypaths
+  public isPathArbitraryLengthDistinct(context: ActionContext): ActionContext {
+    if (!context || !context.get('isPathArbitraryLengthDistinct')) {
+      return context ?
+        context.set('isPathArbitraryLengthDistinct', true) :
+        Map.of('isPathArbitraryLengthDistinct', true);
+    }
+
+    return context.set('isPathArbitraryLengthDistinct', false);
   }
 
   // Based on definition in spec https://www.w3.org/TR/sparql11-query/

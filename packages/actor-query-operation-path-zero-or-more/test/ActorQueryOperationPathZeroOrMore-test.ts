@@ -9,8 +9,6 @@ import { Algebra, Factory } from 'sparqlalgebrajs';
 import { ActorQueryOperationPathZeroOrMore } from '../lib/ActorQueryOperationPathZeroOrMore';
 const arrayifyStream = require('arrayify-stream');
 
-jest.setTimeout(30000);
-
 describe('ActorQueryOperationPathZeroOrMore', () => {
   let bus: any;
   let mediatorQueryOperation: any;

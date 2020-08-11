@@ -1,5 +1,6 @@
 import { Actor, Bus } from '@comunica/core';
 import { blankNode, namedNode } from '@rdfjs/data-model';
+import { termToString } from 'rdf-string';
 import { Factory } from 'sparqlalgebrajs';
 import { ActorAbstractPath } from '../lib/ActorAbstractPath';
 
@@ -33,7 +34,7 @@ describe('ActorAbstractPath', () => {
         factory.createLink(namedNode('p')),
         blankNode('b'),
       );
-      return expect(actor.generateBlankNode(path).value).not.toEqual(path.object.value);
+      return expect(termToString(actor.generateVariable(path))).not.toEqual(path.object.value);
     });
   });
 });

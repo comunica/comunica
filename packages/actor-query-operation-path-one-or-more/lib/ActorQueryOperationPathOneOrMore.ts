@@ -6,7 +6,7 @@ import {
 } from '@comunica/bus-query-operation';
 import { ActionContext } from '@comunica/core';
 import { BufferedIterator, MultiTransformIterator, TransformIterator, EmptyIterator } from 'asynciterator';
-import { Map } from 'immutable';
+
 import { Term } from 'rdf-js';
 import { termToString } from 'rdf-string';
 import { Algebra } from 'sparqlalgebrajs';
@@ -20,20 +20,13 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
   }
 
   public async runOperation(path: Algebra.Path, context: ActionContext): Promise<IActorQueryOperationOutputBindings> {
-    // Such connectivity matching does not introduce duplicates (it does not incorporate any count of the number
-    // of ways the connection can be made) even if the repeated path itself would otherwise result in duplicates.
-    // https://www.w3.org/TR/sparql11-query/#propertypaths
-    if (!context || !context.get('isPathArbitraryLengthDistinct')) {
-      context = context ?
-        context.set('isPathArbitraryLengthDistinct', true) :
-        Map.of('isPathArbitraryLengthDistinct', true);
+    context = this.isPathArbitraryLengthDistinct(context);
+    if (context.get('isPathArbitraryLengthDistinct')) {
       return ActorQueryOperation.getSafeBindings(await this.mediatorQueryOperation.mediate({
         operation: ActorAbstractPath.FACTORY.createDistinct(path),
         context,
       }));
     }
-
-    context = context.set('isPathArbitraryLengthDistinct', false);
 
     const predicate = <Algebra.OneOrMorePath> path.predicate;
 
@@ -92,10 +85,10 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
         results.bindingsStream,
         {
           multiTransform: (bindings: Bindings) => {
-            if (subjects.has(bindings.get(subjectString).value)) {
+            if (subjects.has(termToString(bindings.get(subjectString)))) {
               return new EmptyIterator();
             }
-            subjects.add(bindings.get(subjectString).value);
+            subjects.add(termToString(bindings.get(subjectString)));
             const val = bindings.get(subjectString);
             return new TransformIterator<Bindings>(
               async() => ActorQueryOperation.getSafeBindings(await this.mediatorQueryOperation.mediate({
@@ -126,7 +119,7 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
       });
     }
     // If (!sVar && !oVar)
-    const blankNode = this.generateBlankNode();
+    const blankNode = this.generateVariable();
     const bString = termToString(blankNode);
     const results = ActorQueryOperation.getSafeBindings(await this.mediatorQueryOperation.mediate({
       context,
