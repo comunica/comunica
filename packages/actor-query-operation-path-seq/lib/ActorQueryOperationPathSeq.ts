@@ -36,11 +36,10 @@ export class ActorQueryOperationPathSeq extends ActorAbstractPath {
     ])).map(op => ActorQueryOperation.getSafeBindings(op));
 
     const join = ActorQueryOperation.getSafeBindings(await this.mediatorJoin.mediate({ entries: subOperations }));
-    // Remove the generated blank nodes from the bindings + duplicates
+    // Remove the generated blank nodes from the bindings
     const bindingsStream = join.bindingsStream.transform<Bindings>({
       transform(item, next, push) {
-        const deleted = item.delete(blankName);
-        push(deleted);
+        push(item.delete(blankName));
         next();
       },
     });
