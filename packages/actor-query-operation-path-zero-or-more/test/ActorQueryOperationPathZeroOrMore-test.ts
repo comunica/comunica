@@ -1,8 +1,8 @@
+import { ActorAbstractPath } from '@comunica/actor-abstract-path';
 import { ActorQueryOperation, Bindings } from '@comunica/bus-query-operation';
-import { Bus } from '@comunica/core';
+import { Bus, ActionContext } from '@comunica/core';
 import { namedNode, variable } from '@rdfjs/data-model';
 import { ArrayIterator } from 'asynciterator';
-import { Map } from 'immutable';
 import { termToString } from 'rdf-string';
 import { QUAD_TERM_NAMES } from 'rdf-terms';
 import { Algebra, Factory } from 'sparqlalgebrajs';
@@ -123,7 +123,7 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
         factory.createZeroOrMorePath(factory.createLink(namedNode('p'))),
         variable('x'),
       ),
-      context: Map.of('isPathArbitraryLengthDistinct', false) };
+      context: ActionContext({ [ActorAbstractPath.isPathArbitraryLengthDistinctKey]: false }) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       expect(output.variables).toEqual([ '?x' ]);
       expect(await arrayifyStream(output.bindingsStream)).toEqual([
@@ -137,7 +137,7 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
         factory.createZeroOrMorePath(factory.createLink(namedNode('p'))),
         variable('x'),
       ),
-      context: Map.of('isPathArbitraryLengthDistinct', true) };
+      context: ActionContext({ [ActorAbstractPath.isPathArbitraryLengthDistinctKey]: true }) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       expect(output.variables).toEqual([ '?x' ]);
       expect(await arrayifyStream(output.bindingsStream)).toEqual([
@@ -154,7 +154,7 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
         factory.createZeroOrMorePath(factory.createLink(namedNode('p'))),
         namedNode('o'),
       ),
-      context: Map.of('isPathArbitraryLengthDistinct', true) };
+      context: ActionContext({ [ActorAbstractPath.isPathArbitraryLengthDistinctKey]: true }) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       expect(output.variables).toEqual([ '?x' ]);
       expect(await arrayifyStream(output.bindingsStream)).toEqual([
@@ -171,7 +171,7 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
         factory.createZeroOrMorePath(factory.createLink(namedNode('p'))),
         namedNode('1'),
       ),
-      context: Map.of('isPathArbitraryLengthDistinct', true) };
+      context: ActionContext({ [ActorAbstractPath.isPathArbitraryLengthDistinctKey]: true }) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       expect(output.variables).toEqual([]);
       expect(await arrayifyStream(output.bindingsStream)).toEqual([
@@ -185,7 +185,7 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
         factory.createZeroOrMorePath(factory.createLink(namedNode('p'))),
         variable('y'),
       ),
-      context: Map.of('isPathArbitraryLengthDistinct', true) };
+      context: ActionContext({ [ActorAbstractPath.isPathArbitraryLengthDistinctKey]: true }) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       expect(output.variables).toEqual([ '?x', '?y' ]);
       expect(await arrayifyStream(output.bindingsStream)).toEqual([

@@ -2,11 +2,11 @@ import {
   ActorQueryOperation,
   ActorQueryOperationTypedMediated,
   IActorQueryOperationTypedMediatedArgs,
+  IActorQueryOperationOutputBindings,
 } from '@comunica/bus-query-operation';
 import { ActionContext, IActorTest } from '@comunica/core';
 import { variable } from '@rdfjs/data-model';
 import { AsyncIterator, BufferedIterator } from 'asynciterator';
-import { Map } from 'immutable';
 import { Term, Variable } from 'rdf-js';
 import { termToString } from 'rdf-string';
 import { Algebra, Factory } from 'sparqlalgebrajs';
@@ -20,6 +20,8 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
   protected static readonly FACTORY: Factory = new Factory();
 
   protected readonly predicateType: string;
+
+  public static isPathArbitraryLengthDistinctKey = 'isPathArbitraryLengthDistinct';
 
   protected constructor(args: IActorQueryOperationTypedMediatedArgs, predicateType: string) {
     super(args, 'path');
@@ -51,14 +53,21 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
   // Such connectivity matching does not introduce duplicates (it does not incorporate any count of the number
   // of ways the connection can be made) even if the repeated path itself would otherwise result in duplicates.
   // https://www.w3.org/TR/sparql11-query/#propertypaths
-  public isPathArbitraryLengthDistinct(context: ActionContext): ActionContext {
-    if (!context || !context.get('isPathArbitraryLengthDistinct')) {
-      return context ?
-        context.set('isPathArbitraryLengthDistinct', true) :
-        Map.of('isPathArbitraryLengthDistinct', true);
+  public async isPathArbitraryLengthDistinct(context: ActionContext, path: Algebra.Path):
+  Promise<{context: ActionContext; operation: IActorQueryOperationOutputBindings | undefined}> {
+    if (!context || !context.get(ActorAbstractPath.isPathArbitraryLengthDistinctKey)) {
+      context = context ?
+        context.set(ActorAbstractPath.isPathArbitraryLengthDistinctKey, true) :
+        ActionContext({ [ActorAbstractPath.isPathArbitraryLengthDistinctKey]: true });
+      return { context,
+        operation: ActorQueryOperation.getSafeBindings(await this.mediatorQueryOperation.mediate({
+          operation: ActorAbstractPath.FACTORY.createDistinct(path),
+          context,
+        })) };
     }
 
-    return context.set('isPathArbitraryLengthDistinct', false);
+    context = context.set(ActorAbstractPath.isPathArbitraryLengthDistinctKey, false);
+    return { context, operation: undefined };
   }
 
   // Based on definition in spec https://www.w3.org/TR/sparql11-query/

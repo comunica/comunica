@@ -37,15 +37,12 @@ export class ActorQueryOperationPathZeroOrOne extends ActorAbstractPath {
       throw new Error('ZeroOrOne path expressions with 2 variables not supported yet');
     }
 
-    context = this.isPathArbitraryLengthDistinct(context);
-    if (context.get('isPathArbitraryLengthDistinct')) {
-      return ActorQueryOperation.getSafeBindings(await this.mediatorQueryOperation.mediate({
-        operation: ActorAbstractPath.FACTORY.createDistinct(path),
-        context,
-      }));
+    const distinct = await this.isPathArbitraryLengthDistinct(context, path);
+    if (distinct.operation) {
+      return distinct.operation;
     }
 
-    context = context.set('isPathArbitraryLengthDistinct', false);
+    context = distinct.context;
 
     if (sVar) {
       extra.push(Bindings({ [termToString(path.subject)]: path.object }));
