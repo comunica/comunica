@@ -42,7 +42,12 @@ export abstract class ActorRdfJoin extends Actor<IActionRdfJoin, IMediatorTypeIt
    * @returns {string[]}
    */
   public static overlappingVariables(action: IActionRdfJoin): string[] {
-    return require('lodash.intersection').apply(this, action.entries.map(entry => entry.variables));
+    const variables = action.entries.map(entry => entry.variables);
+    let baseArray = variables[0];
+    for (const array of variables.slice(1)) {
+      baseArray = baseArray.filter(el => array.includes(el));
+    }
+    return baseArray;
   }
 
   /**
@@ -51,7 +56,9 @@ export abstract class ActorRdfJoin extends Actor<IActionRdfJoin, IMediatorTypeIt
    * @returns {string[]}
    */
   public static joinVariables(action: IActionRdfJoin): string[] {
-    return require('lodash.union').apply(this, action.entries.map(entry => entry.variables));
+    const variables = action.entries.map(entry => entry.variables);
+    const withDuplicates = variables.reduce((acc, it) => [ ...acc, ...it ], []);
+    return withDuplicates.filter((value, index) => withDuplicates.indexOf(value) === index);
   }
 
   /**

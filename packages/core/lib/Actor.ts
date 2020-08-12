@@ -36,7 +36,7 @@ export abstract class Actor<I extends IAction, T extends IActorTest, O extends I
    * @throws When required arguments are missing.
    */
   protected constructor(args: IActorArgs<I, T, O>) {
-    require('lodash.assign')(this, args);
+    Object.assign(this, args);
     this.bus.subscribe(this);
     if (this.beforeActors.length > 0) {
       this.bus.addDependencies(this, this.beforeActors);

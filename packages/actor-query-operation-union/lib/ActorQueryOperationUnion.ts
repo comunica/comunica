@@ -24,7 +24,8 @@ export class ActorQueryOperationUnion extends ActorQueryOperationTypedMediated<A
    * @return {string[]} The union of the given variables.
    */
   public static unionVariables(variables: string[][]): string[] {
-    return require('lodash.union').apply({}, variables);
+    const withDuplicates = variables.reduce((acc, it) => [ ...acc, ...it ], []);
+    return withDuplicates.filter((value, index) => withDuplicates.indexOf(value) === index);
   }
 
   /**

@@ -23,7 +23,7 @@ export async function instantiateComponent(configResourceUrl: string, instanceUr
   if (!properties) {
     properties = {};
   }
-  require('lodash.defaults')(properties, { mainModulePath: process.cwd() });
+  properties = { ...properties, ...{ mainModulePath: process.cwd() }};
 
   // Instantiate the given config file
   const loader = new Loader(properties);

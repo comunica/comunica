@@ -125,8 +125,9 @@ export class ActorQueryOperationFromQuad extends ActorQueryOperationTypedMediate
         ));
       }
       // The pattern's graph is defined (including the default graphs)
-      const isNamedGraphAvailable: boolean = require('lodash.find')(namedGraphs.concat(defaultGraphs),
-        (namedGraph: RDF.Term) => namedGraph.equals(patternGraph));
+      const isNamedGraphAvailable: boolean = namedGraphs.concat(defaultGraphs).some(
+        (namedGraph: RDF.Term) => namedGraph.equals(patternGraph),
+      );
       if (isNamedGraphAvailable) {
         // Return the pattern as-is if the pattern's graph was selected in a FROM NAMED
         return operation;

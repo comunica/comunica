@@ -14,7 +14,7 @@ export class Runner implements IRunnerArgs {
   public readonly actors: Actor<IAction, IActorTest, IActorOutput>[];
 
   public constructor(args: IRunnerArgs) {
-    require('lodash.assign')(this, args);
+    Object.assign(this, args);
     if (!this.busInit) {
       throw new Error('A valid "busInit" argument must be provided.');
     }

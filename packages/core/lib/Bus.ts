@@ -32,7 +32,7 @@ export class Bus<A extends Actor<I, T, O>, I extends IAction, T extends IActorTe
    * @throws When required arguments are missing.
    */
   public constructor(args: IBusArgs) {
-    require('lodash.assign')(this, args);
+    Object.assign(this, args);
   }
 
   /**

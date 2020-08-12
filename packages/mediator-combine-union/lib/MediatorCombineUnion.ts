@@ -40,8 +40,11 @@ export class MediatorCombineUnion<A extends Actor<I, T, O>, I extends IAction, T
   protected createCombiner(): (results: O[]) => O {
     return (results: O[]) => {
       const data: any = {};
-      data[this.field] = require('lodash.defaults').apply({},
-        [{}].concat(results.map((result: any) => result[this.field])));
+      data[this.field] = {};
+      [{}].concat(results.map((result: any) => result[this.field]))
+        .forEach((value, index, arr) => {
+          data[this.field] = { ...value, ...data[this.field] };
+        });
       return data;
     };
   }

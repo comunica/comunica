@@ -55,8 +55,9 @@ export class ActorQueryOperationBgpLeftDeepSmallestSort extends ActorQueryOperat
    * @return {string[]} The array of variable names.
    */
   public static getCombinedVariables(patternOutputs: IActorQueryOperationOutputBindings[]): string[] {
-    return require('lodash.uniq')((<string[]> []).concat.apply([],
-      patternOutputs.map(patternOutput => patternOutput.variables)));
+    const withDuplicates = (<string[]> []).concat.apply([],
+      patternOutputs.map(patternOutput => patternOutput.variables));
+    return withDuplicates.filter((value, index) => withDuplicates.indexOf(value) === index);
   }
 
   /**
@@ -65,8 +66,9 @@ export class ActorQueryOperationBgpLeftDeepSmallestSort extends ActorQueryOperat
    * @return {IOutputMetaTuple[]} The sorted array.
    */
   public static sortPatterns(patternOutputsMeta: IOutputMetaTuple[]): IOutputMetaTuple[] {
-    return require('lodash.sortby')(patternOutputsMeta,
-      [ (tuple: IOutputMetaTuple) => ActorQueryOperationBgpLeftDeepSmallestSort.getTotalItems(tuple.meta) ]);
+    return patternOutputsMeta.sort((tuple1: IOutputMetaTuple, tuple2: IOutputMetaTuple) =>
+      ActorQueryOperationBgpLeftDeepSmallestSort.getTotalItems(tuple1.meta) -
+      ActorQueryOperationBgpLeftDeepSmallestSort.getTotalItems(tuple2.meta));
   }
 
   /**

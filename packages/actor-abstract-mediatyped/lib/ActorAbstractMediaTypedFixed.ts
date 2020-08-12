@@ -21,7 +21,11 @@ export abstract class ActorAbstractMediaTypedFixed<HI, HT, HO> extends ActorAbst
   public constructor(args: IActorArgsMediaTypedFixed<HI, HT, HO>) {
     super(args);
     const scale: number = this.priorityScale || this.priorityScale === 0 ? this.priorityScale : 1;
-    this.mediaTypes = require('lodash.mapvalues')(this.mediaTypes, (priority: number) => priority * scale);
+    if (this.mediaTypes) {
+      Object.entries(this.mediaTypes).forEach(([ key, value ], index) => {
+        this.mediaTypes[key] = scale * value;
+      });
+    }
     this.mediaTypes = Object.freeze(this.mediaTypes);
     this.mediaTypeFormats = Object.freeze(this.mediaTypeFormats);
   }

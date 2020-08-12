@@ -61,8 +61,9 @@ export class ActorQueryOperationBgpLeftDeepSmallest extends ActorQueryOperationT
    * @return {string[]} The array of variable names.
    */
   public static getCombinedVariables(patternOutputs: IActorQueryOperationOutputBindings[]): string[] {
-    return require('lodash.uniq')((<string[]> []).concat.apply([],
-      patternOutputs.map(patternOutput => patternOutput.variables)));
+    const withDuplicates = (<string[]> []).concat.apply([],
+      patternOutputs.map(patternOutput => patternOutput.variables));
+    return withDuplicates.filter((value, index) => withDuplicates.indexOf(value) === index);
   }
 
   /**

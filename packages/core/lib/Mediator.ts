@@ -34,7 +34,7 @@ export abstract class Mediator<A extends Actor<I, T, O>,
    * @throws When required arguments are missing.
    */
   protected constructor(args: IMediatorArgs<A, I, T, O>) {
-    require('lodash.assign')(this, args);
+    Object.assign(this, args);
   }
 
   /**

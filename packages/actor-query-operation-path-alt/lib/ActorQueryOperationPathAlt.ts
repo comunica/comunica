@@ -30,9 +30,12 @@ export class ActorQueryOperationPathAlt extends ActorAbstractPath {
     ])).map(op => ActorQueryOperation.getSafeBindings(op));
 
     const bindingsStream = new UnionIterator(subOperations.map(op => op.bindingsStream), { autoStart: false });
-    const variables = require('lodash.uniq')((<string[]> []).concat
-      .apply([], subOperations.map(op => op.variables)));
+    const variables = (<string[]> []).concat
+      .apply([], subOperations.map(op => op.variables));
 
-    return { type: 'bindings', bindingsStream, variables };
+    return { type: 'bindings',
+      bindingsStream,
+      variables:
+      variables.filter((value, index) => variables.indexOf(value) === index) };
   }
 }

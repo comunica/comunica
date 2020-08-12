@@ -26,7 +26,7 @@ export abstract class ActionObserver<I extends IAction, O extends IActorOutput> 
    * @throws When required arguments are missing.
    */
   protected constructor(args: IActionObserverArgs<I, O>) {
-    require('lodash.assign')(this, args);
+    Object.assign(this, args);
   }
 
   /**
