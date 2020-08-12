@@ -72,8 +72,8 @@
 						<h1>Comunica SPARQL File Init Actor</h1>
 					</a>
 					<p><a href="https://www.npmjs.com/package/@comunica/actor-init-sparql-file"><img src="https://badge.fury.io/js/%40comunica%2Factor-init-sparql-file.svg" alt="npm version"></a></p>
-					<p>A comunica SPARQL File Init Actor.</p>
-					<p>This module is part of the <a href="https://github.com/comunica/comunica">Comunica framework</a>.</p>
+					<p>Comunica SPARQL is a SPARQL query engine for JavaScript for querying local and remote RDF files.</p>
+					<p>This module is part of the <a href="https://comunica.dev/">Comunica framework</a>.</p>
 					<a href="#install" id="install" style="color: inherit; text-decoration: none;">
 						<h2>Install</h2>
 					</a>
@@ -93,6 +93,7 @@
 					<pre><code class="language-bash">$ comunica-sparql-file --<span class="hljs-built_in">help</span></code></pre>
 					<p>Just like <a href="https://github.com/comunica/comunica/tree/master/packages/actor-init-sparql">Comunica SPARQL</a>,
 					a <a href="https://github.com/comunica/comunica/tree/master/packages/actor-init-sparql#usage-from-the-command-line">dynamic variant</a> (<code>comunica-dynamic-sparql-file</code>) also exists.</p>
+					<p><em><a href="https://comunica.dev/docs/query/getting_started/query_cli_file/"><strong>Read more</strong> about querying from the command line</a>.</em></p>
 					<a href="#usage-within-application" id="usage-within-application" style="color: inherit; text-decoration: none;">
 						<h3>Usage within application</h3>
 					</a>
@@ -100,10 +101,29 @@
 					<pre><code class="language-javascript"><span class="hljs-keyword">const</span> newEngine = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;@comunica/actor-init-sparql-file&#x27;</span>).newEngine;
 <span class="hljs-keyword">const</span> myEngine = newEngine();
 
-<span class="hljs-keyword">const</span> result = <span class="hljs-keyword">await</span> myEngine.query(<span class="hljs-string">&#x27;SELECT * WHERE { ?s ?p &lt;http://dbpedia.org/resource/Belgium&gt;. ?s ?p ?o } LIMIT 100&#x27;</span>,
-  { <span class="hljs-attr">sources</span>: [<span class="hljs-string">&#x27;/path/to/my/file.ttl&#x27;</span>] })
-result.bindingsStream.on(<span class="hljs-string">&#x27;data&#x27;</span>, <span class="hljs-function">(<span class="hljs-params">data</span>) =&gt;</span> <span class="hljs-built_in">console</span>.log(data.toObject()));</code></pre>
-					<p><a href="https://github.com/comunica/comunica/tree/master/packages/actor-init-sparql#usage-within-application">More details</a></p>
+<span class="hljs-keyword">const</span> result = <span class="hljs-keyword">await</span> myEngine.query(<span class="hljs-string">`
+  SELECT ?s ?p ?o WHERE {
+    ?s ?p &lt;http://dbpedia.org/resource/Belgium&gt;.
+    ?s ?p ?o
+  } LIMIT 100`</span>, {
+  <span class="hljs-attr">sources</span>: [<span class="hljs-string">&#x27;http://fragments.dbpedia.org/2015/en&#x27;</span>],
+});
+
+<span class="hljs-comment">// Consume results as a stream (best performance)</span>
+result.bindingsStream.on(<span class="hljs-string">&#x27;data&#x27;</span>, <span class="hljs-function">(<span class="hljs-params">binding</span>) =&gt;</span> {
+    <span class="hljs-built_in">console</span>.log(binding.get(<span class="hljs-string">&#x27;?s&#x27;</span>).value);
+    <span class="hljs-built_in">console</span>.log(binding.get(<span class="hljs-string">&#x27;?s&#x27;</span>).termType);
+
+    <span class="hljs-built_in">console</span>.log(binding.get(<span class="hljs-string">&#x27;?p&#x27;</span>).value);
+
+    <span class="hljs-built_in">console</span>.log(binding.get(<span class="hljs-string">&#x27;?o&#x27;</span>).value);
+});
+
+<span class="hljs-comment">// Consume results as an array (easier)</span>
+<span class="hljs-keyword">const</span> bindings = <span class="hljs-keyword">await</span> result.bindings();
+<span class="hljs-built_in">console</span>.log(bindings[<span class="hljs-number">0</span>].get(<span class="hljs-string">&#x27;?s&#x27;</span>).value);
+<span class="hljs-built_in">console</span>.log(bindings[<span class="hljs-number">0</span>].get(<span class="hljs-string">&#x27;?s&#x27;</span>).termType);</code></pre>
+					<p><em><a href="https://comunica.dev/docs/query/getting_started/query_app/"><strong>Read more</strong> about querying an application</a>.</em></p>
 					<a href="#usage-as-a-sparql-endpoint" id="usage-as-a-sparql-endpoint" style="color: inherit; text-decoration: none;">
 						<h3>Usage as a SPARQL endpoint</h3>
 					</a>
@@ -114,6 +134,7 @@ result.bindingsStream.on(<span class="hljs-string">&#x27;data&#x27;</span>, <spa
 					<p>The SPARQL endpoint can only be started dynamically.
 					An alternative config file can be passed via the <code>COMUNICA_CONFIG</code> environment variable.</p>
 					<p>Use <code>bin/http.js</code> when running in the Comunica monorepo development environment.</p>
+					<p><em><a href="https://comunica.dev/docs/query/getting_started/setup_endpoint/"><strong>Read more</strong> about setting up a SPARQL endpoint</a>.</em></p>
 				</div>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">
@@ -145,7 +166,7 @@ result.bindingsStream.on(<span class="hljs-string">&#x27;data&#x27;</span>, <spa
 					<div class="tsd-signature tsd-kind-icon">default<wbr>Config<wbr>Path<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &#x60;${__dirname}/../config/config-default.json&#x60;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/c92a383/packages/actor-init-sparql-file/bin/http.ts#L4">packages/actor-init-sparql-file/bin/http.ts:4</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/b2a2c21/packages/actor-init-sparql-file/bin/http.ts#L4">packages/actor-init-sparql-file/bin/http.ts:4</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -162,7 +183,7 @@ result.bindingsStream.on(<span class="hljs-string">&#x27;data&#x27;</span>, <spa
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/c92a383/packages/actor-init-sparql-file/index.ts#L8">packages/actor-init-sparql-file/index.ts:8</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/b2a2c21/packages/actor-init-sparql-file/index.ts#L8">packages/actor-init-sparql-file/index.ts:8</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -185,7 +206,7 @@ result.bindingsStream.on(<span class="hljs-string">&#x27;data&#x27;</span>, <spa
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/c92a383/packages/actor-init-sparql-file/index-browser.ts#L8">packages/actor-init-sparql-file/index-browser.ts:8</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/b2a2c21/packages/actor-init-sparql-file/index-browser.ts#L8">packages/actor-init-sparql-file/index-browser.ts:8</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -208,7 +229,7 @@ result.bindingsStream.on(<span class="hljs-string">&#x27;data&#x27;</span>, <spa
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/c92a383/packages/actor-init-sparql-file/index.ts#L17">packages/actor-init-sparql-file/index.ts:17</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/b2a2c21/packages/actor-init-sparql-file/index.ts#L17">packages/actor-init-sparql-file/index.ts:17</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
