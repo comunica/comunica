@@ -3,28 +3,20 @@
 [![npm version](https://badge.fury.io/js/%40comunica%2Factor-init-sparql.svg)](https://www.npmjs.com/package/@comunica/actor-init-sparql)
 [![Docker Pulls](https://img.shields.io/docker/pulls/comunica/actor-init-sparql.svg)](https://hub.docker.com/r/comunica/actor-init-sparql/)
 
-Linked Data on the Web is being published in different ways,
-such as [data dumps](http://downloads.dbpedia.org/3.9/en/),
-[subject pages](http://dbpedia.org/page/Linked_data),
-[results of SPARQL queries](http://dbpedia.org/sparql?default-graph-uri=http%3A%2F%2Fdbpedia.org&query=CONSTRUCT+%7B+%3Fp+a+dbpedia-owl%3AArtist+%7D%0D%0AWHERE+%7B+%3Fp+a+dbpedia-owl%3AArtist+%7D&format=text%2Fturtle),
-and [Triple Pattern Fragments](http://data.linkeddatafragments.org/dbpedia2014?subject=&predicate=rdf%3Atype&object=dbpedia-owl%3ARestaurant).
-This client is able to solve queries over such _heterogeneous interfaces_.
-
-Concretely, Comunica SPARQL is a module that is preconfigured with a configuration file to initialize
-the [Comunica engine](https://github.com/comunica/comunica) with actors to evaluate SPARQL queries
-over heterogeneous interfaces.
+Comunica SPARQL is a SPARQL query engine for JavaScript for querying over decentralized RDF knowledge graphs on the Web.
 
 It's main distinguishing features are the following:
 
-* High modularity enabling easy extensions and customization.
-* Federated querying over heterogeneous interfaces.
-* Can run using [Node.JS](http://nodejs.org/), in the browser, and via the command-line.
+* Execute [SPARQL 1.1](https://www.w3.org/TR/sparql11-query/) or [GraphQL-LD](https://github.com/rubensworks/graphql-ld.js) queries
+* Federated querying over [heterogeneous interfaces](https://comunica.dev/docs/query/advanced/source_types/), such as RDF files, SPARQL endpoints, [Triple Pattern Fragments](https://linkeddatafragments.org/), or [Solid data pods](https://inrupt.com/solid).
+* High modularity enabling [easy extensions and customization](https://comunica.dev/docs/modify/).
+* Runs in JavaScript using [Node.JS](http://nodejs.org/), in the browser, and via the command-line.
 
-Comunica can either be invoked **dynamically** using a configuration file,
-or **statically** using a pre-compiled configuration file.
-The latter will be faster to start because the dependency-injection phase can be avoided.
+**[Learn more about Comunica on our website](https://comunica.dev/).**
 
 **This actor can not query over local files for security reasons, but [Comunica SPARQL file](https://github.com/comunica/comunica/tree/master/packages/actor-init-sparql-file#readme) can.**
+
+_Internally, this is a [Comunica module](https://comunica.dev/) that is configured with modules to execute SPARQL queries._
 
 ## Installation
 
@@ -58,10 +50,12 @@ Show all triples from http://dbpedia.org/resource/Belgium:
 $ comunica-sparql http://dbpedia.org/resource/Belgium "CONSTRUCT WHERE { ?s ?p ?o }"
 ```
 
+
 Combine multiple sources:
 
 ```bash
-$ comunica-sparql http://fragments.dbpedia.org/2015-10/en file@http://dbpedia.org/resource/Belgium "CONSTRUCT WHERE { ?s ?p ?o } LIMIT 100"
+$ comunica-sparql http://fragments.dbpedia.org/2015-10/en \
+  file@http://dbpedia.org/resource/Belgium "CONSTRUCT WHERE { ?s ?p ?o } LIMIT 100"
 ```
 
 Show the help with all options:
@@ -81,6 +75,8 @@ node bin/query.js http://fragments.dbpedia.org/2016-04/en "CONSTRUCT WHERE { ?s 
 ```
 
 Use `bin/query-dynamic.js` when running dynamically inside the Comunica monorepo development environment.
+
+_[**Read more** about querying from the command line](https://comunica.dev/docs/query/getting_started/query_cli/)._
 
 ### Usage as a SPARQL endpoint
 
@@ -102,6 +98,8 @@ The SPARQL endpoint can only be started dynamically.
 An alternative config file can be passed via the `COMUNICA_CONFIG` environment variable.
 
 Use `bin/http.js` when running in the Comunica monorepo development environment.
+
+_[**Read more** about setting up a SPARQL endpoint](https://comunica.dev/docs/query/getting_started/setup_endpoint/)._
 
 ### Usage within application
 
@@ -128,25 +126,42 @@ which returns an output of type that depends on the given query string.
 For example, a `SELECT` query can be executed as follows:
 
 ```javascript
-const result = await myEngine.query('SELECT * WHERE { ?s ?p <http://dbpedia.org/resource/Belgium>. ?s ?p ?o } LIMIT 100',
-  { sources: ['http://fragments.dbpedia.org/2015/en'] })
-result.bindingsStream.on('data', (data) => console.log(data.toObject()));
+const result = await myEngine.query(`
+  SELECT ?s ?p ?o WHERE {
+    ?s ?p <http://dbpedia.org/resource/Belgium>.
+    ?s ?p ?o
+  } LIMIT 100`, {
+  sources: ['http://fragments.dbpedia.org/2015/en'],
+});
+
+// Consume results as a stream (best performance)
+result.bindingsStream.on('data', (binding) => {
+    console.log(binding.get('?s').value);
+    console.log(binding.get('?s').termType);
+
+    console.log(binding.get('?p').value);
+
+    console.log(binding.get('?o').value);
+});
+
+// Consume results as an array (easier)
+const bindings = await result.bindings();
+console.log(bindings[0].get('?s').value);
+console.log(bindings[0].get('?s').termType);
 ```
 
-Optionally, specific types of sources can be specified (_otherwise, the type of source will be detected automatically_):
+Optionally, specific [types of sources](https://comunica.dev/docs/query/advanced/source_types/) can be specified (_otherwise, the type of source will be detected automatically_):
 
 ```javascript
-const result = await myEngine.query('SELECT * WHERE { ?s ?p <http://dbpedia.org/resource/Belgium>. ?s ?p ?o } LIMIT 100',
-  { sources: [
+const result = await myEngine.query(`...`, {
+  sources: [
     'http://fragments.dbpedia.org/2015/en',
+    { type: 'hypermedia', value: 'http://fragments.dbpedia.org/2016/en' },
+    { type: 'file', value: 'https://www.rubensworks.net/' },
+    new N3Store(),
     { type: 'sparql', value: 'https://dbpedia.org/sparql' },
-    { type: 'file', value: 'https://ruben.verborgh.org/profile/' },
-    { type: 'rdfjsSource', value: new N3Store() },
-  ] })
-// Stream-based processing of results
-result.bindingsStream.on('data', (data) => console.log(data.toObject()));
-// Or directly collect the stream in an array
-const bindings = await result.bindings();
+  ],
+});
 ```
 
 **Note: Some SPARQL endpoints may be recognised as a file instead of a SPARQL endpoint due to them not supporting [SPARQL Service Description](https://www.w3.org/TR/sparql11-service-description/), which may produce incorrect results. For these cases, the `sparql` type MUST be set.**
@@ -155,208 +170,56 @@ For `CONSTRUCT` and `DESCRIBE` queries,
 results can be collected as follows.
 
 ```javascript
-const result = await myEngine.query('CONSTRUCT WHERE { ?s ?p <http://dbpedia.org/resource/Belgium> } LIMIT 100',
-  { sources: ['http://fragments.dbpedia.org/2015/en'] })
-// Stream-based processing of results
-result.quadStream.on('data', (data) => console.log(data));
-// Or directly collect the stream in an array
+const result = await myEngine.query(`
+  CONSTRUCT WHERE {
+    ?s ?p ?o
+  } LIMIT 100`, {
+  sources: ['http://fragments.dbpedia.org/2015/en'],
+});
+
+// Consume results as a stream (best performance)
+result.quadStream.on('data', (quad) => {
+    console.log(quad.subject.value);
+    console.log(quad.predicate.value);
+    console.log(quad.object.value);
+    console.log(quad.graph.value);
+});
+
+// Consume results as an array (easier)
 const quads = await result.quads();
+console.log(quads[0].subject.value);
+console.log(quads[0].predicate.value);
+console.log(quads[0].object.value);
+console.log(quads[0].graph.value);
 ```
 
 Finally, `ASK` queries return async booleans.
 
 ```javascript
-const result = await myEngine.query('ASK { ?s ?p <http://dbpedia.org/resource/Belgium> }',
-  { sources: ['http://fragments.dbpedia.org/2015/en'] })
-const isPresent = await result.booleanResult;
+const result = await myEngine.query(`
+  ASK {
+    ?s ?p <http://dbpedia.org/resource/Belgium>
+  }`, {
+  sources: ['http://fragments.dbpedia.org/2015/en'],
+})
+const hasMatches = await result.booleanResult;
 ```
 
-**Context options:**
+_[**Read more** about querying an application](https://comunica.dev/docs/query/getting_started/query_app/)._
 
-| **Key** | **Description** |
-| ------- | --------------- |
-| `sources` | An array of data sources, e.g. `[ { value: 'http://fragments.dbpedia.org/2015/en' } ]`. Optionally, a source can have a `type` field to _force_ a specific type. For example, `[ { type: 'file', value: 'http://fragments.dbpedia.org/2015/en' } ]` will make sure the source is seen as a file with all hypermedia ignored. Source types can be forced as: `sparql`, `file`, `rdfjsSource` |
-| `initialBindings` | Variables that have to be pre-bound to values in the query, using the `Bindings` datastructure, e.g. `Bindings({ '?s': literal('sl') })`. |
-| `queryFormat` | Name of the provided query's format. Defaults to `sparql`, can also be `graphql` |
-| `baseIRI` | Base IRI for relative IRIs in SPARQL queries, e.g. `http://example.org/`. |
-| `log` | Logger to use, e.g. `new LoggerPretty({ level: 'warn' })`. |
-| `datetime` | Datetime to handle time travel with [Memento](http://timetravel.mementoweb.org/), e.g. `new Date()`. |
-| `lenient` | If failing requests and parsing errors should be logged instead of causing a hard crash. Defaults to `false`. |
+## Learn more
 
-#### *(Optional)* Result formatting
+This README just shows the tip of the iceberg!
+Learn more about Comunica's functionalities in the following guides:
 
-As mentioned before, query results are either a `bindingsStream` (for `SELECT` queries),
-`quadStream` (for `CONSTRUCT` queries), or `booleanResult` (for `ASK` queries).
-
-Using the `@comunica/actor-sparql-serialize-*` actors,
-Comunica allows these results to be serialized into standard formats in a streaming manner.
-
-For example, serializing results to the [SPARQL/JSON](https://www.w3.org/TR/sparql11-results-json/) format
-can be done as follows:
-
-```javascript
-const result = await myEngine.query('SELECT * WHERE { ?s ?p <http://dbpedia.org/resource/Belgium>. ?s ?p ?o } LIMIT 100',
-  { sources: ['http://fragments.dbpedia.org/2015/en'] });
-const { data } = await myEngine.resultToString(result, 'application/sparql-results+json');
-data.pipe(process.stdout);
-```
-
-Passing a media type as second argument is optional.
-If none is supplied, then `application/json` will be picked for bindings,
-`application/trig` for quads, and `simple` for booleans.
-
-By default, the following result formats are available:
-
-| **Media type** | **Description** |
-| ------- | --------------- |
-| [`application/json`](https://github.com/comunica/comunica/tree/master/packages/actor-sparql-serialize-json) | A custom, simplified JSON result format. |
-| [`simple`](https://github.com/comunica/comunica/tree/master/packages/actor-sparql-serialize-simple) | A custom, text-based result format. |
-| [`application/sparql-results+json`](https://github.com/comunica/comunica/tree/master/packages/actor-sparql-serialize-sparql-json) | The [SPARQL/JSON](https://www.w3.org/TR/sparql11-results-json/) results format. |
-| [`application/sparql-results+xml`](https://github.com/comunica/comunica/tree/master/packages/actor-sparql-serialize-sparql-xml) | The [SPARQL/XML](https://www.w3.org/TR/rdf-sparql-XMLres/) results format. |
-| [`stats`](https://github.com/comunica/comunica/tree/master/packages/actor-sparql-serialize-stats) | A custom results format for testing and debugging. |
-| [`table`](https://github.com/comunica/comunica/tree/master/packages/actor-sparql-serialize-table) | A text-based visual table result format. |
-| [`tree`](https://github.com/comunica/comunica/tree/master/packages/actor-sparql-serialize-tree) | A tree-based result format for GraphQL-LD result compacting. |
-| [`application/trig`](https://github.com/comunica/comunica/tree/master/packages/actor-sparql-serialize-rdf) | The [TriG](https://www.w3.org/TR/trig/) RDF serialization. |
-| [`application/n-quads`](https://github.com/comunica/comunica/tree/master/packages/actor-sparql-serialize-rdf) | The [N-Quads](https://www.w3.org/TR/n-quads/) RDF serialization. |
-| [`text/turtle`](https://github.com/comunica/comunica/tree/master/packages/actor-sparql-serialize-rdf) | The [Turtle](https://www.w3.org/TR/turtle/) RDF serialization. |
-| [`application/n-triples`](https://github.com/comunica/comunica/tree/master/packages/actor-sparql-serialize-rdf) | The [N-Triples](https://www.w3.org/TR/n-triples/) RDF serialization. |
-| [`text/n3`](https://github.com/comunica/comunica/tree/master/packages/actor-sparql-serialize-rdf) | The [Notation3](https://www.w3.org/TeamSubmission/n3/) serialization. |
-| [`application/ld+json`](https://github.com/comunica/comunica/tree/master/packages/actor-sparql-serialize-rdf) | The [JSON-LD](https://json-ld.org/) RDF serialization. |
-
-This list of available formats can also be retrieved dynamically by invoking the (asynchronous) `engine.getResultMediaTypes()` method.
-
-On the command-line, the result format can be set using the `-t` flag:
-
-```bash
-$ comunica-sparql http://dbpedia.org/resource/Belgium "SELECT * WHERE { ?s ?p ?o }" -t 'application/sparql-results+json'
-```
-
-All available result formats can be listed from the command-line using `--listformats`:
-
-```bash
-$ comunica-sparql --listformats
-```
-
-#### *(Optional)* Cache handling
-
-When remote documents are fetched over HTTP, a Comunica engine can cache documents to optimize future reuse.
-If your application works over volatile resources, then you may want to invalidate this cache,
-which can be done as follows:
-
-```javascript
-myEngine.invalidateHttpCache(); // Invalidate the full cache
-myEngine.invalidateHttpCache('http://example.org/page.html'); // Invalidate a single document
-```
-
-#### *(Optional)* GraphQL-LD
-
-Instead of SPARQL queries, you can also define [GraphQL](https://graphql.org/) queries
-(with a [JSON-LD](https://json-ld.org/) context).
-
-If you want to convert your results to a GraphQL tree,
-then you will need the `@comunica/actor-sparql-serialize-tree` dependency,
-otherwise you can consume the bindings stream manually.
-
-```javascript
-const newEngine = require('@comunica/actor-init-sparql').newEngine;
-const bindingsStreamToGraphQl = require('@comunica/actor-sparql-serialize-tree').bindingsStreamToGraphQl;
-
-const myEngine = newEngine();
-const config = {
-  sources: ['http://fragments.dbpedia.org/2016-04/en'],
-  queryFormat: 'graphql',
-  "@context": {
-    "label": { "@id": "http://www.w3.org/2000/01/rdf-schema#label" },
-    "label_en": { "@id": "http://www.w3.org/2000/01/rdf-schema#label", "@language": "en" },
-    "writer": { "@id": "http://dbpedia.org/ontology/writer" },
-    "artist": { "@id": "http://dbpedia.org/ontology/musicalArtist" }
-  }
-};
-myEngine.query('{ label @single writer(label_en: \"Michael Jackson\") @single artist @single { label @single } }', config)
-  .then(function (result) { return bindingsStreamToGraphQl(result.bindingsStream, result.context); })
-  .then(console.log);
-```
-
-To run GraphQL queries from the command line, set the `-i` flag to `graphql` and refer to your config file with the JSON-LD context (`@context`) through the `-c` flag. To output your results as a GraphQL tree, set the MIME type of the output with `-t` to `tree`. For example:
-
-```bash
-$ comunica-sparql http://fragments.dbpedia.org/2015-10/en -q "{ label @single }" -c config-with-context.json -i graphql -t tree
-```
-
-#### *(Optional)* Logging
-
-Optionally, a custom logger can be used inside Comunica.
-By default, [`@comunica/logger-void`](https://github.com/comunica/comunica/tree/master/packages/logger-void/) is used,
-which will simply void all log calls.
-(_This default can be changed in the [configuration file](https://github.com/comunica/comunica/blob/master/packages/actor-init-sparql/config/config-default.json)_)
-
-Alternatively, [`@comunica/logger-pretty`](https://github.com/comunica/comunica/tree/master/packages/logger-pretty/),
-[`@comunica/logger-bunyan`](https://github.com/comunica/comunica/tree/master/packages/logger-bunyan/),
-or a custom logger implementing the [`Logger`](https://github.com/comunica/comunica/blob/master/packages/core/lib/Logger.ts) interface can be used.
-
-These loggers can be configured through the context as follows:
-```javascript
-import {LoggerPretty} from "@comunica/logger-pretty";
-
-const context = {
-  log: new LoggerPretty({ level: 'warn' });
-};
-myEngine.query('...', context);
-```
-
-#### *(Optional)* Proxy
-
-Optionally, you can configure a proxy to redirect all HTTP(S) traffic.
-This is for example useful when Comunica is used in a Web browser where a [proxy enables CORS headers on all responses](https://www.npmjs.com/package/cors-anywhere).
-
-Via the command line, a proxy can be enabled as follows:
-```bash
-$ comunica-sparql http://fragments.dbpedia.org/2015-10/en "CONSTRUCT WHERE { ?s ?p ?o } LIMIT 100" -p http://myproxy.org/?uri=
-```
-
-This will cause all requests to be modified by appending the original URL to the proxy URL `http://myproxy.org/?uri=http://fragments.dbpedia.org/2015-10/en`.
-
-A proxy can also be configured via the programmatic API as follows:
-```javascript
-const ProxyHandlerStatic = require("@comunica/actor-http-proxy").ProxyHandlerStatic;
-
-const result = await myEngine.query('SELECT * WHERE { ?s ?p <http://dbpedia.org/resource/Belgium>. ?s ?p ?o } LIMIT 100',
-  {
-    sources: [ { type: 'hypermedia', value: 'http://fragments.dbpedia.org/2015/en' } ],
-    httpProxyHandler: new ProxyHandlerStatic('http://myproxy.org/?uri='),
-  });
-```
-
-Next to `ProxyHandlerStatic`, more advanced proxy handlers can be created by implementing [`IProxyHandler`](https://github.com/comunica/comunica/blob/master/packages/actor-http-proxy/lib/IProxyHandler.ts).
-
-### Usage within browser
-
-_(Just want to quickly demo queries in the browser? Have a look at our [Web client](https://github.com/comunica/jQuery-Widget.js))_
-
-This engine can run in the browser using [Webpack](https://www.npmjs.com/package/webpack).
-To create a web-packed version of the engine, run `yarn run browser` (when inside the `packages/actor-init-sparql` folder) to create `comunica-browser.js`.
-Alternatively, just [use a pre-built version from our CDN](https://github.com/rdfjs/comunica-browser).
-
-Include this file in your webpage as follows:
-
-```html
-<script src="path/to/comunica-browser.js"></script>
-```
-
-After that, `Comunica.newEngine` can be called via JavaScript.
-
-```javascript
-const myEngine = Comunica.newEngine();
-myEngine.query('SELECT * { ?s ?p <http://dbpedia.org/resource/Belgium>. ?s ?p ?o } LIMIT 100',
-  { sources: ['http://fragments.dbpedia.org/2015/en'] })
-  .then(function (result) {
-    result.bindingsStream.on('data', function (data) {
-      console.log(data.toObject());
-    });
-  });
-```
-
-The browser script is pre-compiled using a config file and can therefore only be invoked dynamically.
-See the `prepare` and `browser` scripts in `package.json` to compile using a custom config file.
-
-_If you want to use GraphQL-LD here as well, you can do this similar as in the Node.JS API using `Comunica.bindingsStreamToGraphQl`_
+* _[Querying in a JavaScript browser app](https://comunica.dev/docs/query/getting_started/query_browser_app/)_
+* _[Passing query options](https://comunica.dev/docs/query/advanced/context/)_
+* _[Supported source types](https://comunica.dev/docs/query/advanced/source_types/)_
+* _[Formatting results](https://comunica.dev/docs/query/advanced/result_formats/)_
+* _[Supported specifications](https://comunica.dev/docs/query/advanced/specifications/)_
+* _[Logging and debugging](https://comunica.dev/docs/query/advanced/logging/)_
+* _[Caching](https://comunica.dev/docs/query/advanced/caching/)_
+* _[Using a proxy](https://comunica.dev/docs/query/advanced/proxying/)_
+* _[GraphQL-LD](https://comunica.dev/docs/query/advanced/graphql_ld/)_
+* _[Docker](https://comunica.dev/docs/query/getting_started/query_docker/)_
+* _[*Full documentation*](https://comunica.dev/docs/)_

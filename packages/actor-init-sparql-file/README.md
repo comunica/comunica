@@ -2,9 +2,9 @@
 
 [![npm version](https://badge.fury.io/js/%40comunica%2Factor-init-sparql-file.svg)](https://www.npmjs.com/package/@comunica/actor-init-sparql-file)
 
-A comunica SPARQL File Init Actor.
+Comunica SPARQL is a SPARQL query engine for JavaScript for querying local and remote RDF files.
 
-This module is part of the [Comunica framework](https://github.com/comunica/comunica).
+This module is part of the [Comunica framework](https://comunica.dev/).
 
 ## Install
 
@@ -47,6 +47,8 @@ $ comunica-sparql-file --help
 Just like [Comunica SPARQL](https://github.com/comunica/comunica/tree/master/packages/actor-init-sparql),
 a [dynamic variant](https://github.com/comunica/comunica/tree/master/packages/actor-init-sparql#usage-from-the-command-line) (`comunica-dynamic-sparql-file`) also exists.
 
+_[**Read more** about querying from the command line](https://comunica.dev/docs/query/getting_started/query_cli_file/)._
+
 ### Usage within application
 
 This engine can be used in JavaScript/TypeScript applications as follows:
@@ -55,12 +57,31 @@ This engine can be used in JavaScript/TypeScript applications as follows:
 const newEngine = require('@comunica/actor-init-sparql-file').newEngine;
 const myEngine = newEngine();
 
-const result = await myEngine.query('SELECT * WHERE { ?s ?p <http://dbpedia.org/resource/Belgium>. ?s ?p ?o } LIMIT 100',
-  { sources: ['/path/to/my/file.ttl'] })
-result.bindingsStream.on('data', (data) => console.log(data.toObject()));
+const result = await myEngine.query(`
+  SELECT ?s ?p ?o WHERE {
+    ?s ?p <http://dbpedia.org/resource/Belgium>.
+    ?s ?p ?o
+  } LIMIT 100`, {
+  sources: ['http://fragments.dbpedia.org/2015/en'],
+});
+
+// Consume results as a stream (best performance)
+result.bindingsStream.on('data', (binding) => {
+    console.log(binding.get('?s').value);
+    console.log(binding.get('?s').termType);
+
+    console.log(binding.get('?p').value);
+
+    console.log(binding.get('?o').value);
+});
+
+// Consume results as an array (easier)
+const bindings = await result.bindings();
+console.log(bindings[0].get('?s').value);
+console.log(bindings[0].get('?s').termType);
 ```
 
-[More details](https://github.com/comunica/comunica/tree/master/packages/actor-init-sparql#usage-within-application)
+_[**Read more** about querying an application](https://comunica.dev/docs/query/getting_started/query_app/)._
 
 ### Usage as a SPARQL endpoint
 
@@ -80,3 +101,5 @@ The SPARQL endpoint can only be started dynamically.
 An alternative config file can be passed via the `COMUNICA_CONFIG` environment variable.
 
 Use `bin/http.js` when running in the Comunica monorepo development environment.
+
+_[**Read more** about setting up a SPARQL endpoint](https://comunica.dev/docs/query/getting_started/setup_endpoint/)._

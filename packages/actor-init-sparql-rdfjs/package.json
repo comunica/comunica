@@ -1,7 +1,7 @@
 {
   "name": "@comunica/actor-init-sparql-rdfjs",
   "version": "1.14.0",
-  "description": "A Comunica engine for SPARQL query evaluation over RDFJS sources",
+  "description": "A SPARQL query engine for querying over RDF/JS sources",
   "lsd:importPaths": {
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-sparql-rdfjs/^1.0.0/config/": "config/"
   },
@@ -13,10 +13,16 @@
   },
   "keywords": [
     "comunica",
+    "sparql",
+    "engine",
+    "query",
+    "sparql engine",
+    "sparql query",
+    "sparql 1.1",
     "actor",
     "init",
-    "sparql",
-    "hdt"
+    "rdfjs",
+    "rdf/js"
   ],
   "license": "MIT",
   "bugs": {

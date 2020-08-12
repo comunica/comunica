@@ -1,7 +1,7 @@
 {
   "name": "@comunica/actor-init-sparql-file",
   "version": "1.14.0",
-  "description": "A Comunica engine for SPARQL query evaluation over RDF files",
+  "description": "A SPARQL query engine for querying over local and remote RDF files",
   "lsd:importPaths": {
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-sparql-file/^1.0.0/config/": "config/"
   },
@@ -13,10 +13,15 @@
   },
   "keywords": [
     "comunica",
+    "sparql",
+    "engine",
+    "query",
+    "sparql engine",
+    "sparql query",
+    "sparql 1.1",
     "actor",
     "init",
-    "sparql",
-    "hdt"
+    "file"
   ],
   "license": "MIT",
   "bin": {

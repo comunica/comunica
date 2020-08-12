@@ -1,37 +1,58 @@
-# Comunica
+<p align="center">
+  <a href="https://comunica.dev/">
+    <img alt="Comunica" src="https://comunica.dev/img/comunica_red.svg" width="200">
+  </a>
+</p>
 
-[![Build Status](https://travis-ci.org/comunica/comunica.svg?branch=master)](https://travis-ci.org/comunica/comunica)
-[![Coverage Status](https://coveralls.io/repos/github/comunica/comunica/badge.svg?branch=master)](https://coveralls.io/github/comunica/comunica?branch=master)
-[![DOI](https://zenodo.org/badge/107345960.svg)](https://zenodo.org/badge/latestdoi/107345960)
-[![Gitter chat](https://badges.gitter.im/comunica.png)](https://gitter.im/comunica/Lobby)
+<p align="center">
+  <strong>A knowledge graph querying framework for JavaScript</strong>
+  <br />
+  <i>Flexible SPARQL and GraphQL over decentralized RDF on the Web.</i>
+</p>
 
-Comunica is a highly modular and flexible query engine platform for the Web.
+<p align="center">
+<a href="https://travis-ci.org/comunica/comunica"><img src="https://travis-ci.org/comunica/comunica.svg?branch=master" alt="Build Status"></a>
+<a href="https://coveralls.io/github/comunica/comunica?branch=master"><img src="https://coveralls.io/repos/github/comunica/comunica/badge.svg?branch=master" alt="Coverage Status"></a>
+<a href="https://zenodo.org/badge/latestdoi/107345960"><img src="https://zenodo.org/badge/107345960.svg" alt="DOI"></a>
+<a href="https://gitter.im/comunica/Lobby"><img src="https://badges.gitter.im/comunica.png" alt="Gitter chat"></a>
+</p>
 
-As Comunica is a query engine _platform_,
-various configurations can be built for it,
-each leading to a different query engine.
+**[Learn more about Comunica on our website](https://comunica.dev/).**
 
-**If you just want to query, have a look at these pre-built engines**:
-* [Comunica SPARQL](https://github.com/comunica/comunica/tree/master/packages/actor-init-sparql#readme): SPARQL/GraphQL querying from JavaScript applications or the CLI
+## Query with Comunica
+
+Read one of our [guides to **get started** with querying](https://comunica.dev/docs/query/getting_started/):
+
+* [Querying from the command line](https://comunica.dev/docs/query/getting_started/query_cli/)
+* [Querying local files from the command line](https://comunica.dev/docs/query/getting_started/query_cli_file/)
+* [Querying in a JavaScript app](https://comunica.dev/docs/query/getting_started/query_app/)
+* [Querying in a JavaScript browser app](https://comunica.dev/docs/query/getting_started/query_browser_app/)
+* [Setting up a SPARQL endpoint](https://comunica.dev/docs/query/getting_started/setup_endpoint/)
+* [Querying from a Docker container](https://comunica.dev/docs/query/getting_started/query_docker/)
+
+Or jump right into one of the available query engines:
+* [Comunica SPARQL](https://github.com/comunica/comunica/tree/master/packages/actor-init-sparql#readme): SPARQL/GraphQL querying from JavaScript applications or the CLI ([Browser-ready via a CDN](https://github.com/rdfjs/comunica-browser))
 * [Comunica SPARQL File](https://github.com/comunica/comunica/tree/master/packages/actor-init-sparql-file#readme): Library to query over local RDF files
 * [Comunica SPARQL RDFJS](https://github.com/comunica/comunica/tree/master/packages/actor-init-sparql-rdfjs#readme): Library to query over in-memory [RDFJS-compliant sources](https://rdf.js.org/stream-spec/#source-interface).
 * [Comunica SPARQL HDT](https://github.com/comunica/comunica-actor-init-sparql-hdt#readme): Library to query over local HDT files
 
-This repository should be used by Comunica module **developers** as it contains multiple Comunica modules that can be composed.
-This repository is managed as a [monorepo](https://github.com/babel/babel/blob/master/doc/design/monorepo.md)
-using [Lerna](https://lernajs.io/).
+## Modify or Extending Comunica
 
-More usage information and details can be found in our [manual](http://comunica.readthedocs.io/en/latest/).
-Some examples illustrating the usage of Comunica can be found in our dedicated [examples repository](https://github.com/comunica/examples).
-If you want more background information about the motivations of this work,
-be sure to have a look at our [article](https://comunica.github.io/Article-ISWC2018-Resource/).
+[Read one of our guides to **get started** with modifying Comunica](https://comunica.dev/docs/modify/),
+or have a look at some [examples](https://github.com/comunica/examples).
 
-Browser scripts of all engines in this repo are automatically built and made available via a CDN:
-https://github.com/rdfjs/comunica-browser
+## Contribute
+
+Interested in contributing? Have a look at our [contribution guide](https://github.com/comunica/comunica/blob/master/CONTRIBUTING.md)
+and learn [what you could contribute](https://comunica.dev/contribute/).
 
 ## Development Setup
 
 _(JSDoc: https://comunica.github.io/comunica/)_
+
+This repository should be used by Comunica module **developers** as it contains multiple Comunica modules that can be composed.
+This repository is managed as a [monorepo](https://github.com/babel/babel/blob/master/doc/design/monorepo.md)
+using [Lerna](https://lernajs.io/).
 
 If you want to develop new features
 or use the (potentially unstable) in-development version,
@@ -58,15 +79,6 @@ Furthermore, this will add [pre-commit hooks](https://www.npmjs.com/package/pre-
 to build, lint and test.
 These hooks can temporarily be disabled at your own risk by adding the `-n` flag to the commit command.
 
-### Development tips and tricks
-
-* Only do `yarn install` in the repo root, and *never* in one of the sub-packages, as this can break your repo.
-* `yarn run build` will (re)build all TypeScript to JavaScript. This can also be executed on package-level.
-* `yarn run build-watch` will continuously build the TypeScript to JavaScript. This is useful during development.
-* `yarn test` and `yarn run lint` execute the tests and linter checks locally. Before a PR is opened, these must always pass, and testing coverage must be 100%.
-* When editing configuration files in packages like `actor-init-sparql`, `yarn run prepare` can be executed to compile the JSON files to JavaScript before they can be executed. (not needed when executing dynamically)
-* When modifying a dependency package such as [sparqlee](https://github.com/comunica/sparqlee), [Yarn's link functionality](https://classic.yarnpkg.com/en/docs/cli/link/) can be used to force your local version of that dependency to be used in Comunica.
-
 ## Benchmarking
 
 If you want to do benchmarking with Comunica in Node.js,
@@ -80,6 +92,22 @@ The reason for this is that Comunica extensively generates
 internal `Error` objects.
 In non-production mode, these also produce long stacktraces,
 which may in some cases impact performance.
+
+## Cite
+
+If you are using or extending Comunica as part of a scientific publication,
+we would appreciate a citation of our [article](https://comunica.github.io/Article-ISWC2018-Resource/).
+
+```bibtex
+@inproceedings{taelman_iswc_resources_comunica_2018,
+  author    = {Taelman, Ruben and Van Herwegen, Joachim and Vander Sande, Miel and Verborgh, Ruben},
+  title     = {Comunica: a Modular SPARQL Query Engine for the Web},
+  booktitle = {Proceedings of the 17th International Semantic Web Conference},
+  year      = {2018},
+  month     = oct,
+  url       = {https://comunica.github.io/Article-ISWC2018-Resource/}
+}
+```
 
 ## License
 This code is copyrighted by [Ghent University – imec](http://idlab.ugent.be/)

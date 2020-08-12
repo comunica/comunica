@@ -2,10 +2,10 @@
 
 [![npm version](https://badge.fury.io/js/%40comunica%2Factor-init-sparql-rdfjs.svg)](https://www.npmjs.com/package/@comunica/actor-init-sparql-rdfjs)
 
-A comunica SPARQL RDFJS Init Actor that can query RDFJS sources
+Comunica SPARQL is a SPARQL query engine for JavaScript for querying RDFJS sources
 that implement the [Source interface](http://rdf.js.org/#source-interface).
 
-This module is part of the [Comunica framework](https://github.com/comunica/comunica).
+This module is part of the [Comunica framework](https://comunica.dev/).
 
 ## Install
 
@@ -40,6 +40,8 @@ result.bindingsStream.on('data', (data) => {
   console.log(data.get('?o'));
 });
 ```
+
+_[**Read more** about querying an application](https://comunica.dev/docs/query/getting_started/query_app/)._
 
 ## Optimization
 
