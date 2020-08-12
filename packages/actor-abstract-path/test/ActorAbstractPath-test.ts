@@ -1,5 +1,5 @@
 import { Actor, Bus } from '@comunica/core';
-import { blankNode, namedNode } from '@rdfjs/data-model';
+import { namedNode, variable } from '@rdfjs/data-model';
 import { termToString } from 'rdf-string';
 import { Factory } from 'sparqlalgebrajs';
 import { ActorAbstractPath } from '../lib/ActorAbstractPath';
@@ -28,11 +28,11 @@ describe('ActorAbstractPath', () => {
   describe('An ActorAbstractPath instance', () => {
     const actor = new (<any> ActorAbstractPath)({ bus, name: 'actor' });
 
-    it('generates unique blank nodes', () => {
+    it('generates unique variable', () => {
       const path = factory.createPath(
         namedNode('s'),
         factory.createLink(namedNode('p')),
-        blankNode('b'),
+        variable('b'),
       );
       return expect(termToString(actor.generateVariable(path))).not.toEqual(path.object.value);
     });

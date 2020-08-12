@@ -175,16 +175,11 @@ describe('ActorQueryOperationPathOneOrMore', () => {
       context: ActionContext({ [ActorAbstractPath.isPathArbitraryLengthDistinctKey]: true }) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       expect(output.variables).toEqual([ '?x', '?y' ]);
-      expect(await arrayifyStream(output.bindingsStream)).toEqual([
-        Bindings({ '?x': namedNode('1'), '?y': namedNode('1') }),
+      const bindings: Bindings[] = await arrayifyStream(output.bindingsStream);
+      expect(bindings).toEqual([
         Bindings({ '?x': namedNode('1'), '?y': namedNode('2') }),
+        Bindings({ '?x': namedNode('1'), '?y': namedNode('1') }),
         Bindings({ '?x': namedNode('1'), '?y': namedNode('3') }),
-        Bindings({ '?x': namedNode('2'), '?y': namedNode('1') }),
-        Bindings({ '?x': namedNode('2'), '?y': namedNode('2') }),
-        Bindings({ '?x': namedNode('2'), '?y': namedNode('3') }),
-        Bindings({ '?x': namedNode('3'), '?y': namedNode('1') }),
-        Bindings({ '?x': namedNode('3'), '?y': namedNode('2') }),
-        Bindings({ '?x': namedNode('3'), '?y': namedNode('3') }),
       ]);
     });
   });

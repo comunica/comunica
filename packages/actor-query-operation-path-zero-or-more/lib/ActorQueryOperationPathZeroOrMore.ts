@@ -5,7 +5,7 @@ import {
   ActorQueryOperation,
 } from '@comunica/bus-query-operation';
 import { ActionContext } from '@comunica/core';
-import { MultiTransformIterator, TransformIterator, EmptyIterator } from 'asynciterator';
+import { MultiTransformIterator, TransformIterator, EmptyIterator, BufferedIterator } from 'asynciterator';
 
 import { termToString } from 'rdf-string';
 import { Algebra } from 'sparqlalgebrajs';
@@ -34,36 +34,64 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
     if (sVar && oVar) {
       // Get all the results of subjects, then fill in first variable for those
       const predVar = this.generateVariable(path);
-      const single = ActorAbstractPath.FACTORY.createUnion(
-        ActorAbstractPath.FACTORY.createPattern(path.subject, predVar, path.object, path.graph),
-        ActorAbstractPath.FACTORY.createPattern(path.object, predVar, path.subject, path.graph),
-      );
+      const single = ActorAbstractPath.FACTORY.createPattern(path.subject, predVar, path.object, path.graph);
       const results = ActorQueryOperation.getSafeBindings(
         await this.mediatorQueryOperation.mediate({ context, operation: single }),
       );
       const subjectString = termToString(path.subject);
       const objectString = termToString(path.object);
 
-      const subjects: Set<string> = new Set();
+      const entities: Set<string|undefined> = new Set();
+
+      const termHashes = {};
 
       const bindingsStream: MultiTransformIterator<Bindings, Bindings> = new MultiTransformIterator(
         results.bindingsStream,
         {
           multiTransform: (bindings: Bindings) => {
-            if (subjects.has(bindings.get(subjectString).value)) {
-              return new EmptyIterator();
-            }
-            subjects.add(bindings.get(subjectString).value);
-            const val = bindings.get(subjectString);
+            const subject = bindings.get(subjectString);
+            const object = bindings.get(objectString);
             return new TransformIterator<Bindings>(
-              async() => ActorQueryOperation.getSafeBindings(await this.mediatorQueryOperation.mediate({
-                context, operation: ActorAbstractPath.FACTORY.createPath(val, predicate, path.object, path.graph),
-              })).bindingsStream.transform<Bindings>({
-                transform(item, next, push) {
-                  push(item.merge(Bindings({ [subjectString]: val })));
-                  next();
-                },
-              }),
+              async() => {
+                if (entities.has(termToString(subject)) && entities.has(termToString(object))) {
+                  return new EmptyIterator();
+                }
+                const it = new BufferedIterator<Bindings>();
+                if (!entities.has(termToString(subject))) {
+                  entities.add(termToString(subject));
+                  await this.ALPTwoVariables(
+                    subjectString,
+                    objectString,
+                    subject,
+                    subject,
+                    predicate.path,
+                    context,
+                    termHashes,
+                    it,
+                    { count: 0 },
+                  );
+                }
+                if (!entities.has(termToString(object))) {
+                  entities.add(termToString(object));
+                  await this.ALPTwoVariables(
+                    subjectString,
+                    objectString,
+                    object,
+                    object,
+                    predicate.path,
+                    context,
+                    termHashes,
+                    it,
+                    { count: 0 },
+                  );
+                }
+                return it.transform<Bindings>({
+                  transform(item, next, push) {
+                    push(item);
+                    next();
+                  },
+                });
+              },
             );
           },
         },

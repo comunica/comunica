@@ -3,6 +3,7 @@ import {
   ActorQueryOperationTypedMediated,
   IActorQueryOperationTypedMediatedArgs,
   IActorQueryOperationOutputBindings,
+  Bindings,
 } from '@comunica/bus-query-operation';
 import { ActionContext, IActorTest } from '@comunica/core';
 import { variable } from '@rdfjs/data-model';
@@ -36,13 +37,13 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
     return true;
   }
 
-  // Generates a blank node that does not yet occur in the path
+  // Generates a variable that does not yet occur in the path
   public generateVariable(path?: Algebra.Path, name?: string): Variable {
     if (!name) {
       return this.generateVariable(path, 'b');
     }
 
-    // Path predicates can't contain variables/blank nodes
+    // Path predicates can't contain variables
     if (path && (path.subject.value === name || path.object.value === name)) {
       return this.generateVariable(path, `${name}b`);
     }
@@ -91,15 +92,54 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
     termHashes[termString] = x;
     counter.count++;
 
-    const thisBlankNode = this.generateVariable();
-    const bString = termToString(thisBlankNode);
-    const path = ActorAbstractPath.FACTORY.createPath(x, predicate, thisBlankNode);
+    const thisVariable = this.generateVariable();
+    const vString = termToString(thisVariable);
+    const path = ActorAbstractPath.FACTORY.createPath(x, predicate, thisVariable);
     const results = ActorQueryOperation.getSafeBindings(
       await this.mediatorQueryOperation.mediate({ operation: path, context }),
     );
     results.bindingsStream.on('data', async bindings => {
-      const result = bindings.get(bString);
+      const result = bindings.get(vString);
       await this.ALP(result, predicate, context, termHashes, it, counter);
+    });
+    results.bindingsStream.on('end', () => {
+      if (--counter.count === 0) {
+        it.close();
+      }
+    });
+  }
+
+  public async ALPTwoVariables(subjectString: string, objectString: string, subjectVal: Term,
+    x: Term, predicate: Algebra.PropertyPathSymbol, context: ActionContext,
+    termHashes: {[id: string]: Term}, it: BufferedIterator<Bindings>, counter: any): Promise<void> {
+    const termString = termToString(subjectVal) + termToString(x);
+    if (termHashes[termString]) {
+      return;
+    }
+
+    (<any> it)._push(Bindings({ [subjectString]: subjectVal, [objectString]: x }));
+    termHashes[termString] = x;
+    counter.count++;
+
+    const thisVariable = this.generateVariable();
+    const vString = termToString(thisVariable);
+    const path = ActorAbstractPath.FACTORY.createPath(x, predicate, thisVariable);
+    const results = ActorQueryOperation.getSafeBindings(
+      await this.mediatorQueryOperation.mediate({ operation: path, context }),
+    );
+    results.bindingsStream.on('data', async bindings => {
+      const result = bindings.get(vString);
+      await this.ALPTwoVariables(
+        subjectString,
+        objectString,
+        subjectVal,
+        result,
+        predicate,
+        context,
+        termHashes,
+        it,
+        counter,
+      );
     });
     results.bindingsStream.on('end', () => {
       if (--counter.count === 0) {

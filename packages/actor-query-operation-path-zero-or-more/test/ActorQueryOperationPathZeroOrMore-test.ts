@@ -51,7 +51,7 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
               bind[element] = namedNode(`${1 + i + j}`);
             }
             bindings.push(Bindings(bind));
-            if (arg.operation.type === 'union') {
+            if (vars.length > 1) {
               bindings.push(Bindings(bind));
             }
           }
@@ -188,16 +188,25 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
       context: ActionContext({ [ActorAbstractPath.isPathArbitraryLengthDistinctKey]: true }) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       expect(output.variables).toEqual([ '?x', '?y' ]);
-      expect(await arrayifyStream(output.bindingsStream)).toEqual([
-        Bindings({ '?x': namedNode('6'), '?y': namedNode('1') }),
-        Bindings({ '?x': namedNode('6'), '?y': namedNode('2') }),
-        Bindings({ '?x': namedNode('6'), '?y': namedNode('3') }),
-        Bindings({ '?x': namedNode('7'), '?y': namedNode('1') }),
-        Bindings({ '?x': namedNode('7'), '?y': namedNode('2') }),
-        Bindings({ '?x': namedNode('7'), '?y': namedNode('3') }),
-        Bindings({ '?x': namedNode('8'), '?y': namedNode('1') }),
-        Bindings({ '?x': namedNode('8'), '?y': namedNode('2') }),
-        Bindings({ '?x': namedNode('8'), '?y': namedNode('3') }),
+      const bindings: Bindings[] = await arrayifyStream(output.bindingsStream);
+      expect(bindings).toEqual([
+        Bindings({ '?x': namedNode('1'), '?y': namedNode('1') }),
+        Bindings({ '?x': namedNode('1'), '?y': namedNode('2') }),
+        Bindings({ '?x': namedNode('1'), '?y': namedNode('3') }),
+        Bindings({ '?x': namedNode('3'), '?y': namedNode('3') }),
+        Bindings({ '?x': namedNode('3'), '?y': namedNode('1') }),
+        Bindings({ '?x': namedNode('3'), '?y': namedNode('2') }),
+        Bindings({ '?x': namedNode('2'), '?y': namedNode('2') }),
+        Bindings({ '?x': namedNode('2'), '?y': namedNode('1') }),
+        Bindings({ '?x': namedNode('2'), '?y': namedNode('3') }),
+        Bindings({ '?x': namedNode('4'), '?y': namedNode('4') }),
+        Bindings({ '?x': namedNode('4'), '?y': namedNode('1') }),
+        Bindings({ '?x': namedNode('4'), '?y': namedNode('2') }),
+        Bindings({ '?x': namedNode('4'), '?y': namedNode('3') }),
+        Bindings({ '?x': namedNode('5'), '?y': namedNode('5') }),
+        Bindings({ '?x': namedNode('5'), '?y': namedNode('1') }),
+        Bindings({ '?x': namedNode('5'), '?y': namedNode('2') }),
+        Bindings({ '?x': namedNode('5'), '?y': namedNode('3') }),
       ]);
     });
   });

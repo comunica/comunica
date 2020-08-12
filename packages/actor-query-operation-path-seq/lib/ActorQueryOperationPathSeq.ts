@@ -23,15 +23,15 @@ export class ActorQueryOperationPathSeq extends ActorAbstractPath {
 
   public async runOperation(path: Algebra.Path, context: ActionContext): Promise<IActorQueryOperationOutputBindings> {
     const predicate = <Algebra.Seq> path.predicate;
-    const blank = this.generateVariable(path);
-    const blankName = termToString(blank);
+    const variable = this.generateVariable(path);
+    const varName = termToString(variable);
 
     const subOperations: IActorQueryOperationOutputBindings[] = (await Promise.all([
       this.mediatorQueryOperation.mediate({
-        context, operation: ActorAbstractPath.FACTORY.createPath(path.subject, predicate.left, blank, path.graph),
+        context, operation: ActorAbstractPath.FACTORY.createPath(path.subject, predicate.left, variable, path.graph),
       }),
       this.mediatorQueryOperation.mediate({
-        context, operation: ActorAbstractPath.FACTORY.createPath(blank, predicate.right, path.object, path.graph),
+        context, operation: ActorAbstractPath.FACTORY.createPath(variable, predicate.right, path.object, path.graph),
       }),
     ])).map(op => ActorQueryOperation.getSafeBindings(op));
 
@@ -39,15 +39,15 @@ export class ActorQueryOperationPathSeq extends ActorAbstractPath {
     // Remove the generated variable from the bindings
     const bindingsStream = join.bindingsStream.transform<Bindings>({
       transform(item, next, push) {
-        push(item.delete(blankName));
+        push(item.delete(varName));
         next();
       },
     });
 
     // Remove the generated variable from the list of variables
     const variables = join.variables;
-    const indexOfBlank = variables.indexOf(blankName);
-    variables.splice(indexOfBlank, 1);
+    const indexOfVar = variables.indexOf(varName);
+    variables.splice(indexOfVar, 1);
     return { type: 'bindings', bindingsStream, variables };
   }
 }

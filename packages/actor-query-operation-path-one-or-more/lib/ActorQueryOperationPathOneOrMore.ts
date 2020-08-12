@@ -5,7 +5,7 @@ import {
   IActorQueryOperationTypedMediatedArgs,
 } from '@comunica/bus-query-operation';
 import { ActionContext } from '@comunica/core';
-import { BufferedIterator, MultiTransformIterator, TransformIterator, EmptyIterator } from 'asynciterator';
+import { BufferedIterator, MultiTransformIterator, TransformIterator } from 'asynciterator';
 
 import { Term } from 'rdf-js';
 import { termToString } from 'rdf-string';
@@ -71,35 +71,47 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
     }
     if (sVar && oVar) {
       // Get all the results of subjects with same predicate, but once, then fill in first variable for those
-      const single = ActorAbstractPath.FACTORY.createPath(path.subject, path.predicate.path, path.object, path.graph);
+      const single = ActorAbstractPath.FACTORY.createDistinct(
+        ActorAbstractPath.FACTORY.createPath(path.subject, path.predicate.path, path.object, path.graph),
+      );
       const results = ActorQueryOperation.getSafeBindings(
         await this.mediatorQueryOperation.mediate({ context, operation: single }),
       );
       const subjectString = termToString(path.subject);
       const objectString = termToString(path.object);
 
-      const subjects: Set<string> = new Set();
+      const termHashes = {};
 
       const bindingsStream: MultiTransformIterator<Bindings, Bindings> = new MultiTransformIterator(
         results.bindingsStream,
         {
           multiTransform: (bindings: Bindings) => {
-            if (subjects.has(termToString(bindings.get(subjectString)))) {
-              return new EmptyIterator();
-            }
-            subjects.add(termToString(bindings.get(subjectString)));
-            const val = bindings.get(subjectString);
+            const subject = bindings.get(subjectString);
+            const object = bindings.get(objectString);
             return new TransformIterator<Bindings>(
-              async() => ActorQueryOperation.getSafeBindings(await this.mediatorQueryOperation.mediate({
-                context, operation: ActorAbstractPath.FACTORY.createPath(val, predicate, path.object, path.graph),
-              })).bindingsStream.transform<Bindings>({
-                transform(item, next, push) {
-                  push(item.merge(Bindings({ [subjectString]: val })));
-                  next();
-                },
-              }),
+              async() => {
+                const it = new BufferedIterator<Bindings>();
+                await this.ALPTwoVariables(
+                  subjectString,
+                  objectString,
+                  subject,
+                  object,
+                  predicate.path,
+                  context,
+                  termHashes,
+                  it,
+                  { count: 0 },
+                );
+                return it.transform<Bindings>({
+                  transform(item, next, push) {
+                    push(item);
+                    next();
+                  },
+                });
+              }, { maxBufferSize: 128 },
             );
           },
+          autoStart: false,
         },
       );
       return { type: 'bindings', bindingsStream, variables: [ subjectString, objectString ]};
@@ -118,14 +130,14 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
       });
     }
     // If (!sVar && !oVar)
-    const blankNode = this.generateVariable();
-    const bString = termToString(blankNode);
+    const variable = this.generateVariable();
+    const vString = termToString(variable);
     const results = ActorQueryOperation.getSafeBindings(await this.mediatorQueryOperation.mediate({
       context,
-      operation: ActorAbstractPath.FACTORY.createPath(path.subject, predicate, blankNode, path.graph),
+      operation: ActorAbstractPath.FACTORY.createPath(path.subject, predicate, variable, path.graph),
     }));
     const bindingsStream = results.bindingsStream.transform<Bindings>({
-      filter: item => item.get(bString).equals(path.object),
+      filter: item => item.get(vString).equals(path.object),
       transform(item, next, push) {
         push(Bindings({ }));
         next();
@@ -134,3 +146,4 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
     return { type: 'bindings', bindingsStream, variables: []};
   }
 }
+
