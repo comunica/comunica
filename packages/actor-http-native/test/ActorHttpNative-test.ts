@@ -49,11 +49,9 @@ describe('ActorHttpNative', () => {
 
   describe('An ActorHttpNative instance', () => {
     let actor: ActorHttpNative;
-    let mock;
 
     beforeEach(() => {
       actor = new ActorHttpNative({ name: 'actor', bus });
-      mock = jest.fn();
     });
 
     it('should test', () => {
