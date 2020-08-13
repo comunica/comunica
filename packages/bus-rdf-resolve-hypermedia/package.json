@@ -35,7 +35,7 @@
   ],
   "dependencies": {
     "@types/rdf-js": "^3.0.0",
-    "asynciterator": "^3.0.0",
+    "asynciterator": "^3.0.1",
     "asyncreiterable": "^2.0.0"
   },
   "peerDependencies": {

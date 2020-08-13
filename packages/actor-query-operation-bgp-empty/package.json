@@ -35,7 +35,7 @@
     "index.js"
   ],
   "dependencies": {
-    "asynciterator": "^3.0.0",
+    "asynciterator": "^3.0.1",
     "rdf-string": "^1.4.2",
     "rdf-terms": "^1.4.0"
   },

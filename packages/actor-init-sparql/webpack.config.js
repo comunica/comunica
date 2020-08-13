@@ -17,10 +17,6 @@ module.exports = {
         loader: 'babel-loader',
         exclude: /node_modules/,
       },
-      {
-        test: /\.mjs$/,
-        type: 'javascript/auto',
-      },
     ]
   },
   plugins: [

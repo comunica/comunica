@@ -40,7 +40,7 @@
   },
   "dependencies": {
     "@comunica/actor-abstract-path": "^1.14.0",
-    "asynciterator": "^3.0.0",
+    "asynciterator": "^3.0.1",
     "sparqlalgebrajs": "^2.2.2"
   },
   "devDependencies": {

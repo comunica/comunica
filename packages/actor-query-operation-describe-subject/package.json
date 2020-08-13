@@ -38,7 +38,7 @@
     "@comunica/actor-query-operation-union": "^1.14.0",
     "@rdfjs/data-model": "^1.1.1",
     "@types/rdf-js": "^3.0.0",
-    "asynciterator": "^3.0.0"
+    "asynciterator": "^3.0.1"
   },
   "peerDependencies": {
     "@comunica/bus-query-operation": "^1.0.0",
