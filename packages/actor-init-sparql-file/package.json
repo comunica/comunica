@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-init-sparql-file",
-  "version": "1.14.0",
+  "version": "1.15.0",
   "description": "A SPARQL query engine for querying over local and remote RDF files",
   "lsd:importPaths": {
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-sparql-file/^1.0.0/config/": "config/"
@@ -45,8 +45,8 @@
     "engine-browser.js"
   ],
   "dependencies": {
-    "@comunica/actor-init-sparql": "^1.14.0",
-    "@comunica/actor-rdf-dereference-file": "^1.14.0"
+    "@comunica/actor-init-sparql": "^1.15.0",
+    "@comunica/actor-rdf-dereference-file": "^1.15.0"
   },
   "scripts": {
     "build": "node \"../../node_modules/typescript/bin/tsc\"",

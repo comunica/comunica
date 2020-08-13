@@ -1,6 +1,6 @@
 {
   "name": "@comunica/runner",
-  "version": "1.14.0",
+  "version": "1.15.0",
   "description": "Utility module for Comunica runner modules",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/runner",
   "lsd:components": "components/components.jsonld",
@@ -45,8 +45,8 @@
     "componentsjs": "^3.4.1"
   },
   "devDependencies": {
-    "@comunica/bus-init": "^1.14.0",
-    "@comunica/core": "^1.14.0"
+    "@comunica/bus-init": "^1.15.0",
+    "@comunica/core": "^1.15.0"
   },
   "jest": {
     "globals": {

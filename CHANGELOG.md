@@ -1,6 +1,25 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v1.15.0"></a>
+## [v1.15.0](https://github.com/comunica/comunica/compare/v1.14.0...v1.15.0) - 2020-08-13
+
+### Added
+* [Add convenience methods for getting query results as arrays](https://github.com/comunica/comunica/commit/6448e65aabbd0a3cae0ee3645291a86974305990)
+* [Add option to include credentials in browsers](https://github.com/comunica/comunica/commit/2492fe93b8afa30a866b023958f5e0847c4fbc94)
+* [Enable min/max over non-numerical literal, Closes #673](https://github.com/comunica/comunica/commit/941c45fc986342f43d9e7ca873ea1d6d6021dbb1)
+
+### Changed
+* [Improve command signature of comunica-sparql-http](https://github.com/comunica/comunica/commit/cc3e73c526a7df4d19877c325c1dfd72c9f00030)
+* [Remove lodash dependencies, Closes #402](https://github.com/comunica/comunica/commit/c92a38324cc1967532a75377e0781c7cf64da2ed)
+
+### Fixed
+* [Fix error when parsing webpage with JSON script tag, Closes #707](https://github.com/comunica/comunica/commit/3f9475edc955c63bc502db6ff49eef89ea0c3df8)
+* [Update to asynciterator 3.0.1 to undo webpack hack](https://github.com/comunica/comunica/commit/1c990bf351930d0fec907d8eab6dafd715af37a8)
+* [Add missing newline after each pretty log line](https://github.com/comunica/comunica/commit/c9568e622883799bc13b8d7e6bac0c0eca631a1d)
+* [Fix incorrect hash function in symmetric hash join, Closes #608](https://github.com/comunica/comunica/commit/6a4baf7efc0baa946a4eea3d842c4351b6e60d03)
+* [Bump to sparqlee 1.4.2 with strtswith and endswith fix](https://github.com/comunica/comunica/commit/f395463dc2c1bca6c91f2e8cd2385a0d7fce24b4)
+
 <a name="v1.14.0"></a>
 ## [v1.14.0](https://github.com/comunica/comunica/compare/v1.13.1...v1.14.0) - 2020-07-24
 
