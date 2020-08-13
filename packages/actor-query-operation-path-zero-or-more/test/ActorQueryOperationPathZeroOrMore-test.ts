@@ -50,9 +50,13 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
             for (const [ j, element ] of vars.entries()) {
               bind[element] = namedNode(`${1 + i + j}`);
             }
-            bindings.push(Bindings(bind));
-            if (vars.length > 1) {
+            // If it's oneOrMore don't return bindings with subject en object the same
+            // + Special case for coverage (making sure not every subject gets same objects)
+            if (!(arg.operation && termToString(arg.operation.subject) === '5' && i === 2)) {
               bindings.push(Bindings(bind));
+              if (vars.length > 1) {
+                bindings.push(Bindings(bind));
+              }
             }
           }
         } else {
@@ -179,17 +183,17 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
       ]);
     });
 
-    it('should support ZeroOrMore paths with 2 variables', async() => {
+    it('should support oneOrMore paths with 2 variables', async() => {
       const op = { operation: factory.createPath(
         variable('x'),
-        factory.createZeroOrMorePath(factory.createLink(namedNode('p'))),
+        factory.createOneOrMorePath(factory.createLink(namedNode('p'))),
         variable('y'),
       ),
       context: ActionContext({ [ActorAbstractPath.isPathArbitraryLengthDistinctKey]: true }) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       expect(output.variables).toEqual([ '?x', '?y' ]);
       const bindings: Bindings[] = await arrayifyStream(output.bindingsStream);
-      expect(bindings).toEqual([
+      expect(bindings.filter((b, i) => bindings.indexOf(b) === i)).toEqual([
         Bindings({ '?x': namedNode('1'), '?y': namedNode('1') }),
         Bindings({ '?x': namedNode('1'), '?y': namedNode('2') }),
         Bindings({ '?x': namedNode('1'), '?y': namedNode('3') }),

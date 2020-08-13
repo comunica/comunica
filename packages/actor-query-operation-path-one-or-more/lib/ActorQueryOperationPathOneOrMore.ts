@@ -99,6 +99,7 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
                   predicate.path,
                   context,
                   termHashes,
+                  {},
                   it,
                   { count: 0 },
                 );

@@ -109,42 +109,71 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
     });
   }
 
+  // Let the iterator `it` emit all bindings of size 2, with subjectStringVariable as value subjectVal
+  // and objectStringVariable as value all nodes reachable through predicate* beginning at objectVal
   public async ALPTwoVariables(subjectString: string, objectString: string, subjectVal: Term,
-    x: Term, predicate: Algebra.PropertyPathSymbol, context: ActionContext,
-    termHashes: {[id: string]: Term}, it: BufferedIterator<Bindings>, counter: any): Promise<void> {
-    const termString = termToString(subjectVal) + termToString(x);
-    if (termHashes[termString]) {
+    objectVal: Term, predicate: Algebra.PropertyPathSymbol, context: ActionContext,
+    termHashesGlobal: {[id: string]: Promise<Term[]>}, termHashesCurrentSubject: {[id: string]: boolean},
+    it: BufferedIterator<Bindings>, counter: any): Promise<void> {
+    const termString = termToString(objectVal);
+
+    // If this combination of subject and object already done, return nothing
+    if (termHashesCurrentSubject[termString]) {
       return;
     }
 
-    (<any> it)._push(Bindings({ [subjectString]: subjectVal, [objectString]: x }));
-    termHashes[termString] = x;
+    termHashesCurrentSubject[termString] = true;
+
+    (<any> it)._push(Bindings({ [subjectString]: subjectVal, [objectString]: objectVal }));
     counter.count++;
 
-    const thisVariable = this.generateVariable();
-    const vString = termToString(thisVariable);
-    const path = ActorAbstractPath.FACTORY.createPath(x, predicate, thisVariable);
-    const results = ActorQueryOperation.getSafeBindings(
-      await this.mediatorQueryOperation.mediate({ operation: path, context }),
-    );
-    results.bindingsStream.on('data', async bindings => {
-      const result = bindings.get(vString);
-      await this.ALPTwoVariables(
-        subjectString,
-        objectString,
-        subjectVal,
-        result,
-        predicate,
-        context,
-        termHashes,
-        it,
-        counter,
-      );
-    });
-    results.bindingsStream.on('end', () => {
-      if (--counter.count === 0) {
-        it.close();
+    // If every reachable node from object has already been calculated, use these for current subject too
+    if (termString in termHashesGlobal) {
+      const objects = await termHashesGlobal[termString];
+      for (const object of objects) {
+        if (!termHashesCurrentSubject[termToString(object)]) {
+          termHashesCurrentSubject[termToString(object)] = true;
+          (<any> it)._push(Bindings({ [subjectString]: subjectVal, [objectString]: object }));
+        }
       }
+    }
+
+    // Construct promise to calculate all reachable nodes from this object
+    const promise = new Promise<Term[]>(async(resolve, reject) => {
+      const objectsArray: Term[] = [];
+
+      const thisVariable = this.generateVariable();
+      const vString = termToString(thisVariable);
+      const path = ActorAbstractPath.FACTORY.createPath(objectVal, predicate, thisVariable);
+      const results = ActorQueryOperation.getSafeBindings(
+        await this.mediatorQueryOperation.mediate({ operation: path, context }),
+      );
+
+      results.bindingsStream.on('data', async bindings => {
+        const result = bindings.get(vString);
+        objectsArray.push(result);
+        await this.ALPTwoVariables(
+          subjectString,
+          objectString,
+          subjectVal,
+          result,
+          predicate,
+          context,
+          termHashesGlobal,
+          termHashesCurrentSubject,
+          it,
+          counter,
+        );
+      });
+      results.bindingsStream.on('end', () => {
+        if (--counter.count === 0) {
+          it.close();
+        }
+        resolve(objectsArray);
+      });
     });
+
+    // Set it in the termHashesGlobal when this object occurs again they can wait for this promise
+    termHashesGlobal[termString] = promise;
   }
 }

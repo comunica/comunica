@@ -41,7 +41,7 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
       const subjectString = termToString(path.subject);
       const objectString = termToString(path.object);
 
-      const entities: Set<string|undefined> = new Set();
+      const entities: Set<string> = new Set();
 
       const termHashes = {};
 
@@ -67,6 +67,7 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
                     predicate.path,
                     context,
                     termHashes,
+                    {},
                     it,
                     { count: 0 },
                   );
@@ -81,6 +82,7 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
                     predicate.path,
                     context,
                     termHashes,
+                    {},
                     it,
                     { count: 0 },
                   );
