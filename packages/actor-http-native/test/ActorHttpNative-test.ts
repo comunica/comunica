@@ -202,70 +202,25 @@ describe('Requester', () => {
 });
 
 describe('convertFetchHeadersToHash', () => {
-  it('works with input and response headers', () => {
+  it('works with response headers', () => {
     const requester = new Requester();
     const req = requester.createRequest(url.parse('http://example.com/test'));
     return new Promise(resolve => {
       req.on('response', response => {
-        response.input = { headers: { a: 'b' }};
-        response.headers = { other: 'more' };
-        expect(requester.convertFetchHeadersToHash(response)).toEqual(new Headers({ a: 'b', other: 'more' }));
+        response.headers = { accept: 'more' };
+        expect(requester.convertFetchHeadersToHash(response.headers)).toEqual(new Headers({ accept: 'more' }));
         resolve();
       });
     });
   });
 
-  it('works with only response headers', () => {
+  it('works without headers', () => {
     const requester = new Requester();
     const req = requester.createRequest(url.parse('http://example.com/test'));
     return new Promise(resolve => {
       req.on('response', response => {
-        response.input.headers = {};
-        response.headers = { other: 'more' };
-        expect(requester.convertFetchHeadersToHash(response)).toEqual(new Headers({ other: 'more' }));
-        resolve();
-      });
-    });
-  });
-
-  it('works with no input nor response headers', () => {
-    const requester = new Requester();
-    const req = requester.createRequest(url.parse('http://example.com/test'));
-    return new Promise(resolve => {
-      req.on('response', response => {
-        response.input.headers = {};
         response.headers = {};
         expect(requester.convertFetchHeadersToHash(response)).toEqual(new Headers({}));
-        resolve();
-      });
-    });
-  });
-
-  it('works with undefined input', () => {
-    const requester = new Requester();
-    const req = requester.createRequest(url.parse('http://example.com/test'));
-    return new Promise(resolve => {
-      req.on('response', response => {
-        response.input.headers = undefined;
-        response.headers = {};
-        expect(requester.convertFetchHeadersToHash(response)).toEqual(new Headers({}));
-        resolve();
-      });
-    });
-  });
-
-  it('works with settings headers in _headers field', () => {
-    const requester = new Requester();
-    const settings: any = {};
-    settings.headers = { _headers: { accept: [
-      'application/sparql-results+json;q=1.0,application/sparql-results+xml;q=0.7',
-    ]}};
-    const req = requester.createRequest(settings);
-    return new Promise(resolve => {
-      req.on('response', response => {
-        response.input.headers = {};
-        response.headers = { other: 'more' };
-        expect(requester.convertFetchHeadersToHash(response)).toEqual(new Headers({ other: 'more' }));
         resolve();
       });
     });

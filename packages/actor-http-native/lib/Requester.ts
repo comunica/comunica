@@ -3,7 +3,7 @@
 /* Translated from https://github.com/LinkedDataFragments/Client.js/blob/master/lib/util/Request.js */
 
 import { EventEmitter } from 'events';
-import { AgentOptions, ClientRequest, IncomingMessage } from 'http';
+import { AgentOptions, ClientRequest, IncomingMessage, IncomingHttpHeaders } from 'http';
 import * as url from 'url';
 import * as zlib from 'zlib';
 
@@ -37,11 +37,7 @@ export default class Requester {
 
     // Unpacking headers object into a plain object
     const headersObject: any = {};
-    if (settings.headers && settings.headers._headers) {
-      for (const header in settings.headers._headers) {
-        headersObject[header] = settings.headers._headers[header];
-      }
-    } else if (settings.headers) {
+    if (settings.headers) {
       for (const [ header, val ] of settings.headers.entries()) {
         headersObject[header] = val;
       }
@@ -62,15 +58,12 @@ export default class Requester {
   }
 
   // Wrap headers into an header object type
-  public convertFetchHeadersToHash(response: any): any {
+  public convertFetchHeadersToHash(headers: IncomingHttpHeaders): Headers {
     const responseHeaders: Headers = new Headers();
-    if (response.input && response.input.headers) {
-      for (const header in response.input.headers) {
-        responseHeaders.append(header, response.input.headers[header]);
+    for (const key in headers) {
+      if (typeof headers[key] === 'string') {
+        responseHeaders.append(key, <string> headers[key]);
       }
-    }
-    for (const header in response.headers) {
-      responseHeaders.append(header, response.headers[header]);
     }
     return responseHeaders;
   }
@@ -85,7 +78,7 @@ export default class Requester {
         response.pipe(decoded);
         // Copy response properties
         decoded.statusCode = response.statusCode;
-        decoded.headers = this.convertFetchHeadersToHash(response);
+        decoded.headers = this.convertFetchHeadersToHash(response.headers);
         return decoded;
       }
       // Error when no suitable decoder found
@@ -94,7 +87,7 @@ export default class Requester {
       });
     }
 
-    response.headers = this.convertFetchHeadersToHash(response);
+    response.headers = <any> this.convertFetchHeadersToHash(response.headers);
     return response;
   }
 }
