@@ -1,4 +1,4 @@
-import { ActorHttp, IActionHttp, IActorHttpOutput } from '@comunica/bus-http';
+import { ActorHttp, IActionHttp, IActorHttpOutput, KEY_CONTEXT_INCLUDE_CREDENTIALS } from '@comunica/bus-http';
 import { IActorArgs } from '@comunica/core';
 import { IMediatorTypeTime } from '@comunica/mediatortype-time';
 import 'cross-fetch/polyfill';
@@ -21,6 +21,9 @@ export class ActorHttpNodeFetch extends ActorHttp {
     this.logInfo(action.context, `Requesting ${typeof action.input === 'string' ?
       action.input :
       action.input.url}`);
-    return fetch(action.input, action.init);
+    return fetch(action.input, {
+      ...action.init,
+      ...action.context && action.context.get(KEY_CONTEXT_INCLUDE_CREDENTIALS) ? { credentials: 'include' } : {},
+    });
   }
 }

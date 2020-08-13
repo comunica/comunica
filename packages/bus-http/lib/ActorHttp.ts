@@ -42,3 +42,8 @@ export interface IActionHttp extends IAction {
 export interface IActorHttpOutput extends IActorOutput, Response {
 
 }
+
+/**
+ * @type {string} Context entry for the include credentials glags.
+ */
+export const KEY_CONTEXT_INCLUDE_CREDENTIALS = '@comunica/bus-http:include-credentials';

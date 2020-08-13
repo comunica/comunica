@@ -1,5 +1,5 @@
-import { ActorHttp } from '@comunica/bus-http';
-import { Bus } from '@comunica/core';
+import { ActorHttp, KEY_CONTEXT_INCLUDE_CREDENTIALS } from '@comunica/bus-http';
+import { ActionContext, Bus } from '@comunica/core';
 import { ActorHttpNodeFetch } from '../lib/ActorHttpNodeFetch';
 
 // Mock fetch
@@ -61,6 +61,26 @@ describe('ActorHttpNodeFetch', () => {
       const spy = jest.spyOn(actor, <any> 'logInfo');
       await actor.run({ input: <Request> { url: 'https://www.google.com/' }});
       expect(spy).toHaveBeenCalledWith(undefined, 'Requesting https://www.google.com/');
+    });
+
+    it('should run without KEY_CONTEXT_INCLUDE_CREDENTIALS', async() => {
+      const spy = jest.spyOn(global, 'fetch');
+      await actor.run({
+        input: <Request> { url: 'https://www.google.com/' },
+        context: ActionContext({}),
+      });
+      expect(spy).toHaveBeenCalledWith({ url: 'https://www.google.com/' }, {});
+    });
+
+    it('should run with KEY_CONTEXT_INCLUDE_CREDENTIALS', async() => {
+      const spy = jest.spyOn(global, 'fetch');
+      await actor.run({
+        input: <Request> { url: 'https://www.google.com/' },
+        context: ActionContext({
+          [KEY_CONTEXT_INCLUDE_CREDENTIALS]: true,
+        }),
+      });
+      expect(spy).toHaveBeenCalledWith({ url: 'https://www.google.com/' }, { credentials: 'include' });
     });
   });
 });

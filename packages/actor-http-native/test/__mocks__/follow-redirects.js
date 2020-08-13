@@ -18,6 +18,7 @@ function request(settings, func) {
     statusCode: options.statusCode,
     url: settings.url,
     responseUrl: settings.url,
+    withCredentials: settings.withCredentials,
   });
   setImmediate(() => func(body));
 

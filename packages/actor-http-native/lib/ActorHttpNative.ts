@@ -1,4 +1,4 @@
-import { ActorHttp, IActionHttp, IActorHttpOutput } from '@comunica/bus-http';
+import { ActorHttp, IActionHttp, IActorHttpOutput, KEY_CONTEXT_INCLUDE_CREDENTIALS } from '@comunica/bus-http';
 import { IActorArgs } from '@comunica/core';
 import { IMediatorTypeTime } from '@comunica/mediatortype-time';
 import 'cross-fetch/polyfill';
@@ -33,8 +33,8 @@ export class ActorHttpNative extends ActorHttp {
     const options: any = {};
     // Input can be a Request object or a string
     // if it is a Request object it can contain the same settings as the init object
-    if ((<any> action.input).url) {
-      options.url = (<Request> action.input).url;
+    if ((<any>action.input).url) {
+      options.url = (<Request>action.input).url;
       Object.assign(options, action.input);
     } else {
       options.url = action.input;
@@ -43,7 +43,7 @@ export class ActorHttpNative extends ActorHttp {
     if (action.init) {
       Object.assign(options, action.init);
     } else {
-      options.headers = (<Request> action.input).headers;
+      options.headers = (<Request>action.input).headers;
     }
 
     if (!options.headers) {
@@ -54,6 +54,9 @@ export class ActorHttpNative extends ActorHttp {
     }
 
     options.method = options.method || 'GET';
+    if (action.context && action.context.get(KEY_CONTEXT_INCLUDE_CREDENTIALS)) {
+      options.withCredentials = true;
+    }
 
     this.logInfo(action.context, `Requesting ${options.url}`);
 

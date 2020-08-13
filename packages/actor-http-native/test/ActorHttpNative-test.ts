@@ -1,8 +1,8 @@
 import { Readable } from 'stream';
 import * as url from 'url';
 import * as zlib from 'zlib';
-import { ActorHttp } from '@comunica/bus-http';
-import { Bus } from '@comunica/core';
+import { ActorHttp, KEY_CONTEXT_INCLUDE_CREDENTIALS } from '@comunica/bus-http';
+import { ActionContext, Bus } from '@comunica/core';
 import { ActorHttpNative } from '../lib/ActorHttpNative';
 import Requester from '../lib/Requester';
 
@@ -170,6 +170,23 @@ describe('ActorHttpNative', () => {
       mockSetup({ error: true });
       await expect(actor.run({ input: 'http://example.com/reqerror' }))
         .rejects.toThrow(new Error('Request Error!'));
+    });
+
+    it('should run without KEY_CONTEXT_INCLUDE_CREDENTIALS', async() => {
+      mockSetup({ statusCode: 404 });
+      const results: any = await actor.run({ input: new Request('http://example.com') });
+      expect(results.body).toMatchObject({ withCredentials: undefined });
+    });
+
+    it('should run with KEY_CONTEXT_INCLUDE_CREDENTIALS', async() => {
+      mockSetup({ statusCode: 404 });
+      const results: any = await actor.run({
+        input: new Request('http://example.com'),
+        context: ActionContext({
+          [KEY_CONTEXT_INCLUDE_CREDENTIALS]: true,
+        }),
+      });
+      expect(results.body).toMatchObject({ withCredentials: true });
     });
   });
 });
