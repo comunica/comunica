@@ -18,7 +18,7 @@ export class HtmlScriptListener implements IHtmlParseListener {
   private readonly cbError: (error: Error) => void;
   private readonly cbEnd: () => void;
   private readonly supportedTypes: {[id: string]: number};
-  private readonly context?: ActionContext;
+  private readonly context: ActionContext;
   private baseIRI: string;
   private readonly headers?: Headers;
   private readonly onlyFirstScript: boolean;
@@ -42,7 +42,8 @@ export class HtmlScriptListener implements IHtmlParseListener {
     this.cbError = cbError;
     this.cbEnd = cbEnd;
     this.supportedTypes = supportedTypes;
-    this.context = context;
+    this.context = (context || ActionContext({}))
+      .set('@comunica/actor-rdf-parse-html-script:processing-html-script', true);
     this.baseIRI = baseIRI;
     this.headers = headers;
     this.onlyFirstScript = (context && context.get('extractAllScripts') === false) ?? false;
@@ -120,7 +121,10 @@ export class HtmlScriptListener implements IHtmlParseListener {
             }
             textStream.push(null);
           })
-          .catch(this.cbError);
+          .catch(() => {
+            // Ignore script tags that we don't understand
+            this.onEnd();
+          });
 
         // Reset the media type and text stream
         this.handleMediaType = undefined;

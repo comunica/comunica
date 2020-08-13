@@ -20,6 +20,11 @@ export class ActorRdfParseJsonLd extends ActorRdfParseFixedMediaTypes {
   }
 
   public async testHandle(action: IActionRdfParse, mediaType: string, context: ActionContext): Promise<IActorTest> {
+    if (context &&
+      context.has('@comunica/actor-rdf-parse-html-script:processing-html-script') &&
+      mediaType !== 'application/ld+json') {
+      throw new Error(`JSON-LD in script tags can only have media type 'application/ld+json'`);
+    }
     if (!(mediaType in this.mediaTypes) && !mediaType.endsWith('+json')) {
       throw new Error(`Unrecognized media type: ${mediaType}`);
     }

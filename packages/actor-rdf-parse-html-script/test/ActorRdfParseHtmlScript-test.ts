@@ -25,6 +25,7 @@ describe('ActorRdfParseHtml', () => {
         if (action.mediaTypes === true) {
           return Promise.resolve({ mediaTypes: {
             'application/ld+json': 1,
+            fail: 1,
           }});
         }
         action.input = action.handle.input;
@@ -35,6 +36,8 @@ describe('ActorRdfParseHtml', () => {
           case 'application/ld+json':
             output = await jsonldParser.runHandle(action, action.handleMediaType, context);
             break;
+          case 'fail':
+            return Promise.reject(new Error('Parsing failure'));
         }
         return Promise.resolve({ handle: { quads: output.quads }});
       },
@@ -304,6 +307,25 @@ describe('ActorRdfParseHtml', () => {
           listener.onEnd();
 
           await expect(onEnd).rejects.toThrow(new Error('Unexpected STRING("@id") in state COLON'));
+        });
+
+        it('should ignoore mediator failures', async() => {
+          listener.onTagOpen('html', {});
+          listener.onTagOpen('body', {});
+          listener.onTagOpen('script', { type: 'fail' });
+          listener.onText(`{
+            """@id": "http://example.org/a",
+            "http://example.org/b": "http://example.org/c",
+            "http://example.org/d": "http://example.org/e"
+        }`);
+          listener.onTagClose();
+          listener.onTagClose();
+          listener.onTagClose();
+          listener.onEnd();
+
+          await onEnd;
+
+          expect(emit).toHaveBeenCalledTimes(0);
         });
 
         it('should handle an absolute base tag', async() => {

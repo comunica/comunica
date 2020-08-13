@@ -1,5 +1,5 @@
 import { Readable } from 'stream';
-import { Bus } from '@comunica/core';
+import { ActionContext, Bus } from '@comunica/core';
 import 'jest-rdf';
 import { ActorRdfParseJsonLd } from '../lib/ActorRdfParseJsonLd';
 const arrayifyStream = require('arrayify-stream');
@@ -160,6 +160,22 @@ describe('ActorRdfParseJsonLd', () => {
       it('should test on bla+json', () => {
         return expect(actor.test({ handle: { input, baseIRI: '' }, handleMediaType: 'bla+json' }))
           .resolves.toBeTruthy();
+      });
+
+      it('should not test on bla+json when processing html', () => {
+        return expect(actor.test({
+          handle: { input, baseIRI: '' },
+          handleMediaType: 'bla+json',
+          context: ActionContext({ '@comunica/actor-rdf-parse-html-script:processing-html-script': true }),
+        })).rejects.toBeTruthy();
+      });
+
+      it('should test on application/ld+json when processing html', () => {
+        return expect(actor.test({
+          handle: { input, baseIRI: '' },
+          handleMediaType: 'application/ld+json',
+          context: ActionContext({ '@comunica/actor-rdf-parse-html-script:processing-html-script': true }),
+        })).resolves.toBeTruthy();
       });
 
       it('should not test on N-Triples', () => {
