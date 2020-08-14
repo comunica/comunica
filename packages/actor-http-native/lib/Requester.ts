@@ -38,9 +38,9 @@ export default class Requester {
     // Unpacking headers object into a plain object
     const headersObject: any = {};
     if (settings.headers) {
-      for (const [ header, val ] of settings.headers.entries()) {
-        headersObject[header] = val;
-      }
+      (<Headers> settings.headers).forEach((value, key) => {
+        headersObject[key] = value;
+      });
     }
     settings.headers = headersObject;
 
@@ -58,12 +58,10 @@ export default class Requester {
   }
 
   // Wrap headers into an header object type
-  public convertFetchHeadersToHash(headers: IncomingHttpHeaders): Headers {
+  public convertRequestHeadersToFetchHeaders(headers: IncomingHttpHeaders): Headers {
     const responseHeaders: Headers = new Headers();
     for (const key in headers) {
-      if (typeof headers[key] === 'string') {
-        responseHeaders.append(key, <string> headers[key]);
-      }
+      responseHeaders.append(key, <string> headers[key]);
     }
     return responseHeaders;
   }
@@ -78,7 +76,7 @@ export default class Requester {
         response.pipe(decoded);
         // Copy response properties
         decoded.statusCode = response.statusCode;
-        decoded.headers = this.convertFetchHeadersToHash(response.headers);
+        decoded.headers = this.convertRequestHeadersToFetchHeaders(response.headers);
         return decoded;
       }
       // Error when no suitable decoder found
@@ -87,7 +85,7 @@ export default class Requester {
       });
     }
 
-    response.headers = <any> this.convertFetchHeadersToHash(response.headers);
+    response.headers = <any> this.convertRequestHeadersToFetchHeaders(response.headers);
     return response;
   }
 }

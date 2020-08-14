@@ -199,14 +199,15 @@ describe('Requester', () => {
   });
 });
 
-describe('convertFetchHeadersToHash', () => {
+describe('convertRequestHeadersToFetchHeaders', () => {
   it('works with response headers', () => {
     const requester = new Requester();
     const req = requester.createRequest(url.parse('http://example.com/test'));
     return new Promise(resolve => {
       req.on('response', response => {
         response.headers = { accept: 'more' };
-        expect(requester.convertFetchHeadersToHash(response.headers)).toEqual(new Headers({ accept: 'more' }));
+        expect(requester.convertRequestHeadersToFetchHeaders(response.headers))
+          .toEqual(new Headers({ accept: 'more' }));
         resolve();
       });
     });
@@ -218,7 +219,7 @@ describe('convertFetchHeadersToHash', () => {
     return new Promise(resolve => {
       req.on('response', response => {
         response.headers = {};
-        expect(requester.convertFetchHeadersToHash(response)).toEqual(new Headers({}));
+        expect(requester.convertRequestHeadersToFetchHeaders(response.headers)).toEqual(new Headers({}));
         resolve();
       });
     });

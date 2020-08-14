@@ -42,6 +42,7 @@ export class ActorHttpNative extends ActorHttp {
 
     if (action.init) {
       Object.assign(options, action.init);
+      options.headers = new Headers(action.init.headers);
     } else {
       options.headers = (<Request> action.input).headers;
     }
