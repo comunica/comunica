@@ -25,7 +25,7 @@ export class ActorQueryOperationUnion extends ActorQueryOperationTypedMediated<A
    */
   public static unionVariables(variables: string[][]): string[] {
     const withDuplicates = variables.reduce((acc, it) => [ ...acc, ...it ], []);
-    return withDuplicates.filter((value, index) => withDuplicates.indexOf(value) === index);
+    return [ ...new Set(withDuplicates) ];
   }
 
   /**

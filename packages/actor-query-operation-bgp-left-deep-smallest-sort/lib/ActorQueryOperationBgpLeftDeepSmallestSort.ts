@@ -57,7 +57,7 @@ export class ActorQueryOperationBgpLeftDeepSmallestSort extends ActorQueryOperat
   public static getCombinedVariables(patternOutputs: IActorQueryOperationOutputBindings[]): string[] {
     const withDuplicates = (<string[]> []).concat.apply([],
       patternOutputs.map(patternOutput => patternOutput.variables));
-    return withDuplicates.filter((value, index) => withDuplicates.indexOf(value) === index);
+    return [ ...new Set(withDuplicates) ];
   }
 
   /**

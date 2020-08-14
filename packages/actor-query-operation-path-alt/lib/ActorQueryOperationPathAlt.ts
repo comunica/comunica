@@ -33,9 +33,6 @@ export class ActorQueryOperationPathAlt extends ActorAbstractPath {
     const variables = (<string[]> []).concat
       .apply([], subOperations.map(op => op.variables));
 
-    return { type: 'bindings',
-      bindingsStream,
-      variables:
-      variables.filter((value, index) => variables.indexOf(value) === index) };
+    return { type: 'bindings', bindingsStream, variables: [ ...new Set(variables) ]};
   }
 }

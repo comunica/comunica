@@ -58,7 +58,7 @@ export abstract class ActorRdfJoin extends Actor<IActionRdfJoin, IMediatorTypeIt
   public static joinVariables(action: IActionRdfJoin): string[] {
     const variables = action.entries.map(entry => entry.variables);
     const withDuplicates = variables.reduce((acc, it) => [ ...acc, ...it ], []);
-    return withDuplicates.filter((value, index) => withDuplicates.indexOf(value) === index);
+    return [ ...new Set(withDuplicates) ];
   }
 
   /**
