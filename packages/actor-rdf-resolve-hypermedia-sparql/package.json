@@ -40,7 +40,7 @@
     "@types/rdf-js": "^3.0.0",
     "asynciterator": "^3.0.1",
     "rdf-terms": "^1.4.0",
-    "sparqlalgebrajs": "^2.2.2"
+    "sparqlalgebrajs": "^2.3.2"
   },
   "peerDependencies": {
     "@comunica/bus-rdf-resolve-hypermedia": "^1.8.0",

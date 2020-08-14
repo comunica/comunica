@@ -7878,7 +7878,7 @@ n3@^0.9.1:
   resolved "https://registry.yarnpkg.com/n3/-/n3-0.9.1.tgz#430b547d58dc7381408c45784dd8058171903932"
   integrity sha1-QwtUfVjcc4FAjEV4TdgFgXGQOTI=
 
-n3@^1.0.0, n3@^1.1.1, n3@^1.5.0:
+n3@^1.0.0, n3@^1.1.1, n3@^1.5.0, n3@^1.6.0:
   version "1.6.2"
   resolved "https://registry.yarnpkg.com/n3/-/n3-1.6.2.tgz#3b40b6f6eeba3a115642eb9237109fff743be631"
   integrity sha512-9R45WRNxNPblKLbXGwR9IvtaVvdr80vRxME79fhWnqBzHb2GcP6lS77Mvf8Fx6Wpfn8PpBTdggceWsSMDGY/SA==
@@ -9998,6 +9998,13 @@ sparqljs@^3.0.0, sparqljs@^3.0.1:
   integrity sha512-/hy2ihyn6YaYdLqnfdG8En6n8/NJVfRGI//AWPh6Anbfxfz89vv9ATEa8taE+SpOBuh6pSYEhIYKPkVRkXNBNg==
   dependencies:
     n3 "^1.5.0"
+
+sparqljs@^3.1.1:
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/sparqljs/-/sparqljs-3.1.1.tgz#74b9f250fdcc1192971a709302b52ec102aaf003"
+  integrity sha512-HYSwEu++souL4YjJbRx+3dJ1aNYNuR+BbZdPmdrmD4QMSO14J63BEshpcSURcNRsuriOI+05wo2AaxVvpjhgkg==
+  dependencies:
+    n3 "^1.6.0"
 
 sparqljson-parse@^1.5.0:
   version "1.5.2"
