@@ -3,7 +3,7 @@
 /* Translated from https://github.com/LinkedDataFragments/Client.js/blob/master/lib/util/Request.js */
 
 import { EventEmitter } from 'events';
-import { AgentOptions, ClientRequest, IncomingMessage } from 'http';
+import { AgentOptions, ClientRequest, IncomingMessage, IncomingHttpHeaders } from 'http';
 import * as url from 'url';
 import * as zlib from 'zlib';
 
@@ -34,8 +34,19 @@ export default class Requester {
     const requestProxy = new EventEmitter();
     const requester = settings.protocol === 'http:' ? http : https;
     settings.agents = this.agents;
+
+    // Unpacking headers object into a plain object
+    const headersObject: any = {};
+    if (settings.headers) {
+      (<Headers> settings.headers).forEach((value, key) => {
+        headersObject[key] = value;
+      });
+    }
+    settings.headers = headersObject;
+
     const request: ClientRequest = requester.request(settings, (response: IncomingMessage) => {
       response = this.decode(response);
+      settings.headers = response.headers;
       response.setEncoding('utf8');
       // This was removed compared to the original LDF client implementation
       // response.pause(); // exit flow mode
@@ -44,6 +55,15 @@ export default class Requester {
     request.on('error', error => requestProxy.emit('error', error));
     request.end();
     return requestProxy;
+  }
+
+  // Wrap headers into an header object type
+  public convertRequestHeadersToFetchHeaders(headers: IncomingHttpHeaders): Headers {
+    const responseHeaders: Headers = new Headers();
+    for (const key in headers) {
+      responseHeaders.append(key, <string> headers[key]);
+    }
+    return responseHeaders;
   }
 
   // Returns a decompressed stream from the HTTP response
@@ -56,7 +76,7 @@ export default class Requester {
         response.pipe(decoded);
         // Copy response properties
         decoded.statusCode = response.statusCode;
-        decoded.headers = response.headers;
+        decoded.headers = this.convertRequestHeadersToFetchHeaders(response.headers);
         return decoded;
       }
       // Error when no suitable decoder found
@@ -64,6 +84,8 @@ export default class Requester {
         response.emit('error', new Error(`Unsupported encoding: ${encoding}`));
       });
     }
+
+    response.headers = <any> this.convertRequestHeadersToFetchHeaders(response.headers);
     return response;
   }
 }

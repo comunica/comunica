@@ -11,10 +11,11 @@ function mockSetup(mock) {
 
 function request(settings, func) {
   let body = new IncomingMessage();
+  Object.assign(settings.headers, options.headers || {});
   Object.assign(body, options.body || {}, {
     input: settings,
     setEncoding: () => {},
-    headers: options.headers || {},
+    headers: settings.headers,
     statusCode: options.statusCode,
     url: settings.url,
     responseUrl: settings.url,

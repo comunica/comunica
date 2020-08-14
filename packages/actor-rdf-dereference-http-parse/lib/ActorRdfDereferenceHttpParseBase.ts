@@ -16,6 +16,7 @@ import {
   IActorTestMediaTypesRdfParse,
 } from '@comunica/bus-rdf-parse';
 import { Actor, IActorTest, Mediator } from '@comunica/core';
+import { Headers } from 'cross-fetch';
 import { resolve as resolveRelative } from 'relative-to-absolute-iri';
 
 /**
@@ -62,8 +63,7 @@ export abstract class ActorRdfDereferenceHttpParseBase extends ActorRdfDereferen
     const acceptHeader: string = this.mediaTypesToAcceptString(mediaTypes, this.getMaxAcceptHeaderLength());
 
     // Resolve HTTP URL using appropriate accept header
-    const headers: Headers = new Headers();
-    headers.append('Accept', acceptHeader);
+    const headers: Headers = new Headers({ Accept: acceptHeader });
 
     // Append any custom passed headers
     for (const key in action.headers) {

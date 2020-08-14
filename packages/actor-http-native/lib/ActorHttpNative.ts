@@ -42,6 +42,7 @@ export class ActorHttpNative extends ActorHttp {
 
     if (action.init) {
       Object.assign(options, action.init);
+      options.headers = new Headers(action.init.headers);
     } else {
       options.headers = (<Request>action.input).headers;
     }
@@ -83,7 +84,8 @@ export class ActorHttpNative extends ActorHttp {
               return Promise.resolve(undefined);
             };
             // Missing several of the required fetch fields
-            const headers = new Headers(httpResponse.headers);
+            const headers = httpResponse.headers;
+
             const result = <IActorHttpOutput> {
               body: httpResponse,
               headers,
