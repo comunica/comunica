@@ -35,7 +35,7 @@
     "index.js"
   ],
   "dependencies": {
-    "asyncjoin": "^1.0.0"
+    "asyncjoin": "^1.0.1"
   },
   "peerDependencies": {
     "@comunica/bus-rdf-join": "^1.0.0",

@@ -7,9 +7,9 @@ import {
 import { ActorRdfJoin, IActionRdfJoin } from '@comunica/bus-rdf-join';
 import { ActionContext, Mediator } from '@comunica/core';
 import { IMediatorTypeIterations } from '@comunica/mediatortype-iterations';
+
 import { termToString } from 'rdf-string';
 import { Algebra } from 'sparqlalgebrajs';
-
 /**
  * A comunica Path Seq Query Operation Actor.
  */
@@ -23,28 +23,32 @@ export class ActorQueryOperationPathSeq extends ActorAbstractPath {
 
   public async runOperation(path: Algebra.Path, context: ActionContext): Promise<IActorQueryOperationOutputBindings> {
     const predicate = <Algebra.Seq> path.predicate;
-    const blank = this.generateBlankNode(path);
-    const blankName = termToString(blank);
+    const variable = this.generateVariable(path);
+    const varName = termToString(variable);
 
     const subOperations: IActorQueryOperationOutputBindings[] = (await Promise.all([
       this.mediatorQueryOperation.mediate({
-        context, operation: ActorAbstractPath.FACTORY.createPath(path.subject, predicate.left, blank, path.graph),
+        context, operation: ActorAbstractPath.FACTORY.createPath(path.subject, predicate.left, variable, path.graph),
       }),
       this.mediatorQueryOperation.mediate({
-        context, operation: ActorAbstractPath.FACTORY.createPath(blank, predicate.right, path.object, path.graph),
+        context, operation: ActorAbstractPath.FACTORY.createPath(variable, predicate.right, path.object, path.graph),
       }),
     ])).map(op => ActorQueryOperation.getSafeBindings(op));
 
     const join = ActorQueryOperation.getSafeBindings(await this.mediatorJoin.mediate({ entries: subOperations }));
-    // Remove the generated blank nodes from the bindings
+    // Remove the generated variable from the bindings
     const bindingsStream = join.bindingsStream.transform<Bindings>({
       transform(item, next, push) {
-        push(item.delete(blankName));
+        push(item.delete(varName));
         next();
       },
     });
 
-    return { type: 'bindings', bindingsStream, variables: join.variables };
+    // Remove the generated variable from the list of variables
+    const variables = join.variables;
+    const indexOfVar = variables.indexOf(varName);
+    variables.splice(indexOfVar, 1);
+    return { type: 'bindings', bindingsStream, variables };
   }
 }
 

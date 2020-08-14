@@ -6,6 +6,7 @@ import {
 } from '@comunica/bus-query-operation';
 import { ActionContext } from '@comunica/core';
 import { SingletonIterator } from 'asynciterator';
+
 import { termToString } from 'rdf-string';
 import { Algebra } from 'sparqlalgebrajs';
 
@@ -35,6 +36,13 @@ export class ActorQueryOperationPathZeroOrOne extends ActorAbstractPath {
     if (sVar && oVar) {
       throw new Error('ZeroOrOne path expressions with 2 variables not supported yet');
     }
+
+    const distinct = await this.isPathArbitraryLengthDistinct(context, path);
+    if (distinct.operation) {
+      return distinct.operation;
+    }
+
+    context = distinct.context;
 
     if (sVar) {
       extra.push(Bindings({ [termToString(path.subject)]: path.object }));

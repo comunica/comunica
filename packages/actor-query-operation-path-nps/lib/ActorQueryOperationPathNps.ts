@@ -18,7 +18,7 @@ export class ActorQueryOperationPathNps extends ActorAbstractPath {
 
   public async runOperation(path: Algebra.Path, context: ActionContext): Promise<IActorQueryOperationOutputBindings> {
     const predicate = <Algebra.Nps> path.predicate;
-    const blank = this.generateBlankNode(path);
+    const blank = this.generateVariable(path);
     const blankName = termToString(blank);
 
     const pattern = ActorAbstractPath.FACTORY.createPattern(path.subject, blank, path.object, path.graph);
