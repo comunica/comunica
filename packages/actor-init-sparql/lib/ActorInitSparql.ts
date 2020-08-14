@@ -120,11 +120,23 @@ export class ActorInitSparql extends ActorInitSparqlBrowser {
       context.sources = context.sources || [];
       args._.forEach((sourceValue: string) => {
         const source: {[id: string]: string} = {};
-        const splitValues: string[] = sourceValue.split('@', 2);
-        if (splitValues.length > 1) {
-          source.type = splitValues[0];
+        const splitMediaType: string[] = sourceValue.split('@', 2);
+        let urlWithoutMediaType: string;
+        if (splitMediaType.length === 2 && !splitMediaType[0].includes(':')) {
+          source.type = splitMediaType[0];
+          urlWithoutMediaType = sourceValue.slice(splitMediaType[0].length + 1);
+        } else {
+          urlWithoutMediaType = sourceValue;
         }
-        source.value = splitValues[splitValues.length - 1];
+        const splitCredentials = urlWithoutMediaType.split('@', 2);
+        if (splitCredentials.length === 2) {
+          const credentials = splitCredentials[0].split('//')[1].split(':');
+          source.username = decodeURIComponent(credentials[0]);
+          source.password = decodeURIComponent(credentials[1]);
+          source.value = `${splitCredentials[0].split('//')[0]}//${splitCredentials[1]}`;
+        } else {
+          source.value = urlWithoutMediaType;
+        }
         context.sources.push(source);
       });
     }

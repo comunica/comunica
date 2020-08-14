@@ -91,6 +91,7 @@ describe('ActorInitSparql', () => {
   describe('An ActorInitSparql instance', () => {
     const hypermedia = 'http://example.org/';
     const hypermedia2 = 'hypermedia@http://example.org/';
+    const hypermedia3 = 'hypermedia@http://username:passwd@example.org/';
     const otherSource = 'other@http://example.org/';
     const queryString = 'SELECT * WHERE { ?s ?p ?o } LIMIT 100';
     const context: any = JSON.stringify({ hypermedia });
@@ -465,6 +466,18 @@ describe('ActorInitSparql', () => {
 
     it('should run with a tagged hypermedia and query file option from argv', () => {
       return actor.run({ argv: [ hypermedia2, '-f', `${__dirname}/assets/all-100.sparql` ],
+        env: {},
+        stdin: new PassThrough() })
+        .then(result => {
+          return new Promise((resolve, reject) => {
+            (<any> result).stdout.on('data', (line: any) => expect(line).toBeTruthy());
+            (<any> result).stdout.on('end', resolve);
+          });
+        });
+    });
+
+    it('should run with a tagged hypermedia and credentials in url and query file option from argv', () => {
+      return actor.run({ argv: [ hypermedia3, '-f', `${__dirname}/assets/all-100.sparql` ],
         env: {},
         stdin: new PassThrough() })
         .then(result => {
