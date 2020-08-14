@@ -136,6 +136,11 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
           (<any> it)._push(Bindings({ [subjectString]: subjectVal, [objectString]: object }));
         }
       }
+      if (--counter.count === 0) {
+        it.close();
+      }
+
+      return;
     }
 
     // Construct promise to calculate all reachable nodes from this object
