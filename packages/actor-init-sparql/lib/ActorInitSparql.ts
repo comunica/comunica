@@ -153,7 +153,7 @@ export class ActorInitSparql extends ActorInitSparqlBrowser {
     // Print supported MIME types
     if (args.listformats) {
       const mediaTypes: {[id: string]: number} = await this.getResultMediaTypes();
-      return { stdout: require('streamify-string')(Object.keys(mediaTypes).join('\n')) };
+      return { stdout: require('streamify-string')(`${Object.keys(mediaTypes).join('\n')}\n`) };
     }
 
     // Define query
