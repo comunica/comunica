@@ -9000,6 +9000,13 @@ rdf-store-stream@^1.0.0, rdf-store-stream@^1.0.1:
     "@types/rdf-js" "^3.0.2"
     n3 "^1.1.1"
 
+rdf-string-ttl@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/rdf-string-ttl/-/rdf-string-ttl-1.0.1.tgz#4d1b7c3f47f882b58c3e3036d740bcecc9c87c35"
+  integrity sha512-QdOztnXuQTS5HwS2YTUkY9KUdyjyMYCX4QITfAAAtJnGqQkfah1L+VdV3E+Z3NKp/CBXLqZs/oMZe5J7pUEzpw==
+  dependencies:
+    "@rdfjs/data-model" "^1.1.1"
+
 rdf-string@^1.1.1, rdf-string@^1.3.1, rdf-string@^1.4.2:
   version "1.4.2"
   resolved "https://registry.yarnpkg.com/rdf-string/-/rdf-string-1.4.2.tgz#a6fbf0c4b501fa85ba187ce51020dc8e375b8776"

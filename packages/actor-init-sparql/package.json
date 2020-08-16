@@ -121,6 +121,7 @@
     "@comunica/actor-sparql-serialize-simple": "^1.15.0",
     "@comunica/actor-sparql-serialize-sparql-csv": "^1.0.0",
     "@comunica/actor-sparql-serialize-sparql-json": "^1.15.0",
+    "@comunica/actor-sparql-serialize-sparql-tsv": "^1.0.0",
     "@comunica/actor-sparql-serialize-sparql-xml": "^1.15.0",
     "@comunica/actor-sparql-serialize-stats": "^1.15.0",
     "@comunica/actor-sparql-serialize-table": "^1.15.0",
