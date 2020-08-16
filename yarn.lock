@@ -9033,10 +9033,42 @@ rdf-test-suite-ldf@^1.1.5:
     url-exists "^1.0.3"
     winston "^3.2.1"
 
-rdf-test-suite@^1.12.0, rdf-test-suite@^1.13.0:
+rdf-test-suite@^1.12.0:
   version "1.13.1"
   resolved "https://registry.yarnpkg.com/rdf-test-suite/-/rdf-test-suite-1.13.1.tgz#17cd5c4a84c7007e556455c217632bd32cf8a5a7"
   integrity sha512-O+j3BimspDQcX/x+cMnFcp6KV06832cfLn3+GyQ25jBxt6LXxvJSZvoHRopxL9lRhTuRPYorsjt0UriY2D5+6A==
+  dependencies:
+    "@rdfjs/data-model" "^1.1.2"
+    "@types/json-stable-stringify" "^1.0.32"
+    "@types/log-symbols" "^3.0.0"
+    "@types/minimist" "^1.2.0"
+    "@types/n3" "^1.1.6"
+    "@types/rdf-js" "^3.0.0"
+    "@types/sax" "^1.0.1"
+    arrayify-stream "^1.0.0"
+    isomorphic-fetch "^2.2.1"
+    json-stable-stringify "^1.0.1"
+    jsonld-streaming-parser "^2.0.0"
+    log-symbols "^4.0.0"
+    minimist "^1.2.0"
+    n3 "^1.1.1"
+    rdf-isomorphic "^1.1.0"
+    rdf-literal "^1.0.0"
+    rdf-object "^1.1.0"
+    rdf-quad "^1.3.0"
+    rdf-string "^1.3.1"
+    rdf-terms "^1.4.0"
+    rdfxml-streaming-parser "^1.3.4"
+    relative-to-absolute-iri "^1.0.5"
+    sparqljson-parse "^1.5.0"
+    sparqlxml-parse "^1.2.1"
+    stream-to-string "^1.1.0"
+    streamify-string "^1.0.1"
+
+rdf-test-suite@^1.13.2:
+  version "1.13.2"
+  resolved "https://registry.yarnpkg.com/rdf-test-suite/-/rdf-test-suite-1.13.2.tgz#9f46b65b0e4f56bf3940b9d5031f04b0456096b3"
+  integrity sha512-aziFVsaXtaL+SDPbD5unt/WDjKrp13UZID9bcWLMwfTO+xcNrtzdawv/L7SXQbcCHTJEMKbSOH1QX+aTcPhJfw==
   dependencies:
     "@rdfjs/data-model" "^1.1.2"
     "@types/json-stable-stringify" "^1.0.32"
@@ -9964,7 +9996,7 @@ source-map@~0.1.38:
   dependencies:
     amdefine ">=0.0.4"
 
-sparqlalgebrajs@^2.0.0, sparqlalgebrajs@^2.1.0, sparqlalgebrajs@^2.2.1, sparqlalgebrajs@^2.2.2, sparqlalgebrajs@^2.3.1:
+sparqlalgebrajs@^2.0.0, sparqlalgebrajs@^2.1.0, sparqlalgebrajs@^2.2.1:
   version "2.3.1"
   resolved "https://registry.yarnpkg.com/sparqlalgebrajs/-/sparqlalgebrajs-2.3.1.tgz#62abd5435d98051cfc29c5bacdede5b5f969b47b"
   integrity sha512-zJ9EEX2BtHjdiSQoWP7fKt2IqD4zi24n3CQtRGOIzh8Hyj2JFMtje68CweaIJgQLN5kNYpNx/VT2F6nxpeIRJg==
@@ -9974,6 +10006,17 @@ sparqlalgebrajs@^2.0.0, sparqlalgebrajs@^2.1.0, sparqlalgebrajs@^2.2.1, sparqlal
     minimist "^1.2.5"
     rdf-string "^1.3.1"
     sparqljs "^3.0.1"
+
+sparqlalgebrajs@^2.3.2:
+  version "2.3.2"
+  resolved "https://registry.yarnpkg.com/sparqlalgebrajs/-/sparqlalgebrajs-2.3.2.tgz#3f5d1a2e9a9c1a7149ab90eeae5a9f35066947f4"
+  integrity sha512-QnjSz25c6ruALbxxD7e9E64hoi/yPMz5MzxUIjLEiTob2zWoM4Pj6GlYZAMnxcCdXXURZO+n0Obt/8XhQj4XiQ==
+  dependencies:
+    "@rdfjs/data-model" "^1.1.2"
+    fast-deep-equal "^3.1.1"
+    minimist "^1.2.5"
+    rdf-string "^1.3.1"
+    sparqljs "^3.1.1"
 
 sparqlee@^1.4.2:
   version "1.4.2"
