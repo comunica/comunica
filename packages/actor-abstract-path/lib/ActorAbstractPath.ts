@@ -131,10 +131,18 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
     if (termString in termHashesGlobal) {
       const objects = await termHashesGlobal[termString];
       for (const object of objects) {
-        if (!termHashesCurrentSubject[termToString(object)]) {
-          termHashesCurrentSubject[termToString(object)] = true;
-          (<any> it)._push(Bindings({ [subjectString]: subjectVal, [objectString]: object }));
-        }
+        await this.ALPTwoVariables(
+          subjectString,
+          objectString,
+          subjectVal,
+          object,
+          predicate,
+          context,
+          termHashesGlobal,
+          termHashesCurrentSubject,
+          it,
+          counter,
+        );
       }
       if (--counter.count === 0) {
         it.close();
