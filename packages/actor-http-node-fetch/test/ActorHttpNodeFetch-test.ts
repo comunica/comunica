@@ -1,4 +1,5 @@
 import { ActorHttp, KEY_CONTEXT_INCLUDE_CREDENTIALS } from '@comunica/bus-http';
+import { KEY_CONTEXT_SOURCE } from '@comunica/bus-rdf-resolve-quad-pattern';
 import { ActionContext, Bus } from '@comunica/core';
 import { ActorHttpNodeFetch } from '../lib/ActorHttpNodeFetch';
 
@@ -78,9 +79,62 @@ describe('ActorHttpNodeFetch', () => {
         input: <Request> { url: 'https://www.google.com/' },
         context: ActionContext({
           [KEY_CONTEXT_INCLUDE_CREDENTIALS]: true,
+          [KEY_CONTEXT_SOURCE]: { value: 'https://www.google.com/' },
         }),
       });
       expect(spy).toHaveBeenCalledWith({ url: 'https://www.google.com/' }, { credentials: 'include' });
+    });
+
+    it('should run with authorization', async() => {
+      const spy = jest.spyOn(global, 'fetch');
+      await actor.run({
+        input: <Request> { url: 'https://www.google.com/' },
+        context: ActionContext({
+          [KEY_CONTEXT_INCLUDE_CREDENTIALS]: true,
+          [KEY_CONTEXT_SOURCE]: { value: 'https://www.google.com/', username: 'user', password: 'password' },
+        }),
+      });
+      expect(spy).toHaveBeenCalledWith(
+        { url: 'https://www.google.com/' },
+        { credentials: 'include', headers: new Headers({ Authorization: `Basic ${Buffer.from('user:password').toString('base64')}` }) },
+      );
+    });
+
+    it('should run with authorization and init.headers undefined', async() => {
+      const spy = jest.spyOn(global, 'fetch');
+      await actor.run({
+        input: <Request> { url: 'https://www.google.com/' },
+        init: {},
+        context: ActionContext({
+          [KEY_CONTEXT_INCLUDE_CREDENTIALS]: true,
+          [KEY_CONTEXT_SOURCE]: { value: 'https://www.google.com/', username: 'user', password: 'password' },
+        }),
+      });
+      expect(spy).toHaveBeenCalledWith(
+        { url: 'https://www.google.com/' },
+        { credentials: 'include', headers: new Headers({ Authorization: `Basic ${Buffer.from('user:password').toString('base64')}` }) },
+      );
+    });
+
+    it('should run with authorization and already header in init', async() => {
+      const spy = jest.spyOn(global, 'fetch');
+
+      await actor.run({
+        input: <Request> { url: 'https://www.google.com/' },
+        init: { headers: new Headers({ 'Content-Type': 'image/jpeg' }) },
+        context: ActionContext({
+          [KEY_CONTEXT_INCLUDE_CREDENTIALS]: true,
+          [KEY_CONTEXT_SOURCE]: { value: 'https://www.google.com/', username: 'user', password: 'password' },
+        }),
+      });
+      expect(spy).toHaveBeenCalledWith(
+        { url: 'https://www.google.com/' },
+        { credentials: 'include',
+          headers: new Headers({
+            Authorization: `Basic ${Buffer.from('user:password').toString('base64')}`,
+            'Content-Type': 'image/jpeg',
+          }) },
+      );
     });
   });
 });

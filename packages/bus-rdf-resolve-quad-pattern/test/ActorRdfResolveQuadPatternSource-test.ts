@@ -1,7 +1,8 @@
 import { Bus } from '@comunica/core';
 import { ArrayIterator } from 'asynciterator';
 import * as RDF from 'rdf-js';
-import { ActorRdfResolveQuadPatternSource, getDataSourceType, getDataSourceValue, isDataSourceRawType } from '..';
+import { ActorRdfResolveQuadPatternSource, getDataSourceType, getDataSourceValue,
+  getExtraSourceParams, isDataSourceRawType } from '..';
 
 const arrayifyStream = require('arrayify-stream');
 
@@ -119,6 +120,21 @@ describe('ActorRdfResolveQuadPatternSource', () => {
 
     it('should return on an object source with explicit rdfjs source', () => {
       return expect(getDataSourceValue({ type: 'rdfjsSource', value: rdfjsSource })).toEqual(rdfjsSource);
+    });
+  });
+
+  describe('getExtraSourceParameters', () => {
+    it('should return on a string source', () => {
+      return expect(getExtraSourceParams('abc')).toEqual({});
+    });
+
+    it('should return on a rdfjs source source', () => {
+      return expect(getExtraSourceParams(rdfjsSource)).toEqual({});
+    });
+
+    it('should return on an object source', () => {
+      return expect(getExtraSourceParams({ type: 'T', value: 'abc', username: 'user', password: 'password' }))
+        .toEqual({ username: 'user', password: 'password' });
     });
   });
 });

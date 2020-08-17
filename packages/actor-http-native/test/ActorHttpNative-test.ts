@@ -2,6 +2,7 @@ import { Readable } from 'stream';
 import * as url from 'url';
 import * as zlib from 'zlib';
 import { ActorHttp, KEY_CONTEXT_INCLUDE_CREDENTIALS } from '@comunica/bus-http';
+import { KEY_CONTEXT_SOURCE } from '@comunica/bus-rdf-resolve-quad-pattern';
 import { ActionContext, Bus } from '@comunica/core';
 import { ActorHttpNative } from '../lib/ActorHttpNative';
 import Requester from '../lib/Requester';
@@ -184,6 +185,19 @@ describe('ActorHttpNative', () => {
         input: new Request('http://example.com'),
         context: ActionContext({
           [KEY_CONTEXT_INCLUDE_CREDENTIALS]: true,
+          [KEY_CONTEXT_SOURCE]: { value: 'http://example.com' },
+        }),
+      });
+      expect(results.body).toMatchObject({ withCredentials: true });
+    });
+
+    it('should run with authorization', async() => {
+      mockSetup({ statusCode: 404 });
+      const results: any = await actor.run({
+        input: new Request('http://example.com'),
+        context: ActionContext({
+          [KEY_CONTEXT_INCLUDE_CREDENTIALS]: true,
+          [KEY_CONTEXT_SOURCE]: { value: 'http://example.com', username: 'user', password: 'pass' },
         }),
       });
       expect(results.body).toMatchObject({ withCredentials: true });
