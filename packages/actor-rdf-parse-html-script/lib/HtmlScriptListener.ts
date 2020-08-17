@@ -121,9 +121,14 @@ export class HtmlScriptListener implements IHtmlParseListener {
             }
             textStream.push(null);
           })
-          .catch(() => {
-            // Ignore script tags that we don't understand
-            this.onEnd();
+          .catch((error: Error) => {
+            if (this.targetScriptId) {
+              // Error if we are targeting this script tag specifically
+              this.cbError(error);
+            } else {
+              // Ignore script tags that we don't understand
+              this.onEnd();
+            }
           });
 
         // Reset the media type and text stream

@@ -309,7 +309,7 @@ describe('ActorRdfParseHtml', () => {
           await expect(onEnd).rejects.toThrow(new Error('Unexpected STRING("@id") in state COLON'));
         });
 
-        it('should ignoore mediator failures', async() => {
+        it('should ignore mediator failures', async() => {
           listener.onTagOpen('html', {});
           listener.onTagOpen('body', {});
           listener.onTagOpen('script', { type: 'fail' });
@@ -517,6 +517,23 @@ describe('ActorRdfParseHtml', () => {
           listener.onEnd();
 
           await expect(onEnd).rejects.toThrow(new Error('Targeted script "scriptId" does not have a supported type'));
+        });
+
+        it('should not ignore mediator failures when targeting this script', async() => {
+          listener.onTagOpen('html', {});
+          listener.onTagOpen('body', {});
+          listener.onTagOpen('script', { type: 'fail', id: 'scriptId' });
+          listener.onText(`{
+            """@id": "http://example.org/a",
+            "http://example.org/b": "http://example.org/c",
+            "http://example.org/d": "http://example.org/e"
+        }`);
+          listener.onTagClose();
+          listener.onTagClose();
+          listener.onTagClose();
+          listener.onEnd();
+
+          await expect(onEnd).rejects.toThrow(new Error('Parsing failure'));
         });
       });
     });
