@@ -65,6 +65,7 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
                     subject,
                     subject,
                     predicate.path,
+                    path.graph,
                     context,
                     termHashes,
                     {},
@@ -80,6 +81,7 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
                     object,
                     object,
                     predicate.path,
+                    path.graph,
                     context,
                     termHashes,
                     {},
@@ -101,7 +103,7 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
       return { type: 'bindings', bindingsStream, variables: [ subjectString, objectString ]};
     }
     if (!sVar && !oVar) {
-      const bindingsStream = (await this.ALPeval(path.subject, predicate.path, context))
+      const bindingsStream = (await this.ALPeval(path.subject, predicate.path, path.graph, context))
         .transform<Bindings>({
         filter: item => item.equals(path.object),
         transform(item, next, push) {
@@ -114,7 +116,7 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
     // If (sVar || oVar)
     const value = termToString(sVar ? path.subject : path.object);
     const pred = sVar ? ActorAbstractPath.FACTORY.createInv(predicate.path) : predicate.path;
-    const bindingsStream = (await this.ALPeval(sVar ? path.object : path.subject, pred, context))
+    const bindingsStream = (await this.ALPeval(sVar ? path.object : path.subject, pred, path.graph, context))
       .transform<Bindings>({
       transform(item, next, push) {
         push(Bindings({ [value]: item }));

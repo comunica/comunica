@@ -73,15 +73,15 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
 
   // Based on definition in spec https://www.w3.org/TR/sparql11-query/
   // returns all nodes visited by infinitely repeating the given predicate, starting from x
-  public async ALPeval(x: Term, predicate: Algebra.PropertyPathSymbol, context: ActionContext):
+  public async ALPeval(x: Term, predicate: Algebra.PropertyPathSymbol, graph: Term, context: ActionContext):
   Promise<AsyncIterator<Term>> {
     const it = new BufferedIterator<Term>();
-    await this.ALP(x, predicate, context, {}, it, { count: 0 });
+    await this.ALP(x, predicate, graph, context, {}, it, { count: 0 });
 
     return it;
   }
 
-  public async ALP(x: Term, predicate: Algebra.PropertyPathSymbol, context: ActionContext,
+  public async ALP(x: Term, predicate: Algebra.PropertyPathSymbol, graph: Term, context: ActionContext,
     termHashes: {[id: string]: Term}, it: BufferedIterator<Term>, counter: any): Promise<void> {
     const termString = termToString(x);
     if (termHashes[termString]) {
@@ -94,13 +94,13 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
 
     const thisVariable = this.generateVariable();
     const vString = termToString(thisVariable);
-    const path = ActorAbstractPath.FACTORY.createPath(x, predicate, thisVariable);
+    const path = ActorAbstractPath.FACTORY.createPath(x, predicate, thisVariable, graph);
     const results = ActorQueryOperation.getSafeBindings(
       await this.mediatorQueryOperation.mediate({ operation: path, context }),
     );
     results.bindingsStream.on('data', async bindings => {
       const result = bindings.get(vString);
-      await this.ALP(result, predicate, context, termHashes, it, counter);
+      await this.ALP(result, predicate, graph, context, termHashes, it, counter);
     });
     results.bindingsStream.on('end', () => {
       if (--counter.count === 0) {
@@ -112,7 +112,7 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
   // Let the iterator `it` emit all bindings of size 2, with subjectStringVariable as value subjectVal
   // and objectStringVariable as value all nodes reachable through predicate* beginning at objectVal
   public async ALPTwoVariables(subjectString: string, objectString: string, subjectVal: Term,
-    objectVal: Term, predicate: Algebra.PropertyPathSymbol, context: ActionContext,
+    objectVal: Term, predicate: Algebra.PropertyPathSymbol, graph: Term, context: ActionContext,
     termHashesGlobal: {[id: string]: Promise<Term[]>}, termHashesCurrentSubject: {[id: string]: boolean},
     it: BufferedIterator<Bindings>, counter: any): Promise<void> {
     const termString = termToString(objectVal);
@@ -137,6 +137,7 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
           subjectVal,
           object,
           predicate,
+          graph,
           context,
           termHashesGlobal,
           termHashesCurrentSubject,
@@ -157,7 +158,7 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
 
       const thisVariable = this.generateVariable();
       const vString = termToString(thisVariable);
-      const path = ActorAbstractPath.FACTORY.createPath(objectVal, predicate, thisVariable);
+      const path = ActorAbstractPath.FACTORY.createPath(objectVal, predicate, thisVariable, graph);
       const results = ActorQueryOperation.getSafeBindings(
         await this.mediatorQueryOperation.mediate({ operation: path, context }),
       );
@@ -171,6 +172,7 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
           subjectVal,
           result,
           predicate,
+          graph,
           context,
           termHashesGlobal,
           termHashesCurrentSubject,
