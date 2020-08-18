@@ -1,7 +1,7 @@
 import { Readable } from 'stream';
 import * as url from 'url';
 import * as zlib from 'zlib';
-import { ActorHttp, KEY_CONTEXT_INCLUDE_CREDENTIALS } from '@comunica/bus-http';
+import { ActorHttp, KEY_CONTEXT_INCLUDE_CREDENTIALS, KEY_CONTEXT_AUTH } from '@comunica/bus-http';
 import { ActionContext, Bus } from '@comunica/core';
 import { ActorHttpNative } from '../lib/ActorHttpNative';
 import Requester from '../lib/Requester';
@@ -197,6 +197,17 @@ describe('ActorHttpNative', () => {
         }),
       });
       expect(results.body).toMatchObject({ withCredentials: true });
+    });
+
+    it('should run with authorization', async() => {
+      mockSetup({ statusCode: 404 });
+      const results: any = await actor.run({
+        input: new Request('http://example.com'),
+        context: ActionContext({
+          [KEY_CONTEXT_AUTH]: 'user:pass',
+        }),
+      });
+      expect(results.body.input.auth).toEqual('user:pass');
     });
   });
 });

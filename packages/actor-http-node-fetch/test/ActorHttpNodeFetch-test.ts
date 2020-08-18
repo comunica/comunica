@@ -1,4 +1,4 @@
-import { ActorHttp, KEY_CONTEXT_INCLUDE_CREDENTIALS } from '@comunica/bus-http';
+import { ActorHttp, KEY_CONTEXT_INCLUDE_CREDENTIALS, KEY_CONTEXT_AUTH } from '@comunica/bus-http';
 import { ActionContext, Bus } from '@comunica/core';
 import { ActorHttpNodeFetch } from '../lib/ActorHttpNodeFetch';
 
@@ -81,6 +81,54 @@ describe('ActorHttpNodeFetch', () => {
         }),
       });
       expect(spy).toHaveBeenCalledWith({ url: 'https://www.google.com/' }, { credentials: 'include' });
+    });
+
+    it('should run with authorization', async() => {
+      const spy = jest.spyOn(global, 'fetch');
+      await actor.run({
+        input: <Request> { url: 'https://www.google.com/' },
+        context: ActionContext({
+          [KEY_CONTEXT_AUTH]: 'user:password',
+        }),
+      });
+      expect(spy).toHaveBeenCalledWith(
+        { url: 'https://www.google.com/' },
+        { headers: new Headers({ Authorization: `Basic ${Buffer.from('user:password').toString('base64')}` }) },
+      );
+    });
+
+    it('should run with authorization and init.headers undefined', async() => {
+      const spy = jest.spyOn(global, 'fetch');
+      await actor.run({
+        input: <Request> { url: 'https://www.google.com/' },
+        init: {},
+        context: ActionContext({
+          [KEY_CONTEXT_AUTH]: 'user:password',
+        }),
+      });
+      expect(spy).toHaveBeenCalledWith(
+        { url: 'https://www.google.com/' },
+        { headers: new Headers({ Authorization: `Basic ${Buffer.from('user:password').toString('base64')}` }) },
+      );
+    });
+
+    it('should run with authorization and already header in init', async() => {
+      const spy = jest.spyOn(global, 'fetch');
+
+      await actor.run({
+        input: <Request> { url: 'https://www.google.com/' },
+        init: { headers: new Headers({ 'Content-Type': 'image/jpeg' }) },
+        context: ActionContext({
+          [KEY_CONTEXT_AUTH]: 'user:password',
+        }),
+      });
+      expect(spy).toHaveBeenCalledWith(
+        { url: 'https://www.google.com/' },
+        { headers: new Headers({
+          Authorization: `Basic ${Buffer.from('user:password').toString('base64')}`,
+          'Content-Type': 'image/jpeg',
+        }) },
+      );
     });
   });
 });

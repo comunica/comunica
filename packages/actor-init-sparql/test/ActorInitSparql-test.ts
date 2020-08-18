@@ -1,8 +1,10 @@
 import { PassThrough, Readable } from 'stream';
 import { ProxyHandlerStatic } from '@comunica/actor-http-proxy';
+import { KEY_CONTEXT_AUTH } from '@comunica/bus-http';
 import { ActorInit } from '@comunica/bus-init';
 import { Bindings, KEY_CONTEXT_QUERY_TIMESTAMP } from '@comunica/bus-query-operation';
-import { Bus, KEY_CONTEXT_LOG } from '@comunica/core';
+import { KEY_CONTEXT_SOURCES } from '@comunica/bus-rdf-resolve-quad-pattern';
+import { Bus, KEY_CONTEXT_LOG, ActionContext } from '@comunica/core';
 import { literal, variable, quad, namedNode, defaultGraph } from '@rdfjs/data-model';
 import { translate } from 'sparqlalgebrajs';
 import Factory from 'sparqlalgebrajs/lib/factory';
@@ -91,6 +93,8 @@ describe('ActorInitSparql', () => {
   describe('An ActorInitSparql instance', () => {
     const hypermedia = 'http://example.org/';
     const hypermedia2 = 'hypermedia@http://example.org/';
+    const hypermedia3 = 'http://username:passwd@example.org/';
+    const hypermedia4 = 'hypermedia@http://username:passwd@example.org/';
     const otherSource = 'other@http://example.org/';
     const queryString = 'SELECT * WHERE { ?s ?p ?o } LIMIT 100';
     const context: any = JSON.stringify({ hypermedia });
@@ -473,6 +477,34 @@ describe('ActorInitSparql', () => {
             (<any> result).stdout.on('end', resolve);
           });
         });
+    });
+
+    it('should run with credentials in url and query file option from argv', async() => {
+      const spy = jest.spyOn(actor, 'query');
+      await actor.run({ argv: [ hypermedia3, '-f', `${__dirname}/assets/all-100.sparql` ],
+        env: {},
+        stdin: new PassThrough() })
+        .then(result => {
+          return new Promise((resolve, reject) => {
+            (<any> result).stdout.on('data', (line: any) => expect(line).toBeTruthy());
+            (<any> result).stdout.on('end', resolve);
+          });
+        });
+      expect(spy.mock.calls[0][1][KEY_CONTEXT_SOURCES].array[0].context.get(KEY_CONTEXT_AUTH)).toBe('username:passwd');
+    });
+
+    it('should run with a tagged hypermedia and credentials in url and query file option from argv', async() => {
+      const spy = jest.spyOn(actor, 'query');
+      await actor.run({ argv: [ hypermedia4, '-f', `${__dirname}/assets/all-100.sparql` ],
+        env: {},
+        stdin: new PassThrough() })
+        .then(result => {
+          return new Promise((resolve, reject) => {
+            (<any> result).stdout.on('data', (line: any) => expect(line).toBeTruthy());
+            (<any> result).stdout.on('end', resolve);
+          });
+        });
+      expect(spy.mock.calls[0][1][KEY_CONTEXT_SOURCES].array[0].context.get(KEY_CONTEXT_AUTH)).toBe('username:passwd');
     });
 
     it('should run with an other source type and query file option from argv', () => {
@@ -859,6 +891,48 @@ graph <exists02.ttl> {
       // Make it reject instead of reading input
       mediatorQueryOperation.mediate = (action: any) => Promise.reject(new Error('a'));
       return expect(actor.query('INVALID QUERY', ctx)).rejects.toBeTruthy();
+    });
+  });
+
+  describe('getSourceObjectFromString', () => {
+    it('should correctly parse normal URL', () => {
+      const hypermedia = 'http://example.org/';
+      expect(ActorInitSparql.getSourceObjectFromString(hypermedia))
+        .toEqual({ value: 'http://example.org/' });
+    });
+
+    it('should work with type annotation', () => {
+      const hypermedia = 'hypermedia@http://example.org/';
+      expect(ActorInitSparql.getSourceObjectFromString(hypermedia))
+        .toEqual({ value: 'http://example.org/', type: 'hypermedia' });
+    });
+
+    it('should work with authorization in url', () => {
+      const hypermedia = 'http://username:passwd@example.org/';
+      expect(ActorInitSparql.getSourceObjectFromString(hypermedia))
+        .toEqual({ value: 'http://example.org/', context: ActionContext({ [KEY_CONTEXT_AUTH]: 'username:passwd' }) });
+    });
+
+    it('should work with type annotation and authorization in url', () => {
+      const hypermedia = 'hypermedia@http://username:passwd@example.org/';
+      expect(ActorInitSparql.getSourceObjectFromString(hypermedia))
+        .toEqual({ value: 'http://example.org/',
+          type: 'hypermedia',
+          context: ActionContext({ [KEY_CONTEXT_AUTH]: 'username:passwd' }) });
+    });
+
+    it('should work with empty username in authorization in url', () => {
+      const hypermedia = 'http://:passwd@example.org/';
+      expect(ActorInitSparql.getSourceObjectFromString(hypermedia))
+        .toEqual({ value: 'http://example.org/',
+          context: ActionContext({ [KEY_CONTEXT_AUTH]: ':passwd' }) });
+    });
+
+    it('should work with empty password in authorization in url', () => {
+      const hypermedia = 'http://username:@example.org/';
+      expect(ActorInitSparql.getSourceObjectFromString(hypermedia))
+        .toEqual({ value: 'http://example.org/',
+          context: ActionContext({ [KEY_CONTEXT_AUTH]: 'username:' }) });
     });
   });
 });

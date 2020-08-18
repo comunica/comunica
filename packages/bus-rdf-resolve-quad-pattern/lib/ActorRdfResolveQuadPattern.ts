@@ -27,6 +27,12 @@ export function getDataSourceType(dataSource: IDataSource): string | undefined {
 export function getDataSourceValue(dataSource: IDataSource): string | RDF.Source {
   return isDataSourceRawType(dataSource) ? dataSource : dataSource.value;
 }
+export function getDataSourceContext(dataSource: IDataSource, context: ActionContext): ActionContext {
+  if (typeof dataSource === 'string' || 'match' in dataSource || !dataSource.context) {
+    return context;
+  }
+  return context.merge(dataSource.context);
+}
 
 /**
  * A comunica actor for rdf-resolve-quad-pattern events.
@@ -108,6 +114,7 @@ IActorRdfResolveQuadPatternOutput> {
 export type IDataSource = string | RDF.Source | {
   type?: string;
   value: string | RDF.Source;
+  context?: ActionContext;
 };
 export type DataSources = AsyncReiterable<IDataSource>;
 

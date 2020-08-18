@@ -1,7 +1,8 @@
-import { Bus } from '@comunica/core';
+import { Bus, ActionContext } from '@comunica/core';
 import { ArrayIterator } from 'asynciterator';
 import * as RDF from 'rdf-js';
-import { ActorRdfResolveQuadPatternSource, getDataSourceType, getDataSourceValue, isDataSourceRawType } from '..';
+import { ActorRdfResolveQuadPatternSource, getDataSourceType, getDataSourceValue,
+  getDataSourceContext, isDataSourceRawType } from '..';
 
 const arrayifyStream = require('arrayify-stream');
 
@@ -119,6 +120,24 @@ describe('ActorRdfResolveQuadPatternSource', () => {
 
     it('should return on an object source with explicit rdfjs source', () => {
       return expect(getDataSourceValue({ type: 'rdfjsSource', value: rdfjsSource })).toEqual(rdfjsSource);
+    });
+  });
+
+  describe('getDataSourceContext', () => {
+    const context = ActionContext({ key: 'value' });
+
+    it('should return on a string source', () => {
+      return expect(getDataSourceContext('abc', context)).toEqual(context);
+    });
+
+    it('should return on a rdfjs source source', () => {
+      return expect(getDataSourceContext(rdfjsSource, context)).toEqual(context);
+    });
+
+    it('should return on an object source', () => {
+      const sourceContext = ActionContext({ auth: 'username:passwd' });
+      return expect(getDataSourceContext({ value: 'http://google.com', context: sourceContext }, context))
+        .toEqual(context.merge(sourceContext));
     });
   });
 });

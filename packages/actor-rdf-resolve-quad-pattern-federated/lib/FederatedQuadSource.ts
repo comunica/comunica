@@ -1,6 +1,7 @@
 import {
   DataSources, getDataSourceType, getDataSourceValue, IActionRdfResolveQuadPattern,
-  IActorRdfResolveQuadPatternOutput, IDataSource, ILazyQuadSource, KEY_CONTEXT_SOURCE, KEY_CONTEXT_SOURCES,
+  IActorRdfResolveQuadPatternOutput, IDataSource, ILazyQuadSource, KEY_CONTEXT_SOURCE,
+  KEY_CONTEXT_SOURCES, getDataSourceContext,
 } from '@comunica/bus-rdf-resolve-quad-pattern';
 import { ActionContext, Actor, IActorTest, Mediator } from '@comunica/core';
 import { BlankNodeScoped } from '@comunica/data-factory';
@@ -230,7 +231,8 @@ export class FederatedQuadSource implements ILazyQuadSource {
         let pattern: Algebra.Pattern | undefined;
 
         // Prepare the context for this specific source
-        const context: ActionContext = this.contextDefault.set(KEY_CONTEXT_SOURCE,
+        let context: ActionContext = getDataSourceContext(source, this.contextDefault);
+        context = context.set(KEY_CONTEXT_SOURCE,
           { type: getDataSourceType(source), value: getDataSourceValue(source) });
 
         let output: IActorRdfResolveQuadPatternOutput;

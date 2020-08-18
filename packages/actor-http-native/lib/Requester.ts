@@ -27,7 +27,7 @@ export default class Requester {
   public createRequest(settings: any): EventEmitter {
     // Parse the request URL
     if (settings.url) {
-      Object.assign(settings, url.parse(settings.url));
+      settings = { ...url.parse(settings.url), ...settings };
     }
 
     // Emit the response through a proxy

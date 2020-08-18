@@ -4,9 +4,11 @@ import * as OS from 'os';
 import { Readable } from 'stream';
 import { KEY_CONTEXT_DATETIME } from '@comunica/actor-http-memento';
 import { KEY_CONTEXT_HTTPPROXYHANDLER, ProxyHandlerStatic } from '@comunica/actor-http-proxy';
+import { KEY_CONTEXT_AUTH } from '@comunica/bus-http';
 import { IActionInit, IActorOutputInit } from '@comunica/bus-init';
 import { IActorQueryOperationOutput, KEY_CONTEXT_BASEIRI } from '@comunica/bus-query-operation';
 
+import { ActionContext } from '@comunica/core';
 import { LoggerPretty } from '@comunica/logger-pretty';
 import minimist = require('minimist');
 import {
@@ -69,6 +71,33 @@ export class ActorInitSparql extends ActorInitSparqlBrowser {
     return existsSync(`${__dirname}/../test`);
   }
 
+  /**
+     * Converts an URL like 'hypermedia@http://user:passwd@example.com to an IDataSource
+     * @param {string} sourceString An url with possibly a type and authorization.
+     * @return {[id: string]: any} An IDataSource which represents the sourceString.
+     */
+  public static getSourceObjectFromString(sourceString: string): {[id: string]: any} {
+    const source: {[id: string]: any} = {};
+    const mediaTypeRegex = /^([^:]*)@/u;
+    const mediaTypeMatches = mediaTypeRegex.exec(sourceString);
+    if (mediaTypeMatches) {
+      source.type = mediaTypeMatches[1];
+      sourceString = sourceString.slice((<number> source.type.length) + 1);
+    }
+    const authRegex = /\/\/(.*:.*)@/u;
+    const authMatches = authRegex.exec(sourceString);
+    if (authMatches) {
+      const credentials = authMatches[1];
+      source.context = ActionContext({
+        [KEY_CONTEXT_AUTH]: decodeURIComponent(credentials),
+      });
+      sourceString = sourceString.slice(0, authMatches.index + 2) +
+        sourceString.slice(authMatches.index + credentials.length + 3);
+    }
+    source.value = sourceString;
+    return source;
+  }
+
   public static async buildContext(args: minimist.ParsedArgs, queryContext: boolean, helpMessage: string,
     queryString?: string): Promise<any> {
     // Print version information
@@ -119,12 +148,7 @@ export class ActorInitSparql extends ActorInitSparqlBrowser {
     if (args._.length > 0) {
       context.sources = context.sources || [];
       args._.forEach((sourceValue: string) => {
-        const source: {[id: string]: string} = {};
-        const splitValues: string[] = sourceValue.split('@', 2);
-        if (splitValues.length > 1) {
-          source.type = splitValues[0];
-        }
-        source.value = splitValues[splitValues.length - 1];
+        const source = this.getSourceObjectFromString(sourceValue);
         context.sources.push(source);
       });
     }
