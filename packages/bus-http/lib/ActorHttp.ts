@@ -47,3 +47,9 @@ export interface IActorHttpOutput extends IActorOutput, Response {
  * @type {string} Context entry for the include credentials glags.
  */
 export const KEY_CONTEXT_INCLUDE_CREDENTIALS = '@comunica/bus-http:include-credentials';
+
+/**
+ * @type {string} Context entry for the authentication for a source.
+ * @value {string} "username:password"-pair.
+ */
+export const KEY_CONTEXT_AUTH = '@comunica/bus-http:auth';

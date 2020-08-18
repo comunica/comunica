@@ -1,5 +1,5 @@
-import { ActorHttp, IActionHttp, IActorHttpOutput, KEY_CONTEXT_INCLUDE_CREDENTIALS } from '@comunica/bus-http';
-import { KEY_CONTEXT_AUTH } from '@comunica/bus-rdf-resolve-quad-pattern';
+import { ActorHttp, IActionHttp, IActorHttpOutput,
+  KEY_CONTEXT_INCLUDE_CREDENTIALS, KEY_CONTEXT_AUTH } from '@comunica/bus-http';
 import { IActorArgs } from '@comunica/core';
 import { IMediatorTypeTime } from '@comunica/mediatortype-time';
 import 'cross-fetch/polyfill';

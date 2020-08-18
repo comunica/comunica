@@ -1,8 +1,9 @@
 import { PassThrough, Readable } from 'stream';
 import { ProxyHandlerStatic } from '@comunica/actor-http-proxy';
+import { KEY_CONTEXT_AUTH } from '@comunica/bus-http';
 import { ActorInit } from '@comunica/bus-init';
 import { Bindings, KEY_CONTEXT_QUERY_TIMESTAMP } from '@comunica/bus-query-operation';
-import { KEY_CONTEXT_AUTH, KEY_CONTEXT_SOURCES } from '@comunica/bus-rdf-resolve-quad-pattern';
+import { KEY_CONTEXT_SOURCES } from '@comunica/bus-rdf-resolve-quad-pattern';
 import { Bus, KEY_CONTEXT_LOG, ActionContext } from '@comunica/core';
 import { literal, variable, quad, namedNode, defaultGraph } from '@rdfjs/data-model';
 import { translate } from 'sparqlalgebrajs';

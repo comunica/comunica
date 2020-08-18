@@ -4,10 +4,10 @@ import * as OS from 'os';
 import { Readable } from 'stream';
 import { KEY_CONTEXT_DATETIME } from '@comunica/actor-http-memento';
 import { KEY_CONTEXT_HTTPPROXYHANDLER, ProxyHandlerStatic } from '@comunica/actor-http-proxy';
+import { KEY_CONTEXT_AUTH } from '@comunica/bus-http';
 import { IActionInit, IActorOutputInit } from '@comunica/bus-init';
 import { IActorQueryOperationOutput, KEY_CONTEXT_BASEIRI } from '@comunica/bus-query-operation';
 
-import { KEY_CONTEXT_AUTH } from '@comunica/bus-rdf-resolve-quad-pattern';
 import { ActionContext } from '@comunica/core';
 import { LoggerPretty } from '@comunica/logger-pretty';
 import minimist = require('minimist');

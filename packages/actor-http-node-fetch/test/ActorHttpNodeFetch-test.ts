@@ -1,5 +1,4 @@
-import { ActorHttp, KEY_CONTEXT_INCLUDE_CREDENTIALS } from '@comunica/bus-http';
-import { KEY_CONTEXT_AUTH } from '@comunica/bus-rdf-resolve-quad-pattern';
+import { ActorHttp, KEY_CONTEXT_INCLUDE_CREDENTIALS, KEY_CONTEXT_AUTH } from '@comunica/bus-http';
 import { ActionContext, Bus } from '@comunica/core';
 import { ActorHttpNodeFetch } from '../lib/ActorHttpNodeFetch';
 
