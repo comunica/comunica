@@ -22,7 +22,7 @@ export class FederatedQuadSource implements ILazyQuadSource {
   IActorRdfResolveQuadPatternOutput>, IActionRdfResolveQuadPattern, IActorTest, IActorRdfResolveQuadPatternOutput>;
 
   protected readonly sources: DataSources;
-  protected contextDefault: ActionContext;
+  protected readonly contextDefault: ActionContext;
   protected readonly emptyPatterns: Map<IDataSource, RDF.BaseQuad[]>;
   protected readonly sourceIds: Map<IDataSource, string>;
   protected readonly skipEmptyPatterns: boolean;
