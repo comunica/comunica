@@ -7,6 +7,8 @@ import { KEY_CONTEXT_HTTPPROXYHANDLER, ProxyHandlerStatic } from '@comunica/acto
 import { IActionInit, IActorOutputInit } from '@comunica/bus-init';
 import { IActorQueryOperationOutput, KEY_CONTEXT_BASEIRI } from '@comunica/bus-query-operation';
 
+import { KEY_CONTEXT_AUTH } from '@comunica/bus-rdf-resolve-quad-pattern';
+import { ActionContext } from '@comunica/core';
 import { LoggerPretty } from '@comunica/logger-pretty';
 import minimist = require('minimist');
 import {
@@ -69,6 +71,28 @@ export class ActorInitSparql extends ActorInitSparqlBrowser {
     return existsSync(`${__dirname}/../test`);
   }
 
+  // Function to convert a URL like 'hypermedia@http://user:passwd@example.com to an IDataSource
+  public static getSourceObjectFromString(sourceString: string): {[id: string]: any} {
+    const source: {[id: string]: any} = {};
+    const mediaTypeRegex = /^[^:]*@/u;
+    const mediaTypeMatches = mediaTypeRegex.exec(sourceString);
+    if (mediaTypeMatches) {
+      source.type = mediaTypeMatches[0].slice(0, -1);
+      sourceString = sourceString.slice(sourceString.split('@')[0].length + 1);
+    }
+    const authRegex = /\/\/.*:.*@/u;
+    const authMatches = authRegex.exec(sourceString);
+    if (authMatches) {
+      const credentials = authMatches[0].slice(2, -1);
+      source.context = ActionContext({
+        [KEY_CONTEXT_AUTH]: decodeURIComponent(credentials),
+      });
+      sourceString = `${sourceString.split('@')[0].split('//')[0]}//${sourceString.split('@')[1]}`;
+    }
+    source.value = sourceString;
+    return source;
+  }
+
   public static async buildContext(args: minimist.ParsedArgs, queryContext: boolean, helpMessage: string,
     queryString?: string): Promise<any> {
     // Print version information
@@ -119,24 +143,7 @@ export class ActorInitSparql extends ActorInitSparqlBrowser {
     if (args._.length > 0) {
       context.sources = context.sources || [];
       args._.forEach((sourceValue: string) => {
-        const source: {[id: string]: string} = {};
-        const splitMediaType: string[] = sourceValue.split('@', 2);
-        let urlWithoutMediaType: string;
-        if (splitMediaType.length === 2 && !splitMediaType[0].includes(':')) {
-          source.type = splitMediaType[0];
-          urlWithoutMediaType = sourceValue.slice(splitMediaType[0].length + 1);
-        } else {
-          urlWithoutMediaType = sourceValue;
-        }
-        const splitCredentials = urlWithoutMediaType.split('@', 2);
-        if (splitCredentials.length === 2) {
-          const credentials = splitCredentials[0].split('//')[1].split(':');
-          source.username = decodeURIComponent(credentials[0]);
-          source.password = decodeURIComponent(credentials[1]);
-          source.value = `${splitCredentials[0].split('//')[0]}//${splitCredentials[1]}`;
-        } else {
-          source.value = urlWithoutMediaType;
-        }
+        const source = this.getSourceObjectFromString(sourceValue);
         context.sources.push(source);
       });
     }

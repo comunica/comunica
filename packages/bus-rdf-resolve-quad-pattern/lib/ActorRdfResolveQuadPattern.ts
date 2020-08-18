@@ -14,6 +14,11 @@ export const KEY_CONTEXT_SOURCES = '@comunica/bus-rdf-resolve-quad-pattern:sourc
  * @value {IDataSource} A source.
  */
 export const KEY_CONTEXT_SOURCE = '@comunica/bus-rdf-resolve-quad-pattern:source';
+/**
+ * @type {string} Context entry for the authentication for a source.
+ * @value {string} "username:password"-pair.
+ */
+export const KEY_CONTEXT_AUTH = '@comunica/bus-rdf-resolve-quad-pattern:auth';
 
 export function isDataSourceRawType(dataSource: IDataSource): dataSource is string | RDF.Source {
   return typeof dataSource === 'string' || 'match' in dataSource;
@@ -27,14 +32,11 @@ export function getDataSourceType(dataSource: IDataSource): string | undefined {
 export function getDataSourceValue(dataSource: IDataSource): string | RDF.Source {
   return isDataSourceRawType(dataSource) ? dataSource : dataSource.value;
 }
-export function getExtraSourceParams(dataSource: IDataSource): any {
-  if (typeof dataSource === 'string' || 'match' in dataSource) {
-    return {};
+export function getDataSourceContext(dataSource: IDataSource, context: ActionContext): ActionContext {
+  if (typeof dataSource === 'string' || 'match' in dataSource || !dataSource.context) {
+    return context;
   }
-  const dataSourceCopy: any = { ...dataSource };
-  delete dataSourceCopy.type;
-  delete dataSourceCopy.value;
-  return dataSourceCopy;
+  return context.merge(dataSource.context);
 }
 
 /**
@@ -117,8 +119,7 @@ IActorRdfResolveQuadPatternOutput> {
 export type IDataSource = string | RDF.Source | {
   type?: string;
   value: string | RDF.Source;
-  username?: string;
-  password?: string;
+  context?: ActionContext;
 };
 export type DataSources = AsyncReiterable<IDataSource>;
 
