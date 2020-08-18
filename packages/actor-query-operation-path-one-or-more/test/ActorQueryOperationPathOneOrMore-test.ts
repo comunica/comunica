@@ -165,6 +165,23 @@ describe('ActorQueryOperationPathOneOrMore', () => {
       ]);
     });
 
+    it('should support OneOrMore paths (:s :p+ ?o) with variable graph', async() => {
+      const op = { operation: factory.createPath(
+        namedNode('s'),
+        factory.createOneOrMorePath(factory.createLink(namedNode('p'))),
+        variable('o'),
+        variable('g'),
+      ),
+      context: ActionContext({ [ActorAbstractPath.isPathArbitraryLengthDistinctKey]: true }) };
+      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      expect(output.variables).toEqual([ '?o', '?g' ]);
+      expect(await arrayifyStream(output.bindingsStream)).toEqual([
+        Bindings({ '?o': namedNode('1'), '?g': namedNode('2') }),
+        Bindings({ '?o': namedNode('2'), '?g': namedNode('2') }),
+        Bindings({ '?o': namedNode('3'), '?g': namedNode('2') }),
+      ]);
+    });
+
     it('should support OneOrMore paths with 2 variables', async() => {
       const op = { operation: factory.createPath(
         variable('x'),
@@ -180,6 +197,25 @@ describe('ActorQueryOperationPathOneOrMore', () => {
         Bindings({ '?x': namedNode('1'), '?y': namedNode('2') }),
         Bindings({ '?x': namedNode('1'), '?y': namedNode('1') }),
         Bindings({ '?x': namedNode('1'), '?y': namedNode('3') }),
+      ]);
+    });
+
+    it('should support OneOrMore paths with 2 variables and graph a variable', async() => {
+      const op = { operation: factory.createPath(
+        variable('x'),
+        factory.createOneOrMorePath(factory.createSeq(factory.createLink(namedNode('p')),
+          factory.createLink(namedNode('p')))),
+        variable('y'),
+        variable('g'),
+      ),
+      context: ActionContext({ [ActorAbstractPath.isPathArbitraryLengthDistinctKey]: true }) };
+      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      expect(output.variables).toEqual([ '?x', '?y', '?g' ]);
+      const bindings: Bindings[] = await arrayifyStream(output.bindingsStream);
+      expect(bindings).toEqual([
+        Bindings({ '?x': namedNode('1'), '?y': namedNode('2'), '?g': namedNode('3') }),
+        Bindings({ '?x': namedNode('1'), '?y': namedNode('1'), '?g': namedNode('3') }),
+        Bindings({ '?x': namedNode('1'), '?y': namedNode('3'), '?g': namedNode('3') }),
       ]);
     });
   });

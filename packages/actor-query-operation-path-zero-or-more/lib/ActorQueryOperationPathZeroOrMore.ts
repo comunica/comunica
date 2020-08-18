@@ -6,7 +6,7 @@ import {
 } from '@comunica/bus-query-operation';
 import { ActionContext } from '@comunica/core';
 import { MultiTransformIterator, TransformIterator, EmptyIterator, BufferedIterator } from 'asynciterator';
-
+import { Variable } from 'rdf-js';
 import { termToString } from 'rdf-string';
 import { Algebra } from 'sparqlalgebrajs';
 
@@ -30,6 +30,7 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
 
     const sVar = path.subject.termType === 'Variable';
     const oVar = path.object.termType === 'Variable';
+    const gVar = path.graph.termType === 'Variable';
 
     if (sVar && oVar) {
       // Get all the results of subjects, then fill in first variable for those
@@ -51,6 +52,7 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
           multiTransform: (bindings: Bindings) => {
             const subject = bindings.get(subjectString);
             const object = bindings.get(objectString);
+            const graph = gVar ? bindings.get(termToString(path.graph)) : path.graph;
             return new TransformIterator<Bindings>(
               async() => {
                 if (entities.has(termToString(subject)) && entities.has(termToString(object))) {
@@ -65,7 +67,7 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
                     subject,
                     subject,
                     predicate.path,
-                    path.graph,
+                    graph,
                     context,
                     termHashes,
                     {},
@@ -81,7 +83,7 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
                     object,
                     object,
                     predicate.path,
-                    path.graph,
+                    graph,
                     context,
                     termHashes,
                     {},
@@ -91,6 +93,9 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
                 }
                 return it.transform<Bindings>({
                   transform(item, next, push) {
+                    if (gVar) {
+                      item = item.set(termToString(path.graph), graph);
+                    }
                     push(item);
                     next();
                   },
@@ -100,12 +105,23 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
           },
         },
       );
-      return { type: 'bindings', bindingsStream, variables: [ subjectString, objectString ]};
+      const variables = gVar ?
+        [ subjectString, objectString, termToString(path.graph) ] :
+        [ subjectString, objectString ];
+      return { type: 'bindings', bindingsStream, variables };
     }
     if (!sVar && !oVar) {
-      const bindingsStream = (await this.ALPeval(path.subject, predicate.path, path.graph, context))
+      const variable = this.generateVariable();
+      const bindingsStream = (await this.ALPeval(
+        path.subject,
+        variable,
+        path.subject,
+        predicate.path,
+        path.graph,
+        context,
+      ))
         .transform<Bindings>({
-        filter: item => item.equals(path.object),
+        filter: item => item.get(termToString(variable)).equals(path.object),
         transform(item, next, push) {
           push(Bindings({ }));
           next();
@@ -114,16 +130,24 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
       return { type: 'bindings', bindingsStream, variables: []};
     }
     // If (sVar || oVar)
-    const value = termToString(sVar ? path.subject : path.object);
+    const subject = sVar ? path.object : path.subject;
+    const value: Variable = <Variable> (sVar ? path.subject : path.object);
     const pred = sVar ? ActorAbstractPath.FACTORY.createInv(predicate.path) : predicate.path;
-    const bindingsStream = (await this.ALPeval(sVar ? path.object : path.subject, pred, path.graph, context))
+    const bindingsStream = (await this.ALPeval(
+      subject,
+      value,
+      sVar ? path.object : path.subject,
+      pred,
+      path.graph,
+      context,
+    ))
       .transform<Bindings>({
       transform(item, next, push) {
-        push(Bindings({ [value]: item }));
+        push(item);
         next();
       },
     });
-
-    return { type: 'bindings', bindingsStream, variables: [ value ]};
+    const variables = gVar ? [ termToString(value), termToString(path.graph) ] : [ termToString(value) ];
+    return { type: 'bindings', bindingsStream, variables };
   }
 }

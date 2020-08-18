@@ -7,7 +7,7 @@ import {
 } from '@comunica/bus-query-operation';
 import { ActionContext, IActorTest } from '@comunica/core';
 import { variable } from '@rdfjs/data-model';
-import { AsyncIterator, BufferedIterator } from 'asynciterator';
+import { AsyncIterator, BufferedIterator, MultiTransformIterator, TransformIterator } from 'asynciterator';
 import { Term, Variable } from 'rdf-js';
 import { termToString } from 'rdf-string';
 import { Algebra, Factory } from 'sparqlalgebrajs';
@@ -73,12 +73,49 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
 
   // Based on definition in spec https://www.w3.org/TR/sparql11-query/
   // returns all nodes visited by infinitely repeating the given predicate, starting from x
-  public async ALPeval(x: Term, predicate: Algebra.PropertyPathSymbol, graph: Term, context: ActionContext):
-  Promise<AsyncIterator<Term>> {
-    const it = new BufferedIterator<Term>();
-    await this.ALP(x, predicate, graph, context, {}, it, { count: 0 });
+  public async ALPeval(subject: Term, object: Variable, objectVal: Term, predicate: Algebra.PropertyPathSymbol,
+    graph: Term, context: ActionContext):
+    Promise<AsyncIterator<Bindings>> {
+    if (graph.termType === 'Variable') {
+      const findGraphs = ActorAbstractPath.FACTORY.createPath(subject, predicate, object, graph);
+      const results = ActorQueryOperation.getSafeBindings(
+        await this.mediatorQueryOperation.mediate({ context, operation: findGraphs }),
+      );
 
-    return it;
+      const objectString = termToString(object);
+
+      return new MultiTransformIterator(
+        results.bindingsStream,
+        {
+          multiTransform: (bindings: Bindings) => {
+            const graphValue = bindings.get(termToString(graph));
+            return new TransformIterator<Bindings>(
+              async() => {
+                const it = new BufferedIterator<Term>();
+                await this.ALP(objectVal, predicate, graphValue, context, {}, it, { count: 0 });
+                return it.transform<Bindings>({
+                  transform(item, next, push) {
+                    push(Bindings({ [objectString]: item, [termToString(graph)]: graphValue }));
+                    next();
+                  },
+                });
+              }, { maxBufferSize: 128 },
+            );
+          },
+          autoStart: false,
+        },
+      );
+    }
+
+    const it = new BufferedIterator<Term>();
+    await this.ALP(objectVal, predicate, graph, context, {}, it, { count: 0 });
+
+    return it.transform<Bindings>({
+      transform(item, next, push) {
+        push(Bindings({ [termToString(object)]: item }));
+        next();
+      },
+    });
   }
 
   public async ALP(x: Term, predicate: Algebra.PropertyPathSymbol, graph: Term, context: ActionContext,
@@ -115,7 +152,7 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
     objectVal: Term, predicate: Algebra.PropertyPathSymbol, graph: Term, context: ActionContext,
     termHashesGlobal: {[id: string]: Promise<Term[]>}, termHashesCurrentSubject: {[id: string]: boolean},
     it: BufferedIterator<Bindings>, counter: any): Promise<void> {
-    const termString = termToString(objectVal);
+    const termString = termToString(objectVal) + termToString(graph);
 
     // If this combination of subject and object already done, return nothing
     if (termHashesCurrentSubject[termString]) {
