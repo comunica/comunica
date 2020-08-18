@@ -100,6 +100,7 @@
 								<li class="tsd-kind-reference tsd-parent-kind-module"><a href="bus_rdf_resolve_quad_pattern.html#ilazyquadsource" class="tsd-kind-icon">ILazy<wbr>Quad<wbr>Source</a></li>
 								<li class="tsd-kind-reference tsd-parent-kind-module"><a href="bus_rdf_resolve_quad_pattern.html#key_context_source" class="tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>SOURCE</a></li>
 								<li class="tsd-kind-reference tsd-parent-kind-module"><a href="bus_rdf_resolve_quad_pattern.html#key_context_sources" class="tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>SOURCES</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module"><a href="bus_rdf_resolve_quad_pattern.html#getdatasourcecontext" class="tsd-kind-icon">get<wbr>Data<wbr>Source<wbr>Context</a></li>
 								<li class="tsd-kind-reference tsd-parent-kind-module"><a href="bus_rdf_resolve_quad_pattern.html#getdatasourcetype" class="tsd-kind-icon">get<wbr>Data<wbr>Source<wbr>Type</a></li>
 								<li class="tsd-kind-reference tsd-parent-kind-module"><a href="bus_rdf_resolve_quad_pattern.html#getdatasourcevalue" class="tsd-kind-icon">get<wbr>Data<wbr>Source<wbr>Value</a></li>
 								<li class="tsd-kind-reference tsd-parent-kind-module"><a href="bus_rdf_resolve_quad_pattern.html#isdatasourcerawtype" class="tsd-kind-icon">is<wbr>Data<wbr>Source<wbr>Raw<wbr>Type</a></li>
@@ -137,6 +138,7 @@
 						<section class="tsd-index-section ">
 							<h3>Functions</h3>
 							<ul class="tsd-index-list">
+								<li class="tsd-kind-function tsd-parent-kind-module"><a href="bus_rdf_resolve_quad_pattern.html#getdatasourcecontext-1" class="tsd-kind-icon">get<wbr>Data<wbr>Source<wbr>Context</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-module"><a href="bus_rdf_resolve_quad_pattern.html#getdatasourcetype-1" class="tsd-kind-icon">get<wbr>Data<wbr>Source<wbr>Type</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-module"><a href="bus_rdf_resolve_quad_pattern.html#getdatasourcevalue-1" class="tsd-kind-icon">get<wbr>Data<wbr>Source<wbr>Value</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-module"><a href="bus_rdf_resolve_quad_pattern.html#isdatasourcerawtype-1" class="tsd-kind-icon">is<wbr>Data<wbr>Source<wbr>Raw<wbr>Type</a></li>
@@ -193,6 +195,11 @@
 					Re-exports <a href="bus_rdf_resolve_quad_pattern.html#key_context_sources-1">KEY_CONTEXT_SOURCES</a>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module">
+					<a name="getdatasourcecontext" class="tsd-anchor"></a>
+					<h3>get<wbr>Data<wbr>Source<wbr>Context</h3>
+					Re-exports <a href="bus_rdf_resolve_quad_pattern.html#getdatasourcecontext-1">getDataSourceContext</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module">
 					<a name="getdatasourcetype" class="tsd-anchor"></a>
 					<h3>get<wbr>Data<wbr>Source<wbr>Type</h3>
 					Re-exports <a href="bus_rdf_resolve_quad_pattern.html#getdatasourcetype-1">getDataSourceType</a>
@@ -216,17 +223,17 @@
 					<div class="tsd-signature tsd-kind-icon">Data<wbr>Sources<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">AsyncReiterable</span><span class="tsd-signature-symbol">&lt;</span><a href="bus_rdf_resolve_quad_pattern.html#idatasource" class="tsd-signature-type">IDataSource</a><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/e453819/packages/bus-rdf-resolve-quad-pattern/lib/ActorRdfResolveQuadPattern.ts#L112">packages/bus-rdf-resolve-quad-pattern/lib/ActorRdfResolveQuadPattern.ts:112</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/a63d83b/packages/bus-rdf-resolve-quad-pattern/lib/ActorRdfResolveQuadPattern.ts#L119">packages/bus-rdf-resolve-quad-pattern/lib/ActorRdfResolveQuadPattern.ts:119</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module">
 					<a name="idatasource-1" class="tsd-anchor"></a>
 					<h3>IData<wbr>Source</h3>
-					<div class="tsd-signature tsd-kind-icon">IData<wbr>Source<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Source</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">{ </span>type<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>value<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Source</span><span class="tsd-signature-symbol"> }</span></div>
+					<div class="tsd-signature tsd-kind-icon">IData<wbr>Source<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Source</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">{ </span>context<span class="tsd-signature-symbol">?: </span><a href="core.html#actioncontext-1" class="tsd-signature-type">ActionContext</a><span class="tsd-signature-symbol">; </span>type<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>value<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Source</span><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/e453819/packages/bus-rdf-resolve-quad-pattern/lib/ActorRdfResolveQuadPattern.ts#L108">packages/bus-rdf-resolve-quad-pattern/lib/ActorRdfResolveQuadPattern.ts:108</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/a63d83b/packages/bus-rdf-resolve-quad-pattern/lib/ActorRdfResolveQuadPattern.ts#L114">packages/bus-rdf-resolve-quad-pattern/lib/ActorRdfResolveQuadPattern.ts:114</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -239,7 +246,7 @@
 					<div class="tsd-signature tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>SOURCE<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"@comunica/bus-rdf-resolve-quad-pattern:source"</span><span class="tsd-signature-symbol"> = &quot;@comunica/bus-rdf-resolve-quad-pattern:source&quot;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/e453819/packages/bus-rdf-resolve-quad-pattern/lib/ActorRdfResolveQuadPattern.ts#L16">packages/bus-rdf-resolve-quad-pattern/lib/ActorRdfResolveQuadPattern.ts:16</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/a63d83b/packages/bus-rdf-resolve-quad-pattern/lib/ActorRdfResolveQuadPattern.ts#L16">packages/bus-rdf-resolve-quad-pattern/lib/ActorRdfResolveQuadPattern.ts:16</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -256,7 +263,7 @@
 					<div class="tsd-signature tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>SOURCES<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"@comunica/bus-rdf-resolve-quad-pattern:sources"</span><span class="tsd-signature-symbol"> = &quot;@comunica/bus-rdf-resolve-quad-pattern:sources&quot;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/e453819/packages/bus-rdf-resolve-quad-pattern/lib/ActorRdfResolveQuadPattern.ts#L11">packages/bus-rdf-resolve-quad-pattern/lib/ActorRdfResolveQuadPattern.ts:11</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/a63d83b/packages/bus-rdf-resolve-quad-pattern/lib/ActorRdfResolveQuadPattern.ts#L11">packages/bus-rdf-resolve-quad-pattern/lib/ActorRdfResolveQuadPattern.ts:11</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -271,6 +278,32 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Functions</h2>
 				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module">
+					<a name="getdatasourcecontext-1" class="tsd-anchor"></a>
+					<h3>get<wbr>Data<wbr>Source<wbr>Context</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module">
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Data<wbr>Source<wbr>Context<span class="tsd-signature-symbol">(</span>dataSource<span class="tsd-signature-symbol">: </span><a href="bus_rdf_resolve_quad_pattern.html#idatasource" class="tsd-signature-type">IDataSource</a>, context<span class="tsd-signature-symbol">: </span><a href="core.html#actioncontext-1" class="tsd-signature-type">ActionContext</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="core.html#actioncontext-1" class="tsd-signature-type">ActionContext</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/a63d83b/packages/bus-rdf-resolve-quad-pattern/lib/ActorRdfResolveQuadPattern.ts#L30">packages/bus-rdf-resolve-quad-pattern/lib/ActorRdfResolveQuadPattern.ts:30</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>dataSource: <a href="bus_rdf_resolve_quad_pattern.html#idatasource" class="tsd-signature-type">IDataSource</a></h5>
+								</li>
+								<li>
+									<h5>context: <a href="core.html#actioncontext-1" class="tsd-signature-type">ActionContext</a></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="core.html#actioncontext-1" class="tsd-signature-type">ActionContext</a></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module">
 					<a name="getdatasourcetype-1" class="tsd-anchor"></a>
 					<h3>get<wbr>Data<wbr>Source<wbr>Type</h3>
 					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module">
@@ -280,7 +313,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/e453819/packages/bus-rdf-resolve-quad-pattern/lib/ActorRdfResolveQuadPattern.ts#L21">packages/bus-rdf-resolve-quad-pattern/lib/ActorRdfResolveQuadPattern.ts:21</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/a63d83b/packages/bus-rdf-resolve-quad-pattern/lib/ActorRdfResolveQuadPattern.ts#L21">packages/bus-rdf-resolve-quad-pattern/lib/ActorRdfResolveQuadPattern.ts:21</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -303,7 +336,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/e453819/packages/bus-rdf-resolve-quad-pattern/lib/ActorRdfResolveQuadPattern.ts#L27">packages/bus-rdf-resolve-quad-pattern/lib/ActorRdfResolveQuadPattern.ts:27</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/a63d83b/packages/bus-rdf-resolve-quad-pattern/lib/ActorRdfResolveQuadPattern.ts#L27">packages/bus-rdf-resolve-quad-pattern/lib/ActorRdfResolveQuadPattern.ts:27</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -326,7 +359,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/e453819/packages/bus-rdf-resolve-quad-pattern/lib/ActorRdfResolveQuadPattern.ts#L18">packages/bus-rdf-resolve-quad-pattern/lib/ActorRdfResolveQuadPattern.ts:18</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/a63d83b/packages/bus-rdf-resolve-quad-pattern/lib/ActorRdfResolveQuadPattern.ts#L18">packages/bus-rdf-resolve-quad-pattern/lib/ActorRdfResolveQuadPattern.ts:18</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -387,6 +420,9 @@
 								<a href="bus_rdf_resolve_quad_pattern.html#key_context_sources" class="tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>SOURCES</a>
 							</li>
 							<li class=" tsd-kind-reference tsd-parent-kind-module">
+								<a href="bus_rdf_resolve_quad_pattern.html#getdatasourcecontext" class="tsd-kind-icon">get<wbr>Data<wbr>Source<wbr>Context</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module">
 								<a href="bus_rdf_resolve_quad_pattern.html#getdatasourcetype" class="tsd-kind-icon">get<wbr>Data<wbr>Source<wbr>Type</a>
 							</li>
 							<li class=" tsd-kind-reference tsd-parent-kind-module">
@@ -421,6 +457,9 @@
 							</li>
 							<li class=" tsd-kind-variable tsd-parent-kind-module">
 								<a href="bus_rdf_resolve_quad_pattern.html#key_context_sources-1" class="tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>SOURCES</a>
+							</li>
+							<li class=" tsd-kind-function tsd-parent-kind-module">
+								<a href="bus_rdf_resolve_quad_pattern.html#getdatasourcecontext-1" class="tsd-kind-icon">get<wbr>Data<wbr>Source<wbr>Context</a>
 							</li>
 							<li class=" tsd-kind-function tsd-parent-kind-module">
 								<a href="bus_rdf_resolve_quad_pattern.html#getdatasourcetype-1" class="tsd-kind-icon">get<wbr>Data<wbr>Source<wbr>Type</a>
