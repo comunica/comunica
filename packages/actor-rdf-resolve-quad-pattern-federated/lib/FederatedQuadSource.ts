@@ -232,7 +232,7 @@ export class FederatedQuadSource implements ILazyQuadSource {
 
         // Prepare the context for this specific source
         let context: ActionContext = getDataSourceContext(source, this.contextDefault);
-        context = this.contextDefault.set(KEY_CONTEXT_SOURCE,
+        context = context.set(KEY_CONTEXT_SOURCE,
           { type: getDataSourceType(source), value: getDataSourceValue(source) });
 
         let output: IActorRdfResolveQuadPatternOutput;
