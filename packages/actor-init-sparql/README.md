@@ -220,6 +220,7 @@ Learn more about Comunica's functionalities in the following guides:
 * _[Logging and debugging](https://comunica.dev/docs/query/advanced/logging/)_
 * _[Caching](https://comunica.dev/docs/query/advanced/caching/)_
 * _[Using a proxy](https://comunica.dev/docs/query/advanced/proxying/)_
+* _[HTTP basic authentication](https://comunica.dev/docs/query/advanced/basic_auth/)_
 * _[GraphQL-LD](https://comunica.dev/docs/query/advanced/graphql_ld/)_
 * _[Docker](https://comunica.dev/docs/query/getting_started/query_docker/)_
 * _[*Full documentation*](https://comunica.dev/docs/)_
