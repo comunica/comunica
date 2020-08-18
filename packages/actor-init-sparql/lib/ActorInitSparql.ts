@@ -71,23 +71,28 @@ export class ActorInitSparql extends ActorInitSparqlBrowser {
     return existsSync(`${__dirname}/../test`);
   }
 
-  // Function to convert a URL like 'hypermedia@http://user:passwd@example.com to an IDataSource
+  /**
+     * Converts an URL like 'hypermedia@http://user:passwd@example.com to an IDataSource
+     * @param {string} sourceString An url with possibly a type and authorization.
+     * @return {[id: string]: any} An IDataSource which represents the sourceString.
+     */
   public static getSourceObjectFromString(sourceString: string): {[id: string]: any} {
     const source: {[id: string]: any} = {};
-    const mediaTypeRegex = /^[^:]*@/u;
+    const mediaTypeRegex = /^([^:]*)@/u;
     const mediaTypeMatches = mediaTypeRegex.exec(sourceString);
     if (mediaTypeMatches) {
-      source.type = mediaTypeMatches[0].slice(0, -1);
-      sourceString = sourceString.slice(sourceString.split('@')[0].length + 1);
+      source.type = mediaTypeMatches[1];
+      sourceString = sourceString.slice((<number> source.type.length) + 1);
     }
-    const authRegex = /\/\/.*:.*@/u;
+    const authRegex = /\/\/(.*:.*)@/u;
     const authMatches = authRegex.exec(sourceString);
     if (authMatches) {
-      const credentials = authMatches[0].slice(2, -1);
+      const credentials = authMatches[1];
       source.context = ActionContext({
         [KEY_CONTEXT_AUTH]: decodeURIComponent(credentials),
       });
-      sourceString = `${sourceString.split('@')[0].split('//')[0]}//${sourceString.split('@')[1]}`;
+      sourceString = sourceString.slice(0, authMatches.index + 2) +
+        sourceString.slice(authMatches.index + credentials.length + 3);
     }
     source.value = sourceString;
     return source;

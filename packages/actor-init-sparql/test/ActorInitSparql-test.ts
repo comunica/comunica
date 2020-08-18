@@ -3,7 +3,7 @@ import { ProxyHandlerStatic } from '@comunica/actor-http-proxy';
 import { ActorInit } from '@comunica/bus-init';
 import { Bindings, KEY_CONTEXT_QUERY_TIMESTAMP } from '@comunica/bus-query-operation';
 import { KEY_CONTEXT_AUTH, KEY_CONTEXT_SOURCES } from '@comunica/bus-rdf-resolve-quad-pattern';
-import { Bus, KEY_CONTEXT_LOG } from '@comunica/core';
+import { Bus, KEY_CONTEXT_LOG, ActionContext } from '@comunica/core';
 import { literal, variable, quad, namedNode, defaultGraph } from '@rdfjs/data-model';
 import { translate } from 'sparqlalgebrajs';
 import Factory from 'sparqlalgebrajs/lib/factory';
@@ -890,6 +890,48 @@ graph <exists02.ttl> {
       // Make it reject instead of reading input
       mediatorQueryOperation.mediate = (action: any) => Promise.reject(new Error('a'));
       return expect(actor.query('INVALID QUERY', ctx)).rejects.toBeTruthy();
+    });
+  });
+
+  describe('getSourceObjectFromString', () => {
+    it('should correctly parse normal URL', () => {
+      const hypermedia = 'http://example.org/';
+      expect(ActorInitSparql.getSourceObjectFromString(hypermedia))
+        .toEqual({ value: 'http://example.org/' });
+    });
+
+    it('should work with type annotation', () => {
+      const hypermedia = 'hypermedia@http://example.org/';
+      expect(ActorInitSparql.getSourceObjectFromString(hypermedia))
+        .toEqual({ value: 'http://example.org/', type: 'hypermedia' });
+    });
+
+    it('should work with authorization in url', () => {
+      const hypermedia = 'http://username:passwd@example.org/';
+      expect(ActorInitSparql.getSourceObjectFromString(hypermedia))
+        .toEqual({ value: 'http://example.org/', context: ActionContext({ [KEY_CONTEXT_AUTH]: 'username:passwd' }) });
+    });
+
+    it('should work with type annotation and authorization in url', () => {
+      const hypermedia = 'hypermedia@http://username:passwd@example.org/';
+      expect(ActorInitSparql.getSourceObjectFromString(hypermedia))
+        .toEqual({ value: 'http://example.org/',
+          type: 'hypermedia',
+          context: ActionContext({ [KEY_CONTEXT_AUTH]: 'username:passwd' }) });
+    });
+
+    it('should work with empty username in authorization in url', () => {
+      const hypermedia = 'http://:passwd@example.org/';
+      expect(ActorInitSparql.getSourceObjectFromString(hypermedia))
+        .toEqual({ value: 'http://example.org/',
+          context: ActionContext({ [KEY_CONTEXT_AUTH]: ':passwd' }) });
+    });
+
+    it('should work with empty password in authorization in url', () => {
+      const hypermedia = 'http://username:@example.org/';
+      expect(ActorInitSparql.getSourceObjectFromString(hypermedia))
+        .toEqual({ value: 'http://example.org/',
+          context: ActionContext({ [KEY_CONTEXT_AUTH]: 'username:' }) });
     });
   });
 });

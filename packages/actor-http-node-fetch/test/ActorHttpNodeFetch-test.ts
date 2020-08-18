@@ -1,5 +1,5 @@
 import { ActorHttp, KEY_CONTEXT_INCLUDE_CREDENTIALS } from '@comunica/bus-http';
-import { KEY_CONTEXT_SOURCE, KEY_CONTEXT_AUTH } from '@comunica/bus-rdf-resolve-quad-pattern';
+import { KEY_CONTEXT_AUTH } from '@comunica/bus-rdf-resolve-quad-pattern';
 import { ActionContext, Bus } from '@comunica/core';
 import { ActorHttpNodeFetch } from '../lib/ActorHttpNodeFetch';
 
@@ -89,7 +89,6 @@ describe('ActorHttpNodeFetch', () => {
       await actor.run({
         input: <Request> { url: 'https://www.google.com/' },
         context: ActionContext({
-          [KEY_CONTEXT_SOURCE]: { value: 'https://www.google.com/' },
           [KEY_CONTEXT_AUTH]: 'user:password',
         }),
       });
@@ -105,7 +104,6 @@ describe('ActorHttpNodeFetch', () => {
         input: <Request> { url: 'https://www.google.com/' },
         init: {},
         context: ActionContext({
-          [KEY_CONTEXT_SOURCE]: { value: 'https://www.google.com/' },
           [KEY_CONTEXT_AUTH]: 'user:password',
         }),
       });
@@ -122,7 +120,6 @@ describe('ActorHttpNodeFetch', () => {
         input: <Request> { url: 'https://www.google.com/' },
         init: { headers: new Headers({ 'Content-Type': 'image/jpeg' }) },
         context: ActionContext({
-          [KEY_CONTEXT_SOURCE]: { value: 'https://www.google.com/' },
           [KEY_CONTEXT_AUTH]: 'user:password',
         }),
       });

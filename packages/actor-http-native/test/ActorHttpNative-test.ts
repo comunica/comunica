@@ -2,7 +2,7 @@ import { Readable } from 'stream';
 import * as url from 'url';
 import * as zlib from 'zlib';
 import { ActorHttp, KEY_CONTEXT_INCLUDE_CREDENTIALS } from '@comunica/bus-http';
-import { KEY_CONTEXT_SOURCE, KEY_CONTEXT_AUTH } from '@comunica/bus-rdf-resolve-quad-pattern';
+import { KEY_CONTEXT_AUTH } from '@comunica/bus-rdf-resolve-quad-pattern';
 import { ActionContext, Bus } from '@comunica/core';
 import { ActorHttpNative } from '../lib/ActorHttpNative';
 import Requester from '../lib/Requester';
@@ -195,7 +195,6 @@ describe('ActorHttpNative', () => {
       const results: any = await actor.run({
         input: new Request('http://example.com'),
         context: ActionContext({
-          [KEY_CONTEXT_SOURCE]: { value: 'http://example.com' },
           [KEY_CONTEXT_AUTH]: 'user:pass',
         }),
       });

@@ -115,7 +115,8 @@
             { "contextShortcutKey": "queryTimestamp",         "contextShortcutValue": "@comunica/actor-init-sparql:queryTimestamp"     },
             { "contextShortcutKey": "httpProxyHandler",       "contextShortcutValue": "@comunica/actor-http-proxy:httpProxyHandler"    },
             { "contextShortcutKey": "lenient",                "contextShortcutValue": "@comunica/actor-init-sparql:lenient"            },
-            { "contextShortcutKey": "httpIncludeCredentials", "contextShortcutValue": "@comunica/bus-http:include-credentials"         }
+            { "contextShortcutKey": "httpIncludeCredentials", "contextShortcutValue": "@comunica/bus-http:include-credentials"         },
+            { "contextShortcutKey": "auth",                   "contextShortcutValue": "@comunica/bus-http:auth"                      }
           ]
         }
       ],

@@ -231,8 +231,8 @@ export class FederatedQuadSource implements ILazyQuadSource {
         let pattern: Algebra.Pattern | undefined;
 
         // Prepare the context for this specific source
-        this.contextDefault = getDataSourceContext(source, this.contextDefault);
-        const context: ActionContext = this.contextDefault.set(KEY_CONTEXT_SOURCE,
+        let context: ActionContext = getDataSourceContext(source, this.contextDefault);
+        context = this.contextDefault.set(KEY_CONTEXT_SOURCE,
           { type: getDataSourceType(source), value: getDataSourceValue(source) });
 
         let output: IActorRdfResolveQuadPatternOutput;

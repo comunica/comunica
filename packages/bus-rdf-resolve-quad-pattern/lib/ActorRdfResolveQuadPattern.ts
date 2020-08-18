@@ -18,7 +18,7 @@ export const KEY_CONTEXT_SOURCE = '@comunica/bus-rdf-resolve-quad-pattern:source
  * @type {string} Context entry for the authentication for a source.
  * @value {string} "username:password"-pair.
  */
-export const KEY_CONTEXT_AUTH = '@comunica/bus-rdf-resolve-quad-pattern:auth';
+export const KEY_CONTEXT_AUTH = '@comunica/bus-http:auth';
 
 export function isDataSourceRawType(dataSource: IDataSource): dataSource is string | RDF.Source {
   return typeof dataSource === 'string' || 'match' in dataSource;
