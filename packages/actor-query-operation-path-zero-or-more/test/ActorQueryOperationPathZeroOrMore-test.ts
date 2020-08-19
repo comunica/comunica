@@ -53,7 +53,7 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
             // Special case for coverage (making sure not every subject gets same objects)
             if (!(arg.operation && termToString(arg.operation.subject) === '5' && i === 2)) {
               bindings.push(Bindings(bind));
-              if (vars.length > 1 && !vars.includes('?g')) {
+              if (vars.length > 1 && (!vars.includes('?g') || vars.length === 2)) {
                 bindings.push(Bindings(bind));
               }
             }

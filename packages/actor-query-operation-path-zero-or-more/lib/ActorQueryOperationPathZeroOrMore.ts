@@ -63,7 +63,7 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
                 const it = new BufferedIterator<Bindings>();
                 if (!entities.has(subjectGraphHash)) {
                   entities.add(subjectGraphHash);
-                  await this.ALPTwoVariables(
+                  await this.getSubjectAndObjectBindingsPredicateStar(
                     subjectString,
                     objectString,
                     subject,
@@ -79,7 +79,7 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
                 }
                 if (!entities.has(objectGraphHash)) {
                   entities.add(objectGraphHash);
-                  await this.ALPTwoVariables(
+                  await this.getSubjectAndObjectBindingsPredicateStar(
                     subjectString,
                     objectString,
                     object,
@@ -114,10 +114,9 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
     }
     if (!sVar && !oVar) {
       const variable = this.generateVariable();
-      const bindingsStream = (await this.ALPeval(
+      const bindingsStream = (await this.getObjectsPredicateStarEval(
         path.subject,
         variable,
-        path.subject,
         predicate.path,
         path.graph,
         context,
@@ -135,10 +134,9 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
     const subject = sVar ? path.object : path.subject;
     const value: Variable = <Variable> (sVar ? path.subject : path.object);
     const pred = sVar ? ActorAbstractPath.FACTORY.createInv(predicate.path) : predicate.path;
-    const bindingsStream = (await this.ALPeval(
+    const bindingsStream = (await this.getObjectsPredicateStarEval(
       subject,
       value,
-      sVar ? path.object : path.subject,
       pred,
       path.graph,
       context,

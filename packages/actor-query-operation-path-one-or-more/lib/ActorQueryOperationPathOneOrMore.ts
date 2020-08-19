@@ -56,7 +56,13 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
             return new TransformIterator<Bindings>(
               async() => {
                 const it = new BufferedIterator<Term>();
-                await this.ALP(val, predicate.path, path.graph, context, termHashes, it, { count: 0 });
+                await this.getObjectsPredicateStar(val,
+                  predicate.path,
+                  path.graph,
+                  context,
+                  termHashes,
+                  it,
+                  { count: 0 });
                 return it.transform<Bindings>({
                   transform(item, next, push) {
                     let binding = Bindings({ [objectString]: item });
@@ -99,7 +105,7 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
             return new TransformIterator<Bindings>(
               async() => {
                 const it = new BufferedIterator<Bindings>();
-                await this.ALPTwoVariables(
+                await this.getSubjectAndObjectBindingsPredicateStar(
                   subjectString,
                   objectString,
                   subject,
