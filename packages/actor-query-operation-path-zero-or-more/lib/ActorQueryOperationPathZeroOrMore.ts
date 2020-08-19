@@ -53,14 +53,16 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
             const subject = bindings.get(subjectString);
             const object = bindings.get(objectString);
             const graph = gVar ? bindings.get(termToString(path.graph)) : path.graph;
+            const subjectGraphHash = termToString(subject) + termToString(graph);
+            const objectGraphHash = termToString(object) + termToString(graph);
             return new TransformIterator<Bindings>(
               async() => {
-                if (entities.has(termToString(subject)) && entities.has(termToString(object))) {
+                if (entities.has(subjectGraphHash) && entities.has(objectGraphHash)) {
                   return new EmptyIterator();
                 }
                 const it = new BufferedIterator<Bindings>();
-                if (!entities.has(termToString(subject))) {
-                  entities.add(termToString(subject));
+                if (!entities.has(subjectGraphHash)) {
+                  entities.add(subjectGraphHash);
                   await this.ALPTwoVariables(
                     subjectString,
                     objectString,
@@ -75,8 +77,8 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
                     { count: 0 },
                   );
                 }
-                if (!entities.has(termToString(object))) {
-                  entities.add(termToString(object));
+                if (!entities.has(objectGraphHash)) {
+                  entities.add(objectGraphHash);
                   await this.ALPTwoVariables(
                     subjectString,
                     objectString,

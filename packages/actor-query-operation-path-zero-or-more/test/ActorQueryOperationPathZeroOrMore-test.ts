@@ -252,8 +252,11 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
       const bindings: Bindings[] = await arrayifyStream(output.bindingsStream);
       expect(bindings).toEqual([
         Bindings({ '?x': namedNode('1'), '?y': namedNode('1'), '?g': namedNode('4') }),
+        Bindings({ '?x': namedNode('3'), '?y': namedNode('3'), '?g': namedNode('4') }),
         Bindings({ '?x': namedNode('1'), '?y': namedNode('2'), '?g': namedNode('4') }),
         Bindings({ '?x': namedNode('1'), '?y': namedNode('3'), '?g': namedNode('4') }),
+        Bindings({ '?x': namedNode('3'), '?y': namedNode('1'), '?g': namedNode('4') }),
+        Bindings({ '?x': namedNode('3'), '?y': namedNode('2'), '?g': namedNode('4') }),
         Bindings({ '?x': namedNode('2'), '?y': namedNode('2'), '?g': namedNode('5') }),
         Bindings({ '?x': namedNode('4'), '?y': namedNode('4'), '?g': namedNode('5') }),
         Bindings({ '?x': namedNode('2'), '?y': namedNode('1'), '?g': namedNode('5') }),
