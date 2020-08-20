@@ -165,6 +165,21 @@ describe('ActorQueryOperationPathOneOrMore', () => {
       ]);
     });
 
+    it('should support OneOrMore paths (:s :p+ :o) with variable graph', async() => {
+      const op = { operation: factory.createPath(
+        namedNode('s'),
+        factory.createZeroOrMorePath(factory.createLink(namedNode('p'))),
+        namedNode('1'),
+        variable('g'),
+      ),
+      context: ActionContext({ [ActorAbstractPath.isPathArbitraryLengthDistinctKey]: true }) };
+      const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      expect(output.variables).toEqual([ '?g' ]);
+      expect(await arrayifyStream(output.bindingsStream)).toEqual([
+        Bindings({ '?g': namedNode('2') }),
+      ]);
+    });
+
     it('should support OneOrMore paths (:s :p+ ?o) with variable graph', async() => {
       const op = { operation: factory.createPath(
         namedNode('s'),

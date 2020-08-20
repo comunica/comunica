@@ -161,11 +161,14 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
     const bindingsStream = results.bindingsStream.transform<Bindings>({
       filter: item => item.get(vString).equals(path.object),
       transform(item, next, push) {
-        push(Bindings({ }));
+        const binding = gVar ?
+          Bindings({ [termToString(path.graph)]: item.get(termToString(path.graph)) }) :
+          Bindings({});
+        push(binding);
         next();
       },
     });
-    return { type: 'bindings', bindingsStream, variables: []};
+    return { type: 'bindings', bindingsStream, variables: gVar ? [ termToString(path.graph) ] : []};
   }
 }
 
