@@ -33,7 +33,7 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
     const gVar = path.graph.termType === 'Variable';
 
     if (sVar && oVar) {
-      // Get all the results of subjects, then fill in first variable for those
+      // Query ?s ?p ?o, to get all possible namedNodes in de the db
       const predVar = this.generateVariable(path);
       const single = ActorAbstractPath.FACTORY.createPattern(path.subject, predVar, path.object, path.graph);
       const results = ActorQueryOperation.getSafeBindings(
@@ -42,6 +42,7 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
       const subjectString = termToString(path.subject);
       const objectString = termToString(path.object);
 
+      // Set with all namedNodes we have already started a predicate* search from
       const entities: Set<string> = new Set();
 
       const termHashes = {};
@@ -49,19 +50,24 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
       const bindingsStream: MultiTransformIterator<Bindings, Bindings> = new MultiTransformIterator(
         results.bindingsStream,
         {
-          autoStart: false,
           multiTransform: (bindings: Bindings) => {
+            // Get the subject and object of the triples (?s ?p ?o) and extract graph if it was a variable
             const subject = bindings.get(subjectString);
             const object = bindings.get(objectString);
             const graph = gVar ? bindings.get(termToString(path.graph)) : path.graph;
+            // Make a hash of namedNode + graph to remember from where we already started a search
             const subjectGraphHash = termToString(subject) + termToString(graph);
             const objectGraphHash = termToString(object) + termToString(graph);
             return new TransformIterator<Bindings>(
               async() => {
+                // If no new namedNodes in this triple, return nothing
                 if (entities.has(subjectGraphHash) && entities.has(objectGraphHash)) {
                   return new EmptyIterator();
                 }
+                // Set up an iterator to which getSubjectAndObjectBindingsPredicateStar will push solutions
                 const it = new BufferedIterator<Bindings>();
+                const counter = { count: 0 };
+                // If not started from this namedNode (subject in triple) in this graph, start a search
                 if (!entities.has(subjectGraphHash)) {
                   entities.add(subjectGraphHash);
                   await this.getSubjectAndObjectBindingsPredicateStar(
@@ -75,9 +81,10 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
                     termHashes,
                     {},
                     it,
-                    { count: 0 },
+                    counter,
                   );
                 }
+                // If not started from this namedNode (object in triple) in this graph, start a search
                 if (!entities.has(objectGraphHash)) {
                   entities.add(objectGraphHash);
                   await this.getSubjectAndObjectBindingsPredicateStar(
@@ -91,12 +98,12 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
                     termHashes,
                     {},
                     it,
-                    { count: 0 },
+                    counter,
                   );
                 }
                 return it.transform<Bindings>({
-                  autoStart: false,
                   transform(item, next, push) {
+                    // If the graph was a variable, fill in it's binding (we got it from the ?s ?p ?o binding)
                     if (gVar) {
                       item = item.set(termToString(path.graph), graph);
                     }
@@ -126,6 +133,7 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
         .transform<Bindings>({
         filter: item => item.get(termToString(variable)).equals(path.object),
         transform(item, next, push) {
+          // Return graph binding if graph was a variable, otherwise empty binding
           const binding = gVar ?
             Bindings({ [termToString(path.graph)]: item.get(termToString(path.graph)) }) :
             Bindings({});

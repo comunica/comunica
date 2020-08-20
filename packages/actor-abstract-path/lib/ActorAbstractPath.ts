@@ -74,7 +74,12 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
 
   private async predicateStarGraphVariable(subject: Term, object: Variable, predicate: Algebra.PropertyPathSymbol,
     graph: Term, context: ActionContext): Promise<AsyncIterator<Bindings>> {
-    const findGraphs = ActorAbstractPath.FACTORY.createPath(subject, predicate, object, graph);
+    // Construct path to obtain all graphs where subject exists
+    const predVar = this.generateVariable(ActorAbstractPath.FACTORY.createPath(subject, predicate, object, graph));
+    const findGraphs = ActorAbstractPath.FACTORY.createUnion(
+      ActorAbstractPath.FACTORY.createPattern(subject, predVar, object, graph),
+      ActorAbstractPath.FACTORY.createPattern(object, predVar, subject, graph),
+    );
     const results = ActorQueryOperation.getSafeBindings(
       await this.mediatorQueryOperation.mediate({ context, operation: findGraphs }),
     );
@@ -86,6 +91,7 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
       results.bindingsStream,
       {
         multiTransform: (bindings: Bindings) => {
+          // Extract the graph and start a predicate* search starting from subject in each graph
           const graphValue = bindings.get(termToString(graph));
           if (passedGraphs.has(termToString(graphValue))) {
             return new EmptyIterator();
@@ -239,6 +245,7 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
     const promise = new Promise<Term[]>(async(resolve, reject) => {
       const objectsArray: Term[] = [];
 
+      // Construct path that leads us one step through predicate
       const thisVariable = this.generateVariable();
       const vString = termToString(thisVariable);
       const path = ActorAbstractPath.FACTORY.createPath(objectVal, predicate, thisVariable, graph);
@@ -246,6 +253,7 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
         await this.mediatorQueryOperation.mediate({ operation: path, context }),
       );
 
+      // Recursive call on all neighbours
       results.bindingsStream.on('data', async bindings => {
         const result = bindings.get(vString);
         objectsArray.push(result);
