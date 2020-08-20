@@ -31,6 +31,7 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
 
     const sVar = path.subject.termType === 'Variable';
     const oVar = path.object.termType === 'Variable';
+    const gVar = path.graph.termType === 'Variable';
 
     if (!sVar && oVar) {
       // Get all the results of applying this once, then do zeroOrMore for those
@@ -51,13 +52,24 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
         {
           multiTransform: (bindings: Bindings) => {
             const val = bindings.get(objectString);
+            const graph = gVar ? bindings.get(termToString(path.graph)) : path.graph;
             return new TransformIterator<Bindings>(
               async() => {
                 const it = new BufferedIterator<Term>();
-                await this.ALP(val, predicate.path, context, termHashes, it, { count: 0 });
+                await this.getObjectsPredicateStar(val,
+                  predicate.path,
+                  path.graph,
+                  context,
+                  termHashes,
+                  it,
+                  { count: 0 });
                 return it.transform<Bindings>({
                   transform(item, next, push) {
-                    push(Bindings({ [objectString]: item }));
+                    let binding = Bindings({ [objectString]: item });
+                    if (gVar) {
+                      binding = binding.set(termToString(path.graph), graph);
+                    }
+                    push(binding);
                     next();
                   },
                 });
@@ -67,7 +79,8 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
           autoStart: false,
         },
       );
-      return { type: 'bindings', bindingsStream, variables: [ objectString ]};
+      const variables = gVar ? [ objectString, termToString(path.graph) ] : [ objectString ];
+      return { type: 'bindings', bindingsStream, variables };
     }
     if (sVar && oVar) {
       // Get all the results of subjects with same predicate, but once, then fill in first variable for those
@@ -88,15 +101,17 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
           multiTransform: (bindings: Bindings) => {
             const subject = bindings.get(subjectString);
             const object = bindings.get(objectString);
+            const graph = gVar ? bindings.get(termToString(path.graph)) : path.graph;
             return new TransformIterator<Bindings>(
               async() => {
                 const it = new BufferedIterator<Bindings>();
-                await this.ALPTwoVariables(
+                await this.getSubjectAndObjectBindingsPredicateStar(
                   subjectString,
                   objectString,
                   subject,
                   object,
                   predicate.path,
+                  graph,
                   context,
                   termHashes,
                   {},
@@ -105,6 +120,9 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
                 );
                 return it.transform<Bindings>({
                   transform(item, next, push) {
+                    if (gVar) {
+                      item = item.set(termToString(path.graph), graph);
+                    }
                     push(item);
                     next();
                   },
@@ -115,7 +133,10 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
           autoStart: false,
         },
       );
-      return { type: 'bindings', bindingsStream, variables: [ subjectString, objectString ]};
+      const variables = gVar ?
+        [ subjectString, objectString, termToString(path.graph) ] :
+        [ subjectString, objectString ];
+      return { type: 'bindings', bindingsStream, variables };
     }
     if (sVar && !oVar) {
       return <Promise<IActorQueryOperationOutputBindings>> this.mediatorQueryOperation.mediate({
@@ -140,11 +161,14 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
     const bindingsStream = results.bindingsStream.transform<Bindings>({
       filter: item => item.get(vString).equals(path.object),
       transform(item, next, push) {
-        push(Bindings({ }));
+        const binding = gVar ?
+          Bindings({ [termToString(path.graph)]: item.get(termToString(path.graph)) }) :
+          Bindings({});
+        push(binding);
         next();
       },
     });
-    return { type: 'bindings', bindingsStream, variables: []};
+    return { type: 'bindings', bindingsStream, variables: gVar ? [ termToString(path.graph) ] : []};
   }
 }
 
