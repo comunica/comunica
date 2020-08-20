@@ -89,16 +89,20 @@ export abstract class ActorRdfDereferenceHttpParseBase extends ActorRdfDereferen
     // eslint-disable-next-line no-return-assign
     httpResponse.headers.forEach((value, key) => outputHeaders[key] = value);
 
-    // Wrap WhatWG readable stream into a Node.js readable stream
-    // If the body already is a Node.js stream (in the case of node-fetch), don't do explicit conversion.
-    const responseStream: NodeJS.ReadableStream = ActorHttp.toNodeReadable(httpResponse.body);
-
     // Only parse if retrieval was successful
     if (httpResponse.status !== 200) {
       const error = new Error(`Could not retrieve ${action.url} (${httpResponse.status}: ${
         httpResponse.statusText || 'unknown error'})`);
+      // Close the body if we have one, to avoid process to hang
+      if (httpResponse.body) {
+        await httpResponse.body.cancel();
+      }
       return this.handleDereferenceError(action, error);
     }
+
+    // Wrap WhatWG readable stream into a Node.js readable stream
+    // If the body already is a Node.js stream (in the case of node-fetch), don't do explicit conversion.
+    const responseStream: NodeJS.ReadableStream = ActorHttp.toNodeReadable(httpResponse.body);
 
     // Parse the resulting response
     const match: RegExpExecArray = <RegExpExecArray> ActorRdfDereferenceHttpParseBase.REGEX_MEDIATYPE

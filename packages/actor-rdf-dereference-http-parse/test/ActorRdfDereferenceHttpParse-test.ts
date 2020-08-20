@@ -105,10 +105,15 @@ describe('ActorRdfDereferenceHttpParse', () => {
         if (action.input.includes('missingcontenttype')) {
           headers.delete('content-type');
         }
+        let body = action.input === 'https://www.google.com/noweb' ?
+          require('web-streams-node').toWebReadableStream(new PassThrough()) :
+          new PassThrough();
+        body.cancel = jest.fn();
+        if (action.input.includes('nobody')) {
+          body = undefined;
+        }
         return {
-          body: action.input === 'https://www.google.com/noweb' ?
-            require('web-streams-node').toWebReadableStream(new PassThrough()) :
-            new PassThrough(),
+          body,
           headers,
           status,
           url,
@@ -254,7 +259,13 @@ describe('ActorRdfDereferenceHttpParse', () => {
     });
 
     it('should not run on a 404', () => {
-      return expect(actor.run({ url: 'https://www.nogoogle.com/notfound' })).rejects.toBeTruthy();
+      return expect(actor.run({ url: 'https://www.nogoogle.com/notfound' })).rejects
+        .toThrow(new Error('Could not retrieve https://www.nogoogle.com/notfound (400: unknown error)'));
+    });
+
+    it('should not run on a 404 without a body', () => {
+      return expect(actor.run({ url: 'https://www.nogoogle.com/nobody' })).rejects
+        .toThrow(new Error('Could not retrieve https://www.nogoogle.com/nobody (400: unknown error)'));
     });
 
     it('should run on a 404 in lenient mode', async() => {
