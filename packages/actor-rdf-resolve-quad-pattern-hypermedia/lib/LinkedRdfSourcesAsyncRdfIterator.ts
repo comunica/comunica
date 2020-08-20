@@ -75,7 +75,10 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
           this.startIterator(sourceState, true);
           done();
         })
-        .catch(error => this.emit('error', error));
+        .catch(error => {
+          // We can safely ignore this error, since it handled in setSourcesState
+          done();
+        });
     } else if (!this.iterating && this.nextSource) {
       const nextSource = this.nextSource;
       this.nextSource = undefined;
