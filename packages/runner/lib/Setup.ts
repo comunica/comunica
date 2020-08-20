@@ -23,7 +23,7 @@ export async function instantiateComponent(configResourceUrl: string, instanceUr
   if (!properties) {
     properties = {};
   }
-  properties = { ...properties, ...{ mainModulePath: process.cwd() }};
+  properties = { mainModulePath: process.cwd(), ...properties };
 
   // Instantiate the given config file
   const loader = new Loader(properties);
