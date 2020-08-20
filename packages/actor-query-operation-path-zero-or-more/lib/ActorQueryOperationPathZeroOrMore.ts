@@ -49,6 +49,7 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
       const bindingsStream: MultiTransformIterator<Bindings, Bindings> = new MultiTransformIterator(
         results.bindingsStream,
         {
+          autoStart: false,
           multiTransform: (bindings: Bindings) => {
             const subject = bindings.get(subjectString);
             const object = bindings.get(objectString);
@@ -94,6 +95,7 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
                   );
                 }
                 return it.transform<Bindings>({
+                  autoStart: false,
                   transform(item, next, push) {
                     if (gVar) {
                       item = item.set(termToString(path.graph), graph);
@@ -124,11 +126,14 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
         .transform<Bindings>({
         filter: item => item.get(termToString(variable)).equals(path.object),
         transform(item, next, push) {
-          push(Bindings({ }));
+          const binding = gVar ?
+            Bindings({ [termToString(path.graph)]: item.get(termToString(path.graph)) }) :
+            Bindings({});
+          push(binding);
           next();
         },
       });
-      return { type: 'bindings', bindingsStream, variables: []};
+      return { type: 'bindings', bindingsStream, variables: gVar ? [ termToString(path.graph) ] : []};
     }
     // If (sVar || oVar)
     const subject = sVar ? path.object : path.subject;

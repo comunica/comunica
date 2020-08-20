@@ -206,10 +206,9 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
       return;
     }
 
-    termHashesCurrentSubject[termString] = true;
-
-    (<any> it)._push(Bindings({ [subjectString]: subjectVal, [objectString]: objectVal }));
     counter.count++;
+    termHashesCurrentSubject[termString] = true;
+    (<any> it)._push(Bindings({ [subjectString]: subjectVal, [objectString]: objectVal }));
 
     // If every reachable node from object has already been calculated, use these for current subject too
     if (termString in termHashesGlobal) {
@@ -264,6 +263,7 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
           counter,
         );
       });
+      results.bindingsStream.on('error', reject);
       results.bindingsStream.on('end', () => {
         if (--counter.count === 0) {
           it.close();
