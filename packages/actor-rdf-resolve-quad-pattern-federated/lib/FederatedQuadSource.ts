@@ -274,7 +274,14 @@ export class FederatedQuadSource implements ILazyQuadSource {
           checkEmitMetadata(Infinity, source, pattern);
         }
 
-        return output.data.map(quad => FederatedQuadSource.skolemizeQuad(quad, sourceId));
+        let data = output.data.map(quad => FederatedQuadSource.skolemizeQuad(quad, sourceId));
+
+        // SPARQL query semantics allow graph variables to only match with named graphs, excluding the default graph
+        if (!graph) {
+          data = data.filter(quad => quad.graph.termType !== 'DefaultGraph');
+        }
+
+        return data;
       }, { autoStart: false });
     });
     const it: UnionIterator<RDF.Quad> = new UnionIterator(proxyIt.clone(), { autoStart: false });
