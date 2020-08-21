@@ -1,5 +1,11 @@
 # Changelog
 
+<a name="v1.4.3"></a>
+## [v1.4.3](https://github.com/comunica/sparqlee/compare/v1.4.2...v1.4.3) - 2020-08-21
+
+### Fixed
+* [Make it possible to aggregate over different literal types](https://github.com/comunica/sparqlee/commit/12d5436eaa770000dac6897a4029c351eb45f437)
+
 <a name="v1.4.2"></a>
 ## [v1.4.2](https://github.com/comunica/sparqlee/compare/v1.4.1...v1.4.2) - 2020-07-31
 
