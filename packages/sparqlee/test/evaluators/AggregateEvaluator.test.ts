@@ -337,28 +337,28 @@ describe('an aggregate evaluator should be able to', () => {
       })()).toEqual(undefined);
     });
 
-    it('different types compared in min should return undefined', () => {
+    it('min should work with different types', () => {
       const result = testCase({
         expr: makeAggregate('min'),
         input: [
-          Bindings({ '?x': string('11') }),
+          Bindings({ '?x': double('11.0') }),
           Bindings({ '?x': int('2') }),
-          Bindings({ '?x': string('3') }),
+          Bindings({ '?x': float('3') }),
         ],
       });
-      expect(result).toEqual(undefined);
+      expect(result).toEqual(int('2'));
     });
 
-    it('different types compared in max should return undefined', () => {
+    it('max should work with different types', () => {
       const result = testCase({
         expr: makeAggregate('max'),
         input: [
-          Bindings({ '?x': string('11') }),
+          Bindings({ '?x': double('11.0') }),
           Bindings({ '?x': int('2') }),
-          Bindings({ '?x': string('3') }),
+          Bindings({ '?x': float('3') }),
         ],
       });
-      expect(result).toEqual(undefined);
+      expect(result).toEqual(double('11.0'));
     });
 
     it('passing a non-literal to max should not be accepted', () => {
@@ -402,7 +402,7 @@ describe('an aggregate evaluator should be able to', () => {
           testCase({
             expr: makeAggregate('max'),
             input: [
-              Bindings({ '?x': literal('1') }),
+              Bindings({ '?x': nonLiteral() }),
               Bindings({ '?x': int('1') }),
             ],
             throwError: true,
@@ -416,7 +416,7 @@ describe('an aggregate evaluator should be able to', () => {
             expr: makeAggregate('max'),
             input: [
               Bindings({ '?x': int('1') }),
-              Bindings({ '?x': literal('1') }),
+              Bindings({ '?x': nonLiteral() }),
             ],
             throwError: true,
           });

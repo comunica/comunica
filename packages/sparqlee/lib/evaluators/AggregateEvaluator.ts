@@ -323,9 +323,6 @@ function extractNumericValueAndTypeOrError(term: RDF.Term): { value: number, typ
 function extractValue(extremeTerm: RDF.Literal, term: RDF.Term): {value: any, type:string}  {
   if (term.termType !== 'Literal') {
     throw new Error('Term with value ' + term.value + ' has type ' + term.termType +' and is not a literal');
-  } else if (extremeTerm && extremeTerm.datatype.value !== term.datatype.value) {
-    throw new Error('Inconsistent types were found. Previous term types were of type ' +
-      extremeTerm.datatype.value + ' now type is ' + term.datatype.value +'.');
   }
 
   const transformedLit = transformLiteral(term);
