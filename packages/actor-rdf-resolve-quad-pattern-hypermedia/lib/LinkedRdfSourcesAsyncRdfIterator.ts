@@ -70,7 +70,7 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
       if (!this.sourcesState) {
         this.setSourcesState();
       }
-      (<Promise<ISourceState>> (<ISourcesState> this.sourcesState).sources.get(this.firstUrl))
+      this.getNextSourceCached(this.firstUrl, {})
         .then(sourceState => {
           this.startIterator(sourceState, true);
           done();
