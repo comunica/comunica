@@ -55,7 +55,7 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
       // of the grouping variables merged with the aggregate variables
       output.bindingsStream.on('end', () => {
         try {
-          const bindingsStream = new ArrayIterator(groups.collectResults());
+          const bindingsStream = new ArrayIterator(groups.collectResults(), { autoStart: false });
           const { metadata } = output;
           resolve({ type: 'bindings', bindingsStream, metadata, variables });
         } catch (error) {

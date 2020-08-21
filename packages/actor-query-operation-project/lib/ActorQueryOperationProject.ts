@@ -51,17 +51,20 @@ export class ActorQueryOperationProject extends ActorQueryOperationTypedMediated
     // Required for the BNODE() function: https://www.w3.org/TR/sparql11-query/#func-bnode
     // When we have a scoped blank node, make sure the skolemized value is maintained.
     let blankNodeCounter = 0;
-    bindingsStream = bindingsStream.map((bindings: Bindings) => {
-      blankNodeCounter++;
-      return <Bindings> bindings.map(term => {
-        if (term && term.termType === 'BlankNode') {
-          if (term instanceof BlankNodeScoped) {
-            return new BlankNodeScoped(`${term.value}${blankNodeCounter}`, term.skolemized);
+    bindingsStream = bindingsStream.transform({
+      map(bindings: Bindings) {
+        blankNodeCounter++;
+        return <Bindings> bindings.map(term => {
+          if (term && term.termType === 'BlankNode') {
+            if (term instanceof BlankNodeScoped) {
+              return new BlankNodeScoped(`${term.value}${blankNodeCounter}`, term.skolemized);
+            }
+            return blankNode(`${term.value}${blankNodeCounter}`);
           }
-          return blankNode(`${term.value}${blankNodeCounter}`);
-        }
-        return term;
-      });
+          return term;
+        });
+      },
+      autoStart: false,
     });
 
     return { type: 'bindings', bindingsStream, metadata: output.metadata, variables };

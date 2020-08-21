@@ -117,7 +117,7 @@ export class GroupsState {
     // Case: No Input
     // Some aggregators still define an output on the empty input
     // Result is a single Bindings
-    if (rows.length === 0) {
+    if (rows.length === 0 && this.groupVariables.size === 0) {
       const single: { [key: string]: Term } = {};
       for (const aggregate of this.pattern.aggregates) {
         const key = termToString(aggregate.variable);

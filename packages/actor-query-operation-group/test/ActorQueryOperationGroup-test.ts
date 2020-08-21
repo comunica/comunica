@@ -478,7 +478,21 @@ describe('ActorQueryOperationGroup', () => {
       expect(output.variables).toMatchObject([ '?c' ]);
     });
 
-    it('should be able to count with respect to empty input', async() => {
+    it('should be able to count with respect to empty input with group variables', async() => {
+      const { op, actor } = constructCase({
+        inputBindings: [],
+        groupVariables: [ 'g' ],
+        inputVariables: [ 'x', 'y', 'z' ],
+        inputOp: simpleXYZinput,
+        aggregates: [ aggregateOn('count', 'x', 'c') ],
+      });
+
+      const output = <any> await actor.run(op);
+      expect(await arrayifyStream(output.bindingsStream)).toMatchObject([]);
+      expect(output.variables).toMatchObject([ '?g', '?c' ]);
+    });
+
+    it('should be able to count with respect to empty input without group variables', async() => {
       const { op, actor } = constructCase({
         inputBindings: [],
         groupVariables: [],
