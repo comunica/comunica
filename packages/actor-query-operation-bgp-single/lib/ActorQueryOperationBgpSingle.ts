@@ -1,5 +1,7 @@
-import { ActorQueryOperationTypedMediated, IActorQueryOperationOutput, IActorQueryOperationTypedMediatedArgs,
-  KEY_CONTEXT_BGP_PARENTMETADATA, KEY_CONTEXT_PATTERN_PARENTMETADATA } from '@comunica/bus-query-operation';
+import {
+  ActorQueryOperationTypedMediated, getMetadata, IActorQueryOperationOutput, IActorQueryOperationTypedMediatedArgs,
+  KEY_CONTEXT_BGP_PARENTMETADATA, KEY_CONTEXT_PATTERN_PARENTMETADATA,
+} from '@comunica/bus-query-operation';
 import { ActionContext, IActorTest } from '@comunica/core';
 import { Algebra } from 'sparqlalgebrajs';
 
@@ -26,6 +28,19 @@ export class ActorQueryOperationBgpSingle extends ActorQueryOperationTypedMediat
       context = context.set(KEY_CONTEXT_PATTERN_PARENTMETADATA, metadatas[0]);
     }
 
-    return this.mediatorQueryOperation.mediate({ operation: pattern.patterns[0], context });
+    const output = this.mediatorQueryOperation.mediate({ operation: pattern.patterns[0], context });
+
+    // TODO: We manually trigger the left metadata to be resolved.
+    //       If we don't do this, the inner metadata event seems to be lost in some cases,
+    //       the left promise above is never resolved, this whole metadata promise is never resolved,
+    //       and the application terminates without producing any results.
+    /* istanbul ignore next */
+    output.then(actualOutput => getMetadata(actualOutput).catch(() => {
+      // Do nothing
+    })).catch(() => {
+      // Do nothing
+    });
+
+    return output;
   }
 }
