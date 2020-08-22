@@ -83,6 +83,6 @@ export class ActorQueryOperationLeftJoinNestedLoop extends ActorQueryOperationTy
       .catch(() => Infinity)
       .then(totalItems => ({ totalItems }));
 
-    return { type: 'bindings', bindingsStream, metadata, variables };
+    return { type: 'bindings', bindingsStream, metadata, variables, canContainUndefs: true };
   }
 }

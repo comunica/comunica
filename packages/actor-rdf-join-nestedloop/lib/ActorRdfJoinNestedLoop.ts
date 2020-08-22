@@ -21,7 +21,12 @@ export class ActorRdfJoinNestedLoop extends ActorRdfJoin {
     const join = new NestedLoopJoin<Bindings, Bindings, Bindings>(
       action.entries[0].bindingsStream, action.entries[1].bindingsStream, <any> ActorRdfJoin.join, { autoStart: false },
     );
-    return { type: 'bindings', bindingsStream: join, variables: ActorRdfJoin.joinVariables(action) };
+    return {
+      type: 'bindings',
+      bindingsStream: join,
+      variables: ActorRdfJoin.joinVariables(action),
+      canContainUndefs: false,
+    };
   }
 
   protected async getIterations(action: IActionRdfJoin): Promise<number> {

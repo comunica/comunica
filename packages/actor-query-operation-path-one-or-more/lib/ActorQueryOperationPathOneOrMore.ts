@@ -80,7 +80,7 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
         },
       );
       const variables = gVar ? [ objectString, termToString(path.graph) ] : [ objectString ];
-      return { type: 'bindings', bindingsStream, variables };
+      return { type: 'bindings', bindingsStream, variables, canContainUndefs: false };
     }
     if (sVar && oVar) {
       // Get all the results of subjects with same predicate, but once, then fill in first variable for those
@@ -136,7 +136,7 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
       const variables = gVar ?
         [ subjectString, objectString, termToString(path.graph) ] :
         [ subjectString, objectString ];
-      return { type: 'bindings', bindingsStream, variables };
+      return { type: 'bindings', bindingsStream, variables, canContainUndefs: false };
     }
     if (sVar && !oVar) {
       return <Promise<IActorQueryOperationOutputBindings>> this.mediatorQueryOperation.mediate({
@@ -168,7 +168,12 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
         next();
       },
     });
-    return { type: 'bindings', bindingsStream, variables: gVar ? [ termToString(path.graph) ] : []};
+    return {
+      type: 'bindings',
+      bindingsStream,
+      variables: gVar ? [ termToString(path.graph) ] : [],
+      canContainUndefs: false,
+    };
   }
 }
 

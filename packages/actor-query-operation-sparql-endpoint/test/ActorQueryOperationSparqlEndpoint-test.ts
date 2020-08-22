@@ -126,6 +126,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
       const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
       expect(output.variables).toEqual([ '?p' ]);
       expect(await (<any> output).metadata()).toEqual({ totalItems: 3 });
+      expect(output.canContainUndefs).toEqual(true);
 
       expect(await arrayifyStream(output.bindingsStream)).toEqual([
         Bindings({ '?p': namedNode('http://example.org/sparql-select?query=SELECT%20%3Fp%20WHERE%20%7B%20%3Chttp%3A%2F%2Fs%3E%20%3Fp%20%3Chttp%3A%2F%2Fo%3E.%20%7D/1') }),
@@ -146,6 +147,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
       const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
       expect(output.variables).toEqual([ '?myP' ]);
       expect(await (<any> output).metadata()).toEqual({ totalItems: 3 });
+      expect(output.canContainUndefs).toEqual(true);
 
       expect(await arrayifyStream(output.bindingsStream)).toEqual([
         Bindings({ '?p': namedNode('http://example.org/sparql-select?query=SELECT%20%3FmyP%20WHERE%20%7B%20%3Chttp%3A%2F%2Fs%3E%20%3Fp%20%3Chttp%3A%2F%2Fo%3E.%20%7D/1') }),

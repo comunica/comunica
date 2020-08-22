@@ -143,6 +143,7 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
       bindingsStream: stream,
       metadata,
       variables: (<RDF.Variable[]> variables).map(x => termToString(x)),
+      canContainUndefs: true,
     };
   }
 }

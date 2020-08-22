@@ -20,6 +20,7 @@ describe('ActorQueryOperationMinus', () => {
         metadata: arg.operation.metadata,
         type: 'bindings',
         variables: arg.operation.variables,
+        canContainUndefs: arg.operation.canContainUndefs,
       }),
     };
     left = {
@@ -31,6 +32,7 @@ describe('ActorQueryOperationMinus', () => {
       ]),
       type: 'bindings',
       variables: [ 'a' ],
+      canContainUndefs: false,
     };
     rightNoCommons = {
       metadata: () => Promise.resolve({ totalItems: 2 }),
@@ -40,6 +42,7 @@ describe('ActorQueryOperationMinus', () => {
       ]),
       type: 'bindings',
       variables: [ 'b' ],
+      canContainUndefs: false,
     };
     right = {
       metadata: () => Promise.resolve({ totalItems: 2 }),
@@ -49,6 +52,7 @@ describe('ActorQueryOperationMinus', () => {
       ]),
       type: 'bindings',
       variables: [ 'a' ],
+      canContainUndefs: false,
     };
   });
 
@@ -94,6 +98,7 @@ describe('ActorQueryOperationMinus', () => {
         expect(await (<any> output).metadata()).toEqual({ totalItems: 3 });
         expect(output.variables).toEqual([ 'a' ]);
         expect(output.type).toEqual('bindings');
+        expect(output.canContainUndefs).toEqual(false);
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({ a: literal('3') }),
         ]);
@@ -106,6 +111,7 @@ describe('ActorQueryOperationMinus', () => {
         expect(await (<any> output).metadata()).toEqual({ totalItems: 3 });
         expect(output.variables).toEqual([ 'a' ]);
         expect(output.type).toEqual('bindings');
+        expect(output.canContainUndefs).toEqual(false);
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({ a: literal('1') }),
           Bindings({ a: literal('2') }),
@@ -114,7 +120,7 @@ describe('ActorQueryOperationMinus', () => {
       });
     });
   });
-  describe('An ActorQueryOperationMinus instance with variables in the right stream', () => {
+  describe('An ActorQueryOperationMinus instance with undefs in the right stream', () => {
     let actor: ActorQueryOperationMinus;
 
     beforeEach(() => {
@@ -125,6 +131,7 @@ describe('ActorQueryOperationMinus', () => {
           metadata: arg.operation.metadata,
           type: 'bindings',
           variables: arg.operation.variables,
+          canContainUndefs: arg.operation.canContainUndefs,
         }),
       };
       left = {
@@ -145,6 +152,7 @@ describe('ActorQueryOperationMinus', () => {
         ]),
         type: 'bindings',
         variables: [ 'a', 'b' ],
+        canContainUndefs: false,
       };
       right = {
         metadata: () => Promise.resolve({ totalItems: 2 }),
@@ -158,6 +166,7 @@ describe('ActorQueryOperationMinus', () => {
         ]),
         type: 'bindings',
         variables: [ 'a', 'b' ],
+        canContainUndefs: true,
       };
       actor = new ActorQueryOperationMinus(
         { name: 'actor', bus, mediatorQueryOperation },
@@ -170,6 +179,7 @@ describe('ActorQueryOperationMinus', () => {
         expect(await (<any> output).metadata()).toEqual({ totalItems: 3 });
         expect(output.variables).toEqual([ 'a', 'b' ]);
         expect(output.type).toEqual('bindings');
+        expect(output.canContainUndefs).toEqual(true);
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({
             a: literal('2'),
@@ -180,7 +190,7 @@ describe('ActorQueryOperationMinus', () => {
     });
   });
 
-  describe('An ActorQueryOperationMinus instance with variables in the left stream', () => {
+  describe('An ActorQueryOperationMinus instance with undefs in the left stream', () => {
     let actor: ActorQueryOperationMinus;
 
     beforeEach(() => {
@@ -191,6 +201,7 @@ describe('ActorQueryOperationMinus', () => {
           metadata: arg.operation.metadata,
           type: 'bindings',
           variables: arg.operation.variables,
+          canContainUndefs: arg.operation.canContainUndefs,
         }),
       };
       left = {
@@ -209,6 +220,7 @@ describe('ActorQueryOperationMinus', () => {
         ]),
         type: 'bindings',
         variables: [ 'a', 'b' ],
+        canContainUndefs: true,
       };
       right = {
         metadata: () => Promise.resolve({ totalItems: 2 }),
@@ -224,6 +236,7 @@ describe('ActorQueryOperationMinus', () => {
         ]),
         type: 'bindings',
         variables: [ 'a', 'b' ],
+        canContainUndefs: false,
       };
       actor = new ActorQueryOperationMinus(
         { name: 'actor', bus, mediatorQueryOperation },
@@ -236,6 +249,7 @@ describe('ActorQueryOperationMinus', () => {
         expect(await (<any> output).metadata()).toEqual({ totalItems: 3 });
         expect(output.variables).toEqual([ 'a', 'b' ]);
         expect(output.type).toEqual('bindings');
+        expect(output.canContainUndefs).toEqual(true);
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({
             a: literal('2'),
@@ -246,7 +260,7 @@ describe('ActorQueryOperationMinus', () => {
     });
   });
 
-  describe('An ActorQueryOperationMinus instance with variables in the left and right stream', () => {
+  describe('An ActorQueryOperationMinus instance with undefs in the left and right stream', () => {
     let actor: ActorQueryOperationMinus;
 
     beforeEach(() => {
@@ -257,6 +271,7 @@ describe('ActorQueryOperationMinus', () => {
           metadata: arg.operation.metadata,
           type: 'bindings',
           variables: arg.operation.variables,
+          canContainUndefs: arg.operation.canContainUndefs,
         }),
       };
       left = {
@@ -275,6 +290,7 @@ describe('ActorQueryOperationMinus', () => {
         ]),
         type: 'bindings',
         variables: [ 'a', 'b' ],
+        canContainUndefs: true,
       };
       right = {
         metadata: () => Promise.resolve({ totalItems: 2 }),
@@ -288,6 +304,7 @@ describe('ActorQueryOperationMinus', () => {
         ]),
         type: 'bindings',
         variables: [ 'a', 'b' ],
+        canContainUndefs: true,
       };
       actor = new ActorQueryOperationMinus(
         { name: 'actor', bus, mediatorQueryOperation },
@@ -300,6 +317,7 @@ describe('ActorQueryOperationMinus', () => {
         expect(await (<any> output).metadata()).toEqual({ totalItems: 3 });
         expect(output.variables).toEqual([ 'a', 'b' ]);
         expect(output.type).toEqual('bindings');
+        expect(output.canContainUndefs).toEqual(true);
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({
             a: literal('2'),

@@ -205,6 +205,7 @@ describe('ActorQueryOperationQuadpattern', () => {
       return actor.run({ operation }).then(async(output: IActorQueryOperationOutputBindings) => {
         expect(output.variables).toEqual([ '?p' ]);
         expect(await (<any> output).metadata()).toBe(metadataContent);
+        expect(output.canContainUndefs).toEqual(false);
         expect(await arrayifyStream(output.bindingsStream)).toEqual(
           [ Bindings({ '?p': <RDF.Term> { value: 'p1' }}),
             Bindings({ '?p': <RDF.Term> { value: 'p2' }}),
@@ -226,6 +227,7 @@ describe('ActorQueryOperationQuadpattern', () => {
       return actor.run({ operation, context }).then(async(output: IActorQueryOperationOutputBindings) => {
         expect(output.variables).toEqual([ '?p' ]);
         expect(await (<any> output).metadata()).toBe(metadataContent);
+        expect(output.canContainUndefs).toEqual(false);
         expect(await arrayifyStream(output.bindingsStream)).toEqual(
           [ Bindings({ '?p': <RDF.Term> { value: 'p1' }}),
             Bindings({ '?p': <RDF.Term> { value: 'p2' }}),
@@ -257,6 +259,7 @@ describe('ActorQueryOperationQuadpattern', () => {
       return actor.run({ operation }).then(async(output: IActorQueryOperationOutputBindings) => {
         expect(output.variables).toEqual([ '?v' ]);
         expect(await (<any> output).metadata()).toBe(metadataContent);
+        expect(output.canContainUndefs).toEqual(false);
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({ '?v': <RDF.Term> { value: 'w' }}),
         ]);

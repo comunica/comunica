@@ -73,6 +73,7 @@ describe('ActorQueryOperationBgpEmpty', () => {
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
         expect(await arrayifyStream(output.bindingsStream)).toEqual([ Bindings({}) ]);
         expect(output.variables).toEqual([]);
+        expect(output.canContainUndefs).toEqual(false);
         expect(await (<any> output).metadata()).toMatchObject({ totalItems: 1 });
       });
     });
@@ -86,6 +87,7 @@ describe('ActorQueryOperationBgpEmpty', () => {
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
         expect(await arrayifyStream(output.bindingsStream)).toEqual([ Bindings({}) ]);
         expect(output.variables).toEqual([ '?s1', '?o2' ]);
+        expect(output.canContainUndefs).toEqual(false);
         expect(await (<any> output).metadata()).toMatchObject({ totalItems: 1 });
       });
     });

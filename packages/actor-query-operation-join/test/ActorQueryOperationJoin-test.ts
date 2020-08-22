@@ -35,6 +35,7 @@ describe('ActorQueryOperationJoin', () => {
         operated: arg,
         type: 'bindings',
         variables: [ 'a', 'b' ],
+        canContainUndefs: false,
       }),
     };
   });
@@ -78,6 +79,7 @@ describe('ActorQueryOperationJoin', () => {
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
         expect(output.variables).toEqual([ 'a', 'b' ]);
         expect(output.type).toEqual('bindings');
+        expect(output.canContainUndefs).toEqual(false);
         expect(await (<any> output).metadata()).toEqual({ totalItems: 2 });
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({ a: literal('1'), b: literal('1') }),

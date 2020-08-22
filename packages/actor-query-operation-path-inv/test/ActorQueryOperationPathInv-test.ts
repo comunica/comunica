@@ -24,6 +24,7 @@ describe('ActorQueryOperationPathInv', () => {
         operated: arg,
         type: 'bindings',
         variables: [ 'a' ],
+        canContainUndefs: false,
       }),
     };
   });
@@ -69,6 +70,7 @@ describe('ActorQueryOperationPathInv', () => {
         variable('x'),
       ) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      expect(output.canContainUndefs).toEqual(false);
       expect(await arrayifyStream(output.bindingsStream)).toEqual([
         Bindings({ '?x': namedNode('1') }),
         Bindings({ '?x': namedNode('2') }),

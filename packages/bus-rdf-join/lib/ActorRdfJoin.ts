@@ -28,12 +28,17 @@ export abstract class ActorRdfJoin extends Actor<IActionRdfJoin, IMediatorTypeIt
    * otherwise, it is an upper limit.
    */
   protected limitEntriesMin: boolean;
+  /**
+   * If this actor can handle undefs in the bindings.
+   */
+  protected canHandleUndefs: boolean;
 
   public constructor(args: IActorArgs<IActionRdfJoin, IMediatorTypeIterations, IActorQueryOperationOutput>,
-    limitEntries?: number, limitEntriesMin?: boolean) {
+    limitEntries?: number, limitEntriesMin?: boolean, canHandleUndefs?: boolean) {
     super(args);
     this.limitEntries = limitEntries ?? Infinity;
     this.limitEntriesMin = limitEntriesMin ?? false;
+    this.canHandleUndefs = canHandleUndefs ?? false;
   }
 
   /**
@@ -88,7 +93,7 @@ export abstract class ActorRdfJoin extends Actor<IActionRdfJoin, IMediatorTypeIt
   public static async iteratorsHaveMetadata(action: IActionRdfJoin, key: string): Promise<boolean> {
     return Promise.all(action.entries.map(async entry => {
       if (!entry.metadata) {
-        throw new Error('Missibg metadata');
+        throw new Error('Missing metadata');
       }
       const metadata = await entry.metadata();
       if (!(key in metadata)) {
@@ -105,17 +110,31 @@ export abstract class ActorRdfJoin extends Actor<IActionRdfJoin, IMediatorTypeIt
    * @returns {Promise<IMediatorTypeIterations>} The calculated estime.
    */
   public async test(action: IActionRdfJoin): Promise<IMediatorTypeIterations> {
+    // Allow joining of one or zero streams
     if (action.entries.length <= 1) {
       return { iterations: 0 };
     }
+
+    // Check if this actor can handle the given number of streams
     if (this.limitEntriesMin ? action.entries.length < this.limitEntries : action.entries.length > this.limitEntries) {
       throw new Error(`${this.name} requires ${this.limitEntries
       } sources at ${this.limitEntriesMin ? 'least' : 'most'
       }. The input contained ${action.entries.length}.`);
     }
+
+    // Check if all streams are bindings streams
     for (const entry of action.entries) {
       if (entry.type !== 'bindings') {
         throw new Error(`Invalid type of a join entry: Expected 'bindings' but got '${entry.type}'`);
+      }
+    }
+
+    // Check if this actor can handle undefs
+    if (!this.canHandleUndefs) {
+      for (const entry of action.entries) {
+        if (entry.canContainUndefs) {
+          throw new Error(`Actor ${this.name} can not join streams containing undefs`);
+        }
       }
     }
 
@@ -138,6 +157,7 @@ export abstract class ActorRdfJoin extends Actor<IActionRdfJoin, IMediatorTypeIt
         metadata: () => Promise.resolve({ totalItems: 0 }),
         type: 'bindings',
         variables: [],
+        canContainUndefs: false,
       };
     }
     if (action.entries.length === 1) {

@@ -53,6 +53,7 @@ describe('ActorQueryOperationPathOneOrMore', () => {
           operated: arg,
           type: 'bindings',
           variables: vars,
+          canContainUndefs: false,
         });
       },
     };
@@ -100,6 +101,7 @@ describe('ActorQueryOperationPathOneOrMore', () => {
       ) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       expect(output.variables).toEqual([ '?x' ]);
+      expect(output.canContainUndefs).toEqual(false);
       expect(await arrayifyStream(output.bindingsStream)).toEqual([
         Bindings({ '?x': namedNode('1') }),
       ]);
@@ -114,6 +116,7 @@ describe('ActorQueryOperationPathOneOrMore', () => {
       context: ActionContext({ [ActorAbstractPath.isPathArbitraryLengthDistinctKey]: false }) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       expect(output.variables).toEqual([ '?x' ]);
+      expect(output.canContainUndefs).toEqual(false);
       expect(await arrayifyStream(output.bindingsStream)).toEqual([
         Bindings({ '?x': namedNode('1') }),
       ]);
@@ -128,6 +131,7 @@ describe('ActorQueryOperationPathOneOrMore', () => {
       context: ActionContext({ [ActorAbstractPath.isPathArbitraryLengthDistinctKey]: true }) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       expect(output.variables).toEqual([ '?x' ]);
+      expect(output.canContainUndefs).toEqual(false);
       expect(await arrayifyStream(output.bindingsStream)).toEqual([
         Bindings({ '?x': namedNode('1') }),
         Bindings({ '?x': namedNode('2') }),
@@ -144,6 +148,7 @@ describe('ActorQueryOperationPathOneOrMore', () => {
       context: ActionContext({ [ActorAbstractPath.isPathArbitraryLengthDistinctKey]: true }) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       expect(output.variables).toEqual([ '?x' ]);
+      expect(output.canContainUndefs).toEqual(false);
       expect(await arrayifyStream(output.bindingsStream)).toEqual([
         Bindings({ '?x': namedNode('1') }),
         Bindings({ '?x': namedNode('2') }),
@@ -160,6 +165,7 @@ describe('ActorQueryOperationPathOneOrMore', () => {
       context: ActionContext({ [ActorAbstractPath.isPathArbitraryLengthDistinctKey]: true }) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       expect(output.variables).toEqual([]);
+      expect(output.canContainUndefs).toEqual(false);
       expect(await arrayifyStream(output.bindingsStream)).toEqual([
         Bindings({ }),
       ]);
@@ -175,6 +181,7 @@ describe('ActorQueryOperationPathOneOrMore', () => {
       context: ActionContext({ [ActorAbstractPath.isPathArbitraryLengthDistinctKey]: true }) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       expect(output.variables).toEqual([ '?g' ]);
+      expect(output.canContainUndefs).toEqual(false);
       expect(await arrayifyStream(output.bindingsStream)).toEqual([
         Bindings({ '?g': namedNode('2') }),
       ]);
@@ -190,6 +197,7 @@ describe('ActorQueryOperationPathOneOrMore', () => {
       context: ActionContext({ [ActorAbstractPath.isPathArbitraryLengthDistinctKey]: true }) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       expect(output.variables).toEqual([ '?o', '?g' ]);
+      expect(output.canContainUndefs).toEqual(false);
       expect(await arrayifyStream(output.bindingsStream)).toEqual([
         Bindings({ '?o': namedNode('1'), '?g': namedNode('2') }),
         Bindings({ '?o': namedNode('2'), '?g': namedNode('2') }),
@@ -207,6 +215,7 @@ describe('ActorQueryOperationPathOneOrMore', () => {
       context: ActionContext({ [ActorAbstractPath.isPathArbitraryLengthDistinctKey]: true }) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       expect(output.variables).toEqual([ '?x', '?y' ]);
+      expect(output.canContainUndefs).toEqual(false);
       const bindings: Bindings[] = await arrayifyStream(output.bindingsStream);
       expect(bindings).toEqual([
         Bindings({ '?x': namedNode('1'), '?y': namedNode('2') }),
@@ -226,6 +235,7 @@ describe('ActorQueryOperationPathOneOrMore', () => {
       context: ActionContext({ [ActorAbstractPath.isPathArbitraryLengthDistinctKey]: true }) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       expect(output.variables).toEqual([ '?x', '?y', '?g' ]);
+      expect(output.canContainUndefs).toEqual(false);
       const bindings: Bindings[] = await arrayifyStream(output.bindingsStream);
       expect(bindings).toEqual([
         Bindings({ '?x': namedNode('1'), '?y': namedNode('2'), '?g': namedNode('3') }),

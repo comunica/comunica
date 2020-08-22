@@ -49,6 +49,6 @@ export class ActorQueryOperationFilterSparqlee extends ActorQueryOperationTypedM
     };
 
     const bindingsStream = output.bindingsStream.transform<Bindings>({ transform });
-    return { type: 'bindings', bindingsStream, metadata, variables };
+    return { type: 'bindings', bindingsStream, metadata, variables, canContainUndefs: output.canContainUndefs };
   }
 }

@@ -31,6 +31,7 @@ describe('AbstractBindingsHash', () => {
         operated: arg,
         type: 'bindings',
         variables: [ 'a' ],
+        canContainUndefs: false,
       }),
     };
     hashAlgorithm = 'sha1';
@@ -89,6 +90,7 @@ describe('AbstractBindingsHash', () => {
         expect(await (<any> output).metadata()).toEqual({ totalItems: 5 });
         expect(output.variables).toEqual([ 'a' ]);
         expect(output.type).toEqual('bindings');
+        expect(output.canContainUndefs).toEqual(false);
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({ a: literal('1') }),
           Bindings({ a: literal('2') }),

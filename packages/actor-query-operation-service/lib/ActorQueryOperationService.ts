@@ -49,6 +49,7 @@ export class ActorQueryOperationService extends ActorQueryOperationTypedMediated
           bindingsStream: new SingletonIterator(Bindings({})),
           type: 'bindings',
           variables: [],
+          canContainUndefs: false,
         };
       } else {
         throw error;

@@ -11,6 +11,7 @@ describe('ActorQueryOperationUnion', () => {
   let left: any;
   let leftNoMeta: any;
   let right: any;
+  let rightUndef: any;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -20,6 +21,7 @@ describe('ActorQueryOperationUnion', () => {
         metadata: arg.operation.metadata,
         type: 'bindings',
         variables: arg.operation.variables,
+        canContainUndefs: arg.operation.canContainUndefs,
       }),
     };
     left = {
@@ -31,6 +33,7 @@ describe('ActorQueryOperationUnion', () => {
       ]),
       type: 'bindings',
       variables: [ 'a' ],
+      canContainUndefs: false,
     };
     leftNoMeta = {
       metadata: null,
@@ -41,6 +44,7 @@ describe('ActorQueryOperationUnion', () => {
       ]),
       type: 'bindings',
       variables: [ 'a' ],
+      canContainUndefs: false,
     };
     right = {
       metadata: () => Promise.resolve({ totalItems: 2 }),
@@ -50,6 +54,17 @@ describe('ActorQueryOperationUnion', () => {
       ]),
       type: 'bindings',
       variables: [ 'b' ],
+      canContainUndefs: false,
+    };
+    rightUndef = {
+      metadata: () => Promise.resolve({ totalItems: 2 }),
+      stream: new ArrayIterator([
+        Bindings({ b: literal('1') }),
+        Bindings({ b: literal('2') }),
+      ]),
+      type: 'bindings',
+      variables: [ 'b' ],
+      canContainUndefs: true,
     };
   });
 
@@ -189,6 +204,7 @@ describe('ActorQueryOperationUnion', () => {
         expect(await (<any> output).metadata()).toEqual({ totalItems: 5 });
         expect(output.variables).toEqual([ 'a', 'b' ]);
         expect(output.type).toEqual('bindings');
+        expect(output.canContainUndefs).toEqual(false);
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({ a: literal('1') }),
           Bindings({ b: literal('1') }),
@@ -205,6 +221,24 @@ describe('ActorQueryOperationUnion', () => {
         expect(output.metadata).toBeFalsy();
         expect(output.variables).toEqual([ 'a', 'b' ]);
         expect(output.type).toEqual('bindings');
+        expect(output.canContainUndefs).toEqual(false);
+        expect(await arrayifyStream(output.bindingsStream)).toEqual([
+          Bindings({ a: literal('1') }),
+          Bindings({ b: literal('1') }),
+          Bindings({ a: literal('2') }),
+          Bindings({ b: literal('2') }),
+          Bindings({ a: literal('3') }),
+        ]);
+      });
+    });
+
+    it('should run with a right stream with undefs', () => {
+      const op = { operation: { type: 'union', left, right: rightUndef }};
+      return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
+        expect(await (<any> output).metadata()).toEqual({ totalItems: 5 });
+        expect(output.variables).toEqual([ 'a', 'b' ]);
+        expect(output.type).toEqual('bindings');
+        expect(output.canContainUndefs).toEqual(true);
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({ a: literal('1') }),
           Bindings({ b: literal('1') }),

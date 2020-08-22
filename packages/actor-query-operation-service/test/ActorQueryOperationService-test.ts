@@ -24,6 +24,7 @@ describe('ActorQueryOperationService', () => {
           operated: arg,
           type: 'bindings',
           variables: [ '?a' ],
+          canContainUndefs: true,
         }),
     };
   });
@@ -78,6 +79,7 @@ describe('ActorQueryOperationService', () => {
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
         expect(output.variables).toEqual([ '?a' ]);
         expect(await (<any> output).metadata()).toEqual({ totalItems: 3 });
+        expect(output.canContainUndefs).toEqual(true);
 
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({ a: literal('1') }),
@@ -92,6 +94,7 @@ describe('ActorQueryOperationService', () => {
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
         expect(output.variables).toEqual([ '?a' ]);
         expect(await (<any> output).metadata()).toEqual({ totalItems: 3 });
+        expect(output.canContainUndefs).toEqual(true);
 
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({ a: literal('1') }),
@@ -106,6 +109,7 @@ describe('ActorQueryOperationService', () => {
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
         expect(output.variables).toEqual([]);
         expect(output.metadata).toBeFalsy();
+        expect(output.canContainUndefs).toEqual(false);
 
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({}),
@@ -129,6 +133,7 @@ describe('ActorQueryOperationService', () => {
           .toEqual('auto');
         expect(output.variables).toEqual([ '?a' ]);
         expect(await (<any> output).metadata()).toEqual({ totalItems: 3 });
+        expect(output.canContainUndefs).toEqual(true);
 
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({ a: literal('1') }),
@@ -148,6 +153,7 @@ describe('ActorQueryOperationService', () => {
         expect((<any> output).operated.context.get('@comunica/bus-rdf-resolve-quad-pattern:sources').array[0].type)
           .toEqual('sparql');
         expect(await (<any> output).metadata()).toEqual({ totalItems: 3 });
+        expect(output.canContainUndefs).toEqual(true);
 
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({ a: literal('1') }),

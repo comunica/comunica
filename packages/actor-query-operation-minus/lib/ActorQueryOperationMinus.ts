@@ -44,7 +44,14 @@ export class ActorQueryOperationMinus extends ActorQueryOperationTypedMediated<A
         });
         return output.bindingsStream.filter(data => !index.contains(data));
       }, { autoStart: false });
-      return { type: 'bindings', bindingsStream, variables: output.variables, metadata: output.metadata };
+      const canContainUndefs = buffer.canContainUndefs || output.canContainUndefs;
+      return {
+        type: 'bindings',
+        bindingsStream,
+        variables: output.variables,
+        metadata: output.metadata,
+        canContainUndefs,
+      };
     }
     return output;
   }

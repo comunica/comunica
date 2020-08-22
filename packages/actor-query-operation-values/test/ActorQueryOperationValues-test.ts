@@ -53,6 +53,7 @@ describe('ActorQueryOperationValues', () => {
         expect(await (<any> output).metadata()).toEqual({ totalItems: 1 });
         expect(output.variables).toEqual([ '?v' ]);
         expect(output.type).toEqual('bindings');
+        expect(output.canContainUndefs).toEqual(false);
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({ '?v': namedNode('v1') }),
         ]);
@@ -67,6 +68,7 @@ describe('ActorQueryOperationValues', () => {
         expect(await (<any> output).metadata()).toEqual({ totalItems: 2 });
         expect(output.variables).toEqual([ '?v' ]);
         expect(output.type).toEqual('bindings');
+        expect(output.canContainUndefs).toEqual(false);
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({ '?v': namedNode('v1') }),
           Bindings({ '?v': namedNode('v2') }),
@@ -85,8 +87,28 @@ describe('ActorQueryOperationValues', () => {
         expect(await (<any> output).metadata()).toEqual({ totalItems: 2 });
         expect(output.variables).toEqual([ '?v', '?w' ]);
         expect(output.type).toEqual('bindings');
+        expect(output.canContainUndefs).toEqual(false);
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({ '?v': namedNode('v1'), '?w': namedNode('w1') }),
+          Bindings({ '?v': namedNode('v2'), '?w': namedNode('w2') }),
+        ]);
+      });
+    });
+
+    it('should run on a 2 variables and 2 values, one undefined', () => {
+      const variables = [ variable('v'), variable('w') ];
+      const bindings = [
+        { '?v': namedNode('v1') },
+        { '?v': namedNode('v2'), '?w': namedNode('w2') },
+      ];
+      const op = { operation: { type: 'values', variables, bindings }};
+      return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
+        expect(await (<any> output).metadata()).toEqual({ totalItems: 2 });
+        expect(output.variables).toEqual([ '?v', '?w' ]);
+        expect(output.type).toEqual('bindings');
+        expect(output.canContainUndefs).toEqual(true);
+        expect(await arrayifyStream(output.bindingsStream)).toEqual([
+          Bindings({ '?v': namedNode('v1') }),
           Bindings({ '?v': namedNode('v2'), '?w': namedNode('w2') }),
         ]);
       });

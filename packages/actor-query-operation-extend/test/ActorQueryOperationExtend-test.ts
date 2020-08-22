@@ -75,6 +75,7 @@ describe('ActorQueryOperationExtend', () => {
         operated: arg,
         type: 'bindings',
         variables: [ '?a' ],
+        canContainUndefs: false,
       }),
     };
   });
@@ -134,6 +135,7 @@ describe('ActorQueryOperationExtend', () => {
       expect(output.type).toEqual('bindings');
       expect(await (<any> output).metadata()).toMatchObject({ totalItems: 3 });
       expect(output.variables).toMatchObject([ '?a', '?l' ]);
+      expect(output.canContainUndefs).toEqual(false);
     });
 
     it('should not extend bindings on erroring expressions', async() => {
@@ -148,6 +150,7 @@ describe('ActorQueryOperationExtend', () => {
       expect(output.type).toEqual('bindings');
       expect(await (<any> output).metadata()).toMatchObject({ totalItems: 3 });
       expect(output.variables).toMatchObject([ '?a', '?l' ]);
+      expect(output.canContainUndefs).toEqual(false);
     });
 
     it('should emit error when evaluation code returns a hard error', async next => {

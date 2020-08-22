@@ -96,6 +96,7 @@ function constructCase(
         operated: arg,
         type: 'bindings',
         variables: inputVariables,
+        canContainUndefs: false,
       }),
     };
   }
@@ -476,6 +477,7 @@ describe('ActorQueryOperationGroup', () => {
         Bindings({ '?c': int('4') }),
       ]);
       expect(output.variables).toMatchObject([ '?c' ]);
+      expect(output.canContainUndefs).toEqual(false);
     });
 
     it('should be able to count with respect to empty input with group variables', async() => {
@@ -490,6 +492,7 @@ describe('ActorQueryOperationGroup', () => {
       const output = <any> await actor.run(op);
       expect(await arrayifyStream(output.bindingsStream)).toMatchObject([]);
       expect(output.variables).toMatchObject([ '?g', '?c' ]);
+      expect(output.canContainUndefs).toEqual(false);
     });
 
     it('should be able to count with respect to empty input without group variables', async() => {
@@ -506,6 +509,7 @@ describe('ActorQueryOperationGroup', () => {
         Bindings({ '?c': int('0') }),
       ]);
       expect(output.variables).toMatchObject([ '?c' ]);
+      expect(output.canContainUndefs).toEqual(false);
     });
 
     it('should be able to sum', async() => {
@@ -527,6 +531,7 @@ describe('ActorQueryOperationGroup', () => {
         Bindings({ '?s': int('10') }),
       ]);
       expect(output.variables).toMatchObject([ '?s' ]);
+      expect(output.canContainUndefs).toEqual(false);
     });
 
     it('should be able to sum with respect to empty input', async() => {
@@ -543,6 +548,7 @@ describe('ActorQueryOperationGroup', () => {
         Bindings({ '?s': int('0') }),
       ]);
       expect(output.variables).toMatchObject([ '?s' ]);
+      expect(output.canContainUndefs).toEqual(false);
     });
 
     it('should sum with regard to type promotion', async() => {
@@ -564,6 +570,7 @@ describe('ActorQueryOperationGroup', () => {
         Bindings({ '?s': float('10') }),
       ]);
       expect(output.variables).toMatchObject([ '?s' ]);
+      expect(output.canContainUndefs).toEqual(false);
     });
 
     // TODO empty set
@@ -586,6 +593,7 @@ describe('ActorQueryOperationGroup', () => {
         Bindings({ '?m': int('1') }),
       ]);
       expect(output.variables).toMatchObject([ '?m' ]);
+      expect(output.canContainUndefs).toEqual(false);
     });
 
     it('should be able to min with respect to the empty set', async() => {
@@ -602,6 +610,7 @@ describe('ActorQueryOperationGroup', () => {
         Bindings({}),
       ]);
       expect(output.variables).toMatchObject([ '?m' ]);
+      expect(output.canContainUndefs).toEqual(false);
     });
 
     it('should be able to max', async() => {
@@ -623,6 +632,7 @@ describe('ActorQueryOperationGroup', () => {
         Bindings({ '?m': int('4') }),
       ]);
       expect(output.variables).toMatchObject([ '?m' ]);
+      expect(output.canContainUndefs).toEqual(false);
     });
 
     it('should be able to max with respect to the empty set', async() => {
@@ -639,6 +649,7 @@ describe('ActorQueryOperationGroup', () => {
         Bindings({}),
       ]);
       expect(output.variables).toMatchObject([ '?m' ]);
+      expect(output.canContainUndefs).toEqual(false);
     });
 
     it('should be able to avg', async() => {
@@ -660,6 +671,7 @@ describe('ActorQueryOperationGroup', () => {
         Bindings({ '?a': float('2.5') }),
       ]);
       expect(output.variables).toMatchObject([ '?a' ]);
+      expect(output.canContainUndefs).toEqual(false);
     });
 
     it('should be able to avg with respect to type preservation', async() => {
@@ -681,6 +693,7 @@ describe('ActorQueryOperationGroup', () => {
         Bindings({ '?a': decimal('2.5') }),
       ]);
       expect(output.variables).toMatchObject([ '?a' ]);
+      expect(output.canContainUndefs).toEqual(false);
     });
 
     it('should be able to avg with respect to empty input', async() => {
@@ -697,6 +710,7 @@ describe('ActorQueryOperationGroup', () => {
         Bindings({ '?a': int('0') }),
       ]);
       expect(output.variables).toMatchObject([ '?a' ]);
+      expect(output.canContainUndefs).toEqual(false);
     });
 
     it('should be able to sample', async() => {
@@ -716,6 +730,7 @@ describe('ActorQueryOperationGroup', () => {
       const output = <any> await actor.run(op);
       expect((await arrayifyStream(output.bindingsStream))[0]).toBeTruthy();
       expect(output.variables).toMatchObject([ '?s' ]);
+      expect(output.canContainUndefs).toEqual(false);
     });
 
     it('should be able to sample with respect to the empty input', async() => {
@@ -732,6 +747,7 @@ describe('ActorQueryOperationGroup', () => {
         Bindings({}),
       ]);
       expect(output.variables).toMatchObject([ '?s' ]);
+      expect(output.canContainUndefs).toEqual(false);
     });
 
     it('should be able to group_concat', async() => {
@@ -753,6 +769,7 @@ describe('ActorQueryOperationGroup', () => {
         Bindings({ '?g': literal('1 2 3 4') }),
       ]);
       expect(output.variables).toMatchObject([ '?g' ]);
+      expect(output.canContainUndefs).toEqual(false);
     });
 
     it('should be able to group_concat with respect to the empty input', async() => {
@@ -769,6 +786,7 @@ describe('ActorQueryOperationGroup', () => {
         Bindings({ '?g': literal('') }),
       ]);
       expect(output.variables).toMatchObject([ '?g' ]);
+      expect(output.canContainUndefs).toEqual(false);
     });
 
     it('should be able to group_concat with respect to a custom separator', async() => {
@@ -791,6 +809,7 @@ describe('ActorQueryOperationGroup', () => {
         Bindings({ '?g': literal('1;2;3;4') }),
       ]);
       expect(output.variables).toMatchObject([ '?g' ]);
+      expect(output.canContainUndefs).toEqual(false);
     });
   });
 });

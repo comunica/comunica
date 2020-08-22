@@ -115,6 +115,7 @@ describe('ActorQueryOperationPathSeq', () => {
         variable('x'),
       ) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      expect(output.canContainUndefs).toEqual(false);
       expect(await arrayifyStream(output.bindingsStream)).toEqual([
         Bindings({ '?x': namedNode('2') }),
         Bindings({ '?x': namedNode('3') }),
@@ -129,6 +130,7 @@ describe('ActorQueryOperationPathSeq', () => {
         variable('x'),
       ) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      expect(output.canContainUndefs).toEqual(false);
       expect(await arrayifyStream(output.bindingsStream)).toEqual([
         Bindings({ '?x': namedNode('2') }),
         Bindings({ '?x': namedNode('3') }),

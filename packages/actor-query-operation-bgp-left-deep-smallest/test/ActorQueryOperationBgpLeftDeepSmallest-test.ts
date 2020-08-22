@@ -27,6 +27,7 @@ describe('ActorQueryOperationBgpLeftDeepSmallest', () => {
         metadata: () => Promise.resolve({ totalItems: (arg.context || ActionContext({})).get('totalItems') }),
         type: 'bindings',
         variables: (arg.context || ActionContext({})).get('variables') || [],
+        canContainUndefs: false,
       }),
     };
   });
@@ -544,6 +545,7 @@ describe('ActorQueryOperationBgpLeftDeepSmallest', () => {
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
         expect(output.variables).toEqual([ 'a' ]);
         expect(output.type).toEqual('bindings');
+        expect(output.canContainUndefs).toEqual(false);
         expect(await (<any> output).metadata()).toEqual({ totalItems: 100 });
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({
@@ -562,6 +564,7 @@ describe('ActorQueryOperationBgpLeftDeepSmallest', () => {
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
         expect(output.variables).toEqual([]);
         expect(output.type).toEqual('bindings');
+        expect(output.canContainUndefs).toEqual(false);
         expect(await (<any> output).metadata()).toEqual({ totalItems: Infinity });
         expect(mediatorQueryOperation.mediate).toHaveBeenCalledWith(
           {
@@ -596,6 +599,7 @@ describe('ActorQueryOperationBgpLeftDeepSmallest', () => {
       return thisActor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
         expect(output.variables).toEqual([ '?a', '?d' ]);
         expect(output.type).toEqual('bindings');
+        expect(output.canContainUndefs).toEqual(false);
         expect(await (<any> output).metadata()).toEqual({ totalItems: 0 });
         expect(await arrayifyStream(output.bindingsStream)).toEqual([]);
       });
@@ -617,6 +621,7 @@ describe('ActorQueryOperationBgpLeftDeepSmallest', () => {
       return thisActor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
         expect(output.variables).toEqual([]);
         expect(output.type).toEqual('bindings');
+        expect(output.canContainUndefs).toEqual(false);
         expect(await (<any> output).metadata()).toEqual({ totalItems: Infinity });
         expect(await arrayifyStream(output.bindingsStream)).toEqual([]);
       });

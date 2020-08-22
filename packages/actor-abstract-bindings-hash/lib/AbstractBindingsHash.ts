@@ -47,6 +47,12 @@ export abstract class AbstractBindingsHash<T extends Algebra.Operation> extends 
     const bindingsStream: BindingsStream = output.bindingsStream.filter(
       this.newHashFilter(this.hashAlgorithm, this.digestAlgorithm),
     );
-    return { type: 'bindings', bindingsStream, metadata: output.metadata, variables: output.variables };
+    return {
+      type: 'bindings',
+      bindingsStream,
+      metadata: output.metadata,
+      variables: output.variables,
+      canContainUndefs: output.canContainUndefs,
+    };
   }
 }
