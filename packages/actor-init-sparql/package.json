@@ -93,6 +93,7 @@
     "@comunica/actor-rdf-dereference-http-parse": "^1.15.0",
     "@comunica/actor-rdf-join-multi-smallest": "^1.15.0",
     "@comunica/actor-rdf-join-symmetrichash": "^1.15.0",
+    "@comunica/actor-rdf-join-nestedloop": "^1.15.0",
     "@comunica/actor-rdf-metadata-all": "^1.15.0",
     "@comunica/actor-rdf-metadata-extract-hydra-controls": "^1.15.0",
     "@comunica/actor-rdf-metadata-extract-hydra-count": "^1.15.0",

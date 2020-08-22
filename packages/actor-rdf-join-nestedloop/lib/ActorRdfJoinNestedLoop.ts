@@ -14,7 +14,7 @@ import { NestedLoopJoin } from 'asyncjoin';
  */
 export class ActorRdfJoinNestedLoop extends ActorRdfJoin {
   public constructor(args: IActorArgs<IActionRdfJoin, IMediatorTypeIterations, IActorQueryOperationOutput>) {
-    super(args, 2);
+    super(args, 2, undefined, true);
   }
 
   protected async getOutput(action: IActionRdfJoin): Promise<IActorQueryOperationOutputBindings> {
@@ -25,7 +25,7 @@ export class ActorRdfJoinNestedLoop extends ActorRdfJoin {
       type: 'bindings',
       bindingsStream: join,
       variables: ActorRdfJoin.joinVariables(action),
-      canContainUndefs: false,
+      canContainUndefs: action.entries.reduce((acc, val) => acc || val.canContainUndefs, false),
     };
   }
 

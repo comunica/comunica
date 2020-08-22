@@ -63,23 +63,23 @@ describe('ActorRdfJoinNestedLoop', () => {
       return expect(actor.test(action)).rejects.toBeTruthy();
     });
 
-    it('should fail on undefs in left stream', () => {
+    it('should handle undefs in left stream', () => {
       action.entries[0].canContainUndefs = true;
-      return expect(actor.test(action)).rejects
-        .toThrow(new Error('Actor actor can not join streams containing undefs'));
+      return expect(actor.test(action)).resolves
+        .toEqual({ iterations: 20 });
     });
 
-    it('should fail on undefs in right stream', () => {
+    it('should handle undefs in right stream', () => {
       action.entries[1].canContainUndefs = true;
-      return expect(actor.test(action)).rejects
-        .toThrow(new Error('Actor actor can not join streams containing undefs'));
+      return expect(actor.test(action)).resolves
+        .toEqual({ iterations: 20 });
     });
 
-    it('should fail on undefs in left and right stream', () => {
+    it('should handle undefs in left and right stream', () => {
       action.entries[0].canContainUndefs = true;
       action.entries[1].canContainUndefs = true;
-      return expect(actor.test(action)).rejects
-        .toThrow(new Error('Actor actor can not join streams containing undefs'));
+      return expect(actor.test(action)).resolves
+        .toEqual({ iterations: 20 });
     });
 
     it('should generate correct test metadata', async() => {
@@ -161,6 +161,32 @@ describe('ActorRdfJoinNestedLoop', () => {
           Bindings({ a: literal('2'), b: literal('3'), c: literal('6') }),
           Bindings({ a: literal('3'), b: literal('3'), c: literal('7') }),
           Bindings({ a: literal('3'), b: literal('4'), c: literal('7') }),
+        ];
+        expect(output.variables).toEqual([ 'a', 'b', 'c' ]);
+        // Mapping to string and sorting since we don't know order (well, we sort of know, but we might not!)
+        expect((await arrayifyStream(output.bindingsStream)).map(bindingsToString).sort())
+          // eslint-disable-next-line @typescript-eslint/require-array-sort-compare
+          .toEqual(expected.map(bindingsToString).sort());
+      });
+    });
+
+    it('should join multiple bindings with undefs', () => {
+      action.entries[0].bindingsStream = new ArrayIterator([
+        Bindings({ a: literal('1'), b: literal('2') }),
+        Bindings({ a: literal('2'), b: literal('3') }),
+      ]);
+      action.entries[0].variables = [ 'a', 'b' ];
+      action.entries[1].bindingsStream = new ArrayIterator([
+        Bindings({ a: literal('1'), c: literal('4') }),
+        Bindings({ c: literal('5') }),
+      ]);
+      action.entries[1].canContainUndefs = true;
+      action.entries[1].variables = [ 'a', 'c' ];
+      return actor.run(action).then(async(output: IActorQueryOperationOutputBindings) => {
+        const expected = [
+          Bindings({ a: literal('1'), b: literal('2'), c: literal('4') }),
+          Bindings({ a: literal('1'), b: literal('2'), c: literal('5') }),
+          Bindings({ a: literal('2'), b: literal('3'), c: literal('5') }),
         ];
         expect(output.variables).toEqual([ 'a', 'b', 'c' ]);
         // Mapping to string and sorting since we don't know order (well, we sort of know, but we might not!)
