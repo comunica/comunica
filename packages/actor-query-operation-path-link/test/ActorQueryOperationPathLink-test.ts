@@ -24,6 +24,7 @@ describe('ActorQueryOperationPathLink', () => {
         operated: arg,
         type: 'bindings',
         variables: [ 'a' ],
+        canContainUndefs: false,
       }),
     };
   });
@@ -65,6 +66,7 @@ describe('ActorQueryOperationPathLink', () => {
     it('should support Link paths', async() => {
       const op = { operation: factory.createPath(namedNode('s'), factory.createLink(namedNode('p')), variable('x')) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      expect(output.canContainUndefs).toEqual(false);
       expect(await arrayifyStream(output.bindingsStream)).toEqual([
         Bindings({ '?x': literal('1') }),
         Bindings({ '?x': literal('2') }),

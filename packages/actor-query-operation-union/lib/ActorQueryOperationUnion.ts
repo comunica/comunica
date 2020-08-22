@@ -71,6 +71,7 @@ export class ActorQueryOperationUnion extends ActorQueryOperationTypedMediated<A
     const variables: string[] = ActorQueryOperationUnion.unionVariables(
       outputs.map((output: IActorQueryOperationOutputBindings) => output.variables),
     );
-    return { type: 'bindings', bindingsStream, metadata, variables };
+    const canContainUndefs = outputs.reduce((acc, val) => acc || val.canContainUndefs, false);
+    return { type: 'bindings', bindingsStream, metadata, variables, canContainUndefs };
   }
 }

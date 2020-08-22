@@ -183,6 +183,7 @@ export class ActorQueryOperationBgpLeftDeepSmallestSort extends ActorQueryOperat
         metadata: () => Promise.resolve({ totalItems: 0 }),
         type: 'bindings',
         variables: [],
+        canContainUndefs: false,
       };
     }
 
@@ -225,7 +226,7 @@ export class ActorQueryOperationBgpLeftDeepSmallestSort extends ActorQueryOperat
         outputMetaTuples.map(pat => pat.meta)),
     });
 
-    return { type: 'bindings', bindingsStream, variables, metadata };
+    return { type: 'bindings', bindingsStream, variables, metadata, canContainUndefs: false };
   }
 }
 

@@ -155,7 +155,7 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
         { autoStart: true, maxBufferSize: 128 });
     }, { autoStart: false });
 
-    return { type: 'bindings', bindingsStream, variables, metadata: result.metadata };
+    return { type: 'bindings', bindingsStream, variables, metadata: result.metadata, canContainUndefs: false };
   }
 }
 

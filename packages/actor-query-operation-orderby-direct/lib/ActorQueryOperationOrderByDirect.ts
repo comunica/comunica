@@ -61,7 +61,13 @@ export class ActorQueryOperationOrderByDirect extends ActorQueryOperationTypedMe
       }, options);
     }
 
-    return { type: 'bindings', bindingsStream, metadata: output.metadata, variables: output.variables };
+    return {
+      type: 'bindings',
+      bindingsStream,
+      metadata: output.metadata,
+      variables: output.variables,
+      canContainUndefs: output.canContainUndefs,
+    };
   }
 }
 

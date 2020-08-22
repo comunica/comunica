@@ -253,7 +253,11 @@ export interface IActorQueryOperationOutputBindings extends IActorQueryOperation
    * The list of variable names (without '?') for which bindings are provided in the stream.
    */
   variables: string[];
-
+  /**
+   * If any of the bindings could contain an undefined variable binding.
+   * If this is false, then all variables are guaranteed to have a defined bound value in the bindingsStream.
+   */
+  canContainUndefs: boolean;
 }
 
 /**

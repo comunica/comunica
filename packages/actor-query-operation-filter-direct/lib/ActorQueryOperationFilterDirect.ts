@@ -38,6 +38,12 @@ export class ActorQueryOperationFilterDirect extends ActorQueryOperationTypedMed
     }
     const bindingsStream = output.bindingsStream.transform<Bindings>({ filter, autoStart: false });
 
-    return { type: 'bindings', bindingsStream, metadata: output.metadata, variables: output.variables };
+    return {
+      type: 'bindings',
+      bindingsStream,
+      metadata: output.metadata,
+      variables: output.variables,
+      canContainUndefs: output.canContainUndefs,
+    };
   }
 }

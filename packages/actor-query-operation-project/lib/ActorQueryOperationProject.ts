@@ -67,6 +67,12 @@ export class ActorQueryOperationProject extends ActorQueryOperationTypedMediated
       autoStart: false,
     });
 
-    return { type: 'bindings', bindingsStream, metadata: output.metadata, variables };
+    return {
+      type: 'bindings',
+      bindingsStream,
+      metadata: output.metadata,
+      variables,
+      canContainUndefs: output.canContainUndefs,
+    };
   }
 }

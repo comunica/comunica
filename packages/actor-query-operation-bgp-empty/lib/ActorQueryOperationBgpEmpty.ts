@@ -46,6 +46,7 @@ export class ActorQueryOperationBgpEmpty extends ActorQueryOperationTyped<Algebr
       metadata: () => Promise.resolve({ totalItems: 1 }),
       type: 'bindings',
       variables: ActorQueryOperationBgpEmpty.getVariables(pattern.patterns),
+      canContainUndefs: false,
     };
   }
 }

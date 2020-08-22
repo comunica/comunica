@@ -24,6 +24,7 @@ describe('ActorQueryOperationPathAlt', () => {
         operated: arg,
         type: 'bindings',
         variables: [ 'a' ],
+        canContainUndefs: false,
       }),
     };
   });
@@ -74,6 +75,7 @@ describe('ActorQueryOperationPathAlt', () => {
         variable('x'),
       ) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
+      expect(output.canContainUndefs).toEqual(false);
       expect(await arrayifyStream(output.bindingsStream)).toEqual([
         Bindings({ '?x': literal('1') }),
         Bindings({ '?x': literal('1') }),

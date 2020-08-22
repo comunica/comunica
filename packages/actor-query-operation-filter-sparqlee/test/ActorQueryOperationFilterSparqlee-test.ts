@@ -56,6 +56,7 @@ describe('ActorQueryOperationFilterSparqlee', () => {
         operated: arg,
         type: 'bindings',
         variables: [ 'a' ],
+        canContainUndefs: false,
       }),
     };
   });
@@ -112,6 +113,7 @@ describe('ActorQueryOperationFilterSparqlee', () => {
       expect(output.type).toEqual('bindings');
       expect(await (<any> output).metadata()).toMatchObject({ totalItems: 3 });
       expect(output.variables).toMatchObject([ 'a' ]);
+      expect(output.canContainUndefs).toEqual(false);
     });
 
     it('should return an empty stream for a falsy filter', async() => {
@@ -121,6 +123,7 @@ describe('ActorQueryOperationFilterSparqlee', () => {
       expect(await (<any> output).metadata()).toMatchObject({ totalItems: 3 });
       expect(output.type).toEqual('bindings');
       expect(output.variables).toMatchObject([ 'a' ]);
+      expect(output.canContainUndefs).toEqual(false);
     });
 
     it('should return an empty stream when the expressions error', async() => {
@@ -130,6 +133,7 @@ describe('ActorQueryOperationFilterSparqlee', () => {
       expect(await (<any> output).metadata()).toMatchObject({ totalItems: 3 });
       expect(output.type).toEqual('bindings');
       expect(output.variables).toMatchObject([ 'a' ]);
+      expect(output.canContainUndefs).toEqual(false);
     });
 
     it('should emit an error for a hard erroring filter', async next => {
@@ -154,6 +158,7 @@ describe('ActorQueryOperationFilterSparqlee', () => {
       expect(output.type).toEqual('bindings');
       expect(await (<any> output).metadata()).toMatchObject({ totalItems: 3 });
       expect(output.variables).toMatchObject([ 'a' ]);
+      expect(output.canContainUndefs).toEqual(false);
     });
 
     describe('should be able to handle EXIST filters', () => {

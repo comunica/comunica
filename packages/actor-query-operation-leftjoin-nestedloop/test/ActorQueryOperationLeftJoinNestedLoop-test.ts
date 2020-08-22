@@ -63,6 +63,7 @@ describe('ActorQueryOperationLeftJoinNestedLoop', () => {
           operated: arg,
           type: 'bindings',
           variables: left ? [ '?a' ] : [ '?a', '?b' ],
+          canContainUndefs: false,
         });
       },
     };
@@ -114,6 +115,7 @@ describe('ActorQueryOperationLeftJoinNestedLoop', () => {
         expect(await (<any> output).metadata()).toMatchObject({ totalItems: 9 });
         expect(output.type).toEqual('bindings');
         expect(output.variables).toMatchObject([ '?a', '?b' ]);
+        expect(output.canContainUndefs).toEqual(true);
       });
     });
 
@@ -151,6 +153,7 @@ describe('ActorQueryOperationLeftJoinNestedLoop', () => {
         expect(await (<any> output).metadata()).toMatchObject({ totalItems: 9 });
         expect(output.type).toEqual('bindings');
         expect(output.variables).toMatchObject([ '?a', '?b' ]);
+        expect(output.canContainUndefs).toEqual(true);
       });
     });
 
@@ -166,6 +169,7 @@ describe('ActorQueryOperationLeftJoinNestedLoop', () => {
         expect(await (<any> output).metadata()).toMatchObject({ totalItems: 9 });
         expect(output.type).toEqual('bindings');
         expect(output.variables).toMatchObject([ '?a', '?b' ]);
+        expect(output.canContainUndefs).toEqual(true);
       });
     });
 
@@ -181,6 +185,7 @@ describe('ActorQueryOperationLeftJoinNestedLoop', () => {
         expect(await (<any> output).metadata()).toMatchObject({ totalItems: 9 });
         expect(output.type).toEqual('bindings');
         expect(output.variables).toMatchObject([ '?a', '?b' ]);
+        expect(output.canContainUndefs).toEqual(true);
       });
     });
 

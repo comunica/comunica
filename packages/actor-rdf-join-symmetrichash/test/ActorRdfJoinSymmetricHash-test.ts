@@ -46,12 +46,14 @@ describe('ActorRdfJoinSymmetricHash', () => {
           metadata: () => Promise.resolve({ totalItems: 4 }),
           type: 'bindings',
           variables: [],
+          canContainUndefs: false,
         },
         {
           bindingsStream: new ArrayIterator([], { autoStart: false }),
           metadata: () => Promise.resolve({ totalItems: 5 }),
           type: 'bindings',
           variables: [],
+          canContainUndefs: false,
         },
       ]};
     });
@@ -59,6 +61,25 @@ describe('ActorRdfJoinSymmetricHash', () => {
     it('should only handle 2 streams', () => {
       action.entries.push(<any> {});
       return expect(actor.test(action)).rejects.toBeTruthy();
+    });
+
+    it('should fail on undefs in left stream', () => {
+      action.entries[0].canContainUndefs = true;
+      return expect(actor.test(action)).rejects
+        .toThrow(new Error('Actor actor can not join streams containing undefs'));
+    });
+
+    it('should fail on undefs in right stream', () => {
+      action.entries[1].canContainUndefs = true;
+      return expect(actor.test(action)).rejects
+        .toThrow(new Error('Actor actor can not join streams containing undefs'));
+    });
+
+    it('should fail on undefs in left and right stream', () => {
+      action.entries[0].canContainUndefs = true;
+      action.entries[1].canContainUndefs = true;
+      return expect(actor.test(action)).rejects
+        .toThrow(new Error('Actor actor can not join streams containing undefs'));
     });
 
     it('should generate correct test metadata', async() => {

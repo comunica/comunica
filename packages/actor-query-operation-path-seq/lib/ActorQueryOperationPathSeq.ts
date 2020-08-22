@@ -48,7 +48,7 @@ export class ActorQueryOperationPathSeq extends ActorAbstractPath {
     const variables = join.variables;
     const indexOfVar = variables.indexOf(varName);
     variables.splice(indexOfVar, 1);
-    return { type: 'bindings', bindingsStream, variables };
+    return { type: 'bindings', bindingsStream, variables, canContainUndefs: false };
   }
 }
 

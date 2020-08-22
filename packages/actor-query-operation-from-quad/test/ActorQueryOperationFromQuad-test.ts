@@ -23,6 +23,7 @@ describe('ActorQueryOperationFromQuad', () => {
         operated: arg,
         type: 'bindings',
         variables: [ 'a' ],
+        canContainUndefs: false,
       }),
     };
   });
@@ -581,6 +582,7 @@ describe('ActorQueryOperationFromQuad', () => {
       expect(await (<any> output).metadata()).toMatchObject(Promise.resolve({ totalItems: 3 }));
       expect(output.type).toEqual('bindings');
       expect(output.variables).toMatchObject([ 'a' ]);
+      expect(output.canContainUndefs).toEqual(false);
     });
   });
 });

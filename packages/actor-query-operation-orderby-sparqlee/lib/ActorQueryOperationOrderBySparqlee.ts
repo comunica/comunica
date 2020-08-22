@@ -72,7 +72,13 @@ export class ActorQueryOperationOrderBySparqlee extends ActorQueryOperationTyped
       bindingsStream = sortedStream.map(({ bindings, result }) => bindings);
     }
 
-    return { type: 'bindings', bindingsStream, metadata: output.metadata, variables: output.variables };
+    return {
+      type: 'bindings',
+      bindingsStream,
+      metadata: output.metadata,
+      variables: output.variables,
+      canContainUndefs: output.canContainUndefs,
+    };
   }
 
   // Remove descending operator if necessary

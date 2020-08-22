@@ -63,6 +63,7 @@ describe('ActorRdfJoinMultiSmallest', () => {
             metadata: () => Promise.resolve({ totalItems: 4 }),
             type: 'bindings',
             variables: [ 'a', 'b' ],
+            canContainUndefs: false,
           },
           {
             bindingsStream: new ArrayIterator([
@@ -72,6 +73,7 @@ describe('ActorRdfJoinMultiSmallest', () => {
             metadata: () => Promise.resolve({ totalItems: 5 }),
             type: 'bindings',
             variables: [ 'a', 'c' ],
+            canContainUndefs: false,
           },
           {
             bindingsStream: new ArrayIterator([
@@ -81,6 +83,7 @@ describe('ActorRdfJoinMultiSmallest', () => {
             metadata: () => Promise.resolve({ totalItems: 2 }),
             type: 'bindings',
             variables: [ 'a', 'b' ],
+            canContainUndefs: false,
           },
         ],
       };
@@ -94,6 +97,7 @@ describe('ActorRdfJoinMultiSmallest', () => {
             metadata: () => Promise.resolve({ totalItems: 4 }),
             type: 'bindings',
             variables: [ 'a', 'b' ],
+            canContainUndefs: false,
           },
           {
             bindingsStream: new ArrayIterator([
@@ -103,6 +107,7 @@ describe('ActorRdfJoinMultiSmallest', () => {
             metadata: () => Promise.resolve({ totalItems: 5 }),
             type: 'bindings',
             variables: [ 'a', 'c' ],
+            canContainUndefs: false,
           },
           {
             bindingsStream: new ArrayIterator([
@@ -112,6 +117,7 @@ describe('ActorRdfJoinMultiSmallest', () => {
             metadata: () => Promise.resolve({ totalItems: 2 }),
             type: 'bindings',
             variables: [ 'a', 'b' ],
+            canContainUndefs: false,
           },
           {
             bindingsStream: new ArrayIterator([
@@ -121,6 +127,7 @@ describe('ActorRdfJoinMultiSmallest', () => {
             metadata: () => Promise.resolve({ totalItems: 2 }),
             type: 'bindings',
             variables: [ 'a', 'd' ],
+            canContainUndefs: false,
           },
         ],
       };
@@ -134,6 +141,7 @@ describe('ActorRdfJoinMultiSmallest', () => {
             metadata: () => Promise.resolve({ totalItems: 4 }),
             type: 'bindings',
             variables: [ 'a', 'b' ],
+            canContainUndefs: false,
           },
           {
             bindingsStream: new ArrayIterator([
@@ -143,6 +151,7 @@ describe('ActorRdfJoinMultiSmallest', () => {
             metadata: () => Promise.resolve({}),
             type: 'bindings',
             variables: [ 'a', 'c' ],
+            canContainUndefs: false,
           },
           {
             bindingsStream: new ArrayIterator([
@@ -152,6 +161,7 @@ describe('ActorRdfJoinMultiSmallest', () => {
             metadata: () => Promise.resolve({ totalItems: 2 }),
             type: 'bindings',
             variables: [ 'a', 'b' ],
+            canContainUndefs: false,
           },
         ],
       };

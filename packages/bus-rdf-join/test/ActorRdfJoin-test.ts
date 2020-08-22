@@ -17,7 +17,33 @@ class Dummy extends ActorRdfJoin {
   }
 
   public async getOutput(action: IActionRdfJoin) {
-    const result = <any> { dummy: 'dummy' };
+    const result = <any> { dummy: 'dummy', canContainUndefs: true };
+
+    if (this.metadata) {
+      result.metadata = () => Promise.resolve(this.metadata);
+    }
+
+    return result;
+  }
+
+  protected getIterations(action: IActionRdfJoin): Promise<number> {
+    return Promise.resolve(5);
+  }
+}
+
+// Dummy class to test instance of abstract class, which can handle undefs
+class DummyUndefs extends ActorRdfJoin {
+  public maxEntries: number;
+  public metadata: any;
+
+  // Just here to have a valid dummy class
+  public constructor(metadata?: any) {
+    super({ name: 'name', bus: new Bus({ name: 'bus' }) }, undefined, undefined, true);
+    this.metadata = metadata;
+  }
+
+  public async getOutput(action: IActionRdfJoin) {
+    const result = <any> { dummy: 'dummy', canContainUndefs: true };
 
     if (this.metadata) {
       result.metadata = () => Promise.resolve(this.metadata);
@@ -36,8 +62,8 @@ describe('ActorRdfJoin', () => {
 
   beforeEach(() => {
     action = { entries: [
-      { bindingsStream: <any> null, variables: [], type: 'bindings' },
-      { bindingsStream: <any> null, variables: [], type: 'bindings' },
+      { bindingsStream: <any> null, variables: [], type: 'bindings', canContainUndefs: false },
+      { bindingsStream: <any> null, variables: [], type: 'bindings', canContainUndefs: false },
     ]};
   });
 
@@ -85,6 +111,48 @@ describe('ActorRdfJoin', () => {
       action.entries[0].metadata = () => Promise.resolve({ totalItems: 5 });
       action.entries[1].metadata = () => Promise.resolve({ totalItems: 5 });
       return expect(instance.test(action)).resolves.toHaveProperty('iterations', 5);
+    });
+
+    it('should fail on undefs in left stream', () => {
+      action.entries[0].canContainUndefs = true;
+      return expect(instance.test(action)).rejects
+        .toThrow(new Error('Actor name can not join streams containing undefs'));
+    });
+
+    it('should fail on undefs in right stream', () => {
+      action.entries[1].canContainUndefs = true;
+      return expect(instance.test(action)).rejects
+        .toThrow(new Error('Actor name can not join streams containing undefs'));
+    });
+
+    it('should fail on undefs in left and right stream', () => {
+      action.entries[0].canContainUndefs = true;
+      action.entries[1].canContainUndefs = true;
+      return expect(instance.test(action)).rejects
+        .toThrow(new Error('Actor name can not join streams containing undefs'));
+    });
+  });
+
+  describe('The test function for an actor that can handle undefs', () => {
+    const instance = new DummyUndefs();
+
+    it('should handle undefs in left stream', () => {
+      action.entries[0].canContainUndefs = true;
+      return expect(instance.test(action)).resolves
+        .toEqual({ iterations: Infinity });
+    });
+
+    it('should handle undefs in right stream', () => {
+      action.entries[1].canContainUndefs = true;
+      return expect(instance.test(action)).resolves
+        .toEqual({ iterations: Infinity });
+    });
+
+    it('should handle undefs in left and right stream', () => {
+      action.entries[0].canContainUndefs = true;
+      action.entries[1].canContainUndefs = true;
+      return expect(instance.test(action)).resolves
+        .toEqual({ iterations: Infinity });
     });
   });
 
@@ -204,6 +272,7 @@ describe('ActorRdfJoin', () => {
       return instance.run(action).then(async(result: any) => {
         expect(await arrayifyStream(result.bindingsStream)).toEqual([]);
         expect(result.variables).toEqual([]);
+        expect(result.canContainUndefs).toEqual(false);
         return expect(await result.metadata()).toEqual({ totalItems: 0 });
       });
     });
@@ -221,6 +290,7 @@ describe('ActorRdfJoin', () => {
       action.entries[0].metadata = () => Promise.resolve({ totalItems: 5 });
       action.entries[1].metadata = () => Promise.resolve({ totalItems: 10 });
       await instance.run(action).then(async(result: any) => {
+        expect(result.canContainUndefs).toEqual(true);
         return expect(await result.metadata()).toEqual({ totalItems: 50 });
       });
     });
@@ -230,6 +300,7 @@ describe('ActorRdfJoin', () => {
       action.entries[0].metadata = () => Promise.resolve({ totalItems: 5 });
       action.entries[1].metadata = () => Promise.resolve({ totalItems: 10 });
       await metaInstance.run(action).then(async(result: any) => {
+        expect(result.canContainUndefs).toEqual(true);
         return expect(await result.metadata()).toEqual({ keep: true, totalItems: 50 });
       });
     });
@@ -239,6 +310,7 @@ describe('ActorRdfJoin', () => {
       action.entries[0].metadata = () => Promise.resolve({ totalItems: 5 });
       action.entries[1].metadata = () => Promise.resolve({ totalItems: 10 });
       await metaInstance.run(action).then(async(result: any) => {
+        expect(result.canContainUndefs).toEqual(true);
         return expect(await result.metadata()).toEqual({ totalItems: 10 });
       });
     });

@@ -39,6 +39,7 @@ describe('ActorQueryOperationFilterDirect', () => {
         operated: arg,
         type: 'bindings',
         variables: [ 'a' ],
+        canContainUndefs: false,
       }),
     };
   });
@@ -93,6 +94,7 @@ describe('ActorQueryOperationFilterDirect', () => {
       expect(output.type).toEqual('bindings');
       expect(await (<any> output).metadata()).toMatchObject({ totalItems: 3 });
       expect(output.variables).toMatchObject([ 'a' ]);
+      expect(output.canContainUndefs).toEqual(false);
     });
 
     it('should return an empty stream for a falsy filter', async() => {
@@ -102,6 +104,7 @@ describe('ActorQueryOperationFilterDirect', () => {
       expect(await (<any> output).metadata()).toMatchObject({ totalItems: 3 });
       expect(output.type).toEqual('bindings');
       expect(output.variables).toMatchObject([ 'a' ]);
+      expect(output.canContainUndefs).toEqual(false);
     });
 
     it('should emit an error for an erroring filter', async() => {
@@ -109,6 +112,7 @@ describe('ActorQueryOperationFilterDirect', () => {
       const op = { operation: { type: 'filter', input: {}, expression: falsyExpression }};
       const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
       await expect(arrayifyStream(output.bindingsStream)).rejects.toBeTruthy();
+      expect(output.canContainUndefs).toEqual(false);
     });
   });
 });

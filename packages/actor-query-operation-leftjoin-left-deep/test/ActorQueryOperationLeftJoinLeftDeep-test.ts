@@ -57,6 +57,7 @@ describe('ActorQueryOperationLeftJoinLeftDeep', () => {
             Promise.resolve({ totalItems: (arg.context || ActionContext({})).get('totalItems') }),
           type: 'bindings',
           variables: (arg.context || ActionContext({})).get('variables') || [],
+          canContainUndefs: false,
         });
       },
     };
@@ -107,6 +108,7 @@ describe('ActorQueryOperationLeftJoinLeftDeep', () => {
         expect(output.variables).toEqual([ 'a' ]);
         expect(output.type).toEqual('bindings');
         expect(await (<any> output).metadata()).toEqual({ totalItems: 100 });
+        expect(output.canContainUndefs).toEqual(true);
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({
             '?a': namedNode('bound-a'),
@@ -127,6 +129,7 @@ describe('ActorQueryOperationLeftJoinLeftDeep', () => {
         expect(output.variables).toEqual([ 'a' ]);
         expect(output.type).toEqual('bindings');
         expect(await (<any> output).metadata()).toEqual({ totalItems: 100 });
+        expect(output.canContainUndefs).toEqual(true);
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({
             '?+a': namedNode('bound-+a1'),
@@ -151,6 +154,7 @@ describe('ActorQueryOperationLeftJoinLeftDeep', () => {
         expect(output.variables).toEqual([ 'a' ]);
         expect(output.type).toEqual('bindings');
         expect(await (<any> output).metadata()).toEqual({ totalItems: 100 });
+        expect(output.canContainUndefs).toEqual(true);
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({
             '?a': namedNode('bound-a'),
@@ -175,6 +179,7 @@ describe('ActorQueryOperationLeftJoinLeftDeep', () => {
         expect(output.variables).toEqual([ 'a' ]);
         expect(output.type).toEqual('bindings');
         expect(await (<any> output).metadata()).toEqual({ totalItems: 100 });
+        expect(output.canContainUndefs).toEqual(true);
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({
             '?+a': namedNode('bound-+a1'),
@@ -207,6 +212,7 @@ describe('ActorQueryOperationLeftJoinLeftDeep', () => {
         expect(output.variables).toEqual([ 'a' ]);
         expect(output.type).toEqual('bindings');
         expect(await (<any> output).metadata()).toEqual({ totalItems: 100 });
+        expect(output.canContainUndefs).toEqual(true);
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({
             '?a': namedNode('bound-a'),
@@ -226,6 +232,7 @@ describe('ActorQueryOperationLeftJoinLeftDeep', () => {
         expect(output.variables).toEqual([ 'a' ]);
         expect(output.type).toEqual('bindings');
         expect(await (<any> output).metadata()).toEqual({ totalItems: 100 });
+        expect(output.canContainUndefs).toEqual(true);
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({
             '?+a': namedNode('bound-+a1'),
@@ -288,6 +295,7 @@ describe('ActorQueryOperationLeftJoinLeftDeep', () => {
         expect(output.variables).toEqual([ 'a' ]);
         expect(output.type).toEqual('bindings');
         expect(await (<any> output).metadata()).toEqual({ totalItems: 100 });
+        expect(output.canContainUndefs).toEqual(true);
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({
             '?a': namedNode('bound-a'),

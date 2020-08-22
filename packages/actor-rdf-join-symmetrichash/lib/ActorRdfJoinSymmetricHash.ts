@@ -36,7 +36,12 @@ export class ActorRdfJoinSymmetricHash extends ActorRdfJoin {
       entry => ActorRdfJoinSymmetricHash.hash(entry, variables),
       <any> ActorRdfJoin.join,
     );
-    return { type: 'bindings', bindingsStream: join, variables: ActorRdfJoin.joinVariables(action) };
+    return {
+      type: 'bindings',
+      bindingsStream: join,
+      variables: ActorRdfJoin.joinVariables(action),
+      canContainUndefs: false,
+    };
   }
 
   protected async getIterations(action: IActionRdfJoin): Promise<number> {

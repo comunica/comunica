@@ -35,6 +35,7 @@ export class ActorQueryOperationSlice extends ActorQueryOperationTypedMediated<A
         bindingsStream,
         metadata,
         variables: bindingsOutput.variables,
+        canContainUndefs: bindingsOutput.canContainUndefs,
       };
     }
 

@@ -23,6 +23,7 @@ describe('ActorQueryOperationOrderByDirect', () => {
         operated: arg,
         type: 'bindings',
         variables: [ '?a' ],
+        canContainUndefs: false,
       }),
     };
   });
@@ -97,6 +98,7 @@ describe('ActorQueryOperationOrderByDirect', () => {
       actor = new ActorQueryOperationOrderByDirect({ name: 'actor', bus, mediatorQueryOperation, window: 1 });
       const op = { operation: { type: 'orderby', input: {}, expressions: [ orderA ]}};
       const output = await actor.run(op);
+      expect(ActorQueryOperation.getSafeBindings(output).canContainUndefs).toEqual(false);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
         Bindings({ '?a': literal('2') }),
@@ -108,6 +110,7 @@ describe('ActorQueryOperationOrderByDirect', () => {
     it('should run operator expressions', async() => {
       const op = { operation: { type: 'orderby', input: {}, expressions: [ orderA1 ]}};
       const output = await actor.run(op);
+      expect(ActorQueryOperation.getSafeBindings(output).canContainUndefs).toEqual(false);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
         Bindings({ '?a': literal('1') }),
@@ -119,6 +122,7 @@ describe('ActorQueryOperationOrderByDirect', () => {
     it('should run descend', async() => {
       const op = { operation: { type: 'orderby', input: {}, expressions: [ descOrderA ]}};
       const output = await actor.run(op);
+      expect(ActorQueryOperation.getSafeBindings(output).canContainUndefs).toEqual(false);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
         Bindings({ '?a': literal('3') }),
@@ -130,6 +134,7 @@ describe('ActorQueryOperationOrderByDirect', () => {
     it('should ignore undefined results', async() => {
       const op = { operation: { type: 'orderby', input: {}, expressions: [ orderB ]}};
       const output = await actor.run(op);
+      expect(ActorQueryOperation.getSafeBindings(output).canContainUndefs).toEqual(false);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
         Bindings({ '?a': literal('2') }),

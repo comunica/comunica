@@ -29,7 +29,12 @@ export class ActorQueryOperationPathZeroOrOne extends ActorAbstractPath {
     // Both subject and object non-variables
     if (!sVar && !oVar) {
       if (path.subject.equals(path.object)) {
-        return { type: 'bindings', bindingsStream: new SingletonIterator(Bindings({})), variables: []};
+        return {
+          type: 'bindings',
+          bindingsStream: new SingletonIterator(Bindings({})),
+          variables: [],
+          canContainUndefs: false,
+        };
       }
     }
 
@@ -59,6 +64,6 @@ export class ActorQueryOperationPathZeroOrOne extends ActorAbstractPath {
 
     const bindingsStream = single.bindingsStream.prepend(extra);
 
-    return { type: 'bindings', bindingsStream, variables: single.variables };
+    return { type: 'bindings', bindingsStream, variables: single.variables, canContainUndefs: false };
   }
 }

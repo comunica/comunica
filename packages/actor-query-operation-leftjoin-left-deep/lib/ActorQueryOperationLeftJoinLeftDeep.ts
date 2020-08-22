@@ -93,6 +93,6 @@ export class ActorQueryOperationLeftJoinLeftDeep extends ActorQueryOperationType
       // Do nothing
     });
 
-    return { type: 'bindings', bindingsStream, metadata, variables };
+    return { type: 'bindings', bindingsStream, metadata, variables, canContainUndefs: true };
   }
 }

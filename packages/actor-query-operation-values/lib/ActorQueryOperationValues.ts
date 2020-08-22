@@ -23,6 +23,7 @@ export class ActorQueryOperationValues extends ActorQueryOperationTyped<Algebra.
     const bindingsStream: BindingsStream = new ArrayIterator<Bindings>(pattern.bindings.map(x => Bindings(x)));
     const metadata = (): Promise<{[id: string]: any}> => Promise.resolve({ totalItems: pattern.bindings.length });
     const variables: string[] = pattern.variables.map(x => termToString(x));
-    return { type: 'bindings', bindingsStream, metadata, variables };
+    const canContainUndefs = pattern.bindings.some(bindings => variables.some(variable => !(variable in bindings)));
+    return { type: 'bindings', bindingsStream, metadata, variables, canContainUndefs };
   }
 }

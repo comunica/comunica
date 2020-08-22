@@ -24,6 +24,7 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
         operated: arg,
         type: 'bindings',
         variables: [ '?a' ],
+        canContainUndefs: false,
       }),
     };
   });
@@ -83,6 +84,7 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
     it('should run', async() => {
       const op = { operation: { type: 'orderby', input: {}, expressions: [ orderA ]}};
       const output = await actor.run(op);
+      expect(ActorQueryOperation.getSafeBindings(output).canContainUndefs).toEqual(false);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
         Bindings({ '?a': literal('1') }),
@@ -95,6 +97,7 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
       actor = new ActorQueryOperationOrderBySparqlee({ name: 'actor', bus, mediatorQueryOperation, window: 1 });
       const op = { operation: { type: 'orderby', input: {}, expressions: [ orderA ]}};
       const output = await actor.run(op);
+      expect(ActorQueryOperation.getSafeBindings(output).canContainUndefs).toEqual(false);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
         Bindings({ '?a': literal('22') }),
@@ -106,6 +109,7 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
     it('should run operator expressions', async() => {
       const op = { operation: { type: 'orderby', input: {}, expressions: [ orderA1 ]}};
       const output = await actor.run(op);
+      expect(ActorQueryOperation.getSafeBindings(output).canContainUndefs).toEqual(false);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
         Bindings({ '?a': literal('1') }),
@@ -117,6 +121,7 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
     it('should run descend', async() => {
       const op = { operation: { type: 'orderby', input: {}, expressions: [ descOrderA ]}};
       const output = await actor.run(op);
+      expect(ActorQueryOperation.getSafeBindings(output).canContainUndefs).toEqual(false);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
         Bindings({ '?a': literal('333') }),
@@ -128,6 +133,7 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
     it('should ignore undefined results', async() => {
       const op = { operation: { type: 'orderby', input: {}, expressions: [ orderB ]}};
       const output = await actor.run(op);
+      expect(ActorQueryOperation.getSafeBindings(output).canContainUndefs).toEqual(false);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
         Bindings({ '?a': literal('22') }),

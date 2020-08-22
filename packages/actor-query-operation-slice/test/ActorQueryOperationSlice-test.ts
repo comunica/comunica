@@ -15,6 +15,7 @@ describe('ActorQueryOperationSlice', () => {
   let mediatorQueryOperation: any;
   let mediatorQueryOperationNoMeta: any;
   let mediatorQueryOperationMetaInf: any;
+  let mediatorQueryOperationUndefs: any;
   let mediatorQueryOperationQuads: any;
   let mediatorQueryOperationBoolean: any;
 
@@ -31,6 +32,7 @@ describe('ActorQueryOperationSlice', () => {
         operated: arg,
         type: 'bindings',
         variables: [ 'a' ],
+        canContainUndefs: false,
       }),
     };
     mediatorQueryOperationNoMeta = {
@@ -44,6 +46,7 @@ describe('ActorQueryOperationSlice', () => {
         operated: arg,
         type: 'bindings',
         variables: [ 'a' ],
+        canContainUndefs: false,
       }),
     };
     mediatorQueryOperationMetaInf = {
@@ -57,6 +60,21 @@ describe('ActorQueryOperationSlice', () => {
         operated: arg,
         type: 'bindings',
         variables: [ 'a' ],
+        canContainUndefs: false,
+      }),
+    };
+    mediatorQueryOperationUndefs = {
+      mediate: (arg: any) => Promise.resolve({
+        bindingsStream: new ArrayIterator([
+          Bindings({ a: literal('1') }),
+          Bindings({ a: literal('2') }),
+          Bindings({ a: literal('3') }),
+        ], { autoStart: false }),
+        metadata: () => Promise.resolve({ totalItems: 3 }),
+        operated: arg,
+        type: 'bindings',
+        variables: [ 'a' ],
+        canContainUndefs: true,
       }),
     };
     mediatorQueryOperationQuads = {
@@ -117,6 +135,7 @@ describe('ActorQueryOperationSlice', () => {
         expect(await (<any> output).metadata()).toEqual({ totalItems: 3 });
         expect(output.variables).toEqual([ 'a' ]);
         expect(output.type).toEqual('bindings');
+        expect(output.canContainUndefs).toEqual(false);
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({ a: literal('1') }),
           Bindings({ a: literal('2') }),
@@ -131,6 +150,7 @@ describe('ActorQueryOperationSlice', () => {
         expect(await (<any> output).metadata()).toEqual({ totalItems: 2 });
         expect(output.variables).toEqual([ 'a' ]);
         expect(output.type).toEqual('bindings');
+        expect(output.canContainUndefs).toEqual(false);
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({ a: literal('2') }),
           Bindings({ a: literal('3') }),
@@ -144,6 +164,7 @@ describe('ActorQueryOperationSlice', () => {
         expect(await (<any> output).metadata()).toEqual({ totalItems: 0 });
         expect(output.variables).toEqual([ 'a' ]);
         expect(output.type).toEqual('bindings');
+        expect(output.canContainUndefs).toEqual(false);
         expect(await arrayifyStream(output.bindingsStream)).toEqual([]);
       });
     });
@@ -154,6 +175,7 @@ describe('ActorQueryOperationSlice', () => {
         expect(await (<any> output).metadata()).toEqual({ totalItems: 3 });
         expect(output.variables).toEqual([ 'a' ]);
         expect(output.type).toEqual('bindings');
+        expect(output.canContainUndefs).toEqual(false);
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({ a: literal('1') }),
           Bindings({ a: literal('2') }),
@@ -168,6 +190,7 @@ describe('ActorQueryOperationSlice', () => {
         expect(await (<any> output).metadata()).toEqual({ totalItems: 2 });
         expect(output.variables).toEqual([ 'a' ]);
         expect(output.type).toEqual('bindings');
+        expect(output.canContainUndefs).toEqual(false);
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({ a: literal('1') }),
           Bindings({ a: literal('2') }),
@@ -181,6 +204,7 @@ describe('ActorQueryOperationSlice', () => {
         expect(await (<any> output).metadata()).toEqual({ totalItems: 0 });
         expect(output.variables).toEqual([ 'a' ]);
         expect(output.type).toEqual('bindings');
+        expect(output.canContainUndefs).toEqual(false);
         expect(await arrayifyStream(output.bindingsStream)).toEqual([]);
       });
     });
@@ -191,6 +215,7 @@ describe('ActorQueryOperationSlice', () => {
         expect(await (<any> output).metadata()).toEqual({ totalItems: 2 });
         expect(output.variables).toEqual([ 'a' ]);
         expect(output.type).toEqual('bindings');
+        expect(output.canContainUndefs).toEqual(false);
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({ a: literal('2') }),
           Bindings({ a: literal('3') }),
@@ -204,6 +229,7 @@ describe('ActorQueryOperationSlice', () => {
         expect(await (<any> output).metadata()).toEqual({ totalItems: 1 });
         expect(output.variables).toEqual([ 'a' ]);
         expect(output.type).toEqual('bindings');
+        expect(output.canContainUndefs).toEqual(false);
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({ a: literal('2') }),
         ]);
@@ -216,6 +242,7 @@ describe('ActorQueryOperationSlice', () => {
         expect(await (<any> output).metadata()).toEqual({ totalItems: 1 });
         expect(output.variables).toEqual([ 'a' ]);
         expect(output.type).toEqual('bindings');
+        expect(output.canContainUndefs).toEqual(false);
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({ a: literal('3') }),
         ]);
@@ -228,6 +255,7 @@ describe('ActorQueryOperationSlice', () => {
         expect(await (<any> output).metadata()).toEqual({ totalItems: 0 });
         expect(output.variables).toEqual([ 'a' ]);
         expect(output.type).toEqual('bindings');
+        expect(output.canContainUndefs).toEqual(false);
         expect(await arrayifyStream(output.bindingsStream)).toEqual([]);
       });
     });
@@ -237,6 +265,7 @@ describe('ActorQueryOperationSlice', () => {
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
         expect(await (<any> output).metadata()).toEqual({ totalItems: 0 });
         expect(output.variables).toEqual([ 'a' ]);
+        expect(output.canContainUndefs).toEqual(false);
         expect(await arrayifyStream(output.bindingsStream)).toEqual([]);
       });
     });
@@ -247,6 +276,7 @@ describe('ActorQueryOperationSlice', () => {
         expect(await (<any> output).metadata()).toEqual({ totalItems: 0 });
         expect(output.variables).toEqual([ 'a' ]);
         expect(output.type).toEqual('bindings');
+        expect(output.canContainUndefs).toEqual(false);
         expect(await arrayifyStream(output.bindingsStream)).toEqual([]);
       });
     });
@@ -257,6 +287,7 @@ describe('ActorQueryOperationSlice', () => {
         expect(await (<any> output).metadata()).toEqual({ totalItems: 0 });
         expect(output.variables).toEqual([ 'a' ]);
         expect(output.type).toEqual('bindings');
+        expect(output.canContainUndefs).toEqual(false);
         expect(await arrayifyStream(output.bindingsStream)).toEqual([]);
       });
     });
@@ -267,6 +298,7 @@ describe('ActorQueryOperationSlice', () => {
         expect(await (<any> output).metadata()).toEqual({ totalItems: 0 });
         expect(output.variables).toEqual([ 'a' ]);
         expect(output.type).toEqual('bindings');
+        expect(output.canContainUndefs).toEqual(false);
         expect(await arrayifyStream(output.bindingsStream)).toEqual([]);
       });
     });
@@ -280,6 +312,7 @@ describe('ActorQueryOperationSlice', () => {
         expect(output.metadata).toBeFalsy();
         expect(output.variables).toEqual([ 'a' ]);
         expect(output.type).toEqual('bindings');
+        expect(output.canContainUndefs).toEqual(false);
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({ a: literal('1') }),
           Bindings({ a: literal('2') }),
@@ -297,6 +330,25 @@ describe('ActorQueryOperationSlice', () => {
         expect(await (<any> output).metadata()).toEqual({ totalItems: Infinity });
         expect(output.variables).toEqual([ 'a' ]);
         expect(output.type).toEqual('bindings');
+        expect(output.canContainUndefs).toEqual(false);
+        expect(await arrayifyStream(output.bindingsStream)).toEqual([
+          Bindings({ a: literal('1') }),
+          Bindings({ a: literal('2') }),
+          Bindings({ a: literal('3') }),
+        ]);
+      });
+    });
+
+    it('should run on a stream for start 0 and length 100 when the mediator provides undefs', () => {
+      actor = new ActorQueryOperationSlice({ bus,
+        mediatorQueryOperation: mediatorQueryOperationUndefs,
+        name: 'actor' });
+      const op = { operation: { type: 'project', start: 0, length: 100 }};
+      return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
+        expect(await (<any> output).metadata()).toEqual({ totalItems: 3 });
+        expect(output.variables).toEqual([ 'a' ]);
+        expect(output.type).toEqual('bindings');
+        expect(output.canContainUndefs).toEqual(true);
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({ a: literal('1') }),
           Bindings({ a: literal('2') }),

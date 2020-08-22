@@ -206,6 +206,7 @@ export class ActorQueryOperationBgpLeftDeepSmallest extends ActorQueryOperationT
         metadata: () => Promise.resolve({ totalItems: 0 }),
         type: 'bindings',
         variables: ActorQueryOperationBgpLeftDeepSmallest.getCombinedVariables(patternOutputs),
+        canContainUndefs: false,
       };
     }
 
@@ -260,6 +261,6 @@ export class ActorQueryOperationBgpLeftDeepSmallest extends ActorQueryOperationT
         metadatas.slice(smallestId)),
     });
 
-    return { type: 'bindings', bindingsStream, variables, metadata };
+    return { type: 'bindings', bindingsStream, variables, metadata, canContainUndefs: false };
   }
 }
