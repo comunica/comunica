@@ -124,7 +124,10 @@ export class HtmlScriptListener implements IHtmlParseListener {
           .catch((error: Error) => {
             if (this.targetScriptId) {
               // Error if we are targeting this script tag specifically
-              this.cbError(error);
+              this.cbError(HtmlScriptListener.newErrorCoded(
+                error.message,
+                'loading document failed',
+              ));
             } else {
               // Ignore script tags that we don't understand
               this.onEnd();
