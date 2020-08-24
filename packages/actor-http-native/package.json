@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-http-native",
-  "version": "1.16.0",
+  "version": "1.16.2",
   "description": "A native http actor",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-http-native",
   "lsd:components": "components/components.jsonld",

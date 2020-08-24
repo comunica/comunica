@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v1.16.2"></a>
+## [v1.16.2](https://github.com/comunica/comunica/compare/v1.16.1...v1.16.2) - 2020-08-24
+
+### Fixed
+* [Fix native HTTP actor broken in browser](https://github.com/comunica/comunica/commit/98521f3a63c79895003e0dbb8fb11011dd856997)
+
 <a name="v1.16.1"></a>
 ## [v1.16.1](https://github.com/comunica/comunica/compare/v1.16.0...v1.16.1) - 2020-08-24
 
