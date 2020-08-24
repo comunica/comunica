@@ -99,6 +99,7 @@
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="actor_init_sparql.iqueryresultbindings-1.html#bindings" class="tsd-kind-icon">bindings</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="actor_init_sparql.iqueryresultbindings-1.html#bindingsstream" class="tsd-kind-icon">bindings<wbr>Stream</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="actor_init_sparql.iqueryresultbindings-1.html#cancontainundefs" class="tsd-kind-icon">can<wbr>Contain<wbr>Undefs</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="actor_init_sparql.iqueryresultbindings-1.html#context" class="tsd-kind-icon">context</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="actor_init_sparql.iqueryresultbindings-1.html#metadata" class="tsd-kind-icon">metadata</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-overwrite tsd-is-inherited"><a href="actor_init_sparql.iqueryresultbindings-1.html#type" class="tsd-kind-icon">type</a></li>
@@ -116,7 +117,7 @@
 					<div class="tsd-signature tsd-kind-icon">bindings<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">RDF.Term</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/cfa9044/packages/actor-init-sparql/lib/ActorInitSparql-browser.ts#L311">packages/actor-init-sparql/lib/ActorInitSparql-browser.ts:311</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/697534a/packages/actor-init-sparql/lib/ActorInitSparql-browser.ts#L311">packages/actor-init-sparql/lib/ActorInitSparql-browser.ts:311</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -147,12 +148,29 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="bus_query_operation.iactorqueryoperationoutputbindings-1.html">IActorQueryOperationOutputBindings</a>.<a href="bus_query_operation.iactorqueryoperationoutputbindings-1.html#bindingsstream">bindingsStream</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/cfa9044/packages/bus-query-operation/lib/ActorQueryOperation.ts#L251">packages/bus-query-operation/lib/ActorQueryOperation.ts:251</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/697534a/packages/bus-query-operation/lib/ActorQueryOperation.ts#L251">packages/bus-query-operation/lib/ActorQueryOperation.ts:251</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
 							<p>The stream of bindings resulting from the given operation.</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+					<a name="cancontainundefs" class="tsd-anchor"></a>
+					<h3>can<wbr>Contain<wbr>Undefs</h3>
+					<div class="tsd-signature tsd-kind-icon">can<wbr>Contain<wbr>Undefs<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
+					<aside class="tsd-sources">
+						<p>Inherited from <a href="bus_query_operation.iactorqueryoperationoutputbindings-1.html">IActorQueryOperationOutputBindings</a>.<a href="bus_query_operation.iactorqueryoperationoutputbindings-1.html#cancontainundefs">canContainUndefs</a></p>
+						<ul>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/697534a/packages/bus-query-operation/lib/ActorQueryOperation.ts#L260">packages/bus-query-operation/lib/ActorQueryOperation.ts:260</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>If any of the bindings could contain an undefined variable binding.
+							If this is false, then all variables are guaranteed to have a defined bound value in the bindingsStream.</p>
 						</div>
 					</div>
 				</section>
@@ -163,7 +181,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="bus_query_operation.iactorqueryoperationoutputbase-1.html">IActorQueryOperationOutputBase</a>.<a href="bus_query_operation.iactorqueryoperationoutputbase-1.html#context">context</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/cfa9044/packages/bus-query-operation/lib/ActorQueryOperation.ts#L208">packages/bus-query-operation/lib/ActorQueryOperation.ts:208</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/697534a/packages/bus-query-operation/lib/ActorQueryOperation.ts#L208">packages/bus-query-operation/lib/ActorQueryOperation.ts:208</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -179,7 +197,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="bus_query_operation.iactorqueryoperationoutputstream-1.html">IActorQueryOperationOutputStream</a>.<a href="bus_query_operation.iactorqueryoperationoutputstream-1.html#metadata">metadata</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/cfa9044/packages/bus-query-operation/lib/ActorQueryOperation.ts#L224">packages/bus-query-operation/lib/ActorQueryOperation.ts:224</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/697534a/packages/bus-query-operation/lib/ActorQueryOperation.ts#L224">packages/bus-query-operation/lib/ActorQueryOperation.ts:224</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -201,7 +219,7 @@
 						<p>Inherited from <a href="bus_query_operation.iactorqueryoperationoutputbindings-1.html">IActorQueryOperationOutputBindings</a>.<a href="bus_query_operation.iactorqueryoperationoutputbindings-1.html#type">type</a></p>
 						<p>Overrides <a href="bus_query_operation.iactorqueryoperationoutputbase-1.html">IActorQueryOperationOutputBase</a>.<a href="bus_query_operation.iactorqueryoperationoutputbase-1.html#type">type</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/cfa9044/packages/bus-query-operation/lib/ActorQueryOperation.ts#L247">packages/bus-query-operation/lib/ActorQueryOperation.ts:247</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/697534a/packages/bus-query-operation/lib/ActorQueryOperation.ts#L247">packages/bus-query-operation/lib/ActorQueryOperation.ts:247</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -217,7 +235,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="bus_query_operation.iactorqueryoperationoutputbindings-1.html">IActorQueryOperationOutputBindings</a>.<a href="bus_query_operation.iactorqueryoperationoutputbindings-1.html#variables">variables</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/cfa9044/packages/bus-query-operation/lib/ActorQueryOperation.ts#L255">packages/bus-query-operation/lib/ActorQueryOperation.ts:255</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/697534a/packages/bus-query-operation/lib/ActorQueryOperation.ts#L255">packages/bus-query-operation/lib/ActorQueryOperation.ts:255</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -254,6 +272,9 @@
 									</li>
 									<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
 										<a href="actor_init_sparql.iqueryresultbindings-1.html#bindingsstream" class="tsd-kind-icon">bindings<wbr>Stream</a>
+									</li>
+									<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
+										<a href="actor_init_sparql.iqueryresultbindings-1.html#cancontainundefs" class="tsd-kind-icon">can<wbr>Contain<wbr>Undefs</a>
 									</li>
 									<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
 										<a href="actor_init_sparql.iqueryresultbindings-1.html#context" class="tsd-kind-icon">context</a>
