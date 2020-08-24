@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v1.16.1"></a>
+## [v1.16.1](https://github.com/comunica/comunica/compare/v1.16.0...v1.16.1) - 2020-08-24
+
+### Fixed
+* [Fix incorrect JSON-LD error code on target script error](https://github.com/comunica/comunica/commit/89e5aad4e95db48502fb1c91dd6a95ba38e8b687)
+
 <a name="v1.16.0"></a>
 ## [v1.16.0](https://github.com/comunica/comunica/compare/v1.15.0...v1.16.0) - 2020-08-24
 

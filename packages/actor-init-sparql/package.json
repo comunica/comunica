@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-init-sparql",
-  "version": "1.16.0",
+  "version": "1.16.1",
   "description": "A SPARQL query engine for querying over decentralized RDF knowledge graphs on the Web",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-sparql",
   "lsd:components": "components/components.jsonld",
@@ -101,7 +101,7 @@
     "@comunica/actor-rdf-metadata-primary-topic": "^1.15.0",
     "@comunica/actor-rdf-parse-html": "^1.15.0",
     "@comunica/actor-rdf-parse-html-rdfa": "^1.15.0",
-    "@comunica/actor-rdf-parse-html-script": "^1.16.0",
+    "@comunica/actor-rdf-parse-html-script": "^1.16.1",
     "@comunica/actor-rdf-parse-jsonld": "^1.16.0",
     "@comunica/actor-rdf-parse-n3": "^1.15.0",
     "@comunica/actor-rdf-parse-rdfxml": "^1.15.0",
