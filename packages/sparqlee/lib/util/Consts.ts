@@ -84,7 +84,7 @@ export enum DerivedIntegerTypeURL {
   XSD_POSITIVE_INTEGER = 'http://www.w3.org/2001/XMLSchema#positiveInteger',
 }
 
-export const NumericTypeURLs = Set(Object.values(NumericTypeURL));
+export const NumericTypeURLs: Set<string> = Set(Object.values(NumericTypeURL));
 export const DerivedIntegerTypeURLs = Set(Object.values(DerivedIntegerTypeURL));
 
 export const commonTerms: { [key: string]: RDF.Term } = {
@@ -278,8 +278,8 @@ export enum SpecialOperator {
   BNODE = 'BNODE',
 }
 
-export const RegularOperators = Set(Object.values(RegularOperator));
-export const SpecialOperators = Set(Object.values(SpecialOperator));
+export const RegularOperators: Set<string> = Set(Object.values(RegularOperator));
+export const SpecialOperators: Set<string> = Set(Object.values(SpecialOperator));
 export const Operators = RegularOperators.union(SpecialOperators);
 
 export enum SetFunction {
