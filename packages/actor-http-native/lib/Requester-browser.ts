@@ -4,7 +4,7 @@
 /* Translated from https://github.com/LinkedDataFragments/Client.js/blob/master/lib/browser/Request.js */
 
 import { EventEmitter } from 'events';
-import { IncomingMessage } from 'http';
+import { IncomingHttpHeaders, IncomingMessage } from 'http';
 import { Readable } from 'stream';
 import * as parseLink from 'parse-link-header';
 
@@ -25,21 +25,21 @@ export default class Requester {
     // Reduce OPTIONS preflight requests by removing the Accept-Datetime header
     // on requests for resources that are presumed to have been time-negotiated
     if (this.negotiatedResources[this.removeQuery(settings.url)]) {
-      delete settings.headers['accept-datetime'];
+      (<Headers> settings.headers).delete('accept-datetime');
     }
 
     // Create the actual XMLHttpRequest
     const request = new XMLHttpRequest();
-    const reqHeaders = settings.headers;
+    const reqHeaders: Headers = settings.headers;
     request.open(settings.method, settings.url, true);
     request.timeout = settings.timeout;
     request.withCredentials = settings.withCredentials;
 
-    for (const header of reqHeaders) {
-      if (!(header[0] in UNSAFE_REQUEST_HEADERS) && header[1]) {
-        request.setRequestHeader(header[0], header[1]);
+    reqHeaders.forEach((value, key) => {
+      if (!(key in UNSAFE_REQUEST_HEADERS) && value) {
+        request.setRequestHeader(key, value);
       }
-    }
+    });
 
     // Create a proxy for the XMLHttpRequest
     const requestProxy = new EventEmitter();
@@ -57,13 +57,13 @@ export default class Requester {
       (<any> response).responseUrl = request.responseURL;
 
       // Parse the response headers
-      response.headers = {};
-      const resHeaders = response.headers;
+      const resHeaders: Headers = this.convertRequestHeadersToFetchHeaders(response.headers);
+      response.headers = <any> resHeaders;
       const rawHeaders = request.getAllResponseHeaders() || '';
       const headerMatcher = /^([^\n\r:]+):[\t ]*([^\n\r]*)$/gmu;
       let match = headerMatcher.exec(rawHeaders);
       while (match) {
-        resHeaders[match[1].toLowerCase()] = match[2];
+        resHeaders.set(match[1].toLowerCase(), match[2]);
         match = headerMatcher.exec(rawHeaders);
       }
 
@@ -72,11 +72,11 @@ export default class Requester {
 
       // If the resource was time-negotiated, store its queryless URI
       // to enable the PERFORMANCE HACK explained above
-      if (reqHeaders['accept-datetime'] && resHeaders['memento-datetime']) {
-        const resource = this.removeQuery(resHeaders['content-location'] ?? settings.url);
+      if (reqHeaders.has('accept-datetime') && resHeaders.has('memento-datetime')) {
+        const resource = this.removeQuery(resHeaders.get('content-location') ?? settings.url);
         if (!this.negotiatedResources[resource]) {
           // Ensure the resource is not a timegate
-          const links = (resHeaders.link && parseLink(<string> resHeaders.link)) ?? undefined;
+          const links = (resHeaders.get('link') && parseLink(<string> resHeaders.get('link'))) ?? undefined;
           const timegate = this.removeQuery(links && links.timegate && links.timegate.url);
           if (resource !== timegate) {
             this.negotiatedResources[resource] = true;
@@ -95,6 +95,15 @@ export default class Requester {
     // Execute the request
     request.send();
     return requestProxy;
+  }
+
+  // Wrap headers into an header object type
+  public convertRequestHeadersToFetchHeaders(headers: IncomingHttpHeaders): Headers {
+    const responseHeaders: Headers = new Headers();
+    for (const key in headers) {
+      responseHeaders.append(key, <string> headers[key]);
+    }
+    return responseHeaders;
   }
 
   // Removes the query string from a URL
