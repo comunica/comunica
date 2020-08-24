@@ -1,6 +1,33 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v1.16.0"></a>
+## [v1.16.0](https://github.com/comunica/comunica/compare/v1.15.0...v1.16.0) - 2020-08-24
+
+### Added
+* [Implement missing property path cases](https://github.com/comunica/comunica/commit/5f088603343bdf5de565feb38d7b042bf9cf2c80)
+* [Add HTTP basic authentication support, Closes #613](https://github.com/comunica/comunica/commit/a63d83b68ceb165c76a30e62627f4a9569e59150)
+* [Add TSV SPARQL results serializer, #220](https://github.com/comunica/comunica/commit/276ddbaddb9e51ac213b5ba9062272e8b467a67e)
+* [Add CSV SPARQL results serializer, #220](https://github.com/comunica/comunica/commit/2704d82f6ce3a7dc1330e1e4c8ccbda5176f945e)
+
+### Fixed
+* [Update sparql parser to fix all syntax spec test failures, #287](https://github.com/comunica/comunica/commit/90f0465491873678048310975eaf34bcf57882fe)
+* [Fix network request without headers, Closes #700 (#701)](https://github.com/comunica/comunica/commit/0d5f2a0e5dead75dce4f6b4117ea8e7951415a12)
+* [Correctly handle aggregates without group](https://github.com/comunica/comunica/commit/cfa9044bb6d4ec5743d1bc3229a6d69a95f4dbfe)
+* [Fix subquery aggregates halting the process](https://github.com/comunica/comunica/commit/6128993f228b9b969f6fde38827bda0505a5b677)
+* [Fix variable graph also matching with default graph](https://github.com/comunica/comunica/commit/f198357644a7d0fd5c25f16092010dcf8f0fee31)
+* [Fix hypermedia actor failing on * property path queries](https://github.com/comunica/comunica/commit/ad8e20abdf05e1f8c4f51909891fc00274605aa4)
+* [Fix property path queries failing with named graphs](https://github.com/comunica/comunica/commit/556976cd9d91c4fadb967af2b647b2daf74d7597)
+* [Fix mainModulePath overriding not being possible in dynamic exec](https://github.com/comunica/comunica/commit/156b65fb3a78a0aadde10a169eeca9b643efa148)
+* [Fix process hanging after HTTP error](https://github.com/comunica/comunica/commit/45fe4a0316efd6d6b3837a5a0a927fe7d1e70a1c)
+* [Fix HTTP error events being emitted twice](https://github.com/comunica/comunica/commit/6e170f220c69b336441341a1b2cf175de1bba96d)
+* [Fix targeted HTML script tags not throwing error if of unknown type](https://github.com/comunica/comunica/commit/e453819246b28e79fea7a4105d58bba85f1207cb)
+* [Fix missing newline after --listformats](https://github.com/comunica/comunica/commit/96ee094a85145d5122abfcdba45351620080a0cd)
+
+### Changed
+* [Configure nestedloop join actor for handling streams with undefs](https://github.com/comunica/comunica/commit/4ea4d6cdbd6bf5898c2c154fb76964db39b6a0d0)
+* [Annotate bindingsStreams with canContainUndefs flag](https://github.com/comunica/comunica/commit/028ae5dc7b83aa10df2834db5d57154873998737)
+
 <a name="v1.15.0"></a>
 ## [v1.15.0](https://github.com/comunica/comunica/compare/v1.14.0...v1.15.0) - 2020-08-13
 

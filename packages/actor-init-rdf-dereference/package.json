@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-init-rdf-dereference",
-  "version": "1.15.0",
+  "version": "1.16.0",
   "description": "A Comunica engine for dereferencing RDF resources",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-rdf-dereference",
   "lsd:components": "components/components.jsonld",
@@ -41,11 +41,11 @@
   ],
   "dependencies": {
     "@comunica/actor-abstract-mediatyped": "^1.15.0",
-    "@comunica/actor-http-node-fetch": "^1.15.0",
-    "@comunica/actor-rdf-dereference-http-parse": "^1.15.0",
-    "@comunica/actor-rdf-parse-jsonld": "^1.15.0",
+    "@comunica/actor-http-node-fetch": "^1.16.0",
+    "@comunica/actor-rdf-dereference-http-parse": "^1.16.0",
+    "@comunica/actor-rdf-parse-jsonld": "^1.16.0",
     "@comunica/actor-rdf-parse-n3": "^1.15.0",
-    "@comunica/bus-http": "^1.15.0",
+    "@comunica/bus-http": "^1.16.0",
     "@comunica/bus-init": "^1.15.0",
     "@comunica/bus-rdf-dereference": "^1.15.0",
     "@comunica/bus-rdf-parse": "^1.15.0",
@@ -53,8 +53,8 @@
     "@comunica/mediator-combine-union": "^1.15.0",
     "@comunica/mediator-number": "^1.15.0",
     "@comunica/mediator-race": "^1.15.0",
-    "@comunica/runner": "^1.15.0",
-    "@comunica/runner-cli": "^1.15.0",
+    "@comunica/runner": "^1.16.0",
+    "@comunica/runner-cli": "^1.16.0",
     "rdf-string": "^1.4.2"
   },
   "jest": {
