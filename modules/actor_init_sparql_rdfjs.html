@@ -1,0 +1,274 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>actor-init-sparql-rdfjs | Comunica</title>
+	<meta name="description" content="Documentation for Comunica">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="../assets/css/main.css">
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.json" data-base="..">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="../index.html" class="title">Comunica</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+							<input type="checkbox" id="tsd-filter-only-exported" />
+							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="../globals.html">Globals</a>
+				</li>
+				<li>
+					<a href="actor_init_sparql_rdfjs.html">actor-init-sparql-rdfjs</a>
+				</li>
+			</ul>
+			<h1>Package actor-init-sparql-rdfjs</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<a href="#comunica-sparql-rdfjs-init-actor" id="comunica-sparql-rdfjs-init-actor" style="color: inherit; text-decoration: none;">
+						<h1>Comunica SPARQL RDFJS Init Actor</h1>
+					</a>
+					<p><a href="https://www.npmjs.com/package/@comunica/actor-init-sparql-rdfjs"><img src="https://badge.fury.io/js/%40comunica%2Factor-init-sparql-rdfjs.svg" alt="npm version"></a></p>
+					<p>Comunica SPARQL is a SPARQL query engine for JavaScript for querying RDFJS sources
+					that implement the <a href="http://rdf.js.org/#source-interface">Source interface</a>.</p>
+					<p>This module is part of the <a href="https://comunica.dev/">Comunica framework</a>.</p>
+					<a href="#install" id="install" style="color: inherit; text-decoration: none;">
+						<h2>Install</h2>
+					</a>
+					<pre><code class="language-bash">$ yarn add @comunica/actor-init-sparql-rdfjs</code></pre>
+					<a href="#usage" id="usage" style="color: inherit; text-decoration: none;">
+						<h2>Usage</h2>
+					</a>
+					<pre><code class="language-javascript"><span class="hljs-keyword">const</span> newEngine = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;@comunica/actor-init-sparql-rdfjs&#x27;</span>).newEngine;
+<span class="hljs-keyword">const</span> N3Store = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;n3&#x27;</span>).Store;
+<span class="hljs-keyword">const</span> DataFactory = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;n3&#x27;</span>).DataFactory;
+
+<span class="hljs-comment">// This can be any RDFJS source</span>
+<span class="hljs-comment">// In this example, we wrap an N3Store</span>
+<span class="hljs-keyword">const</span> store = <span class="hljs-keyword">new</span> N3Store();
+store.addQuad(DataFactory.quad(
+  DataFactory.namedNode(<span class="hljs-string">&#x27;a&#x27;</span>), DataFactory.namedNode(<span class="hljs-string">&#x27;b&#x27;</span>), DataFactory.namedNode(<span class="hljs-string">&#x27;http://dbpedia.org/resource/Belgium&#x27;</span>)));
+store.addQuad(DataFactory.quad(
+  DataFactory.namedNode(<span class="hljs-string">&#x27;a&#x27;</span>), DataFactory.namedNode(<span class="hljs-string">&#x27;b&#x27;</span>), DataFactory.namedNode(<span class="hljs-string">&#x27;http://dbpedia.org/resource/Ghent&#x27;</span>)));
+
+<span class="hljs-comment">// Create our engine, and query it.</span>
+<span class="hljs-comment">// If you intend to query multiple times, be sure to cache your engine for optimal performance.</span>
+<span class="hljs-keyword">const</span> myEngine = newEngine();
+<span class="hljs-keyword">const</span> result = <span class="hljs-keyword">await</span> myEngine.query(<span class="hljs-string">&#x27;SELECT * { ?s ?p &lt;http://dbpedia.org/resource/Belgium&gt;. ?s ?p ?o } LIMIT 100&#x27;</span>,
+  { <span class="hljs-attr">sources</span>: [store] });
+result.bindingsStream.on(<span class="hljs-string">&#x27;data&#x27;</span>, <span class="hljs-function">(<span class="hljs-params">data</span>) =&gt;</span> {
+  <span class="hljs-comment">// Each data object contains a mapping from variables to RDFJS terms.</span>
+  <span class="hljs-built_in">console</span>.log(data.get(<span class="hljs-string">&#x27;?s&#x27;</span>));
+  <span class="hljs-built_in">console</span>.log(data.get(<span class="hljs-string">&#x27;?p&#x27;</span>));
+  <span class="hljs-built_in">console</span>.log(data.get(<span class="hljs-string">&#x27;?o&#x27;</span>));
+});</code></pre>
+					<p><em><a href="https://comunica.dev/docs/query/getting_started/query_app/"><strong>Read more</strong> about querying an application</a>.</em></p>
+					<a href="#optimization" id="optimization" style="color: inherit; text-decoration: none;">
+						<h2>Optimization</h2>
+					</a>
+					<p>The RDFJS <a href="http://rdf.js.org/#source-interface">Source interface</a> by default only exposed the <code>match</code> method.
+						In order to allow Comunica to produce more efficient query plans,
+						you can optionally expose a <code>countQuads</code> method that has the same signature as <code>match</code>,
+						but returns a <code>number</code> or <code>Promise&lt;number&gt;</code> that represents (an estimate of)
+						the number of quads that would match the given quad pattern.
+						Certain <code>Source</code> implementations may be able to provide an efficient implementation of this method,
+					which would lead to better query performance.</p>
+					<p>If Comunica does not detect a <code>countQuads</code> method, it will fallback to a sub-optimal counting mechanism
+					where <code>match</code> will be called again to manually count the number of matches.</p>
+				</div>
+			</section>
+			<section class="tsd-panel-group tsd-index-group">
+				<h2>Index</h2>
+				<section class="tsd-panel tsd-index-panel">
+					<div class="tsd-index-content">
+						<section class="tsd-index-section ">
+							<h3>References</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-reference tsd-parent-kind-module"><a href="actor_init_sparql_rdfjs.html#newengine" class="tsd-kind-icon">new<wbr>Engine</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Functions</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-function tsd-parent-kind-module"><a href="actor_init_sparql_rdfjs.html#newengine-1" class="tsd-kind-icon">new<wbr>Engine</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-module"><a href="actor_init_sparql_rdfjs.html#newenginedynamic" class="tsd-kind-icon">new<wbr>Engine<wbr>Dynamic</a></li>
+							</ul>
+						</section>
+					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>References</h2>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module">
+					<a name="newengine" class="tsd-anchor"></a>
+					<h3>new<wbr>Engine</h3>
+					Re-exports <a href="actor_init_sparql_rdfjs.html#newengine-1">newEngine</a>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Functions</h2>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module">
+					<a name="newengine-1" class="tsd-anchor"></a>
+					<h3>new<wbr>Engine</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module">
+						<li class="tsd-signature tsd-kind-icon">new<wbr>Engine<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../classes/actor_init_sparql.actorinitsparql-2.html" class="tsd-signature-type">ActorInitSparql</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/e6bc000/packages/actor-init-sparql-rdfjs/index-browser.ts#L8">packages/actor-init-sparql-rdfjs/index-browser.ts:8</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Create a new comunica engine from the default config.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <a href="../classes/actor_init_sparql.actorinitsparql-2.html" class="tsd-signature-type">ActorInitSparql</a></h4>
+							<p>A comunica engine.</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module">
+					<a name="newenginedynamic" class="tsd-anchor"></a>
+					<h3>new<wbr>Engine<wbr>Dynamic</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module">
+						<li class="tsd-signature tsd-kind-icon">new<wbr>Engine<wbr>Dynamic<span class="tsd-signature-symbol">(</span>options<span class="tsd-signature-symbol">?: </span><a href="../interfaces/actor_init_sparql.iqueryoptions.html" class="tsd-signature-type">IQueryOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../classes/actor_init_sparql.actorinitsparql-2.html" class="tsd-signature-type">ActorInitSparql</a><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/e6bc000/packages/actor-init-sparql-rdfjs/index.ts#L11">packages/actor-init-sparql-rdfjs/index.ts:11</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Create a new dynamic comunica engine from a given config file.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> options: <a href="../interfaces/actor_init_sparql.iqueryoptions.html" class="tsd-signature-type">IQueryOptions</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Optional options on how to instantiate the query evaluator.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../classes/actor_init_sparql.actorinitsparql-2.html" class="tsd-signature-type">ActorInitSparql</a><span class="tsd-signature-symbol">&gt;</span></h4>
+							<p>A promise that resolves to a fully wired comunica engine.</p>
+						</li>
+					</ul>
+				</section>
+			</section>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class="globals  ">
+						<a href="../globals.html"><em>Globals</em></a>
+					</li>
+					<li class="current tsd-kind-module">
+						<a href="actor_init_sparql_rdfjs.html">actor-<wbr>init-<wbr>sparql-<wbr>rdfjs</a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+				</ul>
+				<ul class="current">
+					<li class="current tsd-kind-module">
+						<a href="actor_init_sparql_rdfjs.html" class="tsd-kind-icon">actor-<wbr>init-<wbr>sparql-<wbr>rdfjs</a>
+						<ul>
+							<li class=" tsd-kind-reference tsd-parent-kind-module">
+								<a href="actor_init_sparql_rdfjs.html#newengine" class="tsd-kind-icon">new<wbr>Engine</a>
+							</li>
+							<li class=" tsd-kind-function tsd-parent-kind-module">
+								<a href="actor_init_sparql_rdfjs.html#newengine-1" class="tsd-kind-icon">new<wbr>Engine</a>
+							</li>
+							<li class=" tsd-kind-function tsd-parent-kind-module">
+								<a href="actor_init_sparql_rdfjs.html#newenginedynamic" class="tsd-kind-icon">new<wbr>Engine<wbr>Dynamic</a>
+							</li>
+						</ul>
+					</li>
+				</ul>
+				<ul class="after-current">
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-object-literal"><span class="tsd-kind-icon">Object literal</span></li>
+				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
+				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
+				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
+				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
+				<li class="tsd-kind-class tsd-has-type-parameter"><span class="tsd-kind-icon">Class with type parameter</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="../assets/js/main.js"></script>
+</body>
+</html>
