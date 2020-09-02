@@ -32,7 +32,7 @@
   "bugs": {
     "url": "https://github.com/comunica/comunica/issues"
   },
-  "homepage": "https://github.com/comunica/comunica#readme",
+  "homepage": "https://comunica.dev/",
   "files": [
     "config",
     "bin/**/*.d.ts",
