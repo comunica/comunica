@@ -29,6 +29,8 @@ Read one of our [guides to **get started** with querying](https://comunica.dev/d
 * [Querying in a JavaScript browser app](https://comunica.dev/docs/query/getting_started/query_browser_app/)
 * [Setting up a SPARQL endpoint](https://comunica.dev/docs/query/getting_started/setup_endpoint/)
 * [Querying from a Docker container](https://comunica.dev/docs/query/getting_started/query_docker/)
+* [Setting up a Web client](https://comunica.dev/docs/query/getting_started/setup_web_client/)
+* [Query using the latest development version](https://comunica.dev/docs/query/getting_started/query_dev_version/)
 
 Or jump right into one of the available query engines:
 * [Comunica SPARQL](https://github.com/comunica/comunica/tree/master/packages/actor-init-sparql#readme): SPARQL/GraphQL querying from JavaScript applications or the CLI ([Browser-ready via a CDN](https://github.com/rdfjs/comunica-browser))
@@ -39,12 +41,18 @@ Or jump right into one of the available query engines:
 ## Modify or Extending Comunica
 
 [Read one of our guides to **get started** with modifying Comunica](https://comunica.dev/docs/modify/),
-or have a look at some [examples](https://github.com/comunica/examples).
+or have a look at some [examples](https://github.com/comunica/examples):
+
+* [Querying with a custom configuration from the command line](https://comunica.dev/docs/modify/getting_started/custom_config_cli/)
+* [Querying with a custom configuration in a JavaScript app](https://comunica.dev/docs/modify/getting_started/custom_config_app/)
+* [Exposing your custom config as an npm package](https://comunica.dev/docs/modify/getting_started/custom_init/)
+* [Exposing your custom config in a Web client](https://comunica.dev/docs/modify/getting_started/custom_web_client/)
+* [Contributing a new query operation actor to the Comunica repository](https://comunica.dev/docs/modify/getting_started/contribute_actor/)
+* [Adding a config parameter to an actor](https://comunica.dev/docs/modify/getting_started/actor_parameter/)
 
 ## Contribute
 
-Interested in contributing? Have a look at our [contribution guide](https://github.com/comunica/comunica/blob/master/CONTRIBUTING.md)
-and learn [what you could contribute](https://comunica.dev/contribute/).
+Interested in contributing? Have a look at our [contribution guide](https://comunica.dev/contribute/).
 
 ## Development Setup
 
