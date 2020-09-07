@@ -7,7 +7,11 @@
     "node": ">=8.0"
   },
   "typings": "index",
-  "repository": "https://github.com/comunica/comunica/tree/master/packages/data-factory",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/comunica/comunica.git",
+    "directory": "packages/data-factory"
+  },
   "publishConfig": {
     "access": "public"
   },

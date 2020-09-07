@@ -12,7 +12,11 @@
   },
   "main": "index.js",
   "typings": "index",
-  "repository": "https://github.com/comunica/comunica/tree/master/packages/actor-rdf-join-multi-sequential",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/comunica/comunica.git",
+    "directory": "packages/actor-rdf-join-multi-sequential"
+  },
   "publishConfig": {
     "access": "public"
   },

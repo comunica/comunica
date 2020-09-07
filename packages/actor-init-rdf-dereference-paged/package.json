@@ -13,7 +13,11 @@
   },
   "main": "index.js",
   "typings": "index",
-  "repository": "https://github.com/comunica/comunica/tree/master/packages/actor-init-rdf-dereference-paged",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/comunica/comunica.git",
+    "directory": "packages/actor-init-rdf-dereference-paged"
+  },
   "publishConfig": {
     "access": "public"
   },

@@ -12,7 +12,11 @@
   },
   "main": "index.js",
   "typings": "index",
-  "repository": "https://github.com/comunica/comunica/tree/master/packages/actor-rdf-resolve-quad-pattern-federated",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/comunica/comunica.git",
+    "directory": "packages/actor-rdf-resolve-quad-pattern-federated"
+  },
   "publishConfig": {
     "access": "public"
   },

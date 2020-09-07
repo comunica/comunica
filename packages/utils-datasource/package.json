@@ -5,7 +5,11 @@
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/utils-datasource",
   "main": "index.js",
   "typings": "index",
-  "repository": "https://github.com/comunica/comunica/tree/master/packages/utils-datasource",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/comunica/comunica.git",
+    "directory": "packages/utils-datasource"
+  },
   "publishConfig": {
     "access": "public"
   },

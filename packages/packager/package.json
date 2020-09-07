@@ -4,7 +4,11 @@
   "description": "A tool for packaging Comunica modules in a single NPM package",
   "main": "index.js",
   "typings": "index",
-  "repository": "https://github.com/comunica/comunica/tree/master/packages/packager",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/comunica/comunica.git",
+    "directory": "packages/packager"
+  },
   "publishConfig": {
     "access": "public"
   },

@@ -12,7 +12,11 @@
   },
   "main": "index.js",
   "typings": "index",
-  "repository": "https://github.com/comunica/comunica/tree/master/packages/mediator-number",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/comunica/comunica.git",
+    "directory": "packages/mediator-number"
+  },
   "publishConfig": {
     "access": "public"
   },

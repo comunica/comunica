@@ -15,7 +15,11 @@
     "node": ">=8.0"
   },
   "typings": "index",
-  "repository": "https://github.com/comunica/comunica/tree/master/packages/core",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/comunica/comunica.git",
+    "directory": "packages/core"
+  },
   "publishConfig": {
     "access": "public"
   },

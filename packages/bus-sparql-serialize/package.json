@@ -12,7 +12,11 @@
   },
   "main": "index.js",
   "typings": "index",
-  "repository": "https://github.com/comunica/comunica/tree/master/packages/bus-sparql-serialize",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/comunica/comunica.git",
+    "directory": "packages/bus-sparql-serialize"
+  },
   "publishConfig": {
     "access": "public"
   },

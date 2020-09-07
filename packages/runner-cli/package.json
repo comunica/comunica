@@ -4,7 +4,11 @@
   "description": "A comunica runner that sends an 'init' event from a commandline process.",
   "main": "index.js",
   "typings": "index",
-  "repository": "https://github.com/comunica/comunica/tree/master/packages/runner-cli",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/comunica/comunica.git",
+    "directory": "packages/runner-cli"
+  },
   "publishConfig": {
     "access": "public"
   },

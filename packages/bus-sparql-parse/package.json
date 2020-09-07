@@ -12,7 +12,11 @@
   },
   "main": "index.js",
   "typings": "index",
-  "repository": "https://github.com/comunica/comunica/tree/master/packages/bus-sparql-parse",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/comunica/comunica.git",
+    "directory": "packages/bus-sparql-parse"
+  },
   "publishConfig": {
     "access": "public"
   },

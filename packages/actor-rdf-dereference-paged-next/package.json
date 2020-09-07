@@ -12,7 +12,11 @@
   },
   "main": "index.js",
   "typings": "index",
-  "repository": "https://github.com/comunica/comunica/tree/master/packages/actor-rdf-dereference-paged-next",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/comunica/comunica.git",
+    "directory": "packages/actor-rdf-dereference-paged-next"
+  },
   "publishConfig": {
     "access": "public"
   },
