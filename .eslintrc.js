@@ -128,6 +128,7 @@ module.exports = {
       },
       globals: {
         'spyOn': false,
+        'fail': false,
       },
       rules: {
         'mocha/no-synchronous-tests': 'off',
