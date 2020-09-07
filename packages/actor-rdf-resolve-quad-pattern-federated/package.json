@@ -37,7 +37,7 @@
   "dependencies": {
     "@comunica/data-factory": "^1.14.0",
     "@rdfjs/data-model": "^1.1.1",
-    "@types/rdf-js": "^3.0.0",
+    "@types/rdf-js": "^4.0.0",
     "asynciterator": "^3.0.1",
     "rdf-terms": "^1.5.1",
     "sparqlalgebrajs": "^2.3.2"

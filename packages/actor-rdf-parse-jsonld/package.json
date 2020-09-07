@@ -43,7 +43,7 @@
     "@comunica/core": "^1.15.0"
   },
   "dependencies": {
-    "@types/rdf-js": "^3.0.0",
+    "@types/rdf-js": "^4.0.0",
     "jsonld-context-parser": "^2.0.2",
     "jsonld-streaming-parser": "^2.0.2",
     "stream-to-string": "^1.2.0"

@@ -37,7 +37,7 @@
   "dependencies": {
     "@comunica/bus-rdf-dereference": "^1.15.0",
     "@rdfjs/data-model": "^1.1.0",
-    "@types/rdf-js": "^3.0.0",
+    "@types/rdf-js": "^4.0.0",
     "asynciterator": "^3.0.1",
     "rdf-string": "^1.4.2",
     "rdf-terms": "^1.5.1"

@@ -34,7 +34,7 @@
     "index.js"
   ],
   "dependencies": {
-    "@types/rdf-js": "^3.0.0"
+    "@types/rdf-js": "^4.0.0"
   },
   "peerDependencies": {
     "@comunica/core": "^1.8.0"

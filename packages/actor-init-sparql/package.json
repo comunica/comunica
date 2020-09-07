@@ -157,7 +157,7 @@
     "@comunica/runner": "^1.16.0",
     "@comunica/runner-cli": "^1.16.0",
     "@types/minimist": "^1.2.0",
-    "@types/rdf-js": "^3.0.0",
+    "@types/rdf-js": "^4.0.0",
     "asynciterator": "^3.0.1",
     "asyncreiterable": "^2.0.0",
     "minimist": "^1.2.0",

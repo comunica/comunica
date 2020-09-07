@@ -34,7 +34,7 @@
     "index.js"
   ],
   "dependencies": {
-    "@types/rdf-js": "^3.0.0",
+    "@types/rdf-js": "^4.0.0",
     "graphql-ld": "^1.1.0",
     "rdf-store-stream": "^1.0.1",
     "sparqlalgebrajs": "^2.3.2",

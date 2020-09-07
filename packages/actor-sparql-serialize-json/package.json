@@ -35,7 +35,7 @@
     "index.js"
   ],
   "dependencies": {
-    "@types/rdf-js": "^3.0.0",
+    "@types/rdf-js": "^4.0.0",
     "rdf-string": "^1.4.2"
   },
   "peerDependencies": {
