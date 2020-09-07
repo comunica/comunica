@@ -2,9 +2,12 @@
 
 [![npm version](https://badge.fury.io/js/%40comunica%2Fbus-http-invalidate.svg)](https://www.npmjs.com/package/@comunica/bus-http-invalidate)
 
-A comunica bus for http-invalidate events.
+A bus for HTTP invalidation events.
 
-This module is part of the [Comunica framework](https://github.com/comunica/comunica).
+This module is part of the [Comunica framework](https://github.com/comunica/comunica),
+and should only be used by [developers that want to build their own query engine](https://comunica.dev/docs/modify/).
+
+[Click here if you just want to query with Comunica](https://comunica.dev/docs/query/).
 
 ## Install
 
@@ -12,6 +15,7 @@ This module is part of the [Comunica framework](https://github.com/comunica/comu
 $ yarn add @comunica/bus-http-invalidate
 ```
 
-## Usage
+## Bus usage
 
-TODO
+* **Context**: `"https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-http-invalidate/^1.0.0/components/context.jsonld"`
+* **Bus name**: `cbhi:Bus/HttpInvalidate`

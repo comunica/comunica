@@ -2,9 +2,13 @@
 
 [![npm version](https://badge.fury.io/js/%40comunica%2Factor-rdf-parse-n3.svg)](https://www.npmjs.com/package/@comunica/actor-rdf-parse-n3)
 
-An [N3](https://www.npmjs.com/package/n3)-based RDF Parse actor implementation for Comunica.
+An [RDF Parse](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-parse) actor that handles
+Turtle, TriG, N-Quads, N-Triples and N3 using [N3.js](https://www.npmjs.com/package/n3).
 
-This module is part of the [Comunica framework](https://github.com/comunica/comunica).
+This module is part of the [Comunica framework](https://github.com/comunica/comunica),
+and should only be used by [developers that want to build their own query engine](https://comunica.dev/docs/modify/).
+
+[Click here if you just want to query with Comunica](https://comunica.dev/docs/query/).
 
 ## Install
 
@@ -12,8 +16,26 @@ This module is part of the [Comunica framework](https://github.com/comunica/comu
 $ yarn add @comunica/actor-rdf-parse-n3
 ```
 
-## Usage
+## Configure
 
-TODO
+After installing, this package can be added to your engine's configuration as follows:
+```text
+{
+  "@context": [
+    ...
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-parse-n3/^1.0.0/components/context.jsonld"  
+  ],
+  "actors": [
+    ...
+    {
+      "@id": "config-sets:rdf-parsers.json#myRdfParserN3",
+      "@type": "ActorRdfParseN3",
+      "priorityScale": 1.0
+    }
+  ]
+}
+```
 
-The actor defined by `components/Actor/RdfParse/N3` requires no parameters.
+### Config Parameters
+
+* `caam:Actor/AbstractMediaTypedFixed/priorityScale`: An optional priority for this parser, used for content negotiation, defaults to `1`.

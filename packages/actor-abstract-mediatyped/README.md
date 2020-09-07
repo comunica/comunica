@@ -2,9 +2,12 @@
 
 [![npm version](https://badge.fury.io/js/%40comunica%2Factor-abstract-mediatyped.svg)](https://www.npmjs.com/package/@comunica/actor-abstract-mediatyped)
 
-A comunica Abstract Actor for handling actions based on mediatypes.
+A actor for handling actions based on mediatypes, such as content negotiation
 
-This module is part of the [Comunica framework](https://github.com/comunica/comunica).
+This module is part of the [Comunica framework](https://github.com/comunica/comunica),
+and should only be used by [developers that want to build their own query engine](https://comunica.dev/docs/modify/).
+
+[Click here if you just want to query with Comunica](https://comunica.dev/docs/query/).
 
 ## Install
 
@@ -14,4 +17,6 @@ $ yarn add @comunica/actor-abstract-mediatyped
 
 ## Usage
 
-TODO
+This package exposes [`ActorAbstractMediaTyped`](https://comunica.github.io/comunica/classes/actor_abstract_mediatyped.actorabstractmediatyped-1.html)
+and [`ActorAbstractMediaTypedFixed`](https://comunica.github.io/comunica/classes/actor_abstract_mediatyped.actorabstractmediatypedfixed-1.html)
+that provide utility methods for actors that handle media types.

@@ -2,9 +2,12 @@
 
 [![npm version](https://badge.fury.io/js/%40comunica%2Fbus-rdf-resolve-hypermedia-links.svg)](https://www.npmjs.com/package/@comunica/bus-rdf-resolve-hypermedia-links)
 
-A comunica bus for rdf-resolve-hypermedia-links events.
+A bus for determining which links should be followed from the metadata of the current source.
 
-This module is part of the [Comunica framework](https://github.com/comunica/comunica).
+This module is part of the [Comunica framework](https://github.com/comunica/comunica),
+and should only be used by [developers that want to build their own query engine](https://comunica.dev/docs/modify/).
+
+[Click here if you just want to query with Comunica](https://comunica.dev/docs/query/).
 
 ## Install
 
@@ -12,6 +15,12 @@ This module is part of the [Comunica framework](https://github.com/comunica/comu
 $ yarn add @comunica/bus-rdf-resolve-hypermedia-links
 ```
 
-## Usage
+## Bus usage
 
-TODO
+* **Context**: `"https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-resolve-hypermedia-links/^1.0.0/components/context.jsonld"`
+* **Bus name**: `cbrrhl:Bus/RdfResolveHypermediaLinks`
+
+## Creating actors on this bus
+
+Actors extending [`ActorRdfresolveHypermediaLinks`](https://comunica.github.io/comunica/classes/bus_rdf_resolve_hypermedia_links.actorrdfresolvehypermedialinks-1.html) are automatically subscribed to this bus.
+

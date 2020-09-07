@@ -2,9 +2,12 @@
 
 [![npm version](https://badge.fury.io/js/%40comunica%2Factor-rdf-serialize-jsonld.svg)](https://www.npmjs.com/package/@comunica/actor-rdf-serialize-jsonld)
 
-A comunica JSON-LD RDF Serialize Actor.
+An [RDF Serialize](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-serialize) actor that handles JSON-LD.
 
-This module is part of the [Comunica framework](https://github.com/comunica/comunica).
+This module is part of the [Comunica framework](https://github.com/comunica/comunica),
+and should only be used by [developers that want to build their own query engine](https://comunica.dev/docs/modify/).
+
+[Click here if you just want to query with Comunica](https://comunica.dev/docs/query/).
 
 ## Install
 
@@ -12,6 +15,29 @@ This module is part of the [Comunica framework](https://github.com/comunica/comu
 $ yarn add @comunica/actor-rdf-serialize-jsonld
 ```
 
-## Usage
+## Configure
 
-TODO
+After installing, this package can be added to your engine's configuration as follows:
+```text
+{
+  "@context": [
+    ...
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-abstract-mediatyped/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-serialize-jsonld/^1.0.0/components/context.jsonld"  
+  ],
+  "actors": [
+    ...
+    {
+      "@id": "config-sets:rdf-serializers.json#myRdfSerializeJsonLd",
+      "@type": "ActorRdfSerializeJsonLd",
+      "carsjl:Actor/RdfSerialize/JsonLd/jsonStringifyIndentSpaces": 2,
+      "caam:Actor/AbstractMediaTypedFixed/priorityScale": 0.9
+    }
+  ]
+}
+```
+
+### Config Parameters
+
+* `cbqo:carsjl:Actor/RdfSerialize/JsonLd/jsonStringifyIndentSpaces`: An optional parameter to indicate with how many spaces JSON should be indented, defaults to `2`.
+* `caam:Actor/AbstractMediaTypedFixed/priorityScale`: An optional priority for this serializer, used for content negotiation, defaults to `1`.

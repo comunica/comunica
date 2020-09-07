@@ -2,9 +2,12 @@
 
 [![npm version](https://badge.fury.io/js/%40comunica%2Factor-query-operation-group.svg)](https://www.npmjs.com/package/@comunica/actor-query-operation-group)
 
-A comunica Group Query Operation Actor.
+A [Query Operation](https://github.com/comunica/comunica/tree/master/packages/bus-query-operation) actor that handles [SPARQL `GROUP BY`](https://www.w3.org/TR/sparql11-query/#groupby) operations.
 
-This module is part of the [Comunica framework](https://github.com/comunica/comunica).
+This module is part of the [Comunica framework](https://github.com/comunica/comunica),
+and should only be used by [developers that want to build their own query engine](https://comunica.dev/docs/modify/).
+
+[Click here if you just want to query with Comunica](https://comunica.dev/docs/query/).
 
 ## Install
 
@@ -12,9 +15,26 @@ This module is part of the [Comunica framework](https://github.com/comunica/comu
 $ yarn add @comunica/actor-query-operation-group
 ```
 
-## Usage
+## Configure
 
-Group actor handles SPARQL Algebra GROUP operations.
-Docs [here](https://www.w3.org/TR/sparql11-query/#convertGroupAggSelectExpressions) and [here](https://www.w3.org/TR/sparql11-query/#defn_algGroup).
+After installing, this package can be added to your engine's configuration as follows:
+```text
+{
+  "@context": [
+    ...
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-group/^1.0.0/components/context.jsonld"  
+  ],
+  "actors": [
+    ...
+    {
+      "@id": "config-sets:sparql-queryoperators.json#myGroupQueryOperator",
+      "@type": "ActorQueryOperationGroup",
+      "cbqo:mediatorQueryOperation": { "@id": "config-sets:sparql-queryoperators.json#mediatorQueryOperation" }
+    }
+  ]
+}
+```
 
-See the './examples' dir for example queries and their SPARQL Algebra result.
+### Config Parameters
+
+* `cbqo:mediatorQueryOperation`: A mediator over the [Query Operation bus](https://github.com/comunica/comunica/tree/master/packages/bus-query-operation).

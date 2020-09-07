@@ -2,9 +2,12 @@
 
 [![npm version](https://badge.fury.io/js/%40comunica%2Fbus-rdf-serialize.svg)](https://www.npmjs.com/package/@comunica/bus-rdf-serialize)
 
-A comunica bus for rdf-serialize events.
+A bus for serializing quads to an RDF serialization format.
 
-This module is part of the [Comunica framework](https://github.com/comunica/comunica).
+This module is part of the [Comunica framework](https://github.com/comunica/comunica),
+and should only be used by [developers that want to build their own query engine](https://comunica.dev/docs/modify/).
+
+[Click here if you just want to query with Comunica](https://comunica.dev/docs/query/).
 
 ## Install
 
@@ -12,6 +15,12 @@ This module is part of the [Comunica framework](https://github.com/comunica/comu
 $ yarn add @comunica/bus-rdf-serialize
 ```
 
-## Usage
+## Bus usage
 
-TODO
+* **Context**: `"https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-serialize/^1.0.0/components/context.jsonld"`
+* **Bus name**: `cbrs:Bus/RdfSerialize`
+
+## Creating actors on this bus
+
+Actors extending [`ActorRdfSerialize`](https://comunica.github.io/comunica/classes/bus_rdf_serialize.actorrdfserialize-1.html) are automatically subscribed to this bus.
+
