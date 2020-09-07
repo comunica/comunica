@@ -1,7 +1,7 @@
 import { ILazyQuadSource } from '@comunica/bus-rdf-resolve-quad-pattern';
 import { ActionContext } from '@comunica/core';
 import { AsyncIterator } from 'asynciterator';
-import * as RDF from 'rdf-js';
+import type * as RDF from 'rdf-js';
 import { ISourcesState } from './LinkedRdfSourcesAsyncRdfIterator';
 import { IMediatorArgs, MediatedLinkedRdfSourcesAsyncRdfIterator } from './MediatedLinkedRdfSourcesAsyncRdfIterator';
 

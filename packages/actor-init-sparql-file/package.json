@@ -46,7 +46,9 @@
   ],
   "dependencies": {
     "@comunica/actor-init-sparql": "^1.16.2",
-    "@comunica/actor-rdf-dereference-file": "^1.15.0"
+    "@comunica/actor-rdf-dereference-file": "^1.15.0",
+    "@comunica/runner-cli": "^1.16.0",
+    "sparqlalgebrajs": "^2.3.2"
   },
   "scripts": {
     "build": "node \"../../node_modules/typescript/bin/tsc\"",

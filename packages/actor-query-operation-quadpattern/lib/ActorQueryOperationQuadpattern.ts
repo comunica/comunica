@@ -5,7 +5,7 @@ import { IActionRdfResolveQuadPattern,
   IActorRdfResolveQuadPatternOutput } from '@comunica/bus-rdf-resolve-quad-pattern';
 import { ActionContext, Actor, IActorArgs, IActorTest, Mediator } from '@comunica/core';
 import { TransformIterator } from 'asynciterator';
-import * as RDF from 'rdf-js';
+import type * as RDF from 'rdf-js';
 import { termToString } from 'rdf-string';
 import { getTerms, QUAD_TERM_NAMES, QuadTermName, reduceTerms, TRIPLE_TERM_NAMES, uniqTerms } from 'rdf-terms';
 import { Algebra } from 'sparqlalgebrajs';

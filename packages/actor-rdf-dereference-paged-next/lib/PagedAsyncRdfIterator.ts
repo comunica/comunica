@@ -1,5 +1,5 @@
 import { BufferedIterator, BufferedIteratorOptions } from 'asynciterator';
-import * as RDF from 'rdf-js';
+import type * as RDF from 'rdf-js';
 
 /**
  * An abstract quad iterator that iterates over several pages.

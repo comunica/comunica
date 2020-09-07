@@ -1,6 +1,6 @@
 import { Readable } from 'stream';
 import { IActorArgs, IActorTest } from '@comunica/core';
-import * as RDF from 'rdf-js';
+import type * as RDF from 'rdf-js';
 import { ActorRdfMetadata, IActionRdfMetadata, IActorRdfMetadataOutput } from './ActorRdfMetadata';
 
 /**

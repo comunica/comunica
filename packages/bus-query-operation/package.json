@@ -36,7 +36,9 @@
   "dependencies": {
     "@types/rdf-js": "^3.0.0",
     "asynciterator": "^3.0.1",
-    "immutable": "^3.8.2"
+    "immutable": "^3.8.2",
+    "rdf-string": "^1.5.0",
+    "sparqlalgebrajs": "^2.3.2"
   },
   "peerDependencies": {
     "@comunica/core": "^1.0.0"

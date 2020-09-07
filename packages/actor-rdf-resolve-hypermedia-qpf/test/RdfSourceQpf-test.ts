@@ -2,7 +2,7 @@ import { Readable } from 'stream';
 import { ActionContext, Bus } from '@comunica/core';
 import { defaultGraph, namedNode } from '@rdfjs/data-model';
 import 'jest-rdf';
-import * as RDF from 'rdf-js';
+import type * as RDF from 'rdf-js';
 import { RdfSourceQpf } from '../lib/RdfSourceQpf';
 
 const arrayifyStream = require('arrayify-stream');

@@ -36,6 +36,7 @@
   ],
   "dependencies": {
     "@comunica/actor-rdf-resolve-quad-pattern-sparql-json": "^1.16.0",
+    "@comunica/bus-query-operation": "^1.16.0",
     "@rdfjs/data-model": "^1.1.1",
     "@types/rdf-js": "^3.0.0",
     "asynciterator": "^3.0.1",

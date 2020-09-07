@@ -2,7 +2,7 @@ import { ActorQueryOperation, Bindings, IActorQueryOperationOutputBindings } fro
 import { ActionContext, Bus } from '@comunica/core';
 import { namedNode, variable } from '@rdfjs/data-model';
 import { ArrayIterator, EmptyIterator, SingletonIterator } from 'asynciterator';
-import * as RDF from 'rdf-js';
+import type * as RDF from 'rdf-js';
 import { termToString } from 'rdf-string';
 import { forEachTerms } from 'rdf-terms';
 import { Factory } from 'sparqlalgebrajs';

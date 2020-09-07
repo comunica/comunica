@@ -13,7 +13,7 @@ import {
 } from '@comunica/bus-query-operation';
 import { ActionContext, IActorTest } from '@comunica/core';
 import { ArrayIterator, MultiTransformIterator, TransformIterator } from 'asynciterator';
-import * as RDF from 'rdf-js';
+import type * as RDF from 'rdf-js';
 import { termToString } from 'rdf-string';
 import { mapTerms, QuadTermName } from 'rdf-terms';
 import { Algebra } from 'sparqlalgebrajs';

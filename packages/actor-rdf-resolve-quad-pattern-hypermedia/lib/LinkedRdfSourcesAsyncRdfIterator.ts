@@ -1,6 +1,6 @@
 import { BufferedIterator, BufferedIteratorOptions } from 'asynciterator';
 import LRUCache = require('lru-cache');
-import * as RDF from 'rdf-js';
+import type * as RDF from 'rdf-js';
 
 /**
  * An abstract quad iterator that can iterate over consecutive RDF sources.

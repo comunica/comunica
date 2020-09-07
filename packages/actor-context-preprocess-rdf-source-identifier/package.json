@@ -35,7 +35,9 @@
     "index.js"
   ],
   "dependencies": {
-    "asyncreiterable": "^2.0.0"
+    "@comunica/bus-rdf-resolve-quad-pattern": "^1.16.0",
+    "asyncreiterable": "^2.0.0",
+    "sparqlalgebrajs": "^2.3.2"
   },
   "peerDependencies": {
     "@comunica/bus-context-preprocess": "^1.0.0",

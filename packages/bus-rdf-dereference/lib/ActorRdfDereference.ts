@@ -1,6 +1,6 @@
 import { PassThrough, Readable } from 'stream';
 import { Actor, IAction, IActorArgs, IActorOutput, IActorTest } from '@comunica/core';
-import * as RDF from 'rdf-js';
+import type * as RDF from 'rdf-js';
 
 export const KEY_CONTEXT_LENIENT = '@comunica/actor-init-sparql:lenient';
 

@@ -33,6 +33,9 @@
     "index.d.ts",
     "index.js"
   ],
+  "dependencies": {
+    "sparqlalgebrajs": "^2.3.2"
+  },
   "peerDependencies": {
     "@comunica/core": "^1.0.0"
   },

@@ -6,7 +6,7 @@ import {
 } from '@comunica/bus-query-operation';
 import { ActionContext } from '@comunica/core';
 import { MultiTransformIterator, TransformIterator, EmptyIterator, BufferedIterator } from 'asynciterator';
-import { Variable } from 'rdf-js';
+import type { Variable } from 'rdf-js';
 import { termToString } from 'rdf-string';
 import { Algebra } from 'sparqlalgebrajs';
 

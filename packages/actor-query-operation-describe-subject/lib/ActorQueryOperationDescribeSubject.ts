@@ -6,7 +6,7 @@ import {
 import { ActionContext, IActorTest } from '@comunica/core';
 import { triple, variable } from '@rdfjs/data-model';
 import { UnionIterator } from 'asynciterator';
-import * as RDF from 'rdf-js';
+import type * as RDF from 'rdf-js';
 import { Algebra } from 'sparqlalgebrajs';
 
 /**

@@ -2,7 +2,7 @@ import { Readable } from 'stream';
 import { IActionHandleRdfParse, IActorOutputHandleRdfParse, IActorTestHandleRdfParse } from '@comunica/bus-rdf-parse';
 import { IHtmlParseListener } from '@comunica/bus-rdf-parse-html';
 import { ActionContext, Actor, Mediator } from '@comunica/core';
-import * as RDF from 'rdf-js';
+import type * as RDF from 'rdf-js';
 import { resolve as resolveIri } from 'relative-to-absolute-iri';
 
 /**

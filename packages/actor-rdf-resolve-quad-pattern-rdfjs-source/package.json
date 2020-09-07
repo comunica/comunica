@@ -35,7 +35,8 @@
     "index.js"
   ],
   "dependencies": {
-    "@types/rdf-js": "^3.0.0"
+    "@types/rdf-js": "^3.0.0",
+    "asynciterator": "^3.0.1"
   },
   "peerDependencies": {
     "@comunica/bus-rdf-resolve-quad-pattern": "^1.2.0",

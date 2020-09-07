@@ -7,7 +7,7 @@ import {
 } from '@comunica/bus-query-operation';
 import { ActionContext, IActorTest } from '@comunica/core';
 import { AsyncIterator } from 'asynciterator';
-import * as RDF from 'rdf-js';
+import type * as RDF from 'rdf-js';
 import { getTerms, getVariables, uniqTerms } from 'rdf-terms';
 import { Algebra } from 'sparqlalgebrajs';
 import { BindingsToQuadsIterator } from './BindingsToQuadsIterator';

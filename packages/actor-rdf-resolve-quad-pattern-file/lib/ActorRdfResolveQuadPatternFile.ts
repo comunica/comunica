@@ -6,7 +6,7 @@ import { ActionContext, Actor, IActorArgs, IActorTest, Mediator } from '@comunic
 import { AsyncIterator } from 'asynciterator';
 import * as LRUCache from 'lru-cache';
 import { Store } from 'n3';
-import * as RDF from 'rdf-js';
+import type * as RDF from 'rdf-js';
 import { N3StoreIterator } from './N3StoreIterator';
 import { N3StoreQuadSource } from './N3StoreQuadSource';
 

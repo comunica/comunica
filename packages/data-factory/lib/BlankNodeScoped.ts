@@ -1,4 +1,4 @@
-import * as RDF from 'rdf-js';
+import type * as RDF from 'rdf-js';
 
 /**
  * A blank node that is scoped to a certain source.

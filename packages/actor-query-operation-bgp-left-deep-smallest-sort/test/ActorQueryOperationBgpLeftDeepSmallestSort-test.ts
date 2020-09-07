@@ -7,7 +7,7 @@ import {
 import { ActionContext, Bus } from '@comunica/core';
 import { blankNode, defaultGraph, literal, namedNode, quad, variable } from '@rdfjs/data-model';
 import { ArrayIterator, EmptyIterator, SingletonIterator } from 'asynciterator';
-import * as RDF from 'rdf-js';
+import type * as RDF from 'rdf-js';
 import { Algebra } from 'sparqlalgebrajs';
 import { ActorQueryOperationBgpLeftDeepSmallestSort } from '../lib/ActorQueryOperationBgpLeftDeepSmallestSort';
 const arrayifyStream = require('arrayify-stream');

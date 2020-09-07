@@ -35,7 +35,7 @@ import {
 import { ActionContext, Actor, IAction, IActorArgs, IActorTest,
   KEY_CONTEXT_LOG, Logger, Mediator } from '@comunica/core';
 import { AsyncReiterableArray } from 'asyncreiterable';
-import * as RDF from 'rdf-js';
+import type * as RDF from 'rdf-js';
 import { Algebra } from 'sparqlalgebrajs';
 
 /**

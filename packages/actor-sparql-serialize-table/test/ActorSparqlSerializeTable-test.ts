@@ -3,7 +3,7 @@ import { Bindings, BindingsStream } from '@comunica/bus-query-operation';
 import { Bus } from '@comunica/core';
 import { namedNode } from '@rdfjs/data-model';
 import { ArrayIterator } from 'asynciterator';
-import * as RDF from 'rdf-js';
+import type * as RDF from 'rdf-js';
 import { ActorSparqlSerializeTable } from '../lib/ActorSparqlSerializeTable';
 
 const quad = require('rdf-quad');

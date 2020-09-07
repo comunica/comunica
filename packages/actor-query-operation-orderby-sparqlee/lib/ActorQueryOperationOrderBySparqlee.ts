@@ -3,7 +3,7 @@ import {
   Bindings, IActorQueryOperationOutputBindings, IActorQueryOperationTypedMediatedArgs,
 } from '@comunica/bus-query-operation';
 import { ActionContext, IActorTest } from '@comunica/core';
-import { Term } from 'rdf-js';
+import type { Term } from 'rdf-js';
 import { Algebra } from 'sparqlalgebrajs';
 import { AsyncEvaluator, isExpressionError, orderTypes } from 'sparqlee';
 

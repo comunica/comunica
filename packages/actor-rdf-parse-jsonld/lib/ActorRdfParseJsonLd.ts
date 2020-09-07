@@ -3,7 +3,7 @@ import { ActorRdfParseFixedMediaTypes, IActionRdfParse,
   IActorRdfParseFixedMediaTypesArgs, IActorRdfParseOutput } from '@comunica/bus-rdf-parse';
 import { ActionContext, Actor, IActorTest, Mediator } from '@comunica/core';
 import { JsonLdParser } from 'jsonld-streaming-parser';
-import * as RDF from 'rdf-js';
+import type * as RDF from 'rdf-js';
 import { DocumentLoaderMediated } from './DocumentLoaderMediated';
 
 /**

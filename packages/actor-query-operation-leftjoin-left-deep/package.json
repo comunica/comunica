@@ -35,8 +35,10 @@
     "index.js"
   ],
   "dependencies": {
+    "@comunica/bus-rdf-join": "^1.16.0",
     "@types/rdf-js": "^3.0.0",
-    "asynciterator": "^3.0.1"
+    "asynciterator": "^3.0.1",
+    "sparqlalgebrajs": "^2.3.2"
   },
   "peerDependencies": {
     "@comunica/bus-query-operation": "^1.9.3",

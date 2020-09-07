@@ -2,7 +2,7 @@ import { ActorQueryOperation, Bindings, IActorQueryOperationOutputQuads } from '
 import { Bus } from '@comunica/core';
 import { blankNode, literal, namedNode, quad, variable } from '@rdfjs/data-model';
 import { ArrayIterator } from 'asynciterator';
-import * as RDF from 'rdf-js';
+import type * as RDF from 'rdf-js';
 import { ActorQueryOperationConstruct } from '../lib/ActorQueryOperationConstruct';
 const arrayifyStream = require('arrayify-stream');
 

@@ -100,13 +100,13 @@ module.exports = {
     }],
     'import/no-unused-modules': 'off',
     'unused-imports/no-unused-imports-ts': 'error',
+    'import/no-extraneous-dependencies': 'error',
 
     // TODO: Try to re-enable the following rules in the future
     'global-require': 'off',
     '@typescript-eslint/no-require-imports': 'off',
     '@typescript-eslint/no-var-requires': 'off',
     '@typescript-eslint/no-unused-vars': 'off',
-    'import/no-extraneous-dependencies': 'off', // Disabled for now since it errors on rdf-js imports
     'tsdoc/syntax': 'off',
   },
   overrides: [
@@ -152,7 +152,8 @@ module.exports = {
         '@typescript-eslint/explicit-function-return-type': 'off',
         '@typescript-eslint/unbound-method': 'off',
         '@typescript-eslint/no-extra-parens': 'off',
-        '@typescript-eslint/restrict-plus-operands': 'off'
+        '@typescript-eslint/restrict-plus-operands': 'off',
+        'import/no-extraneous-dependencies': 'off',
       }
     }
   ],

@@ -1,6 +1,6 @@
 import { Bus, ActionContext } from '@comunica/core';
 import { ArrayIterator } from 'asynciterator';
-import * as RDF from 'rdf-js';
+import type * as RDF from 'rdf-js';
 import { ActorRdfResolveQuadPatternSource, getDataSourceType, getDataSourceValue,
   getDataSourceContext, isDataSourceRawType } from '..';
 

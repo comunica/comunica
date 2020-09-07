@@ -1,6 +1,6 @@
 import { AbstractFilterHash } from '@comunica/actor-abstract-bindings-hash';
 import { Bindings } from '@comunica/bus-query-operation';
-import { Term } from 'rdf-js';
+import type { Term } from 'rdf-js';
 import { termToString } from 'rdf-string';
 import { Algebra } from 'sparqlalgebrajs';
 import { AggregateEvaluator, SyncEvaluatorConfig } from 'sparqlee';

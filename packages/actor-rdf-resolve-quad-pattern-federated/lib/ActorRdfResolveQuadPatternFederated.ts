@@ -3,7 +3,7 @@ import {
   IActorRdfResolveQuadPatternOutput, IDataSource, ILazyQuadSource,
 } from '@comunica/bus-rdf-resolve-quad-pattern';
 import { ActionContext, Actor, IActorArgs, IActorTest, Mediator } from '@comunica/core';
-import * as RDF from 'rdf-js';
+import type * as RDF from 'rdf-js';
 import { FederatedQuadSource } from './FederatedQuadSource';
 
 /**

@@ -1,7 +1,7 @@
 import { ActorRdfMetadataExtract, IActionRdfMetadataExtract,
   IActorRdfMetadataExtractOutput } from '@comunica/bus-rdf-metadata-extract';
 import { IActorArgs, IActorTest } from '@comunica/core';
-import * as RDF from 'rdf-js';
+import type * as RDF from 'rdf-js';
 import { parse as parseUriTemplate, UriTemplate } from 'uritemplate';
 
 /**

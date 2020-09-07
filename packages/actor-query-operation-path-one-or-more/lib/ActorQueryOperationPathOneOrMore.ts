@@ -7,7 +7,7 @@ import {
 import { ActionContext } from '@comunica/core';
 import { BufferedIterator, MultiTransformIterator, TransformIterator } from 'asynciterator';
 
-import { Term } from 'rdf-js';
+import type { Term } from 'rdf-js';
 import { termToString } from 'rdf-string';
 import { Algebra } from 'sparqlalgebrajs';
 

@@ -2,7 +2,7 @@ import { ActorRdfResolveQuadPattern } from '@comunica/bus-rdf-resolve-quad-patte
 import { ActionContext, Bus } from '@comunica/core';
 import { namedNode, variable } from '@rdfjs/data-model';
 import { ArrayIterator } from 'asynciterator';
-import * as RDF from 'rdf-js';
+import type * as RDF from 'rdf-js';
 import { ActorRdfResolveQuadPatternRdfJsSource } from '../lib/ActorRdfResolveQuadPatternRdfJsSource';
 
 describe('ActorRdfResolveQuadPatternRdfJsSource', () => {

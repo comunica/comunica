@@ -1,6 +1,6 @@
 import { Actor, IAction, IActorArgs, IActorOutput, IActorTest } from '@comunica/core';
 import { AsyncIterator } from 'asynciterator';
-import * as RDF from 'rdf-js';
+import type * as RDF from 'rdf-js';
 
 /**
  * A base actor for dereferencing URLs to quad streams and following pages.

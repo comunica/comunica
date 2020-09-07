@@ -35,6 +35,7 @@
     "index.js"
   ],
   "dependencies": {
+    "@comunica/bus-rdf-parse-html": "^1.15.0",
     "@types/rdf-js": "^3.0.0",
     "htmlparser2": "^4.0.0"
   },

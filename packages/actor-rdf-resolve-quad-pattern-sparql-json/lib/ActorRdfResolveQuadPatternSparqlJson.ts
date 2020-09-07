@@ -8,7 +8,7 @@ import {
 import { ActionContext, Actor, IActorArgs, IActorTest, Mediator } from '@comunica/core';
 import { variable } from '@rdfjs/data-model';
 import { AsyncIterator, TransformIterator } from 'asynciterator';
-import * as RDF from 'rdf-js';
+import type * as RDF from 'rdf-js';
 import { getTerms, getVariables, mapTerms } from 'rdf-terms';
 import { Algebra, Factory, toSparql } from 'sparqlalgebrajs';
 import { AsyncIteratorJsonBindings } from './AsyncIteratorJsonBindings';

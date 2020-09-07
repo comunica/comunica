@@ -15,7 +15,7 @@ import { IMediatorTypeHttpRequests } from '@comunica/mediatortype-httprequests';
 import { DataSourceUtils } from '@comunica/utils-datasource';
 import { wrap } from 'asynciterator';
 import { SparqlEndpointFetcher } from 'fetch-sparql-endpoint';
-import * as RDF from 'rdf-js';
+import type * as RDF from 'rdf-js';
 import { termToString } from 'rdf-string';
 import { Factory, toSparql, Util } from 'sparqlalgebrajs';
 

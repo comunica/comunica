@@ -6,7 +6,7 @@ import { IActionRdfMetadataExtract, IActorRdfMetadataExtractOutput } from '@comu
 import { ActionContext, Actor, IActorTest, Mediator } from '@comunica/core';
 import { defaultGraph, namedNode } from '@rdfjs/data-model';
 import { AsyncIterator, TransformIterator, wrap } from 'asynciterator';
-import * as RDF from 'rdf-js';
+import type * as RDF from 'rdf-js';
 import { termToString } from 'rdf-string';
 import { mapTerms, matchPattern } from 'rdf-terms';
 

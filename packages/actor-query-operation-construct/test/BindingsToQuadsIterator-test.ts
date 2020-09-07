@@ -1,7 +1,7 @@
 import { Bindings } from '@comunica/bus-query-operation';
 import { blankNode, defaultGraph, literal, namedNode, quad, variable } from '@rdfjs/data-model';
 import { ArrayIterator } from 'asynciterator';
-import * as RDF from 'rdf-js';
+import type * as RDF from 'rdf-js';
 import { BindingsToQuadsIterator } from '../lib/BindingsToQuadsIterator';
 
 const arrayifyStream = require('arrayify-stream');

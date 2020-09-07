@@ -69,6 +69,7 @@
   "dependencies": {
     "@comunica/actor-abstract-bindings-hash": "^1.16.0",
     "@types/lru-cache": "^5.1.0",
-    "lru-cache": "^6.0.0"
+    "lru-cache": "^6.0.0",
+    "sparqlalgebrajs": "^2.3.2"
   }
 }

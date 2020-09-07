@@ -9,7 +9,7 @@ import { ActionContext, IActorTest } from '@comunica/core';
 import { variable } from '@rdfjs/data-model';
 import { AsyncIterator, BufferedIterator, MultiTransformIterator,
   TransformIterator, EmptyIterator } from 'asynciterator';
-import { Term, Variable } from 'rdf-js';
+import type { Term, Variable } from 'rdf-js';
 import { termToString } from 'rdf-string';
 import { Algebra, Factory } from 'sparqlalgebrajs';
 

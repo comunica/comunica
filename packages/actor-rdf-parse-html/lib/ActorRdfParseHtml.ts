@@ -12,7 +12,7 @@ import {
 } from '@comunica/bus-rdf-parse-html';
 import { ActionContext, Actor, Bus, IActorTest } from '@comunica/core';
 import { Parser as HtmlParser } from 'htmlparser2';
-import * as RDF from 'rdf-js';
+import type * as RDF from 'rdf-js';
 
 /**
  * A comunica HTML RDF Parse Actor.

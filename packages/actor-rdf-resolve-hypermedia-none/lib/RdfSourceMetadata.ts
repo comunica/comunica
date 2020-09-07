@@ -1,5 +1,5 @@
 import { Readable } from 'stream';
-import * as RDF from 'rdf-js';
+import type * as RDF from 'rdf-js';
 
 /**
  * A wrapper around an RDF source that emits totalItems metadata *before* the end event.

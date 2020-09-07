@@ -6,7 +6,7 @@ import {
   IActorSparqlSerializeOutput,
 } from '@comunica/bus-sparql-serialize';
 import { ActionContext } from '@comunica/core';
-import * as RDF from 'rdf-js';
+import type * as RDF from 'rdf-js';
 import { termToString } from 'rdf-string-ttl';
 
 /**

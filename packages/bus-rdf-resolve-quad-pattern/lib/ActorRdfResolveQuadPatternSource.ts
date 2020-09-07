@@ -1,6 +1,6 @@
 import { ActionContext, IActorArgs, IActorTest } from '@comunica/core';
 import { AsyncIterator, wrap as wrapAsyncIterator } from 'asynciterator';
-import * as RDF from 'rdf-js';
+import type * as RDF from 'rdf-js';
 import { Algebra } from 'sparqlalgebrajs';
 import {
   ActorRdfResolveQuadPattern,

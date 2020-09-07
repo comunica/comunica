@@ -8,7 +8,7 @@ import {
 import { ActionContext, IActorTest, Mediator } from '@comunica/core';
 import { SingletonIterator } from 'asynciterator';
 import * as _ from 'lodash';
-import * as RDF from 'rdf-js';
+import type * as RDF from 'rdf-js';
 import { MediatedPagedAsyncRdfIterator } from '../lib/MediatedPagedAsyncRdfIterator';
 import { PagedAsyncRdfIterator } from '../lib/PagedAsyncRdfIterator';
 

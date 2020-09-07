@@ -1,5 +1,5 @@
 import { Actor, IAction, IActorArgs, IActorOutput, IActorTest } from '@comunica/core';
-import * as RDF from 'rdf-js';
+import type * as RDF from 'rdf-js';
 
 /**
  * A comunica actor for rdf-metadata events.

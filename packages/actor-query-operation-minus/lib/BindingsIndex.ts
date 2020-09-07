@@ -1,5 +1,5 @@
 import { Bindings } from '@comunica/bus-query-operation';
-import * as RDF from 'rdf-js';
+import type * as RDF from 'rdf-js';
 import { termToString } from 'rdf-string';
 
 /**

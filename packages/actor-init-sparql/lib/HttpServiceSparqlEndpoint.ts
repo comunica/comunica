@@ -9,7 +9,7 @@ import { ActionContext } from '@comunica/core';
 
 import { ArrayIterator } from 'asynciterator';
 import minimist = require('minimist');
-import * as RDF from 'rdf-js';
+import type * as RDF from 'rdf-js';
 import { newEngineDynamic } from '..';
 import { ActorInitSparql } from './ActorInitSparql';
 import { IQueryOptions } from './QueryDynamic';

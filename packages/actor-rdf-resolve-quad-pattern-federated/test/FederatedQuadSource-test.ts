@@ -4,7 +4,7 @@ import { blankNode, defaultGraph, literal, namedNode, quad, variable } from '@rd
 import { ArrayIterator, UnionIterator } from 'asynciterator';
 import { AsyncReiterableArray } from 'asyncreiterable';
 import 'jest-rdf';
-import * as RDF from 'rdf-js';
+import type * as RDF from 'rdf-js';
 import Factory from 'sparqlalgebrajs/lib/factory';
 import { FederatedQuadSource } from '../lib/FederatedQuadSource';
 

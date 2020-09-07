@@ -3,7 +3,7 @@ import { IActorQueryOperationOutputBindings, BindingsStream } from '@comunica/bu
 import { ActorSparqlSerializeFixedMediaTypes, IActionSparqlSerialize,
   IActorSparqlSerializeFixedMediaTypesArgs, IActorSparqlSerializeOutput } from '@comunica/bus-sparql-serialize';
 import { ActionContext, ensureActionContext } from '@comunica/core';
-import * as RDF from 'rdf-js';
+import type * as RDF from 'rdf-js';
 import { Converter, IConverterSettings, ISchema } from 'sparqljson-to-tree';
 
 /**

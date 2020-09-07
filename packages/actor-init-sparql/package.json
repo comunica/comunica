@@ -165,7 +165,8 @@
     "rdf-quad": "^1.4.0",
     "rdf-string": "^1.4.2",
     "rdf-terms": "^1.4.0",
-    "streamify-string": "^1.0.1"
+    "streamify-string": "^1.0.1",
+    "sparqlalgebrajs": "^2.3.2"
   },
   "devDependencies": {
     "@comunica/actor-query-operation-bgp-left-deep-smallest-sort": "^1.16.0"

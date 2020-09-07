@@ -35,7 +35,8 @@
     "index.js"
   ],
   "dependencies": {
-    "@comunica/actor-abstract-bindings-hash": "^1.16.0"
+    "@comunica/actor-abstract-bindings-hash": "^1.16.0",
+    "sparqlalgebrajs": "^2.3.2"
   },
   "peerDependencies": {
     "@comunica/bus-query-operation": "^1.0.0",

@@ -35,6 +35,7 @@
     "index.js"
   ],
   "dependencies": {
+    "@comunica/bus-rdf-resolve-quad-pattern": "^1.16.0",
     "@comunica/utils-datasource": "^1.16.0",
     "@types/rdf-js": "^3.0.0",
     "arrayify-stream": "^1.0.0",

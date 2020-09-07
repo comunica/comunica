@@ -1,6 +1,6 @@
 import { ILazyQuadSource } from '@comunica/bus-rdf-resolve-quad-pattern';
 import { AsyncIterator } from 'asynciterator';
-import * as RDF from 'rdf-js';
+import type * as RDF from 'rdf-js';
 import { N3StoreIterator } from './N3StoreIterator';
 
 export class N3StoreQuadSource implements ILazyQuadSource {

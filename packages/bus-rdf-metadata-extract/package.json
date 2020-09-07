@@ -36,9 +36,12 @@
   "dependencies": {
     "@types/rdf-js": "^3.0.0",
     "graphql-ld": "^1.1.0",
-    "rdf-store-stream": "^1.0.1"
+    "rdf-store-stream": "^1.0.1",
+    "sparqlalgebrajs": "^2.3.2",
+    "stream-to-string": "^1.2.0"
   },
   "peerDependencies": {
+    "@comunica/actor-init-sparql": "^1.16.2",
     "@comunica/core": "^1.0.0"
   },
   "devDependencies": {

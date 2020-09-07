@@ -7,7 +7,7 @@ import { ActionContext, Actor, IActorTest, Mediator } from '@comunica/core';
 import { BlankNodeScoped } from '@comunica/data-factory';
 import * as DataFactory from '@rdfjs/data-model';
 import { AsyncIterator, EmptyIterator, TransformIterator, UnionIterator } from 'asynciterator';
-import * as RDF from 'rdf-js';
+import type * as RDF from 'rdf-js';
 import { mapTerms } from 'rdf-terms';
 import { Algebra, Factory } from 'sparqlalgebrajs';
 

@@ -4,7 +4,7 @@ import {
 } from '@comunica/bus-rdf-resolve-quad-pattern';
 import { ActionContext, IActorArgs, IActorTest } from '@comunica/core';
 import { AsyncIterator } from 'asynciterator';
-import * as RDF from 'rdf-js';
+import type * as RDF from 'rdf-js';
 
 /**
  * A comunica RDFJS Source RDF Resolve Quad Pattern Actor.

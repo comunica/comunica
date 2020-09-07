@@ -3,7 +3,7 @@ import { ActorQueryOperation, IActorQueryOperationOutputBindings, Bindings } fro
 import { ActionContext, Bus } from '@comunica/core';
 import { blankNode, namedNode, variable } from '@rdfjs/data-model';
 import { ArrayIterator } from 'asynciterator';
-import * as RDF from 'rdf-js';
+import type * as RDF from 'rdf-js';
 import { Algebra } from 'sparqlalgebrajs';
 import { ActorQueryOperationQuadpattern } from '../lib/ActorQueryOperationQuadpattern';
 const arrayifyStream = require('arrayify-stream');

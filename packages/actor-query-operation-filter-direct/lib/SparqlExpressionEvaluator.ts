@@ -1,6 +1,6 @@
 /* eslint-disable id-length */
 import { Bindings } from '@comunica/bus-query-operation';
-import * as RDF from 'rdf-js';
+import type * as RDF from 'rdf-js';
 import { stringToTerm, termToString } from 'rdf-string';
 import { Algebra } from 'sparqlalgebrajs';
 

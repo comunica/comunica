@@ -1,7 +1,7 @@
 import { Bindings, BindingsStream } from '@comunica/bus-query-operation';
 import { blankNode } from '@rdfjs/data-model';
 import { ArrayIterator, AsyncIterator, MultiTransformIterator } from 'asynciterator';
-import * as RDF from 'rdf-js';
+import type * as RDF from 'rdf-js';
 import { mapTerms } from 'rdf-terms';
 
 /**

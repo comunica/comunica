@@ -1,6 +1,6 @@
 import { ActorRdfMetadataQuadPredicate, IActionRdfMetadata, IActorRdfMetadataOutput } from '@comunica/bus-rdf-metadata';
 import { IActorArgs, IActorTest } from '@comunica/core';
-import * as RDF from 'rdf-js';
+import type * as RDF from 'rdf-js';
 
 /**
  * An RDF Metadata Actor that splits off the metadata based on the existence of a preconfigured set of predicates

@@ -1,6 +1,6 @@
 import { ActionContext, Actor, IAction, IActorArgs, IActorTest, Mediator } from '@comunica/core';
 import { AsyncIterator } from 'asynciterator';
-import * as RDF from 'rdf-js';
+import type * as RDF from 'rdf-js';
 import { Algebra } from 'sparqlalgebrajs';
 import { Bindings, BindingsStream, materializeOperation } from './Bindings';
 

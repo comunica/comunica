@@ -1,6 +1,6 @@
 import { AsyncIterator } from 'asynciterator';
 import { Map } from 'immutable';
-import * as RDF from 'rdf-js';
+import type * as RDF from 'rdf-js';
 import { termToString } from 'rdf-string';
 import { Algebra, Factory, Util } from 'sparqlalgebrajs';
 
