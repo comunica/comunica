@@ -72,8 +72,12 @@
 						<h1>Comunica Runner</h1>
 					</a>
 					<p><a href="https://www.npmjs.com/package/@comunica/runner"><img src="https://badge.fury.io/js/%40comunica%2Frunner.svg" alt="npm version"></a></p>
-					<p>Utility module for Comunica runner modules, such as @comunica/runner-cli.</p>
-					<p>This module is part of the <a href="https://github.com/comunica/comunica">Comunica framework</a>.</p>
+					<p>Runner module for Comunica actors on the <a href="https://github.com/comunica/comunica/tree/master/packages/bus-init">Init bus</a>.</p>
+					<p>Related to <a href="https://github.com/comunica/comunica/tree/master/packages/runner-cli"><code>@comunica/runner-cli</code></a>, for running on the command line.</p>
+					<p>This module is part of the <a href="https://github.com/comunica/comunica">Comunica framework</a>,
+					and should only be used by <a href="https://comunica.dev/docs/modify/">developers that want to build their own query engine</a>.</p>
+					<p><a href="https://comunica.dev/docs/query/">Click here if you just want to query with Comunica</a>.</p>
+					<p><a href="https://comunica.dev/docs/modify/getting_started/custom_init/">Learn more about creating a custom init actor</a>.</p>
 					<a href="#install" id="install" style="color: inherit; text-decoration: none;">
 						<h2>Install</h2>
 					</a>
@@ -81,7 +85,7 @@
 					<a href="#usage" id="usage" style="color: inherit; text-decoration: none;">
 						<h2>Usage</h2>
 					</a>
-					<p>TODO</p>
+					<p>See <a href="https://comunica.github.io/comunica/modules/runner.html#run-1"><code>run()</code></a></p>
 				</div>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">
@@ -173,7 +177,7 @@
 					<div class="tsd-signature tsd-kind-icon">ISetup<wbr>Properties<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">LoaderProperties</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/31c4cfb/packages/runner/lib/Setup.ts#L63">packages/runner/lib/Setup.ts:63</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/cf91683/packages/runner/lib/Setup.ts#L63">packages/runner/lib/Setup.ts:63</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -186,7 +190,7 @@
 					<div class="tsd-signature tsd-kind-icon">args<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> = process.argv.slice(2)</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/31c4cfb/packages/runner/bin/compile-config.ts#L11">packages/runner/bin/compile-config.ts:11</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/cf91683/packages/runner/bin/compile-config.ts#L11">packages/runner/bin/compile-config.ts:11</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -196,7 +200,7 @@
 					<div class="tsd-signature tsd-kind-icon">config<wbr>Path<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = args[0]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/31c4cfb/packages/runner/bin/compile-config.ts#L20">packages/runner/bin/compile-config.ts:20</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/cf91683/packages/runner/bin/compile-config.ts#L20">packages/runner/bin/compile-config.ts:20</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -206,7 +210,7 @@
 					<div class="tsd-signature tsd-kind-icon">config<wbr>Resource<wbr>Uri<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"urn:comunica:my"</span><span class="tsd-signature-symbol"> = &quot;urn:comunica:my&quot;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/31c4cfb/packages/runner/bin/compile-config.ts#L19">packages/runner/bin/compile-config.ts:19</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/cf91683/packages/runner/bin/compile-config.ts#L19">packages/runner/bin/compile-config.ts:19</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -216,7 +220,7 @@
 					<div class="tsd-signature tsd-kind-icon">config<wbr>Stream<wbr>Raw<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Stream</span><span class="tsd-signature-symbol"> = createReadStream(configPath, { encoding: &#x27;utf8&#x27; })</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/31c4cfb/packages/runner/bin/compile-config.ts#L21">packages/runner/bin/compile-config.ts:21</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/cf91683/packages/runner/bin/compile-config.ts#L21">packages/runner/bin/compile-config.ts:21</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -226,7 +230,7 @@
 					<div class="tsd-signature tsd-kind-icon">export<wbr>Variable<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &quot;urn:comunica:sparqlinit&quot;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/31c4cfb/packages/runner/bin/compile-config.ts#L22">packages/runner/bin/compile-config.ts:22</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/cf91683/packages/runner/bin/compile-config.ts#L22">packages/runner/bin/compile-config.ts:22</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -236,7 +240,7 @@
 					<div class="tsd-signature tsd-kind-icon">main<wbr>Module<wbr>Path<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = process.cwd()</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/31c4cfb/packages/runner/bin/compile-config.ts#L18">packages/runner/bin/compile-config.ts:18</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/cf91683/packages/runner/bin/compile-config.ts#L18">packages/runner/bin/compile-config.ts:18</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -253,7 +257,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/31c4cfb/packages/runner/lib/Setup.ts#L20">packages/runner/lib/Setup.ts:20</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/cf91683/packages/runner/lib/Setup.ts#L20">packages/runner/lib/Setup.ts:20</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -297,7 +301,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/31c4cfb/packages/runner/lib/Setup.ts#L44">packages/runner/lib/Setup.ts:44</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/cf91683/packages/runner/lib/Setup.ts#L44">packages/runner/lib/Setup.ts:44</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">

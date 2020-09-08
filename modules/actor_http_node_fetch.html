@@ -72,17 +72,32 @@
 						<h1>Comunica node-fetch HTTP Actor</h1>
 					</a>
 					<p><a href="https://www.npmjs.com/package/@comunica/actor-http-node-fetch"><img src="https://badge.fury.io/js/%40comunica%2Factor-http-node-fetch.svg" alt="npm version"></a></p>
-					<p>A <a href="https://www.npmjs.com/package/node-fetch">node-fetch</a> HTTP actor implementation for Comunica.</p>
-					<p>This module is part of the <a href="https://github.com/comunica/comunica">Comunica framework</a>.</p>
+					<p>An <a href="https://github.com/comunica/comunica/tree/master/packages/bus-http">HTTP</a> actor that
+					uses <a href="https://www.npmjs.com/package/node-fetch">node-fetch</a> to perform HTTP requests.</p>
+					<p>This module is part of the <a href="https://github.com/comunica/comunica">Comunica framework</a>,
+					and should only be used by <a href="https://comunica.dev/docs/modify/">developers that want to build their own query engine</a>.</p>
+					<p><a href="https://comunica.dev/docs/query/">Click here if you just want to query with Comunica</a>.</p>
 					<a href="#install" id="install" style="color: inherit; text-decoration: none;">
 						<h2>Install</h2>
 					</a>
 					<pre><code class="language-bash">$ yarn add @comunica/actor-http-node-fetch</code></pre>
-					<a href="#usage" id="usage" style="color: inherit; text-decoration: none;">
-						<h2>Usage</h2>
+					<a href="#configure" id="configure" style="color: inherit; text-decoration: none;">
+						<h2>Configure</h2>
 					</a>
-					<p>TODO</p>
-					<p>The actor defined by <code>components/ActorHttpFetch</code> requires no parameters.</p>
+					<p>After installing, this package can be added to your engine&#39;s configuration as follows:</p>
+					<pre><code class="language-text">{
+  &quot;@context&quot;: [
+    ...
+    &quot;https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-http-node-fetch/^1.0.0/components/context.jsonld&quot;  
+  ],
+  &quot;actors&quot;: [
+    ...
+    {
+      &quot;@id&quot;: &quot;config-sets:http.json#myHttpFetcher&quot;,
+      &quot;@type&quot;: &quot;ActorHttpNodeFetch&quot;
+    }
+  ]
+}</code></pre>
 				</div>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">

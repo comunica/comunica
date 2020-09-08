@@ -72,16 +72,39 @@
 						<h1>Comunica Filter Direct Query Operation Actor</h1>
 					</a>
 					<p><a href="https://www.npmjs.com/package/@comunica/actor-query-operation-filter-direct"><img src="https://badge.fury.io/js/%40comunica%2Factor-query-operation-filter-direct.svg" alt="npm version"></a></p>
-					<p>A comunica Filter Direct Query Operation Actor.</p>
-					<p>This module is part of the <a href="https://github.com/comunica/comunica">Comunica framework</a>.</p>
+					<p>A simplistic <a href="https://github.com/comunica/comunica/tree/master/packages/bus-query-operation">Query Operation</a> actor that handles <a href="https://www.w3.org/TR/sparql11-query/#evaluation">SPARQL <code>FILTER</code></a> operations.</p>
+					<p><strong>DEPRECATED in favor of actor-query-operation-filter-sparqlee</strong></p>
+					<p>This module is part of the <a href="https://github.com/comunica/comunica">Comunica framework</a>,
+					and should only be used by <a href="https://comunica.dev/docs/modify/">developers that want to build their own query engine</a>.</p>
+					<p><a href="https://comunica.dev/docs/query/">Click here if you just want to query with Comunica</a>.</p>
 					<a href="#install" id="install" style="color: inherit; text-decoration: none;">
 						<h2>Install</h2>
 					</a>
 					<pre><code class="language-bash">$ yarn add @comunica/actor-query-operation-filter-direct</code></pre>
-					<a href="#usage" id="usage" style="color: inherit; text-decoration: none;">
-						<h2>Usage</h2>
+					<a href="#configure" id="configure" style="color: inherit; text-decoration: none;">
+						<h2>Configure</h2>
 					</a>
-					<p>TODO</p>
+					<p>After installing, this package can be added to your engine&#39;s configuration as follows:</p>
+					<pre><code class="language-text">{
+  &quot;@context&quot;: [
+    ...
+    &quot;https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-filter-direct/^1.0.0/components/context.jsonld&quot;  
+  ],
+  &quot;actors&quot;: [
+    ...
+    {
+      &quot;@id&quot;: &quot;config-sets:sparql-queryoperators.json#myFilterQueryOperator&quot;,
+      &quot;@type&quot;: &quot;ActorQueryOperationFilterDirect&quot;,
+      &quot;cbqo:mediatorQueryOperation&quot;: { &quot;@id&quot;: &quot;config-sets:sparql-queryoperators.json#mediatorQueryOperation&quot; }
+    }
+  ]
+}</code></pre>
+					<a href="#config-parameters" id="config-parameters" style="color: inherit; text-decoration: none;">
+						<h3>Config Parameters</h3>
+					</a>
+					<ul>
+						<li><code>cbqo:mediatorQueryOperation</code>: A mediator over the <a href="https://github.com/comunica/comunica/tree/master/packages/bus-query-operation">Query Operation bus</a>.</li>
+					</ul>
 				</div>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">
@@ -158,7 +181,7 @@
 					<div class="tsd-signature tsd-kind-icon">XSD<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"http://www.w3.org/2001/XMLSchema#"</span><span class="tsd-signature-symbol"> = &quot;http://www.w3.org/2001/XMLSchema#&quot;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/31c4cfb/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L134">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:134</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/cf91683/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L134">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:134</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -168,7 +191,7 @@
 					<div class="tsd-signature tsd-kind-icon">XSD_<wbr>BOOLEAN<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &#x60;${XSD}boolean&#x60;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/31c4cfb/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L137">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:137</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/cf91683/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L137">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:137</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -178,7 +201,7 @@
 					<div class="tsd-signature tsd-kind-icon">XSD_<wbr>DOUBLE<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &#x60;${XSD}double&#x60;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/31c4cfb/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L136">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:136</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/cf91683/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L136">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:136</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -188,7 +211,7 @@
 					<div class="tsd-signature tsd-kind-icon">XSD_<wbr>FALSE<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &#x60;&quot;false&quot;^^${XSD_BOOLEAN}&#x60;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/31c4cfb/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L140">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:140</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/cf91683/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L140">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:140</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -198,7 +221,7 @@
 					<div class="tsd-signature tsd-kind-icon">XSD_<wbr>INTEGER<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &#x60;${XSD}integer&#x60;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/31c4cfb/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L135">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:135</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/cf91683/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L135">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:135</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -208,7 +231,7 @@
 					<div class="tsd-signature tsd-kind-icon">XSD_<wbr>STRING<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &#x60;${XSD}string&#x60;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/31c4cfb/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L138">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:138</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/cf91683/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L138">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:138</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -218,7 +241,7 @@
 					<div class="tsd-signature tsd-kind-icon">XSD_<wbr>TRUE<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &#x60;&quot;true&quot;^^${XSD_BOOLEAN}&#x60;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/31c4cfb/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L139">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:139</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/cf91683/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L139">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:139</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -235,7 +258,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/31c4cfb/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L15">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:15</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/cf91683/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L15">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:15</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -284,7 +307,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/31c4cfb/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L129">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:129</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/cf91683/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L129">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:129</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -307,7 +330,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/31c4cfb/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L122">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:122</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/cf91683/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L122">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:122</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -330,7 +353,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/31c4cfb/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L27">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:27</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/cf91683/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L27">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:27</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -371,7 +394,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/31c4cfb/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L62">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:62</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/cf91683/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L62">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:62</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -415,7 +438,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/31c4cfb/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L54">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:54</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/cf91683/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L54">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:54</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -456,7 +479,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/31c4cfb/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L58">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:58</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/cf91683/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L58">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:58</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -497,7 +520,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/31c4cfb/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L43">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:43</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/cf91683/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L43">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:43</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -538,7 +561,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/31c4cfb/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L113">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:113</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/cf91683/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L113">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:113</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -561,7 +584,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/31c4cfb/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L117">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:117</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/cf91683/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L117">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:117</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -583,7 +606,7 @@
 					<div class="tsd-signature tsd-kind-icon">operators<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/31c4cfb/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L143">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:143</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/cf91683/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L143">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:143</a></li>
 						</ul>
 					</aside>
 					<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-object-literal tsd-is-not-exported">
@@ -596,7 +619,7 @@
 							<li class="tsd-description">
 								<aside class="tsd-sources">
 									<ul>
-										<li>Defined in <a href="https://github.com/comunica/comunica/blob/31c4cfb/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L174">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:174</a></li>
+										<li>Defined in <a href="https://github.com/comunica/comunica/blob/cf91683/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L174">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:174</a></li>
 									</ul>
 								</aside>
 								<h4 class="tsd-parameters-title">Parameters</h4>
@@ -619,7 +642,7 @@
 							<li class="tsd-description">
 								<aside class="tsd-sources">
 									<ul>
-										<li>Defined in <a href="https://github.com/comunica/comunica/blob/31c4cfb/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L159">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:159</a></li>
+										<li>Defined in <a href="https://github.com/comunica/comunica/blob/cf91683/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L159">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:159</a></li>
 									</ul>
 								</aside>
 								<h4 class="tsd-parameters-title">Parameters</h4>
@@ -645,7 +668,7 @@
 							<li class="tsd-description">
 								<aside class="tsd-sources">
 									<ul>
-										<li>Defined in <a href="https://github.com/comunica/comunica/blob/31c4cfb/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L177">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:177</a></li>
+										<li>Defined in <a href="https://github.com/comunica/comunica/blob/cf91683/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L177">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:177</a></li>
 									</ul>
 								</aside>
 								<h4 class="tsd-parameters-title">Parameters</h4>
@@ -671,7 +694,7 @@
 							<li class="tsd-description">
 								<aside class="tsd-sources">
 									<ul>
-										<li>Defined in <a href="https://github.com/comunica/comunica/blob/31c4cfb/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L150">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:150</a></li>
+										<li>Defined in <a href="https://github.com/comunica/comunica/blob/cf91683/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L150">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:150</a></li>
 									</ul>
 								</aside>
 								<h4 class="tsd-parameters-title">Parameters</h4>
@@ -697,7 +720,7 @@
 							<li class="tsd-description">
 								<aside class="tsd-sources">
 									<ul>
-										<li>Defined in <a href="https://github.com/comunica/comunica/blob/31c4cfb/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L144">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:144</a></li>
+										<li>Defined in <a href="https://github.com/comunica/comunica/blob/cf91683/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L144">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:144</a></li>
 									</ul>
 								</aside>
 								<h4 class="tsd-parameters-title">Parameters</h4>
@@ -723,7 +746,7 @@
 							<li class="tsd-description">
 								<aside class="tsd-sources">
 									<ul>
-										<li>Defined in <a href="https://github.com/comunica/comunica/blob/31c4cfb/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L147">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:147</a></li>
+										<li>Defined in <a href="https://github.com/comunica/comunica/blob/cf91683/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L147">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:147</a></li>
 									</ul>
 								</aside>
 								<h4 class="tsd-parameters-title">Parameters</h4>
@@ -749,7 +772,7 @@
 							<li class="tsd-description">
 								<aside class="tsd-sources">
 									<ul>
-										<li>Defined in <a href="https://github.com/comunica/comunica/blob/31c4cfb/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L153">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:153</a></li>
+										<li>Defined in <a href="https://github.com/comunica/comunica/blob/cf91683/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L153">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:153</a></li>
 									</ul>
 								</aside>
 								<h4 class="tsd-parameters-title">Parameters</h4>
@@ -775,7 +798,7 @@
 							<li class="tsd-description">
 								<aside class="tsd-sources">
 									<ul>
-										<li>Defined in <a href="https://github.com/comunica/comunica/blob/31c4cfb/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L162">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:162</a></li>
+										<li>Defined in <a href="https://github.com/comunica/comunica/blob/cf91683/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L162">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:162</a></li>
 									</ul>
 								</aside>
 								<h4 class="tsd-parameters-title">Parameters</h4>
@@ -801,7 +824,7 @@
 							<li class="tsd-description">
 								<aside class="tsd-sources">
 									<ul>
-										<li>Defined in <a href="https://github.com/comunica/comunica/blob/31c4cfb/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L165">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:165</a></li>
+										<li>Defined in <a href="https://github.com/comunica/comunica/blob/cf91683/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L165">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:165</a></li>
 									</ul>
 								</aside>
 								<h4 class="tsd-parameters-title">Parameters</h4>
@@ -827,7 +850,7 @@
 							<li class="tsd-description">
 								<aside class="tsd-sources">
 									<ul>
-										<li>Defined in <a href="https://github.com/comunica/comunica/blob/31c4cfb/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L156">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:156</a></li>
+										<li>Defined in <a href="https://github.com/comunica/comunica/blob/cf91683/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L156">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:156</a></li>
 									</ul>
 								</aside>
 								<h4 class="tsd-parameters-title">Parameters</h4>
@@ -853,7 +876,7 @@
 							<li class="tsd-description">
 								<aside class="tsd-sources">
 									<ul>
-										<li>Defined in <a href="https://github.com/comunica/comunica/blob/31c4cfb/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L168">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:168</a></li>
+										<li>Defined in <a href="https://github.com/comunica/comunica/blob/cf91683/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L168">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:168</a></li>
 									</ul>
 								</aside>
 								<h4 class="tsd-parameters-title">Parameters</h4>
@@ -879,7 +902,7 @@
 							<li class="tsd-description">
 								<aside class="tsd-sources">
 									<ul>
-										<li>Defined in <a href="https://github.com/comunica/comunica/blob/31c4cfb/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L171">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:171</a></li>
+										<li>Defined in <a href="https://github.com/comunica/comunica/blob/cf91683/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L171">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:171</a></li>
 									</ul>
 								</aside>
 								<h4 class="tsd-parameters-title">Parameters</h4>
@@ -905,7 +928,7 @@
 							<li class="tsd-description">
 								<aside class="tsd-sources">
 									<ul>
-										<li>Defined in <a href="https://github.com/comunica/comunica/blob/31c4cfb/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L224">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:224</a></li>
+										<li>Defined in <a href="https://github.com/comunica/comunica/blob/cf91683/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L224">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:224</a></li>
 									</ul>
 								</aside>
 								<h4 class="tsd-parameters-title">Parameters</h4>
@@ -928,7 +951,7 @@
 							<li class="tsd-description">
 								<aside class="tsd-sources">
 									<ul>
-										<li>Defined in <a href="https://github.com/comunica/comunica/blob/31c4cfb/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L199">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:199</a></li>
+										<li>Defined in <a href="https://github.com/comunica/comunica/blob/cf91683/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L199">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:199</a></li>
 									</ul>
 								</aside>
 								<h4 class="tsd-parameters-title">Parameters</h4>
@@ -954,7 +977,7 @@
 							<li class="tsd-description">
 								<aside class="tsd-sources">
 									<ul>
-										<li>Defined in <a href="https://github.com/comunica/comunica/blob/31c4cfb/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L217">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:217</a></li>
+										<li>Defined in <a href="https://github.com/comunica/comunica/blob/cf91683/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L217">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:217</a></li>
 									</ul>
 								</aside>
 								<h4 class="tsd-parameters-title">Parameters</h4>
@@ -977,7 +1000,7 @@
 							<li class="tsd-description">
 								<aside class="tsd-sources">
 									<ul>
-										<li>Defined in <a href="https://github.com/comunica/comunica/blob/31c4cfb/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L214">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:214</a></li>
+										<li>Defined in <a href="https://github.com/comunica/comunica/blob/cf91683/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L214">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:214</a></li>
 									</ul>
 								</aside>
 								<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1000,7 +1023,7 @@
 							<li class="tsd-description">
 								<aside class="tsd-sources">
 									<ul>
-										<li>Defined in <a href="https://github.com/comunica/comunica/blob/31c4cfb/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L183">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:183</a></li>
+										<li>Defined in <a href="https://github.com/comunica/comunica/blob/cf91683/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L183">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:183</a></li>
 									</ul>
 								</aside>
 								<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1023,7 +1046,7 @@
 							<li class="tsd-description">
 								<aside class="tsd-sources">
 									<ul>
-										<li>Defined in <a href="https://github.com/comunica/comunica/blob/31c4cfb/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L186">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:186</a></li>
+										<li>Defined in <a href="https://github.com/comunica/comunica/blob/cf91683/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L186">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:186</a></li>
 									</ul>
 								</aside>
 								<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1049,7 +1072,7 @@
 							<li class="tsd-description">
 								<aside class="tsd-sources">
 									<ul>
-										<li>Defined in <a href="https://github.com/comunica/comunica/blob/31c4cfb/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L204">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:204</a></li>
+										<li>Defined in <a href="https://github.com/comunica/comunica/blob/cf91683/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L204">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:204</a></li>
 									</ul>
 								</aside>
 								<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1075,7 +1098,7 @@
 							<li class="tsd-description">
 								<aside class="tsd-sources">
 									<ul>
-										<li>Defined in <a href="https://github.com/comunica/comunica/blob/31c4cfb/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L211">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:211</a></li>
+										<li>Defined in <a href="https://github.com/comunica/comunica/blob/cf91683/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L211">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:211</a></li>
 									</ul>
 								</aside>
 								<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1098,7 +1121,7 @@
 							<li class="tsd-description">
 								<aside class="tsd-sources">
 									<ul>
-										<li>Defined in <a href="https://github.com/comunica/comunica/blob/31c4cfb/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L180">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:180</a></li>
+										<li>Defined in <a href="https://github.com/comunica/comunica/blob/cf91683/packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts#L180">packages/actor-query-operation-filter-direct/lib/SparqlExpressionEvaluator.ts:180</a></li>
 									</ul>
 								</aside>
 								<h4 class="tsd-parameters-title">Parameters</h4>

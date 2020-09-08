@@ -72,17 +72,52 @@
 						<h1>Comunica Query-based Hydra Count RDF Metadata Extract Actor</h1>
 					</a>
 					<p><a href="https://www.npmjs.com/package/@comunica/actor-rdf-metadata-extract-hydra-count-query"><img src="https://badge.fury.io/js/%40comunica%2Factor-rdf-metadata-extract-hydra-count-query.svg" alt="npm version"></a></p>
-					<p>A comunica Query-based Hydra Count RDF Metadata Extract Actor.</p>
+					<p>An <a href="https://github.com/comunica/comunica/tree/master/packages/bus-rdf-metadata-extract">RDF Metadata Extract</a> actor that
+						extract estimated counts in the <a href="https://www.hydra-cg.com/spec/latest/core/">Hydra Core vocabulary</a>
+						and <a href="https://www.w3.org/TR/void/">VoID</a>
+					using a GraphQL-LD query.</p>
 					<p>This is a query-based variant of <a href="https://github.com/comunica/comunica/tree/master/packages/actor-rdf-metadata-extract-hydra-count">@comunica/actor-rdf-metadata-extract-hydra-count</a>.</p>
-					<p>This module is part of the <a href="https://github.com/comunica/comunica">Comunica framework</a>.</p>
+					<p>This module is part of the <a href="https://github.com/comunica/comunica">Comunica framework</a>,
+					and should only be used by <a href="https://comunica.dev/docs/modify/">developers that want to build their own query engine</a>.</p>
+					<p><a href="https://comunica.dev/docs/query/">Click here if you just want to query with Comunica</a>.</p>
 					<a href="#install" id="install" style="color: inherit; text-decoration: none;">
 						<h2>Install</h2>
 					</a>
 					<pre><code class="language-bash">$ yarn add @comunica/actor-rdf-metadata-extract-hydra-count-query</code></pre>
-					<a href="#usage" id="usage" style="color: inherit; text-decoration: none;">
-						<h2>Usage</h2>
+					<a href="#metadata-entries" id="metadata-entries" style="color: inherit; text-decoration: none;">
+						<h2>Metadata entries</h2>
 					</a>
-					<p>TODO</p>
+					<p>This actor adds the following entries to the metadata object.</p>
+					<ul>
+						<li><code>totalItems</code>: Value of <code>http://www.w3.org/ns/hydra/core#totalItems</code> or <code>http://rdfs.org/ns/void#triples</code>.</li>
+					</ul>
+					<a href="#configure" id="configure" style="color: inherit; text-decoration: none;">
+						<h2>Configure</h2>
+					</a>
+					<p>After installing, this package can be added to your engine&#39;s configuration as follows:</p>
+					<pre><code class="language-text">{
+  &quot;@context&quot;: [
+    ...
+    &quot;https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-metadata-extract-hydra-count-query/^1.0.0/components/context.jsonld&quot;  
+  ],
+  &quot;actors&quot;: [
+    ...
+    {
+      &quot;@id&quot;: &quot;config-sets:resolve-hypermedia.json#myRdfMetadataExtractHydraCountQuery&quot;,
+      &quot;@type&quot;: &quot;ActorRdfMetadataExtractHydraCountQuery&quot;,
+      &quot;carmehco:Actor/RdfMetadataExtract/HydraCountQuery/predicate&quot;: [
+        &quot;http://www.w3.org/ns/hydra/core#totalItems&quot;,
+        &quot;http://rdfs.org/ns/void#triples&quot;
+      ]
+    }
+  ]
+}</code></pre>
+					<a href="#config-parameters" id="config-parameters" style="color: inherit; text-decoration: none;">
+						<h3>Config Parameters</h3>
+					</a>
+					<ul>
+						<li><code>carmehco:Actor/RdfMetadataExtract/HydraCountQuery/predicate</code>: The predicates to consider when determining counts, defaults to <code>http://www.w3.org/ns/hydra/core#totalItems</code> and <code>http://rdfs.org/ns/void#triples</code>.</li>
+					</ul>
 				</div>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">

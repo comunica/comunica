@@ -69,9 +69,46 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<a href="#comunica-memento-http-actor" id="comunica-memento-http-actor" style="color: inherit; text-decoration: none;">
-						<h1>Comunica Memento Http Actor</h1>
+						<h1>Comunica Memento HTTP Actor</h1>
 					</a>
-					<p>A comunica Memento Http Actor.</p>
+					<p><a href="https://www.npmjs.com/package/@comunica/actor-http-memento"><img src="https://badge.fury.io/js/%40comunica%2Factor-http-memento.svg" alt="npm version"></a></p>
+					<p>An <a href="https://github.com/comunica/comunica/tree/master/packages/bus-http">HTTP</a> actor that
+					uses implements the <a href="https://comunica.dev/docs/query/advanced/memento/">Memento protocol to perform time-based content negotiation</a>.</p>
+					<p>This module is part of the <a href="https://github.com/comunica/comunica">Comunica framework</a>,
+					and should only be used by <a href="https://comunica.dev/docs/modify/">developers that want to build their own query engine</a>.</p>
+					<p><a href="https://comunica.dev/docs/query/">Click here if you just want to query with Comunica</a>.</p>
+					<a href="#install" id="install" style="color: inherit; text-decoration: none;">
+						<h2>Install</h2>
+					</a>
+					<pre><code class="language-bash">$ yarn add @comunica/actor-http-memento</code></pre>
+					<a href="#configure" id="configure" style="color: inherit; text-decoration: none;">
+						<h2>Configure</h2>
+					</a>
+					<p>After installing, this package can be added to your engine&#39;s configuration as follows:</p>
+					<pre><code class="language-text">{
+  &quot;@context&quot;: [
+    ...
+    &quot;https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-http-memento/^1.0.0/components/context.jsonld&quot;  
+  ],
+  &quot;actors&quot;: [
+    ...
+    {
+      &quot;@id&quot;: &quot;config-sets:http-memento.json#myHttpFetcher&quot;,
+      &quot;@type&quot;: &quot;ActorHttpMemento&quot;,
+      &quot;cahm:Actor/Http/Memento/mediatorHttp&quot;: {
+        &quot;@id&quot;: &quot;config-sets:http.json#mediatorHttp&quot;
+      },
+      &quot;beforeActor&quot;: &quot;config-sets:http.json#myHttpFetcher&quot;
+    }
+  ]
+}</code></pre>
+					<p>Use <code>beforeActor</code> to indicate that this actor MUST always run <em>before</em> your default HTTP actor.</p>
+					<a href="#config-parameters" id="config-parameters" style="color: inherit; text-decoration: none;">
+						<h3>Config Parameters</h3>
+					</a>
+					<ul>
+						<li><code>cahm:Actor/Http/Memento/mediatorHttp</code>: A mediator over the <a href="https://github.com/comunica/comunica/tree/master/packages/bus-http">HTTP bus</a>.</li>
+					</ul>
 				</div>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">
@@ -133,7 +170,7 @@
 					<div class="tsd-signature tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>DATETIME<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"@comunica/actor-http-memento:datetime"</span><span class="tsd-signature-symbol"> = &quot;@comunica/actor-http-memento:datetime&quot;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/31c4cfb/packages/actor-http-memento/lib/ActorHttpMemento.ts#L69">packages/actor-http-memento/lib/ActorHttpMemento.ts:69</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/cf91683/packages/actor-http-memento/lib/ActorHttpMemento.ts#L69">packages/actor-http-memento/lib/ActorHttpMemento.ts:69</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">

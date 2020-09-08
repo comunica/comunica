@@ -72,20 +72,36 @@
 						<h1>Comunica Primary Topic RDF Metadata Actor</h1>
 					</a>
 					<p><a href="https://www.npmjs.com/package/@comunica/actor-rdf-metadata-primary-topic"><img src="https://badge.fury.io/js/%40comunica%2Factor-rdf-metadata-primary-topic.svg" alt="npm version"></a></p>
-					<p>A Comunica RDF Metadata Actor that splits off the metadata based on the existence of a <code>foaf:primaryTopic</code> link.</p>
+					<p>An <a href="https://github.com/comunica/comunica/tree/master/packages/bus-rdf-metadata">RDF Metadata</a> actor that
+					splits off the metadata based on the existence of a <code>foaf:primaryTopic</code> link.</p>
 					<p><strong>Warning:</strong> Use this at your own risk, as this actor <em>requires</em> <code>foaf:primaryTopic</code> to be linked with the metadata graph,
 						while the <a href="https://www.hydra-cg.com/spec/latest/triple-pattern-fragments/">spec keeps this optional</a>.
 						Furthermore, <code>foaf:primaryTopic</code> must come <em>before</em> the metadata triples.
 					But in cases where <code>foaf:primaryTopic</code> is always used, this actor will be very performant.</p>
-					<p>This module is part of the <a href="https://github.com/comunica/comunica">Comunica framework</a>.</p>
+					<p>This module is part of the <a href="https://github.com/comunica/comunica">Comunica framework</a>,
+					and should only be used by <a href="https://comunica.dev/docs/modify/">developers that want to build their own query engine</a>.</p>
+					<p><a href="https://comunica.dev/docs/query/">Click here if you just want to query with Comunica</a>.</p>
 					<a href="#install" id="install" style="color: inherit; text-decoration: none;">
 						<h2>Install</h2>
 					</a>
 					<pre><code class="language-bash">$ yarn add @comunica/actor-rdf-metadata-primary-topic</code></pre>
-					<a href="#usage" id="usage" style="color: inherit; text-decoration: none;">
-						<h2>Usage</h2>
+					<a href="#configure" id="configure" style="color: inherit; text-decoration: none;">
+						<h2>Configure</h2>
 					</a>
-					<p>TODO</p>
+					<p>After installing, this package can be added to your engine&#39;s configuration as follows:</p>
+					<pre><code class="language-text">{
+  &quot;@context&quot;: [
+    ...
+    &quot;https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-metadata-primary-topic/^1.0.0/components/context.jsonld&quot;  
+  ],
+  &quot;actors&quot;: [
+    ...
+    {
+      &quot;@id&quot;: &quot;config-sets:resolve-hypermedia.json#myRdfMetadataPrimaryTopic&quot;,
+      &quot;@type&quot;: &quot;ActorRdfMetadataPrimaryTopic&quot;
+    }
+  ]
+}</code></pre>
 				</div>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">

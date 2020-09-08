@@ -72,16 +72,26 @@
 						<h1>Comunica Core</h1>
 					</a>
 					<p><a href="https://www.npmjs.com/package/@comunica/core"><img src="https://badge.fury.io/js/%40comunica%2Fcore.svg" alt="npm version"></a></p>
-					<p>The core framework of Comunica, which consists of a mediatable publish-subscribe actor system.</p>
-					<p>This module is part of the <a href="https://github.com/comunica/comunica">Comunica framework</a>.</p>
+					<p>The core framework of Comunica, which consists of a <strong>actors</strong>, <strong>buses</strong>, and <strong>mediators</strong>.</p>
+					<p><strong><a href="https://comunica.dev/docs/modify/advanced/architecture_core/">Click here to learn more about this core architecture</a>.</strong></p>
+					<p>This module is part of the <a href="https://github.com/comunica/comunica">Comunica framework</a>,
+					and should only be used by <a href="https://comunica.dev/docs/modify/">developers that want to build their own query engine</a>.</p>
+					<p><a href="https://comunica.dev/docs/query/">Click here if you just want to query with Comunica</a>.</p>
 					<a href="#install" id="install" style="color: inherit; text-decoration: none;">
 						<h2>Install</h2>
 					</a>
 					<pre><code class="language-bash">$ yarn add @comunica/core</code></pre>
-					<a href="#usage" id="usage" style="color: inherit; text-decoration: none;">
-						<h2>Usage</h2>
+					<a href="#exported-classes" id="exported-classes" style="color: inherit; text-decoration: none;">
+						<h2>Exported classes</h2>
 					</a>
-					<p>TODO</p>
+					<ul>
+						<li><a href="https://comunica.github.io/comunica/classes/core.actor-1.html"><code>Actor</code></a>: An actor can act on messages of certain types and provide output of a certain type.</li>
+						<li><a href="https://comunica.github.io/comunica/classes/core.bus-1.html"><code>Bus</code></a>: A publish-subscribe bus for sending actions to actors to test whether or not they can run an action.</li>
+						<li><a href="https://comunica.github.io/comunica/classes/core.mediator-1.html"><code>Mediator</code></a>: A mediator can mediate an action over a bus of actors.</li>
+						<li><a href="https://comunica.github.io/comunica/classes/core.actionobserver-1.html"><code>ActionObserver</code></a>: An ActionObserver can passively listen to Actor.run inputs and outputs for all actors on a certain bus.</li>
+						<li><a href="https://comunica.github.io/comunica/classes/core.busindexed-1.html"><code>BusIndexed</code></a>: A bus that indexes identified actors, so that actions with a corresponding identifier can be published more efficiently.</li>
+						<li><a href="https://comunica.github.io/comunica/classes/core.logger-1.html"><code>Logger</code></a>: A logger accepts messages from different levels and emits them in a certain way.</li>
+					</ul>
 				</div>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">
@@ -259,7 +269,7 @@
 					<div class="tsd-signature tsd-kind-icon">Action<wbr>Context<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/31c4cfb/packages/core/lib/Actor.ts#L187">packages/core/lib/Actor.ts:187</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/cf91683/packages/core/lib/Actor.ts#L187">packages/core/lib/Actor.ts:187</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -289,7 +299,7 @@
 					<div class="tsd-signature tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>LOG<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"@comunica/core:log"</span><span class="tsd-signature-symbol"> = &quot;@comunica/core:log&quot;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/31c4cfb/packages/core/lib/Logger.ts#L41">packages/core/lib/Logger.ts:41</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/cf91683/packages/core/lib/Logger.ts#L41">packages/core/lib/Logger.ts:41</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -313,7 +323,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/31c4cfb/packages/core/lib/Actor.ts#L195">packages/core/lib/Actor.ts:195</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/cf91683/packages/core/lib/Actor.ts#L195">packages/core/lib/Actor.ts:195</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -350,7 +360,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/31c4cfb/packages/core/lib/Actor.ts#L205">packages/core/lib/Actor.ts:205</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/cf91683/packages/core/lib/Actor.ts#L205">packages/core/lib/Actor.ts:205</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">

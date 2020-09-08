@@ -72,8 +72,10 @@
 						<h1>Comunica Abstract MediaTyped Actor</h1>
 					</a>
 					<p><a href="https://www.npmjs.com/package/@comunica/actor-abstract-mediatyped"><img src="https://badge.fury.io/js/%40comunica%2Factor-abstract-mediatyped.svg" alt="npm version"></a></p>
-					<p>A comunica Abstract Actor for handling actions based on mediatypes.</p>
-					<p>This module is part of the <a href="https://github.com/comunica/comunica">Comunica framework</a>.</p>
+					<p>A actor for handling actions based on mediatypes, such as content negotiation</p>
+					<p>This module is part of the <a href="https://github.com/comunica/comunica">Comunica framework</a>,
+					and should only be used by <a href="https://comunica.dev/docs/modify/">developers that want to build their own query engine</a>.</p>
+					<p><a href="https://comunica.dev/docs/query/">Click here if you just want to query with Comunica</a>.</p>
 					<a href="#install" id="install" style="color: inherit; text-decoration: none;">
 						<h2>Install</h2>
 					</a>
@@ -81,7 +83,9 @@
 					<a href="#usage" id="usage" style="color: inherit; text-decoration: none;">
 						<h2>Usage</h2>
 					</a>
-					<p>TODO</p>
+					<p>This package exposes <a href="https://comunica.github.io/comunica/classes/actor_abstract_mediatyped.actorabstractmediatyped-1.html"><code>ActorAbstractMediaTyped</code></a>
+						and <a href="https://comunica.github.io/comunica/classes/actor_abstract_mediatyped.actorabstractmediatypedfixed-1.html"><code>ActorAbstractMediaTypedFixed</code></a>
+					that provide utility methods for actors that handle media types.</p>
 				</div>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">
@@ -234,7 +238,7 @@
 					<div class="tsd-signature tsd-kind-icon">IAction<wbr>Abstract<wbr>Media<wbr>Typed&lt;HI&gt;<span class="tsd-signature-symbol">:</span> <a href="../interfaces/actor_abstract_mediatyped.iactionabstractmediatypedhandle-1.html" class="tsd-signature-type">IActionAbstractMediaTypedHandle</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">HI</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><a href="../interfaces/actor_abstract_mediatyped.iactionabstractmediatypedmediatypes-1.html" class="tsd-signature-type">IActionAbstractMediaTypedMediaTypes</a><span class="tsd-signature-symbol"> | </span><a href="../interfaces/actor_abstract_mediatyped.iactionabstractmediatypedmediatypeformats-1.html" class="tsd-signature-type">IActionAbstractMediaTypedMediaTypeFormats</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/31c4cfb/packages/actor-abstract-mediatyped/lib/ActorAbstractMediaTyped.ts#L105">packages/actor-abstract-mediatyped/lib/ActorAbstractMediaTyped.ts:105</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/cf91683/packages/actor-abstract-mediatyped/lib/ActorAbstractMediaTyped.ts#L105">packages/actor-abstract-mediatyped/lib/ActorAbstractMediaTyped.ts:105</a></li>
 						</ul>
 					</aside>
 					<h4 class="tsd-type-parameters-title">Type parameters</h4>
@@ -250,7 +254,7 @@
 					<div class="tsd-signature tsd-kind-icon">IActor<wbr>Output<wbr>Abstract<wbr>Media<wbr>Typed&lt;HO&gt;<span class="tsd-signature-symbol">:</span> <a href="../interfaces/actor_abstract_mediatyped.iactoroutputabstractmediatypedhandle-1.html" class="tsd-signature-type">IActorOutputAbstractMediaTypedHandle</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">HO</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><a href="../interfaces/actor_abstract_mediatyped.iactoroutputabstractmediatypedmediatypes-1.html" class="tsd-signature-type">IActorOutputAbstractMediaTypedMediaTypes</a><span class="tsd-signature-symbol"> | </span><a href="../interfaces/actor_abstract_mediatyped.iactoroutputabstractmediatypedmediatypeformats-1.html" class="tsd-signature-type">IActorOutputAbstractMediaTypedMediaTypeFormats</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/31c4cfb/packages/actor-abstract-mediatyped/lib/ActorAbstractMediaTyped.ts#L161">packages/actor-abstract-mediatyped/lib/ActorAbstractMediaTyped.ts:161</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/cf91683/packages/actor-abstract-mediatyped/lib/ActorAbstractMediaTyped.ts#L161">packages/actor-abstract-mediatyped/lib/ActorAbstractMediaTyped.ts:161</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -272,7 +276,7 @@
 					<div class="tsd-signature tsd-kind-icon">IActor<wbr>Test<wbr>Abstract<wbr>Media<wbr>Typed&lt;HT&gt;<span class="tsd-signature-symbol">:</span> <a href="../interfaces/actor_abstract_mediatyped.iactortestabstractmediatypedhandle-1.html" class="tsd-signature-type">IActorTestAbstractMediaTypedHandle</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">HT</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><a href="../interfaces/actor_abstract_mediatyped.iactortestabstractmediatypedmediatypes-1.html" class="tsd-signature-type">IActorTestAbstractMediaTypedMediaTypes</a><span class="tsd-signature-symbol"> | </span><a href="../interfaces/actor_abstract_mediatyped.iactortestabstractmediatypedmediatypeformats-1.html" class="tsd-signature-type">IActorTestAbstractMediaTypedMediaTypeFormats</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/31c4cfb/packages/actor-abstract-mediatyped/lib/ActorAbstractMediaTyped.ts#L136">packages/actor-abstract-mediatyped/lib/ActorAbstractMediaTyped.ts:136</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/cf91683/packages/actor-abstract-mediatyped/lib/ActorAbstractMediaTyped.ts#L136">packages/actor-abstract-mediatyped/lib/ActorAbstractMediaTyped.ts:136</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">

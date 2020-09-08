@@ -72,16 +72,25 @@
 						<h1>Comunica Bus HTTP</h1>
 					</a>
 					<p><a href="https://www.npmjs.com/package/@comunica/bus-http"><img src="https://badge.fury.io/js/%40comunica%2Fbus-http.svg" alt="npm version"></a></p>
-					<p>A comunica bus for HTTP request events. </p>
-					<p>This module is part of the <a href="https://github.com/comunica/comunica">Comunica framework</a>.</p>
+					<p>Performs HTTP(S) requests.</p>
+					<p>This module is part of the <a href="https://github.com/comunica/comunica">Comunica framework</a>,
+					and should only be used by <a href="https://comunica.dev/docs/modify/">developers that want to build their own query engine</a>.</p>
+					<p><a href="https://comunica.dev/docs/query/">Click here if you just want to query with Comunica</a>.</p>
 					<a href="#install" id="install" style="color: inherit; text-decoration: none;">
 						<h2>Install</h2>
 					</a>
 					<pre><code class="language-bash">$ yarn add @comunica/bus-http</code></pre>
-					<a href="#usage" id="usage" style="color: inherit; text-decoration: none;">
-						<h2>Usage</h2>
+					<a href="#bus-usage" id="bus-usage" style="color: inherit; text-decoration: none;">
+						<h2>Bus usage</h2>
 					</a>
-					<p>TODO</p>
+					<ul>
+						<li><strong>Context</strong>: <code>&quot;https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-http/^1.0.0/components/context.jsonld&quot;</code></li>
+						<li><strong>Bus name</strong>: <code>cbh:Bus/Http</code></li>
+					</ul>
+					<a href="#creating-actors-on-this-bus" id="creating-actors-on-this-bus" style="color: inherit; text-decoration: none;">
+						<h2>Creating actors on this bus</h2>
+					</a>
+					<p>Actors extending <a href="https://comunica.github.io/comunica/classes/bus_http.actorhttp-1.html"><code>ActorHttp</code></a> are automatically subscribed to this bus.</p>
 				</div>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">
@@ -157,7 +166,7 @@
 					<div class="tsd-signature tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>AUTH<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"@comunica/bus-http:auth"</span><span class="tsd-signature-symbol"> = &quot;@comunica/bus-http:auth&quot;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/31c4cfb/packages/bus-http/lib/ActorHttp.ts#L55">packages/bus-http/lib/ActorHttp.ts:55</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/cf91683/packages/bus-http/lib/ActorHttp.ts#L55">packages/bus-http/lib/ActorHttp.ts:55</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -174,7 +183,7 @@
 					<div class="tsd-signature tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>INCLUDE_<wbr>CREDENTIALS<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"@comunica/bus-http:include-credentials"</span><span class="tsd-signature-symbol"> = &quot;@comunica/bus-http:include-credentials&quot;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/31c4cfb/packages/bus-http/lib/ActorHttp.ts#L49">packages/bus-http/lib/ActorHttp.ts:49</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/cf91683/packages/bus-http/lib/ActorHttp.ts#L49">packages/bus-http/lib/ActorHttp.ts:49</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">

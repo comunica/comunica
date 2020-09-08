@@ -72,16 +72,26 @@
 						<h1>Comunica Bus Init</h1>
 					</a>
 					<p><a href="https://www.npmjs.com/package/@comunica/bus-init"><img src="https://badge.fury.io/js/%40comunica%2Fbus-init.svg" alt="npm version"></a></p>
-					<p>A comunica bus for &#39;init&#39; events.</p>
-					<p>This module is part of the <a href="https://github.com/comunica/comunica">Comunica framework</a>.</p>
+					<p>A bus from which all Comunica engines start.
+					This is where they accept generic input parameters, such as CLI arguments.</p>
+					<p>This module is part of the <a href="https://github.com/comunica/comunica">Comunica framework</a>,
+					and should only be used by <a href="https://comunica.dev/docs/modify/">developers that want to build their own query engine</a>.</p>
+					<p><a href="https://comunica.dev/docs/query/">Click here if you just want to query with Comunica</a>.</p>
 					<a href="#install" id="install" style="color: inherit; text-decoration: none;">
 						<h2>Install</h2>
 					</a>
 					<pre><code class="language-bash">$ yarn add @comunica/bus-init</code></pre>
-					<a href="#usage" id="usage" style="color: inherit; text-decoration: none;">
-						<h2>Usage</h2>
+					<a href="#bus-usage" id="bus-usage" style="color: inherit; text-decoration: none;">
+						<h2>Bus usage</h2>
 					</a>
-					<p>TODO</p>
+					<ul>
+						<li><strong>Context</strong>: <code>&quot;https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-init/^1.0.0/components/context.jsonld&quot;</code></li>
+						<li><strong>Bus name</strong>: <code>cbi:Bus/Init</code></li>
+					</ul>
+					<a href="#creating-actors-on-this-bus" id="creating-actors-on-this-bus" style="color: inherit; text-decoration: none;">
+						<h2>Creating actors on this bus</h2>
+					</a>
+					<p>Actors extending <a href="https://comunica.github.io/comunica/classes/bus_init.actorinit-1.html"><code>ActorInit</code></a> are automatically subscribed to this bus.</p>
 				</div>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">

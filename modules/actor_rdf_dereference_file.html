@@ -72,16 +72,44 @@
 						<h1>Comunica File RDF Dereference Actor</h1>
 					</a>
 					<p><a href="https://www.npmjs.com/package/@comunica/actor-rdf-dereference-file"><img src="https://badge.fury.io/js/%40comunica%2Factor-rdf-dereference-file.svg" alt="npm version"></a></p>
-					<p>A comunica File RDF Dereference Actor.</p>
-					<p>This module is part of the <a href="https://github.com/comunica/comunica">Comunica framework</a>.</p>
+					<p>An <a href="https://github.com/comunica/comunica/tree/master/packages/bus-rdf-dereference">RDF Dereference</a> actor that
+						resolves an URL to a local file (optionally starting with <code>file://</code>)
+					and parses it using the <a href="https://github.com/comunica/comunica/tree/master/packages/bus-rdf-parse">RDF parse bus</a>.</p>
+					<p>This module is part of the <a href="https://github.com/comunica/comunica">Comunica framework</a>,
+					and should only be used by <a href="https://comunica.dev/docs/modify/">developers that want to build their own query engine</a>.</p>
+					<p><a href="https://comunica.dev/docs/query/">Click here if you just want to query with Comunica</a>.</p>
 					<a href="#install" id="install" style="color: inherit; text-decoration: none;">
 						<h2>Install</h2>
 					</a>
 					<pre><code class="language-bash">$ yarn add @comunica/actor-rdf-dereference-file</code></pre>
-					<a href="#usage" id="usage" style="color: inherit; text-decoration: none;">
-						<h2>Usage</h2>
+					<a href="#configure" id="configure" style="color: inherit; text-decoration: none;">
+						<h2>Configure</h2>
 					</a>
-					<p>TODO</p>
+					<p>After installing, this package can be added to your engine&#39;s configuration as follows:</p>
+					<pre><code class="language-text">{
+  &quot;@context&quot;: [
+    ...
+    &quot;https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-dereference-http-parse/^1.0.0/components/context.jsonld&quot;  
+  ],
+  &quot;actors&quot;: [
+    ...
+    {
+      &quot;@id&quot;: &quot;config-sets:rdf-dereference.json#myRdfFileDereferencer&quot;,
+      &quot;@type&quot;: &quot;ActorRdfDereferenceFile&quot;,
+      &quot;cardf:mediatorRdfParse&quot;: {
+        &quot;@id&quot;: &quot;config-sets:rdf-dereference.json#mediatorRdfParse&quot;,
+        &quot;@type&quot;: &quot;MediatorRace&quot;,
+        &quot;cc:Mediator/bus&quot;: { &quot;@id&quot;: &quot;cbrp:Bus/RdfParse&quot; }
+      }
+    }
+  ]
+}</code></pre>
+					<a href="#config-parameters" id="config-parameters" style="color: inherit; text-decoration: none;">
+						<h3>Config Parameters</h3>
+					</a>
+					<ul>
+						<li><code>cardf:mediatorRdfParse</code>: A mediator over the <a href="https://github.com/comunica/comunica/tree/master/packages/bus-rdf-parse">RDF Parse bus</a> for actual parsing.</li>
+					</ul>
 				</div>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">

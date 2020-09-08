@@ -72,16 +72,31 @@
 						<h1>Comunica Runner CLI</h1>
 					</a>
 					<p><a href="https://www.npmjs.com/package/@comunica/runner-cli"><img src="https://badge.fury.io/js/%40comunica%2Frunner-cli.svg" alt="npm version"></a></p>
-					<p>A Comunica runner for emitting the &#39;init&#39; event from a commandline interface.</p>
-					<p>This module is part of the <a href="https://github.com/comunica/comunica">Comunica framework</a>.</p>
+					<p>Command line runner module for Comunica actors on the <a href="https://github.com/comunica/comunica/tree/master/packages/bus-init">Init bus</a>.</p>
+					<p>Builds upon <a href="https://github.com/comunica/comunica/tree/master/packages/runner"><code>@comunica/runner</code></a>.</p>
+					<p>This module is part of the <a href="https://github.com/comunica/comunica">Comunica framework</a>,
+					and should only be used by <a href="https://comunica.dev/docs/modify/">developers that want to build their own query engine</a>.</p>
+					<p><a href="https://comunica.dev/docs/query/">Click here if you just want to query with Comunica</a>.</p>
+					<p><a href="https://comunica.dev/docs/modify/getting_started/custom_init/">Learn more about creating a custom init actor</a>.</p>
 					<a href="#install" id="install" style="color: inherit; text-decoration: none;">
 						<h2>Install</h2>
 					</a>
 					<pre><code class="language-bash">$ yarn add @comunica/runner-cli</code></pre>
-					<a href="#usage" id="usage" style="color: inherit; text-decoration: none;">
-						<h2>Usage</h2>
+					<a href="#usage-from-the-command-line" id="usage-from-the-command-line" style="color: inherit; text-decoration: none;">
+						<h2>Usage from the command line</h2>
 					</a>
-					<p>TODO</p>
+					<pre><code class="language-bash">$ comunica-run config.json [args...]</code></pre>
+					<a href="#usage-from-an-application" id="usage-from-an-application" style="color: inherit; text-decoration: none;">
+						<h3>Usage from an application</h3>
+					</a>
+					<p>Static:</p>
+					<pre><code class="language-typescript"><span class="hljs-meta">#!/usr/bin/env node</span>
+<span class="hljs-keyword">import</span> { runArgsInProcessStatic } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;@comunica/runner-cli&#x27;</span>;
+runArgsInProcessStatic(<span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;../engine-default.js&#x27;</span>));</code></pre>
+					<p>Dynamic:</p>
+					<pre><code class="language-typescript"><span class="hljs-meta">#!/usr/bin/env node</span>
+<span class="hljs-keyword">import</span> { runArgsInProcess } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;@comunica/runner-cli&#x27;</span>;
+runArgsInProcess(<span class="hljs-string">`<span class="hljs-subst">${__dirname}</span>/../`</span>, <span class="hljs-string">`<span class="hljs-subst">${__dirname}</span>/../config/config-default.json`</span>);</code></pre>
 				</div>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">
@@ -140,7 +155,7 @@
 					<div class="tsd-signature tsd-kind-icon">argv<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> = process.argv.slice(2)</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/31c4cfb/packages/runner-cli/bin/run.ts#L5">packages/runner-cli/bin/run.ts:5</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/cf91683/packages/runner-cli/bin/run.ts#L5">packages/runner-cli/bin/run.ts:5</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -150,7 +165,7 @@
 					<div class="tsd-signature tsd-kind-icon">config<wbr>Resource<wbr>Url<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &lt;string&gt; argv.shift()</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/31c4cfb/packages/runner-cli/bin/run.ts#L11">packages/runner-cli/bin/run.ts:11</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/cf91683/packages/runner-cli/bin/run.ts#L11">packages/runner-cli/bin/run.ts:11</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -167,7 +182,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/31c4cfb/packages/runner-cli/lib/ArgsRunner.ts#L5">packages/runner-cli/lib/ArgsRunner.ts:5</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/cf91683/packages/runner-cli/lib/ArgsRunner.ts#L5">packages/runner-cli/lib/ArgsRunner.ts:5</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -211,7 +226,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/31c4cfb/packages/runner-cli/lib/ArgsRunner.ts#L24">packages/runner-cli/lib/ArgsRunner.ts:24</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/cf91683/packages/runner-cli/lib/ArgsRunner.ts#L24">packages/runner-cli/lib/ArgsRunner.ts:24</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -237,7 +252,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/31c4cfb/packages/runner-cli/lib/ArgsRunner.ts#L33">packages/runner-cli/lib/ArgsRunner.ts:33</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/cf91683/packages/runner-cli/lib/ArgsRunner.ts#L33">packages/runner-cli/lib/ArgsRunner.ts:33</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>

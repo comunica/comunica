@@ -68,20 +68,66 @@
 		<div class="col-8 col-content">
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
-					<a href="#comunica-qpf-rdf-resolve-quad-pattern-actor" id="comunica-qpf-rdf-resolve-quad-pattern-actor" style="color: inherit; text-decoration: none;">
-						<h1>Comunica Qpf RDF Resolve Quad Pattern Actor</h1>
+					<a href="#comunica-hypermedia-rdf-resolve-quad-pattern-actor" id="comunica-hypermedia-rdf-resolve-quad-pattern-actor" style="color: inherit; text-decoration: none;">
+						<h1>Comunica Hypermedia RDF Resolve Quad Pattern Actor</h1>
 					</a>
-					<p><a href="https://www.npmjs.com/package/@comunica/actor-rdf-resolve-quad-pattern-qpf"><img src="https://badge.fury.io/js/%40comunica%2Factor-rdf-resolve-quad-pattern-qpf.svg" alt="npm version"></a></p>
-					<p>A comunica QPF RDF Resolve Quad Pattern Actor.</p>
-					<p>This module is part of the <a href="https://github.com/comunica/comunica">Comunica framework</a>.</p>
+					<p><a href="https://www.npmjs.com/package/@comunica/actor-rdf-resolve-quad-pattern-hypermedia"><img src="https://badge.fury.io/js/%40comunica%2Factor-rdf-resolve-quad-pattern-hypermedia.svg" alt="npm version"></a></p>
+					<p>An <a href="https://github.com/comunica/comunica/tree/master/packages/bus-rdf-resolve-quad-pattern">RDF Resolve Quad Pattern</a> actor that handles <a href="https://comunica.dev/docs/modify/advanced/hypermedia/">hypermedia-based sources</a>.</p>
+					<p>This module is part of the <a href="https://github.com/comunica/comunica">Comunica framework</a>,
+					and should only be used by <a href="https://comunica.dev/docs/modify/">developers that want to build their own query engine</a>.</p>
+					<p><a href="https://comunica.dev/docs/query/">Click here if you just want to query with Comunica</a>.</p>
 					<a href="#install" id="install" style="color: inherit; text-decoration: none;">
 						<h2>Install</h2>
 					</a>
 					<pre><code class="language-bash">$ yarn add @comunica/actor-rdf-resolve-quad-pattern-qpf</code></pre>
-					<a href="#usage" id="usage" style="color: inherit; text-decoration: none;">
-						<h2>Usage</h2>
+					<a href="#configure" id="configure" style="color: inherit; text-decoration: none;">
+						<h2>Configure</h2>
 					</a>
-					<p>TODO</p>
+					<p>After installing, this package can be added to your engine&#39;s configuration as follows:</p>
+					<pre><code class="language-text">{
+  &quot;@context&quot;: [
+    ...
+    &quot;https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-resolve-quad-pattern-hypermedia/^1.0.0/components/context.jsonld&quot;  
+  ],
+  &quot;actors&quot;: [
+    ...
+    {
+      &quot;@id&quot;: &quot;config-sets:resolve-hypermedia.json#myQuadPatternHypermediaResolver&quot;,
+      &quot;@type&quot;: &quot;ActorRdfResolveQuadPatternHypermedia&quot;,
+      &quot;carrqph:Actor/RdfResolveQuadPattern/Hypermedia/mediatorRdfDereference&quot;: {
+        &quot;@id&quot;: &quot;config-sets:resolve-hypermedia.json#mediatorRdfDereference&quot;
+      },
+      &quot;carrqph:Actor/RdfResolveQuadPattern/Hypermedia/mediatorMetadata&quot;: {
+        &quot;@id&quot;: &quot;config-sets:resolve-hypermedia.json#mediatorMetadata&quot;
+      },
+      &quot;carrqph:Actor/RdfResolveQuadPattern/Hypermedia/mediatorMetadataExtract&quot;: {
+        &quot;@id&quot;: &quot;config-sets:resolve-hypermedia.json#mediatorMetadataExtract&quot;
+      },
+      &quot;carrqph:Actor/RdfResolveQuadPattern/Hypermedia/mediatorRdfResolveHypermedia&quot;: {
+        &quot;@id&quot;: &quot;config-sets:resolve-hypermedia.json#mediatorRdfResolveHypermedia&quot;,
+        &quot;@type&quot;: &quot;MediatorNumberMax&quot;,
+        &quot;field&quot;: &quot;filterFactor&quot;,
+        &quot;ignoreErrors&quot;: true,
+        &quot;cc:Mediator/bus&quot;: { &quot;@id&quot;: &quot;cbrrh:Bus/RdfResolveHypermedia&quot; }
+      },
+      &quot;carrqph:Actor/RdfResolveQuadPattern/Hypermedia/mediatorRdfResolveHypermediaLinks&quot;: {
+        &quot;@id&quot;: &quot;config-sets:resolve-hypermedia.json#mediatorRdfResolveHypermediaLinks&quot;,
+        &quot;@type&quot;: &quot;MediatorRace&quot;,
+        &quot;cc:Mediator/bus&quot;: { &quot;@id&quot;: &quot;cbrrhl:Bus/RdfResolveHypermediaLinks&quot; }
+      }
+    }
+  ]
+}</code></pre>
+					<a href="#config-parameters" id="config-parameters" style="color: inherit; text-decoration: none;">
+						<h3>Config Parameters</h3>
+					</a>
+					<ul>
+						<li><code>carrqph:Actor/RdfResolveQuadPattern/Hypermedia/mediatorRdfDereference</code>: A mediator over the <a href="https://github.com/comunica/comunica/tree/master/packages/bus-rdf-dereference">RDF Dereference bus</a>.</li>
+						<li><code>carrqph:Actor/RdfResolveQuadPattern/Hypermedia/mediatorMetadata</code>: A mediator over the <a href="https://github.com/comunica/comunica/tree/master/packages/bus-rdf-metadata">RDF Metadata bus</a>.</li>
+						<li><code>carrqph:Actor/RdfResolveQuadPattern/Hypermedia/mediatorMetadataExtract</code>: A mediator over the <a href="https://github.com/comunica/comunica/tree/master/packages/bus-rdf-metadata-extract">RDF Metadata Extract bus</a>.</li>
+						<li><code>carrqph:Actor/RdfResolveQuadPattern/Hypermedia/mediatorRdfResolveHypermedia</code>: A mediator over the <a href="https://github.com/comunica/comunica/tree/master/packages/bus-rdf-resolve-hypermedia">RDF Resolve Hypermedia bus</a>.</li>
+						<li><code>carrqph:Actor/RdfResolveQuadPattern/Hypermedia/mediatorRdfResolveHypermediaLinks</code>: A mediator over the <a href="https://github.com/comunica/comunica/tree/master/packages/bus-rdf-resolve-hypermedia-links">RDF Resolve Hypermedia Links bus</a>.</li>
+					</ul>
 				</div>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">
@@ -150,7 +196,7 @@
 					<div class="tsd-signature tsd-kind-icon">LRUCache<span class="tsd-signature-symbol">:</span> <a href="actor_rdf_resolve_quad_pattern_hypermedia.html#lrucache" class="tsd-signature-type">LRUCache</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/31c4cfb/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts#L2">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts:2</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/cf91683/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts#L2">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts:2</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -160,7 +206,7 @@
 					<div class="tsd-signature tsd-kind-icon">LRUCache<span class="tsd-signature-symbol">:</span> <a href="actor_rdf_resolve_quad_pattern_hypermedia.html#lrucache" class="tsd-signature-type">LRUCache</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/31c4cfb/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/ActorRdfResolveQuadPatternHypermedia.ts#L17">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/ActorRdfResolveQuadPatternHypermedia.ts:17</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/cf91683/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/ActorRdfResolveQuadPatternHypermedia.ts#L17">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/ActorRdfResolveQuadPatternHypermedia.ts:17</a></li>
 						</ul>
 					</aside>
 				</section>

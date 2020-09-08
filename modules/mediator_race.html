@@ -73,15 +73,40 @@
 					</a>
 					<p><a href="https://www.npmjs.com/package/@comunica/mediator-race"><img src="https://badge.fury.io/js/%40comunica%2Fmediator-race.svg" alt="npm version"></a></p>
 					<p>A mediator that picks the first actor that resolves its test.</p>
-					<p>This module is part of the <a href="https://github.com/comunica/comunica">Comunica framework</a>.</p>
+					<p>This module is part of the <a href="https://github.com/comunica/comunica">Comunica framework</a>,
+					and should only be used by <a href="https://comunica.dev/docs/modify/">developers that want to build their own query engine</a>.</p>
+					<p><a href="https://comunica.dev/docs/query/">Click here if you just want to query with Comunica</a>.</p>
 					<a href="#install" id="install" style="color: inherit; text-decoration: none;">
 						<h2>Install</h2>
 					</a>
 					<pre><code class="language-bash">$ yarn add @comunica/mediator-race</code></pre>
-					<a href="#usage" id="usage" style="color: inherit; text-decoration: none;">
-						<h2>Usage</h2>
+					<a href="#configure" id="configure" style="color: inherit; text-decoration: none;">
+						<h2>Configure</h2>
 					</a>
-					<p>TODO</p>
+					<p>After installing, this mediator can be instantiated as follows:</p>
+					<pre><code class="language-text">{
+  &quot;@context&quot;: [
+    ...
+    &quot;https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-race/^1.0.0/components/context.jsonld&quot;  
+  ],
+  &quot;actors&quot;: [
+    ...
+    {
+      &quot;@type&quot;: &quot;SomeActor&quot;,
+      &quot;someMediator&quot;: {
+        &quot;@id&quot;: &quot;config-sets:rdf-dereference.json#mediatorRdfParseHandle&quot;,
+        &quot;@type&quot;: &quot;MediatorRace&quot;,
+        &quot;cc:Mediator/bus&quot;: { &quot;@id&quot;: &quot;cbrp:Bus/RdfParse&quot; }
+      }
+    }
+  ]
+}</code></pre>
+					<a href="#config-parameters" id="config-parameters" style="color: inherit; text-decoration: none;">
+						<h3>Config Parameters</h3>
+					</a>
+					<ul>
+						<li><code>cc:Mediator/bus</code>: Identifier of the bus to mediate over.</li>
+					</ul>
 				</div>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">

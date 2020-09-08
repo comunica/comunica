@@ -72,16 +72,54 @@
 						<h1>Comunica RDF SPARQL Serialize Actor</h1>
 					</a>
 					<p><a href="https://www.npmjs.com/package/@comunica/actor-sparql-serialize-rdf"><img src="https://badge.fury.io/js/%40comunica%2Factor-sparql-serialize-rdf.svg" alt="npm version"></a></p>
-					<p>A comunica RDF SPARQL Serialize Actor.</p>
-					<p>This module is part of the <a href="https://github.com/comunica/comunica">Comunica framework</a>.</p>
+					<p>A <a href="https://github.com/comunica/comunica/tree/master/packages/bus-sparql-serialize">SPARQL Serialize</a> actor that serializes to RDF by delegating to the <a href="https://github.com/comunica/comunica/tree/master/packages/bus-rdf-serialize">RDF Serialize bus</a>.</p>
+					<p>This module is part of the <a href="https://github.com/comunica/comunica">Comunica framework</a>,
+					and should only be used by <a href="https://comunica.dev/docs/modify/">developers that want to build their own query engine</a>.</p>
+					<p><a href="https://comunica.dev/docs/query/">Click here if you just want to query with Comunica</a>.</p>
 					<a href="#install" id="install" style="color: inherit; text-decoration: none;">
 						<h2>Install</h2>
 					</a>
 					<pre><code class="language-bash">$ yarn add @comunica/actor-sparql-serialize-rdf</code></pre>
-					<a href="#usage" id="usage" style="color: inherit; text-decoration: none;">
-						<h2>Usage</h2>
+					<a href="#configure" id="configure" style="color: inherit; text-decoration: none;">
+						<h2>Configure</h2>
 					</a>
-					<p>TODO</p>
+					<p>After installing, this package can be added to your engine&#39;s configuration as follows:</p>
+					<pre><code class="language-text">{
+  &quot;@context&quot;: [
+    ...
+    &quot;https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-sparql-serialize-rdf/^1.0.0/components/context.jsonld&quot;  
+  ],
+  &quot;actors&quot;: [
+    ...
+    {
+      &quot;@id&quot;: &quot;config-sets:sparql-serializers.json#myRdfSparqlSerializer&quot;,
+      &quot;@type&quot;: &quot;ActorSparqlSerializeRdf&quot;,
+      &quot;cassr:Actor/SparqlSerialize/Rdf/mediatorRdfSerialize&quot;: {
+        &quot;@id&quot;: &quot;config-sets:sparql-serializers.json#mediatorRdfSerialize&quot;,
+        &quot;@type&quot;: &quot;MediatorRace&quot;,
+        &quot;cc:Mediator/bus&quot;: { &quot;@id&quot;: &quot;cbrs:Bus/RdfSerialize&quot; }
+      },
+      &quot;cassr:Actor/SparqlSerialize/Rdf/mediatorRdfSerializeMediaTypeCombiner&quot;: {
+        &quot;@type&quot;: &quot;MediatorCombineUnion&quot;,
+        &quot;cc:Mediator/bus&quot;: { &quot;@id&quot;: &quot;cbrs:Bus/RdfSerialize&quot; },
+        &quot;cmcu:Mediator/CombineUnion/field&quot;: &quot;mediaTypes&quot;
+      },
+      &quot;cassr:Actor/SparqlSerialize/Rdf/mediatorRdfSerializeMediaTypeFormatCombiner&quot;: {
+        &quot;@type&quot;: &quot;MediatorCombineUnion&quot;,
+        &quot;cc:Mediator/bus&quot;: { &quot;@id&quot;: &quot;cbrs:Bus/RdfSerialize&quot; },
+        &quot;cmcu:Mediator/CombineUnion/field&quot;: &quot;mediaTypeFormats&quot;
+      }
+    },
+  ]
+}</code></pre>
+					<a href="#config-parameters" id="config-parameters" style="color: inherit; text-decoration: none;">
+						<h3>Config Parameters</h3>
+					</a>
+					<ul>
+						<li><code>cassr:Actor/SparqlSerialize/Rdf/mediatorRdfSerialize</code>: A mediator over the <a href="https://github.com/comunica/comunica/tree/master/packages/bus-rdf-serialize">RDF Serialize bus</a> for actual serialization.</li>
+						<li><code>cassr:Actor/SparqlSerialize/Rdf/mediatorRdfSerializeMediaTypeCombiner</code>: A mediator over the <a href="https://github.com/comunica/comunica/tree/master/packages/bus-rdf-serialize">RDF Serialize bus</a> for collecting media types.</li>
+						<li><code>cassr:Actor/SparqlSerialize/Rdf/mediatorRdfSerializeMediaTypeFormatCombiner</code>: A mediator over the <a href="https://github.com/comunica/comunica/tree/master/packages/bus-rdf-serialize">RDF Serialize bus</a> for collecting media type formats.</li>
+					</ul>
 				</div>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">

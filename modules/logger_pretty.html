@@ -72,8 +72,11 @@
 						<h1>Comunica Bus SPARQL Parse</h1>
 					</a>
 					<p><a href="https://www.npmjs.com/package/@comunica/bus-sparql-parse"><img src="https://badge.fury.io/js/%40comunica%2Fbus-sparql-parse.svg" alt="npm version"></a></p>
-					<p>A comunica logger that pretty-prints.</p>
-					<p>This module is part of the <a href="https://github.com/comunica/comunica">Comunica framework</a>.</p>
+					<p>A logger that prints to standard output.</p>
+					<p><strong><a href="https://comunica.dev/docs/modify/advanced/logging/">Click here to learn more about logging</a>.</strong></p>
+					<p>This module is part of the <a href="https://github.com/comunica/comunica">Comunica framework</a>,
+					and should only be used by <a href="https://comunica.dev/docs/modify/">developers that want to build their own query engine</a>.</p>
+					<p><a href="https://comunica.dev/docs/query/">Click here if you just want to query with Comunica</a>.</p>
 					<a href="#install" id="install" style="color: inherit; text-decoration: none;">
 						<h2>Install</h2>
 					</a>
@@ -81,7 +84,13 @@
 					<a href="#usage" id="usage" style="color: inherit; text-decoration: none;">
 						<h2>Usage</h2>
 					</a>
-					<p>TODO</p>
+					<pre><code class="language-typescript"><span class="hljs-keyword">const</span> newEngine = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;@comunica/actor-init-sparql&#x27;</span>).newEngine;
+<span class="hljs-keyword">import</span> {LoggerPretty} <span class="hljs-keyword">from</span> <span class="hljs-string">&quot;@comunica/logger-pretty&quot;</span>;
+
+<span class="hljs-keyword">const</span> result = <span class="hljs-keyword">await</span> myEngine.query(<span class="hljs-string">&#x27;SELECT * WHERE { ?s ?p ?o }&#x27;</span>, {
+  sources: [<span class="hljs-string">&#x27;http://fragments.dbpedia.org/2015/en&#x27;</span>],
+  log: <span class="hljs-keyword">new</span> LoggerPretty({ level: <span class="hljs-string">&#x27;debug&#x27;</span> }),
+});</code></pre>
 				</div>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">

@@ -72,16 +72,42 @@
 						<h1>Comunica Reduced Hash Query Operation Actor</h1>
 					</a>
 					<p><a href="https://www.npmjs.com/package/@comunica/actor-query-operation-reduced-hash"><img src="https://badge.fury.io/js/%40comunica%2Factor-query-operation-reduced-hash.svg" alt="npm version"></a></p>
-					<p>A comunica Reduced Hash Query Operation Actor.</p>
-					<p>This module is part of the <a href="https://github.com/comunica/comunica">Comunica framework</a>.</p>
+					<p>A <a href="https://github.com/comunica/comunica/tree/master/packages/bus-query-operation">Query Operation</a> actor that handles <a href="https://www.w3.org/TR/sparql11-query/#sparqlReduced">SPARQL <code>REDUCED</code></a> operations
+					by maintaining a hash-based cache of a fixed size.</p>
+					<p>This module is part of the <a href="https://github.com/comunica/comunica">Comunica framework</a>,
+					and should only be used by <a href="https://comunica.dev/docs/modify/">developers that want to build their own query engine</a>.</p>
+					<p><a href="https://comunica.dev/docs/query/">Click here if you just want to query with Comunica</a>.</p>
 					<a href="#install" id="install" style="color: inherit; text-decoration: none;">
 						<h2>Install</h2>
 					</a>
 					<pre><code class="language-bash">$ yarn add @comunica/actor-query-operation-reduced-hash</code></pre>
-					<a href="#usage" id="usage" style="color: inherit; text-decoration: none;">
-						<h2>Usage</h2>
+					<a href="#configure" id="configure" style="color: inherit; text-decoration: none;">
+						<h2>Configure</h2>
 					</a>
-					<p>TODO</p>
+					<p>After installing, this package can be added to your engine&#39;s configuration as follows:</p>
+					<pre><code class="language-text">{
+  &quot;@context&quot;: [
+    ...
+    &quot;https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-reduced-hash/^1.0.0/components/context.jsonld&quot;  
+  ],
+  &quot;actors&quot;: [
+    ...
+    {
+      &quot;@id&quot;: &quot;config-sets:sparql-queryoperators.json#myReducedQueryOperator&quot;,
+      &quot;@type&quot;: &quot;ActorQueryOperationReducedHash&quot;,
+      &quot;cbqo:mediatorQueryOperation&quot;: { &quot;@id&quot;: &quot;config-sets:sparql-queryoperators.json#mediatorQueryOperation&quot; }
+    }
+  ]
+}</code></pre>
+					<a href="#config-parameters" id="config-parameters" style="color: inherit; text-decoration: none;">
+						<h3>Config Parameters</h3>
+					</a>
+					<ul>
+						<li><code>cbqo:mediatorQueryOperation</code>: A mediator over the <a href="https://github.com/comunica/comunica/tree/master/packages/bus-query-operation">Query Operation bus</a>.</li>
+						<li><code>caabh:Actor/AbstractFilterHash/hashAlgorithm</code>: An optional hash algorithm, defaults to <code>sha1</code>.</li>
+						<li><code>caabh:Actor/AbstractFilterHash/digestAlgorithm</code>: An optional hash algorithm, defaults to <code>base64</code>.</li>
+						<li><code>caqorh:Actor/QueryOperation/ReducedHash/cacheSize</code>: An optional cache size, defaults to <code>100</code>.</li>
+					</ul>
 				</div>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">
@@ -137,7 +163,7 @@
 					<div class="tsd-signature tsd-kind-icon">LRU<span class="tsd-signature-symbol">:</span> <a href="actor_rdf_resolve_quad_pattern_hypermedia.html#lrucache" class="tsd-signature-type">LRUCache</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/31c4cfb/packages/actor-query-operation-reduced-hash/lib/ActorQueryOperationReducedHash.ts#L4">packages/actor-query-operation-reduced-hash/lib/ActorQueryOperationReducedHash.ts:4</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/cf91683/packages/actor-query-operation-reduced-hash/lib/ActorQueryOperationReducedHash.ts#L4">packages/actor-query-operation-reduced-hash/lib/ActorQueryOperationReducedHash.ts:4</a></li>
 						</ul>
 					</aside>
 				</section>

@@ -72,17 +72,60 @@
 						<h1>Comunica HTTP Parse RDF Dereference Actor</h1>
 					</a>
 					<p><a href="https://www.npmjs.com/package/@comunica/actor-rdf-dereference-http-parse"><img src="https://badge.fury.io/js/%40comunica%2Factor-rdf-dereference-http-parse.svg" alt="npm version"></a></p>
+					<p>An <a href="https://github.com/comunica/comunica/tree/master/packages/bus-rdf-dereference">RDF Dereference</a> actor that
+						resolves the URL using the <a href="https://github.com/comunica/comunica/tree/master/packages/bus-http">HTTP bus</a>
+					and parses it using the <a href="https://github.com/comunica/comunica/tree/master/packages/bus-rdf-parse">RDF parse bus</a>.</p>
 					<p>An RDF Dereference actor implementation for Comunica that resolves the URL using the HTTP bus and parses it using the RDF arse bus.</p>
-					<p>This module is part of the <a href="https://github.com/comunica/comunica">Comunica framework</a>.</p>
+					<p>This module is part of the <a href="https://github.com/comunica/comunica">Comunica framework</a>,
+					and should only be used by <a href="https://comunica.dev/docs/modify/">developers that want to build their own query engine</a>.</p>
+					<p><a href="https://comunica.dev/docs/query/">Click here if you just want to query with Comunica</a>.</p>
 					<a href="#install" id="install" style="color: inherit; text-decoration: none;">
 						<h2>Install</h2>
 					</a>
 					<pre><code class="language-bash">$ yarn add @comunica/actor-rdf-dereference-http-parse</code></pre>
-					<a href="#usage" id="usage" style="color: inherit; text-decoration: none;">
-						<h2>Usage</h2>
+					<a href="#configure" id="configure" style="color: inherit; text-decoration: none;">
+						<h2>Configure</h2>
 					</a>
-					<p>TODO</p>
-					<p>The actor defined by <code>components/ActorRdfDereferenceHttpParse</code> requires no parameters.</p>
+					<p>After installing, this package can be added to your engine&#39;s configuration as follows:</p>
+					<pre><code class="language-text">{
+  &quot;@context&quot;: [
+    ...
+    &quot;https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-dereference-http-parse/^1.0.0/components/context.jsonld&quot;  
+  ],
+  &quot;actors&quot;: [
+    ...
+    {
+      &quot;@id&quot;: &quot;config-sets:rdf-dereference.json#myRdfDereferencer&quot;,
+      &quot;@type&quot;: &quot;ActorRdfDereferenceHttpParse&quot;,
+      &quot;mediatorHttp&quot;: {
+        &quot;@id&quot;: &quot;config-sets:http.json#mediatorHttp&quot;
+      },
+      &quot;crdhp:mediatorRdfParseMediatypes&quot;: {
+        &quot;@id&quot;: &quot;config-sets:rdf-dereference.json#mediatorRdfParseMediatypes&quot;,
+        &quot;@type&quot;: &quot;MediatorCombineUnion&quot;,
+        &quot;cc:Mediator/bus&quot;: { &quot;@id&quot;: &quot;cbrp:Bus/RdfParse&quot; },
+        &quot;cmcu:Mediator/CombineUnion/field&quot;: &quot;mediaTypes&quot;
+      },
+      &quot;crdhp:mediatorRdfParseHandle&quot;: {
+        &quot;@id&quot;: &quot;config-sets:rdf-dereference.json#mediatorRdfParseHandle&quot;,
+        &quot;@type&quot;: &quot;MediatorRace&quot;,
+        &quot;cc:Mediator/bus&quot;: { &quot;@id&quot;: &quot;cbrp:Bus/RdfParse&quot; }
+      },
+      &quot;crdhp:maxAcceptHeaderLength&quot;: 1024,
+      &quot;crdhp:maxAcceptHeaderLengthBrowser&quot;: 128,
+    }
+  ]
+}</code></pre>
+					<a href="#config-parameters" id="config-parameters" style="color: inherit; text-decoration: none;">
+						<h3>Config Parameters</h3>
+					</a>
+					<ul>
+						<li><code>crdhp:mediatorHttp</code>: A mediator over the <a href="https://github.com/comunica/comunica/tree/master/packages/bus-http">HTTP bus</a>.</li>
+						<li><code>crdhp:mediatorRdfParseMediatypes</code>: A mediator over the <a href="https://github.com/comunica/comunica/tree/master/packages/bus-rdf-parse">RDF Parse bus</a> for collecting media types.</li>
+						<li><code>crdhp:mediatorRdfParseHandle</code>: A mediator over the <a href="https://github.com/comunica/comunica/tree/master/packages/bus-rdf-parse">RDF Parse bus</a> for actual parsing.</li>
+						<li><code>crdhp:maxAcceptHeaderLength</code>: The maximum allowed accept header value length for non-browser environments, defaults to <code>1024</code>.</li>
+						<li><code>crdhp:maxAcceptHeaderLengthBrowser</code>: The maximum allowed accept header value length for browser environments, defaults to <code>128</code>.</li>
+					</ul>
 				</div>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">

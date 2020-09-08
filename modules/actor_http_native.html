@@ -72,16 +72,32 @@
 						<h1>Comunica Follow Redirects Http Actor</h1>
 					</a>
 					<p><a href="https://www.npmjs.com/package/@comunica/actor-http-native"><img src="https://badge.fury.io/js/%40comunica%2Factor-http-native.svg" alt="npm version"></a></p>
-					<p>A comunica Follow Redirects Http Actor.</p>
-					<p>This module is part of the <a href="https://github.com/comunica/comunica">Comunica framework</a>.</p>
+					<p>An <a href="https://github.com/comunica/comunica/tree/master/packages/bus-http">HTTP</a> actor that
+					uses Node&#39;s request API (<code>XMLHttpRequest</code> in the browser) to perform HTTP requests.</p>
+					<p>This module is part of the <a href="https://github.com/comunica/comunica">Comunica framework</a>,
+					and should only be used by <a href="https://comunica.dev/docs/modify/">developers that want to build their own query engine</a>.</p>
+					<p><a href="https://comunica.dev/docs/query/">Click here if you just want to query with Comunica</a>.</p>
 					<a href="#install" id="install" style="color: inherit; text-decoration: none;">
 						<h2>Install</h2>
 					</a>
 					<pre><code class="language-bash">$ yarn add @comunica/actor-http-native</code></pre>
-					<a href="#usage" id="usage" style="color: inherit; text-decoration: none;">
-						<h2>Usage</h2>
+					<a href="#configure" id="configure" style="color: inherit; text-decoration: none;">
+						<h2>Configure</h2>
 					</a>
-					<p>TODO</p>
+					<p>After installing, this package can be added to your engine&#39;s configuration as follows:</p>
+					<pre><code class="language-text">{
+  &quot;@context&quot;: [
+    ...
+    &quot;https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-http-native/^1.0.0/components/context.jsonld&quot;  
+  ],
+  &quot;actors&quot;: [
+    ...
+    {
+      &quot;@id&quot;: &quot;config-sets:http.json#myHttpFetcher&quot;,
+      &quot;@type&quot;: &quot;ActorHttpNative&quot;
+    }
+  ]
+}</code></pre>
 				</div>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">
@@ -147,7 +163,7 @@
 					<div class="tsd-signature tsd-kind-icon">http<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/31c4cfb/packages/actor-http-native/lib/Requester.ts#L10">packages/actor-http-native/lib/Requester.ts:10</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/cf91683/packages/actor-http-native/lib/Requester.ts#L10">packages/actor-http-native/lib/Requester.ts:10</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -157,7 +173,7 @@
 					<div class="tsd-signature tsd-kind-icon">https<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/31c4cfb/packages/actor-http-native/lib/Requester.ts#L11">packages/actor-http-native/lib/Requester.ts:11</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/cf91683/packages/actor-http-native/lib/Requester.ts#L11">packages/actor-http-native/lib/Requester.ts:11</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -170,7 +186,7 @@
 					<div class="tsd-signature tsd-kind-icon">DECODERS<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/31c4cfb/packages/actor-http-native/lib/Requester.ts#L14">packages/actor-http-native/lib/Requester.ts:14</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/cf91683/packages/actor-http-native/lib/Requester.ts#L14">packages/actor-http-native/lib/Requester.ts:14</a></li>
 						</ul>
 					</aside>
 					<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal tsd-is-not-exported">
@@ -179,7 +195,7 @@
 						<div class="tsd-signature tsd-kind-icon">deflate<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">createInflate</span><span class="tsd-signature-symbol"> = zlib.createInflate</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/comunica/comunica/blob/31c4cfb/packages/actor-http-native/lib/Requester.ts#L14">packages/actor-http-native/lib/Requester.ts:14</a></li>
+								<li>Defined in <a href="https://github.com/comunica/comunica/blob/cf91683/packages/actor-http-native/lib/Requester.ts#L14">packages/actor-http-native/lib/Requester.ts:14</a></li>
 							</ul>
 						</aside>
 					</section>
@@ -189,7 +205,7 @@
 						<div class="tsd-signature tsd-kind-icon">gzip<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">createGunzip</span><span class="tsd-signature-symbol"> = zlib.createGunzip</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/comunica/comunica/blob/31c4cfb/packages/actor-http-native/lib/Requester.ts#L14">packages/actor-http-native/lib/Requester.ts:14</a></li>
+								<li>Defined in <a href="https://github.com/comunica/comunica/blob/cf91683/packages/actor-http-native/lib/Requester.ts#L14">packages/actor-http-native/lib/Requester.ts:14</a></li>
 							</ul>
 						</aside>
 					</section>
@@ -200,7 +216,7 @@
 					<div class="tsd-signature tsd-kind-icon">UNSAFE_<wbr>REQUEST_<wbr>HEADERS<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/31c4cfb/packages/actor-http-native/lib/Requester-browser.ts#L12">packages/actor-http-native/lib/Requester-browser.ts:12</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/cf91683/packages/actor-http-native/lib/Requester-browser.ts#L12">packages/actor-http-native/lib/Requester-browser.ts:12</a></li>
 						</ul>
 					</aside>
 					<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal tsd-is-not-exported">
@@ -209,7 +225,7 @@
 						<div class="tsd-signature tsd-kind-icon">accept-<wbr>encoding<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = true</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/comunica/comunica/blob/31c4cfb/packages/actor-http-native/lib/Requester-browser.ts#L12">packages/actor-http-native/lib/Requester-browser.ts:12</a></li>
+								<li>Defined in <a href="https://github.com/comunica/comunica/blob/cf91683/packages/actor-http-native/lib/Requester-browser.ts#L12">packages/actor-http-native/lib/Requester-browser.ts:12</a></li>
 							</ul>
 						</aside>
 					</section>
@@ -219,7 +235,7 @@
 						<div class="tsd-signature tsd-kind-icon">referer<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = true</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/comunica/comunica/blob/31c4cfb/packages/actor-http-native/lib/Requester-browser.ts#L12">packages/actor-http-native/lib/Requester-browser.ts:12</a></li>
+								<li>Defined in <a href="https://github.com/comunica/comunica/blob/cf91683/packages/actor-http-native/lib/Requester-browser.ts#L12">packages/actor-http-native/lib/Requester-browser.ts:12</a></li>
 							</ul>
 						</aside>
 					</section>
@@ -229,7 +245,7 @@
 						<div class="tsd-signature tsd-kind-icon">user-<wbr>agent<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = true</span></div>
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/comunica/comunica/blob/31c4cfb/packages/actor-http-native/lib/Requester-browser.ts#L12">packages/actor-http-native/lib/Requester-browser.ts:12</a></li>
+								<li>Defined in <a href="https://github.com/comunica/comunica/blob/cf91683/packages/actor-http-native/lib/Requester-browser.ts#L12">packages/actor-http-native/lib/Requester-browser.ts:12</a></li>
 							</ul>
 						</aside>
 					</section>
