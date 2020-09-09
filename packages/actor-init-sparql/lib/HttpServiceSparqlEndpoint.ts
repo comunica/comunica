@@ -171,7 +171,7 @@ Options:
       response.writeHead(301,
         { 'content-type': HttpServiceSparqlEndpoint.MIME_JSON,
           'Access-Control-Allow-Origin': '*',
-          Location: `http://localhost:${this.port}/sparql` });
+          Location: `http://localhost:${this.port}/sparql${requestUrl.search || ''}` });
       response.end(JSON.stringify({ message: 'Queries are accepted on /sparql. Redirected.' }));
       return;
     }
