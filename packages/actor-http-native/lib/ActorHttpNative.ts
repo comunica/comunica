@@ -64,7 +64,9 @@ export class ActorHttpNative extends ActorHttp {
       options.auth = action.context.get(KEY_CONTEXT_AUTH);
     }
 
-    this.logInfo(action.context, `Requesting ${options.url}`);
+    this.logInfo(action.context, `Requesting ${options.url}`, () => ({
+      headers: ActorHttp.headersToHash(options.headers),
+    }));
 
     // Not all options are supported
 

@@ -1,5 +1,6 @@
 import { ActorHttp, KEY_CONTEXT_INCLUDE_CREDENTIALS, KEY_CONTEXT_AUTH } from '@comunica/bus-http';
-import { ActionContext, Bus } from '@comunica/core';
+import { ActionContext, Bus, KEY_CONTEXT_LOG } from '@comunica/core';
+import { LoggerVoid } from '@comunica/logger-void';
 import { ActorHttpNodeFetch } from '../lib/ActorHttpNodeFetch';
 
 // Mock fetch
@@ -54,13 +55,13 @@ describe('ActorHttpNodeFetch', () => {
     it('should run for an input object and log', async() => {
       const spy = jest.spyOn(actor, <any> 'logInfo');
       await actor.run({ input: 'https://www.google.com/' });
-      expect(spy).toHaveBeenCalledWith(undefined, 'Requesting https://www.google.com/');
+      expect(spy).toHaveBeenCalledWith(undefined, 'Requesting https://www.google.com/', expect.anything());
     });
 
     it('should run for an input string and log', async() => {
       const spy = jest.spyOn(actor, <any> 'logInfo');
       await actor.run({ input: <Request> { url: 'https://www.google.com/' }});
-      expect(spy).toHaveBeenCalledWith(undefined, 'Requesting https://www.google.com/');
+      expect(spy).toHaveBeenCalledWith(undefined, 'Requesting https://www.google.com/', expect.anything());
     });
 
     it('should run without KEY_CONTEXT_INCLUDE_CREDENTIALS', async() => {
@@ -129,6 +130,33 @@ describe('ActorHttpNodeFetch', () => {
           'Content-Type': 'image/jpeg',
         }) },
       );
+    });
+
+    it('should run with a logger', async() => {
+      const logger = new LoggerVoid();
+      const spy = spyOn(logger, 'info');
+      await actor.run({
+        input: <Request> { url: 'https://www.google.com/' },
+        init: { headers: new Headers({ a: 'b' }) },
+        context: ActionContext({ [KEY_CONTEXT_LOG]: logger }),
+      });
+      expect(spy).toHaveBeenCalledWith('Requesting https://www.google.com/', {
+        actor: 'actor',
+        headers: { a: 'b' },
+      });
+    });
+
+    it('should run with a logger without init', async() => {
+      const logger = new LoggerVoid();
+      const spy = spyOn(logger, 'info');
+      await actor.run({
+        input: <Request> { url: 'https://www.google.com/' },
+        context: ActionContext({ [KEY_CONTEXT_LOG]: logger }),
+      });
+      expect(spy).toHaveBeenCalledWith('Requesting https://www.google.com/', {
+        actor: 'actor',
+        headers: {},
+      });
     });
   });
 });

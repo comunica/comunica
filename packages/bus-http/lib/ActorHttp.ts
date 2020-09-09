@@ -26,6 +26,18 @@ export abstract class ActorHttp extends Actor<IActionHttp, IActorTest, IActorHtt
   public static toNodeReadable(body: ReadableStream | null): NodeJS.ReadableStream {
     return require('is-stream')(body) ? body : require('web-streams-node').toNodeReadable(body);
   }
+
+  /**
+   * Convert the given headers object into a raw hash.
+   * @param headers A headers object.
+   */
+  public static headersToHash(headers: Headers): {[key: string]: string} {
+    const hash: {[key: string]: string} = {};
+    headers.forEach((value, key) => {
+      hash[key] = value;
+    });
+    return hash;
+  }
 }
 
 /**

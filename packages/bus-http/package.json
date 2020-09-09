@@ -47,6 +47,22 @@
   "devDependencies": {
     "@comunica/core": "^1.15.0"
   },
+  "jest": {
+    "globals": {
+      "ts-jest": {
+        "tsConfig": "../../tsconfig.json"
+      }
+    },
+    "transform": {
+      "^.+\\.ts$": "ts-jest"
+    },
+    "testRegex": "(/test/.*|(\\.|/)(test|spec))\\.ts$",
+    "moduleFileExtensions": [
+      "ts",
+      "js"
+    ],
+    "collectCoverage": true
+  },
   "scripts": {
     "build": "node \"../../node_modules/typescript/bin/tsc\"",
     "validate": "npm ls"

@@ -19,15 +19,17 @@ export class ActorHttpNodeFetch extends ActorHttp {
   }
 
   public run(action: IActionHttp): Promise<IActorHttpOutput> {
-    this.logInfo(action.context, `Requesting ${typeof action.input === 'string' ?
-      action.input :
-      action.input.url}`);
     if (action.context && action.context.get(KEY_CONTEXT_AUTH)) {
       const initHeaders = action.init ? action.init.headers || {} : {};
       action.init = action.init ? action.init : {};
       action.init.headers = new Headers(initHeaders);
       action.init.headers.append('Authorization', `Basic ${Buffer.from(action.context.get(KEY_CONTEXT_AUTH)).toString('base64')}`);
     }
+    this.logInfo(action.context, `Requesting ${typeof action.input === 'string' ?
+      action.input :
+      action.input.url}`, () => ({
+      headers: ActorHttp.headersToHash(new Headers(action.init?.headers)),
+    }));
     return fetch(action.input, {
       ...action.init,
       ...action.context && action.context.get(KEY_CONTEXT_INCLUDE_CREDENTIALS) ? { credentials: 'include' } : {},

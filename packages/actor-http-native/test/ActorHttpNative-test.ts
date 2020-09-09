@@ -2,7 +2,8 @@ import { Readable } from 'stream';
 import * as url from 'url';
 import * as zlib from 'zlib';
 import { ActorHttp, KEY_CONTEXT_INCLUDE_CREDENTIALS, KEY_CONTEXT_AUTH } from '@comunica/bus-http';
-import { ActionContext, Bus } from '@comunica/core';
+import { ActionContext, Bus, KEY_CONTEXT_LOG } from '@comunica/core';
+import { LoggerVoid } from '@comunica/logger-void';
 import { ActorHttpNative } from '../lib/ActorHttpNative';
 import Requester from '../lib/Requester';
 
@@ -208,6 +209,20 @@ describe('ActorHttpNative', () => {
         }),
       });
       expect(results.body.input.auth).toEqual('user:pass');
+    });
+
+    it('should run with a logger', async() => {
+      const logger = new LoggerVoid();
+      const spy = spyOn(logger, 'info');
+      mockSetup({ statusCode: 200 });
+      await actor.run({
+        input: new Request('http://example.com', { headers: new Headers({ a: 'b' }) }),
+        context: ActionContext({ [KEY_CONTEXT_LOG]: logger }),
+      });
+      expect(spy).toHaveBeenCalledWith('Requesting http://example.com/', {
+        actor: 'actor',
+        headers: { a: 'b', 'user-agent': (<any> actor).userAgent },
+      });
     });
   });
 });
