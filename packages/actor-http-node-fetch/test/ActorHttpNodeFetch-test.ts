@@ -13,6 +13,7 @@ describe('ActorHttpNodeFetch', () => {
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
+    jest.clearAllMocks();
   });
 
   describe('The ActorHttpNodeFetch module', () => {
@@ -27,6 +28,22 @@ describe('ActorHttpNodeFetch', () => {
 
     it('should not be able to create new ActorHttpNodeFetch objects without \'new\'', () => {
       expect(() => { (<any> ActorHttpNodeFetch)(); }).toThrow();
+    });
+  });
+
+  describe('#createUserAgent', () => {
+    it('should create a user agent in the browser', () => {
+      if (!(<any> global).window) {
+        (<any> global).window = { navigator: { userAgent: 'Dummy' }};
+      }
+      return expect(ActorHttpNodeFetch.createUserAgent())
+        .toEqual(`Comunica/actor-http-node-fetch (Browser-${window.navigator.userAgent})`);
+    });
+
+    it('should create a user agent in Node.js', () => {
+      delete (<any> global).window;
+      return expect(ActorHttpNodeFetch.createUserAgent())
+        .toEqual(`Comunica/actor-http-node-fetch (Node.js ${process.version}; ${process.platform})`);
     });
   });
 
@@ -70,7 +87,8 @@ describe('ActorHttpNodeFetch', () => {
         input: <Request> { url: 'https://www.google.com/' },
         context: ActionContext({}),
       });
-      expect(spy).toHaveBeenCalledWith({ url: 'https://www.google.com/' }, {});
+      expect(spy).toHaveBeenCalledWith({ url: 'https://www.google.com/' },
+        { headers: new Headers({ 'user-agent': (<any> actor).userAgent }) });
     });
 
     it('should run with KEY_CONTEXT_INCLUDE_CREDENTIALS', async() => {
@@ -81,7 +99,10 @@ describe('ActorHttpNodeFetch', () => {
           [KEY_CONTEXT_INCLUDE_CREDENTIALS]: true,
         }),
       });
-      expect(spy).toHaveBeenCalledWith({ url: 'https://www.google.com/' }, { credentials: 'include' });
+      expect(spy).toHaveBeenCalledWith({ url: 'https://www.google.com/' }, {
+        credentials: 'include',
+        headers: new Headers({ 'user-agent': (<any> actor).userAgent }),
+      });
     });
 
     it('should run with authorization', async() => {
@@ -94,7 +115,10 @@ describe('ActorHttpNodeFetch', () => {
       });
       expect(spy).toHaveBeenCalledWith(
         { url: 'https://www.google.com/' },
-        { headers: new Headers({ Authorization: `Basic ${Buffer.from('user:password').toString('base64')}` }) },
+        { headers: new Headers({
+          Authorization: `Basic ${Buffer.from('user:password').toString('base64')}`,
+          'user-agent': (<any> actor).userAgent,
+        }) },
       );
     });
 
@@ -109,7 +133,10 @@ describe('ActorHttpNodeFetch', () => {
       });
       expect(spy).toHaveBeenCalledWith(
         { url: 'https://www.google.com/' },
-        { headers: new Headers({ Authorization: `Basic ${Buffer.from('user:password').toString('base64')}` }) },
+        { headers: new Headers({
+          Authorization: `Basic ${Buffer.from('user:password').toString('base64')}`,
+          'user-agent': (<any> actor).userAgent,
+        }) },
       );
     });
 
@@ -128,6 +155,7 @@ describe('ActorHttpNodeFetch', () => {
         { headers: new Headers({
           Authorization: `Basic ${Buffer.from('user:password').toString('base64')}`,
           'Content-Type': 'image/jpeg',
+          'user-agent': (<any> actor).userAgent,
         }) },
       );
     });
@@ -142,7 +170,7 @@ describe('ActorHttpNodeFetch', () => {
       });
       expect(spy).toHaveBeenCalledWith('Requesting https://www.google.com/', {
         actor: 'actor',
-        headers: { a: 'b' },
+        headers: { a: 'b', 'user-agent': (<any> actor).userAgent },
       });
     });
 
@@ -155,8 +183,28 @@ describe('ActorHttpNodeFetch', () => {
       });
       expect(spy).toHaveBeenCalledWith('Requesting https://www.google.com/', {
         actor: 'actor',
-        headers: {},
+        headers: { 'user-agent': (<any> actor).userAgent },
       });
+    });
+
+    it('should set no user agent if one has been set', async() => {
+      const spy = jest.spyOn(global, 'fetch');
+      await actor.run({
+        input: <Request> { url: 'https://www.google.com/' },
+        init: { headers: new Headers({ 'user-agent': 'b' }) },
+      });
+      expect(spy).toHaveBeenCalledWith({ url: 'https://www.google.com/' },
+        { headers: new Headers({ 'user-agent': 'b' }) });
+    });
+
+    it('should set a user agent if none has been set', async() => {
+      const spy = jest.spyOn(global, 'fetch');
+      await actor.run({
+        input: <Request> { url: 'https://www.google.com/' },
+        init: { headers: new Headers({}) },
+      });
+      expect(spy).toHaveBeenCalledWith({ url: 'https://www.google.com/' },
+        { headers: new Headers({ 'user-agent': (<any> actor).userAgent }) });
     });
   });
 });
