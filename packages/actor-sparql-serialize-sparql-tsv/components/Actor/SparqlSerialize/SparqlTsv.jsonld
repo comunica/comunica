@@ -18,7 +18,7 @@
           "defaultScoped": {
             "defaultScope": "cassst:Actor/SparqlSerialize/SparqlTsv",
             "defaultScopedValue": [
-              { "mediaTypeKey": "text/tab-separated-values", "priorityValue": "1.0", "mediaTypeFormat": "http://www.w3.org/ns/formats/SPARQL_Results_TSV" }
+              { "mediaTypeKey": "text/tab-separated-values", "priorityValue": "0.75", "mediaTypeFormat": "http://www.w3.org/ns/formats/SPARQL_Results_TSV" }
             ]
           }
         }
