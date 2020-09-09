@@ -2,7 +2,8 @@ import {
   ActorQueryOperation, Bindings, IActorQueryOperationOutputBindings, IPatternBindings,
   KEY_CONTEXT_QUERYOPERATION,
 } from '@comunica/bus-query-operation';
-import { ActionContext, Bus } from '@comunica/core';
+import { ActionContext, Bus, KEY_CONTEXT_LOG } from '@comunica/core';
+import { LoggerVoid } from '@comunica/logger-void';
 import { blankNode, defaultGraph, literal, namedNode, quad, variable } from '@rdfjs/data-model';
 import { ArrayIterator, EmptyIterator, SingletonIterator } from 'asynciterator';
 import type * as RDF from 'rdf-js';
@@ -624,6 +625,21 @@ describe('ActorQueryOperationBgpLeftDeepSmallest', () => {
         expect(output.canContainUndefs).toEqual(false);
         expect(await (<any> output).metadata()).toEqual({ totalItems: Infinity });
         expect(await arrayifyStream(output.bindingsStream)).toEqual([]);
+      });
+    });
+
+    it('should run with a logger', async() => {
+      const logger = new LoggerVoid();
+      const spy = spyOn(logger, 'debug');
+      const op = {
+        operation: { type: 'bgp', patterns },
+        context: ActionContext({ [KEY_CONTEXT_LOG]: logger }),
+      };
+      await actor.run(op);
+      expect(spy).toHaveBeenCalledWith('Smallest pattern: ', {
+        actor: 'actor',
+        metadata: { totalItems: undefined },
+        pattern: patterns[1],
       });
     });
   });

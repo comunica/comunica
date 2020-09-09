@@ -1,6 +1,7 @@
 import { PassThrough, Readable } from 'stream';
 import { ActorRdfDereference, KEY_CONTEXT_LENIENT } from '@comunica/bus-rdf-dereference';
-import { ActionContext, Bus } from '@comunica/core';
+import { ActionContext, Bus, KEY_CONTEXT_LOG } from '@comunica/core';
+import { LoggerVoid } from '@comunica/logger-void';
 import { MediatorRace } from '@comunica/mediator-race';
 import 'cross-fetch/polyfill';
 import { ActorRdfDereferenceHttpParse } from '../lib/ActorRdfDereferenceHttpParse';
@@ -330,6 +331,18 @@ describe('ActorRdfDereferenceHttpParse', () => {
       expect(spy).toHaveBeenCalledTimes(1);
     });
 
+    it('should run and ignore parse errors in lenient mode and log them', async() => {
+      const logger = new LoggerVoid();
+      const spy = spyOn(logger, 'error');
+      const context = ActionContext({ emitParseError: true, [KEY_CONTEXT_LENIENT]: true, [KEY_CONTEXT_LOG]: logger });
+      const output = await actor.run({ url: 'https://www.google.com/', context });
+      expect(await arrayifyStream(output.quads)).toEqual([]);
+      expect(spy).toHaveBeenCalledWith('Parse error', {
+        actor: 'actor',
+        url: 'https://www.google.com/',
+      });
+    });
+
     it('should not run on http rejects', () => {
       const context = ActionContext({ httpReject: true });
       return expect(actor.run({ url: 'https://www.google.com/', context }))
@@ -345,6 +358,16 @@ describe('ActorRdfDereferenceHttpParse', () => {
       expect(spy).toHaveBeenCalledTimes(1);
     });
 
+    it('should run and ignore http rejects in lenient mode and log them', async() => {
+      const logger = new LoggerVoid();
+      const spy = spyOn(logger, 'error');
+      const context = ActionContext({ httpReject: true, [KEY_CONTEXT_LENIENT]: true, [KEY_CONTEXT_LOG]: logger });
+      await actor.run({ url: 'https://www.google.com/', context });
+      expect(spy).toHaveBeenCalledWith('Http reject error', {
+        actor: 'actor',
+      });
+    });
+
     it('should not run on parse rejects', () => {
       const context = ActionContext({ parseReject: true });
       return expect(actor.run({ url: 'https://www.google.com/', context }))
@@ -358,6 +381,16 @@ describe('ActorRdfDereferenceHttpParse', () => {
       expect(output.url).toEqual('https://www.google.com/');
       expect(await arrayifyStream(output.quads)).toEqual([]);
       expect(spy).toHaveBeenCalledTimes(1);
+    });
+
+    it('should run and ignore parse rejects in lenient mode and log them', async() => {
+      const logger = new LoggerVoid();
+      const spy = spyOn(logger, 'error');
+      const context = ActionContext({ parseReject: true, [KEY_CONTEXT_LENIENT]: true, [KEY_CONTEXT_LOG]: logger });
+      await actor.run({ url: 'https://www.google.com/', context });
+      expect(spy).toHaveBeenCalledWith('Parse reject error', {
+        actor: 'actor',
+      });
     });
   });
 });

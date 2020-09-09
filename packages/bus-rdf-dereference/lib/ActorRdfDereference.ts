@@ -39,7 +39,7 @@ export abstract class ActorRdfDereference extends Actor<IActionRdfDereference, I
     // If we don't emit hard errors, make parsing error events log instead, and silence them downstream.
     if (!this.isHardError(action)) {
       quads.on('error', error => {
-        this.logError(action.context, error.message, { url: action.url });
+        this.logError(action.context, error.message, () => ({ url: action.url }));
         // Make sure the errored stream is ended.
         (<any> quads).push(null);
       });
