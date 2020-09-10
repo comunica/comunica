@@ -21,7 +21,7 @@
               { "mediaTypeKey": "application/n-quads",   "priorityValue": "1.0",  "mediaTypeFormat": "http://www.w3.org/ns/formats/N-Quads" },
               { "mediaTypeKey": "application/trig",      "priorityValue": "0.95", "mediaTypeFormat": "http://www.w3.org/ns/formats/TriG" },
               { "mediaTypeKey": "application/n-triples", "priorityValue": "0.8",  "mediaTypeFormat": "http://www.w3.org/ns/formats/N-Triples" },
-              { "mediaTypeKey": "text/turtle",           "priorityValue": "0.5",  "mediaTypeFormat": "http://www.w3.org/ns/formats/Turtle" },
+              { "mediaTypeKey": "text/turtle",           "priorityValue": "0.6",  "mediaTypeFormat": "http://www.w3.org/ns/formats/Turtle" },
               { "mediaTypeKey": "text/n3",               "priorityValue": "0.35", "mediaTypeFormat": "http://www.w3.org/ns/formats/N3" }
             ]
           }
