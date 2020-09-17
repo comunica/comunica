@@ -1,5 +1,12 @@
 # Changelog
 
+<a name="v1.5.0"></a>
+## [v1.5.0](https://github.com/comunica/sparqlee/compare/v1.4.3...v1.5.0) - 2020-09-17
+
+### Changed
+* [Migrate to relative-to-absolute-iri to reduce bundle size](https://github.com/comunica/sparqlee/commit/979c3be15f9691b7fbf44242ecab2685d79783df)
+* [Migrate to rdf-data-factory and @types/rdf-js 4.x](https://github.com/comunica/sparqlee/commit/907d7fcda82f1017d9ae4b517acb38037d1feba3)
+
 <a name="v1.4.3"></a>
 ## [v1.4.3](https://github.com/comunica/sparqlee/compare/v1.4.2...v1.4.3) - 2020-08-21
 
