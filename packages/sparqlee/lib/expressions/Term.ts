@@ -1,10 +1,12 @@
-import * as RDFDM from '@rdfjs/data-model';
+import {DataFactory} from 'rdf-data-factory';
 import * as RDF from 'rdf-js';
 
 import { ExpressionType, TermExpression, TermType } from './Expressions';
 
 import * as C from '../util/Consts';
 import * as Err from '../util/Errors';
+
+const DF = new DataFactory();
 
 export abstract class Term implements TermExpression {
   expressionType: ExpressionType.Term = ExpressionType.Term;
@@ -28,7 +30,7 @@ export class NamedNode extends Term {
   constructor(public value: string) { super(); }
 
   toRDF(): RDF.Term {
-    return RDFDM.namedNode(this.value);
+    return DF.namedNode(this.value);
   }
 
   str(): string {
@@ -54,7 +56,7 @@ export class BlankNode extends Term {
   }
 
   toRDF(): RDF.Term {
-    return RDFDM.blankNode(this.value);
+    return DF.blankNode(this.value);
   }
 }
 
@@ -73,7 +75,7 @@ export class Literal<T> extends Term {
   }
 
   toRDF(): RDF.Term {
-    return RDFDM.literal(
+    return DF.literal(
       this.strValue || this.str(),
       this.language || this.typeURL);
   }

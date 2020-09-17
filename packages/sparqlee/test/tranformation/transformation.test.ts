@@ -1,25 +1,27 @@
 
 import * as RDF from 'rdf-js';
-import { literal } from '@rdfjs/data-model';
+import {DataFactory} from 'rdf-data-factory';
 
 import { transformLiteral } from '../../lib/Transformation';
 import { TypeURL as DT } from '../../lib/util/Consts';
 
 function int(value: string): RDF.Literal {
-    return literal(value, DT.XSD_INTEGER);
+    return DF.literal(value, DF.namedNode(DT.XSD_INTEGER));
 }
 
 function float(value: string): RDF.Literal {
-    return literal(value, DT.XSD_FLOAT);
+    return DF.literal(value, DF.namedNode(DT.XSD_FLOAT));
 }
 
 function decimal(value: string): RDF.Literal {
-    return literal(value, DT.XSD_DECIMAL);
+    return DF.literal(value, DF.namedNode(DT.XSD_DECIMAL));
 }
 
 function double(value: string): RDF.Literal {
-    return literal(value, DT.XSD_DOUBLE);
+    return DF.literal(value, DF.namedNode(DT.XSD_DOUBLE));
 }
+
+const DF = new DataFactory();
 
 describe('ordering literals', () => {
     it('invalid namedNode', () => {
@@ -81,10 +83,10 @@ describe('ordering literals', () => {
         expect(res.typedValue).toEqual(11);
         expect(res.typeURL.value).toEqual(DT.XSD_FLOAT);
         expect(res.expressionType).toEqual('term');
-    }); 
+    });
 
     it('langString type transform', () => {
-        const lit = literal('ab', DT.RDF_LANG_STRING);
+        const lit = DF.literal('ab', DT.RDF_LANG_STRING);
         const res = transformLiteral(lit);
         expect(res.strValue).toEqual('ab');
         expect(res.termType).toEqual("literal");
@@ -92,10 +94,10 @@ describe('ordering literals', () => {
         expect(res.typedValue).toEqual("ab");
         expect(res.typeURL.value).toEqual(DT.RDF_LANG_STRING);
         expect(res.expressionType).toEqual('term');
-    }); 
+    });
 
     it('other type transform', () => {
-        const lit = literal('ab', "othertype");
+        const lit = DF.literal('ab', "othertype");
         const res = transformLiteral(lit);
         expect(res.strValue).toEqual('ab');
         expect(res.termType).toEqual("literal");
@@ -104,6 +106,6 @@ describe('ordering literals', () => {
         expect(res.typeURL.value).toEqual(DT.RDF_LANG_STRING);
         expect(res.expressionType).toEqual('term');
         expect(res.language).toEqual("othertype");
-    }); 
+    });
 });
-  
+

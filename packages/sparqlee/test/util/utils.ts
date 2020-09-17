@@ -1,12 +1,14 @@
 import * as RDF from 'rdf-js';
 
-import { literal } from '@rdfjs/data-model';
+import {DataFactory} from 'rdf-data-factory';
 import { stringToTerm, termToString } from 'rdf-string';
 import { translate } from 'sparqlalgebrajs';
 
 import { AsyncEvaluator, AsyncEvaluatorConfig } from '../../lib/evaluators/AsyncEvaluator';
 import { Bindings } from '../../lib/Types';
 import { ExpressionError } from '../../lib/util/Errors';
+
+const DF = new DataFactory();
 
 export function testAll(exprs: string[], config?: AsyncEvaluatorConfig) {
   exprs.forEach((_expr) => {
@@ -67,19 +69,23 @@ export const aliases = {
 };
 
 export function int(value: string): string {
-  return termToString(literal(value, 'xsd:integer'));
-}
-
-export function float(value: string): string {
-  return termToString(literal(value, 'xsd:float'));
+  return compactTermString(value, 'xsd:integer');
 }
 
 export function decimal(value: string): string {
-  return termToString(literal(value, 'xsd:decimal'));
+  return compactTermString(value, 'xsd:decimal');
 }
 
 export function double(value: string): string {
-  return termToString(literal(value, 'xsd:double'));
+  return compactTermString(value, 'xsd:double');
+}
+
+export function date(value: string): string {
+  return compactTermString(value, 'xsd:dateTime');
+}
+
+function compactTermString(value: string, dataType: string): string {
+  return `"${value}"^^${dataType}`;
 }
 
 export const prefixes: { [key: string]: string } = {

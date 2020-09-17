@@ -1,5 +1,5 @@
-import { literal } from '@rdfjs/data-model';
-import { termToString } from 'rdf-string';
+import {DataFactory} from 'rdf-data-factory';
+import {date, decimal, int} from '../util/utils';
 
 // data ------------------------------------------------------------------------
 // @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
@@ -177,30 +177,4 @@ export function hashUnicode() {
   return {
     s8: '"\u98DF"',
   };
-}
-
-// helpers ---------------------------------------------------------------------
-
-function int(value: string): string {
-  return termToString(literal(value, 'xsd:integer'));
-}
-
-function float(value: string): string {
-  return termToString(literal(value, 'xsd:float'));
-}
-
-function decimal(value: string): string {
-  return termToString(literal(value, 'xsd:decimal'));
-}
-
-function double(value: string): string {
-  return termToString(literal(value, 'xsd:double'));
-}
-
-function date(value: string): string {
-  return termToString(literal(value, 'xsd:dateTime'));
-}
-
-function dateRaw(value: string): string {
-  return termToString(literal(value, 'xsd:date'));
 }

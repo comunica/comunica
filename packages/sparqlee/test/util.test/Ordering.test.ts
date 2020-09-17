@@ -1,27 +1,29 @@
 import * as RDF from 'rdf-js';
 
-import { literal } from '@rdfjs/data-model';
+import {DataFactory} from 'rdf-data-factory';
 import { TypeURL as DT } from '../../lib/util/Consts';
 import { orderTypes } from '../../lib/util/Ordering';
 
+const DF = new DataFactory();
+
 function int(value: string): RDF.Literal {
-  return literal(value, DT.XSD_INTEGER);
+  return DF.literal(value, DF.namedNode(DT.XSD_INTEGER));
 }
 
 function float(value: string): RDF.Literal {
-  return literal(value, DT.XSD_FLOAT);
+  return DF.literal(value, DF.namedNode(DT.XSD_FLOAT));
 }
 
 function decimal(value: string): RDF.Literal {
-  return literal(value, DT.XSD_DECIMAL);
+  return DF.literal(value, DF.namedNode(DT.XSD_DECIMAL));
 }
 
 function double(value: string): RDF.Literal {
-  return literal(value, DT.XSD_DOUBLE);
+  return DF.literal(value, DF.namedNode(DT.XSD_DOUBLE));
 }
 
 function string(value: string): RDF.Literal {
-  return literal(value, DT.XSD_STRING);
+  return DF.literal(value, DF.namedNode(DT.XSD_STRING));
 }
 
 describe('ordering literals', () => {
@@ -30,7 +32,7 @@ describe('ordering literals', () => {
     expect(orderTypes(undefined, numB, true)).toEqual(0);
     expect(orderTypes(undefined, undefined, true)).toEqual(0);
     expect(orderTypes(numB, undefined, true)).toEqual(0);
-  }); 
+  });
   it('integers type identical', () => {
       const numA = int("11");
       const numB = int("11");

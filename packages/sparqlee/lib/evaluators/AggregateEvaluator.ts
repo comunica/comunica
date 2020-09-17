@@ -1,7 +1,7 @@
 // tslint:disable:object-literal-sort-keys
 // tslint:disable:max-classes-per-file
 
-import * as RDFDM from '@rdfjs/data-model';
+import {DataFactory} from 'rdf-data-factory';
 import * as RDF from 'rdf-js';
 
 import { Algebra } from 'sparqlalgebrajs';
@@ -17,6 +17,8 @@ import { parseXSDFloat } from '../util/Parsing';
 import { SetFunction, TypeURL } from './../util/Consts';
 import { SyncEvaluator, SyncEvaluatorConfig } from './SyncEvaluator';
 import { transformLiteral } from '../Transformation';
+
+const DF = new DataFactory();
 
 // TODO: Support hooks
 export class AggregateEvaluator {
@@ -164,12 +166,12 @@ class Sum extends BaseAggregator<SumState> {
 
   init(start: RDF.Term): SumState {
     const { value, type } = extractNumericValueAndTypeOrError(start);
-    return new E.NumericLiteral(value, RDFDM.namedNode(type));
+    return new E.NumericLiteral(value, DF.namedNode(type));
   }
 
   put(state: SumState, term: RDF.Term): SumState {
     const { value, type } = extractNumericValueAndTypeOrError(term);
-    const internalTerm = new E.NumericLiteral(value, RDFDM.namedNode(type));
+    const internalTerm = new E.NumericLiteral(value, DF.namedNode(type));
     const sum = this.summer.apply([state, internalTerm]) as E.NumericLiteral;
     return sum;
   }
@@ -239,13 +241,13 @@ class Average extends BaseAggregator<AverageState> {
 
   init(start: RDF.Term): AverageState {
     const { value, type } = extractNumericValueAndTypeOrError(start);
-    const sum = new E.NumericLiteral(value, RDFDM.namedNode(type));
+    const sum = new E.NumericLiteral(value, DF.namedNode(type));
     return { sum, count: 1 };
   }
 
   put(state: AverageState, term: RDF.Term): AverageState {
     const { value, type } = extractNumericValueAndTypeOrError(term);
-    const internalTerm = new E.NumericLiteral(value, RDFDM.namedNode(type));
+    const internalTerm = new E.NumericLiteral(value, DF.namedNode(type));
     const sum = this.summer.apply([state.sum, internalTerm]) as E.NumericLiteral;
     return {
       sum,
@@ -254,7 +256,7 @@ class Average extends BaseAggregator<AverageState> {
   }
 
   result(state: AverageState): RDF.Term {
-    const count = new E.NumericLiteral(state.count, RDFDM.namedNode(C.TypeURL.XSD_INTEGER));
+    const count = new E.NumericLiteral(state.count, DF.namedNode(C.TypeURL.XSD_INTEGER));
     const result = this.divider.apply([state.sum, count]);
     return result.toRDF();
   }

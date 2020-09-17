@@ -1,7 +1,9 @@
 // tslint:disable:variable-name
-import * as RDFDM from '@rdfjs/data-model';
+import {DataFactory} from 'rdf-data-factory';
 import { Map, Set } from 'immutable';
 import * as RDF from 'rdf-js';
+
+const DF = new DataFactory();
 
 export const TRUE_STR = '"true"^^xsd:boolean';
 export const FALSE_STR = '"false"^^xsd:boolean';
@@ -43,7 +45,7 @@ export enum TypeURL {
 }
 
 export function make(dt: TypeURL): RDF.NamedNode {
-  return RDFDM.namedNode(dt);
+  return DF.namedNode(dt);
 }
 
 // https://www.w3.org/TR/sparql11-query/#operandDataTypes
@@ -88,8 +90,8 @@ export const NumericTypeURLs: Set<string> = Set(Object.values(NumericTypeURL));
 export const DerivedIntegerTypeURLs = Set(Object.values(DerivedIntegerTypeURL));
 
 export const commonTerms: { [key: string]: RDF.Term } = {
-  true: RDFDM.literal('true', RDFDM.namedNode(TypeURL.XSD_BOOLEAN)),
-  false: RDFDM.literal('false', RDFDM.namedNode(TypeURL.XSD_BOOLEAN)),
+  true: DF.literal('true', DF.namedNode(TypeURL.XSD_BOOLEAN)),
+  false: DF.literal('false', DF.namedNode(TypeURL.XSD_BOOLEAN)),
 };
 
 // TODO: Rename to primitive

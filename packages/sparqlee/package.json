@@ -54,6 +54,7 @@
   "devDependencies": {
     "@types/benchmark": "^1.0.30",
     "@types/jest": "^26.0.0",
+    "@types/rdf-js": "^4.0.0",
     "asynciterator": "^3.0.0",
     "benchmark": "^2.1.4",
     "coveralls": "^3.0.2",
@@ -67,15 +68,15 @@
     "typescript": "^4.0.2"
   },
   "dependencies": {
-    "@rdfjs/data-model": "^1.1.0",
     "@types/create-hash": "^1.2.0",
     "@types/uuid": "^8.0.0",
-    "@types/rdf-js": "^3.0.0",
+    "@types/rdf-js": "*",
     "create-hash": "^1.2.0",
     "decimal.js": "^10.2.0",
     "immutable": "^3.8.2",
-    "rdf-string": "^1.1.1",
-    "sparqlalgebrajs": "^2.1.0",
+    "rdf-data-factory": "^1.0.3",
+    "rdf-string": "^1.5.0",
+    "sparqlalgebrajs": "^2.4.0",
     "uri-js": "^4.2.2",
     "uuid": "^8.0.0"
   },
@@ -92,16 +93,5 @@
       "ts",
       "js"
     ]
-  },
-  "greenkeeper": {
-    "commitMessages": {
-      "initialBadge": "Add Greenkeeper badge",
-      "initialDependencies": "Update dependencies",
-      "initialBranches": "Whitelist greenkeeper branches",
-      "dependencyUpdate": "Update ${dependency} to version ${version}",
-      "devDependencyUpdate": "Update dev ${dependency} to version ${version}",
-      "dependencyPin": "Pin ${dependency} to ${oldVersion}",
-      "devDependencyPin": "Pin ${dependency} to ${oldVersion}"
-    }
   }
 }

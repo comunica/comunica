@@ -1,4 +1,4 @@
-import * as RDFDM from '@rdfjs/data-model';
+import {DataFactory} from 'rdf-data-factory';
 import * as hash from 'create-hash';
 import {Decimal} from 'decimal.js';
 import * as uuid from 'uuid';
@@ -16,6 +16,8 @@ import { TypeURL } from '../util/Consts';
 import { transformLiteral } from '../Transformation';
 import { OverloadMap } from './Core';
 import { bool, declare, langString, log, number, string } from './Helpers';
+
+const DF = new DataFactory();
 
 type Term = E.TermExpression;
 
@@ -232,7 +234,7 @@ const STRDT = {
     .onBinary(
       ['string', 'namedNode'],
       (str: E.StringLiteral, iri: E.NamedNode) => {
-        const lit = RDFDM.literal(str.typedValue, RDFDM.namedNode(iri.value));
+        const lit = DF.literal(str.typedValue, DF.namedNode(iri.value));
         return transformLiteral(lit);
       })
     .collect(),

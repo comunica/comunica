@@ -473,13 +473,6 @@
     "@types/yargs" "^15.0.0"
     chalk "^4.0.0"
 
-"@rdfjs/data-model@^1.1.0", "@rdfjs/data-model@^1.1.1", "@rdfjs/data-model@^1.1.2":
-  version "1.1.2"
-  resolved "https://registry.yarnpkg.com/@rdfjs/data-model/-/data-model-1.1.2.tgz#e2f48a422c7e837b8a7d96d240732be3287df713"
-  integrity sha512-pk/G/JLYGaXesoBLvEmoC/ic0H3B79fTyS0Ujjh5YQB2DZW+mn05ZowFFv88rjB9jf7c1XE5XSmf8jzn6U0HHA==
-  dependencies:
-    "@types/rdf-js" "^2.0.1"
-
 "@sinonjs/commons@^1.7.0":
   version "1.8.1"
   resolved "https://registry.yarnpkg.com/@sinonjs/commons/-/commons-1.8.1.tgz#e7df00f98a203324f6dc7cc606cad9d4a8ab2217"
@@ -606,17 +599,10 @@
   resolved "https://registry.yarnpkg.com/@types/prettier/-/prettier-2.0.2.tgz#5bb52ee68d0f8efa9cc0099920e56be6cc4e37f3"
   integrity sha512-IkVfat549ggtkZUthUzEX49562eGikhSYeVGX97SkMFn+sTZrgRewXjQ4tPKFPCykZHkX1Zfd9OoELGqKU2jJA==
 
-"@types/rdf-js@^2.0.1":
-  version "2.0.12"
-  resolved "https://registry.yarnpkg.com/@types/rdf-js/-/rdf-js-2.0.12.tgz#d305a0b6fd105e33f58d5c1b3de33ff8edcb3210"
-  integrity sha512-NBzHFHp2vHOJkPlSqzsOrkEsD9grKn+PdFjZieIw59pc0FlRG6WEQAjQZvHzFxJlYzC6ZDCFyTA1wBvUnnzUQw==
-  dependencies:
-    "@types/node" "*"
-
-"@types/rdf-js@^3.0.0":
-  version "3.0.3"
-  resolved "https://registry.yarnpkg.com/@types/rdf-js/-/rdf-js-3.0.3.tgz#3c606f9bd25b2429b87249d6203c2ffeaab55c98"
-  integrity sha512-1dvodNHh/YpLovHA/b046Nu+xERVt0KcYJFQH1A8S4ZcMj+stYtx4ypXw0X2/oatbREUo4JW+cjoBll3CVtwSQ==
+"@types/rdf-js@^4.0.0":
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/@types/rdf-js/-/rdf-js-4.0.0.tgz#96f7314b09b77ecd16fca7f358db90db8ac86d1b"
+  integrity sha512-2uaR7ks0380MqzUWGOPOOk9yZIr/6MOaCcaj3ntKgd2PqNocgi8j5kSHIJTDe+5ABtTHqKMSE0v0UqrsT8ibgQ==
   dependencies:
     "@types/node" "*"
 
@@ -3347,12 +3333,19 @@ quick-lru@^4.0.1:
   resolved "https://registry.yarnpkg.com/quick-lru/-/quick-lru-4.0.1.tgz#5b8878f113a58217848c6482026c73e1ba57727f"
   integrity sha512-ARhCpm70fzdcvNQfPoy49IaanKkTlRWF2JMzqhcJbhSFRZv7nPTvZJdcY7301IPmvW+/p0RgIWnQDLJxifsQ7g==
 
-rdf-string@^1.1.1, rdf-string@^1.3.1:
-  version "1.4.2"
-  resolved "https://registry.yarnpkg.com/rdf-string/-/rdf-string-1.4.2.tgz#a6fbf0c4b501fa85ba187ce51020dc8e375b8776"
-  integrity sha512-74yYjS0W4N3nYDGbXBZrNsqDmhBTjqChTETO9heC2G2M3iMYaIPtEfUikNsBWUj4+4bIKyqL7vAntWBTfJpFFA==
+rdf-data-factory@^1.0.0, rdf-data-factory@^1.0.3:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/rdf-data-factory/-/rdf-data-factory-1.0.3.tgz#1fb45aebd71c0318843e090f262571b91d68052e"
+  integrity sha512-Fm0E5JiGZl4vRK2qlMmmI/CEZeN/NgEWHyBmTmtFCyp/tAfb5veDfdB1ZqNRqR16pNHzDiPeKZmE7qCK3IehWA==
   dependencies:
-    "@rdfjs/data-model" "^1.1.1"
+    "@types/rdf-js" "^4.0.0"
+
+rdf-string@^1.5.0:
+  version "1.5.0"
+  resolved "https://registry.yarnpkg.com/rdf-string/-/rdf-string-1.5.0.tgz#5d0118f8788fe509f06d8cefc181fd979d712412"
+  integrity sha512-3TEJuDIKUADgZrfcZG+zAN4GfVA1Ei2sKA7Z7QVHkAE36wWoRGPJbGihPQMldgzvy9lG2nzZU+CXz+6oGSQNsQ==
+  dependencies:
+    rdf-data-factory "^1.0.0"
 
 react-is@^16.12.0:
   version "16.13.1"
@@ -3752,15 +3745,15 @@ source-map@^0.7.3:
   resolved "https://registry.yarnpkg.com/source-map/-/source-map-0.7.3.tgz#5302f8169031735226544092e64981f751750383"
   integrity sha512-CkCj6giN3S+n9qrYiBTX5gystlENnRW5jZeNLHpe6aue+SrHcG5VYwujhW9s4dY31mEGsxBDrHR6oI69fTXsaQ==
 
-sparqlalgebrajs@^2.1.0:
-  version "2.3.2"
-  resolved "https://registry.yarnpkg.com/sparqlalgebrajs/-/sparqlalgebrajs-2.3.2.tgz#3f5d1a2e9a9c1a7149ab90eeae5a9f35066947f4"
-  integrity sha512-QnjSz25c6ruALbxxD7e9E64hoi/yPMz5MzxUIjLEiTob2zWoM4Pj6GlYZAMnxcCdXXURZO+n0Obt/8XhQj4XiQ==
+sparqlalgebrajs@^2.4.0:
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/sparqlalgebrajs/-/sparqlalgebrajs-2.4.0.tgz#c223a8185bad1a7e7ffc46eaff859fc55c1ff49c"
+  integrity sha512-6glKn1uWBsdPuQ4D+4r5m8mgWZoMfiNgip4uyblULTmgISqcbsQzrlrIhWQoZSX95QLLlWlYJufhelQAIRAWKg==
   dependencies:
-    "@rdfjs/data-model" "^1.1.2"
     fast-deep-equal "^3.1.1"
     minimist "^1.2.5"
-    rdf-string "^1.3.1"
+    rdf-data-factory "^1.0.0"
+    rdf-string "^1.5.0"
     sparqljs "^3.1.1"
 
 sparqljs@^3.1.1:

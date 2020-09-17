@@ -1,10 +1,13 @@
 import * as RDF from 'rdf-js';
 
-import { literal, namedNode, variable } from '@rdfjs/data-model';
+import {DataFactory} from 'rdf-data-factory';
 import { Algebra } from 'sparqlalgebrajs';
 
 import { AggregateEvaluator } from '../../lib/evaluators/AggregateEvaluator';
 import { Bindings } from '../../lib/Types';
+import {TypeURL as DT} from '../../lib/util/Consts';
+
+const DF = new DataFactory();
 
 type TestCaseArgs = { expr: Algebra.AggregateExpression, input: Bindings[], throwError?: boolean };
 function testCase({ expr, input, throwError }: TestCaseArgs): RDF.Term {
@@ -28,33 +31,33 @@ function makeAggregate(aggregator: string, distinct = false, separator?: string)
     expression: {
       type: 'expression',
       expressionType: 'term',
-      term: variable('x'),
+      term: DF.variable('x'),
     },
   };
 }
 
 function nonLiteral(): RDF.Term {
-  return namedNode('http://example.org/');
+  return DF.namedNode('http://example.org/');
 }
 
 function int(value: string): RDF.Term {
-  return literal(value, 'http://www.w3.org/2001/XMLSchema#integer');
+  return DF.literal(value, DF.namedNode('http://www.w3.org/2001/XMLSchema#integer'));
 }
 
 function float(value: string): RDF.Term {
-  return literal(value, 'http://www.w3.org/2001/XMLSchema#float');
+  return DF.literal(value, DF.namedNode('http://www.w3.org/2001/XMLSchema#float'));
 }
 
 function decimal(value: string): RDF.Term {
-  return literal(value, 'http://www.w3.org/2001/XMLSchema#decimal');
+  return DF.literal(value, DF.namedNode('http://www.w3.org/2001/XMLSchema#decimal'));
 }
 
 function double(value: string): RDF.Term {
-  return literal(value, 'http://www.w3.org/2001/XMLSchema#double');
+  return DF.literal(value, DF.namedNode('http://www.w3.org/2001/XMLSchema#double'));
 }
 
 function string(value: string): RDF.Term {
-  return literal(value, 'http://www.w3.org/2001/XMLSchema#string');
+  return DF.literal(value, DF.namedNode('http://www.w3.org/2001/XMLSchema#string'));
 }
 
 describe('an aggregate evaluator should be able to', () => {
@@ -107,10 +110,10 @@ describe('an aggregate evaluator should be able to', () => {
       const result = testCase({
         expr: makeAggregate('sum'),
         input: [
-          Bindings({ '?x': literal('1', namedNode('http://www.w3.org/2001/XMLSchema#byte')) }),
+          Bindings({ '?x': DF.literal('1', DF.namedNode('http://www.w3.org/2001/XMLSchema#byte')) }),
           Bindings({ '?x': int('2') }),
           Bindings({ '?x': float('3') }),
-          Bindings({ '?x': literal('4', namedNode('http://www.w3.org/2001/XMLSchema#nonNegativeInteger')) }),
+          Bindings({ '?x': DF.literal('4', DF.namedNode('http://www.w3.org/2001/XMLSchema#nonNegativeInteger')) }),
         ],
       });
       expect(result).toEqual(float('10'));
@@ -145,7 +148,7 @@ describe('an aggregate evaluator should be able to', () => {
   });
 
   describe('min', () => {
-    
+
     it('a list of bindings', () => {
       const result = testCase({
         expr: makeAggregate('min'),
@@ -243,10 +246,10 @@ describe('an aggregate evaluator should be able to', () => {
       const result = testCase({
         expr: makeAggregate('avg'),
         input: [
-          Bindings({ '?x': literal('1', namedNode('http://www.w3.org/2001/XMLSchema#byte')) }),
+          Bindings({ '?x': DF.literal('1', DF.namedNode('http://www.w3.org/2001/XMLSchema#byte')) }),
           Bindings({ '?x': int('2') }),
           Bindings({ '?x': float('3') }),
-          Bindings({ '?x': literal('4', namedNode('http://www.w3.org/2001/XMLSchema#nonNegativeInteger')) }),
+          Bindings({ '?x': DF.literal('4', DF.namedNode('http://www.w3.org/2001/XMLSchema#nonNegativeInteger')) }),
         ],
       });
       expect(result).toEqual(float('2.5'));
@@ -300,7 +303,7 @@ describe('an aggregate evaluator should be able to', () => {
           Bindings({ '?x': int('4') }),
         ],
       });
-      expect(result).toEqual(literal('1 2 3 4'));
+      expect(result).toEqual(DF.literal('1 2 3 4'));
     });
 
     it('with respect to empty input', () => {
@@ -308,7 +311,7 @@ describe('an aggregate evaluator should be able to', () => {
         expr: makeAggregate('group_concat'),
         input: [],
       });
-      expect(result).toEqual(literal(''));
+      expect(result).toEqual(DF.literal(''));
     });
 
     it('custom separator', () => {
@@ -321,7 +324,7 @@ describe('an aggregate evaluator should be able to', () => {
           Bindings({ '?x': int('4') }),
         ],
       });
-      expect(result).toEqual(literal('1;2;3;4'));
+      expect(result).toEqual(DF.literal('1;2;3;4'));
     });
   });
 
@@ -331,7 +334,7 @@ describe('an aggregate evaluator should be able to', () => {
           expr: makeAggregate('sum'),
           input: [
             Bindings({ '?x': int('1') }),
-            Bindings({ '?x': literal('1') }),
+            Bindings({ '?x': DF.literal('1') }),
           ],
         });
       })()).toEqual(undefined);
