@@ -1,5 +1,5 @@
 import { Map } from 'immutable';
-import * as URI from 'uri-js';
+import {resolve as resolveRelativeIri} from "relative-to-absolute-iri";
 import * as uuid from 'uuid';
 
 import * as E from '../expressions';
@@ -324,7 +324,7 @@ function IRI_(input: Term, baseIRI: string | undefined, args: E.Expression[]): T
     ? typeCheckLit<string>(input, ['string'], args, C.SpecialOperator.IRI)
     : input as E.NamedNode;
 
-  const iri = URI.resolve(baseIRI || '', lit.str());
+  const iri = resolveRelativeIri(lit.str(), baseIRI || '');
   return new E.NamedNode(iri);
 }
 
