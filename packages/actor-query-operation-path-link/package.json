@@ -44,7 +44,7 @@
   },
   "dependencies": {
     "@comunica/actor-abstract-path": "^1.16.0",
-    "sparqlalgebrajs": "^2.3.2"
+    "sparqlalgebrajs": "^2.4.0"
   },
   "devDependencies": {
     "@comunica/bus-query-operation": "^1.16.0",

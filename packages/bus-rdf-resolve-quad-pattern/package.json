@@ -38,9 +38,9 @@
     "index.js"
   ],
   "dependencies": {
-    "@types/rdf-js": "^3.0.0",
+    "@types/rdf-js": "*",
     "asynciterator": "^3.0.3",
-    "sparqlalgebrajs": "^2.3.2"
+    "sparqlalgebrajs": "^2.4.0"
   },
   "peerDependencies": {
     "@comunica/core": "^1.0.0"

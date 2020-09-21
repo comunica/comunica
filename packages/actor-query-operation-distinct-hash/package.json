@@ -40,7 +40,7 @@
   ],
   "dependencies": {
     "@comunica/actor-abstract-bindings-hash": "^1.16.0",
-    "sparqlalgebrajs": "^2.3.2"
+    "sparqlalgebrajs": "^2.4.0"
   },
   "peerDependencies": {
     "@comunica/bus-query-operation": "^1.0.0",

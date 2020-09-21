@@ -39,8 +39,8 @@
     "index.js"
   ],
   "dependencies": {
-    "@types/rdf-js": "^3.0.0",
-    "rdf-terms": "^1.4.0"
+    "@types/rdf-js": "*",
+    "rdf-terms": "^1.6.2"
   },
   "peerDependencies": {
     "@comunica/bus-sparql-serialize": "^1.0.0",

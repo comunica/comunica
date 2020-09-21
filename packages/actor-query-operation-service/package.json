@@ -41,7 +41,7 @@
   "dependencies": {
     "@comunica/bus-rdf-resolve-quad-pattern": "^1.16.0",
     "asynciterator": "^3.0.3",
-    "sparqlalgebrajs": "^2.3.2"
+    "sparqlalgebrajs": "^2.4.0"
   },
   "peerDependencies": {
     "@comunica/bus-query-operation": "^1.2.0",

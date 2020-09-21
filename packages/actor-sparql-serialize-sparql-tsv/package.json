@@ -40,8 +40,8 @@
   ],
   "dependencies": {
     "@comunica/bus-query-operation": "^1.16.0",
-    "@types/rdf-js": "^3.0.0",
-    "rdf-string-ttl": "^1.0.1"
+    "@types/rdf-js": "*",
+    "rdf-string-ttl": "^1.1.0"
   },
   "peerDependencies": {
     "@comunica/bus-sparql-serialize": "^1.15.0",

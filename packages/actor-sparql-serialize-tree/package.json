@@ -39,7 +39,7 @@
     "index.js"
   ],
   "dependencies": {
-    "@types/rdf-js": "^3.0.0",
+    "@types/rdf-js": "*",
     "sparqljson-to-tree": "^2.0.0"
   },
   "peerDependencies": {

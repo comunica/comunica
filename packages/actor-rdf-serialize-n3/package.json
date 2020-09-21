@@ -39,10 +39,10 @@
     "index.js"
   ],
   "dependencies": {
-    "@types/n3": "^1.4.2",
-    "@types/rdf-js": "^3.0.0",
-    "n3": "^1.0.0",
-    "rdf-string": "^1.4.2"
+    "@types/n3": "^1.4.4",
+    "@types/rdf-js": "*",
+    "n3": "^1.6.3",
+    "rdf-string": "^1.5.0"
   },
   "peerDependencies": {
     "@comunica/bus-rdf-serialize": "^1.0.0",

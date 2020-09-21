@@ -39,7 +39,7 @@
     "index.js"
   ],
   "dependencies": {
-    "@types/rdf-js": "^3.0.0",
+    "@types/rdf-js": "*",
     "@types/uritemplate": "^0.3.4",
     "uritemplate": "0.3.4"
   },

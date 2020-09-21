@@ -40,7 +40,7 @@
   ],
   "dependencies": {
     "@comunica/bus-rdf-resolve-quad-pattern": "^1.16.0",
-    "sparqlalgebrajs": "^2.3.2"
+    "sparqlalgebrajs": "^2.4.0"
   },
   "peerDependencies": {
     "@comunica/bus-context-preprocess": "^1.0.0",

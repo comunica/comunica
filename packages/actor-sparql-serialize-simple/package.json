@@ -39,7 +39,7 @@
     "index.js"
   ],
   "dependencies": {
-    "@types/rdf-js": "^3.0.0"
+    "@types/rdf-js": "*"
   },
   "peerDependencies": {
     "@comunica/bus-sparql-serialize": "^1.0.0",

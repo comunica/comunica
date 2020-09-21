@@ -39,11 +39,11 @@
     "index.js"
   ],
   "dependencies": {
-    "@types/rdf-js": "^3.0.0",
+    "@types/rdf-js": "*",
     "asynciterator": "^3.0.3",
-    "rdf-string": "^1.4.2",
-    "rdf-terms": "^1.4.0",
-    "sparqlalgebrajs": "^2.3.2"
+    "rdf-string": "^1.5.0",
+    "rdf-terms": "^1.6.2",
+    "sparqlalgebrajs": "^2.4.0"
   },
   "peerDependencies": {
     "@comunica/bus-query-operation": "^1.0.0",

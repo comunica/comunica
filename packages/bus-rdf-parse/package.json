@@ -45,7 +45,7 @@
   },
   "dependencies": {
     "@comunica/actor-abstract-mediatyped": "^1.15.0",
-    "@types/rdf-js": "^3.0.0"
+    "@types/rdf-js": "*"
   },
   "jest": {
     "globals": {

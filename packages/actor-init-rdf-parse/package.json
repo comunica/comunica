@@ -54,7 +54,7 @@
     "@comunica/mediator-race": "^1.15.0",
     "@comunica/runner": "^1.16.0",
     "@comunica/runner-cli": "^1.16.0",
-    "rdf-string": "^1.4.2"
+    "rdf-string": "^1.5.0"
   },
   "jest": {
     "globals": {

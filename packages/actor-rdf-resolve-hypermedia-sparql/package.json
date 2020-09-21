@@ -43,10 +43,10 @@
     "@comunica/bus-query-operation": "^1.16.0",
     "@comunica/bus-rdf-resolve-quad-pattern": "^1.16.0",
     "@rdfjs/data-model": "^1.1.1",
-    "@types/rdf-js": "^3.0.0",
+    "@types/rdf-js": "*",
     "asynciterator": "^3.0.3",
-    "rdf-terms": "^1.4.0",
-    "sparqlalgebrajs": "^2.3.2"
+    "rdf-terms": "^1.6.2",
+    "sparqlalgebrajs": "^2.4.0"
   },
   "peerDependencies": {
     "@comunica/bus-rdf-resolve-hypermedia": "^1.8.0",

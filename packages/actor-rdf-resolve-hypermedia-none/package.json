@@ -40,7 +40,7 @@
   ],
   "dependencies": {
     "@comunica/actor-rdf-resolve-quad-pattern-rdfjs-source": "^1.16.0",
-    "@types/rdf-js": "^3.0.0",
+    "@types/rdf-js": "*",
     "rdf-store-stream": "^1.0.1"
   },
   "peerDependencies": {

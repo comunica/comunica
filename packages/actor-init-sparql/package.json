@@ -161,15 +161,15 @@
     "@comunica/runner": "^1.16.0",
     "@comunica/runner-cli": "^1.16.0",
     "@types/minimist": "^1.2.0",
-    "@types/rdf-js": "^3.0.0",
+    "@types/rdf-js": "*",
     "asynciterator": "^3.0.3",
     "minimist": "^1.2.0",
     "negotiate": "^1.0.1",
     "rdf-quad": "^1.4.0",
-    "rdf-string": "^1.4.2",
-    "rdf-terms": "^1.4.0",
+    "rdf-string": "^1.5.0",
+    "rdf-terms": "^1.6.2",
     "streamify-string": "^1.0.1",
-    "sparqlalgebrajs": "^2.3.2"
+    "sparqlalgebrajs": "^2.4.0"
   },
   "devDependencies": {
     "@comunica/actor-query-operation-bgp-left-deep-smallest-sort": "^1.16.0"

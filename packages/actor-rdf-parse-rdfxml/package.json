@@ -39,7 +39,7 @@
     "index.js"
   ],
   "dependencies": {
-    "rdfxml-streaming-parser": "^1.1.0"
+    "rdfxml-streaming-parser": "^1.4.0"
   },
   "peerDependencies": {
     "@comunica/bus-rdf-parse": "^1.1.0",

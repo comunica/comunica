@@ -40,7 +40,7 @@
   ],
   "dependencies": {
     "asynciterator": "^3.0.3",
-    "sparqlalgebrajs": "^2.3.2"
+    "sparqlalgebrajs": "^2.4.0"
   },
   "peerDependencies": {
     "@comunica/bus-query-operation": "^1.0.0",

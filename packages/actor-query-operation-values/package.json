@@ -40,8 +40,8 @@
   ],
   "dependencies": {
     "asynciterator": "^3.0.3",
-    "rdf-string": "^1.4.2",
-    "sparqlalgebrajs": "^2.3.2"
+    "rdf-string": "^1.5.0",
+    "sparqlalgebrajs": "^2.4.0"
   },
   "peerDependencies": {
     "@comunica/bus-query-operation": "^1.0.0",
