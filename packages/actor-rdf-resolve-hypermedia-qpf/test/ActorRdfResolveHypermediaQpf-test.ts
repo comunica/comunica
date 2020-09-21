@@ -1,8 +1,10 @@
 import { ActorRdfResolveHypermedia } from '@comunica/bus-rdf-resolve-hypermedia';
 import { ActionContext, Bus } from '@comunica/core';
+import { variable } from '@rdfjs/data-model';
 import { TransformIterator } from 'asynciterator';
 import { ActorRdfResolveHypermediaQpf } from '../lib/ActorRdfResolveHypermediaQpf';
 import { RdfSourceQpf } from '../lib/RdfSourceQpf';
+const v = variable('v');
 
 describe('ActorRdfResolveHypermediaQpf', () => {
   let bus: any;
@@ -108,7 +110,7 @@ describe('ActorRdfResolveHypermediaQpf', () => {
       expect(source.objectUri).toEqual('o');
       expect(source.graphUri).toEqual('g');
       expect(source.context).toBe(context);
-      expect(source.getCachedQuads()).toBeInstanceOf(TransformIterator);
+      expect(source.getCachedQuads(v, v, v, v)).toBeInstanceOf(TransformIterator);
     });
   });
 

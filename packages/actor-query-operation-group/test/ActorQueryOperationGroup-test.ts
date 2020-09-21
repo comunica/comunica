@@ -573,7 +573,6 @@ describe('ActorQueryOperationGroup', () => {
       expect(output.canContainUndefs).toEqual(false);
     });
 
-    // TODO empty set
     it('should be able to min', async() => {
       const { op, actor } = constructCase({
         inputBindings: [

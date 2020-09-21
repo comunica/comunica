@@ -54,15 +54,6 @@ describe('ActorRdfResolveQuadPatternSource', () => {
         expect(await arrayifyStream(output.data)).toEqual([ 'a', 'b' ]);
       });
     });
-
-    it('should run lazy', () => {
-      actor.getSource = () => ({
-        matchLazy: () => new ArrayIterator([ 'al', 'bl' ]),
-      });
-      return actor.run({ pattern: {}}).then(async(output: any) => {
-        expect(await arrayifyStream(output.data)).toEqual([ 'al', 'bl' ]);
-      });
-    });
   });
 
   describe('isDataSourceRawType', () => {

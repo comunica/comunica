@@ -1,9 +1,14 @@
+import { Readable } from 'stream';
 import { ActorRdfResolveQuadPattern } from '@comunica/bus-rdf-resolve-quad-pattern';
 import { ActionContext, Bus } from '@comunica/core';
-import { namedNode, variable } from '@rdfjs/data-model';
+import { namedNode, quad, variable } from '@rdfjs/data-model';
 import { ArrayIterator } from 'asynciterator';
+import { Store } from 'n3';
 import type * as RDF from 'rdf-js';
-import { ActorRdfResolveQuadPatternRdfJsSource } from '../lib/ActorRdfResolveQuadPatternRdfJsSource';
+import { ActorRdfResolveQuadPatternRdfJsSource, RdfJsQuadSource } from '..';
+import 'jest-rdf';
+
+const arrayifyStream = require('arrayify-stream');
 
 describe('ActorRdfResolveQuadPatternRdfJsSource', () => {
   let bus: any;
@@ -108,24 +113,76 @@ describe('ActorRdfResolveQuadPatternRdfJsSource', () => {
     it('should get the source', () => {
       return expect((<any> actor).getSource(ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:source':
           { type: 'rdfjsSource', value: source }})))
-        .resolves.toMatchObject(source);
+        .resolves.toMatchObject(new RdfJsQuadSource(source));
     });
 
     it('should get the source on raw source form', () => {
       return expect((<any> actor).getSource(ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:source': source })))
-        .resolves.toMatchObject(source);
+        .resolves.toMatchObject(new RdfJsQuadSource(source));
+    });
+
+    it('should run with a real store', async() => {
+      const store = new Store();
+      store.addQuad(quad(namedNode('s1'), namedNode('p'), namedNode('o1')));
+      store.addQuad(quad(namedNode('s2'), namedNode('p'), namedNode('o2')));
+      store.addQuad(quad(namedNode('s3'), namedNode('px'), namedNode('o3')));
+      const context = ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:source': store });
+      const pattern: any = {
+        subject: variable('s'),
+        predicate: namedNode('p'),
+        object: variable('o'),
+        graph: variable('g'),
+      };
+      const { data } = await actor.run({ pattern, context });
+      expect(await arrayifyStream(data)).toEqualRdfQuadArray([
+        quad(namedNode('s1'), namedNode('p'), namedNode('o1')),
+        quad(namedNode('s2'), namedNode('p'), namedNode('o2')),
+      ]);
+      expect(await new Promise(resolve => data.getProperty('metadata', resolve)))
+        .toEqual({ totalItems: 2 });
     });
 
     it('should use countQuads for metadata if available', async() => {
-      source = <any> { countQuads: () => 123 };
-      expect(await (<any> actor).getMetadata(source,
-        { subject: variable('s'), predicate: namedNode('p') })()).toEqual({ totalItems: 123 });
+      source = <any> { countQuads: () => 123, match: () => new ArrayIterator([ 0, 1, 2 ]) };
+      const context = ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:source': source });
+      const pattern: any = {
+        subject: variable('s'),
+        predicate: namedNode('p'),
+        object: variable('o'),
+        graph: variable('g'),
+      };
+      const { data } = await actor.run({ pattern, context });
+      expect(await new Promise(resolve => data.getProperty('metadata', resolve))).toEqual({ totalItems: 123 });
     });
 
     it('should use match for metadata if countQuads is not available', async() => {
       source = <any> { match: () => new ArrayIterator([ 0, 1, 2 ]) };
-      expect(await (<any> actor).getMetadata(source,
-        { subject: variable('s'), predicate: namedNode('p') })()).toEqual({ totalItems: 3 });
+      const context = ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:source': source });
+      const pattern: any = {
+        subject: variable('s'),
+        predicate: namedNode('p'),
+        object: variable('o'),
+        graph: variable('g'),
+      };
+      const { data } = await actor.run({ pattern, context });
+      expect(await new Promise(resolve => data.getProperty('metadata', resolve))).toEqual({ totalItems: 3 });
+    });
+
+    it('should delegate its error event', async() => {
+      const it = new Readable();
+      it._read = () => {
+        it.emit('error', new Error('RdfJsSource error'));
+      };
+      source = <any> { match: () => it };
+      const context = ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:source': source });
+      const pattern: any = {
+        subject: variable('s'),
+        predicate: namedNode('p'),
+        object: variable('o'),
+        graph: variable('g'),
+      };
+      const { data } = await actor.run({ pattern, context });
+      await expect(arrayifyStream(data)).rejects.toThrow(new Error('RdfJsSource error'));
     });
   });
 });

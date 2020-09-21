@@ -1,3 +1,4 @@
+import { IQuadSource } from '@comunica/bus-rdf-resolve-quad-pattern';
 import { Actor, IAction, IActorArgs, IActorOutput, IActorTest } from '@comunica/core';
 import type * as RDF from 'rdf-js';
 
@@ -70,11 +71,8 @@ export interface IActorRdfResolveHypermediaTest extends IActorTest {
 export interface IActorRdfResolveHypermediaOutput extends IActorOutput {
   /**
    * The new source of quads contained in the document.
-   *
-   * Optionally, these sources can emit a 'metadata' event with a metadata object
-   * that will should override the metadata of this source.
    */
-  source: RDF.Source;
+  source: IQuadSource;
   /**
    * The dataset that was handled.
    */

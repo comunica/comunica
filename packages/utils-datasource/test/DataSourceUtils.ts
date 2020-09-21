@@ -1,5 +1,4 @@
 import { ActionContext } from '@comunica/core';
-import { AsyncReiterableArray } from 'asyncreiterable';
 import { DataSourceUtils } from '..';
 
 describe('DataSourceUtils', () => {
@@ -8,18 +7,18 @@ describe('DataSourceUtils', () => {
     { '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'a-type', value: 'a-value' }},
   );
   const contextWithSingleMultipleSources: ActionContext = ActionContext({
-    '@comunica/bus-rdf-resolve-quad-pattern:sources': AsyncReiterableArray.fromFixedData([
+    '@comunica/bus-rdf-resolve-quad-pattern:sources': [
       { type: 'a-type', value: 'a-value' },
-    ]),
+    ],
   });
   const contextWithMultipleSources: ActionContext = ActionContext({
-    '@comunica/bus-rdf-resolve-quad-pattern:sources': AsyncReiterableArray.fromFixedData([
+    '@comunica/bus-rdf-resolve-quad-pattern:sources': [
       { type: 'a-type', value: 'a-value' },
       { type: 'a-type', value: 'a-value' },
-    ]),
+    ],
   });
   const contextNotEnded: ActionContext = ActionContext({
-    '@comunica/bus-rdf-resolve-quad-pattern:sources': AsyncReiterableArray.fromInitialEmpty(),
+    '@comunica/bus-rdf-resolve-quad-pattern:sources': [],
   });
 
   describe('#getSingleSource', () => {

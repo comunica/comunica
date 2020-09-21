@@ -11,7 +11,7 @@ import {
   ActorRdfResolveQuadPatternSource, getDataSourceType,
   IActionRdfResolveQuadPattern,
   IActorRdfResolveQuadPatternOutput, IDataSource,
-  ILazyQuadSource,
+  IQuadSource,
 } from '@comunica/bus-rdf-resolve-quad-pattern';
 import { ActionContext, Actor, IActorArgs, IActorTest, Mediator } from '@comunica/core';
 import LRUCache = require('lru-cache');
@@ -63,7 +63,7 @@ export class ActorRdfResolveQuadPatternHypermedia extends ActorRdfResolveQuadPat
     return true;
   }
 
-  protected getSource(context: ActionContext, operation: Algebra.Pattern): Promise<ILazyQuadSource> {
+  protected getSource(context: ActionContext, operation: Algebra.Pattern): Promise<IQuadSource> {
     const contextSource = <IDataSource> this.getContextSource(context);
     const url = <string> this.getContextSourceUrl(contextSource);
     let source: MediatedQuadSource;

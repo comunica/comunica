@@ -1,4 +1,4 @@
-import { ILazyQuadSource } from '@comunica/bus-rdf-resolve-quad-pattern';
+import { IQuadSource } from '@comunica/bus-rdf-resolve-quad-pattern';
 import { ActionContext } from '@comunica/core';
 import { AsyncIterator } from 'asynciterator';
 import type * as RDF from 'rdf-js';
@@ -10,7 +10,7 @@ import { IMediatorArgs, MediatedLinkedRdfSourcesAsyncRdfIterator } from './Media
  *
  * @see MediatedLinkedRdfSourcesAsyncRdfIterator
  */
-export class MediatedQuadSource implements ILazyQuadSource {
+export class MediatedQuadSource implements IQuadSource {
   public readonly context: ActionContext;
   public readonly firstUrl: string;
   public readonly forceSourceType?: string;
@@ -29,16 +29,7 @@ export class MediatedQuadSource implements ILazyQuadSource {
     this.mediators = mediators;
   }
 
-  public matchLazy(subject?: RegExp | RDF.Term,
-    predicate?: RegExp | RDF.Term,
-    object?: RegExp | RDF.Term,
-    graph?: RegExp | RDF.Term): AsyncIterator<RDF.Quad> & RDF.Stream {
-    if (subject instanceof RegExp ||
-      predicate instanceof RegExp ||
-      object instanceof RegExp ||
-      graph instanceof RegExp) {
-      throw new Error('MediatedQuadSource does not support matching by regular expressions.');
-    }
+  public match(subject: RDF.Term, predicate: RDF.Term, object: RDF.Term, graph: RDF.Term): AsyncIterator<RDF.Quad> {
     const it = new MediatedLinkedRdfSourcesAsyncRdfIterator(
       this.cacheSize,
       this.context,
@@ -57,12 +48,5 @@ export class MediatedQuadSource implements ILazyQuadSource {
       it.setSourcesState(this.sourcesState);
     }
     return it;
-  }
-
-  public match(subject?: RegExp | RDF.Term,
-    predicate?: RegExp | RDF.Term,
-    object?: RegExp | RDF.Term,
-    graph?: RegExp | RDF.Term): RDF.Stream {
-    return this.matchLazy(subject, predicate, object, graph);
   }
 }

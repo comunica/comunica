@@ -127,20 +127,21 @@ describe('ActorQueryOperationQuadpattern', () => {
   describe('An ActorQueryOperationQuadpattern instance', () => {
     let actor: ActorQueryOperationQuadpattern;
     let mediatorResolveQuadPattern: any;
-    let metadata: any;
     let metadataContent: any;
 
     beforeEach(() => {
       metadataContent = { totalitems: 3 };
-      metadata = () => Promise.resolve(metadataContent);
       mediatorResolveQuadPattern = {
         mediate: jest.fn(
-          ({ context }) => Promise.resolve({ data: new ArrayIterator([
-            quad('s1', 'p1', 'o1', 'g1'),
-            quad('s2', 'p2', 'o2', 'g2'),
-            quad('s3', 'p3', 'o3', 'g3'),
-          ]),
-          metadata }),
+          ({ context }) => {
+            const data = new ArrayIterator([
+              quad('s1', 'p1', 'o1', 'g1'),
+              quad('s2', 'p2', 'o2', 'g2'),
+              quad('s3', 'p3', 'o3', 'g3'),
+            ]);
+            data.setProperty('metadata', metadataContent);
+            return Promise.resolve({ data });
+          },
         ),
       };
       actor = new ActorQueryOperationQuadpattern({ name: 'actor', bus, mediatorResolveQuadPattern });
@@ -247,12 +248,17 @@ describe('ActorQueryOperationQuadpattern', () => {
       };
 
       mediatorResolveQuadPattern = {
-        mediate: () => Promise.resolve({ data: new ArrayIterator([
-          quad('s1', 'p1', 'o1', 'g1'),
-          quad('s2', 'p2', 'o2', 'g2'),
-          quad('s3', 'w', 'w', 'g3'),
-        ]),
-        metadata }),
+        mediate: jest.fn(
+          ({ context }) => {
+            const data = new ArrayIterator([
+              quad('s1', 'p1', 'o1', 'g1'),
+              quad('s2', 'p2', 'o2', 'g2'),
+              quad('s3', 'w', 'w', 'g3'),
+            ]);
+            data.setProperty('metadata', metadataContent);
+            return Promise.resolve({ data });
+          },
+        ),
       };
       actor = new ActorQueryOperationQuadpattern({ name: 'actor', bus, mediatorResolveQuadPattern });
 

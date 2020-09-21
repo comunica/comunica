@@ -50,10 +50,10 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
       source = new MediatedLinkedRdfSourcesAsyncRdfIterator(10, context, 'forcedType', s, p, o, g, 'first', mediators);
     });
 
-    describe('getNextUrls', () => {
+    describe('getSourceLinks', () => {
       it('should get urls based on mediatorRdfResolveHypermediaLinks', async() => {
         jest.spyOn(mediatorRdfResolveHypermediaLinks, 'mediate');
-        expect(await source.getNextUrls({ baseURL: 'http://base.org/' })).toEqual([
+        expect(await source.getSourceLinks({ baseURL: 'http://base.org/' })).toEqual([
           'http://base.org/url1',
           'http://base.org/url2',
         ]);
@@ -63,34 +63,34 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
 
       it('should not emit any urls that were already emitted', async() => {
         source.handledUrls['http://base.org/url1'] = true;
-        expect(await source.getNextUrls({ baseURL: 'http://base.org/' })).toEqual([
+        expect(await source.getSourceLinks({ baseURL: 'http://base.org/' })).toEqual([
           'http://base.org/url2',
         ]);
       });
 
       it('should be invokable multiple times', async() => {
-        expect(await source.getNextUrls({ baseURL: 'http://base.org/' })).toEqual([
+        expect(await source.getSourceLinks({ baseURL: 'http://base.org/' })).toEqual([
           'http://base.org/url1',
           'http://base.org/url2',
         ]);
-        expect(await source.getNextUrls({ baseURL: 'http://base2.org/' })).toEqual([
+        expect(await source.getSourceLinks({ baseURL: 'http://base2.org/' })).toEqual([
           'http://base2.org/url1',
           'http://base2.org/url2',
         ]);
-        expect(await source.getNextUrls({ baseURL: 'http://base.org/' })).toEqual([]); // Already handled
+        expect(await source.getSourceLinks({ baseURL: 'http://base.org/' })).toEqual([]); // Already handled
       });
 
       it('should return no urls on a rejecting mediator', async() => {
         mediatorRdfResolveHypermediaLinks.mediate = () => Promise.reject(
           new Error('MediatedLinkedRdfSourcesAsyncRdfIterator error'),
         );
-        expect(await source.getNextUrls({ baseURL: 'http://base.org/' })).toEqual([]);
+        expect(await source.getSourceLinks({ baseURL: 'http://base.org/' })).toEqual([]);
       });
     });
 
-    describe('getNextSource', () => {
+    describe('getSource', () => {
       it('should get urls based on mediatorRdfResolveHypermedia', async() => {
-        expect(await source.getNextSource('startUrl', {})).toEqual({
+        expect(await source.getSource('startUrl', {})).toEqual({
           handledDatasets: { MYDATASET: true },
           metadata: { myKey: 'METADATA' },
           source: { sourceContents: 'QUADS(startUrl)' },
@@ -102,7 +102,7 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
           Promise.resolve({
             source: { sourceContents: quads },
           });
-        expect(await source.getNextSource('startUrl', {})).toEqual({
+        expect(await source.getSource('startUrl', {})).toEqual({
           handledDatasets: {},
           metadata: { myKey: 'METADATA' },
           source: { sourceContents: 'QUADS(startUrl)' },

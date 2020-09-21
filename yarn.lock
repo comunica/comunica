@@ -2140,13 +2140,6 @@
   dependencies:
     highlight.js "^9.15.6"
 
-"@types/asynciterator@^1.1.4":
-  version "1.1.4"
-  resolved "https://registry.yarnpkg.com/@types/asynciterator/-/asynciterator-1.1.4.tgz#8fa87700ac4412c3bd151d9585d6650652d29dbb"
-  integrity sha512-sa5KPB8GsC70myFcnygLm3VEMh/IrSXarbqC7OrJLPJ8jFDzOZ9B1uOgbf0PcQ/smBTVJJXeZItYI9TklGiaSA==
-  dependencies:
-    "@types/node" "*"
-
 "@types/babel__core@^7.0.0", "@types/babel__core@^7.1.7":
   version "7.1.9"
   resolved "https://registry.yarnpkg.com/@types/babel__core/-/babel__core-7.1.9.tgz#77e59d438522a6fb898fa43dc3455c6e72f3963d"
@@ -3079,13 +3072,6 @@ asynckit@^0.4.0:
   version "0.4.0"
   resolved "https://registry.yarnpkg.com/asynckit/-/asynckit-0.4.0.tgz#c79ed97f7f34cb8f2ba1bc9790bcc366474b4b79"
   integrity sha1-x57Zf380y48robyXkLzDZkdLS3k=
-
-asyncreiterable@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/asyncreiterable/-/asyncreiterable-2.0.0.tgz#7e32e768249f72373cf69c6dd5f22d42fe85aa13"
-  integrity sha512-Pq9wUkHrXshCxXWy4/O7krS9qGCgHxoDWajWJja/7f5KoZTcO5Xww25NSMTek+jL3CZ4GrHYvOHx5bmrR4nU3w==
-  dependencies:
-    asynciterator "^3.0.0"
 
 at-least-node@^1.0.0:
   version "1.0.0"

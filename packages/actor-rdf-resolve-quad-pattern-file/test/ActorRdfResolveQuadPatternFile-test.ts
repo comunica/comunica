@@ -178,7 +178,8 @@ describe('ActorRdfResolveQuadPatternFile', () => {
           { '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'file', value: 'abc' }},
         ) })
         .then(async output => {
-          expect(await (<any> output).metadata()).toEqual({ totalItems: 8 });
+          expect(await new Promise(resolve => output.data.getProperty('metadata', resolve)))
+            .toEqual({ totalItems: 8 });
           expect(await arrayifyStream(output.data)).toEqualRdfQuadArray([
             quad('s1', 'p1', 'o1'),
             quad('s1', 'p1', 'o2'),
@@ -199,7 +200,8 @@ describe('ActorRdfResolveQuadPatternFile', () => {
           { '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'file', value: 'abc' }},
         ) })
         .then(async output => {
-          expect(await (<any> output).metadata()).toEqual({ totalItems: 4 });
+          expect(await new Promise(resolve => output.data.getProperty('metadata', resolve)))
+            .toEqual({ totalItems: 4 });
           expect(await arrayifyStream(output.data)).toEqualRdfQuadArray([
             quad('s1', 'p1', 'o1'),
             quad('s1', 'p1', 'o2'),
@@ -216,7 +218,8 @@ describe('ActorRdfResolveQuadPatternFile', () => {
           { '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'file', value: 'abc' }},
         ) })
         .then(async output => {
-          expect(await (<any> output).metadata()).toEqual({ totalItems: 0 });
+          expect(await new Promise(resolve => output.data.getProperty('metadata', resolve)))
+            .toEqual({ totalItems: 0 });
           expect(await arrayifyStream(output.data)).toEqualRdfQuadArray([]);
         });
     });
@@ -251,18 +254,6 @@ describe('ActorRdfResolveQuadPatternFile', () => {
       await httpInvalidator.run({});
       expect(myActor.cache.has('myFile1')).toBeFalsy();
       expect(myActor.cache.has('myFile2')).toBeFalsy();
-    });
-
-    it('should throw an illegal state error when metadata finds no source', () => {
-      return expect((<any> actor).getMetadata(null, null, ActionContext({}))).rejects
-        .toThrow(new Error('Illegal state: Invalid file source found.'));
-    });
-
-    it('should throw an illegal state error when metadata finds no cached source', () => {
-      return expect((<any> actor).getMetadata(null, null, ActionContext(
-        { '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'file', value: 'abc' }},
-      ))).rejects
-        .toThrow(new Error('Illegal state: Missing file source cache entry during metadata retrieval.'));
     });
   });
 });

@@ -85,14 +85,6 @@ export class ActorQueryOperationLeftJoinLeftDeep extends ActorQueryOperationType
       .catch(() => Infinity)
       .then(totalItems => ({ totalItems }));
 
-    // TODO: We manually trigger the left metadata to be resolved.
-    //       If we don't do this, the inner metadata event seems to be lost in some cases,
-    //       the left promise above is never resolved, this whole metadata promise is never resolved,
-    //       and the application terminates without producing any results.
-    getMetadata(left).catch(() => {
-      // Do nothing
-    });
-
     return { type: 'bindings', bindingsStream, metadata, variables, canContainUndefs: true };
   }
 }

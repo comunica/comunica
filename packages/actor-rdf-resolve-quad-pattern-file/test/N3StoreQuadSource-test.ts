@@ -27,24 +27,9 @@ describe('N3StoreQuadSource', () => {
       source = new N3StoreQuadSource(store);
     });
 
-    it('should throw an error on a subject regex call', () => {
-      return expect(() => source.match(/.*/u)).toThrow();
-    });
-
-    it('should throw an error on a predicate regex call', () => {
-      return expect(() => source.match(undefined, /.*/u)).toThrow();
-    });
-
-    it('should throw an error on a object regex call', () => {
-      return expect(() => source.match(undefined, undefined, /.*/u)).toThrow();
-    });
-
-    it('should throw an error on a graph regex call', () => {
-      return expect(() => source.match(undefined, undefined, undefined, /.*/u)).toThrow();
-    });
-
     it('should return a N3StoreIterator', () => {
-      return expect(source.match(variable('v'), variable('v'), variable('v'))).toBeInstanceOf(N3StoreIterator);
+      return expect(source.match(variable('v'), variable('v'), variable('v'), variable('v')))
+        .toBeInstanceOf(N3StoreIterator);
     });
   });
 });

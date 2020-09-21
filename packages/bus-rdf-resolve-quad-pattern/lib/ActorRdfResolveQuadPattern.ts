@@ -1,12 +1,11 @@
 import { ActionContext, Actor, IAction, IActorArgs, IActorOutput, IActorTest } from '@comunica/core';
 import { AsyncIterator } from 'asynciterator';
-import { AsyncReiterable } from 'asyncreiterable';
 import type * as RDF from 'rdf-js';
 import { Algebra } from 'sparqlalgebrajs';
 
 /**
  * @type {string} Context entry for data sources.
- * @value {DataSources} An array or stream of sources.
+ * @value {DataSources} An array of sources.
  */
 export const KEY_CONTEXT_SOURCES = '@comunica/bus-rdf-resolve-quad-pattern:sources';
 /**
@@ -56,7 +55,7 @@ IActorRdfResolveQuadPatternOutput> {
    * @param {ActionContext} context An optional context.
    * @return {IDataSource[]} The array of sources or undefined.
    */
-  protected getContextSources(context?: ActionContext): IDataSource[] | undefined {
+  protected getContextSources(context?: ActionContext): DataSources | undefined {
     return context ? context.get(KEY_CONTEXT_SOURCES) : undefined;
   }
 
@@ -116,7 +115,7 @@ export type IDataSource = string | RDF.Source | {
   value: string | RDF.Source;
   context?: ActionContext;
 };
-export type DataSources = AsyncReiterable<IDataSource>;
+export type DataSources = IDataSource[];
 
 export interface IActionRdfResolveQuadPattern extends IAction {
   /**
@@ -128,15 +127,12 @@ export interface IActionRdfResolveQuadPattern extends IAction {
 export interface IActorRdfResolveQuadPatternOutput extends IActorOutput {
   /**
    * The resulting quad data stream.
+   *
+   * The returned stream MUST expose the property 'metadata'.
+   * The implementor is reponsible for handling cases where 'metadata'
+   * is being called without the stream being in flow-mode.
+   * This metadata object MUST be a hash, and MAY be empty.
+   * It is recommended to contain at least totalItems as an estimate of the number of quads that will be in the stream.
    */
-  data: AsyncIterator<RDF.Quad> & RDF.Stream;
-  /**
-   * Callback that returns a promise that resolves to the metadata about the stream.
-   * This can contain things like the estimated number of total stream elements,
-   * or the order in which the bindings appear.
-   * This callback can be invoked multiple times.
-   * The actors that return this metadata will make sure that multiple calls properly cache this promise.
-   * Metadata will not be collected until this callback is invoked.
-   */
-  metadata: () => Promise<{[id: string]: any}>;
+  data: AsyncIterator<RDF.Quad>;
 }

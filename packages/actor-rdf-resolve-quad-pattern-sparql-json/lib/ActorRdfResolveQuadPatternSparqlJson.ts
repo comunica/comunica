@@ -129,8 +129,8 @@ export class ActorRdfResolveQuadPatternSparqlJson
     const countQuery: string = ActorRdfResolveQuadPatternSparqlJson.patternToCountQuery(pattern);
 
     // Create promise for the metadata containing the estimated count
-    const metadata: () => Promise<{[id: string]: any}> = () => this.queryBindings(endpoint, countQuery, action.context)
-      .then((bindingsStream: BindingsStream) => new Promise((resolve, reject) => {
+    this.queryBindings(endpoint, countQuery, action.context)
+      .then((bindingsStream: BindingsStream) => new Promise(resolve => {
         bindingsStream.on('data', (bindings: Bindings) => {
           const count: RDF.Term = bindings.get('?count');
           if (count) {
@@ -144,7 +144,12 @@ export class ActorRdfResolveQuadPatternSparqlJson
         });
         bindingsStream.on('error', () => resolve({ totalItems: Infinity }));
         bindingsStream.on('end', () => resolve({ totalItems: Infinity }));
-      }));
+      }))
+      .then(metadata => data.setProperty('metadata', metadata))
+      .catch(error => {
+        data.destroy(error);
+        data.setProperty('metadata', { totalItems: Infinity });
+      });
 
     // Materialize the queried pattern using each found binding.
     const data: AsyncIterator<RDF.Quad> & RDF.Stream = new TransformIterator(async() =>
@@ -161,7 +166,7 @@ export class ActorRdfResolveQuadPatternSparqlJson
           return value;
         })), { autoStart: false });
 
-    return { data, metadata };
+    return { data };
   }
 
   /**

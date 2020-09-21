@@ -163,7 +163,6 @@
     "@types/minimist": "^1.2.0",
     "@types/rdf-js": "^3.0.0",
     "asynciterator": "^3.0.1",
-    "asyncreiterable": "^2.0.0",
     "minimist": "^1.2.0",
     "negotiate": "^1.0.1",
     "rdf-quad": "^1.4.0",

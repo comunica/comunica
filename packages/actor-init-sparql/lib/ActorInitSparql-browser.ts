@@ -19,7 +19,6 @@ import { IDataSource, isDataSourceRawType, KEY_CONTEXT_SOURCES } from '@comunica
 import { IActionSparqlParse, IActorSparqlParseOutput } from '@comunica/bus-sparql-parse';
 
 import {
-
   IActionSparqlSerialize,
   IActionSparqlSerializeHandle,
   IActionSparqlSerializeMediaTypeFormats,
@@ -34,7 +33,6 @@ import {
 } from '@comunica/bus-sparql-serialize';
 import { ActionContext, Actor, IAction, IActorArgs, IActorTest,
   KEY_CONTEXT_LOG, Logger, Mediator } from '@comunica/core';
-import { AsyncReiterableArray } from 'asyncreiterable';
 import type * as RDF from 'rdf-js';
 import { Algebra } from 'sparqlalgebrajs';
 
@@ -159,7 +157,6 @@ export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs {
           delete source.type;
         }
       });
-      context[KEY_CONTEXT_SOURCES] = AsyncReiterableArray.fromFixedData(context[KEY_CONTEXT_SOURCES]);
     }
 
     // Prepare context

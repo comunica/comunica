@@ -4,14 +4,14 @@ import {
 } from '@comunica/actor-rdf-resolve-quad-pattern-sparql-json';
 import { IActionHttp, IActorHttpOutput } from '@comunica/bus-http';
 import { Bindings, BindingsStream } from '@comunica/bus-query-operation';
+import { IQuadSource } from '@comunica/bus-rdf-resolve-quad-pattern';
 import { ActionContext, Actor, IActorTest, Mediator } from '@comunica/core';
-import { variable } from '@rdfjs/data-model';
 import { AsyncIterator } from 'asynciterator';
 import type * as RDF from 'rdf-js';
 import { mapTerms } from 'rdf-terms';
 import { Factory } from 'sparqlalgebrajs';
 
-export class RdfSourceSparql implements RDF.Source {
+export class RdfSourceSparql implements IQuadSource {
   protected static readonly FACTORY: Factory = new Factory();
 
   private readonly url: string;
@@ -28,16 +28,6 @@ export class RdfSourceSparql implements RDF.Source {
   }
 
   /**
-   * Return a new variable if the term is undefined, or the term as-is.
-   * @param {Term | undefined} term A term or undefined.
-   * @param {string} variableName A variable name to assign when the term was null.
-   * @return {Term} A term.
-   */
-  public static materializeOptionalTerm(term: RDF.Term | undefined, variableName: string): RDF.Term {
-    return term ?? variable(variableName);
-  }
-
-  /**
    * Send a SPARQL query to a SPARQL endpoint and retrieve its bindings as a stream.
    * @param {string} endpoint A SPARQL endpoint URL.
    * @param {string} query A SPARQL query string.
@@ -48,22 +38,12 @@ export class RdfSourceSparql implements RDF.Source {
     return new AsyncIteratorJsonBindings(endpoint, query, context, this.mediatorHttp);
   }
 
-  public match(subject?: RegExp | RDF.Term,
-    predicate?: RegExp | RDF.Term,
-    object?: RegExp | RDF.Term,
-    graph?: RegExp | RDF.Term): RDF.Stream {
-    if (subject instanceof RegExp ||
-      predicate instanceof RegExp ||
-      object instanceof RegExp ||
-      graph instanceof RegExp) {
-      throw new Error('RdfSourceSparql does not support matching by regular expressions.');
-    }
-
+  public match(subject: RDF.Term, predicate: RDF.Term, object: RDF.Term, graph: RDF.Term): AsyncIterator<RDF.Quad> {
     const pattern = ActorRdfResolveQuadPatternSparqlJson.replaceBlankNodes(RdfSourceSparql.FACTORY.createPattern(
-      RdfSourceSparql.materializeOptionalTerm(subject, 's'),
-      RdfSourceSparql.materializeOptionalTerm(predicate, 'p'),
-      RdfSourceSparql.materializeOptionalTerm(object, 'o'),
-      RdfSourceSparql.materializeOptionalTerm(graph, 'g'),
+      subject,
+      predicate,
+      object,
+      graph,
     ));
     const countQuery: string = ActorRdfResolveQuadPatternSparqlJson.patternToCountQuery(pattern);
     const selectQuery: string = ActorRdfResolveQuadPatternSparqlJson.patternToSelectQuery(pattern);
@@ -86,7 +66,7 @@ export class RdfSourceSparql implements RDF.Source {
       bindingsStream.on('error', () => resolve({ totalItems: Infinity }));
       bindingsStream.on('end', () => resolve({ totalItems: Infinity }));
     })
-      .then(metadata => quads.emit('metadata', metadata));
+      .then(metadata => quads.setProperty('metadata', metadata));
 
     // Materialize the queried pattern using each found binding.
     const quads: AsyncIterator<RDF.Quad> & RDF.Stream = this.queryBindings(this.url, selectQuery, this.context)
@@ -94,8 +74,7 @@ export class RdfSourceSparql implements RDF.Source {
         if (value.termType === 'Variable') {
           const boundValue: RDF.Term = bindings.get(`?${value.value}`);
           if (!boundValue) {
-            quads.emit('error',
-              new Error(`The endpoint ${this.url} failed to provide a binding for ${value.value}.`));
+            quads.destroy(new Error(`The endpoint ${this.url} failed to provide a binding for ${value.value}.`));
           }
           return boundValue;
         }

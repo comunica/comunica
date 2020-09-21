@@ -38,14 +38,15 @@ export class ActorQueryOperationProject extends ActorQueryOperationTypedMediated
     // Make sure the project variables are the only variables that are present in the bindings.
     let bindingsStream: BindingsStream = deleteVariables.length === 0 ?
       output.bindingsStream :
-      output.bindingsStream.map(
-        (binding: Bindings) => {
+      output.bindingsStream.transform({
+        map(bindings: Bindings) {
           for (const deleteVariable of deleteVariables) {
-            binding = binding.delete(deleteVariable);
+            bindings = bindings.delete(deleteVariable);
           }
-          return binding;
+          return bindings;
         },
-      );
+        autoStart: false,
+      });
 
     // Make sure that blank nodes with same labels are not reused over different bindings, as required by SPARQL 1.1.
     // Required for the BNODE() function: https://www.w3.org/TR/sparql11-query/#func-bnode

@@ -3,8 +3,9 @@ import { ISearchForm } from '@comunica/actor-rdf-metadata-extract-hydra-controls
 import { IActionRdfDereference, IActorRdfDereferenceOutput } from '@comunica/bus-rdf-dereference';
 import { IActionRdfMetadata, IActorRdfMetadataOutput } from '@comunica/bus-rdf-metadata';
 import { IActionRdfMetadataExtract, IActorRdfMetadataExtractOutput } from '@comunica/bus-rdf-metadata-extract';
+import { IQuadSource } from '@comunica/bus-rdf-resolve-quad-pattern';
 import { ActionContext, Actor, IActorTest, Mediator } from '@comunica/core';
-import { defaultGraph, namedNode } from '@rdfjs/data-model';
+import { defaultGraph, namedNode, variable } from '@rdfjs/data-model';
 import { AsyncIterator, TransformIterator, wrap } from 'asynciterator';
 import type * as RDF from 'rdf-js';
 import { termToString } from 'rdf-string';
@@ -13,7 +14,7 @@ import { mapTerms, matchPattern } from 'rdf-terms';
 /**
  * An RDF source that executes a quad pattern over a QPF interface and fetches its first page.
  */
-export class RdfSourceQpf implements RDF.Source {
+export class RdfSourceQpf implements IQuadSource {
   public readonly searchForm: ISearchForm;
 
   private readonly mediatorMetadata: Mediator<Actor<IActionRdfMetadata, IActorTest, IActorRdfMetadataOutput>,
@@ -62,7 +63,7 @@ export class RdfSourceQpf implements RDF.Source {
         wrappedQuads = this.reverseMapQuadsToDefaultGraph(wrappedQuads);
       }
       wrappedQuads.setProperty('metadata', metadata);
-      this.cacheQuads(wrappedQuads);
+      this.cacheQuads(wrappedQuads, variable(''), variable(''), variable(''), variable(''));
     }
   }
 
@@ -101,14 +102,14 @@ export class RdfSourceQpf implements RDF.Source {
   /**
    * Create a QPF fragment IRI for the given quad pattern.
    * @param {ISearchForm} searchForm A search form.
-   * @param {Term} subject A term or undefined.
-   * @param {Term} predicate A term or undefined.
-   * @param {Term} object A term or undefined.
-   * @param {Term} graph A term or undefined.
+   * @param {Term} subject A term.
+   * @param {Term} predicate A term.
+   * @param {Term} object A term.
+   * @param {Term} graph A term.
    * @return {string} A URI.
    */
   public createFragmentUri(searchForm: ISearchForm,
-    subject?: RDF.Term, predicate?: RDF.Term, object?: RDF.Term, graph?: RDF.Term): string {
+    subject: RDF.Term, predicate: RDF.Term, object: RDF.Term, graph: RDF.Term): string {
     const entries: {[id: string]: string} = {};
     const input = [
       { uri: this.subjectUri, term: subject },
@@ -117,29 +118,19 @@ export class RdfSourceQpf implements RDF.Source {
       { uri: this.graphUri, term: graph },
     ];
     for (const entry of input) {
-      if (entry.uri && entry.term) {
+      if (entry.uri && entry.term.termType !== 'Variable') {
         entries[entry.uri] = termToString(entry.term);
       }
     }
     return searchForm.getUri(entries);
   }
 
-  public match(subject?: RegExp | RDF.Term,
-    predicate?: RegExp | RDF.Term,
-    object?: RegExp | RDF.Term,
-    graph?: RegExp | RDF.Term): RDF.Stream {
-    if (subject instanceof RegExp ||
-      predicate instanceof RegExp ||
-      object instanceof RegExp ||
-      graph instanceof RegExp) {
-      throw new Error('RdfSourceQpf does not support matching by regular expressions.');
-    }
-
+  public match(subject: RDF.Term, predicate: RDF.Term, object: RDF.Term, graph: RDF.Term): AsyncIterator<RDF.Quad> {
     // If we are querying the default graph,
     // and the source has an overridden value for the default graph (such as QPF can provide),
     // we override the graph parameter with that value.
     let modifiedGraph = false;
-    if (this.defaultGraph && graph && graph.termType === 'DefaultGraph') {
+    if (this.defaultGraph && graph.termType === 'DefaultGraph') {
       modifiedGraph = true;
       graph = this.defaultGraph;
     }
@@ -151,7 +142,7 @@ export class RdfSourceQpf implements RDF.Source {
     }
 
     const quads = new TransformIterator(async() => {
-      let url: string = this.createFragmentUri(this.searchForm, subject, predicate, object, <RDF.Term> graph);
+      let url: string = this.createFragmentUri(this.searchForm, subject, predicate, object, graph);
       const rdfDereferenceOutput = await this.mediatorRdfDereference.mediate({ context: this.context, url });
       url = rdfDereferenceOutput.url;
 
@@ -161,25 +152,24 @@ export class RdfSourceQpf implements RDF.Source {
       );
       const metadataExtractPromise = this.mediatorMetadataExtract
         .mediate({ context: this.context, url, metadata: rdfMetadataOuput.metadata })
-        .then(({ metadata }) => {
-          quads.setProperty('metadata', metadata);
-          quads.emit('metadata', metadata);
-        });
+        .then(({ metadata }) => quads.setProperty('metadata', metadata));
 
       // The server is free to send any data in its response (such as metadata),
       // including quads that do not match the given matter.
       // Therefore, we have to filter away all non-matching quads here.
       const actualDefaultGraph = defaultGraph();
       let filteredOutput: AsyncIterator<RDF.Quad> = wrap<RDF.Quad>(rdfMetadataOuput.data)
-        .filter((quad: RDF.Quad) => {
-          if (matchPattern(quad, subject, predicate, object, <RDF.Term> graph)) {
-            return true;
-          }
-          // Special case: if we are querying in the default graph, and we had an overridden default graph,
-          // also accept that incoming triples may be defined in the actual default graph
-          return modifiedGraph && matchPattern(quad, subject, predicate, object, actualDefaultGraph);
+        .transform({
+          filter(quad: RDF.Quad) {
+            if (matchPattern(quad, subject, predicate, object, graph)) {
+              return true;
+            }
+            // Special case: if we are querying in the default graph, and we had an overridden default graph,
+            // also accept that incoming triples may be defined in the actual default graph
+            return modifiedGraph && matchPattern(quad, subject, predicate, object, actualDefaultGraph);
+          },
         });
-      if (modifiedGraph || !graph) {
+      if (modifiedGraph || graph.termType === 'Variable') {
         // Reverse-map the overridden default graph back to the actual default graph
         filteredOutput = this.reverseMapQuadsToDefaultGraph(filteredOutput);
       }
@@ -196,7 +186,7 @@ export class RdfSourceQpf implements RDF.Source {
     }, { autoStart: false });
 
     this.cacheQuads(quads, subject, predicate, object, graph);
-    return <RDF.Stream> this.getCachedQuads(subject, predicate, object, graph);
+    return <AsyncIterator<RDF.Quad>> this.getCachedQuads(subject, predicate, object, graph);
   }
 
   protected reverseMapQuadsToDefaultGraph(quads: AsyncIterator<RDF.Quad>): AsyncIterator<RDF.Quad> {
@@ -207,31 +197,27 @@ export class RdfSourceQpf implements RDF.Source {
     );
   }
 
-  protected getPatternId(subject?: RDF.Term, predicate?: RDF.Term, object?: RDF.Term, graph?: RDF.Term): string {
+  protected getPatternId(subject: RDF.Term, predicate: RDF.Term, object: RDF.Term, graph: RDF.Term): string {
     return JSON.stringify({
-      s: termToString(subject),
-      p: termToString(predicate),
-      o: termToString(object),
-      g: termToString(graph),
+      s: subject.termType === 'Variable' ? '' : termToString(subject),
+      p: predicate.termType === 'Variable' ? '' : termToString(predicate),
+      o: object.termType === 'Variable' ? '' : termToString(object),
+      g: graph.termType === 'Variable' ? '' : termToString(graph),
     });
   }
 
   protected cacheQuads(quads: AsyncIterator<RDF.Quad>,
-    subject?: RDF.Term, predicate?: RDF.Term, object?: RDF.Term, graph?: RDF.Term): void {
+    subject: RDF.Term, predicate: RDF.Term, object: RDF.Term, graph: RDF.Term): void {
     const patternId = this.getPatternId(subject, predicate, object, graph);
     this.cachedQuads[patternId] = quads.clone();
   }
 
-  protected getCachedQuads(subject?: RDF.Term, predicate?: RDF.Term, object?: RDF.Term, graph?: RDF.Term):
+  protected getCachedQuads(subject: RDF.Term, predicate: RDF.Term, object: RDF.Term, graph: RDF.Term):
   AsyncIterator<RDF.Quad> | undefined {
     const patternId = this.getPatternId(subject, predicate, object, graph);
-    let quads = this.cachedQuads[patternId];
+    const quads = this.cachedQuads[patternId];
     if (quads) {
-      const quadsOriginal = quads;
-      // Make our iterator lazy to ensure that metadata event is emitted before end event.
-      quads = new TransformIterator(async() => quadsOriginal.clone(), { autoStart: false });
-      quadsOriginal.getProperty('metadata', metadata => quads.emit('metadata', metadata));
-      return quads;
+      return quads.clone();
     }
   }
 }

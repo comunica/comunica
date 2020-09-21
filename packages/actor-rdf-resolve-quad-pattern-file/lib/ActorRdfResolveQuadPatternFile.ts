@@ -1,13 +1,14 @@
 import { ActorHttpInvalidateListenable, IActionHttpInvalidate } from '@comunica/bus-http-invalidate';
 import { IActionRdfDereference, IActorRdfDereferenceOutput } from '@comunica/bus-rdf-dereference';
-import { ActorRdfResolveQuadPatternSource, IActionRdfResolveQuadPattern, IActorRdfResolveQuadPatternOutput,
-  ILazyQuadSource } from '@comunica/bus-rdf-resolve-quad-pattern';
+import {
+  ActorRdfResolveQuadPatternSource,
+  IActionRdfResolveQuadPattern,
+  IActorRdfResolveQuadPatternOutput,
+  IQuadSource,
+} from '@comunica/bus-rdf-resolve-quad-pattern';
 import { ActionContext, Actor, IActorArgs, IActorTest, Mediator } from '@comunica/core';
-import { AsyncIterator } from 'asynciterator';
 import * as LRUCache from 'lru-cache';
 import { Store } from 'n3';
-import type * as RDF from 'rdf-js';
-import { N3StoreIterator } from './N3StoreIterator';
 import { N3StoreQuadSource } from './N3StoreQuadSource';
 
 /**
@@ -55,7 +56,7 @@ export class ActorRdfResolveQuadPatternFile extends ActorRdfResolveQuadPatternSo
     return true;
   }
 
-  protected async getSource(context: ActionContext): Promise<ILazyQuadSource> {
+  protected async getSource(context: ActionContext): Promise<IQuadSource> {
     const file: string | undefined = this.getContextSourceUrl(this.getContextSource(context));
     if (!file) {
       throw new Error('Illegal state: Invalid file source found.');
@@ -64,29 +65,6 @@ export class ActorRdfResolveQuadPatternFile extends ActorRdfResolveQuadPatternSo
       await this.initializeFile(file, context);
     }
     return new N3StoreQuadSource(await this.cache.get(file));
-  }
-
-  protected getMetadata(source: ILazyQuadSource, pattern: RDF.BaseQuad, context: ActionContext,
-    data: AsyncIterator<RDF.Quad> & RDF.Stream): () => Promise<{[id: string]: any}> {
-    return () => new Promise((resolve, reject) => {
-      const file: string | undefined = this.getContextSourceUrl(this.getContextSource(context));
-      if (!file) {
-        throw new Error('Illegal state: Invalid file source found.');
-      }
-      const cached = this.cache.get(file);
-      if (!cached) {
-        throw new Error('Illegal state: Missing file source cache entry during metadata retrieval.');
-      }
-      cached.then(store => {
-        const totalItems: number = store.countQuads(
-          N3StoreIterator.nullifyVariables(pattern.subject),
-          N3StoreIterator.nullifyVariables(pattern.predicate),
-          N3StoreIterator.nullifyVariables(pattern.object),
-          N3StoreIterator.nullifyVariables(pattern.graph),
-        );
-        resolve({ totalItems });
-      }, reject);
-    });
   }
 }
 
