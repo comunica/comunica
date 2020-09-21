@@ -1,10 +1,10 @@
-import { EventEmitter } from 'events';
+import type { EventEmitter } from 'events';
 
 import * as http from 'http';
 import * as querystring from 'querystring';
-import { Writable } from 'stream';
+import type { Writable } from 'stream';
 import * as url from 'url';
-import { IActorQueryOperationOutput, IActorQueryOperationOutputQuads } from '@comunica/bus-query-operation';
+import type { IActorQueryOperationOutput, IActorQueryOperationOutputQuads } from '@comunica/bus-query-operation';
 import { ActionContext } from '@comunica/core';
 
 import { ArrayIterator } from 'asynciterator';
@@ -12,7 +12,7 @@ import minimist = require('minimist');
 import type * as RDF from 'rdf-js';
 import { newEngineDynamic } from '..';
 import { ActorInitSparql } from './ActorInitSparql';
-import { IQueryOptions } from './QueryDynamic';
+import type { IQueryOptions } from './QueryDynamic';
 
 const quad = require('rdf-quad');
 
@@ -104,14 +104,14 @@ Options:
     let context: any;
     try {
       context = await ActorInitSparql.buildContext(args, false, HttpServiceSparqlEndpoint.HELP_MESSAGE);
-    } catch (error) {
-      stderr.write(error.message);
+    } catch (error: unknown) {
+      stderr.write((<Error> error).message);
       exit(1);
     }
 
     const invalidateCacheBeforeQuery: boolean = args.i;
-    const port = parseInt(args.p, 10) || 3000;
-    const timeout = (parseInt(args.t, 10) || 60) * 1000;
+    const port = Number.parseInt(args.p, 10) || 3000;
+    const timeout = (Number.parseInt(args.t, 10) || 60) * 1000;
 
     const configResourceUrl = env.COMUNICA_CONFIG ? env.COMUNICA_CONFIG : defaultConfigPath;
 
@@ -231,11 +231,11 @@ Options:
     let result: IActorQueryOperationOutput;
     try {
       result = await engine.query(sparql, this.context);
-    } catch (error) {
+    } catch (error: unknown) {
       stdout.write('[400] Bad request\n');
       response.writeHead(400,
         { 'content-type': HttpServiceSparqlEndpoint.MIME_PLAIN, 'Access-Control-Allow-Origin': '*' });
-      response.end(error.toString());
+      response.end((<Error> error).message);
       return;
     }
 
@@ -258,7 +258,7 @@ Options:
       });
       data.pipe(response);
       eventEmitter = data;
-    } catch (error) {
+    } catch {
       stdout.write('[400] Bad request, invalid media type\n');
       response.writeHead(400,
         { 'content-type': HttpServiceSparqlEndpoint.MIME_PLAIN, 'Access-Control-Allow-Origin': '*' });
@@ -315,7 +315,7 @@ Options:
       });
       data.pipe(response);
       eventEmitter = data;
-    } catch (error) {
+    } catch {
       stdout.write('[400] Bad request, invalid media type\n');
       response.writeHead(400,
         { 'content-type': HttpServiceSparqlEndpoint.MIME_PLAIN, 'Access-Control-Allow-Origin': '*' });
@@ -342,7 +342,7 @@ Options:
       }
       try {
         response.end();
-      } catch (error) {
+      } catch {
         // Do nothing
       }
       clearTimeout(killTimeout);

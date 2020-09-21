@@ -1,5 +1,6 @@
-import { Actor, IAction, IActorArgs, IActorOutput, IActorTest } from '@comunica/core';
-import { IMediatorTypePriority } from '@comunica/mediatortype-priority';
+import type { IAction, IActorArgs, IActorOutput, IActorTest } from '@comunica/core';
+import { Actor } from '@comunica/core';
+import type { IMediatorTypePriority } from '@comunica/mediatortype-priority';
 
 /**
  * A comunica actor for rdf-source-identifier events.

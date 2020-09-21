@@ -1,14 +1,17 @@
-import { ActorQueryOperationTyped, Bindings, BindingsStream,
+import type { BindingsStream,
   IActionQueryOperation, IActorQueryOperationOutput,
   IActorQueryOperationOutputBindings } from '@comunica/bus-query-operation';
-import { IActionRdfResolveQuadPattern,
+import { ActorQueryOperationTyped, Bindings } from '@comunica/bus-query-operation';
+import type { IActionRdfResolveQuadPattern,
   IActorRdfResolveQuadPatternOutput } from '@comunica/bus-rdf-resolve-quad-pattern';
-import { ActionContext, Actor, IActorArgs, IActorTest, Mediator } from '@comunica/core';
-import { TransformIterator, AsyncIterator } from 'asynciterator';
+import type { ActionContext, Actor, IActorArgs, IActorTest, Mediator } from '@comunica/core';
+import type { AsyncIterator } from 'asynciterator';
+import { TransformIterator } from 'asynciterator';
 import type * as RDF from 'rdf-js';
 import { termToString } from 'rdf-string';
-import { getTerms, QUAD_TERM_NAMES, QuadTermName, reduceTerms, TRIPLE_TERM_NAMES, uniqTerms } from 'rdf-terms';
-import { Algebra } from 'sparqlalgebrajs';
+import type { QuadTermName } from 'rdf-terms';
+import { getTerms, QUAD_TERM_NAMES, reduceTerms, TRIPLE_TERM_NAMES, uniqTerms } from 'rdf-terms';
+import type { Algebra } from 'sparqlalgebrajs';
 
 /**
  * A comunica actor for handling 'quadpattern' query operations.
@@ -74,7 +77,7 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
     }
 
     if (!duplicateVariables) {
-      return undefined;
+      return;
     }
 
     // Collect quad element to elements with equal variables mapping.

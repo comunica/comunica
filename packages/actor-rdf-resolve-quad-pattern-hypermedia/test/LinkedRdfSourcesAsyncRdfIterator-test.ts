@@ -2,7 +2,8 @@ import { Readable } from 'stream';
 import { literal as lit, variable } from '@rdfjs/data-model';
 import { ArrayIterator, wrap } from 'asynciterator';
 import type * as RDF from 'rdf-js';
-import { ISourceState, LinkedRdfSourcesAsyncRdfIterator } from '../lib/LinkedRdfSourcesAsyncRdfIterator';
+import type { ISourceState } from '../lib/LinkedRdfSourcesAsyncRdfIterator';
+import { LinkedRdfSourcesAsyncRdfIterator } from '../lib/LinkedRdfSourcesAsyncRdfIterator';
 
 const v = variable('v');
 
@@ -22,7 +23,7 @@ class Dummy extends LinkedRdfSourcesAsyncRdfIterator {
   }
 
   protected getPage(url: string) {
-    return url.startsWith('P') ? parseInt(url.slice(1), 10) : 0;
+    return url.startsWith('P') ? Number.parseInt(url.slice(1), 10) : 0;
   }
 
   protected async getSource(url: string): Promise<ISourceState> {

@@ -1,11 +1,11 @@
+import type { DataSources,
+  IDataSource } from '@comunica/bus-rdf-resolve-quad-pattern';
 import {
-  DataSources,
   getDataSourceType,
-  IDataSource,
   KEY_CONTEXT_SOURCE,
   KEY_CONTEXT_SOURCES,
 } from '@comunica/bus-rdf-resolve-quad-pattern';
-import { ActionContext } from '@comunica/core';
+import type { ActionContext } from '@comunica/core';
 
 /**
  * Comunica datasource utilities

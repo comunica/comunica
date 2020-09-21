@@ -1,4 +1,5 @@
-import { ActionContext, Actor, IAction, IActorArgs, IActorOutput, IActorTest } from '@comunica/core';
+import type { ActionContext, IAction, IActorArgs, IActorOutput, IActorTest } from '@comunica/core';
+import { Actor } from '@comunica/core';
 
 /**
  * A comunica actor for context-preprocess events.

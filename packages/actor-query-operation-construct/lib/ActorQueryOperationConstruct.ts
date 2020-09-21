@@ -1,15 +1,15 @@
+import type { IActorQueryOperationOutputBindings,
+  IActorQueryOperationOutputQuads,
+  IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import {
   ActorQueryOperation,
   ActorQueryOperationTypedMediated,
-  IActorQueryOperationOutputBindings,
-  IActorQueryOperationOutputQuads,
-  IActorQueryOperationTypedMediatedArgs,
 } from '@comunica/bus-query-operation';
-import { ActionContext, IActorTest } from '@comunica/core';
-import { AsyncIterator } from 'asynciterator';
+import type { ActionContext, IActorTest } from '@comunica/core';
+import type { AsyncIterator } from 'asynciterator';
 import type * as RDF from 'rdf-js';
 import { getTerms, getVariables, uniqTerms } from 'rdf-terms';
-import { Algebra } from 'sparqlalgebrajs';
+import type { Algebra } from 'sparqlalgebrajs';
 import { BindingsToQuadsIterator } from './BindingsToQuadsIterator';
 
 /**

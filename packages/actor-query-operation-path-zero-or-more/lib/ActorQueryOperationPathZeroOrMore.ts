@@ -1,10 +1,11 @@
 import { ActorAbstractPath } from '@comunica/actor-abstract-path';
+import type { IActorQueryOperationOutputBindings,
+  IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import {
-  Bindings, IActorQueryOperationOutputBindings,
-  IActorQueryOperationTypedMediatedArgs,
+  Bindings,
   ActorQueryOperation,
 } from '@comunica/bus-query-operation';
-import { ActionContext } from '@comunica/core';
+import type { ActionContext } from '@comunica/core';
 import { MultiTransformIterator, TransformIterator, EmptyIterator, BufferedIterator } from 'asynciterator';
 import type { Variable } from 'rdf-js';
 import { termToString } from 'rdf-string';

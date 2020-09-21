@@ -1,13 +1,13 @@
+import type { IActorQueryOperationOutputBindings,
+  IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import {
   ActorQueryOperation,
   ActorQueryOperationTypedMediated,
-  IActorQueryOperationOutputBindings,
-  IActorQueryOperationTypedMediatedArgs,
 } from '@comunica/bus-query-operation';
-import { ActionContext, IActorTest } from '@comunica/core';
+import type { ActionContext, IActorTest } from '@comunica/core';
 import { ArrayIterator } from 'asynciterator';
 import { termToString } from 'rdf-string';
-import { Algebra } from 'sparqlalgebrajs';
+import type { Algebra } from 'sparqlalgebrajs';
 import { SyncEvaluator } from 'sparqlee';
 
 import { GroupsState } from './GroupsState';
@@ -58,7 +58,7 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
           const bindingsStream = new ArrayIterator(groups.collectResults(), { autoStart: false });
           const { metadata } = output;
           resolve({ type: 'bindings', bindingsStream, metadata, variables, canContainUndefs: output.canContainUndefs });
-        } catch (error) {
+        } catch (error: unknown) {
           reject(error);
         }
       });
@@ -72,7 +72,7 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
       output.bindingsStream.on('data', bindings => {
         try {
           groups.consumeBindings(bindings);
-        } catch (error) {
+        } catch (error: unknown) {
           reject(error);
         }
       });

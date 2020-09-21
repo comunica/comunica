@@ -1,10 +1,11 @@
-import { ActorQueryOperation, IActorQueryOperationOutputBindings, Bindings } from '@comunica/bus-query-operation';
+import type { IActorQueryOperationOutputBindings } from '@comunica/bus-query-operation';
+import { ActorQueryOperation, Bindings } from '@comunica/bus-query-operation';
 
 import { ActionContext, Bus } from '@comunica/core';
 import { blankNode, namedNode, variable } from '@rdfjs/data-model';
 import { ArrayIterator } from 'asynciterator';
 import type * as RDF from 'rdf-js';
-import { Algebra } from 'sparqlalgebrajs';
+import type { Algebra } from 'sparqlalgebrajs';
 import { ActorQueryOperationQuadpattern } from '../lib/ActorQueryOperationQuadpattern';
 const arrayifyStream = require('arrayify-stream');
 const quad = require('rdf-quad');

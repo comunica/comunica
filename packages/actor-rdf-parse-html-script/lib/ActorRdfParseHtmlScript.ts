@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/unbound-method */
-import {
+import type {
   IActionHandleRdfParse,
   IActionMediaTypesRdfParse,
   IActorOutputHandleRdfParse,
@@ -7,8 +7,9 @@ import {
   IActorTestHandleRdfParse,
   IActorTestMediaTypesRdfParse,
 } from '@comunica/bus-rdf-parse';
-import { ActorRdfParseHtml, IActionRdfParseHtml, IActorRdfParseHtmlOutput } from '@comunica/bus-rdf-parse-html';
-import { Actor, IActorArgs, IActorTest, Mediator } from '@comunica/core';
+import type { IActionRdfParseHtml, IActorRdfParseHtmlOutput } from '@comunica/bus-rdf-parse-html';
+import { ActorRdfParseHtml } from '@comunica/bus-rdf-parse-html';
+import type { Actor, IActorArgs, IActorTest, Mediator } from '@comunica/core';
 import { HtmlScriptListener } from './HtmlScriptListener';
 
 /**

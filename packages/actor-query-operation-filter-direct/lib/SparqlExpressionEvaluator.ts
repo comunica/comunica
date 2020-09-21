@@ -1,5 +1,5 @@
 /* eslint-disable id-length */
-import { Bindings } from '@comunica/bus-query-operation';
+import type { Bindings } from '@comunica/bus-query-operation';
 import type * as RDF from 'rdf-js';
 import { stringToTerm, termToString } from 'rdf-string';
 import { Algebra } from 'sparqlalgebrajs';
@@ -18,7 +18,7 @@ export function createEvaluator(expr: Algebra.Expression): (bindings: Bindings) 
   return (bindings: Bindings) => {
     const str = func(bindings);
     if (!str) {
-      return undefined;
+      return;
     }
     return stringToTerm(str);
   };
@@ -82,7 +82,7 @@ function handleFunction(operatorName: string, args: Algebra.Expression[]): (bind
       // Convert the arguments if necessary
       switch (operator.type) {
         case 'numeric':
-          resolvedArgs[i] = arg ? parseFloat(literalValue(arg)) : undefined;
+          resolvedArgs[i] = arg ? Number.parseFloat(literalValue(arg)) : undefined;
           break;
         case 'boolean':
           resolvedArgs[i] = arg !== XSD_FALSE &&

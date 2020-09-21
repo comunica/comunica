@@ -1,3 +1,4 @@
+/* eslint-disable mocha/max-top-level-suites */
 import { blankNode, defaultGraph, literal, namedNode, variable } from '@rdfjs/data-model';
 import { Map } from 'immutable';
 import { Factory } from 'sparqlalgebrajs';

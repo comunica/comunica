@@ -1,11 +1,9 @@
 import { Readable } from 'stream';
-import * as url from 'url';
 import * as zlib from 'zlib';
-import { ActorHttp, KEY_CONTEXT_INCLUDE_CREDENTIALS, KEY_CONTEXT_AUTH } from '@comunica/bus-http';
+import { ActorHttp, KEY_CONTEXT_AUTH, KEY_CONTEXT_INCLUDE_CREDENTIALS } from '@comunica/bus-http';
 import { ActionContext, Bus, KEY_CONTEXT_LOG } from '@comunica/core';
 import { LoggerVoid } from '@comunica/logger-void';
 import { ActorHttpNative } from '../lib/ActorHttpNative';
-import Requester from '../lib/Requester';
 
 const arrayifyStream = require('arrayify-stream');
 const mockSetup = require('./__mocks__/follow-redirects').mockSetup;
@@ -222,48 +220,6 @@ describe('ActorHttpNative', () => {
       expect(spy).toHaveBeenCalledWith('Requesting http://example.com/', {
         actor: 'actor',
         headers: { a: 'b', 'user-agent': (<any> actor).userAgent },
-      });
-    });
-  });
-});
-
-describe('Requester', () => {
-  it('also works with parsed URL objects', () => {
-    mockSetup({ statusCode: 405 });
-    const requester = new Requester();
-    const req = requester.createRequest(url.parse('http://example.com/test'));
-    return new Promise(resolve => {
-      req.on('response', response => {
-        expect(response).toMatchObject({ statusCode: 405 });
-        expect(response.input).toMatchObject({ href: 'http://example.com/test' });
-        resolve();
-      });
-    });
-  });
-});
-
-describe('convertRequestHeadersToFetchHeaders', () => {
-  it('works with response headers', () => {
-    const requester = new Requester();
-    const req = requester.createRequest(url.parse('http://example.com/test'));
-    return new Promise(resolve => {
-      req.on('response', response => {
-        response.headers = { accept: 'more' };
-        expect(requester.convertRequestHeadersToFetchHeaders(response.headers))
-          .toEqual(new Headers({ accept: 'more' }));
-        resolve();
-      });
-    });
-  });
-
-  it('works without headers', () => {
-    const requester = new Requester();
-    const req = requester.createRequest(url.parse('http://example.com/test'));
-    return new Promise(resolve => {
-      req.on('response', response => {
-        response.headers = {};
-        expect(requester.convertRequestHeadersToFetchHeaders(response.headers)).toEqual(new Headers({}));
-        resolve();
       });
     });
   });

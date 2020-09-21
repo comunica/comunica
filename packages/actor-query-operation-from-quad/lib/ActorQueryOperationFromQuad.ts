@@ -1,6 +1,7 @@
-import { ActorQueryOperationTypedMediated, IActorQueryOperationOutput,
+import type { IActorQueryOperationOutput,
   IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
-import { ActionContext, IActorTest } from '@comunica/core';
+import { ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
+import type { ActionContext, IActorTest } from '@comunica/core';
 import type * as RDF from 'rdf-js';
 import { Algebra, Factory } from 'sparqlalgebrajs';
 

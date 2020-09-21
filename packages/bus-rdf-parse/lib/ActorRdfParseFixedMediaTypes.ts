@@ -1,6 +1,7 @@
-import { ActorAbstractMediaTypedFixed, IActorArgsMediaTypedFixed } from '@comunica/actor-abstract-mediatyped';
-import { IActorTest } from '@comunica/core';
-import { IActionRdfParse, IActorRdfParseOutput } from './ActorRdfParse';
+import type { IActorArgsMediaTypedFixed } from '@comunica/actor-abstract-mediatyped';
+import { ActorAbstractMediaTypedFixed } from '@comunica/actor-abstract-mediatyped';
+import type { IActorTest } from '@comunica/core';
+import type { IActionRdfParse, IActorRdfParseOutput } from './ActorRdfParse';
 
 /**
  * A base actor for listening to RDF parse events that has fixed media types.

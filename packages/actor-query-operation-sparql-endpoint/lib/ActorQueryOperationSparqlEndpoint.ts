@@ -1,17 +1,17 @@
-import { EventEmitter } from 'events';
-import { IActionHttp, IActorHttpOutput } from '@comunica/bus-http';
-import {
-  ActorQueryOperation,
-  Bindings,
-  IActionQueryOperation,
+import type { EventEmitter } from 'events';
+import type { IActionHttp, IActorHttpOutput } from '@comunica/bus-http';
+import type { IActionQueryOperation,
   IActorQueryOperationOutput,
   IActorQueryOperationOutputBindings,
   IActorQueryOperationOutputBoolean,
-  IActorQueryOperationOutputQuads,
+  IActorQueryOperationOutputQuads } from '@comunica/bus-query-operation';
+import {
+  ActorQueryOperation,
+  Bindings,
 } from '@comunica/bus-query-operation';
 import { getDataSourceType, getDataSourceValue } from '@comunica/bus-rdf-resolve-quad-pattern';
-import { ActionContext, Actor, IActorArgs, IActorTest, Mediator } from '@comunica/core';
-import { IMediatorTypeHttpRequests } from '@comunica/mediatortype-httprequests';
+import type { ActionContext, Actor, IActorArgs, IActorTest, Mediator } from '@comunica/core';
+import type { IMediatorTypeHttpRequests } from '@comunica/mediatortype-httprequests';
 import { DataSourceUtils } from '@comunica/utils-datasource';
 import { wrap } from 'asynciterator';
 import { SparqlEndpointFetcher } from 'fetch-sparql-endpoint';
@@ -70,7 +70,7 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
       query = toSparql(action.operation);
       // This will throw an error in case the result is an invalid SPARQL query
       type = this.endpointFetcher.getQueryType(query);
-    } catch (error) {
+    } catch {
       // Ignore errors
     }
     // If the input is an sub-query, wrap this in a SELECT

@@ -3,7 +3,7 @@
 /* Translated from https://github.com/LinkedDataFragments/Client.js/blob/master/lib/util/Request.js */
 
 import { EventEmitter } from 'events';
-import { AgentOptions, ClientRequest, IncomingMessage, IncomingHttpHeaders } from 'http';
+import type { AgentOptions, ClientRequest, IncomingMessage, IncomingHttpHeaders } from 'http';
 import * as url from 'url';
 import * as zlib from 'zlib';
 

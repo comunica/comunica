@@ -1,7 +1,8 @@
 import { Readable } from 'stream';
-import { ActorInit, IActionInit, IActorOutputInit } from '@comunica/bus-init';
-import { IActionRdfDereferencePaged, IActorRdfDereferencePagedOutput } from '@comunica/bus-rdf-dereference-paged';
-import { Actor, IActorArgs, IActorTest, Mediator } from '@comunica/core';
+import type { IActionInit, IActorOutputInit } from '@comunica/bus-init';
+import { ActorInit } from '@comunica/bus-init';
+import type { IActionRdfDereferencePaged, IActorRdfDereferencePagedOutput } from '@comunica/bus-rdf-dereference-paged';
+import type { Actor, IActorArgs, IActorTest, Mediator } from '@comunica/core';
 import * as RdfString from 'rdf-string';
 
 /**

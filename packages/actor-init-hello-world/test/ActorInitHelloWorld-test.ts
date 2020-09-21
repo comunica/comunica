@@ -1,5 +1,6 @@
 import { PassThrough } from 'stream';
-import { ActorInit, IActorOutputInit } from '@comunica/bus-init';
+import type { IActorOutputInit } from '@comunica/bus-init';
+import { ActorInit } from '@comunica/bus-init';
 import { Bus } from '@comunica/core';
 import { ActorInitHelloWorld } from '../lib/ActorInitHelloWorld';
 const arrayifyStream = require('arrayify-stream');

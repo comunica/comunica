@@ -1,7 +1,8 @@
-import { IActionHttp, IActorHttpOutput } from '@comunica/bus-http';
-import { ActorRdfParseFixedMediaTypes, IActionRdfParse,
+import type { IActionHttp, IActorHttpOutput } from '@comunica/bus-http';
+import type { IActionRdfParse,
   IActorRdfParseFixedMediaTypesArgs, IActorRdfParseOutput } from '@comunica/bus-rdf-parse';
-import { ActionContext, Actor, IActorTest, Mediator } from '@comunica/core';
+import { ActorRdfParseFixedMediaTypes } from '@comunica/bus-rdf-parse';
+import type { ActionContext, Actor, IActorTest, Mediator } from '@comunica/core';
 import { JsonLdParser } from 'jsonld-streaming-parser';
 import type * as RDF from 'rdf-js';
 import { DocumentLoaderMediated } from './DocumentLoaderMediated';

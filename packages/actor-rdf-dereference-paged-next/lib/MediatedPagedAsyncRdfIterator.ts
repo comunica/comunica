@@ -1,7 +1,7 @@
-import { IActionRdfDereference, IActorRdfDereferenceOutput } from '@comunica/bus-rdf-dereference';
-import { IActionRdfMetadata, IActorRdfMetadataOutput } from '@comunica/bus-rdf-metadata';
-import { IActionRdfMetadataExtract, IActorRdfMetadataExtractOutput } from '@comunica/bus-rdf-metadata-extract';
-import { ActionContext, Actor, IActorTest, Mediator } from '@comunica/core';
+import type { IActionRdfDereference, IActorRdfDereferenceOutput } from '@comunica/bus-rdf-dereference';
+import type { IActionRdfMetadata, IActorRdfMetadataOutput } from '@comunica/bus-rdf-metadata';
+import type { IActionRdfMetadataExtract, IActorRdfMetadataExtractOutput } from '@comunica/bus-rdf-metadata-extract';
+import type { ActionContext, Actor, IActorTest, Mediator } from '@comunica/core';
 import type * as RDF from 'rdf-js';
 import { PagedAsyncRdfIterator } from './PagedAsyncRdfIterator';
 
@@ -59,7 +59,7 @@ export class MediatedPagedAsyncRdfIterator extends PagedAsyncRdfIterator {
       let next = '';
       try {
         next = (await this.firstPageMetadata()).next;
-      } catch (error) {
+      } catch (error: unknown) {
         this.emit('error', error);
       }
       onNextPage(next);

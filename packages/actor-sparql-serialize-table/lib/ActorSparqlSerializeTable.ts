@@ -1,12 +1,13 @@
 import { Readable } from 'stream';
-import {
+import type {
   Bindings,
   IActorQueryOperationOutputBindings,
   IActorQueryOperationOutputQuads,
 } from '@comunica/bus-query-operation';
-import { ActorSparqlSerializeFixedMediaTypes, IActionSparqlSerialize,
+import type { IActionSparqlSerialize,
   IActorSparqlSerializeFixedMediaTypesArgs, IActorSparqlSerializeOutput } from '@comunica/bus-sparql-serialize';
-import { ActionContext } from '@comunica/core';
+import { ActorSparqlSerializeFixedMediaTypes } from '@comunica/bus-sparql-serialize';
+import type { ActionContext } from '@comunica/core';
 
 import { getTerms, QUAD_TERM_NAMES } from 'rdf-terms';
 

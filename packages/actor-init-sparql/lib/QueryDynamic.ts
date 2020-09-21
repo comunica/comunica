@@ -1,5 +1,6 @@
-import { ISetupProperties, Runner, instantiateComponent } from '@comunica/runner';
-import { ActorInitSparql } from './ActorInitSparql';
+import type { ISetupProperties, Runner } from '@comunica/runner';
+import { instantiateComponent } from '@comunica/runner';
+import type { ActorInitSparql } from './ActorInitSparql';
 
 /**
  * Create a new dynamic comunica engine.

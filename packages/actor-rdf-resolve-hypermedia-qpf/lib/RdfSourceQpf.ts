@@ -1,12 +1,13 @@
 /* eslint-disable id-length */
-import { ISearchForm } from '@comunica/actor-rdf-metadata-extract-hydra-controls';
-import { IActionRdfDereference, IActorRdfDereferenceOutput } from '@comunica/bus-rdf-dereference';
-import { IActionRdfMetadata, IActorRdfMetadataOutput } from '@comunica/bus-rdf-metadata';
-import { IActionRdfMetadataExtract, IActorRdfMetadataExtractOutput } from '@comunica/bus-rdf-metadata-extract';
-import { IQuadSource } from '@comunica/bus-rdf-resolve-quad-pattern';
-import { ActionContext, Actor, IActorTest, Mediator } from '@comunica/core';
+import type { ISearchForm } from '@comunica/actor-rdf-metadata-extract-hydra-controls';
+import type { IActionRdfDereference, IActorRdfDereferenceOutput } from '@comunica/bus-rdf-dereference';
+import type { IActionRdfMetadata, IActorRdfMetadataOutput } from '@comunica/bus-rdf-metadata';
+import type { IActionRdfMetadataExtract, IActorRdfMetadataExtractOutput } from '@comunica/bus-rdf-metadata-extract';
+import type { IQuadSource } from '@comunica/bus-rdf-resolve-quad-pattern';
+import type { ActionContext, Actor, IActorTest, Mediator } from '@comunica/core';
 import { defaultGraph, namedNode, variable } from '@rdfjs/data-model';
-import { AsyncIterator, TransformIterator, wrap } from 'asynciterator';
+import type { AsyncIterator } from 'asynciterator';
+import { TransformIterator, wrap } from 'asynciterator';
 import type * as RDF from 'rdf-js';
 import { termToString } from 'rdf-string';
 import { mapTerms, matchPattern } from 'rdf-terms';
@@ -74,7 +75,7 @@ export class RdfSourceQpf implements IQuadSource {
    */
   public getSearchForm(metadata: {[id: string]: any}): ISearchForm | undefined {
     if (!metadata.searchForms || !metadata.searchForms.values) {
-      return undefined;
+      return;
     }
 
     // Find a quad pattern or triple pattern search form

@@ -1,4 +1,5 @@
-import { AsyncIterator, TransformIterator } from 'asynciterator';
+import type { AsyncIterator } from 'asynciterator';
+import { TransformIterator } from 'asynciterator';
 
 // Based on https://github.com/LinkedDataFragments/Client.js/blob/master/lib/sparql/SortIterator.js
 export class SortIterator<T> extends TransformIterator<T, T> {
@@ -11,7 +12,7 @@ export class SortIterator<T> extends TransformIterator<T, T> {
 
     // The `window` parameter indicates the length of the sliding window to apply sorting
     const window: number = options && options.window;
-    this.windowLength = isFinite(window) && window > 0 ? window : Infinity;
+    this.windowLength = Number.isFinite(window) && window > 0 ? window : Infinity;
     this.sort = sort;
     this.sorted = [];
   }

@@ -1,9 +1,10 @@
-import { IQuadSource } from '@comunica/bus-rdf-resolve-quad-pattern';
-import { ActionContext } from '@comunica/core';
-import { AsyncIterator } from 'asynciterator';
+import type { IQuadSource } from '@comunica/bus-rdf-resolve-quad-pattern';
+import type { ActionContext } from '@comunica/core';
+import type { AsyncIterator } from 'asynciterator';
 import type * as RDF from 'rdf-js';
-import { ISourcesState } from './LinkedRdfSourcesAsyncRdfIterator';
-import { IMediatorArgs, MediatedLinkedRdfSourcesAsyncRdfIterator } from './MediatedLinkedRdfSourcesAsyncRdfIterator';
+import type { ISourcesState } from './LinkedRdfSourcesAsyncRdfIterator';
+import type { IMediatorArgs } from './MediatedLinkedRdfSourcesAsyncRdfIterator';
+import { MediatedLinkedRdfSourcesAsyncRdfIterator } from './MediatedLinkedRdfSourcesAsyncRdfIterator';
 
 /**
  * A lazy quad source that creates {@link MediatedLinkedRdfSourcesAsyncRdfIterator} instances when matching quads.

@@ -1,4 +1,4 @@
-import { Readable } from 'stream';
+import type { Readable } from 'stream';
 import { ActorRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extract';
 import { Bus } from '@comunica/core';
 import { ActorRdfMetadataExtractHydraCountQuery } from '../lib/ActorRdfMetadataExtractHydraCountQuery';

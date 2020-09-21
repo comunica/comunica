@@ -277,7 +277,7 @@ describe('RdfSourceSparql', () => {
     });
 
     it('should allow multiple _read calls on query bindings', () => {
-      const data = source.queryBindings('http://ex', '', undefined);
+      const data = source.queryBindings('http://ex', '');
       (<any> data)._read(1, () => {
         // Do nothing
       });

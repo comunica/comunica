@@ -1,8 +1,9 @@
-import { ActorQueryOperation, Bindings, IActionQueryOperation } from '@comunica/bus-query-operation';
+import type { IActionQueryOperation } from '@comunica/bus-query-operation';
+import { ActorQueryOperation, Bindings } from '@comunica/bus-query-operation';
 import { Bus } from '@comunica/core';
 import { literal, namedNode, variable } from '@rdfjs/data-model';
 import { ArrayIterator } from 'asynciterator';
-import { Algebra } from 'sparqlalgebrajs';
+import type { Algebra } from 'sparqlalgebrajs';
 import { ActorQueryOperationGroup } from '../lib/ActorQueryOperationGroup';
 import { GroupsState } from '../lib/GroupsState';
 const arrayifyStream = require('arrayify-stream');
@@ -414,7 +415,7 @@ describe('ActorQueryOperationGroup', () => {
       try {
         await arrayifyStream((<any> await actor.run(op)).bindingsStream);
         fail();
-      } catch (error) {
+      } catch (error: unknown) {
         expect(() => { throw error; }).toThrowError('test error');
       }
       GroupsState.prototype.collectResults = temp;
@@ -437,7 +438,7 @@ describe('ActorQueryOperationGroup', () => {
       try {
         await arrayifyStream((<any> await actor.run(op)).bindingsStream);
         fail('BindingStream did not error when it should');
-      } catch (error) {
+      } catch (error: unknown) {
         expect(() => { throw error; }).toThrowError('test error');
       }
       GroupsState.prototype.consumeBindings = temp;

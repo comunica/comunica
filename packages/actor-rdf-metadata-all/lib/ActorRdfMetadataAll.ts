@@ -1,6 +1,7 @@
 import { Readable } from 'stream';
-import { ActorRdfMetadata, IActionRdfMetadata, IActorRdfMetadataOutput } from '@comunica/bus-rdf-metadata';
-import { IActorArgs, IActorTest } from '@comunica/core';
+import type { IActionRdfMetadata, IActorRdfMetadataOutput } from '@comunica/bus-rdf-metadata';
+import { ActorRdfMetadata } from '@comunica/bus-rdf-metadata';
+import type { IActorArgs, IActorTest } from '@comunica/core';
 
 /**
  * A comunica All RDF Metadata Actor.

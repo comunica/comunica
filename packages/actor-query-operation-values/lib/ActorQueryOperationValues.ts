@@ -1,10 +1,11 @@
-import { ActorQueryOperationTyped, Bindings, IActionQueryOperation,
+import type { IActionQueryOperation,
   IActorQueryOperationOutput, IActorQueryOperationOutputBindings, BindingsStream } from '@comunica/bus-query-operation';
+import { ActorQueryOperationTyped, Bindings } from '@comunica/bus-query-operation';
 
-import { ActionContext, IActorArgs, IActorTest } from '@comunica/core';
+import type { ActionContext, IActorArgs, IActorTest } from '@comunica/core';
 import { ArrayIterator } from 'asynciterator';
 import { termToString } from 'rdf-string';
-import { Algebra } from 'sparqlalgebrajs';
+import type { Algebra } from 'sparqlalgebrajs';
 
 /**
  * A comunica Values Query Operation Actor.

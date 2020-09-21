@@ -1,6 +1,7 @@
-import { ActorRdfMetadataExtractQuery, IActionRdfMetadataExtract, IActorRdfMetadataExtractOutput,
+import type { IActionRdfMetadataExtract, IActorRdfMetadataExtractOutput,
   IActorRdfMetadataExtractQueryArgs } from '@comunica/bus-rdf-metadata-extract';
-import { IActorTest } from '@comunica/core';
+import { ActorRdfMetadataExtractQuery } from '@comunica/bus-rdf-metadata-extract';
+import type { IActorTest } from '@comunica/core';
 import * as GRAPHQLLD_CONTEXT from './context.json';
 
 /**
@@ -25,7 +26,7 @@ export class ActorRdfMetadataExtractHydraCountQuery extends ActorRdfMetadataExtr
   public async run(action: IActionRdfMetadataExtract): Promise<IActorRdfMetadataExtractOutput> {
     const queryData = await this.queryData(action.metadata, { '?pageUrl': action.url });
     if ('totalItems' in queryData && typeof queryData.totalItems !== 'number') {
-      queryData.totalItems = parseInt(queryData.totalItems, 10);
+      queryData.totalItems = Number.parseInt(queryData.totalItems, 10);
     }
     return {
       metadata: {

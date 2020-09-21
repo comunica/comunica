@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/unbound-method */
-import { ActorRdfParseHtml, IActionRdfParseHtml, IActorRdfParseHtmlOutput } from '@comunica/bus-rdf-parse-html';
-import { IActorArgs, IActorTest } from '@comunica/core';
+import type { IActionRdfParseHtml, IActorRdfParseHtmlOutput } from '@comunica/bus-rdf-parse-html';
+import { ActorRdfParseHtml } from '@comunica/bus-rdf-parse-html';
+import type { IActorArgs, IActorTest } from '@comunica/core';
 import { RdfaParser } from 'rdfa-streaming-parser';
 
 /**

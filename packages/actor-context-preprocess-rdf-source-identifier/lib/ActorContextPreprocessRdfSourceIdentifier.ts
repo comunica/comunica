@@ -1,14 +1,14 @@
-import { ActorContextPreprocess,
-  IActorContextPreprocessOutput } from '@comunica/bus-context-preprocess';
+import type { IActorContextPreprocessOutput } from '@comunica/bus-context-preprocess';
+import { ActorContextPreprocess } from '@comunica/bus-context-preprocess';
+import type { DataSources,
+  IDataSource } from '@comunica/bus-rdf-resolve-quad-pattern';
 import {
-  DataSources,
   getDataSourceValue,
-  IDataSource,
   KEY_CONTEXT_SOURCE,
   KEY_CONTEXT_SOURCES,
 } from '@comunica/bus-rdf-resolve-quad-pattern';
-import { IActionRdfSourceIdentifier, IActorRdfSourceIdentifierOutput } from '@comunica/bus-rdf-source-identifier';
-import { ActionContext, Actor, IAction, IActorArgs, IActorTest, Mediator } from '@comunica/core';
+import type { IActionRdfSourceIdentifier, IActorRdfSourceIdentifierOutput } from '@comunica/bus-rdf-source-identifier';
+import type { ActionContext, Actor, IAction, IActorArgs, IActorTest, Mediator } from '@comunica/core';
 
 /**
  * A comunica RDF Source Identifier Context Preprocess Actor.

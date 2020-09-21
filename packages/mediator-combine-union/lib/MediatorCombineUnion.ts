@@ -1,4 +1,5 @@
-import { Actor, IAction, IActorOutput, IActorReply, IActorTest, IMediatorArgs, Mediator } from '@comunica/core';
+import type { Actor, IAction, IActorOutput, IActorReply, IActorTest, IMediatorArgs } from '@comunica/core';
+import { Mediator } from '@comunica/core';
 
 /**
  * A comunica mediator that takes the union of all actor results.
@@ -19,7 +20,7 @@ export class MediatorCombineUnion<A extends Actor<I, T, O>, I extends IAction, T
     let testResults: IActorReply<A, I, T, O>[];
     try {
       testResults = this.publish(action);
-    } catch (error) {
+    } catch {
       testResults = [];
     }
 

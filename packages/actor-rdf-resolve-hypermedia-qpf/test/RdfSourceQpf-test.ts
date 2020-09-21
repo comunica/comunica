@@ -346,6 +346,7 @@ describe('RdfSourceQpf', () => {
   });
 });
 
+// eslint-disable-next-line mocha/max-top-level-suites
 describe('RdfSourceQpf with a custom default graph', () => {
   let source: RdfSourceQpf;
   let bus: any;

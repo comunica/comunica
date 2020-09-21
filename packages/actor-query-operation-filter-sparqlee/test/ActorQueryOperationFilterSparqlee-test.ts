@@ -1,10 +1,12 @@
-import { ActorQueryOperation, Bindings, IActorQueryOperationOutputBindings,
+import type { IActorQueryOperationOutputBindings } from '@comunica/bus-query-operation';
+import { ActorQueryOperation, Bindings,
   KEY_CONTEXT_BASEIRI } from '@comunica/bus-query-operation';
 import { Bus } from '@comunica/core';
 import { literal, variable } from '@rdfjs/data-model';
 import { ArrayIterator } from 'asynciterator';
 import { Map } from 'immutable';
-import { Algebra, Factory, translate } from 'sparqlalgebrajs';
+import type { Algebra } from 'sparqlalgebrajs';
+import { Factory, translate } from 'sparqlalgebrajs';
 import * as sparqlee from 'sparqlee';
 import { ActorQueryOperationFilterSparqlee } from '../lib/ActorQueryOperationFilterSparqlee';
 const arrayifyStream = require('arrayify-stream');

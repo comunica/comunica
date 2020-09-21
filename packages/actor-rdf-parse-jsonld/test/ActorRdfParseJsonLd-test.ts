@@ -1,4 +1,4 @@
-import { Readable } from 'stream';
+import type { Readable } from 'stream';
 import { ActionContext, Bus } from '@comunica/core';
 import 'jest-rdf';
 import { ActorRdfParseJsonLd } from '../lib/ActorRdfParseJsonLd';

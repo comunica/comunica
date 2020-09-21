@@ -1,10 +1,11 @@
-import { ActorQueryOperation, ActorQueryOperationTypedMediated, Bindings, BindingsStream,
+import type { Bindings, BindingsStream,
   IActorQueryOperationOutputBindings, IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
-import { ActionContext, IActorTest } from '@comunica/core';
+import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
+import type { ActionContext, IActorTest } from '@comunica/core';
 import { BlankNodeScoped } from '@comunica/data-factory';
 import { blankNode } from '@rdfjs/data-model';
 import { termToString } from 'rdf-string';
-import { Algebra } from 'sparqlalgebrajs';
+import type { Algebra } from 'sparqlalgebrajs';
 
 /**
  * A comunica Project Query Operation Actor.

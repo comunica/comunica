@@ -1,8 +1,9 @@
+/* eslint-disable mocha/max-top-level-suites */
 import { ActorQueryOperation, Bindings } from '@comunica/bus-query-operation';
 import { Bus } from '@comunica/core';
 import { literal, variable, namedNode } from '@rdfjs/data-model';
 import { ArrayIterator } from 'asynciterator';
-import { Algebra } from 'sparqlalgebrajs';
+import type { Algebra } from 'sparqlalgebrajs';
 import * as sparqlee from 'sparqlee';
 import { ActorQueryOperationOrderBySparqlee } from '../lib/ActorQueryOperationOrderBySparqlee';
 const arrayifyStream = require('arrayify-stream');
@@ -579,7 +580,7 @@ describe('Another ActorQueryOperationOrderBySparqlee with mixed types', () => {
         const output = await actor.run(op);
         const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
         expect(array).toBeFalsy();
-      } catch (error) {
+      } catch {
         // Is valid
       }
     });

@@ -3,7 +3,7 @@ import 'jest-rdf';
 import { variable } from '@rdfjs/data-model';
 import { ArrayIterator } from 'asynciterator';
 import LRUCache = require('lru-cache');
-import { ISourceState } from '../lib/LinkedRdfSourcesAsyncRdfIterator';
+import type { ISourceState } from '../lib/LinkedRdfSourcesAsyncRdfIterator';
 import { MediatedLinkedRdfSourcesAsyncRdfIterator } from '../lib/MediatedLinkedRdfSourcesAsyncRdfIterator';
 import { MediatedQuadSource } from '../lib/MediatedQuadSource';
 

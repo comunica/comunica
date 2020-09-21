@@ -1,7 +1,8 @@
-import { Bindings, IActorQueryOperationOutput,
+import type { Bindings, IActorQueryOperationOutput,
   IActorQueryOperationOutputBindings } from '@comunica/bus-query-operation';
-import { Actor, IAction, IActorArgs } from '@comunica/core';
-import { IMediatorTypeIterations } from '@comunica/mediatortype-iterations';
+import type { IAction, IActorArgs } from '@comunica/core';
+import { Actor } from '@comunica/core';
+import type { IMediatorTypeIterations } from '@comunica/mediatortype-iterations';
 import { ArrayIterator } from 'asynciterator';
 import type * as RDF from 'rdf-js';
 
@@ -79,7 +80,7 @@ export abstract class ActorRdfJoin extends Actor<IActionRdfJoin, IMediatorTypeIt
         }
         return left;
       }, val));
-    } catch (error) {
+    } catch {
       return null;
     }
   }

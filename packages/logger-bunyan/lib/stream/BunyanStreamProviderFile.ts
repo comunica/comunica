@@ -1,6 +1,7 @@
 import { URL } from 'url';
-import { Stream } from 'bunyan';
-import { BunyanStreamProvider, IBunyanStreamProviderArgs } from './BunyanStreamProvider';
+import type { Stream } from 'bunyan';
+import type { IBunyanStreamProviderArgs } from './BunyanStreamProvider';
+import { BunyanStreamProvider } from './BunyanStreamProvider';
 
 /**
  * A file bunyan stream provider.

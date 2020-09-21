@@ -1,12 +1,12 @@
-import { ActorHttpInvalidateListenable, IActionHttpInvalidate } from '@comunica/bus-http-invalidate';
-import { IActionRdfDereference, IActorRdfDereferenceOutput } from '@comunica/bus-rdf-dereference';
+import type { ActorHttpInvalidateListenable, IActionHttpInvalidate } from '@comunica/bus-http-invalidate';
+import type { IActionRdfDereference, IActorRdfDereferenceOutput } from '@comunica/bus-rdf-dereference';
+import type { IActionRdfResolveQuadPattern,
+  IActorRdfResolveQuadPatternOutput,
+  IQuadSource } from '@comunica/bus-rdf-resolve-quad-pattern';
 import {
   ActorRdfResolveQuadPatternSource,
-  IActionRdfResolveQuadPattern,
-  IActorRdfResolveQuadPatternOutput,
-  IQuadSource,
 } from '@comunica/bus-rdf-resolve-quad-pattern';
-import { ActionContext, Actor, IActorArgs, IActorTest, Mediator } from '@comunica/core';
+import type { ActionContext, Actor, IActorArgs, IActorTest, Mediator } from '@comunica/core';
 import * as LRUCache from 'lru-cache';
 import { Store } from 'n3';
 import { N3StoreQuadSource } from './N3StoreQuadSource';

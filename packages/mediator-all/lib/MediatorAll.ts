@@ -1,4 +1,5 @@
-import { Actor, IAction, IActorOutput, IActorReply, IActorTest, IMediatorArgs, Mediator } from '@comunica/core';
+import type { Actor, IAction, IActorOutput, IActorReply, IActorTest, IMediatorArgs } from '@comunica/core';
+import { Mediator } from '@comunica/core';
 
 /**
  * A comunica mediator that runs all actors that resolve their test.
@@ -16,14 +17,14 @@ export class MediatorAll<A extends Actor<I, T, O>, I extends IAction, T extends 
     let testResults: IActorReply<A, I, T, O>[];
     try {
       testResults = this.publish(action);
-    } catch (error) {
+    } catch {
       testResults = [];
     }
     for (const testResult of testResults) {
       try {
         await testResult.reply;
         validActors.push(testResult.actor);
-      } catch (error) {
+      } catch {
         // Ignore errors
       }
     }

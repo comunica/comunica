@@ -1,5 +1,6 @@
-import { Actor, IAction, IActorArgs, IActorOutput, IActorTest } from '@comunica/core';
-import { AsyncIterator } from 'asynciterator';
+import type { IAction, IActorArgs, IActorOutput, IActorTest } from '@comunica/core';
+import { Actor } from '@comunica/core';
+import type { AsyncIterator } from 'asynciterator';
 import type * as RDF from 'rdf-js';
 
 /**

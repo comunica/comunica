@@ -1,16 +1,16 @@
 import { Readable } from 'stream';
+import type { IActionRdfParse,
+  IActorRdfParseFixedMediaTypesArgs,
+  IActorRdfParseOutput } from '@comunica/bus-rdf-parse';
 import {
   ActorRdfParseFixedMediaTypes,
-  IActionRdfParse,
-  IActorRdfParseFixedMediaTypesArgs,
-  IActorRdfParseOutput,
 } from '@comunica/bus-rdf-parse';
-import {
+import type {
   IActionRdfParseHtml,
   IActorRdfParseHtmlOutput,
   IHtmlParseListener,
 } from '@comunica/bus-rdf-parse-html';
-import { ActionContext, Actor, Bus, IActorTest } from '@comunica/core';
+import type { ActionContext, Actor, Bus, IActorTest } from '@comunica/core';
 import { Parser as HtmlParser } from 'htmlparser2';
 import type * as RDF from 'rdf-js';
 
@@ -40,7 +40,7 @@ export class ActorRdfParseHtml extends ActorRdfParseFixedMediaTypes {
       function emit(quad: RDF.Quad): void {
         quads.emit('data', quad);
       }
-      function error(subError: Error): void {
+      function error(subError: unknown): void {
         quads.emit('error', subError);
       }
       function end(): void {
@@ -75,7 +75,7 @@ export class ActorRdfParseHtml extends ActorRdfParseFixedMediaTypes {
                 for (const htmlParseListener of htmlParseListeners) {
                   htmlParseListener.onTagClose();
                 }
-              } catch (error_) {
+              } catch (error_: unknown) {
                 error(error_);
               }
             },
@@ -84,7 +84,7 @@ export class ActorRdfParseHtml extends ActorRdfParseFixedMediaTypes {
                 for (const htmlParseListener of htmlParseListeners) {
                   htmlParseListener.onEnd();
                 }
-              } catch (error_) {
+              } catch (error_: unknown) {
                 error(error_);
               }
               end();
@@ -94,7 +94,7 @@ export class ActorRdfParseHtml extends ActorRdfParseFixedMediaTypes {
                 for (const htmlParseListener of htmlParseListeners) {
                   htmlParseListener.onTagOpen(name, attributes);
                 }
-              } catch (error_) {
+              } catch (error_: unknown) {
                 error(error_);
               }
             },
@@ -103,7 +103,7 @@ export class ActorRdfParseHtml extends ActorRdfParseFixedMediaTypes {
                 for (const htmlParseListener of htmlParseListeners) {
                   htmlParseListener.onText(data);
                 }
-              } catch (error_) {
+              } catch (error_: unknown) {
                 error(error_);
               }
             },

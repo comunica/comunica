@@ -1,6 +1,7 @@
-import { ActorAbstractMediaTypedFixed, IActorArgsMediaTypedFixed } from '@comunica/actor-abstract-mediatyped';
-import { ActionContext, IActorTest } from '@comunica/core';
-import {
+import type { IActorArgsMediaTypedFixed } from '@comunica/actor-abstract-mediatyped';
+import { ActorAbstractMediaTypedFixed } from '@comunica/actor-abstract-mediatyped';
+import type { ActionContext, IActorTest } from '@comunica/core';
+import type {
   IActionSparqlSerialize, IActorSparqlSerializeOutput,
 } from './ActorSparqlSerialize';
 

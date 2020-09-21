@@ -1,16 +1,18 @@
-import { IActionHttp, IActorHttpOutput } from '@comunica/bus-http';
-import { Bindings, BindingsStream } from '@comunica/bus-query-operation';
+import type { IActionHttp, IActorHttpOutput } from '@comunica/bus-http';
+import type { Bindings, BindingsStream } from '@comunica/bus-query-operation';
+import type { IActionRdfResolveQuadPattern,
+  IActorRdfResolveQuadPatternOutput } from '@comunica/bus-rdf-resolve-quad-pattern';
 import {
   ActorRdfResolveQuadPattern,
-  IActionRdfResolveQuadPattern,
-  IActorRdfResolveQuadPatternOutput,
 } from '@comunica/bus-rdf-resolve-quad-pattern';
-import { ActionContext, Actor, IActorArgs, IActorTest, Mediator } from '@comunica/core';
+import type { ActionContext, Actor, IActorArgs, IActorTest, Mediator } from '@comunica/core';
 import { variable } from '@rdfjs/data-model';
-import { AsyncIterator, TransformIterator } from 'asynciterator';
+import type { AsyncIterator } from 'asynciterator';
+import { TransformIterator } from 'asynciterator';
 import type * as RDF from 'rdf-js';
 import { getTerms, getVariables, mapTerms } from 'rdf-terms';
-import { Algebra, Factory, toSparql } from 'sparqlalgebrajs';
+import type { Algebra } from 'sparqlalgebrajs';
+import { Factory, toSparql } from 'sparqlalgebrajs';
 import { AsyncIteratorJsonBindings } from './AsyncIteratorJsonBindings';
 
 /**
@@ -134,8 +136,8 @@ export class ActorRdfResolveQuadPatternSparqlJson
         bindingsStream.on('data', (bindings: Bindings) => {
           const count: RDF.Term = bindings.get('?count');
           if (count) {
-            const totalItems: number = parseInt(count.value, 10);
-            if (isNaN(totalItems)) {
+            const totalItems: number = Number.parseInt(count.value, 10);
+            if (Number.isNaN(totalItems)) {
               return resolve({ totalItems: Infinity });
             }
             return resolve({ totalItems });

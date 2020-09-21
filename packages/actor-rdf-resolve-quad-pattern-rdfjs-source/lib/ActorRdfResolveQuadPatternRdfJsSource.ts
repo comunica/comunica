@@ -1,7 +1,9 @@
+import type { IActionRdfResolveQuadPattern, IActorRdfResolveQuadPatternOutput,
+  IQuadSource } from '@comunica/bus-rdf-resolve-quad-pattern';
 import {
-  ActorRdfResolveQuadPatternSource, IActionRdfResolveQuadPattern, IActorRdfResolveQuadPatternOutput, IQuadSource,
+  ActorRdfResolveQuadPatternSource,
 } from '@comunica/bus-rdf-resolve-quad-pattern';
-import { ActionContext, IActorArgs, IActorTest } from '@comunica/core';
+import type { ActionContext, IActorArgs, IActorTest } from '@comunica/core';
 import { RdfJsQuadSource } from './RdfJsQuadSource';
 
 /**

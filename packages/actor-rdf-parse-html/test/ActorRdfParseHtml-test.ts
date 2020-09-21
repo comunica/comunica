@@ -1,9 +1,10 @@
-import { Readable } from 'stream';
+import type { Readable } from 'stream';
 import { ActorRdfParseHtmlRdfa } from '@comunica/actor-rdf-parse-html-rdfa';
 import { ActorRdfParseHtmlScript } from '@comunica/actor-rdf-parse-html-script';
 import { ActorRdfParseJsonLd } from '@comunica/actor-rdf-parse-jsonld';
-import { IActionRdfParseHtml, IActorRdfParseHtmlOutput } from '@comunica/bus-rdf-parse-html';
-import { ActionContext, Actor, Bus, IActorTest } from '@comunica/core';
+import type { IActionRdfParseHtml, IActorRdfParseHtmlOutput } from '@comunica/bus-rdf-parse-html';
+import type { Actor, IActorTest } from '@comunica/core';
+import { ActionContext, Bus } from '@comunica/core';
 import 'jest-rdf';
 import { ActorRdfParseHtml } from '../lib/ActorRdfParseHtml';
 

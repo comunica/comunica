@@ -1,4 +1,5 @@
-import { BufferedIterator, BufferedIteratorOptions } from 'asynciterator';
+import type { BufferedIteratorOptions } from 'asynciterator';
+import { BufferedIterator } from 'asynciterator';
 import type * as RDF from 'rdf-js';
 
 /**

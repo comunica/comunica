@@ -1,10 +1,10 @@
-import { ActorQueryOperation, ActorQueryOperationTypedMediated,
-  IActorQueryOperationOutput,
+import type { IActorQueryOperationOutput,
   IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
-import { ActorRdfJoin, IActionRdfJoin } from '@comunica/bus-rdf-join';
-import { ActionContext, IActorTest, Mediator } from '@comunica/core';
-import { IMediatorTypeIterations } from '@comunica/mediatortype-iterations';
-import { Algebra } from 'sparqlalgebrajs';
+import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
+import type { ActorRdfJoin, IActionRdfJoin } from '@comunica/bus-rdf-join';
+import type { ActionContext, IActorTest, Mediator } from '@comunica/core';
+import type { IMediatorTypeIterations } from '@comunica/mediatortype-iterations';
+import type { Algebra } from 'sparqlalgebrajs';
 
 /**
  * A comunica Join Query Operation Actor.

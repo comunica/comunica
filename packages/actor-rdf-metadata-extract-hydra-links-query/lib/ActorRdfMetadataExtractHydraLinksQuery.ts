@@ -1,6 +1,7 @@
-import { ActorRdfMetadataExtractQuery, IActionRdfMetadataExtract, IActorRdfMetadataExtractOutput,
+import type { IActionRdfMetadataExtract, IActorRdfMetadataExtractOutput,
   IActorRdfMetadataExtractQueryArgs } from '@comunica/bus-rdf-metadata-extract';
-import { IActorTest } from '@comunica/core';
+import { ActorRdfMetadataExtractQuery } from '@comunica/bus-rdf-metadata-extract';
+import type { IActorTest } from '@comunica/core';
 import * as GRAPHQLLD_CONTEXT from './context.json';
 
 /**

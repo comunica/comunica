@@ -1,9 +1,10 @@
 import { Readable } from 'stream';
-import { Bindings, IActorQueryOperationOutputBindings,
+import type { Bindings, IActorQueryOperationOutputBindings,
   IActorQueryOperationOutputBoolean } from '@comunica/bus-query-operation';
-import { ActorSparqlSerializeFixedMediaTypes, IActionSparqlSerialize,
+import type { IActionSparqlSerialize,
   IActorSparqlSerializeFixedMediaTypesArgs, IActorSparqlSerializeOutput } from '@comunica/bus-sparql-serialize';
-import { ActionContext } from '@comunica/core';
+import { ActorSparqlSerializeFixedMediaTypes } from '@comunica/bus-sparql-serialize';
+import type { ActionContext } from '@comunica/core';
 import type * as RDF from 'rdf-js';
 import * as xml from 'xml';
 
@@ -90,7 +91,7 @@ export class ActorSparqlSerializeSparqlXml extends ActorSparqlSerializeFixedMedi
         root.push({ boolean: await (<IActorQueryOperationOutputBoolean> action).booleanResult });
         root.close();
         setImmediate(() => data.push(null));
-      } catch (error) {
+      } catch (error: unknown) {
         setImmediate(() => data.emit('error', error));
       }
     }

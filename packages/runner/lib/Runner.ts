@@ -1,5 +1,5 @@
-import { ActorInit, IActionInit, IActorOutputInit } from '@comunica/bus-init';
-import { Actor, Bus, IAction, IActorOutput, IActorReply, IActorTest } from '@comunica/core';
+import type { ActorInit, IActionInit, IActorOutputInit } from '@comunica/bus-init';
+import type { Actor, Bus, IAction, IActorOutput, IActorReply, IActorTest } from '@comunica/core';
 
 /**
  * A Runner is used to instantiate a comunica workflow.

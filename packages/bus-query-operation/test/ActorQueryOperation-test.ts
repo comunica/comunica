@@ -1,6 +1,7 @@
 import { ActionContext, Bus } from '@comunica/core';
 import { ArrayIterator } from 'asynciterator';
-import { Algebra, Factory } from 'sparqlalgebrajs';
+import type { Algebra } from 'sparqlalgebrajs';
+import { Factory } from 'sparqlalgebrajs';
 import { ActorQueryOperation, Bindings, getMetadata, KEY_CONTEXT_BASEIRI, KEY_CONTEXT_QUERY_TIMESTAMP } from '..';
 
 describe('ActorQueryOperation', () => {

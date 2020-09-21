@@ -1,4 +1,4 @@
-import { Readable } from 'stream';
+import type { Readable } from 'stream';
 import { ActorRdfParseN3 } from '@comunica/actor-rdf-parse-n3';
 import { ActorInit } from '@comunica/bus-init';
 import { Bus } from '@comunica/core';

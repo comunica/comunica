@@ -1,6 +1,7 @@
 import { PassThrough, Readable } from 'stream';
-import { ActorInit, IActionInit, IActorOutputInit } from '@comunica/bus-init';
-import {
+import type { IActionInit, IActorOutputInit } from '@comunica/bus-init';
+import { ActorInit } from '@comunica/bus-init';
+import type {
   IActionHandleRdfParse,
   IActionRdfParse,
 
@@ -9,7 +10,7 @@ import {
   IActorRdfParseOutput,
   IActorTestHandleRdfParse,
 } from '@comunica/bus-rdf-parse';
-import { Actor, IActorArgs, IActorTest, Mediator } from '@comunica/core';
+import type { Actor, IActorArgs, IActorTest, Mediator } from '@comunica/core';
 import * as RdfString from 'rdf-string';
 
 /**

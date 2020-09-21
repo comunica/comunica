@@ -1,12 +1,12 @@
 import { ActorAbstractPath } from '@comunica/actor-abstract-path';
+import type { Bindings, IActorQueryOperationOutput, IActorQueryOperationOutputBindings,
+  IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import {
   ActorQueryOperation,
-  Bindings, IActorQueryOperationOutput, IActorQueryOperationOutputBindings,
-  IActorQueryOperationTypedMediatedArgs,
 } from '@comunica/bus-query-operation';
-import { ActorRdfJoin, IActionRdfJoin } from '@comunica/bus-rdf-join';
-import { ActionContext, Mediator } from '@comunica/core';
-import { IMediatorTypeIterations } from '@comunica/mediatortype-iterations';
+import type { ActorRdfJoin, IActionRdfJoin } from '@comunica/bus-rdf-join';
+import type { ActionContext, Mediator } from '@comunica/core';
+import type { IMediatorTypeIterations } from '@comunica/mediatortype-iterations';
 
 import { termToString } from 'rdf-string';
 import { Algebra } from 'sparqlalgebrajs';

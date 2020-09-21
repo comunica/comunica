@@ -1,4 +1,4 @@
-import { Readable } from 'stream';
+import type { Readable } from 'stream';
 import { ActorRdfMetadata } from '@comunica/bus-rdf-metadata';
 import { Bus } from '@comunica/core';
 import { ActorRdfMetadataTriplePredicate } from '../lib/ActorRdfMetadataTriplePredicate';

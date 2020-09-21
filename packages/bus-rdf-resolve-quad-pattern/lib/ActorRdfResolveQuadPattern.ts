@@ -1,7 +1,8 @@
-import { ActionContext, Actor, IAction, IActorArgs, IActorOutput, IActorTest } from '@comunica/core';
-import { AsyncIterator } from 'asynciterator';
+import type { ActionContext, IAction, IActorArgs, IActorOutput, IActorTest } from '@comunica/core';
+import { Actor } from '@comunica/core';
+import type { AsyncIterator } from 'asynciterator';
 import type * as RDF from 'rdf-js';
-import { Algebra } from 'sparqlalgebrajs';
+import type { Algebra } from 'sparqlalgebrajs';
 
 /**
  * @type {string} Context entry for data sources.

@@ -1,7 +1,8 @@
-import { IQuadSource } from '@comunica/bus-rdf-resolve-quad-pattern';
-import { AsyncIterator, wrap as wrapAsyncIterator } from 'asynciterator';
+import type { IQuadSource } from '@comunica/bus-rdf-resolve-quad-pattern';
+import type { AsyncIterator } from 'asynciterator';
+import { wrap as wrapAsyncIterator } from 'asynciterator';
 import type * as RDF from 'rdf-js';
-import { IRdfJsSourceExtended } from './IRdfJsSourceExtended';
+import type { IRdfJsSourceExtended } from './IRdfJsSourceExtended';
 
 /**
  * A quad source that wraps over an {@link RDF.Source}.

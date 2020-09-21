@@ -1,4 +1,5 @@
-import { Actor, IAction, IActorOutput, IActorReply, IActorTest, IMediatorArgs, Mediator } from '@comunica/core';
+import type { Actor, IAction, IActorOutput, IActorReply, IActorTest, IMediatorArgs } from '@comunica/core';
+import { Mediator } from '@comunica/core';
 
 /**
  * A mediator that picks the first actor that resolves its test.

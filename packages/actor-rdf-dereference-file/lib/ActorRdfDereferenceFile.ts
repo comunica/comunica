@@ -1,19 +1,19 @@
 import * as fs from 'fs';
 import { URL } from 'url';
 import { promisify } from 'util';
+import type { IActionRdfDereference,
+  IActorRdfDereferenceMediaMappingsArgs,
+  IActorRdfDereferenceOutput } from '@comunica/bus-rdf-dereference';
 import {
   ActorRdfDereferenceMediaMappings,
-  IActionRdfDereference,
-  IActorRdfDereferenceMediaMappingsArgs,
-  IActorRdfDereferenceOutput,
 } from '@comunica/bus-rdf-dereference';
-import {
+import type {
   IActionHandleRdfParse,
   IActorOutputHandleRdfParse,
   IActorRdfParseOutput,
   IActorTestHandleRdfParse,
 } from '@comunica/bus-rdf-parse';
-import { Actor, IActorTest, Mediator } from '@comunica/core';
+import type { Actor, IActorTest, Mediator } from '@comunica/core';
 
 /**
  * A comunica File RDF Dereference Actor.
@@ -32,7 +32,7 @@ export class ActorRdfDereferenceFile extends ActorRdfDereferenceMediaMappings {
       await promisify(fs.access)(
         action.url.startsWith('file://') ? new URL(action.url) : action.url, fs.constants.F_OK,
       );
-    } catch (error) {
+    } catch (error: unknown) {
       throw new Error(
         `This actor only works on existing local files. (${error})`,
       );
@@ -62,7 +62,7 @@ export class ActorRdfDereferenceFile extends ActorRdfDereferenceMediaMappings {
     let parseOutput: IActorRdfParseOutput;
     try {
       parseOutput = (await this.mediatorRdfParse.mediate(parseAction)).handle;
-    } catch (error) {
+    } catch (error: unknown) {
       return this.handleDereferenceError(action, error);
     }
 

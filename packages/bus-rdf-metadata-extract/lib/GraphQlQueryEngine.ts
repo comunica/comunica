@@ -1,6 +1,6 @@
-import { ActorInitSparql } from '@comunica/actor-init-sparql';
-import { IQueryEngine } from 'graphql-ld';
-import { Algebra } from 'sparqlalgebrajs';
+import type { ActorInitSparql } from '@comunica/actor-init-sparql';
+import type { IQueryEngine } from 'graphql-ld';
+import type { Algebra } from 'sparqlalgebrajs';
 import * as stringifyStream from 'stream-to-string';
 
 /**

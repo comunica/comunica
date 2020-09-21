@@ -1,6 +1,7 @@
 import { Map } from 'immutable';
-import { Bus } from './Bus';
-import { KEY_CONTEXT_LOG, Logger } from './Logger';
+import type { Bus } from './Bus';
+import type { Logger } from './Logger';
+import { KEY_CONTEXT_LOG } from './Logger';
 
 /**
  * An actor can act on messages of certain types and provide output of a certain type.
@@ -190,6 +191,7 @@ export type ActionContext = Map<string, any>;
  * @return {ActionContext} The immutable action context from the hash.
  * @constructor
  */
+// eslint-disable-next-line no-redeclare
 export function ActionContext(hash: {[key: string]: any}): ActionContext {
   return Map(hash);
 }

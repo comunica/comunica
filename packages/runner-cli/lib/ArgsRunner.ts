@@ -1,6 +1,7 @@
 /* eslint-disable no-process-env */
-import { IActorOutputInit } from '@comunica/bus-init';
-import { ISetupProperties, run } from '@comunica/runner';
+import type { IActorOutputInit } from '@comunica/bus-init';
+import type { ISetupProperties } from '@comunica/runner';
+import { run } from '@comunica/runner';
 
 export function runArgs(configResourceUrl: string, argv: string[], stdin: NodeJS.ReadStream,
   stdout: NodeJS.WriteStream, stderr: NodeJS.WriteStream, env: NodeJS.ProcessEnv,

@@ -1,15 +1,16 @@
-import {
-  DataSources, getDataSourceType, getDataSourceValue, IActionRdfResolveQuadPattern,
-  IActorRdfResolveQuadPatternOutput, IDataSource, IQuadSource, KEY_CONTEXT_SOURCE,
-  KEY_CONTEXT_SOURCES, getDataSourceContext,
-} from '@comunica/bus-rdf-resolve-quad-pattern';
-import { ActionContext, Actor, IActorTest, Mediator } from '@comunica/core';
+import type { DataSources, IActionRdfResolveQuadPattern,
+  IActorRdfResolveQuadPatternOutput, IDataSource, IQuadSource } from '@comunica/bus-rdf-resolve-quad-pattern';
+import { getDataSourceType, getDataSourceValue, KEY_CONTEXT_SOURCE,
+  KEY_CONTEXT_SOURCES, getDataSourceContext } from '@comunica/bus-rdf-resolve-quad-pattern';
+import type { ActionContext, Actor, IActorTest, Mediator } from '@comunica/core';
 import { BlankNodeScoped } from '@comunica/data-factory';
 import * as DataFactory from '@rdfjs/data-model';
-import { ArrayIterator, AsyncIterator, TransformIterator, UnionIterator } from 'asynciterator';
+import type { AsyncIterator } from 'asynciterator';
+import { ArrayIterator, TransformIterator, UnionIterator } from 'asynciterator';
 import type * as RDF from 'rdf-js';
 import { mapTerms } from 'rdf-terms';
-import { Algebra, Factory } from 'sparqlalgebrajs';
+import type { Algebra } from 'sparqlalgebrajs';
+import { Factory } from 'sparqlalgebrajs';
 
 /**
  * A FederatedQuadSource can evaluate quad pattern queries over the union of different heterogeneous sources.
@@ -225,7 +226,7 @@ export class FederatedQuadSource implements IQuadSource {
 
       // Handle the metadata from this source
       output.data.getProperty('metadata', (subMetadata: { [id: string]: any }) => {
-        if ((!subMetadata.totalItems && subMetadata.totalItems !== 0) || !isFinite(subMetadata.totalItems)) {
+        if ((!subMetadata.totalItems && subMetadata.totalItems !== 0) || !Number.isFinite(subMetadata.totalItems)) {
           // We're already at infinite, so ignore any later metadata
           metadata.totalItems = Infinity;
           remainingSources = 0;

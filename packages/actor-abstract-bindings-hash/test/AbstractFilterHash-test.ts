@@ -1,4 +1,5 @@
-import { Bindings, IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
+import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
+import { Bindings } from '@comunica/bus-query-operation';
 import { Actor, Bus } from '@comunica/core';
 import { literal, namedNode } from '@rdfjs/data-model';
 import { ArrayIterator } from 'asynciterator';

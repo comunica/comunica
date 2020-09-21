@@ -1,3 +1,4 @@
+/* eslint-disable mocha/max-top-level-suites */
 import { PassThrough, Readable } from 'stream';
 import { ProxyHandlerStatic } from '@comunica/actor-http-proxy';
 import { KEY_CONTEXT_AUTH } from '@comunica/bus-http';
@@ -14,10 +15,10 @@ import {
   KEY_CONTEXT_LENIENT,
   KEY_CONTEXT_QUERYFORMAT,
 } from '../lib/ActorInitSparql';
+import type { IQueryResultQuads,
+  IQueryResultBindings } from '../lib/ActorInitSparql-browser';
 import {
   ActorInitSparql as ActorInitSparqlBrowser,
-  IQueryResultQuads,
-  IQueryResultBindings,
 } from '../lib/ActorInitSparql-browser';
 
 describe('exported constants', () => {

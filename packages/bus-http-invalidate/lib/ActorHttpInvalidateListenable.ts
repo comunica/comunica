@@ -1,5 +1,6 @@
-import { IActorArgs, IActorTest } from '@comunica/core';
-import { ActorHttpInvalidate, IActionHttpInvalidate, IActorHttpInvalidateOutput } from './ActorHttpInvalidate';
+import type { IActorArgs, IActorTest } from '@comunica/core';
+import type { IActionHttpInvalidate, IActorHttpInvalidateOutput } from './ActorHttpInvalidate';
+import { ActorHttpInvalidate } from './ActorHttpInvalidate';
 
 /**
  * An ActorHttpInvalidate actor that allows listeners to be attached.

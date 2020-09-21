@@ -1,13 +1,13 @@
+import type { BindingsStream,
+  IActorQueryOperationOutputBindings,
+  IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import {
   ActorQueryOperation,
   ActorQueryOperationTypedMediated,
-  BindingsStream,
-  IActorQueryOperationOutputBindings,
-  IActorQueryOperationTypedMediatedArgs,
 } from '@comunica/bus-query-operation';
-import { ActionContext, IActorTest } from '@comunica/core';
+import type { ActionContext, IActorTest } from '@comunica/core';
 import { UnionIterator } from 'asynciterator';
-import { Algebra } from 'sparqlalgebrajs';
+import type { Algebra } from 'sparqlalgebrajs';
 
 /**
  * A comunica Union Query Operation Actor.
@@ -37,7 +37,7 @@ export class ActorQueryOperationUnion extends ActorQueryOperationTypedMediated<A
   public static unionMetadata(metadatas: {[id: string]: any}[]): {[id: string]: any} {
     let totalItems = 0;
     for (const metadata of metadatas) {
-      if (metadata.totalItems && isFinite(metadata.totalItems)) {
+      if (metadata.totalItems && Number.isFinite(metadata.totalItems)) {
         totalItems += metadata.totalItems;
       } else {
         totalItems = Infinity;

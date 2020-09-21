@@ -1,6 +1,4 @@
-import {
-  ActorAbstractMediaTyped,
-  IActionAbstractMediaTyped,
+import type { IActionAbstractMediaTyped,
   IActionAbstractMediaTypedHandle,
   IActionAbstractMediaTypedMediaTypeFormats,
   IActionAbstractMediaTypedMediaTypes,
@@ -12,10 +10,12 @@ import {
   IActorTestAbstractMediaTyped,
   IActorTestAbstractMediaTypedHandle,
   IActorTestAbstractMediaTypedMediaTypeFormats,
-  IActorTestAbstractMediaTypedMediaTypes,
+  IActorTestAbstractMediaTypedMediaTypes } from '@comunica/actor-abstract-mediatyped';
+import {
+  ActorAbstractMediaTyped,
 } from '@comunica/actor-abstract-mediatyped';
-import { IActorQueryOperationOutputBase } from '@comunica/bus-query-operation';
-import { IAction, IActorOutput, IActorTest } from '@comunica/core';
+import type { IActorQueryOperationOutputBase } from '@comunica/bus-query-operation';
+import type { IAction, IActorOutput, IActorTest } from '@comunica/core';
 
 /**
  * A comunica actor for sparql-serialize events.

@@ -1,15 +1,15 @@
+import type { IActionQueryOperation,
+  IActorQueryOperationOutput,
+  IActorQueryOperationOutputBindings } from '@comunica/bus-query-operation';
 import {
   ActorQueryOperationTyped,
   Bindings,
-  IActionQueryOperation,
-  IActorQueryOperationOutput,
-  IActorQueryOperationOutputBindings,
 } from '@comunica/bus-query-operation';
-import { ActionContext, IActorArgs, IActorTest } from '@comunica/core';
+import type { ActionContext, IActorArgs, IActorTest } from '@comunica/core';
 import { SingletonIterator } from 'asynciterator';
 import { termToString } from 'rdf-string';
 import { getTerms, uniqTerms } from 'rdf-terms';
-import { Algebra } from 'sparqlalgebrajs';
+import type { Algebra } from 'sparqlalgebrajs';
 
 /**
  * A comunica Query Operation Actor for empty BGPs.

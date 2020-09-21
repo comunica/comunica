@@ -35,7 +35,7 @@ describe('LoggerBunyan', () => {
       expect((<any> logger).bunyanLogger.name).toEqual('abc');
       expect((<any> logger).bunyanLogger.a).toEqual('a');
       expect((<any> logger).bunyanLogger.b).toEqual('b');
-      expect((<any> logger).bunyanLogger.streamProviders).toBeFalsy();
+      expect((<any> logger).bunyanLogger.streamProviders).toEqual([]);
     });
 
     it('should forward trace', () => {

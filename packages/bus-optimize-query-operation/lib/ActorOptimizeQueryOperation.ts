@@ -1,5 +1,6 @@
-import { Actor, IAction, IActorArgs, IActorOutput, IActorTest } from '@comunica/core';
-import { Algebra } from 'sparqlalgebrajs';
+import type { IAction, IActorArgs, IActorOutput, IActorTest } from '@comunica/core';
+import { Actor } from '@comunica/core';
+import type { Algebra } from 'sparqlalgebrajs';
 
 /**
  * A comunica actor for optimize-query-operation events.

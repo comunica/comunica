@@ -1,4 +1,5 @@
-import { Bindings, IActorQueryOperationOutputBindings } from '@comunica/bus-query-operation';
+import type { IActorQueryOperationOutputBindings } from '@comunica/bus-query-operation';
+import { Bindings } from '@comunica/bus-query-operation';
 import { Bus } from '@comunica/core';
 import { literal } from '@rdfjs/data-model';
 import { ArrayIterator } from 'asynciterator';
@@ -115,6 +116,7 @@ describe('ActorQueryOperationReducedHash', () => {
   });
 });
 
+// eslint-disable-next-line mocha/max-top-level-suites
 describe('Smaller cache than number of queries', () => {
   let actor: ActorQueryOperationReducedHash;
   let bus: any;

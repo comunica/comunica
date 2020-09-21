@@ -1,8 +1,9 @@
+import type { Bindings, IActorQueryOperationOutputBindings,
+  IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import {
   ActorQueryOperation, ActorQueryOperationTypedMediated,
-  Bindings, IActorQueryOperationOutputBindings, IActorQueryOperationTypedMediatedArgs,
 } from '@comunica/bus-query-operation';
-import { ActionContext, IActorTest } from '@comunica/core';
+import type { ActionContext, IActorTest } from '@comunica/core';
 import type { Term } from 'rdf-js';
 import { Algebra } from 'sparqlalgebrajs';
 import { AsyncEvaluator, isExpressionError, orderTypes } from 'sparqlee';
@@ -48,13 +49,14 @@ export class ActorQueryOperationOrderBySparqlee extends ActorQueryOperationTyped
       interface IAnnotatedBinding {
         bindings: Bindings; result: Term | undefined;
       }
+      // eslint-disable-next-line @typescript-eslint/no-loop-func
       const transform = async(bindings: Bindings, next: any, push: (result: IAnnotatedBinding) => void):
       Promise<void> => {
         try {
           const result = await evaluator.evaluate(bindings);
           push({ bindings, result });
-        } catch (error) {
-          if (!isExpressionError(error)) {
+        } catch (error: unknown) {
+          if (!isExpressionError(<Error> error)) {
             bindingsStream.emit('error', error);
           }
           push({ bindings, result: undefined });

@@ -1,5 +1,6 @@
-import { ActionContext } from '@comunica/core';
-import { ActorAbstractMediaTyped, IActorArgsMediaTyped } from './ActorAbstractMediaTyped';
+import type { ActionContext } from '@comunica/core';
+import type { IActorArgsMediaTyped } from './ActorAbstractMediaTyped';
+import { ActorAbstractMediaTyped } from './ActorAbstractMediaTyped';
 
 export abstract class ActorAbstractMediaTypedFixed<HI, HT, HO> extends ActorAbstractMediaTyped<HI, HT, HO> {
   /**

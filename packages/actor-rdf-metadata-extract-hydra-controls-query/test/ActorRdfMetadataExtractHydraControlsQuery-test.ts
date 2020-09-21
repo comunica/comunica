@@ -35,7 +35,7 @@ const queryEngine: any = {
     };
   },
   resultToString: ({ bindingsStream }: any) => sparqlSerialer
-    .runHandle(<any> { type: 'bindings', bindingsStream, variables: [ 'v' ]}, undefined, undefined),
+    .runHandle(<any> { type: 'bindings', bindingsStream, variables: [ 'v' ]}),
 };
 
 const HYDRA = 'http://www.w3.org/ns/hydra/core#';

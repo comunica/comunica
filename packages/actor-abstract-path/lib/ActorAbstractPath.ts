@@ -1,17 +1,20 @@
+import type { IActorQueryOperationTypedMediatedArgs,
+  IActorQueryOperationOutputBindings } from '@comunica/bus-query-operation';
 import {
   ActorQueryOperation,
   ActorQueryOperationTypedMediated,
-  IActorQueryOperationTypedMediatedArgs,
-  IActorQueryOperationOutputBindings,
   Bindings,
 } from '@comunica/bus-query-operation';
-import { ActionContext, IActorTest } from '@comunica/core';
+import type { IActorTest } from '@comunica/core';
+import { ActionContext } from '@comunica/core';
 import { variable } from '@rdfjs/data-model';
-import { AsyncIterator, BufferedIterator, MultiTransformIterator,
+import type { AsyncIterator } from 'asynciterator';
+import { BufferedIterator, MultiTransformIterator,
   TransformIterator, EmptyIterator } from 'asynciterator';
 import type { Term, Variable } from 'rdf-js';
 import { termToString } from 'rdf-string';
-import { Algebra, Factory } from 'sparqlalgebrajs';
+import type { Algebra } from 'sparqlalgebrajs';
+import { Factory } from 'sparqlalgebrajs';
 
 /**
  * An abstract actor that handles Path operations.

@@ -1,4 +1,5 @@
-import { ActorQueryOperation, IActorQueryOperationOutputQuads } from '@comunica/bus-query-operation';
+import type { IActorQueryOperationOutputQuads } from '@comunica/bus-query-operation';
+import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { ActionContext, Bus } from '@comunica/core';
 import { namedNode, quad, variable } from '@rdfjs/data-model';
 import { ArrayIterator } from 'asynciterator';

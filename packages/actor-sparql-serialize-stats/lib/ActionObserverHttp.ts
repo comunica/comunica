@@ -1,5 +1,6 @@
-import { IActionHttp, IActorHttpOutput } from '@comunica/bus-http';
-import { ActionObserver, Actor, IActionObserverArgs, IActorTest } from '@comunica/core';
+import type { IActionHttp, IActorHttpOutput } from '@comunica/bus-http';
+import type { Actor, IActionObserverArgs, IActorTest } from '@comunica/core';
+import { ActionObserver } from '@comunica/core';
 
 /**
  * Observes HTTP actions, and maintains a counter of the number of requests.

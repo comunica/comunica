@@ -1,5 +1,7 @@
-import { Bindings, IActorQueryOperationOutputBindings } from '@comunica/bus-query-operation';
-import { ActorRdfJoin, IActionRdfJoin } from '@comunica/bus-rdf-join';
+import type { IActorQueryOperationOutputBindings } from '@comunica/bus-query-operation';
+import { Bindings } from '@comunica/bus-query-operation';
+import type { IActionRdfJoin } from '@comunica/bus-rdf-join';
+import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import { Bus } from '@comunica/core';
 import { literal, namedNode } from '@rdfjs/data-model';
 import { ArrayIterator } from 'asynciterator';

@@ -1,4 +1,5 @@
-import { ActorHttp, IActionHttp } from '@comunica/bus-http';
+import type { IActionHttp } from '@comunica/bus-http';
+import { ActorHttp } from '@comunica/bus-http';
 import { ActionContext, Bus } from '@comunica/core';
 import { ActorHttpMemento, KEY_CONTEXT_DATETIME } from '../lib/ActorHttpMemento';
 import 'cross-fetch/polyfill';

@@ -1,6 +1,7 @@
-import { Bindings, BindingsStream } from '@comunica/bus-query-operation';
+import type { Bindings, BindingsStream } from '@comunica/bus-query-operation';
 import { blankNode } from '@rdfjs/data-model';
-import { ArrayIterator, AsyncIterator, MultiTransformIterator } from 'asynciterator';
+import type { AsyncIterator } from 'asynciterator';
+import { ArrayIterator, MultiTransformIterator } from 'asynciterator';
 import type * as RDF from 'rdf-js';
 import { mapTerms } from 'rdf-terms';
 
@@ -57,8 +58,8 @@ export class BindingsToQuadsIterator extends MultiTransformIterator<Bindings, RD
         }
         return boundTerm;
       });
-    } catch (error) {
-      return undefined;
+    } catch {
+      // Do nothing
     }
   }
 

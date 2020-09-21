@@ -1,11 +1,12 @@
-import { ActorHttp, IActionHttp, IActorHttpOutput } from '@comunica/bus-http';
+import type { IActionHttp, IActorHttpOutput } from '@comunica/bus-http';
+import { ActorHttp } from '@comunica/bus-http';
+import type { IActionRdfDereference,
+  IActorRdfDereferenceMediaMappingsArgs,
+  IActorRdfDereferenceOutput } from '@comunica/bus-rdf-dereference';
 import {
   ActorRdfDereferenceMediaMappings,
-  IActionRdfDereference,
-  IActorRdfDereferenceMediaMappingsArgs,
-  IActorRdfDereferenceOutput,
 } from '@comunica/bus-rdf-dereference';
-import {
+import type {
   IActionHandleRdfParse,
   IActionMediaTypesRdfParse,
   IActionRdfParse,
@@ -15,7 +16,7 @@ import {
   IActorTestHandleRdfParse,
   IActorTestMediaTypesRdfParse,
 } from '@comunica/bus-rdf-parse';
-import { Actor, IActorTest, Mediator } from '@comunica/core';
+import type { Actor, IActorTest, Mediator } from '@comunica/core';
 import { Headers } from 'cross-fetch';
 import { resolve as resolveRelative } from 'relative-to-absolute-iri';
 
@@ -78,7 +79,7 @@ export abstract class ActorRdfDereferenceHttpParseBase extends ActorRdfDereferen
     let httpResponse: IActorHttpOutput;
     try {
       httpResponse = await this.mediatorHttp.mediate(httpAction);
-    } catch (error) {
+    } catch (error: unknown) {
       return this.handleDereferenceError(action, error);
     }
     // The response URL can be relative to the given URL
@@ -123,7 +124,7 @@ export abstract class ActorRdfDereferenceHttpParseBase extends ActorRdfDereferen
       parseOutput = (await this.mediatorRdfParseHandle.mediate(
         { context: action.context, handle: parseAction, handleMediaType: mediaType },
       )).handle;
-    } catch (error) {
+    } catch (error: unknown) {
       return this.handleDereferenceError(action, error);
     }
 

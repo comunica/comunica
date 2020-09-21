@@ -1,7 +1,8 @@
-import { ActionContext, IActorArgs, IActorTest } from '@comunica/core';
-import { Algebra } from 'sparqlalgebrajs';
-import { ActorQueryOperation, IActionQueryOperation, IActorQueryOperationOutput,
+import type { ActionContext, IActorArgs, IActorTest } from '@comunica/core';
+import type { Algebra } from 'sparqlalgebrajs';
+import type { IActionQueryOperation, IActorQueryOperationOutput,
   IActorQueryOperationOutputStream } from './ActorQueryOperation';
+import { ActorQueryOperation } from './ActorQueryOperation';
 
 /**
  * @type {string} Context entry for the current query operation.

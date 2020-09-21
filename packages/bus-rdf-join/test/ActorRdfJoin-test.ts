@@ -1,7 +1,8 @@
 import { Bindings } from '@comunica/bus-query-operation';
 import { Bus } from '@comunica/core';
 import { literal } from '@rdfjs/data-model';
-import { ActorRdfJoin, IActionRdfJoin } from '..';
+import type { IActionRdfJoin } from '..';
+import { ActorRdfJoin } from '..';
 
 const arrayifyStream = require('arrayify-stream');
 

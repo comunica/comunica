@@ -1,4 +1,4 @@
-import { LogLevelString, Stream } from 'bunyan';
+import type { LogLevelString, Stream } from 'bunyan';
 
 /**
  * BunyanStreamProvider is able to create bunyan streams.

@@ -2,7 +2,7 @@ import { ActorQueryOperation, Bindings } from '@comunica/bus-query-operation';
 import { Bus } from '@comunica/core';
 import { literal, variable } from '@rdfjs/data-model';
 import { ArrayIterator } from 'asynciterator';
-import { Algebra } from 'sparqlalgebrajs';
+import type { Algebra } from 'sparqlalgebrajs';
 import { ActorQueryOperationOrderByDirect } from '../lib/ActorQueryOperationOrderByDirect';
 const arrayifyStream = require('arrayify-stream');
 

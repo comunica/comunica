@@ -1,8 +1,10 @@
-import { ActorRdfMetadataExtractQuery, IActionRdfMetadataExtract, IActorRdfMetadataExtractOutput,
+import type { IActionRdfMetadataExtract, IActorRdfMetadataExtractOutput,
   IActorRdfMetadataExtractQueryArgs } from '@comunica/bus-rdf-metadata-extract';
-import { IActorTest } from '@comunica/core';
+import { ActorRdfMetadataExtractQuery } from '@comunica/bus-rdf-metadata-extract';
+import type { IActorTest } from '@comunica/core';
 
-import { parse as parseUriTemplate, UriTemplate } from 'uritemplate';
+import type { UriTemplate } from 'uritemplate';
+import { parse as parseUriTemplate } from 'uritemplate';
 import * as GRAPHQLLD_CONTEXT from './context.json';
 
 /**
@@ -110,7 +112,7 @@ export interface ISearchForm {
    *                and as values Hydra variable values.
    * @return {string} The instantiated URI
    */
-  getUri(entries: {[id: string]: string}): string;
+  getUri: (entries: {[id: string]: string}) => string;
 }
 
 export interface ISearchForms {

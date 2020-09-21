@@ -1,11 +1,11 @@
-import { ActionContext, IActorArgs, IActorTest } from '@comunica/core';
-import { AsyncIterator } from 'asynciterator';
+import type { ActionContext, IActorArgs, IActorTest } from '@comunica/core';
+import type { AsyncIterator } from 'asynciterator';
 import type * as RDF from 'rdf-js';
-import { Algebra } from 'sparqlalgebrajs';
+import type { Algebra } from 'sparqlalgebrajs';
+import type { IActionRdfResolveQuadPattern,
+  IActorRdfResolveQuadPatternOutput } from './ActorRdfResolveQuadPattern';
 import {
   ActorRdfResolveQuadPattern,
-  IActionRdfResolveQuadPattern,
-  IActorRdfResolveQuadPatternOutput,
 } from './ActorRdfResolveQuadPattern';
 
 /**
@@ -69,5 +69,5 @@ export interface IQuadSource {
    * @param {RDF.Term} graph     The exact graph to match, variable is wildcard.
    * @return {AsyncIterator<RDF.Quad>} The resulting quad stream.
    */
-  match(subject: RDF.Term, predicate: RDF.Term, object: RDF.Term, graph: RDF.Term): AsyncIterator<RDF.Quad>;
+  match: (subject: RDF.Term, predicate: RDF.Term, object: RDF.Term, graph: RDF.Term) => AsyncIterator<RDF.Quad>;
 }

@@ -1,4 +1,5 @@
-import { Actor, IAction, IActorArgs, IActorOutput, IActorTest } from '@comunica/core';
+import type { IAction, IActorArgs, IActorOutput, IActorTest } from '@comunica/core';
+import { Actor } from '@comunica/core';
 
 /**
  * A base actor for listening to HTTP events.

@@ -1,5 +1,6 @@
-import { Actor, IAction, IActorOutput, IActorTest } from './Actor';
-import { Bus, IActorReply, IBusArgs } from './Bus';
+import type { Actor, IAction, IActorOutput, IActorTest } from './Actor';
+import type { IActorReply, IBusArgs } from './Bus';
+import { Bus } from './Bus';
 
 /**
  * A bus that indexes identified actors,

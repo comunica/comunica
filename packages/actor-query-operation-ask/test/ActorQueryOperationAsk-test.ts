@@ -1,4 +1,5 @@
-import { ActorQueryOperation, Bindings, IActorQueryOperationOutputBoolean } from '@comunica/bus-query-operation';
+import type { IActorQueryOperationOutputBoolean } from '@comunica/bus-query-operation';
+import { ActorQueryOperation, Bindings } from '@comunica/bus-query-operation';
 import { Bus } from '@comunica/core';
 import { literal } from '@rdfjs/data-model';
 import { ArrayIterator, BufferedIterator, range } from 'asynciterator';

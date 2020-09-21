@@ -1,24 +1,26 @@
 /* eslint-disable unicorn/filename-case */
-import { IActorContextPreprocessOutput } from '@comunica/bus-context-preprocess';
-import { IActionHttpInvalidate, IActorHttpInvalidateOutput } from '@comunica/bus-http-invalidate';
-import { ActorInit, IActionInit, IActorOutputInit } from '@comunica/bus-init';
-import {
+import type { IActorContextPreprocessOutput } from '@comunica/bus-context-preprocess';
+import type { IActionHttpInvalidate, IActorHttpInvalidateOutput } from '@comunica/bus-http-invalidate';
+import type { IActionInit, IActorOutputInit } from '@comunica/bus-init';
+import { ActorInit } from '@comunica/bus-init';
+import type {
   IActionOptimizeQueryOperation,
   IActorOptimizeQueryOperationOutput,
 } from '@comunica/bus-optimize-query-operation';
-import { ensureBindings,
-  IActionQueryOperation,
+import type { IActionQueryOperation,
   IActorQueryOperationOutput,
-  KEY_CONTEXT_BASEIRI,
-  KEY_CONTEXT_QUERY_TIMESTAMP,
-  materializeOperation,
   IActorQueryOperationOutputBindings,
   IActorQueryOperationOutputQuads,
   IActorQueryOperationOutputBoolean } from '@comunica/bus-query-operation';
-import { IDataSource, isDataSourceRawType, KEY_CONTEXT_SOURCES } from '@comunica/bus-rdf-resolve-quad-pattern';
-import { IActionSparqlParse, IActorSparqlParseOutput } from '@comunica/bus-sparql-parse';
+import { ensureBindings,
+  KEY_CONTEXT_BASEIRI,
+  KEY_CONTEXT_QUERY_TIMESTAMP,
+  materializeOperation } from '@comunica/bus-query-operation';
+import type { IDataSource } from '@comunica/bus-rdf-resolve-quad-pattern';
+import { isDataSourceRawType, KEY_CONTEXT_SOURCES } from '@comunica/bus-rdf-resolve-quad-pattern';
+import type { IActionSparqlParse, IActorSparqlParseOutput } from '@comunica/bus-sparql-parse';
 
-import {
+import type {
   IActionSparqlSerialize,
   IActionSparqlSerializeHandle,
   IActionSparqlSerializeMediaTypeFormats,
@@ -31,8 +33,9 @@ import {
   IActorTestSparqlSerializeHandle, IActorTestSparqlSerializeMediaTypeFormats,
   IActorTestSparqlSerializeMediaTypes,
 } from '@comunica/bus-sparql-serialize';
-import { ActionContext, Actor, IAction, IActorArgs, IActorTest,
-  KEY_CONTEXT_LOG, Logger, Mediator } from '@comunica/core';
+import type { Actor, IAction, IActorArgs, IActorTest, Logger, Mediator } from '@comunica/core';
+import { ActionContext,
+  KEY_CONTEXT_LOG } from '@comunica/core';
 import type * as RDF from 'rdf-js';
 import { Algebra } from 'sparqlalgebrajs';
 

@@ -1,13 +1,14 @@
 import { ActorQueryOperationUnion } from '@comunica/actor-query-operation-union';
+import type { IActorQueryOperationOutputQuads,
+  IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import {
   ActorQueryOperation, ActorQueryOperationTypedMediated, getMetadata,
-  IActorQueryOperationOutputQuads, IActorQueryOperationTypedMediatedArgs,
 } from '@comunica/bus-query-operation';
-import { ActionContext, IActorTest } from '@comunica/core';
+import type { ActionContext, IActorTest } from '@comunica/core';
 import { triple, variable } from '@rdfjs/data-model';
 import { UnionIterator } from 'asynciterator';
 import type * as RDF from 'rdf-js';
-import { Algebra } from 'sparqlalgebrajs';
+import type { Algebra } from 'sparqlalgebrajs';
 
 /**
  * A comunica Describe Subject Query Operation Actor.

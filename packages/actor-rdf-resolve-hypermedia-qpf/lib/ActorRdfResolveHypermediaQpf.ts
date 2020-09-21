@@ -1,13 +1,13 @@
-import { IActionRdfDereference, IActorRdfDereferenceOutput } from '@comunica/bus-rdf-dereference';
-import { IActionRdfMetadata, IActorRdfMetadataOutput } from '@comunica/bus-rdf-metadata';
-import { IActionRdfMetadataExtract, IActorRdfMetadataExtractOutput } from '@comunica/bus-rdf-metadata-extract';
+import type { IActionRdfDereference, IActorRdfDereferenceOutput } from '@comunica/bus-rdf-dereference';
+import type { IActionRdfMetadata, IActorRdfMetadataOutput } from '@comunica/bus-rdf-metadata';
+import type { IActionRdfMetadataExtract, IActorRdfMetadataExtractOutput } from '@comunica/bus-rdf-metadata-extract';
+import type { IActionRdfResolveHypermedia,
+  IActorRdfResolveHypermediaOutput,
+  IActorRdfResolveHypermediaTest } from '@comunica/bus-rdf-resolve-hypermedia';
 import {
   ActorRdfResolveHypermedia,
-  IActionRdfResolveHypermedia,
-  IActorRdfResolveHypermediaOutput,
-  IActorRdfResolveHypermediaTest,
 } from '@comunica/bus-rdf-resolve-hypermedia';
-import { ActionContext, Actor, IActorArgs, IActorTest, Mediator } from '@comunica/core';
+import type { ActionContext, Actor, IActorArgs, IActorTest, Mediator } from '@comunica/core';
 import type * as RDF from 'rdf-js';
 import { RdfSourceQpf } from './RdfSourceQpf';
 

@@ -1,4 +1,5 @@
-import { Actor, IAction, IActorOutput, IActorReply, IActorTest, IMediatorArgs, Mediator } from '@comunica/core';
+import type { Actor, IAction, IActorOutput, IActorReply, IActorTest, IMediatorArgs } from '@comunica/core';
+import { Mediator } from '@comunica/core';
 
 /**
  * A comunica mediator that goes over all actors in sequence and forwards I/O.
@@ -14,7 +15,7 @@ export class MediatorCombinePipeline<A extends Actor<H, T, H>, H extends IAction
     let testResults: IActorReply<A, H, T, H>[];
     try {
       testResults = this.publish(action);
-    } catch (error) {
+    } catch {
       // If no actors are available, just return the input as output
       return action;
     }

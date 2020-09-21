@@ -1,7 +1,9 @@
 import { PassThrough } from 'stream';
-import { ActorHttp, IActionHttp, IActorHttpOutput } from '@comunica/bus-http';
-import { ActorInit, IActionInit, IActorOutputInit } from '@comunica/bus-init';
-import { Actor, IActorArgs, IActorTest, Mediator } from '@comunica/core';
+import type { IActionHttp, IActorHttpOutput } from '@comunica/bus-http';
+import { ActorHttp } from '@comunica/bus-http';
+import type { IActionInit, IActorOutputInit } from '@comunica/bus-init';
+import { ActorInit } from '@comunica/bus-init';
+import type { Actor, IActorArgs, IActorTest, Mediator } from '@comunica/core';
 
 /**
  * A http actor that listens on the 'init' bus.

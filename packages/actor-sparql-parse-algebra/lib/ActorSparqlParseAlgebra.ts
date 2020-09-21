@@ -1,5 +1,6 @@
-import { ActorSparqlParse, IActionSparqlParse, IActorSparqlParseOutput } from '@comunica/bus-sparql-parse';
-import { IActorArgs, IActorTest } from '@comunica/core';
+import type { IActionSparqlParse, IActorSparqlParseOutput } from '@comunica/bus-sparql-parse';
+import { ActorSparqlParse } from '@comunica/bus-sparql-parse';
+import type { IActorArgs, IActorTest } from '@comunica/core';
 import { translate } from 'sparqlalgebrajs';
 import { Parser as SparqlParser } from 'sparqljs';
 

@@ -1,5 +1,6 @@
-import { ActorHttp, IActionHttp, IActorHttpOutput } from '@comunica/bus-http';
-import { IActorArgs, IActorTest, Mediator } from '@comunica/core';
+import type { IActionHttp, IActorHttpOutput } from '@comunica/bus-http';
+import { ActorHttp } from '@comunica/bus-http';
+import type { IActorArgs, IActorTest, Mediator } from '@comunica/core';
 import 'cross-fetch/polyfill';
 import * as parseLink from 'parse-link-header';
 

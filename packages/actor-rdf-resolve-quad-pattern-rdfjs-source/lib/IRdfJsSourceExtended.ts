@@ -11,5 +11,10 @@ export interface IRdfJsSourceExtended extends RDF.Source {
    * @param object    An optional object.
    * @param graph     An optional graph.
    */
-  countQuads?(subject?: RDF.Term, predicate?: RDF.Term, object?: RDF.Term, graph?: RDF.Term): Promise<number> | number;
+  countQuads?: (
+    subject?: RDF.Term,
+    predicate?: RDF.Term,
+    object?: RDF.Term,
+    graph?: RDF.Term,
+  ) => Promise<number> | number;
 }

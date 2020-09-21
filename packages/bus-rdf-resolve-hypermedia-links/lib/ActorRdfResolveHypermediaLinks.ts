@@ -1,4 +1,5 @@
-import { Actor, IAction, IActorArgs, IActorOutput, IActorTest } from '@comunica/core';
+import type { IAction, IActorArgs, IActorOutput, IActorTest } from '@comunica/core';
+import { Actor } from '@comunica/core';
 
 /**
  * A comunica actor for rdf-resolve-hypermedia-links events.

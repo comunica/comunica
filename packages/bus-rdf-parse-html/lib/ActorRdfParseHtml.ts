@@ -1,4 +1,5 @@
-import { Actor, IAction, IActorArgs, IActorOutput, IActorTest } from '@comunica/core';
+import type { IAction, IActorArgs, IActorOutput, IActorTest } from '@comunica/core';
+import { Actor } from '@comunica/core';
 import type * as RDF from 'rdf-js';
 
 /**
@@ -32,18 +33,18 @@ export interface IActionRdfParseHtml extends IAction {
    * This function can be called whenever a quad has been parsed.
    * @param {Quad} quad A parsed quad.
    */
-  emit(quad: RDF.Quad): void;
+  emit: (quad: RDF.Quad) => void;
 
   /**
    * This function can be called when an error occurs.
    * @param {Error} error An error.
    */
-  error(error: Error): void;
+  error: (error: Error) => void;
 
   /**
    * This function must be called when parsing is complete.
    */
-  end(): void;
+  end: () => void;
 }
 
 export interface IActorRdfParseHtmlOutput extends IActorOutput {
@@ -62,12 +63,12 @@ export interface IHtmlParseListener {
    * @param {string} name The tag name.
    * @param {{[p: string]: string}} attributes A hash of attributes.
    */
-  onTagOpen(name: string, attributes: {[s: string]: string}): void;
+  onTagOpen: (name: string, attributes: {[s: string]: string}) => void;
 
   /**
    * Called when a tag is closed.
    */
-  onTagClose(): void;
+  onTagClose: () => void;
 
   /**
    * Called when text contents are parsed.
@@ -75,10 +76,10 @@ export interface IHtmlParseListener {
    * when for example the string is spread over multiple chunks.
    * @param {string} data A string.
    */
-  onText(data: string): void;
+  onText: (data: string) => void;
 
   /**
    * Called when parsing has ended.
    */
-  onEnd(): void;
+  onEnd: () => void;
 }

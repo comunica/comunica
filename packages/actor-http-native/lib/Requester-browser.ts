@@ -4,7 +4,7 @@
 /* Translated from https://github.com/LinkedDataFragments/Client.js/blob/master/lib/browser/Request.js */
 
 import { EventEmitter } from 'events';
-import { IncomingHttpHeaders, IncomingMessage } from 'http';
+import type { IncomingHttpHeaders, IncomingMessage } from 'http';
 import { Readable } from 'stream';
 import * as parseLink from 'parse-link-header';
 

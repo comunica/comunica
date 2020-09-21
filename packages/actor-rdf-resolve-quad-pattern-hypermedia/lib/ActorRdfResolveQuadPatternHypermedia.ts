@@ -1,21 +1,22 @@
-import { ActorHttpInvalidateListenable, IActionHttpInvalidate } from '@comunica/bus-http-invalidate';
-import { IActionRdfDereference, IActorRdfDereferenceOutput } from '@comunica/bus-rdf-dereference';
-import { IActionRdfMetadata, IActorRdfMetadataOutput } from '@comunica/bus-rdf-metadata';
-import { IActionRdfMetadataExtract, IActorRdfMetadataExtractOutput } from '@comunica/bus-rdf-metadata-extract';
-import { IActionRdfResolveHypermedia, IActorRdfResolveHypermediaOutput } from '@comunica/bus-rdf-resolve-hypermedia';
-import {
+import type { ActorHttpInvalidateListenable, IActionHttpInvalidate } from '@comunica/bus-http-invalidate';
+import type { IActionRdfDereference, IActorRdfDereferenceOutput } from '@comunica/bus-rdf-dereference';
+import type { IActionRdfMetadata, IActorRdfMetadataOutput } from '@comunica/bus-rdf-metadata';
+import type { IActionRdfMetadataExtract, IActorRdfMetadataExtractOutput } from '@comunica/bus-rdf-metadata-extract';
+import type { IActionRdfResolveHypermedia,
+  IActorRdfResolveHypermediaOutput } from '@comunica/bus-rdf-resolve-hypermedia';
+import type {
   IActionRdfResolveHypermediaLinks,
   IActorRdfResolveHypermediaLinksOutput,
 } from '@comunica/bus-rdf-resolve-hypermedia-links';
+import type { IActionRdfResolveQuadPattern,
+  IActorRdfResolveQuadPatternOutput, IDataSource,
+  IQuadSource } from '@comunica/bus-rdf-resolve-quad-pattern';
 import {
   ActorRdfResolveQuadPatternSource, getDataSourceType,
-  IActionRdfResolveQuadPattern,
-  IActorRdfResolveQuadPatternOutput, IDataSource,
-  IQuadSource,
 } from '@comunica/bus-rdf-resolve-quad-pattern';
-import { ActionContext, Actor, IActorArgs, IActorTest, Mediator } from '@comunica/core';
+import type { ActionContext, Actor, IActorArgs, IActorTest, Mediator } from '@comunica/core';
 import LRUCache = require('lru-cache');
-import { Algebra } from 'sparqlalgebrajs';
+import type { Algebra } from 'sparqlalgebrajs';
 import { MediatedQuadSource } from './MediatedQuadSource';
 
 /**

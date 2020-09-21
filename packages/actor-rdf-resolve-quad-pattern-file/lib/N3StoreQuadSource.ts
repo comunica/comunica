@@ -1,5 +1,5 @@
-import { IQuadSource } from '@comunica/bus-rdf-resolve-quad-pattern';
-import { AsyncIterator } from 'asynciterator';
+import type { IQuadSource } from '@comunica/bus-rdf-resolve-quad-pattern';
+import type { AsyncIterator } from 'asynciterator';
 import type * as RDF from 'rdf-js';
 import { N3StoreIterator } from './N3StoreIterator';
 

@@ -1,5 +1,6 @@
-import { IActorArgs, IActorTest } from '@comunica/core';
-import { ActorRdfDereference, IActionRdfDereference, IActorRdfDereferenceOutput } from './ActorRdfDereference';
+import type { IActorArgs, IActorTest } from '@comunica/core';
+import type { IActionRdfDereference, IActorRdfDereferenceOutput } from './ActorRdfDereference';
+import { ActorRdfDereference } from './ActorRdfDereference';
 
 /**
  * A base actor for dereferencing URLs to quad streams.

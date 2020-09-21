@@ -1,14 +1,14 @@
+import type { BindingsStream,
+  IActorQueryOperationOutputBindings } from '@comunica/bus-query-operation';
 import {
   ActorQueryOperation,
   Bindings,
-  BindingsStream,
-  IActorQueryOperationOutputBindings,
 } from '@comunica/bus-query-operation';
 import { ActionContext, Bus } from '@comunica/core';
 import { blankNode, defaultGraph, literal, namedNode, quad, variable } from '@rdfjs/data-model';
 import { ArrayIterator, EmptyIterator, SingletonIterator } from 'asynciterator';
 import type * as RDF from 'rdf-js';
-import { Algebra } from 'sparqlalgebrajs';
+import type { Algebra } from 'sparqlalgebrajs';
 import { ActorQueryOperationBgpLeftDeepSmallestSort } from '../lib/ActorQueryOperationBgpLeftDeepSmallestSort';
 const arrayifyStream = require('arrayify-stream');
 

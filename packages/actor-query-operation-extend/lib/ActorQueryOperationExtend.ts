@@ -1,11 +1,12 @@
-import {
-  ActorQueryOperation, ActorQueryOperationTypedMediated, Bindings,
+import type { Bindings,
   IActorQueryOperationOutputBindings,
-  IActorQueryOperationTypedMediatedArgs,
+  IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
+import {
+  ActorQueryOperation, ActorQueryOperationTypedMediated,
 } from '@comunica/bus-query-operation';
-import { ActionContext, IActorTest } from '@comunica/core';
+import type { ActionContext, IActorTest } from '@comunica/core';
 import { termToString } from 'rdf-string';
-import { Algebra } from 'sparqlalgebrajs';
+import type { Algebra } from 'sparqlalgebrajs';
 import { AsyncEvaluator, isExpressionError } from 'sparqlee';
 
 /**
@@ -37,15 +38,15 @@ export class ActorQueryOperationExtend extends ActorQueryOperationTypedMediated<
     const evaluator = new AsyncEvaluator(expression, config);
 
     // Transform the stream by extending each Bindings with the expression result
-    const transform = async(bindings: Bindings, next: any, push: (bindings: Bindings) => void): Promise<void> => {
+    const transform = async(bindings: Bindings, next: any, push: (pusbBindings: Bindings) => void): Promise<void> => {
       try {
         const result = await evaluator.evaluate(bindings);
         // Extend operation is undefined when the key already exists
         // We just override it here.
         const extended = bindings.set(extendKey, result);
         push(extended);
-      } catch (error) {
-        if (isExpressionError(error)) {
+      } catch (error: unknown) {
+        if (isExpressionError(<Error> error)) {
           // Errors silently don't actually extend according to the spec
           push(bindings);
           // But let's warn anyway

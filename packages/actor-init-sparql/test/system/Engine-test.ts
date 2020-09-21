@@ -1,8 +1,9 @@
 // Needed to undo automock from actor-http-native, cleaner workarounds do not appear to be working.
 jest.unmock('follow-redirects');
 
-import { newEngine, ActorInitSparql } from '../../index-browser';
-import { IQueryResultBindings } from '../../lib/ActorInitSparql-browser';
+import type { ActorInitSparql } from '../../index-browser';
+import { newEngine } from '../../index-browser';
+import type { IQueryResultBindings } from '../../lib/ActorInitSparql-browser';
 import { mockHttp } from './util';
 const arrayifyStream = require('arrayify-stream');
 

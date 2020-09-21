@@ -1,10 +1,13 @@
 import { Readable } from 'stream';
-import { IActorQueryOperationOutputBindings, BindingsStream } from '@comunica/bus-query-operation';
-import { ActorSparqlSerializeFixedMediaTypes, IActionSparqlSerialize,
+import type { IActorQueryOperationOutputBindings, BindingsStream } from '@comunica/bus-query-operation';
+import type { IActionSparqlSerialize,
   IActorSparqlSerializeFixedMediaTypesArgs, IActorSparqlSerializeOutput } from '@comunica/bus-sparql-serialize';
-import { ActionContext, ensureActionContext } from '@comunica/core';
+import { ActorSparqlSerializeFixedMediaTypes } from '@comunica/bus-sparql-serialize';
+import type { ActionContext } from '@comunica/core';
+import { ensureActionContext } from '@comunica/core';
 import type * as RDF from 'rdf-js';
-import { Converter, IConverterSettings, ISchema } from 'sparqljson-to-tree';
+import type { IConverterSettings, ISchema } from 'sparqljson-to-tree';
+import { Converter } from 'sparqljson-to-tree';
 
 /**
  * A comunica Tree SPARQL Serialize Actor.

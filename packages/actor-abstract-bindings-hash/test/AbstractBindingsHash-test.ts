@@ -1,12 +1,12 @@
+import type { IActorQueryOperationOutputBindings,
+  IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import {
   Bindings,
-  IActorQueryOperationOutputBindings,
-  IActorQueryOperationTypedMediatedArgs,
 } from '@comunica/bus-query-operation';
 import { Actor, Bus } from '@comunica/core';
 import { literal } from '@rdfjs/data-model';
 import { ArrayIterator } from 'asynciterator';
-import { Algebra } from 'sparqlalgebrajs';
+import type { Algebra } from 'sparqlalgebrajs';
 import { AbstractBindingsHash } from '..';
 const arrayifyStream = require('arrayify-stream');
 

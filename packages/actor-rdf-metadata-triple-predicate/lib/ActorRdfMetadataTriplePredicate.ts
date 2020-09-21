@@ -1,5 +1,6 @@
-import { ActorRdfMetadataQuadPredicate, IActionRdfMetadata, IActorRdfMetadataOutput } from '@comunica/bus-rdf-metadata';
-import { IActorArgs, IActorTest } from '@comunica/core';
+import type { IActionRdfMetadata, IActorRdfMetadataOutput } from '@comunica/bus-rdf-metadata';
+import { ActorRdfMetadataQuadPredicate } from '@comunica/bus-rdf-metadata';
+import type { IActorArgs, IActorTest } from '@comunica/core';
 import type * as RDF from 'rdf-js';
 
 /**

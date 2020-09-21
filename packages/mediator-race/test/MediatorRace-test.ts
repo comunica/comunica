@@ -1,4 +1,5 @@
-import { Actor, Bus, IAction, IActorOutput, IActorTest } from '@comunica/core';
+import type { IAction, IActorOutput, IActorTest } from '@comunica/core';
+import { Actor, Bus } from '@comunica/core';
 import { MediatorRace } from '..';
 
 describe('MediatorRace', () => {

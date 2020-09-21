@@ -2,11 +2,11 @@ import {
   ActorRdfResolveQuadPatternSparqlJson,
   AsyncIteratorJsonBindings,
 } from '@comunica/actor-rdf-resolve-quad-pattern-sparql-json';
-import { IActionHttp, IActorHttpOutput } from '@comunica/bus-http';
-import { Bindings, BindingsStream } from '@comunica/bus-query-operation';
-import { IQuadSource } from '@comunica/bus-rdf-resolve-quad-pattern';
-import { ActionContext, Actor, IActorTest, Mediator } from '@comunica/core';
-import { AsyncIterator } from 'asynciterator';
+import type { IActionHttp, IActorHttpOutput } from '@comunica/bus-http';
+import type { Bindings, BindingsStream } from '@comunica/bus-query-operation';
+import type { IQuadSource } from '@comunica/bus-rdf-resolve-quad-pattern';
+import type { ActionContext, Actor, IActorTest, Mediator } from '@comunica/core';
+import type { AsyncIterator } from 'asynciterator';
 import type * as RDF from 'rdf-js';
 import { mapTerms } from 'rdf-terms';
 import { Factory } from 'sparqlalgebrajs';
@@ -55,8 +55,8 @@ export class RdfSourceSparql implements IQuadSource {
       bindingsStream.on('data', (bindings: Bindings) => {
         const count: RDF.Term = bindings.get('?count');
         if (count) {
-          const totalItems: number = parseInt(count.value, 10);
-          if (isNaN(totalItems)) {
+          const totalItems: number = Number.parseInt(count.value, 10);
+          if (Number.isNaN(totalItems)) {
             return resolve({ totalItems: Infinity });
           }
           return resolve({ totalItems });

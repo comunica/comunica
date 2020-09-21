@@ -3,7 +3,7 @@ export * from './lib/ActorInitSparql-browser';
 export { bindingsStreamToGraphQl } from '@comunica/actor-sparql-serialize-tree';
 
 // eslint-disable-next-line no-duplicate-imports
-import { ActorInitSparql } from './lib/ActorInitSparql-browser';
+import type { ActorInitSparql } from './lib/ActorInitSparql-browser';
 
 /**
  * Create a new comunica engine from the default config.

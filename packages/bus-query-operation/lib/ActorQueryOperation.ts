@@ -1,8 +1,10 @@
-import { ActionContext, Actor, IAction, IActorArgs, IActorTest, Mediator } from '@comunica/core';
-import { AsyncIterator } from 'asynciterator';
+import type { ActionContext, IAction, IActorArgs, IActorTest, Mediator } from '@comunica/core';
+import { Actor } from '@comunica/core';
+import type { AsyncIterator } from 'asynciterator';
 import type * as RDF from 'rdf-js';
-import { Algebra } from 'sparqlalgebrajs';
-import { Bindings, BindingsStream, materializeOperation } from './Bindings';
+import type { Algebra } from 'sparqlalgebrajs';
+import type { Bindings, BindingsStream } from './Bindings';
+import { materializeOperation } from './Bindings';
 
 /**
  * @type {string} Context entry for current metadata.

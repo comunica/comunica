@@ -1,9 +1,10 @@
+import type { IActorQueryOperationOutput, IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import {
-  ActorQueryOperationTypedMediated, IActorQueryOperationOutput, IActorQueryOperationTypedMediatedArgs,
+  ActorQueryOperationTypedMediated,
   KEY_CONTEXT_BGP_PARENTMETADATA, KEY_CONTEXT_PATTERN_PARENTMETADATA,
 } from '@comunica/bus-query-operation';
-import { ActionContext, IActorTest } from '@comunica/core';
-import { Algebra } from 'sparqlalgebrajs';
+import type { ActionContext, IActorTest } from '@comunica/core';
+import type { Algebra } from 'sparqlalgebrajs';
 
 /**
  * A comunica Query Operation Actor for BGPs with a single pattern.

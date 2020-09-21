@@ -1,4 +1,5 @@
-import { Actor, IAction, IActorOutput, IActorTest, Bus } from '@comunica/core';
+import type { IAction, IActorOutput, IActorTest } from '@comunica/core';
+import { Actor, Bus } from '@comunica/core';
 
 import { Runner } from '../lib/Runner';
 

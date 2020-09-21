@@ -1,4 +1,5 @@
-import { ActorQueryOperation, Bindings, IActorQueryOperationOutputBindings } from '@comunica/bus-query-operation';
+import type { IActorQueryOperationOutputBindings } from '@comunica/bus-query-operation';
+import { ActorQueryOperation, Bindings } from '@comunica/bus-query-operation';
 import { ActionContext, Bus } from '@comunica/core';
 import { namedNode, variable } from '@rdfjs/data-model';
 import { ArrayIterator, EmptyIterator, SingletonIterator } from 'asynciterator';
@@ -101,7 +102,6 @@ describe('ActorQueryOperationLeftJoinLeftDeep', () => {
       const operation = factory.createLeftJoin(
         factory.createPattern(variable('a'), namedNode('1'), namedNode('1'), namedNode('1')),
         factory.createPattern(variable('a'), variable('b'), namedNode('2'), namedNode('b')),
-        undefined,
       );
       const op = { operation, context: ActionContext({ totalItems: 10, variables: [ 'a' ]}) };
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
@@ -122,7 +122,6 @@ describe('ActorQueryOperationLeftJoinLeftDeep', () => {
       const operation = factory.createLeftJoin(
         factory.createPattern(variable('+a'), namedNode('1'), namedNode('1'), namedNode('1')),
         factory.createPattern(variable('+a'), variable('b'), namedNode('2'), namedNode('b')),
-        undefined,
       );
       const op = { operation, context: ActionContext({ totalItems: 10, variables: [ 'a' ]}) };
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
@@ -147,7 +146,6 @@ describe('ActorQueryOperationLeftJoinLeftDeep', () => {
       const operation = factory.createLeftJoin(
         factory.createPattern(variable('a'), namedNode('1'), namedNode('1'), namedNode('1')),
         factory.createPattern(variable('a'), variable('+b'), namedNode('2'), namedNode('b')),
-        undefined,
       );
       const op = { operation, context: ActionContext({ totalItems: 10, variables: [ 'a' ]}) };
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
@@ -172,7 +170,6 @@ describe('ActorQueryOperationLeftJoinLeftDeep', () => {
       const operation = factory.createLeftJoin(
         factory.createPattern(variable('+a'), namedNode('1'), namedNode('1'), namedNode('1')),
         factory.createPattern(variable('+a'), variable('+b'), namedNode('2'), namedNode('b')),
-        undefined,
       );
       const op = { operation, context: ActionContext({ totalItems: 10, variables: [ 'a' ]}) };
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
@@ -205,7 +202,6 @@ describe('ActorQueryOperationLeftJoinLeftDeep', () => {
       const operation = factory.createLeftJoin(
         factory.createPattern(variable('a'), namedNode('1'), namedNode('1'), namedNode('1')),
         factory.createPattern(variable('a'), variable('-b'), namedNode('2'), namedNode('b')),
-        undefined,
       );
       const op = { operation, context: ActionContext({ totalItems: 10, variables: [ 'a' ]}) };
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
@@ -225,7 +221,6 @@ describe('ActorQueryOperationLeftJoinLeftDeep', () => {
       const operation = factory.createLeftJoin(
         factory.createPattern(variable('+a'), namedNode('1'), namedNode('1'), namedNode('1')),
         factory.createPattern(variable('+a'), variable('-b'), namedNode('2'), namedNode('b')),
-        undefined,
       );
       const op = { operation, context: ActionContext({ totalItems: 10, variables: [ 'a' ]}) };
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
@@ -248,7 +243,6 @@ describe('ActorQueryOperationLeftJoinLeftDeep', () => {
       const operation = factory.createLeftJoin(
         factory.createPattern(variable('+a'), namedNode('1'), namedNode('1'), namedNode('1')),
         factory.createPattern(variable('+a'), variable('-b'), namedNode('2'), namedNode('b')),
-        undefined,
       );
       operation.left.rejectMetadata = true;
       const op = { operation, context: ActionContext({ totalItems: 10, variables: [ 'a' ]}) };
@@ -261,7 +255,6 @@ describe('ActorQueryOperationLeftJoinLeftDeep', () => {
       const operation = factory.createLeftJoin(
         factory.createPattern(variable('+a'), namedNode('1'), namedNode('1'), namedNode('1')),
         factory.createPattern(variable('+a'), variable('-b'), namedNode('2'), namedNode('b')),
-        undefined,
       );
       operation.right.rejectMetadata = true;
       const op = { operation, context: ActionContext({ totalItems: 10, variables: [ 'a' ]}) };
@@ -274,7 +267,6 @@ describe('ActorQueryOperationLeftJoinLeftDeep', () => {
       const operation = factory.createLeftJoin(
         factory.createPattern(variable('+a'), namedNode('1'), namedNode('1'), namedNode('1')),
         factory.createPattern(variable('+a'), variable('-b'), namedNode('2'), namedNode('b')),
-        undefined,
       );
       operation.left.rejectMetadata = true;
       operation.right.rejectMetadata = true;

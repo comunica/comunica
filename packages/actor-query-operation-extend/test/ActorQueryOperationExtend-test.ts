@@ -1,4 +1,5 @@
-import { ActorQueryOperation, Bindings, IActorQueryOperationOutputBindings } from '@comunica/bus-query-operation';
+import type { IActorQueryOperationOutputBindings } from '@comunica/bus-query-operation';
+import { ActorQueryOperation, Bindings } from '@comunica/bus-query-operation';
 import { Actor, Bus } from '@comunica/core';
 
 import { literal, namedNode } from '@rdfjs/data-model';

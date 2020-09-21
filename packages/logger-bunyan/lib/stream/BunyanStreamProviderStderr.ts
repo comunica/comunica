@@ -1,5 +1,6 @@
-import { Stream } from 'bunyan';
-import { BunyanStreamProvider, IBunyanStreamProviderArgs } from './BunyanStreamProvider';
+import type { Stream } from 'bunyan';
+import type { IBunyanStreamProviderArgs } from './BunyanStreamProvider';
+import { BunyanStreamProvider } from './BunyanStreamProvider';
 
 /**
  * A stderr bunyan stream provider.

@@ -1,6 +1,7 @@
-import { ActorRdfParseFixedMediaTypes, IActionRdfParse, IActorRdfParseFixedMediaTypesArgs,
+import type { IActionRdfParse, IActorRdfParseFixedMediaTypesArgs,
   IActorRdfParseOutput } from '@comunica/bus-rdf-parse';
-import { ActionContext } from '@comunica/core';
+import { ActorRdfParseFixedMediaTypes } from '@comunica/bus-rdf-parse';
+import type { ActionContext } from '@comunica/core';
 import { RdfXmlParser } from 'rdfxml-streaming-parser';
 
 /**

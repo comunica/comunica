@@ -1,5 +1,6 @@
 import { PassThrough } from 'stream';
-import { Bindings, BindingsStream } from '@comunica/bus-query-operation';
+import type { BindingsStream } from '@comunica/bus-query-operation';
+import { Bindings } from '@comunica/bus-query-operation';
 import { Bus } from '@comunica/core';
 import { blankNode, defaultGraph, literal, namedNode } from '@rdfjs/data-model';
 import { ArrayIterator } from 'asynciterator';

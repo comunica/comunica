@@ -1,4 +1,5 @@
-import { Actor, Bus, IAction, IActorOutput, IActorTest, Mediator } from '@comunica/core';
+import type { IAction, IActorOutput, IActorTest } from '@comunica/core';
+import { Actor, Bus, Mediator } from '@comunica/core';
 import { MediatorAll } from '../lib/MediatorAll';
 
 describe('MediatorAll', () => {
@@ -36,7 +37,7 @@ describe('MediatorAll', () => {
       });
 
       it('should throw for mediateWith', async() => {
-        await expect((<any> mediator).mediateWith(undefined, undefined)).rejects
+        await expect((<any> mediator).mediateWith()).rejects
           .toThrow(new Error('Unsupported operation: MediatorAll#mediateWith'));
       });
     });

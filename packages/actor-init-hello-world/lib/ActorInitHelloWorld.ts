@@ -1,6 +1,7 @@
 import { PassThrough } from 'stream';
-import { ActorInit, IActionInit, IActorOutputInit } from '@comunica/bus-init';
-import { IActorArgs, IActorTest } from '@comunica/core';
+import type { IActionInit, IActorOutputInit } from '@comunica/bus-init';
+import { ActorInit } from '@comunica/bus-init';
+import type { IActorArgs, IActorTest } from '@comunica/core';
 const stringToStream = require('streamify-string');
 
 /**

@@ -1,6 +1,7 @@
-import { ActorAbstractMediaTyped, IActionAbstractMediaTyped, IActorArgsMediaTyped,
+import type { IActionAbstractMediaTyped, IActorArgsMediaTyped,
   IActorOutputAbstractMediaTyped, IActorTestAbstractMediaTyped } from '@comunica/actor-abstract-mediatyped';
-import { IAction, IActorOutput, IActorTest } from '@comunica/core';
+import { ActorAbstractMediaTyped } from '@comunica/actor-abstract-mediatyped';
+import type { IAction, IActorOutput, IActorTest } from '@comunica/core';
 import type * as RDF from 'rdf-js';
 
 /**

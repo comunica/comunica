@@ -1,4 +1,4 @@
-import { IProxyHandler, IRequest } from './IProxyHandler';
+import type { IProxyHandler, IRequest } from './IProxyHandler';
 
 /**
  * A proxy handler that prefixes all URLs with a given string.

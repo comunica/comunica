@@ -1,7 +1,9 @@
-import { ActorOptimizeQueryOperation, IActionOptimizeQueryOperation,
+import type { IActionOptimizeQueryOperation,
   IActorOptimizeQueryOperationOutput } from '@comunica/bus-optimize-query-operation';
-import { IActorArgs, IActorTest } from '@comunica/core';
-import { Algebra, Factory, Util } from 'sparqlalgebrajs';
+import { ActorOptimizeQueryOperation } from '@comunica/bus-optimize-query-operation';
+import type { IActorArgs, IActorTest } from '@comunica/core';
+import type { Algebra, Factory } from 'sparqlalgebrajs';
+import { Util } from 'sparqlalgebrajs';
 
 /**
  * A comunica Join BGP Optimize Query Operation Actor.

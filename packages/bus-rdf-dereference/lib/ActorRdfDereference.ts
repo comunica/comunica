@@ -1,5 +1,6 @@
 import { PassThrough, Readable } from 'stream';
-import { Actor, IAction, IActorArgs, IActorOutput, IActorTest } from '@comunica/core';
+import type { IAction, IActorArgs, IActorOutput, IActorTest } from '@comunica/core';
+import { Actor } from '@comunica/core';
 import type * as RDF from 'rdf-js';
 
 export const KEY_CONTEXT_LENIENT = '@comunica/actor-init-sparql:lenient';
@@ -55,12 +56,12 @@ export abstract class ActorRdfDereference extends Actor<IActionRdfDereference, I
    * @param {Error} error An error that has occured.
    * @return {Promise<IActorRdfDereferenceOutput>} A promise that rejects or resolves to an empty output.
    */
-  protected async handleDereferenceError(action: IActionRdfDereference, error: Error):
+  protected async handleDereferenceError(action: IActionRdfDereference, error: unknown):
   Promise<IActorRdfDereferenceOutput> {
     if (this.isHardError(action)) {
       throw error;
     } else {
-      this.logError(action.context, error.message);
+      this.logError(action.context, (<Error> error).message);
       const quads = new Readable();
       quads.push(null);
       return { url: action.url, quads };

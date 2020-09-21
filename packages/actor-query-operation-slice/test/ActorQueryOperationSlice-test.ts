@@ -1,8 +1,8 @@
+import type { IActorQueryOperationOutputBindings,
+  IActorQueryOperationOutputQuads } from '@comunica/bus-query-operation';
 import {
   ActorQueryOperation,
   Bindings,
-  IActorQueryOperationOutputBindings,
-  IActorQueryOperationOutputQuads,
 } from '@comunica/bus-query-operation';
 import { Bus } from '@comunica/core';
 import { literal, namedNode, quad } from '@rdfjs/data-model';

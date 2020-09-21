@@ -1,11 +1,12 @@
+import type { IActorQueryOperationOutput,
+  IActorQueryOperationOutputBindings } from '@comunica/bus-query-operation';
 import {
   getMetadata,
-  IActorQueryOperationOutput,
-  IActorQueryOperationOutputBindings,
 } from '@comunica/bus-query-operation';
-import { ActorRdfJoin, IActionRdfJoin } from '@comunica/bus-rdf-join';
-import { IActorArgs, IActorTest, Mediator } from '@comunica/core';
-import { IMediatorTypeIterations } from '@comunica/mediatortype-iterations';
+import type { IActionRdfJoin } from '@comunica/bus-rdf-join';
+import { ActorRdfJoin } from '@comunica/bus-rdf-join';
+import type { IActorArgs, IActorTest, Mediator } from '@comunica/core';
+import type { IMediatorTypeIterations } from '@comunica/mediatortype-iterations';
 
 /**
  * A Multi Sequential RDF Join Actor.

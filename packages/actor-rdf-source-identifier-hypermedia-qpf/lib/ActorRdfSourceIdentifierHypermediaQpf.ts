@@ -1,10 +1,12 @@
-import { ActorHttp, IActionHttp, IActorHttpOutput } from '@comunica/bus-http';
+import type { IActionHttp, IActorHttpOutput } from '@comunica/bus-http';
+import { ActorHttp } from '@comunica/bus-http';
+import type { IActionRdfSourceIdentifier, IActorRdfSourceIdentifierArgs,
+  IActorRdfSourceIdentifierOutput } from '@comunica/bus-rdf-source-identifier';
 import {
-  ActorRdfSourceIdentifier, IActionRdfSourceIdentifier, IActorRdfSourceIdentifierArgs,
-  IActorRdfSourceIdentifierOutput,
+  ActorRdfSourceIdentifier,
 } from '@comunica/bus-rdf-source-identifier';
-import { Actor, IActorTest, Mediator } from '@comunica/core';
-import { IMediatorTypePriority } from '@comunica/mediatortype-priority';
+import type { Actor, IActorTest, Mediator } from '@comunica/core';
+import type { IMediatorTypePriority } from '@comunica/mediatortype-priority';
 import 'cross-fetch/polyfill';
 
 /**

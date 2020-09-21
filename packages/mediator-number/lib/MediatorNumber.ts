@@ -1,4 +1,5 @@
-import { Actor, IAction, IActorOutput, IActorReply, IActorTest, Mediator, IMediatorArgs } from '@comunica/core';
+import type { Actor, IAction, IActorOutput, IActorReply, IActorTest, IMediatorArgs } from '@comunica/core';
+import { Mediator } from '@comunica/core';
 
 /**
  * A mediator that can mediate over a single number field.
@@ -34,13 +35,13 @@ export class MediatorNumber<A extends Actor<I, T, O>, I extends IAction, T exten
       case MediatorNumber.MIN:
         return (tests: (T | undefined)[]): number => tests.reduce((prev, curr, i) => {
           const val: number = this.getOrDefault((<any> curr)[this.field], Infinity);
-          return val !== null && (isNaN(prev[0]) || prev[0] > val) ? [ val, i ] : prev;
-        }, [ NaN, -1 ])[1];
+          return val !== null && (Number.isNaN(prev[0]) || prev[0] > val) ? [ val, i ] : prev;
+        }, [ Number.NaN, -1 ])[1];
       case MediatorNumber.MAX:
         return (tests: (T | undefined)[]): number => tests.reduce((prev, curr, i) => {
           const val: number = this.getOrDefault((<any> curr)[this.field], -Infinity);
-          return val !== null && (isNaN(prev[0]) || prev[0] < val) ? [ val, i ] : prev;
-        }, [ NaN, -1 ])[1];
+          return val !== null && (Number.isNaN(prev[0]) || prev[0] < val) ? [ val, i ] : prev;
+        }, [ Number.NaN, -1 ])[1];
       default:
         throw new Error(`No valid "type" value was given, must be either ${
           MediatorNumber.MIN} or ${MediatorNumber.MAX}, but got: ${this.type}`);

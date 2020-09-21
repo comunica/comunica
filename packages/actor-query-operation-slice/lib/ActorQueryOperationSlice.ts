@@ -1,12 +1,12 @@
+import type { IActorQueryOperationOutputBindings, IActorQueryOperationOutputQuads,
+  IActorQueryOperationOutputStream,
+  IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import {
   ActorQueryOperationTypedMediated,
-  IActorQueryOperationOutputBindings, IActorQueryOperationOutputQuads,
-  IActorQueryOperationOutputStream,
-  IActorQueryOperationTypedMediatedArgs,
 } from '@comunica/bus-query-operation';
-import { ActionContext, IActorTest } from '@comunica/core';
-import { AsyncIterator } from 'asynciterator';
-import { Algebra } from 'sparqlalgebrajs';
+import type { ActionContext, IActorTest } from '@comunica/core';
+import type { AsyncIterator } from 'asynciterator';
+import type { Algebra } from 'sparqlalgebrajs';
 
 /**
  * A comunica Slice Query Operation Actor.
@@ -65,7 +65,7 @@ export class ActorQueryOperationSlice extends ActorQueryOperationTypedMediated<A
       () => (<() => Promise<{ [id: string]: any }>>output.metadata)()
         .then(subMetadata => {
           let { totalItems } = subMetadata;
-          if (isFinite(totalItems)) {
+          if (Number.isFinite(totalItems)) {
             totalItems = Math.max(0, totalItems - pattern.start);
             if (hasLength) {
               totalItems = Math.min(totalItems, <number>pattern.length);

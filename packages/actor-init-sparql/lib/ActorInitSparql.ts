@@ -1,19 +1,21 @@
 import { exec } from 'child_process';
 import { existsSync, readFileSync } from 'fs';
 import * as OS from 'os';
-import { Readable } from 'stream';
+import type { Readable } from 'stream';
 import { KEY_CONTEXT_DATETIME } from '@comunica/actor-http-memento';
 import { KEY_CONTEXT_HTTPPROXYHANDLER, ProxyHandlerStatic } from '@comunica/actor-http-proxy';
 import { KEY_CONTEXT_AUTH } from '@comunica/bus-http';
-import { IActionInit, IActorOutputInit } from '@comunica/bus-init';
-import { IActorQueryOperationOutput, KEY_CONTEXT_BASEIRI } from '@comunica/bus-query-operation';
+import type { IActionInit, IActorOutputInit } from '@comunica/bus-init';
+import type { IActorQueryOperationOutput } from '@comunica/bus-query-operation';
+import { KEY_CONTEXT_BASEIRI } from '@comunica/bus-query-operation';
 
 import { ActionContext } from '@comunica/core';
 import { LoggerPretty } from '@comunica/logger-pretty';
 import minimist = require('minimist');
+import type { IActorInitSparqlArgs } from './ActorInitSparql-browser';
 import {
   ActorInitSparql as ActorInitSparqlBrowser,
-  KEY_CONTEXT_LENIENT, KEY_CONTEXT_QUERYFORMAT, IActorInitSparqlArgs,
+  KEY_CONTEXT_LENIENT, KEY_CONTEXT_QUERYFORMAT,
 } from './ActorInitSparql-browser';
 
 // eslint-disable-next-line no-duplicate-imports
@@ -202,8 +204,8 @@ export class ActorInitSparql extends ActorInitSparqlBrowser {
     let context: any;
     try {
       context = await ActorInitSparql.buildContext(args, true, ActorInitSparql.HELP_MESSAGE, this.queryString);
-    } catch (error) {
-      return { stderr: require('streamify-string')(error.message) };
+    } catch (error: unknown) {
+      return { stderr: require('streamify-string')((<Error> error).message) };
     }
 
     // Define the query format

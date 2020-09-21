@@ -1,7 +1,8 @@
 import { RdfJsQuadSource } from '@comunica/actor-rdf-resolve-quad-pattern-rdfjs-source';
-import { ActorRdfResolveHypermedia, IActionRdfResolveHypermedia,
+import type { IActionRdfResolveHypermedia,
   IActorRdfResolveHypermediaOutput, IActorRdfResolveHypermediaTest } from '@comunica/bus-rdf-resolve-hypermedia';
-import { IActorArgs } from '@comunica/core';
+import { ActorRdfResolveHypermedia } from '@comunica/bus-rdf-resolve-hypermedia';
+import type { IActorArgs } from '@comunica/core';
 import { storeStream } from 'rdf-store-stream';
 
 /**

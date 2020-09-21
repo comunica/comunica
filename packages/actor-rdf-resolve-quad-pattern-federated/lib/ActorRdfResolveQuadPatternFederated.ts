@@ -1,8 +1,9 @@
+import type { IActionRdfResolveQuadPattern,
+  IActorRdfResolveQuadPatternOutput, IDataSource, IQuadSource } from '@comunica/bus-rdf-resolve-quad-pattern';
 import {
-  ActorRdfResolveQuadPatternSource, IActionRdfResolveQuadPattern,
-  IActorRdfResolveQuadPatternOutput, IDataSource, IQuadSource,
+  ActorRdfResolveQuadPatternSource,
 } from '@comunica/bus-rdf-resolve-quad-pattern';
-import { ActionContext, Actor, IActorArgs, IActorTest, Mediator } from '@comunica/core';
+import type { ActionContext, Actor, IActorArgs, IActorTest, Mediator } from '@comunica/core';
 import type * as RDF from 'rdf-js';
 import { FederatedQuadSource } from './FederatedQuadSource';
 

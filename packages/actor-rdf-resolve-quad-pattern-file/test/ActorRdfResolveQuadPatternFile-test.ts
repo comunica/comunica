@@ -113,11 +113,11 @@ describe('ActorRdfResolveQuadPatternFile', () => {
     });
 
     it('should allow file initialization with a valid file', () => {
-      return expect(actor.initializeFile('myfile', undefined)).resolves.toBeTruthy();
+      return expect(actor.initializeFile('myfile')).resolves.toBeTruthy();
     });
 
     it('should fail on file initialization with an invalid file', () => {
-      return expect(actor.initializeFile(<any> null, undefined)).rejects.toBeTruthy();
+      return expect(actor.initializeFile(<any> null)).rejects.toBeTruthy();
     });
 
     it('should allow a file quad source to be created for a context with a valid file', () => {

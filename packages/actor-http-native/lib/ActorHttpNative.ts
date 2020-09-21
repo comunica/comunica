@@ -1,7 +1,8 @@
-import { ActorHttp, IActionHttp, IActorHttpOutput,
+import type { IActionHttp, IActorHttpOutput } from '@comunica/bus-http';
+import { ActorHttp,
   KEY_CONTEXT_INCLUDE_CREDENTIALS, KEY_CONTEXT_AUTH } from '@comunica/bus-http';
-import { IActorArgs } from '@comunica/core';
-import { IMediatorTypeTime } from '@comunica/mediatortype-time';
+import type { IActorArgs } from '@comunica/core';
+import type { IMediatorTypeTime } from '@comunica/mediatortype-time';
 import 'cross-fetch/polyfill';
 import Requester from './Requester';
 
@@ -88,7 +89,7 @@ export class ActorHttpNative extends ActorHttp {
             // Expose fetch cancel promise
             httpResponse.cancel = () => {
               httpResponse.destroy();
-              return Promise.resolve(undefined);
+              return Promise.resolve();
             };
             // Missing several of the required fetch fields
             const headers = httpResponse.headers;

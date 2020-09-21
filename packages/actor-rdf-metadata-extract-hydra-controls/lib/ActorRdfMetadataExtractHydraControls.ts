@@ -1,8 +1,10 @@
-import { ActorRdfMetadataExtract, IActionRdfMetadataExtract,
+import type { IActionRdfMetadataExtract,
   IActorRdfMetadataExtractOutput } from '@comunica/bus-rdf-metadata-extract';
-import { IActorArgs, IActorTest } from '@comunica/core';
+import { ActorRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extract';
+import type { IActorArgs, IActorTest } from '@comunica/core';
 import type * as RDF from 'rdf-js';
-import { parse as parseUriTemplate, UriTemplate } from 'uritemplate';
+import type { UriTemplate } from 'uritemplate';
+import { parse as parseUriTemplate } from 'uritemplate';
 
 /**
  * An RDF Metadata Extract Actor that extracts all Hydra controls from the metadata stream.
@@ -156,7 +158,7 @@ export interface ISearchForm {
    *                and as values Hydra variable values.
    * @return {string} The instantiated URI
    */
-  getUri(entries: {[id: string]: string}): string;
+  getUri: (entries: {[id: string]: string}) => string;
 }
 
 export interface ISearchForms {

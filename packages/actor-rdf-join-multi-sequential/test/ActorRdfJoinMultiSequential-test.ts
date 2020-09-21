@@ -1,6 +1,7 @@
 import { ActorRdfJoinNestedLoop } from '@comunica/actor-rdf-join-nestedloop';
 import { Bindings } from '@comunica/bus-query-operation';
-import { ActorRdfJoin, IActionRdfJoin } from '@comunica/bus-rdf-join';
+import type { IActionRdfJoin } from '@comunica/bus-rdf-join';
+import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import { Bus } from '@comunica/core';
 import { literal } from '@rdfjs/data-model';
 import { ArrayIterator } from 'asynciterator';

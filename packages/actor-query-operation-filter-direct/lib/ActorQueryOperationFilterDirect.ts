@@ -1,7 +1,8 @@
-import { ActorQueryOperation, ActorQueryOperationTypedMediated, Bindings,
+import type { Bindings,
   IActorQueryOperationOutputBindings, IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
-import { ActionContext, IActorTest } from '@comunica/core';
-import { Algebra } from 'sparqlalgebrajs';
+import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
+import type { ActionContext, IActorTest } from '@comunica/core';
+import type { Algebra } from 'sparqlalgebrajs';
 import * as SparqlExpressionEvaluator from './SparqlExpressionEvaluator';
 
 /**
@@ -31,7 +32,7 @@ export class ActorQueryOperationFilterDirect extends ActorQueryOperationTypedMed
         const term = exprFunc(bindings);
         // eslint-disable-next-line no-implicit-coercion
         return !!term && term.value !== 'false' && term.value !== '0';
-      } catch (error) {
+      } catch (error: unknown) {
         bindingsStream.emit('error', error);
         return false;
       }

@@ -1,10 +1,11 @@
 import { Readable } from 'stream';
-import { IActorQueryOperationOutputBindings,
+import type { IActorQueryOperationOutputBindings,
   IActorQueryOperationOutputQuads } from '@comunica/bus-query-operation';
-import { ActorSparqlSerializeFixedMediaTypes, IActionSparqlSerialize,
+import type { IActionSparqlSerialize,
   IActorSparqlSerializeFixedMediaTypesArgs, IActorSparqlSerializeOutput } from '@comunica/bus-sparql-serialize';
-import { ActionContext } from '@comunica/core';
-import { ActionObserverHttp } from './ActionObserverHttp';
+import { ActorSparqlSerializeFixedMediaTypes } from '@comunica/bus-sparql-serialize';
+import type { ActionContext } from '@comunica/core';
+import type { ActionObserverHttp } from './ActionObserverHttp';
 
 /**
  * Serializes SPARQL results for testing and debugging.

@@ -1,5 +1,5 @@
 import { BufferedIterator } from 'asynciterator';
-import { Store } from 'n3';
+import type { Store } from 'n3';
 import type * as RDF from 'rdf-js';
 
 export class N3StoreIterator extends BufferedIterator<RDF.Quad> {

@@ -5,7 +5,7 @@
 
 import { createReadStream } from 'fs';
 import { sep } from 'path';
-import { Stream } from 'stream';
+import type { Stream } from 'stream';
 import { compileConfig } from 'componentsjs';
 
 const args = process.argv.slice(2);

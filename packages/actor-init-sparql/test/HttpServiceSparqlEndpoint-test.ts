@@ -4,13 +4,13 @@ import { LoggerPretty } from '@comunica/logger-pretty';
 import { ArrayIterator } from 'asynciterator';
 import { WritableStream } from 'memory-streams';
 import minimist = require('minimist');
-// @ts-ignore
+// @ts-expect-error
 import { newEngineDynamic } from '../__mocks__';
-// @ts-ignore
+// @ts-expect-error
 import { fs, testArgumentDict, testFileContentDict } from '../__mocks__/fs';
-// @ts-ignore
+// @ts-expect-error
 import { http, ServerResponseMock } from '../__mocks__/http';
-// @ts-ignore
+// @ts-expect-error
 import { parse } from '../__mocks__/url';
 import { ActorInitSparql } from '../lib/ActorInitSparql';
 import { HttpServiceSparqlEndpoint } from '../lib/HttpServiceSparqlEndpoint';
@@ -797,7 +797,7 @@ describe('HttpServiceSparqlEndpoint', () => {
       });
 
       it('should not error when eventEmitter is undefined', async() => {
-        expect(() => instance.stopResponse(response, undefined)).not.toThrowError();
+        expect(() => instance.stopResponse(response)).not.toThrowError();
       });
 
       it('should do nothing when no timeout or close event occurs', async() => {

@@ -1,8 +1,9 @@
-import { ActorQueryOperation, ActorQueryOperationTypedMediated, IActorQueryOperationOutput,
+import type { IActorQueryOperationOutput,
   IActorQueryOperationOutputBindings, IActorQueryOperationOutputBoolean,
   IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
-import { ActionContext, IActorTest } from '@comunica/core';
-import { Algebra } from 'sparqlalgebrajs';
+import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
+import type { ActionContext, IActorTest } from '@comunica/core';
+import type { Algebra } from 'sparqlalgebrajs';
 
 /**
  * A comunica Ask Query Operation Actor.

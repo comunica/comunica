@@ -1,22 +1,23 @@
-import {
-  ActorQueryOperation,
-  ActorQueryOperationTypedMediated,
-  Bindings,
+import type { Bindings,
   BindingsStream,
 
   IActorQueryOperationOutputBindings,
   IActorQueryOperationTypedMediatedArgs,
-  IPatternBindings,
+  IPatternBindings } from '@comunica/bus-query-operation';
+import {
+  ActorQueryOperation,
+  ActorQueryOperationTypedMediated,
   KEY_CONTEXT_BGP_CURRENTMETADATA,
   KEY_CONTEXT_BGP_PARENTMETADATA,
   KEY_CONTEXT_BGP_PATTERNBINDINGS,
 } from '@comunica/bus-query-operation';
-import { ActionContext, IActorTest } from '@comunica/core';
+import type { ActionContext, IActorTest } from '@comunica/core';
 import { ArrayIterator, MultiTransformIterator, TransformIterator } from 'asynciterator';
 import type * as RDF from 'rdf-js';
 import { termToString } from 'rdf-string';
-import { mapTerms, QuadTermName } from 'rdf-terms';
-import { Algebra } from 'sparqlalgebrajs';
+import type { QuadTermName } from 'rdf-terms';
+import { mapTerms } from 'rdf-terms';
+import type { Algebra } from 'sparqlalgebrajs';
 
 /**
  * A comunica Query Operation Actor that resolves BGPs in a left-deep manner
@@ -41,7 +42,7 @@ export class ActorQueryOperationBgpLeftDeepSmallest extends ActorQueryOperationT
    */
   public static createLeftDeepStream(baseStream: BindingsStream, patterns: Algebra.Pattern[],
     patternBinder:
-    (patterns: { pattern: Algebra.Pattern; bindings: IPatternBindings }[]) =>
+    (bindPatterns: { pattern: Algebra.Pattern; bindings: IPatternBindings }[]) =>
     Promise<BindingsStream>): BindingsStream {
     return new MultiTransformIterator(baseStream, {
       autoStart: false,

@@ -1,6 +1,7 @@
-import { ActorHttp, IActionHttp, IActorHttpOutput } from '@comunica/bus-http';
+import type { IActionHttp, IActorHttpOutput } from '@comunica/bus-http';
+import { ActorHttp } from '@comunica/bus-http';
 import { Bindings } from '@comunica/bus-query-operation';
-import { ActionContext, Actor, IActorTest, Mediator } from '@comunica/core';
+import type { ActionContext, Actor, IActorTest, Mediator } from '@comunica/core';
 import { BufferedIterator } from 'asynciterator';
 import { SparqlJsonParser } from 'sparqljson-parse';
 

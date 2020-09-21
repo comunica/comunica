@@ -1,12 +1,13 @@
-import { ActorInitSparql } from '@comunica/actor-init-sparql';
-import { IActorArgs, IActorTest } from '@comunica/core';
-import { Client as GraphQlClient, IGraphQlToSparqlResult } from 'graphql-ld';
+import type { ActorInitSparql } from '@comunica/actor-init-sparql';
+import type { IActorArgs, IActorTest } from '@comunica/core';
+import type { IGraphQlToSparqlResult } from 'graphql-ld';
+import { Client as GraphQlClient } from 'graphql-ld';
 import type * as RDF from 'rdf-js';
 import { storeStream } from 'rdf-store-stream';
+import type { IActionRdfMetadataExtract,
+  IActorRdfMetadataExtractOutput } from './ActorRdfMetadataExtract';
 import {
   ActorRdfMetadataExtract,
-  IActionRdfMetadataExtract,
-  IActorRdfMetadataExtractOutput,
 } from './ActorRdfMetadataExtract';
 import { GraphQlQueryEngine } from './GraphQlQueryEngine';
 

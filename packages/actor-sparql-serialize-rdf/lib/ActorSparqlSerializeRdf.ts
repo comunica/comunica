@@ -1,16 +1,17 @@
-import { IActorArgsMediaTyped } from '@comunica/actor-abstract-mediatyped';
-import { IActorQueryOperationOutput, IActorQueryOperationOutputQuads } from '@comunica/bus-query-operation';
+import type { IActorArgsMediaTyped } from '@comunica/actor-abstract-mediatyped';
+import type { IActorQueryOperationOutput, IActorQueryOperationOutputQuads } from '@comunica/bus-query-operation';
 
-import {
-  ActorSparqlSerialize, IActionSparqlSerialize, IActionSparqlSerializeHandle, IActionSparqlSerializeMediaTypeFormats,
+import type { IActionSparqlSerialize, IActionSparqlSerializeHandle, IActionSparqlSerializeMediaTypeFormats,
   IActionSparqlSerializeMediaTypes, IActorOutputSparqlSerializeHandle,
   IActorOutputSparqlSerializeMediaTypeFormats,
   IActorOutputSparqlSerializeMediaTypes,
   IActorSparqlSerializeOutput, IActorTestSparqlSerializeHandle,
   IActorTestSparqlSerializeMediaTypeFormats,
-  IActorTestSparqlSerializeMediaTypes,
+  IActorTestSparqlSerializeMediaTypes } from '@comunica/bus-sparql-serialize';
+import {
+  ActorSparqlSerialize,
 } from '@comunica/bus-sparql-serialize';
-import { ActionContext, Actor, IActorTest, Mediator } from '@comunica/core';
+import type { ActionContext, Actor, IActorTest, Mediator } from '@comunica/core';
 
 /**
  * A comunica RDF SPARQL Serialize Actor.

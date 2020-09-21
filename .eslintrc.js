@@ -69,18 +69,32 @@ module.exports = {
     'unicorn/no-fn-reference-in-iterator': 'off',
     'extended/consistent-err-names': 'off',
     'unicorn/prefer-replace-all': 'off',
+    'unicorn/catch-error-name': ['error', { name: 'error' }],
+    'unicorn/no-reduce': 'off',
+    'no-duplicate-imports': 'off', // Incompatible with type imports
 
     // TS
+    '@typescript-eslint/lines-between-class-members': ['error', { exceptAfterSingleLine: true }],
+    '@typescript-eslint/no-invalid-void-type': 'off', // breaks with default void in Asynchandler 2nd generic
     '@typescript-eslint/array-type': ['error', { default: 'array' }],
     '@typescript-eslint/generic-type-naming': 'off',
-    '@typescript-eslint/interface-name-prefix': ['error', { prefixWithI: 'always' }],
     '@typescript-eslint/no-empty-interface': 'off',
     '@typescript-eslint/no-unnecessary-condition': 'off', // Problems with optional parameters
     '@typescript-eslint/space-before-function-paren': ['error', 'never'],
     '@typescript-eslint/promise-function-async': 'off',
     '@typescript-eslint/consistent-type-assertions': ['error', { assertionStyle: 'angle-bracket' }],
     '@typescript-eslint/member-naming': 'off',
-    '@typescript-eslint/naming-convention': 'error',
+    '@typescript-eslint/naming-convention': [
+      'error',
+      {
+        'selector': 'interface',
+        'format': ['PascalCase'],
+        'custom': {
+          'regex': '^I[A-Z]',
+          'match': true
+        }
+      }
+    ],
     '@typescript-eslint/no-dynamic-delete': 'off',
     '@typescript-eslint/explicit-function-return-type': ['error', {
       allowExpressions: true,
@@ -90,6 +104,7 @@ module.exports = {
     }],
     '@typescript-eslint/no-use-before-define': 'off',
     '@typescript-eslint/prefer-nullish-coalescing': 'off',
+    '@typescript-eslint/consistent-type-imports': ['error', { prefer: 'type-imports' }],
 
     // Import
     'import/order': ['error', {
@@ -108,6 +123,8 @@ module.exports = {
     '@typescript-eslint/no-var-requires': 'off',
     '@typescript-eslint/no-unused-vars': 'off',
     'tsdoc/syntax': 'off',
+    'unicorn/expiring-todo-comments': 'off',
+    'unicorn/import-style': 'off',
   },
   overrides: [
     {

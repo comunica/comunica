@@ -1,8 +1,9 @@
-import { AsyncIterator } from 'asynciterator';
+import type { AsyncIterator } from 'asynciterator';
 import { Map } from 'immutable';
 import type * as RDF from 'rdf-js';
 import { termToString } from 'rdf-string';
-import { Algebra, Factory, Util } from 'sparqlalgebrajs';
+import type { Algebra, Factory } from 'sparqlalgebrajs';
+import { Util } from 'sparqlalgebrajs';
 
 /**
  * A stream of bindings.
@@ -30,6 +31,7 @@ export type Bindings = Map<string, RDF.Term>;
  * @return {Bindings} The immutable bindings from the hash.
  * @constructor
  */
+// eslint-disable-next-line no-redeclare
 export function Bindings(hash: {[key: string]: RDF.Term}): Bindings {
   return Map(hash);
 }

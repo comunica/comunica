@@ -1,11 +1,12 @@
+import type { Bindings, IActorQueryOperationOutputBindings,
+  IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import {
-  ActorQueryOperation, ActorQueryOperationTypedMediated, Bindings, getMetadata, IActorQueryOperationOutputBindings,
-  IActorQueryOperationTypedMediatedArgs,
+  ActorQueryOperation, ActorQueryOperationTypedMediated, getMetadata,
 } from '@comunica/bus-query-operation';
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
-import { ActionContext, IActorTest } from '@comunica/core';
-import { AsyncIterator } from 'asynciterator';
-import { Algebra } from 'sparqlalgebrajs';
+import type { ActionContext, IActorTest } from '@comunica/core';
+import type { AsyncIterator } from 'asynciterator';
+import type { Algebra } from 'sparqlalgebrajs';
 import { AsyncEvaluator, isExpressionError } from 'sparqlee';
 
 /**
@@ -50,8 +51,8 @@ export class ActorQueryOperationLeftJoinNestedLoop extends ActorQueryOperationTy
         try {
           const result = await evaluator.evaluateAsEBV(joinedBindings);
           push({ joinedBindings, result });
-        } catch (error) {
-          if (!isExpressionError(error)) {
+        } catch (error: unknown) {
+          if (!isExpressionError(<Error> error)) {
             bindingsStream.emit('error', error);
           }
         }

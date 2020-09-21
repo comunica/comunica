@@ -1,11 +1,13 @@
-import { createHash, getHashes, Hash } from 'crypto';
+import type { Hash } from 'crypto';
+import { createHash, getHashes } from 'crypto';
+import type { Bindings, IActorQueryOperationOutputBindings,
+  IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import {
-  ActorQueryOperationTypedMediated, Bindings, IActorQueryOperationOutputBindings,
-  IActorQueryOperationTypedMediatedArgs,
+  ActorQueryOperationTypedMediated,
 } from '@comunica/bus-query-operation';
-import { ActionContext } from '@comunica/core';
+import type { ActionContext } from '@comunica/core';
 import { termToString } from 'rdf-string';
-import { Algebra } from 'sparqlalgebrajs';
+import type { Algebra } from 'sparqlalgebrajs';
 
 /**
  * A comunica Hash Query Operation Actor.

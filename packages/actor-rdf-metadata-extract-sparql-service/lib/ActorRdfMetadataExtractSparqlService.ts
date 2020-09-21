@@ -1,6 +1,6 @@
-import { ActorRdfMetadataExtract,
-  IActionRdfMetadataExtract, IActorRdfMetadataExtractOutput } from '@comunica/bus-rdf-metadata-extract';
-import { IActorArgs, IActorTest } from '@comunica/core';
+import type { IActionRdfMetadataExtract, IActorRdfMetadataExtractOutput } from '@comunica/bus-rdf-metadata-extract';
+import { ActorRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extract';
+import type { IActorArgs, IActorTest } from '@comunica/core';
 import { resolve as resolveIri } from 'relative-to-absolute-iri';
 
 /**

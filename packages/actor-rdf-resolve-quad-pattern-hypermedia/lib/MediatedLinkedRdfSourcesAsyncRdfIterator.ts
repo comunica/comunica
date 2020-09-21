@@ -1,14 +1,16 @@
-import { IActionRdfDereference, IActorRdfDereferenceOutput } from '@comunica/bus-rdf-dereference';
-import { IActionRdfMetadata, IActorRdfMetadataOutput } from '@comunica/bus-rdf-metadata';
-import { IActionRdfMetadataExtract, IActorRdfMetadataExtractOutput } from '@comunica/bus-rdf-metadata-extract';
-import { IActionRdfResolveHypermedia, IActorRdfResolveHypermediaOutput } from '@comunica/bus-rdf-resolve-hypermedia';
-import {
+import type { IActionRdfDereference, IActorRdfDereferenceOutput } from '@comunica/bus-rdf-dereference';
+import type { IActionRdfMetadata, IActorRdfMetadataOutput } from '@comunica/bus-rdf-metadata';
+import type { IActionRdfMetadataExtract, IActorRdfMetadataExtractOutput } from '@comunica/bus-rdf-metadata-extract';
+import type { IActionRdfResolveHypermedia,
+  IActorRdfResolveHypermediaOutput } from '@comunica/bus-rdf-resolve-hypermedia';
+import type {
   IActionRdfResolveHypermediaLinks,
   IActorRdfResolveHypermediaLinksOutput,
 } from '@comunica/bus-rdf-resolve-hypermedia-links';
-import { ActionContext, Actor, IActorTest, Mediator } from '@comunica/core';
+import type { ActionContext, Actor, IActorTest, Mediator } from '@comunica/core';
 import type * as RDF from 'rdf-js';
-import { ISourceState, LinkedRdfSourcesAsyncRdfIterator } from './LinkedRdfSourcesAsyncRdfIterator';
+import type { ISourceState } from './LinkedRdfSourcesAsyncRdfIterator';
+import { LinkedRdfSourcesAsyncRdfIterator } from './LinkedRdfSourcesAsyncRdfIterator';
 
 /**
  * An quad iterator that can iterate over consecutive RDF sources
@@ -63,7 +65,7 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
         this.handledUrls[url] = true;
         return true;
       });
-    } catch (error) {
+    } catch {
       // No next URLs may be available, for example when we've reached the end of a Hydra next-page sequence.
       return [];
     }

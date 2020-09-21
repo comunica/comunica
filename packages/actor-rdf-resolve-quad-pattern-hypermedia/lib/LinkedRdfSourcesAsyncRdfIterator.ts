@@ -1,5 +1,6 @@
-import { IQuadSource } from '@comunica/bus-rdf-resolve-quad-pattern';
-import { AsyncIterator, BufferedIterator } from 'asynciterator';
+import type { IQuadSource } from '@comunica/bus-rdf-resolve-quad-pattern';
+import type { AsyncIterator } from 'asynciterator';
+import { BufferedIterator } from 'asynciterator';
 import LRUCache = require('lru-cache');
 import type * as RDF from 'rdf-js';
 

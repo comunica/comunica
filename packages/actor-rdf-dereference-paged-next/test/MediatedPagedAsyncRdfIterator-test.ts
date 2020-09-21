@@ -1,11 +1,12 @@
-import { ActorRdfDereference, IActionRdfDereference, IActorRdfDereferenceOutput } from '@comunica/bus-rdf-dereference';
-import { ActorRdfMetadata, IActionRdfMetadata, IActorRdfMetadataOutput } from '@comunica/bus-rdf-metadata';
-import {
+import type { ActorRdfDereference, IActionRdfDereference,
+  IActorRdfDereferenceOutput } from '@comunica/bus-rdf-dereference';
+import type { ActorRdfMetadata, IActionRdfMetadata, IActorRdfMetadataOutput } from '@comunica/bus-rdf-metadata';
+import type {
   ActorRdfMetadataExtract,
   IActionRdfMetadataExtract,
   IActorRdfMetadataExtractOutput,
 } from '@comunica/bus-rdf-metadata-extract';
-import { ActionContext, IActorTest, Mediator } from '@comunica/core';
+import type { ActionContext, IActorTest, Mediator } from '@comunica/core';
 import { SingletonIterator } from 'asynciterator';
 import * as _ from 'lodash';
 import type * as RDF from 'rdf-js';

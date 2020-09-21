@@ -1,10 +1,12 @@
-import { ActorQueryOperation, ActorQueryOperationTypedMediated,
-  Bindings, IActorQueryOperationOutputBindings,
+import type { IActorQueryOperationOutputBindings,
   IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
+import { ActorQueryOperation, ActorQueryOperationTypedMediated,
+  Bindings } from '@comunica/bus-query-operation';
 import { KEY_CONTEXT_SOURCE, KEY_CONTEXT_SOURCES } from '@comunica/bus-rdf-resolve-quad-pattern';
-import { ActionContext, IActorTest } from '@comunica/core';
+import type { IActorTest } from '@comunica/core';
+import { ActionContext } from '@comunica/core';
 import { SingletonIterator } from 'asynciterator';
-import { Algebra } from 'sparqlalgebrajs';
+import type { Algebra } from 'sparqlalgebrajs';
 
 /**
  * A comunica Service Query Operation Actor.
@@ -40,7 +42,7 @@ export class ActorQueryOperationService extends ActorQueryOperationTypedMediated
       output = ActorQueryOperation.getSafeBindings(
         await this.mediatorQueryOperation.mediate({ operation: pattern.input, context: subContext }),
       );
-    } catch (error) {
+    } catch (error: unknown) {
       if (pattern.silent) {
         // Emit a single empty binding
         output = {

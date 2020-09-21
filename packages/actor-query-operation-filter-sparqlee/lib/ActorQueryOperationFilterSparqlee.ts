@@ -1,12 +1,12 @@
+import type { Bindings,
+  IActorQueryOperationOutputBindings,
+  IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import {
   ActorQueryOperation,
   ActorQueryOperationTypedMediated,
-  Bindings,
-  IActorQueryOperationOutputBindings,
-  IActorQueryOperationTypedMediatedArgs,
 } from '@comunica/bus-query-operation';
-import { ActionContext, IActorTest } from '@comunica/core';
-import { Algebra } from 'sparqlalgebrajs';
+import type { ActionContext, IActorTest } from '@comunica/core';
+import type { Algebra } from 'sparqlalgebrajs';
 import { AsyncEvaluator, isExpressionError } from 'sparqlee';
 
 /**
@@ -40,8 +40,8 @@ export class ActorQueryOperationFilterSparqlee extends ActorQueryOperationTypedM
         if (result) {
           push(item);
         }
-      } catch (error) {
-        if (!isExpressionError(error)) {
+      } catch (error: unknown) {
+        if (!isExpressionError(<Error> error)) {
           bindingsStream.emit('error', error);
         }
       }

@@ -1,9 +1,9 @@
 /* eslint-disable max-len */
+import type { IActorQueryOperationOutputBindings,
+  IActorQueryOperationOutputBoolean, IActorQueryOperationOutputQuads } from '@comunica/bus-query-operation';
 import {
   ActorQueryOperation,
   Bindings,
-  IActorQueryOperationOutputBindings,
-  IActorQueryOperationOutputBoolean, IActorQueryOperationOutputQuads,
 } from '@comunica/bus-query-operation';
 import { ActionContext, Bus } from '@comunica/core';
 import { namedNode, variable } from '@rdfjs/data-model';

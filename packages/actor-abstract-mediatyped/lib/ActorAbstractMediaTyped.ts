@@ -1,4 +1,5 @@
-import { ActionContext, Actor, IAction, IActorArgs, IActorOutput, IActorTest } from '@comunica/core';
+import type { ActionContext, IAction, IActorArgs, IActorOutput, IActorTest } from '@comunica/core';
+import { Actor } from '@comunica/core';
 
 /**
  * An abstract actor that handles media-typed actions.

@@ -3,8 +3,9 @@ export * from './lib/HttpServiceSparqlEndpoint';
 export { newEngine, evaluateQuery, bindingsStreamToGraphQl } from './index-browser';
 
 // eslint-disable-next-line no-duplicate-imports
-import { ActorInitSparql } from './lib/ActorInitSparql';
-import { IQueryOptions, newEngineDynamicArged } from './lib/QueryDynamic';
+import type { ActorInitSparql } from './lib/ActorInitSparql';
+import type { IQueryOptions } from './lib/QueryDynamic';
+import { newEngineDynamicArged } from './lib/QueryDynamic';
 
 /**
  * Create a new dynamic comunica engine from a given config file.

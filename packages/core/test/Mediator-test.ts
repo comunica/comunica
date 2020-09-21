@@ -1,4 +1,5 @@
-import { Actor, Bus, IAction, IActorOutput, IActorTest, Mediator } from '..';
+import type { IAction, IActorOutput, IActorTest } from '..';
+import { Actor, Bus, Mediator } from '..';
 
 describe('Mediator', () => {
   let bus: Bus<Actor<IAction, IActorTest, IActorOutput>, IAction, IActorTest, IActorOutput>;

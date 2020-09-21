@@ -1,5 +1,6 @@
+import type { IActorQueryOperationOutputBindings, IPatternBindings } from '@comunica/bus-query-operation';
 import {
-  ActorQueryOperation, Bindings, IActorQueryOperationOutputBindings, IPatternBindings,
+  ActorQueryOperation, Bindings,
   KEY_CONTEXT_QUERYOPERATION,
 } from '@comunica/bus-query-operation';
 import { ActionContext, Bus, KEY_CONTEXT_LOG } from '@comunica/core';
@@ -7,7 +8,7 @@ import { LoggerVoid } from '@comunica/logger-void';
 import { blankNode, defaultGraph, literal, namedNode, quad, variable } from '@rdfjs/data-model';
 import { ArrayIterator, EmptyIterator, SingletonIterator } from 'asynciterator';
 import type * as RDF from 'rdf-js';
-import { Algebra } from 'sparqlalgebrajs';
+import type { Algebra } from 'sparqlalgebrajs';
 import { ActorQueryOperationBgpLeftDeepSmallest } from '../lib/ActorQueryOperationBgpLeftDeepSmallest';
 const arrayifyStream = require('arrayify-stream');
 

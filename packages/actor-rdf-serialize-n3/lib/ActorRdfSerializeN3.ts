@@ -1,10 +1,10 @@
+import type { IActionRdfSerialize,
+  IActorRdfSerializeFixedMediaTypesArgs,
+  IActorRdfSerializeOutput } from '@comunica/bus-rdf-serialize';
 import {
   ActorRdfSerializeFixedMediaTypes,
-  IActionRdfSerialize,
-  IActorRdfSerializeFixedMediaTypesArgs,
-  IActorRdfSerializeOutput,
 } from '@comunica/bus-rdf-serialize';
-import { ActionContext } from '@comunica/core';
+import type { ActionContext } from '@comunica/core';
 import { StreamWriter } from 'n3';
 
 /**

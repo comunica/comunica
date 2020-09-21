@@ -1,5 +1,6 @@
-import { ActorHttp, IActionHttp, IActorHttpOutput } from '@comunica/bus-http';
-import { ActionContext, Actor, IActorTest, Mediator } from '@comunica/core';
+import type { IActionHttp, IActorHttpOutput } from '@comunica/bus-http';
+import { ActorHttp } from '@comunica/bus-http';
+import type { ActionContext, Actor, IActorTest, Mediator } from '@comunica/core';
 import { FetchDocumentLoader } from 'jsonld-context-parser';
 import * as stringifyStream from 'stream-to-string';
 

@@ -3,9 +3,9 @@
 /* eslint-disable no-sync */
 import * as fs from 'fs';
 import * as Path from 'path';
-import { Stream } from 'stream';
+import type { Stream } from 'stream';
 import { compileConfig } from 'componentsjs';
-import { ParsedArgs } from 'minimist';
+import type { ParsedArgs } from 'minimist';
 import minimist = require('minimist');
 
 const args: ParsedArgs = minimist(process.argv.slice(2));

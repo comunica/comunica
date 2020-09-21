@@ -1,7 +1,7 @@
 /* eslint-disable unicorn/filename-case */
+import type { IActorRdfDereferenceHttpParseArgs } from './ActorRdfDereferenceHttpParseBase';
 import {
   ActorRdfDereferenceHttpParseBase,
-  IActorRdfDereferenceHttpParseArgs,
 } from './ActorRdfDereferenceHttpParseBase';
 
 /**

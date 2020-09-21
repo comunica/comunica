@@ -8,7 +8,7 @@ export interface IProxyHandler {
    * @param {IRequest} request A request.
    * @return {Promise<IRequest>} A new request, or null.
    */
-  getProxy(request: IRequest): Promise<IRequest>;
+  getProxy: (request: IRequest) => Promise<IRequest>;
 }
 
 /**

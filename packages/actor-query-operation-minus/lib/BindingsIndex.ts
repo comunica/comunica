@@ -1,4 +1,4 @@
-import { Bindings } from '@comunica/bus-query-operation';
+import type { Bindings } from '@comunica/bus-query-operation';
 import type * as RDF from 'rdf-js';
 import { termToString } from 'rdf-string';
 

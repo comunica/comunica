@@ -1,5 +1,6 @@
-import { IQuadSource } from '@comunica/bus-rdf-resolve-quad-pattern';
-import { Actor, IAction, IActorArgs, IActorOutput, IActorTest } from '@comunica/core';
+import type { IQuadSource } from '@comunica/bus-rdf-resolve-quad-pattern';
+import type { IAction, IActorArgs, IActorOutput, IActorTest } from '@comunica/core';
+import { Actor } from '@comunica/core';
 import type * as RDF from 'rdf-js';
 
 /**

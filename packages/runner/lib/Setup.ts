@@ -1,6 +1,7 @@
-import { IActionInit, IActorOutputInit } from '@comunica/bus-init';
-import { Loader, LoaderProperties } from 'componentsjs';
-import { Runner } from './Runner';
+import type { IActionInit, IActorOutputInit } from '@comunica/bus-init';
+import type { LoaderProperties } from 'componentsjs';
+import { Loader } from 'componentsjs';
+import type { Runner } from './Runner';
 
 /**
  * Helper functions to setup instances from a given comunica config file.
@@ -52,7 +53,7 @@ export async function run(configResourceUrl: string, action: IActionInit, runner
   let output: IActorOutputInit[];
   try {
     output = await runner.run(action);
-  } catch (error) {
+  } catch (error: unknown) {
     await runner.deinitialize();
     throw error;
   }
