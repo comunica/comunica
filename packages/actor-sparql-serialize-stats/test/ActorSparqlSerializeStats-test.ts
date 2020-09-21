@@ -2,11 +2,12 @@ import { Readable } from 'stream';
 import type { BindingsStream } from '@comunica/bus-query-operation';
 import { Bindings } from '@comunica/bus-query-operation';
 import { Bus } from '@comunica/core';
-import { namedNode } from '@rdfjs/data-model';
 import { ArrayIterator } from 'asynciterator';
+import { DataFactory } from 'rdf-data-factory';
 import type * as RDF from 'rdf-js';
 import { ActionObserverHttp, ActorSparqlSerializeStats } from '..';
 
+const DF = new DataFactory();
 const quad = require('rdf-quad');
 const stringifyStream = require('stream-to-string');
 
@@ -53,8 +54,8 @@ describe('ActorSparqlSerializeStats', () => {
       });
 
       bindingsStream = new ArrayIterator([
-        Bindings({ k1: namedNode('v1') }),
-        Bindings({ k2: namedNode('v2') }),
+        Bindings({ k1: DF.namedNode('v1') }),
+        Bindings({ k2: DF.namedNode('v2') }),
       ]);
       quadStream = new ArrayIterator([
         quad('http://example.org/a', 'http://example.org/b', 'http://example.org/c'),

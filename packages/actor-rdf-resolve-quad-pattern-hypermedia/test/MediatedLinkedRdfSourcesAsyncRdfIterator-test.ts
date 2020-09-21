@@ -1,6 +1,7 @@
 import { ActionContext } from '@comunica/core';
-import { namedNode } from '@rdfjs/data-model';
+import { DataFactory } from 'rdf-data-factory';
 import { MediatedLinkedRdfSourcesAsyncRdfIterator } from '../lib/MediatedLinkedRdfSourcesAsyncRdfIterator';
+const DF = new DataFactory();
 
 describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
   describe('A MediatedLinkedRdfSourcesAsyncRdfIterator instance', () => {
@@ -18,10 +19,10 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
 
     beforeEach(() => {
       context = ActionContext({});
-      s = namedNode('s');
-      p = namedNode('p');
-      o = namedNode('o');
-      g = namedNode('g');
+      s = DF.namedNode('s');
+      p = DF.namedNode('p');
+      o = DF.namedNode('o');
+      g = DF.namedNode('g');
       mediatorRdfDereference = {
         mediate: ({ url }: any) => Promise.resolve({ url, quads: `QUADS(${url})+METADATA`, triples: true }),
       };

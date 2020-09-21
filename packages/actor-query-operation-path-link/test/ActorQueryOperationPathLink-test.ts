@@ -1,10 +1,11 @@
 import { ActorQueryOperation, Bindings } from '@comunica/bus-query-operation';
 import { Bus } from '@comunica/core';
-import { literal, namedNode, variable } from '@rdfjs/data-model';
 import { ArrayIterator } from 'asynciterator';
+import { DataFactory } from 'rdf-data-factory';
 import { Algebra, Factory } from 'sparqlalgebrajs';
 import { ActorQueryOperationPathLink } from '../lib/ActorQueryOperationPathLink';
 const arrayifyStream = require('arrayify-stream');
+const DF = new DataFactory();
 
 describe('ActorQueryOperationPathLink', () => {
   let bus: any;
@@ -16,9 +17,9 @@ describe('ActorQueryOperationPathLink', () => {
     mediatorQueryOperation = {
       mediate: (arg: any) => Promise.resolve({
         bindingsStream: new ArrayIterator([
-          Bindings({ '?x': literal('1') }),
-          Bindings({ '?x': literal('2') }),
-          Bindings({ '?x': literal('3') }),
+          Bindings({ '?x': DF.literal('1') }),
+          Bindings({ '?x': DF.literal('2') }),
+          Bindings({ '?x': DF.literal('3') }),
         ]),
         metadata: () => Promise.resolve({ totalItems: 3 }),
         operated: arg,
@@ -64,13 +65,14 @@ describe('ActorQueryOperationPathLink', () => {
     });
 
     it('should support Link paths', async() => {
-      const op = { operation: factory.createPath(namedNode('s'), factory.createLink(namedNode('p')), variable('x')) };
+      const op = { operation: factory
+        .createPath(DF.namedNode('s'), factory.createLink(DF.namedNode('p')), DF.variable('x')) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       expect(output.canContainUndefs).toEqual(false);
       expect(await arrayifyStream(output.bindingsStream)).toEqual([
-        Bindings({ '?x': literal('1') }),
-        Bindings({ '?x': literal('2') }),
-        Bindings({ '?x': literal('3') }),
+        Bindings({ '?x': DF.literal('1') }),
+        Bindings({ '?x': DF.literal('2') }),
+        Bindings({ '?x': DF.literal('3') }),
       ]);
     });
   });

@@ -1,13 +1,14 @@
 import { ActorAbstractPath } from '@comunica/actor-abstract-path';
 import { ActorQueryOperation, Bindings } from '@comunica/bus-query-operation';
 import { Bus, ActionContext } from '@comunica/core';
-import { namedNode, variable } from '@rdfjs/data-model';
 import { ArrayIterator } from 'asynciterator';
+import { DataFactory } from 'rdf-data-factory';
 import { termToString } from 'rdf-string';
 import { QUAD_TERM_NAMES } from 'rdf-terms';
 import { Algebra, Factory } from 'sparqlalgebrajs';
 import { ActorQueryOperationPathZeroOrOne } from '../lib/ActorQueryOperationPathZeroOrOne';
 const arrayifyStream = require('arrayify-stream');
+const DF = new DataFactory();
 
 describe('ActorQueryOperationPathZeroOrOne', () => {
   let bus: any;
@@ -36,7 +37,7 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
           for (let i = 0; i < 3; ++i) {
             const bind: any = {};
             for (const [ j, element ] of vars.entries()) {
-              bind[element] = namedNode(`${1 + i + j}`);
+              bind[element] = DF.namedNode(`${1 + i + j}`);
             }
             bindings.push(Bindings(bind));
           }
@@ -92,74 +93,74 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
 
     it('should mediate with distinct if not in context', async() => {
       const op = { operation: factory.createPath(
-        namedNode('s'),
-        factory.createZeroOrOnePath(factory.createLink(namedNode('p'))),
-        variable('x'),
+        DF.namedNode('s'),
+        factory.createZeroOrOnePath(factory.createLink(DF.namedNode('p'))),
+        DF.variable('x'),
       ) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       expect(output.variables).toEqual([ '?x' ]);
       expect(output.canContainUndefs).toEqual(false);
       expect(await arrayifyStream(output.bindingsStream)).toEqual([
-        Bindings({ '?x': namedNode('1') }),
+        Bindings({ '?x': DF.namedNode('1') }),
       ]);
     });
 
     it('should mediate with distinct if false in context', async() => {
       const op = { operation: factory.createPath(
-        namedNode('s'),
-        factory.createZeroOrOnePath(factory.createLink(namedNode('p'))),
-        variable('x'),
+        DF.namedNode('s'),
+        factory.createZeroOrOnePath(factory.createLink(DF.namedNode('p'))),
+        DF.variable('x'),
       ),
       context: ActionContext({ [ActorAbstractPath.isPathArbitraryLengthDistinctKey]: false }) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       expect(output.variables).toEqual([ '?x' ]);
       expect(output.canContainUndefs).toEqual(false);
       expect(await arrayifyStream(output.bindingsStream)).toEqual([
-        Bindings({ '?x': namedNode('1') }),
+        Bindings({ '?x': DF.namedNode('1') }),
       ]);
     });
 
     it('should support ZeroOrOne paths (:s :p? ?o)', async() => {
       const op = { operation: factory.createPath(
-        namedNode('s'),
-        factory.createZeroOrOnePath(factory.createLink(namedNode('p'))),
-        variable('x'),
+        DF.namedNode('s'),
+        factory.createZeroOrOnePath(factory.createLink(DF.namedNode('p'))),
+        DF.variable('x'),
       ),
       context: ActionContext({ [ActorAbstractPath.isPathArbitraryLengthDistinctKey]: true }) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       expect(output.variables).toEqual([ '?x' ]);
       expect(output.canContainUndefs).toEqual(false);
       expect(await arrayifyStream(output.bindingsStream)).toEqual([
-        Bindings({ '?x': namedNode('s') }),
-        Bindings({ '?x': namedNode('1') }),
-        Bindings({ '?x': namedNode('2') }),
-        Bindings({ '?x': namedNode('3') }),
+        Bindings({ '?x': DF.namedNode('s') }),
+        Bindings({ '?x': DF.namedNode('1') }),
+        Bindings({ '?x': DF.namedNode('2') }),
+        Bindings({ '?x': DF.namedNode('3') }),
       ]);
     });
 
     it('should support ZeroOrOne paths (?s :p? :o)', async() => {
       const op = { operation: factory.createPath(
-        variable('x'),
-        factory.createZeroOrOnePath(factory.createLink(namedNode('p'))),
-        namedNode('o'),
+        DF.variable('x'),
+        factory.createZeroOrOnePath(factory.createLink(DF.namedNode('p'))),
+        DF.namedNode('o'),
       ),
       context: ActionContext({ [ActorAbstractPath.isPathArbitraryLengthDistinctKey]: true }) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       expect(output.variables).toEqual([ '?x' ]);
       expect(output.canContainUndefs).toEqual(false);
       expect(await arrayifyStream(output.bindingsStream)).toEqual([
-        Bindings({ '?x': namedNode('o') }),
-        Bindings({ '?x': namedNode('1') }),
-        Bindings({ '?x': namedNode('2') }),
-        Bindings({ '?x': namedNode('3') }),
+        Bindings({ '?x': DF.namedNode('o') }),
+        Bindings({ '?x': DF.namedNode('1') }),
+        Bindings({ '?x': DF.namedNode('2') }),
+        Bindings({ '?x': DF.namedNode('3') }),
       ]);
     });
 
     it('should support ZeroOrOne paths (:s :p? :o)', async() => {
       const op = { operation: factory.createPath(
-        namedNode('s'),
-        factory.createZeroOrOnePath(factory.createLink(namedNode('p'))),
-        namedNode('1'),
+        DF.namedNode('s'),
+        factory.createZeroOrOnePath(factory.createLink(DF.namedNode('p'))),
+        DF.namedNode('1'),
       ),
       context: ActionContext({ [ActorAbstractPath.isPathArbitraryLengthDistinctKey]: true }) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
@@ -172,9 +173,9 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
 
     it('should support ZeroOrOne paths (:s :p? :s)', async() => {
       const op = { operation: factory.createPath(
-        namedNode('s'),
-        factory.createZeroOrOnePath(factory.createLink(namedNode('p'))),
-        namedNode('s'),
+        DF.namedNode('s'),
+        factory.createZeroOrOnePath(factory.createLink(DF.namedNode('p'))),
+        DF.namedNode('s'),
       ),
       context: ActionContext({ [ActorAbstractPath.isPathArbitraryLengthDistinctKey]: true }) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
@@ -187,9 +188,9 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
 
     it('should not support ZeroOrOne paths with 2 variables', () => {
       const op = { operation: factory.createPath(
-        variable('x'),
-        factory.createZeroOrOnePath(factory.createLink(namedNode('p'))),
-        variable('y'),
+        DF.variable('x'),
+        factory.createZeroOrOnePath(factory.createLink(DF.namedNode('p'))),
+        DF.variable('y'),
       ) };
       return expect(actor.run(op)).rejects.toBeTruthy();
     });

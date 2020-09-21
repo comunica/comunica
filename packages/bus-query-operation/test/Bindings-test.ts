@@ -1,12 +1,14 @@
 /* eslint-disable mocha/max-top-level-suites */
-import { blankNode, defaultGraph, literal, namedNode, variable } from '@rdfjs/data-model';
 import { Map } from 'immutable';
+import { DataFactory } from 'rdf-data-factory';
 import { Factory } from 'sparqlalgebrajs';
 import { Bindings, ensureBindings, isBindings, materializeOperation, materializeTerm } from '..';
 
+const DF = new DataFactory();
+
 describe('Bindings', () => {
   it('should create a map', () => {
-    expect(Bindings({ a: namedNode('b') })).toBeInstanceOf(Map);
+    expect(Bindings({ a: DF.namedNode('b') })).toBeInstanceOf(Map);
   });
 });
 
@@ -28,26 +30,26 @@ describe('ensureBindings', () => {
 
   it('should create bindings from hashes', () => {
     expect(ensureBindings({})).toBeInstanceOf(Map);
-    expect(ensureBindings({ a: namedNode('b') }).get('a')).toEqual(namedNode('b'));
+    expect(ensureBindings({ a: DF.namedNode('b') }).get('a')).toEqual(DF.namedNode('b'));
   });
 });
 
 const factory = new Factory();
 
-const termNamedNode = namedNode('a');
-const termLiteral = literal('b');
-const termVariableA = variable('a');
-const termVariableB = variable('b');
-const termVariableC = blankNode('c');
-const termVariableD = variable('d');
-const termDefaultGraph = defaultGraph();
+const termNamedNode = DF.namedNode('a');
+const termLiteral = DF.literal('b');
+const termVariableA = DF.variable('a');
+const termVariableB = DF.variable('b');
+const termVariableC = DF.blankNode('c');
+const termVariableD = DF.variable('d');
+const termDefaultGraph = DF.defaultGraph();
 
-const valueA = literal('A');
-const valueC = literal('C');
+const valueA = DF.literal('A');
+const valueC = DF.literal('C');
 
 const bindingsEmpty = Bindings({});
-const bindingsA = Bindings({ '?a': literal('A') });
-const bindingsC = Bindings({ '_:c': literal('C') });
+const bindingsA = Bindings({ '?a': DF.literal('A') });
+const bindingsC = Bindings({ '_:c': DF.literal('C') });
 const bindingsAC = Bindings({ '?a': valueA, '_:c': valueC });
 
 describe('materializeTerm', () => {
@@ -176,8 +178,8 @@ describe('materializeOperation', () => {
       factory.createPath(
         termVariableA,
         factory.createAlt(
-          factory.createNps([ namedNode('A') ]),
-          factory.createNps([ namedNode('B') ]),
+          factory.createNps([ DF.namedNode('A') ]),
+          factory.createNps([ DF.namedNode('B') ]),
         ),
         termVariableC,
         termNamedNode,
@@ -187,8 +189,8 @@ describe('materializeOperation', () => {
       .toEqual(factory.createPath(
         valueA,
         factory.createAlt(
-          factory.createNps([ namedNode('A') ]),
-          factory.createNps([ namedNode('B') ]),
+          factory.createNps([ DF.namedNode('A') ]),
+          factory.createNps([ DF.namedNode('B') ]),
         ),
         termVariableC,
         termNamedNode,

@@ -5,12 +5,14 @@ import {
   Bindings,
 } from '@comunica/bus-query-operation';
 import { ActionContext, Bus } from '@comunica/core';
-import { blankNode, defaultGraph, literal, namedNode, quad, variable } from '@rdfjs/data-model';
 import { ArrayIterator, EmptyIterator, SingletonIterator } from 'asynciterator';
+import { DataFactory } from 'rdf-data-factory';
 import type * as RDF from 'rdf-js';
+
 import type { Algebra } from 'sparqlalgebrajs';
 import { ActorQueryOperationBgpLeftDeepSmallestSort } from '../lib/ActorQueryOperationBgpLeftDeepSmallestSort';
 const arrayifyStream = require('arrayify-stream');
+const DF = new DataFactory<RDF.BaseQuad>();
 
 describe('ActorQueryOperationBgpLeftDeepSmallestSort', () => {
   let bus: any;
@@ -52,39 +54,39 @@ describe('ActorQueryOperationBgpLeftDeepSmallestSort', () => {
   });
 
   describe('Static ActorQueryOperationBgpLeftDeepSmallestSort', () => {
-    const termNamedNode = namedNode('a');
-    const termLiteral = literal('b');
-    const termVariableA = variable('a');
-    const termVariableB = variable('b');
-    const termVariableC = blankNode('c');
-    const termVariableD = blankNode('d');
-    const termDefaultGraph = defaultGraph();
+    const termNamedNode = DF.namedNode('a');
+    const termLiteral = DF.literal('b');
+    const termVariableA = DF.variable('a');
+    const termVariableB = DF.variable('b');
+    const termVariableC = DF.blankNode('c');
+    const termVariableD = DF.blankNode('d');
+    const termDefaultGraph = DF.defaultGraph();
 
-    const patternMaterialized: any = Object.assign(quad(termNamedNode, termNamedNode, termNamedNode, termNamedNode),
+    const patternMaterialized: any = Object.assign(DF.quad(termNamedNode, termNamedNode, termNamedNode, termNamedNode),
       { type: 'pattern' });
-    const patternVarS: any = Object.assign(quad(termVariableA, termNamedNode, termNamedNode, termNamedNode),
+    const patternVarS: any = Object.assign(DF.quad(termVariableA, termNamedNode, termNamedNode, termNamedNode),
       { type: 'pattern' });
-    const patternVarP: any = Object.assign(quad<RDF.BaseQuad>(
+    const patternVarP: any = Object.assign(DF.quad(
       termNamedNode, termVariableA, termNamedNode, termNamedNode,
     ),
     { type: 'pattern' });
-    const patternVarO: any = Object.assign(quad(termNamedNode, termNamedNode, termVariableA, termNamedNode),
+    const patternVarO: any = Object.assign(DF.quad(termNamedNode, termNamedNode, termVariableA, termNamedNode),
       { type: 'pattern' });
-    const patternVarG: any = Object.assign(quad(termNamedNode, termNamedNode, termNamedNode, termVariableA),
+    const patternVarG: any = Object.assign(DF.quad(termNamedNode, termNamedNode, termNamedNode, termVariableA),
       { type: 'pattern' });
-    const patternVarAll: any = Object.assign(quad<RDF.BaseQuad>(
+    const patternVarAll: any = Object.assign(DF.quad(
       termVariableA, termVariableA, termVariableA, termVariableA,
     ),
     { type: 'pattern' });
-    const patternVarMixed: any = Object.assign(quad(termVariableA, termVariableB, termVariableC, termVariableD),
+    const patternVarMixed: any = Object.assign(DF.quad(termVariableA, termVariableB, termVariableC, termVariableD),
       { type: 'pattern' });
 
-    const valueA = literal('A');
-    const valueC = literal('C');
+    const valueA = DF.literal('A');
+    const valueC = DF.literal('C');
 
     const bindingsEmpty = Bindings({});
-    const bindingsA = Bindings({ '?a': literal('A') });
-    const bindingsC = Bindings({ '_:c': literal('C') });
+    const bindingsA = Bindings({ '?a': DF.literal('A') });
+    const bindingsC = Bindings({ '_:c': DF.literal('C') });
     const bindingsAC = Bindings({ '?a': valueA, '_:c': valueC });
 
     describe('materializeTerm', () => {
@@ -177,37 +179,37 @@ describe('ActorQueryOperationBgpLeftDeepSmallestSort', () => {
 
       it('should materialize a pattern with variable subject', () => {
         return expect(ActorQueryOperationBgpLeftDeepSmallestSort.materializePattern(patternVarS, bindingsAC))
-          .toEqual(Object.assign(quad<RDF.BaseQuad>(valueA, termNamedNode, termNamedNode, termNamedNode),
+          .toEqual(Object.assign(DF.quad(valueA, termNamedNode, termNamedNode, termNamedNode),
             { type: 'pattern' }));
       });
 
       it('should materialize a pattern with variable predicate', () => {
         return expect(ActorQueryOperationBgpLeftDeepSmallestSort.materializePattern(patternVarP, bindingsAC))
-          .toEqual(Object.assign(quad<RDF.BaseQuad>(termNamedNode, valueA, termNamedNode, termNamedNode),
+          .toEqual(Object.assign(DF.quad(termNamedNode, valueA, termNamedNode, termNamedNode),
             { type: 'pattern' }));
       });
 
       it('should materialize a pattern with variable object', () => {
         return expect(ActorQueryOperationBgpLeftDeepSmallestSort.materializePattern(patternVarO, bindingsAC))
-          .toEqual(Object.assign(quad(termNamedNode, termNamedNode, valueA, termNamedNode),
+          .toEqual(Object.assign(DF.quad(termNamedNode, termNamedNode, valueA, termNamedNode),
             { type: 'pattern' }));
       });
 
       it('should materialize a pattern with variable graph', () => {
         return expect(ActorQueryOperationBgpLeftDeepSmallestSort.materializePattern(patternVarG, bindingsAC))
-          .toEqual(Object.assign(quad<RDF.BaseQuad>(termNamedNode, termNamedNode, termNamedNode, valueA),
+          .toEqual(Object.assign(DF.quad(termNamedNode, termNamedNode, termNamedNode, valueA),
             { type: 'pattern' }));
       });
 
       it('should materialize a pattern with all variables', () => {
         return expect(ActorQueryOperationBgpLeftDeepSmallestSort.materializePattern(patternVarAll, bindingsAC))
-          .toEqual(Object.assign(quad<RDF.BaseQuad>(valueA, valueA, valueA, valueA),
+          .toEqual(Object.assign(DF.quad(valueA, valueA, valueA, valueA),
             { type: 'pattern' }));
       });
 
       it('should partially materialize a pattern with mixed variables', () => {
         return expect(ActorQueryOperationBgpLeftDeepSmallestSort.materializePattern(patternVarMixed, bindingsAC))
-          .toEqual(Object.assign(quad<RDF.BaseQuad>(valueA, termVariableB, termVariableC, termVariableD),
+          .toEqual(Object.assign(DF.quad(valueA, termVariableB, termVariableC, termVariableD),
             { type: 'pattern' }));
       });
     });
@@ -220,9 +222,9 @@ describe('ActorQueryOperationBgpLeftDeepSmallestSort', () => {
       it('should materialize all patterns in a non-empty array', () => {
         return expect(ActorQueryOperationBgpLeftDeepSmallestSort.materializePatterns([ patternVarS, patternVarP ],
           bindingsAC)).toEqual([
-          Object.assign(quad<RDF.BaseQuad>(valueA, termNamedNode, termNamedNode, termNamedNode),
+          Object.assign(DF.quad(valueA, termNamedNode, termNamedNode, termNamedNode),
             { type: 'pattern' }),
-          Object.assign(quad<RDF.BaseQuad>(termNamedNode, valueA, termNamedNode, termNamedNode),
+          Object.assign(DF.quad(termNamedNode, valueA, termNamedNode, termNamedNode),
             { type: 'pattern' }),
         ]);
       });
@@ -411,13 +413,13 @@ describe('ActorQueryOperationBgpLeftDeepSmallestSort', () => {
           predicate: patterns[2].predicate,
           subject: patterns[3].subject,
         }));
-      const pattern1 = quad(namedNode('1'), namedNode('1'), namedNode('1'), variable('a'));
-      const pattern2 = quad(namedNode('2'), namedNode('2'), variable('b'), namedNode('2'));
-      const pattern3 = quad<any>(namedNode('3'), blankNode('c'), namedNode('3'), namedNode('3'));
-      const pattern4 = quad(blankNode('d'), namedNode('4'), namedNode('4'), namedNode('4'));
-      const binding1 = Bindings({ '?a': namedNode('A') });
-      const binding2 = Bindings({ '?b': namedNode('B') });
-      const binding3 = Bindings({ '_:c': namedNode('C') });
+      const pattern1 = <any> DF.quad(DF.namedNode('1'), DF.namedNode('1'), DF.namedNode('1'), DF.variable('a'));
+      const pattern2 = <any> DF.quad(DF.namedNode('2'), DF.namedNode('2'), DF.variable('b'), DF.namedNode('2'));
+      const pattern3 = <any> DF.quad(DF.namedNode('3'), DF.blankNode('c'), DF.namedNode('3'), DF.namedNode('3'));
+      const pattern4 = <any> DF.quad(DF.blankNode('d'), DF.namedNode('4'), DF.namedNode('4'), DF.namedNode('4'));
+      const binding1 = Bindings({ '?a': DF.namedNode('A') });
+      const binding2 = Bindings({ '?b': DF.namedNode('B') });
+      const binding3 = Bindings({ '_:c': DF.namedNode('C') });
       it('should return an empty stream for an empty base stream', async() => {
         expect(await arrayifyStream(ActorQueryOperationBgpLeftDeepSmallestSort.createLeftDeepStream(
           new EmptyIterator(), [], binder,
@@ -429,11 +431,11 @@ describe('ActorQueryOperationBgpLeftDeepSmallestSort', () => {
           new SingletonIterator(binding1), [ pattern1, pattern2, pattern3, pattern4 ], binder,
         ))).toEqual([
           Bindings({
-            graph: namedNode('A'),
-            object: namedNode('b'),
-            predicate: namedNode('c'),
-            subject: namedNode('d'),
-            '?a': namedNode('A'),
+            graph: DF.namedNode('A'),
+            object: DF.variable('b'),
+            predicate: DF.blankNode('c'),
+            subject: DF.blankNode('d'),
+            '?a': DF.namedNode('A'),
           }),
         ]);
       });
@@ -443,25 +445,25 @@ describe('ActorQueryOperationBgpLeftDeepSmallestSort', () => {
           new ArrayIterator([ binding1, binding2, binding3 ]), [ pattern1, pattern2, pattern3, pattern4 ], binder,
         ))).toEqual([
           Bindings({
-            graph: namedNode('A'),
-            object: namedNode('b'),
-            predicate: blankNode('c'),
-            subject: blankNode('d'),
-            '?a': namedNode('A'),
+            graph: DF.namedNode('A'),
+            object: DF.variable('b'),
+            predicate: DF.blankNode('c'),
+            subject: DF.blankNode('d'),
+            '?a': DF.namedNode('A'),
           }),
           Bindings({
-            graph: namedNode('a'),
-            object: namedNode('B'),
-            predicate: blankNode('c'),
-            subject: blankNode('d'),
-            '?b': namedNode('B'),
+            graph: DF.variable('a'),
+            object: DF.namedNode('B'),
+            predicate: DF.blankNode('c'),
+            subject: DF.blankNode('d'),
+            '?b': DF.namedNode('B'),
           }),
           Bindings({
-            graph: namedNode('a'),
-            object: namedNode('b'),
-            predicate: blankNode('c'),
-            subject: blankNode('d'),
-            '_:c': namedNode('C'),
+            graph: DF.variable('a'),
+            object: DF.variable('b'),
+            predicate: DF.blankNode('c'),
+            subject: DF.blankNode('d'),
+            '_:c': DF.namedNode('C'),
           }),
         ]);
       });
@@ -490,8 +492,8 @@ describe('ActorQueryOperationBgpLeftDeepSmallestSort', () => {
       return expect(actor.test(op)).resolves.toBeTruthy();
     });
 
-    const pattern1 = quad(namedNode('1'), namedNode('1'), namedNode('1'), variable('a'));
-    const pattern2 = quad(variable('d'), namedNode('4'), namedNode('4'), namedNode('4'));
+    const pattern1 = DF.quad(DF.namedNode('1'), DF.namedNode('1'), DF.namedNode('1'), DF.variable('a'));
+    const pattern2 = DF.quad(DF.variable('d'), DF.namedNode('4'), DF.namedNode('4'), DF.namedNode('4'));
     const patterns = [ pattern1, pattern2 ];
 
     it('should run with a context and delegate the pattern to the mediator', () => {
@@ -506,10 +508,10 @@ describe('ActorQueryOperationBgpLeftDeepSmallestSort', () => {
         expect(await (<any> output).metadata()).toEqual({ totalItems: 100 });
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({
-            graph: namedNode('a'),
-            object: namedNode('1'),
-            predicate: namedNode('1'),
-            subject: namedNode('1'),
+            graph: DF.variable('a'),
+            object: DF.namedNode('1'),
+            predicate: DF.namedNode('1'),
+            subject: DF.namedNode('1'),
           }),
         ]);
       });
@@ -524,10 +526,10 @@ describe('ActorQueryOperationBgpLeftDeepSmallestSort', () => {
         expect(await (<any> output).metadata()).toEqual({ totalItems: Infinity });
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({
-            graph: namedNode('a'),
-            object: namedNode('1'),
-            predicate: namedNode('1'),
-            subject: namedNode('1'),
+            graph: DF.variable('a'),
+            object: DF.namedNode('1'),
+            predicate: DF.namedNode('1'),
+            subject: DF.namedNode('1'),
           }),
         ]);
       });

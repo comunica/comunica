@@ -1,8 +1,9 @@
 import { Bindings } from '@comunica/bus-query-operation';
-import { blankNode, defaultGraph, literal, namedNode, quad, variable } from '@rdfjs/data-model';
 import { ArrayIterator } from 'asynciterator';
-import type * as RDF from 'rdf-js';
+import { DataFactory } from 'rdf-data-factory';
+
 import { BindingsToQuadsIterator } from '../lib/BindingsToQuadsIterator';
+const DF = new DataFactory();
 
 const arrayifyStream = require('arrayify-stream');
 
@@ -12,55 +13,55 @@ describe('BindingsToQuadsIterator', () => {
       const bindings = Bindings({});
 
       it('should not bind a literal', () => {
-        return expect(BindingsToQuadsIterator.bindTerm(bindings, literal('abc')).termType).toEqual('Literal');
+        return expect(BindingsToQuadsIterator.bindTerm(bindings, DF.literal('abc')).termType).toEqual('Literal');
       });
 
       it('should not bind a blank node', () => {
-        return expect(BindingsToQuadsIterator.bindTerm(bindings, blankNode()).termType).toEqual('BlankNode');
+        return expect(BindingsToQuadsIterator.bindTerm(bindings, DF.blankNode()).termType).toEqual('BlankNode');
       });
 
       it('should not bind a named node', () => {
-        return expect(BindingsToQuadsIterator.bindTerm(bindings, namedNode('abc')).termType).toEqual('NamedNode');
+        return expect(BindingsToQuadsIterator.bindTerm(bindings, DF.namedNode('abc')).termType).toEqual('NamedNode');
       });
 
       it('should not bind a default graph', () => {
-        return expect(BindingsToQuadsIterator.bindTerm(bindings, defaultGraph()).termType).toEqual('DefaultGraph');
+        return expect(BindingsToQuadsIterator.bindTerm(bindings, DF.defaultGraph()).termType).toEqual('DefaultGraph');
       });
 
       it('should fail to bind a variable', () => {
-        return expect(BindingsToQuadsIterator.bindTerm(bindings, variable('abc'))).toBeFalsy();
+        return expect(BindingsToQuadsIterator.bindTerm(bindings, DF.variable('abc'))).toBeFalsy();
       });
     });
 
     describe('with non-empty bindings', () => {
-      const bindings = Bindings({ '?a': namedNode('a'), '?b': namedNode('b') });
+      const bindings = Bindings({ '?a': DF.namedNode('a'), '?b': DF.namedNode('b') });
 
       it('should not bind a literal', () => {
-        return expect(BindingsToQuadsIterator.bindTerm(bindings, literal('abc')).termType).toEqual('Literal');
+        return expect(BindingsToQuadsIterator.bindTerm(bindings, DF.literal('abc')).termType).toEqual('Literal');
       });
 
       it('should not bind a blank node', () => {
-        return expect(BindingsToQuadsIterator.bindTerm(bindings, blankNode()).termType).toEqual('BlankNode');
+        return expect(BindingsToQuadsIterator.bindTerm(bindings, DF.blankNode()).termType).toEqual('BlankNode');
       });
 
       it('should not bind a named node', () => {
-        return expect(BindingsToQuadsIterator.bindTerm(bindings, namedNode('abc')).termType).toEqual('NamedNode');
+        return expect(BindingsToQuadsIterator.bindTerm(bindings, DF.namedNode('abc')).termType).toEqual('NamedNode');
       });
 
       it('should not bind a default graph', () => {
-        return expect(BindingsToQuadsIterator.bindTerm(bindings, defaultGraph()).termType).toEqual('DefaultGraph');
+        return expect(BindingsToQuadsIterator.bindTerm(bindings, DF.defaultGraph()).termType).toEqual('DefaultGraph');
       });
 
       it('should bind variable ?a', () => {
-        return expect(BindingsToQuadsIterator.bindTerm(bindings, variable('a'))).toEqual(namedNode('a'));
+        return expect(BindingsToQuadsIterator.bindTerm(bindings, DF.variable('a'))).toEqual(DF.namedNode('a'));
       });
 
       it('should bind variable ?b', () => {
-        return expect(BindingsToQuadsIterator.bindTerm(bindings, variable('b'))).toEqual(namedNode('b'));
+        return expect(BindingsToQuadsIterator.bindTerm(bindings, DF.variable('b'))).toEqual(DF.namedNode('b'));
       });
 
       it('should fail to bind variable ?c', () => {
-        return expect(BindingsToQuadsIterator.bindTerm(bindings, variable('c'))).toBeFalsy();
+        return expect(BindingsToQuadsIterator.bindTerm(bindings, DF.variable('c'))).toBeFalsy();
       });
     });
   });
@@ -70,162 +71,162 @@ describe('BindingsToQuadsIterator', () => {
       const bindings = Bindings({});
 
       it('should not bind a quad without variables', () => {
-        return expect(BindingsToQuadsIterator.bindQuad(bindings, quad(
-          blankNode('s'),
-          namedNode('p'),
-          literal('o'),
-          defaultGraph(),
-        ))).toEqual(quad(
-          blankNode('s'),
-          namedNode('p'),
-          literal('o'),
-          defaultGraph(),
+        return expect(BindingsToQuadsIterator.bindQuad(bindings, DF.quad(
+          DF.blankNode('s'),
+          DF.namedNode('p'),
+          DF.literal('o'),
+          DF.defaultGraph(),
+        ))).toEqual(DF.quad(
+          DF.blankNode('s'),
+          DF.namedNode('p'),
+          DF.literal('o'),
+          DF.defaultGraph(),
         ));
       });
 
       it('should return falsy for a quad with an unbound subject variable', () => {
-        return expect(BindingsToQuadsIterator.bindQuad(bindings, quad(
-          variable('s'),
-          namedNode('p'),
-          literal('o'),
-          defaultGraph(),
+        return expect(BindingsToQuadsIterator.bindQuad(bindings, DF.quad(
+          DF.variable('s'),
+          DF.namedNode('p'),
+          DF.literal('o'),
+          DF.defaultGraph(),
         ))).toBeFalsy();
       });
 
       it('should return falsy for a quad with an unbound predicate variable', () => {
-        return expect(BindingsToQuadsIterator.bindQuad(bindings, quad(
-          blankNode('s'),
-          variable('p'),
-          literal('o'),
-          defaultGraph(),
+        return expect(BindingsToQuadsIterator.bindQuad(bindings, DF.quad(
+          DF.blankNode('s'),
+          DF.variable('p'),
+          DF.literal('o'),
+          DF.defaultGraph(),
         ))).toBeFalsy();
       });
 
       it('should return falsy for a quad with an unbound object variable', () => {
-        return expect(BindingsToQuadsIterator.bindQuad(bindings, quad(
-          blankNode('s'),
-          namedNode('p'),
-          variable('o'),
-          defaultGraph(),
+        return expect(BindingsToQuadsIterator.bindQuad(bindings, DF.quad(
+          DF.blankNode('s'),
+          DF.namedNode('p'),
+          DF.variable('o'),
+          DF.defaultGraph(),
         ))).toBeFalsy();
       });
 
       it('should return falsy for a quad with an unbound graph variable', () => {
-        return expect(BindingsToQuadsIterator.bindQuad(bindings, quad(
-          blankNode('s'),
-          namedNode('p'),
-          literal('o'),
-          variable('g'),
+        return expect(BindingsToQuadsIterator.bindQuad(bindings, DF.quad(
+          DF.blankNode('s'),
+          DF.namedNode('p'),
+          DF.literal('o'),
+          DF.variable('g'),
         ))).toBeFalsy();
       });
     });
 
     describe('with non-empty bindings', () => {
-      const bindings = Bindings({ '?a': namedNode('a'), '?b': namedNode('b') });
+      const bindings = Bindings({ '?a': DF.namedNode('a'), '?b': DF.namedNode('b') });
 
       it('should not bind a quad without variables', () => {
-        return expect(BindingsToQuadsIterator.bindQuad(bindings, quad(
-          blankNode('s'),
-          namedNode('p'),
-          literal('o'),
-          defaultGraph(),
-        ))).toEqual(quad(
-          blankNode('s'),
-          namedNode('p'),
-          literal('o'),
-          defaultGraph(),
+        return expect(BindingsToQuadsIterator.bindQuad(bindings, DF.quad(
+          DF.blankNode('s'),
+          DF.namedNode('p'),
+          DF.literal('o'),
+          DF.defaultGraph(),
+        ))).toEqual(DF.quad(
+          DF.blankNode('s'),
+          DF.namedNode('p'),
+          DF.literal('o'),
+          DF.defaultGraph(),
         ));
       });
 
       it('should return falsy for a quad with an unbound subject variable', () => {
-        return expect(BindingsToQuadsIterator.bindQuad(bindings, quad(
-          variable('s'),
-          namedNode('p'),
-          literal('o'),
-          defaultGraph(),
+        return expect(BindingsToQuadsIterator.bindQuad(bindings, DF.quad(
+          DF.variable('s'),
+          DF.namedNode('p'),
+          DF.literal('o'),
+          DF.defaultGraph(),
         ))).toBeFalsy();
       });
 
       it('should return falsy for a quad with an unbound predicate variable', () => {
-        return expect(BindingsToQuadsIterator.bindQuad(bindings, quad(
-          blankNode('s'),
-          variable('p'),
-          literal('o'),
-          defaultGraph(),
+        return expect(BindingsToQuadsIterator.bindQuad(bindings, DF.quad(
+          DF.blankNode('s'),
+          DF.variable('p'),
+          DF.literal('o'),
+          DF.defaultGraph(),
         ))).toBeFalsy();
       });
 
       it('should return falsy for a quad with an unbound object variable', () => {
-        return expect(BindingsToQuadsIterator.bindQuad(bindings, quad(
-          blankNode('s'),
-          namedNode('p'),
-          variable('o'),
-          defaultGraph(),
+        return expect(BindingsToQuadsIterator.bindQuad(bindings, DF.quad(
+          DF.blankNode('s'),
+          DF.namedNode('p'),
+          DF.variable('o'),
+          DF.defaultGraph(),
         ))).toBeFalsy();
       });
 
       it('should return falsy for a quad with an unbound graph variable', () => {
-        return expect(BindingsToQuadsIterator.bindQuad(bindings, quad(
-          blankNode('s'),
-          namedNode('p'),
-          literal('o'),
-          variable('g'),
+        return expect(BindingsToQuadsIterator.bindQuad(bindings, DF.quad(
+          DF.blankNode('s'),
+          DF.namedNode('p'),
+          DF.literal('o'),
+          DF.variable('g'),
         ))).toBeFalsy();
       });
 
       it('should return a bound quad with a bound subject variable', () => {
-        return expect(BindingsToQuadsIterator.bindQuad(bindings, quad(
-          variable('a'),
-          namedNode('p'),
-          literal('o'),
-          defaultGraph(),
-        ))).toEqual(quad(
-          namedNode('a'),
-          namedNode('p'),
-          literal('o'),
-          defaultGraph(),
+        return expect(BindingsToQuadsIterator.bindQuad(bindings, DF.quad(
+          DF.variable('a'),
+          DF.namedNode('p'),
+          DF.literal('o'),
+          DF.defaultGraph(),
+        ))).toEqual(DF.quad(
+          DF.namedNode('a'),
+          DF.namedNode('p'),
+          DF.literal('o'),
+          DF.defaultGraph(),
         ));
       });
 
       it('should return a bound quad with a bound predicate variable', () => {
-        return expect(BindingsToQuadsIterator.bindQuad(bindings, quad(
-          blankNode('s'),
-          variable('b'),
-          literal('o'),
-          defaultGraph(),
-        ))).toEqual(quad(
-          blankNode('s'),
-          namedNode('b'),
-          literal('o'),
-          defaultGraph(),
+        return expect(BindingsToQuadsIterator.bindQuad(bindings, DF.quad(
+          DF.blankNode('s'),
+          DF.variable('b'),
+          DF.literal('o'),
+          DF.defaultGraph(),
+        ))).toEqual(DF.quad(
+          DF.blankNode('s'),
+          DF.namedNode('b'),
+          DF.literal('o'),
+          DF.defaultGraph(),
         ));
       });
 
       it('should return a bound quad with a bound object variable', () => {
-        return expect(BindingsToQuadsIterator.bindQuad(bindings, quad(
-          blankNode('s'),
-          namedNode('p'),
-          variable('a'),
-          defaultGraph(),
-        ))).toEqual(quad(
-          blankNode('s'),
-          namedNode('p'),
-          namedNode('a'),
-          defaultGraph(),
+        return expect(BindingsToQuadsIterator.bindQuad(bindings, DF.quad(
+          DF.blankNode('s'),
+          DF.namedNode('p'),
+          DF.variable('a'),
+          DF.defaultGraph(),
+        ))).toEqual(DF.quad(
+          DF.blankNode('s'),
+          DF.namedNode('p'),
+          DF.namedNode('a'),
+          DF.defaultGraph(),
         ));
       });
 
       it('should return a bound quad with a bound graph variable', () => {
-        return expect(BindingsToQuadsIterator.bindQuad(bindings, quad(
-          blankNode('s'),
-          namedNode('p'),
-          literal('o'),
-          variable('b'),
-        ))).toEqual(quad(
-          blankNode('s'),
-          namedNode('p'),
-          literal('o'),
-          namedNode('b'),
+        return expect(BindingsToQuadsIterator.bindQuad(bindings, DF.quad(
+          DF.blankNode('s'),
+          DF.namedNode('p'),
+          DF.literal('o'),
+          DF.variable('b'),
+        ))).toEqual(DF.quad(
+          DF.blankNode('s'),
+          DF.namedNode('p'),
+          DF.literal('o'),
+          DF.namedNode('b'),
         ));
       });
     });
@@ -233,186 +234,186 @@ describe('BindingsToQuadsIterator', () => {
 
   describe('#localizeBlankNode', () => {
     it('should not localize a literal', () => {
-      return expect(BindingsToQuadsIterator.localizeBlankNode(0, literal('abc')).termType)
+      return expect(BindingsToQuadsIterator.localizeBlankNode(0, DF.literal('abc')).termType)
         .toEqual('Literal');
     });
 
     it('should not localize a variable', () => {
-      return expect(BindingsToQuadsIterator.localizeBlankNode(0, variable('abc')).termType)
+      return expect(BindingsToQuadsIterator.localizeBlankNode(0, DF.variable('abc')).termType)
         .toEqual('Variable');
     });
 
     it('should not localize a named node', () => {
-      return expect(BindingsToQuadsIterator.localizeBlankNode(0, namedNode('abc')).termType)
+      return expect(BindingsToQuadsIterator.localizeBlankNode(0, DF.namedNode('abc')).termType)
         .toEqual('NamedNode');
     });
 
     it('should not localize a default graph', () => {
-      return expect(BindingsToQuadsIterator.localizeBlankNode(0, defaultGraph()).termType)
+      return expect(BindingsToQuadsIterator.localizeBlankNode(0, DF.defaultGraph()).termType)
         .toEqual('DefaultGraph');
     });
 
     it('should localize a blank node with a different counter', () => {
-      expect(BindingsToQuadsIterator.localizeBlankNode(0, blankNode('abc')))
-        .toEqual(blankNode('abc0'));
-      return expect(BindingsToQuadsIterator.localizeBlankNode(1, blankNode('abc')))
-        .toEqual(blankNode('abc1'));
+      expect(BindingsToQuadsIterator.localizeBlankNode(0, DF.blankNode('abc')))
+        .toEqual(DF.blankNode('abc0'));
+      return expect(BindingsToQuadsIterator.localizeBlankNode(1, DF.blankNode('abc')))
+        .toEqual(DF.blankNode('abc1'));
     });
 
     it('should localize a blank node with the same counter', () => {
-      expect(BindingsToQuadsIterator.localizeBlankNode(0, blankNode('abc')))
-        .toEqual(blankNode('abc0'));
-      return expect(BindingsToQuadsIterator.localizeBlankNode(0, blankNode('abc')))
-        .toEqual(blankNode('abc0'));
+      expect(BindingsToQuadsIterator.localizeBlankNode(0, DF.blankNode('abc')))
+        .toEqual(DF.blankNode('abc0'));
+      return expect(BindingsToQuadsIterator.localizeBlankNode(0, DF.blankNode('abc')))
+        .toEqual(DF.blankNode('abc0'));
     });
 
     it('should localize a blank node with mixed counters', () => {
-      expect(BindingsToQuadsIterator.localizeBlankNode(0, blankNode('abc')))
-        .toEqual(blankNode('abc0'));
-      expect(BindingsToQuadsIterator.localizeBlankNode(0, blankNode('abc')))
-        .toEqual(blankNode('abc0'));
+      expect(BindingsToQuadsIterator.localizeBlankNode(0, DF.blankNode('abc')))
+        .toEqual(DF.blankNode('abc0'));
+      expect(BindingsToQuadsIterator.localizeBlankNode(0, DF.blankNode('abc')))
+        .toEqual(DF.blankNode('abc0'));
 
-      expect(BindingsToQuadsIterator.localizeBlankNode(1, blankNode('abc')))
-        .toEqual(blankNode('abc1'));
-      expect(BindingsToQuadsIterator.localizeBlankNode(1, blankNode('abc')))
-        .toEqual(blankNode('abc1'));
+      expect(BindingsToQuadsIterator.localizeBlankNode(1, DF.blankNode('abc')))
+        .toEqual(DF.blankNode('abc1'));
+      expect(BindingsToQuadsIterator.localizeBlankNode(1, DF.blankNode('abc')))
+        .toEqual(DF.blankNode('abc1'));
     });
   });
 
   describe('#localizeQuad', () => {
     it('should not change a quad without blank nodes', () => {
-      return expect(BindingsToQuadsIterator.localizeQuad(0, quad(
-        variable('s'),
-        namedNode('p'),
-        literal('o'),
-        defaultGraph(),
-      ))).toEqual(quad(
-        variable('s'),
-        namedNode('p'),
-        literal('o'),
-        defaultGraph(),
+      return expect(BindingsToQuadsIterator.localizeQuad(0, DF.quad(
+        DF.variable('s'),
+        DF.namedNode('p'),
+        DF.literal('o'),
+        DF.defaultGraph(),
+      ))).toEqual(DF.quad(
+        DF.variable('s'),
+        DF.namedNode('p'),
+        DF.literal('o'),
+        DF.defaultGraph(),
       ));
     });
 
     it('should localize a quad with a subject blank node', () => {
-      return expect(BindingsToQuadsIterator.localizeQuad(0, quad(
-        blankNode('s'),
-        namedNode('p'),
-        literal('o'),
-        defaultGraph(),
-      ))).toEqual(quad(
-        blankNode('s0'),
-        namedNode('p'),
-        literal('o'),
-        defaultGraph(),
+      return expect(BindingsToQuadsIterator.localizeQuad(0, DF.quad(
+        DF.blankNode('s'),
+        DF.namedNode('p'),
+        DF.literal('o'),
+        DF.defaultGraph(),
+      ))).toEqual(DF.quad(
+        DF.blankNode('s0'),
+        DF.namedNode('p'),
+        DF.literal('o'),
+        DF.defaultGraph(),
       ));
     });
 
     it('should localize a quad with a predicate blank node', () => {
-      return expect(BindingsToQuadsIterator.localizeQuad(0, <any> quad<RDF.BaseQuad>(
-        variable('s'),
-        blankNode('p'),
-        literal('o'),
-        defaultGraph(),
-      ))).toEqual(quad<RDF.BaseQuad>(
-        variable('s'),
-        blankNode('p0'),
-        literal('o'),
-        defaultGraph(),
+      return expect(BindingsToQuadsIterator.localizeQuad(0, <any> DF.quad(
+        DF.variable('s'),
+        <any> DF.blankNode('p'),
+        DF.literal('o'),
+        DF.defaultGraph(),
+      ))).toEqual(DF.quad(
+        DF.variable('s'),
+        <any> DF.blankNode('p0'),
+        DF.literal('o'),
+        DF.defaultGraph(),
       ));
     });
 
     it('should localize a quad with a object blank node', () => {
-      return expect(BindingsToQuadsIterator.localizeQuad(0, quad(
-        variable('s'),
-        namedNode('p'),
-        blankNode('o'),
-        defaultGraph(),
-      ))).toEqual(quad(
-        variable('s'),
-        namedNode('p'),
-        blankNode('o0'),
-        defaultGraph(),
+      return expect(BindingsToQuadsIterator.localizeQuad(0, DF.quad(
+        DF.variable('s'),
+        DF.namedNode('p'),
+        DF.blankNode('o'),
+        DF.defaultGraph(),
+      ))).toEqual(DF.quad(
+        DF.variable('s'),
+        DF.namedNode('p'),
+        DF.blankNode('o0'),
+        DF.defaultGraph(),
       ));
     });
 
     it('should localize a quad with a graph blank node', () => {
-      return expect(BindingsToQuadsIterator.localizeQuad(0, quad(
-        variable('s'),
-        namedNode('p'),
-        literal('o'),
-        blankNode('g'),
-      ))).toEqual(quad(
-        variable('s'),
-        namedNode('p'),
-        literal('o'),
-        blankNode('g0'),
+      return expect(BindingsToQuadsIterator.localizeQuad(0, DF.quad(
+        DF.variable('s'),
+        DF.namedNode('p'),
+        DF.literal('o'),
+        DF.blankNode('g'),
+      ))).toEqual(DF.quad(
+        DF.variable('s'),
+        DF.namedNode('p'),
+        DF.literal('o'),
+        DF.blankNode('g0'),
       ));
     });
 
     it('should localize a quad with subject, predicate, object and graph blank nodes', () => {
-      return expect(BindingsToQuadsIterator.localizeQuad(0, quad<any>(
-        blankNode('s'),
-        blankNode('p'),
-        blankNode('o'),
-        blankNode('g'),
-      ))).toEqual(quad<RDF.BaseQuad>(
-        blankNode('s0'),
-        blankNode('p0'),
-        blankNode('o0'),
-        blankNode('g0'),
+      return expect(BindingsToQuadsIterator.localizeQuad(0, DF.quad(
+        DF.blankNode('s'),
+        <any> DF.blankNode('p'),
+        DF.blankNode('o'),
+        DF.blankNode('g'),
+      ))).toEqual(DF.quad(
+        DF.blankNode('s0'),
+        <any> DF.blankNode('p0'),
+        DF.blankNode('o0'),
+        DF.blankNode('g0'),
       ));
     });
 
     it('should localize a quad with equal subject, predicate, object and graph blank nodes', () => {
-      return expect(BindingsToQuadsIterator.localizeQuad(0, quad<any>(
-        blankNode('a'),
-        blankNode('a'),
-        blankNode('a'),
-        blankNode('a'),
-      ))).toEqual(quad<RDF.BaseQuad>(
-        blankNode('a0'),
-        blankNode('a0'),
-        blankNode('a0'),
-        blankNode('a0'),
+      return expect(BindingsToQuadsIterator.localizeQuad(0, DF.quad(
+        DF.blankNode('a'),
+        <any> DF.blankNode('a'),
+        DF.blankNode('a'),
+        DF.blankNode('a'),
+      ))).toEqual(DF.quad(
+        DF.blankNode('a0'),
+        <any> DF.blankNode('a0'),
+        DF.blankNode('a0'),
+        DF.blankNode('a0'),
       ));
     });
 
     it('should localize a quad multiple times with blank nodes with different counters', () => {
-      expect(BindingsToQuadsIterator.localizeQuad(0, quad<any>(
-        blankNode('s'),
-        blankNode('p'),
-        blankNode('o'),
-        blankNode('g'),
-      ))).toEqual(quad<RDF.BaseQuad>(
-        blankNode('s0'),
-        blankNode('p0'),
-        blankNode('o0'),
-        blankNode('g0'),
+      expect(BindingsToQuadsIterator.localizeQuad(0, DF.quad(
+        DF.blankNode('s'),
+        <any> DF.blankNode('p'),
+        DF.blankNode('o'),
+        DF.blankNode('g'),
+      ))).toEqual(DF.quad(
+        DF.blankNode('s0'),
+        <any> DF.blankNode('p0'),
+        DF.blankNode('o0'),
+        DF.blankNode('g0'),
       ));
 
-      expect(BindingsToQuadsIterator.localizeQuad(1, quad<any>(
-        blankNode('s'),
-        blankNode('p'),
-        blankNode('o'),
-        blankNode('g'),
-      ))).toEqual(quad<RDF.BaseQuad>(
-        blankNode('s1'),
-        blankNode('p1'),
-        blankNode('o1'),
-        blankNode('g1'),
+      expect(BindingsToQuadsIterator.localizeQuad(1, DF.quad(
+        DF.blankNode('s'),
+        <any> DF.blankNode('p'),
+        DF.blankNode('o'),
+        DF.blankNode('g'),
+      ))).toEqual(DF.quad(
+        DF.blankNode('s1'),
+        <any> DF.blankNode('p1'),
+        DF.blankNode('o1'),
+        DF.blankNode('g1'),
       ));
 
-      expect(BindingsToQuadsIterator.localizeQuad(2, quad<any>(
-        blankNode('s'),
-        blankNode('p'),
-        blankNode('o'),
-        blankNode('g'),
-      ))).toEqual(quad<RDF.BaseQuad>(
-        blankNode('s2'),
-        blankNode('p2'),
-        blankNode('o2'),
-        blankNode('g2'),
+      expect(BindingsToQuadsIterator.localizeQuad(2, DF.quad(
+        DF.blankNode('s'),
+        <any> DF.blankNode('p'),
+        DF.blankNode('o'),
+        DF.blankNode('g'),
+      ))).toEqual(DF.quad(
+        DF.blankNode('s2'),
+        <any> DF.blankNode('p2'),
+        DF.blankNode('o2'),
+        DF.blankNode('g2'),
       ));
     });
   });
@@ -425,51 +426,57 @@ describe('BindingsToQuadsIterator', () => {
 
     it('should bind a template without variables, blank nodes and bindings', () => {
       return expect(BindingsToQuadsIterator.bindTemplate(Bindings({}), [
-        quad(namedNode('s1'), namedNode('p1'), namedNode('o1')),
-        quad(namedNode('s2'), namedNode('p2'), namedNode('o2')),
-        quad(namedNode('s3'), namedNode('p3'), namedNode('o3')),
+        DF.quad(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1')),
+        DF.quad(DF.namedNode('s2'), DF.namedNode('p2'), DF.namedNode('o2')),
+        DF.quad(DF.namedNode('s3'), DF.namedNode('p3'), DF.namedNode('o3')),
       ], 0))
         .toEqual([
-          quad(namedNode('s1'), namedNode('p1'), namedNode('o1')),
-          quad(namedNode('s2'), namedNode('p2'), namedNode('o2')),
-          quad(namedNode('s3'), namedNode('p3'), namedNode('o3')),
+          DF.quad(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1')),
+          DF.quad(DF.namedNode('s2'), DF.namedNode('p2'), DF.namedNode('o2')),
+          DF.quad(DF.namedNode('s3'), DF.namedNode('p3'), DF.namedNode('o3')),
         ]);
     });
 
     it('should bind a template with variables and bindings and without blank nodes', () => {
-      return expect(BindingsToQuadsIterator.bindTemplate(Bindings({ '?a': namedNode('a'), '?b': namedNode('b') }), [
-        quad(variable('a'), namedNode('p1'), namedNode('o1')),
-        quad(namedNode('s2'), variable('b'), namedNode('o2')),
-        quad(namedNode('s3'), variable('a'), variable('b')),
+      return expect(BindingsToQuadsIterator.bindTemplate(Bindings({
+        '?a': DF.namedNode('a'),
+        '?b': DF.namedNode('b'),
+      }), [
+        DF.quad(DF.variable('a'), DF.namedNode('p1'), DF.namedNode('o1')),
+        DF.quad(DF.namedNode('s2'), DF.variable('b'), DF.namedNode('o2')),
+        DF.quad(DF.namedNode('s3'), DF.variable('a'), DF.variable('b')),
       ], 0))
         .toEqual([
-          quad(namedNode('a'), namedNode('p1'), namedNode('o1')),
-          quad(namedNode('s2'), namedNode('b'), namedNode('o2')),
-          quad(namedNode('s3'), namedNode('a'), namedNode('b')),
+          DF.quad(DF.namedNode('a'), DF.namedNode('p1'), DF.namedNode('o1')),
+          DF.quad(DF.namedNode('s2'), DF.namedNode('b'), DF.namedNode('o2')),
+          DF.quad(DF.namedNode('s3'), DF.namedNode('a'), DF.namedNode('b')),
         ]);
     });
 
     it('should bind a template with variables and incomplete bindings and without blank nodes', () => {
-      return expect(BindingsToQuadsIterator.bindTemplate(Bindings({ '?a': namedNode('a') }), [
-        quad(variable('a'), namedNode('p1'), namedNode('o1')),
-        quad(namedNode('s2'), variable('b'), namedNode('o2')),
-        quad(namedNode('s3'), variable('a'), variable('b')),
+      return expect(BindingsToQuadsIterator.bindTemplate(Bindings({ '?a': DF.namedNode('a') }), [
+        DF.quad(DF.variable('a'), DF.namedNode('p1'), DF.namedNode('o1')),
+        DF.quad(DF.namedNode('s2'), DF.variable('b'), DF.namedNode('o2')),
+        DF.quad(DF.namedNode('s3'), DF.variable('a'), DF.variable('b')),
       ], 0))
         .toEqual([
-          quad(namedNode('a'), namedNode('p1'), namedNode('o1')),
+          DF.quad(DF.namedNode('a'), DF.namedNode('p1'), DF.namedNode('o1')),
         ]);
     });
 
     it('should bind a template with variables, bindings and blank nodes', () => {
-      return expect(BindingsToQuadsIterator.bindTemplate(Bindings({ '?a': namedNode('a'), '?b': namedNode('b') }), [
-        quad(variable('a'), namedNode('p1'), namedNode('o1')),
-        quad(blankNode('bnode'), variable('b'), blankNode('bnode')),
-        quad(blankNode('bnode'), variable('a'), variable('b')),
+      return expect(BindingsToQuadsIterator.bindTemplate(Bindings({
+        '?a': DF.namedNode('a'),
+        '?b': DF.namedNode('b'),
+      }), [
+        DF.quad(DF.variable('a'), DF.namedNode('p1'), DF.namedNode('o1')),
+        DF.quad(DF.blankNode('bnode'), DF.variable('b'), DF.blankNode('bnode')),
+        DF.quad(DF.blankNode('bnode'), DF.variable('a'), DF.variable('b')),
       ], 0))
         .toEqual([
-          quad(namedNode('a'), namedNode('p1'), namedNode('o1')),
-          quad(blankNode('bnode0'), namedNode('b'), blankNode('bnode0')),
-          quad(blankNode('bnode0'), namedNode('a'), namedNode('b')),
+          DF.quad(DF.namedNode('a'), DF.namedNode('p1'), DF.namedNode('o1')),
+          DF.quad(DF.blankNode('bnode0'), DF.namedNode('b'), DF.blankNode('bnode0')),
+          DF.quad(DF.blankNode('bnode0'), DF.namedNode('a'), DF.namedNode('b')),
         ]);
     });
   });
@@ -478,40 +485,45 @@ describe('BindingsToQuadsIterator', () => {
     let iterator: BindingsToQuadsIterator;
     beforeEach(() => {
       iterator = new BindingsToQuadsIterator([
-        quad(variable('a'), namedNode('p1'), namedNode('o1')),
-        quad(blankNode('bnode'), variable('b'), blankNode('bnode')),
-        quad(blankNode('bnode'), variable('a'), variable('b')),
-        quad(blankNode('bnode'), blankNode('otherbnode'), blankNode('otherbnode'), blankNode('otherbnode')),
+        DF.quad(DF.variable('a'), DF.namedNode('p1'), DF.namedNode('o1')),
+        DF.quad(DF.blankNode('bnode'), DF.variable('b'), DF.blankNode('bnode')),
+        DF.quad(DF.blankNode('bnode'), DF.variable('a'), DF.variable('b')),
+        DF.quad(
+          DF.blankNode('bnode'),
+          <any> DF.blankNode('otherbnode'),
+          DF.blankNode('otherbnode'),
+          DF.blankNode('otherbnode'),
+        ),
       ], new ArrayIterator([
-        Bindings({ '?a': namedNode('a1'), '?b': namedNode('b1') }),
-        Bindings({ '?a': namedNode('a2'), '?b': namedNode('b2') }),
-        Bindings({ '?a': namedNode('a3') }),
+        Bindings({ '?a': DF.namedNode('a1'), '?b': DF.namedNode('b1') }),
+        Bindings({ '?a': DF.namedNode('a2'), '?b': DF.namedNode('b2') }),
+        Bindings({ '?a': DF.namedNode('a3') }),
       ]));
     });
 
     it('should be transformed to a valid triple stream', async() => {
       expect(await arrayifyStream(iterator)).toEqual([
-        quad(namedNode('a1'), namedNode('p1'), namedNode('o1')),
-        quad(blankNode('bnode0'), namedNode('b1'), blankNode('bnode0')),
-        quad(blankNode('bnode0'), namedNode('a1'), namedNode('b1')),
-        quad<RDF.BaseQuad>(blankNode('bnode0'),
-          blankNode('otherbnode0'),
-          blankNode('otherbnode0'),
-          blankNode('otherbnode0')),
+        DF.quad(DF.namedNode('a1'), DF.namedNode('p1'), DF.namedNode('o1')),
+        DF.quad(DF.blankNode('bnode0'), DF.namedNode('b1'), DF.blankNode('bnode0')),
+        DF.quad(DF.blankNode('bnode0'), DF.namedNode('a1'), DF.namedNode('b1')),
+        DF.quad(DF.blankNode('bnode0'),
+          <any> DF.blankNode('otherbnode0'),
+          DF.blankNode('otherbnode0'),
+          DF.blankNode('otherbnode0')),
 
-        quad(namedNode('a2'), namedNode('p1'), namedNode('o1')),
-        quad(blankNode('bnode1'), namedNode('b2'), blankNode('bnode1')),
-        quad(blankNode('bnode1'), namedNode('a2'), namedNode('b2')),
-        quad<RDF.BaseQuad>(blankNode('bnode1'),
-          blankNode('otherbnode1'),
-          blankNode('otherbnode1'),
-          blankNode('otherbnode1')),
+        DF.quad(DF.namedNode('a2'), DF.namedNode('p1'), DF.namedNode('o1')),
+        DF.quad(DF.blankNode('bnode1'), DF.namedNode('b2'), DF.blankNode('bnode1')),
+        DF.quad(DF.blankNode('bnode1'), DF.namedNode('a2'), DF.namedNode('b2')),
+        DF.quad(DF.blankNode('bnode1'),
+          <any> DF.blankNode('otherbnode1'),
+          DF.blankNode('otherbnode1'),
+          DF.blankNode('otherbnode1')),
 
-        quad(namedNode('a3'), namedNode('p1'), namedNode('o1')),
-        quad<RDF.BaseQuad>(blankNode('bnode2'),
-          blankNode('otherbnode2'),
-          blankNode('otherbnode2'),
-          blankNode('otherbnode2')),
+        DF.quad(DF.namedNode('a3'), DF.namedNode('p1'), DF.namedNode('o1')),
+        DF.quad(DF.blankNode('bnode2'),
+          <any> DF.blankNode('otherbnode2'),
+          DF.blankNode('otherbnode2'),
+          DF.blankNode('otherbnode2')),
       ]);
     });
   });

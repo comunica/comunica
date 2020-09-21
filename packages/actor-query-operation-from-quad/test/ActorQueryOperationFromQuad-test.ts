@@ -1,11 +1,12 @@
 import type { IActorQueryOperationOutputBindings } from '@comunica/bus-query-operation';
 import { ActorQueryOperation, Bindings } from '@comunica/bus-query-operation';
 import { Bus } from '@comunica/core';
-import { literal, namedNode, variable } from '@rdfjs/data-model';
 import { ArrayIterator } from 'asynciterator';
+import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationFromQuad } from '../lib/ActorQueryOperationFromQuad';
 const arrayifyStream = require('arrayify-stream');
 const quad = require('rdf-quad');
+const DF = new DataFactory();
 
 describe('ActorQueryOperationFromQuad', () => {
   let bus: any;
@@ -16,9 +17,9 @@ describe('ActorQueryOperationFromQuad', () => {
     mediatorQueryOperation = {
       mediate: (arg: any) => Promise.resolve({
         bindingsStream: new ArrayIterator([
-          Bindings({ a: literal('1') }),
-          Bindings({ a: literal('2') }),
-          Bindings({ a: literal('3') }),
+          Bindings({ a: DF.literal('1') }),
+          Bindings({ a: DF.literal('2') }),
+          Bindings({ a: DF.literal('3') }),
         ]),
         metadata: () => Promise.resolve({ totalItems: 3 }),
         operated: arg,
@@ -50,7 +51,7 @@ describe('ActorQueryOperationFromQuad', () => {
     it('should transform a BGP with a default graph pattern', () => {
       const result = ActorQueryOperationFromQuad.applyOperationDefaultGraph(
         { patterns: [ Object.assign(quad('s', 'p', 'o'), { type: 'pattern' }) ], type: 'bgp' },
-        [ namedNode('g') ],
+        [ DF.namedNode('g') ],
       );
       expect(result.type).toEqual('bgp');
       expect(result.patterns[0].equals(quad('s', 'p', 'o', 'g'))).toBeTruthy();
@@ -59,7 +60,7 @@ describe('ActorQueryOperationFromQuad', () => {
     it('should not transform a BGP with a non-default graph pattern', () => {
       const result = ActorQueryOperationFromQuad.applyOperationDefaultGraph(
         { patterns: [ Object.assign(quad('s', 'p', 'o', 'gother'), { type: 'pattern' }) ], type: 'bgp' },
-        [ namedNode('g') ],
+        [ DF.namedNode('g') ],
       );
       expect(result.type).toEqual('bgp');
       expect(result.patterns[0].equals(quad('s', 'p', 'o', 'gother'))).toBeTruthy();
@@ -68,7 +69,7 @@ describe('ActorQueryOperationFromQuad', () => {
     it('should transform a BGP with default graph patterns', () => {
       const result = ActorQueryOperationFromQuad.applyOperationDefaultGraph(
         { patterns: [ Object.assign(quad('s', 'p', 'o'), { type: 'pattern' }) ], type: 'bgp' },
-        [ namedNode('g'), namedNode('h') ],
+        [ DF.namedNode('g'), DF.namedNode('h') ],
       );
       expect(result.type).toEqual('union');
       expect(result.left.type).toEqual('bgp');
@@ -80,7 +81,7 @@ describe('ActorQueryOperationFromQuad', () => {
     it('should not transform a BGP with non-default graph patterns', () => {
       const result = ActorQueryOperationFromQuad.applyOperationDefaultGraph(
         { patterns: [ Object.assign(quad('s', 'p', 'o', 'gother'), { type: 'pattern' }) ], type: 'bgp' },
-        [ namedNode('g'), namedNode('h') ],
+        [ DF.namedNode('g'), DF.namedNode('h') ],
       );
       expect(result.type).toEqual('bgp');
       expect(result.patterns[0].equals(quad('s', 'p', 'o', 'gother'))).toBeTruthy();
@@ -88,7 +89,7 @@ describe('ActorQueryOperationFromQuad', () => {
 
     it('should transform a Path with a default graph pattern', () => {
       const result = ActorQueryOperationFromQuad.applyOperationDefaultGraph(
-        Object.assign(quad('s', 'p', 'o'), { type: 'path' }), [ namedNode('g') ],
+        Object.assign(quad('s', 'p', 'o'), { type: 'path' }), [ DF.namedNode('g') ],
       );
       expect(result.type).toEqual('path');
       expect(quad('s', 'p', 'o', 'g').equals(result)).toBeTruthy();
@@ -96,7 +97,7 @@ describe('ActorQueryOperationFromQuad', () => {
 
     it('should not transform a Path with a non-default graph pattern', () => {
       const result = ActorQueryOperationFromQuad.applyOperationDefaultGraph(
-        Object.assign(quad('s', 'p', 'o', 'gother'), { type: 'path' }), [ namedNode('g') ],
+        Object.assign(quad('s', 'p', 'o', 'gother'), { type: 'path' }), [ DF.namedNode('g') ],
       );
       expect(result.type).toEqual('path');
       expect(quad('s', 'p', 'o', 'gother').equals(result)).toBeTruthy();
@@ -104,7 +105,7 @@ describe('ActorQueryOperationFromQuad', () => {
 
     it('should transform a Path with default graph patterns', () => {
       const result = ActorQueryOperationFromQuad.applyOperationDefaultGraph(
-        Object.assign(quad('s', 'p', 'o'), { type: 'path' }), [ namedNode('g'), namedNode('h') ],
+        Object.assign(quad('s', 'p', 'o'), { type: 'path' }), [ DF.namedNode('g'), DF.namedNode('h') ],
       );
       expect(result.type).toEqual('join');
       expect(result.left.type).toEqual('path');
@@ -115,7 +116,7 @@ describe('ActorQueryOperationFromQuad', () => {
 
     it('should not transform a Path with non-default graph patterns', () => {
       const result = ActorQueryOperationFromQuad.applyOperationDefaultGraph(
-        Object.assign(quad('s', 'p', 'o', 'gother'), { type: 'path' }), [ namedNode('g'), namedNode('h') ],
+        Object.assign(quad('s', 'p', 'o', 'gother'), { type: 'path' }), [ DF.namedNode('g'), DF.namedNode('h') ],
       );
       expect(result.type).toEqual('path');
       expect(quad('s', 'p', 'o', 'gother').equals(result)).toBeTruthy();
@@ -126,15 +127,15 @@ describe('ActorQueryOperationFromQuad', () => {
         {
           stuff: [
             { type: 'blabla', input: Object.assign(quad('s', 'p', 'o'), { type: 'path' }) },
-            { type: 'someunknownthing', variables: [ variable('V') ]},
+            { type: 'someunknownthing', variables: [ DF.variable('V') ]},
           ],
           type: 'bla',
-        }, [ namedNode('g') ],
+        }, [ DF.namedNode('g') ],
       );
       expect(result.type).toEqual('bla');
       expect(result.stuff).toHaveLength(2);
       expect(quad('s', 'p', 'o', 'g').equals(result.stuff[0].input)).toBeTruthy();
-      expect(result.stuff[1]).toEqual({ type: 'someunknownthing', variables: [ variable('V') ]});
+      expect(result.stuff[1]).toEqual({ type: 'someunknownthing', variables: [ DF.variable('V') ]});
     });
   });
 
@@ -142,7 +143,7 @@ describe('ActorQueryOperationFromQuad', () => {
     it('should transform a pattern with a default graph pattern to a no-op', () => {
       const result = ActorQueryOperationFromQuad.applyOperationNamedGraph(
         { patterns: [ Object.assign(quad('s', 'p', 'o'), { type: 'pattern' }) ], type: 'bgp' },
-        [ namedNode('g') ],
+        [ DF.namedNode('g') ],
         [],
       );
       expect(result).toEqual({ type: 'bgp', patterns: []});
@@ -151,14 +152,14 @@ describe('ActorQueryOperationFromQuad', () => {
     it('should transform a pattern with a variable graph pattern', () => {
       const result = ActorQueryOperationFromQuad.applyOperationNamedGraph(
         { patterns: [ Object.assign(quad('s', 'p', 'o', '?g'), { type: 'pattern' }) ], type: 'bgp' },
-        [ namedNode('g') ],
+        [ DF.namedNode('g') ],
         [],
       );
       expect(result.type).toEqual('join');
       expect(result.left.type).toEqual('values');
       expect(result.left.variables.length).toEqual(1);
-      expect(result.left.variables[0]).toEqual(variable('g'));
-      expect(result.left.bindings[0]['?g']).toEqual(namedNode('g'));
+      expect(result.left.variables[0]).toEqual(DF.variable('g'));
+      expect(result.left.bindings[0]['?g']).toEqual(DF.namedNode('g'));
       expect(result.right.type).toEqual('bgp');
       expect(quad('s', 'p', 'o', 'g').equals(result.right.patterns[0])).toBeTruthy();
     });
@@ -166,7 +167,7 @@ describe('ActorQueryOperationFromQuad', () => {
     it('should transform a pattern with a non-available non-default graph pattern to a no-op', () => {
       const result = ActorQueryOperationFromQuad.applyOperationNamedGraph(
         { patterns: [ Object.assign(quad('s', 'p', 'o', 'gother'), { type: 'pattern' }) ], type: 'bgp' },
-        [ namedNode('g') ],
+        [ DF.namedNode('g') ],
         [],
       );
       expect(result).toEqual({ type: 'bgp', patterns: []});
@@ -175,8 +176,8 @@ describe('ActorQueryOperationFromQuad', () => {
     it('should not transform a pattern with a non-available non-default graph pattern but available as default', () => {
       const result = ActorQueryOperationFromQuad.applyOperationNamedGraph(
         { patterns: [ Object.assign(quad('s', 'p', 'o', 'gother'), { type: 'pattern' }) ], type: 'bgp' },
-        [ namedNode('g') ],
-        [ namedNode('gother') ],
+        [ DF.namedNode('g') ],
+        [ DF.namedNode('gother') ],
       );
       expect(result.type).toEqual('bgp');
       expect(quad('s', 'p', 'o', 'gother').equals(result.patterns[0])).toBeTruthy();
@@ -185,7 +186,7 @@ describe('ActorQueryOperationFromQuad', () => {
     it('should not transform a pattern with an available non-default graph pattern', () => {
       const result = ActorQueryOperationFromQuad.applyOperationNamedGraph(
         { patterns: [ Object.assign(quad('s', 'p', 'o', 'g'), { type: 'pattern' }) ], type: 'bgp' },
-        [ namedNode('g') ],
+        [ DF.namedNode('g') ],
         [],
       );
       expect(result.type).toEqual('bgp');
@@ -195,7 +196,7 @@ describe('ActorQueryOperationFromQuad', () => {
     it('should transform a pattern with default graph patterns to a no-op', () => {
       const result = ActorQueryOperationFromQuad.applyOperationNamedGraph(
         { patterns: [ Object.assign(quad('s', 'p', 'o'), { type: 'pattern' }) ], type: 'bgp' },
-        [ namedNode('g'), namedNode('h') ],
+        [ DF.namedNode('g'), DF.namedNode('h') ],
         [],
       );
       expect(result).toEqual({ type: 'bgp', patterns: []});
@@ -204,7 +205,7 @@ describe('ActorQueryOperationFromQuad', () => {
     it('should transform a pattern with variable graph patterns', () => {
       const result = ActorQueryOperationFromQuad.applyOperationNamedGraph(
         { patterns: [ Object.assign(quad('s', 'p', 'o', '?g'), { type: 'pattern' }) ], type: 'bgp' },
-        [ namedNode('g'), namedNode('h') ],
+        [ DF.namedNode('g'), DF.namedNode('h') ],
         [],
       );
       expect(result.type).toEqual('union');
@@ -212,16 +213,16 @@ describe('ActorQueryOperationFromQuad', () => {
       expect(result.left.type).toEqual('join');
       expect(result.left.left.type).toEqual('values');
       expect(result.left.left.variables.length).toEqual(1);
-      expect(result.left.left.variables[0]).toEqual(variable('g'));
-      expect(result.left.left.bindings[0]['?g']).toEqual(namedNode('g'));
+      expect(result.left.left.variables[0]).toEqual(DF.variable('g'));
+      expect(result.left.left.bindings[0]['?g']).toEqual(DF.namedNode('g'));
       expect(result.left.right.type).toEqual('bgp');
       expect(quad('s', 'p', 'o', 'g').equals(result.left.right.patterns[0])).toBeTruthy();
 
       expect(result.right.type).toEqual('join');
       expect(result.right.left.type).toEqual('values');
       expect(result.right.left.variables.length).toEqual(1);
-      expect(result.right.left.variables[0]).toEqual(variable('g'));
-      expect(result.right.left.bindings[0]['?g']).toEqual(namedNode('h'));
+      expect(result.right.left.variables[0]).toEqual(DF.variable('g'));
+      expect(result.right.left.bindings[0]['?g']).toEqual(DF.namedNode('h'));
       expect(result.right.right.type).toEqual('bgp');
       expect(quad('s', 'p', 'o', 'h').equals(result.right.right.patterns[0])).toBeTruthy();
     });
@@ -229,7 +230,7 @@ describe('ActorQueryOperationFromQuad', () => {
     it('should transform a pattern with non-available non-default graph patterns to a no-op', () => {
       const result = ActorQueryOperationFromQuad.applyOperationNamedGraph(
         { patterns: [ Object.assign(quad('s', 'p', 'o', 'gother'), { type: 'pattern' }) ], type: 'bgp' },
-        [ namedNode('g'), namedNode('h') ],
+        [ DF.namedNode('g'), DF.namedNode('h') ],
         [],
       );
       expect(result).toEqual({ type: 'bgp', patterns: []});
@@ -238,7 +239,7 @@ describe('ActorQueryOperationFromQuad', () => {
     it('should transform a pattern with available non-default graph patterns', () => {
       const result = ActorQueryOperationFromQuad.applyOperationNamedGraph(
         { patterns: [ Object.assign(quad('s', 'p', 'o', 'g'), { type: 'pattern' }) ], type: 'bgp' },
-        [ namedNode('g'), namedNode('h') ],
+        [ DF.namedNode('g'), DF.namedNode('h') ],
         [],
       );
       expect(result.type).toEqual('bgp');
@@ -247,34 +248,34 @@ describe('ActorQueryOperationFromQuad', () => {
 
     it('should transform a Path with a default graph pattern to a no-op', () => {
       const result = ActorQueryOperationFromQuad.applyOperationNamedGraph(
-        Object.assign(quad('s', 'p', 'o'), { type: 'path' }), [ namedNode('g') ], [],
+        Object.assign(quad('s', 'p', 'o'), { type: 'path' }), [ DF.namedNode('g') ], [],
       );
       expect(result).toEqual({ type: 'bgp', patterns: []});
     });
 
     it('should transform a Path with a variable graph pattern', () => {
       const result = ActorQueryOperationFromQuad.applyOperationNamedGraph(
-        Object.assign(quad('s', 'p', 'o', '?g'), { type: 'path' }), [ namedNode('g') ], [],
+        Object.assign(quad('s', 'p', 'o', '?g'), { type: 'path' }), [ DF.namedNode('g') ], [],
       );
       expect(result.type).toEqual('join');
       expect(result.left.type).toEqual('values');
       expect(result.left.variables.length).toEqual(1);
-      expect(result.left.variables[0]).toEqual(variable('g'));
-      expect(result.left.bindings[0]['?g']).toEqual(namedNode('g'));
+      expect(result.left.variables[0]).toEqual(DF.variable('g'));
+      expect(result.left.bindings[0]['?g']).toEqual(DF.namedNode('g'));
       expect(result.right.type).toEqual('path');
       expect(quad('s', 'p', 'o', 'g').equals(result.right)).toBeTruthy();
     });
 
     it('should transform a Path with a non-available non-default graph pattern to a no-op', () => {
       const result = ActorQueryOperationFromQuad.applyOperationNamedGraph(
-        Object.assign(quad('s', 'p', 'o', 'gother'), { type: 'path' }), [ namedNode('g') ], [],
+        Object.assign(quad('s', 'p', 'o', 'gother'), { type: 'path' }), [ DF.namedNode('g') ], [],
       );
       expect(result).toEqual({ type: 'bgp', patterns: []});
     });
 
     it('should transform a Path with an available non-default graph pattern', () => {
       const result = ActorQueryOperationFromQuad.applyOperationNamedGraph(
-        Object.assign(quad('s', 'p', 'o', 'g'), { type: 'path' }), [ namedNode('g') ], [],
+        Object.assign(quad('s', 'p', 'o', 'g'), { type: 'path' }), [ DF.namedNode('g') ], [],
       );
       expect(result.type).toEqual('path');
       expect(quad('s', 'p', 'o', 'g').equals(result)).toBeTruthy();
@@ -282,37 +283,37 @@ describe('ActorQueryOperationFromQuad', () => {
 
     it('should transform a Path with default graph patterns to a no-op', () => {
       const result = ActorQueryOperationFromQuad.applyOperationNamedGraph(
-        Object.assign(quad('s', 'p', 'o'), { type: 'path' }), [ namedNode('g'), namedNode('h') ], [],
+        Object.assign(quad('s', 'p', 'o'), { type: 'path' }), [ DF.namedNode('g'), DF.namedNode('h') ], [],
       );
       expect(result).toEqual({ type: 'bgp', patterns: []});
     });
 
     it('should transform a Path with variable graph patterns', () => {
       const result = ActorQueryOperationFromQuad.applyOperationNamedGraph(
-        Object.assign(quad('s', 'p', 'o', '?g'), { type: 'path' }), [ namedNode('g'), namedNode('h') ], [],
+        Object.assign(quad('s', 'p', 'o', '?g'), { type: 'path' }), [ DF.namedNode('g'), DF.namedNode('h') ], [],
       );
       expect(result.type).toEqual('union');
 
       expect(result.left.type).toEqual('join');
       expect(result.left.left.type).toEqual('values');
       expect(result.left.left.variables.length).toEqual(1);
-      expect(result.left.left.variables[0]).toEqual(variable('g'));
-      expect(result.left.left.bindings[0]['?g']).toEqual(namedNode('g'));
+      expect(result.left.left.variables[0]).toEqual(DF.variable('g'));
+      expect(result.left.left.bindings[0]['?g']).toEqual(DF.namedNode('g'));
       expect(result.left.right.type).toEqual('path');
       expect(quad('s', 'p', 'o', 'g').equals(result.left.right)).toBeTruthy();
 
       expect(result.right.type).toEqual('join');
       expect(result.right.left.type).toEqual('values');
       expect(result.right.left.variables.length).toEqual(1);
-      expect(result.right.left.variables[0]).toEqual(variable('g'));
-      expect(result.right.left.bindings[0]['?g']).toEqual(namedNode('h'));
+      expect(result.right.left.variables[0]).toEqual(DF.variable('g'));
+      expect(result.right.left.bindings[0]['?g']).toEqual(DF.namedNode('h'));
       expect(result.right.right.type).toEqual('path');
       expect(quad('s', 'p', 'o', 'h').equals(result.right.right)).toBeTruthy();
     });
 
     it('should not transform a Path with available non-default graph patterns', () => {
       const result = ActorQueryOperationFromQuad.applyOperationNamedGraph(
-        Object.assign(quad('s', 'p', 'o', 'g'), { type: 'path' }), [ namedNode('g'), namedNode('h') ], [],
+        Object.assign(quad('s', 'p', 'o', 'g'), { type: 'path' }), [ DF.namedNode('g'), DF.namedNode('h') ], [],
       );
       expect(result.type).toEqual('path');
       expect(quad('s', 'p', 'o', 'g').equals(result)).toBeTruthy();
@@ -320,7 +321,7 @@ describe('ActorQueryOperationFromQuad', () => {
 
     it('should not transform a Path with non-available non-default graph patterns to a no-op', () => {
       const result = ActorQueryOperationFromQuad.applyOperationNamedGraph(
-        Object.assign(quad('s', 'p', 'o', 'gother'), { type: 'path' }), [ namedNode('g'), namedNode('h') ], [],
+        Object.assign(quad('s', 'p', 'o', 'gother'), { type: 'path' }), [ DF.namedNode('g'), DF.namedNode('h') ], [],
       );
       expect(result).toEqual({ type: 'bgp', patterns: []});
     });
@@ -330,10 +331,10 @@ describe('ActorQueryOperationFromQuad', () => {
         {
           stuff: [
             { type: 'blabla', input: Object.assign(quad('s', 'p', 'o', '?g'), { type: 'path' }) },
-            { type: 'someunknownthing', variables: [ variable('V') ]},
+            { type: 'someunknownthing', variables: [ DF.variable('V') ]},
           ],
           type: 'bla',
-        }, [ namedNode('g') ], [],
+        }, [ DF.namedNode('g') ], [],
       );
       expect(result.type).toEqual('bla');
       expect(result.stuff).toHaveLength(2);
@@ -342,12 +343,12 @@ describe('ActorQueryOperationFromQuad', () => {
       expect(result.stuff[0].input.type).toEqual('join');
       expect(result.stuff[0].input.left.type).toEqual('values');
       expect(result.stuff[0].input.left.variables.length).toEqual(1);
-      expect(result.stuff[0].input.left.variables[0]).toEqual(variable('g'));
-      expect(result.stuff[0].input.left.bindings[0]['?g']).toEqual(namedNode('g'));
+      expect(result.stuff[0].input.left.variables[0]).toEqual(DF.variable('g'));
+      expect(result.stuff[0].input.left.bindings[0]['?g']).toEqual(DF.namedNode('g'));
       expect(result.stuff[0].input.right.type).toEqual('path');
       expect(quad('s', 'p', 'o', 'g').equals(result.stuff[0].input.right)).toBeTruthy();
 
-      expect(result.stuff[1]).toEqual({ type: 'someunknownthing', variables: [ variable('V') ]});
+      expect(result.stuff[1]).toEqual({ type: 'someunknownthing', variables: [ DF.variable('V') ]});
     });
   });
 
@@ -424,7 +425,7 @@ describe('ActorQueryOperationFromQuad', () => {
 
     it('should transform with one default graph and without named graphs', () => {
       const pattern: any = {
-        default: [ namedNode('g') ],
+        default: [ DF.namedNode('g') ],
         input: Object.assign(quad('s', 'p', 'o'), { type: 'path' }),
         named: [],
         type: 'from',
@@ -436,7 +437,7 @@ describe('ActorQueryOperationFromQuad', () => {
 
     it('should transform with two default graphs and without named graphs', () => {
       const pattern: any = {
-        default: [ namedNode('g'), namedNode('h') ],
+        default: [ DF.namedNode('g'), DF.namedNode('h') ],
         input: Object.assign(quad('s', 'p', 'o'), { type: 'path' }),
         named: [],
         type: 'from',
@@ -449,7 +450,7 @@ describe('ActorQueryOperationFromQuad', () => {
 
     it('should transform with two default graphs and without named graphs over two patterns', () => {
       const pattern: any = {
-        default: [ namedNode('g'), namedNode('h') ],
+        default: [ DF.namedNode('g'), DF.namedNode('h') ],
         input: { patterns: [
           Object.assign(quad('s', 'p', 'o1'), { type: 'pattern' }),
           Object.assign(quad('s', 'p', 'o2'), { type: 'pattern' }),
@@ -476,15 +477,15 @@ describe('ActorQueryOperationFromQuad', () => {
       const pattern: any = {
         default: [],
         input: Object.assign(quad('s', 'p', 'o', '?g'), { type: 'path' }),
-        named: [ namedNode('g') ],
+        named: [ DF.namedNode('g') ],
         type: 'from',
       };
       const result = ActorQueryOperationFromQuad.createOperation(pattern);
       expect(result.type).toEqual('join');
       expect(result.left.type).toEqual('values');
       expect(result.left.variables.length).toEqual(1);
-      expect(result.left.variables[0]).toEqual(variable('g'));
-      expect(result.left.bindings[0]['?g']).toEqual(namedNode('g'));
+      expect(result.left.variables[0]).toEqual(DF.variable('g'));
+      expect(result.left.bindings[0]['?g']).toEqual(DF.namedNode('g'));
       expect(result.right.type).toEqual('path');
       expect(quad('s', 'p', 'o', 'g').equals(result.right)).toBeTruthy();
     });
@@ -493,7 +494,7 @@ describe('ActorQueryOperationFromQuad', () => {
       const pattern: any = {
         default: [],
         input: Object.assign(quad('s', 'p', 'o', '?g'), { type: 'path' }),
-        named: [ namedNode('g'), namedNode('h') ],
+        named: [ DF.namedNode('g'), DF.namedNode('h') ],
         type: 'from',
       };
       const result = ActorQueryOperationFromQuad.createOperation(pattern);
@@ -502,23 +503,23 @@ describe('ActorQueryOperationFromQuad', () => {
       expect(result.left.type).toEqual('join');
       expect(result.left.left.type).toEqual('values');
       expect(result.left.left.variables.length).toEqual(1);
-      expect(result.left.left.variables[0]).toEqual(variable('g'));
-      expect(result.left.left.bindings[0]['?g']).toEqual(namedNode('g'));
+      expect(result.left.left.variables[0]).toEqual(DF.variable('g'));
+      expect(result.left.left.bindings[0]['?g']).toEqual(DF.namedNode('g'));
       expect(result.left.right.type).toEqual('path');
       expect(quad('s', 'p', 'o', 'g').equals(result.left.right)).toBeTruthy();
 
       expect(result.right.type).toEqual('join');
       expect(result.right.left.type).toEqual('values');
       expect(result.right.left.variables.length).toEqual(1);
-      expect(result.right.left.variables[0]).toEqual(variable('g'));
-      expect(result.right.left.bindings[0]['?g']).toEqual(namedNode('h'));
+      expect(result.right.left.variables[0]).toEqual(DF.variable('g'));
+      expect(result.right.left.bindings[0]['?g']).toEqual(DF.namedNode('h'));
       expect(result.right.right.type).toEqual('path');
       expect(quad('s', 'p', 'o', 'h').equals(result.right.right)).toBeTruthy();
     });
 
     it('should transform with one default graph and with one named graph', () => {
       const pattern: any = {
-        default: [ namedNode('h') ],
+        default: [ DF.namedNode('h') ],
         input: {
           left: {
             patterns: [
@@ -534,7 +535,7 @@ describe('ActorQueryOperationFromQuad', () => {
           },
           type: 'join',
         },
-        named: [ namedNode('g') ],
+        named: [ DF.namedNode('g') ],
         type: 'from',
       };
       const result = ActorQueryOperationFromQuad.createOperation(pattern);
@@ -544,8 +545,8 @@ describe('ActorQueryOperationFromQuad', () => {
 
       expect(result.left.left.type).toEqual('values');
       expect(result.left.left.variables.length).toEqual(1);
-      expect(result.left.left.variables[0]).toEqual(variable('g'));
-      expect(result.left.left.bindings[0]['?g']).toEqual(namedNode('g'));
+      expect(result.left.left.variables[0]).toEqual(DF.variable('g'));
+      expect(result.left.left.bindings[0]['?g']).toEqual(DF.namedNode('g'));
       expect(result.left.right.type).toEqual('bgp');
       expect(quad('s', 'p', 'o', 'g').equals(result.left.right.patterns[0])).toBeTruthy();
 
@@ -573,12 +574,12 @@ describe('ActorQueryOperationFromQuad', () => {
 
     it('should run', async() => {
       const input = Object.assign(quad('s', 'p', 'o'), { type: 'path' });
-      const op = { operation: { type: 'from', default: [ namedNode('g') ], named: [], input }};
+      const op = { operation: { type: 'from', default: [ DF.namedNode('g') ], named: [], input }};
       const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
       expect(await arrayifyStream(output.bindingsStream)).toMatchObject([
-        Bindings({ a: literal('1') }),
-        Bindings({ a: literal('2') }),
-        Bindings({ a: literal('3') }),
+        Bindings({ a: DF.literal('1') }),
+        Bindings({ a: DF.literal('2') }),
+        Bindings({ a: DF.literal('3') }),
       ]);
       expect(await (<any> output).metadata()).toMatchObject(Promise.resolve({ totalItems: 3 }));
       expect(output.type).toEqual('bindings');

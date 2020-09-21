@@ -2,11 +2,12 @@ import { PassThrough } from 'stream';
 import type { BindingsStream } from '@comunica/bus-query-operation';
 import { Bindings } from '@comunica/bus-query-operation';
 import { Bus } from '@comunica/core';
-import { blankNode, defaultGraph, literal, namedNode } from '@rdfjs/data-model';
 import { ArrayIterator } from 'asynciterator';
+import { DataFactory } from 'rdf-data-factory';
 import type * as RDF from 'rdf-js';
 import { ActorSparqlSerializeSparqlJson } from '..';
 
+const DF = new DataFactory();
 const quad = require('rdf-quad');
 const stringifyStream = require('stream-to-string');
 
@@ -34,32 +35,32 @@ describe('ActorSparqlSerializeSparqlJson', () => {
 
   describe('#bindingToJsonBindings', () => {
     it('should convert named nodes', () => {
-      return expect(ActorSparqlSerializeSparqlJson.bindingToJsonBindings(namedNode('http://ex.org')))
+      return expect(ActorSparqlSerializeSparqlJson.bindingToJsonBindings(DF.namedNode('http://ex.org')))
         .toEqual({ value: 'http://ex.org', type: 'uri' });
     });
 
     it('should convert default graphs', () => {
-      return expect(ActorSparqlSerializeSparqlJson.bindingToJsonBindings(defaultGraph()))
+      return expect(ActorSparqlSerializeSparqlJson.bindingToJsonBindings(DF.defaultGraph()))
         .toEqual({ value: '', type: 'uri' });
     });
 
     it('should convert blank nodes', () => {
-      return expect(ActorSparqlSerializeSparqlJson.bindingToJsonBindings(blankNode('b1')))
+      return expect(ActorSparqlSerializeSparqlJson.bindingToJsonBindings(DF.blankNode('b1')))
         .toEqual({ value: 'b1', type: 'bnode' });
     });
 
     it('should convert plain literals', () => {
-      return expect(ActorSparqlSerializeSparqlJson.bindingToJsonBindings(literal('abc')))
+      return expect(ActorSparqlSerializeSparqlJson.bindingToJsonBindings(DF.literal('abc')))
         .toEqual({ value: 'abc', type: 'literal' });
     });
 
     it('should convert literals with a language', () => {
-      return expect(ActorSparqlSerializeSparqlJson.bindingToJsonBindings(literal('abc', 'en-us')))
+      return expect(ActorSparqlSerializeSparqlJson.bindingToJsonBindings(DF.literal('abc', 'en-us')))
         .toEqual({ value: 'abc', type: 'literal', 'xml:lang': 'en-us' });
     });
 
     it('should convert literals with a datatype', () => {
-      return expect(ActorSparqlSerializeSparqlJson.bindingToJsonBindings(literal('abc', namedNode('http://ex'))))
+      return expect(ActorSparqlSerializeSparqlJson.bindingToJsonBindings(DF.literal('abc', DF.namedNode('http://ex'))))
         .toEqual({ value: 'abc', type: 'literal', datatype: 'http://ex' });
     });
   });
@@ -80,12 +81,12 @@ describe('ActorSparqlSerializeSparqlJson', () => {
         },
         name: 'actor' });
       bindingsStream = new ArrayIterator([
-        Bindings({ '?k1': namedNode('v1') }),
-        Bindings({ '?k2': namedNode('v2') }),
+        Bindings({ '?k1': DF.namedNode('v1') }),
+        Bindings({ '?k2': DF.namedNode('v2') }),
       ]);
       bindingsStreamPartial = new ArrayIterator([
-        Bindings({ '?k1': namedNode('v1') }),
-        Bindings({ '?k2': namedNode('v2') }),
+        Bindings({ '?k1': DF.namedNode('v1') }),
+        Bindings({ '?k2': DF.namedNode('v2') }),
         Bindings({}),
       ]);
       bindingsStreamEmpty = <any> new PassThrough();

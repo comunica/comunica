@@ -1,17 +1,19 @@
 import { ActionContext } from '@comunica/core';
 import { BlankNodeScoped } from '@comunica/data-factory';
-import { blankNode, defaultGraph, literal, namedNode, quad, variable } from '@rdfjs/data-model';
 import { ArrayIterator, TransformIterator } from 'asynciterator';
+import { DataFactory } from 'rdf-data-factory';
 import 'jest-rdf';
 import type * as RDF from 'rdf-js';
+
 import Factory from 'sparqlalgebrajs/lib/factory';
 import { FederatedQuadSource } from '../lib/FederatedQuadSource';
 
 const arrayifyStream = require('arrayify-stream');
 const squad = require('rdf-quad');
 const factory = new Factory();
+const DF = new DataFactory<RDF.BaseQuad>();
 
-const v = variable('v');
+const v = DF.variable('v');
 
 describe('FederatedQuadSource', () => {
   let mediator: any;
@@ -91,123 +93,123 @@ describe('FederatedQuadSource', () => {
 
   describe('#skolemizeTerm', () => {
     it('should not change a variable', () => {
-      expect(FederatedQuadSource.skolemizeTerm(variable('abc'), '0'))
-        .toEqualRdfTerm(variable('abc'));
+      expect(FederatedQuadSource.skolemizeTerm(DF.variable('abc'), '0'))
+        .toEqualRdfTerm(DF.variable('abc'));
     });
 
     it('should not change a named node', () => {
-      expect(FederatedQuadSource.skolemizeTerm(namedNode('abc'), '0'))
-        .toEqualRdfTerm(namedNode('abc'));
+      expect(FederatedQuadSource.skolemizeTerm(DF.namedNode('abc'), '0'))
+        .toEqualRdfTerm(DF.namedNode('abc'));
     });
 
     it('should not change a literal', () => {
-      expect(FederatedQuadSource.skolemizeTerm(literal('abc'), '0'))
-        .toEqualRdfTerm(literal('abc'));
+      expect(FederatedQuadSource.skolemizeTerm(DF.literal('abc'), '0'))
+        .toEqualRdfTerm(DF.literal('abc'));
     });
 
     it('should not change a default graph', () => {
-      expect(FederatedQuadSource.skolemizeTerm(defaultGraph(), '0'))
-        .toEqualRdfTerm(defaultGraph());
+      expect(FederatedQuadSource.skolemizeTerm(DF.defaultGraph(), '0'))
+        .toEqualRdfTerm(DF.defaultGraph());
     });
 
     it('should change a blank node', () => {
-      expect(FederatedQuadSource.skolemizeTerm(blankNode('abc'), '0'))
-        .toEqualRdfTerm(blankNode('urn:comunica_skolem:source_0:abc'));
-      expect((<BlankNodeScoped> FederatedQuadSource.skolemizeTerm(blankNode('abc'), '0')).skolemized)
-        .toEqualRdfTerm(namedNode('urn:comunica_skolem:source_0:abc'));
+      expect(FederatedQuadSource.skolemizeTerm(DF.blankNode('abc'), '0'))
+        .toEqualRdfTerm(DF.blankNode('urn:comunica_skolem:source_0:abc'));
+      expect((<BlankNodeScoped> FederatedQuadSource.skolemizeTerm(DF.blankNode('abc'), '0')).skolemized)
+        .toEqualRdfTerm(DF.namedNode('urn:comunica_skolem:source_0:abc'));
     });
   });
 
   describe('#skolemizeQuad', () => {
     it('should not skolemize named nodes', () => {
       expect(FederatedQuadSource.skolemizeQuad(
-        quad(namedNode('s'), namedNode('p'), namedNode('o'), namedNode('g')), '0',
+        DF.quad(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('o'), DF.namedNode('g')), '0',
       ))
-        .toEqualRdfQuad(quad(namedNode('s'), namedNode('p'), namedNode('o'), namedNode('g')));
+        .toEqualRdfQuad(DF.quad(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('o'), DF.namedNode('g')));
     });
 
     it('should not skolemize blank nodes', () => {
       expect(FederatedQuadSource.skolemizeQuad(
-        quad<RDF.BaseQuad>(blankNode('s'), blankNode('p'), blankNode('o'), blankNode('g')), '0',
+        DF.quad(DF.blankNode('s'), DF.blankNode('p'), DF.blankNode('o'), DF.blankNode('g')), '0',
       ))
-        .toEqualRdfQuad(quad<RDF.BaseQuad>(
-          blankNode('urn:comunica_skolem:source_0:s'),
-          blankNode('urn:comunica_skolem:source_0:p'),
-          blankNode('urn:comunica_skolem:source_0:o'),
-          blankNode('urn:comunica_skolem:source_0:g'),
+        .toEqualRdfQuad(DF.quad(
+          DF.blankNode('urn:comunica_skolem:source_0:s'),
+          DF.blankNode('urn:comunica_skolem:source_0:p'),
+          DF.blankNode('urn:comunica_skolem:source_0:o'),
+          DF.blankNode('urn:comunica_skolem:source_0:g'),
         ));
     });
   });
 
   describe('#deskolemizeTerm', () => {
     it('should not change a variable', () => {
-      expect(FederatedQuadSource.deskolemizeTerm(variable('abc'), '0'))
-        .toEqual(variable('abc'));
+      expect(FederatedQuadSource.deskolemizeTerm(DF.variable('abc'), '0'))
+        .toEqual(DF.variable('abc'));
     });
 
     it('should not change a non-skolemized named node', () => {
-      expect(FederatedQuadSource.deskolemizeTerm(namedNode('abc'), '0'))
-        .toEqual(namedNode('abc'));
+      expect(FederatedQuadSource.deskolemizeTerm(DF.namedNode('abc'), '0'))
+        .toEqual(DF.namedNode('abc'));
     });
 
     it('should not change a literal', () => {
-      expect(FederatedQuadSource.deskolemizeTerm(literal('abc'), '0'))
-        .toEqual(literal('abc'));
+      expect(FederatedQuadSource.deskolemizeTerm(DF.literal('abc'), '0'))
+        .toEqual(DF.literal('abc'));
     });
 
     it('should not change a default graph', () => {
-      expect(FederatedQuadSource.deskolemizeTerm(defaultGraph(), '0'))
-        .toEqual(defaultGraph());
+      expect(FederatedQuadSource.deskolemizeTerm(DF.defaultGraph(), '0'))
+        .toEqual(DF.defaultGraph());
     });
 
     it('should not change a plain blank node', () => {
-      expect(FederatedQuadSource.deskolemizeTerm(blankNode('abc'), '0'))
-        .toEqual(blankNode('abc'));
+      expect(FederatedQuadSource.deskolemizeTerm(DF.blankNode('abc'), '0'))
+        .toEqual(DF.blankNode('abc'));
     });
 
     it('should change a skolemized blank node in the proper source', () => {
       expect(FederatedQuadSource.deskolemizeTerm(new BlankNodeScoped('abc',
-        namedNode('urn:comunica_skolem:source_0:abc')), '0'))
-        .toEqual(blankNode('abc'));
+        DF.namedNode('urn:comunica_skolem:source_0:abc')), '0'))
+        .toEqual(DF.blankNode('abc'));
     });
 
     it('should change a skolemized named node in the proper source', () => {
-      expect(FederatedQuadSource.deskolemizeTerm(namedNode('urn:comunica_skolem:source_0:abc'), '0'))
-        .toEqual(blankNode('abc'));
+      expect(FederatedQuadSource.deskolemizeTerm(DF.namedNode('urn:comunica_skolem:source_0:abc'), '0'))
+        .toEqual(DF.blankNode('abc'));
     });
 
     it('should change a skolemized blank node in the wrong source', () => {
       expect(FederatedQuadSource.deskolemizeTerm(new BlankNodeScoped('abc',
-        namedNode('urn:comunica_skolem:source_0:abc')), '1'))
+        DF.namedNode('urn:comunica_skolem:source_0:abc')), '1'))
         .toBeFalsy();
     });
 
     it('should change a skolemized named node in the wrong source', () => {
       expect(FederatedQuadSource.deskolemizeTerm(new BlankNodeScoped('abc',
-        namedNode('urn:comunica_skolem:source_0:abc')), '1'))
+        DF.namedNode('urn:comunica_skolem:source_0:abc')), '1'))
         .toBeFalsy();
     });
   });
 
   describe('#isTermBound', () => {
     it('should be false on a variable', () => {
-      return expect(FederatedQuadSource.isTermBound(variable('var'))).toBeFalsy();
+      return expect(FederatedQuadSource.isTermBound(DF.variable('var'))).toBeFalsy();
     });
 
     it('should be true on a blank node', () => {
-      return expect(FederatedQuadSource.isTermBound(blankNode('bnode'))).toBeTruthy();
+      return expect(FederatedQuadSource.isTermBound(DF.blankNode('bnode'))).toBeTruthy();
     });
 
     it('should be true on a named node', () => {
-      return expect(FederatedQuadSource.isTermBound(namedNode('http://example.org'))).toBeTruthy();
+      return expect(FederatedQuadSource.isTermBound(DF.namedNode('http://example.org'))).toBeTruthy();
     });
 
     it('should be true on a literal', () => {
-      return expect(FederatedQuadSource.isTermBound(literal('lit'))).toBeTruthy();
+      return expect(FederatedQuadSource.isTermBound(DF.literal('lit'))).toBeTruthy();
     });
 
     it('should be true on the default graph', () => {
-      return expect(FederatedQuadSource.isTermBound(defaultGraph())).toBeTruthy();
+      return expect(FederatedQuadSource.isTermBound(DF.defaultGraph())).toBeTruthy();
     });
   });
 
@@ -352,7 +354,7 @@ describe('FederatedQuadSource', () => {
     });
 
     it('should return an AsyncIterator', () => {
-      return expect(source.match(variable('v'), variable('v'), variable('v'), variable('v')))
+      return expect(source.match(DF.variable('v'), DF.variable('v'), DF.variable('v'), DF.variable('v')))
         .toBeInstanceOf(TransformIterator);
     });
 
@@ -460,17 +462,17 @@ describe('FederatedQuadSource', () => {
     });
 
     it('should store the queried empty patterns in the emptyPatterns datastructure', async() => {
-      await arrayifyStream(source.match(variable('s'), literal('p'), variable('o'), variable('g')));
-      await arrayifyStream(source.match(variable('s'), literal('p'), literal('o'), variable('g')));
+      await arrayifyStream(source.match(DF.variable('s'), DF.literal('p'), DF.variable('o'), DF.variable('g')));
+      await arrayifyStream(source.match(DF.variable('s'), DF.literal('p'), DF.literal('o'), DF.variable('g')));
 
-      await arrayifyStream(source.match(literal('s'), variable('p'), variable('o'), variable('g')));
-      await arrayifyStream(source.match(literal('s'), variable('p'), literal('o'), variable('g')));
-      await arrayifyStream(source.match(literal('s'), variable('p'), literal('o'), literal('g')));
+      await arrayifyStream(source.match(DF.literal('s'), DF.variable('p'), DF.variable('o'), DF.variable('g')));
+      await arrayifyStream(source.match(DF.literal('s'), DF.variable('p'), DF.literal('o'), DF.variable('g')));
+      await arrayifyStream(source.match(DF.literal('s'), DF.variable('p'), DF.literal('o'), DF.literal('g')));
 
       expect([ ...emptyPatterns.entries() ]).toEqual([
         [ subSource, [
-          factory.createPattern(variable('s'), literal('p'), variable('o'), variable('g')),
-          factory.createPattern(literal('s'), variable('p'), variable('o'), variable('g')),
+          factory.createPattern(DF.variable('s'), DF.literal('p'), DF.variable('o'), DF.variable('g')),
+          factory.createPattern(DF.literal('s'), DF.variable('p'), DF.variable('o'), DF.variable('g')),
         ]],
       ]);
     });
@@ -490,7 +492,7 @@ describe('FederatedQuadSource', () => {
     });
 
     it('should return a non-empty AsyncIterator in the default graph', async() => {
-      expect(await arrayifyStream(source.match(v, v, v, defaultGraph()))).toEqual([
+      expect(await arrayifyStream(source.match(v, v, v, DF.defaultGraph()))).toEqual([
         squad('s1', 'p1', 'o1'),
         squad('s1', 'p1', 'o2'),
       ]);
@@ -507,12 +509,12 @@ describe('FederatedQuadSource', () => {
     });
 
     it('should store no queried empty patterns in the emptyPatterns datastructure', async() => {
-      await arrayifyStream(source.match(variable('s'), literal('p'), variable('o'), variable('g')));
-      await arrayifyStream(source.match(variable('s'), literal('p'), literal('o'), variable('g')));
+      await arrayifyStream(source.match(DF.variable('s'), DF.literal('p'), DF.variable('o'), DF.variable('g')));
+      await arrayifyStream(source.match(DF.variable('s'), DF.literal('p'), DF.literal('o'), DF.variable('g')));
 
-      await arrayifyStream(source.match(literal('s'), variable('p'), variable('o'), variable('g')));
-      await arrayifyStream(source.match(literal('s'), variable('p'), literal('o'), variable('g')));
-      await arrayifyStream(source.match(literal('s'), variable('p'), literal('o'), literal('g')));
+      await arrayifyStream(source.match(DF.literal('s'), DF.variable('p'), DF.variable('o'), DF.variable('g')));
+      await arrayifyStream(source.match(DF.literal('s'), DF.variable('p'), DF.literal('o'), DF.variable('g')));
+      await arrayifyStream(source.match(DF.literal('s'), DF.variable('p'), DF.literal('o'), DF.literal('g')));
 
       expect([ ...emptyPatterns.entries() ]).toEqual([
         [ subSource, []],
@@ -534,7 +536,7 @@ describe('FederatedQuadSource', () => {
     });
 
     it('should return a non-empty AsyncIterator in the default graph', async() => {
-      expect(await arrayifyStream(source.match(v, v, v, defaultGraph()))).toEqual([
+      expect(await arrayifyStream(source.match(v, v, v, DF.defaultGraph()))).toEqual([
         squad('s1', 'p1', 'o1'),
         squad('s1', 'p1', 'o2'),
 
@@ -583,7 +585,7 @@ describe('FederatedQuadSource', () => {
     });
 
     it('should return a non-empty AsyncIterator in the default graph', async() => {
-      const a = await arrayifyStream(source.match(v, v, v, defaultGraph()));
+      const a = await arrayifyStream(source.match(v, v, v, DF.defaultGraph()));
       expect(a).toEqual([
         squad('s1', 'p1', 'o1'),
         squad('s1', 'p1', 'o2'),
@@ -602,17 +604,17 @@ describe('FederatedQuadSource', () => {
     });
 
     it('should store the queried empty patterns for the empty source in the emptyPatterns datastructure', async() => {
-      await arrayifyStream(source.match(variable('s'), literal('p'), variable('o'), variable('g')));
-      await arrayifyStream(source.match(variable('s'), literal('p'), literal('o'), variable('g')));
+      await arrayifyStream(source.match(DF.variable('s'), DF.literal('p'), DF.variable('o'), DF.variable('g')));
+      await arrayifyStream(source.match(DF.variable('s'), DF.literal('p'), DF.literal('o'), DF.variable('g')));
 
-      await arrayifyStream(source.match(literal('s'), variable('p'), variable('o'), variable('g')));
-      await arrayifyStream(source.match(literal('s'), variable('p'), literal('o'), variable('g')));
-      await arrayifyStream(source.match(literal('s'), variable('p'), literal('o'), literal('g')));
+      await arrayifyStream(source.match(DF.literal('s'), DF.variable('p'), DF.variable('o'), DF.variable('g')));
+      await arrayifyStream(source.match(DF.literal('s'), DF.variable('p'), DF.literal('o'), DF.variable('g')));
+      await arrayifyStream(source.match(DF.literal('s'), DF.variable('p'), DF.literal('o'), DF.literal('g')));
 
       expect([ ...emptyPatterns.entries() ]).toEqual([
         [ subSource1, [
-          factory.createPattern(variable('s'), literal('p'), variable('o'), variable('g')),
-          factory.createPattern(literal('s'), variable('p'), variable('o'), variable('g')),
+          factory.createPattern(DF.variable('s'), DF.literal('p'), DF.variable('o'), DF.variable('g')),
+          factory.createPattern(DF.literal('s'), DF.variable('p'), DF.variable('o'), DF.variable('g')),
         ]],
         [ subSource2, []],
       ]);
@@ -640,7 +642,7 @@ describe('FederatedQuadSource', () => {
     });
 
     it('should return an empty AsyncIterator for the default graph', async() => {
-      const a = await arrayifyStream(source.match(v, v, v, defaultGraph()));
+      const a = await arrayifyStream(source.match(v, v, v, DF.defaultGraph()));
       expect(a).toEqual([]);
     });
 
@@ -656,21 +658,21 @@ describe('FederatedQuadSource', () => {
     });
 
     it('should store the queried empty patterns for the empty source in the emptyPatterns datastructure', async() => {
-      await arrayifyStream(source.match(variable('s'), literal('p'), variable('o'), variable('g')));
-      await arrayifyStream(source.match(variable('s'), literal('p'), literal('o'), variable('g')));
+      await arrayifyStream(source.match(DF.variable('s'), DF.literal('p'), DF.variable('o'), DF.variable('g')));
+      await arrayifyStream(source.match(DF.variable('s'), DF.literal('p'), DF.literal('o'), DF.variable('g')));
 
-      await arrayifyStream(source.match(literal('s'), variable('p'), variable('o'), variable('g')));
-      await arrayifyStream(source.match(literal('s'), variable('p'), literal('o'), variable('g')));
-      await arrayifyStream(source.match(literal('s'), variable('p'), literal('o'), literal('g')));
+      await arrayifyStream(source.match(DF.literal('s'), DF.variable('p'), DF.variable('o'), DF.variable('g')));
+      await arrayifyStream(source.match(DF.literal('s'), DF.variable('p'), DF.literal('o'), DF.variable('g')));
+      await arrayifyStream(source.match(DF.literal('s'), DF.variable('p'), DF.literal('o'), DF.literal('g')));
 
       expect([ ...emptyPatterns.entries() ]).toEqual([
         [ subSource1, [
-          factory.createPattern(variable('s'), literal('p'), variable('o'), variable('g')),
-          factory.createPattern(literal('s'), variable('p'), variable('o'), variable('g')),
+          factory.createPattern(DF.variable('s'), DF.literal('p'), DF.variable('o'), DF.variable('g')),
+          factory.createPattern(DF.literal('s'), DF.variable('p'), DF.variable('o'), DF.variable('g')),
         ]],
         [ subSource2, [
-          factory.createPattern(variable('s'), literal('p'), variable('o'), variable('g')),
-          factory.createPattern(literal('s'), variable('p'), variable('o'), variable('g')),
+          factory.createPattern(DF.variable('s'), DF.literal('p'), DF.variable('o'), DF.variable('g')),
+          factory.createPattern(DF.literal('s'), DF.variable('p'), DF.variable('o'), DF.variable('g')),
         ]],
       ]);
     });
@@ -696,7 +698,7 @@ describe('FederatedQuadSource', () => {
     });
 
     it('should return an empty AsyncIterator in the default graph', async() => {
-      const a = await arrayifyStream(source.match(v, v, v, defaultGraph()));
+      const a = await arrayifyStream(source.match(v, v, v, DF.defaultGraph()));
       expect(a).toEqual([]);
     });
 
@@ -712,17 +714,17 @@ describe('FederatedQuadSource', () => {
     });
 
     it('should store the queried empty patterns for the empty source in the emptyPatterns datastructure', async() => {
-      await arrayifyStream(source.match(variable('s'), literal('p'), variable('o'), variable('g')));
-      await arrayifyStream(source.match(variable('s'), literal('p'), literal('o'), variable('g')));
+      await arrayifyStream(source.match(DF.variable('s'), DF.literal('p'), DF.variable('o'), DF.variable('g')));
+      await arrayifyStream(source.match(DF.variable('s'), DF.literal('p'), DF.literal('o'), DF.variable('g')));
 
-      await arrayifyStream(source.match(literal('s'), variable('p'), variable('o'), variable('g')));
-      await arrayifyStream(source.match(literal('s'), variable('p'), literal('o'), variable('g')));
-      await arrayifyStream(source.match(literal('s'), variable('p'), literal('o'), literal('g')));
+      await arrayifyStream(source.match(DF.literal('s'), DF.variable('p'), DF.variable('o'), DF.variable('g')));
+      await arrayifyStream(source.match(DF.literal('s'), DF.variable('p'), DF.literal('o'), DF.variable('g')));
+      await arrayifyStream(source.match(DF.literal('s'), DF.variable('p'), DF.literal('o'), DF.literal('g')));
 
       expect([ ...emptyPatterns.entries() ]).toEqual([
         [ subSource, [
-          factory.createPattern(variable('s'), literal('p'), variable('o'), variable('g')),
-          factory.createPattern(literal('s'), variable('p'), variable('o'), variable('g')),
+          factory.createPattern(DF.variable('s'), DF.literal('p'), DF.variable('o'), DF.variable('g')),
+          factory.createPattern(DF.literal('s'), DF.variable('p'), DF.variable('o'), DF.variable('g')),
         ]],
       ]);
     });
@@ -746,7 +748,7 @@ describe('FederatedQuadSource', () => {
     });
 
     it('should return an empty AsyncIterator in the default graph', async() => {
-      const a = await arrayifyStream(source.match(v, v, v, defaultGraph()));
+      const a = await arrayifyStream(source.match(v, v, v, DF.defaultGraph()));
       expect(a).toEqual([]);
     });
 
@@ -762,12 +764,12 @@ describe('FederatedQuadSource', () => {
     });
 
     it('should store the queried empty patterns for the empty source in the emptyPatterns datastructure', async() => {
-      await arrayifyStream(source.match(variable('s'), literal('p'), variable('o'), variable('g')));
-      await arrayifyStream(source.match(variable('s'), literal('p'), literal('o'), variable('g')));
+      await arrayifyStream(source.match(DF.variable('s'), DF.literal('p'), DF.variable('o'), DF.variable('g')));
+      await arrayifyStream(source.match(DF.variable('s'), DF.literal('p'), DF.literal('o'), DF.variable('g')));
 
-      await arrayifyStream(source.match(literal('s'), variable('p'), variable('o'), variable('g')));
-      await arrayifyStream(source.match(literal('s'), variable('p'), literal('o'), variable('g')));
-      await arrayifyStream(source.match(literal('s'), variable('p'), literal('o'), literal('g')));
+      await arrayifyStream(source.match(DF.literal('s'), DF.variable('p'), DF.variable('o'), DF.variable('g')));
+      await arrayifyStream(source.match(DF.literal('s'), DF.variable('p'), DF.literal('o'), DF.variable('g')));
+      await arrayifyStream(source.match(DF.literal('s'), DF.variable('p'), DF.literal('o'), DF.literal('g')));
 
       expect([ ...emptyPatterns.entries() ]).toEqual([]);
     });
@@ -795,7 +797,7 @@ describe('FederatedQuadSource', () => {
     });
 
     it('should return a non-empty AsyncIterator in the default graph', async() => {
-      const a = await arrayifyStream(source.match(v, v, v, defaultGraph()));
+      const a = await arrayifyStream(source.match(v, v, v, DF.defaultGraph()));
       expect(a).toBeRdfIsomorphic([
         squad('s1', 'p1', 'o1'),
         squad('s1', 'p1', 'o2'),
@@ -816,12 +818,12 @@ describe('FederatedQuadSource', () => {
     });
 
     it('should store the queried empty patterns for the empty source in the emptyPatterns datastructure', async() => {
-      await arrayifyStream(source.match(variable('s'), literal('p'), variable('o'), variable('g')));
-      await arrayifyStream(source.match(variable('s'), literal('p'), literal('o'), variable('g')));
+      await arrayifyStream(source.match(DF.variable('s'), DF.literal('p'), DF.variable('o'), DF.variable('g')));
+      await arrayifyStream(source.match(DF.variable('s'), DF.literal('p'), DF.literal('o'), DF.variable('g')));
 
-      await arrayifyStream(source.match(literal('s'), variable('p'), variable('o'), variable('g')));
-      await arrayifyStream(source.match(literal('s'), variable('p'), literal('o'), variable('g')));
-      await arrayifyStream(source.match(literal('s'), variable('p'), literal('o'), literal('g')));
+      await arrayifyStream(source.match(DF.literal('s'), DF.variable('p'), DF.variable('o'), DF.variable('g')));
+      await arrayifyStream(source.match(DF.literal('s'), DF.variable('p'), DF.literal('o'), DF.variable('g')));
+      await arrayifyStream(source.match(DF.literal('s'), DF.variable('p'), DF.literal('o'), DF.literal('g')));
 
       expect([ ...emptyPatterns.entries() ]).toEqual([
         [ subSource1, []],
@@ -848,7 +850,7 @@ describe('FederatedQuadSource', () => {
     });
 
     it('should return a non-empty AsyncIterator for the default graph', async() => {
-      const a = await arrayifyStream(source.match(v, v, v, defaultGraph()));
+      const a = await arrayifyStream(source.match(v, v, v, DF.defaultGraph()));
       expect(a).toEqual([
         squad('s1', 'p1', 'o1'),
         squad('s1', 'p1', 'o1'),
@@ -887,7 +889,7 @@ describe('FederatedQuadSource', () => {
     });
 
     it('should return a non-empty AsyncIterator for the default graph', async() => {
-      const a = await arrayifyStream(source.match(v, v, v, defaultGraph()));
+      const a = await arrayifyStream(source.match(v, v, v, DF.defaultGraph()));
       expect(a).toEqual([
         squad('s1', 'p1', 'o1'),
         squad('s1', 'p1', 'o1'),
@@ -926,7 +928,7 @@ describe('FederatedQuadSource', () => {
     });
 
     it('should return a non-empty AsyncIterator for the default graph', async() => {
-      const a = await arrayifyStream(source.match(v, v, v, defaultGraph()));
+      const a = await arrayifyStream(source.match(v, v, v, DF.defaultGraph()));
       expect(a).toEqual([
         squad('s1', 'p1', 'o1'),
         squad('s1', 'p1', 'o1'),
@@ -965,7 +967,7 @@ describe('FederatedQuadSource', () => {
     });
 
     it('should return a non-empty AsyncIterator for the default graph', async() => {
-      const a = await arrayifyStream(source.match(v, v, v, defaultGraph()));
+      const a = await arrayifyStream(source.match(v, v, v, DF.defaultGraph()));
       expect(a).toEqual([
         squad('s1', 'p1', 'o1'),
         squad('s1', 'p1', 'o1'),
@@ -1008,226 +1010,226 @@ describe('FederatedQuadSource', () => {
     });
 
     it('should return a non-empty AsyncIterator', async() => {
-      const a = await arrayifyStream(source.match(v, v, v, defaultGraph()));
+      const a = await arrayifyStream(source.match(v, v, v, DF.defaultGraph()));
       expect(a).toEqual([
-        quad<RDF.BaseQuad>(
+        DF.quad(
           new BlankNodeScoped('bc_0_s1',
-            namedNode('urn:comunica_skolem:source_0:s1')),
+            DF.namedNode('urn:comunica_skolem:source_0:s1')),
           new BlankNodeScoped('bc_0_p1',
-            namedNode('urn:comunica_skolem:source_0:p1')),
+            DF.namedNode('urn:comunica_skolem:source_0:p1')),
           new BlankNodeScoped('bc_0_o1',
-            namedNode('urn:comunica_skolem:source_0:o1')),
+            DF.namedNode('urn:comunica_skolem:source_0:o1')),
         ),
-        quad<RDF.BaseQuad>(
+        DF.quad(
           new BlankNodeScoped('bc_1_s1',
-            namedNode('urn:comunica_skolem:source_1:s1')),
+            DF.namedNode('urn:comunica_skolem:source_1:s1')),
           new BlankNodeScoped('bc_1_p1',
-            namedNode('urn:comunica_skolem:source_1:p1')),
+            DF.namedNode('urn:comunica_skolem:source_1:p1')),
           new BlankNodeScoped('bc_1_o1',
-            namedNode('urn:comunica_skolem:source_1:o1')),
+            DF.namedNode('urn:comunica_skolem:source_1:o1')),
         ),
-        quad<RDF.BaseQuad>(
+        DF.quad(
           new BlankNodeScoped('bc_0_s2',
-            namedNode('urn:comunica_skolem:source_0:s2')),
+            DF.namedNode('urn:comunica_skolem:source_0:s2')),
           new BlankNodeScoped('bc_0_p2',
-            namedNode('urn:comunica_skolem:source_0:p2')),
+            DF.namedNode('urn:comunica_skolem:source_0:p2')),
           new BlankNodeScoped('bc_0_o2',
-            namedNode('urn:comunica_skolem:source_0:o2')),
+            DF.namedNode('urn:comunica_skolem:source_0:o2')),
         ),
-        quad<RDF.BaseQuad>(
+        DF.quad(
           new BlankNodeScoped('bc_1_s2',
-            namedNode('urn:comunica_skolem:source_1:s2')),
+            DF.namedNode('urn:comunica_skolem:source_1:s2')),
           new BlankNodeScoped('bc_1_p2',
-            namedNode('urn:comunica_skolem:source_1:p2')),
+            DF.namedNode('urn:comunica_skolem:source_1:p2')),
           new BlankNodeScoped('bc_1_o2',
-            namedNode('urn:comunica_skolem:source_1:o2')),
+            DF.namedNode('urn:comunica_skolem:source_1:o2')),
         ),
       ]);
     });
 
     it('should match will all sources for named nodes', async() => {
-      const a = await arrayifyStream(source.match(namedNode('abc'), v, v, defaultGraph()));
+      const a = await arrayifyStream(source.match(DF.namedNode('abc'), v, v, DF.defaultGraph()));
       expect(a).toEqual([
-        quad<RDF.BaseQuad>(
+        DF.quad(
           new BlankNodeScoped('bc_0_s1',
-            namedNode('urn:comunica_skolem:source_0:s1')),
+            DF.namedNode('urn:comunica_skolem:source_0:s1')),
           new BlankNodeScoped('bc_0_p1',
-            namedNode('urn:comunica_skolem:source_0:p1')),
+            DF.namedNode('urn:comunica_skolem:source_0:p1')),
           new BlankNodeScoped('bc_0_o1',
-            namedNode('urn:comunica_skolem:source_0:o1')),
+            DF.namedNode('urn:comunica_skolem:source_0:o1')),
         ),
-        quad<RDF.BaseQuad>(
+        DF.quad(
           new BlankNodeScoped('bc_1_s1',
-            namedNode('urn:comunica_skolem:source_1:s1')),
+            DF.namedNode('urn:comunica_skolem:source_1:s1')),
           new BlankNodeScoped('bc_1_p1',
-            namedNode('urn:comunica_skolem:source_1:p1')),
+            DF.namedNode('urn:comunica_skolem:source_1:p1')),
           new BlankNodeScoped('bc_1_o1',
-            namedNode('urn:comunica_skolem:source_1:o1')),
+            DF.namedNode('urn:comunica_skolem:source_1:o1')),
         ),
-        quad<RDF.BaseQuad>(
+        DF.quad(
           new BlankNodeScoped('bc_0_s2',
-            namedNode('urn:comunica_skolem:source_0:s2')),
+            DF.namedNode('urn:comunica_skolem:source_0:s2')),
           new BlankNodeScoped('bc_0_p2',
-            namedNode('urn:comunica_skolem:source_0:p2')),
+            DF.namedNode('urn:comunica_skolem:source_0:p2')),
           new BlankNodeScoped('bc_0_o2',
-            namedNode('urn:comunica_skolem:source_0:o2')),
+            DF.namedNode('urn:comunica_skolem:source_0:o2')),
         ),
-        quad<RDF.BaseQuad>(
+        DF.quad(
           new BlankNodeScoped('bc_1_s2',
-            namedNode('urn:comunica_skolem:source_1:s2')),
+            DF.namedNode('urn:comunica_skolem:source_1:s2')),
           new BlankNodeScoped('bc_1_p2',
-            namedNode('urn:comunica_skolem:source_1:p2')),
+            DF.namedNode('urn:comunica_skolem:source_1:p2')),
           new BlankNodeScoped('bc_1_o2',
-            namedNode('urn:comunica_skolem:source_1:o2')),
+            DF.namedNode('urn:comunica_skolem:source_1:o2')),
         ),
       ]);
     });
 
     it('should match will all sources for plain blank nodes', async() => {
       const a = await arrayifyStream(source.match(new BlankNodeScoped('abc',
-        namedNode('abc')), v, v, defaultGraph()));
+        DF.namedNode('abc')), v, v, DF.defaultGraph()));
       expect(a).toEqual([
-        quad<RDF.BaseQuad>(
+        DF.quad(
           new BlankNodeScoped('bc_0_s1',
-            namedNode('urn:comunica_skolem:source_0:s1')),
+            DF.namedNode('urn:comunica_skolem:source_0:s1')),
           new BlankNodeScoped('bc_0_p1',
-            namedNode('urn:comunica_skolem:source_0:p1')),
+            DF.namedNode('urn:comunica_skolem:source_0:p1')),
           new BlankNodeScoped('bc_0_o1',
-            namedNode('urn:comunica_skolem:source_0:o1')),
+            DF.namedNode('urn:comunica_skolem:source_0:o1')),
         ),
-        quad<RDF.BaseQuad>(
+        DF.quad(
           new BlankNodeScoped('bc_1_s1',
-            namedNode('urn:comunica_skolem:source_1:s1')),
+            DF.namedNode('urn:comunica_skolem:source_1:s1')),
           new BlankNodeScoped('bc_1_p1',
-            namedNode('urn:comunica_skolem:source_1:p1')),
+            DF.namedNode('urn:comunica_skolem:source_1:p1')),
           new BlankNodeScoped('bc_1_o1',
-            namedNode('urn:comunica_skolem:source_1:o1')),
+            DF.namedNode('urn:comunica_skolem:source_1:o1')),
         ),
-        quad<RDF.BaseQuad>(
+        DF.quad(
           new BlankNodeScoped('bc_0_s2',
-            namedNode('urn:comunica_skolem:source_0:s2')),
+            DF.namedNode('urn:comunica_skolem:source_0:s2')),
           new BlankNodeScoped('bc_0_p2',
-            namedNode('urn:comunica_skolem:source_0:p2')),
+            DF.namedNode('urn:comunica_skolem:source_0:p2')),
           new BlankNodeScoped('bc_0_o2',
-            namedNode('urn:comunica_skolem:source_0:o2')),
+            DF.namedNode('urn:comunica_skolem:source_0:o2')),
         ),
-        quad<RDF.BaseQuad>(
+        DF.quad(
           new BlankNodeScoped('bc_1_s2',
-            namedNode('urn:comunica_skolem:source_1:s2')),
+            DF.namedNode('urn:comunica_skolem:source_1:s2')),
           new BlankNodeScoped('bc_1_p2',
-            namedNode('urn:comunica_skolem:source_1:p2')),
+            DF.namedNode('urn:comunica_skolem:source_1:p2')),
           new BlankNodeScoped('bc_1_o2',
-            namedNode('urn:comunica_skolem:source_1:o2')),
+            DF.namedNode('urn:comunica_skolem:source_1:o2')),
         ),
       ]);
     });
 
     it('should match the first source for blank nodes coming from the first source', async() => {
       const a = await arrayifyStream(source.match(new BlankNodeScoped('abc',
-        namedNode('urn:comunica_skolem:source_0:s1')), v, v, defaultGraph()));
+        DF.namedNode('urn:comunica_skolem:source_0:s1')), v, v, DF.defaultGraph()));
       expect(a).toEqual([
-        quad<RDF.BaseQuad>(
+        DF.quad(
           new BlankNodeScoped('bc_0_s1',
-            namedNode('urn:comunica_skolem:source_0:s1')),
+            DF.namedNode('urn:comunica_skolem:source_0:s1')),
           new BlankNodeScoped('bc_0_p1',
-            namedNode('urn:comunica_skolem:source_0:p1')),
+            DF.namedNode('urn:comunica_skolem:source_0:p1')),
           new BlankNodeScoped('bc_0_o1',
-            namedNode('urn:comunica_skolem:source_0:o1')),
+            DF.namedNode('urn:comunica_skolem:source_0:o1')),
         ),
-        quad<RDF.BaseQuad>(
+        DF.quad(
           new BlankNodeScoped('bc_0_s2',
-            namedNode('urn:comunica_skolem:source_0:s2')),
+            DF.namedNode('urn:comunica_skolem:source_0:s2')),
           new BlankNodeScoped('bc_0_p2',
-            namedNode('urn:comunica_skolem:source_0:p2')),
+            DF.namedNode('urn:comunica_skolem:source_0:p2')),
           new BlankNodeScoped('bc_0_o2',
-            namedNode('urn:comunica_skolem:source_0:o2')),
+            DF.namedNode('urn:comunica_skolem:source_0:o2')),
         ),
       ]);
     });
 
     it('should match the second source for blank nodes coming from the second source', async() => {
       const a = await arrayifyStream(source.match(new BlankNodeScoped('abc',
-        namedNode('urn:comunica_skolem:source_1:s1')), v, v, defaultGraph()));
+        DF.namedNode('urn:comunica_skolem:source_1:s1')), v, v, DF.defaultGraph()));
       expect(a).toEqual([
-        quad<RDF.BaseQuad>(
+        DF.quad(
           new BlankNodeScoped('bc_1_s1',
-            namedNode('urn:comunica_skolem:source_1:s1')),
+            DF.namedNode('urn:comunica_skolem:source_1:s1')),
           new BlankNodeScoped('bc_1_p1',
-            namedNode('urn:comunica_skolem:source_1:p1')),
+            DF.namedNode('urn:comunica_skolem:source_1:p1')),
           new BlankNodeScoped('bc_1_o1',
-            namedNode('urn:comunica_skolem:source_1:o1')),
+            DF.namedNode('urn:comunica_skolem:source_1:o1')),
         ),
-        quad<RDF.BaseQuad>(
+        DF.quad(
           new BlankNodeScoped('bc_1_s2',
-            namedNode('urn:comunica_skolem:source_1:s2')),
+            DF.namedNode('urn:comunica_skolem:source_1:s2')),
           new BlankNodeScoped('bc_1_p2',
-            namedNode('urn:comunica_skolem:source_1:p2')),
+            DF.namedNode('urn:comunica_skolem:source_1:p2')),
           new BlankNodeScoped('bc_1_o2',
-            namedNode('urn:comunica_skolem:source_1:o2')),
+            DF.namedNode('urn:comunica_skolem:source_1:o2')),
         ),
       ]);
     });
 
     it('should match no source for blank nodes coming from an unknown source', async() => {
       const a = await arrayifyStream(source.match(new BlankNodeScoped('abc',
-        namedNode('urn:comunica_skolem:source_2:s1')), v, v, defaultGraph()));
+        DF.namedNode('urn:comunica_skolem:source_2:s1')), v, v, DF.defaultGraph()));
       expect(a).toEqual([]);
     });
 
     it('should match the first source for named nodes coming from the first source', async() => {
-      const a = await arrayifyStream(source.match(namedNode('urn:comunica_skolem:source_0:s1'),
+      const a = await arrayifyStream(source.match(DF.namedNode('urn:comunica_skolem:source_0:s1'),
         v,
         v,
-        defaultGraph()));
+        DF.defaultGraph()));
       expect(a).toEqual([
-        quad<RDF.BaseQuad>(
+        DF.quad(
           new BlankNodeScoped('bc_0_s1',
-            namedNode('urn:comunica_skolem:source_0:s1')),
+            DF.namedNode('urn:comunica_skolem:source_0:s1')),
           new BlankNodeScoped('bc_0_p1',
-            namedNode('urn:comunica_skolem:source_0:p1')),
+            DF.namedNode('urn:comunica_skolem:source_0:p1')),
           new BlankNodeScoped('bc_0_o1',
-            namedNode('urn:comunica_skolem:source_0:o1')),
+            DF.namedNode('urn:comunica_skolem:source_0:o1')),
         ),
-        quad<RDF.BaseQuad>(
+        DF.quad(
           new BlankNodeScoped('bc_0_s2',
-            namedNode('urn:comunica_skolem:source_0:s2')),
+            DF.namedNode('urn:comunica_skolem:source_0:s2')),
           new BlankNodeScoped('bc_0_p2',
-            namedNode('urn:comunica_skolem:source_0:p2')),
+            DF.namedNode('urn:comunica_skolem:source_0:p2')),
           new BlankNodeScoped('bc_0_o2',
-            namedNode('urn:comunica_skolem:source_0:o2')),
+            DF.namedNode('urn:comunica_skolem:source_0:o2')),
         ),
       ]);
     });
 
     it('should match the second source for named nodes coming from the second source', async() => {
       const a = await arrayifyStream(source.match(
-        namedNode('urn:comunica_skolem:source_1:s1'),
+        DF.namedNode('urn:comunica_skolem:source_1:s1'),
         v,
         v,
-        defaultGraph(),
+        DF.defaultGraph(),
       ));
       expect(a).toEqual([
-        quad<RDF.BaseQuad>(
+        DF.quad(
           new BlankNodeScoped('bc_1_s1',
-            namedNode('urn:comunica_skolem:source_1:s1')),
+            DF.namedNode('urn:comunica_skolem:source_1:s1')),
           new BlankNodeScoped('bc_1_p1',
-            namedNode('urn:comunica_skolem:source_1:p1')),
+            DF.namedNode('urn:comunica_skolem:source_1:p1')),
           new BlankNodeScoped('bc_1_o1',
-            namedNode('urn:comunica_skolem:source_1:o1')),
+            DF.namedNode('urn:comunica_skolem:source_1:o1')),
         ),
-        quad<RDF.BaseQuad>(
+        DF.quad(
           new BlankNodeScoped('bc_1_s2',
-            namedNode('urn:comunica_skolem:source_1:s2')),
+            DF.namedNode('urn:comunica_skolem:source_1:s2')),
           new BlankNodeScoped('bc_1_p2',
-            namedNode('urn:comunica_skolem:source_1:p2')),
+            DF.namedNode('urn:comunica_skolem:source_1:p2')),
           new BlankNodeScoped('bc_1_o2',
-            namedNode('urn:comunica_skolem:source_1:o2')),
+            DF.namedNode('urn:comunica_skolem:source_1:o2')),
         ),
       ]);
     });
 
     it('should match no source for named nodes coming from an unknown source', async() => {
-      const a = await arrayifyStream(source.match(namedNode('urn:comunica_skolem:source_2:s1'), v, v, v));
+      const a = await arrayifyStream(source.match(DF.namedNode('urn:comunica_skolem:source_2:s1'), v, v, v));
       expect(a).toEqual([]);
     });
   });

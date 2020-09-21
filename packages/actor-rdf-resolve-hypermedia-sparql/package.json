@@ -42,7 +42,7 @@
     "@comunica/actor-rdf-resolve-quad-pattern-sparql-json": "^1.16.0",
     "@comunica/bus-query-operation": "^1.16.0",
     "@comunica/bus-rdf-resolve-quad-pattern": "^1.16.0",
-    "@rdfjs/data-model": "^1.1.1",
+    "rdf-data-factory": "^1.0.3",
     "@types/rdf-js": "*",
     "asynciterator": "^3.0.3",
     "rdf-terms": "^1.6.2",

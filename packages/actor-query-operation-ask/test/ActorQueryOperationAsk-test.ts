@@ -1,9 +1,10 @@
 import type { IActorQueryOperationOutputBoolean } from '@comunica/bus-query-operation';
 import { ActorQueryOperation, Bindings } from '@comunica/bus-query-operation';
 import { Bus } from '@comunica/core';
-import { literal } from '@rdfjs/data-model';
 import { ArrayIterator, BufferedIterator, range } from 'asynciterator';
+import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationAsk } from '../lib/ActorQueryOperationAsk';
+const DF = new DataFactory();
 
 describe('ActorQueryOperationAsk', () => {
   let bus: any;
@@ -17,9 +18,9 @@ describe('ActorQueryOperationAsk', () => {
     mediatorQueryOperation = {
       mediate: (arg: any) => Promise.resolve({
         bindingsStream: new ArrayIterator([
-          Bindings({ a: literal('1') }),
-          Bindings({ a: literal('2') }),
-          Bindings({ a: literal('3') }),
+          Bindings({ a: DF.literal('1') }),
+          Bindings({ a: DF.literal('2') }),
+          Bindings({ a: DF.literal('3') }),
         ], { autoStart: false }),
         metadata: () => Promise.resolve({ totalItems: 3 }),
         operated: arg,

@@ -1,11 +1,12 @@
 import { Readable } from 'stream';
-import { literal as lit, variable } from '@rdfjs/data-model';
 import { ArrayIterator, wrap } from 'asynciterator';
+import { DataFactory } from 'rdf-data-factory';
 import type * as RDF from 'rdf-js';
 import type { ISourceState } from '../lib/LinkedRdfSourcesAsyncRdfIterator';
 import { LinkedRdfSourcesAsyncRdfIterator } from '../lib/LinkedRdfSourcesAsyncRdfIterator';
 
-const v = variable('v');
+const DF = new DataFactory();
+const v = DF.variable('v');
 
 // Dummy class for testing
 // input is array of arrays, with every array corresponding to a page
@@ -702,7 +703,7 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
 });
 
 function toTerms(data: any) {
-  return data.map((page: any) => page.map((terms: any) => lit.call(null, terms)));
+  return data.map((page: any) => page.map((terms: any) => DF.literal.call(null, terms)));
 }
 
 function flatten(a: any) {

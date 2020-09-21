@@ -3,9 +3,10 @@ import type { Bindings, BindingsStream,
 import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
 import type { ActionContext, IActorTest } from '@comunica/core';
 import { BlankNodeScoped } from '@comunica/data-factory';
-import { blankNode } from '@rdfjs/data-model';
+import { DataFactory } from 'rdf-data-factory';
 import { termToString } from 'rdf-string';
 import type { Algebra } from 'sparqlalgebrajs';
+const DF = new DataFactory();
 
 /**
  * A comunica Project Query Operation Actor.
@@ -61,7 +62,7 @@ export class ActorQueryOperationProject extends ActorQueryOperationTypedMediated
             if (term instanceof BlankNodeScoped) {
               return new BlankNodeScoped(`${term.value}${blankNodeCounter}`, term.skolemized);
             }
-            return blankNode(`${term.value}${blankNodeCounter}`);
+            return DF.blankNode(`${term.value}${blankNodeCounter}`);
           }
           return term;
         });

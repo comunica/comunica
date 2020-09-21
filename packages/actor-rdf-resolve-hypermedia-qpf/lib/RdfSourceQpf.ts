@@ -5,12 +5,13 @@ import type { IActionRdfMetadata, IActorRdfMetadataOutput } from '@comunica/bus-
 import type { IActionRdfMetadataExtract, IActorRdfMetadataExtractOutput } from '@comunica/bus-rdf-metadata-extract';
 import type { IQuadSource } from '@comunica/bus-rdf-resolve-quad-pattern';
 import type { ActionContext, Actor, IActorTest, Mediator } from '@comunica/core';
-import { defaultGraph, namedNode, variable } from '@rdfjs/data-model';
 import type { AsyncIterator } from 'asynciterator';
 import { TransformIterator, wrap } from 'asynciterator';
+import { DataFactory } from 'rdf-data-factory';
 import type * as RDF from 'rdf-js';
 import { termToString } from 'rdf-string';
 import { mapTerms, matchPattern } from 'rdf-terms';
+const DF = new DataFactory();
 
 /**
  * An RDF source that executes a quad pattern over a QPF interface and fetches its first page.
@@ -57,14 +58,14 @@ export class RdfSourceQpf implements IQuadSource {
       throw new Error('Illegal state: found no TPF/QPF search form anymore in metadata.');
     }
     this.searchForm = searchForm;
-    this.defaultGraph = metadata.defaultGraph ? namedNode(metadata.defaultGraph) : undefined;
+    this.defaultGraph = metadata.defaultGraph ? DF.namedNode(metadata.defaultGraph) : undefined;
     if (initialQuads) {
       let wrappedQuads: AsyncIterator<RDF.Quad> = wrap<RDF.Quad>(initialQuads);
       if (this.defaultGraph) {
         wrappedQuads = this.reverseMapQuadsToDefaultGraph(wrappedQuads);
       }
       wrappedQuads.setProperty('metadata', metadata);
-      this.cacheQuads(wrappedQuads, variable(''), variable(''), variable(''), variable(''));
+      this.cacheQuads(wrappedQuads, DF.variable(''), DF.variable(''), DF.variable(''), DF.variable(''));
     }
   }
 
@@ -158,7 +159,7 @@ export class RdfSourceQpf implements IQuadSource {
       // The server is free to send any data in its response (such as metadata),
       // including quads that do not match the given matter.
       // Therefore, we have to filter away all non-matching quads here.
-      const actualDefaultGraph = defaultGraph();
+      const actualDefaultGraph = DF.defaultGraph();
       let filteredOutput: AsyncIterator<RDF.Quad> = wrap<RDF.Quad>(rdfMetadataOuput.data)
         .transform({
           filter(quad: RDF.Quad) {
@@ -191,7 +192,7 @@ export class RdfSourceQpf implements IQuadSource {
   }
 
   protected reverseMapQuadsToDefaultGraph(quads: AsyncIterator<RDF.Quad>): AsyncIterator<RDF.Quad> {
-    const actualDefaultGraph = defaultGraph();
+    const actualDefaultGraph = DF.defaultGraph();
     return quads.map(
       quad => mapTerms(quad,
         (term, key) => key === 'graph' && term.equals(this.defaultGraph) ? actualDefaultGraph : term),

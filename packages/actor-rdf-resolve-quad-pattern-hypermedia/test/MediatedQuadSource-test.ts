@@ -1,15 +1,16 @@
 import { ActionContext } from '@comunica/core';
 import 'jest-rdf';
-import { variable } from '@rdfjs/data-model';
 import { ArrayIterator } from 'asynciterator';
 import LRUCache = require('lru-cache');
+import { DataFactory } from 'rdf-data-factory';
 import type { ISourceState } from '../lib/LinkedRdfSourcesAsyncRdfIterator';
 import { MediatedLinkedRdfSourcesAsyncRdfIterator } from '../lib/MediatedLinkedRdfSourcesAsyncRdfIterator';
 import { MediatedQuadSource } from '../lib/MediatedQuadSource';
 
+const DF = new DataFactory();
 const arrayifyStream = require('arrayify-stream');
 const quad = require('rdf-quad');
-const v = variable('v');
+const v = DF.variable('v');
 
 describe('MediatedQuadSource', () => {
   let context: ActionContext;

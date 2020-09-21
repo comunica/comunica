@@ -1,8 +1,8 @@
 import type { IActorQueryOperationOutputBindings } from '@comunica/bus-query-operation';
 import { ActorQueryOperation, Bindings } from '@comunica/bus-query-operation';
 import { ActionContext, Bus } from '@comunica/core';
-import { namedNode, variable } from '@rdfjs/data-model';
 import { ArrayIterator, EmptyIterator, SingletonIterator } from 'asynciterator';
+import { DataFactory } from 'rdf-data-factory';
 import type * as RDF from 'rdf-js';
 import { termToString } from 'rdf-string';
 import { forEachTerms } from 'rdf-terms';
@@ -11,6 +11,7 @@ import { ActorQueryOperationLeftJoinLeftDeep } from '../lib/ActorQueryOperationL
 
 const arrayifyStream = require('arrayify-stream');
 const factory = new Factory();
+const DF = new DataFactory();
 
 describe('ActorQueryOperationLeftJoinLeftDeep', () => {
   let bus: any;
@@ -35,7 +36,7 @@ describe('ActorQueryOperationLeftJoinLeftDeep', () => {
             } else if (term.value.startsWith('-')) {
               amount = 0;
             }
-            bindings[termToString(term)] = namedNode(`bound-${term.value}${filter ? '-FILTERED' : ''}`);
+            bindings[termToString(term)] = DF.namedNode(`bound-${term.value}${filter ? '-FILTERED' : ''}`);
           }
         });
 
@@ -46,8 +47,8 @@ describe('ActorQueryOperationLeftJoinLeftDeep', () => {
           bindingsStream = new SingletonIterator(Bindings(bindings));
         } else {
           bindingsStream = new ArrayIterator([
-            Bindings(bindings).map((v: RDF.Term) => namedNode(`${v.value}1`)),
-            Bindings(bindings).map((v: RDF.Term) => namedNode(`${v.value}2`)),
+            Bindings(bindings).map((v: RDF.Term) => DF.namedNode(`${v.value}1`)),
+            Bindings(bindings).map((v: RDF.Term) => DF.namedNode(`${v.value}2`)),
           ]);
         }
 
@@ -100,8 +101,8 @@ describe('ActorQueryOperationLeftJoinLeftDeep', () => {
 
     it('should run for one binding in left and right', () => {
       const operation = factory.createLeftJoin(
-        factory.createPattern(variable('a'), namedNode('1'), namedNode('1'), namedNode('1')),
-        factory.createPattern(variable('a'), variable('b'), namedNode('2'), namedNode('b')),
+        factory.createPattern(DF.variable('a'), DF.namedNode('1'), DF.namedNode('1'), DF.namedNode('1')),
+        factory.createPattern(DF.variable('a'), DF.variable('b'), DF.namedNode('2'), DF.namedNode('b')),
       );
       const op = { operation, context: ActionContext({ totalItems: 10, variables: [ 'a' ]}) };
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
@@ -111,8 +112,8 @@ describe('ActorQueryOperationLeftJoinLeftDeep', () => {
         expect(output.canContainUndefs).toEqual(true);
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({
-            '?a': namedNode('bound-a'),
-            '?b': namedNode('bound-b'),
+            '?a': DF.namedNode('bound-a'),
+            '?b': DF.namedNode('bound-b'),
           }),
         ]);
       });
@@ -120,8 +121,8 @@ describe('ActorQueryOperationLeftJoinLeftDeep', () => {
 
     it('should run for multiple bindings in left and one binding in right', () => {
       const operation = factory.createLeftJoin(
-        factory.createPattern(variable('+a'), namedNode('1'), namedNode('1'), namedNode('1')),
-        factory.createPattern(variable('+a'), variable('b'), namedNode('2'), namedNode('b')),
+        factory.createPattern(DF.variable('+a'), DF.namedNode('1'), DF.namedNode('1'), DF.namedNode('1')),
+        factory.createPattern(DF.variable('+a'), DF.variable('b'), DF.namedNode('2'), DF.namedNode('b')),
       );
       const op = { operation, context: ActionContext({ totalItems: 10, variables: [ 'a' ]}) };
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
@@ -131,12 +132,12 @@ describe('ActorQueryOperationLeftJoinLeftDeep', () => {
         expect(output.canContainUndefs).toEqual(true);
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({
-            '?+a': namedNode('bound-+a1'),
-            '?b': namedNode('bound-b'),
+            '?+a': DF.namedNode('bound-+a1'),
+            '?b': DF.namedNode('bound-b'),
           }),
           Bindings({
-            '?+a': namedNode('bound-+a2'),
-            '?b': namedNode('bound-b'),
+            '?+a': DF.namedNode('bound-+a2'),
+            '?b': DF.namedNode('bound-b'),
           }),
         ]);
       });
@@ -144,8 +145,8 @@ describe('ActorQueryOperationLeftJoinLeftDeep', () => {
 
     it('should run for one binding in left and multiple bindings in right', () => {
       const operation = factory.createLeftJoin(
-        factory.createPattern(variable('a'), namedNode('1'), namedNode('1'), namedNode('1')),
-        factory.createPattern(variable('a'), variable('+b'), namedNode('2'), namedNode('b')),
+        factory.createPattern(DF.variable('a'), DF.namedNode('1'), DF.namedNode('1'), DF.namedNode('1')),
+        factory.createPattern(DF.variable('a'), DF.variable('+b'), DF.namedNode('2'), DF.namedNode('b')),
       );
       const op = { operation, context: ActionContext({ totalItems: 10, variables: [ 'a' ]}) };
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
@@ -155,12 +156,12 @@ describe('ActorQueryOperationLeftJoinLeftDeep', () => {
         expect(output.canContainUndefs).toEqual(true);
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({
-            '?a': namedNode('bound-a'),
-            '?+b': namedNode('bound-+b1'),
+            '?a': DF.namedNode('bound-a'),
+            '?+b': DF.namedNode('bound-+b1'),
           }),
           Bindings({
-            '?a': namedNode('bound-a'),
-            '?+b': namedNode('bound-+b2'),
+            '?a': DF.namedNode('bound-a'),
+            '?+b': DF.namedNode('bound-+b2'),
           }),
         ]);
       });
@@ -168,8 +169,8 @@ describe('ActorQueryOperationLeftJoinLeftDeep', () => {
 
     it('should run for multiple binding in left and multiple bindings in right', () => {
       const operation = factory.createLeftJoin(
-        factory.createPattern(variable('+a'), namedNode('1'), namedNode('1'), namedNode('1')),
-        factory.createPattern(variable('+a'), variable('+b'), namedNode('2'), namedNode('b')),
+        factory.createPattern(DF.variable('+a'), DF.namedNode('1'), DF.namedNode('1'), DF.namedNode('1')),
+        factory.createPattern(DF.variable('+a'), DF.variable('+b'), DF.namedNode('2'), DF.namedNode('b')),
       );
       const op = { operation, context: ActionContext({ totalItems: 10, variables: [ 'a' ]}) };
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
@@ -179,20 +180,20 @@ describe('ActorQueryOperationLeftJoinLeftDeep', () => {
         expect(output.canContainUndefs).toEqual(true);
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({
-            '?+a': namedNode('bound-+a1'),
-            '?+b': namedNode('bound-+b1'),
+            '?+a': DF.namedNode('bound-+a1'),
+            '?+b': DF.namedNode('bound-+b1'),
           }),
           Bindings({
-            '?+a': namedNode('bound-+a1'),
-            '?+b': namedNode('bound-+b2'),
+            '?+a': DF.namedNode('bound-+a1'),
+            '?+b': DF.namedNode('bound-+b2'),
           }),
           Bindings({
-            '?+a': namedNode('bound-+a2'),
-            '?+b': namedNode('bound-+b1'),
+            '?+a': DF.namedNode('bound-+a2'),
+            '?+b': DF.namedNode('bound-+b1'),
           }),
           Bindings({
-            '?+a': namedNode('bound-+a2'),
-            '?+b': namedNode('bound-+b2'),
+            '?+a': DF.namedNode('bound-+a2'),
+            '?+b': DF.namedNode('bound-+b2'),
           }),
         ]);
       });
@@ -200,8 +201,8 @@ describe('ActorQueryOperationLeftJoinLeftDeep', () => {
 
     it('should run for one binding in left and no bindings in right', () => {
       const operation = factory.createLeftJoin(
-        factory.createPattern(variable('a'), namedNode('1'), namedNode('1'), namedNode('1')),
-        factory.createPattern(variable('a'), variable('-b'), namedNode('2'), namedNode('b')),
+        factory.createPattern(DF.variable('a'), DF.namedNode('1'), DF.namedNode('1'), DF.namedNode('1')),
+        factory.createPattern(DF.variable('a'), DF.variable('-b'), DF.namedNode('2'), DF.namedNode('b')),
       );
       const op = { operation, context: ActionContext({ totalItems: 10, variables: [ 'a' ]}) };
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
@@ -211,7 +212,7 @@ describe('ActorQueryOperationLeftJoinLeftDeep', () => {
         expect(output.canContainUndefs).toEqual(true);
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({
-            '?a': namedNode('bound-a'),
+            '?a': DF.namedNode('bound-a'),
           }),
         ]);
       });
@@ -219,8 +220,8 @@ describe('ActorQueryOperationLeftJoinLeftDeep', () => {
 
     it('should run for multiple bindings in left and no bindings in right', () => {
       const operation = factory.createLeftJoin(
-        factory.createPattern(variable('+a'), namedNode('1'), namedNode('1'), namedNode('1')),
-        factory.createPattern(variable('+a'), variable('-b'), namedNode('2'), namedNode('b')),
+        factory.createPattern(DF.variable('+a'), DF.namedNode('1'), DF.namedNode('1'), DF.namedNode('1')),
+        factory.createPattern(DF.variable('+a'), DF.variable('-b'), DF.namedNode('2'), DF.namedNode('b')),
       );
       const op = { operation, context: ActionContext({ totalItems: 10, variables: [ 'a' ]}) };
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
@@ -230,10 +231,10 @@ describe('ActorQueryOperationLeftJoinLeftDeep', () => {
         expect(output.canContainUndefs).toEqual(true);
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({
-            '?+a': namedNode('bound-+a1'),
+            '?+a': DF.namedNode('bound-+a1'),
           }),
           Bindings({
-            '?+a': namedNode('bound-+a2'),
+            '?+a': DF.namedNode('bound-+a2'),
           }),
         ]);
       });
@@ -241,8 +242,8 @@ describe('ActorQueryOperationLeftJoinLeftDeep', () => {
 
     it('should correctly handle rejecting metadata in left', () => {
       const operation = factory.createLeftJoin(
-        factory.createPattern(variable('+a'), namedNode('1'), namedNode('1'), namedNode('1')),
-        factory.createPattern(variable('+a'), variable('-b'), namedNode('2'), namedNode('b')),
+        factory.createPattern(DF.variable('+a'), DF.namedNode('1'), DF.namedNode('1'), DF.namedNode('1')),
+        factory.createPattern(DF.variable('+a'), DF.variable('-b'), DF.namedNode('2'), DF.namedNode('b')),
       );
       operation.left.rejectMetadata = true;
       const op = { operation, context: ActionContext({ totalItems: 10, variables: [ 'a' ]}) };
@@ -253,8 +254,8 @@ describe('ActorQueryOperationLeftJoinLeftDeep', () => {
 
     it('should correctly handle rejecting metadata in right', () => {
       const operation = factory.createLeftJoin(
-        factory.createPattern(variable('+a'), namedNode('1'), namedNode('1'), namedNode('1')),
-        factory.createPattern(variable('+a'), variable('-b'), namedNode('2'), namedNode('b')),
+        factory.createPattern(DF.variable('+a'), DF.namedNode('1'), DF.namedNode('1'), DF.namedNode('1')),
+        factory.createPattern(DF.variable('+a'), DF.variable('-b'), DF.namedNode('2'), DF.namedNode('b')),
       );
       operation.right.rejectMetadata = true;
       const op = { operation, context: ActionContext({ totalItems: 10, variables: [ 'a' ]}) };
@@ -265,8 +266,8 @@ describe('ActorQueryOperationLeftJoinLeftDeep', () => {
 
     it('should correctly handle rejecting metadata in left and right', () => {
       const operation = factory.createLeftJoin(
-        factory.createPattern(variable('+a'), namedNode('1'), namedNode('1'), namedNode('1')),
-        factory.createPattern(variable('+a'), variable('-b'), namedNode('2'), namedNode('b')),
+        factory.createPattern(DF.variable('+a'), DF.namedNode('1'), DF.namedNode('1'), DF.namedNode('1')),
+        factory.createPattern(DF.variable('+a'), DF.variable('-b'), DF.namedNode('2'), DF.namedNode('b')),
       );
       operation.left.rejectMetadata = true;
       operation.right.rejectMetadata = true;
@@ -278,9 +279,9 @@ describe('ActorQueryOperationLeftJoinLeftDeep', () => {
 
     it('should run for one binding in left and right with an expression', () => {
       const operation = factory.createLeftJoin(
-        factory.createPattern(variable('a'), namedNode('1'), namedNode('1'), namedNode('1')),
-        factory.createPattern(variable('a'), variable('b'), namedNode('2'), namedNode('b')),
-        factory.createTermExpression(namedNode('EXPRESSION')),
+        factory.createPattern(DF.variable('a'), DF.namedNode('1'), DF.namedNode('1'), DF.namedNode('1')),
+        factory.createPattern(DF.variable('a'), DF.variable('b'), DF.namedNode('2'), DF.namedNode('b')),
+        factory.createTermExpression(DF.namedNode('EXPRESSION')),
       );
       const op = { operation, context: ActionContext({ totalItems: 10, variables: [ 'a' ]}) };
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
@@ -290,8 +291,8 @@ describe('ActorQueryOperationLeftJoinLeftDeep', () => {
         expect(output.canContainUndefs).toEqual(true);
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({
-            '?a': namedNode('bound-a'),
-            '?b': namedNode('bound-b-FILTERED'),
+            '?a': DF.namedNode('bound-a'),
+            '?b': DF.namedNode('bound-b-FILTERED'),
           }),
         ]);
       });

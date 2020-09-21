@@ -1,7 +1,8 @@
-import { literal as lit } from '@rdfjs/data-model';
 import { ArrayIterator } from 'asynciterator';
+import { DataFactory } from 'rdf-data-factory';
 import type * as RDF from 'rdf-js';
 import { PagedAsyncRdfIterator } from '../lib/PagedAsyncRdfIterator';
+const DF = new DataFactory();
 
 // Dummy class for testing
 // input is array of arrays, with every array corresponding to a page
@@ -142,7 +143,7 @@ describe('PagedAsyncRdfIterator', () => {
 });
 
 function toTerms(data: any) {
-  return data.map((page: any) => page.map((terms: any) => lit.call(null, terms)));
+  return data.map((page: any) => page.map((terms: any) => DF.literal.call(null, terms)));
 }
 
 function flatten(a: any) {

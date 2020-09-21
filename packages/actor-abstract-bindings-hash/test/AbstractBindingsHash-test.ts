@@ -4,11 +4,12 @@ import {
   Bindings,
 } from '@comunica/bus-query-operation';
 import { Actor, Bus } from '@comunica/core';
-import { literal } from '@rdfjs/data-model';
 import { ArrayIterator } from 'asynciterator';
+import { DataFactory } from 'rdf-data-factory';
 import type { Algebra } from 'sparqlalgebrajs';
 import { AbstractBindingsHash } from '..';
 const arrayifyStream = require('arrayify-stream');
+const DF = new DataFactory();
 
 describe('AbstractBindingsHash', () => {
   let bus: any;
@@ -21,11 +22,11 @@ describe('AbstractBindingsHash', () => {
     mediatorQueryOperation = {
       mediate: (arg: IActorQueryOperationTypedMediatedArgs) => Promise.resolve({
         bindingsStream: new ArrayIterator([
-          Bindings({ a: literal('1') }),
-          Bindings({ a: literal('2') }),
-          Bindings({ a: literal('1') }),
-          Bindings({ a: literal('3') }),
-          Bindings({ a: literal('2') }),
+          Bindings({ a: DF.literal('1') }),
+          Bindings({ a: DF.literal('2') }),
+          Bindings({ a: DF.literal('1') }),
+          Bindings({ a: DF.literal('3') }),
+          Bindings({ a: DF.literal('2') }),
         ]),
         metadata: () => Promise.resolve({ totalItems: 5 }),
         operated: arg,
@@ -92,11 +93,11 @@ describe('AbstractBindingsHash', () => {
         expect(output.type).toEqual('bindings');
         expect(output.canContainUndefs).toEqual(false);
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
-          Bindings({ a: literal('1') }),
-          Bindings({ a: literal('2') }),
-          Bindings({ a: literal('1') }),
-          Bindings({ a: literal('3') }),
-          Bindings({ a: literal('2') }),
+          Bindings({ a: DF.literal('1') }),
+          Bindings({ a: DF.literal('2') }),
+          Bindings({ a: DF.literal('1') }),
+          Bindings({ a: DF.literal('3') }),
+          Bindings({ a: DF.literal('2') }),
         ]);
       });
     });

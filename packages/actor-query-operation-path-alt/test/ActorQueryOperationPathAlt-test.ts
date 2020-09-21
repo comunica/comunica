@@ -1,10 +1,11 @@
 import { ActorQueryOperation, Bindings } from '@comunica/bus-query-operation';
 import { Bus } from '@comunica/core';
-import { literal, namedNode, variable } from '@rdfjs/data-model';
 import { ArrayIterator } from 'asynciterator';
+import { DataFactory } from 'rdf-data-factory';
 import { Algebra, Factory } from 'sparqlalgebrajs';
 import { ActorQueryOperationPathAlt } from '../lib/ActorQueryOperationPathAlt';
 const arrayifyStream = require('arrayify-stream');
+const DF = new DataFactory();
 
 describe('ActorQueryOperationPathAlt', () => {
   let bus: any;
@@ -16,9 +17,9 @@ describe('ActorQueryOperationPathAlt', () => {
     mediatorQueryOperation = {
       mediate: (arg: any) => Promise.resolve({
         bindingsStream: new ArrayIterator([
-          Bindings({ '?x': literal('1') }),
-          Bindings({ '?x': literal('2') }),
-          Bindings({ '?x': literal('3') }),
+          Bindings({ '?x': DF.literal('1') }),
+          Bindings({ '?x': DF.literal('2') }),
+          Bindings({ '?x': DF.literal('3') }),
         ]),
         metadata: () => Promise.resolve({ totalItems: 3 }),
         operated: arg,
@@ -70,19 +71,19 @@ describe('ActorQueryOperationPathAlt', () => {
 
     it('should support Alt paths', async() => {
       const op = { operation: factory.createPath(
-        namedNode('s'),
-        factory.createAlt(factory.createLink(namedNode('p1')), factory.createLink(namedNode('p2'))),
-        variable('x'),
+        DF.namedNode('s'),
+        factory.createAlt(factory.createLink(DF.namedNode('p1')), factory.createLink(DF.namedNode('p2'))),
+        DF.variable('x'),
       ) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       expect(output.canContainUndefs).toEqual(false);
       expect(await arrayifyStream(output.bindingsStream)).toEqual([
-        Bindings({ '?x': literal('1') }),
-        Bindings({ '?x': literal('1') }),
-        Bindings({ '?x': literal('2') }),
-        Bindings({ '?x': literal('2') }),
-        Bindings({ '?x': literal('3') }),
-        Bindings({ '?x': literal('3') }),
+        Bindings({ '?x': DF.literal('1') }),
+        Bindings({ '?x': DF.literal('1') }),
+        Bindings({ '?x': DF.literal('2') }),
+        Bindings({ '?x': DF.literal('2') }),
+        Bindings({ '?x': DF.literal('3') }),
+        Bindings({ '?x': DF.literal('3') }),
       ]);
     });
   });

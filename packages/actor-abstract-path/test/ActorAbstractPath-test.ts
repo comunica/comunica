@@ -1,8 +1,9 @@
 import { Actor, Bus } from '@comunica/core';
-import { namedNode, variable } from '@rdfjs/data-model';
+import { DataFactory } from 'rdf-data-factory';
 import { termToString } from 'rdf-string';
 import { Factory } from 'sparqlalgebrajs';
 import { ActorAbstractPath } from '../lib/ActorAbstractPath';
+const DF = new DataFactory();
 
 describe('ActorAbstractPath', () => {
   const bus = new Bus({ name: 'bus' });
@@ -30,9 +31,9 @@ describe('ActorAbstractPath', () => {
 
     it('generates unique variable', () => {
       const path = factory.createPath(
-        namedNode('s'),
-        factory.createLink(namedNode('p')),
-        variable('b'),
+        DF.namedNode('s'),
+        factory.createLink(DF.namedNode('p')),
+        DF.variable('b'),
       );
       return expect(termToString(actor.generateVariable(path))).not.toEqual(path.object.value);
     });

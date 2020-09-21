@@ -4,13 +4,15 @@ import { getDataSourceType, getDataSourceValue, KEY_CONTEXT_SOURCE,
   KEY_CONTEXT_SOURCES, getDataSourceContext } from '@comunica/bus-rdf-resolve-quad-pattern';
 import type { ActionContext, Actor, IActorTest, Mediator } from '@comunica/core';
 import { BlankNodeScoped } from '@comunica/data-factory';
-import * as DataFactory from '@rdfjs/data-model';
 import type { AsyncIterator } from 'asynciterator';
 import { ArrayIterator, TransformIterator, UnionIterator } from 'asynciterator';
+import { DataFactory } from 'rdf-data-factory';
 import type * as RDF from 'rdf-js';
 import { mapTerms } from 'rdf-terms';
 import type { Algebra } from 'sparqlalgebrajs';
 import { Factory } from 'sparqlalgebrajs';
+
+const DF = new DataFactory();
 
 /**
  * A FederatedQuadSource can evaluate quad pattern queries over the union of different heterogeneous sources.
@@ -85,7 +87,7 @@ export class FederatedQuadSource implements IQuadSource {
   public static skolemizeTerm(term: RDF.Term, sourceId: string): RDF.Term | BlankNodeScoped {
     if (term.termType === 'BlankNode') {
       return new BlankNodeScoped(`bc_${sourceId}_${term.value}`,
-        DataFactory.namedNode(`${FederatedQuadSource.SKOLEM_PREFIX}${sourceId}:${term.value}`));
+        DF.namedNode(`${FederatedQuadSource.SKOLEM_PREFIX}${sourceId}:${term.value}`));
     }
     return term;
   }
@@ -120,7 +122,7 @@ export class FederatedQuadSource implements IQuadSource {
         if (termSourceId === sourceId) {
           // It came from the correct source
           const termLabel = term.value.slice(colonSeparator + 1, term.value.length);
-          return DataFactory.blankNode(termLabel);
+          return DF.blankNode(termLabel);
         }
         // It came from a different source
         return null;

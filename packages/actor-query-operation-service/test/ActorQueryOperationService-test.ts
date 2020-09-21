@@ -1,10 +1,11 @@
 import type { IActorQueryOperationOutputBindings } from '@comunica/bus-query-operation';
 import { ActorQueryOperation, Bindings } from '@comunica/bus-query-operation';
 import { ActionContext, Bus } from '@comunica/core';
-import { literal, namedNode } from '@rdfjs/data-model';
 import { ArrayIterator } from 'asynciterator';
+import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationService } from '../lib/ActorQueryOperationService';
 const arrayifyStream = require('arrayify-stream');
+const DF = new DataFactory();
 
 describe('ActorQueryOperationService', () => {
   let bus: any;
@@ -17,9 +18,9 @@ describe('ActorQueryOperationService', () => {
         Promise.reject(new Error('Endpoint error')) :
         Promise.resolve({
           bindingsStream: new ArrayIterator([
-            Bindings({ a: literal('1') }),
-            Bindings({ a: literal('2') }),
-            Bindings({ a: literal('3') }),
+            Bindings({ a: DF.literal('1') }),
+            Bindings({ a: DF.literal('2') }),
+            Bindings({ a: DF.literal('3') }),
           ]),
           metadata: () => Promise.resolve({ totalItems: 3 }),
           operated: arg,
@@ -58,7 +59,7 @@ describe('ActorQueryOperationService', () => {
     });
 
     it('should test on service', () => {
-      const op = { operation: { type: 'service', silent: false, name: namedNode('dummy') }};
+      const op = { operation: { type: 'service', silent: false, name: DF.namedNode('dummy') }};
       return expect(actor.test(op)).resolves.toBeTruthy();
     });
 
@@ -68,7 +69,7 @@ describe('ActorQueryOperationService', () => {
     });
 
     it('should not test on service with a non-named node name', () => {
-      const op = { operation: { type: 'service', silent: false, name: literal('dummy') }};
+      const op = { operation: { type: 'service', silent: false, name: DF.literal('dummy') }};
       return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
@@ -76,37 +77,37 @@ describe('ActorQueryOperationService', () => {
       const context = ActionContext({
         '@comunica/bus-rdf-resolve-quad-pattern:sources': { type: 'bla', value: 'blabla' },
       });
-      const op = { operation: { type: 'service', silent: false, name: literal('dummy') }, context };
+      const op = { operation: { type: 'service', silent: false, name: DF.literal('dummy') }, context };
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
         expect(output.variables).toEqual([ '?a' ]);
         expect(await (<any> output).metadata()).toEqual({ totalItems: 3 });
         expect(output.canContainUndefs).toEqual(true);
 
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
-          Bindings({ a: literal('1') }),
-          Bindings({ a: literal('2') }),
-          Bindings({ a: literal('3') }),
+          Bindings({ a: DF.literal('1') }),
+          Bindings({ a: DF.literal('2') }),
+          Bindings({ a: DF.literal('3') }),
         ]);
       });
     });
 
     it('should run without context', () => {
-      const op = { operation: { type: 'service', silent: false, name: literal('dummy') }};
+      const op = { operation: { type: 'service', silent: false, name: DF.literal('dummy') }};
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
         expect(output.variables).toEqual([ '?a' ]);
         expect(await (<any> output).metadata()).toEqual({ totalItems: 3 });
         expect(output.canContainUndefs).toEqual(true);
 
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
-          Bindings({ a: literal('1') }),
-          Bindings({ a: literal('2') }),
-          Bindings({ a: literal('3') }),
+          Bindings({ a: DF.literal('1') }),
+          Bindings({ a: DF.literal('2') }),
+          Bindings({ a: DF.literal('3') }),
         ]);
       });
     });
 
     it('should run on a silent operation when the endpoint errors', () => {
-      const op = { operation: { type: 'service', silent: true, name: literal('dummy'), input: 'error' }};
+      const op = { operation: { type: 'service', silent: true, name: DF.literal('dummy'), input: 'error' }};
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
         expect(output.variables).toEqual([]);
         expect(output.metadata).toBeFalsy();
@@ -119,12 +120,12 @@ describe('ActorQueryOperationService', () => {
     });
 
     it('should not run on a non-silent operation when the endpoint errors', () => {
-      const op = { operation: { type: 'service', silent: false, name: literal('dummy'), input: 'error' }};
+      const op = { operation: { type: 'service', silent: false, name: DF.literal('dummy'), input: 'error' }};
       return expect(actor.run(op)).rejects.toBeTruthy();
     });
 
     it('should run and use auto source type when forceSparqlEndpoint is disabled', () => {
-      const op = { operation: { type: 'service', silent: false, name: literal('dummy') }};
+      const op = { operation: { type: 'service', silent: false, name: DF.literal('dummy') }};
       const actorThis = new ActorQueryOperationService(
         { bus, forceSparqlEndpoint: false, mediatorQueryOperation, name: 'actor' },
       );
@@ -137,15 +138,15 @@ describe('ActorQueryOperationService', () => {
         expect(output.canContainUndefs).toEqual(true);
 
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
-          Bindings({ a: literal('1') }),
-          Bindings({ a: literal('2') }),
-          Bindings({ a: literal('3') }),
+          Bindings({ a: DF.literal('1') }),
+          Bindings({ a: DF.literal('2') }),
+          Bindings({ a: DF.literal('3') }),
         ]);
       });
     });
 
     it('should run and use sparql source type when forceSparqlEndpoint is enabled', () => {
-      const op = { operation: { type: 'service', silent: false, name: literal('dummy') }};
+      const op = { operation: { type: 'service', silent: false, name: DF.literal('dummy') }};
       const actorThis = new ActorQueryOperationService(
         { bus, forceSparqlEndpoint: true, mediatorQueryOperation, name: 'actor' },
       );
@@ -157,9 +158,9 @@ describe('ActorQueryOperationService', () => {
         expect(output.canContainUndefs).toEqual(true);
 
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
-          Bindings({ a: literal('1') }),
-          Bindings({ a: literal('2') }),
-          Bindings({ a: literal('3') }),
+          Bindings({ a: DF.literal('1') }),
+          Bindings({ a: DF.literal('2') }),
+          Bindings({ a: DF.literal('3') }),
         ]);
       });
     });

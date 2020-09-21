@@ -1,11 +1,12 @@
 import type { IActorQueryOperationOutputBindings } from '@comunica/bus-query-operation';
 import { ActorQueryOperation, Bindings } from '@comunica/bus-query-operation';
 import { Bus } from '@comunica/core';
-import { literal, variable } from '@rdfjs/data-model';
 import { ArrayIterator } from 'asynciterator';
+import { DataFactory } from 'rdf-data-factory';
 import * as sparqlee from 'sparqlee';
 import { ActorQueryOperationLeftJoinNestedLoop } from '../lib/ActorQueryOperationLeftJoinNestedLoop';
 const arrayifyStream = require('arrayify-stream');
+const DF = new DataFactory();
 
 describe('ActorQueryOperationLeftJoinNestedLoop', () => {
   let bus: any;
@@ -14,12 +15,12 @@ describe('ActorQueryOperationLeftJoinNestedLoop', () => {
 
   const truthyExpression = {
     expressionType: 'term',
-    term: literal('nonemptystring'),
+    term: DF.literal('nonemptystring'),
     type: 'expression',
   };
   const falsyExpression = {
     expressionType: 'term',
-    term: literal(''),
+    term: DF.literal(''),
     type: 'expression',
   };
   const erroringExpression = {
@@ -30,12 +31,12 @@ describe('ActorQueryOperationLeftJoinNestedLoop', () => {
       {
         type: 'expression',
         expressionType: 'term',
-        term: variable('a'),
+        term: DF.variable('a'),
       },
       {
         type: 'expression',
         expressionType: 'term',
-        term: variable('a'),
+        term: DF.variable('a'),
       },
     ],
   };
@@ -44,14 +45,14 @@ describe('ActorQueryOperationLeftJoinNestedLoop', () => {
     bus = new Bus({ name: 'bus' });
     left = false;
     const bindingStreamLeft = new ArrayIterator([
-      Bindings({ '?a': literal('1') }),
-      Bindings({ '?a': literal('2') }),
-      Bindings({ '?a': literal('3') }),
+      Bindings({ '?a': DF.literal('1') }),
+      Bindings({ '?a': DF.literal('2') }),
+      Bindings({ '?a': DF.literal('3') }),
     ]);
     const bindingStreamRight = new ArrayIterator([
-      Bindings({ '?a': literal('1'), '?b': literal('1') }),
-      Bindings({ '?a': literal('3'), '?b': literal('1') }),
-      Bindings({ '?a': literal('3'), '?b': literal('2') }),
+      Bindings({ '?a': DF.literal('1'), '?b': DF.literal('1') }),
+      Bindings({ '?a': DF.literal('3'), '?b': DF.literal('1') }),
+      Bindings({ '?a': DF.literal('3'), '?b': DF.literal('2') }),
     ]);
     mediatorQueryOperation = {
       mediate(arg: any) {
@@ -108,10 +109,10 @@ describe('ActorQueryOperationLeftJoinNestedLoop', () => {
       const op = { operation: { type: 'leftjoin', left: {}, right: {}}};
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
-          Bindings({ '?a': literal('1'), '?b': literal('1') }),
-          Bindings({ '?a': literal('2') }),
-          Bindings({ '?a': literal('3'), '?b': literal('1') }),
-          Bindings({ '?a': literal('3'), '?b': literal('2') }),
+          Bindings({ '?a': DF.literal('1'), '?b': DF.literal('1') }),
+          Bindings({ '?a': DF.literal('2') }),
+          Bindings({ '?a': DF.literal('3'), '?b': DF.literal('1') }),
+          Bindings({ '?a': DF.literal('3'), '?b': DF.literal('2') }),
         ]);
         expect(await (<any> output).metadata()).toMatchObject({ totalItems: 9 });
         expect(output.type).toEqual('bindings');
@@ -146,10 +147,10 @@ describe('ActorQueryOperationLeftJoinNestedLoop', () => {
       const op = { operation: { type: 'leftjoin', left: {}, right: {}, expression }};
       await actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
-          Bindings({ '?a': literal('1'), '?b': literal('1') }),
-          Bindings({ '?a': literal('2') }),
-          Bindings({ '?a': literal('3'), '?b': literal('1') }),
-          Bindings({ '?a': literal('3'), '?b': literal('2') }),
+          Bindings({ '?a': DF.literal('1'), '?b': DF.literal('1') }),
+          Bindings({ '?a': DF.literal('2') }),
+          Bindings({ '?a': DF.literal('3'), '?b': DF.literal('1') }),
+          Bindings({ '?a': DF.literal('3'), '?b': DF.literal('2') }),
         ]);
         expect(await (<any> output).metadata()).toMatchObject({ totalItems: 9 });
         expect(output.type).toEqual('bindings');
@@ -163,9 +164,9 @@ describe('ActorQueryOperationLeftJoinNestedLoop', () => {
       const op = { operation: { type: 'leftjoin', left: {}, right: {}, expression }};
       await actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
-          Bindings({ '?a': literal('1') }),
-          Bindings({ '?a': literal('2') }),
-          Bindings({ '?a': literal('3') }),
+          Bindings({ '?a': DF.literal('1') }),
+          Bindings({ '?a': DF.literal('2') }),
+          Bindings({ '?a': DF.literal('3') }),
         ]);
         expect(await (<any> output).metadata()).toMatchObject({ totalItems: 9 });
         expect(output.type).toEqual('bindings');
@@ -179,9 +180,9 @@ describe('ActorQueryOperationLeftJoinNestedLoop', () => {
       const op = { operation: { type: 'leftjoin', left: {}, right: {}, expression }};
       await actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
-          Bindings({ '?a': literal('1') }),
-          Bindings({ '?a': literal('2') }),
-          Bindings({ '?a': literal('3') }),
+          Bindings({ '?a': DF.literal('1') }),
+          Bindings({ '?a': DF.literal('2') }),
+          Bindings({ '?a': DF.literal('3') }),
         ]);
         expect(await (<any> output).metadata()).toMatchObject({ totalItems: 9 });
         expect(output.type).toEqual('bindings');
@@ -192,7 +193,9 @@ describe('ActorQueryOperationLeftJoinNestedLoop', () => {
 
     it('should emit an error on a hard erroring expression', async next => {
       // Mock the expression error test so we can force 'a programming error' and test the branch
-      spyOn(sparqlee, 'isExpressionError').and.returnValue(false);
+      // eslint-disable-next-line no-import-assign
+      Object.defineProperty(sparqlee, 'isExpressionError', { writable: true });
+      (<any> sparqlee).isExpressionError = jest.fn(() => false);
       const op = { operation: { type: 'leftjoin', input: {}, expression: erroringExpression }};
       const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
       output.bindingsStream.on('error', () => next());

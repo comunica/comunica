@@ -2,14 +2,15 @@ import type { IActorQueryOperationOutputBindings } from '@comunica/bus-query-ope
 import { ActorQueryOperation, Bindings,
   KEY_CONTEXT_BASEIRI } from '@comunica/bus-query-operation';
 import { Bus } from '@comunica/core';
-import { literal, variable } from '@rdfjs/data-model';
 import { ArrayIterator } from 'asynciterator';
 import { Map } from 'immutable';
+import { DataFactory } from 'rdf-data-factory';
 import type { Algebra } from 'sparqlalgebrajs';
 import { Factory, translate } from 'sparqlalgebrajs';
 import * as sparqlee from 'sparqlee';
 import { ActorQueryOperationFilterSparqlee } from '../lib/ActorQueryOperationFilterSparqlee';
 const arrayifyStream = require('arrayify-stream');
+const DF = new DataFactory();
 
 function template(expr: string) {
   return `
@@ -32,9 +33,9 @@ describe('ActorQueryOperationFilterSparqlee', () => {
   let bus: any;
   let mediatorQueryOperation: any;
   const simpleSPOInput = new Factory().createBgp([ new Factory().createPattern(
-    variable('s'),
-    variable('p'),
-    variable('o'),
+    DF.variable('s'),
+    DF.variable('p'),
+    DF.variable('o'),
   ) ]);
   const truthyExpression = parse('"nonemptystring"');
   const falsyExpression = parse('""');
@@ -50,9 +51,9 @@ describe('ActorQueryOperationFilterSparqlee', () => {
     mediatorQueryOperation = {
       mediate: (arg: any) => Promise.resolve({
         bindingsStream: new ArrayIterator([
-          Bindings({ '?a': literal('1') }),
-          Bindings({ '?a': literal('2') }),
-          Bindings({ '?a': literal('3') }),
+          Bindings({ '?a': DF.literal('1') }),
+          Bindings({ '?a': DF.literal('2') }),
+          Bindings({ '?a': DF.literal('3') }),
         ], { autoStart: false }),
         metadata: () => Promise.resolve({ totalItems: 3 }),
         operated: arg,
@@ -108,9 +109,9 @@ describe('ActorQueryOperationFilterSparqlee', () => {
       const op = { operation: { type: 'filter', input: {}, expression: truthyExpression }};
       const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
       expect(await arrayifyStream(output.bindingsStream)).toMatchObject([
-        Bindings({ '?a': literal('1') }),
-        Bindings({ '?a': literal('2') }),
-        Bindings({ '?a': literal('3') }),
+        Bindings({ '?a': DF.literal('1') }),
+        Bindings({ '?a': DF.literal('2') }),
+        Bindings({ '?a': DF.literal('3') }),
       ]);
       expect(output.type).toEqual('bindings');
       expect(await (<any> output).metadata()).toMatchObject({ totalItems: 3 });
@@ -139,7 +140,9 @@ describe('ActorQueryOperationFilterSparqlee', () => {
     });
 
     it('should emit an error for a hard erroring filter', async next => {
-      spyOn(sparqlee, 'isExpressionError').and.returnValue(false);
+      // eslint-disable-next-line no-import-assign
+      Object.defineProperty(sparqlee, 'isExpressionError', { writable: true });
+      (<any> sparqlee).isExpressionError = jest.fn(() => false);
       const op = { operation: { type: 'filter', input: {}, expression: erroringExpression }};
       const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
       output.bindingsStream.on('error', () => next());
@@ -153,9 +156,9 @@ describe('ActorQueryOperationFilterSparqlee', () => {
       const op = { operation: { type: 'filter', input: {}, expression }, context };
       const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
       expect(await arrayifyStream(output.bindingsStream)).toMatchObject([
-        Bindings({ '?a': literal('1') }),
-        Bindings({ '?a': literal('2') }),
-        Bindings({ '?a': literal('3') }),
+        Bindings({ '?a': DF.literal('1') }),
+        Bindings({ '?a': DF.literal('2') }),
+        Bindings({ '?a': DF.literal('3') }),
       ]);
       expect(output.type).toEqual('bindings');
       expect(await (<any> output).metadata()).toMatchObject({ totalItems: 3 });

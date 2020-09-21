@@ -1,8 +1,9 @@
 import { Bindings } from '@comunica/bus-query-operation';
 import { Bus } from '@comunica/core';
-import { literal, namedNode } from '@rdfjs/data-model';
+import { DataFactory } from 'rdf-data-factory';
 import { ActorRdfMetadataExtractQuery } from '..';
 
+const DF = new DataFactory();
 const arrayifyStream = require('arrayify-stream');
 const quad = require('rdf-quad');
 const streamifyArray = require('streamify-array');
@@ -17,8 +18,8 @@ describe('ActorRdfMetadataExtractQuery', () => {
   const queryEngine: any = {
     query: jest.fn((operation, options) => ({
       bindings: Promise.resolve(streamifyArray([
-        Bindings({ person: namedNode(`p1${options.source.type}`), name: literal(`P1${options.source.value.size}`) }),
-        Bindings({ person: namedNode(`p2${options.source.type}`), name: literal(`P2${options.source.value.size}`) }),
+        Bindings({ person: DF.namedNode(`p1${options.source.type}`), name: DF.literal(`P1${options.source.value.size}`) }),
+        Bindings({ person: DF.namedNode(`p2${options.source.type}`), name: DF.literal(`P2${options.source.value.size}`) }),
       ])),
     })),
     resultToString: jest.fn(async p => ({
@@ -88,7 +89,7 @@ describe('ActorRdfMetadataExtractQuery', () => {
           quad('s1In', 'p1In', 'o1In'),
           quad('s2In', 'p2In', 'o2In'),
         ]);
-        expect(await actor.queryData(data, { '?var': namedNode('V1') })).toEqual([
+        expect(await actor.queryData(data, { '?var': DF.namedNode('V1') })).toEqual([
           {
             name: [ 'P12', 'P22' ],
             person: [ 'p1rdfjsSource', 'p2rdfjsSource' ],

@@ -42,7 +42,7 @@
     "@comunica/bus-rdf-metadata": "^1.15.0",
     "@comunica/bus-rdf-metadata-extract": "^1.15.0",
     "@comunica/utils-datasource": "^1.16.0",
-    "@rdfjs/data-model": "^1.1.1",
+    "rdf-data-factory": "^1.0.3",
     "@types/lru-cache": "^5.1.0",
     "@types/rdf-js": "*",
     "asynciterator": "^3.0.3",

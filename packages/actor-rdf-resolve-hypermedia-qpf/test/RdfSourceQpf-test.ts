@@ -1,6 +1,6 @@
 import { Readable } from 'stream';
 import { ActionContext, Bus } from '@comunica/core';
-import { defaultGraph, namedNode, variable } from '@rdfjs/data-model';
+import { DataFactory } from 'rdf-data-factory';
 import 'jest-rdf';
 import type * as RDF from 'rdf-js';
 import { RdfSourceQpf } from '../lib/RdfSourceQpf';
@@ -8,7 +8,8 @@ import { RdfSourceQpf } from '../lib/RdfSourceQpf';
 const arrayifyStream = require('arrayify-stream');
 const quad = require('rdf-quad');
 const streamifyArray = require('streamify-array');
-const v = variable('v');
+const DF = new DataFactory();
+const v = DF.variable('v');
 
 describe('RdfSourceQpf', () => {
   let source: RdfSourceQpf;
@@ -82,10 +83,10 @@ describe('RdfSourceQpf', () => {
       ]),
     );
 
-    S = namedNode('S');
-    P = namedNode('P');
-    O = namedNode('O');
-    G = namedNode('G');
+    S = DF.namedNode('S');
+    P = DF.namedNode('P');
+    O = DF.namedNode('O');
+    G = DF.namedNode('G');
   });
 
   describe('#constructor', () => {
@@ -188,19 +189,19 @@ describe('RdfSourceQpf', () => {
   describe('createFragmentUri', () => {
     it('should create a valid fragment URI with materialized terms', () => {
       return expect(source.createFragmentUri(metadata.searchForms.values[0],
-        namedNode('S'),
-        namedNode('P'),
-        namedNode('O'),
-        namedNode('G')))
+        DF.namedNode('S'),
+        DF.namedNode('P'),
+        DF.namedNode('O'),
+        DF.namedNode('G')))
         .toEqual('S,P,O,G');
     });
 
     it('should create a valid fragment URI with only a few materialized terms', () => {
       return expect(source.createFragmentUri(metadata.searchForms.values[0],
         v,
-        namedNode('P'),
+        DF.namedNode('P'),
         v,
-        namedNode('G')))
+        DF.namedNode('G')))
         .toEqual('_,P,_,G');
     });
   });
@@ -222,7 +223,7 @@ describe('RdfSourceQpf', () => {
 
     it('should return a copy of the initial quads for the empty pattern with the default graph', async() => {
       expect(await arrayifyStream(source.match(
-        v, v, v, defaultGraph(),
+        v, v, v, DF.defaultGraph(),
       )))
         .toBeRdfIsomorphic([
           quad('s1', 'p1', 'o1'),
@@ -247,25 +248,25 @@ describe('RdfSourceQpf', () => {
 
     it('should handle a non-empty pattern and filter only matching quads', async() => {
       expect(await arrayifyStream(source.match(
-        namedNode('s1'), v, namedNode('o1'), v,
+        DF.namedNode('s1'), v, DF.namedNode('o1'), v,
       )))
         .toBeRdfIsomorphic([
           quad('s1', 'p1', 'o1'),
         ]);
       expect(await arrayifyStream(source.match(
-        namedNode('s2'), v, namedNode('o2'), v,
+        DF.namedNode('s2'), v, DF.namedNode('o2'), v,
       )))
         .toBeRdfIsomorphic([
           quad('s2', 'p2', 'o2'),
         ]);
       expect(await arrayifyStream(source.match(
-        namedNode('s3'), v, namedNode('o3'), v,
+        DF.namedNode('s3'), v, DF.namedNode('o3'), v,
       )))
         .toBeRdfIsomorphic([]);
     });
 
     it('should emit metadata for a non-empty pattern', async() => {
-      const output = source.match(namedNode('s1'), v, namedNode('o1'), v);
+      const output = source.match(DF.namedNode('s1'), v, DF.namedNode('o1'), v);
       const metadataPromise = new Promise(resolve => output.getProperty('metadata', resolve));
       await arrayifyStream(output);
       expect(await metadataPromise).toEqual({ next: 'NEXT' });
@@ -285,7 +286,7 @@ describe('RdfSourceQpf', () => {
     // });
     //
     // expect(await arrayifyStream(source.match(
-    //     variable('v'), null, variable('v'))))
+    //     DF.variable('v'), null, DF.variable('v'))))
     //     .toBeRdfIsomorphic([
     //       quad('t', 'p2', 't'),
     //     ]);
@@ -425,103 +426,103 @@ describe('RdfSourceQpf with a custom default graph', () => {
       ]),
     );
 
-    S = namedNode('S');
-    P = namedNode('P');
-    O = namedNode('O');
-    G = namedNode('G');
+    S = DF.namedNode('S');
+    P = DF.namedNode('P');
+    O = DF.namedNode('O');
+    G = DF.namedNode('G');
   });
 
   describe('match', () => {
     it('should return quads in the overridden default graph', async() => {
       expect(await arrayifyStream(source.match(
-        namedNode('s1'), v, namedNode('o1'), defaultGraph(),
+        DF.namedNode('s1'), v, DF.namedNode('o1'), DF.defaultGraph(),
       )))
         .toBeRdfIsomorphic([
           quad('s1', 'p1', 'o1'),
         ]);
       expect(await arrayifyStream(source.match(
-        namedNode('s2'), v, namedNode('o2'), defaultGraph(),
+        DF.namedNode('s2'), v, DF.namedNode('o2'), DF.defaultGraph(),
       )))
         .toBeRdfIsomorphic([
           quad('s2', 'p2', 'o2'),
         ]);
       expect(await arrayifyStream(source.match(
-        namedNode('s3'), v, namedNode('o3'), defaultGraph(),
+        DF.namedNode('s3'), v, DF.namedNode('o3'), DF.defaultGraph(),
       )))
         .toBeRdfIsomorphic([]);
     });
 
     it('should return quads in all graphs', async() => {
       expect(await arrayifyStream(source.match(
-        namedNode('s1'), v, namedNode('o1'), v,
+        DF.namedNode('s1'), v, DF.namedNode('o1'), v,
       )))
         .toBeRdfIsomorphic([
           quad('s1', 'p1', 'o1'),
           quad('s1', 'p3', 'o1', 'CUSTOM_GRAPH'),
         ]);
       expect(await arrayifyStream(source.match(
-        namedNode('s2'), v, namedNode('o2'), v,
+        DF.namedNode('s2'), v, DF.namedNode('o2'), v,
       )))
         .toBeRdfIsomorphic([
           quad('s2', 'p2', 'o2'),
           quad('s2', 'p4', 'o2', 'CUSTOM_GRAPH'),
         ]);
       expect(await arrayifyStream(source.match(
-        namedNode('s3'), v, namedNode('o3'), v,
+        DF.namedNode('s3'), v, DF.namedNode('o3'), v,
       )))
         .toBeRdfIsomorphic([]);
     });
 
     it('should return quads in a custom graph', async() => {
       expect(await arrayifyStream(source.match(
-        namedNode('s1'), v, namedNode('o1'), namedNode('CUSTOM_GRAPH'),
+        DF.namedNode('s1'), v, DF.namedNode('o1'), DF.namedNode('CUSTOM_GRAPH'),
       )))
         .toBeRdfIsomorphic([
           quad('s1', 'p3', 'o1', 'CUSTOM_GRAPH'),
         ]);
       expect(await arrayifyStream(source.match(
-        namedNode('s2'), v, namedNode('o2'), namedNode('CUSTOM_GRAPH'),
+        DF.namedNode('s2'), v, DF.namedNode('o2'), DF.namedNode('CUSTOM_GRAPH'),
       )))
         .toBeRdfIsomorphic([
           quad('s2', 'p4', 'o2', 'CUSTOM_GRAPH'),
         ]);
       expect(await arrayifyStream(source.match(
-        namedNode('s3'), v, namedNode('o3'), namedNode('CUSTOM_GRAPH'),
+        DF.namedNode('s3'), v, DF.namedNode('o3'), DF.namedNode('CUSTOM_GRAPH'),
       )))
         .toBeRdfIsomorphic([]);
     });
 
     it('should not modify an overridden default graph in the subject position', async() => {
       expect(await arrayifyStream(source.match(
-        v, namedNode('defaultInSubject'), v, v,
+        v, DF.namedNode('defaultInSubject'), v, v,
       )))
         .toBeRdfIsomorphic([
-          quad('DEFAULT_GRAPH', 'defaultInSubject', 'o2', defaultGraph()),
+          quad('DEFAULT_GRAPH', 'defaultInSubject', 'o2', DF.defaultGraph()),
         ]);
     });
 
     it('should also return triples from the actual default graph', async() => {
       expect(await arrayifyStream(source.match(
-        v, namedNode('actualDefaultGraph'), v, v,
+        v, DF.namedNode('actualDefaultGraph'), v, v,
       )))
         .toBeRdfIsomorphic([
-          quad('s1-', 'actualDefaultGraph', 'o1', defaultGraph()),
+          quad('s1-', 'actualDefaultGraph', 'o1', DF.defaultGraph()),
         ]);
       expect(await arrayifyStream(source.match(
-        v, namedNode('actualDefaultGraph'), v, defaultGraph(),
+        v, DF.namedNode('actualDefaultGraph'), v, DF.defaultGraph(),
       )))
         .toBeRdfIsomorphic([
-          quad('s1-', 'actualDefaultGraph', 'o1', defaultGraph()),
+          quad('s1-', 'actualDefaultGraph', 'o1', DF.defaultGraph()),
         ]);
     });
 
     it('should return a mapped copy of the initial quads for the empty pattern', async() => {
       expect(await arrayifyStream(source.match(v, v, v, v))).toBeRdfIsomorphic([
-        quad('s1', 'p1', 'o1', defaultGraph()),
-        quad('s2', 'p2', 'o2', defaultGraph()),
+        quad('s1', 'p1', 'o1', DF.defaultGraph()),
+        quad('s2', 'p2', 'o2', DF.defaultGraph()),
         quad('s1', 'p3', 'o1', 'CUSTOM_GRAPH'),
         quad('s2', 'p4', 'o2', 'CUSTOM_GRAPH'),
-        quad('DEFAULT_GRAPH', 'defaultInSubject', 'o2', defaultGraph()),
+        quad('DEFAULT_GRAPH', 'defaultInSubject', 'o2', DF.defaultGraph()),
         quad('s1-', 'actualDefaultGraph', 'o1'),
       ]);
     });

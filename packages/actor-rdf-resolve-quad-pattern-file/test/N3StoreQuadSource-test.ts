@@ -1,7 +1,8 @@
-import { variable } from '@rdfjs/data-model';
 import { Store as N3Store } from 'n3';
+import { DataFactory } from 'rdf-data-factory';
 import { N3StoreIterator } from '../lib/N3StoreIterator';
 import { N3StoreQuadSource } from '../lib/N3StoreQuadSource';
+const DF = new DataFactory();
 
 describe('N3StoreQuadSource', () => {
   let store: any;
@@ -28,7 +29,7 @@ describe('N3StoreQuadSource', () => {
     });
 
     it('should return a N3StoreIterator', () => {
-      return expect(source.match(variable('v'), variable('v'), variable('v'), variable('v')))
+      return expect(source.match(DF.variable('v'), DF.variable('v'), DF.variable('v'), DF.variable('v')))
         .toBeInstanceOf(N3StoreIterator);
     });
   });

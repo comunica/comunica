@@ -1,12 +1,13 @@
 import { ActorQueryOperation, Bindings } from '@comunica/bus-query-operation';
 import { Bus } from '@comunica/core';
-import { namedNode, variable } from '@rdfjs/data-model';
 import { ArrayIterator } from 'asynciterator';
+import { DataFactory } from 'rdf-data-factory';
 import { termToString } from 'rdf-string';
 import { QUAD_TERM_NAMES } from 'rdf-terms';
 import { Algebra, Factory } from 'sparqlalgebrajs';
 import { ActorQueryOperationPathNps } from '../lib/ActorQueryOperationPathNps';
 const arrayifyStream = require('arrayify-stream');
+const DF = new DataFactory();
 
 describe('ActorQueryOperationPathNps', () => {
   let bus: any;
@@ -29,7 +30,7 @@ describe('ActorQueryOperationPathNps', () => {
           for (let i = 0; i < 3; ++i) {
             const bind: any = {};
             for (const [ j, element ] of vars.entries()) {
-              bind[element] = namedNode(`${1 + i + j}`);
+              bind[element] = DF.namedNode(`${1 + i + j}`);
             }
             bindings.push(Bindings(bind));
           }
@@ -85,15 +86,15 @@ describe('ActorQueryOperationPathNps', () => {
 
     it('should support Nps paths', async() => {
       const op = { operation: factory.createPath(
-        namedNode('s'),
-        factory.createNps([ namedNode('2') ]),
-        variable('x'),
+        DF.namedNode('s'),
+        factory.createNps([ DF.namedNode('2') ]),
+        DF.variable('x'),
       ) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       expect(output.canContainUndefs).toEqual(false);
       expect(await arrayifyStream(output.bindingsStream)).toEqual([
-        Bindings({ '?x': namedNode('2') }),
-        Bindings({ '?x': namedNode('4') }),
+        Bindings({ '?x': DF.namedNode('2') }),
+        Bindings({ '?x': DF.namedNode('4') }),
       ]);
     });
   });

@@ -5,10 +5,11 @@ import {
   ActorQueryOperation, ActorQueryOperationTypedMediated, getMetadata,
 } from '@comunica/bus-query-operation';
 import type { ActionContext, IActorTest } from '@comunica/core';
-import { triple, variable } from '@rdfjs/data-model';
 import { UnionIterator } from 'asynciterator';
+import { DataFactory } from 'rdf-data-factory';
 import type * as RDF from 'rdf-js';
 import type { Algebra } from 'sparqlalgebrajs';
+const DF = new DataFactory<RDF.BaseQuad>();
 
 /**
  * A comunica Describe Subject Query Operation Actor.
@@ -30,7 +31,7 @@ export class ActorQueryOperationDescribeSubject extends ActorQueryOperationTyped
       .map((term: RDF.Term) => {
         // Transform each term to a separate construct operation with S ?p ?o patterns (BGP) for all terms
         const patterns: RDF.BaseQuad[] = [
-          triple<RDF.BaseQuad>(term, variable('__predicate'), variable('__object')),
+          DF.quad(term, DF.variable('__predicate'), DF.variable('__object')),
         ];
         // eslint-disable-next-line no-return-assign
         patterns.forEach((templatePattern: any) => templatePattern.type = 'pattern');
@@ -53,7 +54,7 @@ export class ActorQueryOperationDescribeSubject extends ActorQueryOperationTyped
         .forEach((term: RDF.Term, i: number) => {
           // Transform each term to an S ?p ?o pattern in a non-conflicting way
           const patterns: RDF.BaseQuad[] = [
-            triple<RDF.BaseQuad>(term, variable(`__predicate${i}`), variable(`__object${i}`)),
+            DF.quad(term, DF.variable(`__predicate${i}`), DF.variable(`__object${i}`)),
           ];
           // eslint-disable-next-line no-return-assign
           patterns.forEach((templatePattern: any) => templatePattern.type = 'pattern');

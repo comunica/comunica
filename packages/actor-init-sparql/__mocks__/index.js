@@ -7,7 +7,7 @@ class EngineMock {
 
   query(sparql, context){
     if (sparql === "query_reject"){
-      return Promise.reject("Rejected query");
+      return Promise.reject(new Error("Rejected query"));
     }
     return Promise.resolve();
   }

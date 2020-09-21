@@ -1,10 +1,11 @@
 import { ActorRdfResolveHypermedia } from '@comunica/bus-rdf-resolve-hypermedia';
 import { ActionContext, Bus } from '@comunica/core';
-import { variable } from '@rdfjs/data-model';
 import { TransformIterator } from 'asynciterator';
+import { DataFactory } from 'rdf-data-factory';
 import { ActorRdfResolveHypermediaQpf } from '../lib/ActorRdfResolveHypermediaQpf';
 import { RdfSourceQpf } from '../lib/RdfSourceQpf';
-const v = variable('v');
+const DF = new DataFactory();
+const v = DF.variable('v');
 
 describe('ActorRdfResolveHypermediaQpf', () => {
   let bus: any;

@@ -1,10 +1,11 @@
 import type { IActorQueryOperationOutputBindings } from '@comunica/bus-query-operation';
 import { ActorQueryOperation, Bindings } from '@comunica/bus-query-operation';
 import { Bus } from '@comunica/core';
-import { literal } from '@rdfjs/data-model';
 import { ArrayIterator } from 'asynciterator';
+import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationMinus } from '..';
 const arrayifyStream = require('arrayify-stream');
+const DF = new DataFactory();
 
 describe('ActorQueryOperationMinus', () => {
   let bus: any;
@@ -27,9 +28,9 @@ describe('ActorQueryOperationMinus', () => {
     left = {
       metadata: () => Promise.resolve({ totalItems: 3 }),
       stream: new ArrayIterator([
-        Bindings({ a: literal('1') }),
-        Bindings({ a: literal('2') }),
-        Bindings({ a: literal('3') }),
+        Bindings({ a: DF.literal('1') }),
+        Bindings({ a: DF.literal('2') }),
+        Bindings({ a: DF.literal('3') }),
       ]),
       type: 'bindings',
       variables: [ 'a' ],
@@ -38,8 +39,8 @@ describe('ActorQueryOperationMinus', () => {
     rightNoCommons = {
       metadata: () => Promise.resolve({ totalItems: 2 }),
       stream: new ArrayIterator([
-        Bindings({ b: literal('1') }),
-        Bindings({ b: literal('2') }),
+        Bindings({ b: DF.literal('1') }),
+        Bindings({ b: DF.literal('2') }),
       ]),
       type: 'bindings',
       variables: [ 'b' ],
@@ -48,8 +49,8 @@ describe('ActorQueryOperationMinus', () => {
     right = {
       metadata: () => Promise.resolve({ totalItems: 2 }),
       stream: new ArrayIterator([
-        Bindings({ a: literal('1') }),
-        Bindings({ a: literal('2') }),
+        Bindings({ a: DF.literal('1') }),
+        Bindings({ a: DF.literal('2') }),
       ]),
       type: 'bindings',
       variables: [ 'a' ],
@@ -101,7 +102,7 @@ describe('ActorQueryOperationMinus', () => {
         expect(output.type).toEqual('bindings');
         expect(output.canContainUndefs).toEqual(false);
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
-          Bindings({ a: literal('3') }),
+          Bindings({ a: DF.literal('3') }),
         ]);
       });
     });
@@ -114,9 +115,9 @@ describe('ActorQueryOperationMinus', () => {
         expect(output.type).toEqual('bindings');
         expect(output.canContainUndefs).toEqual(false);
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
-          Bindings({ a: literal('1') }),
-          Bindings({ a: literal('2') }),
-          Bindings({ a: literal('3') }),
+          Bindings({ a: DF.literal('1') }),
+          Bindings({ a: DF.literal('2') }),
+          Bindings({ a: DF.literal('3') }),
         ]);
       });
     });
@@ -139,16 +140,16 @@ describe('ActorQueryOperationMinus', () => {
         metadata: () => Promise.resolve({ totalItems: 3 }),
         stream: new ArrayIterator([
           Bindings({
-            a: literal('1'),
-            b: literal('1'),
+            a: DF.literal('1'),
+            b: DF.literal('1'),
           }),
           Bindings({
-            a: literal('2'),
-            b: literal('2'),
+            a: DF.literal('2'),
+            b: DF.literal('2'),
           }),
           Bindings({
-            a: literal('3'),
-            b: literal('3'),
+            a: DF.literal('3'),
+            b: DF.literal('3'),
           }),
         ]),
         type: 'bindings',
@@ -159,10 +160,10 @@ describe('ActorQueryOperationMinus', () => {
         metadata: () => Promise.resolve({ totalItems: 2 }),
         stream: new ArrayIterator([
           Bindings({
-            a: literal('1'),
+            a: DF.literal('1'),
           }),
           Bindings({
-            b: literal('3'),
+            b: DF.literal('3'),
           }),
         ]),
         type: 'bindings',
@@ -183,8 +184,8 @@ describe('ActorQueryOperationMinus', () => {
         expect(output.canContainUndefs).toEqual(true);
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({
-            a: literal('2'),
-            b: literal('2'),
+            a: DF.literal('2'),
+            b: DF.literal('2'),
           }),
         ]);
       });
@@ -209,14 +210,14 @@ describe('ActorQueryOperationMinus', () => {
         metadata: () => Promise.resolve({ totalItems: 3 }),
         stream: new ArrayIterator([
           Bindings({
-            a: literal('1'),
+            a: DF.literal('1'),
           }),
           Bindings({
-            a: literal('2'),
-            b: literal('2'),
+            a: DF.literal('2'),
+            b: DF.literal('2'),
           }),
           Bindings({
-            b: literal('3'),
+            b: DF.literal('3'),
           }),
         ]),
         type: 'bindings',
@@ -227,12 +228,12 @@ describe('ActorQueryOperationMinus', () => {
         metadata: () => Promise.resolve({ totalItems: 2 }),
         stream: new ArrayIterator([
           Bindings({
-            a: literal('1'),
-            b: literal('1'),
+            a: DF.literal('1'),
+            b: DF.literal('1'),
           }),
           Bindings({
-            a: literal('3'),
-            b: literal('3'),
+            a: DF.literal('3'),
+            b: DF.literal('3'),
           }),
         ]),
         type: 'bindings',
@@ -253,8 +254,8 @@ describe('ActorQueryOperationMinus', () => {
         expect(output.canContainUndefs).toEqual(true);
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({
-            a: literal('2'),
-            b: literal('2'),
+            a: DF.literal('2'),
+            b: DF.literal('2'),
           }),
         ]);
       });
@@ -279,14 +280,14 @@ describe('ActorQueryOperationMinus', () => {
         metadata: () => Promise.resolve({ totalItems: 3 }),
         stream: new ArrayIterator([
           Bindings({
-            a: literal('1'),
+            a: DF.literal('1'),
           }),
           Bindings({
-            a: literal('2'),
-            b: literal('2'),
+            a: DF.literal('2'),
+            b: DF.literal('2'),
           }),
           Bindings({
-            b: literal('3'),
+            b: DF.literal('3'),
           }),
         ]),
         type: 'bindings',
@@ -297,10 +298,10 @@ describe('ActorQueryOperationMinus', () => {
         metadata: () => Promise.resolve({ totalItems: 2 }),
         stream: new ArrayIterator([
           Bindings({
-            a: literal('1'),
+            a: DF.literal('1'),
           }),
           Bindings({
-            a: literal('3'),
+            a: DF.literal('3'),
           }),
         ]),
         type: 'bindings',
@@ -321,8 +322,8 @@ describe('ActorQueryOperationMinus', () => {
         expect(output.canContainUndefs).toEqual(true);
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
           Bindings({
-            a: literal('2'),
-            b: literal('2'),
+            a: DF.literal('2'),
+            b: DF.literal('2'),
           }),
         ]);
       });

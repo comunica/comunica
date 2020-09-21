@@ -1,13 +1,14 @@
 import { Readable } from 'stream';
 import { ActorRdfResolveQuadPattern } from '@comunica/bus-rdf-resolve-quad-pattern';
 import { ActionContext, Bus } from '@comunica/core';
-import { namedNode, quad, variable } from '@rdfjs/data-model';
 import { ArrayIterator } from 'asynciterator';
 import { Store } from 'n3';
+import { DataFactory } from 'rdf-data-factory';
 import type * as RDF from 'rdf-js';
 import { ActorRdfResolveQuadPatternRdfJsSource, RdfJsQuadSource } from '..';
 import 'jest-rdf';
 
+const DF = new DataFactory();
 const arrayifyStream = require('arrayify-stream');
 
 describe('ActorRdfResolveQuadPatternRdfJsSource', () => {
@@ -123,20 +124,20 @@ describe('ActorRdfResolveQuadPatternRdfJsSource', () => {
 
     it('should run with a real store', async() => {
       const store = new Store();
-      store.addQuad(quad(namedNode('s1'), namedNode('p'), namedNode('o1')));
-      store.addQuad(quad(namedNode('s2'), namedNode('p'), namedNode('o2')));
-      store.addQuad(quad(namedNode('s3'), namedNode('px'), namedNode('o3')));
+      store.addQuad(DF.quad(DF.namedNode('s1'), DF.namedNode('p'), DF.namedNode('o1')));
+      store.addQuad(DF.quad(DF.namedNode('s2'), DF.namedNode('p'), DF.namedNode('o2')));
+      store.addQuad(DF.quad(DF.namedNode('s3'), DF.namedNode('px'), DF.namedNode('o3')));
       const context = ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:source': store });
       const pattern: any = {
-        subject: variable('s'),
-        predicate: namedNode('p'),
-        object: variable('o'),
-        graph: variable('g'),
+        subject: DF.variable('s'),
+        predicate: DF.namedNode('p'),
+        object: DF.variable('o'),
+        graph: DF.variable('g'),
       };
       const { data } = await actor.run({ pattern, context });
       expect(await arrayifyStream(data)).toEqualRdfQuadArray([
-        quad(namedNode('s1'), namedNode('p'), namedNode('o1')),
-        quad(namedNode('s2'), namedNode('p'), namedNode('o2')),
+        DF.quad(DF.namedNode('s1'), DF.namedNode('p'), DF.namedNode('o1')),
+        DF.quad(DF.namedNode('s2'), DF.namedNode('p'), DF.namedNode('o2')),
       ]);
       expect(await new Promise(resolve => data.getProperty('metadata', resolve)))
         .toEqual({ totalItems: 2 });
@@ -146,10 +147,10 @@ describe('ActorRdfResolveQuadPatternRdfJsSource', () => {
       source = <any> { countQuads: () => 123, match: () => new ArrayIterator([ 0, 1, 2 ]) };
       const context = ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:source': source });
       const pattern: any = {
-        subject: variable('s'),
-        predicate: namedNode('p'),
-        object: variable('o'),
-        graph: variable('g'),
+        subject: DF.variable('s'),
+        predicate: DF.namedNode('p'),
+        object: DF.variable('o'),
+        graph: DF.variable('g'),
       };
       const { data } = await actor.run({ pattern, context });
       expect(await new Promise(resolve => data.getProperty('metadata', resolve))).toEqual({ totalItems: 123 });
@@ -159,10 +160,10 @@ describe('ActorRdfResolveQuadPatternRdfJsSource', () => {
       source = <any> { match: () => new ArrayIterator([ 0, 1, 2 ]) };
       const context = ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:source': source });
       const pattern: any = {
-        subject: variable('s'),
-        predicate: namedNode('p'),
-        object: variable('o'),
-        graph: variable('g'),
+        subject: DF.variable('s'),
+        predicate: DF.namedNode('p'),
+        object: DF.variable('o'),
+        graph: DF.variable('g'),
       };
       const { data } = await actor.run({ pattern, context });
       expect(await new Promise(resolve => data.getProperty('metadata', resolve))).toEqual({ totalItems: 3 });
@@ -176,10 +177,10 @@ describe('ActorRdfResolveQuadPatternRdfJsSource', () => {
       source = <any> { match: () => it };
       const context = ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:source': source });
       const pattern: any = {
-        subject: variable('s'),
-        predicate: namedNode('p'),
-        object: variable('o'),
-        graph: variable('g'),
+        subject: DF.variable('s'),
+        predicate: DF.namedNode('p'),
+        object: DF.variable('o'),
+        graph: DF.variable('g'),
       };
       const { data } = await actor.run({ pattern, context });
       await expect(arrayifyStream(data)).rejects.toThrow(new Error('RdfJsSource error'));

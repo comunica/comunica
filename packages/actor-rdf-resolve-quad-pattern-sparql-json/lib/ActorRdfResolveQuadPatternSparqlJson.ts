@@ -6,14 +6,15 @@ import {
   ActorRdfResolveQuadPattern,
 } from '@comunica/bus-rdf-resolve-quad-pattern';
 import type { ActionContext, Actor, IActorArgs, IActorTest, Mediator } from '@comunica/core';
-import { variable } from '@rdfjs/data-model';
 import type { AsyncIterator } from 'asynciterator';
 import { TransformIterator } from 'asynciterator';
+import { DataFactory } from 'rdf-data-factory';
 import type * as RDF from 'rdf-js';
 import { getTerms, getVariables, mapTerms } from 'rdf-terms';
 import type { Algebra } from 'sparqlalgebrajs';
 import { Factory, toSparql } from 'sparqlalgebrajs';
 import { AsyncIteratorJsonBindings } from './AsyncIteratorJsonBindings';
+const DF = new DataFactory();
 
 /**
  * A comunica SPARQL JSON RDF Resolve Quad Pattern Actor.
@@ -61,7 +62,7 @@ export class ActorRdfResolveQuadPatternSparqlJson
           variableNames.push(name);
         }
         changed = true;
-        return variable(name);
+        return DF.variable(name);
       }
       return term;
     });
@@ -104,16 +105,16 @@ export class ActorRdfResolveQuadPatternSparqlJson
           ActorRdfResolveQuadPatternSparqlJson.patternToBgp(pattern),
           [],
           [ ActorRdfResolveQuadPatternSparqlJson.FACTORY.createBoundAggregate(
-            variable('var0'),
+            DF.variable('var0'),
             'count',
             ActorRdfResolveQuadPatternSparqlJson.FACTORY.createWildcardExpression(),
             false,
           ) ],
         ),
-        variable('count'),
-        ActorRdfResolveQuadPatternSparqlJson.FACTORY.createTermExpression(variable('var0')),
+        DF.variable('count'),
+        ActorRdfResolveQuadPatternSparqlJson.FACTORY.createTermExpression(DF.variable('var0')),
       ),
-      [ variable('count') ],
+      [ DF.variable('count') ],
     ));
   }
 

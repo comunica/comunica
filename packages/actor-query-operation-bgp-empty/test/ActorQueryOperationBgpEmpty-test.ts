@@ -1,10 +1,11 @@
 import type { IActorQueryOperationOutputBindings } from '@comunica/bus-query-operation';
 import { ActorQueryOperation, Bindings } from '@comunica/bus-query-operation';
 import { Bus } from '@comunica/core';
-import { namedNode, variable } from '@rdfjs/data-model';
+import { DataFactory } from 'rdf-data-factory';
 import Factory from 'sparqlalgebrajs/lib/factory';
 import { ActorQueryOperationBgpEmpty } from '../lib/ActorQueryOperationBgpEmpty';
 const arrayifyStream = require('arrayify-stream');
+const DF = new DataFactory();
 
 const factory = new Factory();
 
@@ -39,15 +40,15 @@ describe('ActorQueryOperationBgpEmpty', () => {
 
     it('should only return variables', () => {
       return expect(ActorQueryOperationBgpEmpty.getVariables([
-        factory.createPattern(variable('s1'), namedNode('p1'), namedNode('o1')),
-        factory.createPattern(namedNode('s2'), namedNode('p2'), variable('o2')),
+        factory.createPattern(DF.variable('s1'), DF.namedNode('p1'), DF.namedNode('o1')),
+        factory.createPattern(DF.namedNode('s2'), DF.namedNode('p2'), DF.variable('o2')),
       ])).toEqual([ '?s1', '?o2' ]);
     });
 
     it('should return distinct variables', () => {
       return expect(ActorQueryOperationBgpEmpty.getVariables([
-        factory.createPattern(variable('s'), namedNode('p'), namedNode('o')),
-        factory.createPattern(variable('s'), namedNode('p'), variable('o')),
+        factory.createPattern(DF.variable('s'), DF.namedNode('p'), DF.namedNode('o')),
+        factory.createPattern(DF.variable('s'), DF.namedNode('p'), DF.variable('o')),
       ])).toEqual([ '?s', '?o' ]);
     });
   });
@@ -82,8 +83,8 @@ describe('ActorQueryOperationBgpEmpty', () => {
     it('should run on a non-empty BGP', () => {
       const op = { operation: { type: 'bgp',
         patterns: [
-          factory.createPattern(variable('s1'), namedNode('p1'), namedNode('o1')),
-          factory.createPattern(namedNode('s2'), namedNode('p2'), variable('o2')),
+          factory.createPattern(DF.variable('s1'), DF.namedNode('p1'), DF.namedNode('o1')),
+          factory.createPattern(DF.namedNode('s2'), DF.namedNode('p2'), DF.variable('o2')),
         ]}};
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
         expect(await arrayifyStream(output.bindingsStream)).toEqual([ Bindings({}) ]);

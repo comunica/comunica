@@ -208,16 +208,16 @@ describe('ActorRdfParseHtml', () => {
 
           expect(emit).toHaveBeenCalledTimes(4);
           expect(emit).toHaveBeenCalledWith(
-            quad('http://example.org/a', 'http://example.org/b', '"http://example.org/c"', '_:b3'),
+            quad('http://example.org/a', 'http://example.org/b', '"http://example.org/c"', '_:df_0'),
           );
           expect(emit).toHaveBeenCalledWith(
-            quad('http://example.org/a', 'http://example.org/d', '"http://example.org/e"', '_:b3'),
+            quad('http://example.org/a', 'http://example.org/d', '"http://example.org/e"', '_:df_0'),
           );
           expect(emit).toHaveBeenCalledWith(
-            quad('http://example.org/A', 'http://example.org/b', '"http://example.org/c"', '_:b4'),
+            quad('http://example.org/A', 'http://example.org/b', '"http://example.org/c"', '_:df_1'),
           );
           expect(emit).toHaveBeenCalledWith(
-            quad('http://example.org/A', 'http://example.org/d', '"http://example.org/e"', '_:b4'),
+            quad('http://example.org/A', 'http://example.org/d', '"http://example.org/e"', '_:df_1'),
           );
           expect(error).not.toHaveBeenCalled();
           expect(end).toHaveBeenCalledTimes(1);

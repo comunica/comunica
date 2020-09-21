@@ -1,10 +1,11 @@
 import type { IActorQueryOperationOutputQuads } from '@comunica/bus-query-operation';
 import { ActorQueryOperation } from '@comunica/bus-query-operation';
 import { ActionContext, Bus } from '@comunica/core';
-import { namedNode, quad, variable } from '@rdfjs/data-model';
 import { ArrayIterator } from 'asynciterator';
+import { DataFactory } from 'rdf-data-factory';
 import type * as RDF from 'rdf-js';
 import { ActorQueryOperationDescribeSubject } from '../lib/ActorQueryOperationDescribeSubject';
+const DF = new DataFactory();
 const arrayifyStream = require('arrayify-stream');
 
 describe('ActorQueryOperationDescribeSubject', () => {
@@ -21,9 +22,9 @@ describe('ActorQueryOperationDescribeSubject', () => {
             metadata: () => Promise.resolve({ totalItems: arg.operation.input.left.patterns.length +
             arg.operation.input.right.patterns.length }),
             quadStream: new ArrayIterator(patterns.map(
-              (pattern: RDF.Quad) => quad(namedNode(pattern.subject.value),
-                namedNode(pattern.predicate.value),
-                namedNode(pattern.object.value)),
+              (pattern: RDF.Quad) => DF.quad(DF.namedNode(pattern.subject.value),
+                DF.namedNode(pattern.predicate.value),
+                DF.namedNode(pattern.object.value)),
             )),
             type: 'quads',
           };
@@ -31,9 +32,9 @@ describe('ActorQueryOperationDescribeSubject', () => {
         return {
           metadata: () => Promise.resolve({ totalItems: arg.operation.input.patterns.length }),
           quadStream: new ArrayIterator(arg.operation.input.patterns.map(
-            (pattern: RDF.Quad) => quad(namedNode(pattern.subject.value),
-              namedNode(pattern.predicate.value),
-              namedNode(pattern.object.value)),
+            (pattern: RDF.Quad) => DF.quad(DF.namedNode(pattern.subject.value),
+              DF.namedNode(pattern.predicate.value),
+              DF.namedNode(pattern.object.value)),
           )),
           type: 'quads',
         };
@@ -78,14 +79,18 @@ describe('ActorQueryOperationDescribeSubject', () => {
     it('should run without variable terms', () => {
       const op = {
         context: ActionContext({ name: 'context' }),
-        operation: { type: 'describe', terms: [ namedNode('a'), namedNode('b') ], input: { type: 'bgp', patterns: []}},
+        operation: {
+          type: 'describe',
+          terms: [ DF.namedNode('a'), DF.namedNode('b') ],
+          input: { type: 'bgp', patterns: []},
+        },
       };
       return actor.run(op).then(async(output: IActorQueryOperationOutputQuads) => {
         expect(await (<any> output).metadata()).toEqual({ totalItems: 2 });
         expect(output.type).toEqual('quads');
         expect(await arrayifyStream(output.quadStream)).toEqual([
-          quad(namedNode('a'), namedNode('__predicate'), namedNode('__object')),
-          quad(namedNode('b'), namedNode('__predicate'), namedNode('__object')),
+          DF.quad(DF.namedNode('a'), DF.namedNode('__predicate'), DF.namedNode('__object')),
+          DF.quad(DF.namedNode('b'), DF.namedNode('__predicate'), DF.namedNode('__object')),
         ]);
       });
     });
@@ -94,8 +99,8 @@ describe('ActorQueryOperationDescribeSubject', () => {
       const op = {
         context: ActionContext({ name: 'context' }),
         operation: {
-          input: { type: 'bgp', patterns: [ quad(variable('a'), variable('b'), namedNode('dummy')) ]},
-          terms: [ variable('a'), variable('b') ],
+          input: { type: 'bgp', patterns: [ DF.quad(DF.variable('a'), DF.variable('b'), DF.namedNode('dummy')) ]},
+          terms: [ DF.variable('a'), DF.variable('b') ],
           type: 'describe',
         },
       };
@@ -103,9 +108,9 @@ describe('ActorQueryOperationDescribeSubject', () => {
         expect(await (<any> output).metadata()).toEqual({ totalItems: 3 });
         expect(output.type).toEqual('quads');
         expect(await arrayifyStream(output.quadStream)).toEqual([
-          quad(namedNode('a'), namedNode('b'), namedNode('dummy')),
-          quad(namedNode('a'), namedNode('__predicate0'), namedNode('__object0')),
-          quad(namedNode('b'), namedNode('__predicate1'), namedNode('__object1')),
+          DF.quad(DF.namedNode('a'), DF.namedNode('b'), DF.namedNode('dummy')),
+          DF.quad(DF.namedNode('a'), DF.namedNode('__predicate0'), DF.namedNode('__object0')),
+          DF.quad(DF.namedNode('b'), DF.namedNode('__predicate1'), DF.namedNode('__object1')),
         ]);
       });
     });
@@ -114,8 +119,8 @@ describe('ActorQueryOperationDescribeSubject', () => {
       const op = {
         context: ActionContext({ name: 'context' }),
         operation: {
-          input: { type: 'bgp', patterns: [ quad(variable('a'), variable('b'), namedNode('dummy')) ]},
-          terms: [ variable('a'), variable('b'), namedNode('c') ],
+          input: { type: 'bgp', patterns: [ DF.quad(DF.variable('a'), DF.variable('b'), DF.namedNode('dummy')) ]},
+          terms: [ DF.variable('a'), DF.variable('b'), DF.namedNode('c') ],
           type: 'describe',
         },
       };
@@ -123,10 +128,10 @@ describe('ActorQueryOperationDescribeSubject', () => {
         expect(await (<any> output).metadata()).toEqual({ totalItems: 4 });
         expect(output.type).toEqual('quads');
         expect(await arrayifyStream(output.quadStream)).toEqual([
-          quad(namedNode('c'), namedNode('__predicate'), namedNode('__object')),
-          quad(namedNode('a'), namedNode('b'), namedNode('dummy')),
-          quad(namedNode('a'), namedNode('__predicate0'), namedNode('__object0')),
-          quad(namedNode('b'), namedNode('__predicate1'), namedNode('__object1')),
+          DF.quad(DF.namedNode('c'), DF.namedNode('__predicate'), DF.namedNode('__object')),
+          DF.quad(DF.namedNode('a'), DF.namedNode('b'), DF.namedNode('dummy')),
+          DF.quad(DF.namedNode('a'), DF.namedNode('__predicate0'), DF.namedNode('__object0')),
+          DF.quad(DF.namedNode('b'), DF.namedNode('__predicate1'), DF.namedNode('__object1')),
         ]);
       });
     });

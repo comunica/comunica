@@ -42,7 +42,7 @@
     "@comunica/core": "^1.0.0"
   },
   "dependencies": {
-    "@rdfjs/data-model": "^1.1.1",
+    "rdf-data-factory": "^1.0.3",
     "@types/rdf-js": "*",
     "asynciterator": "^3.0.3",
     "rdf-string": "^1.5.0",

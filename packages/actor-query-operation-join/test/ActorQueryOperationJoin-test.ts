@@ -1,10 +1,11 @@
 import type { IActorQueryOperationOutputBindings } from '@comunica/bus-query-operation';
 import { ActorQueryOperation, Bindings } from '@comunica/bus-query-operation';
 import { Bus } from '@comunica/core';
-import { literal } from '@rdfjs/data-model';
 import { ArrayIterator } from 'asynciterator';
+import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationJoin } from '../lib/ActorQueryOperationJoin';
 const arrayifyStream = require('arrayify-stream');
+const DF = new DataFactory();
 
 describe('ActorQueryOperationJoin', () => {
   let bus: any;
@@ -16,9 +17,9 @@ describe('ActorQueryOperationJoin', () => {
     mediatorQueryOperation = {
       mediate: (arg: any) => Promise.resolve({
         bindingsStream: new ArrayIterator([
-          Bindings({ a: literal('1') }),
-          Bindings({ a: literal('2') }),
-          Bindings({ a: literal('3') }),
+          Bindings({ a: DF.literal('1') }),
+          Bindings({ a: DF.literal('2') }),
+          Bindings({ a: DF.literal('3') }),
         ]),
         metadata: () => Promise.resolve({ totalItems: 3 }),
         operated: arg,
@@ -29,8 +30,8 @@ describe('ActorQueryOperationJoin', () => {
     mediatorJoin = {
       mediate: (arg: any) => Promise.resolve({
         bindingsStream: new ArrayIterator([
-          Bindings({ a: literal('1'), b: literal('1') }),
-          Bindings({ a: literal('2'), b: literal('2') }),
+          Bindings({ a: DF.literal('1'), b: DF.literal('1') }),
+          Bindings({ a: DF.literal('2'), b: DF.literal('2') }),
         ]),
         metadata: () => Promise.resolve({ totalItems: 2 }),
         operated: arg,
@@ -83,8 +84,8 @@ describe('ActorQueryOperationJoin', () => {
         expect(output.canContainUndefs).toEqual(false);
         expect(await (<any> output).metadata()).toEqual({ totalItems: 2 });
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
-          Bindings({ a: literal('1'), b: literal('1') }),
-          Bindings({ a: literal('2'), b: literal('2') }),
+          Bindings({ a: DF.literal('1'), b: DF.literal('1') }),
+          Bindings({ a: DF.literal('2'), b: DF.literal('2') }),
         ]);
       });
     });

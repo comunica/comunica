@@ -1,10 +1,11 @@
 import { ActorQueryOperation, Bindings } from '@comunica/bus-query-operation';
 import { Bus } from '@comunica/core';
-import { literal, variable } from '@rdfjs/data-model';
 import { ArrayIterator } from 'asynciterator';
+import { DataFactory } from 'rdf-data-factory';
 import type { Algebra } from 'sparqlalgebrajs';
 import { ActorQueryOperationOrderByDirect } from '../lib/ActorQueryOperationOrderByDirect';
 const arrayifyStream = require('arrayify-stream');
+const DF = new DataFactory();
 
 describe('ActorQueryOperationOrderByDirect', () => {
   let bus: any;
@@ -15,9 +16,9 @@ describe('ActorQueryOperationOrderByDirect', () => {
     mediatorQueryOperation = {
       mediate: (arg: any) => Promise.resolve({
         bindingsStream: new ArrayIterator([
-          Bindings({ '?a': literal('2') }),
-          Bindings({ '?a': literal('1') }),
-          Bindings({ '?a': literal('3') }),
+          Bindings({ '?a': DF.literal('2') }),
+          Bindings({ '?a': DF.literal('1') }),
+          Bindings({ '?a': DF.literal('3') }),
         ]),
         metadata: () => Promise.resolve({ totalItems: 3 }),
         operated: arg,
@@ -54,10 +55,10 @@ describe('ActorQueryOperationOrderByDirect', () => {
 
     beforeEach(() => {
       actor = new ActorQueryOperationOrderByDirect({ name: 'actor', bus, mediatorQueryOperation });
-      orderA = { type: 'expression', expressionType: 'term', term: variable('a') };
-      orderB = { type: 'expression', expressionType: 'term', term: variable('b') };
+      orderA = { type: 'expression', expressionType: 'term', term: DF.variable('a') };
+      orderB = { type: 'expression', expressionType: 'term', term: DF.variable('b') };
       descOrderA = { type: 'expression', expressionType: 'operator', operator: 'desc', args: [ orderA ]};
-      orderA1 = { args: [ orderA, { type: 'expression', expressionType: 'term', term: literal('1') }],
+      orderA1 = { args: [ orderA, { type: 'expression', expressionType: 'term', term: DF.literal('1') }],
         expressionType: 'operator',
         operator: '+',
         type: 'expression' };
@@ -88,9 +89,9 @@ describe('ActorQueryOperationOrderByDirect', () => {
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
-        Bindings({ '?a': literal('1') }),
-        Bindings({ '?a': literal('2') }),
-        Bindings({ '?a': literal('3') }),
+        Bindings({ '?a': DF.literal('1') }),
+        Bindings({ '?a': DF.literal('2') }),
+        Bindings({ '?a': DF.literal('3') }),
       ]);
     });
 
@@ -101,9 +102,9 @@ describe('ActorQueryOperationOrderByDirect', () => {
       expect(ActorQueryOperation.getSafeBindings(output).canContainUndefs).toEqual(false);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
-        Bindings({ '?a': literal('2') }),
-        Bindings({ '?a': literal('1') }),
-        Bindings({ '?a': literal('3') }),
+        Bindings({ '?a': DF.literal('2') }),
+        Bindings({ '?a': DF.literal('1') }),
+        Bindings({ '?a': DF.literal('3') }),
       ]);
     });
 
@@ -113,9 +114,9 @@ describe('ActorQueryOperationOrderByDirect', () => {
       expect(ActorQueryOperation.getSafeBindings(output).canContainUndefs).toEqual(false);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
-        Bindings({ '?a': literal('1') }),
-        Bindings({ '?a': literal('2') }),
-        Bindings({ '?a': literal('3') }),
+        Bindings({ '?a': DF.literal('1') }),
+        Bindings({ '?a': DF.literal('2') }),
+        Bindings({ '?a': DF.literal('3') }),
       ]);
     });
 
@@ -125,9 +126,9 @@ describe('ActorQueryOperationOrderByDirect', () => {
       expect(ActorQueryOperation.getSafeBindings(output).canContainUndefs).toEqual(false);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
-        Bindings({ '?a': literal('3') }),
-        Bindings({ '?a': literal('2') }),
-        Bindings({ '?a': literal('1') }),
+        Bindings({ '?a': DF.literal('3') }),
+        Bindings({ '?a': DF.literal('2') }),
+        Bindings({ '?a': DF.literal('1') }),
       ]);
     });
 
@@ -137,9 +138,9 @@ describe('ActorQueryOperationOrderByDirect', () => {
       expect(ActorQueryOperation.getSafeBindings(output).canContainUndefs).toEqual(false);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
-        Bindings({ '?a': literal('2') }),
-        Bindings({ '?a': literal('1') }),
-        Bindings({ '?a': literal('3') }),
+        Bindings({ '?a': DF.literal('2') }),
+        Bindings({ '?a': DF.literal('1') }),
+        Bindings({ '?a': DF.literal('3') }),
       ]);
     });
   });

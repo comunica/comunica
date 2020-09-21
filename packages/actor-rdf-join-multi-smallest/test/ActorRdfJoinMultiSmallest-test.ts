@@ -3,10 +3,11 @@ import { Bindings } from '@comunica/bus-query-operation';
 import type { IActionRdfJoin } from '@comunica/bus-rdf-join';
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import { Bus } from '@comunica/core';
-import { literal } from '@rdfjs/data-model';
 import { ArrayIterator } from 'asynciterator';
+import { DataFactory } from 'rdf-data-factory';
 import { ActorRdfJoinMultiSmallest } from '../lib/ActorRdfJoinMultiSmallest';
 const arrayifyStream = require('arrayify-stream');
+const DF = new DataFactory();
 
 describe('ActorRdfJoinMultiSmallest', () => {
   let bus: any;
@@ -58,8 +59,8 @@ describe('ActorRdfJoinMultiSmallest', () => {
         entries: [
           {
             bindingsStream: new ArrayIterator([
-              Bindings({ a: literal('a1'), b: literal('b1') }),
-              Bindings({ a: literal('a2'), b: literal('b2') }),
+              Bindings({ a: DF.literal('a1'), b: DF.literal('b1') }),
+              Bindings({ a: DF.literal('a2'), b: DF.literal('b2') }),
             ]),
             metadata: () => Promise.resolve({ totalItems: 4 }),
             type: 'bindings',
@@ -68,8 +69,8 @@ describe('ActorRdfJoinMultiSmallest', () => {
           },
           {
             bindingsStream: new ArrayIterator([
-              Bindings({ a: literal('a1'), c: literal('c1') }),
-              Bindings({ a: literal('a2'), c: literal('c2') }),
+              Bindings({ a: DF.literal('a1'), c: DF.literal('c1') }),
+              Bindings({ a: DF.literal('a2'), c: DF.literal('c2') }),
             ]),
             metadata: () => Promise.resolve({ totalItems: 5 }),
             type: 'bindings',
@@ -78,8 +79,8 @@ describe('ActorRdfJoinMultiSmallest', () => {
           },
           {
             bindingsStream: new ArrayIterator([
-              Bindings({ a: literal('a1'), b: literal('b1') }),
-              Bindings({ a: literal('a2'), b: literal('b2') }),
+              Bindings({ a: DF.literal('a1'), b: DF.literal('b1') }),
+              Bindings({ a: DF.literal('a2'), b: DF.literal('b2') }),
             ]),
             metadata: () => Promise.resolve({ totalItems: 2 }),
             type: 'bindings',
@@ -92,8 +93,8 @@ describe('ActorRdfJoinMultiSmallest', () => {
         entries: [
           {
             bindingsStream: new ArrayIterator([
-              Bindings({ a: literal('a1'), b: literal('b1') }),
-              Bindings({ a: literal('a2'), b: literal('b2') }),
+              Bindings({ a: DF.literal('a1'), b: DF.literal('b1') }),
+              Bindings({ a: DF.literal('a2'), b: DF.literal('b2') }),
             ]),
             metadata: () => Promise.resolve({ totalItems: 4 }),
             type: 'bindings',
@@ -102,8 +103,8 @@ describe('ActorRdfJoinMultiSmallest', () => {
           },
           {
             bindingsStream: new ArrayIterator([
-              Bindings({ a: literal('a1'), c: literal('c1') }),
-              Bindings({ a: literal('a2'), c: literal('c2') }),
+              Bindings({ a: DF.literal('a1'), c: DF.literal('c1') }),
+              Bindings({ a: DF.literal('a2'), c: DF.literal('c2') }),
             ]),
             metadata: () => Promise.resolve({ totalItems: 5 }),
             type: 'bindings',
@@ -112,8 +113,8 @@ describe('ActorRdfJoinMultiSmallest', () => {
           },
           {
             bindingsStream: new ArrayIterator([
-              Bindings({ a: literal('a1'), b: literal('b1') }),
-              Bindings({ a: literal('a2'), b: literal('b2') }),
+              Bindings({ a: DF.literal('a1'), b: DF.literal('b1') }),
+              Bindings({ a: DF.literal('a2'), b: DF.literal('b2') }),
             ]),
             metadata: () => Promise.resolve({ totalItems: 2 }),
             type: 'bindings',
@@ -122,8 +123,8 @@ describe('ActorRdfJoinMultiSmallest', () => {
           },
           {
             bindingsStream: new ArrayIterator([
-              Bindings({ a: literal('a1'), d: literal('d1') }),
-              Bindings({ a: literal('a2'), d: literal('d2') }),
+              Bindings({ a: DF.literal('a1'), d: DF.literal('d1') }),
+              Bindings({ a: DF.literal('a2'), d: DF.literal('d2') }),
             ]),
             metadata: () => Promise.resolve({ totalItems: 2 }),
             type: 'bindings',
@@ -136,8 +137,8 @@ describe('ActorRdfJoinMultiSmallest', () => {
         entries: [
           {
             bindingsStream: new ArrayIterator([
-              Bindings({ a: literal('a1'), b: literal('b1') }),
-              Bindings({ a: literal('a2'), b: literal('b2') }),
+              Bindings({ a: DF.literal('a1'), b: DF.literal('b1') }),
+              Bindings({ a: DF.literal('a2'), b: DF.literal('b2') }),
             ]),
             metadata: () => Promise.resolve({ totalItems: 4 }),
             type: 'bindings',
@@ -146,8 +147,8 @@ describe('ActorRdfJoinMultiSmallest', () => {
           },
           {
             bindingsStream: new ArrayIterator([
-              Bindings({ a: literal('a1'), c: literal('c1') }),
-              Bindings({ a: literal('a2'), c: literal('c2') }),
+              Bindings({ a: DF.literal('a1'), c: DF.literal('c1') }),
+              Bindings({ a: DF.literal('a2'), c: DF.literal('c2') }),
             ]),
             metadata: () => Promise.resolve({}),
             type: 'bindings',
@@ -156,8 +157,8 @@ describe('ActorRdfJoinMultiSmallest', () => {
           },
           {
             bindingsStream: new ArrayIterator([
-              Bindings({ a: literal('a1'), b: literal('b1') }),
-              Bindings({ a: literal('a2'), b: literal('b2') }),
+              Bindings({ a: DF.literal('a1'), b: DF.literal('b1') }),
+              Bindings({ a: DF.literal('a2'), b: DF.literal('b2') }),
             ]),
             metadata: () => Promise.resolve({ totalItems: 2 }),
             type: 'bindings',
@@ -195,8 +196,8 @@ describe('ActorRdfJoinMultiSmallest', () => {
       expect(output.variables).toEqual([ 'a', 'c', 'b' ]);
       expect(await (<any> output).metadata()).toEqual({ totalItems: 40 });
       expect(await arrayifyStream(output.bindingsStream)).toEqual([
-        Bindings({ a: literal('a1'), b: literal('b1'), c: literal('c1') }),
-        Bindings({ a: literal('a2'), b: literal('b2'), c: literal('c2') }),
+        Bindings({ a: DF.literal('a1'), b: DF.literal('b1'), c: DF.literal('c1') }),
+        Bindings({ a: DF.literal('a2'), b: DF.literal('b2'), c: DF.literal('c2') }),
       ]);
 
       // Check join order
@@ -211,8 +212,8 @@ describe('ActorRdfJoinMultiSmallest', () => {
       expect(output.variables).toEqual([ 'a', 'c', 'd', 'b' ]);
       expect(await (<any> output).metadata()).toEqual({ totalItems: 80 });
       expect(await arrayifyStream(output.bindingsStream)).toEqual([
-        Bindings({ a: literal('a1'), b: literal('b1'), c: literal('c1'), d: literal('d1') }),
-        Bindings({ a: literal('a2'), b: literal('b2'), c: literal('c2'), d: literal('d2') }),
+        Bindings({ a: DF.literal('a1'), b: DF.literal('b1'), c: DF.literal('c1'), d: DF.literal('d1') }),
+        Bindings({ a: DF.literal('a2'), b: DF.literal('b2'), c: DF.literal('c2'), d: DF.literal('d2') }),
       ]);
 
       // Check join order
@@ -228,8 +229,8 @@ describe('ActorRdfJoinMultiSmallest', () => {
       expect(output.variables).toEqual([ 'a', 'c', 'b' ]);
       expect(output.metadata).toBeFalsy();
       expect(await arrayifyStream(output.bindingsStream)).toEqual([
-        Bindings({ a: literal('a1'), b: literal('b1'), c: literal('c1') }),
-        Bindings({ a: literal('a2'), b: literal('b2'), c: literal('c2') }),
+        Bindings({ a: DF.literal('a1'), b: DF.literal('b1'), c: DF.literal('c1') }),
+        Bindings({ a: DF.literal('a2'), b: DF.literal('b2'), c: DF.literal('c2') }),
       ]);
 
       // Check join order

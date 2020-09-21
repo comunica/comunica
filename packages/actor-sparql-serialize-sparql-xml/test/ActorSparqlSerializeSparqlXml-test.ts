@@ -2,10 +2,11 @@ import { PassThrough } from 'stream';
 import type { BindingsStream } from '@comunica/bus-query-operation';
 import { Bindings } from '@comunica/bus-query-operation';
 import { Bus } from '@comunica/core';
-import { blankNode, defaultGraph, literal, namedNode } from '@rdfjs/data-model';
 import { ArrayIterator } from 'asynciterator';
+import { DataFactory } from 'rdf-data-factory';
 import type * as RDF from 'rdf-js';
 import { ActorSparqlSerializeSparqlXml } from '../lib/ActorSparqlSerializeSparqlXml';
+const DF = new DataFactory();
 const quad = require('rdf-quad');
 const stringifyStream = require('stream-to-string');
 
@@ -33,32 +34,33 @@ describe('ActorSparqlSerializeSparqlXml', () => {
 
   describe('#bindingToXmlBindings', () => {
     it('should convert named nodes', () => {
-      return expect(ActorSparqlSerializeSparqlXml.bindingToXmlBindings(namedNode('http://ex.org'), '?k'))
+      return expect(ActorSparqlSerializeSparqlXml.bindingToXmlBindings(DF.namedNode('http://ex.org'), '?k'))
         .toEqual({ binding: [{ _attr: { name: 'k' }}, { uri: 'http://ex.org' }]});
     });
 
     it('should convert default graphs', () => {
-      return expect(ActorSparqlSerializeSparqlXml.bindingToXmlBindings(defaultGraph(), '?k'))
+      return expect(ActorSparqlSerializeSparqlXml.bindingToXmlBindings(DF.defaultGraph(), '?k'))
         .toEqual({ binding: [{ _attr: { name: 'k' }}, { uri: '' }]});
     });
 
     it('should convert blank nodes', () => {
-      return expect(ActorSparqlSerializeSparqlXml.bindingToXmlBindings(blankNode('b1'), '?k'))
+      return expect(ActorSparqlSerializeSparqlXml.bindingToXmlBindings(DF.blankNode('b1'), '?k'))
         .toEqual({ binding: [{ _attr: { name: 'k' }}, { bnode: 'b1' }]});
     });
 
     it('should convert plain literals', () => {
-      return expect(ActorSparqlSerializeSparqlXml.bindingToXmlBindings(literal('abc'), '?k'))
+      return expect(ActorSparqlSerializeSparqlXml.bindingToXmlBindings(DF.literal('abc'), '?k'))
         .toEqual({ binding: [{ _attr: { name: 'k' }}, { literal: 'abc' }]});
     });
 
     it('should convert literals with a language', () => {
-      return expect(ActorSparqlSerializeSparqlXml.bindingToXmlBindings(literal('abc', 'en-us'), '?k'))
+      return expect(ActorSparqlSerializeSparqlXml.bindingToXmlBindings(DF.literal('abc', 'en-us'), '?k'))
         .toEqual({ binding: [{ _attr: { name: 'k' }}, { literal: [{ _attr: { 'xml:lang': 'en-us' }}, 'abc' ]}]});
     });
 
     it('should convert literals with a datatype', () => {
-      return expect(ActorSparqlSerializeSparqlXml.bindingToXmlBindings(literal('abc', namedNode('http://ex')), '?k'))
+      return expect(ActorSparqlSerializeSparqlXml
+        .bindingToXmlBindings(DF.literal('abc', DF.namedNode('http://ex')), '?k'))
         .toEqual({ binding: [{ _attr: { name: 'k' }}, { literal: [{ _attr: { datatype: 'http://ex' }}, 'abc' ]}]});
     });
   });
@@ -78,12 +80,12 @@ describe('ActorSparqlSerializeSparqlXml', () => {
         },
         name: 'actor' });
       bindingsStream = new ArrayIterator([
-        Bindings({ '?k1': namedNode('v1') }),
-        Bindings({ '?k2': namedNode('v2') }),
+        Bindings({ '?k1': DF.namedNode('v1') }),
+        Bindings({ '?k2': DF.namedNode('v2') }),
       ], { autoStart: false });
       bindingsStreamPartial = new ArrayIterator([
-        Bindings({ '?k1': namedNode('v1') }),
-        Bindings({ '?k2': namedNode('v2') }),
+        Bindings({ '?k1': DF.namedNode('v1') }),
+        Bindings({ '?k2': DF.namedNode('v2') }),
         Bindings({}),
       ], { autoStart: false });
       bindingsStreamError = <any> new PassThrough();

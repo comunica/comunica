@@ -6,7 +6,7 @@ import { ActorInit } from '@comunica/bus-init';
 import { Bindings, KEY_CONTEXT_QUERY_TIMESTAMP } from '@comunica/bus-query-operation';
 import { KEY_CONTEXT_SOURCES } from '@comunica/bus-rdf-resolve-quad-pattern';
 import { Bus, KEY_CONTEXT_LOG, ActionContext } from '@comunica/core';
-import { literal, variable, quad, namedNode, defaultGraph } from '@rdfjs/data-model';
+import { DataFactory } from 'rdf-data-factory';
 import { translate } from 'sparqlalgebrajs';
 import Factory from 'sparqlalgebrajs/lib/factory';
 import {
@@ -20,6 +20,7 @@ import type { IQueryResultQuads,
 import {
   ActorInitSparql as ActorInitSparqlBrowser,
 } from '../lib/ActorInitSparql-browser';
+const DF = new DataFactory();
 
 describe('exported constants', () => {
   it('should be correct', () => {
@@ -121,12 +122,12 @@ describe('ActorInitSparql', () => {
           baseIRI: action.query.includes('BASE') ? 'myBaseIRI' : null,
           operation: factory.createProject(
             factory.createBgp([
-              factory.createPattern(variable('s'), variable('p'), variable('o')),
+              factory.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o')),
             ]),
             [
-              variable('s'),
-              variable('p'),
-              variable('o'),
+              DF.variable('s'),
+              DF.variable('p'),
+              DF.variable('o'),
             ],
           ),
         });
@@ -574,13 +575,13 @@ describe('ActorInitSparql', () => {
 
     describe('query', () => {
       it('should apply bindings when initialBindings are passed via the context', () => {
-        const ctx = { '@comunica/actor-init-sparql:initialBindings': Bindings({ '?s': literal('sl') }) };
+        const ctx = { '@comunica/actor-init-sparql:initialBindings': Bindings({ '?s': DF.literal('sl') }) };
         return expect(actor.query('SELECT * WHERE { ?s ?p ?o }', ctx))
           .resolves.toBeTruthy();
       });
 
       it('should apply bindings when initialBindings in the old format are passed via the context', () => {
-        const ctx = { initialBindings: Bindings({ '?s': literal('sl') }) };
+        const ctx = { initialBindings: Bindings({ '?s': DF.literal('sl') }) };
         return expect(actor.query('SELECT * WHERE { ?s ?p ?o }', ctx))
           .resolves.toBeTruthy();
       });
@@ -815,11 +816,11 @@ graph <exists02.ttl> {
     beforeEach(() => {
       const input = new Readable({ objectMode: true });
       input._read = () => {
-        input.push(quad(
-          namedNode('http://dbpedia.org/resource/Renault_Dauphine'),
-          namedNode('http://dbpedia.org/ontology/assembly'),
-          namedNode('http://dbpedia.org/resource/Belgium'),
-          defaultGraph(),
+        input.push(DF.quad(
+          DF.namedNode('http://dbpedia.org/resource/Renault_Dauphine'),
+          DF.namedNode('http://dbpedia.org/ontology/assembly'),
+          DF.namedNode('http://dbpedia.org/resource/Belgium'),
+          DF.defaultGraph(),
         ));
         input.push(null);
       };
@@ -833,12 +834,12 @@ graph <exists02.ttl> {
           baseIRI: action.query.includes('BASE') ? 'myBaseIRI' : null,
           operation: factory.createProject(
             factory.createBgp([
-              factory.createPattern(variable('s'), variable('p'), variable('o')),
+              factory.createPattern(DF.variable('s'), DF.variable('p'), DF.variable('o')),
             ]),
             [
-              variable('s'),
-              variable('p'),
-              variable('o'),
+              DF.variable('s'),
+              DF.variable('p'),
+              DF.variable('o'),
             ],
           ),
         });
@@ -864,11 +865,11 @@ graph <exists02.ttl> {
       const ctx = { sources: []};
       const result = await actor.query('CONSTRUCT WHERE { ?s ?p ?o }', ctx);
       const array = await (<IQueryResultQuads> result).quads();
-      expect(array).toEqual([ quad(
-        namedNode('http://dbpedia.org/resource/Renault_Dauphine'),
-        namedNode('http://dbpedia.org/ontology/assembly'),
-        namedNode('http://dbpedia.org/resource/Belgium'),
-        defaultGraph(),
+      expect(array).toEqual([ DF.quad(
+        DF.namedNode('http://dbpedia.org/resource/Renault_Dauphine'),
+        DF.namedNode('http://dbpedia.org/ontology/assembly'),
+        DF.namedNode('http://dbpedia.org/resource/Belgium'),
+        DF.defaultGraph(),
       ) ]);
     });
 

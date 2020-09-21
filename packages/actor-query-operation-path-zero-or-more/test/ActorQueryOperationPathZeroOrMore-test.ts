@@ -1,13 +1,14 @@
 import { ActorAbstractPath } from '@comunica/actor-abstract-path';
 import { ActorQueryOperation, Bindings } from '@comunica/bus-query-operation';
 import { Bus, ActionContext } from '@comunica/core';
-import { namedNode, variable } from '@rdfjs/data-model';
 import { ArrayIterator } from 'asynciterator';
+import { DataFactory } from 'rdf-data-factory';
 import { termToString } from 'rdf-string';
 import { QUAD_TERM_NAMES } from 'rdf-terms';
 import { Algebra, Factory } from 'sparqlalgebrajs';
 import { ActorQueryOperationPathZeroOrMore } from '../lib/ActorQueryOperationPathZeroOrMore';
 const arrayifyStream = require('arrayify-stream');
+const DF = new DataFactory();
 
 describe('ActorQueryOperationPathZeroOrMore', () => {
   let bus: any;
@@ -48,7 +49,7 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
           for (let i = 0; i < 3; ++i) {
             const bind: any = {};
             for (const [ j, element ] of vars.entries()) {
-              bind[element] = namedNode(`${1 + i + j}`);
+              bind[element] = DF.namedNode(`${1 + i + j}`);
             }
             // Special case for coverage (making sure not every subject gets same objects)
             if (!(arg.operation && termToString(arg.operation.subject) === '5' && i === 2)) {
@@ -110,74 +111,74 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
 
     it('should mediate with distinct if not in context', async() => {
       const op = { operation: factory.createPath(
-        namedNode('s'),
-        factory.createZeroOrMorePath(factory.createLink(namedNode('p'))),
-        variable('x'),
+        DF.namedNode('s'),
+        factory.createZeroOrMorePath(factory.createLink(DF.namedNode('p'))),
+        DF.variable('x'),
       ) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       expect(output.variables).toEqual([ '?x' ]);
       expect(output.canContainUndefs).toEqual(false);
       expect(await arrayifyStream(output.bindingsStream)).toEqual([
-        Bindings({ '?x': namedNode('1') }),
+        Bindings({ '?x': DF.namedNode('1') }),
       ]);
     });
 
     it('should mediate with distinct if false in context', async() => {
       const op = { operation: factory.createPath(
-        namedNode('s'),
-        factory.createZeroOrMorePath(factory.createLink(namedNode('p'))),
-        variable('x'),
+        DF.namedNode('s'),
+        factory.createZeroOrMorePath(factory.createLink(DF.namedNode('p'))),
+        DF.variable('x'),
       ),
       context: ActionContext({ [ActorAbstractPath.isPathArbitraryLengthDistinctKey]: false }) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       expect(output.variables).toEqual([ '?x' ]);
       expect(output.canContainUndefs).toEqual(false);
       expect(await arrayifyStream(output.bindingsStream)).toEqual([
-        Bindings({ '?x': namedNode('1') }),
+        Bindings({ '?x': DF.namedNode('1') }),
       ]);
     });
 
     it('should support ZeroOrMore paths (:s :p* ?o)', async() => {
       const op = { operation: factory.createPath(
-        namedNode('s'),
-        factory.createZeroOrMorePath(factory.createLink(namedNode('p'))),
-        variable('x'),
+        DF.namedNode('s'),
+        factory.createZeroOrMorePath(factory.createLink(DF.namedNode('p'))),
+        DF.variable('x'),
       ),
       context: ActionContext({ [ActorAbstractPath.isPathArbitraryLengthDistinctKey]: true }) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       expect(output.variables).toEqual([ '?x' ]);
       expect(output.canContainUndefs).toEqual(false);
       expect(await arrayifyStream(output.bindingsStream)).toEqual([
-        Bindings({ '?x': namedNode('s') }),
-        Bindings({ '?x': namedNode('1') }),
-        Bindings({ '?x': namedNode('2') }),
-        Bindings({ '?x': namedNode('3') }),
+        Bindings({ '?x': DF.namedNode('s') }),
+        Bindings({ '?x': DF.namedNode('1') }),
+        Bindings({ '?x': DF.namedNode('2') }),
+        Bindings({ '?x': DF.namedNode('3') }),
       ]);
     });
 
     it('should support ZeroOrMore paths (?s :p* :o)', async() => {
       const op = { operation: factory.createPath(
-        variable('x'),
-        factory.createZeroOrMorePath(factory.createLink(namedNode('p'))),
-        namedNode('o'),
+        DF.variable('x'),
+        factory.createZeroOrMorePath(factory.createLink(DF.namedNode('p'))),
+        DF.namedNode('o'),
       ),
       context: ActionContext({ [ActorAbstractPath.isPathArbitraryLengthDistinctKey]: true }) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       expect(output.variables).toEqual([ '?x' ]);
       expect(output.canContainUndefs).toEqual(false);
       expect(await arrayifyStream(output.bindingsStream)).toEqual([
-        Bindings({ '?x': namedNode('o') }),
-        Bindings({ '?x': namedNode('1') }),
-        Bindings({ '?x': namedNode('2') }),
-        Bindings({ '?x': namedNode('3') }),
+        Bindings({ '?x': DF.namedNode('o') }),
+        Bindings({ '?x': DF.namedNode('1') }),
+        Bindings({ '?x': DF.namedNode('2') }),
+        Bindings({ '?x': DF.namedNode('3') }),
       ]);
     });
 
     it('should support ZeroOrMore paths (:s :p* :o)', async() => {
       const op = { operation: factory.createPath(
-        namedNode('s'),
-        factory.createZeroOrMorePath(factory.createLink(namedNode('p'))),
-        namedNode('1'),
+        DF.namedNode('s'),
+        factory.createZeroOrMorePath(factory.createLink(DF.namedNode('p'))),
+        DF.namedNode('1'),
       ),
       context: ActionContext({ [ActorAbstractPath.isPathArbitraryLengthDistinctKey]: true }) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
@@ -190,54 +191,54 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
 
     it('should support ZeroOrMore paths (:s :p* :o) with variable graph', async() => {
       const op = { operation: factory.createPath(
-        namedNode('s'),
-        factory.createZeroOrMorePath(factory.createLink(namedNode('p'))),
-        namedNode('1'),
-        variable('g'),
+        DF.namedNode('s'),
+        factory.createZeroOrMorePath(factory.createLink(DF.namedNode('p'))),
+        DF.namedNode('1'),
+        DF.variable('g'),
       ),
       context: ActionContext({ [ActorAbstractPath.isPathArbitraryLengthDistinctKey]: true }) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       expect(output.variables).toEqual([ '?g' ]);
       expect(output.canContainUndefs).toEqual(false);
       expect(await arrayifyStream(output.bindingsStream)).toEqual([
-        Bindings({ '?g': namedNode('6') }),
-        Bindings({ '?g': namedNode('7') }),
-        Bindings({ '?g': namedNode('8') }),
+        Bindings({ '?g': DF.namedNode('6') }),
+        Bindings({ '?g': DF.namedNode('7') }),
+        Bindings({ '?g': DF.namedNode('8') }),
       ]);
     });
 
     it('should support ZeroOrMore paths (:s :p* ?o) with variable graph', async() => {
       const op = { operation: factory.createPath(
-        namedNode('s'),
-        factory.createZeroOrMorePath(factory.createLink(namedNode('p'))),
-        variable('x'),
-        variable('g'),
+        DF.namedNode('s'),
+        factory.createZeroOrMorePath(factory.createLink(DF.namedNode('p'))),
+        DF.variable('x'),
+        DF.variable('g'),
       ),
       context: ActionContext({ [ActorAbstractPath.isPathArbitraryLengthDistinctKey]: true }) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       expect(output.variables).toEqual([ '?x', '?g' ]);
       expect(output.canContainUndefs).toEqual(false);
       expect(await arrayifyStream(output.bindingsStream)).toEqual([
-        Bindings({ '?x': namedNode('s'), '?g': namedNode('6') }),
-        Bindings({ '?x': namedNode('1'), '?g': namedNode('6') }),
-        Bindings({ '?x': namedNode('2'), '?g': namedNode('6') }),
-        Bindings({ '?x': namedNode('3'), '?g': namedNode('6') }),
-        Bindings({ '?x': namedNode('s'), '?g': namedNode('7') }),
-        Bindings({ '?x': namedNode('1'), '?g': namedNode('7') }),
-        Bindings({ '?x': namedNode('2'), '?g': namedNode('7') }),
-        Bindings({ '?x': namedNode('3'), '?g': namedNode('7') }),
-        Bindings({ '?x': namedNode('s'), '?g': namedNode('8') }),
-        Bindings({ '?x': namedNode('1'), '?g': namedNode('8') }),
-        Bindings({ '?x': namedNode('2'), '?g': namedNode('8') }),
-        Bindings({ '?x': namedNode('3'), '?g': namedNode('8') }),
+        Bindings({ '?x': DF.namedNode('s'), '?g': DF.namedNode('6') }),
+        Bindings({ '?x': DF.namedNode('1'), '?g': DF.namedNode('6') }),
+        Bindings({ '?x': DF.namedNode('2'), '?g': DF.namedNode('6') }),
+        Bindings({ '?x': DF.namedNode('3'), '?g': DF.namedNode('6') }),
+        Bindings({ '?x': DF.namedNode('s'), '?g': DF.namedNode('7') }),
+        Bindings({ '?x': DF.namedNode('1'), '?g': DF.namedNode('7') }),
+        Bindings({ '?x': DF.namedNode('2'), '?g': DF.namedNode('7') }),
+        Bindings({ '?x': DF.namedNode('3'), '?g': DF.namedNode('7') }),
+        Bindings({ '?x': DF.namedNode('s'), '?g': DF.namedNode('8') }),
+        Bindings({ '?x': DF.namedNode('1'), '?g': DF.namedNode('8') }),
+        Bindings({ '?x': DF.namedNode('2'), '?g': DF.namedNode('8') }),
+        Bindings({ '?x': DF.namedNode('3'), '?g': DF.namedNode('8') }),
       ]);
     });
 
     it('should support zeroOrMore paths with 2 variables', async() => {
       const op = { operation: factory.createPath(
-        variable('x'),
-        factory.createZeroOrMorePath(factory.createLink(namedNode('p'))),
-        variable('y'),
+        DF.variable('x'),
+        factory.createZeroOrMorePath(factory.createLink(DF.namedNode('p'))),
+        DF.variable('y'),
       ),
       context: ActionContext({ [ActorAbstractPath.isPathArbitraryLengthDistinctKey]: true }) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
@@ -245,32 +246,32 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
       expect(output.canContainUndefs).toEqual(false);
       const bindings: Bindings[] = await arrayifyStream(output.bindingsStream);
       expect(bindings).toEqual([
-        Bindings({ '?x': namedNode('1'), '?y': namedNode('1') }),
-        Bindings({ '?x': namedNode('1'), '?y': namedNode('2') }),
-        Bindings({ '?x': namedNode('1'), '?y': namedNode('3') }),
-        Bindings({ '?x': namedNode('3'), '?y': namedNode('3') }),
-        Bindings({ '?x': namedNode('3'), '?y': namedNode('1') }),
-        Bindings({ '?x': namedNode('3'), '?y': namedNode('2') }),
-        Bindings({ '?x': namedNode('2'), '?y': namedNode('2') }),
-        Bindings({ '?x': namedNode('2'), '?y': namedNode('1') }),
-        Bindings({ '?x': namedNode('2'), '?y': namedNode('3') }),
-        Bindings({ '?x': namedNode('4'), '?y': namedNode('4') }),
-        Bindings({ '?x': namedNode('4'), '?y': namedNode('1') }),
-        Bindings({ '?x': namedNode('4'), '?y': namedNode('2') }),
-        Bindings({ '?x': namedNode('4'), '?y': namedNode('3') }),
-        Bindings({ '?x': namedNode('5'), '?y': namedNode('5') }),
-        Bindings({ '?x': namedNode('5'), '?y': namedNode('1') }),
-        Bindings({ '?x': namedNode('5'), '?y': namedNode('2') }),
-        Bindings({ '?x': namedNode('5'), '?y': namedNode('3') }),
+        Bindings({ '?x': DF.namedNode('1'), '?y': DF.namedNode('1') }),
+        Bindings({ '?x': DF.namedNode('1'), '?y': DF.namedNode('2') }),
+        Bindings({ '?x': DF.namedNode('1'), '?y': DF.namedNode('3') }),
+        Bindings({ '?x': DF.namedNode('3'), '?y': DF.namedNode('3') }),
+        Bindings({ '?x': DF.namedNode('3'), '?y': DF.namedNode('1') }),
+        Bindings({ '?x': DF.namedNode('3'), '?y': DF.namedNode('2') }),
+        Bindings({ '?x': DF.namedNode('2'), '?y': DF.namedNode('2') }),
+        Bindings({ '?x': DF.namedNode('2'), '?y': DF.namedNode('1') }),
+        Bindings({ '?x': DF.namedNode('2'), '?y': DF.namedNode('3') }),
+        Bindings({ '?x': DF.namedNode('4'), '?y': DF.namedNode('4') }),
+        Bindings({ '?x': DF.namedNode('4'), '?y': DF.namedNode('1') }),
+        Bindings({ '?x': DF.namedNode('4'), '?y': DF.namedNode('2') }),
+        Bindings({ '?x': DF.namedNode('4'), '?y': DF.namedNode('3') }),
+        Bindings({ '?x': DF.namedNode('5'), '?y': DF.namedNode('5') }),
+        Bindings({ '?x': DF.namedNode('5'), '?y': DF.namedNode('1') }),
+        Bindings({ '?x': DF.namedNode('5'), '?y': DF.namedNode('2') }),
+        Bindings({ '?x': DF.namedNode('5'), '?y': DF.namedNode('3') }),
       ]);
     });
 
     it('should support zeroOrMore paths with 2 variables with variable graph', async() => {
       const op = { operation: factory.createPath(
-        variable('x'),
-        factory.createZeroOrMorePath(factory.createLink(namedNode('p'))),
-        variable('y'),
-        variable('g'),
+        DF.variable('x'),
+        factory.createZeroOrMorePath(factory.createLink(DF.namedNode('p'))),
+        DF.variable('y'),
+        DF.variable('g'),
       ),
       context: ActionContext({ [ActorAbstractPath.isPathArbitraryLengthDistinctKey]: true }) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
@@ -278,26 +279,26 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
       expect(output.canContainUndefs).toEqual(false);
       const bindings: Bindings[] = await arrayifyStream(output.bindingsStream);
       expect(bindings).toEqual([
-        Bindings({ '?x': namedNode('1'), '?y': namedNode('1'), '?g': namedNode('4') }),
-        Bindings({ '?x': namedNode('1'), '?y': namedNode('2'), '?g': namedNode('4') }),
-        Bindings({ '?x': namedNode('1'), '?y': namedNode('3'), '?g': namedNode('4') }),
-        Bindings({ '?x': namedNode('3'), '?y': namedNode('3'), '?g': namedNode('4') }),
-        Bindings({ '?x': namedNode('3'), '?y': namedNode('1'), '?g': namedNode('4') }),
-        Bindings({ '?x': namedNode('3'), '?y': namedNode('2'), '?g': namedNode('4') }),
-        Bindings({ '?x': namedNode('2'), '?y': namedNode('2'), '?g': namedNode('5') }),
-        Bindings({ '?x': namedNode('2'), '?y': namedNode('1'), '?g': namedNode('5') }),
-        Bindings({ '?x': namedNode('2'), '?y': namedNode('3'), '?g': namedNode('5') }),
-        Bindings({ '?x': namedNode('4'), '?y': namedNode('4'), '?g': namedNode('5') }),
-        Bindings({ '?x': namedNode('4'), '?y': namedNode('1'), '?g': namedNode('5') }),
-        Bindings({ '?x': namedNode('4'), '?y': namedNode('2'), '?g': namedNode('5') }),
-        Bindings({ '?x': namedNode('4'), '?y': namedNode('3'), '?g': namedNode('5') }),
-        Bindings({ '?x': namedNode('3'), '?y': namedNode('3'), '?g': namedNode('6') }),
-        Bindings({ '?x': namedNode('5'), '?y': namedNode('5'), '?g': namedNode('6') }),
-        Bindings({ '?x': namedNode('3'), '?y': namedNode('1'), '?g': namedNode('6') }),
-        Bindings({ '?x': namedNode('3'), '?y': namedNode('2'), '?g': namedNode('6') }),
-        Bindings({ '?x': namedNode('5'), '?y': namedNode('1'), '?g': namedNode('6') }),
-        Bindings({ '?x': namedNode('5'), '?y': namedNode('2'), '?g': namedNode('6') }),
-        Bindings({ '?x': namedNode('5'), '?y': namedNode('3'), '?g': namedNode('6') }),
+        Bindings({ '?x': DF.namedNode('1'), '?y': DF.namedNode('1'), '?g': DF.namedNode('4') }),
+        Bindings({ '?x': DF.namedNode('1'), '?y': DF.namedNode('2'), '?g': DF.namedNode('4') }),
+        Bindings({ '?x': DF.namedNode('1'), '?y': DF.namedNode('3'), '?g': DF.namedNode('4') }),
+        Bindings({ '?x': DF.namedNode('3'), '?y': DF.namedNode('3'), '?g': DF.namedNode('4') }),
+        Bindings({ '?x': DF.namedNode('3'), '?y': DF.namedNode('1'), '?g': DF.namedNode('4') }),
+        Bindings({ '?x': DF.namedNode('3'), '?y': DF.namedNode('2'), '?g': DF.namedNode('4') }),
+        Bindings({ '?x': DF.namedNode('2'), '?y': DF.namedNode('2'), '?g': DF.namedNode('5') }),
+        Bindings({ '?x': DF.namedNode('2'), '?y': DF.namedNode('1'), '?g': DF.namedNode('5') }),
+        Bindings({ '?x': DF.namedNode('2'), '?y': DF.namedNode('3'), '?g': DF.namedNode('5') }),
+        Bindings({ '?x': DF.namedNode('4'), '?y': DF.namedNode('4'), '?g': DF.namedNode('5') }),
+        Bindings({ '?x': DF.namedNode('4'), '?y': DF.namedNode('1'), '?g': DF.namedNode('5') }),
+        Bindings({ '?x': DF.namedNode('4'), '?y': DF.namedNode('2'), '?g': DF.namedNode('5') }),
+        Bindings({ '?x': DF.namedNode('4'), '?y': DF.namedNode('3'), '?g': DF.namedNode('5') }),
+        Bindings({ '?x': DF.namedNode('3'), '?y': DF.namedNode('3'), '?g': DF.namedNode('6') }),
+        Bindings({ '?x': DF.namedNode('5'), '?y': DF.namedNode('5'), '?g': DF.namedNode('6') }),
+        Bindings({ '?x': DF.namedNode('3'), '?y': DF.namedNode('1'), '?g': DF.namedNode('6') }),
+        Bindings({ '?x': DF.namedNode('3'), '?y': DF.namedNode('2'), '?g': DF.namedNode('6') }),
+        Bindings({ '?x': DF.namedNode('5'), '?y': DF.namedNode('1'), '?g': DF.namedNode('6') }),
+        Bindings({ '?x': DF.namedNode('5'), '?y': DF.namedNode('2'), '?g': DF.namedNode('6') }),
+        Bindings({ '?x': DF.namedNode('5'), '?y': DF.namedNode('3'), '?g': DF.namedNode('6') }),
       ]);
     });
   });

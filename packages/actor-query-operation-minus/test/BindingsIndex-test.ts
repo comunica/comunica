@@ -1,6 +1,7 @@
 import { Bindings } from '@comunica/bus-query-operation';
-import { namedNode, variable } from '@rdfjs/data-model';
+import { DataFactory } from 'rdf-data-factory';
 import { BindingsIndex } from '../lib/BindingsIndex';
+const DF = new DataFactory();
 
 describe('BindingsIndex', () => {
   let index: BindingsIndex;
@@ -14,10 +15,10 @@ describe('BindingsIndex', () => {
       it('should contain nothing', () => {
         expect(index.contains(Bindings({}))).toBeFalsy();
         expect(index.contains(Bindings({
-          a: namedNode('b'),
+          a: DF.namedNode('b'),
         }))).toBeFalsy();
         expect(index.contains(Bindings({
-          a: variable('b'),
+          a: DF.variable('b'),
         }))).toBeFalsy();
       });
     });
@@ -25,17 +26,17 @@ describe('BindingsIndex', () => {
     describe('with one bindings', () => {
       beforeEach(() => {
         index.add(Bindings({
-          x: namedNode('b'),
+          x: DF.namedNode('b'),
         }));
       });
 
       it('should contain nothing', () => {
         expect(index.contains(Bindings({
-          a: namedNode('b'),
+          a: DF.namedNode('b'),
         }))).toBeFalsy();
         expect(index.contains(Bindings({}))).toBeFalsy();
         expect(index.contains(Bindings({
-          a: variable('b'),
+          a: DF.variable('b'),
         }))).toBeFalsy();
       });
     });
@@ -49,14 +50,14 @@ describe('BindingsIndex', () => {
     describe('without bindings', () => {
       it('should not contain concrete terms', () => {
         expect(index.contains(Bindings({
-          a: namedNode('b'),
+          a: DF.namedNode('b'),
         }))).toBeFalsy();
       });
 
       it('should handle variable, null or undefined terms', () => {
         expect(index.contains(Bindings({}))).toBeFalsy();
         expect(index.contains(Bindings({
-          a: variable('b'),
+          a: DF.variable('b'),
         }))).toBeTruthy();
       });
     });
@@ -64,26 +65,26 @@ describe('BindingsIndex', () => {
     describe('with one bindings', () => {
       beforeEach(() => {
         index.add(Bindings({
-          a: namedNode('b'),
+          a: DF.namedNode('b'),
         }));
       });
 
       it('should not contain non-matching concrete terms', () => {
         expect(index.contains(Bindings({
-          a: namedNode('NON'),
+          a: DF.namedNode('NON'),
         }))).toBeFalsy();
       });
 
       it('should contain matching concrete terms', () => {
         expect(index.contains(Bindings({
-          a: namedNode('b'),
+          a: DF.namedNode('b'),
         }))).toBeTruthy();
       });
 
       it('should handle variable, null or undefined terms', () => {
         expect(index.contains(Bindings({}))).toBeFalsy();
         expect(index.contains(Bindings({
-          a: variable('b'),
+          a: DF.variable('b'),
         }))).toBeTruthy();
       });
     });
@@ -97,26 +98,26 @@ describe('BindingsIndex', () => {
     describe('without bindings', () => {
       it('should not contain concrete terms', () => {
         expect(index.contains(Bindings({
-          a: namedNode('1'),
-          b: namedNode('2'),
-          c: namedNode('3'),
+          a: DF.namedNode('1'),
+          b: DF.namedNode('2'),
+          c: DF.namedNode('3'),
         }))).toBeFalsy();
       });
 
       it('should handle variable, null or undefined terms', () => {
         expect(index.contains(Bindings({}))).toBeFalsy();
         expect(index.contains(Bindings({
-          a: variable('1'),
-          b: variable('2'),
-          c: variable('3'),
+          a: DF.variable('1'),
+          b: DF.variable('2'),
+          c: DF.variable('3'),
         }))).toBeTruthy();
       });
 
       it('should not contain partially concrete terms', () => {
         expect(index.contains(Bindings({
-          a: variable('1'),
-          b: namedNode('2'),
-          c: variable('3'),
+          a: DF.variable('1'),
+          b: DF.namedNode('2'),
+          c: DF.variable('3'),
         }))).toBeFalsy();
       });
     });
@@ -124,97 +125,97 @@ describe('BindingsIndex', () => {
     describe('with one bindings', () => {
       beforeEach(() => {
         index.add(Bindings({
-          a: namedNode('1'),
-          b: namedNode('2'),
-          c: namedNode('3'),
+          a: DF.namedNode('1'),
+          b: DF.namedNode('2'),
+          c: DF.namedNode('3'),
         }));
       });
 
       it('should not contain non-matching concrete terms', () => {
         expect(index.contains(Bindings({
-          a: namedNode('NON'),
-          b: namedNode('NON'),
-          c: namedNode('NON'),
+          a: DF.namedNode('NON'),
+          b: DF.namedNode('NON'),
+          c: DF.namedNode('NON'),
         }))).toBeFalsy();
         expect(index.contains(Bindings({
-          a: namedNode('1'),
-          b: namedNode('NON'),
-          c: namedNode('NON'),
+          a: DF.namedNode('1'),
+          b: DF.namedNode('NON'),
+          c: DF.namedNode('NON'),
         }))).toBeFalsy();
         expect(index.contains(Bindings({
-          a: namedNode('1'),
-          b: namedNode('2'),
-          c: namedNode('NON'),
+          a: DF.namedNode('1'),
+          b: DF.namedNode('2'),
+          c: DF.namedNode('NON'),
         }))).toBeFalsy();
         expect(index.contains(Bindings({
-          a: namedNode('1'),
-          b: namedNode('NON'),
-          c: namedNode('3'),
+          a: DF.namedNode('1'),
+          b: DF.namedNode('NON'),
+          c: DF.namedNode('3'),
         }))).toBeFalsy();
         expect(index.contains(Bindings({
-          a: namedNode('NON'),
-          b: namedNode('NON'),
-          c: namedNode('3'),
+          a: DF.namedNode('NON'),
+          b: DF.namedNode('NON'),
+          c: DF.namedNode('3'),
         }))).toBeFalsy();
         expect(index.contains(Bindings({
-          a: namedNode('NON'),
-          b: namedNode('2'),
-          c: namedNode('3'),
+          a: DF.namedNode('NON'),
+          b: DF.namedNode('2'),
+          c: DF.namedNode('3'),
         }))).toBeFalsy();
       });
 
       it('should contain matching concrete terms', () => {
         expect(index.contains(Bindings({
-          a: namedNode('1'),
-          b: namedNode('2'),
-          c: namedNode('3'),
+          a: DF.namedNode('1'),
+          b: DF.namedNode('2'),
+          c: DF.namedNode('3'),
         }))).toBeTruthy();
       });
 
       it('should handle variable, null or undefined terms', () => {
         expect(index.contains(Bindings({}))).toBeFalsy();
         expect(index.contains(Bindings({
-          a: variable('b'),
+          a: DF.variable('b'),
         }))).toBeTruthy();
       });
 
       it('should contain partially matching concrete terms', () => {
         expect(index.contains(Bindings({
-          a: namedNode('1'),
-          b: namedNode('2'),
+          a: DF.namedNode('1'),
+          b: DF.namedNode('2'),
         }))).toBeTruthy();
         expect(index.contains(Bindings({
-          a: namedNode('1'),
-          c: namedNode('3'),
+          a: DF.namedNode('1'),
+          c: DF.namedNode('3'),
         }))).toBeTruthy();
         expect(index.contains(Bindings({
-          a: namedNode('1'),
+          a: DF.namedNode('1'),
         }))).toBeTruthy();
         expect(index.contains(Bindings({
-          b: namedNode('2'),
+          b: DF.namedNode('2'),
         }))).toBeTruthy();
         expect(index.contains(Bindings({
-          c: namedNode('3'),
+          c: DF.namedNode('3'),
         }))).toBeTruthy();
       });
 
       it('should not contain partially non-matching concrete terms', () => {
         expect(index.contains(Bindings({
-          a: namedNode('1'),
-          b: namedNode('2x'),
+          a: DF.namedNode('1'),
+          b: DF.namedNode('2x'),
         }))).toBeFalsy();
         expect(index.contains(Bindings({
-          a: namedNode('1x'),
-          c: namedNode('3x'),
+          a: DF.namedNode('1x'),
+          c: DF.namedNode('3x'),
         }))).toBeFalsy();
         expect(index.contains(Bindings({
-          a: namedNode('1x'),
+          a: DF.namedNode('1x'),
         }))).toBeFalsy();
         expect(index.contains(Bindings({
-          b: namedNode('2x'),
+          b: DF.namedNode('2x'),
         }))).toBeFalsy();
         expect(index.contains(Bindings({
-          c: namedNode('3x'),
+          c: DF.namedNode('3x'),
         }))).toBeFalsy();
       });
     });
@@ -222,102 +223,102 @@ describe('BindingsIndex', () => {
     describe('with one bindings with variables', () => {
       beforeEach(() => {
         index.add(Bindings({
-          a: namedNode('1'),
-          b: variable('V'),
-          c: namedNode('3'),
+          a: DF.namedNode('1'),
+          b: DF.variable('V'),
+          c: DF.namedNode('3'),
         }));
       });
 
       it('should not contain non-matching concrete terms', () => {
         expect(index.contains(Bindings({
-          a: namedNode('NON'),
-          b: namedNode('NON'),
-          c: namedNode('NON'),
+          a: DF.namedNode('NON'),
+          b: DF.namedNode('NON'),
+          c: DF.namedNode('NON'),
         }))).toBeFalsy();
         expect(index.contains(Bindings({
-          a: namedNode('1'),
-          b: namedNode('NON'),
-          c: namedNode('NON'),
+          a: DF.namedNode('1'),
+          b: DF.namedNode('NON'),
+          c: DF.namedNode('NON'),
         }))).toBeFalsy();
         expect(index.contains(Bindings({
-          a: namedNode('1'),
-          b: namedNode('2'),
-          c: namedNode('NON'),
+          a: DF.namedNode('1'),
+          b: DF.namedNode('2'),
+          c: DF.namedNode('NON'),
         }))).toBeFalsy();
         expect(index.contains(Bindings({
-          a: namedNode('1'),
-          b: namedNode('NON'),
-          c: namedNode('3'),
+          a: DF.namedNode('1'),
+          b: DF.namedNode('NON'),
+          c: DF.namedNode('3'),
         }))).toBeTruthy();
         expect(index.contains(Bindings({
-          a: namedNode('NON'),
-          b: namedNode('NON'),
-          c: namedNode('3'),
+          a: DF.namedNode('NON'),
+          b: DF.namedNode('NON'),
+          c: DF.namedNode('3'),
         }))).toBeFalsy();
         expect(index.contains(Bindings({
-          a: namedNode('NON'),
-          b: namedNode('2'),
-          c: namedNode('3'),
+          a: DF.namedNode('NON'),
+          b: DF.namedNode('2'),
+          c: DF.namedNode('3'),
         }))).toBeFalsy();
       });
 
       it('should contain matching concrete terms', () => {
         expect(index.contains(Bindings({
-          a: namedNode('1'),
-          b: namedNode('2'),
-          c: namedNode('3'),
+          a: DF.namedNode('1'),
+          b: DF.namedNode('2'),
+          c: DF.namedNode('3'),
         }))).toBeTruthy();
         expect(index.contains(Bindings({
-          a: namedNode('1'),
-          b: namedNode('ABC'),
-          c: namedNode('3'),
+          a: DF.namedNode('1'),
+          b: DF.namedNode('ABC'),
+          c: DF.namedNode('3'),
         }))).toBeTruthy();
       });
 
       it('should handle variable, null or undefined terms', () => {
         expect(index.contains(Bindings({}))).toBeFalsy();
         expect(index.contains(Bindings({
-          a: variable('b'),
+          a: DF.variable('b'),
         }))).toBeTruthy();
       });
 
       it('should contain partially matching concrete terms', () => {
         expect(index.contains(Bindings({
-          a: namedNode('1'),
-          b: namedNode('ABC'),
+          a: DF.namedNode('1'),
+          b: DF.namedNode('ABC'),
         }))).toBeTruthy();
         expect(index.contains(Bindings({
-          a: namedNode('1'),
-          c: namedNode('3'),
+          a: DF.namedNode('1'),
+          c: DF.namedNode('3'),
         }))).toBeTruthy();
         expect(index.contains(Bindings({
-          a: namedNode('1'),
+          a: DF.namedNode('1'),
         }))).toBeTruthy();
         expect(index.contains(Bindings({
-          b: namedNode('ABC'),
+          b: DF.namedNode('ABC'),
         }))).toBeTruthy();
         expect(index.contains(Bindings({
-          c: namedNode('3'),
+          c: DF.namedNode('3'),
         }))).toBeTruthy();
       });
 
       it('should not contain partially non-matching concrete terms', () => {
         expect(index.contains(Bindings({
-          a: namedNode('1x'),
-          b: namedNode('2'),
+          a: DF.namedNode('1x'),
+          b: DF.namedNode('2'),
         }))).toBeFalsy();
         expect(index.contains(Bindings({
-          a: namedNode('1x'),
-          c: namedNode('3x'),
+          a: DF.namedNode('1x'),
+          c: DF.namedNode('3x'),
         }))).toBeFalsy();
         expect(index.contains(Bindings({
-          a: namedNode('1x'),
+          a: DF.namedNode('1x'),
         }))).toBeFalsy();
         expect(index.contains(Bindings({
-          b: namedNode('2x'),
+          b: DF.namedNode('2x'),
         }))).toBeTruthy();
         expect(index.contains(Bindings({
-          c: namedNode('3x'),
+          c: DF.namedNode('3x'),
         }))).toBeFalsy();
       });
     });
@@ -325,154 +326,154 @@ describe('BindingsIndex', () => {
     describe('with three bindings', () => {
       beforeEach(() => {
         index.add(Bindings({
-          a: namedNode('1'),
-          b: namedNode('2a'),
-          c: namedNode('3a'),
+          a: DF.namedNode('1'),
+          b: DF.namedNode('2a'),
+          c: DF.namedNode('3a'),
         }));
         index.add(Bindings({
-          a: namedNode('1'),
-          b: namedNode('2b'),
-          c: namedNode('3b'),
+          a: DF.namedNode('1'),
+          b: DF.namedNode('2b'),
+          c: DF.namedNode('3b'),
         }));
         index.add(Bindings({
-          a: namedNode('1x'),
-          b: namedNode('2y'),
-          c: namedNode('3z'),
+          a: DF.namedNode('1x'),
+          b: DF.namedNode('2y'),
+          c: DF.namedNode('3z'),
         }));
       });
 
       it('should not contain non-matching concrete terms', () => {
         expect(index.contains(Bindings({
-          a: namedNode('NON'),
-          b: namedNode('NON'),
-          c: namedNode('NON'),
+          a: DF.namedNode('NON'),
+          b: DF.namedNode('NON'),
+          c: DF.namedNode('NON'),
         }))).toBeFalsy();
         expect(index.contains(Bindings({
-          a: namedNode('1'),
-          b: namedNode('NON'),
-          c: namedNode('NON'),
+          a: DF.namedNode('1'),
+          b: DF.namedNode('NON'),
+          c: DF.namedNode('NON'),
         }))).toBeFalsy();
         expect(index.contains(Bindings({
-          a: namedNode('1'),
-          b: namedNode('2'),
-          c: namedNode('NON'),
+          a: DF.namedNode('1'),
+          b: DF.namedNode('2'),
+          c: DF.namedNode('NON'),
         }))).toBeFalsy();
         expect(index.contains(Bindings({
-          a: namedNode('1'),
-          b: namedNode('NON'),
-          c: namedNode('3'),
+          a: DF.namedNode('1'),
+          b: DF.namedNode('NON'),
+          c: DF.namedNode('3'),
         }))).toBeFalsy();
         expect(index.contains(Bindings({
-          a: namedNode('NON'),
-          b: namedNode('NON'),
-          c: namedNode('3'),
+          a: DF.namedNode('NON'),
+          b: DF.namedNode('NON'),
+          c: DF.namedNode('3'),
         }))).toBeFalsy();
         expect(index.contains(Bindings({
-          a: namedNode('NON'),
-          b: namedNode('2'),
-          c: namedNode('3'),
+          a: DF.namedNode('NON'),
+          b: DF.namedNode('2'),
+          c: DF.namedNode('3'),
         }))).toBeFalsy();
       });
 
       it('should contain matching concrete terms', () => {
         expect(index.contains(Bindings({
-          a: namedNode('1'),
-          b: namedNode('2a'),
-          c: namedNode('3a'),
+          a: DF.namedNode('1'),
+          b: DF.namedNode('2a'),
+          c: DF.namedNode('3a'),
         }))).toBeTruthy();
         expect(index.contains(Bindings({
-          a: namedNode('1'),
-          b: namedNode('2b'),
-          c: namedNode('3b'),
+          a: DF.namedNode('1'),
+          b: DF.namedNode('2b'),
+          c: DF.namedNode('3b'),
         }))).toBeTruthy();
         expect(index.contains(Bindings({
-          a: namedNode('1x'),
-          b: namedNode('2y'),
-          c: namedNode('3z'),
+          a: DF.namedNode('1x'),
+          b: DF.namedNode('2y'),
+          c: DF.namedNode('3z'),
         }))).toBeTruthy();
       });
 
       it('should handle variable, null or undefined terms', () => {
         expect(index.contains(Bindings({}))).toBeFalsy();
         expect(index.contains(Bindings({
-          a: variable('b'),
-          b: variable('b'),
-          c: variable('b'),
+          a: DF.variable('b'),
+          b: DF.variable('b'),
+          c: DF.variable('b'),
         }))).toBeTruthy();
       });
 
       it('should contain partially matching concrete terms', () => {
         expect(index.contains(Bindings({
-          a: namedNode('1'),
-          b: namedNode('2a'),
+          a: DF.namedNode('1'),
+          b: DF.namedNode('2a'),
         }))).toBeTruthy();
         expect(index.contains(Bindings({
-          a: namedNode('1'),
-          b: namedNode('2b'),
+          a: DF.namedNode('1'),
+          b: DF.namedNode('2b'),
         }))).toBeTruthy();
         expect(index.contains(Bindings({
-          a: namedNode('1x'),
-          b: namedNode('2y'),
-        }))).toBeTruthy();
-
-        expect(index.contains(Bindings({
-          a: namedNode('1'),
-          c: namedNode('3a'),
-        }))).toBeTruthy();
-        expect(index.contains(Bindings({
-          a: namedNode('1'),
-          c: namedNode('3a'),
-        }))).toBeTruthy();
-        expect(index.contains(Bindings({
-          a: namedNode('1x'),
-          c: namedNode('3z'),
+          a: DF.namedNode('1x'),
+          b: DF.namedNode('2y'),
         }))).toBeTruthy();
 
         expect(index.contains(Bindings({
-          a: namedNode('1'),
+          a: DF.namedNode('1'),
+          c: DF.namedNode('3a'),
         }))).toBeTruthy();
         expect(index.contains(Bindings({
-          a: namedNode('1x'),
-        }))).toBeTruthy();
-
-        expect(index.contains(Bindings({
-          b: namedNode('2a'),
+          a: DF.namedNode('1'),
+          c: DF.namedNode('3a'),
         }))).toBeTruthy();
         expect(index.contains(Bindings({
-          b: namedNode('2b'),
-        }))).toBeTruthy();
-        expect(index.contains(Bindings({
-          b: namedNode('2y'),
+          a: DF.namedNode('1x'),
+          c: DF.namedNode('3z'),
         }))).toBeTruthy();
 
         expect(index.contains(Bindings({
-          c: namedNode('3a'),
+          a: DF.namedNode('1'),
         }))).toBeTruthy();
         expect(index.contains(Bindings({
-          c: namedNode('3a'),
+          a: DF.namedNode('1x'),
+        }))).toBeTruthy();
+
+        expect(index.contains(Bindings({
+          b: DF.namedNode('2a'),
         }))).toBeTruthy();
         expect(index.contains(Bindings({
-          c: namedNode('3z'),
+          b: DF.namedNode('2b'),
+        }))).toBeTruthy();
+        expect(index.contains(Bindings({
+          b: DF.namedNode('2y'),
+        }))).toBeTruthy();
+
+        expect(index.contains(Bindings({
+          c: DF.namedNode('3a'),
+        }))).toBeTruthy();
+        expect(index.contains(Bindings({
+          c: DF.namedNode('3a'),
+        }))).toBeTruthy();
+        expect(index.contains(Bindings({
+          c: DF.namedNode('3z'),
         }))).toBeTruthy();
       });
 
       it('should not contain partially non-matching concrete terms', () => {
         expect(index.contains(Bindings({
-          a: namedNode('1'),
-          b: namedNode('2x'),
+          a: DF.namedNode('1'),
+          b: DF.namedNode('2x'),
         }))).toBeFalsy();
         expect(index.contains(Bindings({
-          a: namedNode('1x'),
-          c: namedNode('3x'),
+          a: DF.namedNode('1x'),
+          c: DF.namedNode('3x'),
         }))).toBeFalsy();
         expect(index.contains(Bindings({
-          a: namedNode('1y'),
+          a: DF.namedNode('1y'),
         }))).toBeFalsy();
         expect(index.contains(Bindings({
-          b: namedNode('2x'),
+          b: DF.namedNode('2x'),
         }))).toBeFalsy();
         expect(index.contains(Bindings({
-          c: namedNode('3x'),
+          c: DF.namedNode('3x'),
         }))).toBeFalsy();
       });
     });
@@ -486,112 +487,112 @@ describe('BindingsIndex', () => {
     describe('with mixed bindings', () => {
       beforeEach(() => {
         index.add(Bindings({
-          a: namedNode('1a'),
-          b: namedNode('2a'),
+          a: DF.namedNode('1a'),
+          b: DF.namedNode('2a'),
         }));
         index.add(Bindings({
-          a: namedNode('1a'),
+          a: DF.namedNode('1a'),
         }));
         index.add(Bindings({
-          b: namedNode('2b'),
+          b: DF.namedNode('2b'),
         }));
         index.add(Bindings({
-          a: namedNode('1b'),
-          b: namedNode('2b'),
+          a: DF.namedNode('1b'),
+          b: DF.namedNode('2b'),
         }));
         index.add(Bindings({
-          a: namedNode('1d'),
-          b: namedNode('2d'),
+          a: DF.namedNode('1d'),
+          b: DF.namedNode('2d'),
         }));
       });
 
       it('should not contain non-matching concrete terms', () => {
         expect(index.contains(Bindings({
-          a: namedNode('NON'),
-          b: namedNode('NON'),
+          a: DF.namedNode('NON'),
+          b: DF.namedNode('NON'),
         }))).toBeFalsy();
         expect(index.contains(Bindings({
-          a: namedNode('1a'),
-          b: namedNode('NON'),
+          a: DF.namedNode('1a'),
+          b: DF.namedNode('NON'),
         }))).toBeTruthy();
         expect(index.contains(Bindings({
-          a: namedNode('1b'),
-          b: namedNode('NON'),
+          a: DF.namedNode('1b'),
+          b: DF.namedNode('NON'),
         }))).toBeFalsy();
         expect(index.contains(Bindings({
-          a: namedNode('1d'),
-          b: namedNode('NON'),
+          a: DF.namedNode('1d'),
+          b: DF.namedNode('NON'),
         }))).toBeFalsy();
         expect(index.contains(Bindings({
-          a: namedNode('NON'),
-          b: namedNode('2d'),
+          a: DF.namedNode('NON'),
+          b: DF.namedNode('2d'),
         }))).toBeFalsy();
         expect(index.contains(Bindings({
-          a: namedNode('NON'),
-          b: namedNode('2b'),
+          a: DF.namedNode('NON'),
+          b: DF.namedNode('2b'),
         }))).toBeTruthy();
       });
 
       it('should contain matching concrete terms', () => {
         expect(index.contains(Bindings({
-          a: namedNode('1a'),
-          b: namedNode('2a'),
+          a: DF.namedNode('1a'),
+          b: DF.namedNode('2a'),
         }))).toBeTruthy();
         expect(index.contains(Bindings({
-          a: namedNode('1a'),
-          b: namedNode('ANY'),
+          a: DF.namedNode('1a'),
+          b: DF.namedNode('ANY'),
         }))).toBeTruthy();
         expect(index.contains(Bindings({
-          a: namedNode('ANY'),
-          b: namedNode('2b'),
+          a: DF.namedNode('ANY'),
+          b: DF.namedNode('2b'),
         }))).toBeTruthy();
         expect(index.contains(Bindings({
-          a: namedNode('1b'),
-          b: namedNode('2b'),
+          a: DF.namedNode('1b'),
+          b: DF.namedNode('2b'),
         }))).toBeTruthy();
         expect(index.contains(Bindings({
-          a: namedNode('1d'),
-          b: namedNode('2d'),
+          a: DF.namedNode('1d'),
+          b: DF.namedNode('2d'),
         }))).toBeTruthy();
       });
 
       it('should handle variable, null or undefined terms', () => {
         expect(index.contains(Bindings({}))).toBeFalsy();
         expect(index.contains(Bindings({
-          a: variable('b'),
-          b: variable('b'),
+          a: DF.variable('b'),
+          b: DF.variable('b'),
         }))).toBeTruthy();
       });
 
       it('should contain partially matching concrete terms', () => {
         expect(index.contains(Bindings({
-          a: namedNode('1a'),
+          a: DF.namedNode('1a'),
         }))).toBeTruthy();
         expect(index.contains(Bindings({
-          b: namedNode('2a'),
+          b: DF.namedNode('2a'),
         }))).toBeTruthy();
         expect(index.contains(Bindings({
         }))).toBeFalsy();
 
         expect(index.contains(Bindings({
-          a: namedNode('1a'),
+          a: DF.namedNode('1a'),
         }))).toBeTruthy();
         expect(index.contains(Bindings({
-          b: namedNode('ANY'),
-        }))).toBeTruthy();
-
-        expect(index.contains(Bindings({
-          b: namedNode('2b'),
-        }))).toBeTruthy();
-        expect(index.contains(Bindings({
-          a: namedNode('ANY'),
+          b: DF.namedNode('ANY'),
         }))).toBeTruthy();
 
         expect(index.contains(Bindings({
-          b: namedNode('2d'),
+          b: DF.namedNode('2b'),
         }))).toBeTruthy();
         expect(index.contains(Bindings({
-          a: namedNode('1d'),
+          a: DF.namedNode('ANY'),
+        }))).toBeTruthy();
+
+        expect(index.contains(Bindings({
+          b: DF.namedNode('2d'),
+        }))).toBeTruthy();
+        expect(index.contains(Bindings({
+          a: DF.namedNode('1d'),
         }))).toBeTruthy();
       });
     });
@@ -602,44 +603,44 @@ describe('BindingsIndex', () => {
     beforeEach(() => {
       index = new BindingsIndex([ 'b', 'c' ]);
       index.add(Bindings({
-        d: namedNode('d0'),
+        d: DF.namedNode('d0'),
       }));
       index.add(Bindings({
-        b: namedNode('b1'),
-        c: namedNode('c1'),
-        d: namedNode('d1'),
+        b: DF.namedNode('b1'),
+        c: DF.namedNode('c1'),
+        d: DF.namedNode('d1'),
       }));
       index.add(Bindings({
-        b: namedNode('b2'),
-        d: namedNode('d2'),
+        b: DF.namedNode('b2'),
+        d: DF.namedNode('d2'),
       }));
       index.add(Bindings({
-        b: namedNode('b3'),
-        c: namedNode('cx'),
-        d: namedNode('d3'),
+        b: DF.namedNode('b3'),
+        c: DF.namedNode('cx'),
+        d: DF.namedNode('d3'),
       }));
     });
 
     it('should contain bindings according to the spec', () => {
       expect(index.contains(Bindings({
-        a: namedNode('a0'),
-        b: namedNode('b0'),
-        c: namedNode('c0'),
+        a: DF.namedNode('a0'),
+        b: DF.namedNode('b0'),
+        c: DF.namedNode('c0'),
       }))).toBeFalsy();
       expect(index.contains(Bindings({
-        a: namedNode('a1'),
-        b: namedNode('b1'),
-        c: namedNode('c1'),
+        a: DF.namedNode('a1'),
+        b: DF.namedNode('b1'),
+        c: DF.namedNode('c1'),
       }))).toBeTruthy();
       expect(index.contains(Bindings({
-        a: namedNode('a2'),
-        b: namedNode('b2'),
-        c: namedNode('c2'),
+        a: DF.namedNode('a2'),
+        b: DF.namedNode('b2'),
+        c: DF.namedNode('c2'),
       }))).toBeTruthy();
       expect(index.contains(Bindings({
-        a: namedNode('a3'),
-        b: namedNode('b3'),
-        c: namedNode('c3'),
+        a: DF.namedNode('a3'),
+        b: DF.namedNode('b3'),
+        c: DF.namedNode('c3'),
       }))).toBeFalsy();
     });
   });

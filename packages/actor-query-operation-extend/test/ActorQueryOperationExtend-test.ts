@@ -2,12 +2,13 @@ import type { IActorQueryOperationOutputBindings } from '@comunica/bus-query-ope
 import { ActorQueryOperation, Bindings } from '@comunica/bus-query-operation';
 import { Actor, Bus } from '@comunica/core';
 
-import { literal, namedNode } from '@rdfjs/data-model';
 import { ArrayIterator } from 'asynciterator';
+import { DataFactory } from 'rdf-data-factory';
 import * as sparqlee from 'sparqlee';
 
 import { ActorQueryOperationExtend } from '../lib/ActorQueryOperationExtend';
 const arrayifyStream = require('arrayify-stream');
+const DF = new DataFactory();
 
 describe('ActorQueryOperationExtend', () => {
   let bus: any;
@@ -62,9 +63,9 @@ describe('ActorQueryOperationExtend', () => {
   };
 
   const input = [
-    Bindings({ '?a': literal('1') }),
-    Bindings({ '?a': literal('2') }),
-    Bindings({ '?a': literal('3') }),
+    Bindings({ '?a': DF.literal('1') }),
+    Bindings({ '?a': DF.literal('2') }),
+    Bindings({ '?a': DF.literal('3') }),
   ];
 
   beforeEach(() => {
@@ -120,16 +121,16 @@ describe('ActorQueryOperationExtend', () => {
       const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
       expect(await arrayifyStream(output.bindingsStream)).toMatchObject([
         Bindings({
-          '?a': literal('1'),
-          '?l': literal('1', namedNode('http://www.w3.org/2001/XMLSchema#integer')),
+          '?a': DF.literal('1'),
+          '?l': DF.literal('1', DF.namedNode('http://www.w3.org/2001/XMLSchema#integer')),
         }),
         Bindings({
-          '?a': literal('2'),
-          '?l': literal('1', namedNode('http://www.w3.org/2001/XMLSchema#integer')),
+          '?a': DF.literal('2'),
+          '?l': DF.literal('1', DF.namedNode('http://www.w3.org/2001/XMLSchema#integer')),
         }),
         Bindings({
-          '?a': literal('3'),
-          '?l': literal('1', namedNode('http://www.w3.org/2001/XMLSchema#integer')),
+          '?a': DF.literal('3'),
+          '?l': DF.literal('1', DF.namedNode('http://www.w3.org/2001/XMLSchema#integer')),
         }),
       ]);
 
@@ -157,7 +158,9 @@ describe('ActorQueryOperationExtend', () => {
     it('should emit error when evaluation code returns a hard error', async next => {
       const warn = jest.fn();
       spyOn(Actor, 'getContextLogger').and.returnValue({ warn });
-      spyOn(sparqlee, 'isExpressionError').and.returnValue(false);
+      // eslint-disable-next-line no-import-assign
+      Object.defineProperty(sparqlee, 'isExpressionError', { writable: true });
+      (<any> sparqlee).isExpressionError = jest.fn(() => false);
 
       const op = { operation: example(faultyExpression) };
       const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);

@@ -1,11 +1,12 @@
 import type { IActorQueryOperationOutputQuads } from '@comunica/bus-query-operation';
 import { ActorQueryOperation, Bindings } from '@comunica/bus-query-operation';
 import { Bus } from '@comunica/core';
-import { blankNode, literal, namedNode, quad, variable } from '@rdfjs/data-model';
 import { ArrayIterator } from 'asynciterator';
+import { DataFactory } from 'rdf-data-factory';
 import type * as RDF from 'rdf-js';
 import { ActorQueryOperationConstruct } from '../lib/ActorQueryOperationConstruct';
 const arrayifyStream = require('arrayify-stream');
+const DF = new DataFactory<RDF.BaseQuad>();
 
 describe('ActorQueryOperationConstruct', () => {
   let bus: any;
@@ -17,9 +18,9 @@ describe('ActorQueryOperationConstruct', () => {
       mediate: (arg: any) => arg.operation.input ?
         Promise.resolve({
           bindingsStream: new ArrayIterator([
-            Bindings({ '?a': literal('1') }),
-            Bindings({ '?a': literal('2') }),
-            Bindings({ '?a': literal('3') }),
+            Bindings({ '?a': DF.literal('1') }),
+            Bindings({ '?a': DF.literal('2') }),
+            Bindings({ '?a': DF.literal('3') }),
           ], { autoStart: false }),
           metadata: () => Promise.resolve({ totalItems: 3 }),
           operated: arg,
@@ -62,23 +63,23 @@ describe('ActorQueryOperationConstruct', () => {
 
     it('should find no variables in patterns without variables', () => {
       return expect(ActorQueryOperationConstruct.getVariables([
-        quad(blankNode('s1'), namedNode('p1'), literal('o1')),
-        quad(blankNode('s2'), namedNode('p2'), literal('o2'), namedNode('g2')),
+        DF.quad(DF.blankNode('s1'), DF.namedNode('p1'), DF.literal('o1')),
+        DF.quad(DF.blankNode('s2'), DF.namedNode('p2'), DF.literal('o2'), DF.namedNode('g2')),
       ])).toEqual([]);
     });
 
     it('should find variables in patterns with variables', () => {
       return expect(ActorQueryOperationConstruct.getVariables([
-        quad(blankNode('s1'), namedNode('p1'), variable('o1')),
-        quad(variable('s2'), namedNode('p2'), literal('o2'), namedNode('g2')),
-      ])).toEqual([ variable('o1'), variable('s2') ]);
+        DF.quad(DF.blankNode('s1'), DF.namedNode('p1'), DF.variable('o1')),
+        DF.quad(DF.variable('s2'), DF.namedNode('p2'), DF.literal('o2'), DF.namedNode('g2')),
+      ])).toEqual([ DF.variable('o1'), DF.variable('s2') ]);
     });
 
     it('should not find duplicate variables', () => {
       return expect(ActorQueryOperationConstruct.getVariables([
-        quad(blankNode('s1'), namedNode('p1'), variable('o1')),
-        quad(variable('o1'), namedNode('p2'), literal('o2'), namedNode('g2')),
-      ])).toEqual([ variable('o1') ]);
+        DF.quad(DF.blankNode('s1'), DF.namedNode('p1'), DF.variable('o1')),
+        DF.quad(DF.variable('o1'), DF.namedNode('p2'), DF.literal('o2'), DF.namedNode('g2')),
+      ])).toEqual([ DF.variable('o1') ]);
     });
   });
 
@@ -110,16 +111,16 @@ describe('ActorQueryOperationConstruct', () => {
 
     it('should run on a template with the empty binding and produce one result', () => {
       const op = { operation: { template: [
-        quad(blankNode('s1'), namedNode('p1'), literal('o1')),
-        quad(blankNode('s2'), namedNode('p2'), literal('o2')),
+        DF.quad(DF.blankNode('s1'), DF.namedNode('p1'), DF.literal('o1')),
+        DF.quad(DF.blankNode('s2'), DF.namedNode('p2'), DF.literal('o2')),
       ],
       type: 'construct' }};
       return actor.run(op).then(async(output: IActorQueryOperationOutputQuads) => {
         expect(await (<any> output).metadata()).toEqual({ totalItems: 2 });
         expect(output.type).toEqual('quads');
         expect(await arrayifyStream(output.quadStream)).toEqual([
-          quad(blankNode('s10'), namedNode('p1'), literal('o1')),
-          quad(blankNode('s20'), namedNode('p2'), literal('o2')),
+          DF.quad(DF.blankNode('s10'), DF.namedNode('p1'), DF.literal('o1')),
+          DF.quad(DF.blankNode('s20'), DF.namedNode('p2'), DF.literal('o2')),
         ]);
       });
     });
@@ -127,22 +128,22 @@ describe('ActorQueryOperationConstruct', () => {
     it('should run on a template with input', () => {
       const op = { operation: { input: true,
         template: [
-          quad(blankNode('s1'), variable('a'), literal('o1')),
-          quad(blankNode('s2'), namedNode('p2'), variable('a'), variable('a')),
+          DF.quad(DF.blankNode('s1'), DF.variable('a'), DF.literal('o1')),
+          DF.quad(DF.blankNode('s2'), DF.namedNode('p2'), DF.variable('a'), DF.variable('a')),
         ],
         type: 'construct' }};
       return actor.run(op).then(async(output: IActorQueryOperationOutputQuads) => {
         expect(await (<any> output).metadata()).toEqual({ totalItems: 6 });
         expect(output.type).toEqual('quads');
         expect(await arrayifyStream(output.quadStream)).toEqual([
-          quad<RDF.BaseQuad>(blankNode('s10'), literal('1'), literal('o1')),
-          quad<RDF.BaseQuad>(blankNode('s20'), namedNode('p2'), literal('1'), literal('1')),
+          DF.quad(DF.blankNode('s10'), DF.literal('1'), DF.literal('o1')),
+          DF.quad(DF.blankNode('s20'), DF.namedNode('p2'), DF.literal('1'), DF.literal('1')),
 
-          quad<RDF.BaseQuad>(blankNode('s11'), literal('2'), literal('o1')),
-          quad<RDF.BaseQuad>(blankNode('s21'), namedNode('p2'), literal('2'), literal('2')),
+          DF.quad(DF.blankNode('s11'), DF.literal('2'), DF.literal('o1')),
+          DF.quad(DF.blankNode('s21'), DF.namedNode('p2'), DF.literal('2'), DF.literal('2')),
 
-          quad<RDF.BaseQuad>(blankNode('s12'), literal('3'), literal('o1')),
-          quad<RDF.BaseQuad>(blankNode('s22'), namedNode('p2'), literal('3'), literal('3')),
+          DF.quad(DF.blankNode('s12'), DF.literal('3'), DF.literal('o1')),
+          DF.quad(DF.blankNode('s22'), DF.namedNode('p2'), DF.literal('3'), DF.literal('3')),
         ]);
       });
     });
@@ -160,7 +161,7 @@ describe('ActorQueryOperationConstruct', () => {
         },
         name: 'actor' });
       const op = { operation: { template: [
-        quad(blankNode('s1'), variable('a'), literal('o1')),
+        DF.quad(DF.blankNode('s1'), DF.variable('a'), DF.literal('o1')),
       ],
       type: 'construct' }};
       return actor.run(op).then(async(output: IActorQueryOperationOutputQuads) => {
@@ -181,7 +182,7 @@ describe('ActorQueryOperationConstruct', () => {
         },
         name: 'actor' });
       const op = { operation: { template: [
-        quad(blankNode('s1'), variable('a'), literal('o1')),
+        DF.quad(DF.blankNode('s1'), DF.variable('a'), DF.literal('o1')),
       ],
       type: 'construct' }};
       return actor.run(op).then(async(output: IActorQueryOperationOutputQuads) => {

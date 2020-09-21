@@ -2,13 +2,14 @@ import { Readable } from 'stream';
 import { ActorRdfResolveHypermedia } from '@comunica/bus-rdf-resolve-hypermedia';
 import { Bus } from '@comunica/core';
 import 'jest-rdf';
-import { variable } from '@rdfjs/data-model';
+import { DataFactory } from 'rdf-data-factory';
 import { ActorRdfResolveHypermediaNone } from '../lib/ActorRdfResolveHypermediaNone';
 
 const arrayifyStream = require('arrayify-stream');
 const quad = require('rdf-quad');
 const streamifyArray = require('streamify-array');
-const v = variable('v');
+const DF = new DataFactory();
+const v = DF.variable('v');
 
 describe('ActorRdfResolveHypermediaNone', () => {
   let bus: any;

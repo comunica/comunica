@@ -2,10 +2,11 @@ import { PassThrough } from 'stream';
 import type { BindingsStream } from '@comunica/bus-query-operation';
 import { Bindings } from '@comunica/bus-query-operation';
 import { Bus } from '@comunica/core';
-import { blankNode, defaultGraph, literal, namedNode } from '@rdfjs/data-model';
 import { ArrayIterator } from 'asynciterator';
+import { DataFactory } from 'rdf-data-factory';
 import { ActorSparqlSerializeSparqlCsv } from '..';
 
+const DF = new DataFactory();
 const stringifyStream = require('stream-to-string');
 
 describe('ActorSparqlSerializeSparqlCsv', () => {
@@ -32,57 +33,57 @@ describe('ActorSparqlSerializeSparqlCsv', () => {
 
   describe('#bindingToCsvBindings', () => {
     it('should convert named nodes', () => {
-      return expect(ActorSparqlSerializeSparqlCsv.bindingToCsvBindings(namedNode('http://ex.org')))
+      return expect(ActorSparqlSerializeSparqlCsv.bindingToCsvBindings(DF.namedNode('http://ex.org')))
         .toEqual('<http://ex.org>');
     });
 
     it('should convert default graphs', () => {
-      return expect(ActorSparqlSerializeSparqlCsv.bindingToCsvBindings(defaultGraph()))
+      return expect(ActorSparqlSerializeSparqlCsv.bindingToCsvBindings(DF.defaultGraph()))
         .toEqual('<>');
     });
 
     it('should convert blank nodes', () => {
-      return expect(ActorSparqlSerializeSparqlCsv.bindingToCsvBindings(blankNode('b1')))
+      return expect(ActorSparqlSerializeSparqlCsv.bindingToCsvBindings(DF.blankNode('b1')))
         .toEqual('_:b1');
     });
 
     it('should convert plain literals', () => {
-      return expect(ActorSparqlSerializeSparqlCsv.bindingToCsvBindings(literal('abc')))
+      return expect(ActorSparqlSerializeSparqlCsv.bindingToCsvBindings(DF.literal('abc')))
         .toEqual('abc');
     });
 
     it('should convert literals with a language', () => {
-      return expect(ActorSparqlSerializeSparqlCsv.bindingToCsvBindings(literal('abc', 'en-us')))
+      return expect(ActorSparqlSerializeSparqlCsv.bindingToCsvBindings(DF.literal('abc', 'en-us')))
         .toEqual('abc');
     });
 
     it('should convert literals with a datatype', () => {
-      return expect(ActorSparqlSerializeSparqlCsv.bindingToCsvBindings(literal('abc', namedNode('http://ex'))))
+      return expect(ActorSparqlSerializeSparqlCsv.bindingToCsvBindings(DF.literal('abc', DF.namedNode('http://ex'))))
         .toEqual('abc');
     });
 
     it('should convert literals with "', () => {
-      return expect(ActorSparqlSerializeSparqlCsv.bindingToCsvBindings(literal('ab"c')))
+      return expect(ActorSparqlSerializeSparqlCsv.bindingToCsvBindings(DF.literal('ab"c')))
         .toEqual('"ab""c"');
     });
 
     it('should convert literals with \n', () => {
-      return expect(ActorSparqlSerializeSparqlCsv.bindingToCsvBindings(literal('ab\nc')))
+      return expect(ActorSparqlSerializeSparqlCsv.bindingToCsvBindings(DF.literal('ab\nc')))
         .toEqual('"ab\nc"');
     });
 
     it('should convert literals with \r', () => {
-      return expect(ActorSparqlSerializeSparqlCsv.bindingToCsvBindings(literal('ab\rc')))
+      return expect(ActorSparqlSerializeSparqlCsv.bindingToCsvBindings(DF.literal('ab\rc')))
         .toEqual('"ab\rc"');
     });
 
     it('should convert literals with ,', () => {
-      return expect(ActorSparqlSerializeSparqlCsv.bindingToCsvBindings(literal('ab,c')))
+      return expect(ActorSparqlSerializeSparqlCsv.bindingToCsvBindings(DF.literal('ab,c')))
         .toEqual('"ab,c"');
     });
 
     it('should convert literals with multiple escapable characters', () => {
-      return expect(ActorSparqlSerializeSparqlCsv.bindingToCsvBindings(literal('a"b,\n\rc')))
+      return expect(ActorSparqlSerializeSparqlCsv.bindingToCsvBindings(DF.literal('a"b,\n\rc')))
         .toEqual('"a""b,\n\rc"');
     });
   });
@@ -103,17 +104,17 @@ describe('ActorSparqlSerializeSparqlCsv', () => {
         },
         name: 'actor' });
       bindingsStream = new ArrayIterator([
-        Bindings({ '?k1': namedNode('v1') }),
-        Bindings({ '?k2': namedNode('v2') }),
+        Bindings({ '?k1': DF.namedNode('v1') }),
+        Bindings({ '?k2': DF.namedNode('v2') }),
       ]);
       bindingsStreamPartial = new ArrayIterator([
-        Bindings({ '?k1': namedNode('v1') }),
-        Bindings({ '?k2': namedNode('v2') }),
+        Bindings({ '?k1': DF.namedNode('v1') }),
+        Bindings({ '?k2': DF.namedNode('v2') }),
         Bindings({}),
       ]);
       bindingsStreamMixed = new ArrayIterator([
-        Bindings({ '?k1': literal('v"'), '?k2': defaultGraph() }),
-        Bindings({ '?k2': namedNode('v\n\r,') }),
+        Bindings({ '?k1': DF.literal('v"'), '?k2': DF.defaultGraph() }),
+        Bindings({ '?k2': DF.namedNode('v\n\r,') }),
         Bindings({}),
       ]);
       bindingsStreamEmpty = <any> new PassThrough();

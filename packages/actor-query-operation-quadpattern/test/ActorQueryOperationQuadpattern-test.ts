@@ -2,13 +2,14 @@ import type { IActorQueryOperationOutputBindings } from '@comunica/bus-query-ope
 import { ActorQueryOperation, Bindings } from '@comunica/bus-query-operation';
 
 import { ActionContext, Bus } from '@comunica/core';
-import { blankNode, namedNode, variable } from '@rdfjs/data-model';
 import { ArrayIterator } from 'asynciterator';
+import { DataFactory } from 'rdf-data-factory';
 import type * as RDF from 'rdf-js';
 import type { Algebra } from 'sparqlalgebrajs';
 import { ActorQueryOperationQuadpattern } from '../lib/ActorQueryOperationQuadpattern';
 const arrayifyStream = require('arrayify-stream');
 const quad = require('rdf-quad');
+const DF = new DataFactory();
 
 describe('ActorQueryOperationQuadpattern', () => {
   let bus: any;
@@ -36,15 +37,15 @@ describe('ActorQueryOperationQuadpattern', () => {
 
   describe('#isTermVariable', () => {
     it('should be true for a variable', () => {
-      expect(ActorQueryOperationQuadpattern.isTermVariable(variable('v'))).toBeTruthy();
+      expect(ActorQueryOperationQuadpattern.isTermVariable(DF.variable('v'))).toBeTruthy();
     });
 
     it('should be false for a blank node', () => {
-      expect(ActorQueryOperationQuadpattern.isTermVariable(blankNode())).toBeFalsy();
+      expect(ActorQueryOperationQuadpattern.isTermVariable(DF.blankNode())).toBeFalsy();
     });
 
     it('should be false for a named node', () => {
-      expect(ActorQueryOperationQuadpattern.isTermVariable(namedNode('n'))).toBeFalsy();
+      expect(ActorQueryOperationQuadpattern.isTermVariable(DF.namedNode('n'))).toBeFalsy();
     });
   });
 
@@ -162,46 +163,46 @@ describe('ActorQueryOperationQuadpattern', () => {
 
     it('should get variables ?s, ?p, ?o, ?g from pattern ?s ?p ?o ?g', () => {
       return expect(ActorQueryOperationQuadpattern.getVariables(<RDF.Quad> {
-        graph: variable('g'),
-        object: variable('o'),
-        predicate: variable('p'),
-        subject: variable('s'),
+        graph: DF.variable('g'),
+        object: DF.variable('o'),
+        predicate: DF.variable('p'),
+        subject: DF.variable('s'),
       })).toEqual([ '?s', '?p', '?o', '?g' ]);
     });
 
     it('should not get blank nodes _:s, _:p, _:o, _:g from pattern _:s _:p _:o _:g', () => {
       return expect(ActorQueryOperationQuadpattern.getVariables(<RDF.BaseQuad> {
-        graph: blankNode('g'),
-        object: blankNode('o'),
-        predicate: blankNode('p'),
-        subject: blankNode('s'),
+        graph: DF.blankNode('g'),
+        object: DF.blankNode('o'),
+        predicate: DF.blankNode('p'),
+        subject: DF.blankNode('s'),
       })).toEqual([]);
     });
 
     it('should get variable ?s from pattern ?s p o g', () => {
       return expect(ActorQueryOperationQuadpattern.getVariables(<RDF.Quad> {
-        graph: namedNode('g'),
-        object: namedNode('o'),
-        predicate: namedNode('p'),
-        subject: variable('s'),
+        graph: DF.namedNode('g'),
+        object: DF.namedNode('o'),
+        predicate: DF.namedNode('p'),
+        subject: DF.variable('s'),
       })).toEqual([ '?s' ]);
     });
 
     it('should get variable ?p from pattern ?p ?p ?p g', () => {
       return expect(ActorQueryOperationQuadpattern.getVariables(<RDF.Quad> {
-        graph: namedNode('g'),
-        object: variable('o'),
-        predicate: variable('p'),
-        subject: variable('s'),
+        graph: DF.namedNode('g'),
+        object: DF.variable('o'),
+        predicate: DF.variable('p'),
+        subject: DF.variable('s'),
       })).toEqual([ '?s', '?p', '?o' ]);
     });
 
     it('should run s ?p o g', () => {
       const operation = {
-        graph: namedNode('g'),
-        object: namedNode('o'),
-        predicate: variable('p'),
-        subject: namedNode('s'),
+        graph: DF.namedNode('g'),
+        object: DF.namedNode('o'),
+        predicate: DF.variable('p'),
+        subject: DF.namedNode('s'),
         type: 'pattern',
       };
       return actor.run({ operation }).then(async(output: IActorQueryOperationOutputBindings) => {
@@ -209,9 +210,9 @@ describe('ActorQueryOperationQuadpattern', () => {
         expect(await (<any> output).metadata()).toBe(metadataContent);
         expect(output.canContainUndefs).toEqual(false);
         expect(await arrayifyStream(output.bindingsStream)).toEqual(
-          [ Bindings({ '?p': <RDF.Term> { value: 'p1' }}),
-            Bindings({ '?p': <RDF.Term> { value: 'p2' }}),
-            Bindings({ '?p': <RDF.Term> { value: 'p3' }}),
+          [ Bindings({ '?p': DF.namedNode('p1') }),
+            Bindings({ '?p': DF.namedNode('p2') }),
+            Bindings({ '?p': DF.namedNode('p3') }),
           ],
         );
       });
@@ -219,10 +220,10 @@ describe('ActorQueryOperationQuadpattern', () => {
 
     it('should run s ?p o g for an empty context', () => {
       const operation = {
-        graph: namedNode('g'),
-        object: namedNode('o'),
-        predicate: variable('p'),
-        subject: namedNode('s'),
+        graph: DF.namedNode('g'),
+        object: DF.namedNode('o'),
+        predicate: DF.variable('p'),
+        subject: DF.namedNode('s'),
         type: 'pattern',
       };
       const context = ActionContext({});
@@ -231,9 +232,9 @@ describe('ActorQueryOperationQuadpattern', () => {
         expect(await (<any> output).metadata()).toBe(metadataContent);
         expect(output.canContainUndefs).toEqual(false);
         expect(await arrayifyStream(output.bindingsStream)).toEqual(
-          [ Bindings({ '?p': <RDF.Term> { value: 'p1' }}),
-            Bindings({ '?p': <RDF.Term> { value: 'p2' }}),
-            Bindings({ '?p': <RDF.Term> { value: 'p3' }}),
+          [ Bindings({ '?p': DF.namedNode('p1') }),
+            Bindings({ '?p': DF.namedNode('p2') }),
+            Bindings({ '?p': DF.namedNode('p3') }),
           ],
         );
       });
@@ -241,10 +242,10 @@ describe('ActorQueryOperationQuadpattern', () => {
 
     it('should run s ?v ?v g with shared variables', () => {
       const operation = {
-        graph: namedNode('g'),
-        object: variable('v'),
-        predicate: variable('v'),
-        subject: namedNode('s'),
+        graph: DF.namedNode('g'),
+        object: DF.variable('v'),
+        predicate: DF.variable('v'),
+        subject: DF.namedNode('s'),
         type: 'pattern',
       };
 
@@ -268,7 +269,7 @@ describe('ActorQueryOperationQuadpattern', () => {
         expect(await (<any> output).metadata()).toBe(metadataContent);
         expect(output.canContainUndefs).toEqual(false);
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
-          Bindings({ '?v': <RDF.Term> { value: 'w' }}),
+          Bindings({ '?v': DF.namedNode('w') }),
         ]);
       });
     });
@@ -276,10 +277,10 @@ describe('ActorQueryOperationQuadpattern', () => {
     it('should accept a quad-pattern-level context without an operation context', async() => {
       const operation = {
         context: ActionContext({ a: 'overridden' }),
-        graph: namedNode('g'),
-        object: variable('v'),
-        predicate: variable('v'),
-        subject: namedNode('s'),
+        graph: DF.namedNode('g'),
+        object: DF.variable('v'),
+        predicate: DF.variable('v'),
+        subject: DF.namedNode('s'),
         type: 'pattern',
       };
 
@@ -291,10 +292,10 @@ describe('ActorQueryOperationQuadpattern', () => {
     it('should accept a quad-pattern-level context with an operation context', async() => {
       const operation = {
         context: ActionContext({ a: 'overridden' }),
-        graph: namedNode('g'),
-        object: variable('v'),
-        predicate: variable('v'),
-        subject: namedNode('s'),
+        graph: DF.namedNode('g'),
+        object: DF.variable('v'),
+        predicate: DF.variable('v'),
+        subject: DF.namedNode('s'),
         type: 'pattern',
       };
 

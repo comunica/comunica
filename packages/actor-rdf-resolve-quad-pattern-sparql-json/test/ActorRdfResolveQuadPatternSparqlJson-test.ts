@@ -1,10 +1,11 @@
 import { PassThrough } from 'stream';
 import { ActorRdfResolveQuadPattern } from '@comunica/bus-rdf-resolve-quad-pattern';
 import { ActionContext, Bus } from '@comunica/core';
-import { namedNode } from '@rdfjs/data-model';
+import { DataFactory } from 'rdf-data-factory';
 import 'cross-fetch/polyfill';
 import { Factory } from 'sparqlalgebrajs';
 import { ActorRdfResolveQuadPatternSparqlJson } from '../lib/ActorRdfResolveQuadPatternSparqlJson';
+const DF = new DataFactory();
 const arrayifyStream = require('arrayify-stream');
 const quad = require('rdf-quad');
 const streamifyString = require('streamify-string');
@@ -59,7 +60,7 @@ describe('ActorRdfResolveQuadPatternSparqlJson', () => {
     it('should convert a quad to a BGP pattern', () => {
       return expect(ActorRdfResolveQuadPatternSparqlJson.patternToBgp(quad('s', 'p', 'o')))
         .toEqual({
-          patterns: [ new Factory().createPattern(namedNode('s'), namedNode('p'), namedNode('o')) ],
+          patterns: [ new Factory().createPattern(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('o')) ],
           type: 'bgp',
         });
     });

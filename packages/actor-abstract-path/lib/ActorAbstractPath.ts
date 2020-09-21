@@ -7,14 +7,15 @@ import {
 } from '@comunica/bus-query-operation';
 import type { IActorTest } from '@comunica/core';
 import { ActionContext } from '@comunica/core';
-import { variable } from '@rdfjs/data-model';
 import type { AsyncIterator } from 'asynciterator';
 import { BufferedIterator, MultiTransformIterator,
   TransformIterator, EmptyIterator } from 'asynciterator';
+import { DataFactory } from 'rdf-data-factory';
 import type { Term, Variable } from 'rdf-js';
 import { termToString } from 'rdf-string';
 import type { Algebra } from 'sparqlalgebrajs';
 import { Factory } from 'sparqlalgebrajs';
+const DF = new DataFactory();
 
 /**
  * An abstract actor that handles Path operations.
@@ -52,7 +53,7 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
       return this.generateVariable(path, `${name}b`);
     }
 
-    return variable(name);
+    return DF.variable(name);
   }
 
   // Such connectivity matching does not introduce duplicates (it does not incorporate any count of the number

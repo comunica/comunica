@@ -1,9 +1,10 @@
 import type { Bindings, BindingsStream } from '@comunica/bus-query-operation';
-import { blankNode } from '@rdfjs/data-model';
 import type { AsyncIterator } from 'asynciterator';
 import { ArrayIterator, MultiTransformIterator } from 'asynciterator';
+import { DataFactory } from 'rdf-data-factory';
 import type * as RDF from 'rdf-js';
 import { mapTerms } from 'rdf-terms';
+const DF = new DataFactory();
 
 /**
  * Transforms a bindings stream into a quad stream given a quad template.
@@ -73,7 +74,7 @@ export class BindingsToQuadsIterator extends MultiTransformIterator<Bindings, RD
   public static localizeBlankNode(blankNodeCounter: number,
     term: RDF.Term): RDF.Term {
     if (term.termType === 'BlankNode') {
-      return blankNode(`${term.value}${blankNodeCounter}`);
+      return DF.blankNode(`${term.value}${blankNodeCounter}`);
     }
     return term;
   }

@@ -6,6 +6,7 @@ import { EventEmitter } from 'events';
 import type { AgentOptions, ClientRequest, IncomingMessage, IncomingHttpHeaders } from 'http';
 import * as url from 'url';
 import * as zlib from 'zlib';
+import 'cross-fetch/polyfill';
 
 const { http } = require('follow-redirects');
 const { https } = require('follow-redirects');

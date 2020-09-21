@@ -1,9 +1,10 @@
 import { Bindings } from '@comunica/bus-query-operation';
 import { Bus } from '@comunica/core';
-import { literal } from '@rdfjs/data-model';
+import { DataFactory } from 'rdf-data-factory';
 import type { IActionRdfJoin } from '..';
 import { ActorRdfJoin } from '..';
 
+const DF = new DataFactory();
 const arrayifyStream = require('arrayify-stream');
 
 // Dummy class to test instance of abstract class
@@ -203,33 +204,33 @@ describe('ActorRdfJoin', () => {
   describe('The join function', () => {
     it('should return the right binding if the left is empty', () => {
       const left = Bindings({});
-      const right = Bindings({ x: literal('a'), y: literal('b') });
+      const right = Bindings({ x: DF.literal('a'), y: DF.literal('b') });
       return expect(ActorRdfJoin.join(left, right)).toEqual(right);
     });
 
     it('should return the left binding if the right is empty', () => {
-      const left = Bindings({ x: literal('a'), y: literal('b') });
+      const left = Bindings({ x: DF.literal('a'), y: DF.literal('b') });
       const right = Bindings({});
       return expect(ActorRdfJoin.join(left, right)).toEqual(left);
     });
 
     it('should join 2 bindings with no overlapping variables', () => {
-      const left = Bindings({ x: literal('a'), y: literal('b') });
-      const right = Bindings({ v: literal('d'), w: literal('e') });
-      const result = Bindings({ x: literal('a'), y: literal('b'), v: literal('d'), w: literal('e') });
+      const left = Bindings({ x: DF.literal('a'), y: DF.literal('b') });
+      const right = Bindings({ v: DF.literal('d'), w: DF.literal('e') });
+      const result = Bindings({ x: DF.literal('a'), y: DF.literal('b'), v: DF.literal('d'), w: DF.literal('e') });
       return expect(ActorRdfJoin.join(left, right)).toEqual(result);
     });
 
     it('should join 2 bindings with overlapping variables', () => {
-      const left = Bindings({ x: literal('a'), y: literal('b') });
-      const right = Bindings({ x: literal('a'), w: literal('e') });
-      const result = Bindings({ x: literal('a'), y: literal('b'), w: literal('e') });
+      const left = Bindings({ x: DF.literal('a'), y: DF.literal('b') });
+      const right = Bindings({ x: DF.literal('a'), w: DF.literal('e') });
+      const result = Bindings({ x: DF.literal('a'), y: DF.literal('b'), w: DF.literal('e') });
       return expect(ActorRdfJoin.join(left, right)).toEqual(result);
     });
 
     it('should not join bindings with conflicting mappings', () => {
-      const left = Bindings({ x: literal('a'), y: literal('b') });
-      const right = Bindings({ x: literal('b'), w: literal('e') });
+      const left = Bindings({ x: DF.literal('a'), y: DF.literal('b') });
+      const right = Bindings({ x: DF.literal('b'), w: DF.literal('e') });
       return expect(ActorRdfJoin.join(left, right)).toBeFalsy();
     });
   });

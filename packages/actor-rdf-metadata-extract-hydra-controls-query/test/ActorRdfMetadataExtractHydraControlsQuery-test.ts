@@ -2,13 +2,14 @@ import { ActorSparqlSerializeSparqlJson } from '@comunica/actor-sparql-serialize
 import { Bindings } from '@comunica/bus-query-operation';
 import { ActorRdfMetadataExtract } from '@comunica/bus-rdf-metadata-extract';
 import { Bus } from '@comunica/core';
-import { namedNode } from '@rdfjs/data-model';
 import { ArrayIterator } from 'asynciterator';
+import { DataFactory } from 'rdf-data-factory';
 import 'jest-rdf';
 import { ActorRdfMetadataExtractHydraControlsQuery } from '../lib/ActorRdfMetadataExtractHydraControlsQuery';
 
 const quad = require('rdf-quad');
 const stream = require('streamify-array');
+const DF = new DataFactory();
 
 const sparqlSerialer = new ActorSparqlSerializeSparqlJson(<any> { bus: new Bus({ name: 'b' }) });
 const queryEngine: any = {
@@ -16,20 +17,20 @@ const queryEngine: any = {
     return {
       bindingsStream: new ArrayIterator([
         Bindings({
-          '?id': namedNode('subset'),
-          '?graph': namedNode('g'),
-          '?pageUrl': namedNode('http://example.org/?a=A&b=B'),
-          '?search_template': namedNode('http://example.org/{?a,b}'),
-          '?search_mapping_variable': namedNode('a'),
-          '?search_mapping_property': namedNode('propa'),
+          '?id': DF.namedNode('subset'),
+          '?graph': DF.namedNode('g'),
+          '?pageUrl': DF.namedNode('http://example.org/?a=A&b=B'),
+          '?search_template': DF.namedNode('http://example.org/{?a,b}'),
+          '?search_mapping_variable': DF.namedNode('a'),
+          '?search_mapping_property': DF.namedNode('propa'),
         }),
         Bindings({
-          '?id': namedNode('subset'),
-          '?graph': namedNode('g'),
-          '?pageUrl': namedNode('http://example.org/?a=A&b=B'),
-          '?search_template': namedNode('http://example.org/{?a,b}'),
-          '?search_mapping_variable': namedNode('b'),
-          '?search_mapping_property': namedNode('propb'),
+          '?id': DF.namedNode('subset'),
+          '?graph': DF.namedNode('g'),
+          '?pageUrl': DF.namedNode('http://example.org/?a=A&b=B'),
+          '?search_template': DF.namedNode('http://example.org/{?a,b}'),
+          '?search_mapping_variable': DF.namedNode('b'),
+          '?search_mapping_property': DF.namedNode('propb'),
         }),
       ]),
     };

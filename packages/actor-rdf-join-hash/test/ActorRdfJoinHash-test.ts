@@ -3,10 +3,11 @@ import { Bindings } from '@comunica/bus-query-operation';
 import type { IActionRdfJoin } from '@comunica/bus-rdf-join';
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import { Bus } from '@comunica/core';
-import { literal } from '@rdfjs/data-model';
 import { ArrayIterator } from 'asynciterator';
+import { DataFactory } from 'rdf-data-factory';
 import { ActorRdfJoinHash } from '../lib/ActorRdfJoinHash';
 const arrayifyStream = require('arrayify-stream');
+const DF = new DataFactory();
 
 function bindingsToString(b: Bindings): string {
   // eslint-disable-next-line @typescript-eslint/require-array-sort-compare
@@ -112,23 +113,23 @@ describe('ActorRdfJoinHash', () => {
     });
 
     it('should join bindings with matching values', () => {
-      action.entries[0].bindingsStream = new ArrayIterator([ Bindings({ a: literal('a'), b: literal('b') }) ]);
+      action.entries[0].bindingsStream = new ArrayIterator([ Bindings({ a: DF.literal('a'), b: DF.literal('b') }) ]);
       action.entries[0].variables = [ 'a', 'b' ];
-      action.entries[1].bindingsStream = new ArrayIterator([ Bindings({ a: literal('a'), c: literal('c') }) ]);
+      action.entries[1].bindingsStream = new ArrayIterator([ Bindings({ a: DF.literal('a'), c: DF.literal('c') }) ]);
       action.entries[1].variables = [ 'a', 'c' ];
       return actor.run(action).then(async(output: IActorQueryOperationOutputBindings) => {
         expect(output.variables).toEqual([ 'a', 'b', 'c' ]);
         expect(output.canContainUndefs).toEqual(false);
         expect(await arrayifyStream(output.bindingsStream)).toEqual([
-          Bindings({ a: literal('a'), b: literal('b'), c: literal('c') }),
+          Bindings({ a: DF.literal('a'), b: DF.literal('b'), c: DF.literal('c') }),
         ]);
       });
     });
 
     it('should not join bindings with incompatible values', () => {
-      action.entries[0].bindingsStream = new ArrayIterator([ Bindings({ a: literal('a'), b: literal('b') }) ]);
+      action.entries[0].bindingsStream = new ArrayIterator([ Bindings({ a: DF.literal('a'), b: DF.literal('b') }) ]);
       action.entries[0].variables = [ 'a', 'b' ];
-      action.entries[1].bindingsStream = new ArrayIterator([ Bindings({ a: literal('d'), c: literal('c') }) ]);
+      action.entries[1].bindingsStream = new ArrayIterator([ Bindings({ a: DF.literal('d'), c: DF.literal('c') }) ]);
       action.entries[1].variables = [ 'a', 'c' ];
       return actor.run(action).then(async(output: IActorQueryOperationOutputBindings) => {
         expect(output.variables).toEqual([ 'a', 'b', 'c' ]);
@@ -139,33 +140,33 @@ describe('ActorRdfJoinHash', () => {
 
     it('should join multiple bindings', () => {
       action.entries[0].bindingsStream = new ArrayIterator([
-        Bindings({ a: literal('1'), b: literal('2') }),
-        Bindings({ a: literal('1'), b: literal('3') }),
-        Bindings({ a: literal('2'), b: literal('2') }),
-        Bindings({ a: literal('2'), b: literal('3') }),
-        Bindings({ a: literal('3'), b: literal('3') }),
-        Bindings({ a: literal('3'), b: literal('4') }),
+        Bindings({ a: DF.literal('1'), b: DF.literal('2') }),
+        Bindings({ a: DF.literal('1'), b: DF.literal('3') }),
+        Bindings({ a: DF.literal('2'), b: DF.literal('2') }),
+        Bindings({ a: DF.literal('2'), b: DF.literal('3') }),
+        Bindings({ a: DF.literal('3'), b: DF.literal('3') }),
+        Bindings({ a: DF.literal('3'), b: DF.literal('4') }),
       ]);
       action.entries[0].variables = [ 'a', 'b' ];
       action.entries[1].bindingsStream = new ArrayIterator([
-        Bindings({ a: literal('1'), c: literal('4') }),
-        Bindings({ a: literal('1'), c: literal('5') }),
-        Bindings({ a: literal('2'), c: literal('6') }),
-        Bindings({ a: literal('3'), c: literal('7') }),
-        Bindings({ a: literal('0'), c: literal('4') }),
-        Bindings({ a: literal('0'), c: literal('4') }),
+        Bindings({ a: DF.literal('1'), c: DF.literal('4') }),
+        Bindings({ a: DF.literal('1'), c: DF.literal('5') }),
+        Bindings({ a: DF.literal('2'), c: DF.literal('6') }),
+        Bindings({ a: DF.literal('3'), c: DF.literal('7') }),
+        Bindings({ a: DF.literal('0'), c: DF.literal('4') }),
+        Bindings({ a: DF.literal('0'), c: DF.literal('4') }),
       ]);
       action.entries[1].variables = [ 'a', 'c' ];
       return actor.run(action).then(async(output: IActorQueryOperationOutputBindings) => {
         const expected = [
-          Bindings({ a: literal('1'), b: literal('2'), c: literal('4') }),
-          Bindings({ a: literal('1'), b: literal('2'), c: literal('5') }),
-          Bindings({ a: literal('1'), b: literal('3'), c: literal('4') }),
-          Bindings({ a: literal('1'), b: literal('3'), c: literal('5') }),
-          Bindings({ a: literal('2'), b: literal('2'), c: literal('6') }),
-          Bindings({ a: literal('2'), b: literal('3'), c: literal('6') }),
-          Bindings({ a: literal('3'), b: literal('3'), c: literal('7') }),
-          Bindings({ a: literal('3'), b: literal('4'), c: literal('7') }),
+          Bindings({ a: DF.literal('1'), b: DF.literal('2'), c: DF.literal('4') }),
+          Bindings({ a: DF.literal('1'), b: DF.literal('2'), c: DF.literal('5') }),
+          Bindings({ a: DF.literal('1'), b: DF.literal('3'), c: DF.literal('4') }),
+          Bindings({ a: DF.literal('1'), b: DF.literal('3'), c: DF.literal('5') }),
+          Bindings({ a: DF.literal('2'), b: DF.literal('2'), c: DF.literal('6') }),
+          Bindings({ a: DF.literal('2'), b: DF.literal('3'), c: DF.literal('6') }),
+          Bindings({ a: DF.literal('3'), b: DF.literal('3'), c: DF.literal('7') }),
+          Bindings({ a: DF.literal('3'), b: DF.literal('4'), c: DF.literal('7') }),
         ];
         expect(output.variables).toEqual([ 'a', 'b', 'c' ]);
         // Mapping to string and sorting since we don't know order (well, we sort of know, but we might not!)
