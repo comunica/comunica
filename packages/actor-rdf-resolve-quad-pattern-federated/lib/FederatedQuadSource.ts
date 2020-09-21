@@ -1,12 +1,12 @@
 import {
   DataSources, getDataSourceType, getDataSourceValue, IActionRdfResolveQuadPattern,
-  IActorRdfResolveQuadPatternOutput, IDataSource, ILazyQuadSource, KEY_CONTEXT_SOURCE,
+  IActorRdfResolveQuadPatternOutput, IDataSource, IQuadSource, KEY_CONTEXT_SOURCE,
   KEY_CONTEXT_SOURCES, getDataSourceContext,
 } from '@comunica/bus-rdf-resolve-quad-pattern';
 import { ActionContext, Actor, IActorTest, Mediator } from '@comunica/core';
 import { BlankNodeScoped } from '@comunica/data-factory';
 import * as DataFactory from '@rdfjs/data-model';
-import { AsyncIterator, EmptyIterator, TransformIterator, UnionIterator } from 'asynciterator';
+import { ArrayIterator, AsyncIterator, TransformIterator, UnionIterator } from 'asynciterator';
 import type * as RDF from 'rdf-js';
 import { mapTerms } from 'rdf-terms';
 import { Algebra, Factory } from 'sparqlalgebrajs';
@@ -15,7 +15,7 @@ import { Algebra, Factory } from 'sparqlalgebrajs';
  * A FederatedQuadSource can evaluate quad pattern queries over the union of different heterogeneous sources.
  * It will call the given mediator to evaluate each quad pattern query separately.
  */
-export class FederatedQuadSource implements ILazyQuadSource {
+export class FederatedQuadSource implements IQuadSource {
   private static readonly SKOLEM_PREFIX = 'urn:comunica_skolem:source_';
 
   protected readonly mediatorResolveQuadPattern: Mediator<Actor<IActionRdfResolveQuadPattern, IActorTest,
@@ -42,11 +42,11 @@ export class FederatedQuadSource implements ILazyQuadSource {
 
     // Initialize sources in the emptyPatterns datastructure
     if (this.skipEmptyPatterns) {
-      this.sources.iterator().on('data', (source: IDataSource) => {
+      for (const source of this.sources) {
         if (!this.emptyPatterns.has(source)) {
           this.emptyPatterns.set(source, []);
         }
-      });
+      }
     }
   }
 
@@ -169,21 +169,10 @@ export class FederatedQuadSource implements ILazyQuadSource {
     return sourceId;
   }
 
-  public matchLazy(subject?: RegExp | RDF.Term,
-    predicate?: RegExp | RDF.Term,
-    object?: RegExp | RDF.Term,
-    graph?: RegExp | RDF.Term): AsyncIterator<RDF.Quad> & RDF.Stream {
-    if (subject instanceof RegExp ||
-      predicate instanceof RegExp ||
-      object instanceof RegExp ||
-      graph instanceof RegExp) {
-      throw new Error('FederatedQuadSource does not support matching by regular expressions.');
-    }
-
+  public match(subject: RDF.Term, predicate: RDF.Term, object: RDF.Term, graph: RDF.Term): AsyncIterator<RDF.Quad> {
     // Counters for our metadata
     const metadata: {[id: string]: any} = { totalItems: 0 };
-    let remainingSources = 1;
-    let sourcesCount = 0;
+    let remainingSources = this.sources.length;
 
     // Anonymous function to handle totalItems from metadata
     const checkEmitMetadata = (currentTotalItems: number, source: IDataSource,
@@ -195,116 +184,77 @@ export class FederatedQuadSource implements ILazyQuadSource {
         }
       }
       if (!remainingSources) {
-        if (lastMetadata && sourcesCount === 1) {
+        if (lastMetadata && this.sources.length === 1) {
           // If we only had one source, emit the metadata as-is.
-          it.emit('metadata', lastMetadata);
+          it.setProperty('metadata', lastMetadata);
         } else {
-          it.emit('metadata', metadata);
+          it.setProperty('metadata', metadata);
         }
       }
     };
 
-    // TODO: A solution without cloning would be preferred here.
-    //       See discussion at https://github.com/comunica/comunica/issues/553
-    const sourcesIt = this.sources.iterator();
-    const proxyIt: AsyncIterator<TransformIterator<RDF.Quad>> = sourcesIt.map(source => {
+    const proxyIt: Promise<AsyncIterator<RDF.Quad>[]> = Promise.all(this.sources.map(async source => {
       const sourceId = this.getSourceId(source);
-      remainingSources++;
-      sourcesCount++;
 
-      return new TransformIterator(async() => {
-        // Convert falsy terms to variables, reverse of {@link ActorRdfResolveQuadPatternSource#variableToUndefined}.
-        // Deskolemize terms, so we send the original blank nodes to each source.
-        // Note that some sources may not match bnodes by label. SPARQL endpoints for example consider them variables.
-        const patternS = !subject ?
-          DataFactory.variable('vs') :
-          FederatedQuadSource.deskolemizeTerm(subject, sourceId);
-        const patternP = !predicate ?
-          DataFactory.variable('vp') :
-          FederatedQuadSource.deskolemizeTerm(predicate, sourceId);
-        const patternO = !object ?
-          DataFactory.variable('vo') :
-          FederatedQuadSource.deskolemizeTerm(object, sourceId);
-        const patternG = !graph ?
-          DataFactory.variable('vg') :
-          FederatedQuadSource.deskolemizeTerm(graph, sourceId);
-        let pattern: Algebra.Pattern | undefined;
+      // Deskolemize terms, so we send the original blank nodes to each source.
+      // Note that some sources may not match bnodes by label. SPARQL endpoints for example consider them variables.
+      const patternS = FederatedQuadSource.deskolemizeTerm(subject, sourceId);
+      const patternP = FederatedQuadSource.deskolemizeTerm(predicate, sourceId);
+      const patternO = FederatedQuadSource.deskolemizeTerm(object, sourceId);
+      const patternG = FederatedQuadSource.deskolemizeTerm(graph, sourceId);
+      let pattern: Algebra.Pattern | undefined;
 
-        // Prepare the context for this specific source
-        let context: ActionContext = getDataSourceContext(source, this.contextDefault);
-        context = context.set(KEY_CONTEXT_SOURCE,
-          { type: getDataSourceType(source), value: getDataSourceValue(source) });
+      // Prepare the context for this specific source
+      let context: ActionContext = getDataSourceContext(source, this.contextDefault);
+      context = context.set(KEY_CONTEXT_SOURCE,
+        { type: getDataSourceType(source), value: getDataSourceValue(source) });
 
-        let output: IActorRdfResolveQuadPatternOutput;
-        // If any of the deskolemized blank nodes originate from another source,
-        // or if we can predict that the given source will have no bindings for the given pattern,
-        // return an empty iterator.
-        if (!patternS || !patternP || !patternO || !patternG ||
-          // eslint-disable-next-line no-cond-assign
-          this.isSourceEmpty(source, pattern = this.algebraFactory
-            .createPattern(patternS, patternP, patternO, patternG))) {
-          output = { data: new EmptyIterator(), metadata: () => Promise.resolve({ totalItems: 0 }) };
-        } else {
-          output = await this.mediatorResolveQuadPattern.mediate({ pattern, context });
-        }
-        if (output.metadata) {
-          output.metadata()
-            .then((subMetadata: { [id: string]: any }) => {
-              if ((!subMetadata.totalItems && subMetadata.totalItems !== 0) || !isFinite(subMetadata.totalItems)) {
-                // We're already at infinite, so ignore any later metadata
-                metadata.totalItems = Infinity;
-                remainingSources = 0;
-                checkEmitMetadata(Infinity, source, pattern, subMetadata);
-              } else {
-                metadata.totalItems += subMetadata.totalItems;
-                remainingSources--;
-                checkEmitMetadata(subMetadata.totalItems, source, pattern, subMetadata);
-              }
-            })
-            .catch(error => {
-              // Emit as infinite
-              metadata.totalItems = Infinity;
-              remainingSources = 0;
-              checkEmitMetadata(Infinity, source, pattern, metadata);
-            });
-        } else {
+      let output: IActorRdfResolveQuadPatternOutput;
+      // If any of the deskolemized blank nodes originate from another source,
+      // or if we can predict that the given source will have no bindings for the given pattern,
+      // return an empty iterator.
+      if (!patternS || !patternP || !patternO || !patternG ||
+        // eslint-disable-next-line no-cond-assign
+        this.isSourceEmpty(source, pattern = this.algebraFactory
+          .createPattern(patternS, patternP, patternO, patternG))) {
+        output = { data: new ArrayIterator([], { autoStart: false }) };
+        output.data.setProperty('metadata', { totalItems: 0 });
+      } else {
+        output = await this.mediatorResolveQuadPattern.mediate({ pattern, context });
+      }
+
+      // Handle the metadata from this source
+      output.data.getProperty('metadata', (subMetadata: { [id: string]: any }) => {
+        if ((!subMetadata.totalItems && subMetadata.totalItems !== 0) || !isFinite(subMetadata.totalItems)) {
           // We're already at infinite, so ignore any later metadata
           metadata.totalItems = Infinity;
           remainingSources = 0;
-          checkEmitMetadata(Infinity, source, pattern);
+          checkEmitMetadata(Infinity, source, pattern, subMetadata);
+        } else {
+          metadata.totalItems += subMetadata.totalItems;
+          remainingSources--;
+          checkEmitMetadata(subMetadata.totalItems, source, pattern, subMetadata);
         }
+      });
 
-        let data = output.data.map(quad => FederatedQuadSource.skolemizeQuad(quad, sourceId));
-
-        // SPARQL query semantics allow graph variables to only match with named graphs, excluding the default graph
-        if (!graph) {
-          data = data.filter(quad => quad.graph.termType !== 'DefaultGraph');
-        }
-
-        return data;
-      }, { autoStart: false });
-    });
-    const it: UnionIterator<RDF.Quad> = new UnionIterator(proxyIt.clone(), { autoStart: false });
-    it.on('newListener', eventName => {
-      if (eventName === 'metadata') {
-        setImmediate(() => proxyIt.clone().forEach(proxy => proxy.source));
+      // Determine the data stream from this source
+      let data = output.data.map(quad => FederatedQuadSource.skolemizeQuad(quad, sourceId));
+      // SPARQL query semantics allow graph variables to only match with named graphs, excluding the default graph
+      if (graph.termType === 'Variable') {
+        data = data.filter(quad => quad.graph.termType !== 'DefaultGraph');
       }
-    });
+
+      return data;
+    }));
+
+    // Take the union of all source streams
+    const it = new TransformIterator(async() => new UnionIterator(await proxyIt), { autoStart: false });
 
     // If we have 0 sources, immediately emit metadata
-    sourcesIt.on('end', () => {
-      if (!--remainingSources) {
-        it.emit('metadata', metadata);
-      }
-    });
+    if (this.sources.length === 0) {
+      it.setProperty('metadata', metadata);
+    }
 
     return it;
-  }
-
-  public match(subject?: RegExp | RDF.Term,
-    predicate?: RegExp | RDF.Term,
-    object?: RegExp | RDF.Term,
-    graph?: RegExp | RDF.Term): RDF.Stream {
-    return this.matchLazy(subject, predicate, object, graph);
   }
 }

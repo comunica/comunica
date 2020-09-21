@@ -1,10 +1,8 @@
 import {
-  ActorRdfResolveQuadPatternSource, IActionRdfResolveQuadPattern, IActorRdfResolveQuadPatternOutput,
-  ILazyQuadSource,
+  ActorRdfResolveQuadPatternSource, IActionRdfResolveQuadPattern, IActorRdfResolveQuadPatternOutput, IQuadSource,
 } from '@comunica/bus-rdf-resolve-quad-pattern';
 import { ActionContext, IActorArgs, IActorTest } from '@comunica/core';
-import { AsyncIterator } from 'asynciterator';
-import type * as RDF from 'rdf-js';
+import { RdfJsQuadSource } from './RdfJsQuadSource';
 
 /**
  * A comunica RDFJS Source RDF Resolve Quad Pattern Actor.
@@ -12,10 +10,6 @@ import type * as RDF from 'rdf-js';
 export class ActorRdfResolveQuadPatternRdfJsSource extends ActorRdfResolveQuadPatternSource {
   public constructor(args: IActorArgs<IActionRdfResolveQuadPattern, IActorTest, IActorRdfResolveQuadPatternOutput>) {
     super(args);
-  }
-
-  public static nullifyVariables(term?: RDF.Term): RDF.Term | undefined {
-    return !term || term.termType === 'Variable' ? undefined : term;
   }
 
   public async test(action: IActionRdfResolveQuadPattern): Promise<IActorTest> {
@@ -29,38 +23,8 @@ export class ActorRdfResolveQuadPatternRdfJsSource extends ActorRdfResolveQuadPa
     return true;
   }
 
-  protected getMetadata(source: ILazyQuadSource, pattern: RDF.BaseQuad, context: ActionContext,
-    data: AsyncIterator<RDF.Quad> & RDF.Stream): () => Promise<{[id: string]: any}> {
-    return async() => {
-      if (source.countQuads) {
-        // If the source provides a dedicated method for determining cardinality, use that.
-        const totalItems = await source.countQuads(
-          ActorRdfResolveQuadPatternRdfJsSource.nullifyVariables(pattern.subject),
-          ActorRdfResolveQuadPatternRdfJsSource.nullifyVariables(pattern.predicate),
-          ActorRdfResolveQuadPatternRdfJsSource.nullifyVariables(pattern.object),
-          ActorRdfResolveQuadPatternRdfJsSource.nullifyVariables(pattern.graph),
-        );
-        return { totalItems };
-      }
-      // Otherwise, fallback to a sub-optimal alternative where we just call match again to count the quads.
-      const totalItems = await new Promise((resolve, reject) => {
-        let i = 0;
-        const matches = source.match(
-          ActorRdfResolveQuadPatternRdfJsSource.nullifyVariables(pattern.subject),
-          ActorRdfResolveQuadPatternRdfJsSource.nullifyVariables(pattern.predicate),
-          ActorRdfResolveQuadPatternRdfJsSource.nullifyVariables(pattern.object),
-          ActorRdfResolveQuadPatternRdfJsSource.nullifyVariables(pattern.graph),
-        );
-        matches.on('error', reject);
-        matches.on('end', () => resolve(i));
-        matches.on('data', () => i++);
-      });
-      return { totalItems };
-    };
-  }
-
-  protected async getSource(context: ActionContext): Promise<ILazyQuadSource> {
+  protected async getSource(context: ActionContext): Promise<IQuadSource> {
     const source: any = <any> this.getContextSource(context);
-    return 'match' in source ? source : source.value;
+    return new RdfJsQuadSource('match' in source ? source : source.value);
   }
 }

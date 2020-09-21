@@ -1,8 +1,7 @@
 import { ActionContext } from '@comunica/core';
 import { BlankNodeScoped } from '@comunica/data-factory';
 import { blankNode, defaultGraph, literal, namedNode, quad, variable } from '@rdfjs/data-model';
-import { ArrayIterator, UnionIterator } from 'asynciterator';
-import { AsyncReiterableArray } from 'asyncreiterable';
+import { ArrayIterator, TransformIterator } from 'asynciterator';
 import 'jest-rdf';
 import type * as RDF from 'rdf-js';
 import Factory from 'sparqlalgebrajs/lib/factory';
@@ -11,6 +10,8 @@ import { FederatedQuadSource } from '../lib/FederatedQuadSource';
 const arrayifyStream = require('arrayify-stream');
 const squad = require('rdf-quad');
 const factory = new Factory();
+
+const v = variable('v');
 
 describe('FederatedQuadSource', () => {
   let mediator: any;
@@ -21,56 +22,57 @@ describe('FederatedQuadSource', () => {
       mediate(action: any) {
         const type = action.context.get('@comunica/bus-rdf-resolve-quad-pattern:source').type;
         if (type === 'emptySource') {
-          return Promise.resolve({ data: new ArrayIterator([], { autoStart: false }),
-            metadata: () => Promise.resolve({ totalItems: 0 }) });
+          const data = new ArrayIterator([], { autoStart: false });
+          data.setProperty('metadata', { totalItems: 0 });
+          return Promise.resolve({ data });
         }
         if (type === 'nonEmptySourceNoMeta') {
-          return Promise.resolve({ data: new ArrayIterator([
+          const data = new ArrayIterator([
             squad('s1', 'p1', 'o1'),
             squad('s1', 'p1', 'o2'),
-          ], { autoStart: false }),
-          metadata: null });
+          ], { autoStart: false });
+          data.setProperty('metadata', {});
+          return Promise.resolve({ data });
         }
         if (type === 'nonEmptySourceInfMeta') {
-          return Promise.resolve({ data: new ArrayIterator([
+          const data = new ArrayIterator([
             squad('s1', 'p1', 'o1'),
             squad('s1', 'p1', 'o2'),
-          ], { autoStart: false }),
-          metadata: () => Promise.resolve({ totalItems: Infinity }) });
+          ], { autoStart: false });
+          data.setProperty('metadata', { totalItems: Infinity });
+          return Promise.resolve({ data });
         }
         if (type === 'blankNodeSource') {
-          return Promise.resolve({ data: new ArrayIterator([
+          const data = new ArrayIterator([
             squad('_:s1', '_:p1', '_:o1'),
             squad('_:s2', '_:p2', '_:o2'),
-          ], { autoStart: false }),
-          metadata: () => Promise.resolve({ totalItems: Infinity }) });
+          ], { autoStart: false });
+          data.setProperty('metadata', { totalItems: Infinity });
+          return Promise.resolve({ data });
         }
         if (type === 'graphs') {
-          return Promise.resolve({ data: new ArrayIterator([
+          const data = new ArrayIterator([
             squad('s1', 'p1', 'o1'),
             squad('s1', 'p1', 'o2'),
             squad('s2', 'p1', 'o1', 'g1'),
             squad('s2', 'p1', 'o2', 'g1'),
             squad('s3', 'p1', 'o1', 'g2'),
             squad('s3', 'p1', 'o2', 'g2'),
-          ], { autoStart: false }),
-          metadata: () => Promise.resolve({ totalItems: 6 }) });
+          ], { autoStart: false });
+          data.setProperty('metadata', { totalItems: 6 });
+          return Promise.resolve({ data });
         }
-        if (type === 'rejectingMetadata') {
-          return Promise.resolve({
-            data: new ArrayIterator([], { autoStart: false }),
-            metadata: () => Promise.reject(new Error('federated metadata reject')),
-          });
-        }
-        return Promise.resolve({ data: new ArrayIterator([
+        const data = new ArrayIterator([
           squad('s1', 'p1', 'o1'),
           squad('s1', 'p1', 'o2'),
-        ], { autoStart: false }),
-        metadata: () => Promise.resolve({ totalItems: 2, otherMetadata: true }) });
+        ], { autoStart: false });
+        data.setProperty('metadata', { totalItems: 2, otherMetadata: true });
+        return Promise.resolve({ data });
       },
     };
-    context = ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:sources':
-        AsyncReiterableArray.fromFixedData([{ type: 'myType', value: 'myValue' }]) });
+    context = ActionContext({
+      '@comunica/bus-rdf-resolve-quad-pattern:sources': [{ type: 'myType', value: 'myValue' }],
+    });
   });
 
   describe('The FederatedQuadSource module', () => {
@@ -349,25 +351,9 @@ describe('FederatedQuadSource', () => {
       source = new FederatedQuadSource(mediator, context, emptyPatterns, true);
     });
 
-    it('should throw an error on a subject regex call', () => {
-      return expect(() => source.match(/.*/u)).toThrow();
-    });
-
-    it('should throw an error on a predicate regex call', () => {
-      return expect(() => source.match(undefined, /.*/u)).toThrow();
-    });
-
-    it('should throw an error on a object regex call', () => {
-      return expect(() => source.match(undefined, undefined, /.*/u)).toThrow();
-    });
-
-    it('should throw an error on a graph regex call', () => {
-      return expect(() => source.match(undefined, undefined, undefined, /.*/u)).toThrow();
-    });
-
     it('should return an AsyncIterator', () => {
       return expect(source.match(variable('v'), variable('v'), variable('v'), variable('v')))
-        .toBeInstanceOf(UnionIterator);
+        .toBeInstanceOf(TransformIterator);
     });
 
     describe('when calling isSourceEmpty', () => {
@@ -435,21 +421,18 @@ describe('FederatedQuadSource', () => {
 
     beforeEach(() => {
       emptyPatterns = new Map();
-      contextEmpty = ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:sources':
-          AsyncReiterableArray.fromFixedData([]) });
+      contextEmpty = ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:sources': []});
       source = new FederatedQuadSource(mediator, contextEmpty, emptyPatterns, true);
     });
 
     it('should return an empty AsyncIterator', async() => {
-      expect(await arrayifyStream(source.match())).toEqual([]);
+      expect(await arrayifyStream(source.match(v, v, v, v))).toEqual([]);
     });
 
     it('should emit metadata with 0 totalItems', async() => {
-      const stream = source.match();
-      await expect(new Promise((resolve, reject) => {
-        stream.on('metadata', resolve);
-        stream.on('end', reject);
-      })).resolves.toEqual({ totalItems: 0 });
+      const stream = source.match(v, v, v, v);
+      await expect(new Promise(resolve => stream.getProperty('metadata', resolve)))
+        .resolves.toEqual({ totalItems: 0 });
     });
   });
 
@@ -462,21 +445,18 @@ describe('FederatedQuadSource', () => {
     beforeEach(() => {
       subSource = { type: 'emptySource', value: 'I will be empty' };
       emptyPatterns = new Map();
-      contextSingleEmpty = ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:sources':
-          AsyncReiterableArray.fromFixedData([ subSource ]) });
+      contextSingleEmpty = ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:sources': [ subSource ]});
       source = new FederatedQuadSource(mediator, contextSingleEmpty, emptyPatterns, true);
     });
 
     it('should return an empty AsyncIterator', async() => {
-      expect(await arrayifyStream(source.match())).toEqual([]);
+      expect(await arrayifyStream(source.match(v, v, v, v))).toEqual([]);
     });
 
     it('should emit metadata with 0 totalItems', async() => {
-      const stream = source.match();
-      await expect(new Promise((resolve, reject) => {
-        stream.on('metadata', resolve);
-        stream.on('end', reject);
-      })).resolves.toEqual({ totalItems: 0 });
+      const stream = source.match(v, v, v, v);
+      await expect(new Promise(resolve => stream.getProperty('metadata', resolve)))
+        .resolves.toEqual({ totalItems: 0 });
     });
 
     it('should store the queried empty patterns in the emptyPatterns datastructure', async() => {
@@ -505,28 +485,25 @@ describe('FederatedQuadSource', () => {
     beforeEach(() => {
       subSource = { type: 'nonEmptySource', value: 'I will not be empty' };
       emptyPatterns = new Map();
-      contextSingle = ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:sources':
-          AsyncReiterableArray.fromFixedData([ subSource ]) });
+      contextSingle = ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:sources': [ subSource ]});
       source = new FederatedQuadSource(mediator, contextSingle, emptyPatterns, true);
     });
 
     it('should return a non-empty AsyncIterator in the default graph', async() => {
-      expect(await arrayifyStream(source.match(undefined, undefined, undefined, defaultGraph()))).toEqual([
+      expect(await arrayifyStream(source.match(v, v, v, defaultGraph()))).toEqual([
         squad('s1', 'p1', 'o1'),
         squad('s1', 'p1', 'o2'),
       ]);
     });
 
     it('should return a non-empty AsyncIterator with variable graph', async() => {
-      expect(await arrayifyStream(source.match())).toEqual([]);
+      expect(await arrayifyStream(source.match(v, v, v, v))).toEqual([]);
     });
 
     it('should emit metadata with 2 totalItems', async() => {
-      const stream = source.match();
-      await expect(new Promise((resolve, reject) => {
-        stream.on('metadata', resolve);
-        stream.on('end', reject);
-      })).resolves.toEqual({ totalItems: 2, otherMetadata: true });
+      const stream = source.match(v, v, v, v);
+      await expect(new Promise(resolve => stream.getProperty('metadata', resolve)))
+        .resolves.toEqual({ totalItems: 2, otherMetadata: true });
     });
 
     it('should store no queried empty patterns in the emptyPatterns datastructure', async() => {
@@ -552,13 +529,12 @@ describe('FederatedQuadSource', () => {
     beforeEach(() => {
       subSource = { type: 'graphs', value: 'I will contain named graphs' };
       emptyPatterns = new Map();
-      contextSingle = ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:sources':
-          AsyncReiterableArray.fromFixedData([ subSource ]) });
+      contextSingle = ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:sources': [ subSource ]});
       source = new FederatedQuadSource(mediator, contextSingle, emptyPatterns, true);
     });
 
     it('should return a non-empty AsyncIterator in the default graph', async() => {
-      expect(await arrayifyStream(source.match(undefined, undefined, undefined, defaultGraph()))).toEqual([
+      expect(await arrayifyStream(source.match(v, v, v, defaultGraph()))).toEqual([
         squad('s1', 'p1', 'o1'),
         squad('s1', 'p1', 'o2'),
 
@@ -571,7 +547,7 @@ describe('FederatedQuadSource', () => {
     });
 
     it('should return a non-empty AsyncIterator with variable graph', async() => {
-      expect(await arrayifyStream(source.match())).toEqual([
+      expect(await arrayifyStream(source.match(v, v, v, v))).toEqual([
         squad('s2', 'p1', 'o1', 'g1'),
         squad('s2', 'p1', 'o2', 'g1'),
         squad('s3', 'p1', 'o1', 'g2'),
@@ -580,11 +556,9 @@ describe('FederatedQuadSource', () => {
     });
 
     it('should emit metadata with 6 totalItems', async() => {
-      const stream = source.match();
-      await expect(new Promise((resolve, reject) => {
-        stream.on('metadata', resolve);
-        stream.on('end', reject);
-      })).resolves.toEqual({ totalItems: 6 });
+      const stream = source.match(v, v, v, v);
+      await expect(new Promise(resolve => stream.getProperty('metadata', resolve)))
+        .resolves.toEqual({ totalItems: 6 });
     });
   });
 
@@ -599,16 +573,17 @@ describe('FederatedQuadSource', () => {
       subSource1 = { type: 'emptySource', value: 'I will be empty' };
       subSource2 = { type: 'nonEmptySource', value: 'I will not be empty' };
       emptyPatterns = new Map();
-      contextSingleEmpty = ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:sources':
-          AsyncReiterableArray.fromFixedData([
-            subSource1,
-            subSource2,
-          ]) });
+      contextSingleEmpty = ActionContext({
+        '@comunica/bus-rdf-resolve-quad-pattern:sources': [
+          subSource1,
+          subSource2,
+        ],
+      });
       source = new FederatedQuadSource(mediator, contextSingleEmpty, emptyPatterns, true);
     });
 
     it('should return a non-empty AsyncIterator in the default graph', async() => {
-      const a = await arrayifyStream(source.match(undefined, undefined, undefined, defaultGraph()));
+      const a = await arrayifyStream(source.match(v, v, v, defaultGraph()));
       expect(a).toEqual([
         squad('s1', 'p1', 'o1'),
         squad('s1', 'p1', 'o2'),
@@ -616,16 +591,14 @@ describe('FederatedQuadSource', () => {
     });
 
     it('should return a non-empty AsyncIterator for variable graph', async() => {
-      const a = await arrayifyStream(source.match());
+      const a = await arrayifyStream(source.match(v, v, v, v));
       expect(a).toEqual([]);
     });
 
     it('should emit metadata with 2 totalItems', async() => {
-      const stream = source.match();
-      await expect(new Promise((resolve, reject) => {
-        stream.on('metadata', resolve);
-        stream.on('end', reject);
-      })).resolves.toEqual({ totalItems: 2 });
+      const stream = source.match(v, v, v, v);
+      await expect(new Promise(resolve => stream.getProperty('metadata', resolve)))
+        .resolves.toEqual({ totalItems: 2 });
     });
 
     it('should store the queried empty patterns for the empty source in the emptyPatterns datastructure', async() => {
@@ -657,30 +630,29 @@ describe('FederatedQuadSource', () => {
       subSource1 = { type: 'emptySource', value: 'I will be empty' };
       subSource2 = { type: 'emptySource', value: 'I will be empty' };
       emptyPatterns = new Map();
-      contextSingleEmpty = ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:sources':
-          AsyncReiterableArray.fromFixedData([
-            subSource1,
-            subSource2,
-          ]) });
+      contextSingleEmpty = ActionContext({
+        '@comunica/bus-rdf-resolve-quad-pattern:sources': [
+          subSource1,
+          subSource2,
+        ],
+      });
       source = new FederatedQuadSource(mediator, contextSingleEmpty, emptyPatterns, true);
     });
 
     it('should return an empty AsyncIterator for the default graph', async() => {
-      const a = await arrayifyStream(source.match(undefined, undefined, undefined, defaultGraph()));
+      const a = await arrayifyStream(source.match(v, v, v, defaultGraph()));
       expect(a).toEqual([]);
     });
 
     it('should return an empty AsyncIterator for a variable graph', async() => {
-      const a = await arrayifyStream(source.match());
+      const a = await arrayifyStream(source.match(v, v, v, v));
       expect(a).toEqual([]);
     });
 
     it('should emit metadata with 0 totalItems', async() => {
-      const stream = source.match();
-      await expect(new Promise((resolve, reject) => {
-        stream.on('metadata', resolve);
-        stream.on('end', reject);
-      })).resolves.toEqual({ totalItems: 0 });
+      const stream = source.match(v, v, v, v);
+      await expect(new Promise(resolve => stream.getProperty('metadata', resolve)))
+        .resolves.toEqual({ totalItems: 0 });
     });
 
     it('should store the queried empty patterns for the empty source in the emptyPatterns datastructure', async() => {
@@ -713,30 +685,30 @@ describe('FederatedQuadSource', () => {
     beforeEach(() => {
       subSource = { type: 'emptySource', value: 'I will be empty' };
       emptyPatterns = new Map();
-      contextSingleEmpty = ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:sources':
-          AsyncReiterableArray.fromFixedData([
+      contextSingleEmpty = ActionContext({
+        '@comunica/bus-rdf-resolve-quad-pattern:sources':
+          [
             subSource,
             subSource,
-          ]) });
+          ],
+      });
       source = new FederatedQuadSource(mediator, contextSingleEmpty, emptyPatterns, true);
     });
 
     it('should return an empty AsyncIterator in the default graph', async() => {
-      const a = await arrayifyStream(source.match(undefined, undefined, undefined, defaultGraph()));
+      const a = await arrayifyStream(source.match(v, v, v, defaultGraph()));
       expect(a).toEqual([]);
     });
 
     it('should return an empty AsyncIterator for a variable graph', async() => {
-      const a = await arrayifyStream(source.match());
+      const a = await arrayifyStream(source.match(v, v, v, v));
       expect(a).toEqual([]);
     });
 
     it('should emit metadata with 0 totalItems', async() => {
-      const stream = source.match();
-      await expect(new Promise((resolve, reject) => {
-        stream.on('metadata', resolve);
-        stream.on('end', reject);
-      })).resolves.toEqual({ totalItems: 0 });
+      const stream = source.match(v, v, v, v);
+      await expect(new Promise(resolve => stream.getProperty('metadata', resolve)))
+        .resolves.toEqual({ totalItems: 0 });
     });
 
     it('should store the queried empty patterns for the empty source in the emptyPatterns datastructure', async() => {
@@ -763,30 +735,30 @@ describe('FederatedQuadSource', () => {
 
     beforeEach(() => {
       emptyPatterns = new Map();
-      contextSingleEmpty = ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:sources':
-          AsyncReiterableArray.fromFixedData([
+      contextSingleEmpty = ActionContext({
+        '@comunica/bus-rdf-resolve-quad-pattern:sources':
+          [
             { type: 'emptySource', value: 'I will be empty' },
             { type: 'emptySource', value: 'I will be empty' },
-          ]) });
+          ],
+      });
       source = new FederatedQuadSource(mediator, contextSingleEmpty, emptyPatterns, false);
     });
 
     it('should return an empty AsyncIterator in the default graph', async() => {
-      const a = await arrayifyStream(source.match(undefined, undefined, undefined, defaultGraph()));
+      const a = await arrayifyStream(source.match(v, v, v, defaultGraph()));
       expect(a).toEqual([]);
     });
 
     it('should return an empty AsyncIterator for a variable graph', async() => {
-      const a = await arrayifyStream(source.match());
+      const a = await arrayifyStream(source.match(v, v, v, v));
       expect(a).toEqual([]);
     });
 
     it('should emit metadata with 0 totalItems', async() => {
-      const stream = source.match();
-      await expect(new Promise((resolve, reject) => {
-        stream.on('metadata', resolve);
-        stream.on('end', reject);
-      })).resolves.toEqual({ totalItems: 0 });
+      const stream = source.match(v, v, v, v);
+      await expect(new Promise(resolve => stream.getProperty('metadata', resolve)))
+        .resolves.toEqual({ totalItems: 0 });
     });
 
     it('should store the queried empty patterns for the empty source in the emptyPatterns datastructure', async() => {
@@ -812,16 +784,18 @@ describe('FederatedQuadSource', () => {
       subSource1 = { type: 'nonEmptySource', value: 'I will not be empty' };
       subSource2 = { type: 'nonEmptySource2', value: 'I will also not be empty' };
       emptyPatterns = new Map();
-      contextSingleEmpty = ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:sources':
-          AsyncReiterableArray.fromFixedData([
+      contextSingleEmpty = ActionContext({
+        '@comunica/bus-rdf-resolve-quad-pattern:sources':
+          [
             subSource1,
             subSource2,
-          ]) });
+          ],
+      });
       source = new FederatedQuadSource(mediator, contextSingleEmpty, emptyPatterns, true);
     });
 
     it('should return a non-empty AsyncIterator in the default graph', async() => {
-      const a = await arrayifyStream(source.match(undefined, undefined, undefined, defaultGraph()));
+      const a = await arrayifyStream(source.match(v, v, v, defaultGraph()));
       expect(a).toBeRdfIsomorphic([
         squad('s1', 'p1', 'o1'),
         squad('s1', 'p1', 'o2'),
@@ -831,16 +805,14 @@ describe('FederatedQuadSource', () => {
     });
 
     it('should return an empty AsyncIterator for a variable graph', async() => {
-      const a = await arrayifyStream(source.match());
+      const a = await arrayifyStream(source.match(v, v, v, v));
       expect(a).toEqual([]);
     });
 
     it('should emit metadata with 2 totalItems', async() => {
-      const stream = source.match();
-      await expect(new Promise((resolve, reject) => {
-        stream.on('metadata', resolve);
-        stream.on('end', reject);
-      })).resolves.toEqual({ totalItems: 4 });
+      const stream = source.match(v, v, v, v);
+      await expect(new Promise(resolve => stream.getProperty('metadata', resolve)))
+        .resolves.toEqual({ totalItems: 4 });
     });
 
     it('should store the queried empty patterns for the empty source in the emptyPatterns datastructure', async() => {
@@ -865,16 +837,18 @@ describe('FederatedQuadSource', () => {
 
     beforeEach(() => {
       emptyPatterns = new Map();
-      contextSingleEmpty = ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:sources':
-          AsyncReiterableArray.fromFixedData([
+      contextSingleEmpty = ActionContext({
+        '@comunica/bus-rdf-resolve-quad-pattern:sources':
+          [
             { type: 'nonEmptySource', value: 'I will not be empty' },
             { type: 'nonEmptySourceNoMeta', value: 'I will also not be empty, but have no metadata' },
-          ]) });
+          ],
+      });
       source = new FederatedQuadSource(mediator, contextSingleEmpty, emptyPatterns, true);
     });
 
     it('should return a non-empty AsyncIterator for the default graph', async() => {
-      const a = await arrayifyStream(source.match(undefined, undefined, undefined, defaultGraph()));
+      const a = await arrayifyStream(source.match(v, v, v, defaultGraph()));
       expect(a).toEqual([
         squad('s1', 'p1', 'o1'),
         squad('s1', 'p1', 'o1'),
@@ -884,16 +858,14 @@ describe('FederatedQuadSource', () => {
     });
 
     it('should return an empty AsyncIterator for a variable graph', async() => {
-      const a = await arrayifyStream(source.match());
+      const a = await arrayifyStream(source.match(v, v, v, v));
       expect(a).toEqual([]);
     });
 
     it('should emit metadata with Infinity totalItems', async() => {
-      const stream = source.match();
-      await expect(new Promise((resolve, reject) => {
-        stream.on('metadata', resolve);
-        stream.on('end', reject);
-      })).resolves.toEqual({ totalItems: Infinity });
+      const stream = source.match(v, v, v, v);
+      await expect(new Promise(resolve => stream.getProperty('metadata', resolve)))
+        .resolves.toEqual({ totalItems: Infinity });
     });
   });
 
@@ -904,16 +876,18 @@ describe('FederatedQuadSource', () => {
 
     beforeEach(() => {
       emptyPatterns = new Map();
-      contextSingleEmpty = ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:sources':
-          AsyncReiterableArray.fromFixedData([
+      contextSingleEmpty = ActionContext({
+        '@comunica/bus-rdf-resolve-quad-pattern:sources':
+          [
             { type: 'nonEmptySourceNoMeta', value: 'I will not be empty' },
             { type: 'nonEmptySourceNoMeta', value: 'I will also not be empty, but have no metadata' },
-          ]) });
+          ],
+      });
       source = new FederatedQuadSource(mediator, contextSingleEmpty, emptyPatterns, true);
     });
 
     it('should return a non-empty AsyncIterator for the default graph', async() => {
-      const a = await arrayifyStream(source.match(undefined, undefined, undefined, defaultGraph()));
+      const a = await arrayifyStream(source.match(v, v, v, defaultGraph()));
       expect(a).toEqual([
         squad('s1', 'p1', 'o1'),
         squad('s1', 'p1', 'o1'),
@@ -923,16 +897,14 @@ describe('FederatedQuadSource', () => {
     });
 
     it('should return an empty AsyncIterator for a variable graph', async() => {
-      const a = await arrayifyStream(source.match());
+      const a = await arrayifyStream(source.match(v, v, v, v));
       expect(a).toEqual([]);
     });
 
     it('should emit metadata with Infinity totalItems', async() => {
-      const stream = source.match();
-      await expect(new Promise((resolve, reject) => {
-        stream.on('metadata', resolve);
-        stream.on('end', reject);
-      })).resolves.toEqual({ totalItems: Infinity });
+      const stream = source.match(v, v, v, v);
+      await expect(new Promise(resolve => stream.getProperty('metadata', resolve)))
+        .resolves.toEqual({ totalItems: Infinity });
     });
   });
 
@@ -943,16 +915,18 @@ describe('FederatedQuadSource', () => {
 
     beforeEach(() => {
       emptyPatterns = new Map();
-      contextSingleEmpty = ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:sources':
-          AsyncReiterableArray.fromFixedData([
+      contextSingleEmpty = ActionContext({
+        '@comunica/bus-rdf-resolve-quad-pattern:sources':
+          [
             { type: 'nonEmptySource', value: 'I will not be empty' },
             { type: 'nonEmptySourceInfMeta', value: 'I will also not be empty, but have inf metadata' },
-          ]) });
+          ],
+      });
       source = new FederatedQuadSource(mediator, contextSingleEmpty, emptyPatterns, true);
     });
 
     it('should return a non-empty AsyncIterator for the default graph', async() => {
-      const a = await arrayifyStream(source.match(undefined, undefined, undefined, defaultGraph()));
+      const a = await arrayifyStream(source.match(v, v, v, defaultGraph()));
       expect(a).toEqual([
         squad('s1', 'p1', 'o1'),
         squad('s1', 'p1', 'o1'),
@@ -962,16 +936,14 @@ describe('FederatedQuadSource', () => {
     });
 
     it('should return an empty AsyncIterator for a variable graph', async() => {
-      const a = await arrayifyStream(source.match());
+      const a = await arrayifyStream(source.match(v, v, v, v));
       expect(a).toEqual([]);
     });
 
     it('should emit metadata with Infinity totalItems', async() => {
-      const stream = source.match();
-      await expect(new Promise((resolve, reject) => {
-        stream.on('metadata', resolve);
-        stream.on('end', reject);
-      })).resolves.toEqual({ totalItems: Infinity });
+      const stream = source.match(v, v, v, v);
+      await expect(new Promise(resolve => stream.getProperty('metadata', resolve)))
+        .resolves.toEqual({ totalItems: Infinity });
     });
   });
 
@@ -982,16 +954,18 @@ describe('FederatedQuadSource', () => {
 
     beforeEach(() => {
       emptyPatterns = new Map();
-      contextSingleEmpty = ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:sources':
-          AsyncReiterableArray.fromFixedData([
+      contextSingleEmpty = ActionContext({
+        '@comunica/bus-rdf-resolve-quad-pattern:sources':
+          [
             { type: 'nonEmptySourceInfMeta', value: 'I will not be empty' },
             { type: 'nonEmptySourceInfMeta', value: 'I will also not be empty, but have inf metadata' },
-          ]) });
+          ],
+      });
       source = new FederatedQuadSource(mediator, contextSingleEmpty, emptyPatterns, true);
     });
 
     it('should return a non-empty AsyncIterator for the default graph', async() => {
-      const a = await arrayifyStream(source.match(undefined, undefined, undefined, defaultGraph()));
+      const a = await arrayifyStream(source.match(v, v, v, defaultGraph()));
       expect(a).toEqual([
         squad('s1', 'p1', 'o1'),
         squad('s1', 'p1', 'o1'),
@@ -1001,16 +975,14 @@ describe('FederatedQuadSource', () => {
     });
 
     it('should return an empty AsyncIterator for a variable graph', async() => {
-      const a = await arrayifyStream(source.match());
+      const a = await arrayifyStream(source.match(v, v, v, v));
       expect(a).toEqual([]);
     });
 
     it('should emit metadata with Infinity totalItems', async() => {
-      const stream = source.match();
-      await expect(new Promise((resolve, reject) => {
-        stream.on('metadata', resolve);
-        stream.on('end', reject);
-      })).resolves.toEqual({ totalItems: Infinity });
+      const stream = source.match(v, v, v, v);
+      await expect(new Promise(resolve => stream.getProperty('metadata', resolve)))
+        .resolves.toEqual({ totalItems: Infinity });
     });
   });
 
@@ -1025,16 +997,18 @@ describe('FederatedQuadSource', () => {
       subSource1 = { type: 'blankNodeSource', value: 'I will contain blank nodes' };
       subSource2 = { type: 'blankNodeSource', value: 'I will also contain blank nodes' };
       emptyPatterns = new Map();
-      contextSingleEmpty = ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:sources':
-          AsyncReiterableArray.fromFixedData([
+      contextSingleEmpty = ActionContext({
+        '@comunica/bus-rdf-resolve-quad-pattern:sources':
+          [
             subSource1,
             subSource2,
-          ]) });
+          ],
+      });
       source = new FederatedQuadSource(mediator, contextSingleEmpty, emptyPatterns, true);
     });
 
     it('should return a non-empty AsyncIterator', async() => {
-      const a = await arrayifyStream(source.match(undefined, undefined, undefined, defaultGraph()));
+      const a = await arrayifyStream(source.match(v, v, v, defaultGraph()));
       expect(a).toEqual([
         quad<RDF.BaseQuad>(
           new BlankNodeScoped('bc_0_s1',
@@ -1072,7 +1046,7 @@ describe('FederatedQuadSource', () => {
     });
 
     it('should match will all sources for named nodes', async() => {
-      const a = await arrayifyStream(source.match(namedNode('abc'), undefined, undefined, defaultGraph()));
+      const a = await arrayifyStream(source.match(namedNode('abc'), v, v, defaultGraph()));
       expect(a).toEqual([
         quad<RDF.BaseQuad>(
           new BlankNodeScoped('bc_0_s1',
@@ -1111,7 +1085,7 @@ describe('FederatedQuadSource', () => {
 
     it('should match will all sources for plain blank nodes', async() => {
       const a = await arrayifyStream(source.match(new BlankNodeScoped('abc',
-        namedNode('abc')), undefined, undefined, defaultGraph()));
+        namedNode('abc')), v, v, defaultGraph()));
       expect(a).toEqual([
         quad<RDF.BaseQuad>(
           new BlankNodeScoped('bc_0_s1',
@@ -1150,7 +1124,7 @@ describe('FederatedQuadSource', () => {
 
     it('should match the first source for blank nodes coming from the first source', async() => {
       const a = await arrayifyStream(source.match(new BlankNodeScoped('abc',
-        namedNode('urn:comunica_skolem:source_0:s1')), undefined, undefined, defaultGraph()));
+        namedNode('urn:comunica_skolem:source_0:s1')), v, v, defaultGraph()));
       expect(a).toEqual([
         quad<RDF.BaseQuad>(
           new BlankNodeScoped('bc_0_s1',
@@ -1173,7 +1147,7 @@ describe('FederatedQuadSource', () => {
 
     it('should match the second source for blank nodes coming from the second source', async() => {
       const a = await arrayifyStream(source.match(new BlankNodeScoped('abc',
-        namedNode('urn:comunica_skolem:source_1:s1')), undefined, undefined, defaultGraph()));
+        namedNode('urn:comunica_skolem:source_1:s1')), v, v, defaultGraph()));
       expect(a).toEqual([
         quad<RDF.BaseQuad>(
           new BlankNodeScoped('bc_1_s1',
@@ -1196,14 +1170,14 @@ describe('FederatedQuadSource', () => {
 
     it('should match no source for blank nodes coming from an unknown source', async() => {
       const a = await arrayifyStream(source.match(new BlankNodeScoped('abc',
-        namedNode('urn:comunica_skolem:source_2:s1')), undefined, undefined, defaultGraph()));
+        namedNode('urn:comunica_skolem:source_2:s1')), v, v, defaultGraph()));
       expect(a).toEqual([]);
     });
 
     it('should match the first source for named nodes coming from the first source', async() => {
       const a = await arrayifyStream(source.match(namedNode('urn:comunica_skolem:source_0:s1'),
-        undefined,
-        undefined,
+        v,
+        v,
         defaultGraph()));
       expect(a).toEqual([
         quad<RDF.BaseQuad>(
@@ -1228,8 +1202,8 @@ describe('FederatedQuadSource', () => {
     it('should match the second source for named nodes coming from the second source', async() => {
       const a = await arrayifyStream(source.match(
         namedNode('urn:comunica_skolem:source_1:s1'),
-        undefined,
-        undefined,
+        v,
+        v,
         defaultGraph(),
       ));
       expect(a).toEqual([
@@ -1253,31 +1227,8 @@ describe('FederatedQuadSource', () => {
     });
 
     it('should match no source for named nodes coming from an unknown source', async() => {
-      const a = await arrayifyStream(source.match(namedNode('urn:comunica_skolem:source_2:s1')));
+      const a = await arrayifyStream(source.match(namedNode('urn:comunica_skolem:source_2:s1'), v, v, v));
       expect(a).toEqual([]);
-    });
-  });
-
-  describe('A FederatedQuadSource instance with rejecting metadata', () => {
-    let subSource: any;
-    let source: FederatedQuadSource;
-    let emptyPatterns: any;
-    let contextSingleEmpty;
-
-    beforeEach(() => {
-      subSource = { type: 'rejectingMetadata', value: 'I will reject metadata' };
-      emptyPatterns = new Map();
-      contextSingleEmpty = ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:sources':
-          AsyncReiterableArray.fromFixedData([ subSource ]) });
-      source = new FederatedQuadSource(mediator, contextSingleEmpty, emptyPatterns, true);
-    });
-
-    it('should emit metadata with Infinity totalItems', async() => {
-      const stream = source.match();
-      await expect(new Promise((resolve, reject) => {
-        stream.on('metadata', resolve);
-        stream.on('end', reject);
-      })).resolves.toEqual({ totalItems: Infinity });
     });
   });
 });

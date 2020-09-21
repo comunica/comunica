@@ -129,7 +129,7 @@ describe('ActorQueryOperationService', () => {
       );
 
       return actorThis.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
-        expect((<any> output).operated.context.get('@comunica/bus-rdf-resolve-quad-pattern:sources').array[0].type)
+        expect((<any> output).operated.context.get('@comunica/bus-rdf-resolve-quad-pattern:sources')[0].type)
           .toEqual('auto');
         expect(output.variables).toEqual([ '?a' ]);
         expect(await (<any> output).metadata()).toEqual({ totalItems: 3 });
@@ -150,7 +150,7 @@ describe('ActorQueryOperationService', () => {
       );
 
       return actorThis.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
-        expect((<any> output).operated.context.get('@comunica/bus-rdf-resolve-quad-pattern:sources').array[0].type)
+        expect((<any> output).operated.context.get('@comunica/bus-rdf-resolve-quad-pattern:sources')[0].type)
           .toEqual('sparql');
         expect(await (<any> output).metadata()).toEqual({ totalItems: 3 });
         expect(output.canContainUndefs).toEqual(true);

@@ -4,7 +4,7 @@ import { ActorQueryOperationTyped, Bindings, BindingsStream,
 import { IActionRdfResolveQuadPattern,
   IActorRdfResolveQuadPatternOutput } from '@comunica/bus-rdf-resolve-quad-pattern';
 import { ActionContext, Actor, IActorArgs, IActorTest, Mediator } from '@comunica/core';
-import { TransformIterator } from 'asynciterator';
+import { TransformIterator, AsyncIterator } from 'asynciterator';
 import type * as RDF from 'rdf-js';
 import { termToString } from 'rdf-string';
 import { getTerms, QUAD_TERM_NAMES, QuadTermName, reduceTerms, TRIPLE_TERM_NAMES, uniqTerms } from 'rdf-terms';
@@ -91,6 +91,19 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
     return duplicateElementLinks;
   }
 
+  /**
+   * Get the metadata of the given action on a quad stream.
+   *
+   * @param {AsyncIterator<Quad>} data The data stream that is guaranteed to emit the metadata property.
+   * @return {() => Promise<{[p: string]: any}>} A lazy promise behind a callback resolving to a metadata object.
+   */
+  protected static getMetadata(data: AsyncIterator<RDF.Quad>): () => Promise<{[id: string]: any}> {
+    return () => new Promise((resolve, reject) => {
+      data.getProperty('metadata', (metadata: {[id: string]: any}) => resolve(metadata));
+      data.on('error', reject);
+    });
+  }
+
   public async testOperation(operation: Algebra.Pattern, context?: {[id: string]: any}): Promise<IActorTest> {
     return true;
   }
@@ -107,6 +120,9 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
 
     // Collect all variables from the pattern
     const variables: string[] = ActorQueryOperationQuadpattern.getVariables(pattern);
+
+    // Create the metadata callback
+    const metadata = ActorQueryOperationQuadpattern.getMetadata(result.data);
 
     // Convenience datastructure for mapping quad elements to variables
     const elementVariables: {[key: string]: string} = reduceTerms(pattern,
@@ -155,7 +171,7 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
         { autoStart: true, maxBufferSize: 128 });
     }, { autoStart: false });
 
-    return { type: 'bindings', bindingsStream, variables, metadata: result.metadata, canContainUndefs: false };
+    return { type: 'bindings', bindingsStream, variables, metadata, canContainUndefs: false };
   }
 }
 

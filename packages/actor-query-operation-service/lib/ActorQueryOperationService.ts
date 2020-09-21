@@ -4,7 +4,6 @@ import { ActorQueryOperation, ActorQueryOperationTypedMediated,
 import { KEY_CONTEXT_SOURCE, KEY_CONTEXT_SOURCES } from '@comunica/bus-rdf-resolve-quad-pattern';
 import { ActionContext, IActorTest } from '@comunica/core';
 import { SingletonIterator } from 'asynciterator';
-import { AsyncReiterableArray } from 'asyncreiterable';
 import { Algebra } from 'sparqlalgebrajs';
 
 /**
@@ -33,8 +32,7 @@ export class ActorQueryOperationService extends ActorQueryOperationTypedMediated
     context = context || ActionContext({});
     let subContext: ActionContext = context.delete(KEY_CONTEXT_SOURCE).delete(KEY_CONTEXT_SOURCES);
     const sourceType = this.forceSparqlEndpoint ? 'sparql' : 'auto';
-    subContext = subContext.set(KEY_CONTEXT_SOURCES,
-      AsyncReiterableArray.fromFixedData([{ type: sourceType, value: endpoint }]));
+    subContext = subContext.set(KEY_CONTEXT_SOURCES, [{ type: sourceType, value: endpoint }]);
 
     // Query the source
     let output: IActorQueryOperationOutputBindings;

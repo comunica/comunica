@@ -490,7 +490,7 @@ describe('ActorInitSparql', () => {
             (<any> result).stdout.on('end', resolve);
           });
         });
-      expect(spy.mock.calls[0][1][KEY_CONTEXT_SOURCES].array[0].context.get(KEY_CONTEXT_AUTH)).toBe('username:passwd');
+      expect(spy.mock.calls[0][1][KEY_CONTEXT_SOURCES][0].context.get(KEY_CONTEXT_AUTH)).toBe('username:passwd');
     });
 
     it('should run with a tagged hypermedia and credentials in url and query file option from argv', async() => {
@@ -504,7 +504,7 @@ describe('ActorInitSparql', () => {
             (<any> result).stdout.on('end', resolve);
           });
         });
-      expect(spy.mock.calls[0][1][KEY_CONTEXT_SOURCES].array[0].context.get(KEY_CONTEXT_AUTH)).toBe('username:passwd');
+      expect(spy.mock.calls[0][1][KEY_CONTEXT_SOURCES][0].context.get(KEY_CONTEXT_AUTH)).toBe('username:passwd');
     });
 
     it('should run with an other source type and query file option from argv', () => {

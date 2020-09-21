@@ -34,9 +34,7 @@
   ],
   "dependencies": {
     "@comunica/bus-rdf-resolve-quad-pattern": "^1.16.0",
-    "arrayify-stream": "^1.0.0",
-    "asynciterator": "^3.0.1",
-    "asyncreiterable": "^2.0.0"
+    "asynciterator": "^3.0.1"
   },
   "peerDependencies": {
     "@comunica/core": "^1.0.0"

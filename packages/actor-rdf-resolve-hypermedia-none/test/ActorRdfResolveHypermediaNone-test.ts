@@ -2,11 +2,13 @@ import { Readable } from 'stream';
 import { ActorRdfResolveHypermedia } from '@comunica/bus-rdf-resolve-hypermedia';
 import { Bus } from '@comunica/core';
 import 'jest-rdf';
+import { variable } from '@rdfjs/data-model';
 import { ActorRdfResolveHypermediaNone } from '../lib/ActorRdfResolveHypermediaNone';
 
 const arrayifyStream = require('arrayify-stream');
 const quad = require('rdf-quad');
 const streamifyArray = require('streamify-array');
+const v = variable('v');
 
 describe('ActorRdfResolveHypermediaNone', () => {
   let bus: any;
@@ -52,14 +54,10 @@ describe('ActorRdfResolveHypermediaNone', () => {
       const { source } = await actor.run({ metadata: <any> null, quads, url: '' });
       expect(source.match).toBeTruthy();
       await expect(new Promise((resolve, reject) => {
-        const stream = source.match();
-        stream.on('metadata', resolve);
-        stream.on('data', () => {
-          // Do nothing
-        });
-        stream.on('end', () => reject(new Error('Got end event before metadata event.')));
+        const stream = source.match(v, v, v, v);
+        stream.getProperty('metadata', resolve);
       })).resolves.toEqual({ totalItems: 2 });
-      expect(await arrayifyStream(source.match())).toEqualRdfQuadArray([
+      expect(await arrayifyStream(source.match(v, v, v, v))).toEqualRdfQuadArray([
         quad('s1', 'p1', 'o1'),
         quad('s2', 'p2', 'o2'),
       ]);
@@ -79,7 +77,7 @@ describe('ActorRdfResolveHypermediaNone', () => {
           };
           return str;
         };
-        const stream = source.match();
+        const stream = source.match(v, v, v, v);
         stream.on('error', resolve);
         stream.on('data', () => {
           // Do nothing

@@ -184,7 +184,8 @@ describe('ActorRdfResolveQuadPatternSparqlJson', () => {
 
     it('should run', () => {
       return actor.run({ pattern, context }).then(async output => {
-        expect(await (<any> output).metadata()).toEqual({ totalItems: 3 });
+        expect(await new Promise(resolve => output.data.getProperty('metadata', resolve)))
+          .toEqual({ totalItems: 3 });
         expect(await arrayifyStream(output.data)).toEqual([
           quad('s', 'p1', 'o'),
           quad('s', 'p2', 'o'),
@@ -208,7 +209,21 @@ describe('ActorRdfResolveQuadPatternSparqlJson', () => {
       return thisActor.run({ pattern, context }).then(async output => {
         output.data.on('error',
           e => expect(e).toEqual(new Error('Invalid SPARQL endpoint (http://ex) response: Error!')));
-        expect(await (<any> output).metadata()).toEqual({ totalItems: Infinity });
+        expect(await new Promise(resolve => output.data.getProperty('metadata', resolve)))
+          .toEqual({ totalItems: Infinity });
+      });
+    });
+
+    it('should run and error for a server error on queryBindings', () => {
+      const thisActor = new ActorRdfResolveQuadPatternSparqlJson({ name: 'actor', bus, mediatorHttp });
+      thisActor.queryBindings = async() => {
+        throw new Error('Error queryBindings');
+      };
+      return thisActor.run({ pattern, context }).then(async output => {
+        output.data.on('error',
+          e => expect(e).toEqual(new Error('Error queryBindings')));
+        expect(await new Promise(resolve => output.data.getProperty('metadata', resolve)))
+          .toEqual({ totalItems: Infinity });
       });
     });
 
@@ -251,7 +266,8 @@ describe('ActorRdfResolveQuadPatternSparqlJson', () => {
       };
       const thisActor = new ActorRdfResolveQuadPatternSparqlJson({ name: 'actor', bus, mediatorHttp: thisMediator });
       return thisActor.run({ pattern, context }).then(async output => {
-        expect(await (<any> output).metadata()).toEqual({ totalItems: Infinity });
+        expect(await new Promise(resolve => output.data.getProperty('metadata', resolve)))
+          .toEqual({ totalItems: Infinity });
       });
     });
 
@@ -294,7 +310,8 @@ describe('ActorRdfResolveQuadPatternSparqlJson', () => {
       };
       const thisActor = new ActorRdfResolveQuadPatternSparqlJson({ name: 'actor', bus, mediatorHttp: thisMediator });
       return thisActor.run({ pattern, context }).then(async output => {
-        expect(await (<any> output).metadata()).toEqual({ totalItems: Infinity });
+        expect(await new Promise(resolve => output.data.getProperty('metadata', resolve)))
+          .toEqual({ totalItems: Infinity });
       });
     });
 
@@ -342,7 +359,8 @@ describe('ActorRdfResolveQuadPatternSparqlJson', () => {
         });
         output.data.on('error',
           e => expect(e).toEqual(new Error('The endpoint http://ex failed to provide a binding for p')));
-        expect(await (<any> output).metadata()).toEqual({ totalItems: 3 });
+        expect(await new Promise(resolve => output.data.getProperty('metadata', resolve)))
+          .toEqual({ totalItems: 3 });
       });
     });
 
@@ -385,7 +403,8 @@ describe('ActorRdfResolveQuadPatternSparqlJson', () => {
       };
       const thisActor = new ActorRdfResolveQuadPatternSparqlJson({ name: 'actor', bus, mediatorHttp: thisMediator });
       return thisActor.run({ pattern, context }).then(async output => {
-        expect(await (<any> output).metadata()).toEqual({ totalItems: 3 });
+        expect(await new Promise(resolve => output.data.getProperty('metadata', resolve)))
+          .toEqual({ totalItems: 3 });
         expect(await arrayifyStream(output.data)).toEqual([
           quad('s', 'p1', 'o'),
           quad('s', 'p2', 'o'),
@@ -409,7 +428,8 @@ describe('ActorRdfResolveQuadPatternSparqlJson', () => {
       return thisActor.run({ pattern, context }).then(async output => {
         output.data.on('error',
           e => expect(e).toEqual(new Error('Some stream error')));
-        expect(await (<any> output).metadata()).toEqual({ totalItems: Infinity });
+        expect(await new Promise(resolve => output.data.getProperty('metadata', resolve)))
+          .toEqual({ totalItems: Infinity });
       });
     });
 

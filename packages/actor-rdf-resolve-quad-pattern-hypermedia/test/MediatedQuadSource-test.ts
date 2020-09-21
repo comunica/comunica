@@ -1,5 +1,7 @@
 import { ActionContext } from '@comunica/core';
 import 'jest-rdf';
+import { variable } from '@rdfjs/data-model';
+import { ArrayIterator } from 'asynciterator';
 import LRUCache = require('lru-cache');
 import { ISourceState } from '../lib/LinkedRdfSourcesAsyncRdfIterator';
 import { MediatedLinkedRdfSourcesAsyncRdfIterator } from '../lib/MediatedLinkedRdfSourcesAsyncRdfIterator';
@@ -7,7 +9,7 @@ import { MediatedQuadSource } from '../lib/MediatedQuadSource';
 
 const arrayifyStream = require('arrayify-stream');
 const quad = require('rdf-quad');
-const streamifyArray = require('streamify-array');
+const v = variable('v');
 
 describe('MediatedQuadSource', () => {
   let context: ActionContext;
@@ -21,19 +23,23 @@ describe('MediatedQuadSource', () => {
   beforeEach(() => {
     context = ActionContext({});
     mediatorRdfDereference = {
-      mediate: ({ url }: any) => Promise.resolve({
-        quads: url === 'firstUrl' ?
-          streamifyArray([
-            quad('s1', 'p1', 'o1'),
-            quad('s2', 'p2', 'o2'),
-          ]) :
-          streamifyArray([
-            quad('s3', 'p3', 'o3'),
-            quad('s4', 'p4', 'o4'),
-          ]),
-        triples: true,
-        url,
-      }),
+      async mediate({ url }: any) {
+        const data = {
+          quads: url === 'firstUrl' ?
+            new ArrayIterator([
+              quad('s1', 'p1', 'o1'),
+              quad('s2', 'p2', 'o2'),
+            ], { autoStart: false }) :
+            new ArrayIterator([
+              quad('s3', 'p3', 'o3'),
+              quad('s4', 'p4', 'o4'),
+            ], { autoStart: false }),
+          triples: true,
+          url,
+        };
+        data.quads.setProperty('metadata', { firstMeta: true });
+        return data;
+      },
     };
     mediatorMetadata = {
       mediate: ({ quads }: any) => Promise.resolve({ data: quads, metadata: { a: 1 }}),
@@ -45,7 +51,7 @@ describe('MediatedQuadSource', () => {
       mediate: ({ forceSourceType, handledDatasets, metadata, quads }: any) => Promise.resolve({
         dataset: 'MYDATASET',
         source: {
-          match: () => quads,
+          match: () => quads.clone(),
         },
       }),
     };
@@ -74,18 +80,13 @@ describe('MediatedQuadSource', () => {
       source = new MediatedQuadSource(10, context, 'firstUrl', 'forcedType', mediators);
     });
 
-    describe('matchLazy', () => {
-      it('should throw on regexps', () => {
-        return expect(() => source.matchLazy(/.*/u))
-          .toThrow(new Error('MediatedQuadSource does not support matching by regular expressions.'));
-      });
-
+    describe('match', () => {
       it('should return a MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
-        return expect(source.matchLazy()).toBeInstanceOf(MediatedLinkedRdfSourcesAsyncRdfIterator);
+        return expect(source.match(v, v, v, v)).toBeInstanceOf(MediatedLinkedRdfSourcesAsyncRdfIterator);
       });
 
       it('should return a stream', async() => {
-        expect(await arrayifyStream(source.matchLazy())).toEqualRdfQuadArray([
+        expect(await arrayifyStream(source.match(v, v, v, v))).toEqualRdfQuadArray([
           quad('s1', 'p1', 'o1'),
           quad('s2', 'p2', 'o2'),
           quad('s3', 'p3', 'o3'),
@@ -94,22 +95,19 @@ describe('MediatedQuadSource', () => {
       });
 
       it('should return a metadata event', async() => {
-        const out = source.matchLazy();
-        const metaPromise = new Promise((resolve, reject) => {
-          out.on('metadata', resolve);
-          out.on('end', () => reject(new Error('no metadata found')));
-        });
+        const out = source.match(v, v, v, v);
+        const metaPromise = new Promise(resolve => out.getProperty('metadata', resolve));
         expect(await arrayifyStream(out)).toEqualRdfQuadArray([
           quad('s1', 'p1', 'o1'),
           quad('s2', 'p2', 'o2'),
           quad('s3', 'p3', 'o3'),
           quad('s4', 'p4', 'o4'),
         ]);
-        expect(await metaPromise).toEqual({ a: 1 });
+        expect(await metaPromise).toEqual({ firstMeta: true, a: 1 });
       });
 
-      it('should set the first source after the first matchLazy call', async() => {
-        source.matchLazy();
+      it('should set the first source after the first match call', async() => {
+        source.match(v, v, v, v);
         expect((<any> (await source.sourcesState.sources.get('firstUrl'))).metadata).toEqual({ a: 1 });
         expect((<any> (await source.sourcesState.sources.get('firstUrl'))).source).toBeTruthy();
       });
@@ -122,13 +120,17 @@ describe('MediatedQuadSource', () => {
           handledDatasets: {},
           metadata: { a: 2 },
           source: {
-            match: () => streamifyArray([
-              quad('s1x', 'p1', 'o1'),
-              quad('s2x', 'p2', 'o2'),
-            ]),
+            match() {
+              const it = new ArrayIterator([
+                quad('s1x', 'p1', 'o1'),
+                quad('s2x', 'p2', 'o2'),
+              ], { autoStart: false });
+              it.setProperty('metadata', {});
+              return it;
+            },
           },
         }));
-        expect(await arrayifyStream(source.matchLazy())).toEqualRdfQuadArray([
+        expect(await arrayifyStream(source.match(v, v, v, v))).toEqualRdfQuadArray([
           quad('s1x', 'p1', 'o1'),
           quad('s2x', 'p2', 'o2'),
           quad('s3', 'p3', 'o3'),
@@ -144,24 +146,25 @@ describe('MediatedQuadSource', () => {
           handledDatasets: {},
           metadata: { a: 2 },
           source: {
-            match: () => streamifyArray([
-              quad('s1x', 'p1', 'o1'),
-              quad('s2x', 'p2', 'o2'),
-            ]),
+            match() {
+              const it = new ArrayIterator([
+                quad('s1x', 'p1', 'o1'),
+                quad('s2x', 'p2', 'o2'),
+              ], { autoStart: false });
+              it.setProperty('metadata', { firstMeta: true });
+              return it;
+            },
           },
         }));
-        const out = source.matchLazy();
-        const metaPromise = new Promise((resolve, reject) => {
-          out.on('metadata', resolve);
-          out.on('end', () => reject(new Error('no metadata found')));
-        });
+        const out = source.match(v, v, v, v);
+        const metaPromise = new Promise(resolve => out.getProperty('metadata', resolve));
         expect(await arrayifyStream(out)).toEqualRdfQuadArray([
           quad('s1x', 'p1', 'o1'),
           quad('s2x', 'p2', 'o2'),
           quad('s3', 'p3', 'o3'),
           quad('s4', 'p4', 'o4'),
         ]);
-        expect(await metaPromise).toEqual({ a: 2 });
+        expect(await metaPromise).toEqual({ firstMeta: true, a: 2 });
       });
 
       it('should match three chained sources', async() => {
@@ -174,14 +177,18 @@ describe('MediatedQuadSource', () => {
           return Promise.resolve({
             dataset: `MYDATASET${i}`,
             source: {
-              match: () => streamifyArray([
-                quad(`s1${i}`, `p1${i}`, `o1${i}`),
-                quad(`s2${i}`, `p2${i}`, `o2${i}`),
-              ]),
+              match() {
+                const it = new ArrayIterator([
+                  quad(`s1${i}`, `p1${i}`, `o1${i}`),
+                  quad(`s2${i}`, `p2${i}`, `o2${i}`),
+                ], { autoStart: false });
+                it.setProperty('metadata', { firstMeta: true });
+                return it;
+              },
             },
           });
         };
-        expect(await arrayifyStream(source.matchLazy())).toBeRdfIsomorphic([
+        expect(await arrayifyStream(source.match(v, v, v, v))).toBeRdfIsomorphic([
           quad('s11', 'p11', 'o11'),
           quad('s21', 'p21', 'o21'),
           quad('s12', 'p12', 'o12'),
@@ -189,12 +196,6 @@ describe('MediatedQuadSource', () => {
           quad('s13', 'p13', 'o13'),
           quad('s23', 'p23', 'o23'),
         ]);
-      });
-    });
-
-    describe('match', () => {
-      it('should return a MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
-        return expect(source.match()).toBeInstanceOf(MediatedLinkedRdfSourcesAsyncRdfIterator);
       });
     });
   });

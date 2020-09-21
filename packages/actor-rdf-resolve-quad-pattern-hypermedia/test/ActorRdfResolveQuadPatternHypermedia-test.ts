@@ -1,11 +1,11 @@
 import { ActionContext, Bus } from '@comunica/core';
 import 'jest-rdf';
+import { ArrayIterator } from 'asynciterator';
 import { MediatedQuadSource } from '..';
 import { ActorRdfResolveQuadPatternHypermedia } from '../lib/ActorRdfResolveQuadPatternHypermedia';
 
 const arrayifyStream = require('arrayify-stream');
 const quad = require('rdf-quad');
-const streamifyArray = require('streamify-array');
 
 describe('ActorRdfResolveQuadPatternHypermedia', () => {
   let bus: any;
@@ -18,19 +18,23 @@ describe('ActorRdfResolveQuadPatternHypermedia', () => {
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
     mediatorRdfDereference = {
-      mediate: ({ url }: any) => Promise.resolve({
-        quads: url === 'firstUrl' ?
-          streamifyArray([
-            quad('s1', 'p1', 'o1'),
-            quad('s2', 'p2', 'o2'),
-          ]) :
-          streamifyArray([
-            quad('s3', 'p3', 'o3'),
-            quad('s4', 'p4', 'o4'),
-          ]),
-        triples: true,
-        url,
-      }),
+      async mediate({ url }: any) {
+        const data = {
+          quads: url === 'firstUrl' ?
+            new ArrayIterator([
+              quad('s1', 'p1', 'o1'),
+              quad('s2', 'p2', 'o2'),
+            ], { autoStart: false }) :
+            new ArrayIterator([
+              quad('s3', 'p3', 'o3'),
+              quad('s4', 'p4', 'o4'),
+            ], { autoStart: false }),
+          triples: true,
+          url,
+        };
+        data.quads.setProperty('metadata', { firstMeta: true });
+        return data;
+      },
     };
     mediatorMetadata = {
       mediate: ({ quads }: any) => Promise.resolve({ data: quads, metadata: { a: 1 }}),
@@ -42,7 +46,7 @@ describe('ActorRdfResolveQuadPatternHypermedia', () => {
       mediate: ({ forceSourceType, handledDatasets, metadata, quads }: any) => Promise.resolve({
         dataset: 'MYDATASET',
         source: {
-          match: () => quads,
+          match: () => quads.clone(),
         },
       }),
     };
@@ -266,15 +270,27 @@ describe('ActorRdfResolveQuadPatternHypermedia', () => {
 
     describe('run', () => {
       it('should return a quad stream and metadata', async() => {
-        const { data, metadata } = await actor.run({ context, pattern });
-        const metaPromise = metadata();
+        const { data } = await actor.run({ context, pattern });
         expect(await arrayifyStream(data)).toEqualRdfQuadArray([
           quad('s1', 'p1', 'o1'),
           quad('s2', 'p2', 'o2'),
           quad('s3', 'p3', 'o3'),
           quad('s4', 'p4', 'o4'),
         ]);
-        expect(await metaPromise).toEqual({ a: 1 });
+        expect(await new Promise(resolve => data.getProperty('metadata', resolve)))
+          .toEqual({ firstMeta: true, a: 1 });
+      });
+
+      it('should return a quad stream and metadata, with metadata resolving first', async() => {
+        const { data } = await actor.run({ context, pattern });
+        expect(await new Promise(resolve => data.getProperty('metadata', resolve)))
+          .toEqual({ firstMeta: true, a: 1 });
+        expect(await arrayifyStream(data)).toEqualRdfQuadArray([
+          quad('s1', 'p1', 'o1'),
+          quad('s2', 'p2', 'o2'),
+          quad('s3', 'p3', 'o3'),
+          quad('s4', 'p4', 'o4'),
+        ]);
       });
     });
   });

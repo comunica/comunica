@@ -1,6 +1,6 @@
 import { PassThrough } from 'stream';
 import { ActionContext } from '@comunica/core';
-import { defaultGraph, namedNode } from '@rdfjs/data-model';
+import { defaultGraph, namedNode, variable } from '@rdfjs/data-model';
 import 'cross-fetch/polyfill'; // Needed to load Headers
 import 'jest-rdf';
 import { RdfSourceSparql } from '../lib/RdfSourceSparql';
@@ -55,13 +55,8 @@ describe('RdfSourceSparql', () => {
       source = new RdfSourceSparql('http://example.org/sparql', context, mediatorHttp);
     });
 
-    it('should throw on RegExp args', async() => {
-      expect(() => source.match(/.*/u))
-        .toThrow(new Error('RdfSourceSparql does not support matching by regular expressions.'));
-    });
-
     it('should return data', async() => {
-      expect(await arrayifyStream(source.match(namedNode('s'), undefined, namedNode('o'), defaultGraph())))
+      expect(await arrayifyStream(source.match(namedNode('s'), variable('p'), namedNode('o'), defaultGraph())))
         .toEqualRdfQuadArray([
           quad('s', 'p1', 'o'),
           quad('s', 'p2', 'o'),
@@ -107,7 +102,7 @@ describe('RdfSourceSparql', () => {
         },
       };
       source = new RdfSourceSparql('http://example.org/sparql', context, thisMediator);
-      expect(await arrayifyStream(source.match(namedNode('s'), undefined, namedNode('o'), defaultGraph())))
+      expect(await arrayifyStream(source.match(namedNode('s'), variable('p'), namedNode('o'), defaultGraph())))
         .toEqualRdfQuadArray([
           quad('s', 'p1', 'o'),
           quad('s', 'p2', 'o'),
@@ -116,11 +111,9 @@ describe('RdfSourceSparql', () => {
     });
 
     it('should emit metadata', async() => {
-      const stream = source.match(namedNode('s'), undefined, namedNode('o'), defaultGraph());
-      expect(await new Promise((resolve, reject) => {
-        stream.on('metadata', resolve);
-        stream.on('end', () => reject(new Error('No metadata was found.')));
-      })).toEqual({ totalItems: 3 });
+      const stream = source.match(namedNode('s'), variable('p'), namedNode('o'), defaultGraph());
+      expect(await new Promise(resolve => stream.getProperty('metadata', resolve)))
+        .toEqual({ totalItems: 3 });
     });
 
     it('should emit an error on server errors', async() => {
@@ -135,7 +128,7 @@ describe('RdfSourceSparql', () => {
         },
       };
       source = new RdfSourceSparql('http://example.org/sparql', context, thisMediator);
-      await expect(arrayifyStream(source.match(namedNode('s'), undefined, namedNode('o'), defaultGraph())))
+      await expect(arrayifyStream(source.match(namedNode('s'), variable('p'), namedNode('o'), defaultGraph())))
         .rejects.toThrow(new Error('Invalid SPARQL endpoint (http://example.org/sparql) response: Error! (500)'));
     });
 
@@ -177,7 +170,7 @@ describe('RdfSourceSparql', () => {
         },
       };
       source = new RdfSourceSparql('http://example.org/sparql', context, thisMediator);
-      await expect(arrayifyStream(source.match(namedNode('s'), undefined, namedNode('o'), defaultGraph())))
+      await expect(arrayifyStream(source.match(namedNode('s'), variable('p'), namedNode('o'), defaultGraph())))
         .rejects.toThrow(new Error('The endpoint http://example.org/sparql failed to provide a binding for p.'));
     });
 
@@ -193,7 +186,7 @@ describe('RdfSourceSparql', () => {
         },
       };
       source = new RdfSourceSparql('http://example.org/sparql', context, thisMediator);
-      await expect(arrayifyStream(source.match(namedNode('s'), undefined, namedNode('o'), defaultGraph())))
+      await expect(arrayifyStream(source.match(namedNode('s'), variable('p'), namedNode('o'), defaultGraph())))
         .rejects.toThrow(new Error('Some stream error'));
     });
 
@@ -235,11 +228,9 @@ describe('RdfSourceSparql', () => {
         },
       };
       source = new RdfSourceSparql('http://example.org/sparql', context, thisMediator);
-      const stream = source.match(namedNode('s'), undefined, namedNode('o'), defaultGraph());
-      expect(await new Promise((resolve, reject) => {
-        stream.on('metadata', resolve);
-        stream.on('end', () => reject(new Error('No metadata was found.')));
-      })).toEqual({ totalItems: Infinity });
+      const stream = source.match(namedNode('s'), variable('p'), namedNode('o'), defaultGraph());
+      expect(await new Promise(resolve => stream.getProperty('metadata', resolve)))
+        .toEqual({ totalItems: Infinity });
     });
 
     it('should emit metadata with infinity count for missing count results', async() => {
@@ -280,11 +271,9 @@ describe('RdfSourceSparql', () => {
         },
       };
       source = new RdfSourceSparql('http://example.org/sparql', context, thisMediator);
-      const stream = source.match(namedNode('s'), undefined, namedNode('o'), defaultGraph());
-      expect(await new Promise((resolve, reject) => {
-        stream.on('metadata', resolve);
-        stream.on('end', () => reject(new Error('No metadata was found.')));
-      })).toEqual({ totalItems: Infinity });
+      const stream = source.match(namedNode('s'), variable('p'), namedNode('o'), defaultGraph());
+      expect(await new Promise(resolve => stream.getProperty('metadata', resolve)))
+        .toEqual({ totalItems: Infinity });
     });
 
     it('should allow multiple _read calls on query bindings', () => {

@@ -1,4 +1,5 @@
-import { BufferedIterator, BufferedIteratorOptions } from 'asynciterator';
+import { IQuadSource } from '@comunica/bus-rdf-resolve-quad-pattern';
+import { AsyncIterator, BufferedIterator } from 'asynciterator';
 import LRUCache = require('lru-cache');
 import type * as RDF from 'rdf-js';
 
@@ -11,31 +12,29 @@ import type * as RDF from 'rdf-js';
 export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<RDF.Quad> implements RDF.Stream {
   public sourcesState?: ISourcesState;
 
-  protected readonly subject?: RDF.Term;
-  protected readonly predicate?: RDF.Term;
-  protected readonly object?: RDF.Term;
-  protected readonly graph?: RDF.Term;
-  protected nextUrls: string[];
-  protected nextSource?: ISourceState;
+  protected readonly subject: RDF.Term;
+  protected readonly predicate: RDF.Term;
+  protected readonly object: RDF.Term;
+  protected readonly graph: RDF.Term;
+  protected nextSource: ISourceState | undefined;
+  protected readonly urlQueue: string[];
 
   private readonly cacheSize: number;
   private readonly firstUrl: string;
-  private started: boolean;
-  private iterating: boolean;
 
-  public constructor(cacheSize: number, subject: RDF.Term | undefined, predicate: RDF.Term | undefined,
-    object: RDF.Term | undefined, graph: RDF.Term | undefined,
-    firstUrl: string, options?: BufferedIteratorOptions) {
-    super(options);
+  private started = false;
+  private currentIterator: AsyncIterator<RDF.Quad> | undefined;
+
+  public constructor(cacheSize: number, subject: RDF.Term, predicate: RDF.Term, object: RDF.Term, graph: RDF.Term,
+    firstUrl: string) {
+    super({ autoStart: true });
     this.cacheSize = cacheSize;
     this.subject = subject;
     this.predicate = predicate;
     this.object = object;
     this.graph = graph;
-    this.nextUrls = [];
+    this.urlQueue = [];
     this.firstUrl = firstUrl;
-    this.started = false;
-    this.iterating = false;
   }
 
   /**
@@ -59,111 +58,146 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
         sources: new LRUCache<string, Promise<ISourceState>>({ max: this.cacheSize }),
       };
       // Ignore the response, we just want the promise to be cached
-      this.getNextSourceCached(this.firstUrl, {})
+      this.getSourceCached(this.firstUrl, {})
         .catch(error => this.destroy(error));
     }
   }
 
+  /**
+   * Determine the links to be followed from the current source given its metadata.
+   * @param metadata The metadata of a source.
+   */
+  protected abstract getSourceLinks(metadata: {[id: string]: any}): Promise<string[]>;
+
+  /**
+   * Resolve a source for the given URL.
+   * @param url A source URL.
+   * @param handledDatasets A hash of dataset identifiers that have already been handled.
+   */
+  protected abstract async getSource(url: string, handledDatasets: {[type: string]: boolean}): Promise<ISourceState>;
+
+  /**
+   * Resolve a source for the given URL.
+   * This will first try to retrieve the source from cache.
+   * @param url A source URL.
+   * @param handledDatasets A hash of dataset identifiers that have already been handled.
+   */
+  protected getSourceCached(url: string, handledDatasets: {[type: string]: boolean}): Promise<ISourceState> {
+    let source = (<ISourcesState> this.sourcesState).sources.get(url);
+    if (source) {
+      return source;
+    }
+    source = this.getSource(url, handledDatasets);
+    (<ISourcesState> this.sourcesState).sources.set(url, source);
+    return source;
+  }
+
   public _read(count: number, done: () => void): void {
     if (!this.started) {
+      // The first time this is called, prepare the first source
       this.started = true;
+
+      // Create a sources state if needed (can be defined if set from actor cache)
       if (!this.sourcesState) {
         this.setSourcesState();
       }
-      this.getNextSourceCached(this.firstUrl, {})
+
+      // Await the source to be set, and start the source iterator
+      this.getSourceCached(this.firstUrl, {})
         .then(sourceState => {
-          this.startIterator(sourceState, true);
+          this.setCurrentIterator(sourceState, true);
           done();
         })
         .catch(error => {
           // We can safely ignore this error, since it handled in setSourcesState
           done();
         });
-    } else if (!this.iterating && this.nextSource) {
-      const nextSource = this.nextSource;
-      this.nextSource = undefined;
-      this.getNextUrls(nextSource.metadata)
-        .then((nextUrls: string[]) => Promise.all(nextUrls))
-        .then(async(nextUrls: string[]) => {
-          if (nextUrls.length === 0 && this.nextUrls.length === 0) {
-            this.close();
-          } else {
-            for (const nextUrl of nextUrls) {
-              this.nextUrls.push(nextUrl);
-            }
-
-            const nextSourceState = await this.getNextSourceCached(this.nextUrls[0], nextSource.handledDatasets);
-            this.startIterator(nextSourceState, false);
-            this.nextUrls.splice(0, 1);
-          }
-
-          done();
-        }).catch(error => this.emit('error', error));
+    } else if (this.currentIterator) {
+      // If an iterator has been set, read from it.
+      while (count > 0) {
+        const read = this.currentIterator.read();
+        if (read !== null) {
+          count--;
+          this._push(read);
+        } else {
+          break;
+        }
+      }
+      done();
     } else {
+      // This can occur during source loading.
       done();
     }
   }
 
-  protected abstract getNextUrls(metadata: {[id: string]: any}): Promise<string[]>;
-
-  protected abstract async getNextSource(url: string, handledDatasets: {[type: string]: boolean}):
-  Promise<ISourceState>;
-
-  protected getNextSourceCached(url: string, handledDatasets: {[type: string]: boolean}): Promise<ISourceState> {
-    let source = (<ISourcesState> this.sourcesState).sources.get(url);
-    if (source) {
-      return source;
-    }
-    source = this.getNextSource(url, handledDatasets);
-    (<ISourcesState> this.sourcesState).sources.set(url, source);
-    return source;
-  }
-
   /**
    * Start a new iterator for the given source.
-   * Once the iterator is done, it will either determine a new source, or it will close the iterator.
+   * Once the iterator is done, it will either determine a new source, or it will close the linked iterator.
    * @param {ISourceState} startSource The start source state.
    * @param {boolean} emitMetadata If the metadata event should be emitted.
    */
-  protected startIterator(startSource: ISourceState, emitMetadata: boolean): void {
-    // Asynchronously execute the quad pattern query
-    this.iterating = true;
-    const it: RDF.Stream = (<RDF.Source> startSource.source)
+  protected setCurrentIterator(startSource: ISourceState, emitMetadata: boolean): void {
+    // Delegate the quad pattern query to the given source
+    this.currentIterator = (<IQuadSource> startSource.source)
       .match(this.subject, this.predicate, this.object, this.graph);
-    let currentMetadata = startSource.metadata;
-    let ended = false;
+    let receivedMetadata = false;
 
-    // If the response emits metadata, override our metadata
-    // For example, this will always be called for QPF sources (if not, then something is going wrong)
-    it.on('metadata', metadata => {
-      if (ended) {
-        (<any> this).destroy(new Error('Received metadata AFTER the source iterator was ended.'));
+    // Attach readers to the newly created iterator
+    (<any> this.currentIterator)._destination = this;
+    this.currentIterator.on('error', (error: Error) => this.destroy(error));
+    this.currentIterator.on('readable', () => this._fillBuffer());
+    this.currentIterator.on('end', () => {
+      this.currentIterator = undefined;
+
+      // If the metadata was already received, handle the next URL in the queue
+      if (receivedMetadata) {
+        this.handleNextUrl(startSource);
       }
-      currentMetadata = { ...currentMetadata, ...metadata };
     });
 
-    it.on('data', (quad: RDF.Quad) => {
-      this._push(quad);
-      this.readable = true;
-    });
-    it.on('error', (error: Error) => this.destroy(error));
-    it.prependListener('end', () => {
-      ended = true;
+    // Listen for the metadata of the source
+    // The metadata property is guaranteed to be set
+    this.currentIterator.getProperty('metadata', (metadata: { [id: string]: any }) => {
+      startSource.metadata = { ...startSource.metadata, ...metadata };
 
+      // Emit metadata if needed
       if (emitMetadata) {
-        // Emit the metadata after all data has been processed.
-        this.emit('metadata', currentMetadata);
+        this.setProperty('metadata', startSource.metadata);
       }
 
-      // Store the metadata for next ._read call
-      this.nextSource = {
-        handledDatasets: { ...startSource.handledDatasets },
-        metadata: currentMetadata,
-        source: undefined,
-      };
-      this.iterating = false;
-      this.readable = true;
+      // Determine next urls, which will eventually become a next-next source.
+      this.getSourceLinks(startSource.metadata)
+        .then((nextUrls: string[]) => Promise.all(nextUrls))
+        .then(async(nextUrls: string[]) => {
+          // Append all next URLs to our queue
+          for (const nextUrl of nextUrls) {
+            this.urlQueue.push(nextUrl);
+          }
+
+          // Handle the next queued URL if we don't have an active iterator (in which case it will be called later)
+          receivedMetadata = true;
+          if (!this.currentIterator) {
+            this.handleNextUrl(startSource);
+          }
+        }).catch(error => this.destroy(error));
     });
+  }
+
+  /**
+   * Check if a next URL is in the queue.
+   * If yes, start a new iterator.
+   * If no, close this iterator.
+   * @param startSource
+   */
+  protected handleNextUrl(startSource: ISourceState): void {
+    if (this.urlQueue.length === 0) {
+      this.close();
+    } else {
+      this.getSourceCached(this.urlQueue[0], startSource.handledDatasets)
+        .then(nextSourceState => this.setCurrentIterator(nextSourceState, false))
+        .catch(error => this.destroy(error));
+      this.urlQueue.shift();
+    }
   }
 }
 
@@ -186,7 +220,7 @@ export interface ISourceState {
   /**
    * A source.
    */
-  source?: RDF.Source;
+  source?: IQuadSource;
   /**
    * The source's initial metadata.
    */

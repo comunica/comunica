@@ -24,12 +24,8 @@ export const DataSourceUtils = {
     if (context && context.has(KEY_CONTEXT_SOURCES)) {
       // If multiple sources are set
       const datasources: DataSources = context.get(KEY_CONTEXT_SOURCES);
-      if (datasources.isEnded()) {
-        // Now get the first source
-        const datasourcesArray: IDataSource[] = await require('arrayify-stream')(datasources.iterator());
-        if (datasourcesArray.length === 1) {
-          return datasourcesArray[0];
-        }
+      if (datasources.length === 1) {
+        return datasources[0];
       }
     }
   },
