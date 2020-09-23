@@ -39,7 +39,7 @@
   ],
   "dependencies": {
     "@types/rdf-js": "^3.0.0",
-    "asynciterator": "^3.0.1"
+    "asynciterator": "^3.0.3"
   },
   "peerDependencies": {
     "@comunica/core": "^1.0.0"

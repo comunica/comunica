@@ -44,7 +44,7 @@
   "dependencies": {
     "@rdfjs/data-model": "^1.1.1",
     "@types/rdf-js": "^3.0.0",
-    "asynciterator": "^3.0.1",
+    "asynciterator": "^3.0.3",
     "rdf-string": "^1.4.2",
     "sparqlalgebrajs": "^2.3.2"
   },

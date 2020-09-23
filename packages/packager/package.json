@@ -70,7 +70,7 @@
     "@comunica/actor-rdf-parse-n3": "^1.15.0",
     "@comunica/actor-rdf-resolve-quad-pattern-federated": "^1.16.0",
     "@comunica/actor-rdf-resolve-quad-pattern-file": "^1.16.0",
-    "@comunica/actor-rdf-resolve-quad-pattern-qpf": "^1.4.4",
+    "@comunica/actor-rdf-resolve-quad-pattern-hypermedia": "^1.16.0",
     "@comunica/actor-rdf-resolve-quad-pattern-sparql-json": "^1.16.0",
     "@comunica/actor-rdf-serialize-jsonld": "^1.15.0",
     "@comunica/actor-rdf-serialize-n3": "^1.15.0",

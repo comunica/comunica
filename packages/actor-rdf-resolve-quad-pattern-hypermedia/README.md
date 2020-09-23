@@ -12,7 +12,7 @@ and should only be used by [developers that want to build their own query engine
 ## Install
 
 ```bash
-$ yarn add @comunica/actor-rdf-resolve-quad-pattern-qpf
+$ yarn add @comunica/actor-rdf-resolve-quad-pattern-hypermedia
 ```
 ## Configure
 

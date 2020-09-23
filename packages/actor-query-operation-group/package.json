@@ -40,7 +40,7 @@
   ],
   "dependencies": {
     "@comunica/actor-abstract-bindings-hash": "^1.16.0",
-    "asynciterator": "^3.0.1",
+    "asynciterator": "^3.0.3",
     "rdf-string": "^1.4.2",
     "sparqlee": "^1.4.3",
     "sparqlalgebrajs": "^2.3.2"

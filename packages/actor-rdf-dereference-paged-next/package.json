@@ -41,7 +41,7 @@
   "dependencies": {
     "@types/lru-cache": "^5.1.0",
     "@types/rdf-js": "^3.0.0",
-    "asynciterator": "^3.0.1",
+    "asynciterator": "^3.0.3",
     "lru-cache": "^6.0.0"
   },
   "peerDependencies": {
