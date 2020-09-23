@@ -40,7 +40,7 @@
     "index.js"
   ],
   "dependencies": {
-    "asynciterator": "^3.0.1",
+    "asynciterator": "^3.0.3",
     "sparqlee": "^1.4.3",
     "sparqlalgebrajs": "^2.3.2"
   },

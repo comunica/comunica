@@ -40,7 +40,7 @@
   "dependencies": {
     "@comunica/bus-rdf-resolve-quad-pattern": "^1.16.0",
     "@types/rdf-js": "^3.0.0",
-    "asynciterator": "^3.0.1"
+    "asynciterator": "^3.0.3"
   },
   "peerDependencies": {
     "@comunica/actor-rdf-metadata-extract-hydra-controls": "^1.0.0",
