@@ -91,15 +91,10 @@
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="bus_rdf_parse_html.iactionrdfparsehtml-1.html#baseiri" class="tsd-kind-icon">baseIRI</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="bus_rdf_parse_html.iactionrdfparsehtml-1.html#context" class="tsd-kind-icon">context</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="bus_rdf_parse_html.iactionrdfparsehtml-1.html#emit" class="tsd-kind-icon">emit</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="bus_rdf_parse_html.iactionrdfparsehtml-1.html#end" class="tsd-kind-icon">end</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="bus_rdf_parse_html.iactionrdfparsehtml-1.html#error" class="tsd-kind-icon">error</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="bus_rdf_parse_html.iactionrdfparsehtml-1.html#headers" class="tsd-kind-icon">headers</a></li>
-							</ul>
-						</section>
-						<section class="tsd-index-section ">
-							<h3>Methods</h3>
-							<ul class="tsd-index-list">
-								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="bus_rdf_parse_html.iactionrdfparsehtml-1.html#emit" class="tsd-kind-icon">emit</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="bus_rdf_parse_html.iactionrdfparsehtml-1.html#end" class="tsd-kind-icon">end</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="bus_rdf_parse_html.iactionrdfparsehtml-1.html#error" class="tsd-kind-icon">error</a></li>
 							</ul>
 						</section>
 					</div>
@@ -113,7 +108,7 @@
 					<div class="tsd-signature tsd-kind-icon">baseIRI<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d4bf61a/packages/bus-rdf-parse-html/lib/ActorRdfParseHtml.ts#L25">packages/bus-rdf-parse-html/lib/ActorRdfParseHtml.ts:25</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/2d0818c/packages/bus-rdf-parse-html/lib/ActorRdfParseHtml.ts#L26">packages/bus-rdf-parse-html/lib/ActorRdfParseHtml.ts:26</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -129,7 +124,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from <a href="core.iaction-1.html">IAction</a>.<a href="core.iaction-1.html#context">context</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d4bf61a/packages/core/lib/Actor.ts#L215">packages/core/lib/Actor.ts:215</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/2d0818c/packages/core/lib/Actor.ts#L217">packages/core/lib/Actor.ts:217</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -139,12 +134,122 @@
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="emit" class="tsd-anchor"></a>
+					<h3>emit</h3>
+					<div class="tsd-signature tsd-kind-icon">emit<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>quad<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/2d0818c/packages/bus-rdf-parse-html/lib/ActorRdfParseHtml.ts#L36">packages/bus-rdf-parse-html/lib/ActorRdfParseHtml.ts:36</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>This function can be called whenever a quad has been parsed.</p>
+						</div>
+						<dl class="tsd-comment-tags">
+							<dt>param</dt>
+							<dd><p>A parsed quad.</p>
+							</dd>
+						</dl>
+					</div>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter-signature">
+								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property">
+									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>quad<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+								</ul>
+								<ul class="tsd-descriptions">
+									<li class="tsd-description">
+										<h4 class="tsd-parameters-title">Parameters</h4>
+										<ul class="tsd-parameters">
+											<li>
+												<h5>quad: <span class="tsd-signature-type">Quad</span></h5>
+											</li>
+										</ul>
+										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="end" class="tsd-anchor"></a>
+					<h3>end</h3>
+					<div class="tsd-signature tsd-kind-icon">end<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/2d0818c/packages/bus-rdf-parse-html/lib/ActorRdfParseHtml.ts#L47">packages/bus-rdf-parse-html/lib/ActorRdfParseHtml.ts:47</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>This function must be called when parsing is complete.</p>
+						</div>
+					</div>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter-signature">
+								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property">
+									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+								</ul>
+								<ul class="tsd-descriptions">
+									<li class="tsd-description">
+										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="error" class="tsd-anchor"></a>
+					<h3>error</h3>
+					<div class="tsd-signature tsd-kind-icon">error<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>error<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Error</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/2d0818c/packages/bus-rdf-parse-html/lib/ActorRdfParseHtml.ts#L42">packages/bus-rdf-parse-html/lib/ActorRdfParseHtml.ts:42</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>This function can be called when an error occurs.</p>
+						</div>
+					</div>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter-signature">
+								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property">
+									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>error<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Error</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+								</ul>
+								<ul class="tsd-descriptions">
+									<li class="tsd-description">
+										<div class="tsd-comment tsd-typography">
+											<p>An error.</p>
+										</div>
+										<h4 class="tsd-parameters-title">Parameters</h4>
+										<ul class="tsd-parameters">
+											<li>
+												<h5>error: <span class="tsd-signature-type">Error</span></h5>
+											</li>
+										</ul>
+										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="headers" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagOptional">Optional</span> headers</h3>
 					<div class="tsd-signature tsd-kind-icon">headers<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Headers</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d4bf61a/packages/bus-rdf-parse-html/lib/ActorRdfParseHtml.ts#L29">packages/bus-rdf-parse-html/lib/ActorRdfParseHtml.ts:29</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/2d0818c/packages/bus-rdf-parse-html/lib/ActorRdfParseHtml.ts#L30">packages/bus-rdf-parse-html/lib/ActorRdfParseHtml.ts:30</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -152,93 +257,6 @@
 							<p>The headers with which the RDF document should be parsed.</p>
 						</div>
 					</div>
-				</section>
-			</section>
-			<section class="tsd-panel-group tsd-member-group ">
-				<h2>Methods</h2>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
-					<a name="emit" class="tsd-anchor"></a>
-					<h3>emit</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-						<li class="tsd-signature tsd-kind-icon">emit<span class="tsd-signature-symbol">(</span>quad<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/d4bf61a/packages/bus-rdf-parse-html/lib/ActorRdfParseHtml.ts#L35">packages/bus-rdf-parse-html/lib/ActorRdfParseHtml.ts:35</a></li>
-								</ul>
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>This function can be called whenever a quad has been parsed.</p>
-								</div>
-							</div>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>quad: <span class="tsd-signature-type">Quad</span></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>A parsed quad.</p>
-									</div>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
-					<a name="end" class="tsd-anchor"></a>
-					<h3>end</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-						<li class="tsd-signature tsd-kind-icon">end<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/d4bf61a/packages/bus-rdf-parse-html/lib/ActorRdfParseHtml.ts#L46">packages/bus-rdf-parse-html/lib/ActorRdfParseHtml.ts:46</a></li>
-								</ul>
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>This function must be called when parsing is complete.</p>
-								</div>
-							</div>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
-					<a name="error" class="tsd-anchor"></a>
-					<h3>error</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-						<li class="tsd-signature tsd-kind-icon">error<span class="tsd-signature-symbol">(</span>error<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Error</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/d4bf61a/packages/bus-rdf-parse-html/lib/ActorRdfParseHtml.ts#L41">packages/bus-rdf-parse-html/lib/ActorRdfParseHtml.ts:41</a></li>
-								</ul>
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>This function can be called when an error occurs.</p>
-								</div>
-							</div>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>error: <span class="tsd-signature-type">Error</span></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>An error.</p>
-									</div>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-						</li>
-					</ul>
 				</section>
 			</section>
 		</div>
@@ -285,16 +303,16 @@
 										<a href="bus_rdf_parse_html.iactionrdfparsehtml-1.html#context" class="tsd-kind-icon">context</a>
 									</li>
 									<li class=" tsd-kind-property tsd-parent-kind-interface">
-										<a href="bus_rdf_parse_html.iactionrdfparsehtml-1.html#headers" class="tsd-kind-icon">headers</a>
-									</li>
-									<li class=" tsd-kind-method tsd-parent-kind-interface">
 										<a href="bus_rdf_parse_html.iactionrdfparsehtml-1.html#emit" class="tsd-kind-icon">emit</a>
 									</li>
-									<li class=" tsd-kind-method tsd-parent-kind-interface">
+									<li class=" tsd-kind-property tsd-parent-kind-interface">
 										<a href="bus_rdf_parse_html.iactionrdfparsehtml-1.html#end" class="tsd-kind-icon">end</a>
 									</li>
-									<li class=" tsd-kind-method tsd-parent-kind-interface">
+									<li class=" tsd-kind-property tsd-parent-kind-interface">
 										<a href="bus_rdf_parse_html.iactionrdfparsehtml-1.html#error" class="tsd-kind-icon">error</a>
+									</li>
+									<li class=" tsd-kind-property tsd-parent-kind-interface">
+										<a href="bus_rdf_parse_html.iactionrdfparsehtml-1.html#headers" class="tsd-kind-icon">headers</a>
 									</li>
 								</ul>
 							</li>
@@ -328,7 +346,6 @@
 				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
 				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
 				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
 			</ul>
 			<ul class="tsd-legend">
 				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>

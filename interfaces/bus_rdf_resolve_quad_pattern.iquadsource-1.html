@@ -100,68 +100,80 @@
 				<section class="tsd-panel tsd-index-panel">
 					<div class="tsd-index-content">
 						<section class="tsd-index-section ">
-							<h3>Methods</h3>
+							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="bus_rdf_resolve_quad_pattern.iquadsource-1.html#match" class="tsd-kind-icon">match</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="bus_rdf_resolve_quad_pattern.iquadsource-1.html#match" class="tsd-kind-icon">match</a></li>
 							</ul>
 						</section>
 					</div>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
-				<h2>Methods</h2>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
+				<h2>Properties</h2>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="match" class="tsd-anchor"></a>
 					<h3>match</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-						<li class="tsd-signature tsd-kind-icon">match<span class="tsd-signature-symbol">(</span>subject<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">RDF.Term</span>, predicate<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">RDF.Term</span>, object<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">RDF.Term</span>, graph<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">RDF.Term</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">AsyncIterator</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">&gt;</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/d4bf61a/packages/bus-rdf-resolve-quad-pattern/lib/ActorRdfResolveQuadPatternSource.ts#L72">packages/bus-rdf-resolve-quad-pattern/lib/ActorRdfResolveQuadPatternSource.ts:72</a></li>
+					<div class="tsd-signature tsd-kind-icon">match<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>subject<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">RDF.Term</span>, predicate<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">RDF.Term</span>, object<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">RDF.Term</span>, graph<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">RDF.Term</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">AsyncIterator</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">&gt;</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/2d0818c/packages/bus-rdf-resolve-quad-pattern/lib/ActorRdfResolveQuadPatternSource.ts#L72">packages/bus-rdf-resolve-quad-pattern/lib/ActorRdfResolveQuadPatternSource.ts:72</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Returns a (possibly lazy) stream that processes all quads matching the pattern.</p>
+						</div>
+						<p>The returned stream MUST expose the property &#39;metadata&#39;.
+							The implementor is reponsible for handling cases where &#39;metadata&#39;
+						is being called without the stream being in flow-mode.</p>
+						<dl class="tsd-comment-tags">
+							<dt>param</dt>
+							<dd><p>The exact subject to match, variable is wildcard.</p>
+							</dd>
+							<dt>param</dt>
+							<dd><p>The exact predicate to match, variable is wildcard.</p>
+							</dd>
+							<dt>param</dt>
+							<dd><p>The exact object to match, variable is wildcard.</p>
+							</dd>
+							<dt>param</dt>
+							<dd><p>The exact graph to match, variable is wildcard.</p>
+							</dd>
+							<dt>returns</dt>
+							<dd><p>The resulting quad stream.</p>
+							</dd>
+						</dl>
+					</div>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter-signature">
+								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property">
+									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>subject<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">RDF.Term</span>, predicate<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">RDF.Term</span>, object<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">RDF.Term</span>, graph<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">RDF.Term</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">AsyncIterator</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">&gt;</span></li>
 								</ul>
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Returns a (possibly lazy) stream that processes all quads matching the pattern.</p>
-								</div>
-								<p>The returned stream MUST expose the property &#39;metadata&#39;.
-									The implementor is reponsible for handling cases where &#39;metadata&#39;
-								is being called without the stream being in flow-mode.</p>
-							</div>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>subject: <span class="tsd-signature-type">RDF.Term</span></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>The exact subject to match, variable is wildcard.</p>
-									</div>
-								</li>
-								<li>
-									<h5>predicate: <span class="tsd-signature-type">RDF.Term</span></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>The exact predicate to match, variable is wildcard.</p>
-									</div>
-								</li>
-								<li>
-									<h5>object: <span class="tsd-signature-type">RDF.Term</span></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>The exact object to match, variable is wildcard.</p>
-									</div>
-								</li>
-								<li>
-									<h5>graph: <span class="tsd-signature-type">RDF.Term</span></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>The exact graph to match, variable is wildcard.</p>
-									</div>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">AsyncIterator</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">&gt;</span></h4>
-							<p>The resulting quad stream.</p>
-						</li>
-					</ul>
+								<ul class="tsd-descriptions">
+									<li class="tsd-description">
+										<h4 class="tsd-parameters-title">Parameters</h4>
+										<ul class="tsd-parameters">
+											<li>
+												<h5>subject: <span class="tsd-signature-type">RDF.Term</span></h5>
+											</li>
+											<li>
+												<h5>predicate: <span class="tsd-signature-type">RDF.Term</span></h5>
+											</li>
+											<li>
+												<h5>object: <span class="tsd-signature-type">RDF.Term</span></h5>
+											</li>
+											<li>
+												<h5>graph: <span class="tsd-signature-type">RDF.Term</span></h5>
+											</li>
+										</ul>
+										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">AsyncIterator</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">&gt;</span></h4>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</div>
 				</section>
 			</section>
 		</div>
@@ -237,7 +249,7 @@
 							<li class="current tsd-kind-interface tsd-parent-kind-module">
 								<a href="bus_rdf_resolve_quad_pattern.iquadsource-1.html" class="tsd-kind-icon">IQuad<wbr>Source</a>
 								<ul>
-									<li class=" tsd-kind-method tsd-parent-kind-interface">
+									<li class=" tsd-kind-property tsd-parent-kind-interface">
 										<a href="bus_rdf_resolve_quad_pattern.iquadsource-1.html#match" class="tsd-kind-icon">match</a>
 									</li>
 								</ul>
@@ -289,7 +301,7 @@
 			<ul class="tsd-legend">
 				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
 				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
+				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
 			</ul>
 			<ul class="tsd-legend">
 				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>

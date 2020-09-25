@@ -85,14 +85,9 @@
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="actor_rdf_metadata_extract_hydra_controls_query.isearchform-1.html#dataset" class="tsd-kind-icon">dataset</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="actor_rdf_metadata_extract_hydra_controls_query.isearchform-1.html#geturi" class="tsd-kind-icon">get<wbr>Uri</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="actor_rdf_metadata_extract_hydra_controls_query.isearchform-1.html#mappings" class="tsd-kind-icon">mappings</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="actor_rdf_metadata_extract_hydra_controls_query.isearchform-1.html#template" class="tsd-kind-icon">template</a></li>
-							</ul>
-						</section>
-						<section class="tsd-index-section ">
-							<h3>Methods</h3>
-							<ul class="tsd-index-list">
-								<li class="tsd-kind-method tsd-parent-kind-interface"><a href="actor_rdf_metadata_extract_hydra_controls_query.isearchform-1.html#geturi" class="tsd-kind-icon">get<wbr>Uri</a></li>
 							</ul>
 						</section>
 					</div>
@@ -106,7 +101,7 @@
 					<div class="tsd-signature tsd-kind-icon">dataset<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d4bf61a/packages/actor-rdf-metadata-extract-hydra-controls-query/lib/ActorRdfMetadataExtractHydraControlsQuery.ts#L95">packages/actor-rdf-metadata-extract-hydra-controls-query/lib/ActorRdfMetadataExtractHydraControlsQuery.ts:95</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/2d0818c/packages/actor-rdf-metadata-extract-hydra-controls-query/lib/ActorRdfMetadataExtractHydraControlsQuery.ts#L97">packages/actor-rdf-metadata-extract-hydra-controls-query/lib/ActorRdfMetadataExtractHydraControlsQuery.ts:97</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -116,12 +111,62 @@
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="geturi" class="tsd-anchor"></a>
+					<h3>get<wbr>Uri</h3>
+					<div class="tsd-signature tsd-kind-icon">get<wbr>Uri<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>entries<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{}</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">string</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/2d0818c/packages/actor-rdf-metadata-extract-hydra-controls-query/lib/ActorRdfMetadataExtractHydraControlsQuery.ts#L115">packages/actor-rdf-metadata-extract-hydra-controls-query/lib/ActorRdfMetadataExtractHydraControlsQuery.ts:115</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>Instantiate a uri based on the given Hydra variable values.</p>
+						</div>
+						<dl class="tsd-comment-tags">
+							<dt>param</dt>
+							<dd><p>Entries with as keys Hydra properties,
+								and as values Hydra variable values.</p>
+							</dd>
+							<dt>returns</dt>
+							<dd><p>The instantiated URI</p>
+							</dd>
+						</dl>
+					</div>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter-signature">
+								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property">
+									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>entries<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{}</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
+								</ul>
+								<ul class="tsd-descriptions">
+									<li class="tsd-description">
+										<h4 class="tsd-parameters-title">Parameters</h4>
+										<ul class="tsd-parameters">
+											<li>
+												<h5>entries: <span class="tsd-signature-symbol">{}</span></h5>
+												<ul class="tsd-parameters">
+													<li class="tsd-parameter-index-signature">
+														<h5><span class="tsd-signature-symbol">[</span>id: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]: </span><span class="tsd-signature-type">string</span></h5>
+													</li>
+												</ul>
+											</li>
+										</ul>
+										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="mappings" class="tsd-anchor"></a>
 					<h3>mappings</h3>
 					<div class="tsd-signature tsd-kind-icon">mappings<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{}</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d4bf61a/packages/actor-rdf-metadata-extract-hydra-controls-query/lib/ActorRdfMetadataExtractHydraControlsQuery.ts#L105">packages/actor-rdf-metadata-extract-hydra-controls-query/lib/ActorRdfMetadataExtractHydraControlsQuery.ts:105</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/2d0818c/packages/actor-rdf-metadata-extract-hydra-controls-query/lib/ActorRdfMetadataExtractHydraControlsQuery.ts#L107">packages/actor-rdf-metadata-extract-hydra-controls-query/lib/ActorRdfMetadataExtractHydraControlsQuery.ts:107</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -146,7 +191,7 @@
 					<div class="tsd-signature tsd-kind-icon">template<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d4bf61a/packages/actor-rdf-metadata-extract-hydra-controls-query/lib/ActorRdfMetadataExtractHydraControlsQuery.ts#L99">packages/actor-rdf-metadata-extract-hydra-controls-query/lib/ActorRdfMetadataExtractHydraControlsQuery.ts:99</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/2d0818c/packages/actor-rdf-metadata-extract-hydra-controls-query/lib/ActorRdfMetadataExtractHydraControlsQuery.ts#L101">packages/actor-rdf-metadata-extract-hydra-controls-query/lib/ActorRdfMetadataExtractHydraControlsQuery.ts:101</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -154,47 +199,6 @@
 							<p>The URI template containing Hydra variables.</p>
 						</div>
 					</div>
-				</section>
-			</section>
-			<section class="tsd-panel-group tsd-member-group ">
-				<h2>Methods</h2>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-interface">
-					<a name="geturi" class="tsd-anchor"></a>
-					<h3>get<wbr>Uri</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface">
-						<li class="tsd-signature tsd-kind-icon">get<wbr>Uri<span class="tsd-signature-symbol">(</span>entries<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{}</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/d4bf61a/packages/actor-rdf-metadata-extract-hydra-controls-query/lib/ActorRdfMetadataExtractHydraControlsQuery.ts#L113">packages/actor-rdf-metadata-extract-hydra-controls-query/lib/ActorRdfMetadataExtractHydraControlsQuery.ts:113</a></li>
-								</ul>
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Instantiate a uri based on the given Hydra variable values.</p>
-								</div>
-							</div>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>entries: <span class="tsd-signature-symbol">{}</span></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>Entries with as keys Hydra properties,
-										and as values Hydra variable values.</p>
-									</div>
-									<ul class="tsd-parameters">
-										<li class="tsd-parameter-index-signature">
-											<h5><span class="tsd-signature-symbol">[</span>id: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]: </span><span class="tsd-signature-type">string</span></h5>
-										</li>
-									</ul>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
-							<p>The instantiated URI</p>
-						</li>
-					</ul>
 				</section>
 			</section>
 		</div>
@@ -235,13 +239,13 @@
 										<a href="actor_rdf_metadata_extract_hydra_controls_query.isearchform-1.html#dataset" class="tsd-kind-icon">dataset</a>
 									</li>
 									<li class=" tsd-kind-property tsd-parent-kind-interface">
+										<a href="actor_rdf_metadata_extract_hydra_controls_query.isearchform-1.html#geturi" class="tsd-kind-icon">get<wbr>Uri</a>
+									</li>
+									<li class=" tsd-kind-property tsd-parent-kind-interface">
 										<a href="actor_rdf_metadata_extract_hydra_controls_query.isearchform-1.html#mappings" class="tsd-kind-icon">mappings</a>
 									</li>
 									<li class=" tsd-kind-property tsd-parent-kind-interface">
 										<a href="actor_rdf_metadata_extract_hydra_controls_query.isearchform-1.html#template" class="tsd-kind-icon">template</a>
-									</li>
-									<li class=" tsd-kind-method tsd-parent-kind-interface">
-										<a href="actor_rdf_metadata_extract_hydra_controls_query.isearchform-1.html#geturi" class="tsd-kind-icon">get<wbr>Uri</a>
 									</li>
 								</ul>
 							</li>
@@ -272,7 +276,6 @@
 				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
 				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
 				<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
-				<li class="tsd-kind-method tsd-parent-kind-interface"><span class="tsd-kind-icon">Method</span></li>
 			</ul>
 			<ul class="tsd-legend">
 				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
