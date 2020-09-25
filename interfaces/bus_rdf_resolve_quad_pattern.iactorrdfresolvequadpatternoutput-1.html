@@ -90,7 +90,6 @@
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="bus_rdf_resolve_quad_pattern.iactorrdfresolvequadpatternoutput-1.html#data" class="tsd-kind-icon">data</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="bus_rdf_resolve_quad_pattern.iactorrdfresolvequadpatternoutput-1.html#metadata" class="tsd-kind-icon">metadata</a></li>
 							</ul>
 						</section>
 					</div>
@@ -101,51 +100,21 @@
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="data" class="tsd-anchor"></a>
 					<h3>data</h3>
-					<div class="tsd-signature tsd-kind-icon">data<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">AsyncIterator</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-type">Stream</span></div>
+					<div class="tsd-signature tsd-kind-icon">data<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">AsyncIterator</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/b56f008/packages/bus-rdf-resolve-quad-pattern/lib/ActorRdfResolveQuadPattern.ts#L132">packages/bus-rdf-resolve-quad-pattern/lib/ActorRdfResolveQuadPattern.ts:132</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d4bf61a/packages/bus-rdf-resolve-quad-pattern/lib/ActorRdfResolveQuadPattern.ts#L137">packages/bus-rdf-resolve-quad-pattern/lib/ActorRdfResolveQuadPattern.ts:137</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
 							<p>The resulting quad data stream.</p>
 						</div>
-					</div>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="metadata" class="tsd-anchor"></a>
-					<h3>metadata</h3>
-					<div class="tsd-signature tsd-kind-icon">metadata<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">{}</span><span class="tsd-signature-symbol">&gt;</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/b56f008/packages/bus-rdf-resolve-quad-pattern/lib/ActorRdfResolveQuadPattern.ts#L141">packages/bus-rdf-resolve-quad-pattern/lib/ActorRdfResolveQuadPattern.ts:141</a></li>
-						</ul>
-					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>Callback that returns a promise that resolves to the metadata about the stream.
-								This can contain things like the estimated number of total stream elements,
-								or the order in which the bindings appear.
-								This callback can be invoked multiple times.
-								The actors that return this metadata will make sure that multiple calls properly cache this promise.
-							Metadata will not be collected until this callback is invoked.</p>
-						</div>
-					</div>
-					<div class="tsd-type-declaration">
-						<h4>Type declaration</h4>
-						<ul class="tsd-parameters">
-							<li class="tsd-parameter-signature">
-								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property">
-									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">{}</span><span class="tsd-signature-symbol">&gt;</span></li>
-								</ul>
-								<ul class="tsd-descriptions">
-									<li class="tsd-description">
-										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">{}</span><span class="tsd-signature-symbol">&gt;</span></h4>
-									</li>
-								</ul>
-							</li>
-						</ul>
+						<p>The returned stream MUST expose the property &#39;metadata&#39;.
+							The implementor is reponsible for handling cases where &#39;metadata&#39;
+							is being called without the stream being in flow-mode.
+							This metadata object MUST be a hash, and MAY be empty.
+						It is recommended to contain at least totalItems as an estimate of the number of quads that will be in the stream.</p>
 					</div>
 				</section>
 			</section>
@@ -187,7 +156,7 @@
 								<a href="../modules/bus_rdf_resolve_quad_pattern.html#idatasource" class="tsd-kind-icon">IData<wbr>Source</a>
 							</li>
 							<li class=" tsd-kind-reference tsd-parent-kind-module">
-								<a href="../modules/bus_rdf_resolve_quad_pattern.html#ilazyquadsource" class="tsd-kind-icon">ILazy<wbr>Quad<wbr>Source</a>
+								<a href="../modules/bus_rdf_resolve_quad_pattern.html#iquadsource" class="tsd-kind-icon">IQuad<wbr>Source</a>
 							</li>
 							<li class=" tsd-kind-reference tsd-parent-kind-module">
 								<a href="../modules/bus_rdf_resolve_quad_pattern.html#key_context_source" class="tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>SOURCE</a>
@@ -222,13 +191,10 @@
 									<li class=" tsd-kind-property tsd-parent-kind-interface">
 										<a href="bus_rdf_resolve_quad_pattern.iactorrdfresolvequadpatternoutput-1.html#data" class="tsd-kind-icon">data</a>
 									</li>
-									<li class=" tsd-kind-property tsd-parent-kind-interface">
-										<a href="bus_rdf_resolve_quad_pattern.iactorrdfresolvequadpatternoutput-1.html#metadata" class="tsd-kind-icon">metadata</a>
-									</li>
 								</ul>
 							</li>
-							<li class=" tsd-kind-interface tsd-parent-kind-module tsd-has-type-parameter">
-								<a href="bus_rdf_resolve_quad_pattern.ilazyquadsource-1.html" class="tsd-kind-icon">ILazy<wbr>Quad<wbr>Source</a>
+							<li class=" tsd-kind-interface tsd-parent-kind-module">
+								<a href="bus_rdf_resolve_quad_pattern.iquadsource-1.html" class="tsd-kind-icon">IQuad<wbr>Source</a>
 							</li>
 							<li class=" tsd-kind-type-alias tsd-parent-kind-module">
 								<a href="../modules/bus_rdf_resolve_quad_pattern.html#datasources-1" class="tsd-kind-icon">Data<wbr>Sources</a>
