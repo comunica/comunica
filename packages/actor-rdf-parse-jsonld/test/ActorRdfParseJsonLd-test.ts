@@ -136,7 +136,7 @@ describe('ActorRdfParseJsonLd', () => {
             "d": "http://example.org/e"
           }`);
         inputRemoteContextErr = stringToStream(`{
-            "@context": "http://schema.org/error",
+            "@context": "http://myschema.org/error",
             "@id": "http://example.org/a",
             "b": "http://example.org/c",
             "d": "http://example.org/e"
@@ -214,7 +214,7 @@ describe('ActorRdfParseJsonLd', () => {
           { handle: { input: inputRemoteContextErr, baseIRI: '' }, handleMediaType: 'application/ld+json' },
         )
           .then(async(output: any) => expect(arrayifyStream(output.handle.quads)).rejects
-            .toThrow(new Error('Failed to load remote context http://schema.org/error: some error')));
+            .toThrow(new Error('Failed to load remote context http://myschema.org/error: some error')));
       });
 
       it('should run for a JSON doc with a context link header', () => {

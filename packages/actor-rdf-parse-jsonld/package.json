@@ -48,7 +48,7 @@
   },
   "dependencies": {
     "@types/rdf-js": "*",
-    "jsonld-context-parser": "^2.1.0",
+    "jsonld-context-parser": "^2.1.1",
     "jsonld-streaming-parser": "^2.1.0",
     "stream-to-string": "^1.2.0"
   },
