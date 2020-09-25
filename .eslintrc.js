@@ -122,7 +122,7 @@ module.exports = {
     },
     {
       // Specific rules for test files
-      files: ['**/test/*.ts'],
+      files: ['**/test/**/*.ts'],
       env: {
         'jest/globals': true,
       },
