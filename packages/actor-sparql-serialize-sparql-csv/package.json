@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-sparql-serialize-sparql-csv",
-  "version": "1.16.0",
+  "version": "1.17.0",
   "description": "A sparql-csv sparql-serialize actor",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-sparql-serialize-sparql-csv",
   "lsd:components": "components/components.jsonld",
@@ -39,7 +39,7 @@
     "index.js"
   ],
   "dependencies": {
-    "@comunica/bus-query-operation": "^1.16.0",
+    "@comunica/bus-query-operation": "^1.17.0",
     "@types/rdf-js": "*"
   },
   "peerDependencies": {
@@ -47,8 +47,8 @@
     "@comunica/core": "^1.15.0"
   },
   "devDependencies": {
-    "@comunica/bus-sparql-serialize": "^1.16.0",
-    "@comunica/core": "^1.15.0"
+    "@comunica/bus-sparql-serialize": "^1.17.0",
+    "@comunica/core": "^1.17.0"
   },
   "jest": {
     "globals": {

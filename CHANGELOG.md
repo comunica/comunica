@@ -1,6 +1,26 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v1.17.0"></a>
+## [v1.17.0](https://github.com/comunica/comunica/compare/v1.16.2...v1.17.0) - 2020-09-25
+
+### Added
+* [Include request headers in logs, Closes #703](https://github.com/comunica/comunica/commit/e01ffce235674b6fe31995e65a6fb3a2b727d25c)
+* [Include user agent in node-fetch HTTP actor](https://github.com/comunica/comunica/commit/801906fa9831c9a0468798823d8004f205d6ffc1)
+
+### Changed
+* [Update to asynciterator 3.0.3 to fix hanging queries](https://github.com/comunica/comunica/commit/aef4c7d342470a2df261b86b74b0fab3c63a60e7)
+* [Make metadata retrieval more robust, and fix errors where metadata is emitted before end event](https://github.com/comunica/comunica/commit/3095b269f1d98d706d1056495123a69bffe3b457)
+* [Make logger data argument lazy](https://github.com/comunica/comunica/commit/e6d7cee1f7622e4bcb73188a0060d5d9823958f0)
+* [Tweak priorities to let endpoint default to application/json, Closes #662](https://github.com/comunica/comunica/commit/cdde3559b51825eaebb686fffe0a9edf7c8ef238)
+* [Increase default Turtle priority to 0.6, higher than RDF/XML](https://github.com/comunica/comunica/commit/78a46049650697623fbca1c99b3a2e6f7836c7f1)
+* [Update to @types/rdf-js 4](https://github.com/comunica/comunica/commit/e6487936ce5399d3a8173dbdd56ce06b96657d36)
+* [Migrate to rdf-data-factory](https://github.com/comunica/comunica/commit/7f04ab404a9f5ad2369d7ffe9ba83b56e1e72c37)
+
+### Fixed
+* [Update to JSON-LD context parser with schema.org fix](https://github.com/comunica/comunica/commit/2d0818c64e5bfbbb334ecbccb7b5a98a69263d1c)
+* [Fix redirect not including query parameter](https://github.com/comunica/comunica/commit/530a2c71ff62cf10888156d037472b8a15bf4911)
+
 <a name="v1.16.2"></a>
 ## [v1.16.2](https://github.com/comunica/comunica/compare/v1.16.1...v1.16.2) - 2020-08-24
 
