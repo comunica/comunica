@@ -1,0 +1,24 @@
+name: "Close issues that received no response"
+on:
+  schedule:
+  - cron: "0 0 * * *"
+
+jobs:
+  stale:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/stale@v3
+      with:
+        repo-token: "${{ secrets.GITHUB_TOKEN }}"
+        stale-issue-label: "more-information-needed"
+        stale-issue-message: 'This issue has been automatically closed because there has been no response to our request for more information from the original author. With only the information that is currently in the issue, we do not have enough information to take action. Please reach out if you have or find the answers we need so that we can investigate further.'
+        days-before-close: 14
+        days-before-stale: -1
+    - uses: actions/stale@v3
+      with:
+        repo-token: "${{ secrets.GITHUB_TOKEN }}"
+        only-labels: "invalid-template"
+        stale-issue-label: "invalid-template"
+        stale-issue-message: 'This issue has been automatically closed because it does not follow the issue template. Feel free to recreate this issue'
+        days-before-close: 7
+        days-before-stale: -1

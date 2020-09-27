@@ -1,0 +1,21 @@
+labels:
+  - name: "bug 🐛"
+    labeled:
+      issue:
+        body: Thanks for reporting!
+  - name: "feature ➕"
+    labeled:
+      issue:
+        body: Thanks for the suggestion!
+  - name: "performance 🐌"
+    labeled:
+      issue:
+        body: Thanks for reporting!
+  - name: "question ❓"
+    labeled:
+      issue:
+        body: Someone will answer your question soon. In the meantime, you might be able to get help more quickly on our [Gitter channel](https://gitter.im/comunica/Lobby).
+  - name: invalid-template
+    labeled:
+      issue:
+        body: '@{{ issue.user.login }} Your issue appears to be not following one of the allowed issue templates, which breaks our automation tools. Please update your issue to the proper template.'

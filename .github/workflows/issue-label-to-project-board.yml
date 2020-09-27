@@ -1,0 +1,28 @@
+name: "Add labeled issues to project board"
+on:
+  issues:
+    types: [labeled]
+
+env:
+  MY_GITHUB_TOKEN: ${{ secrets.PAT }}
+
+jobs:
+  assign:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Maintenance Issues
+      uses: srggrs/assign-one-project-github-action@1.2.0
+      if: |
+        contains(github.event.issue.labels.*.name, 'bug 🐛') ||
+        contains(github.event.issue.labels.*.name, 'performance 🐌') ||
+        contains(github.event.issue.labels.*.name, 'question ❓')
+      with:
+        project: 'https://github.com/orgs/comunica/projects/2'
+        column_name: 'Triage'
+    - name: Development Issues
+      uses: srggrs/assign-one-project-github-action@1.2.0
+      if: |
+        contains(github.event.issue.labels.*.name, 'feature ➕')
+      with:
+        project: 'https://github.com/orgs/comunica/projects/3'
+        column_name: 'Triage'

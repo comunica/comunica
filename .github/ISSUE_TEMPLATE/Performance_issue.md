@@ -6,7 +6,7 @@ about: An issue with the performance, such as abnormally slow queries.
 
 #### Issue type:
 
-- :snail: Performance issue
+- :snail: Performance issue <!--Don't change this issue type!-->
 
 ____
 #### Description:

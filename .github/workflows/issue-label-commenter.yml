@@ -1,0 +1,14 @@
+name: "Comment on issues by label"
+on:
+  issues:
+    types: [labeled]
+
+jobs:
+  comment:
+    runs-on: ubuntu-18.04
+    steps:
+    - uses: actions/checkout@v2
+    - uses: peaceiris/actions-label-commenter@v1
+      with:
+        github_token: ${{ secrets.PAT }}
+        config_file: .github/issue-commenter.yml
