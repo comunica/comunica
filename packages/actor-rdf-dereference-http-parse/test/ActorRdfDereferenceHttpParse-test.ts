@@ -175,19 +175,29 @@ describe('ActorRdfDereferenceHttpParse', () => {
         .toEqual('b,c;q=0.8,a;q=0.2');
     });
 
-    it('should cut off media types when too long', () => {
-      return expect(actor.mediaTypesToAcceptString({ a: 1, b: 0.8, c: 0.2 }, 23))
+    it('should cut as much as needed for a wildcard (1)', () => {
+      return expect(actor.mediaTypesToAcceptString({ a: 1, b: 0.8, cdef: 0.2 }, 19))
         .toEqual('a,b;q=0.8,*/*;q=0.1');
     });
 
-    it('should cut off media types when too long at edge (1)', () => {
-      return expect(actor.mediaTypesToAcceptString({ a: 1, b: 0.8, c: 0.2 }, 19))
+    it('should cut as much as needed for a wildcard (2)', () => {
+      return expect(actor.mediaTypesToAcceptString({ a: 1, b: 0.8, cd: 0.2, f: 0.1 }, 19))
         .toEqual('a,b;q=0.8,*/*;q=0.1');
     });
 
-    it('should cut off media types when too long at edge (2)', () => {
-      return expect(actor.mediaTypesToAcceptString({ a: 1, b: 0.8, c: 0.2 }, 20))
-        .toEqual('a,b;q=0.8,*/*;q=0.1');
+    it('should cut as much as needed for a wildcard (3)', () => {
+      return expect(actor.mediaTypesToAcceptString({ abcdef: 1, ef: 1 }, 6))
+        .toEqual('*/*;q=0.1');
+    });
+
+    it('should not cut off incorrectly at the maxAcceptHeaderLength boundary', () => {
+      const maxHeaderLength = actor.maxAcceptHeaderLength;
+      // Subtract 6 for ';q=0.8'
+      const typeLength = Math.ceil((maxHeaderLength - 6) / 2);
+      const a = new Array(typeLength).join('a');
+      const b = new Array(typeLength).join('b');
+      return expect(actor.mediaTypesToAcceptString({ [a]: 1, [b]: 0.8 }, maxHeaderLength))
+        .toEqual(`${a},${b};q=0.8`);
     });
 
     it('should run with a web stream', async() => {
