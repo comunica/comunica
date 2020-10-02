@@ -9,6 +9,7 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-parse-jsonld/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-parse-rdfxml/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-parse-html/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-parse-html-microdata/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-parse-html-rdfa/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-parse-html-script/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-parse-xml-rdfa/^1.0.0/components/context.jsonld",
@@ -45,6 +46,10 @@
       "priorityScale": 0.2
     },
 
+    {
+      "@id": "config-sets:rdf-parsers.json#myRdfParserHtmlMicrodata",
+      "@type": "ActorRdfParseHtmlMicrodata"
+    },
     {
       "@id": "config-sets:rdf-parsers.json#myRdfParserHtmlRdfa",
       "@type": "ActorRdfParseHtmlRdfa"

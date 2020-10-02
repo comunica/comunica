@@ -18,8 +18,7 @@ export class ActorRdfParseHtmlMicrodata extends ActorRdfParseHtml {
 
   public async run(action: IActionRdfParseHtml): Promise<IActorRdfParseHtmlOutput> {
     const mediaType = action.headers ? action.headers.get('content-type') : null;
-    // eslint-disable-next-line no-implicit-coercion
-    const xmlMode = !!mediaType && mediaType.includes('xml');
+    const xmlMode = mediaType?.includes('xml');
 
     const htmlParseListener = new MicrodataRdfParser({ baseIRI: action.baseIRI, xmlMode });
     htmlParseListener.on('error', action.error);
