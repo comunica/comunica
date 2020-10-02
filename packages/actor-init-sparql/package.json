@@ -104,6 +104,7 @@
     "@comunica/actor-rdf-metadata-extract-sparql-service": "^1.17.0",
     "@comunica/actor-rdf-metadata-primary-topic": "^1.17.0",
     "@comunica/actor-rdf-parse-html": "^1.17.0",
+    "@comunica/actor-rdf-parse-html-microdata": "^1.0.0",
     "@comunica/actor-rdf-parse-html-rdfa": "^1.17.0",
     "@comunica/actor-rdf-parse-html-script": "^1.17.0",
     "@comunica/actor-rdf-parse-jsonld": "^1.17.0",
