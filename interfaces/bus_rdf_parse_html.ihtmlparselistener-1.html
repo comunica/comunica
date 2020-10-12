@@ -114,7 +114,7 @@
 					<div class="tsd-signature tsd-kind-icon">on<wbr>End<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1c54ea3/packages/bus-rdf-parse-html/lib/ActorRdfParseHtml.ts#L84">packages/bus-rdf-parse-html/lib/ActorRdfParseHtml.ts:84</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/45b0155/packages/bus-rdf-parse-html/lib/ActorRdfParseHtml.ts#L84">packages/bus-rdf-parse-html/lib/ActorRdfParseHtml.ts:84</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -144,7 +144,7 @@
 					<div class="tsd-signature tsd-kind-icon">on<wbr>Tag<wbr>Close<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1c54ea3/packages/bus-rdf-parse-html/lib/ActorRdfParseHtml.ts#L71">packages/bus-rdf-parse-html/lib/ActorRdfParseHtml.ts:71</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/45b0155/packages/bus-rdf-parse-html/lib/ActorRdfParseHtml.ts#L71">packages/bus-rdf-parse-html/lib/ActorRdfParseHtml.ts:71</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -171,10 +171,10 @@
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="ontagopen" class="tsd-anchor"></a>
 					<h3>on<wbr>Tag<wbr>Open</h3>
-					<div class="tsd-signature tsd-kind-icon">on<wbr>Tag<wbr>Open<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>name<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, attributes<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{}</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
+					<div class="tsd-signature tsd-kind-icon">on<wbr>Tag<wbr>Open<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>name<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, attributes<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1c54ea3/packages/bus-rdf-parse-html/lib/ActorRdfParseHtml.ts#L66">packages/bus-rdf-parse-html/lib/ActorRdfParseHtml.ts:66</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/45b0155/packages/bus-rdf-parse-html/lib/ActorRdfParseHtml.ts#L66">packages/bus-rdf-parse-html/lib/ActorRdfParseHtml.ts:66</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -195,7 +195,7 @@
 						<ul class="tsd-parameters">
 							<li class="tsd-parameter-signature">
 								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-property">
-									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>name<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, attributes<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{}</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>name<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, attributes<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 								</ul>
 								<ul class="tsd-descriptions">
 									<li class="tsd-description">
@@ -205,12 +205,7 @@
 												<h5>name: <span class="tsd-signature-type">string</span></h5>
 											</li>
 											<li>
-												<h5>attributes: <span class="tsd-signature-symbol">{}</span></h5>
-												<ul class="tsd-parameters">
-													<li class="tsd-parameter-index-signature">
-														<h5><span class="tsd-signature-symbol">[</span>s: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]: </span><span class="tsd-signature-type">string</span></h5>
-													</li>
-												</ul>
+												<h5>attributes: <span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></h5>
 											</li>
 										</ul>
 										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -226,7 +221,7 @@
 					<div class="tsd-signature tsd-kind-icon">on<wbr>Text<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>data<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/1c54ea3/packages/bus-rdf-parse-html/lib/ActorRdfParseHtml.ts#L79">packages/bus-rdf-parse-html/lib/ActorRdfParseHtml.ts:79</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/45b0155/packages/bus-rdf-parse-html/lib/ActorRdfParseHtml.ts#L79">packages/bus-rdf-parse-html/lib/ActorRdfParseHtml.ts:79</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">

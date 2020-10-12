@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>IPatternBindings | Comunica</title>
+	<title>actor-rdf-parse-html-microdata | Comunica</title>
 	<meta name="description" content="Documentation for Comunica">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -56,13 +56,10 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="../modules/bus_query_operation.html">bus-query-operation</a>
-				</li>
-				<li>
-					<a href="bus_query_operation.ipatternbindings-1.html">IPatternBindings</a>
+					<a href="actor_rdf_parse_html_microdata.html">actor-rdf-parse-html-microdata</a>
 				</li>
 			</ul>
-			<h1>Interface IPatternBindings</h1>
+			<h1>Package actor-rdf-parse-html-microdata</h1>
 		</div>
 	</div>
 </header>
@@ -71,27 +68,63 @@
 		<div class="col-8 col-content">
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
-					<div class="lead">
-						<p>Binds a quad pattern term&#39;s position to a variable.</p>
-					</div>
+					<a href="#comunica-microdata-rdf-parse-html-actor" id="comunica-microdata-rdf-parse-html-actor" style="color: inherit; text-decoration: none;">
+						<h1>Comunica Microdata RDF Parse Html Actor</h1>
+					</a>
+					<p><a href="https://www.npmjs.com/package/@comunica/actor-rdf-parse-html-microdata"><img src="https://badge.fury.io/js/%40comunica%2Factor-rdf-parse-html-microdata.svg" alt="npm version"></a></p>
+					<p>An <a href="https://github.com/comunica/comunica/tree/master/packages/bus-rdf-parse-html">RDF Parse HTML</a> actor that handles <a href="https://w3c.github.io/microdata-rdf/">Microdata to RDF conversion</a>.</p>
+					<p>This module is part of the <a href="https://github.com/comunica/comunica">Comunica framework</a>,
+					and should only be used by <a href="https://comunica.dev/docs/modify/">developers that want to build their own query engine</a>.</p>
+					<p><a href="https://comunica.dev/docs/query/">Click here if you just want to query with Comunica</a>.</p>
+					<a href="#install" id="install" style="color: inherit; text-decoration: none;">
+						<h2>Install</h2>
+					</a>
+					<pre><code class="language-bash">$ yarn add @comunica/actor-rdf-parse-html-microdata</code></pre>
+					<a href="#configure" id="configure" style="color: inherit; text-decoration: none;">
+						<h2>Configure</h2>
+					</a>
+					<p>After installing, this package can be added to your engine&#39;s configuration as follows:</p>
+					<pre><code class="language-text">{
+  &quot;@context&quot;: [
+    ...
+    &quot;https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-parse-html-microdata/^1.0.0/components/context.jsonld&quot;  
+  ],
+  &quot;actors&quot;: [
+    ...
+    {
+      &quot;@id&quot;: &quot;config-sets:rdf-parsers.json#myRdfParserHtmlMicrodata&quot;,
+      &quot;@type&quot;: &quot;ActorRdfParseHtmlMicrodata&quot;
+    }
+  ]
+}</code></pre>
 				</div>
 			</section>
-			<section class="tsd-panel tsd-hierarchy">
-				<h3>Hierarchy</h3>
-				<ul class="tsd-hierarchy">
-					<li>
-						<span class="target">IPatternBindings</span>
-					</li>
-				</ul>
-			</section>
-			<section class="tsd-panel tsd-kind-interface tsd-parent-kind-module">
-				<h3 class="tsd-before-signature">Indexable</h3>
-				<div class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">[</span>termPosition: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]: </span><span class="tsd-signature-type">Variable</span></div>
-				<div class="tsd-comment tsd-typography">
-					<div class="lead">
-						<p>Binds a quad pattern term&#39;s position to a variable.</p>
+			<section class="tsd-panel-group tsd-index-group">
+				<h2>Index</h2>
+				<section class="tsd-panel tsd-index-panel">
+					<div class="tsd-index-content">
+						<section class="tsd-index-section ">
+							<h3>References</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-reference tsd-parent-kind-module"><a href="actor_rdf_parse_html_microdata.html#actorrdfparsehtmlmicrodata" class="tsd-kind-icon">Actor<wbr>Rdf<wbr>Parse<wbr>Html<wbr>Microdata</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Classes</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-class tsd-parent-kind-module"><a href="../classes/actor_rdf_parse_html_microdata.actorrdfparsehtmlmicrodata-1.html" class="tsd-kind-icon">Actor<wbr>Rdf<wbr>Parse<wbr>Html<wbr>Microdata</a></li>
+							</ul>
+						</section>
 					</div>
-				</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>References</h2>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module">
+					<a name="actorrdfparsehtmlmicrodata" class="tsd-anchor"></a>
+					<h3>Actor<wbr>Rdf<wbr>Parse<wbr>Html<wbr>Microdata</h3>
+					Re-exports <a href="../classes/actor_rdf_parse_html_microdata.actorrdfparsehtmlmicrodata-1.html">ActorRdfParseHtmlMicrodata</a>
+				</section>
 			</section>
 		</div>
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
@@ -101,7 +134,7 @@
 						<a href="../globals.html"><em>Globals</em></a>
 					</li>
 					<li class="current tsd-kind-module">
-						<a href="../modules/bus_query_operation.html">bus-<wbr>query-<wbr>operation</a>
+						<a href="actor_rdf_parse_html_microdata.html">actor-<wbr>rdf-<wbr>parse-<wbr>html-<wbr>microdata</a>
 					</li>
 				</ul>
 			</nav>
@@ -110,10 +143,13 @@
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-module">
-						<a href="../modules/bus_query_operation.html" class="tsd-kind-icon">bus-<wbr>query-<wbr>operation</a>
+						<a href="actor_rdf_parse_html_microdata.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>parse-<wbr>html-<wbr>microdata</a>
 						<ul>
-							<li class="current tsd-kind-interface tsd-parent-kind-module">
-								<a href="bus_query_operation.ipatternbindings-1.html" class="tsd-kind-icon">IPattern<wbr>Bindings</a>
+							<li class=" tsd-kind-reference tsd-parent-kind-module">
+								<a href="actor_rdf_parse_html_microdata.html#actorrdfparsehtmlmicrodata" class="tsd-kind-icon">Actor<wbr>Rdf<wbr>Parse<wbr>Html<wbr>Microdata</a>
+							</li>
+							<li class=" tsd-kind-class tsd-parent-kind-module">
+								<a href="../classes/actor_rdf_parse_html_microdata.actorrdfparsehtmlmicrodata-1.html" class="tsd-kind-icon">Actor<wbr>Rdf<wbr>Parse<wbr>Html<wbr>Microdata</a>
 							</li>
 						</ul>
 					</li>

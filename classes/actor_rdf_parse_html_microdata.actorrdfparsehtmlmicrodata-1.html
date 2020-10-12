@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>ActorInitHttp | Comunica</title>
+	<title>ActorRdfParseHtmlMicrodata | Comunica</title>
 	<meta name="description" content="Documentation for Comunica">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -56,13 +56,13 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="../modules/actor_init_http.html">actor-init-http</a>
+					<a href="../modules/actor_rdf_parse_html_microdata.html">actor-rdf-parse-html-microdata</a>
 				</li>
 				<li>
-					<a href="actor_init_http.actorinithttp-1.html">ActorInitHttp</a>
+					<a href="actor_rdf_parse_html_microdata.actorrdfparsehtmlmicrodata-1.html">ActorRdfParseHtmlMicrodata</a>
 				</li>
 			</ul>
-			<h1>Class ActorInitHttp</h1>
+			<h1>Class ActorRdfParseHtmlMicrodata</h1>
 		</div>
 	</div>
 </header>
@@ -72,19 +72,18 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p>A http actor that listens on the &#39;init&#39; bus.</p>
+						<p>A comunica Microdata RDF Parse Html Actor.</p>
 					</div>
-					<p>It will call <code>this.mediatorHttp.mediate</code>.</p>
 				</div>
 			</section>
 			<section class="tsd-panel tsd-hierarchy">
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<a href="bus_init.actorinit-1.html" class="tsd-signature-type">ActorInit</a>
+						<a href="bus_rdf_parse_html.actorrdfparsehtml-1.html" class="tsd-signature-type">ActorRdfParseHtml</a>
 						<ul class="tsd-hierarchy">
 							<li>
-								<span class="target">ActorInitHttp</span>
+								<span class="target">ActorRdfParseHtmlMicrodata</span>
 							</li>
 						</ul>
 					</li>
@@ -93,8 +92,7 @@
 			<section class="tsd-panel">
 				<h3>Implements</h3>
 				<ul class="tsd-hierarchy">
-					<li><a href="../interfaces/core.iactorargs-1.html" class="tsd-signature-type">IActorArgs</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/bus_init.iactioninit-1.html" class="tsd-signature-type">IActionInit</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/core.iactortest-1.html" class="tsd-signature-type">IActorTest</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/bus_init.iactoroutputinit-1.html" class="tsd-signature-type">IActorOutputInit</a><span class="tsd-signature-symbol">&gt;</span></li>
-					<li><a href="../interfaces/actor_init_http.iactorinithttpargs-1.html" class="tsd-signature-type">IActorInitHttpArgs</a></li>
+					<li><a href="../interfaces/core.iactorargs-1.html" class="tsd-signature-type">IActorArgs</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/bus_rdf_parse_html.iactionrdfparsehtml-1.html" class="tsd-signature-type">IActionRdfParseHtml</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/core.iactortest-1.html" class="tsd-signature-type">IActorTest</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/bus_rdf_parse_html.iactorrdfparsehtmloutput-1.html" class="tsd-signature-type">IActorRdfParseHtmlOutput</a><span class="tsd-signature-symbol">&gt;</span></li>
 				</ul>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">
@@ -104,37 +102,33 @@
 						<section class="tsd-index-section ">
 							<h3>Constructors</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite"><a href="actor_init_http.actorinithttp-1.html#constructor" class="tsd-kind-icon">constructor</a></li>
+								<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite"><a href="actor_rdf_parse_html_microdata.actorrdfparsehtmlmicrodata-1.html#constructor" class="tsd-kind-icon">constructor</a></li>
 							</ul>
 						</section>
-						<section class="tsd-index-section ">
+						<section class="tsd-index-section tsd-is-inherited">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="actor_init_http.actorinithttp-1.html#beforeactors" class="tsd-kind-icon">before<wbr>Actors</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="actor_init_http.actorinithttp-1.html#bus" class="tsd-kind-icon">bus</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="actor_init_http.actorinithttp-1.html#headers" class="tsd-kind-icon">headers</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="actor_init_http.actorinithttp-1.html#mediatorhttp" class="tsd-kind-icon">mediator<wbr>Http</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="actor_init_http.actorinithttp-1.html#method" class="tsd-kind-icon">method</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="actor_init_http.actorinithttp-1.html#name" class="tsd-kind-icon">name</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="actor_init_http.actorinithttp-1.html#url" class="tsd-kind-icon">url</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="actor_rdf_parse_html_microdata.actorrdfparsehtmlmicrodata-1.html#beforeactors" class="tsd-kind-icon">before<wbr>Actors</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="actor_rdf_parse_html_microdata.actorrdfparsehtmlmicrodata-1.html#bus" class="tsd-kind-icon">bus</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="actor_rdf_parse_html_microdata.actorrdfparsehtmlmicrodata-1.html#name" class="tsd-kind-icon">name</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="actor_init_http.actorinithttp-1.html#deinitialize" class="tsd-kind-icon">deinitialize</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="actor_init_http.actorinithttp-1.html#getdefaultlogdata" class="tsd-kind-icon">get<wbr>Default<wbr>Log<wbr>Data</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="actor_init_http.actorinithttp-1.html#initialize" class="tsd-kind-icon">initialize</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="actor_init_http.actorinithttp-1.html#logdebug" class="tsd-kind-icon">log<wbr>Debug</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="actor_init_http.actorinithttp-1.html#logerror" class="tsd-kind-icon">log<wbr>Error</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="actor_init_http.actorinithttp-1.html#logfatal" class="tsd-kind-icon">log<wbr>Fatal</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="actor_init_http.actorinithttp-1.html#loginfo" class="tsd-kind-icon">log<wbr>Info</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="actor_init_http.actorinithttp-1.html#logtrace" class="tsd-kind-icon">log<wbr>Trace</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="actor_init_http.actorinithttp-1.html#logwarn" class="tsd-kind-icon">log<wbr>Warn</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="actor_init_http.actorinithttp-1.html#run" class="tsd-kind-icon">run</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="actor_init_http.actorinithttp-1.html#runobservable" class="tsd-kind-icon">run<wbr>Observable</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="actor_init_http.actorinithttp-1.html#test" class="tsd-kind-icon">test</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-static"><a href="actor_init_http.actorinithttp-1.html#getcontextlogger" class="tsd-kind-icon">get<wbr>Context<wbr>Logger</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="actor_rdf_parse_html_microdata.actorrdfparsehtmlmicrodata-1.html#deinitialize" class="tsd-kind-icon">deinitialize</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="actor_rdf_parse_html_microdata.actorrdfparsehtmlmicrodata-1.html#getdefaultlogdata" class="tsd-kind-icon">get<wbr>Default<wbr>Log<wbr>Data</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="actor_rdf_parse_html_microdata.actorrdfparsehtmlmicrodata-1.html#initialize" class="tsd-kind-icon">initialize</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="actor_rdf_parse_html_microdata.actorrdfparsehtmlmicrodata-1.html#logdebug" class="tsd-kind-icon">log<wbr>Debug</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="actor_rdf_parse_html_microdata.actorrdfparsehtmlmicrodata-1.html#logerror" class="tsd-kind-icon">log<wbr>Error</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="actor_rdf_parse_html_microdata.actorrdfparsehtmlmicrodata-1.html#logfatal" class="tsd-kind-icon">log<wbr>Fatal</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="actor_rdf_parse_html_microdata.actorrdfparsehtmlmicrodata-1.html#loginfo" class="tsd-kind-icon">log<wbr>Info</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="actor_rdf_parse_html_microdata.actorrdfparsehtmlmicrodata-1.html#logtrace" class="tsd-kind-icon">log<wbr>Trace</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected"><a href="actor_rdf_parse_html_microdata.actorrdfparsehtmlmicrodata-1.html#logwarn" class="tsd-kind-icon">log<wbr>Warn</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="actor_rdf_parse_html_microdata.actorrdfparsehtmlmicrodata-1.html#run" class="tsd-kind-icon">run</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><a href="actor_rdf_parse_html_microdata.actorrdfparsehtmlmicrodata-1.html#runobservable" class="tsd-kind-icon">run<wbr>Observable</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="actor_rdf_parse_html_microdata.actorrdfparsehtmlmicrodata-1.html#test" class="tsd-kind-icon">test</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-static"><a href="actor_rdf_parse_html_microdata.actorrdfparsehtmlmicrodata-1.html#getcontextlogger" class="tsd-kind-icon">get<wbr>Context<wbr>Logger</a></li>
 							</ul>
 						</section>
 					</div>
@@ -146,35 +140,35 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Actor<wbr>Init<wbr>Http<span class="tsd-signature-symbol">(</span>args<span class="tsd-signature-symbol">: </span><a href="../interfaces/actor_init_http.iactorinithttpargs-1.html" class="tsd-signature-type">IActorInitHttpArgs</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="actor_init_http.actorinithttp-1.html" class="tsd-signature-type">ActorInitHttp</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Actor<wbr>Rdf<wbr>Parse<wbr>Html<wbr>Microdata<span class="tsd-signature-symbol">(</span>args<span class="tsd-signature-symbol">: </span><a href="../interfaces/core.iactorargs-1.html" class="tsd-signature-type">IActorArgs</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/bus_rdf_parse_html.iactionrdfparsehtml-1.html" class="tsd-signature-type">IActionRdfParseHtml</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/core.iactortest-1.html" class="tsd-signature-type">IActorTest</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/bus_rdf_parse_html.iactorrdfparsehtmloutput-1.html" class="tsd-signature-type">IActorRdfParseHtmlOutput</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="actor_rdf_parse_html_microdata.actorrdfparsehtmlmicrodata-1.html" class="tsd-signature-type">ActorRdfParseHtmlMicrodata</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
-								<p>Overrides <a href="bus_init.actorinit-1.html">ActorInit</a>.<a href="bus_init.actorinit-1.html#constructor">constructor</a></p>
+								<p>Overrides <a href="bus_rdf_parse_html.actorrdfparsehtml-1.html">ActorRdfParseHtml</a>.<a href="bus_rdf_parse_html.actorrdfparsehtml-1.html#constructor">constructor</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/45b0155/packages/actor-init-http/lib/ActorInitHttp.ts#L19">packages/actor-init-http/lib/ActorInitHttp.ts:19</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/45b0155/packages/actor-rdf-parse-html-microdata/lib/ActorRdfParseHtmlMicrodata.ts#L10">packages/actor-rdf-parse-html-microdata/lib/ActorRdfParseHtmlMicrodata.ts:10</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>args: <a href="../interfaces/actor_init_http.iactorinithttpargs-1.html" class="tsd-signature-type">IActorInitHttpArgs</a></h5>
+									<h5>args: <a href="../interfaces/core.iactorargs-1.html" class="tsd-signature-type">IActorArgs</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/bus_rdf_parse_html.iactionrdfparsehtml-1.html" class="tsd-signature-type">IActionRdfParseHtml</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/core.iactortest-1.html" class="tsd-signature-type">IActorTest</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/bus_rdf_parse_html.iactorrdfparsehtmloutput-1.html" class="tsd-signature-type">IActorRdfParseHtmlOutput</a><span class="tsd-signature-symbol">&gt;</span></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="actor_init_http.actorinithttp-1.html" class="tsd-signature-type">ActorInitHttp</a></h4>
+							<h4 class="tsd-returns-title">Returns <a href="actor_rdf_parse_html_microdata.actorrdfparsehtmlmicrodata-1.html" class="tsd-signature-type">ActorRdfParseHtmlMicrodata</a></h4>
 						</li>
 					</ul>
 				</section>
 			</section>
-			<section class="tsd-panel-group tsd-member-group ">
+			<section class="tsd-panel-group tsd-member-group tsd-is-inherited">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
 					<a name="beforeactors" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> before<wbr>Actors</h3>
-					<div class="tsd-signature tsd-kind-icon">before<wbr>Actors<span class="tsd-signature-symbol">:</span> <a href="core.actor-1.html" class="tsd-signature-type">Actor</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/bus_init.iactioninit-1.html" class="tsd-signature-type">IActionInit</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/core.iactortest-1.html" class="tsd-signature-type">IActorTest</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/bus_init.iactoroutputinit-1.html" class="tsd-signature-type">IActorOutputInit</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> = []</span></div>
+					<div class="tsd-signature tsd-kind-icon">before<wbr>Actors<span class="tsd-signature-symbol">:</span> <a href="core.actor-1.html" class="tsd-signature-type">Actor</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/bus_rdf_parse_html.iactionrdfparsehtml-1.html" class="tsd-signature-type">IActionRdfParseHtml</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/core.iactortest-1.html" class="tsd-signature-type">IActorTest</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/bus_rdf_parse_html.iactorrdfparsehtmloutput-1.html" class="tsd-signature-type">IActorRdfParseHtmlOutput</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> = []</span></div>
 					<aside class="tsd-sources">
-						<p>Implementation of <a href="../interfaces/actor_init_http.iactorinithttpargs-1.html">IActorInitHttpArgs</a>.<a href="../interfaces/actor_init_http.iactorinithttpargs-1.html#beforeactors">beforeActors</a></p>
+						<p>Implementation of <a href="../interfaces/core.iactorargs-1.html">IActorArgs</a>.<a href="../interfaces/core.iactorargs-1.html#beforeactors">beforeActors</a></p>
 						<p>Inherited from <a href="core.actor-1.html">Actor</a>.<a href="core.actor-1.html#beforeactors">beforeActors</a></p>
 						<ul>
 							<li>Defined in <a href="https://github.com/comunica/comunica/blob/45b0155/packages/core/lib/Actor.ts#L26">packages/core/lib/Actor.ts:26</a></li>
@@ -184,45 +178,12 @@
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
 					<a name="bus" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> bus</h3>
-					<div class="tsd-signature tsd-kind-icon">bus<span class="tsd-signature-symbol">:</span> <a href="core.bus-1.html" class="tsd-signature-type">Bus</a><span class="tsd-signature-symbol">&lt;</span><a href="core.actor-1.html" class="tsd-signature-type">Actor</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/bus_init.iactioninit-1.html" class="tsd-signature-type">IActionInit</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/core.iactortest-1.html" class="tsd-signature-type">IActorTest</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/bus_init.iactoroutputinit-1.html" class="tsd-signature-type">IActorOutputInit</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><a href="../interfaces/bus_init.iactioninit-1.html" class="tsd-signature-type">IActionInit</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/core.iactortest-1.html" class="tsd-signature-type">IActorTest</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/bus_init.iactoroutputinit-1.html" class="tsd-signature-type">IActorOutputInit</a><span class="tsd-signature-symbol">&gt;</span></div>
+					<div class="tsd-signature tsd-kind-icon">bus<span class="tsd-signature-symbol">:</span> <a href="core.bus-1.html" class="tsd-signature-type">Bus</a><span class="tsd-signature-symbol">&lt;</span><a href="core.actor-1.html" class="tsd-signature-type">Actor</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/bus_rdf_parse_html.iactionrdfparsehtml-1.html" class="tsd-signature-type">IActionRdfParseHtml</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/core.iactortest-1.html" class="tsd-signature-type">IActorTest</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/bus_rdf_parse_html.iactorrdfparsehtmloutput-1.html" class="tsd-signature-type">IActorRdfParseHtmlOutput</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><a href="../interfaces/bus_rdf_parse_html.iactionrdfparsehtml-1.html" class="tsd-signature-type">IActionRdfParseHtml</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/core.iactortest-1.html" class="tsd-signature-type">IActorTest</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/bus_rdf_parse_html.iactorrdfparsehtmloutput-1.html" class="tsd-signature-type">IActorRdfParseHtmlOutput</a><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
-						<p>Implementation of <a href="../interfaces/actor_init_http.iactorinithttpargs-1.html">IActorInitHttpArgs</a>.<a href="../interfaces/actor_init_http.iactorinithttpargs-1.html#bus">bus</a></p>
+						<p>Implementation of <a href="../interfaces/core.iactorargs-1.html">IActorArgs</a>.<a href="../interfaces/core.iactorargs-1.html#bus">bus</a></p>
 						<p>Inherited from <a href="core.actor-1.html">Actor</a>.<a href="core.actor-1.html#bus">bus</a></p>
 						<ul>
 							<li>Defined in <a href="https://github.com/comunica/comunica/blob/45b0155/packages/core/lib/Actor.ts#L25">packages/core/lib/Actor.ts:25</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="headers" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> headers</h3>
-					<div class="tsd-signature tsd-kind-icon">headers<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span></div>
-					<aside class="tsd-sources">
-						<p>Implementation of <a href="../interfaces/actor_init_http.iactorinithttpargs-1.html">IActorInitHttpArgs</a>.<a href="../interfaces/actor_init_http.iactorinithttpargs-1.html#headers">headers</a></p>
-						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/45b0155/packages/actor-init-http/lib/ActorInitHttp.ts#L19">packages/actor-init-http/lib/ActorInitHttp.ts:19</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="mediatorhttp" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> mediator<wbr>Http</h3>
-					<div class="tsd-signature tsd-kind-icon">mediator<wbr>Http<span class="tsd-signature-symbol">:</span> <a href="core.mediator-1.html" class="tsd-signature-type">Mediator</a><span class="tsd-signature-symbol">&lt;</span><a href="core.actor-1.html" class="tsd-signature-type">Actor</a><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/bus_http.iactionhttp-1.html" class="tsd-signature-type">IActionHttp</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/core.iactortest-1.html" class="tsd-signature-type">IActorTest</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/bus_http.iactorhttpoutput-1.html" class="tsd-signature-type">IActorHttpOutput</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">, </span><a href="../interfaces/bus_http.iactionhttp-1.html" class="tsd-signature-type">IActionHttp</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/core.iactortest-1.html" class="tsd-signature-type">IActorTest</a><span class="tsd-signature-symbol">, </span><a href="../interfaces/bus_http.iactorhttpoutput-1.html" class="tsd-signature-type">IActorHttpOutput</a><span class="tsd-signature-symbol">&gt;</span></div>
-					<aside class="tsd-sources">
-						<p>Implementation of <a href="../interfaces/actor_init_http.iactorinithttpargs-1.html">IActorInitHttpArgs</a>.<a href="../interfaces/actor_init_http.iactorinithttpargs-1.html#mediatorhttp">mediatorHttp</a></p>
-						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/45b0155/packages/actor-init-http/lib/ActorInitHttp.ts#L14">packages/actor-init-http/lib/ActorInitHttp.ts:14</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="method" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> method</h3>
-					<div class="tsd-signature tsd-kind-icon">method<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></div>
-					<aside class="tsd-sources">
-						<p>Implementation of <a href="../interfaces/actor_init_http.iactorinithttpargs-1.html">IActorInitHttpArgs</a>.<a href="../interfaces/actor_init_http.iactorinithttpargs-1.html#method">method</a></p>
-						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/45b0155/packages/actor-init-http/lib/ActorInitHttp.ts#L18">packages/actor-init-http/lib/ActorInitHttp.ts:18</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -231,21 +192,10 @@
 					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> name</h3>
 					<div class="tsd-signature tsd-kind-icon">name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
-						<p>Implementation of <a href="../interfaces/actor_init_http.iactorinithttpargs-1.html">IActorInitHttpArgs</a>.<a href="../interfaces/actor_init_http.iactorinithttpargs-1.html#name">name</a></p>
+						<p>Implementation of <a href="../interfaces/core.iactorargs-1.html">IActorArgs</a>.<a href="../interfaces/core.iactorargs-1.html#name">name</a></p>
 						<p>Inherited from <a href="core.actor-1.html">Actor</a>.<a href="core.actor-1.html#name">name</a></p>
 						<ul>
 							<li>Defined in <a href="https://github.com/comunica/comunica/blob/45b0155/packages/core/lib/Actor.ts#L24">packages/core/lib/Actor.ts:24</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="url" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> url</h3>
-					<div class="tsd-signature tsd-kind-icon">url<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></div>
-					<aside class="tsd-sources">
-						<p>Implementation of <a href="../interfaces/actor_init_http.iactorinithttpargs-1.html">IActorInitHttpArgs</a>.<a href="../interfaces/actor_init_http.iactorinithttpargs-1.html#url">url</a></p>
-						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/45b0155/packages/actor-init-http/lib/ActorInitHttp.ts#L17">packages/actor-init-http/lib/ActorInitHttp.ts:17</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -515,23 +465,23 @@
 					<a name="run" class="tsd-anchor"></a>
 					<h3>run</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
-						<li class="tsd-signature tsd-kind-icon">run<span class="tsd-signature-symbol">(</span>action<span class="tsd-signature-symbol">: </span><a href="../interfaces/bus_init.iactioninit-1.html" class="tsd-signature-type">IActionInit</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/bus_init.iactoroutputinit-1.html" class="tsd-signature-type">IActorOutputInit</a><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">run<span class="tsd-signature-symbol">(</span>action<span class="tsd-signature-symbol">: </span><a href="../interfaces/bus_rdf_parse_html.iactionrdfparsehtml-1.html" class="tsd-signature-type">IActionRdfParseHtml</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/bus_rdf_parse_html.iactorrdfparsehtmloutput-1.html" class="tsd-signature-type">IActorRdfParseHtmlOutput</a><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Overrides <a href="core.actor-1.html">Actor</a>.<a href="core.actor-1.html#run">run</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/45b0155/packages/actor-init-http/lib/ActorInitHttp.ts#L29">packages/actor-init-http/lib/ActorInitHttp.ts:29</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/45b0155/packages/actor-rdf-parse-html-microdata/lib/ActorRdfParseHtmlMicrodata.ts#L19">packages/actor-rdf-parse-html-microdata/lib/ActorRdfParseHtmlMicrodata.ts:19</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>action: <a href="../interfaces/bus_init.iactioninit-1.html" class="tsd-signature-type">IActionInit</a></h5>
+									<h5>action: <a href="../interfaces/bus_rdf_parse_html.iactionrdfparsehtml-1.html" class="tsd-signature-type">IActionRdfParseHtml</a></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/bus_init.iactoroutputinit-1.html" class="tsd-signature-type">IActorOutputInit</a><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/bus_rdf_parse_html.iactorrdfparsehtmloutput-1.html" class="tsd-signature-type">IActorRdfParseHtmlOutput</a><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -539,7 +489,7 @@
 					<a name="runobservable" class="tsd-anchor"></a>
 					<h3>run<wbr>Observable</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
-						<li class="tsd-signature tsd-kind-icon">run<wbr>Observable<span class="tsd-signature-symbol">(</span>action<span class="tsd-signature-symbol">: </span><a href="../interfaces/bus_init.iactioninit-1.html" class="tsd-signature-type">IActionInit</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/bus_init.iactoroutputinit-1.html" class="tsd-signature-type">IActorOutputInit</a><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">run<wbr>Observable<span class="tsd-signature-symbol">(</span>action<span class="tsd-signature-symbol">: </span><a href="../interfaces/bus_rdf_parse_html.iactionrdfparsehtml-1.html" class="tsd-signature-type">IActionRdfParseHtml</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/bus_rdf_parse_html.iactorrdfparsehtmloutput-1.html" class="tsd-signature-type">IActorRdfParseHtmlOutput</a><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -558,13 +508,13 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>action: <a href="../interfaces/bus_init.iactioninit-1.html" class="tsd-signature-type">IActionInit</a></h5>
+									<h5>action: <a href="../interfaces/bus_rdf_parse_html.iactionrdfparsehtml-1.html" class="tsd-signature-type">IActionRdfParseHtml</a></h5>
 									<div class="tsd-comment tsd-typography">
 										<p>The action to run.</p>
 									</div>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/bus_init.iactoroutputinit-1.html" class="tsd-signature-type">IActorOutputInit</a><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/bus_rdf_parse_html.iactorrdfparsehtmloutput-1.html" class="tsd-signature-type">IActorRdfParseHtmlOutput</a><span class="tsd-signature-symbol">&gt;</span></h4>
 							<p>A promise that resolves to the run result.</p>
 						</li>
 					</ul>
@@ -573,20 +523,20 @@
 					<a name="test" class="tsd-anchor"></a>
 					<h3>test</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
-						<li class="tsd-signature tsd-kind-icon">test<span class="tsd-signature-symbol">(</span>action<span class="tsd-signature-symbol">: </span><a href="../interfaces/bus_init.iactioninit-1.html" class="tsd-signature-type">IActionInit</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/core.iactortest-1.html" class="tsd-signature-type">IActorTest</a><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">test<span class="tsd-signature-symbol">(</span>action<span class="tsd-signature-symbol">: </span><a href="../interfaces/bus_rdf_parse_html.iactionrdfparsehtml-1.html" class="tsd-signature-type">IActionRdfParseHtml</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/core.iactortest-1.html" class="tsd-signature-type">IActorTest</a><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Overrides <a href="core.actor-1.html">Actor</a>.<a href="core.actor-1.html#test">test</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/45b0155/packages/actor-init-http/lib/ActorInitHttp.ts#L25">packages/actor-init-http/lib/ActorInitHttp.ts:25</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/45b0155/packages/actor-rdf-parse-html-microdata/lib/ActorRdfParseHtmlMicrodata.ts#L15">packages/actor-rdf-parse-html-microdata/lib/ActorRdfParseHtmlMicrodata.ts:15</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>action: <a href="../interfaces/bus_init.iactioninit-1.html" class="tsd-signature-type">IActionInit</a></h5>
+									<h5>action: <a href="../interfaces/bus_rdf_parse_html.iactionrdfparsehtml-1.html" class="tsd-signature-type">IActionRdfParseHtml</a></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/core.iactortest-1.html" class="tsd-signature-type">IActorTest</a><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -635,7 +585,7 @@
 						<a href="../globals.html"><em>Globals</em></a>
 					</li>
 					<li class="current tsd-kind-module">
-						<a href="../modules/actor_init_http.html">actor-<wbr>init-<wbr>http</a>
+						<a href="../modules/actor_rdf_parse_html_microdata.html">actor-<wbr>rdf-<wbr>parse-<wbr>html-<wbr>microdata</a>
 					</li>
 				</ul>
 			</nav>
@@ -644,84 +594,66 @@
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-module">
-						<a href="../modules/actor_init_http.html" class="tsd-kind-icon">actor-<wbr>init-<wbr>http</a>
+						<a href="../modules/actor_rdf_parse_html_microdata.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>parse-<wbr>html-<wbr>microdata</a>
 						<ul>
 							<li class=" tsd-kind-reference tsd-parent-kind-module">
-								<a href="../modules/actor_init_http.html#actorinithttp" class="tsd-kind-icon">Actor<wbr>Init<wbr>Http</a>
-							</li>
-							<li class=" tsd-kind-reference tsd-parent-kind-module">
-								<a href="../modules/actor_init_http.html#iactorinithttpargs" class="tsd-kind-icon">IActor<wbr>Init<wbr>Http<wbr>Args</a>
+								<a href="../modules/actor_rdf_parse_html_microdata.html#actorrdfparsehtmlmicrodata" class="tsd-kind-icon">Actor<wbr>Rdf<wbr>Parse<wbr>Html<wbr>Microdata</a>
 							</li>
 							<li class="current tsd-kind-class tsd-parent-kind-module">
-								<a href="actor_init_http.actorinithttp-1.html" class="tsd-kind-icon">Actor<wbr>Init<wbr>Http</a>
+								<a href="actor_rdf_parse_html_microdata.actorrdfparsehtmlmicrodata-1.html" class="tsd-kind-icon">Actor<wbr>Rdf<wbr>Parse<wbr>Html<wbr>Microdata</a>
 								<ul>
 									<li class=" tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
-										<a href="actor_init_http.actorinithttp-1.html#constructor" class="tsd-kind-icon">constructor</a>
+										<a href="actor_rdf_parse_html_microdata.actorrdfparsehtmlmicrodata-1.html#constructor" class="tsd-kind-icon">constructor</a>
 									</li>
 									<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
-										<a href="actor_init_http.actorinithttp-1.html#beforeactors" class="tsd-kind-icon">before<wbr>Actors</a>
+										<a href="actor_rdf_parse_html_microdata.actorrdfparsehtmlmicrodata-1.html#beforeactors" class="tsd-kind-icon">before<wbr>Actors</a>
 									</li>
 									<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
-										<a href="actor_init_http.actorinithttp-1.html#bus" class="tsd-kind-icon">bus</a>
-									</li>
-									<li class=" tsd-kind-property tsd-parent-kind-class">
-										<a href="actor_init_http.actorinithttp-1.html#headers" class="tsd-kind-icon">headers</a>
-									</li>
-									<li class=" tsd-kind-property tsd-parent-kind-class">
-										<a href="actor_init_http.actorinithttp-1.html#mediatorhttp" class="tsd-kind-icon">mediator<wbr>Http</a>
-									</li>
-									<li class=" tsd-kind-property tsd-parent-kind-class">
-										<a href="actor_init_http.actorinithttp-1.html#method" class="tsd-kind-icon">method</a>
+										<a href="actor_rdf_parse_html_microdata.actorrdfparsehtmlmicrodata-1.html#bus" class="tsd-kind-icon">bus</a>
 									</li>
 									<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
-										<a href="actor_init_http.actorinithttp-1.html#name" class="tsd-kind-icon">name</a>
-									</li>
-									<li class=" tsd-kind-property tsd-parent-kind-class">
-										<a href="actor_init_http.actorinithttp-1.html#url" class="tsd-kind-icon">url</a>
+										<a href="actor_rdf_parse_html_microdata.actorrdfparsehtmlmicrodata-1.html#name" class="tsd-kind-icon">name</a>
 									</li>
 									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
-										<a href="actor_init_http.actorinithttp-1.html#deinitialize" class="tsd-kind-icon">deinitialize</a>
+										<a href="actor_rdf_parse_html_microdata.actorrdfparsehtmlmicrodata-1.html#deinitialize" class="tsd-kind-icon">deinitialize</a>
 									</li>
 									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
-										<a href="actor_init_http.actorinithttp-1.html#getdefaultlogdata" class="tsd-kind-icon">get<wbr>Default<wbr>Log<wbr>Data</a>
+										<a href="actor_rdf_parse_html_microdata.actorrdfparsehtmlmicrodata-1.html#getdefaultlogdata" class="tsd-kind-icon">get<wbr>Default<wbr>Log<wbr>Data</a>
 									</li>
 									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
-										<a href="actor_init_http.actorinithttp-1.html#initialize" class="tsd-kind-icon">initialize</a>
+										<a href="actor_rdf_parse_html_microdata.actorrdfparsehtmlmicrodata-1.html#initialize" class="tsd-kind-icon">initialize</a>
 									</li>
 									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
-										<a href="actor_init_http.actorinithttp-1.html#logdebug" class="tsd-kind-icon">log<wbr>Debug</a>
+										<a href="actor_rdf_parse_html_microdata.actorrdfparsehtmlmicrodata-1.html#logdebug" class="tsd-kind-icon">log<wbr>Debug</a>
 									</li>
 									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
-										<a href="actor_init_http.actorinithttp-1.html#logerror" class="tsd-kind-icon">log<wbr>Error</a>
+										<a href="actor_rdf_parse_html_microdata.actorrdfparsehtmlmicrodata-1.html#logerror" class="tsd-kind-icon">log<wbr>Error</a>
 									</li>
 									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
-										<a href="actor_init_http.actorinithttp-1.html#logfatal" class="tsd-kind-icon">log<wbr>Fatal</a>
+										<a href="actor_rdf_parse_html_microdata.actorrdfparsehtmlmicrodata-1.html#logfatal" class="tsd-kind-icon">log<wbr>Fatal</a>
 									</li>
 									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
-										<a href="actor_init_http.actorinithttp-1.html#loginfo" class="tsd-kind-icon">log<wbr>Info</a>
+										<a href="actor_rdf_parse_html_microdata.actorrdfparsehtmlmicrodata-1.html#loginfo" class="tsd-kind-icon">log<wbr>Info</a>
 									</li>
 									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
-										<a href="actor_init_http.actorinithttp-1.html#logtrace" class="tsd-kind-icon">log<wbr>Trace</a>
+										<a href="actor_rdf_parse_html_microdata.actorrdfparsehtmlmicrodata-1.html#logtrace" class="tsd-kind-icon">log<wbr>Trace</a>
 									</li>
 									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-protected">
-										<a href="actor_init_http.actorinithttp-1.html#logwarn" class="tsd-kind-icon">log<wbr>Warn</a>
+										<a href="actor_rdf_parse_html_microdata.actorrdfparsehtmlmicrodata-1.html#logwarn" class="tsd-kind-icon">log<wbr>Warn</a>
 									</li>
 									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
-										<a href="actor_init_http.actorinithttp-1.html#run" class="tsd-kind-icon">run</a>
+										<a href="actor_rdf_parse_html_microdata.actorrdfparsehtmlmicrodata-1.html#run" class="tsd-kind-icon">run</a>
 									</li>
 									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited">
-										<a href="actor_init_http.actorinithttp-1.html#runobservable" class="tsd-kind-icon">run<wbr>Observable</a>
+										<a href="actor_rdf_parse_html_microdata.actorrdfparsehtmlmicrodata-1.html#runobservable" class="tsd-kind-icon">run<wbr>Observable</a>
 									</li>
 									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
-										<a href="actor_init_http.actorinithttp-1.html#test" class="tsd-kind-icon">test</a>
+										<a href="actor_rdf_parse_html_microdata.actorrdfparsehtmlmicrodata-1.html#test" class="tsd-kind-icon">test</a>
 									</li>
 									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-inherited tsd-is-static">
-										<a href="actor_init_http.actorinithttp-1.html#getcontextlogger" class="tsd-kind-icon">get<wbr>Context<wbr>Logger</a>
+										<a href="actor_rdf_parse_html_microdata.actorrdfparsehtmlmicrodata-1.html#getcontextlogger" class="tsd-kind-icon">get<wbr>Context<wbr>Logger</a>
 									</li>
 								</ul>
-							</li>
-							<li class=" tsd-kind-interface tsd-parent-kind-module">
-								<a href="../interfaces/actor_init_http.iactorinithttpargs-1.html" class="tsd-kind-icon">IActor<wbr>Init<wbr>Http<wbr>Args</a>
 							</li>
 						</ul>
 					</li>
@@ -747,7 +679,6 @@
 				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
 				<li class="tsd-kind-class tsd-has-type-parameter"><span class="tsd-kind-icon">Class with type parameter</span></li>
 				<li class="tsd-kind-constructor tsd-parent-kind-class"><span class="tsd-kind-icon">Constructor</span></li>
-				<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
 				<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
 			</ul>
 			<ul class="tsd-legend">
