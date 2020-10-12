@@ -11,7 +11,7 @@ import type {
   IHtmlParseListener,
 } from '@comunica/bus-rdf-parse-html';
 import type { ActionContext, Actor, Bus, IActorTest } from '@comunica/core';
-import { Parser as HtmlParser } from 'htmlparser2';
+import { WritableStream as HtmlParser } from 'htmlparser2/lib/WritableStream';
 import type * as RDF from 'rdf-js';
 
 /**

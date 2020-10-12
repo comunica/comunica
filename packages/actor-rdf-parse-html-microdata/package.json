@@ -39,7 +39,7 @@
     "index.js"
   ],
   "dependencies": {
-    "microdata-rdf-streaming-parser": "^1.0.0"
+    "microdata-rdf-streaming-parser": "^1.1.0"
   },
   "peerDependencies": {
     "@comunica/core": "^1.17.0",
