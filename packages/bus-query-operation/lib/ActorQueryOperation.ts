@@ -100,9 +100,9 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
    * @param {() => Promise<{[p: string]: any}>} metadata A metadata callback
    * @return {() => Promise<{[p: string]: any}>} The callback where the response will be cached.
    */
-  public static cachifyMetadata<T extends (() => Promise<{[id: string]: any}>)
-  | (undefined | (() => Promise<{[id: string]: any}>))>(metadata: T): T {
-    let lastReturn: Promise<{[id: string]: any}>;
+  public static cachifyMetadata<T extends (() => Promise<Record<string, any>>)
+  | (undefined | (() => Promise<Record<string, any>>))>(metadata: T): T {
+    let lastReturn: Promise<Record<string, any>>;
     // eslint-disable-next-line no-return-assign,@typescript-eslint/no-misused-promises
     return <T> (metadata && (() => (lastReturn || (lastReturn = metadata()))));
   }
@@ -223,7 +223,7 @@ export interface IActorQueryOperationOutputStream extends IActorQueryOperationOu
    * The actors that return this metadata will make sure that multiple calls properly cache this promise.
    * Metadata will not be collected until this callback is invoked.
    */
-  metadata?: () => Promise<{[id: string]: any}>;
+  metadata?: () => Promise<Record<string, any>>;
 }
 
 /**
@@ -231,7 +231,7 @@ export interface IActorQueryOperationOutputStream extends IActorQueryOperationOu
  * @param actionOutput An action output, with an optional metadata function.
  * @return The metadata.
  */
-export function getMetadata(actionOutput: IActorQueryOperationOutputStream): Promise<{[id: string]: any}> {
+export function getMetadata(actionOutput: IActorQueryOperationOutputStream): Promise<Record<string, any>> {
   if (!actionOutput.metadata) {
     return Promise.resolve({});
   }
@@ -296,6 +296,4 @@ export interface IActorQueryOperationOutputBoolean extends IActorQueryOperationO
 /**
  * Binds a quad pattern term's position to a variable.
  */
-export interface IPatternBindings {
-  [termPosition: string]: RDF.Variable;
-}
+export type IPatternBindings = Record<string, RDF.Variable>;

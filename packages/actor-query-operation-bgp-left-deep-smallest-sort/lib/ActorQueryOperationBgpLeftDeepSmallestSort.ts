@@ -78,8 +78,8 @@ export class ActorQueryOperationBgpLeftDeepSmallestSort extends ActorQueryOperat
    * @param {{[p: string]: any}[]} otherPatterns The array of optional metadata for the other patterns.
    * @return {number} The estimated number of total items.
    */
-  public static estimateCombinedTotalItems(smallestPattern: {[id: string]: any} | undefined,
-    otherPatterns: ({[id: string]: any} | undefined)[]): number {
+  public static estimateCombinedTotalItems(smallestPattern: Record<string, any> | undefined,
+    otherPatterns: (Record<string, any> | undefined)[]): number {
     const smallestCount: number = ActorQueryOperationBgpLeftDeepSmallestSort.getTotalItems(smallestPattern);
     return otherPatterns
       .map(otherPattern => smallestCount * ActorQueryOperationBgpLeftDeepSmallestSort.getTotalItems(
@@ -93,7 +93,7 @@ export class ActorQueryOperationBgpLeftDeepSmallestSort extends ActorQueryOperat
    * @param {{[p: string]: any}} metadata An optional metadata object.
    * @return {number} The estimated number of items, or `Infinity` if metadata is falsy.
    */
-  public static getTotalItems(metadata?: {[id: string]: any}): number {
+  public static getTotalItems(metadata?: Record<string, any>): number {
     const { totalItems } = metadata ?? {};
     return totalItems || totalItems === 0 ? totalItems : Infinity;
   }
@@ -152,7 +152,7 @@ export class ActorQueryOperationBgpLeftDeepSmallestSort extends ActorQueryOperat
   public static async hasOneEmptyPatternOutput(patternOutputs: IActorQueryOperationOutputBindings[]): Promise<boolean> {
     for (const patternOutput of patternOutputs) {
       if (patternOutput.metadata) {
-        const metadata: {[id: string]: any} = await patternOutput.metadata();
+        const metadata: Record<string, any> = await patternOutput.metadata();
         if (!ActorQueryOperationBgpLeftDeepSmallestSort.getTotalItems(metadata)) {
           return true;
         }
@@ -188,7 +188,7 @@ export class ActorQueryOperationBgpLeftDeepSmallestSort extends ActorQueryOperat
     }
 
     // Resolve the metadata for all patterns
-    const metadatas: {[id: string]: any}[] = await Promise.all(patternOutputs.map(
+    const metadatas: Record<string, any>[] = await Promise.all(patternOutputs.map(
       async patternOutput => patternOutput.metadata ? await patternOutput.metadata() : {},
     ));
 
@@ -221,7 +221,7 @@ export class ActorQueryOperationBgpLeftDeepSmallestSort extends ActorQueryOperat
 
     // Prepare variables and metadata
     const variables: string[] = ActorQueryOperationBgpLeftDeepSmallestSort.getCombinedVariables(patternOutputs);
-    const metadata = (): Promise<{[id: string]: any}> => Promise.resolve({
+    const metadata = (): Promise<Record<string, any>> => Promise.resolve({
       totalItems: ActorQueryOperationBgpLeftDeepSmallestSort.estimateCombinedTotalItems(smallestPattern.meta,
         outputMetaTuples.map(pat => pat.meta)),
     });
@@ -233,5 +233,5 @@ export class ActorQueryOperationBgpLeftDeepSmallestSort extends ActorQueryOperat
 export interface IOutputMetaTuple {
   input: Algebra.Pattern;
   output: IActorQueryOperationOutputBindings;
-  meta?: {[id: string]: any};
+  meta?: Record<string, any>;
 }

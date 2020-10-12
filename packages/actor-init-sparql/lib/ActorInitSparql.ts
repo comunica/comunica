@@ -78,8 +78,8 @@ export class ActorInitSparql extends ActorInitSparqlBrowser {
      * @param {string} sourceString An url with possibly a type and authorization.
      * @return {[id: string]: any} An IDataSource which represents the sourceString.
      */
-  public static getSourceObjectFromString(sourceString: string): {[id: string]: any} {
-    const source: {[id: string]: any} = {};
+  public static getSourceObjectFromString(sourceString: string): Record<string, any> {
+    const source: Record<string, any> = {};
     const mediaTypeRegex = /^([^:]*)@/u;
     const mediaTypeMatches = mediaTypeRegex.exec(sourceString);
     if (mediaTypeMatches) {
@@ -178,7 +178,7 @@ export class ActorInitSparql extends ActorInitSparqlBrowser {
 
     // Print supported MIME types
     if (args.listformats) {
-      const mediaTypes: {[id: string]: number} = await this.getResultMediaTypes();
+      const mediaTypes: Record<string, number> = await this.getResultMediaTypes();
       return { stdout: require('streamify-string')(`${Object.keys(mediaTypes).join('\n')}\n`) };
     }
 

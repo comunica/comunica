@@ -169,7 +169,7 @@ export abstract class ActorRdfJoin extends Actor<IActionRdfJoin, IMediatorTypeIt
 
     function totalItems(): Promise<number> {
       return Promise.all(action.entries
-        .map(entry => (<() => Promise<{[id: string]: any}>> entry.metadata)()))
+        .map(entry => (<() => Promise<Record<string, any>>> entry.metadata)()))
         .then(metadatas => metadatas.reduce((acc, val) => acc * val.totalItems, 1));
     }
 

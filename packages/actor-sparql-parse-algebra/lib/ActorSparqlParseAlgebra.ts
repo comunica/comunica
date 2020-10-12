@@ -8,7 +8,7 @@ import { Parser as SparqlParser } from 'sparqljs';
  * A comunica Algebra SPARQL Parse Actor.
  */
 export class ActorSparqlParseAlgebra extends ActorSparqlParse {
-  public readonly prefixes: {[id: string]: string};
+  public readonly prefixes: Record<string, string>;
 
   public constructor(args: IActorSparqlParseAlgebraArgs) {
     super(args);
@@ -42,5 +42,5 @@ export interface IActorSparqlParseAlgebraArgs
   /**
    * Default prefixes to use
    */
-  prefixes?: { [id: string]: string };
+  prefixes?: Record<string, string>;
 }

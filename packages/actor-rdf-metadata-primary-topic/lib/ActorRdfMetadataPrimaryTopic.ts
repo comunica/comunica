@@ -42,9 +42,9 @@ export class ActorRdfMetadataPrimaryTopic extends ActorRdfMetadata {
 
       // First pass over data to categorize in graphs,
       // and to detect the primaryTopic triple.
-      const graphs: {[id: string]: RDF.Quad[]} = {};
+      const graphs: Record<string, RDF.Quad[]> = {};
       let endpointIdentifier: string | undefined;
-      const primaryTopics: {[id: string]: string} = {};
+      const primaryTopics: Record<string, string> = {};
       action.quads.on('data', quad => {
         if (quad.predicate.value === 'http://rdfs.org/ns/void#subset' &&
           quad.object.value === action.url) {

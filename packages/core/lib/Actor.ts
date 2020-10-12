@@ -192,7 +192,7 @@ export type ActionContext = Map<string, any>;
  * @constructor
  */
 // eslint-disable-next-line no-redeclare
-export function ActionContext(hash: {[key: string]: any}): ActionContext {
+export function ActionContext(hash: Record<string, any>): ActionContext {
   return Map(hash);
 }
 

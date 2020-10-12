@@ -14,7 +14,7 @@ import { ActorRdfDereference } from './ActorRdfDereference';
  * @see IActorRdfDereferenceOutput
  */
 export abstract class ActorRdfDereferenceMediaMappings extends ActorRdfDereference {
-  public readonly mediaMappings: { [id: string]: string };
+  public readonly mediaMappings: Record<string, string>;
 
   public constructor(args: IActorRdfDereferenceMediaMappingsArgs) {
     super(args);
@@ -42,5 +42,5 @@ export interface IActorRdfDereferenceMediaMappingsArgs
   /**
    * A collection of mappings, mapping file extensions to their corresponding media type.
    */
-  mediaMappings: { [id: string]: string };
+  mediaMappings: Record<string, string>;
 }

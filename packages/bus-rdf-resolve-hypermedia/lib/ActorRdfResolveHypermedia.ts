@@ -43,7 +43,7 @@ export interface IActionRdfResolveHypermedia extends IAction {
   /**
    * A metadata key-value mapping.
    */
-  metadata: {[id: string]: any};
+  metadata: Record<string, any>;
   /**
    * A stream of data quads.
    */
@@ -51,7 +51,7 @@ export interface IActionRdfResolveHypermedia extends IAction {
   /**
    * A hash of all datasets that have been handled.
    */
-  handledDatasets?: {[type: string]: boolean};
+  handledDatasets?: Record<string, boolean>;
   /**
    * The explicitly requested source type.
    * If set, the source type of the actor MUST explicitly match the given forced type.

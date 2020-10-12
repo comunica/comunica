@@ -71,9 +71,9 @@ export class Runner implements IRunnerArgs {
    * @param actorIdentifiers A mapping of keys to actor identifiers.
    * @return A mapping of keys to actor instances.
    */
-  public collectActors(actorIdentifiers: {[key: string]: string}):
-  {[key: string]: Actor<IAction, IActorTest, IActorOutput>} {
-    const actors: {[key: string]: Actor<IAction, IActorTest, IActorOutput>} = {};
+  public collectActors(actorIdentifiers: Record<string, string>):
+  Record<string, Actor<IAction, IActorTest, IActorOutput>> {
+    const actors: Record<string, Actor<IAction, IActorTest, IActorOutput>> = {};
 
     // Collect all required actors
     for (const key in actorIdentifiers) {

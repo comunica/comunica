@@ -32,8 +32,8 @@ export abstract class ActorHttp extends Actor<IActionHttp, IActorTest, IActorHtt
    * Convert the given headers object into a raw hash.
    * @param headers A headers object.
    */
-  public static headersToHash(headers: Headers): {[key: string]: string} {
-    const hash: {[key: string]: string} = {};
+  public static headersToHash(headers: Headers): Record<string, string> {
+    const hash: Record<string, string> = {};
     headers.forEach((value, key) => {
       hash[key] = value;
     });

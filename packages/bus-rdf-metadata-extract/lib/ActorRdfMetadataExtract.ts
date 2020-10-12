@@ -35,5 +35,5 @@ export interface IActorRdfMetadataExtractOutput extends IActorOutput {
   /**
    * A metadata key-value mapping.
    */
-  metadata: {[id: string]: any};
+  metadata: Record<string, any>;
 }

@@ -70,7 +70,7 @@ export class ActorSparqlSerializeRdf extends ActorSparqlSerialize implements IAc
     return true;
   }
 
-  public async getMediaTypes(context?: ActionContext): Promise<{[id: string]: number}> {
+  public async getMediaTypes(context?: ActionContext): Promise<Record<string, number>> {
     return (await this.mediatorMediaTypeCombiner.mediate({ context, mediaTypes: true })).mediaTypes;
   }
 
@@ -78,7 +78,7 @@ export class ActorSparqlSerializeRdf extends ActorSparqlSerialize implements IAc
     return true;
   }
 
-  public async getMediaTypeFormats(context?: ActionContext): Promise<{[id: string]: string}> {
+  public async getMediaTypeFormats(context?: ActionContext): Promise<Record<string, string>> {
     return (await this.mediatorMediaTypeFormatCombiner.mediate({ context, mediaTypeFormats: true })).mediaTypeFormats;
   }
 }

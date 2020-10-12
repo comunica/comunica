@@ -26,11 +26,11 @@ export class ActorSparqlSerializeTree extends ActorSparqlSerializeFixedMediaType
    * @return {Promise<string>}
    */
   public static bindingsStreamToGraphQl(bindingsStream: BindingsStream,
-    context: ActionContext | {[key: string]: any} | undefined,
+    context: ActionContext | Record<string, any> | undefined,
     converterSettings?: IConverterSettings): Promise<string> {
     const actionContext: ActionContext = ensureActionContext(context);
     return new Promise((resolve, reject) => {
-      const bindingsArray: {[key: string]: RDF.Term}[] = [];
+      const bindingsArray: Record<string, RDF.Term>[] = [];
       const converter: Converter = new Converter(converterSettings);
 
       const schema: ISchema = {
@@ -40,7 +40,7 @@ export class ActorSparqlSerializeTree extends ActorSparqlSerializeFixedMediaType
       bindingsStream.on('error', reject);
       bindingsStream.on('data', bindings => {
         const rawBindings = bindings.toJS();
-        const reKeyedBindings: {[key: string]: RDF.Term} = {};
+        const reKeyedBindings: Record<string, RDF.Term> = {};
         // Removes the '?' prefix
         for (const key in rawBindings) {
           reKeyedBindings[key.slice(1)] = rawBindings[key];

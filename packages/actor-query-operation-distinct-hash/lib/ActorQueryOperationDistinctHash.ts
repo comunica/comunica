@@ -20,7 +20,7 @@ export class ActorQueryOperationDistinctHash extends AbstractBindingsHash<Algebr
      * @return {(bindings: Bindings) => boolean} A distinct filter for bindings.
      */
   public newHashFilter(hashAlgorithm: string, digestAlgorithm: string): (bindings: Bindings) => boolean {
-    const hashes: {[id: string]: boolean} = {};
+    const hashes: Record<string, boolean> = {};
     return (bindings: Bindings) => {
       const hash: string = AbstractFilterHash.hash(hashAlgorithm, digestAlgorithm, bindings);
       // eslint-disable-next-line no-return-assign

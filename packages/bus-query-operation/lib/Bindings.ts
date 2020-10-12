@@ -32,7 +32,7 @@ export type Bindings = Map<string, RDF.Term>;
  * @constructor
  */
 // eslint-disable-next-line no-redeclare
-export function Bindings(hash: {[key: string]: RDF.Term}): Bindings {
+export function Bindings(hash: Record<string, RDF.Term>): Bindings {
   return Map(hash);
 }
 

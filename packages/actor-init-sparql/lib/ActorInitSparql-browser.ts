@@ -43,8 +43,8 @@ import { Algebra } from 'sparqlalgebrajs';
  * A browser-safe comunica SPARQL Init Actor.
  */
 export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs {
-  private static readonly ALGEBRA_TYPES: {[type: string]: boolean} = Object.keys(Algebra.types)
-    .reduce((acc: {[type: string]: boolean}, key) => {
+  private static readonly ALGEBRA_TYPES: Record<string, boolean> = Object.keys(Algebra.types)
+    .reduce((acc: Record<string, boolean>, key) => {
       acc[(<any> Algebra.types)[key]] = true;
       return acc;
     }, {});
@@ -82,7 +82,7 @@ export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs {
   public readonly queryString?: string;
   public readonly defaultQueryInputFormat?: string;
   public readonly context?: string;
-  public readonly contextKeyShortcuts: {[shortcut: string]: string};
+  public readonly contextKeyShortcuts: Record<string, string>;
 
   public constructor(args: IActorInitSparqlArgs) {
     super(args);
@@ -214,7 +214,7 @@ export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs {
    * @param context An optional context.
    * @return {Promise<{[p: string]: number}>} All available SPARQL (weighted) result media types.
    */
-  public async getResultMediaTypes(context?: ActionContext): Promise<{[id: string]: number}> {
+  public async getResultMediaTypes(context?: ActionContext): Promise<Record<string, number>> {
     return (await this.mediatorSparqlSerializeMediaTypeCombiner.mediate({ context, mediaTypes: true })).mediaTypes;
   }
 
@@ -222,7 +222,7 @@ export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs {
    * @param context An optional context.
    * @return {Promise<{[p: string]: number}>} All available SPARQL result media type formats.
    */
-  public async getResultMediaTypeFormats(context?: ActionContext): Promise<{[id: string]: string}> {
+  public async getResultMediaTypeFormats(context?: ActionContext): Promise<Record<string, string>> {
     return (await this.mediatorSparqlSerializeMediaTypeFormatCombiner.mediate({ context, mediaTypeFormats: true }))
       .mediaTypeFormats;
   }
@@ -297,7 +297,7 @@ export interface IActorInitSparqlArgs extends IActorArgs<IActionInit, IActorTest
   queryString?: string;
   defaultQueryInputFormat?: string;
   context?: string;
-  contextKeyShortcuts: {[shortcut: string]: string};
+  contextKeyShortcuts: Record<string, string>;
 }
 
 /**

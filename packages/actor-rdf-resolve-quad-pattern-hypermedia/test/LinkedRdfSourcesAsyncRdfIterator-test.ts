@@ -19,7 +19,7 @@ class Dummy extends LinkedRdfSourcesAsyncRdfIterator {
     this.data = data;
   }
 
-  protected async getSourceLinks(metadata: {[id: string]: any}): Promise<string[]> {
+  protected async getSourceLinks(metadata: Record<string, any>): Promise<string[]> {
     return metadata.next ? [ metadata.next ] : [];
   }
 
@@ -148,7 +148,7 @@ class DummyMetaOverrideLate extends Dummy {
 
 // Dummy class that produces multiple next page links
 class DummyMultiple extends Dummy {
-  protected async getSourceLinks(metadata: {[id: string]: any}): Promise<string[]> {
+  protected async getSourceLinks(metadata: Record<string, any>): Promise<string[]> {
     return metadata.next ? [ metadata.next, metadata.next ] : [];
   }
 }
@@ -176,7 +176,7 @@ class DummyError extends Dummy {
 
 // Dummy class that produces multiple next page links
 class DummyErrorLinks extends Dummy {
-  protected async getSourceLinks(metadata: {[id: string]: any}): Promise<string[]> {
+  protected async getSourceLinks(metadata: Record<string, any>): Promise<string[]> {
     throw new Error('DummyErrorLinks');
   }
 }

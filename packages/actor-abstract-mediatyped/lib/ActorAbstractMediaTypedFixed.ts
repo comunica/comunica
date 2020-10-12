@@ -7,11 +7,11 @@ export abstract class ActorAbstractMediaTypedFixed<HI, HT, HO> extends ActorAbst
    * A hash of media types, with media type name as key, and its priority as value.
    * Priorities are numbers between [0, 1].
    */
-  public readonly mediaTypes: {[id: string]: number};
+  public readonly mediaTypes: Record<string, number>;
   /**
    * A hash of media types, with media type name as key, and its format IRI as value.
    */
-  public readonly mediaTypeFormats: {[id: string]: string};
+  public readonly mediaTypeFormats: Record<string, string>;
   /**
    * A multiplier for media type priorities.
    * This can be used for keeping the original media types in place,
@@ -51,7 +51,7 @@ export abstract class ActorAbstractMediaTypedFixed<HI, HT, HO> extends ActorAbst
     return true;
   }
 
-  public async getMediaTypes(context: ActionContext): Promise<{[id: string]: number}> {
+  public async getMediaTypes(context: ActionContext): Promise<Record<string, number>> {
     return this.mediaTypes;
   }
 
@@ -59,12 +59,12 @@ export abstract class ActorAbstractMediaTypedFixed<HI, HT, HO> extends ActorAbst
     return true;
   }
 
-  public async getMediaTypeFormats(context: ActionContext): Promise<{[id: string]: string}> {
+  public async getMediaTypeFormats(context: ActionContext): Promise<Record<string, string>> {
     return this.mediaTypeFormats;
   }
 }
 
 export interface IActorArgsMediaTypedFixed<HI, HT, HO> extends IActorArgsMediaTyped<HI, HT, HO> {
-  mediaTypes: {[id: string]: number};
+  mediaTypes: Record<string, number>;
   priorityScale?: number;
 }

@@ -31,7 +31,7 @@ export interface IActionInit extends IAction {
   /**
    * The mapping of environment variables.
    */
-  env: {[id: string]: string | undefined};
+  env: Record<string, string | undefined>;
   /**
    * A standard input stream.
    */

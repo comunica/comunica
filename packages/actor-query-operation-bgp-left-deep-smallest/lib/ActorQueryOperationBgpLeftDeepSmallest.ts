@@ -72,7 +72,7 @@ export class ActorQueryOperationBgpLeftDeepSmallest extends ActorQueryOperationT
    * @param {{[p: string]: any}[]} metadatas An array of optional metadata objects for the patterns.
    * @return {number} The index of the pattern with the smallest number of elements.
    */
-  public static getSmallestPatternId(metadatas: ({[id: string]: any} | undefined)[]): number {
+  public static getSmallestPatternId(metadatas: (Record<string, any> | undefined)[]): number {
     let smallestId = -1;
     let smallestCount = Infinity;
     for (const [ i, meta ] of metadatas.entries()) {
@@ -92,8 +92,8 @@ export class ActorQueryOperationBgpLeftDeepSmallest extends ActorQueryOperationT
    * @param {{[p: string]: any}[]} otherPatterns The array of optional metadata for the other patterns.
    * @return {number} The estimated number of total items.
    */
-  public static estimateCombinedTotalItems(smallestPattern: {[id: string]: any} | undefined,
-    otherPatterns: ({[id: string]: any} | undefined)[]): number {
+  public static estimateCombinedTotalItems(smallestPattern: Record<string, any> | undefined,
+    otherPatterns: (Record<string, any> | undefined)[]): number {
     const smallestCount: number = ActorQueryOperationBgpLeftDeepSmallest.getTotalItems(smallestPattern);
     return otherPatterns
       .map(otherPattern => smallestCount * ActorQueryOperationBgpLeftDeepSmallest.getTotalItems(
@@ -107,7 +107,7 @@ export class ActorQueryOperationBgpLeftDeepSmallest extends ActorQueryOperationT
    * @param {{[p: string]: any}} metadata An optional metadata object.
    * @return {number} The estimated number of items, or `Infinity` if metadata is falsy.
    */
-  public static getTotalItems(metadata?: {[id: string]: any}): number {
+  public static getTotalItems(metadata?: Record<string, any>): number {
     const { totalItems } = metadata ?? {};
     return totalItems || totalItems === 0 ? totalItems : Infinity;
   }
@@ -176,7 +176,7 @@ export class ActorQueryOperationBgpLeftDeepSmallest extends ActorQueryOperationT
   public static async hasOneEmptyPatternOutput(patternOutputs: IActorQueryOperationOutputBindings[]): Promise<boolean> {
     for (const patternOutput of patternOutputs) {
       if (patternOutput.metadata) {
-        const metadata: {[id: string]: any} = await patternOutput.metadata();
+        const metadata: Record<string, any> = await patternOutput.metadata();
         if (!ActorQueryOperationBgpLeftDeepSmallest.getTotalItems(metadata)) {
           return true;
         }
@@ -212,7 +212,7 @@ export class ActorQueryOperationBgpLeftDeepSmallest extends ActorQueryOperationT
     }
 
     // Find the pattern with the smallest number of elements
-    const metadatas: {[id: string]: any}[] = await Promise.all(patternOutputs.map(
+    const metadatas: Record<string, any>[] = await Promise.all(patternOutputs.map(
       async patternOutput => patternOutput.metadata ? await patternOutput.metadata() : {},
     ));
     const smallestId: number = ActorQueryOperationBgpLeftDeepSmallest.getSmallestPatternId(metadatas);
@@ -232,7 +232,7 @@ export class ActorQueryOperationBgpLeftDeepSmallest extends ActorQueryOperationT
     const smallestPattern: IActorQueryOperationOutputBindings = patternOutputs.slice(smallestId)[0];
     const remainingPatterns: Algebra.Pattern[] = pattern.patterns.concat([]);
     remainingPatterns.splice(smallestId, 1);
-    const remainingMetadatas: {[id: string]: any}[] = metadatas.concat([]);
+    const remainingMetadatas: Record<string, any>[] = metadatas.concat([]);
     remainingMetadatas.splice(smallestId, 1);
 
     // Check if the output type is correct
@@ -257,7 +257,7 @@ export class ActorQueryOperationBgpLeftDeepSmallest extends ActorQueryOperationT
 
     // Prepare variables and metadata
     const variables: string[] = ActorQueryOperationBgpLeftDeepSmallest.getCombinedVariables(patternOutputs);
-    const metadata = (): Promise<{[id: string]: any}> => Promise.resolve({
+    const metadata = (): Promise<Record<string, any>> => Promise.resolve({
       totalItems: ActorQueryOperationBgpLeftDeepSmallest.estimateCombinedTotalItems(metadatas[smallestId],
         metadatas.slice(smallestId)),
     });

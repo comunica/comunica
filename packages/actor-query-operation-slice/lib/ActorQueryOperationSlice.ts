@@ -58,11 +58,11 @@ export class ActorQueryOperationSlice extends ActorQueryOperationTypedMediated<A
 
   // If we find metadata, apply slicing on the total number of items
   private sliceMetadata(output: IActorQueryOperationOutputStream, pattern: Algebra.Slice):
-  (() => Promise<{ [id: string]: any }>) | undefined {
+  (() => Promise<Record<string, any>>) | undefined {
     const hasLength: boolean = Boolean(pattern.length) || pattern.length === 0;
     return !output.metadata ?
       undefined :
-      () => (<() => Promise<{ [id: string]: any }>>output.metadata)()
+      () => (<() => Promise<Record<string, any>>>output.metadata)()
         .then(subMetadata => {
           let { totalItems } = subMetadata;
           if (Number.isFinite(totalItems)) {

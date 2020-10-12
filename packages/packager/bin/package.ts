@@ -76,7 +76,7 @@ const referencePackageJson = require(`${__dirname}/../package.json`);
 compileConfig({ mainModulePath, scanGlobal }, configPath, configStreamRaw, configResourceUri, exportVariableName)
   .then((document: string) => {
     // Find dependency package names
-    const dependencies: { [id: string]: string } = {};
+    const dependencies: Record<string, string> = {};
     let match;
     // eslint-disable-next-line no-cond-assign
     while (match = dependencyRegex.exec(document)) {

@@ -62,7 +62,7 @@ export class ActorQueryOperationMinus extends ActorQueryOperationTypedMediated<A
   private getCommonVariables(array1: string[], array2: string[]): string[] {
     return Object.keys(array1.filter(
       (value: string) => array2.includes(value),
-    ).reduce((hash: { [variableName: string]: boolean }, key: string) => {
+    ).reduce((hash: Record<string, boolean>, key: string) => {
       hash[key] = true;
       return hash;
     }, {}));

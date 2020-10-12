@@ -159,7 +159,7 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
      * @return {Promise<void>} All solutions of query should have been pushed to it by then.
      */
   public async getObjectsPredicateStar(object: Term, predicate: Algebra.PropertyPathSymbol, graph: Term,
-    context: ActionContext, termHashes: {[id: string]: Term}, it: BufferedIterator<Term>, counter: any): Promise<void> {
+    context: ActionContext, termHashes: Record<string, Term>, it: BufferedIterator<Term>, counter: any): Promise<void> {
     const termString = termToString(object);
     if (termHashes[termString]) {
       return;
@@ -207,7 +207,7 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
   // and objectStringVariable as value all nodes reachable through predicate* beginning at objectVal
   public async getSubjectAndObjectBindingsPredicateStar(subjectString: string, objectString: string, subjectVal: Term,
     objectVal: Term, predicate: Algebra.PropertyPathSymbol, graph: Term, context: ActionContext,
-    termHashesGlobal: {[id: string]: Promise<Term[]>}, termHashesCurrentSubject: {[id: string]: boolean},
+    termHashesGlobal: Record<string, Promise<Term[]>>, termHashesCurrentSubject: Record<string, boolean>,
     it: BufferedIterator<Bindings>, counter: any): Promise<void> {
     const termString = termToString(objectVal) + termToString(graph);
 

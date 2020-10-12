@@ -34,7 +34,7 @@ export class RdfSourceQpf implements IQuadSource {
   private readonly graphUri?: string;
   private readonly defaultGraph?: RDF.NamedNode;
   private readonly context?: ActionContext;
-  private readonly cachedQuads: {[patternId: string]: AsyncIterator<RDF.Quad>};
+  private readonly cachedQuads: Record<string, AsyncIterator<RDF.Quad>>;
 
   public constructor(mediatorMetadata: Mediator<Actor<IActionRdfMetadata, IActorTest, IActorRdfMetadataOutput>,
   IActionRdfMetadata, IActorTest, IActorRdfMetadataOutput>,
@@ -43,7 +43,7 @@ export class RdfSourceQpf implements IQuadSource {
   mediatorRdfDereference: Mediator<Actor<IActionRdfDereference, IActorTest,
   IActorRdfDereferenceOutput>, IActionRdfDereference, IActorTest, IActorRdfDereferenceOutput>,
   subjectUri: string, predicateUri: string, objectUri: string, graphUri: string | undefined,
-  metadata: {[id: string]: any}, context: ActionContext | undefined, initialQuads?: RDF.Stream) {
+  metadata: Record<string, any>, context: ActionContext | undefined, initialQuads?: RDF.Stream) {
     this.mediatorMetadata = mediatorMetadata;
     this.mediatorMetadataExtract = mediatorMetadataExtract;
     this.mediatorRdfDereference = mediatorRdfDereference;
@@ -74,7 +74,7 @@ export class RdfSourceQpf implements IQuadSource {
    * @param {{[p: string]: any}} metadata A metadata object.
    * @return {ISearchForm} A search form, or null if none could be found.
    */
-  public getSearchForm(metadata: {[id: string]: any}): ISearchForm | undefined {
+  public getSearchForm(metadata: Record<string, any>): ISearchForm | undefined {
     if (!metadata.searchForms || !metadata.searchForms.values) {
       return;
     }
@@ -112,7 +112,7 @@ export class RdfSourceQpf implements IQuadSource {
    */
   public createFragmentUri(searchForm: ISearchForm,
     subject: RDF.Term, predicate: RDF.Term, object: RDF.Term, graph: RDF.Term): string {
-    const entries: {[id: string]: string} = {};
+    const entries: Record<string, string> = {};
     const input = [
       { uri: this.subjectUri, term: subject },
       { uri: this.predicateUri, term: predicate },

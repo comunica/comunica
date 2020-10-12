@@ -40,7 +40,7 @@ export class ActorRdfResolveQuadPatternSparqlJson
   public static replaceBlankNodes(pattern: RDF.BaseQuad): RDF.BaseQuad {
     const variableNames: string[] = getVariables(getTerms(pattern)).map(variableTerm => variableTerm.value);
     // Track the names the blank nodes get mapped to (required if the name has to change)
-    const blankMap: { [id: string]: string } = {};
+    const blankMap: Record<string, string> = {};
     let changed = false;
 
     // For every position, convert to a variable if there is a blank node

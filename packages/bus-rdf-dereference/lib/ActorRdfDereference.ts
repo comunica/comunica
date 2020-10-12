@@ -87,7 +87,7 @@ export interface IActionRdfDereference extends IAction {
   /**
    * Optional HTTP headers to pass.
    */
-  headers?: {[key: string]: string};
+  headers?: Record<string, string>;
 }
 
 export interface IActorRdfDereferenceOutput extends IActorOutput {
@@ -111,5 +111,5 @@ export interface IActorRdfDereferenceOutput extends IActorOutput {
   /**
    * The returned headers of the final URL.
    */
-  headers?: {[key: string]: string};
+  headers?: Record<string, string>;
 }
