@@ -80,7 +80,7 @@ export class ActorQueryOperationDescribeSubject extends ActorQueryOperationTyped
     const quadStream = new UnionIterator(outputs.map(output => output.quadStream), { autoStart: false });
 
     // Take union of metadata
-    const metadata: () => Promise<{[id: string]: any}> = () => Promise.all(outputs
+    const metadata: () => Promise<Record<string, any>> = () => Promise.all(outputs
       .map(x => getMetadata(x)))
       .then(ActorQueryOperationUnion.unionMetadata);
 

@@ -103,7 +103,7 @@ export class ActorQueryOperationFromQuad extends ActorQueryOperationTypedMediate
         if (namedGraphs.length === 1) {
           const graph: RDF.Term = namedGraphs[0];
           // If the pattern graph is a variable, replace the graph and bind the variable using VALUES
-          const bindings: {[key: string]: RDF.Term} = {};
+          const bindings: Record<string, RDF.Term> = {};
           bindings[`?${patternGraph.value}`] = graph;
           const values: Algebra.Values = ActorQueryOperationFromQuad.FACTORY
             .createValues([ patternGraph ], [ bindings ]);

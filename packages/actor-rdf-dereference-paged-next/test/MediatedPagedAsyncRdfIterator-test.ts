@@ -17,7 +17,7 @@ import { PagedAsyncRdfIterator } from '../lib/PagedAsyncRdfIterator';
 class Dummy extends MediatedPagedAsyncRdfIterator {
   public constructor(firstPageUrl: string,
     firstPageData: RDF.Stream,
-    firstPageMetadata: () => Promise<{[id: string]: any}>,
+    firstPageMetadata: () => Promise<Record<string, any>>,
     mediatorRdfDereference: Mediator<ActorRdfDereference,
     IActionRdfDereference, IActorTest, IActorRdfDereferenceOutput>,
     mediatorMetadata: Mediator<ActorRdfMetadata,

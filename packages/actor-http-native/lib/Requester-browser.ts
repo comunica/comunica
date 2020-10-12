@@ -13,7 +13,7 @@ const UNSAFE_REQUEST_HEADERS = { 'accept-encoding': true, 'user-agent': true, re
 
 export default class Requester {
   // Resources that were already time-negotiated
-  private negotiatedResources: {[id: string]: boolean};
+  private negotiatedResources: Record<string, boolean>;
 
   public constructor() {
     this.negotiatedResources = {};

@@ -413,7 +413,7 @@ describe('ActorQueryOperationBgpLeftDeepSmallest', () => {
       it('should return 1 for a three sequential metadatas where 1 is the largest, ' +
         'the first is empty and the last is falsy', () => {
         return expect(ActorQueryOperationBgpLeftDeepSmallest.getSmallestPatternId(
-          <{[id: string]: any}[]> [{}, { totalItems: 3 }, false ],
+          <Record<string, any>[]> [{}, { totalItems: 3 }, false ],
         )).toBe(1);
       });
     });

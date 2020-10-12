@@ -49,9 +49,9 @@ export class ActorQueryOperationConstruct extends ActorQueryOperationTypedMediat
     const quadStream: AsyncIterator<RDF.Quad> = new BindingsToQuadsIterator(pattern.template, output.bindingsStream);
 
     // Let the final metadata contain the estimated number of triples
-    let metadata: (() => Promise<{[id: string]: any}>) | undefined;
+    let metadata: (() => Promise<Record<string, any>>) | undefined;
     if (output.metadata) {
-      metadata = () => (<() => Promise<{[id: string]: any}>> output.metadata)().then(meta => {
+      metadata = () => (<() => Promise<Record<string, any>>> output.metadata)().then(meta => {
         if (meta.totalItems) {
           return { ...meta, totalItems: meta.totalItems * pattern.template.length };
         }

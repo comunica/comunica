@@ -22,7 +22,7 @@ export class ActorQueryOperationValues extends ActorQueryOperationTyped<Algebra.
   public async runOperation(pattern: Algebra.Values, context: ActionContext):
   Promise<IActorQueryOperationOutputBindings> {
     const bindingsStream: BindingsStream = new ArrayIterator<Bindings>(pattern.bindings.map(x => Bindings(x)));
-    const metadata = (): Promise<{[id: string]: any}> => Promise.resolve({ totalItems: pattern.bindings.length });
+    const metadata = (): Promise<Record<string, any>> => Promise.resolve({ totalItems: pattern.bindings.length });
     const variables: string[] = pattern.variables.map(x => termToString(x));
     const canContainUndefs = pattern.bindings.some(bindings => variables.some(variable => !(variable in bindings)));
     return { type: 'bindings', bindingsStream, metadata, variables, canContainUndefs };

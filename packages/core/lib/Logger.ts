@@ -8,7 +8,7 @@ export abstract class Logger {
    * @type {{trace: number; debug: number; info: number; warn: number; error: number; fatal: number}}
    */
 
-  public static readonly LEVELS: {[id: string]: number} = {
+  public static readonly LEVELS: Record<string, number> = {
     trace: 0,
     debug: 1,
     info: 2,

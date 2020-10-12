@@ -64,9 +64,9 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
    *                                           will not occur, instead only { subject: [ 'predicate'] }
    *                                           will be returned.
    */
-  public static getDuplicateElementLinks(pattern: RDF.BaseQuad): {[element: string]: string[]} | undefined {
+  public static getDuplicateElementLinks(pattern: RDF.BaseQuad): Record<string, string[]> | undefined {
     // Collect a variable to quad elements mapping.
-    const variableElements: {[variableName: string]: string[]} = {};
+    const variableElements: Record<string, string[]> = {};
     let duplicateVariables = false;
     for (const key of QUAD_TERM_NAMES) {
       if (pattern[key].termType === 'Variable') {
@@ -81,7 +81,7 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
     }
 
     // Collect quad element to elements with equal variables mapping.
-    const duplicateElementLinks: {[element: string]: string[]} = {};
+    const duplicateElementLinks: Record<string, string[]> = {};
     for (const variable in variableElements) {
       const elements = variableElements[variable];
       const remainingElements = elements.slice(1);
@@ -100,14 +100,14 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
    * @param {AsyncIterator<Quad>} data The data stream that is guaranteed to emit the metadata property.
    * @return {() => Promise<{[p: string]: any}>} A lazy promise behind a callback resolving to a metadata object.
    */
-  protected static getMetadata(data: AsyncIterator<RDF.Quad>): () => Promise<{[id: string]: any}> {
+  protected static getMetadata(data: AsyncIterator<RDF.Quad>): () => Promise<Record<string, any>> {
     return () => new Promise((resolve, reject) => {
-      data.getProperty('metadata', (metadata: {[id: string]: any}) => resolve(metadata));
+      data.getProperty('metadata', (metadata: Record<string, any>) => resolve(metadata));
       data.on('error', reject);
     });
   }
 
-  public async testOperation(operation: Algebra.Pattern, context?: {[id: string]: any}): Promise<IActorTest> {
+  public async testOperation(operation: Algebra.Pattern, context?: Record<string, any>): Promise<IActorTest> {
     return true;
   }
 
@@ -128,16 +128,16 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
     const metadata = ActorQueryOperationQuadpattern.getMetadata(result.data);
 
     // Convenience datastructure for mapping quad elements to variables
-    const elementVariables: {[key: string]: string} = reduceTerms(pattern,
-      (acc: {[key: string]: string}, term: RDF.Term, key: QuadTermName) => {
+    const elementVariables: Record<string, string> = reduceTerms(pattern,
+      (acc: Record<string, string>, term: RDF.Term, key: QuadTermName) => {
         if (ActorQueryOperationQuadpattern.isTermVariable(term)) {
           acc[key] = termToString(term);
         }
         return acc;
       },
       {});
-    const quadBindingsReducer = (acc: {[key: string]: RDF.Term}, term: RDF.Term, key: QuadTermName):
-    {[key: string]: RDF.Term} => {
+    const quadBindingsReducer = (acc: Record<string, RDF.Term>, term: RDF.Term, key: QuadTermName):
+    Record<string, RDF.Term> => {
       const variable: string = elementVariables[key];
       if (variable) {
         acc[variable] = term;
@@ -150,7 +150,7 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
       let filteredOutput = result.data;
 
       // Detect duplicate variables in the pattern
-      const duplicateElementLinks: { [element: string]: string[] } | undefined = ActorQueryOperationQuadpattern
+      const duplicateElementLinks: Record<string, string[]> | undefined = ActorQueryOperationQuadpattern
         .getDuplicateElementLinks(pattern);
 
       // If there are duplicate variables in the search pattern,

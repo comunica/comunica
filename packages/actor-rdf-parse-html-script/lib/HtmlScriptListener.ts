@@ -19,7 +19,7 @@ export class HtmlScriptListener implements IHtmlParseListener {
   private readonly cbQuad: (quad: RDF.Quad) => void;
   private readonly cbError: (error: Error) => void;
   private readonly cbEnd: () => void;
-  private readonly supportedTypes: {[id: string]: number};
+  private readonly supportedTypes: Record<string, number>;
   private readonly context: ActionContext;
   private baseIRI: string;
   private readonly headers?: Headers;
@@ -37,7 +37,7 @@ export class HtmlScriptListener implements IHtmlParseListener {
   Actor<IActionHandleRdfParse, IActorTestHandleRdfParse, IActorOutputHandleRdfParse>,
   IActionHandleRdfParse, IActorTestHandleRdfParse, IActorOutputHandleRdfParse>,
   cbQuad: (quad: RDF.Quad) => void, cbError: (error: Error) => void, cbEnd: () => void,
-  supportedTypes: {[id: string]: number}, context: ActionContext | undefined, baseIRI: string,
+  supportedTypes: Record<string, number>, context: ActionContext | undefined, baseIRI: string,
   headers: Headers | undefined) {
     this.mediatorRdfParseHandle = mediatorRdfParseHandle;
     this.cbQuad = cbQuad;
@@ -143,7 +143,7 @@ export class HtmlScriptListener implements IHtmlParseListener {
     }
   }
 
-  public onTagOpen(name: string, attributes: { [p: string]: string }): void {
+  public onTagOpen(name: string, attributes: Record<string, string>): void {
     // Take into account baseIRI overrides
     if (name === 'base' && attributes.href) {
       this.baseIRI = resolveIri(attributes.href, this.baseIRI);

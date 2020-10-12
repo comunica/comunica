@@ -24,7 +24,7 @@ export interface IActionRdfResolveHypermediaLinks extends IAction {
   /**
    * The metadata from which the links should be extracted.
    */
-  metadata: {[id: string]: any};
+  metadata: Record<string, any>;
 }
 
 export interface IActorRdfResolveHypermediaLinksOutput extends IActorOutput {

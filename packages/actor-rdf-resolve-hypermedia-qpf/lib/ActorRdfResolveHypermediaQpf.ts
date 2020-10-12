@@ -53,7 +53,7 @@ export class ActorRdfResolveHypermediaQpf extends ActorRdfResolveHypermedia
     return { source, dataset: source.searchForm.dataset };
   }
 
-  protected createSource(metadata: {[id: string]: any}, context?: ActionContext, quads?: RDF.Stream): RdfSourceQpf {
+  protected createSource(metadata: Record<string, any>, context?: ActionContext, quads?: RDF.Stream): RdfSourceQpf {
     return new RdfSourceQpf(
       this.mediatorMetadata,
       this.mediatorMetadataExtract,

@@ -89,7 +89,7 @@ export class ActorRdfParseHtml extends ActorRdfParseFixedMediaTypes {
               }
               end();
             },
-            onopentag(name: string, attributes: {[s: string]: string}) {
+            onopentag(name: string, attributes: Record<string, string>) {
               try {
                 for (const htmlParseListener of htmlParseListeners) {
                   htmlParseListener.onTagOpen(name, attributes);

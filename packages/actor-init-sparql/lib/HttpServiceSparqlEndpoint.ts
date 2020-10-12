@@ -134,7 +134,7 @@ Options:
     const engine: ActorInitSparql = await this.engine;
 
     // Determine the allowed media types for requests
-    const mediaTypes: {[id: string]: number} = await engine.getResultMediaTypes();
+    const mediaTypes: Record<string, number> = await engine.getResultMediaTypes();
     const variants: { type: string; quality: number }[] = [];
     for (const type of Object.keys(mediaTypes)) {
       variants.push({ type, quality: mediaTypes[type] });

@@ -65,7 +65,7 @@ export class ActorRdfDereferencePagedNext extends ActorRdfDereferencePaged imple
     return {
       data: output.data.clone(),
       firstPageMetadata: () => output.firstPageMetadata().then(
-        (metadata: {[id: string]: any}) => ({ ...metadata }),
+        (metadata: Record<string, any>) => ({ ...metadata }),
       ),
       firstPageUrl: output.firstPageUrl,
       triples: output.triples,
@@ -83,9 +83,9 @@ export class ActorRdfDereferencePagedNext extends ActorRdfDereferencePaged imple
 
     const firstPageMetaSplit: IActorRdfMetadataOutput = await this.mediatorMetadata
       .mediate({ context: action.context, url: firstPageUrl, quads: firstPage.quads, triples: firstPage.triples });
-    let materializedFirstPageMetadata: Promise<{[id: string]: any}> | undefined;
+    let materializedFirstPageMetadata: Promise<Record<string, any>> | undefined;
     // eslint-disable-next-line no-return-assign
-    const firstPageMetadata: () => Promise<{ [id: string]: any }> = () => materializedFirstPageMetadata ??
+    const firstPageMetadata: () => Promise<Record<string, any>> = () => materializedFirstPageMetadata ??
       (materializedFirstPageMetadata = this.mediatorMetadataExtract.mediate(
         { context: action.context, url: firstPageUrl, metadata: firstPageMetaSplit.metadata },
       ).then(output => output.metadata));

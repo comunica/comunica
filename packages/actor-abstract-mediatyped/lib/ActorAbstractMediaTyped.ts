@@ -81,7 +81,7 @@ export abstract class ActorAbstractMediaTyped<HI, HT, HO>
    * @param {ActionContext} context An optional context.
    * @return {Promise<{[id: string]: number}>} A promise that resolves to the media types.
    */
-  public abstract getMediaTypes(context?: ActionContext): Promise<{[id: string]: number}>;
+  public abstract getMediaTypes(context?: ActionContext): Promise<Record<string, number>>;
 
   /**
    * Check if this actor can emit its media type formats.
@@ -97,7 +97,7 @@ export abstract class ActorAbstractMediaTyped<HI, HT, HO>
    * @param {ActionContext} context An optional context.
    * @return {Promise<{[id: string]: string}>} A promise that resolves to the media types.
    */
-  public abstract getMediaTypeFormats(context?: ActionContext): Promise<{[id: string]: string}>;
+  public abstract getMediaTypeFormats(context?: ActionContext): Promise<Record<string, string>>;
 }
 
 export interface IActorArgsMediaTyped<HI, HT, HO> extends IActorArgs<IActionAbstractMediaTyped<HI>,
@@ -172,12 +172,12 @@ export interface IActorOutputAbstractMediaTypedMediaTypes extends IActorOutput {
    * An object containing media types as keys,
    * and preferences as values, with values ranging from 0 to 1.
    */
-  mediaTypes: {[id: string]: number};
+  mediaTypes: Record<string, number>;
 }
 export interface IActorOutputAbstractMediaTypedMediaTypeFormats extends IActorOutput {
   /**
    * An object containing media types as keys,
    * and format IRIs as values.
    */
-  mediaTypeFormats: {[id: string]: string};
+  mediaTypeFormats: Record<string, string>;
 }

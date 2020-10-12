@@ -46,7 +46,7 @@ export interface IActorRdfDereferencePagedOutput extends IActorOutput {
    * The actors that return this metadata will make sure that multiple calls properly cache this promise.
    * Metadata will not be collected until this callback is invoked.
    */
-  firstPageMetadata: () => Promise<{[id: string]: any}>;
+  firstPageMetadata: () => Promise<Record<string, any>>;
   /**
    * An optional field indicating if the given quad stream originates from a triple-based serialization,
    * in which everything is serialized in the default graph.

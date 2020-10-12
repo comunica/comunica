@@ -34,7 +34,7 @@ export class ActorQueryOperationUnion extends ActorQueryOperationTypedMediated<A
    * @param {{[p: string]: any}[]} metadatas Array of metadata.
    * @return {{[p: string]: any}} Union of the metadata.
    */
-  public static unionMetadata(metadatas: {[id: string]: any}[]): {[id: string]: any} {
+  public static unionMetadata(metadatas: Record<string, any>[]): Record<string, any> {
     let totalItems = 0;
     for (const metadata of metadatas) {
       if (metadata.totalItems && Number.isFinite(metadata.totalItems)) {
@@ -61,11 +61,11 @@ export class ActorQueryOperationUnion extends ActorQueryOperationTypedMediated<A
     const bindingsStream: BindingsStream = new UnionIterator(outputs.map(
       (output: IActorQueryOperationOutputBindings) => output.bindingsStream,
     ), { autoStart: false });
-    const metadata: (() => Promise<{[id: string]: any}>) | undefined = outputs[0].metadata && outputs[1].metadata ?
+    const metadata: (() => Promise<Record<string, any>>) | undefined = outputs[0].metadata && outputs[1].metadata ?
       () =>
         Promise.all([
-          (<() => Promise<{ [id: string]: any }>>outputs[0].metadata)(),
-          (<() => Promise<{ [id: string]: any }>>outputs[1].metadata)(),
+          (<() => Promise<Record<string, any>>>outputs[0].metadata)(),
+          (<() => Promise<Record<string, any>>>outputs[1].metadata)(),
         ]).then(ActorQueryOperationUnion.unionMetadata) :
       undefined;
     const variables: string[] = ActorQueryOperationUnion.unionVariables(

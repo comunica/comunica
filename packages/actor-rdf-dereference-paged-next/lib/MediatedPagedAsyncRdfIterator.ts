@@ -19,7 +19,7 @@ import { PagedAsyncRdfIterator } from './PagedAsyncRdfIterator';
  */
 export class MediatedPagedAsyncRdfIterator extends PagedAsyncRdfIterator {
   public readonly firstPageData: RDF.Stream;
-  public readonly firstPageMetadata: () => Promise<{[id: string]: any}>;
+  public readonly firstPageMetadata: () => Promise<Record<string, any>>;
   public readonly mediatorRdfDereference: Mediator<Actor<IActionRdfDereference, IActorTest, IActorRdfDereferenceOutput>,
   IActionRdfDereference, IActorTest, IActorRdfDereferenceOutput>;
 
@@ -32,7 +32,7 @@ export class MediatedPagedAsyncRdfIterator extends PagedAsyncRdfIterator {
   public readonly context?: ActionContext;
 
   public constructor(firstPageUrl: string, firstPageData: RDF.Stream,
-    firstPageMetadata: () => Promise<{[id: string]: any}>,
+    firstPageMetadata: () => Promise<Record<string, any>>,
     mediatorRdfDereference: Mediator<Actor<IActionRdfDereference, IActorTest,
     IActorRdfDereferenceOutput>, IActionRdfDereference, IActorTest, IActorRdfDereferenceOutput>,
     mediatorMetadata: Mediator<Actor<IActionRdfMetadata, IActorTest, IActorRdfMetadataOutput>,

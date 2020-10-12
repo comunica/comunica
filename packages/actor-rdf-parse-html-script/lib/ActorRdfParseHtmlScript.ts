@@ -36,7 +36,7 @@ export class ActorRdfParseHtmlScript extends ActorRdfParseHtml {
   }
 
   public async run(action: IActionRdfParseHtml): Promise<IActorRdfParseHtmlOutput> {
-    const supportedTypes: {[id: string]: number} = (await this.mediatorRdfParseMediatypes
+    const supportedTypes: Record<string, number> = (await this.mediatorRdfParseMediatypes
       .mediate({ context: action.context, mediaTypes: true })).mediaTypes;
     const htmlParseListener = new HtmlScriptListener(
       this.mediatorRdfParseHandle,

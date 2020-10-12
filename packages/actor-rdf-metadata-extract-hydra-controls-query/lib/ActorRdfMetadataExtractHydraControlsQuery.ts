@@ -25,7 +25,7 @@ export class ActorRdfMetadataExtractHydraControlsQuery extends ActorRdfMetadataE
       }
     }`;
 
-  protected readonly parsedUriTemplateCache: {[url: string]: UriTemplate} = {};
+  protected readonly parsedUriTemplateCache: Record<string, UriTemplate> = {};
 
   public constructor(args: IActorRdfMetadataExtractQueryArgs) {
     super(GRAPHQLLD_CONTEXT, ActorRdfMetadataExtractHydraControlsQuery.GRAPHQLLD_QUERY, args);
@@ -72,8 +72,8 @@ export class ActorRdfMetadataExtractHydraControlsQuery extends ActorRdfMetadataE
           acc[entry.property] = entry.variable;
           return acc;
         }, {});
-        const getUri = (entries: { [id: string]: string }): string => searchTemplate
-          .expand(Object.keys(entries).reduce((variables: { [id: string]: string }, key) => {
+        const getUri = (entries: Record<string, string>): string => searchTemplate
+          .expand(Object.keys(entries).reduce((variables: Record<string, string>, key) => {
             variables[mappings[key]] = entries[key];
             return variables;
           }, {}));
@@ -104,7 +104,7 @@ export interface ISearchForm {
    * With as keys the Hydra properties,
    * and as values the Hydra variables
    */
-  mappings: {[id: string]: string};
+  mappings: Record<string, string>;
 
   /**
    * Instantiate a uri based on the given Hydra variable values.
@@ -112,7 +112,7 @@ export interface ISearchForm {
    *                and as values Hydra variable values.
    * @return {string} The instantiated URI
    */
-  getUri: (entries: {[id: string]: string}) => string;
+  getUri: (entries: Record<string, string>) => string;
 }
 
 export interface ISearchForms {

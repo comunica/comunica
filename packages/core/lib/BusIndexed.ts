@@ -20,7 +20,7 @@ import { Bus } from './Bus';
  */
 export class BusIndexed<A extends Actor<I, T, O>, I extends IAction, T extends IActorTest, O extends IActorOutput>
   extends Bus<A, I, T, O> {
-  protected readonly actorsIndex: {[id: string]: A[]} = {};
+  protected readonly actorsIndex: Record<string, A[]> = {};
   protected readonly actorIdentifierFields: string[];
   protected readonly actionIdentifierFields: string[];
 

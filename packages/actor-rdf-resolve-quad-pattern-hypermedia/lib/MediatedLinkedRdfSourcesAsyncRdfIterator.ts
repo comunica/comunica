@@ -37,7 +37,7 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
 
   private readonly context: ActionContext;
   private readonly forceSourceType?: string;
-  private readonly handledUrls: {[url: string]: boolean};
+  private readonly handledUrls: Record<string, boolean>;
 
   public constructor(cacheSize: number, context: ActionContext, forceSourceType: string | undefined,
     subject: RDF.Term, predicate: RDF.Term, object: RDF.Term, graph: RDF.Term,
@@ -53,7 +53,7 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
     this.handledUrls = {};
   }
 
-  protected async getSourceLinks(metadata: {[id: string]: any}): Promise<string[]> {
+  protected async getSourceLinks(metadata: Record<string, any>): Promise<string[]> {
     try {
       const { urls } = await this.mediatorRdfResolveHypermediaLinks.mediate({ context: this.context, metadata });
 
@@ -71,7 +71,7 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
     }
   }
 
-  protected async getSource(url: string, handledDatasets: {[type: string]: boolean}): Promise<ISourceState> {
+  protected async getSource(url: string, handledDatasets: Record<string, boolean>): Promise<ISourceState> {
     // Get the RDF representation of the given document
     const context = this.context;
     const rdfDereferenceOutput: IActorRdfDereferenceOutput = await this.mediatorRdfDereference

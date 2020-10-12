@@ -174,12 +174,12 @@ export class FederatedQuadSource implements IQuadSource {
 
   public match(subject: RDF.Term, predicate: RDF.Term, object: RDF.Term, graph: RDF.Term): AsyncIterator<RDF.Quad> {
     // Counters for our metadata
-    const metadata: {[id: string]: any} = { totalItems: 0 };
+    const metadata: Record<string, any> = { totalItems: 0 };
     let remainingSources = this.sources.length;
 
     // Anonymous function to handle totalItems from metadata
     const checkEmitMetadata = (currentTotalItems: number, source: IDataSource,
-      pattern: RDF.BaseQuad | undefined, lastMetadata?: {[id: string]: any}): void => {
+      pattern: RDF.BaseQuad | undefined, lastMetadata?: Record<string, any>): void => {
       if (this.skipEmptyPatterns && !currentTotalItems) {
         // Because another call may have added more information in the meantime
         if (pattern && !this.isSourceEmpty(source, pattern)) {
@@ -227,7 +227,7 @@ export class FederatedQuadSource implements IQuadSource {
       }
 
       // Handle the metadata from this source
-      output.data.getProperty('metadata', (subMetadata: { [id: string]: any }) => {
+      output.data.getProperty('metadata', (subMetadata: Record<string, any>) => {
         if ((!subMetadata.totalItems && subMetadata.totalItems !== 0) || !Number.isFinite(subMetadata.totalItems)) {
           // We're already at infinite, so ignore any later metadata
           metadata.totalItems = Infinity;

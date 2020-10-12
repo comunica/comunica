@@ -86,7 +86,7 @@ export abstract class ActorRdfDereferenceHttpParseBase extends ActorRdfDereferen
     const url = resolveRelative(httpResponse.url, action.url);
 
     // Convert output headers to a hash
-    const outputHeaders: {[key: string]: string} = {};
+    const outputHeaders: Record<string, string> = {};
     // eslint-disable-next-line no-return-assign
     httpResponse.headers.forEach((value, key) => outputHeaders[key] = value);
 
@@ -134,7 +134,7 @@ export abstract class ActorRdfDereferenceHttpParseBase extends ActorRdfDereferen
     return { url, quads, triples: parseOutput.triples, headers: outputHeaders };
   }
 
-  public mediaTypesToAcceptString(mediaTypes: { [id: string]: number }, maxLength: number): string {
+  public mediaTypesToAcceptString(mediaTypes: Record<string, number>, maxLength: number): string {
     const wildcard = '*/*;q=0.1';
     const parts: string[] = [];
     const sortedMediaTypes = Object.keys(mediaTypes)

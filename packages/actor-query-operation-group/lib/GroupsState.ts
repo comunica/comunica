@@ -18,9 +18,7 @@ export type BindingsHash = string;
  */
 export interface IGroup {
   bindings: Bindings;
-  aggregators: {
-    [key: string]: AggregateEvaluator;
-  };
+  aggregators: Record<string, AggregateEvaluator>;
 }
 
 /**
@@ -57,7 +55,7 @@ export class GroupsState {
     let group: IGroup | undefined = this.groups.get(groupHash);
     if (!group) {
       // Initialize state for all aggregators for new group
-      const aggregators: { [key: string]: AggregateEvaluator } = {};
+      const aggregators: Record<string, AggregateEvaluator> = {};
       for (const aggregate of this.pattern.aggregates) {
         const key = termToString(aggregate.variable);
         aggregators[key] = new AggregateEvaluator(aggregate, this.sparqleeConfig);
@@ -102,7 +100,7 @@ export class GroupsState {
 
       // Collect aggregator bindings
       // If the aggregate errorred, the result will be undefined
-      const aggBindings: { [key: string]: Term } = {};
+      const aggBindings: Record<string, Term> = {};
       for (const variable in aggregators) {
         const value = aggregators[variable].result();
         if (value !== undefined) {
@@ -119,7 +117,7 @@ export class GroupsState {
     // Some aggregators still define an output on the empty input
     // Result is a single Bindings
     if (rows.length === 0 && this.groupVariables.size === 0) {
-      const single: { [key: string]: Term } = {};
+      const single: Record<string, Term> = {};
       for (const aggregate of this.pattern.aggregates) {
         const key = termToString(aggregate.variable);
         const value = AggregateEvaluator.emptyValue(aggregate);

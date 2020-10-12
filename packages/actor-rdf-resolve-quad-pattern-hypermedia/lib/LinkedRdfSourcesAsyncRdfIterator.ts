@@ -68,14 +68,14 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
    * Determine the links to be followed from the current source given its metadata.
    * @param metadata The metadata of a source.
    */
-  protected abstract getSourceLinks(metadata: {[id: string]: any}): Promise<string[]>;
+  protected abstract getSourceLinks(metadata: Record<string, any>): Promise<string[]>;
 
   /**
    * Resolve a source for the given URL.
    * @param url A source URL.
    * @param handledDatasets A hash of dataset identifiers that have already been handled.
    */
-  protected abstract async getSource(url: string, handledDatasets: {[type: string]: boolean}): Promise<ISourceState>;
+  protected abstract async getSource(url: string, handledDatasets: Record<string, boolean>): Promise<ISourceState>;
 
   /**
    * Resolve a source for the given URL.
@@ -83,7 +83,7 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
    * @param url A source URL.
    * @param handledDatasets A hash of dataset identifiers that have already been handled.
    */
-  protected getSourceCached(url: string, handledDatasets: {[type: string]: boolean}): Promise<ISourceState> {
+  protected getSourceCached(url: string, handledDatasets: Record<string, boolean>): Promise<ISourceState> {
     let source = (<ISourcesState> this.sourcesState).sources.get(url);
     if (source) {
       return source;
@@ -158,7 +158,7 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
 
     // Listen for the metadata of the source
     // The metadata property is guaranteed to be set
-    this.currentIterator.getProperty('metadata', (metadata: { [id: string]: any }) => {
+    this.currentIterator.getProperty('metadata', (metadata: Record<string, any>) => {
       startSource.metadata = { ...startSource.metadata, ...metadata };
 
       // Emit metadata if needed
@@ -225,9 +225,9 @@ export interface ISourceState {
   /**
    * The source's initial metadata.
    */
-  metadata: {[id: string]: any};
+  metadata: Record<string, any>;
   /**
    * All dataset identifiers that have been passed for this source.
    */
-  handledDatasets: {[type: string]: boolean};
+  handledDatasets: Record<string, boolean>;
 }
