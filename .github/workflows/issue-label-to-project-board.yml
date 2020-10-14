@@ -4,7 +4,7 @@ on:
     types: [labeled]
 
 env:
-  MY_GITHUB_TOKEN: ${{ secrets.PAT }}
+  MY_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
   assign:
