@@ -232,4 +232,47 @@ describe('LoggerPretty', () => {
       return expect(process.stderr.write).toHaveBeenCalledTimes(1);
     });
   });
+
+  describe('a LoggerPretty instance with an actor whitelist', () => {
+    let logger: LoggerPretty;
+
+    beforeEach(() => {
+      const actors = {
+        a: true,
+        b: true,
+        c: false,
+      };
+      logger = new LoggerPretty({ level: 'trace', actors });
+    });
+
+    it('should log for a whitelisted actor', () => {
+      logger.trace('bla', { actor: 'a' });
+      return expect(process.stderr.write).toHaveBeenCalledTimes(1);
+    });
+
+    it('should log for another whitelisted actor', () => {
+      logger.trace('bla', { actor: 'b' });
+      return expect(process.stderr.write).toHaveBeenCalledTimes(1);
+    });
+
+    it('should not log for a non-whitelisted actor', () => {
+      logger.trace('bla', { actor: 'c' });
+      return expect(process.stderr.write).not.toHaveBeenCalledTimes(1);
+    });
+
+    it('should not log for another non-whitelisted actor', () => {
+      logger.trace('bla', { actor: 'd' });
+      return expect(process.stderr.write).not.toHaveBeenCalledTimes(1);
+    });
+
+    it('should log for empty data', () => {
+      logger.trace('bla', {});
+      return expect(process.stderr.write).toHaveBeenCalledTimes(1);
+    });
+
+    it('should log for undefined data', () => {
+      logger.trace('bla');
+      return expect(process.stderr.write).toHaveBeenCalledTimes(1);
+    });
+  });
 });

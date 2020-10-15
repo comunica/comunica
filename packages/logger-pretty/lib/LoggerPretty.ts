@@ -7,11 +7,13 @@ import { Logger } from '@comunica/core';
 export class LoggerPretty extends Logger {
   private readonly level: string;
   private readonly levelOrdinal: number;
+  private readonly actors: Record<string, boolean>;
 
   public constructor(args: ILoggerPrettyArgs) {
     super();
     this.level = args.level;
     this.levelOrdinal = Logger.getLevelOrdinal(this.level);
+    this.actors = args.actors || {};
   }
 
   public debug(message: string, data?: any): void {
@@ -39,12 +41,20 @@ export class LoggerPretty extends Logger {
   }
 
   protected log(level: string, message: string, data?: any): void {
-    if (Logger.getLevelOrdinal(level) >= this.levelOrdinal) {
+    if (Logger.getLevelOrdinal(level) >= this.levelOrdinal &&
+      (!data || !('actor' in data) || this.actors[data.actor])) {
       process.stderr.write(`[${new Date().toISOString()}]  ${level.toUpperCase()}: ${message} ${inspect(data)}\n`);
     }
   }
 }
 
 export interface ILoggerPrettyArgs {
+  /**
+   * The minimum logging level.
+   */
   level: string;
+  /**
+   * A whitelist of actor IRIs to log for.
+   */
+  actors?: Record<string, boolean>;
 }
