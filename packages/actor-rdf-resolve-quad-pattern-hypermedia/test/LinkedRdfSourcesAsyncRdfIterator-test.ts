@@ -1,4 +1,5 @@
 import { Readable } from 'stream';
+import type { ILink } from '@comunica/bus-rdf-resolve-hypermedia-links';
 import { ArrayIterator, wrap } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import type * as RDF from 'rdf-js';
@@ -19,19 +20,19 @@ class Dummy extends LinkedRdfSourcesAsyncRdfIterator {
     this.data = data;
   }
 
-  protected async getSourceLinks(metadata: Record<string, any>): Promise<string[]> {
-    return metadata.next ? [ metadata.next ] : [];
+  protected async getSourceLinks(metadata: Record<string, any>): Promise<ILink[]> {
+    return metadata.next ? [{ url: metadata.next }] : [];
   }
 
   protected getPage(url: string) {
     return url.startsWith('P') ? Number.parseInt(url.slice(1), 10) : 0;
   }
 
-  protected async getSource(url: string): Promise<ISourceState> {
-    const requestedPage = this.getPage(url);
+  protected async getSource(link: ILink): Promise<ISourceState> {
+    const requestedPage = this.getPage(link.url);
     if (requestedPage >= this.data.length) {
       return {
-        handledDatasets: { [url]: true },
+        handledDatasets: { [link.url]: true },
         metadata: { requestedPage },
         source: <any> {
           match() {
@@ -43,7 +44,7 @@ class Dummy extends LinkedRdfSourcesAsyncRdfIterator {
       };
     }
     return {
-      handledDatasets: { [url]: true },
+      handledDatasets: { [link.url]: true },
       metadata: { requestedPage, firstPageToken: true, next: `P${requestedPage + 1}` },
       source: <any> {
         match: () => {
@@ -58,28 +59,28 @@ class Dummy extends LinkedRdfSourcesAsyncRdfIterator {
 
 // Dummy class with a rejecting getNextSource
 class InvalidDummy extends Dummy {
-  protected getSource(url: string): Promise<ISourceState> {
+  protected getSource(link: ILink): Promise<ISourceState> {
     return Promise.reject(new Error('NextSource error'));
   }
 }
 
 // Dummy class with a rejecting getNextSource on the second page
 class InvalidDummyNext extends Dummy {
-  protected getSource(url: string): Promise<ISourceState> {
-    if (this.getPage(url) >= 1) {
+  protected getSource(link: ILink): Promise<ISourceState> {
+    if (this.getPage(link.url) >= 1) {
       return Promise.reject(new Error('NextSource2 error'));
     }
-    return super.getSource(url);
+    return super.getSource(link);
   }
 }
 
 // Dummy class with a metadata override event on the first page
 class DummyMetaOverride extends Dummy {
-  protected async getSource(url: string): Promise<ISourceState> {
-    const requestedPage = this.getPage(url);
+  protected async getSource(link: ILink): Promise<ISourceState> {
+    const requestedPage = this.getPage(link.url);
     if (requestedPage >= this.data.length) {
       return {
-        handledDatasets: { [url]: true },
+        handledDatasets: { [link.url]: true },
         metadata: { requestedPage },
         source: <any> {
           match() {
@@ -91,7 +92,7 @@ class DummyMetaOverride extends Dummy {
       };
     }
     return {
-      handledDatasets: { [url]: true },
+      handledDatasets: { [link.url]: true },
       metadata: { firstPageToken: true, next: `P${requestedPage + 1}` },
       source: <any> {
         match: () => {
@@ -106,9 +107,9 @@ class DummyMetaOverride extends Dummy {
 
 // Dummy class with a metadata override event before end event
 class DummyMetaOverrideEarly extends Dummy {
-  protected async getSource(url: string): Promise<ISourceState> {
+  protected async getSource(link: ILink): Promise<ISourceState> {
     return {
-      handledDatasets: { [url]: true },
+      handledDatasets: { [link.url]: true },
       metadata: { firstPageToken: true },
       source: <any> {
         match() {
@@ -127,9 +128,9 @@ class DummyMetaOverrideEarly extends Dummy {
 
 // Dummy class with a metadata override event after end event
 class DummyMetaOverrideLate extends Dummy {
-  protected async getSource(url: string): Promise<ISourceState> {
+  protected async getSource(link: ILink): Promise<ISourceState> {
     return {
-      handledDatasets: { [url]: true },
+      handledDatasets: { [link.url]: true },
       metadata: { firstPageToken: true },
       source: <any> {
         match() {
@@ -148,16 +149,16 @@ class DummyMetaOverrideLate extends Dummy {
 
 // Dummy class that produces multiple next page links
 class DummyMultiple extends Dummy {
-  protected async getSourceLinks(metadata: Record<string, any>): Promise<string[]> {
-    return metadata.next ? [ metadata.next, metadata.next ] : [];
+  protected async getSourceLinks(metadata: Record<string, any>): Promise<ILink[]> {
+    return metadata.next ? [{ url: metadata.next }, { url: metadata.next }] : [];
   }
 }
 
 // Dummy class that emits an error in the source stream
 class DummyError extends Dummy {
-  protected async getSource(url: string): Promise<ISourceState> {
+  protected async getSource(link: ILink): Promise<ISourceState> {
     return {
-      handledDatasets: { [url]: true },
+      handledDatasets: { [link.url]: true },
       metadata: { next: 'NEXT' },
       source: <any> {
         match() {
@@ -176,7 +177,7 @@ class DummyError extends Dummy {
 
 // Dummy class that produces multiple next page links
 class DummyErrorLinks extends Dummy {
-  protected async getSourceLinks(metadata: Record<string, any>): Promise<string[]> {
+  protected async getSourceLinks(metadata: Record<string, any>): Promise<ILink[]> {
     throw new Error('DummyErrorLinks');
   }
 }

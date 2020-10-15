@@ -5,7 +5,7 @@ import type { IActionRdfResolveHypermedia,
   IActorRdfResolveHypermediaOutput } from '@comunica/bus-rdf-resolve-hypermedia';
 import type {
   IActionRdfResolveHypermediaLinks,
-  IActorRdfResolveHypermediaLinksOutput,
+  IActorRdfResolveHypermediaLinksOutput, ILink,
 } from '@comunica/bus-rdf-resolve-hypermedia-links';
 import type { ActionContext, Actor, IActorTest, Mediator } from '@comunica/core';
 import type * as RDF from 'rdf-js';
@@ -53,16 +53,17 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
     this.handledUrls = {};
   }
 
-  protected async getSourceLinks(metadata: Record<string, any>): Promise<string[]> {
+  protected async getSourceLinks(metadata: Record<string, any>): Promise<ILink[]> {
     try {
       const { urls } = await this.mediatorRdfResolveHypermediaLinks.mediate({ context: this.context, metadata });
+      const links: ILink[] = urls.map(url => typeof url === 'string' ? { url } : url);
 
       // Filter URLs to avoid cyclic next-page loops
-      return urls.filter(url => {
-        if (this.handledUrls[url]) {
+      return links.filter(link => {
+        if (this.handledUrls[link.url]) {
           return false;
         }
-        this.handledUrls[url] = true;
+        this.handledUrls[link.url] = true;
         return true;
       });
     } catch {
@@ -71,9 +72,10 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
     }
   }
 
-  protected async getSource(url: string, handledDatasets: Record<string, boolean>): Promise<ISourceState> {
+  protected async getSource(link: ILink, handledDatasets: Record<string, boolean>): Promise<ISourceState> {
     // Get the RDF representation of the given document
     const context = this.context;
+    let url = link.url;
     const rdfDereferenceOutput: IActorRdfDereferenceOutput = await this.mediatorRdfDereference
       .mediate({ context, url });
     url = rdfDereferenceOutput.url;
@@ -84,6 +86,11 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
     );
     const { metadata } = await this.mediatorMetadataExtract
       .mediate({ context, url, metadata: rdfMetadataOuput.metadata });
+
+    // Optionally filter the resulting data
+    if (link.transform) {
+      rdfMetadataOuput.data = await link.transform(rdfMetadataOuput.data);
+    }
 
     // Determine the source
     const { source, dataset } = await this.mediatorRdfResolveHypermedia.mediate({

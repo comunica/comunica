@@ -55,8 +55,8 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
       it('should get urls based on mediatorRdfResolveHypermediaLinks', async() => {
         jest.spyOn(mediatorRdfResolveHypermediaLinks, 'mediate');
         expect(await source.getSourceLinks({ baseURL: 'http://base.org/' })).toEqual([
-          'http://base.org/url1',
-          'http://base.org/url2',
+          { url: 'http://base.org/url1' },
+          { url: 'http://base.org/url2' },
         ]);
         expect(mediatorRdfResolveHypermediaLinks.mediate)
           .toHaveBeenCalledWith({ context, metadata: { baseURL: 'http://base.org/' }});
@@ -65,18 +65,18 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
       it('should not emit any urls that were already emitted', async() => {
         source.handledUrls['http://base.org/url1'] = true;
         expect(await source.getSourceLinks({ baseURL: 'http://base.org/' })).toEqual([
-          'http://base.org/url2',
+          { url: 'http://base.org/url2' },
         ]);
       });
 
       it('should be invokable multiple times', async() => {
         expect(await source.getSourceLinks({ baseURL: 'http://base.org/' })).toEqual([
-          'http://base.org/url1',
-          'http://base.org/url2',
+          { url: 'http://base.org/url1' },
+          { url: 'http://base.org/url2' },
         ]);
         expect(await source.getSourceLinks({ baseURL: 'http://base2.org/' })).toEqual([
-          'http://base2.org/url1',
-          'http://base2.org/url2',
+          { url: 'http://base2.org/url1' },
+          { url: 'http://base2.org/url2' },
         ]);
         expect(await source.getSourceLinks({ baseURL: 'http://base.org/' })).toEqual([]); // Already handled
       });
@@ -87,11 +87,31 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
         );
         expect(await source.getSourceLinks({ baseURL: 'http://base.org/' })).toEqual([]);
       });
+
+      it('should get urls based on mediatorRdfResolveHypermediaLinks when they are provided as string', async() => {
+        mediatorRdfResolveHypermediaLinks.mediate = ({ metadata }: any) => Promise.resolve({
+          urls: [ `${metadata.baseURL}url1`, `${metadata.baseURL}url2` ],
+        });
+        expect(await source.getSourceLinks({ baseURL: 'http://base.org/' })).toEqual([
+          { url: 'http://base.org/url1' },
+          { url: 'http://base.org/url2' },
+        ]);
+      });
+
+      it('should get urls based on mediatorRdfResolveHypermediaLinks when they are provided as links', async() => {
+        mediatorRdfResolveHypermediaLinks.mediate = ({ metadata }: any) => Promise.resolve({
+          urls: [{ url: `${metadata.baseURL}url1` }, { url: `${metadata.baseURL}url2` }],
+        });
+        expect(await source.getSourceLinks({ baseURL: 'http://base.org/' })).toEqual([
+          { url: 'http://base.org/url1' },
+          { url: 'http://base.org/url2' },
+        ]);
+      });
     });
 
     describe('getSource', () => {
       it('should get urls based on mediatorRdfResolveHypermedia', async() => {
-        expect(await source.getSource('startUrl', {})).toEqual({
+        expect(await source.getSource({ url: 'startUrl' }, {})).toEqual({
           handledDatasets: { MYDATASET: true },
           metadata: { myKey: 'METADATA' },
           source: { sourceContents: 'QUADS(startUrl)' },
@@ -103,11 +123,21 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
           Promise.resolve({
             source: { sourceContents: quads },
           });
-        expect(await source.getSource('startUrl', {})).toEqual({
+        expect(await source.getSource({ url: 'startUrl' }, {})).toEqual({
           handledDatasets: {},
           metadata: { myKey: 'METADATA' },
           source: { sourceContents: 'QUADS(startUrl)' },
         });
+      });
+
+      it('should apply the link tranformation', async() => {
+        const transform = jest.fn(input => Promise.resolve(`TRANSFORMED(${input})`));
+        expect(await source.getSource({ url: 'startUrl', transform }, {})).toEqual({
+          handledDatasets: { MYDATASET: true },
+          metadata: { myKey: 'METADATA' },
+          source: { sourceContents: 'TRANSFORMED(QUADS(startUrl))' },
+        });
+        expect(transform).toHaveBeenCalledWith('QUADS(startUrl)');
       });
     });
   });

@@ -1,3 +1,4 @@
+import type { ILink } from '@comunica/bus-rdf-resolve-hypermedia-links';
 import type { IQuadSource } from '@comunica/bus-rdf-resolve-quad-pattern';
 import type { AsyncIterator } from 'asynciterator';
 import { BufferedIterator } from 'asynciterator';
@@ -18,7 +19,7 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
   protected readonly object: RDF.Term;
   protected readonly graph: RDF.Term;
   protected nextSource: ISourceState | undefined;
-  protected readonly urlQueue: string[];
+  protected readonly linkQueue: ILink[];
 
   private readonly cacheSize: number;
   private readonly firstUrl: string;
@@ -34,7 +35,7 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
     this.predicate = predicate;
     this.object = object;
     this.graph = graph;
-    this.urlQueue = [];
+    this.linkQueue = [];
     this.firstUrl = firstUrl;
   }
 
@@ -59,7 +60,7 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
         sources: new LRUCache<string, Promise<ISourceState>>({ max: this.cacheSize }),
       };
       // Ignore the response, we just want the promise to be cached
-      this.getSourceCached(this.firstUrl, {})
+      this.getSourceCached({ url: this.firstUrl }, {})
         .catch(error => this.destroy(error));
     }
   }
@@ -68,28 +69,28 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
    * Determine the links to be followed from the current source given its metadata.
    * @param metadata The metadata of a source.
    */
-  protected abstract getSourceLinks(metadata: Record<string, any>): Promise<string[]>;
+  protected abstract getSourceLinks(metadata: Record<string, any>): Promise<ILink[]>;
 
   /**
    * Resolve a source for the given URL.
-   * @param url A source URL.
+   * @param link A source link.
    * @param handledDatasets A hash of dataset identifiers that have already been handled.
    */
-  protected abstract async getSource(url: string, handledDatasets: Record<string, boolean>): Promise<ISourceState>;
+  protected abstract async getSource(link: ILink, handledDatasets: Record<string, boolean>): Promise<ISourceState>;
 
   /**
    * Resolve a source for the given URL.
    * This will first try to retrieve the source from cache.
-   * @param url A source URL.
+   * @param link A source ILink.
    * @param handledDatasets A hash of dataset identifiers that have already been handled.
    */
-  protected getSourceCached(url: string, handledDatasets: Record<string, boolean>): Promise<ISourceState> {
-    let source = (<ISourcesState> this.sourcesState).sources.get(url);
+  protected getSourceCached(link: ILink, handledDatasets: Record<string, boolean>): Promise<ISourceState> {
+    let source = (<ISourcesState> this.sourcesState).sources.get(link.url);
     if (source) {
       return source;
     }
-    source = this.getSource(url, handledDatasets);
-    (<ISourcesState> this.sourcesState).sources.set(url, source);
+    source = this.getSource(link, handledDatasets);
+    (<ISourcesState> this.sourcesState).sources.set(link.url, source);
     return source;
   }
 
@@ -104,7 +105,7 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
       }
 
       // Await the source to be set, and start the source iterator
-      this.getSourceCached(this.firstUrl, {})
+      this.getSourceCached({ url: this.firstUrl }, {})
         .then(sourceState => {
           this.setCurrentIterator(sourceState, true);
           done();
@@ -168,11 +169,11 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
 
       // Determine next urls, which will eventually become a next-next source.
       this.getSourceLinks(startSource.metadata)
-        .then((nextUrls: string[]) => Promise.all(nextUrls))
-        .then(async(nextUrls: string[]) => {
+        .then((nextUrls: ILink[]) => Promise.all(nextUrls))
+        .then(async(nextUrls: ILink[]) => {
           // Append all next URLs to our queue
           for (const nextUrl of nextUrls) {
-            this.urlQueue.push(nextUrl);
+            this.linkQueue.push(nextUrl);
           }
 
           // Handle the next queued URL if we don't have an active iterator (in which case it will be called later)
@@ -191,13 +192,13 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
    * @param startSource
    */
   protected handleNextUrl(startSource: ISourceState): void {
-    if (this.urlQueue.length === 0) {
+    if (this.linkQueue.length === 0) {
       this.close();
     } else {
-      this.getSourceCached(this.urlQueue[0], startSource.handledDatasets)
+      this.getSourceCached(this.linkQueue[0], startSource.handledDatasets)
         .then(nextSourceState => this.setCurrentIterator(nextSourceState, false))
         .catch(error => this.destroy(error));
-      this.urlQueue.shift();
+      this.linkQueue.shift();
     }
   }
 }
