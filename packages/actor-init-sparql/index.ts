@@ -1,6 +1,14 @@
 export * from './lib/ActorInitSparql';
 export * from './lib/HttpServiceSparqlEndpoint';
-export { newEngine, evaluateQuery, bindingsStreamToGraphQl } from './index-browser';
+export {
+  newEngine,
+  evaluateQuery,
+  bindingsStreamToGraphQl,
+  IQueryResultBindings,
+  IQueryResultQuads,
+  IQueryResultBoolean,
+  IQueryResult,
+} from './index-browser';
 
 // eslint-disable-next-line no-duplicate-imports
 import type { ActorInitSparql } from './lib/ActorInitSparql';
