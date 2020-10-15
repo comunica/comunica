@@ -7,11 +7,14 @@ import type {
   IActionOptimizeQueryOperation,
   IActorOptimizeQueryOperationOutput,
 } from '@comunica/bus-optimize-query-operation';
-import type { IActionQueryOperation,
+import type {
+  IActionQueryOperation,
   IActorQueryOperationOutput,
   IActorQueryOperationOutputBindings,
   IActorQueryOperationOutputQuads,
-  IActorQueryOperationOutputBoolean } from '@comunica/bus-query-operation';
+  IActorQueryOperationOutputBoolean,
+  Bindings,
+} from '@comunica/bus-query-operation';
 import { ensureBindings,
   KEY_CONTEXT_BASEIRI,
   KEY_CONTEXT_QUERY_TIMESTAMP,
@@ -97,7 +100,7 @@ export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs {
     // Set bindings
     if ((<IQueryResultBindings>results).bindingsStream) {
       (<IQueryResultBindings>results).bindings = () => new Promise((resolve, reject) => {
-        const result: RDF.Term[] = [];
+        const result: Bindings[] = [];
         (<IQueryResultBindings>results).bindingsStream.on('data', data => {
           result.push(data);
         });
@@ -308,7 +311,7 @@ export interface IQueryResultBindings extends IActorQueryOperationOutputBindings
   /**
    * The collection of bindings after an 'end' event occured.
    */
-  bindings: () => Promise<RDF.Term[]>;
+  bindings: () => Promise<Bindings[]>;
 }
 
 /**
