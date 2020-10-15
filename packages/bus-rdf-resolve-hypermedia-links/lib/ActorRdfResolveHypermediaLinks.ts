@@ -1,5 +1,6 @@
 import type { IAction, IActorArgs, IActorOutput, IActorTest } from '@comunica/core';
 import { Actor } from '@comunica/core';
+import type * as RDF from 'rdf-js';
 
 /**
  * A comunica actor for rdf-resolve-hypermedia-links events.
@@ -31,5 +32,22 @@ export interface IActorRdfResolveHypermediaLinksOutput extends IActorOutput {
   /**
    * An array of links to follow.
    */
-  urls: string[];
+  urls: (string | ILink)[];
+}
+
+/**
+ * A link holder that can expose additional properties.
+ */
+export interface ILink {
+  /**
+   * The URL identifying this link.
+   */
+  url: string;
+  /**
+   * An optional stream modifier.
+   * This transformation will be applied on the stream of data quads that is obtained from dereferencing the given URL.
+   * @param input The stream of data quads on the given URL.
+   * @returns The stream of data quads to be used for this link instead of the given stream.
+   */
+  transform?: (input: RDF.Stream) => Promise<RDF.Stream>;
 }
