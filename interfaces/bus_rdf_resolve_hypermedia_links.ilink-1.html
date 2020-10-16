@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>IActionHttpInvalidate | Comunica</title>
+	<title>ILink | Comunica</title>
 	<meta name="description" content="Documentation for Comunica">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -56,29 +56,31 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="../modules/bus_http_invalidate.html">bus-http-invalidate</a>
+					<a href="../modules/bus_rdf_resolve_hypermedia_links.html">bus-rdf-resolve-hypermedia-links</a>
 				</li>
 				<li>
-					<a href="bus_http_invalidate.iactionhttpinvalidate-1.html">IActionHttpInvalidate</a>
+					<a href="bus_rdf_resolve_hypermedia_links.ilink-1.html">ILink</a>
 				</li>
 			</ul>
-			<h1>Interface IActionHttpInvalidate</h1>
+			<h1>Interface ILink</h1>
 		</div>
 	</div>
 </header>
 <div class="container container-main">
 	<div class="row">
 		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<p>A link holder that can expose additional properties.</p>
+					</div>
+				</div>
+			</section>
 			<section class="tsd-panel tsd-hierarchy">
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<a href="core.iaction-1.html" class="tsd-signature-type">IAction</a>
-						<ul class="tsd-hierarchy">
-							<li>
-								<span class="target">IActionHttpInvalidate</span>
-							</li>
-						</ul>
+						<span class="target">ILink</span>
 					</li>
 				</ul>
 			</section>
@@ -89,8 +91,8 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="bus_http_invalidate.iactionhttpinvalidate-1.html#context" class="tsd-kind-icon">context</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="bus_http_invalidate.iactionhttpinvalidate-1.html#url" class="tsd-kind-icon">url</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="bus_rdf_resolve_hypermedia_links.ilink-1.html#transform" class="tsd-kind-icon">transform</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="bus_rdf_resolve_hypermedia_links.ilink-1.html#url" class="tsd-kind-icon">url</a></li>
 							</ul>
 						</section>
 					</div>
@@ -98,35 +100,42 @@
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
-					<a name="context" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> context</h3>
-					<div class="tsd-signature tsd-kind-icon">context<span class="tsd-signature-symbol">:</span> <a href="../modules/core.html#actioncontext-1" class="tsd-signature-type">ActionContext</a></div>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="transform" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> transform</h3>
+					<div class="tsd-signature tsd-kind-icon">transform<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span>input<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Stream</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Stream</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span></div>
 					<aside class="tsd-sources">
-						<p>Inherited from <a href="core.iaction-1.html">IAction</a>.<a href="core.iaction-1.html#context">context</a></p>
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/f2d3014/packages/core/lib/Actor.ts#L217">packages/core/lib/Actor.ts:217</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/f2d3014/packages/bus-rdf-resolve-hypermedia-links/lib/ActorRdfResolveHypermediaLinks.ts#L52">packages/bus-rdf-resolve-hypermedia-links/lib/ActorRdfResolveHypermediaLinks.ts:52</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>The optional input context that is passed through by actors.</p>
+							<p>An optional stream modifier.
+							This transformation will be applied on the stream of data quads that is obtained from dereferencing the given URL.</p>
 						</div>
+						<dl class="tsd-comment-tags">
+							<dt>param</dt>
+							<dd><p>The stream of data quads on the given URL.</p>
+							</dd>
+							<dt>returns</dt>
+							<dd><p>The stream of data quads to be used for this link instead of the given stream.</p>
+							</dd>
+						</dl>
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="url" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> url</h3>
-					<div class="tsd-signature tsd-kind-icon">url<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></div>
+					<h3>url</h3>
+					<div class="tsd-signature tsd-kind-icon">url<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/f2d3014/packages/bus-http-invalidate/lib/ActorHttpInvalidate.ts#L26">packages/bus-http-invalidate/lib/ActorHttpInvalidate.ts:26</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/f2d3014/packages/bus-rdf-resolve-hypermedia-links/lib/ActorRdfResolveHypermediaLinks.ts#L45">packages/bus-rdf-resolve-hypermedia-links/lib/ActorRdfResolveHypermediaLinks.ts:45</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>The URL that requires invalidation.
-							If not provided, then <em>all</em> URLs need to be invalidated.</p>
+							<p>The URL identifying this link.</p>
 						</div>
 					</div>
 				</section>
@@ -139,7 +148,7 @@
 						<a href="../globals.html"><em>Globals</em></a>
 					</li>
 					<li class="current tsd-kind-module">
-						<a href="../modules/bus_http_invalidate.html">bus-<wbr>http-<wbr>invalidate</a>
+						<a href="../modules/bus_rdf_resolve_hypermedia_links.html">bus-<wbr>rdf-<wbr>resolve-<wbr>hypermedia-<wbr>links</a>
 					</li>
 				</ul>
 			</nav>
@@ -148,45 +157,39 @@
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-module">
-						<a href="../modules/bus_http_invalidate.html" class="tsd-kind-icon">bus-<wbr>http-<wbr>invalidate</a>
+						<a href="../modules/bus_rdf_resolve_hypermedia_links.html" class="tsd-kind-icon">bus-<wbr>rdf-<wbr>resolve-<wbr>hypermedia-<wbr>links</a>
 						<ul>
 							<li class=" tsd-kind-reference tsd-parent-kind-module">
-								<a href="../modules/bus_http_invalidate.html#actorhttpinvalidate" class="tsd-kind-icon">Actor<wbr>Http<wbr>Invalidate</a>
+								<a href="../modules/bus_rdf_resolve_hypermedia_links.html#actorrdfresolvehypermedialinks" class="tsd-kind-icon">Actor<wbr>Rdf<wbr>Resolve<wbr>Hypermedia<wbr>Links</a>
 							</li>
 							<li class=" tsd-kind-reference tsd-parent-kind-module">
-								<a href="../modules/bus_http_invalidate.html#actorhttpinvalidatelistenable" class="tsd-kind-icon">Actor<wbr>Http<wbr>Invalidate<wbr>Listenable</a>
+								<a href="../modules/bus_rdf_resolve_hypermedia_links.html#iactionrdfresolvehypermedialinks" class="tsd-kind-icon">IAction<wbr>Rdf<wbr>Resolve<wbr>Hypermedia<wbr>Links</a>
 							</li>
 							<li class=" tsd-kind-reference tsd-parent-kind-module">
-								<a href="../modules/bus_http_invalidate.html#iactionhttpinvalidate" class="tsd-kind-icon">IAction<wbr>Http<wbr>Invalidate</a>
+								<a href="../modules/bus_rdf_resolve_hypermedia_links.html#iactorrdfresolvehypermedialinksoutput" class="tsd-kind-icon">IActor<wbr>Rdf<wbr>Resolve<wbr>Hypermedia<wbr>Links<wbr>Output</a>
 							</li>
 							<li class=" tsd-kind-reference tsd-parent-kind-module">
-								<a href="../modules/bus_http_invalidate.html#iactorhttpinvalidateoutput" class="tsd-kind-icon">IActor<wbr>Http<wbr>Invalidate<wbr>Output</a>
-							</li>
-							<li class=" tsd-kind-reference tsd-parent-kind-module">
-								<a href="../modules/bus_http_invalidate.html#iinvalidatelistener" class="tsd-kind-icon">IInvalidate<wbr>Listener</a>
+								<a href="../modules/bus_rdf_resolve_hypermedia_links.html#ilink" class="tsd-kind-icon">ILink</a>
 							</li>
 							<li class=" tsd-kind-class tsd-parent-kind-module">
-								<a href="../classes/bus_http_invalidate.actorhttpinvalidate-1.html" class="tsd-kind-icon">Actor<wbr>Http<wbr>Invalidate</a>
-							</li>
-							<li class=" tsd-kind-class tsd-parent-kind-module">
-								<a href="../classes/bus_http_invalidate.actorhttpinvalidatelistenable-1.html" class="tsd-kind-icon">Actor<wbr>Http<wbr>Invalidate<wbr>Listenable</a>
-							</li>
-							<li class="current tsd-kind-interface tsd-parent-kind-module">
-								<a href="bus_http_invalidate.iactionhttpinvalidate-1.html" class="tsd-kind-icon">IAction<wbr>Http<wbr>Invalidate</a>
-								<ul>
-									<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
-										<a href="bus_http_invalidate.iactionhttpinvalidate-1.html#context" class="tsd-kind-icon">context</a>
-									</li>
-									<li class=" tsd-kind-property tsd-parent-kind-interface">
-										<a href="bus_http_invalidate.iactionhttpinvalidate-1.html#url" class="tsd-kind-icon">url</a>
-									</li>
-								</ul>
+								<a href="../classes/bus_rdf_resolve_hypermedia_links.actorrdfresolvehypermedialinks-1.html" class="tsd-kind-icon">Actor<wbr>Rdf<wbr>Resolve<wbr>Hypermedia<wbr>Links</a>
 							</li>
 							<li class=" tsd-kind-interface tsd-parent-kind-module">
-								<a href="bus_http_invalidate.iactorhttpinvalidateoutput-1.html" class="tsd-kind-icon">IActor<wbr>Http<wbr>Invalidate<wbr>Output</a>
+								<a href="bus_rdf_resolve_hypermedia_links.iactionrdfresolvehypermedialinks-1.html" class="tsd-kind-icon">IAction<wbr>Rdf<wbr>Resolve<wbr>Hypermedia<wbr>Links</a>
 							</li>
-							<li class=" tsd-kind-type-alias tsd-parent-kind-module">
-								<a href="../modules/bus_http_invalidate.html#iinvalidatelistener-1" class="tsd-kind-icon">IInvalidate<wbr>Listener</a>
+							<li class=" tsd-kind-interface tsd-parent-kind-module">
+								<a href="bus_rdf_resolve_hypermedia_links.iactorrdfresolvehypermedialinksoutput-1.html" class="tsd-kind-icon">IActor<wbr>Rdf<wbr>Resolve<wbr>Hypermedia<wbr>Links<wbr>Output</a>
+							</li>
+							<li class="current tsd-kind-interface tsd-parent-kind-module">
+								<a href="bus_rdf_resolve_hypermedia_links.ilink-1.html" class="tsd-kind-icon">ILink</a>
+								<ul>
+									<li class=" tsd-kind-property tsd-parent-kind-interface">
+										<a href="bus_rdf_resolve_hypermedia_links.ilink-1.html#transform" class="tsd-kind-icon">transform</a>
+									</li>
+									<li class=" tsd-kind-property tsd-parent-kind-interface">
+										<a href="bus_rdf_resolve_hypermedia_links.ilink-1.html#url" class="tsd-kind-icon">url</a>
+									</li>
+								</ul>
 							</li>
 						</ul>
 					</li>
