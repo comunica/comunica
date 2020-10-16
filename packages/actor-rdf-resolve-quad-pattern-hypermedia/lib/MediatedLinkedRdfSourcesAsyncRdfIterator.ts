@@ -73,8 +73,13 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
   }
 
   protected async getSource(link: ILink, handledDatasets: Record<string, boolean>): Promise<ISourceState> {
+    // Include context entries from link
+    let context = this.context;
+    if (link.context) {
+      context = context.merge(link.context);
+    }
+
     // Get the RDF representation of the given document
-    const context = this.context;
     let url = link.url;
     const rdfDereferenceOutput: IActorRdfDereferenceOutput = await this.mediatorRdfDereference
       .mediate({ context, url });
