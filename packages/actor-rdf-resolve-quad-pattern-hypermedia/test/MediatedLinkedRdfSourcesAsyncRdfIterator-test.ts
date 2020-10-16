@@ -11,9 +11,9 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
     let p;
     let o;
     let g;
-    let mediatorRdfDereference;
-    let mediatorMetadata;
-    let mediatorMetadataExtract;
+    let mediatorRdfDereference: any;
+    let mediatorMetadata: any;
+    let mediatorMetadataExtract: any;
     let mediatorRdfResolveHypermedia: any;
     let mediatorRdfResolveHypermediaLinks: any;
 
@@ -24,22 +24,24 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
       o = DF.namedNode('o');
       g = DF.namedNode('g');
       mediatorRdfDereference = {
-        mediate: ({ url }: any) => Promise.resolve({ url, quads: `QUADS(${url})+METADATA`, triples: true }),
+        mediate: jest.fn(({ url }: any) => Promise.resolve({ url, quads: `QUADS(${url})+METADATA`, triples: true })),
       };
       mediatorMetadata = {
-        mediate: ({ quads }: any) => Promise.resolve({ data: quads.split('+')[0], metadata: quads.split('+')[1] }),
+        mediate: jest.fn(({ quads }: any) => Promise
+          .resolve({ data: quads.split('+')[0], metadata: quads.split('+')[1] })),
       };
       mediatorMetadataExtract = {
-        mediate: ({ metadata }: any) => Promise.resolve({ metadata: { myKey: metadata }}),
+        mediate: jest.fn(({ metadata }: any) => Promise.resolve({ metadata: { myKey: metadata }})),
       };
       mediatorRdfResolveHypermedia = {
-        mediate: ({ forceSourceType, handledDatasets, metadata, quads }: any) => Promise.resolve({
+        mediate: jest.fn(({ forceSourceType, handledDatasets, metadata, quads }: any) => Promise.resolve({
           dataset: 'MYDATASET',
           source: { sourceContents: quads },
-        }),
+        })),
       };
       mediatorRdfResolveHypermediaLinks = {
-        mediate: ({ metadata }: any) => Promise.resolve({ urls: [ `${metadata.baseURL}url1`, `${metadata.baseURL}url2` ]}),
+        mediate: jest.fn(({ metadata }: any) => Promise
+          .resolve({ urls: [ `${metadata.baseURL}url1`, `${metadata.baseURL}url2` ]})),
       };
       const mediators: any = {
         mediatorMetadata,
@@ -130,7 +132,7 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
         });
       });
 
-      it('should apply the link tranformation', async() => {
+      it('should apply the link transformation', async() => {
         const transform = jest.fn(input => Promise.resolve(`TRANSFORMED(${input})`));
         expect(await source.getSource({ url: 'startUrl', transform }, {})).toEqual({
           handledDatasets: { MYDATASET: true },
@@ -138,6 +140,37 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
           source: { sourceContents: 'TRANSFORMED(QUADS(startUrl))' },
         });
         expect(transform).toHaveBeenCalledWith('QUADS(startUrl)');
+      });
+
+      it('should apply the link context', async() => {
+        expect(await source.getSource({ url: 'startUrl', context: ActionContext({ a: 'b' }) }, {})).toEqual({
+          handledDatasets: { MYDATASET: true },
+          metadata: { myKey: 'METADATA' },
+          source: { sourceContents: 'QUADS(startUrl)' },
+        });
+        expect(mediatorRdfDereference.mediate).toHaveBeenCalledWith({
+          url: 'startUrl',
+          context: ActionContext({ a: 'b' }),
+        });
+        expect(mediatorMetadata.mediate).toHaveBeenCalledWith({
+          quads: 'QUADS(startUrl)+METADATA',
+          triples: true,
+          url: 'startUrl',
+          context: ActionContext({ a: 'b' }),
+        });
+        expect(mediatorMetadataExtract.mediate).toHaveBeenCalledWith({
+          url: 'startUrl',
+          metadata: 'METADATA',
+          context: ActionContext({ a: 'b' }),
+        });
+        expect(mediatorRdfResolveHypermedia.mediate).toHaveBeenCalledWith({
+          url: 'startUrl',
+          forceSourceType: 'forcedType',
+          handledDatasets: { MYDATASET: true },
+          metadata: { myKey: 'METADATA' },
+          quads: 'QUADS(startUrl)',
+          context: ActionContext({ a: 'b' }),
+        });
       });
     });
   });

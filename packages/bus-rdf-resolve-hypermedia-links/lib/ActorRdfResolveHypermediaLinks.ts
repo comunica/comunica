@@ -1,4 +1,4 @@
-import type { IAction, IActorArgs, IActorOutput, IActorTest } from '@comunica/core';
+import type { IAction, IActorArgs, IActorOutput, IActorTest, ActionContext } from '@comunica/core';
 import { Actor } from '@comunica/core';
 import type * as RDF from 'rdf-js';
 
@@ -50,4 +50,9 @@ export interface ILink {
    * @returns The stream of data quads to be used for this link instead of the given stream.
    */
   transform?: (input: RDF.Stream) => Promise<RDF.Stream>;
+  /**
+   * Optional context to apply onto mediators when handling this link as source.
+   * All entries of this context will be added (or overwritten) into the existing context.
+   */
+  context?: ActionContext;
 }
