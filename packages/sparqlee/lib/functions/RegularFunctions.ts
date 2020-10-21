@@ -272,7 +272,7 @@ const STRUUID = {
 const STRLEN = {
   arity: 1,
   overloads: declare()
-    .onStringly1((str) => number(str.typedValue.length, TypeURL.XSD_INTEGER))
+    .onStringly1((str) => number([...str.typedValue].length, TypeURL.XSD_INTEGER))
     .collect(),
 };
 
@@ -282,21 +282,21 @@ const SUBSTR = {
     .onBinaryTyped(
       ['string', 'integer'],
       (source: string, startingLoc: number) => {
-        return string(source.substr(startingLoc - 1));
+        return string([...source].slice(startingLoc - 1).join(''));
       })
     .onBinary(
       ['langString', 'integer'],
       (source: E.LangStringLiteral, startingLoc: E.NumericLiteral) => {
-        const sub = source.typedValue.substr(startingLoc.typedValue - 1);
+        const sub = [...source.typedValue].slice(startingLoc.typedValue - 1).join('');
         return langString(sub, source.language);
       })
     .onTernaryTyped(['string', 'integer', 'integer'],
       (source: string, startingLoc: number, length: number) => {
-        return string(source.substr(startingLoc - 1, length));
+        return string([...source].slice(startingLoc - 1, length).join(''));
       })
     .onTernary(['langString', 'integer', 'integer'],
       (source: E.LangStringLiteral, startingLoc: E.NumericLiteral, length: E.NumericLiteral) => {
-        const sub = source.typedValue.substr(startingLoc.typedValue - 1, length.typedValue);
+        const sub = [...source.typedValue].slice(startingLoc.typedValue - 1, length.typedValue).join('');
         return langString(sub, source.language);
       })
     .collect(),

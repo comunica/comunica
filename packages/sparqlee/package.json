@@ -69,14 +69,14 @@
   },
   "dependencies": {
     "@types/create-hash": "^1.2.0",
-    "@types/uuid": "^8.0.0",
     "@types/rdf-js": "*",
+    "@types/uuid": "^8.0.0",
     "create-hash": "^1.2.0",
     "decimal.js": "^10.2.0",
     "immutable": "^3.8.2",
-    "relative-to-absolute-iri": "^1.0.6",
     "rdf-data-factory": "^1.0.3",
     "rdf-string": "^1.5.0",
+    "relative-to-absolute-iri": "^1.0.6",
     "sparqlalgebrajs": "^2.4.0",
     "uuid": "^8.0.0"
   },

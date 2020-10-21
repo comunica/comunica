@@ -5,6 +5,8 @@ describe('evaluation of \'strlen\' like', () => {
     'strlen("aaa")            = "3"^^xsd:integer',
     'strlen("aaaa"@en)        = "4"^^xsd:integer',
     'strlen("aa"^^xsd:string) = "2"^^xsd:integer',
+    'strlen("👪"^^xsd:string)  = "1"^^xsd:integer',
+    'strlen("👨‍👩‍👧‍👦"^^xsd:string)  = "7"^^xsd:integer',
   ]);
 });
 
@@ -27,6 +29,17 @@ describe('evaluation of \'langMatches\' like', () => {
 describe('evaluations of \'substr\' like', () => {
   testAll([
     'substr("bar", 1, 1) = "b"',
+    'substr("bar", 2) = "ar"',
+    'substr("👪", 2) = ""',
+    'substr("👨‍👩‍👧‍👦", 2) = "‍👩‍👧‍👦"',
+    'substr("👪", 1, 1) = "👪"',
+    'substr("👨‍👩‍👧‍👦", 1, 1) = "👨"',
+    'substr("bar"@en, 1, 1) = "b"@en',
+    'substr("bar"@en, 2) = "ar"@en',
+    'substr("👪"@en, 2) = ""@en',
+    'substr("👨‍👩‍👧‍👦"@en, 2) = "‍👩‍👧‍👦"@en',
+    'substr("👪"@en, 1, 1) = "👪"@en',
+    'substr("👨‍👩‍👧‍👦"@en, 1, 1) = "👨"@en',
   ]);
 });
 
