@@ -1,5 +1,12 @@
 # Changelog
 
+<a name="v1.5.1"></a>
+## [v1.5.1](https://github.com/comunica/sparqlee/compare/v1.5.0...v1.5.1) - 2020-10-23
+
+### Fixed
+* [Improve spec-compliance of XPath constructor functions](https://github.com/comunica/sparqlee/commit/59d9b5c0f2d992c1d1a8348afce8775939d1cff3)
+* [Handle characters outside Unicode BMP](https://github.com/comunica/sparqlee/commit/4b873834a38c35329495d142eaf1c59f56fc0038)
+
 <a name="v1.5.0"></a>
 ## [v1.5.0](https://github.com/comunica/sparqlee/compare/v1.4.3...v1.5.0) - 2020-09-17
 
