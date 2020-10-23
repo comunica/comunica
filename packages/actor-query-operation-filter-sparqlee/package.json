@@ -40,7 +40,7 @@
   ],
   "dependencies": {
     "sparqlalgebrajs": "^2.4.0",
-    "sparqlee": "^1.5.0"
+    "sparqlee": "^1.5.1"
   },
   "peerDependencies": {
     "@comunica/bus-query-operation": "^1.4.0",
