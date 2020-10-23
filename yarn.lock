@@ -6150,7 +6150,7 @@ fs-extra@^8.0.1, fs-extra@^8.1.0:
     jsonfile "^4.0.0"
     universalify "^0.1.0"
 
-fs-extra@^9.0.1:
+fs-extra@^9.0.0, fs-extra@^9.0.1:
   version "9.0.1"
   resolved "https://registry.yarnpkg.com/fs-extra/-/fs-extra-9.0.1.tgz#910da0062437ba4c39fedd863f1675ccfefcb9fc"
   integrity sha512-h2iAoN838FqAFJY2/qVpzFXy+EBxfVE220PalAqQLDVsFOHLJrZvut5puAbCdNv6WJk+B8ihI+k0c7JK5erwqQ==
@@ -10284,7 +10284,7 @@ rdf-object@^1.3.0:
     rdf-string "^1.5.0"
     streamify-array "^1.0.1"
 
-rdf-parse@^1.1.0:
+rdf-parse@^1.5.0:
   version "1.5.0"
   resolved "https://registry.yarnpkg.com/rdf-parse/-/rdf-parse-1.5.0.tgz#decc4a22eb168905d19f2c78d2085dfaf08550fa"
   integrity sha512-NtX08vnqQNzzdpxztPKzZ9U88udXu/mi1OvSnmKrqnao+B2T7VhU1Bn3A0c4VNmQdBL6V0P337BvzaEs9sqJtw==
@@ -10317,7 +10317,7 @@ rdf-quad@^1.4.0, rdf-quad@^1.5.0:
     rdf-literal "^1.2.0"
     rdf-string "^1.5.0"
 
-rdf-store-stream@^1.0.0, rdf-store-stream@^1.0.1:
+rdf-store-stream@^1.0.1, rdf-store-stream@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/rdf-store-stream/-/rdf-store-stream-1.1.0.tgz#218e23fcfc27c75f498416ee1a52986d5a9af4f4"
   integrity sha512-JWvQUv/1yja1TiEzhS1PTactSER9ORjM/6TV8z3KdGWpeQOs9TeUgLzx5PLXSRePFZ8GKNTkG5dD+wC6Yh3sbQ==
@@ -10347,28 +10347,28 @@ rdf-terms@^1.6.2:
     lodash.uniqwith "^4.5.0"
     rdf-data-factory "^1.0.1"
 
-rdf-test-suite-ldf@^1.1.5:
-  version "1.1.5"
-  resolved "https://registry.yarnpkg.com/rdf-test-suite-ldf/-/rdf-test-suite-ldf-1.1.5.tgz#981ce32bbb5773eafad212eb9cb075d775211024"
-  integrity sha512-PGq0dMci9NY8YL3du3C8jyliiNKk10/QioJlCJaLCZNcZK6rxWp3B7uQSUdzliDz0Re4BiAF/K3EKi1Dh7NHZw==
+rdf-test-suite-ldf@^1.3.0:
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/rdf-test-suite-ldf/-/rdf-test-suite-ldf-1.3.0.tgz#f619aa7167abb0c42ca65d126d00f1899d0c7890"
+  integrity sha512-k64GFQ5Cy8uH3cPmOAIoM5/soBxw8kAIU7+wlrzncRSWl1oEgUH+/zTTEwDc8xiPsFLUTbqJXUsqhc7g30NovQ==
   dependencies:
     "@types/fs-extra" "^8.0.0"
     "@types/node-fetch" "^2.5.0"
-    fs-extra "^8.1.0"
+    fs-extra "^9.0.0"
     global "^4.4.0"
     minimist "^1.2.0"
-    n3 "^1.1.1"
-    rdf-parse "^1.1.0"
-    rdf-store-stream "^1.0.0"
-    rdf-test-suite "^1.12.0"
+    n3 "^1.6.3"
+    rdf-parse "^1.5.0"
+    rdf-store-stream "^1.1.0"
+    rdf-test-suite "^1.16.0"
     tcp-port-used "^1.0.1"
     url-exists "^1.0.3"
     winston "^3.2.1"
 
-rdf-test-suite@^1.12.0, rdf-test-suite@^1.14.0:
-  version "1.15.0"
-  resolved "https://registry.yarnpkg.com/rdf-test-suite/-/rdf-test-suite-1.15.0.tgz#f18ec21ab873d3baf0a384635ba8d607bae14dee"
-  integrity sha512-2GnjI2UUju44ajA9iV6kYncD+/g9yxL/tzF1IpoOQq5KBEPKDjOh6KYWA+UwNmTIvyBcM4I1Py0hGSrp/u/6fA==
+rdf-test-suite@^1.16.0:
+  version "1.16.0"
+  resolved "https://registry.yarnpkg.com/rdf-test-suite/-/rdf-test-suite-1.16.0.tgz#ec771653a15d12c25d191e62b87327d8396a588d"
+  integrity sha512-Y/rAZMJQV9xSGlmG55cJ1v9/y0Bd+uYQCO3qFKe9LKqXK/3zCrvRLSV8Wr5ag9vfZsOCYlmXZwk75am3YayPzg==
   dependencies:
     "@types/json-stable-stringify" "^1.0.32"
     "@types/log-symbols" "^3.0.0"
