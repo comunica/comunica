@@ -28,11 +28,8 @@ export function parseXSDFloat(value: string): number | undefined {
  * @param value the string to interpret as a number
  */
 export function parseXSDDecimal(value: string): number | undefined {
-  if (/^(\-|\+)?([0-9]+(\.[0-9]+)?)$/.test(value)) {
-    const numb: number = Number(value);
-    return (isNaN(numb)) ? undefined : numb;
-  }
-  return undefined;
+  const numb: number = Number(value);
+  return (isNaN(numb)) ? undefined : numb;
 }
 
 /**
@@ -44,11 +41,8 @@ export function parseXSDDecimal(value: string): number | undefined {
  * @param value the string to interpret as a number
  */
 export function parseXSDInteger(value: string): number | undefined {
-  if (/^(\-|\+)?([0-9]+)$/.test(value)) {
-    const numb: number = Number(value);
-    return (isNaN(numb)) ? undefined : numb;
-  }
-  return undefined;
+  const numb: number = parseInt(value, 10);
+  return (isNaN(numb)) ? undefined : numb;
 }
 
 export interface SplittedDate {

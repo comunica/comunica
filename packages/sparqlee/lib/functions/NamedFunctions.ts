@@ -30,7 +30,9 @@ type Term = E.TermExpression;
 const toString = {
   arity: 1,
   overloads: declare()
-    .onTerm1((term) => string(term.str()))
+    .onNumeric1((val: E.NumericLiteral) => string(number(val.typedValue).str()))
+    .onBoolean1Typed((val) => string(bool(val).str()))
+    .onTerm1((val: E.StringLiteral) => string(val.str()))
     .collect(),
 };
 
@@ -41,7 +43,7 @@ const toFloat = {
     .onBoolean1Typed((val) => number(val ? 1 : 0))
     .onUnary('string', (val: E.StringLiteral) => {
       const result = parseXSDFloat(val.str());
-      if (!result) { throw new Err.CastError(val, TypeURL.XSD_FLOAT); }
+      if (result === undefined) { throw new Err.CastError(val, TypeURL.XSD_FLOAT); }
       return number(result);
     })
     .copy({ from: ['string'], to: ['nonlexical'] })
@@ -55,7 +57,7 @@ const toDouble = {
     .onBoolean1Typed((val) => number(val ? 1 : 0, TypeURL.XSD_DOUBLE))
     .onUnary('string', (val: E.Term) => {
       const result = parseXSDFloat(val.str());
-      if (!result) { throw new Err.CastError(val, TypeURL.XSD_DOUBLE); }
+      if (result === undefined) { throw new Err.CastError(val, TypeURL.XSD_DOUBLE); }
       return number(result, TypeURL.XSD_DOUBLE);
     })
     .copy({ from: ['string'], to: ['nonlexical'] })
@@ -67,11 +69,16 @@ const toDecimal = {
   overloads: declare()
     .onNumeric1((val: E.Term) => {
       const result = parseXSDDecimal(val.str());
-      if (!result) { throw new Err.CastError(val, TypeURL.XSD_DECIMAL); }
+      if (result === undefined) { throw new Err.CastError(val, TypeURL.XSD_DECIMAL); }
       return number(result, TypeURL.XSD_DECIMAL);
     })
-    .copy({ from: ['integer'], to: ['string'] })
-    .copy({ from: ['integer'], to: ['nonlexical'] })
+    .onString1((val: E.Term) => {
+      const str = val.str();
+      const result = /^(\-|\+)?([0-9]+(\.[0-9]+)?)$/.test(str) ? parseXSDDecimal(str) : undefined;
+      if (result === undefined) { throw new Err.CastError(val, TypeURL.XSD_DECIMAL); }
+      return number(result, TypeURL.XSD_DECIMAL);
+    })
+    .copy({ from: ['string'], to: ['nonlexical'] })
     .onBoolean1Typed((val) => number(val ? 1 : 0, TypeURL.XSD_DECIMAL))
     .collect(),
 };
@@ -82,10 +89,15 @@ const toInteger = {
     .onBoolean1Typed((val) => number(val ? 1 : 0, TypeURL.XSD_INTEGER))
     .onNumeric1((val: E.Term) => {
       const result = parseXSDInteger(val.str());
-      if (!result) { throw new Err.CastError(val, TypeURL.XSD_INTEGER); }
+      if (result === undefined) { throw new Err.CastError(val, TypeURL.XSD_INTEGER); }
       return number(result, TypeURL.XSD_INTEGER);
     })
-    .copy({ from: ['integer'], to: ['string'] })
+    .onString1((val: E.Term) => {
+      const str = val.str();
+      const result = /^[0-9]+$/.test(str) ? parseXSDInteger(str) : undefined;
+      if (result === undefined) { throw new Err.CastError(val, TypeURL.XSD_INTEGER); }
+      return number(result, TypeURL.XSD_INTEGER);
+    })
     .copy({ from: ['integer'], to: ['nonlexical'] })
     .collect(),
 };
@@ -109,13 +121,20 @@ const toBoolean = {
   arity: 1,
   overloads: declare()
     .onNumeric1((val: E.NumericLiteral) => bool(val.coerceEBV()))
-    .onUnary('boolean', (val: Term) => val)
+    .onUnary('boolean', (val: Term) => bool(val.coerceEBV()))
     .onUnary('string', (val: Term) => {
-      const str = val.str();
-      if (str !== 'true' && str !== 'false') {
-        throw new Err.CastError(val, TypeURL.XSD_BOOLEAN);
+      switch (val.str()) {
+        case 'true':
+          return bool(true);
+        case 'false':
+          return bool(false);
+        case '1':
+          return bool(true);
+        case '0':
+          return bool(false);
+        default:
+          throw new Err.CastError(val, TypeURL.XSD_BOOLEAN);
       }
-      return bool((str === 'true'));
     })
     .copy({ from: ['string'], to: ['nonlexical'] })
     .collect(),

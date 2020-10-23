@@ -102,10 +102,10 @@ export function transformLiteral(lit: RDF.Literal): E.Literal<any> {
     }
 
     case DT.XSD_BOOLEAN: {
-      if (lit.value !== 'true' && lit.value !== 'false') {
+      if (lit.value !== 'true' && lit.value !== 'false' && lit.value !== '1' && lit.value !== '0') {
         return new E.NonLexicalLiteral(undefined, lit.datatype, lit.value);
       }
-      return new E.BooleanLiteral(lit.value === 'true', lit.value);
+      return new E.BooleanLiteral(lit.value === 'true' || lit.value === '1', lit.value);
     }
 
     case DT.XSD_INTEGER:
