@@ -24,7 +24,7 @@
           "@id": "caabh:Actor/AbstractFilterHash/digestAlgorithm",
           "defaultScoped": {
             "defaultScope": "caqodh:Actor/QueryOperation/DistinctHash",
-            "defaultScopedValue": "base64"
+            "defaultScopedValue": "hex"
           }
         }
       ],

@@ -36,7 +36,7 @@ describe('AbstractBindingsHash', () => {
       }),
     };
     hashAlgorithm = 'sha1';
-    digestAlgorithm = 'base64';
+    digestAlgorithm = 'hex';
   });
 
   describe('The AbstractBindingsHash module', () => {

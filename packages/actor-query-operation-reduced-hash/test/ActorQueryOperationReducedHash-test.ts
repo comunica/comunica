@@ -32,7 +32,7 @@ describe('ActorQueryOperationReducedHash', () => {
       }),
     };
     hashAlgorithm = 'sha1';
-    digestAlgorithm = 'base64';
+    digestAlgorithm = 'hex';
     cacheSize = 20;
   });
 
@@ -45,17 +45,17 @@ describe('ActorQueryOperationReducedHash', () => {
       );
     });
     it('should create a filter', () => {
-      return expect(actor.newHashFilter('sha1', 'base64'))
+      return expect(actor.newHashFilter('sha1', 'hex'))
         .toBeInstanceOf(Function);
     });
 
     it('should create a filter that is a predicate', () => {
-      const filter = actor.newHashFilter('sha1', 'base64');
+      const filter = actor.newHashFilter('sha1', 'hex');
       return expect(filter(Bindings({ a: DF.literal('a') }))).toBe(true);
     });
 
     it('should create a filter that only returns true once for equal objects', () => {
-      const filter = actor.newHashFilter('sha1', 'base64');
+      const filter = actor.newHashFilter('sha1', 'hex');
       expect(filter(Bindings({ a: DF.literal('a') }))).toBe(true);
       expect(filter(Bindings({ a: DF.literal('a') }))).toBe(false);
       expect(filter(Bindings({ a: DF.literal('a') }))).toBe(false);
@@ -68,9 +68,9 @@ describe('ActorQueryOperationReducedHash', () => {
     });
 
     it('should create a filters that are independent', () => {
-      const filter1 = actor.newHashFilter('sha1', 'base64');
-      const filter2 = actor.newHashFilter('sha1', 'base64');
-      const filter3 = actor.newHashFilter('sha1', 'base64');
+      const filter1 = actor.newHashFilter('sha1', 'hex');
+      const filter2 = actor.newHashFilter('sha1', 'hex');
+      const filter3 = actor.newHashFilter('sha1', 'hex');
       expect(filter1(Bindings({ a: DF.literal('b') }))).toBe(true);
       expect(filter1(Bindings({ a: DF.literal('b') }))).toBe(false);
 
@@ -129,7 +129,7 @@ describe('Smaller cache than number of queries', () => {
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
     hashAlgorithm = 'sha1';
-    digestAlgorithm = 'base64';
+    digestAlgorithm = 'hex';
     cacheSize = 1;
     mediatorQueryOperation = {
       mediate: (arg: any) => Promise.resolve({

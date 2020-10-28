@@ -1,5 +1,3 @@
-import type { Hash } from 'crypto';
-import { createHash, getHashes } from 'crypto';
 import type { Bindings, IActorQueryOperationOutputBindings,
   IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import {
@@ -7,6 +5,7 @@ import {
 } from '@comunica/bus-query-operation';
 import type { ActionContext } from '@comunica/core';
 import { termToString } from 'rdf-string';
+import { createHash } from 'rusha';
 import type { Algebra } from 'sparqlalgebrajs';
 
 /**
@@ -33,7 +32,7 @@ export abstract class AbstractFilterHash<T extends Algebra.Operation> extends Ac
      * @return {boolean} If it exists.
      */
   public static doesHashAlgorithmExist(hashAlgorithm: string): boolean {
-    return getHashes().includes(hashAlgorithm);
+    return [ 'sha1' ].includes(hashAlgorithm);
   }
 
   /**
@@ -42,7 +41,7 @@ export abstract class AbstractFilterHash<T extends Algebra.Operation> extends Ac
      * @return {boolean} If it exists.
      */
   public static doesDigestAlgorithmExist(digestAlgorithm: string): boolean {
-    return [ 'latin1', 'hex', 'base64' ].includes(digestAlgorithm);
+    return [ 'hex' ].includes(digestAlgorithm);
   }
 
   /**
@@ -53,7 +52,13 @@ export abstract class AbstractFilterHash<T extends Algebra.Operation> extends Ac
      * @return {string} The object's hash.
      */
   public static hash(hashAlgorithm: string, digestAlgorithm: string, bindings: Bindings): string {
-    const hash: Hash = createHash(hashAlgorithm);
+    if (hashAlgorithm !== 'sha1') {
+      throw new Error(`Unsupported hashAlgorithm "${hashAlgorithm}"`);
+    }
+    if (digestAlgorithm !== 'hex') {
+      throw new Error(`Unsupported digestAlgorithm "${digestAlgorithm}"`);
+    }
+    const hash = createHash();
     hash.update(require('canonicalize')(bindings.map(x => termToString(x))));
     return hash.digest(<any> digestAlgorithm);
   }

@@ -31,7 +31,7 @@ describe('AbstractFilterHash', () => {
       }),
     };
     hashAlgorithm = 'sha1';
-    digestAlgorithm = 'base64';
+    digestAlgorithm = 'hex';
   });
 
   describe('The AbstractFilterHash module', () => {
@@ -73,8 +73,8 @@ describe('AbstractFilterHash', () => {
       return expect(AbstractFilterHash.doesHashAlgorithmExist('sha1')).toBeTruthy();
     });
 
-    it('should be true on md5', () => {
-      return expect(AbstractFilterHash.doesHashAlgorithmExist('md5')).toBeTruthy();
+    it('should be false on md5', () => {
+      return expect(AbstractFilterHash.doesHashAlgorithmExist('md5')).toBeFalsy();
     });
 
     it('should not be true on something that does not exist', () => {
@@ -84,16 +84,16 @@ describe('AbstractFilterHash', () => {
   });
 
   describe('#doesDigestAlgorithmExist', () => {
-    it('should be true on latin1', () => {
-      return expect(AbstractFilterHash.doesDigestAlgorithmExist('latin1')).toBeTruthy();
+    it('should be false on latin1', () => {
+      return expect(AbstractFilterHash.doesDigestAlgorithmExist('latin1')).toBeFalsy();
     });
 
     it('should be true on hex', () => {
       return expect(AbstractFilterHash.doesDigestAlgorithmExist('hex')).toBeTruthy();
     });
 
-    it('should be true on base64', () => {
-      return expect(AbstractFilterHash.doesDigestAlgorithmExist('base64')).toBeTruthy();
+    it('should be false on base64', () => {
+      return expect(AbstractFilterHash.doesDigestAlgorithmExist('base64')).toBeFalsy();
     });
 
     it('should not be true on something that does not exist', () => {
@@ -104,17 +104,17 @@ describe('AbstractFilterHash', () => {
 
   describe('#hash', () => {
     it('should return the same hash for equal objects', () => {
-      expect(AbstractFilterHash.hash('sha1', 'base64', Bindings({ a: DF.literal('b') })))
-        .toEqual(AbstractFilterHash.hash('sha1', 'base64', Bindings({ a: DF.literal('b') })));
-      expect(AbstractFilterHash.hash('sha1', 'base64', Bindings({ a: DF.namedNode('c') })))
-        .toEqual(AbstractFilterHash.hash('sha1', 'base64', Bindings({ a: DF.namedNode('c') })));
+      expect(AbstractFilterHash.hash('sha1', 'hex', Bindings({ a: DF.literal('b') })))
+        .toEqual(AbstractFilterHash.hash('sha1', 'hex', Bindings({ a: DF.literal('b') })));
+      expect(AbstractFilterHash.hash('sha1', 'hex', Bindings({ a: DF.namedNode('c') })))
+        .toEqual(AbstractFilterHash.hash('sha1', 'hex', Bindings({ a: DF.namedNode('c') })));
     });
 
     it('should return a different hash for non-equal objects', () => {
-      expect(AbstractFilterHash.hash('sha1', 'base64', Bindings({ a: DF.literal('b') })))
-        .not.toEqual(AbstractFilterHash.hash('sha1', 'base64', Bindings({ a: DF.literal('c') })));
-      expect(AbstractFilterHash.hash('sha1', 'base64', Bindings({ a: DF.literal('b') })))
-        .not.toEqual(AbstractFilterHash.hash('sha1', 'base64', Bindings({ a: DF.namedNode('b') })));
+      expect(AbstractFilterHash.hash('sha1', 'hex', Bindings({ a: DF.literal('b') })))
+        .not.toEqual(AbstractFilterHash.hash('sha1', 'hex', Bindings({ a: DF.literal('c') })));
+      expect(AbstractFilterHash.hash('sha1', 'hex', Bindings({ a: DF.literal('b') })))
+        .not.toEqual(AbstractFilterHash.hash('sha1', 'hex', Bindings({ a: DF.namedNode('b') })));
     });
   });
 });
