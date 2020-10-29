@@ -14,20 +14,6 @@
       "comment": "A comunica Reduced Hash Query Operation Actor.",
       "parameters": [
         {
-          "@id": "caabh:Actor/AbstractFilterHash/hashAlgorithm",
-          "defaultScoped": {
-            "defaultScope": "caqorh:Actor/QueryOperation/ReducedHash",
-            "defaultScopedValue": "sha1"
-          }
-        },
-        {
-          "@id": "caabh:Actor/AbstractFilterHash/digestAlgorithm",
-          "defaultScoped": {
-            "defaultScope": "caqorh:Actor/QueryOperation/ReducedHash",
-            "defaultScopedValue": "hex"
-          }
-        },
-        {
           "@id": "caqorh:Actor/QueryOperation/ReducedHash/cacheSize",
           "range": "xsd:integer",
           "required": true,
@@ -39,14 +25,6 @@
         {
           "extends": "caabh:Actor/AbstractFilterHash/constructorArgumentsObject",
           "fields": [
-            {
-              "keyRaw": "hashAlgorithm",
-              "value": "caabh:Actor/AbstractFilterHash/hashAlgorithm"
-            },
-            {
-              "keyRaw": "digestAlgorithm",
-              "value": "caabh:Actor/AbstractFilterHash/digestAlgorithm"
-            },
             {
               "keyRaw": "cacheSize",
               "value": "caqorh:Actor/QueryOperation/ReducedHash/cacheSize"

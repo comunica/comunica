@@ -15,14 +15,12 @@ export class ActorQueryOperationDistinctHash extends AbstractBindingsHash<Algebr
   /**
      * Create a new distinct filter function for the given hash algorithm and digest algorithm.
      * This will maintain an internal hash datastructure so that every bindings object only returns true once.
-     * @param {string} hashAlgorithm A hash algorithm.
-     * @param {string} digestAlgorithm A digest algorithm.
      * @return {(bindings: Bindings) => boolean} A distinct filter for bindings.
      */
-  public newHashFilter(hashAlgorithm: string, digestAlgorithm: string): (bindings: Bindings) => boolean {
+  public newHashFilter(): (bindings: Bindings) => boolean {
     const hashes: Record<string, boolean> = {};
     return (bindings: Bindings) => {
-      const hash: string = AbstractFilterHash.hash(hashAlgorithm, digestAlgorithm, bindings);
+      const hash: string = AbstractFilterHash.hash(bindings);
       // eslint-disable-next-line no-return-assign
       return !(hash in hashes) && (hashes[hash] = true);
     };

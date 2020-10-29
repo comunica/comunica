@@ -11,14 +11,7 @@
       "extends": "caabh:Actor/AbstractFilterHash",
       "requireElement": "AbstractBindingsHash",
       "comment": "An abstract comunica actor for handling binding query operators.",
-      "parameters": [
-        {
-          "@id": "caabh:Actor/AbstractFilterHash/hashAlgorithm"
-        },
-        {
-          "@id": "caabh:Actor/AbstractFilterHash/digestAlgorithm"
-        }
-      ],
+      "parameters": [],
       "constructorArguments": [
         {
           "extends": "caabh:Actor/AbstractFilterHash/constructorArgumentsObject"

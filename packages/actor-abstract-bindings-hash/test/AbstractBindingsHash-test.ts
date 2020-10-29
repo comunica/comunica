@@ -35,8 +35,6 @@ describe('AbstractBindingsHash', () => {
         canContainUndefs: false,
       }),
     };
-    hashAlgorithm = 'sha1';
-    digestAlgorithm = 'hex';
   });
 
   describe('The AbstractBindingsHash module', () => {
@@ -47,29 +45,15 @@ describe('AbstractBindingsHash', () => {
     it('should be a AbstractBindingsHash constructor', () => {
       // eslint-disable-next-line @typescript-eslint/func-call-spacing
       expect(new (<any> AbstractBindingsHash)
-      ({ bus: new Bus({ name: 'bus' }), name: 'actor', hashAlgorithm, digestAlgorithm }, 'distinct'))
+      ({ bus: new Bus({ name: 'bus' }), name: 'actor' }, 'distinct'))
         .toBeInstanceOf(AbstractBindingsHash);
       // eslint-disable-next-line @typescript-eslint/func-call-spacing
       expect(new (<any> AbstractBindingsHash)
-      ({ bus: new Bus({ name: 'bus' }), name: 'actor', hashAlgorithm, digestAlgorithm }, 'distinct'))
+      ({ bus: new Bus({ name: 'bus' }), name: 'actor' }, 'distinct'))
         .toBeInstanceOf(Actor);
     });
     it('should not be able to create new AbstractBindingsHash objects without \'new\'', () => {
       expect(() => { (<any> AbstractBindingsHash)(); }).toThrow();
-    });
-
-    it('should not be able to create new AbstractBindingsHash objects with an invalid hash algo', () => {
-      expect(() => { new (<any> AbstractBindingsHash)(
-        { name: 'actor', bus, mediatorQueryOperation, hashAlgorithm: 'abc', digestAlgorithm }, 'distinct',
-      ); })
-        .toThrow();
-    });
-
-    it('should not be able to create new AbstractBindingsHash objects with an invalid digest algo', () => {
-      expect(() => { new (<any> AbstractBindingsHash)(
-        { name: 'actor', bus, mediatorQueryOperation, hashAlgorithm, digestAlgorithm: 'abc' }, 'distinct',
-      ); })
-        .toThrow();
     });
   });
 
@@ -82,7 +66,7 @@ describe('AbstractBindingsHash', () => {
             return true;
           };
         }
-      }({ name: 'actor', bus, mediatorQueryOperation, hashAlgorithm, digestAlgorithm }, 'distinct');
+      }({ name: 'actor', bus, mediatorQueryOperation }, 'distinct');
     });
 
     it('should run', () => {

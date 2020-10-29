@@ -30,8 +30,6 @@ describe('AbstractFilterHash', () => {
         variables: [ 'a' ],
       }),
     };
-    hashAlgorithm = 'sha1';
-    digestAlgorithm = 'hex';
   });
 
   describe('The AbstractFilterHash module', () => {
@@ -42,79 +40,31 @@ describe('AbstractFilterHash', () => {
     it('should be a AbstractFilterHash constructor', () => {
       // eslint-disable-next-line @typescript-eslint/func-call-spacing
       expect(new (<any> AbstractFilterHash)
-      ({ bus: new Bus({ name: 'bus' }), name: 'actor', hashAlgorithm, digestAlgorithm }, 'distinct'))
+      ({ bus: new Bus({ name: 'bus' }), name: 'actor' }, 'distinct'))
         .toBeInstanceOf(AbstractFilterHash);
       // eslint-disable-next-line @typescript-eslint/func-call-spacing
       expect(new (<any> AbstractFilterHash)
-      ({ bus: new Bus({ name: 'bus' }), name: 'actor', hashAlgorithm, digestAlgorithm }, 'distinct'))
+      ({ bus: new Bus({ name: 'bus' }), name: 'actor' }, 'distinct'))
         .toBeInstanceOf(Actor);
     });
     it('should not be able to create new AbstractFilterHash objects without \'new\'', () => {
       expect(() => { (<any> AbstractFilterHash)(); }).toThrow();
     });
-
-    it('should not be able to create new AbstractFilterHash objects with an invalid hash algo', () => {
-      expect(() => { new (<any> AbstractFilterHash)(
-        { name: 'actor', bus, mediatorQueryOperation, hashAlgorithm: 'abc', digestAlgorithm }, 'distinct',
-      ); })
-        .toThrow();
-    });
-
-    it('should not be able to create new AbstractFilterHash objects with an invalid digest algo', () => {
-      expect(() => { new (<any> AbstractFilterHash)(
-        { name: 'actor', bus, mediatorQueryOperation, hashAlgorithm, digestAlgorithm: 'abc' }, 'distinct',
-      ); })
-        .toThrow();
-    });
-  });
-
-  describe('#doesHashAlgorithmExist', () => {
-    it('should be true on sha1', () => {
-      return expect(AbstractFilterHash.doesHashAlgorithmExist('sha1')).toBeTruthy();
-    });
-
-    it('should be false on md5', () => {
-      return expect(AbstractFilterHash.doesHashAlgorithmExist('md5')).toBeFalsy();
-    });
-
-    it('should not be true on something that does not exist', () => {
-      return expect(AbstractFilterHash.doesHashAlgorithmExist('somethingthatdoesnotexist'))
-        .toBeFalsy();
-    });
-  });
-
-  describe('#doesDigestAlgorithmExist', () => {
-    it('should be false on latin1', () => {
-      return expect(AbstractFilterHash.doesDigestAlgorithmExist('latin1')).toBeFalsy();
-    });
-
-    it('should be true on hex', () => {
-      return expect(AbstractFilterHash.doesDigestAlgorithmExist('hex')).toBeTruthy();
-    });
-
-    it('should be false on base64', () => {
-      return expect(AbstractFilterHash.doesDigestAlgorithmExist('base64')).toBeFalsy();
-    });
-
-    it('should not be true on something that does not exist', () => {
-      return expect(AbstractFilterHash.doesDigestAlgorithmExist('somethingthatdoesnotexist'))
-        .toBeFalsy();
-    });
   });
 
   describe('#hash', () => {
     it('should return the same hash for equal objects', () => {
-      expect(AbstractFilterHash.hash('sha1', 'hex', Bindings({ a: DF.literal('b') })))
-        .toEqual(AbstractFilterHash.hash('sha1', 'hex', Bindings({ a: DF.literal('b') })));
-      expect(AbstractFilterHash.hash('sha1', 'hex', Bindings({ a: DF.namedNode('c') })))
-        .toEqual(AbstractFilterHash.hash('sha1', 'hex', Bindings({ a: DF.namedNode('c') })));
+      expect(AbstractFilterHash.hash(Bindings({ a: DF.literal('b') })))
+        .toEqual(AbstractFilterHash.hash(Bindings({ a: DF.literal('b') })));
+      expect(AbstractFilterHash.hash(Bindings({ a: DF.namedNode('c') })))
+        .toEqual(AbstractFilterHash.hash(Bindings({ a: DF.namedNode('c') })));
     });
 
     it('should return a different hash for non-equal objects', () => {
-      expect(AbstractFilterHash.hash('sha1', 'hex', Bindings({ a: DF.literal('b') })))
-        .not.toEqual(AbstractFilterHash.hash('sha1', 'hex', Bindings({ a: DF.literal('c') })));
-      expect(AbstractFilterHash.hash('sha1', 'hex', Bindings({ a: DF.literal('b') })))
-        .not.toEqual(AbstractFilterHash.hash('sha1', 'hex', Bindings({ a: DF.namedNode('b') })));
+      expect(AbstractFilterHash.hash(Bindings({ a: DF.literal('b') })))
+        .not.toEqual(AbstractFilterHash.hash(Bindings({ a: DF.literal('c') })));
+      expect(AbstractFilterHash.hash(Bindings({ a: DF.literal('b') })))
+        .not.toEqual(AbstractFilterHash.hash(Bindings({ a: DF.namedNode('b') })));
     });
   });
 });
