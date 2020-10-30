@@ -6,9 +6,7 @@
       "files-caabh": "caabh:^1.0.0/",
 
       "AbstractBindingsHash": "caabh:Actor/AbstractBindingsHash",
-      "AbstractFilterHash": "caabh:Actor/AbstractFilterHash",
-      "hashAlgorithm": "caabh:Actor/AbstractFilterHash/hashAlgorithm",
-      "digestAlgorithm": "caabh:Actor/AbstractFilterHash/digestAlgorithm"
+      "AbstractFilterHash": "caabh:Actor/AbstractFilterHash"
     }
   ]
 }

@@ -39,5 +39,3 @@ After installing, this package can be added to your engine's configuration as fo
 ### Config Parameters
 
 * `cbqo:mediatorQueryOperation`: A mediator over the [Query Operation bus](https://github.com/comunica/comunica/tree/master/packages/bus-query-operation).
-* `caabh:Actor/AbstractFilterHash/hashAlgorithm`: An optional hash algorithm, defaults to `sha1`.
-* `caabh:Actor/AbstractFilterHash/digestAlgorithm`: An optional hash algorithm, defaults to `base64`.
