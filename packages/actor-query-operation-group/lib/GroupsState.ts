@@ -135,6 +135,6 @@ export class GroupsState {
    * @param {Bindings} bindings - Bindings to hash
    */
   private hashBindings(bindings: Bindings): BindingsHash {
-    return AbstractFilterHash.hash('sha1', 'hex', bindings);
+    return AbstractFilterHash.hash(bindings);
   }
 }

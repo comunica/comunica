@@ -12,22 +12,7 @@
       "extends": "caabh:Actor/AbstractFilterHash",
       "requireElement": "ActorQueryOperationDistinctHash",
       "comment": "A comunica Distinct Hash Query Operation Actor.",
-      "parameters": [
-        {
-          "@id": "caabh:Actor/AbstractFilterHash/hashAlgorithm",
-          "defaultScoped": {
-            "defaultScope": "caqodh:Actor/QueryOperation/DistinctHash",
-            "defaultScopedValue": "sha1"
-          }
-        },
-        {
-          "@id": "caabh:Actor/AbstractFilterHash/digestAlgorithm",
-          "defaultScoped": {
-            "defaultScope": "caqodh:Actor/QueryOperation/DistinctHash",
-            "defaultScopedValue": "base64"
-          }
-        }
-      ],
+      "parameters": [],
       "constructorArguments": [
         {
           "extends": "caabh:Actor/AbstractFilterHash/constructorArgumentsObject"
