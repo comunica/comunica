@@ -1,5 +1,6 @@
 import {DataFactory} from 'rdf-data-factory';
-import * as hash from 'create-hash';
+import {sha1, sha256, sha384, sha512} from 'hash.js';
+import {hash as md5} from 'spark-md5';
 import {Decimal} from 'decimal.js';
 import * as uuid from 'uuid';
 
@@ -636,35 +637,35 @@ const tz = {
 const MD5 = {
   arity: 1,
   overloads: declare()
-    .onString1Typed((str) => string(hash('md5').update(str).digest('hex')))
+    .onString1Typed((str) => string(md5(str)))
     .collect(),
 };
 
 const SHA1 = {
   arity: 1,
   overloads: declare()
-    .onString1Typed((str) => string(hash('sha1').update(str).digest('hex')))
+    .onString1Typed((str) => string(sha1().update(str).digest('hex')))
     .collect(),
 };
 
 const SHA256 = {
   arity: 1,
   overloads: declare()
-    .onString1Typed((str) => string(hash('sha256').update(str).digest('hex')))
+    .onString1Typed((str) => string(sha256().update(str).digest('hex')))
     .collect(),
 };
 
 const SHA384 = {
   arity: 1,
   overloads: declare()
-    .onString1Typed((str) => string(hash('sha384').update(str).digest('hex')))
+    .onString1Typed((str) => string(sha384().update(str).digest('hex')))
     .collect(),
 };
 
 const SHA512 = {
   arity: 1,
   overloads: declare()
-    .onString1Typed((str) => string(hash('sha512').update(str).digest('hex')))
+    .onString1Typed((str) => string(sha512().update(str).digest('hex')))
     .collect(),
 };
 
