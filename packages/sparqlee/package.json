@@ -1,6 +1,6 @@
 {
   "name": "sparqlee",
-  "version": "1.5.1",
+  "version": "1.6.0",
   "description": "A simple SPARQL expression evaluator library",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -22,7 +22,7 @@
     "sparqlee": "./dist/bin/Sparqlee.js"
   },
   "bin": {
-    "sparqlee": "./dist/bin/Sparqlee.js"
+    "sparqlee": "dist/bin/Sparqlee.js"
   },
   "files": [
     "/dist/bin",
