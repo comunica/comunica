@@ -70,10 +70,9 @@
     "validate": "npm ls"
   },
   "dependencies": {
-    "@types/rusha": "^0.8.0",
     "canonicalize": "^1.0.1",
+    "hash.js": "^1.1.7",
     "rdf-string": "^1.5.0",
-    "rusha": "^0.8.13",
     "sparqlalgebrajs": "^2.4.0"
   }
 }
