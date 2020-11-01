@@ -2363,13 +2363,6 @@
     "@types/node" "*"
     "@types/responselike" "*"
 
-"@types/create-hash@^1.2.0":
-  version "1.2.2"
-  resolved "https://registry.yarnpkg.com/@types/create-hash/-/create-hash-1.2.2.tgz#e87247083df8478f6b83655592bde0d709028235"
-  integrity sha512-Fg8/kfMJObbETFU/Tn+Y0jieYewryLrbKwLCEIwPyklZZVY2qB+64KFjhplGSw+cseZosfFXctXO+PyIYD8iZQ==
-  dependencies:
-    "@types/node" "*"
-
 "@types/fs-extra@^8.0.0":
   version "8.1.1"
   resolved "https://registry.yarnpkg.com/@types/fs-extra/-/fs-extra-8.1.1.tgz#1e49f22d09aa46e19b51c0b013cb63d0d923a068"
@@ -2600,6 +2593,11 @@
   integrity sha512-YNyz4ANZOtmZxQMQOU2q43jjacEGKWywDTL8CkIBSosmRL7HEgoelcI3GyXSrmlennCCmvC/NEenHYFSqYMg+A==
   dependencies:
     "@types/pollyjs__core" "*"
+
+"@types/spark-md5@^3.0.2":
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/@types/spark-md5/-/spark-md5-3.0.2.tgz#da2e8a778a20335fc4f40b6471c4b0d86b70da55"
+  integrity sha512-82E/lVRaqelV9qmRzzJ1PKTpyrpnT7mwdneKNJB9hUtypZDMggloDfFUCIqRRx3lYRxteCwXSq9c+W71Vf0QnQ==
 
 "@types/sparqljs@^3.0.0":
   version "3.1.0"
@@ -11463,6 +11461,11 @@ source-map@~0.1.38:
   dependencies:
     amdefine ">=0.0.4"
 
+spark-md5@^3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/spark-md5/-/spark-md5-3.0.1.tgz#83a0e255734f2ab4e5c466e5a2cfc9ba2aa2124d"
+  integrity sha512-0tF3AGSD1ppQeuffsLDIOWlKUd3lS92tFxcsrh5Pe3ZphhnoK+oXIBTzOAThZCiuINZLvpiLH/1VS1/ANEJVig==
+
 sparqlalgebrajs@^2.4.0:
   version "2.4.0"
   resolved "https://registry.yarnpkg.com/sparqlalgebrajs/-/sparqlalgebrajs-2.4.0.tgz#c223a8185bad1a7e7ffc46eaff859fc55c1ff49c"
@@ -11474,20 +11477,21 @@ sparqlalgebrajs@^2.4.0:
     rdf-string "^1.5.0"
     sparqljs "^3.1.1"
 
-sparqlee@^1.5.1:
-  version "1.5.1"
-  resolved "https://registry.yarnpkg.com/sparqlee/-/sparqlee-1.5.1.tgz#e7d6c2c2431679f1c068a366a192903de5de18d4"
-  integrity sha512-1R9j2JX6jrM+kiBKXffdL3gvyvypagN7b3GK6Mson9aL3jBdRqK0BSccfiiUyK/87cvCmavOk6iGrucucKpZyQ==
+sparqlee@^1.6.0:
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/sparqlee/-/sparqlee-1.6.0.tgz#ad00cdba19ce92d467a450946f1db164199944bf"
+  integrity sha512-jbPhD5FcRp2rORkZZ9L8kM4HAx7N9RQl6YbpvyQYcxjjvMtgZ1OL0OiSbmKy/ixt74ycXjNRYK5IWfL3sdH+NA==
   dependencies:
-    "@types/create-hash" "^1.2.0"
     "@types/rdf-js" "^4.0.0"
+    "@types/spark-md5" "^3.0.2"
     "@types/uuid" "^8.0.0"
-    create-hash "^1.2.0"
     decimal.js "^10.2.0"
+    hash.js "^1.1.7"
     immutable "^3.8.2"
     rdf-data-factory "^1.0.3"
     rdf-string "^1.5.0"
     relative-to-absolute-iri "^1.0.6"
+    spark-md5 "^3.0.1"
     sparqlalgebrajs "^2.4.0"
     uuid "^8.0.0"
 
