@@ -1,6 +1,6 @@
 {
   "name": "@comunica/mediator-race",
-  "version": "1.17.0",
+  "version": "1.18.0",
   "description": "A mediator for a single mediation number value",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-race",
   "lsd:components": "components/components.jsonld",
@@ -40,7 +40,7 @@
     "@comunica/core": "^1.0.0"
   },
   "devDependencies": {
-    "@comunica/core": "^1.17.0"
+    "@comunica/core": "^1.18.0"
   },
   "jest": {
     "globals": {

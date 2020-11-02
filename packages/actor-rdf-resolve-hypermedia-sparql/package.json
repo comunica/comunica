@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-resolve-hypermedia-sparql",
-  "version": "1.17.0",
+  "version": "1.18.0",
   "description": "A sparql rdf-resolve-hypermedia actor",
   "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-resolve-hypermedia-sparql",
   "lsd:components": "components/components.jsonld",
@@ -39,9 +39,9 @@
     "index.js"
   ],
   "dependencies": {
-    "@comunica/actor-rdf-resolve-quad-pattern-sparql-json": "^1.17.0",
-    "@comunica/bus-query-operation": "^1.17.0",
-    "@comunica/bus-rdf-resolve-quad-pattern": "^1.17.0",
+    "@comunica/actor-rdf-resolve-quad-pattern-sparql-json": "^1.18.0",
+    "@comunica/bus-query-operation": "^1.18.0",
+    "@comunica/bus-rdf-resolve-quad-pattern": "^1.18.0",
     "@types/rdf-js": "*",
     "asynciterator": "^3.0.3",
     "rdf-data-factory": "^1.0.3",
@@ -53,9 +53,9 @@
     "@comunica/core": "^1.8.0"
   },
   "devDependencies": {
-    "@comunica/bus-http": "^1.17.0",
-    "@comunica/bus-rdf-resolve-hypermedia": "^1.17.0",
-    "@comunica/core": "^1.17.0"
+    "@comunica/bus-http": "^1.18.0",
+    "@comunica/bus-rdf-resolve-hypermedia": "^1.18.0",
+    "@comunica/core": "^1.18.0"
   },
   "jest": {
     "globals": {

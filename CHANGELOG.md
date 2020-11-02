@@ -1,6 +1,27 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v1.18.0"></a>
+## [v1.18.0](https://github.com/comunica/comunica/compare/v1.17.0...v1.18.0) - 2020-11-02
+
+### Fixed
+* [Fix eager accept header boundary bug, Closes #534](https://github.com/comunica/comunica/commit/f60f8b2a7f2bd18d342b02a6f1248e99e2dd5398)
+* [Fix incorrect return type for bindings(), Closes #742](https://github.com/comunica/comunica/commit/7cfa946fa950573c006c6fcc1cf0a974c2dbdcb7)
+* [Add missing query result interface exports](https://github.com/comunica/comunica/commit/e803e6715a8364ea1b082ada1749023f9abc6ed1)
+
+### Added
+* [Add Microdata to RDF parser](https://github.com/comunica/comunica/commit/ca9400a5a9e1241aad17976554f9fbf7e32aafe2)
+* [Add actor whitelist to LoggerPretty](https://github.com/comunica/comunica/commit/878bce72bdd84605cbe454972fad2b58454fa88b)
+
+### Changed
+* [Use fixed hashing functions](https://github.com/comunica/comunica/commit/921a33266fc5b2faf71742e6e5d6659ba311e7ba)
+* [Update sparqlee to achieve smaller bundle sizes](https://github.com/comunica/comunica/commit/89d4fefa3a01202c988825d2b45ce6ce7e848f63)
+* [Bump sparqlee with improved XPath and Unicode support](https://github.com/comunica/comunica/commit/5fb3275c1ea887b692fc2caae5a271e29635a56b)
+* [Allow quad streams on followed links to be transformed](https://github.com/comunica/comunica/commit/f2d30145a15d4312728d3940ec520bf8da204154)
+* [Allow hypermedia links to define custom context entries](https://github.com/comunica/comunica/commit/420540f0e2ae864e8a79062f74852753560ab8b8)
+* [Allow JSON-LD strict mode to be enabled via context](https://github.com/comunica/comunica/commit/9e575bbf41bcf089c1b7e1ee0142f5bebd30db89)
+* [Allow custom JSON-LD document loader to be passed via context](https://github.com/comunica/comunica/commit/b374aa1f4a23988b4c0c2ce039e2dd05acbe16eb)
+
 <a name="v1.17.0"></a>
 ## [v1.17.0](https://github.com/comunica/comunica/compare/v1.16.2...v1.17.0) - 2020-09-25
 
