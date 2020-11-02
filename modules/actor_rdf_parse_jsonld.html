@@ -106,6 +106,18 @@
 						<li><code>caam:Actor/AbstractMediaTypedFixed/priorityScale</code>: An optional priority for this parser, used for content negotiation, defaults to <code>1</code>.</li>
 						<li><code>crpjl:Actor/RdfParse/JsonLd/mediatorHttp</code>: A mediator over the <a href="https://github.com/comunica/comunica/tree/master/packages/bus-http">HTTP bus</a>, for fetching remote JSON-LD contexts.</li>
 					</ul>
+					<a href="#using-a-custom-document-loader" id="using-a-custom-document-loader" style="color: inherit; text-decoration: none;">
+						<h3>Using a custom document loader</h3>
+					</a>
+					<p>If you want to override how the JSON-LD parser loads external contexts,
+						you can pass a custom document loader via the <code>&#39;@comunica/actor-rdf-parse-jsonld:documentLoader&#39;</code> <a href="https://comunica.dev/docs/query/advanced/context/">context entry</a>.
+					This document loader must implement the <a href="https://github.com/rubensworks/jsonld-context-parser.js/blob/master/lib/IDocumentLoader.ts"><code>IDocumentLoader</code></a> interface.</p>
+					<a href="#enabling-stricter-parsing-mode" id="enabling-stricter-parsing-mode" style="color: inherit; text-decoration: none;">
+						<h3>Enabling stricter parsing mode</h3>
+					</a>
+					<p>Via the <code>&#39;@comunica/actor-rdf-parse-jsonld:strictValues&#39;</code> <a href="https://comunica.dev/docs/query/advanced/context/">context entry</a>,
+						you can set the JSON-LD parser to run in a more strict mode.
+					This corresponds to the <code>strictValues</code> option in <a href="https://github.com/rubensworks/jsonld-streaming-parser.js#configuration">JSON-LD Streaming Parser</a>.</p>
 				</div>
 			</section>
 			<section class="tsd-panel-group tsd-index-group">
@@ -116,20 +128,30 @@
 							<h3>References</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-reference tsd-parent-kind-module"><a href="actor_rdf_parse_jsonld.html#actorrdfparsejsonld" class="tsd-kind-icon">Actor<wbr>Rdf<wbr>Parse<wbr>Json<wbr>Ld</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module"><a href="actor_rdf_parse_jsonld.html#documentloadermediated" class="tsd-kind-icon">Document<wbr>Loader<wbr>Mediated</a></li>
 								<li class="tsd-kind-reference tsd-parent-kind-module"><a href="actor_rdf_parse_jsonld.html#iactorrdfparsejsonldargs" class="tsd-kind-icon">IActor<wbr>Rdf<wbr>Parse<wbr>Json<wbr>LdArgs</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module"><a href="actor_rdf_parse_jsonld.html#key_context_documentloader" class="tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>DOCUMENTLOADER</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module"><a href="actor_rdf_parse_jsonld.html#key_context_strictvalues" class="tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>STRICTVALUES</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
 							<h3>Classes</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-class tsd-parent-kind-module"><a href="../classes/actor_rdf_parse_jsonld.actorrdfparsejsonld-1.html" class="tsd-kind-icon">Actor<wbr>Rdf<wbr>Parse<wbr>Json<wbr>Ld</a></li>
-								<li class="tsd-kind-class tsd-parent-kind-module"><a href="../classes/actor_rdf_parse_jsonld.documentloadermediated.html" class="tsd-kind-icon">Document<wbr>Loader<wbr>Mediated</a></li>
+								<li class="tsd-kind-class tsd-parent-kind-module"><a href="../classes/actor_rdf_parse_jsonld.documentloadermediated-1.html" class="tsd-kind-icon">Document<wbr>Loader<wbr>Mediated</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
 							<h3>Interfaces</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-interface tsd-parent-kind-module"><a href="../interfaces/actor_rdf_parse_jsonld.iactorrdfparsejsonldargs-1.html" class="tsd-kind-icon">IActor<wbr>Rdf<wbr>Parse<wbr>Json<wbr>LdArgs</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Variables</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-variable tsd-parent-kind-module"><a href="actor_rdf_parse_jsonld.html#key_context_documentloader-1" class="tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>DOCUMENTLOADER</a></li>
+								<li class="tsd-kind-variable tsd-parent-kind-module"><a href="actor_rdf_parse_jsonld.html#key_context_strictvalues-1" class="tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>STRICTVALUES</a></li>
 							</ul>
 						</section>
 					</div>
@@ -143,9 +165,47 @@
 					Re-exports <a href="../classes/actor_rdf_parse_jsonld.actorrdfparsejsonld-1.html">ActorRdfParseJsonLd</a>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module">
+					<a name="documentloadermediated" class="tsd-anchor"></a>
+					<h3>Document<wbr>Loader<wbr>Mediated</h3>
+					Re-exports <a href="../classes/actor_rdf_parse_jsonld.documentloadermediated-1.html">DocumentLoaderMediated</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module">
 					<a name="iactorrdfparsejsonldargs" class="tsd-anchor"></a>
 					<h3>IActor<wbr>Rdf<wbr>Parse<wbr>Json<wbr>LdArgs</h3>
 					Re-exports <a href="../interfaces/actor_rdf_parse_jsonld.iactorrdfparsejsonldargs-1.html">IActorRdfParseJsonLdArgs</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module">
+					<a name="key_context_documentloader" class="tsd-anchor"></a>
+					<h3>KEY_<wbr>CONTEXT_<wbr>DOCUMENTLOADER</h3>
+					Re-exports <a href="actor_rdf_parse_jsonld.html#key_context_documentloader-1">KEY_CONTEXT_DOCUMENTLOADER</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module">
+					<a name="key_context_strictvalues" class="tsd-anchor"></a>
+					<h3>KEY_<wbr>CONTEXT_<wbr>STRICTVALUES</h3>
+					Re-exports <a href="actor_rdf_parse_jsonld.html#key_context_strictvalues-1">KEY_CONTEXT_STRICTVALUES</a>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Variables</h2>
+				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-module">
+					<a name="key_context_documentloader-1" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagConst">Const</span> KEY_<wbr>CONTEXT_<wbr>DOCUMENTLOADER</h3>
+					<div class="tsd-signature tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>DOCUMENTLOADER<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"@comunica/actor-rdf-parse-jsonld:documentLoader"</span><span class="tsd-signature-symbol"> = &quot;@comunica/actor-rdf-parse-jsonld:documentLoader&quot;</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/9e575bb/packages/actor-rdf-parse-jsonld/lib/ActorRdfParseJsonLd.ts#L52">packages/actor-rdf-parse-jsonld/lib/ActorRdfParseJsonLd.ts:52</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-module">
+					<a name="key_context_strictvalues-1" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagConst">Const</span> KEY_<wbr>CONTEXT_<wbr>STRICTVALUES</h3>
+					<div class="tsd-signature tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>STRICTVALUES<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"@comunica/actor-rdf-parse-jsonld:strictValues"</span><span class="tsd-signature-symbol"> = &quot;@comunica/actor-rdf-parse-jsonld:strictValues&quot;</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/9e575bb/packages/actor-rdf-parse-jsonld/lib/ActorRdfParseJsonLd.ts#L53">packages/actor-rdf-parse-jsonld/lib/ActorRdfParseJsonLd.ts:53</a></li>
+						</ul>
+					</aside>
 				</section>
 			</section>
 		</div>
@@ -171,16 +231,31 @@
 								<a href="actor_rdf_parse_jsonld.html#actorrdfparsejsonld" class="tsd-kind-icon">Actor<wbr>Rdf<wbr>Parse<wbr>Json<wbr>Ld</a>
 							</li>
 							<li class=" tsd-kind-reference tsd-parent-kind-module">
+								<a href="actor_rdf_parse_jsonld.html#documentloadermediated" class="tsd-kind-icon">Document<wbr>Loader<wbr>Mediated</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module">
 								<a href="actor_rdf_parse_jsonld.html#iactorrdfparsejsonldargs" class="tsd-kind-icon">IActor<wbr>Rdf<wbr>Parse<wbr>Json<wbr>LdArgs</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module">
+								<a href="actor_rdf_parse_jsonld.html#key_context_documentloader" class="tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>DOCUMENTLOADER</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module">
+								<a href="actor_rdf_parse_jsonld.html#key_context_strictvalues" class="tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>STRICTVALUES</a>
 							</li>
 							<li class=" tsd-kind-class tsd-parent-kind-module">
 								<a href="../classes/actor_rdf_parse_jsonld.actorrdfparsejsonld-1.html" class="tsd-kind-icon">Actor<wbr>Rdf<wbr>Parse<wbr>Json<wbr>Ld</a>
 							</li>
 							<li class=" tsd-kind-class tsd-parent-kind-module">
-								<a href="../classes/actor_rdf_parse_jsonld.documentloadermediated.html" class="tsd-kind-icon">Document<wbr>Loader<wbr>Mediated</a>
+								<a href="../classes/actor_rdf_parse_jsonld.documentloadermediated-1.html" class="tsd-kind-icon">Document<wbr>Loader<wbr>Mediated</a>
 							</li>
 							<li class=" tsd-kind-interface tsd-parent-kind-module">
 								<a href="../interfaces/actor_rdf_parse_jsonld.iactorrdfparsejsonldargs-1.html" class="tsd-kind-icon">IActor<wbr>Rdf<wbr>Parse<wbr>Json<wbr>LdArgs</a>
+							</li>
+							<li class=" tsd-kind-variable tsd-parent-kind-module">
+								<a href="actor_rdf_parse_jsonld.html#key_context_documentloader-1" class="tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>DOCUMENTLOADER</a>
+							</li>
+							<li class=" tsd-kind-variable tsd-parent-kind-module">
+								<a href="actor_rdf_parse_jsonld.html#key_context_strictvalues-1" class="tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>STRICTVALUES</a>
 							</li>
 						</ul>
 					</li>
