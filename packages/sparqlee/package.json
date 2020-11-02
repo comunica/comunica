@@ -52,7 +52,7 @@
   },
   "homepage": "https://github.com/comunica/sparqlee#readme",
   "devDependencies": {
-    "@types/benchmark": "^1.0.30",
+    "@types/benchmark": "^2.0.0",
     "@types/jest": "^26.0.0",
     "asynciterator": "^3.0.0",
     "benchmark": "^2.1.4",
