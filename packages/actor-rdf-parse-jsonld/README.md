@@ -46,3 +46,9 @@ After installing, this package can be added to your engine's configuration as fo
 If you want to override how the JSON-LD parser loads external contexts,
 you can pass a custom document loader via the `'@comunica/actor-rdf-parse-jsonld:documentLoader'` [context entry](https://comunica.dev/docs/query/advanced/context/).
 This document loader must implement the [`IDocumentLoader`](https://github.com/rubensworks/jsonld-context-parser.js/blob/master/lib/IDocumentLoader.ts) interface.
+
+### Enabling stricter parsing mode
+
+Via the `'@comunica/actor-rdf-parse-jsonld:strictValues'` [context entry](https://comunica.dev/docs/query/advanced/context/),
+you can set the JSON-LD parser to run in a more strict mode.
+This corresponds to the `strictValues` option in [JSON-LD Streaming Parser](https://github.com/rubensworks/jsonld-streaming-parser.js#configuration).

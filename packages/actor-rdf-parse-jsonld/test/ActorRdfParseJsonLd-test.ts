@@ -1,7 +1,7 @@
 import type { Readable } from 'stream';
 import { ActionContext, Bus } from '@comunica/core';
 import 'jest-rdf';
-import { ActorRdfParseJsonLd, KEY_CONTEXT_DOCUMENTLOADER } from '../lib/ActorRdfParseJsonLd';
+import { ActorRdfParseJsonLd, KEY_CONTEXT_DOCUMENTLOADER, KEY_CONTEXT_STRICTVALUES } from '../lib/ActorRdfParseJsonLd';
 const arrayifyStream = require('arrayify-stream');
 const quad = require('rdf-quad');
 const stringToStream = require('streamify-string');
@@ -90,6 +90,7 @@ describe('ActorRdfParseJsonLd', () => {
     let inputRemoteContext: Readable;
     let inputRemoteContextErr: Readable;
     let inputLinkHeader: Readable;
+    let inputSkipped: Readable;
 
     beforeEach(() => {
       actor = new ActorRdfParseJsonLd({ bus,
@@ -144,6 +145,10 @@ describe('ActorRdfParseJsonLd', () => {
         inputLinkHeader = stringToStream(`{
           "@id": "http://www.example.org/",
           "term": "value"
+        }`);
+        inputSkipped = stringToStream(`{
+          "@id": "http://www.example.org/",
+          "skipped": "value"
         }`);
       });
 
@@ -281,6 +286,39 @@ describe('ActorRdfParseJsonLd', () => {
         ))
           .rejects.toThrow(new Error('Multiple JSON-LD context link headers were found on mult'));
       });
+
+      it('should run with a custom document loader', () => {
+        const documentLoader: any = {
+          load: jest.fn(() => ({ '@context': { '@vocab': 'http://custom.org/' }})),
+        };
+        return actor.run({
+          handle: { input: inputRemoteContext, baseIRI: '' },
+          handleMediaType: 'application/ld+json',
+          context: ActionContext({ [KEY_CONTEXT_DOCUMENTLOADER]: documentLoader }),
+        })
+          .then(async(output: any) => expect(await arrayifyStream(output.handle.quads)).toEqualRdfQuadArray([
+            quad('http://example.org/a', 'http://custom.org/b', '"http://example.org/c"'),
+            quad('http://example.org/a', 'http://custom.org/d', '"http://example.org/e"'),
+          ]));
+      });
+
+      it('should run with skipped properties', () => {
+        return actor.run({
+          handle: { input: inputSkipped, baseIRI: '' },
+          handleMediaType: 'application/ld+json',
+        })
+          .then(async(output: any) => expect(await arrayifyStream(output.handle.quads)).toEqualRdfQuadArray([]));
+      });
+
+      it('should error on skipped properties with strict values', () => {
+        return actor.run({
+          handle: { input: inputSkipped, baseIRI: '' },
+          handleMediaType: 'application/ld+json',
+          context: ActionContext({ [KEY_CONTEXT_STRICTVALUES]: true }),
+        })
+          .then(async(output: any) => expect(arrayifyStream(output.handle.quads)).rejects
+            .toThrow(new Error('Invalid predicate IRI: skipped')));
+      });
     });
 
     describe('for getting media types', () => {
@@ -335,21 +373,6 @@ describe('ActorRdfParseJsonLd', () => {
               quad('http://example.org/a', 'http://example.org/d', '"http://example.org/e"'),
             ]);
           });
-      });
-
-      it('should run with a custom document loader', () => {
-        const documentLoader: any = {
-          load: jest.fn(() => ({ '@context': { '@vocab': 'http://custom.org/' }})),
-        };
-        return actor.run({
-          handle: { input: inputRemoteContext, baseIRI: '' },
-          handleMediaType: 'application/ld+json',
-          context: ActionContext({ [KEY_CONTEXT_DOCUMENTLOADER]: documentLoader }),
-        })
-          .then(async(output: any) => expect(await arrayifyStream(output.handle.quads)).toEqualRdfQuadArray([
-            quad('http://example.org/a', 'http://custom.org/b', '"http://example.org/c"'),
-            quad('http://example.org/a', 'http://custom.org/d', '"http://example.org/e"'),
-          ]));
       });
     });
   });

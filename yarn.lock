@@ -8119,6 +8119,19 @@ jsonld-streaming-parser@^2.0.2, jsonld-streaming-parser@^2.1.0:
     jsonparse "^1.3.1"
     rdf-data-factory "^1.0.2"
 
+jsonld-streaming-parser@^2.1.1:
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/jsonld-streaming-parser/-/jsonld-streaming-parser-2.1.1.tgz#e6a16b14c1323223aa09594be0863cdca391c979"
+  integrity sha512-QEOV+cMMBZCz30XkkX07/ziyETFDZz1fGlrKpXmnuj/iw9yN2PbvwTVCz4Snk/sy1V2sBVuF5L/ubd2XXerY8w==
+  dependencies:
+    "@types/http-link-header" "^1.0.1"
+    "@types/rdf-js" "^4.0.0"
+    canonicalize "^1.0.1"
+    http-link-header "^1.0.2"
+    jsonld-context-parser "^2.0.1"
+    jsonparse "^1.3.1"
+    rdf-data-factory "^1.0.2"
+
 jsonld-streaming-serializer@^1.2.0:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/jsonld-streaming-serializer/-/jsonld-streaming-serializer-1.2.0.tgz#5efb017c6063fb4ed5808767b138e0eead8ed85b"

@@ -37,6 +37,7 @@ export class ActorRdfParseJsonLd extends ActorRdfParseFixedMediaTypes {
     const parser = JsonLdParser.fromHttpResponse(action.baseIRI, mediaType, action.headers, {
       documentLoader: actionContext && actionContext.get(KEY_CONTEXT_DOCUMENTLOADER) ||
         new DocumentLoaderMediated(this.mediatorHttp, actionContext),
+      strictValues: actionContext && actionContext.get(KEY_CONTEXT_STRICTVALUES),
     });
     const quads: RDF.Stream = parser.import(action.input);
     return { quads };
@@ -49,3 +50,4 @@ export interface IActorRdfParseJsonLdArgs extends IActorRdfParseFixedMediaTypesA
 }
 
 export const KEY_CONTEXT_DOCUMENTLOADER = '@comunica/actor-rdf-parse-jsonld:documentLoader';
+export const KEY_CONTEXT_STRICTVALUES = '@comunica/actor-rdf-parse-jsonld:strictValues';
