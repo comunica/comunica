@@ -1,7 +1,7 @@
 import type { Readable } from 'stream';
 import { ActionContext, Bus } from '@comunica/core';
 import 'jest-rdf';
-import { ActorRdfParseJsonLd } from '../lib/ActorRdfParseJsonLd';
+import { ActorRdfParseJsonLd, KEY_CONTEXT_DOCUMENTLOADER } from '../lib/ActorRdfParseJsonLd';
 const arrayifyStream = require('arrayify-stream');
 const quad = require('rdf-quad');
 const stringToStream = require('streamify-string');
@@ -335,6 +335,21 @@ describe('ActorRdfParseJsonLd', () => {
               quad('http://example.org/a', 'http://example.org/d', '"http://example.org/e"'),
             ]);
           });
+      });
+
+      it('should run with a custom document loader', () => {
+        const documentLoader: any = {
+          load: jest.fn(() => ({ '@context': { '@vocab': 'http://custom.org/' }})),
+        };
+        return actor.run({
+          handle: { input: inputRemoteContext, baseIRI: '' },
+          handleMediaType: 'application/ld+json',
+          context: ActionContext({ [KEY_CONTEXT_DOCUMENTLOADER]: documentLoader }),
+        })
+          .then(async(output: any) => expect(await arrayifyStream(output.handle.quads)).toEqualRdfQuadArray([
+            quad('http://example.org/a', 'http://custom.org/b', '"http://example.org/c"'),
+            quad('http://example.org/a', 'http://custom.org/d', '"http://example.org/e"'),
+          ]));
       });
     });
   });
