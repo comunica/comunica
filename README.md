@@ -11,7 +11,7 @@
 </p>
 
 <p align="center">
-<a href="https://travis-ci.org/comunica/comunica"><img src="https://travis-ci.org/comunica/comunica.svg?branch=master" alt="Build Status"></a>
+<a href="https://travis-ci.com/comunica/comunica"><img src="https://travis-ci.com/comunica/comunica.svg?branch=master" alt="Build Status"></a>
 <a href="https://coveralls.io/github/comunica/comunica?branch=master"><img src="https://coveralls.io/repos/github/comunica/comunica/badge.svg?branch=master" alt="Coverage Status"></a>
 <a href="https://zenodo.org/badge/latestdoi/107345960"><img src="https://zenodo.org/badge/107345960.svg" alt="DOI"></a>
 <a href="https://gitter.im/comunica/Lobby"><img src="https://badges.gitter.im/comunica.png" alt="Gitter chat"></a>
