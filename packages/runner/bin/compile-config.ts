@@ -37,6 +37,6 @@ if (require.main) {
 
 compileConfig({ mainModulePath }, configPath, configStreamRaw, configResourceUri, exportVariableName)
   .then(out => process.stdout.write(`${out}\n`)).catch(error => {
-    process.stderr.write(`${error}\n`);
+    process.stderr.write(`${error.stack}\n`);
     process.exit(1);
   });
