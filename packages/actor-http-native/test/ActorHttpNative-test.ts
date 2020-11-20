@@ -32,15 +32,13 @@ describe('ActorHttpNative', () => {
 
   describe('#createUserAgent', () => {
     it('should create a user agent in the browser', () => {
-      if (!(<any> global).window) {
-        (<any> global).window = { navigator: { userAgent: 'Dummy' }};
-      }
+      (<any> global).navigator = { userAgent: 'Dummy' };
       return expect(ActorHttpNative.createUserAgent())
-        .toEqual(`Comunica/actor-http-native (Browser-${window.navigator.userAgent})`);
+        .toEqual(`Comunica/actor-http-native (Browser-${global.navigator.userAgent})`);
     });
 
     it('should create a user agent in Node.js', () => {
-      delete (<any> global).window;
+      delete (<any> global).navigator;
       return expect(ActorHttpNative.createUserAgent())
         .toEqual(`Comunica/actor-http-native (Node.js ${process.version}; ${process.platform})`);
     });

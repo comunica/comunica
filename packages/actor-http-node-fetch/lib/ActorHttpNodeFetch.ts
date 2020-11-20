@@ -19,9 +19,9 @@ export class ActorHttpNodeFetch extends ActorHttp {
   }
 
   public static createUserAgent(): string {
-    return `Comunica/actor-http-node-fetch (${typeof window === 'undefined' ?
+    return `Comunica/actor-http-node-fetch (${typeof global.navigator === 'undefined' ?
       `Node.js ${process.version}; ${process.platform}` :
-      `Browser-${window.navigator.userAgent}`})`;
+      `Browser-${global.navigator.userAgent}`})`;
   }
 
   public async test(action: IActionHttp): Promise<IMediatorTypeTime> {

@@ -1,5 +1,5 @@
 // eslint-disable-next-line no-process-env
-if (!process || (process.env.NODE_ENV === 'production' && !process.env.COMUNICA_DEBUG)) {
+if (typeof process === 'undefined' || (process.env.NODE_ENV === 'production' && !process.env.COMUNICA_DEBUG)) {
   Error.stackTraceLimit = <any> false;
 }
 
