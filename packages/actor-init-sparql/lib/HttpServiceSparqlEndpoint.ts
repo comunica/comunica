@@ -160,9 +160,12 @@ Options:
   public async handleRequest(engine: ActorInitSparql, variants: { type: string; quality: number }[],
     stdout: Writable, stderr: Writable,
     request: http.IncomingMessage, response: http.ServerResponse): Promise<void> {
-    const mediaType: string = request.headers.accept && request.headers.accept !== '*/*' ?
-      // eslint-disable-next-line multiline-ternary
-      require('negotiate').choose(variants, request)[0].type : null;
+    const negotiated = require('negotiate').choose(variants, request)
+      .sort((first: any, second: any) => second.qts - first.qts);
+    const variant: any = request.headers.accept ? negotiated[0] : null;
+    // Require qts strictly larger than 2, as 1 and 2 respectively allow * and */* matching.
+    // For qts 0, 1, and 2, we fallback to our built-in media type defaults, for which we pass null.
+    const mediaType: string = variant && variant.qts > 2 ? variant.type : null;
 
     // Verify the path
     const requestUrl = url.parse(request.url ?? '', true);
@@ -237,6 +240,18 @@ Options:
         { 'content-type': HttpServiceSparqlEndpoint.MIME_PLAIN, 'Access-Control-Allow-Origin': '*' });
       response.end((<Error> error).message);
       return;
+    }
+
+    // Default to SPARQL JSON for bindings and boolean
+    if (!mediaType) {
+      switch (result.type) {
+        case 'quads':
+          mediaType = 'application/trig';
+          break;
+        default:
+          mediaType = 'application/sparql-results+json';
+          break;
+      }
     }
 
     stdout.write(`[200] ${request.method} to ${request.url}\n`);

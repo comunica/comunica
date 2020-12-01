@@ -436,7 +436,7 @@ describe('HttpServiceSparqlEndpoint', () => {
       beforeEach(async() => {
         instance.writeQueryResult = jest.fn();
         engine = await newEngineDynamic();
-        variants = { type: 'test_type', quality: 1 };
+        variants = [{ type: 'test_type', quality: 1 }];
         request = makeRequest();
         response = new ServerResponseMock();
       });
@@ -497,13 +497,8 @@ describe('HttpServiceSparqlEndpoint', () => {
 
       it('should choose a mediaType if accept header is set', async() => {
         const chosen = 'test_chosen_mediatype';
-        const choose = jest.fn(() => [{ type: chosen }]);
-        jest.doMock('negotiate', () => {
-          return {
-            choose,
-          };
-        });
-        request.headers = { accept: 'mediaType' };
+        variants = [{ type: chosen, quality: 1 }];
+        request.headers = { accept: chosen };
 
         instance.parseBody = jest.fn(() => Promise.resolve('test_parseBody_result'));
         request.method = 'POST';
@@ -511,6 +506,87 @@ describe('HttpServiceSparqlEndpoint', () => {
 
         expect(instance.writeQueryResult)
           .toHaveBeenCalledWith(engine, stdout, stderr, request, response, 'test_parseBody_result', chosen, false);
+      });
+
+      it('should choose the best matching mediaType when we can exactly match', async() => {
+        variants = [{ type: 'a/a', quality: 1 }, { type: 'b/b', quality: 0.9 }];
+        request.headers = { accept: 'a/a,b/b' };
+
+        instance.parseBody = jest.fn(() => Promise.resolve('test_parseBody_result'));
+        request.method = 'POST';
+        await instance.handleRequest(engine, variants, stdout, stderr, request, response);
+
+        expect(instance.writeQueryResult)
+          .toHaveBeenCalledWith(engine, stdout, stderr, request, response, 'test_parseBody_result', 'a/a', false);
+      });
+
+      it('should choose the best matching mediaType when we can exactly match with out-of-order q', async() => {
+        variants = [{ type: 'b/b', quality: 0.9 }, { type: 'a/a', quality: 1 }];
+        request.headers = { accept: 'a/a,b/b' };
+
+        instance.parseBody = jest.fn(() => Promise.resolve('test_parseBody_result'));
+        request.method = 'POST';
+        await instance.handleRequest(engine, variants, stdout, stderr, request, response);
+
+        expect(instance.writeQueryResult)
+          .toHaveBeenCalledWith(engine, stdout, stderr, request, response, 'test_parseBody_result', 'a/a', false);
+      });
+
+      it('should choose the second best matching mediaType when we can exactly match', async() => {
+        variants = [{ type: 'a/a', quality: 1 }, { type: 'b/b', quality: 0.9 }];
+        request.headers = { accept: 'b/b' };
+
+        instance.parseBody = jest.fn(() => Promise.resolve('test_parseBody_result'));
+        request.method = 'POST';
+        await instance.handleRequest(engine, variants, stdout, stderr, request, response);
+
+        expect(instance.writeQueryResult)
+          .toHaveBeenCalledWith(engine, stdout, stderr, request, response, 'test_parseBody_result', 'b/b', false);
+      });
+
+      it('should choose the mediaType when the first is unknown', async() => {
+        variants = [{ type: 'a/a', quality: 1 }, { type: 'b/b', quality: 0.9 }];
+        request.headers = { accept: 'x/x,a/a;q=0.8,b/b;q=0.9' };
+
+        instance.parseBody = jest.fn(() => Promise.resolve('test_parseBody_result'));
+        request.method = 'POST';
+        await instance.handleRequest(engine, variants, stdout, stderr, request, response);
+
+        expect(instance.writeQueryResult)
+          .toHaveBeenCalledWith(engine, stdout, stderr, request, response, 'test_parseBody_result', 'b/b', false);
+      });
+
+      it('should choose a null media type if accept header is *', async() => {
+        request.headers = { accept: '*' };
+
+        instance.parseBody = jest.fn(() => Promise.resolve('test_parseBody_result'));
+        request.method = 'POST';
+        await instance.handleRequest(engine, variants, stdout, stderr, request, response);
+
+        expect(instance.writeQueryResult)
+          .toHaveBeenCalledWith(engine, stdout, stderr, request, response, 'test_parseBody_result', null, false);
+      });
+
+      it('should choose a null media type if accept header is */*', async() => {
+        request.headers = { accept: '*/*' };
+
+        instance.parseBody = jest.fn(() => Promise.resolve('test_parseBody_result'));
+        request.method = 'POST';
+        await instance.handleRequest(engine, variants, stdout, stderr, request, response);
+
+        expect(instance.writeQueryResult)
+          .toHaveBeenCalledWith(engine, stdout, stderr, request, response, 'test_parseBody_result', null, false);
+      });
+
+      it('should choose a null mediaType if accept header is not set', async() => {
+        request.headers = {};
+
+        instance.parseBody = jest.fn(() => Promise.resolve('test_parseBody_result'));
+        request.method = 'POST';
+        await instance.handleRequest(engine, variants, stdout, stderr, request, response);
+
+        expect(instance.writeQueryResult)
+          .toHaveBeenCalledWith(engine, stdout, stderr, request, response, 'test_parseBody_result', null, false);
       });
 
       it('should only invalidate cache if invalidateCacheBeforeQuery is set to true', async() => {
@@ -781,6 +857,66 @@ describe('HttpServiceSparqlEndpoint', () => {
         );
         expect(response.writeHead).toHaveBeenLastCalledWith(400,
           { 'content-type': 'text/plain', 'Access-Control-Allow-Origin': '*' });
+      });
+
+      it('should fallback to SPARQL JSON for bindings if media type is null', async() => {
+        const engine = await newEngineDynamic();
+        engine.query = () => ({ type: 'bindings' });
+
+        await instance.writeQueryResult(engine,
+          new PassThrough(),
+          new PassThrough(),
+          request,
+          response,
+          query,
+          null,
+          false);
+
+        await expect(endCalledPromise).resolves.toBeFalsy();
+        expect(response.writeHead).toHaveBeenCalledTimes(1);
+        expect(response.writeHead).toHaveBeenLastCalledWith(200,
+          { 'content-type': 'application/sparql-results+json', 'Access-Control-Allow-Origin': '*' });
+        expect(response.toString()).toBe('test_query_result');
+      });
+
+      it('should fallback to SPARQL JSON for booleans if media type is null', async() => {
+        const engine = await newEngineDynamic();
+        engine.query = () => ({ type: 'boolean' });
+
+        await instance.writeQueryResult(engine,
+          new PassThrough(),
+          new PassThrough(),
+          request,
+          response,
+          query,
+          null,
+          false);
+
+        await expect(endCalledPromise).resolves.toBeFalsy();
+        expect(response.writeHead).toHaveBeenCalledTimes(1);
+        expect(response.writeHead).toHaveBeenLastCalledWith(200,
+          { 'content-type': 'application/sparql-results+json', 'Access-Control-Allow-Origin': '*' });
+        expect(response.toString()).toBe('test_query_result');
+      });
+
+      it('should fallback to TriG for quads if media type is null', async() => {
+        const engine = await newEngineDynamic();
+        engine.query = () => ({ type: 'quads' });
+
+        await instance.writeQueryResult(engine,
+          new PassThrough(),
+          new PassThrough(),
+          request,
+          response,
+          query,
+          null,
+          false);
+
+        await expect(endCalledPromise).resolves.toBeFalsy();
+        expect(response.writeHead).toHaveBeenCalledTimes(1);
+        expect(response.writeHead).toHaveBeenLastCalledWith(200,
+          { 'content-type': 'application/trig', 'Access-Control-Allow-Origin': '*' });
+        expect(response.toString()).toBe('test_query_result');
       });
     });
 
