@@ -1,6 +1,14 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v1.18.1"></a>
+## [v1.18.1](https://github.com/comunica/comunica/compare/v1.18.0...v1.18.1) - 2020-12-01
+
+### Fixed
+* [Fix HTTP service not handling conneg correctly with wildcards](https://github.com/comunica/comunica/commit/f4d672086cc9f1bd620733480c87f3c8e252d6ee)
+* [Remove unsafe usages of process](https://github.com/comunica/comunica/commit/bf5e6a2a0807188bd0bab224da1746b9f48c5d33)
+* [Fix minor (non-breaking) issues with configs](https://github.com/comunica/comunica/commit/12013a54fc0c46a84bcd1687990d37a235ce46cf)
+
 <a name="v1.18.0"></a>
 ## [v1.18.0](https://github.com/comunica/comunica/compare/v1.17.0...v1.18.0) - 2020-11-02
 
