@@ -62,25 +62,25 @@ describe('ActorHttpMemento', () => {
           case 'http://example.com/tg/http%3A%2F%2Fexample.com%2For':
 
             if (requestHeaders.has('accept-datetime') &&
-          new Date(<string> requestHeaders.get('accept-datetime')) > new Date(2018, 6)) {
+          new Date(requestHeaders.get('accept-datetime')!) > new Date(2_018, 6)) {
               bodyText = 'memento1';
-              headers.set('memento-datetime', new Date(2018, 7).toUTCString());
+              headers.set('memento-datetime', new Date(2_018, 7).toUTCString());
               headers.set('content-location', 'http://example.com/m1/http%3A%2F%2Fexample.com%2For');
             } else {
               bodyText = 'memento2';
-              headers.set('memento-datetime', new Date(2018, 1).toUTCString());
+              headers.set('memento-datetime', new Date(2_018, 1).toUTCString());
               headers.set('content-location', 'http://example.com/m2/http%3A%2F%2Fexample.com%2For');
             }
             break;
 
           case 'http://example.com/m1/http%3A%2F%2Fexample.com%2For':
             bodyText = 'memento1';
-            headers.set('memento-datetime', new Date(2018, 7).toUTCString());
+            headers.set('memento-datetime', new Date(2_018, 7).toUTCString());
             break;
 
           case 'http://example.com/m2/http%3A%2F%2Fexample.com%2For':
             bodyText = 'memento2';
-            headers.set('memento-datetime', new Date(2018, 1).toUTCString());
+            headers.set('memento-datetime', new Date(2_018, 1).toUTCString());
             break;
 
           default:
@@ -177,7 +177,7 @@ describe('ActorHttpMemento', () => {
 
     it('should run with old memento', async() => {
       const action: IActionHttp = {
-        context: ActionContext({ [KEY_CONTEXT_DATETIME]: new Date(2018, 1) }),
+        context: ActionContext({ [KEY_CONTEXT_DATETIME]: new Date(2_018, 1) }),
         input: new Request('http://example.com/or'),
       };
 
@@ -190,7 +190,7 @@ describe('ActorHttpMemento', () => {
 
     it('should not follow other link header', async() => {
       const action: IActionHttp = {
-        context: ActionContext({ [KEY_CONTEXT_DATETIME]: new Date(2018, 1) }),
+        context: ActionContext({ [KEY_CONTEXT_DATETIME]: new Date(2_018, 1) }),
         input: new Request('http://example.com/or2'),
       };
 

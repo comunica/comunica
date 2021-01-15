@@ -93,7 +93,7 @@ xmlns="http://www.w3.org/2000/svg" version="1.2" baseProfile="tiny">
 </svg>
       `);
         inputError = new Readable();
-        inputError._read = () => inputError.emit('error', new Error());
+        inputError._read = () => inputError.emit('error', new Error('ParseXmlRdfa'));
       });
 
       it('should run on application/xml', () => {

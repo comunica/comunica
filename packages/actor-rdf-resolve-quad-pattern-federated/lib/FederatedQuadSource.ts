@@ -114,19 +114,17 @@ export class FederatedQuadSource implements IQuadSource {
     if (term.termType === 'BlankNode' && 'skolemized' in term) {
       term = (<BlankNodeScoped> term).skolemized;
     }
-    if (term.termType === 'NamedNode') {
-      if (term.value.startsWith(FederatedQuadSource.SKOLEM_PREFIX)) {
-        const colonSeparator = term.value.indexOf(':', FederatedQuadSource.SKOLEM_PREFIX.length);
-        const termSourceId = term.value.slice(FederatedQuadSource.SKOLEM_PREFIX.length, colonSeparator);
-        // We had a skolemized term
-        if (termSourceId === sourceId) {
-          // It came from the correct source
-          const termLabel = term.value.slice(colonSeparator + 1, term.value.length);
-          return DF.blankNode(termLabel);
-        }
-        // It came from a different source
-        return null;
+    if (term.termType === 'NamedNode' && term.value.startsWith(FederatedQuadSource.SKOLEM_PREFIX)) {
+      const colonSeparator = term.value.indexOf(':', FederatedQuadSource.SKOLEM_PREFIX.length);
+      const termSourceId = term.value.slice(FederatedQuadSource.SKOLEM_PREFIX.length, colonSeparator);
+      // We had a skolemized term
+      if (termSourceId === sourceId) {
+        // It came from the correct source
+        const termLabel = term.value.slice(colonSeparator + 1, term.value.length);
+        return DF.blankNode(termLabel);
       }
+      // It came from a different source
+      return null;
     }
     return term;
   }
@@ -180,11 +178,8 @@ export class FederatedQuadSource implements IQuadSource {
     // Anonymous function to handle totalItems from metadata
     const checkEmitMetadata = (currentTotalItems: number, source: IDataSource,
       pattern: RDF.BaseQuad | undefined, lastMetadata?: Record<string, any>): void => {
-      if (this.skipEmptyPatterns && !currentTotalItems) {
-        // Because another call may have added more information in the meantime
-        if (pattern && !this.isSourceEmpty(source, pattern)) {
-          (<RDF.BaseQuad[]> this.emptyPatterns.get(source)).push(pattern);
-        }
+      if (this.skipEmptyPatterns && !currentTotalItems && pattern && !this.isSourceEmpty(source, pattern)) {
+        this.emptyPatterns.get(source)!.push(pattern);
       }
       if (!remainingSources) {
         if (lastMetadata && this.sources.length === 1) {
@@ -230,9 +225,9 @@ export class FederatedQuadSource implements IQuadSource {
       output.data.getProperty('metadata', (subMetadata: Record<string, any>) => {
         if ((!subMetadata.totalItems && subMetadata.totalItems !== 0) || !Number.isFinite(subMetadata.totalItems)) {
           // We're already at infinite, so ignore any later metadata
-          metadata.totalItems = Infinity;
+          metadata.totalItems = Number.POSITIVE_INFINITY;
           remainingSources = 0;
-          checkEmitMetadata(Infinity, source, pattern, subMetadata);
+          checkEmitMetadata(Number.POSITIVE_INFINITY, source, pattern, subMetadata);
         } else {
           metadata.totalItems += subMetadata.totalItems;
           remainingSources--;

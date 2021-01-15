@@ -53,7 +53,7 @@ describe('ActorSparqlSerializeSimple', () => {
         quad('http://example.org/a', 'http://example.org/d', 'http://example.org/e'),
       ]);
       streamError = new Readable();
-      streamError._read = () => streamError.emit('error', new Error());
+      streamError._read = () => streamError.emit('error', new Error('SparqlSimple'));
     });
 
     describe('for getting media types', () => {
@@ -165,7 +165,7 @@ graph:
 
       it('should emit an error when the boolean is rejected', async() => {
         await expect(stringifyStream((<any> (await actor.run(
-          { handle: <any> { type: 'boolean', booleanResult: Promise.reject(new Error()) },
+          { handle: <any> { type: 'boolean', booleanResult: Promise.reject(new Error('SparqlSimple')) },
             handleMediaType: 'application/json' },
         ))).handle.data)).rejects.toBeTruthy();
       });

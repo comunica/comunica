@@ -21,7 +21,7 @@ jest.mock('../engine-default.js', () => {
 
 import { evaluateQuery, newEngine, newEngineDynamic, bindingsStreamToGraphQl } from '..';
 
-jest.setTimeout(30000);
+jest.setTimeout(30_000);
 
 describe('index', () => {
   it('bindingsStreamToGraphQl to be a function', () => {

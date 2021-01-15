@@ -25,7 +25,7 @@ export class ActorHttpProxy extends ActorHttp {
     if (!await proxyHandler.getProxy(action)) {
       throw new Error(`Actor ${this.name} could not determine a proxy for the given request.`);
     }
-    return { time: Infinity };
+    return { time: Number.POSITIVE_INFINITY };
   }
 
   public async run(action: IActionHttp): Promise<IActorHttpOutput> {

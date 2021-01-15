@@ -44,7 +44,7 @@ export class MediatedQuadSource implements IQuadSource {
     );
     if (!this.sourcesState) {
       it.setSourcesState();
-      this.sourcesState = <ISourcesState> it.sourcesState;
+      this.sourcesState = it.sourcesState!;
     } else {
       it.setSourcesState(this.sourcesState);
     }

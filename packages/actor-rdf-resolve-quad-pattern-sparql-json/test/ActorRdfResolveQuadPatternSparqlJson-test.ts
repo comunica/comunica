@@ -211,7 +211,7 @@ describe('ActorRdfResolveQuadPatternSparqlJson', () => {
         output.data.on('error',
           e => expect(e).toEqual(new Error('Invalid SPARQL endpoint (http://ex) response: Error!')));
         expect(await new Promise(resolve => output.data.getProperty('metadata', resolve)))
-          .toEqual({ totalItems: Infinity });
+          .toEqual({ totalItems: Number.POSITIVE_INFINITY });
       });
     });
 
@@ -224,7 +224,7 @@ describe('ActorRdfResolveQuadPatternSparqlJson', () => {
         output.data.on('error',
           e => expect(e).toEqual(new Error('Error queryBindings')));
         expect(await new Promise(resolve => output.data.getProperty('metadata', resolve)))
-          .toEqual({ totalItems: Infinity });
+          .toEqual({ totalItems: Number.POSITIVE_INFINITY });
       });
     });
 
@@ -268,7 +268,7 @@ describe('ActorRdfResolveQuadPatternSparqlJson', () => {
       const thisActor = new ActorRdfResolveQuadPatternSparqlJson({ name: 'actor', bus, mediatorHttp: thisMediator });
       return thisActor.run({ pattern, context }).then(async output => {
         expect(await new Promise(resolve => output.data.getProperty('metadata', resolve)))
-          .toEqual({ totalItems: Infinity });
+          .toEqual({ totalItems: Number.POSITIVE_INFINITY });
       });
     });
 
@@ -312,7 +312,7 @@ describe('ActorRdfResolveQuadPatternSparqlJson', () => {
       const thisActor = new ActorRdfResolveQuadPatternSparqlJson({ name: 'actor', bus, mediatorHttp: thisMediator });
       return thisActor.run({ pattern, context }).then(async output => {
         expect(await new Promise(resolve => output.data.getProperty('metadata', resolve)))
-          .toEqual({ totalItems: Infinity });
+          .toEqual({ totalItems: Number.POSITIVE_INFINITY });
       });
     });
 
@@ -430,7 +430,7 @@ describe('ActorRdfResolveQuadPatternSparqlJson', () => {
         output.data.on('error',
           e => expect(e).toEqual(new Error('Some stream error')));
         expect(await new Promise(resolve => output.data.getProperty('metadata', resolve)))
-          .toEqual({ totalItems: Infinity });
+          .toEqual({ totalItems: Number.POSITIVE_INFINITY });
       });
     });
 

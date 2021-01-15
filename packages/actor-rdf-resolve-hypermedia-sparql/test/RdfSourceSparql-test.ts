@@ -241,7 +241,7 @@ describe('RdfSourceSparql', () => {
       source = new RdfSourceSparql('http://example.org/sparql', context, thisMediator);
       const stream = source.match(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o'), DF.defaultGraph());
       expect(await new Promise(resolve => stream.getProperty('metadata', resolve)))
-        .toEqual({ totalItems: Infinity });
+        .toEqual({ totalItems: Number.POSITIVE_INFINITY });
     });
 
     it('should emit metadata with infinity count for missing count results', async() => {
@@ -284,7 +284,7 @@ describe('RdfSourceSparql', () => {
       source = new RdfSourceSparql('http://example.org/sparql', context, thisMediator);
       const stream = source.match(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o'), DF.defaultGraph());
       expect(await new Promise(resolve => stream.getProperty('metadata', resolve)))
-        .toEqual({ totalItems: Infinity });
+        .toEqual({ totalItems: Number.POSITIVE_INFINITY });
     });
 
     it('should allow multiple _read calls on query bindings', () => {

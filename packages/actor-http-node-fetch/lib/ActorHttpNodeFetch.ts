@@ -25,7 +25,7 @@ export class ActorHttpNodeFetch extends ActorHttp {
   }
 
   public async test(action: IActionHttp): Promise<IMediatorTypeTime> {
-    return { time: Infinity };
+    return { time: Number.POSITIVE_INFINITY };
   }
 
   public run(action: IActionHttp): Promise<IActorHttpOutput> {

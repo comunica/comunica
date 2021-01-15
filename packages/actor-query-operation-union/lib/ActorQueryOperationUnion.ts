@@ -40,7 +40,7 @@ export class ActorQueryOperationUnion extends ActorQueryOperationTypedMediated<A
       if (metadata.totalItems && Number.isFinite(metadata.totalItems)) {
         totalItems += metadata.totalItems;
       } else {
-        totalItems = Infinity;
+        totalItems = Number.POSITIVE_INFINITY;
         break;
       }
     }

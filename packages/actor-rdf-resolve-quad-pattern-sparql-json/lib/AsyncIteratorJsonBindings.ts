@@ -19,7 +19,7 @@ export class AsyncIteratorJsonBindings extends BufferedIterator<Bindings> {
 
   public constructor(endpoint: string, query: string, context: ActionContext | undefined, mediatorHttp: Mediator<
   Actor<IActionHttp, IActorTest, IActorHttpOutput>, IActionHttp, IActorTest, IActorHttpOutput>) {
-    super({ autoStart: false, maxBufferSize: Infinity });
+    super({ autoStart: false, maxBufferSize: Number.POSITIVE_INFINITY });
     this.endpoint = endpoint;
     this.query = query;
     this.context = context;

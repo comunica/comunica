@@ -55,7 +55,7 @@ describe('ActorSparqlSerializeJson', () => {
       ], { autoStart: false });
       bindingsStreamEmpty = new ArrayIterator([], { autoStart: false });
       streamError = new Readable();
-      streamError._read = () => streamError.emit('error', new Error());
+      streamError._read = () => streamError.emit('error', new Error('SparqlJson'));
     });
 
     describe('for getting media types', () => {
@@ -179,7 +179,7 @@ describe('ActorSparqlSerializeJson', () => {
 
       it('should emit an error when the boolean is rejected', async() => {
         await expect(stringifyStream((<any> (await actor.run(
-          { handle: <any> { type: 'boolean', booleanResult: Promise.reject(new Error()) },
+          { handle: <any> { type: 'boolean', booleanResult: Promise.reject(new Error('SparqlJson')) },
             handleMediaType: 'application/json' },
         ))).handle.data)).rejects.toBeTruthy();
       });

@@ -83,7 +83,7 @@ describe('ActorRdfParseN3', () => {
           <d> <e> <f> <g>.
       `);
         inputError = new Readable();
-        inputError._read = () => inputError.emit('error', new Error());
+        inputError._read = () => inputError.emit('error', new Error('ParseN3'));
       });
 
       it('should test on TriG', () => {

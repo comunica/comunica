@@ -44,19 +44,9 @@ if (!fs.existsSync(packageName)) {
   packageJson = require(`${process.cwd()}/${packageName}/package.json`);
 }
 
-let configPath: string;
-if (args.c) {
-  configPath = args.c;
-} else {
-  configPath = '.';
-}
+const configPath: string = args.c ? args.c : '.';
 
-let mainModulePath: string;
-if (args.p) {
-  mainModulePath = Path.resolve(process.cwd(), args.p);
-} else {
-  mainModulePath = `${__dirname}/../`;
-}
+const mainModulePath: string = args.p ? Path.resolve(process.cwd(), args.p) : `${__dirname}/../`;
 
 let exportVariableName: string | undefined;
 if (args.e) {

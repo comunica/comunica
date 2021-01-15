@@ -41,7 +41,7 @@ describe('FederatedQuadSource', () => {
             squad('s1', 'p1', 'o1'),
             squad('s1', 'p1', 'o2'),
           ], { autoStart: false });
-          data.setProperty('metadata', { totalItems: Infinity });
+          data.setProperty('metadata', { totalItems: Number.POSITIVE_INFINITY });
           return Promise.resolve({ data });
         }
         if (type === 'blankNodeSource') {
@@ -49,7 +49,7 @@ describe('FederatedQuadSource', () => {
             squad('_:s1', '_:p1', '_:o1'),
             squad('_:s2', '_:p2', '_:o2'),
           ], { autoStart: false });
-          data.setProperty('metadata', { totalItems: Infinity });
+          data.setProperty('metadata', { totalItems: Number.POSITIVE_INFINITY });
           return Promise.resolve({ data });
         }
         if (type === 'graphs') {
@@ -867,7 +867,7 @@ describe('FederatedQuadSource', () => {
     it('should emit metadata with Infinity totalItems', async() => {
       const stream = source.match(v, v, v, v);
       await expect(new Promise(resolve => stream.getProperty('metadata', resolve)))
-        .resolves.toEqual({ totalItems: Infinity });
+        .resolves.toEqual({ totalItems: Number.POSITIVE_INFINITY });
     });
   });
 
@@ -906,7 +906,7 @@ describe('FederatedQuadSource', () => {
     it('should emit metadata with Infinity totalItems', async() => {
       const stream = source.match(v, v, v, v);
       await expect(new Promise(resolve => stream.getProperty('metadata', resolve)))
-        .resolves.toEqual({ totalItems: Infinity });
+        .resolves.toEqual({ totalItems: Number.POSITIVE_INFINITY });
     });
   });
 
@@ -945,7 +945,7 @@ describe('FederatedQuadSource', () => {
     it('should emit metadata with Infinity totalItems', async() => {
       const stream = source.match(v, v, v, v);
       await expect(new Promise(resolve => stream.getProperty('metadata', resolve)))
-        .resolves.toEqual({ totalItems: Infinity });
+        .resolves.toEqual({ totalItems: Number.POSITIVE_INFINITY });
     });
   });
 
@@ -984,7 +984,7 @@ describe('FederatedQuadSource', () => {
     it('should emit metadata with Infinity totalItems', async() => {
       const stream = source.match(v, v, v, v);
       await expect(new Promise(resolve => stream.getProperty('metadata', resolve)))
-        .resolves.toEqual({ totalItems: Infinity });
+        .resolves.toEqual({ totalItems: Number.POSITIVE_INFINITY });
     });
   });
 

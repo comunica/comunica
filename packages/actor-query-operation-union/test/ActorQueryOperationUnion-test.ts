@@ -133,18 +133,18 @@ describe('ActorQueryOperationUnion', () => {
     });
 
     it('should return infinite items for a single input with Infinity', () => {
-      return expect(ActorQueryOperationUnion.unionMetadata([{ totalItems: Infinity }]))
-        .toEqual({ totalItems: Infinity });
+      return expect(ActorQueryOperationUnion.unionMetadata([{ totalItems: Number.POSITIVE_INFINITY }]))
+        .toEqual({ totalItems: Number.POSITIVE_INFINITY });
     });
 
     it('should return infinite items for a single empty input', () => {
       return expect(ActorQueryOperationUnion.unionMetadata([{}]))
-        .toEqual({ totalItems: Infinity });
+        .toEqual({ totalItems: Number.POSITIVE_INFINITY });
     });
 
     it('should return infinite items for a single input without items', () => {
       return expect(ActorQueryOperationUnion.unionMetadata([{ something: 'abc' }]))
-        .toEqual({ totalItems: Infinity });
+        .toEqual({ totalItems: Number.POSITIVE_INFINITY });
     });
 
     it('should return 3 items for inputs with 1 and 2', () => {
@@ -153,33 +153,36 @@ describe('ActorQueryOperationUnion', () => {
     });
 
     it('should return infinite items for inputs with Infinity and 2', () => {
-      return expect(ActorQueryOperationUnion.unionMetadata([{ totalItems: Infinity }, { totalItems: 2 }]))
-        .toEqual({ totalItems: Infinity });
+      return expect(ActorQueryOperationUnion
+        .unionMetadata([{ totalItems: Number.POSITIVE_INFINITY }, { totalItems: 2 }]))
+        .toEqual({ totalItems: Number.POSITIVE_INFINITY });
     });
 
     it('should return infinite items for inputs with 1 and Infinity', () => {
-      return expect(ActorQueryOperationUnion.unionMetadata([{ totalItems: 1 }, { totalItems: Infinity }]))
-        .toEqual({ totalItems: Infinity });
+      return expect(ActorQueryOperationUnion
+        .unionMetadata([{ totalItems: 1 }, { totalItems: Number.POSITIVE_INFINITY }]))
+        .toEqual({ totalItems: Number.POSITIVE_INFINITY });
     });
 
     it('should return infinite items for inputs with Infinity and Infinity', () => {
-      return expect(ActorQueryOperationUnion.unionMetadata([{ totalItems: Infinity }, { totalItems: Infinity }]))
-        .toEqual({ totalItems: Infinity });
+      return expect(ActorQueryOperationUnion
+        .unionMetadata([{ totalItems: Number.POSITIVE_INFINITY }, { totalItems: Number.POSITIVE_INFINITY }]))
+        .toEqual({ totalItems: Number.POSITIVE_INFINITY });
     });
 
     it('should return infinite items for inputs with empty and 2', () => {
       return expect(ActorQueryOperationUnion.unionMetadata([{}, { totalItems: 2 }]))
-        .toEqual({ totalItems: Infinity });
+        .toEqual({ totalItems: Number.POSITIVE_INFINITY });
     });
 
     it('should return infinite items for inputs with 1 and empty', () => {
       return expect(ActorQueryOperationUnion.unionMetadata([{ totalItems: 1 }, {}]))
-        .toEqual({ totalItems: Infinity });
+        .toEqual({ totalItems: Number.POSITIVE_INFINITY });
     });
 
     it('should return infinite items for inputs with empty and empty', () => {
       return expect(ActorQueryOperationUnion.unionMetadata([{}, {}]))
-        .toEqual({ totalItems: Infinity });
+        .toEqual({ totalItems: Number.POSITIVE_INFINITY });
     });
   });
 

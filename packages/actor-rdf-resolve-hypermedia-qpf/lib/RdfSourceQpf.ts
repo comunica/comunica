@@ -188,7 +188,7 @@ export class RdfSourceQpf implements IQuadSource {
     }, { autoStart: false });
 
     this.cacheQuads(quads, subject, predicate, object, graph);
-    return <AsyncIterator<RDF.Quad>> this.getCachedQuads(subject, predicate, object, graph);
+    return this.getCachedQuads(subject, predicate, object, graph)!;
   }
 
   protected reverseMapQuadsToDefaultGraph(quads: AsyncIterator<RDF.Quad>): AsyncIterator<RDF.Quad> {

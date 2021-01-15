@@ -86,13 +86,13 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
         if (!variables) {
           variables = Util.inScopeVariables(action.operation);
         }
-        return this.executeQuery(endpoint, <string> query, false, variables);
+        return this.executeQuery(endpoint, query!, false, variables);
       case 'CONSTRUCT':
-        return this.executeQuery(endpoint, <string> query, true);
+        return this.executeQuery(endpoint, query!, true);
       case 'ASK':
         return <IActorQueryOperationOutputBoolean>{
           type: 'boolean',
-          booleanResult: this.endpointFetcher.fetchAsk(endpoint, <string> query),
+          booleanResult: this.endpointFetcher.fetchAsk(endpoint, query!),
         };
     }
   }
@@ -110,7 +110,7 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
       this.endpointFetcher.fetchTriples(endpoint, query) :
       this.endpointFetcher.fetchBindings(endpoint, query);
     let totalItems = 0;
-    const stream = wrap<any>(inputStream, { autoStart: false, maxBufferSize: Infinity })
+    const stream = wrap<any>(inputStream, { autoStart: false, maxBufferSize: Number.POSITIVE_INFINITY })
       .map(rawData => {
         totalItems++;
         return quads ? rawData : Bindings(rawData);
@@ -142,7 +142,7 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
       type: 'bindings',
       bindingsStream: stream,
       metadata,
-      variables: (<RDF.Variable[]> variables).map(x => termToString(x)),
+      variables: variables!.map(x => termToString(x)),
       canContainUndefs: true,
     };
   }

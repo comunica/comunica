@@ -166,7 +166,7 @@ describe('ActorRdfDereferenceHttpParse', () => {
     });
 
     it('should only allow 3 digits after decimal point', () => {
-      return expect(actor.mediaTypesToAcceptString({ a: 1, b: 0.811111111, c: 0.2111111111 }, 100))
+      return expect(actor.mediaTypesToAcceptString({ a: 1, b: 0.811_111_111, c: 0.211_111_111_1 }, 100))
         .toEqual('a,b;q=0.811,c;q=0.211');
     });
 

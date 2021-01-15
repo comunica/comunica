@@ -50,15 +50,17 @@ export class ActorQueryOperationSlice extends ActorQueryOperationTypedMediated<A
 
   // Slice the stream based on the pattern values
   private sliceStream(stream: AsyncIterator<any>, pattern: Algebra.Slice): AsyncIterator<any> {
+    // eslint-disable-next-line unicorn/explicit-length-check
     const hasLength: boolean = Boolean(pattern.length) || pattern.length === 0;
     const { start } = pattern;
-    const end = hasLength ? pattern.start + (<number> pattern.length) - 1 : Infinity;
+    const end = hasLength ? pattern.start + pattern.length! - 1 : Number.POSITIVE_INFINITY;
     return stream.transform({ offset: start, limit: Math.max(end - start + 1, 0), autoStart: false });
   }
 
   // If we find metadata, apply slicing on the total number of items
   private sliceMetadata(output: IActorQueryOperationOutputStream, pattern: Algebra.Slice):
   (() => Promise<Record<string, any>>) | undefined {
+    // eslint-disable-next-line unicorn/explicit-length-check
     const hasLength: boolean = Boolean(pattern.length) || pattern.length === 0;
     return !output.metadata ?
       undefined :
@@ -68,7 +70,7 @@ export class ActorQueryOperationSlice extends ActorQueryOperationTypedMediated<A
           if (Number.isFinite(totalItems)) {
             totalItems = Math.max(0, totalItems - pattern.start);
             if (hasLength) {
-              totalItems = Math.min(totalItems, <number>pattern.length);
+              totalItems = Math.min(totalItems, pattern.length!);
             }
           }
           return { ...subMetadata, totalItems };

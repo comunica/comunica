@@ -37,7 +37,7 @@ describe('MediatorCombinePipeline', () => {
     });
 
     it('should mediate', () => {
-      return expect(mediator.mediate({ field: 1 })).resolves.toEqual({ field: 2101 });
+      return expect(mediator.mediate({ field: 1 })).resolves.toEqual({ field: 2_101 });
     });
   });
 

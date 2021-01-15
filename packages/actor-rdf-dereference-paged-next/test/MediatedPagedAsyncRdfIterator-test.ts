@@ -84,7 +84,7 @@ describe('MediatedPagedAsyncRdfIterator', () => {
     });
 
     it('handles incorrect first page metadata', done => {
-      const thisFirstPageMetadata = () => Promise.reject(new Error());
+      const thisFirstPageMetadata = () => Promise.reject(new Error('MediatedPagedAsyncRdfIterator-test'));
       const thisActor = new (<any> Dummy)('URL',
         new SingletonIterator('DATA'),
         thisFirstPageMetadata,

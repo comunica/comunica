@@ -197,7 +197,7 @@ export class ActorInitSparql extends ActorInitSparqlBrowser {
       }
       if (!query) {
         // If we get here, this.queryString will always be defined
-        query = <string> this.queryString;
+        query = this.queryString!;
       }
     }
 

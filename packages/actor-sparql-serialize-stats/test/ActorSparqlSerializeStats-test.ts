@@ -62,7 +62,7 @@ describe('ActorSparqlSerializeStats', () => {
         quad('http://example.org/a', 'http://example.org/d', 'http://example.org/e'),
       ]);
       streamError = new Readable();
-      streamError._read = () => streamError.emit('error', new Error());
+      streamError._read = () => streamError.emit('error', new Error('SparqlSerializeStats'));
     });
     describe('for getting media types', () => {
       it('should test', () => {

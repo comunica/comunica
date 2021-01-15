@@ -96,17 +96,17 @@ describe('ActorRdfJoin', () => {
     });
 
     it('should return infinity if both metadata objects are missing', () => {
-      return expect(instance.test(action)).resolves.toHaveProperty('iterations', Infinity);
+      return expect(instance.test(action)).resolves.toHaveProperty('iterations', Number.POSITIVE_INFINITY);
     });
 
     it('should return infinity if the left metadata object is missing', async() => {
       action.entries[1].metadata = () => Promise.resolve({ totalItems: 5 });
-      await expect(instance.test(action)).resolves.toHaveProperty('iterations', Infinity);
+      await expect(instance.test(action)).resolves.toHaveProperty('iterations', Number.POSITIVE_INFINITY);
     });
 
     it('should return infinity if the right metadata object is missing', () => {
       action.entries[0].metadata = () => Promise.resolve({ totalItems: 5 });
-      return expect(instance.test(action)).resolves.toHaveProperty('iterations', Infinity);
+      return expect(instance.test(action)).resolves.toHaveProperty('iterations', Number.POSITIVE_INFINITY);
     });
 
     it('should return a value if both metadata objects are present', () => {
@@ -141,20 +141,20 @@ describe('ActorRdfJoin', () => {
     it('should handle undefs in left stream', () => {
       action.entries[0].canContainUndefs = true;
       return expect(instance.test(action)).resolves
-        .toEqual({ iterations: Infinity });
+        .toEqual({ iterations: Number.POSITIVE_INFINITY });
     });
 
     it('should handle undefs in right stream', () => {
       action.entries[1].canContainUndefs = true;
       return expect(instance.test(action)).resolves
-        .toEqual({ iterations: Infinity });
+        .toEqual({ iterations: Number.POSITIVE_INFINITY });
     });
 
     it('should handle undefs in left and right stream', () => {
       action.entries[0].canContainUndefs = true;
       action.entries[1].canContainUndefs = true;
       return expect(instance.test(action)).resolves
-        .toEqual({ iterations: Infinity });
+        .toEqual({ iterations: Number.POSITIVE_INFINITY });
     });
   });
 

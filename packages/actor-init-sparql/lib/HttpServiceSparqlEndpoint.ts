@@ -54,8 +54,8 @@ Options:
   public constructor(args?: IHttpServiceSparqlEndpointArgs) {
     args = args ?? {};
     this.context = args.context || {};
-    this.timeout = args.timeout ?? 60000;
-    this.port = args.port ?? 3000;
+    this.timeout = args.timeout ?? 60_000;
+    this.port = args.port ?? 3_000;
     this.invalidateCacheBeforeQuery = Boolean(args.invalidateCacheBeforeQuery);
 
     this.engine = newEngineDynamic(args);
@@ -110,8 +110,8 @@ Options:
     }
 
     const invalidateCacheBeforeQuery: boolean = args.i;
-    const port = Number.parseInt(args.p, 10) || 3000;
-    const timeout = (Number.parseInt(args.t, 10) || 60) * 1000;
+    const port = Number.parseInt(args.p, 10) || 3_000;
+    const timeout = (Number.parseInt(args.t, 10) || 60) * 1_000;
 
     const configResourceUrl = env.COMUNICA_CONFIG ? env.COMUNICA_CONFIG : defaultConfigPath;
 

@@ -68,7 +68,7 @@ export class ActorSparqlSerializeStats extends ActorSparqlSerializeFixedMediaTyp
 
   public delay(startTime: [number, number]): number {
     const time: [number, number] = process.hrtime(startTime);
-    return time[0] * 1000 + (time[1] / 1000000);
+    return time[0] * 1_000 + (time[1] / 1_000_000);
   }
 }
 

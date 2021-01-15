@@ -28,15 +28,13 @@ export class ActorQueryOperationPathZeroOrOne extends ActorAbstractPath {
     const extra: Bindings[] = [];
 
     // Both subject and object non-variables
-    if (!sVar && !oVar) {
-      if (path.subject.equals(path.object)) {
-        return {
-          type: 'bindings',
-          bindingsStream: new SingletonIterator(Bindings({})),
-          variables: [],
-          canContainUndefs: false,
-        };
-      }
+    if (!sVar && !oVar && path.subject.equals(path.object)) {
+      return {
+        type: 'bindings',
+        bindingsStream: new SingletonIterator(Bindings({})),
+        variables: [],
+        canContainUndefs: false,
+      };
     }
 
     if (sVar && oVar) {

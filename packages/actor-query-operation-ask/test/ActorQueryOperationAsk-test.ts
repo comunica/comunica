@@ -52,7 +52,7 @@ describe('ActorQueryOperationAsk', () => {
     };
     mediatorQueryOperationInf = {
       mediate: (arg: any) => Promise.resolve({
-        bindingsStream: range(0, Infinity),
+        bindingsStream: range(0, Number.POSITIVE_INFINITY),
         metadata: () => Promise.resolve({ totalItems: 0 }),
         operated: arg,
         type: 'bindings',

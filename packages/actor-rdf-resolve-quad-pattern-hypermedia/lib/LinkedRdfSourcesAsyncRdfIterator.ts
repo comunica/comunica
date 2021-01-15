@@ -85,12 +85,12 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
    * @param handledDatasets A hash of dataset identifiers that have already been handled.
    */
   protected getSourceCached(link: ILink, handledDatasets: Record<string, boolean>): Promise<ISourceState> {
-    let source = (<ISourcesState> this.sourcesState).sources.get(link.url);
+    let source = this.sourcesState!.sources.get(link.url);
     if (source) {
       return source;
     }
     source = this.getSource(link, handledDatasets);
-    (<ISourcesState> this.sourcesState).sources.set(link.url, source);
+    this.sourcesState!.sources.set(link.url, source);
     return source;
   }
 
@@ -140,7 +140,7 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
    */
   protected setCurrentIterator(startSource: ISourceState, emitMetadata: boolean): void {
     // Delegate the quad pattern query to the given source
-    this.currentIterator = (<IQuadSource> startSource.source)
+    this.currentIterator = startSource.source!
       .match(this.subject, this.predicate, this.object, this.graph);
     let receivedMetadata = false;
 

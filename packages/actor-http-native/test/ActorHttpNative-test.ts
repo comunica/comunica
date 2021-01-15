@@ -52,7 +52,8 @@ describe('ActorHttpNative', () => {
     });
 
     it('should test', () => {
-      return expect(actor.test({ input: new Request('https://www.google.com/') })).resolves.toEqual({ time: Infinity });
+      return expect(actor.test({ input: new Request('https://www.google.com/') }))
+        .resolves.toEqual({ time: Number.POSITIVE_INFINITY });
     });
 
     it('should test if headers is iterable', async() => {

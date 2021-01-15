@@ -53,12 +53,12 @@ describe('ActorRdfMetadataExtractHydraCount', () => {
 
     it('should run on a stream where count is given', () => {
       return expect(actor.run({ url: '', metadata: input })).resolves
-        .toEqual({ metadata: { totalItems: 12345 }});
+        .toEqual({ metadata: { totalItems: 12_345 }});
     });
 
     it('should run on a stream where count is not given', () => {
       return expect(actor.run({ url: '', metadata: inputNone })).resolves
-        .toEqual({ metadata: { totalItems: Infinity }});
+        .toEqual({ metadata: { totalItems: Number.POSITIVE_INFINITY }});
     });
   });
 });

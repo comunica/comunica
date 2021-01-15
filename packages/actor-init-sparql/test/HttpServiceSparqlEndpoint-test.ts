@@ -44,12 +44,12 @@ describe('HttpServiceSparqlEndpoint', () => {
     });
 
     it('should set fields with values from args if present', () => {
-      const args = { context: { test: 'test' }, timeout: 4321, port: 24321, invalidateCacheBeforeQuery: true };
+      const args = { context: { test: 'test' }, timeout: 4_321, port: 24_321, invalidateCacheBeforeQuery: true };
       const instance = new HttpServiceSparqlEndpoint(args);
 
       expect(instance.context).toEqual({ test: 'test' });
-      expect(instance.timeout).toBe(4321);
-      expect(instance.port).toBe(24321);
+      expect(instance.timeout).toBe(4_321);
+      expect(instance.port).toBe(24_321);
       expect(instance.invalidateCacheBeforeQuery).toBeTruthy();
     });
 
@@ -58,8 +58,8 @@ describe('HttpServiceSparqlEndpoint', () => {
       const instance = new HttpServiceSparqlEndpoint(args);
 
       expect(instance.context).toEqual({});
-      expect(instance.timeout).toBe(60000);
-      expect(instance.port).toBe(3000);
+      expect(instance.timeout).toBe(60_000);
+      expect(instance.port).toBe(3_000);
       expect(instance.invalidateCacheBeforeQuery).toBeFalsy();
     });
   });
@@ -300,7 +300,7 @@ describe('HttpServiceSparqlEndpoint', () => {
           defaultConfigPath,
           stderr,
           exit))
-        .timeout).toBe(60 * 1000);
+        .timeout).toBe(60 * 1_000);
 
       testCommandlineArguments.push('-t', 5);
       expect((await HttpServiceSparqlEndpoint
@@ -310,7 +310,7 @@ describe('HttpServiceSparqlEndpoint', () => {
           defaultConfigPath,
           stderr,
           exit))
-        .timeout).toBe(5 * 1000);
+        .timeout).toBe(5 * 1_000);
     });
 
     it('should read port from the commandline options or use correct default', async() => {
@@ -321,9 +321,9 @@ describe('HttpServiceSparqlEndpoint', () => {
           defaultConfigPath,
           stderr,
           exit))
-        .port).toBe(3000);
+        .port).toBe(3_000);
 
-      testCommandlineArguments.push('-p', 4321);
+      testCommandlineArguments.push('-p', 4_321);
       expect((await HttpServiceSparqlEndpoint
         .generateConstructorArguments(minimist(testCommandlineArguments),
           moduleRootPath,
@@ -331,7 +331,7 @@ describe('HttpServiceSparqlEndpoint', () => {
           defaultConfigPath,
           stderr,
           exit))
-        .port).toBe(4321);
+        .port).toBe(4_321);
     });
 
     it('should read cache invalidation from the commandline options or use correct default', async() => {
@@ -395,8 +395,8 @@ describe('HttpServiceSparqlEndpoint', () => {
       });
 
       it('should set the server\'s timeout and port number correctly', async() => {
-        const port = 201331;
-        const timeout = 201331;
+        const port = 201_331;
+        const timeout = 201_331;
         instance.port = port;
         instance.timeout = timeout;
         await instance.run(stdout, stderr);
@@ -926,7 +926,7 @@ describe('HttpServiceSparqlEndpoint', () => {
       const endListener = jest.fn();
       beforeEach(() => {
         endListener.mockClear();
-        instance.timeout = 1500;
+        instance.timeout = 1_500;
         response = new ServerResponseMock();
         eventEmitter = stringToStream('queryresult');
         eventEmitter.addListener('test', endListener);
@@ -947,7 +947,7 @@ describe('HttpServiceSparqlEndpoint', () => {
 
       it('should remove event eventlisteners from eventEmitter if timeout occurs', async() => {
         instance.stopResponse(response, eventEmitter);
-        await new Promise(resolve => setTimeout(resolve, 1600)); // Wait for timeout to occur
+        await new Promise(resolve => setTimeout(resolve, 1_600)); // Wait for timeout to occur
 
         expect(eventEmitter.listeners('test').length).toEqual(0);
         expect(response.end).toHaveBeenCalled();

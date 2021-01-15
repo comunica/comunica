@@ -12,7 +12,7 @@ export class SortIterator<T> extends TransformIterator<T, T> {
 
     // The `window` parameter indicates the length of the sliding window to apply sorting
     const window: number = options && options.window;
-    this.windowLength = Number.isFinite(window) && window > 0 ? window : Infinity;
+    this.windowLength = Number.isFinite(window) && window > 0 ? window : Number.POSITIVE_INFINITY;
     this.sort = sort;
     this.sorted = [];
   }
@@ -49,7 +49,7 @@ export class SortIterator<T> extends TransformIterator<T, T> {
     }
     // Push the smallest item in the window
     if (length === this.windowLength) {
-      this._push(<T> this.sorted.pop());
+      this._push(this.sorted.pop()!);
     }
     done();
   }
@@ -58,7 +58,7 @@ export class SortIterator<T> extends TransformIterator<T, T> {
   public _flush(done: () => void): void {
     let { length } = this.sorted;
     while (length--) {
-      this._push(<T> this.sorted.pop());
+      this._push(this.sorted.pop()!);
     }
     done();
   }

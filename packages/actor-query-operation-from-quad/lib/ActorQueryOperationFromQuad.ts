@@ -87,13 +87,7 @@ export class ActorQueryOperationFromQuad extends ActorQueryOperationTypedMediate
     defaultGraphs: RDF.Term[]): Algebra.Operation {
     // If the operation is a BGP or Path, change the graph.
     if ((operation.type === 'bgp' && operation.patterns.length > 0) || operation.type === 'path') {
-      let patternGraph: RDF.Term;
-      if (operation.type === 'bgp') {
-        // We assume that the BGP has at least one pattern and all have the same graph.
-        patternGraph = operation.patterns[0].graph;
-      } else {
-        patternGraph = operation.graph;
-      }
+      const patternGraph: RDF.Term = operation.type === 'bgp' ? operation.patterns[0].graph : operation.graph;
       if (patternGraph.termType === 'DefaultGraph') {
         // SPARQL spec (8.2) describes that when FROM NAMED's are used without a FROM, the default graph must be empty.
         // The FROMs are transformed before this step to a named node, so this will not apply to this case anymore.
@@ -107,15 +101,12 @@ export class ActorQueryOperationFromQuad extends ActorQueryOperationTypedMediate
           bindings[`?${patternGraph.value}`] = graph;
           const values: Algebra.Values = ActorQueryOperationFromQuad.FACTORY
             .createValues([ patternGraph ], [ bindings ]);
-          let pattern: Algebra.Operation;
-          if (operation.type === 'bgp') {
-            pattern = ActorQueryOperationFromQuad.FACTORY
+          const pattern: Algebra.Operation = operation.type === 'bgp' ?
+            ActorQueryOperationFromQuad.FACTORY
               .createBgp(operation.patterns.map((pat: Algebra.Pattern) => ActorQueryOperationFromQuad.FACTORY
-                .createPattern(pat.subject, pat.predicate, pat.object, graph)));
-          } else {
-            pattern = ActorQueryOperationFromQuad.FACTORY
+                .createPattern(pat.subject, pat.predicate, pat.object, graph))) :
+            ActorQueryOperationFromQuad.FACTORY
               .createPath(operation.subject, operation.predicate, operation.object, graph);
-          }
           return ActorQueryOperationFromQuad.FACTORY.createJoin(values, pattern);
         }
         // If the pattern graph is a variable, take the union of the pattern applied to each available named graph
@@ -154,7 +145,7 @@ export class ActorQueryOperationFromQuad extends ActorQueryOperationTypedMediate
       return ActorQueryOperationFromQuad.FACTORY.createJoin(operations[0], operations[1]);
     }
     if (operations.length > 2) {
-      return ActorQueryOperationFromQuad.FACTORY.createJoin(<Algebra.Operation> operations.shift(),
+      return ActorQueryOperationFromQuad.FACTORY.createJoin(operations.shift()!,
         this.joinOperations(operations));
     }
     throw new Error('A join can only be applied on at least one operation');
@@ -173,7 +164,7 @@ export class ActorQueryOperationFromQuad extends ActorQueryOperationTypedMediate
       return ActorQueryOperationFromQuad.FACTORY.createUnion(operations[0], operations[1]);
     }
     if (operations.length > 2) {
-      return ActorQueryOperationFromQuad.FACTORY.createUnion(<Algebra.Operation> operations.shift(),
+      return ActorQueryOperationFromQuad.FACTORY.createUnion(operations.shift()!,
         this.unionOperations(operations));
     }
     throw new Error('A union can only be applied on at least one operation');

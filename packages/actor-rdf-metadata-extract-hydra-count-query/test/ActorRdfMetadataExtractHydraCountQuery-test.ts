@@ -43,21 +43,21 @@ describe('ActorRdfMetadataExtractHydraCountQuery', () => {
     });
 
     it('should run on a stream where count is given', () => {
-      actor.queryData = () => Promise.resolve({ totalItems: 12345 });
+      actor.queryData = () => Promise.resolve({ totalItems: 12_345 });
       return expect(actor.run({ url: 'url', metadata: input })).resolves
-        .toEqual({ metadata: { totalItems: 12345 }});
+        .toEqual({ metadata: { totalItems: 12_345 }});
     });
 
     it('should run on a stream where count is given in a string', () => {
       actor.queryData = () => Promise.resolve({ totalItems: '12345' });
       return expect(actor.run({ url: 'url', metadata: input })).resolves
-        .toEqual({ metadata: { totalItems: 12345 }});
+        .toEqual({ metadata: { totalItems: 12_345 }});
     });
 
     it('should run on a stream where count is not given', () => {
       actor.queryData = () => Promise.resolve({});
       return expect(actor.run({ url: 'url', metadata: input })).resolves
-        .toEqual({ metadata: { totalItems: Infinity }});
+        .toEqual({ metadata: { totalItems: Number.POSITIVE_INFINITY }});
     });
   });
 });

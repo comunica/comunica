@@ -125,7 +125,7 @@ describe('ActorSparqlSerializeSparqlTsv', () => {
       bindingsStreamEmpty = <any> new PassThrough();
       (<any> bindingsStreamEmpty)._read = <any> (() => { bindingsStreamEmpty.emit('end'); });
       bindingsStreamError = <any> new PassThrough();
-      (<any> bindingsStreamError)._read = <any> (() => { bindingsStreamError.emit('error', new Error()); });
+      (<any> bindingsStreamError)._read = <any> (() => { bindingsStreamError.emit('error', new Error('SparqlTsv')); });
       variables = [ '?k1', '?k2' ];
     });
 

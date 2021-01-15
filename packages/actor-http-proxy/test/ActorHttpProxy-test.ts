@@ -46,7 +46,7 @@ describe('ActorHttpProxy', () => {
 
     it('should test on a valid proxy handler', () => {
       const input = 'http://example.org';
-      return expect(actor.test({ input, context })).resolves.toEqual({ time: Infinity });
+      return expect(actor.test({ input, context })).resolves.toEqual({ time: Number.POSITIVE_INFINITY });
     });
 
     it('should not test on a missing context', () => {

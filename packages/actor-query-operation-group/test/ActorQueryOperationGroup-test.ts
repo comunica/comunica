@@ -87,11 +87,9 @@ function constructCase(
   const bus: any = new Bus({ name: 'bus' });
 
   // Construct mediator
-  let mediatorQueryOperation: any;
-  if (inputBindings === undefined) {
-    mediatorQueryOperation = getDefaultMediatorQueryOperation();
-  } else {
-    mediatorQueryOperation = {
+  const mediatorQueryOperation: any = inputBindings === undefined ?
+    getDefaultMediatorQueryOperation() :
+    {
       mediate: (arg: any) => Promise.resolve({
         bindingsStream: new ArrayIterator(inputBindings, { autoStart: false }),
         metadata: () => Promise.resolve({ totalItems: inputBindings.length }),
@@ -101,7 +99,6 @@ function constructCase(
         canContainUndefs: false,
       }),
     };
-  }
 
   const operation: Algebra.Group = {
     type: 'group',

@@ -248,7 +248,7 @@ describe('ActorQueryOperationLeftJoinLeftDeep', () => {
       operation.left.rejectMetadata = true;
       const op = { operation, context: ActionContext({ totalItems: 10, variables: [ 'a' ]}) };
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
-        expect(await (<any> output).metadata()).toMatchObject({ totalItems: Infinity });
+        expect(await (<any> output).metadata()).toMatchObject({ totalItems: Number.POSITIVE_INFINITY });
       });
     });
 
@@ -260,7 +260,7 @@ describe('ActorQueryOperationLeftJoinLeftDeep', () => {
       operation.right.rejectMetadata = true;
       const op = { operation, context: ActionContext({ totalItems: 10, variables: [ 'a' ]}) };
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
-        expect(await (<any> output).metadata()).toMatchObject({ totalItems: Infinity });
+        expect(await (<any> output).metadata()).toMatchObject({ totalItems: Number.POSITIVE_INFINITY });
       });
     });
 
@@ -273,7 +273,7 @@ describe('ActorQueryOperationLeftJoinLeftDeep', () => {
       operation.right.rejectMetadata = true;
       const op = { operation, context: ActionContext({ totalItems: 10, variables: [ 'a' ]}) };
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
-        expect(await (<any> output).metadata()).toMatchObject({ totalItems: Infinity });
+        expect(await (<any> output).metadata()).toMatchObject({ totalItems: Number.POSITIVE_INFINITY });
       });
     });
 

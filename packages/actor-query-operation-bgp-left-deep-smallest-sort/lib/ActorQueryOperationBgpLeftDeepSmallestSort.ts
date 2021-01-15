@@ -95,7 +95,7 @@ export class ActorQueryOperationBgpLeftDeepSmallestSort extends ActorQueryOperat
    */
   public static getTotalItems(metadata?: Record<string, any>): number {
     const { totalItems } = metadata ?? {};
-    return totalItems || totalItems === 0 ? totalItems : Infinity;
+    return totalItems || totalItems === 0 ? totalItems : Number.POSITIVE_INFINITY;
   }
 
   /**

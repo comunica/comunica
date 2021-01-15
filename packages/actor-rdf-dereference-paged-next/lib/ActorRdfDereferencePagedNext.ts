@@ -44,7 +44,7 @@ export class ActorRdfDereferencePagedNext extends ActorRdfDereferencePaged imple
 
   public run(action: IActionRdfDereferencePaged): Promise<IActorRdfDereferencePagedOutput> {
     if (this.cache && this.cache.has(action.url)) {
-      return this.cloneOutput(<Promise<IActorRdfDereferencePagedOutput>> this.cache.get(action.url));
+      return this.cloneOutput(this.cache.get(action.url)!);
     }
     const output: Promise<IActorRdfDereferencePagedOutput> = this.runAsync(action);
     if (this.cache) {

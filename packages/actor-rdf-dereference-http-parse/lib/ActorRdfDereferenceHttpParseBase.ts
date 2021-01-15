@@ -106,8 +106,8 @@ export abstract class ActorRdfDereferenceHttpParseBase extends ActorRdfDereferen
     const responseStream: NodeJS.ReadableStream = ActorHttp.toNodeReadable(httpResponse.body);
 
     // Parse the resulting response
-    const match: RegExpExecArray = <RegExpExecArray> ActorRdfDereferenceHttpParseBase.REGEX_MEDIATYPE
-      .exec(httpResponse.headers.get('content-type') ?? '');
+    const match: RegExpExecArray = ActorRdfDereferenceHttpParseBase.REGEX_MEDIATYPE
+      .exec(httpResponse.headers.get('content-type') ?? '')!;
     let mediaType: string | undefined = match[0];
     // If no media type could be found, try to determine it via the file extension
     if (!mediaType || mediaType === 'text/plain') {

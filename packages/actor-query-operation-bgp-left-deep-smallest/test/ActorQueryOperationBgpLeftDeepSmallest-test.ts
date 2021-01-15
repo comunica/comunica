@@ -265,20 +265,20 @@ describe('ActorQueryOperationBgpLeftDeepSmallest', () => {
 
     describe('getTotalItems', () => {
       it('should return Infinity when no metadata is given', () => {
-        return expect(ActorQueryOperationBgpLeftDeepSmallest.getTotalItems()).toBe(Infinity);
+        return expect(ActorQueryOperationBgpLeftDeepSmallest.getTotalItems()).toBe(Number.POSITIVE_INFINITY);
       });
 
       it('should return Infinity when a falsy metadata is given', () => {
-        return expect(ActorQueryOperationBgpLeftDeepSmallest.getTotalItems()).toBe(Infinity);
+        return expect(ActorQueryOperationBgpLeftDeepSmallest.getTotalItems()).toBe(Number.POSITIVE_INFINITY);
       });
 
       it('should return Infinity when an empty metadata is given', () => {
-        return expect(ActorQueryOperationBgpLeftDeepSmallest.getTotalItems({})).toBe(Infinity);
+        return expect(ActorQueryOperationBgpLeftDeepSmallest.getTotalItems({})).toBe(Number.POSITIVE_INFINITY);
       });
 
       it('should return Infinity when a metadata with value Infinity is given', () => {
-        return expect(ActorQueryOperationBgpLeftDeepSmallest.getTotalItems({ totalItems: Infinity }))
-          .toBe(Infinity);
+        return expect(ActorQueryOperationBgpLeftDeepSmallest.getTotalItems({ totalItems: Number.POSITIVE_INFINITY }))
+          .toBe(Number.POSITIVE_INFINITY);
       });
 
       it('should return 10 when a metadata with value 10 is given', () => {
@@ -291,37 +291,37 @@ describe('ActorQueryOperationBgpLeftDeepSmallest', () => {
       it('should return Infinity when no metadata is present', () => {
         return expect(ActorQueryOperationBgpLeftDeepSmallest.estimateCombinedTotalItems(
           undefined, [ undefined ],
-        )).toBe(Infinity);
+        )).toBe(Number.POSITIVE_INFINITY);
       });
 
       it('should return Infinity when no smallest metadata is present', () => {
         return expect(ActorQueryOperationBgpLeftDeepSmallest.estimateCombinedTotalItems(
           undefined, [{ totalItems: 10 }],
-        )).toBe(Infinity);
+        )).toBe(Number.POSITIVE_INFINITY);
       });
 
       it('should return Infinity when no other metadata is present', () => {
         return expect(ActorQueryOperationBgpLeftDeepSmallest.estimateCombinedTotalItems(
           { totalItems: 10 }, [ undefined ],
-        )).toBe(Infinity);
+        )).toBe(Number.POSITIVE_INFINITY);
       });
 
       it('should return Infinity when smallest metadata is has infinity', () => {
         return expect(ActorQueryOperationBgpLeftDeepSmallest.estimateCombinedTotalItems(
-          { totalItems: Infinity }, [{ totalItems: 10 }],
-        )).toBe(Infinity);
+          { totalItems: Number.POSITIVE_INFINITY }, [{ totalItems: 10 }],
+        )).toBe(Number.POSITIVE_INFINITY);
       });
 
       it('should return Infinity when other metadata is has infinity', () => {
         return expect(ActorQueryOperationBgpLeftDeepSmallest.estimateCombinedTotalItems(
-          { totalItems: 10 }, [{ totalItems: Infinity }],
-        )).toBe(Infinity);
+          { totalItems: 10 }, [{ totalItems: Number.POSITIVE_INFINITY }],
+        )).toBe(Number.POSITIVE_INFINITY);
       });
 
       it('should return Infinity when other one metadata is has infinity', () => {
         return expect(ActorQueryOperationBgpLeftDeepSmallest.estimateCombinedTotalItems(
-          { totalItems: 10 }, [{ totalItems: 10 }, { totalItems: Infinity }, { totalItems: 20 }],
-        )).toBe(Infinity);
+          { totalItems: 10 }, [{ totalItems: 10 }, { totalItems: Number.POSITIVE_INFINITY }, { totalItems: 20 }],
+        )).toBe(Number.POSITIVE_INFINITY);
       });
 
       it('should return 10 when with smallest metadata 2 and other metadata 5', () => {
@@ -568,7 +568,7 @@ describe('ActorQueryOperationBgpLeftDeepSmallest', () => {
         expect(output.variables).toEqual([]);
         expect(output.type).toEqual('bindings');
         expect(output.canContainUndefs).toEqual(false);
-        expect(await (<any> output).metadata()).toEqual({ totalItems: Infinity });
+        expect(await (<any> output).metadata()).toEqual({ totalItems: Number.POSITIVE_INFINITY });
         expect(mediatorQueryOperation.mediate).toHaveBeenCalledWith(
           {
             context: ActionContext({ a: 'b', [KEY_CONTEXT_QUERYOPERATION]: op.operation }),
@@ -625,7 +625,7 @@ describe('ActorQueryOperationBgpLeftDeepSmallest', () => {
         expect(output.variables).toEqual([]);
         expect(output.type).toEqual('bindings');
         expect(output.canContainUndefs).toEqual(false);
-        expect(await (<any> output).metadata()).toEqual({ totalItems: Infinity });
+        expect(await (<any> output).metadata()).toEqual({ totalItems: Number.POSITIVE_INFINITY });
         expect(await arrayifyStream(output.bindingsStream)).toEqual([]);
       });
     });

@@ -9,7 +9,7 @@ import type {
   IActorRdfResolveHypermediaLinksOutput,
 } from '@comunica/bus-rdf-resolve-hypermedia-links';
 import type { IActionRdfResolveQuadPattern,
-  IActorRdfResolveQuadPatternOutput, IDataSource,
+  IActorRdfResolveQuadPatternOutput,
   IQuadSource } from '@comunica/bus-rdf-resolve-quad-pattern';
 import {
   ActorRdfResolveQuadPatternSource, getDataSourceType,
@@ -65,13 +65,13 @@ export class ActorRdfResolveQuadPatternHypermedia extends ActorRdfResolveQuadPat
   }
 
   protected getSource(context: ActionContext, operation: Algebra.Pattern): Promise<IQuadSource> {
-    const contextSource = <IDataSource> this.getContextSource(context);
-    const url = <string> this.getContextSourceUrl(contextSource);
+    const contextSource = this.getContextSource(context)!;
+    const url = this.getContextSourceUrl(contextSource)!;
     let source: MediatedQuadSource;
 
     // Try to read from cache
     if (this.cache && this.cache.has(url)) {
-      source = <MediatedQuadSource> this.cache.get(url);
+      source = this.cache.get(url)!;
     } else {
       // If not in cache, create a new source
       source = new MediatedQuadSource(this.cacheSize, context, url, getDataSourceType(contextSource), {

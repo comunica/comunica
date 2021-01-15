@@ -54,7 +54,7 @@ describe('ActorHttpNodeFetch', () => {
 
     it('should test', () => {
       return expect(actor.test({ input: <Request> { url: 'https://www.google.com/' }})).resolves
-        .toEqual({ time: Infinity });
+        .toEqual({ time: Number.POSITIVE_INFINITY });
     });
 
     it('should run on an existing URI', () => {

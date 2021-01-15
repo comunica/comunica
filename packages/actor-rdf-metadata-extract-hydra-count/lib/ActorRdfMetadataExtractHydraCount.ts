@@ -32,7 +32,7 @@ export class ActorRdfMetadataExtractHydraCount extends ActorRdfMetadataExtract
 
       // If no value has been found, assume infinity.
       action.metadata.on('end', () => {
-        resolve({ metadata: { totalItems: Infinity }});
+        resolve({ metadata: { totalItems: Number.POSITIVE_INFINITY }});
       });
     });
   }

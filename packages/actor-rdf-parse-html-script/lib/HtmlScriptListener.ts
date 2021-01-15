@@ -100,7 +100,7 @@ export class HtmlScriptListener implements IHtmlParseListener {
         textStream._read = () => {
           // Do nothing
         };
-        const textChunksLocal = <string[]> this.textChunks;
+        const textChunksLocal = this.textChunks!;
 
         // Send all collected text to parser
         const parseAction = {
@@ -180,7 +180,7 @@ export class HtmlScriptListener implements IHtmlParseListener {
 
   public onText(data: string): void {
     if (this.handleMediaType) {
-      (<string[]> this.textChunks).push(data);
+      this.textChunks!.push(data);
     }
   }
 

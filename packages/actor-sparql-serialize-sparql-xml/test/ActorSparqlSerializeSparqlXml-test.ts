@@ -89,7 +89,7 @@ describe('ActorSparqlSerializeSparqlXml', () => {
         Bindings({}),
       ], { autoStart: false });
       bindingsStreamError = <any> new PassThrough();
-      (<any> bindingsStreamError)._read = <any> (() => { bindingsStreamError.emit('error', new Error()); });
+      (<any> bindingsStreamError)._read = <any> (() => { bindingsStreamError.emit('error', new Error('SpXml')); });
       quadStream = new ArrayIterator([
         quad('http://example.org/a', 'http://example.org/b', 'http://example.org/c'),
         quad('http://example.org/a', 'http://example.org/d', 'http://example.org/e'),

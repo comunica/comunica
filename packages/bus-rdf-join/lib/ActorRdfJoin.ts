@@ -37,7 +37,7 @@ export abstract class ActorRdfJoin extends Actor<IActionRdfJoin, IMediatorTypeIt
   public constructor(args: IActorArgs<IActionRdfJoin, IMediatorTypeIterations, IActorQueryOperationOutput>,
     limitEntries?: number, limitEntriesMin?: boolean, canHandleUndefs?: boolean) {
     super(args);
-    this.limitEntries = limitEntries ?? Infinity;
+    this.limitEntries = limitEntries ?? Number.POSITIVE_INFINITY;
     this.limitEntriesMin = limitEntriesMin ?? false;
     this.canHandleUndefs = canHandleUndefs ?? false;
   }
@@ -140,7 +140,7 @@ export abstract class ActorRdfJoin extends Actor<IActionRdfJoin, IMediatorTypeIt
     }
 
     if (!await ActorRdfJoin.iteratorsHaveMetadata(action, 'totalItems')) {
-      return { iterations: Infinity };
+      return { iterations: Number.POSITIVE_INFINITY };
     }
 
     return { iterations: await this.getIterations(action) };

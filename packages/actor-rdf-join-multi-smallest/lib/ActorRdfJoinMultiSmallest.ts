@@ -22,7 +22,7 @@ export class ActorRdfJoinMultiSmallest extends ActorRdfJoin {
 
   public static getSmallestPatternId(totalItems: number[]): number {
     let smallestId = -1;
-    let smallestCount = Infinity;
+    let smallestCount = Number.POSITIVE_INFINITY;
     for (const [ i, count ] of totalItems.entries()) {
       if (count <= smallestCount) {
         smallestCount = count;
@@ -37,7 +37,7 @@ export class ActorRdfJoinMultiSmallest extends ActorRdfJoin {
 
     // Determine the two smallest streams by estimated count
     const entriesTotalItems = (await Promise.all(action.entries.map(x => getMetadata(x))))
-      .map(metadata => 'totalItems' in metadata ? metadata.totalItems : Infinity);
+      .map(metadata => 'totalItems' in metadata ? metadata.totalItems : Number.POSITIVE_INFINITY);
     const smallestIndex1: number = ActorRdfJoinMultiSmallest.getSmallestPatternId(entriesTotalItems);
     const smallestItem1 = entries.splice(smallestIndex1, 1)[0];
     const smallestCount1 = entriesTotalItems.splice(smallestIndex1, 1);

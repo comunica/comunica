@@ -57,14 +57,14 @@ export class RdfSourceSparql implements IQuadSource {
         if (count) {
           const totalItems: number = Number.parseInt(count.value, 10);
           if (Number.isNaN(totalItems)) {
-            return resolve({ totalItems: Infinity });
+            return resolve({ totalItems: Number.POSITIVE_INFINITY });
           }
           return resolve({ totalItems });
         }
-        return resolve({ totalItems: Infinity });
+        return resolve({ totalItems: Number.POSITIVE_INFINITY });
       });
-      bindingsStream.on('error', () => resolve({ totalItems: Infinity }));
-      bindingsStream.on('end', () => resolve({ totalItems: Infinity }));
+      bindingsStream.on('error', () => resolve({ totalItems: Number.POSITIVE_INFINITY }));
+      bindingsStream.on('end', () => resolve({ totalItems: Number.POSITIVE_INFINITY }));
     })
       .then(metadata => quads.setProperty('metadata', metadata));
 

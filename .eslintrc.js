@@ -72,6 +72,9 @@ module.exports = {
     'unicorn/catch-error-name': ['error', { name: 'error' }],
     'unicorn/no-reduce': 'off',
     'no-duplicate-imports': 'off', // Incompatible with type imports
+    'unicorn/consistent-destructuring': 'off',
+    'unicorn/no-array-callback-reference': 'off',
+    'unicorn/no-new-array': 'off',
 
     // TS
     '@typescript-eslint/lines-between-class-members': ['error', { exceptAfterSingleLine: true }],

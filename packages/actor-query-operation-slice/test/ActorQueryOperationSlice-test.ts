@@ -57,7 +57,7 @@ describe('ActorQueryOperationSlice', () => {
           Bindings({ a: DF.literal('2') }),
           Bindings({ a: DF.literal('3') }),
         ], { autoStart: false }),
-        metadata: () => Promise.resolve({ totalItems: Infinity }),
+        metadata: () => Promise.resolve({ totalItems: Number.POSITIVE_INFINITY }),
         operated: arg,
         type: 'bindings',
         variables: [ 'a' ],
@@ -328,7 +328,7 @@ describe('ActorQueryOperationSlice', () => {
         name: 'actor' });
       const op = { operation: { type: 'project', start: 0, length: 100 }};
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
-        expect(await (<any> output).metadata()).toEqual({ totalItems: Infinity });
+        expect(await (<any> output).metadata()).toEqual({ totalItems: Number.POSITIVE_INFINITY });
         expect(output.variables).toEqual([ 'a' ]);
         expect(output.type).toEqual('bindings');
         expect(output.canContainUndefs).toEqual(false);

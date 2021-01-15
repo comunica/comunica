@@ -126,7 +126,7 @@ export class ActorRdfResolveQuadPatternSparqlJson
   }
 
   public async run(action: IActionRdfResolveQuadPattern): Promise<IActorRdfResolveQuadPatternOutput> {
-    const endpoint: string = <string> this.getContextSourceUrl(this.getContextSource(action.context));
+    const endpoint: string = this.getContextSourceUrl(this.getContextSource(action.context))!;
     const pattern = ActorRdfResolveQuadPatternSparqlJson.replaceBlankNodes(action.pattern);
     const selectQuery: string = ActorRdfResolveQuadPatternSparqlJson.patternToSelectQuery(pattern);
     const countQuery: string = ActorRdfResolveQuadPatternSparqlJson.patternToCountQuery(pattern);
@@ -139,19 +139,19 @@ export class ActorRdfResolveQuadPatternSparqlJson
           if (count) {
             const totalItems: number = Number.parseInt(count.value, 10);
             if (Number.isNaN(totalItems)) {
-              return resolve({ totalItems: Infinity });
+              return resolve({ totalItems: Number.POSITIVE_INFINITY });
             }
             return resolve({ totalItems });
           }
-          return resolve({ totalItems: Infinity });
+          return resolve({ totalItems: Number.POSITIVE_INFINITY });
         });
-        bindingsStream.on('error', () => resolve({ totalItems: Infinity }));
-        bindingsStream.on('end', () => resolve({ totalItems: Infinity }));
+        bindingsStream.on('error', () => resolve({ totalItems: Number.POSITIVE_INFINITY }));
+        bindingsStream.on('end', () => resolve({ totalItems: Number.POSITIVE_INFINITY }));
       }))
       .then(metadata => data.setProperty('metadata', metadata))
       .catch(error => {
         data.destroy(error);
-        data.setProperty('metadata', { totalItems: Infinity });
+        data.setProperty('metadata', { totalItems: Number.POSITIVE_INFINITY });
       });
 
     // Materialize the queried pattern using each found binding.

@@ -15,7 +15,7 @@ export class ActorQueryOperationOrderByDirect extends ActorQueryOperationTypedMe
 
   public constructor(args: IActorQueryOperationOrderByDirectArgs) {
     super(args, 'orderby');
-    this.window = args.window ?? Infinity;
+    this.window = args.window ?? Number.POSITIVE_INFINITY;
   }
 
   public async testOperation(pattern: Algebra.OrderBy, context: ActionContext): Promise<IActorTest> {

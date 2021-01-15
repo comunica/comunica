@@ -91,7 +91,7 @@ describe('ActorRdfParseRdfXml', () => {
           </rdf:RDF>
       `);
         inputError = new Readable();
-        inputError._read = () => inputError.emit('error', new Error());
+        inputError._read = () => inputError.emit('error', new Error('ParseRdfXml'));
       });
 
       it('should run on application/rdf+xml', () => {

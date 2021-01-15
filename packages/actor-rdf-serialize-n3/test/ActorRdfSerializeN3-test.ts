@@ -48,7 +48,7 @@ describe('ActorRdfSerializeN3', () => {
           quad('http://example.org/a', 'http://example.org/d', 'http://example.org/e'),
         ]);
         quadsError = new Readable();
-        quadsError._read = () => quadsError.emit('error', new Error());
+        quadsError._read = () => quadsError.emit('error', new Error('SerializeN3'));
       });
 
       it('should test on application/trig', () => {

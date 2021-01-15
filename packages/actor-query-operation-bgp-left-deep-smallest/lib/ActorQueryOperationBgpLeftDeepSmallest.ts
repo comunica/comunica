@@ -74,7 +74,7 @@ export class ActorQueryOperationBgpLeftDeepSmallest extends ActorQueryOperationT
    */
   public static getSmallestPatternId(metadatas: (Record<string, any> | undefined)[]): number {
     let smallestId = -1;
-    let smallestCount = Infinity;
+    let smallestCount = Number.POSITIVE_INFINITY;
     for (const [ i, meta ] of metadatas.entries()) {
       const count: number = ActorQueryOperationBgpLeftDeepSmallest.getTotalItems(meta);
       if (count <= smallestCount) {
@@ -109,7 +109,7 @@ export class ActorQueryOperationBgpLeftDeepSmallest extends ActorQueryOperationT
    */
   public static getTotalItems(metadata?: Record<string, any>): number {
     const { totalItems } = metadata ?? {};
-    return totalItems || totalItems === 0 ? totalItems : Infinity;
+    return totalItems || totalItems === 0 ? totalItems : Number.POSITIVE_INFINITY;
   }
 
   /**

@@ -24,7 +24,7 @@ export class ActorRdfMetadataTriplePredicate extends ActorRdfMetadataQuadPredica
       return true;
     }
     for (const regex of this.predicateRegexes) {
-      // eslint-disable-next-line @typescript-eslint/prefer-regexp-exec
+      // eslint-disable-next-line @typescript-eslint/prefer-regexp-exec,unicorn/prefer-regexp-test
       if (quad.predicate.value.match(regex)) {
         return true;
       }

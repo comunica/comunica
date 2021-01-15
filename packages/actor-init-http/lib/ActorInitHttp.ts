@@ -33,7 +33,7 @@ export class ActorInitHttp extends ActorInit implements IActorInitHttpArgs {
       input: action.argv.length > 0 ? action.argv[0] : this.url ?? '',
     };
     if (this.method) {
-      (<RequestInit> http.init).method = this.method;
+      http.init!.method = this.method;
     }
     if (this.headers) {
       const headers: Headers = new Headers();
@@ -41,7 +41,7 @@ export class ActorInitHttp extends ActorInit implements IActorInitHttpArgs {
         const i: number = value.indexOf(':');
         headers.append(value.slice(0, i).toLowerCase(), value.slice(i + 2));
       }
-      (<RequestInit> http.init).headers = headers;
+      http.init!.headers = headers;
     }
 
     const httpResponse: IActorHttpOutput = await this.mediatorHttp.mediate(http);

@@ -28,7 +28,7 @@ export class ActorRdfSourceIdentifierFileContentType extends ActorRdfSourceIdent
       input: sourceUrl };
     const httpResponse: IActorHttpOutput = await this.mediatorHttp.mediate(httpAction);
     if (!httpResponse.ok || (httpResponse.headers.has('Content-Type') &&
-      !this.allowedMediaTypes.find((mediaType: string) => {
+      !this.allowedMediaTypes.some((mediaType: string) => {
         const contentType = httpResponse.headers.get('Content-Type');
         return contentType && contentType.includes(mediaType);
       }))) {

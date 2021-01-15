@@ -124,21 +124,21 @@ describe('ActorQueryOperationLeftJoinNestedLoop', () => {
     it('should correctly handle rejecting promise in left and right', () => {
       const op = { operation: { type: 'leftjoin', left: { rejectMetadata: true }, right: { rejectMetadata: true }}};
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
-        expect(await (<any> output).metadata()).toMatchObject({ totalItems: Infinity });
+        expect(await (<any> output).metadata()).toMatchObject({ totalItems: Number.POSITIVE_INFINITY });
       });
     });
 
     it('should correctly handle rejecting promise in left', () => {
       const op = { operation: { type: 'leftjoin', left: { rejectMetadata: true }, right: {}}};
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
-        expect(await (<any> output).metadata()).toMatchObject({ totalItems: Infinity });
+        expect(await (<any> output).metadata()).toMatchObject({ totalItems: Number.POSITIVE_INFINITY });
       });
     });
 
     it('should correctly handle rejecting promise in right', () => {
       const op = { operation: { type: 'leftjoin', left: {}, right: { rejectMetadata: true }}};
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
-        expect(await (<any> output).metadata()).toMatchObject({ totalItems: Infinity });
+        expect(await (<any> output).metadata()).toMatchObject({ totalItems: Number.POSITIVE_INFINITY });
       });
     });
 
