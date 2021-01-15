@@ -55,7 +55,7 @@ export abstract class ActorAbstractMediaTyped<HI, HT, HO>
    * @param {ActionContext} context An optional context.
    * @return {Promise<T>} A promise that resolves to the handle test result.
    */
-  public abstract async testHandle(action: HI, mediaType?: string, context?: ActionContext): Promise<HT>;
+  public abstract testHandle(action: HI, mediaType?: string, context?: ActionContext): Promise<HT>;
 
   /**
    * Run the given handle action on this actor.

@@ -46,7 +46,7 @@ export abstract class ActorQueryOperationTyped<O extends Algebra.Operation> exte
     return output;
   }
 
-  protected abstract async testOperation(operation: O, context: ActionContext | undefined): Promise<IActorTest>;
+  protected abstract testOperation(operation: O, context: ActionContext | undefined): Promise<IActorTest>;
 
   protected abstract runOperation(operation: O, context: ActionContext | undefined):
   Promise<IActorQueryOperationOutput>;

@@ -45,7 +45,7 @@ export abstract class ActorAbstractMediaTypedFixed<HI, HT, HO> extends ActorAbst
    * @param {ActionContext} context An optional context.
    * @param {HI} action The action to test.
    */
-  public abstract async testHandleChecked(action: HI, context: ActionContext): Promise<HT>;
+  public abstract testHandleChecked(action: HI, context: ActionContext): Promise<HT>;
 
   public async testMediaType(context: ActionContext): Promise<boolean> {
     return true;

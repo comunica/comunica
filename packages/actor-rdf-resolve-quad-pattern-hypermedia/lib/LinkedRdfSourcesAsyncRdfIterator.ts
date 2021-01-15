@@ -76,7 +76,7 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
    * @param link A source link.
    * @param handledDatasets A hash of dataset identifiers that have already been handled.
    */
-  protected abstract async getSource(link: ILink, handledDatasets: Record<string, boolean>): Promise<ISourceState>;
+  protected abstract getSource(link: ILink, handledDatasets: Record<string, boolean>): Promise<ISourceState>;
 
   /**
    * Resolve a source for the given URL.

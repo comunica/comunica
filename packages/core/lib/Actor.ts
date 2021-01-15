@@ -60,7 +60,7 @@ export abstract class Actor<I extends IAction, T extends IActorTest, O extends I
    * @param {I} action The action to test.
    * @return {Promise<T>} A promise that resolves to the test result.
    */
-  public abstract async test(action: I): Promise<T>;
+  public abstract test(action: I): Promise<T>;
 
   /**
    * Run the given action on this actor.
@@ -71,7 +71,7 @@ export abstract class Actor<I extends IAction, T extends IActorTest, O extends I
    * @param {I} action The action to run.
    * @return {Promise<T>} A promise that resolves to the run result.
    */
-  public abstract async run(action: I): Promise<O>;
+  public abstract run(action: I): Promise<O>;
 
   /**
    * Run the given action on this actor

@@ -97,7 +97,7 @@ export abstract class Mediator<A extends Actor<I, T, O>,
    * O extends IActorOutput>[]} testResults The actor test results for the action.
    * @return {Promise<A extends Actor<I, T, O>>} A promise that resolves to the _best_ actor.
    */
-  protected abstract async mediateWith(action: I, testResults: IActorReply<A, I, T, O>[]): Promise<A>;
+  protected abstract mediateWith(action: I, testResults: IActorReply<A, I, T, O>[]): Promise<A>;
 }
 
 export interface IMediatorArgs<A extends Actor<I, T, O>,

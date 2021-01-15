@@ -21,7 +21,7 @@ export abstract class ActorRdfSourceIdentifier
     super(args);
   }
 
-  public abstract async test(action: IActionRdfSourceIdentifier): Promise<IMediatorTypePriority>;
+  public abstract test(action: IActionRdfSourceIdentifier): Promise<IMediatorTypePriority>;
 
   protected getSourceUrl(action: IActionRdfSourceIdentifier): string {
     if (!action.sourceValue.startsWith('http')) {
