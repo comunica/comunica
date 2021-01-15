@@ -1,15 +1,17 @@
 import { Readable } from 'stream';
-import { Loader } from 'componentsjs';
+import { ComponentsManagerBuilder } from 'componentsjs';
 import * as Setup from '..';
 
 describe('Setup', () => {
   describe('The Setup module', () => {
     beforeEach(() => {
-      // Mock Loader
-      (<any> Loader) = jest.fn(() => {
+      // Mock manager
+      (<any> ComponentsManagerBuilder).prototype.build = jest.fn(() => {
         return {
-          instantiateFromUrl: () => Promise.resolve({ run: jest.fn(), initialize: jest.fn(), deinitialize: jest.fn() }),
-          registerAvailableModuleResources: jest.fn(),
+          instantiate: async() => ({ run: jest.fn(), initialize: jest.fn(), deinitialize: jest.fn() }),
+          configRegistry: {
+            register: jest.fn(),
+          },
         };
       });
     });
@@ -31,14 +33,17 @@ describe('Setup', () => {
     });
 
     it('should throw an error when the runner resolves to false when calling \'run\'', async() => {
-      (<any> Loader) = jest.fn(() => {
+      // Mock manager
+      (<any> ComponentsManagerBuilder).prototype.build = jest.fn(() => {
         return {
-          instantiateFromUrl: () => Promise.resolve(
-            { deinitialize: jest.fn(),
-              initialize: jest.fn(),
-              run: () => Promise.reject(new Error('Failure setup runner')) },
-          ),
-          registerAvailableModuleResources: jest.fn(),
+          instantiate: async() => ({
+            run: () => Promise.reject(new Error('Failure setup runner')),
+            initialize: jest.fn(),
+            deinitialize: jest.fn(),
+          }),
+          configRegistry: {
+            register: jest.fn(),
+          },
         };
       });
       await expect(Setup.run('', { argv: [], env: {}, stdin: new Readable() }, 'myuri', {})).rejects

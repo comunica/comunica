@@ -1,6 +1,13 @@
 import type { IActionInit, IActorOutputInit } from '@comunica/bus-init';
-import type { LoaderProperties } from 'componentsjs';
-import { Loader } from 'componentsjs';
+import { ComponentsManager } from 'componentsjs';
+import type {
+  IComponentsManagerBuilderOptions,
+  IConstructionStrategy,
+  ComponentRegistry,
+  ConfigRegistry,
+  IModuleState,
+  LogLevel,
+} from 'componentsjs';
 import type { Runner } from './Runner';
 
 /**
@@ -15,7 +22,7 @@ import type { Runner } from './Runner';
  *
  * @param {string} configResourceUrl    The URL or local path to a Components.js config file.
  * @param {string} instanceUri          A URI identifying the component to instantiate.
- * @param {LoaderProperties} properties Properties to pass to the Components.js loader.
+ * @param {ISetupProperties} properties Properties to pass to the Components.js manager.
  * @return {Promise<any>}               A promise that resolves to the instance.
  */
 export async function instantiateComponent(configResourceUrl: string, instanceUri: string,
@@ -24,12 +31,12 @@ export async function instantiateComponent(configResourceUrl: string, instanceUr
   if (!properties) {
     properties = {};
   }
-  properties = { mainModulePath: process.cwd(), ...properties };
+  const propertiesActual: IComponentsManagerBuilderOptions<any> = { mainModulePath: process.cwd(), ...properties };
 
   // Instantiate the given config file
-  const loader = new Loader(properties);
-  await loader.registerAvailableModuleResources();
-  return await loader.instantiateFromUrl(instanceUri, configResourceUrl);
+  const manager = await ComponentsManager.build(propertiesActual);
+  await manager.configRegistry.register(configResourceUrl);
+  return await manager.instantiate(instanceUri);
 }
 
 /**
@@ -39,7 +46,7 @@ export async function instantiateComponent(configResourceUrl: string, instanceUr
  * @param {string} configResourceUrl    The URL or local path to a Components.js config file.
  * @param {any[]} action                The action to pass to the runner.
  * @param {string} runnerUri            An optional URI identifying the runner.
- * @param {LoaderProperties} properties Properties to pass to the Components.js loader.
+ * @param {ISetupProperties} properties Properties to pass to the Components.js loader.
  * @return {Promise<any>}               A promise that resolves when the runner has been initialized.
  */
 export async function run(configResourceUrl: string, action: IActionInit, runnerUri?: string,
@@ -61,4 +68,46 @@ export async function run(configResourceUrl: string, action: IActionInit, runner
   return output;
 }
 
-export type ISetupProperties = LoaderProperties;
+/**
+ * A copy of {@link IComponentsManagerBuilderOptions}, with all fields optional.
+ */
+export interface ISetupProperties {
+  /**
+   * Absolute path to the package root from which module resolution should start.
+   */
+  mainModulePath?: string;
+
+  /**
+   * Callback for registering components and modules.
+   * Defaults to an invocation of {@link ComponentRegistry.registerAvailableModules}.
+   * @param registry A registry that accept component and module registrations.
+   */
+  moduleLoader?: (registry: ComponentRegistry) => Promise<void>;
+  /**
+   * Callback for registering configurations.
+   * Defaults to no config registrations.
+   * @param registry A registry that accepts configuration registrations.
+   */
+  configLoader?: (registry: ConfigRegistry) => Promise<void>;
+  /**
+   * A strategy for constructing instances.
+   * Defaults to {@link ConstructionStrategyCommonJs}.
+   */
+  constructionStrategy?: IConstructionStrategy<any>;
+  /**
+   * If the error state should be dumped into `componentsjs-error-state.json`
+   * after failed instantiations.
+   * Defaults to `false`.
+   */
+  dumpErrorState?: boolean;
+  /**
+   * The logging level.
+   * Defaults to `'warn'`.
+   */
+  logLevel?: LogLevel;
+  /**
+   * The module state.
+   * Defaults to a newly created instances on the {@link mainModulePath}.
+   */
+  moduleState?: IModuleState;
+}

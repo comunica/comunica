@@ -1,6 +1,6 @@
 {
   "@context": [
-    "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^3.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/componentsjs/^4.0.0/components/context.jsonld",
     {
       "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
       "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",

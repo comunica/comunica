@@ -2,15 +2,7 @@
   "name": "@comunica/actor-init-rdf-dereference",
   "version": "1.18.1",
   "description": "A Comunica engine for dereferencing RDF resources",
-  "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-rdf-dereference",
-  "lsd:components": "components/components.jsonld",
-  "lsd:contexts": {
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-rdf-dereference/^1.0.0/components/context.jsonld": "components/context.jsonld"
-  },
-  "lsd:importPaths": {
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-rdf-dereference/^1.0.0/components/": "components/",
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-rdf-dereference/^1.0.0/config/": "config/"
-  },
+  "lsd:module": true,
   "main": "index.js",
   "typings": "index",
   "repository": {

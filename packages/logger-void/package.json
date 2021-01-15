@@ -2,14 +2,7 @@
   "name": "@comunica/logger-void",
   "version": "1.18.1",
   "description": "A comunica void-based logger.",
-  "lsd:module": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/logger-void",
-  "lsd:components": "components/components.jsonld",
-  "lsd:contexts": {
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/logger-void/^1.0.0/components/context.jsonld": "components/context.jsonld"
-  },
-  "lsd:importPaths": {
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/logger-void/^1.0.0/components/": "components/"
-  },
+  "lsd:module": true,
   "main": "index.js",
   "typings": "index",
   "repository": {

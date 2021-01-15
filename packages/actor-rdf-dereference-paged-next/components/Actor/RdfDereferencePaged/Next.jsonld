@@ -44,7 +44,7 @@
           "comment": "An actor that listens to HTTP invalidation events",
           "range": "cbhi:Actor/HttpInvalidateListenable",
           "default": {
-            "@id": "cbrrqp:Actor/RdfResolveQuadPattern/httpInvalidator#default",
+            "@id": "cardph:Actor/RdfResolveQuadPattern/httpInvalidator#default",
             "@type": "cbhi:Actor/HttpInvalidateListenable"
           },
           "required": true,

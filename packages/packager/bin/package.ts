@@ -3,7 +3,6 @@
 /* eslint-disable no-sync */
 import * as fs from 'fs';
 import * as Path from 'path';
-import type { Stream } from 'stream';
 import { compileConfig } from 'componentsjs';
 import type { ParsedArgs } from 'minimist';
 import minimist = require('minimist');
@@ -20,7 +19,6 @@ Options:
   -o      [Required] The package name to generate
   -c      Path to a Comunica config file, if not provided, the config must be provided via stdin
   -p      The main module path, if not provided, this defaults to the directory of the packager
-  -g      If global modules should be included as well next to local modules.
   -e      The instance by config URI that will be exported, by default this is the provided instance URI.
   --help  print this help message
 `);
@@ -46,13 +44,10 @@ if (!fs.existsSync(packageName)) {
   packageJson = require(`${process.cwd()}/${packageName}/package.json`);
 }
 
-let configStreamRaw: Stream;
 let configPath: string;
 if (args.c) {
-  configStreamRaw = fs.createReadStream(args.c, { encoding: 'utf8' });
   configPath = args.c;
 } else {
-  configStreamRaw = process.stdin;
   configPath = '.';
 }
 
@@ -68,12 +63,10 @@ if (args.e) {
   exportVariableName = args.e;
 }
 
-const scanGlobal = Boolean(args.g);
-
 const dependencyRegex = /require\('([^']*)'\)/ug;
 
 const referencePackageJson = require(`${__dirname}/../package.json`);
-compileConfig({ mainModulePath, scanGlobal }, configPath, configStreamRaw, configResourceUri, exportVariableName)
+compileConfig(mainModulePath, configPath, configResourceUri, exportVariableName)
   .then((document: string) => {
     // Find dependency package names
     const dependencies: Record<string, string> = {};
