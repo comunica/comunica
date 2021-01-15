@@ -222,7 +222,7 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
       const it = new Dummy(quads, v, v, v, v, 'first');
       jest.spyOn(<any> it, 'handleNextUrl');
 
-      await new Promise(resolve => {
+      await new Promise<void>(resolve => {
         const result: any = [];
         it.on('data', d => result.push(d));
         it.on('end', () => {
@@ -256,7 +256,7 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
         subseq: true,
       });
 
-      await new Promise(resolve => {
+      await new Promise<void>(resolve => {
         const result: any = [];
         it.on('data', d => result.push(d));
         it.on('end', () => {
@@ -285,7 +285,7 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
       const it = new Dummy(quads, v, v, v, v, 'first');
       jest.spyOn(<any> it, 'handleNextUrl');
 
-      await new Promise(resolve => {
+      await new Promise<void>(resolve => {
         const result: any = [];
         it.on('data', d => result.push(d));
         it.on('end', () => {
@@ -315,7 +315,7 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
         subseq: true,
       });
 
-      await new Promise(resolve => {
+      await new Promise<void>(resolve => {
         const result: any = [];
         it.on('data', d => result.push(d));
         it.on('end', () => {

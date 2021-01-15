@@ -304,7 +304,7 @@ describe('RdfSourceQpf', () => {
       });
 
       const error = new Error('a');
-      return new Promise((resolve, reject) => {
+      return new Promise<void>((resolve, reject) => {
         const output: RDF.Stream = source.match(S, P, O, G);
         output.on('error', e => {
           expect(e).toEqual(error);
@@ -326,7 +326,7 @@ describe('RdfSourceQpf', () => {
       });
 
       const error = new Error('a');
-      return new Promise((resolve, reject) => {
+      return new Promise<void>((resolve, reject) => {
         const output: RDF.Stream = source.match(S, P, O, G);
         output.on('error', e => {
           expect(e).toEqual(error);

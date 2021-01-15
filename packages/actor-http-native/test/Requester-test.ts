@@ -7,7 +7,7 @@ describe('Requester', () => {
     mockSetup({ statusCode: 405 });
     const requester = new Requester();
     const req = requester.createRequest(url.parse('http://example.com/test'));
-    return new Promise(resolve => {
+    return new Promise<void>(resolve => {
       req.on('response', response => {
         expect(response).toMatchObject({ statusCode: 405 });
         expect(response.input).toMatchObject({ href: 'http://example.com/test' });
@@ -20,7 +20,7 @@ describe('Requester', () => {
     it('works with response headers', () => {
       const requester = new Requester();
       const req = requester.createRequest(url.parse('http://example.com/test'));
-      return new Promise(resolve => {
+      return new Promise<void>(resolve => {
         req.on('response', response => {
           response.headers = { accept: 'more' };
           expect(requester.convertRequestHeadersToFetchHeaders(response.headers))
@@ -33,7 +33,7 @@ describe('Requester', () => {
     it('works without headers', () => {
       const requester = new Requester();
       const req = requester.createRequest(url.parse('http://example.com/test'));
-      return new Promise(resolve => {
+      return new Promise<void>(resolve => {
         req.on('response', response => {
           response.headers = {};
           expect(requester.convertRequestHeadersToFetchHeaders(response.headers)).toEqual(new Headers({}));
