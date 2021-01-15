@@ -1,6 +1,6 @@
 {
   "name": "@comunica/bus-init",
-  "version": "1.18.1",
+  "version": "1.19.0",
   "description": "A comunica bus for 'init' events.",
   "lsd:module": true,
   "main": "index.js",
@@ -34,7 +34,7 @@
     "@comunica/core": "^1.0.0"
   },
   "devDependencies": {
-    "@comunica/core": "^1.18.1"
+    "@comunica/core": "^1.19.0"
   },
   "scripts": {
     "build": "node \"../../node_modules/typescript/bin/tsc\"",

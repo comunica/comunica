@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-sparql-serialize-sparql-tsv",
-  "version": "1.18.1",
+  "version": "1.19.0",
   "description": "A sparql-tsv sparql-serialize actor",
   "lsd:module": true,
   "main": "index.js",
@@ -32,7 +32,7 @@
     "index.js"
   ],
   "dependencies": {
-    "@comunica/bus-query-operation": "^1.18.1",
+    "@comunica/bus-query-operation": "^1.19.0",
     "@types/rdf-js": "*",
     "rdf-string-ttl": "^1.1.0"
   },
@@ -41,8 +41,8 @@
     "@comunica/core": "^1.15.0"
   },
   "devDependencies": {
-    "@comunica/bus-sparql-serialize": "^1.18.1",
-    "@comunica/core": "^1.18.1"
+    "@comunica/bus-sparql-serialize": "^1.19.0",
+    "@comunica/core": "^1.19.0"
   },
   "jest": {
     "globals": {

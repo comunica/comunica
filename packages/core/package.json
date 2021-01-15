@@ -1,6 +1,6 @@
 {
   "name": "@comunica/core",
-  "version": "1.18.1",
+  "version": "1.19.0",
   "description": "Lightweight, semantic and modular actor framework",
   "lsd:module": true,
   "main": "index.js",

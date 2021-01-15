@@ -1,6 +1,13 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v1.19.0"></a>
+## [v1.19.0](https://github.com/comunica/comunica/compare/v1.18.1...v1.19.0) - 2021-01-15
+
+### Changed
+* [Update to Components.js 4](https://github.com/comunica/comunica/commit/26160e821cd13a71d4d2bd0178b351f8d257f8d8)
+* [Update dependency htmlparser2 to v6](https://github.com/comunica/comunica/commit/25e7a6b05c96f46a82efaa126d18ff7d47fdac13)
+
 <a name="v1.18.1"></a>
 ## [v1.18.1](https://github.com/comunica/comunica/compare/v1.18.0...v1.18.1) - 2020-12-01
 

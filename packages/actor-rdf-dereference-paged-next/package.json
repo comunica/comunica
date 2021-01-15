@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-dereference-paged-next",
-  "version": "1.18.1",
+  "version": "1.19.0",
   "description": "A hydra rdf-dereference-paged actor",
   "lsd:module": true,
   "main": "index.js",
@@ -46,13 +46,13 @@
     "@comunica/core": "^1.0.0"
   },
   "devDependencies": {
-    "@types/lodash": "*",
-    "@comunica/bus-http-invalidate": "^1.18.1",
-    "@comunica/bus-rdf-dereference": "^1.18.1",
-    "@comunica/bus-rdf-dereference-paged": "^1.18.1",
-    "@comunica/bus-rdf-metadata": "^1.18.1",
-    "@comunica/bus-rdf-metadata-extract": "^1.18.1",
-    "@comunica/core": "^1.18.1"
+    "@comunica/bus-http-invalidate": "^1.19.0",
+    "@comunica/bus-rdf-dereference": "^1.19.0",
+    "@comunica/bus-rdf-dereference-paged": "^1.19.0",
+    "@comunica/bus-rdf-metadata": "^1.19.0",
+    "@comunica/bus-rdf-metadata-extract": "^1.19.0",
+    "@comunica/core": "^1.19.0",
+    "@types/lodash": "*"
   },
   "jest": {
     "globals": {
