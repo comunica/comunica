@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-init-sparql-rdfjs",
-  "version": "1.19.0",
+  "version": "1.19.1",
   "description": "A SPARQL query engine for querying over RDF/JS sources",
   "lsd:importPaths": {
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-sparql-rdfjs/^1.0.0/config/": "config/"
@@ -43,7 +43,7 @@
   ],
   "dependencies": {
     "@comunica/actor-abstract-mediatyped": "^1.19.0",
-    "@comunica/actor-init-sparql": "^1.19.0",
+    "@comunica/actor-init-sparql": "^1.19.1",
     "@comunica/actor-query-operation-ask": "^1.19.0",
     "@comunica/actor-query-operation-bgp-empty": "^1.19.0",
     "@comunica/actor-query-operation-bgp-left-deep-smallest": "^1.19.0",

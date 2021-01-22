@@ -1,6 +1,6 @@
 {
   "name": "@comunica/logger-pretty",
-  "version": "1.19.0",
+  "version": "1.19.1",
   "description": "A comunica logger that pretty-prints.",
   "lsd:module": true,
   "main": "index.js",

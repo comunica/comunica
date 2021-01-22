@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v1.19.1"></a>
+## [v1.19.1](https://github.com/comunica/comunica/compare/v1.19.0...v1.19.1) - 2021-01-22
+
+### Fixed
+* [Fix logger not always producing output, Closes #774](https://github.com/comunica/comunica/commit/3cb07b6e81fe74820110487bccda8d9a2fc804b9)
+
 <a name="v1.19.0"></a>
 ## [v1.19.0](https://github.com/comunica/comunica/compare/v1.18.1...v1.19.0) - 2021-01-15
 

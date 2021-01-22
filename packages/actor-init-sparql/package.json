@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-init-sparql",
-  "version": "1.19.0",
+  "version": "1.19.1",
   "description": "A SPARQL query engine for querying over decentralized RDF knowledge graphs on the Web",
   "lsd:module": true,
   "main": "index.js",
@@ -144,7 +144,7 @@
     "@comunica/bus-sparql-parse": "^1.19.0",
     "@comunica/bus-sparql-serialize": "^1.19.0",
     "@comunica/core": "^1.19.0",
-    "@comunica/logger-pretty": "^1.19.0",
+    "@comunica/logger-pretty": "^1.19.1",
     "@comunica/logger-void": "^1.19.0",
     "@comunica/mediator-all": "^1.19.0",
     "@comunica/mediator-combine-pipeline": "^1.19.0",
