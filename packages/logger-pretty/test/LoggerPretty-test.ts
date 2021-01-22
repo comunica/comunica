@@ -17,6 +17,16 @@ describe('LoggerPretty', () => {
       return expect(process.stderr.write).toHaveBeenCalledTimes(1);
     });
 
+    it('should log for trace for undefined data', () => {
+      logger.trace('bla');
+      return expect(process.stderr.write).toHaveBeenCalledTimes(1);
+    });
+
+    it('should log for trace even when an actor id is set', () => {
+      logger.trace('bla', { actor: 'abc' });
+      return expect(process.stderr.write).toHaveBeenCalledTimes(1);
+    });
+
     it('should log for debug', () => {
       logger.debug('bla', {});
       return expect(process.stderr.write).toHaveBeenCalledTimes(1);
