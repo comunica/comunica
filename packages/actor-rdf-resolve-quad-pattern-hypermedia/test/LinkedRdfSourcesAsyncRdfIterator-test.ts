@@ -16,7 +16,7 @@ class Dummy extends LinkedRdfSourcesAsyncRdfIterator {
 
   public constructor(data: RDF.Quad[][], subject: RDF.Term, predicate: RDF.Term, object: RDF.Term, graph: RDF.Term,
     firstUrl: string) {
-    super(10, subject, predicate, object, graph, firstUrl);
+    super(10, subject, predicate, object, graph, firstUrl, 10);
     this.data = data;
   }
 

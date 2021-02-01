@@ -23,12 +23,21 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
 
   private readonly cacheSize: number;
   private readonly firstUrl: string;
+  private readonly maxIterators: number;
 
   private started = false;
-  private currentIterator: AsyncIterator<RDF.Quad> | undefined;
+  private readonly currentIterators: AsyncIterator<RDF.Quad>[];
+  private iteratorsPendingCreation: number;
 
-  public constructor(cacheSize: number, subject: RDF.Term, predicate: RDF.Term, object: RDF.Term, graph: RDF.Term,
-    firstUrl: string) {
+  public constructor(
+    cacheSize: number,
+    subject: RDF.Term,
+    predicate: RDF.Term,
+    object: RDF.Term,
+    graph: RDF.Term,
+    firstUrl: string,
+    maxIterators: number,
+  ) {
     super({ autoStart: true });
     this.cacheSize = cacheSize;
     this.subject = subject;
@@ -37,6 +46,13 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
     this.graph = graph;
     this.linkQueue = [];
     this.firstUrl = firstUrl;
+    this.maxIterators = maxIterators;
+    if (this.maxIterators <= 0) {
+      throw new Error(`LinkedRdfSourcesAsyncRdfIterator.maxIterators must be larger than zero, but got ${this.maxIterators}`);
+    }
+
+    this.currentIterators = [];
+    this.iteratorsPendingCreation = 0;
   }
 
   /**
@@ -107,29 +123,38 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
       // Await the source to be set, and start the source iterator
       this.getSourceCached({ url: this.firstUrl }, {})
         .then(sourceState => {
-          this.setCurrentIterator(sourceState, true);
+          this.startIterator(sourceState, true);
           done();
         })
         .catch(error => {
           // We can safely ignore this error, since it handled in setSourcesState
           done();
         });
-    } else if (this.currentIterator) {
-      // If an iterator has been set, read from it.
-      while (count > 0) {
-        const read = this.currentIterator.read();
-        if (read !== null) {
-          count--;
-          this._push(read);
-        } else {
+    } else {
+      for (const iterator of this.currentIterators) {
+        while (count > 0) {
+          const read = iterator.read();
+          if (read !== null) {
+            count--;
+            this._push(read);
+          } else {
+            break;
+          }
+        }
+        if (count <= 0) {
           break;
         }
       }
       done();
-    } else {
-      // This can occur during source loading.
-      done();
     }
+  }
+
+  protected canStartNewIterator(): boolean {
+    return this.currentIterators.length + this.iteratorsPendingCreation < this.maxIterators/* && !this.readable*/;
+  }
+
+  protected areIteratorsRunning(): boolean {
+    return this.currentIterators.length + this.iteratorsPendingCreation > 0;
   }
 
   /**
@@ -138,18 +163,19 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
    * @param {ISourceState} startSource The start source state.
    * @param {boolean} emitMetadata If the metadata event should be emitted.
    */
-  protected setCurrentIterator(startSource: ISourceState, emitMetadata: boolean): void {
+  protected startIterator(startSource: ISourceState, emitMetadata: boolean): void {
     // Delegate the quad pattern query to the given source
-    this.currentIterator = startSource.source!
+    const iterator = startSource.source!
       .match(this.subject, this.predicate, this.object, this.graph);
+    this.currentIterators.push(iterator);
     let receivedMetadata = false;
 
     // Attach readers to the newly created iterator
-    (<any> this.currentIterator)._destination = this;
-    this.currentIterator.on('error', (error: Error) => this.destroy(error));
-    this.currentIterator.on('readable', () => this._fillBuffer());
-    this.currentIterator.on('end', () => {
-      this.currentIterator = undefined;
+    (<any> iterator)._destination = this;
+    iterator.on('error', (error: Error) => this.destroy(error));
+    iterator.on('readable', () => this._fillBufferAsync());
+    iterator.on('end', () => {
+      this.currentIterators.splice(this.currentIterators.indexOf(iterator), 1);
 
       // If the metadata was already received, handle the next URL in the queue
       if (receivedMetadata) {
@@ -159,7 +185,7 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
 
     // Listen for the metadata of the source
     // The metadata property is guaranteed to be set
-    this.currentIterator.getProperty('metadata', (metadata: Record<string, any>) => {
+    iterator.getProperty('metadata', (metadata: Record<string, any>) => {
       startSource.metadata = { ...startSource.metadata, ...metadata };
 
       // Emit metadata if needed
@@ -178,8 +204,11 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
 
           // Handle the next queued URL if we don't have an active iterator (in which case it will be called later)
           receivedMetadata = true;
-          if (!this.currentIterator) {
+          while (this.canStartNewIterator()) {
             this.handleNextUrl(startSource);
+            if (this.linkQueue.length === 0) {
+              break;
+            }
           }
         }).catch(error => this.destroy(error));
     });
@@ -193,10 +222,17 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
    */
   protected handleNextUrl(startSource: ISourceState): void {
     if (this.linkQueue.length === 0) {
-      this.close();
+      // Close, only if no other iterators are still running
+      if (!this.areIteratorsRunning()) {
+        this.close();
+      }
     } else {
+      this.iteratorsPendingCreation++;
       this.getSourceCached(this.linkQueue[0], startSource.handledDatasets)
-        .then(nextSourceState => this.setCurrentIterator(nextSourceState, false))
+        .then(nextSourceState => {
+          this.iteratorsPendingCreation--;
+          this.startIterator(nextSourceState, false);
+        })
         .catch(error => this.destroy(error));
       this.linkQueue.shift();
     }

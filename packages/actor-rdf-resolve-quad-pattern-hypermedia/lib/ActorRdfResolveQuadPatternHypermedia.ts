@@ -44,6 +44,7 @@ export class ActorRdfResolveQuadPatternHypermedia extends ActorRdfResolveQuadPat
   public readonly cacheSize: number;
   public readonly cache?: LRUCache<string, MediatedQuadSource>;
   public readonly httpInvalidator: ActorHttpInvalidateListenable;
+  public readonly maxIterators: number;
 
   public constructor(args: IActorRdfResolveQuadPatternHypermediaArgs) {
     super(args);
@@ -74,13 +75,20 @@ export class ActorRdfResolveQuadPatternHypermedia extends ActorRdfResolveQuadPat
       source = this.cache.get(url)!;
     } else {
       // If not in cache, create a new source
-      source = new MediatedQuadSource(this.cacheSize, context, url, getDataSourceType(contextSource), {
-        mediatorMetadata: this.mediatorMetadata,
-        mediatorMetadataExtract: this.mediatorMetadataExtract,
-        mediatorRdfDereference: this.mediatorRdfDereference,
-        mediatorRdfResolveHypermedia: this.mediatorRdfResolveHypermedia,
-        mediatorRdfResolveHypermediaLinks: this.mediatorRdfResolveHypermediaLinks,
-      });
+      source = new MediatedQuadSource(
+        this.cacheSize,
+        context,
+        url,
+        getDataSourceType(contextSource),
+        this.maxIterators,
+        {
+          mediatorMetadata: this.mediatorMetadata,
+          mediatorMetadataExtract: this.mediatorMetadataExtract,
+          mediatorRdfDereference: this.mediatorRdfDereference,
+          mediatorRdfResolveHypermedia: this.mediatorRdfResolveHypermedia,
+          mediatorRdfResolveHypermediaLinks: this.mediatorRdfResolveHypermediaLinks,
+        },
+      );
 
       // Set in cache
       if (this.cache) {
@@ -96,6 +104,7 @@ export interface IActorRdfResolveQuadPatternHypermediaArgs extends
   IActorArgs<IActionRdfResolveQuadPattern, IActorTest, IActorRdfResolveQuadPatternOutput> {
   cacheSize: number;
   httpInvalidator: ActorHttpInvalidateListenable;
+  maxIterators: number;
   mediatorRdfDereference: Mediator<Actor<IActionRdfDereference, IActorTest,
   IActorRdfDereferenceOutput>, IActionRdfDereference, IActorTest, IActorRdfDereferenceOutput>;
   mediatorMetadata: Mediator<Actor<IActionRdfMetadata, IActorTest, IActorRdfMetadataOutput>,

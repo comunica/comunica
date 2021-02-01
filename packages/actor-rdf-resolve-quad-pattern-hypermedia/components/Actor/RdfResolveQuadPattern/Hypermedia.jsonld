@@ -61,7 +61,15 @@
           },
           "required": true,
           "unique": true
-        }
+        },
+        {
+          "@id": "carrqph:Actor/RdfResolveQuadPattern/Hypermedia/maxIterators",
+          "comment": "The maximum number of links that can be followed in parallel.",
+          "range": "xsd:integer",
+          "default": 64,
+          "required": true,
+          "unique": true
+        },
       ],
       "constructorArguments": [
         {
@@ -94,6 +102,10 @@
             {
               "keyRaw": "httpInvalidator",
               "value": "carrqph:Actor/RdfResolveQuadPattern/Hypermedia/httpInvalidator"
+            },
+            {
+              "keyRaw": "maxIterators",
+              "value": "carrqph:Actor/RdfResolveQuadPattern/Hypermedia/maxIterators"
             }
           ]
         }
