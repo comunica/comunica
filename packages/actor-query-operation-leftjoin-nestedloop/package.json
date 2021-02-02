@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-operation-leftjoin-nestedloop",
-  "version": "1.19.0",
+  "version": "1.19.2",
   "description": "A leftjoin nestedloop query-operation actor",
   "lsd:module": true,
   "main": "index.js",
@@ -43,9 +43,9 @@
     "@comunica/core": "^1.0.0"
   },
   "devDependencies": {
-    "@comunica/bus-query-operation": "^1.19.0",
-    "@comunica/bus-rdf-join": "^1.19.0",
-    "@comunica/core": "^1.19.0"
+    "@comunica/bus-query-operation": "^1.19.2",
+    "@comunica/bus-rdf-join": "^1.19.2",
+    "@comunica/core": "^1.19.2"
   },
   "jest": {
     "globals": {

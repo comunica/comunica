@@ -1,6 +1,15 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v1.19.2"></a>
+## [v1.19.2](https://github.com/comunica/comunica/compare/v1.19.1...v1.19.2) - 2021-02-02
+
+### Changed
+* [Remove disabling of stacktraces when in production](https://github.com/comunica/comunica/commit/72c3b03fa1adda907dbcfbda2bafca7ce710167a)
+
+### Fixed
+* [Fix unhandled promise rejection on server errors](https://github.com/comunica/comunica/commit/4e2771d1e9307e2d5cfb1f97abd54d23f398bc87)
+
 <a name="v1.19.1"></a>
 ## [v1.19.1](https://github.com/comunica/comunica/compare/v1.19.0...v1.19.1) - 2021-01-22
 

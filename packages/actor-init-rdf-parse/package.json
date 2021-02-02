@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-init-rdf-parse",
-  "version": "1.19.0",
+  "version": "1.19.2",
   "description": "A Comunica engine for parsing RDF",
   "lsd:module": true,
   "main": "index.js",
@@ -36,16 +36,16 @@
     "index.js"
   ],
   "dependencies": {
-    "@comunica/actor-abstract-mediatyped": "^1.19.0",
-    "@comunica/actor-rdf-parse-jsonld": "^1.19.0",
-    "@comunica/actor-rdf-parse-n3": "^1.19.0",
-    "@comunica/actor-rdf-parse-rdfxml": "^1.19.0",
-    "@comunica/bus-init": "^1.19.0",
-    "@comunica/bus-rdf-parse": "^1.19.0",
-    "@comunica/core": "^1.19.0",
-    "@comunica/mediator-race": "^1.19.0",
-    "@comunica/runner": "^1.19.0",
-    "@comunica/runner-cli": "^1.19.0",
+    "@comunica/actor-abstract-mediatyped": "^1.19.2",
+    "@comunica/actor-rdf-parse-jsonld": "^1.19.2",
+    "@comunica/actor-rdf-parse-n3": "^1.19.2",
+    "@comunica/actor-rdf-parse-rdfxml": "^1.19.2",
+    "@comunica/bus-init": "^1.19.2",
+    "@comunica/bus-rdf-parse": "^1.19.2",
+    "@comunica/core": "^1.19.2",
+    "@comunica/mediator-race": "^1.19.2",
+    "@comunica/runner": "^1.19.2",
+    "@comunica/runner-cli": "^1.19.2",
     "rdf-string": "^1.5.0"
   },
   "jest": {

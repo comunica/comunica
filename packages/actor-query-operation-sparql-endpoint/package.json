@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-operation-sparql-endpoint",
-  "version": "1.19.0",
+  "version": "1.19.2",
   "description": "A sparql-endpoint query-operation actor",
   "lsd:module": true,
   "main": "index.js",
@@ -32,8 +32,8 @@
     "index.js"
   ],
   "dependencies": {
-    "@comunica/bus-rdf-resolve-quad-pattern": "^1.19.0",
-    "@comunica/utils-datasource": "^1.19.0",
+    "@comunica/bus-rdf-resolve-quad-pattern": "^1.19.2",
+    "@comunica/utils-datasource": "^1.19.2",
     "@types/rdf-js": "*",
     "arrayify-stream": "^1.0.0",
     "asynciterator": "^3.0.3",
@@ -49,10 +49,10 @@
     "@comunica/utils-datasource": "^1.2.0"
   },
   "devDependencies": {
-    "@comunica/bus-http": "^1.19.0",
-    "@comunica/bus-query-operation": "^1.19.0",
-    "@comunica/core": "^1.19.0",
-    "@comunica/mediatortype-httprequests": "^1.19.0",
+    "@comunica/bus-http": "^1.19.2",
+    "@comunica/bus-query-operation": "^1.19.2",
+    "@comunica/core": "^1.19.2",
+    "@comunica/mediatortype-httprequests": "^1.19.2",
     "@comunica/utils-datasource": "^1.4.5"
   },
   "jest": {
