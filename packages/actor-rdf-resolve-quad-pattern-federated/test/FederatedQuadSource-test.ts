@@ -52,6 +52,20 @@ describe('FederatedQuadSource', () => {
           data.setProperty('metadata', { totalItems: Number.POSITIVE_INFINITY });
           return Promise.resolve({ data });
         }
+        if (type === 'errorSource') {
+          const data = new ArrayIterator([], { autoStart: false });
+          let ran = false;
+          (<any> data).read = () => {
+            if (ran) {
+              return null;
+            }
+            ran = true;
+            data.emit('error', new Error('FederatedQuadSource: errorSource'));
+            return squad('_:s1', '_:p1', '_:o1');
+          };
+          data.setProperty('metadata', { totalItems: Number.POSITIVE_INFINITY });
+          return Promise.resolve({ data });
+        }
         if (type === 'graphs') {
           const data = new ArrayIterator([
             squad('s1', 'p1', 'o1'),
@@ -1231,6 +1245,30 @@ describe('FederatedQuadSource', () => {
     it('should match no source for named nodes coming from an unknown source', async() => {
       const a = await arrayifyStream(source.match(DF.namedNode('urn:comunica_skolem:source_2:s1'), v, v, v));
       expect(a).toEqual([]);
+    });
+  });
+
+  describe('A FederatedQuadSource instance over an erroring source', () => {
+    let subSource1;
+    let source: FederatedQuadSource;
+    let emptyPatterns;
+    let contextSingleEmpty;
+
+    beforeEach(() => {
+      subSource1 = { type: 'errorSource', value: 'I will emit a data error' };
+      emptyPatterns = new Map();
+      contextSingleEmpty = ActionContext({
+        '@comunica/bus-rdf-resolve-quad-pattern:sources':
+          [
+            subSource1,
+          ],
+      });
+      source = new FederatedQuadSource(mediator, contextSingleEmpty, emptyPatterns, true);
+    });
+
+    it('should emit an error', async() => {
+      await expect(arrayifyStream(source.match(v, v, v, DF.defaultGraph()))).rejects
+        .toThrow(new Error('FederatedQuadSource: errorSource'));
     });
   });
 });

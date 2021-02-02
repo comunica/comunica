@@ -242,6 +242,9 @@ export class FederatedQuadSource implements IQuadSource {
         data = data.filter(quad => quad.graph.termType !== 'DefaultGraph');
       }
 
+      // Forward errors to our final iterator
+      data.on('error', error => it.emit('error', error));
+
       return data;
     }));
 
