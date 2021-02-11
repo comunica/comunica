@@ -116,3 +116,10 @@ export enum KeysRdfResolveQuadPattern {
    */
   source = '@comunica/bus-rdf-resolve-quad-pattern:source',
 }
+
+export enum KeysRdfUpdateQuads {
+  /**
+   * @range {IDataDestination} A data destination.
+   */
+  destination = '@comunica/bus-rdf-update-quads:destination',
+}

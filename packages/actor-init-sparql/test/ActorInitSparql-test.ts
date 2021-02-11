@@ -781,6 +781,31 @@ graph <exists02.ttl> {
       expect(spy.mock.calls[0][1]['@comunica/actor-init-sparql:lenient']).toBeTruthy();
     });
 
+    it('should set the destination with the -d option', async() => {
+      actor = new ActorInitSparql(
+        { bus,
+          contextKeyShortcuts,
+          logger,
+          mediatorContextPreprocess,
+          mediatorHttpInvalidate,
+          mediatorOptimizeQueryOperation,
+          mediatorQueryOperation,
+          mediatorSparqlParse,
+          mediatorSparqlSerialize,
+          mediatorSparqlSerializeMediaTypeCombiner: mediatorSparqlSerialize,
+          mediatorSparqlSerializeMediaTypeFormatCombiner: mediatorSparqlSerialize,
+          name: 'actor',
+          queryString },
+      );
+      const spy = jest.spyOn(actor, 'query');
+      expect(await actor.run({
+        argv: [ hypermedia, queryString, '-d', 'http://target.com/' ],
+        env: {},
+        stdin: new PassThrough(),
+      })).toBeTruthy();
+      expect(spy.mock.calls[0][1]['@comunica/bus-rdf-update-quads:destination']).toEqual('http://target.com/');
+    });
+
     describe('getResultMediaTypeFormats', () => {
       it('should return the media type formats', () => {
         const med: any = {

@@ -1,3 +1,4 @@
+import { KeysRdfUpdateQuads } from '@comunica/context-entries';
 import type { IAction, IActorArgs, IActorOutput, IActorTest, ActionContext } from '@comunica/core';
 import { Actor } from '@comunica/core';
 import type { AsyncIterator } from 'asynciterator';
@@ -6,8 +7,9 @@ import type * as RDF from 'rdf-js';
 /**
  * @type {string} Context entry for a data destination.
  * @value {IDataDestination} A destination.
+ * @deprecated Import this constant from @comunica/context-entries.
  */
-export const KEY_CONTEXT_DESTINATION = '@comunica/bus-rdf-update-quads:destination';
+export const KEY_CONTEXT_DESTINATION = KeysRdfUpdateQuads.destination;
 
 export function isDataDestinationRawType(dataDestination: IDataDestination): dataDestination is string | RDF.Store {
   return typeof dataDestination === 'string' || 'remove' in dataDestination;
