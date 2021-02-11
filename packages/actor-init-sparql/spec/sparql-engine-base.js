@@ -25,16 +25,22 @@ module.exports = function(engine) {
       if (result.type === 'bindings') {
         return new RdfTestSuite.QueryResultBindings(result.variables, await require('arrayify-stream')(result.bindingsStream.map((binding) => binding.toObject())));
       }
-    }
+    },
+    update: async function(data, queryString, options) {
+      const store = await source(data);
+      const result = await engine.query(queryString, {
+        baseIRI: options.baseIRI,
+        sources: [{ type: 'rdfjsSource', value: store }],
+        destination: store,
+      });
+      await result.updateResult;
+      return store.getQuads();
+    },
   };
 };
 
 function source(data) {
   const store = new N3Store();
   store.addQuads(data);
-  return {
-    match: function(s, p, o, g) {
-      return require('streamify-array')(store.getQuads(s, p, o, g));
-    }
-  };
+  return store;
 }
