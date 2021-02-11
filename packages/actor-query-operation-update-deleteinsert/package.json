@@ -1,0 +1,67 @@
+{
+  "name": "@comunica/actor-query-operation-update-deleteinsert",
+  "version": "1.0.0",
+  "description": "A update-deleteinsert query-operation actor",
+  "lsd:module": true,
+  "main": "index.js",
+  "typings": "index",
+  "repository": "https://github.com/comunica/comunica/tree/master/packages/actor-query-operation-update-deleteinsert",
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "comunica",
+    "actor",
+    "query-operation",
+    "update-deleteinsert"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/comunica/comunica/issues"
+  },
+  "homepage": "https://github.com/comunica/comunica#readme",
+  "files": [
+    "components",
+    "lib/**/*.d.ts",
+    "lib/**/*.js",
+    "index.d.ts",
+    "index.js"
+  ],
+  "dependencies": {
+    "@comunica/actor-query-operation-construct": "^1.19.2",
+    "@types/rdf-js": "*",
+    "asynciterator": "^3.0.3"
+  },
+  "peerDependencies": {
+    "@comunica/core": "^1.19.2",
+    "@comunica/bus-query-operation": "^1.19.2",
+    "@comunica/bus-rdf-update-quads": "^1.0.0"
+  },
+  "devDependencies": {
+    "@comunica/core": "^1.19.2",
+    "@comunica/bus-query-operation": "^1.19.2",
+    "@comunica/bus-rdf-update-quads": "^1.0.0"
+  },
+  "jest": {
+    "globals": {
+      "ts-jest": {
+        "tsConfig": "../../tsconfig.json"
+      }
+    },
+    "transform": {
+      "^.+\\.ts$": "ts-jest"
+    },
+    "testRegex": "(/test/.*|(\\.|/)(test|spec))\\.ts$",
+    "moduleFileExtensions": [
+      "ts",
+      "js"
+    ],
+    "collectCoverage": true
+  },
+  "scripts": {
+    "test": "node \"../../node_modules/jest/bin/jest.js\" ${1}",
+    "test-watch": "node \"../../node_modules/jest/bin/jest.js\" ${1} --watch",
+    "build": "node \"../../node_modules/typescript/bin/tsc\"",
+    "validate": "npm ls"
+  }
+}
