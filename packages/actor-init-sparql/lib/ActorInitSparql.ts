@@ -4,7 +4,13 @@ import * as OS from 'os';
 import type { Readable } from 'stream';
 import { ProxyHandlerStatic } from '@comunica/actor-http-proxy';
 import type { IActionInit, IActorOutputInit } from '@comunica/bus-init';
-import { KeysHttp, KeysHttpMemento, KeysHttpProxy, KeysInitSparql } from '@comunica/context-entries';
+import {
+  KeysHttp,
+  KeysHttpMemento,
+  KeysHttpProxy,
+  KeysInitSparql,
+  KeysRdfUpdateQuads,
+} from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import { LoggerPretty } from '@comunica/logger-pretty';
 import type { IActorQueryOperationOutput } from '@comunica/types';
@@ -35,6 +41,7 @@ export class ActorInitSparql extends ActorInitSparqlBrowser {
   Options:
     -q            evaluate the given SPARQL query string
     -f            evaluate the SPARQL query in the given file
+    -d            the destination for update queries
     -c            use the given JSON configuration file (e.g., config.json)
     -t            the MIME type of the output (e.g., application/json)
     -i            the query input format (e.g., graphql, defaults to sparql)
@@ -147,6 +154,11 @@ export class ActorInitSparql extends ActorInitSparqlBrowser {
         const source = this.getSourceObjectFromString(sourceValue);
         context.sources.push(source);
       });
+    }
+
+    // Add destination to context
+    if (args.d) {
+      context[KeysRdfUpdateQuads.destination] = args.d;
     }
 
     // Set the logger
