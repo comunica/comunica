@@ -1,0 +1,9 @@
+{
+  "@context": {
+    "schema": "http://schema.org/",
+    "review": "schema:review",
+    "rating": "schema:reviewRating",
+    "value": "schema:ratingValue",
+    "name": { "@id": "schema:name", "@language": "en"}
+  }
+}
