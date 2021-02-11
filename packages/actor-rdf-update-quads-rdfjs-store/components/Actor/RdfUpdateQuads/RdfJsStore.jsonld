@@ -1,0 +1,21 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-update-quads-rdfjs-store/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-update-quads/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-rdf-update-quads-rdfjs-store",
+  "components": [
+    {
+      "@id": "caruqrs:Actor/RdfUpdateQuads/RdfJsStore",
+      "@type": "Class",
+      "extends": "cbruq:Actor/RdfUpdateQuads",
+      "requireElement": "ActorRdfUpdateQuadsRdfJsStore",
+      "comment": "A comunica RDFJS Store RDF Update Quads Actor.",
+      "constructorArguments": [
+        {
+          "extends": "cbruq:Actor/RdfUpdateQuads/constructorArgumentsObject"
+        }
+      ]
+    }
+  ]
+}

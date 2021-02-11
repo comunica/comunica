@@ -1,0 +1,12 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
+      "caruqrs": "npmd:@comunica/actor-rdf-update-quads-rdfjs-store/",
+      "files-caruqrs": "caruqrs:^1.0.0/",
+
+      "ActorRdfUpdateQuadsRdfJsStore": "caruqrs:Actor/RdfUpdateQuads/RdfJsStore"
+    }
+  ]
+}
