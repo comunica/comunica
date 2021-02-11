@@ -1,0 +1,12 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
+      "caqouc": "npmd:@comunica/actor-query-operation-update-compositeupdate/",
+      "files-caqouc": "caqouc:^1.0.0/",
+
+      "ActorQueryOperationUpdateCompositeUpdate": "caqouc:Actor/QueryOperation/UpdateCompositeUpdate"
+    }
+  ]
+}
