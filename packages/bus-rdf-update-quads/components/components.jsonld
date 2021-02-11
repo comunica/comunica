@@ -1,0 +1,10 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-update-quads/^1.0.0/components/context.jsonld",
+  "@id": "npmd:@comunica/bus-rdf-update-quads",
+  "@type": "Module",
+  "requireName": "@comunica/bus-rdf-update-quads",
+  "import": [
+    "files-cbruq:components/Bus/RdfUpdateQuads.jsonld",
+    "files-cbruq:components/Actor/RdfUpdateQuads.jsonld"
+  ]
+}
