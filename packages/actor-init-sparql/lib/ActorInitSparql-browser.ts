@@ -31,6 +31,7 @@ import type {
   IActorQueryOperationOutputBindings,
   IActorQueryOperationOutputQuads,
   IActorQueryOperationOutputBoolean,
+  IActorQueryOperationOutputUpdate,
   Bindings,
   IQueryEngine,
 } from '@comunica/types';
@@ -324,12 +325,18 @@ export interface IQueryResultQuads extends IActorQueryOperationOutputQuads {
 }
 
 /**
- * Query operation output for quads.
+ * Query operation output for booleans.
  * For example: SPARQL ASK results
  */
 export interface IQueryResultBoolean extends IActorQueryOperationOutputBoolean {}
 
-export type IQueryResult = IQueryResultBindings | IQueryResultQuads | IQueryResultBoolean;
+/**
+ * Query operation output for updates.
+ * For example: SPARQL INSERT/DELETE results
+ */
+export interface IQueryResultUpdate extends IActorQueryOperationOutputUpdate {}
+
+export type IQueryResult = IQueryResultBindings | IQueryResultQuads | IQueryResultBoolean | IQueryResultUpdate;
 
 /**
  * @deprecated Import this constant from @comunica/context-entries.
