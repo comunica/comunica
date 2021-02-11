@@ -1,0 +1,6 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-update-quads/^1.0.0/components/context.jsonld",
+  "@id": "cbruq:Bus/RdfUpdateQuads",
+  "@type": "cc:Bus",
+  "comment": "A comunica bus for rdf-update-quads events."
+}
