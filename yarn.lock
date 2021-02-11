@@ -10656,6 +10656,18 @@ sparqlalgebrajs@^2.4.0:
     rdf-string "^1.5.0"
     sparqljs "^3.1.1"
 
+sparqlalgebrajs@^2.5.0:
+  version "2.5.0"
+  resolved "https://registry.yarnpkg.com/sparqlalgebrajs/-/sparqlalgebrajs-2.5.0.tgz#f53da574449ac6a30a93d7cd260839f6ce70fcc5"
+  integrity sha512-dNJf4xUj5DFZc/9vQnDU5y9u8l4MfvOkMgx6PAefhTjAK0HHChxLZFF4n6GngWfvEZQ3/HcfmQk3cQo6sT/6bQ==
+  dependencies:
+    fast-deep-equal "^3.1.1"
+    minimist "^1.2.5"
+    rdf-data-factory "^1.0.0"
+    rdf-isomorphic "^1.2.0"
+    rdf-string "^1.5.0"
+    sparqljs "^3.1.1"
+
 sparqlee@^1.6.0:
   version "1.6.0"
   resolved "https://registry.yarnpkg.com/sparqlee/-/sparqlee-1.6.0.tgz#ad00cdba19ce92d467a450946f1db164199944bf"
