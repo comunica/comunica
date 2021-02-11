@@ -1,0 +1,9 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-update-quads-rdfjs-store/^1.0.0/components/context.jsonld",
+  "@id": "npmd:@comunica/actor-rdf-update-quads-rdfjs-store",
+  "@type": "Module",
+  "requireName": "@comunica/actor-rdf-update-quads-rdfjs-store",
+  "import": [
+    "files-caruqrs:components/Actor/RdfUpdateQuads/RdfJsStore.jsonld"
+  ]
+}
