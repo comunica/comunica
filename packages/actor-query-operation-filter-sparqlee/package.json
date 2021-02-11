@@ -33,7 +33,7 @@
   ],
   "dependencies": {
     "@comunica/types": "^1.19.2",
-    "sparqlalgebrajs": "^2.4.0",
+    "sparqlalgebrajs": "^2.5.0",
     "sparqlee": "^1.6.2"
   },
   "peerDependencies": {

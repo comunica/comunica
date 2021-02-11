@@ -42,7 +42,7 @@
   "devDependencies": {
     "@comunica/bus-query-operation": "^1.19.2",
     "@comunica/core": "^1.19.2",
-    "sparqlalgebrajs": "^2.4.0"
+    "sparqlalgebrajs": "^2.5.0"
   },
   "jest": {
     "globals": {

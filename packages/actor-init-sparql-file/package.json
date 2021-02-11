@@ -52,7 +52,7 @@
     "@comunica/actor-init-sparql": "^1.19.2",
     "@comunica/actor-rdf-dereference-file": "^1.19.2",
     "@comunica/runner-cli": "^1.19.2",
-    "sparqlalgebrajs": "^2.4.0"
+    "sparqlalgebrajs": "^2.5.0"
   },
   "scripts": {
     "build": "node \"../../node_modules/typescript/bin/tsc\"",
