@@ -8,6 +8,7 @@ import type {
   IActorQueryOperationOutputBindings,
   IActorQueryOperationOutputBoolean,
   IActorQueryOperationOutputQuads,
+  IActorQueryOperationOutputUpdate,
   IActorQueryOperationOutputStream,
   Bindings,
   PatternBindings,
@@ -40,6 +41,11 @@ export type { IActorQueryOperationOutputBoolean };
  * @deprecated Use the type in @comunica/types
  */
 export type { IActorQueryOperationOutputQuads };
+
+/**
+ * @deprecated Use the type in @comunica/types
+ */
+export type { IActorQueryOperationOutputUpdate };
 
 /**
  * @deprecated Use the type in @comunica/types
@@ -152,6 +158,17 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
   public static getSafeBoolean(output: IActorQueryOperationOutput): IActorQueryOperationOutputBoolean {
     ActorQueryOperation.validateQueryOutput(output, 'boolean');
     return <IActorQueryOperationOutputBoolean> output;
+  }
+
+  /**
+   * Safely cast a query operation output to an update output.
+   * This will throw a runtime error if the output is of the incorrect type.
+   * @param {IActorQueryOperationOutput} output A query operation output.
+   * @return {IActorQueryOperationOutputUpdate} An update query operation output.
+   */
+  public static getSafeUpdate(output: IActorQueryOperationOutput): IActorQueryOperationOutputUpdate {
+    ActorQueryOperation.validateQueryOutput(output, 'update');
+    return <IActorQueryOperationOutputUpdate> output;
   }
 
   /**
