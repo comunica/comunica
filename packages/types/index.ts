@@ -78,6 +78,34 @@ export interface IActorQueryOperationOutputBoolean extends IActorQueryOperationO
 
 }
 
+export interface IActorQueryOperationOutputUpdate extends IActorQueryOperationOutputBase {
+  /**
+   * The type of output.
+   */
+  type: 'update';
+  /**
+   * A promise resolving when the update has finished.
+   * Once this is resolved, `quadStreamInserted` and `quadStreamDeleted` will have ended.
+   */
+  updateResult: Promise<void>;
+  /**
+   * The stream of quads that were inserted.
+   *
+   * Undefined if the operation did not have to delete anything.
+   *
+   * Listeners can be added to it before or after `updateResult` has been resolved.
+   */
+  quadStreamInserted?: RDF.Stream & AsyncIterator<RDF.Quad>;
+  /**
+   * The stream of quads that were deleted.
+   *
+   * Undefined if the operation did not have to delete anything.
+   *
+   * Listeners can be added to it before or after `updateResult` has been resolved.
+   */
+  quadStreamDeleted?: RDF.Stream & AsyncIterator<RDF.Quad>;
+}
+
 /**
  * Binds a quad pattern term's position to a variable.
  */
@@ -98,7 +126,8 @@ export interface IActionQueryOperation extends IAction {
 export type IActorQueryOperationOutput =
   IActorQueryOperationOutputStream |
   IActorQueryOperationOutputQuads |
-  IActorQueryOperationOutputBoolean;
+  IActorQueryOperationOutputBoolean |
+  IActorQueryOperationOutputUpdate;
 export interface IActorQueryOperationOutputBase {
   /**
    * The type of output.
