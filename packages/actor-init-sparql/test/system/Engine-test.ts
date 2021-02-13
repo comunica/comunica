@@ -237,6 +237,28 @@ describe('System test: ActorInitSparql', () => {
         expect(store.countQuads(DF.namedNode('ex:s2'), DF.namedNode('ex:p4'), DF.namedNode('ex:o4'), DF.defaultGraph()))
           .toEqual(1);
       });
+
+      it('with load', async() => {
+        // Prepare store
+        const store = new Store();
+
+        // Execute query
+        const result = <IQueryResultUpdate> await engine.query(
+          `LOAD <https://www.rubensworks.net/> INTO GRAPH <ex:graph>`,
+          {
+            sources: [],
+            destination: store,
+          },
+        );
+
+        // Check results
+        await result.updateResult;
+        expect((await arrayifyStream(result.quadStreamInserted)).length > 0).toBeTruthy();
+        expect(result.quadStreamDeleted).toBeUndefined();
+
+        // Check store contents
+        expect(store.size > 0).toBeTruthy();
+      });
     });
   });
 });
