@@ -1,0 +1,21 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-dereference-fallback/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-dereference/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-rdf-dereference-fallback",
+  "components": [
+    {
+      "@id": "cardfa:Actor/RdfDereference/Fallback",
+      "@type": "Class",
+      "extends": "cbrd:Actor/RdfDereference",
+      "requireElement": "ActorRdfDereferenceFallback",
+      "comment": "A comunica Fallback RDF Dereference Actor.",
+      "constructorArguments": [
+        {
+          "extends": "cbrd:Actor/RdfDereference/constructorArgumentsObject"
+        }
+      ]
+    }
+  ]
+}
