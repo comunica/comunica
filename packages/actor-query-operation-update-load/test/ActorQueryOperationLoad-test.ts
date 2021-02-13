@@ -56,14 +56,40 @@ describe('ActorQueryOperationLoad', () => {
       const output = <IActorQueryOperationOutputUpdate> await actor.run(op);
       expect(output.type).toEqual('update');
       await expect(output.updateResult).resolves.toBeUndefined();
-      expect(await arrayifyStream(output.quadStreamInserted)).toEqual([
+      expect(await arrayifyStream(mediatorUpdateQuads.mediate.mock.calls[0][0].quadStreamInsert)).toEqual([
         DF.quad(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('o')),
       ]);
-      expect(output.quadStreamDeleted).toBeUndefined();
+      expect(mediatorUpdateQuads.mediate.mock.calls[0][0].quadStreamDeleted).toBeUndefined();
       expect(mediatorQueryOperation.mediate).toHaveBeenCalledWith({
         operation: expect.anything(),
         context: ActionContext({
           [KEY_CONTEXT_SOURCES]: [ 'URL' ],
+        }),
+      });
+    });
+
+    it('should run with a given context', async() => {
+      const op = {
+        operation: {
+          type: 'load',
+          source: DF.namedNode('URL'),
+        },
+        context: ActionContext({
+          [KEY_CONTEXT_SOURCES]: [ 'SOMETHINGELSE' ],
+        }),
+      };
+      const output = <IActorQueryOperationOutputUpdate> await actor.run(op);
+      expect(output.type).toEqual('update');
+      await expect(output.updateResult).resolves.toBeUndefined();
+      expect(await arrayifyStream(mediatorUpdateQuads.mediate.mock.calls[0][0].quadStreamInsert)).toEqual([
+        DF.quad(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('o')),
+      ]);
+      expect(mediatorUpdateQuads.mediate.mock.calls[0][0].quadStreamDeleted).toBeUndefined();
+      expect(mediatorQueryOperation.mediate).toHaveBeenCalledWith({
+        operation: expect.anything(),
+        context: ActionContext({
+          [KEY_CONTEXT_SOURCES]: [ 'URL' ],
+          '@comunica/bus-query-operation:operation': expect.anything(),
         }),
       });
     });
@@ -77,11 +103,11 @@ describe('ActorQueryOperationLoad', () => {
       };
       const output = <IActorQueryOperationOutputUpdate> await actor.run(op);
       expect(output.type).toEqual('update');
-      expect(await arrayifyStream(output.quadStreamInserted)).toEqual([
+      expect(await arrayifyStream(mediatorUpdateQuads.mediate.mock.calls[0][0].quadStreamInsert)).toEqual([
         DF.quad(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('o')),
       ]);
       await expect(output.updateResult).resolves.toBeUndefined();
-      expect(output.quadStreamDeleted).toBeUndefined();
+      expect(mediatorUpdateQuads.mediate.mock.calls[0][0].quadStreamDeleted).toBeUndefined();
     });
 
     it('should run with destination', async() => {
@@ -95,10 +121,10 @@ describe('ActorQueryOperationLoad', () => {
       const output = <IActorQueryOperationOutputUpdate> await actor.run(op);
       expect(output.type).toEqual('update');
       await expect(output.updateResult).resolves.toBeUndefined();
-      expect(await arrayifyStream(output.quadStreamInserted)).toEqual([
+      expect(await arrayifyStream(mediatorUpdateQuads.mediate.mock.calls[0][0].quadStreamInsert)).toEqual([
         DF.quad(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('o'), DF.namedNode('GRAPH')),
       ]);
-      expect(output.quadStreamDeleted).toBeUndefined();
+      expect(mediatorUpdateQuads.mediate.mock.calls[0][0].quadStreamDeleted).toBeUndefined();
     });
 
     it('should run for an empty source', async() => {
@@ -116,8 +142,8 @@ describe('ActorQueryOperationLoad', () => {
       const output = <IActorQueryOperationOutputUpdate> await actor.run(op);
       expect(output.type).toEqual('update');
       await expect(output.updateResult).resolves.toBeUndefined();
-      expect(await arrayifyStream(output.quadStreamInserted)).toEqual([]);
-      expect(output.quadStreamDeleted).toBeUndefined();
+      expect(await arrayifyStream(mediatorUpdateQuads.mediate.mock.calls[0][0].quadStreamInsert)).toEqual([]);
+      expect(mediatorUpdateQuads.mediate.mock.calls[0][0].quadStreamDeleted).toBeUndefined();
     });
 
     it('should run in silent mode', async() => {
@@ -131,10 +157,10 @@ describe('ActorQueryOperationLoad', () => {
       const output = <IActorQueryOperationOutputUpdate> await actor.run(op);
       expect(output.type).toEqual('update');
       await expect(output.updateResult).resolves.toBeUndefined();
-      expect(await arrayifyStream(output.quadStreamInserted)).toEqual([
+      expect(await arrayifyStream(mediatorUpdateQuads.mediate.mock.calls[0][0].quadStreamInsert)).toEqual([
         DF.quad(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('o')),
       ]);
-      expect(output.quadStreamDeleted).toBeUndefined();
+      expect(mediatorUpdateQuads.mediate.mock.calls[0][0].quadStreamDeleted).toBeUndefined();
       expect(mediatorQueryOperation.mediate).toHaveBeenCalledWith({
         operation: expect.anything(),
         context: ActionContext({

@@ -88,8 +88,8 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
       const output = <IActorQueryOperationOutputUpdate> await actor.run(op);
       expect(output.type).toEqual('update');
       await expect(output.updateResult).resolves.toBeUndefined();
-      expect(output.quadStreamInserted).toBeUndefined();
-      expect(output.quadStreamDeleted).toBeUndefined();
+      expect(mediatorUpdateQuads.mediate.mock.calls[0][0].quadStreamInsert).toBeUndefined();
+      expect(mediatorUpdateQuads.mediate.mock.calls[0][0].quadStreamDelete).toBeUndefined();
     });
 
     it('should run with insert', async() => {
@@ -104,10 +104,10 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
       const output = <IActorQueryOperationOutputUpdate> await actor.run(op);
       expect(output.type).toEqual('update');
       await expect(output.updateResult).resolves.toBeUndefined();
-      expect(await arrayifyStream(output.quadStreamInserted)).toEqual([
+      expect(await arrayifyStream(mediatorUpdateQuads.mediate.mock.calls[0][0].quadStreamInsert)).toEqual([
         DF.quad(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('o')),
       ]);
-      expect(output.quadStreamDeleted).toBeUndefined();
+      expect(mediatorUpdateQuads.mediate.mock.calls[0][0].quadStreamDelete).toBeUndefined();
     });
 
     it('should run with delete', async() => {
@@ -122,8 +122,8 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
       const output = <IActorQueryOperationOutputUpdate> await actor.run(op);
       expect(output.type).toEqual('update');
       await expect(output.updateResult).resolves.toBeUndefined();
-      expect(output.quadStreamInserted).toBeUndefined();
-      expect(await arrayifyStream(output.quadStreamDeleted)).toEqual([
+      expect(mediatorUpdateQuads.mediate.mock.calls[0][0].quadStreamInsert).toBeUndefined();
+      expect(await arrayifyStream(mediatorUpdateQuads.mediate.mock.calls[0][0].quadStreamDelete)).toEqual([
         DF.quad(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('o')),
       ]);
     });
@@ -143,10 +143,10 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
       const output = <IActorQueryOperationOutputUpdate> await actor.run(op);
       expect(output.type).toEqual('update');
       await expect(output.updateResult).resolves.toBeUndefined();
-      expect(await arrayifyStream(output.quadStreamInserted)).toEqual([
+      expect(await arrayifyStream(mediatorUpdateQuads.mediate.mock.calls[0][0].quadStreamInsert)).toEqual([
         DF.quad(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1')),
       ]);
-      expect(await arrayifyStream(output.quadStreamDeleted)).toEqual([
+      expect(await arrayifyStream(mediatorUpdateQuads.mediate.mock.calls[0][0].quadStreamDelete)).toEqual([
         DF.quad(DF.namedNode('s2'), DF.namedNode('p2'), DF.namedNode('o2')),
       ]);
     });
@@ -164,12 +164,12 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
       const output = <IActorQueryOperationOutputUpdate> await actor.run(op);
       expect(output.type).toEqual('update');
       await expect(output.updateResult).resolves.toBeUndefined();
-      expect(await arrayifyStream(output.quadStreamInserted)).toBeRdfIsomorphic([
+      expect(await arrayifyStream(mediatorUpdateQuads.mediate.mock.calls[0][0].quadStreamInsert)).toBeRdfIsomorphic([
         DF.quad(DF.namedNode('s'), DF.namedNode('p'), DF.literal('1')),
         DF.quad(DF.namedNode('s'), DF.namedNode('p'), DF.literal('2')),
         DF.quad(DF.namedNode('s'), DF.namedNode('p'), DF.literal('3')),
       ]);
-      expect(output.quadStreamDeleted).toBeUndefined();
+      expect(mediatorUpdateQuads.mediate.mock.calls[0][0].quadStreamDelete).toBeUndefined();
     });
 
     it('should run with delete and where', async() => {
@@ -185,8 +185,8 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
       const output = <IActorQueryOperationOutputUpdate> await actor.run(op);
       expect(output.type).toEqual('update');
       await expect(output.updateResult).resolves.toBeUndefined();
-      expect(output.quadStreamInserted).toBeUndefined();
-      expect(await arrayifyStream(output.quadStreamDeleted)).toBeRdfIsomorphic([
+      expect(mediatorUpdateQuads.mediate.mock.calls[0][0].quadStreamInsert).toBeUndefined();
+      expect(await arrayifyStream(mediatorUpdateQuads.mediate.mock.calls[0][0].quadStreamDelete)).toBeRdfIsomorphic([
         DF.quad(DF.namedNode('s'), DF.namedNode('p'), DF.literal('1')),
         DF.quad(DF.namedNode('s'), DF.namedNode('p'), DF.literal('2')),
         DF.quad(DF.namedNode('s'), DF.namedNode('p'), DF.literal('3')),
@@ -209,12 +209,12 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
       const output = <IActorQueryOperationOutputUpdate> await actor.run(op);
       expect(output.type).toEqual('update');
       await expect(output.updateResult).resolves.toBeUndefined();
-      expect(await arrayifyStream(output.quadStreamInserted)).toBeRdfIsomorphic([
+      expect(await arrayifyStream(mediatorUpdateQuads.mediate.mock.calls[0][0].quadStreamInsert)).toBeRdfIsomorphic([
         DF.quad(DF.namedNode('s1'), DF.namedNode('p1'), DF.literal('1')),
         DF.quad(DF.namedNode('s1'), DF.namedNode('p1'), DF.literal('2')),
         DF.quad(DF.namedNode('s1'), DF.namedNode('p1'), DF.literal('3')),
       ]);
-      expect(await arrayifyStream(output.quadStreamDeleted)).toBeRdfIsomorphic([
+      expect(await arrayifyStream(mediatorUpdateQuads.mediate.mock.calls[0][0].quadStreamDelete)).toBeRdfIsomorphic([
         DF.quad(DF.namedNode('s2'), DF.namedNode('p2'), DF.literal('1')),
         DF.quad(DF.namedNode('s2'), DF.namedNode('p2'), DF.literal('2')),
         DF.quad(DF.namedNode('s2'), DF.namedNode('p2'), DF.literal('3')),
@@ -258,8 +258,8 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
       const output = <IActorQueryOperationOutputUpdate> await actor.run(op);
       expect(output.type).toEqual('update');
       await expect(output.updateResult).resolves.toBeUndefined();
-      expect(await arrayifyStream(output.quadStreamInserted)).toEqual([]);
-      expect(output.quadStreamDeleted).toBeUndefined();
+      expect(await arrayifyStream(mediatorUpdateQuads.mediate.mock.calls[0][0].quadStreamInsert)).toEqual([]);
+      expect(mediatorUpdateQuads.mediate.mock.calls[0][0].quadStreamDelete).toBeUndefined();
     });
 
     it('should run with delete and where without matches', async() => {
@@ -283,8 +283,8 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
       const output = <IActorQueryOperationOutputUpdate> await actor.run(op);
       expect(output.type).toEqual('update');
       await expect(output.updateResult).resolves.toBeUndefined();
-      expect(output.quadStreamInserted).toBeUndefined();
-      expect(await arrayifyStream(output.quadStreamDeleted)).toEqual([]);
+      expect(mediatorUpdateQuads.mediate.mock.calls[0][0].quadStreamInsert).toBeUndefined();
+      expect(await arrayifyStream(mediatorUpdateQuads.mediate.mock.calls[0][0].quadStreamDelete)).toEqual([]);
     });
 
     it('should run with insert, delete and where without matches', async() => {
@@ -311,8 +311,8 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
       const output = <IActorQueryOperationOutputUpdate> await actor.run(op);
       expect(output.type).toEqual('update');
       await expect(output.updateResult).resolves.toBeUndefined();
-      expect(await arrayifyStream(output.quadStreamInserted)).toEqual([]);
-      expect(await arrayifyStream(output.quadStreamDeleted)).toEqual([]);
+      expect(await arrayifyStream(mediatorUpdateQuads.mediate.mock.calls[0][0].quadStreamInsert)).toEqual([]);
+      expect(await arrayifyStream(mediatorUpdateQuads.mediate.mock.calls[0][0].quadStreamDelete)).toEqual([]);
     });
   });
 });
