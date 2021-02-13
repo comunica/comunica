@@ -28,8 +28,7 @@
     "index.js"
   ],
   "dependencies": {
-    "@types/rdf-js": "*",
-    "asynciterator": "^3.0.3"
+    "@types/rdf-js": "*"
   },
   "peerDependencies": {
     "@comunica/core": "^1.19.2",
