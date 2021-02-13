@@ -5,6 +5,7 @@
 
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-dereference/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-dereference-http-parse/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-dereference-fallback/^1.0.0/components/context.jsonld",
 
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-http/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-parse/^1.0.0/components/context.jsonld",
@@ -17,6 +18,7 @@
     {
       "@id": "config-sets:rdf-dereference.json#myRdfDereferencer",
       "@type": "ActorRdfDereferenceHttpParse",
+      "beforeActor": "config-sets:rdf-dereference.json#myRdfDereferencerFallback",
       "mediatorHttp": {
         "@id": "config-sets:http.json#mediatorHttp"
       },
@@ -31,6 +33,11 @@
         "@type": "MediatorRace",
         "cc:Mediator/bus": { "@id": "cbrp:Bus/RdfParse" }
       }
+    },
+
+    {
+      "@id": "config-sets:rdf-dereference.json#myRdfDereferencerFallback",
+      "@type": "ActorRdfDereferenceFallback"
     }
   ]
 }

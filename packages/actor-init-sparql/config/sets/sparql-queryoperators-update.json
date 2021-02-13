@@ -6,6 +6,7 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-query-operation/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-update-compositeupdate/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-update-deleteinsert/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-update-load/^1.0.0/components/context.jsonld",
 
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-race/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-update-quads/^1.0.0/components/context.jsonld"
@@ -27,6 +28,13 @@
         "@type": "MediatorRace",
         "cc:Mediator/bus": { "@id": "cbruq:Bus/RdfUpdateQuads" }
       }
+    },
+
+    {
+      "@id": "config-sets:sparql-queryoperators.json#myLoadQueryOperator",
+      "@type": "ActorQueryOperationLoad",
+      "cbqo:mediatorQueryOperation": { "@id": "config-sets:sparql-queryoperators.json#mediatorQueryOperation" },
+      "caqoul:mediatorUpdateQuads": { "@id": "config-sets:sparql-queryoperator-update.json#mediatorUpdateQuads" }
     }
   ]
 }
