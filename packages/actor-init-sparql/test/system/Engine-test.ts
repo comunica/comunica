@@ -309,6 +309,75 @@ describe('System test: ActorInitSparql', () => {
           destination: store,
         })).updateResult).resolves.toBeUndefined();
       });
+
+      it('with add', async() => {
+        // Prepare store
+        const store = new Store();
+        store.addQuads([
+          DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p1'), DF.namedNode('ex:o1'), DF.namedNode('ex:g1')),
+          DF.quad(DF.namedNode('ex:s2'), DF.namedNode('ex:p2'), DF.namedNode('ex:o2'), DF.defaultGraph()),
+        ]);
+        expect(store.size).toEqual(2);
+
+        // Execute query
+        const result = <IQueryResultUpdate> await engine.query(`ADD DEFAULT TO <ex:g1>`, {
+          sources: [ store ],
+          destination: store,
+        });
+        await result.updateResult;
+
+        // Check store contents
+        expect(store.size).toEqual(3);
+        expect(store
+          .countQuads(DF.namedNode('ex:s2'), DF.namedNode('ex:p2'), DF.namedNode('ex:o2'), DF.namedNode('ex:g1')))
+          .toEqual(1);
+      });
+
+      it('with move', async() => {
+        // Prepare store
+        const store = new Store();
+        store.addQuads([
+          DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p1'), DF.namedNode('ex:o1'), DF.namedNode('ex:g1')),
+          DF.quad(DF.namedNode('ex:s2'), DF.namedNode('ex:p2'), DF.namedNode('ex:o2'), DF.defaultGraph()),
+        ]);
+        expect(store.size).toEqual(2);
+
+        // Execute query
+        const result = <IQueryResultUpdate> await engine.query(`MOVE DEFAULT TO <ex:g1>`, {
+          sources: [ store ],
+          destination: store,
+        });
+        await result.updateResult;
+
+        // Check store contents
+        expect(store.size).toEqual(1);
+        expect(store
+          .countQuads(DF.namedNode('ex:s2'), DF.namedNode('ex:p2'), DF.namedNode('ex:o2'), DF.namedNode('ex:g1')))
+          .toEqual(1);
+      });
+
+      it('with copy', async() => {
+        // Prepare store
+        const store = new Store();
+        store.addQuads([
+          DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p1'), DF.namedNode('ex:o1'), DF.namedNode('ex:g1')),
+          DF.quad(DF.namedNode('ex:s2'), DF.namedNode('ex:p2'), DF.namedNode('ex:o2'), DF.defaultGraph()),
+        ]);
+        expect(store.size).toEqual(2);
+
+        // Execute query
+        const result = <IQueryResultUpdate> await engine.query(`COPY DEFAULT TO <ex:g1>`, {
+          sources: [ store ],
+          destination: store,
+        });
+        await result.updateResult;
+
+        // Check store contents
+        expect(store.size).toEqual(2);
+        expect(store
+          .countQuads(DF.namedNode('ex:s2'), DF.namedNode('ex:p2'), DF.namedNode('ex:o2'), DF.namedNode('ex:g1')))
+          .toEqual(1);
+      });
     });
   });
 });

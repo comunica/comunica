@@ -1,0 +1,12 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
+      "caqoum": "npmd:@comunica/actor-query-operation-update-move-rewrite/",
+      "files-caqoum": "caqoum:^1.0.0/",
+
+      "ActorQueryOperationMoveRewrite": "caqoum:Actor/QueryOperation/MoveRewrite"
+    }
+  ]
+}

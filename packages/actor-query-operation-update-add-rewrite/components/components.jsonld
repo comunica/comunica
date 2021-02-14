@@ -1,0 +1,9 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-update-add-rewrite/^1.0.0/components/context.jsonld",
+  "@id": "npmd:@comunica/actor-query-operation-update-add-rewrite",
+  "@type": "Module",
+  "requireName": "@comunica/actor-query-operation-update-add-rewrite",
+  "import": [
+    "files-caqoua:components/Actor/QueryOperation/AddRewrite.jsonld"
+  ]
+}
