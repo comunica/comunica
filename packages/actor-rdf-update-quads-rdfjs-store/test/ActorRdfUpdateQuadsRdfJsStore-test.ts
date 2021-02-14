@@ -120,19 +120,86 @@ describe('ActorRdfUpdateQuadsRdfJsStore', () => {
       ]);
     });
 
-    it('should run with streams', async() => {
-      const context = ActionContext({ '@comunica/bus-rdf-update-quads:destination': store });
-      const quadStreamInsert = new ArrayIterator([
-        DF.quad(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1')),
-      ]);
-      const quadStreamDelete = new ArrayIterator([
-        DF.quad(DF.namedNode('sd1'), DF.namedNode('pd1'), DF.namedNode('od1')),
-      ]);
-      const { updateResult } = await actor.run({ quadStreamInsert, quadStreamDelete, context });
-      await expect(updateResult).resolves.toBeUndefined();
-      expect(await arrayifyStream(store.match())).toBeRdfIsomorphic([
-        DF.quad(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1')),
-      ]);
+    describe('for insert and delete', () => {
+      it('should run with insert and delete streams', async() => {
+        const context = ActionContext({ '@comunica/bus-rdf-update-quads:destination': store });
+        const quadStreamInsert = new ArrayIterator([
+          DF.quad(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1')),
+        ]);
+        const quadStreamDelete = new ArrayIterator([
+          DF.quad(DF.namedNode('sd1'), DF.namedNode('pd1'), DF.namedNode('od1')),
+        ]);
+        const { updateResult } = await actor.run({ quadStreamInsert, quadStreamDelete, context });
+        await expect(updateResult).resolves.toBeUndefined();
+        expect(await arrayifyStream(store.match())).toBeRdfIsomorphic([
+          DF.quad(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1')),
+        ]);
+      });
+    });
+
+    describe('for graph deletion', () => {
+      it('should run for default graph', async() => {
+        const context = ActionContext({ '@comunica/bus-rdf-update-quads:destination': store });
+        const deleteGraphs = <any> {
+          graphs: DF.defaultGraph(),
+        };
+        const { updateResult } = await actor.run({ deleteGraphs, context });
+        await expect(updateResult).resolves.toBeUndefined();
+        expect(await arrayifyStream(store.match())).toBeRdfIsomorphic([]);
+      });
+
+      it('should run for a named graph graph', async() => {
+        (<Store> store).addQuads([
+          DF.quad(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1'), DF.namedNode('g1')),
+          DF.quad(DF.namedNode('s2'), DF.namedNode('p2'), DF.namedNode('o2'), DF.namedNode('g1')),
+          DF.quad(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1'), DF.namedNode('g2')),
+        ]);
+
+        const context = ActionContext({ '@comunica/bus-rdf-update-quads:destination': store });
+        const deleteGraphs = <any> {
+          graphs: DF.namedNode('g1'),
+        };
+        const { updateResult } = await actor.run({ deleteGraphs, context });
+        await expect(updateResult).resolves.toBeUndefined();
+        expect(await arrayifyStream(store.match())).toBeRdfIsomorphic([
+          DF.quad(DF.namedNode('sd1'), DF.namedNode('pd1'), DF.namedNode('od1')),
+          DF.quad(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1'), DF.namedNode('g2')),
+        ]);
+      });
+
+      it('should run for all named graphs', async() => {
+        (<Store> store).addQuads([
+          DF.quad(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1'), DF.namedNode('g1')),
+          DF.quad(DF.namedNode('s2'), DF.namedNode('p2'), DF.namedNode('o2'), DF.namedNode('g1')),
+          DF.quad(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1'), DF.namedNode('g2')),
+        ]);
+
+        const context = ActionContext({ '@comunica/bus-rdf-update-quads:destination': store });
+        const deleteGraphs = <any> {
+          graphs: 'NAMED',
+        };
+        const { updateResult } = await actor.run({ deleteGraphs, context });
+        await expect(updateResult).resolves.toBeUndefined();
+        expect(await arrayifyStream(store.match())).toBeRdfIsomorphic([
+          DF.quad(DF.namedNode('sd1'), DF.namedNode('pd1'), DF.namedNode('od1')),
+        ]);
+      });
+
+      it('should run for all graphs', async() => {
+        (<Store> store).addQuads([
+          DF.quad(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1'), DF.namedNode('g1')),
+          DF.quad(DF.namedNode('s2'), DF.namedNode('p2'), DF.namedNode('o2'), DF.namedNode('g1')),
+          DF.quad(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1'), DF.namedNode('g2')),
+        ]);
+
+        const context = ActionContext({ '@comunica/bus-rdf-update-quads:destination': store });
+        const deleteGraphs = <any> {
+          graphs: 'ALL',
+        };
+        const { updateResult } = await actor.run({ deleteGraphs, context });
+        await expect(updateResult).resolves.toBeUndefined();
+        expect(await arrayifyStream(store.match())).toBeRdfIsomorphic([]);
+      });
     });
   });
 });

@@ -5,6 +5,8 @@
 An [RDF Update Quads](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-update-quads) actor
 that handles [RDF/JS Stores](https://comunica.dev/docs/query/advanced/rdfjs_querying/).
 
+RDF/JS Stores are assumed to not record empty graphs.
+
 This module is part of the [Comunica framework](https://github.com/comunica/comunica),
 and should only be used by [developers that want to build their own query engine](https://comunica.dev/docs/modify/).
 

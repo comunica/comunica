@@ -17,25 +17,30 @@ export abstract class ActorRdfUpdateQuadsDestination extends ActorRdfUpdateQuads
 
   public async run(action: IActionRdfUpdateQuads): Promise<IActorRdfUpdateQuadsOutput> {
     const destination = await this.getDestination(action.context);
-    return await this.getOutput(destination, action.quadStreamInsert, action.quadStreamDelete, action.context);
+    return await this.getOutput(destination, action, action.context);
   }
 
   /**
    * Get the output of the given action on a destination.
    * @param {IQuadDestination} destination A quad destination, possibly lazy.
-   * @param {AsyncIterator<RDF.Quad>} quadStreamInsert The quads to insert.
-   * @param {AsyncIterator<RDF.Quad>} quadStreamDelete The quads to delete.
+   * @param {IActionRdfUpdateQuads} action The action.
    * @param {ActionContext} context Optional context data.
    */
   protected async getOutput(
     destination: IQuadDestination,
-    quadStreamInsert?: AsyncIterator<RDF.Quad>,
-    quadStreamDelete?: AsyncIterator<RDF.Quad>,
+    action: IActionRdfUpdateQuads,
     context?: ActionContext,
   ): Promise<IActorRdfUpdateQuadsOutput> {
     const updateResult = Promise.all([
-      quadStreamInsert ? destination.insert(quadStreamInsert) : Promise.resolve(),
-      quadStreamDelete ? destination.delete(quadStreamDelete) : Promise.resolve(),
+      action.quadStreamInsert ? destination.insert(action.quadStreamInsert) : Promise.resolve(),
+      action.quadStreamDelete ? destination.delete(action.quadStreamDelete) : Promise.resolve(),
+      action.deleteGraphs ?
+        destination.deleteGraphs(
+          action.deleteGraphs.graphs,
+          action.deleteGraphs.requireExistence,
+          action.deleteGraphs.dropGraphs,
+        ) :
+        Promise.resolve(),
     ]).then(() => {
       // Return void
     });
@@ -66,4 +71,18 @@ export interface IQuadDestination {
    * @return {AsyncIterator<RDF.Quad>} The deleted quad stream.
    */
   delete: (quads: AsyncIterator<RDF.Quad>) => Promise<void>;
+  /**
+   * Graphs that should be deleted.
+   * @param graphs The graph(s) in which all triples must be removed.
+   * @param requireExistence If true, and the graph does not exist, an error must be emitted.
+   *                         Should only be considered on destinations that record empty graphs.
+   * @param dropGraphs If the graph itself should also be dropped.
+   *                   Should not happen on the 'DEFAULT' graph.
+   *                   Should only be considered on destinations that record empty graphs.
+   */
+  deleteGraphs: (
+    graphs: RDF.DefaultGraph | 'NAMED' | 'ALL' | RDF.NamedNode,
+    requireExistence: boolean,
+    dropGraphs: boolean,
+  ) => Promise<void>;
 }
