@@ -66,4 +66,22 @@ export class RdfJsQuadDestination implements IQuadDestination {
         return await this.promisifyEventEmitter(this.store.deleteGraph(graphs));
     }
   }
+
+  public createGraph(graph: RDF.NamedNode, requireNonExistence: boolean): Promise<void> {
+    // We don't have to create anything, since RDF/JS stores don't record empty graphs.
+
+    // The only check we have to do is error on existence
+    if (requireNonExistence) {
+      const eventEmitter = this.store.match(undefined, undefined, undefined, graph);
+      return new Promise<void>((resolve, reject) => {
+        eventEmitter.once('data', () => {
+          reject(new Error(`Unable to create graph ${graph.value} as it already exists`));
+        });
+        eventEmitter.on('end', resolve);
+        eventEmitter.on('error', reject);
+      });
+    }
+
+    return Promise.resolve();
+  }
 }

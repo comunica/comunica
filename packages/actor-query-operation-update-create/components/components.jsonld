@@ -1,0 +1,9 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-update-create/^1.0.0/components/context.jsonld",
+  "@id": "npmd:@comunica/actor-query-operation-update-create",
+  "@type": "Module",
+  "requireName": "@comunica/actor-query-operation-update-create",
+  "import": [
+    "files-caqoucr:components/Actor/QueryOperation/Create.jsonld"
+  ]
+}

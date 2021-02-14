@@ -41,6 +41,9 @@ export abstract class ActorRdfUpdateQuadsDestination extends ActorRdfUpdateQuads
           action.deleteGraphs.dropGraphs,
         ) :
         Promise.resolve(),
+      action.createGraph ?
+        destination.createGraph(action.createGraph.graph, action.createGraph.requireNonExistence) :
+        Promise.resolve(),
     ]).then(() => {
       // Return void
     });
@@ -85,4 +88,12 @@ export interface IQuadDestination {
     requireExistence: boolean,
     dropGraphs: boolean,
   ) => Promise<void>;
+  /**
+   * Create the given (empty) graph.
+   * @param graph The graph name to create.
+   * @param requireNonExistence If true, an error MUST be thrown when the graph already exists.
+   *                            For destinations that do not record empty graphs,
+   *                            this should only throw if at least one quad with the given quad already exists.
+   */
+  createGraph: (graph: RDF.NamedNode, requireNonExistence: boolean) => Promise<void>;
 }

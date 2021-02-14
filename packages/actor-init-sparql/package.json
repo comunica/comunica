@@ -87,6 +87,7 @@
     "@comunica/actor-query-operation-union": "^1.19.2",
     "@comunica/actor-query-operation-update-clear": "^1.0.0",
     "@comunica/actor-query-operation-update-compositeupdate": "^1.0.0",
+    "@comunica/actor-query-operation-update-create": "^1.0.0",
     "@comunica/actor-query-operation-update-deleteinsert": "^1.0.0",
     "@comunica/actor-query-operation-update-drop": "^1.0.0",
     "@comunica/actor-query-operation-update-load": "^1.0.0",
