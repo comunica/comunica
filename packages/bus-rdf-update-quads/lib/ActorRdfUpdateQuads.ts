@@ -113,6 +113,22 @@ export interface IActionRdfUpdateQuads extends IAction {
      */
     dropGraphs: boolean;
   };
+  /**
+   * An optional creation of a (empty) graph.
+   */
+  createGraph?: {
+    /**
+     * The graph name to create.
+     */
+    graph: RDF.NamedNode;
+    /**
+     * If true, an error MUST be thrown when the graph already exists.
+     *
+     * For destinations that do not record empty graphs,
+     * this should only throw if at least one quad with the given quad already exists.
+     */
+    requireNonExistence: boolean;
+  };
 }
 
 export interface IActorRdfUpdateQuadsOutput extends IActorOutput {

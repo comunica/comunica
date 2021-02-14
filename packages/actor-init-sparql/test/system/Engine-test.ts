@@ -281,6 +281,34 @@ describe('System test: ActorInitSparql', () => {
         expect(store.countQuads(DF.namedNode('ex:s4'), DF.namedNode('ex:p4'), DF.namedNode('ex:o4'), DF.defaultGraph()))
           .toEqual(0);
       });
+
+      it('with create', async() => {
+        // Prepare store
+        const store = new Store();
+        store.addQuads([
+          DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p1'), DF.namedNode('ex:o1'), DF.namedNode('ex:g1')),
+          DF.quad(DF.namedNode('ex:s2'), DF.namedNode('ex:p4'), DF.namedNode('ex:o4'), DF.defaultGraph()),
+        ]);
+        expect(store.size).toEqual(2);
+
+        // Resolve for non-existing graph
+        await expect((<IQueryResultUpdate> await engine.query(`CREATE GRAPH <ex:g2>`, {
+          sources: [ store ],
+          destination: store,
+        })).updateResult).resolves.toBeUndefined();
+
+        // Reject for existing graph
+        await expect((<IQueryResultUpdate> await engine.query(`CREATE GRAPH <ex:g1>`, {
+          sources: [ store ],
+          destination: store,
+        })).updateResult).rejects.toThrowError('Unable to create graph ex:g1 as it already exists');
+
+        // Resolve for existing graph in silent mode
+        await expect((<IQueryResultUpdate> await engine.query(`CREATE SILENT GRAPH <ex:g1>`, {
+          sources: [ store ],
+          destination: store,
+        })).updateResult).resolves.toBeUndefined();
+      });
     });
   });
 });

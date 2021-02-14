@@ -201,5 +201,53 @@ describe('ActorRdfUpdateQuadsRdfJsStore', () => {
         expect(await arrayifyStream(store.match())).toBeRdfIsomorphic([]);
       });
     });
+
+    describe('for graph creation', () => {
+      it('should run for a non-existing graph with requireNonExistence', async() => {
+        const context = ActionContext({ '@comunica/bus-rdf-update-quads:destination': store });
+        const createGraph = {
+          graph: DF.namedNode('g1'),
+          requireNonExistence: true,
+        };
+        const { updateResult } = await actor.run({ createGraph, context });
+        await expect(updateResult).resolves.toBeUndefined();
+      });
+
+      it('should run for a non-existing graph without requireNonExistence', async() => {
+        const context = ActionContext({ '@comunica/bus-rdf-update-quads:destination': store });
+        const createGraph = {
+          graph: DF.namedNode('g1'),
+          requireNonExistence: false,
+        };
+        const { updateResult } = await actor.run({ createGraph, context });
+        await expect(updateResult).resolves.toBeUndefined();
+      });
+
+      it('should not run for an existing graph with requireNonExistence', async() => {
+        const context = ActionContext({ '@comunica/bus-rdf-update-quads:destination': store });
+        (<Store> store).addQuads([
+          DF.quad(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1'), DF.namedNode('g1')),
+        ]);
+        const createGraph = {
+          graph: DF.namedNode('g1'),
+          requireNonExistence: true,
+        };
+        const { updateResult } = await actor.run({ createGraph, context });
+        await expect(updateResult).rejects.toThrowError('Unable to create graph g1 as it already exists');
+      });
+
+      it('should run for an existing graph without requireNonExistence', async() => {
+        const context = ActionContext({ '@comunica/bus-rdf-update-quads:destination': store });
+        (<Store> store).addQuads([
+          DF.quad(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1'), DF.namedNode('g1')),
+        ]);
+        const createGraph = {
+          graph: DF.namedNode('g1'),
+          requireNonExistence: false,
+        };
+        const { updateResult } = await actor.run({ createGraph, context });
+        await expect(updateResult).resolves.toBeUndefined();
+      });
+    });
   });
 });
