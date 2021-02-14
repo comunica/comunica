@@ -233,6 +233,54 @@ describe('System test: ActorInitSparql', () => {
         // Check store contents
         expect(store.size > 0).toBeTruthy();
       });
+
+      it('with clear', async() => {
+        // Prepare store
+        const store = new Store();
+        store.addQuads([
+          DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p1'), DF.namedNode('ex:o1'), DF.namedNode('ex:g1')),
+          DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p2'), DF.namedNode('ex:o2'), DF.namedNode('ex:g2')),
+          DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p3'), DF.namedNode('ex:o3'), DF.namedNode('ex:g3')),
+          DF.quad(DF.namedNode('ex:s2'), DF.namedNode('ex:p4'), DF.namedNode('ex:o4'), DF.defaultGraph()),
+        ]);
+        expect(store.size).toEqual(4);
+
+        // Execute query
+        const result = <IQueryResultUpdate> await engine.query(`CLEAR NAMED`, {
+          sources: [ store ],
+          destination: store,
+        });
+        await result.updateResult;
+
+        // Check store contents
+        expect(store.size).toEqual(1);
+        expect(store.countQuads(DF.namedNode('ex:s2'), DF.namedNode('ex:p4'), DF.namedNode('ex:o4'), DF.defaultGraph()))
+          .toEqual(1);
+      });
+
+      it('with drop', async() => {
+        // Prepare store
+        const store = new Store();
+        store.addQuads([
+          DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p1'), DF.namedNode('ex:o1'), DF.namedNode('ex:g1')),
+          DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p2'), DF.namedNode('ex:o2'), DF.namedNode('ex:g2')),
+          DF.quad(DF.namedNode('ex:s'), DF.namedNode('ex:p3'), DF.namedNode('ex:o3'), DF.namedNode('ex:g3')),
+          DF.quad(DF.namedNode('ex:s2'), DF.namedNode('ex:p4'), DF.namedNode('ex:o4'), DF.defaultGraph()),
+        ]);
+        expect(store.size).toEqual(4);
+
+        // Execute query
+        const result = <IQueryResultUpdate> await engine.query(`DROP DEFAULT`, {
+          sources: [ store ],
+          destination: store,
+        });
+        await result.updateResult;
+
+        // Check store contents
+        expect(store.size).toEqual(3);
+        expect(store.countQuads(DF.namedNode('ex:s4'), DF.namedNode('ex:p4'), DF.namedNode('ex:o4'), DF.defaultGraph()))
+          .toEqual(0);
+      });
     });
   });
 });

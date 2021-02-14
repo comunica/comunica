@@ -1,14 +1,14 @@
 {
-  "name": "@comunica/actor-rdf-update-quads-rdfjs-store",
+  "name": "@comunica/actor-query-operation-update-drop",
   "version": "1.0.0",
-  "description": "A rdfjs-store rdf-update-quads actor",
+  "description": "A drop query-operation actor",
   "lsd:module": true,
   "main": "index.js",
   "typings": "index",
   "repository": {
     "type": "git",
     "url": "https://github.com/comunica/comunica.git",
-    "directory": "packages/actor-rdf-update-quads-rdfjs-store"
+    "directory": "packages/actor-query-operation-update-drop"
   },
   "publishConfig": {
     "access": "public"
@@ -16,8 +16,8 @@
   "keywords": [
     "comunica",
     "actor",
-    "rdf-update-quads",
-    "rdfjs-store"
+    "query-operation",
+    "drop"
   ],
   "license": "MIT",
   "bugs": {
@@ -32,18 +32,15 @@
     "index.js"
   ],
   "dependencies": {
-    "@types/rdf-js": "*",
-    "rdf-data-factory": "^1.0.4",
-    "rdf-string": "^1.5.0",
-    "asynciterator": "^3.0.3"
+    "rdf-data-factory": "^1.0.4"
   },
   "peerDependencies": {
     "@comunica/core": "^1.19.2",
-    "@comunica/bus-rdf-update-quads": "^1.0.0"
+    "@comunica/bus-query-operation": "^1.19.2"
   },
   "devDependencies": {
     "@comunica/core": "^1.19.2",
-    "@comunica/bus-rdf-update-quads": "^1.0.0"
+    "@comunica/bus-query-operation": "^1.19.2"
   },
   "jest": {
     "globals": {
