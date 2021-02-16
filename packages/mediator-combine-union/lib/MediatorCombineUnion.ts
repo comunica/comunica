@@ -42,6 +42,7 @@ export class MediatorCombineUnion<A extends Actor<I, T, O>, I extends IAction, T
     return (results: O[]) => {
       const data: any = {};
       data[this.field] = {};
+      // eslint-disable-next-line unicorn/prefer-spread
       [{}].concat(results.map((result: any) => result[this.field]))
         .forEach((value, index, arr) => {
           data[this.field] = { ...value, ...data[this.field] };

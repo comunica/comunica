@@ -48,7 +48,7 @@ class Dummy extends LinkedRdfSourcesAsyncRdfIterator {
       metadata: { requestedPage, firstPageToken: true, next: `P${requestedPage + 1}` },
       source: <any> {
         match: () => {
-          const it = new ArrayIterator<RDF.Quad>(this.data[requestedPage].concat([]), { autoStart: false });
+          const it = new ArrayIterator<RDF.Quad>([ ...this.data[requestedPage] ], { autoStart: false });
           it.setProperty('metadata', { subseq: true });
           return it;
         },
@@ -96,7 +96,7 @@ class DummyMetaOverride extends Dummy {
       metadata: { firstPageToken: true, next: `P${requestedPage + 1}` },
       source: <any> {
         match: () => {
-          const quads = new ArrayIterator<RDF.Quad>(this.data[requestedPage].concat([]), { autoStart: false });
+          const quads = new ArrayIterator<RDF.Quad>([ ...this.data[requestedPage] ], { autoStart: false });
           quads.on('newListener', () => quads.setProperty('metadata', { next: `P${requestedPage + 1}`, override: true }));
           return quads;
         },

@@ -17,7 +17,7 @@ describe('ActorQueryOperationDescribeSubject', () => {
     mediatorQueryOperation = {
       mediate(arg: any) {
         if (arg.operation.input.type === 'join') {
-          const patterns = arg.operation.input.left.patterns.concat(arg.operation.input.right.patterns);
+          const patterns = [ ...arg.operation.input.left.patterns, ...arg.operation.input.right.patterns ];
           return {
             metadata: () => Promise.resolve({ totalItems: arg.operation.input.left.patterns.length +
             arg.operation.input.right.patterns.length }),

@@ -63,7 +63,7 @@ export class BusIndexed<A extends Actor<I, T, O>, I extends IAction, T extends I
   public publish(action: I): IActorReply<A, I, T, O>[] {
     const actionId = this.getActionIdentifier(action);
     if (actionId) {
-      const actors = (this.actorsIndex[actionId] || []).concat(this.actorsIndex._undefined_ || []);
+      const actors = [ ...this.actorsIndex[actionId] || [], ...this.actorsIndex._undefined_ || [] ];
       return actors.map((actor: A): IActorReply<A, I, T, O> => ({ actor, reply: actor.test(action) }));
     }
     return super.publish(action);

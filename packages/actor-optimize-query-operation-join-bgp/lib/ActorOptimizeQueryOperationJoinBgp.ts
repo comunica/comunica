@@ -23,7 +23,7 @@ export class ActorOptimizeQueryOperationJoinBgp extends ActorOptimizeQueryOperat
         if (op.left.type === 'bgp' && op.right.type === 'bgp') {
           return {
             recurse: false,
-            result: factory.createBgp(op.left.patterns.concat(op.right.patterns)),
+            result: factory.createBgp([ ...op.left.patterns, ...op.right.patterns ]),
           };
         }
         return {

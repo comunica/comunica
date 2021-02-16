@@ -117,7 +117,7 @@ export class ActorQueryOperationFromQuad extends ActorQueryOperationTypedMediate
         ));
       }
       // The pattern's graph is defined (including the default graphs)
-      const isNamedGraphAvailable: boolean = namedGraphs.concat(defaultGraphs).some(
+      const isNamedGraphAvailable: boolean = [ ...namedGraphs, ...defaultGraphs ].some(
         (namedGraph: RDF.Term) => namedGraph.equals(patternGraph),
       );
       if (isNamedGraphAvailable) {

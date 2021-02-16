@@ -29,7 +29,7 @@ export class ActorQueryOperationBgpEmpty extends ActorQueryOperationTyped<Algebr
     return uniqTerms(patterns
       .map(pattern => getTerms(pattern)
         .filter(term => term.termType === 'Variable'))
-      .reduce((acc, val) => acc.concat(val), []))
+      .reduce((acc, val) => [ ...acc, ...val ], []))
       .map(x => termToString(x));
   }
 

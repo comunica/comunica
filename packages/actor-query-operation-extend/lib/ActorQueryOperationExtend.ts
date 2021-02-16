@@ -58,7 +58,7 @@ export class ActorQueryOperationExtend extends ActorQueryOperationTypedMediated<
       next();
     };
 
-    const variables = output.variables.concat([ extendKey ]);
+    const variables = [ ...output.variables, extendKey ];
     const bindingsStream = output.bindingsStream.transform<Bindings>({ transform });
     const { metadata } = output;
     return { type: 'bindings', bindingsStream, metadata, variables, canContainUndefs: output.canContainUndefs };

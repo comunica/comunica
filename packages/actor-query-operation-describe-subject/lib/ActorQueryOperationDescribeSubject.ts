@@ -58,7 +58,7 @@ export class ActorQueryOperationDescribeSubject extends ActorQueryOperationTyped
           ];
           // eslint-disable-next-line no-return-assign
           patterns.forEach((templatePattern: any) => templatePattern.type = 'pattern');
-          variablePatterns = variablePatterns.concat(<Algebra.Pattern[]> patterns);
+          variablePatterns = [ ...variablePatterns, ...<Algebra.Pattern[]> patterns ];
         });
 
       // Add a single construct for the variables

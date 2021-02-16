@@ -230,9 +230,9 @@ export class ActorQueryOperationBgpLeftDeepSmallest extends ActorQueryOperationT
 
     // Take the pattern with the smallest number of items
     const smallestPattern: IActorQueryOperationOutputBindings = patternOutputs.slice(smallestId)[0];
-    const remainingPatterns: Algebra.Pattern[] = pattern.patterns.concat([]);
+    const remainingPatterns: Algebra.Pattern[] = [ ...pattern.patterns ];
     remainingPatterns.splice(smallestId, 1);
-    const remainingMetadatas: Record<string, any>[] = metadatas.concat([]);
+    const remainingMetadatas: Record<string, any>[] = [ ...metadatas ];
     remainingMetadatas.splice(smallestId, 1);
 
     // Check if the output type is correct
