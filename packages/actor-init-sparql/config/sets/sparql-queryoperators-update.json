@@ -14,6 +14,8 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-update-move-rewrite/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-update-copy-rewrite/^1.0.0/components/context.jsonld",
 
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-context-preprocess-source-to-destination/^1.0.0/components/context.jsonld",
+
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-race/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-update-quads/^1.0.0/components/context.jsonld"
   ],
@@ -77,6 +79,11 @@
       "@id": "config-sets:sparql-queryoperator-update.json#myCopyOperator",
       "@type": "ActorQueryOperationCopyRewrite",
       "cbqo:mediatorQueryOperation": { "@id": "config-sets:sparql-queryoperators.json#mediatorQueryOperation" }
+    },
+
+    {
+      "@id": "config-sets:sparql-queryoperator-update.json#myActorContextPreprocessSourceToDestination",
+      "@type": "ActorContextPreprocessSourceToDestination"
     }
   ]
 }

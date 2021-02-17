@@ -50,6 +50,7 @@
   "dependencies": {
     "@comunica/actor-abstract-bindings-hash": "^1.19.2",
     "@comunica/actor-abstract-mediatyped": "^1.19.2",
+    "@comunica/actor-context-preprocess-source-to-destination": "^1.0.0",
     "@comunica/actor-http-memento": "^1.19.2",
     "@comunica/actor-http-native": "^1.19.2",
     "@comunica/actor-http-proxy": "^1.19.2",
