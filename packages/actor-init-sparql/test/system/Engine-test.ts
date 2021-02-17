@@ -164,6 +164,24 @@ describe('System test: ActorInitSparql', () => {
           .toEqual(1);
       });
 
+      it('with direct insert on a single source', async() => {
+        // Prepare store
+        const store = new Store();
+
+        // Execute query
+        const result = <IQueryResultUpdate> await engine.query(`INSERT DATA {
+      <ex:s> <ex:p> <ex:o>.
+    }`, {
+          sources: [ store ],
+        });
+        await result.updateResult;
+
+        // Check store contents
+        expect(store.size).toEqual(1);
+        expect(store.countQuads(DF.namedNode('ex:s'), DF.namedNode('ex:p'), DF.namedNode('ex:o'), DF.defaultGraph()))
+          .toEqual(1);
+      });
+
       it('with direct insert and delete', async() => {
         // Prepare store
         const store = new Store();

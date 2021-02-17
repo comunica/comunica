@@ -1,0 +1,21 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-context-preprocess-source-to-destination/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-context-preprocess/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-context-preprocess-source-to-destination",
+  "components": [
+    {
+      "@id": "cacpstd:Actor/ContextPreprocess/SourceToDestination",
+      "@type": "Class",
+      "extends": "cbcp:Actor/ContextPreprocess",
+      "requireElement": "ActorContextPreprocessSourceToDestination",
+      "comment": "A comunica Source To Destination Context Preprocess Actor.",
+      "constructorArguments": [
+        {
+          "extends": "cbcp:Actor/ContextPreprocess/constructorArgumentsObject"
+        }
+      ]
+    }
+  ]
+}
