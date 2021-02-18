@@ -2,9 +2,8 @@ import { Readable } from 'stream';
 import type { IActionSparqlSerialize,
   IActorSparqlSerializeFixedMediaTypesArgs, IActorSparqlSerializeOutput } from '@comunica/bus-sparql-serialize';
 import { ActorSparqlSerializeFixedMediaTypes } from '@comunica/bus-sparql-serialize';
-import type { ActionContext } from '@comunica/core';
-import type { IActorQueryOperationOutputBindings, IActorQueryOperationOutputBoolean,
-  IActorQueryOperationOutputQuads } from '@comunica/types';
+import type { ActionContext, IActorQueryOperationOutputBindings, IActorQueryOperationOutputBoolean,
+  IActorQueryOperationOutputQuads, IActorQueryOperationOutputUpdate } from '@comunica/types';
 import type * as RDF from 'rdf-js';
 
 /**
@@ -16,8 +15,8 @@ export class ActorSparqlSerializeSimple extends ActorSparqlSerializeFixedMediaTy
   }
 
   public async testHandleChecked(action: IActionSparqlSerialize, context: ActionContext): Promise<boolean> {
-    if (![ 'bindings', 'quads', 'boolean' ].includes(action.type)) {
-      throw new Error('This actor can only handle bindings streams, quad streams or booleans.');
+    if (![ 'bindings', 'quads', 'boolean', 'update' ].includes(action.type)) {
+      throw new Error('This actor can only handle bindings streams, quad streams, booleans, or updates.');
     }
     return true;
   }
@@ -47,13 +46,20 @@ export class ActorSparqlSerializeSimple extends ActorSparqlSerializeFixedMediaTy
         `graph: ${quad.graph.value}\n\n`,
       ));
       resultStream.on('end', () => data.push(null));
-    } else {
+    } else if (action.type === 'boolean') {
       try {
         data.push(`${JSON.stringify(await (<IActorQueryOperationOutputBoolean> action).booleanResult)}\n`);
         data.push(null);
       } catch (error: unknown) {
         setImmediate(() => data.emit('error', error));
       }
+    } else {
+      (<IActorQueryOperationOutputUpdate> action).updateResult
+        .then(() => {
+          data.push('ok\n');
+          data.push(null);
+        })
+        .catch(error => setImmediate(() => data.emit('error', error)));
     }
 
     return { data };
