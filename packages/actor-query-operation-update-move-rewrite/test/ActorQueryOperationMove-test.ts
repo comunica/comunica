@@ -1,5 +1,6 @@
 import type { IActorQueryOperationOutputUpdate } from '@comunica/bus-query-operation';
-import { Bus } from '@comunica/core';
+import { KEY_CONTEXT_READONLY } from '@comunica/bus-query-operation';
+import { ActionContext, Bus } from '@comunica/core';
 import { DataFactory } from 'rdf-data-factory';
 import { Factory } from 'sparqlalgebrajs';
 import { ActorQueryOperationMoveRewrite } from '../lib/ActorQueryOperationMoveRewrite';
@@ -30,6 +31,11 @@ describe('ActorQueryOperationMove', () => {
     it('should test on move', () => {
       const op = { operation: { type: 'move' }};
       return expect(actor.test(op)).resolves.toBeTruthy();
+    });
+
+    it('should not test on readOnly', () => {
+      const op = { operation: { type: 'move' }, context: ActionContext({ [KEY_CONTEXT_READONLY]: true }) };
+      return expect(actor.test(op)).rejects.toThrowError(`Attempted a write operation in read-only mode`);
     });
 
     it('should not test on non-move', () => {

@@ -1,7 +1,8 @@
 import type {
   IActorQueryOperationOutputUpdate,
 } from '@comunica/bus-query-operation';
-import { Bus } from '@comunica/core';
+import { KEY_CONTEXT_READONLY } from '@comunica/bus-query-operation';
+import { ActionContext, Bus } from '@comunica/core';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationCreate } from '../lib/ActorQueryOperationCreate';
 const DF = new DataFactory();
@@ -30,6 +31,11 @@ describe('ActorQueryOperationCreate', () => {
     it('should test on create', () => {
       const op = { operation: { type: 'create' }};
       return expect(actor.test(op)).resolves.toBeTruthy();
+    });
+
+    it('should not test on readOnly', () => {
+      const op = { operation: { type: 'create' }, context: ActionContext({ [KEY_CONTEXT_READONLY]: true }) };
+      return expect(actor.test(op)).rejects.toThrowError(`Attempted a write operation in read-only mode`);
     });
 
     it('should not test on non-create', () => {

@@ -104,6 +104,13 @@ export const KEY_CONTEXT_BASEIRI = KeysInitSparql.baseIRI;
 export const KEY_CONTEXT_QUERY_TIMESTAMP = KeysInitSparql.queryTimestamp;
 
 /**
+ * @type {string} Context entry for indicating that only read operations are allowed, defaults to false.
+ * @value {any} A boolean.
+ * @deprecated Import this constant from @comunica/context-entries.
+ */
+export const KEY_CONTEXT_READONLY = KeysQueryOperation.readOnly;
+
+/**
  * A counter that keeps track blank node generated through BNODE() SPARQL
  * expressions.
  *
@@ -268,6 +275,16 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
       )
         .then((exists: boolean) => expr.not ? !exists : exists);
     };
+  }
+
+  /**
+   * Throw an error if the context contains the readOnly flag.
+   * @param context An action context.
+   */
+  public static throwOnReadOnly(context?: ActionContext): void {
+    if (context && context.get(KEY_CONTEXT_READONLY)) {
+      throw new Error(`Attempted a write operation in read-only mode`);
+    }
   }
 }
 

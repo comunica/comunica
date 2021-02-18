@@ -17,6 +17,7 @@ export class ActorQueryOperationUpdateCompositeUpdate
   }
 
   public async testOperation(pattern: Algebra.CompositeUpdate, context: ActionContext): Promise<IActorTest> {
+    ActorQueryOperation.throwOnReadOnly(context);
     return true;
   }
 

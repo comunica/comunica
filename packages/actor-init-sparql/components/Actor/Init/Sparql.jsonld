@@ -117,7 +117,8 @@
             { "contextShortcutKey": "httpProxyHandler",       "contextShortcutValue": "@comunica/actor-http-proxy:httpProxyHandler"    },
             { "contextShortcutKey": "lenient",                "contextShortcutValue": "@comunica/actor-init-sparql:lenient"            },
             { "contextShortcutKey": "httpIncludeCredentials", "contextShortcutValue": "@comunica/bus-http:include-credentials"         },
-            { "contextShortcutKey": "httpAuth",               "contextShortcutValue": "@comunica/bus-http:auth"                        }
+            { "contextShortcutKey": "httpAuth",               "contextShortcutValue": "@comunica/bus-http:auth"                        },
+            { "contextShortcutKey": "readOnly",               "contextShortcutValue": "@comunica/bus-query-operation:readOnly"         }
           ]
         }
       ],

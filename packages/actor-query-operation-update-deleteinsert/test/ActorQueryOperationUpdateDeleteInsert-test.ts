@@ -3,9 +3,9 @@ import type {
 } from '@comunica/bus-query-operation';
 import {
   ActorQueryOperation,
-  Bindings,
+  Bindings, KEY_CONTEXT_READONLY,
 } from '@comunica/bus-query-operation';
-import { Bus } from '@comunica/core';
+import { ActionContext, Bus } from '@comunica/core';
 import { literal } from '@rdfjs/data-model';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
@@ -76,6 +76,11 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
     it('should test on deleteinsert', () => {
       const op = { operation: { type: 'deleteinsert' }};
       return expect(actor.test(op)).resolves.toBeTruthy();
+    });
+
+    it('should not test on readOnly', () => {
+      const op = { operation: { type: 'deleteinsert' }, context: ActionContext({ [KEY_CONTEXT_READONLY]: true }) };
+      return expect(actor.test(op)).rejects.toThrowError(`Attempted a write operation in read-only mode`);
     });
 
     it('should not test on non-deleteinsert', () => {

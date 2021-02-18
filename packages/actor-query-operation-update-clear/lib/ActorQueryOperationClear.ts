@@ -1,6 +1,6 @@
 import type { IActorQueryOperationOutput,
   IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
-import { ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
+import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
 import type { IActionRdfUpdateQuads, IActorRdfUpdateQuadsOutput } from '@comunica/bus-rdf-update-quads';
 import type { ActionContext, IActorTest, Actor, Mediator } from '@comunica/core';
 import { DataFactory } from 'rdf-data-factory';
@@ -21,6 +21,7 @@ export class ActorQueryOperationClear extends ActorQueryOperationTypedMediated<A
   }
 
   public async testOperation(pattern: Algebra.Clear, context: ActionContext): Promise<IActorTest> {
+    ActorQueryOperation.throwOnReadOnly(context);
     return true;
   }
 
