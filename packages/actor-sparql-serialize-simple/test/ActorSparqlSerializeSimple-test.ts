@@ -85,6 +85,12 @@ describe('ActorSparqlSerializeSimple', () => {
           .resolves.toBeTruthy();
       });
 
+      it('should test on simple update', () => {
+        return expect(actor.test({ handle: <any> { type: 'update', updateResult: Promise.resolve(true) },
+          handleMediaType: 'simple' }))
+          .resolves.toBeTruthy();
+      });
+
       it('should not test on N-Triples', () => {
         return expect(actor.test(
           { handle: <any> { type: 'quads', quadStream }, handleMediaType: 'application/n-triples' },
@@ -149,6 +155,16 @@ graph:
         );
       });
 
+      it('should run on an update result that resolves to false', async() => {
+        expect(await stringifyStream((<any> (await actor.run(
+          { handle: <any> { type: 'update', updateResult: Promise.resolve() }, handleMediaType: 'simple' },
+        )))
+          .handle.data)).toEqual(
+          `ok
+`,
+        );
+      });
+
       it('should emit an error when a bindings stream emits an error', async() => {
         await expect(stringifyStream((<any> (await actor.run(
           { handle: <any> { type: 'bindings', bindingsStream: streamError },
@@ -166,6 +182,13 @@ graph:
       it('should emit an error when the boolean is rejected', async() => {
         await expect(stringifyStream((<any> (await actor.run(
           { handle: <any> { type: 'boolean', booleanResult: Promise.reject(new Error('SparqlSimple')) },
+            handleMediaType: 'application/json' },
+        ))).handle.data)).rejects.toBeTruthy();
+      });
+
+      it('should emit an error when the update is rejected', async() => {
+        await expect(stringifyStream((<any> (await actor.run(
+          { handle: <any> { type: 'update', updateResult: Promise.reject(new Error('SparqlSimple')) },
             handleMediaType: 'application/json' },
         ))).handle.data)).rejects.toBeTruthy();
       });
