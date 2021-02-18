@@ -2,6 +2,7 @@ import * as cluster from 'cluster';
 import * as EventEmitter from 'events';
 import * as querystring from 'querystring';
 import { PassThrough } from 'stream';
+import { KEY_CONTEXT_READONLY } from '@comunica/bus-query-operation';
 import { LoggerPretty } from '@comunica/logger-pretty';
 import { ArrayIterator } from 'asynciterator';
 import { WritableStream } from 'memory-streams';
@@ -15,6 +16,7 @@ import { http, ServerResponseMock } from '../__mocks__/http';
 // @ts-expect-error
 import { parse } from '../__mocks__/url';
 import { ActorInitSparql } from '../lib/ActorInitSparql';
+import type { IQueryBody } from '../lib/HttpServiceSparqlEndpoint';
 import { HttpServiceSparqlEndpoint } from '../lib/HttpServiceSparqlEndpoint';
 const quad = require('rdf-quad');
 const stringToStream = require('streamify-string');
@@ -389,10 +391,31 @@ describe('HttpServiceSparqlEndpoint', () => {
           exit))
         .context).toMatchObject(testFileContentDict);
     });
+
+    it('should read update flag from the commandline options or use correct default', async() => {
+      expect((await HttpServiceSparqlEndpoint
+        .generateConstructorArguments(minimist(testCommandlineArguments),
+          moduleRootPath,
+          env,
+          defaultConfigPath,
+          stderr,
+          exit))
+        .context[KEY_CONTEXT_READONLY]).toBe(true);
+
+      testCommandlineArguments.push('-u');
+      expect((await HttpServiceSparqlEndpoint
+        .generateConstructorArguments(minimist(testCommandlineArguments),
+          moduleRootPath,
+          env,
+          defaultConfigPath,
+          stderr,
+          exit))
+        .context[KEY_CONTEXT_READONLY]).toBe(false);
+    });
   });
 
   describe('An HttpServiceSparqlEndpoint instance', () => {
-    let instance: any;
+    let instance: HttpServiceSparqlEndpoint;
     beforeEach(() => {
       instance = new HttpServiceSparqlEndpoint({ workers: 4 });
     });
@@ -402,12 +425,14 @@ describe('HttpServiceSparqlEndpoint', () => {
       const stderr = new PassThrough();
       beforeEach(() => {
         http.createServer.mockClear();
-        instance.handleRequest.bind = jest.fn(() => 'handleRequest_bound');
+        (<any> instance.handleRequest).bind = jest.fn(() => 'handleRequest_bound');
       });
 
       it('should set the server\'s port number correctly', async() => {
         const port = 201_331;
-        instance.port = port;
+        const timeout = 201_331;
+        (<any> instance).port = port;
+        (<any> instance).timeout = timeout;
         await instance.run(stdout, stderr);
 
         const server = http.createServer.mock.results[0].value;
@@ -430,7 +455,7 @@ describe('HttpServiceSparqlEndpoint', () => {
         await instance.run(stdout, stderr);
 
         expect(http.createServer).toBeCalledTimes(1);
-        expect(http.createServer).toHaveBeenLastCalledWith(instance.handleRequest.bind());
+        expect(http.createServer).toHaveBeenLastCalledWith((<any> instance).handleRequest.bind());
       });
     });
 
@@ -599,7 +624,7 @@ describe('HttpServiceSparqlEndpoint', () => {
           await instance.handleRequest(engine, variants, stdout, stderr, request, response);
 
           expect(instance.writeQueryResult)
-            .toHaveBeenCalledWith(engine, stdout, stderr, request, response, '', null, false);
+            .toHaveBeenCalledWith(engine, stdout, stderr, request, response, undefined, null, false, true);
         });
 
       it('should use the parsed query string when the request method equals GET'
@@ -607,8 +632,15 @@ describe('HttpServiceSparqlEndpoint', () => {
           request.method = 'GET';
           await instance.handleRequest(engine, variants, stdout, stderr, request, response);
 
-          expect(instance.writeQueryResult)
-            .toHaveBeenCalledWith(engine, stdout, stderr, request, response, 'test_query', null, false);
+          expect(instance.writeQueryResult).toHaveBeenCalledWith(engine,
+            stdout,
+            stderr,
+            request,
+            response,
+            { type: 'query', value: 'test_query' },
+            null,
+            false,
+            true);
         });
 
       it('should set headonly and use the empty query string when the request method is HEAD and url parsing fails'
@@ -617,8 +649,15 @@ describe('HttpServiceSparqlEndpoint', () => {
           request.url = 'url_undefined_query';
           await instance.handleRequest(engine, variants, stdout, stderr, request, response);
 
-          expect(instance.writeQueryResult)
-            .toHaveBeenCalledWith(engine, stdout, stderr, request, response, '', null, true);
+          expect(instance.writeQueryResult).toHaveBeenCalledWith(engine,
+            stdout,
+            stderr,
+            request,
+            response,
+            undefined,
+            null,
+            true,
+            true);
         });
 
       it('should set headonly and use the parsed query string when the request method is HEAD'
@@ -626,17 +665,31 @@ describe('HttpServiceSparqlEndpoint', () => {
           request.method = 'HEAD';
           await instance.handleRequest(engine, variants, stdout, stderr, request, response);
 
-          expect(instance.writeQueryResult)
-            .toHaveBeenCalledWith(engine, stdout, stderr, request, response, 'test_query', null, true);
+          expect(instance.writeQueryResult).toHaveBeenCalledWith(engine,
+            stdout,
+            stderr,
+            request,
+            response,
+            { type: 'query', value: 'test_query' },
+            null,
+            true,
+            true);
         });
 
       it('should call writeQueryResult with correct arguments if request method equals POST', async() => {
-        instance.parseBody = jest.fn(() => Promise.resolve('test_parseBody_result'));
+        (<any> instance).parseBody = jest.fn(() => Promise.resolve({ type: 'query', value: 'test_parseBody_result' }));
         request.method = 'POST';
         await instance.handleRequest(engine, variants, stdout, stderr, request, response);
 
-        expect(instance.writeQueryResult)
-          .toHaveBeenCalledWith(engine, stdout, stderr, request, response, 'test_parseBody_result', null, false);
+        expect(instance.writeQueryResult).toHaveBeenCalledWith(engine,
+          stdout,
+          stderr,
+          request,
+          response,
+          { type: 'query', value: 'test_parseBody_result' },
+          null,
+          false,
+          false);
       });
 
       it('should choose a mediaType if accept header is set', async() => {
@@ -644,104 +697,160 @@ describe('HttpServiceSparqlEndpoint', () => {
         variants = [{ type: chosen, quality: 1 }];
         request.headers = { accept: chosen };
 
-        instance.parseBody = jest.fn(() => Promise.resolve('test_parseBody_result'));
+        (<any> instance).parseBody = jest.fn(() => Promise.resolve({ type: 'query', value: 'test_parseBody_result' }));
         request.method = 'POST';
         await instance.handleRequest(engine, variants, stdout, stderr, request, response);
 
-        expect(instance.writeQueryResult)
-          .toHaveBeenCalledWith(engine, stdout, stderr, request, response, 'test_parseBody_result', chosen, false);
+        expect(instance.writeQueryResult).toHaveBeenCalledWith(engine,
+          stdout,
+          stderr,
+          request,
+          response,
+          { type: 'query', value: 'test_parseBody_result' },
+          chosen,
+          false,
+          false);
       });
 
       it('should choose the best matching mediaType when we can exactly match', async() => {
         variants = [{ type: 'a/a', quality: 1 }, { type: 'b/b', quality: 0.9 }];
         request.headers = { accept: 'a/a,b/b' };
 
-        instance.parseBody = jest.fn(() => Promise.resolve('test_parseBody_result'));
+        (<any> instance).parseBody = jest.fn(() => Promise.resolve({ type: 'query', value: 'test_parseBody_result' }));
         request.method = 'POST';
         await instance.handleRequest(engine, variants, stdout, stderr, request, response);
 
-        expect(instance.writeQueryResult)
-          .toHaveBeenCalledWith(engine, stdout, stderr, request, response, 'test_parseBody_result', 'a/a', false);
+        expect(instance.writeQueryResult).toHaveBeenCalledWith(engine,
+          stdout,
+          stderr,
+          request,
+          response,
+          { type: 'query', value: 'test_parseBody_result' },
+          'a/a',
+          false,
+          false);
       });
 
       it('should choose the best matching mediaType when we can exactly match with out-of-order q', async() => {
         variants = [{ type: 'b/b', quality: 0.9 }, { type: 'a/a', quality: 1 }];
         request.headers = { accept: 'a/a,b/b' };
 
-        instance.parseBody = jest.fn(() => Promise.resolve('test_parseBody_result'));
+        (<any> instance).parseBody = jest.fn(() => Promise.resolve({ type: 'query', value: 'test_parseBody_result' }));
         request.method = 'POST';
         await instance.handleRequest(engine, variants, stdout, stderr, request, response);
 
-        expect(instance.writeQueryResult)
-          .toHaveBeenCalledWith(engine, stdout, stderr, request, response, 'test_parseBody_result', 'a/a', false);
+        expect(instance.writeQueryResult).toHaveBeenCalledWith(engine,
+          stdout,
+          stderr,
+          request,
+          response,
+          { type: 'query', value: 'test_parseBody_result' },
+          'a/a',
+          false,
+          false);
       });
 
       it('should choose the second best matching mediaType when we can exactly match', async() => {
         variants = [{ type: 'a/a', quality: 1 }, { type: 'b/b', quality: 0.9 }];
         request.headers = { accept: 'b/b' };
 
-        instance.parseBody = jest.fn(() => Promise.resolve('test_parseBody_result'));
+        (<any> instance).parseBody = jest.fn(() => Promise.resolve({ type: 'query', value: 'test_parseBody_result' }));
         request.method = 'POST';
         await instance.handleRequest(engine, variants, stdout, stderr, request, response);
 
-        expect(instance.writeQueryResult)
-          .toHaveBeenCalledWith(engine, stdout, stderr, request, response, 'test_parseBody_result', 'b/b', false);
+        expect(instance.writeQueryResult).toHaveBeenCalledWith(engine,
+          stdout,
+          stderr,
+          request,
+          response,
+          { type: 'query', value: 'test_parseBody_result' },
+          'b/b',
+          false,
+          false);
       });
 
       it('should choose the mediaType when the first is unknown', async() => {
         variants = [{ type: 'a/a', quality: 1 }, { type: 'b/b', quality: 0.9 }];
         request.headers = { accept: 'x/x,a/a;q=0.8,b/b;q=0.9' };
 
-        instance.parseBody = jest.fn(() => Promise.resolve('test_parseBody_result'));
+        (<any> instance).parseBody = jest.fn(() => Promise.resolve({ type: 'query', value: 'test_parseBody_result' }));
         request.method = 'POST';
         await instance.handleRequest(engine, variants, stdout, stderr, request, response);
 
-        expect(instance.writeQueryResult)
-          .toHaveBeenCalledWith(engine, stdout, stderr, request, response, 'test_parseBody_result', 'b/b', false);
+        expect(instance.writeQueryResult).toHaveBeenCalledWith(engine,
+          stdout,
+          stderr,
+          request,
+          response,
+          { type: 'query', value: 'test_parseBody_result' },
+          'b/b',
+          false,
+          false);
       });
 
       it('should choose a null media type if accept header is *', async() => {
         request.headers = { accept: '*' };
 
-        instance.parseBody = jest.fn(() => Promise.resolve('test_parseBody_result'));
+        (<any> instance).parseBody = jest.fn(() => Promise.resolve({ type: 'query', value: 'test_parseBody_result' }));
         request.method = 'POST';
         await instance.handleRequest(engine, variants, stdout, stderr, request, response);
 
-        expect(instance.writeQueryResult)
-          .toHaveBeenCalledWith(engine, stdout, stderr, request, response, 'test_parseBody_result', null, false);
+        expect(instance.writeQueryResult).toHaveBeenCalledWith(engine,
+          stdout,
+          stderr,
+          request,
+          response,
+          { type: 'query', value: 'test_parseBody_result' },
+          null,
+          false,
+          false);
       });
 
       it('should choose a null media type if accept header is */*', async() => {
         request.headers = { accept: '*/*' };
 
-        instance.parseBody = jest.fn(() => Promise.resolve('test_parseBody_result'));
+        (<any> instance).parseBody = jest.fn(() => Promise.resolve({ type: 'query', value: 'test_parseBody_result' }));
         request.method = 'POST';
         await instance.handleRequest(engine, variants, stdout, stderr, request, response);
 
-        expect(instance.writeQueryResult)
-          .toHaveBeenCalledWith(engine, stdout, stderr, request, response, 'test_parseBody_result', null, false);
+        expect(instance.writeQueryResult).toHaveBeenCalledWith(engine,
+          stdout,
+          stderr,
+          request,
+          response,
+          { type: 'query', value: 'test_parseBody_result' },
+          null,
+          false,
+          false);
       });
 
       it('should choose a null mediaType if accept header is not set', async() => {
         request.headers = {};
 
-        instance.parseBody = jest.fn(() => Promise.resolve('test_parseBody_result'));
+        (<any> instance).parseBody = jest.fn(() => Promise.resolve({ type: 'query', value: 'test_parseBody_result' }));
         request.method = 'POST';
         await instance.handleRequest(engine, variants, stdout, stderr, request, response);
 
-        expect(instance.writeQueryResult)
-          .toHaveBeenCalledWith(engine, stdout, stderr, request, response, 'test_parseBody_result', null, false);
+        expect(instance.writeQueryResult).toHaveBeenCalledWith(engine,
+          stdout,
+          stderr,
+          request,
+          response,
+          { type: 'query', value: 'test_parseBody_result' },
+          null,
+          false,
+          false);
       });
 
       it('should only invalidate cache if invalidateCacheBeforeQuery is set to true', async() => {
-        instance.invalidateCacheBeforeQuery = false;
+        (<any> instance).invalidateCacheBeforeQuery = false;
         await instance.handleRequest(engine, variants, stdout, stderr, request, response);
 
         expect(engine.invalidateHttpCache).not.toHaveBeenCalled();
       });
 
       it('should invalidate cache if invalidateCacheBeforeQuery is set to true', async() => {
-        instance.invalidateCacheBeforeQuery = true;
+        (<any> instance).invalidateCacheBeforeQuery = true;
         await instance.handleRequest(engine, variants, stdout, stderr, request, response);
 
         expect(engine.invalidateHttpCache).toHaveBeenCalled();
@@ -785,20 +894,23 @@ describe('HttpServiceSparqlEndpoint', () => {
     describe('writeQueryResult', () => {
       let response: any;
       let request: any;
-      let query: any;
+      let query: IQueryBody;
       let mediaType: any;
       let endCalledPromise: any;
       beforeEach(() => {
         response = new ServerResponseMock();
         request = stringToStream('default_request_content');
         request.url = 'http://example.org/sparql';
-        query = 'default_test_query';
+        query = {
+          type: 'query',
+          value: 'default_test_query',
+        };
         mediaType = 'default_test_mediatype';
         endCalledPromise = new Promise(resolve => response.onEnd = resolve);
       });
 
       it('should end the response with error message content when the query rejects', async() => {
-        query = 'query_reject';
+        query = { type: 'query', value: 'query_reject' };
         await instance.writeQueryResult(await newEngineDynamic(),
           new PassThrough(),
           new PassThrough(),
@@ -806,7 +918,8 @@ describe('HttpServiceSparqlEndpoint', () => {
           response,
           query,
           mediaType,
-          false);
+          false,
+          true);
 
         await expect(endCalledPromise).resolves.toBe('Rejected query');
         expect(response.writeHead).toHaveBeenLastCalledWith(400,
@@ -823,7 +936,8 @@ describe('HttpServiceSparqlEndpoint', () => {
             response,
             query,
             mediaType,
-            false);
+            false,
+            true);
 
           await expect(endCalledPromise).resolves.toBe(
             'The response for the given query could not be serialized for the requested media type\n',
@@ -840,7 +954,8 @@ describe('HttpServiceSparqlEndpoint', () => {
           response,
           query,
           mediaType,
-          false);
+          false,
+          true);
 
         await expect(endCalledPromise).resolves.toBeFalsy();
         expect(response.writeHead).toHaveBeenCalledTimes(1);
@@ -859,7 +974,8 @@ describe('HttpServiceSparqlEndpoint', () => {
             response,
             query,
             mediaType,
-            false);
+            false,
+            true);
 
           await expect(endCalledPromise).resolves.toBe('An internal server error occurred.\n');
           expect(response.writeHead).toHaveBeenCalledTimes(1);
@@ -875,6 +991,7 @@ describe('HttpServiceSparqlEndpoint', () => {
           response,
           query,
           mediaType,
+          true,
           true);
 
         expect(response.writeHead).toHaveBeenCalledTimes(1);
@@ -897,9 +1014,10 @@ describe('HttpServiceSparqlEndpoint', () => {
           new PassThrough(),
           request,
           response,
-          '',
+          { type: 'query', value: '' },
           mediaType,
-          false);
+          false,
+          true);
 
         // Check output
         await expect(endCalledPromise).resolves.toBeFalsy();
@@ -949,8 +1067,9 @@ describe('HttpServiceSparqlEndpoint', () => {
           new PassThrough(),
           request,
           response,
-          '',
+          { type: 'query', value: '' },
           mediaType,
+          true,
           true);
 
         // Check output
@@ -975,9 +1094,10 @@ describe('HttpServiceSparqlEndpoint', () => {
           new PassThrough(),
           request,
           response,
-          '',
+          { type: 'query', value: '' },
           mediaType,
-          false);
+          false,
+          true);
 
         await expect(endCalledPromise).resolves.toBe('An internal server error occurred.\n');
         expect(response.writeHead).toHaveBeenCalledTimes(1);
@@ -992,9 +1112,10 @@ describe('HttpServiceSparqlEndpoint', () => {
           new PassThrough(),
           request,
           response,
-          '',
+          { type: 'query', value: '' },
           'mediatype_throwerror',
-          false);
+          false,
+          true);
 
         await expect(endCalledPromise).resolves.toBe(
           'The response for the given query could not be serialized for the requested media type\n',
@@ -1003,7 +1124,7 @@ describe('HttpServiceSparqlEndpoint', () => {
           { 'content-type': 'text/plain', 'Access-Control-Allow-Origin': '*' });
       });
 
-      it('should fallback to SPARQL JSON for bindings if media type is null', async() => {
+      it('should fallback to SPARQL JSON for bindings if media type is falsy', async() => {
         const engine = await newEngineDynamic();
         engine.query = () => ({ type: 'bindings' });
 
@@ -1013,8 +1134,9 @@ describe('HttpServiceSparqlEndpoint', () => {
           request,
           response,
           query,
-          null,
-          false);
+          '',
+          false,
+          true);
 
         await expect(endCalledPromise).resolves.toBeFalsy();
         expect(response.writeHead).toHaveBeenCalledTimes(1);
@@ -1023,7 +1145,7 @@ describe('HttpServiceSparqlEndpoint', () => {
         expect(response.toString()).toBe('test_query_result');
       });
 
-      it('should fallback to SPARQL JSON for booleans if media type is null', async() => {
+      it('should fallback to SPARQL JSON for booleans if media type is falsy', async() => {
         const engine = await newEngineDynamic();
         engine.query = () => ({ type: 'boolean' });
 
@@ -1033,8 +1155,9 @@ describe('HttpServiceSparqlEndpoint', () => {
           request,
           response,
           query,
-          null,
-          false);
+          '',
+          false,
+          true);
 
         await expect(endCalledPromise).resolves.toBeFalsy();
         expect(response.writeHead).toHaveBeenCalledTimes(1);
@@ -1043,7 +1166,7 @@ describe('HttpServiceSparqlEndpoint', () => {
         expect(response.toString()).toBe('test_query_result');
       });
 
-      it('should fallback to TriG for quads if media type is null', async() => {
+      it('should fallback to TriG for quads if media type is falsy', async() => {
         const engine = await newEngineDynamic();
         engine.query = () => ({ type: 'quads' });
 
@@ -1053,8 +1176,9 @@ describe('HttpServiceSparqlEndpoint', () => {
           request,
           response,
           query,
-          null,
-          false);
+          '',
+          false,
+          true);
 
         await expect(endCalledPromise).resolves.toBeFalsy();
         expect(response.writeHead).toHaveBeenCalledTimes(1);
@@ -1074,8 +1198,9 @@ describe('HttpServiceSparqlEndpoint', () => {
           request,
           response,
           query,
-          null,
-          false);
+          '',
+          false,
+          true);
 
         expect(process.send).toHaveBeenCalledTimes(1);
         expect(process.send).toHaveBeenCalledWith('start');
@@ -1083,6 +1208,63 @@ describe('HttpServiceSparqlEndpoint', () => {
         response.emit('close');
         expect(process.send).toHaveBeenCalledTimes(2);
         expect(process.send).toHaveBeenCalledWith('end');
+      });
+
+      it('should fallback to simple for updates if media type is falsy', async() => {
+        const engine = await newEngineDynamic();
+        engine.query = () => ({ type: 'update', updateResult: Promise.resolve() });
+
+        await instance.writeQueryResult(engine,
+          new PassThrough(),
+          new PassThrough(),
+          request,
+          response,
+          query,
+          '',
+          false,
+          true);
+
+        await expect(endCalledPromise).resolves.toBeFalsy();
+        expect(response.writeHead).toHaveBeenCalledTimes(1);
+        expect(response.writeHead).toHaveBeenLastCalledWith(200,
+          { 'content-type': 'simple', 'Access-Control-Allow-Origin': '*' });
+        expect(response.toString()).toBe('test_query_result');
+      });
+
+      it('should set readOnly in the context if called with readOnly true', async() => {
+        const engine = await newEngineDynamic();
+        engine.query = jest.fn(() => ({ type: 'bindings' }));
+
+        await instance.writeQueryResult(engine,
+          new PassThrough(),
+          new PassThrough(),
+          request,
+          response,
+          query,
+          '',
+          false,
+          true);
+
+        await expect(endCalledPromise).resolves.toBeFalsy();
+        expect(engine.query).toHaveBeenCalledWith('default_test_query', { [KEY_CONTEXT_READONLY]: true });
+      });
+
+      it('should set not readOnly in the context if called with readOnly false', async() => {
+        const engine = await newEngineDynamic();
+        engine.query = jest.fn(() => ({ type: 'bindings' }));
+
+        await instance.writeQueryResult(engine,
+          new PassThrough(),
+          new PassThrough(),
+          request,
+          response,
+          query,
+          '',
+          false,
+          false);
+
+        await expect(endCalledPromise).resolves.toBeFalsy();
+        expect(engine.query).toHaveBeenCalledWith('default_test_query', {});
       });
     });
 
@@ -1092,7 +1274,7 @@ describe('HttpServiceSparqlEndpoint', () => {
       const endListener = jest.fn();
       beforeEach(() => {
         endListener.mockClear();
-        instance.timeout = 1_500;
+        (<any> instance).timeout = 1_500;
         response = new ServerResponseMock();
         eventEmitter = stringToStream('queryresult');
         eventEmitter.addListener('test', endListener);
@@ -1136,14 +1318,23 @@ describe('HttpServiceSparqlEndpoint', () => {
 
       it('should set encoding of the request to utf8', () => {
         httpRequestMock.setEncoding(null);
-        instance.parseBody(httpRequestMock);
+        (<any> instance).parseBody(httpRequestMock)
+          .catch((error: Error) => {
+            // Ignore error
+          });
         return expect(httpRequestMock._readableState.encoding).toEqual('utf8');
       });
 
-      it('should return the empty string if the query is invalid ' +
-        'and the content-type is application/x-www-form-urlencoded', () => {
+      it('should reject without content-type', () => {
+        httpRequestMock.headers = {};
+        return expect(instance.parseBody(httpRequestMock)).rejects
+          .toThrowError(`Invalid POST body received, query type could not be determined`);
+      });
+
+      it('should reject if the query is invalid and the content-type is application/x-www-form-urlencoded', () => {
         httpRequestMock.headers = { 'content-type': 'application/x-www-form-urlencoded' };
-        return expect(instance.parseBody(httpRequestMock)).resolves.toBe('');
+        return expect(instance.parseBody(httpRequestMock)).rejects
+          .toThrowError(`Invalid POST body received, query type could not be determined`);
       });
 
       it('should parse query from url if the content-type is application/x-www-form-urlencoded', () => {
@@ -1151,16 +1342,42 @@ describe('HttpServiceSparqlEndpoint', () => {
         httpRequestMock = stringToStream(exampleQueryString);
         httpRequestMock.headers = { 'content-type': 'application/x-www-form-urlencoded' };
 
-        return expect(instance.parseBody(httpRequestMock)).resolves.toBe(querystring.parse(exampleQueryString).query);
+        return expect(instance.parseBody(httpRequestMock)).resolves.toEqual({
+          type: 'query',
+          value: querystring.parse(exampleQueryString).query,
+        });
       });
 
-      it('should return input body if content-type is not application/[sparql-query|x-www-form-urlencoded]', () => {
-        return expect(instance.parseBody(httpRequestMock)).resolves.toBe(testRequestBody);
+      it('should parse update from url if the content-type is application/x-www-form-urlencoded', () => {
+        const exampleQueryString = 'update=INSERT%20*%20WHERE%20%7B%3Fs%20%3Fp%20%3Fo%7D';
+        httpRequestMock = stringToStream(exampleQueryString);
+        httpRequestMock.headers = { 'content-type': 'application/x-www-form-urlencoded' };
+
+        return expect(instance.parseBody(httpRequestMock)).resolves.toEqual({
+          type: 'update',
+          value: querystring.parse(exampleQueryString).update,
+        });
+      });
+
+      it('should reject if content-type is not application/[sparql-query|x-www-form-urlencoded]', () => {
+        return expect(instance.parseBody(httpRequestMock)).rejects
+          .toThrowError(`Invalid POST body received, query type could not be determined`);
       });
 
       it('should return input body if content-type is application/sparql-query', () => {
         httpRequestMock.headers = { 'content-type': 'application/sparql-query' };
-        return expect(instance.parseBody(httpRequestMock)).resolves.toBe(testRequestBody);
+        return expect(instance.parseBody(httpRequestMock)).resolves.toEqual({
+          type: 'query',
+          value: testRequestBody,
+        });
+      });
+
+      it('should return input body if content-type is application/sparql-update', () => {
+        httpRequestMock.headers = { 'content-type': 'application/sparql-update' };
+        return expect(instance.parseBody(httpRequestMock)).resolves.toEqual({
+          type: 'update',
+          value: testRequestBody,
+        });
       });
     });
   });

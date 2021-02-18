@@ -5,9 +5,10 @@ import * as http from 'http';
 import * as querystring from 'querystring';
 import type { Writable } from 'stream';
 import * as url from 'url';
+import { KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
-import type { IActorQueryOperationOutput, IActorQueryOperationOutputQuads } from '@comunica/types';
-
+import type { IActorQueryOperationOutput,
+  IActorQueryOperationOutputQuads, IActorQueryOperationOutputUpdate } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import minimist = require('minimist');
 import type * as RDF from 'rdf-js';
@@ -30,7 +31,6 @@ Usage:
   comunica-sparql-http http://fragments.dbpedia.org/2015/en
   comunica-sparql-http http://fragments.dbpedia.org/2015/en hypermedia@http://fragments.dbpedia.org/2016-04/en
   comunica-sparql-http -c context.json 
-  comunica-sparql-http -c "{ \\"sources\\": [{ \\"type\\": \\"hypermedia\\", \\"value\\" : \\"http://fragments.dbpedia.org/2015/en\\" }]}" 
 
 Options:
   -c            Context should be a JSON object or the path to such a JSON file.
@@ -40,6 +40,7 @@ Options:
   -b            base IRI for the query (e.g., http://example.org/)
   -l            Sets the log level (e.g., debug, info, warn, ... defaults to warn)
   -i            A flag that enables cache invalidation before each query execution.
+  -u            Enable update queries (by default only read queries are enabled)
   --lenient     if failing requests and parsing errors should be logged instead of causing a hard crash
   --help        print this help message
   --version     prints version information
@@ -105,7 +106,7 @@ Options:
     env: NodeJS.ProcessEnv, defaultConfigPath: string, stderr: Writable,
     exit: (code: number) => void): Promise<IHttpServiceSparqlEndpointArgs> {
     // Allow both files as direct JSON objects for context
-    let context: any;
+    let context: any = {};
     try {
       context = await ActorInitSparql.buildContext(args, false, HttpServiceSparqlEndpoint.HELP_MESSAGE);
     } catch (error: unknown) {
@@ -117,6 +118,7 @@ Options:
     const port = Number.parseInt(args.p, 10) || 3_000;
     const timeout = (Number.parseInt(args.t, 10) || 60) * 1_000;
     const workers = Number.parseInt(args.w, 10) || 1;
+    context[KeysQueryOperation.readOnly] = !args.u;
 
     const configResourceUrl = env.COMUNICA_CONFIG ? env.COMUNICA_CONFIG : defaultConfigPath;
 
@@ -254,17 +256,20 @@ Options:
     }
 
     // Parse the query, depending on the HTTP method
-    let sparql;
+    let queryBody: IQueryBody | undefined;
     switch (request.method) {
       case 'POST':
-        sparql = await this.parseBody(request);
-        await this.writeQueryResult(engine, stdout, stderr, request, response, sparql, mediaType, false);
+        queryBody = await this.parseBody(request);
+        await this.writeQueryResult(engine, stdout, stderr, request, response, queryBody, mediaType, false, false);
         break;
       case 'HEAD':
       case 'GET':
-        sparql = <string> requestUrl.query.query || '';
-        await this
-          .writeQueryResult(engine, stdout, stderr, request, response, sparql, mediaType, request.method === 'HEAD');
+        // eslint-disable-next-line no-case-declarations
+        const queryValue = <string> requestUrl.query.query;
+        queryBody = queryValue ? { type: 'query', value: queryValue } : undefined;
+        // eslint-disable-next-line no-case-declarations
+        const headOnly = request.method === 'HEAD';
+        await this.writeQueryResult(engine, stdout, stderr, request, response, queryBody, mediaType, headOnly, true);
         break;
       default:
         stdout.write(`[405] ${request.method} to ${request.url}\n`);
@@ -281,20 +286,32 @@ Options:
    * @param {module:stream.internal.Writable} stderr Error output stream.
    * @param {module:http.IncomingMessage} request Request object.
    * @param {module:http.ServerResponse} response Response object.
-   * @param {string} sparql The SPARQL query string.
+   * @param {IQueryBody | undefined} queryBody The query body.
    * @param {string} mediaType The requested response media type.
    * @param {boolean} headOnly If only the header should be written.
+   * @param {boolean} readOnly If only data can be read, but not updated. (i.e., if we're in a GET request)
    */
   public async writeQueryResult(engine: ActorInitSparql, stdout: Writable, stderr: Writable,
     request: http.IncomingMessage, response: http.ServerResponse,
-    sparql: string, mediaType: string, headOnly: boolean): Promise<void> {
-    if (!sparql) {
+    queryBody: IQueryBody | undefined, mediaType: string, headOnly: boolean, readOnly: boolean): Promise<void> {
+    if (!queryBody || !queryBody.value) {
       return this.writeServiceDescription(engine, stdout, stderr, request, response, mediaType, headOnly);
+    }
+
+    // Determine context
+    let context = this.context;
+    if (readOnly) {
+      context = { ...context, [KeysQueryOperation.readOnly]: readOnly };
     }
 
     let result: IActorQueryOperationOutput;
     try {
-      result = await engine.query(sparql, this.context);
+      result = await engine.query(queryBody.value, context);
+
+      // For update queries, also await the result
+      if (result.type === 'update') {
+        await (<IActorQueryOperationOutputUpdate> result).updateResult;
+      }
     } catch (error: unknown) {
       stdout.write('[400] Bad request\n');
       response.writeHead(400,
@@ -309,6 +326,9 @@ Options:
         case 'quads':
           mediaType = 'application/trig';
           break;
+        case 'update':
+          mediaType = 'simple';
+          break;
         default:
           mediaType = 'application/sparql-results+json';
           break;
@@ -317,7 +337,7 @@ Options:
 
     stdout.write(`[200] ${request.method} to ${request.url}\n`);
     stdout.write(`      Requested media type: ${mediaType}\n`);
-    stdout.write(`      Received query: ${sparql}\n`);
+    stdout.write(`      Received ${queryBody.type} query: ${queryBody.value}\n`);
     response.writeHead(200, { 'content-type': mediaType, 'Access-Control-Allow-Origin': '*' });
 
     if (headOnly) {
@@ -431,9 +451,9 @@ Options:
   /**
    * Parses the body of a SPARQL POST request
    * @param {module:http.IncomingMessage} request Request object.
-   * @return {Promise<string>} A promise resolving to a query string.
+   * @return {Promise<IQueryBody>} A promise resolving to a query body object.
    */
-  public parseBody(request: http.IncomingMessage): Promise<string> {
+  public parseBody(request: http.IncomingMessage): Promise<IQueryBody> {
     return new Promise((resolve, reject) => {
       let body = '';
       request.setEncoding('utf8');
@@ -443,16 +463,32 @@ Options:
       });
       request.on('end', () => {
         const contentType: string | undefined = request.headers['content-type'];
-        if (contentType && contentType.includes('application/sparql-query')) {
-          return resolve(body);
+        if (contentType) {
+          if (contentType.includes('application/sparql-query')) {
+            return resolve({ type: 'query', value: body });
+          }
+          if (contentType.includes('application/sparql-update')) {
+            return resolve({ type: 'update', value: body });
+          }
+          if (contentType.includes('application/x-www-form-urlencoded')) {
+            const bodyStructure = querystring.parse(body);
+            if (bodyStructure.query) {
+              return resolve({ type: 'query', value: <string> bodyStructure.query });
+            }
+            if (bodyStructure.update) {
+              return resolve({ type: 'update', value: <string> bodyStructure.update });
+            }
+          }
         }
-        if (contentType && contentType.includes('application/x-www-form-urlencoded')) {
-          return resolve(<string> querystring.parse(body).query || '');
-        }
-        return resolve(body);
+        reject(new Error(`Invalid POST body received, query type could not be determined`));
       });
     });
   }
+}
+
+export interface IQueryBody {
+  type: 'query' | 'update';
+  value: string;
 }
 
 export interface IHttpServiceSparqlEndpointArgs extends IQueryOptions {
