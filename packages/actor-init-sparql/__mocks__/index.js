@@ -9,7 +9,7 @@ class EngineMock {
     if (sparql === "query_reject"){
       return Promise.reject(new Error("Rejected query"));
     }
-    return Promise.resolve();
+    return Promise.resolve({ type: 'bindings' });
   }
 
   resultToString(queryResult, mediaType){
