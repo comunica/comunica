@@ -1,6 +1,6 @@
 import type { IActorQueryOperationOutput,
   IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
-import { ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
+import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
 import type { ActionContext, IActorTest } from '@comunica/core';
 import type { Algebra } from 'sparqlalgebrajs';
 import { Factory } from 'sparqlalgebrajs';
@@ -18,6 +18,7 @@ export class ActorQueryOperationCopyRewrite extends ActorQueryOperationTypedMedi
   }
 
   public async testOperation(pattern: Algebra.Copy, context: ActionContext): Promise<IActorTest> {
+    ActorQueryOperation.throwOnReadOnly(context);
     return true;
   }
 

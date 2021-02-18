@@ -2,7 +2,8 @@ import type {
   IActorQueryOperationOutputUpdate,
 } from '@comunica/bus-query-operation';
 
-import { Bus } from '@comunica/core';
+import { KEY_CONTEXT_READONLY } from '@comunica/bus-query-operation';
+import { ActionContext, Bus } from '@comunica/core';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationClear } from '../lib/ActorQueryOperationClear';
 const arrayifyStream = require('arrayify-stream');
@@ -32,6 +33,11 @@ describe('ActorQueryOperationClear', () => {
     it('should test on clear', () => {
       const op = { operation: { type: 'clear' }};
       return expect(actor.test(op)).resolves.toBeTruthy();
+    });
+
+    it('should not test on readOnly', () => {
+      const op = { operation: { type: 'clear' }, context: ActionContext({ [KEY_CONTEXT_READONLY]: true }) };
+      return expect(actor.test(op)).rejects.toThrowError(`Attempted a write operation in read-only mode`);
     });
 
     it('should not test on non-clear', () => {

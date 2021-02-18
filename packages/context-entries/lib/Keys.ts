@@ -93,6 +93,10 @@ export enum KeysQueryOperation {
    *              This can be passed in 'pattern' actions.
    */
   patternParentMetadata = '@comunica/bus-query-operation:patternParentMetadata',
+  /**
+   * @range {boolean} Flag for indicating that only read operations are allowed, defaults to false.
+   */
+  readOnly = '@comunica/bus-query-operation:readOnly',
 }
 
 export enum KeysRdfParseJsonLd {

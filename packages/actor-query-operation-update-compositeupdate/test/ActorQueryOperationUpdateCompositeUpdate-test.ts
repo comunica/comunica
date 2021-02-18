@@ -1,6 +1,6 @@
 import type { IActorQueryOperationOutputUpdate } from '@comunica/bus-query-operation';
-import { ActorQueryOperation } from '@comunica/bus-query-operation';
-import { Bus } from '@comunica/core';
+import { ActorQueryOperation, KEY_CONTEXT_READONLY } from '@comunica/bus-query-operation';
+import { ActionContext, Bus } from '@comunica/core';
 import { ActorQueryOperationUpdateCompositeUpdate } from '../lib/ActorQueryOperationUpdateCompositeUpdate';
 
 describe('ActorQueryOperationUpdateCompositeUpdate', () => {
@@ -49,6 +49,11 @@ describe('ActorQueryOperationUpdateCompositeUpdate', () => {
     it('should test on compositeupdate', () => {
       const op = { operation: { type: 'compositeupdate' }};
       return expect(actor.test(op)).resolves.toBeTruthy();
+    });
+
+    it('should not test on readOnly', () => {
+      const op = { operation: { type: 'compositeupdate' }, context: ActionContext({ [KEY_CONTEXT_READONLY]: true }) };
+      return expect(actor.test(op)).rejects.toThrowError(`Attempted a write operation in read-only mode`);
     });
 
     it('should not test on non-compositeupdate', () => {

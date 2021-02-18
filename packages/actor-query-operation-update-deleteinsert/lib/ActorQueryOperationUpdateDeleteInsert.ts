@@ -23,6 +23,7 @@ export class ActorQueryOperationUpdateDeleteInsert extends ActorQueryOperationTy
   }
 
   public async testOperation(pattern: Algebra.DeleteInsert, context: ActionContext): Promise<IActorTest> {
+    ActorQueryOperation.throwOnReadOnly(context);
     return true;
   }
 
