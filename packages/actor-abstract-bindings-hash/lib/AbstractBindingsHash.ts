@@ -1,11 +1,11 @@
-import type { Bindings,
-  BindingsStream,
-  IActorQueryOperationOutputBindings } from '@comunica/bus-query-operation';
 import {
   ActorQueryOperation,
   ActorQueryOperationTypedMediated,
 } from '@comunica/bus-query-operation';
 import type { ActionContext, IActorTest } from '@comunica/core';
+import type { IBindings,
+  IBindingsStream,
+  IActorQueryOperationOutputBindings } from '@comunica/types';
 import type { Algebra } from 'sparqlalgebrajs';
 import type { IActorInitRdfDereferencePagedArgs } from './AbstractFilterHash';
 
@@ -23,7 +23,7 @@ export abstract class AbstractBindingsHash<T extends Algebra.Operation> extends 
      * The given filter depends on the Algebraic operation
      * @return {(bindings: Bindings) => boolean} A distinct filter for bindings.
      */
-  public abstract newHashFilter(): (bindings: Bindings) => boolean;
+  public abstract newHashFilter(): (bindings: IBindings) => boolean;
 
   public async testOperation(pattern: T, context: ActionContext): Promise<IActorTest> {
     return true;
@@ -33,7 +33,7 @@ export abstract class AbstractBindingsHash<T extends Algebra.Operation> extends 
     const output: IActorQueryOperationOutputBindings = ActorQueryOperation.getSafeBindings(
       await this.mediatorQueryOperation.mediate({ operation: pattern.input, context }),
     );
-    const bindingsStream: BindingsStream = output.bindingsStream.filter(
+    const bindingsStream: IBindingsStream = output.bindingsStream.filter(
       this.newHashFilter(),
     );
     return {

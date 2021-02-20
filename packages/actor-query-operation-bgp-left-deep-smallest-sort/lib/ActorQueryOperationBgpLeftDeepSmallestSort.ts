@@ -1,13 +1,10 @@
-import type { Bindings,
-  BindingsStream,
-
-  IActorQueryOperationOutputBindings,
-  IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
+import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import {
   ActorQueryOperation,
   ActorQueryOperationTypedMediated,
 } from '@comunica/bus-query-operation';
 import type { ActionContext, IActorTest } from '@comunica/core';
+import type { IBindings, IBindingsStream, IActorQueryOperationOutputBindings } from '@comunica/types';
 import { ArrayIterator, MultiTransformIterator, TransformIterator } from 'asynciterator';
 import type * as RDF from 'rdf-js';
 import { termToString } from 'rdf-string';
@@ -28,19 +25,19 @@ export class ActorQueryOperationBgpLeftDeepSmallestSort extends ActorQueryOperat
    * that takes every binding of the base stream,
    * materializes the remaining patterns with it,
    * and emits all bindings from this new set of patterns.
-   * @param {BindingsStream} baseStream The base stream.
+   * @param {IBindingsStream} baseStream The base stream.
    * @param {Algebra.Pattern[]} patterns The patterns to materialize with each binding of the base stream.
    * @param {(patterns: Algebra.Pattern[]) => Promise<IActorQueryOperationOutput>} patternBinder A callback
    * to retrieve the bindings stream of an array of patterns.
-   * @return {BindingsStream}
+   * @return {IBindingsStream}
    */
-  public static createLeftDeepStream(baseStream: BindingsStream, patterns: Algebra.Pattern[],
+  public static createLeftDeepStream(baseStream: IBindingsStream, patterns: Algebra.Pattern[],
     patternBinder: (bindPatterns: Algebra.Pattern[]) =>
-    Promise<BindingsStream>): BindingsStream {
+    Promise<IBindingsStream>): IBindingsStream {
     return new MultiTransformIterator(baseStream, {
       autoStart: false,
-      multiTransform(bindings: Bindings) {
-        const bindingsMerger = (subBindings: Bindings): Bindings => subBindings.merge(bindings);
+      multiTransform(bindings: IBindings) {
+        const bindingsMerger = (subBindings: IBindings): IBindings => subBindings.merge(bindings);
         return new TransformIterator(
           async() => (await patternBinder(ActorQueryOperationBgpLeftDeepSmallestSort.materializePatterns(patterns,
             bindings))).map(bindingsMerger), { maxBufferSize: 128 },
@@ -101,10 +98,10 @@ export class ActorQueryOperationBgpLeftDeepSmallestSort extends ActorQueryOperat
   /**
    * Materialize all patterns in the given pattern array with the given bindings.
    * @param {Pattern[]} patterns SPARQL algebra patterns.
-   * @param {Bindings} bindings A bindings object.
+   * @param {IBindings} bindings A bindings object.
    * @return {Pattern[]} A new array where each input pattern is materialized.
    */
-  public static materializePatterns(patterns: Algebra.Pattern[], bindings: Bindings): Algebra.Pattern[] {
+  public static materializePatterns(patterns: Algebra.Pattern[], bindings: IBindings): Algebra.Pattern[] {
     return patterns.map(pattern => ActorQueryOperationBgpLeftDeepSmallestSort.materializePattern(
       pattern, bindings,
     ));
@@ -113,10 +110,10 @@ export class ActorQueryOperationBgpLeftDeepSmallestSort extends ActorQueryOperat
   /**
    * Materialize a pattern with the given bindings.
    * @param {Pattern} pattern A SPARQL algebra pattern.
-   * @param {Bindings} bindings A bindings object.
+   * @param {IBindings} bindings A bindings object.
    * @return {Pattern} A new materialized pattern.
    */
-  public static materializePattern(pattern: Algebra.Pattern, bindings: Bindings): Algebra.Pattern {
+  public static materializePattern(pattern: Algebra.Pattern, bindings: IBindings): Algebra.Pattern {
     return <Algebra.Pattern> Object.assign(mapTerms(pattern,
       (term: RDF.Term) => ActorQueryOperationBgpLeftDeepSmallestSort.materializeTerm(term, bindings)),
     { type: 'pattern', context: pattern.context });
@@ -134,7 +131,7 @@ export class ActorQueryOperationBgpLeftDeepSmallestSort extends ActorQueryOperat
    * @param {Bindings} bindings A bindings object.
    * @return {RDF.Term} The materialized term.
    */
-  public static materializeTerm(term: RDF.Term, bindings: Bindings): RDF.Term {
+  public static materializeTerm(term: RDF.Term, bindings: IBindings): RDF.Term {
     if (term.termType === 'Variable') {
       const value: RDF.Term = bindings.get(termToString(term));
       if (value) {
@@ -208,7 +205,7 @@ export class ActorQueryOperationBgpLeftDeepSmallestSort extends ActorQueryOperat
     outputMetaTuples.splice(0, 1);
 
     // Materialize the remaining patterns for each binding in the stream.
-    const bindingsStream: BindingsStream = ActorQueryOperationBgpLeftDeepSmallestSort.createLeftDeepStream(
+    const bindingsStream: IBindingsStream = ActorQueryOperationBgpLeftDeepSmallestSort.createLeftDeepStream(
       smallestPattern.output.bindingsStream,
       outputMetaTuples.map(pat => pat.input),
       async(patterns: Algebra.Pattern[]) => {

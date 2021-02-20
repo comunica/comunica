@@ -1,8 +1,8 @@
 import * as SparqlExpressionEvaluator from '@comunica/actor-query-operation-filter-direct';
-import type { IActorQueryOperationOutputBindings,
-  IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
+import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
 import type { ActionContext, IActorTest } from '@comunica/core';
+import type { IActorQueryOperationOutputBindings } from '@comunica/types';
 import { termToString } from 'rdf-string';
 import { Algebra } from 'sparqlalgebrajs';
 import { SortIterator } from './SortIterator';

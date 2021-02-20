@@ -1,14 +1,18 @@
 import type { Bindings,
-  BindingsStream,
-  IActorQueryOperationOutputBindings,
   IActorQueryOperationTypedMediatedArgs,
-  IPatternBindings } from '@comunica/bus-query-operation';
+} from '@comunica/bus-query-operation';
 import {
   ActorQueryOperation,
   ActorQueryOperationTypedMediated,
 } from '@comunica/bus-query-operation';
 import { KeysQueryOperation } from '@comunica/context-entries';
 import type { ActionContext, IActorTest } from '@comunica/core';
+import type {
+  IBindings,
+  IBindingsStream,
+  IActorQueryOperationOutputBindings,
+  IPatternBindings,
+} from '@comunica/types';
 import { ArrayIterator, MultiTransformIterator, TransformIterator } from 'asynciterator';
 import type * as RDF from 'rdf-js';
 import { termToString } from 'rdf-string';
@@ -37,14 +41,14 @@ export class ActorQueryOperationBgpLeftDeepSmallest extends ActorQueryOperationT
    * to retrieve the bindings stream of an array of patterns.
    * @return {BindingsStream}
    */
-  public static createLeftDeepStream(baseStream: BindingsStream, patterns: Algebra.Pattern[],
+  public static createLeftDeepStream(baseStream: IBindingsStream, patterns: Algebra.Pattern[],
     patternBinder:
     (bindPatterns: { pattern: Algebra.Pattern; bindings: IPatternBindings }[]) =>
-    Promise<BindingsStream>): BindingsStream {
+    Promise<IBindingsStream>): IBindingsStream {
     return new MultiTransformIterator(baseStream, {
       autoStart: false,
-      multiTransform(bindings: Bindings) {
-        const bindingsMerger = (subBindings: Bindings): Bindings => subBindings.merge(bindings);
+      multiTransform(bindings: IBindings) {
+        const bindingsMerger = (subBindings: IBindings): IBindings => subBindings.merge(bindings);
         return new TransformIterator(
           async() => (await patternBinder(ActorQueryOperationBgpLeftDeepSmallest.materializePatterns(patterns,
             bindings))).transform({ map: bindingsMerger }), { maxBufferSize: 128 },
@@ -115,7 +119,7 @@ export class ActorQueryOperationBgpLeftDeepSmallest extends ActorQueryOperationT
    * @param {Bindings} bindings A bindings object.
    * @return { pattern: Algebra.Pattern, bindings: IPatternBindings }[] An array of patterns with their bindings.
    */
-  public static materializePatterns(patterns: Algebra.Pattern[], bindings: Bindings):
+  public static materializePatterns(patterns: Algebra.Pattern[], bindings: IBindings):
   { pattern: Algebra.Pattern; bindings: IPatternBindings }[] {
     return patterns.map(pattern => ActorQueryOperationBgpLeftDeepSmallest.materializePattern(
       pattern, bindings,
@@ -128,7 +132,7 @@ export class ActorQueryOperationBgpLeftDeepSmallest extends ActorQueryOperationT
    * @param {Bindings} bindings A bindings object.
    * @return { pattern: Algebra.Pattern, bindings: IPatternBindings } A new materialized pattern.
    */
-  public static materializePattern(pattern: Algebra.Pattern, bindings: Bindings):
+  public static materializePattern(pattern: Algebra.Pattern, bindings: IBindings):
   { pattern: Algebra.Pattern; bindings: IPatternBindings } {
     const bindingsOut: IPatternBindings = {};
     const patternOut = <Algebra.Pattern> Object.assign(mapTerms(pattern,
@@ -155,7 +159,7 @@ export class ActorQueryOperationBgpLeftDeepSmallest extends ActorQueryOperationT
    * @param {Bindings} bindings A bindings object.
    * @return {RDF.Term} The materialized term.
    */
-  public static materializeTerm(term: RDF.Term, bindings: Bindings): RDF.Term {
+  public static materializeTerm(term: RDF.Term, bindings: IBindings): RDF.Term {
     if (term.termType === 'Variable') {
       const value: RDF.Term = bindings.get(termToString(term));
       if (value) {
@@ -239,7 +243,7 @@ export class ActorQueryOperationBgpLeftDeepSmallest extends ActorQueryOperationT
     const subContext = context && context
       .set(KeysQueryOperation.bgpCurrentMetadata, metadatas[smallestId])
       .set(KeysQueryOperation.bgpParentMetadata, remainingMetadatas);
-    const bindingsStream: BindingsStream = ActorQueryOperationBgpLeftDeepSmallest.createLeftDeepStream(
+    const bindingsStream: IBindingsStream = ActorQueryOperationBgpLeftDeepSmallest.createLeftDeepStream(
       smallestPattern.bindingsStream,
       remainingPatterns,
       async(patterns: { pattern: Algebra.Pattern; bindings: IPatternBindings }[]) => {

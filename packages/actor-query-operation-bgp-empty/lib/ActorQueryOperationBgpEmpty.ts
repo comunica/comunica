@@ -1,11 +1,11 @@
-import type { IActionQueryOperation,
-  IActorQueryOperationOutput,
-  IActorQueryOperationOutputBindings } from '@comunica/bus-query-operation';
 import {
   ActorQueryOperationTyped,
   Bindings,
 } from '@comunica/bus-query-operation';
 import type { ActionContext, IActorArgs, IActorTest } from '@comunica/core';
+import type { IActionQueryOperation,
+  IActorQueryOperationOutput,
+  IActorQueryOperationOutputBindings } from '@comunica/types';
 import { SingletonIterator } from 'asynciterator';
 import { termToString } from 'rdf-string';
 import { getTerms, uniqTerms } from 'rdf-terms';

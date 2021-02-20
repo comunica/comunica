@@ -1,7 +1,7 @@
-import type { Bindings,
-  IActorQueryOperationOutputBindings, IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
+import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
 import type { ActionContext, IActorTest } from '@comunica/core';
+import type { IBindings, IActorQueryOperationOutputBindings } from '@comunica/types';
 import type { Algebra } from 'sparqlalgebrajs';
 import * as SparqlExpressionEvaluator from './SparqlExpressionEvaluator';
 
@@ -27,7 +27,7 @@ export class ActorQueryOperationFilterDirect extends ActorQueryOperationTypedMed
     ActorQueryOperation.validateQueryOutput(output, 'bindings');
 
     const exprFunc = SparqlExpressionEvaluator.createEvaluator(pattern.expression);
-    function filter(bindings: Bindings): boolean {
+    function filter(bindings: IBindings): boolean {
       try {
         const term = exprFunc(bindings);
         // eslint-disable-next-line no-implicit-coercion
@@ -37,7 +37,7 @@ export class ActorQueryOperationFilterDirect extends ActorQueryOperationTypedMed
         return false;
       }
     }
-    const bindingsStream = output.bindingsStream.transform<Bindings>({ filter, autoStart: false });
+    const bindingsStream = output.bindingsStream.transform<IBindings>({ filter, autoStart: false });
 
     return {
       type: 'bindings',

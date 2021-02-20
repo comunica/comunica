@@ -1,5 +1,4 @@
-import type { IActorQueryOperationTypedMediatedArgs,
-  IActorQueryOperationOutputBindings } from '@comunica/bus-query-operation';
+import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import {
   ActorQueryOperation,
   ActorQueryOperationTypedMediated,
@@ -7,6 +6,7 @@ import {
 } from '@comunica/bus-query-operation';
 import type { IActorTest } from '@comunica/core';
 import { ActionContext } from '@comunica/core';
+import type { IActorQueryOperationOutputBindings } from '@comunica/types';
 import type { AsyncIterator } from 'asynciterator';
 import { BufferedIterator, MultiTransformIterator,
   TransformIterator, EmptyIterator } from 'asynciterator';

@@ -1,10 +1,10 @@
 import { ActorQueryOperationUnion } from '@comunica/actor-query-operation-union';
-import type { IActorQueryOperationOutputQuads,
-  IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
+import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import {
   ActorQueryOperation, ActorQueryOperationTypedMediated, getMetadata,
 } from '@comunica/bus-query-operation';
 import type { ActionContext, IActorTest } from '@comunica/core';
+import type { IActorQueryOperationOutputQuads } from '@comunica/types';
 import { UnionIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import type * as RDF from 'rdf-js';
