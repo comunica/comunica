@@ -1,22 +1,21 @@
 {
-  "name": "@comunica/bus-query-operation",
+  "name": "@comunica/types",
   "version": "1.19.2",
-  "description": "A comunica bus for query-operation events.",
-  "lsd:module": true,
+  "description": "Typings module for Comunica",
+  "lsd:module": false,
   "main": "index.js",
   "typings": "index",
   "repository": {
     "type": "git",
     "url": "https://github.com/comunica/comunica.git",
-    "directory": "packages/bus-query-operation"
+    "directory": "packages/types"
   },
   "publishConfig": {
     "access": "public"
   },
   "keywords": [
     "comunica",
-    "bus",
-    "query-operation"
+    "types"
   ],
   "license": "MIT",
   "bugs": {
@@ -27,23 +26,16 @@
     "components",
     "lib/**/*.d.ts",
     "lib/**/*.js",
+    "bin/**/*.d.ts",
+    "bin/**/*.js",
     "index.d.ts",
     "index.js"
   ],
-  "dependencies": {
-    "@comunica/context-entries": "^1.0.0",
-    "@types/rdf-js": "*",
-    "asynciterator": "^3.0.3",
-    "immutable": "^3.8.2",
-    "rdf-string": "^1.5.0",
-    "sparqlalgebrajs": "^2.4.0"
-  },
-  "peerDependencies": {
-    "@comunica/core": "^1.0.0"
-  },
   "devDependencies": {
-    "@comunica/core": "^1.19.2",
-    "@comunica/types": "^1.19.2"
+    "@types/rdf-js": "4.0.1",
+    "immutable": "^3.8.2",
+    "sparqlalgebrajs": "^2.4.0",
+    "asynciterator": "^3.0.3"
   },
   "jest": {
     "globals": {
@@ -62,6 +54,8 @@
     "collectCoverage": true
   },
   "scripts": {
+    "test": "node \"../../node_modules/jest/bin/jest.js\" ${1}",
+    "test-watch": "node \"../../node_modules/jest/bin/jest.js\" ${1} --watch",
     "build": "node \"../../node_modules/typescript/bin/tsc\"",
     "validate": "npm ls"
   }

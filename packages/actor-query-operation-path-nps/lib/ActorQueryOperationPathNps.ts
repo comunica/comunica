@@ -1,10 +1,10 @@
 import { ActorAbstractPath } from '@comunica/actor-abstract-path';
-import type { Bindings, IActorQueryOperationOutputBindings,
-  IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
+import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import {
   ActorQueryOperation,
 } from '@comunica/bus-query-operation';
 import type { ActionContext } from '@comunica/core';
+import type { IBindings, IActorQueryOperationOutputBindings } from '@comunica/types';
 import { termToString } from 'rdf-string';
 import { Algebra } from 'sparqlalgebrajs';
 
@@ -27,7 +27,7 @@ export class ActorQueryOperationPathNps extends ActorAbstractPath {
     );
 
     // Remove the generated blank nodes from the bindings
-    const bindingsStream = output.bindingsStream.transform<Bindings>({
+    const bindingsStream = output.bindingsStream.transform<IBindings>({
       filter(bindings) {
         return !predicate.iris.some(iri => iri.equals(bindings.get(blankName)));
       },

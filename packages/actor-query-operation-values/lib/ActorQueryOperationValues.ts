@@ -1,8 +1,7 @@
-import type { IActionQueryOperation,
-  IActorQueryOperationOutput, IActorQueryOperationOutputBindings, BindingsStream } from '@comunica/bus-query-operation';
 import { ActorQueryOperationTyped, Bindings } from '@comunica/bus-query-operation';
-
 import type { ActionContext, IActorArgs, IActorTest } from '@comunica/core';
+import type { IActionQueryOperation,
+  IActorQueryOperationOutput, IActorQueryOperationOutputBindings, IBindingsStream, IBindings } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { termToString } from 'rdf-string';
 import type { Algebra } from 'sparqlalgebrajs';
@@ -21,7 +20,7 @@ export class ActorQueryOperationValues extends ActorQueryOperationTyped<Algebra.
 
   public async runOperation(pattern: Algebra.Values, context: ActionContext):
   Promise<IActorQueryOperationOutputBindings> {
-    const bindingsStream: BindingsStream = new ArrayIterator<Bindings>(pattern.bindings.map(x => Bindings(x)));
+    const bindingsStream: IBindingsStream = new ArrayIterator<IBindings>(pattern.bindings.map(x => Bindings(x)));
     const metadata = (): Promise<Record<string, any>> => Promise.resolve({ totalItems: pattern.bindings.length });
     const variables: string[] = pattern.variables.map(x => termToString(x));
     const canContainUndefs = pattern.bindings.some(bindings => variables.some(variable => !(variable in bindings)));

@@ -1,6 +1,6 @@
 import type { Actor, IActorArgs, IActorTest, Mediator } from '@comunica/core';
+import type { IActionQueryOperation, IActorQueryOperationOutput } from '@comunica/types';
 import type { Algebra } from 'sparqlalgebrajs';
-import type { IActionQueryOperation, IActorQueryOperationOutput } from './ActorQueryOperation';
 import { ActorQueryOperationTyped } from './ActorQueryOperationTyped';
 
 /**

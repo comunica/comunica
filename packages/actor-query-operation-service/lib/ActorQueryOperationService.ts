@@ -1,10 +1,10 @@
-import type { IActorQueryOperationOutputBindings,
-  IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
+import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperation, ActorQueryOperationTypedMediated,
   Bindings } from '@comunica/bus-query-operation';
 import { KeysRdfResolveQuadPattern } from '@comunica/context-entries';
 import type { IActorTest } from '@comunica/core';
 import { ActionContext } from '@comunica/core';
+import type { IActorQueryOperationOutputBindings } from '@comunica/types';
 import { SingletonIterator } from 'asynciterator';
 import type { Algebra } from 'sparqlalgebrajs';
 

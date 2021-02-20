@@ -1,11 +1,11 @@
 import { Readable } from 'stream';
-import type { Bindings, IActorQueryOperationOutputBindings } from '@comunica/bus-query-operation';
 import type { IActionSparqlSerialize, IActorSparqlSerializeFixedMediaTypesArgs,
   IActorSparqlSerializeOutput } from '@comunica/bus-sparql-serialize';
 import {
   ActorSparqlSerializeFixedMediaTypes,
 } from '@comunica/bus-sparql-serialize';
 import type { ActionContext } from '@comunica/core';
+import type { IBindings, IActorQueryOperationOutputBindings } from '@comunica/types';
 import type * as RDF from 'rdf-js';
 import { termToString } from 'rdf-string-ttl';
 
@@ -57,7 +57,7 @@ export class ActorSparqlSerializeSparqlTsv extends ActorSparqlSerializeFixedMedi
     bindingsAction.bindingsStream.on('error', (error: Error) => {
       data.emit('error', error);
     });
-    bindingsAction.bindingsStream.on('data', (bindings: Bindings) => {
+    bindingsAction.bindingsStream.on('data', (bindings: IBindings) => {
       data.push(`${bindingsAction.variables
         .map((key: string) => ActorSparqlSerializeSparqlTsv
           .bindingToTsvBindings(bindings.get(key)))

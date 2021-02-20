@@ -1,10 +1,13 @@
-import type { IActorQueryOperationOutputBindings, IActorQueryOperationOutputQuads,
-  IActorQueryOperationOutputStream,
-  IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
+import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import {
   ActorQueryOperationTypedMediated,
 } from '@comunica/bus-query-operation';
 import type { ActionContext, IActorTest } from '@comunica/core';
+import type {
+  IActorQueryOperationOutputBindings,
+  IActorQueryOperationOutputQuads,
+  IActorQueryOperationOutputStream,
+} from '@comunica/types';
 import type { AsyncIterator } from 'asynciterator';
 import type { Algebra } from 'sparqlalgebrajs';
 

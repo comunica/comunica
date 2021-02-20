@@ -1,6 +1,3 @@
-import type { Bindings,
-  IActorQueryOperationOutput,
-  IActorQueryOperationOutputBindings } from '@comunica/bus-query-operation';
 import {
   getMetadata,
 } from '@comunica/bus-query-operation';
@@ -8,6 +5,9 @@ import type { IActionRdfJoin } from '@comunica/bus-rdf-join';
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import type { IActorArgs } from '@comunica/core';
 import type { IMediatorTypeIterations } from '@comunica/mediatortype-iterations';
+import type { IBindings,
+  IActorQueryOperationOutput,
+  IActorQueryOperationOutputBindings } from '@comunica/types';
 import { NestedLoopJoin } from 'asyncjoin';
 
 /**
@@ -19,7 +19,7 @@ export class ActorRdfJoinNestedLoop extends ActorRdfJoin {
   }
 
   protected async getOutput(action: IActionRdfJoin): Promise<IActorQueryOperationOutputBindings> {
-    const join = new NestedLoopJoin<Bindings, Bindings, Bindings>(
+    const join = new NestedLoopJoin<IBindings, IBindings, IBindings>(
       action.entries[0].bindingsStream, action.entries[1].bindingsStream, <any> ActorRdfJoin.join, { autoStart: false },
     );
     return {

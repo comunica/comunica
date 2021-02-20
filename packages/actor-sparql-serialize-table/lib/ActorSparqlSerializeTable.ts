@@ -1,13 +1,13 @@
 import { Readable } from 'stream';
-import type {
-  Bindings,
-  IActorQueryOperationOutputBindings,
-  IActorQueryOperationOutputQuads,
-} from '@comunica/bus-query-operation';
 import type { IActionSparqlSerialize,
   IActorSparqlSerializeFixedMediaTypesArgs, IActorSparqlSerializeOutput } from '@comunica/bus-sparql-serialize';
 import { ActorSparqlSerializeFixedMediaTypes } from '@comunica/bus-sparql-serialize';
 import type { ActionContext } from '@comunica/core';
+import type {
+  IBindings,
+  IActorQueryOperationOutputBindings,
+  IActorQueryOperationOutputQuads,
+} from '@comunica/types';
 
 import { getTerms, QUAD_TERM_NAMES } from 'rdf-terms';
 
@@ -47,7 +47,7 @@ export class ActorSparqlSerializeTable extends ActorSparqlSerializeFixedMediaTyp
     data.push(`${header}\n${ActorSparqlSerializeTable.repeat('-', header.length)}\n`);
   }
 
-  public pushRow(data: Readable, labels: string[], bindings: Bindings): void {
+  public pushRow(data: Readable, labels: string[], bindings: IBindings): void {
     data.push(`${labels
       .map(label => bindings.has(label) ? bindings.get(label).value : '')
       .map(label => this.pad(label))

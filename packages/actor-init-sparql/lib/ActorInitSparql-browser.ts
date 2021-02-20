@@ -7,14 +7,6 @@ import type {
   IActionOptimizeQueryOperation,
   IActorOptimizeQueryOperationOutput,
 } from '@comunica/bus-optimize-query-operation';
-import type {
-  IActionQueryOperation,
-  IActorQueryOperationOutput,
-  IActorQueryOperationOutputBindings,
-  IActorQueryOperationOutputQuads,
-  IActorQueryOperationOutputBoolean,
-  Bindings,
-} from '@comunica/bus-query-operation';
 import { ensureBindings, materializeOperation } from '@comunica/bus-query-operation';
 import type { IDataSource } from '@comunica/bus-rdf-resolve-quad-pattern';
 import { isDataSourceRawType } from '@comunica/bus-rdf-resolve-quad-pattern';
@@ -33,13 +25,22 @@ import type {
 import { KeysInitSparql, KeysCore, KeysRdfResolveQuadPattern } from '@comunica/context-entries';
 import type { Actor, IAction, IActorArgs, IActorTest, Logger, Mediator } from '@comunica/core';
 import { ActionContext } from '@comunica/core';
+import type {
+  IActionQueryOperation,
+  IActorQueryOperationOutput,
+  IActorQueryOperationOutputBindings,
+  IActorQueryOperationOutputQuads,
+  IActorQueryOperationOutputBoolean,
+  IBindings,
+  IActorInitSparql,
+} from '@comunica/types';
 import type * as RDF from 'rdf-js';
 import { Algebra } from 'sparqlalgebrajs';
 
 /**
  * A browser-safe comunica SPARQL Init Actor.
  */
-export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs {
+export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs, IActorInitSparql {
   private static readonly ALGEBRA_TYPES: Record<string, boolean> = Object.keys(Algebra.types)
     .reduce((acc: Record<string, boolean>, key) => {
       acc[(<any> Algebra.types)[key]] = true;
@@ -94,7 +95,7 @@ export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs {
     // Set bindings
     if ((<IQueryResultBindings>results).bindingsStream) {
       (<IQueryResultBindings>results).bindings = () => new Promise((resolve, reject) => {
-        const result: Bindings[] = [];
+        const result: IBindings[] = [];
         (<IQueryResultBindings>results).bindingsStream.on('data', data => {
           result.push(data);
         });
@@ -308,7 +309,7 @@ export interface IQueryResultBindings extends IActorQueryOperationOutputBindings
   /**
    * The collection of bindings after an 'end' event occured.
    */
-  bindings: () => Promise<Bindings[]>;
+  bindings: () => Promise<IBindings[]>;
 }
 
 /**

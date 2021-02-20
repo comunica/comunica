@@ -1,10 +1,10 @@
 import { Readable } from 'stream';
-import type { Bindings, IActorQueryOperationOutputBindings,
-  IActorQueryOperationOutputBoolean } from '@comunica/bus-query-operation';
 import type { IActionSparqlSerialize,
   IActorSparqlSerializeFixedMediaTypesArgs, IActorSparqlSerializeOutput } from '@comunica/bus-sparql-serialize';
 import { ActorSparqlSerializeFixedMediaTypes } from '@comunica/bus-sparql-serialize';
 import type { ActionContext } from '@comunica/core';
+import type { IBindings, IActorQueryOperationOutputBindings,
+  IActorQueryOperationOutputBoolean } from '@comunica/types';
 import type * as RDF from 'rdf-js';
 import * as xml from 'xml';
 
@@ -74,7 +74,7 @@ export class ActorSparqlSerializeSparqlXml extends ActorSparqlSerializeFixedMedi
       resultStream.on('error', (error: Error) => {
         data.emit('error', error);
       });
-      resultStream.on('data', (bindings: Bindings) => {
+      resultStream.on('data', (bindings: IBindings) => {
         // XML SPARQL results spec does not allow unbound variables and blank node bindings
         const realBindings = bindings.filter((value: RDF.Term, key: string) => Boolean(value) && key.startsWith('?'));
         results.push({ result: realBindings.map(ActorSparqlSerializeSparqlXml.bindingToXmlBindings) });

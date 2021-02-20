@@ -1,7 +1,7 @@
 import { ActorAbstractPath } from '@comunica/actor-abstract-path';
-import type { IActorQueryOperationOutput,
-  IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
+import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import type { ActionContext } from '@comunica/core';
+import type { IActorQueryOperationOutput } from '@comunica/types';
 import { Algebra } from 'sparqlalgebrajs';
 
 /**
