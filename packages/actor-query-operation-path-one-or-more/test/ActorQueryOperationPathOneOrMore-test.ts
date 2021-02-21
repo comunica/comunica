@@ -1,6 +1,7 @@
 import { ActorAbstractPath } from '@comunica/actor-abstract-path';
 import { ActorQueryOperation, Bindings } from '@comunica/bus-query-operation';
 import { Bus, ActionContext } from '@comunica/core';
+import type { IBindings } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { termToString } from 'rdf-string';
@@ -217,7 +218,7 @@ describe('ActorQueryOperationPathOneOrMore', () => {
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       expect(output.variables).toEqual([ '?x', '?y' ]);
       expect(output.canContainUndefs).toEqual(false);
-      const bindings: Bindings[] = await arrayifyStream(output.bindingsStream);
+      const bindings: IBindings[] = await arrayifyStream(output.bindingsStream);
       expect(bindings).toEqual([
         Bindings({ '?x': DF.namedNode('1'), '?y': DF.namedNode('2') }),
         Bindings({ '?x': DF.namedNode('1'), '?y': DF.namedNode('1') }),
@@ -237,7 +238,7 @@ describe('ActorQueryOperationPathOneOrMore', () => {
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       expect(output.variables).toEqual([ '?x', '?y', '?g' ]);
       expect(output.canContainUndefs).toEqual(false);
-      const bindings: Bindings[] = await arrayifyStream(output.bindingsStream);
+      const bindings: IBindings[] = await arrayifyStream(output.bindingsStream);
       expect(bindings).toEqual([
         Bindings({ '?x': DF.namedNode('1'), '?y': DF.namedNode('2'), '?g': DF.namedNode('3') }),
         Bindings({ '?x': DF.namedNode('1'), '?y': DF.namedNode('1'), '?g': DF.namedNode('3') }),
