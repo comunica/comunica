@@ -6,7 +6,7 @@ import {
 } from '@comunica/bus-query-operation';
 import type { IActorTest } from '@comunica/core';
 import { ActionContext } from '@comunica/core';
-import type { IActorQueryOperationOutputBindings } from '@comunica/types';
+import type { IActorQueryOperationOutputBindings, IBindings } from '@comunica/types';
 import type { AsyncIterator } from 'asynciterator';
 import { BufferedIterator, MultiTransformIterator,
   TransformIterator, EmptyIterator } from 'asynciterator';
@@ -77,7 +77,7 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
   }
 
   private async predicateStarGraphVariable(subject: Term, object: Variable, predicate: Algebra.PropertyPathSymbol,
-    graph: Term, context: ActionContext): Promise<AsyncIterator<Bindings>> {
+    graph: Term, context: ActionContext): Promise<AsyncIterator<IBindings>> {
     // Construct path to obtain all graphs where subject exists
     const predVar = this.generateVariable(ActorAbstractPath.FACTORY.createPath(subject, predicate, object, graph));
     const findGraphs = ActorAbstractPath.FACTORY.createUnion(
@@ -94,18 +94,18 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
     return new MultiTransformIterator(
       results.bindingsStream,
       {
-        multiTransform: (bindings: Bindings) => {
+        multiTransform: (bindings: IBindings) => {
           // Extract the graph and start a predicate* search starting from subject in each graph
           const graphValue = bindings.get(termToString(graph));
           if (passedGraphs.has(termToString(graphValue))) {
             return new EmptyIterator();
           }
           passedGraphs.add(termToString(graphValue));
-          return new TransformIterator<Bindings>(
+          return new TransformIterator<IBindings>(
             async() => {
               const it = new BufferedIterator<Term>();
               await this.getObjectsPredicateStar(subject, predicate, graphValue, context, {}, it, { count: 0 });
-              return it.transform<Bindings>({
+              return it.transform<IBindings>({
                 transform(item, next, push) {
                   push(Bindings({ [objectString]: item, [termToString(graph)]: graphValue }));
                   next();
@@ -131,7 +131,7 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
      * @return {Promise<AsyncIterator<Bindings>} Iterator to where all bindings of query should have been pushed.
      */
   public async getObjectsPredicateStarEval(subject: Term, object: Variable, predicate: Algebra.PropertyPathSymbol,
-    graph: Term, context: ActionContext): Promise<AsyncIterator<Bindings>> {
+    graph: Term, context: ActionContext): Promise<AsyncIterator<IBindings>> {
     if (graph.termType === 'Variable') {
       return this.predicateStarGraphVariable(subject, object, predicate, graph, context);
     }
@@ -139,7 +139,7 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
     const it = new BufferedIterator<Term>();
     await this.getObjectsPredicateStar(subject, predicate, graph, context, {}, it, { count: 0 });
 
-    return it.transform<Bindings>({
+    return it.transform<IBindings>({
       transform(item, next, push) {
         push(Bindings({ [termToString(object)]: item }));
         next();
@@ -199,7 +199,7 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
      * Remembers solutions for when objectVal is already been calculated, can be reused when same objectVal occurs
      * @param {{[id: string]: Term}} termHashesCurrentSubject
      * Remembers the pairs we've already searched for, can stop searching if so.
-     * @param {BufferedIterator<Bindings>} it Iterator to push terms to.
+     * @param {BufferedIterator<IBindings>} it Iterator to push terms to.
      * @param {any} counter Counts how many searches are in progress to close it when needed (when counter == 0).
      * @return {Promise<void>} All solutions of query should have been pushed to it by then.
      */
@@ -208,7 +208,7 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
   public async getSubjectAndObjectBindingsPredicateStar(subjectString: string, objectString: string, subjectVal: Term,
     objectVal: Term, predicate: Algebra.PropertyPathSymbol, graph: Term, context: ActionContext,
     termHashesGlobal: Record<string, Promise<Term[]>>, termHashesCurrentSubject: Record<string, boolean>,
-    it: BufferedIterator<Bindings>, counter: any): Promise<void> {
+    it: BufferedIterator<IBindings>, counter: any): Promise<void> {
     const termString = termToString(objectVal) + termToString(graph);
 
     // If this combination of subject and object already done, return nothing

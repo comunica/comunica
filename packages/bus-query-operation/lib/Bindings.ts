@@ -5,16 +5,14 @@ import { termToString } from 'rdf-string';
 import type { Algebra, Factory } from 'sparqlalgebrajs';
 import { Util } from 'sparqlalgebrajs';
 
-export type Bindings = IBindings;
-
 /**
  * A convenience constructor for bindings based on a given hash.
  * @param {{[p: string]: RDF.Term}} hash A hash that maps variable names to terms.
- * @return {Bindings} The immutable bindings from the hash.
+ * @return {IBindings} The immutable bindings from the hash.
  * @constructor
  */
 // eslint-disable-next-line no-redeclare
-export function Bindings(hash: Record<string, RDF.Term>): Bindings {
+export function Bindings(hash: Record<string, RDF.Term>): IBindings {
   return Map(hash);
 }
 
@@ -33,7 +31,7 @@ export function isBindings(maybeBindings: any): boolean {
  * @param maybeBindings Any object.
  * @return {Bindings} A bindings object.
  */
-export function ensureBindings(maybeBindings: any): Bindings {
+export function ensureBindings(maybeBindings: any): IBindings {
   return isBindings(maybeBindings) ? maybeBindings : Bindings(maybeBindings);
 }
 
@@ -49,7 +47,7 @@ export function ensureBindings(maybeBindings: any): Bindings {
  * @param {Bindings} bindings A bindings object.
  * @return {RDF.Term} The materialized term.
  */
-export function materializeTerm(term: RDF.Term, bindings: Bindings): RDF.Term {
+export function materializeTerm(term: RDF.Term, bindings: IBindings): RDF.Term {
   if (term.termType === 'Variable') {
     const value: RDF.Term = bindings.get(termToString(term));
     if (value) {
@@ -64,11 +62,11 @@ export function materializeTerm(term: RDF.Term, bindings: Bindings): RDF.Term {
  * Essentially, all variables in the given operation will be replaced
  * by the terms bound to the variables in the given bindings.
  * @param {Operation} operation SPARQL algebra operation.
- * @param {Bindings} bindings A bindings object.
+ * @param {IBindings} bindings A bindings object.
  * @param {boolean} strictTargetVariables If target variable bindings (such as on SELECT or BIND) should not be allowed.
  * @return Algebra.Operation A new operation materialized with the given bindings.
  */
-export function materializeOperation(operation: Algebra.Operation, bindings: Bindings,
+export function materializeOperation(operation: Algebra.Operation, bindings: IBindings,
   strictTargetVariables = false): Algebra.Operation {
   return Util.mapOperation(operation, {
     path(op: Algebra.Path, factory: Factory) {

@@ -1,4 +1,4 @@
-import type { Bindings } from '@comunica/bus-query-operation';
+import type { IBindings } from '@comunica/types';
 import type * as RDF from 'rdf-js';
 import { termToString } from 'rdf-string';
 
@@ -25,7 +25,7 @@ export class BindingsIndex {
    * Add the given bindings to the index.
    * @param {Bindings} bindings A bindings.
    */
-  public add(bindings: Bindings): void {
+  public add(bindings: IBindings): void {
     if (this.isBindingsValid(bindings)) {
       let dataIt = this.data;
       for (const key of this.keys) {
@@ -44,7 +44,7 @@ export class BindingsIndex {
    * @param {Bindings} bindings A bindings.
    * @return {boolean} If it exists in the index.
    */
-  public contains(bindings: Bindings): boolean {
+  public contains(bindings: IBindings): boolean {
     // Always return false if the bindings contain none of the expected keys
     if (!this.isBindingsValid(bindings)) {
       return false;
@@ -53,7 +53,7 @@ export class BindingsIndex {
     return this.containsRecursive(bindings, this.keys, [ this.data ]);
   }
 
-  protected isBindingsValid(bindings: Bindings): boolean {
+  protected isBindingsValid(bindings: IBindings): boolean {
     let validKeys = false;
     for (const key of this.keys) {
       if (bindings.get(key)) {
@@ -64,7 +64,7 @@ export class BindingsIndex {
     return validKeys;
   }
 
-  protected containsRecursive(bindings: Bindings, keys: string[], dataIndexes: IDataIndex[]): boolean {
+  protected containsRecursive(bindings: IBindings, keys: string[], dataIndexes: IDataIndex[]): boolean {
     if (keys.length === 0) {
       return true;
     }

@@ -8,9 +8,9 @@ import type {
   IActorQueryOperationOutputBoolean,
   IActorQueryOperationOutputQuads,
   IActorQueryOperationOutputStream,
+  IBindings,
 } from '@comunica/types';
 import type { Algebra } from 'sparqlalgebrajs';
-import type { Bindings } from './Bindings';
 import { materializeOperation } from './Bindings';
 
 /**
@@ -164,7 +164,7 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
   public static createExistenceResolver(context: ActionContext, mediatorQueryOperation: Mediator<
   Actor<IActionQueryOperation, IActorTest, IActorQueryOperationOutput>,
   IActionQueryOperation, IActorTest, IActorQueryOperationOutput>):
-    (expr: Algebra.ExistenceExpression, bindings: Bindings) => Promise<boolean> {
+    (expr: Algebra.ExistenceExpression, bindings: IBindings) => Promise<boolean> {
     return async(expr, bindings) => {
       const operation = materializeOperation(expr.input, bindings);
 

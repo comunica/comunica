@@ -1,6 +1,6 @@
 import type { IActorInitRdfDereferencePagedArgs } from '@comunica/actor-abstract-bindings-hash';
 import { AbstractBindingsHash, AbstractFilterHash } from '@comunica/actor-abstract-bindings-hash';
-import type { Bindings } from '@comunica/bus-query-operation';
+import type { IBindings } from '@comunica/types';
 import LRU = require('lru-cache');
 import type { Algebra } from 'sparqlalgebrajs';
 /**
@@ -19,9 +19,9 @@ export class ActorQueryOperationReducedHash extends AbstractBindingsHash<Algebra
    * This will maintain an internal hash datastructure so that every bindings object only returns true once.
    * @return {(bindings: Bindings) => boolean} A distinct filter for bindings.
    */
-  public newHashFilter(): (bindings: Bindings) => boolean {
+  public newHashFilter(): (bindings: IBindings) => boolean {
     const hashes = new LRU<string, boolean>({ max: this.cacheSize });
-    return (bindings: Bindings) => {
+    return (bindings: IBindings) => {
       const hash: string = AbstractFilterHash.hash(bindings);
       return !hashes.has(hash) && hashes.set(hash, true);
     };
