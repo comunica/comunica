@@ -3,9 +3,9 @@ import {
   AsyncIteratorJsonBindings,
 } from '@comunica/actor-rdf-resolve-quad-pattern-sparql-json';
 import type { IActionHttp, IActorHttpOutput } from '@comunica/bus-http';
-import type { Bindings, BindingsStream } from '@comunica/bus-query-operation';
 import type { IQuadSource } from '@comunica/bus-rdf-resolve-quad-pattern';
 import type { ActionContext, Actor, IActorTest, Mediator } from '@comunica/core';
+import type { IBindings, IBindingsStream } from '@comunica/types';
 import type { AsyncIterator } from 'asynciterator';
 import type * as RDF from 'rdf-js';
 import { mapTerms } from 'rdf-terms';
@@ -34,7 +34,7 @@ export class RdfSourceSparql implements IQuadSource {
    * @param {ActionContext} context An optional context.
    * @return {BindingsStream} A stream of bindings.
    */
-  public queryBindings(endpoint: string, query: string, context?: ActionContext): BindingsStream {
+  public queryBindings(endpoint: string, query: string, context?: ActionContext): IBindingsStream {
     return new AsyncIteratorJsonBindings(endpoint, query, context, this.mediatorHttp);
   }
 
@@ -51,8 +51,8 @@ export class RdfSourceSparql implements IQuadSource {
     // Emit metadata containing the estimated count (reject is never called)
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     new Promise(resolve => {
-      const bindingsStream: BindingsStream = this.queryBindings(this.url, countQuery, this.context);
-      bindingsStream.on('data', (bindings: Bindings) => {
+      const bindingsStream: IBindingsStream = this.queryBindings(this.url, countQuery, this.context);
+      bindingsStream.on('data', (bindings: IBindings) => {
         const count: RDF.Term = bindings.get('?count');
         if (count) {
           const totalItems: number = Number.parseInt(count.value, 10);
@@ -70,7 +70,7 @@ export class RdfSourceSparql implements IQuadSource {
 
     // Materialize the queried pattern using each found binding.
     const quads: AsyncIterator<RDF.Quad> & RDF.Stream = this.queryBindings(this.url, selectQuery, this.context)
-      .map((bindings: Bindings) => <RDF.Quad> mapTerms(pattern, (value: RDF.Term) => {
+      .map((bindings: IBindings) => <RDF.Quad> mapTerms(pattern, (value: RDF.Term) => {
         if (value.termType === 'Variable') {
           const boundValue: RDF.Term = bindings.get(`?${value.value}`);
           if (!boundValue) {

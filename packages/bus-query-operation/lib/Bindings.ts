@@ -1,11 +1,9 @@
-import type { IBindings, IBindingsStream } from '@comunica/types';
+import type { IBindings } from '@comunica/types';
 import { Map } from 'immutable';
 import type * as RDF from 'rdf-js';
 import { termToString } from 'rdf-string';
 import type { Algebra, Factory } from 'sparqlalgebrajs';
 import { Util } from 'sparqlalgebrajs';
-
-export { IBindingsStream as BindingsStream };
 
 export type Bindings = IBindings;
 

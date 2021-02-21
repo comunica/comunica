@@ -1,11 +1,11 @@
 import type { IActionHttp, IActorHttpOutput } from '@comunica/bus-http';
-import type { Bindings, BindingsStream } from '@comunica/bus-query-operation';
 import type { IActionRdfResolveQuadPattern,
   IActorRdfResolveQuadPatternOutput } from '@comunica/bus-rdf-resolve-quad-pattern';
 import {
   ActorRdfResolveQuadPattern,
 } from '@comunica/bus-rdf-resolve-quad-pattern';
 import type { ActionContext, Actor, IActorArgs, IActorTest, Mediator } from '@comunica/core';
+import type { IBindings, IBindingsStream } from '@comunica/types';
 import type { AsyncIterator } from 'asynciterator';
 import { TransformIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
@@ -133,8 +133,8 @@ export class ActorRdfResolveQuadPatternSparqlJson
 
     // Create promise for the metadata containing the estimated count
     this.queryBindings(endpoint, countQuery, action.context)
-      .then((bindingsStream: BindingsStream) => new Promise(resolve => {
-        bindingsStream.on('data', (bindings: Bindings) => {
+      .then((bindingsStream: IBindingsStream) => new Promise(resolve => {
+        bindingsStream.on('data', (bindings: IBindings) => {
           const count: RDF.Term = bindings.get('?count');
           if (count) {
             const totalItems: number = Number.parseInt(count.value, 10);
@@ -157,7 +157,7 @@ export class ActorRdfResolveQuadPatternSparqlJson
     // Materialize the queried pattern using each found binding.
     const data: AsyncIterator<RDF.Quad> & RDF.Stream = new TransformIterator(async() =>
       (await this.queryBindings(endpoint, selectQuery, action.context))
-        .map((bindings: Bindings) => <RDF.Quad> mapTerms(pattern, (value: RDF.Term) => {
+        .map((bindings: IBindings) => <RDF.Quad> mapTerms(pattern, (value: RDF.Term) => {
           if (value.termType === 'Variable') {
             const boundValue: RDF.Term = bindings.get(`?${value.value}`);
             if (!boundValue) {
@@ -177,9 +177,9 @@ export class ActorRdfResolveQuadPatternSparqlJson
    * @param {string} endpoint A SPARQL endpoint URL.
    * @param {string} query A SPARQL query string.
    * @param {ActionContext} context An optional context.
-   * @return {Promise<BindingsStream>} A promise resolving to a stream of bindings.
+   * @return {Promise<IBindingsStream>} A promise resolving to a stream of bindings.
    */
-  public async queryBindings(endpoint: string, query: string, context?: ActionContext): Promise<BindingsStream> {
+  public async queryBindings(endpoint: string, query: string, context?: ActionContext): Promise<IBindingsStream> {
     return new AsyncIteratorJsonBindings(endpoint, query, context, this.mediatorHttp);
   }
 }
