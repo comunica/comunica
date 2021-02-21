@@ -1,10 +1,10 @@
-import type { BindingsStream,
-  IActorQueryOperationOutputBindings } from '@comunica/bus-query-operation';
 import {
   ActorQueryOperation,
   Bindings,
 } from '@comunica/bus-query-operation';
 import { ActionContext, Bus } from '@comunica/core';
+import type { IBindingsStream,
+  IActorQueryOperationOutputBindings } from '@comunica/types';
 import { ArrayIterator, EmptyIterator, SingletonIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import type * as RDF from 'rdf-js';
@@ -407,7 +407,7 @@ describe('ActorQueryOperationBgpLeftDeepSmallestSort', () => {
     });
 
     describe('createLeftDeepStream', () => {
-      const binder: (patterns: Algebra.Pattern[]) => Promise<BindingsStream> =
+      const binder: (patterns: Algebra.Pattern[]) => Promise<IBindingsStream> =
         async(patterns: any) => new SingletonIterator(Bindings({
           graph: patterns[0].graph,
           object: patterns[1].object,

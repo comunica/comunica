@@ -1,6 +1,6 @@
-import type { IActionQueryOperation } from '@comunica/bus-query-operation';
 import { ActorQueryOperation, Bindings } from '@comunica/bus-query-operation';
 import { Bus } from '@comunica/core';
+import type { IActionQueryOperation } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import type { Algebra } from 'sparqlalgebrajs';

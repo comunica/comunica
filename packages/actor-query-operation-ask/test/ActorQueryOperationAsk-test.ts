@@ -1,6 +1,6 @@
-import type { IActorQueryOperationOutputBoolean } from '@comunica/bus-query-operation';
 import { ActorQueryOperation, Bindings } from '@comunica/bus-query-operation';
 import { Bus } from '@comunica/core';
+import type { IActorQueryOperationOutputBoolean } from '@comunica/types';
 import { ArrayIterator, BufferedIterator, range } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationAsk } from '../lib/ActorQueryOperationAsk';

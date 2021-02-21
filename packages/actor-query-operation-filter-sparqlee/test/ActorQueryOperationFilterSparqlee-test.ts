@@ -1,7 +1,7 @@
-import type { IActorQueryOperationOutputBindings } from '@comunica/bus-query-operation';
 import { ActorQueryOperation, Bindings } from '@comunica/bus-query-operation';
 import { KeysInitSparql } from '@comunica/context-entries';
 import { Bus } from '@comunica/core';
+import type { IActorQueryOperationOutputBindings } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { Map } from 'immutable';
 import { DataFactory } from 'rdf-data-factory';
