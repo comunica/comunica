@@ -205,6 +205,9 @@ export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs {
     // Optimize the query operation
     operation = (await this.mediatorOptimizeQueryOperation.mediate({ context, operation })).operation;
 
+    // Save original query in context
+    context = context.set(KEY_CONTEXT_QUERY, operation);
+
     // Execute query
     const resolve: IActionQueryOperation = { context, operation };
     let output = <IQueryResult> await this.mediatorQueryOperation.mediate(resolve);
@@ -337,3 +340,4 @@ export const KEY_CONTEXT_INITIALBINDINGS = '@comunica/actor-init-sparql:initialB
 export const KEY_CONTEXT_QUERYFORMAT = '@comunica/actor-init-sparql:queryFormat';
 export const KEY_CONTEXT_GRAPHQL_SINGULARIZEVARIABLES = '@comunica/actor-init-sparql:singularizeVariables';
 export const KEY_CONTEXT_LENIENT = '@comunica/actor-init-sparql:lenient';
+export const KEY_CONTEXT_QUERY = '@comunica/actor-init-sparql:query';
