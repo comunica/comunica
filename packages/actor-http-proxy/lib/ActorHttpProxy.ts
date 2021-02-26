@@ -1,5 +1,6 @@
 import type { IActionHttp, IActorHttpOutput } from '@comunica/bus-http';
 import { ActorHttp } from '@comunica/bus-http';
+import { KeysHttpProxy } from '@comunica/context-entries';
 import type { IActorArgs, IActorTest, Mediator } from '@comunica/core';
 import type { IMediatorTypeTime } from '@comunica/mediatortype-time';
 import type { IProxyHandler } from './IProxyHandler';
@@ -18,7 +19,7 @@ export class ActorHttpProxy extends ActorHttp {
     if (!action.context) {
       throw new Error(`Actor ${this.name} could not find a context.`);
     }
-    const proxyHandler: IProxyHandler = action.context.get(KEY_CONTEXT_HTTPPROXYHANDLER);
+    const proxyHandler: IProxyHandler = action.context.get(KeysHttpProxy.httpProxyHandler);
     if (!proxyHandler) {
       throw new Error(`Actor ${this.name} could not find a proxy handler in the context.`);
     }
@@ -33,12 +34,12 @@ export class ActorHttpProxy extends ActorHttp {
     if (!action.context) {
       throw new Error('Illegal state: missing context');
     }
-    const proxyHandler: IProxyHandler = action.context.get(KEY_CONTEXT_HTTPPROXYHANDLER);
+    const proxyHandler: IProxyHandler = action.context.get(KeysHttpProxy.httpProxyHandler);
 
     // Send a request for the modified request
     const output = await this.mediatorHttp.mediate({
       ...await proxyHandler.getProxy(action),
-      context: action.context.delete(KEY_CONTEXT_HTTPPROXYHANDLER),
+      context: action.context.delete(KeysHttpProxy.httpProxyHandler),
     });
 
     // Modify the response URL
@@ -51,4 +52,7 @@ export interface IActorHttpProxyArgs extends IActorArgs<IActionHttp, IActorTest,
   mediatorHttp: Mediator<ActorHttp, IActionHttp, IActorTest, IActorHttpOutput>;
 }
 
-export const KEY_CONTEXT_HTTPPROXYHANDLER = '@comunica/actor-http-proxy:httpProxyHandler';
+/**
+ * @deprecated Import this constant from @comunica/context-entries.
+ */
+export const KEY_CONTEXT_HTTPPROXYHANDLER = KeysHttpProxy.httpProxyHandler;

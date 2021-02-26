@@ -1,6 +1,6 @@
 import type { IActorQueryOperationOutputBindings } from '@comunica/bus-query-operation';
-import { ActorQueryOperation, Bindings,
-  KEY_CONTEXT_BASEIRI } from '@comunica/bus-query-operation';
+import { ActorQueryOperation, Bindings } from '@comunica/bus-query-operation';
+import { KeysInitSparql } from '@comunica/context-entries';
 import { Bus } from '@comunica/core';
 import { ArrayIterator } from 'asynciterator';
 import { Map } from 'immutable';
@@ -151,7 +151,7 @@ describe('ActorQueryOperationFilterSparqlee', () => {
     it('should use and respect the baseIRI from the expression context', async() => {
       const expression = parse('str(IRI(?a)) = concat("http://example.com/", ?a)');
       const context = Map({
-        [KEY_CONTEXT_BASEIRI]: 'http://example.com',
+        [KeysInitSparql.baseIRI]: 'http://example.com',
       });
       const op = { operation: { type: 'filter', input: {}, expression }, context };
       const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);

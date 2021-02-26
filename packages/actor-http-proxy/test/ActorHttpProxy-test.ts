@@ -1,8 +1,8 @@
 import { ActorHttp } from '@comunica/bus-http';
+import { KeysHttpProxy } from '@comunica/context-entries';
 import { Bus, ActionContext } from '@comunica/core';
-
 import 'cross-fetch/polyfill';
-import { ActorHttpProxy, KEY_CONTEXT_HTTPPROXYHANDLER } from '../lib/ActorHttpProxy';
+import { ActorHttpProxy } from '../lib/ActorHttpProxy';
 import { ProxyHandlerStatic } from '../lib/ProxyHandlerStatic';
 
 describe('ActorHttpProxy', () => {
@@ -40,7 +40,7 @@ describe('ActorHttpProxy', () => {
     beforeEach(() => {
       actor = new ActorHttpProxy({ name: 'actor', bus, mediatorHttp });
       context = ActionContext({
-        [KEY_CONTEXT_HTTPPROXYHANDLER]: new ProxyHandlerStatic('http://proxy.org/'),
+        [KeysHttpProxy.httpProxyHandler]: new ProxyHandlerStatic('http://proxy.org/'),
       });
     });
 
@@ -64,7 +64,7 @@ describe('ActorHttpProxy', () => {
     it('should not test on an invalid proxy handler', () => {
       const input = 'http://example.org';
       context = ActionContext({
-        [KEY_CONTEXT_HTTPPROXYHANDLER]: { getProxy: () => null },
+        [KeysHttpProxy.httpProxyHandler]: { getProxy: () => null },
       });
       return expect(actor.test({ input, context })).rejects
         .toThrow(new Error('Actor actor could not determine a proxy for the given request.'));

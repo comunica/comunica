@@ -1,7 +1,8 @@
 import type { IActionHttp } from '@comunica/bus-http';
 import { ActorHttp } from '@comunica/bus-http';
+import { KeysHttpMemento } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
-import { ActorHttpMemento, KEY_CONTEXT_DATETIME } from '../lib/ActorHttpMemento';
+import { ActorHttpMemento } from '../lib/ActorHttpMemento';
 import 'cross-fetch/polyfill';
 
 describe('ActorHttpMemento', () => {
@@ -113,7 +114,7 @@ describe('ActorHttpMemento', () => {
 
     it('should test', () => {
       const action: IActionHttp = {
-        context: ActionContext({ [KEY_CONTEXT_DATETIME]: new Date() }),
+        context: ActionContext({ [KeysHttpMemento.datetime]: new Date() }),
         input: new Request('https://www.google.com/'),
       };
       return expect(actor.test(action)).resolves.toEqual(true);
@@ -121,7 +122,7 @@ describe('ActorHttpMemento', () => {
 
     it('should test with empty headers', () => {
       const action: IActionHttp = {
-        context: ActionContext({ [KEY_CONTEXT_DATETIME]: new Date() }),
+        context: ActionContext({ [KeysHttpMemento.datetime]: new Date() }),
         init: { headers: new Headers() },
         input: new Request('https://www.google.com/'),
       };
@@ -135,7 +136,7 @@ describe('ActorHttpMemento', () => {
 
     it('should test without init', () => {
       const action: IActionHttp = {
-        context: ActionContext({ [KEY_CONTEXT_DATETIME]: new Date() }),
+        context: ActionContext({ [KeysHttpMemento.datetime]: new Date() }),
         init: {},
         input: new Request('https://www.google.com/'),
       };
@@ -144,7 +145,7 @@ describe('ActorHttpMemento', () => {
 
     it('should not test with Accept-Datetime header', () => {
       const action: IActionHttp = {
-        context: ActionContext({ [KEY_CONTEXT_DATETIME]: new Date() }),
+        context: ActionContext({ [KeysHttpMemento.datetime]: new Date() }),
         init: { headers: new Headers({ 'Accept-Datetime': new Date().toUTCString() }) },
         input: new Request('https://www.google.com/'),
       };
@@ -153,7 +154,7 @@ describe('ActorHttpMemento', () => {
 
     it('should run with new memento', async() => {
       const action: IActionHttp = {
-        context: ActionContext({ [KEY_CONTEXT_DATETIME]: new Date() }),
+        context: ActionContext({ [KeysHttpMemento.datetime]: new Date() }),
         input: new Request('http://example.com/or'),
       };
       const result = await actor.run(action);
@@ -165,7 +166,7 @@ describe('ActorHttpMemento', () => {
 
     it('should run with new memento without timegate body', async() => {
       const action: IActionHttp = {
-        context: ActionContext({ [KEY_CONTEXT_DATETIME]: new Date() }),
+        context: ActionContext({ [KeysHttpMemento.datetime]: new Date() }),
         input: new Request('http://example.com/nobody'),
       };
       const result = await actor.run(action);
@@ -177,7 +178,7 @@ describe('ActorHttpMemento', () => {
 
     it('should run with old memento', async() => {
       const action: IActionHttp = {
-        context: ActionContext({ [KEY_CONTEXT_DATETIME]: new Date(2_018, 1) }),
+        context: ActionContext({ [KeysHttpMemento.datetime]: new Date(2_018, 1) }),
         input: new Request('http://example.com/or'),
       };
 
@@ -190,7 +191,7 @@ describe('ActorHttpMemento', () => {
 
     it('should not follow other link header', async() => {
       const action: IActionHttp = {
-        context: ActionContext({ [KEY_CONTEXT_DATETIME]: new Date(2_018, 1) }),
+        context: ActionContext({ [KeysHttpMemento.datetime]: new Date(2_018, 1) }),
         input: new Request('http://example.com/or2'),
       };
 

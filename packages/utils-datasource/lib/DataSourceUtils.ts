@@ -1,10 +1,6 @@
-import type { DataSources,
-  IDataSource } from '@comunica/bus-rdf-resolve-quad-pattern';
-import {
-  getDataSourceType,
-  KEY_CONTEXT_SOURCE,
-  KEY_CONTEXT_SOURCES,
-} from '@comunica/bus-rdf-resolve-quad-pattern';
+import type { DataSources, IDataSource } from '@comunica/bus-rdf-resolve-quad-pattern';
+import { getDataSourceType } from '@comunica/bus-rdf-resolve-quad-pattern';
+import { KeysRdfResolveQuadPattern } from '@comunica/context-entries';
 import type { ActionContext } from '@comunica/core';
 
 /**
@@ -17,13 +13,13 @@ export const DataSourceUtils = {
    * @return {Promise<IDataSource>} A promise resolving to the single datasource or undefined.
    */
   async getSingleSource(context?: ActionContext): Promise<IDataSource | undefined> {
-    if (context && context.has(KEY_CONTEXT_SOURCE)) {
+    if (context && context.has(KeysRdfResolveQuadPattern.source)) {
       // If the single source is set
-      return context.get(KEY_CONTEXT_SOURCE);
+      return context.get(KeysRdfResolveQuadPattern.source);
     }
-    if (context && context.has(KEY_CONTEXT_SOURCES)) {
+    if (context && context.has(KeysRdfResolveQuadPattern.sources)) {
       // If multiple sources are set
-      const datasources: DataSources = context.get(KEY_CONTEXT_SOURCES);
+      const datasources: DataSources = context.get(KeysRdfResolveQuadPattern.sources);
       if (datasources.length === 1) {
         return datasources[0];
       }

@@ -31,6 +31,7 @@
     "index.js"
   ],
   "dependencies": {
+    "@comunica/context-entries": "^1.0.0",
     "@types/rdf-js": "*",
     "asynciterator": "^3.0.3",
     "sparqlalgebrajs": "^2.4.0"

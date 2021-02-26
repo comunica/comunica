@@ -1,11 +1,10 @@
 /* eslint-disable mocha/max-top-level-suites */
 import { PassThrough, Readable } from 'stream';
 import { ProxyHandlerStatic } from '@comunica/actor-http-proxy';
-import { KEY_CONTEXT_AUTH } from '@comunica/bus-http';
 import { ActorInit } from '@comunica/bus-init';
-import { Bindings, KEY_CONTEXT_QUERY_TIMESTAMP } from '@comunica/bus-query-operation';
-import { KEY_CONTEXT_SOURCES } from '@comunica/bus-rdf-resolve-quad-pattern';
-import { Bus, KEY_CONTEXT_LOG, ActionContext } from '@comunica/core';
+import { Bindings } from '@comunica/bus-query-operation';
+import { KeysCore, KeysHttp, KeysInitSparql, KeysRdfResolveQuadPattern } from '@comunica/context-entries';
+import { Bus, ActionContext } from '@comunica/core';
 import { DataFactory } from 'rdf-data-factory';
 import { translate } from 'sparqlalgebrajs';
 import Factory from 'sparqlalgebrajs/lib/factory';
@@ -207,7 +206,7 @@ describe('ActorInitSparql', () => {
       );
       const spy = jest.spyOn(actor, 'query');
       await actor.run({ argv: [], env: {}, stdin: new PassThrough() });
-      expect(spy.mock.calls[0][1][KEY_CONTEXT_QUERYFORMAT]).toEqual('sparql');
+      expect(spy.mock.calls[0][1][KeysInitSparql.queryFormat]).toEqual('sparql');
     });
 
     it('should allow the query format to be changed with -i', async() => {
@@ -228,7 +227,7 @@ describe('ActorInitSparql', () => {
       );
       const spy = jest.spyOn(actor, 'query');
       await actor.run({ argv: [ '-i', 'graphql' ], env: {}, stdin: new PassThrough() });
-      expect(spy.mock.calls[0][1][KEY_CONTEXT_QUERYFORMAT]).toEqual('graphql');
+      expect(spy.mock.calls[0][1][KeysInitSparql.queryFormat]).toEqual('graphql');
     });
 
     it('should allow a media type to be passed with -t', async() => {
@@ -492,7 +491,8 @@ describe('ActorInitSparql', () => {
             (<any> result).stdout.on('end', resolve);
           });
         });
-      expect(spy.mock.calls[0][1][KEY_CONTEXT_SOURCES][0].context.get(KEY_CONTEXT_AUTH)).toBe('username:passwd');
+      expect(spy.mock.calls[0][1][KeysRdfResolveQuadPattern.sources][0].context.get(KeysHttp.auth))
+        .toBe('username:passwd');
     });
 
     it('should run with a tagged hypermedia and credentials in url and query file option from argv', async() => {
@@ -506,7 +506,8 @@ describe('ActorInitSparql', () => {
             (<any> result).stdout.on('end', resolve);
           });
         });
-      expect(spy.mock.calls[0][1][KEY_CONTEXT_SOURCES][0].context.get(KEY_CONTEXT_AUTH)).toBe('username:passwd');
+      expect(spy.mock.calls[0][1][KeysRdfResolveQuadPattern.sources][0].context.get(KeysHttp.auth))
+        .toBe('username:passwd');
     });
 
     it('should run with an other source type and query file option from argv', () => {
@@ -597,8 +598,8 @@ describe('ActorInitSparql', () => {
           .resolves.toBeTruthy();
       });
 
-      it('should allow KEY_CONTEXT_QUERY_TIMESTAMP to be set', () => {
-        const ctx = { [KEY_CONTEXT_QUERY_TIMESTAMP]: new Date() };
+      it('should allow KeysInitSparql.queryTimestamp to be set', () => {
+        const ctx = { [KeysInitSparql.queryTimestamp]: new Date() };
         return expect(actor.query('SELECT * WHERE { ?s ?p ?o }', ctx))
           .resolves.toBeTruthy();
       });
@@ -680,7 +681,7 @@ describe('ActorInitSparql', () => {
 
     it('should set logger on the -l option', async() => {
       const med: any = {
-        mediate: (arg: any) => Promise.resolve({ handle: { data: arg.context.get(KEY_CONTEXT_LOG) }}),
+        mediate: (arg: any) => Promise.resolve({ handle: { data: arg.context.get(KeysCore.log) }}),
       };
       actor = new ActorInitSparql(
         { bus,
@@ -912,7 +913,7 @@ graph <exists02.ttl> {
     it('should work with authorization in url', () => {
       const hypermedia = 'http://username:passwd@example.org/';
       expect(ActorInitSparql.getSourceObjectFromString(hypermedia))
-        .toEqual({ value: 'http://example.org/', context: ActionContext({ [KEY_CONTEXT_AUTH]: 'username:passwd' }) });
+        .toEqual({ value: 'http://example.org/', context: ActionContext({ [KeysHttp.auth]: 'username:passwd' }) });
     });
 
     it('should work with type annotation and authorization in url', () => {
@@ -920,21 +921,21 @@ graph <exists02.ttl> {
       expect(ActorInitSparql.getSourceObjectFromString(hypermedia))
         .toEqual({ value: 'http://example.org/',
           type: 'hypermedia',
-          context: ActionContext({ [KEY_CONTEXT_AUTH]: 'username:passwd' }) });
+          context: ActionContext({ [KeysHttp.auth]: 'username:passwd' }) });
     });
 
     it('should work with empty username in authorization in url', () => {
       const hypermedia = 'http://:passwd@example.org/';
       expect(ActorInitSparql.getSourceObjectFromString(hypermedia))
         .toEqual({ value: 'http://example.org/',
-          context: ActionContext({ [KEY_CONTEXT_AUTH]: ':passwd' }) });
+          context: ActionContext({ [KeysHttp.auth]: ':passwd' }) });
     });
 
     it('should work with empty password in authorization in url', () => {
       const hypermedia = 'http://username:@example.org/';
       expect(ActorInitSparql.getSourceObjectFromString(hypermedia))
         .toEqual({ value: 'http://example.org/',
-          context: ActionContext({ [KEY_CONTEXT_AUTH]: 'username:' }) });
+          context: ActionContext({ [KeysHttp.auth]: 'username:' }) });
     });
   });
 });

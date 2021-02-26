@@ -1,8 +1,6 @@
 import type { IActorQueryOperationOutput, IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
-import {
-  ActorQueryOperationTypedMediated,
-  KEY_CONTEXT_BGP_PARENTMETADATA, KEY_CONTEXT_PATTERN_PARENTMETADATA,
-} from '@comunica/bus-query-operation';
+import { ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
+import { KeysQueryOperation } from '@comunica/context-entries';
 import type { ActionContext, IActorTest } from '@comunica/core';
 import type { Algebra } from 'sparqlalgebrajs';
 
@@ -23,10 +21,10 @@ export class ActorQueryOperationBgpSingle extends ActorQueryOperationTypedMediat
 
   public runOperation(pattern: Algebra.Bgp, context: ActionContext): Promise<IActorQueryOperationOutput> {
     // If we have parent metadata, extract the single parent metadata entry.
-    if (context && context.has(KEY_CONTEXT_BGP_PARENTMETADATA)) {
-      const metadatas = context.get(KEY_CONTEXT_BGP_PARENTMETADATA);
-      context = context.delete(KEY_CONTEXT_BGP_PARENTMETADATA);
-      context = context.set(KEY_CONTEXT_PATTERN_PARENTMETADATA, metadatas[0]);
+    if (context && context.has(KeysQueryOperation.bgpParentMetadata)) {
+      const metadatas = context.get(KeysQueryOperation.bgpParentMetadata);
+      context = context.delete(KeysQueryOperation.bgpParentMetadata);
+      context = context.set(KeysQueryOperation.patternParentMetadata, metadatas[0]);
     }
 
     return this.mediatorQueryOperation.mediate({ operation: pattern.patterns[0], context });

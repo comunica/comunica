@@ -1,3 +1,4 @@
+import { KeysInitSparql, KeysQueryOperation } from '@comunica/context-entries';
 import type { ActionContext, IAction, IActorArgs, IActorTest, Mediator } from '@comunica/core';
 import { Actor } from '@comunica/core';
 import type { AsyncIterator } from 'asynciterator';
@@ -10,41 +11,47 @@ import { materializeOperation } from './Bindings';
  * @type {string} Context entry for current metadata.
  *                I.e., the metadata that was used to determine the next BGP operation.
  * @value {any} A metadata hash.
+ * @deprecated Import this constant from @comunica/context-entries.
  */
-export const KEY_CONTEXT_BGP_CURRENTMETADATA = '@comunica/bus-query-operation:bgpCurrentMetadata';
+export const KEY_CONTEXT_BGP_CURRENTMETADATA = KeysQueryOperation.bgpCurrentMetadata;
 /**
  * @type {string} Context entry for an array of parent metadata.
  *                I.e., an array of the metadata that was present before materializing the current BGP operations.
  *                This can be passed in 'bgp' actions.
  *                The array entries should correspond to the pattern entries in the BGP.
  * @value {any} An array of metadata hashes.
+ * @deprecated Import this constant from @comunica/context-entries.
  */
-export const KEY_CONTEXT_BGP_PARENTMETADATA = '@comunica/bus-query-operation:bgpParentMetadata';
+export const KEY_CONTEXT_BGP_PARENTMETADATA = KeysQueryOperation.bgpParentMetadata;
 /**
  * @type {string} Context entry for indicating which patterns were bound from variables.
- *                I.e., an array of the same length as the value of KEY_CONTEXT_BGP_PARENTMETADATA,
+ *                I.e., an array of the same length as the value of KeysQueryOperation.patternParentMetadata,
  *                where each array value corresponds to the pattern bindings for the corresponding pattern.
  * @value {any} An array of {@link IPatternBindings}.
+ * @deprecated Import this constant from @comunica/context-entries.
  */
-export const KEY_CONTEXT_BGP_PATTERNBINDINGS = '@comunica/bus-query-operation:bgpPatternBindings';
+export const KEY_CONTEXT_BGP_PATTERNBINDINGS = KeysQueryOperation.bgpPatternBindings;
 /**
  * @type {string} Context entry for parent metadata.
  *                I.e., the metadata that was present before materializing the current operation.
  *                This can be passed in 'pattern' actions.
  * @value {any} A metadata hash.
+ * @deprecated Import this constant from @comunica/context-entries.
  */
-export const KEY_CONTEXT_PATTERN_PARENTMETADATA = '@comunica/bus-query-operation:patternParentMetadata';
+export const KEY_CONTEXT_PATTERN_PARENTMETADATA = KeysQueryOperation.patternParentMetadata;
 /**
  * @type {string} Context entry for query's base IRI.
  * @value {any} A string.
+ * @deprecated Import this constant from @comunica/context-entries.
  */
-export const KEY_CONTEXT_BASEIRI = '@comunica/actor-init-sparql:baseIRI';
+export const KEY_CONTEXT_BASEIRI = KeysInitSparql.baseIRI;
 /**
  * @type {string} A timestamp representing the current time.
  *                This is required for certain SPARQL operations such as NOW().
  * @value {any} a date.
+ * @deprecated Import this constant from @comunica/context-entries.
  */
-export const KEY_CONTEXT_QUERY_TIMESTAMP = '@comunica/actor-init-sparql:queryTimestamp';
+export const KEY_CONTEXT_QUERY_TIMESTAMP = KeysInitSparql.queryTimestamp;
 
 /**
  * A comunica actor for query-operation events.
@@ -128,8 +135,8 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
   Actor<IActionQueryOperation, IActorTest, IActorQueryOperationOutput>,
   IActionQueryOperation, IActorTest, IActorQueryOperationOutput>): IExpressionContext {
     if (context) {
-      const now: Date = context.get(KEY_CONTEXT_QUERY_TIMESTAMP);
-      const baseIRI: string = context.get(KEY_CONTEXT_BASEIRI);
+      const now: Date = context.get(KeysInitSparql.queryTimestamp);
+      const baseIRI: string = context.get(KeysInitSparql.baseIRI);
       return {
         now,
         baseIRI,

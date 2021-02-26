@@ -1,7 +1,8 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { Readable } from 'stream';
-import { ActorRdfDereference, KEY_CONTEXT_LENIENT } from '@comunica/bus-rdf-dereference';
+import { ActorRdfDereference } from '@comunica/bus-rdf-dereference';
+import { KeysInitSparql } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import { ActorRdfDereferenceFile } from '../lib/ActorRdfDereferenceFile';
 
@@ -171,7 +172,7 @@ describe('ActorRdfDereferenceFile', () => {
 
     it('should run and ignore parse errors in lenient mode', async() => {
       const p = path.join(__dirname, 'dummy.ttl');
-      const context = ActionContext({ emitParseError: true, [KEY_CONTEXT_LENIENT]: true });
+      const context = ActionContext({ emitParseError: true, [KeysInitSparql.lenient]: true });
       const spy = jest.spyOn(actor, <any> 'logError');
       const output = await actor.run({ url: p, context });
       expect(output.url).toEqual(p);
@@ -188,7 +189,7 @@ describe('ActorRdfDereferenceFile', () => {
 
     it('should run and ignore parse rejects in lenient mode', async() => {
       const p = path.join(__dirname, 'dummy.ttl');
-      const context = ActionContext({ parseReject: true, [KEY_CONTEXT_LENIENT]: true });
+      const context = ActionContext({ parseReject: true, [KeysInitSparql.lenient]: true });
       const spy = jest.spyOn(actor, <any> 'logError');
       const output = await actor.run({ url: p, context });
       expect(output.url).toEqual(p);

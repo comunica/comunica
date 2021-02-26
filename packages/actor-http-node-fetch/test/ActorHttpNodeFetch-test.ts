@@ -1,5 +1,6 @@
-import { ActorHttp, KEY_CONTEXT_INCLUDE_CREDENTIALS, KEY_CONTEXT_AUTH } from '@comunica/bus-http';
-import { ActionContext, Bus, KEY_CONTEXT_LOG } from '@comunica/core';
+import { ActorHttp } from '@comunica/bus-http';
+import { KeysCore, KeysHttp } from '@comunica/context-entries';
+import { ActionContext, Bus } from '@comunica/core';
 import { LoggerVoid } from '@comunica/logger-void';
 import { ActorHttpNodeFetch } from '../lib/ActorHttpNodeFetch';
 
@@ -79,7 +80,7 @@ describe('ActorHttpNodeFetch', () => {
       expect(spy).toHaveBeenCalledWith(undefined, 'Requesting https://www.google.com/', expect.anything());
     });
 
-    it('should run without KEY_CONTEXT_INCLUDE_CREDENTIALS', async() => {
+    it('should run without KeysHttp.includeCredentials', async() => {
       const spy = jest.spyOn(global, 'fetch');
       await actor.run({
         input: <Request> { url: 'https://www.google.com/' },
@@ -89,12 +90,12 @@ describe('ActorHttpNodeFetch', () => {
         { headers: new Headers({ 'user-agent': (<any> actor).userAgent }) });
     });
 
-    it('should run with KEY_CONTEXT_INCLUDE_CREDENTIALS', async() => {
+    it('should run with KeysHttp.includeCredentials', async() => {
       const spy = jest.spyOn(global, 'fetch');
       await actor.run({
         input: <Request> { url: 'https://www.google.com/' },
         context: ActionContext({
-          [KEY_CONTEXT_INCLUDE_CREDENTIALS]: true,
+          [KeysHttp.includeCredentials]: true,
         }),
       });
       expect(spy).toHaveBeenCalledWith({ url: 'https://www.google.com/' }, {
@@ -108,7 +109,7 @@ describe('ActorHttpNodeFetch', () => {
       await actor.run({
         input: <Request> { url: 'https://www.google.com/' },
         context: ActionContext({
-          [KEY_CONTEXT_AUTH]: 'user:password',
+          [KeysHttp.auth]: 'user:password',
         }),
       });
       expect(spy).toHaveBeenCalledWith(
@@ -126,7 +127,7 @@ describe('ActorHttpNodeFetch', () => {
         input: <Request> { url: 'https://www.google.com/' },
         init: {},
         context: ActionContext({
-          [KEY_CONTEXT_AUTH]: 'user:password',
+          [KeysHttp.auth]: 'user:password',
         }),
       });
       expect(spy).toHaveBeenCalledWith(
@@ -145,7 +146,7 @@ describe('ActorHttpNodeFetch', () => {
         input: <Request> { url: 'https://www.google.com/' },
         init: { headers: new Headers({ 'Content-Type': 'image/jpeg' }) },
         context: ActionContext({
-          [KEY_CONTEXT_AUTH]: 'user:password',
+          [KeysHttp.auth]: 'user:password',
         }),
       });
       expect(spy).toHaveBeenCalledWith(
@@ -164,7 +165,7 @@ describe('ActorHttpNodeFetch', () => {
       await actor.run({
         input: <Request> { url: 'https://www.google.com/' },
         init: { headers: new Headers({ a: 'b' }) },
-        context: ActionContext({ [KEY_CONTEXT_LOG]: logger }),
+        context: ActionContext({ [KeysCore.log]: logger }),
       });
       expect(spy).toHaveBeenCalledWith('Requesting https://www.google.com/', {
         actor: 'actor',
@@ -177,7 +178,7 @@ describe('ActorHttpNodeFetch', () => {
       const spy = spyOn(logger, 'info');
       await actor.run({
         input: <Request> { url: 'https://www.google.com/' },
-        context: ActionContext({ [KEY_CONTEXT_LOG]: logger }),
+        context: ActionContext({ [KeysCore.log]: logger }),
       });
       expect(spy).toHaveBeenCalledWith('Requesting https://www.google.com/', {
         actor: 'actor',

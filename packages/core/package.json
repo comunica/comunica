@@ -36,6 +36,7 @@
     "index.js"
   ],
   "dependencies": {
+    "@comunica/context-entries": "^1.0.0",
     "immutable": "^3.8.2"
   },
   "jest": {

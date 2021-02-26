@@ -1,9 +1,13 @@
 import { PassThrough, Readable } from 'stream';
+import { KeysInitSparql } from '@comunica/context-entries';
 import type { IAction, IActorArgs, IActorOutput, IActorTest } from '@comunica/core';
 import { Actor } from '@comunica/core';
 import type * as RDF from 'rdf-js';
 
-export const KEY_CONTEXT_LENIENT = '@comunica/actor-init-sparql:lenient';
+/**
+ * @deprecated Import this constant from @comunica/context-entries.
+ */
+export const KEY_CONTEXT_LENIENT = KeysInitSparql.lenient;
 
 /**
  * A base actor for dereferencing URLs to quad streams.
@@ -27,7 +31,7 @@ export abstract class ActorRdfDereference extends Actor<IActionRdfDereference, I
    * @return {boolean} If hard errors are enabled.
    */
   protected isHardError(action: IActionRdfDereference): boolean {
-    return !action.context || !action.context.get(KEY_CONTEXT_LENIENT);
+    return !action.context || !action.context.get(KeysInitSparql.lenient);
   }
 
   /**

@@ -15,30 +15,24 @@ import type {
   IActorQueryOperationOutputBoolean,
   Bindings,
 } from '@comunica/bus-query-operation';
-import { ensureBindings,
-  KEY_CONTEXT_BASEIRI,
-  KEY_CONTEXT_QUERY_TIMESTAMP,
-  materializeOperation } from '@comunica/bus-query-operation';
+import { ensureBindings, materializeOperation } from '@comunica/bus-query-operation';
 import type { IDataSource } from '@comunica/bus-rdf-resolve-quad-pattern';
-import { isDataSourceRawType, KEY_CONTEXT_SOURCES } from '@comunica/bus-rdf-resolve-quad-pattern';
+import { isDataSourceRawType } from '@comunica/bus-rdf-resolve-quad-pattern';
 import type { IActionSparqlParse, IActorSparqlParseOutput } from '@comunica/bus-sparql-parse';
-
 import type {
   IActionSparqlSerialize,
   IActionSparqlSerializeHandle,
   IActionSparqlSerializeMediaTypeFormats,
   IActionSparqlSerializeMediaTypes,
-
   IActorOutputSparqlSerializeHandle, IActorOutputSparqlSerializeMediaTypeFormats,
   IActorOutputSparqlSerializeMediaTypes,
   IActorSparqlSerializeOutput,
-
   IActorTestSparqlSerializeHandle, IActorTestSparqlSerializeMediaTypeFormats,
   IActorTestSparqlSerializeMediaTypes,
 } from '@comunica/bus-sparql-serialize';
+import { KeysInitSparql, KeysCore, KeysRdfResolveQuadPattern } from '@comunica/context-entries';
 import type { Actor, IAction, IActorArgs, IActorTest, Logger, Mediator } from '@comunica/core';
-import { ActionContext,
-  KEY_CONTEXT_LOG } from '@comunica/core';
+import { ActionContext } from '@comunica/core';
 import type * as RDF from 'rdf-js';
 import { Algebra } from 'sparqlalgebrajs';
 
@@ -147,18 +141,18 @@ export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs {
     }
 
     // Set the default logger if none is provided
-    if (!context[KEY_CONTEXT_LOG]) {
-      context[KEY_CONTEXT_LOG] = this.logger;
+    if (!context[KeysCore.log]) {
+      context[KeysCore.log] = this.logger;
     }
 
-    if (!context[KEY_CONTEXT_QUERY_TIMESTAMP]) {
-      context[KEY_CONTEXT_QUERY_TIMESTAMP] = new Date();
+    if (!context[KeysInitSparql.queryTimestamp]) {
+      context[KeysInitSparql.queryTimestamp] = new Date();
     }
 
     // Ensure sources are an async re-iterable
-    if (Array.isArray(context[KEY_CONTEXT_SOURCES])) {
+    if (Array.isArray(context[KeysRdfResolveQuadPattern.sources])) {
       // TODO: backwards compatibility
-      context[KEY_CONTEXT_SOURCES].forEach((source: IDataSource): void => {
+      context[KeysRdfResolveQuadPattern.sources].forEach((source: IDataSource): void => {
         if (!isDataSourceRawType(source) && (source.type === 'auto' || source.type === 'hypermedia')) {
           delete source.type;
         }
@@ -168,16 +162,16 @@ export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs {
     // Prepare context
     context = ActionContext(context);
     let queryFormat = 'sparql';
-    if (context && context.has(KEY_CONTEXT_QUERYFORMAT)) {
-      queryFormat = context.get(KEY_CONTEXT_QUERYFORMAT);
-      context = context.delete(KEY_CONTEXT_QUERYFORMAT);
-      if (queryFormat === 'graphql' && !context.has(KEY_CONTEXT_GRAPHQL_SINGULARIZEVARIABLES)) {
-        context = context.set(KEY_CONTEXT_GRAPHQL_SINGULARIZEVARIABLES, {});
+    if (context && context.has(KeysInitSparql.queryFormat)) {
+      queryFormat = context.get(KeysInitSparql.queryFormat);
+      context = context.delete(KeysInitSparql.queryFormat);
+      if (queryFormat === 'graphql' && !context.has(KeysInitSparql.graphqlSingularizeVariables)) {
+        context = context.set(KeysInitSparql.graphqlSingularizeVariables, {});
       }
     }
     let baseIRI: string | undefined;
-    if (context && context.has(KEY_CONTEXT_BASEIRI)) {
-      baseIRI = context.get(KEY_CONTEXT_BASEIRI);
+    if (context && context.has(KeysInitSparql.baseIRI)) {
+      baseIRI = context.get(KeysInitSparql.baseIRI);
     }
 
     // Pre-processing the context
@@ -190,15 +184,15 @@ export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs {
       operation = queryParseOutput.operation;
       // Update the baseIRI in the context if the query modified it.
       if (queryParseOutput.baseIRI) {
-        context = context.set(KEY_CONTEXT_BASEIRI, queryParseOutput.baseIRI);
+        context = context.set(KeysInitSparql.baseIRI, queryParseOutput.baseIRI);
       }
     } else {
       operation = query;
     }
 
     // Apply initial bindings in context
-    if (context.has(KEY_CONTEXT_INITIALBINDINGS)) {
-      const bindings = context.get(KEY_CONTEXT_INITIALBINDINGS);
+    if (context.has(KeysInitSparql.initialBindings)) {
+      const bindings = context.get(KeysInitSparql.initialBindings);
       operation = materializeOperation(operation, ensureBindings(bindings));
     }
 
@@ -206,7 +200,7 @@ export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs {
     operation = (await this.mediatorOptimizeQueryOperation.mediate({ context, operation })).operation;
 
     // Save original query in context
-    context = context.set(KEY_CONTEXT_QUERY, operation);
+    context = context.set(KeysInitSparql.query, operation);
 
     // Execute query
     const resolve: IActionQueryOperation = { context, operation };
@@ -336,8 +330,23 @@ export interface IQueryResultBoolean extends IActorQueryOperationOutputBoolean {
 
 export type IQueryResult = IQueryResultBindings | IQueryResultQuads | IQueryResultBoolean;
 
-export const KEY_CONTEXT_INITIALBINDINGS = '@comunica/actor-init-sparql:initialBindings';
-export const KEY_CONTEXT_QUERYFORMAT = '@comunica/actor-init-sparql:queryFormat';
-export const KEY_CONTEXT_GRAPHQL_SINGULARIZEVARIABLES = '@comunica/actor-init-sparql:singularizeVariables';
-export const KEY_CONTEXT_LENIENT = '@comunica/actor-init-sparql:lenient';
-export const KEY_CONTEXT_QUERY = '@comunica/actor-init-sparql:query';
+/**
+ * @deprecated Import this constant from @comunica/context-entries.
+ */
+export const KEY_CONTEXT_INITIALBINDINGS = KeysInitSparql.initialBindings;
+/**
+ * @deprecated Import this constant from @comunica/context-entries.
+ */
+export const KEY_CONTEXT_QUERYFORMAT = KeysInitSparql.queryFormat;
+/**
+ * @deprecated Import this constant from @comunica/context-entries.
+ */
+export const KEY_CONTEXT_GRAPHQL_SINGULARIZEVARIABLES = KeysInitSparql.graphqlSingularizeVariables;
+/**
+ * @deprecated Import this constant from @comunica/context-entries.
+ */
+export const KEY_CONTEXT_LENIENT = KeysInitSparql.lenient;
+/**
+ * @deprecated Import this constant from @comunica/context-entries.
+ */
+export const KEY_CONTEXT_QUERY = KeysInitSparql.query;

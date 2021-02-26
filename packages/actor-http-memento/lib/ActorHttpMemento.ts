@@ -1,5 +1,6 @@
 import type { IActionHttp, IActorHttpOutput } from '@comunica/bus-http';
 import { ActorHttp } from '@comunica/bus-http';
+import { KeysHttpMemento } from '@comunica/context-entries';
 import type { IActorArgs, IActorTest, Mediator } from '@comunica/core';
 import 'cross-fetch/polyfill';
 import * as parseLink from 'parse-link-header';
@@ -16,8 +17,8 @@ export class ActorHttpMemento extends ActorHttp {
   }
 
   public async test(action: IActionHttp): Promise<IActorTest> {
-    if (!(action.context && action.context.has(KEY_CONTEXT_DATETIME) &&
-          action.context.get(KEY_CONTEXT_DATETIME) instanceof Date)) {
+    if (!(action.context && action.context.has(KeysHttpMemento.datetime) &&
+          action.context.get(KeysHttpMemento.datetime) instanceof Date)) {
       throw new Error('This actor only handles request with a set valid datetime.');
     }
     if (action.init && new Headers(action.init.headers ?? {}).has('accept-datetime')) {
@@ -31,8 +32,8 @@ export class ActorHttpMemento extends ActorHttp {
     const init: RequestInit = action.init ? { ...action.init } : {};
     const headers: Headers = init.headers = new Headers(init.headers ?? {});
 
-    if (action.context && action.context.has(KEY_CONTEXT_DATETIME)) {
-      headers.append('accept-datetime', action.context.get(KEY_CONTEXT_DATETIME).toUTCString());
+    if (action.context && action.context.has(KeysHttpMemento.datetime)) {
+      headers.append('accept-datetime', action.context.get(KeysHttpMemento.datetime).toUTCString());
     }
 
     const httpAction: IActionHttp = { context: action.context, input: action.input, init };
@@ -66,5 +67,6 @@ export interface IActorHttpMementoArgs
 
 /**
  * @type {string} Context entry for the desired datetime.
+ * @deprecated Import this constant from @comunica/context-entries.
  */
-export const KEY_CONTEXT_DATETIME = '@comunica/actor-http-memento:datetime';
+export const KEY_CONTEXT_DATETIME = KeysHttpMemento.datetime;

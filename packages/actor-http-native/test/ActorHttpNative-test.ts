@@ -1,7 +1,8 @@
 import { Readable } from 'stream';
 import * as zlib from 'zlib';
-import { ActorHttp, KEY_CONTEXT_AUTH, KEY_CONTEXT_INCLUDE_CREDENTIALS } from '@comunica/bus-http';
-import { ActionContext, Bus, KEY_CONTEXT_LOG } from '@comunica/core';
+import { ActorHttp } from '@comunica/bus-http';
+import { KeysCore, KeysHttp } from '@comunica/context-entries';
+import { ActionContext, Bus } from '@comunica/core';
 import { LoggerVoid } from '@comunica/logger-void';
 import { ActorHttpNative } from '../lib/ActorHttpNative';
 
@@ -180,18 +181,18 @@ describe('ActorHttpNative', () => {
         .rejects.toThrow(new Error('Request Error!'));
     });
 
-    it('should run without KEY_CONTEXT_INCLUDE_CREDENTIALS', async() => {
+    it('should run without KeysHttp.includeCredentials', async() => {
       mockSetup({ statusCode: 404 });
       const results: any = await actor.run({ input: new Request('http://example.com') });
       expect(results.body).toMatchObject({ withCredentials: undefined });
     });
 
-    it('should run with KEY_CONTEXT_INCLUDE_CREDENTIALS', async() => {
+    it('should run with KeysHttp.includeCredentials', async() => {
       mockSetup({ statusCode: 404 });
       const results: any = await actor.run({
         input: new Request('http://example.com'),
         context: ActionContext({
-          [KEY_CONTEXT_INCLUDE_CREDENTIALS]: true,
+          [KeysHttp.includeCredentials]: true,
         }),
       });
       expect(results.body).toMatchObject({ withCredentials: true });
@@ -202,7 +203,7 @@ describe('ActorHttpNative', () => {
       const results: any = await actor.run({
         input: new Request('http://example.com'),
         context: ActionContext({
-          [KEY_CONTEXT_AUTH]: 'user:pass',
+          [KeysHttp.auth]: 'user:pass',
         }),
       });
       expect(results.body.input.auth).toEqual('user:pass');
@@ -214,7 +215,7 @@ describe('ActorHttpNative', () => {
       mockSetup({ statusCode: 200 });
       await actor.run({
         input: new Request('http://example.com', { headers: new Headers({ a: 'b' }) }),
-        context: ActionContext({ [KEY_CONTEXT_LOG]: logger }),
+        context: ActionContext({ [KeysCore.log]: logger }),
       });
       expect(spy).toHaveBeenCalledWith('Requesting http://example.com/', {
         actor: 'actor',

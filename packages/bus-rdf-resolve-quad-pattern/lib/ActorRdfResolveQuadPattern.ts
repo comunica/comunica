@@ -1,3 +1,4 @@
+import { KeysRdfResolveQuadPattern } from '@comunica/context-entries';
 import type { ActionContext, IAction, IActorArgs, IActorOutput, IActorTest } from '@comunica/core';
 import { Actor } from '@comunica/core';
 import type { AsyncIterator } from 'asynciterator';
@@ -7,13 +8,15 @@ import type { Algebra } from 'sparqlalgebrajs';
 /**
  * @type {string} Context entry for data sources.
  * @value {DataSources} An array of sources.
+ * @deprecated Import this constant from @comunica/context-entries.
  */
-export const KEY_CONTEXT_SOURCES = '@comunica/bus-rdf-resolve-quad-pattern:sources';
+export const KEY_CONTEXT_SOURCES = KeysRdfResolveQuadPattern.sources;
 /**
  * @type {string} Context entry for a data source.
  * @value {IDataSource} A source.
+ * @deprecated Import this constant from @comunica/context-entries.
  */
-export const KEY_CONTEXT_SOURCE = '@comunica/bus-rdf-resolve-quad-pattern:source';
+export const KEY_CONTEXT_SOURCE = KeysRdfResolveQuadPattern.source;
 
 export function isDataSourceRawType(dataSource: IDataSource): dataSource is string | RDF.Source {
   return typeof dataSource === 'string' || 'match' in dataSource;
@@ -57,7 +60,7 @@ IActorRdfResolveQuadPatternOutput> {
    * @return {IDataSource[]} The array of sources or undefined.
    */
   protected getContextSources(context?: ActionContext): DataSources | undefined {
-    return context ? context.get(KEY_CONTEXT_SOURCES) : undefined;
+    return context ? context.get(KeysRdfResolveQuadPattern.sources) : undefined;
   }
 
   /**
@@ -66,7 +69,7 @@ IActorRdfResolveQuadPatternOutput> {
    * @return {IDataSource} The source or undefined.
    */
   protected getContextSource(context?: ActionContext): IDataSource | undefined {
-    return context ? context.get(KEY_CONTEXT_SOURCE) : undefined;
+    return context ? context.get(KeysRdfResolveQuadPattern.source) : undefined;
   }
 
   /**

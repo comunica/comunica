@@ -1,13 +1,9 @@
 import type { IActorContextPreprocessOutput } from '@comunica/bus-context-preprocess';
 import { ActorContextPreprocess } from '@comunica/bus-context-preprocess';
-import type { DataSources,
-  IDataSource } from '@comunica/bus-rdf-resolve-quad-pattern';
-import {
-  getDataSourceValue,
-  KEY_CONTEXT_SOURCE,
-  KEY_CONTEXT_SOURCES,
-} from '@comunica/bus-rdf-resolve-quad-pattern';
+import type { DataSources, IDataSource } from '@comunica/bus-rdf-resolve-quad-pattern';
+import { getDataSourceValue } from '@comunica/bus-rdf-resolve-quad-pattern';
 import type { IActionRdfSourceIdentifier, IActorRdfSourceIdentifierOutput } from '@comunica/bus-rdf-source-identifier';
+import { KeysRdfResolveQuadPattern } from '@comunica/context-entries';
 import type { ActionContext, Actor, IAction, IActorArgs, IActorTest, Mediator } from '@comunica/core';
 
 /**
@@ -27,26 +23,26 @@ export class ActorContextPreprocessRdfSourceIdentifier extends ActorContextPrepr
 
   public async run(action: IAction): Promise<IActorContextPreprocessOutput> {
     if (action.context) {
-      if (action.context.get(KEY_CONTEXT_SOURCE)) {
-        let source = action.context.get(KEY_CONTEXT_SOURCE);
+      if (action.context.get(KeysRdfResolveQuadPattern.source)) {
+        let source = action.context.get(KeysRdfResolveQuadPattern.source);
         let { context } = action;
         if (source.type === 'auto') {
-          context = action.context.delete(KEY_CONTEXT_SOURCE);
+          context = action.context.delete(KeysRdfResolveQuadPattern.source);
           source = await this.identifySource(source, context);
-          context = context.set(KEY_CONTEXT_SOURCE, source);
+          context = context.set(KeysRdfResolveQuadPattern.source, source);
         }
         return { context };
       }
-      if (action.context.get(KEY_CONTEXT_SOURCES)) {
-        const subContext: ActionContext = action.context.delete(KEY_CONTEXT_SOURCES);
+      if (action.context.get(KeysRdfResolveQuadPattern.sources)) {
+        const subContext: ActionContext = action.context.delete(KeysRdfResolveQuadPattern.sources);
 
-        const sources: DataSources = action.context.get(KEY_CONTEXT_SOURCES);
+        const sources: DataSources = action.context.get(KeysRdfResolveQuadPattern.sources);
         const newSources: DataSources = [];
         for (const source of sources) {
           newSources.push(await this.identifySource(source, subContext));
         }
 
-        return { context: action.context.set(KEY_CONTEXT_SOURCES, newSources) };
+        return { context: action.context.set(KeysRdfResolveQuadPattern.sources, newSources) };
       }
     }
     return action;

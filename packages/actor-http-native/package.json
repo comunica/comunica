@@ -36,6 +36,7 @@
     "@comunica/core": "^1.0.0"
   },
   "dependencies": {
+    "@comunica/context-entries": "^1.0.0",
     "@types/parse-link-header": "^1.0.0",
     "cross-fetch": "^3.0.5",
     "follow-redirects": "^1.5.1",

@@ -2,6 +2,7 @@ import type { IActionHttp, IActorHttpOutput } from '@comunica/bus-http';
 import type { IActionRdfParse,
   IActorRdfParseFixedMediaTypesArgs, IActorRdfParseOutput } from '@comunica/bus-rdf-parse';
 import { ActorRdfParseFixedMediaTypes } from '@comunica/bus-rdf-parse';
+import { KeysRdfParseJsonLd } from '@comunica/context-entries';
 import type { ActionContext, Actor, IActorTest, Mediator } from '@comunica/core';
 import { JsonLdParser } from 'jsonld-streaming-parser';
 import type * as RDF from 'rdf-js';
@@ -35,9 +36,9 @@ export class ActorRdfParseJsonLd extends ActorRdfParseFixedMediaTypes {
   public async runHandle(action: IActionRdfParse, mediaType: string, actionContext: ActionContext):
   Promise<IActorRdfParseOutput> {
     const parser = JsonLdParser.fromHttpResponse(action.baseIRI, mediaType, action.headers, {
-      documentLoader: actionContext && actionContext.get(KEY_CONTEXT_DOCUMENTLOADER) ||
+      documentLoader: actionContext && actionContext.get(KeysRdfParseJsonLd.documentLoader) ||
         new DocumentLoaderMediated(this.mediatorHttp, actionContext),
-      strictValues: actionContext && actionContext.get(KEY_CONTEXT_STRICTVALUES),
+      strictValues: actionContext && actionContext.get(KeysRdfParseJsonLd.strictValues),
     });
     const quads: RDF.Stream = parser.import(action.input);
     return { quads };
@@ -49,5 +50,11 @@ export interface IActorRdfParseJsonLdArgs extends IActorRdfParseFixedMediaTypesA
   IActionHttp, IActorTest, IActorHttpOutput>;
 }
 
-export const KEY_CONTEXT_DOCUMENTLOADER = '@comunica/actor-rdf-parse-jsonld:documentLoader';
-export const KEY_CONTEXT_STRICTVALUES = '@comunica/actor-rdf-parse-jsonld:strictValues';
+/**
+ * @deprecated Import this constant from @comunica/context-entries.
+ */
+export const KEY_CONTEXT_DOCUMENTLOADER = KeysRdfParseJsonLd.documentLoader;
+/**
+ * @deprecated Import this constant from @comunica/context-entries.
+ */
+export const KEY_CONTEXT_STRICTVALUES = KeysRdfParseJsonLd.strictValues;

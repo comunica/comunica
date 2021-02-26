@@ -1,7 +1,7 @@
 import type { DataSources, IActionRdfResolveQuadPattern,
   IActorRdfResolveQuadPatternOutput, IDataSource, IQuadSource } from '@comunica/bus-rdf-resolve-quad-pattern';
-import { getDataSourceType, getDataSourceValue, KEY_CONTEXT_SOURCE,
-  KEY_CONTEXT_SOURCES, getDataSourceContext } from '@comunica/bus-rdf-resolve-quad-pattern';
+import { getDataSourceType, getDataSourceValue, getDataSourceContext } from '@comunica/bus-rdf-resolve-quad-pattern';
+import { KeysRdfResolveQuadPattern } from '@comunica/context-entries';
 import type { ActionContext, Actor, IActorTest, Mediator } from '@comunica/core';
 import { BlankNodeScoped } from '@comunica/data-factory';
 import type { AsyncIterator } from 'asynciterator';
@@ -36,8 +36,8 @@ export class FederatedQuadSource implements IQuadSource {
   context: ActionContext, emptyPatterns: Map<IDataSource, RDF.Quad[]>,
   skipEmptyPatterns: boolean) {
     this.mediatorResolveQuadPattern = mediatorResolveQuadPattern;
-    this.sources = context.get(KEY_CONTEXT_SOURCES);
-    this.contextDefault = context.delete(KEY_CONTEXT_SOURCES);
+    this.sources = context.get(KeysRdfResolveQuadPattern.sources);
+    this.contextDefault = context.delete(KeysRdfResolveQuadPattern.sources);
     this.emptyPatterns = emptyPatterns;
     this.sourceIds = new Map();
     this.skipEmptyPatterns = skipEmptyPatterns;
@@ -204,7 +204,7 @@ export class FederatedQuadSource implements IQuadSource {
 
       // Prepare the context for this specific source
       let context: ActionContext = getDataSourceContext(source, this.contextDefault);
-      context = context.set(KEY_CONTEXT_SOURCE,
+      context = context.set(KeysRdfResolveQuadPattern.source,
         { type: getDataSourceType(source), value: getDataSourceValue(source) });
 
       let output: IActorRdfResolveQuadPatternOutput;

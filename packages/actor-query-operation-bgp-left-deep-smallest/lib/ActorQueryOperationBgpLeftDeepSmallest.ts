@@ -1,16 +1,13 @@
 import type { Bindings,
   BindingsStream,
-
   IActorQueryOperationOutputBindings,
   IActorQueryOperationTypedMediatedArgs,
   IPatternBindings } from '@comunica/bus-query-operation';
 import {
   ActorQueryOperation,
   ActorQueryOperationTypedMediated,
-  KEY_CONTEXT_BGP_CURRENTMETADATA,
-  KEY_CONTEXT_BGP_PARENTMETADATA,
-  KEY_CONTEXT_BGP_PATTERNBINDINGS,
 } from '@comunica/bus-query-operation';
+import { KeysQueryOperation } from '@comunica/context-entries';
 import type { ActionContext, IActorTest } from '@comunica/core';
 import { ArrayIterator, MultiTransformIterator, TransformIterator } from 'asynciterator';
 import type * as RDF from 'rdf-js';
@@ -240,8 +237,8 @@ export class ActorQueryOperationBgpLeftDeepSmallest extends ActorQueryOperationT
 
     // Materialize the remaining patterns for each binding in the stream.
     const subContext = context && context
-      .set(KEY_CONTEXT_BGP_CURRENTMETADATA, metadatas[smallestId])
-      .set(KEY_CONTEXT_BGP_PARENTMETADATA, remainingMetadatas);
+      .set(KeysQueryOperation.bgpCurrentMetadata, metadatas[smallestId])
+      .set(KeysQueryOperation.bgpParentMetadata, remainingMetadatas);
     const bindingsStream: BindingsStream = ActorQueryOperationBgpLeftDeepSmallest.createLeftDeepStream(
       smallestPattern.bindingsStream,
       remainingPatterns,
@@ -250,7 +247,7 @@ export class ActorQueryOperationBgpLeftDeepSmallest extends ActorQueryOperationT
         const operation: Algebra.Bgp = { type: 'bgp', patterns: patterns.map(pat => pat.pattern) };
         const bindings = patterns.map(pat => pat.bindings);
         return ActorQueryOperation.getSafeBindings(await this.mediatorQueryOperation.mediate(
-          { operation, context: subContext.set(KEY_CONTEXT_BGP_PATTERNBINDINGS, bindings) },
+          { operation, context: subContext.set(KeysQueryOperation.bgpPatternBindings, bindings) },
         )).bindingsStream;
       },
     );

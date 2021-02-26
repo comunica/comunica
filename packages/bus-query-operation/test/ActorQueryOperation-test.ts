@@ -1,8 +1,9 @@
+import { KeysInitSparql } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import { ArrayIterator } from 'asynciterator';
 import type { Algebra } from 'sparqlalgebrajs';
 import { Factory } from 'sparqlalgebrajs';
-import { ActorQueryOperation, Bindings, getMetadata, KEY_CONTEXT_BASEIRI, KEY_CONTEXT_QUERY_TIMESTAMP } from '..';
+import { ActorQueryOperation, Bindings, getMetadata } from '..';
 
 describe('ActorQueryOperation', () => {
   const bus = new Bus({ name: 'bus' });
@@ -81,8 +82,8 @@ describe('ActorQueryOperation', () => {
       it('should create an non-empty object for a filled context', () => {
         const date = new Date();
         expect(ActorQueryOperation.getExpressionContext(ActionContext({
-          [KEY_CONTEXT_QUERY_TIMESTAMP]: date,
-          [KEY_CONTEXT_BASEIRI]: 'http://base.org/',
+          [KeysInitSparql.queryTimestamp]: date,
+          [KeysInitSparql.baseIRI]: 'http://base.org/',
         }))).toEqual({
           now: date,
           baseIRI: 'http://base.org/',

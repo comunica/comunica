@@ -1,6 +1,6 @@
 import type { IActionHttp, IActorHttpOutput } from '@comunica/bus-http';
-import { ActorHttp,
-  KEY_CONTEXT_INCLUDE_CREDENTIALS, KEY_CONTEXT_AUTH } from '@comunica/bus-http';
+import { ActorHttp } from '@comunica/bus-http';
+import { KeysHttp } from '@comunica/context-entries';
 import type { IActorArgs } from '@comunica/core';
 import type { IMediatorTypeTime } from '@comunica/mediatortype-time';
 import 'cross-fetch/polyfill';
@@ -57,12 +57,12 @@ export class ActorHttpNative extends ActorHttp {
     }
 
     options.method = options.method || 'GET';
-    if (action.context && action.context.get(KEY_CONTEXT_INCLUDE_CREDENTIALS)) {
+    if (action.context && action.context.get(KeysHttp.includeCredentials)) {
       options.withCredentials = true;
     }
 
-    if (action.context && action.context.get(KEY_CONTEXT_AUTH)) {
-      options.auth = action.context.get(KEY_CONTEXT_AUTH);
+    if (action.context && action.context.get(KeysHttp.auth)) {
+      options.auth = action.context.get(KeysHttp.auth);
     }
 
     this.logInfo(action.context, `Requesting ${options.url}`, () => ({

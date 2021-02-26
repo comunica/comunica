@@ -1,9 +1,7 @@
 import type { IActorQueryOperationOutputBindings, IPatternBindings } from '@comunica/bus-query-operation';
-import {
-  ActorQueryOperation, Bindings,
-  KEY_CONTEXT_QUERYOPERATION,
-} from '@comunica/bus-query-operation';
-import { ActionContext, Bus, KEY_CONTEXT_LOG } from '@comunica/core';
+import { ActorQueryOperation, Bindings } from '@comunica/bus-query-operation';
+import { KeysCore, KeysQueryOperation } from '@comunica/context-entries';
+import { ActionContext, Bus } from '@comunica/core';
 import { LoggerVoid } from '@comunica/logger-void';
 import { ArrayIterator, EmptyIterator, SingletonIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
@@ -571,7 +569,7 @@ describe('ActorQueryOperationBgpLeftDeepSmallest', () => {
         expect(await (<any> output).metadata()).toEqual({ totalItems: Number.POSITIVE_INFINITY });
         expect(mediatorQueryOperation.mediate).toHaveBeenCalledWith(
           {
-            context: ActionContext({ a: 'b', [KEY_CONTEXT_QUERYOPERATION]: op.operation }),
+            context: ActionContext({ a: 'b', [KeysQueryOperation.operation]: op.operation }),
             operation: DF.quad(DF.variable('d'), DF.namedNode('4'), DF.namedNode('4'), DF.namedNode('4')),
           },
         );
@@ -635,7 +633,7 @@ describe('ActorQueryOperationBgpLeftDeepSmallest', () => {
       const spy = spyOn(logger, 'debug');
       const op = {
         operation: { type: 'bgp', patterns },
-        context: ActionContext({ [KEY_CONTEXT_LOG]: logger }),
+        context: ActionContext({ [KeysCore.log]: logger }),
       };
       await actor.run(op);
       expect(spy).toHaveBeenCalledWith('Smallest pattern: ', {

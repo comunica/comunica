@@ -1,5 +1,6 @@
+import { KeysCore } from '@comunica/context-entries';
 import { LoggerVoid } from '@comunica/logger-void';
-import { ActionContext, Actor, Bus, KEY_CONTEXT_LOG } from '..';
+import { ActionContext, Actor, Bus } from '..';
 
 describe('Actor', () => {
   const bus = new Bus({ name: 'bus' });
@@ -102,7 +103,7 @@ describe('Actor', () => {
         jest.spyOn(logger, 'warn');
         jest.spyOn(logger, 'error');
         jest.spyOn(logger, 'fatal');
-        context = ActionContext({ [KEY_CONTEXT_LOG]: logger });
+        context = ActionContext({ [KeysCore.log]: logger });
       });
 
       it('should call the logger on trace', () => {
@@ -153,7 +154,7 @@ describe('Actor', () => {
 
     it('for a context with logger should return the logger', () => {
       const logger = 'blabla';
-      return expect(Actor.getContextLogger(ActionContext({ [KEY_CONTEXT_LOG]: logger }))).toBe(logger);
+      return expect(Actor.getContextLogger(ActionContext({ [KeysCore.log]: logger }))).toBe(logger);
     });
   });
 });

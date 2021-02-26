@@ -1,7 +1,8 @@
 import type { Readable } from 'stream';
+import { KeysRdfParseJsonLd } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import 'jest-rdf';
-import { ActorRdfParseJsonLd, KEY_CONTEXT_DOCUMENTLOADER, KEY_CONTEXT_STRICTVALUES } from '../lib/ActorRdfParseJsonLd';
+import { ActorRdfParseJsonLd } from '../lib/ActorRdfParseJsonLd';
 const arrayifyStream = require('arrayify-stream');
 const quad = require('rdf-quad');
 const stringToStream = require('streamify-string');
@@ -294,7 +295,7 @@ describe('ActorRdfParseJsonLd', () => {
         return actor.run({
           handle: { input: inputRemoteContext, baseIRI: '' },
           handleMediaType: 'application/ld+json',
-          context: ActionContext({ [KEY_CONTEXT_DOCUMENTLOADER]: documentLoader }),
+          context: ActionContext({ [KeysRdfParseJsonLd.documentLoader]: documentLoader }),
         })
           .then(async(output: any) => expect(await arrayifyStream(output.handle.quads)).toEqualRdfQuadArray([
             quad('http://example.org/a', 'http://custom.org/b', '"http://example.org/c"'),
@@ -314,7 +315,7 @@ describe('ActorRdfParseJsonLd', () => {
         return actor.run({
           handle: { input: inputSkipped, baseIRI: '' },
           handleMediaType: 'application/ld+json',
-          context: ActionContext({ [KEY_CONTEXT_STRICTVALUES]: true }),
+          context: ActionContext({ [KeysRdfParseJsonLd.strictValues]: true }),
         })
           .then(async(output: any) => expect(arrayifyStream(output.handle.quads)).rejects
             .toThrow(new Error('Invalid predicate IRI: skipped')));

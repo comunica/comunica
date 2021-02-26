@@ -1,5 +1,5 @@
-import { ActorQueryOperation, KEY_CONTEXT_BGP_PARENTMETADATA,
-  KEY_CONTEXT_PATTERN_PARENTMETADATA, KEY_CONTEXT_QUERYOPERATION } from '@comunica/bus-query-operation';
+import { ActorQueryOperation } from '@comunica/bus-query-operation';
+import { KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import { ActorQueryOperationBgpSingle } from '../lib/ActorQueryOperationBgpSingle';
 
@@ -57,7 +57,7 @@ describe('ActorQueryOperationBgpSingle', () => {
       const op = { operation: { type: 'bgp', patterns: [ 'abc' ]}, context: ActionContext({ c: 'C' }) };
       return actor.run(op).then(async output => {
         expect(output).toMatchObject({ operated: {
-          context: ActionContext({ c: 'C', [KEY_CONTEXT_QUERYOPERATION]: op.operation }),
+          context: ActionContext({ c: 'C', [KeysQueryOperation.operation]: op.operation }),
           operation: 'abc',
         }});
       });
@@ -65,7 +65,7 @@ describe('ActorQueryOperationBgpSingle', () => {
 
     it('should run with a context with parent metadata and delegate the pattern to the mediator', () => {
       const context = ActionContext({
-        [KEY_CONTEXT_BGP_PARENTMETADATA]: [{
+        [KeysQueryOperation.bgpParentMetadata]: [{
           a: 'b',
         }],
       });
@@ -74,8 +74,8 @@ describe('ActorQueryOperationBgpSingle', () => {
         expect(output).toMatchObject({
           operated: {
             context: ActionContext({
-              [KEY_CONTEXT_PATTERN_PARENTMETADATA]: { a: 'b' },
-              [KEY_CONTEXT_QUERYOPERATION]: op.operation,
+              [KeysQueryOperation.patternParentMetadata]: { a: 'b' },
+              [KeysQueryOperation.operation]: op.operation,
             }),
             operation: 'abc',
           },

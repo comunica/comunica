@@ -1,3 +1,4 @@
+import { KeysQueryOperation } from '@comunica/context-entries';
 import type { ActionContext, IActorArgs, IActorTest } from '@comunica/core';
 import type { Algebra } from 'sparqlalgebrajs';
 import type { IActionQueryOperation, IActorQueryOperationOutput,
@@ -6,8 +7,9 @@ import { ActorQueryOperation } from './ActorQueryOperation';
 
 /**
  * @type {string} Context entry for the current query operation.
+ * @deprecated Import this constant from @comunica/context-entries.
  */
-export const KEY_CONTEXT_QUERYOPERATION = '@comunica/bus-query-operation:operation';
+export const KEY_CONTEXT_QUERYOPERATION = KeysQueryOperation.operation;
 
 /**
  * A base implementation for query operation actors for a specific operation type.
@@ -37,7 +39,7 @@ export abstract class ActorQueryOperationTyped<O extends Algebra.Operation> exte
 
   public async run(action: IActionQueryOperation): Promise<IActorQueryOperationOutput> {
     const operation: O = <O> action.operation;
-    const subContext = action.context && action.context.set(KEY_CONTEXT_QUERYOPERATION, operation);
+    const subContext = action.context && action.context.set(KeysQueryOperation.operation, operation);
     const output: IActorQueryOperationOutput = await this.runOperation(operation, subContext);
     if ((<IActorQueryOperationOutputStream> output).metadata) {
       (<IActorQueryOperationOutputStream> output).metadata =

@@ -2,21 +2,15 @@ import { exec } from 'child_process';
 import { existsSync, readFileSync } from 'fs';
 import * as OS from 'os';
 import type { Readable } from 'stream';
-import { KEY_CONTEXT_DATETIME } from '@comunica/actor-http-memento';
-import { KEY_CONTEXT_HTTPPROXYHANDLER, ProxyHandlerStatic } from '@comunica/actor-http-proxy';
-import { KEY_CONTEXT_AUTH } from '@comunica/bus-http';
+import { ProxyHandlerStatic } from '@comunica/actor-http-proxy';
 import type { IActionInit, IActorOutputInit } from '@comunica/bus-init';
 import type { IActorQueryOperationOutput } from '@comunica/bus-query-operation';
-import { KEY_CONTEXT_BASEIRI } from '@comunica/bus-query-operation';
-
+import { KeysHttp, KeysHttpMemento, KeysHttpProxy, KeysInitSparql } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import { LoggerPretty } from '@comunica/logger-pretty';
 import minimist = require('minimist');
 import type { IActorInitSparqlArgs } from './ActorInitSparql-browser';
-import {
-  ActorInitSparql as ActorInitSparqlBrowser,
-  KEY_CONTEXT_LENIENT, KEY_CONTEXT_QUERYFORMAT,
-} from './ActorInitSparql-browser';
+import { ActorInitSparql as ActorInitSparqlBrowser } from './ActorInitSparql-browser';
 
 // eslint-disable-next-line no-duplicate-imports
 export {
@@ -91,7 +85,7 @@ export class ActorInitSparql extends ActorInitSparqlBrowser {
     if (authMatches) {
       const credentials = authMatches[1];
       source.context = ActionContext({
-        [KEY_CONTEXT_AUTH]: decodeURIComponent(credentials),
+        [KeysHttp.auth]: decodeURIComponent(credentials),
       });
       sourceString = sourceString.slice(0, authMatches.index + 2) +
         sourceString.slice(authMatches.index + credentials.length + 3);
@@ -162,12 +156,12 @@ export class ActorInitSparql extends ActorInitSparqlBrowser {
 
     // Define the base IRI
     if (args.b) {
-      context[KEY_CONTEXT_BASEIRI] = args.b;
+      context[KeysInitSparql.baseIRI] = args.b;
     }
 
     // Define lenient-mode
     if (args.lenient) {
-      context[KEY_CONTEXT_LENIENT] = true;
+      context[KeysInitSparql.lenient] = true;
     }
 
     return context;
@@ -209,19 +203,19 @@ export class ActorInitSparql extends ActorInitSparqlBrowser {
     }
 
     // Define the query format
-    context[KEY_CONTEXT_QUERYFORMAT] = this.defaultQueryInputFormat;
+    context[KeysInitSparql.queryFormat] = this.defaultQueryInputFormat;
     if (args.i) {
-      context[KEY_CONTEXT_QUERYFORMAT] = args.i;
+      context[KeysInitSparql.queryFormat] = args.i;
     }
 
     // Define the datetime
     if (args.d) {
-      context[KEY_CONTEXT_DATETIME] = new Date(args.d);
+      context[KeysHttpMemento.datetime] = new Date(args.d);
     }
 
     // Set the proxy
     if (args.p) {
-      context[KEY_CONTEXT_HTTPPROXYHANDLER] = new ProxyHandlerStatic(args.p);
+      context[KeysHttpProxy.httpProxyHandler] = new ProxyHandlerStatic(args.p);
     }
 
     // Evaluate query
