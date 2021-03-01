@@ -71,6 +71,11 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
         ]);
       });
 
+      it('should not re-emit any the first url', async() => {
+        mediatorRdfResolveHypermediaLinks.mediate = () => Promise.resolve({ urls: [ 'first' ]});
+        expect(await source.getSourceLinks({ baseURL: 'http://base.org/' })).toEqual([]);
+      });
+
       it('should be invokable multiple times', async() => {
         expect(await source.getSourceLinks({ baseURL: 'http://base.org/' })).toEqual([
           { url: 'http://base.org/url1' },

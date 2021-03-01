@@ -50,7 +50,7 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
     this.mediatorMetadataExtract = mediators.mediatorMetadataExtract;
     this.mediatorRdfResolveHypermedia = mediators.mediatorRdfResolveHypermedia;
     this.mediatorRdfResolveHypermediaLinks = mediators.mediatorRdfResolveHypermediaLinks;
-    this.handledUrls = {};
+    this.handledUrls = { [firstUrl]: true };
   }
 
   protected async getSourceLinks(metadata: Record<string, any>): Promise<ILink[]> {
