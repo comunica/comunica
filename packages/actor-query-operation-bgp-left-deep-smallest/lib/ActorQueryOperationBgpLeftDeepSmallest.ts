@@ -1,5 +1,4 @@
-import type { IActorQueryOperationTypedMediatedArgs,
-} from '@comunica/bus-query-operation';
+import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import {
   ActorQueryOperation,
   ActorQueryOperationTypedMediated,

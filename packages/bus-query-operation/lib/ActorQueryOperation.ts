@@ -1,5 +1,5 @@
 import { KeysInitSparql, KeysQueryOperation } from '@comunica/context-entries';
-import type { ActionContext, IAction, IActorArgs, IActorTest, Mediator } from '@comunica/core';
+import type { ActionContext, IActorArgs, IActorTest, Mediator } from '@comunica/core';
 import { Actor } from '@comunica/core';
 import type {
   IActionQueryOperation,
