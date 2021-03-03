@@ -9,7 +9,7 @@ import type {
   TBindings,
   TBindingsStream,
   IActorQueryOperationOutputBindings,
-  IPatternBindings,
+  TPatternBindings,
 } from '@comunica/types';
 import { ArrayIterator, MultiTransformIterator, TransformIterator } from 'asynciterator';
 import type * as RDF from 'rdf-js';
@@ -41,7 +41,7 @@ export class ActorQueryOperationBgpLeftDeepSmallest extends ActorQueryOperationT
    */
   public static createLeftDeepStream(baseStream: TBindingsStream, patterns: Algebra.Pattern[],
                                      patternBinder:
-    (bindPatterns: { pattern: Algebra.Pattern; bindings: IPatternBindings }[]) =>
+    (bindPatterns: { pattern: Algebra.Pattern; bindings: TPatternBindings }[]) =>
     Promise<TBindingsStream>): TBindingsStream {
     return new MultiTransformIterator(baseStream, {
       autoStart: false,
@@ -118,7 +118,7 @@ export class ActorQueryOperationBgpLeftDeepSmallest extends ActorQueryOperationT
    * @return { pattern: Algebra.Pattern, bindings: IPatternBindings }[] An array of patterns with their bindings.
    */
   public static materializePatterns(patterns: Algebra.Pattern[], bindings: TBindings):
-  { pattern: Algebra.Pattern; bindings: IPatternBindings }[] {
+  { pattern: Algebra.Pattern; bindings: TPatternBindings }[] {
     return patterns.map(pattern => ActorQueryOperationBgpLeftDeepSmallest.materializePattern(
       pattern, bindings,
     ));
@@ -131,8 +131,8 @@ export class ActorQueryOperationBgpLeftDeepSmallest extends ActorQueryOperationT
    * @return { pattern: Algebra.Pattern, bindings: IPatternBindings } A new materialized pattern.
    */
   public static materializePattern(pattern: Algebra.Pattern, bindings: TBindings):
-  { pattern: Algebra.Pattern; bindings: IPatternBindings } {
-    const bindingsOut: IPatternBindings = {};
+  { pattern: Algebra.Pattern; bindings: TPatternBindings } {
+    const bindingsOut: TPatternBindings = {};
     const patternOut = <Algebra.Pattern> Object.assign(mapTerms(pattern,
       (term: RDF.Term, termPosition: QuadTermName) => {
         const materializedTerm = ActorQueryOperationBgpLeftDeepSmallest.materializeTerm(term, bindings);
@@ -244,7 +244,7 @@ export class ActorQueryOperationBgpLeftDeepSmallest extends ActorQueryOperationT
     const bindingsStream: TBindingsStream = ActorQueryOperationBgpLeftDeepSmallest.createLeftDeepStream(
       smallestPattern.bindingsStream,
       remainingPatterns,
-      async(patterns: { pattern: Algebra.Pattern; bindings: IPatternBindings }[]) => {
+      async(patterns: { pattern: Algebra.Pattern; bindings: TPatternBindings }[]) => {
         // Send the materialized patterns to the mediator for recursive BGP evaluation.
         const operation: Algebra.Bgp = { type: 'bgp', patterns: patterns.map(pat => pat.pattern) };
         const bindings = patterns.map(pat => pat.bindings);

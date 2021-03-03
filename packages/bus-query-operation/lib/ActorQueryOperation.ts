@@ -9,9 +9,45 @@ import type {
   IActorQueryOperationOutputQuads,
   IActorQueryOperationOutputStream,
   TBindings,
+  TPatternBindings,
 } from '@comunica/types';
 import type { Algebra } from 'sparqlalgebrajs';
 import { materializeOperation } from './Bindings';
+
+/**
+ * @deprecated Use the type in @comunica/types
+ */
+export type { IActionQueryOperation };
+
+/**
+ * @deprecated Use the type in @comunica/types
+ */
+export type { TActorQueryOperationOutput as IActorQueryOperationOutput };
+
+/**
+ * @deprecated Use the type in @comunica/types
+ */
+export type { IActorQueryOperationOutputBindings };
+
+/**
+ * @deprecated Use the type in @comunica/types
+ */
+export type { IActorQueryOperationOutputBoolean };
+
+/**
+ * @deprecated Use the type in @comunica/types
+ */
+export type { IActorQueryOperationOutputQuads };
+
+/**
+ * @deprecated Use the type in @comunica/types
+ */
+export type { IActorQueryOperationOutputStream };
+
+/**
+ * @deprecated Use the type in @comunica/types
+ */
+export type { TPatternBindings as IPatternBindings };
 
 /**
  * @type {string} Context entry for current metadata.
@@ -33,7 +69,7 @@ export const KEY_CONTEXT_BGP_PARENTMETADATA = KeysQueryOperation.bgpParentMetada
  * @type {string} Context entry for indicating which patterns were bound from variables.
  *                I.e., an array of the same length as the value of KeysQueryOperation.patternParentMetadata,
  *                where each array value corresponds to the pattern bindings for the corresponding pattern.
- * @value {any} An array of {@link IPatternBindings}.
+ * @value {any} An array of {@link TPatternBindings}.
  * @deprecated Import this constant from @comunica/context-entries.
  */
 export const KEY_CONTEXT_BGP_PATTERNBINDINGS = KeysQueryOperation.bgpPatternBindings;

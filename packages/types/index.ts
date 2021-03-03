@@ -81,7 +81,7 @@ export interface IActorQueryOperationOutputBoolean extends IActorQueryOperationO
 /**
  * Binds a quad pattern term's position to a variable.
  */
-export type IPatternBindings = Record<string, RDF.Variable>;
+export type TPatternBindings = Record<string, RDF.Variable>;
 
 export interface IActionQueryOperation extends IAction {
   /**
