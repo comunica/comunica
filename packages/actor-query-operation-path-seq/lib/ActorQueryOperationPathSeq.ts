@@ -6,7 +6,7 @@ import {
 import type { ActorRdfJoin, IActionRdfJoin } from '@comunica/bus-rdf-join';
 import type { ActionContext, Mediator } from '@comunica/core';
 import type { IMediatorTypeIterations } from '@comunica/mediatortype-iterations';
-import type { IBindings, IActorQueryOperationOutput, IActorQueryOperationOutputBindings } from '@comunica/types';
+import type { TBindings, TActorQueryOperationOutput, IActorQueryOperationOutputBindings } from '@comunica/types';
 
 import { termToString } from 'rdf-string';
 import { Algebra } from 'sparqlalgebrajs';
@@ -15,7 +15,7 @@ import { Algebra } from 'sparqlalgebrajs';
  */
 export class ActorQueryOperationPathSeq extends ActorAbstractPath {
   public readonly mediatorJoin: Mediator<ActorRdfJoin,
-  IActionRdfJoin, IMediatorTypeIterations, IActorQueryOperationOutput>;
+  IActionRdfJoin, IMediatorTypeIterations, TActorQueryOperationOutput>;
 
   public constructor(args: IActorQueryOperationPathSeq) {
     super(args, Algebra.types.SEQ);
@@ -37,7 +37,7 @@ export class ActorQueryOperationPathSeq extends ActorAbstractPath {
 
     const join = ActorQueryOperation.getSafeBindings(await this.mediatorJoin.mediate({ entries: subOperations }));
     // Remove the generated variable from the bindings
-    const bindingsStream = join.bindingsStream.transform<IBindings>({
+    const bindingsStream = join.bindingsStream.transform<TBindings>({
       transform(item, next, push) {
         push(item.delete(varName));
         next();
@@ -53,5 +53,5 @@ export class ActorQueryOperationPathSeq extends ActorAbstractPath {
 }
 
 export interface IActorQueryOperationPathSeq extends IActorQueryOperationTypedMediatedArgs {
-  mediatorJoin: Mediator<ActorRdfJoin, IActionRdfJoin, IMediatorTypeIterations, IActorQueryOperationOutput>;
+  mediatorJoin: Mediator<ActorRdfJoin, IActionRdfJoin, IMediatorTypeIterations, TActorQueryOperationOutput>;
 }

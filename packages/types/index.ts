@@ -11,7 +11,7 @@ import type { Algebra } from 'sparqlalgebrajs';
  * Blank nodes are represented as strings containing the blank node name prefixed with '_:'.
  * Terms are named nodes, literals or the default graph.
  */
-export type IBindings = Map<string, RDF.Term>;
+export type TBindings = Map<string, RDF.Term>;
 
 /**
  * A stream of bindings.
@@ -21,7 +21,7 @@ export type IBindings = Map<string, RDF.Term>;
  *
  * @see Bindings
  */
-export type IBindingsStream = AsyncIterator<IBindings>;
+export type TBindingsStream = AsyncIterator<TBindings>;
 
 /**
  * Query operation output for a bindings stream.
@@ -35,7 +35,7 @@ export interface IActorQueryOperationOutputBindings extends IActorQueryOperation
   /**
    * The stream of bindings resulting from the given operation.
    */
-  bindingsStream: IBindingsStream;
+  bindingsStream: TBindingsStream;
   /**
    * The list of variable names (without '?') for which bindings are provided in the stream.
    */
@@ -94,7 +94,7 @@ export interface IActionQueryOperation extends IAction {
  * Query operation output.
  * @see IActorQueryOperationOutputBindings, IActorQueryOperationOutputQuads, IActorQueryOperationOutputBoolean
  */
-export type IActorQueryOperationOutput =
+export type TActorQueryOperationOutput =
   IActorQueryOperationOutputStream |
   IActorQueryOperationOutputQuads |
   IActorQueryOperationOutputBoolean;
@@ -106,7 +106,7 @@ export interface IActorQueryOperationOutputBase {
   /**
    * The resulting action context.
    */
-  context?: IActionContext;
+  context?: TActionContext;
 }
 
 /**
@@ -133,7 +133,7 @@ export interface IAction {
   /**
    * The optional input context that is passed through by actors.
    */
-  context?: IActionContext;
+  context?: TActionContext;
 }
 
 /**
@@ -154,8 +154,8 @@ export interface IAction {
  * This context can contain any information that might be relevant for certain actors.
  * For instance, this context can contain a list of datasources over which operators should query.
  */
-export type IActionContext = Map<string, any>;
+export type TActionContext = Map<string, any>;
 
 export interface IActorInitSparql {
-  query: (query: string | Algebra.Operation, context?: any) => Promise<IActorQueryOperationOutput>;
+  query: (query: string | Algebra.Operation, context?: any) => Promise<TActorQueryOperationOutput>;
 }

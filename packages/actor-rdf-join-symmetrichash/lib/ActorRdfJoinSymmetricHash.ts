@@ -5,8 +5,8 @@ import type { IActionRdfJoin } from '@comunica/bus-rdf-join';
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import type { IActorArgs } from '@comunica/core';
 import type { IMediatorTypeIterations } from '@comunica/mediatortype-iterations';
-import type { IBindings,
-  IActorQueryOperationOutput,
+import type { TBindings,
+  TActorQueryOperationOutput,
   IActorQueryOperationOutputBindings } from '@comunica/types';
 import { SymmetricHashJoin } from 'asyncjoin';
 
@@ -14,24 +14,24 @@ import { SymmetricHashJoin } from 'asyncjoin';
  * A comunica Hash RDF Join Actor.
  */
 export class ActorRdfJoinSymmetricHash extends ActorRdfJoin {
-  public constructor(args: IActorArgs<IActionRdfJoin, IMediatorTypeIterations, IActorQueryOperationOutput>) {
+  public constructor(args: IActorArgs<IActionRdfJoin, IMediatorTypeIterations, TActorQueryOperationOutput>) {
     super(args, 2);
   }
 
   /**
    * Creates a hash of the given bindings by concatenating the results of the given variables.
    * This function will not sort the variables and expects them to be in the same order for every call.
-   * @param {IBindings} bindings
+   * @param {TBindings} bindings
    * @param {string[]} variables
    * @returns {string}
    */
-  public static hash(bindings: IBindings, variables: string[]): string {
+  public static hash(bindings: TBindings, variables: string[]): string {
     return variables.filter(variable => bindings.has(variable)).map(variable => bindings.get(variable).value).join('');
   }
 
   public async getOutput(action: IActionRdfJoin): Promise<IActorQueryOperationOutputBindings> {
     const variables = ActorRdfJoin.overlappingVariables(action);
-    const join = new SymmetricHashJoin<IBindings, string, IBindings>(
+    const join = new SymmetricHashJoin<TBindings, string, TBindings>(
       action.entries[0].bindingsStream,
       action.entries[1].bindingsStream,
       entry => ActorRdfJoinSymmetricHash.hash(entry, variables),

@@ -2,7 +2,7 @@ import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-
 import { ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
 import { KeysQueryOperation } from '@comunica/context-entries';
 import type { ActionContext, IActorTest } from '@comunica/core';
-import type { IActorQueryOperationOutput } from '@comunica/types';
+import type { TActorQueryOperationOutput } from '@comunica/types';
 import type { Algebra } from 'sparqlalgebrajs';
 
 /**
@@ -20,7 +20,7 @@ export class ActorQueryOperationBgpSingle extends ActorQueryOperationTypedMediat
     return true;
   }
 
-  public runOperation(pattern: Algebra.Bgp, context: ActionContext): Promise<IActorQueryOperationOutput> {
+  public runOperation(pattern: Algebra.Bgp, context: ActionContext): Promise<TActorQueryOperationOutput> {
     // If we have parent metadata, extract the single parent metadata entry.
     if (context && context.has(KeysQueryOperation.bgpParentMetadata)) {
       const metadatas = context.get(KeysQueryOperation.bgpParentMetadata);

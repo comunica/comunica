@@ -4,7 +4,7 @@ import type { IActionSparqlSerialize,
 import { ActorSparqlSerializeFixedMediaTypes } from '@comunica/bus-sparql-serialize';
 import type { ActionContext } from '@comunica/core';
 import type {
-  IBindings,
+  TBindings,
   IActorQueryOperationOutputBindings,
   IActorQueryOperationOutputQuads,
 } from '@comunica/types';
@@ -47,7 +47,7 @@ export class ActorSparqlSerializeTable extends ActorSparqlSerializeFixedMediaTyp
     data.push(`${header}\n${ActorSparqlSerializeTable.repeat('-', header.length)}\n`);
   }
 
-  public pushRow(data: Readable, labels: string[], bindings: IBindings): void {
+  public pushRow(data: Readable, labels: string[], bindings: TBindings): void {
     data.push(`${labels
       .map(label => bindings.has(label) ? bindings.get(label).value : '')
       .map(label => this.pad(label))

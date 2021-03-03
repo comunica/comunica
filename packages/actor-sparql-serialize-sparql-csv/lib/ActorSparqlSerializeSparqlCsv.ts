@@ -5,7 +5,7 @@ import {
   ActorSparqlSerializeFixedMediaTypes,
 } from '@comunica/bus-sparql-serialize';
 import type { ActionContext } from '@comunica/core';
-import type { IBindings, IActorQueryOperationOutputBindings } from '@comunica/types';
+import type { TBindings, IActorQueryOperationOutputBindings } from '@comunica/types';
 import type * as RDF from 'rdf-js';
 
 /**
@@ -69,7 +69,7 @@ export class ActorSparqlSerializeSparqlCsv extends ActorSparqlSerializeFixedMedi
     bindingsAction.bindingsStream.on('error', (error: Error) => {
       data.emit('error', error);
     });
-    bindingsAction.bindingsStream.on('data', (bindings: IBindings) => {
+    bindingsAction.bindingsStream.on('data', (bindings: TBindings) => {
       data.push(`${bindingsAction.variables
         .map((key: string) => ActorSparqlSerializeSparqlCsv
           .bindingToCsvBindings(bindings.get(key)))

@@ -3,7 +3,7 @@ import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica
 import type { ActorRdfJoin, IActionRdfJoin } from '@comunica/bus-rdf-join';
 import type { ActionContext, IActorTest, Mediator } from '@comunica/core';
 import type { IMediatorTypeIterations } from '@comunica/mediatortype-iterations';
-import type { IActorQueryOperationOutput } from '@comunica/types';
+import type { TActorQueryOperationOutput } from '@comunica/types';
 import type { Algebra } from 'sparqlalgebrajs';
 
 /**
@@ -11,7 +11,7 @@ import type { Algebra } from 'sparqlalgebrajs';
  */
 export class ActorQueryOperationJoin extends ActorQueryOperationTypedMediated<Algebra.Join> {
   public readonly mediatorJoin: Mediator<ActorRdfJoin,
-  IActionRdfJoin, IMediatorTypeIterations, IActorQueryOperationOutput>;
+  IActionRdfJoin, IMediatorTypeIterations, TActorQueryOperationOutput>;
 
   public constructor(args: IActorQueryOperationJoinArgs) {
     super(args, 'join');
@@ -21,7 +21,7 @@ export class ActorQueryOperationJoin extends ActorQueryOperationTypedMediated<Al
     return true;
   }
 
-  public async runOperation(pattern: Algebra.Join, context: ActionContext): Promise<IActorQueryOperationOutput> {
+  public async runOperation(pattern: Algebra.Join, context: ActionContext): Promise<TActorQueryOperationOutput> {
     const left = this.mediatorQueryOperation.mediate({ operation: pattern.left, context });
     const right = this.mediatorQueryOperation.mediate({ operation: pattern.right, context });
 
@@ -32,5 +32,5 @@ export class ActorQueryOperationJoin extends ActorQueryOperationTypedMediated<Al
 }
 
 export interface IActorQueryOperationJoinArgs extends IActorQueryOperationTypedMediatedArgs {
-  mediatorJoin: Mediator<ActorRdfJoin, IActionRdfJoin, IMediatorTypeIterations, IActorQueryOperationOutput>;
+  mediatorJoin: Mediator<ActorRdfJoin, IActionRdfJoin, IMediatorTypeIterations, TActorQueryOperationOutput>;
 }

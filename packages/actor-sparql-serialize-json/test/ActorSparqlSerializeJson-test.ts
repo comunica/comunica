@@ -1,7 +1,7 @@
 import { Readable } from 'stream';
 import { Bindings } from '@comunica/bus-query-operation';
 import { Bus } from '@comunica/core';
-import type { IBindingsStream } from '@comunica/types';
+import type { TBindingsStream } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import type * as RDF from 'rdf-js';
@@ -34,9 +34,9 @@ describe('ActorSparqlSerializeJson', () => {
 
   describe('An ActorSparqlSerializeJson instance', () => {
     let actor: ActorSparqlSerializeJson;
-    let bindingsStream: IBindingsStream;
+    let bindingsStream: TBindingsStream;
     let quadStream: RDF.Stream;
-    let bindingsStreamEmpty: IBindingsStream;
+    let bindingsStreamEmpty: TBindingsStream;
     let streamError: Readable;
 
     beforeEach(() => {

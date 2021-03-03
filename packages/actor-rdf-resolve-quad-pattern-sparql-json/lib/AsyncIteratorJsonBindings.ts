@@ -2,14 +2,14 @@ import type { IActionHttp, IActorHttpOutput } from '@comunica/bus-http';
 import { ActorHttp } from '@comunica/bus-http';
 import { Bindings } from '@comunica/bus-query-operation';
 import type { ActionContext, Actor, IActorTest, Mediator } from '@comunica/core';
-import type { IBindings } from '@comunica/types';
+import type { TBindings } from '@comunica/types';
 import { BufferedIterator } from 'asynciterator';
 import { SparqlJsonParser } from 'sparqljson-parse';
 
 /**
  * An AsyncIterator that executes a SPARQL query against an endpoint, parses each binding, and emits it in this stream.
  */
-export class AsyncIteratorJsonBindings extends BufferedIterator<IBindings> {
+export class AsyncIteratorJsonBindings extends BufferedIterator<TBindings> {
   private readonly endpoint: string;
   private readonly query: string;
   private readonly context?: ActionContext;

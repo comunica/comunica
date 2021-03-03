@@ -4,7 +4,7 @@ import {
   ActorQueryOperationTypedMediated,
 } from '@comunica/bus-query-operation';
 import type { ActionContext, IActorTest } from '@comunica/core';
-import type { IBindings, IActorQueryOperationOutputBindings } from '@comunica/types';
+import type { TBindings, IActorQueryOperationOutputBindings } from '@comunica/types';
 import type { Algebra } from 'sparqlalgebrajs';
 import { AsyncEvaluator, isExpressionError } from 'sparqlee';
 
@@ -33,7 +33,7 @@ export class ActorQueryOperationFilterSparqlee extends ActorQueryOperationTypedM
     const config = ActorQueryOperation.getExpressionContext(context, this.mediatorQueryOperation);
     const evaluator = new AsyncEvaluator(pattern.expression, config);
 
-    const transform = async(item: IBindings, next: any, push: (bindings: IBindings) => void): Promise<void> => {
+    const transform = async(item: TBindings, next: any, push: (bindings: TBindings) => void): Promise<void> => {
       try {
         const result = await evaluator.evaluateAsEBV(item);
         if (result) {
@@ -47,7 +47,7 @@ export class ActorQueryOperationFilterSparqlee extends ActorQueryOperationTypedM
       next();
     };
 
-    const bindingsStream = output.bindingsStream.transform<IBindings>({ transform });
+    const bindingsStream = output.bindingsStream.transform<TBindings>({ transform });
     return { type: 'bindings', bindingsStream, metadata, variables, canContainUndefs: output.canContainUndefs };
   }
 }

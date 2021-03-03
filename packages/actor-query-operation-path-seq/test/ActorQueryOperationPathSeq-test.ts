@@ -1,7 +1,7 @@
 import { ActorQueryOperation, Bindings } from '@comunica/bus-query-operation';
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import { Bus } from '@comunica/core';
-import type { IBindings } from '@comunica/types';
+import type { TBindings } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { termToString } from 'rdf-string';
@@ -53,8 +53,8 @@ describe('ActorQueryOperationPathSeq', () => {
 
     mediatorJoin = {
       async mediate(arg: any) {
-        const left: IBindings[] = await arrayifyStream(arg.entries[0].bindingsStream);
-        const right: IBindings[] = await arrayifyStream(arg.entries[1].bindingsStream);
+        const left: TBindings[] = await arrayifyStream(arg.entries[0].bindingsStream);
+        const right: TBindings[] = await arrayifyStream(arg.entries[1].bindingsStream);
         const bindings = [];
         for (const l of left) {
           for (const r of right) {

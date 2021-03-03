@@ -2,7 +2,7 @@ import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-
 import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
 import type { ActionContext, IActorTest } from '@comunica/core';
 import { BlankNodeScoped } from '@comunica/data-factory';
-import type { IBindings, IBindingsStream, IActorQueryOperationOutputBindings } from '@comunica/types';
+import type { TBindings, TBindingsStream, IActorQueryOperationOutputBindings } from '@comunica/types';
 import { DataFactory } from 'rdf-data-factory';
 import { termToString } from 'rdf-string';
 import type { Algebra } from 'sparqlalgebrajs';
@@ -38,10 +38,10 @@ export class ActorQueryOperationProject extends ActorQueryOperationTypedMediated
     }
 
     // Make sure the project variables are the only variables that are present in the bindings.
-    let bindingsStream: IBindingsStream = deleteVariables.length === 0 ?
+    let bindingsStream: TBindingsStream = deleteVariables.length === 0 ?
       output.bindingsStream :
       output.bindingsStream.transform({
-        map(bindings: IBindings) {
+        map(bindings: TBindings) {
           for (const deleteVariable of deleteVariables) {
             bindings = bindings.delete(deleteVariable);
           }
@@ -55,9 +55,9 @@ export class ActorQueryOperationProject extends ActorQueryOperationTypedMediated
     // When we have a scoped blank node, make sure the skolemized value is maintained.
     let blankNodeCounter = 0;
     bindingsStream = bindingsStream.transform({
-      map(bindings: IBindings) {
+      map(bindings: TBindings) {
         blankNodeCounter++;
-        return <IBindings> bindings.map(term => {
+        return <TBindings> bindings.map(term => {
           if (term && term.termType === 'BlankNode') {
             if (term instanceof BlankNodeScoped) {
               return new BlankNodeScoped(`${term.value}${blankNodeCounter}`, term.skolemized);

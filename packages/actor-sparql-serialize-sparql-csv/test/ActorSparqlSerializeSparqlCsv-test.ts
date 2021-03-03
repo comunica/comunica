@@ -1,7 +1,7 @@
 import { PassThrough } from 'stream';
 import { Bindings } from '@comunica/bus-query-operation';
 import { Bus } from '@comunica/core';
-import type { IBindingsStream } from '@comunica/types';
+import type { TBindingsStream } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorSparqlSerializeSparqlCsv } from '..';
@@ -90,11 +90,11 @@ describe('ActorSparqlSerializeSparqlCsv', () => {
 
   describe('An ActorSparqlSerializeSparqlCsv instance', () => {
     let actor: ActorSparqlSerializeSparqlCsv;
-    let bindingsStream: IBindingsStream;
-    let bindingsStreamPartial: IBindingsStream;
-    let bindingsStreamMixed: IBindingsStream;
-    let bindingsStreamEmpty: IBindingsStream;
-    let bindingsStreamError: IBindingsStream;
+    let bindingsStream: TBindingsStream;
+    let bindingsStreamPartial: TBindingsStream;
+    let bindingsStreamMixed: TBindingsStream;
+    let bindingsStreamEmpty: TBindingsStream;
+    let bindingsStreamError: TBindingsStream;
     let variables: string[];
 
     beforeEach(() => {

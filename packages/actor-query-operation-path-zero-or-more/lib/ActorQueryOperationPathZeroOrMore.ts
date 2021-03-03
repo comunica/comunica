@@ -5,7 +5,7 @@ import {
   ActorQueryOperation,
 } from '@comunica/bus-query-operation';
 import type { ActionContext } from '@comunica/core';
-import type { IBindings, IActorQueryOperationOutputBindings } from '@comunica/types';
+import type { TBindings, IActorQueryOperationOutputBindings } from '@comunica/types';
 import { MultiTransformIterator, TransformIterator, EmptyIterator, BufferedIterator } from 'asynciterator';
 import type { Variable } from 'rdf-js';
 import { termToString } from 'rdf-string';
@@ -48,10 +48,10 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
 
       const termHashes = {};
 
-      const bindingsStream: MultiTransformIterator<IBindings, IBindings> = new MultiTransformIterator(
+      const bindingsStream: MultiTransformIterator<TBindings, TBindings> = new MultiTransformIterator(
         results.bindingsStream,
         {
-          multiTransform: (bindings: IBindings) => {
+          multiTransform: (bindings: TBindings) => {
             // Get the subject and object of the triples (?s ?p ?o) and extract graph if it was a variable
             const subject = bindings.get(subjectString);
             const object = bindings.get(objectString);
@@ -59,14 +59,14 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
             // Make a hash of namedNode + graph to remember from where we already started a search
             const subjectGraphHash = termToString(subject) + termToString(graph);
             const objectGraphHash = termToString(object) + termToString(graph);
-            return new TransformIterator<IBindings>(
+            return new TransformIterator<TBindings>(
               async() => {
                 // If no new namedNodes in this triple, return nothing
                 if (entities.has(subjectGraphHash) && entities.has(objectGraphHash)) {
                   return new EmptyIterator();
                 }
                 // Set up an iterator to which getSubjectAndObjectBindingsPredicateStar will push solutions
-                const it = new BufferedIterator<IBindings>();
+                const it = new BufferedIterator<TBindings>();
                 const counter = { count: 0 };
                 // If not started from this namedNode (subject in triple) in this graph, start a search
                 if (!entities.has(subjectGraphHash)) {
@@ -102,7 +102,7 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
                     counter,
                   );
                 }
-                return it.transform<IBindings>({
+                return it.transform<TBindings>({
                   transform(item, next, push) {
                     // If the graph was a variable, fill in it's binding (we got it from the ?s ?p ?o binding)
                     if (gVar) {
@@ -131,7 +131,7 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
         path.graph,
         context,
       ))
-        .transform<IBindings>({
+        .transform<TBindings>({
         filter: item => item.get(termToString(variable)).equals(path.object),
         transform(item, next, push) {
           // Return graph binding if graph was a variable, otherwise empty binding
@@ -160,7 +160,7 @@ export class ActorQueryOperationPathZeroOrMore extends ActorAbstractPath {
       path.graph,
       context,
     ))
-      .transform<IBindings>({
+      .transform<TBindings>({
       transform(item, next, push) {
         push(item);
         next();

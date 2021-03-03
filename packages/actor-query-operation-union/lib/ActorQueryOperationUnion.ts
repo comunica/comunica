@@ -4,7 +4,7 @@ import {
   ActorQueryOperationTypedMediated,
 } from '@comunica/bus-query-operation';
 import type { ActionContext, IActorTest } from '@comunica/core';
-import type { IBindingsStream, IActorQueryOperationOutputBindings } from '@comunica/types';
+import type { TBindingsStream, IActorQueryOperationOutputBindings } from '@comunica/types';
 import { UnionIterator } from 'asynciterator';
 import type { Algebra } from 'sparqlalgebrajs';
 
@@ -57,7 +57,7 @@ export class ActorQueryOperationUnion extends ActorQueryOperationTypedMediated<A
       this.mediatorQueryOperation.mediate({ operation: pattern.right, context }),
     ])).map(ActorQueryOperation.getSafeBindings);
 
-    const bindingsStream: IBindingsStream = new UnionIterator(outputs.map(
+    const bindingsStream: TBindingsStream = new UnionIterator(outputs.map(
       (output: IActorQueryOperationOutputBindings) => output.bindingsStream,
     ), { autoStart: false });
     const metadata: (() => Promise<Record<string, any>>) | undefined = outputs[0].metadata && outputs[1].metadata ?

@@ -1,7 +1,7 @@
 import type { IAction, IActorArgs } from '@comunica/core';
 import { Actor } from '@comunica/core';
 import type { IMediatorTypeIterations } from '@comunica/mediatortype-iterations';
-import type { IBindings, IActorQueryOperationOutput,
+import type { TBindings, TActorQueryOperationOutput,
   IActorQueryOperationOutputBindings } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import type * as RDF from 'rdf-js';
@@ -15,9 +15,9 @@ import type * as RDF from 'rdf-js';
  * * Output: IActorRdfJoinOutput: The resulting joined stream.
  *
  * @see IActionRdfJoin
- * @see IActorQueryOperationOutput
+ * @see TActorQueryOperationOutput
  */
-export abstract class ActorRdfJoin extends Actor<IActionRdfJoin, IMediatorTypeIterations, IActorQueryOperationOutput> {
+export abstract class ActorRdfJoin extends Actor<IActionRdfJoin, IMediatorTypeIterations, TActorQueryOperationOutput> {
   /**
    * Can be used by subclasses to indicate the max or min number of streams that can be joined.
    * 0 for infinity.
@@ -34,7 +34,7 @@ export abstract class ActorRdfJoin extends Actor<IActionRdfJoin, IMediatorTypeIt
    */
   protected canHandleUndefs: boolean;
 
-  public constructor(args: IActorArgs<IActionRdfJoin, IMediatorTypeIterations, IActorQueryOperationOutput>,
+  public constructor(args: IActorArgs<IActionRdfJoin, IMediatorTypeIterations, TActorQueryOperationOutput>,
     limitEntries?: number, limitEntriesMin?: boolean, canHandleUndefs?: boolean) {
     super(args);
     this.limitEntries = limitEntries ?? Number.POSITIVE_INFINITY;
@@ -69,12 +69,12 @@ export abstract class ActorRdfJoin extends Actor<IActionRdfJoin, IMediatorTypeIt
 
   /**
    * Returns the result of joining bindings, or `null` if no join is possible.
-   * @param {IBindings[]} bindings
-   * @returns {IBindings}
+   * @param {TBindings[]} bindings
+   * @returns {TBindings}
    */
-  public static join(...bindings: IBindings[]): IBindings | null {
+  public static join(...bindings: TBindings[]): TBindings | null {
     try {
-      return bindings.reduce((acc: IBindings, val: IBindings) => acc.mergeWith((left: RDF.Term, right: RDF.Term) => {
+      return bindings.reduce((acc: TBindings, val: TBindings) => acc.mergeWith((left: RDF.Term, right: RDF.Term) => {
         if (!left.equals(right)) {
           throw new Error('Join failure');
         }
@@ -149,7 +149,7 @@ export abstract class ActorRdfJoin extends Actor<IActionRdfJoin, IMediatorTypeIt
   /**
    * Returns default input for 0 or 1 entries. Calls the getOutput function otherwise
    * @param {IActionRdfJoin} action
-   * @returns {Promise<IActorQueryOperationOutput>}
+   * @returns {Promise<TActorQueryOperationOutput>}
    */
   public async run(action: IActionRdfJoin): Promise<IActorQueryOperationOutputBindings> {
     if (action.entries.length === 0) {
@@ -198,7 +198,7 @@ export abstract class ActorRdfJoin extends Actor<IActionRdfJoin, IMediatorTypeIt
    * Returns the resulting output for joining the given entries.
    * This is called after removing the trivial cases in run.
    * @param {IActionRdfJoin} action
-   * @returns {Promise<IActorQueryOperationOutput>}
+   * @returns {Promise<TActorQueryOperationOutput>}
    */
   protected abstract getOutput(action: IActionRdfJoin): Promise<IActorQueryOperationOutputBindings>;
 

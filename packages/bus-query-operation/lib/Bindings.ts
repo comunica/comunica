@@ -1,9 +1,31 @@
-import type { IBindings } from '@comunica/types';
 import { Map } from 'immutable';
 import type * as RDF from 'rdf-js';
 import { termToString } from 'rdf-string';
 import type { Algebra, Factory } from 'sparqlalgebrajs';
 import { Util } from 'sparqlalgebrajs';
+
+/**
+ * A stream of bindings.
+ *
+ * Next to the list of available variables,
+ * an optional metadata hash can be present.
+ *
+ * @see Bindings
+ * @deprecated Use the Bindings type from @comunica/types
+ */
+export type BindingsStream = AsyncIterator<Bindings>;
+
+/**
+ * An immutable solution mapping object.
+ * This maps variables to a terms.
+ *
+ * Variables are represented as strings containing the variable name prefixed with '?'.
+ * Blank nodes are represented as strings containing the blank node name prefixed with '_:'.
+ * Terms are named nodes, literals or the default graph.
+ *
+ * @deprecated Use the Bindings type from @comunica/types
+ */
+export type Bindings = Map<string, RDF.Term>;
 
 /**
  * A convenience constructor for bindings based on a given hash.
@@ -12,7 +34,7 @@ import { Util } from 'sparqlalgebrajs';
  * @constructor
  */
 // eslint-disable-next-line no-redeclare
-export function Bindings(hash: Record<string, RDF.Term>): IBindings {
+export function Bindings(hash: Record<string, RDF.Term>): Bindings {
   return Map(hash);
 }
 
@@ -31,7 +53,7 @@ export function isBindings(maybeBindings: any): boolean {
  * @param maybeBindings Any object.
  * @return {Bindings} A bindings object.
  */
-export function ensureBindings(maybeBindings: any): IBindings {
+export function ensureBindings(maybeBindings: any): Bindings {
   return isBindings(maybeBindings) ? maybeBindings : Bindings(maybeBindings);
 }
 
@@ -47,7 +69,7 @@ export function ensureBindings(maybeBindings: any): IBindings {
  * @param {Bindings} bindings A bindings object.
  * @return {RDF.Term} The materialized term.
  */
-export function materializeTerm(term: RDF.Term, bindings: IBindings): RDF.Term {
+export function materializeTerm(term: RDF.Term, bindings: Bindings): RDF.Term {
   if (term.termType === 'Variable') {
     const value: RDF.Term = bindings.get(termToString(term));
     if (value) {
@@ -66,7 +88,7 @@ export function materializeTerm(term: RDF.Term, bindings: IBindings): RDF.Term {
  * @param {boolean} strictTargetVariables If target variable bindings (such as on SELECT or BIND) should not be allowed.
  * @return Algebra.Operation A new operation materialized with the given bindings.
  */
-export function materializeOperation(operation: Algebra.Operation, bindings: IBindings,
+export function materializeOperation(operation: Algebra.Operation, bindings: Bindings,
   strictTargetVariables = false): Algebra.Operation {
   return Util.mapOperation(operation, {
     path(op: Algebra.Path, factory: Factory) {

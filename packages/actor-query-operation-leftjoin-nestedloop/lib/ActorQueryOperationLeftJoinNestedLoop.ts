@@ -4,7 +4,7 @@ import {
 } from '@comunica/bus-query-operation';
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import type { ActionContext, IActorTest } from '@comunica/core';
-import type { IBindings, IActorQueryOperationOutputBindings } from '@comunica/types';
+import type { TBindings, IActorQueryOperationOutputBindings } from '@comunica/types';
 import type { AsyncIterator } from 'asynciterator';
 import type { Algebra } from 'sparqlalgebrajs';
 import { AsyncEvaluator, isExpressionError } from 'sparqlee';
@@ -34,10 +34,10 @@ export class ActorQueryOperationLeftJoinNestedLoop extends ActorQueryOperationTy
       new AsyncEvaluator(pattern.expression, config) :
       null;
 
-    const leftJoinInner = (outerItem: IBindings, innerStream: AsyncIterator<IBindings>):
-    AsyncIterator<{ joinedBindings: IBindings; result: boolean }> => innerStream
-      .transform<{ joinedBindings: IBindings; result: boolean }>({
-      async transform(innerItem: IBindings, nextInner: any, push) {
+    const leftJoinInner = (outerItem: TBindings, innerStream: AsyncIterator<TBindings>):
+    AsyncIterator<{ joinedBindings: TBindings; result: boolean }> => innerStream
+      .transform<{ joinedBindings: TBindings; result: boolean }>({
+      async transform(innerItem: TBindings, nextInner: any, push) {
         const joinedBindings = ActorRdfJoin.join(outerItem, innerItem);
         if (!joinedBindings) {
           nextInner();
@@ -60,7 +60,7 @@ export class ActorQueryOperationLeftJoinNestedLoop extends ActorQueryOperationTy
       },
     });
 
-    const leftJoinOuter = (leftItem: IBindings, nextLeft: any, push: (bindings: IBindings) => void): void => {
+    const leftJoinOuter = (leftItem: TBindings, nextLeft: any, push: (bindings: TBindings) => void): void => {
       const innerStream = right.bindingsStream.clone();
       const joinedStream = leftJoinInner(leftItem, innerStream);
 
@@ -76,7 +76,7 @@ export class ActorQueryOperationLeftJoinNestedLoop extends ActorQueryOperationTy
 
     const transform = leftJoinOuter;
     const bindingsStream = left.bindingsStream
-      .transform<IBindings>({ optional: true, transform });
+      .transform<TBindings>({ optional: true, transform });
 
     const variables = ActorRdfJoin.joinVariables({ entries: [ left, right ]});
     const metadata = (): Promise<Record<string, any>> => Promise.all([ left, right ].map(x => getMetadata(x)))

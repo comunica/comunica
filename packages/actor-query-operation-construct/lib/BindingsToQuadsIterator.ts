@@ -1,4 +1,4 @@
-import type { IBindings, IBindingsStream } from '@comunica/types';
+import type { TBindings, TBindingsStream } from '@comunica/types';
 import type { AsyncIterator } from 'asynciterator';
 import { ArrayIterator, MultiTransformIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
@@ -12,11 +12,11 @@ const DF = new DataFactory();
  * This conforms to the SPARQL 1.1 spec on constructing triples:
  * https://www.w3.org/TR/sparql11-query/#rConstructTriples
  */
-export class BindingsToQuadsIterator extends MultiTransformIterator<IBindings, RDF.Quad> {
+export class BindingsToQuadsIterator extends MultiTransformIterator<TBindings, RDF.Quad> {
   protected template: RDF.BaseQuad[];
   protected blankNodeCounter: number;
 
-  public constructor(template: RDF.BaseQuad[], bindingsStream: IBindingsStream) {
+  public constructor(template: RDF.BaseQuad[], bindingsStream: TBindingsStream) {
     super(bindingsStream, { autoStart: false });
     this.template = template;
     this.blankNodeCounter = 0;
@@ -35,7 +35,7 @@ export class BindingsToQuadsIterator extends MultiTransformIterator<IBindings, R
    *                             If the given term is a variable, then the bound term is returned,
    *                             or a falsy value if it did not exist in the bindings.
    */
-  public static bindTerm(bindings: IBindings, term: RDF.Term): RDF.Term {
+  public static bindTerm(bindings: TBindings, term: RDF.Term): RDF.Term {
     if (term.termType === 'Variable') {
       return bindings.get(`?${term.value}`);
     }
@@ -50,7 +50,7 @@ export class BindingsToQuadsIterator extends MultiTransformIterator<IBindings, R
    * @param {RDF.Quad} pattern  An RDF quad.
    * @return {RDF.Quad}         A bound RDF quad or undefined.
    */
-  public static bindQuad(bindings: IBindings, pattern: RDF.BaseQuad): RDF.Quad | undefined {
+  public static bindQuad(bindings: TBindings, pattern: RDF.BaseQuad): RDF.Quad | undefined {
     try {
       return mapTerms(<RDF.Quad> pattern, term => {
         const boundTerm: RDF.Term = BindingsToQuadsIterator.bindTerm(bindings, term);
@@ -97,8 +97,8 @@ export class BindingsToQuadsIterator extends MultiTransformIterator<IBindings, R
    * @param               blankNodeCounter   A counter value for the blank node.
    * @return {RDF.Quad[]}                    A list of quads.
    */
-  public static bindTemplate(bindings: IBindings, template: RDF.BaseQuad[],
-    blankNodeCounter: number): RDF.Quad[] {
+  public static bindTemplate(bindings: TBindings, template: RDF.BaseQuad[],
+                             blankNodeCounter: number): RDF.Quad[] {
     return template
       // Bind variables to bound terms
       .map(x => BindingsToQuadsIterator.bindQuad.bind(null, bindings)(x))
@@ -108,7 +108,7 @@ export class BindingsToQuadsIterator extends MultiTransformIterator<IBindings, R
       .map(BindingsToQuadsIterator.localizeQuad.bind(null, blankNodeCounter));
   }
 
-  public _createTransformer(bindings: IBindings): AsyncIterator<RDF.Quad> {
+  public _createTransformer(bindings: TBindings): AsyncIterator<RDF.Quad> {
     return new ArrayIterator(BindingsToQuadsIterator.bindTemplate(
       bindings, this.template, this.blankNodeCounter++,
     ));
