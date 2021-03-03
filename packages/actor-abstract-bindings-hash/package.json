@@ -63,6 +63,7 @@
     "validate": "npm ls"
   },
   "dependencies": {
+    "@comunica/types": "^1.19.2",
     "canonicalize": "^1.0.1",
     "hash.js": "^1.1.7",
     "rdf-string": "^1.5.0",

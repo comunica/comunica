@@ -31,6 +31,7 @@
     "index.js"
   ],
   "dependencies": {
+    "@comunica/types": "^1.19.2",
     "@types/rdf-js": "*",
     "asynciterator": "^3.0.3"
   },

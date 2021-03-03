@@ -34,6 +34,7 @@
   "dependencies": {
     "@comunica/bus-rdf-resolve-quad-pattern": "^1.19.2",
     "@comunica/context-entries": "^1.0.0",
+    "@comunica/types": "^1.19.2",
     "asynciterator": "^3.0.3",
     "sparqlalgebrajs": "^2.4.0"
   },

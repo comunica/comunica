@@ -31,6 +31,9 @@
     "index.d.ts",
     "index.js"
   ],
+  "dependencies": {
+    "@comunica/types": "^1.19.2"
+  },
   "peerDependencies": {
     "@comunica/bus-rdf-serialize": "^1.0.0",
     "@comunica/bus-sparql-serialize": "^1.0.0",

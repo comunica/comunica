@@ -33,7 +33,8 @@
   ],
   "dependencies": {
     "@comunica/bus-query-operation": "^1.19.2",
-    "@comunica/mediatortype-iterations": "^1.19.2"
+    "@comunica/mediatortype-iterations": "^1.19.2",
+    "@comunica/types": "^1.19.2"
   },
   "peerDependencies": {
     "@comunica/bus-rdf-join": "^1.9.2",

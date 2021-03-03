@@ -33,6 +33,7 @@
   ],
   "dependencies": {
     "@comunica/bus-query-operation": "^1.19.2",
+    "@comunica/types": "^1.19.2",
     "@types/rdf-js": "*",
     "rdf-string-ttl": "^1.1.0"
   },
