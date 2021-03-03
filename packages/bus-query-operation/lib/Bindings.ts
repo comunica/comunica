@@ -1,3 +1,4 @@
+import type { TBindings } from '@comunica/types';
 import { Map } from 'immutable';
 import type * as RDF from 'rdf-js';
 import { termToString } from 'rdf-string';
@@ -11,7 +12,7 @@ import { Util } from 'sparqlalgebrajs';
  * an optional metadata hash can be present.
  *
  * @see Bindings
- * @deprecated Use the Bindings type from @comunica/types
+ * @deprecated Use the "BindingsStream" type from @comunica/types
  */
 export type BindingsStream = AsyncIterator<Bindings>;
 
@@ -23,18 +24,18 @@ export type BindingsStream = AsyncIterator<Bindings>;
  * Blank nodes are represented as strings containing the blank node name prefixed with '_:'.
  * Terms are named nodes, literals or the default graph.
  *
- * @deprecated Use the Bindings type from @comunica/types
+ * @deprecated Use the "Bindings" type from @comunica/types.
  */
 export type Bindings = Map<string, RDF.Term>;
 
 /**
  * A convenience constructor for bindings based on a given hash.
  * @param {{[p: string]: RDF.Term}} hash A hash that maps variable names to terms.
- * @return {IBindings} The immutable bindings from the hash.
+ * @return {TBindings} The immutable bindings from the hash.
  * @constructor
  */
 // eslint-disable-next-line no-redeclare
-export function Bindings(hash: Record<string, RDF.Term>): Bindings {
+export function Bindings(hash: Record<string, RDF.Term>): TBindings {
   return Map(hash);
 }
 
@@ -51,9 +52,9 @@ export function isBindings(maybeBindings: any): boolean {
  * Convert the given object to a bindings object if it is not a bindings object yet.
  * If it already is a bindings object, return the object as-is.
  * @param maybeBindings Any object.
- * @return {Bindings} A bindings object.
+ * @return {TBindings} A bindings object.
  */
-export function ensureBindings(maybeBindings: any): Bindings {
+export function ensureBindings(maybeBindings: any): TBindings {
   return isBindings(maybeBindings) ? maybeBindings : Bindings(maybeBindings);
 }
 
@@ -66,10 +67,10 @@ export function ensureBindings(maybeBindings: any): Bindings {
  * In all other cases, the term itself is returned.
  *
  * @param {RDF.Term} term A term.
- * @param {Bindings} bindings A bindings object.
+ * @param {TBindings} bindings A bindings object.
  * @return {RDF.Term} The materialized term.
  */
-export function materializeTerm(term: RDF.Term, bindings: Bindings): RDF.Term {
+export function materializeTerm(term: RDF.Term, bindings: TBindings): RDF.Term {
   if (term.termType === 'Variable') {
     const value: RDF.Term = bindings.get(termToString(term));
     if (value) {
@@ -84,11 +85,11 @@ export function materializeTerm(term: RDF.Term, bindings: Bindings): RDF.Term {
  * Essentially, all variables in the given operation will be replaced
  * by the terms bound to the variables in the given bindings.
  * @param {Operation} operation SPARQL algebra operation.
- * @param {IBindings} bindings A bindings object.
+ * @param {TBindings} bindings A bindings object.
  * @param {boolean} strictTargetVariables If target variable bindings (such as on SELECT or BIND) should not be allowed.
  * @return Algebra.Operation A new operation materialized with the given bindings.
  */
-export function materializeOperation(operation: Algebra.Operation, bindings: Bindings,
+export function materializeOperation(operation: Algebra.Operation, bindings: TBindings,
   strictTargetVariables = false): Algebra.Operation {
   return Util.mapOperation(operation, {
     path(op: Algebra.Path, factory: Factory) {
