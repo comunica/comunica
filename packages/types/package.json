@@ -31,7 +31,7 @@
     "index.js"
   ],
   "devDependencies": {
-    "@types/rdf-js": "4.0.1",
+    "@types/rdf-js": "*",
     "immutable": "^3.8.2",
     "sparqlalgebrajs": "^2.4.0",
     "asynciterator": "^3.0.3"
