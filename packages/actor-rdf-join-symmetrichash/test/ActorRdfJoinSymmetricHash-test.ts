@@ -2,14 +2,14 @@ import { Bindings } from '@comunica/bus-query-operation';
 import type { IActionRdfJoin } from '@comunica/bus-rdf-join';
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import { Bus } from '@comunica/core';
-import type { IActorQueryOperationOutputBindings, TBindings } from '@comunica/types';
+import type { IActorQueryOperationOutputBindings } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorRdfJoinSymmetricHash } from '../lib/ActorRdfJoinSymmetricHash';
 const arrayifyStream = require('arrayify-stream');
 const DF = new DataFactory();
 
-function bindingsToString(b: TBindings): string {
+function bindingsToString(b: Bindings): string {
   // eslint-disable-next-line @typescript-eslint/require-array-sort-compare
   const keys = b.keySeq().toArray().sort();
   return keys.map(k => `${k}:${b.get(k).value}`).toString();

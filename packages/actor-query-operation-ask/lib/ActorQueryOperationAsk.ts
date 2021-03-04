@@ -2,7 +2,7 @@ import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-
 import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
 import type { ActionContext, IActorTest } from '@comunica/core';
 import type {
-  TActorQueryOperationOutput,
+  ActorQueryOperationOutput,
   IActorQueryOperationOutputBindings,
   IActorQueryOperationOutputBoolean,
 } from '@comunica/types';
@@ -22,7 +22,7 @@ export class ActorQueryOperationAsk extends ActorQueryOperationTypedMediated<Alg
 
   public async runOperation(pattern: Algebra.Ask, context: ActionContext): Promise<IActorQueryOperationOutputBoolean> {
     // Call other query operations like this:
-    const output: TActorQueryOperationOutput = await this.mediatorQueryOperation.mediate(
+    const output: ActorQueryOperationOutput = await this.mediatorQueryOperation.mediate(
       { operation: pattern.input, context },
     );
     const bindings: IActorQueryOperationOutputBindings = ActorQueryOperation.getSafeBindings(output);

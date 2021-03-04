@@ -1,10 +1,10 @@
 import { KeysCore } from '@comunica/context-entries';
-import type { IAction, TActionContext } from '@comunica/types';
+import type { IAction, ActionContext as _ActionContext } from '@comunica/types';
 import { Map } from 'immutable';
 import type { Bus } from './Bus';
 import type { Logger } from './Logger';
 
-export type ActionContext = TActionContext;
+export type ActionContext = _ActionContext;
 export type { IAction };
 
 /**

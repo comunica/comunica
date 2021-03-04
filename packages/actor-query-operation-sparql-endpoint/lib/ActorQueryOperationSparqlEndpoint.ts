@@ -8,7 +8,7 @@ import { getDataSourceType, getDataSourceValue } from '@comunica/bus-rdf-resolve
 import type { ActionContext, Actor, IActorArgs, IActorTest, Mediator } from '@comunica/core';
 import type { IMediatorTypeHttpRequests } from '@comunica/mediatortype-httprequests';
 import type { IActionQueryOperation,
-  TActorQueryOperationOutput,
+  ActorQueryOperationOutput,
   IActorQueryOperationOutputBindings,
   IActorQueryOperationOutputBoolean,
   IActorQueryOperationOutputQuads } from '@comunica/types';
@@ -53,7 +53,7 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
     throw new Error(`${this.name} requires a single source with a 'sparql' endpoint to be present in the context.`);
   }
 
-  public async run(action: IActionQueryOperation): Promise<TActorQueryOperationOutput> {
+  public async run(action: IActionQueryOperation): Promise<ActorQueryOperationOutput> {
     const source = await DataSourceUtils.getSingleSource(action.context);
     if (!source) {
       throw new Error('Illegal state: undefined sparql endpoint source.');
@@ -105,7 +105,7 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
    * @param variables Variables for SELECT queries.
    */
   public executeQuery(endpoint: string, query: string, quads: boolean, variables?: RDF.Variable[]):
-  TActorQueryOperationOutput {
+  ActorQueryOperationOutput {
     const inputStream: Promise<EventEmitter> = quads ?
       this.endpointFetcher.fetchTriples(endpoint, query) :
       this.endpointFetcher.fetchBindings(endpoint, query);
@@ -149,7 +149,7 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
 }
 
 export interface IActorQueryOperationSparqlEndpointArgs
-  extends IActorArgs<IActionQueryOperation, IActorTest, TActorQueryOperationOutput> {
+  extends IActorArgs<IActionQueryOperation, IActorTest, ActorQueryOperationOutput> {
   mediatorHttp: Mediator<Actor<IActionHttp, IActorTest, IActorHttpOutput>,
   IActionHttp, IActorTest, IActorHttpOutput>;
 }

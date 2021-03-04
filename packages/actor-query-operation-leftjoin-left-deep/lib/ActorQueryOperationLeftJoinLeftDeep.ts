@@ -6,7 +6,7 @@ import {
 } from '@comunica/bus-query-operation';
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import type { ActionContext, IActorTest } from '@comunica/core';
-import type { TBindings, TBindingsStream, IActorQueryOperationOutputBindings } from '@comunica/types';
+import type { Bindings, BindingsStream, IActorQueryOperationOutputBindings } from '@comunica/types';
 import { MultiTransformIterator, TransformIterator } from 'asynciterator';
 import type { Algebra } from 'sparqlalgebrajs';
 import { Factory } from 'sparqlalgebrajs';
@@ -26,18 +26,18 @@ export class ActorQueryOperationLeftJoinLeftDeep extends ActorQueryOperationType
    * that takes every binding of the base stream,
    * materializes the remaining patterns with it,
    * and emits all bindings from this new set of patterns.
-   * @param {TBindingsStream} leftStream The base stream.
+   * @param {BindingsStream} leftStream The base stream.
    * @param {Algebra.Operation} rightOperation The operation to materialize with each binding of the base stream.
    * @param {Algebra.Operation => Promise<BindingsStream>} operationBinder A callback to retrieve the bindings stream
    *                                                                       of an operation.
    * @return {BindingsStream}
    */
   /* eslint max-len: off */
-  public static createLeftDeepStream(leftStream: TBindingsStream, rightOperation: Algebra.Operation,
-                                     operationBinder: (operation: Algebra.Operation) => Promise<TBindingsStream>): TBindingsStream {
+  public static createLeftDeepStream(leftStream: BindingsStream, rightOperation: Algebra.Operation,
+                                     operationBinder: (operation: Algebra.Operation) => Promise<BindingsStream>): BindingsStream {
     return new MultiTransformIterator(leftStream, {
-      multiTransform(bindings: TBindings) {
-        const bindingsMerger = (subBindings: TBindings): TBindings => subBindings.merge(bindings);
+      multiTransform(bindings: Bindings) {
+        const bindingsMerger = (subBindings: Bindings): Bindings => subBindings.merge(bindings);
         return new TransformIterator(
           async() => (await operationBinder(materializeOperation(rightOperation, bindings)))
             .map(bindingsMerger), { maxBufferSize: 128 },

@@ -1,6 +1,5 @@
 import { AbstractFilterHash } from '@comunica/actor-abstract-bindings-hash';
 import { Bindings } from '@comunica/bus-query-operation';
-import type { TBindings } from '@comunica/types';
 import type { Term } from 'rdf-js';
 import { termToString } from 'rdf-string';
 import type { Algebra } from 'sparqlalgebrajs';
@@ -18,7 +17,7 @@ export type BindingsHash = string;
  * @property {Bindings} bindings - The binding entries on which we group
  */
 export interface IGroup {
-  bindings: TBindings;
+  bindings: Bindings;
   aggregators: Record<string, AggregateEvaluator>;
 }
 
@@ -45,7 +44,7 @@ export class GroupsState {
    *
    * @param {Bindings} bindings - The Bindings to consume
    */
-  public consumeBindings(bindings: TBindings): void {
+  public consumeBindings(bindings: Bindings): void {
     // Select the bindings on which we group
     const grouper = bindings
       .filter((_, variable: string) => this.groupVariables.has(variable))
@@ -94,9 +93,9 @@ export class GroupsState {
    * Collect the result of the current state. This returns a Bindings per group,
    * and a (possibly empty) Bindings in case the no Bindings have been consumed yet.
    */
-  public collectResults(): TBindings[] {
+  public collectResults(): Bindings[] {
     // Collect groups
-    let rows: TBindings[] = [ ...this.groups ].map(([ _, group ]) => {
+    let rows: Bindings[] = [ ...this.groups ].map(([ _, group ]) => {
       const { bindings: groupBindings, aggregators } = group;
 
       // Collect aggregator bindings
@@ -135,7 +134,7 @@ export class GroupsState {
   /**
    * @param {Bindings} bindings - Bindings to hash
    */
-  private hashBindings(bindings: TBindings): BindingsHash {
+  private hashBindings(bindings: Bindings): BindingsHash {
     return AbstractFilterHash.hash(bindings);
   }
 }

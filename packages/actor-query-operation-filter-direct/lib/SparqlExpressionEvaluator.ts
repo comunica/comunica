@@ -1,5 +1,5 @@
 /* eslint-disable id-length */
-import type { TBindings } from '@comunica/types';
+import type { Bindings } from '@comunica/types';
 import type * as RDF from 'rdf-js';
 import { stringToTerm, termToString } from 'rdf-string';
 import { Algebra } from 'sparqlalgebrajs';
@@ -12,10 +12,10 @@ import { Algebra } from 'sparqlalgebrajs';
  * @param {Expression} expr
  * @returns {(bindings: Bindings) => Term}
  */
-export function createEvaluator(expr: Algebra.Expression): (bindings: TBindings) => (RDF.Term | undefined) {
+export function createEvaluator(expr: Algebra.Expression): (bindings: Bindings) => (RDF.Term | undefined) {
   const func = handleExpression(expr);
   // Internally the expression evaluator uses primitives, so these have to be converted back
-  return (bindings: TBindings) => {
+  return (bindings: Bindings) => {
     const str = func(bindings);
     if (!str) {
       return;
@@ -24,7 +24,7 @@ export function createEvaluator(expr: Algebra.Expression): (bindings: TBindings)
   };
 }
 
-function handleExpression(expr: Algebra.Expression): (bindings: TBindings) => (string | undefined) {
+function handleExpression(expr: Algebra.Expression): (bindings: Bindings) => (string | undefined) {
   if (expr.expressionType === Algebra.expressionTypes.TERM) {
     return handleTermExpression(<Algebra.TermExpression>expr);
   }
@@ -40,7 +40,7 @@ function handleExpression(expr: Algebra.Expression): (bindings: TBindings) => (s
   throw new Error(`Unsupported Expression type: ${expr.expressionType}`);
 }
 
-function handleTermExpression(expr: Algebra.TermExpression): (bindings: TBindings) => (string | undefined) {
+function handleTermExpression(expr: Algebra.TermExpression): (bindings: Bindings) => (string | undefined) {
   if (expr.term.termType === 'Variable') {
     return bindings => {
       const str = termToString(expr.term);
@@ -51,15 +51,15 @@ function handleTermExpression(expr: Algebra.TermExpression): (bindings: TBinding
   return () => str;
 }
 
-function handleNamedExpression(expr: Algebra.NamedExpression): (bindings: TBindings) => string {
+function handleNamedExpression(expr: Algebra.NamedExpression): (bindings: Bindings) => string {
   return handleFunction(expr.name.value, expr.args);
 }
 
-function handleOperatorExpression(expr: Algebra.OperatorExpression): (bindings: TBindings) => string {
+function handleOperatorExpression(expr: Algebra.OperatorExpression): (bindings: Bindings) => string {
   return handleFunction(expr.operator, expr.args);
 }
 
-function handleFunction(operatorName: string, args: Algebra.Expression[]): (bindings: TBindings) => string {
+function handleFunction(operatorName: string, args: Algebra.Expression[]): (bindings: Bindings) => string {
   const op = operators[operatorName];
   if (!op) {
     throw new Error(`Unsupported operator ${operatorName}`);
@@ -67,13 +67,13 @@ function handleFunction(operatorName: string, args: Algebra.Expression[]): (bind
 
   // Special case: some operators accept expressions instead of evaluated expressions
   if (op.acceptsExpressions) {
-    return ((operator: any, unparsedArgs) => (bindings: TBindings) => operator.apply(bindings, unparsedArgs))(op, args);
+    return ((operator: any, unparsedArgs) => (bindings: Bindings) => operator.apply(bindings, unparsedArgs))(op, args);
   }
 
   const funcArgs = args.map(handleExpression);
 
   return ((operator: any,
-    argumentExpressions: ((bindings: TBindings) => (string | undefined))[]) => (bindings: TBindings): string => {
+    argumentExpressions: ((bindings: Bindings) => (string | undefined))[]) => (bindings: Bindings): string => {
     // Evaluate the arguments
     const resolvedArgs: (number | boolean | string | undefined)[] = new Array(argumentExpressions.length);
     const origArgs: (string | undefined)[] = new Array(argumentExpressions.length);

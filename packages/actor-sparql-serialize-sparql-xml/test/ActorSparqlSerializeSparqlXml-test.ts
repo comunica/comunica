@@ -1,7 +1,7 @@
 import { PassThrough } from 'stream';
 import { Bindings } from '@comunica/bus-query-operation';
 import { Bus } from '@comunica/core';
-import type { TBindingsStream } from '@comunica/types';
+import type { BindingsStream } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import type * as RDF from 'rdf-js';
@@ -67,9 +67,9 @@ describe('ActorSparqlSerializeSparqlXml', () => {
 
   describe('An ActorSparqlSerializeSparqlXml instance', () => {
     let actor: ActorSparqlSerializeSparqlXml;
-    let bindingsStream: TBindingsStream;
-    let bindingsStreamPartial: TBindingsStream;
-    let bindingsStreamError: TBindingsStream;
+    let bindingsStream: BindingsStream;
+    let bindingsStreamPartial: BindingsStream;
+    let bindingsStreamError: BindingsStream;
     let quadStream: RDF.Stream;
     let variables: string[];
 

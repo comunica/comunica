@@ -5,7 +5,7 @@ import {
   Bindings,
 } from '@comunica/bus-query-operation';
 import type { ActionContext } from '@comunica/core';
-import type { TBindings, IActorQueryOperationOutputBindings } from '@comunica/types';
+import type { IActorQueryOperationOutputBindings } from '@comunica/types';
 import { SingletonIterator } from 'asynciterator';
 
 import { termToString } from 'rdf-string';
@@ -25,7 +25,7 @@ export class ActorQueryOperationPathZeroOrOne extends ActorAbstractPath {
     const sVar = path.subject.termType === 'Variable';
     const oVar = path.object.termType === 'Variable';
 
-    const extra: TBindings[] = [];
+    const extra: Bindings[] = [];
 
     // Both subject and object non-variables
     if (!sVar && !oVar && path.subject.equals(path.object)) {

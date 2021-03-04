@@ -1,6 +1,6 @@
 import type { IActorInitRdfDereferencePagedArgs } from '@comunica/actor-abstract-bindings-hash';
 import { AbstractBindingsHash, AbstractFilterHash } from '@comunica/actor-abstract-bindings-hash';
-import type { TBindings } from '@comunica/types';
+import type { Bindings } from '@comunica/types';
 import type { Algebra } from 'sparqlalgebrajs';
 
 /**
@@ -17,9 +17,9 @@ export class ActorQueryOperationDistinctHash extends AbstractBindingsHash<Algebr
      * This will maintain an internal hash datastructure so that every bindings object only returns true once.
      * @return {(bindings: Bindings) => boolean} A distinct filter for bindings.
      */
-  public newHashFilter(): (bindings: TBindings) => boolean {
+  public newHashFilter(): (bindings: Bindings) => boolean {
     const hashes: Record<string, boolean> = {};
-    return (bindings: TBindings) => {
+    return (bindings: Bindings) => {
       const hash: string = AbstractFilterHash.hash(bindings);
       // eslint-disable-next-line no-return-assign
       return !(hash in hashes) && (hashes[hash] = true);

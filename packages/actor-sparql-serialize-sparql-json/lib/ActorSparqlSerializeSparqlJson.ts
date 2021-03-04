@@ -3,7 +3,7 @@ import type { IActionSparqlSerialize,
   IActorSparqlSerializeFixedMediaTypesArgs, IActorSparqlSerializeOutput } from '@comunica/bus-sparql-serialize';
 import { ActorSparqlSerializeFixedMediaTypes } from '@comunica/bus-sparql-serialize';
 import type { ActionContext } from '@comunica/core';
-import type { TBindings, IActorQueryOperationOutputBindings,
+import type { Bindings, IActorQueryOperationOutputBindings,
   IActorQueryOperationOutputBoolean } from '@comunica/types';
 import type * as RDF from 'rdf-js';
 
@@ -68,7 +68,7 @@ export class ActorSparqlSerializeSparqlJson extends ActorSparqlSerializeFixedMed
       resultStream.on('error', (error: Error) => {
         data.emit('error', error);
       });
-      resultStream.on('data', (bindings: TBindings) => {
+      resultStream.on('data', (bindings: Bindings) => {
         if (empty) {
           data.push('"results": { "bindings": [\n');
         } else {
@@ -76,7 +76,7 @@ export class ActorSparqlSerializeSparqlJson extends ActorSparqlSerializeFixedMed
         }
 
         // JSON SPARQL results spec does not allow unbound variables and blank node bindings
-        const realBindings: TBindings = <any> bindings
+        const realBindings: Bindings = <any> bindings
           .filter((value: RDF.Term, key: string) => Boolean(value) && key.startsWith('?'));
 
         data.push(JSON.stringify((<any> realBindings.mapEntries(([ key, value ]: [string, RDF.Term]) =>

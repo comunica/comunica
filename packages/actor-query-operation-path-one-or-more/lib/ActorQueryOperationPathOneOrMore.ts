@@ -5,7 +5,7 @@ import {
   Bindings,
 } from '@comunica/bus-query-operation';
 import type { ActionContext } from '@comunica/core';
-import type { IActorQueryOperationOutputBindings, TBindings } from '@comunica/types';
+import type { IActorQueryOperationOutputBindings } from '@comunica/types';
 import { BufferedIterator, MultiTransformIterator, TransformIterator } from 'asynciterator';
 
 import type { Term } from 'rdf-js';
@@ -48,13 +48,13 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
       // All branches need to share the same termHashes to prevent duplicates
       const termHashes = {};
 
-      const bindingsStream: MultiTransformIterator<TBindings, TBindings> = new MultiTransformIterator(
+      const bindingsStream: MultiTransformIterator<Bindings, Bindings> = new MultiTransformIterator(
         results.bindingsStream,
         {
-          multiTransform: (bindings: TBindings) => {
+          multiTransform: (bindings: Bindings) => {
             const val = bindings.get(objectString);
             const graph = gVar ? bindings.get(termToString(path.graph)) : path.graph;
-            return new TransformIterator<TBindings>(
+            return new TransformIterator<Bindings>(
               async() => {
                 const it = new BufferedIterator<Term>();
                 await this.getObjectsPredicateStar(val,
@@ -64,7 +64,7 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
                   termHashes,
                   it,
                   { count: 0 });
-                return it.transform<TBindings>({
+                return it.transform<Bindings>({
                   transform(item, next, push) {
                     let binding = Bindings({ [objectString]: item });
                     if (gVar) {
@@ -96,16 +96,16 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
 
       const termHashes = {};
 
-      const bindingsStream: MultiTransformIterator<TBindings, TBindings> = new MultiTransformIterator(
+      const bindingsStream: MultiTransformIterator<Bindings, Bindings> = new MultiTransformIterator(
         results.bindingsStream,
         {
-          multiTransform: (bindings: TBindings) => {
+          multiTransform: (bindings: Bindings) => {
             const subject = bindings.get(subjectString);
             const object = bindings.get(objectString);
             const graph = gVar ? bindings.get(termToString(path.graph)) : path.graph;
-            return new TransformIterator<TBindings>(
+            return new TransformIterator<Bindings>(
               async() => {
-                const it = new BufferedIterator<TBindings>();
+                const it = new BufferedIterator<Bindings>();
                 await this.getSubjectAndObjectBindingsPredicateStar(
                   subjectString,
                   objectString,
@@ -119,7 +119,7 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
                   it,
                   { count: 0 },
                 );
-                return it.transform<TBindings>({
+                return it.transform<Bindings>({
                   transform(item, next, push) {
                     if (gVar) {
                       item = item.set(termToString(path.graph), graph);
@@ -159,7 +159,7 @@ export class ActorQueryOperationPathOneOrMore extends ActorAbstractPath {
       context,
       operation: ActorAbstractPath.FACTORY.createPath(path.subject, predicate, variable, path.graph),
     }));
-    const bindingsStream = results.bindingsStream.transform<TBindings>({
+    const bindingsStream = results.bindingsStream.transform<Bindings>({
       filter: item => item.get(vString).equals(path.object),
       transform(item, next, push) {
         const binding = gVar ?

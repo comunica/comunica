@@ -1,6 +1,6 @@
 import { ActorQueryOperation, Bindings } from '@comunica/bus-query-operation';
 import { Bus } from '@comunica/core';
-import type { IActionQueryOperation, TBindings } from '@comunica/types';
+import type { IActionQueryOperation } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import type { Algebra } from 'sparqlalgebrajs';
@@ -71,7 +71,7 @@ const getDefaultMediatorQueryOperation = () => ({
 });
 
 interface ICaseOptions {
-  inputBindings?: TBindings[];
+  inputBindings?: Bindings[];
   groupVariables?: string[];
   inputVariables?: string[];
   aggregates?: Algebra.BoundAggregate[];

@@ -3,7 +3,7 @@ import {
   ActorQueryOperation, ActorQueryOperationTypedMediated,
 } from '@comunica/bus-query-operation';
 import type { ActionContext, IActorTest } from '@comunica/core';
-import type { TBindings, IActorQueryOperationOutputBindings } from '@comunica/types';
+import type { Bindings, IActorQueryOperationOutputBindings } from '@comunica/types';
 import { termToString } from 'rdf-string';
 import type { Algebra } from 'sparqlalgebrajs';
 import { AsyncEvaluator, isExpressionError } from 'sparqlee';
@@ -37,7 +37,7 @@ export class ActorQueryOperationExtend extends ActorQueryOperationTypedMediated<
     const evaluator = new AsyncEvaluator(expression, config);
 
     // Transform the stream by extending each Bindings with the expression result
-    const transform = async(bindings: TBindings, next: any, push: (pusbBindings: TBindings) => void): Promise<void> => {
+    const transform = async(bindings: Bindings, next: any, push: (pusbBindings: Bindings) => void): Promise<void> => {
       try {
         const result = await evaluator.evaluate(bindings);
         // Extend operation is undefined when the key already exists
@@ -58,7 +58,7 @@ export class ActorQueryOperationExtend extends ActorQueryOperationTypedMediated<
     };
 
     const variables = [ ...output.variables, extendKey ];
-    const bindingsStream = output.bindingsStream.transform<TBindings>({ transform });
+    const bindingsStream = output.bindingsStream.transform<Bindings>({ transform });
     const { metadata } = output;
     return { type: 'bindings', bindingsStream, metadata, variables, canContainUndefs: output.canContainUndefs };
   }

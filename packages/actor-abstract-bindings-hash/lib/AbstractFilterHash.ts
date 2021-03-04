@@ -3,7 +3,7 @@ import {
   ActorQueryOperationTypedMediated,
 } from '@comunica/bus-query-operation';
 import type { ActionContext } from '@comunica/core';
-import type { TBindings, IActorQueryOperationOutputBindings } from '@comunica/types';
+import type { Bindings, IActorQueryOperationOutputBindings } from '@comunica/types';
 import { sha1 } from 'hash.js';
 import { termToString } from 'rdf-string';
 import type { Algebra } from 'sparqlalgebrajs';
@@ -19,10 +19,10 @@ export abstract class AbstractFilterHash<T extends Algebra.Operation> extends Ac
 
   /**
    * Create a string-based hash of the given object.
-   * @param {TBindings} bindings The bindings to hash.
+   * @param {Bindings} bindings The bindings to hash.
    * @return {string} The object's hash.
    */
-  public static hash(bindings: TBindings): string {
+  public static hash(bindings: Bindings): string {
     return sha1()
       .update(require('canonicalize')(bindings.map(x => termToString(x))))
       .digest('hex');

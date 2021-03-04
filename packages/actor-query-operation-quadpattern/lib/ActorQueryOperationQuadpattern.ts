@@ -2,8 +2,8 @@ import { ActorQueryOperationTyped, Bindings } from '@comunica/bus-query-operatio
 import type { IActionRdfResolveQuadPattern,
   IActorRdfResolveQuadPatternOutput } from '@comunica/bus-rdf-resolve-quad-pattern';
 import type { ActionContext, Actor, IActorArgs, IActorTest, Mediator } from '@comunica/core';
-import type { TBindingsStream,
-  IActionQueryOperation, TActorQueryOperationOutput,
+import type { BindingsStream,
+  IActionQueryOperation, ActorQueryOperationOutput,
   IActorQueryOperationOutputBindings } from '@comunica/types';
 import type { AsyncIterator } from 'asynciterator';
 import { TransformIterator } from 'asynciterator';
@@ -146,7 +146,7 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
     };
 
     // Optionally filter, and construct bindings
-    const bindingsStream: TBindingsStream = new TransformIterator(async() => {
+    const bindingsStream: BindingsStream = new TransformIterator(async() => {
       let filteredOutput = result.data;
 
       // Detect duplicate variables in the pattern
@@ -179,7 +179,7 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
 }
 
 export interface IActorQueryOperationQuadpatternArgs extends
-  IActorArgs<IActionQueryOperation, IActorTest, TActorQueryOperationOutput> {
+  IActorArgs<IActionQueryOperation, IActorTest, ActorQueryOperationOutput> {
   mediatorResolveQuadPattern: Mediator<Actor<IActionRdfResolveQuadPattern, IActorTest,
   IActorRdfResolveQuadPatternOutput>, IActionRdfResolveQuadPattern, IActorTest, IActorRdfResolveQuadPatternOutput>;
 }

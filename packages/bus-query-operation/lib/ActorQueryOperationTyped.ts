@@ -1,6 +1,6 @@
 import { KeysQueryOperation } from '@comunica/context-entries';
 import type { ActionContext, IActorArgs, IActorTest } from '@comunica/core';
-import type { IActionQueryOperation, TActorQueryOperationOutput,
+import type { IActionQueryOperation, ActorQueryOperationOutput,
   IActorQueryOperationOutputStream } from '@comunica/types';
 import type { Algebra } from 'sparqlalgebrajs';
 import { ActorQueryOperation } from './ActorQueryOperation';
@@ -17,7 +17,7 @@ export const KEY_CONTEXT_QUERYOPERATION = KeysQueryOperation.operation;
 export abstract class ActorQueryOperationTyped<O extends Algebra.Operation> extends ActorQueryOperation {
   public readonly operationName: string;
 
-  protected constructor(args: IActorArgs<IActionQueryOperation, IActorTest, TActorQueryOperationOutput>,
+  protected constructor(args: IActorArgs<IActionQueryOperation, IActorTest, ActorQueryOperationOutput>,
     operationName: string) {
     super(<any> { ...args, operationName });
     if (!this.operationName) {
@@ -37,10 +37,10 @@ export abstract class ActorQueryOperationTyped<O extends Algebra.Operation> exte
     return this.testOperation(operation, action.context);
   }
 
-  public async run(action: IActionQueryOperation): Promise<TActorQueryOperationOutput> {
+  public async run(action: IActionQueryOperation): Promise<ActorQueryOperationOutput> {
     const operation: O = <O> action.operation;
     const subContext = action.context && action.context.set(KeysQueryOperation.operation, operation);
-    const output: TActorQueryOperationOutput = await this.runOperation(operation, subContext);
+    const output: ActorQueryOperationOutput = await this.runOperation(operation, subContext);
     if ((<IActorQueryOperationOutputStream> output).metadata) {
       (<IActorQueryOperationOutputStream> output).metadata =
         ActorQueryOperation.cachifyMetadata((<IActorQueryOperationOutputStream> output).metadata);
@@ -51,5 +51,5 @@ export abstract class ActorQueryOperationTyped<O extends Algebra.Operation> exte
   protected abstract testOperation(operation: O, context: ActionContext | undefined): Promise<IActorTest>;
 
   protected abstract runOperation(operation: O, context: ActionContext | undefined):
-  Promise<TActorQueryOperationOutput>;
+  Promise<ActorQueryOperationOutput>;
 }

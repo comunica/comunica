@@ -1,5 +1,4 @@
 import { Bindings } from '@comunica/bus-query-operation';
-import type { TBindings } from '@comunica/types';
 import { DataFactory } from 'rdf-data-factory';
 import type { Algebra } from 'sparqlalgebrajs';
 import * as SparqlExpressionEvaluator from '../lib/SparqlExpressionEvaluator';
@@ -18,7 +17,7 @@ function namedExpression(name: string, args: Algebra.Expression[]): Algebra.Name
 }
 
 describe('SparqlExpressionEvaluator', () => {
-  let bindings: TBindings;
+  let bindings: Bindings;
 
   beforeEach(() => {
     bindings = Bindings({
