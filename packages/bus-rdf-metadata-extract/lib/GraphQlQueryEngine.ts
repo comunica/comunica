@@ -1,15 +1,15 @@
-import type { ActorInitSparql } from '@comunica/actor-init-sparql';
-import type { IQueryEngine } from 'graphql-ld';
+import type { IQueryEngine } from '@comunica/types';
+import type { IQueryEngine as IGraphQlQueryEngine } from 'graphql-ld';
 import type { Algebra } from 'sparqlalgebrajs';
 import * as stringifyStream from 'stream-to-string';
 
 /**
  * A comunica-based GraphQL-LD query engine.
  */
-export class GraphQlQueryEngine implements IQueryEngine {
-  private readonly comunicaEngine: ActorInitSparql;
+export class GraphQlQueryEngine implements IGraphQlQueryEngine {
+  private readonly comunicaEngine: IQueryEngine;
 
-  public constructor(comunicaEngine: ActorInitSparql) {
+  public constructor(comunicaEngine: IQueryEngine) {
     this.comunicaEngine = comunicaEngine;
   }
 

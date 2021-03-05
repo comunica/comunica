@@ -31,6 +31,7 @@
     "index.js"
   ],
   "dependencies": {
+    "@comunica/types": "^1.19.2",
     "@types/rdf-js": "*",
     "graphql-ld": "^1.2.0",
     "rdf-store-stream": "^1.0.1",
