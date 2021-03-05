@@ -4,7 +4,6 @@ import { Map } from 'immutable';
 import type { Bus } from './Bus';
 import type { Logger } from './Logger';
 
-export type ActionContext = _ActionContext;
 export type { IAction };
 
 /**
@@ -168,6 +167,28 @@ export interface IActorArgs<I extends IAction, T extends IActorTest, O extends I
   bus: Bus<Actor<I, T, O>, I, T, O>;
   beforeActors?: Actor<I, T, O>[];
 }
+
+/**
+ * An immutable key-value mapped context that can be passed to any (@link IAction}.
+ * All actors that receive a context must forward this context to any actor, mediator or bus that it calls.
+ * This context may be transformed before forwarding.
+ *
+ * Each bus should describe in its action interface which context entries are possible (non-restrictive)
+ * and corresponding context keys should be exposed in '@comunica/context-entries' for easy reuse.
+ * If actors support any specific context entries next to those inherited by the bus action interface,
+ * then this should be described in its README file.
+ *
+ * To avoid entry conflicts, all keys must be properly namespaced using the following convention:
+ *   Each key must be prefixed with the package name followed by a `:`.
+ *   For example, the `rdf-resolve-quad-pattern` bus declares the `sources` entry,
+ *   which should be named as `@comunica/bus-rdf-resolve-quad-pattern:sources`.
+ *
+ * This context can contain any information that might be relevant for certain actors.
+ * For instance, this context can contain a list of datasources over which operators should query.
+ *
+ * @deprecated Use the same type from @comunica/types
+ */
+export type ActionContext = _ActionContext;
 
 /**
  * A convenience constructor for {@link ActionContext} based on a given hash.

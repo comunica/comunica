@@ -143,7 +143,7 @@ export interface IAction {
  * This context may be transformed before forwarding.
  *
  * Each bus should describe in its action interface which context entries are possible (non-restrictive)
- * and expose a `KEY_CONTEXT_${ENTRY_NAME}` constant for easy reuse.
+ * and corresponding context keys should be exposed in '@comunica/context-entries' for easy reuse.
  * If actors support any specific context entries next to those inherited by the bus action interface,
  * then this should be described in its README file.
  *
