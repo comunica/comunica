@@ -1,11 +1,11 @@
 /* eslint-disable max-len */
-import type { IActorQueryOperationOutputBindings,
-  IActorQueryOperationOutputBoolean, IActorQueryOperationOutputQuads } from '@comunica/bus-query-operation';
 import {
   ActorQueryOperation,
   Bindings,
 } from '@comunica/bus-query-operation';
 import { ActionContext, Bus } from '@comunica/core';
+import type { IActorQueryOperationOutputBindings,
+  IActorQueryOperationOutputBoolean, IActorQueryOperationOutputQuads } from '@comunica/types';
 import { SparqlEndpointFetcher } from 'fetch-sparql-endpoint';
 import { Headers } from 'node-fetch';
 import { DataFactory } from 'rdf-data-factory';

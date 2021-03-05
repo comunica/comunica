@@ -1,10 +1,10 @@
-import type { IActorQueryOperationOutputBindings,
-  IActorQueryOperationOutputQuads } from '@comunica/bus-query-operation';
 import {
   ActorQueryOperation,
   Bindings,
 } from '@comunica/bus-query-operation';
 import { Bus } from '@comunica/core';
+import type { IActorQueryOperationOutputBindings,
+  IActorQueryOperationOutputQuads } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationSlice } from '../lib/ActorQueryOperationSlice';

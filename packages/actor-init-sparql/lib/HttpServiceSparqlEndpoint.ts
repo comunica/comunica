@@ -4,8 +4,8 @@ import * as http from 'http';
 import * as querystring from 'querystring';
 import type { Writable } from 'stream';
 import * as url from 'url';
-import type { IActorQueryOperationOutput, IActorQueryOperationOutputQuads } from '@comunica/bus-query-operation';
 import { ActionContext } from '@comunica/core';
+import type { IActorQueryOperationOutput, IActorQueryOperationOutputQuads } from '@comunica/types';
 
 import { ArrayIterator } from 'asynciterator';
 import minimist = require('minimist');

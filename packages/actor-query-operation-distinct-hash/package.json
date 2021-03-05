@@ -33,6 +33,7 @@
   ],
   "dependencies": {
     "@comunica/actor-abstract-bindings-hash": "^1.19.2",
+    "@comunica/types": "^1.19.2",
     "sparqlalgebrajs": "^2.4.0"
   },
   "peerDependencies": {

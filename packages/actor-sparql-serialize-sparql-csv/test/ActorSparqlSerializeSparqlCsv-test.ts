@@ -1,7 +1,7 @@
 import { PassThrough } from 'stream';
-import type { BindingsStream } from '@comunica/bus-query-operation';
 import { Bindings } from '@comunica/bus-query-operation';
 import { Bus } from '@comunica/core';
+import type { BindingsStream } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorSparqlSerializeSparqlCsv } from '..';

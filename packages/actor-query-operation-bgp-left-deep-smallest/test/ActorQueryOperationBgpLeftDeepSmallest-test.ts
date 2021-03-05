@@ -1,8 +1,8 @@
-import type { IActorQueryOperationOutputBindings, IPatternBindings } from '@comunica/bus-query-operation';
 import { ActorQueryOperation, Bindings } from '@comunica/bus-query-operation';
 import { KeysCore, KeysQueryOperation } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import { LoggerVoid } from '@comunica/logger-void';
+import type { IActorQueryOperationOutputBindings, PatternBindings } from '@comunica/types';
 import { ArrayIterator, EmptyIterator, SingletonIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import type * as RDF from 'rdf-js';
@@ -447,7 +447,7 @@ describe('ActorQueryOperationBgpLeftDeepSmallest', () => {
 
     describe('createLeftDeepStream', () => {
       const binder: any =
-        (patterns: { pattern: Algebra.Pattern; bindings: IPatternBindings }[]) => new SingletonIterator(
+        (patterns: { pattern: Algebra.Pattern; bindings: PatternBindings }[]) => new SingletonIterator(
           Bindings({
             graph: patterns[0].pattern.graph,
             object: patterns[1].pattern.object,

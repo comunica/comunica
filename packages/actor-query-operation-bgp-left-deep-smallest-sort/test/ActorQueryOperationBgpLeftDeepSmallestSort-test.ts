@@ -1,10 +1,10 @@
-import type { BindingsStream,
-  IActorQueryOperationOutputBindings } from '@comunica/bus-query-operation';
 import {
   ActorQueryOperation,
   Bindings,
 } from '@comunica/bus-query-operation';
 import { ActionContext, Bus } from '@comunica/core';
+import type { BindingsStream,
+  IActorQueryOperationOutputBindings } from '@comunica/types';
 import { ArrayIterator, EmptyIterator, SingletonIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import type * as RDF from 'rdf-js';

@@ -32,6 +32,7 @@
   ],
   "dependencies": {
     "@comunica/context-entries": "^1.0.0",
+    "@comunica/types": "^1.19.2",
     "@types/rdf-js": "*",
     "asynciterator": "^3.0.3",
     "immutable": "^3.8.2",
@@ -42,7 +43,8 @@
     "@comunica/core": "^1.0.0"
   },
   "devDependencies": {
-    "@comunica/core": "^1.19.2"
+    "@comunica/core": "^1.19.2",
+    "@comunica/types": "^1.19.2"
   },
   "jest": {
     "globals": {

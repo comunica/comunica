@@ -1,11 +1,11 @@
 import { ActorAbstractPath } from '@comunica/actor-abstract-path/lib/ActorAbstractPath';
-import type { IActorQueryOperationOutputBindings,
-  IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
+import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import {
   ActorQueryOperation,
   Bindings,
 } from '@comunica/bus-query-operation';
 import type { ActionContext } from '@comunica/core';
+import type { IActorQueryOperationOutputBindings } from '@comunica/types';
 import { SingletonIterator } from 'asynciterator';
 
 import { termToString } from 'rdf-string';

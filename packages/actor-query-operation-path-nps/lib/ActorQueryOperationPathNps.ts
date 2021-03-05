@@ -1,10 +1,10 @@
 import { ActorAbstractPath } from '@comunica/actor-abstract-path';
-import type { Bindings, IActorQueryOperationOutputBindings,
-  IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
+import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import {
   ActorQueryOperation,
 } from '@comunica/bus-query-operation';
 import type { ActionContext } from '@comunica/core';
+import type { Bindings, IActorQueryOperationOutputBindings } from '@comunica/types';
 import { termToString } from 'rdf-string';
 import { Algebra } from 'sparqlalgebrajs';
 

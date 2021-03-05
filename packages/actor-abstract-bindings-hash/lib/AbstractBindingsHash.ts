@@ -1,11 +1,11 @@
-import type { Bindings,
-  BindingsStream,
-  IActorQueryOperationOutputBindings } from '@comunica/bus-query-operation';
 import {
   ActorQueryOperation,
   ActorQueryOperationTypedMediated,
 } from '@comunica/bus-query-operation';
 import type { ActionContext, IActorTest } from '@comunica/core';
+import type { Bindings,
+  BindingsStream,
+  IActorQueryOperationOutputBindings } from '@comunica/types';
 import type { Algebra } from 'sparqlalgebrajs';
 import type { IActorInitRdfDereferencePagedArgs } from './AbstractFilterHash';
 

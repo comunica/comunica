@@ -1,7 +1,10 @@
 import { KeysCore } from '@comunica/context-entries';
+import type { IAction, ActionContext as _ActionContext } from '@comunica/types';
 import { Map } from 'immutable';
 import type { Bus } from './Bus';
 import type { Logger } from './Logger';
+
+export type { IAction };
 
 /**
  * An actor can act on messages of certain types and provide output of a certain type.
@@ -182,8 +185,10 @@ export interface IActorArgs<I extends IAction, T extends IActorTest, O extends I
  *
  * This context can contain any information that might be relevant for certain actors.
  * For instance, this context can contain a list of datasources over which operators should query.
+ *
+ * @deprecated Use the same type from @comunica/types
  */
-export type ActionContext = Map<string, any>;
+export type ActionContext = _ActionContext;
 
 /**
  * A convenience constructor for {@link ActionContext} based on a given hash.
@@ -204,17 +209,6 @@ export function ActionContext(hash: Record<string, any>): ActionContext {
  */
 export function ensureActionContext(maybeActionContext: any): ActionContext {
   return Map.isMap(maybeActionContext) ? maybeActionContext : ActionContext(maybeActionContext);
-}
-
-/**
- * Data interface for the type of action.
- */
-export interface IAction {
-
-  /**
-   * The optional input context that is passed through by actors.
-   */
-  context?: ActionContext;
 }
 
 /**

@@ -1,6 +1,6 @@
-import type { IActorQueryOperationOutputBindings } from '@comunica/bus-query-operation';
 import { ActorQueryOperation, Bindings } from '@comunica/bus-query-operation';
 import { Bus } from '@comunica/core';
+import type { IActorQueryOperationOutputBindings } from '@comunica/types';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorQueryOperationValues } from '../lib/ActorQueryOperationValues';
 const arrayifyStream = require('arrayify-stream');

@@ -1,4 +1,4 @@
-import type { Bindings, BindingsStream } from '@comunica/bus-query-operation';
+import type { Bindings, BindingsStream } from '@comunica/types';
 import type { AsyncIterator } from 'asynciterator';
 import { ArrayIterator, MultiTransformIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';

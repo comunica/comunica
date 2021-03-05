@@ -1,8 +1,8 @@
 import { KeysQueryOperation } from '@comunica/context-entries';
 import type { ActionContext, IActorArgs, IActorTest } from '@comunica/core';
-import type { Algebra } from 'sparqlalgebrajs';
 import type { IActionQueryOperation, IActorQueryOperationOutput,
-  IActorQueryOperationOutputStream } from './ActorQueryOperation';
+  IActorQueryOperationOutputStream } from '@comunica/types';
+import type { Algebra } from 'sparqlalgebrajs';
 import { ActorQueryOperation } from './ActorQueryOperation';
 
 /**

@@ -37,6 +37,7 @@
   },
   "dependencies": {
     "@comunica/actor-abstract-path": "^1.19.2",
+    "@comunica/types": "^1.19.2",
     "sparqlalgebrajs": "^2.4.0"
   },
   "devDependencies": {

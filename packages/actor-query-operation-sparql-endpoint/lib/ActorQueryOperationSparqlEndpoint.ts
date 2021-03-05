@@ -1,10 +1,5 @@
 import type { EventEmitter } from 'events';
 import type { IActionHttp, IActorHttpOutput } from '@comunica/bus-http';
-import type { IActionQueryOperation,
-  IActorQueryOperationOutput,
-  IActorQueryOperationOutputBindings,
-  IActorQueryOperationOutputBoolean,
-  IActorQueryOperationOutputQuads } from '@comunica/bus-query-operation';
 import {
   ActorQueryOperation,
   Bindings,
@@ -12,6 +7,11 @@ import {
 import { getDataSourceType, getDataSourceValue } from '@comunica/bus-rdf-resolve-quad-pattern';
 import type { ActionContext, Actor, IActorArgs, IActorTest, Mediator } from '@comunica/core';
 import type { IMediatorTypeHttpRequests } from '@comunica/mediatortype-httprequests';
+import type { IActionQueryOperation,
+  IActorQueryOperationOutput,
+  IActorQueryOperationOutputBindings,
+  IActorQueryOperationOutputBoolean,
+  IActorQueryOperationOutputQuads } from '@comunica/types';
 import { DataSourceUtils } from '@comunica/utils-datasource';
 import { wrap } from 'asynciterator';
 import { SparqlEndpointFetcher } from 'fetch-sparql-endpoint';

@@ -1,10 +1,10 @@
-import type { BindingsStream,
-  IActionQueryOperation, IActorQueryOperationOutput,
-  IActorQueryOperationOutputBindings } from '@comunica/bus-query-operation';
 import { ActorQueryOperationTyped, Bindings } from '@comunica/bus-query-operation';
 import type { IActionRdfResolveQuadPattern,
   IActorRdfResolveQuadPatternOutput } from '@comunica/bus-rdf-resolve-quad-pattern';
 import type { ActionContext, Actor, IActorArgs, IActorTest, Mediator } from '@comunica/core';
+import type { BindingsStream,
+  IActionQueryOperation, IActorQueryOperationOutput,
+  IActorQueryOperationOutputBindings } from '@comunica/types';
 import type { AsyncIterator } from 'asynciterator';
 import { TransformIterator } from 'asynciterator';
 import type * as RDF from 'rdf-js';

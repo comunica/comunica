@@ -1,13 +1,10 @@
-import type { Bindings,
-  BindingsStream,
-
-  IActorQueryOperationOutputBindings,
-  IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
+import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import {
   ActorQueryOperation,
   ActorQueryOperationTypedMediated,
 } from '@comunica/bus-query-operation';
 import type { ActionContext, IActorTest } from '@comunica/core';
+import type { Bindings, BindingsStream, IActorQueryOperationOutputBindings } from '@comunica/types';
 import { ArrayIterator, MultiTransformIterator, TransformIterator } from 'asynciterator';
 import type * as RDF from 'rdf-js';
 import { termToString } from 'rdf-string';
@@ -35,8 +32,7 @@ export class ActorQueryOperationBgpLeftDeepSmallestSort extends ActorQueryOperat
    * @return {BindingsStream}
    */
   public static createLeftDeepStream(baseStream: BindingsStream, patterns: Algebra.Pattern[],
-    patternBinder: (bindPatterns: Algebra.Pattern[]) =>
-    Promise<BindingsStream>): BindingsStream {
+    patternBinder: (bindPatterns: Algebra.Pattern[]) => Promise<BindingsStream>): BindingsStream {
     return new MultiTransformIterator(baseStream, {
       autoStart: false,
       multiTransform(bindings: Bindings) {

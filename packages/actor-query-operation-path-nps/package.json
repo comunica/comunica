@@ -37,6 +37,7 @@
   },
   "dependencies": {
     "@comunica/actor-abstract-path": "^1.19.2",
+    "@comunica/types": "^1.19.2",
     "rdf-string": "^1.5.0",
     "sparqlalgebrajs": "^2.4.0"
   },

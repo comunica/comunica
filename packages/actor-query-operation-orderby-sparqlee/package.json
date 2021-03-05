@@ -36,6 +36,7 @@
     "@comunica/core": "^1.0.0"
   },
   "dependencies": {
+    "@comunica/types": "^1.19.2",
     "@types/rdf-js": "*",
     "asynciterator": "^3.0.3",
     "rdf-string": "^1.5.0",

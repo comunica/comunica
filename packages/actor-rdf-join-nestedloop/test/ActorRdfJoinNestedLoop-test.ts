@@ -1,8 +1,8 @@
-import type { IActorQueryOperationOutputBindings } from '@comunica/bus-query-operation';
 import { Bindings } from '@comunica/bus-query-operation';
 import type { IActionRdfJoin } from '@comunica/bus-rdf-join';
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import { Bus } from '@comunica/core';
+import type { IActorQueryOperationOutputBindings } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import { ActorRdfJoinNestedLoop } from '../lib/ActorRdfJoinNestedLoop';

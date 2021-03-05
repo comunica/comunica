@@ -1,29 +1,13 @@
-import type { AsyncIterator } from 'asynciterator';
+import type { Bindings as _Bindings, BindingsStream } from '@comunica/types';
 import { Map } from 'immutable';
 import type * as RDF from 'rdf-js';
 import { termToString } from 'rdf-string';
 import type { Algebra, Factory } from 'sparqlalgebrajs';
 import { Util } from 'sparqlalgebrajs';
 
-/**
- * A stream of bindings.
- *
- * Next to the list of available variables,
- * an optional metadata hash can be present.
- *
- * @see Bindings
- */
-export type BindingsStream = AsyncIterator<Bindings>;
+export type Bindings = _Bindings;
 
-/**
- * An immutable solution mapping object.
- * This maps variables to a terms.
- *
- * Variables are represented as strings containing the variable name prefixed with '?'.
- * Blank nodes are represented as strings containing the blank node name prefixed with '_:'.
- * Terms are named nodes, literals or the default graph.
- */
-export type Bindings = Map<string, RDF.Term>;
+export type { BindingsStream };
 
 /**
  * A convenience constructor for bindings based on a given hash.

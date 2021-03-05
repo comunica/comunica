@@ -1,7 +1,4 @@
-import type { Bindings,
-  BindingsStream,
-  IActorQueryOperationOutputBindings,
-  IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
+import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import {
   ActorQueryOperation,
   ActorQueryOperationTypedMediated, getMetadata,
@@ -9,6 +6,7 @@ import {
 } from '@comunica/bus-query-operation';
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import type { ActionContext, IActorTest } from '@comunica/core';
+import type { Bindings, BindingsStream, IActorQueryOperationOutputBindings } from '@comunica/types';
 import { MultiTransformIterator, TransformIterator } from 'asynciterator';
 import type { Algebra } from 'sparqlalgebrajs';
 import { Factory } from 'sparqlalgebrajs';
