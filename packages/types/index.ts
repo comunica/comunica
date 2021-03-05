@@ -156,6 +156,6 @@ export interface IAction {
  */
 export type ActionContext = Map<string, any>;
 
-export interface IActorInitSparql {
+export interface IQueryEngine {
   query: (query: string | Algebra.Operation, context?: any) => Promise<ActorQueryOperationOutput>;
 }

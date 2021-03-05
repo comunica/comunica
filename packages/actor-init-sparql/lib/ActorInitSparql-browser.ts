@@ -32,7 +32,7 @@ import type {
   IActorQueryOperationOutputQuads,
   IActorQueryOperationOutputBoolean,
   Bindings,
-  IActorInitSparql,
+  IQueryEngine,
 } from '@comunica/types';
 import type * as RDF from 'rdf-js';
 import { Algebra } from 'sparqlalgebrajs';
@@ -40,7 +40,7 @@ import { Algebra } from 'sparqlalgebrajs';
 /**
  * A browser-safe comunica SPARQL Init Actor.
  */
-export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs, IActorInitSparql {
+export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs, IQueryEngine {
   private static readonly ALGEBRA_TYPES: Record<string, boolean> = Object.keys(Algebra.types)
     .reduce((acc: Record<string, boolean>, key) => {
       acc[(<any> Algebra.types)[key]] = true;
