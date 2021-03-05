@@ -207,9 +207,9 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
   // and objectStringVariable as value all nodes reachable through predicate* beginning at objectVal
   /* eslint max-len: off */
   public async getSubjectAndObjectBindingsPredicateStar(subjectString: string, objectString: string, subjectVal: Term,
-                                                        objectVal: Term, predicate: Algebra.PropertyPathSymbol, graph: Term, context: ActionContext,
-                                                        termHashesGlobal: Record<string, Promise<Term[]>>, termHashesCurrentSubject: Record<string, boolean>,
-                                                        it: BufferedIterator<Bindings>, counter: any): Promise<void> {
+    objectVal: Term, predicate: Algebra.PropertyPathSymbol, graph: Term, context: ActionContext,
+    termHashesGlobal: Record<string, Promise<Term[]>>, termHashesCurrentSubject: Record<string, boolean>,
+    it: BufferedIterator<Bindings>, counter: any): Promise<void> {
     const termString = termToString(objectVal) + termToString(graph);
 
     // If this combination of subject and object already done, return nothing

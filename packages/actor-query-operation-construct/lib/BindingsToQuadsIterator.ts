@@ -98,7 +98,7 @@ export class BindingsToQuadsIterator extends MultiTransformIterator<Bindings, RD
    * @return {RDF.Quad[]}                    A list of quads.
    */
   public static bindTemplate(bindings: Bindings, template: RDF.BaseQuad[],
-                             blankNodeCounter: number): RDF.Quad[] {
+    blankNodeCounter: number): RDF.Quad[] {
     return template
       // Bind variables to bound terms
       .map(x => BindingsToQuadsIterator.bindQuad.bind(null, bindings)(x))

@@ -32,8 +32,7 @@ export class ActorQueryOperationBgpLeftDeepSmallestSort extends ActorQueryOperat
    * @return {BindingsStream}
    */
   public static createLeftDeepStream(baseStream: BindingsStream, patterns: Algebra.Pattern[],
-                                     patternBinder: (bindPatterns: Algebra.Pattern[]) =>
-    Promise<BindingsStream>): BindingsStream {
+    patternBinder: (bindPatterns: Algebra.Pattern[]) => Promise<BindingsStream>): BindingsStream {
     return new MultiTransformIterator(baseStream, {
       autoStart: false,
       multiTransform(bindings: Bindings) {

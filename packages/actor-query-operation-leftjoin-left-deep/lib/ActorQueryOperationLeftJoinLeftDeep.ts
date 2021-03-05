@@ -34,7 +34,7 @@ export class ActorQueryOperationLeftJoinLeftDeep extends ActorQueryOperationType
    */
   /* eslint max-len: off */
   public static createLeftDeepStream(leftStream: BindingsStream, rightOperation: Algebra.Operation,
-                                     operationBinder: (operation: Algebra.Operation) => Promise<BindingsStream>): BindingsStream {
+    operationBinder: (operation: Algebra.Operation) => Promise<BindingsStream>): BindingsStream {
     return new MultiTransformIterator(leftStream, {
       multiTransform(bindings: Bindings) {
         const bindingsMerger = (subBindings: Bindings): Bindings => subBindings.merge(bindings);
