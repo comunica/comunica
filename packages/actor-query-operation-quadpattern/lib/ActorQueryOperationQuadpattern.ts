@@ -3,7 +3,7 @@ import type { IActionRdfResolveQuadPattern,
   IActorRdfResolveQuadPatternOutput } from '@comunica/bus-rdf-resolve-quad-pattern';
 import type { ActionContext, Actor, IActorArgs, IActorTest, Mediator } from '@comunica/core';
 import type { BindingsStream,
-  IActionQueryOperation, ActorQueryOperationOutput,
+  IActionQueryOperation, IActorQueryOperationOutput,
   IActorQueryOperationOutputBindings } from '@comunica/types';
 import type { AsyncIterator } from 'asynciterator';
 import { TransformIterator } from 'asynciterator';
@@ -179,7 +179,7 @@ export class ActorQueryOperationQuadpattern extends ActorQueryOperationTyped<Alg
 }
 
 export interface IActorQueryOperationQuadpatternArgs extends
-  IActorArgs<IActionQueryOperation, IActorTest, ActorQueryOperationOutput> {
+  IActorArgs<IActionQueryOperation, IActorTest, IActorQueryOperationOutput> {
   mediatorResolveQuadPattern: Mediator<Actor<IActionRdfResolveQuadPattern, IActorTest,
   IActorRdfResolveQuadPatternOutput>, IActionRdfResolveQuadPattern, IActorTest, IActorRdfResolveQuadPatternOutput>;
 }

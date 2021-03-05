@@ -5,7 +5,7 @@ import * as querystring from 'querystring';
 import type { Writable } from 'stream';
 import * as url from 'url';
 import { ActionContext } from '@comunica/core';
-import type { ActorQueryOperationOutput, IActorQueryOperationOutputQuads } from '@comunica/types';
+import type { IActorQueryOperationOutput, IActorQueryOperationOutputQuads } from '@comunica/types';
 
 import { ArrayIterator } from 'asynciterator';
 import minimist = require('minimist');
@@ -231,7 +231,7 @@ Options:
       return this.writeServiceDescription(engine, stdout, stderr, request, response, mediaType, headOnly);
     }
 
-    let result: ActorQueryOperationOutput;
+    let result: IActorQueryOperationOutput;
     try {
       result = await engine.query(sparql, this.context);
     } catch (error: unknown) {

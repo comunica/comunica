@@ -5,7 +5,7 @@ import type { IActionRdfJoin } from '@comunica/bus-rdf-join';
 import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import type { IActorArgs, IActorTest, Mediator } from '@comunica/core';
 import type { IMediatorTypeIterations } from '@comunica/mediatortype-iterations';
-import type { ActorQueryOperationOutput,
+import type { IActorQueryOperationOutput,
   IActorQueryOperationOutputBindings } from '@comunica/types';
 
 /**
@@ -14,7 +14,7 @@ import type { ActorQueryOperationOutput,
  */
 export class ActorRdfJoinMultiSequential extends ActorRdfJoin {
   public readonly mediatorJoin: Mediator<ActorRdfJoin,
-  IActionRdfJoin, IMediatorTypeIterations, ActorQueryOperationOutput>;
+  IActionRdfJoin, IMediatorTypeIterations, IActorQueryOperationOutput>;
 
   public constructor(args: IActorRdfJoinMultiSequentialArgs) {
     super(args, 3, true);
@@ -36,7 +36,7 @@ export class ActorRdfJoinMultiSequential extends ActorRdfJoin {
 }
 
 export interface IActorRdfJoinMultiSequentialArgs
-  extends IActorArgs<IActionRdfJoin, IActorTest, ActorQueryOperationOutput> {
+  extends IActorArgs<IActionRdfJoin, IActorTest, IActorQueryOperationOutput> {
   mediatorJoin: Mediator<ActorRdfJoin,
-  IActionRdfJoin, IMediatorTypeIterations, ActorQueryOperationOutput>;
+  IActionRdfJoin, IMediatorTypeIterations, IActorQueryOperationOutput>;
 }

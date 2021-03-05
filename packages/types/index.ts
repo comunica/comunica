@@ -94,7 +94,8 @@ export interface IActionQueryOperation extends IAction {
  * Query operation output.
  * @see IActorQueryOperationOutputBindings, IActorQueryOperationOutputQuads, IActorQueryOperationOutputBoolean
  */
-export type ActorQueryOperationOutput =
+// TODO: rename to QueryOutput in next major update
+export type IActorQueryOperationOutput =
   IActorQueryOperationOutputStream |
   IActorQueryOperationOutputQuads |
   IActorQueryOperationOutputBoolean;
@@ -157,5 +158,5 @@ export interface IAction {
 export type ActionContext = Map<string, any>;
 
 export interface IQueryEngine {
-  query: (query: string | Algebra.Operation, context?: any) => Promise<ActorQueryOperationOutput>;
+  query: (query: string | Algebra.Operation, context?: any) => Promise<IActorQueryOperationOutput>;
 }

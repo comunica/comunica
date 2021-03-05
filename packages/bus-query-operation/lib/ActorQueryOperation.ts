@@ -3,7 +3,7 @@ import type { ActionContext, IActorArgs, IActorTest, Mediator } from '@comunica/
 import { Actor } from '@comunica/core';
 import type {
   IActionQueryOperation,
-  ActorQueryOperationOutput,
+  IActorQueryOperationOutput,
   IActorQueryOperationOutputBindings,
   IActorQueryOperationOutputBoolean,
   IActorQueryOperationOutputQuads,
@@ -22,7 +22,7 @@ export type { IActionQueryOperation };
 /**
  * @deprecated Use the type in @comunica/types
  */
-export type { ActorQueryOperationOutput as IActorQueryOperationOutput };
+export type { IActorQueryOperationOutput as IActorQueryOperationOutput };
 
 /**
  * @deprecated Use the type in @comunica/types
@@ -104,20 +104,20 @@ export const KEY_CONTEXT_QUERY_TIMESTAMP = KeysInitSparql.queryTimestamp;
  * * Output: IActorQueryOperationOutput: A bindings stream.
  *
  * @see IActionQueryOperation
- * @see ActorQueryOperationOutput
+ * @see IActorQueryOperationOutput
  */
-export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, IActorTest, ActorQueryOperationOutput> {
-  protected constructor(args: IActorArgs<IActionQueryOperation, IActorTest, ActorQueryOperationOutput>) {
+export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, IActorTest, IActorQueryOperationOutput> {
+  protected constructor(args: IActorArgs<IActionQueryOperation, IActorTest, IActorQueryOperationOutput>) {
     super(args);
   }
 
   /**
    * Safely cast a query operation output to a bindings output.
    * This will throw a runtime error if the output is of the incorrect type.
-   * @param {ActorQueryOperationOutput} output A query operation output.
+   * @param {IActorQueryOperationOutput} output A query operation output.
    * @return {IActorQueryOperationOutputBindings} A bindings query operation output.
    */
-  public static getSafeBindings(output: ActorQueryOperationOutput): IActorQueryOperationOutputBindings {
+  public static getSafeBindings(output: IActorQueryOperationOutput): IActorQueryOperationOutputBindings {
     ActorQueryOperation.validateQueryOutput(output, 'bindings');
     return <IActorQueryOperationOutputBindings> output;
   }
@@ -125,10 +125,10 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
   /**
    * Safely cast a query operation output to a quads output.
    * This will throw a runtime error if the output is of the incorrect type.
-   * @param {ActorQueryOperationOutput} output A query operation output.
+   * @param {IActorQueryOperationOutput} output A query operation output.
    * @return {IActorQueryOperationOutputQuads} A quads query operation output.
    */
-  public static getSafeQuads(output: ActorQueryOperationOutput): IActorQueryOperationOutputQuads {
+  public static getSafeQuads(output: IActorQueryOperationOutput): IActorQueryOperationOutputQuads {
     ActorQueryOperation.validateQueryOutput(output, 'quads');
     return <IActorQueryOperationOutputQuads> output;
   }
@@ -136,10 +136,10 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
   /**
    * Safely cast a query operation output to a boolean output.
    * This will throw a runtime error if the output is of the incorrect type.
-   * @param {ActorQueryOperationOutput} output A query operation output.
+   * @param {IActorQueryOperationOutput} output A query operation output.
    * @return {IActorQueryOperationOutputBoolean} A boolean query operation output.
    */
-  public static getSafeBoolean(output: ActorQueryOperationOutput): IActorQueryOperationOutputBoolean {
+  public static getSafeBoolean(output: IActorQueryOperationOutput): IActorQueryOperationOutputBoolean {
     ActorQueryOperation.validateQueryOutput(output, 'boolean');
     return <IActorQueryOperationOutputBoolean> output;
   }
@@ -158,10 +158,10 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
 
   /**
    * Throw an error if the output type does not match the expected type.
-   * @param {ActorQueryOperationOutput} output A query operation output.
+   * @param {IActorQueryOperationOutput} output A query operation output.
    * @param {string} expectedType The expected output type.
    */
-  public static validateQueryOutput(output: ActorQueryOperationOutput, expectedType: string): void {
+  public static validateQueryOutput(output: IActorQueryOperationOutput, expectedType: string): void {
     if (output.type !== expectedType) {
       throw new Error(`Invalid query output type: Expected '${expectedType}' but got '${output.type}'`);
     }
@@ -174,8 +174,8 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
    *                               If defined, the existence resolver will be defined as `exists`.
    */
   public static getExpressionContext(context: ActionContext, mediatorQueryOperation?: Mediator<
-  Actor<IActionQueryOperation, IActorTest, ActorQueryOperationOutput>,
-  IActionQueryOperation, IActorTest, ActorQueryOperationOutput>): IExpressionContext {
+  Actor<IActionQueryOperation, IActorTest, IActorQueryOperationOutput>,
+  IActionQueryOperation, IActorTest, IActorQueryOperationOutput>): IExpressionContext {
     if (context) {
       const now: Date = context.get(KeysInitSparql.queryTimestamp);
       const baseIRI: string = context.get(KeysInitSparql.baseIRI);
@@ -198,8 +198,8 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
    * @param mediatorQueryOperation A query operation mediator.
    */
   public static createExistenceResolver(context: ActionContext, mediatorQueryOperation: Mediator<
-  Actor<IActionQueryOperation, IActorTest, ActorQueryOperationOutput>,
-  IActionQueryOperation, IActorTest, ActorQueryOperationOutput>):
+  Actor<IActionQueryOperation, IActorTest, IActorQueryOperationOutput>,
+  IActionQueryOperation, IActorTest, IActorQueryOperationOutput>):
     (expr: Algebra.ExistenceExpression, bindings: Bindings) => Promise<boolean> {
     return async(expr, bindings) => {
       const operation = materializeOperation(expr.input, bindings);

@@ -4,7 +4,7 @@ import {
 } from '@comunica/bus-query-operation';
 import type { ActionContext, IActorArgs, IActorTest } from '@comunica/core';
 import type { IActionQueryOperation,
-  ActorQueryOperationOutput,
+  IActorQueryOperationOutput,
   IActorQueryOperationOutputBindings } from '@comunica/types';
 import { SingletonIterator } from 'asynciterator';
 import { termToString } from 'rdf-string';
@@ -15,7 +15,7 @@ import type { Algebra } from 'sparqlalgebrajs';
  * A comunica Query Operation Actor for empty BGPs.
  */
 export class ActorQueryOperationBgpEmpty extends ActorQueryOperationTyped<Algebra.Bgp> {
-  public constructor(args: IActorArgs<IActionQueryOperation, IActorTest, ActorQueryOperationOutput>) {
+  public constructor(args: IActorArgs<IActionQueryOperation, IActorTest, IActorQueryOperationOutput>) {
     super(args, 'bgp');
   }
 

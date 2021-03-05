@@ -27,7 +27,7 @@ import type { Actor, IAction, IActorArgs, IActorTest, Logger, Mediator } from '@
 import { ActionContext } from '@comunica/core';
 import type {
   IActionQueryOperation,
-  ActorQueryOperationOutput,
+  IActorQueryOperationOutput,
   IActorQueryOperationOutputBindings,
   IActorQueryOperationOutputQuads,
   IActorQueryOperationOutputBoolean,
@@ -50,8 +50,8 @@ export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs, 
   public readonly mediatorOptimizeQueryOperation: Mediator<Actor<IActionOptimizeQueryOperation, IActorTest,
   IActorOptimizeQueryOperationOutput>, IActionOptimizeQueryOperation, IActorTest, IActorOptimizeQueryOperationOutput>;
 
-  public readonly mediatorQueryOperation: Mediator<Actor<IActionQueryOperation, IActorTest, ActorQueryOperationOutput>,
-  IActionQueryOperation, IActorTest, ActorQueryOperationOutput>;
+  public readonly mediatorQueryOperation: Mediator<Actor<IActionQueryOperation, IActorTest, IActorQueryOperationOutput>,
+  IActionQueryOperation, IActorTest, IActorQueryOperationOutput>;
 
   public readonly mediatorSparqlParse: Mediator<Actor<IActionSparqlParse, IActorTest, IActorSparqlParseOutput>,
   IActionSparqlParse, IActorTest, IActorSparqlParseOutput>;
@@ -91,7 +91,7 @@ export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs, 
    * @param {IActorQueryOperationOutput} results Basic query results.
    * @return {IQueryResult} Same query results with added fields.
    */
-  public static enhanceQueryResults(results: ActorQueryOperationOutput): IQueryResult {
+  public static enhanceQueryResults(results: IActorQueryOperationOutput): IQueryResult {
     // Set bindings
     if ((<IQueryResultBindings>results).bindingsStream) {
       (<IQueryResultBindings>results).bindings = () => new Promise((resolve, reject) => {
@@ -235,7 +235,7 @@ export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs, 
    * @param {ActionContext} context An optional context.
    * @return {Promise<IActorSparqlSerializeOutput>} A text stream.
    */
-  public async resultToString(queryResult: ActorQueryOperationOutput, mediaType?: string, context?: any):
+  public async resultToString(queryResult: IActorQueryOperationOutput, mediaType?: string, context?: any):
   Promise<IActorSparqlSerializeOutput> {
     context = ActionContext(context);
 
@@ -275,8 +275,8 @@ export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs, 
 export interface IActorInitSparqlArgs extends IActorArgs<IActionInit, IActorTest, IActorOutputInit> {
   mediatorOptimizeQueryOperation: Mediator<Actor<IActionOptimizeQueryOperation, IActorTest,
   IActorOptimizeQueryOperationOutput>, IActionOptimizeQueryOperation, IActorTest, IActorOptimizeQueryOperationOutput>;
-  mediatorQueryOperation: Mediator<Actor<IActionQueryOperation, IActorTest, ActorQueryOperationOutput>,
-  IActionQueryOperation, IActorTest, ActorQueryOperationOutput>;
+  mediatorQueryOperation: Mediator<Actor<IActionQueryOperation, IActorTest, IActorQueryOperationOutput>,
+  IActionQueryOperation, IActorTest, IActorQueryOperationOutput>;
   mediatorSparqlParse: Mediator<Actor<IActionSparqlParse, IActorTest, IActorSparqlParseOutput>,
   IActionSparqlParse, IActorTest, IActorSparqlParseOutput>;
   mediatorSparqlSerialize: Mediator<

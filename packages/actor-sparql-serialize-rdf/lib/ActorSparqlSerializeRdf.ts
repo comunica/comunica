@@ -11,7 +11,7 @@ import {
   ActorSparqlSerialize,
 } from '@comunica/bus-sparql-serialize';
 import type { ActionContext, Actor, IActorTest, Mediator } from '@comunica/core';
-import type { ActorQueryOperationOutput, IActorQueryOperationOutputQuads } from '@comunica/types';
+import type { IActorQueryOperationOutput, IActorQueryOperationOutputQuads } from '@comunica/types';
 
 /**
  * A comunica RDF SPARQL Serialize Actor.
@@ -38,7 +38,7 @@ export class ActorSparqlSerializeRdf extends ActorSparqlSerialize implements IAc
     super(args);
   }
 
-  public async testHandle(action: ActorQueryOperationOutput, mediaType: string, context?: ActionContext):
+  public async testHandle(action: IActorQueryOperationOutput, mediaType: string, context?: ActionContext):
   Promise<IActorTest> {
     // Check if we are provided with a quad stream
     if (action.type !== 'quads') {
@@ -56,7 +56,7 @@ export class ActorSparqlSerializeRdf extends ActorSparqlSerialize implements IAc
     return true;
   }
 
-  public async runHandle(action: ActorQueryOperationOutput, mediaType: string, context?: ActionContext):
+  public async runHandle(action: IActorQueryOperationOutput, mediaType: string, context?: ActionContext):
   Promise<IActorSparqlSerializeOutput> {
     // Delegate handling to the mediator
     return (await this.mediatorRdfSerialize.mediate({

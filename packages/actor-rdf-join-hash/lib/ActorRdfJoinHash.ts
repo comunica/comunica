@@ -6,7 +6,7 @@ import { ActorRdfJoin } from '@comunica/bus-rdf-join';
 import type { IActorArgs } from '@comunica/core';
 import type { IMediatorTypeIterations } from '@comunica/mediatortype-iterations';
 import type { Bindings,
-  ActorQueryOperationOutput,
+  IActorQueryOperationOutput,
   IActorQueryOperationOutputBindings } from '@comunica/types';
 import { HashJoin } from 'asyncjoin';
 
@@ -14,7 +14,7 @@ import { HashJoin } from 'asyncjoin';
  * A comunica Hash RDF Join Actor.
  */
 export class ActorRdfJoinHash extends ActorRdfJoin {
-  public constructor(args: IActorArgs<IActionRdfJoin, IMediatorTypeIterations, ActorQueryOperationOutput>) {
+  public constructor(args: IActorArgs<IActionRdfJoin, IMediatorTypeIterations, IActorQueryOperationOutput>) {
     super(args, 2);
   }
 

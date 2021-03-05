@@ -1,7 +1,7 @@
 import { ActorQueryOperationTyped, Bindings } from '@comunica/bus-query-operation';
 import type { ActionContext, IActorArgs, IActorTest } from '@comunica/core';
 import type { IActionQueryOperation,
-  ActorQueryOperationOutput, IActorQueryOperationOutputBindings, BindingsStream } from '@comunica/types';
+  IActorQueryOperationOutput, IActorQueryOperationOutputBindings, BindingsStream } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { termToString } from 'rdf-string';
 import type { Algebra } from 'sparqlalgebrajs';
@@ -10,7 +10,7 @@ import type { Algebra } from 'sparqlalgebrajs';
  * A comunica Values Query Operation Actor.
  */
 export class ActorQueryOperationValues extends ActorQueryOperationTyped<Algebra.Values> {
-  public constructor(args: IActorArgs<IActionQueryOperation, IActorTest, ActorQueryOperationOutput>) {
+  public constructor(args: IActorArgs<IActionQueryOperation, IActorTest, IActorQueryOperationOutput>) {
     super(args, 'values');
   }
 

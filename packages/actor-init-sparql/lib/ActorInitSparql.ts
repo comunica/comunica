@@ -7,7 +7,7 @@ import type { IActionInit, IActorOutputInit } from '@comunica/bus-init';
 import { KeysHttp, KeysHttpMemento, KeysHttpProxy, KeysInitSparql } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
 import { LoggerPretty } from '@comunica/logger-pretty';
-import type { ActorQueryOperationOutput } from '@comunica/types';
+import type { IActorQueryOperationOutput } from '@comunica/types';
 import minimist = require('minimist');
 import type { IActorInitSparqlArgs } from './ActorInitSparql-browser';
 import { ActorInitSparql as ActorInitSparqlBrowser } from './ActorInitSparql-browser';
@@ -219,7 +219,7 @@ export class ActorInitSparql extends ActorInitSparqlBrowser {
     }
 
     // Evaluate query
-    const queryResult: ActorQueryOperationOutput = await this.query(query, context);
+    const queryResult: IActorQueryOperationOutput = await this.query(query, context);
 
     // Serialize output according to media type
     const stdout: Readable = <Readable> (await this.resultToString(queryResult, args.t, queryResult.context)).data;
