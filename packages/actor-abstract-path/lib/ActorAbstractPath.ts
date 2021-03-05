@@ -205,7 +205,6 @@ export abstract class ActorAbstractPath extends ActorQueryOperationTypedMediated
      */
   // Let the iterator `it` emit all bindings of size 2, with subjectStringVariable as value subjectVal
   // and objectStringVariable as value all nodes reachable through predicate* beginning at objectVal
-  /* eslint max-len: off */
   public async getSubjectAndObjectBindingsPredicateStar(subjectString: string, objectString: string, subjectVal: Term,
     objectVal: Term, predicate: Algebra.PropertyPathSymbol, graph: Term, context: ActionContext,
     termHashesGlobal: Record<string, Promise<Term[]>>, termHashesCurrentSubject: Record<string, boolean>,

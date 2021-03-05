@@ -22,7 +22,7 @@ export type { IActionQueryOperation };
 /**
  * @deprecated Use the type in @comunica/types
  */
-export type { IActorQueryOperationOutput as IActorQueryOperationOutput };
+export type { IActorQueryOperationOutput };
 
 /**
  * @deprecated Use the type in @comunica/types
