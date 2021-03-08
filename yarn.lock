@@ -4941,15 +4941,15 @@ escodegen@^1.14.1:
   optionalDependencies:
     source-map "~0.6.1"
 
-eslint-config-es@3.28.13:
-  version "3.28.13"
-  resolved "https://registry.yarnpkg.com/eslint-config-es/-/eslint-config-es-3.28.13.tgz#068886ff5988fa0841bc684aa64f06a73908956e"
-  integrity sha512-HFKFLn1afdzYksYANttHU5GgxLEQ3UTG4iClhaJYo4kKvWTf/za8gkHR81A7s8DV/shzPjuCPSpriFEEMpJcHQ==
+eslint-config-es@3.28.14:
+  version "3.28.14"
+  resolved "https://registry.yarnpkg.com/eslint-config-es/-/eslint-config-es-3.28.14.tgz#21baa1529321748c36c23621a0cf647731f1ab51"
+  integrity sha512-WlRoPmGC1K62SBOSjEgHL6jfZCCL2dL+PFllcIS0PY1ZpbnGtkLFWepMQbCWoMJxm5eLEY9f+56Uk2PMAL2/mg==
   dependencies:
     "@typescript-eslint/eslint-plugin" "4.16.1"
     "@typescript-eslint/parser" "4.16.1"
     eslint-plugin-extended "0.2.0"
-    eslint-plugin-mocha "8.0.0"
+    eslint-plugin-mocha "8.1.0"
     eslint-plugin-react "7.22.0"
     eslint-plugin-unicorn "28.0.2"
 
@@ -5013,10 +5013,10 @@ eslint-plugin-jest@^24.0.2:
   dependencies:
     "@typescript-eslint/experimental-utils" "^4.0.1"
 
-eslint-plugin-mocha@8.0.0:
-  version "8.0.0"
-  resolved "https://registry.yarnpkg.com/eslint-plugin-mocha/-/eslint-plugin-mocha-8.0.0.tgz#7ec5d228bcb3735301701dfbc3376320a1ca3791"
-  integrity sha512-n67etbWDz6NQM+HnTwZHyBwz/bLlYPOxUbw7bPuCyFujv7ZpaT/Vn6KTAbT02gf7nRljtYIjWcTxK/n8a57rQQ==
+eslint-plugin-mocha@8.1.0:
+  version "8.1.0"
+  resolved "https://registry.yarnpkg.com/eslint-plugin-mocha/-/eslint-plugin-mocha-8.1.0.tgz#b9aebbede46a808e46e622c8fd99d2a2f353e725"
+  integrity sha512-1EgHvXKRl7W3mq3sntZAi5T24agRMyiTPL4bSXe+B4GksYOjAPEWYx+J3eJg4It1l2NMNZJtk0gQyQ6mfiPhQg==
   dependencies:
     eslint-utils "^2.1.0"
     ramda "^0.27.1"
