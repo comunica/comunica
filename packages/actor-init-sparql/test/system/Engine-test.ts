@@ -8,12 +8,15 @@ import { mockHttp } from './util';
 const arrayifyStream = require('arrayify-stream');
 
 describe('System test: ActorInitSparql', () => {
-  mockHttp();
+  const pollyContext = mockHttp();
 
   let engine: ActorInitSparql;
 
   beforeEach(() => {
     engine = newEngine();
+    pollyContext.polly.server.any().on('beforePersist', (req, recording) => {
+      recording.request.headers = recording.request.headers.filter(({ name }: any) => name !== 'user-agent');
+    });
   });
 
   describe('query', () => {

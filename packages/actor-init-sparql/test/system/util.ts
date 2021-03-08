@@ -16,5 +16,10 @@ export function mockHttp() {
     persister: 'fs',
     persisterOptions: { fs: { recordingsDir }},
     recordFailedRequests: true,
+    matchRequestsBy: {
+      headers: {
+        exclude: [ 'user-agent' ],
+      },
+    },
   });
 }
