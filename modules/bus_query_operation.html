@@ -1,0 +1,696 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>bus-query-operation | Comunica</title>
+	<meta name="description" content="Documentation for Comunica">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="../assets/css/main.css">
+	<script async src="../assets/js/search.js" id="search-script"></script>
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.json" data-base="..">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="../index.html" class="title">Comunica</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="../modules.html">Comunica</a>
+				</li>
+				<li>
+					<a href="bus_query_operation.html">bus-query-operation</a>
+				</li>
+			</ul>
+			<h1>Module bus-query-operation</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<a href="#comunica-bus-query-operation" id="comunica-bus-query-operation" style="color: inherit; text-decoration: none;">
+						<h1>Comunica Bus Query Operation</h1>
+					</a>
+					<p><a href="https://www.npmjs.com/package/@comunica/bus-query-operation"><img src="https://badge.fury.io/js/%40comunica%2Fbus-query-operation.svg" alt="npm version"></a></p>
+					<p>A bus for evaluating <a href="https://comunica.dev/docs/modify/advanced/algebra/">SPARQL algebra operations</a>.</p>
+					<p>This module is part of the <a href="https://github.com/comunica/comunica">Comunica framework</a>,
+					and should only be used by <a href="https://comunica.dev/docs/modify/">developers that want to build their own query engine</a>.</p>
+					<p><a href="https://comunica.dev/docs/query/">Click here if you just want to query with Comunica</a>.</p>
+					<a href="#install" id="install" style="color: inherit; text-decoration: none;">
+						<h2>Install</h2>
+					</a>
+					<pre><code class="language-bash"><span style="color: #000000">$ yarn add @comunica/bus-query-operation</span>
+</code></pre>
+					<a href="#bus-usage" id="bus-usage" style="color: inherit; text-decoration: none;">
+						<h2>Bus usage</h2>
+					</a>
+					<ul>
+						<li><strong>Context</strong>: <code>&quot;https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-query-operation/^1.0.0/components/context.jsonld&quot;</code></li>
+						<li><strong>Bus name</strong>: <code>cbqo:Bus/QueryOperation</code></li>
+					</ul>
+					<a href="#creating-actors-on-this-bus" id="creating-actors-on-this-bus" style="color: inherit; text-decoration: none;">
+						<h2>Creating actors on this bus</h2>
+					</a>
+					<p>Actors extending <a href="https://comunica.github.io/comunica/classes/bus_query_operation.actorqueryoperation-1.html"><code>ActorQueryOperation</code></a> or <a href="https://comunica.github.io/comunica/classes/bus_query_operation.actorqueryoperationtyped-1.html"><code>ActorQueryOperationTyped</code></a> are automatically subscribed to this bus.</p>
+					<p>It is recommended to extend from <code>ActorQueryOperationTyped</code> if your actor supports a single query operation,
+						as the bus will be able to handle this actor more efficiently.
+					This is not applicable if your actor handles multiple different types of query operations.</p>
+				</div>
+			</section>
+			<section class="tsd-panel-group tsd-index-group">
+				<h2>Index</h2>
+				<section class="tsd-panel tsd-index-panel">
+					<div class="tsd-index-content">
+						<section class="tsd-index-section ">
+							<h3>References</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-reference tsd-parent-kind-module"><a href="bus_query_operation.html#bindingsstream" class="tsd-kind-icon">Bindings<wbr>Stream</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module"><a href="bus_query_operation.html#iactionqueryoperation" class="tsd-kind-icon">IAction<wbr>Query<wbr>Operation</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module"><a href="bus_query_operation.html#iactorqueryoperationoutput" class="tsd-kind-icon">IActor<wbr>Query<wbr>Operation<wbr>Output</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module"><a href="bus_query_operation.html#iactorqueryoperationoutputbindings" class="tsd-kind-icon">IActor<wbr>Query<wbr>Operation<wbr>Output<wbr>Bindings</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module"><a href="bus_query_operation.html#iactorqueryoperationoutputboolean" class="tsd-kind-icon">IActor<wbr>Query<wbr>Operation<wbr>Output<wbr>Boolean</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module"><a href="bus_query_operation.html#iactorqueryoperationoutputquads" class="tsd-kind-icon">IActor<wbr>Query<wbr>Operation<wbr>Output<wbr>Quads</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module"><a href="bus_query_operation.html#iactorqueryoperationoutputstream" class="tsd-kind-icon">IActor<wbr>Query<wbr>Operation<wbr>Output<wbr>Stream</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module"><a href="bus_query_operation.html#ipatternbindings" class="tsd-kind-icon">IPattern<wbr>Bindings</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Classes</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-class tsd-parent-kind-module"><a href="../classes/bus_query_operation.actorqueryoperation.html" class="tsd-kind-icon">Actor<wbr>Query<wbr>Operation</a></li>
+								<li class="tsd-kind-class tsd-parent-kind-module tsd-has-type-parameter"><a href="../classes/bus_query_operation.actorqueryoperationtyped.html" class="tsd-kind-icon">Actor<wbr>Query<wbr>Operation<wbr>Typed</a></li>
+								<li class="tsd-kind-class tsd-parent-kind-module tsd-has-type-parameter"><a href="../classes/bus_query_operation.actorqueryoperationtypedmediated.html" class="tsd-kind-icon">Actor<wbr>Query<wbr>Operation<wbr>Typed<wbr>Mediated</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Interfaces</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-interface tsd-parent-kind-module"><a href="../interfaces/bus_query_operation.iactorqueryoperationtypedmediatedargs.html" class="tsd-kind-icon">IActor<wbr>Query<wbr>Operation<wbr>Typed<wbr>Mediated<wbr>Args</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module"><a href="../interfaces/bus_query_operation.iexpressioncontext.html" class="tsd-kind-icon">IExpression<wbr>Context</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Variables</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-variable tsd-parent-kind-module"><a href="bus_query_operation.html#key_context_baseiri" class="tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>BASEIRI</a></li>
+								<li class="tsd-kind-variable tsd-parent-kind-module"><a href="bus_query_operation.html#key_context_bgp_currentmetadata" class="tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>BGP_<wbr>CURRENTMETADATA</a></li>
+								<li class="tsd-kind-variable tsd-parent-kind-module"><a href="bus_query_operation.html#key_context_bgp_parentmetadata" class="tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>BGP_<wbr>PARENTMETADATA</a></li>
+								<li class="tsd-kind-variable tsd-parent-kind-module"><a href="bus_query_operation.html#key_context_bgp_patternbindings" class="tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>BGP_<wbr>PATTERNBINDINGS</a></li>
+								<li class="tsd-kind-variable tsd-parent-kind-module"><a href="bus_query_operation.html#key_context_pattern_parentmetadata" class="tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>PATTERN_<wbr>PARENTMETADATA</a></li>
+								<li class="tsd-kind-variable tsd-parent-kind-module"><a href="bus_query_operation.html#key_context_queryoperation" class="tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>QUERYOPERATION</a></li>
+								<li class="tsd-kind-variable tsd-parent-kind-module"><a href="bus_query_operation.html#key_context_query_timestamp" class="tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>QUERY_<wbr>TIMESTAMP</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section ">
+							<h3>Functions</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-function tsd-parent-kind-module"><a href="bus_query_operation.html#bindings" class="tsd-kind-icon">Bindings</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-module"><a href="bus_query_operation.html#ensurebindings" class="tsd-kind-icon">ensure<wbr>Bindings</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-module"><a href="bus_query_operation.html#getmetadata" class="tsd-kind-icon">get<wbr>Metadata</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-module"><a href="bus_query_operation.html#isbindings" class="tsd-kind-icon">is<wbr>Bindings</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-module"><a href="bus_query_operation.html#materializeoperation" class="tsd-kind-icon">materialize<wbr>Operation</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-module"><a href="bus_query_operation.html#materializeterm" class="tsd-kind-icon">materialize<wbr>Term</a></li>
+							</ul>
+						</section>
+					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>References</h2>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module">
+					<a name="bindingsstream" class="tsd-anchor"></a>
+					<h3>Bindings<wbr>Stream</h3>
+					Re-exports <a href="">BindingsStream</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module">
+					<a name="iactionqueryoperation" class="tsd-anchor"></a>
+					<h3>IAction<wbr>Query<wbr>Operation</h3>
+					Re-exports <a href="">IActionQueryOperation</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module">
+					<a name="iactorqueryoperationoutput" class="tsd-anchor"></a>
+					<h3>IActor<wbr>Query<wbr>Operation<wbr>Output</h3>
+					Re-exports <a href="">IActorQueryOperationOutput</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module">
+					<a name="iactorqueryoperationoutputbindings" class="tsd-anchor"></a>
+					<h3>IActor<wbr>Query<wbr>Operation<wbr>Output<wbr>Bindings</h3>
+					Re-exports <a href="">IActorQueryOperationOutputBindings</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module">
+					<a name="iactorqueryoperationoutputboolean" class="tsd-anchor"></a>
+					<h3>IActor<wbr>Query<wbr>Operation<wbr>Output<wbr>Boolean</h3>
+					Re-exports <a href="">IActorQueryOperationOutputBoolean</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module">
+					<a name="iactorqueryoperationoutputquads" class="tsd-anchor"></a>
+					<h3>IActor<wbr>Query<wbr>Operation<wbr>Output<wbr>Quads</h3>
+					Re-exports <a href="">IActorQueryOperationOutputQuads</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module">
+					<a name="iactorqueryoperationoutputstream" class="tsd-anchor"></a>
+					<h3>IActor<wbr>Query<wbr>Operation<wbr>Output<wbr>Stream</h3>
+					Re-exports <a href="">IActorQueryOperationOutputStream</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module">
+					<a name="ipatternbindings" class="tsd-anchor"></a>
+					<h3>IPattern<wbr>Bindings</h3>
+					Renames and exports <a href="">PatternBindings</a>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Variables</h2>
+				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-module">
+					<a name="key_context_baseiri" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagConst">Const</span> KEY_<wbr>CONTEXT_<wbr>BASEIRI</h3>
+					<div class="tsd-signature tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>BASEIRI<span class="tsd-signature-symbol">:</span> <a href="../enums/context_entries.keysinitsparql.html#baseiri" class="tsd-signature-type" data-tsd-kind="Enumeration member">baseIRI</a><span class="tsd-signature-symbol"> = ...</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/47bb4d3/packages/bus-query-operation/lib/ActorQueryOperation.ts#L89">packages/bus-query-operation/lib/ActorQueryOperation.ts:89</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<dl class="tsd-comment-tags">
+							<dt>value</dt>
+							<dd><p>{any} A string.</p>
+							</dd>
+							<dt>deprecated</dt>
+							<dd><p>Import this constant from @comunica/context-entries.</p>
+							</dd>
+						</dl>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-module">
+					<a name="key_context_bgp_currentmetadata" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagConst">Const</span> KEY_<wbr>CONTEXT_<wbr>BGP_<wbr>CURRENTMETADATA</h3>
+					<div class="tsd-signature tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>BGP_<wbr>CURRENTMETADATA<span class="tsd-signature-symbol">:</span> <a href="../enums/context_entries.keysqueryoperation.html#bgpcurrentmetadata" class="tsd-signature-type" data-tsd-kind="Enumeration member">bgpCurrentMetadata</a><span class="tsd-signature-symbol"> = ...</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/47bb4d3/packages/bus-query-operation/lib/ActorQueryOperation.ts#L58">packages/bus-query-operation/lib/ActorQueryOperation.ts:58</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<dl class="tsd-comment-tags">
+							<dt>value</dt>
+							<dd><p>{any} A metadata hash.</p>
+							</dd>
+							<dt>deprecated</dt>
+							<dd><p>Import this constant from @comunica/context-entries.</p>
+							</dd>
+						</dl>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-module">
+					<a name="key_context_bgp_parentmetadata" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagConst">Const</span> KEY_<wbr>CONTEXT_<wbr>BGP_<wbr>PARENTMETADATA</h3>
+					<div class="tsd-signature tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>BGP_<wbr>PARENTMETADATA<span class="tsd-signature-symbol">:</span> <a href="../enums/context_entries.keysqueryoperation.html#bgpparentmetadata" class="tsd-signature-type" data-tsd-kind="Enumeration member">bgpParentMetadata</a><span class="tsd-signature-symbol"> = ...</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/47bb4d3/packages/bus-query-operation/lib/ActorQueryOperation.ts#L67">packages/bus-query-operation/lib/ActorQueryOperation.ts:67</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<dl class="tsd-comment-tags">
+							<dt>value</dt>
+							<dd><p>{any} An array of metadata hashes.</p>
+							</dd>
+							<dt>deprecated</dt>
+							<dd><p>Import this constant from @comunica/context-entries.</p>
+							</dd>
+						</dl>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-module">
+					<a name="key_context_bgp_patternbindings" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagConst">Const</span> KEY_<wbr>CONTEXT_<wbr>BGP_<wbr>PATTERNBINDINGS</h3>
+					<div class="tsd-signature tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>BGP_<wbr>PATTERNBINDINGS<span class="tsd-signature-symbol">:</span> <a href="../enums/context_entries.keysqueryoperation.html#bgppatternbindings" class="tsd-signature-type" data-tsd-kind="Enumeration member">bgpPatternBindings</a><span class="tsd-signature-symbol"> = ...</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/47bb4d3/packages/bus-query-operation/lib/ActorQueryOperation.ts#L75">packages/bus-query-operation/lib/ActorQueryOperation.ts:75</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<dl class="tsd-comment-tags">
+							<dt>value</dt>
+							<dd><p>{any} An array of {@link PatternBindings}.</p>
+							</dd>
+							<dt>deprecated</dt>
+							<dd><p>Import this constant from @comunica/context-entries.</p>
+							</dd>
+						</dl>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-module">
+					<a name="key_context_pattern_parentmetadata" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagConst">Const</span> KEY_<wbr>CONTEXT_<wbr>PATTERN_<wbr>PARENTMETADATA</h3>
+					<div class="tsd-signature tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>PATTERN_<wbr>PARENTMETADATA<span class="tsd-signature-symbol">:</span> <a href="../enums/context_entries.keysqueryoperation.html#patternparentmetadata" class="tsd-signature-type" data-tsd-kind="Enumeration member">patternParentMetadata</a><span class="tsd-signature-symbol"> = ...</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/47bb4d3/packages/bus-query-operation/lib/ActorQueryOperation.ts#L83">packages/bus-query-operation/lib/ActorQueryOperation.ts:83</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<dl class="tsd-comment-tags">
+							<dt>value</dt>
+							<dd><p>{any} A metadata hash.</p>
+							</dd>
+							<dt>deprecated</dt>
+							<dd><p>Import this constant from @comunica/context-entries.</p>
+							</dd>
+						</dl>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-module">
+					<a name="key_context_queryoperation" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagConst">Const</span> KEY_<wbr>CONTEXT_<wbr>QUERYOPERATION</h3>
+					<div class="tsd-signature tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>QUERYOPERATION<span class="tsd-signature-symbol">:</span> <a href="../enums/context_entries.keysqueryoperation.html#operation" class="tsd-signature-type" data-tsd-kind="Enumeration member">operation</a><span class="tsd-signature-symbol"> = ...</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/47bb4d3/packages/bus-query-operation/lib/ActorQueryOperationTyped.ts#L12">packages/bus-query-operation/lib/ActorQueryOperationTyped.ts:12</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<dl class="tsd-comment-tags">
+							<dt>deprecated</dt>
+							<dd><p>Import this constant from @comunica/context-entries.</p>
+							</dd>
+						</dl>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-module">
+					<a name="key_context_query_timestamp" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagConst">Const</span> KEY_<wbr>CONTEXT_<wbr>QUERY_<wbr>TIMESTAMP</h3>
+					<div class="tsd-signature tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>QUERY_<wbr>TIMESTAMP<span class="tsd-signature-symbol">:</span> <a href="../enums/context_entries.keysinitsparql.html#querytimestamp" class="tsd-signature-type" data-tsd-kind="Enumeration member">queryTimestamp</a><span class="tsd-signature-symbol"> = ...</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/47bb4d3/packages/bus-query-operation/lib/ActorQueryOperation.ts#L96">packages/bus-query-operation/lib/ActorQueryOperation.ts:96</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<dl class="tsd-comment-tags">
+							<dt>value</dt>
+							<dd><p>{any} a date.</p>
+							</dd>
+							<dt>deprecated</dt>
+							<dd><p>Import this constant from @comunica/context-entries.</p>
+							</dd>
+						</dl>
+					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Functions</h2>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module">
+					<a name="bindings" class="tsd-anchor"></a>
+					<h3>Bindings</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module">
+						<li class="tsd-signature tsd-kind-icon">Bindings<span class="tsd-signature-symbol">(</span>hash<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">RDF.Term</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="bus_query_operation.html#bindings" class="tsd-signature-type" data-tsd-kind="Function">Bindings</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/47bb4d3/packages/bus-query-operation/lib/Bindings.ts#L19">packages/bus-query-operation/lib/Bindings.ts:19</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>A convenience constructor for bindings based on a given hash.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>hash: <span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">RDF.Term</span><span class="tsd-signature-symbol">&gt;</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>A hash that maps variable names to terms.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="bus_query_operation.html#bindings" class="tsd-signature-type" data-tsd-kind="Function">Bindings</a></h4>
+							<p>The immutable bindings from the hash.</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module">
+					<a name="ensurebindings" class="tsd-anchor"></a>
+					<h3>ensure<wbr>Bindings</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module">
+						<li class="tsd-signature tsd-kind-icon">ensure<wbr>Bindings<span class="tsd-signature-symbol">(</span>maybeBindings<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="bus_query_operation.html#bindings" class="tsd-signature-type" data-tsd-kind="Function">Bindings</a></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/47bb4d3/packages/bus-query-operation/lib/Bindings.ts#L38">packages/bus-query-operation/lib/Bindings.ts:38</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Convert the given object to a bindings object if it is not a bindings object yet.
+									If it already is a bindings object, return the object as-is.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>maybeBindings: <span class="tsd-signature-type">any</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Any object.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <a href="bus_query_operation.html#bindings" class="tsd-signature-type" data-tsd-kind="Function">Bindings</a></h4>
+							<p>A bindings object.</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module">
+					<a name="getmetadata" class="tsd-anchor"></a>
+					<h3>get<wbr>Metadata</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module">
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Metadata<span class="tsd-signature-symbol">(</span>actionOutput<span class="tsd-signature-symbol">: </span><a href="" class="tsd-signature-type" data-tsd-kind="Interface">IActorQueryOperationOutputStream</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/47bb4d3/packages/bus-query-operation/lib/ActorQueryOperation.ts#L234">packages/bus-query-operation/lib/ActorQueryOperation.ts:234</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Helper function to get the metadata of an action output.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>actionOutput: <a href="" class="tsd-signature-type" data-tsd-kind="Interface">IActorQueryOperationOutputStream</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>An action output, with an optional metadata function.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<p>The metadata.</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module">
+					<a name="isbindings" class="tsd-anchor"></a>
+					<h3>is<wbr>Bindings</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module">
+						<li class="tsd-signature tsd-kind-icon">is<wbr>Bindings<span class="tsd-signature-symbol">(</span>maybeBindings<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/47bb4d3/packages/bus-query-operation/lib/Bindings.ts#L28">packages/bus-query-operation/lib/Bindings.ts:28</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Check if the given object is a bindings object.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>maybeBindings: <span class="tsd-signature-type">any</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Any object.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
+							<p>If the object is a bindings object.</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module">
+					<a name="materializeoperation" class="tsd-anchor"></a>
+					<h3>materialize<wbr>Operation</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module">
+						<li class="tsd-signature tsd-kind-icon">materialize<wbr>Operation<span class="tsd-signature-symbol">(</span>operation<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Algebra.Operation</span>, bindings<span class="tsd-signature-symbol">: </span><a href="bus_query_operation.html#bindings" class="tsd-signature-type" data-tsd-kind="Function">Bindings</a>, strictTargetVariables<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Algebra.Operation</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/47bb4d3/packages/bus-query-operation/lib/Bindings.ts#L73">packages/bus-query-operation/lib/Bindings.ts:73</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Materialize the given operation (recursively) with the given bindings.
+										Essentially, all variables in the given operation will be replaced
+									by the terms bound to the variables in the given bindings.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>operation: <span class="tsd-signature-type">Algebra.Operation</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>SPARQL algebra operation.</p>
+									</div>
+								</li>
+								<li>
+									<h5>bindings: <a href="bus_query_operation.html#bindings" class="tsd-signature-type" data-tsd-kind="Function">Bindings</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>A bindings object.</p>
+									</div>
+								</li>
+								<li>
+									<h5>strictTargetVariables: <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = false</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>If target variable bindings (such as on SELECT or BIND) should not be allowed.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Algebra.Operation</span></h4>
+							<p>Algebra.Operation A new operation materialized with the given bindings.</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-module">
+					<a name="materializeterm" class="tsd-anchor"></a>
+					<h3>materialize<wbr>Term</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-module">
+						<li class="tsd-signature tsd-kind-icon">materialize<wbr>Term<span class="tsd-signature-symbol">(</span>term<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">RDF.Term</span>, bindings<span class="tsd-signature-symbol">: </span><a href="bus_query_operation.html#bindings" class="tsd-signature-type" data-tsd-kind="Function">Bindings</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">RDF.Term</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/47bb4d3/packages/bus-query-operation/lib/Bindings.ts#L54">packages/bus-query-operation/lib/Bindings.ts:54</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Materialize a term with the given binding.</p>
+								</div>
+								<p>If the given term is a variable,
+									and that variable exist in the given bindings object,
+									the value of that binding is returned.
+								In all other cases, the term itself is returned.</p>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>term: <span class="tsd-signature-type">RDF.Term</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>A term.</p>
+									</div>
+								</li>
+								<li>
+									<h5>bindings: <a href="bus_query_operation.html#bindings" class="tsd-signature-type" data-tsd-kind="Function">Bindings</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>A bindings object.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">RDF.Term</span></h4>
+							<p>The materialized term.</p>
+						</li>
+					</ul>
+				</section>
+			</section>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class=" ">
+						<a href="../modules.html">Modules</a>
+					</li>
+					<li class="current tsd-kind-module">
+						<a href="bus_query_operation.html">bus-<wbr>query-<wbr>operation</a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+				</ul>
+				<ul class="current">
+					<li class="current tsd-kind-module">
+						<a href="bus_query_operation.html" class="tsd-kind-icon">bus-<wbr>query-<wbr>operation</a>
+						<ul>
+							<li class=" tsd-kind-reference tsd-parent-kind-module">
+								<a href="bus_query_operation.html#bindingsstream" class="tsd-kind-icon">Bindings<wbr>Stream</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module">
+								<a href="bus_query_operation.html#iactionqueryoperation" class="tsd-kind-icon">IAction<wbr>Query<wbr>Operation</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module">
+								<a href="bus_query_operation.html#iactorqueryoperationoutput" class="tsd-kind-icon">IActor<wbr>Query<wbr>Operation<wbr>Output</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module">
+								<a href="bus_query_operation.html#iactorqueryoperationoutputbindings" class="tsd-kind-icon">IActor<wbr>Query<wbr>Operation<wbr>Output<wbr>Bindings</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module">
+								<a href="bus_query_operation.html#iactorqueryoperationoutputboolean" class="tsd-kind-icon">IActor<wbr>Query<wbr>Operation<wbr>Output<wbr>Boolean</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module">
+								<a href="bus_query_operation.html#iactorqueryoperationoutputquads" class="tsd-kind-icon">IActor<wbr>Query<wbr>Operation<wbr>Output<wbr>Quads</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module">
+								<a href="bus_query_operation.html#iactorqueryoperationoutputstream" class="tsd-kind-icon">IActor<wbr>Query<wbr>Operation<wbr>Output<wbr>Stream</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module">
+								<a href="bus_query_operation.html#ipatternbindings" class="tsd-kind-icon">IPattern<wbr>Bindings</a>
+							</li>
+							<li class=" tsd-kind-class tsd-parent-kind-module">
+								<a href="../classes/bus_query_operation.actorqueryoperation.html" class="tsd-kind-icon">Actor<wbr>Query<wbr>Operation</a>
+							</li>
+							<li class=" tsd-kind-class tsd-parent-kind-module tsd-has-type-parameter">
+								<a href="../classes/bus_query_operation.actorqueryoperationtyped.html" class="tsd-kind-icon">Actor<wbr>Query<wbr>Operation<wbr>Typed</a>
+							</li>
+							<li class=" tsd-kind-class tsd-parent-kind-module tsd-has-type-parameter">
+								<a href="../classes/bus_query_operation.actorqueryoperationtypedmediated.html" class="tsd-kind-icon">Actor<wbr>Query<wbr>Operation<wbr>Typed<wbr>Mediated</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module">
+								<a href="../interfaces/bus_query_operation.iactorqueryoperationtypedmediatedargs.html" class="tsd-kind-icon">IActor<wbr>Query<wbr>Operation<wbr>Typed<wbr>Mediated<wbr>Args</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module">
+								<a href="../interfaces/bus_query_operation.iexpressioncontext.html" class="tsd-kind-icon">IExpression<wbr>Context</a>
+							</li>
+							<li class=" tsd-kind-variable tsd-parent-kind-module">
+								<a href="bus_query_operation.html#key_context_baseiri" class="tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>BASEIRI</a>
+							</li>
+							<li class=" tsd-kind-variable tsd-parent-kind-module">
+								<a href="bus_query_operation.html#key_context_bgp_currentmetadata" class="tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>BGP_<wbr>CURRENTMETADATA</a>
+							</li>
+							<li class=" tsd-kind-variable tsd-parent-kind-module">
+								<a href="bus_query_operation.html#key_context_bgp_parentmetadata" class="tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>BGP_<wbr>PARENTMETADATA</a>
+							</li>
+							<li class=" tsd-kind-variable tsd-parent-kind-module">
+								<a href="bus_query_operation.html#key_context_bgp_patternbindings" class="tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>BGP_<wbr>PATTERNBINDINGS</a>
+							</li>
+							<li class=" tsd-kind-variable tsd-parent-kind-module">
+								<a href="bus_query_operation.html#key_context_pattern_parentmetadata" class="tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>PATTERN_<wbr>PARENTMETADATA</a>
+							</li>
+							<li class=" tsd-kind-variable tsd-parent-kind-module">
+								<a href="bus_query_operation.html#key_context_queryoperation" class="tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>QUERYOPERATION</a>
+							</li>
+							<li class=" tsd-kind-variable tsd-parent-kind-module">
+								<a href="bus_query_operation.html#key_context_query_timestamp" class="tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>QUERY_<wbr>TIMESTAMP</a>
+							</li>
+							<li class=" tsd-kind-function tsd-parent-kind-module">
+								<a href="bus_query_operation.html#bindings" class="tsd-kind-icon">Bindings</a>
+							</li>
+							<li class=" tsd-kind-function tsd-parent-kind-module">
+								<a href="bus_query_operation.html#ensurebindings" class="tsd-kind-icon">ensure<wbr>Bindings</a>
+							</li>
+							<li class=" tsd-kind-function tsd-parent-kind-module">
+								<a href="bus_query_operation.html#getmetadata" class="tsd-kind-icon">get<wbr>Metadata</a>
+							</li>
+							<li class=" tsd-kind-function tsd-parent-kind-module">
+								<a href="bus_query_operation.html#isbindings" class="tsd-kind-icon">is<wbr>Bindings</a>
+							</li>
+							<li class=" tsd-kind-function tsd-parent-kind-module">
+								<a href="bus_query_operation.html#materializeoperation" class="tsd-kind-icon">materialize<wbr>Operation</a>
+							</li>
+							<li class=" tsd-kind-function tsd-parent-kind-module">
+								<a href="bus_query_operation.html#materializeterm" class="tsd-kind-icon">materialize<wbr>Term</a>
+							</li>
+						</ul>
+					</li>
+				</ul>
+				<ul class="after-current">
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
+				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
+				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
+				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
+				<li class="tsd-kind-class tsd-has-type-parameter"><span class="tsd-kind-icon">Class with type parameter</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-enum"><span class="tsd-kind-icon">Enumeration</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="../assets/js/main.js"></script>
+</body>
+</html>

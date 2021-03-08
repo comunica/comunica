@@ -1,0 +1,1057 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>Comunica</title>
+	<meta name="description" content="Documentation for Comunica">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="assets/css/main.css">
+	<script async src="assets/js/search.js" id="search-script"></script>
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="assets/js/search.json" data-base=".">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="index.html" class="title">Comunica</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<h1>Comunica</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<div class="tsd-panel tsd-typography">
+				<p align="center">
+					<a href="https://comunica.dev/">
+						<img alt="Comunica" src="https://comunica.dev/img/comunica_red.svg" width="200">
+					</a>
+				</p>
+				<p align="center">
+					<strong>A knowledge graph querying framework for JavaScript</strong>
+					<br />
+					<i>Flexible SPARQL and GraphQL over decentralized RDF on the Web.</i>
+				</p>
+				<p align="center">
+					<a href="https://travis-ci.com/comunica/comunica"><img src="https://travis-ci.com/comunica/comunica.svg?branch=master" alt="Build Status"></a>
+					<a href="https://coveralls.io/github/comunica/comunica?branch=master"><img src="https://coveralls.io/repos/github/comunica/comunica/badge.svg?branch=master" alt="Coverage Status"></a>
+					<a href="https://zenodo.org/badge/latestdoi/107345960"><img src="https://zenodo.org/badge/107345960.svg" alt="DOI"></a>
+					<a href="https://gitter.im/comunica/Lobby"><img src="https://badges.gitter.im/comunica.png" alt="Gitter chat"></a>
+				</p>
+				<p><strong><a href="https://comunica.dev/">Learn more about Comunica on our website</a>.</strong></p>
+				<a href="#query-with-comunica" id="query-with-comunica" style="color: inherit; text-decoration: none;">
+					<h2>Query with Comunica</h2>
+				</a>
+				<p>Read one of our <a href="https://comunica.dev/docs/query/getting_started/">guides to <strong>get started</strong> with querying</a>:</p>
+				<ul>
+					<li><a href="https://comunica.dev/docs/query/getting_started/query_cli/">Querying from the command line</a></li>
+					<li><a href="https://comunica.dev/docs/query/getting_started/query_cli_file/">Querying local files from the command line</a></li>
+					<li><a href="https://comunica.dev/docs/query/getting_started/query_app/">Querying in a JavaScript app</a></li>
+					<li><a href="https://comunica.dev/docs/query/getting_started/query_browser_app/">Querying in a JavaScript browser app</a></li>
+					<li><a href="https://comunica.dev/docs/query/getting_started/setup_endpoint/">Setting up a SPARQL endpoint</a></li>
+					<li><a href="https://comunica.dev/docs/query/getting_started/query_docker/">Querying from a Docker container</a></li>
+					<li><a href="https://comunica.dev/docs/query/getting_started/setup_web_client/">Setting up a Web client</a></li>
+					<li><a href="https://comunica.dev/docs/query/getting_started/query_dev_version/">Query using the latest development version</a></li>
+				</ul>
+				<p>Or jump right into one of the available query engines:</p>
+				<ul>
+					<li><a href="https://github.com/comunica/comunica/tree/master/packages/actor-init-sparql#readme">Comunica SPARQL</a>: SPARQL/GraphQL querying from JavaScript applications or the CLI (<a href="https://github.com/rdfjs/comunica-browser">Browser-ready via a CDN</a>)</li>
+					<li><a href="https://github.com/comunica/comunica/tree/master/packages/actor-init-sparql-file#readme">Comunica SPARQL File</a>: Library to query over local RDF files</li>
+					<li><a href="https://github.com/comunica/comunica/tree/master/packages/actor-init-sparql-rdfjs#readme">Comunica SPARQL RDFJS</a>: Library to query over in-memory <a href="https://rdf.js.org/stream-spec/#source-interface">RDFJS-compliant sources</a>.</li>
+					<li><a href="https://github.com/comunica/comunica-actor-init-sparql-hdt#readme">Comunica SPARQL HDT</a>: Library to query over local HDT files</li>
+				</ul>
+				<a href="#modify-or-extending-comunica" id="modify-or-extending-comunica" style="color: inherit; text-decoration: none;">
+					<h2>Modify or Extending Comunica</h2>
+				</a>
+				<p><a href="https://comunica.dev/docs/modify/">Read one of our guides to <strong>get started</strong> with modifying Comunica</a>,
+				or have a look at some <a href="https://github.com/comunica/examples">examples</a>:</p>
+				<ul>
+					<li><a href="https://comunica.dev/docs/modify/getting_started/custom_config_cli/">Querying with a custom configuration from the command line</a></li>
+					<li><a href="https://comunica.dev/docs/modify/getting_started/custom_config_app/">Querying with a custom configuration in a JavaScript app</a></li>
+					<li><a href="https://comunica.dev/docs/modify/getting_started/custom_init/">Exposing your custom config as an npm package</a></li>
+					<li><a href="https://comunica.dev/docs/modify/getting_started/custom_web_client/">Exposing your custom config in a Web client</a></li>
+					<li><a href="https://comunica.dev/docs/modify/getting_started/contribute_actor/">Contributing a new query operation actor to the Comunica repository</a></li>
+					<li><a href="https://comunica.dev/docs/modify/getting_started/actor_parameter/">Adding a config parameter to an actor</a></li>
+				</ul>
+				<a href="#contribute" id="contribute" style="color: inherit; text-decoration: none;">
+					<h2>Contribute</h2>
+				</a>
+				<p>Interested in contributing? Have a look at our <a href="https://comunica.dev/contribute/">contribution guide</a>.</p>
+				<a href="#development-setup" id="development-setup" style="color: inherit; text-decoration: none;">
+					<h2>Development Setup</h2>
+				</a>
+				<p><em>(JSDoc: <a href="https://comunica.github.io/comunica/">https://comunica.github.io/comunica/</a>)</em></p>
+				<p>This repository should be used by Comunica module <strong>developers</strong> as it contains multiple Comunica modules that can be composed.
+					This repository is managed as a <a href="https://github.com/babel/babel/blob/master/doc/design/monorepo.md">monorepo</a>
+				using <a href="https://lernajs.io/">Lerna</a>.</p>
+				<p>If you want to develop new features
+					or use the (potentially unstable) in-development version,
+				you can set up a development environment for Comunica.</p>
+				<p>Comunica requires <a href="http://nodejs.org/">Node.JS</a> 8.0 or higher and the <a href="https://yarnpkg.com/en/">Yarn</a> package manager.
+				Comunica is tested on OSX, Linux and Windows.</p>
+				<p>This project can be setup by cloning and installing it as follows:</p>
+				<pre><code class="language-bash"><span style="color: #000000">$ git clone https://github.com/comunica/comunica.git</span>
+<span style="color: #000000">$ </span><span style="color: #795E26">cd</span><span style="color: #000000"> comunica</span>
+<span style="color: #000000">$ yarn install</span>
+</code></pre>
+				<p><strong>Note: <code>npm install</code> is not supported at the moment, as this project makes use of Yarn&#39;s <a href="https://yarnpkg.com/lang/en/docs/workspaces/">workspaces</a> functionality</strong></p>
+				<p>This will install the dependencies of all modules, and bootstrap the Lerna monorepo.
+					After that, all <a href="https://github.com/comunica/comunica/tree/master/packages">Comunica packages</a> are available in the <code>packages/</code> folder
+				and can be used in a development environment, such as querying with <a href="https://github.com/comunica/comunica/tree/master/packages/actor-init-sparql">Comunica SPARQL (<code>packages/actor-init-sparql</code>)</a>.</p>
+				<p>Furthermore, this will add <a href="https://www.npmjs.com/package/pre-commit">pre-commit hooks</a>
+					to build, lint and test.
+				These hooks can temporarily be disabled at your own risk by adding the <code>-n</code> flag to the commit command.</p>
+				<a href="#benchmarking" id="benchmarking" style="color: inherit; text-decoration: none;">
+					<h2>Benchmarking</h2>
+				</a>
+				<p>If you want to do benchmarking with Comunica in Node.js,
+				make sure to run Node.js in production mode as follows:</p>
+				<pre><code class="language-bash"><span style="color: #000000">&gt; NODE_ENV=production node packages/some-package/bin/some-bin.js</span>
+</code></pre>
+				<p>The reason for this is that Comunica extensively generates
+					internal <code>Error</code> objects.
+					In non-production mode, these also produce long stacktraces,
+				which may in some cases impact performance.</p>
+				<a href="#cite" id="cite" style="color: inherit; text-decoration: none;">
+					<h2>Cite</h2>
+				</a>
+				<p>If you are using or extending Comunica as part of a scientific publication,
+				we would appreciate a citation of our <a href="https://comunica.github.io/Article-ISWC2018-Resource/">article</a>.</p>
+				<pre><code class="language-bibtex">@inproceedings{taelman_iswc_resources_comunica_2018,
+  author    = {Taelman, Ruben and Van Herwegen, Joachim and Vander Sande, Miel and Verborgh, Ruben},
+  title     = {Comunica: a Modular SPARQL Query Engine for the Web},
+  booktitle = {Proceedings of the 17th International Semantic Web Conference},
+  year      = {2018},
+  month     = oct,
+  url       = {https://comunica.github.io/Article-ISWC2018-Resource/}
+}
+</code></pre>
+				<a href="#license" id="license" style="color: inherit; text-decoration: none;">
+					<h2>License</h2>
+				</a>
+				<p>This code is copyrighted by <a href="http://idlab.ugent.be/">Ghent University – imec</a>
+				and released under the <a href="http://opensource.org/licenses/MIT">MIT license</a>.</p>
+			</div>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class=" ">
+						<a href="modules.html">Modules</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_abstract_bindings_hash.html">actor-<wbr>abstract-<wbr>bindings-<wbr>hash</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_abstract_mediatyped.html">actor-<wbr>abstract-<wbr>mediatyped</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_abstract_path.html">actor-<wbr>abstract-<wbr>path</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_context_preprocess_rdf_source_identifier.html">actor-<wbr>context-<wbr>preprocess-<wbr>rdf-<wbr>source-<wbr>identifier</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_http_memento.html">actor-<wbr>http-<wbr>memento</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_http_native.html">actor-<wbr>http-<wbr>native</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_http_node_fetch.html">actor-<wbr>http-<wbr>node-<wbr>fetch</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_http_proxy.html">actor-<wbr>http-<wbr>proxy</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_init_hello_world.html">actor-<wbr>init-<wbr>hello-<wbr>world</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_init_http.html">actor-<wbr>init-<wbr>http</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_init_rdf_dereference.html">actor-<wbr>init-<wbr>rdf-<wbr>dereference</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_init_rdf_dereference_paged.html">actor-<wbr>init-<wbr>rdf-<wbr>dereference-<wbr>paged</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_init_rdf_parse.html">actor-<wbr>init-<wbr>rdf-<wbr>parse</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_init_sparql.html">actor-<wbr>init-<wbr>sparql</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_optimize_query_operation_join_bgp.html">actor-<wbr>optimize-<wbr>query-<wbr>operation-<wbr>join-<wbr>bgp</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_query_operation_ask.html">actor-<wbr>query-<wbr>operation-<wbr>ask</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_query_operation_bgp_empty.html">actor-<wbr>query-<wbr>operation-<wbr>bgp-<wbr>empty</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_query_operation_bgp_left_deep_smallest.html">actor-<wbr>query-<wbr>operation-<wbr>bgp-<wbr>left-<wbr>deep-<wbr>smallest</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_query_operation_bgp_left_deep_smallest_sort.html">actor-<wbr>query-<wbr>operation-<wbr>bgp-<wbr>left-<wbr>deep-<wbr>smallest-<wbr>sort</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_query_operation_bgp_single.html">actor-<wbr>query-<wbr>operation-<wbr>bgp-<wbr>single</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_query_operation_construct.html">actor-<wbr>query-<wbr>operation-<wbr>construct</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_query_operation_describe_subject.html">actor-<wbr>query-<wbr>operation-<wbr>describe-<wbr>subject</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_query_operation_distinct_hash.html">actor-<wbr>query-<wbr>operation-<wbr>distinct-<wbr>hash</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_query_operation_extend.html">actor-<wbr>query-<wbr>operation-<wbr>extend</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_query_operation_filter_direct.html">actor-<wbr>query-<wbr>operation-<wbr>filter-<wbr>direct</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_query_operation_filter_sparqlee.html">actor-<wbr>query-<wbr>operation-<wbr>filter-<wbr>sparqlee</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_query_operation_from_quad.html">actor-<wbr>query-<wbr>operation-<wbr>from-<wbr>quad</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_query_operation_group.html">actor-<wbr>query-<wbr>operation-<wbr>group</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_query_operation_join.html">actor-<wbr>query-<wbr>operation-<wbr>join</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_query_operation_leftjoin_left_deep.html">actor-<wbr>query-<wbr>operation-<wbr>leftjoin-<wbr>left-<wbr>deep</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_query_operation_leftjoin_nestedloop.html">actor-<wbr>query-<wbr>operation-<wbr>leftjoin-<wbr>nestedloop</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_query_operation_minus.html">actor-<wbr>query-<wbr>operation-<wbr>minus</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_query_operation_orderby_direct.html">actor-<wbr>query-<wbr>operation-<wbr>orderby-<wbr>direct</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_query_operation_orderby_sparqlee.html">actor-<wbr>query-<wbr>operation-<wbr>orderby-<wbr>sparqlee</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_query_operation_path_alt.html">actor-<wbr>query-<wbr>operation-<wbr>path-<wbr>alt</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_query_operation_path_inv.html">actor-<wbr>query-<wbr>operation-<wbr>path-<wbr>inv</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_query_operation_path_link.html">actor-<wbr>query-<wbr>operation-<wbr>path-<wbr>link</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_query_operation_path_nps.html">actor-<wbr>query-<wbr>operation-<wbr>path-<wbr>nps</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_query_operation_path_one_or_more.html">actor-<wbr>query-<wbr>operation-<wbr>path-<wbr>one-<wbr>or-<wbr>more</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_query_operation_path_seq.html">actor-<wbr>query-<wbr>operation-<wbr>path-<wbr>seq</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_query_operation_path_zero_or_more.html">actor-<wbr>query-<wbr>operation-<wbr>path-<wbr>zero-<wbr>or-<wbr>more</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_query_operation_path_zero_or_one.html">actor-<wbr>query-<wbr>operation-<wbr>path-<wbr>zero-<wbr>or-<wbr>one</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_query_operation_project.html">actor-<wbr>query-<wbr>operation-<wbr>project</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_query_operation_quadpattern.html">actor-<wbr>query-<wbr>operation-<wbr>quadpattern</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_query_operation_reduced_hash.html">actor-<wbr>query-<wbr>operation-<wbr>reduced-<wbr>hash</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_query_operation_service.html">actor-<wbr>query-<wbr>operation-<wbr>service</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_query_operation_slice.html">actor-<wbr>query-<wbr>operation-<wbr>slice</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_query_operation_sparql_endpoint.html">actor-<wbr>query-<wbr>operation-<wbr>sparql-<wbr>endpoint</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_query_operation_union.html">actor-<wbr>query-<wbr>operation-<wbr>union</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_query_operation_values.html">actor-<wbr>query-<wbr>operation-<wbr>values</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_rdf_dereference_file.html">actor-<wbr>rdf-<wbr>dereference-<wbr>file</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_rdf_dereference_http_parse.html">actor-<wbr>rdf-<wbr>dereference-<wbr>http-<wbr>parse</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_rdf_dereference_paged_next.html">actor-<wbr>rdf-<wbr>dereference-<wbr>paged-<wbr>next</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_rdf_join_hash.html">actor-<wbr>rdf-<wbr>join-<wbr>hash</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_rdf_join_multi_sequential.html">actor-<wbr>rdf-<wbr>join-<wbr>multi-<wbr>sequential</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_rdf_join_multi_smallest.html">actor-<wbr>rdf-<wbr>join-<wbr>multi-<wbr>smallest</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_rdf_join_nestedloop.html">actor-<wbr>rdf-<wbr>join-<wbr>nestedloop</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_rdf_join_symmetrichash.html">actor-<wbr>rdf-<wbr>join-<wbr>symmetrichash</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_rdf_metadata_all.html">actor-<wbr>rdf-<wbr>metadata-<wbr>all</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_rdf_metadata_extract_hydra_controls.html">actor-<wbr>rdf-<wbr>metadata-<wbr>extract-<wbr>hydra-<wbr>controls</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_rdf_metadata_extract_hydra_controls_query.html">actor-<wbr>rdf-<wbr>metadata-<wbr>extract-<wbr>hydra-<wbr>controls-<wbr>query</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_rdf_metadata_extract_hydra_count.html">actor-<wbr>rdf-<wbr>metadata-<wbr>extract-<wbr>hydra-<wbr>count</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_rdf_metadata_extract_hydra_count_query.html">actor-<wbr>rdf-<wbr>metadata-<wbr>extract-<wbr>hydra-<wbr>count-<wbr>query</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_rdf_metadata_extract_hydra_links_query.html">actor-<wbr>rdf-<wbr>metadata-<wbr>extract-<wbr>hydra-<wbr>links-<wbr>query</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_rdf_metadata_extract_sparql_service.html">actor-<wbr>rdf-<wbr>metadata-<wbr>extract-<wbr>sparql-<wbr>service</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_rdf_metadata_primary_topic.html">actor-<wbr>rdf-<wbr>metadata-<wbr>primary-<wbr>topic</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_rdf_metadata_triple_predicate.html">actor-<wbr>rdf-<wbr>metadata-<wbr>triple-<wbr>predicate</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_rdf_parse_html.html">actor-<wbr>rdf-<wbr>parse-<wbr>html</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_rdf_parse_html_microdata.html">actor-<wbr>rdf-<wbr>parse-<wbr>html-<wbr>microdata</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_rdf_parse_html_rdfa.html">actor-<wbr>rdf-<wbr>parse-<wbr>html-<wbr>rdfa</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_rdf_parse_html_script.html">actor-<wbr>rdf-<wbr>parse-<wbr>html-<wbr>script</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_rdf_parse_jsonld.html">actor-<wbr>rdf-<wbr>parse-<wbr>jsonld</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_rdf_parse_n3.html">actor-<wbr>rdf-<wbr>parse-<wbr>n3</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_rdf_parse_rdfxml.html">actor-<wbr>rdf-<wbr>parse-<wbr>rdfxml</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_rdf_parse_xml_rdfa.html">actor-<wbr>rdf-<wbr>parse-<wbr>xml-<wbr>rdfa</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_rdf_resolve_hypermedia_links_next.html">actor-<wbr>rdf-<wbr>resolve-<wbr>hypermedia-<wbr>links-<wbr>next</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_rdf_resolve_hypermedia_none.html">actor-<wbr>rdf-<wbr>resolve-<wbr>hypermedia-<wbr>none</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_rdf_resolve_hypermedia_qpf.html">actor-<wbr>rdf-<wbr>resolve-<wbr>hypermedia-<wbr>qpf</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_rdf_resolve_hypermedia_sparql.html">actor-<wbr>rdf-<wbr>resolve-<wbr>hypermedia-<wbr>sparql</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_rdf_resolve_quad_pattern_federated.html">actor-<wbr>rdf-<wbr>resolve-<wbr>quad-<wbr>pattern-<wbr>federated</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_rdf_resolve_quad_pattern_file.html">actor-<wbr>rdf-<wbr>resolve-<wbr>quad-<wbr>pattern-<wbr>file</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_rdf_resolve_quad_pattern_hypermedia.html">actor-<wbr>rdf-<wbr>resolve-<wbr>quad-<wbr>pattern-<wbr>hypermedia</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_rdf_resolve_quad_pattern_rdfjs_source.html">actor-<wbr>rdf-<wbr>resolve-<wbr>quad-<wbr>pattern-<wbr>rdfjs-<wbr>source</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_rdf_resolve_quad_pattern_sparql_json.html">actor-<wbr>rdf-<wbr>resolve-<wbr>quad-<wbr>pattern-<wbr>sparql-<wbr>json</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_rdf_serialize_jsonld.html">actor-<wbr>rdf-<wbr>serialize-<wbr>jsonld</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_rdf_serialize_n3.html">actor-<wbr>rdf-<wbr>serialize-<wbr>n3</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_rdf_source_identifier_file_content_type.html">actor-<wbr>rdf-<wbr>source-<wbr>identifier-<wbr>file-<wbr>content-<wbr>type</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_rdf_source_identifier_hypermedia_qpf.html">actor-<wbr>rdf-<wbr>source-<wbr>identifier-<wbr>hypermedia-<wbr>qpf</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_rdf_source_identifier_sparql.html">actor-<wbr>rdf-<wbr>source-<wbr>identifier-<wbr>sparql</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_sparql_parse_algebra.html">actor-<wbr>sparql-<wbr>parse-<wbr>algebra</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_sparql_parse_graphql.html">actor-<wbr>sparql-<wbr>parse-<wbr>graphql</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_sparql_serialize_json.html">actor-<wbr>sparql-<wbr>serialize-<wbr>json</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_sparql_serialize_rdf.html">actor-<wbr>sparql-<wbr>serialize-<wbr>rdf</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_sparql_serialize_simple.html">actor-<wbr>sparql-<wbr>serialize-<wbr>simple</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_sparql_serialize_sparql_csv.html">actor-<wbr>sparql-<wbr>serialize-<wbr>sparql-<wbr>csv</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_sparql_serialize_sparql_json.html">actor-<wbr>sparql-<wbr>serialize-<wbr>sparql-<wbr>json</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_sparql_serialize_sparql_tsv.html">actor-<wbr>sparql-<wbr>serialize-<wbr>sparql-<wbr>tsv</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_sparql_serialize_sparql_xml.html">actor-<wbr>sparql-<wbr>serialize-<wbr>sparql-<wbr>xml</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_sparql_serialize_stats.html">actor-<wbr>sparql-<wbr>serialize-<wbr>stats</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_sparql_serialize_table.html">actor-<wbr>sparql-<wbr>serialize-<wbr>table</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_sparql_serialize_tree.html">actor-<wbr>sparql-<wbr>serialize-<wbr>tree</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/bus_context_preprocess.html">bus-<wbr>context-<wbr>preprocess</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/bus_http.html">bus-<wbr>http</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/bus_http_invalidate.html">bus-<wbr>http-<wbr>invalidate</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/bus_init.html">bus-<wbr>init</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/bus_optimize_query_operation.html">bus-<wbr>optimize-<wbr>query-<wbr>operation</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/bus_query_operation.html">bus-<wbr>query-<wbr>operation</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/bus_rdf_dereference.html">bus-<wbr>rdf-<wbr>dereference</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/bus_rdf_dereference_paged.html">bus-<wbr>rdf-<wbr>dereference-<wbr>paged</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/bus_rdf_join.html">bus-<wbr>rdf-<wbr>join</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/bus_rdf_metadata.html">bus-<wbr>rdf-<wbr>metadata</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/bus_rdf_metadata_extract.html">bus-<wbr>rdf-<wbr>metadata-<wbr>extract</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/bus_rdf_parse.html">bus-<wbr>rdf-<wbr>parse</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/bus_rdf_parse_html.html">bus-<wbr>rdf-<wbr>parse-<wbr>html</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/bus_rdf_resolve_hypermedia.html">bus-<wbr>rdf-<wbr>resolve-<wbr>hypermedia</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/bus_rdf_resolve_hypermedia_links.html">bus-<wbr>rdf-<wbr>resolve-<wbr>hypermedia-<wbr>links</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/bus_rdf_resolve_quad_pattern.html">bus-<wbr>rdf-<wbr>resolve-<wbr>quad-<wbr>pattern</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/bus_rdf_serialize.html">bus-<wbr>rdf-<wbr>serialize</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/bus_rdf_source_identifier.html">bus-<wbr>rdf-<wbr>source-<wbr>identifier</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/bus_sparql_parse.html">bus-<wbr>sparql-<wbr>parse</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/bus_sparql_serialize.html">bus-<wbr>sparql-<wbr>serialize</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/context_entries.html">context-<wbr>entries</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/core.html">core</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/data_factory.html">data-<wbr>factory</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/logger_bunyan.html">logger-<wbr>bunyan</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/logger_pretty.html">logger-<wbr>pretty</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/logger_void.html">logger-<wbr>void</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/mediator_all.html">mediator-<wbr>all</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/mediator_combine_pipeline.html">mediator-<wbr>combine-<wbr>pipeline</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/mediator_combine_union.html">mediator-<wbr>combine-<wbr>union</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/mediator_number.html">mediator-<wbr>number</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/mediator_race.html">mediator-<wbr>race</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/mediatortype_httprequests.html">mediatortype-<wbr>httprequests</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/mediatortype_iterations.html">mediatortype-<wbr>iterations</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/mediatortype_priority.html">mediatortype-<wbr>priority</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/mediatortype_time.html">mediatortype-<wbr>time</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/packager.html">packager</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/runner.html">runner</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/runner_cli.html">runner-<wbr>cli</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/utils_datasource.html">utils-<wbr>datasource</a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_abstract_bindings_hash.html" class="tsd-kind-icon">actor-<wbr>abstract-<wbr>bindings-<wbr>hash</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_abstract_mediatyped.html" class="tsd-kind-icon">actor-<wbr>abstract-<wbr>mediatyped</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_abstract_path.html" class="tsd-kind-icon">actor-<wbr>abstract-<wbr>path</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_context_preprocess_rdf_source_identifier.html" class="tsd-kind-icon">actor-<wbr>context-<wbr>preprocess-<wbr>rdf-<wbr>source-<wbr>identifier</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_http_memento.html" class="tsd-kind-icon">actor-<wbr>http-<wbr>memento</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_http_native.html" class="tsd-kind-icon">actor-<wbr>http-<wbr>native</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_http_node_fetch.html" class="tsd-kind-icon">actor-<wbr>http-<wbr>node-<wbr>fetch</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_http_proxy.html" class="tsd-kind-icon">actor-<wbr>http-<wbr>proxy</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_init_hello_world.html" class="tsd-kind-icon">actor-<wbr>init-<wbr>hello-<wbr>world</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_init_http.html" class="tsd-kind-icon">actor-<wbr>init-<wbr>http</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_init_rdf_dereference.html" class="tsd-kind-icon">actor-<wbr>init-<wbr>rdf-<wbr>dereference</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_init_rdf_dereference_paged.html" class="tsd-kind-icon">actor-<wbr>init-<wbr>rdf-<wbr>dereference-<wbr>paged</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_init_rdf_parse.html" class="tsd-kind-icon">actor-<wbr>init-<wbr>rdf-<wbr>parse</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_init_sparql.html" class="tsd-kind-icon">actor-<wbr>init-<wbr>sparql</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_optimize_query_operation_join_bgp.html" class="tsd-kind-icon">actor-<wbr>optimize-<wbr>query-<wbr>operation-<wbr>join-<wbr>bgp</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_query_operation_ask.html" class="tsd-kind-icon">actor-<wbr>query-<wbr>operation-<wbr>ask</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_query_operation_bgp_empty.html" class="tsd-kind-icon">actor-<wbr>query-<wbr>operation-<wbr>bgp-<wbr>empty</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_query_operation_bgp_left_deep_smallest.html" class="tsd-kind-icon">actor-<wbr>query-<wbr>operation-<wbr>bgp-<wbr>left-<wbr>deep-<wbr>smallest</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_query_operation_bgp_left_deep_smallest_sort.html" class="tsd-kind-icon">actor-<wbr>query-<wbr>operation-<wbr>bgp-<wbr>left-<wbr>deep-<wbr>smallest-<wbr>sort</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_query_operation_bgp_single.html" class="tsd-kind-icon">actor-<wbr>query-<wbr>operation-<wbr>bgp-<wbr>single</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_query_operation_construct.html" class="tsd-kind-icon">actor-<wbr>query-<wbr>operation-<wbr>construct</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_query_operation_describe_subject.html" class="tsd-kind-icon">actor-<wbr>query-<wbr>operation-<wbr>describe-<wbr>subject</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_query_operation_distinct_hash.html" class="tsd-kind-icon">actor-<wbr>query-<wbr>operation-<wbr>distinct-<wbr>hash</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_query_operation_extend.html" class="tsd-kind-icon">actor-<wbr>query-<wbr>operation-<wbr>extend</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_query_operation_filter_direct.html" class="tsd-kind-icon">actor-<wbr>query-<wbr>operation-<wbr>filter-<wbr>direct</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_query_operation_filter_sparqlee.html" class="tsd-kind-icon">actor-<wbr>query-<wbr>operation-<wbr>filter-<wbr>sparqlee</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_query_operation_from_quad.html" class="tsd-kind-icon">actor-<wbr>query-<wbr>operation-<wbr>from-<wbr>quad</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_query_operation_group.html" class="tsd-kind-icon">actor-<wbr>query-<wbr>operation-<wbr>group</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_query_operation_join.html" class="tsd-kind-icon">actor-<wbr>query-<wbr>operation-<wbr>join</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_query_operation_leftjoin_left_deep.html" class="tsd-kind-icon">actor-<wbr>query-<wbr>operation-<wbr>leftjoin-<wbr>left-<wbr>deep</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_query_operation_leftjoin_nestedloop.html" class="tsd-kind-icon">actor-<wbr>query-<wbr>operation-<wbr>leftjoin-<wbr>nestedloop</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_query_operation_minus.html" class="tsd-kind-icon">actor-<wbr>query-<wbr>operation-<wbr>minus</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_query_operation_orderby_direct.html" class="tsd-kind-icon">actor-<wbr>query-<wbr>operation-<wbr>orderby-<wbr>direct</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_query_operation_orderby_sparqlee.html" class="tsd-kind-icon">actor-<wbr>query-<wbr>operation-<wbr>orderby-<wbr>sparqlee</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_query_operation_path_alt.html" class="tsd-kind-icon">actor-<wbr>query-<wbr>operation-<wbr>path-<wbr>alt</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_query_operation_path_inv.html" class="tsd-kind-icon">actor-<wbr>query-<wbr>operation-<wbr>path-<wbr>inv</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_query_operation_path_link.html" class="tsd-kind-icon">actor-<wbr>query-<wbr>operation-<wbr>path-<wbr>link</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_query_operation_path_nps.html" class="tsd-kind-icon">actor-<wbr>query-<wbr>operation-<wbr>path-<wbr>nps</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_query_operation_path_one_or_more.html" class="tsd-kind-icon">actor-<wbr>query-<wbr>operation-<wbr>path-<wbr>one-<wbr>or-<wbr>more</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_query_operation_path_seq.html" class="tsd-kind-icon">actor-<wbr>query-<wbr>operation-<wbr>path-<wbr>seq</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_query_operation_path_zero_or_more.html" class="tsd-kind-icon">actor-<wbr>query-<wbr>operation-<wbr>path-<wbr>zero-<wbr>or-<wbr>more</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_query_operation_path_zero_or_one.html" class="tsd-kind-icon">actor-<wbr>query-<wbr>operation-<wbr>path-<wbr>zero-<wbr>or-<wbr>one</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_query_operation_project.html" class="tsd-kind-icon">actor-<wbr>query-<wbr>operation-<wbr>project</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_query_operation_quadpattern.html" class="tsd-kind-icon">actor-<wbr>query-<wbr>operation-<wbr>quadpattern</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_query_operation_reduced_hash.html" class="tsd-kind-icon">actor-<wbr>query-<wbr>operation-<wbr>reduced-<wbr>hash</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_query_operation_service.html" class="tsd-kind-icon">actor-<wbr>query-<wbr>operation-<wbr>service</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_query_operation_slice.html" class="tsd-kind-icon">actor-<wbr>query-<wbr>operation-<wbr>slice</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_query_operation_sparql_endpoint.html" class="tsd-kind-icon">actor-<wbr>query-<wbr>operation-<wbr>sparql-<wbr>endpoint</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_query_operation_union.html" class="tsd-kind-icon">actor-<wbr>query-<wbr>operation-<wbr>union</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_query_operation_values.html" class="tsd-kind-icon">actor-<wbr>query-<wbr>operation-<wbr>values</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_rdf_dereference_file.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>dereference-<wbr>file</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_rdf_dereference_http_parse.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>dereference-<wbr>http-<wbr>parse</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_rdf_dereference_paged_next.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>dereference-<wbr>paged-<wbr>next</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_rdf_join_hash.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>join-<wbr>hash</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_rdf_join_multi_sequential.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>join-<wbr>multi-<wbr>sequential</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_rdf_join_multi_smallest.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>join-<wbr>multi-<wbr>smallest</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_rdf_join_nestedloop.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>join-<wbr>nestedloop</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_rdf_join_symmetrichash.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>join-<wbr>symmetrichash</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_rdf_metadata_all.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>metadata-<wbr>all</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_rdf_metadata_extract_hydra_controls.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>metadata-<wbr>extract-<wbr>hydra-<wbr>controls</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_rdf_metadata_extract_hydra_controls_query.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>metadata-<wbr>extract-<wbr>hydra-<wbr>controls-<wbr>query</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_rdf_metadata_extract_hydra_count.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>metadata-<wbr>extract-<wbr>hydra-<wbr>count</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_rdf_metadata_extract_hydra_count_query.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>metadata-<wbr>extract-<wbr>hydra-<wbr>count-<wbr>query</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_rdf_metadata_extract_hydra_links_query.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>metadata-<wbr>extract-<wbr>hydra-<wbr>links-<wbr>query</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_rdf_metadata_extract_sparql_service.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>metadata-<wbr>extract-<wbr>sparql-<wbr>service</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_rdf_metadata_primary_topic.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>metadata-<wbr>primary-<wbr>topic</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_rdf_metadata_triple_predicate.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>metadata-<wbr>triple-<wbr>predicate</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_rdf_parse_html.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>parse-<wbr>html</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_rdf_parse_html_microdata.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>parse-<wbr>html-<wbr>microdata</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_rdf_parse_html_rdfa.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>parse-<wbr>html-<wbr>rdfa</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_rdf_parse_html_script.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>parse-<wbr>html-<wbr>script</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_rdf_parse_jsonld.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>parse-<wbr>jsonld</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_rdf_parse_n3.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>parse-<wbr>n3</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_rdf_parse_rdfxml.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>parse-<wbr>rdfxml</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_rdf_parse_xml_rdfa.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>parse-<wbr>xml-<wbr>rdfa</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_rdf_resolve_hypermedia_links_next.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>resolve-<wbr>hypermedia-<wbr>links-<wbr>next</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_rdf_resolve_hypermedia_none.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>resolve-<wbr>hypermedia-<wbr>none</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_rdf_resolve_hypermedia_qpf.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>resolve-<wbr>hypermedia-<wbr>qpf</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_rdf_resolve_hypermedia_sparql.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>resolve-<wbr>hypermedia-<wbr>sparql</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_rdf_resolve_quad_pattern_federated.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>resolve-<wbr>quad-<wbr>pattern-<wbr>federated</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_rdf_resolve_quad_pattern_file.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>resolve-<wbr>quad-<wbr>pattern-<wbr>file</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_rdf_resolve_quad_pattern_hypermedia.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>resolve-<wbr>quad-<wbr>pattern-<wbr>hypermedia</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_rdf_resolve_quad_pattern_rdfjs_source.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>resolve-<wbr>quad-<wbr>pattern-<wbr>rdfjs-<wbr>source</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_rdf_resolve_quad_pattern_sparql_json.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>resolve-<wbr>quad-<wbr>pattern-<wbr>sparql-<wbr>json</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_rdf_serialize_jsonld.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>serialize-<wbr>jsonld</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_rdf_serialize_n3.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>serialize-<wbr>n3</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_rdf_source_identifier_file_content_type.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>source-<wbr>identifier-<wbr>file-<wbr>content-<wbr>type</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_rdf_source_identifier_hypermedia_qpf.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>source-<wbr>identifier-<wbr>hypermedia-<wbr>qpf</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_rdf_source_identifier_sparql.html" class="tsd-kind-icon">actor-<wbr>rdf-<wbr>source-<wbr>identifier-<wbr>sparql</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_sparql_parse_algebra.html" class="tsd-kind-icon">actor-<wbr>sparql-<wbr>parse-<wbr>algebra</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_sparql_parse_graphql.html" class="tsd-kind-icon">actor-<wbr>sparql-<wbr>parse-<wbr>graphql</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_sparql_serialize_json.html" class="tsd-kind-icon">actor-<wbr>sparql-<wbr>serialize-<wbr>json</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_sparql_serialize_rdf.html" class="tsd-kind-icon">actor-<wbr>sparql-<wbr>serialize-<wbr>rdf</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_sparql_serialize_simple.html" class="tsd-kind-icon">actor-<wbr>sparql-<wbr>serialize-<wbr>simple</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_sparql_serialize_sparql_csv.html" class="tsd-kind-icon">actor-<wbr>sparql-<wbr>serialize-<wbr>sparql-<wbr>csv</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_sparql_serialize_sparql_json.html" class="tsd-kind-icon">actor-<wbr>sparql-<wbr>serialize-<wbr>sparql-<wbr>json</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_sparql_serialize_sparql_tsv.html" class="tsd-kind-icon">actor-<wbr>sparql-<wbr>serialize-<wbr>sparql-<wbr>tsv</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_sparql_serialize_sparql_xml.html" class="tsd-kind-icon">actor-<wbr>sparql-<wbr>serialize-<wbr>sparql-<wbr>xml</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_sparql_serialize_stats.html" class="tsd-kind-icon">actor-<wbr>sparql-<wbr>serialize-<wbr>stats</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_sparql_serialize_table.html" class="tsd-kind-icon">actor-<wbr>sparql-<wbr>serialize-<wbr>table</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/actor_sparql_serialize_tree.html" class="tsd-kind-icon">actor-<wbr>sparql-<wbr>serialize-<wbr>tree</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/bus_context_preprocess.html" class="tsd-kind-icon">bus-<wbr>context-<wbr>preprocess</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/bus_http.html" class="tsd-kind-icon">bus-<wbr>http</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/bus_http_invalidate.html" class="tsd-kind-icon">bus-<wbr>http-<wbr>invalidate</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/bus_init.html" class="tsd-kind-icon">bus-<wbr>init</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/bus_optimize_query_operation.html" class="tsd-kind-icon">bus-<wbr>optimize-<wbr>query-<wbr>operation</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/bus_query_operation.html" class="tsd-kind-icon">bus-<wbr>query-<wbr>operation</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/bus_rdf_dereference.html" class="tsd-kind-icon">bus-<wbr>rdf-<wbr>dereference</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/bus_rdf_dereference_paged.html" class="tsd-kind-icon">bus-<wbr>rdf-<wbr>dereference-<wbr>paged</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/bus_rdf_join.html" class="tsd-kind-icon">bus-<wbr>rdf-<wbr>join</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/bus_rdf_metadata.html" class="tsd-kind-icon">bus-<wbr>rdf-<wbr>metadata</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/bus_rdf_metadata_extract.html" class="tsd-kind-icon">bus-<wbr>rdf-<wbr>metadata-<wbr>extract</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/bus_rdf_parse.html" class="tsd-kind-icon">bus-<wbr>rdf-<wbr>parse</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/bus_rdf_parse_html.html" class="tsd-kind-icon">bus-<wbr>rdf-<wbr>parse-<wbr>html</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/bus_rdf_resolve_hypermedia.html" class="tsd-kind-icon">bus-<wbr>rdf-<wbr>resolve-<wbr>hypermedia</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/bus_rdf_resolve_hypermedia_links.html" class="tsd-kind-icon">bus-<wbr>rdf-<wbr>resolve-<wbr>hypermedia-<wbr>links</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/bus_rdf_resolve_quad_pattern.html" class="tsd-kind-icon">bus-<wbr>rdf-<wbr>resolve-<wbr>quad-<wbr>pattern</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/bus_rdf_serialize.html" class="tsd-kind-icon">bus-<wbr>rdf-<wbr>serialize</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/bus_rdf_source_identifier.html" class="tsd-kind-icon">bus-<wbr>rdf-<wbr>source-<wbr>identifier</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/bus_sparql_parse.html" class="tsd-kind-icon">bus-<wbr>sparql-<wbr>parse</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/bus_sparql_serialize.html" class="tsd-kind-icon">bus-<wbr>sparql-<wbr>serialize</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/context_entries.html" class="tsd-kind-icon">context-<wbr>entries</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/core.html" class="tsd-kind-icon">core</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/data_factory.html" class="tsd-kind-icon">data-<wbr>factory</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/logger_bunyan.html" class="tsd-kind-icon">logger-<wbr>bunyan</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/logger_pretty.html" class="tsd-kind-icon">logger-<wbr>pretty</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/logger_void.html" class="tsd-kind-icon">logger-<wbr>void</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/mediator_all.html" class="tsd-kind-icon">mediator-<wbr>all</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/mediator_combine_pipeline.html" class="tsd-kind-icon">mediator-<wbr>combine-<wbr>pipeline</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/mediator_combine_union.html" class="tsd-kind-icon">mediator-<wbr>combine-<wbr>union</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/mediator_number.html" class="tsd-kind-icon">mediator-<wbr>number</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/mediator_race.html" class="tsd-kind-icon">mediator-<wbr>race</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/mediatortype_httprequests.html" class="tsd-kind-icon">mediatortype-<wbr>httprequests</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/mediatortype_iterations.html" class="tsd-kind-icon">mediatortype-<wbr>iterations</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/mediatortype_priority.html" class="tsd-kind-icon">mediatortype-<wbr>priority</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/mediatortype_time.html" class="tsd-kind-icon">mediatortype-<wbr>time</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/packager.html" class="tsd-kind-icon">packager</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/runner.html" class="tsd-kind-icon">runner</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/runner_cli.html" class="tsd-kind-icon">runner-<wbr>cli</a>
+					</li>
+					<li class=" tsd-kind-module">
+						<a href="modules/utils_datasource.html" class="tsd-kind-icon">utils-<wbr>datasource</a>
+					</li>
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
+				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
+				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
+				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
+				<li class="tsd-kind-class tsd-has-type-parameter"><span class="tsd-kind-icon">Class with type parameter</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-enum"><span class="tsd-kind-icon">Enumeration</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="assets/js/main.js"></script>
+</body>
+</html>
