@@ -13,10 +13,12 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-resolve-hypermedia-links-next/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-resolve-hypermedia-none/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-resolve-hypermedia-qpf/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-resolve-hypermedia-links-queue-fifo/^1.0.0/components/context.jsonld",
 
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-dereference/^1.0.0/components/context.jsonld",
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-resolve-hypermedia-links/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-resolve-hypermedia/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-resolve-hypermedia-links/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-resolve-hypermedia-links-queue/^1.0.0/components/context.jsonld",
 
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-combine-union/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-number/^1.0.0/components/context.jsonld",
@@ -72,12 +74,22 @@
         "@id": "config-sets:resolve-hypermedia.json#mediatorRdfResolveHypermediaLinks",
         "@type": "MediatorRace",
         "cc:Mediator/bus": { "@id": "cbrrhl:Bus/RdfResolveHypermediaLinks" }
+      },
+      "carrqph:Actor/RdfResolveQuadPattern/Hypermedia/mediatorRdfResolveHypermediaLinksQueue": {
+        "@id": "config-sets:resolve-hypermedia.json#mediatorRdfResolveHypermediaLinksQueue",
+        "@type": "MediatorRace",
+        "cc:Mediator/bus": { "@id": "cbrrhlq:Bus/RdfResolveHypermediaLinksQueue" }
       }
     },
 
     {
       "@id": "config-sets:resolve-hypermedia.json#myHypermediaLinksNext",
       "@type": "ActorRdfResolveHypermediaLinksNext"
+    },
+
+    {
+      "@id": "config-sets:resolve-hypermedia.json#myHypermediaLinksQueue",
+      "@type": "ActorRdfResolveHypermediaLinksQueueFifo"
     },
 
     {

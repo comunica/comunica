@@ -48,6 +48,11 @@ After installing, this package can be added to your engine's configuration as fo
         "@id": "config-sets:resolve-hypermedia.json#mediatorRdfResolveHypermediaLinks",
         "@type": "MediatorRace",
         "cc:Mediator/bus": { "@id": "cbrrhl:Bus/RdfResolveHypermediaLinks" }
+      },
+      "carrqph:Actor/RdfResolveQuadPattern/Hypermedia/mediatorRdfResolveHypermediaLinksQueue": {
+        "@id": "config-sets:resolve-hypermedia.json#mediatorRdfResolveHypermediaLinksQueue",
+        "@type": "MediatorRace",
+        "cc:Mediator/bus": { "@id": "cbrrhlq:Bus/RdfResolveHypermediaLinksQueue" }
       }
     }
   ]
@@ -61,3 +66,4 @@ After installing, this package can be added to your engine's configuration as fo
 * `carrqph:Actor/RdfResolveQuadPattern/Hypermedia/mediatorMetadataExtract`: A mediator over the [RDF Metadata Extract bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-metadata-extract).
 * `carrqph:Actor/RdfResolveQuadPattern/Hypermedia/mediatorRdfResolveHypermedia`: A mediator over the [RDF Resolve Hypermedia bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-resolve-hypermedia).
 * `carrqph:Actor/RdfResolveQuadPattern/Hypermedia/mediatorRdfResolveHypermediaLinks`: A mediator over the [RDF Resolve Hypermedia Links bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-resolve-hypermedia-links).
+* `carrqph:Actor/RdfResolveQuadPattern/Hypermedia/mediatorRdfResolveHypermediaLinksQueue`: A mediator over the [RDF Resolve Hypermedia Links Queue bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-resolve-hypermedia-links-queue).

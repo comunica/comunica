@@ -1,3 +1,4 @@
+import { LinkQueueFifo } from '@comunica/actor-rdf-resolve-hypermedia-links-queue-fifo';
 import { ActionContext } from '@comunica/core';
 import 'jest-rdf';
 import { ArrayIterator } from 'asynciterator';
@@ -19,6 +20,7 @@ describe('MediatedQuadSource', () => {
   let mediatorMetadataExtract;
   let mediatorRdfResolveHypermedia: any;
   let mediatorRdfResolveHypermediaLinks: any;
+  let mediatorRdfResolveHypermediaLinksQueue: any;
   let mediators: any;
 
   beforeEach(() => {
@@ -59,12 +61,16 @@ describe('MediatedQuadSource', () => {
     mediatorRdfResolveHypermediaLinks = {
       mediate: () => Promise.resolve({ urls: [ 'next' ]}),
     };
+    mediatorRdfResolveHypermediaLinksQueue = {
+      mediate: () => Promise.resolve({ linkQueue: new LinkQueueFifo() }),
+    };
     mediators = {
       mediatorMetadata,
       mediatorMetadataExtract,
       mediatorRdfDereference,
       mediatorRdfResolveHypermedia,
       mediatorRdfResolveHypermediaLinks,
+      mediatorRdfResolveHypermediaLinksQueue,
     };
   });
 

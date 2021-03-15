@@ -1,0 +1,10 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-resolve-hypermedia-links-queue/^1.0.0/components/context.jsonld",
+  "@id": "npmd:@comunica/bus-rdf-resolve-hypermedia-links-queue",
+  "@type": "Module",
+  "requireName": "@comunica/bus-rdf-resolve-hypermedia-links-queue",
+  "import": [
+    "files-cbrrhlq:components/Bus/RdfResolveHypermediaLinksQueue.jsonld",
+    "files-cbrrhlq:components/Actor/RdfResolveHypermediaLinksQueue.jsonld"
+  ]
+}

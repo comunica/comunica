@@ -1,16 +1,11 @@
 import type { ILink } from '@comunica/bus-rdf-resolve-hypermedia-links';
+import type { ILinkQueue } from '@comunica/bus-rdf-resolve-hypermedia-links-queue';
 import type { IQuadSource } from '@comunica/bus-rdf-resolve-quad-pattern';
 import type { AsyncIterator } from 'asynciterator';
 import { BufferedIterator } from 'asynciterator';
 import LRUCache = require('lru-cache');
 import type * as RDF from 'rdf-js';
 
-/**
- * An abstract quad iterator that can iterate over consecutive RDF sources.
- *
- * This iterator stores a queue of sources that need to be iterated over.
- * For each source, its collected metadata is maintained.
- */
 export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<RDF.Quad> implements RDF.Stream {
   public sourcesState?: ISourcesState;
 
@@ -19,10 +14,9 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
   protected readonly object: RDF.Term;
   protected readonly graph: RDF.Term;
   protected nextSource: ISourceState | undefined;
-  protected readonly linkQueue: ILink[];
 
   private readonly cacheSize: number;
-  private readonly firstUrl: string;
+  protected readonly firstUrl: string;
 
   private started = false;
   private currentIterator: AsyncIterator<RDF.Quad> | undefined;
@@ -35,9 +29,14 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
     this.predicate = predicate;
     this.object = object;
     this.graph = graph;
-    this.linkQueue = [];
     this.firstUrl = firstUrl;
   }
+
+  /**
+   * Get the internal link queue.
+   * The returned instance must always be the same.
+   */
+  public abstract getLinkQueue(): Promise<ILinkQueue>;
 
   /**
    * This method can optionally called after constructing an instance
@@ -172,8 +171,9 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
         .then((nextUrls: ILink[]) => Promise.all(nextUrls))
         .then(async(nextUrls: ILink[]) => {
           // Append all next URLs to our queue
+          const linkQueue = await this.getLinkQueue();
           for (const nextUrl of nextUrls) {
-            this.linkQueue.push(nextUrl);
+            linkQueue.push(nextUrl);
           }
 
           // Handle the next queued URL if we don't have an active iterator (in which case it will be called later)
@@ -192,14 +192,18 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
    * @param startSource
    */
   protected handleNextUrl(startSource: ISourceState): void {
-    if (this.linkQueue.length === 0) {
-      this.close();
-    } else {
-      this.getSourceCached(this.linkQueue[0], startSource.handledDatasets)
-        .then(nextSourceState => this.setCurrentIterator(nextSourceState, false))
-        .catch(error => this.destroy(error));
-      this.linkQueue.shift();
-    }
+    this.getLinkQueue()
+      .then(linkQueue => {
+        const nextLink = linkQueue.pop();
+        if (!nextLink) {
+          this.close();
+        } else {
+          this.getSourceCached(nextLink, startSource.handledDatasets)
+            .then(nextSourceState => this.setCurrentIterator(nextSourceState, false))
+            .catch(error => this.destroy(error));
+        }
+      })
+      .catch(error => this.destroy(error));
   }
 }
 

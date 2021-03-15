@@ -1,5 +1,5 @@
 import type { IQuadSource } from '@comunica/bus-rdf-resolve-quad-pattern';
-import type { ActionContext } from '@comunica/core';
+import type { ActionContext } from '@comunica/types';
 import type { AsyncIterator } from 'asynciterator';
 import type * as RDF from 'rdf-js';
 import type { ISourcesState } from './LinkedRdfSourcesAsyncRdfIterator';

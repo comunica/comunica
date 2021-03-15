@@ -1,3 +1,4 @@
+import { LinkQueueFifo } from '@comunica/actor-rdf-resolve-hypermedia-links-queue-fifo';
 import { ActionContext } from '@comunica/core';
 import { DataFactory } from 'rdf-data-factory';
 import { MediatedLinkedRdfSourcesAsyncRdfIterator } from '../lib/MediatedLinkedRdfSourcesAsyncRdfIterator';
@@ -16,6 +17,7 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
     let mediatorMetadataExtract: any;
     let mediatorRdfResolveHypermedia: any;
     let mediatorRdfResolveHypermediaLinks: any;
+    let mediatorRdfResolveHypermediaLinksQueue: any;
 
     beforeEach(() => {
       context = ActionContext({});
@@ -43,14 +45,37 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
         mediate: jest.fn(({ metadata }: any) => Promise
           .resolve({ urls: [ `${metadata.baseURL}url1`, `${metadata.baseURL}url2` ]})),
       };
+      mediatorRdfResolveHypermediaLinksQueue = {
+        mediate: () => Promise.resolve({ linkQueue: new LinkQueueFifo() }),
+      };
       const mediators: any = {
         mediatorMetadata,
         mediatorMetadataExtract,
         mediatorRdfDereference,
         mediatorRdfResolveHypermedia,
         mediatorRdfResolveHypermediaLinks,
+        mediatorRdfResolveHypermediaLinksQueue,
       };
       source = new MediatedLinkedRdfSourcesAsyncRdfIterator(10, context, 'forcedType', s, p, o, g, 'first', mediators);
+    });
+
+    describe('getLinkQueue', () => {
+      it('should return a new link queue when called for the first time', async() => {
+        expect(await source.getLinkQueue()).toBeInstanceOf(LinkQueueFifo);
+      });
+
+      it('should always return the same link queue', async() => {
+        const queue = await source.getLinkQueue();
+        expect(await source.getLinkQueue()).toBe(queue);
+        expect(await source.getLinkQueue()).toBe(queue);
+        expect(await source.getLinkQueue()).toBe(queue);
+      });
+
+      it('should throw on a rejecting mediator', async() => {
+        mediatorRdfResolveHypermediaLinksQueue.mediate = () => Promise
+          .reject(new Error('MediatedLinkRdfSourceAsyncRdfIterator-error'));
+        await expect(source.getLinkQueue()).rejects.toThrowError('MediatedLinkRdfSourceAsyncRdfIterator-error');
+      });
     });
 
     describe('getSourceLinks', () => {

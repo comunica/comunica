@@ -1,5 +1,7 @@
 import { Readable } from 'stream';
+import { LinkQueueFifo } from '@comunica/actor-rdf-resolve-hypermedia-links-queue-fifo';
 import type { ILink } from '@comunica/bus-rdf-resolve-hypermedia-links';
+import type { ILinkQueue } from '@comunica/bus-rdf-resolve-hypermedia-links-queue';
 import { ArrayIterator, wrap } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import type * as RDF from 'rdf-js';
@@ -13,11 +15,16 @@ const v = DF.variable('v');
 // input is array of arrays, with every array corresponding to a page
 class Dummy extends LinkedRdfSourcesAsyncRdfIterator {
   public data: RDF.Quad[][];
+  public linkQueue: ILinkQueue = new LinkQueueFifo();
 
   public constructor(data: RDF.Quad[][], subject: RDF.Term, predicate: RDF.Term, object: RDF.Term, graph: RDF.Term,
     firstUrl: string) {
     super(10, subject, predicate, object, graph, firstUrl);
     this.data = data;
+  }
+
+  public async getLinkQueue(): Promise<ILinkQueue> {
+    return this.linkQueue;
   }
 
   protected async getSourceLinks(metadata: Record<string, any>): Promise<ILink[]> {
@@ -179,6 +186,25 @@ class DummyError extends Dummy {
 class DummyErrorLinks extends Dummy {
   protected async getSourceLinks(metadata: Record<string, any>): Promise<ILink[]> {
     throw new Error('DummyErrorLinks');
+  }
+}
+
+// Dummy class that rejects on getLinkQueue
+class DummyErrorLinkQueueFirst extends Dummy {
+  public getLinkQueue(): Promise<ILinkQueue> {
+    return Promise.reject(new Error('DummyErrorLinkQueueFirst'));
+  }
+}
+
+// Dummy class that rejects on getLinkQueue when called for the second time
+class DummyErrorLinkQueueLater extends Dummy {
+  public calls = 0;
+
+  public getLinkQueue(): Promise<ILinkQueue> {
+    if (this.calls++ === 0) {
+      return super.getLinkQueue();
+    }
+    return Promise.reject(new Error('DummyErrorLinkQueueLater'));
   }
 }
 
@@ -699,6 +725,28 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
           // Do nothing
         });
       })).rejects.toThrow(new Error('DummyErrorLinks'));
+    });
+
+    it('delegates error events from rejecting link queue fetching', async() => {
+      const it = new DummyErrorLinkQueueFirst([[], []], v, v, v, v, 'first');
+      await expect(new Promise((resolve, reject) => {
+        it.on('error', reject);
+        it.on('end', resolve);
+        it.on('data', () => {
+          // Do nothing
+        });
+      })).rejects.toThrow(new Error('DummyErrorLinkQueueFirst'));
+    });
+
+    it('delegates error events from later rejecting link queue fetching', async() => {
+      const it = new DummyErrorLinkQueueLater([[], []], v, v, v, v, 'first');
+      await expect(new Promise((resolve, reject) => {
+        it.on('error', reject);
+        it.on('end', resolve);
+        it.on('data', () => {
+          // Do nothing
+        });
+      })).rejects.toThrow(new Error('DummyErrorLinkQueueLater'));
     });
   });
 });

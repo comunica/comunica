@@ -5,8 +5,15 @@ import type { IActionRdfResolveHypermedia,
   IActorRdfResolveHypermediaOutput } from '@comunica/bus-rdf-resolve-hypermedia';
 import type {
   IActionRdfResolveHypermediaLinks,
-  IActorRdfResolveHypermediaLinksOutput, ILink,
+  IActorRdfResolveHypermediaLinksOutput,
+  ILink,
 } from '@comunica/bus-rdf-resolve-hypermedia-links';
+import type {
+  ILinkQueue,
+  IActionRdfResolveHypermediaLinksQueue,
+  IActorRdfResolveHypermediaLinksQueueOutput,
+} from '@comunica/bus-rdf-resolve-hypermedia-links-queue';
+
 import type { ActionContext, Actor, IActorTest, Mediator } from '@comunica/core';
 import type * as RDF from 'rdf-js';
 import type { ISourceState } from './LinkedRdfSourcesAsyncRdfIterator';
@@ -35,9 +42,14 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
   IActorRdfResolveHypermediaLinksOutput>, IActionRdfResolveHypermediaLinks, IActorTest,
   IActorRdfResolveHypermediaLinksOutput>;
 
+  private readonly mediatorRdfResolveHypermediaLinksQueue: Mediator<Actor<IActionRdfResolveHypermediaLinksQueue,
+  IActorTest, IActorRdfResolveHypermediaLinksQueueOutput>, IActionRdfResolveHypermediaLinksQueue, IActorTest,
+  IActorRdfResolveHypermediaLinksQueueOutput>;
+
   private readonly context: ActionContext;
   private readonly forceSourceType?: string;
   private readonly handledUrls: Record<string, boolean>;
+  private linkQueue: Promise<ILinkQueue> | undefined;
 
   public constructor(cacheSize: number, context: ActionContext, forceSourceType: string | undefined,
     subject: RDF.Term, predicate: RDF.Term, object: RDF.Term, graph: RDF.Term,
@@ -50,7 +62,17 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
     this.mediatorMetadataExtract = mediators.mediatorMetadataExtract;
     this.mediatorRdfResolveHypermedia = mediators.mediatorRdfResolveHypermedia;
     this.mediatorRdfResolveHypermediaLinks = mediators.mediatorRdfResolveHypermediaLinks;
+    this.mediatorRdfResolveHypermediaLinksQueue = mediators.mediatorRdfResolveHypermediaLinksQueue;
     this.handledUrls = { [firstUrl]: true };
+  }
+
+  public getLinkQueue(): Promise<ILinkQueue> {
+    if (!this.linkQueue) {
+      this.linkQueue = this.mediatorRdfResolveHypermediaLinksQueue
+        .mediate({ firstUrl: this.firstUrl })
+        .then(result => result.linkQueue);
+    }
+    return this.linkQueue;
   }
 
   protected async getSourceLinks(metadata: Record<string, any>): Promise<ILink[]> {
@@ -130,4 +152,7 @@ export interface IMediatorArgs {
   mediatorRdfResolveHypermediaLinks: Mediator<Actor<IActionRdfResolveHypermediaLinks, IActorTest,
   IActorRdfResolveHypermediaLinksOutput>, IActionRdfResolveHypermediaLinks, IActorTest,
   IActorRdfResolveHypermediaLinksOutput>;
+  mediatorRdfResolveHypermediaLinksQueue: Mediator<Actor<IActionRdfResolveHypermediaLinksQueue,
+  IActorTest, IActorRdfResolveHypermediaLinksQueueOutput>, IActionRdfResolveHypermediaLinksQueue, IActorTest,
+  IActorRdfResolveHypermediaLinksQueueOutput>;
 }

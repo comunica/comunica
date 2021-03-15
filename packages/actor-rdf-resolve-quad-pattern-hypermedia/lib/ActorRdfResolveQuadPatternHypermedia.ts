@@ -1,3 +1,4 @@
+import { LinkQueueFifo } from '@comunica/actor-rdf-resolve-hypermedia-links-queue-fifo';
 import type { ActorHttpInvalidateListenable, IActionHttpInvalidate } from '@comunica/bus-http-invalidate';
 import type { IActionRdfDereference, IActorRdfDereferenceOutput } from '@comunica/bus-rdf-dereference';
 import type { IActionRdfMetadata, IActorRdfMetadataOutput } from '@comunica/bus-rdf-metadata';
@@ -8,6 +9,10 @@ import type {
   IActionRdfResolveHypermediaLinks,
   IActorRdfResolveHypermediaLinksOutput,
 } from '@comunica/bus-rdf-resolve-hypermedia-links';
+import type {
+  IActionRdfResolveHypermediaLinksQueue,
+  IActorRdfResolveHypermediaLinksQueueOutput,
+} from '@comunica/bus-rdf-resolve-hypermedia-links-queue';
 import type { IActionRdfResolveQuadPattern,
   IActorRdfResolveQuadPatternOutput,
   IQuadSource } from '@comunica/bus-rdf-resolve-quad-pattern';
@@ -40,6 +45,10 @@ export class ActorRdfResolveQuadPatternHypermedia extends ActorRdfResolveQuadPat
   public readonly mediatorRdfResolveHypermediaLinks: Mediator<Actor<IActionRdfResolveHypermediaLinks, IActorTest,
   IActorRdfResolveHypermediaLinksOutput>, IActionRdfResolveHypermediaLinks, IActorTest,
   IActorRdfResolveHypermediaLinksOutput>;
+
+  public readonly mediatorRdfResolveHypermediaLinksQueue?: Mediator<Actor<IActionRdfResolveHypermediaLinksQueue,
+  IActorTest, IActorRdfResolveHypermediaLinksQueueOutput>, IActionRdfResolveHypermediaLinksQueue, IActorTest,
+  IActorRdfResolveHypermediaLinksQueueOutput>;
 
   public readonly cacheSize: number;
   public readonly cache?: LRUCache<string, MediatedQuadSource>;
@@ -80,6 +89,10 @@ export class ActorRdfResolveQuadPatternHypermedia extends ActorRdfResolveQuadPat
         mediatorRdfDereference: this.mediatorRdfDereference,
         mediatorRdfResolveHypermedia: this.mediatorRdfResolveHypermedia,
         mediatorRdfResolveHypermediaLinks: this.mediatorRdfResolveHypermediaLinks,
+        mediatorRdfResolveHypermediaLinksQueue: this.mediatorRdfResolveHypermediaLinksQueue || <any> {
+          // TODO: remove backwards-compatibility in next major version
+          mediate: async() => ({ linkQueue: new LinkQueueFifo() }),
+        },
       });
 
       // Set in cache
@@ -107,4 +120,8 @@ export interface IActorRdfResolveQuadPatternHypermediaArgs extends
   mediatorRdfResolveHypermediaLinks: Mediator<Actor<IActionRdfResolveHypermediaLinks, IActorTest,
   IActorRdfResolveHypermediaLinksOutput>, IActionRdfResolveHypermediaLinks, IActorTest,
   IActorRdfResolveHypermediaLinksOutput>;
+  // TODO: make the following mandatory upon the next breaking change
+  mediatorRdfResolveHypermediaLinksQueue?: Mediator<Actor<IActionRdfResolveHypermediaLinksQueue,
+  IActorTest, IActorRdfResolveHypermediaLinksQueueOutput>, IActionRdfResolveHypermediaLinksQueue, IActorTest,
+  IActorRdfResolveHypermediaLinksQueueOutput>;
 }
