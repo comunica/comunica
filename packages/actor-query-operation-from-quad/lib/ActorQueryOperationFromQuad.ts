@@ -81,6 +81,7 @@ export class ActorQueryOperationFromQuad extends ActorQueryOperationTypedMediate
    * This will (possibly) create a new operation and not modify the given operation.
    * @param {Operation} operation An operation.
    * @param {RDF.Term[]} namedGraphs Graph terms.
+   * @param {RDF.Term[]} defaultGraphs Default graph terms.
    * @return {Operation} A new operation.
    */
   public static applyOperationNamedGraph(operation: Algebra.Operation, namedGraphs: RDF.Term[],
@@ -187,7 +188,7 @@ export class ActorQueryOperationFromQuad extends ActorQueryOperationTypedMediate
     if (pattern.default.length > 0) {
       operation = ActorQueryOperationFromQuad.applyOperationDefaultGraph(operation, pattern.default);
     }
-    if (pattern.named.length > 0) {
+    if (pattern.named.length > 0 || pattern.default.length > 0) {
       operation = ActorQueryOperationFromQuad.applyOperationNamedGraph(operation, pattern.named, pattern.default);
     }
     return operation;

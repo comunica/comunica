@@ -473,7 +473,19 @@ describe('ActorQueryOperationFromQuad', () => {
       expect(quad('s', 'p', 'o2', 'h').equals(result.right.right.patterns[0])).toBeTruthy();
     });
 
-    it('should transform without default graphs and with one named graph', () => {
+    it('should transform with one default graph and without named graphs over a named graph pattern', () => {
+      const pattern: any = {
+        default: [ DF.namedNode('g1') ],
+        input: Object.assign(quad('s', 'p', 'o', 'g2'), { type: 'path' }),
+        named: [],
+        type: 'from',
+      };
+      const result = ActorQueryOperationFromQuad.createOperation(pattern);
+      expect(result.type).toEqual('bgp');
+      expect(result.patterns).toEqual([]);
+    });
+
+    it('should transform without default graphs and with one variable named graph', () => {
       const pattern: any = {
         default: [],
         input: Object.assign(quad('s', 'p', 'o', '?g'), { type: 'path' }),
@@ -490,7 +502,31 @@ describe('ActorQueryOperationFromQuad', () => {
       expect(quad('s', 'p', 'o', 'g').equals(result.right)).toBeTruthy();
     });
 
-    it('should transform without default graphs and with two named graphs', () => {
+    it('should transform without default graphs and with one IRI named graph that matches', () => {
+      const pattern: any = {
+        default: [],
+        input: Object.assign(quad('s', 'p', 'o', 'g'), { type: 'path' }),
+        named: [ DF.namedNode('g') ],
+        type: 'from',
+      };
+      const result = ActorQueryOperationFromQuad.createOperation(pattern);
+      expect(result.type).toEqual('path');
+      expect(quad('s', 'p', 'o', 'g').equals(result)).toBeTruthy();
+    });
+
+    it('should transform without default graphs and with one IRI named graph that does not match', () => {
+      const pattern: any = {
+        default: [],
+        input: Object.assign(quad('s', 'p', 'o', 'g1'), { type: 'path' }),
+        named: [ DF.namedNode('g2') ],
+        type: 'from',
+      };
+      const result = ActorQueryOperationFromQuad.createOperation(pattern);
+      expect(result.type).toEqual('bgp');
+      expect(result.patterns).toEqual([]);
+    });
+
+    it('should transform without default graphs and with two variable named graphs', () => {
       const pattern: any = {
         default: [],
         input: Object.assign(quad('s', 'p', 'o', '?g'), { type: 'path' }),
@@ -517,7 +553,33 @@ describe('ActorQueryOperationFromQuad', () => {
       expect(quad('s', 'p', 'o', 'h').equals(result.right.right)).toBeTruthy();
     });
 
-    it('should transform with one default graph and with one named graph', () => {
+    it('should transform without default graphs and with two IRI named graphs one of which matches', () => {
+      const pattern: any = {
+        default: [],
+        input: Object.assign(quad('s', 'p', 'o', 'g'), { type: 'path' }),
+        named: [ DF.namedNode('g'), DF.namedNode('h') ],
+        type: 'from',
+      };
+      const result = ActorQueryOperationFromQuad.createOperation(pattern);
+
+      expect(result.type).toEqual('path');
+      expect(quad('s', 'p', 'o', 'g').equals(result)).toBeTruthy();
+    });
+
+    it('should transform without default graphs and with two IRI named graphs none of which match', () => {
+      const pattern: any = {
+        default: [],
+        input: Object.assign(quad('s', 'p', 'o', 'g1'), { type: 'path' }),
+        named: [ DF.namedNode('g2'), DF.namedNode('g3') ],
+        type: 'from',
+      };
+      const result = ActorQueryOperationFromQuad.createOperation(pattern);
+
+      expect(result.type).toEqual('bgp');
+      expect(result.patterns).toEqual([]);
+    });
+
+    it('should transform with one default graph and with one variable named graph', () => {
       const pattern: any = {
         default: [ DF.namedNode('h') ],
         input: {
@@ -549,6 +611,68 @@ describe('ActorQueryOperationFromQuad', () => {
       expect(result.left.left.bindings[0]['?g']).toEqual(DF.namedNode('g'));
       expect(result.left.right.type).toEqual('bgp');
       expect(quad('s', 'p', 'o', 'g').equals(result.left.right.patterns[0])).toBeTruthy();
+
+      expect(result.right.type).toEqual('bgp');
+      expect(quad('s', 'p', 'o', 'h').equals(result.right.patterns[0])).toBeTruthy();
+    });
+
+    it('should transform with one default graph and with one IRI named graph that matches', () => {
+      const pattern: any = {
+        default: [ DF.namedNode('h') ],
+        input: {
+          left: {
+            patterns: [
+              Object.assign(quad('s', 'p', 'o', 'g'), { type: 'pattern' }),
+            ],
+            type: 'bgp',
+          },
+          right: {
+            patterns: [
+              Object.assign(quad('s', 'p', 'o'), { type: 'pattern' }),
+            ],
+            type: 'bgp',
+          },
+          type: 'join',
+        },
+        named: [ DF.namedNode('g') ],
+        type: 'from',
+      };
+      const result = ActorQueryOperationFromQuad.createOperation(pattern);
+      expect(result.type).toEqual('join');
+
+      expect(result.left.type).toEqual('bgp');
+      expect(quad('s', 'p', 'o', 'g').equals(result.left.patterns[0])).toBeTruthy();
+
+      expect(result.right.type).toEqual('bgp');
+      expect(quad('s', 'p', 'o', 'h').equals(result.right.patterns[0])).toBeTruthy();
+    });
+
+    it('should transform with one default graph and with one IRI named graph that does not match', () => {
+      const pattern: any = {
+        default: [ DF.namedNode('h') ],
+        input: {
+          left: {
+            patterns: [
+              Object.assign(quad('s', 'p', 'o', 'g1'), { type: 'pattern' }),
+            ],
+            type: 'bgp',
+          },
+          right: {
+            patterns: [
+              Object.assign(quad('s', 'p', 'o'), { type: 'pattern' }),
+            ],
+            type: 'bgp',
+          },
+          type: 'join',
+        },
+        named: [ DF.namedNode('g2') ],
+        type: 'from',
+      };
+      const result = ActorQueryOperationFromQuad.createOperation(pattern);
+      expect(result.type).toEqual('join');
+
+      expect(result.left.type).toEqual('bgp');
+      expect(result.left.patterns).toEqual([]);
 
       expect(result.right.type).toEqual('bgp');
       expect(quad('s', 'p', 'o', 'h').equals(result.right.patterns[0])).toBeTruthy();
