@@ -173,7 +173,7 @@ export abstract class LinkedRdfSourcesAsyncRdfIterator extends BufferedIterator<
           // Append all next URLs to our queue
           const linkQueue = await this.getLinkQueue();
           for (const nextUrl of nextUrls) {
-            linkQueue.push(nextUrl);
+            linkQueue.push(nextUrl, startSource.link);
           }
 
           // Handle the next queued URL if we don't have an active iterator (in which case it will be called later)
@@ -223,6 +223,10 @@ export interface ISourcesState {
  * This is needed for following links within a source.
  */
 export interface ISourceState {
+  /**
+   * The link to this source.
+   */
+  link: ILink;
   /**
    * A source.
    */

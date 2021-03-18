@@ -7,9 +7,10 @@ export interface ILinkQueue {
   /**
    * Add the given link to the queue.
    * @param link A link.
+   * @param parent The parent in which the given link was discovered.
    * @returns If the link was added to the queue.
    */
-  push: (link: ILink) => boolean;
+  push: (link: ILink, parent: ILink) => boolean;
   /**
    * The number of links in the queue.
    */

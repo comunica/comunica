@@ -144,6 +144,7 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
     describe('getSource', () => {
       it('should get urls based on mediatorRdfResolveHypermedia', async() => {
         expect(await source.getSource({ url: 'startUrl' }, {})).toEqual({
+          link: { url: 'startUrl' },
           handledDatasets: { MYDATASET: true },
           metadata: { myKey: 'METADATA' },
           source: { sourceContents: 'QUADS(startUrl)' },
@@ -156,6 +157,7 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
             source: { sourceContents: quads },
           });
         expect(await source.getSource({ url: 'startUrl' }, {})).toEqual({
+          link: { url: 'startUrl' },
           handledDatasets: {},
           metadata: { myKey: 'METADATA' },
           source: { sourceContents: 'QUADS(startUrl)' },
@@ -165,6 +167,7 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
       it('should apply the link transformation', async() => {
         const transform = jest.fn(input => Promise.resolve(`TRANSFORMED(${input})`));
         expect(await source.getSource({ url: 'startUrl', transform }, {})).toEqual({
+          link: { url: 'startUrl', transform },
           handledDatasets: { MYDATASET: true },
           metadata: { myKey: 'METADATA' },
           source: { sourceContents: 'TRANSFORMED(QUADS(startUrl))' },
@@ -174,6 +177,7 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
 
       it('should apply the link context', async() => {
         expect(await source.getSource({ url: 'startUrl', context: ActionContext({ a: 'b' }) }, {})).toEqual({
+          link: { url: 'startUrl', context: ActionContext({ a: 'b' }) },
           handledDatasets: { MYDATASET: true },
           metadata: { myKey: 'METADATA' },
           source: { sourceContents: 'QUADS(startUrl)' },

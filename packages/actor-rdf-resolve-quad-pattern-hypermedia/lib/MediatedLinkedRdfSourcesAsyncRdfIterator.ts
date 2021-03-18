@@ -136,7 +136,7 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
       handledDatasets[dataset] = true;
     }
 
-    return { source, metadata, handledDatasets };
+    return { link, source, metadata, handledDatasets };
   }
 }
 

@@ -55,4 +55,10 @@ export interface ILink {
    * All entries of this context will be added (or overwritten) into the existing context.
    */
   context?: ActionContext;
+  /**
+   * An optional link-specific metadata object.
+   * This may be used to keep track of data that is relevant to links,
+   * which could be used across actors.
+   */
+  metadata?: Record<string, any>;
 }

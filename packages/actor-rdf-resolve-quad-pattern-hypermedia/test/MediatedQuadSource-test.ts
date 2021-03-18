@@ -124,6 +124,7 @@ describe('MediatedQuadSource', () => {
           sources: new LRUCache<string, Promise<ISourceState>>(10),
         };
         source.sourcesState.sources.set('firstUrl', Promise.resolve({
+          link: { url: 'firstUrl' },
           handledDatasets: {},
           metadata: { a: 2 },
           source: {
@@ -150,6 +151,7 @@ describe('MediatedQuadSource', () => {
           sources: new LRUCache<string, Promise<ISourceState>>(10),
         };
         source.sourcesState.sources.set('firstUrl', Promise.resolve({
+          link: { url: 'firstUrl' },
           handledDatasets: {},
           metadata: { a: 2 },
           source: {

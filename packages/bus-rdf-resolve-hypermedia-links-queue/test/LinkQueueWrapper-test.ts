@@ -17,8 +17,8 @@ describe('LinkQueueWrapper', () => {
 
   describe('push', () => {
     it('calls the wrapped link queue', () => {
-      expect(wrapper.push({ url: 'a' })).toEqual(true);
-      expect(wrapped.push).toHaveBeenCalledWith({ url: 'a' });
+      expect(wrapper.push({ url: 'a' }, { url: 'parent' })).toEqual(true);
+      expect(wrapped.push).toHaveBeenCalledWith({ url: 'a' }, { url: 'parent' });
     });
   });
 

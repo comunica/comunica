@@ -39,6 +39,7 @@ class Dummy extends LinkedRdfSourcesAsyncRdfIterator {
     const requestedPage = this.getPage(link.url);
     if (requestedPage >= this.data.length) {
       return {
+        link,
         handledDatasets: { [link.url]: true },
         metadata: { requestedPage },
         source: <any> {
@@ -51,6 +52,7 @@ class Dummy extends LinkedRdfSourcesAsyncRdfIterator {
       };
     }
     return {
+      link,
       handledDatasets: { [link.url]: true },
       metadata: { requestedPage, firstPageToken: true, next: `P${requestedPage + 1}` },
       source: <any> {
@@ -87,6 +89,7 @@ class DummyMetaOverride extends Dummy {
     const requestedPage = this.getPage(link.url);
     if (requestedPage >= this.data.length) {
       return {
+        link,
         handledDatasets: { [link.url]: true },
         metadata: { requestedPage },
         source: <any> {
@@ -99,6 +102,7 @@ class DummyMetaOverride extends Dummy {
       };
     }
     return {
+      link,
       handledDatasets: { [link.url]: true },
       metadata: { firstPageToken: true, next: `P${requestedPage + 1}` },
       source: <any> {
@@ -116,6 +120,7 @@ class DummyMetaOverride extends Dummy {
 class DummyMetaOverrideEarly extends Dummy {
   protected async getSource(link: ILink): Promise<ISourceState> {
     return {
+      link,
       handledDatasets: { [link.url]: true },
       metadata: { firstPageToken: true },
       source: <any> {
@@ -137,6 +142,7 @@ class DummyMetaOverrideEarly extends Dummy {
 class DummyMetaOverrideLate extends Dummy {
   protected async getSource(link: ILink): Promise<ISourceState> {
     return {
+      link,
       handledDatasets: { [link.url]: true },
       metadata: { firstPageToken: true },
       source: <any> {
@@ -165,6 +171,7 @@ class DummyMultiple extends Dummy {
 class DummyError extends Dummy {
   protected async getSource(link: ILink): Promise<ISourceState> {
     return {
+      link,
       handledDatasets: { [link.url]: true },
       metadata: { next: 'NEXT' },
       source: <any> {
@@ -225,11 +232,13 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
         expect(result).toEqual(flatten(quads));
         expect((<any> it).handleNextUrl).toHaveBeenCalledTimes(2);
         expect((<any> it).handleNextUrl).toHaveBeenNthCalledWith(1, {
+          link: { url: 'first' },
           handledDatasets: { first: true },
           metadata: { requestedPage: 0, firstPageToken: true, next: 'P1', subseq: true },
           source: expect.anything(),
         });
         expect((<any> it).handleNextUrl).toHaveBeenNthCalledWith(2, {
+          link: { url: 'P1' },
           handledDatasets: { P1: true },
           metadata: { requestedPage: 1, subseq: true },
           source: expect.anything(),
@@ -367,11 +376,13 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
         expect(result).toEqual(flatten(quads));
         expect((<any> it).handleNextUrl).toHaveBeenCalledTimes(2);
         expect((<any> it).handleNextUrl).toHaveBeenNthCalledWith(1, {
+          link: { url: 'first' },
           handledDatasets: { first: true },
           metadata: { requestedPage: 0, firstPageToken: true, next: 'P1', subseq: true },
           source: expect.anything(),
         });
         expect((<any> it).handleNextUrl).toHaveBeenNthCalledWith(2, {
+          link: { url: 'P1' },
           handledDatasets: { P1: true },
           metadata: { requestedPage: 1, subseq: true },
           source: expect.anything(),
@@ -398,11 +409,13 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
         expect(result).toEqual(flatten(quads));
         expect((<any> it2).handleNextUrl).toHaveBeenCalledTimes(2);
         expect((<any> it2).handleNextUrl).toHaveBeenNthCalledWith(1, {
+          link: { url: 'first' },
           handledDatasets: { first: true },
           metadata: { requestedPage: 0, firstPageToken: true, next: 'P1', subseq: true },
           source: expect.anything(),
         });
         expect((<any> it2).handleNextUrl).toHaveBeenNthCalledWith(2, {
+          link: { url: 'P1' },
           handledDatasets: { P1: true },
           metadata: { requestedPage: 1, subseq: true },
           source: expect.anything(),
@@ -438,21 +451,25 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
         expect(result).toEqual(flatten(quads));
         expect((<any> it).handleNextUrl).toHaveBeenCalledTimes(4);
         expect((<any> it).handleNextUrl).toHaveBeenNthCalledWith(1, {
+          link: { url: 'first' },
           handledDatasets: { first: true },
           metadata: { requestedPage: 0, firstPageToken: true, next: 'P1', subseq: true },
           source: expect.anything(),
         });
         expect((<any> it).handleNextUrl).toHaveBeenNthCalledWith(2, {
+          link: { url: 'P1' },
           handledDatasets: { P1: true },
           metadata: { requestedPage: 1, firstPageToken: true, next: 'P2', subseq: true },
           source: expect.anything(),
         });
         expect((<any> it).handleNextUrl).toHaveBeenNthCalledWith(3, {
+          link: { url: 'P2' },
           handledDatasets: { P2: true },
           metadata: { requestedPage: 2, firstPageToken: true, next: 'P3', subseq: true },
           source: expect.anything(),
         });
         expect((<any> it).handleNextUrl).toHaveBeenNthCalledWith(4, {
+          link: { url: 'P3' },
           handledDatasets: { P3: true },
           metadata: { requestedPage: 3, subseq: true },
           source: expect.anything(),
@@ -489,21 +506,25 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
         expect(result).toEqual(flatten(quads));
         expect((<any> it).handleNextUrl).toHaveBeenCalledTimes(4);
         expect((<any> it).handleNextUrl).toHaveBeenNthCalledWith(1, {
+          link: { url: 'first' },
           handledDatasets: { first: true },
           metadata: { requestedPage: 0, firstPageToken: true, next: 'P1', subseq: true },
           source: expect.anything(),
         });
         expect((<any> it).handleNextUrl).toHaveBeenNthCalledWith(2, {
+          link: { url: 'P1' },
           handledDatasets: { P1: true },
           metadata: { requestedPage: 1, firstPageToken: true, next: 'P2', subseq: true },
           source: expect.anything(),
         });
         expect((<any> it).handleNextUrl).toHaveBeenNthCalledWith(3, {
+          link: { url: 'P2' },
           handledDatasets: { P2: true },
           metadata: { requestedPage: 2, firstPageToken: true, next: 'P3', subseq: true },
           source: expect.anything(),
         });
         expect((<any> it).handleNextUrl).toHaveBeenNthCalledWith(4, {
+          link: { url: 'P3' },
           handledDatasets: { P3: true },
           metadata: { requestedPage: 3, subseq: true },
           source: expect.anything(),
@@ -550,36 +571,43 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
         ])));
         expect((<any> it).handleNextUrl).toHaveBeenCalledTimes(7);
         expect((<any> it).handleNextUrl).toHaveBeenNthCalledWith(1, {
+          link: { url: 'first' },
           handledDatasets: { first: true },
           metadata: { requestedPage: 0, firstPageToken: true, next: 'P1', subseq: true },
           source: expect.anything(),
         });
         expect((<any> it).handleNextUrl).toHaveBeenNthCalledWith(2, {
+          link: { url: 'P1' },
           handledDatasets: { P1: true },
           metadata: { requestedPage: 1, firstPageToken: true, next: 'P2', subseq: true },
           source: expect.anything(),
         });
         expect((<any> it).handleNextUrl).toHaveBeenNthCalledWith(3, {
+          link: { url: 'P1' },
           handledDatasets: { P1: true },
           metadata: { requestedPage: 1, firstPageToken: true, next: 'P2', subseq: true },
           source: expect.anything(),
         });
         expect((<any> it).handleNextUrl).toHaveBeenNthCalledWith(4, {
+          link: { url: 'P2' },
           handledDatasets: { P2: true },
           metadata: { requestedPage: 2, subseq: true },
           source: expect.anything(),
         });
         expect((<any> it).handleNextUrl).toHaveBeenNthCalledWith(5, {
+          link: { url: 'P2' },
           handledDatasets: { P2: true },
           metadata: { requestedPage: 2, subseq: true },
           source: expect.anything(),
         });
         expect((<any> it).handleNextUrl).toHaveBeenNthCalledWith(6, {
+          link: { url: 'P2' },
           handledDatasets: { P2: true },
           metadata: { requestedPage: 2, subseq: true },
           source: expect.anything(),
         });
         expect((<any> it).handleNextUrl).toHaveBeenNthCalledWith(7, {
+          link: { url: 'P2' },
           handledDatasets: { P2: true },
           metadata: { requestedPage: 2, subseq: true },
           source: expect.anything(),
@@ -632,16 +660,19 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
         expect(result).toEqual(flatten(quads));
         expect((<any> it).handleNextUrl).toHaveBeenCalledTimes(3);
         expect((<any> it).handleNextUrl).toHaveBeenNthCalledWith(1, {
+          link: { url: 'first' },
           handledDatasets: { first: true },
           metadata: { firstPageToken: true, next: 'P1', override: true },
           source: expect.anything(),
         });
         expect((<any> it).handleNextUrl).toHaveBeenNthCalledWith(2, {
+          link: { url: 'P1' },
           handledDatasets: { P1: true },
           metadata: { firstPageToken: true, next: 'P2', override: true },
           source: expect.anything(),
         });
         expect((<any> it).handleNextUrl).toHaveBeenNthCalledWith(3, {
+          link: { url: 'P2' },
           handledDatasets: { P2: true },
           metadata: { requestedPage: 2, subseq: true },
           source: expect.anything(),
@@ -661,6 +692,7 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
         expect(result).toEqual(flatten(quads));
         expect((<any> it).handleNextUrl).toHaveBeenCalledTimes(1);
         expect((<any> it).handleNextUrl).toHaveBeenNthCalledWith(1, {
+          link: { url: 'first' },
           handledDatasets: { first: true },
           metadata: { firstPageToken: true, override: true },
           source: expect.anything(),
@@ -680,6 +712,7 @@ describe('LinkedRdfSourcesAsyncRdfIterator', () => {
         expect(result).toEqual(flatten(quads));
         expect((<any> it).handleNextUrl).toHaveBeenCalledTimes(1);
         expect((<any> it).handleNextUrl).toHaveBeenNthCalledWith(1, {
+          link: { url: 'first' },
           handledDatasets: { first: true },
           metadata: { firstPageToken: true, override: true },
           source: expect.anything(),

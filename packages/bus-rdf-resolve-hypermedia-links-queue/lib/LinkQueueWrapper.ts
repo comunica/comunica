@@ -11,8 +11,8 @@ export class LinkQueueWrapper implements ILinkQueue {
     this.linkQueue = linkQueue;
   }
 
-  public push(link: ILink): boolean {
-    return this.linkQueue.push(link);
+  public push(link: ILink, parent: ILink): boolean {
+    return this.linkQueue.push(link, parent);
   }
 
   public getSize(): number {
