@@ -37,7 +37,7 @@
     "@types/rdf-js": "*",
     "asynciterator": "^3.0.3",
     "rdf-data-factory": "^1.0.3",
-    "sparqlalgebrajs": "^2.5.0"
+    "sparqlalgebrajs": "^2.5.5"
   },
   "peerDependencies": {
     "@comunica/bus-query-operation": "^1.0.0",
