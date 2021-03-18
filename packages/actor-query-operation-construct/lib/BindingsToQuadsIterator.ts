@@ -13,12 +13,14 @@ const DF = new DataFactory();
  * https://www.w3.org/TR/sparql11-query/#rConstructTriples
  */
 export class BindingsToQuadsIterator extends MultiTransformIterator<Bindings, RDF.Quad> {
-  protected template: RDF.BaseQuad[];
+  protected readonly template: RDF.BaseQuad[];
+  protected readonly localizeBlankNodes: boolean;
   protected blankNodeCounter: number;
 
-  public constructor(template: RDF.BaseQuad[], bindingsStream: BindingsStream) {
+  public constructor(template: RDF.BaseQuad[], bindingsStream: BindingsStream, localizeBlankNodes = true) {
     super(bindingsStream, { autoStart: false });
     this.template = template;
+    this.localizeBlankNodes = localizeBlankNodes;
     this.blankNodeCounter = 0;
   }
 
@@ -86,7 +88,7 @@ export class BindingsToQuadsIterator extends MultiTransformIterator<Bindings, RD
    * @return {RDF.BaseQuad}                 A quad.
    */
   public static localizeQuad(blankNodeCounter: number,
-    pattern: RDF.Quad): RDF.Quad {
+    pattern: RDF.BaseQuad): RDF.BaseQuad {
     return mapTerms(pattern, term => BindingsToQuadsIterator.localizeBlankNode(blankNodeCounter, term));
   }
 
@@ -97,19 +99,21 @@ export class BindingsToQuadsIterator extends MultiTransformIterator<Bindings, RD
    * @param               blankNodeCounter   A counter value for the blank node.
    * @return {RDF.Quad[]}                    A list of quads.
    */
-  public static bindTemplate(bindings: Bindings, template: RDF.BaseQuad[],
-    blankNodeCounter: number): RDF.Quad[] {
-    return template
+  public bindTemplate(bindings: Bindings, template: RDF.BaseQuad[], blankNodeCounter: number): RDF.Quad[] {
+    let quads: RDF.BaseQuad[] = <RDF.BaseQuad[]> template
       // Bind variables to bound terms
       .map(x => BindingsToQuadsIterator.bindQuad.bind(null, bindings)(x))
       // Remove quads that contained unbound terms, i.e., variables.
-      .filter(Boolean)
+      .filter(Boolean);
+    if (this.localizeBlankNodes) {
       // Make sure the multiple instantiations of the template contain different blank nodes, as required by SPARQL 1.1.
-      .map(BindingsToQuadsIterator.localizeQuad.bind(null, blankNodeCounter));
+      quads = quads.map(BindingsToQuadsIterator.localizeQuad.bind(null, blankNodeCounter));
+    }
+    return <RDF.Quad[]> quads;
   }
 
   public _createTransformer(bindings: Bindings): AsyncIterator<RDF.Quad> {
-    return new ArrayIterator(BindingsToQuadsIterator.bindTemplate(
+    return new ArrayIterator(this.bindTemplate(
       bindings, this.template, this.blankNodeCounter++,
     ));
   }

@@ -425,69 +425,6 @@ describe('BindingsToQuadsIterator', () => {
     });
   });
 
-  describe('#bindTemplate', () => {
-    it('should bind an empty template without variables, blank nodes and bindings', () => {
-      return expect(BindingsToQuadsIterator.bindTemplate(Bindings({}), [], 0))
-        .toEqual([]);
-    });
-
-    it('should bind a template without variables, blank nodes and bindings', () => {
-      return expect(BindingsToQuadsIterator.bindTemplate(Bindings({}), [
-        DF.quad(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1')),
-        DF.quad(DF.namedNode('s2'), DF.namedNode('p2'), DF.namedNode('o2')),
-        DF.quad(DF.namedNode('s3'), DF.namedNode('p3'), DF.namedNode('o3')),
-      ], 0))
-        .toEqual([
-          DF.quad(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1')),
-          DF.quad(DF.namedNode('s2'), DF.namedNode('p2'), DF.namedNode('o2')),
-          DF.quad(DF.namedNode('s3'), DF.namedNode('p3'), DF.namedNode('o3')),
-        ]);
-    });
-
-    it('should bind a template with variables and bindings and without blank nodes', () => {
-      return expect(BindingsToQuadsIterator.bindTemplate(Bindings({
-        '?a': DF.namedNode('a'),
-        '?b': DF.namedNode('b'),
-      }), [
-        DF.quad(DF.variable('a'), DF.namedNode('p1'), DF.namedNode('o1')),
-        DF.quad(DF.namedNode('s2'), DF.variable('b'), DF.namedNode('o2')),
-        DF.quad(DF.namedNode('s3'), DF.variable('a'), DF.variable('b')),
-      ], 0))
-        .toEqual([
-          DF.quad(DF.namedNode('a'), DF.namedNode('p1'), DF.namedNode('o1')),
-          DF.quad(DF.namedNode('s2'), DF.namedNode('b'), DF.namedNode('o2')),
-          DF.quad(DF.namedNode('s3'), DF.namedNode('a'), DF.namedNode('b')),
-        ]);
-    });
-
-    it('should bind a template with variables and incomplete bindings and without blank nodes', () => {
-      return expect(BindingsToQuadsIterator.bindTemplate(Bindings({ '?a': DF.namedNode('a') }), [
-        DF.quad(DF.variable('a'), DF.namedNode('p1'), DF.namedNode('o1')),
-        DF.quad(DF.namedNode('s2'), DF.variable('b'), DF.namedNode('o2')),
-        DF.quad(DF.namedNode('s3'), DF.variable('a'), DF.variable('b')),
-      ], 0))
-        .toEqual([
-          DF.quad(DF.namedNode('a'), DF.namedNode('p1'), DF.namedNode('o1')),
-        ]);
-    });
-
-    it('should bind a template with variables, bindings and blank nodes', () => {
-      return expect(BindingsToQuadsIterator.bindTemplate(Bindings({
-        '?a': DF.namedNode('a'),
-        '?b': DF.namedNode('b'),
-      }), [
-        DF.quad(DF.variable('a'), DF.namedNode('p1'), DF.namedNode('o1')),
-        DF.quad(DF.blankNode('bnode'), DF.variable('b'), DF.blankNode('bnode')),
-        DF.quad(DF.blankNode('bnode'), DF.variable('a'), DF.variable('b')),
-      ], 0))
-        .toEqual([
-          DF.quad(DF.namedNode('a'), DF.namedNode('p1'), DF.namedNode('o1')),
-          DF.quad(DF.blankNode('bnode0'), DF.namedNode('b'), DF.blankNode('bnode0')),
-          DF.quad(DF.blankNode('bnode0'), DF.namedNode('a'), DF.namedNode('b')),
-        ]);
-    });
-  });
-
   describe('instantiated for a template', () => {
     let iterator: BindingsToQuadsIterator;
     beforeEach(() => {
@@ -531,6 +468,116 @@ describe('BindingsToQuadsIterator', () => {
           <any> DF.blankNode('otherbnode2'),
           DF.blankNode('otherbnode2'),
           DF.blankNode('otherbnode2')),
+      ]);
+    });
+
+    describe('#bindTemplate', () => {
+      it('should bind an empty template without variables, blank nodes and bindings', () => {
+        return expect(iterator.bindTemplate(Bindings({}), [], 0))
+          .toEqual([]);
+      });
+
+      it('should bind a template without variables, blank nodes and bindings', () => {
+        return expect(iterator.bindTemplate(Bindings({}), [
+          DF.quad(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1')),
+          DF.quad(DF.namedNode('s2'), DF.namedNode('p2'), DF.namedNode('o2')),
+          DF.quad(DF.namedNode('s3'), DF.namedNode('p3'), DF.namedNode('o3')),
+        ], 0))
+          .toEqual([
+            DF.quad(DF.namedNode('s1'), DF.namedNode('p1'), DF.namedNode('o1')),
+            DF.quad(DF.namedNode('s2'), DF.namedNode('p2'), DF.namedNode('o2')),
+            DF.quad(DF.namedNode('s3'), DF.namedNode('p3'), DF.namedNode('o3')),
+          ]);
+      });
+
+      it('should bind a template with variables and bindings and without blank nodes', () => {
+        return expect(iterator.bindTemplate(Bindings({
+          '?a': DF.namedNode('a'),
+          '?b': DF.namedNode('b'),
+        }), [
+          DF.quad(DF.variable('a'), DF.namedNode('p1'), DF.namedNode('o1')),
+          DF.quad(DF.namedNode('s2'), DF.variable('b'), DF.namedNode('o2')),
+          DF.quad(DF.namedNode('s3'), DF.variable('a'), DF.variable('b')),
+        ], 0))
+          .toEqual([
+            DF.quad(DF.namedNode('a'), DF.namedNode('p1'), DF.namedNode('o1')),
+            DF.quad(DF.namedNode('s2'), DF.namedNode('b'), DF.namedNode('o2')),
+            DF.quad(DF.namedNode('s3'), DF.namedNode('a'), DF.namedNode('b')),
+          ]);
+      });
+
+      it('should bind a template with variables and incomplete bindings and without blank nodes', () => {
+        return expect(iterator.bindTemplate(Bindings({ '?a': DF.namedNode('a') }), [
+          DF.quad(DF.variable('a'), DF.namedNode('p1'), DF.namedNode('o1')),
+          DF.quad(DF.namedNode('s2'), DF.variable('b'), DF.namedNode('o2')),
+          DF.quad(DF.namedNode('s3'), DF.variable('a'), DF.variable('b')),
+        ], 0))
+          .toEqual([
+            DF.quad(DF.namedNode('a'), DF.namedNode('p1'), DF.namedNode('o1')),
+          ]);
+      });
+
+      it('should bind a template with variables, bindings and blank nodes', () => {
+        return expect(iterator.bindTemplate(Bindings({
+          '?a': DF.namedNode('a'),
+          '?b': DF.namedNode('b'),
+        }), [
+          DF.quad(DF.variable('a'), DF.namedNode('p1'), DF.namedNode('o1')),
+          DF.quad(DF.blankNode('bnode'), DF.variable('b'), DF.blankNode('bnode')),
+          DF.quad(DF.blankNode('bnode'), DF.variable('a'), DF.variable('b')),
+        ], 0))
+          .toEqual([
+            DF.quad(DF.namedNode('a'), DF.namedNode('p1'), DF.namedNode('o1')),
+            DF.quad(DF.blankNode('bnode0'), DF.namedNode('b'), DF.blankNode('bnode0')),
+            DF.quad(DF.blankNode('bnode0'), DF.namedNode('a'), DF.namedNode('b')),
+          ]);
+      });
+    });
+  });
+
+  describe('instantiated for a template without localizing blank nodes', () => {
+    let iterator: BindingsToQuadsIterator;
+    beforeEach(() => {
+      iterator = new BindingsToQuadsIterator([
+        DF.quad(DF.variable('a'), DF.namedNode('p1'), DF.namedNode('o1')),
+        DF.quad(DF.blankNode('bnode'), DF.variable('b'), DF.blankNode('bnode')),
+        DF.quad(DF.blankNode('bnode'), DF.variable('a'), DF.variable('b')),
+        DF.quad(
+          DF.blankNode('bnode'),
+          <any> DF.blankNode('otherbnode'),
+          DF.blankNode('otherbnode'),
+          DF.blankNode('otherbnode'),
+        ),
+      ], new ArrayIterator([
+        Bindings({ '?a': DF.namedNode('a1'), '?b': DF.namedNode('b1') }),
+        Bindings({ '?a': DF.namedNode('a2'), '?b': DF.namedNode('b2') }),
+        Bindings({ '?a': DF.namedNode('a3') }),
+      ]), false);
+    });
+
+    it('should be transformed to a valid triple stream', async() => {
+      expect(await arrayifyStream(iterator)).toEqual([
+        DF.quad(DF.namedNode('a1'), DF.namedNode('p1'), DF.namedNode('o1')),
+        DF.quad(DF.blankNode('bnode'), DF.namedNode('b1'), DF.blankNode('bnode')),
+        DF.quad(DF.blankNode('bnode'), DF.namedNode('a1'), DF.namedNode('b1')),
+        DF.quad(DF.blankNode('bnode'),
+          <any> DF.blankNode('otherbnode'),
+          DF.blankNode('otherbnode'),
+          DF.blankNode('otherbnode')),
+
+        DF.quad(DF.namedNode('a2'), DF.namedNode('p1'), DF.namedNode('o1')),
+        DF.quad(DF.blankNode('bnode'), DF.namedNode('b2'), DF.blankNode('bnode')),
+        DF.quad(DF.blankNode('bnode'), DF.namedNode('a2'), DF.namedNode('b2')),
+        DF.quad(DF.blankNode('bnode'),
+          <any> DF.blankNode('otherbnode'),
+          DF.blankNode('otherbnode'),
+          DF.blankNode('otherbnode')),
+
+        DF.quad(DF.namedNode('a3'), DF.namedNode('p1'), DF.namedNode('o1')),
+        DF.quad(DF.blankNode('bnode'),
+          <any> DF.blankNode('otherbnode'),
+          DF.blankNode('otherbnode'),
+          DF.blankNode('otherbnode')),
       ]);
     });
   });

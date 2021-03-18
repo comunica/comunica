@@ -18,6 +18,8 @@ export class ActorQueryOperationUpdateDeleteInsert extends ActorQueryOperationTy
   public readonly mediatorUpdateQuads: Mediator<Actor<IActionRdfUpdateQuads, IActorTest, IActorRdfUpdateQuadsOutput>,
   IActionRdfUpdateQuads, IActorTest, IActorRdfUpdateQuadsOutput>;
 
+  protected blankNodeCounter = 0;
+
   public constructor(args: IActorQueryOperationUpdateDeleteInsertArgs) {
     super(args, 'deleteinsert');
   }
@@ -39,10 +41,22 @@ export class ActorQueryOperationUpdateDeleteInsert extends ActorQueryOperationTy
     let quadStreamInsert: AsyncIterator<RDF.Quad> | undefined;
     let quadStreamDelete: AsyncIterator<RDF.Quad> | undefined;
     if (pattern.insert) {
-      quadStreamInsert = new BindingsToQuadsIterator(pattern.insert, whereBindings.clone());
+      // Localize blank nodes in pattern, to avoid clashes across different INSERT/DELETE calls
+      quadStreamInsert = new BindingsToQuadsIterator(
+        pattern.insert.map(BindingsToQuadsIterator.localizeQuad.bind(null, this.blankNodeCounter)),
+        whereBindings.clone(),
+        false,
+      );
+      this.blankNodeCounter++;
     }
     if (pattern.delete) {
-      quadStreamDelete = new BindingsToQuadsIterator(pattern.delete, whereBindings.clone());
+      // Localize blank nodes in pattern, to avoid clashes across different INSERT/DELETE calls
+      quadStreamDelete = new BindingsToQuadsIterator(
+        pattern.delete.map(BindingsToQuadsIterator.localizeQuad.bind(null, this.blankNodeCounter)),
+        whereBindings.clone(),
+        false,
+      );
+      this.blankNodeCounter++;
     }
 
     // Evaluate the required modifications
