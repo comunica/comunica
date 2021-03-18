@@ -30,7 +30,7 @@ module.exports = function(engine) {
       const store = await source(data);
       const result = await engine.query(queryString, {
         baseIRI: options.baseIRI,
-        sources: [{ type: 'rdfjsSource', value: store }],
+        source: { type: 'rdfjsSource', value: store },
         destination: store,
       });
       await result.updateResult;

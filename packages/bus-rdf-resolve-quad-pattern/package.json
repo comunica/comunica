@@ -34,7 +34,7 @@
     "@comunica/context-entries": "^1.0.0",
     "@types/rdf-js": "*",
     "asynciterator": "^3.0.3",
-    "sparqlalgebrajs": "^2.5.0"
+    "sparqlalgebrajs": "^2.5.5"
   },
   "peerDependencies": {
     "@comunica/core": "^1.0.0"

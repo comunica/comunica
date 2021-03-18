@@ -33,7 +33,7 @@
   ],
   "dependencies": {
     "rdf-data-factory": "^1.0.4",
-    "sparqlalgebrajs": "^2.5.0"
+    "sparqlalgebrajs": "^2.5.5"
   },
   "peerDependencies": {
     "@comunica/core": "^1.19.2",
