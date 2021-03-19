@@ -1,3 +1,4 @@
+import * as cluster from 'cluster';
 import type { EventEmitter } from 'events';
 
 import * as http from 'http';
@@ -35,6 +36,7 @@ Options:
   -c            Context should be a JSON object or the path to such a JSON file.
   -p            The HTTP port to run on (default: 3000)
   -t            The query execution timeout in seconds (default: 60)
+  -w            The number of worker threads (default: 1)
   -b            base IRI for the query (e.g., http://example.org/)
   -l            Sets the log level (e.g., debug, info, warn, ... defaults to warn)
   -i            A flag that enables cache invalidation before each query execution.
@@ -48,6 +50,7 @@ Options:
   public readonly context: any;
   public readonly timeout: number;
   public readonly port: number;
+  public readonly workers: number;
 
   public readonly invalidateCacheBeforeQuery: boolean;
 
@@ -56,6 +59,7 @@ Options:
     this.context = args.context || {};
     this.timeout = args.timeout ?? 60_000;
     this.port = args.port ?? 3_000;
+    this.workers = args.workers ?? 1;
     this.invalidateCacheBeforeQuery = Boolean(args.invalidateCacheBeforeQuery);
 
     this.engine = newEngineDynamic(args);
@@ -112,6 +116,7 @@ Options:
     const invalidateCacheBeforeQuery: boolean = args.i;
     const port = Number.parseInt(args.p, 10) || 3_000;
     const timeout = (Number.parseInt(args.t, 10) || 60) * 1_000;
+    const workers = Number.parseInt(args.w, 10) || 1;
 
     const configResourceUrl = env.COMUNICA_CONFIG ? env.COMUNICA_CONFIG : defaultConfigPath;
 
@@ -122,6 +127,7 @@ Options:
       mainModulePath: moduleRootPath,
       port,
       timeout,
+      workers,
     };
   }
 
@@ -130,7 +136,64 @@ Options:
    * @param {module:stream.internal.Writable} stdout The output stream to log to.
    * @param {module:stream.internal.Writable} stderr The error stream to log errors to.
    */
-  public async run(stdout: Writable, stderr: Writable): Promise<void> {
+  public run(stdout: Writable, stderr: Writable): Promise<void> {
+    if (cluster.isMaster) {
+      return this.runMaster(stdout, stderr);
+    }
+    return this.runWorker(stdout, stderr);
+  }
+
+  /**
+   * Start the HTTP service as master.
+   * @param {module:stream.internal.Writable} stdout The output stream to log to.
+   * @param {module:stream.internal.Writable} stderr The error stream to log errors to.
+   */
+  public async runMaster(stdout: Writable, stderr: Writable): Promise<void> {
+    stderr.write(`Server running on http://localhost:${this.port}/sparql\n`);
+
+    // Create workers
+    for (let i = 0; i < this.workers; i++) {
+      cluster.fork();
+    }
+
+    // Attach listeners to each new worker
+    cluster.on('listening', worker => {
+      // Respawn crashed workers
+      worker.once('exit', (code, signal) => {
+        if (!worker.exitedAfterDisconnect) {
+          stderr.write(`Worker ${worker.process.pid} died with ${code || signal}. Starting new worker.\n`);
+          cluster.fork();
+        }
+      });
+
+      // Handle worker timeouts
+      let workerTimeout: NodeJS.Timeout | undefined;
+      worker.on('message', message => {
+        if (message === 'start') {
+          workerTimeout = setTimeout(() => {
+            stderr.write(`Worker ${worker.process.pid} timed out.\n`);
+            worker.process.kill('SIGKILL');
+            workerTimeout = undefined;
+          }, this.timeout);
+        } else if (message === 'end' && workerTimeout) {
+          clearTimeout(workerTimeout);
+          workerTimeout = undefined;
+        }
+      });
+    });
+
+    // Disconnect from cluster on SIGINT, so that the process can cleanly terminate
+    process.once('SIGINT', () => {
+      cluster.disconnect();
+    });
+  }
+
+  /**
+   * Start the HTTP service as worker.
+   * @param {module:stream.internal.Writable} stdout The output stream to log to.
+   * @param {module:stream.internal.Writable} stderr The error stream to log errors to.
+   */
+  public async runWorker(stdout: Writable, stderr: Writable): Promise<void> {
     const engine: ActorInitSparql = await this.engine;
 
     // Determine the allowed media types for requests
@@ -143,9 +206,7 @@ Options:
     // Start the server
     const server = http.createServer(this.handleRequest.bind(this, engine, variants, stdout, stderr));
     server.listen(this.port);
-    // Unreliable mechanism, set too high on purpose
-    server.setTimeout(2 * this.timeout);
-    stderr.write(`Server running on http://localhost:${this.port}/sparql\n`);
+    stderr.write(`Server worker (${process.pid}) running on http://localhost:${this.port}/sparql\n`);
   }
 
   /**
@@ -264,6 +325,9 @@ Options:
       return;
     }
 
+    // Send message to master process to indicate the start of an execution
+    process.send!('start');
+
     let eventEmitter: EventEmitter | undefined;
     try {
       const { data } = await engine.resultToString(result, mediaType);
@@ -279,6 +343,9 @@ Options:
         { 'content-type': HttpServiceSparqlEndpoint.MIME_PLAIN, 'Access-Control-Allow-Origin': '*' });
       response.end('The response for the given query could not be serialized for the requested media type\n');
     }
+
+    // Send message to master process to indicate the end of an execution
+    response.on('close', () => process.send!('end'));
 
     this.stopResponse(response, eventEmitter);
   }
@@ -346,8 +413,6 @@ Options:
    * @param {NodeJS.ReadableStream} eventEmitter Query result stream.
    */
   public stopResponse(response: http.ServerResponse, eventEmitter?: EventEmitter): void {
-    // Note: socket or response timeouts seemed unreliable, hence the explicit timeout
-    const killTimeout = setTimeout(killClient, this.timeout);
     response.on('close', killClient);
     function killClient(): void {
       if (eventEmitter) {
@@ -360,7 +425,6 @@ Options:
       } catch {
         // Do nothing
       }
-      clearTimeout(killTimeout);
     }
   }
 
@@ -395,5 +459,6 @@ export interface IHttpServiceSparqlEndpointArgs extends IQueryOptions {
   context?: any;
   timeout?: number;
   port?: number;
+  workers?: number;
   invalidateCacheBeforeQuery?: boolean;
 }

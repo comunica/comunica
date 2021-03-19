@@ -1,3 +1,5 @@
+import * as cluster from 'cluster';
+import * as EventEmitter from 'events';
 import * as querystring from 'querystring';
 import { PassThrough } from 'stream';
 import { LoggerPretty } from '@comunica/logger-pretty';
@@ -36,8 +38,17 @@ jest.mock('http', () => {
 jest.mock('fs', () => {
   return fs;
 });
+jest.useFakeTimers();
+// eslint-disable-next-line import/order
+import { mocked } from 'ts-jest/utils';
 
 describe('HttpServiceSparqlEndpoint', () => {
+  beforeEach(() => {
+    // Assume worker thread in all tests by default
+    (<any> cluster).isMaster = false;
+    jest.clearAllMocks();
+  });
+
   describe('constructor', () => {
     it('shouldn\'t error if no args are supplied', () => {
       expect(() => new HttpServiceSparqlEndpoint()).not.toThrowError();
@@ -151,7 +162,7 @@ describe('HttpServiceSparqlEndpoint', () => {
         defaultConfigPath,
         exit).then(res => {
         expect(exit).toHaveBeenCalledWith(1);
-        expect(stderr.toString()).toBe(`${HttpServiceSparqlEndpoint.HELP_MESSAGE}Server running on http://localhost:3000/sparql\n`);
+        expect(stderr.toString()).toMatch(`${HttpServiceSparqlEndpoint.HELP_MESSAGE}`);
       });
     });
 
@@ -164,7 +175,7 @@ describe('HttpServiceSparqlEndpoint', () => {
         defaultConfigPath,
         exit).then(res => {
         expect(exit).toHaveBeenCalledWith(1);
-        expect(stderr.toString()).toBe(`${HttpServiceSparqlEndpoint.HELP_MESSAGE}Server running on http://localhost:3000/sparql\n`);
+        expect(stderr.toString()).toMatch(`${HttpServiceSparqlEndpoint.HELP_MESSAGE}`);
       });
     });
 
@@ -204,7 +215,7 @@ describe('HttpServiceSparqlEndpoint', () => {
         defaultConfigPath,
         exit).then(res => {
         expect(exit).toHaveBeenCalledWith(1);
-        expect(stderr.toString()).toBe(`${HttpServiceSparqlEndpoint.HELP_MESSAGE}Server running on http://localhost:3000/sparql\n`);
+        expect(stderr.toString()).toMatch(`${HttpServiceSparqlEndpoint.HELP_MESSAGE}`);
       });
     });
   });
@@ -383,7 +394,7 @@ describe('HttpServiceSparqlEndpoint', () => {
   describe('An HttpServiceSparqlEndpoint instance', () => {
     let instance: any;
     beforeEach(() => {
-      instance = new HttpServiceSparqlEndpoint({});
+      instance = new HttpServiceSparqlEndpoint({ workers: 4 });
     });
 
     describe('run', () => {
@@ -394,16 +405,13 @@ describe('HttpServiceSparqlEndpoint', () => {
         instance.handleRequest.bind = jest.fn(() => 'handleRequest_bound');
       });
 
-      it('should set the server\'s timeout and port number correctly', async() => {
+      it('should set the server\'s port number correctly', async() => {
         const port = 201_331;
-        const timeout = 201_331;
         instance.port = port;
-        instance.timeout = timeout;
         await instance.run(stdout, stderr);
 
         const server = http.createServer.mock.results[0].value;
         expect(server.listen).toHaveBeenCalledWith(port);
-        expect(server.setTimeout).toHaveBeenCalledWith(2 * timeout);
       });
 
       it('should call bind handleRequest with the correct arguments', async() => {
@@ -423,6 +431,142 @@ describe('HttpServiceSparqlEndpoint', () => {
 
         expect(http.createServer).toBeCalledTimes(1);
         expect(http.createServer).toHaveBeenLastCalledWith(instance.handleRequest.bind());
+      });
+    });
+
+    describe('run as a master', () => {
+      const stdout = new PassThrough();
+      const stderr = new PassThrough();
+      beforeEach(() => {
+        // Assume worker thread in all tests by default
+        (<any> cluster).isMaster = true;
+        (<any> cluster).fork = jest.fn();
+        (<any> cluster).disconnect = jest.fn();
+        (<any> cluster).on = jest.fn();
+        (<any> process).once = jest.fn();
+      });
+
+      it('should invoke fork for each worker', async() => {
+        await instance.run(stdout, stderr);
+
+        expect(cluster.fork).toBeCalledTimes(4);
+      });
+
+      it('should handle worker exits', async() => {
+        await instance.run(stdout, stderr);
+
+        // Simulate listening event
+        const dummyWorker = new EventEmitter();
+        (<any> dummyWorker).process = {};
+        (<any> mocked(cluster.on).mock.calls[0][1])(dummyWorker);
+
+        // Simulate exit event
+        dummyWorker.emit('exit');
+
+        expect(cluster.fork).toBeCalledTimes(5);
+      });
+
+      it('should handle worker exits when exitedAfterDisconnect is true', async() => {
+        await instance.run(stdout, stderr);
+
+        // Simulate listening event
+        const dummyWorker = new EventEmitter();
+        (<any> dummyWorker).exitedAfterDisconnect = true;
+        (<any> dummyWorker).process = {};
+        (<any> mocked(cluster.on).mock.calls[0][1])(dummyWorker);
+
+        // Simulate exit event
+        dummyWorker.emit('exit');
+
+        expect(cluster.fork).toBeCalledTimes(4);
+      });
+
+      it('should handle worker start messages', async() => {
+        await instance.run(stdout, stderr);
+
+        // Simulate listening event
+        const dummyWorker = new EventEmitter();
+        (<any> dummyWorker).process = {
+          kill: jest.fn(),
+        };
+        (<any> mocked(cluster.on).mock.calls[0][1])(dummyWorker);
+
+        // Simulate start event
+        dummyWorker.emit('message', 'start');
+
+        expect(setTimeout).toHaveBeenCalledTimes(1);
+        expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 60_000);
+        expect((<any> dummyWorker).process.kill).not.toHaveBeenCalled();
+
+        // Simulate timeout is passed
+        jest.runAllTimers();
+
+        expect((<any> dummyWorker).process.kill).toHaveBeenCalledWith('SIGKILL');
+      });
+
+      it('should handle worker end messages before timeout is reached', async() => {
+        await instance.run(stdout, stderr);
+
+        // Simulate listening event
+        const dummyWorker = new EventEmitter();
+        (<any> dummyWorker).process = {
+          kill: jest.fn(),
+        };
+        (<any> mocked(cluster.on).mock.calls[0][1])(dummyWorker);
+
+        // Simulate start event
+        dummyWorker.emit('message', 'start');
+
+        expect(setTimeout).toHaveBeenCalledTimes(1);
+        expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 60_000);
+        expect((<any> dummyWorker).process.kill).not.toHaveBeenCalled();
+
+        // Simulate end event
+        dummyWorker.emit('message', 'end');
+
+        expect(clearTimeout).toHaveBeenCalledTimes(1);
+
+        expect((<any> dummyWorker).process.kill).not.toHaveBeenCalledWith('SIGKILL');
+
+        // Simulate timeout is passed
+        jest.runAllTimers();
+      });
+
+      it('should handle worker end messages after timeout is reached', async() => {
+        await instance.run(stdout, stderr);
+
+        // Simulate listening event
+        const dummyWorker = new EventEmitter();
+        (<any> dummyWorker).process = {
+          kill: jest.fn(),
+        };
+        (<any> mocked(cluster.on).mock.calls[0][1])(dummyWorker);
+
+        // Simulate start event
+        dummyWorker.emit('message', 'start');
+
+        expect(setTimeout).toHaveBeenCalledTimes(1);
+        expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 60_000);
+        expect((<any> dummyWorker).process.kill).not.toHaveBeenCalled();
+
+        // Simulate timeout is passed
+        jest.runAllTimers();
+
+        expect((<any> dummyWorker).process.kill).toHaveBeenCalledWith('SIGKILL');
+
+        // Simulate end event
+        dummyWorker.emit('message', 'end');
+
+        expect(clearTimeout).not.toHaveBeenCalled();
+      });
+
+      it('should handle SIGINTs', async() => {
+        await instance.run(stdout, stderr);
+
+        // Simulate SIGINT event
+        (<any> mocked(process.once).mock.calls[0][1])();
+
+        expect(cluster.disconnect).toBeCalledTimes(1);
       });
     });
 
@@ -918,6 +1062,28 @@ describe('HttpServiceSparqlEndpoint', () => {
           { 'content-type': 'application/trig', 'Access-Control-Allow-Origin': '*' });
         expect(response.toString()).toBe('test_query_result');
       });
+
+      it('should emit process start and end events', async() => {
+        process.send = jest.fn();
+        const engine = await newEngineDynamic();
+        engine.query = () => ({ type: 'bindings' });
+
+        await instance.writeQueryResult(engine,
+          new PassThrough(),
+          new PassThrough(),
+          request,
+          response,
+          query,
+          null,
+          false);
+
+        expect(process.send).toHaveBeenCalledTimes(1);
+        expect(process.send).toHaveBeenCalledWith('start');
+
+        response.emit('close');
+        expect(process.send).toHaveBeenCalledTimes(2);
+        expect(process.send).toHaveBeenCalledWith('end');
+      });
     });
 
     describe('stopResponse', () => {
@@ -933,7 +1099,8 @@ describe('HttpServiceSparqlEndpoint', () => {
       });
 
       it('should not error when eventEmitter is undefined', async() => {
-        expect(() => instance.stopResponse(response)).not.toThrowError();
+        instance.stopResponse(response);
+        response.emit('close');
       });
 
       it('should do nothing when no timeout or close event occurs', async() => {
@@ -943,14 +1110,6 @@ describe('HttpServiceSparqlEndpoint', () => {
         expect(eventEmitter.listeners('test').length).toEqual(1);
         expect(response.end).not.toHaveBeenCalled();
         expect(endListener).not.toHaveBeenCalled();
-      });
-
-      it('should remove event eventlisteners from eventEmitter if timeout occurs', async() => {
-        instance.stopResponse(response, eventEmitter);
-        await new Promise(resolve => setTimeout(resolve, 1_600)); // Wait for timeout to occur
-
-        expect(eventEmitter.listeners('test').length).toEqual(0);
-        expect(response.end).toHaveBeenCalled();
       });
 
       it('should remove event eventlisteners from eventEmitter when response is closed', async() => {
