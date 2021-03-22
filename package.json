@@ -56,7 +56,7 @@
     "@strictsoftware/typedoc-plugin-monorepo": "^0.4.2",
     "typescript": "^4.0.3",
     "uglifyjs-webpack-plugin": "^2.1.1",
-    "webpack": "^4.28.3",
+    "webpack": "^5.0.0",
     "webpack-cli": "^4.0.0",
     "memory-streams": "^0.1.3"
   },
