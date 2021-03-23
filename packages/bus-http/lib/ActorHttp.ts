@@ -2,6 +2,9 @@ import { KeysHttp } from '@comunica/context-entries';
 import type { IAction, IActorArgs, IActorOutput, IActorTest } from '@comunica/core';
 import { Actor } from '@comunica/core';
 
+const isStream = require('is-stream');
+const toNodeReadable = require('web-streams-node').toNodeReadable;
+
 /**
  * A base actor for listening to HTTP events.
  *
@@ -26,7 +29,7 @@ export abstract class ActorHttp extends Actor<IActionHttp, IActorTest, IActorHtt
    * @returns {NodeJS.ReadableStream}
    */
   public static toNodeReadable(body: ReadableStream | null): NodeJS.ReadableStream {
-    return require('is-stream')(body) ? body : require('web-streams-node').toNodeReadable(body);
+    return isStream(body) ? body : toNodeReadable(body);
   }
 
   /**

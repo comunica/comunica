@@ -19,7 +19,7 @@
   ],
   "license": "MIT",
   "bin": {
-    "comunica-compile-config": "./bin/compile-config.js"
+    "comunica-compile-config": "./bin/compile-config"
   },
   "bugs": {
     "url": "https://github.com/comunica/comunica/issues"

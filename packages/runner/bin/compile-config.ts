@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 import { compileConfig } from 'componentsjs';
 
 // Compiles a configuration to a module (single file) that exports the instantiated instance,

@@ -138,6 +138,7 @@ module.exports = {
           'case': 'kebabCase'
         }],
         'no-process-env': 'off',
+        'unicorn/no-process-exit': 'off',
       }
     },
     {
