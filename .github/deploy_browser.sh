@@ -3,11 +3,11 @@
 
 REPO_NAME="comunica/comunica"
 TARGET_REPO_NAME="rdfjs/comunica-browser.git"
-if [ "$TRAVIS_REPO_SLUG" != "$REPO_NAME" ] || ([ "$TRAVIS_BRANCH" != "master" ] && [ -z "$TRAVIS_TAG" ]); then exit; fi
+if [ "$GITHUB_REPOSITORY" != "$REPO_NAME" ] || ([ "$GITHUB_REF" != "refs/heads/master" ] && [ "$GITHUB_REF" != refs/tags/* ]); then exit; fi
 
 # Set the target version
-if [ ! -z "$TRAVIS_TAG" ]; then
-    VERSION=${TRAVIS_TAG:1}
+if [ "$GITHUB_REF" == refs/tags/* ]; then
+    VERSION=${TRAVIS_TAG:10}
 else
     VERSION="latest"
 fi
@@ -47,8 +47,8 @@ popd
 
 # Commit and push latest version
 git add --all
-git config user.name  "Travis"
-git config user.email "travis@travis-ci.org"
+git config user.name  "GitHub"
+git config user.email "GitHub@github.org"
 if [ ! -z "$TRAVIS_TAG" ]; then
     git commit -m "Update to comunica/comunica#$TRAVIS_TAG."
 else
