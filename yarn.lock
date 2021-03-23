@@ -10641,6 +10641,13 @@ sparqljs@^3.1.2, sparqljs@^3.3.0, sparqljs@^3.4.1:
   dependencies:
     rdf-data-factory "^1.0.4"
 
+sparqljs@^3.4.1:
+  version "3.4.1"
+  resolved "https://registry.yarnpkg.com/sparqljs/-/sparqljs-3.4.1.tgz#1da48bd1b7d71507108417a7fc111e8949c1ce23"
+  integrity sha512-JKcKPFdpPLiNnZU4i3f2MUk3LBIh0pCd1mWIP1Zi+Te7umurJLDBYCygsRNPK9Pz8ZI5n66StiQRxzSPYqdxjQ==
+  dependencies:
+    rdf-data-factory "^1.0.4"
+
 sparqljson-parse@^1.6.0:
   version "1.6.0"
   resolved "https://registry.yarnpkg.com/sparqljson-parse/-/sparqljson-parse-1.6.0.tgz#f3a936da973a1b82c8c793a7563cbb63f43738f6"
