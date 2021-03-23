@@ -68,15 +68,6 @@
 <div class="container container-main">
 	<div class="row">
 		<div class="col-8 col-content">
-			<section class="tsd-panel tsd-comment">
-				<div class="tsd-comment tsd-typography">
-					<div class="lead">
-						<p>An abstract quad iterator that can iterate over consecutive RDF sources.</p>
-					</div>
-					<p>This iterator stores a queue of sources that need to be iterated over.
-					For each source, its collected metadata is maintained.</p>
-				</div>
-			</section>
 			<section class="tsd-panel tsd-hierarchy">
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
@@ -121,9 +112,8 @@
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected tsd-is-external"><a href="actor_rdf_resolve_quad_pattern_hypermedia.linkedrdfsourcesasyncrdfiterator.html#_state" class="tsd-kind-icon">_state</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="actor_rdf_resolve_quad_pattern_hypermedia.linkedrdfsourcesasyncrdfiterator.html#cachesize" class="tsd-kind-icon">cache<wbr>Size</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="actor_rdf_resolve_quad_pattern_hypermedia.linkedrdfsourcesasyncrdfiterator.html#currentiterator" class="tsd-kind-icon">current<wbr>Iterator</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="actor_rdf_resolve_quad_pattern_hypermedia.linkedrdfsourcesasyncrdfiterator.html#firsturl" class="tsd-kind-icon">first<wbr>Url</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="actor_rdf_resolve_quad_pattern_hypermedia.linkedrdfsourcesasyncrdfiterator.html#firsturl" class="tsd-kind-icon">first<wbr>Url</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="actor_rdf_resolve_quad_pattern_hypermedia.linkedrdfsourcesasyncrdfiterator.html#graph" class="tsd-kind-icon">graph</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="actor_rdf_resolve_quad_pattern_hypermedia.linkedrdfsourcesasyncrdfiterator.html#linkqueue" class="tsd-kind-icon">link<wbr>Queue</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="actor_rdf_resolve_quad_pattern_hypermedia.linkedrdfsourcesasyncrdfiterator.html#nextsource" class="tsd-kind-icon">next<wbr>Source</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="actor_rdf_resolve_quad_pattern_hypermedia.linkedrdfsourcesasyncrdfiterator.html#object" class="tsd-kind-icon">object</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="actor_rdf_resolve_quad_pattern_hypermedia.linkedrdfsourcesasyncrdfiterator.html#predicate" class="tsd-kind-icon">predicate</a></li>
@@ -173,6 +163,7 @@
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="actor_rdf_resolve_quad_pattern_hypermedia.linkedrdfsourcesasyncrdfiterator.html#eventnames" class="tsd-kind-icon">event<wbr>Names</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="actor_rdf_resolve_quad_pattern_hypermedia.linkedrdfsourcesasyncrdfiterator.html#filter" class="tsd-kind-icon">filter</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="actor_rdf_resolve_quad_pattern_hypermedia.linkedrdfsourcesasyncrdfiterator.html#foreach" class="tsd-kind-icon">for<wbr>Each</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="actor_rdf_resolve_quad_pattern_hypermedia.linkedrdfsourcesasyncrdfiterator.html#getlinkqueue" class="tsd-kind-icon">get<wbr>Link<wbr>Queue</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="actor_rdf_resolve_quad_pattern_hypermedia.linkedrdfsourcesasyncrdfiterator.html#getmaxlisteners" class="tsd-kind-icon">get<wbr>Max<wbr>Listeners</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="actor_rdf_resolve_quad_pattern_hypermedia.linkedrdfsourcesasyncrdfiterator.html#getproperties" class="tsd-kind-icon">get<wbr>Properties</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-external"><a href="actor_rdf_resolve_quad_pattern_hypermedia.linkedrdfsourcesasyncrdfiterator.html#getproperty" class="tsd-kind-icon">get<wbr>Property</a></li>
@@ -224,7 +215,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/f329e84/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts#L28">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts:28</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/567592e/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts#L22">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts:22</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -327,7 +318,7 @@
 					<div class="tsd-signature tsd-kind-icon">cache<wbr>Size<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/f329e84/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts#L24">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts:24</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/567592e/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts#L18">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts:18</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -337,17 +328,17 @@
 					<div class="tsd-signature tsd-kind-icon">current<wbr>Iterator<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">AsyncIterator</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/f329e84/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts#L28">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts:28</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/567592e/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts#L22">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts:22</a></li>
 						</ul>
 					</aside>
 				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
 					<a name="firsturl" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagPrivate">Private</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> first<wbr>Url</h3>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> first<wbr>Url</h3>
 					<div class="tsd-signature tsd-kind-icon">first<wbr>Url<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/f329e84/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts#L25">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts:25</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/567592e/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts#L19">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts:19</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -357,17 +348,7 @@
 					<div class="tsd-signature tsd-kind-icon">graph<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Term</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/f329e84/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts#L20">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts:20</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
-					<a name="linkqueue" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagProtected">Protected</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> link<wbr>Queue</h3>
-					<div class="tsd-signature tsd-kind-icon">link<wbr>Queue<span class="tsd-signature-symbol">:</span> <a href="../interfaces/bus_rdf_resolve_hypermedia_links.ilink.html" class="tsd-signature-type" data-tsd-kind="Interface">ILink</a><span class="tsd-signature-symbol">[]</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/f329e84/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts#L22">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts:22</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/567592e/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts#L15">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts:15</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -377,7 +358,7 @@
 					<div class="tsd-signature tsd-kind-icon">next<wbr>Source<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><a href="../interfaces/actor_rdf_resolve_quad_pattern_hypermedia.isourcestate.html" class="tsd-signature-type" data-tsd-kind="Interface">ISourceState</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/f329e84/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts#L21">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts:21</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/567592e/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts#L16">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts:16</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -387,7 +368,7 @@
 					<div class="tsd-signature tsd-kind-icon">object<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Term</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/f329e84/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts#L19">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts:19</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/567592e/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts#L14">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts:14</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -397,7 +378,7 @@
 					<div class="tsd-signature tsd-kind-icon">predicate<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Term</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/f329e84/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts#L18">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts:18</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/567592e/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts#L13">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts:13</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -407,7 +388,7 @@
 					<div class="tsd-signature tsd-kind-icon">sources<wbr>State<span class="tsd-signature-symbol">:</span> <a href="../interfaces/actor_rdf_resolve_quad_pattern_hypermedia.isourcesstate.html" class="tsd-signature-type" data-tsd-kind="Interface">ISourcesState</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/f329e84/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts#L15">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts:15</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/567592e/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts#L10">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts:10</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -417,7 +398,7 @@
 					<div class="tsd-signature tsd-kind-icon">started<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = false</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/f329e84/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts#L27">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts:27</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/567592e/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts#L21">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts:21</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -427,7 +408,7 @@
 					<div class="tsd-signature tsd-kind-icon">subject<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Term</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/f329e84/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts#L17">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts:17</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/567592e/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts#L12">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts:12</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -1082,7 +1063,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/f329e84/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts#L97">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts:97</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/567592e/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts#L96">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts:96</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1499,6 +1480,29 @@
 						</li>
 					</ul>
 				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="getlinkqueue" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagAbstract">Abstract</span> get<wbr>Link<wbr>Queue</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Link<wbr>Queue<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/bus_rdf_resolve_hypermedia_links_queue.ilinkqueue.html" class="tsd-signature-type" data-tsd-kind="Interface">ILinkQueue</a><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/567592e/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts#L39">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts:39</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Get the internal link queue.
+									The returned instance must always be the same.</p>
+								</div>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/bus_rdf_resolve_hypermedia_links_queue.ilinkqueue.html" class="tsd-signature-type" data-tsd-kind="Interface">ILinkQueue</a><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-external">
 					<a name="getmaxlisteners" class="tsd-anchor"></a>
 					<h3>get<wbr>Max<wbr>Listeners</h3>
@@ -1617,7 +1621,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/f329e84/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts#L79">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts:79</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/567592e/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts#L78">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts:78</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1654,7 +1658,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/f329e84/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts#L87">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts:87</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/567592e/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts#L86">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts:86</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1692,7 +1696,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/f329e84/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts#L72">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts:72</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/567592e/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts#L71">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts:71</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1723,7 +1727,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/f329e84/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts#L194">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts:194</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/567592e/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts#L194">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts:194</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -2271,7 +2275,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/f329e84/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts#L141">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts:141</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/567592e/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts#L140">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts:140</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -2411,7 +2415,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/f329e84/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts#L55">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts:55</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/567592e/packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts#L54">packages/actor-rdf-resolve-quad-pattern-hypermedia/lib/LinkedRdfSourcesAsyncRdfIterator.ts:54</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -2748,14 +2752,11 @@
 									<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
 										<a href="actor_rdf_resolve_quad_pattern_hypermedia.linkedrdfsourcesasyncrdfiterator.html#currentiterator" class="tsd-kind-icon">current<wbr>Iterator</a>
 									</li>
-									<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
+									<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
 										<a href="actor_rdf_resolve_quad_pattern_hypermedia.linkedrdfsourcesasyncrdfiterator.html#firsturl" class="tsd-kind-icon">first<wbr>Url</a>
 									</li>
 									<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
 										<a href="actor_rdf_resolve_quad_pattern_hypermedia.linkedrdfsourcesasyncrdfiterator.html#graph" class="tsd-kind-icon">graph</a>
-									</li>
-									<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
-										<a href="actor_rdf_resolve_quad_pattern_hypermedia.linkedrdfsourcesasyncrdfiterator.html#linkqueue" class="tsd-kind-icon">link<wbr>Queue</a>
 									</li>
 									<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
 										<a href="actor_rdf_resolve_quad_pattern_hypermedia.linkedrdfsourcesasyncrdfiterator.html#nextsource" class="tsd-kind-icon">next<wbr>Source</a>
@@ -2873,6 +2874,9 @@
 									</li>
 									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
 										<a href="actor_rdf_resolve_quad_pattern_hypermedia.linkedrdfsourcesasyncrdfiterator.html#foreach" class="tsd-kind-icon">for<wbr>Each</a>
+									</li>
+									<li class=" tsd-kind-method tsd-parent-kind-class">
+										<a href="actor_rdf_resolve_quad_pattern_hypermedia.linkedrdfsourcesasyncrdfiterator.html#getlinkqueue" class="tsd-kind-icon">get<wbr>Link<wbr>Queue</a>
 									</li>
 									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
 										<a href="actor_rdf_resolve_quad_pattern_hypermedia.linkedrdfsourcesasyncrdfiterator.html#getmaxlisteners" class="tsd-kind-icon">get<wbr>Max<wbr>Listeners</a>

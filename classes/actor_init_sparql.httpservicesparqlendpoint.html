@@ -101,6 +101,7 @@
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="actor_init_sparql.httpservicesparqlendpoint.html#invalidatecachebeforequery" class="tsd-kind-icon">invalidate<wbr>Cache<wbr>Before<wbr>Query</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="actor_init_sparql.httpservicesparqlendpoint.html#port" class="tsd-kind-icon">port</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class"><a href="actor_init_sparql.httpservicesparqlendpoint.html#timeout" class="tsd-kind-icon">timeout</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="actor_init_sparql.httpservicesparqlendpoint.html#workers" class="tsd-kind-icon">workers</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><a href="actor_init_sparql.httpservicesparqlendpoint.html#help_message" class="tsd-kind-icon">HELP_<wbr>MESSAGE</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><a href="actor_init_sparql.httpservicesparqlendpoint.html#mime_json" class="tsd-kind-icon">MIME_<wbr>JSON</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static"><a href="actor_init_sparql.httpservicesparqlendpoint.html#mime_plain" class="tsd-kind-icon">MIME_<wbr>PLAIN</a></li>
@@ -112,6 +113,8 @@
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="actor_init_sparql.httpservicesparqlendpoint.html#handlerequest" class="tsd-kind-icon">handle<wbr>Request</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="actor_init_sparql.httpservicesparqlendpoint.html#parsebody" class="tsd-kind-icon">parse<wbr>Body</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="actor_init_sparql.httpservicesparqlendpoint.html#run" class="tsd-kind-icon">run</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="actor_init_sparql.httpservicesparqlendpoint.html#runmaster" class="tsd-kind-icon">run<wbr>Master</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="actor_init_sparql.httpservicesparqlendpoint.html#runworker" class="tsd-kind-icon">run<wbr>Worker</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="actor_init_sparql.httpservicesparqlendpoint.html#stopresponse" class="tsd-kind-icon">stop<wbr>Response</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="actor_init_sparql.httpservicesparqlendpoint.html#writequeryresult" class="tsd-kind-icon">write<wbr>Query<wbr>Result</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="actor_init_sparql.httpservicesparqlendpoint.html#writeservicedescription" class="tsd-kind-icon">write<wbr>Service<wbr>Description</a></li>
@@ -134,7 +137,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/f329e84/packages/actor-init-sparql/lib/HttpServiceSparqlEndpoint.ts#L52">packages/actor-init-sparql/lib/HttpServiceSparqlEndpoint.ts:52</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/567592e/packages/actor-init-sparql/lib/HttpServiceSparqlEndpoint.ts#L55">packages/actor-init-sparql/lib/HttpServiceSparqlEndpoint.ts:55</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -156,7 +159,7 @@
 					<div class="tsd-signature tsd-kind-icon">context<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/f329e84/packages/actor-init-sparql/lib/HttpServiceSparqlEndpoint.ts#L48">packages/actor-init-sparql/lib/HttpServiceSparqlEndpoint.ts:48</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/567592e/packages/actor-init-sparql/lib/HttpServiceSparqlEndpoint.ts#L50">packages/actor-init-sparql/lib/HttpServiceSparqlEndpoint.ts:50</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -166,7 +169,7 @@
 					<div class="tsd-signature tsd-kind-icon">engine<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="" class="tsd-signature-type" data-tsd-kind="Class">ActorInitSparql</a><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/f329e84/packages/actor-init-sparql/lib/HttpServiceSparqlEndpoint.ts#L46">packages/actor-init-sparql/lib/HttpServiceSparqlEndpoint.ts:46</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/567592e/packages/actor-init-sparql/lib/HttpServiceSparqlEndpoint.ts#L48">packages/actor-init-sparql/lib/HttpServiceSparqlEndpoint.ts:48</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -176,7 +179,7 @@
 					<div class="tsd-signature tsd-kind-icon">invalidate<wbr>Cache<wbr>Before<wbr>Query<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/f329e84/packages/actor-init-sparql/lib/HttpServiceSparqlEndpoint.ts#L52">packages/actor-init-sparql/lib/HttpServiceSparqlEndpoint.ts:52</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/567592e/packages/actor-init-sparql/lib/HttpServiceSparqlEndpoint.ts#L55">packages/actor-init-sparql/lib/HttpServiceSparqlEndpoint.ts:55</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -186,7 +189,7 @@
 					<div class="tsd-signature tsd-kind-icon">port<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/f329e84/packages/actor-init-sparql/lib/HttpServiceSparqlEndpoint.ts#L50">packages/actor-init-sparql/lib/HttpServiceSparqlEndpoint.ts:50</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/567592e/packages/actor-init-sparql/lib/HttpServiceSparqlEndpoint.ts#L52">packages/actor-init-sparql/lib/HttpServiceSparqlEndpoint.ts:52</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -196,17 +199,27 @@
 					<div class="tsd-signature tsd-kind-icon">timeout<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/f329e84/packages/actor-init-sparql/lib/HttpServiceSparqlEndpoint.ts#L49">packages/actor-init-sparql/lib/HttpServiceSparqlEndpoint.ts:49</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/567592e/packages/actor-init-sparql/lib/HttpServiceSparqlEndpoint.ts#L51">packages/actor-init-sparql/lib/HttpServiceSparqlEndpoint.ts:51</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="workers" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> workers</h3>
+					<div class="tsd-signature tsd-kind-icon">workers<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/567592e/packages/actor-init-sparql/lib/HttpServiceSparqlEndpoint.ts#L53">packages/actor-init-sparql/lib/HttpServiceSparqlEndpoint.ts:53</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-static">
 					<a name="help_message" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> <span class="tsd-flag ts-flagStatic">Static</span> HELP_<wbr>MESSAGE</h3>
-					<div class="tsd-signature tsd-kind-icon">HELP_<wbr>MESSAGE<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;comunica-sparql-http exposes a Comunica engine as SPARQL endpoint\n\nUsage:\n  comunica-sparql-http http://fragments.dbpedia.org/2015/en\n  comunica-sparql-http http://fragments.dbpedia.org/2015/en hypermedia@http://fragments.dbpedia.org/2016-04/en\n  comunica-sparql-http -c context.json \n  comunica-sparql-http -c \&quot;{ \\\&quot;sources\\\&quot;: [{ \\\&quot;type\\\&quot;: \\\&quot;hypermedia\\\&quot;, \\\&quot;value\\\&quot; : \\\&quot;http://fragments.dbpedia.org/2015/en\\\&quot; }]}\&quot; \n\nOptions:\n  -c            Context should be a JSON object or the path to such a JSON file.\n  -p            The HTTP port to run on (default: 3000)\n  -t            The query execution timeout in seconds (default: 60)\n  -b            base IRI for the query (e.g., http://example.org/)\n  -l            Sets the log level (e.g., debug, info, warn, ... defaults to warn)\n  -i            A flag that enables cache invalidation before each query execution.\n  --lenient     if failing requests and parsing errors should be logged instead of causing a hard crash\n  --help        print this help message\n  --version     prints version information\n&quot;</span><span class="tsd-signature-symbol"> = ...</span></div>
+					<div class="tsd-signature tsd-kind-icon">HELP_<wbr>MESSAGE<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;comunica-sparql-http exposes a Comunica engine as SPARQL endpoint\n\nUsage:\n  comunica-sparql-http http://fragments.dbpedia.org/2015/en\n  comunica-sparql-http http://fragments.dbpedia.org/2015/en hypermedia@http://fragments.dbpedia.org/2016-04/en\n  comunica-sparql-http -c context.json \n  comunica-sparql-http -c \&quot;{ \\\&quot;sources\\\&quot;: [{ \\\&quot;type\\\&quot;: \\\&quot;hypermedia\\\&quot;, \\\&quot;value\\\&quot; : \\\&quot;http://fragments.dbpedia.org/2015/en\\\&quot; }]}\&quot; \n\nOptions:\n  -c            Context should be a JSON object or the path to such a JSON file.\n  -p            The HTTP port to run on (default: 3000)\n  -t            The query execution timeout in seconds (default: 60)\n  -w            The number of worker threads (default: 1)\n  -b            base IRI for the query (e.g., http://example.org/)\n  -l            Sets the log level (e.g., debug, info, warn, ... defaults to warn)\n  -i            A flag that enables cache invalidation before each query execution.\n  --lenient     if failing requests and parsing errors should be logged instead of causing a hard crash\n  --help        print this help message\n  --version     prints version information\n&quot;</span><span class="tsd-signature-symbol"> = ...</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/f329e84/packages/actor-init-sparql/lib/HttpServiceSparqlEndpoint.ts#L26">packages/actor-init-sparql/lib/HttpServiceSparqlEndpoint.ts:26</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/567592e/packages/actor-init-sparql/lib/HttpServiceSparqlEndpoint.ts#L27">packages/actor-init-sparql/lib/HttpServiceSparqlEndpoint.ts:27</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -216,7 +229,7 @@
 					<div class="tsd-signature tsd-kind-icon">MIME_<wbr>JSON<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;application/json&quot;</span><span class="tsd-signature-symbol"> = &#x27;application/json&#x27;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/f329e84/packages/actor-init-sparql/lib/HttpServiceSparqlEndpoint.ts#L24">packages/actor-init-sparql/lib/HttpServiceSparqlEndpoint.ts:24</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/567592e/packages/actor-init-sparql/lib/HttpServiceSparqlEndpoint.ts#L25">packages/actor-init-sparql/lib/HttpServiceSparqlEndpoint.ts:25</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -226,7 +239,7 @@
 					<div class="tsd-signature tsd-kind-icon">MIME_<wbr>PLAIN<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;text/plain&quot;</span><span class="tsd-signature-symbol"> = &#x27;text/plain&#x27;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/f329e84/packages/actor-init-sparql/lib/HttpServiceSparqlEndpoint.ts#L23">packages/actor-init-sparql/lib/HttpServiceSparqlEndpoint.ts:23</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/567592e/packages/actor-init-sparql/lib/HttpServiceSparqlEndpoint.ts#L24">packages/actor-init-sparql/lib/HttpServiceSparqlEndpoint.ts:24</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -243,7 +256,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/f329e84/packages/actor-init-sparql/lib/HttpServiceSparqlEndpoint.ts#L160">packages/actor-init-sparql/lib/HttpServiceSparqlEndpoint.ts:160</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/567592e/packages/actor-init-sparql/lib/HttpServiceSparqlEndpoint.ts#L221">packages/actor-init-sparql/lib/HttpServiceSparqlEndpoint.ts:221</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -301,7 +314,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/f329e84/packages/actor-init-sparql/lib/HttpServiceSparqlEndpoint.ts#L372">packages/actor-init-sparql/lib/HttpServiceSparqlEndpoint.ts:372</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/567592e/packages/actor-init-sparql/lib/HttpServiceSparqlEndpoint.ts#L436">packages/actor-init-sparql/lib/HttpServiceSparqlEndpoint.ts:436</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -333,12 +346,86 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/f329e84/packages/actor-init-sparql/lib/HttpServiceSparqlEndpoint.ts#L133">packages/actor-init-sparql/lib/HttpServiceSparqlEndpoint.ts:133</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/567592e/packages/actor-init-sparql/lib/HttpServiceSparqlEndpoint.ts#L139">packages/actor-init-sparql/lib/HttpServiceSparqlEndpoint.ts:139</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
 									<p>Start the HTTP service.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>stdout: <span class="tsd-signature-type">Writable</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The output stream to log to.</p>
+									</div>
+								</li>
+								<li>
+									<h5>stderr: <span class="tsd-signature-type">Writable</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The error stream to log errors to.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="runmaster" class="tsd-anchor"></a>
+					<h3>run<wbr>Master</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">run<wbr>Master<span class="tsd-signature-symbol">(</span>stdout<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Writable</span>, stderr<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Writable</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/567592e/packages/actor-init-sparql/lib/HttpServiceSparqlEndpoint.ts#L151">packages/actor-init-sparql/lib/HttpServiceSparqlEndpoint.ts:151</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Start the HTTP service as master.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>stdout: <span class="tsd-signature-type">Writable</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The output stream to log to.</p>
+									</div>
+								</li>
+								<li>
+									<h5>stderr: <span class="tsd-signature-type">Writable</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>The error stream to log errors to.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="runworker" class="tsd-anchor"></a>
+					<h3>run<wbr>Worker</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">run<wbr>Worker<span class="tsd-signature-symbol">(</span>stdout<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Writable</span>, stderr<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Writable</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/567592e/packages/actor-init-sparql/lib/HttpServiceSparqlEndpoint.ts#L196">packages/actor-init-sparql/lib/HttpServiceSparqlEndpoint.ts:196</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Start the HTTP service as worker.</p>
 								</div>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -370,7 +457,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/f329e84/packages/actor-init-sparql/lib/HttpServiceSparqlEndpoint.ts#L348">packages/actor-init-sparql/lib/HttpServiceSparqlEndpoint.ts:348</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/567592e/packages/actor-init-sparql/lib/HttpServiceSparqlEndpoint.ts#L415">packages/actor-init-sparql/lib/HttpServiceSparqlEndpoint.ts:415</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -407,7 +494,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/f329e84/packages/actor-init-sparql/lib/HttpServiceSparqlEndpoint.ts#L227">packages/actor-init-sparql/lib/HttpServiceSparqlEndpoint.ts:227</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/567592e/packages/actor-init-sparql/lib/HttpServiceSparqlEndpoint.ts#L288">packages/actor-init-sparql/lib/HttpServiceSparqlEndpoint.ts:288</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -480,7 +567,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/f329e84/packages/actor-init-sparql/lib/HttpServiceSparqlEndpoint.ts#L286">packages/actor-init-sparql/lib/HttpServiceSparqlEndpoint.ts:286</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/567592e/packages/actor-init-sparql/lib/HttpServiceSparqlEndpoint.ts#L353">packages/actor-init-sparql/lib/HttpServiceSparqlEndpoint.ts:353</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -521,7 +608,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/f329e84/packages/actor-init-sparql/lib/HttpServiceSparqlEndpoint.ts#L100">packages/actor-init-sparql/lib/HttpServiceSparqlEndpoint.ts:100</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/567592e/packages/actor-init-sparql/lib/HttpServiceSparqlEndpoint.ts#L104">packages/actor-init-sparql/lib/HttpServiceSparqlEndpoint.ts:104</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -594,7 +681,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/f329e84/packages/actor-init-sparql/lib/HttpServiceSparqlEndpoint.ts#L75">packages/actor-init-sparql/lib/HttpServiceSparqlEndpoint.ts:75</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/567592e/packages/actor-init-sparql/lib/HttpServiceSparqlEndpoint.ts#L79">packages/actor-init-sparql/lib/HttpServiceSparqlEndpoint.ts:79</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -714,6 +801,9 @@
 									<li class=" tsd-kind-property tsd-parent-kind-class">
 										<a href="actor_init_sparql.httpservicesparqlendpoint.html#timeout" class="tsd-kind-icon">timeout</a>
 									</li>
+									<li class=" tsd-kind-property tsd-parent-kind-class">
+										<a href="actor_init_sparql.httpservicesparqlendpoint.html#workers" class="tsd-kind-icon">workers</a>
+									</li>
 									<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-static">
 										<a href="actor_init_sparql.httpservicesparqlendpoint.html#help_message" class="tsd-kind-icon">HELP_<wbr>MESSAGE</a>
 									</li>
@@ -731,6 +821,12 @@
 									</li>
 									<li class=" tsd-kind-method tsd-parent-kind-class">
 										<a href="actor_init_sparql.httpservicesparqlendpoint.html#run" class="tsd-kind-icon">run</a>
+									</li>
+									<li class=" tsd-kind-method tsd-parent-kind-class">
+										<a href="actor_init_sparql.httpservicesparqlendpoint.html#runmaster" class="tsd-kind-icon">run<wbr>Master</a>
+									</li>
+									<li class=" tsd-kind-method tsd-parent-kind-class">
+										<a href="actor_init_sparql.httpservicesparqlendpoint.html#runworker" class="tsd-kind-icon">run<wbr>Worker</a>
 									</li>
 									<li class=" tsd-kind-method tsd-parent-kind-class">
 										<a href="actor_init_sparql.httpservicesparqlendpoint.html#stopresponse" class="tsd-kind-icon">stop<wbr>Response</a>
