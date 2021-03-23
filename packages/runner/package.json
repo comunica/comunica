@@ -39,7 +39,7 @@
     "@comunica/core": "^1.0.0"
   },
   "dependencies": {
-    "componentsjs": "^4.0.3"
+    "componentsjs": "^4.0.6"
   },
   "devDependencies": {
     "@comunica/bus-init": "^1.19.2",

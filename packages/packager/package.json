@@ -103,7 +103,7 @@
     "@comunica/runner": "^1.19.2",
     "@comunica/runner-cli": "^1.19.2",
     "@types/minimist": "^1.2.0",
-    "componentsjs": "^4.0.3",
+    "componentsjs": "^4.0.6",
     "minimist": "^1.2.0"
   },
   "scripts": {
