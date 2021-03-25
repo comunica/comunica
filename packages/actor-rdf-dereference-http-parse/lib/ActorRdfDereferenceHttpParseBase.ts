@@ -125,6 +125,8 @@ export abstract class ActorRdfDereferenceHttpParseBase extends ActorRdfDereferen
         { context: action.context, handle: parseAction, handleMediaType: mediaType },
       )).handle;
     } catch (error: unknown) {
+      // Close the body, to avoid process to hang
+      await httpResponse.body!.cancel();
       return this.handleDereferenceError(action, error);
     }
 
