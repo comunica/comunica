@@ -3,6 +3,7 @@ import { ActionContext, Bus } from '@comunica/core';
 import { ArrayIterator } from 'asynciterator';
 import type { Algebra } from 'sparqlalgebrajs';
 import { Factory } from 'sparqlalgebrajs';
+import * as uuid from 'uuid';
 import { ActorQueryOperation, Bindings, getMetadata } from '..';
 
 describe('ActorQueryOperation', () => {
@@ -73,18 +74,18 @@ describe('ActorQueryOperation', () => {
     });
   });
 
-  describe('#getExpressionContext', () => {
+  describe('#getAsyncExpressionContext', () => {
     describe('without mediatorQueryOperation', () => {
       it('should create an empty object for an empty context', () => {
-        expect(ActorQueryOperation.getExpressionContext(ActionContext({}))).toEqual({});
+        expect(ActorQueryOperation.getAsyncExpressionContext(ActionContext({}))).toEqual({});
       });
 
       it('should create an non-empty object for a filled context', () => {
         const date = new Date();
-        expect(ActorQueryOperation.getExpressionContext(ActionContext({
+        expect(ActorQueryOperation.getAsyncExpressionContext(ActionContext({
           [KeysInitSparql.queryTimestamp]: date,
           [KeysInitSparql.baseIRI]: 'http://base.org/',
-        }))).toEqual({
+        }))).toContain({
           now: date,
           baseIRI: 'http://base.org/',
         });
@@ -108,13 +109,13 @@ describe('ActorQueryOperation', () => {
 
       it('should create an object with a resolver', () => {
         const resolver = (<any> ActorQueryOperation
-          .getExpressionContext(ActionContext({}), mediatorQueryOperation)).exists;
+          .getAsyncExpressionContext(ActionContext({}), mediatorQueryOperation)).exists;
         expect(resolver).toBeTruthy();
       });
 
       it('should allow a resolver to be invoked', async() => {
         const resolver = (<any> ActorQueryOperation
-          .getExpressionContext(ActionContext({}), mediatorQueryOperation)).exists;
+          .getAsyncExpressionContext(ActionContext({}), mediatorQueryOperation)).exists;
         const factory = new Factory();
         const expr: Algebra.ExistenceExpression = factory.createExistenceExpression(
           true,
@@ -136,4 +137,5 @@ describe('ActorQueryOperation', () => {
         .toEqual({ bla: true });
     });
   });
+
 });

@@ -4,6 +4,7 @@ import { ArrayIterator, MultiTransformIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import type * as RDF from 'rdf-js';
 import { mapTerms } from 'rdf-terms';
+import {BlankNodeBindingsScoped} from '@comunica/data-factory';
 const DF = new DataFactory();
 
 /**
@@ -74,6 +75,9 @@ export class BindingsToQuadsIterator extends MultiTransformIterator<Bindings, RD
   public static localizeBlankNode(blankNodeCounter: number,
     term: RDF.Term): RDF.Term {
     if (term.termType === 'BlankNode') {
+      if ((<RDF.BlankNode & { singleBindingsScope?: boolean }>term).singleBindingsScope) {
+        return new BlankNodeBindingsScoped(`${term.value}${blankNodeCounter}`);
+      }
       return DF.blankNode(`${term.value}${blankNodeCounter}`);
     }
     return term;

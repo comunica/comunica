@@ -29,7 +29,7 @@ export class ActorQueryOperationLeftJoinNestedLoop extends ActorQueryOperationTy
     const right = ActorQueryOperation.getSafeBindings(rightRaw);
 
     // TODO: refactor custom handling of pattern.expression. Should be pushed on the bus instead as a filter operation.
-    const config = { ...ActorQueryOperation.getExpressionContext(context) };
+    const config = { ...ActorQueryOperation.getAsyncExpressionContext(context) };
     const evaluator = pattern.expression ?
       new AsyncEvaluator(pattern.expression, config) :
       null;

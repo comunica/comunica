@@ -33,7 +33,7 @@ export class ActorQueryOperationExtend extends ActorQueryOperationTypedMediated<
     );
 
     const extendKey = termToString(variable);
-    const config = { ...ActorQueryOperation.getExpressionContext(context, this.mediatorQueryOperation) };
+    const config = { ...ActorQueryOperation.getAsyncExpressionContext(context, this.mediatorQueryOperation) };
     const evaluator = new AsyncEvaluator(expression, config);
 
     // Transform the stream by extending each Bindings with the expression result
