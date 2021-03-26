@@ -1,5 +1,11 @@
 # Changelog
 
+<a name="v1.6.1"></a>
+## [v1.6.1](https://github.com/comunica/sparqlee/compare/v1.6.0...v1.6.1) - 2021-03-26
+
+### Fixed
+* [Fix missing bnode custom generator fn in the context](https://github.com/comunica/sparqlee/commit/40150452a57304a71d175766e6d4f7064b1ed059)
+
 <a name="v1.6.0"></a>
 ## [v1.6.0](https://github.com/comunica/sparqlee/compare/v1.5.1...v1.6.0) - 2020-11-01
 
