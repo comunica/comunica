@@ -33,6 +33,7 @@ export class SyncEvaluator {
 
     const context: SyncEvaluatorContext = {
       now: config.now || new Date(Date.now()),
+      bnode: config.bnode || undefined,
       baseIRI: config.baseIRI || undefined,
       exists: config.exists,
       aggregate: config.aggregate,
