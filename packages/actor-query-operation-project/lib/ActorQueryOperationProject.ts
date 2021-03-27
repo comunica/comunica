@@ -1,6 +1,7 @@
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
 import type { ActionContext, IActorTest } from '@comunica/core';
+import { BlankNodeBindingsScoped } from '@comunica/data-factory';
 import type { Bindings, BindingsStream, IActorQueryOperationOutputBindings } from '@comunica/types';
 import { DataFactory } from 'rdf-data-factory';
 import type * as RDF from 'rdf-js';
@@ -59,8 +60,7 @@ export class ActorQueryOperationProject extends ActorQueryOperationTypedMediated
         blankNodeCounter++;
         const scopedBlankNodesCache = new Map<string, RDF.BlankNode>();
         return <Bindings> bindings.map(term => {
-          if (term && term.termType === 'BlankNode' &&
-          (<RDF.BlankNode & { singleBindingsScope?: boolean }>term).singleBindingsScope) {
+          if (term instanceof BlankNodeBindingsScoped) {
             let scopedBlankNode = scopedBlankNodesCache.get(term.value);
             if (!scopedBlankNode) {
               scopedBlankNode = DF.blankNode(`${term.value}${blankNodeCounter}`);

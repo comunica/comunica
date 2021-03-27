@@ -75,7 +75,7 @@ export class BindingsToQuadsIterator extends MultiTransformIterator<Bindings, RD
   public static localizeBlankNode(blankNodeCounter: number,
     term: RDF.Term): RDF.Term {
     if (term.termType === 'BlankNode') {
-      if ((<RDF.BlankNode & { singleBindingsScope?: boolean }>term).singleBindingsScope) {
+      if (term instanceof BlankNodeBindingsScoped) {
         return new BlankNodeBindingsScoped(`${term.value}${blankNodeCounter}`);
       }
       return DF.blankNode(`${term.value}${blankNodeCounter}`);
