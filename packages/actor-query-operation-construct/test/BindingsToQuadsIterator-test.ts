@@ -3,6 +3,7 @@ import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 
 import { BindingsToQuadsIterator } from '../lib/BindingsToQuadsIterator';
+import {BlankNodeBindingsScoped} from '@comunica/data-factory';
 const DF = new DataFactory();
 
 const arrayifyStream = require('arrayify-stream');
@@ -277,6 +278,11 @@ describe('BindingsToQuadsIterator', () => {
         .toEqual(DF.blankNode('abc1'));
       expect(BindingsToQuadsIterator.localizeBlankNode(1, DF.blankNode('abc')))
         .toEqual(DF.blankNode('abc1'));
+    });
+
+    it('should localize a blank node scoped to a single set of bindings', () => {
+      expect(BindingsToQuadsIterator.localizeBlankNode(0, new BlankNodeBindingsScoped('abc')))
+        .toEqual(new BlankNodeBindingsScoped('abc0'));
     });
   });
 
