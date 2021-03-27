@@ -1,10 +1,10 @@
+import { BlankNodeBindingsScoped } from '@comunica/data-factory';
 import type { Bindings, BindingsStream } from '@comunica/types';
 import type { AsyncIterator } from 'asynciterator';
 import { ArrayIterator, MultiTransformIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 import type * as RDF from 'rdf-js';
 import { mapTerms } from 'rdf-terms';
-import {BlankNodeBindingsScoped} from '@comunica/data-factory';
 const DF = new DataFactory();
 
 /**

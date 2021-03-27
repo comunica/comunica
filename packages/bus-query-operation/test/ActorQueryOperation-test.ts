@@ -3,7 +3,6 @@ import { ActionContext, Bus } from '@comunica/core';
 import { ArrayIterator } from 'asynciterator';
 import type { Algebra } from 'sparqlalgebrajs';
 import { Factory } from 'sparqlalgebrajs';
-import * as uuid from 'uuid';
 import { ActorQueryOperation, Bindings, getMetadata } from '..';
 
 describe('ActorQueryOperation', () => {
@@ -166,5 +165,4 @@ describe('ActorQueryOperation', () => {
         .toEqual({ bla: true });
     });
   });
-
 });

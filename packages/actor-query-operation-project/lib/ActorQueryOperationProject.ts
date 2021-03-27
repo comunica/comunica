@@ -1,9 +1,8 @@
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
 import type { ActionContext, IActorTest } from '@comunica/core';
-import { BlankNodeBindingsScoped, BlankNodeScoped } from '@comunica/data-factory';
 import type { Bindings, BindingsStream, IActorQueryOperationOutputBindings } from '@comunica/types';
-import {BlankNode, DataFactory} from 'rdf-data-factory';
+import { DataFactory } from 'rdf-data-factory';
 import type * as RDF from 'rdf-js';
 import { termToString } from 'rdf-string';
 import type { Algebra } from 'sparqlalgebrajs';

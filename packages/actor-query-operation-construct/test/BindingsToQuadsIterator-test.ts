@@ -1,9 +1,10 @@
 import { Bindings } from '@comunica/bus-query-operation';
+import { BlankNodeBindingsScoped } from '@comunica/data-factory';
 import { ArrayIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
 
 import { BindingsToQuadsIterator } from '../lib/BindingsToQuadsIterator';
-import {BlankNodeBindingsScoped} from '@comunica/data-factory';
+
 const DF = new DataFactory();
 
 const arrayifyStream = require('arrayify-stream');

@@ -1,6 +1,6 @@
 import { ActorQueryOperation, Bindings } from '@comunica/bus-query-operation';
 import { Bus } from '@comunica/core';
-import {BlankNodeBindingsScoped, BlankNodeScoped} from '@comunica/data-factory';
+import { BlankNodeBindingsScoped, BlankNodeScoped } from '@comunica/data-factory';
 import type { IActorQueryOperationOutputBindings } from '@comunica/types';
 import { ArrayIterator, SingletonIterator } from 'asynciterator';
 import { DataFactory } from 'rdf-data-factory';
