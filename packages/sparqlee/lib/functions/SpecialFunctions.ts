@@ -344,7 +344,7 @@ const BNODE = {
 
     if (context.bnode) {
       const bnode = await context.bnode(strInput);
-      return new E.BlankNode(bnode.value);
+      return new E.BlankNode(bnode);
     }
 
     return BNODE_(strInput);
@@ -360,7 +360,7 @@ const BNODE = {
 
     if (context.bnode) {
       const bnode = context.bnode(strInput);
-      return new E.BlankNode(bnode.value);
+      return new E.BlankNode(bnode);
     }
 
     return BNODE_(strInput);
