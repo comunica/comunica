@@ -1,5 +1,11 @@
 # Changelog
 
+<a name="v1.6.2"></a>
+## [v1.6.2](https://github.com/comunica/sparqlee/compare/v1.6.1...v1.6.2) - 2021-03-29
+
+### Fixed
+* [Preserve the original blank node in bnode generator functions](https://github.com/comunica/sparqlee/commit/c843192619217bdfd9a23be836d4941a212d3d04)
+
 <a name="v1.6.1"></a>
 ## [v1.6.1](https://github.com/comunica/sparqlee/compare/v1.6.0...v1.6.1) - 2021-03-26
 
