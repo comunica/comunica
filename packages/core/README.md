@@ -19,9 +19,9 @@ $ yarn add @comunica/core
 
 ## Exported classes
 
-* [`Actor`](https://comunica.github.io/comunica/classes/core.actor-1.html): An actor can act on messages of certain types and provide output of a certain type.
-* [`Bus`](https://comunica.github.io/comunica/classes/core.bus-1.html): A publish-subscribe bus for sending actions to actors to test whether or not they can run an action.
-* [`Mediator`](https://comunica.github.io/comunica/classes/core.mediator-1.html): A mediator can mediate an action over a bus of actors.
-* [`ActionObserver`](https://comunica.github.io/comunica/classes/core.actionobserver-1.html): An ActionObserver can passively listen to Actor.run inputs and outputs for all actors on a certain bus.
-* [`BusIndexed`](https://comunica.github.io/comunica/classes/core.busindexed-1.html): A bus that indexes identified actors, so that actions with a corresponding identifier can be published more efficiently.
-* [`Logger`](https://comunica.github.io/comunica/classes/core.logger-1.html): A logger accepts messages from different levels and emits them in a certain way.
+* [`Actor`](https://comunica.github.io/comunica/classes/core.actor.html): An actor can act on messages of certain types and provide output of a certain type.
+* [`Bus`](https://comunica.github.io/comunica/classes/core.bus.html): A publish-subscribe bus for sending actions to actors to test whether or not they can run an action.
+* [`Mediator`](https://comunica.github.io/comunica/classes/core.mediator.html): A mediator can mediate an action over a bus of actors.
+* [`ActionObserver`](https://comunica.github.io/comunica/classes/core.actionobserver.html): An ActionObserver can passively listen to Actor.run inputs and outputs for all actors on a certain bus.
+* [`BusIndexed`](https://comunica.github.io/comunica/classes/core.busindexed.html): A bus that indexes identified actors, so that actions with a corresponding identifier can be published more efficiently.
+* [`Logger`](https://comunica.github.io/comunica/classes/core.logger.html): A logger accepts messages from different levels and emits them in a certain way.

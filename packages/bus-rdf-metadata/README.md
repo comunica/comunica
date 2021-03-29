@@ -22,5 +22,5 @@ $ yarn add @comunica/bus-rdf-metadata
 
 ## Creating actors on this bus
 
-Actors extending [`ActorRdfMetadata`](https://comunica.github.io/comunica/classes/bus_rdf_metadata.actorrdfmetadata-1.html) are automatically subscribed to this bus.
+Actors extending [`ActorRdfMetadata`](https://comunica.github.io/comunica/classes/bus_rdf_metadata.actorrdfmetadata.html) are automatically subscribed to this bus.
 

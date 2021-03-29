@@ -22,5 +22,5 @@ $ yarn add @comunica/bus-rdf-serialize
 
 ## Creating actors on this bus
 
-Actors extending [`ActorRdfSerialize`](https://comunica.github.io/comunica/classes/bus_rdf_serialize.actorrdfserialize-1.html) are automatically subscribed to this bus.
+Actors extending [`ActorRdfSerialize`](https://comunica.github.io/comunica/classes/bus_rdf_serialize.actorrdfserialize.html) are automatically subscribed to this bus.
 

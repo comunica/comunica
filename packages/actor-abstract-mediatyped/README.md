@@ -17,6 +17,6 @@ $ yarn add @comunica/actor-abstract-mediatyped
 
 ## Usage
 
-This package exposes [`ActorAbstractMediaTyped`](https://comunica.github.io/comunica/classes/actor_abstract_mediatyped.actorabstractmediatyped-1.html)
-and [`ActorAbstractMediaTypedFixed`](https://comunica.github.io/comunica/classes/actor_abstract_mediatyped.actorabstractmediatypedfixed-1.html)
+This package exposes [`ActorAbstractMediaTyped`](https://comunica.github.io/comunica/classes/actor_abstract_mediatyped.actorabstractmediatyped.html)
+and [`ActorAbstractMediaTypedFixed`](https://comunica.github.io/comunica/classes/actor_abstract_mediatyped.actorabstractmediatypedfixed.html)
 that provide utility methods for actors that handle media types.

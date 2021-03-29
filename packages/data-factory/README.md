@@ -17,5 +17,5 @@ $ yarn add @comunica/data-factory
 
 ## Exposed classes
 
-* [`BlankNodeScoped`](https://comunica.github.io/comunica/classes/data_factory.blanknodescoped-1.html): A blank node that is scoped to a certain source, and exposes a skolemized named node.
-* [`BlankNodeBindingsScoped`](https://comunica.github.io/comunica/classes/data_factory.blanknodebindingsscoped-1.html): A blank node that is scoped to a certain set of bindings.
+* [`BlankNodeScoped`](https://comunica.github.io/comunica/classes/data_factory.blanknodescoped.html): A blank node that is scoped to a certain source, and exposes a skolemized named node.
+* [`BlankNodeBindingsScoped`](https://comunica.github.io/comunica/classes/data_factory.blanknodebindingsscoped.html): A blank node that is scoped to a certain set of bindings.

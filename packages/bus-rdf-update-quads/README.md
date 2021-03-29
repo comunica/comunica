@@ -24,7 +24,7 @@ $ yarn add @comunica/bus-rdf-update-quads
 
 ## Creating actors on this bus
 
-Actors extending [`ActorRdfUpdateQuads`](https://comunica.github.io/comunica/classes/bus_rdf_update_quads.actorrdfupdatequads-1.html) are automatically subscribed to this bus.
+Actors extending [`ActorRdfUpdateQuads`](https://comunica.github.io/comunica/classes/bus_rdf_update_quads.actorrdfupdatequads.html) are automatically subscribed to this bus.
 
-[`ActorRdfUpdateQuadsDestination`](https://comunica.github.io/comunica/classes/bus_rdf_update_quads.actorrdfupdatequadsdestination-1.html) is an extension of `ActorRdfUpdateQuads`
-that delegates insert and delete streams to an [`IQuadDestination`](https://comunica.github.io/comunica/classes/bus_rdf_update_quads.iquaddestination-1.html).
+[`ActorRdfUpdateQuadsDestination`](https://comunica.github.io/comunica/classes/bus_rdf_update_quads.actorrdfupdatequadsdestination.html) is an extension of `ActorRdfUpdateQuads`
+that delegates insert and delete streams to an [`IQuadDestination`](https://comunica.github.io/comunica/classes/bus_rdf_update_quads.iquaddestination.html).

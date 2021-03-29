@@ -23,7 +23,7 @@ $ yarn add @comunica/actor-rdf-metadata-extract-hydra-controls-query
 
 This actor adds the following entries to the metadata object.
 
-* `searchForms`: All available Hydra search forms, using the [`ISearchForms`](https://comunica.github.io/comunica/interfaces/actor_rdf_metadata_extract_hydra_controls.isearchforms-1.html) interface.
+* `searchForms`: All available Hydra search forms, using the [`ISearchForms`](https://comunica.github.io/comunica/interfaces/actor_rdf_metadata_extract_hydra_controls.isearchforms.html) interface.
 
 ## Configure
 

@@ -22,4 +22,4 @@ $ yarn add @comunica/bus-context-preprocess
 
 ## Creating actors on this bus
 
-Actors extending [`ActorContextPreprocess`](https://comunica.github.io/comunica/classes/bus_context_preprocess.actorcontextpreprocess-1.html) are automatically subscribed to this bus.
+Actors extending [`ActorContextPreprocess`](https://comunica.github.io/comunica/classes/bus_context_preprocess.actorcontextpreprocess.html) are automatically subscribed to this bus.

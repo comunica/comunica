@@ -22,5 +22,5 @@ $ yarn add @comunica/bus-sparql-serialize
 
 ## Creating actors on this bus
 
-Actors extending [`ActorSparqlSerialize`](https://comunica.github.io/comunica/classes/bus_sparql_serialize.actorsparqlserialize-1.html) are automatically subscribed to this bus.
+Actors extending [`ActorSparqlSerialize`](https://comunica.github.io/comunica/classes/bus_sparql_serialize.actorsparqlserialize.html) are automatically subscribed to this bus.
 

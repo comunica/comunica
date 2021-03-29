@@ -22,5 +22,5 @@ $ yarn add @comunica/bus-sparql-parse
 
 ## Creating actors on this bus
 
-Actors extending [`ActorSparqlParse`](https://comunica.github.io/comunica/classes/bus_sparql_parse.actorsparqlparse-1.html) are automatically subscribed to this bus.
+Actors extending [`ActorSparqlParse`](https://comunica.github.io/comunica/classes/bus_sparql_parse.actorsparqlparse.html) are automatically subscribed to this bus.
 

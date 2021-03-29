@@ -16,6 +16,6 @@ $ yarn add @comunica/actor-abstract-binding-hash
 
 ## Usage
 
-This package exposes [`AbstractBindingsHash`](https://comunica.github.io/comunica/classes/actor_abstract_bindings_hash.abstractbindingshash-1.html)
-and [`AbstractFilterHash`](https://comunica.github.io/comunica/classes/actor_abstract_bindings_hash.abstractfilterhash-1.html)
+This package exposes [`AbstractBindingsHash`](https://comunica.github.io/comunica/classes/actor_abstract_bindings_hash.abstractbindingshash.html)
+and [`AbstractFilterHash`](https://comunica.github.io/comunica/classes/actor_abstract_bindings_hash.abstractfilterhash.html)
 that provide utility methods for hashing.
