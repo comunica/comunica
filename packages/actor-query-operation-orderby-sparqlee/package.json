@@ -41,7 +41,7 @@
     "asynciterator": "^3.0.3",
     "rdf-string": "^1.5.0",
     "sparqlalgebrajs": "^2.4.0",
-    "sparqlee": "^1.6.1"
+    "sparqlee": "^1.6.2"
   },
   "devDependencies": {
     "@comunica/actor-query-operation-filter-direct": "^1.19.2",
