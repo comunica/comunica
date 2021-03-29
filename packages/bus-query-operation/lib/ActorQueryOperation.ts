@@ -14,7 +14,6 @@ import type {
 } from '@comunica/types';
 import type * as RDF from 'rdf-js';
 import type { Algebra } from 'sparqlalgebrajs';
-import * as uuid from 'uuid';
 import { materializeOperation } from './Bindings';
 
 /**
@@ -97,6 +96,14 @@ export const KEY_CONTEXT_BASEIRI = KeysInitSparql.baseIRI;
  * @deprecated Import this constant from @comunica/context-entries.
  */
 export const KEY_CONTEXT_QUERY_TIMESTAMP = KeysInitSparql.queryTimestamp;
+
+/**
+ * A counter that keeps track blank node generated through BNODE() SPARQL
+ * expressions.
+ *
+ * @type {number}
+ */
+let bnodeCounter = 0;
 
 /**
  * A comunica actor for query-operation events.
@@ -190,7 +197,7 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
   IActionQueryOperation, IActorTest, IActorQueryOperationOutput>): IExpressionContext {
     return {
       ...this.getBaseExpressionContext(context),
-      bnode: (input?: string) => new BlankNodeBindingsScoped(input || uuid.v4()),
+      bnode: (input?: string) => new BlankNodeBindingsScoped(input || `BNODE_${bnodeCounter++}`),
     };
   }
 
@@ -205,7 +212,7 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
   IActionQueryOperation, IActorTest, IActorQueryOperationOutput>): IAsyncExpressionContext {
     const expressionContext: IAsyncExpressionContext = {
       ...this.getBaseExpressionContext(context),
-      bnode: (input?: string) => Promise.resolve(new BlankNodeBindingsScoped(input || uuid.v4())),
+      bnode: (input?: string) => Promise.resolve(new BlankNodeBindingsScoped(input || `BNODE_${bnodeCounter++}`)),
     };
     if (context && mediatorQueryOperation) {
       expressionContext.exists = ActorQueryOperation.createExistenceResolver(context, mediatorQueryOperation);
