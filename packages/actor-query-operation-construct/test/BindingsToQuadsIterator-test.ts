@@ -283,7 +283,7 @@ describe('BindingsToQuadsIterator', () => {
 
     it('should localize a blank node scoped to a single set of bindings', () => {
       expect(BindingsToQuadsIterator.localizeBlankNode(0, new BlankNodeBindingsScoped('abc')))
-        .toEqual(new BlankNodeBindingsScoped('abc0'));
+        .toEqual(DF.blankNode('abc0'));
     });
   });
 
