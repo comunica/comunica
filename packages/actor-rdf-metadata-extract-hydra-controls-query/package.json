@@ -45,7 +45,7 @@
     "@comunica/actor-sparql-serialize-sparql-json": "^1.19.2",
     "@comunica/bus-rdf-metadata-extract": "^1.19.2",
     "@comunica/core": "^1.19.2",
-    "asynciterator": "^3.0.3"
+    "asynciterator": "^3.1.0"
   },
   "jest": {
     "globals": {

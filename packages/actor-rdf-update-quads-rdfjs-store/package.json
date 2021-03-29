@@ -35,7 +35,7 @@
     "@types/rdf-js": "*",
     "rdf-data-factory": "^1.0.4",
     "rdf-string": "^1.5.0",
-    "asynciterator": "^3.0.3"
+    "asynciterator": "^3.1.0"
   },
   "peerDependencies": {
     "@comunica/core": "^1.19.2",

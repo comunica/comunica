@@ -33,7 +33,7 @@
   "dependencies": {
     "@comunica/context-entries": "^1.0.0",
     "@types/rdf-js": "*",
-    "asynciterator": "^3.0.3"
+    "asynciterator": "^3.1.0"
   },
   "peerDependencies": {
     "@comunica/core": "^1.19.2"
