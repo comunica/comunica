@@ -1,4 +1,3 @@
-import { BlankNodeBindingsScoped } from '@comunica/data-factory';
 import type { Bindings, BindingsStream } from '@comunica/types';
 import type { AsyncIterator } from 'asynciterator';
 import { ArrayIterator, MultiTransformIterator } from 'asynciterator';
