@@ -1,0 +1,603 @@
+<!doctype html>
+<html class="default no-js">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>types | Comunica</title>
+	<meta name="description" content="Documentation for Comunica">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="../assets/css/main.css">
+	<script async src="../assets/js/search.js" id="search-script"></script>
+</head>
+<body>
+<header>
+	<div class="tsd-page-toolbar">
+		<div class="container">
+			<div class="table-wrap">
+				<div class="table-cell" id="tsd-search" data-index="../assets/js/search.json" data-base="..">
+					<div class="field">
+						<label for="tsd-search-field" class="tsd-widget search no-caption">Search</label>
+						<input id="tsd-search-field" type="text" />
+					</div>
+					<ul class="results">
+						<li class="state loading">Preparing search index...</li>
+						<li class="state failure">The search index is not available</li>
+					</ul>
+					<a href="../index.html" class="title">Comunica</a>
+				</div>
+				<div class="table-cell" id="tsd-widgets">
+					<div id="tsd-filter">
+						<a href="#" class="tsd-widget options no-caption" data-toggle="options">Options</a>
+						<div class="tsd-filter-group">
+							<div class="tsd-select" id="tsd-filter-visibility">
+								<span class="tsd-select-label">All</span>
+								<ul class="tsd-select-list">
+									<li data-value="public">Public</li>
+									<li data-value="protected">Public/Protected</li>
+									<li data-value="private" class="selected">All</li>
+								</ul>
+							</div>
+							<input type="checkbox" id="tsd-filter-inherited" checked />
+							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
+						</div>
+					</div>
+					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tsd-page-title">
+		<div class="container">
+			<ul class="tsd-breadcrumb">
+				<li>
+					<a href="../modules.html">Comunica</a>
+				</li>
+				<li>
+					<a href="types.html">types</a>
+				</li>
+			</ul>
+			<h1>Module types</h1>
+		</div>
+	</div>
+</header>
+<div class="container container-main">
+	<div class="row">
+		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<a href="#sparql-to-sparql-algebra-converter" id="sparql-to-sparql-algebra-converter" style="color: inherit; text-decoration: none;">
+						<h1>SPARQL to SPARQL Algebra converter</h1>
+					</a>
+					<p><a href="https://www.npmjs.com/package/sparqlalgebrajs"><img src="https://badge.fury.io/js/sparqlalgebrajs.svg" alt="npm version"></a>
+					<a href="https://travis-ci.org/joachimvh/SPARQLAlgebra.js"><img src="https://travis-ci.org/joachimvh/SPARQLAlgebra.js.svg?branch=master" alt="Build Status"></a> </p>
+					<p>2 components get exposed: the <strong>translate</strong> function and the <strong>Algebra</strong> object,
+					which contains all the output types that can occur.</p>
+					<p>Note that this is still a work in progress so naming conventions could change.
+						There is also support for &#39;non-algebra&#39; entities such as ASK, FROM, etc.
+					to make sure the output contains all relevant information from the query.</p>
+					<a href="#translate" id="translate" style="color: inherit; text-decoration: none;">
+						<h2>Translate</h2>
+					</a>
+					<p>Input for the translate function should either be a SPARQL string
+					or a result from calling <a href="https://github.com/RubenVerborgh/SPARQL.js">SPARQL.js</a>.</p>
+					<pre><code class="language-javascript"><span style="color: #0000FF">const</span><span style="color: #000000"> { </span><span style="color: #0070C1">translate</span><span style="color: #000000"> } = </span><span style="color: #795E26">require</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;sparqlalgebrajs&#039;</span><span style="color: #000000">);</span>
+<span style="color: #795E26">translate</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;SELECT * WHERE { ?x ?y ?z }&#039;</span><span style="color: #000000">);</span>
+</code></pre>
+					<p>Returns:</p>
+					<pre><code class="language-javascript"><span style="color: #000000">{ type: </span><span style="color: #A31515">&#039;project&#039;</span><span style="color: #000000">,</span>
+<span style="color: #000000">  input: { type: </span><span style="color: #A31515">&#039;bgp&#039;</span><span style="color: #000000">, patterns: [ </span>
+<span style="color: #000000">    { </span><span style="color: #001080">type:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;pattern&#039;</span><span style="color: #000000">, </span><span style="color: #001080">subject:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;?x&#039;</span><span style="color: #000000">, </span><span style="color: #001080">predicate:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;?y&#039;</span><span style="color: #000000">, </span><span style="color: #001080">object:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;?z&#039;</span><span style="color: #000000"> } ] },</span>
+<span style="color: #000000">  variables: [ </span><span style="color: #A31515">&#039;?x&#039;</span><span style="color: #000000">, </span><span style="color: #A31515">&#039;?y&#039;</span><span style="color: #000000">, </span><span style="color: #A31515">&#039;?z&#039;</span><span style="color: #000000"> ] }</span>
+</code></pre>
+					<p>Translating back to SPARQL can be done with the <code>toSparql</code> (or <code>toSparqlJs</code>) function.</p>
+					<a href="#algebra-object" id="algebra-object" style="color: inherit; text-decoration: none;">
+						<h2>Algebra object</h2>
+					</a>
+					<p>The algebra object contains a <code>types</code> object,
+						which contains all possible values for the <code>type</code> field in the output results.
+						Besides that it also contains all the TypeScript interfaces of the possible output results.
+					The output of the <code>translate</code> function will always be an <code>Algebra.Operation</code> instance.</p>
+					<a href="#deviations-from-the-spec" id="deviations-from-the-spec" style="color: inherit; text-decoration: none;">
+						<h2>Deviations from the spec</h2>
+					</a>
+					<p>This implementation tries to stay as close to the SPARQL 1.1
+						<a href="https://www.w3.org/TR/sparql11-query/#sparqlDefinition">specification</a>,
+						but some changes were made for ease of use.
+						These are mostly based on the Jena ARQ <a href="https://jena.apache.org/documentation/query/">implementation</a>.
+					What follows is a non-exhaustive list of deviations:</p>
+					<a href="#named-parameters" id="named-parameters" style="color: inherit; text-decoration: none;">
+						<h4>Named parameters</h4>
+					</a>
+					<p>This is the biggest visual change.
+						The functions no longer take an ordered list of parameters but a named list instead.
+						The reason for this is to prevent having to memorize the order of parameters and also
+					due to seeing some differences between the spec and the Jena ARQ SSE output when ordering parameters.</p>
+					<a href="#multisetlist-conversion" id="multisetlist-conversion" style="color: inherit; text-decoration: none;">
+						<h4>Multiset/List conversion</h4>
+					</a>
+					<p>The functions <code>toMultiset</code> and <code>toList</code> have been removed for brevity.
+					Conversions between the two are implied by the operations used.</p>
+					<a href="#quads" id="quads" style="color: inherit; text-decoration: none;">
+						<h4>Quads</h4>
+					</a>
+					<p>The <code>translate</code> function has an optional second parameter
+						indicating whether patterns should be translated to triple or quad patterns.
+						In the case of quads the <code>graph</code> operation will be removed
+						and embedded into the patterns it contained.
+					The default value for this parameter is <code>false</code>.</p>
+					<pre><code><span style="color: #000000">PREFIX : &lt;</span><span style="color: #267F99">http</span><span style="color: #000000">:</span><span style="color: #008000">//www.example.org/&gt;</span>
+
+<span style="color: #267F99">SELECT</span><span style="color: #000000"> ?</span><span style="color: #267F99">x</span><span style="color: #000000"> </span><span style="color: #267F99">WHERE</span><span style="color: #000000"> {</span>
+<span style="color: #000000">    </span><span style="color: #267F99">GRAPH</span><span style="color: #000000"> ?</span><span style="color: #267F99">g</span><span style="color: #000000"> {?</span><span style="color: #267F99">x</span><span style="color: #000000"> ?</span><span style="color: #267F99">y</span><span style="color: #000000"> ?</span><span style="color: #001080">z</span><span style="color: #000000">}</span>
+<span style="color: #000000">}</span>
+</code></pre>
+					<p>Default result:</p>
+					<pre><code class="language-javascript"><span style="color: #000000">{ type: </span><span style="color: #A31515">&#039;project&#039;</span><span style="color: #000000">,</span>
+<span style="color: #000000">  input: { type: </span><span style="color: #A31515">&#039;graph&#039;</span><span style="color: #000000">, graph: </span><span style="color: #A31515">&#039;?g&#039;</span><span style="color: #000000">, input:  </span>
+<span style="color: #000000">    { type: </span><span style="color: #A31515">&#039;bgp&#039;</span><span style="color: #000000">, patterns: </span>
+<span style="color: #000000">      [ { </span><span style="color: #001080">type:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;pattern&#039;</span><span style="color: #000000">, </span><span style="color: #001080">subject:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;?x&#039;</span><span style="color: #000000">, </span><span style="color: #001080">predicate:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;?y&#039;</span><span style="color: #000000">, </span><span style="color: #001080">object:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;?z&#039;</span><span style="color: #000000"> } ] } },</span>
+<span style="color: #000000">  variables: [ </span><span style="color: #A31515">&#039;?x&#039;</span><span style="color: #000000"> ] }</span>
+</code></pre>
+					<p>With quads:</p>
+					<pre><code class="language-javascript"><span style="color: #000000">{ type: </span><span style="color: #A31515">&#039;project&#039;</span><span style="color: #000000">,</span>
+<span style="color: #000000">  input: { type: </span><span style="color: #A31515">&#039;bgp&#039;</span><span style="color: #000000">, patterns: </span>
+<span style="color: #000000">    [ { </span><span style="color: #001080">type:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;pattern&#039;</span><span style="color: #000000">, </span><span style="color: #001080">subject:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;?x&#039;</span><span style="color: #000000">, </span><span style="color: #001080">predicate:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;?y&#039;</span><span style="color: #000000">, </span><span style="color: #001080">object:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;?z&#039;</span><span style="color: #000000">, </span><span style="color: #001080">graph:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;?g&#039;</span><span style="color: #000000"> } ] },</span>
+<span style="color: #000000">  variables: [ </span><span style="color: #A31515">&#039;?x&#039;</span><span style="color: #000000"> ] }</span>
+</code></pre>
+					<a href="#sparql" id="sparql" style="color: inherit; text-decoration: none;">
+						<h4>SPARQL*</h4>
+					</a>
+					<p><a href="https://blog.liu.se/olafhartig/2019/01/10/position-statement-rdf-star-and-sparql-star/">SPARQL*</a> queries can be parsed by setting <code>sparqlStar</code> to true in the <code>translate</code> options.</p>
+					<a href="#values" id="values" style="color: inherit; text-decoration: none;">
+						<h4>VALUES</h4>
+					</a>
+					<p>For the VALUES block we return the following output:</p>
+					<pre><code><span style="color: #0070C1">PREFIX</span><span style="color: #000000"> dc:   &lt;</span><span style="color: #267F99">http</span><span style="color: #000000">:</span><span style="color: #008000">//purl.org/dc/elements/1.1/&gt; </span>
+<span style="color: #267F99">PREFIX</span><span style="color: #000000"> :     &lt;</span><span style="color: #267F99">http</span><span style="color: #000000">:</span><span style="color: #008000">//example.org/book/&gt; </span>
+<span style="color: #267F99">PREFIX</span><span style="color: #000000"> </span><span style="color: #267F99">ns</span><span style="color: #000000">:   &lt;</span><span style="color: #267F99">http</span><span style="color: #000000">:</span><span style="color: #008000">//example.org/ns#&gt; </span>
+
+<span style="color: #267F99">SELECT</span><span style="color: #000000"> ?</span><span style="color: #267F99">book</span><span style="color: #000000"> ?</span><span style="color: #267F99">title</span><span style="color: #000000"> ?</span><span style="color: #267F99">price</span>
+<span style="color: #000000">{</span>
+<span style="color: #000000">   </span><span style="color: #267F99">VALUES</span><span style="color: #000000"> ?</span><span style="color: #267F99">book</span><span style="color: #000000"> { :</span><span style="color: #267F99">book1</span><span style="color: #000000"> :</span><span style="color: #267F99">book3</span><span style="color: #000000"> }</span>
+<span style="color: #000000">   ?</span><span style="color: #267F99">book</span><span style="color: #000000"> </span><span style="color: #001080">dc</span><span style="color: #000000">:</span><span style="color: #267F99">title</span><span style="color: #000000"> ?</span><span style="color: #267F99">title</span><span style="color: #000000"> ;</span>
+<span style="color: #000000">         </span><span style="color: #001080">ns</span><span style="color: #000000">:</span><span style="color: #267F99">price</span><span style="color: #000000"> ?</span><span style="color: #267F99">price</span><span style="color: #000000"> .</span>
+<span style="color: #000000">}</span>
+</code></pre>
+					<pre><code class="language-javascript"><span style="color: #000000">{ type: </span><span style="color: #A31515">&#039;project&#039;</span><span style="color: #000000">,</span>
+<span style="color: #000000">  input: </span>
+<span style="color: #000000">   { type: </span><span style="color: #A31515">&#039;join&#039;</span><span style="color: #000000">,</span>
+<span style="color: #000000">     left: { type: </span><span style="color: #A31515">&#039;values&#039;</span><span style="color: #000000">, </span>
+<span style="color: #000000">             variables: [</span><span style="color: #A31515">&#039;?book&#039;</span><span style="color: #000000">],</span>
+<span style="color: #000000">             bindings: [</span>
+<span style="color: #000000">               { </span><span style="color: #A31515">&#039;?book&#039;</span><span style="color: #001080">:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;http://example.org/book/book1&#039;</span><span style="color: #000000"> },</span>
+<span style="color: #000000">               { </span><span style="color: #A31515">&#039;?book&#039;</span><span style="color: #001080">:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;http://example.org/book/book3&#039;</span><span style="color: #000000"> },</span>
+<span style="color: #000000">             ] },</span>
+<span style="color: #000000">     right: { type: </span><span style="color: #A31515">&#039;bgp&#039;</span><span style="color: #000000">, </span>
+<span style="color: #000000">              patterns: [</span>
+<span style="color: #000000">                {</span>
+<span style="color: #000000">                  </span><span style="color: #001080">type:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;pattern&#039;</span><span style="color: #000000">,</span>
+<span style="color: #000000">                  </span><span style="color: #001080">subject:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;?book&#039;</span><span style="color: #000000">,</span>
+<span style="color: #000000">                  </span><span style="color: #001080">predicate:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;http://purl.org/dc/elements/1.1/title&#039;</span><span style="color: #000000">,</span>
+<span style="color: #000000">                  </span><span style="color: #001080">object:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;?title&#039;</span>
+<span style="color: #000000">                },</span>
+<span style="color: #000000">                {</span>
+<span style="color: #000000">                  </span><span style="color: #001080">type:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;pattern&#039;</span><span style="color: #000000">,</span>
+<span style="color: #000000">                  </span><span style="color: #001080">subject:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;?book&#039;</span><span style="color: #000000">,</span>
+<span style="color: #000000">                  </span><span style="color: #001080">predicate:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;http://example.org/ns#price&#039;</span><span style="color: #000000">,</span>
+<span style="color: #000000">                  </span><span style="color: #001080">object:</span><span style="color: #000000"> </span><span style="color: #A31515">&#039;?price&#039;</span>
+<span style="color: #000000">                }</span>
+<span style="color: #000000">              ] } },</span>
+<span style="color: #000000">  variables: [ </span><span style="color: #A31515">&#039;?book&#039;</span><span style="color: #000000">, </span><span style="color: #A31515">&#039;?title&#039;</span><span style="color: #000000">, </span><span style="color: #A31515">&#039;?price&#039;</span><span style="color: #000000"> ] }</span>
+</code></pre>
+					<a href="#differences-from-jena-arq" id="differences-from-jena-arq" style="color: inherit; text-decoration: none;">
+						<h4>Differences from Jena ARQ</h4>
+					</a>
+					<p>Some differences from Jena (again, non-exhaustive):
+						no prefixes are used (all uris get expanded)
+					and the project operation always gets used (even in the case of <code>SELECT *</code>).</p>
+					<a href="#a-note-on-tests" id="a-note-on-tests" style="color: inherit; text-decoration: none;">
+						<h2>A note on tests</h2>
+					</a>
+					<p>Every test consists of a sparql file and a corresponding json file containing the algebra result.
+					Tests ending with <code>(quads)</code> in their name are tested/generated with <code>quads: true</code> in the options.</p>
+				</div>
+			</section>
+			<section class="tsd-panel-group tsd-index-group">
+				<h2>Index</h2>
+				<section class="tsd-panel tsd-index-panel">
+					<div class="tsd-index-content">
+						<section class="tsd-index-section tsd-is-external">
+							<h3>References</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-reference tsd-parent-kind-module tsd-is-external"><a href="types.html#factory" class="tsd-kind-icon">Factory</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module tsd-is-external"><a href="types.html#util" class="tsd-kind-icon">Util</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module tsd-is-external"><a href="types.html#tosparql" class="tsd-kind-icon">to<wbr>Sparql</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module tsd-is-external"><a href="types.html#tosparqljs" class="tsd-kind-icon">to<wbr>Sparql<wbr>Js</a></li>
+								<li class="tsd-kind-reference tsd-parent-kind-module tsd-is-external"><a href="types.html#translate" class="tsd-kind-icon">translate</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section tsd-is-external">
+							<h3>Classes</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-class tsd-parent-kind-module tsd-is-external"><a href="../classes/types.default.html" class="tsd-kind-icon">default</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section tsd-is-external">
+							<h3>Interfaces</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-interface tsd-parent-kind-module tsd-is-external"><a href="../interfaces/types.add.html" class="tsd-kind-icon">Add</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module tsd-is-external"><a href="../interfaces/types.aggregateexpression.html" class="tsd-kind-icon">Aggregate<wbr>Expression</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module tsd-is-external"><a href="../interfaces/types.alt.html" class="tsd-kind-icon">Alt</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module tsd-is-external"><a href="../interfaces/types.ask.html" class="tsd-kind-icon">Ask</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module tsd-is-external"><a href="../interfaces/types.bgp.html" class="tsd-kind-icon">Bgp</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module tsd-is-external"><a href="../interfaces/types.boundaggregate.html" class="tsd-kind-icon">Bound<wbr>Aggregate</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module tsd-is-external"><a href="../interfaces/types.clear.html" class="tsd-kind-icon">Clear</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module tsd-is-external"><a href="../interfaces/types.compositeupdate.html" class="tsd-kind-icon">Composite<wbr>Update</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module tsd-is-external"><a href="../interfaces/types.construct.html" class="tsd-kind-icon">Construct</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module tsd-is-external"><a href="../interfaces/types.copy.html" class="tsd-kind-icon">Copy</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module tsd-is-external"><a href="../interfaces/types.create.html" class="tsd-kind-icon">Create</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module tsd-is-external"><a href="../interfaces/types.deleteinsert.html" class="tsd-kind-icon">Delete<wbr>Insert</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module tsd-is-external"><a href="../interfaces/types.describe.html" class="tsd-kind-icon">Describe</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module tsd-is-external"><a href="../interfaces/types.distinct.html" class="tsd-kind-icon">Distinct</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module tsd-is-external"><a href="../interfaces/types.double.html" class="tsd-kind-icon">Double</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module tsd-is-external"><a href="../interfaces/types.drop.html" class="tsd-kind-icon">Drop</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module tsd-is-external"><a href="../interfaces/types.existenceexpression.html" class="tsd-kind-icon">Existence<wbr>Expression</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module tsd-is-external"><a href="../interfaces/types.expression.html" class="tsd-kind-icon">Expression</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module tsd-is-external"><a href="../interfaces/types.extend.html" class="tsd-kind-icon">Extend</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module tsd-is-external"><a href="../interfaces/types.filter.html" class="tsd-kind-icon">Filter</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module tsd-is-external"><a href="../interfaces/types.from.html" class="tsd-kind-icon">From</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module tsd-is-external"><a href="../interfaces/types.graph.html" class="tsd-kind-icon">Graph</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module tsd-is-external"><a href="../interfaces/types.group.html" class="tsd-kind-icon">Group</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module tsd-is-external"><a href="../interfaces/types.groupconcatexpression.html" class="tsd-kind-icon">Group<wbr>Concat<wbr>Expression</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module tsd-is-external"><a href="../interfaces/types.inv.html" class="tsd-kind-icon">Inv</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module tsd-is-external"><a href="../interfaces/types.join.html" class="tsd-kind-icon">Join</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module tsd-is-external"><a href="../interfaces/types.leftjoin.html" class="tsd-kind-icon">Left<wbr>Join</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module tsd-is-external"><a href="../interfaces/types.link.html" class="tsd-kind-icon">Link</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module tsd-is-external"><a href="../interfaces/types.load.html" class="tsd-kind-icon">Load</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module tsd-is-external"><a href="../interfaces/types.minus.html" class="tsd-kind-icon">Minus</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module tsd-is-external"><a href="../interfaces/types.move.html" class="tsd-kind-icon">Move</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module tsd-is-external"><a href="../interfaces/types.namedexpression.html" class="tsd-kind-icon">Named<wbr>Expression</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module tsd-is-external"><a href="../interfaces/types.nps.html" class="tsd-kind-icon">Nps</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module tsd-is-external"><a href="../interfaces/types.oneormorepath.html" class="tsd-kind-icon">One<wbr>OrMore<wbr>Path</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module tsd-is-external"><a href="../interfaces/types.operation.html" class="tsd-kind-icon">Operation</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module tsd-is-external"><a href="../interfaces/types.operatorexpression.html" class="tsd-kind-icon">Operator<wbr>Expression</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module tsd-is-external"><a href="../interfaces/types.orderby.html" class="tsd-kind-icon">Order<wbr>By</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module tsd-is-external"><a href="../interfaces/types.path.html" class="tsd-kind-icon">Path</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module tsd-is-external"><a href="../interfaces/types.pattern.html" class="tsd-kind-icon">Pattern</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module tsd-is-external"><a href="../interfaces/types.project.html" class="tsd-kind-icon">Project</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module tsd-is-external"><a href="../interfaces/types.propertypathsymbol.html" class="tsd-kind-icon">Property<wbr>Path<wbr>Symbol</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module tsd-is-external"><a href="../interfaces/types.recurseresult.html" class="tsd-kind-icon">Recurse<wbr>Result</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module tsd-is-external"><a href="../interfaces/types.reduced.html" class="tsd-kind-icon">Reduced</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module tsd-is-external"><a href="../interfaces/types.seq.html" class="tsd-kind-icon">Seq</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module tsd-is-external"><a href="../interfaces/types.service.html" class="tsd-kind-icon">Service</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module tsd-is-external"><a href="../interfaces/types.single.html" class="tsd-kind-icon">Single</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module tsd-is-external"><a href="../interfaces/types.slice.html" class="tsd-kind-icon">Slice</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module tsd-is-external"><a href="../interfaces/types.termexpression.html" class="tsd-kind-icon">Term<wbr>Expression</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module tsd-is-external"><a href="../interfaces/types.union.html" class="tsd-kind-icon">Union</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module tsd-is-external"><a href="../interfaces/types.update.html" class="tsd-kind-icon">Update</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module tsd-is-external"><a href="../interfaces/types.updategraph.html" class="tsd-kind-icon">Update<wbr>Graph</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module tsd-is-external"><a href="../interfaces/types.updategraphshortcut.html" class="tsd-kind-icon">Update<wbr>Graph<wbr>Shortcut</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module tsd-is-external"><a href="../interfaces/types.values.html" class="tsd-kind-icon">Values</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module tsd-is-external"><a href="../interfaces/types.wildcard.html" class="tsd-kind-icon">Wildcard</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module tsd-is-external"><a href="../interfaces/types.wildcardexpression.html" class="tsd-kind-icon">Wildcard<wbr>Expression</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module tsd-is-external"><a href="../interfaces/types.zeroormorepath.html" class="tsd-kind-icon">Zero<wbr>OrMore<wbr>Path</a></li>
+								<li class="tsd-kind-interface tsd-parent-kind-module tsd-is-external"><a href="../interfaces/types.zerooronepath.html" class="tsd-kind-icon">Zero<wbr>OrOne<wbr>Path</a></li>
+							</ul>
+						</section>
+						<section class="tsd-index-section tsd-is-external">
+							<h3>Variables</h3>
+							<ul class="tsd-index-list">
+								<li class="tsd-kind-variable tsd-parent-kind-module tsd-is-external"><a href="types.html#expressiontypes" class="tsd-kind-icon">expression<wbr>Types</a></li>
+								<li class="tsd-kind-variable tsd-parent-kind-module tsd-is-external"><a href="types.html#types-1" class="tsd-kind-icon">types</a></li>
+							</ul>
+						</section>
+					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group tsd-is-external">
+				<h2>References</h2>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+					<a name="factory" class="tsd-anchor"></a>
+					<h3>Factory</h3>
+					Renames and exports <a href="../classes/types.default.html">default</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+					<a name="util" class="tsd-anchor"></a>
+					<h3>Util</h3>
+					Renames and exports <a href="">default</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+					<a name="tosparql" class="tsd-anchor"></a>
+					<h3>to<wbr>Sparql</h3>
+					Re-exports <a href="">toSparql</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+					<a name="tosparqljs" class="tsd-anchor"></a>
+					<h3>to<wbr>Sparql<wbr>Js</h3>
+					Re-exports <a href="">toSparqlJs</a>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+					<a name="translate" class="tsd-anchor"></a>
+					<h3>translate</h3>
+					Renames and exports <a href="">default</a>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group tsd-is-external">
+				<h2>Variables</h2>
+				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-module tsd-is-external">
+					<a name="expressiontypes" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagConst">Const</span> expression<wbr>Types</h3>
+					<div class="tsd-signature tsd-kind-icon">expression<wbr>Types<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Readonly</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">{ </span>AGGREGATE<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>EXISTENCE<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>NAMED<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>OPERATOR<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>TERM<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>WILDCARD<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">&gt;</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in packages/types/node_modules/sparqlalgebrajs/lib/algebra.d.ts:47</li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-module tsd-is-external">
+					<a name="types-1" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagConst">Const</span> types</h3>
+					<div class="tsd-signature tsd-kind-icon">types<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Readonly</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">{ </span>ADD<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>ALT<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>ASK<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>BGP<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>CLEAR<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>COMPOSITE_UPDATE<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>CONSTRUCT<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>COPY<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>CREATE<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>DELETE_INSERT<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>DESC<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>DESCRIBE<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>DISTINCT<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>DROP<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>EXPRESSION<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>EXTEND<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>FILTER<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>FROM<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>GRAPH<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>GROUP<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>INV<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>JOIN<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>LEFT_JOIN<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>LINK<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>LOAD<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>MINUS<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>MOVE<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>NPS<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>ONE_OR_MORE_PATH<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>ORDER_BY<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>PATH<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>PATTERN<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>PROJECT<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>REDUCED<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>SEQ<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>SERVICE<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>SLICE<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>UNION<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>VALUES<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>ZERO_OR_MORE_PATH<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">; </span>ZERO_OR_ONE_PATH<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">&gt;</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in packages/types/node_modules/sparqlalgebrajs/lib/algebra.d.ts:4</li>
+						</ul>
+					</aside>
+				</section>
+			</section>
+		</div>
+		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
+			<nav class="tsd-navigation primary">
+				<ul>
+					<li class=" ">
+						<a href="../modules.html">Modules</a>
+					</li>
+					<li class="current tsd-kind-module tsd-is-external">
+						<a href="types.html">types</a>
+					</li>
+				</ul>
+			</nav>
+			<nav class="tsd-navigation secondary menu-sticky">
+				<ul class="before-current">
+				</ul>
+				<ul class="current">
+					<li class="current tsd-kind-module tsd-is-external">
+						<a href="types.html" class="tsd-kind-icon">types</a>
+						<ul>
+							<li class=" tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+								<a href="types.html#factory" class="tsd-kind-icon">Factory</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+								<a href="types.html#util" class="tsd-kind-icon">Util</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+								<a href="types.html#tosparql" class="tsd-kind-icon">to<wbr>Sparql</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+								<a href="types.html#tosparqljs" class="tsd-kind-icon">to<wbr>Sparql<wbr>Js</a>
+							</li>
+							<li class=" tsd-kind-reference tsd-parent-kind-module tsd-is-external">
+								<a href="types.html#translate" class="tsd-kind-icon">translate</a>
+							</li>
+							<li class=" tsd-kind-class tsd-parent-kind-module tsd-is-external">
+								<a href="../classes/types.default.html" class="tsd-kind-icon">default</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-external">
+								<a href="../interfaces/types.add.html" class="tsd-kind-icon">Add</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-external">
+								<a href="../interfaces/types.aggregateexpression.html" class="tsd-kind-icon">Aggregate<wbr>Expression</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-external">
+								<a href="../interfaces/types.alt.html" class="tsd-kind-icon">Alt</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-external">
+								<a href="../interfaces/types.ask.html" class="tsd-kind-icon">Ask</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-external">
+								<a href="../interfaces/types.bgp.html" class="tsd-kind-icon">Bgp</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-external">
+								<a href="../interfaces/types.boundaggregate.html" class="tsd-kind-icon">Bound<wbr>Aggregate</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-external">
+								<a href="../interfaces/types.clear.html" class="tsd-kind-icon">Clear</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-external">
+								<a href="../interfaces/types.compositeupdate.html" class="tsd-kind-icon">Composite<wbr>Update</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-external">
+								<a href="../interfaces/types.construct.html" class="tsd-kind-icon">Construct</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-external">
+								<a href="../interfaces/types.copy.html" class="tsd-kind-icon">Copy</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-external">
+								<a href="../interfaces/types.create.html" class="tsd-kind-icon">Create</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-external">
+								<a href="../interfaces/types.deleteinsert.html" class="tsd-kind-icon">Delete<wbr>Insert</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-external">
+								<a href="../interfaces/types.describe.html" class="tsd-kind-icon">Describe</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-external">
+								<a href="../interfaces/types.distinct.html" class="tsd-kind-icon">Distinct</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-external">
+								<a href="../interfaces/types.double.html" class="tsd-kind-icon">Double</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-external">
+								<a href="../interfaces/types.drop.html" class="tsd-kind-icon">Drop</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-external">
+								<a href="../interfaces/types.existenceexpression.html" class="tsd-kind-icon">Existence<wbr>Expression</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-external">
+								<a href="../interfaces/types.expression.html" class="tsd-kind-icon">Expression</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-external">
+								<a href="../interfaces/types.extend.html" class="tsd-kind-icon">Extend</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-external">
+								<a href="../interfaces/types.filter.html" class="tsd-kind-icon">Filter</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-external">
+								<a href="../interfaces/types.from.html" class="tsd-kind-icon">From</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-external">
+								<a href="../interfaces/types.graph.html" class="tsd-kind-icon">Graph</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-external">
+								<a href="../interfaces/types.group.html" class="tsd-kind-icon">Group</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-external">
+								<a href="../interfaces/types.groupconcatexpression.html" class="tsd-kind-icon">Group<wbr>Concat<wbr>Expression</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-external">
+								<a href="../interfaces/types.inv.html" class="tsd-kind-icon">Inv</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-external">
+								<a href="../interfaces/types.join.html" class="tsd-kind-icon">Join</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-external">
+								<a href="../interfaces/types.leftjoin.html" class="tsd-kind-icon">Left<wbr>Join</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-external">
+								<a href="../interfaces/types.link.html" class="tsd-kind-icon">Link</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-external">
+								<a href="../interfaces/types.load.html" class="tsd-kind-icon">Load</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-external">
+								<a href="../interfaces/types.minus.html" class="tsd-kind-icon">Minus</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-external">
+								<a href="../interfaces/types.move.html" class="tsd-kind-icon">Move</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-external">
+								<a href="../interfaces/types.namedexpression.html" class="tsd-kind-icon">Named<wbr>Expression</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-external">
+								<a href="../interfaces/types.nps.html" class="tsd-kind-icon">Nps</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-external">
+								<a href="../interfaces/types.oneormorepath.html" class="tsd-kind-icon">One<wbr>OrMore<wbr>Path</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-external">
+								<a href="../interfaces/types.operation.html" class="tsd-kind-icon">Operation</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-external">
+								<a href="../interfaces/types.operatorexpression.html" class="tsd-kind-icon">Operator<wbr>Expression</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-external">
+								<a href="../interfaces/types.orderby.html" class="tsd-kind-icon">Order<wbr>By</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-external">
+								<a href="../interfaces/types.path.html" class="tsd-kind-icon">Path</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-external">
+								<a href="../interfaces/types.pattern.html" class="tsd-kind-icon">Pattern</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-external">
+								<a href="../interfaces/types.project.html" class="tsd-kind-icon">Project</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-external">
+								<a href="../interfaces/types.propertypathsymbol.html" class="tsd-kind-icon">Property<wbr>Path<wbr>Symbol</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-external">
+								<a href="../interfaces/types.recurseresult.html" class="tsd-kind-icon">Recurse<wbr>Result</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-external">
+								<a href="../interfaces/types.reduced.html" class="tsd-kind-icon">Reduced</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-external">
+								<a href="../interfaces/types.seq.html" class="tsd-kind-icon">Seq</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-external">
+								<a href="../interfaces/types.service.html" class="tsd-kind-icon">Service</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-external">
+								<a href="../interfaces/types.single.html" class="tsd-kind-icon">Single</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-external">
+								<a href="../interfaces/types.slice.html" class="tsd-kind-icon">Slice</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-external">
+								<a href="../interfaces/types.termexpression.html" class="tsd-kind-icon">Term<wbr>Expression</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-external">
+								<a href="../interfaces/types.union.html" class="tsd-kind-icon">Union</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-external">
+								<a href="../interfaces/types.update.html" class="tsd-kind-icon">Update</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-external">
+								<a href="../interfaces/types.updategraph.html" class="tsd-kind-icon">Update<wbr>Graph</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-external">
+								<a href="../interfaces/types.updategraphshortcut.html" class="tsd-kind-icon">Update<wbr>Graph<wbr>Shortcut</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-external">
+								<a href="../interfaces/types.values.html" class="tsd-kind-icon">Values</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-external">
+								<a href="../interfaces/types.wildcard.html" class="tsd-kind-icon">Wildcard</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-external">
+								<a href="../interfaces/types.wildcardexpression.html" class="tsd-kind-icon">Wildcard<wbr>Expression</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-external">
+								<a href="../interfaces/types.zeroormorepath.html" class="tsd-kind-icon">Zero<wbr>OrMore<wbr>Path</a>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-external">
+								<a href="../interfaces/types.zerooronepath.html" class="tsd-kind-icon">Zero<wbr>OrOne<wbr>Path</a>
+							</li>
+							<li class=" tsd-kind-variable tsd-parent-kind-module tsd-is-external">
+								<a href="types.html#expressiontypes" class="tsd-kind-icon">expression<wbr>Types</a>
+							</li>
+							<li class=" tsd-kind-variable tsd-parent-kind-module tsd-is-external">
+								<a href="types.html#types-1" class="tsd-kind-icon">types</a>
+							</li>
+						</ul>
+					</li>
+				</ul>
+				<ul class="after-current">
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<footer class="with-border-bottom">
+	<div class="container">
+		<h2>Legend</h2>
+		<div class="tsd-legend-group">
+			<ul class="tsd-legend">
+				<li class="tsd-kind-variable"><span class="tsd-kind-icon">Variable</span></li>
+				<li class="tsd-kind-function"><span class="tsd-kind-icon">Function</span></li>
+				<li class="tsd-kind-type-alias"><span class="tsd-kind-icon">Type alias</span></li>
+				<li class="tsd-kind-type-alias tsd-has-type-parameter"><span class="tsd-kind-icon">Type alias with type parameter</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-interface"><span class="tsd-kind-icon">Interface</span></li>
+				<li class="tsd-kind-interface tsd-has-type-parameter"><span class="tsd-kind-icon">Interface with type parameter</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-class"><span class="tsd-kind-icon">Class</span></li>
+				<li class="tsd-kind-class tsd-has-type-parameter"><span class="tsd-kind-icon">Class with type parameter</span></li>
+			</ul>
+			<ul class="tsd-legend">
+				<li class="tsd-kind-enum"><span class="tsd-kind-icon">Enumeration</span></li>
+			</ul>
+		</div>
+	</div>
+</footer>
+<div class="container tsd-generator">
+	<p>Generated using <a href="https://typedoc.org/" target="_blank">TypeDoc</a></p>
+</div>
+<div class="overlay"></div>
+<script src="../assets/js/main.js"></script>
+</body>
+</html>

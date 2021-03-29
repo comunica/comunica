@@ -115,6 +115,7 @@
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected tsd-is-external"><a href="actor_query_operation_construct.bindingstoquadsiterator.html#_sourcestarted" class="tsd-kind-icon">_source<wbr>Started</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected tsd-is-external"><a href="actor_query_operation_construct.bindingstoquadsiterator.html#_state" class="tsd-kind-icon">_state</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="actor_query_operation_construct.bindingstoquadsiterator.html#blanknodecounter" class="tsd-kind-icon">blank<wbr>Node<wbr>Counter</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="actor_query_operation_construct.bindingstoquadsiterator.html#localizeblanknodes" class="tsd-kind-icon">localize<wbr>Blank<wbr>Nodes</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="actor_query_operation_construct.bindingstoquadsiterator.html#template" class="tsd-kind-icon">template</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static tsd-is-external"><a href="actor_query_operation_construct.bindingstoquadsiterator.html#capturerejectionsymbol" class="tsd-kind-icon">capture<wbr>Rejection<wbr>Symbol</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-static tsd-is-external"><a href="actor_query_operation_construct.bindingstoquadsiterator.html#capturerejections" class="tsd-kind-icon">capture<wbr>Rejections</a></li>
@@ -159,6 +160,7 @@
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-protected tsd-is-external"><a href="actor_query_operation_construct.bindingstoquadsiterator.html#_validatesource" class="tsd-kind-icon">_validate<wbr>Source</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="actor_query_operation_construct.bindingstoquadsiterator.html#addlistener" class="tsd-kind-icon">add<wbr>Listener</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="actor_query_operation_construct.bindingstoquadsiterator.html#append" class="tsd-kind-icon">append</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="actor_query_operation_construct.bindingstoquadsiterator.html#bindtemplate" class="tsd-kind-icon">bind<wbr>Template</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="actor_query_operation_construct.bindingstoquadsiterator.html#clone" class="tsd-kind-icon">clone</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="actor_query_operation_construct.bindingstoquadsiterator.html#close" class="tsd-kind-icon">close</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="actor_query_operation_construct.bindingstoquadsiterator.html#copyproperties" class="tsd-kind-icon">copy<wbr>Properties</a></li>
@@ -193,7 +195,6 @@
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="actor_query_operation_construct.bindingstoquadsiterator.html#tostring" class="tsd-kind-icon">to<wbr>String</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-external"><a href="actor_query_operation_construct.bindingstoquadsiterator.html#transform" class="tsd-kind-icon">transform</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="actor_query_operation_construct.bindingstoquadsiterator.html#bindquad" class="tsd-kind-icon">bind<wbr>Quad</a></li>
-								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="actor_query_operation_construct.bindingstoquadsiterator.html#bindtemplate" class="tsd-kind-icon">bind<wbr>Template</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="actor_query_operation_construct.bindingstoquadsiterator.html#bindterm" class="tsd-kind-icon">bind<wbr>Term</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static tsd-is-external"><a href="actor_query_operation_construct.bindingstoquadsiterator.html#listenercount-1" class="tsd-kind-icon">listener<wbr>Count</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-static"><a href="actor_query_operation_construct.bindingstoquadsiterator.html#localizeblanknode" class="tsd-kind-icon">localize<wbr>Blank<wbr>Node</a></li>
@@ -211,13 +212,13 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Bindings<wbr>ToQuads<wbr>Iterator<span class="tsd-signature-symbol">(</span>template<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">BaseQuad</span><span class="tsd-signature-symbol">[]</span>, bindingsStream<span class="tsd-signature-symbol">: </span><a href="" class="tsd-signature-type" data-tsd-kind="Type alias">BindingsStream</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="actor_query_operation_construct.bindingstoquadsiterator.html" class="tsd-signature-type" data-tsd-kind="Class">BindingsToQuadsIterator</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Bindings<wbr>ToQuads<wbr>Iterator<span class="tsd-signature-symbol">(</span>template<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">BaseQuad</span><span class="tsd-signature-symbol">[]</span>, bindingsStream<span class="tsd-signature-symbol">: </span><a href="" class="tsd-signature-type" data-tsd-kind="Type alias">BindingsStream</a>, localizeBlankNodes<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="actor_query_operation_construct.bindingstoquadsiterator.html" class="tsd-signature-type" data-tsd-kind="Class">BindingsToQuadsIterator</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/d9b93b4/packages/actor-query-operation-construct/lib/BindingsToQuadsIterator.ts#L17">packages/actor-query-operation-construct/lib/BindingsToQuadsIterator.ts:17</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/6c3431a/packages/actor-query-operation-construct/lib/BindingsToQuadsIterator.ts#L18">packages/actor-query-operation-construct/lib/BindingsToQuadsIterator.ts:18</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -227,6 +228,9 @@
 								</li>
 								<li>
 									<h5>bindingsStream: <a href="" class="tsd-signature-type" data-tsd-kind="Type alias">BindingsStream</a></h5>
+								</li>
+								<li>
+									<h5>localizeBlankNodes: <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = true</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <a href="actor_query_operation_construct.bindingstoquadsiterator.html" class="tsd-signature-type" data-tsd-kind="Class">BindingsToQuadsIterator</a></h4>
@@ -242,7 +246,7 @@
 					<div class="tsd-signature tsd-kind-icon">_bound<wbr>Push<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>item<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:508</li>
+							<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:509</li>
 						</ul>
 					</aside>
 					<div class="tsd-type-declaration">
@@ -273,7 +277,7 @@
 					<div class="tsd-signature tsd-kind-icon">_create<wbr>Source<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">AsyncIteratorOrPromise</span><span class="tsd-signature-symbol">&lt;</span><a href="" class="tsd-signature-type" data-tsd-kind="Type alias">Bindings</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:504</li>
+							<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:506</li>
 						</ul>
 					</aside>
 				</section>
@@ -283,7 +287,7 @@
 					<div class="tsd-signature tsd-kind-icon">_destroy<wbr>Source<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:506</li>
+							<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:507</li>
 						</ul>
 					</aside>
 				</section>
@@ -293,7 +297,7 @@
 					<div class="tsd-signature tsd-kind-icon">_optional<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:507</li>
+							<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:508</li>
 						</ul>
 					</aside>
 				</section>
@@ -339,7 +343,7 @@
 					<div class="tsd-signature tsd-kind-icon">_pushed<wbr>Count<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:400</li>
+							<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:401</li>
 						</ul>
 					</aside>
 				</section>
@@ -349,7 +353,7 @@
 					<div class="tsd-signature tsd-kind-icon">_reading<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:399</li>
+							<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:400</li>
 						</ul>
 					</aside>
 				</section>
@@ -359,7 +363,7 @@
 					<div class="tsd-signature tsd-kind-icon">_source<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">InternalSource</span><span class="tsd-signature-symbol">&lt;</span><a href="" class="tsd-signature-type" data-tsd-kind="Type alias">Bindings</a><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:503</li>
+							<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:505</li>
 						</ul>
 					</aside>
 				</section>
@@ -369,7 +373,7 @@
 					<div class="tsd-signature tsd-kind-icon">_source<wbr>Started<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:505</li>
+							<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:402</li>
 						</ul>
 					</aside>
 				</section>
@@ -389,17 +393,27 @@
 					<div class="tsd-signature tsd-kind-icon">blank<wbr>Node<wbr>Counter<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d9b93b4/packages/actor-query-operation-construct/lib/BindingsToQuadsIterator.ts#L17">packages/actor-query-operation-construct/lib/BindingsToQuadsIterator.ts:17</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/6c3431a/packages/actor-query-operation-construct/lib/BindingsToQuadsIterator.ts#L18">packages/actor-query-operation-construct/lib/BindingsToQuadsIterator.ts:18</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+					<a name="localizeblanknodes" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> localize<wbr>Blank<wbr>Nodes</h3>
+					<div class="tsd-signature tsd-kind-icon">localize<wbr>Blank<wbr>Nodes<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/6c3431a/packages/actor-query-operation-construct/lib/BindingsToQuadsIterator.ts#L17">packages/actor-query-operation-construct/lib/BindingsToQuadsIterator.ts:17</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected">
 					<a name="template" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagProtected">Protected</span> template</h3>
+					<h3><span class="tsd-flag ts-flagProtected">Protected</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> template</h3>
 					<div class="tsd-signature tsd-kind-icon">template<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">BaseQuad</span><span class="tsd-signature-symbol">[]</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d9b93b4/packages/actor-query-operation-construct/lib/BindingsToQuadsIterator.ts#L16">packages/actor-query-operation-construct/lib/BindingsToQuadsIterator.ts:16</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/6c3431a/packages/actor-query-operation-construct/lib/BindingsToQuadsIterator.ts#L16">packages/actor-query-operation-construct/lib/BindingsToQuadsIterator.ts:16</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -577,7 +591,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:417</li>
+									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:419</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -592,7 +606,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:418</li>
+									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:420</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -674,7 +688,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:524</li>
+									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:525</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -687,7 +701,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:525</li>
+									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:526</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -718,7 +732,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:433</li>
+									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:435</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -804,7 +818,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:639</li>
+									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:636</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -821,7 +835,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:481</li>
+									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:483</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -849,7 +863,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/d9b93b4/packages/actor-query-operation-construct/lib/BindingsToQuadsIterator.ts#L111">packages/actor-query-operation-construct/lib/BindingsToQuadsIterator.ts:111</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/6c3431a/packages/actor-query-operation-construct/lib/BindingsToQuadsIterator.ts#L115">packages/actor-query-operation-construct/lib/BindingsToQuadsIterator.ts:115</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -872,7 +886,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:482</li>
+									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:484</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -916,7 +930,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:570</li>
+									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:567</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -961,7 +975,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:462</li>
+									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:464</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -989,7 +1003,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:466</li>
+									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:468</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1011,7 +1025,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:490</li>
+									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:492</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1056,7 +1070,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:425</li>
+									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:427</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1088,7 +1102,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:530</li>
+									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:531</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1110,7 +1124,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:554</li>
+									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:551</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1154,7 +1168,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:455</li>
+									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:457</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1190,7 +1204,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:632</li>
+									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:629</li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1228,7 +1242,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:549</li>
+									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:546</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1283,7 +1297,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:495</li>
+									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:497</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1305,7 +1319,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:564</li>
+									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:561</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1380,7 +1394,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:537</li>
+									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:538</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -1484,6 +1498,50 @@
 						</li>
 					</ul>
 				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+					<a name="bindtemplate" class="tsd-anchor"></a>
+					<h3>bind<wbr>Template</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+						<li class="tsd-signature tsd-kind-icon">bind<wbr>Template<span class="tsd-signature-symbol">(</span>bindings<span class="tsd-signature-symbol">: </span><a href="" class="tsd-signature-type" data-tsd-kind="Type alias">Bindings</a>, template<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">BaseQuad</span><span class="tsd-signature-symbol">[]</span>, blankNodeCounter<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">[]</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/6c3431a/packages/actor-query-operation-construct/lib/BindingsToQuadsIterator.ts#L102">packages/actor-query-operation-construct/lib/BindingsToQuadsIterator.ts:102</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Convert the given template to a list of quads based on the given bindings.</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>bindings: <a href="" class="tsd-signature-type" data-tsd-kind="Type alias">Bindings</a></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>A bindings object.</p>
+									</div>
+								</li>
+								<li>
+									<h5>template: <span class="tsd-signature-type">BaseQuad</span><span class="tsd-signature-symbol">[]</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>A list of quad patterns.</p>
+									</div>
+								</li>
+								<li>
+									<h5>blankNodeCounter: <span class="tsd-signature-type">number</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>A counter value for the blank node.</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">[]</span></h4>
+							<p>A list of quads.</p>
+						</li>
+					</ul>
+				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-external">
 					<a name="clone" class="tsd-anchor"></a>
 					<h3>clone</h3>
@@ -1520,7 +1578,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:474</li>
+									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:476</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -2316,15 +2374,18 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:541</li>
+									<li>Defined in node_modules/asynciterator/dist/asynciterator.d.ts:442</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Tries to read a transformed item.</p>
+									<p>Tries to read the next item from the iterator.
+										If the buffer is empty,
+									this method calls {@link BufferedIterator#_read} to fetch items.</p>
 								</div>
 							</div>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Quad</span></h4>
+							<p>The next item, or <code>null</code> if none is available</p>
 						</li>
 					</ul>
 				</section>
@@ -2665,7 +2726,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/d9b93b4/packages/actor-query-operation-construct/lib/BindingsToQuadsIterator.ts#L53">packages/actor-query-operation-construct/lib/BindingsToQuadsIterator.ts:53</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/6c3431a/packages/actor-query-operation-construct/lib/BindingsToQuadsIterator.ts#L55">packages/actor-query-operation-construct/lib/BindingsToQuadsIterator.ts:55</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -2696,50 +2757,6 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
-					<a name="bindtemplate" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagStatic">Static</span> bind<wbr>Template</h3>
-					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
-						<li class="tsd-signature tsd-kind-icon">bind<wbr>Template<span class="tsd-signature-symbol">(</span>bindings<span class="tsd-signature-symbol">: </span><a href="" class="tsd-signature-type" data-tsd-kind="Type alias">Bindings</a>, template<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">BaseQuad</span><span class="tsd-signature-symbol">[]</span>, blankNodeCounter<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">[]</span></li>
-					</ul>
-					<ul class="tsd-descriptions">
-						<li class="tsd-description">
-							<aside class="tsd-sources">
-								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/d9b93b4/packages/actor-query-operation-construct/lib/BindingsToQuadsIterator.ts#L100">packages/actor-query-operation-construct/lib/BindingsToQuadsIterator.ts:100</a></li>
-								</ul>
-							</aside>
-							<div class="tsd-comment tsd-typography">
-								<div class="lead">
-									<p>Convert the given template to a list of quads based on the given bindings.</p>
-								</div>
-							</div>
-							<h4 class="tsd-parameters-title">Parameters</h4>
-							<ul class="tsd-parameters">
-								<li>
-									<h5>bindings: <a href="" class="tsd-signature-type" data-tsd-kind="Type alias">Bindings</a></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>A bindings object.</p>
-									</div>
-								</li>
-								<li>
-									<h5>template: <span class="tsd-signature-type">BaseQuad</span><span class="tsd-signature-symbol">[]</span></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>A list of quad patterns.</p>
-									</div>
-								</li>
-								<li>
-									<h5>blankNodeCounter: <span class="tsd-signature-type">number</span></h5>
-									<div class="tsd-comment tsd-typography">
-										<p>A counter value for the blank node.</p>
-									</div>
-								</li>
-							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">[]</span></h4>
-							<p>A list of quads.</p>
-						</li>
-					</ul>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-static">
 					<a name="bindterm" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagStatic">Static</span> bind<wbr>Term</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
@@ -2749,7 +2766,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/d9b93b4/packages/actor-query-operation-construct/lib/BindingsToQuadsIterator.ts#L38">packages/actor-query-operation-construct/lib/BindingsToQuadsIterator.ts:38</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/6c3431a/packages/actor-query-operation-construct/lib/BindingsToQuadsIterator.ts#L40">packages/actor-query-operation-construct/lib/BindingsToQuadsIterator.ts:40</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -2827,7 +2844,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/d9b93b4/packages/actor-query-operation-construct/lib/BindingsToQuadsIterator.ts#L74">packages/actor-query-operation-construct/lib/BindingsToQuadsIterator.ts:74</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/6c3431a/packages/actor-query-operation-construct/lib/BindingsToQuadsIterator.ts#L76">packages/actor-query-operation-construct/lib/BindingsToQuadsIterator.ts:76</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -2860,13 +2877,13 @@
 					<a name="localizequad" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagStatic">Static</span> localize<wbr>Quad</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-static">
-						<li class="tsd-signature tsd-kind-icon">localize<wbr>Quad<span class="tsd-signature-symbol">(</span>blankNodeCounter<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, pattern<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Quad</span></li>
+						<li class="tsd-signature tsd-kind-icon">localize<wbr>Quad<span class="tsd-signature-symbol">(</span>blankNodeCounter<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, pattern<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">BaseQuad</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">BaseQuad</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/d9b93b4/packages/actor-query-operation-construct/lib/BindingsToQuadsIterator.ts#L88">packages/actor-query-operation-construct/lib/BindingsToQuadsIterator.ts:88</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/6c3431a/packages/actor-query-operation-construct/lib/BindingsToQuadsIterator.ts#L90">packages/actor-query-operation-construct/lib/BindingsToQuadsIterator.ts:90</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -2883,13 +2900,13 @@
 									</div>
 								</li>
 								<li>
-									<h5>pattern: <span class="tsd-signature-type">Quad</span></h5>
+									<h5>pattern: <span class="tsd-signature-type">BaseQuad</span></h5>
 									<div class="tsd-comment tsd-typography">
 										<p>The pattern that should be localized.</p>
 									</div>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Quad</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">BaseQuad</span></h4>
 							<p>A quad.</p>
 						</li>
 					</ul>
@@ -3030,6 +3047,9 @@
 										<a href="actor_query_operation_construct.bindingstoquadsiterator.html#blanknodecounter" class="tsd-kind-icon">blank<wbr>Node<wbr>Counter</a>
 									</li>
 									<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
+										<a href="actor_query_operation_construct.bindingstoquadsiterator.html#localizeblanknodes" class="tsd-kind-icon">localize<wbr>Blank<wbr>Nodes</a>
+									</li>
+									<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-protected">
 										<a href="actor_query_operation_construct.bindingstoquadsiterator.html#template" class="tsd-kind-icon">template</a>
 									</li>
 									<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-static tsd-is-external">
@@ -3130,6 +3150,9 @@
 									</li>
 									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
 										<a href="actor_query_operation_construct.bindingstoquadsiterator.html#append" class="tsd-kind-icon">append</a>
+									</li>
+									<li class=" tsd-kind-method tsd-parent-kind-class">
+										<a href="actor_query_operation_construct.bindingstoquadsiterator.html#bindtemplate" class="tsd-kind-icon">bind<wbr>Template</a>
 									</li>
 									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-external">
 										<a href="actor_query_operation_construct.bindingstoquadsiterator.html#clone" class="tsd-kind-icon">clone</a>
@@ -3232,9 +3255,6 @@
 									</li>
 									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
 										<a href="actor_query_operation_construct.bindingstoquadsiterator.html#bindquad" class="tsd-kind-icon">bind<wbr>Quad</a>
-									</li>
-									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
-										<a href="actor_query_operation_construct.bindingstoquadsiterator.html#bindtemplate" class="tsd-kind-icon">bind<wbr>Template</a>
 									</li>
 									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-static">
 										<a href="actor_query_operation_construct.bindingstoquadsiterator.html#bindterm" class="tsd-kind-icon">bind<wbr>Term</a>
