@@ -3198,10 +3198,10 @@ asynciterator@^3.0.0, asynciterator@^3.0.3:
   resolved "https://registry.yarnpkg.com/asynciterator/-/asynciterator-3.0.3.tgz#9c84d56714960f4807212d7508450bc2ac375c3a"
   integrity sha512-mNvEwsk6DN7+co9T2be/Eor0kKQGIXCoGg27v7vsCLlFdSXlboH06UGCy9cfEh2qAfDdgsEpmDn6y59f3+ZvgA==
 
-asyncjoin@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/asyncjoin/-/asyncjoin-1.0.1.tgz#40d81b1c17c0cf0b91bc6c93241a576886b2c840"
-  integrity sha512-FjqqH7H9YUbE51U6xX4hQfzIAbyEKSZLdhdQNvl0kQ2vZvgiYgW1o1Vl4LJIU+3fu7ld3Tdcq72G5/h6OALsBw==
+asyncjoin@^1.0.3:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/asyncjoin/-/asyncjoin-1.0.3.tgz#070538ae7e8de7e7a253b0da50cad142b156eb19"
+  integrity sha512-wBlf3sOdmUwbFW+zq1HBeOLdQAThSaFfTcdTFZGdB6OVR5VsIKZTycIC8ykDnzJhaZH2OaP23tru1DlLJvrRjA==
   dependencies:
     asynciterator "^3.0.0"
 
