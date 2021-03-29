@@ -72,7 +72,12 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">IExpressionContext</span>
+						<span class="tsd-signature-type">IBaseExpressionContext</span>
+						<ul class="tsd-hierarchy">
+							<li>
+								<span class="target">IExpressionContext</span>
+							</li>
+						</ul>
 					</li>
 				</ul>
 			</section>
@@ -84,6 +89,7 @@
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="bus_query_operation.iexpressioncontext.html#baseiri" class="tsd-kind-icon">baseIRI</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="bus_query_operation.iexpressioncontext.html#bnode" class="tsd-kind-icon">bnode</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="bus_query_operation.iexpressioncontext.html#now" class="tsd-kind-icon">now</a></li>
 							</ul>
 						</section>
@@ -98,9 +104,40 @@
 					<div class="tsd-signature tsd-kind-icon">baseIRI<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/81767a2/packages/bus-query-operation/lib/ActorQueryOperation.ts#L243">packages/bus-query-operation/lib/ActorQueryOperation.ts:243</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d9b93b4/packages/bus-query-operation/lib/ActorQueryOperation.ts#L271">packages/bus-query-operation/lib/ActorQueryOperation.ts:271</a></li>
 						</ul>
 					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="bnode" class="tsd-anchor"></a>
+					<h3>bnode</h3>
+					<div class="tsd-signature tsd-kind-icon">bnode<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>input<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">BlankNode</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d9b93b4/packages/bus-query-operation/lib/ActorQueryOperation.ts#L276">packages/bus-query-operation/lib/ActorQueryOperation.ts:276</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter-signature">
+								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-interface">
+									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>input<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">BlankNode</span></li>
+								</ul>
+								<ul class="tsd-descriptions">
+									<li class="tsd-description">
+										<h4 class="tsd-parameters-title">Parameters</h4>
+										<ul class="tsd-parameters">
+											<li>
+												<h5><span class="tsd-flag ts-flagOptional">Optional</span> input: <span class="tsd-signature-type">string</span></h5>
+											</li>
+										</ul>
+										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">BlankNode</span></h4>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="now" class="tsd-anchor"></a>
@@ -108,7 +145,7 @@
 					<div class="tsd-signature tsd-kind-icon">now<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Date</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/81767a2/packages/bus-query-operation/lib/ActorQueryOperation.ts#L242">packages/bus-query-operation/lib/ActorQueryOperation.ts:242</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d9b93b4/packages/bus-query-operation/lib/ActorQueryOperation.ts#L270">packages/bus-query-operation/lib/ActorQueryOperation.ts:270</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -168,11 +205,17 @@
 							<li class=" tsd-kind-interface tsd-parent-kind-module">
 								<a href="bus_query_operation.iactorqueryoperationtypedmediatedargs.html" class="tsd-kind-icon">IActor<wbr>Query<wbr>Operation<wbr>Typed<wbr>Mediated<wbr>Args</a>
 							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module">
+								<a href="bus_query_operation.iasyncexpressioncontext.html" class="tsd-kind-icon">IAsync<wbr>Expression<wbr>Context</a>
+							</li>
 							<li class="current tsd-kind-interface tsd-parent-kind-module">
 								<a href="bus_query_operation.iexpressioncontext.html" class="tsd-kind-icon">IExpression<wbr>Context</a>
 								<ul>
 									<li class=" tsd-kind-property tsd-parent-kind-interface">
 										<a href="bus_query_operation.iexpressioncontext.html#baseiri" class="tsd-kind-icon">baseIRI</a>
+									</li>
+									<li class=" tsd-kind-property tsd-parent-kind-interface">
+										<a href="bus_query_operation.iexpressioncontext.html#bnode" class="tsd-kind-icon">bnode</a>
 									</li>
 									<li class=" tsd-kind-property tsd-parent-kind-interface">
 										<a href="bus_query_operation.iexpressioncontext.html#now" class="tsd-kind-icon">now</a>

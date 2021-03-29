@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>BlankNodeScoped | Comunica</title>
+	<title>BlankNodeBindingsScoped | Comunica</title>
 	<meta name="description" content="Documentation for Comunica">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -58,10 +58,10 @@
 					<a href="../modules/data_factory.html">data-factory</a>
 				</li>
 				<li>
-					<a href="data_factory.blanknodescoped.html">BlankNodeScoped</a>
+					<a href="data_factory.blanknodebindingsscoped.html">BlankNodeBindingsScoped</a>
 				</li>
 			</ul>
-			<h1>Class BlankNodeScoped</h1>
+			<h1>Class BlankNodeBindingsScoped</h1>
 		</div>
 	</div>
 </header>
@@ -71,7 +71,7 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p>A blank node that is scoped to a certain source.</p>
+						<p>A blank node that is scoped to a set of bindings.</p>
 					</div>
 				</div>
 			</section>
@@ -79,7 +79,7 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">BlankNodeScoped</span>
+						<span class="target">BlankNodeBindingsScoped</span>
 					</li>
 				</ul>
 			</section>
@@ -96,21 +96,21 @@
 						<section class="tsd-index-section ">
 							<h3>Constructors</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="data_factory.blanknodescoped.html#constructor" class="tsd-kind-icon">constructor</a></li>
+								<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="data_factory.blanknodebindingsscoped.html#constructor" class="tsd-kind-icon">constructor</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="data_factory.blanknodescoped.html#skolemized" class="tsd-kind-icon">skolemized</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="data_factory.blanknodescoped.html#termtype" class="tsd-kind-icon">term<wbr>Type</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="data_factory.blanknodescoped.html#value" class="tsd-kind-icon">value</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="data_factory.blanknodebindingsscoped.html#singlebindingsscope" class="tsd-kind-icon">single<wbr>Bindings<wbr>Scope</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="data_factory.blanknodebindingsscoped.html#termtype" class="tsd-kind-icon">term<wbr>Type</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="data_factory.blanknodebindingsscoped.html#value" class="tsd-kind-icon">value</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="data_factory.blanknodescoped.html#equals" class="tsd-kind-icon">equals</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="data_factory.blanknodebindingsscoped.html#equals" class="tsd-kind-icon">equals</a></li>
 							</ul>
 						</section>
 					</div>
@@ -122,13 +122,13 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Blank<wbr>Node<wbr>Scoped<span class="tsd-signature-symbol">(</span>value<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, skolemized<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">NamedNode</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="data_factory.blanknodescoped.html" class="tsd-signature-type" data-tsd-kind="Class">BlankNodeScoped</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Blank<wbr>Node<wbr>Bindings<wbr>Scoped<span class="tsd-signature-symbol">(</span>value<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="data_factory.blanknodebindingsscoped.html" class="tsd-signature-type" data-tsd-kind="Class">BlankNodeBindingsScoped</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/d9b93b4/packages/data-factory/lib/BlankNodeScoped.ts#L14">packages/data-factory/lib/BlankNodeScoped.ts:14</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/d9b93b4/packages/data-factory/lib/BlankNodeBindingsScoped.ts#L9">packages/data-factory/lib/BlankNodeBindingsScoped.ts:9</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -136,11 +136,8 @@
 								<li>
 									<h5>value: <span class="tsd-signature-type">string</span></h5>
 								</li>
-								<li>
-									<h5>skolemized: <span class="tsd-signature-type">NamedNode</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></h5>
-								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="data_factory.blanknodescoped.html" class="tsd-signature-type" data-tsd-kind="Class">BlankNodeScoped</a></h4>
+							<h4 class="tsd-returns-title">Returns <a href="data_factory.blanknodebindingsscoped.html" class="tsd-signature-type" data-tsd-kind="Class">BlankNodeBindingsScoped</a></h4>
 						</li>
 					</ul>
 				</section>
@@ -148,21 +145,14 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="skolemized" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> skolemized</h3>
-					<div class="tsd-signature tsd-kind-icon">skolemized<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">NamedNode</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></div>
+					<a name="singlebindingsscope" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagReadonly">Readonly</span> single<wbr>Bindings<wbr>Scope</h3>
+					<div class="tsd-signature tsd-kind-icon">single<wbr>Bindings<wbr>Scope<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">true</span><span class="tsd-signature-symbol"> = true</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d9b93b4/packages/data-factory/lib/BlankNodeScoped.ts#L14">packages/data-factory/lib/BlankNodeScoped.ts:14</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d9b93b4/packages/data-factory/lib/BlankNodeBindingsScoped.ts#L8">packages/data-factory/lib/BlankNodeBindingsScoped.ts:8</a></li>
 						</ul>
 					</aside>
-					<div class="tsd-comment tsd-typography">
-						<div class="lead">
-							<p>This value can be obtained by consumers in query results,
-								so that this can be passed into another query as an IRI,
-							in order to obtain more results relating to this (blank) node.</p>
-						</div>
-					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="termtype" class="tsd-anchor"></a>
@@ -170,7 +160,7 @@
 					<div class="tsd-signature tsd-kind-icon">term<wbr>Type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;BlankNode&quot;</span><span class="tsd-signature-symbol"> = &#x27;BlankNode&#x27;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d9b93b4/packages/data-factory/lib/BlankNodeScoped.ts#L7">packages/data-factory/lib/BlankNodeScoped.ts:7</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d9b93b4/packages/data-factory/lib/BlankNodeBindingsScoped.ts#L7">packages/data-factory/lib/BlankNodeBindingsScoped.ts:7</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -180,7 +170,7 @@
 					<div class="tsd-signature tsd-kind-icon">value<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d9b93b4/packages/data-factory/lib/BlankNodeScoped.ts#L8">packages/data-factory/lib/BlankNodeScoped.ts:8</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d9b93b4/packages/data-factory/lib/BlankNodeBindingsScoped.ts#L9">packages/data-factory/lib/BlankNodeBindingsScoped.ts:9</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -197,7 +187,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/d9b93b4/packages/data-factory/lib/BlankNodeScoped.ts#L21">packages/data-factory/lib/BlankNodeScoped.ts:21</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/d9b93b4/packages/data-factory/lib/BlankNodeBindingsScoped.ts#L15">packages/data-factory/lib/BlankNodeBindingsScoped.ts:15</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -230,28 +220,28 @@
 					<li class="current tsd-kind-module">
 						<a href="../modules/data_factory.html" class="tsd-kind-icon">data-<wbr>factory</a>
 						<ul>
-							<li class=" tsd-kind-class tsd-parent-kind-module">
-								<a href="data_factory.blanknodebindingsscoped.html" class="tsd-kind-icon">Blank<wbr>Node<wbr>Bindings<wbr>Scoped</a>
-							</li>
 							<li class="current tsd-kind-class tsd-parent-kind-module">
-								<a href="data_factory.blanknodescoped.html" class="tsd-kind-icon">Blank<wbr>Node<wbr>Scoped</a>
+								<a href="data_factory.blanknodebindingsscoped.html" class="tsd-kind-icon">Blank<wbr>Node<wbr>Bindings<wbr>Scoped</a>
 								<ul>
 									<li class=" tsd-kind-constructor tsd-parent-kind-class">
-										<a href="data_factory.blanknodescoped.html#constructor" class="tsd-kind-icon">constructor</a>
+										<a href="data_factory.blanknodebindingsscoped.html#constructor" class="tsd-kind-icon">constructor</a>
 									</li>
 									<li class=" tsd-kind-property tsd-parent-kind-class">
-										<a href="data_factory.blanknodescoped.html#skolemized" class="tsd-kind-icon">skolemized</a>
+										<a href="data_factory.blanknodebindingsscoped.html#singlebindingsscope" class="tsd-kind-icon">single<wbr>Bindings<wbr>Scope</a>
 									</li>
 									<li class=" tsd-kind-property tsd-parent-kind-class">
-										<a href="data_factory.blanknodescoped.html#termtype" class="tsd-kind-icon">term<wbr>Type</a>
+										<a href="data_factory.blanknodebindingsscoped.html#termtype" class="tsd-kind-icon">term<wbr>Type</a>
 									</li>
 									<li class=" tsd-kind-property tsd-parent-kind-class">
-										<a href="data_factory.blanknodescoped.html#value" class="tsd-kind-icon">value</a>
+										<a href="data_factory.blanknodebindingsscoped.html#value" class="tsd-kind-icon">value</a>
 									</li>
 									<li class=" tsd-kind-method tsd-parent-kind-class">
-										<a href="data_factory.blanknodescoped.html#equals" class="tsd-kind-icon">equals</a>
+										<a href="data_factory.blanknodebindingsscoped.html#equals" class="tsd-kind-icon">equals</a>
 									</li>
 								</ul>
+							</li>
+							<li class=" tsd-kind-class tsd-parent-kind-module">
+								<a href="data_factory.blanknodescoped.html" class="tsd-kind-icon">Blank<wbr>Node<wbr>Scoped</a>
 							</li>
 						</ul>
 					</li>
