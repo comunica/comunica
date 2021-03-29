@@ -36,7 +36,7 @@ export class ActorQueryOperationOrderBySparqlee extends ActorQueryOperationTyped
     const output = ActorQueryOperation.getSafeBindings(outputRaw);
 
     const options = { window: this.window };
-    const sparqleeConfig = { ...ActorQueryOperation.getExpressionContext(context) };
+    const sparqleeConfig = { ...ActorQueryOperation.getAsyncExpressionContext(context) };
     let { bindingsStream } = output;
 
     // Sorting backwards since the first one is the most important therefore should be ordered last.

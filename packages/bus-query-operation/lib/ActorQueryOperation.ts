@@ -1,6 +1,7 @@
 import { KeysInitSparql, KeysQueryOperation } from '@comunica/context-entries';
 import type { ActionContext, IActorArgs, IActorTest, Mediator } from '@comunica/core';
 import { Actor } from '@comunica/core';
+import { BlankNodeBindingsScoped } from '@comunica/data-factory';
 import type {
   IActionQueryOperation,
   IActorQueryOperationOutput,
@@ -11,6 +12,7 @@ import type {
   Bindings,
   PatternBindings,
 } from '@comunica/types';
+import type * as RDF from 'rdf-js';
 import type { Algebra } from 'sparqlalgebrajs';
 import { materializeOperation } from './Bindings';
 
@@ -96,6 +98,14 @@ export const KEY_CONTEXT_BASEIRI = KeysInitSparql.baseIRI;
 export const KEY_CONTEXT_QUERY_TIMESTAMP = KeysInitSparql.queryTimestamp;
 
 /**
+ * A counter that keeps track blank node generated through BNODE() SPARQL
+ * expressions.
+ *
+ * @type {number}
+ */
+let bnodeCounter = 0;
+
+/**
  * A comunica actor for query-operation events.
  *
  * Actor types:
@@ -167,8 +177,17 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
     }
   }
 
+  protected static getBaseExpressionContext(context: ActionContext): IBaseExpressionContext {
+    if (context) {
+      const now: Date = context.get(KeysInitSparql.queryTimestamp);
+      const baseIRI: string = context.get(KeysInitSparql.baseIRI);
+      return { now, baseIRI };
+    }
+    return {};
+  }
+
   /**
-   * Create an options object that can be used to construct a sparqlee evaluator.
+   * Create an options object that can be used to construct a sparqlee synchronous evaluator.
    * @param context An action context.
    * @param mediatorQueryOperation An optional query query operation mediator.
    *                               If defined, the existence resolver will be defined as `exists`.
@@ -176,20 +195,29 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
   public static getExpressionContext(context: ActionContext, mediatorQueryOperation?: Mediator<
   Actor<IActionQueryOperation, IActorTest, IActorQueryOperationOutput>,
   IActionQueryOperation, IActorTest, IActorQueryOperationOutput>): IExpressionContext {
-    if (context) {
-      const now: Date = context.get(KeysInitSparql.queryTimestamp);
-      const baseIRI: string = context.get(KeysInitSparql.baseIRI);
-      return {
-        now,
-        baseIRI,
-        ...mediatorQueryOperation ?
-          {
-            exists: ActorQueryOperation.createExistenceResolver(context, mediatorQueryOperation),
-          } :
-          {},
-      };
+    return {
+      ...this.getBaseExpressionContext(context),
+      bnode: (input?: string) => new BlankNodeBindingsScoped(input || `BNODE_${bnodeCounter++}`),
+    };
+  }
+
+  /**
+   * Create an options object that can be used to construct a sparqlee asynchronous evaluator.
+   * @param context An action context.
+   * @param mediatorQueryOperation An optional query query operation mediator.
+   *                               If defined, the existence resolver will be defined as `exists`.
+   */
+  public static getAsyncExpressionContext(context: ActionContext, mediatorQueryOperation?: Mediator<
+  Actor<IActionQueryOperation, IActorTest, IActorQueryOperationOutput>,
+  IActionQueryOperation, IActorTest, IActorQueryOperationOutput>): IAsyncExpressionContext {
+    const expressionContext: IAsyncExpressionContext = {
+      ...this.getBaseExpressionContext(context),
+      bnode: (input?: string) => Promise.resolve(new BlankNodeBindingsScoped(input || `BNODE_${bnodeCounter++}`)),
+    };
+    if (context && mediatorQueryOperation) {
+      expressionContext.exists = ActorQueryOperation.createExistenceResolver(context, mediatorQueryOperation);
     }
-    return {};
+    return expressionContext;
   }
 
   /**
@@ -238,9 +266,17 @@ export function getMetadata(actionOutput: IActorQueryOperationOutputStream): Pro
   return actionOutput.metadata();
 }
 
-export interface IExpressionContext {
+interface IBaseExpressionContext {
   now?: Date;
   baseIRI?: string;
-  // Exists?: (expr: Algebra.ExistenceExpression, bindings: Bindings) => Promise<boolean>;
-  // bnode?: (input?: string) => Promise<RDF.BlankNode>;
+}
+
+// TODO: rename to ISyncExpressionContext in next major version
+export interface IExpressionContext extends IBaseExpressionContext {
+  bnode: (input?: string | undefined) => RDF.BlankNode;
+}
+
+export interface IAsyncExpressionContext extends IBaseExpressionContext {
+  bnode: (input?: string | undefined) => Promise<RDF.BlankNode>;
+  exists?: (expr: Algebra.ExistenceExpression, bindings: Bindings) => Promise<boolean>;
 }

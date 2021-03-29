@@ -75,17 +75,46 @@ describe('ActorQueryOperation', () => {
 
   describe('#getExpressionContext', () => {
     describe('without mediatorQueryOperation', () => {
-      it('should create an empty object for an empty context', () => {
-        expect(ActorQueryOperation.getExpressionContext(ActionContext({}))).toEqual({});
+      it('should create an empty object for an empty contexts save for the bnode function', () => {
+        expect(ActorQueryOperation.getExpressionContext(ActionContext({})))
+          .toEqual({ bnode: expect.any(Function) });
+      });
+
+      it('the bnode function should synchronously return a blank node', () => {
+        const context = ActorQueryOperation.getExpressionContext(ActionContext({}));
+        const blankNode = context.bnode();
+        expect(blankNode).toBeDefined();
+        expect(blankNode).toHaveProperty('termType');
+        expect(blankNode.termType).toEqual('BlankNode');
+      });
+    });
+  });
+
+  describe('#getAsyncExpressionContext', () => {
+    describe('without mediatorQueryOperation', () => {
+      it('should create an empty object for an empty contexts save for the bnode function', () => {
+        expect(ActorQueryOperation.getAsyncExpressionContext(ActionContext({})))
+          .toEqual({ bnode: expect.any(Function) });
+      });
+
+      it('the bnode function should asynchronously return a blank node', async() => {
+        const context = ActorQueryOperation.getAsyncExpressionContext(ActionContext({}));
+        const blankNodePromise = context.bnode();
+        expect(blankNodePromise).toBeInstanceOf(Promise);
+        const blankNode = await blankNodePromise;
+        expect(blankNode).toBeDefined();
+        expect(blankNode).toHaveProperty('termType');
+        expect(blankNode.termType).toEqual('BlankNode');
       });
 
       it('should create an non-empty object for a filled context', () => {
         const date = new Date();
-        expect(ActorQueryOperation.getExpressionContext(ActionContext({
+        expect(ActorQueryOperation.getAsyncExpressionContext(ActionContext({
           [KeysInitSparql.queryTimestamp]: date,
           [KeysInitSparql.baseIRI]: 'http://base.org/',
         }))).toEqual({
           now: date,
+          bnode: expect.any(Function),
           baseIRI: 'http://base.org/',
         });
       });
@@ -108,13 +137,13 @@ describe('ActorQueryOperation', () => {
 
       it('should create an object with a resolver', () => {
         const resolver = (<any> ActorQueryOperation
-          .getExpressionContext(ActionContext({}), mediatorQueryOperation)).exists;
+          .getAsyncExpressionContext(ActionContext({}), mediatorQueryOperation)).exists;
         expect(resolver).toBeTruthy();
       });
 
       it('should allow a resolver to be invoked', async() => {
         const resolver = (<any> ActorQueryOperation
-          .getExpressionContext(ActionContext({}), mediatorQueryOperation)).exists;
+          .getAsyncExpressionContext(ActionContext({}), mediatorQueryOperation)).exists;
         const factory = new Factory();
         const expr: Algebra.ExistenceExpression = factory.createExistenceExpression(
           true,

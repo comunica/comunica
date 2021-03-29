@@ -1,9 +1,10 @@
 import type { IActorQueryOperationTypedMediatedArgs } from '@comunica/bus-query-operation';
 import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica/bus-query-operation';
 import type { ActionContext, IActorTest } from '@comunica/core';
-import { BlankNodeScoped } from '@comunica/data-factory';
+import { BlankNodeBindingsScoped } from '@comunica/data-factory';
 import type { Bindings, BindingsStream, IActorQueryOperationOutputBindings } from '@comunica/types';
 import { DataFactory } from 'rdf-data-factory';
+import type * as RDF from 'rdf-js';
 import { termToString } from 'rdf-string';
 import type { Algebra } from 'sparqlalgebrajs';
 const DF = new DataFactory();
@@ -57,12 +58,15 @@ export class ActorQueryOperationProject extends ActorQueryOperationTypedMediated
     bindingsStream = bindingsStream.transform({
       map(bindings: Bindings) {
         blankNodeCounter++;
+        const scopedBlankNodesCache = new Map<string, RDF.BlankNode>();
         return <Bindings> bindings.map(term => {
-          if (term && term.termType === 'BlankNode') {
-            if (term instanceof BlankNodeScoped) {
-              return new BlankNodeScoped(`${term.value}${blankNodeCounter}`, term.skolemized);
+          if (term instanceof BlankNodeBindingsScoped) {
+            let scopedBlankNode = scopedBlankNodesCache.get(term.value);
+            if (!scopedBlankNode) {
+              scopedBlankNode = DF.blankNode(`${term.value}${blankNodeCounter}`);
+              scopedBlankNodesCache.set(term.value, scopedBlankNode);
             }
-            return DF.blankNode(`${term.value}${blankNodeCounter}`);
+            return scopedBlankNode;
           }
           return term;
         });
