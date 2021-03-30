@@ -13,7 +13,7 @@ This module is part of the [Comunica framework](https://comunica.dev/).
 $ yarn add @comunica/actor-init-sparql-rdfjs
 ```
 
-## Usage
+## Query
 
 ```javascript
 const newEngine = require('@comunica/actor-init-sparql-rdfjs').newEngine;
@@ -21,7 +21,6 @@ const N3Store = require('n3').Store;
 const DataFactory = require('n3').DataFactory;
 
 // This can be any RDFJS source
-// In this example, we wrap an N3Store
 const store = new N3Store();
 store.addQuad(DataFactory.quad(
   DataFactory.namedNode('a'), DataFactory.namedNode('b'), DataFactory.namedNode('http://dbpedia.org/resource/Belgium')));
@@ -41,7 +40,41 @@ result.bindingsStream.on('data', (data) => {
 });
 ```
 
-_[**Read more** about querying an application](https://comunica.dev/docs/query/getting_started/query_app/)._
+_[**Read more** about querying in an application](https://comunica.dev/docs/query/getting_started/query_app/)._
+
+## Update
+
+```javascript
+const newEngine = require('@comunica/actor-init-sparql-rdfjs').newEngine;
+const N3Store = require('n3').Store;
+
+// This can be any RDFJS store
+const store = new N3Store();
+
+// Create our engine, and query it.
+const myEngine = newEngine();
+const query = `
+PREFIX dc: <http://purl.org/dc/elements/1.1/>
+INSERT DATA
+{ 
+  <http://example/book1> dc:title "A new book" ;
+                         dc:creator "A.N.Other" .
+}
+`;
+
+// Initiate the update
+const result = await myEngine.query(query, {
+  sources: [store],
+});
+
+// Wait for the update to complete
+await result.updateResult;
+
+// Prints '2' => the store is updated
+console.log(store.size);
+```
+
+_[**Read more** about updating in an application](https://comunica.dev/docs/query/getting_started/update_app/)._
 
 ## Optimization
 

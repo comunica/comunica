@@ -24,8 +24,10 @@
 Read one of our [guides to **get started** with querying](https://comunica.dev/docs/query/getting_started/):
 
 * [Querying from the command line](https://comunica.dev/docs/query/getting_started/query_cli/)
+* [Updating from the command line](https://comunica.dev/docs/query/getting_started/update_cli/)
 * [Querying local files from the command line](https://comunica.dev/docs/query/getting_started/query_cli_file/)
 * [Querying in a JavaScript app](https://comunica.dev/docs/query/getting_started/query_app/)
+* [Updating in a JavaScript app](https://comunica.dev/docs/query/getting_started/update_app/)
 * [Querying in a JavaScript browser app](https://comunica.dev/docs/query/getting_started/query_browser_app/)
 * [Setting up a SPARQL endpoint](https://comunica.dev/docs/query/getting_started/setup_endpoint/)
 * [Querying from a Docker container](https://comunica.dev/docs/query/getting_started/query_docker/)

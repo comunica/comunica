@@ -7,10 +7,11 @@ Comunica SPARQL is a SPARQL query engine for JavaScript for querying over decent
 
 It's main distinguishing features are the following:
 
-* Execute [SPARQL 1.1](https://www.w3.org/TR/sparql11-query/) or [GraphQL-LD](https://github.com/rubensworks/graphql-ld.js) queries
+* Execute [SPARQL 1.1](https://www.w3.org/TR/sparql11-query/) or [GraphQL-LD](https://github.com/rubensworks/graphql-ld.js) queries.
 * Federated querying over [heterogeneous interfaces](https://comunica.dev/docs/query/advanced/source_types/), such as RDF files, SPARQL endpoints, [Triple Pattern Fragments](https://linkeddatafragments.org/), or [Solid data pods](https://inrupt.com/solid).
 * High modularity enabling [easy extensions and customization](https://comunica.dev/docs/modify/).
 * Runs in JavaScript using [Node.JS](http://nodejs.org/), in the browser, and via the command-line.
+* Update sources using [SPARQL 1.1 Update queries](https://www.w3.org/TR/sparql11-update/) _(currently only over [RDF/JS stores](https://github.com/comunica/comunica/tree/master/packages/actor-init-sparql-rdfjs#readme))_.
 
 **[Learn more about Comunica on our website](https://comunica.dev/).**
 
@@ -215,6 +216,7 @@ Learn more about Comunica's functionalities in the following guides:
 * _[Querying in a JavaScript browser app](https://comunica.dev/docs/query/getting_started/query_browser_app/)_
 * _[Passing query options](https://comunica.dev/docs/query/advanced/context/)_
 * _[Supported source types](https://comunica.dev/docs/query/advanced/source_types/)_
+* _[Supported destination types](https://comunica.dev/docs/query/advanced/destination_types/)_
 * _[Formatting results](https://comunica.dev/docs/query/advanced/result_formats/)_
 * _[Supported specifications](https://comunica.dev/docs/query/advanced/specifications/)_
 * _[Logging and debugging](https://comunica.dev/docs/query/advanced/logging/)_
