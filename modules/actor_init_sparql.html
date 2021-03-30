@@ -75,10 +75,11 @@
 					<p>Comunica SPARQL is a SPARQL query engine for JavaScript for querying over decentralized RDF knowledge graphs on the Web.</p>
 					<p>It&#39;s main distinguishing features are the following:</p>
 					<ul>
-						<li>Execute <a href="https://www.w3.org/TR/sparql11-query/">SPARQL 1.1</a> or <a href="https://github.com/rubensworks/graphql-ld.js">GraphQL-LD</a> queries</li>
+						<li>Execute <a href="https://www.w3.org/TR/sparql11-query/">SPARQL 1.1</a> or <a href="https://github.com/rubensworks/graphql-ld.js">GraphQL-LD</a> queries.</li>
 						<li>Federated querying over <a href="https://comunica.dev/docs/query/advanced/source_types/">heterogeneous interfaces</a>, such as RDF files, SPARQL endpoints, <a href="https://linkeddatafragments.org/">Triple Pattern Fragments</a>, or <a href="https://inrupt.com/solid">Solid data pods</a>.</li>
 						<li>High modularity enabling <a href="https://comunica.dev/docs/modify/">easy extensions and customization</a>.</li>
 						<li>Runs in JavaScript using <a href="http://nodejs.org/">Node.JS</a>, in the browser, and via the command-line.</li>
+						<li>Update sources using <a href="https://www.w3.org/TR/sparql11-update/">SPARQL 1.1 Update queries</a> <em>(currently only over <a href="https://github.com/comunica/comunica/tree/master/packages/actor-init-sparql-rdfjs#readme">RDF/JS stores</a>)</em>.</li>
 					</ul>
 					<p><strong><a href="https://comunica.dev/">Learn more about Comunica on our website</a>.</strong></p>
 					<p><strong>This actor can not query over local files for security reasons, but <a href="https://github.com/comunica/comunica/tree/master/packages/actor-init-sparql-file#readme">Comunica SPARQL file</a> can.</strong></p>
@@ -230,6 +231,7 @@
 						<li><em><a href="https://comunica.dev/docs/query/getting_started/query_browser_app/">Querying in a JavaScript browser app</a></em></li>
 						<li><em><a href="https://comunica.dev/docs/query/advanced/context/">Passing query options</a></em></li>
 						<li><em><a href="https://comunica.dev/docs/query/advanced/source_types/">Supported source types</a></em></li>
+						<li><em><a href="https://comunica.dev/docs/query/advanced/destination_types/">Supported destination types</a></em></li>
 						<li><em><a href="https://comunica.dev/docs/query/advanced/result_formats/">Formatting results</a></em></li>
 						<li><em><a href="https://comunica.dev/docs/query/advanced/specifications/">Supported specifications</a></em></li>
 						<li><em><a href="https://comunica.dev/docs/query/advanced/logging/">Logging and debugging</a></em></li>
@@ -299,7 +301,7 @@
 					<div class="tsd-signature tsd-kind-icon">IQuery<wbr>Result<span class="tsd-signature-symbol">:</span> <a href="../interfaces/actor_init_sparql.iqueryresultbindings.html" class="tsd-signature-type" data-tsd-kind="Interface">IQueryResultBindings</a><span class="tsd-signature-symbol"> | </span><a href="../interfaces/actor_init_sparql.iqueryresultquads.html" class="tsd-signature-type" data-tsd-kind="Interface">IQueryResultQuads</a><span class="tsd-signature-symbol"> | </span><a href="../interfaces/actor_init_sparql.iqueryresultboolean.html" class="tsd-signature-type" data-tsd-kind="Interface">IQueryResultBoolean</a><span class="tsd-signature-symbol"> | </span><a href="../interfaces/actor_init_sparql.iqueryresultupdate.html" class="tsd-signature-type" data-tsd-kind="Interface">IQueryResultUpdate</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/f9c6f9d/packages/actor-init-sparql/lib/ActorInitSparql-browser.ts#L339">packages/actor-init-sparql/lib/ActorInitSparql-browser.ts:339</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/59aea8d/packages/actor-init-sparql/lib/ActorInitSparql-browser.ts#L339">packages/actor-init-sparql/lib/ActorInitSparql-browser.ts:339</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -312,7 +314,7 @@
 					<div class="tsd-signature tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>GRAPHQL_<wbr>SINGULARIZEVARIABLES<span class="tsd-signature-symbol">:</span> <a href="../enums/context_entries.keysinitsparql.html#graphqlsingularizevariables" class="tsd-signature-type" data-tsd-kind="Enumeration member">graphqlSingularizeVariables</a><span class="tsd-signature-symbol"> = ...</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/f9c6f9d/packages/actor-init-sparql/lib/ActorInitSparql-browser.ts#L352">packages/actor-init-sparql/lib/ActorInitSparql-browser.ts:352</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/59aea8d/packages/actor-init-sparql/lib/ActorInitSparql-browser.ts#L352">packages/actor-init-sparql/lib/ActorInitSparql-browser.ts:352</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -329,7 +331,7 @@
 					<div class="tsd-signature tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>INITIALBINDINGS<span class="tsd-signature-symbol">:</span> <a href="../enums/context_entries.keysinitsparql.html#initialbindings" class="tsd-signature-type" data-tsd-kind="Enumeration member">initialBindings</a><span class="tsd-signature-symbol"> = ...</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/f9c6f9d/packages/actor-init-sparql/lib/ActorInitSparql-browser.ts#L344">packages/actor-init-sparql/lib/ActorInitSparql-browser.ts:344</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/59aea8d/packages/actor-init-sparql/lib/ActorInitSparql-browser.ts#L344">packages/actor-init-sparql/lib/ActorInitSparql-browser.ts:344</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -346,7 +348,7 @@
 					<div class="tsd-signature tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>LENIENT<span class="tsd-signature-symbol">:</span> <a href="../enums/context_entries.keysinitsparql.html#lenient" class="tsd-signature-type" data-tsd-kind="Enumeration member">lenient</a><span class="tsd-signature-symbol"> = ...</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/f9c6f9d/packages/actor-init-sparql/lib/ActorInitSparql-browser.ts#L356">packages/actor-init-sparql/lib/ActorInitSparql-browser.ts:356</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/59aea8d/packages/actor-init-sparql/lib/ActorInitSparql-browser.ts#L356">packages/actor-init-sparql/lib/ActorInitSparql-browser.ts:356</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -363,7 +365,7 @@
 					<div class="tsd-signature tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>QUERY<span class="tsd-signature-symbol">:</span> <a href="../enums/context_entries.keysinitsparql.html#query" class="tsd-signature-type" data-tsd-kind="Enumeration member">query</a><span class="tsd-signature-symbol"> = ...</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/f9c6f9d/packages/actor-init-sparql/lib/ActorInitSparql-browser.ts#L360">packages/actor-init-sparql/lib/ActorInitSparql-browser.ts:360</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/59aea8d/packages/actor-init-sparql/lib/ActorInitSparql-browser.ts#L360">packages/actor-init-sparql/lib/ActorInitSparql-browser.ts:360</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -380,7 +382,7 @@
 					<div class="tsd-signature tsd-kind-icon">KEY_<wbr>CONTEXT_<wbr>QUERYFORMAT<span class="tsd-signature-symbol">:</span> <a href="../enums/context_entries.keysinitsparql.html#queryformat" class="tsd-signature-type" data-tsd-kind="Enumeration member">queryFormat</a><span class="tsd-signature-symbol"> = ...</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/f9c6f9d/packages/actor-init-sparql/lib/ActorInitSparql-browser.ts#L348">packages/actor-init-sparql/lib/ActorInitSparql-browser.ts:348</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/59aea8d/packages/actor-init-sparql/lib/ActorInitSparql-browser.ts#L348">packages/actor-init-sparql/lib/ActorInitSparql-browser.ts:348</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -404,7 +406,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/f9c6f9d/packages/actor-init-sparql/lib/QueryDynamic.ts#L12">packages/actor-init-sparql/lib/QueryDynamic.ts:12</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/59aea8d/packages/actor-init-sparql/lib/QueryDynamic.ts#L12">packages/actor-init-sparql/lib/QueryDynamic.ts:12</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
