@@ -1,6 +1,6 @@
 {
   "name": "@comunica/bus-rdf-dereference",
-  "version": "1.19.2",
+  "version": "1.20.0",
   "description": "A comunica bus for 'http' events.",
   "lsd:module": true,
   "main": "index.js",
@@ -31,14 +31,14 @@
     "index.js"
   ],
   "dependencies": {
-    "@comunica/context-entries": "^1.0.0",
+    "@comunica/context-entries": "^1.20.0",
     "@types/rdf-js": "*"
   },
   "peerDependencies": {
     "@comunica/core": "^1.0.0"
   },
   "devDependencies": {
-    "@comunica/core": "^1.19.2"
+    "@comunica/core": "^1.20.0"
   },
   "scripts": {
     "build": "node \"../../node_modules/typescript/bin/tsc\"",

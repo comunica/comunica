@@ -1,6 +1,6 @@
 {
   "name": "@comunica/bus-rdf-update-quads",
-  "version": "1.0.0",
+  "version": "1.20.0",
   "description": "A comunica bus for rdf-update-quads events.",
   "lsd:module": true,
   "main": "index.js",
@@ -31,7 +31,7 @@
     "index.js"
   ],
   "dependencies": {
-    "@comunica/context-entries": "^1.0.0",
+    "@comunica/context-entries": "^1.20.0",
     "@types/rdf-js": "*",
     "asynciterator": "^3.1.0"
   },
@@ -39,7 +39,7 @@
     "@comunica/core": "^1.19.2"
   },
   "devDependencies": {
-    "@comunica/core": "^1.19.2"
+    "@comunica/core": "^1.20.0"
   },
   "jest": {
     "globals": {

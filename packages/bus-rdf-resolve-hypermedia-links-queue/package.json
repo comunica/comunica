@@ -1,6 +1,6 @@
 {
   "name": "@comunica/bus-rdf-resolve-hypermedia-links-queue",
-  "version": "1.0.0",
+  "version": "1.20.0",
   "description": "A comunica bus for rdf-resolve-hypermedia-links-queue events.",
   "lsd:module": true,
   "main": "index.js",
@@ -34,7 +34,7 @@
     "@comunica/core": "^1.19.2"
   },
   "devDependencies": {
-    "@comunica/core": "^1.19.2"
+    "@comunica/core": "^1.20.0"
   },
   "jest": {
     "globals": {

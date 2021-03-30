@@ -1,6 +1,46 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v1.20.0"></a>
+## [v1.20.0](https://github.com/comunica/comunica/compare/v1.19.2...v1.20.0) - 2021-03-30
+
+### Added
+* Add support for SPARQL Update queries
+    * [Add update actors to all init engines](https://github.com/comunica/comunica/commit/5cfd55fc727c5723dd3ad754fa3f59a057cb212a)
+    * [Support update queries in SPARQL endpoint](https://github.com/comunica/comunica/commit/23baaac3b2178ac24b65e2b8431102bfc7630f25)
+    * [Support update results in simple serializer](https://github.com/comunica/comunica/commit/95e72833fe423b553652a4f4668f1e055ad52ee9)
+    * [Add readOnly context entry that makes update actors fail](https://github.com/comunica/comunica/commit/637369d6766bffb328b8f0badac40fad25742bfb)
+    * [Allow single source in context to be inherited as destination](https://github.com/comunica/comunica/commit/2d473a86d569b432042b8c8c2ec2f22ae4fdc32f)
+    * [Add add, copy, and move update operation actors](https://github.com/comunica/comunica/commit/d5eb6fb802decec3a801fa6cd1ce9ac4905fb066)
+    * [Add create update operation](https://github.com/comunica/comunica/commit/2e1ed0b208ed20d70cead12a0931472f8b88097d)
+    * [Add clear and drop update operations](https://github.com/comunica/comunica/commit/76e5fd274808ff57a1cf2b263e83f2c82a2e08f1)
+    * [Configure load update actor](https://github.com/comunica/comunica/commit/5f6fff8323477f5af0b49bc65de0b376b2cfaadd)
+    * [Add load update query operation actor](https://github.com/comunica/comunica/commit/32b8639916db77a851646cf4d6c072e462ac3644)
+    * [Add fallback rdf-dereference actor](https://github.com/comunica/comunica/commit/047ec2519222a724fbd4679c13ebf209f5f4e2a2)
+    * [Run SPARQL Update test suite](https://github.com/comunica/comunica/commit/a517873e68dff05f3635754954b21c6e6c2c3178)
+    * [Enable passing destination via the CLI](https://github.com/comunica/comunica/commit/3db79860ebd1b0f26364f8a2382cb99c53d556d1)
+    * [Configure INSERT and DELETE actors](https://github.com/comunica/comunica/commit/0f790e9b66f8151c6baf0e6618d9fe5aa98d6be8)
+    * [Add composite update operation actor](https://github.com/comunica/comunica/commit/c6ea8db2fb0491a7d2098ab4e1707a7195cece1b)
+    * [Add INSERT/DELETE operation actor](https://github.com/comunica/comunica/commit/2eedb3f3b8928ecd0d330603ddfec1efc0ef1e26)
+    * [Add RDF update actor that handles RDF/JS stores](https://github.com/comunica/comunica/commit/75756dcd63a28134b03fc7df6cacf2140f4fbc7a)
+    * [Add bus for handling quad updates](https://github.com/comunica/comunica/commit/13461a8df6c21c69a128386613ab4de12f221e4c)
+    * [Add update query operation output type](https://github.com/comunica/comunica/commit/896dc07ff7cfce94950adfa6e820b6138ce563e8)
+* [Enable worker threads in SPARQL endpoints](https://github.com/comunica/comunica/commit/607ba34c085089caa9a02c6d606aefc63b7e996d)
+* [Delegate link queue creation to the new link queue bus](https://github.com/comunica/comunica/commit/8de44d1da8e63c9b3a15c26dadcb003c2c00f136)
+
+### Changed
+* [Move public query engine interfaces into @comunica/types](https://github.com/comunica/comunica/commit/3f46a233883b699df87fcee3215516f97e15e346)
+* [Move all context keys to '@comunica/context-entries'](https://github.com/comunica/comunica/commit/12b9ee3e8e5bc2d0fadd662a3d6aeef838b87619)
+* [Keep track of parent link when pushing into link queue](https://github.com/comunica/comunica/commit/65ae0b1b6e2aad4368d2bcb76956a7f7b9474b6a)
+* [Save original query in context](https://github.com/comunica/comunica/commit/97e2cf1076fa296443e2fae80c223e46613cae68)
+
+### Fixed
+* [Enable blank node correlation across results, Closes #795](https://github.com/comunica/comunica/commit/d9b93b4608c69e6c8b710b664c37e47a1c0d41c7)
+* [Fix FROM/FROM NAMED not always restricting views](https://github.com/comunica/comunica/commit/1eb8ce0e91ee34464663a6b8648f7bb6845f56a6)
+* [Bump asyncjoin with close on undefined fix, Closes #791](https://github.com/comunica/comunica/commit/81767a2ab65f5b23002ae738806b277e8b91338d)
+* [Fix process hanging if a source parsing action rejects, Closes #786](https://github.com/comunica/comunica/commit/7e77c0134b8354eb735ab2b805f8f6689f7c6b34)
+* [Fix hypermedia quad pattern resolver not skipping links to itself](https://github.com/comunica/comunica/commit/9e11ee35123790a9d8028976c648ede6f836ac04)
+
 <a name="v1.19.2"></a>
 ## [v1.19.2](https://github.com/comunica/comunica/compare/v1.19.1...v1.19.2) - 2021-02-02
 

@@ -1,6 +1,6 @@
 {
   "name": "@comunica/utils-datasource",
-  "version": "1.19.2",
+  "version": "1.20.0",
   "description": "An abstract actor for handling mediatype detection.",
   "lsd:module": true,
   "main": "index.js",
@@ -33,15 +33,15 @@
     "index.js"
   ],
   "dependencies": {
-    "@comunica/bus-rdf-resolve-quad-pattern": "^1.19.2",
-    "@comunica/context-entries": "^1.0.0",
+    "@comunica/bus-rdf-resolve-quad-pattern": "^1.20.0",
+    "@comunica/context-entries": "^1.20.0",
     "asynciterator": "^3.1.0"
   },
   "peerDependencies": {
     "@comunica/core": "^1.0.0"
   },
   "devDependencies": {
-    "@comunica/core": "^1.19.2"
+    "@comunica/core": "^1.20.0"
   },
   "jest": {
     "globals": {
