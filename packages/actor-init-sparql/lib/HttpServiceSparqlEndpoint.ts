@@ -33,14 +33,15 @@ Usage:
   comunica-sparql-http -c context.json 
 
 Options:
-  -c            Context should be a JSON object or the path to such a JSON file.
-  -p            The HTTP port to run on (default: 3000)
-  -t            The query execution timeout in seconds (default: 60)
-  -w            The number of worker threads (default: 1)
+  -d            the destination for update queries
+  -c            context should be a JSON object or the path to such a JSON file.
+  -p            the HTTP port to run on (default: 3000)
+  -t            the query execution timeout in seconds (default: 60)
+  -w            the number of worker threads (default: 1)
   -b            base IRI for the query (e.g., http://example.org/)
   -l            Sets the log level (e.g., debug, info, warn, ... defaults to warn)
-  -i            A flag that enables cache invalidation before each query execution.
-  -u            Enable update queries (by default only read queries are enabled)
+  -i            a flag that enables cache invalidation before each query execution.
+  -u            enable update queries (by default only read queries are enabled)
   --lenient     if failing requests and parsing errors should be logged instead of causing a hard crash
   --help        print this help message
   --version     prints version information
