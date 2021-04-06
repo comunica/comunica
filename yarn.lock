@@ -9993,10 +9993,18 @@ rdf-quad@^1.4.0, rdf-quad@^1.5.0:
     rdf-literal "^1.2.0"
     rdf-string "^1.5.0"
 
-rdf-store-stream@^1.0.1, rdf-store-stream@^1.1.0:
+rdf-store-stream@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/rdf-store-stream/-/rdf-store-stream-1.1.0.tgz#218e23fcfc27c75f498416ee1a52986d5a9af4f4"
   integrity sha512-JWvQUv/1yja1TiEzhS1PTactSER9ORjM/6TV8z3KdGWpeQOs9TeUgLzx5PLXSRePFZ8GKNTkG5dD+wC6Yh3sbQ==
+  dependencies:
+    "@types/rdf-js" "*"
+    n3 "^1.6.3"
+
+rdf-store-stream@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/rdf-store-stream/-/rdf-store-stream-1.2.0.tgz#2d7c916cb1c52620cf42d172de11941ed5c12753"
+  integrity sha512-VpnXP+S90GmvZXKpmMEb8bwPFpeYIrL/tPGtTFumaYslbR/KYC68d2+QQZ4Mz63kptFw/uwnGcZ2budTFtJWqQ==
   dependencies:
     "@types/rdf-js" "*"
     n3 "^1.6.3"

@@ -1,8 +1,10 @@
+import { Readable } from 'stream';
 import { LinkQueueFifo } from '@comunica/actor-rdf-resolve-hypermedia-links-queue-fifo';
 import { ActionContext } from '@comunica/core';
 import { DataFactory } from 'rdf-data-factory';
 import { MediatedLinkedRdfSourcesAsyncRdfIterator } from '../lib/MediatedLinkedRdfSourcesAsyncRdfIterator';
 const DF = new DataFactory();
+const arrayifyStream = require('arrayify-stream');
 
 describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
   describe('A MediatedLinkedRdfSourcesAsyncRdfIterator instance', () => {
@@ -205,6 +207,19 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
           quads: 'QUADS(startUrl)',
           context: ActionContext({ a: 'b' }),
         });
+      });
+
+      it('should delegate dereference errors to the source', async() => {
+        const error = new Error('MediatedLinkedRdfSourcesAsyncRdfIterator dereference error');
+        mediatorRdfDereference.mediate = () => Promise.reject(error);
+        const ret = await source.getSource({ url: 'startUrl' }, {});
+        expect(ret).toEqual({
+          link: { url: 'startUrl' },
+          handledDatasets: { MYDATASET: true },
+          metadata: {},
+          source: { sourceContents: expect.any(Readable) },
+        });
+        await expect(arrayifyStream(ret.source.sourceContents)).rejects.toThrow(error);
       });
     });
   });

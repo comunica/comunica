@@ -34,7 +34,7 @@
     "@comunica/types": "^1.20.0",
     "@types/rdf-js": "*",
     "graphql-ld": "^1.2.0",
-    "rdf-store-stream": "^1.0.1",
+    "rdf-store-stream": "^1.2.0",
     "sparqlalgebrajs": "^2.5.5",
     "stream-to-string": "^1.2.0"
   },

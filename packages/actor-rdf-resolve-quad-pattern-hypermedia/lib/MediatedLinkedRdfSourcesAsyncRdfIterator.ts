@@ -1,3 +1,4 @@
+import { Readable } from 'stream';
 import type { IActionRdfDereference, IActorRdfDereferenceOutput } from '@comunica/bus-rdf-dereference';
 import type { IActionRdfMetadata, IActorRdfMetadataOutput } from '@comunica/bus-rdf-metadata';
 import type { IActionRdfMetadataExtract, IActorRdfMetadataExtractOutput } from '@comunica/bus-rdf-metadata-extract';
@@ -103,20 +104,34 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
 
     // Get the RDF representation of the given document
     let url = link.url;
-    const rdfDereferenceOutput: IActorRdfDereferenceOutput = await this.mediatorRdfDereference
-      .mediate({ context, url });
-    url = rdfDereferenceOutput.url;
+    let quads: RDF.Stream;
+    let metadata: Record<string, any>;
+    try {
+      const rdfDereferenceOutput: IActorRdfDereferenceOutput = await this.mediatorRdfDereference
+        .mediate({ context, url });
+      url = rdfDereferenceOutput.url;
 
-    // Determine the metadata
-    const rdfMetadataOuput: IActorRdfMetadataOutput = await this.mediatorMetadata.mediate(
-      { context, url, quads: rdfDereferenceOutput.quads, triples: rdfDereferenceOutput.triples },
-    );
-    const { metadata } = await this.mediatorMetadataExtract
-      .mediate({ context, url, metadata: rdfMetadataOuput.metadata });
+      // Determine the metadata
+      const rdfMetadataOuput: IActorRdfMetadataOutput = await this.mediatorMetadata.mediate(
+        { context, url, quads: rdfDereferenceOutput.quads, triples: rdfDereferenceOutput.triples },
+      );
+      metadata = (await this.mediatorMetadataExtract
+        .mediate({ context, url, metadata: rdfMetadataOuput.metadata })).metadata;
+      quads = rdfMetadataOuput.data;
 
-    // Optionally filter the resulting data
-    if (link.transform) {
-      rdfMetadataOuput.data = await link.transform(rdfMetadataOuput.data);
+      // Optionally filter the resulting data
+      if (link.transform) {
+        quads = await link.transform(quads);
+      }
+    } catch (error: unknown) {
+      // Make sure that dereference errors are only emitted once an actor really needs the read quads
+      // This for example allows SPARQL endpoints that error on service description fetching to still be source-forcible
+      quads = new Readable();
+      quads.read = () => {
+        quads.emit('error', error);
+        return null;
+      };
+      metadata = {};
     }
 
     // Determine the source
@@ -125,7 +140,7 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
       forceSourceType: this.forceSourceType,
       handledDatasets,
       metadata,
-      quads: rdfMetadataOuput.data,
+      quads,
       url,
     });
 
