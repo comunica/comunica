@@ -1,6 +1,5 @@
 /* eslint-disable unicorn/filename-case */
-import type { IActorContextPreprocessOutput } from '@comunica/bus-context-preprocess';
-import type { IActionContextPreprocess } from '@comunica/bus-context-preprocess';
+import type { IActorContextPreprocessOutput, IActionContextPreprocess } from '@comunica/bus-context-preprocess';
 import type { IActionHttpInvalidate, IActorHttpInvalidateOutput } from '@comunica/bus-http-invalidate';
 import type { IActionInit, IActorOutputInit } from '@comunica/bus-init';
 import { ActorInit } from '@comunica/bus-init';
