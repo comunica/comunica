@@ -30,6 +30,12 @@ function request(settings, func) {
         setImmediate(() => callback(new Error('Request Error!')));
       }
     },
+    once: (type, callback) => {
+      if (type === 'error' && options.error) {
+        setImmediate(() => callback(new Error('Request Error!')));
+      }
+    },
+    emit: () => {},
     end: () => {}
   }
 }

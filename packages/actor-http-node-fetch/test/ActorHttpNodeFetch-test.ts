@@ -170,6 +170,7 @@ describe('ActorHttpNodeFetch', () => {
       expect(spy).toHaveBeenCalledWith('Requesting https://www.google.com/', {
         actor: 'actor',
         headers: { a: 'b', 'user-agent': (<any> actor).userAgent },
+        method: 'GET',
       });
     });
 
@@ -183,6 +184,22 @@ describe('ActorHttpNodeFetch', () => {
       expect(spy).toHaveBeenCalledWith('Requesting https://www.google.com/', {
         actor: 'actor',
         headers: { 'user-agent': (<any> actor).userAgent },
+        method: 'GET',
+      });
+    });
+
+    it('should run with a logger with another another method', async() => {
+      const logger = new LoggerVoid();
+      const spy = spyOn(logger, 'info');
+      await actor.run({
+        input: <Request> { url: 'https://www.google.com/' },
+        init: { headers: new Headers({ a: 'b' }), method: 'POST' },
+        context: ActionContext({ [KeysCore.log]: logger }),
+      });
+      expect(spy).toHaveBeenCalledWith('Requesting https://www.google.com/', {
+        actor: 'actor',
+        headers: { a: 'b', 'user-agent': (<any> actor).userAgent },
+        method: 'POST',
       });
     });
 

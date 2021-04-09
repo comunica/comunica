@@ -4,6 +4,7 @@ import { Actor } from '@comunica/core';
 
 const isStream = require('is-stream');
 const toNodeReadable = require('web-streams-node').toNodeReadable;
+const toWebReadableStream = require('web-streams-node').toWebReadableStream;
 
 /**
  * A base actor for listening to HTTP events.
@@ -23,13 +24,22 @@ export abstract class ActorHttp extends Actor<IActionHttp, IActorTest, IActorHtt
   }
 
   /**
-   * Converts a WhatWG streams to Node streams if required.
+   * Converts WhatWG streams to Node streams if required.
    * Returns the input in case the stream already is a Node stream.
    * @param {ReadableStream} body
    * @returns {NodeJS.ReadableStream}
    */
   public static toNodeReadable(body: ReadableStream | null): NodeJS.ReadableStream {
     return isStream(body) ? body : toNodeReadable(body);
+  }
+
+  /**
+   * Converts Node streams to WhatWG streams.
+   * @param {NodeJS.ReadableStream} body
+   * @returns {ReadableStream}
+   */
+  public static toWebReadableStream(body: NodeJS.ReadableStream | null): ReadableStream {
+    return toWebReadableStream(body);
   }
 
   /**

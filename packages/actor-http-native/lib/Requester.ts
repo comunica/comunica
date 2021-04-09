@@ -7,6 +7,7 @@ import type { AgentOptions, ClientRequest, IncomingMessage, IncomingHttpHeaders 
 import * as url from 'url';
 import * as zlib from 'zlib';
 import 'cross-fetch/polyfill';
+import { ActorHttp } from '@comunica/bus-http';
 
 const { http } = require('follow-redirects');
 const { https } = require('follow-redirects');
@@ -44,7 +45,6 @@ export default class Requester {
       });
     }
     settings.headers = headersObject;
-
     const request: ClientRequest = requester.request(settings, (response: IncomingMessage) => {
       response = this.decode(response);
       settings.headers = response.headers;
@@ -54,7 +54,11 @@ export default class Requester {
       requestProxy.emit('response', response);
     });
     request.on('error', error => requestProxy.emit('error', error));
-    request.end();
+    if (settings.body) {
+      ActorHttp.toNodeReadable(settings.body).pipe(request);
+    } else {
+      request.end();
+    }
     return requestProxy;
   }
 
