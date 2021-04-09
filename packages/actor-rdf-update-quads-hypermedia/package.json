@@ -1,0 +1,74 @@
+{
+  "name": "@comunica/actor-rdf-update-quads-hypermedia",
+  "version": "1.0.0",
+  "description": "A hypermedia rdf-update-quads actor",
+  "lsd:module": true,
+  "main": "index.js",
+  "typings": "index",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/comunica/comunica.git",
+    "directory": "packages/actor-rdf-update-quads-hypermedia"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "comunica",
+    "actor",
+    "rdf-update-quads",
+    "hypermedia"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/comunica/comunica/issues"
+  },
+  "homepage": "https://comunica.dev/",
+  "files": [
+    "components",
+    "lib/**/*.d.ts",
+    "lib/**/*.js",
+    "index.d.ts",
+    "index.js"
+  ],
+  "dependencies": {
+    "@comunica/bus-rdf-dereference": "^1.20.0",
+    "@comunica/bus-rdf-metadata": "^1.20.0",
+    "@comunica/bus-rdf-metadata-extract": "^1.20.0",
+    "@comunica/bus-rdf-update-hypermedia": "^1.0.0",
+    "@types/lru-cache": "^5.1.0",
+    "lru-cache": "^6.0.0"
+  },
+  "peerDependencies": {
+    "@comunica/core": "^1.20.0",
+    "@comunica/bus-http-invalidate": "^1.20.0",
+    "@comunica/bus-rdf-update-quads": "^1.20.0"
+  },
+  "devDependencies": {
+    "@comunica/core": "^1.20.0",
+    "@comunica/bus-http-invalidate": "^1.20.0",
+    "@comunica/bus-rdf-update-quads": "^1.20.0"
+  },
+  "jest": {
+    "globals": {
+      "ts-jest": {
+        "tsConfig": "../../tsconfig.json"
+      }
+    },
+    "transform": {
+      "^.+\\.ts$": "ts-jest"
+    },
+    "testRegex": "(/test/.*|(\\.|/)(test|spec))\\.ts$",
+    "moduleFileExtensions": [
+      "ts",
+      "js"
+    ],
+    "collectCoverage": true
+  },
+  "scripts": {
+    "test": "node \"../../node_modules/jest/bin/jest.js\" ${1}",
+    "test-watch": "node \"../../node_modules/jest/bin/jest.js\" ${1} --watch",
+    "build": "node \"../../node_modules/typescript/bin/tsc\"",
+    "validate": "npm ls"
+  }
+}
