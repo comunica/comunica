@@ -1,5 +1,5 @@
 import type { IActionAbstractMediaTyped, IActorArgsMediaTyped,
-  IActorOutputAbstractMediaTyped, IActorTestAbstractMediaTyped } from '@comunica/actor-abstract-mediatyped';
+  IActorTestAbstractMediaTyped, IActorOutputAbstractMediaTypedHandle } from '@comunica/actor-abstract-mediatyped';
 import { ActorAbstractMediaTyped } from '@comunica/actor-abstract-mediatyped';
 import type { IAction, IActorOutput, IActorTest } from '@comunica/core';
 import type * as RDF from 'rdf-js';
@@ -24,7 +24,7 @@ export abstract class ActorRdfSerialize extends
 
 export type IActionRootRdfSerialize = IActionAbstractMediaTyped<IActionRdfSerialize>;
 export type IActorTestRootRdfSerialize = IActorTestAbstractMediaTyped<IActorTest>;
-export type IActorOutputRootRdfSerialize = IActorOutputAbstractMediaTyped<IActorRdfSerializeOutput>;
+export type IActorOutputRootRdfSerialize = IActorOutputAbstractMediaTypedHandle<IActorRdfSerializeOutput>;
 
 export interface IActionRdfSerialize extends IAction {
   /**

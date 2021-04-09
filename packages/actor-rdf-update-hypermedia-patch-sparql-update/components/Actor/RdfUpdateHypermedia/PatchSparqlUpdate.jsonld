@@ -1,0 +1,46 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-update-hypermedia-patch-sparql-update/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-update-hypermedia/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-rdf-update-hypermedia-patch-sparql-update",
+  "components": [
+    {
+      "@id": "caruhpsu:Actor/RdfUpdateHypermedia/PatchSparqlUpdate",
+      "@type": "Class",
+      "extends": "cbruh:Actor/RdfUpdateHypermedia",
+      "requireElement": "ActorRdfUpdateHypermediaPatchSparqlUpdate",
+      "comment": "A comunica Patch SPARQL Update RDF Update Hypermedia Actor.",
+      "parameters": [
+        {
+          "@id": "caruhpsu:Actor/RdfUpdateHypermedia/PatchSparqlUpdate#mediatorHttp",
+          "comment": "The HTTP mediator",
+          "required": true,
+          "unique": true
+        },
+        {
+          "@id": "caruhpsu:Actor/RdfUpdateHypermedia/PatchSparqlUpdate#mediatorRdfSerialize",
+          "comment": "The RDF Serialize mediator for handling serialization",
+          "required": true,
+          "unique": true
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "caruhpsu:Actor/RdfUpdateHypermedia/PatchSparqlUpdate/constructorArgumentsObject",
+          "extends": "cbruh:Actor/RdfUpdateHypermedia/constructorArgumentsObject",
+          "fields": [
+            {
+              "keyRaw": "mediatorHttp",
+              "value": "caruhpsu:Actor/RdfUpdateHypermedia/PatchSparqlUpdate#mediatorHttp"
+            },
+            {
+              "keyRaw": "mediatorRdfSerialize",
+              "value": "caruhpsu:Actor/RdfUpdateHypermedia/PatchSparqlUpdate#mediatorRdfSerialize"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
