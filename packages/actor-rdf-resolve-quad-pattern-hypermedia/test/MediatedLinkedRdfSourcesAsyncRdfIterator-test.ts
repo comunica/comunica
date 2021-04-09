@@ -28,7 +28,12 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
       o = DF.namedNode('o');
       g = DF.namedNode('g');
       mediatorRdfDereference = {
-        mediate: jest.fn(({ url }: any) => Promise.resolve({ url, quads: `QUADS(${url})+METADATA`, triples: true })),
+        mediate: jest.fn(({ url }: any) => Promise.resolve({
+          url,
+          quads: `QUADS(${url})+METADATA`,
+          triples: true,
+          headers: 'HEADERS',
+        })),
       };
       mediatorMetadata = {
         mediate: jest.fn(({ quads }: any) => Promise
@@ -198,6 +203,7 @@ describe('MediatedLinkedRdfSourcesAsyncRdfIterator', () => {
           url: 'startUrl',
           metadata: 'METADATA',
           context: ActionContext({ a: 'b' }),
+          headers: 'HEADERS',
         });
         expect(mediatorRdfResolveHypermedia.mediate).toHaveBeenCalledWith({
           url: 'startUrl',
