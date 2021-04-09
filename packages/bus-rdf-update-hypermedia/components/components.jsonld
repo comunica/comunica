@@ -1,0 +1,10 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-update-hypermedia/^1.0.0/components/context.jsonld",
+  "@id": "npmd:@comunica/bus-rdf-update-hypermedia",
+  "@type": "Module",
+  "requireName": "@comunica/bus-rdf-update-hypermedia",
+  "import": [
+    "files-cbruh:components/Bus/RdfUpdateHypermedia.jsonld",
+    "files-cbruh:components/Actor/RdfUpdateHypermedia.jsonld"
+  ]
+}
