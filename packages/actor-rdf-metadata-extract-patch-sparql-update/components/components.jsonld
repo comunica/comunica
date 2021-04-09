@@ -1,0 +1,9 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-metadata-extract-patch-sparql-update/^1.0.0/components/context.jsonld",
+  "@id": "npmd:@comunica/actor-rdf-metadata-extract-patch-sparql-update",
+  "@type": "Module",
+  "requireName": "@comunica/actor-rdf-metadata-extract-patch-sparql-update",
+  "import": [
+    "files-carmepsu:components/Actor/RdfMetadataExtract/PatchSparqlUpdate.jsonld"
+  ]
+}
