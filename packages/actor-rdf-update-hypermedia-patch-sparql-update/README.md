@@ -30,9 +30,20 @@ After installing, this package can be added to your engine's configuration as fo
   "actors": [
     ...
     {
-      "@id": "config-sets:resolve-hypermedia.json#myRdfMetadataExtractPatchSparqlUpdate",
-      "@type": "ActorRdfUpdateHypermediaPatchSparqlUpdate"
+      "@id": "config-sets:rdf-update-rdfjs.json#myRdfUpdateHypermediaPatchSparqlUpdate",
+      "@type": "ActorRdfUpdateHypermediaPatchSparqlUpdate",
+      "caruhpsu:Actor/RdfUpdateHypermedia/PatchSparqlUpdate#mediatorHttp": {
+        "@id": "config-sets:http.json#mediatorHttp"
+      },
+      "caruhpsu:Actor/RdfUpdateHypermedia/PatchSparqlUpdate#mediatorRdfSerialize": {
+        "@id": "config-sets:sparql-serializers.json#mediatorRdfSerialize"
+      }
     }
   ]
 }
 ```
+
+### Config Parameters
+
+* `caruhpsu:Actor/RdfUpdateHypermedia/PatchSparqlUpdate#mediatorHttp`: A mediator over the [HTTP bus](https://github.com/comunica/comunica/tree/master/packages/bus-http).
+* `caruhpsu:Actor/RdfUpdateHypermedia/PatchSparqlUpdate#mediatorRdfSerialize`: A mediator over the [RDF serialize bus](https://github.com/comunica/comunica/tree/master/packages/bus-rdf-serialize).

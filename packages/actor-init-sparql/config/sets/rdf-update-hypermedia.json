@@ -1,0 +1,52 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-init-sparql/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/runner/^1.0.0/components/context.jsonld",
+
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-update-quads/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-update-quads-hypermedia/^1.0.0/components/context.jsonld",
+
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-metadata-extract-patch-sparql-update/^1.0.0/components/context.jsonld",
+
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-update-hypermedia/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-update-hypermedia-patch-sparql-update/^1.0.0/components/context.jsonld",
+
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-race/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "urn:comunica:my",
+  "actors": [
+    {
+      "@id": "config-sets:rdf-update-rdfjs.json#myRdfUpdateQuadsHypermedia",
+      "@type": "ActorRdfUpdateQuadsHypermedia",
+      "caruqh:Actor/RdfUpdateQuads/Hypermedia/mediatorRdfDereference": {
+        "@id": "config-sets:resolve-hypermedia.json#mediatorRdfDereference"
+      },
+      "caruqh:Actor/RdfUpdateQuads/Hypermedia/mediatorMetadata": {
+        "@id": "config-sets:resolve-hypermedia.json#mediatorMetadata"
+      },
+      "caruqh:Actor/RdfUpdateQuads/Hypermedia/mediatorMetadataExtract": {
+        "@id": "config-sets:resolve-hypermedia.json#mediatorMetadataExtract"
+      },
+      "caruqh:Actor/RdfUpdateQuads/Hypermedia/mediatorRdfUpdateHypermedia": {
+        "@id": "config-sets:rdf-update-rdfjs.json#mediatorRdfUpdateHypermedia",
+        "@type": "MediatorRace",
+        "cc:Mediator/bus": { "@id": "cbruh:Bus/RdfUpdateHypermedia" }
+      }
+    },
+
+    {
+      "@id": "config-sets:resolve-hypermedia.json#myRdfMetadataExtractPatchSparqlUpdate",
+      "@type": "ActorRdfMetadataExtractPatchSparqlUpdate"
+    },
+    {
+      "@id": "config-sets:rdf-update-rdfjs.json#myRdfUpdateHypermediaPatchSparqlUpdate",
+      "@type": "ActorRdfUpdateHypermediaPatchSparqlUpdate",
+      "caruhpsu:Actor/RdfUpdateHypermedia/PatchSparqlUpdate#mediatorHttp": {
+        "@id": "config-sets:http.json#mediatorHttp"
+      },
+      "caruhpsu:Actor/RdfUpdateHypermedia/PatchSparqlUpdate#mediatorRdfSerialize": {
+        "@id": "config-sets:sparql-serializers.json#mediatorRdfSerialize"
+      }
+    }
+  ]
+}
