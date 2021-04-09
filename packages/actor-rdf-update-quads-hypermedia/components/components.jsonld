@@ -1,0 +1,9 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-update-quads-hypermedia/^1.0.0/components/context.jsonld",
+  "@id": "npmd:@comunica/actor-rdf-update-quads-hypermedia",
+  "@type": "Module",
+  "requireName": "@comunica/actor-rdf-update-quads-hypermedia",
+  "import": [
+    "files-caruqh:components/Actor/RdfUpdateQuads/Hypermedia.jsonld"
+  ]
+}
