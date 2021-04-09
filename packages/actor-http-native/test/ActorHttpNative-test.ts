@@ -220,7 +220,22 @@ describe('ActorHttpNative', () => {
       expect(spy).toHaveBeenCalledWith('Requesting http://example.com/', {
         actor: 'actor',
         headers: { a: 'b', 'user-agent': (<any> actor).userAgent },
+        method: 'GET',
       });
+    });
+
+    it('should throw when the given body via input', async() => {
+      await expect(actor.run(
+        { input: new Request('http://example.com', { body: new ReadableStream(), method: 'POST' }) },
+      )).rejects.toThrow(new Error('ActorHttpNative does not support passing body via input, use init instead.'));
+    });
+
+    it('should send the given body via init', async() => {
+      mockSetup({ statusCode: 200 });
+      const result: any = await actor.run(
+        { input: new Request('http://example.com'), init: { body: new ReadableStream(), method: 'POST' }},
+      );
+      expect(result).toMatchObject({ status: 200 });
     });
   });
 });

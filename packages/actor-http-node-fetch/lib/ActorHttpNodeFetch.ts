@@ -45,6 +45,7 @@ export class ActorHttpNodeFetch extends ActorHttp {
       action.input :
       action.input.url}`, () => ({
       headers: ActorHttp.headersToHash(new Headers(action.init!.headers)),
+      method: action.init!.method || 'GET',
     }));
 
     // Perform request

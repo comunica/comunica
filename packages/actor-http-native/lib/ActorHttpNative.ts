@@ -45,8 +45,12 @@ export class ActorHttpNative extends ActorHttp {
     if (action.init) {
       Object.assign(options, action.init);
       options.headers = new Headers(action.init.headers);
+      options.body = action.init.body;
     } else {
       options.headers = (<Request>action.input).headers;
+      if ((<Request>action.input).body) {
+        throw new Error(`ActorHttpNative does not support passing body via input, use init instead.`);
+      }
     }
 
     if (!options.headers) {
@@ -67,6 +71,7 @@ export class ActorHttpNative extends ActorHttp {
 
     this.logInfo(action.context, `Requesting ${options.url}`, () => ({
       headers: ActorHttp.headersToHash(options.headers),
+      method: options.method,
     }));
 
     // Not all options are supported

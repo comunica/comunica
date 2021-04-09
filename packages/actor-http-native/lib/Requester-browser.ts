@@ -93,7 +93,14 @@ export default class Requester {
     };
 
     // Execute the request
-    request.send();
+    if (settings.body) {
+      settings.body.blob()
+        .then((blob: any) => request.send(blob))
+        .catch((error: Error) => requestProxy.emit('error', error));
+    } else {
+      request.send();
+    }
+
     return requestProxy;
   }
 
