@@ -29,6 +29,10 @@ export interface IActionRdfMetadataExtract extends IAction {
    * The resulting quad data stream.
    */
   metadata: RDF.Stream;
+  /**
+   * The headers of the page.
+   */
+  headers?: Record<string, string>;
 }
 
 export interface IActorRdfMetadataExtractOutput extends IActorOutput {

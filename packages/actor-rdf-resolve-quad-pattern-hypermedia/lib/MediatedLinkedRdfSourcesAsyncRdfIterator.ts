@@ -115,8 +115,12 @@ export class MediatedLinkedRdfSourcesAsyncRdfIterator extends LinkedRdfSourcesAs
       const rdfMetadataOuput: IActorRdfMetadataOutput = await this.mediatorMetadata.mediate(
         { context, url, quads: rdfDereferenceOutput.quads, triples: rdfDereferenceOutput.triples },
       );
-      metadata = (await this.mediatorMetadataExtract
-        .mediate({ context, url, metadata: rdfMetadataOuput.metadata })).metadata;
+      metadata = (await this.mediatorMetadataExtract.mediate({
+        context,
+        url,
+        metadata: rdfMetadataOuput.metadata,
+        headers: rdfDereferenceOutput.headers,
+      })).metadata;
       quads = rdfMetadataOuput.data;
 
       // Optionally filter the resulting data
