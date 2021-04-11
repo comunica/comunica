@@ -27,7 +27,7 @@ export class ActorHttpInvalidateListenable extends ActorHttpInvalidate {
     for (const listener of this.invalidateListeners) {
       listener(action);
     }
-    return true;
+    return {};
   }
 }
 

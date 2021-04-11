@@ -222,5 +222,5 @@ export interface IActorTest {
  * Data interface for the type of an actor run result.
  */
 export interface IActorOutput {
-
+  context?: ActionContext;
 }
