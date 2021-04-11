@@ -621,6 +621,24 @@ describe('ActorInitSparql', () => {
             '@comunica/actor-init-sparql:baseIRI': 'myBaseIRI',
           });
       });
+
+      it('should allow optimize actors to modify the context', async() => {
+        const optimizeMediate = mediatorOptimizeQueryOperation.mediate;
+        mediatorOptimizeQueryOperation.mediate = (action: any) => {
+          action = {
+            ...action,
+            context: action.context.set('the-answer', 42),
+          };
+          return optimizeMediate(action);
+        };
+        const queryMediate = mediatorQueryOperation.mediate;
+        mediatorQueryOperation.mediate = (action: any) => {
+          expect(action.context.get('the-answer')).toBe(42);
+          return queryMediate(action);
+        };
+        await expect(actor.query('SELECT * WHERE { ?s ?p ?o }'))
+          .resolves.toBeTruthy();
+      });
     });
 
     it('bindings() should collect all bindings until "end" event occurs on triples', async() => {
