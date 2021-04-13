@@ -781,7 +781,7 @@ graph <exists02.ttl> {
       expect(spy.mock.calls[0][1]['@comunica/actor-init-sparql:lenient']).toBeTruthy();
     });
 
-    it('should set the destination with the -d option', async() => {
+    it('should set the destination with the --to option', async() => {
       actor = new ActorInitSparql(
         { bus,
           contextKeyShortcuts,
@@ -799,7 +799,7 @@ graph <exists02.ttl> {
       );
       const spy = jest.spyOn(actor, 'query');
       expect(await actor.run({
-        argv: [ hypermedia, queryString, '-d', 'http://target.com/' ],
+        argv: [ hypermedia, queryString, '--to', 'http://target.com/' ],
         env: {},
         stdin: new PassThrough(),
       })).toBeTruthy();
