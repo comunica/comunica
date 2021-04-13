@@ -623,21 +623,15 @@ describe('ActorInitSparql', () => {
       });
 
       it('should allow optimize actors to modify the context', async() => {
-        const optimizeMediate = mediatorOptimizeQueryOperation.mediate;
         mediatorOptimizeQueryOperation.mediate = (action: any) => {
-          action = {
+          return Promise.resolve({
             ...action,
             context: action.context.set('the-answer', 42),
-          };
-          return optimizeMediate(action);
+          });
         };
-        const queryMediate = mediatorQueryOperation.mediate;
-        mediatorQueryOperation.mediate = (action: any) => {
-          expect(action.context.get('the-answer')).toBe(42);
-          return queryMediate(action);
-        };
-        await expect(actor.query('SELECT * WHERE { ?s ?p ?o }'))
-          .resolves.toBeTruthy();
+        const result = await actor.query('SELECT * WHERE { ?s ?p ?o }');
+        expect(result).toHaveProperty('context');
+        expect(result.context!.get('the-answer')).toEqual(42);
       });
     });
 
