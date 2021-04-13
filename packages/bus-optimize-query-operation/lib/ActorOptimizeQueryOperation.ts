@@ -1,5 +1,6 @@
 import type { IAction, IActorArgs, IActorOutput, IActorTest } from '@comunica/core';
 import { Actor } from '@comunica/core';
+import type { ActionContext } from '@comunica/types';
 import type { Algebra } from 'sparqlalgebrajs';
 
 /**
@@ -26,4 +27,5 @@ export interface IActionOptimizeQueryOperation extends IAction {
 
 export interface IActorOptimizeQueryOperationOutput extends IActorOutput {
   operation: Algebra.Operation;
+  context?: ActionContext;
 }
