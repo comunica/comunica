@@ -105,7 +105,7 @@ describe('QuadDestinationPatchSparqlUpdate', () => {
 
   describe('createGraph', () => {
     it('should always throw', async() => {
-      await expect(destination.createGraph(DF.namedNode('a'), true))
+      await expect(destination.createGraphs([ DF.namedNode('a') ], true))
         .rejects.toThrow(`Patch-based SPARQL Update destinations don't support named graphs`);
     });
   });

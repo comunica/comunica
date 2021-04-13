@@ -26,8 +26,8 @@ export class ActorQueryOperationCreate extends ActorQueryOperationTypedMediated<
   Promise<IActorQueryOperationOutput> {
     // Delegate to update-quads bus
     const { updateResult } = await this.mediatorUpdateQuads.mediate({
-      createGraph: {
-        graph: pattern.source,
+      createGraphs: {
+        graphs: [ pattern.source ],
         requireNonExistence: !pattern.silent,
       },
       context,

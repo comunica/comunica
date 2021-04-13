@@ -34,7 +34,7 @@ export class RdfJsQuadDestination implements IQuadDestination {
   }
 
   public async deleteGraphs(
-    graphs: RDF.DefaultGraph | 'NAMED' | 'ALL' | RDF.NamedNode,
+    graphs: RDF.DefaultGraph | 'NAMED' | 'ALL' | RDF.NamedNode[],
     requireExistence: boolean,
     dropGraphs: boolean,
   ): Promise<void> {
@@ -63,25 +63,27 @@ export class RdfJsQuadDestination implements IQuadDestination {
         break;
       default:
         // Delete the default graph or a named graph
-        return await this.promisifyEventEmitter(this.store.deleteGraph(graphs));
+        for (const graph of Array.isArray(graphs) ? graphs : [ graphs ]) {
+          await this.promisifyEventEmitter(this.store.deleteGraph(graph));
+        }
     }
   }
 
-  public createGraph(graph: RDF.NamedNode, requireNonExistence: boolean): Promise<void> {
+  public async createGraphs(graphs: RDF.NamedNode[], requireNonExistence: boolean): Promise<void> {
     // We don't have to create anything, since RDF/JS stores don't record empty graphs.
 
     // The only check we have to do is error on existence
     if (requireNonExistence) {
-      const eventEmitter = this.store.match(undefined, undefined, undefined, graph);
-      return new Promise<void>((resolve, reject) => {
-        eventEmitter.once('data', () => {
-          reject(new Error(`Unable to create graph ${graph.value} as it already exists`));
+      for (const graph of graphs) {
+        const eventEmitter = this.store.match(undefined, undefined, undefined, graph);
+        await new Promise<void>((resolve, reject) => {
+          eventEmitter.once('data', () => {
+            reject(new Error(`Unable to create graph ${graph.value} as it already exists`));
+          });
+          eventEmitter.on('end', resolve);
+          eventEmitter.on('error', reject);
         });
-        eventEmitter.on('end', resolve);
-        eventEmitter.on('error', reject);
-      });
+      }
     }
-
-    return Promise.resolve();
   }
 }

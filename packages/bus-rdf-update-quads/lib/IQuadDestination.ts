@@ -20,23 +20,23 @@ export interface IQuadDestination {
   /**
    * Graphs that should be deleted.
    * @param graphs The graph(s) in which all triples must be removed.
-   * @param requireExistence If true, and the graph does not exist, an error must be emitted.
+   * @param requireExistence If true, and any of the graphs does not exist, an error must be emitted.
    *                         Should only be considered on destinations that record empty graphs.
-   * @param dropGraphs If the graph itself should also be dropped.
+   * @param dropGraphs If the graphs themselves should also be dropped.
    *                   Should not happen on the 'DEFAULT' graph.
    *                   Should only be considered on destinations that record empty graphs.
    */
   deleteGraphs: (
-    graphs: RDF.DefaultGraph | 'NAMED' | 'ALL' | RDF.NamedNode,
+    graphs: RDF.DefaultGraph | 'NAMED' | 'ALL' | RDF.NamedNode[],
     requireExistence: boolean,
     dropGraphs: boolean,
   ) => Promise<void>;
   /**
-   * Create the given (empty) graph.
-   * @param graph The graph name to create.
-   * @param requireNonExistence If true, an error MUST be thrown when the graph already exists.
+   * Create the given (empty) graphs.
+   * @param graphs The graph names to create.
+   * @param requireNonExistence If true, an error MUST be thrown when any of the graph already exists.
    *                            For destinations that do not record empty graphs,
    *                            this should only throw if at least one quad with the given quad already exists.
    */
-  createGraph: (graph: RDF.NamedNode, requireNonExistence: boolean) => Promise<void>;
+  createGraphs: (graphs: RDF.NamedNode[], requireNonExistence: boolean) => Promise<void>;
 }

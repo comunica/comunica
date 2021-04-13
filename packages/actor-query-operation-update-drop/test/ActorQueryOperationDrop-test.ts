@@ -124,7 +124,7 @@ describe('ActorQueryOperationDrop', () => {
       expect(output.type).toEqual('update');
       await expect(output.updateResult).resolves.toBeUndefined();
       expect(mediatorUpdateQuads.mediate.mock.calls[0][0].deleteGraphs).toEqual({
-        graphs: DF.namedNode('g1'),
+        graphs: [ DF.namedNode('g1') ],
         requireExistence: true,
         dropGraphs: true,
       });

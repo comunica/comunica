@@ -54,8 +54,8 @@ describe('ActorQueryOperationCreate', () => {
       const output = <IActorQueryOperationOutputUpdate> await actor.run(op);
       expect(output.type).toEqual('update');
       await expect(output.updateResult).resolves.toBeUndefined();
-      expect(mediatorUpdateQuads.mediate.mock.calls[0][0].createGraph).toEqual({
-        graph: DF.namedNode('g1'),
+      expect(mediatorUpdateQuads.mediate.mock.calls[0][0].createGraphs).toEqual({
+        graphs: [ DF.namedNode('g1') ],
         requireNonExistence: true,
       });
     });
@@ -71,8 +71,8 @@ describe('ActorQueryOperationCreate', () => {
       const output = <IActorQueryOperationOutputUpdate> await actor.run(op);
       expect(output.type).toEqual('update');
       await expect(output.updateResult).resolves.toBeUndefined();
-      expect(mediatorUpdateQuads.mediate.mock.calls[0][0].createGraph).toEqual({
-        graph: DF.namedNode('g1'),
+      expect(mediatorUpdateQuads.mediate.mock.calls[0][0].createGraphs).toEqual({
+        graphs: [ DF.namedNode('g1') ],
         requireNonExistence: false,
       });
     });

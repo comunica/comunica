@@ -98,7 +98,7 @@ export interface IActionRdfUpdateQuads extends IAction {
     /**
      * The graph(s) in which all triples must be removed.
      */
-    graphs: RDF.DefaultGraph | 'NAMED' | 'ALL' | RDF.NamedNode;
+    graphs: RDF.DefaultGraph | 'NAMED' | 'ALL' | RDF.NamedNode[];
     /**
      * If true, and the graph does not exist, an error must be emitted.
      *
@@ -114,13 +114,13 @@ export interface IActionRdfUpdateQuads extends IAction {
     dropGraphs: boolean;
   };
   /**
-   * An optional creation of a (empty) graph.
+   * An optional creation of (empty) graphs.
    */
-  createGraph?: {
+  createGraphs?: {
     /**
-     * The graph name to create.
+     * The graph names to create.
      */
-    graph: RDF.NamedNode;
+    graphs: RDF.NamedNode[];
     /**
      * If true, an error MUST be thrown when the graph already exists.
      *

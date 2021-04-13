@@ -89,14 +89,14 @@ export class QuadDestinationPatchSparqlUpdate implements IQuadDestination {
   }
 
   public async deleteGraphs(
-    graphs: RDF.DefaultGraph | 'NAMED' | 'ALL' | RDF.NamedNode,
+    graphs: RDF.DefaultGraph | 'NAMED' | 'ALL' | RDF.NamedNode[],
     requireExistence: boolean,
     dropGraphs: boolean,
   ): Promise<void> {
     throw new Error(`Patch-based SPARQL Update destinations don't support named graphs`);
   }
 
-  public async createGraph(graph: RDF.NamedNode, requireNonExistence: boolean): Promise<void> {
+  public async createGraphs(graphs: RDF.NamedNode[], requireNonExistence: boolean): Promise<void> {
     throw new Error(`Patch-based SPARQL Update destinations don't support named graphs`);
   }
 }

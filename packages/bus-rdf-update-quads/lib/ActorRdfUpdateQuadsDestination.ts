@@ -40,8 +40,8 @@ export abstract class ActorRdfUpdateQuadsDestination extends ActorRdfUpdateQuads
           action.deleteGraphs.dropGraphs,
         ) :
         Promise.resolve(),
-      action.createGraph ?
-        destination.createGraph(action.createGraph.graph, action.createGraph.requireNonExistence) :
+      action.createGraphs ?
+        destination.createGraphs(action.createGraphs.graphs, action.createGraphs.requireNonExistence) :
         Promise.resolve(),
     ]).then(() => {
       // Return void

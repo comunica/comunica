@@ -4,6 +4,7 @@ import { ActorQueryOperation, ActorQueryOperationTypedMediated } from '@comunica
 import type { IActionRdfUpdateQuads, IActorRdfUpdateQuadsOutput } from '@comunica/bus-rdf-update-quads';
 import type { ActionContext, Actor, IActorTest, Mediator } from '@comunica/core';
 import { DataFactory } from 'rdf-data-factory';
+import type * as RDF from 'rdf-js';
 import type { Algebra } from 'sparqlalgebrajs';
 
 const DF = new DataFactory();
@@ -28,9 +29,17 @@ export class ActorQueryOperationDrop extends ActorQueryOperationTypedMediated<Al
   public async runOperation(pattern: Algebra.Drop, context: ActionContext):
   Promise<IActorQueryOperationOutput> {
     // Delegate to update-quads bus
+    let graphs: RDF.DefaultGraph | 'NAMED' | 'ALL' | RDF.NamedNode[];
+    if (pattern.source === 'DEFAULT') {
+      graphs = DF.defaultGraph();
+    } else if (typeof pattern.source === 'string') {
+      graphs = pattern.source;
+    } else {
+      graphs = [ pattern.source ];
+    }
     const { updateResult } = await this.mediatorUpdateQuads.mediate({
       deleteGraphs: {
-        graphs: pattern.source === 'DEFAULT' ? DF.defaultGraph() : pattern.source,
+        graphs,
         requireExistence: !pattern.silent,
         dropGraphs: true,
       },
