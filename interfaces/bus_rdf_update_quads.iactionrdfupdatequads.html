@@ -89,7 +89,7 @@
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="bus_rdf_update_quads.iactionrdfupdatequads.html#context" class="tsd-kind-icon">context</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="bus_rdf_update_quads.iactionrdfupdatequads.html#creategraph" class="tsd-kind-icon">create<wbr>Graph</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="bus_rdf_update_quads.iactionrdfupdatequads.html#creategraphs" class="tsd-kind-icon">create<wbr>Graphs</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="bus_rdf_update_quads.iactionrdfupdatequads.html#deletegraphs" class="tsd-kind-icon">delete<wbr>Graphs</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="bus_rdf_update_quads.iactionrdfupdatequads.html#quadstreamdelete" class="tsd-kind-icon">quad<wbr>Stream<wbr>Delete</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="bus_rdf_update_quads.iactionrdfupdatequads.html#quadstreaminsert" class="tsd-kind-icon">quad<wbr>Stream<wbr>Insert</a></li>
@@ -107,7 +107,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from IAction.context</p>
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/c31b0d0/packages/types/index.ts#L149">packages/types/index.ts:149</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/e695c5e/packages/types/index.ts#L149">packages/types/index.ts:149</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -117,27 +117,27 @@
 					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="creategraph" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagOptional">Optional</span> create<wbr>Graph</h3>
-					<div class="tsd-signature tsd-kind-icon">create<wbr>Graph<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>graph<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">NamedNode</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">; </span>requireNonExistence<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> }</span></div>
+					<a name="creategraphs" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> create<wbr>Graphs</h3>
+					<div class="tsd-signature tsd-kind-icon">create<wbr>Graphs<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>graphs<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">NamedNode</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span>requireNonExistence<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/c31b0d0/packages/bus-rdf-update-quads/lib/ActorRdfUpdateQuads.ts#L119">packages/bus-rdf-update-quads/lib/ActorRdfUpdateQuads.ts:119</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/e695c5e/packages/bus-rdf-update-quads/lib/ActorRdfUpdateQuads.ts#L119">packages/bus-rdf-update-quads/lib/ActorRdfUpdateQuads.ts:119</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>An optional creation of a (empty) graph.</p>
+							<p>An optional creation of (empty) graphs.</p>
 						</div>
 					</div>
 					<div class="tsd-type-declaration">
 						<h4>Type declaration</h4>
 						<ul class="tsd-parameters">
 							<li class="tsd-parameter">
-								<h5>graph<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">NamedNode</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></h5>
+								<h5>graphs<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">NamedNode</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[]</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
-										<p>The graph name to create.</p>
+										<p>The graph names to create.</p>
 									</div>
 								</div>
 							</li>
@@ -157,10 +157,10 @@
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="deletegraphs" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagOptional">Optional</span> delete<wbr>Graphs</h3>
-					<div class="tsd-signature tsd-kind-icon">delete<wbr>Graphs<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>dropGraphs<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>graphs<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">DefaultGraph</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">NamedNode</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;NAMED&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;ALL&quot;</span><span class="tsd-signature-symbol">; </span>requireExistence<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> }</span></div>
+					<div class="tsd-signature tsd-kind-icon">delete<wbr>Graphs<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{ </span>dropGraphs<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>graphs<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">DefaultGraph</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;NAMED&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;ALL&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">NamedNode</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">; </span>requireExistence<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> }</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/c31b0d0/packages/bus-rdf-update-quads/lib/ActorRdfUpdateQuads.ts#L97">packages/bus-rdf-update-quads/lib/ActorRdfUpdateQuads.ts:97</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/e695c5e/packages/bus-rdf-update-quads/lib/ActorRdfUpdateQuads.ts#L97">packages/bus-rdf-update-quads/lib/ActorRdfUpdateQuads.ts:97</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -182,7 +182,7 @@
 								</div>
 							</li>
 							<li class="tsd-parameter">
-								<h5>graphs<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">DefaultGraph</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">NamedNode</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;NAMED&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;ALL&quot;</span></h5>
+								<h5>graphs<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">DefaultGraph</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;NAMED&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;ALL&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">NamedNode</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[]</span></h5>
 								<div class="tsd-comment tsd-typography">
 									<div class="lead">
 										<p>The graph(s) in which all triples must be removed.</p>
@@ -207,7 +207,7 @@
 					<div class="tsd-signature tsd-kind-icon">quad<wbr>Stream<wbr>Delete<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">AsyncIterator</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/c31b0d0/packages/bus-rdf-update-quads/lib/ActorRdfUpdateQuads.ts#L93">packages/bus-rdf-update-quads/lib/ActorRdfUpdateQuads.ts:93</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/e695c5e/packages/bus-rdf-update-quads/lib/ActorRdfUpdateQuads.ts#L93">packages/bus-rdf-update-quads/lib/ActorRdfUpdateQuads.ts:93</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -222,7 +222,7 @@
 					<div class="tsd-signature tsd-kind-icon">quad<wbr>Stream<wbr>Insert<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">AsyncIterator</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/c31b0d0/packages/bus-rdf-update-quads/lib/ActorRdfUpdateQuads.ts#L89">packages/bus-rdf-update-quads/lib/ActorRdfUpdateQuads.ts:89</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/e695c5e/packages/bus-rdf-update-quads/lib/ActorRdfUpdateQuads.ts#L89">packages/bus-rdf-update-quads/lib/ActorRdfUpdateQuads.ts:89</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -264,7 +264,7 @@
 										<a href="bus_rdf_update_quads.iactionrdfupdatequads.html#context" class="tsd-kind-icon">context</a>
 									</li>
 									<li class=" tsd-kind-property tsd-parent-kind-interface">
-										<a href="bus_rdf_update_quads.iactionrdfupdatequads.html#creategraph" class="tsd-kind-icon">create<wbr>Graph</a>
+										<a href="bus_rdf_update_quads.iactionrdfupdatequads.html#creategraphs" class="tsd-kind-icon">create<wbr>Graphs</a>
 									</li>
 									<li class=" tsd-kind-property tsd-parent-kind-interface">
 										<a href="bus_rdf_update_quads.iactionrdfupdatequads.html#deletegraphs" class="tsd-kind-icon">delete<wbr>Graphs</a>

@@ -97,7 +97,7 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="bus_rdf_update_quads.iquaddestination.html#creategraph" class="tsd-kind-icon">create<wbr>Graph</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="bus_rdf_update_quads.iquaddestination.html#creategraphs" class="tsd-kind-icon">create<wbr>Graphs</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="bus_rdf_update_quads.iquaddestination.html#delete" class="tsd-kind-icon">delete</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="bus_rdf_update_quads.iquaddestination.html#deletegraphs" class="tsd-kind-icon">delete<wbr>Graphs</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="bus_rdf_update_quads.iquaddestination.html#insert" class="tsd-kind-icon">insert</a></li>
@@ -109,24 +109,24 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="creategraph" class="tsd-anchor"></a>
-					<h3>create<wbr>Graph</h3>
-					<div class="tsd-signature tsd-kind-icon">create<wbr>Graph<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>graph<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">NamedNode</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span>, requireNonExistence<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></div>
+					<a name="creategraphs" class="tsd-anchor"></a>
+					<h3>create<wbr>Graphs</h3>
+					<div class="tsd-signature tsd-kind-icon">create<wbr>Graphs<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>graphs<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">NamedNode</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[]</span>, requireNonExistence<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/c31b0d0/packages/bus-rdf-update-quads/lib/IQuadDestination.ts#L41">packages/bus-rdf-update-quads/lib/IQuadDestination.ts:41</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/e695c5e/packages/bus-rdf-update-quads/lib/IQuadDestination.ts#L41">packages/bus-rdf-update-quads/lib/IQuadDestination.ts:41</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
 						<div class="lead">
-							<p>Create the given (empty) graph.</p>
+							<p>Create the given (empty) graphs.</p>
 						</div>
 						<dl class="tsd-comment-tags">
 							<dt>param</dt>
-							<dd><p>The graph name to create.</p>
+							<dd><p>The graph names to create.</p>
 							</dd>
 							<dt>param</dt>
-							<dd><p>If true, an error MUST be thrown when the graph already exists.
+							<dd><p>If true, an error MUST be thrown when any of the graph already exists.
 									For destinations that do not record empty graphs,
 								this should only throw if at least one quad with the given quad already exists.</p>
 							</dd>
@@ -137,14 +137,14 @@
 						<ul class="tsd-parameters">
 							<li class="tsd-parameter-signature">
 								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-interface">
-									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>graph<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">NamedNode</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span>, requireNonExistence<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>graphs<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">NamedNode</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[]</span>, requireNonExistence<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
 								</ul>
 								<ul class="tsd-descriptions">
 									<li class="tsd-description">
 										<h4 class="tsd-parameters-title">Parameters</h4>
 										<ul class="tsd-parameters">
 											<li>
-												<h5>graph: <span class="tsd-signature-type">NamedNode</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></h5>
+												<h5>graphs: <span class="tsd-signature-type">NamedNode</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[]</span></h5>
 											</li>
 											<li>
 												<h5>requireNonExistence: <span class="tsd-signature-type">boolean</span></h5>
@@ -163,7 +163,7 @@
 					<div class="tsd-signature tsd-kind-icon">delete<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>quads<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">AsyncIterator</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/c31b0d0/packages/bus-rdf-update-quads/lib/IQuadDestination.ts#L19">packages/bus-rdf-update-quads/lib/IQuadDestination.ts:19</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/e695c5e/packages/bus-rdf-update-quads/lib/IQuadDestination.ts#L19">packages/bus-rdf-update-quads/lib/IQuadDestination.ts:19</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -204,10 +204,10 @@
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 					<a name="deletegraphs" class="tsd-anchor"></a>
 					<h3>delete<wbr>Graphs</h3>
-					<div class="tsd-signature tsd-kind-icon">delete<wbr>Graphs<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>graphs<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">DefaultGraph</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">NamedNode</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;NAMED&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;ALL&quot;</span>, requireExistence<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span>, dropGraphs<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></div>
+					<div class="tsd-signature tsd-kind-icon">delete<wbr>Graphs<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>graphs<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">DefaultGraph</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;NAMED&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;ALL&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">NamedNode</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[]</span>, requireExistence<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span>, dropGraphs<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/c31b0d0/packages/bus-rdf-update-quads/lib/IQuadDestination.ts#L29">packages/bus-rdf-update-quads/lib/IQuadDestination.ts:29</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/e695c5e/packages/bus-rdf-update-quads/lib/IQuadDestination.ts#L29">packages/bus-rdf-update-quads/lib/IQuadDestination.ts:29</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -219,11 +219,11 @@
 							<dd><p>The graph(s) in which all triples must be removed.</p>
 							</dd>
 							<dt>param</dt>
-							<dd><p>If true, and the graph does not exist, an error must be emitted.
+							<dd><p>If true, and any of the graphs does not exist, an error must be emitted.
 								Should only be considered on destinations that record empty graphs.</p>
 							</dd>
 							<dt>param</dt>
-							<dd><p>If the graph itself should also be dropped.
+							<dd><p>If the graphs themselves should also be dropped.
 									Should not happen on the &#39;DEFAULT&#39; graph.
 								Should only be considered on destinations that record empty graphs.</p>
 							</dd>
@@ -234,14 +234,14 @@
 						<ul class="tsd-parameters">
 							<li class="tsd-parameter-signature">
 								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-interface">
-									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>graphs<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">DefaultGraph</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">NamedNode</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;NAMED&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;ALL&quot;</span>, requireExistence<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span>, dropGraphs<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
+									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>graphs<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">DefaultGraph</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;NAMED&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;ALL&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">NamedNode</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[]</span>, requireExistence<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span>, dropGraphs<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
 								</ul>
 								<ul class="tsd-descriptions">
 									<li class="tsd-description">
 										<h4 class="tsd-parameters-title">Parameters</h4>
 										<ul class="tsd-parameters">
 											<li>
-												<h5>graphs: <span class="tsd-signature-type">DefaultGraph</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">NamedNode</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;NAMED&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;ALL&quot;</span></h5>
+												<h5>graphs: <span class="tsd-signature-type">DefaultGraph</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;NAMED&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;ALL&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">NamedNode</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">[]</span></h5>
 											</li>
 											<li>
 												<h5>requireExistence: <span class="tsd-signature-type">boolean</span></h5>
@@ -263,7 +263,7 @@
 					<div class="tsd-signature tsd-kind-icon">insert<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>quads<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">AsyncIterator</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/c31b0d0/packages/bus-rdf-update-quads/lib/IQuadDestination.ts#L13">packages/bus-rdf-update-quads/lib/IQuadDestination.ts:13</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/e695c5e/packages/bus-rdf-update-quads/lib/IQuadDestination.ts#L13">packages/bus-rdf-update-quads/lib/IQuadDestination.ts:13</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -337,7 +337,7 @@
 								<a href="bus_rdf_update_quads.iquaddestination.html" class="tsd-kind-icon">IQuad<wbr>Destination</a>
 								<ul>
 									<li class=" tsd-kind-property tsd-parent-kind-interface">
-										<a href="bus_rdf_update_quads.iquaddestination.html#creategraph" class="tsd-kind-icon">create<wbr>Graph</a>
+										<a href="bus_rdf_update_quads.iquaddestination.html#creategraphs" class="tsd-kind-icon">create<wbr>Graphs</a>
 									</li>
 									<li class=" tsd-kind-property tsd-parent-kind-interface">
 										<a href="bus_rdf_update_quads.iquaddestination.html#delete" class="tsd-kind-icon">delete</a>
