@@ -9,4 +9,5 @@ if (argv.length === 0 || /^--?h(elp)?$/u.test(argv[0])) {
 }
 
 const configResourceUrl = argv.shift()!;
-runArgs(configResourceUrl, argv, process.stdin, process.stdout, process.stderr, process.env);
+// eslint-disable-next-line max-len
+runArgs(configResourceUrl, argv, process.stdin, process.stdout, process.stderr, (code?: number) => process.exit(code), process.env);
