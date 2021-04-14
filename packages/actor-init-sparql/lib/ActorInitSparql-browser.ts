@@ -199,7 +199,9 @@ export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs, 
     }
 
     // Optimize the query operation
-    operation = (await this.mediatorOptimizeQueryOperation.mediate({ context, operation })).operation;
+    const mediatorResult = await this.mediatorOptimizeQueryOperation.mediate({ context, operation });
+    operation = mediatorResult.operation;
+    context = mediatorResult.context || context;
 
     // Pre-processing the context, this time with the operation
     context = (await this.mediatorContextPreprocess.mediate({ context, operation })).context;

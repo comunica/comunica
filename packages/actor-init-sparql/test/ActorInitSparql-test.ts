@@ -621,6 +621,27 @@ describe('ActorInitSparql', () => {
             '@comunica/actor-init-sparql:baseIRI': 'myBaseIRI',
           });
       });
+
+      it('should pass down the provided context if optimize actors do not return one', async() => {
+        mediatorOptimizeQueryOperation.mediate = (action: any) => {
+          return Promise.resolve({ ...action, context: undefined });
+        };
+        const result = await actor.query('SELECT * WHERE { ?s ?p ?o }', { 'the-answer': 42 });
+        expect(result).toHaveProperty('context');
+        expect(result.context!.get('the-answer')).toEqual(42);
+      });
+
+      it('should allow optimize actors to modify the context', async() => {
+        mediatorOptimizeQueryOperation.mediate = (action: any) => {
+          return Promise.resolve({
+            ...action,
+            context: action.context.set('the-answer', 42),
+          });
+        };
+        const result = await actor.query('SELECT * WHERE { ?s ?p ?o }');
+        expect(result).toHaveProperty('context');
+        expect(result.context!.get('the-answer')).toEqual(42);
+      });
     });
 
     it('bindings() should collect all bindings until "end" event occurs on triples', async() => {

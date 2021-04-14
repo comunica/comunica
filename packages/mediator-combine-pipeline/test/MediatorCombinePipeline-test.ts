@@ -1,5 +1,5 @@
 import type { IAction, IActorOutput, IActorTest } from '@comunica/core';
-import { Actor, Bus, Mediator } from '@comunica/core';
+import { Actor, Bus, Mediator, ActionContext } from '@comunica/core';
 import { MediatorCombinePipeline } from '../lib/MediatorCombinePipeline';
 
 describe('MediatorCombinePipeline', () => {
@@ -39,6 +39,21 @@ describe('MediatorCombinePipeline', () => {
     it('should mediate', () => {
       return expect(mediator.mediate({ field: 1 })).resolves.toEqual({ field: 2_101 });
     });
+
+    it('should mediate without changing the context', async() => {
+      const context = ActionContext({});
+      const result = await mediator.mediate({ field: 1, context });
+      expect(result).toEqual({ field: 2_101, context });
+    });
+
+    it('should mediate changing the context', async() => {
+      new DummyActorContextOutput(1_000, bus);
+      const context = ActionContext({});
+      const result = await mediator.mediate({ field: 1, context });
+      expect(result).toHaveProperty('context');
+      expect(result.context).not.toEqual(context);
+      expect(result.context!.get('id')).toEqual(1_000);
+    });
   });
 
   describe('An MediatorCombinePipeline instance without actors', () => {
@@ -54,10 +69,10 @@ describe('MediatorCombinePipeline', () => {
   });
 });
 
-class DummyActor extends Actor<IDummyAction, IActorTest, IDummyAction> {
+class DummyActor extends Actor<IDummyAction, IActorTest, IDummyOutput> {
   public readonly id: number;
 
-  public constructor(id: number, bus: Bus<DummyActor, IDummyAction, IActorTest, IDummyAction>) {
+  public constructor(id: number, bus: Bus<DummyActor, IDummyAction, IActorTest, IDummyOutput>) {
     super({ name: `dummy${id}`, bus });
     this.id = id;
   }
@@ -66,11 +81,25 @@ class DummyActor extends Actor<IDummyAction, IActorTest, IDummyAction> {
     return true;
   }
 
-  public async run(action: IDummyAction): Promise<IDummyAction> {
+  public async run(action: IDummyAction): Promise<IDummyOutput> {
     return { field: action.field * this.id + this.id };
   }
 }
 
-interface IDummyAction extends IAction, IActorOutput {
+class DummyActorContextOutput extends DummyActor {
+  public async run(action: IDummyAction): Promise<IDummyOutput> {
+    return {
+      ...super.run(action),
+      context: (action.context || ActionContext({})).set('id', this.id),
+    };
+  }
+}
+
+interface IDummyAction extends IAction {
   field: number;
+}
+
+interface IDummyOutput extends IActorOutput {
+  field: number;
+  context?: ActionContext;
 }
