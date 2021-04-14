@@ -1,5 +1,5 @@
 /* eslint-disable unicorn/filename-case */
-import type { IActorContextPreprocessOutput, IActionContextPreprocess } from '@comunica/bus-context-preprocess';
+import type { IActorContextPreprocessOutput } from '@comunica/bus-context-preprocess';
 import type { IActionHttpInvalidate, IActorHttpInvalidateOutput } from '@comunica/bus-http-invalidate';
 import type { IActionInit, IActorOutputInit } from '@comunica/bus-init';
 import { ActorInit } from '@comunica/bus-init';
@@ -23,7 +23,7 @@ import type {
   IActorTestSparqlSerializeMediaTypes,
 } from '@comunica/bus-sparql-serialize';
 import { KeysInitSparql, KeysCore, KeysRdfResolveQuadPattern } from '@comunica/context-entries';
-import type { Actor, IActorArgs, IActorTest, Logger, Mediator } from '@comunica/core';
+import type { Actor, IAction, IActorArgs, IActorTest, Logger, Mediator } from '@comunica/core';
 import { ActionContext } from '@comunica/core';
 import type {
   IActionQueryOperation,
@@ -71,8 +71,8 @@ export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs, 
   IActionSparqlSerializeMediaTypeFormats, IActorTestSparqlSerializeMediaTypeFormats,
   IActorOutputSparqlSerializeMediaTypeFormats>;
 
-  public readonly mediatorContextPreprocess: Mediator<Actor<IActionContextPreprocess, IActorTest,
-  IActorContextPreprocessOutput>, IActionContextPreprocess, IActorTest, IActorContextPreprocessOutput>;
+  public readonly mediatorContextPreprocess: Mediator<Actor<IAction, IActorTest,
+  IActorContextPreprocessOutput>, IAction, IActorTest, IActorContextPreprocessOutput>;
 
   public readonly mediatorHttpInvalidate: Mediator<Actor<IActionHttpInvalidate, IActorTest, IActorHttpInvalidateOutput>,
   IActionHttpInvalidate, IActorTest, IActorHttpInvalidateOutput>;
@@ -203,9 +203,6 @@ export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs, 
     operation = mediatorResult.operation;
     context = mediatorResult.context || context;
 
-    // Pre-processing the context, this time with the operation
-    context = (await this.mediatorContextPreprocess.mediate({ context, operation })).context;
-
     // Save original query in context
     context = context.set(KeysInitSparql.query, operation);
 
@@ -296,8 +293,8 @@ export interface IActorInitSparqlArgs extends IActorArgs<IActionInit, IActorTest
   IActorOutputSparqlSerializeMediaTypeFormats>,
   IActionSparqlSerializeMediaTypeFormats, IActorTestSparqlSerializeMediaTypeFormats,
   IActorOutputSparqlSerializeMediaTypeFormats>;
-  mediatorContextPreprocess: Mediator<Actor<IActionContextPreprocess, IActorTest, IActorContextPreprocessOutput>,
-  IActionContextPreprocess, IActorTest, IActorContextPreprocessOutput>;
+  mediatorContextPreprocess: Mediator<Actor<IAction, IActorTest, IActorContextPreprocessOutput>,
+  IAction, IActorTest, IActorContextPreprocessOutput>;
   mediatorHttpInvalidate: Mediator<Actor<IActionHttpInvalidate, IActorTest, IActorHttpInvalidateOutput>,
   IActionHttpInvalidate, IActorTest, IActorHttpInvalidateOutput>;
   logger: Logger;
