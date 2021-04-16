@@ -41,6 +41,12 @@ After installing, this package can be added to your engine's configuration as fo
 * `caam:Actor/AbstractMediaTypedFixed/priorityScale`: An optional priority for this parser, used for content negotiation, defaults to `1`.
 * `crpjl:Actor/RdfParse/JsonLd/mediatorHttp`: A mediator over the [HTTP bus](https://github.com/comunica/comunica/tree/master/packages/bus-http), for fetching remote JSON-LD contexts.
 
+### Passing custom options
+
+If you want to pass custom options to the JSON-LD parser,
+you can use the `'@comunica/actor-rdf-parse-jsonld:parserOptions'` [context entry](https://comunica.dev/docs/query/advanced/context/)
+to provide [parser options](https://github.com/rubensworks/jsonld-streaming-parser.js#configuration) as a hash.
+
 ### Using a custom document loader
 
 If you want to override how the JSON-LD parser loads external contexts,

@@ -108,6 +108,10 @@ export enum KeysRdfParseJsonLd {
    * @range {boolean}
    */
   strictValues = '@comunica/actor-rdf-parse-jsonld:strictValues',
+  /**
+   * @range {Record<string, any>}
+   */
+  parserOptions = '@comunica/actor-rdf-parse-jsonld:parserOptions',
 }
 
 export enum KeysRdfResolveQuadPattern {

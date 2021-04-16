@@ -39,6 +39,7 @@ export class ActorRdfParseJsonLd extends ActorRdfParseFixedMediaTypes {
       documentLoader: actionContext && actionContext.get(KeysRdfParseJsonLd.documentLoader) ||
         new DocumentLoaderMediated(this.mediatorHttp, actionContext),
       strictValues: actionContext && actionContext.get(KeysRdfParseJsonLd.strictValues),
+      ...(actionContext && actionContext.get(KeysRdfParseJsonLd.parserOptions)) || {},
     });
     const quads: RDF.Stream = parser.import(action.input);
     return { quads };
