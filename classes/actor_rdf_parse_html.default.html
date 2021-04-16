@@ -105,6 +105,7 @@
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-external"><a href="actor_rdf_parse_html.default.html#getsection" class="tsd-kind-icon">get<wbr>Section</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-external"><a href="actor_rdf_parse_html.default.html#handleinattributevalue" class="tsd-kind-icon">handle<wbr>InAttribute<wbr>Value</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-external"><a href="actor_rdf_parse_html.default.html#handletrailingdata" class="tsd-kind-icon">handle<wbr>Trailing<wbr>Data</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-external"><a href="actor_rdf_parse_html.default.html#istagstartchar" class="tsd-kind-icon">is<wbr>Tag<wbr>Start<wbr>Char</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-external"><a href="actor_rdf_parse_html.default.html#parse" class="tsd-kind-icon">parse</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-external"><a href="actor_rdf_parse_html.default.html#parsefixedentity" class="tsd-kind-icon">parse<wbr>Fixed<wbr>Entity</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-external"><a href="actor_rdf_parse_html.default.html#parselegacyentity" class="tsd-kind-icon">parse<wbr>Legacy<wbr>Entity</a></li>
@@ -167,7 +168,7 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">new default<span class="tsd-signature-symbol">(</span>options<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">{ </span>decodeEntities<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>xmlMode<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> }</span>, cbs<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Callbacks</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="actor_rdf_parse_html.default.html" class="tsd-signature-type" data-tsd-kind="Class">default</a></li>
+						<li class="tsd-signature tsd-kind-icon">new default<span class="tsd-signature-symbol">(</span>options<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">{ </span>decodeEntities<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>xmlMode<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> }</span>, cbs<span class="tsd-signature-symbol">: </span><a href="../interfaces/actor_rdf_parse_html.callbacks.html" class="tsd-signature-type" data-tsd-kind="Interface">Callbacks</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="actor_rdf_parse_html.default.html" class="tsd-signature-type" data-tsd-kind="Class">default</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
@@ -182,7 +183,7 @@
 									<h5>options: <span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-symbol">{ </span>decodeEntities<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">; </span>xmlMode<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> }</span></h5>
 								</li>
 								<li>
-									<h5>cbs: <span class="tsd-signature-type">Callbacks</span></h5>
+									<h5>cbs: <a href="../interfaces/actor_rdf_parse_html.callbacks.html" class="tsd-signature-type" data-tsd-kind="Interface">Callbacks</a></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <a href="actor_rdf_parse_html.default.html" class="tsd-signature-type" data-tsd-kind="Class">default</a></h4>
@@ -284,7 +285,7 @@
 					<div class="tsd-signature tsd-kind-icon">cleanup<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:161</li>
+							<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:168</li>
 						</ul>
 					</aside>
 				</section>
@@ -304,7 +305,7 @@
 					<div class="tsd-signature tsd-kind-icon">decode<wbr>Numeric<wbr>Entity<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:158</li>
+							<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:165</li>
 						</ul>
 					</aside>
 				</section>
@@ -314,7 +315,7 @@
 					<div class="tsd-signature tsd-kind-icon">emit<wbr>Partial<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:172</li>
+							<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:179</li>
 						</ul>
 					</aside>
 				</section>
@@ -324,7 +325,7 @@
 					<div class="tsd-signature tsd-kind-icon">emit<wbr>Token<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:171</li>
+							<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:178</li>
 						</ul>
 					</aside>
 				</section>
@@ -349,7 +350,7 @@
 					<div class="tsd-signature tsd-kind-icon">finish<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:168</li>
+							<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:175</li>
 						</ul>
 					</aside>
 				</section>
@@ -359,7 +360,7 @@
 					<div class="tsd-signature tsd-kind-icon">get<wbr>Section<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:170</li>
+							<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:177</li>
 						</ul>
 					</aside>
 				</section>
@@ -369,7 +370,7 @@
 					<div class="tsd-signature tsd-kind-icon">handle<wbr>InAttribute<wbr>Value<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:135</li>
+							<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:142</li>
 						</ul>
 					</aside>
 				</section>
@@ -379,9 +380,26 @@
 					<div class="tsd-signature tsd-kind-icon">handle<wbr>Trailing<wbr>Data<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:169</li>
+							<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:176</li>
 						</ul>
 					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-external">
+					<a name="istagstartchar" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> is<wbr>Tag<wbr>Start<wbr>Char</h3>
+					<div class="tsd-signature tsd-kind-icon">is<wbr>Tag<wbr>Start<wbr>Char<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:131</li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>HTML only allows ASCII alpha characters (a-z and A-Z) at the beginning of a tag name.</p>
+						</div>
+						<p>XML allows a lot more characters here (@see <a href="https://www.w3.org/TR/REC-xml/#NT-NameStartChar">https://www.w3.org/TR/REC-xml/#NT-NameStartChar</a>).
+						We allow anything that wouldn&#39;t end the tag.</p>
+					</div>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-external">
 					<a name="parse" class="tsd-anchor"></a>
@@ -389,7 +407,7 @@
 					<div class="tsd-signature tsd-kind-icon">parse<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:167</li>
+							<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:174</li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -405,7 +423,7 @@
 					<div class="tsd-signature tsd-kind-icon">parse<wbr>Fixed<wbr>Entity<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:155</li>
+							<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:162</li>
 						</ul>
 					</aside>
 				</section>
@@ -415,7 +433,7 @@
 					<div class="tsd-signature tsd-kind-icon">parse<wbr>Legacy<wbr>Entity<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:156</li>
+							<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:163</li>
 						</ul>
 					</aside>
 				</section>
@@ -470,7 +488,7 @@
 					<div class="tsd-signature tsd-kind-icon">state<wbr>After<wbr>Attribute<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:133</li>
+							<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:140</li>
 						</ul>
 					</aside>
 				</section>
@@ -480,7 +498,7 @@
 					<div class="tsd-signature tsd-kind-icon">state<wbr>After<wbr>Cdata1<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:149</li>
+							<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:156</li>
 						</ul>
 					</aside>
 				</section>
@@ -490,7 +508,7 @@
 					<div class="tsd-signature tsd-kind-icon">state<wbr>After<wbr>Cdata2<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:150</li>
+							<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:157</li>
 						</ul>
 					</aside>
 				</section>
@@ -500,7 +518,7 @@
 					<div class="tsd-signature tsd-kind-icon">state<wbr>After<wbr>Closing<wbr>Tag<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:129</li>
+							<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:136</li>
 						</ul>
 					</aside>
 				</section>
@@ -510,7 +528,7 @@
 					<div class="tsd-signature tsd-kind-icon">state<wbr>After<wbr>Comment1<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:145</li>
+							<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:152</li>
 						</ul>
 					</aside>
 				</section>
@@ -520,7 +538,7 @@
 					<div class="tsd-signature tsd-kind-icon">state<wbr>After<wbr>Comment2<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:146</li>
+							<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:153</li>
 						</ul>
 					</aside>
 				</section>
@@ -530,7 +548,7 @@
 					<div class="tsd-signature tsd-kind-icon">state<wbr>After<wbr>Special<wbr>Last<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:154</li>
+							<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:161</li>
 						</ul>
 					</aside>
 				</section>
@@ -540,7 +558,7 @@
 					<div class="tsd-signature tsd-kind-icon">state<wbr>Before<wbr>Attribute<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:130</li>
+							<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:137</li>
 						</ul>
 					</aside>
 				</section>
@@ -550,7 +568,7 @@
 					<div class="tsd-signature tsd-kind-icon">state<wbr>Before<wbr>Attribute<wbr>Value<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:134</li>
+							<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:141</li>
 						</ul>
 					</aside>
 				</section>
@@ -560,7 +578,7 @@
 					<div class="tsd-signature tsd-kind-icon">state<wbr>Before<wbr>Cdata6<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:147</li>
+							<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:154</li>
 						</ul>
 					</aside>
 				</section>
@@ -570,7 +588,7 @@
 					<div class="tsd-signature tsd-kind-icon">state<wbr>Before<wbr>Closing<wbr>Tag<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:127</li>
+							<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:134</li>
 						</ul>
 					</aside>
 				</section>
@@ -580,7 +598,7 @@
 					<div class="tsd-signature tsd-kind-icon">state<wbr>Before<wbr>Comment<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:142</li>
+							<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:149</li>
 						</ul>
 					</aside>
 				</section>
@@ -590,7 +608,7 @@
 					<div class="tsd-signature tsd-kind-icon">state<wbr>Before<wbr>Declaration<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:139</li>
+							<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:146</li>
 						</ul>
 					</aside>
 				</section>
@@ -600,7 +618,7 @@
 					<div class="tsd-signature tsd-kind-icon">state<wbr>Before<wbr>Special<wbr>Last<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:153</li>
+							<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:160</li>
 						</ul>
 					</aside>
 				</section>
@@ -610,7 +628,7 @@
 					<div class="tsd-signature tsd-kind-icon">state<wbr>Before<wbr>SpecialS<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:151</li>
+							<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:158</li>
 						</ul>
 					</aside>
 				</section>
@@ -620,7 +638,7 @@
 					<div class="tsd-signature tsd-kind-icon">state<wbr>Before<wbr>SpecialSEnd<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:152</li>
+							<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:159</li>
 						</ul>
 					</aside>
 				</section>
@@ -630,7 +648,7 @@
 					<div class="tsd-signature tsd-kind-icon">state<wbr>Before<wbr>Tag<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:125</li>
+							<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:132</li>
 						</ul>
 					</aside>
 				</section>
@@ -640,7 +658,7 @@
 					<div class="tsd-signature tsd-kind-icon">state<wbr>InAttribute<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:132</li>
+							<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:139</li>
 						</ul>
 					</aside>
 				</section>
@@ -650,7 +668,7 @@
 					<div class="tsd-signature tsd-kind-icon">state<wbr>InAttribute<wbr>Value<wbr>Double<wbr>Quotes<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:136</li>
+							<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:143</li>
 						</ul>
 					</aside>
 				</section>
@@ -660,7 +678,7 @@
 					<div class="tsd-signature tsd-kind-icon">state<wbr>InAttribute<wbr>Value<wbr>NoQuotes<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:138</li>
+							<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:145</li>
 						</ul>
 					</aside>
 				</section>
@@ -670,7 +688,7 @@
 					<div class="tsd-signature tsd-kind-icon">state<wbr>InAttribute<wbr>Value<wbr>Single<wbr>Quotes<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:137</li>
+							<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:144</li>
 						</ul>
 					</aside>
 				</section>
@@ -680,7 +698,7 @@
 					<div class="tsd-signature tsd-kind-icon">state<wbr>InCdata<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:148</li>
+							<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:155</li>
 						</ul>
 					</aside>
 				</section>
@@ -690,7 +708,7 @@
 					<div class="tsd-signature tsd-kind-icon">state<wbr>InClosing<wbr>Tag<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:128</li>
+							<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:135</li>
 						</ul>
 					</aside>
 				</section>
@@ -700,7 +718,7 @@
 					<div class="tsd-signature tsd-kind-icon">state<wbr>InComment<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:143</li>
+							<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:150</li>
 						</ul>
 					</aside>
 				</section>
@@ -710,7 +728,7 @@
 					<div class="tsd-signature tsd-kind-icon">state<wbr>InDeclaration<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:140</li>
+							<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:147</li>
 						</ul>
 					</aside>
 				</section>
@@ -720,7 +738,7 @@
 					<div class="tsd-signature tsd-kind-icon">state<wbr>InHex<wbr>Entity<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:160</li>
+							<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:167</li>
 						</ul>
 					</aside>
 				</section>
@@ -730,7 +748,7 @@
 					<div class="tsd-signature tsd-kind-icon">state<wbr>InNamed<wbr>Entity<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:157</li>
+							<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:164</li>
 						</ul>
 					</aside>
 				</section>
@@ -740,7 +758,7 @@
 					<div class="tsd-signature tsd-kind-icon">state<wbr>InNumeric<wbr>Entity<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:159</li>
+							<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:166</li>
 						</ul>
 					</aside>
 				</section>
@@ -750,7 +768,7 @@
 					<div class="tsd-signature tsd-kind-icon">state<wbr>InProcessing<wbr>Instruction<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:141</li>
+							<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:148</li>
 						</ul>
 					</aside>
 				</section>
@@ -760,7 +778,7 @@
 					<div class="tsd-signature tsd-kind-icon">state<wbr>InSelf<wbr>Closing<wbr>Tag<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:131</li>
+							<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:138</li>
 						</ul>
 					</aside>
 				</section>
@@ -770,7 +788,7 @@
 					<div class="tsd-signature tsd-kind-icon">state<wbr>InSpecial<wbr>Comment<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:144</li>
+							<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:151</li>
 						</ul>
 					</aside>
 				</section>
@@ -780,7 +798,7 @@
 					<div class="tsd-signature tsd-kind-icon">state<wbr>InTag<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:126</li>
+							<li>Defined in packages/actor-rdf-parse-html/node_modules/htmlparser2/lib/Tokenizer.d.ts:133</li>
 						</ul>
 					</aside>
 				</section>
@@ -1010,6 +1028,9 @@
 										<a href="actor_rdf_parse_html.default.html#handletrailingdata" class="tsd-kind-icon">handle<wbr>Trailing<wbr>Data</a>
 									</li>
 									<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-external">
+										<a href="actor_rdf_parse_html.default.html#istagstartchar" class="tsd-kind-icon">is<wbr>Tag<wbr>Start<wbr>Char</a>
+									</li>
+									<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-external">
 										<a href="actor_rdf_parse_html.default.html#parse" class="tsd-kind-icon">parse</a>
 									</li>
 									<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private tsd-is-external">
@@ -1148,6 +1169,9 @@
 										<a href="actor_rdf_parse_html.default.html#write" class="tsd-kind-icon">write</a>
 									</li>
 								</ul>
+							</li>
+							<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-external">
+								<a href="../interfaces/actor_rdf_parse_html.callbacks.html" class="tsd-kind-icon">Callbacks</a>
 							</li>
 							<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-external">
 								<a href="../interfaces/actor_rdf_parse_html.handler.html" class="tsd-kind-icon">Handler</a>
