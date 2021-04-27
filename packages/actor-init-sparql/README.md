@@ -213,6 +213,8 @@ _[**Read more** about querying an application](https://comunica.dev/docs/query/g
 This README just shows the tip of the iceberg!
 Learn more about Comunica's functionalities in the following guides:
 
+* _[Updating from the command line](https://comunica.dev/docs/query/getting_started/update_cli/)_
+* _[Updating in a JavaScript app](https://comunica.dev/docs/query/getting_started/update_app/)_
 * _[Querying in a JavaScript browser app](https://comunica.dev/docs/query/getting_started/query_browser_app/)_
 * _[Passing query options](https://comunica.dev/docs/query/advanced/context/)_
 * _[Supported source types](https://comunica.dev/docs/query/advanced/source_types/)_
