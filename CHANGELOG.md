@@ -1,6 +1,32 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v1.21.0"></a>
+## [v1.21.0](https://github.com/comunica/comunica/compare/v1.20.0...v1.21.0) - 2021-04-27
+
+### Added
+* Enable hypermedia-driven updates
+    * [Pass headers to metadata extraction actors](https://github.com/comunica/comunica/commit/421f7b421d906c9d3addad9ff9bbca4a72e242d5)
+    * [Add metadata extractor for detecting SPARQL Update Patch servers](https://github.com/comunica/comunica/commit/e63ee7e7a98ca6872846edd9ceb5864709f6781f)
+    * [Configure hypermedia-based update actors](https://github.com/comunica/comunica/commit/cc879d80d07d50e1eba0aa9a4932fad7562406f7)
+    * [Add actor for handling servers supporting SPARQL Update patches](https://github.com/comunica/comunica/commit/e789df603911f20806c4854fafc4b12352f772ea)
+    * [Add update actor for delegating to hypermedia bus](https://github.com/comunica/comunica/commit/19197a4c14e4b80c4efe928f644c1e116797c4b2)
+    * [Add bus for hypermedia-based update actors](https://github.com/comunica/comunica/commit/735bc5e3950a55680214ebbb150cbe12b4cac2dd)
+* [Support HTTP requests with bodies](https://github.com/comunica/comunica/commit/2c84199d53e018aad7799d5e638171ed1d2b40bc)
+* [Allow context modification in optimize-query-operation bus](https://github.com/comunica/comunica/commit/81373206a17d0fcb8d3af701e5266287113d545c)
+
+### Changed
+* [Move IQuadDestination to separate file](https://github.com/comunica/comunica/commit/17651f77321276e2a0a7865b8265d079f2d5145d)
+* [Allow multiple graphs to be created/deleted in IQuadDestination](https://github.com/comunica/comunica/commit/e695c5e468c402e1cd6ade35254c14a92963ba43)
+* [Use --to option instead of -d to mark destination on CLI](https://github.com/comunica/comunica/commit/cbe309139558a59722370c031e3726fe1ea2f5b2)
+* [Allow any parser options to be passed to actor-rdf-parse-jsonld](https://github.com/comunica/comunica/commit/199710d70b01d22ea40fe5e12e16a9d8800f32fc)
+
+### Fixed
+* [Emit non-zero exit code on CLI errors, Closes #805](https://github.com/comunica/comunica/commit/00aa446cc8d2fd713711787b8a59f45c266947ea)
+* [Remove unnecessary dependencies on utils-datasource to mute Yarn warnings](https://github.com/comunica/comunica/commit/861953827475c5307b27db192784c86fb5ec39dc)
+* [Fix types dependencies not being actual dependencies](https://github.com/comunica/comunica/commit/e0b7e29b640bf720206e2082c9ddf4461900d6ed)
+* [Fix unable to federate over multiple GraphDB instances](https://github.com/comunica/comunica/commit/fab22d68a5a51393ae2f5b38870f30db3e8034b3)
+
 <a name="v1.20.0"></a>
 ## [v1.20.0](https://github.com/comunica/comunica/compare/v1.19.2...v1.20.0) - 2021-03-30
 

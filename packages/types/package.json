@@ -1,6 +1,6 @@
 {
   "name": "@comunica/types",
-  "version": "1.20.0",
+  "version": "1.21.0",
   "description": "Typings module for Comunica",
   "main": "index.js",
   "typings": "index",

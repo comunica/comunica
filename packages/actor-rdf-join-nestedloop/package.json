@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-join-nestedloop",
-  "version": "1.20.0",
+  "version": "1.21.0",
   "description": "A nestedloop rdf-join actor",
   "lsd:module": true,
   "main": "index.js",
@@ -32,7 +32,7 @@
     "index.js"
   ],
   "dependencies": {
-    "@comunica/types": "^1.20.0",
+    "@comunica/types": "^1.21.0",
     "asyncjoin": "^1.0.3"
   },
   "peerDependencies": {
@@ -40,10 +40,10 @@
     "@comunica/core": "^1.0.0"
   },
   "devDependencies": {
-    "@comunica/bus-query-operation": "^1.20.0",
-    "@comunica/bus-rdf-join": "^1.20.0",
-    "@comunica/core": "^1.20.0",
-    "@comunica/mediatortype-iterations": "^1.20.0"
+    "@comunica/bus-query-operation": "^1.21.0",
+    "@comunica/bus-rdf-join": "^1.21.0",
+    "@comunica/core": "^1.21.0",
+    "@comunica/mediatortype-iterations": "^1.21.0"
   },
   "jest": {
     "globals": {

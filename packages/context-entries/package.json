@@ -1,6 +1,6 @@
 {
   "name": "@comunica/context-entries",
-  "version": "1.20.0",
+  "version": "1.21.0",
   "description": "A collection of reusable Comunica context key definitions.",
   "main": "index.js",
   "typings": "index",
