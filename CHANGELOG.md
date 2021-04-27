@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v1.21.1"></a>
+## [v1.21.1](https://github.com/comunica/comunica/compare/v1.21.0...v1.21.1) - 2021-04-27
+
+Republish due to npm publishing failure of 1.21.0.
+
 <a name="v1.21.0"></a>
 ## [v1.21.0](https://github.com/comunica/comunica/compare/v1.20.0...v1.21.0) - 2021-04-27
 

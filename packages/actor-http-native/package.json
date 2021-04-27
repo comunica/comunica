@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-http-native",
-  "version": "1.21.0",
+  "version": "1.21.1",
   "description": "A native http actor",
   "lsd:module": true,
   "main": "index.js",
@@ -36,16 +36,16 @@
     "@comunica/core": "^1.0.0"
   },
   "dependencies": {
-    "@comunica/context-entries": "^1.21.0",
+    "@comunica/context-entries": "^1.21.1",
     "@types/parse-link-header": "^1.0.0",
     "cross-fetch": "^3.0.5",
     "follow-redirects": "^1.5.1",
     "parse-link-header": "^1.0.1"
   },
   "devDependencies": {
-    "@comunica/bus-http": "^1.21.0",
-    "@comunica/core": "^1.21.0",
-    "@comunica/mediatortype-time": "^1.21.0"
+    "@comunica/bus-http": "^1.21.1",
+    "@comunica/core": "^1.21.1",
+    "@comunica/mediatortype-time": "^1.21.1"
   },
   "jest": {
     "globals": {

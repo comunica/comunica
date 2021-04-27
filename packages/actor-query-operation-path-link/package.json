@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-operation-path-link",
-  "version": "1.21.0",
+  "version": "1.21.1",
   "description": "A path-link query-operation actor",
   "lsd:module": true,
   "main": "index.js",
@@ -36,13 +36,13 @@
     "@comunica/core": "^1.2.0"
   },
   "dependencies": {
-    "@comunica/actor-abstract-path": "^1.21.0",
-    "@comunica/types": "^1.21.0",
+    "@comunica/actor-abstract-path": "^1.21.1",
+    "@comunica/types": "^1.21.1",
     "sparqlalgebrajs": "^2.5.5"
   },
   "devDependencies": {
-    "@comunica/bus-query-operation": "^1.21.0",
-    "@comunica/core": "^1.21.0"
+    "@comunica/bus-query-operation": "^1.21.1",
+    "@comunica/core": "^1.21.1"
   },
   "jest": {
     "globals": {
