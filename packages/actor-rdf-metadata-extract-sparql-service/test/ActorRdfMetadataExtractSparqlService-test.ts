@@ -38,9 +38,10 @@ describe('ActorRdfMetadataExtractSparqlService', () => {
     let inputRelativeLiteral: Readable;
     let inputRelativeIri: Readable;
     let inputBlankSubject: Readable;
+    let inputHttpsHttp: Readable;
 
     beforeEach(() => {
-      actor = new ActorRdfMetadataExtractSparqlService({ name: 'actor', bus });
+      actor = new ActorRdfMetadataExtractSparqlService({ name: 'actor', bus, inferHttpsEndpoint: false });
       input = stream([
         quad('s1', 'p1', 'o1', ''),
         quad('http://example.org/',
@@ -82,6 +83,15 @@ describe('ActorRdfMetadataExtractSparqlService', () => {
         quad('_:b', 'p1', 'o1', ''),
         quad('_:b', 'http://www.w3.org/ns/sparql-service-description#endpoint', 'http://example2.org/ENDPOINT', ''),
         quad('_:b', 'px', '5678', ''),
+        quad('s3', 'p3', 'o3', ''),
+      ]);
+      inputHttpsHttp = stream([
+        quad('s1', 'p1', 'o1', ''),
+        quad('https://example.org/',
+          'http://www.w3.org/ns/sparql-service-description#endpoint',
+          'http://example2.org/ENDPOINT',
+          ''),
+        quad('s2', 'px', '5678', ''),
         quad('s3', 'p3', 'o3', ''),
       ]);
     });
@@ -128,6 +138,17 @@ describe('ActorRdfMetadataExtractSparqlService', () => {
     it('should run on a stream where the service description subject is a blank node', () => {
       return expect(actor.run({ url: 'http://example.org/', metadata: inputBlankSubject })).resolves
         .toEqual({ metadata: { sparqlService: 'http://example2.org/ENDPOINT' }});
+    });
+
+    it('should run on a stream where https refers to http', () => {
+      return expect(actor.run({ url: 'https://example.org/', metadata: inputHttpsHttp })).resolves
+        .toEqual({ metadata: { sparqlService: 'http://example2.org/ENDPOINT' }});
+    });
+
+    it('should run on a stream where https refers to http with inferHttpsEndpoint', () => {
+      actor = new ActorRdfMetadataExtractSparqlService({ name: 'actor', bus, inferHttpsEndpoint: true });
+      return expect(actor.run({ url: 'https://example.org/', metadata: inputHttpsHttp })).resolves
+        .toEqual({ metadata: { sparqlService: 'https://example2.org/ENDPOINT' }});
     });
   });
 });

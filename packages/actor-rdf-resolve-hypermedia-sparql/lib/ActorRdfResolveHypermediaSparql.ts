@@ -14,6 +14,7 @@ export class ActorRdfResolveHypermediaSparql extends ActorRdfResolveHypermedia {
   IActionHttp, IActorTest, IActorHttpOutput>;
 
   public readonly checkUrlSuffix: boolean;
+  public readonly forceHttpGet: boolean;
 
   public constructor(args: IActorRdfResolveHypermediaSparqlArgs) {
     super(args, 'sparql');
@@ -29,7 +30,12 @@ export class ActorRdfResolveHypermediaSparql extends ActorRdfResolveHypermedia {
 
   public async run(action: IActionRdfResolveHypermedia): Promise<IActorRdfResolveHypermediaOutput> {
     this.logInfo(action.context, `Identified as sparql source: ${action.url}`);
-    const source = new RdfSourceSparql(action.metadata.sparqlService || action.url, action.context, this.mediatorHttp);
+    const source = new RdfSourceSparql(
+      action.metadata.sparqlService || action.url,
+      action.context,
+      this.mediatorHttp,
+      this.forceHttpGet,
+    );
     return { source };
   }
 }
@@ -39,4 +45,5 @@ export interface IActorRdfResolveHypermediaSparqlArgs
   mediatorHttp: Mediator<Actor<IActionHttp, IActorTest, IActorHttpOutput>,
   IActionHttp, IActorTest, IActorHttpOutput>;
   checkUrlSuffix: boolean;
+  forceHttpGet: boolean;
 }

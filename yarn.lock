@@ -5352,10 +5352,10 @@ fecha@^4.2.0:
   resolved "https://registry.yarnpkg.com/fecha/-/fecha-4.2.1.tgz#0a83ad8f86ef62a091e22bb5a039cd03d23eecce"
   integrity sha512-MMMQ0ludy/nBs1/o0zVOiKTpG7qMbonKUzjJgQFEuvq6INZ1OraKPRAWkBq5vlKLOUMpmNYG1JoN3oDPUQ9m3Q==
 
-fetch-sparql-endpoint@^1.7.0:
-  version "1.9.0"
-  resolved "https://registry.yarnpkg.com/fetch-sparql-endpoint/-/fetch-sparql-endpoint-1.9.0.tgz#a71fddffb42340d2963d28bb52a16a6eb115d0f6"
-  integrity sha512-iACwPeKhvy5aM2rbzdnKOUWHLM3tW+odZ88pdPG+xCXSTGMtWBI8FP8fqgHcZsxNq9NfRU7+pMsMsU5JCNabCA==
+fetch-sparql-endpoint@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/fetch-sparql-endpoint/-/fetch-sparql-endpoint-2.0.0.tgz#bcd6b3821633d7c13e5e5e997c1a616fc1100135"
+  integrity sha512-s+JsX0rMKzZKMg3CzdbGORqwwR+NbtzW1dUIiQT1w12IAP1pK/PI2WixaP/C+VuP8sv7Xfx+w8EL/WM03sUtcg==
   dependencies:
     cross-fetch "^3.0.6"
     is-stream "^2.0.0"

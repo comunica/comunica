@@ -40,3 +40,4 @@ After installing, this package can be added to your engine's configuration as fo
 ### Config Parameters
 
 * `carrhs:Actor/RdfResolveHypermedia/Sparql/mediatorHttp`: A mediator over the [HTTP bus](https://github.com/comunica/comunica/tree/master/packages/bus-http).
+* `carrhs:Actor/RdfResolveHypermedia/Sparql/forceHttpGet`: If queries should be sent via HTTP GET instead of POST, defaults to `false`.

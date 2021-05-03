@@ -32,7 +32,7 @@ describe('ActorRdfResolveHypermediaSparql', () => {
 
     beforeEach(() => {
       actor = new ActorRdfResolveHypermediaSparql(
-        { name: 'actor', bus, mediatorHttp: <any> 'mediator', checkUrlSuffix: true },
+        { name: 'actor', bus, mediatorHttp: <any> 'mediator', checkUrlSuffix: true, forceHttpGet: false },
       );
     });
 
@@ -64,7 +64,7 @@ describe('ActorRdfResolveHypermediaSparql', () => {
 
       it('should not test with an URL ending with /sparql if checkUrlSuffix is false', async() => {
         actor = new ActorRdfResolveHypermediaSparql(
-          { name: 'actor', bus, mediatorHttp: <any> 'mediator', checkUrlSuffix: false },
+          { name: 'actor', bus, mediatorHttp: <any> 'mediator', checkUrlSuffix: false, forceHttpGet: false },
         );
         await expect(actor.test({ url: 'URL/sparql', metadata: {}, quads: <any> null })).rejects
           .toThrow(new Error('Actor actor could not detect a SPARQL service description or URL ending on /sparql.'));
@@ -72,7 +72,7 @@ describe('ActorRdfResolveHypermediaSparql', () => {
 
       it('should not test with an URL ending with /sparql if the type is forced to something else', async() => {
         actor = new ActorRdfResolveHypermediaSparql(
-          { name: 'actor', bus, mediatorHttp: <any> 'mediator', checkUrlSuffix: false },
+          { name: 'actor', bus, mediatorHttp: <any> 'mediator', checkUrlSuffix: false, forceHttpGet: false },
         );
         await expect(actor.test({ url: 'URL/sparql', metadata: {}, quads: <any> null, forceSourceType: 'file' }))
           .rejects.toThrow(new Error('Actor actor is not able to handle source type file.'));

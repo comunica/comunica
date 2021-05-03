@@ -35,6 +35,7 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
   public constructor(args: IActorQueryOperationSparqlEndpointArgs) {
     super(args);
     this.endpointFetcher = new SparqlEndpointFetcher({
+      method: args.forceHttpGet ? 'GET' : 'POST',
       fetch: (input: Request | string, init?: RequestInit) => this.mediatorHttp.mediate(
         { input, init, context: this.lastContext },
       ),
@@ -152,4 +153,5 @@ export interface IActorQueryOperationSparqlEndpointArgs
   extends IActorArgs<IActionQueryOperation, IActorTest, IActorQueryOperationOutput> {
   mediatorHttp: Mediator<Actor<IActionHttp, IActorTest, IActorHttpOutput>,
   IActionHttp, IActorTest, IActorHttpOutput>;
+  forceHttpGet: boolean;
 }

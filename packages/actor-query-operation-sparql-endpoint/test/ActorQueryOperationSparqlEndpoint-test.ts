@@ -41,13 +41,13 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
   "results": {
     "bindings": [
       {
-        "p": { "type": "uri" , "value": "${action.input}/1" }
+        "p": { "type": "uri" , "value": "${action.init.body ? `${action.input}POST${action.init.body.toString()}` : action.input}/1" }
       },
       {
-        "p": { "type": "uri" , "value": "${action.input}/2" }
+        "p": { "type": "uri" , "value": "${action.init.body ? `${action.input}POST${action.init.body.toString()}` : action.input}/2" }
       },
       {
-        "p": { "type": "uri" , "value": "${action.input}/3" }
+        "p": { "type": "uri" , "value": "${action.init.body ? `${action.input}POST${action.init.body.toString()}` : action.input}/3" }
       }
     ]
   }
@@ -83,7 +83,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
     let actor: ActorQueryOperationSparqlEndpoint;
 
     beforeEach(() => {
-      actor = new ActorQueryOperationSparqlEndpoint({ name: 'actor', bus, mediatorHttp });
+      actor = new ActorQueryOperationSparqlEndpoint({ name: 'actor', bus, mediatorHttp, forceHttpGet: false });
     });
 
     it('should test on a single sparql source', () => {
@@ -129,13 +129,54 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
       expect(output.canContainUndefs).toEqual(true);
 
       expect(await arrayifyStream(output.bindingsStream)).toEqual([
+        Bindings({ '?p': DF.namedNode('http://example.org/sparql-selectPOSTquery=SELECT+%3Fp+WHERE+%7B+%3Chttp%3A%2F%2Fs%3E+%3Fp+%3Chttp%3A%2F%2Fo%3E.+%7D/1') }),
+        Bindings({ '?p': DF.namedNode('http://example.org/sparql-selectPOSTquery=SELECT+%3Fp+WHERE+%7B+%3Chttp%3A%2F%2Fs%3E+%3Fp+%3Chttp%3A%2F%2Fo%3E.+%7D/2') }),
+        Bindings({ '?p': DF.namedNode('http://example.org/sparql-selectPOSTquery=SELECT+%3Fp+WHERE+%7B+%3Chttp%3A%2F%2Fs%3E+%3Fp+%3Chttp%3A%2F%2Fo%3E.+%7D/3') }),
+      ]);
+    });
+
+    it('should run for a SELECT query', async() => {
+      const context = ActionContext({
+        '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'sparql', value: 'http://example.org/sparql-select' },
+      });
+      const op = { context,
+        operation: factory.createProject(
+          factory.createPattern(DF.namedNode('http://s'), DF.variable('p'), DF.namedNode('http://o')),
+          [ DF.variable('myP') ],
+        ) };
+      const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
+      expect(output.variables).toEqual([ '?myP' ]);
+      expect(await (<any> output).metadata()).toEqual({ totalItems: 3 });
+      expect(output.canContainUndefs).toEqual(true);
+
+      expect(await arrayifyStream(output.bindingsStream)).toEqual([
+        Bindings({ '?p': DF.namedNode('http://example.org/sparql-selectPOSTquery=SELECT+%3FmyP+WHERE+%7B+%3Chttp%3A%2F%2Fs%3E+%3Fp+%3Chttp%3A%2F%2Fo%3E.+%7D/1') }),
+        Bindings({ '?p': DF.namedNode('http://example.org/sparql-selectPOSTquery=SELECT+%3FmyP+WHERE+%7B+%3Chttp%3A%2F%2Fs%3E+%3Fp+%3Chttp%3A%2F%2Fo%3E.+%7D/2') }),
+        Bindings({ '?p': DF.namedNode('http://example.org/sparql-selectPOSTquery=SELECT+%3FmyP+WHERE+%7B+%3Chttp%3A%2F%2Fs%3E+%3Fp+%3Chttp%3A%2F%2Fo%3E.+%7D/3') }),
+      ]);
+    });
+
+    it('should run for a sub-query on HTTP GET', async() => {
+      actor = new ActorQueryOperationSparqlEndpoint({ name: 'actor', bus, mediatorHttp, forceHttpGet: true });
+      const context = ActionContext({
+        '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'sparql', value: 'http://example.org/sparql-select' },
+      });
+      const op = { context,
+        operation: factory.createPattern(DF.namedNode('http://s'), DF.variable('p'), DF.namedNode('http://o')) };
+      const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
+      expect(output.variables).toEqual([ '?p' ]);
+      expect(await (<any> output).metadata()).toEqual({ totalItems: 3 });
+      expect(output.canContainUndefs).toEqual(true);
+
+      expect(await arrayifyStream(output.bindingsStream)).toEqual([
         Bindings({ '?p': DF.namedNode('http://example.org/sparql-select?query=SELECT%20%3Fp%20WHERE%20%7B%20%3Chttp%3A%2F%2Fs%3E%20%3Fp%20%3Chttp%3A%2F%2Fo%3E.%20%7D/1') }),
         Bindings({ '?p': DF.namedNode('http://example.org/sparql-select?query=SELECT%20%3Fp%20WHERE%20%7B%20%3Chttp%3A%2F%2Fs%3E%20%3Fp%20%3Chttp%3A%2F%2Fo%3E.%20%7D/2') }),
         Bindings({ '?p': DF.namedNode('http://example.org/sparql-select?query=SELECT%20%3Fp%20WHERE%20%7B%20%3Chttp%3A%2F%2Fs%3E%20%3Fp%20%3Chttp%3A%2F%2Fo%3E.%20%7D/3') }),
       ]);
     });
 
-    it('should run for a SELECT query', async() => {
+    it('should run for a SELECT query on HTTP GET', async() => {
+      actor = new ActorQueryOperationSparqlEndpoint({ name: 'actor', bus, mediatorHttp, forceHttpGet: true });
       const context = ActionContext({
         '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'sparql', value: 'http://example.org/sparql-select' },
       });
@@ -205,7 +246,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
       });
       const op = { context,
         operation: factory.createPattern(DF.namedNode('http://s'), DF.variable('p'), DF.namedNode('http://o')) };
-      const thisActor = new ActorQueryOperationSparqlEndpoint({ name: 'actor', bus, mediatorHttp: thisMediator });
+      const thisActor = new ActorQueryOperationSparqlEndpoint({ name: 'actor', bus, mediatorHttp: thisMediator, forceHttpGet: false });
       const x = ActorQueryOperation.getSafeBindings(await thisActor.run(op)).bindingsStream;
       await expect(arrayifyStream(x))
         .rejects.toThrow(new Error('Invalid SPARQL endpoint (http://ex) response: Error!'));

@@ -25,6 +25,14 @@
           "unique": true,
           "range": "xsd:boolean",
           "default": true
+        },
+        {
+          "@id": "carrhs:Actor/RdfResolveHypermedia/Sparql/forceHttpGet",
+          "comment": "If queries should be sent via HTTP GET instead of POST",
+          "required": true,
+          "unique": true,
+          "range": "xsd:boolean",
+          "default": false
         }
       ],
       "constructorArguments": [
@@ -38,6 +46,10 @@
             {
               "keyRaw": "checkUrlSuffix",
               "value": "carrhs:Actor/RdfResolveHypermedia/Sparql/checkUrlSuffix"
+            },
+            {
+              "keyRaw": "forceHttpGet",
+              "value": "carrhs:Actor/RdfResolveHypermedia/Sparql/forceHttpGet"
             }
           ]
         }

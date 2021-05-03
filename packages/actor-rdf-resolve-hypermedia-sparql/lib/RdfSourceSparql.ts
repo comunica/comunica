@@ -1,15 +1,17 @@
-import {
-  ActorRdfResolveQuadPatternSparqlJson,
-  AsyncIteratorJsonBindings,
-} from '@comunica/actor-rdf-resolve-quad-pattern-sparql-json';
 import type { IActionHttp, IActorHttpOutput } from '@comunica/bus-http';
+import { Bindings } from '@comunica/bus-query-operation';
 import type { IQuadSource } from '@comunica/bus-rdf-resolve-quad-pattern';
 import type { ActionContext, Actor, IActorTest, Mediator } from '@comunica/core';
-import type { Bindings, BindingsStream } from '@comunica/types';
+import type { BindingsStream } from '@comunica/types';
 import type { AsyncIterator } from 'asynciterator';
+import { wrap } from 'asynciterator';
+import { SparqlEndpointFetcher } from 'fetch-sparql-endpoint';
+import { DataFactory } from 'rdf-data-factory';
 import type * as RDF from 'rdf-js';
-import { mapTerms } from 'rdf-terms';
-import { Factory } from 'sparqlalgebrajs';
+import { getTerms, getVariables, mapTerms } from 'rdf-terms';
+import type { Algebra } from 'sparqlalgebrajs';
+import { Factory, toSparql } from 'sparqlalgebrajs';
+const DF = new DataFactory();
 
 export class RdfSourceSparql implements IQuadSource {
   protected static readonly FACTORY: Factory = new Factory();
@@ -19,39 +21,136 @@ export class RdfSourceSparql implements IQuadSource {
   private readonly mediatorHttp: Mediator<Actor<IActionHttp, IActorTest, IActorHttpOutput>,
   IActionHttp, IActorTest, IActorHttpOutput>;
 
+  private readonly endpointFetcher: SparqlEndpointFetcher;
+
   public constructor(url: string, context: ActionContext | undefined,
     mediatorHttp: Mediator<Actor<IActionHttp, IActorTest, IActorHttpOutput>,
-    IActionHttp, IActorTest, IActorHttpOutput>) {
+    IActionHttp, IActorTest, IActorHttpOutput>, forceHttpGet: boolean) {
     this.url = url;
     this.context = context;
     this.mediatorHttp = mediatorHttp;
+    this.endpointFetcher = new SparqlEndpointFetcher({
+      method: forceHttpGet ? 'GET' : 'POST',
+      fetch: (input: Request | string, init?: RequestInit) => this.mediatorHttp.mediate(
+        { input, init, context: this.context },
+      ),
+      prefixVariableQuestionMark: true,
+    });
+  }
+
+  /**
+   * Replace all blank nodes in a pattern with variables.
+   * If the pattern contains no blank nodes the original pattern gets returned.
+   * @param {RDF.BaseQuad} pattern A quad pattern.
+   * @return {RDF.BaseQuad} A quad pattern with no blank nodes.
+   */
+  public static replaceBlankNodes(pattern: RDF.BaseQuad): RDF.BaseQuad {
+    const variableNames: string[] = getVariables(getTerms(pattern)).map(variableTerm => variableTerm.value);
+    // Track the names the blank nodes get mapped to (required if the name has to change)
+    const blankMap: Record<string, string> = {};
+    let changed = false;
+
+    // For every position, convert to a variable if there is a blank node
+    const result = mapTerms(pattern, term => {
+      if (term.termType === 'BlankNode') {
+        let name = term.value;
+        if (blankMap[name]) {
+          name = blankMap[name];
+        } else {
+          if (variableNames.includes(name)) {
+            // Increase index added to name until we find one that is available (2 loops at most)
+            let idx = 0;
+            while (variableNames.includes(`${name}${idx}`)) {
+              ++idx;
+            }
+            name += idx;
+          }
+          blankMap[term.value] = name;
+          variableNames.push(name);
+        }
+        changed = true;
+        return DF.variable(name);
+      }
+      return term;
+    });
+
+    return changed ? result : pattern;
+  }
+
+  /**
+   * Convert a quad pattern to a BGP with only that pattern.
+   * @param {RDF.pattern} quad A quad pattern.
+   * @return {Bgp} A BGP.
+   */
+  public static patternToBgp(pattern: RDF.BaseQuad): Algebra.Bgp {
+    return RdfSourceSparql.FACTORY.createBgp([ RdfSourceSparql.FACTORY
+      .createPattern(pattern.subject, pattern.predicate, pattern.object, pattern.graph) ]);
+  }
+
+  /**
+   * Convert a quad pattern to a select query for this pattern.
+   * @param {RDF.Quad} pattern A quad pattern.
+   * @return {string} A select query string.
+   */
+  public static patternToSelectQuery(pattern: RDF.BaseQuad): string {
+    const variables: RDF.Variable[] = getVariables(getTerms(pattern));
+    return toSparql(RdfSourceSparql.FACTORY.createProject(
+      RdfSourceSparql.patternToBgp(pattern),
+      variables,
+    ));
+  }
+
+  /**
+   * Convert a quad pattern to a count query for the number of matching triples for this pattern.
+   * @param {RDF.Quad} pattern A quad pattern.
+   * @return {string} A count query string.
+   */
+  public static patternToCountQuery(pattern: RDF.BaseQuad): string {
+    return toSparql(RdfSourceSparql.FACTORY.createProject(
+      RdfSourceSparql.FACTORY.createExtend(
+        RdfSourceSparql.FACTORY.createGroup(
+          RdfSourceSparql.patternToBgp(pattern),
+          [],
+          [ RdfSourceSparql.FACTORY.createBoundAggregate(
+            DF.variable('var0'),
+            'count',
+            RdfSourceSparql.FACTORY.createWildcardExpression(),
+            false,
+          ) ],
+        ),
+        DF.variable('count'),
+        RdfSourceSparql.FACTORY.createTermExpression(DF.variable('var0')),
+      ),
+      [ DF.variable('count') ],
+    ));
   }
 
   /**
    * Send a SPARQL query to a SPARQL endpoint and retrieve its bindings as a stream.
    * @param {string} endpoint A SPARQL endpoint URL.
    * @param {string} query A SPARQL query string.
-   * @param {ActionContext} context An optional context.
    * @return {BindingsStream} A stream of bindings.
    */
-  public queryBindings(endpoint: string, query: string, context?: ActionContext): BindingsStream {
-    return new AsyncIteratorJsonBindings(endpoint, query, context, this.mediatorHttp);
+  public queryBindings(endpoint: string, query: string): BindingsStream {
+    const rawStream = this.endpointFetcher.fetchBindings(endpoint, query);
+    return wrap<any>(rawStream, { autoStart: false, maxBufferSize: Number.POSITIVE_INFINITY })
+      .map(rawData => Bindings(rawData));
   }
 
   public match(subject: RDF.Term, predicate: RDF.Term, object: RDF.Term, graph: RDF.Term): AsyncIterator<RDF.Quad> {
-    const pattern = ActorRdfResolveQuadPatternSparqlJson.replaceBlankNodes(RdfSourceSparql.FACTORY.createPattern(
+    const pattern = RdfSourceSparql.replaceBlankNodes(RdfSourceSparql.FACTORY.createPattern(
       subject,
       predicate,
       object,
       graph,
     ));
-    const countQuery: string = ActorRdfResolveQuadPatternSparqlJson.patternToCountQuery(pattern);
-    const selectQuery: string = ActorRdfResolveQuadPatternSparqlJson.patternToSelectQuery(pattern);
+    const countQuery: string = RdfSourceSparql.patternToCountQuery(pattern);
+    const selectQuery: string = RdfSourceSparql.patternToSelectQuery(pattern);
 
     // Emit metadata containing the estimated count (reject is never called)
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     new Promise(resolve => {
-      const bindingsStream: BindingsStream = this.queryBindings(this.url, countQuery, this.context);
+      const bindingsStream: BindingsStream = this.queryBindings(this.url, countQuery);
       bindingsStream.on('data', (bindings: Bindings) => {
         const count: RDF.Term = bindings.get('?count');
         if (count) {
@@ -69,7 +168,7 @@ export class RdfSourceSparql implements IQuadSource {
       .then(metadata => quads.setProperty('metadata', metadata));
 
     // Materialize the queried pattern using each found binding.
-    const quads: AsyncIterator<RDF.Quad> & RDF.Stream = this.queryBindings(this.url, selectQuery, this.context)
+    const quads: AsyncIterator<RDF.Quad> & RDF.Stream = this.queryBindings(this.url, selectQuery)
       .map((bindings: Bindings) => <RDF.Quad> mapTerms(pattern, (value: RDF.Term) => {
         if (value.termType === 'Variable') {
           const boundValue: RDF.Term = bindings.get(`?${value.value}`);

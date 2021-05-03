@@ -7,7 +7,9 @@ import { resolve as resolveIri } from 'relative-to-absolute-iri';
  * A comunica RDF Metadata Extract Actor for SPARQL service descriptions.
  */
 export class ActorRdfMetadataExtractSparqlService extends ActorRdfMetadataExtract {
-  public constructor(args: IActorArgs<IActionRdfMetadataExtract, IActorTest, IActorRdfMetadataExtractOutput>) {
+  private readonly inferHttpsEndpoint: boolean;
+
+  public constructor(args: IActorRdfMetadataExtractSparqlServiceArgs) {
     super(args);
   }
 
@@ -28,6 +30,12 @@ export class ActorRdfMetadataExtractSparqlService extends ActorRdfMetadataExtrac
           metadata.sparqlService = quad.object.termType === 'Literal' ?
             resolveIri(quad.object.value, action.url) :
             quad.object.value;
+
+          // Fix a common mistake in SPARQL endpoint setups where HTTPS SD's refer to a non-existing HTTP API
+          if (this.inferHttpsEndpoint &&
+            action.url.startsWith('https') && !metadata.sparqlService.startsWith('https')) {
+            metadata.sparqlService = metadata.sparqlService.replace('http:', 'https:');
+          }
         } else if (quad.predicate.value === 'http://www.w3.org/ns/sparql-service-description#defaultGraph') {
           metadata.defaultGraph = quad.object.value;
         }
@@ -39,4 +47,9 @@ export class ActorRdfMetadataExtractSparqlService extends ActorRdfMetadataExtrac
       });
     });
   }
+}
+
+export interface IActorRdfMetadataExtractSparqlServiceArgs
+  extends IActorArgs<IActionRdfMetadataExtract, IActorTest, IActorRdfMetadataExtractOutput> {
+  inferHttpsEndpoint: boolean;
 }

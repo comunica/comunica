@@ -3,6 +3,7 @@ import { ActionContext } from '@comunica/core';
 import { DataFactory } from 'rdf-data-factory';
 import 'cross-fetch/polyfill'; // Needed to load Headers
 import 'jest-rdf';
+import { Factory } from 'sparqlalgebrajs';
 import { RdfSourceSparql } from '../lib/RdfSourceSparql';
 
 const arrayifyStream = require('arrayify-stream');
@@ -14,8 +15,10 @@ describe('RdfSourceSparql', () => {
   const context = ActionContext({});
   const mediatorHttp: any = {
     mediate(action: any) {
+      const query = action.init.body.toString();
       return {
-        body: action.input.indexOf('COUNT') > 0 ?
+        headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
+        body: query.indexOf('COUNT') > 0 ?
           streamifyString(`{
   "head": { "vars": [ "count" ]
   } ,
@@ -49,11 +52,72 @@ describe('RdfSourceSparql', () => {
     },
   };
 
+  describe('#replaceBlankNodes', () => {
+    it('should replace blank nodes with variables', () => {
+      return expect(RdfSourceSparql.replaceBlankNodes(quad('s', 'p', '_:o')))
+        .toEqual(quad('s', 'p', '?o'));
+    });
+
+    it('should make sure blank and variable names don\'t overlap', () => {
+      return expect(RdfSourceSparql.replaceBlankNodes(quad('?x', '?x0', '_:x')))
+        .toEqual(quad('?x', '?x0', '?x1'));
+    });
+
+    it('should make sure blank and variable names don\'t overlap (2)', () => {
+      return expect(RdfSourceSparql.replaceBlankNodes(quad('?x', '_:x0', '_:x')))
+        .toEqual(quad('?x', '?x0', '?x1'));
+    });
+
+    it('should blank names change consistently', () => {
+      return expect(RdfSourceSparql.replaceBlankNodes(quad('?x', '_:x', '_:x')))
+        .toEqual(quad('?x', '?x0', '?x0'));
+    });
+  });
+
+  describe('#patternToBgp', () => {
+    it('should convert a quad to a BGP pattern', () => {
+      return expect(RdfSourceSparql.patternToBgp(quad('s', 'p', 'o')))
+        .toEqual({
+          patterns: [ new Factory().createPattern(DF.namedNode('s'), DF.namedNode('p'), DF.namedNode('o')) ],
+          type: 'bgp',
+        });
+    });
+  });
+
+  describe('#patternToSelectQuery', () => {
+    it('should convert a quad with named nodes to a select query', () => {
+      return expect(RdfSourceSparql.patternToSelectQuery(quad('http://s', 'http://p', 'http://o')))
+        .toEqual('SELECT * WHERE { <http://s> <http://p> <http://o>. }');
+    });
+
+    it('should convert a quad with variables to a select query', () => {
+      return expect(RdfSourceSparql.patternToSelectQuery(quad('?s', '?p', '?o', '?g')))
+        .toEqual('SELECT ?s ?p ?o ?g WHERE { GRAPH ?g { ?s ?p ?o. } }');
+    });
+  });
+
+  describe('#patternToCountQuery', () => {
+    it('should convert a quad with named nodes to a count query', () => {
+      return expect(RdfSourceSparql.patternToCountQuery(quad('http://s', 'http://p', 'http://o')))
+        .toEqual('SELECT (COUNT(*) AS ?count) WHERE { <http://s> <http://p> <http://o>. }');
+    });
+
+    it('should convert a quad with a variable to a count query', () => {
+      return expect(RdfSourceSparql.patternToCountQuery(quad('?s', 'http://p', 'http://o')))
+        .toEqual('SELECT (COUNT(*) AS ?count) WHERE { ?s <http://p> <http://o>. }');
+    });
+
+    it('should convert a quad with variables to a count query', () => {
+      return expect(RdfSourceSparql.patternToCountQuery(quad('?s', '?p', '?o')))
+        .toEqual('SELECT (COUNT(*) AS ?count) WHERE { ?s ?p ?o. }');
+    });
+  });
+
   describe('an instance', () => {
     let source: RdfSourceSparql;
 
     beforeEach(() => {
-      source = new RdfSourceSparql('http://example.org/sparql', context, mediatorHttp);
+      source = new RdfSourceSparql('http://example.org/sparql', context, mediatorHttp, false);
     });
 
     it('should return data', async() => {
@@ -70,8 +134,10 @@ describe('RdfSourceSparql', () => {
     it('should return data for a web stream', async() => {
       const thisMediator: any = {
         mediate(action: any) {
+          const query = action.init.body.toString();
           return {
-            body: require('web-streams-node').toWebReadableStream(action.input.indexOf('COUNT') > 0 ?
+            headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
+            body: require('web-streams-node').toWebReadableStream(query.indexOf('COUNT') > 0 ?
               streamifyString(`{
   "head": { "vars": [ "count" ]
   } ,
@@ -104,7 +170,7 @@ describe('RdfSourceSparql', () => {
           };
         },
       };
-      source = new RdfSourceSparql('http://example.org/sparql', context, thisMediator);
+      source = new RdfSourceSparql('http://example.org/sparql', context, thisMediator, false);
       expect(await arrayifyStream(
         source.match(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o'), DF.defaultGraph()),
       ))
@@ -127,6 +193,7 @@ describe('RdfSourceSparql', () => {
       const thisMediator: any = {
         mediate() {
           return {
+            headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
             body: streamifyString(``),
             ok: false,
             status: 500,
@@ -134,18 +201,20 @@ describe('RdfSourceSparql', () => {
           };
         },
       };
-      source = new RdfSourceSparql('http://example.org/sparql', context, thisMediator);
+      source = new RdfSourceSparql('http://example.org/sparql', context, thisMediator, false);
       await expect(arrayifyStream(
         source.match(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o'), DF.defaultGraph()),
       ))
-        .rejects.toThrow(new Error('Invalid SPARQL endpoint (http://example.org/sparql) response: Error! (500)'));
+        .rejects.toThrow(new Error('Invalid SPARQL endpoint (http://example.org/sparql) response: Error!'));
     });
 
     it('should emit an error for invalid binding results', async() => {
       const thisMediator: any = {
         mediate(action: any) {
+          const query = action.init.body.toString();
           return {
-            body: action.input.indexOf('COUNT') > 0 ?
+            headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
+            body: query.indexOf('COUNT') > 0 ?
               streamifyString(`{
   "head": { "vars": [ "count" ]
   } ,
@@ -178,7 +247,7 @@ describe('RdfSourceSparql', () => {
           };
         },
       };
-      source = new RdfSourceSparql('http://example.org/sparql', context, thisMediator);
+      source = new RdfSourceSparql('http://example.org/sparql', context, thisMediator, false);
       await expect(arrayifyStream(source
         .match(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o'), DF.defaultGraph())))
         .rejects.toThrow(new Error('The endpoint http://example.org/sparql failed to provide a binding for p.'));
@@ -190,12 +259,13 @@ describe('RdfSourceSparql', () => {
           const stream = new PassThrough();
           stream._read = () => setImmediate(() => stream.emit('error', new Error('Some stream error')));
           return {
+            headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
             body: stream,
             ok: true,
           };
         },
       };
-      source = new RdfSourceSparql('http://example.org/sparql', context, thisMediator);
+      source = new RdfSourceSparql('http://example.org/sparql', context, thisMediator, false);
       await expect(arrayifyStream(source
         .match(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o'), DF.defaultGraph())))
         .rejects.toThrow(new Error('Some stream error'));
@@ -204,8 +274,10 @@ describe('RdfSourceSparql', () => {
     it('should emit metadata with infinity count for invalid count results', async() => {
       const thisMediator: any = {
         mediate(action: any) {
+          const query = action.init.body.toString();
           return {
-            body: action.input.indexOf('COUNT') > 0 ?
+            headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
+            body: query.indexOf('COUNT') > 0 ?
               streamifyString(`{
   "head": { "vars": [ "count" ]
   } ,
@@ -238,7 +310,7 @@ describe('RdfSourceSparql', () => {
           };
         },
       };
-      source = new RdfSourceSparql('http://example.org/sparql', context, thisMediator);
+      source = new RdfSourceSparql('http://example.org/sparql', context, thisMediator, false);
       const stream = source.match(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o'), DF.defaultGraph());
       expect(await new Promise(resolve => stream.getProperty('metadata', resolve)))
         .toEqual({ totalItems: Number.POSITIVE_INFINITY });
@@ -247,8 +319,10 @@ describe('RdfSourceSparql', () => {
     it('should emit metadata with infinity count for missing count results', async() => {
       const thisMediator: any = {
         mediate(action: any) {
+          const query = action.init.body.toString();
           return {
-            body: action.input.indexOf('COUNT') > 0 ?
+            headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
+            body: query.indexOf('COUNT') > 0 ?
               streamifyString(`{
   "head": { "vars": [ "count" ]
   } ,
@@ -281,7 +355,7 @@ describe('RdfSourceSparql', () => {
           };
         },
       };
-      source = new RdfSourceSparql('http://example.org/sparql', context, thisMediator);
+      source = new RdfSourceSparql('http://example.org/sparql', context, thisMediator, false);
       const stream = source.match(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o'), DF.defaultGraph());
       expect(await new Promise(resolve => stream.getProperty('metadata', resolve)))
         .toEqual({ totalItems: Number.POSITIVE_INFINITY });
@@ -295,6 +369,56 @@ describe('RdfSourceSparql', () => {
       (<any> data)._read(1, () => {
         // Do nothing
       });
+    });
+
+    it('should return data for HTTP GET requests', async() => {
+      const thisMediator: any = {
+        mediate(action: any) {
+          const query = action.input;
+          return {
+            headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
+            body: query.indexOf('COUNT') > 0 ?
+              streamifyString(`{
+  "head": { "vars": [ "count" ]
+  } ,
+  "results": { 
+    "bindings": [
+      {
+        "count": { "type": "literal" , "value": "3" }
+      }
+    ]
+  }
+}`) :
+              streamifyString(`{
+  "head": { "vars": [ "p" ]
+  } ,
+  "results": { 
+    "bindings": [
+      {
+        "p": { "type": "uri" , "value": "p1" }
+      },
+      {
+        "p": { "type": "uri" , "value": "p2" }
+      },
+      {
+        "p": { "type": "uri" , "value": "p3" }
+      }
+    ]
+  }
+}`),
+            ok: true,
+          };
+        },
+      };
+      source = new RdfSourceSparql('http://example.org/sparql', context, thisMediator, true);
+      expect(await arrayifyStream(
+        source.match(DF.namedNode('s'), DF.variable('p'), DF.namedNode('o'), DF.defaultGraph()),
+      ))
+        .toEqualRdfQuadArray([
+          quad('s', 'p1', 'o'),
+          quad('s', 'p2', 'o'),
+          quad('s', 'p3', 'o'),
+        ]);
     });
   });
 });

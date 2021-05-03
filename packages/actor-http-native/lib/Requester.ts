@@ -55,7 +55,12 @@ export default class Requester {
     });
     request.on('error', error => requestProxy.emit('error', error));
     if (settings.body) {
-      ActorHttp.toNodeReadable(settings.body).pipe(request);
+      if (settings.body instanceof URLSearchParams) {
+        request.write(settings.body.toString());
+        request.end();
+      } else {
+        ActorHttp.toNodeReadable(settings.body).pipe(request);
+      }
     } else {
       request.end();
     }

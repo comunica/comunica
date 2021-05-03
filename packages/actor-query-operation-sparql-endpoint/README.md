@@ -39,3 +39,4 @@ After installing, this package can be added to your engine's configuration as fo
 ### Config Parameters
 
 * `caqose:Actor/QueryOperation/SparqlEndpoint/mediatorHttp`: A mediator over the [HTTP bus](https://github.com/comunica/comunica/tree/master/packages/bus-http).
+* `caqose:Actor/QueryOperation/SparqlEndpoint/forceHttpGet`: If queries should be sent via HTTP GET instead of POST, defaults to `false`.

@@ -32,12 +32,12 @@
     "index.js"
   ],
   "dependencies": {
-    "@comunica/actor-rdf-resolve-quad-pattern-sparql-json": "^1.21.1",
     "@comunica/bus-query-operation": "^1.21.1",
     "@comunica/bus-rdf-resolve-quad-pattern": "^1.21.1",
     "@comunica/types": "^1.21.1",
     "@types/rdf-js": "*",
     "asynciterator": "^3.1.0",
+    "fetch-sparql-endpoint": "^2.0.0",
     "rdf-data-factory": "^1.0.3",
     "rdf-terms": "^1.6.2",
     "sparqlalgebrajs": "^2.5.5"

@@ -36,7 +36,8 @@ function request(settings, func) {
       }
     },
     emit: () => {},
-    end: () => {}
+    end: () => {},
+    write: () => {},
   }
 }
 
