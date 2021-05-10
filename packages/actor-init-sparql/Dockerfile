@@ -1,4 +1,4 @@
-FROM node:10
+FROM node:16
 
 # Install location
 ENV dir /var/www/@comunica/actor-init-sparql/
