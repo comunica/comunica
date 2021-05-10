@@ -30,7 +30,7 @@
     "babel-loader": "^8.1.0",
     "coveralls": "^3.0.0",
     "eslint": "^7.9.0",
-    "eslint-config-es": "3.28.27",
+    "eslint-config-es": "3.28.29",
     "eslint-plugin-tsdoc": "^0.2.7",
     "eslint-plugin-import": "^2.22.0",
     "eslint-plugin-jest": "^24.0.2",
