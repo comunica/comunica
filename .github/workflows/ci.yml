@@ -155,7 +155,7 @@ jobs:
         run: yarn run doc
       - name: Deploy TSDoc to GitHub Pages
         if: startsWith(github.ref, 'refs/heads/master')
-        uses: JamesIves/github-pages-deploy-action@4.1.1
+        uses: JamesIves/github-pages-deploy-action@4.1.3
         with:
           branch: gh-pages
           folder: documentation
