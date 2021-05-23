@@ -18,7 +18,7 @@
     "@pollyjs/persister-fs": "^5.0.0",
     "@rdfjs/data-model": "^1.1.1",
     "@types/jest": "^26.0.0",
-    "@types/node": "^13.1.7",
+    "@types/node": "^14.0.0",
     "@types/pollyjs__adapter-node-http": "^2.0.0",
     "@types/pollyjs__core": "^4.3.0",
     "@types/pollyjs__persister-fs": "^2.0.0",
