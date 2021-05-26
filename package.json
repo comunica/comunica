@@ -37,7 +37,7 @@
     "eslint-import-resolver-typescript": "^2.3.0",
     "eslint-plugin-unused-imports": "^1.0.0",
     "immutable": "^3.8.2",
-    "jest": "^26.0.0",
+    "jest": "^27.0.0",
     "jest-rdf": "^1.6.0",
     "lerna": "^4.0.0",
     "manual-git-changelog": "^1.0.0",
