@@ -141,7 +141,7 @@ describe('ActorQueryOperationExtend', () => {
 
     it('should not extend bindings on erroring expressions', async() => {
       const warn = jest.fn();
-      spyOn(Actor, 'getContextLogger').and.returnValue({ warn });
+      jest.spyOn(Actor, 'getContextLogger').mockImplementation(() => (<any>{ warn }));
 
       const op = { operation: example(faultyExpression) };
       const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
@@ -154,16 +154,16 @@ describe('ActorQueryOperationExtend', () => {
       expect(output.canContainUndefs).toEqual(false);
     });
 
-    it('should emit error when evaluation code returns a hard error', async next => {
+    it('should emit error when evaluation code returns a hard error', async() => {
       const warn = jest.fn();
-      spyOn(Actor, 'getContextLogger').and.returnValue({ warn });
+      jest.spyOn(Actor, 'getContextLogger').mockImplementation(() => (<any>{ warn }));
       // eslint-disable-next-line no-import-assign
       Object.defineProperty(sparqlee, 'isExpressionError', { writable: true });
       (<any> sparqlee).isExpressionError = jest.fn(() => false);
 
       const op = { operation: example(faultyExpression) };
       const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
-      output.bindingsStream.on('error', () => next());
+      await new Promise<void>(resolve => output.bindingsStream.on('error', () => resolve()));
       expect(warn).toBeCalledTimes(0);
     });
   });

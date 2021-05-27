@@ -161,7 +161,7 @@ describe('ActorHttpNodeFetch', () => {
 
     it('should run with a logger', async() => {
       const logger = new LoggerVoid();
-      const spy = spyOn(logger, 'info');
+      const spy = jest.spyOn(logger, 'info');
       await actor.run({
         input: <Request> { url: 'https://www.google.com/' },
         init: { headers: new Headers({ a: 'b' }) },
@@ -176,7 +176,7 @@ describe('ActorHttpNodeFetch', () => {
 
     it('should run with a logger without init', async() => {
       const logger = new LoggerVoid();
-      const spy = spyOn(logger, 'info');
+      const spy = jest.spyOn(logger, 'info');
       await actor.run({
         input: <Request> { url: 'https://www.google.com/' },
         context: ActionContext({ [KeysCore.log]: logger }),
@@ -190,7 +190,7 @@ describe('ActorHttpNodeFetch', () => {
 
     it('should run with a logger with another another method', async() => {
       const logger = new LoggerVoid();
-      const spy = spyOn(logger, 'info');
+      const spy = jest.spyOn(logger, 'info');
       await actor.run({
         input: <Request> { url: 'https://www.google.com/' },
         init: { headers: new Headers({ a: 'b' }), method: 'POST' },

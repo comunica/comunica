@@ -139,13 +139,13 @@ describe('ActorQueryOperationFilterSparqlee', () => {
       expect(output.canContainUndefs).toEqual(false);
     });
 
-    it('should emit an error for a hard erroring filter', async next => {
+    it('should emit an error for a hard erroring filter', async() => {
       // eslint-disable-next-line no-import-assign
       Object.defineProperty(sparqlee, 'isExpressionError', { writable: true });
       (<any> sparqlee).isExpressionError = jest.fn(() => false);
       const op = { operation: { type: 'filter', input: {}, expression: erroringExpression }};
       const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
-      output.bindingsStream.on('error', () => next());
+      await new Promise<void>(resolve => output.bindingsStream.on('error', () => resolve()));
     });
 
     it('should use and respect the baseIRI from the expression context', async() => {

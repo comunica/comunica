@@ -191,14 +191,14 @@ describe('ActorQueryOperationLeftJoinNestedLoop', () => {
       });
     });
 
-    it('should emit an error on a hard erroring expression', async next => {
+    it('should emit an error on a hard erroring expression', async() => {
       // Mock the expression error test so we can force 'a programming error' and test the branch
       // eslint-disable-next-line no-import-assign
       Object.defineProperty(sparqlee, 'isExpressionError', { writable: true });
       (<any> sparqlee).isExpressionError = jest.fn(() => false);
       const op = { operation: { type: 'leftjoin', input: {}, expression: erroringExpression }};
       const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
-      output.bindingsStream.on('error', () => next());
+      await new Promise<void>(resolve => output.bindingsStream.on('error', () => resolve()));
     });
   });
 });

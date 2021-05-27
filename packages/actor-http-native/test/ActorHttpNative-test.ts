@@ -211,7 +211,7 @@ describe('ActorHttpNative', () => {
 
     it('should run with a logger', async() => {
       const logger = new LoggerVoid();
-      const spy = spyOn(logger, 'info');
+      const spy = jest.spyOn(logger, 'info');
       mockSetup({ statusCode: 200 });
       await actor.run({
         input: new Request('http://example.com', { headers: new Headers({ a: 'b' }) }),

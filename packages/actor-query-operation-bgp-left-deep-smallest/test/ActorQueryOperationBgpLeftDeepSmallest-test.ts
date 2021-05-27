@@ -630,7 +630,7 @@ describe('ActorQueryOperationBgpLeftDeepSmallest', () => {
 
     it('should run with a logger', async() => {
       const logger = new LoggerVoid();
-      const spy = spyOn(logger, 'debug');
+      const spy = jest.spyOn(logger, 'debug');
       const op = {
         operation: { type: 'bgp', patterns },
         context: ActionContext({ [KeysCore.log]: logger }),

@@ -344,7 +344,7 @@ describe('ActorRdfDereferenceHttpParse', () => {
 
     it('should run and ignore parse errors in lenient mode and log them', async() => {
       const logger = new LoggerVoid();
-      const spy = spyOn(logger, 'error');
+      const spy = jest.spyOn(logger, 'error');
       const context = ActionContext({ emitParseError: true, [KeysInitSparql.lenient]: true, [KeysCore.log]: logger });
       const output = await actor.run({ url: 'https://www.google.com/', context });
       expect(await arrayifyStream(output.quads)).toEqual([]);
@@ -371,7 +371,7 @@ describe('ActorRdfDereferenceHttpParse', () => {
 
     it('should run and ignore http rejects in lenient mode and log them', async() => {
       const logger = new LoggerVoid();
-      const spy = spyOn(logger, 'error');
+      const spy = jest.spyOn(logger, 'error');
       const context = ActionContext({ httpReject: true, [KeysInitSparql.lenient]: true, [KeysCore.log]: logger });
       await actor.run({ url: 'https://www.google.com/', context });
       expect(spy).toHaveBeenCalledWith('Http reject error', {
@@ -396,7 +396,7 @@ describe('ActorRdfDereferenceHttpParse', () => {
 
     it('should run and ignore parse rejects in lenient mode and log them', async() => {
       const logger = new LoggerVoid();
-      const spy = spyOn(logger, 'error');
+      const spy = jest.spyOn(logger, 'error');
       const context = ActionContext({ parseReject: true, [KeysInitSparql.lenient]: true, [KeysCore.log]: logger });
       await actor.run({ url: 'https://www.google.com/', context });
       expect(spy).toHaveBeenCalledWith('Parse reject error', {
