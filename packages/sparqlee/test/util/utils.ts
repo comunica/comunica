@@ -13,7 +13,11 @@ const DF = new DataFactory();
 export function testAll(exprs: string[], config?: AsyncEvaluatorConfig) {
   exprs.forEach((_expr) => {
     const expr = _expr.trim();
-    const equals = expr.match(/ = [^=]*$/g).pop();
+    const matched = expr.match(/ = [^=]*$/g);
+    if (!matched) {
+      throw new Error(`Could not match '${expr}'`);
+    }
+    const equals = matched.pop();
     const body = expr.replace(equals, '');
     const _result = equals.replace(' = ', '');
     const result = stringToTerm(replacePrefix(_result));
