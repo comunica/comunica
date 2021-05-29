@@ -236,9 +236,17 @@ export class FederatedQuadSource implements IQuadSource {
       } else {
         output = await this.mediatorResolveQuadPattern.mediate({ pattern, context });
       }
+      
+      
 
       // Handle the metadata from this source
       output.data.getProperty('metadata', (subMetadata: Record<string, any>) => {
+
+        // TODO: WIP
+        // console.log('@FederatedQuadSource: calling this.mediatorRdfMetadataAggregate.mediate(...)')
+        const metadataAggregatePromise = this.mediatorRdfMetadataAggregate.mediate({metadata: subMetadata, context});
+      
+        
         if ((!subMetadata.totalItems && subMetadata.totalItems !== 0) || !Number.isFinite(subMetadata.totalItems)) {
           // We're already at infinite, so ignore any later metadata
           metadata.totalItems = Number.POSITIVE_INFINITY;
