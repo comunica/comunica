@@ -12,6 +12,11 @@ import { mapTerms } from 'rdf-terms';
 import type { Algebra } from 'sparqlalgebrajs';
 import { Factory } from 'sparqlalgebrajs';
 
+import type {
+  IActionRdfMetadataAggregate,
+  IActorRdfMetadataAggregateOutput
+} from '@comunica/bus-rdf-metadata-aggregate';
+
 const DF = new DataFactory();
 
 /**
@@ -31,10 +36,16 @@ export class FederatedQuadSource implements IQuadSource {
   protected readonly skipEmptyPatterns: boolean;
   protected readonly algebraFactory: Factory;
 
+  public readonly mediatorRdfMetadataAggregate:  Mediator<Actor<IActionRdfMetadataAggregate, IActorTest,
+  IActorRdfMetadataAggregateOutput>, IActionRdfMetadataAggregate, IActorTest, IActorRdfMetadataAggregateOutput>;
+
   public constructor(mediatorResolveQuadPattern: Mediator<Actor<IActionRdfResolveQuadPattern, IActorTest,
   IActorRdfResolveQuadPatternOutput>, IActionRdfResolveQuadPattern, IActorTest, IActorRdfResolveQuadPatternOutput>,
   context: ActionContext, emptyPatterns: Map<IDataSource, RDF.Quad[]>,
-  skipEmptyPatterns: boolean) {
+  skipEmptyPatterns: boolean,
+  mediatorRdfMetadataAggregate:  Mediator<Actor<IActionRdfMetadataAggregate, IActorTest,
+  IActorRdfMetadataAggregateOutput>, IActionRdfMetadataAggregate, IActorTest, IActorRdfMetadataAggregateOutput>
+  ) {
     this.mediatorResolveQuadPattern = mediatorResolveQuadPattern;
     this.sources = context.get(KeysRdfResolveQuadPattern.sources);
     this.contextDefault = context.delete(KeysRdfResolveQuadPattern.sources);
@@ -42,6 +53,8 @@ export class FederatedQuadSource implements IQuadSource {
     this.sourceIds = new Map();
     this.skipEmptyPatterns = skipEmptyPatterns;
     this.algebraFactory = new Factory();
+
+    this.mediatorRdfMetadataAggregate = mediatorRdfMetadataAggregate;
 
     // Initialize sources in the emptyPatterns datastructure
     if (this.skipEmptyPatterns) {
@@ -51,6 +64,9 @@ export class FederatedQuadSource implements IQuadSource {
         }
       }
     }
+
+    console.log('initialized: FederatedQuadSource !');
+    console.log('\tthis.mediatorRdfMetadataAggregate: ', this.mediatorRdfMetadataAggregate)
   }
 
   /**
