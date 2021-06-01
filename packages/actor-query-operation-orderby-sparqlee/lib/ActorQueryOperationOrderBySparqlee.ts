@@ -56,6 +56,9 @@ export class ActorQueryOperationOrderBySparqlee extends ActorQueryOperationTyped
           const result = await evaluator.evaluate(bindings);
           push({ bindings, result });
         } catch (error: unknown) {
+          // We ignore all Expression errors.
+          // Other errors (likely programming mistakes) are still propagated.
+          // I can't recall where this is defined in the spec.
           if (!isExpressionError(<Error> error)) {
             bindingsStream.emit('error', error);
           }

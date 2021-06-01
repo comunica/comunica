@@ -40,6 +40,15 @@ export class ActorQueryOperationFilterSparqlee extends ActorQueryOperationTypedM
           push(item);
         }
       } catch (error: unknown) {
+        // We ignore all Expression errors.
+        // Other errors (likely programming mistakes) are still propagated.
+        //
+        // > Specifically, FILTERs eliminate any solutions that,
+        // > when substituted into the expression, either result in
+        // > an effective boolean value of false or produce an error.
+        // > ...
+        // > These errors have no effect outside of FILTER evaluation.
+        // https://www.w3.org/TR/sparql11-query/#expressions
         if (!isExpressionError(<Error> error)) {
           bindingsStream.emit('error', error);
         }
