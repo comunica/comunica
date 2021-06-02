@@ -1,0 +1,32 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-metadata-aggregate/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/bus-rdf-metadata-aggregate",
+  "components": [
+    {
+      "@id": "cbrma:Actor/RdfMetadataAggregate",
+      "@type": "AbstractClass",
+      "extends": "cc:Actor",
+      "requireElement": "ActorRdfMetadataAggregate",
+      "comment": "A comunica actor for rdf-metadata-aggregate events.",
+      "parameters": [
+        {
+          "@id": "cc:Actor/bus",
+          "defaultScoped": {
+            "defaultScope": "cbrma:Actor/RdfMetadataAggregate",
+            "defaultScopedValue": { "@id": "cbrma:Bus/RdfMetadataAggregate" }
+          }
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "cbrma:Actor/RdfMetadataAggregate/constructorArgumentsObject",
+          "@type": "https://linkedsoftwaredependencies.org/vocabularies/object-oriented#Object",
+          "extends": "cc:Actor/constructorArgumentsObject"
+        }
+      ]
+    }
+  ]
+}

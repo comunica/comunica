@@ -24,7 +24,14 @@
           "range": "xsd:boolean",
           "default": false,
           "unique": true
+        },
+        {
+          "@id": "carrqpf:Actor/RdfResolveQuadPattern/Federated/mediatorRdfMetadataAggregate",
+          "comment": "todo",
+          "required": true,
+          "unique": true
         }
+        
       ],
       "constructorArguments": [
         {
@@ -38,6 +45,10 @@
             {
               "keyRaw": "skipEmptyPatterns",
               "value": "carrqpf:Actor/RdfResolveQuadPattern/Federated/skipEmptyPatterns"
+            },
+            {
+              "keyRaw": "mediatorRdfMetadataAggregate",
+              "value": "carrqpf:Actor/RdfResolveQuadPattern/Federated/mediatorRdfMetadataAggregate"
             }
           ]
         }

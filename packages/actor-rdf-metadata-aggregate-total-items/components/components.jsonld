@@ -1,0 +1,9 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-metadata-aggregate-total-items/^1.0.0/components/context.jsonld",
+  "@id": "npmd:@comunica/actor-rdf-metadata-aggregate-total-items",
+  "@type": "Module",
+  "requireName": "@comunica/actor-rdf-metadata-aggregate-total-items",
+  "import": [
+    "files-carmati:components/Actor/RdfMetadataAggregate/TotalItems.jsonld"
+  ]
+}

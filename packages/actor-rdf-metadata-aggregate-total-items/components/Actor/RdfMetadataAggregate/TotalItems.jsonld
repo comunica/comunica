@@ -1,0 +1,21 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-metadata-aggregate-total-items/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-metadata-aggregate/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-rdf-metadata-aggregate-total-items",
+  "components": [
+    {
+      "@id": "carmati:Actor/RdfMetadataAggregate/TotalItems",
+      "@type": "Class",
+      "extends": "cbrma:Actor/RdfMetadataAggregate",
+      "requireElement": "ActorRdfMetadataAggregateTotalItems",
+      "comment": "A comunica Total Items RDF Metadata Aggregate Actor.",
+      "constructorArguments": [
+        {
+          "extends": "cbrma:Actor/RdfMetadataAggregate/constructorArgumentsObject"
+        }
+      ]
+    }
+  ]
+}

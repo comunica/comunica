@@ -7,7 +7,10 @@
 
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-dereference-paged/^1.0.0/components/context.jsonld",
 
-    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-race/^1.0.0/components/context.jsonld"
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-metadata-aggregate/^1.0.0/components/context.jsonld",
+
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-all/^1.0.0/components/context.jsonld"
+
   ],
   "@id": "urn:comunica:my",
   "actors": [
@@ -16,6 +19,11 @@
       "@type": "ActorRdfResolveQuadPatternFederated",
       "carrqpf:Actor/RdfResolveQuadPattern/Federated/mediatorResolveQuadPattern": {
         "@id": "config-sets:sparql-queryoperators.json#mediatorResolveQuadPattern"
+      },
+      "carrqpf:Actor/RdfResolveQuadPattern/Federated/mediatorRdfMetadataAggregate": {
+        "@id": "config-sets:resolve-federated.json#mediatorRdfMetadataAggregate",
+        "@type": "MediatorAll",
+        "cc:Mediator/bus": { "@id": "cbrma:Bus/RdfMetadataAggregate" }
       }
     }
   ]

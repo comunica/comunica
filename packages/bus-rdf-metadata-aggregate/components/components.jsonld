@@ -1,0 +1,10 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-metadata-aggregate/^1.0.0/components/context.jsonld",
+  "@id": "npmd:@comunica/bus-rdf-metadata-aggregate",
+  "@type": "Module",
+  "requireName": "@comunica/bus-rdf-metadata-aggregate",
+  "import": [
+    "files-cbrma:components/Bus/RdfMetadataAggregate.jsonld",
+    "files-cbrma:components/Actor/RdfMetadataAggregate.jsonld"
+  ]
+}
