@@ -185,11 +185,22 @@ export class FederatedQuadSource implements IQuadSource {
 
   public match(subject: RDF.Term, predicate: RDF.Term, object: RDF.Term, graph: RDF.Term): AsyncIterator<RDF.Quad> {
     // Counters for our metadata
+    let metadata: Record<string, any> = { totalItems: 0 };
     let remainingSources = this.sources.length;
+
+    // Anonymous function to handle totalItems from metadata
+    const checkEmitMetadata = (currentTotalItems: number, source: IDataSource,
+      pattern: RDF.BaseQuad | undefined): void => {
+      if (this.skipEmptyPatterns && !currentTotalItems && pattern && !this.isSourceEmpty(source, pattern)) {
+        this.emptyPatterns.get(source)!.push(pattern);
+      }
+      if (!remainingSources) {
+        it.setProperty('metadata', metadata);
+      }
+    };
 
     const proxyIt: Promise<AsyncIterator<RDF.Quad>[]> = Promise.all(this.sources.map(async source => {
       const sourceId = this.getSourceId(source);
-
       // Deskolemize terms, so we send the original blank nodes to each source.
       // Note that some sources may not match bnodes by label. SPARQL endpoints for example consider them variables.
       const patternS = FederatedQuadSource.deskolemizeTerm(subject, sourceId);
@@ -216,17 +227,19 @@ export class FederatedQuadSource implements IQuadSource {
       } else {
         output = await this.mediatorResolveQuadPattern.mediate({ pattern, context });
       }
-
-      // Call RdfMetadataAggregate bus
-      const metadataPromise = this.mediatorRdfMetadataAggregate
-          .mediate({quadPatternOutput: output, context, source});
-      remainingSources--;
-
-      if(remainingSources===0) {
-        // We collected metadata for all sources, we can resolve the metadata & emit
-        const awaitedAggregatedMetadata = await metadataPromise;
-        it.setProperty('metadata', awaitedAggregatedMetadata);
-      }
+      // Handle the metadata from this source
+      output.data.getProperty('metadata', async (subMetadata: Record<string, any>) => {
+        const aggregateOutput = await this.mediatorRdfMetadataAggregate.mediate({metadata, subMetadata, context, source});
+        metadata = aggregateOutput.metadata;
+        if (metadata.totalItems === Number.POSITIVE_INFINITY) {
+          // We're already at infinite, so ignore any later metadata
+          remainingSources = 0;
+          checkEmitMetadata(Number.POSITIVE_INFINITY, source, pattern);
+        } else {
+          remainingSources--;
+          checkEmitMetadata(metadata.totalItems, source, pattern);
+        }
+      });
 
       // Determine the data stream from this source
       let data = output.data.map(quad => FederatedQuadSource.skolemizeQuad(quad, sourceId));

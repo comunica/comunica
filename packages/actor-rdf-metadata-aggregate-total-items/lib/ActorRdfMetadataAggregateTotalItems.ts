@@ -16,41 +16,23 @@ export class ActorRdfMetadataAggregateTotalItems extends ActorRdfMetadataAggrega
   }
 
   public async run(action: IActionRdfMetadataAggregate): Promise<IActorRdfMetadataAggregateOutput> {
-    const output = action.quadPatternOutput;
-    // Get the (sub)metadata from the quad pattern output data iterator
-    const recordsPromise = new Promise<Record<string,any>[]>((resolve, reject)=>{
-      try {
-        output.data.getProperty('metadata', (subMetadata: Record<string, any>) => {
-          // Create metadata record containing the totalItems from subMetadata and the corresponding source.
-          const metadataRecord = {
-            totalItems: subMetadata.totalItems,
-            resolvedFrom:action.source
-          }
+    const { metadata, subMetadata } = action;
+    let totalItems = metadata.totalItems;
+    let subTotalItems = subMetadata.totalItems;
 
-          this.records.push(metadataRecord);
-          resolve(this.records);
-        });
-      } catch (err) {
-        console.error('Error while processing submetadata');
-        reject(err)
-      }
-    })
+    if ((!subMetadata.totalItems && subMetadata.totalItems !== 0) || !Number.isFinite(subMetadata.totalItems))
+      totalItems = Number.POSITIVE_INFINITY;
 
+    // The metadata doesn't have a totalItems property, totalItems will be undefined.
+    // Depending on whether the sub metadata contains a totalItems property,
+    // we set it to either that totalItems value or zero
+    if (!totalItems)
+      totalItems = subTotalItems ? subTotalItems : 0
+    else
+      totalItems += subMetadata.totalItems;
 
-    // Create a promise to the aggregated result (the total number of items from each metadata record)
-    const metadataPromise = new Promise<Record<string, any>>(async (resolve,reject)=>{
-      const resolvedRecords = await recordsPromise;
-      const total = resolvedRecords.map(x=>x.totalItems).reduce((acc,val)=>acc+val);
-      resolve ({
-        totalItems: total, // this value may be altered by subsequent operations (e.g. the slice query operation)
-        [this.name]: {
-          totalItems: total,
-          records: resolvedRecords
-        }
-      })
-    })
-
-    // Return the aggregated number of items and the actual metadata records
-    return metadataPromise
+    return {
+      metadata: { ...metadata, totalItems }
+    };
   }
 }

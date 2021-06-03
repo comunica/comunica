@@ -1,11 +1,5 @@
-import {
-  IActionRdfResolveQuadPattern,
-  IActorRdfResolveQuadPatternOutput,
-  IDataSource
-} from '@comunica/bus-rdf-resolve-quad-pattern';
 import { Actor, IAction, IActorArgs, IActorOutput, IActorTest } from '@comunica/core';
-import type { AsyncIterator } from 'asynciterator';
-import type * as RDF from 'rdf-js';
+import {IDataSource} from "@comunica/bus-rdf-resolve-quad-pattern";
 
 /**
  * A comunica actor for rdf-metadata-aggregate events.
@@ -29,9 +23,11 @@ export abstract class ActorRdfMetadataAggregate extends Actor<IActionRdfMetadata
 }
 
 export interface IActionRdfMetadataAggregate extends IAction {
-  quadPatternOutput: IActorRdfResolveQuadPatternOutput;
-  source: IDataSource;
+  metadata: Record<string, any>;
+  subMetadata: Record<string, any>;
+  source?: IDataSource;
 }
 
 export interface IActorRdfMetadataAggregateOutput extends IActorOutput {
+  metadata: Record<string, any>;
 }
