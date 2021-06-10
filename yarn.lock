@@ -2211,29 +2211,29 @@
   dependencies:
     "@octokit/openapi-types" "^6.0.0"
 
-"@pollyjs/adapter-node-http@^5.0.0":
-  version "5.1.0"
-  resolved "https://registry.yarnpkg.com/@pollyjs/adapter-node-http/-/adapter-node-http-5.1.0.tgz#5bad8e21aeae7fc630bc2aa92be1385e4a77b456"
-  integrity sha512-3G2oYzSrHOGkHhDST/s3zj0luR6nQUfuLkZekYpNBNTIDZIreaOlNiwG7DAqB1YboGxFeQWKTMoqYu33cK2qYA==
+"@pollyjs/adapter-node-http@^5.1.0":
+  version "5.1.1"
+  resolved "https://registry.yarnpkg.com/@pollyjs/adapter-node-http/-/adapter-node-http-5.1.1.tgz#b717f28eda10e76e80c821f33d71b1cf064f41d0"
+  integrity sha512-hN4pemkI4Wb+jAloezZrKDCqQUAlIXcgRXtrG6CZseE14QVQ8zl2I1RakUnEHBgeRWtvl5ve6uJrFNGdE8mrLA==
   dependencies:
-    "@pollyjs/adapter" "^5.0.0"
-    "@pollyjs/utils" "^5.0.0"
+    "@pollyjs/adapter" "^5.1.1"
+    "@pollyjs/utils" "^5.1.1"
     lodash-es "^4.17.11"
     nock "^12.0.3"
 
-"@pollyjs/adapter@^5.0.0":
-  version "5.0.0"
-  resolved "https://registry.yarnpkg.com/@pollyjs/adapter/-/adapter-5.0.0.tgz#faba5a7e68db38f56b4bf04271d8f5a10d5ca8c2"
-  integrity sha512-GaJUp9hKKKbRbh1FDbjVfxNGIYs8/1QQI5SR+zjz+OjpjV2btRPFCq1cqO4ORrHA2pTIC8IvEL3lgPSG4v/cPg==
+"@pollyjs/adapter@^5.1.1":
+  version "5.1.1"
+  resolved "https://registry.yarnpkg.com/@pollyjs/adapter/-/adapter-5.1.1.tgz#ef55788dd59ba77589b884856406323fff700606"
+  integrity sha512-4Ju6batDrkqyhYFhmKhjDTIbkfj0p0kZslCQ/saA1JMWIqlFnrXMiJVCSVlwNEsej3Zt/n9JfU5mEzbXxi+3vg==
   dependencies:
-    "@pollyjs/utils" "^5.0.0"
+    "@pollyjs/utils" "^5.1.1"
 
-"@pollyjs/core@^5.0.0":
-  version "5.1.0"
-  resolved "https://registry.yarnpkg.com/@pollyjs/core/-/core-5.1.0.tgz#6a4233ffe27dcd789bd6f31265451b35c24e090f"
-  integrity sha512-t29uNtc8Jq9MX3md+QgsfDtmsad9zLfKWiH33JdJjSilETWGPoq90xuMmWSXoXQCfIEVhIQ9rPEIvcmFpyqGCg==
+"@pollyjs/core@^5.1.0":
+  version "5.1.1"
+  resolved "https://registry.yarnpkg.com/@pollyjs/core/-/core-5.1.1.tgz#f9595083a95f22e37f610bfacaa38299bffae6f3"
+  integrity sha512-MggjU1GT0SP8bPRoqvL2QZ0GhJABwGb1E21+Duv08v8HqGtesN0XEZBZxVsXhspqwAKI6oOrB7767a2TOptT1g==
   dependencies:
-    "@pollyjs/utils" "^5.0.0"
+    "@pollyjs/utils" "^5.1.1"
     "@sindresorhus/fnv1a" "^1.2.0"
     blueimp-md5 "^2.10.0"
     fast-json-stable-stringify "^2.0.0"
@@ -2280,6 +2280,14 @@
   version "5.0.0"
   resolved "https://registry.yarnpkg.com/@pollyjs/utils/-/utils-5.0.0.tgz#c001f93865db82780dd17642c54e3919260c0034"
   integrity sha512-zXoR13NGR1fVoUAcKR9/8AYCXZsMkG5EdvTZbR1nk5hCYJN1AR73HAKXMPsk/2vkLnBr6LWoAr3f9LjwqJOehQ==
+  dependencies:
+    qs "^6.7.0"
+    url-parse "^1.4.7"
+
+"@pollyjs/utils@^5.1.1":
+  version "5.1.1"
+  resolved "https://registry.yarnpkg.com/@pollyjs/utils/-/utils-5.1.1.tgz#3dd3c7df82ef5df3fdb6db7be14f097c44b2001c"
+  integrity sha512-Kzx4NkFJI2p2N82mCtpGZk82ArDCJUnRHPZ1mTEIkRSOwtz30N729+dbI39aS6H5oGcD8x/KAx3ZTAj3EQLxaQ==
   dependencies:
     qs "^6.7.0"
     url-parse "^1.4.7"
@@ -2568,10 +2576,10 @@
   resolved "https://registry.yarnpkg.com/@types/spark-md5/-/spark-md5-3.0.2.tgz#da2e8a778a20335fc4f40b6471c4b0d86b70da55"
   integrity sha512-82E/lVRaqelV9qmRzzJ1PKTpyrpnT7mwdneKNJB9hUtypZDMggloDfFUCIqRRx3lYRxteCwXSq9c+W71Vf0QnQ==
 
-"@types/sparqljs@^3.0.0":
-  version "3.1.1"
-  resolved "https://registry.yarnpkg.com/@types/sparqljs/-/sparqljs-3.1.1.tgz#2569e958ffa4a1172272bac2835f5e6d1c17a10f"
-  integrity sha512-S/+x6MDEBzVlLvBhsH/r6UvD3I0jXYpWiahCNkcmd8Dli6brxAiTorQ1ZKIGpPgP1tmZrmuQ075Fi7KIrrMXDA==
+"@types/sparqljs@3.0.1", "@types/sparqljs@^3.0.0", "@types/sparqljs@^3.0.1":
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/@types/sparqljs/-/sparqljs-3.0.1.tgz#198429396d5e7abb9cd280cb2843b30bad033b32"
+  integrity sha512-2SGl+Q4Gq0Rh/y0ZT6iBvQDDlws3NiPKfkMaEnGDWHvwNonlSZt03jm7HJ7C9I+huwBQ5l5SOYpeJsrh0nOJew==
   dependencies:
     "@types/rdf-js" "*"
 
@@ -5513,6 +5521,24 @@ fetch-sparql-endpoint@^2.0.0:
     stream-to-string "^1.1.0"
     web-streams-node "^0.4.0"
 
+fetch-sparql-endpoint@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/fetch-sparql-endpoint/-/fetch-sparql-endpoint-2.0.1.tgz#db8a34aa25346eaa6d41de11430693a93954a591"
+  integrity sha512-5+iRsmS69sdwkJkaTHFUJuXIAyrv62DL3IOwZOoFcXvXuughD9QsVKQwpsyRRrIoEsJyycerpnjEqcO6javfTA==
+  dependencies:
+    "@types/rdf-js" "*"
+    "@types/sparqljs" "^3.0.1"
+    cross-fetch "^3.0.6"
+    is-stream "^2.0.0"
+    minimist "^1.2.0"
+    n3 "^1.6.3"
+    rdf-string "^1.5.0"
+    sparqljs "^3.1.2"
+    sparqljson-parse "^1.6.0"
+    sparqlxml-parse "^1.4.0"
+    stream-to-string "^1.1.0"
+    web-streams-node "^0.4.0"
+
 figgy-pudding@^3.5.1:
   version "3.5.2"
   resolved "https://registry.yarnpkg.com/figgy-pudding/-/figgy-pudding-3.5.2.tgz#b4eee8148abb01dcf1d1ac34367d59e12fa61d6e"
@@ -7469,10 +7495,23 @@ jsonld-context-parser@^2.0.0, jsonld-context-parser@^2.0.2, jsonld-context-parse
     http-link-header "^1.0.2"
     relative-to-absolute-iri "^1.0.5"
 
-jsonld-streaming-parser@^2.1.0, jsonld-streaming-parser@^2.1.1, jsonld-streaming-parser@^2.3.0:
+jsonld-streaming-parser@^2.1.0, jsonld-streaming-parser@^2.1.1:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/jsonld-streaming-parser/-/jsonld-streaming-parser-2.3.0.tgz#7417fc867c9fefbf7452259f0b78e707e0c357fa"
   integrity sha512-IJiFhX9GQ/uLugd3BSYgJDaisAc22fV2Ij7tH0yWG8KZpriSGadRVvxUkfglzRKSjqxYBsZ+qAQ+UR7YGwiHRQ==
+  dependencies:
+    "@types/http-link-header" "^1.0.1"
+    "@types/rdf-js" "^4.0.0"
+    canonicalize "^1.0.1"
+    http-link-header "^1.0.2"
+    jsonld-context-parser "^2.1.2"
+    jsonparse "^1.3.1"
+    rdf-data-factory "^1.0.4"
+
+jsonld-streaming-parser@^2.3.2:
+  version "2.3.2"
+  resolved "https://registry.yarnpkg.com/jsonld-streaming-parser/-/jsonld-streaming-parser-2.3.2.tgz#a3e1bd405a500186cc12b0f1fcee8a97b8392dd4"
+  integrity sha512-C9hyL5LRb2K0eaS5biP+ixUtMjr3UPJn9WInNYAmjX9tL7NzeSw3lY7nW3GEnKETxF3I3btvEPR1Nm/+tHMWZQ==
   dependencies:
     "@types/http-link-header" "^1.0.1"
     "@types/rdf-js" "^4.0.0"
