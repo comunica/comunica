@@ -1,0 +1,21 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-metadata-extract-put-accepted/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-metadata-extract/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-rdf-metadata-extract-put-accepted",
+  "components": [
+    {
+      "@id": "carmepa:Actor/RdfMetadataExtract/PutAccepted",
+      "@type": "Class",
+      "extends": "cbrme:Actor/RdfMetadataExtract",
+      "requireElement": "ActorRdfMetadataExtractPutAccepted",
+      "comment": "A comunica POST Accepted RDF Metadata Extract Actor.",
+      "constructorArguments": [
+        {
+          "extends": "cbrme:Actor/RdfMetadataExtract/constructorArgumentsObject"
+        }
+      ]
+    }
+  ]
+}
