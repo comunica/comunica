@@ -1,0 +1,12 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
+      "carmeahm": "npmd:@comunica/actor-rdf-metadata-extract-allow-http-methods/",
+      "files-carmeahm": "carmeahm:^1.0.0/",
+
+      "ActorRdfMetadataExtractAllowHttpMethods": "carmeahm:Actor/RdfMetadataExtract/AllowHttpMethods"
+    }
+  ]
+}
