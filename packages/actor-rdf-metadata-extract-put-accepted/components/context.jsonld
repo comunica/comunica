@@ -1,0 +1,12 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
+      "carmepa": "npmd:@comunica/actor-rdf-metadata-extract-put-accepted/",
+      "files-carmepa": "carmepa:^1.0.0/",
+
+      "ActorRdfMetadataExtractPutAccepted": "carmepa:Actor/RdfMetadataExtract/PutAccepted"
+    }
+  ]
+}
