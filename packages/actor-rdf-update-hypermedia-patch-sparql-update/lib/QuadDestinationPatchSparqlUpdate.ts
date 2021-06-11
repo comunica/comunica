@@ -14,7 +14,7 @@ import { Headers } from 'cross-fetch';
 import type * as RDF from 'rdf-js';
 
 /**
- * A quad destination that represents an LDP resource.
+ * A quad destination that represents a resource that is patchable via SPARQL Update.
  */
 export class QuadDestinationPatchSparqlUpdate implements IQuadDestination {
   private readonly url: string;

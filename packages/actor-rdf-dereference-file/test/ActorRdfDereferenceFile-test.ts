@@ -93,6 +93,7 @@ describe('ActorRdfDereferenceFile', () => {
             data,
             mediaType: 'text/turtle',
           },
+          exists: true,
           triples: false,
           url: p,
         },

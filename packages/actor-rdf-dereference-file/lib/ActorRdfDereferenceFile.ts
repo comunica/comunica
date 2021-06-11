@@ -69,6 +69,7 @@ export class ActorRdfDereferenceFile extends ActorRdfDereferenceMediaMappings {
     return {
       headers: {},
       quads: this.handleDereferenceStreamErrors(action, parseOutput.quads),
+      exists: true,
       triples: parseOutput.triples,
       url: action.url,
     };

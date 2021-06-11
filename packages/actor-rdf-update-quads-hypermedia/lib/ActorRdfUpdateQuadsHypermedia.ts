@@ -68,7 +68,8 @@ export class ActorRdfUpdateQuadsHypermedia extends ActorRdfUpdateQuadsDestinatio
       try {
         // Dereference destination URL
         const rdfDereferenceOutput: IActorRdfDereferenceOutput = await this.mediatorRdfDereference
-          .mediate({ context, url });
+          .mediate({ context, url, acceptErrors: true });
+        exists = rdfDereferenceOutput.exists;
         url = rdfDereferenceOutput.url;
 
         // Determine the metadata
@@ -81,7 +82,6 @@ export class ActorRdfUpdateQuadsHypermedia extends ActorRdfUpdateQuadsDestinatio
           metadata: rdfMetadataOuput.metadata,
           headers: rdfDereferenceOutput.headers,
         })).metadata;
-        exists = true;
       } catch {
         metadata = {};
         exists = false;

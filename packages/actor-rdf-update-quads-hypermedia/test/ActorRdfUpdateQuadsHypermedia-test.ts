@@ -24,6 +24,7 @@ describe('ActorRdfUpdateQuadsHypermedia', () => {
         mediate: jest.fn(async({ url }: any) => {
           const data = {
             quads: 'QUADS',
+            exists: true,
             triples: true,
             url,
             headers: 'HEADERS',
@@ -100,6 +101,7 @@ describe('ActorRdfUpdateQuadsHypermedia', () => {
         expect(mediatorRdfDereference.mediate).toHaveBeenCalledWith({
           context,
           url: 'abc',
+          acceptErrors: true,
         });
         expect(mediatorMetadata.mediate).toHaveBeenCalledWith({
           context,
@@ -199,6 +201,28 @@ describe('ActorRdfUpdateQuadsHypermedia', () => {
           context,
           forceDestinationType: '',
           metadata: {},
+          url: 'abc',
+          exists: false,
+        });
+      });
+
+      it('should delegate exist-false dereferences to the destination', async() => {
+        mediatorRdfDereference.mediate = jest.fn(async({ url }: any) => {
+          const data = {
+            quads: 'QUADS',
+            exists: false,
+            triples: true,
+            url,
+            headers: 'HEADERS',
+          };
+          return data;
+        });
+        await actor.getDestination(context);
+
+        expect(mediatorRdfUpdateHypermedia.mediate).toHaveBeenCalledWith({
+          context,
+          forceDestinationType: '',
+          metadata: { a: 1 },
           url: 'abc',
           exists: false,
         });

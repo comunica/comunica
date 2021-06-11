@@ -46,6 +46,15 @@ describe('ActorRdfUpdateHypermediaPatchSparqlUpdate', () => {
         .toThrow(`Actor actor could not detect a destination with 'application/sparql-update' as 'Accept-Patch' header.`);
     });
 
+    it('should not test on a non-existing destination', () => {
+      const context = ActionContext({ [KeysRdfUpdateQuads.destination]: 'abc' });
+      const url = 'abc';
+      const metadata = { patchSparqlUpdate: true };
+      const exists = false;
+      return expect(actor.test({ context, url, metadata, exists })).rejects
+        .toThrow(`Actor actor can only patch a destination that already exists.`);
+    });
+
     it('should test on invalid metadata with forced destination type', () => {
       const context = ActionContext({ [KeysRdfUpdateQuads.destination]: 'abc' });
       const url = 'abc';
