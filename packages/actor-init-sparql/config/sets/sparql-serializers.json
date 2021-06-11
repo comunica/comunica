@@ -34,6 +34,7 @@
         "cc:Mediator/bus": { "@id": "cbrs:Bus/RdfSerialize" }
       },
       "mediatorRdfSerializeMediaTypeCombiner": {
+        "@id": "config-sets:sparql-serializers.json#mediatorRdfSerializeMediatypes",
         "@type": "MediatorCombineUnion",
         "cc:Mediator/bus": { "@id": "cbrs:Bus/RdfSerialize" },
         "cmcu:Mediator/CombineUnion/field": "mediaTypes"
