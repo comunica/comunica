@@ -1,0 +1,56 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-update-hypermedia-put-ldp/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-update-hypermedia/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-rdf-update-hypermedia-put-ldp",
+  "components": [
+    {
+      "@id": "caruhpl:Actor/RdfUpdateHypermedia/PutLdp",
+      "@type": "Class",
+      "extends": "cbruh:Actor/RdfUpdateHypermedia",
+      "requireElement": "ActorRdfUpdateHypermediaPutLdp",
+      "comment": "A comunica Put LDP RDF Update Hypermedia Actor.",
+      "parameters": [
+        {
+          "@id": "caruhpl:Actor/RdfUpdateHypermedia/PutLdp#mediatorHttp",
+          "comment": "The HTTP mediator",
+          "required": true,
+          "unique": true
+        },
+        {
+          "@id": "caruhpl:Actor/RdfUpdateHypermedia/PutLdp#mediatorRdfSerializeMediatypes",
+          "comment": "The RDF Serialize mediator for collecting media types",
+          "required": true,
+          "unique": true
+        },
+        {
+          "@id": "caruhpl:Actor/RdfUpdateHypermedia/PutLdp#mediatorRdfSerialize",
+          "comment": "The RDF Serialize mediator for handling serialization",
+          "required": true,
+          "unique": true
+        }
+      ],
+      "constructorArguments": [
+        {
+          "@id": "caruhpl:Actor/RdfUpdateHypermedia/PutLdp/constructorArgumentsObject",
+          "extends": "cbruh:Actor/RdfUpdateHypermedia/constructorArgumentsObject",
+          "fields": [
+            {
+              "keyRaw": "mediatorHttp",
+              "value": "caruhpl:Actor/RdfUpdateHypermedia/PutLdp#mediatorHttp"
+            },
+            {
+              "keyRaw": "mediatorRdfSerializeMediatypes",
+              "value": "caruhpl:Actor/RdfUpdateHypermedia/PutLdp#mediatorRdfSerializeMediatypes"
+            },
+            {
+              "keyRaw": "mediatorRdfSerialize",
+              "value": "caruhpl:Actor/RdfUpdateHypermedia/PutLdp#mediatorRdfSerialize"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
