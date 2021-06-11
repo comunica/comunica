@@ -207,6 +207,7 @@ describe('ActorRdfDereferenceHttpParse', () => {
       };
       const output = await actor.run({ url: 'https://www.google.com/' });
       expect(output.url).toEqual('https://www.google.com/index.html');
+      expect(output.exists).toEqual(true);
       expect(output.triples).toEqual(true);
       expect(output.headers).toEqual(headers);
       expect(await arrayifyStream(output.quads)).toEqual([]);
@@ -278,6 +279,14 @@ describe('ActorRdfDereferenceHttpParse', () => {
     it('should not run on a 404 without a body', () => {
       return expect(actor.run({ url: 'https://www.nogoogle.com/nobody' })).rejects
         .toThrow(new Error('Could not retrieve https://www.nogoogle.com/nobody (400: unknown error)'));
+    });
+
+    it('should run on a 404 when acceptErrors is true', async() => {
+      const output = await actor.run({ url: 'https://www.nogoogle.com/notfound', acceptErrors: true });
+      expect(output.url).toEqual('https://www.google.com/index.html');
+      expect(output.exists).toEqual(false);
+      expect(output.triples).toEqual(true);
+      expect(await arrayifyStream(output.quads)).toEqual([]);
     });
 
     it('should run on a 404 in lenient mode', async() => {
