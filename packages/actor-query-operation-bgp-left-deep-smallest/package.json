@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-operation-bgp-left-deep-smallest",
-  "version": "1.21.1",
+  "version": "1.21.2",
   "description": "A bgp-left-deep-smallest query-operation actor",
   "lsd:module": true,
   "main": "index.js",

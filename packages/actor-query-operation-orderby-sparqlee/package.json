@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-operation-orderby-sparqlee",
-  "version": "1.21.1",
+  "version": "1.21.2",
   "description": "A orderby-sparqlee query-operation actor",
   "lsd:module": true,
   "main": "index.js",

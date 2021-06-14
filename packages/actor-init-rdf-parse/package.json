@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-init-rdf-parse",
-  "version": "1.21.1",
+  "version": "1.21.2",
   "description": "A Comunica engine for parsing RDF",
   "lsd:module": true,
   "main": "index.js",
@@ -37,7 +37,7 @@
   ],
   "dependencies": {
     "@comunica/actor-abstract-mediatyped": "^1.21.1",
-    "@comunica/actor-rdf-parse-jsonld": "^1.21.1",
+    "@comunica/actor-rdf-parse-jsonld": "^1.21.2",
     "@comunica/actor-rdf-parse-n3": "^1.21.1",
     "@comunica/actor-rdf-parse-rdfxml": "^1.21.1",
     "@comunica/bus-init": "^1.21.1",
