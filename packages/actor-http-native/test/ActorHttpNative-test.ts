@@ -245,5 +245,13 @@ describe('ActorHttpNative', () => {
       );
       expect(result).toMatchObject({ status: 200 });
     });
+
+    it('should send the given string body via init', async() => {
+      mockSetup({ statusCode: 200 });
+      const result: any = await actor.run(
+        { input: new Request('http://example.com'), init: { body: 'my-body', method: 'POST' }},
+      );
+      expect(result).toMatchObject({ status: 200 });
+    });
   });
 });

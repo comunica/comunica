@@ -58,6 +58,9 @@ export default class Requester {
       if (settings.body instanceof URLSearchParams) {
         request.write(settings.body.toString());
         request.end();
+      } else if (typeof settings.body === 'string') {
+        request.write(settings.body);
+        request.end();
       } else {
         ActorHttp.toNodeReadable(settings.body).pipe(request);
       }
