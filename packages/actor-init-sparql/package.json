@@ -131,6 +131,7 @@
     "@comunica/actor-rdf-serialize-n3": "^1.21.1",
     "@comunica/actor-rdf-update-hypermedia-patch-sparql-update": "^1.21.1",
     "@comunica/actor-rdf-update-hypermedia-put-ldp": "^1.0.0",
+    "@comunica/actor-rdf-update-hypermedia-sparql": "^1.0.0",
     "@comunica/actor-rdf-update-quads-hypermedia": "^1.21.1",
     "@comunica/actor-rdf-update-quads-rdfjs-store": "^1.21.1",
     "@comunica/actor-sparql-parse-algebra": "^1.21.1",

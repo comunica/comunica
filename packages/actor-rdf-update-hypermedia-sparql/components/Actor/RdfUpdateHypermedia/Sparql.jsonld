@@ -1,0 +1,58 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-update-hypermedia-sparql/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-update-hypermedia/^1.0.0/components/context.jsonld"
+  ],
+  "@id": "npmd:@comunica/actor-rdf-update-hypermedia-sparql",
+  "components": [
+    {
+      "@id": "caruhs:Actor/RdfUpdateHypermedia/Sparql",
+      "@type": "Class",
+      "extends": "cbruh:Actor/RdfUpdateHypermedia",
+      "requireElement": "ActorRdfUpdateHypermediaSparql",
+      "comment": "A comunica SPARQL RDF Update Hypermedia Actor.",
+      "parameters": [
+        {
+          "@id": "caruhs:Actor/RdfUpdateHypermedia/Sparql#mediatorHttp",
+          "comment": "The HTTP mediator",
+          "required": true,
+          "unique": true
+        },
+        {
+          "@id": "caruhs:Actor/RdfUpdateHypermedia/Sparql#mediatorRdfSerialize",
+          "comment": "The RDF Serialize mediator for handling serialization",
+          "required": true,
+          "unique": true
+        },
+        {
+          "@id": "caruhs:Actor/RdfUpdateHypermedia/Sparql#checkUrlSuffix",
+          "comment": "If URLs ending with '/sparql' should also be considered SPARQL endpoints.",
+          "required": true,
+          "unique": true,
+          "range": "xsd:boolean",
+          "default": true
+        },
+      ],
+      "constructorArguments": [
+        {
+          "@id": "caruhs:Actor/RdfUpdateHypermedia/Sparql/constructorArgumentsObject",
+          "extends": "cbruh:Actor/RdfUpdateHypermedia/constructorArgumentsObject",
+          "fields": [
+            {
+              "keyRaw": "mediatorHttp",
+              "value": "caruhs:Actor/RdfUpdateHypermedia/Sparql#mediatorHttp"
+            },
+            {
+              "keyRaw": "mediatorRdfSerialize",
+              "value": "caruhs:Actor/RdfUpdateHypermedia/Sparql#mediatorRdfSerialize"
+            },
+            {
+              "keyRaw": "checkUrlSuffix",
+              "value": "caruhs:Actor/RdfUpdateHypermedia/Sparql#checkUrlSuffix"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
