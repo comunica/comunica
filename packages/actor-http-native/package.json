@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-http-native",
-  "version": "1.21.2",
+  "version": "1.21.3",
   "description": "A native http actor",
   "lsd:module": true,
   "main": "index.js",

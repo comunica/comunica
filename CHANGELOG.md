@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v1.21.3"></a>
+## [v1.21.3](https://github.com/comunica/comunica/compare/v1.21.2...v1.21.3) - 2021-06-18
+
+### Fixed
+* [Fix POST requests with body not working on browsers](https://github.com/comunica/comunica/commit/3b01e4bf492293f0e887acf4423ab872c035085a)
+
 <a name="v1.21.2"></a>
 ## [v1.21.2](https://github.com/comunica/comunica/compare/v1.21.1...v1.21.2) - 2021-06-14
 
