@@ -5,6 +5,7 @@ import {
   Bindings,
 } from '@comunica/bus-query-operation';
 import { getDataSourceType, getDataSourceValue } from '@comunica/bus-rdf-resolve-quad-pattern';
+import { getDataDestinationType, getDataDestinationValue } from '@comunica/bus-rdf-update-quads';
 import type { ActionContext, Actor, IActorArgs, IActorTest, Mediator } from '@comunica/core';
 import type { IMediatorTypeHttpRequests } from '@comunica/mediatortype-httprequests';
 import type { IActionQueryOperation,
@@ -15,6 +16,7 @@ import type { IActionQueryOperation,
 import { DataSourceUtils } from '@comunica/utils-datasource';
 import { wrap } from 'asynciterator';
 import { SparqlEndpointFetcher } from 'fetch-sparql-endpoint';
+import type { IUpdateTypes } from 'fetch-sparql-endpoint';
 import type * as RDF from 'rdf-js';
 import { termToString } from 'rdf-string';
 import { Factory, toSparql, Util } from 'sparqlalgebrajs';
@@ -48,7 +50,11 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
       throw new Error('Missing field \'operation\' in a query operation action.');
     }
     const source = await DataSourceUtils.getSingleSource(action.context);
-    if (source && getDataSourceType(source) === 'sparql') {
+    const destination = await DataSourceUtils.getSingleDestination(action.context);
+    if (source && getDataSourceType(source) === 'sparql' &&
+      (!destination ||
+        (getDataDestinationType(destination) === 'sparql' &&
+          getDataDestinationValue(destination) === getDataSourceValue(source)))) {
       return { httpRequests: 1 };
     }
     throw new Error(`${this.name} requires a single source with a 'sparql' endpoint to be present in the context.`);
@@ -65,12 +71,17 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
     // Determine the full SPARQL query that needs to be sent to the endpoint
     // Also check the type of the query (SELECT, CONSTRUCT (includes DESCRIBE) or ASK)
     let query: string | undefined;
-    let type: 'SELECT' | 'CONSTRUCT' | 'ASK' | 'UNKNOWN' | undefined;
+    let type: 'SELECT' | 'CONSTRUCT' | 'ASK' | 'UNKNOWN' | IUpdateTypes | undefined;
     let variables: RDF.Variable[] | undefined;
     try {
       query = toSparql(action.operation);
       // This will throw an error in case the result is an invalid SPARQL query
       type = this.endpointFetcher.getQueryType(query);
+
+      // Also check if this is an update query
+      if (type === 'UNKNOWN') {
+        type = this.endpointFetcher.getUpdateTypes(query);
+      }
     } catch {
       // Ignore errors
     }
@@ -94,6 +105,11 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
         return <IActorQueryOperationOutputBoolean>{
           type: 'boolean',
           booleanResult: this.endpointFetcher.fetchAsk(endpoint, query!),
+        };
+      default:
+        return {
+          type: 'update',
+          updateResult: this.endpointFetcher.fetchUpdate(endpoint, query!),
         };
     }
   }

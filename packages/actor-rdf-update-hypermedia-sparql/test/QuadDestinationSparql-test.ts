@@ -16,12 +16,16 @@ describe('QuadDestinationSparql', () => {
 
   beforeEach(() => {
     mediatorHttp = {
-      mediate: jest.fn(() => ({
-        status: 200,
-        body: streamifyString(`RESPONSE`),
-        headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
-        ok: true,
-      })),
+      mediate: jest.fn(() => {
+        const body = streamifyString(`RESPONSE`);
+        body.cancel = jest.fn();
+        return {
+          status: 200,
+          body,
+          headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
+          ok: true,
+        };
+      }),
     };
     mediatorRdfSerialize = {
       mediate: jest.fn(() => ({
@@ -56,12 +60,14 @@ describe('QuadDestinationSparql', () => {
     });
 
     it('should throw on a server error', async() => {
+      const body = streamifyString(`ERROR`);
       mediatorHttp.mediate = () => ({
         status: 400,
-        body: streamifyString(`ERROR`),
+        body,
         headers: new Headers({ 'Content-Type': 'application/sparql-results+json' }),
         ok: false,
       });
+      body.cancel = jest.fn();
       await expect(destination.insert(<any> 'QUADS')).rejects
         .toThrow('Invalid SPARQL endpoint (abc) response: undefined');
     });

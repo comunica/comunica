@@ -1,6 +1,7 @@
 import type { DataSources, IDataSource } from '@comunica/bus-rdf-resolve-quad-pattern';
 import { getDataSourceType } from '@comunica/bus-rdf-resolve-quad-pattern';
-import { KeysRdfResolveQuadPattern } from '@comunica/context-entries';
+import type { IDataDestination } from '@comunica/bus-rdf-update-quads';
+import { KeysRdfResolveQuadPattern, KeysRdfUpdateQuads } from '@comunica/context-entries';
 import type { ActionContext } from '@comunica/core';
 
 /**
@@ -45,5 +46,17 @@ export const DataSourceUtils = {
   async singleSourceHasType(context: ActionContext | undefined, requiredType: string): Promise<boolean> {
     const actualType = await this.getSingleSourceType(context);
     return actualType ? actualType === requiredType : false;
+  },
+
+  /**
+   * Get the single destination if the context contains just a single destination.
+   * @param {ActionContext} context A context, can be null.
+   * @return {Promise<IDataDestination>} A promise resolving to the single datadestination or undefined.
+   */
+  async getSingleDestination(context?: ActionContext): Promise<IDataDestination | undefined> {
+    if (context && context.has(KeysRdfUpdateQuads.destination)) {
+      // If the single destination is set
+      return context.get(KeysRdfUpdateQuads.destination);
+    }
   },
 };

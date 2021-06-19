@@ -1,4 +1,5 @@
 /* eslint-disable max-len */
+import type { IActorQueryOperationOutputUpdate } from '@comunica/bus-query-operation';
 import {
   ActorQueryOperation,
   Bindings,
@@ -53,6 +54,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
   }
 }`);
         }
+        body.cancel = jest.fn();
         return {
           body,
           headers: new Headers({ 'Content-Type': SparqlEndpointFetcher.CONTENTTYPE_SPARQL_JSON }),
@@ -94,6 +96,15 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
       return expect(actor.test(op)).resolves.toBeTruthy();
     });
 
+    it('should test on a single sparql source and equal destination', () => {
+      const context = ActionContext({
+        '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'sparql', value: 'a' },
+        '@comunica/bus-rdf-update-quads:destination': { type: 'sparql', value: 'a' },
+      });
+      const op: any = { operation: 'bla', context };
+      return expect(actor.test(op)).resolves.toBeTruthy();
+    });
+
     it('should not test on a single non-sparql source', () => {
       const context = ActionContext({
         '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'nosparql' },
@@ -105,6 +116,15 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
     it('should not test on a missing operation', () => {
       const context = ActionContext({
         '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'sparql' },
+      });
+      const op: any = { operation: null, context };
+      return expect(actor.test(op)).rejects.toBeTruthy();
+    });
+
+    it('should not test on a differing source and destination', () => {
+      const context = ActionContext({
+        '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'sparql', value: 'a' },
+        '@comunica/bus-rdf-update-quads:destination': { type: 'sparql', value: 'b' },
       });
       const op: any = { operation: null, context };
       return expect(actor.test(op)).rejects.toBeTruthy();
@@ -227,6 +247,20 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
         quad('http://ex.org/s', 'http://ex.org/p', 'http://ex.org/o1'),
         quad('http://ex.org/s', 'http://ex.org/p', 'http://ex.org/o2'),
       ]);
+    });
+
+    it('should run for an update query', async() => {
+      const context = ActionContext({
+        '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'sparql', value: 'http://example.org/sparql-update' },
+      });
+      const op = { context,
+        operation: factory.createDrop(
+          DF.namedNode('http://s'),
+          true,
+        ) };
+      const output: IActorQueryOperationOutputUpdate = <any> await actor.run(op);
+
+      await output.updateResult;
     });
 
     it('should run and error for a server error', async() => {
