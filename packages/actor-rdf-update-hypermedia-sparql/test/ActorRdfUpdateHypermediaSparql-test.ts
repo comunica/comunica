@@ -31,7 +31,8 @@ describe('ActorRdfUpdateHypermediaSparql', () => {
         bus,
         mediatorHttp,
         mediatorRdfSerialize,
-        checkUrlSuffix: true,
+        checkUrlSuffixSparql: true,
+        checkUrlSuffixUpdate: true,
       });
     });
 
@@ -49,7 +50,7 @@ describe('ActorRdfUpdateHypermediaSparql', () => {
       const metadata = { somethingElse: true };
       const exists = true;
       return expect(actor.test({ context, url, metadata, exists })).rejects
-        .toThrow(`Actor actor could not detect a SPARQL service description or URL ending on /sparql.`);
+        .toThrow(`Actor actor could not detect a SPARQL service description or URL ending on /sparql or /update.`);
     });
 
     it('should test on invalid metadata with forced destination type', () => {
@@ -76,14 +77,32 @@ describe('ActorRdfUpdateHypermediaSparql', () => {
         bus,
         mediatorHttp,
         mediatorRdfSerialize,
-        checkUrlSuffix: false,
+        checkUrlSuffixSparql: false,
+        checkUrlSuffixUpdate: true,
       });
       const context = ActionContext({ [KeysRdfUpdateQuads.destination]: 'abc' });
       const url = 'abc/sparql';
       const metadata = { somethingElse: true };
       const exists = true;
       return expect(actor.test({ context, url, metadata, exists })).rejects
-        .toThrow(`Actor actor could not detect a SPARQL service description or URL ending on /sparql.`);
+        .toThrow(`Actor actor could not detect a SPARQL service description or URL ending on /sparql or /update.`);
+    });
+
+    it('should not test on invalid metadata when URL ends with /update when checkUrlSuffix is false', () => {
+      actor = new ActorRdfUpdateHypermediaSparql({
+        name: 'actor',
+        bus,
+        mediatorHttp,
+        mediatorRdfSerialize,
+        checkUrlSuffixSparql: true,
+        checkUrlSuffixUpdate: false,
+      });
+      const context = ActionContext({ [KeysRdfUpdateQuads.destination]: 'abc' });
+      const url = 'abc/update';
+      const metadata = { somethingElse: true };
+      const exists = true;
+      return expect(actor.test({ context, url, metadata, exists })).rejects
+        .toThrow(`Actor actor could not detect a SPARQL service description or URL ending on /sparql or /update.`);
     });
 
     it('should not test on invalid metadata with forced destination type for different destination type', () => {

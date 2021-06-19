@@ -20,7 +20,8 @@ export class ActorRdfUpdateHypermediaSparql extends ActorRdfUpdateHypermedia {
   Actor<IActionRootRdfSerialize, IActorTestRootRdfSerialize, IActorOutputRootRdfSerialize>,
   IActionRootRdfSerialize, IActorTestRootRdfSerialize, IActorOutputRootRdfSerialize>;
 
-  public readonly checkUrlSuffix: boolean;
+  public readonly checkUrlSuffixSparql: boolean;
+  public readonly checkUrlSuffixUpdate: boolean;
 
   public constructor(args: IActorRdfUpdateHypermediaSparqlArgs) {
     super(args, 'sparql');
@@ -28,8 +29,9 @@ export class ActorRdfUpdateHypermediaSparql extends ActorRdfUpdateHypermedia {
 
   public async testMetadata(action: IActionRdfUpdateHypermedia): Promise<IActorTest> {
     if (!action.forceDestinationType && !action.metadata.sparqlService &&
-      !(this.checkUrlSuffix && action.url.endsWith('/sparql'))) {
-      throw new Error(`Actor ${this.name} could not detect a SPARQL service description or URL ending on /sparql.`);
+      !(this.checkUrlSuffixSparql && action.url.endsWith('/sparql')) &&
+      !(this.checkUrlSuffixUpdate && action.url.endsWith('/update'))) {
+      throw new Error(`Actor ${this.name} could not detect a SPARQL service description or URL ending on /sparql or /update.`);
     }
     return true;
   }
@@ -54,5 +56,6 @@ export interface IActorRdfUpdateHypermediaSparqlArgs
   mediatorRdfSerialize: Mediator<
   Actor<IActionRootRdfSerialize, IActorTestRootRdfSerialize, IActorOutputRootRdfSerialize>,
   IActionRootRdfSerialize, IActorTestRootRdfSerialize, IActorOutputRootRdfSerialize>;
-  checkUrlSuffix: boolean;
+  checkUrlSuffixSparql: boolean;
+  checkUrlSuffixUpdate: boolean;
 }

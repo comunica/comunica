@@ -25,8 +25,16 @@
           "unique": true
         },
         {
-          "@id": "caruhs:Actor/RdfUpdateHypermedia/Sparql#checkUrlSuffix",
+          "@id": "caruhs:Actor/RdfUpdateHypermedia/Sparql#checkUrlSuffixSparql",
           "comment": "If URLs ending with '/sparql' should also be considered SPARQL endpoints.",
+          "required": true,
+          "unique": true,
+          "range": "xsd:boolean",
+          "default": true
+        },
+        {
+          "@id": "caruhs:Actor/RdfUpdateHypermedia/Sparql#checkUrlSuffixUpdate",
+          "comment": "If URLs ending with '/update' should also be considered SPARQL endpoints.",
           "required": true,
           "unique": true,
           "range": "xsd:boolean",
@@ -47,8 +55,12 @@
               "value": "caruhs:Actor/RdfUpdateHypermedia/Sparql#mediatorRdfSerialize"
             },
             {
-              "keyRaw": "checkUrlSuffix",
-              "value": "caruhs:Actor/RdfUpdateHypermedia/Sparql#checkUrlSuffix"
+              "keyRaw": "checkUrlSuffixSparql",
+              "value": "caruhs:Actor/RdfUpdateHypermedia/Sparql#checkUrlSuffixSparql"
+            },
+            {
+              "keyRaw": "checkUrlSuffixUpdate",
+              "value": "caruhs:Actor/RdfUpdateHypermedia/Sparql#checkUrlSuffixUpdate"
             }
           ]
         }
