@@ -30,6 +30,9 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
   public readonly mediatorHttp: Mediator<Actor<IActionHttp, IActorTest, IActorHttpOutput>,
   IActionHttp, IActorTest, IActorHttpOutput>;
 
+  public readonly checkUrlSuffixSparql: boolean;
+  public readonly checkUrlSuffixUpdate: boolean;
+
   public readonly endpointFetcher: SparqlEndpointFetcher;
 
   protected lastContext?: ActionContext;
@@ -51,13 +54,20 @@ export class ActorQueryOperationSparqlEndpoint extends ActorQueryOperation {
     }
     const source = await DataSourceUtils.getSingleSource(action.context);
     const destination = await DataSourceUtils.getSingleDestination(action.context);
-    if (source && getDataSourceType(source) === 'sparql' &&
-      (!destination ||
-        (getDataDestinationType(destination) === 'sparql' &&
-          getDataDestinationValue(destination) === getDataSourceValue(source)))) {
+    const sourceType = source ? getDataSourceType(source) : undefined;
+    const destinationType = destination ? getDataDestinationType(destination) : undefined;
+    const sourceValue = source ? getDataSourceValue(source) : undefined;
+    const destinationValue = destination ? getDataDestinationValue(destination) : undefined;
+    if ((source && sourceType === 'sparql' &&
+      (!destination || (destinationType === 'sparql' && destinationValue === sourceValue))) ||
+      (source && !sourceType && (!destination || (!destinationType && destinationValue === sourceValue)) &&
+        typeof sourceValue === 'string' && (
+        (this.checkUrlSuffixSparql && sourceValue.endsWith('/sparql')) ||
+        (this.checkUrlSuffixUpdate && sourceValue.endsWith('/update'))
+      ))) {
       return { httpRequests: 1 };
     }
-    throw new Error(`${this.name} requires a single source with a 'sparql' endpoint to be present in the context.`);
+    throw new Error(`${this.name} requires a single source with a 'sparql' endpoint to be present in the context or URL ending on /sparql or /update.`);
   }
 
   public async run(action: IActionQueryOperation): Promise<IActorQueryOperationOutput> {
@@ -169,5 +179,7 @@ export interface IActorQueryOperationSparqlEndpointArgs
   extends IActorArgs<IActionQueryOperation, IActorTest, IActorQueryOperationOutput> {
   mediatorHttp: Mediator<Actor<IActionHttp, IActorTest, IActorHttpOutput>,
   IActionHttp, IActorTest, IActorHttpOutput>;
+  checkUrlSuffixSparql: boolean;
+  checkUrlSuffixUpdate: boolean;
   forceHttpGet: boolean;
 }

@@ -85,7 +85,14 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
     let actor: ActorQueryOperationSparqlEndpoint;
 
     beforeEach(() => {
-      actor = new ActorQueryOperationSparqlEndpoint({ name: 'actor', bus, mediatorHttp, forceHttpGet: false });
+      actor = new ActorQueryOperationSparqlEndpoint({
+        name: 'actor',
+        bus,
+        mediatorHttp,
+        forceHttpGet: false,
+        checkUrlSuffixSparql: true,
+        checkUrlSuffixUpdate: true,
+      });
     });
 
     it('should test on a single sparql source', () => {
@@ -103,6 +110,46 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
       });
       const op: any = { operation: 'bla', context };
       return expect(actor.test(op)).resolves.toBeTruthy();
+    });
+
+    it('should test on a URL ending with /sparql', () => {
+      const context = ActionContext({
+        '@comunica/bus-rdf-resolve-quad-pattern:source': { value: '/sparql' },
+      });
+      const op: any = { operation: 'bla', context };
+      return expect(actor.test(op)).resolves.toBeTruthy();
+    });
+
+    it('should test on a URL ending with /update', () => {
+      const context = ActionContext({
+        '@comunica/bus-rdf-resolve-quad-pattern:source': { value: '/update' },
+      });
+      const op: any = { operation: 'bla', context };
+      return expect(actor.test(op)).resolves.toBeTruthy();
+    });
+
+    it('should test on equal source and destination URL ending with /sparql', () => {
+      const context = ActionContext({
+        '@comunica/bus-rdf-resolve-quad-pattern:source': { value: '/sparql' },
+        '@comunica/bus-rdf-update-quads:destination': { value: '/sparql' },
+      });
+      const op: any = { operation: 'bla', context };
+      return expect(actor.test(op)).resolves.toBeTruthy();
+    });
+
+    it('should test on equal source and destination URL ending with /update', () => {
+      const context = ActionContext({
+        '@comunica/bus-rdf-resolve-quad-pattern:source': { value: '/update' },
+        '@comunica/bus-rdf-update-quads:destination': { value: '/update' },
+      });
+      const op: any = { operation: 'bla', context };
+      return expect(actor.test(op)).resolves.toBeTruthy();
+    });
+
+    it('should not test on no source', () => {
+      const context = ActionContext({});
+      const op: any = { operation: 'bla', context };
+      return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
     it('should not test on a single non-sparql source', () => {
@@ -125,6 +172,15 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
       const context = ActionContext({
         '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'sparql', value: 'a' },
         '@comunica/bus-rdf-update-quads:destination': { type: 'sparql', value: 'b' },
+      });
+      const op: any = { operation: null, context };
+      return expect(actor.test(op)).rejects.toBeTruthy();
+    });
+
+    it('should not test on a differing source and destination when both end with /sparql', () => {
+      const context = ActionContext({
+        '@comunica/bus-rdf-resolve-quad-pattern:source': { value: 'a/sparql' },
+        '@comunica/bus-rdf-update-quads:destination': { value: 'b/sparql' },
       });
       const op: any = { operation: null, context };
       return expect(actor.test(op)).rejects.toBeTruthy();
@@ -177,7 +233,14 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
     });
 
     it('should run for a sub-query on HTTP GET', async() => {
-      actor = new ActorQueryOperationSparqlEndpoint({ name: 'actor', bus, mediatorHttp, forceHttpGet: true });
+      actor = new ActorQueryOperationSparqlEndpoint({
+        name: 'actor',
+        bus,
+        mediatorHttp,
+        forceHttpGet: true,
+        checkUrlSuffixSparql: true,
+        checkUrlSuffixUpdate: true,
+      });
       const context = ActionContext({
         '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'sparql', value: 'http://example.org/sparql-select' },
       });
@@ -196,7 +259,14 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
     });
 
     it('should run for a SELECT query on HTTP GET', async() => {
-      actor = new ActorQueryOperationSparqlEndpoint({ name: 'actor', bus, mediatorHttp, forceHttpGet: true });
+      actor = new ActorQueryOperationSparqlEndpoint({
+        name: 'actor',
+        bus,
+        mediatorHttp,
+        forceHttpGet: true,
+        checkUrlSuffixSparql: true,
+        checkUrlSuffixUpdate: true,
+      });
       const context = ActionContext({
         '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'sparql', value: 'http://example.org/sparql-select' },
       });
@@ -280,7 +350,14 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
       });
       const op = { context,
         operation: factory.createPattern(DF.namedNode('http://s'), DF.variable('p'), DF.namedNode('http://o')) };
-      const thisActor = new ActorQueryOperationSparqlEndpoint({ name: 'actor', bus, mediatorHttp: thisMediator, forceHttpGet: false });
+      const thisActor = new ActorQueryOperationSparqlEndpoint({
+        name: 'actor',
+        bus,
+        mediatorHttp: thisMediator,
+        forceHttpGet: false,
+        checkUrlSuffixSparql: true,
+        checkUrlSuffixUpdate: true,
+      });
       const x = ActorQueryOperation.getSafeBindings(await thisActor.run(op)).bindingsStream;
       await expect(arrayifyStream(x))
         .rejects.toThrow(new Error('Invalid SPARQL endpoint (http://ex) response: Error!'));
