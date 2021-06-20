@@ -5523,24 +5523,6 @@ fetch-sparql-endpoint@^2.0.2:
     stream-to-string "^1.1.0"
     web-streams-node "^0.4.0"
 
-fetch-sparql-endpoint@^2.0.1:
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/fetch-sparql-endpoint/-/fetch-sparql-endpoint-2.0.1.tgz#db8a34aa25346eaa6d41de11430693a93954a591"
-  integrity sha512-5+iRsmS69sdwkJkaTHFUJuXIAyrv62DL3IOwZOoFcXvXuughD9QsVKQwpsyRRrIoEsJyycerpnjEqcO6javfTA==
-  dependencies:
-    "@types/rdf-js" "*"
-    "@types/sparqljs" "^3.0.1"
-    cross-fetch "^3.0.6"
-    is-stream "^2.0.0"
-    minimist "^1.2.0"
-    n3 "^1.6.3"
-    rdf-string "^1.5.0"
-    sparqljs "^3.1.2"
-    sparqljson-parse "^1.6.0"
-    sparqlxml-parse "^1.4.0"
-    stream-to-string "^1.1.0"
-    web-streams-node "^0.4.0"
-
 figgy-pudding@^3.5.1:
   version "3.5.2"
   resolved "https://registry.yarnpkg.com/figgy-pudding/-/figgy-pudding-3.5.2.tgz#b4eee8148abb01dcf1d1ac34367d59e12fa61d6e"
