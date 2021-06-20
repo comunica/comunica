@@ -36,7 +36,7 @@
     "@comunica/types": "^1.21.1",
     "@types/rdf-js": "*",
     "asynciterator": "^3.1.0",
-    "sparqlalgebrajs": "^2.5.5"
+    "sparqlalgebrajs": "^3.0.0"
   },
   "peerDependencies": {
     "@comunica/bus-query-operation": "^1.9.3",

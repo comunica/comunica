@@ -34,7 +34,7 @@
     "@types/rdf-js": "*",
     "asynciterator": "^3.1.0",
     "immutable": "^3.8.2",
-    "sparqlalgebrajs": "^2.4.0"
+    "sparqlalgebrajs": "^3.0.0"
   },
   "jest": {
     "globals": {

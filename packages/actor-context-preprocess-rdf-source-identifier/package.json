@@ -34,7 +34,7 @@
   "dependencies": {
     "@comunica/bus-rdf-resolve-quad-pattern": "^1.21.1",
     "@comunica/context-entries": "^1.21.1",
-    "sparqlalgebrajs": "^2.5.5"
+    "sparqlalgebrajs": "^3.0.0"
   },
   "peerDependencies": {
     "@comunica/bus-context-preprocess": "^1.0.0",
