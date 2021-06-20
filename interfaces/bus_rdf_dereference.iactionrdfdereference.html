@@ -88,6 +88,7 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="bus_rdf_dereference.iactionrdfdereference.html#accepterrors" class="tsd-kind-icon">accept<wbr>Errors</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited"><a href="bus_rdf_dereference.iactionrdfdereference.html#context" class="tsd-kind-icon">context</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="bus_rdf_dereference.iactionrdfdereference.html#headers" class="tsd-kind-icon">headers</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="bus_rdf_dereference.iactionrdfdereference.html#mediatype" class="tsd-kind-icon">media<wbr>Type</a></li>
@@ -100,6 +101,23 @@
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="accepterrors" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagOptional">Optional</span> accept<wbr>Errors</h3>
+					<div class="tsd-signature tsd-kind-icon">accept<wbr>Errors<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d78c2a1/packages/bus-rdf-dereference/lib/ActorRdfDereference.ts#L87">packages/bus-rdf-dereference/lib/ActorRdfDereference.ts:87</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>By default, actors will reject upon receiving non-200 HTTP responses.
+								If this option is true, then all HTTP responses will cause the action to resolve,
+							but some outputs may therefore contain empty quad streams.</p>
+						</div>
+					</div>
+				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
 					<a name="context" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagOptional">Optional</span> context</h3>
@@ -107,7 +125,7 @@
 					<aside class="tsd-sources">
 						<p>Inherited from IAction.context</p>
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/cfec875/packages/types/index.ts#L149">packages/types/index.ts:149</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d78c2a1/packages/types/index.ts#L149">packages/types/index.ts:149</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -122,7 +140,7 @@
 					<div class="tsd-signature tsd-kind-icon">headers<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Record</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/cfec875/packages/bus-rdf-dereference/lib/ActorRdfDereference.ts#L94">packages/bus-rdf-dereference/lib/ActorRdfDereference.ts:94</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d78c2a1/packages/bus-rdf-dereference/lib/ActorRdfDereference.ts#L101">packages/bus-rdf-dereference/lib/ActorRdfDereference.ts:101</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -137,7 +155,7 @@
 					<div class="tsd-signature tsd-kind-icon">media<wbr>Type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/cfec875/packages/bus-rdf-dereference/lib/ActorRdfDereference.ts#L85">packages/bus-rdf-dereference/lib/ActorRdfDereference.ts:85</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d78c2a1/packages/bus-rdf-dereference/lib/ActorRdfDereference.ts#L92">packages/bus-rdf-dereference/lib/ActorRdfDereference.ts:92</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -152,7 +170,7 @@
 					<div class="tsd-signature tsd-kind-icon">method<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/cfec875/packages/bus-rdf-dereference/lib/ActorRdfDereference.ts#L90">packages/bus-rdf-dereference/lib/ActorRdfDereference.ts:90</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d78c2a1/packages/bus-rdf-dereference/lib/ActorRdfDereference.ts#L97">packages/bus-rdf-dereference/lib/ActorRdfDereference.ts:97</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -168,7 +186,7 @@
 					<div class="tsd-signature tsd-kind-icon">url<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/cfec875/packages/bus-rdf-dereference/lib/ActorRdfDereference.ts#L80">packages/bus-rdf-dereference/lib/ActorRdfDereference.ts:80</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/d78c2a1/packages/bus-rdf-dereference/lib/ActorRdfDereference.ts#L80">packages/bus-rdf-dereference/lib/ActorRdfDereference.ts:80</a></li>
 						</ul>
 					</aside>
 					<div class="tsd-comment tsd-typography">
@@ -206,6 +224,9 @@
 							<li class="current tsd-kind-interface tsd-parent-kind-module">
 								<a href="bus_rdf_dereference.iactionrdfdereference.html" class="tsd-kind-icon">IAction<wbr>Rdf<wbr>Dereference</a>
 								<ul>
+									<li class=" tsd-kind-property tsd-parent-kind-interface">
+										<a href="bus_rdf_dereference.iactionrdfdereference.html#accepterrors" class="tsd-kind-icon">accept<wbr>Errors</a>
+									</li>
 									<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited">
 										<a href="bus_rdf_dereference.iactionrdfdereference.html#context" class="tsd-kind-icon">context</a>
 									</li>
