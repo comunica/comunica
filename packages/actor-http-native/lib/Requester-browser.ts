@@ -96,6 +96,8 @@ export default class Requester {
     if (settings.body) {
       if (settings.body instanceof URLSearchParams) {
         request.send(settings.body.toString());
+      } else if (typeof settings.body === 'string') {
+        request.send(settings.body);
       } else {
         settings.body.blob()
           .then((blob: any) => request.send(blob))
