@@ -6,7 +6,6 @@ import { QuadDestinationPatchSparqlUpdate } from '../lib/QuadDestinationPatchSpa
 describe('ActorRdfUpdateHypermediaPatchSparqlUpdate', () => {
   let bus: any;
   let mediatorHttp: any;
-  let mediatorRdfSerialize: any;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -15,18 +14,13 @@ describe('ActorRdfUpdateHypermediaPatchSparqlUpdate', () => {
         body: 'BODY',
       })),
     };
-    mediatorRdfSerialize = {
-      mediate: jest.fn(() => ({
-        todo: 'TRUE',
-      })),
-    };
   });
 
   describe('An ActorRdfUpdateHypermediaPatchSparqlUpdate instance', () => {
     let actor: ActorRdfUpdateHypermediaPatchSparqlUpdate;
 
     beforeEach(() => {
-      actor = new ActorRdfUpdateHypermediaPatchSparqlUpdate({ name: 'actor', bus, mediatorHttp, mediatorRdfSerialize });
+      actor = new ActorRdfUpdateHypermediaPatchSparqlUpdate({ name: 'actor', bus, mediatorHttp });
     });
 
     it('should test', () => {

@@ -1,17 +1,13 @@
-import { PassThrough } from 'stream';
+import { Readable } from 'stream';
 import type { IActionHttp, IActorHttpOutput } from '@comunica/bus-http';
 import { ActorHttp } from '@comunica/bus-http';
-import type {
-  IActionRootRdfSerialize,
-  IActorTestRootRdfSerialize,
-  IActorOutputRootRdfSerialize,
-} from '@comunica/bus-rdf-serialize';
 import type { IQuadDestination } from '@comunica/bus-rdf-update-quads';
 import type { Actor, IActorTest, Mediator } from '@comunica/core';
 import type { ActionContext } from '@comunica/types';
 import type { AsyncIterator } from 'asynciterator';
 import { Headers } from 'cross-fetch';
 import type * as RDF from 'rdf-js';
+import { termToString } from 'rdf-string-ttl';
 
 /**
  * A quad destination that represents a resource that is patchable via SPARQL Update.
@@ -23,23 +19,15 @@ export class QuadDestinationPatchSparqlUpdate implements IQuadDestination {
   private readonly mediatorHttp: Mediator<Actor<IActionHttp, IActorTest, IActorHttpOutput>,
   IActionHttp, IActorTest, IActorHttpOutput>;
 
-  private readonly mediatorRdfSerialize: Mediator<
-  Actor<IActionRootRdfSerialize, IActorTestRootRdfSerialize, IActorOutputRootRdfSerialize>,
-  IActionRootRdfSerialize, IActorTestRootRdfSerialize, IActorOutputRootRdfSerialize>;
-
   public constructor(
     url: string,
     context: ActionContext | undefined,
     mediatorHttp: Mediator<Actor<IActionHttp, IActorTest, IActorHttpOutput>,
     IActionHttp, IActorTest, IActorHttpOutput>,
-    mediatorRdfSerialize: Mediator<
-    Actor<IActionRootRdfSerialize, IActorTestRootRdfSerialize, IActorOutputRootRdfSerialize>,
-    IActionRootRdfSerialize, IActorTestRootRdfSerialize, IActorOutputRootRdfSerialize>,
   ) {
     this.url = url;
     this.context = context;
     this.mediatorHttp = mediatorHttp;
-    this.mediatorRdfSerialize = mediatorRdfSerialize;
   }
 
   public insert(quads: AsyncIterator<RDF.Quad>): Promise<void> {
@@ -51,20 +39,22 @@ export class QuadDestinationPatchSparqlUpdate implements IQuadDestination {
   }
 
   public async wrapSparqlUpdateRequest(type: 'INSERT' | 'DELETE', quads: AsyncIterator<RDF.Quad>): Promise<void> {
-    // Serialize quads
-    const { handle: { data }} = await this.mediatorRdfSerialize.mediate({
-      handle: { quadStream: quads },
-      handleMediaType: 'text/turtle',
-    });
-
-    // Wrap triples in INSERT DATA block
-    const dataWrapped = new PassThrough();
-    dataWrapped.push(`${type} DATA {`);
-    data.pipe(dataWrapped, { end: false });
-    data.on('end', () => {
-      dataWrapped.push('}');
-      dataWrapped.push(null);
-    });
+    // Wrap triples in DATA block
+    const dataWrapped = quads
+      .map((quad: RDF.Quad) => {
+        let stringQuad = `${termToString(quad.subject)} ${termToString(quad.predicate)} ${termToString(quad.object)} .`;
+        if (quad.graph.termType !== 'DefaultGraph') {
+          stringQuad = `  GRAPH ${termToString(quad.graph)} { ${stringQuad} }\n`;
+        } else {
+          stringQuad = `  ${stringQuad}\n`;
+        }
+        return stringQuad;
+      })
+      .prepend([ `${type} DATA {\n` ])
+      .append([ '}' ]);
+    const readable = new Readable();
+    dataWrapped.on('data', (quad: RDF.Quad) => readable.push(quad));
+    dataWrapped.on('end', () => readable.push(null));
 
     // Send data in PUT request
     const headers: Headers = new Headers({ 'content-type': 'application/sparql-update' });
@@ -73,7 +63,7 @@ export class QuadDestinationPatchSparqlUpdate implements IQuadDestination {
       init: {
         headers,
         method: 'PATCH',
-        body: ActorHttp.toWebReadableStream(dataWrapped),
+        body: ActorHttp.toWebReadableStream(readable),
       },
       input: this.url,
     });

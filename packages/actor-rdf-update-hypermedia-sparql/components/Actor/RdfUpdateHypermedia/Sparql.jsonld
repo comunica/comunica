@@ -19,12 +19,6 @@
           "unique": true
         },
         {
-          "@id": "caruhs:Actor/RdfUpdateHypermedia/Sparql#mediatorRdfSerialize",
-          "comment": "The RDF Serialize mediator for handling serialization",
-          "required": true,
-          "unique": true
-        },
-        {
           "@id": "caruhs:Actor/RdfUpdateHypermedia/Sparql#checkUrlSuffixSparql",
           "comment": "If URLs ending with '/sparql' should also be considered SPARQL endpoints.",
           "required": true,
@@ -49,10 +43,6 @@
             {
               "keyRaw": "mediatorHttp",
               "value": "caruhs:Actor/RdfUpdateHypermedia/Sparql#mediatorHttp"
-            },
-            {
-              "keyRaw": "mediatorRdfSerialize",
-              "value": "caruhs:Actor/RdfUpdateHypermedia/Sparql#mediatorRdfSerialize"
             },
             {
               "keyRaw": "checkUrlSuffixSparql",

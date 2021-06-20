@@ -6,18 +6,12 @@ import { QuadDestinationSparql } from '../lib/QuadDestinationSparql';
 describe('ActorRdfUpdateHypermediaSparql', () => {
   let bus: any;
   let mediatorHttp: any;
-  let mediatorRdfSerialize: any;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
     mediatorHttp = {
       mediate: jest.fn(() => ({
         body: 'BODY',
-      })),
-    };
-    mediatorRdfSerialize = {
-      mediate: jest.fn(() => ({
-        todo: 'TRUE',
       })),
     };
   });
@@ -30,7 +24,6 @@ describe('ActorRdfUpdateHypermediaSparql', () => {
         name: 'actor',
         bus,
         mediatorHttp,
-        mediatorRdfSerialize,
         checkUrlSuffixSparql: true,
         checkUrlSuffixUpdate: true,
       });
@@ -76,7 +69,6 @@ describe('ActorRdfUpdateHypermediaSparql', () => {
         name: 'actor',
         bus,
         mediatorHttp,
-        mediatorRdfSerialize,
         checkUrlSuffixSparql: false,
         checkUrlSuffixUpdate: true,
       });
@@ -93,7 +85,6 @@ describe('ActorRdfUpdateHypermediaSparql', () => {
         name: 'actor',
         bus,
         mediatorHttp,
-        mediatorRdfSerialize,
         checkUrlSuffixSparql: true,
         checkUrlSuffixUpdate: false,
       });

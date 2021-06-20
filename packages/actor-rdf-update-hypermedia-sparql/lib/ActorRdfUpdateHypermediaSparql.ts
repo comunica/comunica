@@ -1,9 +1,4 @@
 import type { IActionHttp, IActorHttpOutput } from '@comunica/bus-http';
-import type {
-  IActionRootRdfSerialize,
-  IActorOutputRootRdfSerialize,
-  IActorTestRootRdfSerialize,
-} from '@comunica/bus-rdf-serialize';
 import type { IActionRdfUpdateHypermedia, IActorRdfUpdateHypermediaOutput } from '@comunica/bus-rdf-update-hypermedia';
 import { ActorRdfUpdateHypermedia } from '@comunica/bus-rdf-update-hypermedia';
 import type { Actor, IActorArgs, IActorTest, Mediator } from '@comunica/core';
@@ -15,10 +10,6 @@ import { QuadDestinationSparql } from './QuadDestinationSparql';
 export class ActorRdfUpdateHypermediaSparql extends ActorRdfUpdateHypermedia {
   public readonly mediatorHttp: Mediator<Actor<IActionHttp, IActorTest, IActorHttpOutput>,
   IActionHttp, IActorTest, IActorHttpOutput>;
-
-  public readonly mediatorRdfSerialize: Mediator<
-  Actor<IActionRootRdfSerialize, IActorTestRootRdfSerialize, IActorOutputRootRdfSerialize>,
-  IActionRootRdfSerialize, IActorTestRootRdfSerialize, IActorOutputRootRdfSerialize>;
 
   public readonly checkUrlSuffixSparql: boolean;
   public readonly checkUrlSuffixUpdate: boolean;
@@ -43,7 +34,6 @@ export class ActorRdfUpdateHypermediaSparql extends ActorRdfUpdateHypermedia {
         action.metadata.sparqlService || action.url,
         action.context,
         this.mediatorHttp,
-        this.mediatorRdfSerialize,
       ),
     };
   }
@@ -53,9 +43,6 @@ export interface IActorRdfUpdateHypermediaSparqlArgs
   extends IActorArgs<IActionRdfUpdateHypermedia, IActorTest, IActorRdfUpdateHypermediaOutput> {
   mediatorHttp: Mediator<Actor<IActionHttp, IActorTest, IActorHttpOutput>,
   IActionHttp, IActorTest, IActorHttpOutput>;
-  mediatorRdfSerialize: Mediator<
-  Actor<IActionRootRdfSerialize, IActorTestRootRdfSerialize, IActorOutputRootRdfSerialize>,
-  IActionRootRdfSerialize, IActorTestRootRdfSerialize, IActorOutputRootRdfSerialize>;
   checkUrlSuffixSparql: boolean;
   checkUrlSuffixUpdate: boolean;
 }
