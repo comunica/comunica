@@ -1,12 +1,13 @@
-import { ActionContext } from '@comunica/core';
-import { BlankNodeScoped } from '@comunica/data-factory';
-import { ArrayIterator, TransformIterator } from 'asynciterator';
-import { DataFactory } from 'rdf-data-factory';
+import {ActionContext} from '@comunica/core';
+import {BlankNodeScoped} from '@comunica/data-factory';
+import {ArrayIterator, TransformIterator} from 'asynciterator';
+import {DataFactory} from 'rdf-data-factory';
 import 'jest-rdf';
 import type * as RDF from 'rdf-js';
 
 import Factory from 'sparqlalgebrajs/lib/factory';
-import { FederatedQuadSource } from '../lib/FederatedQuadSource';
+import {FederatedQuadSource} from '../lib/FederatedQuadSource';
+import {mockedMediatorAgg} from "./MediatorRdfMetadataAggregateMock";
 
 const arrayifyStream = require('arrayify-stream');
 const squad = require('rdf-quad');
@@ -18,6 +19,7 @@ const v = DF.variable('v');
 describe('FederatedQuadSource', () => {
   let mediator: any;
   let context: ActionContext;
+  let mediatorAggregate: any;
 
   beforeEach(() => {
     mediator = {
@@ -86,9 +88,12 @@ describe('FederatedQuadSource', () => {
         return Promise.resolve({ data });
       },
     };
+
     context = ActionContext({
       '@comunica/bus-rdf-resolve-quad-pattern:sources': [{ type: 'myType', value: 'myValue' }],
     });
+
+    mediatorAggregate = mockedMediatorAgg;
   });
 
   describe('The FederatedQuadSource module', () => {
@@ -97,11 +102,11 @@ describe('FederatedQuadSource', () => {
     });
 
     it('should be a FederatedQuadSource constructor', () => {
-      expect(new FederatedQuadSource(mediator, context, new Map(), true)).toBeInstanceOf(FederatedQuadSource);
+      expect(new FederatedQuadSource(mediator, context, new Map(), true, mediatorAggregate)).toBeInstanceOf(FederatedQuadSource);
     });
 
     it('should be a FederatedQuadSource constructor with optional bufferSize argument', () => {
-      expect(new FederatedQuadSource(mediator, context, new Map(), true)).toBeInstanceOf(FederatedQuadSource);
+      expect(new FederatedQuadSource(mediator, context, new Map(), true, mediatorAggregate)).toBeInstanceOf(FederatedQuadSource);
     });
   });
 
@@ -364,7 +369,7 @@ describe('FederatedQuadSource', () => {
       subSource = {};
       emptyPatterns = new Map();
       emptyPatterns.set(subSource, [ squad('?a', '?b', '?c', '"d"') ]);
-      source = new FederatedQuadSource(mediator, context, emptyPatterns, true);
+      source = new FederatedQuadSource(mediator, context, emptyPatterns, true,mediatorAggregate);
     });
 
     it('should return an AsyncIterator', () => {
@@ -404,7 +409,7 @@ describe('FederatedQuadSource', () => {
       subSource = {};
       emptyPatterns = new Map();
       emptyPatterns.set(subSource, [ squad('?a', '?b', '?c', '"d"') ]);
-      source = new FederatedQuadSource(mediator, context, emptyPatterns, false);
+      source = new FederatedQuadSource(mediator, context, emptyPatterns, false,mediatorAggregate);
     });
 
     describe('when calling isSourceEmpty', () => {
@@ -438,7 +443,7 @@ describe('FederatedQuadSource', () => {
     beforeEach(() => {
       emptyPatterns = new Map();
       contextEmpty = ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:sources': []});
-      source = new FederatedQuadSource(mediator, contextEmpty, emptyPatterns, true);
+      source = new FederatedQuadSource(mediator, contextEmpty, emptyPatterns, true, mediatorAggregate);
     });
 
     it('should return an empty AsyncIterator', async() => {
@@ -462,7 +467,7 @@ describe('FederatedQuadSource', () => {
       subSource = { type: 'emptySource', value: 'I will be empty' };
       emptyPatterns = new Map();
       contextSingleEmpty = ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:sources': [ subSource ]});
-      source = new FederatedQuadSource(mediator, contextSingleEmpty, emptyPatterns, true);
+      source = new FederatedQuadSource(mediator, contextSingleEmpty, emptyPatterns, true, mediatorAggregate);
     });
 
     it('should return an empty AsyncIterator', async() => {
@@ -502,7 +507,7 @@ describe('FederatedQuadSource', () => {
       subSource = { type: 'nonEmptySource', value: 'I will not be empty' };
       emptyPatterns = new Map();
       contextSingle = ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:sources': [ subSource ]});
-      source = new FederatedQuadSource(mediator, contextSingle, emptyPatterns, true);
+      source = new FederatedQuadSource(mediator, contextSingle, emptyPatterns, true, mediatorAggregate);
     });
 
     it('should return a non-empty AsyncIterator in the default graph', async() => {
@@ -546,7 +551,7 @@ describe('FederatedQuadSource', () => {
       subSource = { type: 'graphs', value: 'I will contain named graphs' };
       emptyPatterns = new Map();
       contextSingle = ActionContext({ '@comunica/bus-rdf-resolve-quad-pattern:sources': [ subSource ]});
-      source = new FederatedQuadSource(mediator, contextSingle, emptyPatterns, true);
+      source = new FederatedQuadSource(mediator, contextSingle, emptyPatterns, true, mediatorAggregate);
     });
 
     it('should return a non-empty AsyncIterator in the default graph', async() => {
@@ -595,7 +600,7 @@ describe('FederatedQuadSource', () => {
           subSource2,
         ],
       });
-      source = new FederatedQuadSource(mediator, contextSingleEmpty, emptyPatterns, true);
+      source = new FederatedQuadSource(mediator, contextSingleEmpty, emptyPatterns, true, mediatorAggregate);
     });
 
     it('should return a non-empty AsyncIterator in the default graph', async() => {
@@ -614,7 +619,7 @@ describe('FederatedQuadSource', () => {
     it('should emit metadata with 2 totalItems', async() => {
       const stream = source.match(v, v, v, v);
       await expect(new Promise(resolve => stream.getProperty('metadata', resolve)))
-        .resolves.toEqual({ totalItems: 2 });
+        .resolves.toMatchObject({ totalItems: 2 });
     });
 
     it('should store the queried empty patterns for the empty source in the emptyPatterns datastructure', async() => {
@@ -652,7 +657,7 @@ describe('FederatedQuadSource', () => {
           subSource2,
         ],
       });
-      source = new FederatedQuadSource(mediator, contextSingleEmpty, emptyPatterns, true);
+      source = new FederatedQuadSource(mediator, contextSingleEmpty, emptyPatterns, true, mediatorAggregate);
     });
 
     it('should return an empty AsyncIterator for the default graph', async() => {
@@ -708,7 +713,7 @@ describe('FederatedQuadSource', () => {
             subSource,
           ],
       });
-      source = new FederatedQuadSource(mediator, contextSingleEmpty, emptyPatterns, true);
+      source = new FederatedQuadSource(mediator, contextSingleEmpty, emptyPatterns, true, mediatorAggregate);
     });
 
     it('should return an empty AsyncIterator in the default graph', async() => {
@@ -758,7 +763,7 @@ describe('FederatedQuadSource', () => {
             { type: 'emptySource', value: 'I will be empty' },
           ],
       });
-      source = new FederatedQuadSource(mediator, contextSingleEmpty, emptyPatterns, false);
+      source = new FederatedQuadSource(mediator, contextSingleEmpty, emptyPatterns, false,mediatorAggregate);
     });
 
     it('should return an empty AsyncIterator in the default graph', async() => {
@@ -807,7 +812,7 @@ describe('FederatedQuadSource', () => {
             subSource2,
           ],
       });
-      source = new FederatedQuadSource(mediator, contextSingleEmpty, emptyPatterns, true);
+      source = new FederatedQuadSource(mediator, contextSingleEmpty, emptyPatterns, true, mediatorAggregate);
     });
 
     it('should return a non-empty AsyncIterator in the default graph', async() => {
@@ -828,7 +833,7 @@ describe('FederatedQuadSource', () => {
     it('should emit metadata with 2 totalItems', async() => {
       const stream = source.match(v, v, v, v);
       await expect(new Promise(resolve => stream.getProperty('metadata', resolve)))
-        .resolves.toEqual({ totalItems: 4 });
+        .resolves.toMatchObject({ totalItems: 4 });
     });
 
     it('should store the queried empty patterns for the empty source in the emptyPatterns datastructure', async() => {
@@ -860,7 +865,7 @@ describe('FederatedQuadSource', () => {
             { type: 'nonEmptySourceNoMeta', value: 'I will also not be empty, but have no metadata' },
           ],
       });
-      source = new FederatedQuadSource(mediator, contextSingleEmpty, emptyPatterns, true);
+      source = new FederatedQuadSource(mediator, contextSingleEmpty, emptyPatterns, true, mediatorAggregate);
     });
 
     it('should return a non-empty AsyncIterator for the default graph', async() => {
@@ -881,7 +886,7 @@ describe('FederatedQuadSource', () => {
     it('should emit metadata with Infinity totalItems', async() => {
       const stream = source.match(v, v, v, v);
       await expect(new Promise(resolve => stream.getProperty('metadata', resolve)))
-        .resolves.toEqual({ totalItems: Number.POSITIVE_INFINITY });
+        .resolves.toMatchObject({ totalItems: Number.POSITIVE_INFINITY });
     });
   });
 
@@ -899,7 +904,7 @@ describe('FederatedQuadSource', () => {
             { type: 'nonEmptySourceNoMeta', value: 'I will also not be empty, but have no metadata' },
           ],
       });
-      source = new FederatedQuadSource(mediator, contextSingleEmpty, emptyPatterns, true);
+      source = new FederatedQuadSource(mediator, contextSingleEmpty, emptyPatterns, true, mediatorAggregate);
     });
 
     it('should return a non-empty AsyncIterator for the default graph', async() => {
@@ -938,7 +943,7 @@ describe('FederatedQuadSource', () => {
             { type: 'nonEmptySourceInfMeta', value: 'I will also not be empty, but have inf metadata' },
           ],
       });
-      source = new FederatedQuadSource(mediator, contextSingleEmpty, emptyPatterns, true);
+      source = new FederatedQuadSource(mediator, contextSingleEmpty, emptyPatterns, true, mediatorAggregate);
     });
 
     it('should return a non-empty AsyncIterator for the default graph', async() => {
@@ -959,7 +964,7 @@ describe('FederatedQuadSource', () => {
     it('should emit metadata with Infinity totalItems', async() => {
       const stream = source.match(v, v, v, v);
       await expect(new Promise(resolve => stream.getProperty('metadata', resolve)))
-        .resolves.toEqual({ totalItems: Number.POSITIVE_INFINITY });
+        .resolves.toMatchObject({ totalItems: Number.POSITIVE_INFINITY });
     });
   });
 
@@ -977,9 +982,11 @@ describe('FederatedQuadSource', () => {
             { type: 'nonEmptySourceInfMeta', value: 'I will also not be empty, but have inf metadata' },
           ],
       });
-      source = new FederatedQuadSource(mediator, contextSingleEmpty, emptyPatterns, true);
+      source = new FederatedQuadSource(mediator, contextSingleEmpty, emptyPatterns, true, mediatorAggregate);
     });
 
+    // TODO
+    // reason: looks like the only indifference is the order of the values
     it('should return a non-empty AsyncIterator for the default graph', async() => {
       const a = await arrayifyStream(source.match(v, v, v, DF.defaultGraph()));
       expect(a).toEqual([
@@ -1020,9 +1027,11 @@ describe('FederatedQuadSource', () => {
             subSource2,
           ],
       });
-      source = new FederatedQuadSource(mediator, contextSingleEmpty, emptyPatterns, true);
+      source = new FederatedQuadSource(mediator, contextSingleEmpty, emptyPatterns, true, mediatorAggregate);
     });
 
+    // TODO
+    // reason: looks like the only indifference is the order of the values
     it('should return a non-empty AsyncIterator', async() => {
       const a = await arrayifyStream(source.match(v, v, v, DF.defaultGraph()));
       expect(a).toEqual([
@@ -1263,7 +1272,7 @@ describe('FederatedQuadSource', () => {
             subSource1,
           ],
       });
-      source = new FederatedQuadSource(mediator, contextSingleEmpty, emptyPatterns, true);
+      source = new FederatedQuadSource(mediator, contextSingleEmpty, emptyPatterns, true, mediatorAggregate);
     });
 
     it('should emit an error', async() => {
