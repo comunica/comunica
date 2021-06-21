@@ -4,11 +4,6 @@ export const mockedMediatorAgg = {
     mediate(action: any) {
 
         const {metadata, subMetadata} = action
-        console.log(`
-        mediatatorAggregate.mediate
-          metadata: ${JSON.stringify(metadata)}
-          subMetadata: ${JSON.stringify(subMetadata)}
-      `)
 
         let newTotalItems: number = 0
         const isEmptyRecord = (r: Record<string, any>) => Object.keys(r).length === 0

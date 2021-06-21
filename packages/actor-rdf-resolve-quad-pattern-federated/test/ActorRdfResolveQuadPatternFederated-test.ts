@@ -3,7 +3,7 @@ import {ActionContext, Bus} from '@comunica/core';
 import {ArrayIterator} from 'asynciterator';
 import {ActorRdfResolveQuadPatternFederated} from '../lib/ActorRdfResolveQuadPatternFederated';
 import 'jest-rdf';
-import {mockedMediatorAgg} from "./MediatorRdfMetadataAggregateMock";
+const {mockedMediatorAgg} = require('./__mocks__/MediatorRdfMetadataAggregateMock');
 
 const arrayifyStream = require('arrayify-stream');
 const squad = require('rdf-quad');
