@@ -31,6 +31,9 @@
     "index.d.ts",
     "index.js"
   ],
+  "dependencies": {
+    "@comunica/context-entries": "^1.21.1"
+  },
   "peerDependencies": {
     "@comunica/bus-context-preprocess": "^1.19.2",
     "@comunica/core": "^1.19.2"
