@@ -47,9 +47,6 @@
       "@type": "ActorRdfUpdateHypermediaPatchSparqlUpdate",
       "caruhpsu:Actor/RdfUpdateHypermedia/PatchSparqlUpdate#mediatorHttp": {
         "@id": "config-sets:http.json#mediatorHttp"
-      },
-      "caruhpsu:Actor/RdfUpdateHypermedia/PatchSparqlUpdate#mediatorRdfSerialize": {
-        "@id": "config-sets:sparql-serializers.json#mediatorRdfSerialize"
       }
     },
 
@@ -80,9 +77,6 @@
       "@type": "ActorRdfUpdateHypermediaSparql",
       "caruhs:Actor/RdfUpdateHypermedia/Sparql#mediatorHttp": {
         "@id": "config-sets:http.json#mediatorHttp"
-      },
-      "caruhs:Actor/RdfUpdateHypermedia/Sparql#mediatorRdfSerialize": {
-        "@id": "config-sets:sparql-serializers.json#mediatorRdfSerialize"
       }
     }
   ]
