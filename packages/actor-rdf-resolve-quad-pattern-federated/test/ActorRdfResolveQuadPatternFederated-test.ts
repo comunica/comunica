@@ -1,15 +1,17 @@
-import { ActorRdfResolveQuadPattern } from '@comunica/bus-rdf-resolve-quad-pattern';
-import { ActionContext, Bus } from '@comunica/core';
-import { ArrayIterator } from 'asynciterator';
-import { ActorRdfResolveQuadPatternFederated } from '../lib/ActorRdfResolveQuadPatternFederated';
+import {ActorRdfResolveQuadPattern} from '@comunica/bus-rdf-resolve-quad-pattern';
+import {ActionContext, Bus} from '@comunica/core';
+import {ArrayIterator} from 'asynciterator';
+import {ActorRdfResolveQuadPatternFederated} from '../lib/ActorRdfResolveQuadPatternFederated';
 import 'jest-rdf';
+const {mockedMediatorAgg} = require('./__mocks__/MediatorRdfMetadataAggregateMock');
+
 const arrayifyStream = require('arrayify-stream');
 const squad = require('rdf-quad');
-
 describe('ActorRdfResolveQuadPatternFederated', () => {
   let bus: any;
   let mediatorResolveQuadPattern: any;
   let skipEmptyPatterns: any;
+  let mediatorRdfMetadataAggregate: any;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -24,6 +26,7 @@ describe('ActorRdfResolveQuadPatternFederated', () => {
       },
     };
     skipEmptyPatterns = true;
+    mediatorRdfMetadataAggregate = mockedMediatorAgg;
   });
 
   describe('The ActorRdfResolveQuadPatternFederated module', () => {
@@ -52,7 +55,7 @@ describe('ActorRdfResolveQuadPatternFederated', () => {
 
     beforeEach(() => {
       actor = new ActorRdfResolveQuadPatternFederated(
-        { name: 'actor', bus, mediatorResolveQuadPattern, skipEmptyPatterns },
+        {name: 'actor', bus, mediatorResolveQuadPattern, skipEmptyPatterns,mediatorRdfMetadataAggregate },
       );
     });
 

@@ -1,4 +1,6 @@
 import { Actor, IAction, IActorArgs, IActorOutput, IActorTest } from '@comunica/core';
+import type { AsyncIterator } from 'asynciterator';
+import type * as RDF from 'rdf-js';
 import {IDataSource} from "@comunica/bus-rdf-resolve-quad-pattern";
 
 /**
@@ -24,10 +26,9 @@ export abstract class ActorRdfMetadataAggregate extends Actor<IActionRdfMetadata
 
 export interface IActionRdfMetadataAggregate extends IAction {
   metadata: Record<string, any>;
-  subMetadata: Record<string, any>;
-  source?: IDataSource;
+  subMetadata?: Record<string, any>;
 }
 
 export interface IActorRdfMetadataAggregateOutput extends IActorOutput {
-  metadata: Record<string, any>;
+  aggregatedMetadata: Record<string, any>;
 }

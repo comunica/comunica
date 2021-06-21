@@ -16,6 +16,7 @@ import type {
   IActionRdfMetadataAggregate,
   IActorRdfMetadataAggregateOutput
 } from '@comunica/bus-rdf-metadata-aggregate';
+import {Record} from "immutable";
 
 const DF = new DataFactory();
 
@@ -36,7 +37,7 @@ export class FederatedQuadSource implements IQuadSource {
   protected readonly skipEmptyPatterns: boolean;
   protected readonly algebraFactory: Factory;
 
-  public readonly mediatorRdfMetadataAggregate:  Mediator<Actor<IActionRdfMetadataAggregate, IActorTest,
+  public readonly mediatorAggregate:  Mediator<Actor<IActionRdfMetadataAggregate, IActorTest,
   IActorRdfMetadataAggregateOutput>, IActionRdfMetadataAggregate, IActorTest, IActorRdfMetadataAggregateOutput>;
 
   public constructor(mediatorResolveQuadPattern: Mediator<Actor<IActionRdfResolveQuadPattern, IActorTest,
@@ -54,7 +55,7 @@ export class FederatedQuadSource implements IQuadSource {
     this.skipEmptyPatterns = skipEmptyPatterns;
     this.algebraFactory = new Factory();
 
-    this.mediatorRdfMetadataAggregate = mediatorRdfMetadataAggregate;
+    this.mediatorAggregate = mediatorRdfMetadataAggregate;
 
     // Initialize sources in the emptyPatterns datastructure
     if (this.skipEmptyPatterns) {
@@ -64,6 +65,7 @@ export class FederatedQuadSource implements IQuadSource {
         }
       }
     }
+
   }
 
   /**
@@ -142,6 +144,24 @@ export class FederatedQuadSource implements IQuadSource {
     return term;
   }
 
+  static deskolemizeQuad(s: RDF.Term,
+                                p: RDF.Term,
+                                o: RDF.Term,
+                                g: RDF.Term,
+                                sourceId: string, algebraFactory: Factory): Algebra.Pattern | undefined {
+    const patternS = FederatedQuadSource.deskolemizeTerm(s, sourceId);
+    const patternP = FederatedQuadSource.deskolemizeTerm(p, sourceId);
+    const patternO = FederatedQuadSource.deskolemizeTerm(o, sourceId);
+    const patternG = FederatedQuadSource.deskolemizeTerm(g, sourceId);
+
+    return patternS && patternP && patternO && patternG ?
+        algebraFactory
+            .createPattern(patternS!, patternP!, patternO!, patternG!)
+        :
+        undefined;
+
+  }
+
   /**
    * If the given source is guaranteed to produce an empty result for the given pattern.
    *
@@ -183,21 +203,108 @@ export class FederatedQuadSource implements IQuadSource {
     return sourceId;
   }
 
-  public match(subject: RDF.Term, predicate: RDF.Term, object: RDF.Term, graph: RDF.Term): AsyncIterator<RDF.Quad> {
-    // Counters for our metadata
-    let metadata: Record<string, any> = { totalItems: 0 };
-    let remainingSources = this.sources.length;
 
-    // Anonymous function to handle totalItems from metadata
-    const checkEmitMetadata = (currentTotalItems: number, source: IDataSource,
-      pattern: RDF.BaseQuad | undefined): void => {
-      if (this.skipEmptyPatterns && !currentTotalItems && pattern && !this.isSourceEmpty(source, pattern)) {
-        this.emptyPatterns.get(source)!.push(pattern);
+
+  checkPushEmptyPattern = (md: Record<string,any> | undefined, source: IDataSource,
+                                 pattern: RDF.BaseQuad | undefined, lastMetadata?: Record<string, any>) => {
+    if (this.skipEmptyPatterns && !md && pattern && !this.isSourceEmpty(source, pattern)) {
+      this.emptyPatterns.get(source)!.push(pattern);
+    }
+  }
+
+  public match(subject: RDF.Term, predicate: RDF.Term, object: RDF.Term, graph: RDF.Term): AsyncIterator<RDF.Quad> {
+
+    const metadataCallbacks =
+        this.sources.map(
+            async (source, i) : Promise<Record<string,any>|undefined> =>
+            {
+              const sourceId = this.getSourceId(source);
+
+              // Deskolemize terms, so we send the original blank nodes to each source.
+              // Note that some sources may not match bnodes by label. SPARQL endpoints for example consider them variables.
+              let pattern: Algebra.Pattern | undefined;
+
+              // Prepare the context for this specific source
+              let context: ActionContext = getDataSourceContext(source, this.contextDefault);
+              context = context.set(KeysRdfResolveQuadPattern.source,
+                  { type: getDataSourceType(source), value: getDataSourceValue(source) });
+
+              let output: IActorRdfResolveQuadPatternOutput;
+              pattern = FederatedQuadSource.deskolemizeQuad(subject, predicate, object, graph, sourceId, this.algebraFactory);
+
+              const sourceMetadataCallbackPromise: Promise<Record<string, any>|undefined> = new Promise(
+                  async (resolve,reject) => {
+                    try {
+                      output = await this.mediatorResolveQuadPattern.mediate({ pattern:pattern!, context });
+                      const outputMetadata : Record<string,any> | any = output.data.getProperty('metadata');
+                      // If any of the deskolemized blank nodes originate from another source,
+                      // or if we can predict that the given source will have no bindings for the given pattern,
+                      // return empty iterator metadata
+                      const returnEmptyIterator =
+                          !pattern ||
+                          // eslint-disable-next-line no-cond-assign
+                          this.isSourceEmpty(source, pattern)
+
+                      const metadataIndicatesEmpty = outputMetadata !== undefined
+                      && outputMetadata.totalItems !== undefined
+                      && outputMetadata.totalItems === 0
+
+                      if(returnEmptyIterator) {
+                        this.checkPushEmptyPattern(undefined, source, pattern)
+                        resolve({totalItems: 0})
+                      }
+                      else if (metadataIndicatesEmpty) {
+                        this.checkPushEmptyPattern(undefined, source, pattern)
+                        resolve(outputMetadata)
+                      }
+                      else {
+                        this.checkPushEmptyPattern(outputMetadata, source, pattern)
+                        if(!outputMetadata)
+                          resolve(undefined)
+                        else
+                          output.data.getProperty('metadata',resolve);
+                      }
+                    } catch (err) {
+                      reject(err)
+                    }
+                  },
+              )
+
+              return sourceMetadataCallbackPromise
+            }
+        )
+
+    if (this.sources.length) {
+      const [first,...remaining] = metadataCallbacks;
+      if(remaining.length===0) {
+        // We only have the first metadata callback.
+        // No aggregation needed.
+        first.then(md=>{
+          it.setProperty('metadata', md)
+        })
+      }else {
+        // We have more than one metadata callback to resolve.
+        // We can reduce by aggregation
+        const reducedResult = metadataCallbacks.reduce(
+            (prev,curr, )=>{
+              return new Promise<Record<string,any>>( (resolve,reject)=>{
+                prev!.then(md => {
+                  curr!.then(mdCurr => {
+                    this.mediatorAggregate.mediate({
+                      metadata: md!,
+                      subMetadata: mdCurr
+                    }).then((aggOut)=>{ resolve(aggOut);})
+                  })
+                })
+              })
+            });
+
+        // Set the iterator's metadata with the resolved aggregated metadata
+        reducedResult
+            .then(rr=>it.setProperty('metadata', rr!.aggregatedMetadata))
+            .catch(err => it.emit('error', err))
       }
-      if (!remainingSources) {
-        it.setProperty('metadata', metadata);
-      }
-    };
+    }
 
     const proxyIt: Promise<AsyncIterator<RDF.Quad>[]> = Promise.all(this.sources.map(async source => {
       const sourceId = this.getSourceId(source);
@@ -223,23 +330,9 @@ export class FederatedQuadSource implements IQuadSource {
         this.isSourceEmpty(source, pattern = this.algebraFactory
           .createPattern(patternS, patternP, patternO, patternG))) {
         output = { data: new ArrayIterator([], { autoStart: false }) };
-        output.data.setProperty('metadata', { });
       } else {
         output = await this.mediatorResolveQuadPattern.mediate({ pattern, context });
       }
-      // Handle the metadata from this source
-      output.data.getProperty('metadata', async (subMetadata: Record<string, any>) => {
-        const aggregateOutput = await this.mediatorRdfMetadataAggregate.mediate({metadata, subMetadata, context, source});
-        metadata = aggregateOutput.metadata;
-        if (metadata.totalItems === Number.POSITIVE_INFINITY) {
-          // We're already at infinite, so ignore any later metadata
-          remainingSources = 0;
-          checkEmitMetadata(Number.POSITIVE_INFINITY, source, pattern);
-        } else {
-          remainingSources--;
-          checkEmitMetadata(metadata.totalItems, source, pattern);
-        }
-      });
 
       // Determine the data stream from this source
       let data = output.data.map(quad => FederatedQuadSource.skolemizeQuad(quad, sourceId));
@@ -259,7 +352,7 @@ export class FederatedQuadSource implements IQuadSource {
 
     // If we have 0 sources, immediately emit metadata
     if (this.sources.length === 0) {
-      it.setProperty('metadata', {});
+      it.setProperty('metadata', { totalItems: 0 });
     }
 
     return it;
