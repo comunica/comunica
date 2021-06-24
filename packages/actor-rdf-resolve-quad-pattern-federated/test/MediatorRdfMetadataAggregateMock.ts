@@ -12,7 +12,7 @@ export const mockedMediatorAgg = {
 
         let newTotalItems: number = 0
         const isEmptyRecord = (r: Record<string, any>) => Object.keys(r).length === 0
-        const hasTotalItems = (r: Record<string, any>) => r.totalItems !== undefined
+        const hasTotalItems = (r: Record<string, any>) => r && r.totalItems !== undefined
         let resultRecord = {}
 
         if (!subMetadata) {
