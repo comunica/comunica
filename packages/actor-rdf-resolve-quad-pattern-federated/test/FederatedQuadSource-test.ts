@@ -1,13 +1,13 @@
-import {ActionContext} from '@comunica/core';
-import {BlankNodeScoped} from '@comunica/data-factory';
-import {ArrayIterator, TransformIterator} from 'asynciterator';
-import {DataFactory} from 'rdf-data-factory';
+import { ActionContext } from '@comunica/core';
+import { BlankNodeScoped } from '@comunica/data-factory';
+import { ArrayIterator, TransformIterator } from 'asynciterator';
+import { DataFactory } from 'rdf-data-factory';
 import 'jest-rdf';
 import type * as RDF from 'rdf-js';
 
 import Factory from 'sparqlalgebrajs/lib/factory';
-import {FederatedQuadSource} from '../lib/FederatedQuadSource';
-import {mockedMediatorAgg} from "./MediatorRdfMetadataAggregateMock";
+import { FederatedQuadSource } from '../lib/FederatedQuadSource';
+import { mockedMediatorAgg } from './MediatorRdfMetadataAggregateMock';
 
 const arrayifyStream = require('arrayify-stream');
 const squad = require('rdf-quad');
@@ -369,7 +369,7 @@ describe('FederatedQuadSource', () => {
       subSource = {};
       emptyPatterns = new Map();
       emptyPatterns.set(subSource, [ squad('?a', '?b', '?c', '"d"') ]);
-      source = new FederatedQuadSource(mediator, context, emptyPatterns, true,mediatorAggregate);
+      source = new FederatedQuadSource(mediator, context, emptyPatterns, true, mediatorAggregate);
     });
 
     it('should return an AsyncIterator', () => {
@@ -409,7 +409,7 @@ describe('FederatedQuadSource', () => {
       subSource = {};
       emptyPatterns = new Map();
       emptyPatterns.set(subSource, [ squad('?a', '?b', '?c', '"d"') ]);
-      source = new FederatedQuadSource(mediator, context, emptyPatterns, false,mediatorAggregate);
+      source = new FederatedQuadSource(mediator, context, emptyPatterns, false, mediatorAggregate);
     });
 
     describe('when calling isSourceEmpty', () => {
@@ -763,7 +763,7 @@ describe('FederatedQuadSource', () => {
             { type: 'emptySource', value: 'I will be empty' },
           ],
       });
-      source = new FederatedQuadSource(mediator, contextSingleEmpty, emptyPatterns, false,mediatorAggregate);
+      source = new FederatedQuadSource(mediator, contextSingleEmpty, emptyPatterns, false, mediatorAggregate);
     });
 
     it('should return an empty AsyncIterator in the default graph', async() => {
