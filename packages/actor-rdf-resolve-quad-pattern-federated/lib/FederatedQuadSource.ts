@@ -199,21 +199,26 @@ export class FederatedQuadSource implements IQuadSource {
     let nMetadataObjects = 0;
     let nMetadataObjectsReduced = 0;
     type IReducer = (action: IActionRdfMetadataAggregate) => Promise<Record<string, any>>;
-
-    function reduce(reducer: IReducer): void {
+    const emitFinalMetadata = (): void => {
+      const finalMetadata = collectedSourceMetadata.pop();
+      it.setProperty('metadata', finalMetadata);
+    };
+    //
+    function reduce(reducer: IReducer, last: boolean): void {
       if (collectedSourceMetadata.length >= 2) {
         // Push reduced result back onto the collected source metadata array
         reducer({ metadata: collectedSourceMetadata.pop()!, subMetadata: collectedSourceMetadata.pop()! })
           .then(({ aggregatedMetadata }) => {
             collectedSourceMetadata.push(aggregatedMetadata);
             nMetadataObjectsReduced += 2;
-            // If we have reduced pair of metadata records, we can emit the last (and final) one.
-            if (nMetadataObjects === nMetadataObjectsReduced) {
-              const z = collectedSourceMetadata.pop()!;
-              it.setProperty('metadata', z);
+
+            if (nMetadataObjectsReduced === nMetadataObjects) {
+              emitFinalMetadata();
             }
           })
           .catch(error => it.emit('error', error));
+      } else if (last) {
+        emitFinalMetadata();
       }
     }
 
@@ -260,7 +265,8 @@ export class FederatedQuadSource implements IQuadSource {
         nMetadataObjects++;
         collectedSourceMetadata.push(outputMetadata);
         const myReducer: IReducer = action => this.mediatorAggregate.mediate(action);
-        reduce(myReducer);
+        const last = i === this.sources.length - 1;
+        reduce(myReducer, last);
       }
 
       // Determine the data stream from this source
