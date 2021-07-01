@@ -1,23 +1,23 @@
-import type { DataSources, IActionRdfResolveQuadPattern,
-  IActorRdfResolveQuadPatternOutput, IDataSource, IQuadSource } from '@comunica/bus-rdf-resolve-quad-pattern';
+import type {
+  IActionRdfMetadataAggregate,
+  IActorRdfMetadataAggregateOutput,
+} from '@comunica/bus-rdf-metadata-aggregate';
+import type {
+  DataSources, IActionRdfResolveQuadPattern,
+  IActorRdfResolveQuadPatternOutput, IDataSource, IQuadSource,
+} from '@comunica/bus-rdf-resolve-quad-pattern';
 import { getDataSourceType, getDataSourceValue, getDataSourceContext } from '@comunica/bus-rdf-resolve-quad-pattern';
 import { KeysRdfResolveQuadPattern } from '@comunica/context-entries';
 import type { ActionContext, Actor, IActorTest, Mediator } from '@comunica/core';
 import { BlankNodeScoped } from '@comunica/data-factory';
 import type { AsyncIterator } from 'asynciterator';
 import { ArrayIterator, TransformIterator, UnionIterator } from 'asynciterator';
+import type { Record } from 'immutable';
 import { DataFactory } from 'rdf-data-factory';
 import type * as RDF from 'rdf-js';
 import { mapTerms } from 'rdf-terms';
 import type { Algebra } from 'sparqlalgebrajs';
 import { Factory } from 'sparqlalgebrajs';
-
-import type {
-  IActionRdfMetadataAggregate,
-  IActorRdfMetadataAggregateOutput
-} from '@comunica/bus-rdf-metadata-aggregate';
-import {Record} from "immutable";
-import EventEmitter = require("events");
 
 const DF = new DataFactory();
 
@@ -38,16 +38,15 @@ export class FederatedQuadSource implements IQuadSource {
   protected readonly skipEmptyPatterns: boolean;
   protected readonly algebraFactory: Factory;
 
-  public readonly mediatorAggregate:  Mediator<Actor<IActionRdfMetadataAggregate, IActorTest,
+  public readonly mediatorAggregate: Mediator<Actor<IActionRdfMetadataAggregate, IActorTest,
   IActorRdfMetadataAggregateOutput>, IActionRdfMetadataAggregate, IActorTest, IActorRdfMetadataAggregateOutput>;
 
   public constructor(mediatorResolveQuadPattern: Mediator<Actor<IActionRdfResolveQuadPattern, IActorTest,
   IActorRdfResolveQuadPatternOutput>, IActionRdfResolveQuadPattern, IActorTest, IActorRdfResolveQuadPatternOutput>,
   context: ActionContext, emptyPatterns: Map<IDataSource, RDF.Quad[]>,
   skipEmptyPatterns: boolean,
-  mediatorRdfMetadataAggregate:  Mediator<Actor<IActionRdfMetadataAggregate, IActorTest,
-  IActorRdfMetadataAggregateOutput>, IActionRdfMetadataAggregate, IActorTest, IActorRdfMetadataAggregateOutput>
-  ) {
+  mediatorRdfMetadataAggregate: Mediator<Actor<IActionRdfMetadataAggregate, IActorTest,
+  IActorRdfMetadataAggregateOutput>, IActionRdfMetadataAggregate, IActorTest, IActorRdfMetadataAggregateOutput>) {
     this.mediatorResolveQuadPattern = mediatorResolveQuadPattern;
     this.sources = context.get(KeysRdfResolveQuadPattern.sources);
     this.contextDefault = context.delete(KeysRdfResolveQuadPattern.sources);
@@ -66,40 +65,39 @@ export class FederatedQuadSource implements IQuadSource {
         }
       }
     }
-
   }
 
   /**
-   * Check if the given RDF term is not bound to an exact value.
-   * I.e., if it is not a Variable.
-   * @param {RDF.Term} term An RDF term.
-   * @return {boolean} If it is not bound.
-   */
+     * Check if the given RDF term is not bound to an exact value.
+     * I.e., if it is not a Variable.
+     * @param {RDF.Term} term An RDF term.
+     * @return {boolean} If it is not bound.
+     */
   public static isTermBound(term: RDF.Term): boolean {
     return term.termType !== 'Variable';
   }
 
   /**
-   * Checks if the given (child) pattern is a more bound version of the given (parent) pattern.
-   * This will also return true if the patterns are equal.
-   * @param {RDF.BaseQuad} child A child pattern.
-   * @param {RDF.BaseQuad} parent A parent pattern.
-   * @return {boolean} If child is a sub-pattern of parent
-   */
+     * Checks if the given (child) pattern is a more bound version of the given (parent) pattern.
+     * This will also return true if the patterns are equal.
+     * @param {RDF.BaseQuad} child A child pattern.
+     * @param {RDF.BaseQuad} parent A parent pattern.
+     * @return {boolean} If child is a sub-pattern of parent
+     */
   public static isSubPatternOf(child: RDF.BaseQuad, parent: RDF.BaseQuad): boolean {
     return (!FederatedQuadSource.isTermBound(parent.subject) || parent.subject.equals(child.subject)) &&
-      (!FederatedQuadSource.isTermBound(parent.predicate) || parent.predicate.equals(child.predicate)) &&
-      (!FederatedQuadSource.isTermBound(parent.object) || parent.object.equals(child.object)) &&
-      (!FederatedQuadSource.isTermBound(parent.graph) || parent.graph.equals(child.graph));
+            (!FederatedQuadSource.isTermBound(parent.predicate) || parent.predicate.equals(child.predicate)) &&
+            (!FederatedQuadSource.isTermBound(parent.object) || parent.object.equals(child.object)) &&
+            (!FederatedQuadSource.isTermBound(parent.graph) || parent.graph.equals(child.graph));
   }
 
   /**
-   * If the given term is a blank node, return a deterministic named node for it
-   * based on the source id and the blank node value.
-   * @param term Any RDF term.
-   * @param sourceId A source identifier.
-   * @return If the given term was a blank node, this will return a skolemized named node, otherwise the original term.
-   */
+     * If the given term is a blank node, return a deterministic named node for it
+     * based on the source id and the blank node value.
+     * @param term Any RDF term.
+     * @param sourceId A source identifier.
+     * @return If the given term was a blank node, this will return a skolemized named node,otherwise the original term.
+     */
   public static skolemizeTerm(term: RDF.Term, sourceId: string): RDF.Term | BlankNodeScoped {
     if (term.termType === 'BlankNode') {
       return new BlankNodeScoped(`bc_${sourceId}_${term.value}`,
@@ -109,26 +107,26 @@ export class FederatedQuadSource implements IQuadSource {
   }
 
   /**
-   * Skolemize all terms in the given quad.
-   * @param quad An RDF quad.
-   * @param sourceId A source identifier.
-   * @return The skolemized quad.
-   */
+     * Skolemize all terms in the given quad.
+     * @param quad An RDF quad.
+     * @param sourceId A source identifier.
+     * @return The skolemized quad.
+     */
   public static skolemizeQuad<Q extends RDF.BaseQuad = RDF.Quad>(quad: Q, sourceId: string): Q {
     return mapTerms(quad, term => FederatedQuadSource.skolemizeTerm(term, sourceId));
   }
 
   /**
-   * If a given term was a skolemized named node for the given source id,
-   * deskolemize it again to a blank node.
-   * If the given term was a skolemized named node for another source, return false.
-   * If the given term was not a skolemized named node, return the original term.
-   * @param term Any RDF term.
-   * @param sourceId A source identifier.
-   */
+     * If a given term was a skolemized named node for the given source id,
+     * deskolemize it again to a blank node.
+     * If the given term was a skolemized named node for another source, return false.
+     * If the given term was not a skolemized named node, return the original term.
+     * @param term Any RDF term.
+     * @param sourceId A source identifier.
+     */
   public static deskolemizeTerm(term: RDF.Term, sourceId: string): RDF.Term | null {
     if (term.termType === 'BlankNode' && 'skolemized' in term) {
-      term = (<BlankNodeScoped> term).skolemized;
+      term = (<BlankNodeScoped>term).skolemized;
     }
     if (term.termType === 'NamedNode' && term.value.startsWith(FederatedQuadSource.SKOLEM_PREFIX)) {
       const colonSeparator = term.value.indexOf(':', FederatedQuadSource.SKOLEM_PREFIX.length);
@@ -145,36 +143,18 @@ export class FederatedQuadSource implements IQuadSource {
     return term;
   }
 
-  static deskolemizeQuad(s: RDF.Term,
-                                p: RDF.Term,
-                                o: RDF.Term,
-                                g: RDF.Term,
-                                sourceId: string, algebraFactory: Factory): Algebra.Pattern | undefined {
-    const patternS = FederatedQuadSource.deskolemizeTerm(s, sourceId);
-    const patternP = FederatedQuadSource.deskolemizeTerm(p, sourceId);
-    const patternO = FederatedQuadSource.deskolemizeTerm(o, sourceId);
-    const patternG = FederatedQuadSource.deskolemizeTerm(g, sourceId);
-
-    return patternS && patternP && patternO && patternG ?
-        algebraFactory
-            .createPattern(patternS!, patternP!, patternO!, patternG!)
-        :
-        undefined;
-
-  }
-
   /**
-   * If the given source is guaranteed to produce an empty result for the given pattern.
-   *
-   * This prediction is done based on the 'emptyPatterns' datastructure that is stored within this actor.
-   * Every time an empty pattern is passed, this pattern is stored in this datastructure for this source.
-   * If this pattern (or a more bound pattern) is queried, we know for certain that it will be empty again.
-   * This is under the assumption that sources will remain static during query evaluation.
-   *
-   * @param {IQuerySource} source
-   * @param {RDF.BaseQuad} pattern
-   * @return {boolean}
-   */
+     * If the given source is guaranteed to produce an empty result for the given pattern.
+     *
+     * This prediction is done based on the 'emptyPatterns' datastructure that is stored within this actor.
+     * Every time an empty pattern is passed, this pattern is stored in this datastructure for this source.
+     * If this pattern (or a more bound pattern) is queried, we know for certain that it will be empty again.
+     * This is under the assumption that sources will remain static during query evaluation.
+     *
+     * @param {IQuerySource} source
+     * @param {RDF.BaseQuad} pattern
+     * @return {boolean}
+     */
   public isSourceEmpty(source: IDataSource, pattern: RDF.BaseQuad): boolean {
     if (!this.skipEmptyPatterns) {
       return false;
@@ -191,10 +171,10 @@ export class FederatedQuadSource implements IQuadSource {
   }
 
   /**
-   * Get the unique, deterministic id for the given source.
-   * @param source A data source.
-   * @return The id of the given source.
-   */
+     * Get the unique, deterministic id for the given source.
+     * @param source A data source.
+     * @return The id of the given source.
+     */
   public getSourceId(source: IDataSource): string {
     let sourceId = this.sourceIds.get(source);
     if (sourceId === undefined) {
@@ -204,10 +184,8 @@ export class FederatedQuadSource implements IQuadSource {
     return sourceId;
   }
 
-
-
-  checkPushEmptyPattern = (md: Record<string,any> | undefined, source: IDataSource,
-                                 pattern: RDF.BaseQuad | undefined, lastMetadata?: Record<string, any>) => {
+  private checkPushEmptyPattern(md: Record<string, any> | undefined, source: IDataSource,
+    pattern: RDF.BaseQuad | undefined, lastMetadata?: Record<string, any>): void {
     if (this.skipEmptyPatterns && !md && pattern && !this.isSourceEmpty(source, pattern)) {
       this.emptyPatterns.get(source)!.push(pattern);
     }
@@ -217,35 +195,29 @@ export class FederatedQuadSource implements IQuadSource {
     // Counters for our metadata
     const metadata: Record<string, any> = { totalItems: 0 };
 
-    const collectedSourceMetadata: Record<string,any>[] = []
-    let nMetadataObjects : number = 0;
-    let nMetadataObjectsReduced : number = 0;
+    const collectedSourceMetadata: Record<string, any>[] = [];
+    let nMetadataObjects = 0;
+    let nMetadataObjectsReduced = 0;
+    type IReducer = (action: IActionRdfMetadataAggregate) => Promise<Record<string, any>>;
 
-    type IReducer = (action:IActionRdfMetadataAggregate) => Promise<Record<string, any>>;
-
-    function reduce(reducer: IReducer) {
-      console.log(`@reduce; collectedSourceMetadata.length: ${collectedSourceMetadata.length}`)
-      if ( collectedSourceMetadata.length >= 2 ) {
-        const a = collectedSourceMetadata.pop()!;
-        const b = collectedSourceMetadata.pop()!;
-
-        // push reduced result back onto the collected source metadata array
-        reducer({metadata:a, subMetadata:b}).then(c => {
-          const {aggregatedMetadata} = c ;
-          collectedSourceMetadata.push(aggregatedMetadata)
-          nMetadataObjectsReduced+=2;
-          reduce(reducer)
-        })
-      }
-
-      // If we have reduced pair of metadata records, we can emit the last (and final) one.
-      if (nMetadataObjects === nMetadataObjectsReduced ) {
-        const z = collectedSourceMetadata.pop()!;
-        it.setProperty('metadata',z)
+    function reduce(reducer: IReducer): void {
+      if (collectedSourceMetadata.length >= 2) {
+        // Push reduced result back onto the collected source metadata array
+        reducer({ metadata: collectedSourceMetadata.pop()!, subMetadata: collectedSourceMetadata.pop()! })
+          .then(({ aggregatedMetadata }) => {
+            collectedSourceMetadata.push(aggregatedMetadata);
+            nMetadataObjectsReduced += 2;
+            // If we have reduced pair of metadata records, we can emit the last (and final) one.
+            if (nMetadataObjects === nMetadataObjectsReduced) {
+              const z = collectedSourceMetadata.pop()!;
+              it.setProperty('metadata', z);
+            }
+          })
+          .catch(error => it.emit('error', error));
       }
     }
 
-    const proxyIt: Promise<AsyncIterator<RDF.Quad>[]> = Promise.all(this.sources.map(async (source,i) => {
+    const proxyIt: Promise<AsyncIterator<RDF.Quad>[]> = Promise.all(this.sources.map(async(source, i) => {
       const sourceId = this.getSourceId(source);
 
       // Deskolemize terms, so we send the original blank nodes to each source.
@@ -266,27 +238,29 @@ export class FederatedQuadSource implements IQuadSource {
       // or if we can predict that the given source will have no bindings for the given pattern,
       // return an empty iterator.
       if (!patternS || !patternP || !patternO || !patternG ||
-        // eslint-disable-next-line no-cond-assign
-        this.isSourceEmpty(source, pattern = this.algebraFactory
-          .createPattern(patternS, patternP, patternO, patternG))) {
+            // eslint-disable-next-line no-cond-assign
+            this.isSourceEmpty(source, pattern = this.algebraFactory
+              .createPattern(patternS, patternP, patternO, patternG))) {
         output = { data: new ArrayIterator([], { autoStart: false }) };
-        this.checkPushEmptyPattern({totalItems: 0}, source, pattern)
+        this.checkPushEmptyPattern({ totalItems: 0 }, source, pattern);
       } else {
         output = await this.mediatorResolveQuadPattern.mediate({ pattern, context });
       }
 
-      const outputMetadata : Record<string,any> | undefined = output.data.getProperty('metadata');
+      const outputMetadata: Record<string, any> | undefined = output.data.getProperty('metadata');
 
-      const metadataIndicatesEmpty = outputMetadata !== undefined
-      && outputMetadata.totalItems !== undefined
-      && outputMetadata.totalItems === 0
-      if (metadataIndicatesEmpty)
-        this.checkPushEmptyPattern(undefined, source, pattern)
+      const metadataIndicatesEmpty = outputMetadata !== undefined &&
+            outputMetadata.totalItems !== undefined &&
+            outputMetadata.totalItems === 0;
+      if (metadataIndicatesEmpty) {
+        this.checkPushEmptyPattern(undefined, source, pattern);
+      }
 
-      if( outputMetadata ) {
-        nMetadataObjects ++;
+      if (outputMetadata) {
+        nMetadataObjects++;
         collectedSourceMetadata.push(outputMetadata);
-        reduce(this.mediatorAggregate.mediate)
+        const myReducer: IReducer = action => this.mediatorAggregate.mediate(action);
+        reduce(myReducer);
       }
 
       // Determine the data stream from this source
