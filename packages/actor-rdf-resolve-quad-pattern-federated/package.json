@@ -62,7 +62,10 @@
       "ts",
       "js"
     ],
-    "collectCoverage": true
+    "collectCoverage": true,
+    "testPathIgnorePatterns": [
+      "/test/__mocks__"
+    ]
   },
   "scripts": {
     "test": "node \"../../node_modules/jest/bin/jest.js\" ${1}",
