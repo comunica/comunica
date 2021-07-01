@@ -1,7 +1,8 @@
 import {Record} from "immutable";
+import {IActionRdfMetadataAggregate} from "@comunica/bus-rdf-metadata-aggregate";
 
 export const mockedMediatorAgg = {
-    mediate(action: any) {
+    mediate(action: IActionRdfMetadataAggregate) {
 
         const {metadata, subMetadata} = action
         console.log(`

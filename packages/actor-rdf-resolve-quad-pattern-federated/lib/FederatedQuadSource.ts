@@ -219,6 +219,34 @@ export class FederatedQuadSource implements IQuadSource {
 
 
     const collectedSourceMetadata: Record<string,any>[] = []
+    let nMetadataObjects : number = 0;
+    let nMetadataObjectsReduced : number = 0;
+
+    // type IReducer = (a: Record<string, any>, b: Record<string,any>) => Promise<Record<string, any>>;
+    type IReducer = (action:IActionRdfMetadataAggregate) => Promise<Record<string, any>>;
+
+    function reduce(reducer: IReducer) {
+      console.log(`@reduce; collectedSourceMetadata.length: ${collectedSourceMetadata.length}`)
+      if ( collectedSourceMetadata.length >= 2 ) {
+        const a = collectedSourceMetadata.pop()!;
+        const b = collectedSourceMetadata.pop()!;
+
+        // push reduced result back onto the collected source metadata array
+        reducer({metadata:a, subMetadata:b}).then(c => {
+          const {aggregatedMetadata} = c ;
+          collectedSourceMetadata.push(aggregatedMetadata)
+          nMetadataObjectsReduced+=2;
+          reduce(reducer)
+        })
+      }
+
+
+      if (nMetadataObjects === nMetadataObjectsReduced ) {
+        const z = collectedSourceMetadata.pop()!;
+        it.setProperty('metadata',z)
+      }
+    }
+
     const mdEmitter: EventEmitter = new EventEmitter(); // not needed
     mdEmitter.on('metadataReady',  (md:Record<string,any>)=> collectedSourceMetadata.push(md))
 
@@ -252,7 +280,7 @@ export class FederatedQuadSource implements IQuadSource {
         output = await this.mediatorResolveQuadPattern.mediate({ pattern, context });
       }
 
-      const outputMetadata : Record<string,any> | any = output.data.getProperty('metadata');
+      const outputMetadata : Record<string,any> | undefined = output.data.getProperty('metadata');
 
       const metadataIndicatesEmpty = outputMetadata !== undefined
       && outputMetadata.totalItems !== undefined
@@ -260,8 +288,12 @@ export class FederatedQuadSource implements IQuadSource {
       if (metadataIndicatesEmpty)
         this.checkPushEmptyPattern(undefined, source, pattern)
 
-      // mdEmitter.emit('metadataReady', output.data.getProperty('metadata'))
-      collectedSourceMetadata.push(outputMetadata.getProperty('metadata'))
+      if( outputMetadata ) {
+        nMetadataObjects ++;
+        collectedSourceMetadata.push(outputMetadata);
+        reduce(this.mediatorAggregate.mediate)
+      }
+
       // call to async function to process collectedSourceMetadata head (note: mutex lock)
 
       // output.getProperty('metadata', collectedSourceMetadata.push);
