@@ -217,12 +217,10 @@ export class FederatedQuadSource implements IQuadSource {
     // Counters for our metadata
     const metadata: Record<string, any> = { totalItems: 0 };
 
-
     const collectedSourceMetadata: Record<string,any>[] = []
     let nMetadataObjects : number = 0;
     let nMetadataObjectsReduced : number = 0;
 
-    // type IReducer = (a: Record<string, any>, b: Record<string,any>) => Promise<Record<string, any>>;
     type IReducer = (action:IActionRdfMetadataAggregate) => Promise<Record<string, any>>;
 
     function reduce(reducer: IReducer) {
@@ -240,15 +238,12 @@ export class FederatedQuadSource implements IQuadSource {
         })
       }
 
-
+      // If we have reduced pair of metadata records, we can emit the last (and final) one.
       if (nMetadataObjects === nMetadataObjectsReduced ) {
         const z = collectedSourceMetadata.pop()!;
         it.setProperty('metadata',z)
       }
     }
-
-    const mdEmitter: EventEmitter = new EventEmitter(); // not needed
-    mdEmitter.on('metadataReady',  (md:Record<string,any>)=> collectedSourceMetadata.push(md))
 
     const proxyIt: Promise<AsyncIterator<RDF.Quad>[]> = Promise.all(this.sources.map(async (source,i) => {
       const sourceId = this.getSourceId(source);
@@ -294,12 +289,6 @@ export class FederatedQuadSource implements IQuadSource {
         reduce(this.mediatorAggregate.mediate)
       }
 
-      // call to async function to process collectedSourceMetadata head (note: mutex lock)
-
-      // output.getProperty('metadata', collectedSourceMetadata.push);
-      if(i === this.sources.length-1) // todo: final call
-        mdEmitter.emit('lastSource')
-
       // Determine the data stream from this source
       let data = output.data.map(quad => FederatedQuadSource.skolemizeQuad(quad, sourceId));
       // SPARQL query semantics allow graph variables to only match with named graphs, excluding the default graph
@@ -315,28 +304,6 @@ export class FederatedQuadSource implements IQuadSource {
 
     // Take the union of all source streams
     const it = new TransformIterator(async() => new UnionIterator(await proxyIt), { autoStart: false });
-
-    // Start processing the metadata after the last source
-    // mdEmitter.on('lastSource', async (...args)=>
-    // {
-    //   const [first, ...remaining] = collectedSourceMetadata;
-    //
-    //   let out: Record<string,any> = ( remaining.length === 0 ) ?
-    //       first
-    //       :
-    //       (await collectedSourceMetadata.reduce(
-    //           (prev,curr, )=>{
-    //             return new Promise<Record<string,any>>( (resolve,reject)=>{
-    //               resolve(this.mediatorAggregate.mediate({
-    //                 metadata: prev,
-    //                 subMetadata: curr
-    //               }));
-    //             });
-    //           })).aggregatedMetadata
-    //
-    //   it.setProperty('metadata', out);
-    // });
-
 
     // If we have 0 sources, immediately emit metadata
     if (this.sources.length === 0) {
