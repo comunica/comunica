@@ -37,7 +37,7 @@
     "asynciterator": "^3.1.0",
     "rdf-data-factory": "^1.0.3",
     "rdf-terms": "^1.6.2",
-    "sparqlalgebrajs": "^2.5.5",
+    "sparqlalgebrajs": "^3.0.0",
     "sparqljson-parse": "^1.6.0"
   },
   "peerDependencies": {

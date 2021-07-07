@@ -35,7 +35,7 @@
     "@types/rdf-js": "*",
     "graphql-ld": "^1.2.0",
     "rdf-store-stream": "^1.2.0",
-    "sparqlalgebrajs": "^2.5.5",
+    "sparqlalgebrajs": "^3.0.0",
     "stream-to-string": "^1.2.0"
   },
   "peerDependencies": {

@@ -46,7 +46,7 @@
     "rdf-test-suite": "^1.17.0",
     "rdf-test-suite-ldf": "^1.4.0",
     "setup-polly-jest": "^0.9.1",
-    "sparqlalgebrajs": "^2.5.5",
+    "sparqlalgebrajs": "^3.0.0",
     "stream-to-string": "^1.1.0",
     "streamify-array": "^1.0.0",
     "streamify-string": "^1.0.1",

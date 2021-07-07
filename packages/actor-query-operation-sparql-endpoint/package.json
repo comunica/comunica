@@ -42,7 +42,7 @@
     "fetch-sparql-endpoint": "^2.0.2",
     "rdf-string": "^1.5.0",
     "rdf-terms": "^1.6.2",
-    "sparqlalgebrajs": "^2.5.5"
+    "sparqlalgebrajs": "^3.0.0"
   },
   "peerDependencies": {
     "@comunica/bus-http": "^1.2.0",

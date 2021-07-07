@@ -39,7 +39,7 @@
     "@comunica/types": "^1.21.1",
     "@types/rdf-js": "*",
     "rdf-string": "^1.5.0",
-    "sparqlalgebrajs": "^2.5.5"
+    "sparqlalgebrajs": "^3.0.0"
   },
   "devDependencies": {
     "@comunica/bus-query-operation": "^1.21.1",

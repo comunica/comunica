@@ -40,7 +40,7 @@
     "@types/rdf-js": "*",
     "asynciterator": "^3.1.0",
     "rdf-string": "^1.5.0",
-    "sparqlalgebrajs": "^2.5.5",
+    "sparqlalgebrajs": "^3.0.0",
     "sparqlee": "^1.6.2"
   },
   "devDependencies": {
