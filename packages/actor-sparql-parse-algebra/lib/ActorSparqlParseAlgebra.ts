@@ -24,9 +24,6 @@ export class ActorSparqlParseAlgebra extends ActorSparqlParse {
 
   public async run(action: IActionSparqlParse): Promise<IActorSparqlParseOutput> {
     const parser = new SparqlParser({ prefixes: this.prefixes, baseIRI: action.baseIRI });
-    // Resets the identifier counter used for blank nodes
-    // provides nicer and more consistent output if there are multiple calls
-    (<any> parser)._resetBlanks();
     const parsedSyntax = parser.parse(action.query);
     const baseIRI = parsedSyntax.type === 'query' ? parsedSyntax.base : undefined;
     return {
