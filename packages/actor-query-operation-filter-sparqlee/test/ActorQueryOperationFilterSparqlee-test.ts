@@ -8,6 +8,7 @@ import { DataFactory } from 'rdf-data-factory';
 import type { Algebra } from 'sparqlalgebrajs';
 import { Factory, translate } from 'sparqlalgebrajs';
 import * as sparqlee from 'sparqlee';
+import { isExpressionError } from 'sparqlee';
 import { ActorQueryOperationFilterSparqlee } from '../lib/ActorQueryOperationFilterSparqlee';
 const arrayifyStream = require('arrayify-stream');
 const DF = new DataFactory();
@@ -137,6 +138,23 @@ describe('ActorQueryOperationFilterSparqlee', () => {
       expect(output.type).toEqual('bindings');
       expect(output.variables).toMatchObject([ 'a' ]);
       expect(output.canContainUndefs).toEqual(false);
+    });
+
+    it('Should log warning for an expressionError', async() => {
+      // The order is very important. This item requires isExpressionError to still have it's right definition.
+      const logWarnSpy = jest.spyOn(<any> actor, 'logWarn');
+      const op = { operation: { type: 'filter', input: {}, expression: erroringExpression }};
+      const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
+      await new Promise<void>(resolve => output.bindingsStream.on('end', resolve));
+      expect(logWarnSpy).toHaveBeenCalledTimes(3);
+      logWarnSpy.mock.calls.forEach((call, index) => {
+        const dataCB = <() => { error: any; bindings: Bindings }> call[2];
+        const { error, bindings } = dataCB();
+        expect(isExpressionError(error)).toBeTruthy();
+        expect(bindings).toEqual({
+          '?a': DF.literal(String(index + 1), DF.namedNode('http://www.w3.org/2001/XMLSchema#string')),
+        });
+      });
     });
 
     it('should emit an error for a hard erroring filter', async() => {
