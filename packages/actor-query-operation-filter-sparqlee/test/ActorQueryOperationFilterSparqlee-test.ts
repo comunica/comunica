@@ -140,6 +140,21 @@ describe('ActorQueryOperationFilterSparqlee', () => {
       expect(output.canContainUndefs).toEqual(false);
     });
 
+    it('Should log warning for an expressionError', async() => {
+      // The order is very important. This item requires isExpressionError to still have it's right definition.
+      const logWarnSpy = jest.spyOn(<any> actor, 'logWarn');
+      const op = { operation: { type: 'filter', input: {}, expression: erroringExpression }};
+      const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
+      await new Promise<void>(resolve => output.bindingsStream.on('end', resolve));
+      expect(logWarnSpy).toHaveBeenCalledTimes(3);
+      for (const call of logWarnSpy.mock.calls) {
+        const dataCB = <() => { error: any; bindings: Bindings }> call[2];
+        const { error, bindings } = dataCB();
+        expect(isExpressionError(error)).toBeTruthy();
+        expect(isBindings(bindings)).toBeTruthy();
+      }
+    });
+
     it('should emit an error for a hard erroring filter', async() => {
       // eslint-disable-next-line no-import-assign
       Object.defineProperty(sparqlee, 'isExpressionError', { writable: true });
@@ -147,24 +162,6 @@ describe('ActorQueryOperationFilterSparqlee', () => {
       const op = { operation: { type: 'filter', input: {}, expression: erroringExpression }};
       const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
       await new Promise<void>(resolve => output.bindingsStream.on('error', () => resolve()));
-    });
-
-    it('Should log warning for an expressionError', async() => {
-      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-      const logWarnSpy = jest.spyOn(<any> actor, 'logWarn');
-      // eslint-disable-next-line no-import-assign
-      Object.defineProperty(sparqlee, 'isExpressionError', { writable: true });
-      (<any> sparqlee).isExpressionError = jest.fn(() => true);
-      const op = { operation: { type: 'filter', input: {}, expression: erroringExpression }};
-      const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
-      await new Promise<void>(resolve => output.bindingsStream.on('end', () => resolve()));
-      expect(logWarnSpy).toHaveBeenCalled();
-      for (const call of logWarnSpy.mock.calls) {
-        const dataCB = <() => { error: any; bindings: Bindings }> call[2];
-        const { error, bindings } = dataCB();
-        expect(isExpressionError(error)).toBeTruthy();
-        expect(isBindings(bindings)).toBeTruthy();
-      }
     });
 
     it('should use and respect the baseIRI from the expression context', async() => {
