@@ -1,4 +1,4 @@
-import { ActorQueryOperation, Bindings } from '@comunica/bus-query-operation';
+import { ActorQueryOperation, Bindings, isBindings } from '@comunica/bus-query-operation';
 import { KeysInitSparql } from '@comunica/context-entries';
 import { Bus } from '@comunica/core';
 import type { IActorQueryOperationOutputBindings } from '@comunica/types';
@@ -160,8 +160,10 @@ describe('ActorQueryOperationFilterSparqlee', () => {
       await new Promise<void>(resolve => output.bindingsStream.on('end', () => resolve()));
       expect(logWarnSpy).toHaveBeenCalled();
       for (const call of logWarnSpy.mock.calls) {
-        const dataCB = <() => any> call[2];
-        expect(isExpressionError(dataCB())).toBeTruthy();
+        const dataCB = <() => { error: any; bindings: Bindings }> call[2];
+        const { error, bindings } = dataCB();
+        expect(isExpressionError(error)).toBeTruthy();
+        expect(isBindings(bindings)).toBeTruthy();
       }
     });
 
