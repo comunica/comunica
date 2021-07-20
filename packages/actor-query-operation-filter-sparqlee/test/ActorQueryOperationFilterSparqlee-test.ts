@@ -151,9 +151,8 @@ describe('ActorQueryOperationFilterSparqlee', () => {
         const dataCB = <() => { error: any; bindings: Bindings }> call[2];
         const { error, bindings } = dataCB();
         expect(isExpressionError(error)).toBeTruthy();
-        const dataFact = new DataFactory();
         expect(bindings).toEqual({
-          '?a': dataFact.literal(String(index + 1), dataFact.namedNode('http://www.w3.org/2001/XMLSchema#string')),
+          '?a': DF.literal(String(index + 1), DF.namedNode('http://www.w3.org/2001/XMLSchema#string')),
         });
       });
     });
