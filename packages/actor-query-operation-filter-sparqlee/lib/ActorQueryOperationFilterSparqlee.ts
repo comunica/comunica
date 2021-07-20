@@ -49,7 +49,11 @@ export class ActorQueryOperationFilterSparqlee extends ActorQueryOperationTypedM
         // > ...
         // > These errors have no effect outside of FILTER evaluation.
         // https://www.w3.org/TR/sparql11-query/#expressions
-        if (!isExpressionError(<Error> error)) {
+        if (isExpressionError(<Error> error)) {
+          // In many cases, this is a user error, where the user should manually cast the variable to a string.
+          // In order to help users debug this, we should report these errors via the logger as warnings.
+          this.logWarn(context, 'Error occurred while filtering.', () => error);
+        } else {
           bindingsStream.emit('error', error);
         }
       }

@@ -8,6 +8,7 @@ import { DataFactory } from 'rdf-data-factory';
 import type { Algebra } from 'sparqlalgebrajs';
 import { Factory, translate } from 'sparqlalgebrajs';
 import * as sparqlee from 'sparqlee';
+import { isExpressionError } from 'sparqlee';
 import { ActorQueryOperationFilterSparqlee } from '../lib/ActorQueryOperationFilterSparqlee';
 const arrayifyStream = require('arrayify-stream');
 const DF = new DataFactory();
@@ -146,6 +147,22 @@ describe('ActorQueryOperationFilterSparqlee', () => {
       const op = { operation: { type: 'filter', input: {}, expression: erroringExpression }};
       const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
       await new Promise<void>(resolve => output.bindingsStream.on('error', () => resolve()));
+    });
+
+    it('Should log warning for an expressionError', async() => {
+      // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
+      const logWarnSpy = jest.spyOn(<any> actor, 'logWarn');
+      // eslint-disable-next-line no-import-assign
+      Object.defineProperty(sparqlee, 'isExpressionError', { writable: true });
+      (<any> sparqlee).isExpressionError = jest.fn(() => true);
+      const op = { operation: { type: 'filter', input: {}, expression: erroringExpression }};
+      const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
+      await new Promise<void>(resolve => output.bindingsStream.on('end', () => resolve()));
+      expect(logWarnSpy).toHaveBeenCalled();
+      for (const call of logWarnSpy.mock.calls) {
+        const dataCB = <() => any> call[2];
+        expect(isExpressionError(dataCB())).toBeTruthy();
+      }
     });
 
     it('should use and respect the baseIRI from the expression context', async() => {
