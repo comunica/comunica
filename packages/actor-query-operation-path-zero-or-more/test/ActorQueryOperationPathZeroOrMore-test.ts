@@ -278,7 +278,9 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
       expect(output.variables).toEqual([ '?x', '?y', '?g' ]);
       expect(output.canContainUndefs).toEqual(false);
       const bindings: Bindings[] = await arrayifyStream(output.bindingsStream);
-      expect(bindings).toEqual([
+      const comparator = ((left: Bindings, right: Bindings) => JSON.stringify(left.toJS())
+        .localeCompare(JSON.stringify(right.toJS())));
+      expect(bindings.sort(comparator)).toEqual([
         Bindings({ '?x': DF.namedNode('1'), '?y': DF.namedNode('1'), '?g': DF.namedNode('4') }),
         Bindings({ '?x': DF.namedNode('1'), '?y': DF.namedNode('2'), '?g': DF.namedNode('4') }),
         Bindings({ '?x': DF.namedNode('1'), '?y': DF.namedNode('3'), '?g': DF.namedNode('4') }),
@@ -299,7 +301,7 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
         Bindings({ '?x': DF.namedNode('5'), '?y': DF.namedNode('1'), '?g': DF.namedNode('6') }),
         Bindings({ '?x': DF.namedNode('5'), '?y': DF.namedNode('2'), '?g': DF.namedNode('6') }),
         Bindings({ '?x': DF.namedNode('5'), '?y': DF.namedNode('3'), '?g': DF.namedNode('6') }),
-      ]);
+      ].sort(comparator));
     });
   });
 });
