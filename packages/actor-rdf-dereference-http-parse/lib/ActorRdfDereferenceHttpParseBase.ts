@@ -154,7 +154,12 @@ export abstract class ActorRdfDereferenceHttpParseBase extends ActorRdfDereferen
     const parts: string[] = [];
     const sortedMediaTypes = Object.keys(mediaTypes)
       .map(mediaType => ({ mediaType, priority: mediaTypes[mediaType] }))
-      .sort((left, right) => right.priority - left.priority);
+      .sort((left, right) => {
+        if (right.priority === left.priority) {
+          return left.mediaType.localeCompare(right.mediaType);
+        }
+        return right.priority - left.priority;
+      });
     // Take into account the ',' characters joining each type
     const separatorLength = sortedMediaTypes.length - 1;
     let partsLength = separatorLength;

@@ -158,7 +158,9 @@ describe('ActorRdfDereferenceHttpParse', () => {
     });
 
     it('should stringify three media types', () => {
-      return expect(actor.mediaTypesToAcceptString({ a: 1, b: 1, c: 1 }, 100)).toEqual('a,b,c');
+      expect(actor.mediaTypesToAcceptString({ a: 1, b: 1, c: 1 }, 100)).toEqual('a,b,c');
+      expect(actor.mediaTypesToAcceptString({ b: 1, c: 1, a: 1 }, 100)).toEqual('a,b,c');
+      expect(actor.mediaTypesToAcceptString({ c: 1, a: 1, b: 1 }, 100)).toEqual('a,b,c');
     });
 
     it('should stringify three prioritized media types', () => {
