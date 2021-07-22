@@ -32,7 +32,7 @@
   ],
   "dependencies": {
     "@types/rdf-js": "*",
-    "asynciterator": "^3.1.0",
+    "asynciterator": "^3.2.0",
     "immutable": "^3.8.2",
     "sparqlalgebrajs": "^2.4.0"
   },

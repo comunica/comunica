@@ -53,6 +53,7 @@ export class QuadDestinationPatchSparqlUpdate implements IQuadDestination {
       .prepend([ `${type} DATA {\n` ])
       .append([ '}' ]);
     const readable = new Readable();
+    readable._read = () => true;
     dataWrapped.on('data', (quad: RDF.Quad) => readable.push(quad));
     dataWrapped.on('end', () => readable.push(null));
 

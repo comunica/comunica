@@ -26,6 +26,10 @@ describe('System test: ActorInitSparql', () => {
     });
   });
 
+  afterEach(async() => {
+    await pollyContext.polly.flush();
+  });
+
   describe('query', () => {
     describe('simple SPO on a raw RDF document', () => {
       it('with results', async() => {

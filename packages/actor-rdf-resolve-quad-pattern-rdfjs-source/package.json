@@ -33,7 +33,7 @@
   ],
   "dependencies": {
     "@types/rdf-js": "*",
-    "asynciterator": "^3.1.0"
+    "asynciterator": "^3.2.0"
   },
   "peerDependencies": {
     "@comunica/bus-rdf-resolve-quad-pattern": "^1.2.0",
