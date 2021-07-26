@@ -1,6 +1,6 @@
 # Sparqlee
 
-[![Build Status](https://travis-ci.org/comunica/sparqlee.svg?branch=master)](https://travis-ci.org/comunica/sparqlee)
+[![Build status](https://github.com/comunica/sparqlee/workflows/CI/badge.svg)](https://github.com/comunica/sparqlee/actions?query=workflow%3ACI)
 [![Coverage Status](https://coveralls.io/repos/github/comunica/sparqlee/badge.svg?branch=master)](https://coveralls.io/github/comunica/sparqlee?branch=master)
 [![npm version](https://badge.fury.io/js/sparqlee.svg)](https://www.npmjs.com/package/sparqlee)
 [![Gitter chat](https://badges.gitter.im/comunica.png)](https://gitter.im/comunica/Lobby)

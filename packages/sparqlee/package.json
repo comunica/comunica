@@ -83,6 +83,7 @@
   "jest": {
     "testEnvironment": "node",
     "preset": "ts-jest",
+    "collectCoverage": true,
     "testPathIgnorePatterns": [
       "<rootDir>/dist/"
     ],
