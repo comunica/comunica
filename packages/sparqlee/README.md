@@ -83,7 +83,7 @@ An example consumer/hook can be found in [Comunica](https://github.com/comunica/
 
 ### Aggregates
 
-We provide an `AggregateEvaluator` to which you can pass the individual bindings in the stream, end ask the aggregated result back. It uses Sparqlee's internal type system for operations such as `sum` and `avg`.
+We provide an `AggregateEvaluator` to which you can pass the individual bindings in the stream, and ask the aggregated result back. It uses Sparqlee's internal type system for operations such as `sum` and `avg`.
 
 ```ts
 const stream = [bindings1, bindings2, bindings3];
@@ -91,7 +91,7 @@ const stream = [bindings1, bindings2, bindings3];
 if (stream.length === 0) {
   return AggregateEvaluator.emptyValue(aggregateExpression);
 } else {
-  const evaluator = = new AggregateEvaluator(aggregateExpression, bindings[0]);
+  const evaluator = new AggregateEvaluator(aggregateExpression, bindings[0]);
   stream.slice(1).forEach((bindings) => evaluator.put(bindings));
   return evaluator.result();
 }
