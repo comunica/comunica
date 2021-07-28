@@ -1,10 +1,10 @@
 /** @jest-environment setup-polly-jest/jest-environment-node */
 
 // Needed to undo automock from actor-http-native, cleaner workarounds do not appear to be working.
-import { literal } from '@rdfjs/data-model';
-
 jest.unmock('follow-redirects');
 
+import { KeysInitSparql } from '@comunica/context-entries';
+import { literal } from '@rdfjs/data-model';
 import { Store } from 'n3';
 import { DataFactory } from 'rdf-data-factory';
 import type * as RDF from 'rdf-js';
@@ -13,7 +13,6 @@ import { newEngine } from '../../index-browser';
 import type { IQueryResultBindings } from '../../lib/ActorInitSparql-browser';
 import { mockHttp } from './util';
 import 'jest-rdf';
-import { KeysInitSparql } from '@comunica/context-entries';
 const arrayifyStream = require('arrayify-stream');
 
 const DF = new DataFactory();
@@ -114,13 +113,13 @@ describe('System test: ActorInitSparql', () => {
         it('rejects when map does not match', async() => {
           const context = <any> { sources: [ 'https://www.rubensworks.net/' ]};
           context[KeysInitSparql.extensionFunctionMap] = baseFunctionMap;
-          expect(engine.query(baseQuery('nonExist'), context)).rejects.toThrow();
+          await expect(engine.query(baseQuery('nonExist'), context)).rejects.toThrow();
         });
 
         it('rejects when creator returns null', async() => {
           const context = <any> { sources: [ 'https://www.rubensworks.net/' ]};
           context[KeysInitSparql.extensionFunctionCreator] = () => null;
-          expect(engine.query(baseQuery('nonExist'), context)).rejects.toThrow();
+          await expect(engine.query(baseQuery('nonExist'), context)).rejects.toThrow();
         });
 
         it('with results and pointless custom filter given by creator', async() => {
@@ -149,8 +148,7 @@ describe('System test: ActorInitSparql', () => {
           const context = <any> { sources: [ 'https://www.rubensworks.net/' ]};
           context[KeysInitSparql.extensionFunctionMap] = baseFunctionMap;
           context[KeysInitSparql.extensionFunctionCreator] = baseFunctionCreator;
-          expect(engine.query(baseQuery(funcAllow), context)).rejects.toThrow('It is not allowed to provide both ' +
-            'an extensionFunctionCreator an a extensionFunctionMap as this would lead to confusion');
+          await expect(engine.query(baseQuery(funcAllow), context)).rejects.toThrow();
         });
       });
     });
