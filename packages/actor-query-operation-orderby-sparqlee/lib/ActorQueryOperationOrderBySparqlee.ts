@@ -25,7 +25,8 @@ export class ActorQueryOperationOrderBySparqlee extends ActorQueryOperationTyped
     // Will throw error for unsupported operators
     for (let expr of pattern.expressions) {
       expr = this.extractSortExpression(expr);
-      const _ = new AsyncEvaluator(expr);
+      const sparqleeConfig = { ...ActorQueryOperation.getAsyncExpressionContext(context) };
+      const _ = new AsyncEvaluator(expr, sparqleeConfig);
     }
     return true;
   }

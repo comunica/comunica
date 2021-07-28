@@ -8,6 +8,7 @@ import type { IActorQueryOperationOutputBindings } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { termToString } from 'rdf-string';
 import type { Algebra } from 'sparqlalgebrajs';
+import type { SyncEvaluatorConfig } from 'sparqlee';
 import { SyncEvaluator } from 'sparqlee';
 
 import { GroupsState } from './GroupsState';
@@ -43,7 +44,8 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
       ...aggregates.map(agg => termToString(agg.variable)),
     ];
 
-    const sparqleeConfig = { ...ActorQueryOperation.getExpressionContext(context) };
+    const sparqleeConfig = { ...ActorQueryOperation.getExpressionContext(context),
+      extensionFunctionCreator: undefined };
 
     // Return a new promise that completes when the stream has ended or when
     // an error occurs

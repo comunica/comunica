@@ -60,6 +60,16 @@ export enum KeysInitSparql {
    *                 This is required for certain SPARQL operations such as NOW().
    */
   queryTimestamp = '@comunica/actor-init-sparql:queryTimestamp',
+  /**
+   * @range {functionNamedNode: RDF.NamedNode) => ((args: RDF.Term[]) => Promise<RDF.Term>) | null} A callback function
+   * returning an extension function given the namedNode of the function.
+   */
+  extensionFunctionCreator = '@comunica/actor-init-sparql:extensionFunctionCreator',
+  /**
+   * @range {Map<string, (args: RDF.Term[]) => Promise<RDF.Term>>} A map with key the name of the function
+   * and value the extension function.
+   */
+  extensionFunctionMap = '@comunica/actor-init-sparql:extensionFunctionMap',
 }
 
 export enum KeysQueryOperation {

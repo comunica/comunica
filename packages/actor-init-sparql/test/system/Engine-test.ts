@@ -1,15 +1,19 @@
 /** @jest-environment setup-polly-jest/jest-environment-node */
 
 // Needed to undo automock from actor-http-native, cleaner workarounds do not appear to be working.
+import { literal } from '@rdfjs/data-model';
+
 jest.unmock('follow-redirects');
 
 import { Store } from 'n3';
 import { DataFactory } from 'rdf-data-factory';
+import type * as RDF from 'rdf-js';
 import type { ActorInitSparql, IQueryResultUpdate } from '../../index-browser';
 import { newEngine } from '../../index-browser';
 import type { IQueryResultBindings } from '../../lib/ActorInitSparql-browser';
 import { mockHttp } from './util';
 import 'jest-rdf';
+import { KeysInitSparql } from '@comunica/context-entries';
 const arrayifyStream = require('arrayify-stream');
 
 const DF = new DataFactory();
@@ -85,6 +89,69 @@ describe('System test: ActorInitSparql', () => {
           .toEqual([]);
         expect((await arrayifyStream((<IQueryResultBindings> await engine.query(query, context)).bindingsStream)))
           .toEqual([]);
+      });
+
+      describe('custom function', () => {
+        const funcAllow = 'allowAll';
+        const baseFunctionName = (funcName: string) =>
+          `http://example.org/functions#${funcName}`;
+        const baseQuery = (funcName: string) => `PREFIX func: <http://example.org/functions#>
+        SELECT * WHERE {
+              ?s ?p ?o.
+            FILTER (func:${funcName}(?o))
+        }`;
+        const baseFunctionMap = new Map<string, (args: RDF.Term[]) => Promise<RDF.Term>>([
+          [ baseFunctionName(funcAllow), async(arg: RDF.Term[]) => {
+            return literal('true', 'http://www.w3.org/2001/XMLSchema#boolean');
+          } ],
+        ]);
+        const baseFunctionCreator = (functionName: RDF.NamedNode) => {
+          return (arg: RDF.Term[]) => {
+            return literal('true', 'http://www.w3.org/2001/XMLSchema#boolean');
+          };
+        };
+
+        it('rejects when map does not match', async() => {
+          const context = <any> { sources: [ 'https://www.rubensworks.net/' ]};
+          context[KeysInitSparql.extensionFunctionMap] = baseFunctionMap;
+          expect(engine.query(baseQuery('nonExist'), context)).rejects.toThrow();
+        });
+
+        it('rejects when creator returns null', async() => {
+          const context = <any> { sources: [ 'https://www.rubensworks.net/' ]};
+          context[KeysInitSparql.extensionFunctionCreator] = () => null;
+          expect(engine.query(baseQuery('nonExist'), context)).rejects.toThrow();
+        });
+
+        it('with results and pointless custom filter given by creator', async() => {
+          const context = <any> { sources: [ 'https://www.rubensworks.net/' ]};
+          context[KeysInitSparql.extensionFunctionCreator] = baseFunctionCreator;
+          const result = <IQueryResultBindings> await engine.query(baseQuery(funcAllow), context);
+          expect((await arrayifyStream(result.bindingsStream)).length).toBeGreaterThan(100);
+        });
+
+        it('with results and pointless custom filter given by map', async() => {
+          const context = <any> { sources: [ 'https://www.rubensworks.net/' ]};
+          context[KeysInitSparql.extensionFunctionMap] = baseFunctionMap;
+          const result = <IQueryResultBindings> await engine.query(baseQuery(funcAllow), context);
+          expect((await arrayifyStream(result.bindingsStream)).length).toBeGreaterThan(100);
+        });
+
+        it('with results but all filtered away', async() => {
+          const context = <any> { sources: [ 'https://www.rubensworks.net/' ]};
+          context[KeysInitSparql.extensionFunctionCreator] = () => () =>
+            literal('false', 'http://www.w3.org/2001/XMLSchema#boolean');
+          const result = <IQueryResultBindings> await engine.query(baseQuery('rejectAll'), context);
+          expect(await arrayifyStream(result.bindingsStream)).toEqual([]);
+        });
+
+        it('thorws error when supplying both map and creator', async() => {
+          const context = <any> { sources: [ 'https://www.rubensworks.net/' ]};
+          context[KeysInitSparql.extensionFunctionMap] = baseFunctionMap;
+          context[KeysInitSparql.extensionFunctionCreator] = baseFunctionCreator;
+          expect(engine.query(baseQuery(funcAllow), context)).rejects.toThrow('It is not allowed to provide both ' +
+            'an extensionFunctionCreator an a extensionFunctionMap as this would lead to confusion');
+        });
       });
     });
 
