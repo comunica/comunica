@@ -162,10 +162,6 @@ export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs, 
     }
 
     // Prepare and check context
-    if (context[KeysInitSparql.extensionFunctionCreator] && context[KeysInitSparql.extensionFunctionMap]) {
-      throw new Error('It is not allowed to provide both an extensionFunctionCreator an a extensionFunctionMap ' +
-      'as this would lead to confusion');
-    }
     context = ActionContext(context);
     let queryFormat = 'sparql';
     if (context && context.has(KeysInitSparql.queryFormat)) {
