@@ -13,6 +13,7 @@ import type {
   Bindings,
   PatternBindings,
 } from '@comunica/types';
+import type { Record } from 'immutable';
 import type * as RDF from 'rdf-js';
 import type { Algebra } from 'sparqlalgebrajs';
 import { materializeOperation } from './Bindings';
@@ -205,15 +206,18 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
     if (context) {
       const now: Date = context.get(KeysInitSparql.queryTimestamp);
       const baseIRI: string = context.get(KeysInitSparql.baseIRI);
+      // The user has the option of either providing an extensionFunctionCreator or extensionFunctions.
+      // If an extensionFunctions is given we will make a wrapper for it.
+      if (context.has(KeysInitSparql.extensionFunctionCreator) && context.has(KeysInitSparql.extensionFunctions)) {
+        throw new Error('Illegal extensionFunctionCreator and extensionFunctions context entries,' +
+          'only one of them is allowed');
+      }
       let extensionFunctionCreator: (functionNamedNode: RDF.NamedNode) =>
-      ((args: RDF.Term[]) => Promise<RDF.Term>) | null = context.get(KeysInitSparql.extensionFunctionCreator);
-      const extensionFunctionMap: Map<string, (args: RDF.Term[]) => Promise<RDF.Term>> =
-      context.get(KeysInitSparql.extensionFunctionMap);
-      if (extensionFunctionMap) {
-        extensionFunctionCreator = functionNamedNode => {
-          const res = extensionFunctionMap.get(functionNamedNode.value);
-          return res || null;
-        };
+      ((args: RDF.Term[]) => Promise<RDF.Term>) | undefined = context.get(KeysInitSparql.extensionFunctionCreator);
+      const extensionFunctions: Record<string, (args: RDF.Term[]) => Promise<RDF.Term>> =
+      context.get(KeysInitSparql.extensionFunctions);
+      if (extensionFunctions) {
+        extensionFunctionCreator = functionNamedNode => extensionFunctions[functionNamedNode.value];
       }
       return { now, baseIRI, extensionFunctionCreator };
     }
@@ -313,7 +317,8 @@ export function getMetadata(actionOutput: IActorQueryOperationOutputStream): Pro
 interface IBaseExpressionContext {
   now?: Date;
   baseIRI?: string;
-  extensionFunctionCreator?: (functionNamedNode: RDF.NamedNode) => ((args: RDF.Term[]) => Promise<RDF.Term>) | null;
+  extensionFunctionCreator?: (functionNamedNode: RDF.NamedNode) =>
+  ((args: RDF.Term[]) => Promise<RDF.Term>) | undefined;
 }
 
 // TODO: rename to ISyncExpressionContext in next major version

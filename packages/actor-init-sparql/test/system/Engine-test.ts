@@ -90,65 +90,100 @@ describe('System test: ActorInitSparql', () => {
           .toEqual([]);
       });
 
-      describe('custom function', () => {
-        const funcAllow = 'allowAll';
-        const baseFunctionName = (funcName: string) =>
-          `http://example.org/functions#${funcName}`;
+      describe('extension function', () => {
+        let funcAllow: string;
+        let store: Store;
+        let baseFunctions: Record<string, (args: RDF.Term[]) => Promise<RDF.Term>>;
+        let baseFunctionCreator: (functionName: RDF.NamedNode) => ((args: RDF.Term[]) => Promise<RDF.Term>) | undefined;
+        let quads: RDF.Quad[];
+        beforeEach(() => {
+          const stringType = 'http://www.w3.org/2001/XMLSchema#string';
+          const booleanType = 'http://www.w3.org/2001/XMLSchema#boolean';
+          funcAllow = 'allowAll';
+          baseFunctions = {
+            'http://example.org/functions#allowAll': async(args: RDF.Term[]) => literal('true', booleanType),
+          };
+          baseFunctionCreator = (functionName: RDF.NamedNode) =>
+            async(args: RDF.Term[]) => literal('true', booleanType);
+          store = new Store();
+          quads = [
+            DF.quad(DF.namedNode('ex:a'), DF.namedNode('ex:p1'), DF.literal('apple', stringType)),
+            DF.quad(DF.namedNode('ex:a'), DF.namedNode('ex:p2'), DF.literal('APPLE', stringType)),
+            DF.quad(DF.namedNode('ex:a'), DF.namedNode('ex:p3'), DF.literal('Apple', stringType)),
+            DF.quad(DF.namedNode('ex:a'), DF.namedNode('ex:p4'), DF.literal('aPPLE', stringType)),
+          ];
+          store.addQuads(quads);
+        });
         const baseQuery = (funcName: string) => `PREFIX func: <http://example.org/functions#>
         SELECT * WHERE {
               ?s ?p ?o.
             FILTER (func:${funcName}(?o))
         }`;
-        const baseFunctionMap = new Map<string, (args: RDF.Term[]) => Promise<RDF.Term>>([
-          [ baseFunctionName(funcAllow), async(arg: RDF.Term[]) => {
-            return literal('true', 'http://www.w3.org/2001/XMLSchema#boolean');
-          } ],
-        ]);
-        const baseFunctionCreator = (functionName: RDF.NamedNode) => {
-          return (arg: RDF.Term[]) => {
-            return literal('true', 'http://www.w3.org/2001/XMLSchema#boolean');
-          };
-        };
 
-        it('rejects when map does not match', async() => {
-          const context = <any> { sources: [ 'https://www.rubensworks.net/' ]};
-          context[KeysInitSparql.extensionFunctionMap] = baseFunctionMap;
-          await expect(engine.query(baseQuery('nonExist'), context)).rejects.toThrow();
+        it('rejects when record does not match', async() => {
+          const context = <any> { sources: [ store ]};
+          context[KeysInitSparql.extensionFunctions] = baseFunctions;
+          await expect(engine.query(baseQuery('nonExist'), context)).rejects.toThrow('Unknown named operator');
         });
 
         it('rejects when creator returns null', async() => {
-          const context = <any> { sources: [ 'https://www.rubensworks.net/' ]};
+          const context = <any> { sources: [ store ]};
           context[KeysInitSparql.extensionFunctionCreator] = () => null;
-          await expect(engine.query(baseQuery('nonExist'), context)).rejects.toThrow();
+          await expect(engine.query(baseQuery('nonExist'), context)).rejects.toThrow('Unknown named operator');
         });
 
         it('with results and pointless custom filter given by creator', async() => {
-          const context = <any> { sources: [ 'https://www.rubensworks.net/' ]};
+          const context = <any> { sources: [ store ]};
           context[KeysInitSparql.extensionFunctionCreator] = baseFunctionCreator;
           const result = <IQueryResultBindings> await engine.query(baseQuery(funcAllow), context);
-          expect((await arrayifyStream(result.bindingsStream)).length).toBeGreaterThan(100);
+          expect((await arrayifyStream(result.bindingsStream)).length).toEqual(store.size);
         });
 
-        it('with results and pointless custom filter given by map', async() => {
-          const context = <any> { sources: [ 'https://www.rubensworks.net/' ]};
-          context[KeysInitSparql.extensionFunctionMap] = baseFunctionMap;
+        it('with results and pointless custom filter given by record', async() => {
+          const context = <any> { sources: [ store ]};
+          context[KeysInitSparql.extensionFunctions] = baseFunctions;
           const result = <IQueryResultBindings> await engine.query(baseQuery(funcAllow), context);
-          expect((await arrayifyStream(result.bindingsStream)).length).toBeGreaterThan(100);
+          expect((await arrayifyStream(result.bindingsStream)).length).toEqual(4);
         });
 
         it('with results but all filtered away', async() => {
-          const context = <any> { sources: [ 'https://www.rubensworks.net/' ]};
+          const context = <any> { sources: [ store ]};
           context[KeysInitSparql.extensionFunctionCreator] = () => () =>
             literal('false', 'http://www.w3.org/2001/XMLSchema#boolean');
           const result = <IQueryResultBindings> await engine.query(baseQuery('rejectAll'), context);
           expect(await arrayifyStream(result.bindingsStream)).toEqual([]);
         });
 
-        it('thorws error when supplying both map and creator', async() => {
-          const context = <any> { sources: [ 'https://www.rubensworks.net/' ]};
-          context[KeysInitSparql.extensionFunctionMap] = baseFunctionMap;
+        it('throws error when supplying both record and creator', async() => {
+          const context = <any> { sources: [ store ]};
+          context[KeysInitSparql.extensionFunctions] = baseFunctions;
           context[KeysInitSparql.extensionFunctionCreator] = baseFunctionCreator;
-          await expect(engine.query(baseQuery(funcAllow), context)).rejects.toThrow();
+          await expect(engine.query(baseQuery(funcAllow), context)).rejects
+            .toThrow('Illegal extensionFunctionCreator and extensionFunctions');
+        });
+
+        it('handles complex queries with BIND to', async() => {
+          const context = <any> { sources: [ store ]};
+          const stringType = 'http://www.w3.org/2001/XMLSchema#string';
+          const complexQuery = `PREFIX func: <http://example.org/functions#>
+        SELECT ?caps WHERE {
+              ?s ?p ?o.
+              BIND (func:to-upper-case(?o) AS ?caps)
+        }
+          `;
+          context[KeysInitSparql.extensionFunctions] = {
+            async 'http://example.org/functions#to-upper-case'(args: RDF.Term[]) {
+              const arg = args[0];
+              if (arg.termType === 'Literal' && arg.datatype.equals(DF.literal('', stringType).datatype)) {
+                return DF.literal(arg.value.toUpperCase(), stringType);
+              }
+              return arg;
+            },
+          };
+          const result = <IQueryResultBindings> await engine.query(complexQuery, context);
+          expect((await result.bindings()).map(res => res.get('?caps').value)).toEqual(
+            quads.map(q => q.object.value.toUpperCase()),
+          );
         });
       });
     });

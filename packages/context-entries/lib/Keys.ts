@@ -61,15 +61,15 @@ export enum KeysInitSparql {
    */
   queryTimestamp = '@comunica/actor-init-sparql:queryTimestamp',
   /**
-   * @range {functionNamedNode: RDF.NamedNode) => ((args: RDF.Term[]) => Promise<RDF.Term>) | null} A callback function
-   * returning an extension function given the namedNode of the function.
+   * @range {functionNamedNode: RDF.NamedNode) => ((args: RDF.Term[]) => Promise<RDF.Term>) | undefined}
+   * A callback function returning an extension function given the namedNode of the function.
    */
   extensionFunctionCreator = '@comunica/actor-init-sparql:extensionFunctionCreator',
   /**
-   * @range {Map<string, (args: RDF.Term[]) => Promise<RDF.Term>>} A map with key the name of the function
+   * @range {Record<string, (args: RDF.Term[]) => Promise<RDF.Term>>} A map with key the name of the function
    * and value the extension function.
    */
-  extensionFunctionMap = '@comunica/actor-init-sparql:extensionFunctionMap',
+  extensionFunctions = '@comunica/actor-init-sparql:extensionFunctions',
 }
 
 export enum KeysQueryOperation {
