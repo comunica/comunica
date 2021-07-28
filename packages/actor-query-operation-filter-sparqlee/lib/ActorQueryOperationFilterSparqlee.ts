@@ -6,7 +6,7 @@ import {
 import type { ActionContext, IActorTest } from '@comunica/core';
 import type { Bindings, IActorQueryOperationOutputBindings } from '@comunica/types';
 import type { Algebra } from 'sparqlalgebrajs';
-import { AsyncEvaluator, isExpressionError } from 'sparqlee';
+import {AsyncEvaluator, AsyncEvaluatorConfig, isExpressionError} from 'sparqlee';
 
 /**
  * A comunica Filter Sparqlee Query Operation Actor.

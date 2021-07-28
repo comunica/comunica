@@ -43,7 +43,6 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
       ...aggregates.map(agg => termToString(agg.variable)),
     ];
 
-    // TODO: we should not override extensionFunctionCreator. Instead we should use an AsyncAggregateEvaluator.
     const sparqleeConfig = { ...ActorQueryOperation.getExpressionContext(context),
       extensionFunctionCreator: undefined };
 
