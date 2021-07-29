@@ -10669,10 +10669,10 @@ sparqlalgebrajs@^2.4.0, sparqlalgebrajs@^2.5.5:
     rdf-string "^1.5.0"
     sparqljs "^3.3.0"
 
-sparqlee@^1.6.2:
-  version "1.6.2"
-  resolved "https://registry.yarnpkg.com/sparqlee/-/sparqlee-1.6.2.tgz#5b7b9a6afaa7aa80cc0f9114a49473c3902f7783"
-  integrity sha512-Wvp1wYrbzxHEEb4rXw7SfxILhrl+YlDBv4mS4FJqJxFpZbblgPIKlscyif8kB4kezJXCxXExzV/ArN231jKrfg==
+sparqlee@^1.7.0:
+  version "1.7.0"
+  resolved "https://registry.yarnpkg.com/sparqlee/-/sparqlee-1.7.0.tgz#ff3ec7224f6b24911ed6443fb639207af6ca2656"
+  integrity sha512-Ucu4/1G8IeswuisOfXJ6s17p3XTL8V/MuHBfvuQI+ts/FozqWIsTGD1BFLAmlJSUlJ2K1AMWUVGdGdNwJg6pjA==
   dependencies:
     "@types/rdf-js" "^4.0.0"
     "@types/spark-md5" "^3.0.2"

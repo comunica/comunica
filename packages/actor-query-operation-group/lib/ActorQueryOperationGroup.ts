@@ -43,7 +43,9 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
       ...aggregates.map(agg => termToString(agg.variable)),
     ];
 
-    const sparqleeConfig = { ...ActorQueryOperation.getExpressionContext(context) };
+    // TODO: we should not override extensionFunctionCreator. Instead we should use an AsyncAggregateEvaluator.
+    const sparqleeConfig = { ...ActorQueryOperation.getExpressionContext(context),
+      extensionFunctionCreator: undefined };
 
     // Return a new promise that completes when the stream has ended or when
     // an error occurs
