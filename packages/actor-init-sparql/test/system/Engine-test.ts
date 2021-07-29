@@ -158,7 +158,7 @@ describe('System test: ActorInitSparql', () => {
           context[KeysInitSparql.extensionFunctions] = baseFunctions;
           context[KeysInitSparql.extensionFunctionCreator] = baseFunctionCreator;
           await expect(engine.query(baseQuery(funcAllow), context)).rejects
-            .toThrow('Illegal extensionFunctionCreator and extensionFunctions');
+            .toThrow('Illegal simultaneous usage of extensionFunctionCreator and extensionFunctions in context');
         });
 
         it('handles complex queries with BIND to', async() => {
