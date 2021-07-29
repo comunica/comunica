@@ -62,12 +62,18 @@ export enum KeysInitSparql {
   queryTimestamp = '@comunica/actor-init-sparql:queryTimestamp',
   /**
    * @range {functionNamedNode: RDF.NamedNode) => ((args: RDF.Term[]) => Promise<RDF.Term>) | undefined}
-   * A callback function returning an extension function given the namedNode of the function.
+   * Extension function creator for a given function IRI.
+   * Returned value should be an async function implementation.
+   * Undefined may be returned if no implementation exists for the given function IRI.
+   *
+   * The dictionary-based extensionFunctions context entry may be used instead, but not simultaneously.
    */
   extensionFunctionCreator = '@comunica/actor-init-sparql:extensionFunctionCreator',
   /**
-   * @range {Record<string, (args: RDF.Term[]) => Promise<RDF.Term>>} A map with key the name of the function
-   * and value the extension function.
+   * @range {Record<string, (args: RDF.Term[]) => Promise<RDF.Term>>} Dictionary of extension functions.
+   * Key is the IRI of the function, and value is the async function implementation.
+   *
+   * The callback-based extensionFunctionCreator context entry may be used instead, but not simultaneously.
    */
   extensionFunctions = '@comunica/actor-init-sparql:extensionFunctions',
 }

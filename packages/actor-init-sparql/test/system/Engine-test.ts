@@ -4,7 +4,6 @@
 jest.unmock('follow-redirects');
 
 import { KeysInitSparql } from '@comunica/context-entries';
-import { literal } from '@rdfjs/data-model';
 import { Store } from 'n3';
 import { DataFactory } from 'rdf-data-factory';
 import type * as RDF from 'rdf-js';
@@ -101,10 +100,10 @@ describe('System test: ActorInitSparql', () => {
           const booleanType = 'http://www.w3.org/2001/XMLSchema#boolean';
           funcAllow = 'allowAll';
           baseFunctions = {
-            'http://example.org/functions#allowAll': async(args: RDF.Term[]) => literal('true', booleanType),
+            'http://example.org/functions#allowAll': async(args: RDF.Term[]) => DF.literal('true', booleanType),
           };
           baseFunctionCreator = (functionName: RDF.NamedNode) =>
-            async(args: RDF.Term[]) => literal('true', booleanType);
+            async(args: RDF.Term[]) => DF.literal('true', booleanType);
           store = new Store();
           quads = [
             DF.quad(DF.namedNode('ex:a'), DF.namedNode('ex:p1'), DF.literal('apple', stringType)),
@@ -149,7 +148,7 @@ describe('System test: ActorInitSparql', () => {
         it('with results but all filtered away', async() => {
           const context = <any> { sources: [ store ]};
           context[KeysInitSparql.extensionFunctionCreator] = () => () =>
-            literal('false', 'http://www.w3.org/2001/XMLSchema#boolean');
+            DF.literal('false', 'http://www.w3.org/2001/XMLSchema#boolean');
           const result = <IQueryResultBindings> await engine.query(baseQuery('rejectAll'), context);
           expect(await arrayifyStream(result.bindingsStream)).toEqual([]);
         });
