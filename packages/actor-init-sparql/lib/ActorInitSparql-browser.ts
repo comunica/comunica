@@ -161,7 +161,7 @@ export class ActorInitSparql extends ActorInit implements IActorInitSparqlArgs, 
       });
     }
 
-    // Prepare and check context
+    // Prepare context
     context = ActionContext(context);
     let queryFormat = 'sparql';
     if (context && context.has(KeysInitSparql.queryFormat)) {
