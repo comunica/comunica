@@ -95,9 +95,11 @@ describe('System test: ActorInitSparql', () => {
         let baseFunctions: Record<string, (args: RDF.Term[]) => Promise<RDF.Term>>;
         let baseFunctionCreator: (functionName: RDF.NamedNode) => ((args: RDF.Term[]) => Promise<RDF.Term>) | undefined;
         let quads: RDF.Quad[];
+        let stringType: RDF.NamedNode;
+        let booleanType: RDF.NamedNode;
         beforeEach(() => {
-          const stringType = 'http://www.w3.org/2001/XMLSchema#string';
-          const booleanType = 'http://www.w3.org/2001/XMLSchema#boolean';
+          stringType = DF.namedNode('http://www.w3.org/2001/XMLSchema#string');
+          booleanType = DF.namedNode('http://www.w3.org/2001/XMLSchema#boolean');
           funcAllow = 'allowAll';
           baseFunctions = {
             'http://example.org/functions#allowAll': async(args: RDF.Term[]) => DF.literal('true', booleanType),
@@ -148,7 +150,7 @@ describe('System test: ActorInitSparql', () => {
         it('with results but all filtered away', async() => {
           const context = <any> { sources: [ store ]};
           context[KeysInitSparql.extensionFunctionCreator] = () => () =>
-            DF.literal('false', 'http://www.w3.org/2001/XMLSchema#boolean');
+            DF.literal('false', booleanType);
           const result = <IQueryResultBindings> await engine.query(baseQuery('rejectAll'), context);
           expect(await arrayifyStream(result.bindingsStream)).toEqual([]);
         });
@@ -163,7 +165,6 @@ describe('System test: ActorInitSparql', () => {
 
         it('handles complex queries with BIND to', async() => {
           const context = <any> { sources: [ store ]};
-          const stringType = 'http://www.w3.org/2001/XMLSchema#string';
           const complexQuery = `PREFIX func: <http://example.org/functions#>
         SELECT ?caps WHERE {
               ?s ?p ?o.
