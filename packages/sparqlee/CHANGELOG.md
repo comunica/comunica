@@ -1,5 +1,11 @@
 # Changelog
 
+<a name="v1.7.0"></a>
+## [v1.7.0](https://github.com/comunica/sparqlee/compare/v1.6.2...v1.7.0) - 2021-07-29
+
+### Added
+* [Add support for custom functions, Closes #16](https://github.com/comunica/sparqlee/commit/6c609b165e48bb190042b1fdbaf019e2c78d59f5)
+
 <a name="v1.6.2"></a>
 ## [v1.6.2](https://github.com/comunica/sparqlee/compare/v1.6.1...v1.6.2) - 2021-03-29
 
