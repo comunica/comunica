@@ -189,6 +189,12 @@ export class UnknownNamedOperator extends Error {
   }
 }
 
+export class ExtensionFunctionError extends Error {
+  constructor(name: string, functionError: Error) {
+    super(`Error thrown in ${name}: ${functionError.message}${functionError.stack ? `\n${functionError.stack}` : ''}`);
+  }
+}
+
 export class NoAggregator extends Error {
   constructor(name?: string) {
     super(`Aggregate expression ${pp(name)} found, but no aggregate hook provided.`);

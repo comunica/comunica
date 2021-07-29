@@ -1,31 +1,33 @@
 import * as RDF from 'rdf-js';
 import * as RDFString from 'rdf-string';
-import { Algebra as Alg } from 'sparqlalgebrajs';
+import {Algebra as Alg} from 'sparqlalgebrajs';
 
 import * as E from './expressions';
+import {AsyncExtensionApplication, SimpleApplication} from './expressions';
 import * as C from './util/Consts';
+import {TypeURL as DT} from './util/Consts';
 import * as Err from './util/Errors';
+import {ExtensionFunctionError} from './util/Errors';
 import * as P from './util/Parsing';
 
-import {
-  namedFunctions,
-  regularFunctions,
-  specialFunctions,
-} from './functions';
-import { TypeURL as DT } from './util/Consts';
+import {namedFunctions, regularFunctions, specialFunctions,} from './functions';
+import {AsyncExtensionFunction, AsyncExtensionFunctionCreator} from './evaluators/AsyncEvaluator';
+import {SyncExtensionFunction, SyncExtensionFunctionCreator} from './evaluators/SyncEvaluator';
 
-export function transformAlgebra(expr: Alg.Expression): E.Expression {
+type FunctionCreatorConfig = {type: 'sync', creator: SyncExtensionFunctionCreator} |
+  {type: 'async', creator: AsyncExtensionFunctionCreator};
+
+export function transformAlgebra(expr: Alg.Expression, creatorConfig: FunctionCreatorConfig): E.Expression {
   if (!expr) { throw new Err.InvalidExpression(expr); }
-
   const types = Alg.expressionTypes;
 
   switch (expr.expressionType) {
     case types.TERM:
       return transformTerm(expr as Alg.TermExpression);
     case types.OPERATOR:
-      return transformOperator(expr as Alg.OperatorExpression);
+      return transformOperator(expr as Alg.OperatorExpression, creatorConfig);
     case types.NAMED:
-      return transformNamed(expr as Alg.NamedExpression);
+      return transformNamed(expr as Alg.NamedExpression, creatorConfig);
     case types.EXISTENCE:
       return transformExistence(expr as Alg.ExistenceExpression);
     case types.AGGREGATE:
@@ -141,11 +143,11 @@ export function transformLiteral(lit: RDF.Literal): E.Literal<any> {
   }
 }
 
-function transformOperator(expr: Alg.OperatorExpression)
+function transformOperator(expr: Alg.OperatorExpression, creatorConfig: FunctionCreatorConfig)
   : E.OperatorExpression | E.SpecialOperatorExpression {
   if (C.SpecialOperators.contains(expr.operator)) {
     const op = expr.operator as C.SpecialOperator;
-    const args = expr.args.map((a) => transformAlgebra(a));
+    const args = expr.args.map((a) => transformAlgebra(a, creatorConfig));
     const func = specialFunctions.get(op);
     if (!func.checkArity(args)) {
       throw new Err.InvalidArity(args, op);
@@ -156,25 +158,62 @@ function transformOperator(expr: Alg.OperatorExpression)
       throw new Err.UnknownOperator(expr.operator);
     }
     const op = expr.operator as C.RegularOperator;
-    const args = expr.args.map((a) => transformAlgebra(a));
+    const args = expr.args.map((a) => transformAlgebra(a, creatorConfig));
     const func = regularFunctions.get(op);
     if (!hasCorrectArity(args, func.arity)) { throw new Err.InvalidArity(args, op); }
     return new E.Operator(args, func.apply);
   }
 }
 
-// TODO: Support passing functions to override default behaviour;
-export function transformNamed(expr: Alg.NamedExpression): E.NamedExpression {
-  const funcName = expr.name.value;
-  if (!C.NamedOperators.contains(funcName as C.NamedOperator)) {
-    throw new Err.UnknownNamedOperator(expr.name.value);
-  }
+function wrapSyncFunction(f: SyncExtensionFunction, name: string): SimpleApplication {
+  return (args => {
+    let res;
+    try {
+      res = f(args.map(arg => arg.toRDF()));
+    }catch (e) {
+      throw new ExtensionFunctionError(name, e);
+    }
+    return transformRDFTermUnsafe(res);
+  });
+}
 
-  // tslint:disable-next-line:no-any
-  const op = expr.name.value as any as C.NamedOperator;
-  const args = expr.args.map((a) => transformAlgebra(a));
-  const func = namedFunctions.get(op);
-  return new E.Named(expr.name, args, func.apply);
+function wrapAsyncFunction(f: AsyncExtensionFunction, name: string): AsyncExtensionApplication {
+  return (async args => {
+    let res;
+    try {
+      res = await f(args.map(arg => arg.toRDF()));
+    }catch (e) {
+      throw new ExtensionFunctionError(name, e);
+    }
+    return transformRDFTermUnsafe(res);
+  });
+}
+// TODO: Support passing functions to override default behaviour;
+function transformNamed(expr: Alg.NamedExpression, creatorConfig: FunctionCreatorConfig)
+  : E.NamedExpression | E.AsyncExtensionExpression | E.SyncExtensionExpression  {
+  const funcName = expr.name.value;
+  const args = expr.args.map((a) => transformAlgebra(a, creatorConfig));
+  if (C.NamedOperators.contains(funcName as C.NamedOperator)) {
+    // return a basic named expression
+    const op = expr.name.value as any as C.NamedOperator;
+    const func = namedFunctions.get(op);
+    return new E.Named(expr.name, args, func.apply);
+  } else if (creatorConfig.type === 'sync') {
+    // Expression might be extension function, check this for the sync
+    const func = creatorConfig.creator(expr.name);
+    if (func) {
+      const simpleAppl = wrapSyncFunction(func, expr.name.value);
+      return new E.SyncExtension(expr.name, args, simpleAppl);
+    }
+  } else {
+    // The expression might be an extension function, check this for the async case
+    const func = creatorConfig.creator(expr.name);
+    if (func) {
+      const asyncAppl = wrapAsyncFunction(func, expr.name.value);
+      return new E.AsyncExtension(expr.name, args, asyncAppl);
+    }
+  }
+  throw new Err.UnknownNamedOperator(expr.name.value);
 }
 
 function hasCorrectArity(args: E.Expression[], arity: number | number[]): boolean {

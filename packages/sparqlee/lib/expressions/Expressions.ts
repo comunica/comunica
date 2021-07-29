@@ -11,6 +11,8 @@ export enum ExpressionType {
   SpecialOperator = 'specialOperator',
   Term = 'term',
   Variable = 'variable',
+  AsyncExtension = 'asyncExtension',
+  SyncExtension = 'syncExtension',
 }
 
 export type Expression =
@@ -20,7 +22,9 @@ export type Expression =
   OperatorExpression |
   SpecialOperatorExpression |
   TermExpression |
-  VariableExpression;
+  VariableExpression |
+  AsyncExtensionExpression |
+  SyncExtensionExpression;
 
 export interface ExpressionProps {
   expressionType: ExpressionType;
@@ -44,8 +48,23 @@ export type NamedExpression = ExpressionProps & {
   args: Expression[];
 };
 
+export type AsyncExtensionExpression = ExpressionProps & {
+  expressionType: ExpressionType.AsyncExtension;
+  name: RDF.NamedNode;
+  apply: AsyncExtensionApplication;
+  args: Expression[];
+};
+
+export type SyncExtensionExpression = ExpressionProps & {
+  expressionType: ExpressionType.SyncExtension;
+  name: RDF.NamedNode;
+  apply: SimpleApplication;
+  args: Expression[];
+};
+
 // export type Application = SimpleApplication | SpecialApplication;
 export type SimpleApplication = (args: TermExpression[]) => TermExpression;
+export type AsyncExtensionApplication = (args: TermExpression[]) => Promise<TermExpression>;
 
 export type OperatorExpression = ExpressionProps & {
   expressionType: ExpressionType.Operator;

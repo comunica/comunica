@@ -7,6 +7,7 @@ import { transformAlgebra } from '../Transformation';
 import { Bindings, ExpressionEvaluator } from '../Types';
 
 import { SyncRecursiveEvaluator } from './RecursiveExpressionEvaluator';
+import {NamedNode} from 'rdf-js';
 
 type Expression = E.Expression;
 type Term = E.TermExpression;
@@ -18,7 +19,11 @@ export interface SyncEvaluatorConfig {
   exists?: (expression: Alg.ExistenceExpression, mapping: Bindings) => boolean;
   aggregate?: (expression: Alg.AggregateExpression) => RDF.Term;
   bnode?: (input?: string) => RDF.BlankNode;
+  extensionFunctionCreator?: SyncExtensionFunctionCreator;
 }
+
+export type SyncExtensionFunction = (args: RDF.Term[]) => RDF.Term;
+export type SyncExtensionFunctionCreator = (functionNamedNode: NamedNode) => SyncExtensionFunction | undefined;
 
 export type SyncEvaluatorContext = SyncEvaluatorConfig & {
   now: Date;
@@ -29,8 +34,6 @@ export class SyncEvaluator {
   private evaluator: ExpressionEvaluator<Expression, Term>;
 
   constructor(public algExpr: Alg.Expression, public config: SyncEvaluatorConfig = {}) {
-    this.expr = transformAlgebra(algExpr);
-
     const context: SyncEvaluatorContext = {
       now: config.now || new Date(Date.now()),
       bnode: config.bnode || undefined,
@@ -39,6 +42,8 @@ export class SyncEvaluator {
       aggregate: config.aggregate,
     };
 
+    const extensionFunctionCreator = config.extensionFunctionCreator || (() => undefined);
+    this.expr = transformAlgebra(algExpr, { type: 'sync', creator: extensionFunctionCreator });
     this.evaluator = new SyncRecursiveEvaluator(context);
   }
 

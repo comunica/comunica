@@ -2,6 +2,8 @@ import * as RDF from 'rdf-js';
 
 import { termToString } from 'rdf-string';
 import { evaluate } from '../util/utils';
+import {AsyncExtensionFunctionCreator} from "../../lib/evaluators/AsyncEvaluator";
+import {SyncExtensionFunctionCreator} from "../../lib/evaluators/SyncEvaluator";
 
 /*
  * Maps short strings to longer RDF term-literals for easy use in making
@@ -41,6 +43,8 @@ export interface EvaluationConfig {
   aliasMap: AliasMap;
   resultMap: ResultMap;
   notation: Notation;
+  asyncExtensionFunctionCreator?: AsyncExtensionFunctionCreator;
+  syncExtensionFunctionCreator?: SyncExtensionFunctionCreator;
 }
 export type EvaluationTable = EvaluationConfig & {
   table: string;
@@ -93,7 +97,7 @@ class BinaryTable extends Table<[string, string, string]> {
       const { aliasMap, resultMap, op } = this.def;
       const expr = this.format([op, aliasMap[left], aliasMap[right]]);
       it(`${this.format([op, left, right])} should return ${result}`, () => {
-        return expect(evaluate(expr)
+        return expect(evaluate(expr, {extensionFunctionCreator: this.def.asyncExtensionFunctionCreator})
           .then(termToString))
           .resolves
           .toEqual(termToString(resultMap[result]));

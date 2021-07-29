@@ -1,7 +1,6 @@
 import {testAll} from '../util/utils';
-import {AsyncEvaluatorConfig} from '../../';
 import {DataFactory} from 'rdf-data-factory';
-
+import {AsyncEvaluatorConfig} from '../../lib/evaluators/AsyncEvaluator';
 const DF = new DataFactory();
 
 describe('evaluations of \'bnode\' with custom blank node generator function', () => {

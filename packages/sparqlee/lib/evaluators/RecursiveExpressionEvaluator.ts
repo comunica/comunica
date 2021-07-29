@@ -6,6 +6,7 @@ import { Bindings, ExpressionEvaluator } from '../Types';
 
 import { AsyncEvaluatorContext } from './AsyncEvaluator';
 import { SyncEvaluatorContext } from './SyncEvaluator';
+import {AsyncExtension, SyncExtension} from '../expressions';
 
 type Expression = E.Expression;
 type Term = E.TermExpression;
@@ -44,6 +45,7 @@ export class AsyncRecursiveEvaluator implements ExpressionEvaluator<Expression, 
       [E.ExpressionType.Named]: this.evalNamed,
       [E.ExpressionType.Existence]: this.evalExistence,
       [E.ExpressionType.Aggregate]: this.evalAggregate,
+      [E.ExpressionType.AsyncExtension]: this.evalAsyncExtension,
     };
 
   constructor(private context: AsyncEvaluatorContext) { }
@@ -75,10 +77,18 @@ export class AsyncRecursiveEvaluator implements ExpressionEvaluator<Expression, 
     return expr.applyAsync(context);
   }
 
+  private async _evalAsyncArgs(args: Expression[], mapping: Bindings): Promise<E.TermExpression[]> {
+    const argPromises = args.map((arg) => this.evaluate(arg, mapping));
+    return await Promise.all(argPromises);
+  }
+
   private async evalNamed(expr: Named, mapping: Bindings): Promise<Term> {
-    const argPromises = expr.args.map((arg) => this.evaluate(arg, mapping));
-    const argResults = await Promise.all(argPromises);
-    return expr.apply(argResults);
+    return expr.apply(await this._evalAsyncArgs(expr.args, mapping));
+  }
+
+  private async evalAsyncExtension(expr: AsyncExtension, mapping: Bindings): Promise<Term> {
+    return await expr.apply(await this._evalAsyncArgs(expr.args, mapping));
+
   }
 
   private async evalExistence(expr: Existence, mapping: Bindings): Promise<Term> {
@@ -118,6 +128,7 @@ export class SyncRecursiveEvaluator implements ExpressionEvaluator<Expression, T
       [E.ExpressionType.Named]: this.evalNamed,
       [E.ExpressionType.Existence]: this.evalExistence,
       [E.ExpressionType.Aggregate]: this.evalAggregate,
+      [E.ExpressionType.SyncExtension]: this.evalSyncExtension,
     };
 
   constructor(private context: SyncEvaluatorContext) { }
@@ -149,6 +160,11 @@ export class SyncRecursiveEvaluator implements ExpressionEvaluator<Expression, T
   }
 
   private evalNamed(expr: Named, mapping: Bindings): Term {
+    const args = expr.args.map((arg) => this.evaluate(arg, mapping));
+    return expr.apply(args);
+  }
+
+  private evalSyncExtension(expr: SyncExtension, mapping: Bindings): Term {
     const args = expr.args.map((arg) => this.evaluate(arg, mapping));
     return expr.apply(args);
   }

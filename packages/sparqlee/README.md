@@ -41,6 +41,7 @@ interface AsyncEvaluatorConfig {
   exists?: (expression: Alg.ExistenceExpression, mapping: Bindings) => Promise<boolean>;
   aggregate?: (expression: Alg.AggregateExpression) => Promise<RDF.Term>;
   bnode?: (input?: string) => Promise<RDF.BlankNode>;
+  extensionFunctionCreator?: (functionNamedNode: RDF.NamedNode) => (args: RDF.Term[]) => Promise<RDF.Term> | undefined;
 }
 ```
 
@@ -105,9 +106,19 @@ aggregate?: (expression: Alg.AggregateExpression) => Promise<RDF.Term>;
 
 You can probably ignore this.
 
-### Custom functions
+### Extension functions
 
-**NOTE: Not yet implemented. On the roadmap.**
+Extension functions can be added by providing the `extensionFunctionCreator` in the config.
+Example
+```ts
+config.extensionFunctionCreator = (functionName: RDF.NamedNode) => {
+   if (functionNamedNode.value === 'https://example.org/functions#equal') {
+      return async (args: RDF.Term[]) => {
+         return literal(String(args[0].equals(args[1])), 'http://www.w3.org/2001/XMLSchema#boolean');       
+      }
+   }
+}
+```
 
 ### Binary
 

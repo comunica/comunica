@@ -117,7 +117,7 @@ export class AggregateEvaluator {
   }
 }
 
-abstract class BaseAggregator<State> {
+export abstract class BaseAggregator<State> {
   protected distinct: boolean;
   protected separator: string;
 

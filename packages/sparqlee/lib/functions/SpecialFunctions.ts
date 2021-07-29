@@ -1,5 +1,5 @@
 import { Map } from 'immutable';
-import {resolve as resolveRelativeIri} from "relative-to-absolute-iri";
+import {resolve as resolveRelativeIri} from 'relative-to-absolute-iri';
 import * as uuid from 'uuid';
 
 import * as E from '../expressions';
