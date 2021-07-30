@@ -25,6 +25,7 @@
     "@types/setup-polly-jest": "^0.5.0",
     "@typescript-eslint/eslint-plugin": "^4.15.0",
     "@typescript-eslint/parser": "^4.1.1",
+    "abort-controller": "^3.0.0",
     "arrayify-stream": "^1.0.0",
     "asynciterator": "^3.1.0",
     "babel-loader": "^8.1.0",

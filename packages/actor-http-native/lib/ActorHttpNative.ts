@@ -96,6 +96,16 @@ export class ActorHttpNative extends ActorHttp {
               httpResponse.destroy();
               return Promise.resolve();
             };
+
+            // Support abort controller
+            if (action.init && action.init.signal) {
+              if (action.init.signal.aborted) {
+                httpResponse.destroy();
+              } else {
+                action.init.signal.addEventListener('abort', () => httpResponse.destroy());
+              }
+            }
+
             // Missing several of the required fetch fields
             const headers = httpResponse.headers;
 
