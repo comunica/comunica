@@ -67,6 +67,6 @@
     "canonicalize": "^1.0.1",
     "hash.js": "^1.1.7",
     "rdf-string": "^1.5.0",
-    "sparqlalgebrajs": "^2.5.5"
+    "sparqlalgebrajs": "^3.0.0"
   }
 }
