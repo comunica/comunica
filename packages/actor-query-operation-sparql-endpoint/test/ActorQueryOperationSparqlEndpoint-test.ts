@@ -11,6 +11,7 @@ import { SparqlEndpointFetcher } from 'fetch-sparql-endpoint';
 import { Headers } from 'node-fetch';
 import { DataFactory } from 'rdf-data-factory';
 import { Factory } from 'sparqlalgebrajs';
+import { mocked } from 'ts-jest/utils';
 import { ActorQueryOperationSparqlEndpoint } from '../lib/ActorQueryOperationSparqlEndpoint';
 const arrayifyStream = require('arrayify-stream');
 const quad = require('rdf-quad');
@@ -27,7 +28,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
     mediatorHttp = {
-      mediate(action: any) {
+      mediate: jest.fn((action: any) => {
         let body;
         if (action.input.startsWith('http://example.org/sparql-construct')) {
           body = streamifyString(`<http://ex.org/s> <http://ex.org/p> <http://ex.org/o1>, <http://ex.org/o2>.`);
@@ -60,7 +61,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
           headers: new Headers({ 'Content-Type': SparqlEndpointFetcher.CONTENTTYPE_SPARQL_JSON }),
           ok: true,
         };
-      },
+      }),
     };
   });
 
@@ -330,7 +331,12 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
         ) };
       const output: IActorQueryOperationOutputUpdate = <any> await actor.run(op);
 
+      expect(mocked(mediatorHttp.mediate).mock.calls[0][0].init.signal).toBeTruthy();
+      expect(mocked(mediatorHttp.mediate).mock.calls[0][0].init.signal.aborted).toBeFalsy();
+
       await output.updateResult;
+
+      expect(mocked(mediatorHttp.mediate).mock.calls[0][0].init.signal.aborted).toBeTruthy();
     });
 
     it('should run and error for a server error', async() => {

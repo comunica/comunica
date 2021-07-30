@@ -48,6 +48,7 @@ describe('QuadDestinationSparql', () => {
   <ex:s1> <ex:p1> <ex:o1> .
   GRAPH <ex:g2> { <ex:s2> <ex:p2> <ex:o2> . }
 }`,
+          signal: expect.anything(),
         },
         input: 'abc',
       });
@@ -83,6 +84,7 @@ describe('QuadDestinationSparql', () => {
   <ex:s1> <ex:p1> <ex:o1> .
   GRAPH <ex:g2> { <ex:s2> <ex:p2> <ex:o2> . }
 }`,
+          signal: expect.anything(),
         },
         input: 'abc',
       });
@@ -99,6 +101,7 @@ describe('QuadDestinationSparql', () => {
           headers: { 'content-type': 'application/sparql-update' },
           method: 'POST',
           body: 'DROP DEFAULT',
+          signal: expect.anything(),
         },
         input: 'abc',
       });
@@ -113,6 +116,7 @@ describe('QuadDestinationSparql', () => {
           headers: { 'content-type': 'application/sparql-update' },
           method: 'POST',
           body: 'DROP NAMED',
+          signal: expect.anything(),
         },
         input: 'abc',
       });
@@ -127,6 +131,7 @@ describe('QuadDestinationSparql', () => {
           headers: { 'content-type': 'application/sparql-update' },
           method: 'POST',
           body: 'DROP ALL',
+          signal: expect.anything(),
         },
         input: 'abc',
       });
@@ -141,6 +146,7 @@ describe('QuadDestinationSparql', () => {
           headers: { 'content-type': 'application/sparql-update' },
           method: 'POST',
           body: 'DROP GRAPH <g:1>; DROP GRAPH <g:2>',
+          signal: expect.anything(),
         },
         input: 'abc',
       });
@@ -155,6 +161,7 @@ describe('QuadDestinationSparql', () => {
           headers: { 'content-type': 'application/sparql-update' },
           method: 'POST',
           body: 'DROP SILENT GRAPH <g:1>; DROP SILENT GRAPH <g:2>',
+          signal: expect.anything(),
         },
         input: 'abc',
       });
@@ -169,6 +176,7 @@ describe('QuadDestinationSparql', () => {
           headers: { 'content-type': 'application/sparql-update' },
           method: 'POST',
           body: 'CLEAR GRAPH <g:1>; CLEAR GRAPH <g:2>',
+          signal: expect.anything(),
         },
         input: 'abc',
       });
@@ -183,6 +191,7 @@ describe('QuadDestinationSparql', () => {
           headers: { 'content-type': 'application/sparql-update' },
           method: 'POST',
           body: 'CLEAR SILENT GRAPH <g:1>; CLEAR SILENT GRAPH <g:2>',
+          signal: expect.anything(),
         },
         input: 'abc',
       });
@@ -199,6 +208,7 @@ describe('QuadDestinationSparql', () => {
           headers: { 'content-type': 'application/sparql-update' },
           method: 'POST',
           body: 'CREATE GRAPH <g:1>; CREATE GRAPH <g:2>',
+          signal: expect.anything(),
         },
         input: 'abc',
       });
@@ -213,6 +223,7 @@ describe('QuadDestinationSparql', () => {
           headers: { 'content-type': 'application/sparql-update' },
           method: 'POST',
           body: 'CREATE SILENT GRAPH <g:1>; CREATE SILENT GRAPH <g:2>',
+          signal: expect.anything(),
         },
         input: 'abc',
       });
