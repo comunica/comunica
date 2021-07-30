@@ -77,7 +77,7 @@
     "rdf-string": "^1.5.0",
     "relative-to-absolute-iri": "^1.0.6",
     "spark-md5": "^3.0.1",
-    "sparqlalgebrajs": "^2.4.0",
+    "sparqlalgebrajs": "^3.0.1",
     "uuid": "^8.0.0"
   },
   "jest": {

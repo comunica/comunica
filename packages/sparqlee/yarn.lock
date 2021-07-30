@@ -674,6 +674,13 @@
     "@types/yargs" "^16.0.0"
     chalk "^4.0.0"
 
+"@rdfjs/types@*":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@rdfjs/types/-/types-1.0.1.tgz#92908a13bc88c71b349b332f3db19178282d6f4e"
+  integrity sha512-YxVkH0XrCNG3MWeZxfg596GFe+oorTVusmNxRP6ZHTsGczZ8AGvG3UchRNkg3Fy4MyysI7vBAA5YZbESL+VmHQ==
+  dependencies:
+    "@types/node" "*"
+
 "@sinonjs/commons@^1.7.0":
   version "1.8.1"
   resolved "https://registry.yarnpkg.com/@sinonjs/commons/-/commons-1.8.1.tgz#e7df00f98a203324f6dc7cc606cad9d4a8ab2217"
@@ -801,10 +808,20 @@
   resolved "https://registry.yarnpkg.com/@types/minimist/-/minimist-1.2.0.tgz#69a23a3ad29caf0097f06eda59b361ee2f0639f6"
   integrity sha1-aaI6OtKcrwCX8G7aWbNh7i8GOfY=
 
+"@types/minimist@^1.2.1":
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/@types/minimist/-/minimist-1.2.2.tgz#ee771e2ba4b3dc5b372935d549fd9617bf345b8c"
+  integrity sha512-jhuKLIRrhvCPLqwPcx6INqmKeiA5EWrsCOPhrlFSrbrmU4ZMPjj5Ul/oLCMDO98XRUIwVm78xICz4EPCektzeQ==
+
 "@types/node@*":
   version "14.6.0"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-14.6.0.tgz#7d4411bf5157339337d7cff864d9ff45f177b499"
   integrity sha512-mikldZQitV94akrc4sCcSjtJfsTKt4p+e/s0AGscVA6XArQ9kFclP+ZiYUMnq987rc6QlYxXv/EivqlfSLxpKA==
+
+"@types/node@^15.12.2":
+  version "15.14.4"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-15.14.4.tgz#aaf18436ef67f24676d92b8bbe0f5f41b08db3e8"
+  integrity sha512-yblJrsfCxdxYDUa2fM5sP93ZLk5xL3/+3MJei+YtsNbIdY75ePy2AiCfpq+onepzax+8/Yv+OD/fLNleWpCzVg==
 
 "@types/normalize-package-data@^2.4.0":
   version "2.4.0"
@@ -823,10 +840,24 @@
   dependencies:
     "@types/node" "*"
 
+"@types/rdf-js@^4.0.2":
+  version "4.0.2"
+  resolved "https://registry.yarnpkg.com/@types/rdf-js/-/rdf-js-4.0.2.tgz#a7eb0ff009915db2c980df97533d3ba7acad0c4b"
+  integrity sha512-soR/+RMogGiDU1lrpuQl5ZL55/L1eq/JlR2dWx052Uh/RYs9okh3XZHFlIJXHZqjqyjEn4WdbOMfBj7vvc2WVQ==
+  dependencies:
+    rdf-js "*"
+
 "@types/spark-md5@^3.0.2":
   version "3.0.2"
   resolved "https://registry.yarnpkg.com/@types/spark-md5/-/spark-md5-3.0.2.tgz#da2e8a778a20335fc4f40b6471c4b0d86b70da55"
   integrity sha512-82E/lVRaqelV9qmRzzJ1PKTpyrpnT7mwdneKNJB9hUtypZDMggloDfFUCIqRRx3lYRxteCwXSq9c+W71Vf0QnQ==
+
+"@types/sparqljs@^3.1.2":
+  version "3.1.3"
+  resolved "https://registry.yarnpkg.com/@types/sparqljs/-/sparqljs-3.1.3.tgz#e4b9a2511bc2f14f564559ed6cf567835791a7e9"
+  integrity sha512-nmFgmR6ns4i8sg9fYu+293H+PMLKmDOZy34sgwgAeUEEiIqSs4guj5aCZRt3gq1g0yuKXkqrxLDq/684g7pGtQ==
+  dependencies:
+    rdf-js "^4.0.2"
 
 "@types/stack-utils@^2.0.0":
   version "2.0.0"
@@ -1607,7 +1638,7 @@ extsprintf@^1.2.0:
   resolved "https://registry.yarnpkg.com/extsprintf/-/extsprintf-1.4.0.tgz#e2689f8f356fad62cca65a3a91c5df5f9551692f"
   integrity sha1-4mifjzVvrWLMplo6kcXfX5VRaS8=
 
-fast-deep-equal@^3.1.1:
+fast-deep-equal@^3.1.1, fast-deep-equal@^3.1.3:
   version "3.1.3"
   resolved "https://registry.yarnpkg.com/fast-deep-equal/-/fast-deep-equal-3.1.3.tgz#3a7d56b559d6cbc3eb512325244e619a65c6c525"
   integrity sha512-f3qQ9oQy9j2AhBe/H9VC91wLmKBCCU/gDOnKNAYG5hswO7BLKj09Hc5HYNz9cGI++xlpDCIgDaitVs03ATR84Q==
@@ -2628,6 +2659,11 @@ lodash.templatesettings@^4.0.0:
   dependencies:
     lodash._reinterpolate "^3.0.0"
 
+lodash.uniqwith@^4.5.0:
+  version "4.5.0"
+  resolved "https://registry.yarnpkg.com/lodash.uniqwith/-/lodash.uniqwith-4.5.0.tgz#7a0cbf65f43b5928625a9d4d0dc54b18cadc7ef3"
+  integrity sha1-egy/ZfQ7WShiWp1NDcVLGMrcfvM=
+
 lodash@4.x, lodash@^4.7.0:
   version "4.17.21"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.21.tgz#679591c564c3bffaae8454cf0b3df370c3d6911c"
@@ -2821,14 +2857,6 @@ ms@2.1.2, ms@^2.1.1:
   version "2.1.2"
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.1.2.tgz#d09d1f357b443f493382a8eb3ccd183872ae6009"
   integrity sha512-sGkPx+VjMtmA6MX27oA4FBFELFCZZ4S4XqeGOXCv68tT+jb3vk/RyaKWP0PTKyWtmLSM0b+adUTEvbs1PEaH2w==
-
-n3@^1.6.0:
-  version "1.6.2"
-  resolved "https://registry.yarnpkg.com/n3/-/n3-1.6.2.tgz#3b40b6f6eeba3a115642eb9237109fff743be631"
-  integrity sha512-9R45WRNxNPblKLbXGwR9IvtaVvdr80vRxME79fhWnqBzHb2GcP6lS77Mvf8Fx6Wpfn8PpBTdggceWsSMDGY/SA==
-  dependencies:
-    queue-microtask "^1.1.2"
-    readable-stream "^3.6.0"
 
 natural-compare@^1.4.0:
   version "1.4.0"
@@ -3117,11 +3145,6 @@ qs@~6.5.2:
   resolved "https://registry.yarnpkg.com/qs/-/qs-6.5.2.tgz#cb3ae806e8740444584ef154ce8ee98d403f3e36"
   integrity sha512-N5ZAX4/LxJmF+7wN74pUD6qAh9/wnvdQcjq9TZjevvXzSUo7bfmw91saqMjzGS2xq91/odN2dW/WOl7qQHNDGA==
 
-queue-microtask@^1.1.2:
-  version "1.1.4"
-  resolved "https://registry.yarnpkg.com/queue-microtask/-/queue-microtask-1.1.4.tgz#40841ace4356b48b35b5ea61a2e1fe0a23c59ce1"
-  integrity sha512-eY/4Obve9cE5FK8YvC1cJsm5cr7XvAurul8UtBDJ2PR1p5NmAwHtvAt5ftcLtwYRCUKNhxCneZZlxmUDFoSeKA==
-
 quick-lru@^1.0.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/quick-lru/-/quick-lru-1.1.0.tgz#4360b17c61136ad38078397ff11416e186dcfbb8"
@@ -3139,12 +3162,43 @@ rdf-data-factory@^1.0.0, rdf-data-factory@^1.0.3:
   dependencies:
     "@types/rdf-js" "^4.0.0"
 
+rdf-data-factory@^1.0.1, rdf-data-factory@^1.0.4:
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/rdf-data-factory/-/rdf-data-factory-1.0.4.tgz#4e22fc462620fbca650eb2d26c4a13a103edd777"
+  integrity sha512-ZIIwEkLcV7cTc+atvQFzAETFVRHz1BRe/MhdkZqYse8vxskErj8/bF/Ittc3B5c0GTyw6O3jVF2V7xBRGyRoSQ==
+  dependencies:
+    "@types/rdf-js" "^4.0.0"
+
+rdf-isomorphic@^1.2.1:
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/rdf-isomorphic/-/rdf-isomorphic-1.2.1.tgz#071f0d05671e3e6c9bdae75ff4cbe50308f2fc75"
+  integrity sha512-kIKlQYoizNqp8zhbca1zV3mYngisoD/KNt/xBRjagp7R3F8niI3b1vxvqcWlSkNXgPD6MsXpP2E/uXZ8oGTIcA==
+  dependencies:
+    hash.js "^1.1.7"
+    rdf-string "^1.5.0"
+    rdf-terms "^1.6.2"
+
+rdf-js@*, rdf-js@^4.0.2:
+  version "4.0.2"
+  resolved "https://registry.yarnpkg.com/rdf-js/-/rdf-js-4.0.2.tgz#f01510528bbfc6e004012b71a8a533896c4c4c10"
+  integrity sha512-ApvlFa/WsQh8LpPK/6hctQwG06Z9ztQQGWVtrcrf9L6+sejHNXLPOqL+w7q3hF+iL0C4sv3AX1PUtGkLNzyZ0Q==
+  dependencies:
+    "@rdfjs/types" "*"
+
 rdf-string@^1.5.0:
   version "1.5.0"
   resolved "https://registry.yarnpkg.com/rdf-string/-/rdf-string-1.5.0.tgz#5d0118f8788fe509f06d8cefc181fd979d712412"
   integrity sha512-3TEJuDIKUADgZrfcZG+zAN4GfVA1Ei2sKA7Z7QVHkAE36wWoRGPJbGihPQMldgzvy9lG2nzZU+CXz+6oGSQNsQ==
   dependencies:
     rdf-data-factory "^1.0.0"
+
+rdf-terms@^1.6.2:
+  version "1.6.2"
+  resolved "https://registry.yarnpkg.com/rdf-terms/-/rdf-terms-1.6.2.tgz#e31ad9023e0ee163dafa3dd847410c61556d0d57"
+  integrity sha512-dASpdYHYLEwzN9iSymJie1WUj6VHXy1By8Am4g2rJlhTfVvNitsJpDY+A3X2QehlGhCaWjHMzXS4q/JKNPI80A==
+  dependencies:
+    lodash.uniqwith "^4.5.0"
+    rdf-data-factory "^1.0.1"
 
 react-is@^16.12.0:
   version "16.13.1"
@@ -3192,7 +3246,7 @@ read-pkg@^5.2.0:
     parse-json "^5.0.0"
     type-fest "^0.6.0"
 
-"readable-stream@2 || 3", readable-stream@^3.6.0:
+"readable-stream@2 || 3":
   version "3.6.0"
   resolved "https://registry.yarnpkg.com/readable-stream/-/readable-stream-3.6.0.tgz#337bbda3adc0706bd3e024426a286d4b4b2c9198"
   integrity sha512-BViHy7LKeTz4oNnkcLJ+lVSL6vpiFeX6/d3oSH8zCW7UxP2onchk+vTGB143xuFjHS3deTgkKoXXymXqymiIdA==
@@ -3404,23 +3458,28 @@ spark-md5@^3.0.1:
   resolved "https://registry.yarnpkg.com/spark-md5/-/spark-md5-3.0.1.tgz#83a0e255734f2ab4e5c466e5a2cfc9ba2aa2124d"
   integrity sha512-0tF3AGSD1ppQeuffsLDIOWlKUd3lS92tFxcsrh5Pe3ZphhnoK+oXIBTzOAThZCiuINZLvpiLH/1VS1/ANEJVig==
 
-sparqlalgebrajs@^2.4.0:
-  version "2.4.0"
-  resolved "https://registry.yarnpkg.com/sparqlalgebrajs/-/sparqlalgebrajs-2.4.0.tgz#c223a8185bad1a7e7ffc46eaff859fc55c1ff49c"
-  integrity sha512-6glKn1uWBsdPuQ4D+4r5m8mgWZoMfiNgip4uyblULTmgISqcbsQzrlrIhWQoZSX95QLLlWlYJufhelQAIRAWKg==
+sparqlalgebrajs@^3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/sparqlalgebrajs/-/sparqlalgebrajs-3.0.1.tgz#3e42ca55622b6d12f9a22e47b985409576b345b3"
+  integrity sha512-smQQ0ZHvMYTD1OeFKCBETICI/oj6clVhxBYLLqjP9i/kR9XMgJPt0JKUhocfiS8TmXIm9CKS8Gaul0SExQG3XA==
   dependencies:
-    fast-deep-equal "^3.1.1"
+    "@types/minimist" "^1.2.1"
+    "@types/node" "^15.12.2"
+    "@types/rdf-js" "^4.0.2"
+    "@types/sparqljs" "^3.1.2"
+    fast-deep-equal "^3.1.3"
     minimist "^1.2.5"
-    rdf-data-factory "^1.0.0"
+    rdf-data-factory "^1.0.4"
+    rdf-isomorphic "^1.2.1"
     rdf-string "^1.5.0"
-    sparqljs "^3.1.1"
+    sparqljs "^3.4.2"
 
-sparqljs@^3.1.1:
-  version "3.1.1"
-  resolved "https://registry.yarnpkg.com/sparqljs/-/sparqljs-3.1.1.tgz#74b9f250fdcc1192971a709302b52ec102aaf003"
-  integrity sha512-HYSwEu++souL4YjJbRx+3dJ1aNYNuR+BbZdPmdrmD4QMSO14J63BEshpcSURcNRsuriOI+05wo2AaxVvpjhgkg==
+sparqljs@^3.4.2:
+  version "3.4.2"
+  resolved "https://registry.yarnpkg.com/sparqljs/-/sparqljs-3.4.2.tgz#ad69eb1ff62b3d1152f41ed50f01fae8638d18fa"
+  integrity sha512-MmmZ6cMuvhf4Eh2FXX21dalgADUiZ9WN8XKMedwhTFg0r7W09/o8wvoZ8C4yA6FptnjjAjm+mGnxAEpkSRY3QQ==
   dependencies:
-    n3 "^1.6.0"
+    rdf-data-factory "^1.0.4"
 
 spawn-sync@^1.0.15:
   version "1.0.15"
