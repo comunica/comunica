@@ -1,5 +1,11 @@
 # Changelog
 
+<a name="v1.8.0"></a>
+## [v1.8.0](https://github.com/comunica/sparqlee/compare/v1.7.0...v1.8.0) - 2021-07-30
+
+### Changed
+* [Bump to sparqlalgebrajs 3](https://github.com/comunica/sparqlee/commit/4e78fbcda8a0ed89b631c27b1a7d007a25dfa4da)
+
 <a name="v1.7.0"></a>
 ## [v1.7.0](https://github.com/comunica/sparqlee/compare/v1.6.2...v1.7.0) - 2021-07-29
 
