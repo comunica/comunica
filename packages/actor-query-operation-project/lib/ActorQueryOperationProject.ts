@@ -29,11 +29,12 @@ export class ActorQueryOperationProject extends ActorQueryOperationTypedMediated
     );
 
     // Find all variables that should be deleted from the input stream.
-    const variables: string[] = pattern.variables.map(x => termToString(x));
+    const variables: string[] = pattern.variables.map(x => x.termType === 'Wildcard' ? '*' : termToString(x));
     const deleteVariables = output.variables.filter(variable => !variables.includes(variable));
 
     // Error if there are variables that are not bound in the input stream.
-    const missingVariables = variables.filter(variable => !output.variables.includes(variable));
+    const missingVariables = variables.filter(variable => !output.variables.includes(variable) &&
+      variable !== '*');
     if (missingVariables.length > 0) {
       throw new Error(`Variables '${missingVariables}' are used in the projection result, but are not assigned.`);
     }

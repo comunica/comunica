@@ -100,17 +100,17 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
     });
 
     it('should test on ZeroOrMore paths', () => {
-      const op = { operation: { type: Algebra.types.PATH, predicate: { type: Algebra.types.ZERO_OR_MORE_PATH }}};
+      const op: any = { operation: { type: Algebra.types.PATH, predicate: { type: Algebra.types.ZERO_OR_MORE_PATH }}};
       return expect(actor.test(op)).resolves.toBeTruthy();
     });
 
     it('should test on different paths', () => {
-      const op = { operation: { type: Algebra.types.PATH, predicate: { type: 'dummy' }}};
+      const op: any = { operation: { type: Algebra.types.PATH, predicate: { type: 'dummy' }}};
       return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
     it('should mediate with distinct if not in context', async() => {
-      const op = { operation: factory.createPath(
+      const op: any = { operation: factory.createPath(
         DF.namedNode('s'),
         factory.createZeroOrMorePath(factory.createLink(DF.namedNode('p'))),
         DF.variable('x'),
@@ -124,7 +124,7 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
     });
 
     it('should mediate with distinct if false in context', async() => {
-      const op = { operation: factory.createPath(
+      const op: any = { operation: factory.createPath(
         DF.namedNode('s'),
         factory.createZeroOrMorePath(factory.createLink(DF.namedNode('p'))),
         DF.variable('x'),
@@ -139,7 +139,7 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
     });
 
     it('should support ZeroOrMore paths (:s :p* ?o)', async() => {
-      const op = { operation: factory.createPath(
+      const op: any = { operation: factory.createPath(
         DF.namedNode('s'),
         factory.createZeroOrMorePath(factory.createLink(DF.namedNode('p'))),
         DF.variable('x'),
@@ -157,7 +157,7 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
     });
 
     it('should support ZeroOrMore paths (?s :p* :o)', async() => {
-      const op = { operation: factory.createPath(
+      const op: any = { operation: factory.createPath(
         DF.variable('x'),
         factory.createZeroOrMorePath(factory.createLink(DF.namedNode('p'))),
         DF.namedNode('o'),
@@ -175,7 +175,7 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
     });
 
     it('should support ZeroOrMore paths (:s :p* :o)', async() => {
-      const op = { operation: factory.createPath(
+      const op: any = { operation: factory.createPath(
         DF.namedNode('s'),
         factory.createZeroOrMorePath(factory.createLink(DF.namedNode('p'))),
         DF.namedNode('1'),
@@ -190,7 +190,7 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
     });
 
     it('should support ZeroOrMore paths (:s :p* :o) with variable graph', async() => {
-      const op = { operation: factory.createPath(
+      const op: any = { operation: factory.createPath(
         DF.namedNode('s'),
         factory.createZeroOrMorePath(factory.createLink(DF.namedNode('p'))),
         DF.namedNode('1'),
@@ -208,7 +208,7 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
     });
 
     it('should support ZeroOrMore paths (:s :p* ?o) with variable graph', async() => {
-      const op = { operation: factory.createPath(
+      const op: any = { operation: factory.createPath(
         DF.namedNode('s'),
         factory.createZeroOrMorePath(factory.createLink(DF.namedNode('p'))),
         DF.variable('x'),
@@ -235,7 +235,7 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
     });
 
     it('should support zeroOrMore paths with 2 variables', async() => {
-      const op = { operation: factory.createPath(
+      const op: any = { operation: factory.createPath(
         DF.variable('x'),
         factory.createZeroOrMorePath(factory.createLink(DF.namedNode('p'))),
         DF.variable('y'),
@@ -267,7 +267,7 @@ describe('ActorQueryOperationPathZeroOrMore', () => {
     });
 
     it('should support zeroOrMore paths with 2 variables with variable graph', async() => {
-      const op = { operation: factory.createPath(
+      const op: any = { operation: factory.createPath(
         DF.variable('x'),
         factory.createZeroOrMorePath(factory.createLink(DF.namedNode('p'))),
         DF.variable('y'),

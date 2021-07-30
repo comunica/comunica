@@ -55,17 +55,17 @@ describe('ActorQueryOperationPathLink', () => {
     });
 
     it('should test on Link paths', () => {
-      const op = { operation: { type: Algebra.types.PATH, predicate: { type: Algebra.types.LINK }}};
+      const op: any = { operation: { type: Algebra.types.PATH, predicate: { type: Algebra.types.LINK }}};
       return expect(actor.test(op)).resolves.toBeTruthy();
     });
 
     it('should test on different paths', () => {
-      const op = { operation: { type: Algebra.types.PATH, predicate: { type: 'dummy' }}};
+      const op: any = { operation: { type: Algebra.types.PATH, predicate: { type: 'dummy' }}};
       return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
     it('should support Link paths', async() => {
-      const op = { operation: factory
+      const op: any = { operation: factory
         .createPath(DF.namedNode('s'), factory.createLink(DF.namedNode('p')), DF.variable('x')) };
       const output = ActorQueryOperation.getSafeBindings(await actor.run(op));
       expect(output.canContainUndefs).toEqual(false);

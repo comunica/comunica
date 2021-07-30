@@ -64,27 +64,27 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
     });
 
     it('should test on orderby', () => {
-      const op = { operation: { type: 'orderby', expressions: []}};
+      const op: any = { operation: { type: 'orderby', expressions: []}};
       return expect(actor.test(op)).resolves.toBeTruthy();
     });
 
     it('should test on a descending orderby', () => {
-      const op = { operation: { type: 'orderby', expressions: [ descOrderA ]}};
+      const op: any = { operation: { type: 'orderby', expressions: [ descOrderA ]}};
       return expect(actor.test(op)).resolves.toBeTruthy();
     });
 
     it('should test on multiple expressions', () => {
-      const op = { operation: { type: 'orderby', expressions: [ orderA, descOrderA, orderA1 ]}};
+      const op: any = { operation: { type: 'orderby', expressions: [ orderA, descOrderA, orderA1 ]}};
       return expect(actor.test(op)).resolves.toBeTruthy();
     });
 
     it('should not test on non-orderby', () => {
-      const op = { operation: { type: 'some-other-type' }};
+      const op: any = { operation: { type: 'some-other-type' }};
       return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
     it('should run', async() => {
-      const op = { operation: { type: 'orderby', input: {}, expressions: [ orderA ]}};
+      const op: any = { operation: { type: 'orderby', input: {}, expressions: [ orderA ]}};
       const output = await actor.run(op);
       expect(ActorQueryOperation.getSafeBindings(output).canContainUndefs).toEqual(false);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
@@ -97,7 +97,7 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
 
     it('should run with a window', async() => {
       actor = new ActorQueryOperationOrderBySparqlee({ name: 'actor', bus, mediatorQueryOperation, window: 1 });
-      const op = { operation: { type: 'orderby', input: {}, expressions: [ orderA ]}};
+      const op: any = { operation: { type: 'orderby', input: {}, expressions: [ orderA ]}};
       const output = await actor.run(op);
       expect(ActorQueryOperation.getSafeBindings(output).canContainUndefs).toEqual(false);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
@@ -109,7 +109,7 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
     });
 
     it('should run operator expressions', async() => {
-      const op = { operation: { type: 'orderby', input: {}, expressions: [ orderA1 ]}};
+      const op: any = { operation: { type: 'orderby', input: {}, expressions: [ orderA1 ]}};
       const output = await actor.run(op);
       expect(ActorQueryOperation.getSafeBindings(output).canContainUndefs).toEqual(false);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
@@ -121,7 +121,7 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
     });
 
     it('should run descend', async() => {
-      const op = { operation: { type: 'orderby', input: {}, expressions: [ descOrderA ]}};
+      const op: any = { operation: { type: 'orderby', input: {}, expressions: [ descOrderA ]}};
       const output = await actor.run(op);
       expect(ActorQueryOperation.getSafeBindings(output).canContainUndefs).toEqual(false);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
@@ -133,7 +133,7 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
     });
 
     it('should ignore undefined results', async() => {
-      const op = { operation: { type: 'orderby', input: {}, expressions: [ orderB ]}};
+      const op: any = { operation: { type: 'orderby', input: {}, expressions: [ orderB ]}};
       const output = await actor.run(op);
       expect(ActorQueryOperation.getSafeBindings(output).canContainUndefs).toEqual(false);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
@@ -149,7 +149,7 @@ describe('ActorQueryOperationOrderBySparqlee', () => {
       // eslint-disable-next-line no-import-assign
       Object.defineProperty(sparqlee, 'isExpressionError', { writable: true });
       (<any> sparqlee).isExpressionError = jest.fn(() => false);
-      const op = { operation: { type: 'orderby', input: {}, expressions: [ orderB ]}};
+      const op: any = { operation: { type: 'orderby', input: {}, expressions: [ orderB ]}};
       const output = <any> await actor.run(op);
       await new Promise<void>(resolve => output.bindingsStream.on('error', () => resolve()));
     });
@@ -197,7 +197,7 @@ describe('ActorQueryOperationOrderBySparqlee with multiple comparators', () => {
     });
 
     it('should order A', async() => {
-      const op = { operation: { type: 'orderby', input: {}, expressions: [ orderA ]}};
+      const op: any = { operation: { type: 'orderby', input: {}, expressions: [ orderA ]}};
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
@@ -208,7 +208,7 @@ describe('ActorQueryOperationOrderBySparqlee with multiple comparators', () => {
     });
 
     it('should order B', async() => {
-      const op = { operation: { type: 'orderby', input: {}, expressions: [ orderB ]}};
+      const op: any = { operation: { type: 'orderby', input: {}, expressions: [ orderB ]}};
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
@@ -219,7 +219,7 @@ describe('ActorQueryOperationOrderBySparqlee with multiple comparators', () => {
     });
 
     it('should order priority B and secondary A, ascending', async() => {
-      const op = { operation: { type: 'orderby', input: {}, expressions: [ orderB, orderA ]}};
+      const op: any = { operation: { type: 'orderby', input: {}, expressions: [ orderB, orderA ]}};
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
@@ -230,7 +230,7 @@ describe('ActorQueryOperationOrderBySparqlee with multiple comparators', () => {
     });
 
     it('descending order A multiple orderby', async() => {
-      const op = { operation: { type: 'orderby', input: {}, expressions: [ descOrderA ]}};
+      const op: any = { operation: { type: 'orderby', input: {}, expressions: [ descOrderA ]}};
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
@@ -241,7 +241,7 @@ describe('ActorQueryOperationOrderBySparqlee with multiple comparators', () => {
     });
 
     it('descending order B multiple orderby', async() => {
-      const op = { operation: { type: 'orderby', input: {}, expressions: [ descOrderB ]}};
+      const op: any = { operation: { type: 'orderby', input: {}, expressions: [ descOrderB ]}};
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
@@ -253,7 +253,7 @@ describe('ActorQueryOperationOrderBySparqlee with multiple comparators', () => {
 
     it('strlen orderby with multiple comparators', async() => {
       // Priority goes to orderB1 then we secondarily sort by orderA1
-      const op = { operation: { type: 'orderby', input: {}, expressions: [ orderB1, orderA1 ]}};
+      const op: any = { operation: { type: 'orderby', input: {}, expressions: [ orderB1, orderA1 ]}};
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
@@ -298,7 +298,7 @@ describe('ActorQueryOperationOrderBySparqlee with integer type', () => {
     });
 
     it('should sort as an ascending integer', async() => {
-      const op = { operation: { type: 'orderby', input: {}, expressions: [ orderA ]}};
+      const op: any = { operation: { type: 'orderby', input: {}, expressions: [ orderA ]}};
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
@@ -309,7 +309,7 @@ describe('ActorQueryOperationOrderBySparqlee with integer type', () => {
     });
 
     it('should sort as an descending integer', async() => {
-      const op = { operation: { type: 'orderby', input: {}, expressions: [ descOrderA ]}};
+      const op: any = { operation: { type: 'orderby', input: {}, expressions: [ descOrderA ]}};
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
@@ -354,7 +354,7 @@ describe('ActorQueryOperationOrderBySparqlee with double type', () => {
     });
 
     it('should sort as an ascending double', async() => {
-      const op = { operation: { type: 'orderby', input: {}, expressions: [ orderA ]}};
+      const op: any = { operation: { type: 'orderby', input: {}, expressions: [ orderA ]}};
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
@@ -365,7 +365,7 @@ describe('ActorQueryOperationOrderBySparqlee with double type', () => {
     });
 
     it('should sort as an descending double', async() => {
-      const op = { operation: { type: 'orderby', input: {}, expressions: [ descOrderA ]}};
+      const op: any = { operation: { type: 'orderby', input: {}, expressions: [ descOrderA ]}};
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
@@ -410,7 +410,7 @@ describe('ActorQueryOperationOrderBySparqlee with decimal type', () => {
     });
 
     it('should sort as an ascending decimal', async() => {
-      const op = { operation: { type: 'orderby', input: {}, expressions: [ orderA ]}};
+      const op: any = { operation: { type: 'orderby', input: {}, expressions: [ orderA ]}};
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
@@ -421,7 +421,7 @@ describe('ActorQueryOperationOrderBySparqlee with decimal type', () => {
     });
 
     it('should sort as an descending decimal', async() => {
-      const op = { operation: { type: 'orderby', input: {}, expressions: [ descOrderA ]}};
+      const op: any = { operation: { type: 'orderby', input: {}, expressions: [ descOrderA ]}};
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
@@ -466,7 +466,7 @@ describe('ActorQueryOperationOrderBySparqlee with float type', () => {
     });
 
     it('should sort as an ascending float', async() => {
-      const op = { operation: { type: 'orderby', input: {}, expressions: [ orderA ]}};
+      const op: any = { operation: { type: 'orderby', input: {}, expressions: [ orderA ]}};
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
@@ -477,7 +477,7 @@ describe('ActorQueryOperationOrderBySparqlee with float type', () => {
     });
 
     it('should sort as an descending float', async() => {
-      const op = { operation: { type: 'orderby', input: {}, expressions: [ descOrderA ]}};
+      const op: any = { operation: { type: 'orderby', input: {}, expressions: [ descOrderA ]}};
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
@@ -522,7 +522,7 @@ describe('ActorQueryOperationOrderBySparqlee with mixed types', () => {
     });
 
     it('should sort as an ascending integer', async() => {
-      const op = { operation: { type: 'orderby', input: {}, expressions: [ orderA ]}};
+      const op: any = { operation: { type: 'orderby', input: {}, expressions: [ orderA ]}};
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
@@ -533,7 +533,7 @@ describe('ActorQueryOperationOrderBySparqlee with mixed types', () => {
     });
 
     it('should sort as an descending integer', async() => {
-      const op = { operation: { type: 'orderby', input: {}, expressions: [ descOrderA ]}};
+      const op: any = { operation: { type: 'orderby', input: {}, expressions: [ descOrderA ]}};
       const output = await actor.run(op);
       const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
       expect(array).toMatchObject([
@@ -579,7 +579,7 @@ describe('Another ActorQueryOperationOrderBySparqlee with mixed types', () => {
 
     it('should not sort since its not a literal ascending', async() => {
       try {
-        const op = { operation: { type: 'orderby', input: {}, expressions: [ orderA ]}};
+        const op: any = { operation: { type: 'orderby', input: {}, expressions: [ orderA ]}};
         const output = await actor.run(op);
         const array = await arrayifyStream(ActorQueryOperation.getSafeBindings(output).bindingsStream);
         expect(array).toBeFalsy();

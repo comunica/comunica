@@ -189,7 +189,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
 
     it('should fail to run for a missing source', async() => {
       const context = ActionContext({});
-      const op = { context,
+      const op: any = { context,
         operation: factory.createPattern(DF.namedNode('http://s'), DF.variable('p'), DF.namedNode('http://o')) };
       await expect(actor.run(op)).rejects.toThrow(new Error('Illegal state: undefined sparql endpoint source.'));
     });
@@ -198,7 +198,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
       const context = ActionContext({
         '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'sparql', value: 'http://example.org/sparql-select' },
       });
-      const op = { context,
+      const op: any = { context,
         operation: factory.createPattern(DF.namedNode('http://s'), DF.variable('p'), DF.namedNode('http://o')) };
       const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
       expect(output.variables).toEqual([ '?p' ]);
@@ -216,7 +216,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
       const context = ActionContext({
         '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'sparql', value: 'http://example.org/sparql-select' },
       });
-      const op = { context,
+      const op: any = { context,
         operation: factory.createProject(
           factory.createPattern(DF.namedNode('http://s'), DF.variable('p'), DF.namedNode('http://o')),
           [ DF.variable('myP') ],
@@ -245,7 +245,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
       const context = ActionContext({
         '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'sparql', value: 'http://example.org/sparql-select' },
       });
-      const op = { context,
+      const op: any = { context,
         operation: factory.createPattern(DF.namedNode('http://s'), DF.variable('p'), DF.namedNode('http://o')) };
       const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
       expect(output.variables).toEqual([ '?p' ]);
@@ -271,7 +271,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
       const context = ActionContext({
         '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'sparql', value: 'http://example.org/sparql-select' },
       });
-      const op = { context,
+      const op: any = { context,
         operation: factory.createProject(
           factory.createPattern(DF.namedNode('http://s'), DF.variable('p'), DF.namedNode('http://o')),
           [ DF.variable('myP') ],
@@ -292,7 +292,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
       const context = ActionContext({
         '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'sparql', value: 'http://example.org/sparql-ask' },
       });
-      const op = { context,
+      const op: any = { context,
         operation: factory.createAsk(
           factory.createPattern(DF.namedNode('http://s'), DF.variable('p'), DF.namedNode('http://o')),
         ) };
@@ -305,7 +305,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
       const context = ActionContext({
         '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'sparql', value: 'http://example.org/sparql-construct' },
       });
-      const op = { context,
+      const op: any = { context,
         operation: factory.createConstruct(
           factory.createPattern(DF.namedNode('http://s'), DF.variable('p'), DF.namedNode('http://o')),
           [ factory.createPattern(DF.namedNode('http://s'), DF.variable('p'), DF.namedNode('http://o')) ],
@@ -324,7 +324,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
       const context = ActionContext({
         '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'sparql', value: 'http://example.org/sparql-update' },
       });
-      const op = { context,
+      const op: any = { context,
         operation: factory.createDrop(
           DF.namedNode('http://s'),
           true,
@@ -354,7 +354,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
       const context = ActionContext({
         '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'sparql', value: 'http://ex' },
       });
-      const op = { context,
+      const op: any = { context,
         operation: factory.createPattern(DF.namedNode('http://s'), DF.variable('p'), DF.namedNode('http://o')) };
       const thisActor = new ActorQueryOperationSparqlEndpoint({
         name: 'actor',
@@ -373,7 +373,7 @@ describe('ActorQueryOperationSparqlEndpoint', () => {
       const context = ActionContext({
         '@comunica/bus-rdf-resolve-quad-pattern:source': { type: 'sparql', value: 'http://ex' },
       });
-      const op = { context,
+      const op: any = { context,
         operation: factory.createPattern(DF.namedNode('http://s'), DF.variable('p'), DF.namedNode('http://o')) };
       actor.endpointFetcher.fetchBindings = () => Promise.reject(new Error('MY ERROR'));
       return expect(new Promise((resolve, reject) => {

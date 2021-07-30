@@ -29,22 +29,22 @@ describe('ActorQueryOperationCreate', () => {
     });
 
     it('should test on create', () => {
-      const op = { operation: { type: 'create' }};
+      const op: any = { operation: { type: 'create' }};
       return expect(actor.test(op)).resolves.toBeTruthy();
     });
 
     it('should not test on readOnly', () => {
-      const op = { operation: { type: 'create' }, context: ActionContext({ [KEY_CONTEXT_READONLY]: true }) };
+      const op: any = { operation: { type: 'create' }, context: ActionContext({ [KEY_CONTEXT_READONLY]: true }) };
       return expect(actor.test(op)).rejects.toThrowError(`Attempted a write operation in read-only mode`);
     });
 
     it('should not test on non-create', () => {
-      const op = { operation: { type: 'some-other-type' }};
+      const op: any = { operation: { type: 'some-other-type' }};
       return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
     it('should run in normal mode', async() => {
-      const op = {
+      const op: any = {
         operation: {
           type: 'create',
           source: DF.namedNode('g1'),
@@ -61,7 +61,7 @@ describe('ActorQueryOperationCreate', () => {
     });
 
     it('should run in silent mode', async() => {
-      const op = {
+      const op: any = {
         operation: {
           type: 'create',
           source: DF.namedNode('g1'),

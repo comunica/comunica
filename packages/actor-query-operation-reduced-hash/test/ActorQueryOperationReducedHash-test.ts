@@ -88,17 +88,17 @@ describe('ActorQueryOperationReducedHash', () => {
     });
 
     it('should test on reduced', () => {
-      const op = { operation: { type: 'reduced' }};
+      const op: any = { operation: { type: 'reduced' }};
       return expect(actor.test(op)).resolves.toBeTruthy();
     });
 
     it('should not test on non-reduced', () => {
-      const op = { operation: { type: 'some-other-type' }};
+      const op: any = { operation: { type: 'some-other-type' }};
       return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
     it('should run', () => {
-      const op = { operation: { type: 'reduced' }};
+      const op: any = { operation: { type: 'reduced' }};
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
         expect(await (<any> output).metadata()).toEqual({ totalItems: 5 });
         expect(output.variables).toEqual([ 'a' ]);
@@ -145,7 +145,7 @@ describe('Smaller cache than number of queries', () => {
     );
   });
   it('should run', () => {
-    const op = { operation: { type: 'reduced' }};
+    const op: any = { operation: { type: 'reduced' }};
     return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
       expect(await (<any> output).metadata()).toEqual({ totalItems: 7 });
       expect(output.variables).toEqual([ 'a' ]);

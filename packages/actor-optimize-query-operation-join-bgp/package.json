@@ -32,7 +32,7 @@
     "index.js"
   ],
   "dependencies": {
-    "sparqlalgebrajs": "^2.5.5"
+    "sparqlalgebrajs": "^3.0.0"
   },
   "peerDependencies": {
     "@comunica/bus-optimize-query-operation": "^1.0.0",

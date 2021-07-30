@@ -72,6 +72,7 @@
     "@comunica/actor-query-operation-leftjoin-left-deep": "^1.21.1",
     "@comunica/actor-query-operation-leftjoin-nestedloop": "^1.21.2",
     "@comunica/actor-query-operation-minus": "^1.21.1",
+    "@comunica/actor-query-operation-nop": "^1.0.0",
     "@comunica/actor-query-operation-orderby-sparqlee": "^1.21.2",
     "@comunica/actor-query-operation-path-alt": "^1.21.1",
     "@comunica/actor-query-operation-path-inv": "^1.21.1",
@@ -187,7 +188,7 @@
     "rdf-quad": "^1.4.0",
     "rdf-string": "^1.5.0",
     "rdf-terms": "^1.6.2",
-    "sparqlalgebrajs": "^2.5.5",
+    "sparqlalgebrajs": "^3.0.0",
     "streamify-string": "^1.0.1"
   },
   "devDependencies": {

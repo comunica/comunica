@@ -82,17 +82,17 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
     });
 
     it('should test on ZeroOrOne paths', () => {
-      const op = { operation: { type: Algebra.types.PATH, predicate: { type: Algebra.types.ZERO_OR_ONE_PATH }}};
+      const op: any = { operation: { type: Algebra.types.PATH, predicate: { type: Algebra.types.ZERO_OR_ONE_PATH }}};
       return expect(actor.test(op)).resolves.toBeTruthy();
     });
 
     it('should test on different paths', () => {
-      const op = { operation: { type: Algebra.types.PATH, predicate: { type: 'dummy' }}};
+      const op: any = { operation: { type: Algebra.types.PATH, predicate: { type: 'dummy' }}};
       return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
     it('should mediate with distinct if not in context', async() => {
-      const op = { operation: factory.createPath(
+      const op: any = { operation: factory.createPath(
         DF.namedNode('s'),
         factory.createZeroOrOnePath(factory.createLink(DF.namedNode('p'))),
         DF.variable('x'),
@@ -106,7 +106,7 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
     });
 
     it('should mediate with distinct if false in context', async() => {
-      const op = { operation: factory.createPath(
+      const op: any = { operation: factory.createPath(
         DF.namedNode('s'),
         factory.createZeroOrOnePath(factory.createLink(DF.namedNode('p'))),
         DF.variable('x'),
@@ -121,7 +121,7 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
     });
 
     it('should support ZeroOrOne paths (:s :p? ?o)', async() => {
-      const op = { operation: factory.createPath(
+      const op: any = { operation: factory.createPath(
         DF.namedNode('s'),
         factory.createZeroOrOnePath(factory.createLink(DF.namedNode('p'))),
         DF.variable('x'),
@@ -139,7 +139,7 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
     });
 
     it('should support ZeroOrOne paths (?s :p? :o)', async() => {
-      const op = { operation: factory.createPath(
+      const op: any = { operation: factory.createPath(
         DF.variable('x'),
         factory.createZeroOrOnePath(factory.createLink(DF.namedNode('p'))),
         DF.namedNode('o'),
@@ -157,7 +157,7 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
     });
 
     it('should support ZeroOrOne paths (:s :p? :o)', async() => {
-      const op = { operation: factory.createPath(
+      const op: any = { operation: factory.createPath(
         DF.namedNode('s'),
         factory.createZeroOrOnePath(factory.createLink(DF.namedNode('p'))),
         DF.namedNode('1'),
@@ -172,7 +172,7 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
     });
 
     it('should support ZeroOrOne paths (:s :p? :s)', async() => {
-      const op = { operation: factory.createPath(
+      const op: any = { operation: factory.createPath(
         DF.namedNode('s'),
         factory.createZeroOrOnePath(factory.createLink(DF.namedNode('p'))),
         DF.namedNode('s'),
@@ -187,7 +187,7 @@ describe('ActorQueryOperationPathZeroOrOne', () => {
     });
 
     it('should not support ZeroOrOne paths with 2 variables', () => {
-      const op = { operation: factory.createPath(
+      const op: any = { operation: factory.createPath(
         DF.variable('x'),
         factory.createZeroOrOnePath(factory.createLink(DF.namedNode('p'))),
         DF.variable('y'),

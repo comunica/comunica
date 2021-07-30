@@ -61,17 +61,17 @@ describe('ActorQueryOperationBgpEmpty', () => {
     });
 
     it('should test on empty BGPs', () => {
-      const op = { operation: { type: 'bgp', patterns: []}};
+      const op: any = { operation: { type: 'bgp', patterns: []}};
       return expect(actor.test(op)).resolves.toBeTruthy();
     });
 
     it('should not test on non-empty BGPs', () => {
-      const op = { operation: { type: 'bgp', patterns: [ 'abc' ]}};
+      const op: any = { operation: { type: 'bgp', patterns: [ 'abc' ]}};
       return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
     it('should run on an empty BGP', () => {
-      const op = { operation: { type: 'bgp', patterns: []}};
+      const op: any = { operation: { type: 'bgp', patterns: []}};
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
         expect(await arrayifyStream(output.bindingsStream)).toEqual([ Bindings({}) ]);
         expect(output.variables).toEqual([]);
@@ -81,7 +81,7 @@ describe('ActorQueryOperationBgpEmpty', () => {
     });
 
     it('should run on a non-empty BGP', () => {
-      const op = { operation: { type: 'bgp',
+      const op: any = { operation: { type: 'bgp',
         patterns: [
           factory.createPattern(DF.variable('s1'), DF.namedNode('p1'), DF.namedNode('o1')),
           factory.createPattern(DF.namedNode('s2'), DF.namedNode('p2'), DF.variable('o2')),

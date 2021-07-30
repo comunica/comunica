@@ -124,7 +124,7 @@ describe('ActorQueryOperationFromQuad', () => {
 
     it('should transform other types of operations', () => {
       const result = ActorQueryOperationFromQuad.applyOperationDefaultGraph(
-        {
+        <any> {
           stuff: [
             { type: 'blabla', input: Object.assign(quad('s', 'p', 'o'), { type: 'path' }) },
             { type: 'someunknownthing', variables: [ DF.variable('V') ]},
@@ -328,7 +328,7 @@ describe('ActorQueryOperationFromQuad', () => {
 
     it('should transform other types of operations', () => {
       const result = ActorQueryOperationFromQuad.applyOperationNamedGraph(
-        {
+        <any> {
           stuff: [
             { type: 'blabla', input: Object.assign(quad('s', 'p', 'o', '?g'), { type: 'path' }) },
             { type: 'someunknownthing', variables: [ DF.variable('V') ]},
@@ -362,7 +362,7 @@ describe('ActorQueryOperationFromQuad', () => {
     });
 
     it('should transform two operations', () => {
-      expect(ActorQueryOperationFromQuad.joinOperations([{ type: 'nop0' }, { type: 'nop1' }]))
+      expect(ActorQueryOperationFromQuad.joinOperations(<any> [{ type: 'nop0' }, { type: 'nop1' }]))
         .toEqual({
           left: { type: 'nop0' },
           right: { type: 'nop1' },
@@ -371,7 +371,7 @@ describe('ActorQueryOperationFromQuad', () => {
     });
 
     it('should transform three operations', () => {
-      expect(ActorQueryOperationFromQuad.joinOperations([{ type: 'nop0' }, { type: 'nop1' }, { type: 'nop2' }]))
+      expect(ActorQueryOperationFromQuad.joinOperations(<any> [{ type: 'nop0' }, { type: 'nop1' }, { type: 'nop2' }]))
         .toEqual({
           left: { type: 'nop0' },
           right: {
@@ -394,7 +394,7 @@ describe('ActorQueryOperationFromQuad', () => {
     });
 
     it('should transform two operations', () => {
-      expect(ActorQueryOperationFromQuad.unionOperations([{ type: 'nop0' }, { type: 'nop1' }]))
+      expect(ActorQueryOperationFromQuad.unionOperations(<any> [{ type: 'nop0' }, { type: 'nop1' }]))
         .toEqual({
           left: { type: 'nop0' },
           right: { type: 'nop1' },
@@ -403,7 +403,7 @@ describe('ActorQueryOperationFromQuad', () => {
     });
 
     it('should transform three operations', () => {
-      expect(ActorQueryOperationFromQuad.unionOperations([{ type: 'nop0' }, { type: 'nop1' }, { type: 'nop2' }]))
+      expect(ActorQueryOperationFromQuad.unionOperations(<any> [{ type: 'nop0' }, { type: 'nop1' }, { type: 'nop2' }]))
         .toEqual({
           left: { type: 'nop0' },
           right: {
@@ -687,18 +687,18 @@ describe('ActorQueryOperationFromQuad', () => {
     });
 
     it('should test on from', () => {
-      const op = { operation: { type: 'from' }};
+      const op: any = { operation: { type: 'from' }};
       return expect(actor.test(op)).resolves.toBeTruthy();
     });
 
     it('should not test on non-from', () => {
-      const op = { operation: { type: 'some-other-type' }};
+      const op: any = { operation: { type: 'some-other-type' }};
       return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
     it('should run', async() => {
       const input = Object.assign(quad('s', 'p', 'o'), { type: 'path' });
-      const op = { operation: { type: 'from', default: [ DF.namedNode('g') ], named: [], input }};
+      const op: any = { operation: { type: 'from', default: [ DF.namedNode('g') ], named: [], input }};
       const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
       expect(await arrayifyStream(output.bindingsStream)).toMatchObject([
         Bindings({ a: DF.literal('1') }),

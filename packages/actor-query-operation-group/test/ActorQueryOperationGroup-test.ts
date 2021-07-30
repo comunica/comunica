@@ -106,7 +106,7 @@ function constructCase(
     variables: groupVariables.map(name => DF.variable(name)) || [],
     aggregates: aggregates || [],
   };
-  const op = { operation };
+  const op: any = { operation };
 
   const actor = new ActorQueryOperationGroup({ name: 'actor', bus, mediatorQueryOperation });
   return { actor, bus, mediatorQueryOperation, op };
@@ -157,7 +157,7 @@ describe('ActorQueryOperationGroup', () => {
     });
 
     it('should not test on non-group', () => {
-      const op = { operation: { type: 'some-other-type' }};
+      const op: any = { operation: { type: 'some-other-type' }};
       const { actor } = constructCase({});
       return expect(actor.test(op)).rejects.toBeTruthy();
     });

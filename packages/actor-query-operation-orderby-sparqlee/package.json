@@ -40,8 +40,8 @@
     "@types/rdf-js": "*",
     "asynciterator": "^3.2.0",
     "rdf-string": "^1.5.0",
-    "sparqlalgebrajs": "^2.5.5",
-    "sparqlee": "^1.7.0"
+    "sparqlalgebrajs": "^3.0.0",
+    "sparqlee": "^1.8.0"
   },
   "devDependencies": {
     "@comunica/actor-query-operation-filter-direct": "^1.21.1",

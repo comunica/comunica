@@ -92,22 +92,22 @@ describe('ActorQueryOperationFilterSparqlee', () => {
     });
 
     it('should test on filter', () => {
-      const op = { operation: { type: 'filter', expression: truthyExpression }};
+      const op: any = { operation: { type: 'filter', expression: truthyExpression }};
       return expect(actor.test(op)).resolves.toBeTruthy();
     });
 
     it('should fail on unsupported operators', () => {
-      const op = { operation: { type: 'filter', expression: unknownExpression }};
+      const op: any = { operation: { type: 'filter', expression: unknownExpression }};
       return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
     it('should not test on non-filter', () => {
-      const op = { operation: { type: 'some-other-type' }};
+      const op: any = { operation: { type: 'some-other-type' }};
       return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
     it('should return the full stream for a truthy filter', async() => {
-      const op = { operation: { type: 'filter', input: {}, expression: truthyExpression }};
+      const op: any = { operation: { type: 'filter', input: {}, expression: truthyExpression }};
       const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
       expect(await arrayifyStream(output.bindingsStream)).toMatchObject([
         Bindings({ '?a': DF.literal('1') }),
@@ -121,7 +121,7 @@ describe('ActorQueryOperationFilterSparqlee', () => {
     });
 
     it('should return an empty stream for a falsy filter', async() => {
-      const op = { operation: { type: 'filter', input: {}, expression: falsyExpression }};
+      const op: any = { operation: { type: 'filter', input: {}, expression: falsyExpression }};
       const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
       expect(await arrayifyStream(output.bindingsStream)).toMatchObject([]);
       expect(await (<any> output).metadata()).toMatchObject({ totalItems: 3 });
@@ -131,7 +131,7 @@ describe('ActorQueryOperationFilterSparqlee', () => {
     });
 
     it('should return an empty stream when the expressions error', async() => {
-      const op = { operation: { type: 'filter', input: {}, expression: erroringExpression }};
+      const op: any = { operation: { type: 'filter', input: {}, expression: erroringExpression }};
       const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
       expect(await arrayifyStream(output.bindingsStream)).toMatchObject([]);
       expect(await (<any> output).metadata()).toMatchObject({ totalItems: 3 });
@@ -143,7 +143,7 @@ describe('ActorQueryOperationFilterSparqlee', () => {
     it('Should log warning for an expressionError', async() => {
       // The order is very important. This item requires isExpressionError to still have it's right definition.
       const logWarnSpy = jest.spyOn(<any> actor, 'logWarn');
-      const op = { operation: { type: 'filter', input: {}, expression: erroringExpression }};
+      const op: any = { operation: { type: 'filter', input: {}, expression: erroringExpression }};
       const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
       await new Promise<void>(resolve => output.bindingsStream.on('end', resolve));
       expect(logWarnSpy).toHaveBeenCalledTimes(3);
@@ -161,7 +161,7 @@ describe('ActorQueryOperationFilterSparqlee', () => {
       // eslint-disable-next-line no-import-assign
       Object.defineProperty(sparqlee, 'isExpressionError', { writable: true });
       (<any> sparqlee).isExpressionError = jest.fn(() => false);
-      const op = { operation: { type: 'filter', input: {}, expression: erroringExpression }};
+      const op: any = { operation: { type: 'filter', input: {}, expression: erroringExpression }};
       const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
       await new Promise<void>(resolve => output.bindingsStream.on('error', () => resolve()));
     });
@@ -171,7 +171,7 @@ describe('ActorQueryOperationFilterSparqlee', () => {
       const context = Map({
         [KeysInitSparql.baseIRI]: 'http://example.com',
       });
-      const op = { operation: { type: 'filter', input: {}, expression }, context };
+      const op: any = { operation: { type: 'filter', input: {}, expression }, context };
       const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
       expect(await arrayifyStream(output.bindingsStream)).toMatchObject([
         Bindings({ '?a': DF.literal('1') }),

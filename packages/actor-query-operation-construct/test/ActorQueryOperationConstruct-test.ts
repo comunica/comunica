@@ -91,17 +91,17 @@ describe('ActorQueryOperationConstruct', () => {
     });
 
     it('should test on construct', () => {
-      const op = { operation: { type: 'construct', template: []}};
+      const op: any = { operation: { type: 'construct', template: []}};
       return expect(actor.test(op)).resolves.toBeTruthy();
     });
 
     it('should not test on non-construct', () => {
-      const op = { operation: { type: 'some-other-type', template: []}};
+      const op: any = { operation: { type: 'some-other-type', template: []}};
       return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
     it('should run on an empty template', () => {
-      const op = { operation: { type: 'construct', template: []}};
+      const op: any = { operation: { type: 'construct', template: []}};
       return actor.run(op).then(async(output: IActorQueryOperationOutputQuads) => {
         expect(await (<any> output).metadata()).toEqual({ totalItems: 0 });
         expect(output.type).toEqual('quads');
@@ -110,7 +110,7 @@ describe('ActorQueryOperationConstruct', () => {
     });
 
     it('should run on a template with the empty binding and produce one result', () => {
-      const op = { operation: { template: [
+      const op: any = { operation: { template: [
         DF.quad(DF.blankNode('s1'), DF.namedNode('p1'), DF.literal('o1')),
         DF.quad(DF.blankNode('s2'), DF.namedNode('p2'), DF.literal('o2')),
       ],
@@ -126,7 +126,7 @@ describe('ActorQueryOperationConstruct', () => {
     });
 
     it('should run on a template with input', () => {
-      const op = { operation: { input: true,
+      const op: any = { operation: { input: true,
         template: [
           DF.quad(DF.blankNode('s1'), DF.variable('a'), DF.literal('o1')),
           DF.quad(DF.blankNode('s2'), DF.namedNode('p2'), DF.variable('a'), DF.variable('a')),
@@ -160,7 +160,7 @@ describe('ActorQueryOperationConstruct', () => {
           }),
         },
         name: 'actor' });
-      const op = { operation: { template: [
+      const op: any = { operation: { template: [
         DF.quad(DF.blankNode('s1'), DF.variable('a'), DF.literal('o1')),
       ],
       type: 'construct' }};
@@ -181,7 +181,7 @@ describe('ActorQueryOperationConstruct', () => {
           }),
         },
         name: 'actor' });
-      const op = { operation: { template: [
+      const op: any = { operation: { template: [
         DF.quad(DF.blankNode('s1'), DF.variable('a'), DF.literal('o1')),
       ],
       type: 'construct' }};

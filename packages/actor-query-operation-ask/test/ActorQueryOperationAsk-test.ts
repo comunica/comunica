@@ -86,17 +86,17 @@ describe('ActorQueryOperationAsk', () => {
     });
 
     it('should test on ask', () => {
-      const op = { operation: { type: 'ask' }};
+      const op: any = { operation: { type: 'ask' }};
       return expect(actor.test(op)).resolves.toBeTruthy();
     });
 
     it('should not test on non-ask', () => {
-      const op = { operation: { type: 'some-other-type' }};
+      const op: any = { operation: { type: 'some-other-type' }};
       return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
     it('should run on a non-empty stream', () => {
-      const op = { operation: { type: 'ask' }};
+      const op: any = { operation: { type: 'ask' }};
       return actor.run(op).then(async(output: IActorQueryOperationOutputBoolean) => {
         expect(output.type).toEqual('boolean');
         expect(await output.booleanResult).toBeTruthy();
@@ -104,7 +104,7 @@ describe('ActorQueryOperationAsk', () => {
     });
 
     it('should run on an empty stream', () => {
-      const op = { operation: { type: 'ask' }};
+      const op: any = { operation: { type: 'ask' }};
       const actorEmpty = new ActorQueryOperationAsk(
         { name: 'actor', bus, mediatorQueryOperation: mediatorQueryOperationEmpty },
       );
@@ -115,7 +115,7 @@ describe('ActorQueryOperationAsk', () => {
     });
 
     it('should run and return a rejecting promise on an errorring stream', () => {
-      const op = { operation: { type: 'ask' }};
+      const op: any = { operation: { type: 'ask' }};
       const actorError = new ActorQueryOperationAsk(
         { name: 'actor', bus, mediatorQueryOperation: mediatorQueryOperationError },
       );

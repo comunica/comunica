@@ -106,17 +106,17 @@ describe('ActorQueryOperationExtend', () => {
     });
 
     it('should test on extend', () => {
-      const op = { operation: example(defaultExpression) };
+      const op: any = { operation: example(defaultExpression) };
       return expect(actor.test(op)).resolves.toBeTruthy();
     });
 
     it('should not test on non-extend', () => {
-      const op = { operation: { type: 'some-other-type' }};
+      const op: any = { operation: { type: 'some-other-type' }};
       return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
     it('should run', async() => {
-      const op = { operation: example(defaultExpression) };
+      const op: any = { operation: example(defaultExpression) };
       const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
       expect(await arrayifyStream(output.bindingsStream)).toMatchObject([
         Bindings({
@@ -143,7 +143,7 @@ describe('ActorQueryOperationExtend', () => {
       const warn = jest.fn();
       jest.spyOn(Actor, 'getContextLogger').mockImplementation(() => (<any>{ warn }));
 
-      const op = { operation: example(faultyExpression) };
+      const op: any = { operation: example(faultyExpression) };
       const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
 
       expect(await arrayifyStream(output.bindingsStream)).toMatchObject(input);
@@ -161,7 +161,7 @@ describe('ActorQueryOperationExtend', () => {
       Object.defineProperty(sparqlee, 'isExpressionError', { writable: true });
       (<any> sparqlee).isExpressionError = jest.fn(() => false);
 
-      const op = { operation: example(faultyExpression) };
+      const op: any = { operation: example(faultyExpression) };
       const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
       await new Promise<void>(resolve => output.bindingsStream.on('error', () => resolve()));
       expect(warn).toBeCalledTimes(0);

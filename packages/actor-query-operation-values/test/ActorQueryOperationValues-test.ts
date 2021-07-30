@@ -38,19 +38,19 @@ describe('ActorQueryOperationValues', () => {
     });
 
     it('should test on values', () => {
-      const op = { operation: { type: 'values' }};
+      const op: any = { operation: { type: 'values' }};
       return expect(actor.test(op)).resolves.toBeTruthy();
     });
 
     it('should not test on non-values', () => {
-      const op = { operation: { type: 'some-other-type' }};
+      const op: any = { operation: { type: 'some-other-type' }};
       return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
     it('should run on a 1 variable and 1 value', () => {
       const variables = [ DF.variable('v') ];
       const bindings = [{ '?v': DF.namedNode('v1') }];
-      const op = { operation: { type: 'values', variables, bindings }};
+      const op: any = { operation: { type: 'values', variables, bindings }};
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
         expect(await (<any> output).metadata()).toEqual({ totalItems: 1 });
         expect(output.variables).toEqual([ '?v' ]);
@@ -65,7 +65,7 @@ describe('ActorQueryOperationValues', () => {
     it('should run on a 1 variable and 2 values', () => {
       const variables = [ DF.variable('v') ];
       const bindings = [{ '?v': DF.namedNode('v1') }, { '?v': DF.namedNode('v2') }];
-      const op = { operation: { type: 'values', variables, bindings }};
+      const op: any = { operation: { type: 'values', variables, bindings }};
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
         expect(await (<any> output).metadata()).toEqual({ totalItems: 2 });
         expect(output.variables).toEqual([ '?v' ]);
@@ -84,7 +84,7 @@ describe('ActorQueryOperationValues', () => {
         { '?v': DF.namedNode('v1'), '?w': DF.namedNode('w1') },
         { '?v': DF.namedNode('v2'), '?w': DF.namedNode('w2') },
       ];
-      const op = { operation: { type: 'values', variables, bindings }};
+      const op: any = { operation: { type: 'values', variables, bindings }};
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
         expect(await (<any> output).metadata()).toEqual({ totalItems: 2 });
         expect(output.variables).toEqual([ '?v', '?w' ]);
@@ -103,7 +103,7 @@ describe('ActorQueryOperationValues', () => {
         { '?v': DF.namedNode('v1') },
         { '?v': DF.namedNode('v2'), '?w': DF.namedNode('w2') },
       ];
-      const op = { operation: { type: 'values', variables, bindings }};
+      const op: any = { operation: { type: 'values', variables, bindings }};
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
         expect(await (<any> output).metadata()).toEqual({ totalItems: 2 });
         expect(output.variables).toEqual([ '?v', '?w' ]);

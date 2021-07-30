@@ -70,7 +70,7 @@ describe('AbstractBindingsHash', () => {
     });
 
     it('should run', () => {
-      const op = { operation: { type: 'distinct' }};
+      const op: any = { operation: { type: 'distinct' }};
       return m.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
         expect(await (<any> output).metadata()).toEqual({ totalItems: 5 });
         expect(output.variables).toEqual([ 'a' ]);
@@ -86,12 +86,12 @@ describe('AbstractBindingsHash', () => {
       });
     });
     it('should test on distinct', () => {
-      const op = { operation: { type: 'distinct' }};
+      const op: any = { operation: { type: 'distinct' }};
       return expect(m.test(op)).resolves.toBeTruthy();
     });
 
     it('should not test on non-distinct', () => {
-      const op = { operation: { type: 'some-other-type' }};
+      const op: any = { operation: { type: 'some-other-type' }};
       return expect(m.test(op)).rejects.toBeTruthy();
     });
   });

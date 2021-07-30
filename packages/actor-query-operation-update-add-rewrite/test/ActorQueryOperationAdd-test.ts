@@ -31,22 +31,22 @@ describe('ActorQueryOperationAdd', () => {
     });
 
     it('should test on add', () => {
-      const op = { operation: { type: 'add' }};
+      const op: any = { operation: { type: 'add' }};
       return expect(actor.test(op)).resolves.toBeTruthy();
     });
 
     it('should not test on readOnly', () => {
-      const op = { operation: { type: 'add' }, context: ActionContext({ [KEY_CONTEXT_READONLY]: true }) };
+      const op: any = { operation: { type: 'add' }, context: ActionContext({ [KEY_CONTEXT_READONLY]: true }) };
       return expect(actor.test(op)).rejects.toThrowError(`Attempted a write operation in read-only mode`);
     });
 
     it('should not test on non-add', () => {
-      const op = { operation: { type: 'some-other-type' }};
+      const op: any = { operation: { type: 'some-other-type' }};
       return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
     it('should run with named source and named destination', async() => {
-      const op = {
+      const op: any = {
         operation: {
           type: 'add',
           source: DF.namedNode('SOURCE'),
@@ -65,7 +65,7 @@ describe('ActorQueryOperationAdd', () => {
     });
 
     it('should run with default source and named destination', async() => {
-      const op = {
+      const op: any = {
         operation: {
           type: 'add',
           source: 'DEFAULT',
@@ -84,7 +84,7 @@ describe('ActorQueryOperationAdd', () => {
     });
 
     it('should run with named source and default destination', async() => {
-      const op = {
+      const op: any = {
         operation: {
           type: 'add',
           source: DF.namedNode('SOURCE'),
@@ -103,7 +103,7 @@ describe('ActorQueryOperationAdd', () => {
     });
 
     it('should run with default source and default destination', async() => {
-      const op = {
+      const op: any = {
         operation: {
           type: 'add',
           source: 'DEFAULT',
