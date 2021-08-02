@@ -8,7 +8,7 @@ import type { IActorQueryOperationOutputBindings } from '@comunica/types';
 import { ArrayIterator } from 'asynciterator';
 import { termToString } from 'rdf-string';
 import type { Algebra } from 'sparqlalgebrajs';
-import { SyncEvaluator } from 'sparqlee';
+import { AsyncEvaluator } from 'sparqlee';
 
 import { GroupsState } from './GroupsState';
 
@@ -23,7 +23,9 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
   public async testOperation(pattern: Algebra.Group, context: ActionContext): Promise<IActorTest> {
     for (const aggregate of pattern.aggregates) {
       // Will throw for unsupported expressions
-      const _ = new SyncEvaluator(aggregate.expression);
+      const _ = new AsyncEvaluator(aggregate.expression, {
+        ...ActorQueryOperation.getAsyncExpressionContext(context),
+      });
     }
     return true;
   }
@@ -43,9 +45,7 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
       ...aggregates.map(agg => termToString(agg.variable)),
     ];
 
-    // TODO: we should not override extensionFunctionCreator. Instead we should use an AsyncAggregateEvaluator.
-    const sparqleeConfig = { ...ActorQueryOperation.getExpressionContext(context),
-      extensionFunctionCreator: undefined };
+    const sparqleeConfig = { ...ActorQueryOperation.getAsyncExpressionContext(context) };
 
     // Return a new promise that completes when the stream has ended or when
     // an error occurs
@@ -57,13 +57,11 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
       // we return the identified groups. Which are nothing more than Bindings
       // of the grouping variables merged with the aggregate variables
       output.bindingsStream.on('end', () => {
-        try {
-          const bindingsStream = new ArrayIterator(groups.collectResults(), { autoStart: false });
+        groups.collectResults().then(results => {
+          const bindingsStream = new ArrayIterator(results, { autoStart: false });
           const { metadata } = output;
           resolve({ type: 'bindings', bindingsStream, metadata, variables, canContainUndefs: output.canContainUndefs });
-        } catch (error: unknown) {
-          reject(error);
-        }
+        }).catch(error => reject(error));
       });
 
       // Make sure to propagate any errors in the binding stream
@@ -73,11 +71,7 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
       // We need to bind this after the 'error' and 'end' listeners to avoid the
       // stream having ended before those listeners are bound.
       output.bindingsStream.on('data', bindings => {
-        try {
-          groups.consumeBindings(bindings);
-        } catch (error: unknown) {
-          reject(error);
-        }
+        groups.consumeBindings(bindings).catch(reject);
       });
     });
   }
