@@ -56,12 +56,14 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
       // We can only return when the binding stream ends, when that happens
       // we return the identified groups. Which are nothing more than Bindings
       // of the grouping variables merged with the aggregate variables
-      output.bindingsStream.on('end', () => {
-        groups.collectResults().then(results => {
-          const bindingsStream = new ArrayIterator(results, { autoStart: false });
+      output.bindingsStream.on('end', async() => {
+        try {
+          const bindingsStream = new ArrayIterator(await groups.collectResults(), { autoStart: false });
           const { metadata } = output;
           resolve({ type: 'bindings', bindingsStream, metadata, variables, canContainUndefs: output.canContainUndefs });
-        }).catch(error => reject(error));
+        } catch (error: unknown) {
+          reject(error);
+        }
       });
 
       // Make sure to propagate any errors in the binding stream

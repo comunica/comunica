@@ -70,19 +70,6 @@ const getDefaultMediatorQueryOperation = () => ({
   }),
 });
 
-function delayItems<S>(delay: number):
-(item: S, done: () => void, push: (item: S) => void) => Promise<void> {
-  return async(item: S, done: () => void, push: (item: S) => void): Promise<void> => {
-    for (let i = 0; i < delay; i++) {
-      await new Promise(setImmediate);
-    }
-    if (item) {
-      push(item);
-    }
-    done();
-  };
-}
-
 interface ICaseOptions {
   inputBindings?: Bindings[];
   groupVariables?: string[];
@@ -99,13 +86,12 @@ function constructCase(
 ): ICaseOutput {
   const bus: any = new Bus({ name: 'bus' });
 
-  const bindingsStream = new ArrayIterator(inputBindings, { autoStart: false });
   // Construct mediator
   const mediatorQueryOperation: any = inputBindings === undefined ?
     getDefaultMediatorQueryOperation() :
     {
       mediate: (arg: any) => Promise.resolve({
-        bindingsStream,
+        bindingsStream: new ArrayIterator(inputBindings, { autoStart: false }),
         metadata: () => Promise.resolve({ totalItems: inputBindings.length }),
         operated: arg,
         type: 'bindings',
@@ -187,7 +173,7 @@ describe('ActorQueryOperationGroup', () => {
       await expect(actor.test(op)).resolves.toEqual(true);
     });
 
-    it('should group on a single var', async() => { // TODO: alter this to get full coverage
+    it('should group on a single var', async() => {
       const { op, actor } = constructCase({
         inputBindings: [
           Bindings({ '?x': DF.literal('aaa') }),

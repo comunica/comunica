@@ -123,26 +123,6 @@ describe('System test: ActorInitSparql', () => {
             FILTER (func:${funcName}(?o))
         }`;
 
-        it('handles complex queries with groupBy', async() => {
-          const context = <any> { sources: [ store ]};
-          const complexQuery = `PREFIX func: <http://example.org/functions#>
-        SELECT (SUM(func:count-chars(?o)) AS ?sum) WHERE {
-              ?s ?p ?o.
-        }
-          `;
-          context[KeysInitSparql.extensionFunctions] = {
-            async 'http://example.org/functions#count-chars'(args: RDF.Term[]) {
-              const arg = args[0];
-              if (arg.termType === 'Literal' && arg.datatype.equals(DF.literal('', stringType).datatype)) {
-                return DF.literal(String(arg.value.length), integerType);
-              }
-              return arg;
-            },
-          };
-          const result = <IQueryResultBindings> await engine.query(complexQuery, context);
-          expect((await result.bindings()).map(res => res.get('?sum').value)).toEqual([ '20' ]);
-        });
-
         it('rejects when record does not match', async() => {
           const context = <any> { sources: [ store ]};
           context[KeysInitSparql.extensionFunctions] = baseFunctions;
@@ -206,6 +186,26 @@ describe('System test: ActorInitSparql', () => {
           expect((await result.bindings()).map(res => res.get('?caps').value)).toEqual(
             quads.map(q => q.object.value.toUpperCase()),
           );
+        });
+
+        it('handles complex queries with groupBy', async() => {
+          const context = <any> { sources: [ store ]};
+          const complexQuery = `PREFIX func: <http://example.org/functions#>
+        SELECT (SUM(func:count-chars(?o)) AS ?sum) WHERE {
+              ?s ?p ?o.
+        }
+          `;
+          context[KeysInitSparql.extensionFunctions] = {
+            async 'http://example.org/functions#count-chars'(args: RDF.Term[]) {
+              const arg = args[0];
+              if (arg.termType === 'Literal' && arg.datatype.equals(DF.literal('', stringType).datatype)) {
+                return DF.literal(String(arg.value.length), integerType);
+              }
+              return arg;
+            },
+          };
+          const result = <IQueryResultBindings> await engine.query(complexQuery, context);
+          expect((await result.bindings()).map(res => res.get('?sum').value)).toEqual([ '20' ]);
         });
       });
     });
