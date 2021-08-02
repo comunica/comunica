@@ -26,17 +26,20 @@ export interface IGroup {
  */
 export class GroupsState {
   private readonly groups: Map<BindingsHash, IGroup>;
+  private readonly groupsInitializer: Map<BindingsHash, Promise<IGroup>>;
   private readonly groupVariables: Set<string>;
   private readonly distinctHashes: null | Map<BindingsHash, Set<BindingsHash>>;
-  private readonly waitList: Promise<void>[];
+  private waitCounter: number;
+  private waitResolver: ((bindings: Bindings[]) => void);
 
   public constructor(private readonly pattern: Algebra.Group, private readonly sparqleeConfig: AsyncEvaluatorConfig) {
     this.groups = new Map();
+    this.groupsInitializer = new Map();
     this.groupVariables = new Set(this.pattern.variables.map(x => termToString(x)));
     this.distinctHashes = pattern.aggregates.some(({ distinct }) => distinct) ?
       new Map() :
       null;
-    this.waitList = [];
+    this.waitCounter = 1;
   }
 
   /**
@@ -47,82 +50,68 @@ export class GroupsState {
    * @param {Bindings} bindings - The Bindings to consume
    */
   public consumeBindings(bindings: Bindings): Promise<void> {
-    const res: Promise<void> = (async() => {
-      // Select the bindings on which we group
-      const grouper = bindings
-        .filter((_, variable: string) => this.groupVariables.has(variable))
-        .toMap();
-      const groupHash = this.hashBindings(grouper);
-      // First member of group -> create new group
-      let group: IGroup | undefined = this.groups.get(groupHash);
-      if (!group) {
-        // Initialize state for all aggregators for new group
+    this.waitCounter++;
+
+    // Select the bindings on which we group
+    const grouper = bindings
+      .filter((_, variable: string) => this.groupVariables.has(variable))
+      .toMap();
+    const groupHash = this.hashBindings(grouper);
+    // First member of group -> create new group
+    const groupTest: Promise<IGroup> | undefined = this.groupsInitializer.get(groupHash);
+
+    let res: Promise<any>;
+    if (!groupTest) {
+      // Initialize state for all aggregators for new group
+      const groupPromise = (async() => {
         const aggregators: Record<string, AsyncAggregateEvaluator> = {};
-        const terms: (Term|undefined)[] = await Promise.all(this.pattern.aggregates.map(async aggregate => {
+        await Promise.all(this.pattern.aggregates.map(async aggregate => {
           const key = termToString(aggregate.variable);
           aggregators[key] = new AsyncAggregateEvaluator(aggregate, this.sparqleeConfig);
-          const term = await aggregators[key].evaluate(bindings);
-          if (!term) {
-            return term;
-          }
-          aggregators[key].putTerm(term);
-          return term;
+          await aggregators[key].put(bindings);
         }));
-
-        // Check group again, the group might already been initialized
-        group = this.groups.get(groupHash);
-        if (group) {
-          return await this.consumeBindingsInGroup(group, groupHash, bindings, terms);
-        }
-
-        group = { aggregators, bindings: grouper };
-        this.groups.set(groupHash, group);
 
         if (this.distinctHashes) {
           const bindingsHash = this.hashBindings(bindings);
           this.distinctHashes.set(groupHash, new Set([ bindingsHash ]));
         }
-      } else {
-        // Group already exists
-        await this.consumeBindingsInGroup(group, groupHash, bindings);
-      }
-    })();
-    this.waitList.push(res);
-    return res;
+        return { aggregators, bindings: grouper };
+      })();
+      this.groupsInitializer.set(groupHash, groupPromise);
+      res = groupPromise.then(group => {
+        this.groups.set(groupHash, group);
+      });
+    } else {
+      const defGroupPromise = groupTest;
+      res = (async() => {
+        const group = await defGroupPromise;
+        await Promise.all(this.pattern.aggregates.map(async aggregate => {
+          // If distinct, check first whether we have inserted these values already
+          if (aggregate.distinct) {
+            const hash = this.hashBindings(bindings);
+            if (this.distinctHashes!.get(groupHash)!.has(hash)) {
+              return;
+            }
+            this.distinctHashes!.get(groupHash)!.add(hash);
+          }
+
+          const variable = termToString(aggregate.variable);
+          await group.aggregators[variable].put(bindings);
+        }));
+      })();
+    }
+    return res.then(() => {
+      this.subtractCounter();
+    });
   }
 
-  private async consumeBindingsInGroup(group: IGroup, groupHash: string, bindings: Bindings,
-    terms?: (Term|undefined)[]): Promise<void> {
-    // Update all the aggregators with the input binding
-    await Promise.all(this.pattern.aggregates.map(async(aggregate, index) => {
-      // If distinct, check first whether we have inserted these values already
-      if (aggregate.distinct) {
-        const hash = this.hashBindings(bindings);
-        if (this.distinctHashes!.get(groupHash)!.has(hash)) {
-          return;
-        }
-        this.distinctHashes!.get(groupHash)!.add(hash);
-      }
-
-      const variable = termToString(aggregate.variable);
-      let term;
-      if (terms && index < terms.length) {
-        term = terms[index];
-      } else {
-        term = await group.aggregators[variable].evaluate(bindings);
-      }
-      if (term) {
-        group.aggregators[variable].putTerm(term);
-      }
-    }));
+  private subtractCounter(): void {
+    if (--this.waitCounter === 0) {
+      this.handleResultCollection();
+    }
   }
 
-  /**
-   * Collect the result of the current state. This returns a Bindings per group,
-   * and a (possibly empty) Bindings in case the no Bindings have been consumed yet.
-   */
-  public async collectResults(): Promise<Bindings[]> {
-    await Promise.all(this.waitList);
+  private handleResultCollection(): void {
     // Collect groups
     let rows: Bindings[] = [ ...this.groups ].map(([ _, group ]) => {
       const { bindings: groupBindings, aggregators } = group;
@@ -156,8 +145,19 @@ export class GroupsState {
       }
       rows = [ Bindings(single) ];
     }
+    this.waitResolver(rows);
+  }
 
-    return rows;
+  /**
+   * Collect the result of the current state. This returns a Bindings per group,
+   * and a (possibly empty) Bindings in case the no Bindings have been consumed yet.
+   */
+  public collectResults(): Promise<Bindings[]> {
+    const res: Promise<Bindings[]> = new Promise(resolve => {
+      this.waitResolver = resolve;
+    });
+    this.subtractCounter();
+    return res;
   }
 
   /**
