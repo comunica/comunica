@@ -12,19 +12,36 @@ This package is available on [npm](https://www.npmjs.com/package/sparqlee), type
 ## Using Sparqlee
 
 ```ts
-const expression = ...some sparql algebra expression...;
-const bindings = ...some bindings/solution mapping...;
-const config = ...sparqlee config and optional context...;
+import { translate } from "sparqlalgebrajs";
+import { stringToTerm } from "rdf-string";
 
-// Create an evaluator (a sync evaluator will exist in the future too)
-const evaluator = new AsyncEvaluator(expression, config);
+// An example SPARQL query with an expression in a FILTER statement.
+// We translate it to SPARQL Algebra format ...
+const query = translate(`
+  SELECT * WHERE {
+     ?s ?p ?o
+     FILTER langMatches(lang(?o), "FR")
+    }
+`);
 
-// evaluate it as a term
-const result: RDF.Term = await evaluator.evaluate(bindings);
+// ... and get the part corresponding to "langMatches(...)".
+const expression = query.input.expression;
 
-// or evaluate it as an Effective Boolean Value (for e.g in FILTER)
+// We create an evaluator for this expression.
+// A sync version exists as well.
+const evaluator = new AsyncEvaluator(expression);
+
+// We can now evaluate some bindings as a term, ...
+const result: RDF.Term = await evaluator.evaluate(
+  Bindings({
+    ...
+    '?o': stringToTerm("Ceci n'est pas une pipe"@fr),
+    ...
+  })
+);
+
+// ... or as an Effective Boolean Value (e.g. for use in FILTER)
 const result: boolean = await evaluator.evaluateAsEBV(bindings);
-
 ```
 
 Note: If you want to use *aggregates*, or *exists* you should check out the [stream section](#streams).
