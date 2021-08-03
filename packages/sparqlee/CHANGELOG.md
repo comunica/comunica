@@ -1,5 +1,11 @@
 # Changelog
 
+<a name="v1.9.0"></a>
+## [v1.9.0](https://github.com/comunica/sparqlee/compare/v1.8.0...v1.9.0) - 2021-08-03
+
+### Added
+* [Add AsyncAggregateEvaluator](https://github.com/comunica/sparqlee/commit/67e324f886d0b20b5b9dd7f0a2e2368720d7c9be)
+
 <a name="v1.8.0"></a>
 ## [v1.8.0](https://github.com/comunica/sparqlee/compare/v1.7.0...v1.8.0) - 2021-07-30
 
