@@ -55,6 +55,10 @@ export class GroupsState {
    * @param {Bindings} bindings - The Bindings to consume
    */
   public consumeBindings(bindings: Bindings): Promise<void> {
+    const check = this.resultCheck<void>();
+    if (check) {
+      return check;
+    }
     // We increment the counter and decrement him when put action is performed.
     this.waitCounter++;
 
@@ -155,14 +159,22 @@ export class GroupsState {
     this.waitResolver(rows);
   }
 
+  private resultCheck<T>(): Promise<T> | undefined {
+    if (this.resultHasBeenCalled) {
+      return Promise.reject(new Error('Calling any function after calling collectResult is invalid.'));
+    }
+  }
+
   /**
    * Collect the result of the final state. This returns a Bindings per group,
    * and a (possibly empty) Bindings in case no Bindings have been consumed yet.
-   * you can only call this method once. Once the promise resolves calling @{consumeBindings} will not alter this value.
+   * You can only call this method once, after calling this method,
+   * calling any function on this will result in an error being thrown.
    */
   public collectResults(): Promise<Bindings[]> {
-    if (this.resultHasBeenCalled) {
-      return new Promise((resolve, reject) => reject(new Error('collectResult should only be called once.')));
+    const check = this.resultCheck<Bindings[]>();
+    if (check) {
+      return check;
     }
     this.resultHasBeenCalled = true;
     const res = new Promise<Bindings[]>(resolve => {

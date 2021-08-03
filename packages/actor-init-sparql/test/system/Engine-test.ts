@@ -204,7 +204,7 @@ describe('System test: ActorInitSparql', () => {
               const arg = args[0];
               if (arg.termType === 'Literal' && arg.datatype.equals(DF.literal('', stringType).datatype)) {
                 if (timout) {
-                  await new Promise(setImmediate);
+                  await new Promise(resolve => setTimeout(resolve, 1));
                 }
                 return DF.literal(String(arg.value.length), integerType);
               }
