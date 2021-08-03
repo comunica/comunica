@@ -150,6 +150,22 @@ describe('ActorQueryOperationGroup', () => {
     });
   });
 
+  describe('A GroupState instance', () => {
+    it('should throw an error if collectResults is called multiple times', async() => {
+      const { actor, op } = constructCase({});
+      const temp = new GroupsState(<Algebra.Group> op.operation, {});
+      expect(await temp.collectResults()).toBeTruthy();
+      await expect(temp.collectResults()).rejects.toThrow('collectResult');
+    });
+
+    it('should throw an error if consumeBindings is called after collectResults', async() => {
+      const { actor, op } = constructCase({});
+      const temp = new GroupsState(<Algebra.Group> op.operation, {});
+      expect(await temp.collectResults()).toBeTruthy();
+      await expect(temp.consumeBindings(Bindings({ '?x': DF.literal('aaa') }))).rejects.toThrow('collectResult');
+    });
+  });
+
   describe('An ActorQueryOperationGroup instance', () => {
     it('should test on group', () => {
       const { actor, op } = constructCase({});
@@ -400,7 +416,7 @@ describe('ActorQueryOperationGroup', () => {
       const temp = GroupsState.prototype.collectResults;
       GroupsState.prototype.collectResults = jest
         .fn()
-        .mockImplementationOnce(() => {
+        .mockImplementationOnce(async() => {
           throw new Error('test error');
         });
       const { op, actor } = constructCase({
@@ -423,7 +439,7 @@ describe('ActorQueryOperationGroup', () => {
       const temp = GroupsState.prototype.consumeBindings;
       GroupsState.prototype.consumeBindings = jest
         .fn()
-        .mockImplementation(() => {
+        .mockImplementation(async() => {
           throw new Error('test error');
         });
       const { op, actor } = constructCase({
