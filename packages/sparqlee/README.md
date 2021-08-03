@@ -123,6 +123,11 @@ aggregate?: (expression: Alg.AggregateExpression) => Promise<RDF.Term>;
 
 You can probably ignore this.
 
+We also provide an `AsyncAggregateEvaluator` to that works the same way `AggregateEvaluator` does.
+The signature of only the `put` method changes to be async. It is up to you to handle this correctly.
+You are for example expected to await all puts before you ask for `result`.
+You should also note the order of calling and awaiting put while using the `GroupConcat` aggregator.
+
 ### Extension functions
 
 Extension functions can be added by providing the `extensionFunctionCreator` in the config.
