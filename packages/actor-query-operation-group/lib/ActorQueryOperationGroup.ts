@@ -23,9 +23,7 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
   public async testOperation(pattern: Algebra.Group, context: ActionContext): Promise<IActorTest> {
     for (const aggregate of pattern.aggregates) {
       // Will throw for unsupported expressions
-      const _ = new AsyncEvaluator(aggregate.expression, {
-        ...ActorQueryOperation.getAsyncExpressionContext(context),
-      });
+      const _ = new AsyncEvaluator(aggregate.expression, ActorQueryOperation.getAsyncExpressionContext(context));
     }
     return true;
   }
@@ -45,7 +43,7 @@ export class ActorQueryOperationGroup extends ActorQueryOperationTypedMediated<A
       ...aggregates.map(agg => termToString(agg.variable)),
     ];
 
-    const sparqleeConfig = { ...ActorQueryOperation.getAsyncExpressionContext(context) };
+    const sparqleeConfig = ActorQueryOperation.getAsyncExpressionContext(context);
 
     // Return a new promise that completes when the stream has ended or when
     // an error occurs

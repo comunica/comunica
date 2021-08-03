@@ -150,6 +150,15 @@ describe('ActorQueryOperationGroup', () => {
     });
   });
 
+  describe('A GroupState instance', () => {
+    it('should throw an error of collectResults is called multiple times', async() => {
+      const { actor, op } = constructCase({});
+      const temp = new GroupsState(<Algebra.Group> op.operation, {});
+      expect(await temp.collectResults()).toBeTruthy();
+      await expect(temp.collectResults()).rejects.toThrow('collectResult');
+    });
+  });
+
   describe('An ActorQueryOperationGroup instance', () => {
     it('should test on group', () => {
       const { actor, op } = constructCase({});

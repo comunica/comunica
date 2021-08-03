@@ -188,24 +188,45 @@ describe('System test: ActorInitSparql', () => {
           );
         });
 
-        it('handles complex queries with groupBy', async() => {
-          const context = <any> { sources: [ store ]};
-          const complexQuery = `PREFIX func: <http://example.org/functions#>
+        describe('handles complex queries with groupBy', () => {
+          let context: any;
+          let complexQuery: string;
+          let extensionBuilder: (timout: boolean) => (args: RDF.Term[]) => Promise<RDF.Term>;
+
+          beforeEach(() => {
+            context = <any> { sources: [ store ]};
+            complexQuery = `PREFIX func: <http://example.org/functions#>
         SELECT (SUM(func:count-chars(?o)) AS ?sum) WHERE {
               ?s ?p ?o.
         }
           `;
-          context[KeysInitSparql.extensionFunctions] = {
-            async 'http://example.org/functions#count-chars'(args: RDF.Term[]) {
+            extensionBuilder = (timout: boolean) => async(args: RDF.Term[]) => {
               const arg = args[0];
               if (arg.termType === 'Literal' && arg.datatype.equals(DF.literal('', stringType).datatype)) {
+                if (timout) {
+                  await new Promise(setImmediate);
+                }
                 return DF.literal(String(arg.value.length), integerType);
               }
               return arg;
-            },
-          };
-          const result = <IQueryResultBindings> await engine.query(complexQuery, context);
-          expect((await result.bindings()).map(res => res.get('?sum').value)).toEqual([ '20' ]);
+            };
+          });
+
+          it('can be evaluated', async() => {
+            context[KeysInitSparql.extensionFunctions] = {
+              'http://example.org/functions#count-chars': extensionBuilder(false),
+            };
+            const result = <IQueryResultBindings> await engine.query(complexQuery, context);
+            expect((await result.bindings()).map(res => res.get('?sum').value)).toEqual([ '20' ]);
+          });
+
+          it('can be truly async', async() => {
+            context[KeysInitSparql.extensionFunctions] = {
+              'http://example.org/functions#count-chars': extensionBuilder(true),
+            };
+            const result = <IQueryResultBindings> await engine.query(complexQuery, context);
+            expect((await result.bindings()).map(res => res.get('?sum').value)).toEqual([ '20' ]);
+          });
         });
       });
     });
