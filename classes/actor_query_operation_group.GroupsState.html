@@ -99,6 +99,10 @@
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="actor_query_operation_group.GroupsState.html#distinctHashes" class="tsd-kind-icon">distinct<wbr>Hashes</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="actor_query_operation_group.GroupsState.html#groupVariables" class="tsd-kind-icon">group<wbr>Variables</a></li>
 								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="actor_query_operation_group.GroupsState.html#groups" class="tsd-kind-icon">groups</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="actor_query_operation_group.GroupsState.html#groupsInitializer" class="tsd-kind-icon">groups<wbr>Initializer</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="actor_query_operation_group.GroupsState.html#resultHasBeenCalled" class="tsd-kind-icon">result<wbr>Has<wbr>Been<wbr>Called</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="actor_query_operation_group.GroupsState.html#waitCounter" class="tsd-kind-icon">wait<wbr>Counter</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class tsd-is-private"><a href="actor_query_operation_group.GroupsState.html#waitResolver" class="tsd-kind-icon">wait<wbr>Resolver</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
@@ -106,7 +110,10 @@
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="actor_query_operation_group.GroupsState.html#collectResults" class="tsd-kind-icon">collect<wbr>Results</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class"><a href="actor_query_operation_group.GroupsState.html#consumeBindings" class="tsd-kind-icon">consume<wbr>Bindings</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="actor_query_operation_group.GroupsState.html#handleResultCollection" class="tsd-kind-icon">handle<wbr>Result<wbr>Collection</a></li>
 								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="actor_query_operation_group.GroupsState.html#hashBindings" class="tsd-kind-icon">hash<wbr>Bindings</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-private"><a href="actor_query_operation_group.GroupsState.html#resultCheck" class="tsd-kind-icon">result<wbr>Check</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class tsd-is-private"><a href="actor_query_operation_group.GroupsState.html#subtractWaitCounterAndCollect" class="tsd-kind-icon">subtract<wbr>Wait<wbr>Counter<wbr>And<wbr>Collect</a></li>
 							</ul>
 						</section>
 					</div>
@@ -118,13 +125,13 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">new <wbr>Groups<wbr>State<span class="tsd-signature-symbol">(</span>pattern<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Group</span>, sparqleeConfig<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">SyncEvaluatorConfig</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="actor_query_operation_group.GroupsState.html" class="tsd-signature-type" data-tsd-kind="Class">GroupsState</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>Groups<wbr>State<span class="tsd-signature-symbol">(</span>pattern<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Group</span>, sparqleeConfig<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">AsyncEvaluatorConfig</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="actor_query_operation_group.GroupsState.html" class="tsd-signature-type" data-tsd-kind="Class">GroupsState</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/94fbf59/packages/actor-query-operation-group/lib/GroupsState.ts#L32">packages/actor-query-operation-group/lib/GroupsState.ts:32</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/987aa0a/packages/actor-query-operation-group/lib/GroupsState.ts#L39">packages/actor-query-operation-group/lib/GroupsState.ts:39</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -133,7 +140,7 @@
 									<h5>pattern: <span class="tsd-signature-type">Group</span></h5>
 								</li>
 								<li>
-									<h5>sparqleeConfig: <span class="tsd-signature-type">SyncEvaluatorConfig</span></h5>
+									<h5>sparqleeConfig: <span class="tsd-signature-type">AsyncEvaluatorConfig</span></h5>
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <a href="actor_query_operation_group.GroupsState.html" class="tsd-signature-type" data-tsd-kind="Class">GroupsState</a></h4>
@@ -149,7 +156,7 @@
 					<div class="tsd-signature tsd-kind-icon">distinct<wbr>Hashes<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">Set</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/94fbf59/packages/actor-query-operation-group/lib/GroupsState.ts#L30">packages/actor-query-operation-group/lib/GroupsState.ts:30</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/987aa0a/packages/actor-query-operation-group/lib/GroupsState.ts#L33">packages/actor-query-operation-group/lib/GroupsState.ts:33</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -159,7 +166,7 @@
 					<div class="tsd-signature tsd-kind-icon">group<wbr>Variables<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Set</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/94fbf59/packages/actor-query-operation-group/lib/GroupsState.ts#L29">packages/actor-query-operation-group/lib/GroupsState.ts:29</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/987aa0a/packages/actor-query-operation-group/lib/GroupsState.ts#L32">packages/actor-query-operation-group/lib/GroupsState.ts:32</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -169,9 +176,70 @@
 					<div class="tsd-signature tsd-kind-icon">groups<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><a href="../interfaces/actor_query_operation_group.IGroup.html" class="tsd-signature-type" data-tsd-kind="Interface">IGroup</a><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/comunica/comunica/blob/94fbf59/packages/actor-query-operation-group/lib/GroupsState.ts#L28">packages/actor-query-operation-group/lib/GroupsState.ts:28</a></li>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/987aa0a/packages/actor-query-operation-group/lib/GroupsState.ts#L28">packages/actor-query-operation-group/lib/GroupsState.ts:28</a></li>
 						</ul>
 					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
+					<a name="groupsInitializer" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> <span class="tsd-flag ts-flagReadonly">Readonly</span> groups<wbr>Initializer</h3>
+					<div class="tsd-signature tsd-kind-icon">groups<wbr>Initializer<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Map</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/actor_query_operation_group.IGroup.html" class="tsd-signature-type" data-tsd-kind="Interface">IGroup</a><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">&gt;</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/987aa0a/packages/actor-query-operation-group/lib/GroupsState.ts#L31">packages/actor-query-operation-group/lib/GroupsState.ts:31</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
+					<a name="resultHasBeenCalled" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> result<wbr>Has<wbr>Been<wbr>Called</h3>
+					<div class="tsd-signature tsd-kind-icon">result<wbr>Has<wbr>Been<wbr>Called<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/987aa0a/packages/actor-query-operation-group/lib/GroupsState.ts#L37">packages/actor-query-operation-group/lib/GroupsState.ts:37</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
+					<a name="waitCounter" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> wait<wbr>Counter</h3>
+					<div class="tsd-signature tsd-kind-icon">wait<wbr>Counter<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/987aa0a/packages/actor-query-operation-group/lib/GroupsState.ts#L34">packages/actor-query-operation-group/lib/GroupsState.ts:34</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-private">
+					<a name="waitResolver" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> wait<wbr>Resolver</h3>
+					<div class="tsd-signature tsd-kind-icon">wait<wbr>Resolver<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">(</span>bindings<span class="tsd-signature-symbol">: </span><a href="" class="tsd-signature-type" data-tsd-kind="Type alias">Bindings</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">void</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/comunica/comunica/blob/987aa0a/packages/actor-query-operation-group/lib/GroupsState.ts#L36">packages/actor-query-operation-group/lib/GroupsState.ts:36</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter-signature">
+								<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-class">
+									<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>bindings<span class="tsd-signature-symbol">: </span><a href="" class="tsd-signature-type" data-tsd-kind="Type alias">Bindings</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+								</ul>
+								<ul class="tsd-descriptions">
+									<li class="tsd-description">
+										<h4 class="tsd-parameters-title">Parameters</h4>
+										<ul class="tsd-parameters">
+											<li>
+												<h5>bindings: <a href="" class="tsd-signature-type" data-tsd-kind="Type alias">Bindings</a><span class="tsd-signature-symbol">[]</span></h5>
+											</li>
+										</ul>
+										<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</div>
 				</section>
 			</section>
 			<section class="tsd-panel-group tsd-member-group ">
@@ -180,22 +248,24 @@
 					<a name="collectResults" class="tsd-anchor"></a>
 					<h3>collect<wbr>Results</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">collect<wbr>Results<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="" class="tsd-signature-type" data-tsd-kind="Type alias">Bindings</a><span class="tsd-signature-symbol">[]</span></li>
+						<li class="tsd-signature tsd-kind-icon">collect<wbr>Results<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="" class="tsd-signature-type" data-tsd-kind="Type alias">Bindings</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/94fbf59/packages/actor-query-operation-group/lib/GroupsState.ts#L96">packages/actor-query-operation-group/lib/GroupsState.ts:96</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/987aa0a/packages/actor-query-operation-group/lib/GroupsState.ts#L174">packages/actor-query-operation-group/lib/GroupsState.ts:174</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>Collect the result of the current state. This returns a Bindings per group,
-									and a (possibly empty) Bindings in case the no Bindings have been consumed yet.</p>
+									<p>Collect the result of the final state. This returns a Bindings per group,
+										and a (possibly empty) Bindings in case no Bindings have been consumed yet.
+										You can only call this method once, after calling this method,
+									calling any function on this will result in an error being thrown.</p>
 								</div>
 							</div>
-							<h4 class="tsd-returns-title">Returns <a href="" class="tsd-signature-type" data-tsd-kind="Type alias">Bindings</a><span class="tsd-signature-symbol">[]</span></h4>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="" class="tsd-signature-type" data-tsd-kind="Type alias">Bindings</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -203,13 +273,13 @@
 					<a name="consumeBindings" class="tsd-anchor"></a>
 					<h3>consume<wbr>Bindings</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">consume<wbr>Bindings<span class="tsd-signature-symbol">(</span>bindings<span class="tsd-signature-symbol">: </span><a href="" class="tsd-signature-type" data-tsd-kind="Type alias">Bindings</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+						<li class="tsd-signature tsd-kind-icon">consume<wbr>Bindings<span class="tsd-signature-symbol">(</span>bindings<span class="tsd-signature-symbol">: </span><a href="" class="tsd-signature-type" data-tsd-kind="Type alias">Bindings</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/94fbf59/packages/actor-query-operation-group/lib/GroupsState.ts#L47">packages/actor-query-operation-group/lib/GroupsState.ts:47</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/987aa0a/packages/actor-query-operation-group/lib/GroupsState.ts#L57">packages/actor-query-operation-group/lib/GroupsState.ts:57</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -230,6 +300,23 @@
 									</div>
 								</li>
 							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
+					<a name="handleResultCollection" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> handle<wbr>Result<wbr>Collection</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
+						<li class="tsd-signature tsd-kind-icon">handle<wbr>Result<wbr>Collection<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/987aa0a/packages/actor-query-operation-group/lib/GroupsState.ts#L125">packages/actor-query-operation-group/lib/GroupsState.ts:125</a></li>
+								</ul>
+							</aside>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
@@ -244,7 +331,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/94fbf59/packages/actor-query-operation-group/lib/GroupsState.ts#L137">packages/actor-query-operation-group/lib/GroupsState.ts:137</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/987aa0a/packages/actor-query-operation-group/lib/GroupsState.ts#L190">packages/actor-query-operation-group/lib/GroupsState.ts:190</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -257,6 +344,46 @@
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-private">
+					<a name="resultCheck" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> result<wbr>Check</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-private">
+						<li class="tsd-signature tsd-kind-icon">result<wbr>Check&lt;T&gt;<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/987aa0a/packages/actor-query-operation-group/lib/GroupsState.ts#L162">packages/actor-query-operation-group/lib/GroupsState.ts:162</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-type-parameters-title">Type parameters</h4>
+							<ul class="tsd-type-parameters">
+								<li>
+									<h4>T</h4>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-private">
+					<a name="subtractWaitCounterAndCollect" class="tsd-anchor"></a>
+					<h3><span class="tsd-flag ts-flagPrivate">Private</span> subtract<wbr>Wait<wbr>Counter<wbr>And<wbr>Collect</h3>
+					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-private">
+						<li class="tsd-signature tsd-kind-icon">subtract<wbr>Wait<wbr>Counter<wbr>And<wbr>Collect<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/987aa0a/packages/actor-query-operation-group/lib/GroupsState.ts#L119">packages/actor-query-operation-group/lib/GroupsState.ts:119</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -298,6 +425,18 @@
 									<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
 										<a href="actor_query_operation_group.GroupsState.html#groups" class="tsd-kind-icon">groups</a>
 									</li>
+									<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
+										<a href="actor_query_operation_group.GroupsState.html#groupsInitializer" class="tsd-kind-icon">groups<wbr>Initializer</a>
+									</li>
+									<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
+										<a href="actor_query_operation_group.GroupsState.html#resultHasBeenCalled" class="tsd-kind-icon">result<wbr>Has<wbr>Been<wbr>Called</a>
+									</li>
+									<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
+										<a href="actor_query_operation_group.GroupsState.html#waitCounter" class="tsd-kind-icon">wait<wbr>Counter</a>
+									</li>
+									<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-private">
+										<a href="actor_query_operation_group.GroupsState.html#waitResolver" class="tsd-kind-icon">wait<wbr>Resolver</a>
+									</li>
 									<li class=" tsd-kind-method tsd-parent-kind-class">
 										<a href="actor_query_operation_group.GroupsState.html#collectResults" class="tsd-kind-icon">collect<wbr>Results</a>
 									</li>
@@ -305,7 +444,16 @@
 										<a href="actor_query_operation_group.GroupsState.html#consumeBindings" class="tsd-kind-icon">consume<wbr>Bindings</a>
 									</li>
 									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
+										<a href="actor_query_operation_group.GroupsState.html#handleResultCollection" class="tsd-kind-icon">handle<wbr>Result<wbr>Collection</a>
+									</li>
+									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
 										<a href="actor_query_operation_group.GroupsState.html#hashBindings" class="tsd-kind-icon">hash<wbr>Bindings</a>
+									</li>
+									<li class=" tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-private">
+										<a href="actor_query_operation_group.GroupsState.html#resultCheck" class="tsd-kind-icon">result<wbr>Check</a>
+									</li>
+									<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-private">
+										<a href="actor_query_operation_group.GroupsState.html#subtractWaitCounterAndCollect" class="tsd-kind-icon">subtract<wbr>Wait<wbr>Counter<wbr>And<wbr>Collect</a>
 									</li>
 								</ul>
 							</li>
