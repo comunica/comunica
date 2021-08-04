@@ -1,55 +1,52 @@
-import {Record} from "immutable";
+import type { IActionRdfMetadataAggregate } from '@comunica/bus-rdf-metadata-aggregate';
+import type { Record } from 'immutable';
 
 export const mockedMediatorAgg = {
-    mediate(action: any) {
+  mediate(action: IActionRdfMetadataAggregate) {
+    const { metadata, subMetadata } = action;
+    let newTotalItems = 0;
+    const isEmptyRecord = (r: Record<string, any>) => Object.keys(r).length === 0;
+    const hasTotalItems = (r: Record<string, any>) => r && r.totalItems !== undefined;
+    let resultRecord = {};
 
-        const {metadata, subMetadata} = action
+    if (isEmptyRecord(metadata))
+    { newTotalItems = Number.POSITIVE_INFINITY; }
+    else if (!subMetadata) {
+      // Submetadata not defined
+      resultRecord = metadata;
+    } else {
+      // Submetadata IS defined
+      const metadataHasTotalItems = hasTotalItems(metadata);
+      const subMetadataHasTotalItems = hasTotalItems(subMetadata);
 
-        let newTotalItems: number = 0
-        const isEmptyRecord = (r: Record<string, any>) => Object.keys(r).length === 0
-        const hasTotalItems = (r: Record<string, any>) => r.totalItems !== undefined
-        let resultRecord = {}
-
-        if (!subMetadata) {
-            // submetadata not defined
-            resultRecord = metadata
-        } else {
-            // submetadata IS defined
-            const metadataHasTotalItems = hasTotalItems(metadata)
-            const subMetadataHasTotalItems = hasTotalItems(subMetadata)
-
-
-            if (metadataHasTotalItems && subMetadataHasTotalItems) {
-                // metadata has total items & submetadata has total items
-                newTotalItems = metadata.totalItems + subMetadata.totalItems
-            } else if (!metadataHasTotalItems && !subMetadataHasTotalItems) {
-                // neither metadata or submetadata has totalItems
-                newTotalItems = Number.POSITIVE_INFINITY
-            } else if (!metadataHasTotalItems && subMetadata) {
-                // metadata does not have total items
-                newTotalItems = subMetadata.totalItems
-
-            } else {
-                if (isEmptyRecord(subMetadata)) {
-                    newTotalItems = Number.POSITIVE_INFINITY;
-                } else {
-                    throw  Error('CASE NOT COVERED YET')
-                }
-            }
-        }
-
-        resultRecord = {
-            ...subMetadata,
-            ...metadata,
-            totalItems: newTotalItems
-        }
-
-        return Promise.resolve(
-            {
-                aggregatedMetadata: {
-                    ...resultRecord
-                }
-            }
-        )
+      if (metadataHasTotalItems && subMetadataHasTotalItems) {
+        // Metadata has total items & submetadata has total items
+        newTotalItems = metadata.totalItems + subMetadata.totalItems;
+      } else if (!metadataHasTotalItems && !subMetadataHasTotalItems) {
+        // Neither metadata or submetadata has totalItems
+        newTotalItems = Number.POSITIVE_INFINITY;
+      } else if (!metadataHasTotalItems && subMetadata) {
+        // Metadata does not have total items
+        newTotalItems = subMetadata.totalItems;
+      } else if (isEmptyRecord(subMetadata)) {
+        newTotalItems = Number.POSITIVE_INFINITY;
+      } else {
+        throw new Error('CASE NOT COVERED YET');
+      }
     }
-}
+
+    resultRecord = {
+      ...subMetadata,
+      ...metadata,
+      totalItems: newTotalItems,
+    };
+
+    return Promise.resolve(
+      {
+        aggregatedMetadata: {
+          ...resultRecord,
+        },
+      },
+    );
+  },
+};

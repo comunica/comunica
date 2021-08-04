@@ -1,10 +1,9 @@
-import type { IActionRdfResolveQuadPattern,
-  IActorRdfResolveQuadPatternOutput, IDataSource, IQuadSource } from '@comunica/bus-rdf-resolve-quad-pattern';
-
 import type {
   IActionRdfMetadataAggregate,
-  IActorRdfMetadataAggregateOutput
+  IActorRdfMetadataAggregateOutput,
 } from '@comunica/bus-rdf-metadata-aggregate';
+import type { IActionRdfResolveQuadPattern,
+  IActorRdfResolveQuadPatternOutput, IDataSource, IQuadSource } from '@comunica/bus-rdf-resolve-quad-pattern';
 
 import {
   ActorRdfResolveQuadPatternSource,
@@ -25,8 +24,7 @@ export class ActorRdfResolveQuadPatternFederated extends ActorRdfResolveQuadPatt
 
   protected readonly emptyPatterns: Map<IDataSource, RDF.Quad[]> = new Map();
 
-
-  public readonly mediatorRdfMetadataAggregate:  Mediator<Actor<IActionRdfMetadataAggregate, IActorTest,
+  public readonly mediatorRdfMetadataAggregate: Mediator<Actor<IActionRdfMetadataAggregate, IActorTest,
   IActorRdfMetadataAggregateOutput>, IActionRdfMetadataAggregate, IActorTest, IActorRdfMetadataAggregateOutput>;
 
   public constructor(args: IActorRdfResolveQuadPatternFederatedArgs) {
@@ -47,7 +45,7 @@ export class ActorRdfResolveQuadPatternFederated extends ActorRdfResolveQuadPatt
       context,
       this.emptyPatterns,
       this.skipEmptyPatterns,
-      this.mediatorRdfMetadataAggregate
+      this.mediatorRdfMetadataAggregate,
     );
   }
 }
@@ -58,7 +56,7 @@ export interface IActorRdfResolveQuadPatternFederatedArgs
   IActorRdfResolveQuadPatternOutput>, IActionRdfResolveQuadPattern, IActorTest, IActorRdfResolveQuadPatternOutput>;
   skipEmptyPatterns?: boolean;
 
-  mediatorRdfMetadataAggregate:  Mediator<Actor<IActionRdfMetadataAggregate, IActorTest,
+  mediatorRdfMetadataAggregate: Mediator<Actor<IActionRdfMetadataAggregate, IActorTest,
   IActorRdfMetadataAggregateOutput>, IActionRdfMetadataAggregate, IActorTest, IActorRdfMetadataAggregateOutput>;
 
 }
