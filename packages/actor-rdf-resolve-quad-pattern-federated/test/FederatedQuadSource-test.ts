@@ -7,7 +7,7 @@ import type * as RDF from 'rdf-js';
 
 import Factory from 'sparqlalgebrajs/lib/factory';
 import { FederatedQuadSource } from '../lib/FederatedQuadSource';
-import { mockedMediatorAgg } from './MediatorRdfMetadataAggregateMock';
+import { mockedMediatorAgg } from './__mocks__/MediatorRdfMetadataAggregateMock';
 
 const arrayifyStream = require('arrayify-stream');
 const squad = require('rdf-quad');
