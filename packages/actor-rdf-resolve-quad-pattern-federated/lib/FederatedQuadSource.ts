@@ -192,13 +192,11 @@ export class FederatedQuadSource implements IQuadSource {
   }
 
   public match(subject: RDF.Term, predicate: RDF.Term, object: RDF.Term, graph: RDF.Term): AsyncIterator<RDF.Quad> {
-    // Counters for our metadata
-    const metadata: Record<string, any> = { totalItems: 0 };
-
     const collectedSourceMetadata: Record<string, any>[] = [];
     let nMetadataObjects = 0;
     let nMetadataObjectsReduced = 0;
     type IReducer = (action: IActionRdfMetadataAggregate) => Promise<Record<string, any>>;
+    //
     const emitFinalMetadata = (): void => {
       const finalMetadata = collectedSourceMetadata.pop();
       it.setProperty('metadata', finalMetadata);
@@ -257,6 +255,7 @@ export class FederatedQuadSource implements IQuadSource {
       const metadataIndicatesEmpty = outputMetadata !== undefined &&
             outputMetadata.totalItems !== undefined &&
             outputMetadata.totalItems === 0;
+
       if (metadataIndicatesEmpty) {
         this.checkPushEmptyPattern(undefined, source, pattern);
       }
@@ -287,7 +286,8 @@ export class FederatedQuadSource implements IQuadSource {
 
     // If we have 0 sources, immediately emit metadata
     if (this.sources.length === 0) {
-      it.setProperty('metadata', metadata);
+      collectedSourceMetadata.push({ totalItems: 0 });
+      emitFinalMetadata();
     }
 
     return it;
