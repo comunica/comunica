@@ -1,0 +1,12 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
+      "caruhs": "npmd:@comunica/actor-rdf-update-hypermedia-sparql/",
+      "files-caruhs": "caruhs:^1.0.0/",
+
+      "ActorRdfUpdateHypermediaSparql": "caruhs:Actor/RdfUpdateHypermedia/Sparql"
+    }
+  ]
+}

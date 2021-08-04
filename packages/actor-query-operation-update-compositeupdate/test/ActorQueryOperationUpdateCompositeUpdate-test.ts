@@ -47,22 +47,24 @@ describe('ActorQueryOperationUpdateCompositeUpdate', () => {
     });
 
     it('should test on compositeupdate', () => {
-      const op = { operation: { type: 'compositeupdate' }};
+      const op: any = { operation: { type: 'compositeupdate' }};
       return expect(actor.test(op)).resolves.toBeTruthy();
     });
 
     it('should not test on readOnly', () => {
-      const op = { operation: { type: 'compositeupdate' }, context: ActionContext({ [KEY_CONTEXT_READONLY]: true }) };
+      const op: any = {
+        operation: { type: 'compositeupdate' }, context: ActionContext({ [KEY_CONTEXT_READONLY]: true }),
+      };
       return expect(actor.test(op)).rejects.toThrowError(`Attempted a write operation in read-only mode`);
     });
 
     it('should not test on non-compositeupdate', () => {
-      const op = { operation: { type: 'some-other-type' }};
+      const op: any = { operation: { type: 'some-other-type' }};
       return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
     it('should run without updates', async() => {
-      const op = {
+      const op: any = {
         operation: {
           type: 'compositeupdate',
           updates: [],
@@ -74,7 +76,7 @@ describe('ActorQueryOperationUpdateCompositeUpdate', () => {
     });
 
     it('should run with one operation', async() => {
-      const op = {
+      const op: any = {
         operation: {
           type: 'compositeupdate',
           updates: [
@@ -88,7 +90,7 @@ describe('ActorQueryOperationUpdateCompositeUpdate', () => {
     });
 
     it('should run with one three operations', async() => {
-      const op = {
+      const op: any = {
         operation: {
           type: 'compositeupdate',
           updates: [

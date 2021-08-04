@@ -1,0 +1,9 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-metadata-extract-allow-http-methods/^1.0.0/components/context.jsonld",
+  "@id": "npmd:@comunica/actor-rdf-metadata-extract-allow-http-methods",
+  "@type": "Module",
+  "requireName": "@comunica/actor-rdf-metadata-extract-allow-http-methods",
+  "import": [
+    "files-carmeahm:components/Actor/RdfMetadataExtract/AllowHttpMethods.jsonld"
+  ]
+}

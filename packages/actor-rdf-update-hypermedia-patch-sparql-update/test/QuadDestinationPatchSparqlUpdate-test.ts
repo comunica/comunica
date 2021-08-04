@@ -1,19 +1,18 @@
 import { ActorHttp } from '@comunica/bus-http';
 import { KeysRdfUpdateQuads } from '@comunica/context-entries';
 import { ActionContext } from '@comunica/core';
+import { ArrayIterator } from 'asynciterator';
 import { Headers } from 'cross-fetch';
 import { DataFactory } from 'rdf-data-factory';
 import { QuadDestinationPatchSparqlUpdate } from '../lib/QuadDestinationPatchSparqlUpdate';
 
 const DF = new DataFactory();
 const stringifyStream = require('stream-to-string');
-const streamifyString = require('streamify-string');
 
 describe('QuadDestinationPatchSparqlUpdate', () => {
   let context: ActionContext;
   let url: string;
   let mediatorHttp: any;
-  let mediatorRdfSerialize: any;
   let destination: QuadDestinationPatchSparqlUpdate;
 
   beforeEach(() => {
@@ -22,26 +21,17 @@ describe('QuadDestinationPatchSparqlUpdate', () => {
         status: 200,
       })),
     };
-    mediatorRdfSerialize = {
-      mediate: jest.fn(() => ({
-        handle: {
-          data: streamifyString(`TRIPLES`),
-        },
-      })),
-    };
     context = ActionContext({ [KeysRdfUpdateQuads.destination]: 'abc' });
     url = 'abc';
-    destination = new QuadDestinationPatchSparqlUpdate(url, context, mediatorHttp, mediatorRdfSerialize);
+    destination = new QuadDestinationPatchSparqlUpdate(url, context, mediatorHttp);
   });
 
   describe('insert', () => {
     it('should handle a valid insert', async() => {
-      await destination.insert(<any> 'QUADS');
-
-      expect(mediatorRdfSerialize.mediate).toHaveBeenCalledWith({
-        handle: { quadStream: 'QUADS' },
-        handleMediaType: 'text/turtle',
-      });
+      await destination.insert(new ArrayIterator([
+        DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:p1'), DF.namedNode('ex:o1')),
+        DF.quad(DF.namedNode('ex:s2'), DF.namedNode('ex:p2'), DF.namedNode('ex:o2'), DF.namedNode('ex:g2')),
+      ]));
 
       expect(mediatorHttp.mediate).toHaveBeenCalledWith({
         context,
@@ -53,12 +43,15 @@ describe('QuadDestinationPatchSparqlUpdate', () => {
         input: 'abc',
       });
       expect(await stringifyStream(ActorHttp.toNodeReadable(mediatorHttp.mediate.mock.calls[0][0].init.body)))
-        .toEqual('INSERT DATA {TRIPLES}');
+        .toEqual(`INSERT DATA {
+  <ex:s1> <ex:p1> <ex:o1> .
+  GRAPH <ex:g2> { <ex:s2> <ex:p2> <ex:o2> . }
+}`);
     });
 
     it('should throw on a server error', async() => {
       mediatorHttp.mediate = () => ({ status: 400 });
-      await expect(destination.insert(<any> 'QUADS')).rejects
+      await expect(destination.insert(new ArrayIterator([]))).rejects
         .toThrow('Could not retrieve abc (400: unknown error)');
     });
 
@@ -68,19 +61,17 @@ describe('QuadDestinationPatchSparqlUpdate', () => {
         status: 200,
         body: { cancel },
       });
-      await destination.insert(<any> 'QUADS');
+      await destination.insert(new ArrayIterator([]));
       expect(cancel).toHaveBeenCalled();
     });
   });
 
   describe('delete', () => {
     it('should handle a valid delete', async() => {
-      await destination.delete(<any> 'QUADS');
-
-      expect(mediatorRdfSerialize.mediate).toHaveBeenCalledWith({
-        handle: { quadStream: 'QUADS' },
-        handleMediaType: 'text/turtle',
-      });
+      await destination.delete(new ArrayIterator([
+        DF.quad(DF.namedNode('ex:s1'), DF.namedNode('ex:p1'), DF.namedNode('ex:o1')),
+        DF.quad(DF.namedNode('ex:s2'), DF.namedNode('ex:p2'), DF.namedNode('ex:o2'), DF.namedNode('ex:g2')),
+      ]));
 
       expect(mediatorHttp.mediate).toHaveBeenCalledWith({
         context,
@@ -92,7 +83,10 @@ describe('QuadDestinationPatchSparqlUpdate', () => {
         input: 'abc',
       });
       expect(await stringifyStream(ActorHttp.toNodeReadable(mediatorHttp.mediate.mock.calls[0][0].init.body)))
-        .toEqual('DELETE DATA {TRIPLES}');
+        .toEqual(`DELETE DATA {
+  <ex:s1> <ex:p1> <ex:o1> .
+  GRAPH <ex:g2> { <ex:s2> <ex:p2> <ex:o2> . }
+}`);
     });
   });
 

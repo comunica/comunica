@@ -8,10 +8,9 @@ jobs:
       matrix:
         os: [ubuntu-latest]
         node-version:
-          - 10.x
           - 12.x
           - 14.x
-          - 15.x
+          - 16.x
     steps:
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v2
@@ -155,7 +154,7 @@ jobs:
         run: yarn run doc
       - name: Deploy TSDoc to GitHub Pages
         if: startsWith(github.ref, 'refs/heads/master')
-        uses: JamesIves/github-pages-deploy-action@4.1.1
+        uses: JamesIves/github-pages-deploy-action@4.1.4
         with:
           branch: gh-pages
           folder: documentation

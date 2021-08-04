@@ -6,10 +6,14 @@
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-update-quads/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-update-quads-hypermedia/^1.0.0/components/context.jsonld",
 
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-metadata-extract-allow-http-methods/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-metadata-extract-put-accepted/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-metadata-extract-patch-sparql-update/^1.0.0/components/context.jsonld",
 
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/bus-rdf-update-hypermedia/^1.0.0/components/context.jsonld",
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-update-hypermedia-patch-sparql-update/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-update-hypermedia-put-ldp/^1.0.0/components/context.jsonld",
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-rdf-update-hypermedia-sparql/^1.0.0/components/context.jsonld",
 
     "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/mediator-race/^1.0.0/components/context.jsonld"
   ],
@@ -43,9 +47,36 @@
       "@type": "ActorRdfUpdateHypermediaPatchSparqlUpdate",
       "caruhpsu:Actor/RdfUpdateHypermedia/PatchSparqlUpdate#mediatorHttp": {
         "@id": "config-sets:http.json#mediatorHttp"
+      }
+    },
+
+    {
+      "@id": "config-sets:resolve-hypermedia.json#myRdfMetadataExtractAllowHttpMethods",
+      "@type": "ActorRdfMetadataExtractAllowHttpMethods"
+    },
+    {
+      "@id": "config-sets:resolve-hypermedia.json#myRdfMetadataExtractPutAccepted",
+      "@type": "ActorRdfMetadataExtractPutAccepted"
+    },
+    {
+      "@id": "config-sets:rdf-update-rdfjs.json#myRdfUpdateHypermediaPutLdp",
+      "@type": "ActorRdfUpdateHypermediaPutLdp",
+      "caruhpl:Actor/RdfUpdateHypermedia/PutLdp#mediatorHttp": {
+        "@id": "config-sets:http.json#mediatorHttp"
       },
-      "caruhpsu:Actor/RdfUpdateHypermedia/PatchSparqlUpdate#mediatorRdfSerialize": {
+      "caruhpl:Actor/RdfUpdateHypermedia/PutLdp#mediatorRdfSerializeMediatypes": {
+        "@id": "config-sets:sparql-serializers.json#mediatorRdfSerializeMediatypes"
+      },
+      "caruhpl:Actor/RdfUpdateHypermedia/PutLdp#mediatorRdfSerialize": {
         "@id": "config-sets:sparql-serializers.json#mediatorRdfSerialize"
+      }
+    },
+
+    {
+      "@id": "config-sets:rdf-update-rdfjs.json#myRdfUpdateHypermediaSparql",
+      "@type": "ActorRdfUpdateHypermediaSparql",
+      "caruhs:Actor/RdfUpdateHypermedia/Sparql#mediatorHttp": {
+        "@id": "config-sets:http.json#mediatorHttp"
       }
     }
   ]

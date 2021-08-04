@@ -6,7 +6,10 @@ import { ActorHttpNodeFetch } from '../lib/ActorHttpNodeFetch';
 
 // Mock fetch
 (<any> global).fetch = (input: any, init: any) => {
-  return Promise.resolve({ status: input.url === 'https://www.google.com/' ? 200 : 404 });
+  return Promise.resolve({
+    status: input.url === 'https://www.google.com/' ? 200 : 404,
+    ...input.url === 'NOBODY' ? {} : { body: { destroy: jest.fn() }},
+  });
 };
 
 describe('ActorHttpNodeFetch', () => {
@@ -61,6 +64,11 @@ describe('ActorHttpNodeFetch', () => {
     it('should run on an existing URI', () => {
       return expect(actor.run({ input: <Request> { url: 'https://www.google.com/' }})).resolves
         .toMatchObject({ status: 200 });
+    });
+
+    it('should run without body response', () => {
+      return expect(actor.run({ input: <Request> { url: 'NOBODY' }})).resolves
+        .toMatchObject({ status: 404 });
     });
 
     it('should run on an non-existing URI', () => {
@@ -161,7 +169,7 @@ describe('ActorHttpNodeFetch', () => {
 
     it('should run with a logger', async() => {
       const logger = new LoggerVoid();
-      const spy = spyOn(logger, 'info');
+      const spy = jest.spyOn(logger, 'info');
       await actor.run({
         input: <Request> { url: 'https://www.google.com/' },
         init: { headers: new Headers({ a: 'b' }) },
@@ -176,7 +184,7 @@ describe('ActorHttpNodeFetch', () => {
 
     it('should run with a logger without init', async() => {
       const logger = new LoggerVoid();
-      const spy = spyOn(logger, 'info');
+      const spy = jest.spyOn(logger, 'info');
       await actor.run({
         input: <Request> { url: 'https://www.google.com/' },
         context: ActionContext({ [KeysCore.log]: logger }),
@@ -190,7 +198,7 @@ describe('ActorHttpNodeFetch', () => {
 
     it('should run with a logger with another another method', async() => {
       const logger = new LoggerVoid();
-      const spy = spyOn(logger, 'info');
+      const spy = jest.spyOn(logger, 'info');
       await actor.run({
         input: <Request> { url: 'https://www.google.com/' },
         init: { headers: new Headers({ a: 'b' }), method: 'POST' },
@@ -221,6 +229,17 @@ describe('ActorHttpNodeFetch', () => {
       });
       expect(spy).toHaveBeenCalledWith({ url: 'https://www.google.com/' },
         { headers: new Headers({ 'user-agent': (<any> actor).userAgent }) });
+    });
+
+    it('should run and expose body.cancel', async() => {
+      const response = await actor.run({ input: <Request> { url: 'https://www.google.com/' }});
+      expect((<any> response.body).destroy).not.toHaveBeenCalled();
+      expect(response.body!.cancel).toBeTruthy();
+
+      const closeError = new Error('node-fetch close');
+      await response.body!.cancel(closeError);
+
+      expect((<any> response.body).destroy).toHaveBeenCalledWith(closeError);
     });
   });
 });

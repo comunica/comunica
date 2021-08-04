@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-rdf-resolve-hypermedia-sparql",
-  "version": "1.21.1",
+  "version": "1.21.2",
   "description": "A sparql rdf-resolve-hypermedia actor",
   "lsd:module": true,
   "main": "index.js",
@@ -36,11 +36,11 @@
     "@comunica/bus-rdf-resolve-quad-pattern": "^1.21.1",
     "@comunica/types": "^1.21.1",
     "@types/rdf-js": "*",
-    "asynciterator": "^3.1.0",
-    "fetch-sparql-endpoint": "^2.0.0",
+    "asynciterator": "^3.2.0",
+    "fetch-sparql-endpoint": "^2.1.1",
     "rdf-data-factory": "^1.0.3",
     "rdf-terms": "^1.6.2",
-    "sparqlalgebrajs": "^2.5.5"
+    "sparqlalgebrajs": "^3.0.0"
   },
   "peerDependencies": {
     "@comunica/bus-rdf-resolve-hypermedia": "^1.8.0",

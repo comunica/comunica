@@ -52,6 +52,10 @@ export class ActorQueryOperationLeftJoinNestedLoop extends ActorQueryOperationTy
           const result = await evaluator.evaluateAsEBV(joinedBindings);
           push({ joinedBindings, result });
         } catch (error: unknown) {
+          // We ignore all Expression errors.
+          // Other errors (likely programming mistakes) are still propagated.
+          // Left Join is defined in terms of Filter (https://www.w3.org/TR/sparql11-query/#defn_algJoin),
+          // and Filter requires this (https://www.w3.org/TR/sparql11-query/#expressions).
           if (!isExpressionError(<Error> error)) {
             bindingsStream.emit('error', error);
           }

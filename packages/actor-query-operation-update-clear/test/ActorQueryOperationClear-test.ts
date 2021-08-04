@@ -31,22 +31,22 @@ describe('ActorQueryOperationClear', () => {
     });
 
     it('should test on clear', () => {
-      const op = { operation: { type: 'clear' }};
+      const op: any = { operation: { type: 'clear' }};
       return expect(actor.test(op)).resolves.toBeTruthy();
     });
 
     it('should not test on readOnly', () => {
-      const op = { operation: { type: 'clear' }, context: ActionContext({ [KEY_CONTEXT_READONLY]: true }) };
+      const op: any = { operation: { type: 'clear' }, context: ActionContext({ [KEY_CONTEXT_READONLY]: true }) };
       return expect(actor.test(op)).rejects.toThrowError(`Attempted a write operation in read-only mode`);
     });
 
     it('should not test on non-clear', () => {
-      const op = { operation: { type: 'some-other-type' }};
+      const op: any = { operation: { type: 'some-other-type' }};
       return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
     it('should run for default graph', async() => {
-      const op = {
+      const op: any = {
         operation: {
           type: 'clear',
           source: 'DEFAULT',
@@ -63,7 +63,7 @@ describe('ActorQueryOperationClear', () => {
     });
 
     it('should run for default graph in silent mode', async() => {
-      const op = {
+      const op: any = {
         operation: {
           type: 'clear',
           source: 'DEFAULT',
@@ -81,7 +81,7 @@ describe('ActorQueryOperationClear', () => {
     });
 
     it('should run for all graphs', async() => {
-      const op = {
+      const op: any = {
         operation: {
           type: 'clear',
           source: 'ALL',
@@ -98,7 +98,7 @@ describe('ActorQueryOperationClear', () => {
     });
 
     it('should run for all named graphs', async() => {
-      const op = {
+      const op: any = {
         operation: {
           type: 'clear',
           source: 'NAMED',
@@ -115,7 +115,7 @@ describe('ActorQueryOperationClear', () => {
     });
 
     it('should run for a named graph', async() => {
-      const op = {
+      const op: any = {
         operation: {
           type: 'clear',
           source: DF.namedNode('g1'),

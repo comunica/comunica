@@ -40,7 +40,7 @@ jest.mock('http', () => {
 jest.mock('fs', () => {
   return fs;
 });
-jest.useFakeTimers();
+jest.useFakeTimers('legacy');
 // eslint-disable-next-line import/order
 import { mocked } from 'ts-jest/utils';
 

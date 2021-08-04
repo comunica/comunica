@@ -94,9 +94,15 @@ export default class Requester {
 
     // Execute the request
     if (settings.body) {
-      settings.body.blob()
-        .then((blob: any) => request.send(blob))
-        .catch((error: Error) => requestProxy.emit('error', error));
+      if (settings.body instanceof URLSearchParams) {
+        request.send(settings.body.toString());
+      } else if (typeof settings.body === 'string') {
+        request.send(settings.body);
+      } else {
+        settings.body.blob()
+          .then((blob: any) => request.send(blob))
+          .catch((error: Error) => requestProxy.emit('error', error));
+      }
     } else {
       request.send();
     }

@@ -1,0 +1,9 @@
+{
+  "@context": "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/actor-query-operation-nop/^1.0.0/components/context.jsonld",
+  "@id": "npmd:@comunica/actor-query-operation-nop",
+  "@type": "Module",
+  "requireName": "@comunica/actor-query-operation-nop",
+  "import": [
+    "files-caqon:components/Actor/QueryOperation/Nop.jsonld"
+  ]
+}

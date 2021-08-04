@@ -148,7 +148,7 @@ export function materializeOperation(operation: Algebra.Operation, bindings: Bin
       // Otherwise, we just filter out the bound variables.
       if (strictTargetVariables) {
         for (const variable of op.variables) {
-          if (bindings.has(termToString(variable))) {
+          if (variable.termType !== 'Wildcard' && bindings.has(termToString(variable))) {
             throw new Error(`Tried to bind variable ${termToString(variable)} in a SELECT operator.`);
           }
         }
@@ -157,7 +157,8 @@ export function materializeOperation(operation: Algebra.Operation, bindings: Bin
           result: op,
         };
       }
-      const variables = op.variables.filter(variable => !bindings.has(termToString(variable)));
+      const variables = op.variables.filter(variable => variable.termType !== 'Wildcard' &&
+        !bindings.has(termToString(variable)));
       return {
         recurse: true,
         result: factory.createProject(

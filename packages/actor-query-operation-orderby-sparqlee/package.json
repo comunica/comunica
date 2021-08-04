@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-operation-orderby-sparqlee",
-  "version": "1.21.1",
+  "version": "1.21.2",
   "description": "A orderby-sparqlee query-operation actor",
   "lsd:module": true,
   "main": "index.js",
@@ -38,10 +38,10 @@
   "dependencies": {
     "@comunica/types": "^1.21.1",
     "@types/rdf-js": "*",
-    "asynciterator": "^3.1.0",
+    "asynciterator": "^3.2.0",
     "rdf-string": "^1.5.0",
-    "sparqlalgebrajs": "^2.5.5",
-    "sparqlee": "^1.6.2"
+    "sparqlalgebrajs": "^3.0.0",
+    "sparqlee": "^1.9.0"
   },
   "devDependencies": {
     "@comunica/actor-query-operation-filter-direct": "^1.21.1",

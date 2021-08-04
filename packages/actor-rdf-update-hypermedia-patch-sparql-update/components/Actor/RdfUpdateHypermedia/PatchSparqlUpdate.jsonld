@@ -17,12 +17,6 @@
           "comment": "The HTTP mediator",
           "required": true,
           "unique": true
-        },
-        {
-          "@id": "caruhpsu:Actor/RdfUpdateHypermedia/PatchSparqlUpdate#mediatorRdfSerialize",
-          "comment": "The RDF Serialize mediator for handling serialization",
-          "required": true,
-          "unique": true
         }
       ],
       "constructorArguments": [
@@ -33,10 +27,6 @@
             {
               "keyRaw": "mediatorHttp",
               "value": "caruhpsu:Actor/RdfUpdateHypermedia/PatchSparqlUpdate#mediatorHttp"
-            },
-            {
-              "keyRaw": "mediatorRdfSerialize",
-              "value": "caruhpsu:Actor/RdfUpdateHypermedia/PatchSparqlUpdate#mediatorRdfSerialize"
             }
           ]
         }

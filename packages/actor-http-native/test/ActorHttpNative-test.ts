@@ -4,6 +4,7 @@ import { ActorHttp } from '@comunica/bus-http';
 import { KeysCore, KeysHttp } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
 import { LoggerVoid } from '@comunica/logger-void';
+import { AbortController } from 'abort-controller';
 import { ActorHttpNative } from '../lib/ActorHttpNative';
 
 const arrayifyStream = require('arrayify-stream');
@@ -211,7 +212,7 @@ describe('ActorHttpNative', () => {
 
     it('should run with a logger', async() => {
       const logger = new LoggerVoid();
-      const spy = spyOn(logger, 'info');
+      const spy = jest.spyOn(logger, 'info');
       mockSetup({ statusCode: 200 });
       await actor.run({
         input: new Request('http://example.com', { headers: new Headers({ a: 'b' }) }),
@@ -244,6 +245,50 @@ describe('ActorHttpNative', () => {
         { input: new Request('http://example.com'), init: { body: new URLSearchParams(), method: 'POST' }},
       );
       expect(result).toMatchObject({ status: 200 });
+    });
+
+    it('should send the given string body via init', async() => {
+      mockSetup({ statusCode: 200 });
+      const result: any = await actor.run(
+        { input: new Request('http://example.com'), init: { body: 'my-body', method: 'POST' }},
+      );
+      expect(result).toMatchObject({ status: 200 });
+    });
+
+    it('should handle an abort controller signal that does nothing', () => {
+      mockSetup({ statusCode: 200 });
+      const abortController = new AbortController();
+      return expect(actor.run({
+        input: new Request('http://example.com'),
+        init: { signal: abortController.signal },
+      })).resolves.toMatchObject({ status: 200 });
+    });
+
+    it('should handle an abort controller signal that is aborted immediately', async() => {
+      mockSetup({ statusCode: 200 });
+      const abortController = new AbortController();
+      abortController.abort();
+      const response = await actor.run({
+        input: new Request('http://example.com'),
+        init: { signal: abortController.signal },
+      });
+      expect(response.status).toEqual(200);
+      expect((<any> response).body.destroy).toHaveBeenCalled();
+    });
+
+    it('should handle an abort controller signal that is aborted later', async() => {
+      mockSetup({ statusCode: 200 });
+      const abortController = new AbortController();
+      const response = await actor.run({
+        input: new Request('http://example.com'),
+        init: { signal: abortController.signal },
+      });
+      expect((<any> response).body.destroy).not.toHaveBeenCalled();
+      expect(response.status).toEqual(200);
+
+      abortController.abort();
+
+      expect((<any> response).body.destroy).toHaveBeenCalled();
     });
   });
 });

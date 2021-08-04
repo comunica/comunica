@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-query-operation-leftjoin-nestedloop",
-  "version": "1.21.1",
+  "version": "1.21.2",
   "description": "A leftjoin nestedloop query-operation actor",
   "lsd:module": true,
   "main": "index.js",
@@ -34,9 +34,9 @@
   ],
   "dependencies": {
     "@comunica/types": "^1.21.1",
-    "asynciterator": "^3.1.0",
-    "sparqlalgebrajs": "^2.5.5",
-    "sparqlee": "^1.6.2"
+    "asynciterator": "^3.2.0",
+    "sparqlalgebrajs": "^3.0.0",
+    "sparqlee": "^1.9.0"
   },
   "peerDependencies": {
     "@comunica/bus-query-operation": "^1.0.0",

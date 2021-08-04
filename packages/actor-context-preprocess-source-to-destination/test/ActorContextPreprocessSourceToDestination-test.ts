@@ -1,8 +1,6 @@
+import { KeysRdfResolveQuadPattern, KeysRdfUpdateQuads } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
-import {
-  ActorContextPreprocessSourceToDestination, KEY_CONTEXT_DESTINATION,
-  KEY_CONTEXT_SOURCES,
-} from '../lib/ActorContextPreprocessSourceToDestination';
+import { ActorContextPreprocessSourceToDestination } from '../lib/ActorContextPreprocessSourceToDestination';
 
 describe('ActorContextPreprocessSourceToDestination', () => {
   let bus: any;
@@ -35,11 +33,11 @@ describe('ActorContextPreprocessSourceToDestination', () => {
     it('should run on context with 0 sources', async() => {
       expect(await actor.run({
         context: ActionContext({
-          [KEY_CONTEXT_SOURCES]: [],
+          [KeysRdfResolveQuadPattern.sources]: [],
         }),
       })).toEqual({
         context: ActionContext({
-          [KEY_CONTEXT_SOURCES]: [],
+          [KeysRdfResolveQuadPattern.sources]: [],
         }),
       });
     });
@@ -47,11 +45,11 @@ describe('ActorContextPreprocessSourceToDestination', () => {
     it('should run on context with 2 sources', async() => {
       expect(await actor.run({
         context: ActionContext({
-          [KEY_CONTEXT_SOURCES]: [ 'a', 'b' ],
+          [KeysRdfResolveQuadPattern.sources]: [ 'a', 'b' ],
         }),
       })).toEqual({
         context: ActionContext({
-          [KEY_CONTEXT_SOURCES]: [ 'a', 'b' ],
+          [KeysRdfResolveQuadPattern.sources]: [ 'a', 'b' ],
         }),
       });
     });
@@ -59,12 +57,12 @@ describe('ActorContextPreprocessSourceToDestination', () => {
     it('should run on context with 1 source', async() => {
       expect(await actor.run({
         context: ActionContext({
-          [KEY_CONTEXT_SOURCES]: [ 'a' ],
+          [KeysRdfResolveQuadPattern.sources]: [ 'a' ],
         }),
       })).toEqual({
         context: ActionContext({
-          [KEY_CONTEXT_SOURCES]: [ 'a' ],
-          [KEY_CONTEXT_DESTINATION]: 'a',
+          [KeysRdfResolveQuadPattern.sources]: [ 'a' ],
+          [KeysRdfUpdateQuads.destination]: 'a',
         }),
       });
     });
@@ -72,13 +70,13 @@ describe('ActorContextPreprocessSourceToDestination', () => {
     it('should run on context with 1 source and a destination', async() => {
       expect(await actor.run({
         context: ActionContext({
-          [KEY_CONTEXT_SOURCES]: [ 'a' ],
-          [KEY_CONTEXT_DESTINATION]: 'existing',
+          [KeysRdfResolveQuadPattern.sources]: [ 'a' ],
+          [KeysRdfUpdateQuads.destination]: 'existing',
         }),
       })).toEqual({
         context: ActionContext({
-          [KEY_CONTEXT_SOURCES]: [ 'a' ],
-          [KEY_CONTEXT_DESTINATION]: 'existing',
+          [KeysRdfResolveQuadPattern.sources]: [ 'a' ],
+          [KeysRdfUpdateQuads.destination]: 'existing',
         }),
       });
     });

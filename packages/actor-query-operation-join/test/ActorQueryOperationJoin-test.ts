@@ -67,17 +67,17 @@ describe('ActorQueryOperationJoin', () => {
     });
 
     it('should test on join', () => {
-      const op = { operation: { type: 'join' }};
+      const op: any = { operation: { type: 'join' }};
       return expect(actor.test(op)).resolves.toBeTruthy();
     });
 
     it('should not test on non-join', () => {
-      const op = { operation: { type: 'some-other-type' }};
+      const op: any = { operation: { type: 'some-other-type' }};
       return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
     it('should run', () => {
-      const op = { operation: { type: 'join' }};
+      const op: any = { operation: { type: 'join' }};
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
         expect(output.variables).toEqual([ 'a', 'b' ]);
         expect(output.type).toEqual('bindings');

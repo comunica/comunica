@@ -194,17 +194,17 @@ describe('ActorQueryOperationUnion', () => {
     });
 
     it('should test on union', () => {
-      const op = { operation: { type: 'union', left, right }};
+      const op: any = { operation: { type: 'union', left, right }};
       return expect(actor.test(op)).resolves.toBeTruthy();
     });
 
     it('should not test on non-union', () => {
-      const op = { operation: { type: 'some-other-type', left, right }};
+      const op: any = { operation: { type: 'some-other-type', left, right }};
       return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
     it('should run', () => {
-      const op = { operation: { type: 'union', left, right }};
+      const op: any = { operation: { type: 'union', left, right }};
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
         expect(await (<any> output).metadata()).toEqual({ totalItems: 5 });
         expect(output.variables).toEqual([ 'a', 'b' ]);
@@ -221,7 +221,7 @@ describe('ActorQueryOperationUnion', () => {
     });
 
     it('should run with a left stream without metadata', () => {
-      const op = { operation: { type: 'union', left: leftNoMeta, right }};
+      const op: any = { operation: { type: 'union', left: leftNoMeta, right }};
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
         expect(output.metadata).toBeFalsy();
         expect(output.variables).toEqual([ 'a', 'b' ]);
@@ -238,7 +238,7 @@ describe('ActorQueryOperationUnion', () => {
     });
 
     it('should run with a right stream with undefs', () => {
-      const op = { operation: { type: 'union', left, right: rightUndef }};
+      const op: any = { operation: { type: 'union', left, right: rightUndef }};
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
         expect(await (<any> output).metadata()).toEqual({ totalItems: 5 });
         expect(output.variables).toEqual([ 'a', 'b' ]);

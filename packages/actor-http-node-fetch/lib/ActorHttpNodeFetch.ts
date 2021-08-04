@@ -1,3 +1,4 @@
+import type { Readable } from 'stream';
 import type { IActionHttp, IActorHttpOutput } from '@comunica/bus-http';
 import { ActorHttp } from '@comunica/bus-http';
 import { KeysHttp } from '@comunica/context-entries';
@@ -52,6 +53,13 @@ export class ActorHttpNodeFetch extends ActorHttp {
     return fetch(action.input, {
       ...action.init,
       ...action.context && action.context.get(KeysHttp.includeCredentials) ? { credentials: 'include' } : {},
+    }).then(response => {
+      // Node-fetch does not support body.cancel, while it is mandatory according to the fetch and readablestream api.
+      // If it doesn't exist, we monkey-patch it.
+      if (response.body && !response.body.cancel) {
+        response.body.cancel = async(error?: Error) => (<Readable> <any> response.body).destroy(error);
+      }
+      return response;
     });
   }
 }

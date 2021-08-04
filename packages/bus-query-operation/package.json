@@ -35,10 +35,10 @@
     "@comunica/data-factory": "^1.21.1",
     "@comunica/types": "^1.21.1",
     "@types/rdf-js": "*",
-    "asynciterator": "^3.1.0",
+    "asynciterator": "^3.2.0",
     "immutable": "^3.8.2",
     "rdf-string": "^1.5.0",
-    "sparqlalgebrajs": "^2.5.5"
+    "sparqlalgebrajs": "^3.0.0"
   },
   "peerDependencies": {
     "@comunica/core": "^1.0.0"

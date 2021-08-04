@@ -1,3 +1,4 @@
+import { Readable } from 'stream';
 import type { IActionHttp, IActorHttpOutput } from '@comunica/bus-http';
 import { ActorHttp } from '@comunica/bus-http';
 import type { IActionRdfDereference,
@@ -19,6 +20,7 @@ import type {
 import type { Actor, IActorTest, Mediator } from '@comunica/core';
 import { Headers } from 'cross-fetch';
 import { resolve as resolveRelative } from 'relative-to-absolute-iri';
+import * as stringifyStream from 'stream-to-string';
 
 /**
  * An actor that listens on the 'rdf-dereference' bus.
@@ -57,6 +59,8 @@ export abstract class ActorRdfDereferenceHttpParseBase extends ActorRdfDereferen
   }
 
   public async run(action: IActionRdfDereference): Promise<IActorRdfDereferenceOutput> {
+    let exists = true;
+
     // Define accept header based on available media types.
     const { mediaTypes } = await this.mediatorRdfParseMediatypes.mediate(
       { context: action.context, mediaTypes: true },
@@ -92,18 +96,29 @@ export abstract class ActorRdfDereferenceHttpParseBase extends ActorRdfDereferen
 
     // Only parse if retrieval was successful
     if (httpResponse.status !== 200) {
-      const error = new Error(`Could not retrieve ${action.url} (${httpResponse.status}: ${
-        httpResponse.statusText || 'unknown error'})`);
-      // Close the body if we have one, to avoid process to hang
+      exists = false;
+      // Consume the body, to avoid process to hang
+      let bodyString = 'empty response';
       if (httpResponse.body) {
-        await httpResponse.body.cancel();
+        const responseStream = ActorHttp.toNodeReadable(httpResponse.body);
+        bodyString = await stringifyStream(responseStream);
       }
-      return this.handleDereferenceError(action, error);
+      if (!action.acceptErrors) {
+        const error = new Error(`Could not retrieve ${action.url} (HTTP status ${httpResponse.status}):\n${bodyString}`);
+        return this.handleDereferenceError(action, error);
+      }
     }
 
-    // Wrap WhatWG readable stream into a Node.js readable stream
-    // If the body already is a Node.js stream (in the case of node-fetch), don't do explicit conversion.
-    const responseStream: NodeJS.ReadableStream = ActorHttp.toNodeReadable(httpResponse.body);
+    // Create Node quad response stream;
+    let responseStream: NodeJS.ReadableStream;
+    if (exists) {
+      // Wrap WhatWG readable stream into a Node.js readable stream
+      // If the body already is a Node.js stream (in the case of node-fetch), don't do explicit conversion.
+      responseStream = ActorHttp.toNodeReadable(httpResponse.body);
+    } else {
+      responseStream = new Readable();
+      (<Readable> responseStream).push(null);
+    }
 
     // Parse the resulting response
     const match: RegExpExecArray = ActorRdfDereferenceHttpParseBase.REGEX_MEDIATYPE
@@ -133,7 +148,7 @@ export abstract class ActorRdfDereferenceHttpParseBase extends ActorRdfDereferen
     const quads = this.handleDereferenceStreamErrors(action, parseOutput.quads);
 
     // Return the parsed quad stream and whether or not only triples are supported
-    return { url, quads, triples: parseOutput.triples, headers: outputHeaders };
+    return { url, quads, exists, triples: parseOutput.triples, headers: outputHeaders };
   }
 
   public mediaTypesToAcceptString(mediaTypes: Record<string, number>, maxLength: number): string {
@@ -141,7 +156,12 @@ export abstract class ActorRdfDereferenceHttpParseBase extends ActorRdfDereferen
     const parts: string[] = [];
     const sortedMediaTypes = Object.keys(mediaTypes)
       .map(mediaType => ({ mediaType, priority: mediaTypes[mediaType] }))
-      .sort((left, right) => right.priority - left.priority);
+      .sort((left, right) => {
+        if (right.priority === left.priority) {
+          return left.mediaType.localeCompare(right.mediaType);
+        }
+        return right.priority - left.priority;
+      });
     // Take into account the ',' characters joining each type
     const separatorLength = sortedMediaTypes.length - 1;
     let partsLength = separatorLength;

@@ -60,6 +60,22 @@ export enum KeysInitSparql {
    *                 This is required for certain SPARQL operations such as NOW().
    */
   queryTimestamp = '@comunica/actor-init-sparql:queryTimestamp',
+  /**
+   * @range {functionNamedNode: RDF.NamedNode) => ((args: RDF.Term[]) => Promise<RDF.Term>) | undefined}
+   * Extension function creator for a given function IRI.
+   * Returned value should be an async function implementation.
+   * Undefined may be returned if no implementation exists for the given function IRI.
+   *
+   * The dictionary-based extensionFunctions context entry may be used instead, but not simultaneously.
+   */
+  extensionFunctionCreator = '@comunica/actor-init-sparql:extensionFunctionCreator',
+  /**
+   * @range {Record<string, (args: RDF.Term[]) => Promise<RDF.Term>>} Dictionary of extension functions.
+   * Key is the IRI of the function, and value is the async function implementation.
+   *
+   * The callback-based extensionFunctionCreator context entry may be used instead, but not simultaneously.
+   */
+  extensionFunctions = '@comunica/actor-init-sparql:extensionFunctions',
 }
 
 export enum KeysQueryOperation {

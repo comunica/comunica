@@ -32,22 +32,22 @@ describe('ActorQueryOperationCopy', () => {
     });
 
     it('should test on copy', () => {
-      const op = { operation: { type: 'copy' }};
+      const op: any = { operation: { type: 'copy' }};
       return expect(actor.test(op)).resolves.toBeTruthy();
     });
 
     it('should not test on readOnly', () => {
-      const op = { operation: { type: 'copy' }, context: ActionContext({ [KEY_CONTEXT_READONLY]: true }) };
+      const op: any = { operation: { type: 'copy' }, context: ActionContext({ [KEY_CONTEXT_READONLY]: true }) };
       return expect(actor.test(op)).rejects.toThrowError(`Attempted a write operation in read-only mode`);
     });
 
     it('should not test on non-copy', () => {
-      const op = { operation: { type: 'some-other-type' }};
+      const op: any = { operation: { type: 'some-other-type' }};
       return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
     it('should run with different named source and named dest', async() => {
-      const op = {
+      const op: any = {
         operation: {
           type: 'copy',
           source: DF.namedNode('SOURCE'),
@@ -67,7 +67,7 @@ describe('ActorQueryOperationCopy', () => {
     });
 
     it('should run with different named source and named dest in silent mode', async() => {
-      const op = {
+      const op: any = {
         operation: {
           type: 'copy',
           source: DF.namedNode('SOURCE'),
@@ -87,7 +87,7 @@ describe('ActorQueryOperationCopy', () => {
     });
 
     it('should run with equal named source and named dest', async() => {
-      const op = {
+      const op: any = {
         operation: {
           type: 'copy',
           source: DF.namedNode('SOURCE'),
@@ -102,7 +102,7 @@ describe('ActorQueryOperationCopy', () => {
     });
 
     it('should run with equal default source and default dest', async() => {
-      const op = {
+      const op: any = {
         operation: {
           type: 'copy',
           source: 'DEFAULT',
@@ -117,7 +117,7 @@ describe('ActorQueryOperationCopy', () => {
     });
 
     it('should run with different default source and named dest', async() => {
-      const op = {
+      const op: any = {
         operation: {
           type: 'copy',
           source: 'DEFAULT',
@@ -137,7 +137,7 @@ describe('ActorQueryOperationCopy', () => {
     });
 
     it('should run with different named source and default dest', async() => {
-      const op = {
+      const op: any = {
         operation: {
           type: 'copy',
           source: DF.namedNode('SOURCE'),
