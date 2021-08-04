@@ -20,9 +20,9 @@ describe('evaluation of "&&" like', () => {
   `;
 
   const errorTable = `
-  true  error = error
-  error true  = error
-  error error = error
+  true  error = 'Cannot coerce term to EBV'
+  error true  = 'Cannot coerce term to EBV'
+  error error = 'Cannot coerce term to EBV'
   `;
 
   testTable({ ...wrap(config), table, errorTable });

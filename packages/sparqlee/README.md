@@ -341,3 +341,6 @@ We also handle type promotion by explicitly coding for it. This is done in the a
 
 Running tests will generate a `test-report.html` in the root dir.
 **TODO** Explain test organizatian and expression tables
+
+Evaluating within a test should be done by calling `generalEvaluate`.
+This will test both sync and async implementation if possible. 

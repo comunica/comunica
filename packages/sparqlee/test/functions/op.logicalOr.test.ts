@@ -20,9 +20,9 @@ describe('evaluation of "||" like', () => {
   `;
 
   const errorTable = `
-  false error = error
-  error false = error
-  error error = error
+  false error = 'Cannot coerce term to EBV'
+  error false = 'Cannot coerce term to EBV'
+  error error = 'Cannot coerce term to EBV'
   `;
 
   testTable({ ...wrap(config), table, errorTable });

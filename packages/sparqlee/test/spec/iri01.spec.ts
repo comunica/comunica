@@ -30,7 +30,7 @@ describe('We should respect the iri01 spec', () => {
   testAll([
     'URI("uri") = http://example.org/uri',
     'IRI("iri") = http://example.org/iri',
-  ], { baseIRI: 'http://example.org' });
+  ], { type: 'sync', config: { baseIRI: 'http://example.org' }});
 });
 
 /**

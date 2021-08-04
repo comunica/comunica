@@ -34,9 +34,9 @@ describe('evaluation of \'*\' like', () => {
   `;
 
   const errorTable = `
-  anyNum error = error
-  error  anyNum   = error
-  error  error = error
+  anyNum error = ''
+  error  anyNum   = ''
+  error  error = ''
   `;
 
   testTable({ ...wrap(config), table, errorTable });

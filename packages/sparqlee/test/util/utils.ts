@@ -7,10 +7,10 @@ import { translate } from 'sparqlalgebrajs';
 import { AsyncEvaluator, AsyncEvaluatorConfig } from '../../lib/evaluators/AsyncEvaluator';
 import { Bindings } from '../../lib/Types';
 import { ExpressionError } from '../../lib/util/Errors';
+import {SyncEvaluator, SyncEvaluatorConfig} from '../../lib/evaluators/SyncEvaluator';
+import {generalEvaluate, GeneralEvaluationConfig} from './generalEvaluation';
 
-const DF = new DataFactory();
-
-export function testAll(exprs: string[], config?: AsyncEvaluatorConfig) {
+export function testAll(exprs: string[], config?: GeneralEvaluationConfig) {
   exprs.forEach((_expr) => {
     const expr = _expr.trim();
     const matched = expr.match(/ = [^=]*$/g);
@@ -22,30 +22,31 @@ export function testAll(exprs: string[], config?: AsyncEvaluatorConfig) {
     const _result = equals.replace(' = ', '');
     const result = stringToTerm(replacePrefix(_result));
     // console.log(`${expr}\n${equals}\n${body}\n${_result}\n${result}`);
-    it(`${body} should evaluate to ${_result}`, () => {
-      return expect(evaluate(body, config)
-        .then(termToString))
-        .resolves
-        .toBe(termToString(result));
+    it(`${body} should evaluate to ${_result}`, async() => {
+      const evaluated = await generalEvaluate({
+        expression: template(body), expectEquality: true, generalEvaluationConfig: config
+      });
+      return expect(termToString(evaluated.asyncResult)).toEqual(termToString(result));
     });
   });
 }
 
-export function testAllErrors(exprs: string[], config?: AsyncEvaluatorConfig) {
+export function testAllErrors(exprs: string[], config?: GeneralEvaluationConfig) {
   exprs.forEach((_expr) => {
     const expr = _expr.trim();
     const equals = expr.match(/ = error *$/)[0];
     const body = expr.replace(equals, '');
     it(`${body} should error`, () => {
-      return expect(evaluate(body, config)
-        .then(termToString))
+      return expect(generalEvaluate({
+        expression: template(body), expectEquality: true, generalEvaluationConfig: config
+      }).then(res => termToString(res.asyncResult)))
         .rejects
         .toThrowError(ExpressionError);
     });
   });
 }
 
-function template(expr: string) {
+export function template(expr: string) {
   return `
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 PREFIX fn: <https://www.w3.org/TR/xpath-functions#>
@@ -54,17 +55,6 @@ PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 
 SELECT * WHERE { ?s ?p ?o FILTER (${expr})}
 `;
-}
-
-function parse(query: string) {
-  const sparqlQuery = translate(query);
-  // Extract filter expression from complete query
-  return sparqlQuery.input.expression;
-}
-
-export function evaluate(expr: string, config?: AsyncEvaluatorConfig): Promise<RDF.Term> {
-  const evaluator = new AsyncEvaluator(parse(template(expr)), config);
-  return evaluator.evaluate(Bindings({}));
 }
 
 export const aliases = {

@@ -1,9 +1,8 @@
 import * as RDF from 'rdf-js';
 
 import { termToString } from 'rdf-string';
-import { evaluate } from '../util/utils';
-import {AsyncExtensionFunctionCreator} from "../../lib/evaluators/AsyncEvaluator";
-import {SyncExtensionFunctionCreator} from "../../lib/evaluators/SyncEvaluator";
+import { template } from './utils';
+import {generalEvaluate, GeneralEvaluationConfig} from './generalEvaluation';
 
 /*
  * Maps short strings to longer RDF term-literals for easy use in making
@@ -43,11 +42,10 @@ export interface EvaluationConfig {
   aliasMap: AliasMap;
   resultMap: ResultMap;
   notation: Notation;
-  asyncExtensionFunctionCreator?: AsyncExtensionFunctionCreator;
-  syncExtensionFunctionCreator?: SyncExtensionFunctionCreator;
+  generalEvaluationConfig?: GeneralEvaluationConfig;
 }
 export type EvaluationTable = EvaluationConfig & {
-  table: string;
+  table?: string;
   errorTable?: string;
 };
 
@@ -96,11 +94,11 @@ class BinaryTable extends Table<[string, string, string]> {
       const [left, right, result] = row;
       const { aliasMap, resultMap, op } = this.def;
       const expr = this.format([op, aliasMap[left], aliasMap[right]]);
-      it(`${this.format([op, left, right])} should return ${result}`, () => {
-        return expect(evaluate(expr, {extensionFunctionCreator: this.def.asyncExtensionFunctionCreator})
-          .then(termToString))
-          .resolves
-          .toEqual(termToString(resultMap[result]));
+      it(`${this.format([op, left, right])} should return ${result}`, async() => {
+        const evaluated = await generalEvaluate({
+          expression: template(expr), expectEquality: true, generalEvaluationConfig: this.def.generalEvaluationConfig
+        });
+        expect(termToString(evaluated.asyncResult)).toEqual(termToString(resultMap[result]));
       });
     });
 
@@ -108,8 +106,10 @@ class BinaryTable extends Table<[string, string, string]> {
       const [left, right, error] = row;
       const { aliasMap, op } = this.def;
       const expr = this.format([op, aliasMap[left], aliasMap[right]]);
-      it(`${this.format([op, left, right])} should error`, () => {
-        return expect(evaluate(expr)).rejects.toThrow(Error);
+      it(`${this.format([op, left, right])} should error`, async() => {
+        return expect(generalEvaluate({
+          expression: template(expr), expectEquality: true, generalEvaluationConfig: this.def.generalEvaluationConfig
+        })).rejects.toThrow(error);
       });
     });
   }
@@ -130,11 +130,11 @@ class UnaryTable extends Table<[string, string]> {
       const [arg, result] = row;
       const { aliasMap, op, resultMap } = this.def;
       const expr = this.format([op, aliasMap[arg]]);
-      it(`${this.format([op, arg])} should return ${result}`, () => {
-        return expect(evaluate(expr)
-          .then(termToString))
-          .resolves
-          .toEqual(termToString(resultMap[result]));
+      it(`${this.format([op, arg])} should return ${result}`, async () => {
+        const evaluated = await generalEvaluate({
+          expression: template(expr), expectEquality: true, generalEvaluationConfig: this.def.generalEvaluationConfig
+        });
+        expect(termToString(evaluated.asyncResult)).toEqual(termToString(resultMap[result]));
       });
     });
 
@@ -143,7 +143,9 @@ class UnaryTable extends Table<[string, string]> {
       const { aliasMap, op } = this.def;
       const expr = this.format([op, aliasMap[arg]]);
       it(`${this.format([op, arg])} should error`, () => {
-        expect(evaluate(expr)).rejects.toThrow(Error);
+        return expect(generalEvaluate({
+          expression: template(expr), expectEquality: true, generalEvaluationConfig: this.def.generalEvaluationConfig
+        })).rejects.toThrow(error);
       });
     });
   }
@@ -158,17 +160,15 @@ class UnaryTable extends Table<[string, string]> {
   }
 }
 
-interface ParserConstructor<RowType extends Row> {
-  new(table: string, errorTable: string): TableParser<RowType>;
-}
+type ParserConstructor<RowType extends Row> = new(table: string, errorTable: string) => TableParser<RowType>;
 
 abstract class TableParser<RowType extends Row> {
   table: RowType[];
   errorTable: RowType[];
 
-  constructor(table: string, errTable?: string) {
+  constructor(table?: string, errTable?: string) {
 
-    this.table = this.splitTable(table).map((row) => this.parseRow(row));
+    this.table = table ? this.splitTable(table).map((row) => this.parseRow(row)) : [];
     this.errorTable = (errTable)
       ? this.splitTable(errTable).map((r) => this.parseRow(r))
       : [];
@@ -186,7 +186,8 @@ abstract class TableParser<RowType extends Row> {
 class BinaryTableParser extends TableParser<[string, string, string]> {
   protected parseRow(row: string): [string, string, string] {
     row = row.trim().replace(/  +/g, ' ');
-    const [left, right, _, result] = row.split(' ');
+    const [left, right, _, result] = row.match(/([^\s']+|'[^']*')+/g)
+      .map(i => i.replace(/'([^']*)'/, '$1'));
     return [left, right, result];
   }
 }
@@ -195,7 +196,8 @@ class UnaryTableParser extends TableParser<[string, string]> {
   protected parseRow(row: string): [string, string] {
     // Trim whitespace and remove double spaces
     row = row.trim().replace(/  +/g, ' ');
-    const [arg, _, result] = row.split(' ');
+    const [arg, _, result] = row.match(/([^\s']+|'[^']*')+/g)
+      .map(i => i.replace(/'([^']*)'/, '$1'));
     return [arg, result];
   }
 }

@@ -223,7 +223,7 @@ function inRecursiveSync(
   if (args.length === 0) {
     const noErrors = results.every((v) => !v);
     if (noErrors) {
-      bool(false);
+      return bool(false);
     } else {
       throw new Err.InError(results);
     }

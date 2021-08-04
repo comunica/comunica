@@ -1,10 +1,10 @@
-import { error, merge, numeric, wrap } from '../util/Aliases';
+import { merge, numeric, wrap } from '../util/Aliases';
 import { Notation, testTable } from '../util/TruthTable';
 
 const config = {
   arity: 2,
   op: '/',
-  aliases: merge(numeric, error),
+  aliases: merge(numeric),
   notation: Notation.Infix,
 };
 
@@ -32,8 +32,8 @@ describe('evaluation of \'/\' like', () => {
   `;
 
   const errorTable = `
-  0i 0i = error
-  3i 0i = error
+  0i 0i = 'Integer division by 0'
+  3i 0i = 'Integer division by 0'
   `;
 
   testTable({ ...wrap(config), table, errorTable });

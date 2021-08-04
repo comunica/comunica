@@ -32,9 +32,9 @@ describe('evaluation of \'-\' like', () => {
   `;
 
   const errorTable = `
-  anyNum error  = error
-  error  anyNum = error
-  error  error  = error
+  anyNum error  = ''
+  error  anyNum = ''
+  error  error  = 'Argument types not valid'
   `;
 
   testTable({ ...wrap(config), table, errorTable });
