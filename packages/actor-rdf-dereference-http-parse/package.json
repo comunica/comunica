@@ -31,7 +31,8 @@
   ],
   "dependencies": {
     "cross-fetch": "^3.0.5",
-    "relative-to-absolute-iri": "^1.0.5"
+    "relative-to-absolute-iri": "^1.0.5",
+    "stream-to-string": "^1.2.0"
   },
   "peerDependencies": {
     "@comunica/bus-http": "^1.0.0",

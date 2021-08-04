@@ -1,4 +1,4 @@
-import { PassThrough, Readable } from 'stream';
+import { Readable } from 'stream';
 import { ActorRdfDereference } from '@comunica/bus-rdf-dereference';
 import { KeysCore, KeysInitSparql } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
@@ -7,6 +7,7 @@ import { MediatorRace } from '@comunica/mediator-race';
 import 'cross-fetch/polyfill';
 import { ActorRdfDereferenceHttpParse } from '../lib/ActorRdfDereferenceHttpParse';
 const arrayifyStream = require('arrayify-stream');
+const streamifyString = require('streamify-string');
 
 describe('ActorRdfDereferenceHttpParse', () => {
   let bus: any;
@@ -107,9 +108,10 @@ describe('ActorRdfDereferenceHttpParse', () => {
         if (action.input.includes('missingcontenttype')) {
           headers.delete('content-type');
         }
+        const dummyBodyStream = streamifyString('DUMMY BODY');
         let body = action.input === 'https://www.google.com/noweb' ?
-          require('web-streams-node').toWebReadableStream(new PassThrough()) :
-          new PassThrough();
+          require('web-streams-node').toWebReadableStream(dummyBodyStream) :
+          dummyBodyStream;
         body.cancel = jest.fn();
         if (action.input.includes('nobody')) {
           body = undefined;
@@ -275,12 +277,12 @@ describe('ActorRdfDereferenceHttpParse', () => {
 
     it('should not run on a 404', () => {
       return expect(actor.run({ url: 'https://www.nogoogle.com/notfound' })).rejects
-        .toThrow(new Error('Could not retrieve https://www.nogoogle.com/notfound (400: unknown error)'));
+        .toThrow(new Error('Could not retrieve https://www.nogoogle.com/notfound (HTTP status 400):\nDUMMY BODY'));
     });
 
     it('should not run on a 404 without a body', () => {
       return expect(actor.run({ url: 'https://www.nogoogle.com/nobody' })).rejects
-        .toThrow(new Error('Could not retrieve https://www.nogoogle.com/nobody (400: unknown error)'));
+        .toThrow(new Error('Could not retrieve https://www.nogoogle.com/nobody (HTTP status 400):\nempty response'));
     });
 
     it('should run on a 404 when acceptErrors is true', async() => {

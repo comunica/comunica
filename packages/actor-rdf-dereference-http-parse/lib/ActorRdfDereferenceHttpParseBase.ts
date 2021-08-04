@@ -20,6 +20,7 @@ import type {
 import type { Actor, IActorTest, Mediator } from '@comunica/core';
 import { Headers } from 'cross-fetch';
 import { resolve as resolveRelative } from 'relative-to-absolute-iri';
+import * as stringifyStream from 'stream-to-string';
 
 /**
  * An actor that listens on the 'rdf-dereference' bus.
@@ -96,13 +97,14 @@ export abstract class ActorRdfDereferenceHttpParseBase extends ActorRdfDereferen
     // Only parse if retrieval was successful
     if (httpResponse.status !== 200) {
       exists = false;
-      // Close the body if we have one, to avoid process to hang
+      // Consume the body, to avoid process to hang
+      let bodyString = 'empty response';
       if (httpResponse.body) {
-        await httpResponse.body.cancel();
+        const responseStream = ActorHttp.toNodeReadable(httpResponse.body);
+        bodyString = await stringifyStream(responseStream);
       }
       if (!action.acceptErrors) {
-        const error = new Error(`Could not retrieve ${action.url} (${httpResponse.status}: ${
-          httpResponse.statusText || 'unknown error'})`);
+        const error = new Error(`Could not retrieve ${action.url} (HTTP status ${httpResponse.status}):\n${bodyString}`);
         return this.handleDereferenceError(action, error);
       }
     }
