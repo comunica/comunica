@@ -10,7 +10,7 @@ import { getDataSourceType, getDataSourceValue, getDataSourceContext } from '@co
 import { KeysRdfResolveQuadPattern } from '@comunica/context-entries';
 import type { ActionContext, Actor, IActorTest, Mediator } from '@comunica/core';
 import { BlankNodeScoped } from '@comunica/data-factory';
-import type { AsyncIterator } from 'asynciterator';
+import { AsyncIterator } from 'asynciterator';
 import { ArrayIterator, TransformIterator, UnionIterator } from 'asynciterator';
 import type { Record } from 'immutable';
 import { DataFactory } from 'rdf-data-factory';
@@ -192,17 +192,19 @@ export class FederatedQuadSource implements IQuadSource {
   }
 
   public match(subject: RDF.Term, predicate: RDF.Term, object: RDF.Term, graph: RDF.Term): AsyncIterator<RDF.Quad> {
+    let it = new AsyncIterator<RDF.Quad>();
+
     const collectedSourceMetadata: Record<string, any>[] = [];
     let nMetadataObjects = 0;
     let nMetadataObjectsReduced = 0;
     type IReducer = (action: IActionRdfMetadataAggregate) => Promise<Record<string, any>>;
-    //
+    // Anonymous function that will set the metadata property on the AsyncIterator.
     const emitFinalMetadata = (): void => {
       const finalMetadata = collectedSourceMetadata.pop();
       it.setProperty('metadata', finalMetadata);
     };
-    //
-    function reduce(reducer: IReducer, last: boolean): void {
+    // Anonymous function for reducing the metadata collected from the sources.
+    const reduce = (reducer: IReducer, last: boolean): void => {
       if (collectedSourceMetadata.length >= 2) {
         // Push reduced result back onto the collected source metadata array
         reducer({ metadata: collectedSourceMetadata.pop()!, subMetadata: collectedSourceMetadata.pop()! })
@@ -218,7 +220,7 @@ export class FederatedQuadSource implements IQuadSource {
       } else if (last) {
         emitFinalMetadata();
       }
-    }
+    };
 
     const proxyIt: Promise<AsyncIterator<RDF.Quad>[]> = Promise.all(this.sources.map(async(source, i) => {
       const sourceId = this.getSourceId(source);
@@ -249,7 +251,7 @@ export class FederatedQuadSource implements IQuadSource {
       } else {
         output = await this.mediatorResolveQuadPattern.mediate({ pattern, context });
       }
-
+      // Get the metadata property from the output data, if any.
       const outputMetadata: Record<string, any> | undefined = output.data.getProperty('metadata');
 
       const metadataIndicatesEmpty = outputMetadata !== undefined &&
@@ -260,12 +262,15 @@ export class FederatedQuadSource implements IQuadSource {
         this.checkPushEmptyPattern(undefined, source, pattern);
       }
 
+      // If the output contains metadata, collect & reduce.
       if (outputMetadata) {
         nMetadataObjects++;
         collectedSourceMetadata.push(outputMetadata);
         const myReducer: IReducer = action => this.mediatorAggregate.mediate(action);
         const last = i === this.sources.length - 1;
         reduce(myReducer, last);
+      } else {
+        emitFinalMetadata();
       }
 
       // Determine the data stream from this source
@@ -282,7 +287,7 @@ export class FederatedQuadSource implements IQuadSource {
     }));
 
     // Take the union of all source streams
-    const it = new TransformIterator(async() => new UnionIterator(await proxyIt), { autoStart: false });
+    it = new TransformIterator(async() => new UnionIterator(await proxyIt), { autoStart: false });
 
     // If we have 0 sources, immediately emit metadata
     if (this.sources.length === 0) {
