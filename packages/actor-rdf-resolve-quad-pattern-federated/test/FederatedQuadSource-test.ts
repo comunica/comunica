@@ -102,11 +102,13 @@ describe('FederatedQuadSource', () => {
     });
 
     it('should be a FederatedQuadSource constructor', () => {
-      expect(new FederatedQuadSource(mediator, context, new Map(), true, mediatorAggregate)).toBeInstanceOf(FederatedQuadSource);
+      expect(new FederatedQuadSource(mediator, context, new Map(), true, mediatorAggregate))
+        .toBeInstanceOf(FederatedQuadSource);
     });
 
     it('should be a FederatedQuadSource constructor with optional bufferSize argument', () => {
-      expect(new FederatedQuadSource(mediator, context, new Map(), true, mediatorAggregate)).toBeInstanceOf(FederatedQuadSource);
+      expect(new FederatedQuadSource(mediator, context, new Map(), true, mediatorAggregate))
+        .toBeInstanceOf(FederatedQuadSource);
     });
   });
 

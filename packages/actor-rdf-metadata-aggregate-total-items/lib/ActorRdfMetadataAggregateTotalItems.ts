@@ -1,12 +1,14 @@
-import { ActorRdfMetadataAggregate, IActionRdfMetadataAggregate, IActorRdfMetadataAggregateOutput } from '@comunica/bus-rdf-metadata-aggregate';
-import { IActorArgs, IActorTest } from '@comunica/core';
-import {Record} from "immutable";
+import type { IActionRdfMetadataAggregate,
+  IActorRdfMetadataAggregateOutput } from '@comunica/bus-rdf-metadata-aggregate';
+import { ActorRdfMetadataAggregate } from '@comunica/bus-rdf-metadata-aggregate';
+import type { IActorArgs, IActorTest } from '@comunica/core';
+import type { Record } from 'immutable';
 
 /**
  * A comunica Total Items RDF Metadata Aggregate Actor.
  */
 export class ActorRdfMetadataAggregateTotalItems extends ActorRdfMetadataAggregate {
-  public records: Record<string,any>[] = [];
+  public records: Record<string, any>[] = [];
 
   public constructor(args: IActorArgs<IActionRdfMetadataAggregate, IActorTest, IActorRdfMetadataAggregateOutput>) {
     super(args);
@@ -17,53 +19,49 @@ export class ActorRdfMetadataAggregateTotalItems extends ActorRdfMetadataAggrega
   }
 
   public async run(action: IActionRdfMetadataAggregate): Promise<IActorRdfMetadataAggregateOutput> {
-    const {metadata, subMetadata} = action
+    const { metadata, subMetadata } = action;
 
-    let newTotalItems: number = 0
-    const isEmptyRecord = (r: Record<string, any>) => Object.keys(r).length === 0
-    const hasTotalItems = (r: Record<string, any>) => r.totalItems !== undefined
-    let resultRecord = {}
+    let newTotalItems = 0;
+    const isEmptyRecord = (record: Record<string, any>): boolean => Object.keys(record).length === 0;
+    const hasTotalItems = (record: Record<string, any>): boolean => record.totalItems !== undefined;
+    let resultRecord = {};
 
     if (!subMetadata) {
-      // submetadata not defined
-      resultRecord = metadata
+      // Submetadata not defined
+      resultRecord = metadata;
     } else {
-      // submetadata IS defined
-      const metadataHasTotalItems = hasTotalItems(metadata)
-      const subMetadataHasTotalItems = hasTotalItems(subMetadata)
-
+      // Submetadata IS defined
+      const metadataHasTotalItems = hasTotalItems(metadata);
+      const subMetadataHasTotalItems = hasTotalItems(subMetadata);
 
       if (metadataHasTotalItems && subMetadataHasTotalItems) {
-        // metadata has total items & submetadata has total items
-        newTotalItems = metadata.totalItems + subMetadata.totalItems
+        // Metadata has total items & submetadata has total items
+        newTotalItems = Number(metadata.totalItems) + Number(subMetadata.totalItems);
       } else if (!metadataHasTotalItems && !subMetadataHasTotalItems) {
-        // neither metadata or submetadata has totalItems
-        newTotalItems = Number.POSITIVE_INFINITY
+        // Neither metadata or submetadata has totalItems
+        newTotalItems = Number.POSITIVE_INFINITY;
       } else if (!metadataHasTotalItems && subMetadata) {
-        // metadata does not have total items
-        newTotalItems = subMetadata.totalItems
-
+        // Metadata does not have total items
+        newTotalItems = subMetadata.totalItems;
+      } else if (isEmptyRecord(subMetadata)) {
+        newTotalItems = Number.POSITIVE_INFINITY;
       } else {
-        if (isEmptyRecord(subMetadata)) {
-          newTotalItems = Number.POSITIVE_INFINITY;
-        } else {
-          throw  Error('CASE NOT COVERED YET')
-        }
+        throw new Error('CASE NOT COVERED YET');
       }
     }
 
     resultRecord = {
       ...subMetadata,
       ...metadata,
-      totalItems: newTotalItems
-    }
+      totalItems: newTotalItems,
+    };
 
     return Promise.resolve(
-        {
-          aggregatedMetadata: {
-            ...resultRecord
-          }
-        }
-    )
+      {
+        aggregatedMetadata: {
+          ...resultRecord,
+        },
+      },
+    );
   }
 }
