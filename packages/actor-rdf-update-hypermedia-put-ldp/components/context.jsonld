@@ -1,0 +1,12 @@
+{
+  "@context": [
+    "https://linkedsoftwaredependencies.org/bundles/npm/@comunica/core/^1.0.0/components/context.jsonld",
+    {
+      "npmd": "https://linkedsoftwaredependencies.org/bundles/npm/",
+      "caruhpl": "npmd:@comunica/actor-rdf-update-hypermedia-put-ldp/",
+      "files-caruhpl": "caruhpl:^1.0.0/",
+
+      "ActorRdfUpdateHypermediaPutLdp": "caruhpl:Actor/RdfUpdateHypermedia/PutLdp"
+    }
+  ]
+}

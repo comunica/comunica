@@ -55,17 +55,17 @@ describe('ActorQueryOperationPathInv', () => {
     });
 
     it('should test on Inv paths', () => {
-      const op = { operation: { type: Algebra.types.PATH, predicate: { type: Algebra.types.INV }}};
+      const op: any = { operation: { type: Algebra.types.PATH, predicate: { type: Algebra.types.INV }}};
       return expect(actor.test(op)).resolves.toBeTruthy();
     });
 
     it('should test on different paths', () => {
-      const op = { operation: { type: Algebra.types.PATH, predicate: { type: 'dummy' }}};
+      const op: any = { operation: { type: Algebra.types.PATH, predicate: { type: 'dummy' }}};
       return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
     it('should support Inv paths', async() => {
-      const op = { operation: factory.createPath(
+      const op: any = { operation: factory.createPath(
         DF.namedNode('s'),
         factory.createInv(factory.createLink(DF.namedNode('p'))),
         DF.variable('x'),

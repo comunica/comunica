@@ -67,17 +67,17 @@ describe('ActorQueryOperationDescribeSubject', () => {
     });
 
     it('should test on describe', () => {
-      const op = { operation: { type: 'describe' }};
+      const op: any = { operation: { type: 'describe' }};
       return expect(actor.test(op)).resolves.toBeTruthy();
     });
 
     it('should not test on non-describe', () => {
-      const op = { operation: { type: 'some-other-type' }};
+      const op: any = { operation: { type: 'some-other-type' }};
       return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
     it('should run without variable terms', () => {
-      const op = {
+      const op: any = {
         context: ActionContext({ name: 'context' }),
         operation: {
           type: 'describe',
@@ -96,7 +96,7 @@ describe('ActorQueryOperationDescribeSubject', () => {
     });
 
     it('should run with variable terms and an input', () => {
-      const op = {
+      const op: any = {
         context: ActionContext({ name: 'context' }),
         operation: {
           input: { type: 'bgp', patterns: [ DF.quad(DF.variable('a'), DF.variable('b'), DF.namedNode('dummy')) ]},
@@ -116,7 +116,7 @@ describe('ActorQueryOperationDescribeSubject', () => {
     });
 
     it('should run with and without variable terms and an input', () => {
-      const op = {
+      const op: any = {
         context: ActionContext({ name: 'context' }),
         operation: {
           input: { type: 'bgp', patterns: [ DF.quad(DF.variable('a'), DF.variable('b'), DF.namedNode('dummy')) ]},

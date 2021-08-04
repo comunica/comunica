@@ -6,7 +6,6 @@ import { QuadDestinationPatchSparqlUpdate } from '../lib/QuadDestinationPatchSpa
 describe('ActorRdfUpdateHypermediaPatchSparqlUpdate', () => {
   let bus: any;
   let mediatorHttp: any;
-  let mediatorRdfSerialize: any;
 
   beforeEach(() => {
     bus = new Bus({ name: 'bus' });
@@ -15,18 +14,13 @@ describe('ActorRdfUpdateHypermediaPatchSparqlUpdate', () => {
         body: 'BODY',
       })),
     };
-    mediatorRdfSerialize = {
-      mediate: jest.fn(() => ({
-        todo: 'TRUE',
-      })),
-    };
   });
 
   describe('An ActorRdfUpdateHypermediaPatchSparqlUpdate instance', () => {
     let actor: ActorRdfUpdateHypermediaPatchSparqlUpdate;
 
     beforeEach(() => {
-      actor = new ActorRdfUpdateHypermediaPatchSparqlUpdate({ name: 'actor', bus, mediatorHttp, mediatorRdfSerialize });
+      actor = new ActorRdfUpdateHypermediaPatchSparqlUpdate({ name: 'actor', bus, mediatorHttp });
     });
 
     it('should test', () => {
@@ -44,6 +38,15 @@ describe('ActorRdfUpdateHypermediaPatchSparqlUpdate', () => {
       const exists = true;
       return expect(actor.test({ context, url, metadata, exists })).rejects
         .toThrow(`Actor actor could not detect a destination with 'application/sparql-update' as 'Accept-Patch' header.`);
+    });
+
+    it('should not test on a non-existing destination', () => {
+      const context = ActionContext({ [KeysRdfUpdateQuads.destination]: 'abc' });
+      const url = 'abc';
+      const metadata = { patchSparqlUpdate: true };
+      const exists = false;
+      return expect(actor.test({ context, url, metadata, exists })).rejects
+        .toThrow(`Actor actor can only patch a destination that already exists.`);
     });
 
     it('should test on invalid metadata with forced destination type', () => {

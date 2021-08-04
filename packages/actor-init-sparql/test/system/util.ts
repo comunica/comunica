@@ -12,8 +12,8 @@ Polly.register(NodeHttpAdapter);
 // Mocks HTTP requests using Polly.JS
 export function mockHttp() {
   return setupPolly({
-    adapters: [ 'node-http' ],
-    persister: 'fs',
+    adapters: [ NodeHttpAdapter ],
+    persister: FSPersister,
     persisterOptions: { fs: { recordingsDir }},
     recordFailedRequests: true,
     matchRequestsBy: {

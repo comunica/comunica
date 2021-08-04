@@ -153,7 +153,7 @@ describe('ActorQueryOperationQuadpattern', () => {
     });
 
     it('should not test on dummy operations', () => {
-      return expect(actor.test({ operation: { type: 'dummy' }})).rejects.toBeTruthy();
+      return expect(actor.test(<any> { operation: { type: 'dummy' }})).rejects.toBeTruthy();
     });
 
     it('should not test on invalid operations', () => {
@@ -197,7 +197,7 @@ describe('ActorQueryOperationQuadpattern', () => {
     });
 
     it('should run s ?p o g', () => {
-      const operation = {
+      const operation: any = {
         graph: DF.namedNode('g'),
         object: DF.namedNode('o'),
         predicate: DF.variable('p'),
@@ -218,7 +218,7 @@ describe('ActorQueryOperationQuadpattern', () => {
     });
 
     it('should run s ?p o g for an empty context', () => {
-      const operation = {
+      const operation: any = {
         graph: DF.namedNode('g'),
         object: DF.namedNode('o'),
         predicate: DF.variable('p'),
@@ -240,7 +240,7 @@ describe('ActorQueryOperationQuadpattern', () => {
     });
 
     it('should run s ?v ?v g with shared variables', () => {
-      const operation = {
+      const operation: any = {
         graph: DF.namedNode('g'),
         object: DF.variable('v'),
         predicate: DF.variable('v'),
@@ -274,7 +274,7 @@ describe('ActorQueryOperationQuadpattern', () => {
     });
 
     it('should accept a quad-pattern-level context without an operation context', async() => {
-      const operation = {
+      const operation: any = {
         context: ActionContext({ a: 'overridden' }),
         graph: DF.namedNode('g'),
         object: DF.variable('v'),
@@ -289,7 +289,7 @@ describe('ActorQueryOperationQuadpattern', () => {
     });
 
     it('should accept a quad-pattern-level context with an operation context', async() => {
-      const operation = {
+      const operation: any = {
         context: ActionContext({ a: 'overridden' }),
         graph: DF.namedNode('g'),
         object: DF.variable('v'),

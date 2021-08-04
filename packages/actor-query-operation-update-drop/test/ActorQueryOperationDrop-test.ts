@@ -30,22 +30,22 @@ describe('ActorQueryOperationDrop', () => {
     });
 
     it('should test on clear', () => {
-      const op = { operation: { type: 'drop' }};
+      const op: any = { operation: { type: 'drop' }};
       return expect(actor.test(op)).resolves.toBeTruthy();
     });
 
     it('should not test on readOnly', () => {
-      const op = { operation: { type: 'drop' }, context: ActionContext({ [KEY_CONTEXT_READONLY]: true }) };
+      const op: any = { operation: { type: 'drop' }, context: ActionContext({ [KEY_CONTEXT_READONLY]: true }) };
       return expect(actor.test(op)).rejects.toThrowError(`Attempted a write operation in read-only mode`);
     });
 
     it('should not test on non-clear', () => {
-      const op = { operation: { type: 'some-other-type' }};
+      const op: any = { operation: { type: 'some-other-type' }};
       return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
     it('should run for default graph', async() => {
-      const op = {
+      const op: any = {
         operation: {
           type: 'drop',
           source: 'DEFAULT',
@@ -62,7 +62,7 @@ describe('ActorQueryOperationDrop', () => {
     });
 
     it('should run for default graph in silent mode', async() => {
-      const op = {
+      const op: any = {
         operation: {
           type: 'drop',
           source: 'DEFAULT',
@@ -80,7 +80,7 @@ describe('ActorQueryOperationDrop', () => {
     });
 
     it('should run for all graphs', async() => {
-      const op = {
+      const op: any = {
         operation: {
           type: 'drop',
           source: 'ALL',
@@ -97,7 +97,7 @@ describe('ActorQueryOperationDrop', () => {
     });
 
     it('should run for all named graphs', async() => {
-      const op = {
+      const op: any = {
         operation: {
           type: 'drop',
           source: 'NAMED',
@@ -114,7 +114,7 @@ describe('ActorQueryOperationDrop', () => {
     });
 
     it('should run for a named graph', async() => {
-      const op = {
+      const op: any = {
         operation: {
           type: 'drop',
           source: DF.namedNode('g1'),

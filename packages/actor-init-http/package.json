@@ -1,6 +1,6 @@
 {
   "name": "@comunica/actor-init-http",
-  "version": "1.21.1",
+  "version": "1.21.2",
   "description": "A Comunica engine for triggering HTTP requests",
   "lsd:module": true,
   "main": "index.js",
@@ -36,7 +36,7 @@
     "index.js"
   ],
   "dependencies": {
-    "@comunica/actor-http-node-fetch": "^1.21.1",
+    "@comunica/actor-http-node-fetch": "^1.21.2",
     "@comunica/bus-http": "^1.21.1",
     "@comunica/bus-init": "^1.21.1",
     "@comunica/core": "^1.21.1",

@@ -68,7 +68,7 @@ export abstract class ActorRdfDereference extends Actor<IActionRdfDereference, I
       this.logError(action.context, (<Error> error).message);
       const quads = new Readable();
       quads.push(null);
-      return { url: action.url, quads };
+      return { url: action.url, quads, exists: false };
     }
   }
 }
@@ -78,6 +78,13 @@ export interface IActionRdfDereference extends IAction {
    * The URL to dereference
    */
   url: string;
+
+  /**
+   * By default, actors will reject upon receiving non-200 HTTP responses.
+   * If this option is true, then all HTTP responses will cause the action to resolve,
+   * but some outputs may therefore contain empty quad streams.
+   */
+  acceptErrors?: boolean;
 
   /**
    * The mediatype of the source (if it can't be inferred from the source)
@@ -106,6 +113,10 @@ export interface IActorRdfDereferenceOutput extends IActorOutput {
    * The resulting quad stream.
    */
   quads: RDF.Stream;
+  /**
+   * This will always be true, unless `acceptErrors` was set to true in the action and the dereferencing failed.
+   */
+  exists: boolean;
   /**
    * An optional field indicating if the given quad stream originates from a triple-based serialization,
    * in which everything is serialized in the default graph.

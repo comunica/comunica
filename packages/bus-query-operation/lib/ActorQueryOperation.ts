@@ -205,7 +205,21 @@ export abstract class ActorQueryOperation extends Actor<IActionQueryOperation, I
     if (context) {
       const now: Date = context.get(KeysInitSparql.queryTimestamp);
       const baseIRI: string = context.get(KeysInitSparql.baseIRI);
-      return { now, baseIRI };
+
+      // Handle two variants of providing extension functions
+      if (context.has(KeysInitSparql.extensionFunctionCreator) && context.has(KeysInitSparql.extensionFunctions)) {
+        throw new Error('Illegal simultaneous usage of extensionFunctionCreator and extensionFunctions in context');
+      }
+      let extensionFunctionCreator: (functionNamedNode: RDF.NamedNode) =>
+      ((args: RDF.Term[]) => Promise<RDF.Term>) | undefined = context.get(KeysInitSparql.extensionFunctionCreator);
+      // Convert dictionary-based variant to callback
+      const extensionFunctions: Record<string, (args: RDF.Term[]) => Promise<RDF.Term>> = context
+        .get(KeysInitSparql.extensionFunctions);
+      if (extensionFunctions) {
+        extensionFunctionCreator = functionNamedNode => extensionFunctions[functionNamedNode.value];
+      }
+
+      return { now, baseIRI, extensionFunctionCreator };
     }
     return {};
   }
@@ -303,6 +317,8 @@ export function getMetadata(actionOutput: IActorQueryOperationOutputStream): Pro
 interface IBaseExpressionContext {
   now?: Date;
   baseIRI?: string;
+  extensionFunctionCreator?: (functionNamedNode: RDF.NamedNode) =>
+  ((args: RDF.Term[]) => Promise<RDF.Term>) | undefined;
 }
 
 // TODO: rename to ISyncExpressionContext in next major version

@@ -1,6 +1,20 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+<a name="v1.21.3"></a>
+## [v1.21.3](https://github.com/comunica/comunica/compare/v1.21.2...v1.21.3) - 2021-06-18
+
+### Fixed
+* [Fix POST requests with body not working on browsers](https://github.com/comunica/comunica/commit/3b01e4bf492293f0e887acf4423ab872c035085a)
+
+<a name="v1.21.2"></a>
+## [v1.21.2](https://github.com/comunica/comunica/compare/v1.21.1...v1.21.2) - 2021-06-14
+
+### Changed
+* [Interact with SPARQL endpoints via HTTP POST, Closes #814](https://github.com/comunica/comunica/commit/fa00e7e16d5390c7e02dfe45753faea00c7bf620)
+* [Update dependency @types/node to v14](https://github.com/comunica/comunica/commit/16fb7130fcf4fac13455956463c6b858d912c0e9)
+* [Update jsonld-streaming-parser to 2.3.2](https://github.com/comunica/comunica/commit/316605c5c734044f4222afd9482b4050d64e3f3c)
+
 <a name="v1.21.1"></a>
 ## [v1.21.1](https://github.com/comunica/comunica/compare/v1.21.0...v1.21.1) - 2021-04-27
 

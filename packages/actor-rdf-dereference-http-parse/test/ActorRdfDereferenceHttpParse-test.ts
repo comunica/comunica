@@ -1,4 +1,4 @@
-import { PassThrough, Readable } from 'stream';
+import { Readable } from 'stream';
 import { ActorRdfDereference } from '@comunica/bus-rdf-dereference';
 import { KeysCore, KeysInitSparql } from '@comunica/context-entries';
 import { ActionContext, Bus } from '@comunica/core';
@@ -7,6 +7,7 @@ import { MediatorRace } from '@comunica/mediator-race';
 import 'cross-fetch/polyfill';
 import { ActorRdfDereferenceHttpParse } from '../lib/ActorRdfDereferenceHttpParse';
 const arrayifyStream = require('arrayify-stream');
+const streamifyString = require('streamify-string');
 
 describe('ActorRdfDereferenceHttpParse', () => {
   let bus: any;
@@ -107,9 +108,10 @@ describe('ActorRdfDereferenceHttpParse', () => {
         if (action.input.includes('missingcontenttype')) {
           headers.delete('content-type');
         }
+        const dummyBodyStream = streamifyString('DUMMY BODY');
         let body = action.input === 'https://www.google.com/noweb' ?
-          require('web-streams-node').toWebReadableStream(new PassThrough()) :
-          new PassThrough();
+          require('web-streams-node').toWebReadableStream(dummyBodyStream) :
+          dummyBodyStream;
         body.cancel = jest.fn();
         if (action.input.includes('nobody')) {
           body = undefined;
@@ -158,7 +160,9 @@ describe('ActorRdfDereferenceHttpParse', () => {
     });
 
     it('should stringify three media types', () => {
-      return expect(actor.mediaTypesToAcceptString({ a: 1, b: 1, c: 1 }, 100)).toEqual('a,b,c');
+      expect(actor.mediaTypesToAcceptString({ a: 1, b: 1, c: 1 }, 100)).toEqual('a,b,c');
+      expect(actor.mediaTypesToAcceptString({ b: 1, c: 1, a: 1 }, 100)).toEqual('a,b,c');
+      expect(actor.mediaTypesToAcceptString({ c: 1, a: 1, b: 1 }, 100)).toEqual('a,b,c');
     });
 
     it('should stringify three prioritized media types', () => {
@@ -207,6 +211,7 @@ describe('ActorRdfDereferenceHttpParse', () => {
       };
       const output = await actor.run({ url: 'https://www.google.com/' });
       expect(output.url).toEqual('https://www.google.com/index.html');
+      expect(output.exists).toEqual(true);
       expect(output.triples).toEqual(true);
       expect(output.headers).toEqual(headers);
       expect(await arrayifyStream(output.quads)).toEqual([]);
@@ -272,12 +277,20 @@ describe('ActorRdfDereferenceHttpParse', () => {
 
     it('should not run on a 404', () => {
       return expect(actor.run({ url: 'https://www.nogoogle.com/notfound' })).rejects
-        .toThrow(new Error('Could not retrieve https://www.nogoogle.com/notfound (400: unknown error)'));
+        .toThrow(new Error('Could not retrieve https://www.nogoogle.com/notfound (HTTP status 400):\nDUMMY BODY'));
     });
 
     it('should not run on a 404 without a body', () => {
       return expect(actor.run({ url: 'https://www.nogoogle.com/nobody' })).rejects
-        .toThrow(new Error('Could not retrieve https://www.nogoogle.com/nobody (400: unknown error)'));
+        .toThrow(new Error('Could not retrieve https://www.nogoogle.com/nobody (HTTP status 400):\nempty response'));
+    });
+
+    it('should run on a 404 when acceptErrors is true', async() => {
+      const output = await actor.run({ url: 'https://www.nogoogle.com/notfound', acceptErrors: true });
+      expect(output.url).toEqual('https://www.google.com/index.html');
+      expect(output.exists).toEqual(false);
+      expect(output.triples).toEqual(true);
+      expect(await arrayifyStream(output.quads)).toEqual([]);
     });
 
     it('should run on a 404 in lenient mode', async() => {
@@ -344,7 +357,7 @@ describe('ActorRdfDereferenceHttpParse', () => {
 
     it('should run and ignore parse errors in lenient mode and log them', async() => {
       const logger = new LoggerVoid();
-      const spy = spyOn(logger, 'error');
+      const spy = jest.spyOn(logger, 'error');
       const context = ActionContext({ emitParseError: true, [KeysInitSparql.lenient]: true, [KeysCore.log]: logger });
       const output = await actor.run({ url: 'https://www.google.com/', context });
       expect(await arrayifyStream(output.quads)).toEqual([]);
@@ -371,7 +384,7 @@ describe('ActorRdfDereferenceHttpParse', () => {
 
     it('should run and ignore http rejects in lenient mode and log them', async() => {
       const logger = new LoggerVoid();
-      const spy = spyOn(logger, 'error');
+      const spy = jest.spyOn(logger, 'error');
       const context = ActionContext({ httpReject: true, [KeysInitSparql.lenient]: true, [KeysCore.log]: logger });
       await actor.run({ url: 'https://www.google.com/', context });
       expect(spy).toHaveBeenCalledWith('Http reject error', {
@@ -396,7 +409,7 @@ describe('ActorRdfDereferenceHttpParse', () => {
 
     it('should run and ignore parse rejects in lenient mode and log them', async() => {
       const logger = new LoggerVoid();
-      const spy = spyOn(logger, 'error');
+      const spy = jest.spyOn(logger, 'error');
       const context = ActionContext({ parseReject: true, [KeysInitSparql.lenient]: true, [KeysCore.log]: logger });
       await actor.run({ url: 'https://www.google.com/', context });
       expect(spy).toHaveBeenCalledWith('Parse reject error', {

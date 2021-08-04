@@ -49,17 +49,34 @@ describe('ActorQueryOperationProject', () => {
     });
 
     it('should test on projects', () => {
-      const op = { operation: { type: 'project', input: 'in' }};
+      const op: any = { operation: { type: 'project', input: 'in' }};
       return expect(actor.test(op)).resolves.toBeTruthy();
     });
 
     it('should not test on non-projects', () => {
-      const op = { operation: { type: 'bgp', input: 'in' }};
+      const op: any = { operation: { type: 'bgp', input: 'in' }};
       return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
+    it('should run on a stream with a wildcard variable', () => {
+      const op: any = {
+        operation: { type: 'project', input: 'in', variables: [{ termType: 'Wildcard' }]},
+      };
+      return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
+        expect((<any> output).metadata()).toEqual('M');
+        expect(output.variables).toEqual([ '*' ]);
+        expect(output.type).toEqual('bindings');
+        expect(output.canContainUndefs).toEqual(false);
+        expect(await arrayifyStream(output.bindingsStream)).toEqual([
+          Bindings({}),
+        ]);
+      });
+    });
+
     it('should run on a stream with variables that should not be deleted or are missing', () => {
-      const op = { operation: { type: 'project', input: 'in', variables: [ DF.variable('a'), DF.blankNode('delet') ]}};
+      const op: any = {
+        operation: { type: 'project', input: 'in', variables: [ DF.variable('a'), DF.blankNode('delet') ]},
+      };
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
         expect((<any> output).metadata()).toEqual('M');
         expect(output.variables).toEqual([ '?a', '_:delet' ]);
@@ -72,7 +89,7 @@ describe('ActorQueryOperationProject', () => {
     });
 
     it('should run on a stream with variables that should be deleted', () => {
-      const op = { operation: { type: 'project', input: 'in', variables: [ DF.variable('a') ]}};
+      const op: any = { operation: { type: 'project', input: 'in', variables: [ DF.variable('a') ]}};
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
         expect((<any> output).metadata()).toEqual('M');
         expect(output.variables).toEqual([ '?a' ]);
@@ -85,7 +102,9 @@ describe('ActorQueryOperationProject', () => {
     });
 
     it('should error run on a stream with variables that should be deleted and are missing', async() => {
-      const op = { operation: { type: 'project', input: 'in', variables: [ DF.variable('a'), DF.variable('missing') ]}};
+      const op: any = {
+        operation: { type: 'project', input: 'in', variables: [ DF.variable('a'), DF.variable('missing') ]},
+      };
       await expect(actor.run(op)).rejects
         .toThrow('Variables \'?missing\' are used in the projection result, but are not assigned.');
     });
@@ -103,7 +122,7 @@ describe('ActorQueryOperationProject', () => {
         variables: [ '?a' ],
         canContainUndefs: true,
       });
-      const op = { operation: { type: 'project', input: 'in', variables: [ DF.variable('a') ]}};
+      const op: any = { operation: { type: 'project', input: 'in', variables: [ DF.variable('a') ]}};
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
         expect((<any> output).metadata()).toEqual('M');
         expect(output.variables).toEqual([ '?a' ]);
@@ -130,7 +149,7 @@ describe('ActorQueryOperationProject', () => {
         variables: [ '?a' ],
         canContainUndefs: true,
       });
-      const op = { operation: { type: 'project', input: 'in', variables: [ DF.variable('a') ]}};
+      const op: any = { operation: { type: 'project', input: 'in', variables: [ DF.variable('a') ]}};
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
         expect((<any> output).metadata()).toEqual('M');
         expect(output.variables).toEqual([ '?a' ]);
@@ -157,7 +176,7 @@ describe('ActorQueryOperationProject', () => {
         variables: [ '?a' ],
         canContainUndefs: true,
       });
-      const op = { operation: { type: 'project', input: 'in', variables: [ DF.variable('a') ]}};
+      const op: any = { operation: { type: 'project', input: 'in', variables: [ DF.variable('a') ]}};
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
         expect((<any> output).metadata()).toEqual('M');
         expect(output.variables).toEqual([ '?a' ]);
@@ -185,7 +204,7 @@ describe('ActorQueryOperationProject', () => {
         variables: [ '?a' ],
         canContainUndefs: true,
       });
-      const op = { operation: { type: 'project', input: 'in', variables: [ DF.variable('a') ]}};
+      const op: any = { operation: { type: 'project', input: 'in', variables: [ DF.variable('a') ]}};
       return actor.run(op).then(async(output: IActorQueryOperationOutputBindings) => {
         expect((<any> output).metadata()).toEqual('M');
         expect(output.variables).toEqual([ '?a' ]);

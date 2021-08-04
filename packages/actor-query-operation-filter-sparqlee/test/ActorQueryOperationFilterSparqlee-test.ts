@@ -8,6 +8,7 @@ import { DataFactory } from 'rdf-data-factory';
 import type { Algebra } from 'sparqlalgebrajs';
 import { Factory, translate } from 'sparqlalgebrajs';
 import * as sparqlee from 'sparqlee';
+import { isExpressionError } from 'sparqlee';
 import { ActorQueryOperationFilterSparqlee } from '../lib/ActorQueryOperationFilterSparqlee';
 const arrayifyStream = require('arrayify-stream');
 const DF = new DataFactory();
@@ -91,22 +92,22 @@ describe('ActorQueryOperationFilterSparqlee', () => {
     });
 
     it('should test on filter', () => {
-      const op = { operation: { type: 'filter', expression: truthyExpression }};
+      const op: any = { operation: { type: 'filter', expression: truthyExpression }};
       return expect(actor.test(op)).resolves.toBeTruthy();
     });
 
     it('should fail on unsupported operators', () => {
-      const op = { operation: { type: 'filter', expression: unknownExpression }};
+      const op: any = { operation: { type: 'filter', expression: unknownExpression }};
       return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
     it('should not test on non-filter', () => {
-      const op = { operation: { type: 'some-other-type' }};
+      const op: any = { operation: { type: 'some-other-type' }};
       return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
     it('should return the full stream for a truthy filter', async() => {
-      const op = { operation: { type: 'filter', input: {}, expression: truthyExpression }};
+      const op: any = { operation: { type: 'filter', input: {}, expression: truthyExpression }};
       const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
       expect(await arrayifyStream(output.bindingsStream)).toMatchObject([
         Bindings({ '?a': DF.literal('1') }),
@@ -120,7 +121,7 @@ describe('ActorQueryOperationFilterSparqlee', () => {
     });
 
     it('should return an empty stream for a falsy filter', async() => {
-      const op = { operation: { type: 'filter', input: {}, expression: falsyExpression }};
+      const op: any = { operation: { type: 'filter', input: {}, expression: falsyExpression }};
       const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
       expect(await arrayifyStream(output.bindingsStream)).toMatchObject([]);
       expect(await (<any> output).metadata()).toMatchObject({ totalItems: 3 });
@@ -130,7 +131,7 @@ describe('ActorQueryOperationFilterSparqlee', () => {
     });
 
     it('should return an empty stream when the expressions error', async() => {
-      const op = { operation: { type: 'filter', input: {}, expression: erroringExpression }};
+      const op: any = { operation: { type: 'filter', input: {}, expression: erroringExpression }};
       const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
       expect(await arrayifyStream(output.bindingsStream)).toMatchObject([]);
       expect(await (<any> output).metadata()).toMatchObject({ totalItems: 3 });
@@ -139,13 +140,30 @@ describe('ActorQueryOperationFilterSparqlee', () => {
       expect(output.canContainUndefs).toEqual(false);
     });
 
-    it('should emit an error for a hard erroring filter', async next => {
+    it('Should log warning for an expressionError', async() => {
+      // The order is very important. This item requires isExpressionError to still have it's right definition.
+      const logWarnSpy = jest.spyOn(<any> actor, 'logWarn');
+      const op: any = { operation: { type: 'filter', input: {}, expression: erroringExpression }};
+      const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
+      await new Promise<void>(resolve => output.bindingsStream.on('end', resolve));
+      expect(logWarnSpy).toHaveBeenCalledTimes(3);
+      logWarnSpy.mock.calls.forEach((call, index) => {
+        const dataCB = <() => { error: any; bindings: Bindings }> call[2];
+        const { error, bindings } = dataCB();
+        expect(isExpressionError(error)).toBeTruthy();
+        expect(bindings).toEqual({
+          '?a': DF.literal(String(index + 1), DF.namedNode('http://www.w3.org/2001/XMLSchema#string')),
+        });
+      });
+    });
+
+    it('should emit an error for a hard erroring filter', async() => {
       // eslint-disable-next-line no-import-assign
       Object.defineProperty(sparqlee, 'isExpressionError', { writable: true });
       (<any> sparqlee).isExpressionError = jest.fn(() => false);
-      const op = { operation: { type: 'filter', input: {}, expression: erroringExpression }};
+      const op: any = { operation: { type: 'filter', input: {}, expression: erroringExpression }};
       const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
-      output.bindingsStream.on('error', () => next());
+      await new Promise<void>(resolve => output.bindingsStream.on('error', () => resolve()));
     });
 
     it('should use and respect the baseIRI from the expression context', async() => {
@@ -153,7 +171,7 @@ describe('ActorQueryOperationFilterSparqlee', () => {
       const context = Map({
         [KeysInitSparql.baseIRI]: 'http://example.com',
       });
-      const op = { operation: { type: 'filter', input: {}, expression }, context };
+      const op: any = { operation: { type: 'filter', input: {}, expression }, context };
       const output: IActorQueryOperationOutputBindings = <any> await actor.run(op);
       expect(await arrayifyStream(output.bindingsStream)).toMatchObject([
         Bindings({ '?a': DF.literal('1') }),

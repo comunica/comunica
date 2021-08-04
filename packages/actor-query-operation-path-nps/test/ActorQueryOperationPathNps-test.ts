@@ -75,17 +75,17 @@ describe('ActorQueryOperationPathNps', () => {
     });
 
     it('should test on Nps paths', () => {
-      const op = { operation: { type: Algebra.types.PATH, predicate: { type: Algebra.types.NPS }}};
+      const op: any = { operation: { type: Algebra.types.PATH, predicate: { type: Algebra.types.NPS }}};
       return expect(actor.test(op)).resolves.toBeTruthy();
     });
 
     it('should test on different paths', () => {
-      const op = { operation: { type: Algebra.types.PATH, predicate: { type: 'dummy' }}};
+      const op: any = { operation: { type: Algebra.types.PATH, predicate: { type: 'dummy' }}};
       return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
     it('should support Nps paths', async() => {
-      const op = { operation: factory.createPath(
+      const op: any = { operation: factory.createPath(
         DF.namedNode('s'),
         factory.createNps([ DF.namedNode('2') ]),
         DF.variable('x'),

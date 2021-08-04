@@ -19,6 +19,13 @@
 
 **[Learn more about Comunica on our website](https://comunica.dev/).**
 
+Comunica is an open-source project that is used by [many other projects](https://github.com/comunica/comunica/network/dependents),
+and is being maintained by a [group of volunteers](https://github.com/comunica/comunica/graphs/contributors).
+If you would like to support this project, you may consider:
+
+* Contributing directly by [writing code or documentation](https://comunica.dev/contribute/); or
+* Contributing indirectly by funding this project via [Open Collective](https://opencollective.com/comunica-association).
+
 ## Query with Comunica
 
 Read one of our [guides to **get started** with querying](https://comunica.dev/docs/query/getting_started/):

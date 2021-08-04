@@ -74,22 +74,22 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
     });
 
     it('should test on deleteinsert', () => {
-      const op = { operation: { type: 'deleteinsert' }};
+      const op: any = { operation: { type: 'deleteinsert' }};
       return expect(actor.test(op)).resolves.toBeTruthy();
     });
 
     it('should not test on readOnly', () => {
-      const op = { operation: { type: 'deleteinsert' }, context: ActionContext({ [KEY_CONTEXT_READONLY]: true }) };
+      const op: any = { operation: { type: 'deleteinsert' }, context: ActionContext({ [KEY_CONTEXT_READONLY]: true }) };
       return expect(actor.test(op)).rejects.toThrowError(`Attempted a write operation in read-only mode`);
     });
 
     it('should not test on non-deleteinsert', () => {
-      const op = { operation: { type: 'some-other-type' }};
+      const op: any = { operation: { type: 'some-other-type' }};
       return expect(actor.test(op)).rejects.toBeTruthy();
     });
 
     it('should run without operation input', async() => {
-      const op = { operation: { type: 'deleteinsert' }};
+      const op: any = { operation: { type: 'deleteinsert' }};
       const output = <IActorQueryOperationOutputUpdate> await actor.run(op);
       expect(output.type).toEqual('update');
       await expect(output.updateResult).resolves.toBeUndefined();
@@ -98,7 +98,7 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
     });
 
     it('should run with insert', async() => {
-      const op = {
+      const op: any = {
         operation: {
           type: 'deleteinsert',
           insert: [
@@ -116,7 +116,7 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
     });
 
     it('should run with delete', async() => {
-      const op = {
+      const op: any = {
         operation: {
           type: 'deleteinsert',
           delete: [
@@ -134,7 +134,7 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
     });
 
     it('should run with insert and delete', async() => {
-      const op = {
+      const op: any = {
         operation: {
           type: 'deleteinsert',
           insert: [
@@ -157,7 +157,7 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
     });
 
     it('should run with insert and where', async() => {
-      const op = {
+      const op: any = {
         operation: {
           type: 'deleteinsert',
           insert: [
@@ -178,7 +178,7 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
     });
 
     it('should run with delete and where', async() => {
-      const op = {
+      const op: any = {
         operation: {
           type: 'deleteinsert',
           delete: [
@@ -199,7 +199,7 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
     });
 
     it('should run with insert, delete and where', async() => {
-      const op = {
+      const op: any = {
         operation: {
           type: 'deleteinsert',
           insert: [
@@ -232,7 +232,7 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
         updateResult: Promise.reject(error),
       }));
 
-      const op = {
+      const op: any = {
         operation: {
           type: 'deleteinsert',
         },
@@ -251,7 +251,7 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
         variables: [ '?a' ],
       });
 
-      const op = {
+      const op: any = {
         operation: {
           type: 'deleteinsert',
           insert: [
@@ -276,7 +276,7 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
         variables: [ '?a' ],
       });
 
-      const op = {
+      const op: any = {
         operation: {
           type: 'deleteinsert',
           delete: [
@@ -301,7 +301,7 @@ describe('ActorQueryOperationUpdateDeleteInsert', () => {
         variables: [ '?a' ],
       });
 
-      const op = {
+      const op: any = {
         operation: {
           type: 'deleteinsert',
           insert: [

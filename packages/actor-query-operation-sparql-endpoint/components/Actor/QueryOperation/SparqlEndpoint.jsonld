@@ -25,7 +25,23 @@
           "required": true,
           "unique": true,
           "default": false
-        }
+        },
+        {
+          "@id": "caqose:Actor/QueryOperation/SparqlEndpoint/checkUrlSuffixSparql",
+          "comment": "If URLs ending with '/sparql' should also be considered SPARQL endpoints.",
+          "required": true,
+          "unique": true,
+          "range": "xsd:boolean",
+          "default": true
+        },
+        {
+          "@id": "caqose:Actor/QueryOperation/SparqlEndpoint/checkUrlSuffixUpdate",
+          "comment": "If URLs ending with '/update' should also be considered SPARQL endpoints.",
+          "required": true,
+          "unique": true,
+          "range": "xsd:boolean",
+          "default": true
+        },
       ],
       "constructorArguments": [
         {
@@ -39,6 +55,14 @@
             {
               "keyRaw": "forceHttpGet",
               "value": "caqose:Actor/QueryOperation/SparqlEndpoint/forceHttpGet"
+            },
+            {
+              "keyRaw": "checkUrlSuffixSparql",
+              "value": "caqose:Actor/QueryOperation/SparqlEndpoint/checkUrlSuffixSparql"
+            },
+            {
+              "keyRaw": "checkUrlSuffixUpdate",
+              "value": "caqose:Actor/QueryOperation/SparqlEndpoint/checkUrlSuffixUpdate"
             }
           ]
         }
