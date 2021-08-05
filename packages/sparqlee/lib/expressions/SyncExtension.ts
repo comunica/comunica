@@ -1,11 +1,13 @@
-import {Expression, ExpressionType, NamedExpression, SimpleApplication, SyncExtensionExpression} from './Expressions';
-import * as RDF from 'rdf-js';
+import type * as RDF from 'rdf-js';
+import type { Expression, SimpleApplication, SyncExtensionExpression } from './Expressions';
+import { ExpressionType } from './Expressions';
 
 export class SyncExtension implements SyncExtensionExpression {
-  expressionType: ExpressionType.SyncExtension = ExpressionType.SyncExtension;
+  public expressionType: ExpressionType.SyncExtension = ExpressionType.SyncExtension;
 
-  constructor(
+  public constructor(
     public name: RDF.NamedNode,
     public args: Expression[],
-    public apply: SimpleApplication) { }
+    public apply: SimpleApplication,
+  ) { }
 }

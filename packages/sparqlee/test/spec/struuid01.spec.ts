@@ -1,5 +1,3 @@
-import * as Data from './_data';
-
 import { aliases as a, int, testAll } from '../util/utils';
 
 /**
@@ -29,7 +27,6 @@ import { aliases as a, int, testAll } from '../util/utils';
  */
 
 describe('We should respect the struuid01 spec', () => {
-  const { } = Data.data();
   testAll([
     `ISLITERAL(STRUUID()) = ${a.true}`,
     `REGEX(STRUUID(), "^[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}$", "i") = ${a.true}`,

@@ -1,7 +1,6 @@
-// tslint:disable:max-line-length
+/* eslint max-len: 0 */
+import { testAll } from '../util/utils';
 import * as Data from './_data';
-
-import { aliases as a, testAll } from '../util/utils';
 
 /**
  * REQUEST: sha512-01.rq

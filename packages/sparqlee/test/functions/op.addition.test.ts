@@ -1,4 +1,4 @@
-import { error, merge, numeric, wrap } from '../util/Aliases';
+import { merge, numeric, wrap } from '../util/Aliases';
 import { Notation, testTable } from '../util/TruthTable';
 
 const config = {

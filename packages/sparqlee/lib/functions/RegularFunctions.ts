@@ -1,22 +1,19 @@
-import {DataFactory} from 'rdf-data-factory';
-import {sha1, sha256, sha384, sha512} from 'hash.js';
-import {hash as md5} from 'spark-md5';
-import {Decimal} from 'decimal.js';
+import { Decimal } from 'decimal.js';
+import { sha1, sha256, sha384, sha512 } from 'hash.js';
+import { Map } from 'immutable';
+import { DataFactory } from 'rdf-data-factory';
+import { hash as md5 } from 'spark-md5';
 import * as uuid from 'uuid';
 
-import { Map } from 'immutable';
-
 import * as E from '../expressions';
+import { transformLiteral } from '../Transformation';
 import * as C from '../util/Consts';
+import { TypeURL } from '../util/Consts';
 import * as Err from '../util/Errors';
 import * as P from '../util/Parsing';
+import type { OverloadMap } from './Core';
+import { bool, declare, langString, number, string } from './Helpers';
 import * as X from './XPathFunctions';
-
-import { TypeURL } from '../util/Consts';
-
-import { transformLiteral } from '../Transformation';
-import { OverloadMap } from './Core';
-import { bool, declare, langString, log, number, string } from './Helpers';
 
 const DF = new DataFactory();
 
@@ -35,21 +32,21 @@ type Term = E.TermExpression;
 const not = {
   arity: 1,
   overloads: declare()
-    .onTerm1((val) => bool(!val.coerceEBV()))
+    .onTerm1(val => bool(!val.coerceEBV()))
     .collect(),
 };
 
 const unaryPlus = {
   arity: 1,
   overloads: declare()
-    .onNumeric1((val) => number(val.typedValue, val.typeURL.value as TypeURL))
+    .onNumeric1(val => number(val.typedValue, <TypeURL> val.typeURL.value))
     .collect(),
 };
 
 const unaryMinus = {
   arity: 1,
   overloads: declare()
-    .onNumeric1((val) => number(-val.typedValue, val.typeURL.value as TypeURL))
+    .onNumeric1(val => number(-val.typedValue, <TypeURL> val.typeURL.value))
     .collect(),
 };
 
@@ -65,13 +62,14 @@ const division = {
   overloads: declare()
     .arithmetic((left, right) => Decimal.div(left, right).toNumber())
     .onBinaryTyped(
-      ['integer', 'integer'],
+      [ 'integer', 'integer' ],
       (left: number, right: number) => {
         if (right === 0) {
           throw new Err.ExpressionError('Integer division by 0');
         }
         return number(Decimal.div(left, right).toNumber(), TypeURL.XSD_DECIMAL);
-      })
+      },
+    )
     .collect(),
 };
 
@@ -98,18 +96,18 @@ const equality = {
     .booleanTest((left, right) => left === right)
     .dateTimeTest((left, right) => left.getTime() === right.getTime())
     .set(
-      ['term', 'term'],
-      ([left, right]) => bool(RDFTermEqual(left, right)),
+      [ 'term', 'term' ],
+      ([ left, right ]) => bool(RDFTermEqual(left, right)),
     )
     .collect(),
 };
 
-function RDFTermEqual(_left: Term, _right: Term) {
+function RDFTermEqual(_left: Term, _right: Term): boolean {
   const left = _left.toRDF();
   const right = _right.toRDF();
   const val = left.equals(right);
   if ((left.termType === 'Literal') && (right.termType === 'Literal')) {
-    throw new Err.RDFEqualTypeError([_left, _right]);
+    throw new Err.RDFEqualTypeError([ _left, _right ]);
   }
   return val;
 }
@@ -122,8 +120,8 @@ const inequality = {
     .booleanTest((left, right) => left !== right)
     .dateTimeTest((left, right) => left.getTime() !== right.getTime())
     .set(
-      ['term', 'term'],
-      ([left, right]) => bool(!RDFTermEqual(left, right)),
+      [ 'term', 'term' ],
+      ([ left, right ]) => bool(!RDFTermEqual(left, right)),
     )
     .collect(),
 };
@@ -176,50 +174,50 @@ const greaterThanEqual = {
 const isIRI = {
   arity: 1,
   overloads: declare()
-    .onTerm1((term) => bool(term.termType === 'namedNode'))
+    .onTerm1(term => bool(term.termType === 'namedNode'))
     .collect(),
 };
 
 const isBlank = {
   arity: 1,
   overloads: declare()
-    .onTerm1((term) => bool(term.termType === 'blankNode'))
+    .onTerm1(term => bool(term.termType === 'blankNode'))
     .collect(),
 };
 
 const isLiteral = {
   arity: 1,
   overloads: declare()
-    .onTerm1((term) => bool(term.termType === 'literal'))
+    .onTerm1(term => bool(term.termType === 'literal'))
     .collect(),
 };
 
 const isNumeric = {
   arity: 1,
   overloads: declare()
-    .onNumeric1((term) => bool(true))
-    .onTerm1((term) => bool(false))
+    .onNumeric1(term => bool(true))
+    .onTerm1(term => bool(false))
     .collect(),
 };
 
 const toString = {
   arity: 1,
   overloads: declare()
-    .onTerm1((term) => string(term.str()))
+    .onTerm1(term => string(term.str()))
     .collect(),
 };
 
 const lang = {
   arity: 1,
   overloads: declare()
-    .onLiteral1((lit) => string(lit.language || ''))
+    .onLiteral1(lit => string(lit.language || ''))
     .collect(),
 };
 
 const datatype = {
   arity: 1,
   overloads: declare()
-    .onLiteral1((lit) => new E.NamedNode(lit.typeURL.value))
+    .onLiteral1(lit => new E.NamedNode(lit.typeURL.value))
     .collect(),
 };
 
@@ -233,11 +231,12 @@ const STRDT = {
   arity: 2,
   overloads: declare()
     .onBinary(
-      ['string', 'namedNode'],
+      [ 'string', 'namedNode' ],
       (str: E.StringLiteral, iri: E.NamedNode) => {
         const lit = DF.literal(str.typedValue, DF.namedNode(iri.value));
         return transformLiteral(lit);
-      })
+      },
+    )
     .collect(),
 };
 
@@ -245,7 +244,7 @@ const STRLANG = {
   arity: 2,
   overloads: declare()
     .onBinaryTyped(
-      ['string', 'string'],
+      [ 'string', 'string' ],
       (val: string, language: string) => new E.LangStringLiteral(val, language.toLowerCase()),
     )
     .collect(),
@@ -273,31 +272,30 @@ const STRUUID = {
 const STRLEN = {
   arity: 1,
   overloads: declare()
-    .onStringly1((str) => number([...str.typedValue].length, TypeURL.XSD_INTEGER))
+    .onStringly1(str => number([ ...str.typedValue ].length, TypeURL.XSD_INTEGER))
     .collect(),
 };
 
 const SUBSTR = {
-  arity: [2, 3],
+  arity: [ 2, 3 ],
   overloads: declare()
     .onBinaryTyped(
-      ['string', 'integer'],
-      (source: string, startingLoc: number) => {
-        return string([...source].slice(startingLoc - 1).join(''));
-      })
+      [ 'string', 'integer' ],
+      (source: string, startingLoc: number) => string([ ...source ].slice(startingLoc - 1).join('')),
+    )
     .onBinary(
-      ['langString', 'integer'],
+      [ 'langString', 'integer' ],
       (source: E.LangStringLiteral, startingLoc: E.NumericLiteral) => {
-        const sub = [...source.typedValue].slice(startingLoc.typedValue - 1).join('');
+        const sub = [ ...source.typedValue ].slice(startingLoc.typedValue - 1).join('');
         return langString(sub, source.language);
-      })
-    .onTernaryTyped(['string', 'integer', 'integer'],
-      (source: string, startingLoc: number, length: number) => {
-        return string([...source].slice(startingLoc - 1, length).join(''));
-      })
-    .onTernary(['langString', 'integer', 'integer'],
+      },
+    )
+    .onTernaryTyped([ 'string', 'integer', 'integer' ],
+      (source: string, startingLoc: number, length: number) =>
+        string([ ...source ].slice(startingLoc - 1, length).join('')))
+    .onTernary([ 'langString', 'integer', 'integer' ],
       (source: E.LangStringLiteral, startingLoc: E.NumericLiteral, length: E.NumericLiteral) => {
-        const sub = [...source.typedValue].slice(startingLoc.typedValue - 1, length.typedValue).join('');
+        const sub = [ ...source.typedValue ].slice(startingLoc.typedValue - 1, length.typedValue).join('');
         return langString(sub, source.language);
       })
     .collect(),
@@ -306,16 +304,16 @@ const SUBSTR = {
 const UCASE = {
   arity: 1,
   overloads: declare()
-    .onString1Typed((lit) => string(lit.toUpperCase()))
-    .onLangString1((lit) => langString(lit.typedValue.toUpperCase(), lit.language))
+    .onString1Typed(lit => string(lit.toUpperCase()))
+    .onLangString1(lit => langString(lit.typedValue.toUpperCase(), lit.language))
     .collect(),
 };
 
 const LCASE = {
   arity: 1,
   overloads: declare()
-    .onString1Typed((lit) => string(lit.toLowerCase()))
-    .onLangString1((lit) => langString(lit.typedValue.toLowerCase(), lit.language))
+    .onString1Typed(lit => string(lit.toLowerCase()))
+    .onLangString1(lit => langString(lit.typedValue.toLowerCase(), lit.language))
     .collect(),
 };
 
@@ -323,21 +321,22 @@ const STRSTARTS = {
   arity: 2,
   overloads: declare()
     .onBinaryTyped(
-      ['string', 'string'],
+      [ 'string', 'string' ],
       (arg1: string, arg2: string) => bool(arg1.startsWith(arg2)),
     )
     .onBinaryTyped(
-      ['langString', 'string'],
+      [ 'langString', 'string' ],
       (arg1: string, arg2: string) => bool(arg1.startsWith(arg2)),
     )
     .onBinary(
-      ['langString', 'langString'],
+      [ 'langString', 'langString' ],
       (arg1: E.LangStringLiteral, arg2: E.LangStringLiteral) => {
         if (arg1.language !== arg2.language) {
           throw new Err.IncompatibleLanguageOperation(arg1, arg2);
         }
         return bool(arg1.typedValue.startsWith(arg2.typedValue));
-      })
+      },
+    )
     .collect(),
 };
 
@@ -345,21 +344,22 @@ const STRENDS = {
   arity: 2,
   overloads: declare()
     .onBinaryTyped(
-      ['string', 'string'],
+      [ 'string', 'string' ],
       (arg1: string, arg2: string) => bool(arg1.endsWith(arg2)),
     )
     .onBinaryTyped(
-      ['langString', 'string'],
+      [ 'langString', 'string' ],
       (arg1: string, arg2: string) => bool(arg1.endsWith(arg2)),
     )
     .onBinary(
-      ['langString', 'langString'],
+      [ 'langString', 'langString' ],
       (arg1: E.LangStringLiteral, arg2: E.LangStringLiteral) => {
         if (arg1.language !== arg2.language) {
           throw new Err.IncompatibleLanguageOperation(arg1, arg2);
         }
         return bool(arg1.typedValue.endsWith(arg2.typedValue));
-      })
+      },
+    )
     .collect(),
 };
 
@@ -367,21 +367,22 @@ const CONTAINS = {
   arity: 2,
   overloads: declare()
     .onBinaryTyped(
-      ['string', 'string'],
+      [ 'string', 'string' ],
       (arg1: string, arg2: string) => bool(arg1.includes(arg2)),
     )
     .onBinaryTyped(
-      ['langString', 'string'],
+      [ 'langString', 'string' ],
       (arg1: string, arg2: string) => bool(arg1.includes(arg2)),
     )
     .onBinary(
-      ['langString', 'langString'],
+      [ 'langString', 'langString' ],
       (arg1: E.LangStringLiteral, arg2: E.LangStringLiteral) => {
         if (arg1.language !== arg2.language) {
           throw new Err.IncompatibleLanguageOperation(arg1, arg2);
         }
         return bool(arg1.typedValue.includes(arg2.typedValue));
-      })
+      },
+    )
     .collect(),
 };
 
@@ -389,27 +390,28 @@ const STRBEFORE = {
   arity: 2,
   overloads: declare()
     .onBinaryTyped(
-      ['string', 'string'],
-      (arg1: string, arg2: string) => string(arg1.substr(0, arg1.indexOf(arg2))),
+      [ 'string', 'string' ],
+      (arg1: string, arg2: string) => string(arg1.slice(0, Math.max(0, arg1.indexOf(arg2)))),
     )
     .onBinary(
-      ['langString', 'string'],
+      [ 'langString', 'string' ],
       (arg1: E.LangStringLiteral, arg2: E.StringLiteral) => {
-        const [a1, a2] = [arg1.typedValue, arg2.typedValue];
-        const sub = arg1.typedValue.substr(0, a1.indexOf(a2));
-        return (sub || !a2) ? langString(sub, arg1.language) : string(sub);
+        const [ a1, a2 ] = [ arg1.typedValue, arg2.typedValue ];
+        const sub = arg1.typedValue.slice(0, Math.max(0, a1.indexOf(a2)));
+        return sub || !a2 ? langString(sub, arg1.language) : string(sub);
       },
     )
     .onBinary(
-      ['langString', 'langString'],
+      [ 'langString', 'langString' ],
       (arg1: E.LangStringLiteral, arg2: E.LangStringLiteral) => {
         if (arg1.language !== arg2.language) {
           throw new Err.IncompatibleLanguageOperation(arg1, arg2);
         }
-        const [a1, a2] = [arg1.typedValue, arg2.typedValue];
-        const sub = arg1.typedValue.substr(0, a1.indexOf(a2));
-        return (sub || !a2) ? langString(sub, arg1.language) : string(sub);
-      })
+        const [ a1, a2 ] = [ arg1.typedValue, arg2.typedValue ];
+        const sub = arg1.typedValue.slice(0, Math.max(0, a1.indexOf(a2)));
+        return sub || !a2 ? langString(sub, arg1.language) : string(sub);
+      },
+    )
     .collect(),
 };
 
@@ -417,34 +419,35 @@ const STRAFTER = {
   arity: 2,
   overloads: declare()
     .onBinaryTyped(
-      ['string', 'string'],
-      (arg1: string, arg2: string) => string(arg1.substr(arg1.indexOf(arg2)).substr(arg2.length)),
+      [ 'string', 'string' ],
+      (arg1: string, arg2: string) => string(arg1.slice(arg1.indexOf(arg2)).slice(arg2.length)),
     )
     .onBinary(
-      ['langString', 'string'],
+      [ 'langString', 'string' ],
       (arg1: E.LangStringLiteral, arg2: E.StringLiteral) => {
-        const [a1, a2] = [arg1.typedValue, arg2.typedValue];
-        const sub = a1.substr(a1.indexOf(a2)).substr(a2.length);
-        return (sub || !a2) ? langString(sub, arg1.language) : string(sub);
+        const [ a1, a2 ] = [ arg1.typedValue, arg2.typedValue ];
+        const sub = a1.slice(a1.indexOf(a2)).slice(a2.length);
+        return sub || !a2 ? langString(sub, arg1.language) : string(sub);
       },
     )
     .onBinary(
-      ['langString', 'langString'],
+      [ 'langString', 'langString' ],
       (arg1: E.LangStringLiteral, arg2: E.LangStringLiteral) => {
         if (arg1.language !== arg2.language) {
           throw new Err.IncompatibleLanguageOperation(arg1, arg2);
         }
-        const [a1, a2] = [arg1.typedValue, arg2.typedValue];
-        const sub = a1.substr(a1.indexOf(a2)).substr(a2.length);
-        return (sub || !a2) ? langString(sub, arg1.language) : string(sub);
-      })
+        const [ a1, a2 ] = [ arg1.typedValue, arg2.typedValue ];
+        const sub = a1.slice(a1.indexOf(a2)).slice(a2.length);
+        return sub || !a2 ? langString(sub, arg1.language) : string(sub);
+      },
+    )
     .collect(),
 };
 
 const ENCODE_FOR_URI = {
   arity: 1,
   overloads: declare()
-    .onStringly1Typed((val) => string(encodeURI(val))).collect(),
+    .onStringly1Typed(val => string(encodeURI(val))).collect(),
 };
 
 // See special operators
@@ -454,47 +457,48 @@ const langmatches = {
   arity: 2,
   overloads: declare()
     .onBinaryTyped(
-      ['string', 'string'],
+      [ 'string', 'string' ],
       (tag: string, range: string) => bool(X.langMatches(tag, range)),
     ).collect(),
 };
 
-const regex2 = (text: string, pattern: string) => bool(X.matches(text, pattern));
-const regex3 = (text: string, pattern: string, flags: string) => bool(X.matches(text, pattern, flags));
+const regex2: (text: string, pattern: string) => E.BooleanLiteral =
+  (text: string, pattern: string) => bool(X.matches(text, pattern));
+const regex3: (text: string, pattern: string, flags: string) => E.BooleanLiteral =
+  (text: string, pattern: string, flags: string) => bool(X.matches(text, pattern, flags));
 const REGEX = {
-  arity: [2, 3],
+  arity: [ 2, 3 ],
   overloads: declare()
-    .onBinaryTyped(['string', 'string'], regex2)
-    .onBinaryTyped(['langString', 'string'], regex2)
-    .onTernaryTyped(['string', 'string', 'string'], regex3)
-    .onTernaryTyped(['langString', 'string', 'string'], regex3)
+    .onBinaryTyped([ 'string', 'string' ], regex2)
+    .onBinaryTyped([ 'langString', 'string' ], regex2)
+    .onTernaryTyped([ 'string', 'string', 'string' ], regex3)
+    .onTernaryTyped([ 'langString', 'string', 'string' ], regex3)
     .collect(),
 };
 
 const REPLACE = {
-  arity: [3, 4],
+  arity: [ 3, 4 ],
   overloads: declare()
     .onTernaryTyped(
-      ['string', 'string', 'string'],
+      [ 'string', 'string', 'string' ],
       (arg: string, pattern: string, replacement: string) =>
         string(X.replace(arg, pattern, replacement)),
     )
     .set(
-      ['langString', 'string', 'string'],
-      ([arg, pattern, replacement]: [E.LangStringLiteral, E.StringLiteral, E.StringLiteral]) => {
+      [ 'langString', 'string', 'string' ],
+      ([ arg, pattern, replacement ]: [E.LangStringLiteral, E.StringLiteral, E.StringLiteral]) => {
         const result = X.replace(arg.typedValue, pattern.typedValue, replacement.typedValue);
         return langString(result, arg.language);
       },
     )
     .onQuaternaryTyped(
-      ['string', 'string', 'string', 'string'],
+      [ 'string', 'string', 'string', 'string' ],
       (arg: string, pattern: string, replacement: string, flags: string) =>
         string(X.replace(arg, pattern, replacement, flags)),
     )
     .set(
-      ['langString', 'string', 'string', 'string'],
-      ([arg, pattern, replacement, flags]
-        : [E.LangStringLiteral, E.StringLiteral, E.StringLiteral, E.StringLiteral]) => {
+      [ 'langString', 'string', 'string', 'string' ], ([ arg, pattern, replacement, flags ]:
+      [E.LangStringLiteral, E.StringLiteral, E.StringLiteral, E.StringLiteral]) => {
         const result = X.replace(arg.typedValue, pattern.typedValue, replacement.typedValue, flags.typedValue);
         return langString(result, arg.language);
       },
@@ -511,7 +515,8 @@ const abs = {
   arity: 1,
   overloads: declare()
     .onNumeric1(
-      (num) => number(Math.abs(num.typedValue), num.typeURL.value as C.TypeURL))
+      num => number(Math.abs(num.typedValue), <C.TypeURL> num.typeURL.value),
+    )
     .collect(),
 };
 
@@ -519,7 +524,8 @@ const round = {
   arity: 1,
   overloads: declare()
     .onNumeric1(
-      (num) => number(Math.round(num.typedValue), num.typeURL.value as C.TypeURL))
+      num => number(Math.round(num.typedValue), <C.TypeURL> num.typeURL.value),
+    )
     .collect(),
 };
 
@@ -527,7 +533,8 @@ const ceil = {
   arity: 1,
   overloads: declare()
     .onNumeric1(
-      (num) => number(Math.ceil(num.typedValue), num.typeURL.value as C.TypeURL))
+      num => number(Math.ceil(num.typedValue), <C.TypeURL> num.typeURL.value),
+    )
     .collect(),
 };
 
@@ -535,7 +542,8 @@ const floor = {
   arity: 1,
   overloads: declare()
     .onNumeric1(
-      (num) => number(Math.floor(num.typedValue), num.typeURL.value as C.TypeURL))
+      num => number(Math.floor(num.typedValue), <C.TypeURL> num.typeURL.value),
+    )
     .collect(),
 };
 
@@ -551,7 +559,7 @@ const rand = {
 // https://www.w3.org/TR/sparql11-query/#func-date-time
 // ----------------------------------------------------------------------------
 
-function parseDate(dateLit: E.DateTimeLiteral): P.SplittedDate {
+function parseDate(dateLit: E.DateTimeLiteral): P.ISplittedDate {
   return P.parseXSDDateTime(dateLit.str());
 }
 
@@ -562,7 +570,8 @@ const year = {
   arity: 1,
   overloads: declare()
     .onDateTime1(
-      (date) => number(Number(parseDate(date).year), TypeURL.XSD_INTEGER))
+      date => number(Number(parseDate(date).year), TypeURL.XSD_INTEGER),
+    )
     .collect(),
 };
 
@@ -570,7 +579,8 @@ const month = {
   arity: 1,
   overloads: declare()
     .onDateTime1(
-      (date) => number(Number(parseDate(date).month), TypeURL.XSD_INTEGER))
+      date => number(Number(parseDate(date).month), TypeURL.XSD_INTEGER),
+    )
     .collect(),
 };
 
@@ -578,7 +588,8 @@ const day = {
   arity: 1,
   overloads: declare()
     .onDateTime1(
-      (date) => number(Number(parseDate(date).day), TypeURL.XSD_INTEGER))
+      date => number(Number(parseDate(date).day), TypeURL.XSD_INTEGER),
+    )
     .collect(),
 };
 
@@ -586,7 +597,8 @@ const hours = {
   arity: 1,
   overloads: declare()
     .onDateTime1(
-      (date) => number(Number(parseDate(date).hours), TypeURL.XSD_INTEGER))
+      date => number(Number(parseDate(date).hours), TypeURL.XSD_INTEGER),
+    )
     .collect(),
 };
 
@@ -594,7 +606,8 @@ const minutes = {
   arity: 1,
   overloads: declare()
     .onDateTime1(
-      (date) => number(Number(parseDate(date).minutes), TypeURL.XSD_INTEGER))
+      date => number(Number(parseDate(date).minutes), TypeURL.XSD_INTEGER),
+    )
     .collect(),
 };
 
@@ -602,7 +615,8 @@ const seconds = {
   arity: 1,
   overloads: declare()
     .onDateTime1(
-      (date) => number(Number(parseDate(date).seconds), TypeURL.XSD_DECIMAL))
+      date => number(Number(parseDate(date).seconds), TypeURL.XSD_DECIMAL),
+    )
     .collect(),
 };
 
@@ -610,7 +624,7 @@ const timezone = {
   arity: 1,
   overloads: declare()
     .onDateTime1(
-      (date) => {
+      date => {
         const duration = X.formatDayTimeDuration(parseDate(date).timezone);
         if (!duration) {
           throw new Err.InvalidTimezoneCall(date.strValue);
@@ -625,7 +639,8 @@ const tz = {
   arity: 1,
   overloads: declare()
     .onDateTime1(
-      (date) => string(parseDate(date).timezone))
+      date => string(parseDate(date).timezone),
+    )
     .collect(),
 };
 
@@ -637,35 +652,35 @@ const tz = {
 const MD5 = {
   arity: 1,
   overloads: declare()
-    .onString1Typed((str) => string(md5(str)))
+    .onString1Typed(str => string(md5(str)))
     .collect(),
 };
 
 const SHA1 = {
   arity: 1,
   overloads: declare()
-    .onString1Typed((str) => string(sha1().update(str).digest('hex')))
+    .onString1Typed(str => string(sha1().update(str).digest('hex')))
     .collect(),
 };
 
 const SHA256 = {
   arity: 1,
   overloads: declare()
-    .onString1Typed((str) => string(sha256().update(str).digest('hex')))
+    .onString1Typed(str => string(sha256().update(str).digest('hex')))
     .collect(),
 };
 
 const SHA384 = {
   arity: 1,
   overloads: declare()
-    .onString1Typed((str) => string(sha384().update(str).digest('hex')))
+    .onString1Typed(str => string(sha384().update(str).digest('hex')))
     .collect(),
 };
 
 const SHA512 = {
   arity: 1,
   overloads: declare()
-    .onString1Typed((str) => string(sha512().update(str).digest('hex')))
+    .onString1Typed(str => string(sha512().update(str).digest('hex')))
     .collect(),
 };
 
@@ -674,17 +689,17 @@ const SHA512 = {
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
-/*
+/**
  * Collect all the definitions from above into an object
  */
-const _definitions: { [key in C.RegularOperator]: Definition } = {
+const _definitions: {[key in C.RegularOperator]: IDefinition } = {
   // --------------------------------------------------------------------------
   // Operator Mapping
   // https://www.w3.org/TR/sparql11-query/#OperatorMapping
   // --------------------------------------------------------------------------
   '!': not,
-  'UPLUS': unaryPlus,
-  'UMINUS': unaryMinus,
+  UPLUS: unaryPlus,
+  UMINUS: unaryMinus,
   '*': multiplication,
   '/': division,
   '+': addition,
@@ -700,82 +715,82 @@ const _definitions: { [key in C.RegularOperator]: Definition } = {
   // Functions on RDF Terms
   // https://www.w3.org/TR/sparql11-query/#func-rdfTerms
   // --------------------------------------------------------------------------
-  'isiri': isIRI,
-  'isblank': isBlank,
-  'isliteral': isLiteral,
-  'isnumeric': isNumeric,
-  'str': toString,
-  'lang': lang,
-  'datatype': datatype,
+  isiri: isIRI,
+  isblank: isBlank,
+  isliteral: isLiteral,
+  isnumeric: isNumeric,
+  str: toString,
+  lang,
+  datatype,
   // 'iri': IRI (see special operators),
   // 'uri': IRI (see special operators),
   // 'BNODE': BNODE (see special operators),
-  'strdt': STRDT,
-  'strlang': STRLANG,
-  'uuid': UUID,
-  'struuid': STRUUID,
+  strdt: STRDT,
+  strlang: STRLANG,
+  uuid: UUID,
+  struuid: STRUUID,
 
   // --------------------------------------------------------------------------
   // Functions on strings
   // https://www.w3.org/TR/sparql11-query/#func-forms
   // --------------------------------------------------------------------------
-  'strlen': STRLEN,
-  'substr': SUBSTR,
-  'ucase': UCASE,
-  'lcase': LCASE,
-  'strstarts': STRSTARTS,
-  'strends': STRENDS,
-  'contains': CONTAINS,
-  'strbefore': STRBEFORE,
-  'strafter': STRAFTER,
-  'encode_for_uri': ENCODE_FOR_URI,
+  strlen: STRLEN,
+  substr: SUBSTR,
+  ucase: UCASE,
+  lcase: LCASE,
+  strstarts: STRSTARTS,
+  strends: STRENDS,
+  contains: CONTAINS,
+  strbefore: STRBEFORE,
+  strafter: STRAFTER,
+  encode_for_uri: ENCODE_FOR_URI,
   // 'concat': CONCAT (see special operators)
-  'langmatches': langmatches,
-  'regex': REGEX,
-  'replace': REPLACE,
+  langmatches,
+  regex: REGEX,
+  replace: REPLACE,
 
   // --------------------------------------------------------------------------
   // Functions on numerics
   // https://www.w3.org/TR/sparql11-query/#func-numerics
   // --------------------------------------------------------------------------
-  'abs': abs,
-  'round': round,
-  'ceil': ceil,
-  'floor': floor,
-  'rand': rand,
+  abs,
+  round,
+  ceil,
+  floor,
+  rand,
 
   // --------------------------------------------------------------------------
   // Functions on Dates and Times
   // https://www.w3.org/TR/sparql11-query/#func-date-time
   // --------------------------------------------------------------------------
   // 'now': now (see special operators),
-  'year': year,
-  'month': month,
-  'day': day,
-  'hours': hours,
-  'minutes': minutes,
-  'seconds': seconds,
-  'timezone': timezone,
-  'tz': tz,
+  year,
+  month,
+  day,
+  hours,
+  minutes,
+  seconds,
+  timezone,
+  tz,
 
   // --------------------------------------------------------------------------
   // Hash functions
   // https://www.w3.org/TR/sparql11-query/#func-hash
   // --------------------------------------------------------------------------
-  'md5': MD5,
-  'sha1': SHA1,
-  'sha256': SHA256,
-  'sha384': SHA384,
-  'sha512': SHA512,
+  md5: MD5,
+  sha1: SHA1,
+  sha256: SHA256,
+  sha384: SHA384,
+  sha512: SHA512,
 };
 
 // ----------------------------------------------------------------------------
 // The definitions and functionality for all operators
 // ----------------------------------------------------------------------------
 
-export interface Definition {
+export interface IDefinition {
   arity: number | number[];
   overloads: OverloadMap;
 }
 
-export const definitions = Map<C.RegularOperator, Definition>(_definitions);
+export const definitions = Map<C.RegularOperator, IDefinition>(_definitions);

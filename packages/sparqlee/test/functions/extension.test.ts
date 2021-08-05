@@ -1,11 +1,12 @@
-import {bool, dateTime, merge, numeric, str, StringMap, stringToTermPrefix, TermMap, wrap} from '../util/Aliases';
-import {Notation, testTable} from '../util/TruthTable';
-import * as RDF from 'rdf-js';
-import {NamedNode} from 'rdf-js';
-import {SyncExtensionFunctionCreator} from '../../lib/evaluators/SyncEvaluator';
-import {DataFactory} from 'rdf-data-factory';
-import {Bindings} from '../../lib/Types';
-import {generalEvaluate, GeneralEvaluationConfig} from '../util/generalEvaluation';
+import { DataFactory } from 'rdf-data-factory';
+import type * as RDF from 'rdf-js';
+import type { SyncExtensionFunctionCreator } from '../../lib/evaluators/SyncEvaluator';
+import { Bindings } from '../../lib/Types';
+import { bool, dateTime, merge, numeric, str, stringToTermPrefix, wrap } from '../util/Aliases';
+import type { StringMap, TermMap } from '../util/Aliases';
+import type { GeneralEvaluationConfig } from '../util/generalEvaluation';
+import { generalEvaluate } from '../util/generalEvaluation';
+import { Notation, testTable } from '../util/TruthTable';
 
 function mapToTerm(map: StringMap): TermMap {
   return Object
@@ -38,7 +39,7 @@ describe('extension functions:', () => {
   NaN  3f  = false
   3f   NaN = false
   `;
-    const extensionTermEqual: SyncExtensionFunctionCreator = (functionNamedNode: NamedNode) => {
+    const extensionTermEqual: SyncExtensionFunctionCreator = (functionNamedNode: RDF.NamedNode) => {
       if (functionNamedNode.value === 'https://example.org/functions#equal') {
         return (args: RDF.Term[]) => {
           const resMap = mapToTerm(merge(numeric, str, dateTime, bool));
@@ -54,16 +55,16 @@ describe('extension functions:', () => {
     };
 
     describe('Can be evaluated', () => {
-      const generalEvaluationConfig: GeneralEvaluationConfig = { type: 'sync', config: {
+      const generalEvaluationConfig: GeneralEvaluationConfig = { type: 'sync',
+        config: {
           extensionFunctionCreator: extensionTermEqual,
-        }
-      };
-      const config = Object.assign(Object.assign({}, configBase), { generalEvaluationConfig });
-      testTable({...wrap(config), table});
+        }};
+      const config = { ...configBase, generalEvaluationConfig };
+      testTable({ ...wrap(config), table });
     });
 
     describe('throws error when not providing implementation', () => {
-      const errorTable: (e: string) => string = (e) => `
+      const errorTable: (e: string) => string = e => `
   3i 3i = ${e}
   3d 3d = ${e}
   3f 3f = ${e}
@@ -86,8 +87,8 @@ describe('extension functions:', () => {
   NaN  3f  = ${e}
   3f   NaN = ${e}
   `;
-      const config = Object.assign({}, configBase);
-      testTable({...wrap(config), errorTable: errorTable('Unknown named operator')});
+      const config = { ...configBase };
+      testTable({ ...wrap(config), errorTable: errorTable('Unknown named operator') });
     });
     it('upper case', async() => {
       const complexQuery = `PREFIX func: <http://example.org/functions#>
@@ -97,7 +98,7 @@ describe('extension functions:', () => {
         }`;
       const DF = new DataFactory();
       const stringType = DF.namedNode('http://www.w3.org/2001/XMLSchema#string');
-      const creator = (functionNamedNode: NamedNode) => (args: RDF.Term[]) => {
+      const creator = () => (args: RDF.Term[]) => {
         const arg = args[0];
         if (arg.termType === 'Literal' && arg.datatype.equals(DF.literal('', stringType).datatype)) {
           return DF.literal(arg.value.toUpperCase(), stringType);
@@ -105,11 +106,14 @@ describe('extension functions:', () => {
         return arg;
       };
       const bindings = Bindings({
-        '?o': DF.literal('AppLe', stringType)
+        '?o': DF.literal('AppLe', stringType),
       });
-      const generalEvaluationConfig: GeneralEvaluationConfig = { type: 'sync', config: { extensionFunctionCreator: creator } };
+      const generalEvaluationConfig: GeneralEvaluationConfig = {
+        type: 'sync',
+        config: { extensionFunctionCreator: creator },
+      };
       const evaluated = await generalEvaluate({
-        expression: complexQuery, expectEquality: true, generalEvaluationConfig, bindings
+        expression: complexQuery, expectEquality: true, generalEvaluationConfig, bindings,
       });
       expect(evaluated.asyncResult).toEqual(DF.literal('APPLE', stringType));
     });

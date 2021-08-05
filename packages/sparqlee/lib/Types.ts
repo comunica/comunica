@@ -1,14 +1,6 @@
 import { Map } from 'immutable';
-import * as RDF from 'rdf-js';
-import { Algebra as Alg } from 'sparqlalgebrajs';
+import type * as RDF from 'rdf-js';
 
-/**
- * An immutable solution mapping object.
- * This maps variables to a terms.
- *
- * Variables are represented as strings containing the variable name (without '?').
- * Terms are named nodes, literals or the default graph.
- */
 export type Bindings = Map<string, RDF.Term>;
 
 /**
@@ -17,15 +9,15 @@ export type Bindings = Map<string, RDF.Term>;
  * @return {Bindings} The immutable bindings from the hash.
  * @constructor
  */
-export function Bindings(hash: { [key: string]: RDF.Term }): Bindings {
+export function Bindings(hash: Record<string, RDF.Term>): Bindings {
   return Map(hash);
 }
 
-export interface ExpressionEvaluator<ExpressionType, TermType> {
-  evaluate(expr: ExpressionType, mapping: Bindings): TermType;
+export interface IExpressionEvaluator<ExpressionType, TermType> {
+  evaluate: (expr: ExpressionType, mapping: Bindings) => TermType;
 }
 
-// export type Hooks = {
+// Export type Hooks = {
 //   existence?: ExistenceHook;
 //   aggregate?: AggregateHook;
 //   namedFunc?: NamedFuncHook;

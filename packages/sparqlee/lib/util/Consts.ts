@@ -1,7 +1,6 @@
-// tslint:disable:variable-name
-import {DataFactory} from 'rdf-data-factory';
 import { Map, Set } from 'immutable';
-import * as RDF from 'rdf-js';
+import { DataFactory } from 'rdf-data-factory';
+import type * as RDF from 'rdf-js';
 
 const DF = new DataFactory();
 
@@ -89,7 +88,7 @@ export enum DerivedIntegerTypeURL {
 export const NumericTypeURLs: Set<string> = Set(Object.values(NumericTypeURL));
 export const DerivedIntegerTypeURLs = Set(Object.values(DerivedIntegerTypeURL));
 
-export const commonTerms: { [key: string]: RDF.Term } = {
+export const commonTerms: Record<string, RDF.Term> = {
   true: DF.literal('true', DF.namedNode(TypeURL.XSD_BOOLEAN)),
   false: DF.literal('false', DF.namedNode(TypeURL.XSD_BOOLEAN)),
 };
@@ -109,7 +108,7 @@ export type Type =
   | 'nonlexical';
 
 export type PrimitiveNumericType = 'integer' | 'decimal' | 'float' | 'double';
-export const PrimitiveNumericTypes = Set(['integer', 'decimal', 'float', 'double']);
+export const PrimitiveNumericTypes = Set([ 'integer', 'decimal', 'float', 'double' ]);
 
 export function type(typeURL: string): Type {
   switch (typeURL) {
@@ -146,10 +145,10 @@ export function type(typeURL: string): Type {
 // concrete type, since categories should remain the same. This mostly (only)
 // relevant for integer subtypes.
 const _decategorize = Map<PrimitiveNumericType, TypeURL>([
-  ['integer', TypeURL.XSD_INTEGER],
-  ['float', TypeURL.XSD_FLOAT],
-  ['double', TypeURL.XSD_DOUBLE],
-  ['decimal', TypeURL.XSD_DECIMAL],
+  [ 'integer', TypeURL.XSD_INTEGER ],
+  [ 'float', TypeURL.XSD_FLOAT ],
+  [ 'double', TypeURL.XSD_DOUBLE ],
+  [ 'decimal', TypeURL.XSD_DECIMAL ],
 ]);
 
 export function decategorize(cat: PrimitiveNumericType): TypeURL {
@@ -270,8 +269,8 @@ export enum SpecialOperator {
   IN = 'in',
   NOT_IN = 'notin',
 
-  // Annoying functions
-  CONCAT = 'concat', // Has variable arity
+  // Annoying functions - Has variable arity
+  CONCAT = 'concat',
 
   // Context dependant functions
   NOW = 'now',

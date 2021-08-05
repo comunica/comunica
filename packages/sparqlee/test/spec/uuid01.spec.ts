@@ -1,5 +1,3 @@
-import * as Data from './_data';
-
 import { aliases as a, int, testAll } from '../util/utils';
 
 /**
@@ -31,7 +29,6 @@ import { aliases as a, int, testAll } from '../util/utils';
  */
 
 describe('We should respect the uuid01 spec', () => {
-  const { } = Data.data();
   testAll([
     `ISIRI(UUID()) = ${a.true}`,
     `REGEX(STR(UUID()), "^urn:uuid:[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}$", "i") = ${a.true}`,

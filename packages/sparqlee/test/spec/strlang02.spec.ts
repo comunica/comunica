@@ -1,6 +1,5 @@
+import { testAll } from '../util/utils';
 import * as Data from './_data';
-
-import { aliases as a, testAll, testAllErrors } from '../util/utils';
 
 /**
  * REQUEST: strlang02.rq

@@ -1,6 +1,5 @@
+import { testAllErrors } from '../util/utils';
 import * as Data from './_data';
-
-import { aliases as a, decimal, int, testAll, testAllErrors } from '../util/utils';
 
 /**
  * REQUEST: plus-2-corrected.rq

@@ -1,7 +1,6 @@
-import { Map } from 'immutable';
+import type { Map } from 'immutable';
 
-import * as E from '../expressions';
-import * as C from '../util/Consts';
+import type * as C from '../util/Consts';
 
 import {
   NamedFunction,

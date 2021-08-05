@@ -9,11 +9,17 @@
  * @param value the string to interpret as a number
  */
 export function parseXSDFloat(value: string): number | undefined {
-  const numb: number = Number(value);
-  if (isNaN(numb)) {
-    if (value === 'NaN') { return NaN; }
-    if (value === 'INF') { return Infinity; }
-    if (value === '-INF') { return -Infinity; }
+  const numb = Number(value);
+  if (Number.isNaN(numb)) {
+    if (value === 'NaN') {
+      return Number.NaN;
+    }
+    if (value === 'INF') {
+      return Number.POSITIVE_INFINITY;
+    }
+    if (value === '-INF') {
+      return Number.NEGATIVE_INFINITY;
+    }
     return undefined;
   }
   return numb;
@@ -28,8 +34,8 @@ export function parseXSDFloat(value: string): number | undefined {
  * @param value the string to interpret as a number
  */
 export function parseXSDDecimal(value: string): number | undefined {
-  const numb: number = Number(value);
-  return (isNaN(numb)) ? undefined : numb;
+  const numb = Number(value);
+  return Number.isNaN(numb) ? undefined : numb;
 }
 
 /**
@@ -41,11 +47,11 @@ export function parseXSDDecimal(value: string): number | undefined {
  * @param value the string to interpret as a number
  */
 export function parseXSDInteger(value: string): number | undefined {
-  const numb: number = parseInt(value, 10);
-  return (isNaN(numb)) ? undefined : numb;
+  const numb: number = Number.parseInt(value, 10);
+  return Number.isNaN(numb) ? undefined : numb;
 }
 
-export interface SplittedDate {
+export interface ISplittedDate {
   year: string;
   month: string;
   day: string;
@@ -68,20 +74,20 @@ export interface SplittedDate {
  *  - "2011-01-10"
  * @param value the ISO date time string
  */
-export function parseXSDDateTime(value: string): SplittedDate {
+export function parseXSDDateTime(value: string): ISplittedDate {
   const posT = value.indexOf('T');
-  const date = posT >= 0 ? value.substr(0, posT) : value;
-  const [year, month, day] = date.split('-');
+  const date = posT >= 0 ? value.slice(0, Math.max(0, posT)) : value;
+  const [ year, month, day ] = date.split('-');
   let hours = '';
   let minutes = '';
   let seconds = '';
   let timezone = '';
   if (posT >= 0) {
-    const timeAndTimeZone = value.substr(posT + 1);
-    const [time, _timeZoneChopped] = timeAndTimeZone.split(/[\+\-Z]/);
-    [hours, minutes, seconds] = time.split(':');
-    const timezoneOrNull = new RegExp(/([\+\-Z].*)/).exec(timeAndTimeZone);
-    timezone = (timezoneOrNull) ? timezoneOrNull[0] : '';
+    const timeAndTimeZone = value.slice(posT + 1);
+    const [ time, _timeZoneChopped ] = timeAndTimeZone.split(/[+Z-]/u);
+    [ hours, minutes, seconds ] = time.split(':');
+    const timezoneOrNull = /([+Z-].*)/u.exec(timeAndTimeZone);
+    timezone = timezoneOrNull ? timezoneOrNull[0] : '';
   } else {
     hours = '00';
     minutes = '00';

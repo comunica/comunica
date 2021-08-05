@@ -1,6 +1,5 @@
-import * as Data from './_data';
-
 import { decimal, testAll } from '../util/utils';
+import * as Data from './_data';
 
 /**
  * REQUEST: seconds-01.rq

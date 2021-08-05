@@ -1,4 +1,4 @@
-import {testAll, testAllErrors} from '../util/utils';
+import { testAll, testAllErrors } from '../util/utils';
 
 describe('evaluation of XPath constructors', () => {
   describe('to string', () => {

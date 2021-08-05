@@ -1,12 +1,12 @@
-import * as RDF from 'rdf-js';
-import {Algebra as Alg} from 'sparqlalgebrajs';
+import type * as RDF from 'rdf-js';
+import type { Algebra as Alg } from 'sparqlalgebrajs';
 
-import * as E from '../expressions/Expressions';
+import type * as E from '../expressions/Expressions';
 
-import {transformAlgebra} from '../Transformation';
-import {Bindings, ExpressionEvaluator} from '../Types';
+import { transformAlgebra } from '../Transformation';
+import type { Bindings, IExpressionEvaluator } from '../Types';
 
-import {AsyncRecursiveEvaluator} from './RecursiveExpressionEvaluator';
+import { AsyncRecursiveEvaluator } from './RecursiveExpressionEvaluator';
 
 type Expression = E.Expression;
 type Term = E.TermExpression;
@@ -14,7 +14,7 @@ type Term = E.TermExpression;
 export type AsyncExtensionFunction = (args: RDF.Term[]) => Promise<RDF.Term>;
 export type AsyncExtensionFunctionCreator = (functionNamedNode: RDF.NamedNode) => AsyncExtensionFunction | undefined;
 
-export interface AsyncEvaluatorConfig {
+export interface IAsyncEvaluatorConfig {
   now?: Date;
   baseIRI?: string;
 
@@ -24,15 +24,15 @@ export interface AsyncEvaluatorConfig {
   extensionFunctionCreator?: AsyncExtensionFunctionCreator;
 }
 
-export type AsyncEvaluatorContext = AsyncEvaluatorConfig & {
+export type AsyncEvaluatorContext = IAsyncEvaluatorConfig & {
   now: Date;
 };
 
 export class AsyncEvaluator {
-  private expr: Expression;
-  private evaluator: ExpressionEvaluator<Expression, Promise<Term>>;
+  private readonly expr: Expression;
+  private readonly evaluator: IExpressionEvaluator<Expression, Promise<Term>>;
 
-  constructor(public algExpr: Alg.Expression, public config: AsyncEvaluatorConfig = {}) {
+  public constructor(public algExpr: Alg.Expression, public config: IAsyncEvaluatorConfig = {}) {
     const context = {
       now: config.now || new Date(Date.now()),
       bnode: config.bnode || undefined,
@@ -41,29 +41,26 @@ export class AsyncEvaluator {
       aggregate: config.aggregate,
     };
 
-    const extensionFunctionCreator = config.extensionFunctionCreator || (() => undefined);
+    const extensionFunctionCreator: AsyncExtensionFunctionCreator =
+      // eslint-disable-next-line unicorn/no-useless-undefined
+      config.extensionFunctionCreator || (() => undefined);
     this.expr = transformAlgebra(algExpr, { type: 'async', creator: extensionFunctionCreator });
 
     this.evaluator = new AsyncRecursiveEvaluator(context);
   }
 
-  async evaluate(mapping: Bindings): Promise<RDF.Term> {
+  public async evaluate(mapping: Bindings): Promise<RDF.Term> {
     const result = await this.evaluator.evaluate(this.expr, mapping);
-    return log(result).toRDF();
+    return result.toRDF();
   }
 
-  async evaluateAsEBV(mapping: Bindings): Promise<boolean> {
+  public async evaluateAsEBV(mapping: Bindings): Promise<boolean> {
     const result = await this.evaluator.evaluate(this.expr, mapping);
-    return log(result).coerceEBV();
+    return result.coerceEBV();
   }
 
-  async evaluateAsInternal(mapping: Bindings): Promise<Term> {
+  public async evaluateAsInternal(mapping: Bindings): Promise<Term> {
     const result = await this.evaluator.evaluate(this.expr, mapping);
-    return log(result);
+    return result;
   }
-}
-
-function log<T>(val: T): T {
-  // console.log(val);
-  return val;
 }

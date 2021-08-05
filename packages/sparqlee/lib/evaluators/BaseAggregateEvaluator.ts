@@ -1,12 +1,12 @@
-import {Algebra} from 'sparqlalgebrajs';
-import {AggregatorClass, aggregators, BaseAggregator} from '../Aggregators';
-import {SetFunction} from '../util/Consts';
-import * as RDF from 'rdf-js';
+import type * as RDF from 'rdf-js';
+import type { Algebra } from 'sparqlalgebrajs';
+import type { IAggregatorClass, BaseAggregator } from '../Aggregators';
+import { aggregators } from '../Aggregators';
+import type { Bindings } from '../Types';
+import type { SetFunction } from '../util/Consts';
 import * as Err from '../util/Errors';
-import {Bindings} from '../Types';
 
 export abstract class BaseAggregateEvaluator {
-
   protected expression: Algebra.AggregateExpression;
   protected aggregator: BaseAggregator<any>;
   protected throwError = false;
@@ -14,7 +14,7 @@ export abstract class BaseAggregateEvaluator {
 
   protected constructor(expr: Algebra.AggregateExpression, throwError?: boolean) {
     this.expression = expr;
-    this.aggregator = new aggregators[expr.aggregator as SetFunction](expr);
+    this.aggregator = new aggregators[<SetFunction> expr.aggregator](expr);
     this.throwError = throwError;
   }
 
@@ -26,16 +26,16 @@ export abstract class BaseAggregateEvaluator {
    *
    * @param throwError whether this function should respect the spec and throw an error if no empty value is defined
    */
-  static emptyValue(expr: Algebra.AggregateExpression, throwError = false): RDF.Term {
-    const val = aggregators[expr.aggregator as SetFunction].emptyValue();
+  public static emptyValue(expr: Algebra.AggregateExpression, throwError = false): RDF.Term {
+    const val = aggregators[<SetFunction> expr.aggregator].emptyValue();
     if (val === undefined && throwError) {
       throw new Err.EmptyAggregateError();
     }
     return val;
   }
 
-  result(): RDF.Term {
-    return (this.aggregator.constructor as AggregatorClass).emptyValue();
+  public result(): RDF.Term | undefined {
+    return (<IAggregatorClass> this.aggregator.constructor).emptyValue();
   }
 
   /**
@@ -68,5 +68,5 @@ export abstract class BaseAggregateEvaluator {
    */
   protected abstract __put(bindings: Bindings): void | Promise<void>;
 
-  protected abstract safeThrow(err: Error): void;
+  protected abstract safeThrow(err: unknown): void;
 }

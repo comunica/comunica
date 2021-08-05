@@ -1,18 +1,17 @@
-import * as RDF from 'rdf-js';
-import { Algebra as Alg } from 'sparqlalgebrajs';
+import type * as RDF from 'rdf-js';
+import type { Algebra as Alg } from 'sparqlalgebrajs';
 
-import * as E from '../expressions/Expressions';
+import type * as E from '../expressions/Expressions';
 
 import { transformAlgebra } from '../Transformation';
-import { Bindings, ExpressionEvaluator } from '../Types';
+import type { Bindings, IExpressionEvaluator } from '../Types';
 
 import { SyncRecursiveEvaluator } from './RecursiveExpressionEvaluator';
-import {NamedNode} from 'rdf-js';
 
 type Expression = E.Expression;
 type Term = E.TermExpression;
 
-export interface SyncEvaluatorConfig {
+export interface ISyncEvaluatorConfig {
   now?: Date;
   baseIRI?: string;
 
@@ -23,17 +22,17 @@ export interface SyncEvaluatorConfig {
 }
 
 export type SyncExtensionFunction = (args: RDF.Term[]) => RDF.Term;
-export type SyncExtensionFunctionCreator = (functionNamedNode: NamedNode) => SyncExtensionFunction | undefined;
+export type SyncExtensionFunctionCreator = (functionNamedNode: RDF.NamedNode) => SyncExtensionFunction | undefined;
 
-export type SyncEvaluatorContext = SyncEvaluatorConfig & {
+export type SyncEvaluatorContext = ISyncEvaluatorConfig & {
   now: Date;
 };
 
 export class SyncEvaluator {
-  private expr: Expression;
-  private evaluator: ExpressionEvaluator<Expression, Term>;
+  private readonly expr: Expression;
+  private readonly evaluator: IExpressionEvaluator<Expression, Term>;
 
-  constructor(public algExpr: Alg.Expression, public config: SyncEvaluatorConfig = {}) {
+  public constructor(public algExpr: Alg.Expression, public config: ISyncEvaluatorConfig = {}) {
     const context: SyncEvaluatorContext = {
       now: config.now || new Date(Date.now()),
       bnode: config.bnode || undefined,
@@ -42,28 +41,25 @@ export class SyncEvaluator {
       aggregate: config.aggregate,
     };
 
-    const extensionFunctionCreator = config.extensionFunctionCreator || (() => undefined);
+    const extensionFunctionCreator: SyncExtensionFunctionCreator =
+      // eslint-disable-next-line unicorn/no-useless-undefined
+      config.extensionFunctionCreator || (() => undefined);
     this.expr = transformAlgebra(algExpr, { type: 'sync', creator: extensionFunctionCreator });
     this.evaluator = new SyncRecursiveEvaluator(context);
   }
 
-  evaluate(mapping: Bindings): RDF.Term {
+  public evaluate(mapping: Bindings): RDF.Term {
     const result = this.evaluator.evaluate(this.expr, mapping);
-    return log(result).toRDF();
+    return result.toRDF();
   }
 
-  evaluateAsEBV(mapping: Bindings): boolean {
+  public evaluateAsEBV(mapping: Bindings): boolean {
     const result = this.evaluator.evaluate(this.expr, mapping);
-    return log(result).coerceEBV();
+    return result.coerceEBV();
   }
 
-  evaluateAsInternal(mapping: Bindings): Term {
+  public evaluateAsInternal(mapping: Bindings): Term {
     const result = this.evaluator.evaluate(this.expr, mapping);
-    return log(result);
+    return result;
   }
-}
-
-function log<T>(val: T): T {
-  // console.log(val);
-  return val;
 }

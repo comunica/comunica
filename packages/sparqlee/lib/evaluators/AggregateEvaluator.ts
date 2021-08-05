@@ -1,18 +1,19 @@
-import {Algebra} from 'sparqlalgebrajs';
-import {Bindings} from '../Types';
-import {SyncEvaluator, SyncEvaluatorConfig} from './SyncEvaluator';
-import {BaseAggregateEvaluator} from './BaseAggregateEvaluator';
+import type { Algebra } from 'sparqlalgebrajs';
+import type { Bindings } from '../Types';
+import { BaseAggregateEvaluator } from './BaseAggregateEvaluator';
+import type { ISyncEvaluatorConfig } from './SyncEvaluator';
+import { SyncEvaluator } from './SyncEvaluator';
 
 // TODO: Support hooks & change name to SyncAggregateEvaluator
-export class AggregateEvaluator extends BaseAggregateEvaluator{
-  private evaluator: SyncEvaluator;
+export class AggregateEvaluator extends BaseAggregateEvaluator {
+  private readonly evaluator: SyncEvaluator;
 
-  constructor(expr: Algebra.AggregateExpression, config?: SyncEvaluatorConfig, throwError?: boolean) {
+  public constructor(expr: Algebra.AggregateExpression, config?: ISyncEvaluatorConfig, throwError?: boolean) {
     super(expr, throwError);
     this.evaluator = new SyncEvaluator(expr.expression, config);
   }
 
-  put(bindings: Bindings): void {
+  public put(bindings: Bindings): void {
     this.init(bindings);
   }
 
@@ -20,16 +21,18 @@ export class AggregateEvaluator extends BaseAggregateEvaluator{
     try {
       const term = this.evaluator.evaluate(bindings);
       this.state = this.aggregator.put(this.state, term);
-    } catch (err) {
-      this.safeThrow(err);
+    } catch (error: unknown) {
+      this.safeThrow(error);
     }
   }
 
-  protected safeThrow(err: Error): void {
+  protected safeThrow(err: unknown): void {
     if (this.throwError) {
       throw err;
     } else {
-      this.put = () => { return; };
+      // eslint-disable-next-line @typescript-eslint/no-empty-function
+      this.put = () => {};
+      // eslint-disable-next-line unicorn/no-useless-undefined
       this.result = () => undefined;
     }
   }
@@ -39,11 +42,11 @@ export class AggregateEvaluator extends BaseAggregateEvaluator{
       const startTerm = this.evaluator.evaluate(start);
       this.state = this.aggregator.init(startTerm);
       if (this.state) {
-        this.put = this.__put;
-        this.result = this.__result;
+        this.put = this.__put.bind(this);
+        this.result = this.__result.bind(this);
       }
-    } catch (err) {
-      this.safeThrow(err);
+    } catch (error: unknown) {
+      this.safeThrow(error);
     }
   }
 }

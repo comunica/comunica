@@ -1,39 +1,40 @@
-import {DataFactory} from 'rdf-data-factory';
-import * as RDF from 'rdf-js';
-
-import { ExpressionType, TermExpression, TermType } from './Expressions';
+import { DataFactory } from 'rdf-data-factory';
+import type * as RDF from 'rdf-js';
 
 import * as C from '../util/Consts';
 import * as Err from '../util/Errors';
+import type { TermExpression, TermType } from './Expressions';
+import { ExpressionType } from './Expressions';
 
 const DF = new DataFactory();
 
 export abstract class Term implements TermExpression {
-  expressionType: ExpressionType.Term = ExpressionType.Term;
+  public expressionType: ExpressionType.Term = ExpressionType.Term;
   abstract termType: TermType;
 
   abstract toRDF(): RDF.Term;
 
-  str(): string {
-    throw new Err.InvalidArgumentTypes([this], C.RegularOperator.STR);
+  public str(): string {
+    throw new Err.InvalidArgumentTypes([ this ], C.RegularOperator.STR);
   }
 
-  coerceEBV(): boolean {
+  public coerceEBV(): boolean {
     throw new Err.EBVCoercionError(this);
   }
-
 }
 
 // NamedNodes -----------------------------------------------------------------
 export class NamedNode extends Term {
-  termType: TermType = 'namedNode';
-  constructor(public value: string) { super(); }
+  public termType: TermType = 'namedNode';
+  public constructor(public value: string) {
+    super();
+  }
 
-  toRDF(): RDF.Term {
+  public toRDF(): RDF.Term {
     return DF.namedNode(this.value);
   }
 
-  str(): string {
+  public str(): string {
     return this.value;
   }
 }
@@ -41,56 +42,60 @@ export class NamedNode extends Term {
 // BlankNodes -----------------------------------------------------------------
 
 export class BlankNode extends Term {
-  static _nextID = 0;
+  public static _nextID = 0;
 
-  value: RDF.BlankNode;
-  termType: TermType = 'blankNode';
+  public value: RDF.BlankNode;
+  public termType: TermType = 'blankNode';
 
-  constructor(value: RDF.BlankNode|string) {
+  public constructor(value: RDF.BlankNode | string) {
     super();
     this.value = typeof value === 'string' ? DF.blankNode(value) : value;
   }
 
-  static nextID() {
+  public static nextID(): string {
     BlankNode._nextID += 1;
     return BlankNode.nextID.toString();
   }
 
-  toRDF(): RDF.Term {
+  public toRDF(): RDF.Term {
     return this.value;
   }
 }
 
 // Literals-- -----------------------------------------------------------------
 export class Literal<T> extends Term {
-  termType: 'literal' = 'literal';
-  type: C.Type;
+  public termType: 'literal' = 'literal';
+  public type: C.Type;
 
-  constructor(
+  public constructor(
     public typedValue: T,
     public typeURL: RDF.NamedNode,
     public strValue?: string,
-    public language?: string) {
+    public language?: string,
+  ) {
     super();
     this.type = C.type(typeURL.value);
   }
 
-  toRDF(): RDF.Term {
+  public toRDF(): RDF.Term {
     return DF.literal(
       this.strValue || this.str(),
-      this.language || this.typeURL);
+      this.language || this.typeURL,
+    );
   }
 
-  str(): string {
+  public str(): string {
+    // eslint-disable-next-line @typescript-eslint/no-base-to-string
     return this.strValue || this.typedValue.toString();
   }
 }
 
 export class NumericLiteral extends Literal<number> {
-  private static specificFormatters: { [key in C.PrimitiveNumericType]: (val: number) => string } = {
-    integer: (value) => value.toFixed(), // Avoid emitting non lexical integers
-    float: (value) => value.toString(),
-    decimal: (value) => value.toString(),
+  private static readonly specificFormatters: {[key in C.PrimitiveNumericType]: (val: number) => string } = {
+    // Avoid emitting non lexical integers
+    integer: value => value.toFixed(0),
+    float: value => value.toString(),
+    decimal: value => value.toString(),
     // // Be consistent with float
     // decimal: (value) => {
     //   const jsDecimal = value.toString();
@@ -100,67 +105,68 @@ export class NumericLiteral extends Literal<number> {
     // },
 
     // https://www.w3.org/TR/xmlschema-2/#double
-    double: (value) => {
+    double(value) {
       const jsExponential = value.toExponential();
-      const [jsMantisse, jsExponent] = jsExponential.split('e');
+      const [ jsMantisse, jsExponent ] = jsExponential.split('e');
 
-      // leading + must be removed for integer
+      // Leading + must be removed for integer
       // https://www.w3.org/TR/xmlschema-2/#integer
-      const exponent = jsExponent.replace(/\+/, '');
+      const exponent = jsExponent.replace(/\+/u, '');
 
       // SPARQL test suite prefers trailing zero's
-      const mantisse = jsMantisse.match(/\./)
-        ? jsMantisse
-        : jsMantisse + '.0';
+      const mantisse = jsMantisse.includes('.') ?
+        jsMantisse :
+        `${jsMantisse}.0`;
 
       return `${mantisse}E${exponent}`;
     },
   };
 
-  type: C.PrimitiveNumericType;
+  public type: C.PrimitiveNumericType;
 
-  coerceEBV(): boolean {
+  public coerceEBV(): boolean {
     return !!this.typedValue;
   }
 
-  toRDF(): RDF.Term {
+  public toRDF(): RDF.Term {
     const term = super.toRDF();
-    if (!isFinite(this.typedValue)) {
+    if (!Number.isFinite(this.typedValue)) {
       term.value = term.value.replace('Infinity', 'INF');
     }
     return term;
   }
 
-  str(): string {
-    return this.strValue
-      || NumericLiteral.specificFormatters[this.type](this.typedValue);
+  public str(): string {
+    return this.strValue ||
+      NumericLiteral.specificFormatters[this.type](this.typedValue);
   }
 }
 
 export class BooleanLiteral extends Literal<boolean> {
-  constructor(public typedValue: boolean, public strValue?: string) {
+  public constructor(public typedValue: boolean, public strValue?: string) {
     super(typedValue, C.make(C.TypeURL.XSD_BOOLEAN), strValue);
   }
-  coerceEBV(): boolean {
+
+  public coerceEBV(): boolean {
     return !!this.typedValue;
   }
 }
 
 export class DateTimeLiteral extends Literal<Date> {
-  // strValue is mandatory here because toISOString will always add
+  // StrValue is mandatory here because toISOString will always add
   // milliseconds, even if they were not present.
-  constructor(public typedValue: Date, public strValue: string) {
+  public constructor(public typedValue: Date, public strValue: string) {
     super(typedValue, C.make(C.TypeURL.XSD_DATE_TIME), strValue);
   }
 }
 
 export class LangStringLiteral extends Literal<string> {
-  constructor(public typedValue: string, public language: string) {
+  public constructor(public typedValue: string, public language: string) {
     super(typedValue, C.make(C.TypeURL.RDF_LANG_STRING), typedValue, language);
   }
 
-  coerceEBV(): boolean {
-    return this.strValue.length !== 0;
+  public coerceEBV(): boolean {
+    return this.strValue.length > 0;
   }
 }
 
@@ -169,16 +175,16 @@ export class LangStringLiteral extends Literal<string> {
 // https://www.w3.org/TR/sparql11-query/#func-strings
 // This does not include language tagged literals
 export class StringLiteral extends Literal<string> {
-  constructor(public typedValue: string) {
+  public constructor(public typedValue: string) {
     super(typedValue, C.make(C.TypeURL.XSD_STRING), typedValue);
   }
 
-  coerceEBV(): boolean {
-    return this.strValue.length !== 0;
+  public coerceEBV(): boolean {
+    return this.strValue.length > 0;
   }
 }
 
-/*
+/**
  * This class is used when a literal is parsed, and it's value is
  * an invalid lexical form for it's datatype. The spec defines value with
  * invalid lexical form are still valid terms, and as such we can not error
@@ -196,24 +202,27 @@ export class StringLiteral extends Literal<string> {
  *  - ... some other more precise thing i can't find...
  */
 export class NonLexicalLiteral extends Literal<undefined> {
-  private shouldBeCategory: C.Type;
-  constructor(
+  private readonly shouldBeCategory: C.Type;
+  public constructor(
     typedValue: undefined,
     typeURL: RDF.NamedNode,
     strValue?: string,
-    language?: string) {
+    language?: string,
+  ) {
     super(typedValue, typeURL, strValue, language);
     this.typedValue = undefined;
     this.type = 'nonlexical';
     this.shouldBeCategory = C.type(typeURL.value);
   }
 
-  coerceEBV(): boolean {
+  public coerceEBV(): boolean {
     const isNumericOrBool =
-      C.PrimitiveNumericTypes.contains(this.shouldBeCategory)
-      || this.shouldBeCategory === 'boolean';
+      C.PrimitiveNumericTypes.contains(this.shouldBeCategory) ||
+      this.shouldBeCategory === 'boolean';
 
-    if (isNumericOrBool) { return false; }
+    if (isNumericOrBool) {
+      return false;
+    }
     throw new Err.EBVCoercionError(this);
   }
 }

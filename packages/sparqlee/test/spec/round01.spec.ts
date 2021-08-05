@@ -1,6 +1,5 @@
+import { decimal, int, testAll } from '../util/utils';
 import * as Data from './_data';
-
-import { aliases as a, decimal, int, testAll } from '../util/utils';
 
 /**
  * REQUEST: round01.rq

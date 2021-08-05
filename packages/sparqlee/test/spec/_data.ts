@@ -1,7 +1,6 @@
-import {DataFactory} from 'rdf-data-factory';
-import {date, decimal, int} from '../util/utils';
+import { date, decimal, int } from '../util/utils';
 
-// data ------------------------------------------------------------------------
+// Data ------------------------------------------------------------------------
 // @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 // @prefix : <http://example.org/> .
 
@@ -56,7 +55,7 @@ export function data() {
   };
 }
 
-// data 2 ----------------------------------------------------------------------
+// Data 2 ----------------------------------------------------------------------
 // @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 // @prefix : <http://example.org/> .
 //
@@ -84,7 +83,7 @@ export function data2() {
   };
 }
 
-// data 3 ----------------------------------------------------------------------
+// Data 3 ----------------------------------------------------------------------
 // @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 // @prefix : <http://example.org/> .
 //
@@ -114,7 +113,7 @@ export function data3() {
   };
 }
 
-// data 4 ----------------------------------------------------------------------
+// Data 4 ----------------------------------------------------------------------
 // @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 // @prefix : <http://example.org/> .
 //
@@ -132,7 +131,7 @@ export function data4() {
   };
 }
 
-// data builtin ----------------------------------------------------------------
+// Data builtin ----------------------------------------------------------------
 // @prefix : <http://example/> .
 // @prefix  xsd:    <http://www.w3.org/2001/XMLSchema#> .
 //
@@ -149,9 +148,9 @@ export function dataBuiltin3() {
   return {
     x1p: '"a"',
     x1q: '1',
-    // x2p: '"1"',
+    // X2p: '"1"',
     x2q: '"1"',
-    // x3p: '',
+    // X3p: '',
     x3q: '"1"',
     x4p: '1',
     x4q: '2',
@@ -166,7 +165,7 @@ export function dataBuiltin3() {
   };
 }
 
-// hash unicode ----------------------------------------------------------------
+// Hash unicode ----------------------------------------------------------------
 // @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 // @prefix : <http://example.org/> .
 

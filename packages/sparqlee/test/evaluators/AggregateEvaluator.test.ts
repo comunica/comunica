@@ -1,20 +1,19 @@
-import * as RDF from 'rdf-js';
+import { DataFactory } from 'rdf-data-factory';
+import type * as RDF from 'rdf-js';
 
-import {DataFactory} from 'rdf-data-factory';
-import { Algebra } from 'sparqlalgebrajs';
+import type { Algebra } from 'sparqlalgebrajs';
 
-import {AggregateEvaluator} from '../../lib/evaluators/AggregateEvaluator';
+import { AggregateEvaluator } from '../../lib/evaluators/AggregateEvaluator';
+import { AsyncAggregateEvaluator } from '../../lib/evaluators/AsyncAggregateEvaluator';
 import { Bindings } from '../../lib/Types';
-import {TypeURL as DT} from '../../lib/util/Consts';
-import {AsyncAggregateEvaluator} from '../../lib/evaluators/AsyncAggregateEvaluator';
 
 const DF = new DataFactory();
 
-type BaseTestCaseArgs = { expr: Algebra.AggregateExpression, throwError?: boolean, evalTogether?: boolean };
-type TestCaseArgs = BaseTestCaseArgs & { input: Bindings[] };
+interface IBaseTestCaseArgs { expr: Algebra.AggregateExpression; throwError?: boolean; evalTogether?: boolean }
+type TestCaseArgs = IBaseTestCaseArgs & { input: Bindings[] };
 
 async function testCase({ expr, input, throwError, evalTogether }: TestCaseArgs): Promise<RDF.Term> {
-  const results: Array<RDF.Term | undefined> = [];
+  const results: (RDF.Term | undefined)[] = [];
   if (input.length === 0) {
     results.push(AggregateEvaluator.emptyValue(expr, throwError || false));
     results.push(AsyncAggregateEvaluator.emptyValue(expr, throwError || false));
@@ -40,10 +39,10 @@ async function testCase({ expr, input, throwError, evalTogether }: TestCaseArgs)
     return (!other && !value) || (value && value.equals(other));
   }));
   // We need to check here because they could be undefined.
-  if (! equalCheck) {
+  if (!equalCheck) {
     let message = 'Not all results are equal.';
     if (evalTogether) {
-      message = message.concat(' This might be because the given aggregator can not reliably be evaluated together.');
+      message += ' This might be because the given aggregator can not reliably be evaluated together.';
     }
     throw new Error(message);
   }
@@ -51,11 +50,11 @@ async function testCase({ expr, input, throwError, evalTogether }: TestCaseArgs)
 }
 
 function makeAggregate(aggregator: string, distinct = false, separator?: string):
-  Algebra.AggregateExpression {
+Algebra.AggregateExpression {
   return {
     type: 'expression',
     expressionType: 'aggregate',
-    aggregator: aggregator as any,
+    aggregator: <any> aggregator,
     distinct,
     separator,
     expression: {
@@ -92,19 +91,19 @@ function string(value: string): RDF.Term {
 
 describe('an aggregate evaluator should be able to', () => {
   describe('count', () => {
-    let baseTestCaseArgs: BaseTestCaseArgs;
+    let baseTestCaseArgs: IBaseTestCaseArgs;
 
     beforeEach(() => {
-      baseTestCaseArgs = { expr: makeAggregate('count'),  evalTogether: true};
+      baseTestCaseArgs = { expr: makeAggregate('count'), evalTogether: true };
     });
     it('a list of bindings', async() => {
       const result = testCase({
         ...baseTestCaseArgs,
         input: [
-          Bindings({'?x': int('1')}),
-          Bindings({'?x': int('2')}),
-          Bindings({'?x': int('3')}),
-          Bindings({'?x': int('4')}),
+          Bindings({ '?x': int('1') }),
+          Bindings({ '?x': int('2') }),
+          Bindings({ '?x': int('3') }),
+          Bindings({ '?x': int('4') }),
         ],
       });
       expect(await result).toEqual(int('4'));
@@ -120,9 +119,9 @@ describe('an aggregate evaluator should be able to', () => {
   });
 
   describe('sum', () => {
-    let baseTestCaseArgs: BaseTestCaseArgs;
+    let baseTestCaseArgs: IBaseTestCaseArgs;
     beforeEach(() => {
-      baseTestCaseArgs = { expr: makeAggregate('sum'),  evalTogether: true};
+      baseTestCaseArgs = { expr: makeAggregate('sum'), evalTogether: true };
     });
     it('a list of bindings', async() => {
       const result = testCase({
@@ -137,7 +136,7 @@ describe('an aggregate evaluator should be able to', () => {
       expect(await result).toEqual(int('10'));
     });
 
-    it('with respect to empty input', async () => {
+    it('with respect to empty input', async() => {
       const result = testCase({
         ...baseTestCaseArgs,
         input: [],
@@ -145,7 +144,7 @@ describe('an aggregate evaluator should be able to', () => {
       expect(await result).toEqual(int('0'));
     });
 
-    it('with respect to type promotion', async () => {
+    it('with respect to type promotion', async() => {
       const result = testCase({
         ...baseTestCaseArgs,
         input: [
@@ -158,7 +157,7 @@ describe('an aggregate evaluator should be able to', () => {
       expect(await result).toEqual(float('10'));
     });
 
-    it('with accurate results', async () => {
+    it('with accurate results', async() => {
       const result = testCase({
         expr: makeAggregate('sum'),
         input: [
@@ -174,13 +173,13 @@ describe('an aggregate evaluator should be able to', () => {
   });
 
   describe('min', () => {
-    let baseTestCaseArgs: BaseTestCaseArgs;
+    let baseTestCaseArgs: IBaseTestCaseArgs;
 
     beforeEach(() => {
-      baseTestCaseArgs = { expr: makeAggregate('min'),  evalTogether: true};
+      baseTestCaseArgs = { expr: makeAggregate('min'), evalTogether: true };
     });
 
-    it('a list of bindings', async () => {
+    it('a list of bindings', async() => {
       const result = testCase({
         ...baseTestCaseArgs,
         input: [
@@ -206,7 +205,7 @@ describe('an aggregate evaluator should be able to', () => {
       expect(await result).toEqual(string('1'));
     });
 
-    it('with respect to empty input', async () => {
+    it('with respect to empty input', async() => {
       const result = testCase({
         ...baseTestCaseArgs,
         input: [],
@@ -216,11 +215,11 @@ describe('an aggregate evaluator should be able to', () => {
   });
 
   describe('max', () => {
-    let baseTestCaseArgs: BaseTestCaseArgs;
+    let baseTestCaseArgs: IBaseTestCaseArgs;
     beforeEach(() => {
-      baseTestCaseArgs = { expr: makeAggregate('max'),  evalTogether: true};
+      baseTestCaseArgs = { expr: makeAggregate('max'), evalTogether: true };
     });
-    it('a list of bindings', async () => {
+    it('a list of bindings', async() => {
       const result = testCase({
         ...baseTestCaseArgs,
         input: [
@@ -233,7 +232,7 @@ describe('an aggregate evaluator should be able to', () => {
       expect(await result).toEqual(int('4'));
     });
 
-    it('a list of string bindings', async () => {
+    it('a list of string bindings', async() => {
       const result = testCase({
         ...baseTestCaseArgs,
         input: [
@@ -246,7 +245,7 @@ describe('an aggregate evaluator should be able to', () => {
       expect(await result).toEqual(string('3'));
     });
 
-    it('with respect to empty input', async () => {
+    it('with respect to empty input', async() => {
       const result = testCase({
         ...baseTestCaseArgs,
         input: [],
@@ -256,11 +255,11 @@ describe('an aggregate evaluator should be able to', () => {
   });
 
   describe('avg', () => {
-    let baseTestCaseArgs: BaseTestCaseArgs;
+    let baseTestCaseArgs: IBaseTestCaseArgs;
     beforeEach(() => {
-      baseTestCaseArgs = { expr: makeAggregate('avg'),  evalTogether: true};
+      baseTestCaseArgs = { expr: makeAggregate('avg'), evalTogether: true };
     });
-    it('a list of bindings', async () => {
+    it('a list of bindings', async() => {
       const result = testCase({
         ...baseTestCaseArgs,
         input: [
@@ -273,7 +272,7 @@ describe('an aggregate evaluator should be able to', () => {
       expect(await result).toEqual(float('2.5'));
     });
 
-    it('with respect to empty input', async () => {
+    it('with respect to empty input', async() => {
       const result = testCase({
         ...baseTestCaseArgs,
         input: [],
@@ -281,7 +280,7 @@ describe('an aggregate evaluator should be able to', () => {
       expect(await result).toEqual(int('0'));
     });
 
-    it('with respect to type promotion and subtype substitution', async () => {
+    it('with respect to type promotion and subtype substitution', async() => {
       const result = testCase({
         ...baseTestCaseArgs,
         input: [
@@ -294,7 +293,7 @@ describe('an aggregate evaluator should be able to', () => {
       expect(await result).toEqual(float('2.5'));
     });
 
-    it('with respect to type preservation', async () => {
+    it('with respect to type preservation', async() => {
       const result = testCase({
         ...baseTestCaseArgs,
         input: [
@@ -307,7 +306,7 @@ describe('an aggregate evaluator should be able to', () => {
       expect(await result).toEqual(decimal('2.5'));
     });
 
-    it('with respect to type promotion 2', async () => {
+    it('with respect to type promotion 2', async() => {
       const result = testCase({
         ...baseTestCaseArgs,
         input: [
@@ -322,11 +321,11 @@ describe('an aggregate evaluator should be able to', () => {
   });
 
   describe('sample', () => {
-    let baseTestCaseArgs: BaseTestCaseArgs;
+    let baseTestCaseArgs: IBaseTestCaseArgs;
     beforeEach(() => {
-      baseTestCaseArgs = { expr: makeAggregate('sample'),  evalTogether: false};
+      baseTestCaseArgs = { expr: makeAggregate('sample'), evalTogether: false };
     });
-    it('a list of bindings', async () => {
+    it('a list of bindings', async() => {
       const result = testCase({
         ...baseTestCaseArgs,
         input: [
@@ -339,7 +338,7 @@ describe('an aggregate evaluator should be able to', () => {
       expect(await result).toEqual(int('1'));
     });
 
-    it('with respect to empty input', async () => {
+    it('with respect to empty input', async() => {
       const result = testCase({
         ...baseTestCaseArgs,
         input: [],
@@ -349,11 +348,11 @@ describe('an aggregate evaluator should be able to', () => {
   });
 
   describe('group_concat', () => {
-    let baseTestCaseArgs: BaseTestCaseArgs;
+    let baseTestCaseArgs: IBaseTestCaseArgs;
     beforeEach(() => {
-      baseTestCaseArgs = { expr: makeAggregate('group_concat'),  evalTogether: false};
+      baseTestCaseArgs = { expr: makeAggregate('group_concat'), evalTogether: false };
     });
-    it('a list of bindings', async () => {
+    it('a list of bindings', async() => {
       const result = testCase({
         ...baseTestCaseArgs,
         input: [
@@ -366,7 +365,7 @@ describe('an aggregate evaluator should be able to', () => {
       expect(await result).toEqual(DF.literal('1 2 3 4'));
     });
 
-    it('with respect to empty input', async () => {
+    it('with respect to empty input', async() => {
       const result = testCase({
         ...baseTestCaseArgs,
         input: [],
@@ -374,7 +373,7 @@ describe('an aggregate evaluator should be able to', () => {
       expect(await result).toEqual(DF.literal(''));
     });
 
-    it('custom separator', async () => {
+    it('custom separator', async() => {
       const result = testCase({
         expr: makeAggregate('group_concat', undefined, ';'),
         input: [
@@ -388,108 +387,108 @@ describe('an aggregate evaluator should be able to', () => {
     });
   });
 
-    it('on a put', async () => {
-      const testCaseArg = {
-        expr: makeAggregate('sum'),
+  it('on a put', async() => {
+    const testCaseArg = {
+      expr: makeAggregate('sum'),
+      input: [
+        Bindings({ '?x': int('1') }),
+        Bindings({ '?x': DF.literal('1') }),
+      ],
+      evalTogether: true,
+    };
+    expect(await testCase(testCaseArg)).toEqual(undefined);
+  });
+
+  it('min should work with different types', async() => {
+    const result = testCase({
+      expr: makeAggregate('min'),
+      input: [
+        Bindings({ '?x': double('11.0') }),
+        Bindings({ '?x': int('2') }),
+        Bindings({ '?x': float('3') }),
+      ],
+      evalTogether: true,
+    });
+    expect(await result).toEqual(int('2'));
+  });
+
+  it('max should work with different types', async() => {
+    const result = testCase({
+      expr: makeAggregate('max'),
+      input: [
+        Bindings({ '?x': double('11.0') }),
+        Bindings({ '?x': int('2') }),
+        Bindings({ '?x': float('3') }),
+      ],
+      evalTogether: true,
+    });
+    expect(await result).toEqual(double('11.0'));
+  });
+
+  it('passing a non-literal to max should not be accepted', async() => {
+    const result = testCase({
+      expr: makeAggregate('max'),
+      input: [
+        Bindings({ '?x': nonLiteral() }),
+        Bindings({ '?x': int('2') }),
+        Bindings({ '?x': int('3') }),
+      ],
+      evalTogether: true,
+    });
+    expect(await result).toEqual(undefined);
+  });
+
+  it('passing a non-literal to sum should not be accepted', async() => {
+    const testCaseArg = {
+      expr: makeAggregate('sum'),
+      input: [
+        Bindings({ '?x': nonLiteral() }),
+        Bindings({ '?x': int('2') }),
+        Bindings({ '?x': int('3') }),
+        Bindings({ '?x': int('4') }),
+      ],
+      evalTogether: true,
+    };
+    expect(await testCase(testCaseArg)).toBeUndefined();
+  });
+
+  describe('when we ask for throwing errors', () => {
+    it('and the input is empty', async() => {
+      const testCaseArg: TestCaseArgs = {
+        expr: makeAggregate('max'),
+        input: [],
+        throwError: true,
+        evalTogether: true,
+      };
+      await expect(testCase(testCaseArg)).rejects.toThrow('Empty aggregate expression');
+    });
+
+    it('and the first value errors', async() => {
+      const testCaseArg: TestCaseArgs = {
+        expr: makeAggregate('max'),
+        input: [
+          Bindings({ '?x': nonLiteral() }),
+          Bindings({ '?x': int('1') }),
+        ],
+        throwError: true,
+        evalTogether: true,
+      };
+      await expect(testCase(testCaseArg)).rejects
+        .toThrow('Term with value http://example.org/ has type NamedNode and is not a literal');
+    });
+
+    it('and any value in the stream errors', async() => {
+      const testCaseArg: TestCaseArgs = {
+        expr: makeAggregate('max'),
         input: [
           Bindings({ '?x': int('1') }),
-          Bindings({ '?x': DF.literal('1') }),
-        ],
-        evalTogether: true,
-      };
-      expect(await testCase(testCaseArg)).toEqual(undefined);
-    });
-
-    it('min should work with different types', async () => {
-      const result = testCase({
-        expr: makeAggregate('min'),
-        input: [
-          Bindings({ '?x': double('11.0') }),
-          Bindings({ '?x': int('2') }),
-          Bindings({ '?x': float('3') }),
-        ],
-        evalTogether: true,
-      });
-      expect(await result).toEqual(int('2'));
-    });
-
-    it('max should work with different types', async () => {
-      const result = testCase({
-        expr: makeAggregate('max'),
-        input: [
-          Bindings({ '?x': double('11.0') }),
-          Bindings({ '?x': int('2') }),
-          Bindings({ '?x': float('3') }),
-        ],
-        evalTogether: true,
-      });
-      expect(await result).toEqual(double('11.0'));
-    });
-
-    it('passing a non-literal to max should not be accepted', async () => {
-      const result = testCase({
-        expr: makeAggregate('max'),
-        input: [
           Bindings({ '?x': nonLiteral() }),
-          Bindings({ '?x': int('2') }),
-          Bindings({ '?x': int('3') }),
         ],
         evalTogether: true,
-      });
-      expect(await result).toEqual(undefined);
-    });
-
-    it('passing a non-literal to sum should not be accepted', async () => {
-      const testCaseArg = {
-        expr: makeAggregate('sum'),
-        input: [
-          Bindings({ '?x': nonLiteral() }),
-          Bindings({ '?x': int('2') }),
-          Bindings({ '?x': int('3') }),
-          Bindings({ '?x': int('4') }),
-        ],
-        evalTogether: true,
+        throwError: true,
       };
-      expect(await testCase(testCaseArg)).toBeUndefined();
-    });
-
-    describe('when we ask for throwing errors', () => {
-      it('and the input is empty', async () => {
-        const testCaseArg: TestCaseArgs = {
-          expr: makeAggregate('max'),
-          input: [],
-          throwError: true,
-          evalTogether: true,
-        };
-        await expect(testCase(testCaseArg)).rejects.toThrow('Empty aggregate expression');
-      });
-
-      it('and the first value errors', async () => {
-        const testCaseArg: TestCaseArgs = {
-          expr: makeAggregate('max'),
-          input: [
-            Bindings({ '?x': nonLiteral() }),
-            Bindings({ '?x': int('1') }),
-          ],
-          throwError: true,
-          evalTogether: true,
-        };
-        await expect(testCase(testCaseArg)).rejects
-          .toThrow('Term with value http://example.org/ has type NamedNode and is not a literal');
-      });
-
-      it('and any value in the stream errors', async () => {
-        const testCaseArg: TestCaseArgs = {
-          expr: makeAggregate('max'),
-          input: [
-            Bindings({ '?x': int('1') }),
-            Bindings({ '?x': nonLiteral() }),
-          ],
-          evalTogether: true,
-          throwError: true,
-        };
-        await expect(testCase(testCaseArg)).rejects
-          .toThrow('Term with value http://example.org/ has type NamedNode and is not a literal');
+      await expect(testCase(testCaseArg)).rejects
+        .toThrow('Term with value http://example.org/ has type NamedNode and is not a literal');
     });
   });
 });

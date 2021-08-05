@@ -1,6 +1,5 @@
+import { testAll } from '../util/utils';
 import * as Data from './_data';
-
-import { aliases as a, testAll } from '../util/utils';
 
 /**
  * REQUEST: sha1-01.rq

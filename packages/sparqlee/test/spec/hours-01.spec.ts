@@ -1,6 +1,5 @@
+import { int, testAll } from '../util/utils';
 import * as Data from './_data';
-
-import { aliases as a, int, testAll } from '../util/utils';
 
 /**
  * REQUEST: hours-01.rq

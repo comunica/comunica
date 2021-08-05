@@ -1,5 +1,6 @@
 dist/
 test-report.html
+.eslintcache
 
 # Logs
 logs

@@ -1,10 +1,9 @@
-import * as RDF from 'rdf-js';
-import { Algebra } from 'sparqlalgebrajs';
+import type * as RDF from 'rdf-js';
+import type { Algebra } from 'sparqlalgebrajs';
 
-import * as E from '../expressions';
-import * as C from './Consts';
-
-import { Bindings } from '../Types';
+import type * as E from '../expressions';
+import type { Bindings } from '../Types';
+import type * as C from './Consts';
 
 /**
  * This class of error will be thrown when an expression errors.
@@ -38,7 +37,7 @@ export function isExpressionError(error: Error): boolean {
  * a valid lexical form.
  */
 export class InvalidLexicalForm extends ExpressionError {
-  constructor(public arg: RDF.Term) {
+  public constructor(public arg: RDF.Term) {
     super(`Invalid lexical form '${pp(arg)}'`);
   }
 }
@@ -47,7 +46,7 @@ export class InvalidLexicalForm extends ExpressionError {
  * A variable in the expression was not bound.
  */
 export class UnboundVariableError extends ExpressionError {
-  constructor(public variable: string, public bindings: Bindings) {
+  public constructor(public variable: string, public bindings: Bindings) {
     super(`Unbound variable '${pp(variable)}'`);
   }
 }
@@ -59,7 +58,7 @@ export class UnboundVariableError extends ExpressionError {
  * on EBVs.
  */
 export class EBVCoercionError extends ExpressionError {
-  constructor(public arg: E.Term) {
+  public constructor(public arg: E.Term) {
     super(`Cannot coerce term to EBV '${pp(arg)}'`);
   }
 }
@@ -70,7 +69,7 @@ export class EBVCoercionError extends ExpressionError {
  * See {@link https://www.w3.org/TR/sparql11-query/#func-RDFterm-equal | term equality spec}.
  */
 export class RDFEqualTypeError extends ExpressionError {
-  constructor(public args: E.Expression[]) {
+  public constructor(public args: E.Expression[]) {
     super('Equality test for literals with unsupported datatypes');
   }
 }
@@ -79,7 +78,7 @@ export class RDFEqualTypeError extends ExpressionError {
  * All the expressions in a COALESCE call threw errors.
  */
 export class CoalesceError extends ExpressionError {
-  constructor(public errors: Error[]) {
+  public constructor(public errors: Error[]) {
     super('All COALESCE arguments threw errors');
   }
 }
@@ -88,10 +87,12 @@ export class CoalesceError extends ExpressionError {
  * No arguments to an IN call where equal, and at least one threw an error.
  */
 export class InError extends ExpressionError {
-  constructor(public errors: Array<Error | false>) {
+  public constructor(public errors: (Error | false)[]) {
     super(
-      'Some argument to IN errorred and none where equal. ' +
-      errors.map((err) => `(${err.toString()}) `).join('and '));
+      `Some argument to IN errorred and none where equal. ${
+        // eslint-disable-next-line @typescript-eslint/no-base-to-string
+        errors.map(err => `(${err.toString()}) `).join('and ')}`,
+    );
   }
 }
 
@@ -99,7 +100,7 @@ export class InError extends ExpressionError {
  * Literals were passed to an operator that doesn't support their datatypes.
  */
 export class InvalidArgumentTypes extends ExpressionError {
-  constructor(public args: E.Expression[], public op: C.Operator | C.NamedOperator) {
+  public constructor(public args: E.Expression[], public op: C.Operator | C.NamedOperator) {
     super(`Argument types not valid for operator: '${pp(op)}' with '${pp(args)}`);
   }
 }
@@ -108,25 +109,25 @@ export class InvalidArgumentTypes extends ExpressionError {
  * An invalid typecast happened.
  */
 export class CastError<T> extends ExpressionError {
-  constructor(public arg: T, cast: C.TypeURL) {
+  public constructor(public arg: T, cast: C.TypeURL) {
     super(`Invalid cast: '${pp(arg)}' to '${pp(cast)}'`);
   }
 }
 
 export class InvalidTimezoneCall extends ExpressionError {
-  constructor(public dateString: string) {
+  public constructor(public dateString: string) {
     super(`TIMEZONE call on ${dateString} which has no timezone`);
   }
 }
 
 export class IncompatibleLanguageOperation extends ExpressionError {
-  constructor(public arg1: E.LangStringLiteral, public arg2: E.LangStringLiteral) {
+  public constructor(public arg1: E.LangStringLiteral, public arg2: E.LangStringLiteral) {
     super(`Operation on incompatible language literals '${pp(arg1)}' and '${pp(arg2)}'`);
   }
 }
 
 export class EmptyAggregateError extends ExpressionError {
-  constructor() {
+  public constructor() {
     super('Empty aggregate expression');
   }
 }
@@ -139,7 +140,7 @@ export class EmptyAggregateError extends ExpressionError {
  * mistake has been made.
  */
 export class UnexpectedError<T> extends Error {
-  constructor(message: string, public payload?: T) {
+  public constructor(message: string, public payload?: T) {
     super(`Programmer Error '${message}'`);
   }
 }
@@ -148,65 +149,69 @@ export class UnexpectedError<T> extends Error {
  * An Error that signals a feature or function is yet unimplemented.
  */
 export class UnimplementedError extends Error {
-  constructor(feature: string) {
+  public constructor(feature: string) {
     super(`Unimplemented feature '${feature}!'`);
   }
 }
 
 export class InvalidArity extends Error {
-  constructor(public args: E.Expression[], public op: C.Operator) {
+  public constructor(public args: E.Expression[], public op: C.Operator) {
     super(`The number of args does not match the arity of the operator '${pp(op)}'.`);
   }
 }
 
 export class InvalidExpression<T> extends Error {
-  constructor(expr: T) {
+  public constructor(expr: T) {
     super(`Invalid SPARQL Expression '${pp(expr)}'`);
   }
 }
 
 export class InvalidExpressionType<T> extends Error {
-  constructor(public expr: T) {
+  public constructor(public expr: T) {
     super(`Invalid expression type for SPARQL Expression '${pp(expr)}'`);
   }
 }
 
 export class InvalidTermType extends Error {
-  constructor(public term: Algebra.TermExpression) {
+  public constructor(public term: Algebra.TermExpression) {
     super(`Invalid term type for term '${pp(term)}'`);
   }
 }
 
 export class UnknownOperator extends Error {
-  constructor(name: string) {
+  public constructor(name: string) {
     super(`Unknown operator: '${pp(name)}`);
   }
 }
 
 export class UnknownNamedOperator extends Error {
-  constructor(name: string) {
+  public constructor(name: string) {
     super(`Unknown named operator: '${pp(name)}'`);
   }
 }
 
 export class ExtensionFunctionError extends Error {
-  constructor(name: string, functionError: Error) {
-    super(`Error thrown in ${name}: ${functionError.message}${functionError.stack ? `\n${functionError.stack}` : ''}`);
+  public constructor(name: string, functionError: unknown) {
+    if (functionError instanceof Error) {
+      super(`Error thrown in ${name}: ${functionError.message}${functionError.stack ? `\n${functionError.stack}` : ''}`);
+    } else {
+      super(`Error thrown in ${name}`);
+    }
   }
 }
 
 export class NoAggregator extends Error {
-  constructor(name?: string) {
+  public constructor(name?: string) {
     super(`Aggregate expression ${pp(name)} found, but no aggregate hook provided.`);
   }
 }
 
 export class NoExistenceHook extends Error {
-  constructor() {
+  public constructor() {
     super('EXISTS found, but no existence hook provided.');
   }
 }
 
-function pp<T>(o: T) {
-  return JSON.stringify(o);
+function pp<T>(object: T): string {
+  return JSON.stringify(object);
 }

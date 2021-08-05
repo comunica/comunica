@@ -1,6 +1,4 @@
-import * as Data from './_data';
-
-import { aliases as a, decimal, int, testAll, testAllErrors } from '../util/utils';
+import { decimal, int, testAll, testAllErrors } from '../util/utils';
 
 /**
  * REQUEST: coalesce01.rq

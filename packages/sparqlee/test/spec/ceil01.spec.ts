@@ -1,6 +1,5 @@
-import * as Data from './_data';
-
 import { decimal, int, testAll } from '../util/utils';
+import * as Data from './_data';
 
 /**
  * REQUEST: ceil01.rq
