@@ -1,4 +1,5 @@
-import { testAllErrors } from '../util/utils';
+import { Notation } from '../util/TestTable';
+import { runTestTable } from '../util/utils';
 import * as Data from './_data';
 
 /**
@@ -36,17 +37,21 @@ describe('We should respect the plus-2-corrected spec', () => {
     x7p, x7q,
     x8p, x8q,
   } = Data.dataBuiltin3();
-
-  testAllErrors([
-    `str(${x1p})             + str(${x1q}) = error`,
-    `str(BNODE())            + str(${x2q}) = error`,
-    `str(<http://example/a>) + str(${x3q}) = error`,
-    `str(${x4p})             + str(${x4q}) = error`,
-    `str(${x5p})             + str(${x5q}) = error`,
-    `str(${x6p})             + str(${x6q}) = error`,
-    `str(${x7p})             + str(${x7q}) = error`,
-    `str(${x8p})             + str(${x8q}) = error`,
-  ]);
+  runTestTable({
+    notation: Notation.Infix,
+    operation: '+',
+    arity: 2,
+    errorTable: `
+    'str(${x1p})'              'str(${x1q})' = ''
+    'str(BNODE())'             'str(${x2q})' = ''
+    'str(<http://example/a>)'  'str(${x3q})' = ''
+    'str(${x4p})'              'str(${x4q})' = ''
+    'str(${x5p})'              'str(${x5q})' = ''
+    'str(${x6p})'              'str(${x6q})' = ''
+    'str(${x7p})'              'str(${x7q})' = ''
+    'str(${x8p})'              'str(${x8q})' = ''
+    `,
+  });
 });
 
 /**

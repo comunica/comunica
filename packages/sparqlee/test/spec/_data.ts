@@ -1,4 +1,4 @@
-import { date, decimal, int } from '../util/utils';
+import { date, decimal, int } from '../util/Aliases';
 
 // Data ------------------------------------------------------------------------
 // @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .

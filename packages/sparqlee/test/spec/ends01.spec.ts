@@ -1,4 +1,6 @@
-import { aliases as a, testAll } from '../util/utils';
+import { bool } from '../util/Aliases';
+import { Notation } from '../util/TestTable';
+import { runTestTable } from '../util/utils';
 import * as Data from './_data';
 
 /**
@@ -28,15 +30,21 @@ import * as Data from './_data';
 
 describe('We should respect the ends01 spec', () => {
   const { s1, s2, s3, s4, s5, s6, s7 } = Data.data();
-  testAll([
-    `STRENDS(${s1}, "bc") = ${a.false}`,
-    `STRENDS(${s2}, "bc") = ${a.false}`,
-    `STRENDS(${s3}, "bc") = ${a.false}`,
-    `STRENDS(${s4}, "bc") = ${a.false}`,
-    `STRENDS(${s5}, "bc") = ${a.false}`,
-    `STRENDS(${s6}, "bc") = ${a.true}`,
-    `STRENDS(${s7}, "bc") = ${a.false}`,
-  ]);
+  runTestTable({
+    notation: Notation.Function,
+    arity: 2,
+    aliases: bool,
+    operation: 'STRENDS',
+    testTable: `
+      '${s1}' "bc" = false
+      '${s2}' "bc" = false
+      '${s3}' "bc" = false
+      '${s4}' "bc" = false
+      '${s5}' "bc" = false
+      '${s6}' "bc" = true
+      '${s7}' "bc" = false
+    `,
+  });
 });
 
 /**

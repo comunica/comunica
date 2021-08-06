@@ -1,4 +1,6 @@
-import { aliases as a, testAll } from '../util/utils';
+import { bool } from '../util/Aliases';
+import { Notation } from '../util/TestTable';
+import { runTestTable } from '../util/utils';
 
 /**
  * REQUEST: notin01.rq
@@ -24,9 +26,15 @@ import { aliases as a, testAll } from '../util/utils';
  */
 
 describe('We should respect the notin01 spec', () => {
-  testAll([
-    `2 NOT IN () = ${a.true}`,
-  ]);
+  runTestTable({
+    arity: 2,
+    notation: Notation.Infix,
+    operation: 'NOT IN',
+    aliases: bool,
+    testTable: `
+      2 '()' = true
+    `,
+  });
 });
 
 /**

@@ -1,4 +1,5 @@
-import { testAll } from '../util/utils';
+import { Notation } from '../util/TestTable';
+import { runTestTable } from '../util/utils';
 import * as Data from './_data';
 
 /**
@@ -26,15 +27,20 @@ import * as Data from './_data';
 
 describe('We should respect the lcase01 spec', () => {
   const { s1, s2, s3, s4, s5, s6, s7 } = Data.data();
-  testAll([
-    `LCASE(${s1}) = "foo"`,
-    `LCASE(${s2}) = "bar"@en`,
-    `LCASE(${s3}) = "baz"`,
-    `LCASE(${s4}) = "食べ物"`,
-    `LCASE(${s5}) = "100%"`,
-    `LCASE(${s6}) = "abc"^^xsd:string`,
-    `LCASE(${s7}) = "def"^^xsd:string`,
-  ]);
+  runTestTable({
+    arity: 1,
+    notation: Notation.Function,
+    operation: 'LCASE',
+    testTable: `
+    '${s1}' = "foo"
+    '${s2}' = "bar"@en
+    '${s3}' = "baz"
+    '${s4}' = "食べ物"
+    '${s5}' = "100%"
+    '${s6}' = "abc"^^xsd:string
+    '${s7}' = "def"^^xsd:string
+    `,
+  });
 });
 
 /**

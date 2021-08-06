@@ -1,4 +1,5 @@
-import { testAll } from '../util/utils';
+import { Notation } from '../util/TestTable';
+import { runTestTable } from '../util/utils';
 import * as Data from './_data';
 
 /**
@@ -27,9 +28,14 @@ import * as Data from './_data';
 
 describe('We should respect the concat01 spec', () => {
   const { s1, s2, s3, s4, s5, s6, s7 } = Data.data();
-  testAll([
-    `CONCAT(${s6}, ${s7}) = "abcDEF"^^xsd:string`,
-  ]);
+  runTestTable({
+    arity: 2,
+    notation: Notation.Function,
+    operation: 'CONCAT',
+    testTable: `
+      '${s6}' '${s7}' = "abcDEF"^^xsd:string
+    `,
+  });
 });
 
 /**

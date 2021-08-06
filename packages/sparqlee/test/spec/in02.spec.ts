@@ -1,4 +1,6 @@
-import { aliases as a, testAll } from '../util/utils';
+import { bool } from '../util/Aliases';
+import { Notation } from '../util/TestTable';
+import { runTestTable } from '../util/utils';
 
 /**
  * REQUEST: in02.rq
@@ -23,9 +25,15 @@ import { aliases as a, testAll } from '../util/utils';
  */
 
 describe('We should respect the in02 spec', () => {
-  testAll([
-    `2 IN (1, 3) = ${a.false}`,
-  ]);
+  runTestTable({
+    aliases: bool,
+    notation: Notation.Infix,
+    operation: 'IN',
+    arity: 2,
+    testTable: `
+      2 '(1, 3)' = false
+    `,
+  });
 });
 
 /**

@@ -1,4 +1,6 @@
-import { decimal, int, testAll } from '../util/utils';
+import { decimal, int } from '../util/Aliases';
+import { Notation } from '../util/TestTable';
+import { runTestTable } from '../util/utils';
 import * as Data from './_data';
 
 /**
@@ -27,13 +29,18 @@ import * as Data from './_data';
 
 describe('We should respect the round01 spec', () => {
   const { n1, n2, n3, n4, n5 } = Data.data();
-  testAll([
-    `ROUND(${n1}) = ${int('-1')}`,
-    `ROUND(${n2}) = ${decimal('-2')}`,
-    `ROUND(${n3}) = ${decimal('1')}`,
-    `ROUND(${n4}) = ${int('-2')}`,
-    `ROUND(${n5}) = ${decimal('3')}`,
-  ]);
+  runTestTable({
+    arity: 1,
+    operation: 'ROUND',
+    notation: Notation.Function,
+    testTable: `
+      '${n1}' = '${int('-1')}
+      '${n2}' = '${decimal('-2')}
+      '${n3}' = '${decimal('1')}
+      '${n4}' = '${int('-2')}
+      '${n5}' = '${decimal('3')}
+    `,
+  });
 });
 
 /**

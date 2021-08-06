@@ -1,4 +1,5 @@
-import { testAll } from '../util/utils';
+import { Notation } from '../util/TestTable';
+import { runTestTable } from '../util/utils';
 import * as Data from './_data';
 
 /**
@@ -27,15 +28,20 @@ import * as Data from './_data';
 
 describe('We should respect the encode01 spec', () => {
   const { s1, s2, s3, s4, s5, s6, s7 } = Data.data();
-  testAll([
-    `ENCODE_FOR_URI(${s1}) = "foo"`,
-    `ENCODE_FOR_URI(${s2}) = "bar"`,
-    `ENCODE_FOR_URI(${s3}) = "BAZ"`,
-    `ENCODE_FOR_URI(${s4}) = "%E9%A3%9F%E3%81%B9%E7%89%A9"`,
-    `ENCODE_FOR_URI(${s5}) = "100%25"`,
-    `ENCODE_FOR_URI(${s6}) = "abc"^^xsd:string`,
-    `ENCODE_FOR_URI(${s7}) = "DEF"^^xsd:string`,
-  ]);
+  runTestTable({
+    notation: Notation.Function,
+    operation: 'ENCODE_FOR_URI',
+    arity: 1,
+    testTable: `
+    '${s1}' = "foo"
+    '${s2}' = "bar"
+    '${s3}' = "BAZ"
+    '${s4}' = "%E9%A3%9F%E3%81%B9%E7%89%A9"
+    '${s5}' = "100%25"
+    '${s6}' = "abc"^^xsd:string
+    '${s7}' = "DEF"^^xsd:string
+    `,
+  });
 });
 
 /**

@@ -1,45 +1,33 @@
 import type * as RDF from 'rdf-js';
 import { stringToTerm } from 'rdf-string';
 
-import type { GeneralEvaluationConfig } from './generalEvaluation';
-import type { IEvaluationConfig, Notation } from './TruthTable';
+/**
+ * Maps short strings to longer RDF term-literals for easy use in making test tables.
+ * Ex: { 'true': '"true"^^xsd:boolean' }
+  */
+export type AliasMap = Record<string, string>;
 
-export type StringMap = Record<string, string>;
-export type TermMap = Record<string, RDF.Term>;
-
-export function merge(...maps: StringMap[]): StringMap {
+export function merge(...maps: AliasMap[]): AliasMap {
   return Object.assign({}, ...maps);
 }
 
-export interface INewEvaluationConfig {
-  op: string;
-  arity: number;
-  aliases: StringMap;
-  notation: Notation;
-  generalEvaluationConfig?: GeneralEvaluationConfig;
-}
-
-// Temp function, should remove later
-// TODO
-export function wrap(conf: INewEvaluationConfig): IEvaluationConfig {
-  const { op, arity, aliases, notation, generalEvaluationConfig } = conf;
-  const aliasMap = aliases;
-  const resultMap = mapToTerm(aliases);
-  return { op, arity, aliasMap, resultMap, notation, generalEvaluationConfig };
-}
-
-function mapToTerm(map: StringMap): TermMap {
-  return Object
-    .keys(map)
-    .reduce((p, k) => ({ ...p, [k]: stringToTermPrefix(map[k]) }), {});
-}
-
-export const prefixes: Record<string, string> = {
+/**
+ * A list of default prefixes that are used by stringToTermPrefix and template
+ */
+export const defaultPrefixes: Record<string, string> = {
   xsd: 'http://www.w3.org/2001/XMLSchema#',
   rdf: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#langString',
+  fn: 'https://www.w3.org/TR/xpath-functions#',
+  er: 'http://www.w3.org/2005/xqt-errors#',
 };
 
-export function stringToTermPrefix(str: string): RDF.Term {
+/**
+ * Converts a string to a rdf term. The string can contain a prefix that'll be
+ * resolved with defaultPrefixes of the provided prefixes.
+ * @param str
+ * @param additionalPrefixes
+ */
+export function stringToTermPrefix(str: string, additionalPrefixes?: Record<string, string>): RDF.Term {
   const term = <RDF.Literal> stringToTerm(str);
   if (term.termType !== 'Literal') { return term; }
   if (!term.datatype) { return term; }
@@ -47,24 +35,77 @@ export function stringToTermPrefix(str: string): RDF.Term {
   const url = term.datatype.value;
   try {
     const prefix = url.match(/.*:/ug)[0].slice(0, -1);
-    term.datatype.value = url.replace(`${prefix}:`, prefixes[prefix]);
+    const prefixes: Record<string, string> = additionalPrefixes ?
+      { ...defaultPrefixes, ...additionalPrefixes } :
+      defaultPrefixes;
+    if (prefixes[prefix]) {
+      term.datatype.value = url.replace(`${prefix}:`, prefixes[prefix]);
+    }
     return term;
   } catch {
     return term;
   }
 }
 
-export const bool = {
+export function template(expr: string, additionalPrefixes?: Record<string, string>) {
+  const prefixRecord = additionalPrefixes ? { ...defaultPrefixes, ...additionalPrefixes } : defaultPrefixes;
+  const prefix = Object.entries(prefixRecord).map(([ pref, full ]) =>
+    `PREFIX ${pref.endsWith(':') ? pref : `${pref}:`} <${full}>`).join('\n');
+  return `
+${prefix}
+
+SELECT * WHERE { ?s ?p ?o FILTER (${expr})}
+`;
+}
+
+/**
+ * Transform an int to rdf int:
+ * '2' => "2"^^xsd:integer
+ * @param value string (representing an int)
+ */
+export function int(value: string): string {
+  return compactTermString(value, 'xsd:integer');
+}
+
+/**
+ * '2.0' => "2.0"^^${dataType}
+ * @param value string (representing a decimal)
+ */
+export function decimal(value: string): string {
+  return compactTermString(value, 'xsd:decimal');
+}
+
+/**
+ * '123.456' => "123.456"^^xsd:double
+ * @param value string (representing a decimal)
+ */
+export function double(value: string): string {
+  return compactTermString(value, 'xsd:double');
+}
+
+/**
+ * '2001-10-26T21:32:52' => "2001-10-26T21:32:52"^^xsd:dateTime
+ * @param value string (representing a date)
+ */
+export function date(value: string): string {
+  return compactTermString(value, 'xsd:dateTime');
+}
+
+function compactTermString(value: string, dataType: string): string {
+  return `"${value}"^^${dataType}`;
+}
+
+export const bool: AliasMap = {
   true: '"true"^^xsd:boolean',
   false: '"false"^^xsd:boolean',
   anyBool: '"true"^^xsd:boolean',
 };
 
-export const error = {
+export const error: AliasMap = {
   error: '"not a dateTime"^^xsd:dateTime',
 };
 
-export const numeric = {
+export const numeric: AliasMap = {
   anyNum: '"14"^^xsd:integer',
   '0i': '"0"^^xsd:integer',
   '1i': '"1"^^xsd:integer',
@@ -101,7 +142,7 @@ export const numeric = {
   '-5d': '"-5"^^xsd:decimal',
 };
 
-export const dateTime = {
+export const dateTime: AliasMap = {
   anyDate: '"2001-10-26T21:32:52"^^xsd:dateTime',
   earlyN: '"1999-03-17T06:00:00Z"^^xsd:dateTime',
   earlyZ: '"1999-03-17T10:00:00+04:00"^^xsd:dateTime',
@@ -111,91 +152,9 @@ export const dateTime = {
   edge2: '"2000-01-01T00:00:00"^^xsd:dateTime',
 };
 
-export const str = {
+export const str: AliasMap = {
   anyStr: '"generic-string"^^xsd:string',
   empty: '""^^xsd:string',
   aaa: '"aaa"^^xsd:string',
   bbb: '"bbb"^^xsd:string',
-};
-
-export const strTemp = {
-  simple: '"simple"',
-  lang: '"lang"@en',
-  string: '"string"^^xsd:string',
-  number: '"3"^^xsd:integer',
-  badlex: '"badlex"^^xsd:integer',
-  uri: '<http://dbpedia.org/resource/Adventist_Heritage>',
-  emptyString: '',
-
-  nonLexicalBool: '"notABool"^^xsd:boolean',
-  nonLexicalInt: '"notAnInt"^^xsd:integer',
-  boolFalse: '"false"^^xsd:boolean',
-  boolTrue: '"true"^^xsd:boolean',
-
-  zeroSimple: '""',
-  zeroLang: '""@en',
-  zeroStr: '""^^xsd:string',
-  nonZeroSimple: '"a simple literal"',
-  nonZeroLang: '"a language literal"@en',
-  nonZeroStr: '"a string with datatype"^^xsd:string',
-
-  zeroInt: '"0"^^xsd:integer',
-  zeroDouble: '"0.0"^^xsd:double',
-  zeroDerived: '"0"^^xsd:unsignedInt',
-  nonZeroInt: '"3"^^xsd:integer',
-  nonZeroDouble: '"0.01667"^^xsd:double',
-  nonZeroDerived: '"1"^^xsd:unsignedInt',
-  infPos: '"INF"^^xsd:double',
-  infNeg: '"-INF"^^xsd:float',
-  NaN: '"NaN"^^xsd:float',
-
-  date: '"2001-10-26T21:32:52+02:00"^^xsd:dateTime',
-  unbound: '?a',
-
-  xsdString: 'http://www.w3.org/2001/XMLSchema#string',
-  xsdInt: 'http://www.w3.org/2001/XMLSchema#integer',
-};
-
-export const ebvCoercionTemp = {
-  nonLexicalBool: '"notABool"^^xsd:boolean',
-  nonLexicalInt: '"notAnInt"^^xsd:integer',
-  boolFalse: '"false"^^xsd:boolean',
-  boolTrue: '"true"^^xsd:boolean',
-
-  zeroSimple: '""',
-  zeroLang: '""@en',
-  zeroStr: '""^^xsd:string',
-  nonZeroSimple: '"a simple literal"',
-  nonZeroLang: '"a language literal"@en',
-  nonZeroStr: '"a string with datatype"^^xsd:string',
-
-  zeroInt: '"0"^^xsd:integer',
-  zeroDouble: '"0.0"^^xsd:double',
-  zeroDerived: '"0"^^xsd:unsignedInt',
-  nonZeroInt: '"3"^^xsd:integer',
-  nonZeroDouble: '"0.01667"^^xsd:double',
-  nonZeroDerived: '"1"^^xsd:unsignedInt',
-  infPos: '"INF"^^xsd:double',
-  infNeg: '"-INF"^^xsd:float',
-  NaN: '"NaN"^^xsd:float',
-
-  date: '"2001-10-26T21:32:52+02:00"^^xsd:dateTime',
-  unbound: '?a',
-  uri: '<http://dbpedia.org/resource/Adventist_Heritage>',
-};
-
-export const langMatchesTemp = {
-  range: '"de-*-DE"',
-
-  'de-DE': '"de-DE"',
-  'de-de': '"de-de"',
-  'de-Latn-DE': '"de-Latn-DE"',
-  'de-Latf-DE': '"de-Latf-DE"',
-  'de-DE-x-goethe': '"de-DE-x-goethe"',
-  'de-Latn-DE-1996': '"de-Latn-DE-1996"',
-  'de-Deva-DE': '"de-Deva-DE"',
-
-  de: '"de"',
-  'de-X-DE': '"de-X-DE"',
-  'de-Deva': '"de-Deva"',
 };

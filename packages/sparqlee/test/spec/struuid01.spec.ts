@@ -1,4 +1,8 @@
-import { aliases as a, int, testAll } from '../util/utils';
+import { bool, int } from '../util/Aliases';
+import { Notation } from '../util/TestTable';
+import type { ITestTableConfigBase } from '../util/utils';
+
+import { runTestTable } from '../util/utils';
 
 /**
  * REQUEST: struuid01.rq
@@ -27,11 +31,33 @@ import { aliases as a, int, testAll } from '../util/utils';
  */
 
 describe('We should respect the struuid01 spec', () => {
-  testAll([
-    `ISLITERAL(STRUUID()) = ${a.true}`,
-    `REGEX(STRUUID(), "^[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}$", "i") = ${a.true}`,
-    `STRLEN(STRUUID()) = ${int('36')}`,
-  ]);
+  const config: ITestTableConfigBase = {
+    aliases: bool,
+    arity: 'vary',
+    notation: Notation.Function,
+    operation: '',
+  };
+  runTestTable({
+    ...config,
+    operation: 'ISLITERAL',
+    testTable: `
+      STRUUID() = true    
+    `,
+  });
+  runTestTable({
+    ...config,
+    operation: 'REGEX',
+    testTable: `
+      STRUUID() "^[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}$" "i" = true    
+    `,
+  });
+  runTestTable({
+    ...config,
+    operation: 'STRLEN',
+    testTable: `
+      STRUUID() = '${int('36')}'
+    `,
+  });
 });
 
 /**

@@ -1,4 +1,5 @@
-import { testAll } from '../util/utils';
+import { Notation } from '../util/TestTable';
+import { runTestTable } from '../util/utils';
 import * as Data from './_data';
 
 /**
@@ -26,9 +27,14 @@ import * as Data from './_data';
 
 describe('We should respect the sha1-02 spec', () => {
   const { s8 } = Data.hashUnicode();
-  testAll([
-    `SHA1(${s8}) = "d46696735b6a09ff407bfc1a9407e008840db9c9"`,
-  ]);
+  runTestTable({
+    arity: 1,
+    notation: Notation.Function,
+    operation: 'SHA1',
+    testTable: `
+      '${s8}' = "d46696735b6a09ff407bfc1a9407e008840db9c9"
+    `,
+  });
 });
 
 /**

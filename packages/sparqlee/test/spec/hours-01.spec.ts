@@ -1,4 +1,6 @@
-import { int, testAll } from '../util/utils';
+import { int } from '../util/Aliases';
+import { Notation } from '../util/TestTable';
+import { runTestTable } from '../util/utils';
 import * as Data from './_data';
 
 /**
@@ -26,12 +28,17 @@ import * as Data from './_data';
 
 describe('We should respect the hours-01 spec', () => {
   const { d1, d2, d3, d4 } = Data.data();
-  testAll([
-    `HOURS(${d1}) = ${int('11')}`,
-    `HOURS(${d2}) = ${int('15')}`,
-    `HOURS(${d3}) = ${int('23')}`,
-    `HOURS(${d4}) = ${int('1')}`,
-  ]);
+  runTestTable({
+    arity: 1,
+    notation: Notation.Function,
+    operation: 'HOURS',
+    testTable: `
+      '${d1}' = '${int('11')}'
+      '${d2}' = '${int('15')}'
+      '${d3}' = '${int('23')}'
+      '${d4}' = '${int('1')}'
+    `,
+  });
 });
 
 /**

@@ -1,4 +1,6 @@
-import { decimal, int, testAll } from '../util/utils';
+import { decimal, int } from '../util/Aliases';
+import { Notation } from '../util/TestTable';
+import { runTestTable } from '../util/utils';
 import * as Data from './_data';
 
 /**
@@ -27,13 +29,18 @@ import * as Data from './_data';
 
 describe('We should respect the floor01 spec', () => {
   const { n1, n2, n3, n4, n5 } = Data.data();
-  testAll([
-    `FLOOR(${n1}) = ${int('-1')}`,
-    `FLOOR(${n2}) = ${decimal('-2')}`,
-    `FLOOR(${n3}) = ${decimal('1')}`,
-    `FLOOR(${n4}) = ${int('-2')}`,
-    `FLOOR(${n5}) = ${decimal('2')}`,
-  ]);
+  runTestTable({
+    notation: Notation.Function,
+    operation: 'FLOOR',
+    arity: 1,
+    testTable: `
+      '${n1}' = '${int('-1')}'
+      '${n2}' = '${decimal('-2')}'
+      '${n3}' = '${decimal('1')}'
+      '${n4}' = '${int('-2')}'
+      '${n5}' = '${decimal('2')}'
+    `,
+  });
 });
 
 /**

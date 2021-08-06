@@ -1,6 +1,6 @@
 import { DataFactory } from 'rdf-data-factory';
+import { template } from '../util/Aliases';
 import { generalEvaluate } from '../util/generalEvaluation';
-import { template } from '../util/utils';
 
 const DF = new DataFactory();
 

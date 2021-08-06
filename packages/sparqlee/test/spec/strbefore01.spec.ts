@@ -1,4 +1,5 @@
-import { testAll, testAllErrors } from '../util/utils';
+import { Notation } from '../util/TestTable';
+import { runTestTable } from '../util/utils';
 import * as Data from './_data';
 
 /**
@@ -27,18 +28,22 @@ import * as Data from './_data';
 
 describe('We should respect the strbefore01 spec', () => {
   const { s1, s2, s3, s4, s5, s6, s7 } = Data.data2();
-  testAll([
-    `STRBEFORE(${s1}, "s") = ""`,
-    `STRBEFORE(${s2}, "s") = ""`,
-    `STRBEFORE(${s3}, "s") = "engli"@en`,
-    `STRBEFORE(${s4}, "s") = "françai"@fr`,
-    `STRBEFORE(${s5}, "s") = ""^^xsd:string`,
-    `STRBEFORE(${s6}, "s") = ""^^xsd:string`,
-  ]);
-
-  testAllErrors([
-    `STRBEFORE(${s7}, "s") = error`,
-  ]);
+  runTestTable({
+    arity: 2,
+    operation: 'STRBEFORE',
+    notation: Notation.Function,
+    testTable: `
+      '${s1}' "s" = ""
+      '${s2}' "s" = ""
+      '${s3}' "s" = "engli"@en
+      '${s4}' "s" = "françai"@fr
+      '${s5}' "s" = ""^^xsd:string
+      '${s6}' "s" = ""^^xsd:string
+    `,
+    errorTable: `
+      '${s7}' "s" = ''
+    `,
+  });
 });
 
 /**

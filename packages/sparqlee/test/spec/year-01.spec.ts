@@ -1,4 +1,6 @@
-import { int, testAll } from '../util/utils';
+import { int } from '../util/Aliases';
+import { Notation } from '../util/TestTable';
+import { runTestTable } from '../util/utils';
 import * as Data from './_data';
 
 describe('Year', () => {
@@ -27,12 +29,17 @@ describe('Year', () => {
 
   describe('We should respect the year-01 spec', () => {
     const { d1, d2, d3, d4 } = Data.data();
-    testAll([
-      `YEAR(${d1}) = ${int('2010')}`,
-      `YEAR(${d2}) = ${int('2010')}`,
-      `YEAR(${d3}) = ${int('2008')}`,
-      `YEAR(${d4}) = ${int('2011')}`,
-    ]);
+    runTestTable({
+      operation: 'YEAR',
+      arity: 1,
+      notation: Notation.Function,
+      testTable: `
+        '${d1}' = '${int('2010')}'
+        '${d2}' = '${int('2010')}'
+        '${d3}' = '${int('2008')}'
+        '${d4}' = '${int('2011')}'      
+      `,
+    });
   });
 
   /**
@@ -67,11 +74,16 @@ describe('Year', () => {
 
   describe('We should allow YEAR on xsd:date', () => {
     const { dr1, dr2, dr3, dr4 } = Data.data();
-    testAll([
-      `YEAR(${dr1}) = ${int('2010')}`,
-      `YEAR(${dr2}) = ${int('2010')}`,
-      `YEAR(${dr3}) = ${int('2008')}`,
-      `YEAR(${dr4}) = ${int('2011')}`,
-    ]);
+    runTestTable({
+      operation: 'YEAR',
+      arity: 1,
+      notation: Notation.Function,
+      testTable: `
+        '${dr1}' = '${int('2010')}'
+        '${dr2}' = '${int('2010')}'
+        '${dr3}' = '${int('2008')}'
+        '${dr4}' = '${int('2011')}'  
+      `,
+    });
   });
 });

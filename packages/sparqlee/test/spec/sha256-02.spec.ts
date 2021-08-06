@@ -1,4 +1,5 @@
-import { testAll } from '../util/utils';
+import { Notation } from '../util/TestTable';
+import { runTestTable } from '../util/utils';
 import * as Data from './_data';
 
 /**
@@ -26,9 +27,14 @@ import * as Data from './_data';
 
 describe('We should respect the sha256-02 spec', () => {
   const { s8 } = Data.hashUnicode();
-  testAll([
-    `SHA256(${s8}) = "0fbe868d1df356ca9df7ebff346da3a56280e059a7ea81186ef885b140d254ee"`,
-  ]);
+  runTestTable({
+    arity: 1,
+    notation: Notation.Function,
+    operation: 'SHA256',
+    testTable: `
+      '${s8}' = "0fbe868d1df356ca9df7ebff346da3a56280e059a7ea81186ef885b140d254ee"
+    `,
+  });
 });
 
 /**

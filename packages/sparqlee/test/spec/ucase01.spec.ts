@@ -1,4 +1,5 @@
-import { testAll } from '../util/utils';
+import { Notation } from '../util/TestTable';
+import { runTestTable } from '../util/utils';
 import * as Data from './_data';
 
 /**
@@ -26,15 +27,20 @@ import * as Data from './_data';
 
 describe('We should respect the ucase01 spec', () => {
   const { s1, s2, s3, s4, s5, s6, s7 } = Data.data();
-  testAll([
-    `UCASE(${s1}) = "FOO"`,
-    `UCASE(${s2}) = "BAR"@en`,
-    `UCASE(${s3}) = "BAZ"`,
-    `UCASE(${s4}) = "食べ物"`,
-    `UCASE(${s5}) = "100%"`,
-    `UCASE(${s6}) = "ABC"^^xsd:string`,
-    `UCASE(${s7}) = "DEF"^^xsd:string`,
-  ]);
+  runTestTable({
+    operation: 'UCASE',
+    notation: Notation.Function,
+    arity: 1,
+    testTable: `
+      '${s1}' = "FOO"
+      '${s2}' = "BAR"@en
+      '${s3}' = "BAZ"
+      '${s4}' = "食べ物"
+      '${s5}' = "100%"
+      '${s6}' = "ABC"^^xsd:string
+      '${s7}' = "DEF"^^xsd:string
+    `,
+  });
 });
 
 /**

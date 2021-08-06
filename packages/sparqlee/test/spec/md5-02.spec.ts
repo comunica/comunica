@@ -1,4 +1,5 @@
-import { testAll } from '../util/utils';
+import { Notation } from '../util/TestTable';
+import { runTestTable } from '../util/utils';
 import * as Data from './_data';
 
 /**
@@ -26,9 +27,14 @@ import * as Data from './_data';
 
 describe('We should respect the md5-02 spec', () => {
   const { s4 } = Data.data();
-  testAll([
-    `MD5(${s4}) = "e7ada485d13b1decf628c9211bc3a97b"`,
-  ]);
+  runTestTable({
+    operation: 'MD5',
+    notation: Notation.Function,
+    arity: 1,
+    testTable: `
+      '${s4}' = "e7ada485d13b1decf628c9211bc3a97b"
+    `,
+  });
 });
 
 /**

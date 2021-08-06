@@ -1,4 +1,5 @@
-import { testAll } from '../util/utils';
+import { Notation } from '../util/TestTable';
+import { runTestTable } from '../util/utils';
 import * as Data from './_data';
 
 /**
@@ -27,9 +28,14 @@ import * as Data from './_data';
 
 describe('We should respect the replace02 spec', () => {
   const { s8 } = Data.data3();
-  testAll([
-    `REPLACE(${s8}, "ana", "*") = "b*na"`,
-  ]);
+  runTestTable({
+    operation: 'REPLACE',
+    arity: 'vary',
+    notation: Notation.Function,
+    testTable: `
+      '${s8}' "ana" "*" = "b*na"
+    `,
+  });
 });
 
 /**

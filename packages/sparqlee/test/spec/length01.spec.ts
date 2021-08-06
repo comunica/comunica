@@ -1,4 +1,6 @@
-import { int, testAll } from '../util/utils';
+import { int } from '../util/Aliases';
+import { Notation } from '../util/TestTable';
+import { runTestTable } from '../util/utils';
 import * as Data from './_data';
 
 /**
@@ -26,15 +28,20 @@ import * as Data from './_data';
 
 describe('We should respect the length01 spec', () => {
   const { s1, s2, s3, s4, s5, s6, s7 } = Data.data();
-  testAll([
-    `STRLEN(${s1}) = ${int('3')}`,
-    `STRLEN(${s2}) = ${int('3')}`,
-    `STRLEN(${s3}) = ${int('3')}`,
-    `STRLEN(${s4}) = ${int('3')}`,
-    `STRLEN(${s5}) = ${int('4')}`,
-    `STRLEN(${s6}) = ${int('3')}`,
-    `STRLEN(${s7}) = ${int('3')}`,
-  ]);
+  runTestTable({
+    operation: 'STRLEN',
+    notation: Notation.Function,
+    arity: 1,
+    testTable: `
+      '${s1}' = '${int('3')}'
+      '${s2}' = '${int('3')}'
+      '${s3}' = '${int('3')}'
+      '${s4}' = '${int('3')}'
+      '${s5}' = '${int('4')}'
+      '${s6}' = '${int('3')}'
+      '${s7}' = '${int('3')}'
+    `,
+  });
 });
 
 /**

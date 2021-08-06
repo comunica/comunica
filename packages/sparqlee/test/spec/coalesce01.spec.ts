@@ -1,4 +1,6 @@
-import { decimal, int, testAll, testAllErrors } from '../util/utils';
+import { decimal, int } from '../util/Aliases';
+import { Notation } from '../util/TestTable';
+import { runTestTable } from '../util/utils';
 
 /**
  * REQUEST: coalesce01.rq
@@ -50,31 +52,31 @@ describe('We should respect the coalesce01 spec', () => {
     n3: int('4'),
   };
 
-  testAll([
-    // :n0
-    `COALESCE(${q0}, -1) = ${int('-1')}`,
-    `COALESCE(${n0}/${q0}, -2) = ${int('-2')}`,
-    `COALESCE(?z, -3) = ${int('-3')}`,
-
-    // :n1
-    `COALESCE(${q1}, -1) = ${q1}`,
-    `COALESCE(${n1}/${q1}, -2) = ${int('-2')}`,
-    `COALESCE(?z, -3) = ${int('-3')}`,
-
-    // :n2
-    `COALESCE(${q2}, -1) = ${q2}`,
-    `COALESCE(${n2}/${q2}, -2) = ${decimal('0')}`,
-    `COALESCE(?z, -3) = ${int('-3')}`,
-
-    // :n3
-    `COALESCE(${q3}, -1) = ${q3}`,
-    `COALESCE(${n3}/${q3}) = ${decimal('2')}`,
-    `COALESCE(?z, -3) = ${int('-3')}`,
-  ]);
-
-  testAllErrors([
-    'COALESCE(?z) = error',
-  ]);
+  runTestTable({
+    arity: 'vary',
+    operation: 'COALESCE',
+    notation: Notation.Function,
+    testTable: `
+    '${q0}'  -1 = '${int('-1')}'
+    '${n0}/${q0}' -2 = '${int('-2')}'
+    ?z -3 = '${int('-3')}'
+    
+    '${q1}' -1 = '${q1}'
+    '${n1}/${q1}' -2 = '${int('-2')}'
+    ?z -3 = '${int('-3')}'
+    
+    '${q2}' -1 = '${q2}'
+    '${n2}/${q2}' -2 = '${decimal('0')}'
+    ?z -3 = '${int('-3')}'
+    
+    '${q3}' -1 = '${q3}'
+    '${n3}/${q3}' = '${decimal('2')}'
+    ?z -3 = '${int('-3')}'
+    `,
+    errorTable: `
+      ?z = ''    
+    `,
+  });
 });
 
 /**

@@ -1,4 +1,6 @@
-import { decimal, int, testAll, testAllErrors } from '../util/utils';
+import { decimal, int } from '../util/Aliases';
+import { Notation } from '../util/TestTable';
+import { runTestTable } from '../util/utils';
 import * as Data from './_data';
 
 /**
@@ -35,20 +37,23 @@ describe('We should respect the plus-1-corrected spec', () => {
     x7p, x7q,
     x8p, x8q,
   } = Data.dataBuiltin3();
-
-  testAll([
-    `${x4p} + ${x4q} = ${int('3')}`,
-    `${x5p} + ${x5q} = ${decimal('3')}`,
-  ]);
-
-  testAllErrors([
-    `${x1p} + ${x1q} = error`,
-    `BNODE() + ${x2q} = error`,
-    `<http://example/a> + ${x3q} = error`,
-    `${x6p} + ${x6q} = error`,
-    `${x7p} + ${x7q} = error`,
-    `${x8p} + ${x8q} = error`,
-  ]);
+  runTestTable({
+    notation: Notation.Infix,
+    operation: '+',
+    arity: 2,
+    testTable: `
+      '${x4p}' '${x4q}' = '${int('3')}'
+      '${x5p}' '${x5q}' = '${decimal('3')}'
+    `,
+    errorTable: `
+      '${x1p}' '${x1q}' = ''
+      'BNODE()' '${x2q}' = ''
+      '<http://example/a>' '${x3q}' = ''
+      '${x6p}' '${x6q}' = ''
+      '${x7p}' '${x7q}' = ''
+      '${x8p}' '${x8q}' = ''
+    `,
+  });
 });
 
 /**

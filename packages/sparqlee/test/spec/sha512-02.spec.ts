@@ -1,5 +1,6 @@
 /* eslint max-len: 0 */
-import { testAll } from '../util/utils';
+import { Notation } from '../util/TestTable';
+import { runTestTable } from '../util/utils';
 import * as Data from './_data';
 
 /**
@@ -27,9 +28,14 @@ import * as Data from './_data';
 
 describe('We should respect the sha512-02 spec', () => {
   const { s8 } = Data.hashUnicode();
-  testAll([
-    `SHA512(${s8}) = "b433ed0e60c818bea72d3aa1a43db89b3ed2b624597407b7912bbb7685f2e45ae5500e092da5f938391d282b26bc43e4035b12460c93ab5e2e1a05d582331d85"`,
-  ]);
+  runTestTable({
+    arity: 1,
+    notation: Notation.Function,
+    operation: 'SHA512',
+    testTable: `
+      '${s8}' = "b433ed0e60c818bea72d3aa1a43db89b3ed2b624597407b7912bbb7685f2e45ae5500e092da5f938391d282b26bc43e4035b12460c93ab5e2e1a05d582331d85"
+    `,
+  });
 });
 
 /**

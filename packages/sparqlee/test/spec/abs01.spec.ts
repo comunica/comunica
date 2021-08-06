@@ -1,4 +1,6 @@
-import { aliases as a, testAll } from '../util/utils';
+import { bool } from '../util/Aliases';
+import { Notation } from '../util/TestTable';
+import { runTestTable } from '../util/utils';
 import * as Data from './_data';
 
 /**
@@ -27,13 +29,19 @@ import * as Data from './_data';
 
 describe('We should respect the abs01 spec', () => {
   const { n1, n2, n3, n4, n5 } = Data.data();
-  testAll([
-    `abs(${n1}) >= 2 = ${a.false}`,
-    `abs(${n2}) >= 2 = ${a.false}`,
-    `abs(${n3}) >= 2 = ${a.false}`,
-    `abs(${n4}) >= 2 = ${a.true}`,
-    `abs(${n5}) >= 2 = ${a.true}`,
-  ]);
+  runTestTable({
+    arity: 2,
+    notation: Notation.Infix,
+    operation: '>=',
+    aliases: bool,
+    testTable: `
+      'abs(${n1})' 2 = false
+      'abs(${n2})' 2 = false
+      'abs(${n3})' 2 = false
+      'abs(${n4})' 2 = true
+      'abs(${n5})' 2 = true
+    `,
+  });
 });
 
 /**

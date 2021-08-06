@@ -1,4 +1,5 @@
-import { testAll, testAllErrors } from '../util/utils';
+import { Notation } from '../util/TestTable';
+import { runTestTable } from '../util/utils';
 import * as Data from './_data';
 
 /**
@@ -25,29 +26,33 @@ import * as Data from './_data';
 
 describe('We should respect the strlang03 spec', () => {
   const { n1, n2, n3, n4, n5, s1, s2, s3, s4, s5, s6, s7, d1, d2, d3, d4 } = Data.data();
-  testAll([
-    `STRLANG(${s1}, "en-US") = "foo"@en-us`,
-    `STRLANG(${s3}, "en-US") = "BAZ"@en-us`,
-    `STRLANG(${s4}, "en-US") = "食べ物"@en-us`,
-    `STRLANG(${s5}, "en-US") = "100%"@en-us`,
-    `STRLANG(${s6}, "en-US") = "abc"@en-us`,
-    `STRLANG(${s7}, "en-US") = "DEF"@en-us`,
-  ]);
+  runTestTable({
+    arity: 2,
+    operation: 'STRLANG',
+    notation: Notation.Function,
+    testTable: `
+      ${s1} "en-US" = "foo"@en-us
+      ${s3} "en-US" = "BAZ"@en-us
+      ${s4} "en-US" = "食べ物"@en-us
+      ${s5} "en-US" = "100%"@en-us
+      ${s6} "en-US" = "abc"@en-us
+      ${s7} "en-US" = "DEF"@en-us    
+    `,
+    errorTable: `
+    '${n1}' "en-US" = ''
+    '${n2}' "en-US" = ''
+    '${n3}' "en-US" = ''
+    '${n4}' "en-US" = ''
+    '${n5}' "en-US" = ''
 
-  testAllErrors([
-    `STRLANG(${n1}, "en-US") = error`,
-    `STRLANG(${n2}, "en-US") = error`,
-    `STRLANG(${n3}, "en-US") = error`,
-    `STRLANG(${n4}, "en-US") = error`,
-    `STRLANG(${n5}, "en-US") = error`,
+    '${s2}' "en-US" = ''
 
-    `STRLANG(${s2}, "en-US") = error`,
-
-    `STRLANG(${d1}, "en-US") = error`,
-    `STRLANG(${d2}, "en-US") = error`,
-    `STRLANG(${d3}, "en-US") = error`,
-    `STRLANG(${d4}, "en-US") = error`,
-  ]);
+    '${d1}' "en-US" = ''
+    '${d2}' "en-US" = ''
+    '${d3}' "en-US" = ''
+    '${d4}' "en-US" = ''
+    `,
+  });
 });
 
 /**

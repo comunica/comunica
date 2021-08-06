@@ -1,4 +1,6 @@
-import { int, testAll } from '../util/utils';
+import { int } from '../util/Aliases';
+import { Notation } from '../util/TestTable';
+import { runTestTable } from '../util/utils';
 import * as Data from './_data';
 
 /**
@@ -26,12 +28,17 @@ import * as Data from './_data';
 
 describe('We should respect the minutes-01 spec', () => {
   const { d1, d2, d3, d4 } = Data.data();
-  testAll([
-    `MINUTES(${d1}) = ${int('28')}`,
-    `MINUTES(${d2}) = ${int('38')}`,
-    `MINUTES(${d3}) = ${int('59')}`,
-    `MINUTES(${d4}) = ${int('2')}`,
-  ]);
+  runTestTable({
+    arity: 1,
+    notation: Notation.Function,
+    operation: 'MINUTES',
+    testTable: `
+      '${d1}' = '${int('28')}'
+      '${d2}' = '${int('38')}'
+      '${d3}' = '${int('59')}'
+      '${d4}' = '${int('2')}'
+    `,
+  });
 });
 
 /**

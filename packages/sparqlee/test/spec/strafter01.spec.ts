@@ -1,4 +1,5 @@
-import { testAll, testAllErrors } from '../util/utils';
+import { Notation } from '../util/TestTable';
+import { runTestTable } from '../util/utils';
 import * as Data from './_data';
 
 /**
@@ -27,18 +28,22 @@ import * as Data from './_data';
 
 describe('We should respect the strafter01 spec', () => {
   const { s1, s2, s3, s4, s5, s6, s7 } = Data.data2();
-  testAll([
-    `STRAFTER(${s1}, "e") = ""`,
-    `STRAFTER(${s2}, "e") = ""`,
-    `STRAFTER(${s3}, "e") = "nglish"@en`,
-    `STRAFTER(${s4}, "e") = ""`,
-    `STRAFTER(${s5}, "e") = ""^^xsd:string`,
-    `STRAFTER(${s6}, "e") = "f"^^xsd:string`,
-  ]);
-
-  testAllErrors([
-    `STRAFTER(${s7}, "e") = error`,
-  ]);
+  runTestTable({
+    arity: 2,
+    notation: Notation.Function,
+    operation: 'STRAFTER',
+    testTable: `
+      '${s1}' "e" = ""
+      '${s2}' "e" = ""
+      '${s3}' "e" = "nglish"@en
+      '${s4}' "e" = ""
+      '${s5}' "e" = ""^^xsd:string
+      '${s6}' "e" = "f"^^xsd:string
+    `,
+    errorTable: `
+      ${s7} "e" = ''    
+    `,
+  });
 });
 
 /**

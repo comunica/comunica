@@ -1,4 +1,5 @@
-import { testAllErrors } from '../util/utils';
+import { Notation } from '../util/TestTable';
+import { runTestTable } from '../util/utils';
 import * as Data from './_data';
 
 /**
@@ -27,9 +28,14 @@ import * as Data from './_data';
 
 describe('We should respect the strlang01 spec', () => {
   const { s2 } = Data.data();
-  testAllErrors([
-    `STRLANG(${s2}, "en-US") = error`,
-  ]);
+  runTestTable({
+    arity: 2,
+    operation: 'STRLANG',
+    notation: Notation.Function,
+    errorTable: `
+      '${s2}' "en-US" = ''
+    `,
+  });
 });
 
 /**

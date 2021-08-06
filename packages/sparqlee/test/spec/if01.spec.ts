@@ -1,4 +1,6 @@
-import { aliases as a, testAll } from '../util/utils';
+import { bool } from '../util/Aliases';
+import { Notation } from '../util/TestTable';
+import { runTestTable } from '../util/utils';
 import * as Data from './_data';
 
 /**
@@ -28,15 +30,21 @@ import * as Data from './_data';
 
 describe('We should respect the if01 spec', () => {
   const { s1, s2, s3, s4, s5, s6, s7 } = Data.data2();
-  testAll([
-    `IF(lang(${s1}) = "ja", true, false) = ${a.false}`,
-    `IF(lang(${s2}) = "ja", true, false) = ${a.true}`,
-    `IF(lang(${s3}) = "ja", true, false) = ${a.false}`,
-    `IF(lang(${s4}) = "ja", true, false) = ${a.false}`,
-    `IF(lang(${s5}) = "ja", true, false) = ${a.false}`,
-    `IF(lang(${s6}) = "ja", true, false) = ${a.false}`,
-    `IF(lang(${s7}) = "ja", true, false) = ${a.false}`,
-  ]);
+  runTestTable({
+    aliases: bool,
+    operation: 'IF',
+    arity: 'vary',
+    notation: Notation.Function,
+    testTable: `
+    'lang(${s1}) = "ja"' true false = false
+    'lang(${s2}) = "ja"' true false = true
+    'lang(${s3}) = "ja"' true false = false
+    'lang(${s4}) = "ja"' true false = false
+    'lang(${s5}) = "ja"' true false = false
+    'lang(${s6}) = "ja"' true false = false
+    'lang(${s7}) = "ja"' true false = false
+    `,
+  });
 });
 
 /**

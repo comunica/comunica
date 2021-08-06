@@ -2190,7 +2190,7 @@ escodegen@^2.0.0:
   optionalDependencies:
     source-map "~0.6.1"
 
-eslint-config-es@^3.30.7:
+eslint-config-es@3.30.7:
   version "3.30.7"
   resolved "https://registry.yarnpkg.com/eslint-config-es/-/eslint-config-es-3.30.7.tgz#8c9eaa56a20c4d231c6b2d9a1897590bc7772028"
   integrity sha512-T4bGJFzFz8GkA/k9AwN7353hRkGxDiw62Hy3g4pC6xBM9Vq7VUR43DQCggB4/d0iPfiLwDneFCh6xOffslptAA==

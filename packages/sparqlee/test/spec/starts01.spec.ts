@@ -1,4 +1,6 @@
-import { aliases as a, testAll } from '../util/utils';
+import { bool } from '../util/Aliases';
+import { Notation } from '../util/TestTable';
+import { runTestTable } from '../util/utils';
 import * as Data from './_data';
 
 /**
@@ -28,25 +30,31 @@ import * as Data from './_data';
 
 describe('We should respect the starts01 spec', () => {
   const { n1, n2, n3, n4, s1, s2, s3, s4, s5, s6, s7, d1, d2, d3, d4 } = Data.data();
-  testAll([
-    `STRSTARTS(STR(${n1}), "1") = ${a.false}`,
-    `STRSTARTS(STR(${n2}), "1") = ${a.false}`,
-    `STRSTARTS(STR(${n3}), "1") = ${a.true}`,
-    `STRSTARTS(STR(${n4}), "1") = ${a.false}`,
-
-    `STRSTARTS(STR(${s1}), "1") = ${a.false}`,
-    `STRSTARTS(STR(${s2}), "1") = ${a.false}`,
-    `STRSTARTS(STR(${s3}), "1") = ${a.false}`,
-    `STRSTARTS(STR(${s4}), "1") = ${a.false}`,
-    `STRSTARTS(STR(${s5}), "1") = ${a.true}`,
-    `STRSTARTS(STR(${s6}), "1") = ${a.false}`,
-    `STRSTARTS(STR(${s7}), "1") = ${a.false}`,
-
-    `STRSTARTS(STR(${d1}), "1") = ${a.false}`,
-    `STRSTARTS(STR(${d2}), "1") = ${a.false}`,
-    `STRSTARTS(STR(${d3}), "1") = ${a.false}`,
-    `STRSTARTS(STR(${d4}), "1") = ${a.false}`,
-  ]);
+  runTestTable({
+    arity: 2,
+    operation: 'STRSTARTS',
+    notation: Notation.Function,
+    aliases: bool,
+    testTable: `
+      'STR(${n1})' "1" = false
+      'STR(${n2})' "1" = false
+      'STR(${n3})' "1" = true
+      'STR(${n4})' "1" = false
+  
+      'STR(${s1})' "1" = false
+      'STR(${s2})' "1" = false
+      'STR(${s3})' "1" = false
+      'STR(${s4})' "1" = false
+      'STR(${s5})' "1" = true
+      'STR(${s6})' "1" = false
+      'STR(${s7})' "1" = false
+  
+      'STR(${d1})' "1" = false
+      'STR(${d2})' "1" = false
+      'STR(${d3})' "1" = false
+      'STR(${d4})' "1" = false
+    `,
+  });
 });
 
 /**

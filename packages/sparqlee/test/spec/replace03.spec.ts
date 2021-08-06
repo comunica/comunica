@@ -1,3 +1,5 @@
+import { Notation } from '../util/TestTable';
+import { runTestTable } from '../util/utils';
 import * as Data from './_data';
 
 /**
@@ -24,14 +26,16 @@ import * as Data from './_data';
  *   .
  */
 
-describe.skip('We should respect the replace03 spec', () => {
+describe('We should respect the replace03 spec', () => {
   const { s9 } = Data.data3();
-  it('dummy', () => {
-    // Do nothing
+  runTestTable({
+    operation: 'REPLACE',
+    arity: 'vary',
+    notation: Notation.Function,
+    testTable: `
+      '${s9}' "(ab)|(a)" "[1=$1][2=$2]" = "[1=ab][2=]cd"
+    `,
   });
-  // TestAll([
-  // `REPLACE(${s9}, "(ab)|(a)", "[1=$1][2=$2]) = "[1=ab][2=]cd"`,
-  // ]);
 });
 
 /**

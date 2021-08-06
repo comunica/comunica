@@ -340,7 +340,58 @@ We also handle type promotion by explicitly coding for it. This is done in the a
 ### Testing
 
 Running tests will generate a `test-report.html` in the root dir.
-**TODO** Explain test organizatian and expression tables
 
-Evaluating within a test should be done by calling `generalEvaluate`.
-This will test both sync and async implementation if possible. 
+The testing environment is set up to do a lot of tests with little code.
+The files responsible for fluent behaviour reside in `test/util`.  
+Most tests can be run by running the `runTestTable` method in `test/util/utils.ts`.
+This method expects a TestTable. Multiple test are run over a TestTable (one for every line).
+A TestTable may contain aliases if the aliases are also provided
+(Some handy aliases reside in `test/util/Aliases.ts`).
+This means that when testing something like `"3"^^xsd:integer equals "3"^^xsd:integer` is `"true"^^xsd:boolean`.
+We would write a small table (for this example some more tests are added) and test it like this:
+```ts
+import { bool, merge, numeric } from './util/Aliases';
+import { Notation } from './util/TruthTable';
+import { runTestTable } from './util/utils';
+runTestTable({
+   testTable: `
+       3i 3i = true
+       3i -5i = false
+       -0f 0f = true
+       NaN  NaN = false
+   `,
+   arity: 2,
+   operation: '=',
+   aliases: merge(numeric, bool),
+   notation: Notation.Infix,
+});
+```
+More options can be provided and are explained with the type definition of the argument of `runTestTable`.
+
+We can also provide an `errorTable` to the `runTestTable` method.
+This is used when we want to test if calling certain functions on certain arguments throws the error we want.
+An example is testing whether `Unknown named operator` error is thrown when
+we don't provide the implementation for an extension function.
+```ts
+import { bool, merge, numeric } from './util/Aliases';
+import { Notation } from './util/TruthTable';
+import { runTestTable } from './util/utils';
+runTestTable({
+   errorTable: `
+       3i 3i = 'Unknown named operator'
+       3i -5i = 'Unknown named operator'
+       -0f 0f = 'Unknown named operator'
+       NaN  NaN = 'Unknown named operator'
+   `,
+   arity: 2,
+   operation: '<https://example.org/functions#equal>',
+   aliases: merge(numeric, bool),
+   notation: Notation.Infix,
+});
+```
+When you don't care what the error is, you can just test for `''`.
+
+In case the tables are too restrictive for your test, and you need an evaluation.
+You should still use the `generalEvaluate` function from `test/util/generalEvaluation.ts`.
+This function will automatically run both async and sync when possible.
+This increases your tests' coverage.

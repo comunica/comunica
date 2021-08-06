@@ -1,4 +1,5 @@
-import { testAll, testAllErrors } from '../util/utils';
+import { Notation } from '../util/TestTable';
+import { runTestTable } from '../util/utils';
 import * as Data from './_data';
 
 /**
@@ -26,29 +27,33 @@ import * as Data from './_data';
 
 describe('We should respect the strdt03 spec', () => {
   const { n1, n2, n3, n4, n5, s1, s2, s3, s4, s5, s6, s7, d1, d2, d3, d4 } = Data.data();
-  testAll([
-    `STRDT(${s1}, xsd:string) = "foo"^^xsd:string`,
-    `STRDT(${s3}, xsd:string) = "BAZ"^^xsd:string`,
-    `STRDT(${s4}, xsd:string) = "食べ物"^^xsd:string`,
-    `STRDT(${s5}, xsd:string) = "100%"^^xsd:string`,
-    `STRDT(${s6}, xsd:string) = "abc"^^xsd:string`,
-    `STRDT(${s7}, xsd:string) = "DEF"^^xsd:string`,
-  ]);
-
-  testAllErrors([
-    `STRDT(${n1}, xsd:string) = error`,
-    `STRDT(${n2}, xsd:string) = error`,
-    `STRDT(${n3}, xsd:string) = error`,
-    `STRDT(${n4}, xsd:string) = error`,
-    `STRDT(${n5}, xsd:string) = error`,
-
-    `STRDT(${s2}, xsd:string) = error`,
-
-    `STRDT(${d1}, xsd:string) = error`,
-    `STRDT(${d2}, xsd:string) = error`,
-    `STRDT(${d3}, xsd:string) = error`,
-    `STRDT(${d4}, xsd:string) = error`,
-  ]);
+  runTestTable({
+    arity: 2,
+    notation: Notation.Function,
+    operation: 'STRDT',
+    testTable: `
+      '${s1}' xsd:string = "foo"^^xsd:string
+      '${s3}' xsd:string = "BAZ"^^xsd:string
+      '${s4}' xsd:string = "食べ物"^^xsd:string
+      '${s5}' xsd:string = "100%"^^xsd:string
+      '${s6}' xsd:string = "abc"^^xsd:string
+      '${s7}' xsd:string = "DEF"^^xsd:string
+    `,
+    errorTable: `
+      '${n1}' xsd:string = ''
+      '${n2}' xsd:string = ''
+      '${n3}' xsd:string = ''
+      '${n4}' xsd:string = ''
+      '${n5}' xsd:string = ''
+  
+      '${s2}' xsd:string = ''
+  
+      '${d1}' xsd:string = ''
+      '${d2}' xsd:string = ''
+      '${d3}' xsd:string = ''
+      '${d4}' xsd:string = ''
+    `,
+  });
 });
 
 /**

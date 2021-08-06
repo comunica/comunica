@@ -1,4 +1,6 @@
-import { aliases as a, testAll } from '../util/utils';
+import { bool } from '../util/Aliases';
+import { Notation } from '../util/TestTable';
+import { runTestTable } from '../util/utils';
 
 /**
  * REQUEST: bnode01.rq
@@ -31,9 +33,15 @@ import { aliases as a, testAll } from '../util/utils';
 
 // This does of course not correspond to the actual spec test.
 describe('We should respect the bnode01 spec', () => {
-  testAll([
-    `BNODE() != BNODE() = ${a.true}`,
-  ]);
+  runTestTable({
+    arity: 2,
+    operation: '!=',
+    aliases: bool,
+    notation: Notation.Infix,
+    testTable: `
+      'BNODE()' 'BNODE()' = true
+    `,
+  });
 });
 
 /**

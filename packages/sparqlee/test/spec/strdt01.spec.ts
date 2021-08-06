@@ -1,4 +1,5 @@
-import { testAllErrors } from '../util/utils';
+import { Notation } from '../util/TestTable';
+import { runTestTable } from '../util/utils';
 import * as Data from './_data';
 
 /**
@@ -28,9 +29,14 @@ import * as Data from './_data';
 
 describe('We should respect the strdt01 spec', () => {
   const { s2 } = Data.data();
-  testAllErrors([
-    `STRDT(${s2}, xsd:string) = error`,
-  ]);
+  runTestTable({
+    arity: 2,
+    notation: Notation.Function,
+    operation: 'STRDT',
+    errorTable: `
+      '${s2}' xsd:string = ''
+    `,
+  });
 });
 
 /**

@@ -1,88 +1,56 @@
-import { stringToTerm, termToString } from 'rdf-string';
-import { ExpressionError } from '../../lib/util/Errors';
+import type { AliasMap } from './Aliases';
 import type { GeneralEvaluationConfig } from './generalEvaluation';
-import { generalEvaluate } from './generalEvaluation';
+import type { Notation } from './TestTable';
+import { BinaryTable, UnaryTable, VariableTable } from './TestTable';
 
-export function testAll(exprs: string[], config?: GeneralEvaluationConfig) {
-  exprs.forEach(_expr => {
-    const expr = _expr.trim();
-    const matched = expr.match(/ = [^=]*$/ug);
-    if (!matched) {
-      throw new Error(`Could not match '${expr}'`);
-    }
-    const equals = matched.pop();
-    const body = expr.replace(equals, '');
-    const _result = equals.replace(' = ', '');
-    const result = stringToTerm(replacePrefix(_result));
-    // Console.log(`${expr}\n${equals}\n${body}\n${_result}\n${result}`);
-    it(`${body} should evaluate to ${_result}`, async() => {
-      const evaluated = await generalEvaluate({
-        expression: template(body), expectEquality: true, generalEvaluationConfig: config,
-      });
-      expect(termToString(evaluated.asyncResult)).toEqual(termToString(result));
-    });
-  });
+export interface ITestTableConfigBase {
+  /**
+   * Operation / function that needs to be called on the arguments provided in the TestTable.
+   */
+  operation: string;
+  /**
+   * How many arguments does the operation take. The vary option means you don't know. This can only be provided
+   * when the notation is Notation.Function.
+   */
+  arity: 1 | 2 | 'vary';
+  notation: Notation;
+  /**
+   * Configuration that'll we provided to the Evaluator.
+   * If the type is sync, the test will be preformed both sync and async.
+   */
+  config?: GeneralEvaluationConfig;
+  aliases?: AliasMap;
+  /**
+   * Additional prefixes can be provided if the defaultPrefixes in ./Aliases.ts are not enough.
+   */
+  additionalPrefixes?: Record<string, string>;
 }
-
-export function testAllErrors(exprs: string[], config?: GeneralEvaluationConfig) {
-  exprs.forEach(_expr => {
-    const expr = _expr.trim();
-    const equals = (/ = error *$/u.exec(expr))[0];
-    const body = expr.replace(equals, '');
-    it(`${body} should error`, () => {
-      return expect(generalEvaluate({
-        expression: template(body), expectEquality: true, generalEvaluationConfig: config,
-      }).then(res => termToString(res.asyncResult)))
-        .rejects
-        .toThrowError(ExpressionError);
-    });
-  });
-}
-
-export function template(expr: string) {
-  return `
-PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
-PREFIX fn: <https://www.w3.org/TR/xpath-functions#>
-PREFIX err: <http://www.w3.org/2005/xqt-errors#>
-PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-
-SELECT * WHERE { ?s ?p ?o FILTER (${expr})}
-`;
-}
-
-export const aliases = {
-  true: '"true"^^xsd:boolean',
-  false: '"false"^^xsd:boolean',
+export type TestTableConfig = ITestTableConfigBase & {
+  /**
+   * TestTable that will check equality;
+   */
+  testTable?: string;
+  /**
+   * TestTable that will check if a given error is thrown.
+   * Result can be '' if the message doesn't need to be checked.
+   */
+  errorTable?: string;
 };
 
-export function int(value: string): string {
-  return compactTermString(value, 'xsd:integer');
+export function runTestTable(arg: TestTableConfig): void {
+  if (!(arg.testTable || arg.errorTable)) {
+    // We throw this error and don't just say all is well because not providing a table is probably a user mistake.
+    throw new Error('Can not test if neither testTable or errorTable is provided');
+  }
+  let testTable: UnaryTable | BinaryTable | VariableTable;
+  if (arg.arity === 1) {
+    testTable = new UnaryTable(arg);
+  } else if (arg.arity === 2) {
+    testTable = new BinaryTable(arg);
+  } else {
+    testTable = new VariableTable(arg);
+  }
+
+  testTable.test();
 }
 
-export function decimal(value: string): string {
-  return compactTermString(value, 'xsd:decimal');
-}
-
-export function double(value: string): string {
-  return compactTermString(value, 'xsd:double');
-}
-
-export function date(value: string): string {
-  return compactTermString(value, 'xsd:dateTime');
-}
-
-function compactTermString(value: string, dataType: string): string {
-  return `"${value}"^^${dataType}`;
-}
-
-export const prefixes: Record<string, string> = {
-  xsd: 'http://www.w3.org/2001/XMLSchema#',
-  rdf: 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
-};
-
-export function replacePrefix(str: string): string {
-  const prefixLocs = /\^\^.*:/u.exec(str);
-  if (!prefixLocs) { return str; }
-  const prefix = prefixLocs[0].slice(2, -1);
-  return str.replace(`${prefix}:`, prefixes[prefix]);
-}

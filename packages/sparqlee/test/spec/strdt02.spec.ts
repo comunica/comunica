@@ -1,4 +1,5 @@
-import { testAll } from '../util/utils';
+import { Notation } from '../util/TestTable';
+import { runTestTable } from '../util/utils';
 import * as Data from './_data';
 
 /**
@@ -28,9 +29,14 @@ import * as Data from './_data';
 
 describe('We should respect the strdt02 spec', () => {
   const { s2 } = Data.data();
-  testAll([
-    `STRDT(STR(${s2}), xsd:string) = "bar"^^xsd:string`,
-  ]);
+  runTestTable({
+    arity: 2,
+    notation: Notation.Function,
+    operation: 'STRDT',
+    testTable: `
+      'STR(${s2})' xsd:string = "bar"^^xsd:string    
+    `,
+  });
 });
 
 /**

@@ -1,4 +1,5 @@
-import { testAll } from '../util/utils';
+import { Notation } from '../util/TestTable';
+import { runTestTable } from '../util/utils';
 import * as Data from './_data';
 
 /**
@@ -26,12 +27,17 @@ import * as Data from './_data';
 
 describe('We should respect the tz-01 spec', () => {
   const { d1, d2, d3, d4 } = Data.data();
-  testAll([
-    `TZ(${d1}) = "Z"`,
-    `TZ(${d2}) = "-08:00"`,
-    `TZ(${d3}) = "Z"`,
-    `TZ(${d4}) = ""`,
-  ]);
+  runTestTable({
+    arity: 1,
+    notation: Notation.Function,
+    operation: 'TZ',
+    testTable: `
+      '${d1}' = "Z"
+      '${d2}' = "-08:00"
+      '${d3}' = "Z"
+      '${d4}' = ""
+    `,
+  });
 });
 
 /**

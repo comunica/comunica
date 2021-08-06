@@ -1,4 +1,5 @@
-import { testAllErrors } from '../util/utils';
+import { Notation } from '../util/TestTable';
+import { runTestTable } from '../util/utils';
 
 /**
  * REQUEST: if02.rq
@@ -21,9 +22,14 @@ import { testAllErrors } from '../util/utils';
  */
 
 describe('We should respect the if02 spec', () => {
-  testAllErrors([
-    'IF(1/0, false, true) = error',
-  ]);
+  runTestTable({
+    notation: Notation.Function,
+    arity: 'vary',
+    operation: 'IF',
+    errorTable: `
+    '1/0' false true = ''
+    `,
+  });
 });
 
 /**

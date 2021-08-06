@@ -1,4 +1,6 @@
-import { aliases as a, testAll } from '../util/utils';
+import { bool } from '../util/Aliases';
+import { Notation } from '../util/TestTable';
+import { runTestTable } from '../util/utils';
 import * as Data from './_data';
 
 /**
@@ -27,26 +29,32 @@ import * as Data from './_data';
 
 describe('We should respect the isnumeric01 spec', () => {
   const { n1, n2, n3, n4, n5, s1, s2, s3, s4, s5, s6, s7, d1, d2, d3, d4 } = Data.data();
-  testAll([
-    `isNumeric(${n1}) = ${a.true}`,
-    `isNumeric(${n2}) = ${a.true}`,
-    `isNumeric(${n3}) = ${a.true}`,
-    `isNumeric(${n4}) = ${a.true}`,
-    `isNumeric(${n5}) = ${a.true}`,
+  runTestTable({
+    aliases: bool,
+    operation: 'isNumeric',
+    notation: Notation.Function,
+    arity: 1,
+    testTable: `
+    '${n1}' = true
+    '${n2}' = true
+    '${n3}' = true
+    '${n4}' = true
+    '${n5}' = true
 
-    `isNumeric(${s1}) = ${a.false}`,
-    `isNumeric(${s2}) = ${a.false}`,
-    `isNumeric(${s3}) = ${a.false}`,
-    `isNumeric(${s4}) = ${a.false}`,
-    `isNumeric(${s5}) = ${a.false}`,
-    `isNumeric(${s6}) = ${a.false}`,
-    `isNumeric(${s7}) = ${a.false}`,
+    '${s1}' = false
+    '${s2}' = false
+    '${s3}' = false
+    '${s4}' = false
+    '${s5}' = false
+    '${s6}' = false
+    '${s7}' = false
 
-    `isNumeric(${d1}) = ${a.false}`,
-    `isNumeric(${d2}) = ${a.false}`,
-    `isNumeric(${d3}) = ${a.false}`,
-    `isNumeric(${d4}) = ${a.false}`,
-  ]);
+    '${d1}' = false
+    '${d2}' = false
+    '${d3}' = false
+    '${d4}' = false
+    `,
+  });
 });
 
 /**

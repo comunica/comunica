@@ -1,4 +1,5 @@
-import { testAll } from '../util/utils';
+import { Notation } from '../util/TestTable';
+import { runTestTable } from '../util/utils';
 import * as Data from './_data';
 
 /**
@@ -26,15 +27,20 @@ import * as Data from './_data';
 
 describe('We should respect the substring02 spec', () => {
   const { s1, s2, s3, s4, s5, s6, s7 } = Data.data();
-  testAll([
-    `SUBSTR(${s1}, 2) = "oo"`,
-    `SUBSTR(${s2}, 2) = "ar"@en`,
-    `SUBSTR(${s3}, 2) = "AZ"`,
-    `SUBSTR(${s4}, 2) = "べ物"`,
-    `SUBSTR(${s5}, 2) = "00%"`,
-    `SUBSTR(${s6}, 2) = "bc"^^xsd:string`,
-    `SUBSTR(${s7}, 2) = "EF"^^xsd:string`,
-  ]);
+  runTestTable({
+    arity: 'vary',
+    operation: 'SUBSTR',
+    notation: Notation.Function,
+    testTable: `
+    '${s1}' 2 = "oo"
+    '${s2}' 2 = "ar"@en
+    '${s3}' 2 = "AZ"
+    '${s4}' 2 = "べ物"
+    '${s5}' 2 = "00%"
+    '${s6}' 2 = "bc"^^xsd:string
+    '${s7}' 2 = "EF"^^xsd:string
+    `,
+  });
 });
 
 /**

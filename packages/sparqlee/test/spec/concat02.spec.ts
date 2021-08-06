@@ -1,4 +1,5 @@
-import { testAll, testAllErrors } from '../util/utils';
+import { Notation } from '../util/TestTable';
+import { runTestTable } from '../util/utils';
 import * as Data from './_data';
 
 /**
@@ -27,65 +28,70 @@ import * as Data from './_data';
 
 describe('We should respect the concat02 spec', () => {
   const { s1, s2, s3, s4, s5, s6, s7 } = Data.data2();
-  testAll([
-    `CONCAT(${s1}, ${s1}) = "123123"`,
-    `CONCAT(${s1}, ${s2}) = "123日本語"`,
-    `CONCAT(${s1}, ${s3}) = "123english"`,
-    `CONCAT(${s1}, ${s4}) = "123français"`,
-    `CONCAT(${s1}, ${s5}) = "123abc"`,
-    `CONCAT(${s1}, ${s6}) = "123def"`,
-
-    `CONCAT(${s2}, ${s1}) = "日本語123"`,
-    `CONCAT(${s2}, ${s2}) = "日本語日本語"@ja`,
-    `CONCAT(${s2}, ${s3}) = "日本語english"`,
-    `CONCAT(${s2}, ${s4}) = "日本語français"`,
-    `CONCAT(${s2}, ${s5}) = "日本語abc"`,
-    `CONCAT(${s2}, ${s6}) = "日本語def"`,
-
-    `CONCAT(${s3}, ${s1}) = "english123"`,
-    `CONCAT(${s3}, ${s2}) = "english日本語"`,
-    `CONCAT(${s3}, ${s3}) = "englishenglish"@en`,
-    `CONCAT(${s3}, ${s4}) = "englishfrançais"`,
-    `CONCAT(${s3}, ${s5}) = "englishabc"`,
-    `CONCAT(${s3}, ${s6}) = "englishdef"`,
-
-    `CONCAT(${s4}, ${s1}) = "français123"`,
-    `CONCAT(${s4}, ${s2}) = "français日本語"`,
-    `CONCAT(${s4}, ${s3}) = "françaisenglish"`,
-    `CONCAT(${s4}, ${s4}) = "françaisfrançais"@fr`,
-    `CONCAT(${s4}, ${s5}) = "françaisabc"`,
-    `CONCAT(${s4}, ${s6}) = "françaisdef"`,
-
-    `CONCAT(${s5}, ${s1}) = "abc123"`,
-    `CONCAT(${s5}, ${s2}) = "abc日本語"`,
-    `CONCAT(${s5}, ${s3}) = "abcenglish"`,
-    `CONCAT(${s5}, ${s4}) = "abcfrançais"`,
-    `CONCAT(${s5}, ${s5}) = "abcabc"^^xsd:string`,
-    `CONCAT(${s5}, ${s6}) = "abcdef"^^xsd:string`,
-
-    `CONCAT(${s6}, ${s1}) = "def123"`,
-    `CONCAT(${s6}, ${s2}) = "def日本語"`,
-    `CONCAT(${s6}, ${s3}) = "defenglish"`,
-    `CONCAT(${s6}, ${s4}) = "deffrançais"`,
-    `CONCAT(${s6}, ${s5}) = "defabc"^^xsd:string`,
-    `CONCAT(${s6}, ${s6}) = "defdef"^^xsd:string`,
-  ]);
-  testAllErrors([
-    `CONCAT(${s1}, ${s7}) = error`,
-    `CONCAT(${s2}, ${s7}) = error`,
-    `CONCAT(${s3}, ${s7}) = error`,
-    `CONCAT(${s4}, ${s7}) = error`,
-    `CONCAT(${s5}, ${s7}) = error`,
-    `CONCAT(${s6}, ${s7}) = error`,
-    `CONCAT(${s7}, ${s7}) = error`,
-
-    `CONCAT(${s7}, ${s1}) = error`,
-    `CONCAT(${s7}, ${s2}) = error`,
-    `CONCAT(${s7}, ${s3}) = error`,
-    `CONCAT(${s7}, ${s4}) = error`,
-    `CONCAT(${s7}, ${s5}) = error`,
-    `CONCAT(${s7}, ${s6}) = error`,
-  ]);
+  runTestTable({
+    arity: 2,
+    notation: Notation.Function,
+    operation: 'CONCAT',
+    testTable: `
+    '${s1}' '${s1}' = "123123"
+    '${s1}' '${s2}' = "123日本語"
+    '${s1}' '${s3}' = "123english"
+    '${s1}' '${s4}' = "123français"
+    '${s1}' '${s5}' = "123abc"
+    
+    '${s1}' '${s6}' = "123def"
+    '${s2}' '${s1}' = "日本語123"
+    '${s2}' '${s2}' = "日本語日本語"@ja
+    '${s2}' '${s3}' = "日本語english"
+    '${s2}' '${s4}' = "日本語français"
+    '${s2}' '${s5}' = "日本語abc"
+    '${s2}' '${s6}' = "日本語def"
+    
+    '${s3}' '${s1}' = "english123"
+    '${s3}' '${s2}' = "english日本語"
+    '${s3}' '${s3}' = "englishenglish"@en
+    '${s3}' '${s4}' = "englishfrançais"
+    '${s3}' '${s5}' = "englishabc"
+    '${s3}' '${s6}' = "englishdef"
+    
+    '${s4}' '${s1}' = "français123"
+    '${s4}' '${s2}' = "français日本語"
+    '${s4}' '${s3}' = "françaisenglish"
+    '${s4}' '${s4}' = "françaisfrançais"@fr
+    '${s4}' '${s5}' = "françaisabc"
+    '${s4}' '${s6}' = "françaisdef"
+    
+    '${s5}' '${s1}' = "abc123"
+    '${s5}' '${s2}' = "abc日本語"
+    '${s5}' '${s3}' = "abcenglish"
+    '${s5}' '${s4}' = "abcfrançais"
+    '${s5}' '${s5}' = "abcabc"^^xsd:string
+    '${s5}' '${s6}' = "abcdef"^^xsd:string
+    
+    '${s6}' '${s1}' = "def123"
+    '${s6}' '${s2}' = "def日本語"
+    '${s6}' '${s3}' = "defenglish"
+    '${s6}' '${s4}' = "deffrançais"
+    '${s6}' '${s5}' = "defabc"^^xsd:string
+    '${s6}' '${s6}' = "defdef"^^xsd:string
+    `,
+    errorTable: `
+      '${s1}' '${s7}' = ''
+      '${s2}' '${s7}' = ''
+      '${s3}' '${s7}' = ''
+      '${s4}' '${s7}' = ''
+      '${s5}' '${s7}' = ''
+      '${s6}' '${s7}' = ''
+      '${s7}' '${s7}' = ''
+  
+      '${s7}' '${s1}' = ''
+      '${s7}' '${s2}' = ''
+      '${s7}' '${s3}' = ''
+      '${s7}' '${s4}' = ''
+      '${s7}' '${s5}' = ''
+      '${s7}' '${s6}' = ''
+    `,
+  });
 });
 
 /**

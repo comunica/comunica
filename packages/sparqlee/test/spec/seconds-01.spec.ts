@@ -1,4 +1,6 @@
-import { decimal, testAll } from '../util/utils';
+import { decimal } from '../util/Aliases';
+import { Notation } from '../util/TestTable';
+import { runTestTable } from '../util/utils';
 import * as Data from './_data';
 
 /**
@@ -26,12 +28,17 @@ import * as Data from './_data';
 
 describe('We should respect the seconds-01 spec', () => {
   const { d1, d2, d3, d4 } = Data.data();
-  testAll([
-    `SECONDS(${d1}) = ${decimal('1')}`,
-    `SECONDS(${d2}) = ${decimal('2')}`,
-    `SECONDS(${d3}) = ${decimal('0')}`,
-    `SECONDS(${d4}) = ${decimal('3')}`,
-  ]);
+  runTestTable({
+    arity: 1,
+    operation: 'SECONDS',
+    notation: Notation.Function,
+    testTable: `
+      '${d1}' = '${decimal('1')}'
+      '${d2}' = '${decimal('2')}'
+      '${d3}' = '${decimal('0')}'
+      '${d4}' = '${decimal('3')}'
+    `,
+  });
 });
 
 /**

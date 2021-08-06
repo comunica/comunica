@@ -1,10 +1,28 @@
-import { testAll } from '../util/utils';
+import { Notation } from '../util/TestTable';
+import type { ITestTableConfigBase } from '../util/utils';
+import { runTestTable } from '../util/utils';
 
 describe('We should respect the iri01 spec', () => {
-  testAll([
-    'URI("uri") = http://example.org/uri',
-    'IRI("iri") = http://example.org/iri',
-  ], { type: 'sync', config: { baseIRI: 'http://example.org' }});
+  const config: ITestTableConfigBase = {
+    config: { type: 'sync', config: { baseIRI: 'http://example.org' }},
+    arity: 1,
+    operation: '',
+    notation: Notation.Function,
+  };
+  runTestTable({
+    ...config,
+    operation: 'URI',
+    testTable: `
+      "uri" = http://example.org/uri
+    `,
+  });
+  runTestTable({
+    ...config,
+    operation: 'IRI',
+    testTable: `
+      "iri" = http://example.org/iri
+    `,
+  });
 });
 
 /**

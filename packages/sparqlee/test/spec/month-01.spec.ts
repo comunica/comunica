@@ -1,4 +1,6 @@
-import { int, testAll } from '../util/utils';
+import { int } from '../util/Aliases';
+import { Notation } from '../util/TestTable';
+import { runTestTable } from '../util/utils';
 import * as Data from './_data';
 
 /**
@@ -26,12 +28,17 @@ import * as Data from './_data';
 
 describe('We should respect the month-01 spec', () => {
   const { d1, d2, d3, d4 } = Data.data();
-  testAll([
-    `MONTH(${d1}) = ${int('6')}`,
-    `MONTH(${d2}) = ${int('12')}`,
-    `MONTH(${d3}) = ${int('6')}`,
-    `MONTH(${d4}) = ${int('2')}`,
-  ]);
+  runTestTable({
+    operation: 'MONTH',
+    notation: Notation.Function,
+    arity: 1,
+    testTable: `
+    '${d1}' = '${int('6')}'
+    '${d2}' = '${int('12')}'
+    '${d3}' = '${int('6')}'
+    '${d4}' = '${int('2')}'
+    `,
+  });
 });
 
 /**

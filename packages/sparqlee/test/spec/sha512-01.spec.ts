@@ -1,5 +1,6 @@
 /* eslint max-len: 0 */
-import { testAll } from '../util/utils';
+import { Notation } from '../util/TestTable';
+import { runTestTable } from '../util/utils';
 import * as Data from './_data';
 
 /**
@@ -33,9 +34,14 @@ import * as Data from './_data';
 
 describe('We should respect the sha512-01 spec', () => {
   const { s1 } = Data.data();
-  testAll([
-    `SHA512(${s1}) = "f7fbba6e0636f890e56fbbf3283e524c6fa3204ae298382d624741d0dc6638326e282c41be5e4254d8820772c5518a2c5a8c0c7f7eda19594a7eb539453e1ed7"`,
-  ]);
+  runTestTable({
+    arity: 1,
+    notation: Notation.Function,
+    operation: 'SHA512',
+    testTable: `
+      '${s1}' = "f7fbba6e0636f890e56fbbf3283e524c6fa3204ae298382d624741d0dc6638326e282c41be5e4254d8820772c5518a2c5a8c0c7f7eda19594a7eb539453e1ed7"
+    `,
+  });
 });
 
 /**

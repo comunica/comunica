@@ -1,4 +1,7 @@
-import { aliases as a, int, testAll } from '../util/utils';
+import { bool, int } from '../util/Aliases';
+import { Notation } from '../util/TestTable';
+import type { ITestTableConfigBase } from '../util/utils';
+import { runTestTable } from '../util/utils';
 
 /**
  * REQUEST: uuid01.rq
@@ -29,11 +32,33 @@ import { aliases as a, int, testAll } from '../util/utils';
  */
 
 describe('We should respect the uuid01 spec', () => {
-  testAll([
-    `ISIRI(UUID()) = ${a.true}`,
-    `REGEX(STR(UUID()), "^urn:uuid:[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}$", "i") = ${a.true}`,
-    `STRLEN(STR(UUID())) = ${int('45')}`,
-  ]);
+  const config: ITestTableConfigBase = {
+    aliases: bool,
+    arity: 'vary',
+    notation: Notation.Function,
+    operation: '',
+  };
+  runTestTable({
+    ...config,
+    operation: 'ISIRI',
+    testTable: `
+      UUID() = true    
+    `,
+  });
+  runTestTable({
+    ...config,
+    operation: 'REGEX',
+    testTable: `
+      'STR(UUID())' "^urn:uuid:[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{12}$" "i" = true    
+    `,
+  });
+  runTestTable({
+    ...config,
+    operation: 'STRLEN',
+    testTable: `
+      STR(UUID()) = '${int('45')}'    
+    `,
+  });
 });
 
 /**

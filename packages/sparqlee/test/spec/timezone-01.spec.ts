@@ -1,4 +1,5 @@
-import { testAll, testAllErrors } from '../util/utils';
+import { Notation } from '../util/TestTable';
+import { runTestTable } from '../util/utils';
 import * as Data from './_data';
 
 /**
@@ -26,15 +27,19 @@ import * as Data from './_data';
 
 describe('We should respect the timezone-01 spec', () => {
   const { d1, d2, d3, d4 } = Data.data();
-  testAll([
-    `TIMEZONE(${d1}) = "PT0S"^^xsd:dayTimeDuration`,
-    `TIMEZONE(${d2}) = "-PT8H"^^xsd:dayTimeDuration`,
-    `TIMEZONE(${d3}) = "PT0S"^^xsd:dayTimeDuration`,
-  ]);
-
-  testAllErrors([
-    `TIMEZONE(${d4}) = error`,
-  ]);
+  runTestTable({
+    operation: 'TIMEZONE',
+    notation: Notation.Function,
+    arity: 1,
+    testTable: `
+      '${d1}' = "PT0S"^^xsd:dayTimeDuration
+      '${d2}' = "-PT8H"^^xsd:dayTimeDuration
+      '${d3}' = "PT0S"^^xsd:dayTimeDuration
+    `,
+    errorTable: `
+      '${d4}' = ''    
+    `,
+  });
 });
 
 /**

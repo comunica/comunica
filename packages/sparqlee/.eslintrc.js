@@ -20,6 +20,8 @@ module.exports = {
         'no-sync': 'off',
         // TODO: stop using global functions + ignore tests folder. Issue #95
         'no-implicit-globals': 'off',
+        // 'At' is not yet supported by nodejs when disabling this.
+        'unicorn/prefer-at': 'off',
     },
     overrides: [
         {

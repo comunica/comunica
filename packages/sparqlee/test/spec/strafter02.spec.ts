@@ -1,4 +1,5 @@
-import { testAll, testAllErrors } from '../util/utils';
+import { Notation } from '../util/TestTable';
+import { runTestTable } from '../util/utils';
 import * as Data from './_data';
 
 /**
@@ -37,36 +38,40 @@ import * as Data from './_data';
 
 describe('We should respect the strafter02 spec', () => {
   const { s1, s2, s3 } = Data.data4();
-  testAll([
-    `STRAFTER(${s1}, "b") = "c"`,
-    `STRAFTER(${s1}, "ab") = "c"`,
-    `STRAFTER(${s1}, "") = "abc"`,
-    `STRAFTER(${s1}, "b"^^xsd:string) = "c"`,
-    `STRAFTER(${s1}, "xyz"^^xsd:string) = ""`,
-
-    `STRAFTER(${s2}, "b") = "c"@en`,
-    `STRAFTER(${s2}, "ab") = "c"@en`,
-    `STRAFTER(${s2}, "") = "abc"@en`,
-    `STRAFTER(${s2}, ""@en) = "abc"@en`,
-    `STRAFTER(${s2}, "b"^^xsd:string) = "c"@en`,
-    `STRAFTER(${s2}, "xyz"^^xsd:string) = ""`,
-
-    `STRAFTER(${s3}, "b") = "c"^^xsd:string`,
-    `STRAFTER(${s3}, "ab") = "c"^^xsd:string`,
-    `STRAFTER(${s3}, "") = "abc"^^xsd:string`,
-    `STRAFTER(${s3}, "b"^^xsd:string) = "c"^^xsd:string`,
-    `STRAFTER(${s3}, "xyz"^^xsd:string) = ""^^xsd:string`,
-  ]);
-
-  testAllErrors([
-    `STRAFTER(${s1}, "b"@cy) = error`,
-    `STRAFTER(${s1}, ""@en)  = error`,
-
-    `STRAFTER(${s2}, "b"@cy) = error`,
-
-    `STRAFTER(${s3}, ""@en)  = error`,
-    `STRAFTER(${s3}, "b"@cy) = error`,
-  ]);
+  runTestTable({
+    arity: 2,
+    notation: Notation.Function,
+    operation: 'STRAFTER',
+    testTable: `
+      '${s1}' "b" = "c"
+      '${s1}' "ab" = "c"
+      '${s1}' "" = "abc"
+      '${s1}' "b"^^xsd:string = "c"
+      '${s1}' "xyz"^^xsd:string = ""
+  
+      '${s2}' "b" = "c"@en
+      '${s2}' "ab" = "c"@en
+      '${s2}' "" = "abc"@en
+      '${s2}' ""@en = "abc"@en
+      '${s2}' "b"^^xsd:string = "c"@en
+      '${s2}' "xyz"^^xsd:string = ""
+  
+      '${s3}' "b" = "c"^^xsd:string
+      '${s3}' "ab" = "c"^^xsd:string
+      '${s3}' "" = "abc"^^xsd:string
+      '${s3}' "b"^^xsd:string = "c"^^xsd:string
+      '${s3}' "xyz"^^xsd:string = ""^^xsd:string
+    `,
+    errorTable: `
+      '${s1}' "b"@cy = ''
+      '${s1}' ""@en  = ''
+  
+      '${s2}' "b"@cy = ''
+  
+      '${s3}' ""@en  = ''
+      '${s3}' "b"@cy = ''
+    `,
+  });
 });
 
 /**
