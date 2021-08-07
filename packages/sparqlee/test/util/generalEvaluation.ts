@@ -14,6 +14,10 @@ export interface IGeneralEvaluationArg {
   bindings?: Bindings;
   expression?: string;
   generalEvaluationConfig?: GeneralEvaluationConfig;
+  /**
+   * Boolean pointing out if the result of async and sync evaluation should be the same.
+   * Default: Don't check / false.
+   */
   expectEquality?: boolean;
 }
 export async function generalEvaluate(arg: IGeneralEvaluationArg):
