@@ -1,6 +1,5 @@
 import { Decimal } from 'decimal.js';
 import { sha1, sha256, sha384, sha512 } from 'hash.js';
-import { Map } from 'immutable';
 import { DataFactory } from 'rdf-data-factory';
 import { hash as md5 } from 'spark-md5';
 import * as uuid from 'uuid';
@@ -200,7 +199,7 @@ const isNumeric = {
     .collect(),
 };
 
-const toString = {
+const STR = {
   arity: 1,
   overloads: declare()
     .onTerm1(term => string(term.str()))
@@ -692,7 +691,7 @@ const SHA512 = {
 /**
  * Collect all the definitions from above into an object
  */
-const _definitions: {[key in C.RegularOperator]: IDefinition } = {
+export const definitions: Record<C.RegularOperator, IDefinition> = {
   // --------------------------------------------------------------------------
   // Operator Mapping
   // https://www.w3.org/TR/sparql11-query/#OperatorMapping
@@ -719,7 +718,7 @@ const _definitions: {[key in C.RegularOperator]: IDefinition } = {
   isblank: isBlank,
   isliteral: isLiteral,
   isnumeric: isNumeric,
-  str: toString,
+  str: STR,
   lang,
   datatype,
   // 'iri': IRI (see special operators),
@@ -792,5 +791,3 @@ export interface IDefinition {
   arity: number | number[];
   overloads: OverloadMap;
 }
-
-export const definitions = Map<C.RegularOperator, IDefinition>(_definitions);

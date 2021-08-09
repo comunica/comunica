@@ -3,7 +3,8 @@
  * definitions for the SPARQL functions.
  */
 
-import { List, Map, Record } from 'immutable';
+// eslint-disable-next-line no-redeclare
+import { List, Map } from 'immutable';
 
 import * as E from '../expressions';
 import type { SimpleApplication } from '../expressions';
@@ -42,8 +43,8 @@ export class Builder {
     const _from = List(from);
     for (let i = last; i >= 0; i--) {
       const impl = this.implementations[i];
-      if (impl.get('types').equals(_from)) {
-        return this.set(to, impl.get('func'));
+      if (impl.types.equals(_from)) {
+        return this.set(to, impl.func);
       }
     }
     throw new Err.UnexpectedError(
@@ -286,30 +287,30 @@ export interface IImplType {
   func: E.SimpleApplication;
 }
 
-const implDefaults = {
-  types: <ArgumentType[]> [],
+const implDefaults: IImplType = {
+  types: List(),
   func() {
     const msg = 'Implementation not set yet declared as implemented';
     throw new Err.UnexpectedError(msg);
   },
 };
 
-export class Impl extends Record(implDefaults) {
-  public constructor(params: IImplType) {
-    super(params);
+export class Impl implements IImplType {
+  public types: List<ArgumentType>;
+  public func: E.SimpleApplication;
+
+  public constructor(params?: IImplType) {
+    this.init(params || implDefaults);
   }
 
-  public get<T extends keyof IImplType>(value: T): IImplType[T] {
-    return super.get(value);
-  }
-
-  public toPair(): [List<ArgumentType>, E.SimpleApplication] {
-    return [ this.get('types'), this.get('func') ];
+  private init(params: IImplType): void {
+    this.types = params.types;
+    this.func = params.func;
   }
 }
 
 export function map(implementations: Impl[]): OverloadMap {
-  const typeImplPair = implementations.map(i => i.toPair());
+  const typeImplPair = implementations.map(i => [ i.types, i.func ]);
   return Map<List<ArgumentType>, E.SimpleApplication>(typeImplPair);
 }
 

@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-redeclare
 import type { Map } from 'immutable';
 import { List } from 'immutable';
 

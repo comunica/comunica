@@ -53,7 +53,7 @@ class Count extends BaseAggregator<number> {
 type SumState = E.NumericLiteral;
 
 class Sum extends BaseAggregator<SumState> {
-  private readonly summer = regularFunctions.get(C.RegularOperator.ADDITION);
+  private readonly summer = regularFunctions[C.RegularOperator.ADDITION];
 
   public static emptyValue(): RDF.Term {
     return number(0, TypeURL.XSD_INTEGER).toRDF();
@@ -133,8 +133,8 @@ interface IAverageState {
 }
 
 class Average extends BaseAggregator<IAverageState> {
-  private readonly summer = regularFunctions.get(C.RegularOperator.ADDITION);
-  private readonly divider = regularFunctions.get(C.RegularOperator.DIVISION);
+  private readonly summer = regularFunctions[C.RegularOperator.ADDITION];
+  private readonly divider = regularFunctions[C.RegularOperator.DIVISION];
 
   public static emptyValue(): RDF.Term {
     return number(0, TypeURL.XSD_INTEGER).toRDF();
@@ -216,7 +216,7 @@ function extractNumericValueAndTypeOrError(term: RDF.Term): { value: number; typ
   // TODO: Check behaviour
   if (term.termType !== 'Literal') {
     throw new Error(`Term with value ${term.value} has type ${term.termType} and is not a numeric literal`);
-  } else if (!C.NumericTypeURLs.contains(term.datatype.value)) {
+  } else if (!C.NumericTypeURLs.has(term.datatype.value)) {
     throw new Error(`Term datatype ${term.datatype.value} with value ${term.value} has type ${term.termType} and is not a numeric literal`);
   }
 

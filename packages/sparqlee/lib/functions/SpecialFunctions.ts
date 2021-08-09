@@ -1,4 +1,3 @@
-import { Map } from 'immutable';
 import { resolve as resolveRelativeIri } from 'relative-to-absolute-iri';
 import * as uuid from 'uuid';
 
@@ -220,7 +219,7 @@ async function inRecursiveAsync(
 
   try {
     const next = await evaluate(args.shift(), mapping);
-    const isEqual = regularFunctions.get(C.RegularOperator.EQUAL);
+    const isEqual = regularFunctions[C.RegularOperator.EQUAL];
     if ((<E.BooleanLiteral> isEqual.apply([ needle, next ])).typedValue) {
       return bool(true);
     }
@@ -245,7 +244,7 @@ function inRecursiveSync(
 
   try {
     const next = evaluate(args.shift(), mapping);
-    const isEqual = regularFunctions.get(C.RegularOperator.EQUAL);
+    const isEqual = regularFunctions[C.RegularOperator.EQUAL];
     if ((<E.BooleanLiteral> isEqual.apply([ needle, next ])).typedValue) {
       return bool(true);
     }
@@ -262,12 +261,12 @@ const notInSPARQL = {
     return args.length > 0;
   },
   async applyAsync(context: E.EvalContextAsync): PTerm {
-    const _in = specialFunctions.get(C.SpecialOperator.IN);
+    const _in = specialFunctions[C.SpecialOperator.IN];
     const isIn = await _in.applyAsync(context);
     return bool(!(<E.BooleanLiteral> isIn).typedValue);
   },
   applySync(context: E.EvalContextSync): Term {
-    const _in = specialFunctions.get(C.SpecialOperator.IN);
+    const _in = specialFunctions[C.SpecialOperator.IN];
     const isIn = _in.applySync(context);
     return bool(!(<E.BooleanLiteral> isIn).typedValue);
   },
@@ -400,7 +399,7 @@ export interface ISpecialDefinition {
   checkArity?: (args: E.Expression[]) => boolean;
 }
 
-const _specialDefinitions: {[key in C.SpecialOperator]: ISpecialDefinition } = {
+export const specialDefinitions: Record<C.SpecialOperator, ISpecialDefinition> = {
   // --------------------------------------------------------------------------
   // Functional Forms
   // https://www.w3.org/TR/sparql11-query/#func-forms
@@ -424,4 +423,3 @@ const _specialDefinitions: {[key in C.SpecialOperator]: ISpecialDefinition } = {
   BNODE,
 };
 
-export const specialDefinitions = Map<C.SpecialOperator, ISpecialDefinition>(_specialDefinitions);

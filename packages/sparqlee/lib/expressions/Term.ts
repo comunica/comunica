@@ -217,7 +217,7 @@ export class NonLexicalLiteral extends Literal<undefined> {
 
   public coerceEBV(): boolean {
     const isNumericOrBool =
-      C.PrimitiveNumericTypes.contains(this.shouldBeCategory) ||
+      C.PrimitiveNumericTypes.has(this.shouldBeCategory) ||
       this.shouldBeCategory === 'boolean';
 
     if (isNumericOrBool) {

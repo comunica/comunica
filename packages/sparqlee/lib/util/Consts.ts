@@ -1,4 +1,3 @@
-import { Map, Set } from 'immutable';
 import { DataFactory } from 'rdf-data-factory';
 import type * as RDF from 'rdf-js';
 
@@ -85,8 +84,8 @@ export enum DerivedIntegerTypeURL {
   XSD_POSITIVE_INTEGER = 'http://www.w3.org/2001/XMLSchema#positiveInteger',
 }
 
-export const NumericTypeURLs: Set<string> = Set(Object.values(NumericTypeURL));
-export const DerivedIntegerTypeURLs = Set(Object.values(DerivedIntegerTypeURL));
+export const NumericTypeURLs: Set<string> = new Set(Object.values(NumericTypeURL));
+export const DerivedIntegerTypeURLs = new Set(Object.values(DerivedIntegerTypeURL));
 
 export const commonTerms: Record<string, RDF.Term> = {
   true: DF.literal('true', DF.namedNode(TypeURL.XSD_BOOLEAN)),
@@ -108,7 +107,7 @@ export type Type =
   | 'nonlexical';
 
 export type PrimitiveNumericType = 'integer' | 'decimal' | 'float' | 'double';
-export const PrimitiveNumericTypes = Set([ 'integer', 'decimal', 'float', 'double' ]);
+export const PrimitiveNumericTypes = new Set([ 'integer', 'decimal', 'float', 'double' ]);
 
 export function type(typeURL: string): Type {
   switch (typeURL) {
@@ -144,15 +143,15 @@ export function type(typeURL: string): Type {
 // If datatypes get lost or lose specificity during operations, we can insert a
 // concrete type, since categories should remain the same. This mostly (only)
 // relevant for integer subtypes.
-const _decategorize = Map<PrimitiveNumericType, TypeURL>([
-  [ 'integer', TypeURL.XSD_INTEGER ],
-  [ 'float', TypeURL.XSD_FLOAT ],
-  [ 'double', TypeURL.XSD_DOUBLE ],
-  [ 'decimal', TypeURL.XSD_DECIMAL ],
-]);
+const _decategorize: Record<PrimitiveNumericType, TypeURL> = {
+  integer: TypeURL.XSD_INTEGER,
+  float: TypeURL.XSD_FLOAT,
+  double: TypeURL.XSD_DOUBLE,
+  decimal: TypeURL.XSD_DECIMAL,
+};
 
 export function decategorize(cat: PrimitiveNumericType): TypeURL {
-  return _decategorize.get(cat);
+  return _decategorize[cat];
 }
 
 // ----------------------------------------------------------------------------
@@ -279,9 +278,9 @@ export enum SpecialOperator {
   BNODE = 'BNODE',
 }
 
-export const RegularOperators: Set<string> = Set(Object.values(RegularOperator));
-export const SpecialOperators: Set<string> = Set(Object.values(SpecialOperator));
-export const Operators = RegularOperators.union(SpecialOperators);
+export const RegularOperators: Set<string> = new Set(Object.values(RegularOperator));
+export const SpecialOperators: Set<string> = new Set(Object.values(SpecialOperator));
+export const Operators = new Set([ ...RegularOperators, ...SpecialOperators ]);
 
 export enum SetFunction {
   COUNT = 'count',
@@ -292,7 +291,7 @@ export enum SetFunction {
   GROUP_CONCAT = 'group_concat',
   SAMPLE = 'sample',
 }
-export const SetFunctions = Set(Object.values(SetFunction));
+export const SetFunctions = new Set(Object.values(SetFunction));
 
 export type NamedOperator =
   // XPath Constructor functions
@@ -306,7 +305,7 @@ export type NamedOperator =
   | TypeURL.XSD_DATE
   | TypeURL.XSD_BOOLEAN;
 
-export const NamedOperators = Set([
+export const NamedOperators = new Set([
   TypeURL.XSD_STRING,
   TypeURL.XSD_FLOAT,
   TypeURL.XSD_DOUBLE,

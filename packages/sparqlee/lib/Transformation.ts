@@ -99,8 +99,8 @@ export function transformLiteral(lit: RDF.Literal): E.Literal<any> {
 
     case DT.XSD_DATE_TIME:
     case DT.XSD_DATE: {
-      const val: Date = new Date(lit.value);
-      if (Number.isNaN(val.getTime())) {
+      const dateVal: Date = new Date(lit.value);
+      if (Number.isNaN(dateVal.getTime())) {
         return new E.NonLexicalLiteral(undefined, lit.datatype, lit.value);
       }
       return new E.DateTimeLiteral(new Date(lit.value), lit.value);
@@ -127,19 +127,19 @@ export function transformLiteral(lit: RDF.Literal): E.Literal<any> {
     case DT.XSD_UNSIGNED_SHORT:
     case DT.XSD_UNSIGNED_BYTE:
     case DT.XSD_INT: {
-      const val: number = P.parseXSDDecimal(lit.value);
-      if (val === undefined) {
+      const intVal: number = P.parseXSDDecimal(lit.value);
+      if (intVal === undefined) {
         return new E.NonLexicalLiteral(undefined, lit.datatype, lit.value);
       }
-      return new E.NumericLiteral(val, lit.datatype, lit.value);
+      return new E.NumericLiteral(intVal, lit.datatype, lit.value);
     }
     case DT.XSD_FLOAT:
     case DT.XSD_DOUBLE: {
-      const val: number = P.parseXSDFloat(lit.value);
-      if (val === undefined) {
+      const doubleVal: number = P.parseXSDFloat(lit.value);
+      if (doubleVal === undefined) {
         return new E.NonLexicalLiteral(undefined, lit.datatype, lit.value);
       }
-      return new E.NumericLiteral(val, lit.datatype, lit.value);
+      return new E.NumericLiteral(doubleVal, lit.datatype, lit.value);
     }
     default: return new E.Literal<string>(lit.value, lit.datatype, lit.value);
   }
@@ -147,25 +147,25 @@ export function transformLiteral(lit: RDF.Literal): E.Literal<any> {
 
 function transformOperator(expr: Alg.OperatorExpression, creatorConfig: FunctionCreatorConfig):
 E.OperatorExpression | E.SpecialOperatorExpression {
-  if (C.SpecialOperators.contains(expr.operator)) {
-    const op = <C.SpecialOperator> expr.operator;
-    const args = expr.args.map(arg => transformAlgebra(arg, creatorConfig));
-    const func = specialFunctions.get(op);
-    if (!func.checkArity(args)) {
-      throw new Err.InvalidArity(args, op);
+  if (C.SpecialOperators.has(expr.operator)) {
+    const specialOp = <C.SpecialOperator> expr.operator;
+    const specialArgs = expr.args.map(arg => transformAlgebra(arg, creatorConfig));
+    const specialFunc = specialFunctions[specialOp];
+    if (!specialFunc.checkArity(specialArgs)) {
+      throw new Err.InvalidArity(specialArgs, specialOp);
     }
-    return new E.SpecialOperator(args, func.applyAsync, func.applySync);
+    return new E.SpecialOperator(specialArgs, specialFunc.applyAsync, specialFunc.applySync);
   }
-  if (!C.Operators.contains(expr.operator)) {
+  if (!C.Operators.has(expr.operator)) {
     throw new Err.UnknownOperator(expr.operator);
   }
-  const op = <C.RegularOperator> expr.operator;
-  const args = expr.args.map(arg => transformAlgebra(arg, creatorConfig));
-  const func = regularFunctions.get(op);
-  if (!hasCorrectArity(args, func.arity)) {
-    throw new Err.InvalidArity(args, op);
+  const regularOp = <C.RegularOperator> expr.operator;
+  const regularArgs = expr.args.map(arg => transformAlgebra(arg, creatorConfig));
+  const regularFunc = regularFunctions[regularOp];
+  if (!hasCorrectArity(regularArgs, regularFunc.arity)) {
+    throw new Err.InvalidArity(regularArgs, regularOp);
   }
-  return new E.Operator(args, func.apply);
+  return new E.Operator(regularArgs, regularFunc.apply);
 }
 
 function wrapSyncFunction(func: SyncExtensionFunction, name: string): SimpleApplication {
@@ -194,24 +194,24 @@ function transformNamed(expr: Alg.NamedExpression, creatorConfig: FunctionCreato
 E.NamedExpression | E.AsyncExtensionExpression | E.SyncExtensionExpression {
   const funcName = expr.name.value;
   const args = expr.args.map(arg => transformAlgebra(arg, creatorConfig));
-  if (C.NamedOperators.contains(<C.NamedOperator> funcName)) {
+  if (C.NamedOperators.has(<C.NamedOperator> funcName)) {
     // Return a basic named expression
     const op = <C.NamedOperator> expr.name.value;
-    const func = namedFunctions.get(op);
-    return new E.Named(expr.name, args, func.apply);
+    const namedFunc = namedFunctions[op];
+    return new E.Named(expr.name, args, namedFunc.apply);
   }
   if (creatorConfig.type === 'sync') {
     // Expression might be extension function, check this for the sync
-    const func = creatorConfig.creator(expr.name);
-    if (func) {
-      const simpleAppl = wrapSyncFunction(func, expr.name.value);
+    const syncExtensionFunc = creatorConfig.creator(expr.name);
+    if (syncExtensionFunc) {
+      const simpleAppl = wrapSyncFunction(syncExtensionFunc, expr.name.value);
       return new E.SyncExtension(expr.name, args, simpleAppl);
     }
   } else {
     // The expression might be an extension function, check this for the async case
-    const func = creatorConfig.creator(expr.name);
-    if (func) {
-      const asyncAppl = wrapAsyncFunction(func, expr.name.value);
+    const asyncExtensionFunc = creatorConfig.creator(expr.name);
+    if (asyncExtensionFunc) {
+      const asyncAppl = wrapAsyncFunction(asyncExtensionFunc, expr.name.value);
       return new E.AsyncExtension(expr.name, args, asyncAppl);
     }
   }

@@ -3,7 +3,8 @@
   "compilerOptions": {
     "module": "CommonJS",
     "lib": [
-      "es2017"
+      "es6",
+      "es2019",
     ],
     "target": "es2017",
     "noImplicitAny": true,
@@ -20,7 +21,7 @@
     "index.ts",
     "lib/**/*.ts",
     "bin/**/*.ts",
-    "util/**/*.ts", 
+    "util/**/*.ts",
     "typings/**/*.d.ts",
   ],
   "exclude": [

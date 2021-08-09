@@ -15,10 +15,8 @@ module.exports = {
         'mocha/no-exports': 'off',
         'mocha/no-skipped-tests': 'off',
 
-        // TODO: use native datastructures instead of those provided by Immutable. Issue #94
-        'no-redeclare': 'off',
         'no-sync': 'off',
-        // TODO: stop using global functions + ignore tests folder. Issue #95
+        // Issue #95 pointed out this can be disabled here. https://eslint.org/docs/rules/no-implicit-globals
         'no-implicit-globals': 'off',
         // 'At' is not yet supported by nodejs when disabling this.
         'unicorn/prefer-at': 'off',

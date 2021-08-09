@@ -1,5 +1,3 @@
-import { Map } from 'immutable';
-
 import type * as E from '../expressions';
 import type * as C from '../util/Consts';
 import { TypeURL } from '../util/Consts';
@@ -27,7 +25,7 @@ type Term = E.TermExpression;
 // https://www.w3.org/TR/xpath-functions/#casting-from-primitive-to-primitive
 // ----------------------------------------------------------------------------
 
-const toString = {
+const xsdToString = {
   arity: 1,
   overloads: declare()
     .onNumeric1((val: E.NumericLiteral) => string(number(val.typedValue).str()))
@@ -36,7 +34,7 @@ const toString = {
     .collect(),
 };
 
-const toFloat = {
+const xsdToFloat = {
   arity: 1,
   overloads: declare()
     .onNumeric1((val: E.NumericLiteral) => number(val.typedValue))
@@ -52,7 +50,7 @@ const toFloat = {
     .collect(),
 };
 
-const toDouble = {
+const xsdToDouble = {
   arity: 1,
   overloads: declare()
     .onNumeric1((val: E.NumericLiteral) => number(val.typedValue, TypeURL.XSD_DOUBLE))
@@ -68,7 +66,7 @@ const toDouble = {
     .collect(),
 };
 
-const toDecimal = {
+const xsdToDecimal = {
   arity: 1,
   overloads: declare()
     .onNumeric1((val: E.Term) => {
@@ -91,7 +89,7 @@ const toDecimal = {
     .collect(),
 };
 
-const toInteger = {
+const xsdToInteger = {
   arity: 1,
   overloads: declare()
     .onBoolean1Typed(val => number(val ? 1 : 0, TypeURL.XSD_INTEGER))
@@ -114,7 +112,7 @@ const toInteger = {
     .collect(),
 };
 
-const toDatetime = {
+const xsdToDatetime = {
   arity: 1,
   overloads: declare()
     .onUnary('date', (val: E.DateTimeLiteral) => val)
@@ -129,7 +127,7 @@ const toDatetime = {
     .collect(),
 };
 
-const toBoolean = {
+const xsdToBoolean = {
   arity: 1,
   overloads: declare()
     .onNumeric1((val: E.NumericLiteral) => bool(val.coerceEBV()))
@@ -157,19 +155,19 @@ const toBoolean = {
 // ----------------------------------------------------------------------------
 // ----------------------------------------------------------------------------
 
-const _definitions: {[key in C.NamedOperator]: IDefinition } = {
+export const namedDefinitions: Record<C.NamedOperator, IDefinition> = {
   // --------------------------------------------------------------------------
   // XPath Constructor functions
   // https://www.w3.org/TR/sparql11-query/#FunctionMapping
   // --------------------------------------------------------------------------
-  [TypeURL.XSD_STRING]: toString,
-  [TypeURL.XSD_FLOAT]: toFloat,
-  [TypeURL.XSD_DOUBLE]: toDouble,
-  [TypeURL.XSD_DECIMAL]: toDecimal,
-  [TypeURL.XSD_INTEGER]: toInteger,
-  [TypeURL.XSD_DATE_TIME]: toDatetime,
-  [TypeURL.XSD_DATE]: toDatetime,
-  [TypeURL.XSD_BOOLEAN]: toBoolean,
+  [TypeURL.XSD_STRING]: xsdToString,
+  [TypeURL.XSD_FLOAT]: xsdToFloat,
+  [TypeURL.XSD_DOUBLE]: xsdToDouble,
+  [TypeURL.XSD_DECIMAL]: xsdToDecimal,
+  [TypeURL.XSD_INTEGER]: xsdToInteger,
+  [TypeURL.XSD_DATE_TIME]: xsdToDatetime,
+  [TypeURL.XSD_DATE]: xsdToDatetime,
+  [TypeURL.XSD_BOOLEAN]: xsdToBoolean,
 };
 
 // ----------------------------------------------------------------------------
@@ -180,5 +178,3 @@ export interface IDefinition {
   arity: number | number[];
   overloads: OverloadMap;
 }
-
-export const namedDefinitions = Map<C.NamedOperator, IDefinition>(_definitions);

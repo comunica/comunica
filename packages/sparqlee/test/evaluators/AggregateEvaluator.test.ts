@@ -148,10 +148,14 @@ describe('an aggregate evaluator should be able to', () => {
       const result = testCase({
         ...baseTestCaseArgs,
         input: [
-          Bindings({ '?x': DF.literal('1', DF.namedNode('http://www.w3.org/2001/XMLSchema#byte')) }),
+          Bindings({
+            '?x': DF.literal('1', DF.namedNode('http://www.w3.org/2001/XMLSchema#byte')),
+          }),
           Bindings({ '?x': int('2') }),
           Bindings({ '?x': float('3') }),
-          Bindings({ '?x': DF.literal('4', DF.namedNode('http://www.w3.org/2001/XMLSchema#nonNegativeInteger')) }),
+          Bindings({
+            '?x': DF.literal('4', DF.namedNode('http://www.w3.org/2001/XMLSchema#nonNegativeInteger')),
+          }),
         ],
       });
       expect(await result).toEqual(float('10'));
@@ -284,10 +288,14 @@ describe('an aggregate evaluator should be able to', () => {
       const result = testCase({
         ...baseTestCaseArgs,
         input: [
-          Bindings({ '?x': DF.literal('1', DF.namedNode('http://www.w3.org/2001/XMLSchema#byte')) }),
+          Bindings({
+            '?x': DF.literal('1', DF.namedNode('http://www.w3.org/2001/XMLSchema#byte')),
+          }),
           Bindings({ '?x': int('2') }),
           Bindings({ '?x': float('3') }),
-          Bindings({ '?x': DF.literal('4', DF.namedNode('http://www.w3.org/2001/XMLSchema#nonNegativeInteger')) }),
+          Bindings({
+            '?x': DF.literal('4', DF.namedNode('http://www.w3.org/2001/XMLSchema#nonNegativeInteger')),
+          }),
         ],
       });
       expect(await result).toEqual(float('2.5'));

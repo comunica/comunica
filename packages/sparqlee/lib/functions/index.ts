@@ -1,5 +1,3 @@
-import type { Map } from 'immutable';
-
 import type * as C from '../util/Consts';
 
 import {
@@ -13,20 +11,19 @@ import { specialDefinitions } from './SpecialFunctions';
 
 export * from './Core';
 
-export type RegularFunctionMap = Map<C.RegularOperator, RegularFunction>;
-export const regularFunctions: RegularFunctionMap =
-  definitions
-    .map((def, op) => new RegularFunction(op, def))
-    .toMap();
+export type RegularFunctionMap = Record<C.RegularOperator, RegularFunction>;
+export const regularFunctions: RegularFunctionMap = <RegularFunctionMap> Object.fromEntries(
+  Object.entries(definitions).map(([ key, val ]) =>
+    [ key, new RegularFunction(<C.RegularOperator>key, val) ]),
+);
 
-export type SpecialFunctionAsyncMap = Map<C.SpecialOperator, SpecialFunction>;
-export const specialFunctions: SpecialFunctionAsyncMap =
-  specialDefinitions
-    .map((def, op) => new SpecialFunction(op, def))
-    .toMap();
+export type SpecialFunctionAsyncMap = Record<C.SpecialOperator, SpecialFunction>;
+export const specialFunctions: SpecialFunctionAsyncMap = <SpecialFunctionAsyncMap>Object.fromEntries(
+  Object.entries(specialDefinitions).map(([ key, val ]) => [ key, new SpecialFunction(<C.SpecialOperator>key, val) ]),
+);
 
-export type NamedFunctionMap = Map<C.NamedOperator, NamedFunction>;
-export const namedFunctions: NamedFunctionMap =
-  namedDefinitions
-    .map((def, op) => new NamedFunction(op, def))
-    .toMap();
+export type NamedFunctionMap = Record<C.NamedOperator, NamedFunction>;
+export const namedFunctions: NamedFunctionMap = <NamedFunctionMap> Object.fromEntries(
+  Object.entries(namedDefinitions).map(([ key, val ]) =>
+    [ key, new NamedFunction(<C.NamedOperator>key, val) ]),
+);

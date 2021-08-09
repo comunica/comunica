@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-redeclare
 import { Map } from 'immutable';
 import type * as RDF from 'rdf-js';
 
@@ -9,6 +10,7 @@ export type Bindings = Map<string, RDF.Term>;
  * @return {Bindings} The immutable bindings from the hash.
  * @constructor
  */
+// eslint-disable-next-line no-redeclare
 export function Bindings(hash: Record<string, RDF.Term>): Bindings {
   return Map(hash);
 }
