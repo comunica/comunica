@@ -175,7 +175,7 @@ Options:
         if (message === 'start') {
           workerTimeout = setTimeout(() => {
             stderr.write(`Worker ${worker.process.pid} timed out.\n`);
-            worker.process.kill('SIGKILL');
+            worker.send('shutdown');
             workerTimeout = undefined;
           }, this.timeout);
         } else if (message === 'end' && workerTimeout) {
@@ -349,6 +349,16 @@ Options:
     // Send message to master process to indicate the start of an execution
     process.send!('start');
 
+    // Listen for shutdown events from master for timeouts
+    const messageListener = (message: string): void => {
+      if (message === 'shutdown') {
+        response.end('!TIMED OUT!');
+        // eslint-disable-next-line unicorn/no-process-exit
+        process.exit(9);
+      }
+    };
+    process.on('message', messageListener);
+
     let eventEmitter: EventEmitter | undefined;
     try {
       const { data } = await engine.resultToString(result, mediaType);
@@ -366,7 +376,10 @@ Options:
     }
 
     // Send message to master process to indicate the end of an execution
-    response.on('close', () => process.send!('end'));
+    response.on('close', () => {
+      process.removeListener('message', messageListener);
+      process.send!('end');
+    });
 
     this.stopResponse(response, eventEmitter);
   }
