@@ -43,7 +43,12 @@ export class ActorHttpProxy extends ActorHttp {
     });
 
     // Modify the response URL
-    (<any> output).url = output.headers.get('x-final-url') ?? requestedUrl;
+    // use defineProperty to allow modification of unmodifiable objects
+    Object.defineProperty(output, 'url', {
+      configurable: true,
+      enumerable: true,
+      get: () => output.headers.get('x-final-url') ?? requestedUrl,
+    });
     return output;
   }
 }
