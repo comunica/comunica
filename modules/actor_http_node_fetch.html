@@ -72,9 +72,11 @@
 					</a>
 					<p><a href="https://www.npmjs.com/package/@comunica/actor-http-node-fetch"><img src="https://badge.fury.io/js/%40comunica%2Factor-http-node-fetch.svg" alt="npm version"></a></p>
 					<p>An <a href="https://github.com/comunica/comunica/tree/master/packages/bus-http">HTTP</a> actor that
-					uses <a href="https://www.npmjs.com/package/node-fetch">node-fetch</a> to perform HTTP requests.</p>
+					uses <a href="https://www.npmjs.com/package/cross-fetch">cross-fetch</a> to perform HTTP requests.</p>
 					<p>This module is part of the <a href="https://github.com/comunica/comunica">Comunica framework</a>,
 					and should only be used by <a href="https://comunica.dev/docs/modify/">developers that want to build their own query engine</a>.</p>
+					<p>When this actor is used, a custom fetch implementation may be provided via the context (<code>fetch</code>).
+					If none is provided, the default fallback fetch implementation will be used (<code>node-fetch</code> in Node.js, and the browser&#39;s <code>fetch</code> in browser environments).</p>
 					<p><a href="https://comunica.dev/docs/query/">Click here if you just want to query with Comunica</a>.</p>
 					<a href="#install" id="install" style="color: inherit; text-decoration: none;">
 						<h2>Install</h2>
