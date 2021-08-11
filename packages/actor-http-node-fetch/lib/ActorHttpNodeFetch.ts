@@ -56,7 +56,9 @@ export class ActorHttpNodeFetch extends ActorHttp {
     }));
 
     // Perform request
-    return fetch(action.input, this.fetchInitPreprocessor.handle({
+    const customFetch: (input: RequestInfo, init?: RequestInit) => Promise<Response> = action
+      .context?.get(KeysHttp.fetch);
+    return (customFetch || fetch)(action.input, this.fetchInitPreprocessor.handle({
       ...action.init,
       ...action.context && action.context.get(KeysHttp.includeCredentials) ? { credentials: 'include' } : {},
     })).then(response => {

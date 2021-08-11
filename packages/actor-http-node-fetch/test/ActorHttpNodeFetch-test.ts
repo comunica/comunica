@@ -278,5 +278,16 @@ describe('ActorHttpNodeFetch', () => {
 
       expect((<any> response.body).destroy).toHaveBeenCalledWith(closeError);
     });
+
+    it('should run with a custom fetch function', async() => {
+      const customFetch = jest.fn(async() => ({}));
+      await actor.run({
+        input: <Request> { url: 'https://www.google.com/' },
+        context: ActionContext({ [KeysHttp.fetch]: customFetch }),
+      });
+
+      expect(fetch).not.toHaveBeenCalled();
+      expect(customFetch).toHaveBeenCalled();
+    });
   });
 });
