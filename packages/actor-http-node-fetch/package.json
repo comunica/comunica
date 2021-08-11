@@ -63,5 +63,8 @@
     "test-watch": "node \"../../node_modules/jest/bin/jest.js\" ${1} --watch",
     "build": "node \"../../node_modules/typescript/bin/tsc\"",
     "validate": "npm ls"
+  },
+  "browser": {
+    "./lib/FetchInitPreprocessor.js": "./lib/FetchInitPreprocessor-browser.js"
   }
 }

@@ -5,6 +5,8 @@ import { KeysHttp } from '@comunica/context-entries';
 import type { IActorArgs } from '@comunica/core';
 import type { IMediatorTypeTime } from '@comunica/mediatortype-time';
 import 'cross-fetch/polyfill';
+import { FetchInitPreprocessor } from './FetchInitPreprocessor';
+import type { IFetchInitPreprocessor } from './IFetchInitPreprocessor';
 
 /**
  * A node-fetch actor that listens on the 'init' bus.
@@ -13,10 +15,14 @@ import 'cross-fetch/polyfill';
  */
 export class ActorHttpNodeFetch extends ActorHttp {
   private readonly userAgent: string;
+  private readonly fetchInitPreprocessor: IFetchInitPreprocessor;
 
-  public constructor(args: IActorArgs<IActionHttp, IMediatorTypeTime, IActorHttpOutput>) {
+  public constructor(args: IActorHttpNodeFetchArgs) {
     super(args);
     this.userAgent = ActorHttpNodeFetch.createUserAgent();
+    this.fetchInitPreprocessor = new FetchInitPreprocessor(args.agentOptions ?
+      JSON.parse(args.agentOptions) :
+      undefined);
   }
 
   public static createUserAgent(): string {
@@ -50,10 +56,10 @@ export class ActorHttpNodeFetch extends ActorHttp {
     }));
 
     // Perform request
-    return fetch(action.input, {
+    return fetch(action.input, this.fetchInitPreprocessor.handle({
       ...action.init,
       ...action.context && action.context.get(KeysHttp.includeCredentials) ? { credentials: 'include' } : {},
-    }).then(response => {
+    })).then(response => {
       // Node-fetch does not support body.cancel, while it is mandatory according to the fetch and readablestream api.
       // If it doesn't exist, we monkey-patch it.
       if (response.body && !response.body.cancel) {
@@ -62,4 +68,8 @@ export class ActorHttpNodeFetch extends ActorHttp {
       return response;
     });
   }
+}
+
+export interface IActorHttpNodeFetchArgs extends IActorArgs<IActionHttp, IMediatorTypeTime, IActorHttpOutput> {
+  agentOptions?: string;
 }
