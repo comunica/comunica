@@ -107,7 +107,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/comunica/comunica/blob/7fe77c5/packages/actor-rdf-resolve-quad-pattern-rdfjs-source/lib/IRdfJsSourceExtended.ts#L14">packages/actor-rdf-resolve-quad-pattern-rdfjs-source/lib/IRdfJsSourceExtended.ts:14</a></li>
+									<li>Defined in <a href="https://github.com/comunica/comunica/blob/dfb9030/packages/actor-rdf-resolve-quad-pattern-rdfjs-source/lib/IRdfJsSourceExtended.ts#L14">packages/actor-rdf-resolve-quad-pattern-rdfjs-source/lib/IRdfJsSourceExtended.ts:14</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -151,14 +151,14 @@
 					<a name="match" class="tsd-anchor"></a>
 					<h3>match</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface tsd-is-inherited tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">match<span class="tsd-signature-symbol">(</span>subject<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">RegExp</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Term</span>, predicate<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">RegExp</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Term</span>, object<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">RegExp</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Term</span>, graph<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">RegExp</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Term</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Stream</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">match<span class="tsd-signature-symbol">(</span>subject<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Term</span>, predicate<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Term</span>, object<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Term</span>, graph<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Term</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Stream</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Quad</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<p>Inherited from RDF.Source.match</p>
 								<ul>
-									<li>Defined in node_modules/@types/rdf-js/index.d.ts:348</li>
+									<li>Defined in node_modules/@rdfjs/types/stream.d.ts:49</li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -169,27 +169,27 @@
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> subject: <span class="tsd-signature-type">RegExp</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Term</span></h5>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> subject: <span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Term</span></h5>
 									<div class="tsd-comment tsd-typography">
-										<p>The optional exact subject or subject regex to match.</p>
+										<p>The optional subject.</p>
 									</div>
 								</li>
 								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> predicate: <span class="tsd-signature-type">RegExp</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Term</span></h5>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> predicate: <span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Term</span></h5>
 									<div class="tsd-comment tsd-typography">
-										<p>The optional exact predicate or predicate regex to match.</p>
+										<p>The optional predicate.</p>
 									</div>
 								</li>
 								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> object: <span class="tsd-signature-type">RegExp</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Term</span></h5>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> object: <span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Term</span></h5>
 									<div class="tsd-comment tsd-typography">
-										<p>The optional exact object or object regex to match.</p>
+										<p>The optional object.</p>
 									</div>
 								</li>
 								<li>
-									<h5><span class="tsd-flag ts-flagOptional">Optional</span> graph: <span class="tsd-signature-type">RegExp</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Term</span></h5>
+									<h5><span class="tsd-flag ts-flagOptional">Optional</span> graph: <span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Term</span></h5>
 									<div class="tsd-comment tsd-typography">
-										<p>The optional exact graph or graph regex to match.</p>
+										<p>The optional graph.</p>
 									</div>
 								</li>
 							</ul>
