@@ -1,6 +1,6 @@
+import type * as RDF from '@rdfjs/types';
 // eslint-disable-next-line no-redeclare
 import { Map } from 'immutable';
-import type * as RDF from 'rdf-js';
 
 export type Bindings = Map<string, RDF.Term>;
 

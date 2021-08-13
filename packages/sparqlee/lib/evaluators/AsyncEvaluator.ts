@@ -1,4 +1,4 @@
-import type * as RDF from 'rdf-js';
+import type * as RDF from '@rdfjs/types';
 import type { Algebra as Alg } from 'sparqlalgebrajs';
 
 import type * as E from '../expressions/Expressions';

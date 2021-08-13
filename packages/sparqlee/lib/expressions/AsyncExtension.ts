@@ -1,4 +1,4 @@
-import type * as RDF from 'rdf-js';
+import type * as RDF from '@rdfjs/types';
 import type { AsyncExtensionApplication, AsyncExtensionExpression, Expression } from './Expressions';
 import { ExpressionType } from './Expressions';
 
